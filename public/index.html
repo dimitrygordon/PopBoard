@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Classroom Board</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="login">
+  <h2>Join Discussion</h2>
+  <input id="usernameInput" placeholder="Enter your name" />
+  <button id="joinBtn">Join</button>
+</div>
+
+<div id="app" class="hidden">
+
+  <header>
+    <h2 id="welcome"></h2>
+    <button id="teacherBtn" class="hidden">Teacher Panel</button>
+  </header>
+
+  <section id="pollSection"></section>
+
+  <section id="newPost">
+    <textarea id="postInput" placeholder="Write a comment..."></textarea>
+    <button id="postBtn">Post</button>
+  </section>
+
+  <section>
+    <select id="sortSelect">
+      <option value="new">Newest</option>
+      <option value="top">Top</option>
+    </select>
+  </section>
+
+  <section id="posts"></section>
+
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
