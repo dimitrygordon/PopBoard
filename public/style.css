@@ -1,8 +1,40 @@
+/* Define light mode as default via :root */
+:root {
+  --bg-color: #f4f4f4;
+  --text-color: #333;
+  --card-bg: white;
+  --input-bg: white;
+  --input-text: #333;
+  --button-bg: #007bff;
+  --button-text: white;
+  --button-hover-bg: #0056b3;
+  --accent: blue;
+  --poll-bg: #fffbe6;
+  --border-color: #ddd;
+}
+
+/* Dark mode overrides */
+[data-theme="dark"] {
+  --bg-color: #121212;
+  --text-color: #e0e0e0;
+  --card-bg: #1e1e1e;
+  --input-bg: #2d2d2d;
+  --input-text: #e0e0e0;
+  --button-bg: #0d6efd;
+  --button-text: white;
+  --button-hover-bg: #0a58ca;
+  --accent: #4da6ff;
+  --poll-bg: #2a2a1f;
+  --border-color: #444;
+}
+
+/* Apply variables */
 body {
   font-family: system-ui, sans-serif;
   margin: 0;
   padding: 10px;
-  background: #f4f4f4;
+  background: var(--bg-color);
+  color: var(--text-color);
 }
 
 .hidden {
@@ -14,22 +46,38 @@ body {
   margin: auto;
 }
 
-textarea, input {
+textarea,
+input {
   width: 100%;
   padding: 8px;
   margin-bottom: 8px;
+  background: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
 button {
   padding: 8px 12px;
   cursor: pointer;
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background: var(--button-hover-bg);
 }
 
 .post {
-  background: white;
+  background: var(--card-bg);
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 6px;
+  border: 1px solid var(--border-color);
 }
 
 .reply {
@@ -39,12 +87,21 @@ button {
 
 .upvote {
   cursor: pointer;
-  color: blue;
+  color: var(--accent);
 }
 
 .poll {
-  background: #fffbe6;
+  background: var(--poll-bg);
   padding: 10px;
   margin-bottom: 15px;
   border-radius: 6px;
+}
+
+/* Optional: better spacing for poll buttons */
+.poll button {
+  margin: 5px 8px 5px 0;
+}
+
+html {
+  transition: background-color 0.3s, color 0.3s;
 }
