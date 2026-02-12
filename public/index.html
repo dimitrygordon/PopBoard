@@ -8,42 +8,25 @@
 </head>
 <body>
 
-<!-- Login Screen -->
-<div id="loginScreen">
-  <div id="logo"><img src="/popboard-logo.png" alt="PopBoard" id="logo-img"></div>
-  <h2>Join PopBoard</h2>
-  <input id="usernameInput" placeholder="Your display name" />
-  <button id="studentJoinBtn">Join as Student</button>
-  <button id="teacherLoginBtn">Teacher Login</button>
+<div id="login">
+  <div id="logo">
+    <img src="/popboard-logo.png" alt="PopBoard Logo" id="logo-img" loading="lazy">
+  </div>
+  <h2>Join Discussion</h2>
+  <input id="usernameInput" placeholder="Enter your name" />
+  <button id="joinBtn">Join</button>
 </div>
 
-<!-- Board Selector (Students) -->
-<div id="boardSelector" class="hidden">
-  <h2>Select a PopBoard</h2>
-  <select id="boardSelect"></select>
-  <button id="joinSelectedBoardBtn">Join Board</button>
-  <button id="backToLoginBtn">Back</button>
-</div>
-
-<!-- Teacher Dashboard -->
-<div id="teacherDashboard" class="hidden">
-  <div id="logo"><img src="/popboard-logo.png" alt="PopBoard" id="logo-img"></div>
-  <h2>Teacher Portal</h2>
-  <button id="createBoardBtn">Create New PopBoard</button>
-  <ul id="boardList"></ul>
-  <button id="logoutTeacherBtn">Logout</button>
-</div>
-
-<!-- Main App (Inside a PopBoard) -->
-<div id="mainApp" class="hidden">
+<div id="app" class="hidden">
 
   <header>
-    <div id="logo"><img src="/popboard-logo.png" alt="PopBoard" id="logo-img"></div>
-    <div id="boardTitle"></div>
+    <div id="logo">
+      <img src="/popboard-logo.png" alt="PopBoard Logo" id="logo-img" loading="lazy">
+    </div>
+
     <div class="header-right">
-      <button id="teacherPanelBtn" class="hidden">Teacher Tools</button>
+      <button id="teacherBtn" class="hidden">Teacher Panel</button>
       <button id="themeToggle">🌙 Dark Mode</button>
-      <button id="backToDashboardBtn" class="hidden">Back to Boards</button>
     </div>
   </header>
 
@@ -51,18 +34,25 @@
 
   <section id="newPost">
     <textarea id="postInput" placeholder="Write a comment..."></textarea>
-    <label><input type="checkbox" id="anonymousToggle"> 🥷🏼 Post Anonymously</label>
+    
+    <!-- New: Anonymous toggle -->
+    <label class="anonymous-label">
+      <input type="checkbox" id="anonymousToggle">
+      🥷🏼 Post Anonymously
+    </label>
+
     <button id="postBtn">Post</button>
   </section>
 
   <section>
     <select id="sortSelect">
       <option value="new">Newest</option>
-      <option value="popular">Popular</option>
+      <option value="top">Top</option>
     </select>
   </section>
 
   <section id="posts"></section>
+
 </div>
 
 <script type="module" src="app.js"></script>
