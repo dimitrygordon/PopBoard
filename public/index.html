@@ -3,75 +3,70 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PopBoard – Live Classroom Board</title>
-
+  <title>PopBoard</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<!-- ──────────────────────────────────────────────── -->
-<!-- Login -->
-<!-- ──────────────────────────────────────────────── -->
-<div id="login">
-  <h2>Join Discussion</h2>
-  <input 
-    id="usernameInput" 
-    placeholder="Enter your name" 
-    autocomplete="off"
-  />
+<div id="login" class="visible">
+  <h2>Join PopBoard</h2>
+  <input id="usernameInput" placeholder="Your display name" />
+  <div id="boardSelection" class="hidden">
+    <label>Select PopBoard:</label>
+    <select id="boardSelect"></select>
+  </div>
+  <label><input type="checkbox" id="anonToggle"> 🥷🏼 Post Anonymously</label>
   <button id="joinBtn">Join</button>
 </div>
 
-<!-- ──────────────────────────────────────────────── -->
-<!-- App -->
-<!-- ──────────────────────────────────────────────── -->
-<div id="app" class="hidden">
-
-  <!-- Header -->
+<div id="popboards" class="hidden">
   <header>
     <div id="logo">
-      <img
-        src="/popboard-logo.png"
-        alt="PopBoard Logo"
-        id="logo-img"
-        loading="lazy"
-      />
+      <img src="/popboard-logo.png" alt="PopBoard Logo" id="logo-img" loading="lazy">
     </div>
-
     <div class="header-right">
-      <span id="userBadge" class="hidden"></span>
+      <button id="themeToggle">🌙 Dark Mode</button>
+      <button id="backToBoards">Back to PopBoards</button>
+    </div>
+  </header>
+  <h2>PopBoards</h2>
+  <div id="boardsList"></div>
+  <div id="newBoardSection">
+    <input id="newBoardName" placeholder="New PopBoard name" />
+    <button id="createBoardBtn">Create New PopBoard</button>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <header>
+    <div id="logo">
+      <img src="/popboard-logo.png" alt="PopBoard Logo" id="logo-img" loading="lazy">
+    </div>
+    <div class="header-right">
       <button id="teacherBtn" class="hidden">Teacher Panel</button>
       <button id="themeToggle">🌙 Dark Mode</button>
+      <button id="backToBoards">Back to PopBoards</button>
     </div>
   </header>
 
-  <!-- Polls -->
   <section id="pollSection"></section>
 
-  <!-- New Post -->
   <section id="newPost">
-    <textarea 
-      id="postInput" 
-      placeholder="Write a comment… (be respectful)"
-    ></textarea>
+    <textarea id="postInput" placeholder="Write a comment..."></textarea>
+    <label><input type="checkbox" id="anonPostToggle"> 🥷🏼 Post Anonymously</label>
     <button id="postBtn">Post</button>
   </section>
 
-  <!-- Sort -->
   <section>
     <select id="sortSelect">
       <option value="new">Newest</option>
-      <option value="top">Top</option>
+      <option value="top">Top (updates ~every 2 min)</option>
     </select>
   </section>
 
-  <!-- Posts -->
   <section id="posts"></section>
-
 </div>
 
-<!-- App Logic -->
 <script type="module" src="app.js"></script>
-
 </body>
 </html>
