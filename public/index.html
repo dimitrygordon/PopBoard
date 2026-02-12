@@ -3,47 +3,61 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PopBoard</title>
+  <title>PopBoard – Live Classroom Board</title>
+
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
+<!-- ──────────────────────────────────────────────── -->
+<!-- Login -->
+<!-- ──────────────────────────────────────────────── -->
 <div id="login">
-  <div id="logo">
-    <img src="/popboard-logo.png" alt="PopBoard Logo" id="logo-img" loading="lazy">
-  </div>
   <h2>Join Discussion</h2>
-  <input id="usernameInput" placeholder="Enter your name" />
+  <input 
+    id="usernameInput" 
+    placeholder="Enter your name" 
+    autocomplete="off"
+  />
   <button id="joinBtn">Join</button>
 </div>
 
+<!-- ──────────────────────────────────────────────── -->
+<!-- App -->
+<!-- ──────────────────────────────────────────────── -->
 <div id="app" class="hidden">
 
+  <!-- Header -->
   <header>
     <div id="logo">
-      <img src="/popboard-logo.png" alt="PopBoard Logo" id="logo-img" loading="lazy">
+      <img
+        src="/popboard-logo.png"
+        alt="PopBoard Logo"
+        id="logo-img"
+        loading="lazy"
+      />
     </div>
 
     <div class="header-right">
+      <span id="userBadge" class="hidden"></span>
       <button id="teacherBtn" class="hidden">Teacher Panel</button>
       <button id="themeToggle">🌙 Dark Mode</button>
     </div>
   </header>
 
+  <!-- Polls -->
   <section id="pollSection"></section>
 
+  <!-- New Post -->
   <section id="newPost">
-    <textarea id="postInput" placeholder="Write a comment..."></textarea>
-    
-    <!-- New: Anonymous toggle -->
-    <label class="anonymous-label">
-      <input type="checkbox" id="anonymousToggle">
-      🥷🏼 Post Anonymously
-    </label>
-
+    <textarea 
+      id="postInput" 
+      placeholder="Write a comment… (be respectful)"
+    ></textarea>
     <button id="postBtn">Post</button>
   </section>
 
+  <!-- Sort -->
   <section>
     <select id="sortSelect">
       <option value="new">Newest</option>
@@ -51,10 +65,13 @@
     </select>
   </section>
 
+  <!-- Posts -->
   <section id="posts"></section>
 
 </div>
 
+<!-- App Logic -->
 <script type="module" src="app.js"></script>
+
 </body>
 </html>
