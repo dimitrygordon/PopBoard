@@ -1,11 +1,18 @@
-// 🔥 Firebase imports (ES module via CDN)
+// ────────────────────────────────────────────────
+// Firebase imports
+// ────────────────────────────────────────────────
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getFirestore, collection, addDoc, onSnapshot,
   serverTimestamp, query, orderBy, doc, updateDoc, deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  getStorage, ref, uploadBytes, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-// 🔥 Firebase config
+// ────────────────────────────────────────────────
+// Firebase config
+// ────────────────────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyClkHjUnQ96VNRj1FxyY-ca-AcDWYoX_m8",
   authDomain: "hotseat-4f661.firebaseapp.com",
@@ -15,36 +22,43 @@ const firebaseConfig = {
   appId: "1:1052089495081:web:15293be177ad3a6f577638"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
-// 🌟 App state
+// ────────────────────────────────────────────────
+// App state
+// ────────────────────────────────────────────────
 let username = "";
 let isTeacher = false;
 let sortMode = "new";
+let unsubscribePosts = null;
 
-// Track user interactions (client-side only)
-let myUpvotedPostIds = new Set();
-let myPollVotes = new Map();
-
-// DOM elements
-const loginDiv      = document.getElementById("login");
-const appDiv        = document.getElementById("app");
-const joinBtn       = document.getElementById("joinBtn");
-const usernameInput = document.getElementById("usernameInput");
-const postInput     = document.getElementById("postInput");
-const postBtn       = document.getElementById("postBtn");
-const postsDiv      = document.getElementById("posts");
-const sortSelect    = document.getElementById("sortSelect");
-const teacherBtn    = document.getElementById("teacherBtn");
-const pollSection   = document.getElementById("pollSection");
-const themeToggle   = document.getElementById("themeToggle");
-const htmlElement   = document.documentElement;
-const anonymousToggle = document.getElementById("anonymousToggle");
+// Persistent anonymous user ID
+let userId = localStorage.getItem("pollUserId");
+if (!userId) {
+  userId = crypto.randomUUID();
+  localStorage.setItem("pollUserId", userId);
+}
 
 // ────────────────────────────────────────────────
-// Theme handling (unchanged)
+// DOM elements
+// ────────────────────────────────────────────────
+const loginDiv = document.getElementById("login");
+const appDiv = document.getElementById("app");
+const joinBtn = document.getElementById("joinBtn");
+const usernameInput = document.getElementById("usernameInput");
+const postInput = document.getElementById("postInput");
+const postBtn = document.getElementById("postBtn");
+const postsDiv = document.getElementById("posts");
+const sortSelect = document.getElementById("sortSelect");
+const teacherBtn = document.getElementById("teacherBtn");
+const pollSection = document.getElementById("pollSection");
+const themeToggle = document.getElementById("themeToggle");
+const htmlElement = document.documentElement;
+
+// ────────────────────────────────────────────────
+// Theme handling
 // ────────────────────────────────────────────────
 function setTheme(theme) {
   htmlElement.setAttribute("data-theme", theme);
@@ -58,39 +72,16 @@ function loadTheme() {
   else setTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
 }
 
-window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
-  if (!localStorage.getItem("theme")) setTheme(e.matches ? "dark" : "light");
-});
-
-themeToggle.addEventListener("click", () => {
+themeToggle.onclick = () => {
   const current = htmlElement.getAttribute("data-theme") || "light";
   setTheme(current === "dark" ? "light" : "dark");
-});
+};
 
 loadTheme();
 
 // ────────────────────────────────────────────────
-// Confetti + haptic feedback
+// Join session
 // ────────────────────────────────────────────────
-function popcornConfetti(element) {
-  const rect = element.getBoundingClientRect();
-  for (let i = 0; i < 14; i++) {
-    const c = document.createElement("div");
-    c.className = "confetti";
-    c.textContent = "🍿";
-    c.style.left = `${rect.left + Math.random() * rect.width}px`;
-    c.style.top = `${rect.top + 20}px`;
-    c.style.animationDuration = `${1.4 + Math.random() * 1}s`;
-    document.body.appendChild(c);
-    setTimeout(() => c.remove(), 2800);
-  }
-  if (navigator.vibrate) navigator.vibrate(55);
-}
-
-// ────────────────────────────────────────────────
-// App logic
-// ────────────────────────────────────────────────
-
 joinBtn.onclick = () => {
   username = usernameInput.value.trim();
   if (!username) return;
@@ -102,104 +93,63 @@ joinBtn.onclick = () => {
   appDiv.classList.remove("hidden");
 
   loadPosts();
-  loadPoll();
+  loadPolls();
 };
 
-// Post with anonymous support + reply capability
+// ────────────────────────────────────────────────
+// Posts
+// ────────────────────────────────────────────────
 postBtn.onclick = async () => {
   const text = postInput.value.trim();
   if (!text) return;
 
-  const isAnonymous = anonymousToggle.checked;
-  const authorName = isAnonymous ? "🥷🏼 Anonymous" : username;
-
   await addDoc(collection(db, "posts"), {
-    author: authorName,
+    author: username,
     text,
     upvotes: 0,
-    timestamp: serverTimestamp(),
-    parentId: null   // null = top-level comment
+    timestamp: serverTimestamp()
   });
 
   postInput.value = "";
-  anonymousToggle.checked = false;
 };
 
-// Sort change
 sortSelect.onchange = () => {
   sortMode = sortSelect.value;
   loadPosts();
 };
 
-// Load posts (supports replies + threshold visuals)
 function loadPosts() {
-  const q = query(collection(db, "posts"), orderBy("timestamp", "asc"));
+  if (unsubscribePosts) unsubscribePosts();
 
-  onSnapshot(q, snapshot => {
+  const q = query(
+    collection(db, "posts"),
+    orderBy(sortMode === "new" ? "timestamp" : "upvotes", "desc")
+  );
+
+  unsubscribePosts = onSnapshot(q, snapshot => {
     postsDiv.innerHTML = "";
 
-    const allPosts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-
-    allPosts.forEach(postData => {
+    snapshot.forEach(docSnap => {
+      const post = docSnap.data();
       const div = document.createElement("div");
       div.className = "post";
-      if (myUpvotedPostIds.has(postData.id)) div.classList.add("upvoted-by-me");
-
-      const upvotes = postData.upvotes || 0;
-      if (upvotes >= 10) div.classList.add("popcorn-mega");
-      else if (upvotes >= 5) div.classList.add("popcorn-medium");
-      else if (upvotes >= 2) div.classList.add("popcorn-small");
-
-      const isReply = !!postData.parentId;
-      if (isReply) div.classList.add("reply");
 
       div.innerHTML = `
-        <strong>${postData.author}</strong><br/>
-        ${postData.text}<br/>
-        <span class="upvote">🍿</span>
-        <button class="reply-btn">Reply</button>
+        <strong>${post.author}</strong>
+        <p>${post.text}</p>
+        <span class="upvote">🍿 ${post.upvotes || 0}</span>
         ${isTeacher ? "<button class='delete'>Delete</button>" : ""}
       `;
 
-      // Upvote toggle
-      const upvoteSpan = div.querySelector(".upvote");
-      upvoteSpan.onclick = async () => {
-        const already = myUpvotedPostIds.has(postData.id);
-
-        if (already) {
-          myUpvotedPostIds.delete(postData.id);
-          div.classList.remove("upvoted-by-me");
-          await updateDoc(doc(db, "posts", postData.id), {
-            upvotes: Math.max(0, upvotes - 1)
-          });
-        } else {
-          myUpvotedPostIds.add(postData.id);
-          div.classList.add("upvoted-by-me");
-          popcornConfetti(upvoteSpan);
-          await updateDoc(doc(db, "posts", postData.id), {
-            upvotes: upvotes + 1
-          });
-        }
-      };
-
-      // Reply button
-      div.querySelector(".reply-btn").onclick = async () => {
-        const replyText = prompt("Reply to this comment:");
-        if (!replyText) return;
-
-        await addDoc(collection(db, "posts"), {
-          author: username,
-          text: replyText,
-          upvotes: 0,
-          timestamp: serverTimestamp(),
-          parentId: postData.id
+      div.querySelector(".upvote").onclick = async () => {
+        await updateDoc(doc(db, "posts", docSnap.id), {
+          upvotes: (post.upvotes || 0) + 1
         });
       };
 
-      // Teacher delete
       if (isTeacher) {
         div.querySelector(".delete").onclick = async () => {
-          await deleteDoc(doc(db, "posts", postData.id));
+          await deleteDoc(doc(db, "posts", docSnap.id));
         };
       }
 
@@ -208,73 +158,150 @@ function loadPosts() {
   });
 }
 
-// Teacher creates poll (unchanged for now)
+// ────────────────────────────────────────────────
+// Teacher creates poll
+// ────────────────────────────────────────────────
 teacherBtn.onclick = async () => {
   const question = prompt("Poll question:");
-  const optionsStr = prompt("Comma-separated options:");
-  if (!question || !optionsStr) return;
+  if (!question) return;
 
-  const options = optionsStr.split(",").map(o => o.trim()).filter(Boolean);
-  if (options.length === 0) return;
+  const type = prompt("Poll type: 'multiple' or 'free'");
+  if (!["multiple", "free"].includes(type)) return;
+
+  let options = [];
+  if (type === "multiple") {
+    const optStr = prompt("Comma-separated options:");
+    options = optStr.split(",").map(o => o.trim()).filter(Boolean);
+    if (!options.length) return;
+  }
+
+  let imageUrl = null;
+  if (confirm("Add an image to this poll?")) {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.click();
+
+    await new Promise(resolve => {
+      input.onchange = async () => {
+        const file = input.files[0];
+        const imgRef = ref(storage, `poll-images/${crypto.randomUUID()}`);
+        await uploadBytes(imgRef, file);
+        imageUrl = await getDownloadURL(imgRef);
+        resolve();
+      };
+    });
+  }
 
   await addDoc(collection(db, "polls"), {
     question,
+    type,
     options,
-    votes: Array(options.length).fill(0),
-    active: true
+    votes: {},
+    responses: {},
+    imageUrl,
+    active: true,
+    createdAt: serverTimestamp()
   });
 };
 
-// Load poll with toggle / change vote support
-function loadPoll() {
+// ────────────────────────────────────────────────
+// Load polls
+// ────────────────────────────────────────────────
+function loadPolls() {
   onSnapshot(collection(db, "polls"), snapshot => {
     pollSection.innerHTML = "";
 
     snapshot.forEach(docSnap => {
       const poll = docSnap.data();
-      if (!poll.active) return;
-
       const div = document.createElement("div");
       div.className = "poll";
-      div.innerHTML = `<strong>${poll.question}</strong><br/>`;
 
-      const myChoice = myPollVotes.get(docSnap.id);
+      if (poll.imageUrl) {
+        const img = document.createElement("img");
+        img.src = poll.imageUrl;
+        div.appendChild(img);
+      }
 
-      poll.options.forEach((opt, i) => {
-        const btn = document.createElement("button");
-        btn.textContent = `${opt} (${poll.votes[i] || 0})`;
+      div.innerHTML += `<strong>${poll.question}</strong><br/>`;
 
-        if (myChoice === i) btn.classList.add("voted-by-me");
+      // ── ACTIVE POLLS ──
+      if (poll.active) {
 
-        btn.onclick = async () => {
-          const current = myPollVotes.get(docSnap.id);
+        // Multiple choice
+        if (poll.type === "multiple") {
+          poll.options.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.textContent = opt;
 
-          if (current === i) {
-            // Remove vote
-            myPollVotes.delete(docSnap.id);
-            btn.classList.remove("voted-by-me");
-            const newVotes = [...(poll.votes || [])];
-            newVotes[i] = Math.max(0, (newVotes[i] || 0) - 1);
-            await updateDoc(doc(db, "polls", docSnap.id), { votes: newVotes });
-          } else {
-            // Change or new vote
-            if (current !== undefined) {
-              const newVotes = [...(poll.votes || [])];
-              newVotes[current] = Math.max(0, (newVotes[current] || 0) - 1);
-              await updateDoc(doc(db, "polls", docSnap.id), { votes: newVotes });
+            if (poll.votes?.[userId] === i) {
+              btn.classList.add("voted-by-me");
             }
-            myPollVotes.set(docSnap.id, i);
-            btn.classList.add("voted-by-me");
-            const newVotes = [...(poll.votes || [])];
-            newVotes[i] = (newVotes[i] || 0) + 1;
-            await updateDoc(doc(db, "polls", docSnap.id), { votes: newVotes });
-          }
-        };
 
-        div.appendChild(btn);
-      });
+            btn.onclick = async () => {
+              const current = poll.votes?.[userId];
+              const newVotes = { ...(poll.votes || {}) };
 
-      if (isTeacher) {
+              if (current === i) delete newVotes[userId];
+              else newVotes[userId] = i;
+
+              await updateDoc(doc(db, "polls", docSnap.id), { votes: newVotes });
+            };
+
+            div.appendChild(btn);
+          });
+        }
+
+        // Free response
+        if (poll.type === "free") {
+          const textarea = document.createElement("textarea");
+          textarea.placeholder = "Type your response...";
+          textarea.value = poll.responses?.[userId] || "";
+
+          const submit = document.createElement("button");
+          submit.textContent = "Submit";
+
+          submit.onclick = async () => {
+            await updateDoc(doc(db, "polls", docSnap.id), {
+              [`responses.${userId}`]: textarea.value.trim()
+            });
+          };
+
+          div.appendChild(textarea);
+          div.appendChild(submit);
+        }
+      }
+
+      // ── CLOSED POLLS ──
+      if (!poll.active && poll.type === "multiple") {
+        const counts = {};
+        Object.values(poll.votes || {}).forEach(i => {
+          counts[i] = (counts[i] || 0) + 1;
+        });
+
+        poll.options.forEach((opt, i) => {
+          const wrap = document.createElement("div");
+          wrap.className = "result";
+          wrap.innerHTML = `<strong>${opt} (${counts[i] || 0})</strong>`;
+
+          const bar = document.createElement("div");
+          bar.className = "bar";
+          bar.style.width = `${(counts[i] || 0) * 24}px`;
+
+          wrap.appendChild(bar);
+          div.appendChild(wrap);
+        });
+      }
+
+      if (!poll.active && poll.type === "free" && isTeacher) {
+        Object.values(poll.responses || {}).forEach(r => {
+          const p = document.createElement("p");
+          p.textContent = r;
+          div.appendChild(p);
+        });
+      }
+
+      if (isTeacher && poll.active) {
         const closeBtn = document.createElement("button");
         closeBtn.textContent = "Close Poll";
         closeBtn.onclick = async () => {
