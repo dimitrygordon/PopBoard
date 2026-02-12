@@ -105,3 +105,58 @@ button:hover {
 html {
   transition: background-color 0.3s, color 0.3s;
 }
+
+/* Logo styling */
+#logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--text-color);
+  margin: 0;
+}
+
+/* Upvoted post highlight (maroon tint) */
+.post.upvoted-by-me {
+  background: #80000022;          /* semi-transparent maroon */
+  border-color: #80000088;
+  transition: background 0.4s;
+}
+
+/* Poll button states */
+.poll button {
+  margin: 5px 8px 5px 0;
+  min-width: 140px;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.poll button.voted-by-me {
+  background: #800000 !important;     /* maroon */
+  color: white !important;
+}
+
+/* Popcorn emoji animation when voting */
+.poll button.voted-by-me::after {
+  content: "🍿";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.4rem;
+  animation: popcorn-pop 0.8s ease-out forwards;
+}
+
+@keyframes popcorn-pop {
+  0%   { opacity: 0; transform: translateY(-50%) scale(0.5); }
+  50%  { opacity: 1; transform: translateY(-50%) scale(1.4); }
+  100% { opacity: 0; transform: translateY(-80%) scale(1.2); }
+}
+
+/* Dark mode adjustments for highlights */
+[data-theme="dark"] .post.upvoted-by-me {
+  background: #80000044;          /* slightly stronger in dark mode */
+  border-color: #b2222288;
+}
+
+[data-theme="dark"] .poll button.voted-by-me {
+  background: #a00000 !important;
+}
