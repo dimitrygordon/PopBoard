@@ -227,6 +227,30 @@ label {
 }
 
 /* ──────────────────────────────────────────────── */
+/* Anonymous Toggle - Improved Spacing & Styling    */
+/* ──────────────────────────────────────────────── */
+
+.post-options {
+  display: flex;
+  align-items: center;
+  gap: 6px !important;
+  margin-bottom: 8px !important;
+}
+
+.post-options input[type="checkbox"] {
+  width: auto !important;
+  margin: 0 !important;
+  cursor: pointer;
+}
+
+.post-options label {
+  margin: 0 !important;
+  font-size: 0.85rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ──────────────────────────────────────────────── */
 /* Teacher Upvote History (NEW – safe addition)     */
 /* ──────────────────────────────────────────────── */
 
@@ -263,6 +287,31 @@ label {
 
 .history-log div:last-child {
   border-bottom: none;
+}
+
+/* ──────────────────────────────────────────────── */
+/* Per-comment upvote history                       */
+/* ──────────────────────────────────────────────── */
+
+.comment-upvote-history {
+  margin-top: 8px;
+  padding: 8px;
+  background: rgba(0,0,0,0.02);
+  border-left: 3px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  opacity: 0.85;
+}
+
+.comment-upvote-history strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.8rem;
+}
+
+.comment-upvote-history div {
+  padding: 1px 0;
 }
 
 /* ──────────────────────────────────────────────── */
