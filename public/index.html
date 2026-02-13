@@ -3,54 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Live Classroom Board</title>
+  <title>PopBoard 1.3</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
+<!-- Login Section -->
 <div id="login">
   <h2>Join Discussion</h2>
   <input id="usernameInput" placeholder="Enter your name" />
   <button id="joinBtn">Join</button>
 </div>
 
+<!-- Main App -->
 <div id="app" class="hidden">
 
+  <!-- Header -->
   <header>
     <div id="logo">
-      <!-- Fallback text if image fails to load -->
-      <img 
-        src="/popboard-logo.png" 
-        alt="PopBoard Logo" 
-        id="logo-img" 
-        loading="lazy"
-      >
+      <img src="/popboard-logo.png" alt="PopBoard Logo" id="logo-img" loading="lazy" />
     </div>
-
     <div class="header-right">
       <button id="teacherBtn" class="hidden">Teacher Panel</button>
       <button id="themeToggle">🌙 Dark Mode</button>
     </div>
   </header>
 
+  <!-- Poll Section -->
   <section id="pollSection"></section>
 
+  <!-- Teacher Panel (teacher-only, toggled via JS) -->
+  <section id="teacherPanel" class="hidden">
+    <!-- Teacher tools injected via JS -->
+    <div id="upvote-history-container" class="teacher-panel">
+      <h3>Upvote History</h3>
+      <div id="upvote-history-log" class="history-log"></div>
+    </div>
+  </section>
+
+  <!-- New Post Section -->
   <section id="newPost">
     <textarea id="postInput" placeholder="Write a comment..."></textarea>
+    <div class="post-options" style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+      <input type="checkbox" id="anonymousToggle" />
+      <label for="anonymousToggle">🥷🏼 Anonymous</label>
+    </div>
     <button id="postBtn">Post</button>
   </section>
 
-  <section>
+  <!-- Sorting Options -->
+  <section id="sortSection">
     <select id="sortSelect">
       <option value="new">Newest</option>
       <option value="top">Top</option>
     </select>
   </section>
 
+  <!-- Posts Container -->
   <section id="posts"></section>
 
 </div>
 
+<!-- App JS -->
 <script type="module" src="app.js"></script>
+
 </body>
 </html>
