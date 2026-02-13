@@ -198,40 +198,40 @@ function loadPosts() {
       `;
 
       const upvoteSpan = div.querySelector(".upvote");
-      upvoteSpan.onclick = async () => {
-        const already = myUpvotedPostIds.has(postId);
-        const ref = doc(db, "posts", postId);
+upvoteSpan.onclick = async () => {
+  const already = myUpvotedPostIds.has(postId);
+  const ref = doc(db, "posts", postId);
 
-        try {
-          if (already) {
-            // Remove upvote
-            myUpvotedPostIds.delete(postId);
-            div.classList.remove("upvoted-by-me");
+  try {
+    if (already) {
+      // Remove upvote – NO animation, just visual change + haptic
+      myUpvotedPostIds.delete(postId);
+      div.classList.remove("upvoted-by-me");
 
-            await updateDoc(ref, {
-              upvoters: arrayRemove(username),
-              upvotes: increment(-1)
-            });
+      await updateDoc(ref, {
+        upvoters: arrayRemove(username),
+        upvotes: increment(-1)
+      });
 
-            createPopcornParticles(upvoteSpan, true);  // removing animation
-            triggerHaptic();
-          } else {
-            // Add upvote
-            myUpvotedPostIds.add(postId);
-            div.classList.add("upvoted-by-me");
+      triggerHaptic();  // keep haptic if you want feedback
+      // NO createConfettiBurst here
+    } else {
+      // Add upvote – confetti burst + haptic
+      myUpvotedPostIds.add(postId);
+      div.classList.add("upvoted-by-me");
 
-            await updateDoc(ref, {
-              upvoters: arrayUnion(username),
-              upvotes: increment(1)
-            });
+      await updateDoc(ref, {
+        upvoters: arrayUnion(username),
+        upvotes: increment(1)
+      });
 
-            createPopcornParticles(upvoteSpan, false); // happy confetti
-            triggerHaptic();
-          }
-        } catch (err) {
-          console.error("Upvote failed:", err);
-        }
-      };
+      createConfettiBurst(upvoteSpan);
+      triggerHaptic();
+    }
+  } catch (err) {
+    console.error("Upvote failed:", err);
+  }
+};
 
       if (isTeacher) {
         div.querySelector(".delete").onclick = async () => {
