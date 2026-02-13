@@ -160,8 +160,6 @@ async function addReply(postId, text, anonymous = false) {
 }
 
 // ---------------- Load Replies ----------------
-
-// ---------------- Load Replies (Updated) ----------------
 function loadReplies(postId, container, parentVisible = true) {
   const q = query(collection(db, "replies"), orderBy("timestamp", "asc"));
   onSnapshot(q, snap => {
@@ -250,6 +248,7 @@ function loadPosts() {
       if (isTeacher) {
         const hideBtn = document.createElement("button");
         hideBtn.textContent = post.visible ? "Hide Comment" : "Show Comment";
+        hideBtn.className = "hide-toggle";
         hideBtn.onclick = async () => {
           const ref = doc(db, "posts", postId);
           const newVisible = !post.visible;
@@ -275,20 +274,38 @@ function loadPosts() {
         const ref = doc(db, "posts", postId);
         const already = post.upvoters?.includes(username);
 
+        // Use username directly for history (no emoji prefix)
+        const action = already ? "Removed Upvote" : "Upvoted";
+
         if (already) {
           await updateDoc(ref, {
             upvoters: arrayRemove(username),
             upvotes: increment(-1),
-            upvoteHistory: arrayUnion({ username, action: "Removed Upvote" })
+            upvoteHistory: arrayUnion(`${username}: ${action}`)
           });
         } else {
           await updateDoc(ref, {
             upvoters: arrayUnion(username),
             upvotes: increment(1),
-            upvoteHistory: arrayUnion({ username, action: "Upvoted" })
+            upvoteHistory: arrayUnion(`${username}: ${action}`)
           });
         }
       };
+
+      // Display upvote history for teachers
+      if (isTeacher && post.upvoteHistory && post.upvoteHistory.length > 0) {
+        const historyDiv = document.createElement("div");
+        historyDiv.className = "comment-upvote-history";
+        historyDiv.innerHTML = "<strong>Upvote Log:</strong>";
+        
+        post.upvoteHistory.forEach(entry => {
+          const entryDiv = document.createElement("div");
+          entryDiv.textContent = entry;
+          historyDiv.appendChild(entryDiv);
+        });
+        
+        div.appendChild(historyDiv);
+      }
 
       const repliesDiv = document.createElement("div");
       loadReplies(postId, repliesDiv, post.visible);
@@ -299,24 +316,42 @@ function loadPosts() {
         input.className = "reply-input";
         input.placeholder = "Reply…";
 
+        // Create anonymous toggle wrapper with proper styling
+        const anonWrapper = document.createElement("div");
+        anonWrapper.className = "post-options";
+        anonWrapper.style.display = "flex";
+        anonWrapper.style.alignItems = "center";
+        anonWrapper.style.gap = "6px";
+        anonWrapper.style.marginTop = "6px";
+        anonWrapper.style.marginBottom = "6px";
+
         const anonCheck = document.createElement("input");
         anonCheck.type = "checkbox";
-        anonCheck.id = "replyAnonymous";
+        anonCheck.id = `replyAnonymous-${postId}`;
+        anonCheck.style.width = "auto";
+        anonCheck.style.margin = "0";
+
         const label = document.createElement("label");
-        label.textContent = " 🥷🏼Anonymous";
-        label.prepend(anonCheck);
+        label.htmlFor = `replyAnonymous-${postId}`;
+        label.textContent = "🥷🏼 Anonymous";
+        label.style.margin = "0";
+        label.style.fontSize = "0.85rem";
+        label.style.cursor = "pointer";
+
+        anonWrapper.appendChild(anonCheck);
+        anonWrapper.appendChild(label);
 
         const send = document.createElement("button");
         send.textContent = "Send";
         send.onclick = () => {
           addReply(postId, input.value, anonCheck.checked);
           input.remove();
+          anonWrapper.remove();
           send.remove();
-          label.remove();
         };
 
         div.appendChild(input);
-        div.appendChild(label);
+        div.appendChild(anonWrapper);
         div.appendChild(send);
       };
 
