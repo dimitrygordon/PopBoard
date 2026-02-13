@@ -18,6 +18,7 @@
 
   <header>
     <div id="logo">
+      <!-- Fallback text if image fails to load -->
       <img 
         src="/popboard-logo.png" 
         alt="PopBoard Logo" 
@@ -49,15 +50,6 @@
   <section id="posts"></section>
 
 </div>
-
-<!-- Hidden template for reply input -->
-<template id="reply-input-template">
-  <div class="reply-input-area" style="margin: 10px 0 6px 28px; display:flex; gap:8px; align-items:center;">
-    <textarea class="reply-text" placeholder="Reply..." rows="2" style="flex:1;"></textarea>
-    <button class="reply-send-btn">Send</button>
-    <button class="reply-cancel-btn">Cancel</button>
-  </div>
-</template>
 
 <script type="module" src="app.js"></script>
 </body>
