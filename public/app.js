@@ -292,7 +292,7 @@ enterBoardBtn.onclick = async () => {
       historicalUpvotesGiven: 0,
       historicalUpvotesReceived: 0,
       historicalPollsCast: 0,
-      monthlyStats: {} // { "2025-02": { comments: 5, upvotesGiven: 10, ... } }
+      monthlyStats: {}
     });
     currentStudentId = newStudent.id;
   }
@@ -516,8 +516,6 @@ async function resetBoard(boardId) {
   for (const doc of pollsSnapshot.docs) {
     await deleteDoc(doc.ref);
   }
-
-  // Keep student accounts - they persist with historical data
 }
 
 async function deleteBoard(boardId) {
@@ -541,9 +539,8 @@ function enterBoard(boardId) {
   if (isTeacher) {
     teacherBtn.classList.remove("hidden");
     backToPortalBtn.classList.remove("hidden");
-    studentsBtn.classList.remove("hidden"); // ← MISSING LINE - ADDS STUDENTS BUTTON
+    studentsBtn.classList.remove("hidden");
   } else {
-    // Hide teacher-only buttons for students
     teacherBtn.classList.add("hidden");
     backToPortalBtn.classList.add("hidden");
     studentsBtn.classList.add("hidden");
@@ -886,10 +883,8 @@ function drawChart(canvasId, monthlyStats, metric) {
   const width = canvas.width;
   const height = canvas.height;
 
-  // Clear canvas
   ctx.clearRect(0, 0, width, height);
 
-  // Get last 12 months
   const months = [];
   const now = new Date();
   for (let i = 11; i >= 0; i--) {
@@ -902,22 +897,17 @@ function drawChart(canvasId, monthlyStats, metric) {
     });
   }
 
-  // Find max value for scaling
   const maxValue = Math.max(...months.map(m => m.value), 1);
 
-  // Chart dimensions
   const padding = 40;
   const chartWidth = width - padding * 2;
   const chartHeight = height - padding * 2;
   const pointSpacing = chartWidth / (months.length - 1);
 
-  // Get theme colors
   const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-  const lineColor = isDark ? "#d4a373" : "#d4a373";
+  const lineColor = "#d4a373";
   const textColor = isDark ? "#f5f5f7" : "#1d1d1f";
-  const gridColor = isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)";
 
-  // Draw line
   ctx.strokeStyle = lineColor;
   ctx.lineWidth = 3;
   ctx.lineCap = "round";
@@ -931,7 +921,6 @@ function drawChart(canvasId, monthlyStats, metric) {
     if (i === 0) {
       ctx.moveTo(x, y);
     } else {
-      // Smooth curve using quadratic bezier
       const prevX = padding + (i - 1) * pointSpacing;
       const prevY = padding + chartHeight - (months[i - 1].value / maxValue) * chartHeight;
       const cpX = (prevX + x) / 2;
@@ -943,7 +932,6 @@ function drawChart(canvasId, monthlyStats, metric) {
 
   ctx.stroke();
 
-  // Draw points
   ctx.fillStyle = lineColor;
   months.forEach((month, i) => {
     const x = padding + i * pointSpacing;
@@ -953,7 +941,6 @@ function drawChart(canvasId, monthlyStats, metric) {
     ctx.fill();
   });
 
-  // Draw month labels (every other month to avoid crowding)
   ctx.fillStyle = textColor;
   ctx.font = "11px system-ui";
   ctx.textAlign = "center";
@@ -964,8 +951,6 @@ function drawChart(canvasId, monthlyStats, metric) {
     }
   });
 }
-
-// ---------------- Helper: Update Student Historical Stats ----------------
 
 async function incrementStudentStat(studentId, metric, amount = 1) {
   if (!studentId) return;
@@ -978,7 +963,6 @@ async function incrementStudentStat(studentId, metric, amount = 1) {
   const student = studentDoc.data();
   const monthlyStats = student.monthlyStats || {};
   
-  // Get current month key
   const now = new Date();
   const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   
@@ -997,14 +981,11 @@ async function incrementStudentStat(studentId, metric, amount = 1) {
     monthlyStats: monthlyStats
   };
   
-  // Update historical total
   const historicalKey = `historical${metric.charAt(0).toUpperCase() + metric.slice(1)}`;
   updates[historicalKey] = (student[historicalKey] || 0) + amount;
   
   await updateDoc(studentRef, updates);
 }
-
-// ---------------- Image Upload Helpers ----------------
 
 async function uploadImage(file, folder) {
   const timestamp = Date.now();
@@ -1055,7 +1036,6 @@ postImageInput.onchange = (e) => {
   });
 };
 
-// ---------------- Post ----------------
 postBtn.onclick = async () => {
   const text = postInput.value.trim();
   if (!text && !postImageFile) {
@@ -1081,7 +1061,6 @@ postBtn.onclick = async () => {
     timestamp: serverTimestamp()
   });
 
-  // Update student stats
   if (currentStudentId) {
     await incrementStudentStat(currentStudentId, "comments");
   }
@@ -1096,13 +1075,11 @@ postBtn.onclick = async () => {
   }
 };
 
-// ---------------- Sort ----------------
 sortSelect.onchange = () => {
   sortMode = sortSelect.value;
   loadPosts();
 };
 
-// ---------------- Confetti ----------------
 function createPopcornConfetti(upvoteElement) {
   for (let i = 0; i < 6; i++) {
     const particle = document.createElement("span");
@@ -1128,7 +1105,6 @@ function createPopcornConfetti(upvoteElement) {
   }
 }
 
-// ---------------- Replies ----------------
 async function addReply(postId, text, anonymous = false, imageUrl = null) {
   if (!text && !imageUrl) return;
   await addDoc(collection(db, "boards", currentBoardId, "replies"), {
@@ -1140,13 +1116,11 @@ async function addReply(postId, text, anonymous = false, imageUrl = null) {
     timestamp: serverTimestamp()
   });
 
-  // Update student stats
   if (currentStudentId) {
     await incrementStudentStat(currentStudentId, "comments");
   }
 }
 
-// ---------------- Load Replies ----------------
 function loadReplies(postId, container, parentVisible = true) {
   const q = query(collection(db, "boards", currentBoardId, "replies"), orderBy("timestamp", "asc"));
   onSnapshot(q, snap => {
@@ -1202,7 +1176,6 @@ function loadReplies(postId, container, parentVisible = true) {
   });
 }
 
-// ---------------- Load Posts ----------------
 function loadPosts() {
   if (!currentBoardId) return;
 
@@ -1297,7 +1270,6 @@ function loadPosts() {
             upvoteHistory: arrayUnion(`${username}: ${action}`)
           });
           
-          // Update student stats
           if (currentStudentId) {
             await incrementStudentStat(currentStudentId, "upvotesGiven", -1);
           }
@@ -1308,13 +1280,11 @@ function loadPosts() {
             upvoteHistory: arrayUnion(`${username}: ${action}`)
           });
           
-          // Update student stats
           if (currentStudentId) {
             await incrementStudentStat(currentStudentId, "upvotesGiven", 1);
           }
         }
         
-        // Update upvotes received for post author
         if (!already && post.author !== username) {
           const authorStudentQuery = query(
             collection(db, "boards", currentBoardId, "students"),
@@ -1426,7 +1396,6 @@ function loadPosts() {
   });
 }
 
-// ---------------- Polls ----------------
 teacherBtn.onclick = async () => {
   pollCreation.classList.remove("hidden");
   pollCreation.innerHTML = `
@@ -1535,7 +1504,6 @@ teacherBtn.onclick = async () => {
 async function loadPoll() {
   if (!currentBoardId) return;
 
-  // Get total student count for percentage calculation
   const studentsSnapshot = await getDocs(collection(db, "boards", currentBoardId, "students"));
   const totalStudents = studentsSnapshot.size;
 
@@ -1546,7 +1514,9 @@ async function loadPoll() {
       const poll = docSnap.data();
       const pollId = docSnap.id;
 
-      if (!poll.visible && !isTeacher) return;
+      const pollVisible = poll.visible !== undefined ? poll.visible : false;
+      
+      if (!pollVisible && !isTeacher) return;
 
       const div = document.createElement("div");
       div.className = "poll";
@@ -1561,14 +1531,12 @@ async function loadPoll() {
       }
 
       if (poll.type === "free") {
-        // Calculate percentage responded
         const uniqueResponders = new Set((poll.history || []).map(h => h.username));
         const percentageResponded = totalStudents > 0 
           ? Math.round((uniqueResponders.size / totalStudents) * 100) 
           : 0;
 
         if (isTeacher) {
-          // Show percentage stat
           const percentDiv = document.createElement("div");
           percentDiv.className = "poll-stat";
           percentDiv.innerHTML = `<strong>Percentage Responded: ${percentageResponded}%</strong>`;
@@ -1588,11 +1556,18 @@ async function loadPoll() {
         }
         
         if (!isTeacher) {
+          const hasSubmitted = (poll.history || []).some(h => h.username === username);
+          
           const textarea = document.createElement("textarea");
-          textarea.placeholder = "Enter your response...";
+          textarea.placeholder = hasSubmitted ? "✓ Your response popped in!" : "Enter your response...";
           const submitBtn = document.createElement("button");
           submitBtn.textContent = "Submit";
           submitBtn.className = "teacher-control";
+
+          if (hasSubmitted) {
+            textarea.disabled = true;
+            submitBtn.disabled = true;
+          }
 
           submitBtn.onclick = async (e) => {
             e.stopPropagation();
@@ -1604,13 +1579,12 @@ async function loadPoll() {
               history: arrayUnion({ username, response: responseText })
             });
 
-            // Update student stats
             if (currentStudentId) {
               await incrementStudentStat(currentStudentId, "pollsCast");
             }
 
-            textarea.placeholder = "✓ Your response popped in!";
             textarea.value = "";
+            textarea.placeholder = "✓ Your response popped in!";
             textarea.disabled = true;
             submitBtn.disabled = true;
           };
@@ -1619,10 +1593,9 @@ async function loadPoll() {
           div.appendChild(submitBtn);
         }
       } else {
-        // Multiple choice - calculate percentage
-        const totalVotes = (poll.votes || []).reduce((sum, v) => sum + v, 0);
+        const voters = poll.voters || [];
         const percentageResponded = totalStudents > 0 
-          ? Math.round((totalVotes / totalStudents) * 100) 
+          ? Math.round((voters.length / totalStudents) * 100) 
           : 0;
 
         if (isTeacher) {
@@ -1652,7 +1625,6 @@ async function loadPoll() {
                 history: arrayUnion({ username, response: `Removed vote: ${opt}` })
               });
               
-              // Update student stats
               if (currentStudentId) {
                 await incrementStudentStat(currentStudentId, "pollsCast", -1);
               }
@@ -1665,7 +1637,6 @@ async function loadPoll() {
               
               if (prevChoice === undefined) {
                 updates.voters = arrayUnion(username);
-                // First vote - increment stats
                 if (currentStudentId) {
                   await incrementStudentStat(currentStudentId, "pollsCast", 1);
                 }
@@ -1695,11 +1666,11 @@ async function loadPoll() {
 
       if (isTeacher) {
         const toggleBtn = document.createElement("button");
-        toggleBtn.textContent = poll.visible ? "👁️‍🗨️Hide" : "👁️Show";
+        toggleBtn.textContent = pollVisible ? "👁️‍🗨️Hide" : "👁️Show";
         toggleBtn.className = "hide-toggle teacher-control";
         toggleBtn.onclick = async (e) => {
           e.stopPropagation();
-          await updateDoc(doc(db, "boards", currentBoardId, "polls", pollId), { visible: !poll.visible });
+          await updateDoc(doc(db, "boards", currentBoardId, "polls", pollId), { visible: !pollVisible });
         };
         div.appendChild(toggleBtn);
 
@@ -1751,7 +1722,6 @@ async function loadPoll() {
   });
 }
 
-// ---------------- Alerts for polls posted live ----------------
 const knownVisiblePolls = new Set();
 
 onSnapshot(collection(db, "boards", currentBoardId || "temp", "polls"), snapshot => {
