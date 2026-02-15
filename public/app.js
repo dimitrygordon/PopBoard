@@ -451,6 +451,7 @@ function enterBoard(boardId) {
     teacherBtn.classList.remove("hidden");
     backToPortalBtn.classList.remove("hidden");
   } else {
+    // CRITICAL FIX: Hide teacher button for students
     teacherBtn.classList.add("hidden");
   }
   
