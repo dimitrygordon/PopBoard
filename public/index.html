@@ -27,6 +27,20 @@
   </div>
 </div>
 
+<!-- Teacher Login (Password Entry) -->
+<div id="teacherLogin" class="hidden">
+  <div class="login-logo">
+    <img src="/popboard-logo.png" alt="PopBoard Logo" id="teacher-logo-img" />
+  </div>
+  <h2>Teacher Login</h2>
+  <input id="teacherNameInput" placeholder="Teacher name" />
+  <input id="teacherPasswordInput" type="password" placeholder="Password" />
+  <div class="login-buttons">
+    <button id="teacherSignInBtn">Sign In</button>
+    <button id="backToMainLoginBtn" class="secondary-btn">Back</button>
+  </div>
+</div>
+
 <!-- Board Name Entry -->
 <div id="boardNameEntry" class="hidden">
   <div class="login-logo">
@@ -34,8 +48,10 @@
   </div>
   <h2>Enter PopBoard Name</h2>
   <input id="boardNameInput" placeholder="PopBoard name" />
-  <button id="enterBoardBtn">Enter</button>
-  <button id="backToLoginBtn" class="secondary-btn">Back</button>
+  <div class="login-buttons">
+    <button id="enterBoardBtn">Enter</button>
+    <button id="backToLoginBtn" class="secondary-btn">Back</button>
+  </div>
 </div>
 
 <!-- PopBoards Portal (Teacher View) -->
@@ -45,7 +61,7 @@
       <img src="/popboard-logo.png" alt="PopBoard Logo" id="logo-img" loading="lazy" />
     </div>
     <div class="header-right">
-      <button id="logoutBtn">Logout</button>
+      <button id="logoutBtnPortal">Logout</button>
       <button id="themeTogglePortal">🌙 Dark Mode</button>
     </div>
   </header>
@@ -71,6 +87,7 @@
     <div class="header-right">
       <button id="backToPortalBtn" class="hidden">Back to Boards</button>
       <button id="teacherBtn" class="hidden">Teacher Panel</button>
+      <button id="logoutBtnApp">Logout</button>
       <button id="themeToggle">🌙 Dark Mode</button>
     </div>
   </header>
