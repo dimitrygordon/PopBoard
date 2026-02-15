@@ -14,14 +14,53 @@
 </head>
 <body>
 
-<!-- Login Section -->
+<!-- Login Section (Initial Page) -->
 <div id="login">
-  <h2>Join Discussion</h2>
+  <div class="login-logo">
+    <img src="/popboard-logo.png" alt="PopBoard Logo" id="login-logo-img" />
+  </div>
+  <h2>Join PopBoard</h2>
   <input id="usernameInput" placeholder="Enter your name" />
-  <button id="joinBtn">Join</button>
+  <div class="login-buttons">
+    <button id="joinBtn">Join</button>
+    <button id="teacherLoginBtn">Teacher</button>
+  </div>
 </div>
 
-<!-- Main App -->
+<!-- Board Name Entry -->
+<div id="boardNameEntry" class="hidden">
+  <div class="login-logo">
+    <img src="/popboard-logo.png" alt="PopBoard Logo" id="boardname-logo-img" />
+  </div>
+  <h2>Enter PopBoard Name</h2>
+  <input id="boardNameInput" placeholder="PopBoard name" />
+  <button id="enterBoardBtn">Enter</button>
+  <button id="backToLoginBtn" class="secondary-btn">Back</button>
+</div>
+
+<!-- PopBoards Portal (Teacher View) -->
+<div id="boardsPortal" class="hidden">
+  <header>
+    <div id="logo">
+      <img src="/popboard-logo.png" alt="PopBoard Logo" id="logo-img" loading="lazy" />
+    </div>
+    <div class="header-right">
+      <button id="logoutBtn">Logout</button>
+      <button id="themeTogglePortal">🌙 Dark Mode</button>
+    </div>
+  </header>
+  
+  <div class="portal-container">
+    <h2>Your PopBoards</h2>
+    <div class="create-board-section">
+      <input id="newBoardNameInput" placeholder="New PopBoard name" />
+      <button id="createBoardBtn">Create PopBoard</button>
+    </div>
+    <div id="boardsList"></div>
+  </div>
+</div>
+
+<!-- Main App (Inside a PopBoard) -->
 <div id="app" class="hidden">
 
   <!-- Header -->
@@ -30,10 +69,14 @@
       <img src="/popboard-logo.png" alt="PopBoard Logo" id="logo-img" loading="lazy" />
     </div>
     <div class="header-right">
+      <button id="backToPortalBtn" class="hidden">Back to Boards</button>
       <button id="teacherBtn" class="hidden">Teacher Panel</button>
       <button id="themeToggle">🌙 Dark Mode</button>
     </div>
   </header>
+
+  <!-- Teacher Poll Creation (appears at top when creating poll) -->
+  <section id="pollCreation" class="hidden"></section>
 
   <!-- Poll Section -->
   <section id="pollSection"></section>
@@ -50,10 +93,13 @@
   <!-- New Post Section -->
   <section id="newPost">
     <textarea id="postInput" placeholder="Write a comment..."></textarea>
-    <div class="post-options" style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+    <div class="post-options">
       <input type="checkbox" id="anonymousToggle" />
       <label for="anonymousToggle">🥷🏼 Anonymous</label>
+      <input type="file" id="postImageInput" accept="image/*" style="display:none;" />
+      <button id="postImageBtn" class="secondary-btn" style="padding: 8px 16px; font-size: 0.85rem;">📷 Add Image</button>
     </div>
+    <div id="postImagePreview" class="image-preview"></div>
     <button id="postBtn">Post</button>
   </section>
 
