@@ -529,13 +529,15 @@ function renderLeaderboardUI(top6) {
   var maxScore = 0.1;
   for (var i = 0; i < top6.length; i++) { if (top6[i].score > maxScore) { maxScore = top6[i].score; } }
   var medals = ["🥇", "🥈", "🥉"];
+  var isDark = document.documentElement.getAttribute("data-theme") === "dark";
+  var place456Color = isDark ? "#1a1a1a" : "#ffffff";
   var barGradients = [
     "linear-gradient(90deg, #f7d700, #fff176, #f9a825, #ffd700)",
     "linear-gradient(90deg, #9e9e9e, #e0e0e0, #bdbdbd, #c0c0c0)",
     "linear-gradient(90deg, #cd7f32, #e8a96a, #b5651d, #cd7f32)",
-    "linear-gradient(90deg, #757575, #9e9e9e)",
-    "linear-gradient(90deg, #757575, #9e9e9e)",
-    "linear-gradient(90deg, #757575, #9e9e9e)"
+    place456Color,
+    place456Color,
+    place456Color
   ];
 
   // Container for animated rows — position:relative lets children animate with translateY
@@ -576,7 +578,7 @@ function renderLeaderboardUI(top6) {
     fill.style.transition = "width 0.7s cubic-bezier(0.4,0,0.2,1)";
     var scoreSpan = document.createElement("span");
     scoreSpan.className = "lb-score";
-    scoreSpan.style.color = i < 3 ? "#1d1d1f" : "white";
+    scoreSpan.style.color = i < 3 ? "#1d1d1f" : (isDark ? "white" : "#1d1d1f");
     scoreSpan.textContent = parseFloat(entry.score.toFixed(1)) + " pt";
     fill.appendChild(scoreSpan);
     track.appendChild(fill);
@@ -1957,19 +1959,37 @@ function renderMCPoll(div, poll, pollId, totalStudents) {
   } else {
     // Student view
     if (responsesShown) {
+      var maxVotes = 1;
+      for (var vi = 0; vi < votes.length; vi++) { if ((votes[vi] || 0) > maxVotes) { maxVotes = votes[vi] || 0; } }
+      var chart = document.createElement("div");
+      chart.className = "mc-bar-chart";
       for (var oi = 0; oi < options.length; oi++) {
-        var btn = document.createElement("button");
-        btn.type = "button";
-        btn.textContent = options[oi];
-        btn.disabled = true;
-        if (myPollVotes.get(pollId) === oi) { btn.classList.add("voted-by-me"); }
+        var voteCount = Number(votes[oi]) || 0;
+        var row = document.createElement("div");
+        row.className = "mc-bar-row";
+        var barLabel = document.createElement("div");
+        barLabel.className = "mc-bar-label";
+        barLabel.textContent = options[oi];
+        var track = document.createElement("div");
+        track.className = "mc-bar-track";
+        var fill = document.createElement("div");
+        fill.className = "mc-bar-fill";
         if (correctShown) {
-          btn.style.cssText = correctIndices.indexOf(oi) !== -1
-            ? "background:#34c759!important;color:white!important;border-color:#34c759!important;"
-            : "background:#ff453a!important;color:white!important;border-color:#ff453a!important;";
+          fill.style.background = correctIndices.indexOf(oi) !== -1 ? "#34c759" : "#ff453a";
+        } else {
+          fill.style.background = "#0071e3";
         }
-        div.appendChild(btn);
+        fill.style.width = (voteCount === 0 ? 0 : Math.max(4, (voteCount / maxVotes) * 100)) + "%";
+        var countSpan = document.createElement("span");
+        countSpan.className = "mc-bar-count";
+        countSpan.textContent = voteCount;
+        track.appendChild(fill);
+        track.appendChild(countSpan);
+        row.appendChild(barLabel);
+        row.appendChild(track);
+        chart.appendChild(row);
       }
+      div.appendChild(chart);
     } else {
       for (var oi = 0; oi < options.length; oi++) {
         var btn = document.createElement("button");
@@ -2068,6 +2088,8 @@ async function updateDailyDashboard() {
     });
     pollsSnap.forEach(function(pd) {
       var p = pd.data();
+      var hasInteraction = (p.history && p.history.length > 0) || (p.voters && p.voters.length > 0);
+      if (!hasInteraction) { return; }
       pollCount++;
       var resp = new Set();
       if (p.type === "mc") { (p.voters || []).forEach(function(v) { resp.add(v); }); }
