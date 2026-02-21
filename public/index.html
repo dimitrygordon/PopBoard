@@ -4,17 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PopBoard</title>
-  
-  <!-- Favicon and app icons with explicit types -->
   <link rel="icon" type="image/png" sizes="any" href="/popboard-logo.png" />
   <link rel="shortcut icon" type="image/png" href="/popboard-logo.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/popboard-logo.png" />
-  
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<!-- Login Section (Initial Page) -->
+<!-- Login Section -->
 <div id="login">
   <div class="login-logo">
     <img src="/popboard-logo.png" alt="PopBoard Logo" id="login-logo-img" />
@@ -27,7 +24,7 @@
   </div>
 </div>
 
-<!-- Teacher Login (Password Entry) -->
+<!-- Teacher Login -->
 <div id="teacherLogin" class="hidden">
   <div class="login-logo">
     <img src="/popboard-logo.png" alt="PopBoard Logo" id="teacher-logo-img" />
@@ -55,7 +52,7 @@
   </div>
 </div>
 
-<!-- PopBoards Portal (Teacher View) -->
+<!-- PopBoards Portal (Teacher) -->
 <div id="boardsPortal" class="hidden">
   <header>
     <div id="logo">
@@ -66,7 +63,6 @@
       <button id="themeTogglePortal">🌙 Dark Mode</button>
     </div>
   </header>
-  
   <div class="portal-container">
     <h2>Your PopBoards</h2>
     <div class="create-board-section">
@@ -77,7 +73,7 @@
   </div>
 </div>
 
-<!-- Students Portal (Teacher View) -->
+<!-- Students Portal (Teacher) -->
 <div id="studentsPortal" class="hidden">
   <header>
     <div id="logo">
@@ -89,7 +85,6 @@
       <button id="themeToggleStudents">🌙 Dark Mode</button>
     </div>
   </header>
-  
   <div class="portal-container">
     <h2>Students</h2>
     <div id="studentsList"></div>
@@ -108,16 +103,13 @@
       <button id="themeToggleDashboard">🌙 Dark Mode</button>
     </div>
   </header>
-  
   <div class="portal-container">
     <div id="dashboardContent"></div>
   </div>
 </div>
 
-<!-- Main App (Inside a PopBoard) -->
+<!-- Main App -->
 <div id="app" class="hidden">
-
-  <!-- Header -->
   <header>
     <div id="logo">
       <img src="/popboard-logo.png" alt="PopBoard Logo" id="logo-img" loading="lazy" />
@@ -135,18 +127,43 @@
     </div>
   </header>
 
-  <!-- Teacher Poll Creation (appears at top when creating poll) -->
+  <!-- Teacher: Leaderboard visibility toggle -->
+  <div id="leaderboardToggleContainer" class="hidden" style="text-align:center; margin-bottom:12px;">
+    <button id="leaderboardVisibilityBtn" class="teacher-control">👁️ Leaderboard Shown</button>
+  </div>
+
+  <!-- Leaderboard -->
+  <section id="leaderboardSection"></section>
+
+  <!-- Student emoji picker (students only) -->
+  <div id="emojiPickerContainer" class="hidden">
+    <span class="emoji-label">Your Emoji:</span>
+    <div id="emojiCircle" title="Click to choose your emoji">
+      <span id="emojiDisplay">Choose Emoji</span>
+    </div>
+    <input id="emojiInput" maxlength="2" placeholder="" />
+  </div>
+
+  <!-- Teacher Poll Creation -->
   <section id="pollCreation" class="hidden"></section>
 
   <!-- Poll Section -->
   <section id="pollSection"></section>
 
-  <!-- Poll Panel (teacher-only, toggled via JS) -->
+  <!-- Teacher Panel -->
   <section id="teacherPanel" class="hidden">
-    <!-- Teacher tools injected via JS -->
     <div id="upvote-history-container" class="teacher-panel">
       <h3>Upvote History</h3>
       <div id="upvote-history-log" class="history-log"></div>
+    </div>
+  </section>
+
+  <!-- Daily Dashboard (teacher only) -->
+  <section id="dailyDashboard" class="hidden">
+    <div class="daily-dashboard-card">
+      <h3>📊 Daily Dashboard</h3>
+      <div id="dailyEngagementDisplay" class="daily-engagement-big"></div>
+      <div id="dailyMetricsText" class="daily-metrics-text"></div>
     </div>
   </section>
 
@@ -163,7 +180,7 @@
     <button id="postBtn">Post</button>
   </section>
 
-  <!-- Sorting Options -->
+  <!-- Sorting -->
   <section id="sortSection">
     <select id="sortSelect">
       <option value="new">Newest</option>
@@ -171,13 +188,10 @@
     </select>
   </section>
 
-  <!-- Posts Container -->
+  <!-- Posts -->
   <section id="posts"></section>
-
 </div>
 
-<!-- App JS -->
 <script type="module" src="app.js"></script>
-
 </body>
 </html>
