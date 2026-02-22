@@ -506,27 +506,6 @@ function initLeaderboard() {
       scores.push({ name: d.id, displayName: nickname || d.id, score: data.score || 0, emoji: emoji });
     }
     scores.sort(function(a, b) { return b.score - a.score; });
-    if (!isTeacher) {
-      var myRank = -1;
-      for (var ri = 0; ri < scores.length; ri++) {
-        if (scores[ri].name === username) { myRank = ri + 1; break; }
-      }
-      var rankLabel = document.getElementById("myRankLabel");
-      if (!rankLabel) {
-        rankLabel = document.createElement("span");
-        rankLabel.id = "myRankLabel";
-        rankLabel.style.cssText = "font-size:0.85rem;opacity:0.6;white-space:nowrap;";
-        var group = document.querySelector(".leaderboard-identity-group");
-        if (group) { group.appendChild(rankLabel); }
-      }
-      if (myRank > 0) {
-        var medal = myRank === 1 ? "🥇" : myRank === 2 ? "🥈" : myRank === 3 ? "🥉" : "";
-        rankLabel.textContent = medal ? medal + " #" + myRank : "#" + myRank;
-      } else {
-        rankLabel.textContent = "";
-      }
-    }
-    renderLeaderboardUI(scores.slice(0, 6));
     renderLeaderboardUI(scores.slice(0, 6));
   });
 }
@@ -593,7 +572,10 @@ function renderLeaderboardUI(top6) {
     var targetWidth = Math.max(4, (entry.score / maxScore) * 100);
     // Start at 0 width, then animate to target after paint
     fill.style.width = "0%";
-    fill.style.background = barGradients[i];
+    if (i === 0) { fill.classList.add("lb-bar-gold"); }
+    else if (i === 1) { fill.classList.add("lb-bar-silver"); }
+    else if (i === 2) { fill.classList.add("lb-bar-bronze"); }
+    else { fill.style.background = barGradients[i]; }
     fill.style.transition = "width 0.7s cubic-bezier(0.4,0,0.2,1)";
     var scoreSpan = document.createElement("span");
     scoreSpan.className = "lb-score";
@@ -1314,10 +1296,7 @@ async function mergeStudents(keepId, mergeId) {
     historicalComments: (keepData.historicalComments || 0) + (mergeData.historicalComments || 0),
     historicalUpvotesGiven: (keepData.historicalUpvotesGiven || 0) + (mergeData.historicalUpvotesGiven || 0),
     historicalUpvotesReceived: (keepData.historicalUpvotesReceived || 0) + (mergeData.historicalUpvotesReceived || 0),
-    historicalPollsCast: (keepData.historicalPollsCast || 0) + (mergeData.historicalPollsCast || 0),
-    goldMedals: (keepData.goldMedals || 0) + (mergeData.goldMedals || 0),
-    silverMedals: (keepData.silverMedals || 0) + (mergeData.silverMedals || 0),
-    bronzeMedals: (keepData.bronzeMedals || 0) + (mergeData.bronzeMedals || 0)
+    historicalPollsCast: (keepData.historicalPollsCast || 0) + (mergeData.historicalPollsCast || 0)
   };
   var mergedM = Object.assign({}, keepData.monthlyStats || {});
   var mergeStats = mergeData.monthlyStats || {};
@@ -1335,20 +1314,6 @@ async function mergeStudents(keepId, mergeId) {
   var updateData = { monthlyStats: mergedM };
   for (var key in mergedH) { updateData[key] = mergedH[key]; }
   await updateDoc(keepRef, updateData);
-
-  // ── Merge leaderboard docs ─────────────────────────────────────────────
-  var keepLbRef = doc(db, "boards", currentBoardId, "leaderboard", keepData.username);
-  var mergeLbRef = doc(db, "boards", currentBoardId, "leaderboard", mergeData.username);
-  var keepLbSnap = await getDoc(keepLbRef);
-  var mergeLbSnap = await getDoc(mergeLbRef);
-  if (mergeLbSnap.exists()) {
-    var mergedScore = (keepLbSnap.exists() ? keepLbSnap.data().score || 0 : 0) + (mergeLbSnap.data().score || 0);
-    var mergedEmoji = (keepLbSnap.exists() && keepLbSnap.data().emoji) ? keepLbSnap.data().emoji : (mergeLbSnap.data().emoji || "");
-    var mergedNickname = (keepLbSnap.exists() && keepLbSnap.data().nickname) ? keepLbSnap.data().nickname : (mergeLbSnap.data().nickname || "");
-    await setDoc(keepLbRef, { score: parseFloat(mergedScore.toFixed(3)), emoji: mergedEmoji, nickname: mergedNickname }, { merge: true });
-    await deleteDoc(mergeLbRef);
-  }
-
   await deleteDoc(mergeRef);
   alert("Students merged successfully.");
   viewStudentDashboard(keepId);
