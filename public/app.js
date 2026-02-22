@@ -39,6 +39,7 @@ let unsubPolls = null;
 let unsubLeaderboard = null;
 let unsubBoardSettings = null;
 let studentNickname = "";
+let dailyDataVisible = false;
 
 const loginDiv = document.getElementById("login");
 const teacherLoginDiv = document.getElementById("teacherLogin");
@@ -811,25 +812,38 @@ async function loadStudentsPortal() {
     studentsList.innerHTML = "<p style='text-align:center;margin-top:40px;'>No students yet.</p>";
     return;
   }
+  var toggleBtn = document.getElementById("dailyDataToggleBtn");
+  if (toggleBtn) {
+    toggleBtn.textContent = dailyDataVisible ? "👁️ Daily Data Shown" : "👁️‍🗨️ Daily Data Hidden";
+    toggleBtn.onclick = async function() {
+      dailyDataVisible = !dailyDataVisible;
+      toggleBtn.textContent = dailyDataVisible ? "👁️ Daily Data Shown" : "👁️‍🗨️ Daily Data Hidden";
+      await loadStudentsPortal();
+    };
+  }
   var allStudentDocs = studentsSnapshot.docs;
   studentsList.appendChild(await buildClassAggregateCard(allStudentDocs, totalPolls, pollsSnapshot));
   for (var i = 0; i < allStudentDocs.length; i++) {
     var studentDoc = allStudentDocs[i];
     var student = studentDoc.data();
     var studentId = studentDoc.id;
-    var stats = await calculateStudentStats(studentId, totalPolls, pollsSnapshot);
     var card = document.createElement("div");
     card.className = "board-card";
     var info = document.createElement("div");
     info.className = "board-card-info";
-    var pollPct = totalPolls > 0 ? Math.round((stats.pollsVoted / totalPolls) * 100) : 0;
-    var engagementData = await computeMonthlyEngagement(studentId, student);
-    var currentMonthKey = new Date().getFullYear() + "-" + String(new Date().getMonth() + 1).padStart(2, "0");
-    var currentEngagement = 0;
-    for (var ei = 0; ei < engagementData.length; ei++) {
-      if (engagementData[ei].key === currentMonthKey) { currentEngagement = Math.round(engagementData[ei].value); break; }
+    if (dailyDataVisible) {
+      var stats = await calculateStudentStats(studentId, totalPolls, pollsSnapshot);
+      var pollPct = totalPolls > 0 ? Math.round((stats.pollsVoted / totalPolls) * 100) : 0;
+      var engagementData = await computeMonthlyEngagement(studentId, student);
+      var currentMonthKey = new Date().getFullYear() + "-" + String(new Date().getMonth() + 1).padStart(2, "0");
+      var currentEngagement = 0;
+      for (var ei = 0; ei < engagementData.length; ei++) {
+        if (engagementData[ei].key === currentMonthKey) { currentEngagement = Math.round(engagementData[ei].value); break; }
+      }
+      info.innerHTML = "<h3>" + student.username + "</h3><p class='student-stats'>📊 Engagement: " + currentEngagement + "% | Polls: " + stats.pollsVoted + " (" + pollPct + "%) | Comments: " + stats.comments + " | Upvotes Given: " + stats.upvotesGiven + " | Upvotes Received: " + stats.upvotesReceived + " | 🥷🏼 Anonymous: " + stats.anonymousPercentage + "%</p>";
+    } else {
+      info.innerHTML = "<h3>" + student.username + "</h3>";
     }
-    info.innerHTML = "<h3>" + student.username + "</h3><p class='student-stats'>📊 Engagement: " + currentEngagement + "% | Polls: " + stats.pollsVoted + " (" + pollPct + "%) | Comments: " + stats.comments + " | Upvotes Given: " + stats.upvotesGiven + " | Upvotes Received: " + stats.upvotesReceived + " | 🥷🏼 Anonymous: " + stats.anonymousPercentage + "%</p>";
     var actions = document.createElement("div");
     actions.className = "board-card-actions";
     var enterBtn = document.createElement("button");
@@ -1508,11 +1522,69 @@ function loadPosts() {
   var q = query(collection(db, "boards", currentBoardId, "posts"), orderBy(orderField, "desc"));
   unsubPosts = onSnapshot(q, function(snapshot) {
     postsDiv.innerHTML = "";
+    var archivedComments = document.getElementById("archivedComments");
+    if (archivedComments) { archivedComments.innerHTML = ""; }
     snapshot.forEach(function(docSnap) {
       var post = docSnap.data();
       var postId = docSnap.id;
       if (post.visible === undefined) { post.visible = true; }
       if (!post.visible && !isTeacher) { return; }
+      if (!post.visible && isTeacher) {
+        // Render into archived section instead
+        var archivedComments = document.getElementById("archivedComments");
+        if (archivedComments) {
+          if (archivedComments.querySelector(".archived-comments-header") === null) {
+            var header = document.createElement("div");
+            header.className = "archived-comments-header";
+            header.style.cssText = "text-align:center;color:var(--text-secondary,#888);font-size:0.85rem;margin:24px 0 8px;letter-spacing:0.05em;";
+            header.textContent = "── Archived Comments ──";
+            archivedComments.appendChild(header);
+          }
+          var aDiv = document.createElement("div");
+          aDiv.className = "post hidden-comment";
+          var displayName = post.anonymous ? "🥷🏼 Anonymous" : post.author;
+          aDiv.innerHTML = "<strong>" + displayName + "</strong><br>" + post.text + "<br><span class='upvote'>🍿 " + (post.upvotes || 0) + "</span>";
+          if (post.imageUrl) {
+            var aImg = document.createElement("img");
+            aImg.src = post.imageUrl;
+            aImg.className = "comment-image";
+            (function(url) { aImg.onclick = function() { showImageLightbox(url); }; })(postId);
+            aDiv.appendChild(aImg);
+          }
+          var aHBtn = document.createElement("button");
+          aHBtn.textContent = "👁️‍🗨️ Hidden";
+          aHBtn.className = "hide-toggle teacher-control";
+          (function(pid) {
+            aHBtn.onclick = async function(e) {
+              e.stopPropagation();
+              await updateDoc(doc(db, "boards", currentBoardId, "posts", pid), { visible: true });
+              var rSnap = await getDocs(collection(db, "boards", currentBoardId, "replies"));
+              rSnap.forEach(function(rd) {
+                if (rd.data().postId === pid) { updateDoc(doc(db, "boards", currentBoardId, "replies", rd.id), { visible: true }); }
+              });
+            };
+          })(postId);
+          aDiv.appendChild(aHBtn);
+          var aDelBtn = document.createElement("button");
+          aDelBtn.textContent = "🗑️ Delete";
+          aDelBtn.className = "delete teacher-control";
+          (function(pid) {
+            aDelBtn.onclick = async function(e) {
+              e.stopPropagation();
+              if (!confirm("Delete this post?")) { return; }
+              var rSnap = await getDocs(collection(db, "boards", currentBoardId, "replies"));
+              rSnap.forEach(function(rd) { if (rd.data().postId === pid) { deleteDoc(doc(db, "boards", currentBoardId, "replies", rd.id)); } });
+              await deleteDoc(doc(db, "boards", currentBoardId, "posts", pid));
+            };
+          })(postId);
+          aDiv.appendChild(aDelBtn);
+          var aRepliesDiv = document.createElement("div");
+          loadReplies(postId, aRepliesDiv, true);
+          aDiv.appendChild(aRepliesDiv);
+          archivedComments.appendChild(aDiv);
+        }
+        return;
+      }
       if (post.upvoters && post.upvoters.indexOf(username) !== -1) { myUpvotedPostIds.add(postId); } else { myUpvotedPostIds.delete(postId); }
       var div = document.createElement("div");
       div.className = "post";
@@ -1866,7 +1938,7 @@ async function loadPolls() {
                 if (idx !== -1) { multiSet.delete(idx); }
               }
             });
-            if (multiSet.size > 0) { myPollVotes.set(pollId + "_multi", multiSet); }
+            myPollVotes.set(pollId + "_multi", multiSet);
           } else {
             var lastVote = null;
             (poll.history || []).forEach(function(h) {
@@ -2179,11 +2251,15 @@ function renderMCPoll(div, poll, pollId, totalStudents) {
         var fill = document.createElement("div");
         fill.className = "mc-bar-fill";
         if (correctShown) {
-        fill.style.background = correctIndices.indexOf(oi) !== -1 ? "#34c759" : "#ff453a";
-        if (myPollVotes.get(pollId) === oi) { row.style.cssText += "outline:2px solid #0071e3;border-radius:999px;"; }
+          fill.style.background = correctIndices.indexOf(oi) !== -1 ? "#34c759" : "#ff453a";
+          if (myPollVotes.get(pollId) === oi || (poll.requireAllCorrect && (myPollVotes.get(pollId + "_multi") || new Set()).has(oi))) {
+            row.style.cssText += "outline:2px solid #0071e3;border-radius:999px;";
+          }
         } else {
-        fill.style.background = "#0071e3";
-        if (myPollVotes.get(pollId) === oi) { row.style.cssText += "outline:2px solid #0071e3;border-radius:999px;box-shadow:0 0 0 3px rgba(0,113,227,0.25);"; }
+          fill.style.background = "#0071e3";
+          if (myPollVotes.get(pollId) === oi || (poll.requireAllCorrect && (myPollVotes.get(pollId + "_multi") || new Set()).has(oi))) {
+            row.style.cssText += "outline:2px solid #0071e3;border-radius:999px;box-shadow:0 0 0 3px rgba(0,113,227,0.25);";
+          }
         }
         fill.style.width = (voteCount === 0 ? 0 : Math.max(4, (voteCount / maxVotes) * 100)) + "%";
         var countSpan = document.createElement("span");
@@ -2201,7 +2277,12 @@ function renderMCPoll(div, poll, pollId, totalStudents) {
         var btn = document.createElement("button");
         btn.type = "button";
         btn.textContent = options[oi];
-        if (myPollVotes.get(pollId) === oi) { btn.classList.add("voted-by-me"); }
+        if (poll.requireAllCorrect) {
+          var currentSet = myPollVotes.get(pollId + "_multi") || new Set();
+          if (currentSet.has(oi)) { btn.classList.add("voted-by-me"); }
+        } else {
+          if (myPollVotes.get(pollId) === oi) { btn.classList.add("voted-by-me"); }
+        }
         (function(optIndex, optText, pollData) {
           btn.onclick = async function(e) {
             e.stopPropagation();
@@ -2210,20 +2291,21 @@ function renderMCPoll(div, poll, pollId, totalStudents) {
               var currentSet = myPollVotes.get(pollId + "_multi") || new Set();
               if (currentSet.has(optIndex)) {
                 currentSet.delete(optIndex);
+                myPollVotes.set(pollId + "_multi", currentSet);
                 await updateDoc(pollRef, {
                   ["votes." + optIndex]: increment(-1),
-                  voters: currentSet.size === 0 ? arrayRemove(username) : pollData.voters,
+                  voters: currentSet.size === 0 ? arrayRemove(username) : arrayUnion(username),
                   history: arrayUnion({ username: username, response: "Removed vote: " + optText, timestamp: Date.now() })
                 });
               } else {
                 currentSet.add(optIndex);
+                myPollVotes.set(pollId + "_multi", currentSet);
                 await updateDoc(pollRef, {
                   ["votes." + optIndex]: increment(1),
                   voters: arrayUnion(username),
                   history: arrayUnion({ username: username, response: "Voted: " + optText, timestamp: Date.now() })
                 });
               }
-              myPollVotes.set(pollId + "_multi", currentSet);
             } else {
               var prevChoice = myPollVotes.get(pollId);
               if (prevChoice === optIndex) {
