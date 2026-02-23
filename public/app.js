@@ -431,6 +431,7 @@ async function startBoard() {
   leaderboardSection.innerHTML = "";
   listenBoardSettings();
   initLeaderboard();
+  initStickyCommentBar();
   loadPosts();
   await loadPolls();
   if (isTeacher) { updateDailyDashboard(); }
@@ -521,7 +522,8 @@ function renderLeaderboardUI(top6) {
     var empty = document.createElement("p");
     empty.textContent = "No scores yet. Answer polls to earn points!";
     card.appendChild(empty);
-    leaderboardSection.appendChild(card);
+  leaderboardSection.appendChild(card);
+  initStickyLeaderboard();
     return;
   }
 
@@ -612,6 +614,7 @@ function renderLeaderboardUI(top6) {
 
   card.appendChild(rowContainer);
   leaderboardSection.appendChild(card);
+  initStickyLeaderboard();
 }
 
 async function awardLeaderboardPoints(pollId, correctIndices) {
@@ -1439,6 +1442,8 @@ postBtn.onclick = async function() {
   postImagePreview.innerHTML = "";
   postImageInput.value = "";
   if (document.getElementById("anonymousToggle")) { document.getElementById("anonymousToggle").checked = false; }
+  document.getElementById("newPost").classList.remove("comment-expanded");
+  document.getElementById("newPost").classList.add("comment-collapsed");
 };
 
 sortSelect.onchange = function() { sortMode = sortSelect.value; loadPosts(); };
@@ -2396,4 +2401,127 @@ async function updateDailyDashboard() {
     console.error("Daily dashboard error:", err);
   }
   setTimeout(function() { updateDailyDashboard(); }, 60000);
+}
+
+function initStickyLeaderboard() {
+  var card = leaderboardSection.querySelector(".leaderboard-card");
+  if (!card) { return; }
+
+  var existing = card.querySelector(".lb-compress-btn");
+  if (existing) { existing.remove(); }
+
+  var isCompressed = false;
+  var toggleBtn = document.createElement("button");
+  toggleBtn.className = "lb-compress-btn";
+  toggleBtn.textContent = "∧";
+  toggleBtn.style.cssText = "position:absolute;bottom:8px;right:12px;width:28px;height:28px;border-radius:50%;padding:0;font-size:0.8rem;display:flex;align-items:center;justify-content:center;opacity:0.4;border:1.5px solid var(--border-color);background:transparent;color:var(--text-color);cursor:pointer;transition:all 0.3s ease;z-index:10;";
+  toggleBtn.onmouseenter = function() { toggleBtn.style.opacity = "1"; };
+  toggleBtn.onmouseleave = function() { toggleBtn.style.opacity = "0.4"; };
+  toggleBtn.onclick = function(e) {
+    e.stopPropagation();
+    isCompressed = !isCompressed;
+    toggleBtn.textContent = isCompressed ? "∨" : "∧";
+    applyLeaderboardCompression(isCompressed);
+  };
+  card.style.position = "relative";
+  card.appendChild(toggleBtn);
+}
+
+function applyLeaderboardCompression(compress) {
+  var card = leaderboardSection.querySelector(".leaderboard-card");
+  if (!card) { return; }
+  var rows = card.querySelectorAll(".lb-row");
+  var rowContainer = rows.length > 0 ? rows[0].parentNode : null;
+  if (!rowContainer) { return; }
+
+  if (compress) {
+    leaderboardSection.classList.add("lb-compressed");
+    rows.forEach(function(row, i) {
+      if (i >= 3) {
+        row.style.opacity = "0";
+        row.style.pointerEvents = "none";
+      } else {
+        row.style.opacity = "1";
+      }
+      row.style.top = (i * 28) + "px";
+
+      var nameDiv = row.querySelector(".lb-name");
+      var emoji = row.querySelector(".lb-emoji");
+
+      // Move emoji out of nameDiv into row directly so it stays visible
+      if (emoji && nameDiv && emoji.parentNode === nameDiv) {
+        nameDiv.removeChild(emoji);
+        emoji.style.cssText = "font-size:1.2rem;display:inline-block;transition:all 0.4s ease;flex-shrink:0;";
+        row.insertBefore(emoji, nameDiv);
+      }
+
+      if (nameDiv) { nameDiv.style.cssText = "opacity:0;width:0;overflow:hidden;min-width:0;flex-shrink:1;transition:all 0.4s ease;"; }
+      var medal = row.querySelector(".lb-medal");
+      if (medal) { medal.style.cssText = "opacity:0;width:0;overflow:hidden;min-width:0;margin:0;transition:all 0.4s ease;"; }
+      var score = row.querySelector(".lb-score");
+      if (score) { score.style.cssText = "opacity:0;transition:opacity 0.4s ease;"; }
+      var track = row.querySelector(".lb-bar-track");
+      if (track) { track.style.height = "14px"; track.style.transition = "height 0.4s ease"; }
+      var fill = row.querySelector(".lb-bar-fill");
+      if (fill) { fill.style.height = "14px"; fill.style.transition = "height 0.4s ease"; }
+    });
+    rowContainer.style.height = (Math.min(rows.length, 3) * 28) + "px";
+    rowContainer.style.transition = "height 0.4s ease";
+
+  } else {
+    leaderboardSection.classList.remove("lb-compressed");
+    var ROW_HEIGHT = 48;
+    rows.forEach(function(row, i) {
+      row.style.opacity = "1";
+      row.style.pointerEvents = "";
+      row.style.top = (i * ROW_HEIGHT) + "px";
+
+      var nameDiv = row.querySelector(".lb-name");
+      var emoji = row.querySelector(".lb-emoji");
+
+      // Move emoji back inside nameDiv
+      if (emoji && nameDiv && emoji.parentNode === row) {
+        row.removeChild(emoji);
+        emoji.style.cssText = "display:inline-block;transition:all 0.4s ease;";
+        nameDiv.insertBefore(emoji, nameDiv.firstChild);
+      }
+
+      if (nameDiv) { nameDiv.style.cssText = "width:110px;opacity:1;overflow:visible;min-width:110px;transition:all 0.4s ease;display:flex;align-items:center;gap:5px;justify-content:flex-end;"; }
+      var medal = row.querySelector(".lb-medal");
+      if (medal) { medal.style.cssText = "opacity:1;width:auto;font-size:1.1rem;margin-left:6px;flex-shrink:0;transition:all 0.4s ease;"; }
+      var score = row.querySelector(".lb-score");
+      if (score) { score.style.cssText = "font-size:0.78rem;font-weight:700;color:white;white-space:nowrap;opacity:1;transition:opacity 0.4s ease;"; }
+      var track = row.querySelector(".lb-bar-track");
+      if (track) { track.style.height = "30px"; track.style.transition = "height 0.4s ease"; }
+      var fill = row.querySelector(".lb-bar-fill");
+      if (fill) { fill.style.height = "100%"; fill.style.transition = "height 0.4s ease"; }
+    });
+    rowContainer.style.height = (rows.length * ROW_HEIGHT) + "px";
+    rowContainer.style.transition = "height 0.4s ease";
+  }
+}
+
+function initStickyCommentBar() {
+  var newPost = document.getElementById("newPost");
+  var postInput = document.getElementById("postInput");
+  var cancelBtn = document.getElementById("cancelPostBtn");
+  if (!newPost || !postInput) { return; }
+
+  postInput.addEventListener("focus", function() {
+    newPost.classList.remove("comment-collapsed");
+    newPost.classList.add("comment-expanded");
+  });
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", function() {
+      postInput.value = "";
+      postImageFile = null;
+      document.getElementById("postImagePreview").innerHTML = "";
+      document.getElementById("postImageInput").value = "";
+      if (document.getElementById("anonymousToggle")) { document.getElementById("anonymousToggle").checked = false; }
+      postInput.blur();
+      newPost.classList.remove("comment-expanded");
+      newPost.classList.add("comment-collapsed");
+    });
+  }
 }
