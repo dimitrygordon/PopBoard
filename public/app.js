@@ -971,7 +971,7 @@ function renderNicknameInput() {
   var input = document.createElement("input");
   input.type = "text";
   input.maxLength = 20;
-  input.placeholder = "Leaderboard name (optional)";
+  input.placeholder = "Leaderboard name";
   input.value = studentNickname || "";
   input.style.cssText = "position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:calc(100% - 32px);background:transparent;border:none;outline:none;font-size:1rem;color:inherit;text-align:center;letter-spacing:0.02em;";
   input.onblur = async function() {
