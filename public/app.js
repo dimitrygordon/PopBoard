@@ -1467,6 +1467,47 @@ function createPopcornConfetti(el) {
   }
 }
 
+function triggerPopcornConfetti() {
+  var count = 60;
+  for (var i = 0; i < count; i++) {
+    (function(index) {
+      setTimeout(function() {
+        var p = document.createElement("span");
+        p.textContent = "🍿";
+        var startX = Math.random() * window.innerWidth;
+        var size = 14 + Math.random() * 18;
+        var duration = 2000 + Math.random() * 1500;
+        var drift = (Math.random() - 0.5) * 200;
+        p.style.position = "fixed";
+        p.style.left = startX + "px";
+        p.style.top = "-50px";
+        p.style.fontSize = size + "px";
+        p.style.pointerEvents = "none";
+        p.style.zIndex = "99999";
+        p.style.opacity = "1";
+        document.body.appendChild(p);
+
+        var start = null;
+        function animate(ts) {
+          if (!start) { start = ts; }
+          var elapsed = ts - start;
+          var progress = elapsed / duration;
+          if (progress >= 1) {
+            p.remove();
+            return;
+          }
+          p.style.top = (-50 + (window.innerHeight + 100) * progress) + "px";
+          p.style.left = (startX + drift * progress) + "px";
+          p.style.transform = "rotate(" + (progress * 360 * (Math.random() > 0.5 ? 1 : -1)) + "deg)";
+          if (progress > 0.75) { p.style.opacity = String(1 - ((progress - 0.75) / 0.25)); }
+          requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+      }, index * 40);
+    })(i);
+  }
+}
+
 async function addReply(postId, text, anonymous, imageUrl) {
   if (!anonymous) { anonymous = false; }
   if (!imageUrl) { imageUrl = null; }
@@ -2257,8 +2298,12 @@ function renderMCPoll(div, poll, pollId, totalStudents) {
         fill.className = "mc-bar-fill";
         if (correctShown) {
           fill.style.background = correctIndices.indexOf(oi) !== -1 ? "#34c759" : "#ff453a";
-          if (myPollVotes.get(pollId) === oi || (poll.requireAllCorrect && (myPollVotes.get(pollId + "_multi") || new Set()).has(oi))) {
+          var studentPicked = myPollVotes.get(pollId) === oi || (poll.requireAllCorrect && (myPollVotes.get(pollId + "_multi") || new Set()).has(oi));
+          if (studentPicked) {
             row.style.cssText += "outline:2px solid #0071e3;border-radius:999px;";
+            if (correctIndices.indexOf(oi) !== -1) {
+              triggerPopcornConfetti();
+            }
           }
         } else {
           fill.style.background = "#0071e3";
