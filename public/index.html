@@ -162,17 +162,22 @@
     </div>
   </section>
 
-  <!-- New Post Section -->
-  <section id="newPost">
+  <!-- New Post Section (sticky bottom) -->
+  <section id="newPost" class="comment-collapsed">
     <textarea id="postInput" placeholder="Write a comment..."></textarea>
-    <div class="post-options">
-      <input type="checkbox" id="anonymousToggle" />
-      <label for="anonymousToggle">🥷🏼 Anonymous</label>
-      <input type="file" id="postImageInput" accept="image/*" style="display:none;" />
-      <button id="postImageBtn" class="secondary-btn" style="padding: 8px 16px; font-size: 0.85rem;">📷 Add Image</button>
+    <div class="post-options-row">
+      <div class="post-options-left">
+        <input type="checkbox" id="anonymousToggle" />
+        <label for="anonymousToggle">🥷🏼 Anonymous</label>
+        <input type="file" id="postImageInput" accept="image/*" style="display:none;" />
+        <button id="postImageBtn" class="secondary-btn" style="padding: 8px 16px; font-size: 0.85rem;">📷 Add Image</button>
+      </div>
+      <div class="post-options-right comment-bar-actions">
+        <button id="cancelPostBtn">Cancel</button>
+        <button id="postBtn">Post</button>
+      </div>
     </div>
     <div id="postImagePreview" class="image-preview"></div>
-    <button id="postBtn">Post</button>
   </section>
 
   <!-- Sorting -->
