@@ -667,3 +667,234 @@ button.hide-toggle:hover, .reply button.hide-toggle:hover {
   background-size: 300% 100% !important;
   animation: bronzeSheen 22.4s ease-in-out infinite !important;
 }
+
+/* ── Sticky Leaderboard ────────────────────────────────────────────────── */
+#leaderboardSection {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-color);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 4px 0;
+  max-width: 100%;
+  margin: 0 0 20px 0;
+  border-radius: 24px;
+}
+
+.leaderboard-card {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.lb-row {
+  transition: opacity 0.4s ease, top 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lb-row.lb-hidden-row {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lb-name, .lb-score, .lb-medal {
+  transition: opacity 0.4s ease, width 0.4s ease;
+}
+
+.lb-compressed .lb-name,
+.lb-compressed .lb-score,
+.lb-compressed .lb-medal {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.lb-compressed .leaderboard-card h3 {
+  opacity: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  transition: all 0.4s ease;
+}
+
+.lb-compressed .lb-bar-fill {
+  height: 10px !important;
+  transition: height 0.4s ease !important;
+}
+
+.lb-compressed .lb-bar-track {
+  height: 10px !important;
+  transition: height 0.4s ease !important;
+}
+
+.lb-compressed .lb-emoji {
+  font-size: 0.9rem !important;
+  transition: font-size 0.4s ease !important;
+}
+
+/* ── Sticky Comment Bar ────────────────────────────────────────────────── */
+#newPost {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+  padding: 8px 16px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
+  border-radius: 0;
+  margin-bottom: 0;
+}
+
+#newPost.comment-collapsed {
+  padding: 8px 16px;
+}
+
+#newPost.comment-collapsed #postInput {
+  height: 40px;
+  min-height: 40px;
+  max-height: 40px;
+  border-radius: 999px;
+  padding: 0 20px;
+  line-height: 40px;
+  resize: none;
+  overflow: hidden;
+  text-align: left;
+  margin-bottom: 0;
+}
+
+#newPost.comment-collapsed .post-options-row,
+#newPost.comment-collapsed .post-options-left,
+#newPost.comment-collapsed .post-options-right,
+#newPost.comment-collapsed .comment-bar-actions,
+#newPost.comment-collapsed #postImagePreview,
+#newPost.comment-collapsed #postBtn,
+#newPost.comment-collapsed #cancelPostBtn {
+  display: none !important;
+}
+
+#newPost.comment-expanded #postInput {
+  height: 80px;
+  min-height: 80px;
+  border-radius: 12px;
+  padding: 10px 16px;
+  line-height: normal;
+  resize: none;
+  margin-bottom: 0;
+}
+
+.post-options-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.post-options-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.post-options-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.comment-bar-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+#newPost.comment-expanded .post-options-row {
+  display: flex !important;
+}
+
+#newPost.comment-expanded .comment-bar-actions {
+  display: flex !important;
+}
+
+#cancelPostBtn {
+  background: transparent;
+  border: 1.5px solid var(--border-color);
+  color: var(--text-color);
+}
+
+#posts, #archivedPolls, #archivedComments {
+  padding-bottom: 80px;
+}
+
+/* ── Theme Toggle ────────────────────────────────────────────────── */
+#themeToggle, #themeTogglePortal, #themeToggleStudents, #themeToggleDashboard {
+  background: var(--card-bg);
+  color: var(--text-color);
+  border: 1.5px solid var(--border-color);
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+[data-theme="dark"] .post-options input[type="checkbox"],
+[data-theme="dark"] #newPost input[type="checkbox"] {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .post-options input[type="checkbox"]:checked,
+[data-theme="dark"] #newPost input[type="checkbox"]:checked {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
+[data-theme="dark"] .post-options label,
+[data-theme="dark"] #newPost label {
+  color: var(--text-secondary) !important;
+}
+
+/* ── Anonymous checkbox dark mode fix ─────────────────────────────────── */
+#newPost input[type="checkbox"]#anonymousToggle {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 18px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  background: var(--checkbox-bg) !important;
+  border: 1.5px solid var(--input-border) !important;
+  border-radius: 4px !important;
+  position: relative !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+  resize: none !important;
+}
+
+#newPost input[type="checkbox"]#anonymousToggle:checked {
+  background: var(--checkbox-checked) !important;
+  border-color: var(--checkbox-checked) !important;
+}
+
+#newPost input[type="checkbox"]#anonymousToggle:checked::after {
+  content: "✓" !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  color: white !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+}
+
+.lb-compressed .leaderboard-card {
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+#leaderboardSection.lb-compressed {
+  border-radius: 24px;
+}
