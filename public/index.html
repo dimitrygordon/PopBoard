@@ -1,204 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PopBoard</title>
-  <link rel="icon" type="image/png" sizes="any" href="/popboard-logo.png" />
-  <link rel="shortcut icon" type="image/png" href="/popboard-logo.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/popboard-logo.png" />
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grounded Natural Foods</title>
+<link rel="icon" type="image/jpeg" href="favicon.jpg">
+<link rel="apple-touch-icon" href="favicon.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=7">
+<!-- Firebase: live shared data store (Firestore) + photo uploads (Storage) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<!-- ZXing barcode reader: works via getUserMedia + canvas scanning, so it runs in Safari/iOS
+     (unlike the native BarcodeDetector API, which iOS Safari does not support). -->
+<script src="https://unpkg.com/@zxing/library@0.21.3/umd/index.min.js"></script>
 </head>
 <body>
 
-<!-- Login Section -->
-<div id="login">
-  <div class="login-logo">
-    <img src="/popboard-logo.png" alt="PopBoard Logo" id="login-logo-img" />
-  </div>
-  <h2>Join PopBoard</h2>
-  <input id="usernameInput" placeholder="Your name" />
-  <input id="boardNameInput" placeholder="PopBoard name" />
-  <input id="studentPasswordInput" type="password" placeholder="Password (protects your account)" />
-  <div class="login-buttons">
-    <button id="joinBtn">Join</button>
-  </div>
-  <p style="text-align:center;margin-top:16px;font-size:0.85rem;opacity:0.6;">
-    <a id="teacherLoginBtn" href="#" style="color:inherit;text-decoration:underline;cursor:pointer;">Teacher? Sign in here</a>
-  </p>
-</div>
+<div class="vine vine-left" aria-hidden="true"></div>
+<div class="vine vine-right" aria-hidden="true"></div>
 
-<!-- Teacher Login -->
-<div id="teacherLogin" class="hidden">
-  <div class="login-logo">
-    <img src="/popboard-logo.png" alt="PopBoard Logo" id="teacher-logo-img" />
-  </div>
-  <h2>Teacher Login</h2>
-  <input id="teacherNameInput" placeholder="Teacher name" />
-  <input id="teacherPasswordInput" type="password" placeholder="Password" />
-  <div class="login-buttons">
-    <button id="teacherSignInBtn">Sign In</button>
-    <button id="backToMainLoginBtn" class="secondary-btn">Back</button>
-  </div>
-</div>
+<!-- ======================= PUBLIC SITE ======================= -->
+<main id="view-public" class="view">
 
-<!-- PopBoards Portal (Teacher) -->
-<div id="boardsPortal" class="hidden">
-  <header>
-    <div id="logo">
-      <img src="/popboard-logo.png" alt="PopBoard Logo" id="logo-img" loading="lazy" />
-    </div>
-    <div class="header-right">
-      <button id="logoutBtnPortal">Logout</button>
-      <button id="themeTogglePortal">🌙 Dark Mode</button>
-    </div>
-  </header>
-  <div class="portal-container">
-    <h2>Your PopBoards</h2>
-    <div class="create-board-section">
-      <input id="newBoardNameInput" placeholder="New PopBoard name" />
-      <button id="createBoardBtn">Create PopBoard</button>
-    </div>
-    <div id="boardsList"></div>
-  </div>
-</div>
+  <header class="site-header">
+    <img class="brand-mark" src="groundedtitle.png" alt="Grounded Natural Foods" onerror="this.onerror=null;this.replaceWith(Object.assign(document.createElement('h1'),{className:'brand-fallback',textContent:'grounded'}));">
+    <p class="site-meta">435 S US HWY 231, Jasper IN &nbsp;|&nbsp; Mon–Fri 9–6 &amp; Sat 9–2</p>
 
-<!-- Students Portal (Teacher) -->
-<div id="studentsPortal" class="hidden">
-  <header>
-    <div id="logo">
-      <img src="/popboard-logo.png" alt="PopBoard Logo" id="logo-img" loading="lazy" />
-    </div>
-    <div class="header-right">
-      <button id="backToBoardFromStudents">Back to Board</button>
-      <button id="logoutBtnStudents">Logout</button>
-      <button id="themeToggleStudents">🌙 Dark Mode</button>
-    </div>
-  </header>
-  <div class="portal-container">
-    <h2>Students</h2>
-    <div style="text-align:center;margin-bottom:16px;">
-      <button id="dailyDataToggleBtn" class="teacher-control">👁️‍🗨️ Daily Data Hidden</button>
-    </div>
-    <div id="studentsList"></div>
-  </div>
-</div>
-
-<!-- Student Dashboard -->
-<div id="studentDashboard" class="hidden">
-  <header>
-    <div id="logo">
-      <img src="/popboard-logo.png" alt="PopBoard Logo" id="logo-img" loading="lazy" />
-    </div>
-    <div class="header-right">
-      <button id="backToStudentsFromDashboard">Back to Students</button>
-      <button id="logoutBtnDashboard">Logout</button>
-      <button id="themeToggleDashboard">🌙 Dark Mode</button>
-    </div>
-  </header>
-  <div class="portal-container">
-    <div id="dashboardContent"></div>
-  </div>
-</div>
-
-<!-- Main App -->
-<div id="app" class="hidden">
-  <header>
-    <div id="logo">
-      <img src="/popboard-logo.png" alt="PopBoard Logo" id="logo-img" loading="lazy" />
-    </div>
-    <div class="header-right">
-      <div class="header-top-row">
-        <button id="backToPortalBtn" class="hidden">Back to Boards</button>
-        <button id="studentsBtn" class="hidden">Students</button>
-        <button id="teacherBtn" class="hidden">Poll</button>
-      </div>
-      <div class="header-bottom-row">
-        <button id="logoutBtnApp">Logout</button>
-        <button id="themeToggle">🌙 Dark Mode</button>
-      </div>
+    <div class="contact-row">
+      <a class="contact-icon" href="tel:8124824060" title="Call us" aria-label="Call">
+        <svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.7 3.6 4.9 6.3 6.3l2.1-2.1c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.9 21 3 13.1 3 3.5c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.3 1.1L6.6 10.8z"/></svg>
+      </a>
+      <a class="contact-icon" href="https://www.facebook.com/grounded.naturalfoods/" target="_blank" rel="noopener" title="Facebook" aria-label="Facebook">
+        <svg viewBox="0 0 24 24"><path d="M13.5 21v-7.9h2.7l.4-3.1h-3.1V8.1c0-.9.3-1.5 1.6-1.5h1.7V3.8C16.5 3.7 15.5 3.6 14.4 3.6c-2.5 0-4.2 1.5-4.2 4.3v2.4H7.5v3.1h2.7V21h3.3z"/></svg>
+      </a>
+      <a class="contact-icon" href="https://www.instagram.com/groundednaturalfoods/?hl=en" target="_blank" rel="noopener" title="Instagram" aria-label="Instagram">
+        <svg viewBox="0 0 24 24"><path d="M12 8.4a3.6 3.6 0 100 7.2 3.6 3.6 0 000-7.2zm0 5.9a2.3 2.3 0 110-4.6 2.3 2.3 0 010 4.6zm4.6-6.1a.85.85 0 11-1.7 0 .85.85 0 011.7 0zM12 4.6c2.4 0 2.7 0 3.6.05.9.04 1.5.18 1.9.34.5.2.8.42 1.2.8.4.4.6.7.8 1.2.16.4.3 1 .34 1.9.05.9.05 1.2.05 3.6s0 2.7-.05 3.6c-.04.9-.18 1.5-.34 1.9a3.2 3.2 0 01-.8 1.2c-.4.4-.7.6-1.2.8-.4.16-1 .3-1.9.34-.9.05-1.2.05-3.6.05s-2.7 0-3.6-.05c-.9-.04-1.5-.18-1.9-.34a3.2 3.2 0 01-1.2-.8 3.2 3.2 0 01-.8-1.2c-.16-.4-.3-1-.34-1.9C4.6 14.7 4.6 14.4 4.6 12s0-2.7.05-3.6c.04-.9.18-1.5.34-1.9.2-.5.42-.8.8-1.2.4-.4.7-.6 1.2-.8.4-.16 1-.3 1.9-.34C9.3 4.6 9.6 4.6 12 4.6z"/></svg>
+      </a>
+      <a class="contact-icon" href="mailto:groundedmanagement@icloud.com" title="Email us" aria-label="Email">
+        <svg viewBox="0 0 24 24"><path d="M3 5.5h18v13H3v-13zm2 1.2v.6l7 5 7-5v-.6H5zm14 2.2l-7 5-7-5v8.6h14V8.9z"/></svg>
+      </a>
+      <button class="contact-icon dark-toggle-btn" data-action="toggle-dark" title="Toggle dark mode" aria-label="Toggle dark mode"><span class="dark-toggle-icon"></span></button>
+      <button class="contact-icon login-icon" data-action="login" title="Login" aria-label="Login">
+        <svg viewBox="0 0 24 24"><path d="M12 12a4.6 4.6 0 100-9.2 4.6 4.6 0 000 9.2zm0 2.1c-3.5 0-10.4 1.8-10.4 5.3V21h20.8v-1.6c0-3.5-6.9-5.3-10.4-5.3z"/></svg>
+      </button>
     </div>
   </header>
 
-  <!-- Teacher Poll Creation (top, above everything) -->
-  <section id="pollCreation" class="hidden"></section>
+  <section class="panel deli-panel">
+    <div class="panel-head">
+      <h2 class="panel-title">Weekly Deli</h2>
+      <div class="panel-nav">
+        <button class="btn small outline" data-action="deli-prev">← Prev</button>
+        <button class="btn small outline" data-action="deli-today">Today</button>
+        <span class="week-range" id="deli-week-range"></span>
+        <button class="btn small outline" data-action="deli-next">Next →</button>
+      </div>
+    </div>
+    <div class="diet-legend">
+      <span><i class="tag tag-df"></i>Dairy Free</span>
+      <span><i class="tag tag-gf"></i>Gluten Free</span>
+      <span><i class="tag tag-v"></i>Vegetarian</span>
+    </div>
+    <div class="deli-hours">
+      <span>Grab &amp; Go 9–6</span><span>·</span><span>Custom Bar 11–2</span><span>·</span><span>Meat &amp; Cheese 9–4</span>
+    </div>
+    <div class="deli-grid" id="deli-grid"></div>
+  </section>
 
-  <!-- Teacher: Leaderboard visibility toggle -->
-  <div id="leaderboardToggleContainer" class="hidden" style="text-align:center; margin-bottom:12px;">
-    <button id="leaderboardVisibilityBtn" class="teacher-control">👁️ Leaderboard Shown</button>
+  <section class="panel soup-panel">
+    <div class="panel-head">
+      <h2 class="panel-title" id="soup-month-title"></h2>
+      <div class="diet-legend">
+        <span><i class="tag tag-df"></i>Dairy Free</span>
+        <span><i class="tag tag-gf"></i>Gluten Free</span>
+        <span><i class="tag tag-v"></i>Vegetarian</span>
+      </div>
+    </div>
+    <div class="panel-nav">
+      <button class="btn small outline" data-action="soup-prev">← Prev</button>
+      <button class="btn small outline" data-action="soup-today">Today</button>
+      <button class="btn small outline" data-action="soup-next">Next →</button>
+      <button class="btn small outline" data-action="soup-export">Add to Calendar</button>
+    </div>
+    <div class="soup-cal-wrap" id="soup-cal-wrap">
+      <div class="soup-cal-dow" id="soup-cal-dow"></div>
+      <div class="soup-cal" id="soup-cal"></div>
+    </div>
+  </section>
+
+  <section class="panel coffee-panel">
+    <img src="coffee.PNG" alt="Coffee menu" class="coffee-img" onerror="this.onerror=null;this.replaceWith(Object.assign(document.createElement('div'),{className:'coffee-fallback',textContent:'Coffee menu image — add coffee.PNG to the repo'}));">
+  </section>
+
+  <section class="panel produce-panel">
+    <h2 class="panel-title">Produce Deals</h2>
+    <div class="produce-list" id="produce-list"></div>
+  </section>
+
+  <footer class="site-footer">
+    <a class="apply-btn" href="https://drive.google.com/file/d/11_adRRcDz_JQyHWNm9Brb7fxNidu6eJR/view?pli=1" target="_blank" rel="noopener">Apply Here</a>
+  </footer>
+</main>
+
+<!-- ======================= LOGIN ======================= -->
+<main id="view-login" class="view hidden">
+  <div class="login-card">
+    <h1 class="login-title">grounded</h1>
+    <p class="login-sub">Staff &amp; management sign in</p>
+    <form id="login-form">
+      <label>Username
+        <input type="text" id="login-username" autocomplete="username" required>
+      </label>
+      <label>Password
+        <input type="password" id="login-password" autocomplete="current-password" required>
+      </label>
+      <p class="login-error hidden" id="login-error">That username or password isn't right. Try again.</p>
+      <button type="submit" id="login-submit-btn" class="primary-btn">Sign In</button>
+    </form>
+    <button class="link-btn" data-action="back-public">← Back to site</button>
   </div>
+</main>
 
-  <!-- Leaderboard -->
-  <section id="leaderboardSection"></section>
+<!-- ======================= EMPLOYEE / MASTER PORTAL ======================= -->
+<main id="view-portal" class="view hidden">
 
-  <!-- Student emoji picker + nickname (students only) -->
-  <div id="emojiPickerContainer" class="hidden">
-    <div class="leaderboard-identity-group">
-      <div id="emojiCircle" title="Click to choose your emoji">
-        <span id="emojiDisplay">Choose Emoji</span>
-      </div>
-      <div id="nicknameInputContainer"></div>
+  <header class="portal-sticky">
+    <div class="portal-top-row">
+      <nav class="portal-tabs" id="portal-tabs"></nav>
+      <span class="portal-user" id="portal-user"></span>
+      <button class="icon-btn ghost dark-toggle-btn" data-action="toggle-dark" title="Toggle dark mode" aria-label="Toggle dark mode"><span class="dark-toggle-icon"></span></button>
+      <button class="icon-btn ghost logout-btn" data-action="logout">Log Out</button>
     </div>
-    <input id="emojiInput" maxlength="2" placeholder="" />
-  </div>
-
-  <!-- Poll Section -->
-  <section id="pollSection"></section>
-
-  <!-- Teacher Panel -->
-  <section id="teacherPanel" class="hidden">
-    <div id="upvote-history-container" class="teacher-panel">
-      <h3>Upvote History</h3>
-      <div id="upvote-history-log" class="history-log"></div>
+    <div class="portal-exp-subheader hidden" id="portal-exp-subheader">
+      <button class="icon-btn" data-action="add-item">+ Add Item</button>
+      <button class="icon-btn ghost hidden" id="bulk-import-btn" data-action="bulk-import">Import</button>
+      <input type="search" id="portal-search" placeholder="Search brand, description, UPC…" class="portal-search">
+      <input type="date" id="portal-search-date" class="portal-search-date" title="Search by expiration date">
+      <button class="icon-btn ghost hidden" id="categories-quick-btn" data-action="toggle-categories">Categories</button>
     </div>
-  </section>
+  </header>
 
-  <!-- Daily Dashboard (teacher only) -->
-  <section id="dailyDashboard" class="hidden">
-    <div class="daily-dashboard-card">
-      <h3>📊 Daily Dashboard</h3>
-      <div id="dailyEngagementDisplay" class="daily-engagement-big"></div>
-      <div id="dailyMetricsText" class="daily-metrics-text"></div>
-    </div>
-  </section>
+  <section id="portal-body" class="portal-body"></section>
+</main>
 
-  <!-- New Post Section (sticky bottom) -->
-  <section id="newPost" class="comment-collapsed">
-    <textarea id="postInput" placeholder="Write a comment..."></textarea>
-    <div class="post-options-row">
-      <div class="post-options-left">
-        <input type="checkbox" id="anonymousToggle" />
-        <label for="anonymousToggle">🥷🏼 Anonymous</label>
-        <input type="file" id="postImageInput" accept="image/*" style="display:none;" />
-        <button id="postImageBtn" class="secondary-btn" style="padding: 8px 16px; font-size: 0.85rem;">📷 Add Image</button>
-      </div>
-      <div class="post-options-right comment-bar-actions">
-        <button id="cancelPostBtn">Cancel</button>
-        <button id="postBtn">Post</button>
-      </div>
-    </div>
-    <div id="postImagePreview" class="image-preview"></div>
-  </section>
+<!-- ======================= MODAL ROOT ======================= -->
+<div id="modal-root"></div>
 
-  <!-- Sorting -->
-  <section id="sortSection">
-    <select id="sortSelect">
-      <option value="new">Newest</option>
-      <option value="top">Top</option>
-    </select>
-  </section>
-
-  <!-- Posts -->
-  <section id="posts"></section>
-
-  <!-- Archived Comments (hidden primary comments, teacher only) -->
-  <section id="archivedComments"></section>
-
-  <!-- Archived Polls (hidden + interacted, teacher only) -->
-  <section id="archivedPolls"></section>
-
-</div>
-
-<script type="module" src="app.js"></script>
+<script src="app.js?v=12"></script>
 </body>
 </html>
