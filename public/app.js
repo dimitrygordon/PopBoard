@@ -40,6 +40,9 @@ let unsubLeaderboard = null;
 let unsubBoardSettings = null;
 let studentNickname = "";
 let dailyDataVisible = false;
+let prevLeaderboardRanks = {};
+let studentCorrectStreak = 0;
+let celebratedPollIds = new Set();
 
 const loginDiv = document.getElementById("login");
 const teacherLoginDiv = document.getElementById("teacherLogin");
@@ -93,6 +96,151 @@ const htmlElement = document.documentElement;
 const boardNameInput = document.getElementById("boardNameInput");
 const studentPasswordInput = document.getElementById("studentPasswordInput");
 
+// ── Audio Engine ────────────────────────────────────────────────────────────
+var audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+  if (audioCtx.state === "suspended") { audioCtx.resume(); }
+  return audioCtx;
+}
+
+function playPop() {
+  try {
+    var ctx = getAudioCtx();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(520, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 0.08);
+    gain.gain.setValueAtTime(0.18, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.12);
+  } catch(e) {}
+}
+
+function playChime() {
+  try {
+    var ctx = getAudioCtx();
+    var frequencies = [523, 659, 784, 1047];
+    frequencies.forEach(function(freq, i) {
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.1);
+      gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.1);
+      gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + i * 0.1 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.1 + 0.6);
+      osc.start(ctx.currentTime + i * 0.1);
+      osc.stop(ctx.currentTime + i * 0.1 + 0.6);
+    });
+  } catch(e) {}
+}
+
+function playWhoosh() {
+  try {
+    var ctx = getAudioCtx();
+    var osc1 = ctx.createOscillator();
+    var osc2 = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc1.connect(gain);
+    osc2.connect(gain);
+    gain.connect(ctx.destination);
+    osc1.type = "sine";
+    osc2.type = "sine";
+    osc1.frequency.setValueAtTime(320, ctx.currentTime);
+    osc1.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.35);
+    osc2.frequency.setValueAtTime(240, ctx.currentTime);
+    osc2.frequency.exponentialRampToValueAtTime(140, ctx.currentTime + 0.35);
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+    osc1.start(ctx.currentTime);
+    osc1.stop(ctx.currentTime + 0.35);
+    osc2.start(ctx.currentTime);
+    osc2.stop(ctx.currentTime + 0.35);
+  } catch(e) {}
+}
+
+function playThunderbolt() {
+  try {
+    var ctx = getAudioCtx();
+    var osc1 = ctx.createOscillator();
+    var osc2 = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc1.connect(gain);
+    osc2.connect(gain);
+    gain.connect(ctx.destination);
+    osc1.type = "sawtooth";
+    osc2.type = "square";
+    osc1.frequency.setValueAtTime(180, ctx.currentTime);
+    osc1.frequency.exponentialRampToValueAtTime(60, ctx.currentTime + 0.15);
+    osc2.frequency.setValueAtTime(120, ctx.currentTime);
+    osc2.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.15);
+    gain.gain.setValueAtTime(0.22, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+    osc1.start(ctx.currentTime);
+    osc1.stop(ctx.currentTime + 0.25);
+    osc2.start(ctx.currentTime);
+    osc2.stop(ctx.currentTime + 0.25);
+  } catch(e) {}
+}
+
+function triggerLightningConfetti() {
+  var count = 60;
+  for (var i = 0; i < count; i++) {
+    (function(index) {
+      setTimeout(function() {
+        var p = document.createElement("span");
+        p.textContent = "⚡";
+        var startX = Math.random() * window.innerWidth;
+        var size = 14 + Math.random() * 18;
+        var duration = 2000 + Math.random() * 1500;
+        var drift = (Math.random() - 0.5) * 200;
+        p.style.position = "fixed";
+        p.style.left = startX + "px";
+        p.style.top = "-50px";
+        p.style.fontSize = size + "px";
+        p.style.pointerEvents = "none";
+        p.style.zIndex = "99999";
+        p.style.opacity = "1";
+        document.body.appendChild(p);
+        var start = null;
+        function animate(ts) {
+          if (!start) { start = ts; }
+          var elapsed = ts - start;
+          var progress = elapsed / duration;
+          if (progress >= 1) { p.remove(); return; }
+          p.style.top = (-50 + (window.innerHeight + 100) * progress) + "px";
+          p.style.left = (startX + drift * progress) + "px";
+          p.style.transform = "rotate(" + (progress * 360) + "deg)";
+          if (progress > 0.75) { p.style.opacity = String(1 - ((progress - 0.75) / 0.25)); }
+          requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+      }, index * 40);
+    })(i);
+  }
+}
+
+function animateUpvoteCount(el, from, to) {
+  var steps = 8;
+  var duration = 400;
+  var stepTime = duration / steps;
+  var current = 0;
+  var interval = setInterval(function() {
+    current++;
+    var randomMid = from + Math.round((Math.random() - 0.5) * 3);
+    el.textContent = current < steps ? randomMid : to;
+    el.style.transform = current < steps ? "scale(1.3)" : "scale(1)";
+    el.style.transition = "transform 0.1s ease";
+    if (current >= steps) { clearInterval(interval); }
+  }, stepTime);
+}
+
 function setTheme(theme) {
   htmlElement.setAttribute("data-theme", theme);
   localStorage.setItem("theme", theme);
@@ -124,6 +272,10 @@ if (themeToggleStudents) { themeToggleStudents.addEventListener("click", toggleT
 if (themeToggleDashboard) { themeToggleDashboard.addEventListener("click", toggleTheme); }
 
 loadTheme();
+
+document.addEventListener("touchstart", function() {
+  getAudioCtx();
+}, { once: true });
 
 function teardownBoardListeners() {
   if (unsubPosts) { unsubPosts(); unsubPosts = null; }
@@ -431,6 +583,7 @@ async function startBoard() {
   leaderboardSection.innerHTML = "";
   listenBoardSettings();
   initLeaderboard();
+  initStickyCommentBar();
   loadPosts();
   await loadPolls();
   if (isTeacher) { updateDailyDashboard(); }
@@ -507,8 +660,76 @@ function initLeaderboard() {
       scores.push({ name: d.id, displayName: nickname || d.id, score: data.score || 0, emoji: emoji });
     }
     scores.sort(function(a, b) { return b.score - a.score; });
+
+    // Rank change indicators
+    if (!isTeacher) {
+      scores.forEach(function(entry, newRank) {
+        var oldRank = prevLeaderboardRanks[entry.name];
+        if (oldRank !== undefined && oldRank > newRank) {
+          var improvement = oldRank - newRank;
+          setTimeout(function() {
+            var rows = leaderboardSection.querySelectorAll(".lb-row");
+            rows.forEach(function(row) {
+              if (row.dataset.lbName === entry.name) {
+                var badge = document.createElement("span");
+                badge.textContent = "↑" + improvement;
+                badge.style.cssText = "position:absolute;right:-36px;top:50%;transform:translateY(-50%);color:#34c759;font-size:0.75rem;font-weight:700;opacity:1;transition:opacity 0.5s ease,top 0.5s ease;pointer-events:none;";
+                row.style.position = "relative";
+                row.appendChild(badge);
+                setTimeout(function() { badge.style.opacity = "0"; badge.style.top = "0%"; }, 1500);
+                setTimeout(function() { badge.remove(); }, 2000);
+              }
+            });
+          }, 600);
+        }
+        prevLeaderboardRanks[entry.name] = newRank;
+      });
+    }
+
+    if (!isTeacher) {
+      var myRank = -1;
+      for (var ri = 0; ri < scores.length; ri++) {
+        if (scores[ri].name === username) { myRank = ri + 1; break; }
+      }
+      var rankLabel = document.getElementById("myRankLabel");
+      if (!rankLabel) {
+        rankLabel = document.createElement("span");
+        rankLabel.id = "myRankLabel";
+        rankLabel.style.cssText = "font-size:0.85rem;opacity:0.6;white-space:nowrap;";
+        var group = document.querySelector(".leaderboard-identity-group");
+        if (group) { group.appendChild(rankLabel); }
+      }
+      if (myRank > 0) {
+        var medal = myRank === 1 ? "🥇" : myRank === 2 ? "🥈" : myRank === 3 ? "🥉" : "";
+        rankLabel.textContent = medal ? medal + " #" + myRank : "#" + myRank;
+      } else {
+        rankLabel.textContent = "";
+      }
+    }
+
     renderLeaderboardUI(scores.slice(0, 6));
   });
+}
+
+function showFirstBadge() {
+  var existing = document.getElementById("firstBadge");
+  if (existing) { existing.remove(); }
+  var badge = document.createElement("div");
+  badge.id = "firstBadge";
+  badge.textContent = "⚡ Fastest!";
+  badge.style.cssText = "position:fixed;top:80px;left:50%;transform:translateX(-50%) scale(0.5);background:linear-gradient(135deg,#f7d700,#ff9500);color:white;font-size:1.3rem;font-weight:800;padding:12px 28px;border-radius:999px;z-index:99999;opacity:0;pointer-events:none;box-shadow:0 8px 32px rgba(255,180,0,0.5);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s ease;";
+  document.body.appendChild(badge);
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      badge.style.transform = "translateX(-50%) scale(1)";
+      badge.style.opacity = "1";
+    });
+  });
+  setTimeout(function() {
+    badge.style.transform = "translateX(-50%) scale(0.8)";
+    badge.style.opacity = "0";
+    setTimeout(function() { badge.remove(); }, 400);
+  }, 2500);
 }
 
 function renderLeaderboardUI(top6) {
@@ -521,7 +742,8 @@ function renderLeaderboardUI(top6) {
     var empty = document.createElement("p");
     empty.textContent = "No scores yet. Answer polls to earn points!";
     card.appendChild(empty);
-    leaderboardSection.appendChild(card);
+  leaderboardSection.appendChild(card);
+  initStickyLeaderboard();
     return;
   }
 
@@ -573,15 +795,20 @@ function renderLeaderboardUI(top6) {
     var targetWidth = Math.max(4, (entry.score / maxScore) * 100);
     // Start at 0 width, then animate to target after paint
     fill.style.width = "0%";
-    if (i === 0) { fill.classList.add("lb-bar-gold"); }
-    else if (i === 1) { fill.classList.add("lb-bar-silver"); }
-    else if (i === 2) { fill.classList.add("lb-bar-bronze"); }
+    if (i === 0) { startSheenAnimation(fill, "gold"); }
+    else if (i === 1) { startSheenAnimation(fill, "silver"); }
+    else if (i === 2) { startSheenAnimation(fill, "bronze"); }
     else { fill.style.background = barGradients[i]; }
     fill.style.transition = "width 0.7s cubic-bezier(0.4,0,0.2,1)";
     var scoreSpan = document.createElement("span");
     scoreSpan.className = "lb-score";
     scoreSpan.style.color = i < 3 ? "#1d1d1f" : (isDark ? "white" : "#1d1d1f");
+    var prevScore = parseFloat(scoreSpan.dataset.prevScore || 0);
     scoreSpan.textContent = parseFloat(entry.score.toFixed(1)) + " pt";
+    scoreSpan.dataset.prevScore = entry.score;
+    if (prevScore > 0 && entry.score > prevScore) {
+      animateScoreCount(scoreSpan, prevScore, entry.score);
+    }
     fill.appendChild(scoreSpan);
     track.appendChild(fill);
 
@@ -605,6 +832,21 @@ function renderLeaderboardUI(top6) {
       requestAnimationFrame(function() {
         requestAnimationFrame(function() {
           fillEl.style.width = width + "%";
+          fillEl.style.transform = "scaleY(1.05)";
+          setTimeout(function() {
+            fillEl.style.transform = "scaleY(1)";
+            fillEl.style.transition += ", transform 0.2s ease";
+            // Force animation restart after width has settled
+            var cls = fillEl.classList.contains("lb-bar-gold") ? "lb-bar-gold"
+                    : fillEl.classList.contains("lb-bar-silver") ? "lb-bar-silver"
+                    : fillEl.classList.contains("lb-bar-bronze") ? "lb-bar-bronze"
+                    : null;
+            if (cls) {
+              fillEl.classList.remove(cls);
+              void fillEl.offsetWidth; // force reflow
+              fillEl.classList.add(cls);
+            }
+          }, 700);
         });
       });
     })(fill, targetWidth);
@@ -612,6 +854,7 @@ function renderLeaderboardUI(top6) {
 
   card.appendChild(rowContainer);
   leaderboardSection.appendChild(card);
+  initStickyLeaderboard();
 }
 
 async function awardLeaderboardPoints(pollId, correctIndices) {
@@ -667,45 +910,6 @@ async function awardLeaderboardPoints(pollId, correctIndices) {
       score: parseFloat(((prevLb.score || 0) + points).toFixed(3))
     }, { merge: true });
 
-    // ── Confetti for the student who just earned a medal ───────────────────
-    if (student.name === username && !isTeacher) {
-      if (rank === 0 || rank === 1 || rank === 2) {
-        var prevScores = [];
-        var allLbSnap = await getDocs(collection(db, "boards", currentBoardId, "leaderboard"));
-        allLbSnap.forEach(function(d) { prevScores.push({ name: d.id, score: d.data().score || 0 }); });
-        prevScores.sort(function(a, b) { return b.score - a.score; });
-        var prevRank = -1;
-        for (var pri = 0; pri < prevScores.length; pri++) {
-          if (prevScores[pri].name === student.name) { prevRank = pri; break; }
-        }
-        var isImprovement = prevRank === -1 || rank < prevRank;
-        if (isImprovement) {
-          var medals = ["🥇", "🥈", "🥉"];
-          var centerEl = document.getElementById("leaderboardSection");
-          if (centerEl) {
-            for (var ci = 0; ci < 18; ci++) {
-              var p = document.createElement("span");
-              p.textContent = medals[rank];
-              var rect = centerEl.getBoundingClientRect();
-              var startX = rect.left + rect.width / 2;
-              var startY = rect.top + rect.height / 2;
-              p.style.cssText = "position:fixed;left:" + startX + "px;top:" + startY + "px;font-size:22px;opacity:1;transition:all 1s ease-out;pointer-events:none;z-index:9999;";
-              document.body.appendChild(p);
-              var x = (Math.random() - 0.5) * 220;
-              var y = -Math.random() * 180 - 40;
-              (function(el, xv, yv) {
-                requestAnimationFrame(function() {
-                  el.style.transform = "translate(" + xv + "px," + yv + "px) rotate(" + Math.round(Math.random() * 360) + "deg)";
-                  el.style.opacity = "0";
-                });
-                setTimeout(function() { el.remove(); }, 1000);
-              })(p, x, y);
-            }
-          }
-        }
-      }
-    }
-
     // ── Save medal counts to student doc (persists across resets) ──────────
     var studentQuery = query(collection(db, "boards", currentBoardId, "students"), where("username", "==", student.name));
     var studentSnap = await getDocs(studentQuery);
@@ -737,6 +941,7 @@ function setupEmojiPicker() {
       emojiInput.style.cssText = "width:0;height:0;opacity:0;position:absolute;pointer-events:none;";
       saveStudentEmoji();
       renderEmojiCircle();
+      pulseEmojiRing();
     } else if (val.length > 0) {
       emojiInput.value = "";
     }
@@ -766,7 +971,7 @@ function renderNicknameInput() {
   var input = document.createElement("input");
   input.type = "text";
   input.maxLength = 20;
-  input.placeholder = "Leaderboard name (optional)";
+  input.placeholder = "Leaderboard name";
   input.value = studentNickname || "";
   input.style.cssText = "position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:calc(100% - 32px);background:transparent;border:none;outline:none;font-size:1rem;color:inherit;text-align:center;letter-spacing:0.02em;";
   input.onblur = async function() {
@@ -1429,6 +1634,7 @@ postBtn.onclick = async function() {
   var anonymous = document.getElementById("anonymousToggle") ? document.getElementById("anonymousToggle").checked : false;
   var imageUrl = null;
   if (postImageFile) { imageUrl = await uploadImage(postImageFile, "boards/" + currentBoardId + "/posts"); }
+  playWhoosh();
   await addDoc(collection(db, "boards", currentBoardId, "posts"), {
     author: username, text: text, anonymous: anonymous, imageUrl: imageUrl,
     upvotes: 0, upvoters: [], upvoteHistory: [], timestamp: serverTimestamp()
@@ -1439,6 +1645,8 @@ postBtn.onclick = async function() {
   postImagePreview.innerHTML = "";
   postImageInput.value = "";
   if (document.getElementById("anonymousToggle")) { document.getElementById("anonymousToggle").checked = false; }
+  document.getElementById("newPost").classList.remove("comment-expanded");
+  document.getElementById("newPost").classList.add("comment-collapsed");
 };
 
 sortSelect.onchange = function() { sortMode = sortSelect.value; loadPosts(); };
@@ -1460,6 +1668,160 @@ function createPopcornConfetti(el) {
       setTimeout(function() { el2.remove(); }, 800);
     })(p, x, y);
   }
+}
+
+function triggerPopcornConfetti() {
+  var count = 60;
+  for (var i = 0; i < count; i++) {
+    (function(index) {
+      setTimeout(function() {
+        var p = document.createElement("span");
+        p.textContent = "🍿";
+        var startX = Math.random() * window.innerWidth;
+        var size = 14 + Math.random() * 18;
+        var duration = 2000 + Math.random() * 1500;
+        var drift = (Math.random() - 0.5) * 200;
+        p.style.position = "fixed";
+        p.style.left = startX + "px";
+        p.style.top = "-50px";
+        p.style.fontSize = size + "px";
+        p.style.pointerEvents = "none";
+        p.style.zIndex = "99999";
+        p.style.opacity = "1";
+        document.body.appendChild(p);
+
+        var start = null;
+        function animate(ts) {
+          if (!start) { start = ts; }
+          var elapsed = ts - start;
+          var progress = elapsed / duration;
+          if (progress >= 1) {
+            p.remove();
+            return;
+          }
+          p.style.top = (-50 + (window.innerHeight + 100) * progress) + "px";
+          p.style.left = (startX + drift * progress) + "px";
+          p.style.transform = "rotate(" + (progress * 360 * (Math.random() > 0.5 ? 1 : -1)) + "deg)";
+          if (progress > 0.75) { p.style.opacity = String(1 - ((progress - 0.75) / 0.25)); }
+          requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+      }, index * 40);
+    })(i);
+  }
+}
+
+function pulseEmojiRing() {
+  var circle = document.getElementById("emojiCircle");
+  if (!circle) { return; }
+  var ring = document.createElement("div");
+  ring.style.cssText = "position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(1);width:56px;height:56px;border-radius:50%;border:2px solid var(--accent);opacity:0.8;pointer-events:none;z-index:10;transition:transform 0.6s ease-out,opacity 0.6s ease-out;";
+  circle.style.position = "relative";
+  circle.appendChild(ring);
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      ring.style.transform = "translate(-50%,-50%) scale(2.2)";
+      ring.style.opacity = "0";
+    });
+  });
+  setTimeout(function() { ring.remove(); }, 700);
+}
+
+function animateScoreCount(el, from, to) {
+  var duration = 800;
+  var start = null;
+  function step(ts) {
+    if (!start) { start = ts; }
+    var progress = Math.min((ts - start) / duration, 1);
+    var eased = 1 - Math.pow(1 - progress, 3);
+    var current = from + (to - from) * eased;
+    el.textContent = parseFloat(current.toFixed(1)) + " pt";
+    if (progress < 1) { requestAnimationFrame(step); }
+    else { el.textContent = parseFloat(to.toFixed(1)) + " pt"; }
+  }
+  requestAnimationFrame(step);
+}
+
+function showMedalCelebration(medal) {
+  // Small delay so it appears after confetti starts
+  setTimeout(function() {
+    var el = document.createElement("div");
+    el.textContent = medal;
+    el.style.cssText = [
+      "position:fixed",
+      "top:50%",
+      "left:50%",
+      "transform:translate(-50%,-50%) scale(0) rotate(-20deg)",
+      "font-size:12rem",
+      "line-height:1",
+      "z-index:99990",
+      "pointer-events:none",
+      "opacity:0",
+      "filter:drop-shadow(0 8px 32px rgba(0,0,0,0.4))",
+      "transition:transform 0.55s cubic-bezier(0.34,1.56,0.64,1),opacity 0.25s ease"
+    ].join(";");
+    document.body.appendChild(el);
+
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        el.style.transform = "translate(-50%,-50%) scale(1) rotate(0deg)";
+        el.style.opacity = "1";
+      });
+    });
+
+    setTimeout(function() {
+      el.style.transition = "transform 0.45s cubic-bezier(0.4,0,1,1),opacity 0.45s ease";
+      el.style.transform = "translate(-50%,-50%) scale(0.2) rotate(15deg)";
+      el.style.opacity = "0";
+      setTimeout(function() { el.remove(); }, 500);
+    }, 2000);
+  }, 300);
+}
+
+function showStreakBadge(streak) {
+  var existing = document.getElementById("streakBadge");
+  if (existing) { existing.remove(); }
+  var badge = document.createElement("div");
+  badge.id = "streakBadge";
+  badge.textContent = "🔥 " + streak + " Streak!";
+  badge.style.cssText = "position:fixed;top:80px;left:50%;transform:translateX(-50%) scale(0.5);background:linear-gradient(135deg,#ff6b00,#ff3b00);color:white;font-size:1.3rem;font-weight:800;padding:12px 28px;border-radius:999px;z-index:99999;opacity:0;pointer-events:none;box-shadow:0 8px 32px rgba(255,80,0,0.4);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s ease;";
+  document.body.appendChild(badge);
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      badge.style.transform = "translateX(-50%) scale(1)";
+      badge.style.opacity = "1";
+    });
+  });
+  setTimeout(function() {
+    badge.style.transform = "translateX(-50%) scale(0.8)";
+    badge.style.opacity = "0";
+    setTimeout(function() { badge.remove(); }, 400);
+  }, 2500);
+}
+
+function startSheenAnimation(el, type) {
+  var configs = {
+    gold:   { base: "#f9a825", mid: "#ffd700", sheen: "#fff8c0", duration: 6000 },
+    silver: { base: "#9e9e9e", mid: "#c0c0c0", sheen: "#f0f0f0", duration: 7000 },
+    bronze: { base: "#b5651d", mid: "#cd7f32", sheen: "#f0c080", duration: 8000 }
+  };
+  var c = configs[type];
+  var start = null;
+  var cancelled = false;
+
+  // Cancel any existing animation on this element
+  if (el._sheenCancel) { el._sheenCancel(); }
+  el._sheenCancel = function() { cancelled = true; };
+
+  function animate(ts) {
+    if (cancelled || !el.isConnected) { return; }
+    if (!start) { start = ts; }
+    var progress = ((ts - start) % c.duration) / c.duration;
+    var pos = Math.round(progress * 300) - 100;
+    el.style.background = "linear-gradient(90deg, " + c.base + " 0%, " + c.mid + " " + (pos - 40) + "%, " + c.sheen + " " + pos + "%, " + c.mid + " " + (pos + 40) + "%, " + c.base + " 100%)";
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
 }
 
 async function addReply(postId, text, anonymous, imageUrl) {
@@ -1591,7 +1953,7 @@ function loadPosts() {
       if (myUpvotedPostIds.has(postId)) { div.classList.add("upvoted-by-me"); }
       if (!post.visible) { div.classList.add("hidden-comment"); }
       var displayName = post.anonymous && !isTeacher ? "🥷🏼 Anonymous" : post.author;
-      div.innerHTML = "<strong>" + displayName + "</strong><br>" + post.text + "<br><span class='upvote'>🍿 " + (post.upvotes || 0) + "</span><button class='reply-btn teacher-control'>Reply</button>";
+      div.innerHTML = "<strong>" + displayName + "</strong><br>" + post.text + "<br><span class='upvote'>🍿 <span class='upvote-count'>" + (post.upvotes || 0) + "</span></span><button class='reply-btn teacher-control'>Reply</button>";
       if (post.imageUrl) {
         var img = document.createElement("img");
         img.src = post.imageUrl;
@@ -1633,7 +1995,14 @@ function loadPosts() {
         upvoteSpan.onclick = async function(e) {
           e.stopPropagation();
           createPopcornConfetti(upvoteSpan);
+          playPop();
           if (navigator.vibrate) { navigator.vibrate(25); }
+          var countEl = upvoteSpan.querySelector(".upvote-count");
+          if (countEl) {
+            var oldVal = parseInt(countEl.textContent) || 0;
+            var newVal = already ? oldVal - 1 : oldVal + 1;
+            animateUpvoteCount(countEl, oldVal, newVal);
+          }
           var postRef = doc(db, "boards", currentBoardId, "posts", pid);
           var already = postData.upvoters && postData.upvoters.indexOf(username) !== -1;
           if (already) {
@@ -1705,6 +2074,7 @@ function loadPosts() {
             ev.stopPropagation();
             var iUrl = null;
             if (replyImageFile) { iUrl = await uploadImage(replyImageFile, "boards/" + currentBoardId + "/replies"); }
+            playWhoosh();
             await addReply(pid, input.value, anonCheck.checked, iUrl);
             input.remove(); anonWrapper.remove(); send.remove(); riInput.remove(); riPreview.remove();
           };
@@ -2164,6 +2534,7 @@ function renderFreePoll(div, poll, pollId, totalStudents) {
         await updateDoc(doc(db, "boards", currentBoardId, "polls", pid), {
           history: arrayUnion({ username: username, response: responseText, timestamp: Date.now() })
         });
+      playPop();
         if (currentStudentId) { await incrementStudentStat(currentStudentId, "pollsCast"); }
         ta.value = "";
         ta.placeholder = "✓ Your response popped in!";
@@ -2252,8 +2623,56 @@ function renderMCPoll(div, poll, pollId, totalStudents) {
         fill.className = "mc-bar-fill";
         if (correctShown) {
           fill.style.background = correctIndices.indexOf(oi) !== -1 ? "#34c759" : "#ff453a";
-          if (myPollVotes.get(pollId) === oi || (poll.requireAllCorrect && (myPollVotes.get(pollId + "_multi") || new Set()).has(oi))) {
+          var studentPicked = myPollVotes.get(pollId) === oi || (poll.requireAllCorrect && (myPollVotes.get(pollId + "_multi") || new Set()).has(oi));
+          if (studentPicked) {
             row.style.cssText += "outline:2px solid #0071e3;border-radius:999px;";
+            if (correctIndices.indexOf(oi) !== -1 && !celebratedPollIds.has(pollId)) {
+              celebratedPollIds.add(pollId);
+              triggerPopcornConfetti();
+              playChime();
+              if (navigator.vibrate) { navigator.vibrate([30, 50, 60]); }
+              studentCorrectStreak++;
+              if (studentCorrectStreak >= 3) { showStreakBadge(studentCorrectStreak); }
+              // Medal celebration
+              var myMedal = oi === correctIndices[0] ? (
+                poll.correctIndices && poll.correctIndices.length > 0 ? null : null
+              ) : null;
+              var medals = ["🥇", "🥈", "🥉"];
+              // Find student's rank among correct answerers by timestamp
+              var myEntry = (poll.history || []).filter(function(h) {
+                return h.username === username && (h.response || "").indexOf("Voted: ") === 0;
+              }).sort(function(a, b) { return (a.timestamp || 0) - (b.timestamp || 0); });
+              var allCorrectEntries = (poll.history || []).filter(function(h) {
+                var resp = h.response || "";
+                if (resp.indexOf("Voted: ") !== 0) { return false; }
+                var optText = resp.slice(7);
+                var idx = (poll.options || []).indexOf(optText);
+                return correctIndices.indexOf(idx) !== -1;
+              });
+              var uniqueCorrect = {};
+              allCorrectEntries.forEach(function(h) {
+                if (!uniqueCorrect[h.username] || h.timestamp < uniqueCorrect[h.username]) {
+                  uniqueCorrect[h.username] = h.timestamp || 0;
+                }
+              });
+              var sortedCorrect = Object.keys(uniqueCorrect).sort(function(a, b) {
+                return uniqueCorrect[a] - uniqueCorrect[b];
+              });
+              var myRankAmongCorrect = sortedCorrect.indexOf(username);
+              if (myRankAmongCorrect >= 0 && myRankAmongCorrect <= 2) {
+                showMedalCelebration(medals[myRankAmongCorrect]);
+              }
+              // First to answer
+              if (myRankAmongCorrect === 0) {
+                setTimeout(function() {
+                  showFirstBadge();
+                  triggerLightningConfetti();
+                  playThunderbolt();
+                }, 2800);
+              }
+            } else {
+              studentCorrectStreak = 0;
+            }
           }
         } else {
           fill.style.background = "#0071e3";
@@ -2292,6 +2711,7 @@ function renderMCPoll(div, poll, pollId, totalStudents) {
               if (currentSet.has(optIndex)) {
                 currentSet.delete(optIndex);
                 myPollVotes.set(pollId + "_multi", currentSet);
+                playPop();
                 await updateDoc(pollRef, {
                   ["votes." + optIndex]: increment(-1),
                   voters: currentSet.size === 0 ? arrayRemove(username) : arrayUnion(username),
@@ -2300,6 +2720,7 @@ function renderMCPoll(div, poll, pollId, totalStudents) {
               } else {
                 currentSet.add(optIndex);
                 myPollVotes.set(pollId + "_multi", currentSet);
+                playPop();
                 await updateDoc(pollRef, {
                   ["votes." + optIndex]: increment(1),
                   voters: arrayUnion(username),
@@ -2310,6 +2731,7 @@ function renderMCPoll(div, poll, pollId, totalStudents) {
               var prevChoice = myPollVotes.get(pollId);
               if (prevChoice === optIndex) {
                 myPollVotes.delete(pollId);
+                playPop();
                 await updateDoc(pollRef, {
                   ["votes." + optIndex]: increment(-1),
                   voters: arrayRemove(username),
@@ -2318,6 +2740,7 @@ function renderMCPoll(div, poll, pollId, totalStudents) {
                 if (currentStudentId) { await incrementStudentStat(currentStudentId, "pollsCast", -1); }
               } else {
                 myPollVotes.set(pollId, optIndex);
+                playPop();
                 var updates = {
                   ["votes." + optIndex]: increment(1),
                   history: arrayUnion({ username: username, response: "Voted: " + optText, timestamp: Date.now() })
@@ -2396,4 +2819,137 @@ async function updateDailyDashboard() {
     console.error("Daily dashboard error:", err);
   }
   setTimeout(function() { updateDailyDashboard(); }, 60000);
+}
+
+function initStickyLeaderboard() {
+  var card = leaderboardSection.querySelector(".leaderboard-card");
+  if (!card) { return; }
+
+  var existing = card.querySelector(".lb-compress-btn");
+  if (existing) { existing.remove(); }
+
+  var isCompressed = false;
+  var toggleBtn = document.createElement("button");
+  toggleBtn.className = "lb-compress-btn";
+  toggleBtn.textContent = "∧";
+  toggleBtn.style.cssText = "position:absolute;bottom:8px;right:12px;width:28px;height:28px;border-radius:50%;padding:0;font-size:0.8rem;display:flex;align-items:center;justify-content:center;opacity:0.4;border:1.5px solid var(--border-color);background:transparent;color:var(--text-color);cursor:pointer;transition:all 0.3s ease;z-index:10;";
+  toggleBtn.onmouseenter = function() { toggleBtn.style.opacity = "1"; };
+  toggleBtn.onmouseleave = function() { toggleBtn.style.opacity = "0.4"; };
+  toggleBtn.onclick = function(e) {
+    e.stopPropagation();
+    isCompressed = !isCompressed;
+    toggleBtn.textContent = isCompressed ? "∨" : "∧";
+    applyLeaderboardCompression(isCompressed);
+  };
+  card.style.position = "relative";
+  card.appendChild(toggleBtn);
+}
+
+function applyLeaderboardCompression(compress) {
+  var card = leaderboardSection.querySelector(".leaderboard-card");
+  if (!card) { return; }
+  var rows = card.querySelectorAll(".lb-row");
+  var rowContainer = rows.length > 0 ? rows[0].parentNode : null;
+  if (!rowContainer) { return; }
+
+  playWhoosh();
+
+  if (compress) {
+    leaderboardSection.classList.add("lb-compressed");
+    rows.forEach(function(row, i) {
+      if (i >= 3) {
+        row.style.opacity = "0";
+        row.style.pointerEvents = "none";
+      } else {
+        row.style.opacity = "1";
+      }
+      row.style.top = (i * 28) + "px";
+
+      var nameDiv = row.querySelector(".lb-name");
+      var emoji = row.querySelector(".lb-emoji");
+
+      // Move emoji out of nameDiv into row directly so it stays visible
+      if (emoji && nameDiv && emoji.parentNode === nameDiv) {
+        nameDiv.removeChild(emoji);
+        emoji.style.cssText = "font-size:1.2rem;display:inline-block;transition:all 0.4s ease;flex-shrink:0;";
+        row.insertBefore(emoji, nameDiv);
+      }
+
+      if (nameDiv) { nameDiv.style.cssText = "opacity:0;width:0;overflow:hidden;min-width:0;flex-shrink:1;transition:all 0.4s ease;"; }
+      var medal = row.querySelector(".lb-medal");
+      if (medal) { medal.style.cssText = "opacity:0;width:0;overflow:hidden;min-width:0;margin:0;transition:all 0.4s ease;"; }
+      var score = row.querySelector(".lb-score");
+      if (score) { score.style.cssText = "opacity:0;transition:opacity 0.4s ease;"; }
+      var track = row.querySelector(".lb-bar-track");
+      if (track) { track.style.height = "14px"; track.style.transition = "height 0.4s ease"; }
+      var fill = row.querySelector(".lb-bar-fill");
+      if (fill) {
+        fill.style.height = "14px";
+        fill.style.transition = "height 0.4s ease";
+        fill.style.backgroundSize = "300% 100%";
+      }
+    });
+    rowContainer.style.height = (Math.min(rows.length, 3) * 28) + "px";
+    rowContainer.style.transition = "height 0.4s ease";
+
+  } else {
+    leaderboardSection.classList.remove("lb-compressed");
+    var ROW_HEIGHT = 48;
+    rows.forEach(function(row, i) {
+      row.style.opacity = "1";
+      row.style.pointerEvents = "";
+      row.style.top = (i * ROW_HEIGHT) + "px";
+
+      var nameDiv = row.querySelector(".lb-name");
+      var emoji = row.querySelector(".lb-emoji");
+
+      // Move emoji back inside nameDiv
+      if (emoji && nameDiv && emoji.parentNode === row) {
+        row.removeChild(emoji);
+        emoji.style.cssText = "display:inline-block;transition:all 0.4s ease;";
+        nameDiv.insertBefore(emoji, nameDiv.firstChild);
+      }
+
+      if (nameDiv) { nameDiv.style.cssText = "width:110px;opacity:1;overflow:visible;min-width:110px;transition:all 0.4s ease;display:flex;align-items:center;gap:5px;justify-content:flex-end;"; }
+      var medal = row.querySelector(".lb-medal");
+      if (medal) { medal.style.cssText = "opacity:1;width:auto;font-size:1.1rem;margin-left:6px;flex-shrink:0;transition:all 0.4s ease;"; }
+      var score = row.querySelector(".lb-score");
+      if (score) { score.style.cssText = "font-size:0.78rem;font-weight:700;color:white;white-space:nowrap;opacity:1;transition:opacity 0.4s ease;"; }
+      var track = row.querySelector(".lb-bar-track");
+      if (track) { track.style.height = "30px"; track.style.transition = "height 0.4s ease"; }
+      var fill = row.querySelector(".lb-bar-fill");
+      if (fill) {
+        fill.style.height = "100%";
+        fill.style.transition = "height 0.4s ease, width 0.5s ease";
+        fill.style.backgroundSize = "300% 100%";
+      }
+    });
+    rowContainer.style.height = (rows.length * ROW_HEIGHT) + "px";
+    rowContainer.style.transition = "height 0.4s ease";
+  }
+}
+
+function initStickyCommentBar() {
+  var newPost = document.getElementById("newPost");
+  var postInput = document.getElementById("postInput");
+  var cancelBtn = document.getElementById("cancelPostBtn");
+  if (!newPost || !postInput) { return; }
+
+  postInput.addEventListener("focus", function() {
+    newPost.classList.remove("comment-collapsed");
+    newPost.classList.add("comment-expanded");
+  });
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", function() {
+      postInput.value = "";
+      postImageFile = null;
+      document.getElementById("postImagePreview").innerHTML = "";
+      document.getElementById("postImageInput").value = "";
+      if (document.getElementById("anonymousToggle")) { document.getElementById("anonymousToggle").checked = false; }
+      postInput.blur();
+      newPost.classList.remove("comment-expanded");
+      newPost.classList.add("comment-collapsed");
+    });
+  }
 }
