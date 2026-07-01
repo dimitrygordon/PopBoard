@@ -1,1936 +1,2399 @@
-/* =========================================================================
-   GROUNDED NATURAL FOODS — app.js
-   Data is now backed live by Firebase Firestore (see the FIREBASE block
-   below). The `db` object still holds the exact same shape as before and
-   is what every render/UI function reads from — it's now a live local
-   mirror of Firestore rather than a static mock. Any mutation anywhere in
-   the app eventually funnels through scheduleSave(), which pushes the
-   whole relevant collection back up to Firestore (debounced), and
-   Firestore's onSnapshot listeners keep every open tab/device in sync.
-   ========================================================================= */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, onSnapshot, getDocs,
+  serverTimestamp, query, orderBy, doc, updateDoc, deleteDoc,
+  increment, arrayUnion, arrayRemove, where, getDoc, setDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  getStorage, ref, uploadBytes, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-/* ---------------------------- DATE HELPERS ---------------------------- */
-const DOW = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const DAY_KEYS = ['MON','TUE','WED','THU','FRI','SAT']; // schedule days, Sunday added via toggle
-const ALL_DAYS = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
-function pad(n){ return n<10 ? '0'+n : ''+n; }
-function isoDate(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
-function todayISO(){ return isoDate(new Date()); }
-function startOfWeekMonday(d){
-  const date = new Date(d);
-  const day = date.getDay(); // 0 Sun .. 6 Sat
-  const diff = (day === 0 ? -6 : 1 - day);
-  date.setDate(date.getDate()+diff);
-  date.setHours(0,0,0,0);
-  return date;
-}
-function addDays(d,n){ const nd = new Date(d); nd.setDate(nd.getDate()+n); return nd; }
-function fmtShort(d){ return `${d.getMonth()+1}/${d.getDate()}`; }
-function formatTime12hr(t){
-  if(!t) return '';
-  const [h,m] = t.split(':').map(Number);
-  const period = h>=12 ? 'PM' : 'AM';
-  let h12 = h % 12; if(h12===0) h12 = 12;
-  return `${pad(h12)}:${pad(m)} ${period}`;
-}
-function weekKeyOf(d){ return isoDate(startOfWeekMonday(d)); }
-function fmtWeekRange(monday){
-  const sat = addDays(monday,5);
-  return `${MONTHS[monday.getMonth()].slice(0,3)} ${monday.getDate()} – ${MONTHS[sat.getMonth()].slice(0,3)} ${sat.getDate()}`;
-}
-function lastNMonthLabels(n){
-  const out = [];
-  const now = new Date();
-  for(let i=n-1;i>=0;i--){
-    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
-    out.push(MONTHS[d.getMonth()].slice(0,3));
-  }
-  return out;
-}
-// stats.added / stats.checked are a rolling 12-month window whose LAST index
-// is always "this month" (matches lastNMonthLabels' ordering). Whenever real
-// time has moved into a new month since this employee's stats were last
-// touched, shift the window forward first so old months roll off correctly.
-function ensureStatsCurrentMonth(emp){
-  if(!emp.stats) emp.stats = { added:Array(12).fill(0), checked:Array(12).fill(0) };
-  const nowKey = `${new Date().getFullYear()}-${pad(new Date().getMonth()+1)}`;
-  if(emp.statsMonthKey !== nowKey){
-    if(emp.statsMonthKey){
-      const [oy,om] = emp.statsMonthKey.split('-').map(Number);
-      const [ny,nm] = nowKey.split('-').map(Number);
-      const monthsPassed = Math.max(0, Math.min((ny-oy)*12 + (nm-om), 12));
-      for(let i=0;i<monthsPassed;i++){
-        emp.stats.added.shift(); emp.stats.added.push(0);
-        emp.stats.checked.shift(); emp.stats.checked.push(0);
-      }
-    }
-    emp.statsMonthKey = nowKey;
-  }
-}
-// Records one item-added or item-checked-off event against the currently
-// logged-in employee (master actions aren't attributed to any employee).
-function recordEmployeeStat(kind){
-  if(!session || session.isMaster) return;
-  const emp = db.employees.find(e=>e.id===session.employeeId);
-  if(!emp) return;
-  ensureStatsCurrentMonth(emp);
-  emp.stats[kind][11] = (emp.stats[kind][11]||0) + 1;
-}
-// Re-renders destroy and recreate every input in portal-body, which drops focus
-// after a single keystroke. Any live-filter input calls this right after
-// renderPortalBody() to put focus (and the cursor position) right back where
-// it was, so typing feels the same as the persistent top search box.
-function reFocusInput(id, cursorPos){
-  const el = document.getElementById(id);
-  if(el){
-    el.focus();
-    if(typeof cursorPos === 'number'){
-      try{ el.setSelectionRange(cursorPos, cursorPos); }catch(e){}
-    }
-  }
-}
-function escHtmlAttr(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
-
-/* ---------------------------- DATA LAYER (mock) ---------------------------- */
-const db = {
-  master: { username:'Gordon', password:'4byHisgrace' },
-
-  settings: {
-    showWeekendsSoup: false,   // customer + admin soup calendar: show Sat/Sun columns
-    showSunSchedule: false     // scheduling grid: show Sunday column
-  },
-
-  // Master-managed list of employee roles. Fully custom — add as many as needed
-  // from Add Employee or the employee detail page.
-  roles: [],
-
-  employees: [],
-
-  categories: [],
-
-  localUpcDb: {},
-
-  expirationItems: [],
-
-  soups: [],
-  // Soup size/pricing tiers shown on the Weekly Deli Menu's Soups box.
-  // Editable (add/rename sizes, edit price, delete) from the Soup Menu tab.
-  soupSizes: [
-    { id:'szsm', name:'Small', price:'' },
-    { id:'szmd', name:'Medium', price:'' },
-    { id:'szlg', name:'Large', price:'' }
-  ],
-  // soupMenu[monthKey][isoDate] = soupId   monthKey = 'YYYY-MM'
-  soupMenu: {},
-
-  // Deli boxes are dynamic — the master adds/renames/deactivates/deletes boxes
-  // from the Deli Menu tab. Start blank; use "+ Add Box" to create the first one.
-  deliBoxes: [],
-  deliItemLists: {},
-
-  // weeklyMenus[weekKey] = { [boxId]: {price, notes, items:[id..]} }
-  weeklyMenus: {},
-
-  produceDeals: [],
-
-  // schedule[weekKey][employeeId][DAY] = {start,end}
-  schedule: {},
-  timeOffRequests: [],
-  chatMessages: []
-};
-
-/* ============================================================
-   FIREBASE — connected to the "GroundedMarket" project.
-   ============================================================
-   These values are safe to be public in client-side code — real security
-   lives in Firestore/Storage Rules (see the rules provided separately),
-   not in hiding these.
-   ============================================================ */
 const firebaseConfig = {
-  apiKey: "AIzaSyCYd08eJkPenGNUkVuRC2ozfe5nTfTye1I",
-  authDomain: "groundedmarket-86e50.firebaseapp.com",
-  projectId: "groundedmarket-86e50",
-  storageBucket: "groundedmarket-86e50.firebasestorage.app",
-  messagingSenderId: "518382046314",
-  appId: "1:518382046314:web:4bd964d6bf2607cb7a8e13"
+  apiKey: "AIzaSyClkHjUnQ96VNRj1FxyY-ca-AcDWYoX_m8",
+  authDomain: "hotseat-4f661.firebaseapp.com",
+  projectId: "hotseat-4f661",
+  storageBucket: "hotseat-4f661.firebasestorage.app",
+  messagingSenderId: "1052089495081",
+  appId: "1:1052089495081:web:15293be177ad3a6f577638"
 };
-firebase.initializeApp(firebaseConfig);
-const fsdb = firebase.firestore();
-const storage = firebase.storage();
 
-const FIRESTORE_COLLECTIONS = ['categories','expirations','employees','roles','soups','soupSizes','soupMenu','deli','produce','schedule','timeOffRequests','chat','settings'];
-// CRITICAL SAFEGUARD: a collection is only "loaded" once we've successfully
-// received real data from Firestore for it (or successfully created it, if
-// it was genuinely brand new). Saves are hard-blocked until every single
-// collection has loaded — this is what prevents a bug (or a quota/permission
-// hiccup on the very first read) from ever pushing blank local defaults up
-// and overwriting real data in Firestore. Do not remove this gate.
-let loadedCollections = new Set();
-function markLoaded(name){ loadedCollections.add(name); }
-function allCollectionsLoaded(){ return FIRESTORE_COLLECTIONS.every(n=>loadedCollections.has(n)); }
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
-// Guards against a save→listen→save feedback loop: while we're applying data
-// that just arrived FROM Firestore, scheduleSave() below is a no-op.
-let applyingRemoteUpdate = false;
-let saveDebounceTimer = null;
-function scheduleSave(){
-  if(applyingRemoteUpdate) return;
-  if(!allCollectionsLoaded()) return; // never write before every collection has loaded once
-  clearTimeout(saveDebounceTimer);
-  saveDebounceTimer = setTimeout(saveAllToFirestore, 500);
-}
-// Remembers the last JSON actually written/read for each collection, so we
-// skip re-writing a document that hasn't changed — cuts write volume a lot,
-// since scheduleSave() runs after nearly every render, not just real edits.
-let lastKnownJSON = {};
-function saveAllToFirestore(){
-  const w = (name, payload) => {
-    const json = JSON.stringify(payload);
-    if(lastKnownJSON[name] === json) return;
-    lastKnownJSON[name] = json;
-    fsdb.collection('store').doc(name).set(payload).catch(err=>console.error('Firestore save failed:', name, err));
-  };
-  w('categories', { list: db.categories });
-  w('expirations', { items: db.expirationItems, localUpcDb: db.localUpcDb });
-  w('employees', { list: db.employees });
-  w('roles', { list: db.roles });
-  w('soups', { list: db.soups });
-  w('soupSizes', { list: db.soupSizes });
-  w('soupMenu', { data: db.soupMenu });
-  w('deli', { boxes: db.deliBoxes, itemLists: db.deliItemLists, weeklyMenus: db.weeklyMenus });
-  w('produce', { list: db.produceDeals });
-  w('schedule', { data: db.schedule });
-  w('timeOffRequests', { list: db.timeOffRequests });
-  w('chat', { list: db.chatMessages });
-  w('settings', db.settings);
-}
-// Live-syncs every collection. On a brand-new/empty Firestore project this
-// seeds it blank; after that, every open tab/device shares the same live
-// data, and edits show up everywhere within moments.
-function bindDoc(name, applyFn, seedPayload){
-  fsdb.collection('store').doc(name).onSnapshot(snap=>{
-    if(snap.exists){
-      applyFn(snap.data());
-      lastKnownJSON[name] = JSON.stringify(snap.data());
-      markLoaded(name);
-      afterFirestoreUpdate();
-    } else {
-      fsdb.collection('store').doc(name).set(seedPayload)
-        .then(()=>{ lastKnownJSON[name] = JSON.stringify(seedPayload); markLoaded(name); })
-        .catch(err=>console.error('Firestore seed failed:', name, err));
-    }
-  }, err=>{
-    // Do NOT mark this collection as loaded on error — that's what keeps
-    // scheduleSave() blocked until a real read actually succeeds.
-    console.error('Firestore listener failed:', name, err);
-  });
-}
-function initFirebaseSync(){
-  bindDoc('categories', d=>{ db.categories = d.list||[]; }, { list: db.categories });
-  bindDoc('expirations', d=>{ db.expirationItems = d.items||[]; db.localUpcDb = d.localUpcDb||{}; }, { items: db.expirationItems, localUpcDb: db.localUpcDb });
-  bindDoc('employees', d=>{ db.employees = d.list||[]; }, { list: db.employees });
-  bindDoc('roles', d=>{ db.roles = d.list||[]; }, { list: db.roles });
-  bindDoc('soups', d=>{ db.soups = d.list||[]; }, { list: db.soups });
-  bindDoc('soupSizes', d=>{ db.soupSizes = d.list||[]; }, { list: db.soupSizes });
-  bindDoc('soupMenu', d=>{ db.soupMenu = d.data||{}; }, { data: db.soupMenu });
-  bindDoc('deli', d=>{ db.deliBoxes = d.boxes||[]; db.deliItemLists = d.itemLists||{}; db.weeklyMenus = d.weeklyMenus||{}; }, { boxes: db.deliBoxes, itemLists: db.deliItemLists, weeklyMenus: db.weeklyMenus });
-  bindDoc('produce', d=>{ db.produceDeals = d.list||[]; }, { list: db.produceDeals });
-  bindDoc('schedule', d=>{ db.schedule = d.data||{}; }, { data: db.schedule });
-  bindDoc('timeOffRequests', d=>{ db.timeOffRequests = d.list||[]; }, { list: db.timeOffRequests });
-  bindDoc('chat', d=>{ db.chatMessages = d.list||[]; }, { list: db.chatMessages });
-  bindDoc('settings', d=>{ db.settings = { showWeekendsSoup: !!d.showWeekendsSoup, showSunSchedule: !!d.showSunSchedule }; }, db.settings);
-}
-// Re-renders whatever's currently on screen after data arrives from another
-// device/tab. Restores the employee-detail sub-view instead of bouncing
-// back to the list, if that's what was open.
-function afterFirestoreUpdate(){
-  applyingRemoteUpdate = true;
-  if(!document.getElementById('view-public').classList.contains('hidden')){
-    renderPublic();
-  }
-  if(session && !document.getElementById('view-portal').classList.contains('hidden')){
-    if(activeTab==='Employees' && viewingEmployeeId){
-      if(db.employees.find(e=>e.id===viewingEmployeeId)) openEmployeeDetail(viewingEmployeeId);
-      else { viewingEmployeeId = null; renderPortalBody(); }
-    } else {
-      renderPortalBody();
-    }
-  }
-  applyingRemoteUpdate = false;
+let username = "";
+let studentPassword = "";
+let isTeacher = false;
+let isMasterAdmin = false;
+let teacherAccount = "";
+let currentBoardId = "";
+let currentStudentId = "";
+let sortMode = "new";
+let leaderboardVisible = true;
+let studentEmoji = "";
+let myUpvotedPostIds = new Set();
+let myPollVotes = new Map();
+let postImageFile = null;
+let unsubPosts = null;
+let unsubPolls = null;
+let unsubLeaderboard = null;
+let unsubBoardSettings = null;
+let studentNickname = "";
+let dailyDataVisible = false;
+
+const loginDiv = document.getElementById("login");
+const teacherLoginDiv = document.getElementById("teacherLogin");
+const boardsPortalDiv = document.getElementById("boardsPortal");
+const studentsPortalDiv = document.getElementById("studentsPortal");
+const studentDashboardDiv = document.getElementById("studentDashboard");
+const appDiv = document.getElementById("app");
+const usernameInput = document.getElementById("usernameInput");
+const joinBtn = document.getElementById("joinBtn");
+const teacherLoginBtn = document.getElementById("teacherLoginBtn");
+const teacherNameInput = document.getElementById("teacherNameInput");
+const teacherPasswordInput = document.getElementById("teacherPasswordInput");
+const teacherSignInBtn = document.getElementById("teacherSignInBtn");
+const backToMainLoginBtn = document.getElementById("backToMainLoginBtn");
+const newBoardNameInput = document.getElementById("newBoardNameInput");
+const createBoardBtn = document.getElementById("createBoardBtn");
+const boardsList = document.getElementById("boardsList");
+const logoutBtnPortal = document.getElementById("logoutBtnPortal");
+const logoutBtnApp = document.getElementById("logoutBtnApp");
+const logoutBtnStudents = document.getElementById("logoutBtnStudents");
+const logoutBtnDashboard = document.getElementById("logoutBtnDashboard");
+const backToPortalBtn = document.getElementById("backToPortalBtn");
+const studentsBtn = document.getElementById("studentsBtn");
+const backToBoardFromStudents = document.getElementById("backToBoardFromStudents");
+const backToStudentsFromDashboard = document.getElementById("backToStudentsFromDashboard");
+const postInput = document.getElementById("postInput");
+const postBtn = document.getElementById("postBtn");
+const postsDiv = document.getElementById("posts");
+const sortSelect = document.getElementById("sortSelect");
+const teacherBtn = document.getElementById("teacherBtn");
+const pollSection = document.getElementById("pollSection");
+const pollCreation = document.getElementById("pollCreation");
+const postImageInput = document.getElementById("postImageInput");
+const postImageBtn = document.getElementById("postImageBtn");
+const postImagePreview = document.getElementById("postImagePreview");
+const studentsList = document.getElementById("studentsList");
+const dashboardContent = document.getElementById("dashboardContent");
+const leaderboardSection = document.getElementById("leaderboardSection");
+const leaderboardToggleContainer = document.getElementById("leaderboardToggleContainer");
+const leaderboardVisibilityBtn = document.getElementById("leaderboardVisibilityBtn");
+const emojiPickerContainer = document.getElementById("emojiPickerContainer");
+const emojiCircle = document.getElementById("emojiCircle");
+const emojiDisplay = document.getElementById("emojiDisplay");
+const emojiInput = document.getElementById("emojiInput");
+const dailyDashboard = document.getElementById("dailyDashboard");
+const themeToggle = document.getElementById("themeToggle");
+const themeTogglePortal = document.getElementById("themeTogglePortal");
+const themeToggleStudents = document.getElementById("themeToggleStudents");
+const themeToggleDashboard = document.getElementById("themeToggleDashboard");
+const htmlElement = document.documentElement;
+const boardNameInput = document.getElementById("boardNameInput");
+const studentPasswordInput = document.getElementById("studentPasswordInput");
+
+function setTheme(theme) {
+  htmlElement.setAttribute("data-theme", theme);
+  localStorage.setItem("theme", theme);
+  var text = theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode";
+  if (themeToggle) { themeToggle.textContent = text; }
+  if (themeTogglePortal) { themeTogglePortal.textContent = text; }
+  if (themeToggleStudents) { themeToggleStudents.textContent = text; }
+  if (themeToggleDashboard) { themeToggleDashboard.textContent = text; }
 }
 
-function newId(prefix){ return prefix + Math.random().toString(36).slice(2,9); }
-
-/* Role picker: a select of existing roles plus a "+ Add new role…" option that
-   reveals a text field. Used identically on Add Employee and the employee
-   detail page, so any custom role typed in either place is saved to
-   db.roles and immediately available everywhere else. */
-function roleSelectHTML(prefix, currentRole){
-  const opts = db.roles.map(r=>`<option value="${r}" ${r===currentRole?'selected':''}>${r}</option>`).join('');
-  const noRolesYet = db.roles.length === 0;
-  return `<select id="${prefix}-role-select" onchange="toggleNewRoleInput('${prefix}')">${opts}<option value="__new__" ${noRolesYet?'selected':''}>+ Add new role…</option></select>
-    <input type="text" id="${prefix}-role-new" class="${noRolesYet?'':'hidden'}" placeholder="New role name" style="margin-top:6px">`;
-}
-function toggleNewRoleInput(prefix){
-  const sel = document.getElementById(`${prefix}-role-select`);
-  const inp = document.getElementById(`${prefix}-role-new`);
-  inp.classList.toggle('hidden', sel.value !== '__new__');
-  if(sel.value === '__new__') inp.focus();
-}
-function resolveRole(prefix){
-  const sel = document.getElementById(`${prefix}-role-select`);
-  if(sel.value === '__new__'){
-    const val = document.getElementById(`${prefix}-role-new`).value.trim();
-    if(val && !db.roles.includes(val)) db.roles.push(val);
-    return val || 'General';
-  }
-  return sel.value;
+function loadTheme() {
+  var saved = localStorage.getItem("theme");
+  if (saved) { setTheme(saved); }
+  else { setTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); }
 }
 
-function blankMenuTemplate(){
-  const t = {};
-  db.deliBoxes.forEach(b=>{ t[b.id] = { price:'', notes:'', items:[] }; });
-  return t;
-}
-function weeklyMenu(weekKey){
-  if(!db.weeklyMenus[weekKey]){
-    const keys = Object.keys(db.weeklyMenus).sort();
-    const prev = keys.length ? db.weeklyMenus[keys[keys.length-1]] : null;
-    const base = prev ? JSON.parse(JSON.stringify(prev)) : blankMenuTemplate();
-    db.deliBoxes.forEach(b=>{ if(!base[b.id]) base[b.id] = { price:'', notes:'', items:[] }; });
-    db.weeklyMenus[weekKey] = base;
-  }
-  return db.weeklyMenus[weekKey];
-}
-// When items are added/removed for a given week+box, every already-generated
-// future week mirrors that change. Past weeks are never touched.
-function cascadeDeliChangeForward(weekKey, boxId){
-  const items = weeklyMenu(weekKey)[boxId].items.slice();
-  Object.keys(db.weeklyMenus).filter(k=>k>weekKey).sort().forEach(k=>{
-    if(db.weeklyMenus[k][boxId]) db.weeklyMenus[k][boxId].items = items.slice();
-  });
+function toggleTheme() {
+  var current = htmlElement.getAttribute("data-theme") || "light";
+  setTheme(current === "dark" ? "light" : "dark");
 }
 
-function monthSoupMenu(monthKey){
-  if(!db.soupMenu[monthKey]) db.soupMenu[monthKey] = {};
-  return db.soupMenu[monthKey];
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function(e) {
+  if (!localStorage.getItem("theme")) { setTheme(e.matches ? "dark" : "light"); }
+});
+
+if (themeToggle) { themeToggle.addEventListener("click", toggleTheme); }
+if (themeTogglePortal) { themeTogglePortal.addEventListener("click", toggleTheme); }
+if (themeToggleStudents) { themeToggleStudents.addEventListener("click", toggleTheme); }
+if (themeToggleDashboard) { themeToggleDashboard.addEventListener("click", toggleTheme); }
+
+loadTheme();
+
+function teardownBoardListeners() {
+  if (unsubPosts) { unsubPosts(); unsubPosts = null; }
+  if (unsubPolls) { unsubPolls(); unsubPolls = null; }
+  if (unsubLeaderboard) { unsubLeaderboard(); unsubLeaderboard = null; }
+  if (unsubBoardSettings) { unsubBoardSettings(); unsubBoardSettings = null; }
 }
 
-/* ---------------------------- SESSION ---------------------------- */
-let session = null; // {isMaster, employeeId, name}
-let activeTab = 'Expirations';
-let expSubView = 'items'; // 'items' | 'categories' (master only)
-let viewingEmployeeId = null; // set while an employee detail sub-view is open
-
-/* expirations carousel state */
-let catDayOffset = {};    // catId -> integer days from today
-let catSearchTerm = {};   // catId -> string, used by the category search modal
-let catDateFilter = {};   // catId -> ISO date string, used by the category search modal
-let pastExpanded = false;
-let pastDateFilter = '';
-let soupListSearchTerm = '';
-
-/* public + admin carousel offsets */
-let publicDeliWeekOffset = 0;
-let deliAdminWeekOffset = 0;
-let publicSoupMonthOffset = 0;
-let soupAdminMonthOffset = 0;
-let scheduleWeekOffset = 0;
-
-let activeScanReader = null;
-
-/* ---------------------------- ROUTER ---------------------------- */
-function showView(id){
-  document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
-}
-
-/* ============================================================
-   PUBLIC PAGE RENDER
-   ============================================================ */
-function renderPublic(){
-  publicDeliWeekOffset = 0;
-  publicSoupMonthOffset = 0;
-  renderDeliPanel();
-  renderSoupPanel();
-  renderProduceList('produce-list', false);
-}
-
-function diettags(o){
-  let out = '';
-  if(o.df) out += '<span class="tag tag-df" title="Dairy Free"></span>';
-  if(o.gf) out += '<span class="tag tag-gf" title="Gluten Free"></span>';
-  if(o.v) out += '<span class="tag tag-v" title="Vegetarian"></span>';
-  return out;
-}
-function soupSizePriceLabel(){
-  const priced = (db.soupSizes||[]).filter(s=>s.price);
-  return priced.length ? priced.map(s=>`${s.name} $${s.price}`).join(' · ') : '';
-}
-
-/* ---- Deli (public) ---- */
-function renderDeliPanel(){
-  const monday = addDays(startOfWeekMonday(new Date()), publicDeliWeekOffset*7);
-  document.getElementById('deli-week-range').textContent = fmtWeekRange(monday);
-  renderDeliGrid(monday);
-}
-function renderDeliGrid(monday){
-  const weekKey = weekKeyOf(monday);
-  const menu = weeklyMenu(weekKey);
-
-  const soupRows = ['MON','TUE','WED','THU','FRI'].map((label,i)=>{
-    const date = addDays(monday,i);
-    const mk = `${date.getFullYear()}-${pad(date.getMonth()+1)}`;
-    const mm = monthSoupMenu(mk);
-    const sid = mm[isoDate(date)];
-    const soup = db.soups.find(s=>s.id===sid);
-    return `<div class="soup-day-row"><span class="dow">${label}</span><span>${soup ? soup.name+' '+diettags(soup) : '—'}</span></div>`;
-  }).join('');
-
-  function box(boxDef){
-    const data = menu[boxDef.id];
-    const list = db.deliItemLists[boxDef.id] || [];
-    if(!data) return '';
-    const items = data.items.map(id=>{
-      const item = list.find(l=>l.id===id);
-      if(!item) return '';
-      return `<div class="deli-item"><div class="deli-item-name">${item.name} ${diettags(item)}</div><div class="deli-item-desc">${item.desc}</div></div>`;
-    }).join('');
-    return `<div class="deli-box"><h3>${boxDef.title} ${data.price?`<span class="price">$${data.price}</span>`:''}</h3>${items || '<p class="empty-note">Nothing on the menu this week.</p>'}${data.notes ? `<div class="deli-notes">${data.notes}</div>`:''}</div>`;
-  }
-
-  const activeBoxes = db.deliBoxes.filter(b=>b.active);
-  const mid = Math.ceil(activeBoxes.length/2) || 1;
-  const colA = activeBoxes.slice(0,mid), colB = activeBoxes.slice(mid);
-
-  document.getElementById('deli-grid').innerHTML = `
-    <div class="deli-col">
-      <div class="deli-box"><h3>Soups ${soupSizePriceLabel() ? `<span class="price">${soupSizePriceLabel()}</span>` : ''}</h3>${soupRows}</div>
-      ${colA.map(box).join('')}
-    </div>
-    <div class="deli-col">
-      ${colB.map(box).join('')}
-    </div>`;
-}
-
-/* ---- Soup (public) ---- */
-function dowHeaderHTML(showWeekends){
-  const days = showWeekends ? ['MON','TUE','WED','THU','FRI','SAT','SUN'] : ['MON','TUE','WED','THU','FRI'];
-  return days.map(d=>`<span>${d}</span>`).join('');
-}
-function renderSoupPanel(){
-  const base = new Date(); base.setDate(1); base.setMonth(base.getMonth()+publicSoupMonthOffset);
-  const monthKey = `${base.getFullYear()}-${pad(base.getMonth()+1)}`;
-  document.getElementById('soup-month-title').textContent = `${MONTHS[base.getMonth()]} Soups`;
-  const sw = db.settings.showWeekendsSoup;
-  const dowEl = document.getElementById('soup-cal-dow');
-  dowEl.className = `soup-cal-dow cols-${sw?7:5}`;
-  dowEl.innerHTML = dowHeaderHTML(sw);
-  const calEl = document.getElementById('soup-cal');
-  calEl.className = `soup-cal cols-${sw?7:5}`;
-  calEl.innerHTML = buildSoupCalHTML(monthKey, sw, false); // never show Source publicly
-}
-// Downloadable .ics file for the month currently being viewed — one all-day
-// event per scheduled soup. Both Apple Calendar and Google Calendar can
-// import a standard .ics file directly, so one export covers either choice.
-function escapeICS(str){
-  return (str||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
-}
-function exportSoupMenuICS(){
-  const base = new Date(); base.setDate(1); base.setMonth(base.getMonth()+publicSoupMonthOffset);
-  const monthKey = `${base.getFullYear()}-${pad(base.getMonth()+1)}`;
-  const mm = monthSoupMenu(monthKey);
-  const dates = Object.keys(mm).sort();
-  if(!dates.length){ alert('No soups are scheduled for this month yet.'); return; }
-  const now = new Date();
-  const stamp = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}T${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}Z`;
-  let ics = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Grounded Natural Foods//Soup Menu//EN\r\nCALSCALE:GREGORIAN\r\n';
-  dates.forEach(dateISO=>{
-    const soup = db.soups.find(s=>s.id===mm[dateISO]);
-    if(!soup) return;
-    const dtstart = dateISO.replace(/-/g,'');
-    const dtend = isoDate(addDays(new Date(dateISO+'T00:00'),1)).replace(/-/g,'');
-    const tags = [soup.df?'Dairy Free':'', soup.gf?'Gluten Free':'', soup.v?'Vegetarian':''].filter(Boolean).join(', ');
-    ics += 'BEGIN:VEVENT\r\n';
-    ics += `UID:soup-${dateISO}@groundedmarket.com\r\n`;
-    ics += `DTSTAMP:${stamp}\r\n`;
-    ics += `DTSTART;VALUE=DATE:${dtstart}\r\n`;
-    ics += `DTEND;VALUE=DATE:${dtend}\r\n`;
-    ics += `SUMMARY:${escapeICS(soup.name + ' Soup')}\r\n`;
-    if(tags) ics += `DESCRIPTION:${escapeICS(tags)}\r\n`;
-    ics += `LOCATION:${escapeICS('Grounded Natural Foods, 435 S US HWY 231, Jasper IN')}\r\n`;
-    ics += 'END:VEVENT\r\n';
-  });
-  ics += 'END:VCALENDAR\r\n';
-  const blob = new Blob([ics], { type:'text/calendar;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `grounded-soup-menu-${MONTHS[base.getMonth()].toLowerCase()}-${base.getFullYear()}.ics`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(()=>URL.revokeObjectURL(url), 1000);
-}
-// canSeeSoupSource — Source is a master/Kitchen-staff-only detail, never shown
-// to customers or to employees in other roles.
-function canSeeSoupSource(){
-  if(!session) return false;
-  if(session.isMaster) return true;
-  const emp = db.employees.find(e=>e.id===session.employeeId);
-  return !!(emp && (emp.role==='Kitchen' || emp.role==='Kitchen & Floor'));
-}
-function buildSoupCalHTML(monthKey, showWeekends, showSource){
-  const [y,m] = monthKey.split('-').map(Number);
-  const last = new Date(y, m, 0);
-  const mm = monthSoupMenu(monthKey);
-  let cells = '';
-  let leadingPlaced = false;
-  for(let d=1; d<=last.getDate(); d++){
-    const date = new Date(y,m-1,d);
-    let dow = date.getDay(); dow = dow===0?6:dow-1; // 0=Mon..6=Sun
-    if(!showWeekends && dow>=5) continue; // skip Sat/Sun entirely
-    if(!leadingPlaced){
-      for(let i=0;i<dow;i++) cells += `<div class="soup-cell empty"></div>`;
-      leadingPlaced = true;
-    }
-    const iso = isoDate(date);
-    const soup = db.soups.find(s=>s.id===mm[iso]);
-    cells += `<div class="soup-cell" data-date="${iso}">
-      <div class="d">${d}</div>
-      ${soup ? `<div class="s-name">${soup.name}</div><div class="s-tags">${diettags(soup)}</div>${showSource && soup.source ? `<div class="s-source">${soup.source}</div>` : ''}` : ''}
-    </div>`;
-  }
-  return cells;
-}
-
-function renderProduceList(targetId, editable){
-  const wrap = document.getElementById(targetId);
-  if(!db.produceDeals.length){ wrap.innerHTML = '<p class="empty-note">No current deals.</p>'; return; }
-  wrap.innerHTML = db.produceDeals.map(p=>`
-    <div class="produce-row">
-      <div class="produce-left">
-        <span class="produce-name">${p.name}</span>
-        <span class="${p.organic?'produce-organic':'produce-conventional'}">${p.organic?'Organic':'Conventional'}</span>
-      </div>
-      <span class="price-tag">$${p.price} / ${p.unit}</span>
-      ${p.img ? `<img class="produce-img" src="${p.img}" alt="${p.name}">` : (editable? '' : '<span></span>')}
-      ${editable ? `<span><button class="btn small outline" onclick="editProduceDeal('${p.id}')">Edit</button> <button class="btn small danger" onclick="deleteProduceDeal('${p.id}')">Delete</button></span>` : ''}
-    </div>`).join('');
-}
-
-/* ============================================================
-   AUTH
-   ============================================================ */
-function attemptLogin(){
-  const u = document.getElementById('login-username').value.trim();
-  const p = document.getElementById('login-password').value;
-  const errEl = document.getElementById('login-error');
-  if(u===db.master.username && p===db.master.password){
-    session = { isMaster:true, name:'Gordon (Master)' };
-    errEl.classList.add('hidden');
-    document.getElementById('login-form').reset();
-    enterPortal();
-    return;
-  }
-  const emp = db.employees.find(e=>e.username===u && e.password===p && e.active);
-  if(emp){
-    session = { isMaster:false, employeeId:emp.id, name:emp.name };
-    errEl.classList.add('hidden');
-    document.getElementById('login-form').reset();
-    enterPortal();
-    return;
-  }
-  errEl.classList.remove('hidden');
-}
-document.getElementById('login-form').addEventListener('submit', e=>{ e.preventDefault(); attemptLogin(); });
-document.getElementById('login-submit-btn').addEventListener('click', e=>{ e.preventDefault(); attemptLogin(); });
-
-function enterPortal(){
-  activeTab = 'Expirations';
-  expSubView = 'items';
-  document.getElementById('portal-user').textContent = session.name;
-  renderPortalTabs();
-  updatePortalStickyState();
-  renderPortalBody();
-  showView('view-portal');
-}
-
-function logout(){ session = null; showView('view-public'); renderPublic(); }
-
-/* ============================================================
-   PORTAL SHELL
-   ============================================================ */
-function renderPortalTabs(){
-  let tabs;
-  if(session.isMaster){
-    tabs = ['Expirations','Deli Menu','Soup Menu','Produce Deals','Employees','Scheduling','Chat'];
+joinBtn.onclick = async function() {
+  username = usernameInput.value.trim();
+  var boardName = boardNameInput.value.trim();
+  studentPassword = studentPasswordInput.value.trim();
+  if (!username) { alert("Enter your name to join!"); return; }
+  if (!boardName) { alert("Enter the PopBoard name to join!"); return; }
+  if (username.toLowerCase() === "dimitry") { alert("This name is reserved."); return; }
+  isTeacher = false;
+  var q = query(collection(db, "boards"), where("name", "==", boardName));
+  var snapshot = await getDocs(q);
+  if (snapshot.empty) { alert("Oops! That PopBoard hasn't popped yet. Double-check the name and try again!"); return; }
+  var boardData = snapshot.docs[0].data();
+  currentBoardId = snapshot.docs[0].id;
+  if (username === boardData.teacherAccount) { alert("Nice try, but that's the teacher's name! Choose another to join the popcorn party!"); return; }
+  var studentsRef = collection(db, "boards", currentBoardId, "students");
+  var studentQuery = query(studentsRef, where("username", "==", username));
+  var studentSnapshot = await getDocs(studentQuery);
+  if (!studentSnapshot.empty) {
+    var existingStudent = studentSnapshot.docs[0];
+    var existingPassword = existingStudent.data().password || "";
+    if (existingPassword && existingPassword !== studentPassword) { alert("That password didn't pop! Double-check your kernel key!"); return; }
+    currentStudentId = existingStudent.id;
+    studentEmoji = existingStudent.data().emoji || "";
+    studentNickname = existingStudent.data().nickname || "";
   } else {
-    tabs = ['Expirations','Schedule','Chat'];
-    const emp = db.employees.find(e=>e.id===session.employeeId);
-    if(emp && (emp.role==='Kitchen' || emp.role==='Kitchen & Floor')) tabs.splice(1,0,'Soup Menu');
+    var newStudent = await addDoc(studentsRef, {
+      username: username,
+      password: studentPassword,
+      joinedAt: serverTimestamp(),
+      historicalComments: 0,
+      historicalUpvotesGiven: 0,
+      historicalUpvotesReceived: 0,
+      historicalPollsCast: 0,
+      monthlyStats: {},
+      emoji: "",
+      nickname: ""
+    });
+    currentStudentId = newStudent.id;
+    studentEmoji = "";
+    studentNickname = "";
   }
-  document.getElementById('portal-tabs').innerHTML = tabs.map(t=>
-    `<button class="portal-tab ${t===activeTab?'active':''}" data-tab="${t}">${t}</button>`).join('');
-}
+  loginDiv.classList.add("hidden");
+  appDiv.classList.remove("hidden");
+  teacherBtn.classList.add("hidden");
+  backToPortalBtn.classList.add("hidden");
+  studentsBtn.classList.add("hidden");
+  leaderboardToggleContainer.classList.add("hidden");
+  dailyDashboard.classList.add("hidden");
+  startBoard();
+};
 
-function updatePortalStickyState(){
-  const sub = document.getElementById('portal-exp-subheader');
-  const catBtn = document.getElementById('categories-quick-btn');
-  const importBtn = document.getElementById('bulk-import-btn');
-  if(activeTab==='Expirations'){
-    sub.classList.remove('hidden');
-    catBtn.classList.toggle('hidden', !session.isMaster);
-    catBtn.textContent = expSubView==='categories' ? '← Back to Items' : 'Categories';
-    importBtn.classList.toggle('hidden', !session.isMaster);
-  } else {
-    sub.classList.add('hidden');
-  }
-}
-
-function setTab(t){ activeTab = t; expSubView = 'items'; viewingEmployeeId = null; renderPortalTabs(); updatePortalStickyState(); renderPortalBody(); }
-
-function renderPortalBody(){
-  const el = document.getElementById('portal-body');
-  updatePortalStickyState();
-  switch(activeTab){
-    case 'Expirations':
-      el.innerHTML = (expSubView==='categories' && session.isMaster) ? categoriesHTML() : expirationsHTML();
-      break;
-    case 'Deli Menu': el.innerHTML = deliMenuAdminHTML(); break;
-    case 'Soup Menu': el.innerHTML = soupMenuAdminHTML(); break;
-    case 'Produce Deals': el.innerHTML = produceAdminHTML(); renderProduceList('produce-admin-list', true); break;
-    case 'Employees': el.innerHTML = employeesHTML(); break;
-    case 'Scheduling':
-    case 'Schedule': el.innerHTML = scheduleHTML(); break;
-    case 'Chat': el.innerHTML = chatHTML(); renderChatMessages(); break;
-    default: el.innerHTML = '';
-  }
-  scheduleSave();
-}
-
-/* ============================================================
-   MODALS
-   ============================================================ */
-function openModal(html){
-  document.getElementById('modal-root').innerHTML = `
-    <div class="modal-overlay" onclick="if(event.target===this) closeModal()">
-      <div class="modal-box">
-        <button class="modal-close" onclick="closeModal()">✕</button>
-        ${html}
-      </div>
-    </div>`;
-}
-function closeModal(){ stopScan(); document.getElementById('modal-root').innerHTML=''; }
-
-/* ============================================================
-   EXPIRATION TRACKER
-   ============================================================ */
-function categoryItems(catId){
-  return db.expirationItems.filter(i=>i.categoryId===catId).sort((a,b)=>a.date.localeCompare(b.date));
-}
-function expItemLabel(i){
-  return `${i.brand} | ${i.description} | ${i.upc} <span class="pill">×${i.count}</span>`;
-}
-
-function expirationsHTML(){
-  if(!db.categories.length){ return '<p class="empty-note">No categories yet.</p>' + pastSectionHTML(); }
-  let html = db.categories.map(cat=>categoryBoxHTML(cat)).join('');
-  html += markdownListHTML();
-  html += pastSectionHTML();
-  return html;
-}
-
-function pastSectionHTML(){
-  const items = db.expirationItems.filter(i=>i.date < todayISO());
-  const filtered = pastDateFilter ? items.filter(i=>i.date===pastDateFilter) : items;
-  const sorted = filtered.slice().sort((a,b)=>b.date.localeCompare(a.date));
-  return `<details class="past-section" ${pastExpanded?'open':''}>
-    <summary>Past Expirations (${items.length})</summary>
-    <div class="past-filter">
-      <label style="font-family:var(--font-mono);font-size:11.5px;color:var(--ink-soft)">Filter by date</label>
-      <input type="date" value="${pastDateFilter}" onchange="pastDateFilter=this.value;pastExpanded=true;renderPortalBody()">
-      ${pastDateFilter?`<button class="btn small outline" onclick="pastDateFilter='';renderPortalBody()">Clear</button>`:''}
-    </div>
-    ${sorted.length ? sorted.map(i=>{
-      const cat = db.categories.find(c=>c.id===i.categoryId);
-      return `<div style="margin-bottom:4px"><span class="pill">${cat?cat.emoji:''} ${cat?cat.name:''}</span>${expItemRow(i, i.date<todayISO() && !i.done, true)}</div>`;
-    }).join('') : '<p class="empty-note">No past expirations.</p>'}
-  </details>`;
-}
-
-function categoryBoxHTML(cat){
-  const items = categoryItems(cat.id);
-  const overdue = items.filter(i=>i.date < todayISO() && !i.done);
-  const offset = catDayOffset[cat.id] || 0;
-  const viewDate = isoDate(addDays(new Date(), offset));
-  const viewLabel = offset===0 ? 'Today' : new Date(viewDate+'T00:00').toDateString();
-
-  let inner = '';
-  if(overdue.length){
-    inner += `<div class="day-group"><div class="day-label" style="color:var(--red-flag)">PAST DUE</div>${overdue.map(i=>expItemRow(i,true,true)).join('')}</div>`;
-  }
-
-  const dayItems = items.filter(i=>i.date===viewDate);
-  inner += `<div class="cat-daynav">
-    <button class="btn small outline" onclick="catDayOffset['${cat.id}']=(catDayOffset['${cat.id}']||0)-1;renderPortalBody()">← Prev Day</button>
-    ${offset!==0?`<button class="btn small" onclick="catDayOffset['${cat.id}']=0;renderPortalBody()">Today</button>`:''}
-    <span class="cat-date-label">${viewLabel}</span>
-    <button class="btn small outline" onclick="catDayOffset['${cat.id}']=(catDayOffset['${cat.id}']||0)+1;renderPortalBody()">Next Day →</button>
-  </div>`;
-  inner += `<div class="day-group">${dayItems.length ? dayItems.map(i=>expItemRow(i,false)).join('') : '<p class="empty-note">Nothing expiring this day.</p>'}</div>`;
-
-  return `<div class="category-box" data-cat="${cat.id}">
-    <div class="category-head">
-      <h3>${cat.emoji} ${cat.name}</h3>
-      <span style="display:flex;align-items:center;gap:10px">
-        <span class="exp-count">${items.length} tracked</span>
-        <button class="search-icon-btn" title="Search this category" onclick="openCategorySearchModal('${cat.id}')"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.3" y1="15.3" x2="21" y2="21"/></svg></button>
-      </span>
-    </div>
-    <div style="padding:4px 18px 14px">${inner}</div>
-  </div>`;
-}
-
-// Focused search for one category — keyword and/or date, sorted newest-first.
-// Replaces the old inline "Show more (full list)" toggle with a lighter popup.
-function openCategorySearchModal(catId, term){
-  if(term !== undefined) catSearchTerm[catId] = term;
-  const cat = db.categories.find(c=>c.id===catId);
-  const t = (catSearchTerm[catId]||'').toLowerCase();
-  const dateVal = catDateFilter[catId] || '';
-  const items = categoryItems(catId);
-  const hasFilter = !!(t || dateVal);
-  const filtered = hasFilter ? items.filter(i=>{
-    const textOk = !t || (i.brand+' '+i.description+' '+i.upc).toLowerCase().includes(t);
-    const dateOk = !dateVal || i.date === dateVal;
-    return textOk && dateOk;
-  }).sort((a,b)=>b.date.localeCompare(a.date)) : [];
-  openModal(`<h3>Search ${cat ? cat.emoji+' '+cat.name : 'Category'}</h3>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-      <input type="text" id="cat-modal-search" style="flex:1;min-width:160px;margin:0;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--cream)"
-        placeholder="Search this category…" value="${escHtmlAttr(catSearchTerm[catId]||'')}"
-        oninput="const pos=this.selectionStart; openCategorySearchModal('${catId}', this.value); reFocusInput('cat-modal-search', pos);">
-      <input type="date" id="cat-modal-date" style="margin:0;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--cream)"
-        value="${dateVal}" onchange="catDateFilter['${catId}']=this.value; openCategorySearchModal('${catId}');">
-    </div>
-    <div class="search-panel-list" style="max-height:360px">
-      ${hasFilter
-        ? (filtered.length ? filtered.map(i=>`<div class="search-panel-row" style="display:block">${expItemRow(i, i.date<todayISO() && !i.done, true)}</div>`).join('') : '<div class="search-panel-row">No matches.</div>')
-        : '<div class="search-panel-row">Type a keyword or pick a date to search.</div>'}
-    </div>`);
-  setTimeout(()=>{ const el=document.getElementById('cat-modal-search'); if(el){ el.focus(); el.selectionStart=el.selectionEnd=el.value.length; } },0);
-}
-
-function expItemRow(item, overdue, showDate){
-  const classes = ['exp-item'];
-  if(item.done) classes.push('done');
-  if(overdue && !item.done) classes.push('overdue');
-  const flagSvg = `<svg class="flag-icon ${item.flagged?'flag-on':'flag-off'}" viewBox="0 0 24 24"><path d="M6 3v18h2v-7h9l-1.5-3.5L17 7H8V3z"/></svg>`;
-  const dateLabel = showDate ? `<span class="exp-date-label">${item.date}</span>` : '';
-  return `<div class="${classes.join(' ')}">
-    <button class="link-chain" title="Search image" onclick="searchImage('${item.upc}','${escAttr(item.brand)}','${escAttr(item.description)}')">🔗</button>
-    <span class="exp-text" onclick="toggleDone('${item.id}')">${dateLabel}${expItemLabel(item)}</span>
-    <button class="icon-edit-btn" title="Edit item" onclick="event.stopPropagation();openEditExpItem('${item.id}')">✎</button>
-    <button class="flag-btn" title="Markdown flag" onclick="toggleFlag('${item.id}')">${flagSvg}</button>
-  </div>`;
-}
-
-function markdownListHTML(){
-  const flagged = db.expirationItems.filter(i=>i.flagged);
-  return `<div class="category-box"><div class="category-head"><h3>🏷️ Markdown</h3><span class="exp-count">${flagged.length} items</span></div>
-    <div style="padding:4px 18px 14px">${flagged.length ? flagged.map(i=>expItemRow(i,i.date<todayISO(),true)).join('') : '<p class="empty-note">No markdown items.</p>'}</div></div>`;
-}
-
-function openEditExpItem(id){
-  const i = db.expirationItems.find(x=>x.id===id);
-  const catOptions = db.categories.map(c=>`<option value="${c.id}" ${c.id===i.categoryId?'selected':''}>${c.emoji} ${c.name}</option>`).join('');
-  openModal(`<h3>Edit Item</h3>
-    <div class="field"><label>Brand</label><input type="text" id="eex-brand" value="${escHtmlAttr(i.brand)}"></div>
-    <div class="field"><label>Description</label><input type="text" id="eex-desc" value="${escHtmlAttr(i.description)}"></div>
-    <div class="field"><label>UPC</label><input type="text" id="eex-upc" value="${escHtmlAttr(i.upc)}"></div>
-    <div class="field"><label>Category</label><select id="eex-cat">${catOptions}</select></div>
-    <div class="field"><label>Expiration date</label><input type="date" id="eex-date" value="${i.date}"></div>
-    <div class="field"><label>Count on hand</label><input type="number" id="eex-count" min="1" value="${i.count}"></div>
-    <div class="modal-actions">
-      <button class="btn danger" onclick="deleteExpItem('${id}')">Delete</button>
-      <button class="btn" onclick="saveEditExpItem('${id}')">Save</button>
-    </div>`);
-}
-function saveEditExpItem(id){
-  const i = db.expirationItems.find(x=>x.id===id);
-  i.brand = document.getElementById('eex-brand').value.trim() || i.brand;
-  i.description = document.getElementById('eex-desc').value.trim() || i.description;
-  i.upc = document.getElementById('eex-upc').value.trim() || i.upc;
-  i.categoryId = document.getElementById('eex-cat').value || i.categoryId;
-  i.date = document.getElementById('eex-date').value || i.date;
-  const count = parseInt(document.getElementById('eex-count').value,10);
-  if(count>0) i.count = count;
-  closeModal(); renderPortalBody();
-}
-function deleteExpItem(id){
-  if(!confirm('Delete this expiration entry? This cannot be undone.')) return;
-  db.expirationItems = db.expirationItems.filter(x=>x.id!==id);
-  closeModal(); renderPortalBody();
-}
-
-function toggleDone(id){
-  const i = db.expirationItems.find(x=>x.id===id);
-  const wasDone = i.done;
-  i.done = !i.done;
-  if(!wasDone && i.done) recordEmployeeStat('checked');
-  renderPortalBody();
-}
-function escAttr(s){ return (s||'').replace(/'/g,"\\'"); }
-function searchImage(upc, brand, desc){
-  const q = encodeURIComponent(`${upc} ${brand} ${desc}`);
-  window.open(`https://www.google.com/search?tbm=isch&q=${q}`, '_blank');
-}
-function toggleFlag(id){
-  const item = db.expirationItems.find(x=>x.id===id);
-  if(!item.flagged){
-    openModal(`<h3>Mark down: ${item.description}</h3><p>How much longer should this item run?</p>
-      <div class="modal-actions">
-        <button class="btn" onclick="applyMarkdown('${id}',14)">+14 Days</button>
-        <button class="btn" onclick="applyMarkdown('${id}',30)">+30 Days</button>
-      </div>
-      <div class="field" style="margin-top:14px">
-        <label>Or enter a custom number of days</label>
-        <div style="display:flex;gap:8px">
-          <input type="number" id="custom-md-days" min="1" placeholder="e.g. 21" style="flex:1">
-          <button class="btn outline" onclick="applyCustomMarkdown('${id}')">+Custom</button>
-        </div>
-      </div>`);
-  } else {
-    item.flagged = false;
-    renderPortalBody();
-  }
-}
-function applyCustomMarkdown(id){
-  const val = parseInt(document.getElementById('custom-md-days').value,10);
-  if(!val || val<1) return;
-  applyMarkdown(id, val);
-}
-function applyMarkdown(id, days){
-  const item = db.expirationItems.find(x=>x.id===id);
-  const base = new Date(item.date+'T00:00');
-  item.date = isoDate(addDays(base, days));
-  item.flagged = true;
-  closeModal();
-  renderPortalBody();
-}
-
-/* --- Add item flow (barcode scan via ZXing — works in Safari/iOS, unlike BarcodeDetector) --- */
-function addItemFlow(){
-  const catOptions = db.categories.map(c=>`<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
-  openModal(`
-    <h3>Add Item</h3>
-    <div id="scan-area">
-      <button class="btn" id="start-scan-btn" onclick="startScan()">📷 Scan UPC</button>
-      <p style="font-size:12.5px;color:var(--ink-soft);margin-top:8px">Uses your device camera. Works in Safari/iOS. Otherwise, enter details manually below.</p>
-    </div>
-    <form id="add-item-form" onsubmit="submitAddItem(event)">
-      <div class="field"><label>UPC</label><input type="text" id="ai-upc" required></div>
-      <div class="field"><label>Brand</label><input type="text" id="ai-brand" required></div>
-      <div class="field"><label>Description</label><input type="text" id="ai-desc" required></div>
-      <div class="field"><label>Count on hand</label><input type="number" id="ai-count" min="1" value="1" required></div>
-      <div class="field"><label>Expiration date</label><input type="date" id="ai-date" required></div>
-      <div class="field"><label>Category</label><select id="ai-cat">${catOptions}</select></div>
-      <div class="modal-actions"><button type="submit" class="btn">Add Item</button></div>
-    </form>`);
-  document.getElementById('ai-upc').addEventListener('change', lookupUpc);
-}
-
-function lookupUpc(){
-  const upc = document.getElementById('ai-upc').value.trim();
-  if(!upc) return;
-  if(db.localUpcDb[upc]){
-    document.getElementById('ai-brand').value = db.localUpcDb[upc].brand;
-    document.getElementById('ai-desc').value = db.localUpcDb[upc].description;
-    return;
-  }
-  fetch(`https://world.openfoodfacts.org/api/v2/product/${upc}.json`)
-    .then(r=>r.json())
-    .then(data=>{
-      if(data && data.product){
-        document.getElementById('ai-brand').value = data.product.brands || '';
-        document.getElementById('ai-desc').value = data.product.product_name || '';
-      }
-    })
-    .catch(()=>{ /* fall back silently to manual entry */ });
-}
-
-function startScan(){
-  const area = document.getElementById('scan-area');
-  if(typeof ZXing === 'undefined'){
-    alert("Barcode scanner didn't load. Enter the UPC manually below.");
-    return;
-  }
-  area.innerHTML = `<video id="scan-video" style="width:100%;border-radius:8px;background:#000" muted playsinline autoplay></video>
-    <p style="font-size:12px;color:var(--ink-soft);margin-top:6px">Point the camera at a barcode…</p>`;
-  const codeReader = new ZXing.BrowserMultiFormatReader();
-  activeScanReader = codeReader;
-  codeReader.decodeFromConstraints({ video:{ facingMode:'environment' } }, 'scan-video', (result, err)=>{
-    if(result){
-      const text = result.getText();
-      stopScan();
-      document.getElementById('ai-upc').value = text;
-      lookupUpc();
-      area.innerHTML = `<p style="color:var(--green-deep)">✓ UPC captured: ${text}</p>`;
-    }
-  }).catch(()=>{
-    alert('Camera access was denied or unavailable. Enter the UPC manually.');
-  });
-}
-function stopScan(){
-  if(activeScanReader){ try{ activeScanReader.reset(); }catch(e){} activeScanReader = null; }
-}
-
-function submitAddItem(e){
+document.getElementById("teacherLoginBtn").onclick = function(e) {
   e.preventDefault();
-  const upc = document.getElementById('ai-upc').value.trim();
-  const brand = document.getElementById('ai-brand').value.trim();
-  const desc = document.getElementById('ai-desc').value.trim();
-  const count = parseInt(document.getElementById('ai-count').value,10);
-  const date = document.getElementById('ai-date').value;
-  const categoryId = document.getElementById('ai-cat').value;
+  loginDiv.classList.add("hidden");
+  teacherLoginDiv.classList.remove("hidden");
+};
 
-  db.localUpcDb[upc] = { brand, description:desc }; // save for next time
+backToMainLoginBtn.onclick = function() {
+  teacherLoginDiv.classList.add("hidden");
+  loginDiv.classList.remove("hidden");
+  teacherNameInput.value = "";
+  teacherPasswordInput.value = "";
+};
 
-  const dup = db.expirationItems.find(i=>i.upc===upc && i.date===date);
-  if(dup){
-    closeModal();
-    setTimeout(()=>{
-      openModal(`<h3>Possible duplicate</h3><p>${brand} — ${desc} already has an entry expiring ${date}. Add it anyway?</p>
-        <div class="modal-actions"><button class="btn outline" onclick="closeModal()">Cancel</button>
-        <button class="btn" onclick="finishAddItem('${upc}','${escAttr(brand)}','${escAttr(desc)}',${count},'${date}','${categoryId}')">Add Anyway</button></div>`);
-    },50);
+teacherSignInBtn.onclick = async function() {
+  var name = teacherNameInput.value.trim();
+  var password = teacherPasswordInput.value.trim();
+  if (!name || !password) { alert("Enter name and password to enter the kernel command center!"); return; }
+  if (name.toLowerCase() === "dimitry" && password === "301718Dag") {
+    isMasterAdmin = true;
+    isTeacher = true;
+    teacherAccount = "Dimitry";
+    username = "Dimitry";
+    await setDoc(doc(db, "teachers", "Dimitry"), { name: "Dimitry", password: "301718Dag", createdAt: serverTimestamp() }, { merge: true });
+    teacherLoginDiv.classList.add("hidden");
+    boardsPortalDiv.classList.remove("hidden");
+    loadBoardsPortal();
     return;
   }
-  finishAddItem(upc,brand,desc,count,date,categoryId);
-}
-function finishAddItem(upc,brand,desc,count,date,categoryId){
-  db.expirationItems.push({ id:newId('x'), categoryId, upc, brand, description:desc, count, date, done:false, flagged:false });
-  recordEmployeeStat('added');
-  closeModal();
-  openModal(`<h3>✓ Added</h3><p>${brand} — ${desc} was added to expirations.</p><div class="modal-actions"><button class="btn" onclick="closeModal();renderPortalBody();">Done</button></div>`);
-}
-
-/* --- Bulk import: paste many lines at once, preview, then commit to Firestore ---
-   Auto-detects, line by line, whichever of these three formats is present —
-   you can even mix aisle exports that use different layouts in one paste:
-
-   1) "Brand : Description (Count)" / UPC / Date  — three lines per item.
-
-   2) "Description (Count)" / "Entered <entry date> <UPC>" / Date — three
-      lines per item, no separator between brand and description, so the
-      whole first line is kept as the Description (Brand left blank). The
-      "Entered" date is ignored — only the UPC is pulled off that line.
-      Handles a blank title line (just "(N)") and a missing count/date
-      gracefully by still surfacing the row in the preview, flagged, rather
-      than silently dropping it.
-
-   3) A manually delimited single line: UPC | Brand | Description | Count | Date
-      (pipe, tab, or comma separated) — handy if you're pasting from a
-      spreadsheet instead.
-
-   Any other stray line (report title, "Page X of Y" footer, etc.) is
-   simply skipped. Exact duplicate UPC+date pairs within one paste are
-   flagged and skipped rather than imported twice. */
-function parseFlexibleDate(str){
-  str = (str||'').trim();
-  if(!str) return '';
-  let m = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/); // YYYY-MM-DD
-  if(m) return `${m[1]}-${pad(+m[2])}-${pad(+m[3])}`;
-  m = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/); // MM/DD/YYYY, M-D-YY, etc.
-  if(m){
-    let yr = +m[3];
-    if(yr < 100) yr += 2000;
-    return `${yr}-${pad(+m[1])}-${pad(+m[2])}`;
-  }
-  return '';
-}
-// Pulls a date off the FRONT of a line even if extra text (like a footer
-// timestamp, or "New Reminder") follows/replaces it — returns '' if nothing
-// date-shaped is found at all.
-function extractLeadingDate(str){
-  const m = (str||'').match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
-  if(!m) return '';
-  let yr = +m[3];
-  if(yr < 100) yr += 2000;
-  return `${yr}-${pad(+m[1])}-${pad(+m[2])}`;
-}
-function looksLikeUpc(str){ return /^[A-Za-z0-9]{6,18}$/.test((str||'').trim()); }
-function splitImportLine(line){
-  if(line.includes('|')) return line.split('|').map(s=>s.trim());
-  if(line.includes('\t')) return line.split('\t').map(s=>s.trim());
-  return line.split(',').map(s=>s.trim());
-}
-function parseImportBlock(raw){
-  const lines = raw.split('\n').map(l=>l.trim()).filter(Boolean);
-  const records = [];
-  const seen = new Set(); // dedupe exact UPC+date repeats within one paste
-  let i = 0;
-  while(i < lines.length){
-    // Style 2: "Description (Count)" / "Entered <date> <UPC>" / Date.
-    // Anchored on the "Entered " line, since that's present and unambiguous
-    // even when the title line is blank, has no count, or has a stray colon.
-    if(/^Entered\s+/i.test(lines[i+1]||'')){
-      const titleLine = lines[i] || '';
-      const enteredLine = lines[i+1] || '';
-      const dateLine = lines[i+2] || '';
-      const countMatch = titleLine.match(/^(.*?)\s*\((\d+)\)\s*$/);
-      const description = (countMatch ? countMatch[1] : titleLine).trim() || 'Unlabeled item — please edit';
-      const count = countMatch ? parseInt(countMatch[2],10) : 1;
-      const enteredMatch = enteredLine.match(/^Entered\s+\S+\s+(\S+)$/i);
-      const upc = enteredMatch ? enteredMatch[1].trim() : '';
-      const date = extractLeadingDate(dateLine);
-      const key = upc + '|' + date;
-      const dup = !!(upc && date) && seen.has(key);
-      const ok = !!(description && upc && date) && !dup;
-      if(ok) seen.add(key);
-      records.push({ brand:'', description, count, upc, date, ok, dup, raw: `${titleLine}  /  ${enteredLine}  /  ${dateLine}` });
-      i += 3;
-      continue;
+  var teacherRef = doc(db, "teachers", name);
+  var teacherDoc = await getDoc(teacherRef);
+  if (teacherDoc.exists()) {
+    if (teacherDoc.data().password === password) {
+      teacherAccount = name;
+      username = name;
+      isTeacher = true;
+      teacherLoginDiv.classList.add("hidden");
+      boardsPortalDiv.classList.remove("hidden");
+      loadBoardsPortal();
+    } else {
+      alert("That password didn't pop! Double-check your kernel key!");
     }
-    // Style 1: "Brand : Description (Count)" header line followed by a UPC
-    // line and a date line.
-    const header = lines[i].match(/^(.+?)\s*:\s*(.+?)\s*\((\d+)\)\s*$/);
-    if(header && looksLikeUpc(lines[i+1]) && extractLeadingDate(lines[i+2])){
-      const upc = lines[i+1].trim();
-      const date = extractLeadingDate(lines[i+2]);
-      const key = upc + '|' + date;
-      const dup = seen.has(key);
-      if(!dup) seen.add(key);
-      records.push({
-        brand: header[1].trim(), description: header[2].trim(), count: parseInt(header[3],10),
-        upc, date, ok: !dup, dup,
-        raw: `${lines[i]}  /  ${lines[i+1]}  /  ${lines[i+2]}`
-      });
-      i += 3;
-      continue;
-    }
-    // Style 3: single delimited line
-    if(lines[i].includes('|') || lines[i].includes('\t') || (lines[i].match(/,/g)||[]).length>=4){
-      const parts = splitImportLine(lines[i]);
-      const upc=(parts[0]||'').trim(), brand=(parts[1]||'').trim(), description=(parts[2]||'').trim(), countRaw=(parts[3]||'').trim(), dateRaw=(parts[4]||'').trim();
-      const date = parseFlexibleDate(dateRaw);
-      const count = parseInt(countRaw,10);
-      records.push({ upc, brand, description, count, date, ok: !!(upc && brand && description && count>0 && date), dup:false, raw:lines[i] });
-      i += 1;
-      continue;
-    }
-    // Unrecognized stray line (report title, page footer, etc.) — skip it silently.
-    i += 1;
-  }
-  return records;
-}
-let bulkImportParsed = [];
-function bulkImportFlow(){
-  const catOptions = db.categories.map(c=>`<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
-  openModal(`<h3>Bulk Import Expirations</h3>
-    <p style="font-size:12.5px;color:var(--ink-soft)">Paste directly from your aisle PDF export — no reformatting needed. It auto-detects either 3-line layout: <strong>Brand : Description (Count)</strong> / UPC / Date, <em>or</em> <strong>Description (Count)</strong> / "Entered ‹date› ‹UPC›" / Date (brand and description get combined into the description field for this style). Report titles, footers, and duplicate entries are skipped automatically.<br><br>A spreadsheet-style single line also works: <strong>UPC | Brand | Description | Count | Date</strong>.</p>
-    ${db.categories.length ? `<div class="field"><label>Assign all imported items to category</label><select id="bi-category">${catOptions}</select></div>` : `<p class="empty-note">Add at least one category first (Categories button) before importing.</p>`}
-    <div class="field"><label>Paste data</label><textarea id="bi-text" style="min-height:200px" placeholder="Annie's Bunny Grahams Chocolate Chip (1)
-Entered 4/1/26 013562000180
-7/9/26"></textarea></div>
-    <div class="modal-actions"><button class="btn outline" onclick="closeModal()">Cancel</button>${db.categories.length ? `<button class="btn" onclick="previewBulkImport()">Preview</button>` : ''}</div>`);
-}
-function previewBulkImport(){
-  const raw = document.getElementById('bi-text').value;
-  const categoryId = document.getElementById('bi-category').value;
-  const records = parseImportBlock(raw);
-  bulkImportParsed = records.filter(r=>r.ok).map(r=>({ upc:r.upc, brand:r.brand, description:r.description, count:r.count, date:r.date, categoryId }));
-  const okCount = bulkImportParsed.length;
-  openModal(`<h3>Preview: ${okCount} of ${records.length} items look good</h3>
-    <div class="search-panel-list" style="max-height:320px">
-      ${records.length ? records.map(r=>{
-        const label = r.ok ? '✓ OK' : (r.dup ? '⚠ duplicate — skipped' : '⚠ needs attention — add manually');
-        return `<div class="search-panel-row" style="display:block;${r.ok?'':'background:#F3DACB'}">
-        <div style="font-family:var(--font-mono);font-size:11px;color:${r.ok?'var(--green-moss)':'var(--red-flag)'}">${label}</div>
-        <div style="font-size:13px">${r.ok ? `${r.upc} — ${r.brand?r.brand+': ':''}${r.description} (×${r.count}) — exp ${r.date}` : (r.raw||'')}</div>
-      </div>`;
-      }).join('') : '<div class="search-panel-row">No lines found — go back and paste some data.</div>'}
-    </div>
-    <div class="modal-actions">
-      <button class="btn outline" onclick="bulkImportFlow()">← Edit</button>
-      <button class="btn" ${okCount===0?'disabled':''} onclick="commitBulkImport()">Import ${okCount} Item${okCount===1?'':'s'}</button>
-    </div>`);
-}
-function commitBulkImport(){
-  bulkImportParsed.forEach(row=>{
-    db.expirationItems.push({ id:newId('x'), categoryId:row.categoryId, upc:row.upc, brand:row.brand, description:row.description, count:row.count, date:row.date, done:false, flagged:false });
-    if(row.upc) db.localUpcDb[row.upc] = { brand:row.brand, description:row.description };
-    recordEmployeeStat('added');
-  });
-  const count = bulkImportParsed.length;
-  bulkImportParsed = [];
-  closeModal();
-  openModal(`<h3>✓ Imported</h3><p>${count} item${count===1?'':'s'} added to expirations.</p><div class="modal-actions"><button class="btn" onclick="closeModal();renderPortalBody();">Done</button></div>`);
-}
-
-function portalSearch(){
-  const term = document.getElementById('portal-search').value.trim().toLowerCase();
-  const dateVal = document.getElementById('portal-search-date').value;
-  if(!term && !dateVal){ renderPortalBody(); return; }
-  const matches = db.expirationItems.filter(i=>{
-    const cat = db.categories.find(c=>c.id===i.categoryId);
-    const catName = cat ? cat.name.toLowerCase() : '';
-    const textOk = !term || i.brand.toLowerCase().includes(term) || i.description.toLowerCase().includes(term) || i.upc.includes(term) || catName.includes(term);
-    const dateOk = !dateVal || i.date === dateVal;
-    return textOk && dateOk;
-  }).sort((a,b)=>b.date.localeCompare(a.date));
-  activeTab = 'Expirations'; expSubView = 'items';
-  renderPortalTabs(); updatePortalStickyState();
-  const label = term && dateVal ? `"${term}" on ${dateVal}` : term ? `"${term}"` : `expiring ${dateVal}`;
-  const el = document.getElementById('portal-body');
-  el.innerHTML = `<h2 class="section-title">Search results for ${label}</h2>` +
-    (matches.length ? matches.map(i=>`<div class="card">${expItemRow(i, i.date<todayISO() && !i.done, true)}</div>`).join('') : '<p class="empty-note">No matches.</p>');
-}
-
-/* ============================================================
-   CATEGORIES (master only — nested inside Expirations tab)
-   ============================================================ */
-function categoriesHTML(){
-  return `<h2 class="section-title">Categories <button class="btn" onclick="addCategoryFlow()">+ Add Category</button></h2>
-    ${db.categories.map(c=>`<div class="card" style="display:flex;justify-content:space-between;align-items:center">
-      <span style="font-size:18px">${c.emoji} ${c.name}</span>
-      <span><button class="btn small outline" onclick="editCategory('${c.id}')">Rename</button> <button class="btn small danger" onclick="deleteCategory('${c.id}')">Delete</button></span>
-    </div>`).join('')}`;
-}
-function addCategoryFlow(){
-  openModal(`<h3>Add Category</h3>
-    <div class="field"><label>Emoji</label><input type="text" id="cat-emoji" maxlength="4" placeholder="🥫"></div>
-    <div class="field"><label>Name</label><input type="text" id="cat-name" placeholder="Aisle 5 — Snacks"></div>
-    <div class="modal-actions"><button class="btn" onclick="saveCategory()">Save</button></div>`);
-}
-function saveCategory(){
-  const emoji = document.getElementById('cat-emoji').value.trim() || '📦';
-  const name = document.getElementById('cat-name').value.trim();
-  if(!name) return;
-  db.categories.push({ id:newId('c'), emoji, name });
-  closeModal(); renderPortalBody();
-}
-function editCategory(id){
-  const c = db.categories.find(x=>x.id===id);
-  openModal(`<h3>Edit Category</h3>
-    <div class="field"><label>Emoji</label><input type="text" id="cat-emoji" maxlength="4" value="${c.emoji}"></div>
-    <div class="field"><label>Name</label><input type="text" id="cat-name" value="${c.name}"></div>
-    <div class="modal-actions"><button class="btn" onclick="updateCategory('${id}')">Save</button></div>`);
-}
-function updateCategory(id){
-  const c = db.categories.find(x=>x.id===id);
-  c.emoji = document.getElementById('cat-emoji').value.trim() || c.emoji;
-  c.name = document.getElementById('cat-name').value.trim() || c.name;
-  closeModal(); renderPortalBody();
-}
-function deleteCategory(id){
-  if(!confirm('Delete this category and unassign its items?')) return;
-  db.categories = db.categories.filter(c=>c.id!==id);
-  renderPortalBody();
-}
-
-/* ============================================================
-   DELI MENU ADMIN (master only)
-   ============================================================ */
-function deliMenuAdminHTML(){
-  const monday = addDays(startOfWeekMonday(new Date()), deliAdminWeekOffset*7);
-  const weekKey = weekKeyOf(monday);
-  weeklyMenu(weekKey); // ensure it exists
-
-  const boxes = db.deliBoxes;
-  const mid = Math.ceil(boxes.length/2) || 1;
-  const colA = boxes.slice(0,mid), colB = boxes.slice(mid);
-
-  return `<h2 class="section-title">Deli Menu
-      <span class="panel-nav">
-        <button class="btn small outline" onclick="deliAdminWeekOffset--;renderPortalBody()">← Prev</button>
-        ${deliAdminWeekOffset!==0?`<button class="btn small" onclick="deliAdminWeekOffset=0;renderPortalBody()">Today</button>`:''}
-        <span class="week-range">${fmtWeekRange(monday)}</span>
-        <button class="btn small outline" onclick="deliAdminWeekOffset++;renderPortalBody()">Next →</button>
-        <button class="btn small" onclick="addDeliBoxFlow()">+ Add Box</button>
-      </span></h2>
-    <p style="font-size:12.5px;color:var(--ink-soft);margin-bottom:10px">Adding or removing an item from a week's menu automatically carries that change forward into every future week you've already generated. Past weeks are never changed.</p>
-    <div class="deli-grid">
-      <div class="deli-col">${colA.map(b=>editorBox(weekKey,b.id)).join('')}</div>
-      <div class="deli-col">${colB.map(b=>editorBox(weekKey,b.id)).join('')}</div>
-    </div>`;
-}
-
-function editorBox(weekKey, boxId){
-  const boxDef = db.deliBoxes.find(b=>b.id===boxId);
-  const list = db.deliItemLists[boxId] || [];
-  const data = weeklyMenu(weekKey)[boxId];
-  if(!boxDef || !data) return '';
-  return `<div class="card ${boxDef.active?'':'box-inactive'}">
-      <h4>${boxDef.title}${boxDef.active?'':' (inactive)'} <span class="price">$<input type="text" style="width:60px" value="${data.price}" onchange="updatePrice('${weekKey}','${boxId}',this.value)"></span></h4>
-      ${data.items.map(id=>{
-        const item = list.find(l=>l.id===id);
-        return item ? `<div class="deli-item"><div class="deli-item-name">${item.name} ${diettags(item)} <button class="btn small danger" style="margin-left:auto" onclick="removeMenuItem('${weekKey}','${boxId}','${id}')">Delete</button></div><div class="deli-item-desc">${item.desc}</div></div>` : '';
-      }).join('')}
-      <div style="margin-top:8px">
-        <button class="btn small" onclick="openDeliItemPicker('${weekKey}','${boxId}')">+ Add Item (search)</button>
-        <button class="btn small outline" onclick="manageDeliItemsFlow('${boxId}')">Manage Items</button>
-      </div>
-      <div class="field" style="margin-top:10px"><label>Notes shown to customers</label><textarea onchange="updateNotes('${weekKey}','${boxId}',this.value)">${data.notes}</textarea></div>
-      <div class="box-admin-row" style="margin-top:10px;border-top:1px dashed var(--line);padding-top:10px">
-        <button class="btn small outline" onclick="renameDeliBox('${boxId}')">Rename</button>
-        <button class="btn small outline" onclick="toggleDeliBoxActive('${boxId}')">${boxDef.active?'Deactivate':'Reactivate'}</button>
-        <button class="btn small danger" onclick="deleteDeliBox('${boxId}')">Delete Box</button>
-      </div>
-    </div>`;
-}
-function updatePrice(weekKey,boxId,val){ weeklyMenu(weekKey)[boxId].price = val; scheduleSave(); }
-function updateNotes(weekKey,boxId,val){ weeklyMenu(weekKey)[boxId].notes = val; scheduleSave(); }
-
-function openDeliItemPicker(weekKey, boxId){ renderDeliPickerModal(weekKey, boxId, ''); }
-function renderDeliPickerModal(weekKey, boxId, term){
-  const list = db.deliItemLists[boxId] || [];
-  const data = weeklyMenu(weekKey)[boxId];
-  const t = term.toLowerCase();
-  const options = list.filter(i=> !data.items.includes(i.id) && (!t || i.name.toLowerCase().includes(t)));
-  openModal(`<h3>Add item to ${db.deliBoxes.find(b=>b.id===boxId).title}</h3>
-    <div class="field"><input type="text" id="deli-pick-search" placeholder="Search items…" value="${escAttr(term)}" oninput="renderDeliPickerModal('${weekKey}','${boxId}', this.value)"></div>
-    <div class="search-panel-list">${options.length? options.map(i=>`<div class="search-panel-row" onclick="pickDeliItem('${weekKey}','${boxId}','${i.id}')"><span>${i.name}</span>${diettags(i)}</div>`).join('') : '<div class="search-panel-row">No matches.</div>'}</div>
-    <div class="modal-actions"><button class="btn outline" onclick="newListItemFlow('${boxId}','${weekKey}')">+ New Item</button></div>`);
-  setTimeout(()=>{ const el=document.getElementById('deli-pick-search'); if(el){ el.focus(); el.selectionStart=el.selectionEnd=el.value.length; } },0);
-}
-function pickDeliItem(weekKey, boxId, itemId){
-  const data = weeklyMenu(weekKey)[boxId];
-  if(!data.items.includes(itemId)) data.items.push(itemId);
-  cascadeDeliChangeForward(weekKey, boxId);
-  closeModal();
-  renderPortalBody();
-}
-function removeMenuItem(weekKey,boxId,id){
-  const data = weeklyMenu(weekKey)[boxId];
-  data.items = data.items.filter(x=>x!==id);
-  cascadeDeliChangeForward(weekKey, boxId);
-  renderPortalBody();
-}
-function newListItemFlow(boxId, weekKey){
-  openModal(`<h3>New item</h3>
-    <div class="field"><label>Name</label><input type="text" id="ni-name"></div>
-    <div class="field"><label>Description</label><textarea id="ni-desc"></textarea></div>
-    <div class="toggle-row">
-      <label><input type="checkbox" id="ni-df"> Dairy Free</label>
-      <label><input type="checkbox" id="ni-gf"> Gluten Free</label>
-      <label><input type="checkbox" id="ni-v"> Vegetarian</label>
-    </div>
-    <div class="modal-actions"><button class="btn" onclick="saveNewListItem('${boxId}','${weekKey||''}')">Save</button></div>`);
-}
-function saveNewListItem(boxId, weekKey){
-  const name = document.getElementById('ni-name').value.trim();
-  if(!name) return;
-  const item = { id:newId('i'), name, desc:document.getElementById('ni-desc').value.trim(),
-    df:document.getElementById('ni-df').checked, gf:document.getElementById('ni-gf').checked, v:document.getElementById('ni-v').checked, img:'' };
-  if(!db.deliItemLists[boxId]) db.deliItemLists[boxId] = [];
-  db.deliItemLists[boxId].push(item);
-  if(weekKey){
-    const data = weeklyMenu(weekKey)[boxId];
-    data.items.push(item.id);
-    cascadeDeliChangeForward(weekKey, boxId);
-  }
-  closeModal(); renderPortalBody();
-}
-
-// Manage the master item list for a box directly — edit or permanently
-// delete items, independent of any single week's menu.
-function manageDeliItemsFlow(boxId){
-  const list = db.deliItemLists[boxId] || [];
-  const boxTitle = (db.deliBoxes.find(b=>b.id===boxId)||{}).title || '';
-  openModal(`<h3>Manage ${boxTitle} Items</h3>
-    <div class="search-panel-list" style="max-height:320px">
-      ${list.length ? list.map(item=>`<div class="search-panel-row" style="display:flex;justify-content:space-between;align-items:center">
-        <span>${item.name} ${diettags(item)}</span>
-        <span><button class="btn small outline" onclick="editDeliListItem('${boxId}','${item.id}')">Edit</button> <button class="btn small danger" onclick="deleteDeliListItem('${boxId}','${item.id}')">Delete</button></span>
-      </div>`).join('') : '<div class="search-panel-row">No items yet.</div>'}
-    </div>
-    <div class="modal-actions"><button class="btn outline" onclick="closeModal()">Close</button><button class="btn" onclick="newListItemFlow('${boxId}','')">+ New Item</button></div>`);
-}
-function editDeliListItem(boxId, itemId){
-  const item = (db.deliItemLists[boxId]||[]).find(i=>i.id===itemId);
-  if(!item) return;
-  openModal(`<h3>Edit Item</h3>
-    <div class="field"><label>Name</label><input type="text" id="edi-name" value="${escHtmlAttr(item.name)}"></div>
-    <div class="field"><label>Description</label><textarea id="edi-desc">${item.desc||''}</textarea></div>
-    <div class="toggle-row">
-      <label><input type="checkbox" id="edi-df" ${item.df?'checked':''}> Dairy Free</label>
-      <label><input type="checkbox" id="edi-gf" ${item.gf?'checked':''}> Gluten Free</label>
-      <label><input type="checkbox" id="edi-v" ${item.v?'checked':''}> Vegetarian</label>
-    </div>
-    <div class="modal-actions">
-      <button class="btn danger" onclick="deleteDeliListItem('${boxId}','${itemId}')">Delete</button>
-      <button class="btn" onclick="saveDeliListItem('${boxId}','${itemId}')">Save</button>
-    </div>`);
-}
-function saveDeliListItem(boxId, itemId){
-  const item = (db.deliItemLists[boxId]||[]).find(i=>i.id===itemId);
-  if(!item) return;
-  item.name = document.getElementById('edi-name').value.trim() || item.name;
-  item.desc = document.getElementById('edi-desc').value;
-  item.df = document.getElementById('edi-df').checked;
-  item.gf = document.getElementById('edi-gf').checked;
-  item.v = document.getElementById('edi-v').checked;
-  closeModal(); renderPortalBody();
-}
-function deleteDeliListItem(boxId, itemId){
-  if(!confirm("Delete this item entirely? It will be removed from every week's menu that uses it.")) return;
-  db.deliItemLists[boxId] = (db.deliItemLists[boxId]||[]).filter(i=>i.id!==itemId);
-  Object.keys(db.weeklyMenus).forEach(wk=>{
-    const data = db.weeklyMenus[wk][boxId];
-    if(data) data.items = data.items.filter(id=>id!==itemId);
-  });
-  closeModal(); renderPortalBody();
-}
-
-function addDeliBoxFlow(){
-  openModal(`<h3>Add Deli Box</h3>
-    <div class="field"><label>Box title</label><input type="text" id="box-new-title" placeholder="e.g. Smoothies"></div>
-    <div class="modal-actions"><button class="btn" onclick="saveAddDeliBox()">Create</button></div>`);
-}
-function saveAddDeliBox(){
-  const title = document.getElementById('box-new-title').value.trim();
-  if(!title) return;
-  const id = newId('box');
-  db.deliBoxes.push({ id, title, active:true });
-  db.deliItemLists[id] = [];
-  Object.keys(db.weeklyMenus).forEach(k=>{ db.weeklyMenus[k][id] = { price:'', notes:'', items:[] }; });
-  closeModal(); renderPortalBody();
-}
-function renameDeliBox(id){
-  const b = db.deliBoxes.find(x=>x.id===id);
-  openModal(`<h3>Rename Box</h3><div class="field"><input type="text" id="box-rename" value="${b.title}"></div>
-    <div class="modal-actions"><button class="btn" onclick="saveRenameDeliBox('${id}')">Save</button></div>`);
-}
-function saveRenameDeliBox(id){
-  const b = db.deliBoxes.find(x=>x.id===id);
-  const v = document.getElementById('box-rename').value.trim();
-  if(v) b.title = v;
-  closeModal(); renderPortalBody();
-}
-function toggleDeliBoxActive(id){ const b = db.deliBoxes.find(x=>x.id===id); b.active = !b.active; renderPortalBody(); }
-function deleteDeliBox(id){
-  if(!confirm('Delete this box and all its menu data? This cannot be undone.')) return;
-  db.deliBoxes = db.deliBoxes.filter(b=>b.id!==id);
-  delete db.deliItemLists[id];
-  Object.keys(db.weeklyMenus).forEach(k=>{ delete db.weeklyMenus[k][id]; });
-  renderPortalBody();
-}
-
-/* ============================================================
-   SOUP MENU ADMIN (master edits; Kitchen / Kitchen & Floor employees view only)
-   ============================================================ */
-function soupMenuAdminHTML(){
-  const editable = session.isMaster;
-  const base = new Date(); base.setDate(1); base.setMonth(base.getMonth()+soupAdminMonthOffset);
-  const monthKey = `${base.getFullYear()}-${pad(base.getMonth()+1)}`;
-  const sw = db.settings.showWeekendsSoup;
-  return `<h2 class="section-title">Soup Menu Calendar
-      <span class="panel-nav">
-        <button class="btn small outline" onclick="soupAdminMonthOffset--;renderPortalBody()">← Prev</button>
-        ${soupAdminMonthOffset!==0?`<button class="btn small" onclick="soupAdminMonthOffset=0;renderPortalBody()">Today</button>`:''}
-        <span class="week-range">${MONTHS[base.getMonth()]} ${base.getFullYear()}</span>
-        <button class="btn small outline" onclick="soupAdminMonthOffset++;renderPortalBody()">Next →</button>
-      </span></h2>
-    ${editable ? `<label class="weekend-toggle"><input type="checkbox" ${sw?'checked':''} onchange="db.settings.showWeekendsSoup=this.checked;renderPortalBody()"> Show Weekends (Sat &amp; Sun)</label>` : ''}
-    <div class="soup-cal-wrap">
-      <div class="soup-cal-dow cols-${sw?7:5}">${dowHeaderHTML(sw)}</div>
-      <div class="soup-cal cols-${sw?7:5}" id="soup-admin-cal">${buildSoupCalHTML(monthKey, sw, canSeeSoupSource())}</div>
-    </div>
-    ${editable ? `<p style="font-size:12.5px;color:var(--ink-soft);margin-top:10px">Click any day to set its soup.</p>` : `<p style="font-size:12.5px;color:var(--ink-soft);margin-top:10px">View only.</p>`}
-
-    <h2 class="section-title" style="margin-top:26px">Soup List ${editable ? `<button class="btn" onclick="addSoupFlow()">+ Add Soup</button>` : ''}</h2>
-    <input type="text" id="soup-list-search" class="cat-search" style="margin:0 0 12px" placeholder="Search soups…"
-      value="${escHtmlAttr(soupListSearchTerm)}"
-      oninput="const pos=this.selectionStart; soupListSearchTerm=this.value; renderPortalBody(); reFocusInput('soup-list-search', pos);">
-    ${db.soups.filter(s=> !soupListSearchTerm || s.name.toLowerCase().includes(soupListSearchTerm.toLowerCase())).map(s=>`<div class="card" style="display:flex;justify-content:space-between;align-items:center">
-      <span>${s.name} ${diettags(s)}</span>
-      ${editable ? `<span><button class="btn small outline" onclick="editSoup('${s.id}')">Edit</button> <button class="btn small danger" onclick="deleteSoup('${s.id}')">Delete</button></span>` : ''}
-    </div>`).join('') || '<p class="empty-note">No soups match that search.</p>'}
-    ${editable ? soupSizesAdminHTML() : ''}`;
-}
-function soupSizesAdminHTML(){
-  return `<h2 class="section-title" style="margin-top:26px">Soup Sizes &amp; Pricing <button class="btn" onclick="addSoupSizeFlow()">+ Add Size</button></h2>
-    <p style="font-size:12.5px;color:var(--ink-soft);margin-bottom:10px">Shown on the Weekly Deli Menu's Soups box.</p>
-    ${db.soupSizes.length ? db.soupSizes.map(s=>`<div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-      <span>${s.name}</span>
-      <span style="display:flex;align-items:center;gap:6px">$<input type="text" style="width:70px" value="${s.price}" onchange="updateSoupSizePrice('${s.id}',this.value)">
-      <button class="btn small danger" onclick="deleteSoupSize('${s.id}')">Delete</button></span>
-    </div>`).join('') : '<p class="empty-note">No sizes yet.</p>'}`;
-}
-function addSoupSizeFlow(){
-  openModal(`<h3>Add Soup Size</h3>
-    <div class="field"><label>Size name</label><input type="text" id="ss-name" placeholder="e.g. Extra Large"></div>
-    <div class="field"><label>Price</label><input type="text" id="ss-price" placeholder="6.00"></div>
-    <div class="modal-actions"><button class="btn" onclick="saveSoupSize()">Save</button></div>`);
-}
-function saveSoupSize(){
-  const name = document.getElementById('ss-name').value.trim();
-  if(!name) return;
-  db.soupSizes.push({ id:newId('sz'), name, price:document.getElementById('ss-price').value.trim() });
-  closeModal(); renderPortalBody();
-}
-function updateSoupSizePrice(id,val){ const s=db.soupSizes.find(x=>x.id===id); if(s){ s.price=val; scheduleSave(); } }
-function deleteSoupSize(id){ if(!confirm('Delete this size?')) return; db.soupSizes = db.soupSizes.filter(s=>s.id!==id); renderPortalBody(); }
-function sourceDatalistHTML(){
-  const sources = [...new Set(db.soups.map(s=>s.source).filter(Boolean))];
-  return `<datalist id="soup-source-list">${sources.map(s=>`<option value="${escHtmlAttr(s)}">`).join('')}</datalist>`;
-}
-function addSoupFlow(){
-  openModal(`<h3>Add Soup</h3>
-    <div class="field"><label>Name</label><input type="text" id="sp-name"></div>
-    <div class="toggle-row">
-      <label><input type="checkbox" id="sp-df"> Dairy Free</label>
-      <label><input type="checkbox" id="sp-gf"> Gluten Free</label>
-      <label><input type="checkbox" id="sp-v"> Vegetarian</label>
-    </div>
-    <div class="field"><label>Source (optional)</label><input type="text" id="sp-source" list="soup-source-list">${sourceDatalistHTML()}</div>
-    <div class="field"><label>Notes</label><textarea id="sp-notes"></textarea></div>
-    <div class="modal-actions"><button class="btn" onclick="saveSoup()">Save</button></div>`);
-}
-function saveSoup(){
-  const name = document.getElementById('sp-name').value.trim();
-  if(!name) return;
-  db.soups.push({ id:newId('s'), name, df:document.getElementById('sp-df').checked, gf:document.getElementById('sp-gf').checked, v:document.getElementById('sp-v').checked, source:document.getElementById('sp-source').value.trim(), notes:document.getElementById('sp-notes').value });
-  closeModal(); renderPortalBody();
-}
-function editSoup(id){
-  const s = db.soups.find(x=>x.id===id);
-  openModal(`<h3>Edit Soup</h3>
-    <div class="field"><label>Name</label><input type="text" id="sp-name" value="${s.name}"></div>
-    <div class="toggle-row">
-      <label><input type="checkbox" id="sp-df" ${s.df?'checked':''}> Dairy Free</label>
-      <label><input type="checkbox" id="sp-gf" ${s.gf?'checked':''}> Gluten Free</label>
-      <label><input type="checkbox" id="sp-v" ${s.v?'checked':''}> Vegetarian</label>
-    </div>
-    <div class="field"><label>Source (optional)</label><input type="text" id="sp-source" list="soup-source-list" value="${escHtmlAttr(s.source||'')}">${sourceDatalistHTML()}</div>
-    <div class="field"><label>Notes</label><textarea id="sp-notes">${s.notes||''}</textarea></div>
-    <div class="modal-actions"><button class="btn" onclick="updateSoup('${id}')">Save</button></div>`);
-}
-function updateSoup(id){
-  const s = db.soups.find(x=>x.id===id);
-  s.name = document.getElementById('sp-name').value.trim() || s.name;
-  s.df = document.getElementById('sp-df').checked; s.gf = document.getElementById('sp-gf').checked; s.v = document.getElementById('sp-v').checked;
-  s.source = document.getElementById('sp-source').value.trim();
-  s.notes = document.getElementById('sp-notes').value;
-  closeModal(); renderPortalBody();
-}
-function deleteSoup(id){ if(!confirm('Delete this soup?')) return; db.soups = db.soups.filter(s=>s.id!==id); renderPortalBody(); }
-
-document.getElementById('portal-body').addEventListener('click', e=>{
-  const cell = e.target.closest('#soup-admin-cal .soup-cell');
-  if(cell && cell.dataset.date && session.isMaster) openSoupDayPicker(cell.dataset.date);
-});
-function dateISOHasSoup(dateISO){ return !!monthSoupMenu(dateISO.slice(0,7))[dateISO]; }
-function openSoupDayPicker(dateISO, term){
-  term = term || '';
-  const t = term.toLowerCase();
-  const options = db.soups.filter(s=> !t || s.name.toLowerCase().includes(t));
-  openModal(`<h3>Soup for ${dateISO}</h3>
-    <div class="field"><input type="text" id="soup-filter" placeholder="Search soups…" value="${escAttr(term)}" oninput="openSoupDayPicker('${dateISO}', this.value)"></div>
-    <div class="search-panel-list">
-      ${options.length ? options.map(s=>`<div class="search-panel-row" onclick="setSoupDay('${dateISO}','${s.id}')"><span>${s.name}</span>${diettags(s)}</div>`).join('') : '<div class="search-panel-row">No matches.</div>'}
-      ${dateISOHasSoup(dateISO) ? `<div class="search-panel-row" style="color:var(--red-flag)" onclick="clearSoupDay('${dateISO}')">✕ Clear this day</div>` : ''}
-    </div>`);
-  setTimeout(()=>{ const el=document.getElementById('soup-filter'); if(el){ el.focus(); el.selectionStart=el.selectionEnd=el.value.length; } },0);
-}
-function setSoupDay(dateISO, soupId){
-  monthSoupMenu(dateISO.slice(0,7))[dateISO] = soupId;
-  closeModal(); renderPortalBody();
-}
-function clearSoupDay(dateISO){
-  delete monthSoupMenu(dateISO.slice(0,7))[dateISO];
-  closeModal(); renderPortalBody();
-}
-
-/* ============================================================
-   PRODUCE DEALS ADMIN (master only)
-   ============================================================ */
-function produceAdminHTML(){
-  return `<h2 class="section-title">Produce Deals <button class="btn" onclick="addProduceFlow()">+ Add Deal</button></h2>
-    <div id="produce-admin-list"></div>`;
-}
-function uploadProduceImage(inputEl){
-  return new Promise(resolve=>{
-    const file = inputEl && inputEl.files && inputEl.files[0];
-    if(!file){ resolve(''); return; }
-    const path = 'produce/' + Date.now() + '-' + file.name.replace(/[^a-z0-9.]+/gi,'_');
-    const ref = storage.ref().child(path);
-    ref.put(file)
-      .then(snap=>snap.ref.getDownloadURL())
-      .then(url=>resolve(url))
-      .catch(err=>{ console.error('Image upload failed:', err); alert('Photo upload failed — the deal will save without a photo. Check your connection and Storage Rules.'); resolve(''); });
-  });
-}
-function addProduceFlow(){
-  openModal(`<h3>Add Produce Deal</h3>
-    <div class="field"><label>Produce name</label><input type="text" id="pd-name"></div>
-    <div class="field"><label>Price</label><input type="text" id="pd-price" placeholder="2.49"></div>
-    <div class="field"><label>Unit</label><input type="text" id="pd-unit" placeholder="lb, pk, ea."></div>
-    <div class="toggle-row"><label><input type="checkbox" id="pd-organic"> Organic (unchecked = Conventional)</label></div>
-    <div class="field"><label>Photo (optional)</label><input type="file" accept="image/*" id="pd-img-file"></div>
-    <div class="modal-actions"><button class="btn" onclick="saveProduce()">Save</button></div>`);
-}
-async function saveProduce(){
-  const name = document.getElementById('pd-name').value.trim();
-  if(!name) return;
-  const img = await uploadProduceImage(document.getElementById('pd-img-file'));
-  db.produceDeals.push({ id:newId('p'), name, price:document.getElementById('pd-price').value.trim(), unit:document.getElementById('pd-unit').value.trim(), organic:document.getElementById('pd-organic').checked, img });
-  closeModal(); renderPortalBody();
-}
-function editProduceDeal(id){
-  const p = db.produceDeals.find(x=>x.id===id);
-  window.__clearProduceImg = false;
-  openModal(`<h3>Edit Deal</h3>
-    <div class="field"><label>Produce name</label><input type="text" id="pd-name" value="${p.name}"></div>
-    <div class="field"><label>Price</label><input type="text" id="pd-price" value="${p.price}"></div>
-    <div class="field"><label>Unit</label><input type="text" id="pd-unit" value="${p.unit}"></div>
-    <div class="toggle-row"><label><input type="checkbox" id="pd-organic" ${p.organic?'checked':''}> Organic (unchecked = Conventional)</label></div>
-    ${p.img?`<img src="${p.img}" class="produce-img" style="margin-bottom:8px" id="pd-img-preview">`:''}
-    <div class="field"><label>Replace photo (optional)</label><input type="file" accept="image/*" id="pd-img-file"></div>
-    <div class="modal-actions">
-      ${p.img?`<button class="btn outline" onclick="window.__clearProduceImg=true;const el=document.getElementById('pd-img-preview');if(el)el.remove();">Remove Photo</button>`:''}
-      <button class="btn" onclick="updateProduce('${id}')">Save</button>
-    </div>`);
-}
-async function updateProduce(id){
-  const p = db.produceDeals.find(x=>x.id===id);
-  p.name = document.getElementById('pd-name').value.trim()||p.name;
-  p.price = document.getElementById('pd-price').value.trim();
-  p.unit = document.getElementById('pd-unit').value.trim();
-  p.organic = document.getElementById('pd-organic').checked;
-  const fileEl = document.getElementById('pd-img-file');
-  if(fileEl.files && fileEl.files[0]){
-    p.img = await uploadProduceImage(fileEl);
-  } else if(window.__clearProduceImg){
-    p.img = '';
-  }
-  window.__clearProduceImg = false;
-  closeModal(); renderPortalBody();
-}
-function deleteProduceDeal(id){ if(!confirm('Delete this deal?')) return; db.produceDeals = db.produceDeals.filter(p=>p.id!==id); renderPortalBody(); }
-
-/* ============================================================
-   EMPLOYEES (master only)
-   ============================================================ */
-function employeesHTML(){
-  return `<h2 class="section-title">Employees <button class="btn" onclick="addEmployeeFlow()">+ Add Employee</button></h2>
-    ${db.employees.map(e=>`<div class="card">
-      <h4>${e.keyholder?'🔑 ':''}${e.name} ${!e.active?'<span class="pill inactive">Inactive</span>':''}</h4>
-      <p class="pill">${e.role}</p><p style="font-size:13px;color:var(--ink-soft)">${e.phone||'No phone on file'}</p>
-      <button class="btn small outline" onclick="openEmployeeDetail('${e.id}')">View Details</button>
-      <button class="btn small ${e.active?'danger':''}" onclick="toggleEmployeeActive('${e.id}')">${e.active?'Deactivate':'Reactivate'}</button>
-      <button class="btn small danger" onclick="deleteEmployee('${e.id}')">Delete</button>
-    </div>`).join('')}`;
-}
-function addEmployeeFlow(){
-  openModal(`<h3>Add Employee</h3>
-    <div class="field"><label>Name</label><input type="text" id="em-name"></div>
-    <div class="field"><label>Username</label><input type="text" id="em-user"></div>
-    <div class="field"><label>Password</label><input type="text" id="em-pass"></div>
-    <div class="field"><label>Role</label>${roleSelectHTML('em', db.roles[0])}</div>
-    <div class="field"><label>Phone</label><input type="text" id="em-phone"></div>
-    <div class="toggle-row"><label><input type="checkbox" id="em-key"> 🔑 Keyholder</label></div>
-    <div class="field"><label>Notes</label><textarea id="em-notes"></textarea></div>
-    <div class="modal-actions"><button class="btn" onclick="saveEmployee()">Save</button></div>`);
-}
-function saveEmployee(){
-  const name = document.getElementById('em-name').value.trim();
-  const username = document.getElementById('em-user').value.trim();
-  if(!name || !username) return;
-  db.employees.push({ id:newId('e'), name, username, password:document.getElementById('em-pass').value||'changeme',
-    role:resolveRole('em'), keyholder:document.getElementById('em-key').checked,
-    phone:document.getElementById('em-phone').value.trim(), notes:document.getElementById('em-notes').value, active:true,
-    typicalSchedule:{}, stats:{added:Array(12).fill(0), checked:Array(12).fill(0)}, statsMonthKey:`${new Date().getFullYear()}-${pad(new Date().getMonth()+1)}`, createdAt:todayISO() });
-  closeModal(); renderPortalBody();
-}
-function toggleEmployeeActive(id){ const e = db.employees.find(x=>x.id===id); e.active=!e.active; renderPortalBody(); }
-function deleteEmployee(id){ if(!confirm('Delete this employee account?')) return; db.employees = db.employees.filter(e=>e.id!==id); renderPortalBody(); }
-
-function employeeInfoEditHTML(e){
-  return `<div class="card">
-    <h4>Account Info</h4>
-    <div class="field"><label>Name</label><input type="text" value="${e.name}" onchange="updateEmployeeField('${e.id}','name',this.value)"></div>
-    <div class="field"><label>Username</label><input type="text" value="${e.username}" onchange="updateEmployeeField('${e.id}','username',this.value)"></div>
-    <div class="field"><label>Password</label><input type="text" value="${e.password}" onchange="updateEmployeeField('${e.id}','password',this.value)"></div>
-    <div class="field"><label>Role</label>${roleSelectHTML('ei', e.role)}
-      <button class="btn small outline" style="margin-top:8px" onclick="saveEmployeeRole('${e.id}')">Update Role</button></div>
-    <div class="field"><label>Phone</label><input type="text" value="${e.phone||''}" onchange="updateEmployeeField('${e.id}','phone',this.value)"></div>
-    <div class="toggle-row"><label><input type="checkbox" ${e.keyholder?'checked':''} onchange="updateEmployeeField('${e.id}','keyholder',this.checked)"> 🔑 Keyholder</label></div>
-    <div class="field"><label>Notes</label><textarea onchange="updateEmployeeField('${e.id}','notes',this.value)">${e.notes||''}</textarea></div>
-  </div>`;
-}
-function saveEmployeeRole(id){
-  updateEmployeeField(id, 'role', resolveRole('ei'));
-  openEmployeeDetail(id);
-}
-function updateEmployeeField(id, field, value){
-  const e = db.employees.find(x=>x.id===id);
-  e[field] = value;
-  const title = document.getElementById('emp-detail-title');
-  if(title) title.textContent = `${e.keyholder?'🔑 ':''}${e.name}`;
-  scheduleSave();
-}
-
-function typicalScheduleGridHTML(emp){
-  return `<div class="sched-grid with-sun" style="grid-template-columns:110px repeat(7,1fr);min-width:560px">
-    <div class="sched-head">Day</div>${ALL_DAYS.map(d=>`<div class="sched-head">${d}</div>`).join('')}
-    <div class="sched-name">Hours</div>
-    ${ALL_DAYS.map(d=>{
-      const t = emp.typicalSchedule[d];
-      return `<div class="sched-cell" onclick="editTypicalCell('${emp.id}','${d}')">${t?`${t.start}-${t.end}`:''}</div>`;
-    }).join('')}
-  </div>`;
-}
-function editTypicalCell(empId, dayKey){
-  const emp = db.employees.find(e=>e.id===empId);
-  const cur = emp.typicalSchedule[dayKey];
-  openModal(`<h3>${emp.name} — Typical ${dayKey}</h3>
-    <div class="field"><label>Start</label><input type="time" id="tc-start" value="${cur?cur.start:'09:00'}"></div>
-    <div class="field"><label>End</label><input type="time" id="tc-end" value="${cur?cur.end:'17:00'}"></div>
-    <div class="modal-actions">
-      ${cur?`<button class="btn danger" onclick="clearTypicalCell('${empId}','${dayKey}')">Clear</button>`:''}
-      <button class="btn" onclick="saveTypicalCell('${empId}','${dayKey}')">Save</button>
-    </div>`);
-}
-function saveTypicalCell(empId,dayKey){
-  const emp = db.employees.find(e=>e.id===empId);
-  emp.typicalSchedule[dayKey] = { start:document.getElementById('tc-start').value, end:document.getElementById('tc-end').value };
-  closeModal(); openEmployeeDetail(empId);
-}
-function clearTypicalCell(empId,dayKey){
-  const emp = db.employees.find(e=>e.id===empId);
-  delete emp.typicalSchedule[dayKey];
-  closeModal(); openEmployeeDetail(empId);
-}
-
-function statChartHTML(values, color){
-  const total = values.reduce((a,b)=>a+b,0);
-  const monthLabels = lastNMonthLabels(12);
-  const max = Math.max(1,...values);
-  return `<div style="font-family:var(--font-mono);font-size:12px;color:var(--brown-light);margin-bottom:6px">Total: <strong style="color:var(--ink);font-size:14px">${total}</strong></div>
-    <div class="chart-wrap">
-      ${values.map((v,i)=>`<div class="chart-col"><div class="chart-bar" style="height:${(v/max*50)+4}px;background:${color}" title="${v}"></div><div class="chart-bar-label">${monthLabels[i]} · ${v}</div></div>`).join('')}
-    </div>`;
-}
-
-function chatCommentsHTML(e){
-  const comments = db.chatMessages.filter(m=>m.empId===e.id).slice().sort((a,b)=>a.ts-b.ts);
-  return comments.length ? comments.map(c=>`<p style="font-size:13.5px">${new Date(c.ts).toLocaleDateString()} — "${c.text}"</p>`).join('') : '<p class="empty-note">No comments yet.</p>';
-}
-
-function openEmployeeDetail(id){
-  viewingEmployeeId = id;
-  const e = db.employees.find(x=>x.id===id);
-  const daysSince = Math.max(1, Math.round((Date.now()-new Date(e.createdAt))/86400000));
-  const requests = db.timeOffRequests.filter(r=>r.employeeId===id);
-  const daysRequested = requests.length;
-  const pct = ((daysRequested/daysSince)*100).toFixed(1);
-  const approved = requests.filter(r=>r.status==='approved').length;
-  const denied = requests.filter(r=>r.status==='denied').length;
-  const totalDecided = approved+denied || 1;
-
-  const el = document.getElementById('portal-body');
-  el.innerHTML = `
-    <button class="btn small outline" onclick="viewingEmployeeId=null;renderPortalBody()">← Back to Employees</button>
-    <h2 class="section-title" id="emp-detail-title" style="margin-top:14px">${e.keyholder?'🔑 ':''}${e.name}</h2>
-    ${employeeInfoEditHTML(e)}
-    <div class="card">
-      <h4>Typical Schedule</h4>
-      <p style="font-size:12.5px;color:var(--ink-soft)">Click a day to set or clear this employee's usual hours. The 🪄 wand on the Scheduling tab fills a week from this.</p>
-      <div style="overflow-x:auto">${typicalScheduleGridHTML(e)}</div>
-    </div>
-    <div class="card">
-      <h4>Items Added (last 12 months)</h4>
-      ${statChartHTML(e.stats.added, 'var(--green-moss)')}
-      <h4 style="margin-top:16px">Items Checked Off (last 12 months)</h4>
-      ${statChartHTML(e.stats.checked, 'var(--terracotta)')}
-    </div>
-    <div class="card stat-row">
-      <div class="stat-block"><div class="stat-num">${daysRequested}</div><div class="stat-label">TIME OFF REQUESTS · ${pct}% OF DAYS SINCE HIRE</div></div>
-      <div class="stat-block">
-        <div class="stat-num" style="color:var(--green-moss)">${approved} <span style="color:var(--red-flag);font-size:20px">/ ${denied}</span></div>
-        <div class="stat-label">APPROVED / DENIED</div>
-        <div class="bar"><div class="approved" style="width:${approved/totalDecided*100}%"></div><div class="denied" style="width:${denied/totalDecided*100}%"></div></div>
-      </div>
-    </div>
-    <div class="card">
-      <h4>Chat Comments</h4>
-      ${chatCommentsHTML(e)}
-    </div>
-    <div class="card">
-      <h4>Time Off Requests</h4>
-      ${requests.length ? requests.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(r=>`<p style="opacity:${new Date(r.date)<new Date()?0.55:1}">${r.date} ${formatTime12hr(r.start)} - ${formatTime12hr(r.end)} — <strong>${r.status}</strong> ${r.responseComment?`<br><span style="font-size:12.5px;color:var(--ink-soft)">${r.responseComment}</span>`:''}</p>`).join('') : '<p class="empty-note">No requests yet.</p>'}
-    </div>`;
-  scheduleSave();
-}
-
-/* ============================================================
-   SCHEDULING
-   ============================================================ */
-function weekSchedule(weekKey){ if(!db.schedule[weekKey]) db.schedule[weekKey] = {}; return db.schedule[weekKey]; }
-function scheduleDayKeys(){ return db.settings.showSunSchedule ? [...DAY_KEYS,'SUN'] : DAY_KEYS; }
-
-function scheduleHTML(){
-  const pending = db.timeOffRequests.filter(r=>r.status==='pending');
-  let html = '';
-  if(session.isMaster){
-    html += `<h2 class="section-title">Time Off Requests</h2>`;
-    html += pending.length ? pending.map(r=>{
-      const emp = db.employees.find(e=>e.id===r.employeeId);
-      return `<div class="card"><strong>${emp?emp.name:'—'}</strong> — ${r.date} ${formatTime12hr(r.start)} - ${formatTime12hr(r.end)}
-        ${r.comment?`<br><span style="font-size:12.5px;color:var(--ink-soft)">${r.comment}</span>`:''}
-        <div class="modal-actions" style="justify-content:flex-start;margin-top:8px">
-          <button class="btn small" onclick="respondRequest('${r.id}','approved')">Approve</button>
-          <button class="btn small danger" onclick="respondRequest('${r.id}','denied')">Deny</button>
-        </div></div>`;
-    }).join('') : '<p class="empty-note">No pending requests.</p>';
-    const past = db.timeOffRequests.filter(r=>r.status!=='pending');
-    if(past.length) html += `<details><summary style="cursor:pointer;font-size:13px;color:var(--brown-light)">Past requests (${past.length})</summary>${past.map(r=>{
-      const emp = db.employees.find(e=>e.id===r.employeeId);
-      return `<div class="card" style="opacity:.7"><strong>${emp?emp.name:'—'}</strong> — ${r.date} ${formatTime12hr(r.start)} - ${formatTime12hr(r.end)} — ${r.status}</div>`;
-    }).join('')}</details>`;
-    html += `<label class="weekend-toggle"><input type="checkbox" ${db.settings.showSunSchedule?'checked':''} onchange="db.settings.showSunSchedule=this.checked;renderPortalBody()"> Show SUN (Sundays)</label>`;
   } else {
-    html += myTimeOffListHTML();
-    html += `<h2 class="section-title" style="margin-top:10px">My Schedule <button class="btn small" onclick="requestTimeOffFlow()">Time Off Request</button></h2>`;
-    html += myUpcomingScheduleHTML();
+    teacherAccount = name;
+    username = name;
+    isTeacher = true;
+    await setDoc(teacherRef, { name: name, password: password, createdAt: serverTimestamp() });
+    teacherLoginDiv.classList.add("hidden");
+    boardsPortalDiv.classList.remove("hidden");
+    loadBoardsPortal();
   }
+};
 
-  const monday = addDays(startOfWeekMonday(new Date()), scheduleWeekOffset*7);
-  const weekKey = weekKeyOf(monday);
-  html += `<h2 class="section-title" style="margin-top:22px">Weekly Schedule
-    <span class="panel-nav">
-      <button class="btn small outline" onclick="scheduleWeekOffset--;renderPortalBody()">← Prev Week</button>
-      <span class="week-range">${fmtWeekRange(monday)}</span>
-      <button class="btn small outline" onclick="scheduleWeekOffset++;renderPortalBody()">Next Week →</button>
-      ${scheduleWeekOffset!==0?`<button class="btn small" onclick="scheduleWeekOffset=0;renderPortalBody()">Today</button>`:''}
-    </span></h2>`;
-  html += weekBoxHTML(weekKey, monday);
-  return html;
+logoutBtnPortal.onclick = function() { resetAndLogout(); };
+logoutBtnApp.onclick = function() { resetAndLogout(); };
+logoutBtnStudents.onclick = function() { resetAndLogout(); };
+logoutBtnDashboard.onclick = function() { resetAndLogout(); };
+
+function resetAndLogout() {
+  teardownBoardListeners();
+  username = "";
+  studentPassword = "";
+  isTeacher = false;
+  isMasterAdmin = false;
+  teacherAccount = "";
+  currentBoardId = "";
+  currentStudentId = "";
+  studentEmoji = "";
+  myUpvotedPostIds.clear();
+  myPollVotes.clear();
+  var panels = [boardsPortalDiv, studentsPortalDiv, studentDashboardDiv, appDiv, teacherLoginDiv];
+  for (var i = 0; i < panels.length; i++) { panels[i].classList.add("hidden"); }
+  loginDiv.classList.remove("hidden");
+  usernameInput.value = "";
+  if (document.getElementById("boardNameInput")) { document.getElementById("boardNameInput").value = ""; }
+  if (document.getElementById("studentPasswordInput")) { document.getElementById("studentPasswordInput").value = ""; }
+  teacherNameInput.value = "";
+  teacherPasswordInput.value = "";
+  pollSection.innerHTML = "";
+  postsDiv.innerHTML = "";
+  leaderboardSection.innerHTML = "";
 }
 
-// Lists the logged-in employee's own shifts (today onward) across the
-// current + next week, in "DAY | DATE | START to END | Notes" form.
-function myUpcomingScheduleHTML(){
-  const rows = [];
-  for(let w=0; w<2; w++){
-    const monday = addDays(startOfWeekMonday(new Date()), w*7);
-    const weekKey = weekKeyOf(monday);
-    const mySched = (weekSchedule(weekKey)[session.employeeId]) || {};
-    scheduleDayKeys().forEach((dk,i)=>{
-      const date = addDays(monday,i);
-      const iso = isoDate(date);
-      if(iso < todayISO()) return;
-      const shift = mySched[dk];
-      if(shift) rows.push({ date, iso, dk, shift });
+backToPortalBtn.onclick = function() {
+  teardownBoardListeners();
+  currentBoardId = "";
+  appDiv.classList.add("hidden");
+  boardsPortalDiv.classList.remove("hidden");
+  loadBoardsPortal();
+};
+
+studentsBtn.onclick = function() {
+  appDiv.classList.add("hidden");
+  studentsPortalDiv.classList.remove("hidden");
+  loadStudentsPortal();
+};
+
+backToBoardFromStudents.onclick = function() {
+  studentsPortalDiv.classList.add("hidden");
+  appDiv.classList.remove("hidden");
+};
+
+backToStudentsFromDashboard.onclick = function() {
+  studentDashboardDiv.classList.add("hidden");
+  studentsPortalDiv.classList.remove("hidden");
+  loadStudentsPortal();
+};
+
+async function loadBoardsPortal() {
+  boardsList.innerHTML = "";
+  if (isMasterAdmin) {
+    backToPortalBtn.classList.add("hidden");
+    var teachersSnapshot = await getDocs(collection(db, "teachers"));
+    var boardsSnapshot = await getDocs(collection(db, "boards"));
+    var teacherBoards = {};
+    teachersSnapshot.forEach(function(d) {
+      if (d.id !== "Dimitry") { teacherBoards[d.id] = []; }
     });
-  }
-  rows.sort((a,b)=>a.iso.localeCompare(b.iso));
-  return `<div class="card">
-    <h4>My Upcoming Shifts (next 2 weeks)</h4>
-    ${rows.length ? rows.map(r=>`<p style="font-size:13.5px;margin:6px 0">${r.dk} | ${fmtShort(r.date)} | ${formatTime12hr(r.shift.start)} to ${formatTime12hr(r.shift.end)}${r.shift.notes?` | ${r.shift.notes}`:''}</p>`).join('') : '<p class="empty-note">No upcoming shifts scheduled.</p>'}
-  </div>`;
-}
-
-function myTimeOffListHTML(){
-  const mine = db.timeOffRequests.filter(r=>r.employeeId===session.employeeId);
-  const upcoming = mine.filter(r=>r.date>=todayISO()).sort((a,b)=>a.date.localeCompare(b.date));
-  const past = mine.filter(r=>r.date<todayISO()).sort((a,b)=>b.date.localeCompare(a.date));
-  return `<h2 class="section-title">My Time Off Requests</h2>
-    ${upcoming.length ? upcoming.map(timeOffRowHTML).join('') : '<p class="empty-note">No upcoming requests.</p>'}
-    ${past.length ? `<details style="margin-top:8px"><summary style="cursor:pointer;font-size:13px;color:var(--brown-light)">Past requests (${past.length})</summary>${past.map(timeOffRowHTML).join('')}</details>` : ''}`;
-}
-function timeOffRowHTML(r){
-  return `<div class="timeoff-list-item">${r.date} ${formatTime12hr(r.start)} - ${formatTime12hr(r.end)} <span class="timeoff-status ${r.status}">${r.status}</span>
-    ${r.comment?`<br><span style="font-size:12px;color:var(--ink-soft)">Reason: ${r.comment}</span>`:''}
-    ${r.responseComment?`<br><span style="font-size:12px;color:var(--ink-soft)">Manager: ${r.responseComment}</span>`:''}</div>`;
-}
-
-function weekBoxHTML(weekKey, monday){
-  const sched = weekSchedule(weekKey);
-  const days = scheduleDayKeys();
-  const roles = [...new Set(db.employees.filter(e=>e.active).map(e=>e.role))];
-  let rows = '';
-  roles.forEach(role=>{
-    rows += `<div class="sched-role-row">${role}</div>`;
-    db.employees.filter(e=>e.active && e.role===role).forEach(emp=>{
-      const canEditRow = session.isMaster || (!session.isMaster && session.employeeId===emp.id);
-      const isSelf = !session.isMaster && session.employeeId===emp.id;
-      const selfClass = isSelf ? ' own-row' : '';
-      rows += `<div class="sched-name${selfClass}">${session.isMaster?`<button class="magic-btn" title="Fill typical schedule" onclick="magicFill('${weekKey}','${emp.id}')">🪄</button>`:''}${emp.keyholder?'🔑 ':''}<span style="cursor:pointer" onclick="showProfile('${emp.id}')">${emp.name}</span></div>`;
-      days.forEach((dk,i)=>{
-        const cellData = (sched[emp.id]||{})[dk];
-        const date = addDays(monday,i);
-        const req = db.timeOffRequests.find(r=>r.employeeId===emp.id && r.date===isoDate(date) && r.status!=='denied');
-        const isReq = !!req;
-        const label = isReq ? `Off${req.status==='pending'?' ?':''}` : (cellData ? `${formatTime12hr(cellData.start)} - ${formatTime12hr(cellData.end)}` : '');
-        const clickable = session.isMaster ? `onclick="editCell('${weekKey}','${emp.id}','${dk}','${isoDate(date)}')"` :
-          (canEditRow ? `onclick="employeeCellClick('${weekKey}','${emp.id}','${dk}','${isoDate(date)}')"` : '');
-        const noteBtn = (!isReq && cellData && cellData.notes) ? `<button class="sched-note-btn" title="View note" onclick="event.stopPropagation();viewShiftNote('${escAttr(cellData.notes)}')"><svg viewBox="0 0 24 24"><path d="M6 3h9l5 5v13a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M14 3v5h5" fill="none" stroke-width="1.3"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="15.5" x2="16" y2="15.5"/></svg></button>` : '';
-        rows += `<div class="sched-cell ${isReq?'request':''}${isSelf?' own-row':''}" ${clickable}>${label}${noteBtn}</div>`;
+    boardsSnapshot.forEach(function(d) {
+      var b = d.data();
+      var t = b.teacherAccount || "Unknown";
+      if (!teacherBoards[t]) { teacherBoards[t] = []; }
+      teacherBoards[t].push({ id: d.id, name: b.name, createdAt: b.createdAt, teacherAccount: b.teacherAccount });
+    });
+    var masterSection = document.createElement("div");
+    masterSection.className = "master-admin-section";
+    masterSection.innerHTML = "<h2>Master Admin</h2>";
+    for (var teacher in teacherBoards) {
+      var tc = document.createElement("div");
+      tc.className = "teacher-card";
+      tc.innerHTML = "<h4>Teacher: " + teacher + "</h4>";
+      var bd = document.createElement("div");
+      bd.className = "teacher-boards";
+      teacherBoards[teacher].forEach(function(board) { bd.appendChild(createBoardCard(board, true)); });
+      var dtBtn = document.createElement("button");
+      dtBtn.textContent = "🗑️ Delete Teacher";
+      dtBtn.className = "delete-poll teacher-control";
+      dtBtn.style.marginTop = "12px";
+      (function(t2, boards2) {
+        dtBtn.onclick = async function() {
+          if (!confirm("Delete teacher " + t2 + " and all boards?")) { return; }
+          for (var bi = 0; bi < boards2.length; bi++) { await deleteBoard(boards2[bi].id); }
+          await deleteDoc(doc(db, "teachers", t2));
+          loadBoardsPortal();
+        };
+      })(teacher, teacherBoards[teacher]);
+      tc.appendChild(bd);
+      tc.appendChild(dtBtn);
+      masterSection.appendChild(tc);
+    }
+    boardsList.appendChild(masterSection);
+  } else {
+    backToPortalBtn.classList.add("hidden");
+    var q = query(collection(db, "boards"), where("teacherAccount", "==", teacherAccount));
+    onSnapshot(q, function(snapshot) {
+      boardsList.innerHTML = "";
+      if (snapshot.empty) {
+        boardsList.innerHTML = "<p style='text-align:center;margin-top:40px;'>No boards yet.</p>";
+        return;
+      }
+      snapshot.forEach(function(d) {
+        boardsList.appendChild(createBoardCard({ id: d.id, name: d.data().name, createdAt: d.data().createdAt }, false));
       });
     });
-  });
-  const gridClass = days.length===7 ? 'sched-grid with-sun' : 'sched-grid';
-  return `<div class="week-box"><div class="week-label">${fmtWeekRange(monday)}</div>
-    <div class="${gridClass}">
-      <div class="sched-head">Employee</div>${days.map((d,i)=>`<div class="sched-head">${d} ${fmtShort(addDays(monday,i))}</div>`).join('')}
-      ${rows}
-    </div></div>`;
-}
-function viewShiftNote(note){
-  openModal(`<h3>Shift Note</h3><p style="white-space:pre-wrap">${note}</p><div class="modal-actions"><button class="btn" onclick="closeModal()">Close</button></div>`);
-}
-
-function showProfile(empId){
-  const e = db.employees.find(x=>x.id===empId);
-  openModal(`<div class="profile-pop"><h3>${e.keyholder?'🔑 ':''}${e.name}</h3><p>${e.phone||'No phone on file'}</p><p class="pill">${e.role}</p></div>`);
-}
-
-function editCell(weekKey, empId, dayKey, dateISO){
-  const emp = db.employees.find(e=>e.id===empId);
-  const typical = emp.typicalSchedule[dayKey];
-  const current = (weekSchedule(weekKey)[empId]||{})[dayKey];
-  openModal(`<h3>${emp.name} — ${dayKey} ${dateISO}</h3>
-    ${typical ? `<button class="btn small outline" onclick="applyTypical('${weekKey}','${empId}','${dayKey}')">Use typical: ${formatTime12hr(typical.start)} - ${formatTime12hr(typical.end)}</button><br><br>` : ''}
-    <div class="field"><label>Start</label><input type="time" id="cell-start" value="${current?current.start:(typical?typical.start:'09:00')}"></div>
-    <div class="field"><label>End</label><input type="time" id="cell-end" value="${current?current.end:(typical?typical.end:'17:00')}"></div>
-    <div class="field"><label>Note (optional)</label><textarea id="cell-notes" placeholder="e.g. Covering for Dana, closing shift…">${current&&current.notes?escHtmlAttr(current.notes):''}</textarea></div>
-    <div class="modal-actions">
-      ${current?`<button class="btn danger" onclick="clearCell('${weekKey}','${empId}','${dayKey}')">Clear</button>`:''}
-      <button class="btn" onclick="saveCell('${weekKey}','${empId}','${dayKey}')">Save</button>
-    </div>`);
-}
-function saveCell(weekKey,empId,dayKey){
-  const sched = weekSchedule(weekKey);
-  if(!sched[empId]) sched[empId] = {};
-  const notes = document.getElementById('cell-notes').value.trim();
-  sched[empId][dayKey] = { start:document.getElementById('cell-start').value, end:document.getElementById('cell-end').value, notes };
-  closeModal(); renderPortalBody();
-}
-function clearCell(weekKey,empId,dayKey){ delete weekSchedule(weekKey)[empId][dayKey]; closeModal(); renderPortalBody(); }
-function applyTypical(weekKey,empId,dayKey){
-  const emp = db.employees.find(e=>e.id===empId);
-  document.getElementById('cell-start').value = emp.typicalSchedule[dayKey].start;
-  document.getElementById('cell-end').value = emp.typicalSchedule[dayKey].end;
-}
-function magicFill(weekKey, empId){
-  const emp = db.employees.find(e=>e.id===empId);
-  const sched = weekSchedule(weekKey);
-  if(!sched[empId]) sched[empId] = {};
-  Object.entries(emp.typicalSchedule).forEach(([day,val])=>{ sched[empId][day] = {...val}; });
-  renderPortalBody();
-}
-function employeeCellClick(weekKey, empId, dayKey, dateISO){
-  openModal(`<h3>${dayKey} ${dateISO}</h3>
-    <div class="modal-actions" style="justify-content:flex-start"><button class="btn" onclick="requestTimeOffFlow('${dateISO}')">Request Time Off</button></div>`);
-}
-function requestTimeOffFlow(prefillDate){
-  openModal(`<h3>Request Time Off</h3>
-    <div class="field"><label>Date</label><input type="date" id="to-date" value="${prefillDate||''}"></div>
-    <div class="field"><label>Start</label><input type="time" id="to-start" value="09:00"></div>
-    <div class="field"><label>End</label><input type="time" id="to-end" value="17:00"></div>
-    <div class="field"><label>Comments</label><textarea id="to-comment" placeholder="Reason for request…"></textarea></div>
-    <div class="modal-actions"><button class="btn" onclick="submitTimeOff()">Submit Request</button></div>`);
-}
-function submitTimeOff(){
-  const date = document.getElementById('to-date').value;
-  if(!date) return;
-  db.timeOffRequests.push({ id:newId('r'), employeeId:session.employeeId, date, start:document.getElementById('to-start').value, end:document.getElementById('to-end').value, comment:document.getElementById('to-comment').value, status:'pending', responseComment:'' });
-  closeModal(); renderPortalBody();
-}
-function respondRequest(id, status){
-  const r = db.timeOffRequests.find(x=>x.id===id);
-  const comment = prompt(`Add a comment for this ${status==='approved'?'approval':'denial'} (optional):`) || '';
-  r.status = status; r.responseComment = comment;
-  renderPortalBody();
-}
-
-/* ============================================================
-   CHAT
-   ============================================================ */
-function chatHTML(){
-  return `<h2 class="section-title">Chat</h2>
-    <div class="chat-box">
-      <div class="chat-messages" id="chat-messages"></div>
-      <div class="chat-input-row">
-        <input type="text" id="chat-input" placeholder="Write a message…" onkeydown="if(event.key==='Enter') sendChat()">
-        <button class="btn" onclick="sendChat()">Send</button>
-      </div>
-    </div>`;
-}
-function renderChatMessages(){
-  const el = document.getElementById('chat-messages');
-  if(!el) return;
-  el.innerHTML = db.chatMessages.map(m=>{
-    return `<div class="chat-msg"><div class="who">${m.empId ? `<button onclick="showProfile('${m.empId}')">${m.who}</button>` : m.who} · ${new Date(m.ts).toLocaleString()}</div><div>${m.text}</div></div>`;
-  }).join('');
-  el.scrollTop = el.scrollHeight;
-  scheduleSave();
-}
-function sendChat(){
-  const input = document.getElementById('chat-input');
-  const text = input.value.trim();
-  if(!text) return;
-  db.chatMessages.push({ id:newId('m'), who:session.name.replace(' (Master)',''), empId: session.isMaster?null:session.employeeId, text, ts:Date.now() });
-  input.value='';
-  renderChatMessages();
-}
-
-/* ============================================================
-   GLOBAL EVENT WIRING
-   ============================================================ */
-document.body.addEventListener('click', e=>{
-  const actionEl = e.target.closest('[data-action]');
-  if(actionEl){
-    const action = actionEl.dataset.action;
-    if(action==='login') showView('view-login');
-    if(action==='back-public') showView('view-public');
-    if(action==='logout') logout();
-    if(action==='toggle-dark') toggleDarkMode();
-    if(action==='add-item') addItemFlow();
-    if(action==='bulk-import') bulkImportFlow();
-    if(action==='toggle-categories'){ expSubView = expSubView==='categories' ? 'items' : 'categories'; renderPortalBody(); }
-    if(action==='deli-prev'){ publicDeliWeekOffset--; renderDeliPanel(); }
-    if(action==='deli-today'){ publicDeliWeekOffset=0; renderDeliPanel(); }
-    if(action==='deli-next'){ publicDeliWeekOffset++; renderDeliPanel(); }
-    if(action==='soup-prev'){ publicSoupMonthOffset--; renderSoupPanel(); }
-    if(action==='soup-today'){ publicSoupMonthOffset=0; renderSoupPanel(); }
-    if(action==='soup-next'){ publicSoupMonthOffset++; renderSoupPanel(); }
-    if(action==='soup-export') exportSoupMenuICS();
   }
-  const tabEl = e.target.closest('.portal-tab');
-  if(tabEl) setTab(tabEl.dataset.tab);
+}
+
+function createBoardCard(board, isMasterView) {
+  var card = document.createElement("div");
+  card.className = "board-card";
+  var info = document.createElement("div");
+  info.className = "board-card-info";
+  info.innerHTML = "<h3>" + board.name + "</h3><p>Created " + (board.createdAt ? new Date(board.createdAt.seconds * 1000).toLocaleDateString() : "recently") + "</p>";
+  var actions = document.createElement("div");
+  actions.className = "board-card-actions";
+  var enterBtn = document.createElement("button");
+  enterBtn.textContent = "Enter";
+  (function(bid) {
+    enterBtn.onclick = function(e) { e.stopPropagation(); enterBoard(bid); };
+  })(board.id);
+  actions.appendChild(enterBtn);
+  var resetBtn = document.createElement("button");
+  resetBtn.textContent = "🔄 Reset";
+  resetBtn.className = "teacher-control";
+  (function(bid, bname) {
+    resetBtn.onclick = async function(e) {
+      e.stopPropagation();
+      if (!confirm("Reset " + bname + "?")) { return; }
+      await resetBoard(bid);
+    };
+  })(board.id, board.name);
+  actions.appendChild(resetBtn);
+  var deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "🗑️ Delete";
+  deleteBtn.className = "delete-poll teacher-control";
+  (function(bid, bname) {
+    deleteBtn.onclick = async function(e) {
+      e.stopPropagation();
+      if (!confirm("Delete " + bname + "?")) { return; }
+      await deleteBoard(bid);
+      if (isMasterView) { loadBoardsPortal(); }
+    };
+  })(board.id, board.name);
+  actions.appendChild(deleteBtn);
+  card.appendChild(info);
+  card.appendChild(actions);
+  (function(bid) { card.onclick = function() { enterBoard(bid); }; })(board.id);
+  return card;
+}
+
+async function resetBoard(boardId) {
+  var cols = ["posts", "replies", "polls", "leaderboard"];
+  for (var i = 0; i < cols.length; i++) {
+    var snap = await getDocs(collection(db, "boards", boardId, cols[i]));
+    for (var j = 0; j < snap.docs.length; j++) { await deleteDoc(snap.docs[j].ref); }
+  }
+}
+
+async function deleteBoard(boardId) {
+  var cols = ["posts", "replies", "polls", "leaderboard"];
+  for (var i = 0; i < cols.length; i++) {
+    var snap = await getDocs(collection(db, "boards", boardId, cols[i]));
+    for (var j = 0; j < snap.docs.length; j++) { await deleteDoc(snap.docs[j].ref); }
+  }
+  var studentsSnap = await getDocs(collection(db, "boards", boardId, "students"));
+  for (var k = 0; k < studentsSnap.docs.length; k++) { await deleteDoc(studentsSnap.docs[k].ref); }
+  await deleteDoc(doc(db, "boards", boardId));
+}
+
+function enterBoard(boardId) {
+  teardownBoardListeners();
+  currentBoardId = boardId;
+  boardsPortalDiv.classList.add("hidden");
+  appDiv.classList.remove("hidden");
+  teacherBtn.classList.remove("hidden");
+  backToPortalBtn.classList.remove("hidden");
+  studentsBtn.classList.remove("hidden");
+  leaderboardToggleContainer.classList.remove("hidden");
+  dailyDashboard.classList.remove("hidden");
+  emojiPickerContainer.classList.add("hidden");
+  startBoard();
+}
+
+async function startBoard() {
+  pollSection.innerHTML = "";
+  postsDiv.innerHTML = "";
+  leaderboardSection.innerHTML = "";
+  listenBoardSettings();
+  initLeaderboard();
+  loadPosts();
+  await loadPolls();
+  if (isTeacher) { updateDailyDashboard(); }
+  if (!isTeacher) { setupEmojiPicker(); }
+}
+
+createBoardBtn.onclick = async function() {
+  var boardName = newBoardNameInput.value.trim();
+  if (!boardName) { alert("Enter a board name."); return; }
+  var q = query(collection(db, "boards"), where("name", "==", boardName));
+  var snapshot = await getDocs(q);
+  if (!snapshot.empty) { alert("PopBoard name is already taken. Pick a fresh kernel!"); return; }
+  await addDoc(collection(db, "boards"), { name: boardName, teacherAccount: teacherAccount, createdAt: serverTimestamp() });
+  newBoardNameInput.value = "";
+};
+
+function listenBoardSettings() {
+  if (unsubBoardSettings) { unsubBoardSettings(); unsubBoardSettings = null; }
+  if (!currentBoardId) { return; }
+  unsubBoardSettings = onSnapshot(doc(db, "boards", currentBoardId), function(d) {
+    if (!d.exists()) { return; }
+    leaderboardVisible = d.data().leaderboardVisible !== false;
+    applyLeaderboardVisibility();
+  });
+}
+
+function applyLeaderboardVisibility() {
+  if (isTeacher) {
+    leaderboardSection.style.display = "";
+    leaderboardVisibilityBtn.textContent = leaderboardVisible ? "👁️ Leaderboard Shown" : "👁️‍🗨️ Leaderboard Hidden";
+    return;
+  }
+  var nicknameContainer = document.getElementById("nicknameInputContainer");
+  if (leaderboardVisible) {
+    leaderboardSection.style.display = "";
+    emojiPickerContainer.classList.remove("hidden");
+    if (nicknameContainer) { nicknameContainer.style.display = "inline-flex"; }
+  } else {
+    leaderboardSection.style.display = "none";
+    emojiPickerContainer.classList.add("hidden");
+    if (nicknameContainer) { nicknameContainer.style.display = "none"; }
+  }
+}
+
+leaderboardVisibilityBtn.onclick = async function() {
+  if (!currentBoardId) { return; }
+  leaderboardVisible = !leaderboardVisible;
+  await updateDoc(doc(db, "boards", currentBoardId), { leaderboardVisible: leaderboardVisible });
+};
+
+function initLeaderboard() {
+  if (unsubLeaderboard) { unsubLeaderboard(); unsubLeaderboard = null; }
+  if (!currentBoardId) { return; }
+  getDoc(doc(db, "boards", currentBoardId)).then(function(d) {
+    leaderboardVisible = d.exists() ? (d.data().leaderboardVisible !== false) : true;
+    applyLeaderboardVisibility();
+  });
+  unsubLeaderboard = onSnapshot(collection(db, "boards", currentBoardId, "leaderboard"), async function(snapshot) {
+    var scores = [];
+    for (var i = 0; i < snapshot.docs.length; i++) {
+      var d = snapshot.docs[i];
+      var data = d.data();
+      var emoji = data.emoji || "";
+      var nickname = data.nickname || "";
+      if (!emoji || !nickname) {
+        var studentQuery = query(collection(db, "boards", currentBoardId, "students"), where("username", "==", d.id));
+        var studentSnap = await getDocs(studentQuery);
+        if (!studentSnap.empty) {
+          var sData = studentSnap.docs[0].data();
+          if (!emoji) { emoji = sData.emoji || ""; }
+          if (!nickname) { nickname = sData.nickname || ""; }
+        }
+      }
+      scores.push({ name: d.id, displayName: nickname || d.id, score: data.score || 0, emoji: emoji });
+    }
+    scores.sort(function(a, b) { return b.score - a.score; });
+    renderLeaderboardUI(scores.slice(0, 6));
+  });
+}
+
+function renderLeaderboardUI(top6) {
+  leaderboardSection.innerHTML = "";
+  if (!isTeacher && !leaderboardVisible) { return; }
+  var card = document.createElement("div");
+  card.className = "leaderboard-card";
+  card.innerHTML = "<h3>🏆 Leaderboard</h3>";
+  if (top6.length === 0) {
+    var empty = document.createElement("p");
+    empty.textContent = "No scores yet. Answer polls to earn points!";
+    card.appendChild(empty);
+    leaderboardSection.appendChild(card);
+    return;
+  }
+
+  var maxScore = 0.1;
+  for (var i = 0; i < top6.length; i++) { if (top6[i].score > maxScore) { maxScore = top6[i].score; } }
+  var medals = ["🥇", "🥈", "🥉"];
+  var isDark = document.documentElement.getAttribute("data-theme") === "dark";
+  var place456Color = isDark ? "#1a1a1a" : "#ffffff";
+  var barGradients = [
+    "linear-gradient(90deg, #f7d700, #fff176, #f9a825, #ffd700)",
+    "linear-gradient(90deg, #9e9e9e, #e0e0e0, #bdbdbd, #c0c0c0)",
+    "linear-gradient(90deg, #cd7f32, #e8a96a, #b5651d, #cd7f32)",
+    place456Color,
+    place456Color,
+    place456Color
+  ];
+
+  // Container for animated rows — position:relative lets children animate with translateY
+  var rowContainer = document.createElement("div");
+  rowContainer.style.cssText = "position:relative;";
+  var ROW_HEIGHT = 48; // px — must match approximate lb-row height including margin
+  rowContainer.style.height = (top6.length * ROW_HEIGHT) + "px";
+
+  for (var i = 0; i < top6.length; i++) {
+    var entry = top6[i];
+    var row = document.createElement("div");
+    row.className = "lb-row";
+    row.dataset.lbName = entry.name;
+
+    // Position each row absolutely so we can animate it
+    row.style.cssText = "position:absolute;width:100%;top:" + (i * ROW_HEIGHT) + "px;transition:top 0.5s cubic-bezier(0.4,0,0.2,1);";
+
+    var nameDiv = document.createElement("div");
+    nameDiv.className = "lb-name";
+    var nameSpan = document.createElement("span");
+    nameSpan.textContent = entry.displayName || entry.name;
+    nameDiv.appendChild(nameSpan);
+    if (entry.emoji) {
+      var eSpan = document.createElement("span");
+      eSpan.className = "lb-emoji emoji-animate";
+      eSpan.textContent = entry.emoji;
+      nameDiv.insertBefore(eSpan, nameSpan);
+    }
+
+    var track = document.createElement("div");
+    track.className = "lb-bar-track";
+    var fill = document.createElement("div");
+    fill.className = "lb-bar-fill";
+    var targetWidth = Math.max(4, (entry.score / maxScore) * 100);
+    // Start at 0 width, then animate to target after paint
+    fill.style.width = "0%";
+    if (i === 0) { fill.classList.add("lb-bar-gold"); }
+    else if (i === 1) { fill.classList.add("lb-bar-silver"); }
+    else if (i === 2) { fill.classList.add("lb-bar-bronze"); }
+    else { fill.style.background = barGradients[i]; }
+    fill.style.transition = "width 0.7s cubic-bezier(0.4,0,0.2,1)";
+    var scoreSpan = document.createElement("span");
+    scoreSpan.className = "lb-score";
+    scoreSpan.style.color = i < 3 ? "#1d1d1f" : (isDark ? "white" : "#1d1d1f");
+    scoreSpan.textContent = parseFloat(entry.score.toFixed(1)) + " pt";
+    fill.appendChild(scoreSpan);
+    track.appendChild(fill);
+
+    var medalSpan = document.createElement("span");
+    medalSpan.className = "lb-medal";
+    if (i < 3) {
+      medalSpan.textContent = medals[i];
+    } else {
+      medalSpan.textContent = "";
+      medalSpan.style.width = "1.5rem";
+      medalSpan.style.display = "inline-block";
+    }
+
+    row.appendChild(nameDiv);
+    row.appendChild(track);
+    row.appendChild(medalSpan);
+    rowContainer.appendChild(row);
+
+    // Animate bar width on next frame so CSS transition fires
+    (function(fillEl, width) {
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          fillEl.style.width = width + "%";
+        });
+      });
+    })(fill, targetWidth);
+  }
+
+  card.appendChild(rowContainer);
+  leaderboardSection.appendChild(card);
+}
+
+async function awardLeaderboardPoints(pollId, correctIndices) {
+  var pollSnap = await getDoc(doc(db, "boards", currentBoardId, "polls", pollId));
+  if (!pollSnap.exists()) { return; }
+  var poll = pollSnap.data();
+  var options = poll.options || [];
+  var voterData = {};
+  var history = poll.history || [];
+  for (var i = 0; i < history.length; i++) {
+    var entry = history[i];
+    if (!entry.username) { continue; }
+    var n = entry.username;
+    var optText = entry.response || "";
+    if (optText.indexOf("Voted: ") === 0) { optText = optText.slice(7); }
+    else if (optText.indexOf("Removed vote: ") === 0) { optText = optText.slice(14); }
+    var idx = options.indexOf(optText);
+    if (idx === -1) { continue; }
+    if (!voterData[n]) {
+      voterData[n] = { lastIndex: idx, firstTs: entry.timestamp || Date.now() };
+    } else {
+      voterData[n].lastIndex = idx;
+      if (entry.timestamp && entry.timestamp < voterData[n].firstTs) { voterData[n].firstTs = entry.timestamp; }
+    }
+  }
+  var correctStudents = [];
+  for (var voterName in voterData) {
+    if (correctIndices.indexOf(voterData[voterName].lastIndex) !== -1) {
+      correctStudents.push({ name: voterName, ts: voterData[voterName].firstTs });
+    }
+  }
+  if (correctStudents.length === 0) { return; }
+  var minTs = correctStudents[0].ts;
+  var maxTs = correctStudents[0].ts;
+  for (var i = 0; i < correctStudents.length; i++) {
+    if (correctStudents[i].ts < minTs) { minTs = correctStudents[i].ts; }
+    if (correctStudents[i].ts > maxTs) { maxTs = correctStudents[i].ts; }
+  }
+  var range = maxTs - minTs || 1;
+  var sorted = correctStudents.slice().sort(function(a, b) { return a.ts - b.ts; });
+  for (var i = 0; i < correctStudents.length; i++) {
+    var student = correctStudents[i];
+    var norm = (student.ts - minTs) / range;
+    var points = parseFloat((1.0 - norm * 0.8).toFixed(3));
+    var rank = -1;
+    for (var ri = 0; ri < sorted.length; ri++) { if (sorted[ri].name === student.name) { rank = ri; break; } }
+
+    // ── Save score to leaderboard doc (resets with board) ──────────────────
+    var lbRef = doc(db, "boards", currentBoardId, "leaderboard", student.name);
+    var lbSnap = await getDoc(lbRef);
+    var prevLb = lbSnap.exists() ? lbSnap.data() : { score: 0 };
+    await setDoc(lbRef, {
+      score: parseFloat(((prevLb.score || 0) + points).toFixed(3))
+    }, { merge: true });
+
+    // ── Confetti for the student who just earned a medal ───────────────────
+    if (student.name === username && !isTeacher) {
+      if (rank === 0 || rank === 1 || rank === 2) {
+        var prevScores = [];
+        var allLbSnap = await getDocs(collection(db, "boards", currentBoardId, "leaderboard"));
+        allLbSnap.forEach(function(d) { prevScores.push({ name: d.id, score: d.data().score || 0 }); });
+        prevScores.sort(function(a, b) { return b.score - a.score; });
+        var prevRank = -1;
+        for (var pri = 0; pri < prevScores.length; pri++) {
+          if (prevScores[pri].name === student.name) { prevRank = pri; break; }
+        }
+        var isImprovement = prevRank === -1 || rank < prevRank;
+        if (isImprovement) {
+          var medals = ["🥇", "🥈", "🥉"];
+          var centerEl = document.getElementById("leaderboardSection");
+          if (centerEl) {
+            for (var ci = 0; ci < 18; ci++) {
+              var p = document.createElement("span");
+              p.textContent = medals[rank];
+              var rect = centerEl.getBoundingClientRect();
+              var startX = rect.left + rect.width / 2;
+              var startY = rect.top + rect.height / 2;
+              p.style.cssText = "position:fixed;left:" + startX + "px;top:" + startY + "px;font-size:22px;opacity:1;transition:all 1s ease-out;pointer-events:none;z-index:9999;";
+              document.body.appendChild(p);
+              var x = (Math.random() - 0.5) * 220;
+              var y = -Math.random() * 180 - 40;
+              (function(el, xv, yv) {
+                requestAnimationFrame(function() {
+                  el.style.transform = "translate(" + xv + "px," + yv + "px) rotate(" + Math.round(Math.random() * 360) + "deg)";
+                  el.style.opacity = "0";
+                });
+                setTimeout(function() { el.remove(); }, 1000);
+              })(p, x, y);
+            }
+          }
+        }
+      }
+    }
+
+    // ── Save medal counts to student doc (persists across resets) ──────────
+    var studentQuery = query(collection(db, "boards", currentBoardId, "students"), where("username", "==", student.name));
+    var studentSnap = await getDocs(studentQuery);
+    if (studentSnap.empty) { continue; }
+    var studentRef = studentSnap.docs[0].ref;
+    var studentData = studentSnap.docs[0].data();
+    var medalUpdates = {};
+    if (rank === 0) { medalUpdates.goldMedals = (studentData.goldMedals || 0) + 1; }
+    else if (rank === 1) { medalUpdates.silverMedals = (studentData.silverMedals || 0) + 1; }
+    else if (rank === 2) { medalUpdates.bronzeMedals = (studentData.bronzeMedals || 0) + 1; }
+    if (Object.keys(medalUpdates).length > 0) { await updateDoc(studentRef, medalUpdates); }
+  }
+}
+
+function setupEmojiPicker() {
+  renderEmojiCircle();
+  renderNicknameInput();
+
+  emojiCircle.onclick = function() {
+    emojiInput.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:72px;height:72px;font-size:2rem;text-align:center;z-index:9999;border-radius:50%;opacity:1;pointer-events:all;border:2px solid #0071e3;outline:none;";
+    emojiInput.value = "";
+    emojiInput.focus();
+  };
+  emojiInput.oninput = function() {
+    var val = emojiInput.value;
+    var matches = val.match(/\p{Emoji_Presentation}|\p{Emoji}\uFE0F/gu);
+    if (matches && matches.length > 0) {
+      studentEmoji = matches[0];
+      emojiInput.style.cssText = "width:0;height:0;opacity:0;position:absolute;pointer-events:none;";
+      saveStudentEmoji();
+      renderEmojiCircle();
+    } else if (val.length > 0) {
+      emojiInput.value = "";
+    }
+  };
+  emojiInput.onblur = function() {
+    emojiInput.style.cssText = "width:0;height:0;opacity:0;position:absolute;pointer-events:none;";
+  };
+}
+
+function renderEmojiCircle() {
+  emojiDisplay.innerHTML = "";
+  if (studentEmoji) {
+    var span = document.createElement("span");
+    span.className = "emoji-animate";
+    span.style.fontSize = "1.6rem";
+    span.textContent = studentEmoji;
+    emojiDisplay.appendChild(span);
+  } else {
+    emojiDisplay.textContent = "Choose Emoji";
+  }
+}
+
+function renderNicknameInput() {
+  var container = document.getElementById("nicknameInputContainer");
+  if (!container) { return; }
+  container.innerHTML = "";
+  var input = document.createElement("input");
+  input.type = "text";
+  input.maxLength = 20;
+  input.placeholder = "Leaderboard name (optional)";
+  input.value = studentNickname || "";
+  input.style.cssText = "position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:calc(100% - 32px);background:transparent;border:none;outline:none;font-size:1rem;color:inherit;text-align:center;letter-spacing:0.02em;";
+  input.onblur = async function() {
+    var newVal = input.value.trim();
+    if (newVal !== studentNickname) {
+      studentNickname = newVal;
+      await saveStudentNickname();
+    }
+  };
+  input.onkeydown = function(e) { if (e.key === "Enter") { input.blur(); } };
+  container.style.position = "relative";
+  container.appendChild(input);
+}
+
+async function saveStudentNickname() {
+  if (!currentStudentId || !currentBoardId) { return; }
+  await updateDoc(doc(db, "boards", currentBoardId, "students", currentStudentId), { nickname: studentNickname });
+  var lbRef = doc(db, "boards", currentBoardId, "leaderboard", username);
+  var lbSnap = await getDoc(lbRef);
+  if (lbSnap.exists()) {
+    await updateDoc(lbRef, { nickname: studentNickname });
+  }
+}
+
+async function saveStudentEmoji() {
+  if (!currentStudentId || !currentBoardId) { return; }
+  await updateDoc(doc(db, "boards", currentBoardId, "students", currentStudentId), { emoji: studentEmoji });
+  var lbRef = doc(db, "boards", currentBoardId, "leaderboard", username);
+  var lbSnap = await getDoc(lbRef);
+  if (lbSnap.exists()) {
+    await updateDoc(lbRef, { emoji: studentEmoji });
+  }
+  // Do NOT recreate the leaderboard doc if it doesn't exist —
+  // it should only be created when points are awarded
+}
+
+async function loadStudentsPortal() {
+  studentsList.innerHTML = "";
+  var studentsSnapshot = await getDocs(collection(db, "boards", currentBoardId, "students"));
+  var pollsSnapshot = await getDocs(collection(db, "boards", currentBoardId, "polls"));
+  var totalPolls = pollsSnapshot.size;
+  if (studentsSnapshot.empty) {
+    studentsList.innerHTML = "<p style='text-align:center;margin-top:40px;'>No students yet.</p>";
+    return;
+  }
+  var toggleBtn = document.getElementById("dailyDataToggleBtn");
+  if (toggleBtn) {
+    toggleBtn.textContent = dailyDataVisible ? "👁️ Daily Data Shown" : "👁️‍🗨️ Daily Data Hidden";
+    toggleBtn.onclick = async function() {
+      dailyDataVisible = !dailyDataVisible;
+      toggleBtn.textContent = dailyDataVisible ? "👁️ Daily Data Shown" : "👁️‍🗨️ Daily Data Hidden";
+      await loadStudentsPortal();
+    };
+  }
+  var allStudentDocs = studentsSnapshot.docs;
+  studentsList.appendChild(await buildClassAggregateCard(allStudentDocs, totalPolls, pollsSnapshot));
+  for (var i = 0; i < allStudentDocs.length; i++) {
+    var studentDoc = allStudentDocs[i];
+    var student = studentDoc.data();
+    var studentId = studentDoc.id;
+    var card = document.createElement("div");
+    card.className = "board-card";
+    var info = document.createElement("div");
+    info.className = "board-card-info";
+    if (dailyDataVisible) {
+      var stats = await calculateStudentStats(studentId, totalPolls, pollsSnapshot);
+      var pollPct = totalPolls > 0 ? Math.round((stats.pollsVoted / totalPolls) * 100) : 0;
+      var engagementData = await computeMonthlyEngagement(studentId, student);
+      var currentMonthKey = new Date().getFullYear() + "-" + String(new Date().getMonth() + 1).padStart(2, "0");
+      var currentEngagement = 0;
+      for (var ei = 0; ei < engagementData.length; ei++) {
+        if (engagementData[ei].key === currentMonthKey) { currentEngagement = Math.round(engagementData[ei].value); break; }
+      }
+      info.innerHTML = "<h3>" + student.username + "</h3><p class='student-stats'>📊 Engagement: " + currentEngagement + "% | Polls: " + stats.pollsVoted + " (" + pollPct + "%) | Comments: " + stats.comments + " | Upvotes Given: " + stats.upvotesGiven + " | Upvotes Received: " + stats.upvotesReceived + " | 🥷🏼 Anonymous: " + stats.anonymousPercentage + "%</p>";
+    } else {
+      info.innerHTML = "<h3>" + student.username + "</h3>";
+    }
+    var actions = document.createElement("div");
+    actions.className = "board-card-actions";
+    var enterBtn = document.createElement("button");
+    enterBtn.textContent = "Enter";
+    (function(sid) { enterBtn.onclick = function(e) { e.stopPropagation(); viewStudentDashboard(sid); }; })(studentId);
+    var deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "🗑️ Delete";
+    deleteBtn.className = "delete-poll teacher-control";
+    (function(sid, sname) {
+      deleteBtn.onclick = async function(e) {
+        e.stopPropagation();
+        if (!confirm("Delete student " + sname + "?")) { return; }
+        await deleteDoc(doc(db, "boards", currentBoardId, "students", sid));
+        loadStudentsPortal();
+      };
+    })(studentId, student.username);
+    actions.appendChild(enterBtn);
+    actions.appendChild(deleteBtn);
+    card.appendChild(info);
+    card.appendChild(actions);
+    (function(sid) { card.onclick = function() { viewStudentDashboard(sid); }; })(studentId);
+    studentsList.appendChild(card);
+  }
+}
+
+async function buildClassAggregateCard(allStudentDocs, totalPolls, pollsSnapshot) {
+  var card = document.createElement("div");
+  card.className = "board-card class-aggregate-card";
+  var info = document.createElement("div");
+  info.className = "board-card-info";
+  info.innerHTML = "<h3>📊 Class Aggregate</h3><p>Average across all students</p>";
+  var actions = document.createElement("div");
+  actions.className = "board-card-actions";
+  var enterBtn = document.createElement("button");
+  enterBtn.textContent = "Enter";
+  enterBtn.onclick = async function(e) { e.stopPropagation(); await viewClassAggregateDashboard(allStudentDocs, totalPolls, pollsSnapshot); };
+  actions.appendChild(enterBtn);
+  card.appendChild(info);
+  card.appendChild(actions);
+  card.onclick = async function() { await viewClassAggregateDashboard(allStudentDocs, totalPolls, pollsSnapshot); };
+  return card;
+}
+
+async function viewStudentDashboard(studentId) {
+  currentStudentId = studentId;
+  studentsPortalDiv.classList.add("hidden");
+  studentDashboardDiv.classList.remove("hidden");
+  var studentDoc = await getDoc(doc(db, "boards", currentBoardId, "students", studentId));
+  var student = studentDoc.data();
+  var lbData = { gold: studentDoc.data().goldMedals || 0, silver: studentDoc.data().silverMedals || 0, bronze: studentDoc.data().bronzeMedals || 0 };
+  var monthlyEngagement = await computeMonthlyEngagement(studentId, student);
+  var monthlyPollsCastPct = await computeMonthlyPollsCastPct(studentId, student);
+  var monthlyAnonPct = await computeMonthlyAnonPct(studentId, student);
+  var monthlyPollAccuracy = await computeMonthlyPollAccuracy(studentId, student);
+  dashboardContent.innerHTML = "<div class='dashboard-header'><h2>" + student.username + "</h2><p>" + (student.password ? "Password: " + student.password : "No password set") + "</p><button id='mergeStudentBtn' class='teacher-control' style='margin-top:16px;'>Merge Student</button></div><div class='metrics-grid' id='metricsGrid'></div>";
+  var grid = document.getElementById("metricsGrid");
+  var lbCard = document.createElement("div");
+  lbCard.className = "metric-card";
+  lbCard.innerHTML = "<h3>🏆 Medals</h3><div style='font-size:1.4rem;padding:8px 0;'>🥇 " + (lbData.gold || 0) + " &nbsp; 🥈 " + (lbData.silver || 0) + " &nbsp; 🥉 " + (lbData.bronze || 0) + "</div>";
+  grid.appendChild(lbCard);
+  addPercentageMetricCard(grid, "📊 Engagement %", monthlyEngagement, "engagementChart");
+  addPercentageMetricCard(grid, "🗳️ Polls Cast %", monthlyPollsCastPct, "pollsCastPctChart");
+  addPercentageMetricCard(grid, "🥷🏼 Anonymous %", monthlyAnonPct, "anonPctChart");
+  addPercentageMetricCard(grid, "🎯 Poll Accuracy %", monthlyPollAccuracy, "pollAccuracyChart");
+  addHistoricMetricCard(grid, "Comments Made: " + (student.historicalComments || 0), student.monthlyStats || {}, "comments", "commentsChart");
+  addHistoricMetricCard(grid, "Upvotes Given: " + (student.historicalUpvotesGiven || 0), student.monthlyStats || {}, "upvotesGiven", "upvotesGivenChart");
+  addHistoricMetricCard(grid, "Upvotes Received: " + (student.historicalUpvotesReceived || 0), student.monthlyStats || {}, "upvotesReceived", "upvotesReceivedChart");
+  document.getElementById("mergeStudentBtn").onclick = async function() { await showMergeDialog(studentId); };
+}
+
+function addHistoricMetricCard(grid, title, monthlyStats, metric, canvasId) {
+  var card = document.createElement("div");
+  card.className = "metric-card";
+  card.innerHTML = "<h3>" + title + "</h3><canvas id='" + canvasId + "' width='400' height='200'></canvas>";
+  grid.appendChild(card);
+  drawChart(canvasId, monthlyStats, metric);
+}
+
+function addPercentageMetricCard(grid, title, monthlyData, canvasId) {
+  var card = document.createElement("div");
+  card.className = "metric-card";
+  card.innerHTML = "<h3>" + title + "</h3><canvas id='" + canvasId + "' width='400' height='200'></canvas>";
+  grid.appendChild(card);
+  drawPercentageChart(canvasId, monthlyData);
+}
+
+async function viewClassAggregateDashboard(allStudentDocs, totalPolls, pollsSnapshot) {
+  studentsPortalDiv.classList.add("hidden");
+  studentDashboardDiv.classList.remove("hidden");
+  var months = getLastTwelveMonthKeys();
+  var n = allStudentDocs.length || 1;
+  var totComments = 0;
+  var totUpvGiven = 0;
+  var totUpvReceived = 0;
+  var avgMonthlyStats = {};
+  for (var mi = 0; mi < months.length; mi++) {
+    avgMonthlyStats[months[mi]] = { comments: 0, upvotesGiven: 0, upvotesReceived: 0, pollsCast: 0 };
+  }
+  for (var i = 0; i < allStudentDocs.length; i++) {
+    var s = allStudentDocs[i].data();
+    totComments += s.historicalComments || 0;
+    totUpvGiven += s.historicalUpvotesGiven || 0;
+    totUpvReceived += s.historicalUpvotesReceived || 0;
+    for (var mi = 0; mi < months.length; mi++) {
+      var m = months[mi];
+      if (s.monthlyStats && s.monthlyStats[m]) {
+        avgMonthlyStats[m].comments += (s.monthlyStats[m].comments || 0) / n;
+        avgMonthlyStats[m].upvotesGiven += (s.monthlyStats[m].upvotesGiven || 0) / n;
+        avgMonthlyStats[m].upvotesReceived += (s.monthlyStats[m].upvotesReceived || 0) / n;
+        avgMonthlyStats[m].pollsCast += (s.monthlyStats[m].pollsCast || 0) / n;
+      }
+    }
+  }
+  var lbSnap = await getDocs(collection(db, "boards", currentBoardId, "leaderboard"));
+  var lbScores = [];
+  lbSnap.forEach(function(d) {
+    var data = d.data();
+    lbScores.push({ name: d.id, pts: (data.gold || 0) * 3 + (data.silver || 0) * 2 + (data.bronze || 0) });
+  });
+  lbScores.sort(function(a, b) { return b.pts - a.pts; });
+  var top3 = lbScores.slice(0, 3);
+  dashboardContent.innerHTML = "<div class='dashboard-header'><h2>📊 Class Aggregate</h2><p>Mean across all " + n + " students</p></div><div class='metrics-grid' id='metricsGridAgg'></div>";
+  var grid = document.getElementById("metricsGridAgg");
+  var medals = ["🥇", "🥈", "🥉"];
+  var top3Html = top3.length > 0 ? top3.map(function(s, i) { return medals[i] + " " + s.name; }).join("<br>") : "No data yet";
+  var lbCard = document.createElement("div");
+  lbCard.className = "metric-card";
+  lbCard.innerHTML = "<h3>🏆 Top Students</h3><div class='leaderboard-summary-box'>" + top3Html + "</div>";
+  grid.appendChild(lbCard);
+  addPercentageMetricCard(grid, "📊 Engagement %", await computeClassAggregatePercent(allStudentDocs, "engagement"), "aggEngagementChart");
+  addPercentageMetricCard(grid, "🗳️ Polls Cast %", await computeClassAggregatePercent(allStudentDocs, "pollsCast"), "aggPollsChart");
+  addPercentageMetricCard(grid, "🥷🏼 Anonymous %", await computeClassAggregatePercent(allStudentDocs, "anon"), "aggAnonChart");
+  addPercentageMetricCard(grid, "🎯 Poll Accuracy %", await computeClassAggregatePercent(allStudentDocs, "accuracy"), "aggAccuracyChart");
+  addHistoricMetricCard(grid, "Comments (avg): " + Math.round(totComments / n), avgMonthlyStats, "comments", "aggCommentsChart");
+  addHistoricMetricCard(grid, "Upvotes Given (avg): " + Math.round(totUpvGiven / n), avgMonthlyStats, "upvotesGiven", "aggUpvGivenChart");
+  addHistoricMetricCard(grid, "Upvotes Received (avg): " + Math.round(totUpvReceived / n), avgMonthlyStats, "upvotesReceived", "aggUpvRecChart");
+}
+
+async function computeClassAggregatePercent(allStudentDocs, type) {
+  var months = getLastTwelveMonthKeys();
+  var sumByMonth = {};
+  for (var mi = 0; mi < months.length; mi++) { sumByMonth[months[mi]] = 0; }
+  var count = 0;
+  for (var i = 0; i < allStudentDocs.length; i++) {
+    var s = allStudentDocs[i].data();
+    var data;
+    if (type === "engagement") { data = await computeMonthlyEngagement(allStudentDocs[i].id, s); }
+    else if (type === "pollsCast") { data = await computeMonthlyPollsCastPct(allStudentDocs[i].id, s); }
+    else if (type === "anon") { data = await computeMonthlyAnonPct(allStudentDocs[i].id, s); }
+    else if (type === "accuracy") { data = await computeMonthlyPollAccuracy(allStudentDocs[i].id, s); }
+    if (data) {
+      for (var di = 0; di < data.length; di++) { sumByMonth[data[di].key] = (sumByMonth[data[di].key] || 0) + data[di].value; }
+      count++;
+    }
+  }
+  var nCount = count || 1;
+  var result = [];
+  for (var mi = 0; mi < months.length; mi++) {
+    var key = months[mi];
+    var d = new Date();
+    d.setMonth(d.getMonth() - (11 - mi));
+    result.push({ key: key, label: d.toLocaleString("en", { month: "short" }).toUpperCase(), value: sumByMonth[key] / nCount });
+  }
+  return result;
+}
+
+function getLastTwelveMonthKeys() {
+  var keys = [];
+  var now = new Date();
+  for (var i = 11; i >= 0; i--) {
+    var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    keys.push(d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"));
+  }
+  return keys;
+}
+
+async function computeMonthlyEngagement(studentId, student) {
+  var months = getLastTwelveMonthKeys();
+  var joinedAt = student.joinedAt && student.joinedAt.toDate ? student.joinedAt.toDate() : new Date(0);
+  var pollsSnap = await getDocs(collection(db, "boards", currentBoardId, "polls"));
+  var postsSnap = await getDocs(collection(db, "boards", currentBoardId, "posts"));
+  var repliesSnap = await getDocs(collection(db, "boards", currentBoardId, "replies"));
+  var now = new Date();
+  var currentMonthKey = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
+  var results = [];
+  for (var mi = 0; mi < months.length; mi++) {
+    var monthKey = months[mi];
+    var parts = monthKey.split("-");
+    var yr = parseInt(parts[0]);
+    var mo = parseInt(parts[1]);
+    var monthEnd = new Date(yr, mo, 0, 23, 59, 59);
+    if (monthEnd < joinedAt) { results.push({ key: monthKey, label: getMonthLabel(monthKey), value: 0 }); continue; }
+    var totalOpp = 0;
+    var participated = 0;
+    var primaryCommentCount = 0;
+    pollsSnap.forEach(function(pd) {
+      var poll = pd.data();
+      var hasInteraction = (poll.history && poll.history.length > 0) || (poll.voters && poll.voters.length > 0);
+      if (!hasInteraction) { return; }
+      var pollTime = poll.createdAt && poll.createdAt.toDate ? poll.createdAt.toDate() : null;
+      var pk = pollTime ? (pollTime.getFullYear() + "-" + String(pollTime.getMonth() + 1).padStart(2, "0")) : currentMonthKey;
+      if (pk !== monthKey) { return; }
+      totalOpp++;
+      var voted = poll.type === "mc" ? (poll.voters || []).indexOf(student.username) !== -1 : (poll.history || []).some(function(h) { return h.username === student.username; });
+      if (voted) { participated++; }
+    });
+    postsSnap.forEach(function(pd) {
+      var post = pd.data();
+      var postTime = post.timestamp && post.timestamp.toDate ? post.timestamp.toDate() : null;
+      if (!postTime || postTime < joinedAt) { return; }
+      var pk = postTime.getFullYear() + "-" + String(postTime.getMonth() + 1).padStart(2, "0");
+      if (pk !== monthKey) { return; }
+      if (post.author === student.username) { primaryCommentCount++; return; }
+      totalOpp++;
+      var upvoted = (post.upvoters || []).indexOf(student.username) !== -1;
+      var replied = repliesSnap.docs.some(function(rd) { return rd.data().postId === pd.id && rd.data().author === student.username; });
+      if (upvoted || replied) { participated++; }
+    });
+    var pct = totalOpp > 0 ? (participated / totalOpp) * 100 : 0;
+    pct = Math.min(pct + Math.min(primaryCommentCount * 2, 50), 100);
+    results.push({ key: monthKey, label: getMonthLabel(monthKey), value: pct });
+  }
+  return results;
+}
+
+async function computeMonthlyPollsCastPct(studentId, student) {
+  var months = getLastTwelveMonthKeys();
+  var joinedAt = student.joinedAt && student.joinedAt.toDate ? student.joinedAt.toDate() : new Date(0);
+  var pollsSnap = await getDocs(collection(db, "boards", currentBoardId, "polls"));
+  var now = new Date();
+  var currentMonthKey = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
+  var results = [];
+  for (var mi = 0; mi < months.length; mi++) {
+    var monthKey = months[mi];
+    var parts = monthKey.split("-");
+    var yr = parseInt(parts[0]);
+    var mo = parseInt(parts[1]);
+    var monthEnd = new Date(yr, mo, 0, 23, 59, 59);
+    if (monthEnd < joinedAt) { results.push({ key: monthKey, label: getMonthLabel(monthKey), value: 0 }); continue; }
+    var total = 0;
+    var voted = 0;
+    pollsSnap.forEach(function(pd) {
+      var poll = pd.data();
+      var hasInteraction = (poll.history && poll.history.length > 0) || (poll.voters && poll.voters.length > 0);
+      if (!hasInteraction) { return; }
+      var pollTime = poll.createdAt && poll.createdAt.toDate ? poll.createdAt.toDate() : null;
+      var pk = pollTime ? (pollTime.getFullYear() + "-" + String(pollTime.getMonth() + 1).padStart(2, "0")) : currentMonthKey;
+      if (pk !== monthKey) { return; }
+      total++;
+      var v = poll.type === "mc" ? (poll.voters || []).indexOf(student.username) !== -1 : (poll.history || []).some(function(h) { return h.username === student.username; });
+      if (v) { voted++; }
+    });
+    results.push({ key: monthKey, label: getMonthLabel(monthKey), value: total > 0 ? (voted / total) * 100 : 0 });
+  }
+  return results;
+}
+
+async function computeMonthlyAnonPct(studentId, student) {
+  var months = getLastTwelveMonthKeys();
+  var postsSnap = await getDocs(collection(db, "boards", currentBoardId, "posts"));
+  var repliesSnap = await getDocs(collection(db, "boards", currentBoardId, "replies"));
+  var results = [];
+  for (var mi = 0; mi < months.length; mi++) {
+    var monthKey = months[mi];
+    var total = 0;
+    var anon = 0;
+    postsSnap.forEach(function(pd) {
+      var p = pd.data();
+      if (p.author !== student.username) { return; }
+      var t = p.timestamp && p.timestamp.toDate ? p.timestamp.toDate() : null;
+      if (!t) { return; }
+      var pk = t.getFullYear() + "-" + String(t.getMonth() + 1).padStart(2, "0");
+      if (pk !== monthKey) { return; }
+      total++;
+      if (p.anonymous) { anon++; }
+    });
+    repliesSnap.forEach(function(rd) {
+      var r = rd.data();
+      if (r.author !== student.username) { return; }
+      var t = r.timestamp && r.timestamp.toDate ? r.timestamp.toDate() : null;
+      if (!t) { return; }
+      var pk = t.getFullYear() + "-" + String(t.getMonth() + 1).padStart(2, "0");
+      if (pk !== monthKey) { return; }
+      total++;
+      if (r.anonymous) { anon++; }
+    });
+    results.push({ key: monthKey, label: getMonthLabel(monthKey), value: total > 0 ? (anon / total) * 100 : 0 });
+  }
+  return results;
+}
+
+async function computeMonthlyPollAccuracy(studentId, student) {
+  var months = getLastTwelveMonthKeys();
+  var pollsSnap = await getDocs(collection(db, "boards", currentBoardId, "polls"));
+  var now = new Date();
+  var currentMonthKey = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
+  var results = [];
+  for (var mi = 0; mi < months.length; mi++) {
+    var monthKey = months[mi];
+    var participated = 0;
+    var correct = 0;
+    pollsSnap.forEach(function(pd) {
+      var poll = pd.data();
+      if (poll.type !== "mc") { return; }
+      if ((poll.voters || []).indexOf(student.username) === -1) { return; }
+      var pollTime = poll.createdAt && poll.createdAt.toDate ? poll.createdAt.toDate() : null;
+      var pk = pollTime ? (pollTime.getFullYear() + "-" + String(pollTime.getMonth() + 1).padStart(2, "0")) : currentMonthKey;
+      if (pk !== monthKey) { return; }
+      participated++;
+      if (!poll.correctIndices || poll.correctIndices.length === 0) { return; }
+      var voterEntries = (poll.history || []).filter(function(e) { return e.username === student.username; });
+      if (!voterEntries.length) { return; }
+      var last = voterEntries[voterEntries.length - 1];
+      var optText = last.response || "";
+      if (optText.indexOf("Voted: ") === 0) { optText = optText.slice(7); }
+      else if (optText.indexOf("Removed vote: ") === 0) { optText = optText.slice(14); }
+      if (poll.correctIndices.indexOf((poll.options || []).indexOf(optText)) !== -1) { correct++; }
+    });
+    results.push({ key: monthKey, label: getMonthLabel(monthKey), value: participated > 0 ? (correct / participated) * 100 : 0 });
+  }
+  return results;
+}
+
+function getMonthLabel(monthKey) {
+  var parts = monthKey.split("-");
+  return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, 1).toLocaleString("en", { month: "short" }).toUpperCase();
+}
+
+function drawChart(canvasId, monthlyStats, metric) {
+  var canvas = document.getElementById(canvasId);
+  if (!canvas) { return; }
+  var ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  var months = getLastTwelveMonthKeys();
+  var data = [];
+  for (var i = 0; i < months.length; i++) {
+    var key = months[i];
+    data.push({ key: key, label: getMonthLabel(key), value: monthlyStats[key] && monthlyStats[key][metric] ? monthlyStats[key][metric] : 0 });
+  }
+  var maxValue = 1;
+  for (var i = 0; i < data.length; i++) { if (data[i].value > maxValue) { maxValue = data[i].value; } }
+  var padding = 40;
+  var chartWidth = canvas.width - padding * 2;
+  var chartHeight = canvas.height - padding * 2;
+  var pointSpacing = chartWidth / (data.length - 1);
+  ctx.strokeStyle = "#d4a373";
+  ctx.lineWidth = 3;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.setLineDash([]);
+  ctx.beginPath();
+  for (var i = 0; i < data.length; i++) {
+    var x = padding + i * pointSpacing;
+    var y = padding + chartHeight - (data[i].value / maxValue) * chartHeight;
+    if (i === 0) { ctx.moveTo(x, y); } else { ctx.lineTo(x, y); }
+  }
+  ctx.stroke();
+  ctx.fillStyle = "#d4a373";
+  for (var i = 0; i < data.length; i++) {
+    var x = padding + i * pointSpacing;
+    var y = padding + chartHeight - (data[i].value / maxValue) * chartHeight;
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.fillStyle = "#1d1d1f";
+  ctx.font = "11px system-ui";
+  ctx.textAlign = "center";
+  for (var i = 0; i < data.length; i++) {
+    if (i % 2 === 0 || i === data.length - 1) {
+      ctx.fillText(data[i].label, padding + i * pointSpacing, canvas.height - 10);
+    }
+  }
+}
+
+function drawPercentageChart(canvasId, monthlyData) {
+  var canvas = document.getElementById(canvasId);
+  if (!canvas) { return; }
+  var ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!monthlyData || monthlyData.length === 0) { return; }
+  var padding = 40;
+  var chartWidth = canvas.width - padding * 2;
+  var chartHeight = canvas.height - padding * 2;
+  var pointSpacing = chartWidth / (monthlyData.length - 1);
+  var rollingAvg = [];
+  for (var i = 0; i < monthlyData.length; i++) {
+    var sum = 0;
+    for (var j = 0; j <= i; j++) { sum += monthlyData[j].value; }
+    rollingAvg.push({ key: monthlyData[i].key, label: monthlyData[i].label, value: sum / (i + 1) });
+  }
+  drawColoredLine(ctx, monthlyData, padding, chartWidth, chartHeight, pointSpacing, 100, false);
+  drawColoredLine(ctx, rollingAvg, padding, chartWidth, chartHeight, pointSpacing, 100, true);
+  ctx.fillStyle = "#1d1d1f";
+  ctx.font = "11px system-ui";
+  ctx.textAlign = "center";
+  for (var i = 0; i < monthlyData.length; i++) {
+    if (i % 2 === 0 || i === monthlyData.length - 1) {
+      ctx.fillText(monthlyData[i].label, padding + i * pointSpacing, canvas.height - 10);
+    }
+  }
+}
+
+function getEngagementColor(pct) {
+  var p = Math.max(0, Math.min(100, pct));
+  if (p <= 33.333) { var t = p / 33.333; return "rgb(" + Math.round(128 + t * 127) + ",0,0)"; }
+  if (p <= 66.666) { var t = (p - 33.333) / 33.333; return "rgb(255," + Math.round(t * 204) + ",0)"; }
+  var t = (p - 66.666) / 33.334;
+  return "rgb(" + Math.round(255 * (1 - t)) + "," + Math.round(180 + t * 75) + ",0)";
+}
+
+function drawColoredLine(ctx, data, padding, chartWidth, chartHeight, pointSpacing, maxVal, dotted) {
+  if (data.length < 2) { return; }
+  ctx.save();
+  ctx.lineWidth = dotted ? 2 : 3;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  if (dotted) { ctx.setLineDash([6, 4]); } else { ctx.setLineDash([]); }
+  for (var i = 1; i < data.length; i++) {
+    var x0 = padding + (i - 1) * pointSpacing;
+    var y0 = padding + chartHeight - (data[i - 1].value / maxVal) * chartHeight;
+    var x1 = padding + i * pointSpacing;
+    var y1 = padding + chartHeight - (data[i].value / maxVal) * chartHeight;
+    ctx.strokeStyle = getEngagementColor((data[i - 1].value + data[i].value) / 2);
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1, y1);
+    ctx.stroke();
+  }
+  if (!dotted) {
+    for (var i = 0; i < data.length; i++) {
+      var x = padding + i * pointSpacing;
+      var y = padding + chartHeight - (data[i].value / maxVal) * chartHeight;
+      ctx.fillStyle = getEngagementColor(data[i].value);
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
+async function showMergeDialog(sid) {
+  var snap = await getDocs(collection(db, "boards", currentBoardId, "students"));
+  var students = [];
+  snap.forEach(function(d) { if (d.id !== sid) { students.push({ id: d.id, username: d.data().username }); } });
+  if (!students.length) { alert("No other students to merge with."); return; }
+  var promptText = "Select student to merge with:\n\n";
+  for (var i = 0; i < students.length; i++) { promptText += (i + 1) + ". " + students[i].username + "\n"; }
+  promptText += "\nEnter number:";
+  var sel = prompt(promptText);
+  var idx = parseInt(sel) - 1;
+  if (isNaN(idx) || idx < 0 || idx >= students.length) { alert("Invalid selection."); return; }
+  if (!confirm("Merge " + students[idx].username + " into current student?")) { return; }
+  await mergeStudents(sid, students[idx].id);
+}
+
+async function mergeStudents(keepId, mergeId) {
+  var keepRef = doc(db, "boards", currentBoardId, "students", keepId);
+  var mergeRef = doc(db, "boards", currentBoardId, "students", mergeId);
+  var keepData = (await getDoc(keepRef)).data();
+  var mergeData = (await getDoc(mergeRef)).data();
+  var mergedH = {
+    historicalComments: (keepData.historicalComments || 0) + (mergeData.historicalComments || 0),
+    historicalUpvotesGiven: (keepData.historicalUpvotesGiven || 0) + (mergeData.historicalUpvotesGiven || 0),
+    historicalUpvotesReceived: (keepData.historicalUpvotesReceived || 0) + (mergeData.historicalUpvotesReceived || 0),
+    historicalPollsCast: (keepData.historicalPollsCast || 0) + (mergeData.historicalPollsCast || 0)
+  };
+  var mergedM = Object.assign({}, keepData.monthlyStats || {});
+  var mergeStats = mergeData.monthlyStats || {};
+  for (var m in mergeStats) {
+    if (!mergedM[m]) { mergedM[m] = mergeStats[m]; }
+    else {
+      mergedM[m] = {
+        comments: (mergedM[m].comments || 0) + (mergeStats[m].comments || 0),
+        upvotesGiven: (mergedM[m].upvotesGiven || 0) + (mergeStats[m].upvotesGiven || 0),
+        upvotesReceived: (mergedM[m].upvotesReceived || 0) + (mergeStats[m].upvotesReceived || 0),
+        pollsCast: (mergedM[m].pollsCast || 0) + (mergeStats[m].pollsCast || 0)
+      };
+    }
+  }
+  var updateData = { monthlyStats: mergedM };
+  for (var key in mergedH) { updateData[key] = mergedH[key]; }
+  await updateDoc(keepRef, updateData);
+  await deleteDoc(mergeRef);
+  alert("Students merged successfully.");
+  viewStudentDashboard(keepId);
+}
+
+async function calculateStudentStats(studentId, totalPolls, pollsSnapshot) {
+  var student = (await getDoc(doc(db, "boards", currentBoardId, "students", studentId))).data();
+  var pollsVoted = 0;
+  pollsSnapshot.forEach(function(pd) {
+    var poll = pd.data();
+    if (poll.type === "mc" && (poll.voters || []).indexOf(student.username) !== -1) { pollsVoted++; }
+    else if (poll.type === "free" && (poll.history || []).some(function(h) { return h.username === student.username; })) { pollsVoted++; }
+  });
+  var postsSnap = await getDocs(collection(db, "boards", currentBoardId, "posts"));
+  var repliesSnap = await getDocs(collection(db, "boards", currentBoardId, "replies"));
+  var comments = 0;
+  var anonComments = 0;
+  var upvotesGiven = 0;
+  var upvotesReceived = 0;
+  postsSnap.forEach(function(pd) {
+    var p = pd.data();
+    if (p.author !== student.username) { return; }
+    comments++;
+    if (p.anonymous) { anonComments++; }
+  });
+  repliesSnap.forEach(function(rd) {
+    var r = rd.data();
+    if (r.author !== student.username) { return; }
+    comments++;
+    if (r.anonymous) { anonComments++; }
+  });
+  postsSnap.forEach(function(pd) {
+    var p = pd.data();
+    if ((p.upvoters || []).indexOf(student.username) !== -1) { upvotesGiven++; }
+    if (p.author === student.username) { upvotesReceived += p.upvotes || 0; }
+  });
+  return {
+    pollsVoted: pollsVoted,
+    comments: comments,
+    upvotesGiven: upvotesGiven,
+    upvotesReceived: upvotesReceived,
+    anonymousPercentage: comments > 0 ? Math.round((anonComments / comments) * 100) : 0
+  };
+}
+
+async function incrementStudentStat(studentId, metric, amount) {
+  if (amount === undefined) { amount = 1; }
+  if (!studentId) { return; }
+  var studentRef = doc(db, "boards", currentBoardId, "students", studentId);
+  var studentDoc = await getDoc(studentRef);
+  if (!studentDoc.exists()) { return; }
+  var student = studentDoc.data();
+  var monthlyStats = student.monthlyStats || {};
+  var now = new Date();
+  var monthKey = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
+  if (!monthlyStats[monthKey]) { monthlyStats[monthKey] = { comments: 0, upvotesGiven: 0, upvotesReceived: 0, pollsCast: 0 }; }
+  monthlyStats[monthKey][metric] = (monthlyStats[monthKey][metric] || 0) + amount;
+  var updates = { monthlyStats: monthlyStats };
+  var hKey = "historical" + metric.charAt(0).toUpperCase() + metric.slice(1);
+  updates[hKey] = (student[hKey] || 0) + amount;
+  await updateDoc(studentRef, updates);
+}
+
+async function uploadImage(file, folder) {
+  var storageRef = ref(storage, folder + "/" + Date.now() + "-" + file.name);
+  await uploadBytes(storageRef, file);
+  return getDownloadURL(storageRef);
+}
+
+function showImagePreview(file, previewElement, removeCallback) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    previewElement.innerHTML = "<img src='" + e.target.result + "' /><button class='remove-image'>x</button>";
+    previewElement.querySelector(".remove-image").onclick = removeCallback;
+  };
+  reader.readAsDataURL(file);
+}
+
+function showImageLightbox(imageUrl) {
+  var lb = document.createElement("div");
+  lb.className = "image-lightbox";
+  lb.innerHTML = "<img src='" + imageUrl + "' />";
+  lb.onclick = function() { lb.remove(); };
+  document.body.appendChild(lb);
+}
+
+postImageBtn.onclick = function() { postImageInput.click(); };
+postImageInput.onchange = function(e) {
+  var file = e.target.files[0];
+  if (!file) { return; }
+  if (!file.type.startsWith("image/")) { alert("Please select an image file."); return; }
+  postImageFile = file;
+  showImagePreview(file, postImagePreview, function() { postImageFile = null; postImagePreview.innerHTML = ""; postImageInput.value = ""; });
+};
+
+postBtn.onclick = async function() {
+  var text = postInput.value.trim();
+  if (!text && !postImageFile) { alert("Please enter text or attach an image."); return; }
+  var anonymous = document.getElementById("anonymousToggle") ? document.getElementById("anonymousToggle").checked : false;
+  var imageUrl = null;
+  if (postImageFile) { imageUrl = await uploadImage(postImageFile, "boards/" + currentBoardId + "/posts"); }
+  await addDoc(collection(db, "boards", currentBoardId, "posts"), {
+    author: username, text: text, anonymous: anonymous, imageUrl: imageUrl,
+    upvotes: 0, upvoters: [], upvoteHistory: [], timestamp: serverTimestamp()
+  });
+  if (currentStudentId) { await incrementStudentStat(currentStudentId, "comments"); }
+  postInput.value = "";
+  postImageFile = null;
+  postImagePreview.innerHTML = "";
+  postImageInput.value = "";
+  if (document.getElementById("anonymousToggle")) { document.getElementById("anonymousToggle").checked = false; }
+};
+
+sortSelect.onchange = function() { sortMode = sortSelect.value; loadPosts(); };
+
+function createPopcornConfetti(el) {
+  for (var i = 0; i < 6; i++) {
+    var p = document.createElement("span");
+    p.textContent = "🍿";
+    var rect = el.getBoundingClientRect();
+    p.style.cssText = "position:fixed;left:" + rect.left + "px;top:" + rect.top + "px;font-size:16px;opacity:1;transition:all 0.8s ease-out;pointer-events:none;z-index:9999;";
+    document.body.appendChild(p);
+    var x = (Math.random() - 0.5) * 60;
+    var y = -Math.random() * 60 - 20;
+    (function(el2, xv, yv) {
+      requestAnimationFrame(function() {
+        el2.style.transform = "translate(" + xv + "px," + yv + "px) rotate(" + Math.round(Math.random() * 360) + "deg)";
+        el2.style.opacity = 0;
+      });
+      setTimeout(function() { el2.remove(); }, 800);
+    })(p, x, y);
+  }
+}
+
+async function addReply(postId, text, anonymous, imageUrl) {
+  if (!anonymous) { anonymous = false; }
+  if (!imageUrl) { imageUrl = null; }
+  if (!text && !imageUrl) { return; }
+  await addDoc(collection(db, "boards", currentBoardId, "replies"), {
+    postId: postId, author: username, text: text, anonymous: anonymous, imageUrl: imageUrl, timestamp: serverTimestamp()
+  });
+  if (currentStudentId) { await incrementStudentStat(currentStudentId, "comments"); }
+}
+
+function loadReplies(postId, container, parentVisible) {
+  if (parentVisible === undefined) { parentVisible = true; }
+  var q = query(collection(db, "boards", currentBoardId, "replies"), orderBy("timestamp", "asc"));
+  onSnapshot(q, function(snap) {
+    container.innerHTML = "";
+    snap.forEach(function(d) {
+      var r = d.data();
+      if (r.postId !== postId) { return; }
+      if (r.visible === undefined) { r.visible = true; }
+      if (!r.visible && !isTeacher) { return; }
+      if (!parentVisible && !isTeacher) { return; }
+      var div = document.createElement("div");
+      div.className = "reply";
+      if (!r.visible) { div.classList.add("hidden-comment"); }
+      div.innerHTML = "<strong>" + (r.anonymous && !isTeacher ? "🥷🏼 Anonymous" : r.author) + "</strong> " + r.text;
+      if (r.imageUrl) {
+        var img = document.createElement("img");
+        img.src = r.imageUrl;
+        img.className = "comment-image";
+        (function(url) { img.onclick = function() { showImageLightbox(url); }; })(r.imageUrl);
+        div.appendChild(img);
+      }
+      if (isTeacher) {
+        var hBtn = document.createElement("button");
+        hBtn.textContent = r.visible ? "👁️ Shown" : "👁️‍🗨️ Hidden";
+        hBtn.className = "hide-toggle teacher-control";
+        (function(docId, vis) {
+          hBtn.onclick = async function() { await updateDoc(doc(db, "boards", currentBoardId, "replies", docId), { visible: !vis }); };
+        })(d.id, r.visible);
+        div.appendChild(hBtn);
+        var delBtn = document.createElement("button");
+        delBtn.textContent = "🗑️ Delete";
+        delBtn.className = "delete-btn teacher-control";
+        (function(docId) {
+          delBtn.onclick = async function() { await deleteDoc(doc(db, "boards", currentBoardId, "replies", docId)); };
+        })(d.id);
+        div.appendChild(delBtn);
+      }
+      container.appendChild(div);
+    });
+  });
+}
+
+function loadPosts() {
+  if (!currentBoardId) { return; }
+  if (unsubPosts) { unsubPosts(); unsubPosts = null; }
+  var orderField = sortMode === "new" ? "timestamp" : "upvotes";
+  var q = query(collection(db, "boards", currentBoardId, "posts"), orderBy(orderField, "desc"));
+  unsubPosts = onSnapshot(q, function(snapshot) {
+    postsDiv.innerHTML = "";
+    var archivedComments = document.getElementById("archivedComments");
+    if (archivedComments) { archivedComments.innerHTML = ""; }
+    snapshot.forEach(function(docSnap) {
+      var post = docSnap.data();
+      var postId = docSnap.id;
+      if (post.visible === undefined) { post.visible = true; }
+      if (!post.visible && !isTeacher) { return; }
+      if (!post.visible && isTeacher) {
+        // Render into archived section instead
+        var archivedComments = document.getElementById("archivedComments");
+        if (archivedComments) {
+          if (archivedComments.querySelector(".archived-comments-header") === null) {
+            var header = document.createElement("div");
+            header.className = "archived-comments-header";
+            header.style.cssText = "text-align:center;color:var(--text-secondary,#888);font-size:0.85rem;margin:24px 0 8px;letter-spacing:0.05em;";
+            header.textContent = "── Archived Comments ──";
+            archivedComments.appendChild(header);
+          }
+          var aDiv = document.createElement("div");
+          aDiv.className = "post hidden-comment";
+          var displayName = post.anonymous ? "🥷🏼 Anonymous" : post.author;
+          aDiv.innerHTML = "<strong>" + displayName + "</strong><br>" + post.text + "<br><span class='upvote'>🍿 " + (post.upvotes || 0) + "</span>";
+          if (post.imageUrl) {
+            var aImg = document.createElement("img");
+            aImg.src = post.imageUrl;
+            aImg.className = "comment-image";
+            (function(url) { aImg.onclick = function() { showImageLightbox(url); }; })(postId);
+            aDiv.appendChild(aImg);
+          }
+          var aHBtn = document.createElement("button");
+          aHBtn.textContent = "👁️‍🗨️ Hidden";
+          aHBtn.className = "hide-toggle teacher-control";
+          (function(pid) {
+            aHBtn.onclick = async function(e) {
+              e.stopPropagation();
+              await updateDoc(doc(db, "boards", currentBoardId, "posts", pid), { visible: true });
+              var rSnap = await getDocs(collection(db, "boards", currentBoardId, "replies"));
+              rSnap.forEach(function(rd) {
+                if (rd.data().postId === pid) { updateDoc(doc(db, "boards", currentBoardId, "replies", rd.id), { visible: true }); }
+              });
+            };
+          })(postId);
+          aDiv.appendChild(aHBtn);
+          var aDelBtn = document.createElement("button");
+          aDelBtn.textContent = "🗑️ Delete";
+          aDelBtn.className = "delete teacher-control";
+          (function(pid) {
+            aDelBtn.onclick = async function(e) {
+              e.stopPropagation();
+              if (!confirm("Delete this post?")) { return; }
+              var rSnap = await getDocs(collection(db, "boards", currentBoardId, "replies"));
+              rSnap.forEach(function(rd) { if (rd.data().postId === pid) { deleteDoc(doc(db, "boards", currentBoardId, "replies", rd.id)); } });
+              await deleteDoc(doc(db, "boards", currentBoardId, "posts", pid));
+            };
+          })(postId);
+          aDiv.appendChild(aDelBtn);
+          var aRepliesDiv = document.createElement("div");
+          loadReplies(postId, aRepliesDiv, true);
+          aDiv.appendChild(aRepliesDiv);
+          archivedComments.appendChild(aDiv);
+        }
+        return;
+      }
+      if (post.upvoters && post.upvoters.indexOf(username) !== -1) { myUpvotedPostIds.add(postId); } else { myUpvotedPostIds.delete(postId); }
+      var div = document.createElement("div");
+      div.className = "post";
+      if (myUpvotedPostIds.has(postId)) { div.classList.add("upvoted-by-me"); }
+      if (!post.visible) { div.classList.add("hidden-comment"); }
+      var displayName = post.anonymous && !isTeacher ? "🥷🏼 Anonymous" : post.author;
+      div.innerHTML = "<strong>" + displayName + "</strong><br>" + post.text + "<br><span class='upvote'>🍿 " + (post.upvotes || 0) + "</span><button class='reply-btn teacher-control'>Reply</button>";
+      if (post.imageUrl) {
+        var img = document.createElement("img");
+        img.src = post.imageUrl;
+        img.className = "comment-image";
+        (function(url) { img.onclick = function() { showImageLightbox(url); }; })(post.imageUrl);
+        div.appendChild(img);
+      }
+      if (isTeacher) {
+        var hBtn = document.createElement("button");
+        hBtn.textContent = post.visible ? "👁️ Shown" : "👁️‍🗨️ Hidden";
+        hBtn.className = "hide-toggle teacher-control";
+        (function(pid, vis) {
+          hBtn.onclick = async function(e) {
+            e.stopPropagation();
+            var newV = !vis;
+            await updateDoc(doc(db, "boards", currentBoardId, "posts", pid), { visible: newV });
+            var rSnap = await getDocs(collection(db, "boards", currentBoardId, "replies"));
+            rSnap.forEach(function(rd) {
+              if (rd.data().postId === pid) { updateDoc(doc(db, "boards", currentBoardId, "replies", rd.id), { visible: newV }); }
+            });
+          };
+        })(postId, post.visible);
+        div.appendChild(hBtn);
+        var delBtn = document.createElement("button");
+        delBtn.textContent = "🗑️ Delete";
+        delBtn.className = "delete teacher-control";
+        (function(pid) {
+          delBtn.onclick = async function(e) {
+            e.stopPropagation();
+            var rSnap = await getDocs(collection(db, "boards", currentBoardId, "replies"));
+            rSnap.forEach(function(rd) { if (rd.data().postId === pid) { deleteDoc(doc(db, "boards", currentBoardId, "replies", rd.id)); } });
+            await deleteDoc(doc(db, "boards", currentBoardId, "posts", pid));
+          };
+        })(postId);
+        div.appendChild(delBtn);
+      }
+      var upvoteSpan = div.querySelector(".upvote");
+      (function(pid, postData) {
+        upvoteSpan.onclick = async function(e) {
+          e.stopPropagation();
+          createPopcornConfetti(upvoteSpan);
+          if (navigator.vibrate) { navigator.vibrate(25); }
+          var postRef = doc(db, "boards", currentBoardId, "posts", pid);
+          var already = postData.upvoters && postData.upvoters.indexOf(username) !== -1;
+          if (already) {
+            await updateDoc(postRef, { upvoters: arrayRemove(username), upvotes: increment(-1), upvoteHistory: arrayUnion(username + ": Removed Upvote") });
+            if (currentStudentId) { await incrementStudentStat(currentStudentId, "upvotesGiven", -1); }
+          } else {
+            await updateDoc(postRef, { upvoters: arrayUnion(username), upvotes: increment(1), upvoteHistory: arrayUnion(username + ": Upvoted") });
+            if (currentStudentId) { await incrementStudentStat(currentStudentId, "upvotesGiven", 1); }
+            if (postData.author !== username) {
+              var aq = query(collection(db, "boards", currentBoardId, "students"), where("username", "==", postData.author));
+              var aSnap = await getDocs(aq);
+              if (!aSnap.empty) { await incrementStudentStat(aSnap.docs[0].id, "upvotesReceived", 1); }
+            }
+          }
+        };
+      })(postId, post);
+      if (isTeacher && post.upvoteHistory && post.upvoteHistory.length > 0) {
+        var hDiv = document.createElement("div");
+        hDiv.className = "comment-upvote-history";
+        hDiv.innerHTML = "<strong>Upvote Log:</strong>";
+        post.upvoteHistory.forEach(function(entry) {
+          var d = document.createElement("div");
+          d.textContent = entry;
+          hDiv.appendChild(d);
+        });
+        div.appendChild(hDiv);
+      }
+      var repliesDiv = document.createElement("div");
+      loadReplies(postId, repliesDiv, post.visible);
+      var replyBtn = div.querySelector(".reply-btn");
+      (function(pid) {
+        replyBtn.onclick = function(e) {
+          e.stopPropagation();
+          var input = document.createElement("textarea");
+          input.className = "reply-input";
+          input.placeholder = "Reply...";
+          var anonWrapper = document.createElement("div");
+          anonWrapper.className = "post-options";
+          var anonCheck = document.createElement("input");
+          anonCheck.type = "checkbox";
+          anonCheck.id = "rA-" + pid;
+          var label = document.createElement("label");
+          label.htmlFor = "rA-" + pid;
+          label.textContent = "🥷🏼 Anonymous";
+          var riInput = document.createElement("input");
+          riInput.type = "file";
+          riInput.accept = "image/*";
+          riInput.style.display = "none";
+          var riBtn = document.createElement("button");
+          riBtn.textContent = "📷 Add Image";
+          riBtn.className = "secondary-btn teacher-control";
+          riBtn.onclick = function() { riInput.click(); };
+          var riPreview = document.createElement("div");
+          riPreview.className = "image-preview";
+          var replyImageFile = null;
+          riInput.onchange = function(ev) {
+            var f = ev.target.files[0];
+            if (!f || !f.type.startsWith("image/")) { return; }
+            replyImageFile = f;
+            showImagePreview(f, riPreview, function() { replyImageFile = null; riPreview.innerHTML = ""; riInput.value = ""; });
+          };
+          anonWrapper.appendChild(anonCheck);
+          anonWrapper.appendChild(label);
+          anonWrapper.appendChild(riBtn);
+          var send = document.createElement("button");
+          send.textContent = "Send";
+          send.className = "teacher-control";
+          send.onclick = async function(ev) {
+            ev.stopPropagation();
+            var iUrl = null;
+            if (replyImageFile) { iUrl = await uploadImage(replyImageFile, "boards/" + currentBoardId + "/replies"); }
+            await addReply(pid, input.value, anonCheck.checked, iUrl);
+            input.remove(); anonWrapper.remove(); send.remove(); riInput.remove(); riPreview.remove();
+          };
+          div.appendChild(input);
+          div.appendChild(anonWrapper);
+          div.appendChild(riPreview);
+          div.appendChild(send);
+        };
+      })(postId);
+      div.appendChild(repliesDiv);
+      postsDiv.appendChild(div);
+    });
+  });
+}
+
+teacherBtn.addEventListener("click", function() {
+  if (!pollCreation.classList.contains("hidden")) {
+    pollCreation.classList.add("hidden");
+    pollCreation.innerHTML = "";
+    return;
+  }
+  pollCreation.innerHTML = "<h3>Create Poll</h3><div class='poll-type-buttons' id='pollTypeBtns'><button type='button' id='mcBtn' class='teacher-control'>Multiple Choice</button><button type='button' id='freeBtn' class='teacher-control'>Free Response</button></div><input type='text' id='pollQuestionInput' placeholder='Poll question' style='display:none;' /><div id='mcOptionsContainer' style='display:none;'><div class='mc-options-list' id='mcOptionsList'></div><button type='button' class='add-option-btn teacher-control' id='addOptionBtn'>+</button><div class='require-all-row' style='margin-top:10px;'><input type='checkbox' id='requireAllCorrect' /><label for='requireAllCorrect'>Require All Correct</label></div></div><input type='file' id='pollImageInput' accept='image/*' style='display:none;' /><button type='button' id='pollImageBtn' class='secondary-btn teacher-control' style='display:none;'>📷 Add Image</button><div id='pollImagePreviewInner' class='image-preview'></div><button type='button' id='createPollBtn' class='teacher-control' style='display:none;'>Create Poll</button><button type='button' id='cancelPollBtn' class='teacher-control' style='display:none;margin-left:8px;'>Cancel</button>";
+  pollCreation.classList.remove("hidden");
+
+  var currentPollType = "";
+  var pollImageFile = null;
+  var pImgInput = document.getElementById("pollImageInput");
+  var pImgPreview = document.getElementById("pollImagePreviewInner");
+
+  document.getElementById("pollImageBtn").addEventListener("click", function(e) { e.stopPropagation(); pImgInput.click(); });
+  pImgInput.addEventListener("change", function(e) {
+    var f = e.target.files[0];
+    if (!f || !f.type.startsWith("image/")) { return; }
+    pollImageFile = f;
+    showImagePreview(f, pImgPreview, function() { pollImageFile = null; pImgPreview.innerHTML = ""; pImgInput.value = ""; });
+  });
+
+  function addMCOptionRow() {
+    var list = document.getElementById("mcOptionsList");
+    var row = document.createElement("div");
+    row.className = "mc-option-row";
+    var toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "correct-toggle teacher-control";
+    toggle.textContent = "ㄨ";
+    toggle.dataset.correct = "false";
+    toggle.addEventListener("click", function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var isCorrect = toggle.dataset.correct === "true";
+      toggle.dataset.correct = String(!isCorrect);
+      toggle.textContent = !isCorrect ? "✓" : "ㄨ";
+      toggle.classList.toggle("is-correct", !isCorrect);
+    });
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.placeholder = "Option text";
+    inp.style.marginBottom = "0";
+    row.appendChild(toggle);
+    row.appendChild(inp);
+    list.appendChild(row);
+  }
+
+  addMCOptionRow();
+  addMCOptionRow();
+
+  document.getElementById("addOptionBtn").addEventListener("click", function(e) { e.preventDefault(); e.stopPropagation(); addMCOptionRow(); });
+
+  document.getElementById("mcBtn").addEventListener("click", function(e) {
+    e.stopPropagation();
+    currentPollType = "mc";
+    document.getElementById("pollQuestionInput").style.display = "block";
+    document.getElementById("mcOptionsContainer").style.display = "block";
+    document.getElementById("pollImageBtn").style.display = "inline-block";
+    document.getElementById("createPollBtn").style.display = "inline-block";
+    document.getElementById("cancelPollBtn").style.display = "inline-block";
+    document.getElementById("pollTypeBtns").style.display = "none";
+  });
+
+  document.getElementById("freeBtn").addEventListener("click", function(e) {
+    e.stopPropagation();
+    currentPollType = "free";
+    document.getElementById("pollQuestionInput").style.display = "block";
+    document.getElementById("pollImageBtn").style.display = "inline-block";
+    document.getElementById("createPollBtn").style.display = "inline-block";
+    document.getElementById("cancelPollBtn").style.display = "inline-block";
+    document.getElementById("pollTypeBtns").style.display = "none";
+  });
+
+  document.getElementById("cancelPollBtn").addEventListener("click", function(e) {
+    e.stopPropagation();
+    pollCreation.classList.add("hidden");
+    pollCreation.innerHTML = "";
+    pollImageFile = null;
+  });
+
+  document.getElementById("createPollBtn").addEventListener("click", async function(e) {
+    e.stopPropagation();
+    var createBtn = document.getElementById("createPollBtn");
+    if (!createBtn || createBtn.disabled) { return; }
+    if (!currentPollType) { alert("Please select Multiple Choice or Free Response first."); return; }
+    var questionEl = document.getElementById("pollQuestionInput");
+    var question = questionEl ? questionEl.value.trim() : "";
+    if (!question) { alert("Please enter a poll question."); return; }
+    createBtn.disabled = true;
+    createBtn.textContent = "Creating...";
+    var imageUrl = null;
+    try {
+      if (pollImageFile) { imageUrl = await uploadImage(pollImageFile, "boards/" + currentBoardId + "/polls"); }
+      if (currentPollType === "mc") {
+        var rows = document.querySelectorAll("#mcOptionsList .mc-option-row");
+        var options = [];
+        var correctIndices = [];
+        rows.forEach(function(row) {
+          var text = row.querySelector("input[type='text']").value.trim();
+          var isCorrect = row.querySelector(".correct-toggle").dataset.correct === "true";
+          if (text) {
+            if (isCorrect) { correctIndices.push(options.length); }
+            options.push(text);
+          }
+        });
+        if (options.length < 2) { alert("Please add at least 2 options."); createBtn.disabled = false; createBtn.textContent = "Create Poll"; return; }
+        if (correctIndices.length === 0) { alert("Kernel crisis! Mark a ✓ to publish."); createBtn.disabled = false; createBtn.textContent = "Create Poll"; return; }
+        var requireAll = document.getElementById("requireAllCorrect").checked;
+        await addDoc(collection(db, "boards", currentBoardId, "polls"), {
+          question: question, type: "mc", options: options,
+          votes: Array(options.length).fill(0), voters: [], visible: false,
+          imageUrl: imageUrl, history: [], correctIndices: correctIndices,
+          requireAllCorrect: requireAll, responsesVisible: false,
+          correctVisible: false, pointsAwarded: false, createdAt: serverTimestamp()
+        });
+      } else {
+        await addDoc(collection(db, "boards", currentBoardId, "polls"), {
+          question: question, type: "free", responses: {}, visible: false,
+          responsesVisible: false, imageUrl: imageUrl, history: [], createdAt: serverTimestamp()
+        });
+      }
+      pollCreation.classList.add("hidden");
+      pollCreation.innerHTML = "";
+      pollImageFile = null;
+    } catch (err) {
+      console.error("Error creating poll:", err);
+      alert("Something went wrong. Please try again.");
+      if (createBtn) { createBtn.disabled = false; createBtn.textContent = "Create Poll"; }
+    }
+  });
 });
-document.getElementById('portal-search').addEventListener('input', ()=>portalSearch());
-document.getElementById('portal-search-date').addEventListener('input', ()=>portalSearch());
 
-/* ---------------------------- DARK MODE ---------------------------- */
-// Sun/moon icon-only toggle, available to everyone (public + portal).
-// Preference is remembered per-browser via localStorage.
-const SUN_ICON = '<svg viewBox="0 0 24 24"><path d="M12 4a1 1 0 011 1v1a1 1 0 11-2 0V5a1 1 0 011-1zm0 14a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm8-6a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM6 12a1 1 0 01-1 1H4a1 1 0 110-2h1a1 1 0 011 1zm11.66 6.66a1 1 0 01-1.42 0l-.7-.71a1 1 0 111.42-1.41l.7.7a1 1 0 010 1.42zM7.46 7.46a1 1 0 01-1.42 0l-.7-.71A1 1 0 016.75 5.34l.71.7a1 1 0 010 1.42zm10.2-1.42a1 1 0 010 1.42l-.7.7a1 1 0 11-1.42-1.41l.7-.7a1 1 0 011.42 0zM6.75 18.66a1 1 0 010-1.42l.71-.7a1 1 0 111.41 1.41l-.7.71a1 1 0 01-1.42 0zM12 7a5 5 0 100 10 5 5 0 000-10z"/></svg>';
-const MOON_ICON = '<svg viewBox="0 0 24 24"><path d="M20.7 15.5A8.7 8.7 0 019.5 3.3a1 1 0 00-1.2-1.3A10.7 10.7 0 1022 16.7a1 1 0 00-1.3-1.2z"/></svg>';
-function updateDarkModeIcons(){
-  const isDark = document.body.classList.contains('dark-mode');
-  document.querySelectorAll('.dark-toggle-icon').forEach(el=>{ el.innerHTML = isDark ? SUN_ICON : MOON_ICON; });
-}
-function toggleDarkMode(){
-  document.body.classList.toggle('dark-mode');
-  localStorage.setItem('groundedDarkMode', document.body.classList.contains('dark-mode') ? '1' : '0');
-  updateDarkModeIcons();
-}
-function initDarkMode(){
-  if(localStorage.getItem('groundedDarkMode') === '1') document.body.classList.add('dark-mode');
-  updateDarkModeIcons();
+var cachedTotalStudents = 0;
+
+// Normalise Firestore votes field — created as array but becomes a map
+// object {0: n, 1: n} after any ["votes.N"] increment operations.
+
+// ─── POLLS ─────────────────────────────────────────────────────────────────
+
+function getVotesArray(poll) {
+  var options = poll.options || [];
+  var raw = poll.votes;
+  if (!raw) { return Array(options.length).fill(0); }
+  if (Array.isArray(raw)) { return raw; }
+  var arr = [];
+  for (var i = 0; i < options.length; i++) {
+    arr.push(raw[String(i)] !== undefined ? raw[String(i)] : (raw[i] !== undefined ? raw[i] : 0));
+  }
+  return arr;
 }
 
-/* ---------------------------- INIT ---------------------------- */
-// Paint immediately with the local seed defaults so the page is never blank,
-// then let Firestore's listeners take over the moment real/synced data loads.
-initFirebaseSync();
-initDarkMode();
-renderPublic();
-showView('view-public');
+// Using 1.6's proven pattern: await student count FIRST, then set up listener.
+// This guarantees currentBoardId is valid and the listener fires correctly for students.
+
+async function loadPolls() {
+  if (!currentBoardId) { return; }
+  if (unsubPolls) { unsubPolls(); unsubPolls = null; }
+
+  var studentsSnapshot = await getDocs(collection(db, "boards", currentBoardId, "students"));
+  var totalStudents = studentsSnapshot.size;
+
+  unsubPolls = onSnapshot(
+    collection(db, "boards", currentBoardId, "polls"),
+    function(snapshot) {
+      pollSection.innerHTML = "";
+      var archivedSection = document.getElementById("archivedPolls");
+      if (archivedSection) { archivedSection.innerHTML = ""; }
+
+      var pollDocs = [];
+      snapshot.forEach(function(docSnap) { pollDocs.push(docSnap); });
+
+      pollDocs.sort(function(a, b) {
+        function getPollPriority(docSnap) {
+          var p = docSnap.data();
+          var hasInteraction = (p.history && p.history.length > 0) || (p.voters && p.voters.length > 0);
+          if (p.visible) { return 0; }
+          if (!hasInteraction) { return 1; }
+          return 2;
+        }
+        return getPollPriority(a) - getPollPriority(b);
+      });
+
+      var activePollDocs = pollDocs.filter(function(d) {
+        var p = d.data();
+        var hasInteraction = (p.history && p.history.length > 0) || (p.voters && p.voters.length > 0);
+        return p.visible || !hasInteraction;
+      });
+      var archivedPollDocs = pollDocs.filter(function(d) {
+        var p = d.data();
+        var hasInteraction = (p.history && p.history.length > 0) || (p.voters && p.voters.length > 0);
+        return !p.visible && hasInteraction;
+      });
+
+      activePollDocs.forEach(function(docSnap) {
+        var poll = docSnap.data();
+        var pollId = docSnap.id;
+        var pollVisible = poll.visible !== undefined ? poll.visible : false;
+
+        if (!isTeacher && !pollVisible) { return; }
+
+        // Restore vote state from history on reload
+        if (!isTeacher && currentStudentId) {
+          if (poll.requireAllCorrect) {
+            var multiSet = new Set();
+            (poll.history || []).forEach(function(h) {
+              if (h.username !== username) { return; }
+              var resp = h.response || "";
+              if (resp.indexOf("Voted: ") === 0) {
+                var optText = resp.slice(7);
+                var idx = (poll.options || []).indexOf(optText);
+                if (idx !== -1) { multiSet.add(idx); }
+              } else if (resp.indexOf("Removed vote: ") === 0) {
+                var optText = resp.slice(14);
+                var idx = (poll.options || []).indexOf(optText);
+                if (idx !== -1) { multiSet.delete(idx); }
+              }
+            });
+            myPollVotes.set(pollId + "_multi", multiSet);
+          } else {
+            var lastVote = null;
+            (poll.history || []).forEach(function(h) {
+              if (h.username !== username) { return; }
+              var resp = h.response || "";
+              if (resp.indexOf("Voted: ") === 0) {
+                var optText = resp.slice(7);
+                var idx = (poll.options || []).indexOf(optText);
+                if (idx !== -1) { lastVote = idx; }
+              } else if (resp.indexOf("Removed vote: ") === 0) {
+                lastVote = null;
+              }
+            });
+            if (lastVote !== null) { myPollVotes.set(pollId, lastVote); }
+          }
+        }
+
+        var div = document.createElement("div");
+        div.className = "poll";
+        var hasInteraction = (poll.history && poll.history.length > 0) || (poll.voters && poll.voters.length > 0);
+        if (isTeacher && !pollVisible && !hasInteraction) { div.style.opacity = "0.4"; div.style.filter = "grayscale(30%)"; }
+        var questionEl = document.createElement("strong");
+        questionEl.textContent = poll.question;
+        div.appendChild(questionEl);
+
+        if (poll.imageUrl) {
+          var img = document.createElement("img");
+          img.src = poll.imageUrl;
+          img.className = "poll-image";
+          (function(url) { img.onclick = function() { showImageLightbox(url); }; })(poll.imageUrl);
+          div.appendChild(img);
+        }
+
+        if (poll.type === "free") { renderFreePoll(div, poll, pollId, totalStudents); }
+        else if (poll.type === "mc") { renderMCPoll(div, poll, pollId, totalStudents); }
+
+        if (isTeacher) {
+          var controlsDiv = document.createElement("div");
+          controlsDiv.style.cssText = "margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;";
+
+          var toggleBtn = document.createElement("button");
+          toggleBtn.type = "button";
+          toggleBtn.textContent = pollVisible ? "👁️ Shown" : "👁️‍🗨️ Hidden";
+          toggleBtn.className = "hide-toggle teacher-control";
+          (function(pid, vis) {
+            toggleBtn.onclick = async function(e) {
+              e.stopPropagation();
+              await updateDoc(doc(db, "boards", currentBoardId, "polls", pid), { visible: !vis });
+            };
+          })(pollId, pollVisible);
+          controlsDiv.appendChild(toggleBtn);
+
+          var rToggle = document.createElement("button");
+          rToggle.type = "button";
+          rToggle.textContent = poll.responsesVisible ? "👁️ Responses Shown" : "👁️‍🗨️ Responses Hidden";
+          rToggle.className = "hide-toggle teacher-control";
+          (function(pid, rv) {
+            rToggle.onclick = async function(e) {
+              e.stopPropagation();
+              await updateDoc(doc(db, "boards", currentBoardId, "polls", pid), { responsesVisible: !rv });
+            };
+          })(pollId, poll.responsesVisible);
+          controlsDiv.appendChild(rToggle);
+
+          if (poll.type === "mc" && poll.responsesVisible) {
+            var cToggle = document.createElement("button");
+            cToggle.type = "button";
+            cToggle.textContent = poll.correctVisible ? "👁️ Correct Shown" : "👁️‍🗨️ Correct Hidden";
+            cToggle.className = "hide-toggle teacher-control";
+            (function(pid, cv, ci, pa) {
+              cToggle.onclick = async function(e) {
+                e.stopPropagation();
+                var newCV = !cv;
+                await updateDoc(doc(db, "boards", currentBoardId, "polls", pid), { correctVisible: newCV });
+                if (newCV && ci && ci.length > 0 && !pa) {
+                  await awardLeaderboardPoints(pid, ci);
+                  await updateDoc(doc(db, "boards", currentBoardId, "polls", pid), { pointsAwarded: true });
+                }
+              };
+            })(pollId, poll.correctVisible, poll.correctIndices, poll.pointsAwarded);
+            controlsDiv.appendChild(cToggle);
+          }
+
+          var resetBtn = document.createElement("button");
+          resetBtn.type = "button";
+          resetBtn.textContent = "🔄 Reset";
+          resetBtn.className = "teacher-control";
+          (function(pid, pdata) {
+            resetBtn.onclick = async function(e) {
+              e.stopPropagation();
+              if (!confirm("Reset this poll?")) { return; }
+              var updates = { history: [], pointsAwarded: false };
+              if (pdata.type === "mc") {
+                updates.votes = Array(pdata.options.length).fill(0);
+                updates.voters = [];
+                updates.responsesVisible = false;
+                updates.correctVisible = false;
+              } else {
+                updates.responses = {};
+                updates.responsesVisible = false;
+              }
+              await updateDoc(doc(db, "boards", currentBoardId, "polls", pid), updates);
+            };
+          })(pollId, poll);
+          controlsDiv.appendChild(resetBtn);
+
+          var delBtn = document.createElement("button");
+          delBtn.type = "button";
+          delBtn.textContent = "🗑️ Delete";
+          delBtn.className = "delete-poll teacher-control";
+          (function(pid) {
+            delBtn.onclick = async function(e) {
+              e.stopPropagation();
+              if (!confirm("Delete this poll?")) { return; }
+              await deleteDoc(doc(db, "boards", currentBoardId, "polls", pid));
+            };
+          })(pollId);
+          controlsDiv.appendChild(delBtn);
+          div.appendChild(controlsDiv);
+        }
+
+        pollSection.appendChild(div);
+      });
+
+      if (isTeacher && archivedSection && archivedPollDocs.length > 0) {
+        var header = document.createElement("div");
+        header.style.cssText = "text-align:center;color:var(--text-secondary,#888);font-size:0.85rem;margin:24px 0 8px;letter-spacing:0.05em;";
+        header.textContent = "── Archived Polls ──";
+        archivedSection.appendChild(header);
+        archivedPollDocs.forEach(function(docSnap) {
+          var poll = docSnap.data();
+          var pollId = docSnap.id;
+          var div = document.createElement("div");
+          div.className = "poll";
+          div.style.opacity = "0.6";
+          var questionEl = document.createElement("strong");
+          questionEl.textContent = poll.question;
+          div.appendChild(questionEl);
+          if (poll.imageUrl) {
+            var img = document.createElement("img");
+            img.src = poll.imageUrl;
+            img.className = "poll-image";
+            (function(url) { img.onclick = function() { showImageLightbox(url); }; })(poll.imageUrl);
+            div.appendChild(img);
+          }
+          if (poll.type === "free") { renderFreePoll(div, poll, pollId, totalStudents); }
+          else if (poll.type === "mc") { renderMCPoll(div, poll, pollId, totalStudents); }
+          var controlsDiv = document.createElement("div");
+          controlsDiv.style.cssText = "margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;";
+          var toggleBtn = document.createElement("button");
+          toggleBtn.type = "button";
+          toggleBtn.textContent = "👁️‍🗨️ Hidden";
+          toggleBtn.className = "hide-toggle teacher-control";
+          (function(pid) {
+            toggleBtn.onclick = async function(e) {
+              e.stopPropagation();
+              await updateDoc(doc(db, "boards", currentBoardId, "polls", pid), { visible: true });
+            };
+          })(pollId);
+          controlsDiv.appendChild(toggleBtn);
+          var delBtn = document.createElement("button");
+          delBtn.type = "button";
+          delBtn.textContent = "🗑️ Delete";
+          delBtn.className = "delete-poll teacher-control";
+          (function(pid) {
+            delBtn.onclick = async function(e) {
+              e.stopPropagation();
+              if (!confirm("Delete this poll?")) { return; }
+              await deleteDoc(doc(db, "boards", currentBoardId, "polls", pid));
+            };
+          })(pollId);
+          controlsDiv.appendChild(delBtn);
+          div.appendChild(controlsDiv);
+          archivedSection.appendChild(div);
+        });
+      }
+    },
+    function(error) { console.error("Poll listener error:", error); }
+  );
+}
+
+function renderFreePoll(div, poll, pollId, totalStudents) {
+  var uniqueResponders = new Set();
+  (poll.history || []).forEach(function(h) { uniqueResponders.add(h.username); });
+  var pct = totalStudents > 0 ? Math.round((uniqueResponders.size / totalStudents) * 100) : 0;
+
+  if (isTeacher) {
+    var pDiv = document.createElement("div");
+    pDiv.className = "poll-stat";
+    pDiv.innerHTML = "<strong>🗳️ Responded: " + pct + "%</strong>";
+    div.appendChild(pDiv);
+  }
+
+  if (isTeacher || poll.responsesVisible) {
+    var logDiv = document.createElement("div");
+    logDiv.className = "poll-log";
+    logDiv.innerHTML = "<strong>Poll Log:</strong>";
+    (poll.history || []).forEach(function(e) {
+      var p = document.createElement("div");
+      p.textContent = e.username + ": " + e.response;
+      logDiv.appendChild(p);
+    });
+    div.appendChild(logDiv);
+  }
+
+  if (!isTeacher) {
+    var hasSubmitted = (poll.history || []).some(function(h) { return h.username === username; });
+    var textarea = document.createElement("textarea");
+    textarea.placeholder = hasSubmitted ? "✓ Your response popped in!" : "Enter your response...";
+    if (hasSubmitted) { textarea.disabled = true; }
+
+    var submitBtn = document.createElement("button");
+    submitBtn.type = "button";
+    submitBtn.textContent = "Submit";
+    // No teacher-control class — this is a student-facing button, styled as a normal poll button
+    if (hasSubmitted) { submitBtn.disabled = true; }
+
+    (function(pid, ta, sb) {
+      sb.onclick = async function(e) {
+        e.stopPropagation();
+        var responseText = ta.value.trim();
+        if (!responseText) { return; }
+        await updateDoc(doc(db, "boards", currentBoardId, "polls", pid), {
+          history: arrayUnion({ username: username, response: responseText, timestamp: Date.now() })
+        });
+        if (currentStudentId) { await incrementStudentStat(currentStudentId, "pollsCast"); }
+        ta.value = "";
+        ta.placeholder = "✓ Your response popped in!";
+        ta.disabled = true;
+        sb.disabled = true;
+      };
+    })(pollId, textarea, submitBtn);
+
+    div.appendChild(textarea);
+    div.appendChild(submitBtn);
+  }
+}
+
+function renderMCPoll(div, poll, pollId, totalStudents) {
+  var responsesShown = poll.responsesVisible === true;
+  var correctShown = poll.correctVisible === true;
+  var voters = poll.voters || [];
+  var votes = getVotesArray(poll);
+  var options = poll.options || [];
+  var correctIndices = poll.correctIndices || [];
+  var pct = totalStudents > 0 ? Math.round((voters.length / totalStudents) * 100) : 0;
+
+  if (isTeacher) {
+    var pDiv = document.createElement("div");
+    pDiv.className = "poll-stat";
+    pDiv.innerHTML = "<strong>🗳️ Responded: " + pct + "%</strong>";
+    div.appendChild(pDiv);
+
+    var chart = document.createElement("div");
+    chart.className = "mc-bar-chart";
+    var maxVotes = 1;
+    for (var vi = 0; vi < votes.length; vi++) {
+      if ((votes[vi] || 0) > maxVotes) { maxVotes = votes[vi] || 0; }
+    }
+    for (var oi = 0; oi < options.length; oi++) {
+      var voteCount = Number(votes[oi]) || 0;
+      var row = document.createElement("div");
+      row.className = "mc-bar-row";
+      var barLabel = document.createElement("div");
+      barLabel.className = "mc-bar-label";
+      barLabel.textContent = options[oi];
+      var track = document.createElement("div");
+      track.className = "mc-bar-track";
+      var fill = document.createElement("div");
+      fill.className = "mc-bar-fill";
+      fill.style.background = correctIndices.indexOf(oi) !== -1 ? "#34c759" : "#ff453a";
+      fill.style.width = (voteCount === 0 ? 0 : Math.max(4, (voteCount / maxVotes) * 100)) + "%";
+      var countSpan = document.createElement("span");
+      countSpan.className = "mc-bar-count";
+      countSpan.textContent = voteCount;
+      track.appendChild(fill);
+      track.appendChild(countSpan);
+      row.appendChild(barLabel);
+      row.appendChild(track);
+      chart.appendChild(row);
+    }
+    div.appendChild(chart);
+
+    var logDiv = document.createElement("div");
+    logDiv.className = "poll-log";
+    logDiv.innerHTML = "<strong>Poll Log:</strong>";
+    (poll.history || []).forEach(function(e) {
+      var p = document.createElement("div");
+      p.textContent = e.username + ": " + e.response;
+      logDiv.appendChild(p);
+    });
+    div.appendChild(logDiv);
+
+  } else {
+    // Student view
+    if (responsesShown) {
+      var maxVotes = 1;
+      for (var vi = 0; vi < votes.length; vi++) { if ((votes[vi] || 0) > maxVotes) { maxVotes = votes[vi] || 0; } }
+      var chart = document.createElement("div");
+      chart.className = "mc-bar-chart";
+      for (var oi = 0; oi < options.length; oi++) {
+        var voteCount = Number(votes[oi]) || 0;
+        var row = document.createElement("div");
+        row.className = "mc-bar-row";
+        var barLabel = document.createElement("div");
+        barLabel.className = "mc-bar-label";
+        barLabel.textContent = options[oi];
+        var track = document.createElement("div");
+        track.className = "mc-bar-track";
+        var fill = document.createElement("div");
+        fill.className = "mc-bar-fill";
+        if (correctShown) {
+          fill.style.background = correctIndices.indexOf(oi) !== -1 ? "#34c759" : "#ff453a";
+          if (myPollVotes.get(pollId) === oi || (poll.requireAllCorrect && (myPollVotes.get(pollId + "_multi") || new Set()).has(oi))) {
+            row.style.cssText += "outline:2px solid #0071e3;border-radius:999px;";
+          }
+        } else {
+          fill.style.background = "#0071e3";
+          if (myPollVotes.get(pollId) === oi || (poll.requireAllCorrect && (myPollVotes.get(pollId + "_multi") || new Set()).has(oi))) {
+            row.style.cssText += "outline:2px solid #0071e3;border-radius:999px;box-shadow:0 0 0 3px rgba(0,113,227,0.25);";
+          }
+        }
+        fill.style.width = (voteCount === 0 ? 0 : Math.max(4, (voteCount / maxVotes) * 100)) + "%";
+        var countSpan = document.createElement("span");
+        countSpan.className = "mc-bar-count";
+        countSpan.textContent = voteCount;
+        track.appendChild(fill);
+        track.appendChild(countSpan);
+        row.appendChild(barLabel);
+        row.appendChild(track);
+        chart.appendChild(row);
+      }
+      div.appendChild(chart);
+    } else {
+      for (var oi = 0; oi < options.length; oi++) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = options[oi];
+        if (poll.requireAllCorrect) {
+          var currentSet = myPollVotes.get(pollId + "_multi") || new Set();
+          if (currentSet.has(oi)) { btn.classList.add("voted-by-me"); }
+        } else {
+          if (myPollVotes.get(pollId) === oi) { btn.classList.add("voted-by-me"); }
+        }
+        (function(optIndex, optText, pollData) {
+          btn.onclick = async function(e) {
+            e.stopPropagation();
+            var pollRef = doc(db, "boards", currentBoardId, "polls", pollId);
+            if (pollData.requireAllCorrect) {
+              var currentSet = myPollVotes.get(pollId + "_multi") || new Set();
+              if (currentSet.has(optIndex)) {
+                currentSet.delete(optIndex);
+                myPollVotes.set(pollId + "_multi", currentSet);
+                await updateDoc(pollRef, {
+                  ["votes." + optIndex]: increment(-1),
+                  voters: currentSet.size === 0 ? arrayRemove(username) : arrayUnion(username),
+                  history: arrayUnion({ username: username, response: "Removed vote: " + optText, timestamp: Date.now() })
+                });
+              } else {
+                currentSet.add(optIndex);
+                myPollVotes.set(pollId + "_multi", currentSet);
+                await updateDoc(pollRef, {
+                  ["votes." + optIndex]: increment(1),
+                  voters: arrayUnion(username),
+                  history: arrayUnion({ username: username, response: "Voted: " + optText, timestamp: Date.now() })
+                });
+              }
+            } else {
+              var prevChoice = myPollVotes.get(pollId);
+              if (prevChoice === optIndex) {
+                myPollVotes.delete(pollId);
+                await updateDoc(pollRef, {
+                  ["votes." + optIndex]: increment(-1),
+                  voters: arrayRemove(username),
+                  history: arrayUnion({ username: username, response: "Removed vote: " + optText, timestamp: Date.now() })
+                });
+                if (currentStudentId) { await incrementStudentStat(currentStudentId, "pollsCast", -1); }
+              } else {
+                myPollVotes.set(pollId, optIndex);
+                var updates = {
+                  ["votes." + optIndex]: increment(1),
+                  history: arrayUnion({ username: username, response: "Voted: " + optText, timestamp: Date.now() })
+                };
+                if (prevChoice === undefined || prevChoice === null) {
+                  updates.voters = arrayUnion(username);
+                  if (currentStudentId) { await incrementStudentStat(currentStudentId, "pollsCast", 1); }
+                } else {
+                  updates["votes." + prevChoice] = increment(-1);
+                }
+                await updateDoc(pollRef, updates);
+              }
+            }
+          };
+        })(oi, options[oi], poll);
+        div.appendChild(btn);
+      }
+    }
+  }
+}
+
+async function updateDailyDashboard() {
+  if (!isTeacher || !currentBoardId) { return; }
+  try {
+    var postsSnap = await getDocs(collection(db, "boards", currentBoardId, "posts"));
+    var repliesSnap = await getDocs(collection(db, "boards", currentBoardId, "replies"));
+    var pollsSnap = await getDocs(collection(db, "boards", currentBoardId, "polls"));
+    var studentsSnap = await getDocs(collection(db, "boards", currentBoardId, "students"));
+    var activeStudents = new Set();
+    postsSnap.forEach(function(d) { activeStudents.add(d.data().author); });
+    repliesSnap.forEach(function(d) { activeStudents.add(d.data().author); });
+    pollsSnap.forEach(function(pd) {
+      var p = pd.data();
+      (p.voters || []).forEach(function(v) { activeStudents.add(v); });
+      (p.history || []).forEach(function(h) { activeStudents.add(h.username); });
+    });
+    var attendance = activeStudents.size;
+    var totalStudents = studentsSnap.size;
+    var totalComments = 0;
+    var totalUpvotes = 0;
+    var anonCount = 0;
+    var totalCommentCount = 0;
+    var pollParticipationSum = 0;
+    var pollCount = 0;
+    postsSnap.forEach(function(d) {
+      var p = d.data();
+      totalComments++;
+      totalUpvotes += p.upvotes || 0;
+      if (p.anonymous) { anonCount++; }
+      totalCommentCount++;
+    });
+    repliesSnap.forEach(function(d) {
+      var r = d.data();
+      if (r.anonymous) { anonCount++; }
+      totalCommentCount++;
+    });
+    pollsSnap.forEach(function(pd) {
+      var p = pd.data();
+      var hasInteraction = (p.history && p.history.length > 0) || (p.voters && p.voters.length > 0);
+      if (!hasInteraction) { return; }
+      pollCount++;
+      var resp = new Set();
+      if (p.type === "mc") { (p.voters || []).forEach(function(v) { resp.add(v); }); }
+      else { (p.history || []).forEach(function(h) { resp.add(h.username); }); }
+      if (attendance > 0) { pollParticipationSum += resp.size / attendance; }
+    });
+    var engagementPct = pollCount > 0 ? Math.round((pollParticipationSum / pollCount) * 100) : 0;
+    var anonPct = totalCommentCount > 0 ? Math.round((anonCount / totalCommentCount) * 100) : 0;
+    var engDisplay = document.getElementById("dailyEngagementDisplay");
+    var metricsText = document.getElementById("dailyMetricsText");
+    if (engDisplay) { engDisplay.textContent = engagementPct + "% Engagement"; }
+    if (metricsText) {
+      metricsText.innerHTML = "Attendance: " + attendance + "/" + totalStudents + " &nbsp;|&nbsp; Upvotes: " + totalUpvotes + " &nbsp;|&nbsp; Comments: " + totalComments + " &nbsp;|&nbsp; Poll Participation: " + engagementPct + "% &nbsp;|&nbsp; 🥷🏼 Anonymity: " + anonPct + "%";
+    }
+  } catch (err) {
+    console.error("Daily dashboard error:", err);
+  }
+  setTimeout(function() { updateDailyDashboard(); }, 60000);
+}
