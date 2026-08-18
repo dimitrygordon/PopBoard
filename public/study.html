@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHECKRIDE // Physics 5266 Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root{
+  --bg:#0F1216;
+  --panel:#171C22;
+  --panel-2:#1E252D;
+  --panel-3:#252E38;
+  --border:#2C3742;
+  --border-lit:#3A4854;
+  --amber:#FFB300;
+  --amber-dim:#8a640f;
+  --cyan:#5FD3C4;
+  --green:#4CD07D;
+  --red:#FF5C5C;
+  --text:#E9E6DE;
+  --text-dim:#93A0AC;
+  --text-dimmer:#5C6874;
+  --radius:10px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  background-image:
+    radial-gradient(circle at 15% 0%, rgba(95,211,196,0.05), transparent 40%),
+    radial-gradient(circle at 85% 100%, rgba(255,179,0,0.05), transparent 40%);
+  color:var(--text);
+  font-family:'Inter',system-ui,sans-serif;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.label-font{font-family:'Oswald',sans-serif; letter-spacing:0.03em; text-transform:uppercase;}
+.mono{font-family:'JetBrains Mono',monospace;}
+button{font-family:inherit; cursor:pointer;}
+::-webkit-scrollbar{width:8px; height:8px;}
+::-webkit-scrollbar-thumb{background:var(--border-lit); border-radius:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+
+/* ---------- shell ---------- */
+#app{max-width:1080px; margin:0 auto; padding:14px 14px 60px;}
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 16px; margin-bottom:14px;
+  background:linear-gradient(180deg, var(--panel-2), var(--panel));
+  border:1px solid var(--border); border-radius:var(--radius);
+}
+.brand{display:flex; align-items:center; gap:10px;}
+.brand .dot{width:10px;height:10px;border-radius:50%;background:var(--amber); box-shadow:0 0 8px var(--amber);}
+.brand h1{font-size:18px; margin:0; color:var(--text); letter-spacing:0.06em;}
+.brand .sub{font-size:10px; color:var(--text-dimmer); font-family:'JetBrains Mono',monospace; letter-spacing:0.08em;}
+.readout{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--cyan); text-align:right;}
+.readout div{line-height:1.5;}
+
+nav.tabs{display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap;}
+nav.tabs button{
+  background:var(--panel); border:1px solid var(--border); color:var(--text-dim);
+  padding:9px 14px; border-radius:8px; font-size:12px; font-family:'Oswald',sans-serif;
+  letter-spacing:0.05em; text-transform:uppercase; transition:all .15s;
+}
+nav.tabs button:hover{border-color:var(--border-lit); color:var(--text);}
+nav.tabs button.active{background:var(--panel-3); color:var(--amber); border-color:var(--amber-dim); box-shadow:inset 0 0 0 1px rgba(255,179,0,0.15);}
+
+.panel{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:20px; margin-bottom:16px;}
+.panel-title{font-size:13px; color:var(--text-dim); margin:0 0 14px; display:flex; align-items:center; justify-content:space-between;}
+.panel-title .tag{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-dimmer); text-transform:none; letter-spacing:0;}
+
+/* ---------- dashboard gauges ---------- */
+.gauge-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px;}
+.gauge-card{background:var(--panel-2); border:1px solid var(--border); border-radius:var(--radius); padding:14px; text-align:center;}
+.gauge-card svg{display:block; margin:0 auto;}
+.gauge-label{font-size:11px; color:var(--text-dim); margin-top:8px; font-family:'Oswald',sans-serif; letter-spacing:0.04em; text-transform:uppercase;}
+.gauge-sub{font-size:10px; color:var(--text-dimmer); font-family:'JetBrains Mono',monospace; margin-top:2px;}
+.gauge-pct{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:20px;}
+
+.stat-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; margin-top:16px;}
+.stat-box{background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:12px;}
+.stat-box .n{font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700; color:var(--amber);}
+.stat-box .l{font-size:10px; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.05em; margin-top:2px;}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  background:var(--panel-3); border:1px solid var(--border-lit); color:var(--text);
+  padding:11px 18px; border-radius:8px; font-size:13px; font-weight:500;
+  font-family:'Oswald',sans-serif; letter-spacing:0.04em; text-transform:uppercase;
+  transition:all .15s;
+}
+.btn:hover{border-color:var(--amber-dim); background:#2a333e;}
+.btn-primary{background:var(--amber); border-color:var(--amber); color:#1a1300; font-weight:700;}
+.btn-primary:hover{background:#ffc433; border-color:#ffc433;}
+.btn-ghost{background:transparent; border-color:var(--border);}
+.btn-danger{border-color:#5a2a2a; color:var(--red);}
+.btn-danger:hover{background:#241414; border-color:var(--red);}
+.btn:disabled{opacity:0.4; cursor:not-allowed;}
+.btn-sm{padding:6px 12px; font-size:11px;}
+.btn-row{display:flex; gap:10px; flex-wrap:wrap;}
+
+/* ---------- mode cards ---------- */
+.mode-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px;}
+.mode-card{
+  background:var(--panel-2); border:1px solid var(--border); border-radius:var(--radius);
+  padding:18px; cursor:pointer; transition:all .15s; position:relative; overflow:hidden;
+}
+.mode-card:hover{border-color:var(--amber-dim); transform:translateY(-1px);}
+.mode-card .icon{font-size:22px; margin-bottom:8px;}
+.mode-card h3{margin:0 0 6px; font-size:15px; color:var(--text);}
+.mode-card p{margin:0; font-size:12px; color:var(--text-dim); line-height:1.5;}
+.mode-card .badge{position:absolute; top:14px; right:14px; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--cyan); border:1px solid #2a4a45; padding:2px 7px; border-radius:20px;}
+
+/* ---------- question player ---------- */
+.player-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;}
+.progress-bar{height:5px; background:var(--panel-2); border-radius:3px; overflow:hidden; margin-bottom:16px; border:1px solid var(--border);}
+.progress-bar-fill{height:100%; background:linear-gradient(90deg,var(--cyan),var(--amber)); transition:width .3s;}
+.q-meta{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dimmer);}
+.q-timer{font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--amber); background:var(--panel-2); border:1px solid var(--border); padding:5px 12px; border-radius:6px;}
+.q-cat-pill{font-size:10px; color:var(--cyan); border:1px solid #2a4a45; padding:3px 9px; border-radius:20px; text-transform:uppercase; letter-spacing:0.04em; font-family:'Oswald',sans-serif;}
+.q-text{font-size:16px; line-height:1.6; margin:16px 0 18px; color:var(--text);}
+.q-instruction{font-size:11px; color:var(--amber); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; font-family:'Oswald',sans-serif;}
+.choices{display:flex; flex-direction:column; gap:8px;}
+.choice{
+  display:flex; align-items:flex-start; gap:12px; padding:13px 14px;
+  background:var(--panel-2); border:1px solid var(--border); border-radius:8px;
+  transition:all .12s;
+}
+.choice:not(.locked):hover{border-color:var(--border-lit); background:#232b34;}
+.choice .letter{
+  font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px;
+  width:22px; height:22px; border-radius:5px; border:1px solid var(--border-lit);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--text-dim);
+}
+.choice .txt{font-size:14px; line-height:1.5; padding-top:2px;}
+.choice.selected{border-color:var(--amber); background:rgba(255,179,0,0.08);}
+.choice.selected .letter{background:var(--amber); color:#1a1300; border-color:var(--amber);}
+.choice.correct{border-color:var(--green); background:rgba(76,208,125,0.09);}
+.choice.correct .letter{background:var(--green); color:#0a1f0f; border-color:var(--green);}
+.choice.incorrect{border-color:var(--red); background:rgba(255,92,92,0.09);}
+.choice.incorrect .letter{background:var(--red); color:#2a0a0a; border-color:var(--red);}
+
+.explain-box{margin-top:16px; padding:14px; background:var(--panel-2); border-left:3px solid var(--cyan); border-radius:0 8px 8px 0; font-size:13px; line-height:1.6; color:var(--text-dim);}
+.explain-box b{color:var(--cyan);}
+
+.player-foot{display:flex; justify-content:space-between; align-items:center; margin-top:20px; padding-top:16px; border-top:1px solid var(--border);}
+
+/* ---------- results ---------- */
+.result-hero{text-align:center; padding:24px 10px;}
+.result-hero .big{font-family:'JetBrains Mono',monospace; font-size:52px; font-weight:700; line-height:1;}
+.result-hero .pass{color:var(--green);}
+.result-hero .fail{color:var(--red);}
+.result-hero .cap{font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.08em; margin-top:8px;}
+.breakdown-row{display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border);}
+.breakdown-row:last-child{border-bottom:none;}
+.breakdown-name{flex:0 0 180px; font-size:12px; color:var(--text-dim);}
+.breakdown-track{flex:1; height:8px; background:var(--panel-2); border-radius:4px; overflow:hidden; border:1px solid var(--border);}
+.breakdown-fill{height:100%; border-radius:4px;}
+.breakdown-pct{flex:0 0 50px; text-align:right; font-family:'JetBrains Mono',monospace; font-size:12px;}
+
+/* ---------- lists / tables ---------- */
+.item-row{display:flex; justify-content:space-between; align-items:center; padding:12px 14px; background:var(--panel-2); border:1px solid var(--border); border-radius:8px; margin-bottom:8px; gap:10px; flex-wrap:wrap;}
+.item-row .info{flex:1; min-width:200px;}
+.item-row .title{font-size:13px; color:var(--text); margin-bottom:2px;}
+.item-row .meta{font-size:11px; color:var(--text-dimmer); font-family:'JetBrains Mono',monospace;}
+.miss-bar{width:60px; height:6px; background:var(--panel-3); border-radius:3px; overflow:hidden; display:inline-block; margin-left:8px; vertical-align:middle;}
+.miss-fill{height:100%; background:var(--red);}
+
+.empty-state{text-align:center; padding:40px 20px; color:var(--text-dimmer);}
+.empty-state .big{font-size:32px; margin-bottom:10px;}
+
+/* ---------- import ---------- */
+textarea{
+  width:100%; min-height:180px; background:var(--panel-2); border:1px solid var(--border);
+  color:var(--text); border-radius:8px; padding:12px; font-family:'JetBrains Mono',monospace;
+  font-size:12.5px; line-height:1.6; resize:vertical;
+}
+textarea:focus, select:focus, input:focus{outline:1px solid var(--amber-dim);}
+.file-drop{
+  border:1.5px dashed var(--border-lit); border-radius:8px; padding:22px; text-align:center;
+  color:var(--text-dim); font-size:12px; margin-bottom:14px; cursor:pointer; transition:all .15s;
+}
+.file-drop:hover{border-color:var(--amber-dim); color:var(--text);}
+select{background:var(--panel-2); border:1px solid var(--border); color:var(--text); padding:6px 10px; border-radius:6px; font-size:12px; font-family:'Inter',sans-serif;}
+.parsed-item{background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:12px; margin-bottom:8px;}
+.parsed-item .pq{font-size:13px; margin-bottom:8px;}
+.parsed-item .pc{font-size:12px; color:var(--text-dim); margin:2px 0;}
+.parsed-item .pc.correct{color:var(--green);}
+.parsed-item .prow{display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:8px;}
+
+.hint{font-size:11.5px; color:var(--text-dimmer); line-height:1.6; margin-top:10px;}
+.hint code{background:var(--panel-3); padding:1px 5px; border-radius:4px; color:var(--cyan);}
+
+.check-row{display:flex; align-items:center; gap:10px; margin-bottom:8px;}
+.toggle-row{display:flex; align-items:center; justify-content:space-between; padding:10px 0;}
+
+@media (max-width:640px){
+  .breakdown-name{flex-basis:110px; font-size:11px;}
+  .topbar{flex-direction:column; align-items:flex-start; gap:8px;}
+  .readout{text-align:left;}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ============================================================
+   CHECKRIDE — Praxis Physics (5266) practice engine
+   Original practice content only. Not affiliated with ETS.
+   ============================================================ */
+
+const CATS = {
+  I:   {name:"Nature & Impact of Science", short:"Sci & Eng", weight:12, color:"#5FD3C4"},
+  II:  {name:"Matter & Energy", short:"Matter/Energy", weight:15, color:"#8FD35F"},
+  III: {name:"Mechanics", short:"Mechanics", weight:35, color:"#FFB300"},
+  IV:  {name:"Electricity & Magnetism", short:"E&M", weight:21, color:"#FF8A5C"},
+  V:   {name:"Waves", short:"Waves", weight:17, color:"#C88FFF"}
+};
+
+/* ---------- seed question bank (90 original items, ETS-weighted, not real exam content) ---------- */
+const SEED = [
+// ===== CATEGORY I — Nature & Impact of Science (10) =====
+{cat:"I",sub:"Nature of Science",type:"single",q:"Which statement best distinguishes a scientific theory from a hypothesis?",ch:["A theory is a guess, while a hypothesis has been proven true","A hypothesis is an untested tentative explanation; a theory is a well-substantiated explanation supported by extensive evidence","Theories cannot be revised once accepted, while hypotheses can be revised freely","A hypothesis applies only to living systems, while a theory applies to physical systems"],ans:[1],exp:"In science, a hypothesis is a testable, tentative explanation. A theory is a broad, well-tested explanatory framework supported by a large body of evidence — and like all scientific claims, it remains open to revision in light of new evidence."},
+{cat:"I",sub:"Nature of Science",type:"single",q:"A physics teacher asks students why scientific models are sometimes revised. Which response best reflects the nature of scientific knowledge?",ch:["Models are revised only when proven completely wrong","Models are revised as new evidence emerges that requires more accurate or complete explanations","Models are permanent once accepted by the scientific community","Models are revised based on popular vote among scientists"],ans:[1],exp:"Scientific models are provisional; they are refined or replaced as new data demand a better fit between explanation and observation."},
+{cat:"I",sub:"Data & Measurement",type:"single",q:"A student measures the length of a table as 152.30 cm with a meter stick marked in millimeters. How many significant figures does this measurement contain?",ch:["3","4","5","6"],ans:[2],exp:"152.30 cm has five significant figures: the trailing zero after the decimal point is significant because it reflects the precision of the measuring instrument."},
+{cat:"I",sub:"Data & Measurement",type:"single",q:"Convert 72 km/h to meters per second.",ch:["10 m/s","20 m/s","25 m/s","30 m/s"],ans:[1],exp:"72 km/h × (1000 m/km) ÷ (3600 s/h) = 20 m/s."},
+{cat:"I",sub:"Data & Measurement",type:"single",q:"A hiker walks 3.0 km east, then 4.0 km north. What is the magnitude of the hiker's total displacement?",ch:["3.0 km","4.0 km","5.0 km","7.0 km"],ans:[2],exp:"The displacement is the hypotenuse of a 3-4-5 right triangle: √(3² + 4²) = 5.0 km."},
+{cat:"I",sub:"Data & Measurement",type:"single",q:"A student experimentally measures g as 9.7 m/s². The accepted value is 9.8 m/s². What is the percent error, to the nearest tenth?",ch:["0.1%","1.0%","1.2%","10%"],ans:[1],exp:"Percent error = |9.7 − 9.8| / 9.8 × 100% ≈ 1.0%."},
+{cat:"I",sub:"Lab Procedures",type:"multi",selectN:2,q:"Which TWO of the following are appropriate safety practices when using a laser pointer in a classroom demonstration?",ch:["Point the laser directly at students to show reflection","Wear laser safety goggles rated for the laser's wavelength","Avoid aiming the beam toward reflective surfaces at eye level","Use the highest-power laser available for better visibility"],ans:[1,2],exp:"Lasers should never be aimed at people or at reflective surfaces near eye level, and appropriate eyewear should be worn. Higher power increases hazard, not safety."},
+{cat:"I",sub:"Engineering Design",type:"single",q:"In the engineering design process, which step primarily involves identifying criteria and constraints?",ch:["Optimizing the design","Defining the problem","Testing the prototype","Communicating results"],ans:[1],exp:"Defining the problem includes establishing the criteria (what success looks like) and the constraints (limits on the solution) before design work begins."},
+{cat:"I",sub:"Science, Tech & Society",type:"single",q:"Which of the following is a legitimate criticism of large-scale wind energy production, distinct from concerns about fossil fuel combustion?",ch:["Wind turbines emit large amounts of carbon dioxide during operation","Wind energy generation is intermittent and depends on local wind conditions","Wind turbines are a major contributor to ozone layer depletion","Wind energy cannot be used to generate electricity at all"],ans:[1],exp:"A central engineering challenge of wind power is intermittency — output depends on variable wind conditions, unlike dispatchable fossil-fuel generation."},
+{cat:"I",sub:"Data & Measurement",type:"single",q:"A graph of an object's position versus time is a straight line with a positive, constant slope. What can be concluded?",ch:["The object is at rest","The object is accelerating uniformly","The object is moving with constant, nonzero velocity","The object is moving with decreasing speed"],ans:[2],exp:"A constant slope on a position-time graph represents constant velocity; the object covers equal displacement in equal time intervals."},
+
+// ===== CATEGORY II — Matter & Energy (13) =====
+{cat:"II",sub:"Atomic/Nuclear",type:"single",q:"In the Bohr model of the hydrogen atom, an electron emits a photon when it:",ch:["Absorbs energy and moves to a higher energy level","Transitions from a higher energy level to a lower one","Remains in the ground state indefinitely","Collides directly with the nucleus"],ans:[1],exp:"Photon emission occurs when an electron drops to a lower, more stable energy level, releasing the energy difference as a photon."},
+{cat:"II",sub:"Atomic/Nuclear",type:"single",q:"What particle is emitted during alpha decay of a radioactive nucleus?",ch:["A helium-4 nucleus (2 protons, 2 neutrons)","A high-energy electron","A high-energy photon","A free neutron"],ans:[0],exp:"An alpha particle is identical to a helium-4 nucleus: two protons and two neutrons bound together."},
+{cat:"II",sub:"Atomic/Nuclear",type:"single",q:"A radioactive sample has a half-life of 8 days. What fraction of the original sample remains after 32 days?",ch:["1/4","1/8","1/16","1/32"],ans:[2],exp:"32 days ÷ 8 days = 4 half-lives. Remaining fraction = (1/2)^4 = 1/16."},
+{cat:"II",sub:"Atomic/Nuclear",type:"single",q:"Which of the following best describes nuclear fusion?",ch:["A heavy nucleus splits into two lighter nuclei, releasing energy","Two light nuclei combine to form a heavier nucleus, releasing energy","A nucleus captures a free electron, releasing energy","An electron is ejected from a metal surface, releasing energy"],ans:[1],exp:"Fusion combines light nuclei (e.g., isotopes of hydrogen) into a heavier nucleus, releasing energy because the products are more tightly bound."},
+{cat:"II",sub:"Quantum Basics",type:"single",q:"According to the photoelectric effect, increasing the intensity of light incident on a metal surface (above the threshold frequency) primarily increases:",ch:["The maximum kinetic energy of each ejected electron","The number of electrons ejected per second","The work function of the metal","The threshold frequency of the metal"],ans:[1],exp:"Intensity relates to photon count, not photon energy. More photons above threshold frequency eject more electrons per second; maximum kinetic energy depends on frequency, not intensity."},
+{cat:"II",sub:"Quantum Basics",type:"single",q:"The de Broglie wavelength of a particle is inversely proportional to its:",ch:["Mass alone","Momentum","Electric charge","Temperature"],ans:[1],exp:"λ = h/p — the de Broglie wavelength depends inversely on momentum (mass × velocity), not mass alone."},
+{cat:"II",sub:"Thermal Energy",type:"single",q:"How much heat is required to raise the temperature of 2.0 kg of water by 10°C? (c_water = 4186 J/kg·°C)",ch:["4,186 J","41,860 J","83,720 J","837,200 J"],ans:[2],exp:"Q = mcΔT = (2.0 kg)(4186 J/kg·°C)(10°C) = 83,720 J."},
+{cat:"II",sub:"Thermal Energy",type:"single",q:"Which of the following processes requires energy input while the temperature of the substance remains constant?",ch:["Heating liquid water from 20°C to 50°C","Melting ice at 0°C into liquid water at 0°C","Cooling steam from 150°C to 110°C","Heating a solid metal bar with no phase change"],ans:[1],exp:"During a phase change, added energy (latent heat) goes into breaking intermolecular bonds rather than raising temperature, so temperature stays constant while melting occurs."},
+{cat:"II",sub:"Thermal Energy",type:"single",q:"Absolute zero on the Celsius scale is approximately:",ch:["0°C","−100°C","−273°C","−460°C"],ans:[2],exp:"Absolute zero is 0 K, which corresponds to approximately −273.15°C."},
+{cat:"II",sub:"Thermodynamics",type:"single",q:"A gas absorbs 500 J of heat and does 200 J of work on its surroundings. What is the change in the gas's internal energy?",ch:["200 J","300 J","500 J","700 J"],ans:[1],exp:"By the first law of thermodynamics, ΔU = Q − W = 500 J − 200 J = 300 J."},
+{cat:"II",sub:"Thermodynamics",type:"single",q:"Which statement is consistent with the second law of thermodynamics?",ch:["The entropy of an isolated system tends to decrease over time","Heat spontaneously flows from a colder object to a hotter one","The total entropy of an isolated system never decreases over time","Energy is created in every thermodynamic process"],ans:[2],exp:"The second law states that the total entropy of an isolated system tends to increase, or at minimum stay the same for a reversible process — it never spontaneously decreases."},
+{cat:"II",sub:"Thermal Energy",type:"single",q:"A metal spoon and a wooden spoon have both been sitting in the same room for hours. The metal spoon feels colder to the touch. This is best explained by:",ch:["The metal spoon actually has a lower temperature than the wood","Metal has higher thermal conductivity, so it conducts heat away from the hand faster","Wood radiates more heat than metal at the same temperature","The metal spoon has a greater specific heat than the wood"],ans:[1],exp:"Both objects are at the same (room) temperature. The perceived difference is due to thermal conductivity: metal conducts heat away from skin much faster than wood, making it feel colder."},
+{cat:"II",sub:"Atomic/Nuclear",type:"multi",selectN:2,q:"Which TWO of the following particles reside in the nucleus of an atom?",ch:["Electron","Proton","Neutron","Positron"],ans:[1,2],exp:"The nucleus contains protons and neutrons (collectively, nucleons). Electrons orbit outside the nucleus, and positrons are antimatter particles produced in certain decay processes, not standard nuclear constituents."},
+
+// ===== CATEGORY III — Mechanics (32) =====
+{cat:"III",sub:"Kinematics",type:"single",q:"A ball is thrown vertically upward with an initial speed of 20 m/s. Ignoring air resistance, how long until it returns to its starting height? (g = 10 m/s²)",ch:["1 s","2 s","4 s","8 s"],ans:[2],exp:"Time up = v/g = 2 s; total time (up and down) = 2 × 2 s = 4 s."},
+{cat:"III",sub:"Kinematics",type:"single",q:"A car accelerates uniformly from rest to 30 m/s in 6 s. What distance does it travel during this time?",ch:["45 m","90 m","180 m","360 m"],ans:[1],exp:"Average velocity = (0 + 30)/2 = 15 m/s. Distance = 15 m/s × 6 s = 90 m."},
+{cat:"III",sub:"Kinematics",type:"single",q:"On a velocity-versus-time graph, which feature represents the object's acceleration?",ch:["The area under the curve","The slope of the line","The y-intercept","The x-intercept"],ans:[1],exp:"Slope = Δv/Δt, which is the definition of acceleration. The area under a v-t graph instead gives displacement."},
+{cat:"III",sub:"Kinematics",type:"single",q:"A projectile is launched at 30 m/s at 37° above horizontal (sin 37° ≈ 0.6, cos 37° ≈ 0.8). What is the initial vertical velocity component?",ch:["6 m/s","18 m/s","24 m/s","30 m/s"],ans:[1],exp:"v_y = v·sinθ = 30 × 0.6 = 18 m/s."},
+{cat:"III",sub:"Kinematics",type:"single",q:"A boat heads directly across a river at 4 m/s relative to the water, while the current flows at 3 m/s downstream. What is the boat's speed relative to the shore?",ch:["1 m/s","3 m/s","5 m/s","7 m/s"],ans:[2],exp:"The velocities are perpendicular, so resultant speed = √(4² + 3²) = 5 m/s."},
+{cat:"III",sub:"Newton's Laws",type:"single",q:"An object moves at constant velocity in a straight line. What can be concluded about the net force acting on it?",ch:["The net force is in the direction of motion","The net force is zero","The net force is increasing over time","The net force opposes the motion"],ans:[1],exp:"By Newton's first law, constant velocity (no acceleration) means the net force on the object is zero."},
+{cat:"III",sub:"Newton's Laws",type:"single",q:"A 5 kg object experiences a net force of 20 N. What is its acceleration?",ch:["0.25 m/s²","4 m/s²","15 m/s²","25 m/s²"],ans:[1],exp:"a = F/m = 20 N / 5 kg = 4 m/s²."},
+{cat:"III",sub:"Newton's Laws",type:"single",q:"According to Newton's third law, if a book pushes down on a table with force F, the table pushes up on the book with:",ch:["A force less than F","A force equal to F, in the opposite direction","A force greater than F","No force at all"],ans:[1],exp:"Newton's third law: for every action force there is a reaction force equal in magnitude and opposite in direction, acting on the other object."},
+{cat:"III",sub:"Newton's Laws",type:"single",q:"An elevator accelerates upward at 2 m/s². A 70 kg passenger stands on a scale inside. What does the scale read? (g = 10 m/s²)",ch:["700 N","714 N","840 N","980 N"],ans:[2],exp:"Normal force N = m(g + a) = 70 kg × (10 + 2) m/s² = 840 N."},
+{cat:"III",sub:"Newton's Laws",type:"single",q:"A passenger in an accelerating train observes a ball roll toward the back of the train with no applied force, in the train's own frame of reference. Which statement best explains this?",ch:["The train's frame is non-inertial, so a fictitious force appears to act on the ball","Newton's laws only apply outside moving vehicles","The ball briefly has negative mass in this frame","Air resistance pushes the ball backward"],ans:[0],exp:"In an accelerating (non-inertial) reference frame, objects appear to experience a fictitious force opposite the frame's acceleration, even though no real force acts on them."},
+{cat:"III",sub:"Gravitation",type:"single",q:"Two masses are separated by a distance r, exerting gravitational force F on each other. If the distance is doubled, the new force is:",ch:["F/4","F/2","2F","4F"],ans:[0],exp:"Gravitational force follows an inverse-square law: F ∝ 1/r². Doubling r reduces the force to F/4."},
+{cat:"III",sub:"Gravitation",type:"single",q:"A satellite orbits Earth at radius R. If the orbital radius is increased, the satellite's orbital speed:",ch:["Increases","Decreases","Stays the same","Depends only on the satellite's mass"],ans:[1],exp:"Orbital speed v = √(GM/R). As R increases, orbital speed decreases."},
+{cat:"III",sub:"Gravitation",type:"single",q:"Planet X orbits its star at a radius 4 times that of Earth's orbit around the Sun. Approximately how many Earth years does one orbit of Planet X take?",ch:["4 years","8 years","16 years","64 years"],ans:[1],exp:"By Kepler's third law, T² ∝ R³. With R = 4, R³ = 64, so T = √64 = 8 years."},
+{cat:"III",sub:"Gravitation",type:"single",q:"An astronaut has a mass of 80 kg on Earth. On the Moon, where gravity is about 1/6 of Earth's, the astronaut's mass is:",ch:["80 kg","13.3 kg","480 kg","0 kg, since mass is a form of weight"],ans:[0],exp:"Mass is an intrinsic property of matter and does not change with location; only weight (the gravitational force on that mass) changes."},
+{cat:"III",sub:"Circular & Harmonic Motion",type:"single",q:"A car rounds a curve at constant speed. In what direction does the net (centripetal) force point?",ch:["Tangent to the path of motion","Outward, away from the center of the curve","Toward the center of the curve","The net force is zero since speed is constant"],ans:[2],exp:"Centripetal force always points toward the center of the circular path, even when speed is constant, because direction (and thus velocity) is still changing."},
+{cat:"III",sub:"Circular & Harmonic Motion",type:"single",q:"A 2 kg object moves in a circle of radius 0.5 m at a constant speed of 4 m/s. What is the magnitude of the centripetal force?",ch:["8 N","16 N","32 N","64 N"],ans:[3],exp:"F_c = mv²/r = (2 kg)(4 m/s)² / 0.5 m = 2 × 16 / 0.5 = 64 N."},
+{cat:"III",sub:"Circular & Harmonic Motion",type:"single",q:"On a mass-spring system undergoing simple harmonic motion, doubling the mass (with the same spring constant) causes the period to:",ch:["Increase by a factor of 2","Increase by a factor of √2","Decrease by a factor of √2","Remain unchanged"],ans:[1],exp:"T = 2π√(m/k). Doubling m multiplies T by √2."},
+{cat:"III",sub:"Circular & Harmonic Motion",type:"single",q:"For a simple pendulum undergoing small-angle oscillations, the restoring force is provided primarily by:",ch:["Tension in the string alone","The component of gravity tangent to the arc of motion","Air resistance","The normal force from the pivot point"],ans:[1],exp:"The tangential component of gravity along the arc pulls the pendulum bob back toward equilibrium; tension acts along the string (centripetal direction) and does no tangential work."},
+{cat:"III",sub:"Energy & Work",type:"single",q:"A 10 kg box is lifted 2 m at constant velocity. How much work is done against gravity? (g = 10 m/s²)",ch:["20 J","100 J","200 J","2000 J"],ans:[2],exp:"W = mgh = (10 kg)(10 m/s²)(2 m) = 200 J."},
+{cat:"III",sub:"Energy & Work",type:"single",q:"A 0.5 kg ball is dropped from a height of 5 m. Ignoring air resistance, what is its speed just before hitting the ground? (g = 10 m/s²)",ch:["5 m/s","7.1 m/s","10 m/s","100 m/s"],ans:[2],exp:"By conservation of energy, v = √(2gh) = √(2 × 10 × 5) = √100 = 10 m/s."},
+{cat:"III",sub:"Energy & Work",type:"single",q:"A motor performs 6000 J of work in 3 seconds. What is its power output?",ch:["500 W","2000 W","3000 W","18000 W"],ans:[1],exp:"P = W/t = 6000 J / 3 s = 2000 W."},
+{cat:"III",sub:"Energy & Work",type:"single",q:"As a bungee jumper falls from the platform toward the lowest point of the fall (ignoring air resistance), gravitational potential energy is primarily converted into:",ch:["Kinetic energy only, for the entire fall","Kinetic energy, and then increasingly into elastic potential energy of the cord as it stretches","Thermal energy only","Electrical energy"],ans:[1],exp:"Early in the fall, PE converts mostly to KE. Once the cord begins to stretch, energy increasingly transfers into elastic potential energy stored in the cord as it decelerates the jumper."},
+{cat:"III",sub:"Momentum",type:"single",q:"A 3 kg cart moving at 4 m/s collides with and sticks to a stationary 1 kg cart. What is their combined velocity immediately after the collision?",ch:["1 m/s","3 m/s","4 m/s","12 m/s"],ans:[1],exp:"Conservation of momentum: (3 kg)(4 m/s) = (4 kg)(v_f), so v_f = 12/4 = 3 m/s."},
+{cat:"III",sub:"Momentum",type:"single",q:"Which of the following is conserved in BOTH elastic and inelastic collisions within an isolated system?",ch:["Kinetic energy only","Momentum only","Both momentum and kinetic energy","Neither momentum nor kinetic energy"],ans:[1],exp:"Momentum is conserved in all collisions within an isolated system. Kinetic energy is conserved only in elastic collisions."},
+{cat:"III",sub:"Momentum",type:"single",q:"A 0.2 kg ball moving at 6 m/s is struck and reverses direction, moving away at 4 m/s. What is the magnitude of the impulse delivered to the ball?",ch:["0.4 kg·m/s","1.0 kg·m/s","2.0 kg·m/s","2.0 N"],ans:[2],exp:"Impulse = Δp = m(v_f − v_i) = 0.2 kg × (−4 − 6) m/s = −2.0 kg·m/s; magnitude = 2.0 kg·m/s."},
+{cat:"III",sub:"Momentum",type:"single",q:"For an isolated system with no external forces, the velocity of the system's center of mass:",ch:["Always increases","Always decreases","Remains constant","Oscillates over time"],ans:[2],exp:"With no external net force, the total momentum of the system is conserved, so the center of mass moves at constant velocity (or remains at rest)."},
+{cat:"III",sub:"Rotational Motion",type:"single",q:"A spinning ice skater pulls her arms inward. What happens to her angular velocity and rotational kinetic energy?",ch:["Both increase","Both decrease","Angular velocity increases; kinetic energy also increases due to work done pulling her arms in","Angular velocity increases; kinetic energy decreases"],ans:[2],exp:"With angular momentum conserved, a smaller moment of inertia means a larger angular velocity. Because the skater does work pulling her arms inward against the effective outward tendency, rotational kinetic energy actually increases."},
+{cat:"III",sub:"Rotational Motion",type:"single",q:"A force of 10 N is applied perpendicular to a wrench at a distance of 0.3 m from the bolt. What is the resulting torque?",ch:["0.3 N·m","3 N·m","10 N·m","30 N·m"],ans:[1],exp:"τ = F × r = 10 N × 0.3 m = 3 N·m."},
+{cat:"III",sub:"Rotational Motion",type:"single",q:"For an extended rigid object to be in static equilibrium, which condition(s) must be satisfied?",ch:["Net force must be zero only","Net torque must be zero only","Both net force and net torque must be zero","Neither must be zero if the object is symmetric"],ans:[2],exp:"Static equilibrium requires that both the net force (ΣF = 0) and the net torque (Στ = 0) acting on the object are zero."},
+{cat:"III",sub:"Fluids",type:"single",q:"An object floats with 60% of its volume submerged in water (density 1000 kg/m³). What is the density of the object?",ch:["400 kg/m³","600 kg/m³","1000 kg/m³","1600 kg/m³"],ans:[1],exp:"For a floating object, the fraction submerged equals the ratio of object density to fluid density: 0.60 × 1000 kg/m³ = 600 kg/m³."},
+{cat:"III",sub:"Fluids",type:"single",q:"According to Bernoulli's principle, as the speed of a fluid increases, the pressure within the fluid:",ch:["Increases","Decreases","Remains unchanged","Becomes zero"],ans:[1],exp:"Bernoulli's principle states that for an ideal fluid, an increase in flow speed corresponds to a decrease in pressure (at the same elevation)."},
+{cat:"III",sub:"Friction",type:"single",q:"A 4 kg box slides on a horizontal floor with a coefficient of kinetic friction of 0.25. What is the magnitude of the kinetic friction force? (g = 10 m/s²)",ch:["1 N","2.5 N","10 N","40 N"],ans:[2],exp:"f = μ·N = μ·mg = 0.25 × 4 kg × 10 m/s² = 10 N."},
+
+// ===== CATEGORY IV — Electricity & Magnetism (19) =====
+{cat:"IV",sub:"Electrostatics",type:"single",q:"Two point charges +q and −q attract each other with force F at separation r. If both charge magnitudes are tripled while r stays fixed, the new force is:",ch:["F","3F","9F","F/9"],ans:[2],exp:"Coulomb's law: F ∝ q₁q₂. Tripling both charges multiplies the force by 3 × 3 = 9."},
+{cat:"IV",sub:"Electrostatics",type:"single",q:"Two charges separated by 2 m exert a force of 8 N on each other. If the separation is increased to 4 m, what is the new force?",ch:["2 N","4 N","8 N","16 N"],ans:[0],exp:"F ∝ 1/r². Doubling the distance reduces the force by a factor of 4: 8 N / 4 = 2 N."},
+{cat:"IV",sub:"Electrostatics",type:"single",q:"Electric field lines around a single, isolated positive point charge point:",ch:["Toward the charge","Away from the charge","Parallel to each other","In circles around the charge"],ans:[1],exp:"By convention, electric field lines point away from positive charges (in the direction a positive test charge would be pushed) and toward negative charges."},
+{cat:"IV",sub:"Electrostatics",type:"single",q:"Two like charges are brought closer together. The electric potential energy of the system:",ch:["Increases","Decreases","Remains zero","Remains constant"],ans:[0],exp:"Work must be done against the repulsive force to bring like charges closer together, which increases the system's stored electric potential energy."},
+{cat:"IV",sub:"Circuits",type:"single",q:"A 6-ohm resistor is connected to a 12 V battery. What current flows through it?",ch:["0.5 A","2 A","6 A","72 A"],ans:[1],exp:"By Ohm's law, I = V/R = 12 V / 6 Ω = 2 A."},
+{cat:"IV",sub:"Circuits",type:"single",q:"A 3-ohm and a 6-ohm resistor are connected in series to a 9 V battery. What is the total current in the circuit?",ch:["0.5 A","1 A","3 A","9 A"],ans:[1],exp:"Series resistance adds: R_total = 3 + 6 = 9 Ω. I = V/R = 9 V / 9 Ω = 1 A."},
+{cat:"IV",sub:"Circuits",type:"single",q:"Two 4-ohm resistors are connected in parallel. What is the equivalent resistance?",ch:["1 ohm","2 ohms","4 ohms","8 ohms"],ans:[1],exp:"For equal parallel resistors, R_eq = R/n = 4 Ω / 2 = 2 Ω."},
+{cat:"IV",sub:"Circuits",type:"single",q:"A resistor carries a current of 3 A when connected to a 12 V source. What power does it dissipate?",ch:["4 W","9 W","15 W","36 W"],ans:[3],exp:"P = IV = 3 A × 12 V = 36 W."},
+{cat:"IV",sub:"Circuits",type:"multi",selectN:2,q:"Which TWO of the following materials are good electrical conductors at room temperature?",ch:["Copper","Rubber","Silver","Glass"],ans:[0,2],exp:"Copper and silver are metals with loosely bound valence electrons, making them excellent conductors. Rubber and glass are electrical insulators."},
+{cat:"IV",sub:"Capacitance",type:"single",q:"Two capacitors, 2 µF and 4 µF, are connected in parallel. What is the equivalent capacitance?",ch:["1.33 µF","2 µF","4 µF","6 µF"],ans:[3],exp:"Capacitors in parallel add directly: C_eq = 2 µF + 4 µF = 6 µF."},
+{cat:"IV",sub:"Capacitance",type:"single",q:"Two identical 6 µF capacitors are connected in series. What is the equivalent capacitance?",ch:["3 µF","6 µF","12 µF","36 µF"],ans:[0],exp:"For equal series capacitors, C_eq = C/n = 6 µF / 2 = 3 µF."},
+{cat:"IV",sub:"Capacitance",type:"single",q:"Inserting a dielectric material between the plates of a parallel-plate capacitor (with charge held constant) causes the capacitance to:",ch:["Decrease","Increase","Remain the same","Become zero"],ans:[1],exp:"A dielectric reduces the effective electric field between the plates for a given charge, which increases capacitance (C = Q/V, and V decreases)."},
+{cat:"IV",sub:"Magnetism",type:"single",q:"A positive charge moves to the right through a magnetic field pointing into the page. Using the right-hand rule, the magnetic force on the charge points:",ch:["Up","Down","Into the page","Out of the page"],ans:[0],exp:"F = qv × B. With v to the right and B into the page, the cross product v × B points upward (toward the top of the page) for a positive charge."},
+{cat:"IV",sub:"Magnetism",type:"single",q:"Two long, parallel wires carry current in the same direction. The wires will:",ch:["Repel each other","Attract each other","Exert no force on each other","Rotate perpendicular to each other"],ans:[1],exp:"Parallel currents flowing in the same direction attract each other; currents in opposite directions repel."},
+{cat:"IV",sub:"Magnetism",type:"single",q:"A charge of 2 C moves at 5 m/s perpendicular to a 0.4 T magnetic field. What is the magnitude of the magnetic force on the charge?",ch:["0.4 N","1 N","4 N","10 N"],ans:[2],exp:"F = qvB = (2 C)(5 m/s)(0.4 T) = 4 N."},
+{cat:"IV",sub:"Magnetism",type:"single",q:"Which of the following creates a magnetic field?",ch:["A stationary point charge only","A moving charge or an electric current","A charge at absolute rest in a vacuum","An uncharged, stationary object"],ans:[1],exp:"Magnetic fields are produced by moving charges (currents). A stationary charge produces only an electric field."},
+{cat:"IV",sub:"EM Induction",type:"single",q:"A bar magnet is pushed into a coil of wire, inducing a current. According to Lenz's law, the direction of the induced current opposes:",ch:["The resistance of the wire","The change in magnetic flux through the coil","The direction of the magnet's velocity only","Gravity"],ans:[1],exp:"Lenz's law states that the induced current flows in the direction that opposes the change in magnetic flux that caused it."},
+{cat:"IV",sub:"EM Induction",type:"single",q:"A generator converts mechanical energy into electrical energy through which process?",ch:["Electrostatic induction","Electromagnetic induction","Thermal conduction","The photoelectric effect"],ans:[1],exp:"Generators rotate a coil within a magnetic field (or vice versa), inducing an EMF via electromagnetic induction (Faraday's law)."},
+{cat:"IV",sub:"EM Induction",type:"single",q:"A 0.5 m conducting rod moves at 4 m/s perpendicular to a 0.2 T magnetic field. What EMF is induced across the rod?",ch:["0.1 V","0.4 V","1.0 V","4.0 V"],ans:[1],exp:"Motional EMF = BLv = (0.2 T)(0.5 m)(4 m/s) = 0.4 V."},
+
+// ===== CATEGORY V — Waves (16) =====
+{cat:"V",sub:"Wave Properties",type:"single",q:"A wave has a wavelength of 2 m and a frequency of 5 Hz. What is its speed?",ch:["0.4 m/s","2.5 m/s","7 m/s","10 m/s"],ans:[3],exp:"v = λf = 2 m × 5 Hz = 10 m/s."},
+{cat:"V",sub:"Wave Properties",type:"single",q:"Sound waves traveling through air are classified as:",ch:["Transverse waves","Longitudinal waves","Electromagnetic waves","Standing waves only"],ans:[1],exp:"Sound propagates through compressions and rarefactions of the medium parallel to the direction of travel, making it a longitudinal wave."},
+{cat:"V",sub:"Wave Properties",type:"single",q:"A standing wave on a string is formed by:",ch:["A single wave traveling in one direction only","The superposition of two waves of the same frequency traveling in opposite directions","Two waves of different frequencies traveling in the same direction","A wave reflecting off a moving boundary only"],ans:[1],exp:"Standing waves result from the interference of two identical waves traveling in opposite directions, typically from a wave and its reflection."},
+{cat:"V",sub:"Wave Properties",type:"single",q:"If the amplitude of a wave is doubled, the energy transported by the wave (per unit time) is multiplied by a factor of:",ch:["2","4","8","16"],ans:[1],exp:"Wave energy is proportional to the square of the amplitude, so doubling amplitude quadruples the energy."},
+{cat:"V",sub:"Sound",type:"single",q:"The pitch of a sound is most closely associated with its:",ch:["Amplitude","Frequency","Speed","Wavelength, regardless of medium"],ans:[1],exp:"Pitch is the perceptual correlate of frequency: higher frequency is perceived as higher pitch."},
+{cat:"V",sub:"Sound",type:"single",q:"An organ pipe closed at one end has a fundamental frequency of 100 Hz. What is the frequency of the next higher harmonic it can produce?",ch:["150 Hz","200 Hz","300 Hz","400 Hz"],ans:[2],exp:"A pipe closed at one end supports only odd harmonics (1st, 3rd, 5th...). The next harmonic after the fundamental (1st) is the 3rd: 3 × 100 Hz = 300 Hz."},
+{cat:"V",sub:"Sound",type:"single",q:"Two tuning forks with frequencies of 440 Hz and 444 Hz are struck simultaneously. What beat frequency is heard?",ch:["2 Hz","4 Hz","442 Hz","884 Hz"],ans:[1],exp:"Beat frequency equals the absolute difference between the two frequencies: |444 − 440| = 4 Hz."},
+{cat:"V",sub:"Sound",type:"single",q:"As an ambulance with its siren sounding approaches a stationary observer, the observer hears a frequency that is:",ch:["Lower than the source frequency","Higher than the source frequency","The same as the source frequency","Inaudible due to destructive interference"],ans:[1],exp:"By the Doppler effect, when a source approaches an observer, the observed frequency increases (wavefronts are compressed)."},
+{cat:"V",sub:"EM Spectrum",type:"single",q:"Which of the following lists electromagnetic waves in order of increasing frequency?",ch:["Radio, visible, gamma ray","Gamma ray, visible, radio","Visible, radio, gamma ray","Radio, gamma ray, visible"],ans:[0],exp:"In order of increasing frequency (and decreasing wavelength): radio, microwave, infrared, visible, ultraviolet, X-ray, gamma ray."},
+{cat:"V",sub:"EM Spectrum",type:"single",q:"In a vacuum, which color of visible light travels fastest?",ch:["Red","Blue","Violet","All colors travel at the same speed in a vacuum"],ans:[3],exp:"In a vacuum, all electromagnetic waves — regardless of frequency or color — travel at the same speed, c ≈ 3 × 10⁸ m/s. Dispersion by wavelength occurs only in a medium."},
+{cat:"V",sub:"EM Spectrum",type:"single",q:"The redshift of light from distant galaxies is an application of which phenomenon?",ch:["Diffraction","The Doppler effect","Total internal reflection","Polarization"],ans:[1],exp:"Redshift results from the relative recession of distant galaxies, stretching light to longer wavelengths — a Doppler-effect analog for electromagnetic waves."},
+{cat:"V",sub:"Geometric Optics",type:"single",q:"An object is placed 40 cm in front of a converging lens with a focal length of 10 cm. Using 1/f = 1/dₒ + 1/dᵢ, what is the image distance?",ch:["8 cm","13.3 cm","20 cm","40 cm"],ans:[1],exp:"1/dᵢ = 1/f − 1/dₒ = 1/10 − 1/40 = 3/40, so dᵢ = 40/3 ≈ 13.3 cm."},
+{cat:"V",sub:"Geometric Optics",type:"single",q:"A concave mirror forms what type of image when the object is placed beyond the center of curvature?",ch:["Virtual, upright, magnified","Real, inverted, reduced","Virtual, inverted, reduced","Real, upright, magnified"],ans:[1],exp:"For an object beyond the center of curvature of a concave mirror, the image forms between the focal point and the center of curvature: real, inverted, and reduced."},
+{cat:"V",sub:"Geometric Optics",type:"single",q:"Light travels from water into air at an angle to the normal. What happens to the ray?",ch:["It bends toward the normal","It bends away from the normal","It continues in a straight line, unaffected","It reverses direction"],ans:[1],exp:"Going from a denser medium (water) to a less dense medium (air), light speeds up and bends away from the normal, per Snell's law."},
+{cat:"V",sub:"Wave Phenomena",type:"single",q:"In Young's double-slit experiment, bright fringes occur where:",ch:["Waves from the two slits arrive out of phase and destructively interfere","Waves from the two slits arrive in phase and constructively interfere","Only one slit contributes light to that point","The path difference equals a quarter wavelength"],ans:[1],exp:"Bright (constructive interference) fringes occur where the path difference between the two slits is a whole number of wavelengths, so the waves arrive in phase."},
+{cat:"V",sub:"Wave Phenomena",type:"single",q:"The sky appears blue primarily because of:",ch:["Absorption of blue light by atmospheric ozone","Rayleigh scattering, which scatters shorter (blue) wavelengths more than longer wavelengths","Reflection of blue light off the ocean","The Doppler effect caused by Earth's rotation"],ans:[1],exp:"Rayleigh scattering by air molecules scatters shorter (blue/violet) wavelengths of sunlight much more strongly than longer (red) wavelengths, giving the sky its blue color."}
+];
+
+/* ---------- utility ---------- */
+const LETTERS = ["A","B","C","D","E","F"];
+const uid = () => 'q' + Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4);
+const shuffle = arr => { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; };
+const fmtTime = s => { s=Math.max(0,Math.floor(s)); const m=Math.floor(s/60); const sec=s%60; return `${m}:${sec.toString().padStart(2,'0')}`; };
+const pct = (n,d) => d===0 ? 0 : Math.round((n/d)*100);
+
+/* ---------- storage layer (browser localStorage) ---------- */
+const STORE_KEY = "ppdb-v1";
+let DB = null; // {questions, stats, sessions}
+let saveTimer = null;
+
+function seedDB(){
+  const questions = SEED.map(s => ({...s, id: uid(), origin:"seed"}));
+  return {questions, stats:{}, sessions:[]};
+}
+
+async function loadDB(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw){
+      DB = JSON.parse(raw);
+      if(!DB.questions || !DB.questions.length) DB.questions = seedDB().questions;
+      if(!DB.stats) DB.stats = {};
+      if(!DB.sessions) DB.sessions = [];
+    } else {
+      DB = seedDB();
+      await persist(true);
+    }
+  }catch(e){
+    DB = seedDB();
+  }
+}
+function persist(immediate){
+  clearTimeout(saveTimer);
+  const doSave = async () => {
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }catch(e){ console.error("save failed", e); }
+  };
+  if(immediate) return doSave();
+  saveTimer = setTimeout(doSave, 350);
+}
+
+function statFor(qid){
+  if(!DB.stats[qid]) DB.stats[qid] = {seen:0, correct:0, wrong:0, streak:0, lastResult:null, lastSeen:0};
+  return DB.stats[qid];
+}
+
+function weightFor(qid){
+  const s = DB.stats[qid];
+  if(!s || s.seen===0) return 4;              // unseen — high priority
+  if(s.lastResult===false) return 3.2;        // missed last time
+  if(s.streak>=3) return 0.35;                // mastered — rarely resurface
+  if(s.streak>=1) return 1;                   // correct but not mastered
+  return 2;
+}
+
+function weightedSample(pool, n){
+  const items = pool.map(q => ({q, w: weightFor(q.id) * (0.85+Math.random()*0.3)}));
+  items.sort((a,b)=>b.w-a.w);
+  // take top-weighted 70%, randomize rest for variety
+  const take = Math.min(n, items.length);
+  const topSlice = items.slice(0, Math.min(items.length, Math.ceil(take*1.8)));
+  const chosen = shuffle(topSlice).slice(0, take).map(x=>x.q);
+  return shuffle(chosen);
+}
+
+/* ---------- app state ---------- */
+let VIEW = "dashboard";
+let SESSION = null; // active practice/test session
+let IMPORT_PREVIEW = [];
+
+function catStats(catKey){
+  const qs = DB.questions.filter(q => q.cat===catKey);
+  let seen=0, correct=0, attempts=0;
+  qs.forEach(q=>{ const s=DB.stats[q.id]; if(s && s.seen>0){ seen++; correct+=s.correct; attempts+=s.seen; }});
+  const mastery = attempts===0 ? 0 : pct(correct, attempts);
+  return {total:qs.length, seen, mastery, attempts, correct};
+}
+
+function overallMastery(){
+  let attempts=0, correct=0;
+  Object.values(DB.stats).forEach(s=>{ attempts+=s.seen; correct+=s.correct; });
+  return {attempts, correct, pct: pct(correct,attempts)};
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function render(){
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    ${topbar()}
+    ${SESSION ? '' : tabs()}
+    <div id="view">${SESSION ? renderPlayer() : renderView()}</div>
+  `;
+  wireGlobalEvents();
+}
+
+function topbar(){
+  const om = overallMastery();
+  return `
+  <div class="topbar">
+    <div class="brand">
+      <div class="dot"></div>
+      <div>
+        <h1>CHECKRIDE</h1>
+        <div class="sub">PHYSICS · PRAXIS 5266 · FLIGHT PREP ENGINE</div>
+      </div>
+    </div>
+    <div class="readout">
+      <div>BANK: <b>${DB.questions.length}</b> ITEMS</div>
+      <div>LIFETIME ACCURACY: <b>${om.pct}%</b> (${om.correct}/${om.attempts})</div>
+    </div>
+  </div>`;
+}
+
+function tabs(){
+  const t = [
+    ["dashboard","Dashboard"],
+    ["practice","Practice"],
+    ["trouble","Trouble Areas"],
+    ["bank","Question Bank"],
+    ["import","Import"],
+    ["history","History"]
+  ];
+  return `<nav class="tabs">${t.map(([k,l])=>`<button data-tab="${k}" class="${VIEW===k?'active':''}">${l}</button>`).join('')}</nav>`;
+}
+
+function renderView(){
+  if(VIEW==="dashboard") return renderDashboard();
+  if(VIEW==="practice") return renderPractice();
+  if(VIEW==="trouble") return renderTrouble();
+  if(VIEW==="bank") return renderBank();
+  if(VIEW==="import") return renderImport();
+  if(VIEW==="history") return renderHistory();
+  return "";
+}
+
+/* ---------- gauge svg ---------- */
+function gaugeSVG(pctVal, color, size=88){
+  const r = size/2 - 8;
+  const c = 2*Math.PI*r;
+  const off = c * (1 - pctVal/100);
+  const cx=size/2, cy=size/2;
+  return `
+  <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#252E38" stroke-width="7"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="7"
+      stroke-dasharray="${c}" stroke-dashoffset="${off}" stroke-linecap="round"
+      transform="rotate(-90 ${cx} ${cy})" style="transition:stroke-dashoffset .5s;"/>
+    <text x="${cx}" y="${cy+6}" text-anchor="middle" font-family="JetBrains Mono" font-size="18" font-weight="700" fill="${color}">${pctVal}%</text>
+  </svg>`;
+}
+
+function renderDashboard(){
+  const om = overallMastery();
+  const readiness = om.attempts < 20 ? Math.round(om.pct*0.5) : om.pct;
+  const totalSessions = DB.sessions.length;
+  const lastSession = DB.sessions[DB.sessions.length-1];
+  return `
+  <div class="panel">
+    <div class="panel-title"><span>Readiness Overview</span><span class="tag">5 CATEGORIES · ETS-WEIGHTED</span></div>
+    <div class="gauge-grid">
+      <div class="gauge-card" style="border-color:${readiness>=70?'#2f5c3f':'#3a2f2f'}">
+        ${gaugeSVG(readiness, readiness>=70?'#4CD07D':'#FFB300', 96)}
+        <div class="gauge-label">Overall Readiness</div>
+        <div class="gauge-sub">${om.attempts} attempts logged</div>
+      </div>
+      ${Object.entries(CATS).map(([k,c])=>{
+        const cs = catStats(k);
+        return `<div class="gauge-card">
+          ${gaugeSVG(cs.mastery, c.color, 88)}
+          <div class="gauge-label">${c.short}</div>
+          <div class="gauge-sub">${cs.seen}/${cs.total} seen · ${c.weight}% of exam</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="n">${DB.questions.length}</div><div class="l">Bank Size</div></div>
+      <div class="stat-box"><div class="n">${totalSessions}</div><div class="l">Sessions Flown</div></div>
+      <div class="stat-box"><div class="n">${troubleQuestions().length}</div><div class="l">Trouble Items</div></div>
+      <div class="stat-box"><div class="n">${lastSession ? pct(lastSession.correct,lastSession.total)+'%' : '—'}</div><div class="l">Last Session Score</div></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title"><span>Choose a Mode</span></div>
+    <div class="mode-grid">
+      <div class="mode-card" data-start="drill-20">
+        <div class="icon">🎯</div>
+        <h3>Quick Drill</h3>
+        <p>20 questions, adaptive mix weighted toward what you miss. Immediate feedback after each answer.</p>
+        <div class="badge">~15 min</div>
+      </div>
+      <div class="mode-card" data-start="checkride">
+        <div class="icon">✈️</div>
+        <h3>Full Checkride</h3>
+        <p>Simulates the real exam: up to 125 questions, 150-minute timer, no feedback until the ride is over.</p>
+        <div class="badge">150 min</div>
+      </div>
+      <div class="mode-card" data-start="trouble">
+        <div class="icon">⚠️</div>
+        <h3>Trouble Areas</h3>
+        <p>Pulls only from questions you've missed or never mastered. The core of spaced repetition.</p>
+        <div class="badge">${troubleQuestions().length} items</div>
+      </div>
+      <div class="mode-card" data-tab-jump="practice">
+        <div class="icon">⚙️</div>
+        <h3>Custom Session</h3>
+        <p>Pick category, length, and mode manually from the Practice tab.</p>
+        <div class="badge">Manual</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function troubleQuestions(){
+  return DB.questions.filter(q=>{
+    const s = DB.stats[q.id];
+    return s && s.seen>0 && (s.lastResult===false || (s.correct===0 && s.seen>0) || s.streak<2 && s.wrong>0);
+  });
+}
+
+function renderPractice(){
+  return `
+  <div class="panel">
+    <div class="panel-title"><span>Build a Session</span><span class="tag">STUDY MODE — feedback after each item</span></div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:16px;">
+      <label class="mono" style="font-size:11px; color:var(--text-dim);">CATEGORY</label>
+      <select id="pk-cat">
+        <option value="ALL">All categories (weighted)</option>
+        ${Object.entries(CATS).map(([k,c])=>`<option value="${k}">${k} — ${c.name}</option>`).join('')}
+      </select>
+      <label class="mono" style="font-size:11px; color:var(--text-dim);">LENGTH</label>
+      <select id="pk-len">
+        <option value="10">10</option>
+        <option value="20" selected>20</option>
+        <option value="40">40</option>
+        <option value="125">125 (full)</option>
+      </select>
+      <label class="mono" style="font-size:11px; color:var(--text-dim);">FEEDBACK</label>
+      <select id="pk-mode">
+        <option value="study" selected>Immediate (Study)</option>
+        <option value="test">Held until end (Test)</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" id="pk-start">Start Session</button>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title"><span>Category Breakdown</span></div>
+    ${Object.entries(CATS).map(([k,c])=>{
+      const cs = catStats(k);
+      return `<div class="breakdown-row">
+        <div class="breakdown-name">${k} · ${c.short}</div>
+        <div class="breakdown-track"><div class="breakdown-fill" style="width:${cs.mastery}%; background:${c.color};"></div></div>
+        <div class="breakdown-pct" style="color:${c.color}">${cs.mastery}%</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function renderTrouble(){
+  const tq = troubleQuestions();
+  const bySub = {};
+  tq.forEach(q=>{
+    const key = q.cat+" · "+q.sub;
+    if(!bySub[key]) bySub[key]=[];
+    bySub[key].push(q);
+  });
+  return `
+  <div class="panel">
+    <div class="panel-title"><span>Trouble Areas</span><span class="tag">${tq.length} FLAGGED ITEMS</span></div>
+    ${tq.length===0 ? `<div class="empty-state"><div class="big">✓</div>No trouble items yet — answer some questions in Practice mode and misses will surface here for spaced repetition.</div>` : `
+      <button class="btn btn-primary" id="drill-trouble" style="margin-bottom:16px;">Drill All Trouble Items (${tq.length})</button>
+      ${Object.entries(bySub).map(([k,arr])=>{
+        const missRate = Math.round(arr.reduce((a,q)=>{const s=DB.stats[q.id]; return a + (s.wrong/(s.seen||1));},0)/arr.length*100);
+        return `<div class="item-row">
+          <div class="info"><div class="title">${k}</div><div class="meta">${arr.length} item${arr.length>1?'s':''} flagged</div></div>
+          <div><span class="mono" style="font-size:11px; color:var(--red);">${missRate}% miss rate</span><span class="miss-bar"><span class="miss-fill" style="width:${missRate}%"></span></span></div>
+        </div>`;
+      }).join('')}
+    `}
+  </div>`;
+}
+
+function renderBank(){
+  return `
+  <div class="panel">
+    <div class="panel-title"><span>Question Bank</span><span class="tag">${DB.questions.length} TOTAL</span></div>
+    ${Object.entries(CATS).map(([k,c])=>{
+      const qs = DB.questions.filter(q=>q.cat===k);
+      const seedCount = qs.filter(q=>q.origin==="seed").length;
+      const impCount = qs.length - seedCount;
+      return `<div class="item-row">
+        <div class="info">
+          <div class="title">${k} — ${c.name}</div>
+          <div class="meta">${qs.length} questions · ${seedCount} starter · ${impCount} imported · target ${c.weight}% of exam</div>
+        </div>
+        <button class="btn btn-sm btn-ghost" data-view-cat="${k}">View</button>
+      </div>`;
+    }).join('')}
+    <div id="cat-detail" style="margin-top:16px;"></div>
+  </div>`;
+}
+
+function renderImport(){
+  return `
+  <div class="panel">
+    <div class="panel-title"><span>Import Questions</span><span class="tag">PDF · TEXT · QUIZLET PASTE</span></div>
+    <div class="file-drop" id="pdf-drop">
+      📄 Click to upload a PDF — text will be extracted below for review.<br>
+      <span style="font-size:10.5px;">Your own study PDFs only. Extraction happens locally in this app.</span>
+      <input type="file" id="pdf-input" accept="application/pdf" style="display:none;">
+    </div>
+    <div id="pdf-status" class="mono" style="font-size:11px; color:var(--cyan); margin-bottom:10px;"></div>
+    <textarea id="import-text" placeholder="Paste multiple-choice questions here, OR paste a Quizlet term/definition export (tab-separated).
+
+MCQ format example:
+1. What is the SI unit of force?
+A) Watt
+B) Newton
+C) Joule
+D) Pascal
+Answer: B
+
+Quizlet paste example (Export > Term and definition separated by Tab, Cards separated by New line):
+Newton's First Law	An object in motion stays in motion unless acted on by a net force
+Ohm's Law	V = IR"></textarea>
+    <div style="display:flex; gap:10px; align-items:center; margin-top:12px; flex-wrap:wrap;">
+      <label class="mono" style="font-size:11px; color:var(--text-dim);">DEFAULT CATEGORY</label>
+      <select id="import-cat">
+        ${Object.entries(CATS).map(([k,c])=>`<option value="${k}">${k} — ${c.name}</option>`).join('')}
+      </select>
+      <button class="btn btn-primary" id="parse-btn">Parse</button>
+      <button class="btn btn-ghost" id="clear-import">Clear</button>
+    </div>
+    <div class="hint">Supports numbered MCQs with <code>A) B) C) D)</code> choices and an <code>Answer: B</code> or <code>Answer: A, C</code> line (multi-select). If no MCQ pattern is found, tab-separated lines are treated as Quizlet term/definition pairs and auto-converted into multiple-choice recall questions using other terms in the set as distractors.</div>
+  </div>
+
+  <div class="panel" id="preview-panel" style="${IMPORT_PREVIEW.length? '' : 'display:none;'}">
+    <div class="panel-title"><span>Preview (${IMPORT_PREVIEW.length} parsed)</span></div>
+    <div id="preview-list">${IMPORT_PREVIEW.map((q,i)=>renderPreviewItem(q,i)).join('')}</div>
+    <div class="btn-row" style="margin-top:12px;">
+      <button class="btn btn-primary" id="commit-import">Add All to Bank</button>
+      <button class="btn btn-ghost" id="discard-import">Discard Preview</button>
+    </div>
+  </div>`;
+}
+
+function renderPreviewItem(q,i){
+  return `<div class="parsed-item">
+    <div class="pq">${i+1}. ${escapeHtml(q.q)}</div>
+    ${q.ch.map((c,ci)=>`<div class="pc ${q.ans.includes(ci)?'correct':''}">${LETTERS[ci]}) ${escapeHtml(c)} ${q.ans.includes(ci)?'✓':''}</div>`).join('')}
+    <div class="prow">
+      <select data-preview-cat="${i}">
+        ${Object.entries(CATS).map(([k,c])=>`<option value="${k}" ${q.cat===k?'selected':''}>${k} — ${c.short}</option>`).join('')}
+      </select>
+      <button class="btn btn-sm btn-danger" data-remove-preview="${i}">Remove</button>
+    </div>
+  </div>`;
+}
+
+function escapeHtml(s){ const d=document.createElement('div'); d.innerText=s; return d.innerHTML; }
+
+function renderHistory(){
+  const sess = [...DB.sessions].reverse();
+  return `
+  <div class="panel">
+    <div class="panel-title"><span>Session History</span><span class="tag">${sess.length} LOGGED</span></div>
+    ${sess.length===0 ? `<div class="empty-state"><div class="big">🛫</div>No sessions yet. Start one from Dashboard or Practice.</div>` :
+      sess.map(s=>`<div class="item-row">
+        <div class="info">
+          <div class="title">${s.modeLabel} — ${pct(s.correct,s.total)}% (${s.correct}/${s.total})</div>
+          <div class="meta">${new Date(s.date).toLocaleString()} · ${fmtTime(s.durationSec)} elapsed</div>
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+/* ============================================================
+   SESSION PLAYER
+   ============================================================ */
+function startSession(kind, opts={}){
+  let pool = DB.questions;
+  let modeLabel = "Session";
+  let feedback = "study";
+  let len = 20;
+  let timeLimitSec = null;
+
+  if(kind==="drill-20"){ pool = DB.questions; len=20; feedback="study"; modeLabel="Quick Drill"; }
+  if(kind==="checkride"){ pool = DB.questions; len=Math.min(125, DB.questions.length); feedback="test"; modeLabel="Full Checkride"; timeLimitSec=150*60; }
+  if(kind==="trouble"){ pool = troubleQuestions(); len=Math.min(pool.length,30); feedback="study"; modeLabel="Trouble Areas Drill"; if(pool.length===0) return; }
+  if(kind==="custom"){
+    pool = opts.cat==="ALL" ? DB.questions : DB.questions.filter(q=>q.cat===opts.cat);
+    len = Math.min(opts.len, pool.length);
+    feedback = opts.mode;
+    modeLabel = `Custom · ${opts.cat==="ALL"?'All Categories':opts.cat} · ${len}Q`;
+    if(opts.mode==="test" && len>=100) timeLimitSec = 150*60;
+  }
+
+  const qset = weightedSample(pool, len);
+  if(qset.length===0) return;
+
+  SESSION = {
+    kind, modeLabel, feedback,
+    questions: qset,
+    idx: 0,
+    answers: {}, // qid -> {selected:[], correct:bool}
+    locked: false,
+    startTime: Date.now(),
+    timeLimitSec,
+    finished:false
+  };
+  render();
+  if(timeLimitSec) startTimer();
+}
+
+let timerInterval=null;
+function startTimer(){
+  clearInterval(timerInterval);
+  timerInterval = setInterval(()=>{
+    if(!SESSION || SESSION.finished){ clearInterval(timerInterval); return; }
+    const elapsed = (Date.now()-SESSION.startTime)/1000;
+    const remain = SESSION.timeLimitSec - elapsed;
+    if(remain<=0){
+      finishSession();
+      clearInterval(timerInterval);
+    } else {
+      const el = document.getElementById('q-timer-val');
+      if(el) el.textContent = fmtTime(remain);
+    }
+  },1000);
+}
+
+function renderPlayer(){
+  if(SESSION.finished) return renderResults();
+  const q = SESSION.questions[SESSION.idx];
+  const ans = SESSION.answers[q.id];
+  const isMulti = q.type==="multi";
+  const locked = !!ans && (SESSION.feedback==="study");
+  const c = CATS[q.cat];
+  const progressPct = Math.round((SESSION.idx)/SESSION.questions.length*100);
+
+  return `
+  <div class="panel">
+    <div class="player-head">
+      <div>
+        <span class="q-cat-pill">${q.cat} · ${c.short}</span>
+        <span class="q-meta" style="margin-left:10px;">ITEM ${SESSION.idx+1} / ${SESSION.questions.length}</span>
+      </div>
+      ${SESSION.timeLimitSec ? `<div class="q-timer">⏱ <span id="q-timer-val">${fmtTime(SESSION.timeLimitSec - (Date.now()-SESSION.startTime)/1000)}</span></div>` : `<div class="q-meta">${SESSION.modeLabel}</div>`}
+    </div>
+    <div class="progress-bar"><div class="progress-bar-fill" style="width:${progressPct}%"></div></div>
+
+    ${isMulti ? `<div class="q-instruction">Select ${q.selectN===2?'TWO':q.selectN===3?'THREE':q.selectN} answers</div>` : ''}
+    <div class="q-text">${escapeHtml(q.q)}</div>
+
+    <div class="choices">
+      ${q.ch.map((choice,ci)=>{
+        const selected = ans && ans.selected.includes(ci);
+        let cls = "choice";
+        if(selected) cls += " selected";
+        if(locked){
+          cls += " locked";
+          if(q.ans.includes(ci)) cls += " correct";
+          else if(selected) cls += " incorrect";
+        }
+        return `<div class="${cls}" data-choice="${ci}">
+          <div class="letter">${LETTERS[ci]}</div>
+          <div class="txt">${escapeHtml(choice)}</div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    ${locked ? `<div class="explain-box"><b>${ans.correct?'Correct.':'Missed.'}</b> ${escapeHtml(q.exp||'No explanation provided.')}</div>` : ''}
+
+    <div class="player-foot">
+      <button class="btn btn-ghost" id="quit-session">Exit Session</button>
+      <div class="btn-row">
+        ${!ans && !isMulti ? '' : ''}
+        ${!locked ? `<button class="btn btn-primary" id="submit-answer" ${!ans || ans.selected.length===0 ? 'disabled':''}>Submit</button>`
+                   : `<button class="btn btn-primary" id="next-question">${SESSION.idx+1>=SESSION.questions.length ? 'Finish Session' : 'Next Item →'}</button>`}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderResults(){
+  const total = SESSION.questions.length;
+  let correct = 0;
+  const byCat = {};
+  SESSION.questions.forEach(q=>{
+    const a = SESSION.answers[q.id];
+    const ok = a && a.correct;
+    if(ok) correct++;
+    if(!byCat[q.cat]) byCat[q.cat] = {total:0, correct:0};
+    byCat[q.cat].total++;
+    if(ok) byCat[q.cat].correct++;
+  });
+  const scorePct = pct(correct,total);
+  const passLine = scorePct>=70;
+  const duration = (Date.now()-SESSION.startTime)/1000;
+
+  return `
+  <div class="panel">
+    <div class="result-hero">
+      <div class="big ${passLine?'pass':'fail'}">${scorePct}%</div>
+      <div class="cap">${correct} / ${total} correct · ${SESSION.modeLabel} · ${fmtTime(duration)} elapsed</div>
+    </div>
+    <div style="margin-top:10px;">
+      ${Object.entries(byCat).map(([k,d])=>{
+        const p = pct(d.correct,d.total);
+        return `<div class="breakdown-row">
+          <div class="breakdown-name">${k} · ${CATS[k].short}</div>
+          <div class="breakdown-track"><div class="breakdown-fill" style="width:${p}%; background:${CATS[k].color};"></div></div>
+          <div class="breakdown-pct" style="color:${CATS[k].color}">${p}%</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="btn-row" style="margin-top:20px;">
+      <button class="btn btn-primary" id="close-session">Back to Dashboard</button>
+      <button class="btn btn-ghost" id="review-session">Review Missed Items</button>
+    </div>
+  </div>`;
+}
+
+function selectChoice(ci){
+  const q = SESSION.questions[SESSION.idx];
+  if(!SESSION.answers[q.id]) SESSION.answers[q.id] = {selected:[], correct:false};
+  const a = SESSION.answers[q.id];
+  if(a.locked) return;
+  const isMulti = q.type==="multi";
+  if(isMulti){
+    const pos = a.selected.indexOf(ci);
+    if(pos>=0) a.selected.splice(pos,1);
+    else a.selected.push(ci);
+  } else {
+    a.selected = [ci];
+  }
+  render();
+}
+
+function submitAnswer(){
+  const q = SESSION.questions[SESSION.idx];
+  const a = SESSION.answers[q.id];
+  if(!a || a.selected.length===0) return;
+  const sortedSel = [...a.selected].sort().join(',');
+  const sortedAns = [...q.ans].sort().join(',');
+  a.correct = sortedSel===sortedAns;
+  a.locked = true;
+
+  const s = statFor(q.id);
+  s.seen++;
+  s.lastSeen = Date.now();
+  if(a.correct){ s.correct++; s.streak++; s.lastResult=true; }
+  else { s.wrong++; s.streak=0; s.lastResult=false; }
+  persist();
+
+  if(SESSION.feedback==="test"){
+    goNext();
+  } else {
+    render();
+  }
+}
+
+function goNext(){
+  if(SESSION.idx+1 >= SESSION.questions.length){
+    finishSession();
+  } else {
+    SESSION.idx++;
+    render();
+  }
+}
+
+function finishSession(){
+  SESSION.finished = true;
+  const total = SESSION.questions.length;
+  let correct = 0;
+  SESSION.questions.forEach(q=>{ const a=SESSION.answers[q.id]; if(a && a.correct) correct++; });
+  DB.sessions.push({
+    id: uid(), date: Date.now(), modeLabel: SESSION.modeLabel,
+    total, correct, durationSec: (Date.now()-SESSION.startTime)/1000
+  });
+  persist(true);
+  render();
+}
+
+/* ============================================================
+   IMPORT PARSER
+   ============================================================ */
+function parseImportText(text, defaultCat){
+  text = text.trim();
+  if(!text) return [];
+
+  // Try MCQ pattern first
+  const mcq = parseMCQBlocks(text, defaultCat);
+  if(mcq.length>0) return mcq;
+
+  // Fallback: Quizlet tab-separated term/definition pairs
+  return parseQuizletPairs(text, defaultCat);
+}
+
+function parseMCQBlocks(text, defaultCat){
+  const lines = text.split(/\r?\n/);
+  const blocks = [];
+  let current = null;
+
+  const qStart = /^\s*(\d+)[\.\)]\s*(.+)/;
+  const choiceLine = /^\s*[\(\[]?([A-Fa-f])[\.\)\]]\s+(.+)/;
+  const answerLine = /^\s*(answer|correct)\s*:?\s*([A-Fa-f](\s*[,\/&]\s*[A-Fa-f])*)/i;
+
+  lines.forEach(raw=>{
+    const line = raw.trim();
+    if(!line) return;
+    const qm = line.match(qStart);
+    const cm = line.match(choiceLine);
+    const am = line.match(answerLine);
+
+    if(am && current){
+      current.ansLetters = am[2].toUpperCase().split(/[,\/&]/).map(s=>s.trim());
+      return;
+    }
+    if(cm && current){
+      current.choices.push(cm[2].trim());
+      return;
+    }
+    if(qm){
+      if(current) blocks.push(current);
+      current = {qtext: qm[2].trim(), choices:[], ansLetters:[]};
+      return;
+    }
+    // continuation of question text (no marker yet, and no choices started)
+    if(current && current.choices.length===0){
+      current.qtext += " " + line;
+    }
+  });
+  if(current) blocks.push(current);
+
+  const out = [];
+  blocks.forEach(b=>{
+    if(b.choices.length<2 || b.ansLetters.length===0 || !b.qtext) return;
+    const ansIdx = b.ansLetters.map(l=>LETTERS.indexOf(l.toUpperCase())).filter(i=>i>=0 && i<b.choices.length);
+    if(ansIdx.length===0) return;
+    out.push({
+      id: uid(), cat: defaultCat, sub:"Imported", origin:"imported",
+      type: ansIdx.length>1 ? "multi" : "single",
+      selectN: ansIdx.length>1 ? ansIdx.length : undefined,
+      q: b.qtext, ch: b.choices, ans: ansIdx,
+      exp: "Imported item — no explanation provided."
+    });
+  });
+  return out;
+}
+
+function parseQuizletPairs(text, defaultCat){
+  const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  const pairs = [];
+  lines.forEach(l=>{
+    const parts = l.split('\t');
+    if(parts.length>=2 && parts[0] && parts[1]){
+      pairs.push({term: parts[0].trim(), def: parts.slice(1).join(' ').trim()});
+    } else {
+      // try comma-separated as fallback if no tabs found anywhere
+      const cparts = l.split(/\s{2,}|;\s*/);
+      if(cparts.length>=2 && cparts[0] && cparts[1]){
+        pairs.push({term: cparts[0].trim(), def: cparts.slice(1).join(' ').trim()});
+      }
+    }
+  });
+  if(pairs.length<2) return [];
+
+  const allTerms = pairs.map(p=>p.term);
+  const out = pairs.map((p,i)=>{
+    const distractorPool = allTerms.filter((t,ti)=>ti!==i);
+    const distractors = shuffle(distractorPool).slice(0,3);
+    const choices = shuffle([p.term, ...distractors]);
+    const correctIdx = choices.indexOf(p.term);
+    return {
+      id: uid(), cat: defaultCat, sub:"Imported (Quizlet)", origin:"imported",
+      type:"single", q: `Which term matches: "${p.def}"?`,
+      ch: choices, ans:[correctIdx],
+      exp: "Imported from Quizlet-style term/definition pair."
+    };
+  });
+  return out;
+}
+
+async function extractPdfText(file){
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({data: buf}).promise;
+  let text = "";
+  for(let i=1;i<=pdf.numPages;i++){
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    text += content.items.map(it=>it.str).join(" ") + "\n";
+  }
+  return text;
+}
+
+/* ============================================================
+   EVENTS
+   ============================================================ */
+function wireGlobalEvents(){
+  document.querySelectorAll('[data-tab]').forEach(b=>{
+    b.onclick = ()=>{ VIEW = b.getAttribute('data-tab'); IMPORT_PREVIEW=[]; render(); };
+  });
+  document.querySelectorAll('[data-tab-jump]').forEach(b=>{
+    b.onclick = ()=>{ VIEW = b.getAttribute('data-tab-jump'); render(); };
+  });
+  document.querySelectorAll('[data-start]').forEach(b=>{
+    b.onclick = ()=> startSession(b.getAttribute('data-start'));
+  });
+
+  const pkStart = document.getElementById('pk-start');
+  if(pkStart) pkStart.onclick = ()=>{
+    const cat = document.getElementById('pk-cat').value;
+    const len = parseInt(document.getElementById('pk-len').value);
+    const mode = document.getElementById('pk-mode').value;
+    startSession("custom", {cat, len, mode});
+  };
+
+  const drillTrouble = document.getElementById('drill-trouble');
+  if(drillTrouble) drillTrouble.onclick = ()=> startSession("trouble");
+
+  document.querySelectorAll('[data-view-cat]').forEach(b=>{
+    b.onclick = ()=>{
+      const k = b.getAttribute('data-view-cat');
+      const qs = DB.questions.filter(q=>q.cat===k);
+      const el = document.getElementById('cat-detail');
+      el.innerHTML = `<div class="panel-title" style="margin-top:10px;"><span>${k} — ${CATS[k].name}</span></div>` +
+        qs.map(q=>{
+          const s = DB.stats[q.id];
+          const seen = s ? s.seen : 0;
+          const acc = s && s.seen>0 ? pct(s.correct,s.seen) : null;
+          return `<div class="item-row">
+            <div class="info"><div class="title">${escapeHtml(q.q.slice(0,110))}${q.q.length>110?'…':''}</div>
+            <div class="meta">${q.sub} · ${q.origin} ${acc!==null ? '· '+acc+'% ('+seen+' attempts)' : '· not yet attempted'}</div></div>
+          </div>`;
+        }).join('');
+    };
+  });
+
+  // player
+  document.querySelectorAll('[data-choice]').forEach(el=>{
+    el.onclick = ()=> selectChoice(parseInt(el.getAttribute('data-choice')));
+  });
+  const submitBtn = document.getElementById('submit-answer');
+  if(submitBtn) submitBtn.onclick = submitAnswer;
+  const nextBtn = document.getElementById('next-question');
+  if(nextBtn) nextBtn.onclick = goNext;
+  const quitBtn = document.getElementById('quit-session');
+  if(quitBtn) quitBtn.onclick = ()=>{
+    if(confirm('Exit this session? Progress on answered questions is already saved, but the session summary will not be logged.')){
+      clearInterval(timerInterval);
+      SESSION = null; render();
+    }
+  };
+  const closeBtn = document.getElementById('close-session');
+  if(closeBtn) closeBtn.onclick = ()=>{ SESSION=null; VIEW="dashboard"; render(); };
+  const reviewBtn = document.getElementById('review-session');
+  if(reviewBtn) reviewBtn.onclick = ()=>{
+    SESSION.reviewMode = true;
+    SESSION.finished = false;
+    SESSION.questions = SESSION.questions.filter(q=>{ const a=SESSION.answers[q.id]; return a && !a.correct; });
+    SESSION.idx = 0;
+    if(SESSION.questions.length===0){ SESSION=null; VIEW="dashboard"; }
+    else { SESSION.feedback="study"; SESSION.answers = {}; SESSION.timeLimitSec=null; }
+    render();
+  };
+
+  // import
+  const pdfDrop = document.getElementById('pdf-drop');
+  const pdfInput = document.getElementById('pdf-input');
+  if(pdfDrop) pdfDrop.onclick = ()=> pdfInput.click();
+  if(pdfInput) pdfInput.onchange = async ()=>{
+    const file = pdfInput.files[0];
+    if(!file) return;
+    const status = document.getElementById('pdf-status');
+    status.textContent = "Extracting text from " + file.name + " ...";
+    try{
+      const text = await extractPdfText(file);
+      document.getElementById('import-text').value = text.trim();
+      status.textContent = `Extracted ${text.length.toLocaleString()} characters from ${file.name}. Review below, then Parse.`;
+    }catch(e){
+      status.textContent = "Could not extract text from that PDF: " + e.message;
+    }
+  };
+  const parseBtn = document.getElementById('parse-btn');
+  if(parseBtn) parseBtn.onclick = ()=>{
+    const text = document.getElementById('import-text').value;
+    const cat = document.getElementById('import-cat').value;
+    IMPORT_PREVIEW = parseImportText(text, cat);
+    render();
+  };
+  const clearImport = document.getElementById('clear-import');
+  if(clearImport) clearImport.onclick = ()=>{ document.getElementById('import-text').value=""; };
+  const commitBtn = document.getElementById('commit-import');
+  if(commitBtn) commitBtn.onclick = ()=>{
+    DB.questions.push(...IMPORT_PREVIEW);
+    persist(true);
+    IMPORT_PREVIEW = [];
+    document.getElementById('import-text').value = "";
+    render();
+  };
+  const discardBtn = document.getElementById('discard-import');
+  if(discardBtn) discardBtn.onclick = ()=>{ IMPORT_PREVIEW=[]; render(); };
+  document.querySelectorAll('[data-remove-preview]').forEach(b=>{
+    b.onclick = ()=>{ IMPORT_PREVIEW.splice(parseInt(b.getAttribute('data-remove-preview')),1); render(); };
+  });
+  document.querySelectorAll('[data-preview-cat]').forEach(sel=>{
+    sel.onchange = ()=>{ IMPORT_PREVIEW[parseInt(sel.getAttribute('data-preview-cat'))].cat = sel.value; };
+  });
+}
+
+/* ---------- boot ---------- */
+(async function boot(){
+  document.getElementById('app').innerHTML = '<div style="padding:60px; text-align:center; color:#93A0AC; font-family:JetBrains Mono, monospace;">Loading question bank…</div>';
+  await loadDB();
+  render();
+})();
+</script>
+</body>
+</html>
