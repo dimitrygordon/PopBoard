@@ -60,6 +60,7 @@ const backToMainLoginBtn = document.getElementById("backToMainLoginBtn");
 const newBoardNameInput = document.getElementById("newBoardNameInput");
 const createBoardBtn = document.getElementById("createBoardBtn");
 const boardsList = document.getElementById("boardsList");
+const studyBtn = document.getElementById("studyBtn");
 const logoutBtnPortal = document.getElementById("logoutBtnPortal");
 const logoutBtnApp = document.getElementById("logoutBtnApp");
 const logoutBtnStudents = document.getElementById("logoutBtnStudents");
@@ -360,6 +361,7 @@ teacherSignInBtn.onclick = async function() {
     await setDoc(doc(db, "teachers", "Dimitry"), { name: "Dimitry", password: "301718Dag", createdAt: serverTimestamp() }, { merge: true });
     teacherLoginDiv.classList.add("hidden");
     boardsPortalDiv.classList.remove("hidden");
+    studyBtn.classList.remove("hidden");
     loadBoardsPortal();
     return;
   }
@@ -387,6 +389,8 @@ teacherSignInBtn.onclick = async function() {
   }
 };
 
+studyBtn.onclick = function() { window.open("study.html", "_blank"); };
+
 logoutBtnPortal.onclick = function() { resetAndLogout(); };
 logoutBtnApp.onclick = function() { resetAndLogout(); };
 logoutBtnStudents.onclick = function() { resetAndLogout(); };
@@ -399,6 +403,7 @@ function resetAndLogout() {
   isTeacher = false;
   isMasterAdmin = false;
   teacherAccount = "";
+  studyBtn.classList.add("hidden");
   currentBoardId = "";
   currentStudentId = "";
   studentEmoji = "";
