@@ -251,6 +251,11 @@ button:active { transform: scale(0.97); }
   ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
   .seat:hover .seat-delete { display: block; }
   button:hover { background: var(--button-hover-bg); border-color: var(--text-color); transform: translateY(-1px); }
+  .keyword-chip:hover { background: var(--button-hover-bg); border-color: var(--accent); }
+  /* hover-capable pointers get the count tucked away until hovered; touch
+     devices (outside this media query) fall back to always showing it */
+  .keyword-count { opacity: 0; max-width: 0; margin-left: 0; overflow: hidden; }
+  .keyword-chip:hover .keyword-count { opacity: 0.75; max-width: 32px; margin-left: 6px; }
 }
 
 .poll button.teacher-control,
@@ -413,6 +418,33 @@ button.hide-toggle, .reply button.hide-toggle {
 }
 .poll-log strong { display: block; margin-bottom: 8px; font-size: 0.75rem !important; color: var(--text-color); }
 .poll-log div { padding: 3px 0; }
+
+.keyword-map { margin-top: 16px; margin-bottom: 8px; }
+.keyword-map strong { display: block; margin-bottom: 8px; font-size: 0.75rem !important; color: var(--text-color); }
+.keyword-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+.keyword-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--input-bg);
+  border: 1.5px solid var(--border-color);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-color);
+  cursor: default;
+  transition: all 0.2s ease;
+}
+.keyword-term { line-height: 1; }
+.keyword-count {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  opacity: 0.7;
+  margin-left: 5px;
+  line-height: 1;
+  transition: opacity 0.2s ease, max-width 0.2s ease;
+}
 
 #sortSection { margin-bottom: 20px; display: flex; justify-content: flex-end; }
 
