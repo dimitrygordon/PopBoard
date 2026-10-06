@@ -2881,6 +2881,109 @@ async function loadPolls() {
   );
 }
 
+// Domain-neutral nouns/verbs that survive compromise's tagging but carry no
+// real meaning for a keyword map (e.g. "a lot of things happened").
+var KEYWORD_STOPWORDS = [
+  "thing", "things", "stuff", "lot", "lots", "way", "ways", "something",
+  "anything", "everything", "someone", "people", "person", "time", "times",
+  "bit", "part", "parts", "kind", "kinds", "sort", "sorts"
+];
+
+function extractKeywordCandidates(text) {
+  if (!window.nlp || !text) { return []; }
+  var out = [];
+  window.nlp(text).json().forEach(function(sentence) {
+    var buffer = [];
+    function flushBuffer() {
+      if (!buffer.length) { return; }
+      var phrase = buffer.join(" ");
+      var singular = window.nlp(phrase).nouns().toSingular().text();
+      var term = (singular || phrase).toLowerCase().trim();
+      if (term) { out.push(term); }
+      buffer = [];
+    }
+    (sentence.terms || []).forEach(function(t) {
+      var tags = t.tags || [];
+      if (tags.indexOf("Noun") !== -1) { buffer.push(t.text); return; }
+      flushBuffer();
+      var isMeaningfulVerb = tags.indexOf("Verb") !== -1 && tags.indexOf("Auxiliary") === -1 && tags.indexOf("Copula") === -1;
+      if (isMeaningfulVerb) { out.push(t.text.toLowerCase()); }
+    });
+    flushBuffer();
+  });
+  return out.filter(function(term) { return term.length > 1 && KEYWORD_STOPWORDS.indexOf(term) === -1; });
+}
+
+// TF-IDF over the poll's responses, each response treated as one document.
+// Returns the top 10 terms by aggregate weighted score, each with its raw
+// occurrence count (shown on hover).
+function computeKeywordMap(responseTexts) {
+  var N = responseTexts.length;
+  if (!N) { return []; }
+  var totalCount = {};
+  var docFreq = {};
+  responseTexts.forEach(function(text) {
+    var seenInDoc = {};
+    extractKeywordCandidates(text).forEach(function(term) {
+      totalCount[term] = (totalCount[term] || 0) + 1;
+      if (!seenInDoc[term]) { seenInDoc[term] = true; docFreq[term] = (docFreq[term] || 0) + 1; }
+    });
+  });
+  var scored = Object.keys(totalCount).map(function(term) {
+    // smoothed idf, consistent with scikit-learn's TfidfTransformer default
+    var idf = Math.log((1 + N) / (1 + docFreq[term])) + 1;
+    return { term: term, count: totalCount[term], score: totalCount[term] * idf };
+  });
+  scored.sort(function(a, b) { return b.score - a.score; });
+  return scored.slice(0, 10);
+}
+
+function renderKeywordMap(poll) {
+  var wrap = document.createElement("div");
+  wrap.className = "keyword-map";
+  var label = document.createElement("strong");
+  label.textContent = "Keyword Map:";
+  wrap.appendChild(label);
+
+  if (!window.nlp) {
+    var unavailable = document.createElement("div");
+    unavailable.className = "confusion-timeline-empty";
+    unavailable.textContent = "Keyword extraction unavailable.";
+    wrap.appendChild(unavailable);
+    return wrap;
+  }
+
+  var responseTexts = (poll.history || []).map(function(h) { return h.response || ""; });
+  var keywords = computeKeywordMap(responseTexts);
+  var cloud = document.createElement("div");
+  cloud.className = "keyword-cloud";
+  if (!keywords.length) {
+    var emptyMsg = document.createElement("div");
+    emptyMsg.className = "confusion-timeline-empty";
+    emptyMsg.textContent = "No keywords yet -- waiting on responses.";
+    cloud.appendChild(emptyMsg);
+  } else {
+    var maxScore = keywords[0].score || 1;
+    keywords.forEach(function(k) {
+      var chip = document.createElement("span");
+      chip.className = "keyword-chip";
+      chip.style.opacity = (0.55 + 0.45 * (k.score / maxScore)).toFixed(2);
+      chip.title = k.count + (k.count === 1 ? " mention" : " mentions");
+      var termSpan = document.createElement("span");
+      termSpan.className = "keyword-term";
+      termSpan.textContent = k.term;
+      var countSpan = document.createElement("span");
+      countSpan.className = "keyword-count";
+      countSpan.textContent = k.count;
+      chip.appendChild(termSpan);
+      chip.appendChild(countSpan);
+      cloud.appendChild(chip);
+    });
+  }
+  wrap.appendChild(cloud);
+  return wrap;
+}
+
 function renderFreePoll(div, poll, pollId, totalStudents) {
   var uniqueResponders = new Set();
   (poll.history || []).forEach(function(h) { uniqueResponders.add(h.username); });
@@ -2891,6 +2994,22 @@ function renderFreePoll(div, poll, pollId, totalStudents) {
     pDiv.className = "poll-stat";
     pDiv.innerHTML = "<strong>🗳️ Responded: " + pct + "%</strong>";
     div.appendChild(pDiv);
+
+    var kToggle = document.createElement("button");
+    kToggle.type = "button";
+    kToggle.className = "hide-toggle teacher-control";
+    kToggle.textContent = poll.keywordsVisible ? "👁️ Keywords Shown" : "👁️‍🗨️ Keywords Hidden";
+    (function(pid, kv) {
+      kToggle.onclick = async function(e) {
+        e.stopPropagation();
+        await updateDoc(doc(db, "boards", currentBoardId, "polls", pid), { keywordsVisible: !kv });
+      };
+    })(pollId, poll.keywordsVisible);
+    div.appendChild(kToggle);
+  }
+
+  if (isTeacher || poll.keywordsVisible) {
+    div.appendChild(renderKeywordMap(poll));
   }
 
   if (isTeacher || poll.responsesVisible) {
