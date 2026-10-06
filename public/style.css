@@ -898,3 +898,196 @@ button.hide-toggle:hover, .reply button.hide-toggle:hover {
 #leaderboardSection.lb-compressed {
   border-radius: 24px;
 }
+
+/* ── Seating Map ─────────────────────────────────────────────────── */
+#seatingMap .portal-container { max-width: 960px; }
+
+#seatCanvas {
+  position: relative;
+  width: 100%;
+  min-height: 560px;
+  background-color: var(--bg-secondary);
+  background-image: radial-gradient(circle, var(--border-color) 1px, transparent 1px);
+  background-size: 24px 24px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 24px;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.seat {
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  margin-left: -32px;
+  margin-top: -32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-color);
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  box-shadow: var(--shadow-sm);
+}
+.seat:active { cursor: grabbing; }
+.seat.seat-unassigned {
+  border-style: dashed;
+  color: var(--text-secondary);
+  background: transparent;
+  font-size: 1.6rem;
+}
+.seat.seat-dragging { z-index: 50; box-shadow: 0 6px 18px rgba(0,0,0,0.25); }
+
+.seat-delete {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--delete-color, #ff453a);
+  color: #fff;
+  font-size: 0.7rem;
+  line-height: 18px;
+  text-align: center;
+  display: none;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+.seat:hover .seat-delete { display: block; }
+
+.seat-popup {
+  position: absolute;
+  z-index: 200;
+  background: var(--card-bg);
+  border: 1.5px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px;
+  width: 240px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+}
+.seat-popup h4 { margin: 0 0 4px 0; font-size: 1rem; padding-right: 16px; }
+.seat-popup .seat-popup-meta { font-size: 0.78rem; color: var(--text-secondary); }
+.seat-popup select { width: 100%; margin-top: 10px; }
+.seat-popup button { width: 100%; margin-top: 10px; }
+.seat-popup .seat-popup-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  padding: 0;
+  min-width: auto;
+}
+
+.confusion-timeline {
+  display: flex;
+  gap: 2px;
+  margin-top: 10px;
+  height: 18px;
+  align-items: flex-end;
+}
+.confusion-timeline .tick {
+  flex: 1 1 auto;
+  height: 100%;
+  border-radius: 2px;
+  min-width: 3px;
+}
+.confusion-timeline .tick.red { background: #ff453a; }
+.confusion-timeline .tick.green { background: #34c759; }
+.confusion-timeline-empty { font-size: 0.78rem; color: var(--text-secondary); margin-top: 10px; }
+
+/* ── Confusion Indicator (students) ─────────────────────────────────── */
+#confusionIndicator {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  bottom: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+  transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#confusionIndicator.indicator-raised { bottom: 150px; }
+.confusion-label { font-size: 0.8rem; color: var(--text-secondary); }
+.confusion-buttons { display: flex; gap: 10px; }
+.confusion-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  padding: 0;
+  min-width: auto;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+}
+.confusion-btn.confusion-active { border-color: transparent; box-shadow: 0 0 0 2px var(--accent); }
+
+@media (max-width: 640px) {
+  #seatCanvas { min-height: 420px; }
+  .seat { width: 52px; height: 52px; margin-left: -26px; margin-top: -26px; font-size: 1.15rem; }
+}
+
+/* ── Drawing poll ────────────────────────────────────────────────────── */
+.draw-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.draw-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  padding: 0;
+  min-width: auto;
+  cursor: pointer;
+}
+.draw-color.draw-color-active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.draw-canvas {
+  width: 100%;
+  max-width: 480px;
+  aspect-ratio: 3 / 2;
+  background: #ffffff;
+  border: 1.5px solid var(--border-color);
+  border-radius: 12px;
+  touch-action: none;
+  display: block;
+  cursor: crosshair;
+}
+.draw-thumb-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+.draw-thumb { text-align: center; }
+.draw-thumb img {
+  width: 110px;
+  height: 74px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-color);
+  cursor: pointer;
+}
+.draw-thumb span { display: block; font-size: 0.72rem; color: var(--text-secondary); margin-top: 4px; }
