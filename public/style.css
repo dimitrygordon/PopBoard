@@ -1052,6 +1052,15 @@ button.hide-toggle, .reply button.hide-toggle {
 .confusion-timeline .tick.green { background: #34c759; }
 .confusion-timeline-empty { font-size: 0.78rem; color: var(--text-secondary); margin-top: 10px; }
 
+.poll-waiting-placeholder {
+  margin-top: 12px;
+  padding: 14px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
 /* ── Confusion Indicator (students) ─────────────────────────────────── */
 #confusionIndicator {
   position: fixed;
