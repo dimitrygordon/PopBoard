@@ -954,14 +954,17 @@ button.hide-toggle, .reply button.hide-toggle {
 
 .seat {
   position: absolute;
-  width: 64px;
-  height: 64px;
-  margin-left: -32px;
-  margin-top: -32px;
+  width: 68px;
+  height: 68px;
+  margin-left: -34px;
+  margin-top: -34px;
   border-radius: 50%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 1px;
+  padding: 4px 2px;
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--text-color);
@@ -971,6 +974,7 @@ button.hide-toggle, .reply button.hide-toggle {
   user-select: none;
   touch-action: none;
   box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
 .seat:active { cursor: grabbing; }
 .seat.seat-unassigned {
@@ -980,6 +984,46 @@ button.hide-toggle, .reply button.hide-toggle {
   font-size: 1.6rem;
 }
 .seat.seat-dragging { z-index: 50; box-shadow: 0 6px 18px rgba(0,0,0,0.25); }
+.seat .seat-icon-line { font-size: 1.15rem; line-height: 1; }
+.seat .seat-name-line {
+  font-size: 0.5rem;
+  font-weight: 600;
+  line-height: 1;
+  opacity: 0.75;
+  max-width: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.seat-mode-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border-color);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.seat-response-text {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.seat-response-thumb {
+  display: block;
+  margin-top: 10px;
+  width: 100%;
+  border-radius: 10px;
+  cursor: pointer;
+}
 
 .seat-delete {
   position: absolute;
@@ -1093,6 +1137,8 @@ button.hide-toggle, .reply button.hide-toggle {
 @media (max-width: 640px) {
   #seatCanvas { min-height: 420px; }
   .seat { width: 52px; height: 52px; margin-left: -26px; margin-top: -26px; font-size: 1.15rem; }
+  .seat .seat-icon-line { font-size: 0.95rem; }
+  .seat .seat-name-line { font-size: 0.42rem; max-width: 44px; }
 }
 
 /* ── Drawing poll ────────────────────────────────────────────────────── */
