@@ -50,6 +50,14 @@ let seatingStudentsCache = {};
 let seatingSeatsCache = [];
 let draggingSeatId = null;
 let openSeatPopupId = null;
+let pollSectionCollapsed = false;
+let currentCarouselPollId = null;
+let seatMapResponsePollId = null;
+let seatMapResponsePollQuestion = "";
+let seatMapResponsePollData = null;
+let isLeaderboardCompressed = false;
+var LEADERBOARD_TOP_N = 5;
+var LEADERBOARD_COMPACT_N = 3;
 
 const loginDiv = document.getElementById("login");
 const teacherLoginDiv = document.getElementById("teacherLogin");
@@ -486,13 +494,28 @@ backToBoardFromStudents.onclick = function() {
 };
 
 seatsBtn.onclick = function() {
+  seatMapResponsePollId = null;
+  seatMapResponsePollQuestion = "";
+  seatMapResponsePollData = null;
   appDiv.classList.add("hidden");
   seatingMapDiv.classList.remove("hidden");
   loadSeatingMap();
 };
 
+function enterSeatMapResponseView(pollId, pollQuestion) {
+  seatMapResponsePollId = pollId;
+  seatMapResponsePollQuestion = pollQuestion || "";
+  seatMapResponsePollData = null;
+  appDiv.classList.add("hidden");
+  seatingMapDiv.classList.remove("hidden");
+  loadSeatingMap();
+}
+
 backToBoardFromSeats.onclick = function() {
   if (unsubSeats) { unsubSeats(); unsubSeats = null; }
+  seatMapResponsePollId = null;
+  seatMapResponsePollQuestion = "";
+  seatMapResponsePollData = null;
   closeSeatPopup();
   seatingMapDiv.classList.add("hidden");
   appDiv.classList.remove("hidden");
@@ -799,8 +822,8 @@ function initLeaderboard() {
       });
     }
 
+    var myRank = -1;
     if (!isTeacher) {
-      var myRank = -1;
       for (var ri = 0; ri < scores.length; ri++) {
         if (scores[ri].name === username) { myRank = ri + 1; break; }
       }
@@ -820,7 +843,16 @@ function initLeaderboard() {
       }
     }
 
-    renderLeaderboardUI(scores.slice(0, 6));
+    // Students ranked below the shown top N still get to see their own
+    // placement — but only on their own screen, and only once, never
+    // duplicating a row they're already shown in above.
+    var topRows = scores.slice(0, LEADERBOARD_TOP_N);
+    var personalRow = null;
+    if (!isTeacher && myRank > LEADERBOARD_TOP_N) {
+      var me = scores[myRank - 1];
+      personalRow = { name: me.name, displayName: me.displayName, score: me.score, emoji: me.emoji, rank: myRank };
+    }
+    renderLeaderboardUI(topRows, personalRow);
   });
 }
 
@@ -845,49 +877,54 @@ function showFirstBadge() {
   }, 2500);
 }
 
-function renderLeaderboardUI(top6) {
+function renderLeaderboardUI(topRows, personalRow) {
   leaderboardSection.innerHTML = "";
   if (!isTeacher && !leaderboardVisible) { return; }
   var card = document.createElement("div");
   card.className = "leaderboard-card";
   card.innerHTML = "<h3>🏆 Leaderboard</h3>";
-  if (top6.length === 0) {
+  if (topRows.length === 0 && !personalRow) {
     var empty = document.createElement("p");
     empty.textContent = "No scores yet. Answer polls to earn points!";
     card.appendChild(empty);
-  leaderboardSection.appendChild(card);
-  initStickyLeaderboard();
+    leaderboardSection.appendChild(card);
+    initStickyLeaderboard();
     return;
   }
 
   var maxScore = 0.1;
-  for (var i = 0; i < top6.length; i++) { if (top6[i].score > maxScore) { maxScore = top6[i].score; } }
+  for (var i = 0; i < topRows.length; i++) { if (topRows[i].score > maxScore) { maxScore = topRows[i].score; } }
+  if (personalRow && personalRow.score > maxScore) { maxScore = personalRow.score; }
   var medals = ["🥇", "🥈", "🥉"];
   var isDark = document.documentElement.getAttribute("data-theme") === "dark";
   var place456Color = isDark ? "#1a1a1a" : "#ffffff";
-  var barGradients = [
-    "linear-gradient(90deg, #f7d700, #fff176, #f9a825, #ffd700)",
-    "linear-gradient(90deg, #9e9e9e, #e0e0e0, #bdbdbd, #c0c0c0)",
-    "linear-gradient(90deg, #cd7f32, #e8a96a, #b5651d, #cd7f32)",
-    place456Color,
-    place456Color,
-    place456Color
-  ];
+
+  var ROW_HEIGHT = 48; // px — must match approximate lb-row height including margin
+  var DIVIDER_HEIGHT = 24;
 
   // Container for animated rows — position:relative lets children animate with translateY
   var rowContainer = document.createElement("div");
   rowContainer.style.cssText = "position:relative;";
-  var ROW_HEIGHT = 48; // px — must match approximate lb-row height including margin
-  rowContainer.style.height = (top6.length * ROW_HEIGHT) + "px";
+  var totalHeight = topRows.length * ROW_HEIGHT + (personalRow ? DIVIDER_HEIGHT + ROW_HEIGHT : 0);
+  rowContainer.style.height = totalHeight + "px";
 
-  for (var i = 0; i < top6.length; i++) {
-    var entry = top6[i];
+  // Hides a bar's score label if it would spill past the bar's own bounds
+  // (narrow bars have a 4% min-width floor, but arbitrarily long score text).
+  function hideScoreIfOverflowing(fillEl, scoreEl) {
+    setTimeout(function() {
+      var available = fillEl.getBoundingClientRect().width - 10; // minus padding-right
+      var needed = scoreEl.getBoundingClientRect().width;
+      scoreEl.style.visibility = needed > available ? "hidden" : "";
+    }, 720);
+  }
+
+  function buildRow(entry, topPx, colorIndex, isPersonal) {
     var row = document.createElement("div");
-    row.className = "lb-row";
+    row.className = "lb-row" + (isPersonal ? " lb-personal-row" : "");
     row.dataset.lbName = entry.name;
 
     // Position each row absolutely so we can animate it
-    row.style.cssText = "position:absolute;width:100%;top:" + (i * ROW_HEIGHT) + "px;transition:top 0.5s cubic-bezier(0.4,0,0.2,1);";
+    row.style.cssText = "position:absolute;width:100%;top:" + topPx + "px;transition:top 0.5s cubic-bezier(0.4,0,0.2,1);";
 
     var nameDiv = document.createElement("div");
     nameDiv.className = "lb-name";
@@ -908,27 +945,24 @@ function renderLeaderboardUI(top6) {
     var targetWidth = Math.max(4, (entry.score / maxScore) * 100);
     // Start at 0 width, then animate to target after paint
     fill.style.width = "0%";
-    if (i === 0) { startSheenAnimation(fill, "gold"); }
-    else if (i === 1) { startSheenAnimation(fill, "silver"); }
-    else if (i === 2) { startSheenAnimation(fill, "bronze"); }
-    else { fill.style.background = barGradients[i]; }
+    if (!isPersonal && colorIndex === 0) { startSheenAnimation(fill, "gold"); }
+    else if (!isPersonal && colorIndex === 1) { startSheenAnimation(fill, "silver"); }
+    else if (!isPersonal && colorIndex === 2) { startSheenAnimation(fill, "bronze"); }
+    else { fill.style.background = place456Color; }
     fill.style.transition = "width 0.7s cubic-bezier(0.4,0,0.2,1)";
     var scoreSpan = document.createElement("span");
     scoreSpan.className = "lb-score";
-    scoreSpan.style.color = i < 3 ? "#1d1d1f" : (isDark ? "white" : "#1d1d1f");
-    var prevScore = parseFloat(scoreSpan.dataset.prevScore || 0);
+    scoreSpan.style.color = (!isPersonal && colorIndex < 3) ? "#1d1d1f" : (isDark ? "white" : "#1d1d1f");
     scoreSpan.textContent = parseFloat(entry.score.toFixed(1)) + " pt";
-    scoreSpan.dataset.prevScore = entry.score;
-    if (prevScore > 0 && entry.score > prevScore) {
-      animateScoreCount(scoreSpan, prevScore, entry.score);
-    }
     fill.appendChild(scoreSpan);
     track.appendChild(fill);
 
     var medalSpan = document.createElement("span");
     medalSpan.className = "lb-medal";
-    if (i < 3) {
-      medalSpan.textContent = medals[i];
+    if (isPersonal) {
+      medalSpan.textContent = "#" + entry.rank;
+    } else if (colorIndex < 3) {
+      medalSpan.textContent = medals[colorIndex];
     } else {
       medalSpan.textContent = "";
       medalSpan.style.width = "1.5rem";
@@ -941,7 +975,7 @@ function renderLeaderboardUI(top6) {
     rowContainer.appendChild(row);
 
     // Animate bar width on next frame so CSS transition fires
-    (function(fillEl, width) {
+    (function(fillEl, scoreEl, width) {
       requestAnimationFrame(function() {
         requestAnimationFrame(function() {
           fillEl.style.width = width + "%";
@@ -949,25 +983,90 @@ function renderLeaderboardUI(top6) {
           setTimeout(function() {
             fillEl.style.transform = "scaleY(1)";
             fillEl.style.transition += ", transform 0.2s ease";
-            // Force animation restart after width has settled
-            var cls = fillEl.classList.contains("lb-bar-gold") ? "lb-bar-gold"
-                    : fillEl.classList.contains("lb-bar-silver") ? "lb-bar-silver"
-                    : fillEl.classList.contains("lb-bar-bronze") ? "lb-bar-bronze"
-                    : null;
-            if (cls) {
-              fillEl.classList.remove(cls);
-              void fillEl.offsetWidth; // force reflow
-              fillEl.classList.add(cls);
-            }
           }, 700);
+          hideScoreIfOverflowing(fillEl, scoreEl);
         });
       });
-    })(fill, targetWidth);
+    })(fill, scoreSpan, targetWidth);
+  }
+
+  for (var i = 0; i < topRows.length; i++) {
+    buildRow(topRows[i], i * ROW_HEIGHT, i, false);
+  }
+
+  if (personalRow) {
+    var dividerTop = topRows.length * ROW_HEIGHT;
+    var divider = document.createElement("div");
+    divider.className = "lb-divider";
+    divider.textContent = "⋮";
+    divider.style.cssText = "position:absolute;width:100%;top:" + dividerTop + "px;height:" + DIVIDER_HEIGHT + "px;text-align:center;color:var(--text-secondary);line-height:" + DIVIDER_HEIGHT + "px;font-size:0.9rem;transition:top 0.5s cubic-bezier(0.4,0,0.2,1),opacity 0.4s ease;";
+    rowContainer.appendChild(divider);
+    buildRow(personalRow, dividerTop + DIVIDER_HEIGHT, -1, true);
   }
 
   card.appendChild(rowContainer);
   leaderboardSection.appendChild(card);
   initStickyLeaderboard();
+}
+
+function mcHistoryActionPhrase(resp) {
+  resp = resp || "";
+  if (resp.indexOf("Changed vote: ") === 0) {
+    var toSep = resp.indexOf(" to ");
+    var newText = toSep === -1 ? "" : resp.slice(toSep + 4);
+    return "changed vote " + newText;
+  } else if (resp.indexOf("Voted: ") === 0) {
+    return "voted " + resp.slice(7);
+  } else if (resp.indexOf("Removed vote: ") === 0) {
+    return "removed vote " + resp.slice(14);
+  }
+  return resp;
+}
+
+function computeFinalMCState(poll, studentEntries, isMulti) {
+  var options = poll.options || [];
+  if (isMulti) {
+    var set = new Set();
+    studentEntries.forEach(function(e) {
+      var resp = e.response || "";
+      if (resp.indexOf("Voted: ") === 0) {
+        var idx = options.indexOf(resp.slice(7));
+        if (idx !== -1) { set.add(idx); }
+      } else if (resp.indexOf("Removed vote: ") === 0) {
+        var idx = options.indexOf(resp.slice(14));
+        if (idx !== -1) { set.delete(idx); }
+      }
+    });
+    return set;
+  }
+  var lastIdx = null;
+  studentEntries.forEach(function(e) {
+    var resp = e.response || "";
+    if (resp.indexOf("Changed vote: ") === 0) {
+      var toSep = resp.indexOf(" to ");
+      var optText = toSep === -1 ? "" : resp.slice(toSep + 4);
+      var idx = options.indexOf(optText);
+      if (idx !== -1) { lastIdx = idx; }
+    } else if (resp.indexOf("Voted: ") === 0) {
+      var idx = options.indexOf(resp.slice(7));
+      if (idx !== -1) { lastIdx = idx; }
+    } else if (resp.indexOf("Removed vote: ") === 0) {
+      lastIdx = null;
+    }
+  });
+  return lastIdx;
+}
+
+function groupHistoryByStudent(history) {
+  var sorted = (history || []).slice().sort(function(a, b) { return (a.timestamp || 0) - (b.timestamp || 0); });
+  var order = [];
+  var map = {};
+  sorted.forEach(function(e) {
+    if (!e.username) { return; }
+    if (!map[e.username]) { map[e.username] = []; order.push(e.username); }
+    map[e.username].push(e);
+  });
+  return order.map(function(name) { return { username: name, entries: map[name] }; });
 }
 
 async function awardLeaderboardPoints(pollId, correctIndices) {
@@ -982,7 +1081,11 @@ async function awardLeaderboardPoints(pollId, correctIndices) {
     if (!entry.username) { continue; }
     var n = entry.username;
     var optText = entry.response || "";
-    if (optText.indexOf("Voted: ") === 0) { optText = optText.slice(7); }
+    if (optText.indexOf("Changed vote: ") === 0) {
+      var toSep = optText.indexOf(" to ");
+      optText = toSep === -1 ? "" : optText.slice(toSep + 4);
+    }
+    else if (optText.indexOf("Voted: ") === 0) { optText = optText.slice(7); }
     else if (optText.indexOf("Removed vote: ") === 0) { optText = optText.slice(14); }
     var idx = options.indexOf(optText);
     if (idx === -1) { continue; }
@@ -1011,7 +1114,7 @@ async function awardLeaderboardPoints(pollId, correctIndices) {
   for (var i = 0; i < correctStudents.length; i++) {
     var student = correctStudents[i];
     var norm = (student.ts - minTs) / range;
-    var points = parseFloat((1.0 - norm * 0.8).toFixed(3));
+    var points = parseFloat((1.0 - norm * 0.3).toFixed(3)); // fastest 1.0, slowest 0.7
     var rank = -1;
     for (var ri = 0; ri < sorted.length; ri++) { if (sorted[ri].name === student.name) { rank = ri; break; } }
 
@@ -1476,7 +1579,11 @@ async function computeMonthlyPollAccuracy(studentId, student) {
       if (!voterEntries.length) { return; }
       var last = voterEntries[voterEntries.length - 1];
       var optText = last.response || "";
-      if (optText.indexOf("Voted: ") === 0) { optText = optText.slice(7); }
+      if (optText.indexOf("Changed vote: ") === 0) {
+        var toSep = optText.indexOf(" to ");
+        optText = toSep === -1 ? "" : optText.slice(toSep + 4);
+      }
+      else if (optText.indexOf("Voted: ") === 0) { optText = optText.slice(7); }
       else if (optText.indexOf("Removed vote: ") === 0) { optText = optText.slice(14); }
       if (poll.correctIndices.indexOf((poll.options || []).indexOf(optText)) !== -1) { correct++; }
     });
@@ -1809,6 +1916,7 @@ function loadSeatingMap() {
   closeSeatPopup();
   seatingStudentsCache = {};
   seatingSeatsCache = [];
+  renderSeatMapModeBar();
 
   var unsubStudentsLocal = onSnapshot(collection(db, "boards", currentBoardId, "students"), function(snap) {
     var map = {};
@@ -1824,7 +1932,51 @@ function loadSeatingMap() {
     if (!draggingSeatId) { renderSeats(); }
     refreshOpenSeatPopup();
   });
-  unsubSeats = function() { unsubStudentsLocal(); unsubSeatsLocal(); };
+  var unsubResponsePollLocal = null;
+  if (seatMapResponsePollId) {
+    unsubResponsePollLocal = onSnapshot(doc(db, "boards", currentBoardId, "polls", seatMapResponsePollId), function(ds) {
+      seatMapResponsePollData = ds.exists() ? ds.data() : null;
+      renderSeats();
+      refreshOpenSeatPopup();
+    });
+  }
+  unsubSeats = function() {
+    unsubStudentsLocal();
+    unsubSeatsLocal();
+    if (unsubResponsePollLocal) { unsubResponsePollLocal(); }
+  };
+}
+
+// Mode banner shown above the seat grid while reviewing a specific poll's
+// responses, so the teacher can tell this isn't the live confusion view.
+function renderSeatMapModeBar() {
+  var existing = document.getElementById("seatModeBar");
+  if (existing) { existing.remove(); }
+  if (!seatMapResponsePollId) { return; }
+  var bar = document.createElement("div");
+  bar.id = "seatModeBar";
+  bar.className = "seat-mode-bar";
+  var label = document.createElement("span");
+  label.textContent = "🪑 Viewing responses: " + (seatMapResponsePollQuestion || "this poll");
+  bar.appendChild(label);
+  var backBtn = document.createElement("button");
+  backBtn.type = "button";
+  backBtn.className = "teacher-control";
+  backBtn.textContent = "← Back to confusion view";
+  backBtn.onclick = function() {
+    seatMapResponsePollId = null;
+    seatMapResponsePollQuestion = "";
+    seatMapResponsePollData = null;
+    loadSeatingMap();
+  };
+  bar.appendChild(backBtn);
+  seatCanvas.parentNode.insertBefore(bar, seatCanvas);
+}
+
+function studentRespondedToPoll(poll, studentUsername) {
+  if (!poll) { return false; }
+  if (poll.type === "mc") { return (poll.voters || []).indexOf(studentUsername) !== -1; }
+  return (poll.history || []).some(function(h) { return h.username === studentUsername; });
 }
 
 function renderSeats() {
@@ -1838,9 +1990,22 @@ function renderSeats() {
     el.dataset.seatId = seat.id;
 
     if (student) {
-      el.textContent = student.emoji ? student.emoji : (student.username ? student.username.charAt(0).toUpperCase() : "?");
+      var iconLine = document.createElement("span");
+      iconLine.className = "seat-icon-line";
+      iconLine.textContent = student.emoji ? student.emoji : (student.username ? student.username.charAt(0).toUpperCase() : "?");
+      el.appendChild(iconLine);
+      var nameLine = document.createElement("span");
+      nameLine.className = "seat-name-line";
+      nameLine.textContent = (student.username || "").split(" ")[0];
+      el.appendChild(nameLine);
       el.title = student.username || "";
-      applyConfusionVisual(el, student.confusionState, student.confusionSetAt);
+      if (seatMapResponsePollId) {
+        var responded = studentRespondedToPoll(seatMapResponsePollData, student.username);
+        el.style.transition = "";
+        el.style.backgroundColor = responded ? CONFUSION_COLORS.green : CONFUSION_COLORS.red;
+      } else {
+        applyConfusionVisual(el, student.confusionState, student.confusionSetAt);
+      }
     } else {
       el.textContent = "+";
       el.title = "Unassigned seat";
@@ -1945,12 +2110,136 @@ function refreshOpenSeatPopup() {
   if (openSeatPopupId) { openSeatPopup(openSeatPopupId); }
 }
 
+function positionSeatPopup(popup, seatId) {
+  document.body.appendChild(popup);
+  var seatEl = seatCanvas.querySelector('[data-seat-id="' + seatId + '"]');
+  if (seatEl) {
+    var r = seatEl.getBoundingClientRect();
+    var popupWidth = 240;
+    var left = Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - popupWidth - 16);
+    left = Math.max(16, left);
+    popup.style.left = left + "px";
+    popup.style.top = (window.scrollY + r.bottom + 10) + "px";
+    // apple-design §7: scale the popup in from the seat that opened it,
+    // not from its own center -- keeps the spatial link between trigger and content
+    var seatCenterX = window.scrollX + r.left + r.width / 2;
+    var originXPct = Math.max(10, Math.min(90, ((seatCenterX - left) / popupWidth) * 100));
+    popup.style.setProperty("--seat-popup-origin", originXPct + "% 0%");
+  }
+  setTimeout(function() {
+    seatPopupOutsideClickHandler = function(e) {
+      if (!popup.contains(e.target) && !seatCanvas.contains(e.target)) { closeSeatPopup(); }
+    };
+    document.addEventListener("click", seatPopupOutsideClickHandler);
+  }, 0);
+}
+
+function getStudentMCResponseText(poll, studentUsername) {
+  var options = poll.options || [];
+  if (poll.requireAllCorrect) {
+    var set = new Set();
+    (poll.history || []).forEach(function(h) {
+      if (h.username !== studentUsername) { return; }
+      var resp = h.response || "";
+      if (resp.indexOf("Voted: ") === 0) {
+        var idx = options.indexOf(resp.slice(7));
+        if (idx !== -1) { set.add(idx); }
+      } else if (resp.indexOf("Removed vote: ") === 0) {
+        var idx = options.indexOf(resp.slice(14));
+        if (idx !== -1) { set.delete(idx); }
+      }
+    });
+    var picked = Array.from(set).sort(function(a, b) { return a - b; }).map(function(idx) { return options[idx]; });
+    return picked.length ? picked.join(", ") : "(no current selection)";
+  }
+  var lastIdx = null;
+  (poll.history || []).forEach(function(h) {
+    if (h.username !== studentUsername) { return; }
+    var resp = h.response || "";
+    if (resp.indexOf("Changed vote: ") === 0) {
+      var toSep = resp.indexOf(" to ");
+      var optText = toSep === -1 ? "" : resp.slice(toSep + 4);
+      var idx = options.indexOf(optText);
+      if (idx !== -1) { lastIdx = idx; }
+    } else if (resp.indexOf("Voted: ") === 0) {
+      var idx = options.indexOf(resp.slice(7));
+      if (idx !== -1) { lastIdx = idx; }
+    } else if (resp.indexOf("Removed vote: ") === 0) {
+      lastIdx = null;
+    }
+  });
+  return lastIdx !== null ? options[lastIdx] : "(no current selection)";
+}
+
+function renderSeatResponsePopup(seatId, student) {
+  var popup = document.createElement("div");
+  popup.className = "seat-popup";
+
+  var closeBtn = document.createElement("button");
+  closeBtn.type = "button";
+  closeBtn.className = "seat-popup-close";
+  closeBtn.textContent = "✕";
+  closeBtn.onclick = function() { closeSeatPopup(); };
+  popup.appendChild(closeBtn);
+
+  var title = document.createElement("h4");
+  title.textContent = student ? (student.nickname || student.username) : "Unassigned seat";
+  popup.appendChild(title);
+
+  if (!student) {
+    var empty = document.createElement("div");
+    empty.className = "confusion-timeline-empty";
+    empty.textContent = "No student assigned to this seat.";
+    popup.appendChild(empty);
+  } else {
+    var poll = seatMapResponsePollData;
+    var responded = studentRespondedToPoll(poll, student.username);
+    var statusLine = document.createElement("div");
+    statusLine.className = "seat-popup-meta";
+    statusLine.textContent = responded ? "✅ Responded" : "❌ No response yet";
+    popup.appendChild(statusLine);
+
+    if (responded && poll) {
+      var entries = (poll.history || []).filter(function(h) { return h.username === student.username; });
+      if (poll.type === "mc") {
+        var respDiv = document.createElement("div");
+        respDiv.className = "seat-response-text";
+        respDiv.textContent = getStudentMCResponseText(poll, student.username);
+        popup.appendChild(respDiv);
+      } else if (poll.type === "free") {
+        var last = entries[entries.length - 1];
+        var respDiv = document.createElement("div");
+        respDiv.className = "seat-response-text";
+        respDiv.textContent = last ? last.response : "";
+        popup.appendChild(respDiv);
+      } else if (poll.type === "draw") {
+        var lastImg = entries.filter(function(e) { return e.imageUrl; }).slice(-1)[0];
+        if (lastImg) {
+          var img = document.createElement("img");
+          img.className = "seat-response-thumb";
+          img.src = lastImg.imageUrl;
+          (function(url) { img.onclick = function() { showImageLightbox(url); }; })(lastImg.imageUrl);
+          popup.appendChild(img);
+        }
+      }
+    }
+  }
+
+  positionSeatPopup(popup, seatId);
+}
+
 function openSeatPopup(seatId) {
   closeSeatPopup();
   var seat = seatingSeatsCache.filter(function(s) { return s.id === seatId; })[0];
   if (!seat) { return; }
   openSeatPopupId = seatId;
   var student = seat.studentId ? seatingStudentsCache[seat.studentId] : null;
+
+  if (seatMapResponsePollId) {
+    renderSeatResponsePopup(seatId, student);
+    return;
+  }
+
   var unassignedStudents = Object.keys(seatingStudentsCache)
     .map(function(id) { return seatingStudentsCache[id]; })
     .filter(function(s) {
@@ -2026,27 +2315,7 @@ function openSeatPopup(seatId) {
   };
   popup.appendChild(delSeatBtn);
 
-  document.body.appendChild(popup);
-  var seatEl = seatCanvas.querySelector('[data-seat-id="' + seatId + '"]');
-  if (seatEl) {
-    var r = seatEl.getBoundingClientRect();
-    var popupWidth = 240;
-    var left = Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - popupWidth - 16);
-    left = Math.max(16, left);
-    popup.style.left = left + "px";
-    popup.style.top = (window.scrollY + r.bottom + 10) + "px";
-    // apple-design §7: scale the popup in from the seat that opened it,
-    // not from its own center -- keeps the spatial link between trigger and content
-    var seatCenterX = window.scrollX + r.left + r.width / 2;
-    var originXPct = Math.max(10, Math.min(90, ((seatCenterX - left) / popupWidth) * 100));
-    popup.style.setProperty("--seat-popup-origin", originXPct + "% 0%");
-  }
-  setTimeout(function() {
-    seatPopupOutsideClickHandler = function(e) {
-      if (!popup.contains(e.target) && !seatCanvas.contains(e.target)) { closeSeatPopup(); }
-    };
-    document.addEventListener("click", seatPopupOutsideClickHandler);
-  }, 0);
+  positionSeatPopup(popup, seatId);
 }
 
 postImageBtn.onclick = function() { postImageInput.click(); };
@@ -2426,6 +2695,7 @@ function loadPosts() {
         upvoteSpan.onclick = async function(e) {
           e.stopPropagation();
           if (isDisplayMode) { return; }
+          var already = postData.upvoters && postData.upvoters.indexOf(username) !== -1;
           createPopcornConfetti(upvoteSpan);
           playPop();
           if (navigator.vibrate) { navigator.vibrate(25); }
@@ -2436,12 +2706,11 @@ function loadPosts() {
             animateUpvoteCount(countEl, oldVal, newVal);
           }
           var postRef = doc(db, "boards", currentBoardId, "posts", pid);
-          var already = postData.upvoters && postData.upvoters.indexOf(username) !== -1;
           if (already) {
-            await updateDoc(postRef, { upvoters: arrayRemove(username), upvotes: increment(-1), upvoteHistory: arrayUnion(username + ": Removed Upvote") });
+            await updateDoc(postRef, { upvoters: arrayRemove(username), upvotes: increment(-1), upvoteHistory: arrayUnion({ username: username, action: "Removed Upvote", timestamp: Date.now() }) });
             if (currentStudentId) { await incrementStudentStat(currentStudentId, "upvotesGiven", -1); }
           } else {
-            await updateDoc(postRef, { upvoters: arrayUnion(username), upvotes: increment(1), upvoteHistory: arrayUnion(username + ": Upvoted") });
+            await updateDoc(postRef, { upvoters: arrayUnion(username), upvotes: increment(1), upvoteHistory: arrayUnion({ username: username, action: "Upvoted", timestamp: Date.now() }) });
             if (currentStudentId) { await incrementStudentStat(currentStudentId, "upvotesGiven", 1); }
             if (postData.author !== username) {
               var aq = query(collection(db, "boards", currentBoardId, "students"), where("username", "==", postData.author));
@@ -2455,9 +2724,16 @@ function loadPosts() {
         var hDiv = document.createElement("div");
         hDiv.className = "comment-upvote-history";
         hDiv.innerHTML = "<strong>Upvote Log:</strong>";
-        post.upvoteHistory.forEach(function(entry) {
+        var legacyEntries = post.upvoteHistory.filter(function(entry) { return typeof entry === "string"; });
+        var objectEntries = post.upvoteHistory.filter(function(entry) { return entry && typeof entry === "object"; });
+        legacyEntries.forEach(function(entry) {
           var d = document.createElement("div");
           d.textContent = entry;
+          hDiv.appendChild(d);
+        });
+        groupHistoryByStudent(objectEntries).forEach(function(group) {
+          var d = document.createElement("div");
+          d.textContent = group.username + ": " + group.entries.map(function(e) { return e.action; }).join(", ");
           hDiv.appendChild(d);
         });
         div.appendChild(hDiv);
@@ -2688,6 +2964,75 @@ function getVotesArray(poll) {
 // Using 1.6's proven pattern: await student count FIRST, then set up listener.
 // This guarantees currentBoardId is valid and the listener fires correctly for students.
 
+function applyPollSectionCollapse() {
+  var wrapper = document.getElementById("pollCarouselWrapper");
+  var bottomRow = document.getElementById("pollCollapseBottomRow");
+  var topBtn = document.getElementById("pollCollapseToggleTop");
+  var bottomBtn = document.getElementById("pollCollapseToggleBottom");
+  if (wrapper) { wrapper.classList.toggle("hidden", pollSectionCollapsed); }
+  if (bottomRow) { bottomRow.classList.toggle("hidden", pollSectionCollapsed); }
+  var label = pollSectionCollapsed ? "▸ Show Polls" : "▾ Hide Polls";
+  if (topBtn) { topBtn.textContent = label; }
+  if (bottomBtn) { bottomBtn.textContent = label; }
+}
+
+var pollCarouselScrollDebounce = null;
+
+// Keyed by poll ID (not raw index) so a mid-session poll add/remove doesn't
+// silently jump the viewer to a different poll on the next re-render.
+function wirePollCarouselNav(track, prevBtn, nextBtn, pollIds) {
+  if (!pollIds.length) {
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    return;
+  }
+  var startIndex = currentCarouselPollId ? pollIds.indexOf(currentCarouselPollId) : 0;
+  if (startIndex === -1) { startIndex = 0; }
+
+  function updateNavButtons(index) {
+    prevBtn.disabled = index <= 0;
+    nextBtn.disabled = index >= pollIds.length - 1;
+  }
+
+  var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function scrollToIndex(index, smooth) {
+    index = Math.max(0, Math.min(pollIds.length - 1, index));
+    var card = track.children[index];
+    if (!card) { return; }
+    track.scrollTo({ left: card.offsetLeft, behavior: (smooth && !reducedMotion) ? "smooth" : "auto" });
+    currentCarouselPollId = pollIds[index];
+    updateNavButtons(index);
+  }
+
+  requestAnimationFrame(function() { scrollToIndex(startIndex, false); });
+
+  prevBtn.onclick = function() {
+    var idx = pollIds.indexOf(currentCarouselPollId);
+    scrollToIndex((idx === -1 ? 0 : idx) - 1, true);
+  };
+  nextBtn.onclick = function() {
+    var idx = pollIds.indexOf(currentCarouselPollId);
+    scrollToIndex((idx === -1 ? 0 : idx) + 1, true);
+  };
+
+  track.onscroll = function() {
+    if (pollCarouselScrollDebounce) { clearTimeout(pollCarouselScrollDebounce); }
+    pollCarouselScrollDebounce = setTimeout(function() {
+      var nearest = 0;
+      var minDist = Infinity;
+      for (var i = 0; i < track.children.length; i++) {
+        var dist = Math.abs(track.children[i].offsetLeft - track.scrollLeft);
+        if (dist < minDist) { minDist = dist; nearest = i; }
+      }
+      currentCarouselPollId = pollIds[nearest];
+      updateNavButtons(nearest);
+    }, 120);
+  };
+
+  updateNavButtons(startIndex);
+}
+
 async function loadPolls() {
   if (!currentBoardId) { return; }
   if (unsubPolls) { unsubPolls(); unsubPolls = null; }
@@ -2727,6 +3072,58 @@ async function loadPolls() {
         return !p.visible && hasInteraction;
       });
 
+      if (isTeacher) {
+        var topRow = document.createElement("div");
+        topRow.className = "poll-collapse-row";
+        var topToggleBtn = document.createElement("button");
+        topToggleBtn.type = "button";
+        topToggleBtn.id = "pollCollapseToggleTop";
+        topToggleBtn.className = "teacher-control";
+        topToggleBtn.textContent = pollSectionCollapsed ? "▸ Show Polls" : "▾ Hide Polls";
+        topToggleBtn.onclick = function() { pollSectionCollapsed = !pollSectionCollapsed; applyPollSectionCollapse(); };
+        topRow.appendChild(topToggleBtn);
+        pollSection.appendChild(topRow);
+      }
+
+      var carouselWrapper = document.createElement("div");
+      carouselWrapper.id = "pollCarouselWrapper";
+      carouselWrapper.className = "poll-carousel-wrapper" + (isTeacher && pollSectionCollapsed ? " hidden" : "");
+
+      var carouselPrevBtn = document.createElement("button");
+      carouselPrevBtn.type = "button";
+      carouselPrevBtn.className = "poll-carousel-nav poll-carousel-prev";
+      carouselPrevBtn.textContent = "‹";
+      carouselPrevBtn.setAttribute("aria-label", "Previous poll");
+
+      var carouselTrack = document.createElement("div");
+      carouselTrack.id = "pollCarouselTrack";
+      carouselTrack.className = "poll-carousel-track";
+
+      var carouselNextBtn = document.createElement("button");
+      carouselNextBtn.type = "button";
+      carouselNextBtn.className = "poll-carousel-nav poll-carousel-next";
+      carouselNextBtn.textContent = "›";
+      carouselNextBtn.setAttribute("aria-label", "Next poll");
+
+      carouselWrapper.appendChild(carouselPrevBtn);
+      carouselWrapper.appendChild(carouselTrack);
+      carouselWrapper.appendChild(carouselNextBtn);
+      pollSection.appendChild(carouselWrapper);
+
+      if (isTeacher) {
+        var bottomRow = document.createElement("div");
+        bottomRow.id = "pollCollapseBottomRow";
+        bottomRow.className = "poll-collapse-row" + (pollSectionCollapsed ? " hidden" : "");
+        var bottomToggleBtn = document.createElement("button");
+        bottomToggleBtn.type = "button";
+        bottomToggleBtn.id = "pollCollapseToggleBottom";
+        bottomToggleBtn.className = "teacher-control";
+        bottomToggleBtn.textContent = pollSectionCollapsed ? "▸ Show Polls" : "▾ Hide Polls";
+        bottomToggleBtn.onclick = function() { pollSectionCollapsed = !pollSectionCollapsed; applyPollSectionCollapse(); };
+        bottomRow.appendChild(bottomToggleBtn);
+        pollSection.appendChild(bottomRow);
+      }
+
       activePollDocs.forEach(function(docSnap) {
         var poll = docSnap.data();
         var pollId = docSnap.id;
@@ -2757,7 +3154,12 @@ async function loadPolls() {
             (poll.history || []).forEach(function(h) {
               if (h.username !== username) { return; }
               var resp = h.response || "";
-              if (resp.indexOf("Voted: ") === 0) {
+              if (resp.indexOf("Changed vote: ") === 0) {
+                var toSep = resp.indexOf(" to ");
+                var optText = toSep === -1 ? "" : resp.slice(toSep + 4);
+                var idx = (poll.options || []).indexOf(optText);
+                if (idx !== -1) { lastVote = idx; }
+              } else if (resp.indexOf("Voted: ") === 0) {
                 var optText = resp.slice(7);
                 var idx = (poll.options || []).indexOf(optText);
                 if (idx !== -1) { lastVote = idx; }
@@ -2771,6 +3173,7 @@ async function loadPolls() {
 
         var div = document.createElement("div");
         div.className = "poll";
+        div.dataset.pollId = pollId;
         var hasInteraction = (poll.history && poll.history.length > 0) || (poll.voters && poll.voters.length > 0);
         if (isTeacher && !pollVisible && !hasInteraction) { div.style.opacity = "0.4"; div.style.filter = "grayscale(30%)"; }
         var questionEl = document.createElement("strong");
@@ -2836,6 +3239,18 @@ async function loadPolls() {
             controlsDiv.appendChild(cToggle);
           }
 
+          var seatMapBtn = document.createElement("button");
+          seatMapBtn.type = "button";
+          seatMapBtn.textContent = "🪑 View on Seating Map";
+          seatMapBtn.className = "teacher-control";
+          (function(pid, pQuestion) {
+            seatMapBtn.onclick = function(e) {
+              e.stopPropagation();
+              enterSeatMapResponseView(pid, pQuestion);
+            };
+          })(pollId, poll.question);
+          controlsDiv.appendChild(seatMapBtn);
+
           var resetBtn = document.createElement("button");
           resetBtn.type = "button";
           resetBtn.textContent = "🔄 Reset";
@@ -2874,8 +3289,10 @@ async function loadPolls() {
           div.appendChild(controlsDiv);
         }
 
-        pollSection.appendChild(div);
+        carouselTrack.appendChild(div);
       });
+
+      wirePollCarouselNav(carouselTrack, carouselPrevBtn, carouselNextBtn, activePollDocs.map(function(d) { return d.id; }));
 
       if (isTeacher && archivedSection && archivedPollDocs.length > 0) {
         var header = document.createElement("div");
@@ -2951,9 +3368,10 @@ function renderFreePoll(div, poll, pollId, totalStudents) {
     var logDiv = document.createElement("div");
     logDiv.className = "poll-log";
     logDiv.innerHTML = "<strong>Poll Log:</strong>";
-    (poll.history || []).forEach(function(e) {
+    groupHistoryByStudent(poll.history).forEach(function(group) {
       var p = document.createElement("div");
-      p.textContent = e.username + ": " + e.response;
+      var texts = group.entries.map(function(e) { return e.response; });
+      p.textContent = group.username + ": " + texts.join(", ");
       logDiv.appendChild(p);
     });
     div.appendChild(logDiv);
@@ -3201,9 +3619,20 @@ function renderMCPoll(div, poll, pollId, totalStudents) {
     var logDiv = document.createElement("div");
     logDiv.className = "poll-log";
     logDiv.innerHTML = "<strong>Poll Log:</strong>";
-    (poll.history || []).forEach(function(e) {
+    groupHistoryByStudent(poll.history).forEach(function(group) {
       var p = document.createElement("div");
-      p.textContent = e.username + ": " + e.response;
+      var lineText, isCorrect;
+      if (poll.requireAllCorrect) {
+        var finalSet = computeFinalMCState(poll, group.entries, true);
+        var idxList = Array.from(finalSet).sort(function(a, b) { return a - b; });
+        lineText = idxList.map(function(idx) { return options[idx]; }).join(", ");
+        isCorrect = idxList.length === correctIndices.length && idxList.every(function(idx) { return correctIndices.indexOf(idx) !== -1; });
+      } else {
+        lineText = group.entries.map(function(e) { return mcHistoryActionPhrase(e.response); }).join(", ");
+        var finalIdx = computeFinalMCState(poll, group.entries, false);
+        isCorrect = finalIdx !== null && correctIndices.indexOf(finalIdx) !== -1;
+      }
+      p.textContent = (isCorrect ? "✓ " : "") + group.username + ": " + lineText;
       logDiv.appendChild(p);
     });
     div.appendChild(logDiv);
@@ -3348,20 +3777,28 @@ function renderMCPoll(div, poll, pollId, totalStudents) {
                   history: arrayUnion({ username: username, response: "Removed vote: " + optText, timestamp: Date.now() })
                 });
                 if (currentStudentId) { await incrementStudentStat(currentStudentId, "pollsCast", -1); }
-              } else {
+              } else if (prevChoice === undefined || prevChoice === null) {
+                // Fresh pick -- no prior selection to switch from.
                 myPollVotes.set(pollId, optIndex);
                 playPop();
-                var updates = {
+                await updateDoc(pollRef, {
                   ["votes." + optIndex]: increment(1),
+                  voters: arrayUnion(username),
                   history: arrayUnion({ username: username, response: "Voted: " + optText, timestamp: Date.now() })
-                };
-                if (prevChoice === undefined || prevChoice === null) {
-                  updates.voters = arrayUnion(username);
-                  if (currentStudentId) { await incrementStudentStat(currentStudentId, "pollsCast", 1); }
-                } else {
-                  updates["votes." + prevChoice] = increment(-1);
-                }
-                await updateDoc(pollRef, updates);
+                });
+                if (currentStudentId) { await incrementStudentStat(currentStudentId, "pollsCast", 1); }
+              } else {
+                // Switching directly from one option to another, recorded as
+                // its own distinct event (not a separate remove + vote pair)
+                // so the poll log can show it as a single "changed vote" line.
+                var prevOptText = (pollData.options || [])[prevChoice];
+                myPollVotes.set(pollId, optIndex);
+                playPop();
+                await updateDoc(pollRef, {
+                  ["votes." + optIndex]: increment(1),
+                  ["votes." + prevChoice]: increment(-1),
+                  history: arrayUnion({ username: username, response: "Changed vote: " + prevOptText + " to " + optText, timestamp: Date.now() })
+                });
               }
             }
           };
@@ -3438,36 +3875,48 @@ function initStickyLeaderboard() {
   var existing = card.querySelector(".lb-compress-btn");
   if (existing) { existing.remove(); }
 
-  var isCompressed = false;
   var toggleBtn = document.createElement("button");
   toggleBtn.className = "lb-compress-btn";
-  toggleBtn.textContent = "∧";
+  toggleBtn.textContent = isLeaderboardCompressed ? "∨" : "∧";
   toggleBtn.style.cssText = "position:absolute;bottom:8px;right:12px;width:28px;height:28px;border-radius:50%;padding:0;font-size:0.8rem;display:flex;align-items:center;justify-content:center;opacity:0.4;border:1.5px solid var(--border-color);background:transparent;color:var(--text-color);cursor:pointer;transition:all 0.3s ease;z-index:10;";
   toggleBtn.onmouseenter = function() { toggleBtn.style.opacity = "1"; };
   toggleBtn.onmouseleave = function() { toggleBtn.style.opacity = "0.4"; };
   toggleBtn.onclick = function(e) {
     e.stopPropagation();
-    isCompressed = !isCompressed;
-    toggleBtn.textContent = isCompressed ? "∨" : "∧";
-    applyLeaderboardCompression(isCompressed);
+    isLeaderboardCompressed = !isLeaderboardCompressed;
+    toggleBtn.textContent = isLeaderboardCompressed ? "∨" : "∧";
+    applyLeaderboardCompression(isLeaderboardCompressed, true);
   };
   card.style.position = "relative";
   card.appendChild(toggleBtn);
+
+  // The board re-renders on every Firestore snapshot, which rebuilds these
+  // rows from scratch — re-apply whatever compression state was already in
+  // effect so a live score update doesn't silently reset the view to expanded.
+  applyLeaderboardCompression(isLeaderboardCompressed, false);
 }
 
-function applyLeaderboardCompression(compress) {
+function applyLeaderboardCompression(compress, animated) {
   var card = leaderboardSection.querySelector(".leaderboard-card");
   if (!card) { return; }
-  var rows = card.querySelectorAll(".lb-row");
-  var rowContainer = rows.length > 0 ? rows[0].parentNode : null;
+  var allRows = card.querySelectorAll(".lb-row");
+  if (allRows.length === 0) { return; }
+  var rows = [];
+  var personalRow = null;
+  allRows.forEach(function(row) {
+    if (row.classList.contains("lb-personal-row")) { personalRow = row; }
+    else { rows.push(row); }
+  });
+  var divider = card.querySelector(".lb-divider");
+  var rowContainer = rows[0] ? rows[0].parentNode : (personalRow ? personalRow.parentNode : null);
   if (!rowContainer) { return; }
 
-  playWhoosh();
+  if (animated) { playWhoosh(); }
 
   if (compress) {
     leaderboardSection.classList.add("lb-compressed");
     rows.forEach(function(row, i) {
-      if (i >= 3) {
+      if (i >= LEADERBOARD_COMPACT_N) {
         row.style.opacity = "0";
         row.style.pointerEvents = "none";
       } else {
@@ -3499,12 +3948,42 @@ function applyLeaderboardCompression(compress) {
         fill.style.backgroundSize = "300% 100%";
       }
     });
-    rowContainer.style.height = (Math.min(rows.length, 3) * 28) + "px";
+
+    if (divider) { divider.style.cssText += "opacity:0;height:0;pointer-events:none;"; }
+    if (personalRow) {
+      var compactShown = Math.min(rows.length, LEADERBOARD_COMPACT_N);
+      personalRow.style.opacity = "1";
+      personalRow.style.pointerEvents = "";
+      personalRow.style.top = (compactShown * 28) + "px";
+
+      var pNameDiv = personalRow.querySelector(".lb-name");
+      var pEmoji = personalRow.querySelector(".lb-emoji");
+      if (pEmoji && pNameDiv && pEmoji.parentNode === pNameDiv) {
+        pNameDiv.removeChild(pEmoji);
+        pEmoji.style.cssText = "font-size:1.2rem;display:inline-block;transition:all 0.4s ease;flex-shrink:0;";
+        personalRow.insertBefore(pEmoji, pNameDiv);
+      }
+      if (pNameDiv) { pNameDiv.style.cssText = "opacity:0;width:0;overflow:hidden;min-width:0;flex-shrink:1;transition:all 0.4s ease;"; }
+      // Exception: the personal row keeps its "#N" placement visible even
+      // though every other row's medal/score text is hidden in compact mode.
+      var pMedal = personalRow.querySelector(".lb-medal");
+      if (pMedal) { pMedal.style.cssText = "opacity:1;width:auto;overflow:visible;min-width:0;margin-left:6px;font-size:0.72rem;font-weight:700;color:var(--text-secondary);pointer-events:auto;transition:all 0.4s ease;"; }
+      var pScore = personalRow.querySelector(".lb-score");
+      if (pScore) { pScore.style.cssText = "opacity:0;transition:opacity 0.4s ease;"; }
+      var pTrack = personalRow.querySelector(".lb-bar-track");
+      if (pTrack) { pTrack.style.height = "14px"; pTrack.style.transition = "height 0.4s ease"; }
+      var pFill = personalRow.querySelector(".lb-bar-fill");
+      if (pFill) { pFill.style.height = "14px"; pFill.style.transition = "height 0.4s ease"; }
+    }
+
+    var compactCount = Math.min(rows.length, LEADERBOARD_COMPACT_N) + (personalRow ? 1 : 0);
+    rowContainer.style.height = (compactCount * 28) + "px";
     rowContainer.style.transition = "height 0.4s ease";
 
   } else {
     leaderboardSection.classList.remove("lb-compressed");
     var ROW_HEIGHT = 48;
+    var DIVIDER_HEIGHT = 24;
     rows.forEach(function(row, i) {
       row.style.opacity = "1";
       row.style.pointerEvents = "";
@@ -3534,7 +4013,33 @@ function applyLeaderboardCompression(compress) {
         fill.style.backgroundSize = "300% 100%";
       }
     });
-    rowContainer.style.height = (rows.length * ROW_HEIGHT) + "px";
+
+    var dividerTop = rows.length * ROW_HEIGHT;
+    if (divider) { divider.style.cssText += "opacity:1;height:" + DIVIDER_HEIGHT + "px;top:" + dividerTop + "px;pointer-events:none;"; }
+    if (personalRow) {
+      personalRow.style.opacity = "1";
+      personalRow.style.pointerEvents = "";
+      personalRow.style.top = (dividerTop + (divider ? DIVIDER_HEIGHT : 0)) + "px";
+
+      var pNameDiv2 = personalRow.querySelector(".lb-name");
+      var pEmoji2 = personalRow.querySelector(".lb-emoji");
+      if (pEmoji2 && pNameDiv2 && pEmoji2.parentNode === personalRow) {
+        personalRow.removeChild(pEmoji2);
+        pEmoji2.style.cssText = "display:inline-block;transition:all 0.4s ease;";
+        pNameDiv2.insertBefore(pEmoji2, pNameDiv2.firstChild);
+      }
+      if (pNameDiv2) { pNameDiv2.style.cssText = "width:110px;opacity:1;overflow:visible;min-width:110px;transition:all 0.4s ease;display:flex;align-items:center;gap:5px;justify-content:flex-end;"; }
+      var pMedal2 = personalRow.querySelector(".lb-medal");
+      if (pMedal2) { pMedal2.style.cssText = "opacity:1;width:auto;font-size:1.1rem;margin-left:6px;flex-shrink:0;color:var(--text-secondary);transition:all 0.4s ease;"; }
+      var pScore2 = personalRow.querySelector(".lb-score");
+      if (pScore2) { pScore2.style.cssText = "font-size:0.78rem;font-weight:700;color:white;white-space:nowrap;opacity:1;transition:opacity 0.4s ease;"; }
+      var pTrack2 = personalRow.querySelector(".lb-bar-track");
+      if (pTrack2) { pTrack2.style.height = "30px"; pTrack2.style.transition = "height 0.4s ease"; }
+      var pFill2 = personalRow.querySelector(".lb-bar-fill");
+      if (pFill2) { pFill2.style.height = "100%"; pFill2.style.transition = "height 0.4s ease, width 0.5s ease"; }
+    }
+
+    rowContainer.style.height = (rows.length * ROW_HEIGHT + (personalRow ? DIVIDER_HEIGHT + ROW_HEIGHT : 0)) + "px";
     rowContainer.style.transition = "height 0.4s ease";
   }
 }
