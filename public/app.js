@@ -24,6 +24,7 @@ const storage = getStorage(app);
 let username = "";
 let studentPassword = "";
 let isTeacher = false;
+let isDisplayMode = false;
 let isMasterAdmin = false;
 let teacherAccount = "";
 let currentBoardId = "";
@@ -325,6 +326,7 @@ joinBtn.onclick = async function() {
   if (!boardName) { alert("Enter the PopBoard name to join!"); return; }
   if (username.toLowerCase() === "dimitry") { alert("This name is reserved."); return; }
   isTeacher = false;
+  isDisplayMode = false;
   var q = query(collection(db, "boards"), where("name", "==", boardName));
   var snapshot = await getDocs(q);
   if (snapshot.empty) { alert("Oops! That PopBoard hasn't popped yet. Double-check the name and try again!"); return; }
@@ -440,6 +442,7 @@ function resetAndLogout() {
   username = "";
   studentPassword = "";
   isTeacher = false;
+  isDisplayMode = false;
   isMasterAdmin = false;
   teacherAccount = "";
   studyBtn.classList.add("hidden");
@@ -451,6 +454,7 @@ function resetAndLogout() {
   var panels = [boardsPortalDiv, studentsPortalDiv, studentDashboardDiv, appDiv, teacherLoginDiv, seatingMapDiv];
   for (var i = 0; i < panels.length; i++) { panels[i].classList.add("hidden"); }
   confusionIndicator.classList.add("hidden");
+  document.getElementById("newPost").classList.remove("hidden");
   loginDiv.classList.remove("hidden");
   usernameInput.value = "";
   if (document.getElementById("boardNameInput")) { document.getElementById("boardNameInput").value = ""; }
@@ -466,6 +470,13 @@ function resetAndLogout() {
 backToPortalBtn.onclick = function() {
   teardownBoardListeners();
   currentBoardId = "";
+  // Only a teacher-identity session (real teacher view or Display mode) can
+  // ever see/click this button, so it's always safe to restore the real
+  // teacher identity here when leaving Display mode.
+  isTeacher = true;
+  isDisplayMode = false;
+  currentStudentId = "";
+  username = "";
   appDiv.classList.add("hidden");
   boardsPortalDiv.classList.remove("hidden");
   loadBoardsPortal();
@@ -598,6 +609,13 @@ function createBoardCard(board, isMasterView) {
     enterBtn.onclick = function(e) { e.stopPropagation(); enterBoard(bid); };
   })(board.id);
   actions.appendChild(enterBtn);
+  var displayBtn = document.createElement("button");
+  displayBtn.textContent = "📺 Display";
+  displayBtn.title = "Open a read-only classroom display view (no voting, no posting)";
+  (function(bid) {
+    displayBtn.onclick = function(e) { e.stopPropagation(); enterDisplayMode(bid); };
+  })(board.id);
+  actions.appendChild(displayBtn);
   var resetBtn = document.createElement("button");
   resetBtn.textContent = "🔄 Reset";
   resetBtn.className = "teacher-control";
@@ -649,6 +667,7 @@ async function deleteBoard(boardId) {
 function enterBoard(boardId) {
   teardownBoardListeners();
   currentBoardId = boardId;
+  isDisplayMode = false;
   boardsPortalDiv.classList.add("hidden");
   appDiv.classList.remove("hidden");
   teacherBtn.classList.remove("hidden");
@@ -659,6 +678,36 @@ function enterBoard(boardId) {
   dailyDashboard.classList.remove("hidden");
   emojiPickerContainer.classList.add("hidden");
   confusionIndicator.classList.add("hidden");
+  document.getElementById("newPost").classList.remove("hidden");
+  startBoard();
+}
+
+// A read-only "classroom TV" entry point for teachers -- looks like the
+// student view (no emoji/nickname picker) but can't vote, post, or reply.
+// Deliberately renders through the existing !isTeacher branches everywhere
+// (isTeacher is set false here) so it inherits student-facing UI for free;
+// isDisplayMode only needs to gate the handful of spots that are actually
+// interactive.
+function enterDisplayMode(boardId) {
+  teardownBoardListeners();
+  currentBoardId = boardId;
+  isTeacher = false;
+  isDisplayMode = true;
+  currentStudentId = "";
+  username = "";
+  studentEmoji = "";
+  studentNickname = "";
+  boardsPortalDiv.classList.add("hidden");
+  appDiv.classList.remove("hidden");
+  teacherBtn.classList.add("hidden");
+  backToPortalBtn.classList.remove("hidden");
+  studentsBtn.classList.add("hidden");
+  seatsBtn.classList.add("hidden");
+  leaderboardToggleContainer.classList.add("hidden");
+  dailyDashboard.classList.add("hidden");
+  emojiPickerContainer.classList.add("hidden");
+  confusionIndicator.classList.add("hidden");
+  document.getElementById("newPost").classList.add("hidden");
   startBoard();
 }
 
@@ -668,11 +717,11 @@ async function startBoard() {
   leaderboardSection.innerHTML = "";
   listenBoardSettings();
   initLeaderboard();
-  initStickyCommentBar();
+  if (!isDisplayMode) { initStickyCommentBar(); }
   loadPosts();
   await loadPolls();
   if (isTeacher) { updateDailyDashboard(); }
-  if (!isTeacher) { setupEmojiPicker(); initConfusionIndicator(); }
+  if (!isTeacher && !isDisplayMode) { setupEmojiPicker(); initConfusionIndicator(); }
 }
 
 createBoardBtn.onclick = async function() {
@@ -704,8 +753,10 @@ function applyLeaderboardVisibility() {
   var nicknameContainer = document.getElementById("nicknameInputContainer");
   if (leaderboardVisible) {
     leaderboardSection.style.display = "";
-    emojiPickerContainer.classList.remove("hidden");
-    if (nicknameContainer) { nicknameContainer.style.display = "inline-flex"; }
+    if (!isDisplayMode) {
+      emojiPickerContainer.classList.remove("hidden");
+      if (nicknameContainer) { nicknameContainer.style.display = "inline-flex"; }
+    }
   } else {
     leaderboardSection.style.display = "none";
     emojiPickerContainer.classList.add("hidden");
@@ -2277,6 +2328,7 @@ postImageInput.onchange = function(e) {
 };
 
 postBtn.onclick = async function() {
+  if (isDisplayMode) { return; }
   var text = postInput.value.trim();
   if (!text && !postImageFile) { alert("Please enter text or attach an image."); return; }
   var anonymous = document.getElementById("anonymousToggle") ? document.getElementById("anonymousToggle").checked : false;
@@ -2642,6 +2694,7 @@ function loadPosts() {
       (function(pid, postData) {
         upvoteSpan.onclick = async function(e) {
           e.stopPropagation();
+          if (isDisplayMode) { return; }
           var already = postData.upvoters && postData.upvoters.indexOf(username) !== -1;
           createPopcornConfetti(upvoteSpan);
           playPop();
@@ -2688,6 +2741,7 @@ function loadPosts() {
       var repliesDiv = document.createElement("div");
       loadReplies(postId, repliesDiv, post.visible);
       var replyBtn = div.querySelector(".reply-btn");
+      if (isDisplayMode) { replyBtn.style.display = "none"; }
       (function(pid) {
         replyBtn.onclick = function(e) {
           e.stopPropagation();
@@ -3323,7 +3377,7 @@ function renderFreePoll(div, poll, pollId, totalStudents) {
     div.appendChild(logDiv);
   }
 
-  if (!isTeacher) {
+  if (!isTeacher && !isDisplayMode) {
     var hasSubmitted = (poll.history || []).some(function(h) { return h.username === username; });
     var textarea = document.createElement("textarea");
     textarea.placeholder = hasSubmitted ? "✓ Your response popped in!" : "Enter your response...";
@@ -3354,6 +3408,11 @@ function renderFreePoll(div, poll, pollId, totalStudents) {
 
     div.appendChild(textarea);
     div.appendChild(submitBtn);
+  } else if (isDisplayMode) {
+    var waitingEl = document.createElement("div");
+    waitingEl.className = "poll-waiting-placeholder";
+    waitingEl.textContent = "Waiting for responses…";
+    div.appendChild(waitingEl);
   }
 }
 
@@ -3396,7 +3455,7 @@ function renderDrawPoll(div, poll, pollId, totalStudents) {
     div.appendChild(gridDiv);
   }
 
-  if (!isTeacher) {
+  if (!isTeacher && !isDisplayMode) {
     var hasSubmitted = (poll.history || []).some(function(h) { return h.username === username; });
     if (hasSubmitted) {
       var doneMsg = document.createElement("div");
@@ -3504,6 +3563,11 @@ function renderDrawPoll(div, poll, pollId, totalStudents) {
     div.appendChild(toolbar);
     div.appendChild(canvas);
     div.appendChild(submitBtn);
+  } else if (isDisplayMode) {
+    var waitingEl = document.createElement("div");
+    waitingEl.className = "poll-waiting-placeholder";
+    waitingEl.textContent = "Waiting for responses…";
+    div.appendChild(waitingEl);
   }
 }
 
@@ -3671,6 +3735,11 @@ function renderMCPoll(div, poll, pollId, totalStudents) {
           if (currentSet.has(oi)) { btn.classList.add("voted-by-me"); }
         } else {
           if (myPollVotes.get(pollId) === oi) { btn.classList.add("voted-by-me"); }
+        }
+        if (isDisplayMode) {
+          btn.disabled = true;
+          div.appendChild(btn);
+          continue;
         }
         (function(optIndex, optText, pollData) {
           btn.onclick = async function(e) {
