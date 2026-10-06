@@ -85,6 +85,27 @@
   </div>
 </div>
 
+<!-- Seating Map (Teacher) -->
+<div id="seatingMap" class="hidden">
+  <header>
+    <div id="logo">
+      <img src="/popboard-logo.png" alt="PopBoard Logo" id="logo-img" loading="lazy" />
+    </div>
+    <div class="header-right">
+      <button id="backToBoardFromSeats">Back to Board</button>
+      <button id="logoutBtnSeats">Logout</button>
+      <button id="themeToggleSeats">🌙 Dark Mode</button>
+    </div>
+  </header>
+  <div class="portal-container">
+    <h2>Seating Map</h2>
+    <div style="text-align:center;margin-bottom:16px;">
+      <button id="addSeatBtn" class="teacher-control">+ Add Seat</button>
+    </div>
+    <div id="seatCanvas"></div>
+  </div>
+</div>
+
 <!-- Student Dashboard -->
 <div id="studentDashboard" class="hidden">
   <header>
@@ -112,6 +133,7 @@
       <div class="header-top-row">
         <button id="backToPortalBtn" class="hidden">Back to Boards</button>
         <button id="studentsBtn" class="hidden">Students</button>
+        <button id="seatsBtn" class="hidden">🪑 Seats</button>
         <button id="teacherBtn" class="hidden">Poll</button>
       </div>
       <div class="header-bottom-row">
@@ -162,6 +184,15 @@
       <div id="dailyMetricsText" class="daily-metrics-text"></div>
     </div>
   </section>
+
+  <!-- Confusion indicator (students only) -->
+  <div id="confusionIndicator" class="hidden">
+    <span class="confusion-label">How's it going?</span>
+    <div class="confusion-buttons">
+      <button type="button" id="confusionGreenBtn" class="confusion-btn" data-state="green" title="I've got it">🟢</button>
+      <button type="button" id="confusionRedBtn" class="confusion-btn" data-state="red" title="I'm confused">🔴</button>
+    </div>
+  </div>
 
   <!-- New Post Section (sticky bottom) -->
   <section id="newPost" class="comment-collapsed">

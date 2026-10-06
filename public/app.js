@@ -43,6 +43,12 @@ let dailyDataVisible = false;
 let prevLeaderboardRanks = {};
 let studentCorrectStreak = 0;
 let celebratedPollIds = new Set();
+let unsubSeats = null;
+let unsubOwnConfusion = null;
+let seatingStudentsCache = {};
+let seatingSeatsCache = [];
+let draggingSeatId = null;
+let openSeatPopupId = null;
 
 const loginDiv = document.getElementById("login");
 const teacherLoginDiv = document.getElementById("teacherLogin");
@@ -69,6 +75,16 @@ const backToPortalBtn = document.getElementById("backToPortalBtn");
 const studentsBtn = document.getElementById("studentsBtn");
 const backToBoardFromStudents = document.getElementById("backToBoardFromStudents");
 const backToStudentsFromDashboard = document.getElementById("backToStudentsFromDashboard");
+const seatsBtn = document.getElementById("seatsBtn");
+const seatingMapDiv = document.getElementById("seatingMap");
+const seatCanvas = document.getElementById("seatCanvas");
+const addSeatBtn = document.getElementById("addSeatBtn");
+const backToBoardFromSeats = document.getElementById("backToBoardFromSeats");
+const logoutBtnSeats = document.getElementById("logoutBtnSeats");
+const themeToggleSeats = document.getElementById("themeToggleSeats");
+const confusionIndicator = document.getElementById("confusionIndicator");
+const confusionGreenBtn = document.getElementById("confusionGreenBtn");
+const confusionRedBtn = document.getElementById("confusionRedBtn");
 const postInput = document.getElementById("postInput");
 const postBtn = document.getElementById("postBtn");
 const postsDiv = document.getElementById("posts");
@@ -271,6 +287,7 @@ if (themeToggle) { themeToggle.addEventListener("click", toggleTheme); }
 if (themeTogglePortal) { themeTogglePortal.addEventListener("click", toggleTheme); }
 if (themeToggleStudents) { themeToggleStudents.addEventListener("click", toggleTheme); }
 if (themeToggleDashboard) { themeToggleDashboard.addEventListener("click", toggleTheme); }
+if (themeToggleSeats) { themeToggleSeats.addEventListener("click", toggleTheme); }
 
 loadTheme();
 
@@ -283,6 +300,8 @@ function teardownBoardListeners() {
   if (unsubPolls) { unsubPolls(); unsubPolls = null; }
   if (unsubLeaderboard) { unsubLeaderboard(); unsubLeaderboard = null; }
   if (unsubBoardSettings) { unsubBoardSettings(); unsubBoardSettings = null; }
+  if (unsubSeats) { unsubSeats(); unsubSeats = null; }
+  if (unsubOwnConfusion) { unsubOwnConfusion(); unsubOwnConfusion = null; }
 }
 
 joinBtn.onclick = async function() {
@@ -320,7 +339,10 @@ joinBtn.onclick = async function() {
       historicalPollsCast: 0,
       monthlyStats: {},
       emoji: "",
-      nickname: ""
+      nickname: "",
+      confusionState: null,
+      confusionSetAt: null,
+      confusionHistory: []
     });
     currentStudentId = newStudent.id;
     studentEmoji = "";
@@ -331,8 +353,10 @@ joinBtn.onclick = async function() {
   teacherBtn.classList.add("hidden");
   backToPortalBtn.classList.add("hidden");
   studentsBtn.classList.add("hidden");
+  seatsBtn.classList.add("hidden");
   leaderboardToggleContainer.classList.add("hidden");
   dailyDashboard.classList.add("hidden");
+  confusionIndicator.classList.remove("hidden");
   startBoard();
 };
 
@@ -395,9 +419,11 @@ logoutBtnPortal.onclick = function() { resetAndLogout(); };
 logoutBtnApp.onclick = function() { resetAndLogout(); };
 logoutBtnStudents.onclick = function() { resetAndLogout(); };
 logoutBtnDashboard.onclick = function() { resetAndLogout(); };
+logoutBtnSeats.onclick = function() { resetAndLogout(); };
 
 function resetAndLogout() {
   teardownBoardListeners();
+  closeSeatPopup();
   username = "";
   studentPassword = "";
   isTeacher = false;
@@ -409,8 +435,9 @@ function resetAndLogout() {
   studentEmoji = "";
   myUpvotedPostIds.clear();
   myPollVotes.clear();
-  var panels = [boardsPortalDiv, studentsPortalDiv, studentDashboardDiv, appDiv, teacherLoginDiv];
+  var panels = [boardsPortalDiv, studentsPortalDiv, studentDashboardDiv, appDiv, teacherLoginDiv, seatingMapDiv];
   for (var i = 0; i < panels.length; i++) { panels[i].classList.add("hidden"); }
+  confusionIndicator.classList.add("hidden");
   loginDiv.classList.remove("hidden");
   usernameInput.value = "";
   if (document.getElementById("boardNameInput")) { document.getElementById("boardNameInput").value = ""; }
@@ -420,6 +447,7 @@ function resetAndLogout() {
   pollSection.innerHTML = "";
   postsDiv.innerHTML = "";
   leaderboardSection.innerHTML = "";
+  seatCanvas.innerHTML = "";
 }
 
 backToPortalBtn.onclick = function() {
@@ -439,6 +467,28 @@ studentsBtn.onclick = function() {
 backToBoardFromStudents.onclick = function() {
   studentsPortalDiv.classList.add("hidden");
   appDiv.classList.remove("hidden");
+};
+
+seatsBtn.onclick = function() {
+  appDiv.classList.add("hidden");
+  seatingMapDiv.classList.remove("hidden");
+  loadSeatingMap();
+};
+
+backToBoardFromSeats.onclick = function() {
+  if (unsubSeats) { unsubSeats(); unsubSeats = null; }
+  closeSeatPopup();
+  seatingMapDiv.classList.add("hidden");
+  appDiv.classList.remove("hidden");
+};
+
+addSeatBtn.onclick = async function() {
+  if (!currentBoardId) { return; }
+  var jitterX = 30 + Math.random() * 40;
+  var jitterY = 30 + Math.random() * 40;
+  await addDoc(collection(db, "boards", currentBoardId, "seats"), {
+    x: jitterX, y: jitterY, studentId: null, createdAt: serverTimestamp()
+  });
 };
 
 backToStudentsFromDashboard.onclick = function() {
@@ -576,9 +626,11 @@ function enterBoard(boardId) {
   teacherBtn.classList.remove("hidden");
   backToPortalBtn.classList.remove("hidden");
   studentsBtn.classList.remove("hidden");
+  seatsBtn.classList.remove("hidden");
   leaderboardToggleContainer.classList.remove("hidden");
   dailyDashboard.classList.remove("hidden");
   emojiPickerContainer.classList.add("hidden");
+  confusionIndicator.classList.add("hidden");
   startBoard();
 }
 
@@ -592,7 +644,7 @@ async function startBoard() {
   loadPosts();
   await loadPolls();
   if (isTeacher) { updateDailyDashboard(); }
-  if (!isTeacher) { setupEmojiPicker(); }
+  if (!isTeacher) { setupEmojiPicker(); initConfusionIndicator(); }
 }
 
 createBoardBtn.onclick = async function() {
@@ -1549,7 +1601,7 @@ async function calculateStudentStats(studentId, totalPolls, pollsSnapshot) {
   pollsSnapshot.forEach(function(pd) {
     var poll = pd.data();
     if (poll.type === "mc" && (poll.voters || []).indexOf(student.username) !== -1) { pollsVoted++; }
-    else if (poll.type === "free" && (poll.history || []).some(function(h) { return h.username === student.username; })) { pollsVoted++; }
+    else if ((poll.type === "free" || poll.type === "draw") && (poll.history || []).some(function(h) { return h.username === student.username; })) { pollsVoted++; }
   });
   var postsSnap = await getDocs(collection(db, "boards", currentBoardId, "posts"));
   var repliesSnap = await getDocs(collection(db, "boards", currentBoardId, "replies"));
@@ -1622,6 +1674,295 @@ function showImageLightbox(imageUrl) {
   lb.innerHTML = "<img src='" + imageUrl + "' />";
   lb.onclick = function() { lb.remove(); };
   document.body.appendChild(lb);
+}
+
+// ─── CONFUSION STATE (shared by seating map + student indicator) ───────────
+
+var CONFUSION_DURATION_MS = 5 * 60 * 1000;
+var CONFUSION_COLORS = { red: "#ff453a", green: "#34c759" };
+
+// Fades `el`'s background from the full confusion color to the theme-neutral
+// color over whatever time remains in the 5-minute window. Using a CSS
+// transition (rather than a setInterval countdown) means re-calling this on
+// every snapshot update is safe and cheap: the remaining time is always
+// recomputed from the absolute `setAtMs` timestamp, so the visual always
+// lands in the correct spot in its fade regardless of when/how often we redraw.
+function applyConfusionVisual(el, state, setAtMs) {
+  var neutral = getComputedStyle(document.documentElement).getPropertyValue("--bg-secondary").trim() || "#ffffff";
+  var remaining = (state && setAtMs) ? CONFUSION_DURATION_MS - (Date.now() - setAtMs) : 0;
+  if (!state || !CONFUSION_COLORS[state] || remaining <= 0) {
+    el.style.transition = "";
+    el.style.backgroundColor = neutral;
+    return;
+  }
+  el.style.transition = "none";
+  el.style.backgroundColor = CONFUSION_COLORS[state];
+  void el.offsetWidth; // force reflow so the "full color, no transition" frame commits
+  el.style.transition = "background-color " + remaining + "ms linear";
+  el.style.backgroundColor = neutral;
+}
+
+async function setMyConfusionState(state) {
+  if (!currentStudentId || !currentBoardId) { return; }
+  var studentRef = doc(db, "boards", currentBoardId, "students", currentStudentId);
+  var now = Date.now();
+  await updateDoc(studentRef, {
+    confusionState: state,
+    confusionSetAt: now,
+    confusionHistory: arrayUnion({ state: state, setAt: now })
+  });
+  // Trim history to the most recent ~40 entries so the array doesn't grow unbounded.
+  var snap = await getDoc(studentRef);
+  var hist = (snap.data() || {}).confusionHistory || [];
+  if (hist.length > 40) { await updateDoc(studentRef, { confusionHistory: hist.slice(hist.length - 40) }); }
+}
+
+function initConfusionIndicator() {
+  if (unsubOwnConfusion) { unsubOwnConfusion(); unsubOwnConfusion = null; }
+  if (!currentStudentId || !currentBoardId) { return; }
+  confusionGreenBtn.onclick = function() { playPop(); setMyConfusionState("green"); };
+  confusionRedBtn.onclick = function() { playPop(); setMyConfusionState("red"); };
+  unsubOwnConfusion = onSnapshot(doc(db, "boards", currentBoardId, "students", currentStudentId), function(d) {
+    if (!d.exists()) { return; }
+    var data = d.data();
+    confusionGreenBtn.classList.toggle("confusion-active", data.confusionState === "green");
+    confusionRedBtn.classList.toggle("confusion-active", data.confusionState === "red");
+    applyConfusionVisual(confusionGreenBtn, data.confusionState === "green" ? "green" : null, data.confusionSetAt);
+    applyConfusionVisual(confusionRedBtn, data.confusionState === "red" ? "red" : null, data.confusionSetAt);
+  });
+}
+
+// ─── SEATING MAP (teacher-only sandbox) ─────────────────────────────────────
+
+var seatPopupOutsideClickHandler = null;
+
+function closeSeatPopup() {
+  var existing = document.querySelector(".seat-popup");
+  if (existing) { existing.remove(); }
+  openSeatPopupId = null;
+  if (seatPopupOutsideClickHandler) {
+    document.removeEventListener("click", seatPopupOutsideClickHandler);
+    seatPopupOutsideClickHandler = null;
+  }
+}
+
+function loadSeatingMap() {
+  if (unsubSeats) { unsubSeats(); unsubSeats = null; }
+  if (!currentBoardId) { return; }
+  seatCanvas.innerHTML = "";
+  closeSeatPopup();
+  seatingStudentsCache = {};
+  seatingSeatsCache = [];
+
+  var unsubStudentsLocal = onSnapshot(collection(db, "boards", currentBoardId, "students"), function(snap) {
+    var map = {};
+    snap.forEach(function(d) { map[d.id] = Object.assign({ id: d.id }, d.data()); });
+    seatingStudentsCache = map;
+    if (!draggingSeatId) { renderSeats(); }
+    refreshOpenSeatPopup();
+  });
+  var unsubSeatsLocal = onSnapshot(collection(db, "boards", currentBoardId, "seats"), function(snap) {
+    var list = [];
+    snap.forEach(function(d) { list.push(Object.assign({ id: d.id }, d.data())); });
+    seatingSeatsCache = list;
+    if (!draggingSeatId) { renderSeats(); }
+    refreshOpenSeatPopup();
+  });
+  unsubSeats = function() { unsubStudentsLocal(); unsubSeatsLocal(); };
+}
+
+function renderSeats() {
+  seatCanvas.innerHTML = "";
+  seatingSeatsCache.forEach(function(seat) {
+    var student = seat.studentId ? seatingStudentsCache[seat.studentId] : null;
+    var el = document.createElement("div");
+    el.className = "seat" + (student ? "" : " seat-unassigned");
+    el.style.left = (seat.x != null ? seat.x : 50) + "%";
+    el.style.top = (seat.y != null ? seat.y : 50) + "%";
+    el.dataset.seatId = seat.id;
+
+    if (student) {
+      el.textContent = student.emoji ? student.emoji : (student.username ? student.username.charAt(0).toUpperCase() : "?");
+      el.title = student.username || "";
+      applyConfusionVisual(el, student.confusionState, student.confusionSetAt);
+    } else {
+      el.textContent = "+";
+      el.title = "Unassigned seat";
+    }
+
+    var delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "seat-delete";
+    delBtn.textContent = "✕";
+    delBtn.title = "Delete seat";
+    (function(seatId) {
+      delBtn.onclick = async function(e) {
+        e.stopPropagation();
+        if (!confirm("Delete this seat?")) { return; }
+        await deleteDoc(doc(db, "boards", currentBoardId, "seats", seatId));
+        if (openSeatPopupId === seatId) { closeSeatPopup(); }
+      };
+    })(seat.id);
+    el.appendChild(delBtn);
+
+    wireSeatDrag(el, seat);
+    seatCanvas.appendChild(el);
+  });
+}
+
+function wireSeatDrag(el, seat) {
+  var dragging = false;
+  var moved = false;
+  var startClientX = 0, startClientY = 0;
+
+  el.addEventListener("pointerdown", function(e) {
+    if (e.target === el.querySelector(".seat-delete")) { return; }
+    e.preventDefault();
+    dragging = true;
+    moved = false;
+    draggingSeatId = seat.id;
+    startClientX = e.clientX;
+    startClientY = e.clientY;
+    el.classList.add("seat-dragging");
+    el.setPointerCapture(e.pointerId);
+  });
+
+  el.addEventListener("pointermove", function(e) {
+    if (!dragging) { return; }
+    var dx = e.clientX - startClientX;
+    var dy = e.clientY - startClientY;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) { moved = true; }
+    var rect = seatCanvas.getBoundingClientRect();
+    var pctX = ((e.clientX - rect.left) / rect.width) * 100;
+    var pctY = ((e.clientY - rect.top) / rect.height) * 100;
+    pctX = Math.max(2, Math.min(98, pctX));
+    pctY = Math.max(2, Math.min(98, pctY));
+    el.style.left = pctX + "%";
+    el.style.top = pctY + "%";
+    el.dataset.pendingX = pctX;
+    el.dataset.pendingY = pctY;
+  });
+
+  function endDrag(e) {
+    if (!dragging) { return; }
+    dragging = false;
+    el.classList.remove("seat-dragging");
+    draggingSeatId = null;
+    var finalX = el.dataset.pendingX !== undefined ? parseFloat(el.dataset.pendingX) : seat.x;
+    var finalY = el.dataset.pendingY !== undefined ? parseFloat(el.dataset.pendingY) : seat.y;
+    if (moved) {
+      updateDoc(doc(db, "boards", currentBoardId, "seats", seat.id), { x: finalX, y: finalY }).then(function() {
+        renderSeats();
+      });
+    } else {
+      openSeatPopup(seat.id);
+    }
+  }
+
+  el.addEventListener("pointerup", endDrag);
+  el.addEventListener("pointercancel", endDrag);
+}
+
+function refreshOpenSeatPopup() {
+  if (openSeatPopupId) { openSeatPopup(openSeatPopupId); }
+}
+
+function openSeatPopup(seatId) {
+  closeSeatPopup();
+  var seat = seatingSeatsCache.filter(function(s) { return s.id === seatId; })[0];
+  if (!seat) { return; }
+  openSeatPopupId = seatId;
+  var student = seat.studentId ? seatingStudentsCache[seat.studentId] : null;
+  var unassignedStudents = Object.keys(seatingStudentsCache)
+    .map(function(id) { return seatingStudentsCache[id]; })
+    .filter(function(s) {
+      var takenByOtherSeat = seatingSeatsCache.some(function(s2) { return s2.studentId === s.id && s2.id !== seatId; });
+      return !takenByOtherSeat;
+    });
+
+  var popup = document.createElement("div");
+  popup.className = "seat-popup";
+
+  var closeBtn = document.createElement("button");
+  closeBtn.type = "button";
+  closeBtn.className = "seat-popup-close";
+  closeBtn.textContent = "✕";
+  closeBtn.onclick = function() { closeSeatPopup(); };
+  popup.appendChild(closeBtn);
+
+  var title = document.createElement("h4");
+  title.textContent = student ? (student.nickname || student.username) : "Unassigned seat";
+  popup.appendChild(title);
+
+  if (student) {
+    var meta = document.createElement("div");
+    meta.className = "seat-popup-meta";
+    meta.textContent = "@" + student.username;
+    popup.appendChild(meta);
+
+    var hist = (student.confusionHistory || []).slice(-24);
+    if (hist.length) {
+      var timeline = document.createElement("div");
+      timeline.className = "confusion-timeline";
+      hist.forEach(function(h) {
+        var tick = document.createElement("div");
+        tick.className = "tick " + (h.state === "red" ? "red" : "green");
+        tick.title = new Date(h.setAt).toLocaleString();
+        timeline.appendChild(tick);
+      });
+      popup.appendChild(timeline);
+    } else {
+      var empty = document.createElement("div");
+      empty.className = "confusion-timeline-empty";
+      empty.textContent = "No confusion reports yet this class.";
+      popup.appendChild(empty);
+    }
+  }
+
+  var select = document.createElement("select");
+  var blankOpt = document.createElement("option");
+  blankOpt.value = "";
+  blankOpt.textContent = "— Unassigned —";
+  select.appendChild(blankOpt);
+  unassignedStudents.forEach(function(s) {
+    var opt = document.createElement("option");
+    opt.value = s.id;
+    opt.textContent = s.nickname || s.username;
+    if (student && s.id === student.id) { opt.selected = true; }
+    select.appendChild(opt);
+  });
+  if (!student) { blankOpt.selected = true; }
+  select.onchange = async function() {
+    await updateDoc(doc(db, "boards", currentBoardId, "seats", seatId), { studentId: select.value || null });
+  };
+  popup.appendChild(select);
+
+  var delSeatBtn = document.createElement("button");
+  delSeatBtn.type = "button";
+  delSeatBtn.className = "teacher-control";
+  delSeatBtn.textContent = "🗑️ Delete Seat";
+  delSeatBtn.onclick = async function() {
+    if (!confirm("Delete this seat?")) { return; }
+    await deleteDoc(doc(db, "boards", currentBoardId, "seats", seatId));
+    closeSeatPopup();
+  };
+  popup.appendChild(delSeatBtn);
+
+  document.body.appendChild(popup);
+  var seatEl = seatCanvas.querySelector('[data-seat-id="' + seatId + '"]');
+  if (seatEl) {
+    var r = seatEl.getBoundingClientRect();
+    var popupWidth = 240;
+    var left = Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - popupWidth - 16);
+    popup.style.left = Math.max(16, left) + "px";
+    popup.style.top = (window.scrollY + r.bottom + 10) + "px";
+  }
+  setTimeout(function() {
+    seatPopupOutsideClickHandler = function(e) {
+      if (!popup.contains(e.target) && !seatCanvas.contains(e.target)) { closeSeatPopup(); }
+    };
+    document.addEventListener("click", seatPopupOutsideClickHandler);
+  }, 0);
 }
 
 postImageBtn.onclick = function() { postImageInput.click(); };
@@ -2101,7 +2442,7 @@ teacherBtn.addEventListener("click", function() {
     pollCreation.innerHTML = "";
     return;
   }
-  pollCreation.innerHTML = "<h3>Create Poll</h3><div class='poll-type-buttons' id='pollTypeBtns'><button type='button' id='mcBtn' class='teacher-control'>Multiple Choice</button><button type='button' id='freeBtn' class='teacher-control'>Free Response</button></div><input type='text' id='pollQuestionInput' placeholder='Poll question' style='display:none;' /><div id='mcOptionsContainer' style='display:none;'><div class='mc-options-list' id='mcOptionsList'></div><button type='button' class='add-option-btn teacher-control' id='addOptionBtn'>+</button><div class='require-all-row' style='margin-top:10px;'><input type='checkbox' id='requireAllCorrect' /><label for='requireAllCorrect'>Require All Correct</label></div></div><input type='file' id='pollImageInput' accept='image/*' style='display:none;' /><button type='button' id='pollImageBtn' class='secondary-btn teacher-control' style='display:none;'>📷 Add Image</button><div id='pollImagePreviewInner' class='image-preview'></div><button type='button' id='createPollBtn' class='teacher-control' style='display:none;'>Create Poll</button><button type='button' id='cancelPollBtn' class='teacher-control' style='display:none;margin-left:8px;'>Cancel</button>";
+  pollCreation.innerHTML = "<h3>Create Poll</h3><div class='poll-type-buttons' id='pollTypeBtns'><button type='button' id='mcBtn' class='teacher-control'>Multiple Choice</button><button type='button' id='freeBtn' class='teacher-control'>Free Response</button><button type='button' id='drawBtn' class='teacher-control'>✏️ Drawing</button></div><input type='text' id='pollQuestionInput' placeholder='Poll question' style='display:none;' /><div id='mcOptionsContainer' style='display:none;'><div class='mc-options-list' id='mcOptionsList'></div><button type='button' class='add-option-btn teacher-control' id='addOptionBtn'>+</button><div class='require-all-row' style='margin-top:10px;'><input type='checkbox' id='requireAllCorrect' /><label for='requireAllCorrect'>Require All Correct</label></div></div><input type='file' id='pollImageInput' accept='image/*' style='display:none;' /><button type='button' id='pollImageBtn' class='secondary-btn teacher-control' style='display:none;'>📷 Add Image</button><div id='pollImagePreviewInner' class='image-preview'></div><button type='button' id='createPollBtn' class='teacher-control' style='display:none;'>Create Poll</button><button type='button' id='cancelPollBtn' class='teacher-control' style='display:none;margin-left:8px;'>Cancel</button>";
   pollCreation.classList.remove("hidden");
 
   var currentPollType = "";
@@ -2169,6 +2510,16 @@ teacherBtn.addEventListener("click", function() {
     document.getElementById("pollTypeBtns").style.display = "none";
   });
 
+  document.getElementById("drawBtn").addEventListener("click", function(e) {
+    e.stopPropagation();
+    currentPollType = "draw";
+    document.getElementById("pollQuestionInput").style.display = "block";
+    document.getElementById("pollImageBtn").style.display = "inline-block";
+    document.getElementById("createPollBtn").style.display = "inline-block";
+    document.getElementById("cancelPollBtn").style.display = "inline-block";
+    document.getElementById("pollTypeBtns").style.display = "none";
+  });
+
   document.getElementById("cancelPollBtn").addEventListener("click", function(e) {
     e.stopPropagation();
     pollCreation.classList.add("hidden");
@@ -2180,7 +2531,7 @@ teacherBtn.addEventListener("click", function() {
     e.stopPropagation();
     var createBtn = document.getElementById("createPollBtn");
     if (!createBtn || createBtn.disabled) { return; }
-    if (!currentPollType) { alert("Please select Multiple Choice or Free Response first."); return; }
+    if (!currentPollType) { alert("Please select Multiple Choice, Free Response, or Drawing first."); return; }
     var questionEl = document.getElementById("pollQuestionInput");
     var question = questionEl ? questionEl.value.trim() : "";
     if (!question) { alert("Please enter a poll question."); return; }
@@ -2213,7 +2564,7 @@ teacherBtn.addEventListener("click", function() {
         });
       } else {
         await addDoc(collection(db, "boards", currentBoardId, "polls"), {
-          question: question, type: "free", responses: {}, visible: false,
+          question: question, type: currentPollType, responses: {}, visible: false,
           responsesVisible: false, imageUrl: imageUrl, history: [], createdAt: serverTimestamp()
         });
       }
@@ -2349,6 +2700,7 @@ async function loadPolls() {
 
         if (poll.type === "free") { renderFreePoll(div, poll, pollId, totalStudents); }
         else if (poll.type === "mc") { renderMCPoll(div, poll, pollId, totalStudents); }
+        else if (poll.type === "draw") { renderDrawPoll(div, poll, pollId, totalStudents); }
 
         if (isTeacher) {
           var controlsDiv = document.createElement("div");
@@ -2461,6 +2813,7 @@ async function loadPolls() {
           }
           if (poll.type === "free") { renderFreePoll(div, poll, pollId, totalStudents); }
           else if (poll.type === "mc") { renderMCPoll(div, poll, pollId, totalStudents); }
+          else if (poll.type === "draw") { renderDrawPoll(div, poll, pollId, totalStudents); }
           var controlsDiv = document.createElement("div");
           controlsDiv.style.cssText = "margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;";
           var toggleBtn = document.createElement("button");
@@ -2549,6 +2902,156 @@ function renderFreePoll(div, poll, pollId, totalStudents) {
     })(pollId, textarea, submitBtn);
 
     div.appendChild(textarea);
+    div.appendChild(submitBtn);
+  }
+}
+
+var DRAW_COLORS = ["#1d1d1f", "#ff453a", "#0a84ff", "#34c759"];
+
+function renderDrawPoll(div, poll, pollId, totalStudents) {
+  var uniqueResponders = new Set();
+  (poll.history || []).forEach(function(h) { uniqueResponders.add(h.username); });
+  var pct = totalStudents > 0 ? Math.round((uniqueResponders.size / totalStudents) * 100) : 0;
+
+  if (isTeacher) {
+    var pDiv = document.createElement("div");
+    pDiv.className = "poll-stat";
+    pDiv.innerHTML = "<strong>🗳️ Responded: " + pct + "%</strong>";
+    div.appendChild(pDiv);
+  }
+
+  if (isTeacher || poll.responsesVisible) {
+    var gridDiv = document.createElement("div");
+    gridDiv.className = "draw-thumb-grid";
+    (poll.history || []).forEach(function(e) {
+      if (!e.imageUrl) { return; }
+      var thumb = document.createElement("div");
+      thumb.className = "draw-thumb";
+      var img = document.createElement("img");
+      img.src = e.imageUrl;
+      (function(url) { img.onclick = function() { showImageLightbox(url); }; })(e.imageUrl);
+      var label = document.createElement("span");
+      label.textContent = e.username;
+      thumb.appendChild(img);
+      thumb.appendChild(label);
+      gridDiv.appendChild(thumb);
+    });
+    if (!gridDiv.children.length) {
+      var emptyMsg = document.createElement("div");
+      emptyMsg.className = "confusion-timeline-empty";
+      emptyMsg.textContent = "No drawings submitted yet.";
+      gridDiv.appendChild(emptyMsg);
+    }
+    div.appendChild(gridDiv);
+  }
+
+  if (!isTeacher) {
+    var hasSubmitted = (poll.history || []).some(function(h) { return h.username === username; });
+    if (hasSubmitted) {
+      var doneMsg = document.createElement("div");
+      doneMsg.className = "poll-stat";
+      doneMsg.innerHTML = "<strong>✓ Your drawing popped in!</strong>";
+      div.appendChild(doneMsg);
+      return;
+    }
+
+    var toolbar = document.createElement("div");
+    toolbar.className = "draw-toolbar";
+    var canvas = document.createElement("canvas");
+    canvas.className = "draw-canvas";
+    canvas.width = 480;
+    canvas.height = 320;
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.lineWidth = 4;
+    var currentColor = DRAW_COLORS[0];
+    ctx.strokeStyle = currentColor;
+
+    var colorBtns = DRAW_COLORS.map(function(c, i) {
+      var swatch = document.createElement("button");
+      swatch.type = "button";
+      swatch.className = "draw-color" + (i === 0 ? " draw-color-active" : "");
+      swatch.style.background = c;
+      swatch.onclick = function(e) {
+        e.stopPropagation();
+        currentColor = c;
+        ctx.strokeStyle = c;
+        colorBtns.forEach(function(b) { b.classList.remove("draw-color-active"); });
+        swatch.classList.add("draw-color-active");
+      };
+      return swatch;
+    });
+    colorBtns.forEach(function(b) { toolbar.appendChild(b); });
+
+    var clearBtn = document.createElement("button");
+    clearBtn.type = "button";
+    clearBtn.className = "secondary-btn";
+    clearBtn.textContent = "Clear";
+    clearBtn.onclick = function(e) {
+      e.stopPropagation();
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    };
+    toolbar.appendChild(clearBtn);
+
+    var submitBtn = document.createElement("button");
+    submitBtn.type = "button";
+    submitBtn.textContent = "Submit Drawing";
+
+    var drawing = false;
+    function canvasPoint(e) {
+      var rect = canvas.getBoundingClientRect();
+      var scaleX = canvas.width / rect.width;
+      var scaleY = canvas.height / rect.height;
+      return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
+    }
+    canvas.addEventListener("pointerdown", function(e) {
+      e.preventDefault();
+      drawing = true;
+      canvas.setPointerCapture(e.pointerId);
+      var p = canvasPoint(e);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+    });
+    canvas.addEventListener("pointermove", function(e) {
+      if (!drawing) { return; }
+      var p = canvasPoint(e);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+    });
+    function stopDrawing() { drawing = false; }
+    canvas.addEventListener("pointerup", stopDrawing);
+    canvas.addEventListener("pointercancel", stopDrawing);
+
+    (function(pid, cv, sb) {
+      sb.onclick = function(e) {
+        e.stopPropagation();
+        sb.disabled = true;
+        sb.textContent = "Submitting...";
+        cv.toBlob(async function(blob) {
+          try {
+            var file = new File([blob], username + "-" + Date.now() + ".png", { type: "image/png" });
+            var url = await uploadImage(file, "boards/" + currentBoardId + "/polls/" + pid + "/drawings");
+            await updateDoc(doc(db, "boards", currentBoardId, "polls", pid), {
+              history: arrayUnion({ username: username, response: "Submitted a drawing", imageUrl: url, timestamp: Date.now() })
+            });
+            playPop();
+            if (currentStudentId) { await incrementStudentStat(currentStudentId, "pollsCast"); }
+          } catch (err) {
+            console.error("Error submitting drawing:", err);
+            alert("Something went wrong submitting your drawing. Please try again.");
+            sb.disabled = false;
+            sb.textContent = "Submit Drawing";
+          }
+        }, "image/png");
+      };
+    })(pollId, canvas, submitBtn);
+
+    div.appendChild(toolbar);
+    div.appendChild(canvas);
     div.appendChild(submitBtn);
   }
 }
