@@ -919,6 +919,66 @@ function renderLeaderboardUI(top6) {
   initStickyLeaderboard();
 }
 
+function mcHistoryActionPhrase(resp) {
+  resp = resp || "";
+  if (resp.indexOf("Changed vote: ") === 0) {
+    var toSep = resp.indexOf(" to ");
+    var newText = toSep === -1 ? "" : resp.slice(toSep + 4);
+    return "changed vote " + newText;
+  } else if (resp.indexOf("Voted: ") === 0) {
+    return "voted " + resp.slice(7);
+  } else if (resp.indexOf("Removed vote: ") === 0) {
+    return "removed vote " + resp.slice(14);
+  }
+  return resp;
+}
+
+function computeFinalMCState(poll, studentEntries, isMulti) {
+  var options = poll.options || [];
+  if (isMulti) {
+    var set = new Set();
+    studentEntries.forEach(function(e) {
+      var resp = e.response || "";
+      if (resp.indexOf("Voted: ") === 0) {
+        var idx = options.indexOf(resp.slice(7));
+        if (idx !== -1) { set.add(idx); }
+      } else if (resp.indexOf("Removed vote: ") === 0) {
+        var idx = options.indexOf(resp.slice(14));
+        if (idx !== -1) { set.delete(idx); }
+      }
+    });
+    return set;
+  }
+  var lastIdx = null;
+  studentEntries.forEach(function(e) {
+    var resp = e.response || "";
+    if (resp.indexOf("Changed vote: ") === 0) {
+      var toSep = resp.indexOf(" to ");
+      var optText = toSep === -1 ? "" : resp.slice(toSep + 4);
+      var idx = options.indexOf(optText);
+      if (idx !== -1) { lastIdx = idx; }
+    } else if (resp.indexOf("Voted: ") === 0) {
+      var idx = options.indexOf(resp.slice(7));
+      if (idx !== -1) { lastIdx = idx; }
+    } else if (resp.indexOf("Removed vote: ") === 0) {
+      lastIdx = null;
+    }
+  });
+  return lastIdx;
+}
+
+function groupHistoryByStudent(history) {
+  var sorted = (history || []).slice().sort(function(a, b) { return (a.timestamp || 0) - (b.timestamp || 0); });
+  var order = [];
+  var map = {};
+  sorted.forEach(function(e) {
+    if (!e.username) { return; }
+    if (!map[e.username]) { map[e.username] = []; order.push(e.username); }
+    map[e.username].push(e);
+  });
+  return order.map(function(name) { return { username: name, entries: map[name] }; });
+}
+
 async function awardLeaderboardPoints(pollId, correctIndices) {
   var pollSnap = await getDoc(doc(db, "boards", currentBoardId, "polls", pollId));
   if (!pollSnap.exists()) { return; }
@@ -931,7 +991,11 @@ async function awardLeaderboardPoints(pollId, correctIndices) {
     if (!entry.username) { continue; }
     var n = entry.username;
     var optText = entry.response || "";
-    if (optText.indexOf("Voted: ") === 0) { optText = optText.slice(7); }
+    if (optText.indexOf("Changed vote: ") === 0) {
+      var toSep = optText.indexOf(" to ");
+      optText = toSep === -1 ? "" : optText.slice(toSep + 4);
+    }
+    else if (optText.indexOf("Voted: ") === 0) { optText = optText.slice(7); }
     else if (optText.indexOf("Removed vote: ") === 0) { optText = optText.slice(14); }
     var idx = options.indexOf(optText);
     if (idx === -1) { continue; }
@@ -1425,7 +1489,11 @@ async function computeMonthlyPollAccuracy(studentId, student) {
       if (!voterEntries.length) { return; }
       var last = voterEntries[voterEntries.length - 1];
       var optText = last.response || "";
-      if (optText.indexOf("Voted: ") === 0) { optText = optText.slice(7); }
+      if (optText.indexOf("Changed vote: ") === 0) {
+        var toSep = optText.indexOf(" to ");
+        optText = toSep === -1 ? "" : optText.slice(toSep + 4);
+      }
+      else if (optText.indexOf("Voted: ") === 0) { optText = optText.slice(7); }
       else if (optText.indexOf("Removed vote: ") === 0) { optText = optText.slice(14); }
       if (poll.correctIndices.indexOf((poll.options || []).indexOf(optText)) !== -1) { correct++; }
     });
@@ -2373,6 +2441,7 @@ function loadPosts() {
       (function(pid, postData) {
         upvoteSpan.onclick = async function(e) {
           e.stopPropagation();
+          var already = postData.upvoters && postData.upvoters.indexOf(username) !== -1;
           createPopcornConfetti(upvoteSpan);
           playPop();
           if (navigator.vibrate) { navigator.vibrate(25); }
@@ -2383,12 +2452,11 @@ function loadPosts() {
             animateUpvoteCount(countEl, oldVal, newVal);
           }
           var postRef = doc(db, "boards", currentBoardId, "posts", pid);
-          var already = postData.upvoters && postData.upvoters.indexOf(username) !== -1;
           if (already) {
-            await updateDoc(postRef, { upvoters: arrayRemove(username), upvotes: increment(-1), upvoteHistory: arrayUnion(username + ": Removed Upvote") });
+            await updateDoc(postRef, { upvoters: arrayRemove(username), upvotes: increment(-1), upvoteHistory: arrayUnion({ username: username, action: "Removed Upvote", timestamp: Date.now() }) });
             if (currentStudentId) { await incrementStudentStat(currentStudentId, "upvotesGiven", -1); }
           } else {
-            await updateDoc(postRef, { upvoters: arrayUnion(username), upvotes: increment(1), upvoteHistory: arrayUnion(username + ": Upvoted") });
+            await updateDoc(postRef, { upvoters: arrayUnion(username), upvotes: increment(1), upvoteHistory: arrayUnion({ username: username, action: "Upvoted", timestamp: Date.now() }) });
             if (currentStudentId) { await incrementStudentStat(currentStudentId, "upvotesGiven", 1); }
             if (postData.author !== username) {
               var aq = query(collection(db, "boards", currentBoardId, "students"), where("username", "==", postData.author));
@@ -2402,9 +2470,16 @@ function loadPosts() {
         var hDiv = document.createElement("div");
         hDiv.className = "comment-upvote-history";
         hDiv.innerHTML = "<strong>Upvote Log:</strong>";
-        post.upvoteHistory.forEach(function(entry) {
+        var legacyEntries = post.upvoteHistory.filter(function(entry) { return typeof entry === "string"; });
+        var objectEntries = post.upvoteHistory.filter(function(entry) { return entry && typeof entry === "object"; });
+        legacyEntries.forEach(function(entry) {
           var d = document.createElement("div");
           d.textContent = entry;
+          hDiv.appendChild(d);
+        });
+        groupHistoryByStudent(objectEntries).forEach(function(group) {
+          var d = document.createElement("div");
+          d.textContent = group.username + ": " + group.entries.map(function(e) { return e.action; }).join(", ");
           hDiv.appendChild(d);
         });
         div.appendChild(hDiv);
@@ -2703,7 +2778,12 @@ async function loadPolls() {
             (poll.history || []).forEach(function(h) {
               if (h.username !== username) { return; }
               var resp = h.response || "";
-              if (resp.indexOf("Voted: ") === 0) {
+              if (resp.indexOf("Changed vote: ") === 0) {
+                var toSep = resp.indexOf(" to ");
+                var optText = toSep === -1 ? "" : resp.slice(toSep + 4);
+                var idx = (poll.options || []).indexOf(optText);
+                if (idx !== -1) { lastVote = idx; }
+              } else if (resp.indexOf("Voted: ") === 0) {
                 var optText = resp.slice(7);
                 var idx = (poll.options || []).indexOf(optText);
                 if (idx !== -1) { lastVote = idx; }
@@ -2897,9 +2977,10 @@ function renderFreePoll(div, poll, pollId, totalStudents) {
     var logDiv = document.createElement("div");
     logDiv.className = "poll-log";
     logDiv.innerHTML = "<strong>Poll Log:</strong>";
-    (poll.history || []).forEach(function(e) {
+    groupHistoryByStudent(poll.history).forEach(function(group) {
       var p = document.createElement("div");
-      p.textContent = e.username + ": " + e.response;
+      var texts = group.entries.map(function(e) { return e.response; });
+      p.textContent = group.username + ": " + texts.join(", ");
       logDiv.appendChild(p);
     });
     div.appendChild(logDiv);
@@ -3137,9 +3218,20 @@ function renderMCPoll(div, poll, pollId, totalStudents) {
     var logDiv = document.createElement("div");
     logDiv.className = "poll-log";
     logDiv.innerHTML = "<strong>Poll Log:</strong>";
-    (poll.history || []).forEach(function(e) {
+    groupHistoryByStudent(poll.history).forEach(function(group) {
       var p = document.createElement("div");
-      p.textContent = e.username + ": " + e.response;
+      var lineText, isCorrect;
+      if (poll.requireAllCorrect) {
+        var finalSet = computeFinalMCState(poll, group.entries, true);
+        var idxList = Array.from(finalSet).sort(function(a, b) { return a - b; });
+        lineText = idxList.map(function(idx) { return options[idx]; }).join(", ");
+        isCorrect = idxList.length === correctIndices.length && idxList.every(function(idx) { return correctIndices.indexOf(idx) !== -1; });
+      } else {
+        lineText = group.entries.map(function(e) { return mcHistoryActionPhrase(e.response); }).join(", ");
+        var finalIdx = computeFinalMCState(poll, group.entries, false);
+        isCorrect = finalIdx !== null && correctIndices.indexOf(finalIdx) !== -1;
+      }
+      p.textContent = (isCorrect ? "✓ " : "") + group.username + ": " + lineText;
       logDiv.appendChild(p);
     });
     div.appendChild(logDiv);
@@ -3279,20 +3371,28 @@ function renderMCPoll(div, poll, pollId, totalStudents) {
                   history: arrayUnion({ username: username, response: "Removed vote: " + optText, timestamp: Date.now() })
                 });
                 if (currentStudentId) { await incrementStudentStat(currentStudentId, "pollsCast", -1); }
-              } else {
+              } else if (prevChoice === undefined || prevChoice === null) {
+                // Fresh pick -- no prior selection to switch from.
                 myPollVotes.set(pollId, optIndex);
                 playPop();
-                var updates = {
+                await updateDoc(pollRef, {
                   ["votes." + optIndex]: increment(1),
+                  voters: arrayUnion(username),
                   history: arrayUnion({ username: username, response: "Voted: " + optText, timestamp: Date.now() })
-                };
-                if (prevChoice === undefined || prevChoice === null) {
-                  updates.voters = arrayUnion(username);
-                  if (currentStudentId) { await incrementStudentStat(currentStudentId, "pollsCast", 1); }
-                } else {
-                  updates["votes." + prevChoice] = increment(-1);
-                }
-                await updateDoc(pollRef, updates);
+                });
+                if (currentStudentId) { await incrementStudentStat(currentStudentId, "pollsCast", 1); }
+              } else {
+                // Switching directly from one option to another, recorded as
+                // its own distinct event (not a separate remove + vote pair)
+                // so the poll log can show it as a single "changed vote" line.
+                var prevOptText = (pollData.options || [])[prevChoice];
+                myPollVotes.set(pollId, optIndex);
+                playPop();
+                await updateDoc(pollRef, {
+                  ["votes." + optIndex]: increment(1),
+                  ["votes." + prevChoice]: increment(-1),
+                  history: arrayUnion({ username: username, response: "Changed vote: " + prevOptText + " to " + optText, timestamp: Date.now() })
+                });
               }
             }
           };
