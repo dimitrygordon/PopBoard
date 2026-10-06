@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" id="themeColorMeta" content="#f5f5f7" />
   <title>PopBoard</title>
   <link rel="icon" type="image/png" sizes="any" href="/popboard-logo.png" />
   <link rel="shortcut icon" type="image/png" href="/popboard-logo.png" />
@@ -19,7 +21,7 @@
   <h2>Join PopBoard</h2>
   <input id="usernameInput" placeholder="Your name" />
   <input id="boardNameInput" placeholder="PopBoard name" />
-  <input id="studentPasswordInput" type="password" placeholder="Password (protects your account)" />
+  <input id="studentPasswordInput" type="password" placeholder="Password (protects your account)" autocapitalize="none" autocorrect="off" spellcheck="false" />
   <div class="login-buttons">
     <button id="joinBtn">Join</button>
   </div>
@@ -35,7 +37,7 @@
   </div>
   <h2>Teacher Login</h2>
   <input id="teacherNameInput" placeholder="Teacher name" />
-  <input id="teacherPasswordInput" type="password" placeholder="Password" />
+  <input id="teacherPasswordInput" type="password" placeholder="Password" autocapitalize="none" autocorrect="off" spellcheck="false" />
   <div class="login-buttons">
     <button id="teacherSignInBtn">Sign In</button>
     <button id="backToMainLoginBtn" class="secondary-btn">Back</button>

@@ -266,6 +266,11 @@ function setTheme(theme) {
   if (themeTogglePortal) { themeTogglePortal.textContent = text; }
   if (themeToggleStudents) { themeToggleStudents.textContent = text; }
   if (themeToggleDashboard) { themeToggleDashboard.textContent = text; }
+  if (themeToggleSeats) { themeToggleSeats.textContent = text; }
+  // Keep the mobile status bar in sync with the theme actually applied (which
+  // can be a manual override), not just the OS's prefers-color-scheme.
+  var themeColorMeta = document.getElementById("themeColorMeta");
+  if (themeColorMeta) { themeColorMeta.setAttribute("content", theme === "dark" ? "#0a0a0a" : "#f5f5f7"); }
 }
 
 function loadTheme() {
@@ -1810,6 +1815,20 @@ function renderSeats() {
   });
 }
 
+// apple-design §9 rubber-banding: the further past the bound, the less the
+// value follows. `value` and bounds are in the same unit (here, percent).
+function rubberBandOvershoot(overshoot, dimension, constant) {
+  if (constant === undefined) { constant = 0.55; }
+  return (overshoot * dimension * constant) / (dimension + constant * Math.abs(overshoot));
+}
+
+function clampWithRubberBand(value, min, max) {
+  var range = max - min;
+  if (value < min) { return min + rubberBandOvershoot(value - min, range); }
+  if (value > max) { return max + rubberBandOvershoot(value - max, range); }
+  return value;
+}
+
 function wireSeatDrag(el, seat) {
   var dragging = false;
   var moved = false;
@@ -1833,10 +1852,12 @@ function wireSeatDrag(el, seat) {
     var dy = e.clientY - startClientY;
     if (Math.abs(dx) > 3 || Math.abs(dy) > 3) { moved = true; }
     var rect = seatCanvas.getBoundingClientRect();
-    var pctX = ((e.clientX - rect.left) / rect.width) * 100;
-    var pctY = ((e.clientY - rect.top) / rect.height) * 100;
-    pctX = Math.max(2, Math.min(98, pctX));
-    pctY = Math.max(2, Math.min(98, pctY));
+    var rawX = ((e.clientX - rect.left) / rect.width) * 100;
+    var rawY = ((e.clientY - rect.top) / rect.height) * 100;
+    // apple-design §9: resist progressively past the boundary instead of a
+    // hard stop -- real things slow down before they stop, they don't freeze
+    var pctX = clampWithRubberBand(rawX, 2, 98);
+    var pctY = clampWithRubberBand(rawY, 2, 98);
     el.style.left = pctX + "%";
     el.style.top = pctY + "%";
     el.dataset.pendingX = pctX;
@@ -1850,6 +1871,12 @@ function wireSeatDrag(el, seat) {
     draggingSeatId = null;
     var finalX = el.dataset.pendingX !== undefined ? parseFloat(el.dataset.pendingX) : seat.x;
     var finalY = el.dataset.pendingY !== undefined ? parseFloat(el.dataset.pendingY) : seat.y;
+    // Snap back inside the sandbox if the rubber-band let it overshoot.
+    finalX = Math.max(2, Math.min(98, finalX));
+    finalY = Math.max(2, Math.min(98, finalY));
+    el.style.transition = "left 200ms cubic-bezier(0.23, 1, 0.32, 1), top 200ms cubic-bezier(0.23, 1, 0.32, 1)";
+    el.style.left = finalX + "%";
+    el.style.top = finalY + "%";
     if (moved) {
       updateDoc(doc(db, "boards", currentBoardId, "seats", seat.id), { x: finalX, y: finalY }).then(function() {
         renderSeats();
@@ -1954,8 +1981,14 @@ function openSeatPopup(seatId) {
     var r = seatEl.getBoundingClientRect();
     var popupWidth = 240;
     var left = Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - popupWidth - 16);
-    popup.style.left = Math.max(16, left) + "px";
+    left = Math.max(16, left);
+    popup.style.left = left + "px";
     popup.style.top = (window.scrollY + r.bottom + 10) + "px";
+    // apple-design §7: scale the popup in from the seat that opened it,
+    // not from its own center -- keeps the spatial link between trigger and content
+    var seatCenterX = window.scrollX + r.left + r.width / 2;
+    var originXPct = Math.max(10, Math.min(90, ((seatCenterX - left) / popupWidth) * 100));
+    popup.style.setProperty("--seat-popup-origin", originXPct + "% 0%");
   }
   setTimeout(function() {
     seatPopupOutsideClickHandler = function(e) {
