@@ -49,6 +49,8 @@ let seatingStudentsCache = {};
 let seatingSeatsCache = [];
 let draggingSeatId = null;
 let openSeatPopupId = null;
+let pollSectionCollapsed = false;
+let currentCarouselPollId = null;
 let seatMapResponsePollId = null;
 let seatMapResponsePollQuestion = "";
 let seatMapResponsePollData = null;
@@ -2908,6 +2910,75 @@ function getVotesArray(poll) {
 // Using 1.6's proven pattern: await student count FIRST, then set up listener.
 // This guarantees currentBoardId is valid and the listener fires correctly for students.
 
+function applyPollSectionCollapse() {
+  var wrapper = document.getElementById("pollCarouselWrapper");
+  var bottomRow = document.getElementById("pollCollapseBottomRow");
+  var topBtn = document.getElementById("pollCollapseToggleTop");
+  var bottomBtn = document.getElementById("pollCollapseToggleBottom");
+  if (wrapper) { wrapper.classList.toggle("hidden", pollSectionCollapsed); }
+  if (bottomRow) { bottomRow.classList.toggle("hidden", pollSectionCollapsed); }
+  var label = pollSectionCollapsed ? "▸ Show Polls" : "▾ Hide Polls";
+  if (topBtn) { topBtn.textContent = label; }
+  if (bottomBtn) { bottomBtn.textContent = label; }
+}
+
+var pollCarouselScrollDebounce = null;
+
+// Keyed by poll ID (not raw index) so a mid-session poll add/remove doesn't
+// silently jump the viewer to a different poll on the next re-render.
+function wirePollCarouselNav(track, prevBtn, nextBtn, pollIds) {
+  if (!pollIds.length) {
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    return;
+  }
+  var startIndex = currentCarouselPollId ? pollIds.indexOf(currentCarouselPollId) : 0;
+  if (startIndex === -1) { startIndex = 0; }
+
+  function updateNavButtons(index) {
+    prevBtn.disabled = index <= 0;
+    nextBtn.disabled = index >= pollIds.length - 1;
+  }
+
+  var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function scrollToIndex(index, smooth) {
+    index = Math.max(0, Math.min(pollIds.length - 1, index));
+    var card = track.children[index];
+    if (!card) { return; }
+    track.scrollTo({ left: card.offsetLeft, behavior: (smooth && !reducedMotion) ? "smooth" : "auto" });
+    currentCarouselPollId = pollIds[index];
+    updateNavButtons(index);
+  }
+
+  requestAnimationFrame(function() { scrollToIndex(startIndex, false); });
+
+  prevBtn.onclick = function() {
+    var idx = pollIds.indexOf(currentCarouselPollId);
+    scrollToIndex((idx === -1 ? 0 : idx) - 1, true);
+  };
+  nextBtn.onclick = function() {
+    var idx = pollIds.indexOf(currentCarouselPollId);
+    scrollToIndex((idx === -1 ? 0 : idx) + 1, true);
+  };
+
+  track.onscroll = function() {
+    if (pollCarouselScrollDebounce) { clearTimeout(pollCarouselScrollDebounce); }
+    pollCarouselScrollDebounce = setTimeout(function() {
+      var nearest = 0;
+      var minDist = Infinity;
+      for (var i = 0; i < track.children.length; i++) {
+        var dist = Math.abs(track.children[i].offsetLeft - track.scrollLeft);
+        if (dist < minDist) { minDist = dist; nearest = i; }
+      }
+      currentCarouselPollId = pollIds[nearest];
+      updateNavButtons(nearest);
+    }, 120);
+  };
+
+  updateNavButtons(startIndex);
+}
+
 async function loadPolls() {
   if (!currentBoardId) { return; }
   if (unsubPolls) { unsubPolls(); unsubPolls = null; }
@@ -2946,6 +3017,58 @@ async function loadPolls() {
         var hasInteraction = (p.history && p.history.length > 0) || (p.voters && p.voters.length > 0);
         return !p.visible && hasInteraction;
       });
+
+      if (isTeacher) {
+        var topRow = document.createElement("div");
+        topRow.className = "poll-collapse-row";
+        var topToggleBtn = document.createElement("button");
+        topToggleBtn.type = "button";
+        topToggleBtn.id = "pollCollapseToggleTop";
+        topToggleBtn.className = "teacher-control";
+        topToggleBtn.textContent = pollSectionCollapsed ? "▸ Show Polls" : "▾ Hide Polls";
+        topToggleBtn.onclick = function() { pollSectionCollapsed = !pollSectionCollapsed; applyPollSectionCollapse(); };
+        topRow.appendChild(topToggleBtn);
+        pollSection.appendChild(topRow);
+      }
+
+      var carouselWrapper = document.createElement("div");
+      carouselWrapper.id = "pollCarouselWrapper";
+      carouselWrapper.className = "poll-carousel-wrapper" + (isTeacher && pollSectionCollapsed ? " hidden" : "");
+
+      var carouselPrevBtn = document.createElement("button");
+      carouselPrevBtn.type = "button";
+      carouselPrevBtn.className = "poll-carousel-nav poll-carousel-prev";
+      carouselPrevBtn.textContent = "‹";
+      carouselPrevBtn.setAttribute("aria-label", "Previous poll");
+
+      var carouselTrack = document.createElement("div");
+      carouselTrack.id = "pollCarouselTrack";
+      carouselTrack.className = "poll-carousel-track";
+
+      var carouselNextBtn = document.createElement("button");
+      carouselNextBtn.type = "button";
+      carouselNextBtn.className = "poll-carousel-nav poll-carousel-next";
+      carouselNextBtn.textContent = "›";
+      carouselNextBtn.setAttribute("aria-label", "Next poll");
+
+      carouselWrapper.appendChild(carouselPrevBtn);
+      carouselWrapper.appendChild(carouselTrack);
+      carouselWrapper.appendChild(carouselNextBtn);
+      pollSection.appendChild(carouselWrapper);
+
+      if (isTeacher) {
+        var bottomRow = document.createElement("div");
+        bottomRow.id = "pollCollapseBottomRow";
+        bottomRow.className = "poll-collapse-row" + (pollSectionCollapsed ? " hidden" : "");
+        var bottomToggleBtn = document.createElement("button");
+        bottomToggleBtn.type = "button";
+        bottomToggleBtn.id = "pollCollapseToggleBottom";
+        bottomToggleBtn.className = "teacher-control";
+        bottomToggleBtn.textContent = pollSectionCollapsed ? "▸ Show Polls" : "▾ Hide Polls";
+        bottomToggleBtn.onclick = function() { pollSectionCollapsed = !pollSectionCollapsed; applyPollSectionCollapse(); };
+        bottomRow.appendChild(bottomToggleBtn);
+        pollSection.appendChild(bottomRow);
+      }
 
       activePollDocs.forEach(function(docSnap) {
         var poll = docSnap.data();
@@ -2996,6 +3119,7 @@ async function loadPolls() {
 
         var div = document.createElement("div");
         div.className = "poll";
+        div.dataset.pollId = pollId;
         var hasInteraction = (poll.history && poll.history.length > 0) || (poll.voters && poll.voters.length > 0);
         if (isTeacher && !pollVisible && !hasInteraction) { div.style.opacity = "0.4"; div.style.filter = "grayscale(30%)"; }
         var questionEl = document.createElement("strong");
@@ -3111,8 +3235,10 @@ async function loadPolls() {
           div.appendChild(controlsDiv);
         }
 
-        pollSection.appendChild(div);
+        carouselTrack.appendChild(div);
       });
+
+      wirePollCarouselNav(carouselTrack, carouselPrevBtn, carouselNextBtn, activePollDocs.map(function(d) { return d.id; }));
 
       if (isTeacher && archivedSection && archivedPollDocs.length > 0) {
         var header = document.createElement("div");

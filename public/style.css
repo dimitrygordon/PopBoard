@@ -320,6 +320,47 @@ button.hide-toggle, .reply button.hide-toggle {
 .poll button.voted-by-me::after { content: " ✓"; font-weight: bold; }
 .poll textarea { margin-top: 12px; min-height: 100px; }
 
+.poll-collapse-row { text-align: center; margin-bottom: 12px; }
+
+.poll-carousel-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#pollCarouselTrack {
+  flex: 1 1 auto;
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+#pollCarouselTrack::-webkit-scrollbar { display: none; }
+#pollCarouselTrack .poll {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  margin-bottom: 0;
+}
+
+.poll-carousel-nav {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0;
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: 1.5px solid var(--button-border);
+}
+.poll-carousel-nav:disabled { opacity: 0.3; cursor: default; }
+
 .poll-stat {
   margin-top: 12px; margin-bottom: 8px; padding: 10px 14px;
   background: var(--input-bg); border-radius: 12px;
