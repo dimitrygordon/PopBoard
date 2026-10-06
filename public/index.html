@@ -182,7 +182,10 @@
   <section id="dailyDashboard" class="hidden">
     <div class="daily-dashboard-card">
       <h3>📊 Daily Dashboard</h3>
-      <div id="dailyEngagementDisplay" class="daily-engagement-big"></div>
+      <div class="daily-engagement-row">
+        <div id="dailyEngagementDisplay" class="daily-engagement-big"></div>
+        <div id="dailySeatMapWidget" class="daily-seat-map-widget"><div id="dailySeatMapCanvas"></div></div>
+      </div>
       <div id="dailyMetricsText" class="daily-metrics-text"></div>
     </div>
   </section>
@@ -191,8 +194,8 @@
   <div id="confusionIndicator" class="hidden">
     <span class="confusion-label">How's it going?</span>
     <div class="confusion-buttons">
-      <button type="button" id="confusionGreenBtn" class="confusion-btn" data-state="green" title="I've got it">🟢</button>
-      <button type="button" id="confusionRedBtn" class="confusion-btn" data-state="red" title="I'm confused">🔴</button>
+      <button type="button" id="confusionGreenBtn" class="confusion-btn" data-state="green" title="I've got it"><span class="confusion-dot confusion-dot-green"></span></button>
+      <button type="button" id="confusionRedBtn" class="confusion-btn" data-state="red" title="I'm confused"><span class="confusion-dot confusion-dot-red"></span></button>
     </div>
   </div>
 

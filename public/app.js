@@ -58,6 +58,32 @@ let seatMapResponsePollData = null;
 let isLeaderboardCompressed = false;
 var LEADERBOARD_TOP_N = 5;
 var LEADERBOARD_COMPACT_N = 3;
+var unsubDashSeats = null;
+var dashSeatStudentsCache = {};
+var dashSeatSeatsCache = [];
+var hoveredSeatId = null;
+var seatPopupOpenedByHover = false;
+
+// ─── MINIMAL ICON SET ───────────────────────────────────────────────────────
+// Hand-drawn 24x24 line icons, stroke="currentColor" so each one inherits its
+// button's own text color (incl. the red delete button's forced white) and
+// adapts to light/dark theme automatically -- no extra CSS vars needed.
+var ICONS = {
+  eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M2 12C4.5 7 8 5 12 5s7.5 2 10 7c-2.5 5-6 7-10 7s-7.5-2-10-7Z"/><circle cx="12" cy="12" r="2.5"/></svg>',
+  eyeOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M3.5 7C5.8 5.3 8.6 4.3 12 4.3c4 0 7.5 2 10 6.7-1 1.9-2.2 3.4-3.6 4.5M9.5 9.6a3 3 0 0 0 4.2 4.2M6.2 17.3C4.3 16 2.9 14.1 2 12c.5-1 1.1-1.9 1.8-2.8"/><line x1="3" y1="3" x2="21" y2="21"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M4 7h16"/><path d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>',
+  refresh: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M3 12a9 9 0 0 1 15.3-6.4L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.3 6.4L3 16"/><path d="M3 21v-5h5"/></svg>',
+  camera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  seat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M6 4v9a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4"/><path d="M6 13v6"/><path d="M18 13v6"/><path d="M9 13v4"/><path d="M15 13v4"/></svg>',
+  tv: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><rect x="3" y="5" width="18" height="13" rx="2"/><path d="M8 21h8"/><path d="M12 18v3"/></svg>',
+  moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></svg>',
+  sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v3M12 18.5v3M3.5 12h3M17.5 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>',
+  mask: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M2 9c2-1.5 5-2.2 10-2.2S20 7.5 22 9c-.3 4-2.3 7-5 7-2 0-2.6-1.7-5-1.7S7 16 5 16c-2.7 0-4.7-3-5-7Z"/><circle cx="7.5" cy="10.3" r="0.9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="10.3" r="0.9" fill="currentColor" stroke="none"/></svg>',
+  book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H12v18H5.5A1.5 1.5 0 0 1 4 19.5Z"/><path d="M20 4.5A1.5 1.5 0 0 0 18.5 3H12v18h6.5a1.5 1.5 0 0 0 1.5-1.5Z"/></svg>'
+};
+
+function iconLabel(name, text) { return ICONS[name] + (text ? " " + text : ""); }
+function eyeLabel(visible, shownText, hiddenText) { return iconLabel(visible ? "eye" : "eyeOff", visible ? shownText : hiddenText); }
 
 const loginDiv = document.getElementById("login");
 const teacherLoginDiv = document.getElementById("teacherLogin");
@@ -114,6 +140,7 @@ const emojiCircle = document.getElementById("emojiCircle");
 const emojiDisplay = document.getElementById("emojiDisplay");
 const emojiInput = document.getElementById("emojiInput");
 const dailyDashboard = document.getElementById("dailyDashboard");
+const dailySeatMapCanvasEl = document.getElementById("dailySeatMapCanvas");
 const themeToggle = document.getElementById("themeToggle");
 const themeTogglePortal = document.getElementById("themeTogglePortal");
 const themeToggleStudents = document.getElementById("themeToggleStudents");
@@ -121,6 +148,17 @@ const themeToggleDashboard = document.getElementById("themeToggleDashboard");
 const htmlElement = document.documentElement;
 const boardNameInput = document.getElementById("boardNameInput");
 const studentPasswordInput = document.getElementById("studentPasswordInput");
+
+// ── One-time icon injection for buttons/labels whose markup is otherwise
+// static (no JS ever sets their text), so every icon has one source of
+// truth (the ICONS object) instead of hand-written SVG duplicated into HTML.
+if (postImageBtn) { postImageBtn.innerHTML = iconLabel("camera", "Add Image"); }
+if (seatsBtn) { seatsBtn.innerHTML = iconLabel("seat", "Seats"); }
+if (studyBtn) { studyBtn.innerHTML = iconLabel("book", "Study"); }
+(function() {
+  var anonLabel = document.querySelector('label[for="anonymousToggle"]');
+  if (anonLabel) { anonLabel.innerHTML = iconLabel("mask", "Anonymous"); }
+})();
 
 // ── Audio Engine ────────────────────────────────────────────────────────────
 var audioCtx = null;
@@ -270,12 +308,12 @@ function animateUpvoteCount(el, from, to) {
 function setTheme(theme) {
   htmlElement.setAttribute("data-theme", theme);
   localStorage.setItem("theme", theme);
-  var text = theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode";
-  if (themeToggle) { themeToggle.textContent = text; }
-  if (themeTogglePortal) { themeTogglePortal.textContent = text; }
-  if (themeToggleStudents) { themeToggleStudents.textContent = text; }
-  if (themeToggleDashboard) { themeToggleDashboard.textContent = text; }
-  if (themeToggleSeats) { themeToggleSeats.textContent = text; }
+  var text = theme === "dark" ? iconLabel("sun", "Light Mode") : iconLabel("moon", "Dark Mode");
+  if (themeToggle) { themeToggle.innerHTML = text; }
+  if (themeTogglePortal) { themeTogglePortal.innerHTML = text; }
+  if (themeToggleStudents) { themeToggleStudents.innerHTML = text; }
+  if (themeToggleDashboard) { themeToggleDashboard.innerHTML = text; }
+  if (themeToggleSeats) { themeToggleSeats.innerHTML = text; }
   // Keep the mobile status bar in sync with the theme actually applied (which
   // can be a manual override), not just the OS's prefers-color-scheme.
   var themeColorMeta = document.getElementById("themeColorMeta");
@@ -315,6 +353,7 @@ function teardownBoardListeners() {
   if (unsubLeaderboard) { unsubLeaderboard(); unsubLeaderboard = null; }
   if (unsubBoardSettings) { unsubBoardSettings(); unsubBoardSettings = null; }
   if (unsubSeats) { unsubSeats(); unsubSeats = null; }
+  if (unsubDashSeats) { unsubDashSeats(); unsubDashSeats = null; }
   if (unsubOwnConfusion) { unsubOwnConfusion(); unsubOwnConfusion = null; }
 }
 
@@ -563,7 +602,7 @@ async function loadBoardsPortal() {
       bd.className = "teacher-boards";
       teacherBoards[teacher].forEach(function(board) { bd.appendChild(createBoardCard(board, true)); });
       var dtBtn = document.createElement("button");
-      dtBtn.textContent = "🗑️ Delete Teacher";
+      dtBtn.innerHTML = iconLabel("trash", "Delete Teacher");
       dtBtn.className = "delete-poll teacher-control";
       dtBtn.style.marginTop = "12px";
       (function(t2, boards2) {
@@ -610,14 +649,14 @@ function createBoardCard(board, isMasterView) {
   })(board.id);
   actions.appendChild(enterBtn);
   var displayBtn = document.createElement("button");
-  displayBtn.textContent = "📺 Display";
+  displayBtn.innerHTML = iconLabel("tv", "Display");
   displayBtn.title = "Open a read-only classroom display view (no voting, no posting)";
   (function(bid) {
     displayBtn.onclick = function(e) { e.stopPropagation(); enterDisplayMode(bid); };
   })(board.id);
   actions.appendChild(displayBtn);
   var resetBtn = document.createElement("button");
-  resetBtn.textContent = "🔄 Reset";
+  resetBtn.innerHTML = iconLabel("refresh", "Reset");
   resetBtn.className = "teacher-control";
   (function(bid, bname) {
     resetBtn.onclick = async function(e) {
@@ -628,7 +667,7 @@ function createBoardCard(board, isMasterView) {
   })(board.id, board.name);
   actions.appendChild(resetBtn);
   var deleteBtn = document.createElement("button");
-  deleteBtn.textContent = "🗑️ Delete";
+  deleteBtn.innerHTML = iconLabel("trash", "Delete");
   deleteBtn.className = "delete-poll teacher-control";
   (function(bid, bname) {
     deleteBtn.onclick = async function(e) {
@@ -720,7 +759,7 @@ async function startBoard() {
   if (!isDisplayMode) { initStickyCommentBar(); }
   loadPosts();
   await loadPolls();
-  if (isTeacher) { updateDailyDashboard(); }
+  if (isTeacher) { updateDailyDashboard(); loadDashboardSeatMap(); }
   if (!isTeacher && !isDisplayMode) { setupEmojiPicker(); initConfusionIndicator(); }
 }
 
@@ -747,7 +786,7 @@ function listenBoardSettings() {
 function applyLeaderboardVisibility() {
   if (isTeacher) {
     leaderboardSection.style.display = "";
-    leaderboardVisibilityBtn.textContent = leaderboardVisible ? "👁️ Leaderboard Shown" : "👁️‍🗨️ Leaderboard Hidden";
+    leaderboardVisibilityBtn.innerHTML = eyeLabel(leaderboardVisible, "Leaderboard Shown", "Leaderboard Hidden");
     return;
   }
   var nicknameContainer = document.getElementById("nicknameInputContainer");
@@ -1235,10 +1274,10 @@ async function loadStudentsPortal() {
   }
   var toggleBtn = document.getElementById("dailyDataToggleBtn");
   if (toggleBtn) {
-    toggleBtn.textContent = dailyDataVisible ? "👁️ Daily Data Shown" : "👁️‍🗨️ Daily Data Hidden";
+    toggleBtn.innerHTML = eyeLabel(dailyDataVisible, "Daily Data Shown", "Daily Data Hidden");
     toggleBtn.onclick = async function() {
       dailyDataVisible = !dailyDataVisible;
-      toggleBtn.textContent = dailyDataVisible ? "👁️ Daily Data Shown" : "👁️‍🗨️ Daily Data Hidden";
+      toggleBtn.innerHTML = eyeLabel(dailyDataVisible, "Daily Data Shown", "Daily Data Hidden");
       await loadStudentsPortal();
     };
   }
@@ -1271,7 +1310,7 @@ async function loadStudentsPortal() {
     enterBtn.textContent = "Enter";
     (function(sid) { enterBtn.onclick = function(e) { e.stopPropagation(); viewStudentDashboard(sid); }; })(studentId);
     var deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "🗑️ Delete";
+    deleteBtn.innerHTML = iconLabel("trash", "Delete");
     deleteBtn.className = "delete-poll teacher-control";
     (function(sid, sname) {
       deleteBtn.onclick = async function(e) {
@@ -1957,7 +1996,12 @@ function renderSeatMapModeBar() {
   bar.id = "seatModeBar";
   bar.className = "seat-mode-bar";
   var label = document.createElement("span");
-  label.textContent = "🪑 Viewing responses: " + (seatMapResponsePollQuestion || "this poll");
+  var labelIcon = document.createElement("span");
+  labelIcon.innerHTML = ICONS.seat; // trusted, static, hardcoded -- safe as innerHTML
+  label.appendChild(labelIcon);
+  // The poll question is teacher-authored text -- append as a text node, not
+  // via innerHTML, so it stays exactly as inert as it was before this change.
+  label.appendChild(document.createTextNode(" Viewing responses: " + (seatMapResponsePollQuestion || "this poll")));
   bar.appendChild(label);
   var backBtn = document.createElement("button");
   backBtn.type = "button";
@@ -1983,8 +2027,9 @@ function renderSeats() {
   seatCanvas.innerHTML = "";
   seatingSeatsCache.forEach(function(seat) {
     var student = seat.studentId ? seatingStudentsCache[seat.studentId] : null;
+    var editable = !seatMapResponsePollId;
     var el = document.createElement("div");
-    el.className = "seat" + (student ? "" : " seat-unassigned");
+    el.className = "seat" + (student ? "" : " seat-unassigned") + (editable ? "" : " seat-view-only");
     el.style.left = (seat.x != null ? seat.x : 50) + "%";
     el.style.top = (seat.y != null ? seat.y : 50) + "%";
     el.dataset.seatId = seat.id;
@@ -2026,7 +2071,7 @@ function renderSeats() {
     })(seat.id);
     el.appendChild(delBtn);
 
-    wireSeatDrag(el, seat);
+    wireSeatDrag(el, seat, editable);
     seatCanvas.appendChild(el);
   });
 }
@@ -2045,7 +2090,7 @@ function clampWithRubberBand(value, min, max) {
   return value;
 }
 
-function wireSeatDrag(el, seat) {
+function wireSeatDrag(el, seat, editable) {
   var dragging = false;
   var moved = false;
   var startClientX = 0, startClientY = 0;
@@ -2063,7 +2108,11 @@ function wireSeatDrag(el, seat) {
   });
 
   el.addEventListener("pointermove", function(e) {
-    if (!dragging) { return; }
+    // Non-editable contexts (reviewing a poll's responses, or any view-only
+    // rendering) never persist a drag -- skip the whole repositioning step so
+    // `moved` can never flip true, and endDrag's existing click-vs-drag
+    // branch below treats every interaction here as a click.
+    if (!dragging || !editable) { return; }
     var dx = e.clientX - startClientX;
     var dy = e.clientY - startClientY;
     if (Math.abs(dx) > 3 || Math.abs(dy) > 3) { moved = true; }
@@ -2098,6 +2147,7 @@ function wireSeatDrag(el, seat) {
         renderSeats();
       });
     } else {
+      seatPopupOpenedByHover = false;
       openSeatPopup(seat.id);
     }
   }
@@ -2110,9 +2160,9 @@ function refreshOpenSeatPopup() {
   if (openSeatPopupId) { openSeatPopup(openSeatPopupId); }
 }
 
-function positionSeatPopup(popup, seatId) {
+function positionSeatPopup(popup, seatId, canvasEl) {
   document.body.appendChild(popup);
-  var seatEl = seatCanvas.querySelector('[data-seat-id="' + seatId + '"]');
+  var seatEl = canvasEl.querySelector('[data-seat-id="' + seatId + '"]');
   if (seatEl) {
     var r = seatEl.getBoundingClientRect();
     var popupWidth = 240;
@@ -2128,10 +2178,45 @@ function positionSeatPopup(popup, seatId) {
   }
   setTimeout(function() {
     seatPopupOutsideClickHandler = function(e) {
-      if (!popup.contains(e.target) && !seatCanvas.contains(e.target)) { closeSeatPopup(); }
+      if (!popup.contains(e.target) && !canvasEl.contains(e.target)) { closeSeatPopup(); }
     };
     document.addEventListener("click", seatPopupOutsideClickHandler);
   }, 0);
+  // If this popup was opened by hovering, moving the mouse from the seat
+  // onto the popup itself (to use its dropdown/delete button, or a draw
+  // response's lightbox image) must not immediately close it.
+  popup.addEventListener("mouseleave", function(e) {
+    if (!seatPopupOpenedByHover || openSeatPopupId !== seatId) { return; }
+    var seatEl2 = canvasEl.querySelector('[data-seat-id="' + seatId + '"]');
+    if (seatEl2 && e.relatedTarget && seatEl2.contains(e.relatedTarget)) { return; }
+    closeSeatPopup();
+    hoveredSeatId = null;
+  });
+}
+
+// Delegates hover on a stable canvas element (never destroyed, only its
+// children are, on every Firestore snapshot) rather than wiring
+// mouseenter/mouseleave per seat -- per-seat listeners would get silently
+// orphaned the moment renderSeats() rebuilds the seat nodes under a
+// stationary pointer.
+function wireSeatHoverDelegation(canvasEl, openPopupFn) {
+  if (!canvasEl || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) { return; }
+  canvasEl.addEventListener("mouseover", function(e) {
+    var seatEl = e.target.closest(".seat");
+    if (!seatEl || seatEl.dataset.seatId === hoveredSeatId) { return; }
+    hoveredSeatId = seatEl.dataset.seatId;
+    seatPopupOpenedByHover = true;
+    openPopupFn(hoveredSeatId);
+  });
+  canvasEl.addEventListener("mouseout", function(e) {
+    var seatEl = e.target.closest(".seat");
+    if (!seatEl) { return; }
+    var goingTo = e.relatedTarget;
+    var popupEl = document.querySelector(".seat-popup");
+    if (goingTo && (seatEl.contains(goingTo) || (popupEl && popupEl.contains(goingTo)))) { return; }
+    if (hoveredSeatId === seatEl.dataset.seatId) { hoveredSeatId = null; }
+    if (seatPopupOpenedByHover && openSeatPopupId === seatEl.dataset.seatId) { closeSeatPopup(); }
+  });
 }
 
 function getStudentMCResponseText(poll, studentUsername) {
@@ -2225,7 +2310,7 @@ function renderSeatResponsePopup(seatId, student) {
     }
   }
 
-  positionSeatPopup(popup, seatId);
+  positionSeatPopup(popup, seatId, seatCanvas);
 }
 
 function openSeatPopup(seatId) {
@@ -2307,7 +2392,7 @@ function openSeatPopup(seatId) {
   var delSeatBtn = document.createElement("button");
   delSeatBtn.type = "button";
   delSeatBtn.className = "teacher-control";
-  delSeatBtn.textContent = "🗑️ Delete Seat";
+  delSeatBtn.innerHTML = iconLabel("trash", "Delete Seat");
   delSeatBtn.onclick = async function() {
     if (!confirm("Delete this seat?")) { return; }
     await deleteDoc(doc(db, "boards", currentBoardId, "seats", seatId));
@@ -2315,7 +2400,130 @@ function openSeatPopup(seatId) {
   };
   popup.appendChild(delSeatBtn);
 
-  positionSeatPopup(popup, seatId);
+  positionSeatPopup(popup, seatId, seatCanvas);
+}
+
+wireSeatHoverDelegation(seatCanvas, openSeatPopup);
+
+// ─── DAILY DASHBOARD: read-only mini seating widget ─────────────────────────
+// Always confusion-mode (never poll-filtered) and never editable -- a
+// deliberately separate, simpler set of functions rather than generalizing
+// renderSeats()/openSeatPopup(), matching this codebase's existing pattern of
+// sibling near-duplicate render functions (renderFreePoll/renderMCPoll/
+// renderDrawPoll) over one more complex, more widely-shared one.
+
+function loadDashboardSeatMap() {
+  if (unsubDashSeats) { unsubDashSeats(); unsubDashSeats = null; }
+  if (!currentBoardId || !dailySeatMapCanvasEl) { return; }
+  var unsubStudentsLocal = onSnapshot(collection(db, "boards", currentBoardId, "students"), function(snap) {
+    var map = {};
+    snap.forEach(function(d) { map[d.id] = Object.assign({ id: d.id }, d.data()); });
+    dashSeatStudentsCache = map;
+    renderDashboardSeatMap();
+  });
+  var unsubSeatsLocal = onSnapshot(collection(db, "boards", currentBoardId, "seats"), function(snap) {
+    var list = [];
+    snap.forEach(function(d) { list.push(Object.assign({ id: d.id }, d.data())); });
+    dashSeatSeatsCache = list;
+    renderDashboardSeatMap();
+  });
+  unsubDashSeats = function() { unsubStudentsLocal(); unsubSeatsLocal(); };
+}
+
+function renderDashboardSeatMap() {
+  if (!dailySeatMapCanvasEl) { return; }
+  dailySeatMapCanvasEl.innerHTML = "";
+  if (dashSeatSeatsCache.length === 0) {
+    var empty = document.createElement("div");
+    empty.className = "confusion-timeline-empty";
+    empty.style.textAlign = "center";
+    empty.style.padding = "40px 8px";
+    empty.textContent = "No seats configured yet — set them up from Seats";
+    dailySeatMapCanvasEl.appendChild(empty);
+    return;
+  }
+  dashSeatSeatsCache.forEach(function(seat) {
+    var student = seat.studentId ? dashSeatStudentsCache[seat.studentId] : null;
+    var el = document.createElement("div");
+    el.className = "seat seat-mini seat-view-only" + (student ? "" : " seat-unassigned");
+    el.style.left = (seat.x != null ? seat.x : 50) + "%";
+    el.style.top = (seat.y != null ? seat.y : 50) + "%";
+    el.dataset.seatId = seat.id;
+    if (student) {
+      var iconLine = document.createElement("span");
+      iconLine.className = "seat-icon-line";
+      iconLine.textContent = student.emoji ? student.emoji : (student.username ? student.username.charAt(0).toUpperCase() : "?");
+      el.appendChild(iconLine);
+      el.title = student.username || "";
+      applyConfusionVisual(el, student.confusionState, student.confusionSetAt);
+    } else {
+      el.textContent = "+";
+      el.title = "Unassigned seat";
+    }
+    dailySeatMapCanvasEl.appendChild(el);
+  });
+}
+
+function renderConfusionDetailPopup(seatId, student) {
+  closeSeatPopup();
+  openSeatPopupId = seatId;
+  var popup = document.createElement("div");
+  popup.className = "seat-popup";
+
+  var closeBtn = document.createElement("button");
+  closeBtn.type = "button";
+  closeBtn.className = "seat-popup-close";
+  closeBtn.textContent = "✕";
+  closeBtn.onclick = function() { closeSeatPopup(); };
+  popup.appendChild(closeBtn);
+
+  var title = document.createElement("h4");
+  title.textContent = student ? (student.nickname || student.username) : "Unassigned seat";
+  popup.appendChild(title);
+
+  if (student) {
+    var meta = document.createElement("div");
+    meta.className = "seat-popup-meta";
+    meta.textContent = "@" + student.username;
+    popup.appendChild(meta);
+
+    var hist = (student.confusionHistory || []).slice(-24);
+    if (hist.length) {
+      var timeline = document.createElement("div");
+      timeline.className = "confusion-timeline";
+      hist.forEach(function(h) {
+        var tick = document.createElement("div");
+        tick.className = "tick " + (h.state === "red" ? "red" : "green");
+        tick.title = new Date(h.setAt).toLocaleString();
+        timeline.appendChild(tick);
+      });
+      popup.appendChild(timeline);
+    } else {
+      var empty = document.createElement("div");
+      empty.className = "confusion-timeline-empty";
+      empty.textContent = "No confusion reports yet this class.";
+      popup.appendChild(empty);
+    }
+  }
+
+  positionSeatPopup(popup, seatId, dailySeatMapCanvasEl);
+}
+
+function openDashboardSeatPopup(seatId) {
+  var seat = dashSeatSeatsCache.filter(function(s) { return s.id === seatId; })[0];
+  if (!seat) { return; }
+  var student = seat.studentId ? dashSeatStudentsCache[seat.studentId] : null;
+  renderConfusionDetailPopup(seatId, student);
+}
+
+if (dailySeatMapCanvasEl) {
+  dailySeatMapCanvasEl.addEventListener("click", function(e) {
+    var seatEl = e.target.closest(".seat");
+    if (!seatEl) { return; }
+    seatPopupOpenedByHover = false;
+    openDashboardSeatPopup(seatEl.dataset.seatId);
+  });
+  wireSeatHoverDelegation(dailySeatMapCanvasEl, openDashboardSeatPopup);
 }
 
 postImageBtn.onclick = function() { postImageInput.click(); };
@@ -2558,14 +2766,14 @@ function loadReplies(postId, container, parentVisible) {
       }
       if (isTeacher) {
         var hBtn = document.createElement("button");
-        hBtn.textContent = r.visible ? "👁️ Shown" : "👁️‍🗨️ Hidden";
+        hBtn.innerHTML = eyeLabel(r.visible, "Shown", "Hidden");
         hBtn.className = "hide-toggle teacher-control";
         (function(docId, vis) {
           hBtn.onclick = async function() { await updateDoc(doc(db, "boards", currentBoardId, "replies", docId), { visible: !vis }); };
         })(d.id, r.visible);
         div.appendChild(hBtn);
         var delBtn = document.createElement("button");
-        delBtn.textContent = "🗑️ Delete";
+        delBtn.innerHTML = iconLabel("trash", "Delete");
         delBtn.className = "delete-btn teacher-control";
         (function(docId) {
           delBtn.onclick = async function() { await deleteDoc(doc(db, "boards", currentBoardId, "replies", docId)); };
@@ -2614,7 +2822,7 @@ function loadPosts() {
             aDiv.appendChild(aImg);
           }
           var aHBtn = document.createElement("button");
-          aHBtn.textContent = "👁️‍🗨️ Hidden";
+          aHBtn.innerHTML = eyeLabel(false, "Shown", "Hidden");
           aHBtn.className = "hide-toggle teacher-control";
           (function(pid) {
             aHBtn.onclick = async function(e) {
@@ -2628,7 +2836,7 @@ function loadPosts() {
           })(postId);
           aDiv.appendChild(aHBtn);
           var aDelBtn = document.createElement("button");
-          aDelBtn.textContent = "🗑️ Delete";
+          aDelBtn.innerHTML = iconLabel("trash", "Delete");
           aDelBtn.className = "delete teacher-control";
           (function(pid) {
             aDelBtn.onclick = async function(e) {
@@ -2663,7 +2871,7 @@ function loadPosts() {
       }
       if (isTeacher) {
         var hBtn = document.createElement("button");
-        hBtn.textContent = post.visible ? "👁️ Shown" : "👁️‍🗨️ Hidden";
+        hBtn.innerHTML = eyeLabel(post.visible, "Shown", "Hidden");
         hBtn.className = "hide-toggle teacher-control";
         (function(pid, vis) {
           hBtn.onclick = async function(e) {
@@ -2678,7 +2886,7 @@ function loadPosts() {
         })(postId, post.visible);
         div.appendChild(hBtn);
         var delBtn = document.createElement("button");
-        delBtn.textContent = "🗑️ Delete";
+        delBtn.innerHTML = iconLabel("trash", "Delete");
         delBtn.className = "delete teacher-control";
         (function(pid) {
           delBtn.onclick = async function(e) {
@@ -2755,13 +2963,13 @@ function loadPosts() {
           anonCheck.id = "rA-" + pid;
           var label = document.createElement("label");
           label.htmlFor = "rA-" + pid;
-          label.textContent = "🥷🏼 Anonymous";
+          label.innerHTML = iconLabel("mask", "Anonymous");
           var riInput = document.createElement("input");
           riInput.type = "file";
           riInput.accept = "image/*";
           riInput.style.display = "none";
           var riBtn = document.createElement("button");
-          riBtn.textContent = "📷 Add Image";
+          riBtn.innerHTML = iconLabel("camera", "Add Image");
           riBtn.className = "secondary-btn teacher-control";
           riBtn.onclick = function() { riInput.click(); };
           var riPreview = document.createElement("div");
@@ -2805,7 +3013,7 @@ teacherBtn.addEventListener("click", function() {
     pollCreation.innerHTML = "";
     return;
   }
-  pollCreation.innerHTML = "<h3>Create Poll</h3><div class='poll-type-buttons' id='pollTypeBtns'><button type='button' id='mcBtn' class='teacher-control'>Multiple Choice</button><button type='button' id='freeBtn' class='teacher-control'>Free Response</button><button type='button' id='drawBtn' class='teacher-control'>✏️ Drawing</button></div><input type='text' id='pollQuestionInput' placeholder='Poll question' style='display:none;' /><div id='mcOptionsContainer' style='display:none;'><div class='mc-options-list' id='mcOptionsList'></div><button type='button' class='add-option-btn teacher-control' id='addOptionBtn'>+</button><div class='require-all-row' style='margin-top:10px;'><input type='checkbox' id='requireAllCorrect' /><label for='requireAllCorrect'>Require All Correct</label></div></div><input type='file' id='pollImageInput' accept='image/*' style='display:none;' /><button type='button' id='pollImageBtn' class='secondary-btn teacher-control' style='display:none;'>📷 Add Image</button><div id='pollImagePreviewInner' class='image-preview'></div><button type='button' id='createPollBtn' class='teacher-control' style='display:none;'>Create Poll</button><button type='button' id='cancelPollBtn' class='teacher-control' style='display:none;margin-left:8px;'>Cancel</button>";
+  pollCreation.innerHTML = "<h3>Create Poll</h3><div class='poll-type-buttons' id='pollTypeBtns'><button type='button' id='mcBtn' class='teacher-control'>Multiple Choice</button><button type='button' id='freeBtn' class='teacher-control'>Free Response</button><button type='button' id='drawBtn' class='teacher-control'>✏️ Drawing</button></div><input type='text' id='pollQuestionInput' placeholder='Poll question' style='display:none;' /><div id='mcOptionsContainer' style='display:none;'><div class='mc-options-list' id='mcOptionsList'></div><button type='button' class='add-option-btn teacher-control' id='addOptionBtn'>+</button><div class='require-all-row' style='margin-top:10px;'><input type='checkbox' id='requireAllCorrect' /><label for='requireAllCorrect'>Require All Correct</label></div></div><input type='file' id='pollImageInput' accept='image/*' style='display:none;' /><button type='button' id='pollImageBtn' class='secondary-btn teacher-control' style='display:none;'>" + iconLabel("camera", "Add Image") + "</button><div id='pollImagePreviewInner' class='image-preview'></div><button type='button' id='createPollBtn' class='teacher-control' style='display:none;'>Create Poll</button><button type='button' id='cancelPollBtn' class='teacher-control' style='display:none;margin-left:8px;'>Cancel</button>";
   pollCreation.classList.remove("hidden");
 
   var currentPollType = "";
@@ -3198,7 +3406,7 @@ async function loadPolls() {
 
           var toggleBtn = document.createElement("button");
           toggleBtn.type = "button";
-          toggleBtn.textContent = pollVisible ? "👁️ Shown" : "👁️‍🗨️ Hidden";
+          toggleBtn.innerHTML = eyeLabel(pollVisible, "Shown", "Hidden");
           toggleBtn.className = "hide-toggle teacher-control";
           (function(pid, vis) {
             toggleBtn.onclick = async function(e) {
@@ -3210,7 +3418,7 @@ async function loadPolls() {
 
           var rToggle = document.createElement("button");
           rToggle.type = "button";
-          rToggle.textContent = poll.responsesVisible ? "👁️ Responses Shown" : "👁️‍🗨️ Responses Hidden";
+          rToggle.innerHTML = eyeLabel(poll.responsesVisible, "Responses Shown", "Responses Hidden");
           rToggle.className = "hide-toggle teacher-control";
           (function(pid, rv) {
             rToggle.onclick = async function(e) {
@@ -3223,7 +3431,7 @@ async function loadPolls() {
           if (poll.type === "mc" && poll.responsesVisible) {
             var cToggle = document.createElement("button");
             cToggle.type = "button";
-            cToggle.textContent = poll.correctVisible ? "👁️ Correct Shown" : "👁️‍🗨️ Correct Hidden";
+            cToggle.innerHTML = eyeLabel(poll.correctVisible, "Correct Shown", "Correct Hidden");
             cToggle.className = "hide-toggle teacher-control";
             (function(pid, cv, ci, pa) {
               cToggle.onclick = async function(e) {
@@ -3241,7 +3449,7 @@ async function loadPolls() {
 
           var seatMapBtn = document.createElement("button");
           seatMapBtn.type = "button";
-          seatMapBtn.textContent = "🪑 View on Seating Map";
+          seatMapBtn.innerHTML = iconLabel("seat", "View on Seating Map");
           seatMapBtn.className = "teacher-control";
           (function(pid, pQuestion) {
             seatMapBtn.onclick = function(e) {
@@ -3253,7 +3461,7 @@ async function loadPolls() {
 
           var resetBtn = document.createElement("button");
           resetBtn.type = "button";
-          resetBtn.textContent = "🔄 Reset";
+          resetBtn.innerHTML = iconLabel("refresh", "Reset");
           resetBtn.className = "teacher-control";
           (function(pid, pdata) {
             resetBtn.onclick = async function(e) {
@@ -3276,7 +3484,7 @@ async function loadPolls() {
 
           var delBtn = document.createElement("button");
           delBtn.type = "button";
-          delBtn.textContent = "🗑️ Delete";
+          delBtn.innerHTML = iconLabel("trash", "Delete");
           delBtn.className = "delete-poll teacher-control";
           (function(pid) {
             delBtn.onclick = async function(e) {
@@ -3322,7 +3530,7 @@ async function loadPolls() {
           controlsDiv.style.cssText = "margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;";
           var toggleBtn = document.createElement("button");
           toggleBtn.type = "button";
-          toggleBtn.textContent = "👁️‍🗨️ Hidden";
+          toggleBtn.innerHTML = eyeLabel(false, "Shown", "Hidden");
           toggleBtn.className = "hide-toggle teacher-control";
           (function(pid) {
             toggleBtn.onclick = async function(e) {
@@ -3333,7 +3541,7 @@ async function loadPolls() {
           controlsDiv.appendChild(toggleBtn);
           var delBtn = document.createElement("button");
           delBtn.type = "button";
-          delBtn.textContent = "🗑️ Delete";
+          delBtn.innerHTML = iconLabel("trash", "Delete");
           delBtn.className = "delete-poll teacher-control";
           (function(pid) {
             delBtn.onclick = async function(e) {
@@ -3469,7 +3677,7 @@ function renderFreePoll(div, poll, pollId, totalStudents) {
     var kToggle = document.createElement("button");
     kToggle.type = "button";
     kToggle.className = "hide-toggle teacher-control";
-    kToggle.textContent = poll.keywordsVisible ? "👁️ Keywords Shown" : "👁️‍🗨️ Keywords Hidden";
+    kToggle.innerHTML = eyeLabel(poll.keywordsVisible, "Keywords Shown", "Keywords Hidden");
     (function(pid, kv) {
       kToggle.onclick = async function(e) {
         e.stopPropagation();
