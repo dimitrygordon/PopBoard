@@ -49,6 +49,9 @@ let seatingStudentsCache = {};
 let seatingSeatsCache = [];
 let draggingSeatId = null;
 let openSeatPopupId = null;
+let seatMapResponsePollId = null;
+let seatMapResponsePollQuestion = "";
+let seatMapResponsePollData = null;
 
 const loginDiv = document.getElementById("login");
 const teacherLoginDiv = document.getElementById("teacherLogin");
@@ -475,13 +478,28 @@ backToBoardFromStudents.onclick = function() {
 };
 
 seatsBtn.onclick = function() {
+  seatMapResponsePollId = null;
+  seatMapResponsePollQuestion = "";
+  seatMapResponsePollData = null;
   appDiv.classList.add("hidden");
   seatingMapDiv.classList.remove("hidden");
   loadSeatingMap();
 };
 
+function enterSeatMapResponseView(pollId, pollQuestion) {
+  seatMapResponsePollId = pollId;
+  seatMapResponsePollQuestion = pollQuestion || "";
+  seatMapResponsePollData = null;
+  appDiv.classList.add("hidden");
+  seatingMapDiv.classList.remove("hidden");
+  loadSeatingMap();
+}
+
 backToBoardFromSeats.onclick = function() {
   if (unsubSeats) { unsubSeats(); unsubSeats = null; }
+  seatMapResponsePollId = null;
+  seatMapResponsePollQuestion = "";
+  seatMapResponsePollData = null;
   closeSeatPopup();
   seatingMapDiv.classList.add("hidden");
   appDiv.classList.remove("hidden");
@@ -1758,6 +1776,7 @@ function loadSeatingMap() {
   closeSeatPopup();
   seatingStudentsCache = {};
   seatingSeatsCache = [];
+  renderSeatMapModeBar();
 
   var unsubStudentsLocal = onSnapshot(collection(db, "boards", currentBoardId, "students"), function(snap) {
     var map = {};
@@ -1773,7 +1792,51 @@ function loadSeatingMap() {
     if (!draggingSeatId) { renderSeats(); }
     refreshOpenSeatPopup();
   });
-  unsubSeats = function() { unsubStudentsLocal(); unsubSeatsLocal(); };
+  var unsubResponsePollLocal = null;
+  if (seatMapResponsePollId) {
+    unsubResponsePollLocal = onSnapshot(doc(db, "boards", currentBoardId, "polls", seatMapResponsePollId), function(ds) {
+      seatMapResponsePollData = ds.exists() ? ds.data() : null;
+      renderSeats();
+      refreshOpenSeatPopup();
+    });
+  }
+  unsubSeats = function() {
+    unsubStudentsLocal();
+    unsubSeatsLocal();
+    if (unsubResponsePollLocal) { unsubResponsePollLocal(); }
+  };
+}
+
+// Mode banner shown above the seat grid while reviewing a specific poll's
+// responses, so the teacher can tell this isn't the live confusion view.
+function renderSeatMapModeBar() {
+  var existing = document.getElementById("seatModeBar");
+  if (existing) { existing.remove(); }
+  if (!seatMapResponsePollId) { return; }
+  var bar = document.createElement("div");
+  bar.id = "seatModeBar";
+  bar.className = "seat-mode-bar";
+  var label = document.createElement("span");
+  label.textContent = "🪑 Viewing responses: " + (seatMapResponsePollQuestion || "this poll");
+  bar.appendChild(label);
+  var backBtn = document.createElement("button");
+  backBtn.type = "button";
+  backBtn.className = "teacher-control";
+  backBtn.textContent = "← Back to confusion view";
+  backBtn.onclick = function() {
+    seatMapResponsePollId = null;
+    seatMapResponsePollQuestion = "";
+    seatMapResponsePollData = null;
+    loadSeatingMap();
+  };
+  bar.appendChild(backBtn);
+  seatCanvas.parentNode.insertBefore(bar, seatCanvas);
+}
+
+function studentRespondedToPoll(poll, studentUsername) {
+  if (!poll) { return false; }
+  if (poll.type === "mc") { return (poll.voters || []).indexOf(studentUsername) !== -1; }
+  return (poll.history || []).some(function(h) { return h.username === studentUsername; });
 }
 
 function renderSeats() {
@@ -1787,9 +1850,22 @@ function renderSeats() {
     el.dataset.seatId = seat.id;
 
     if (student) {
-      el.textContent = student.emoji ? student.emoji : (student.username ? student.username.charAt(0).toUpperCase() : "?");
+      var iconLine = document.createElement("span");
+      iconLine.className = "seat-icon-line";
+      iconLine.textContent = student.emoji ? student.emoji : (student.username ? student.username.charAt(0).toUpperCase() : "?");
+      el.appendChild(iconLine);
+      var nameLine = document.createElement("span");
+      nameLine.className = "seat-name-line";
+      nameLine.textContent = (student.username || "").split(" ")[0];
+      el.appendChild(nameLine);
       el.title = student.username || "";
-      applyConfusionVisual(el, student.confusionState, student.confusionSetAt);
+      if (seatMapResponsePollId) {
+        var responded = studentRespondedToPoll(seatMapResponsePollData, student.username);
+        el.style.transition = "";
+        el.style.backgroundColor = responded ? CONFUSION_COLORS.green : CONFUSION_COLORS.red;
+      } else {
+        applyConfusionVisual(el, student.confusionState, student.confusionSetAt);
+      }
     } else {
       el.textContent = "+";
       el.title = "Unassigned seat";
@@ -1894,12 +1970,136 @@ function refreshOpenSeatPopup() {
   if (openSeatPopupId) { openSeatPopup(openSeatPopupId); }
 }
 
+function positionSeatPopup(popup, seatId) {
+  document.body.appendChild(popup);
+  var seatEl = seatCanvas.querySelector('[data-seat-id="' + seatId + '"]');
+  if (seatEl) {
+    var r = seatEl.getBoundingClientRect();
+    var popupWidth = 240;
+    var left = Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - popupWidth - 16);
+    left = Math.max(16, left);
+    popup.style.left = left + "px";
+    popup.style.top = (window.scrollY + r.bottom + 10) + "px";
+    // apple-design §7: scale the popup in from the seat that opened it,
+    // not from its own center -- keeps the spatial link between trigger and content
+    var seatCenterX = window.scrollX + r.left + r.width / 2;
+    var originXPct = Math.max(10, Math.min(90, ((seatCenterX - left) / popupWidth) * 100));
+    popup.style.setProperty("--seat-popup-origin", originXPct + "% 0%");
+  }
+  setTimeout(function() {
+    seatPopupOutsideClickHandler = function(e) {
+      if (!popup.contains(e.target) && !seatCanvas.contains(e.target)) { closeSeatPopup(); }
+    };
+    document.addEventListener("click", seatPopupOutsideClickHandler);
+  }, 0);
+}
+
+function getStudentMCResponseText(poll, studentUsername) {
+  var options = poll.options || [];
+  if (poll.requireAllCorrect) {
+    var set = new Set();
+    (poll.history || []).forEach(function(h) {
+      if (h.username !== studentUsername) { return; }
+      var resp = h.response || "";
+      if (resp.indexOf("Voted: ") === 0) {
+        var idx = options.indexOf(resp.slice(7));
+        if (idx !== -1) { set.add(idx); }
+      } else if (resp.indexOf("Removed vote: ") === 0) {
+        var idx = options.indexOf(resp.slice(14));
+        if (idx !== -1) { set.delete(idx); }
+      }
+    });
+    var picked = Array.from(set).sort(function(a, b) { return a - b; }).map(function(idx) { return options[idx]; });
+    return picked.length ? picked.join(", ") : "(no current selection)";
+  }
+  var lastIdx = null;
+  (poll.history || []).forEach(function(h) {
+    if (h.username !== studentUsername) { return; }
+    var resp = h.response || "";
+    if (resp.indexOf("Changed vote: ") === 0) {
+      var toSep = resp.indexOf(" to ");
+      var optText = toSep === -1 ? "" : resp.slice(toSep + 4);
+      var idx = options.indexOf(optText);
+      if (idx !== -1) { lastIdx = idx; }
+    } else if (resp.indexOf("Voted: ") === 0) {
+      var idx = options.indexOf(resp.slice(7));
+      if (idx !== -1) { lastIdx = idx; }
+    } else if (resp.indexOf("Removed vote: ") === 0) {
+      lastIdx = null;
+    }
+  });
+  return lastIdx !== null ? options[lastIdx] : "(no current selection)";
+}
+
+function renderSeatResponsePopup(seatId, student) {
+  var popup = document.createElement("div");
+  popup.className = "seat-popup";
+
+  var closeBtn = document.createElement("button");
+  closeBtn.type = "button";
+  closeBtn.className = "seat-popup-close";
+  closeBtn.textContent = "✕";
+  closeBtn.onclick = function() { closeSeatPopup(); };
+  popup.appendChild(closeBtn);
+
+  var title = document.createElement("h4");
+  title.textContent = student ? (student.nickname || student.username) : "Unassigned seat";
+  popup.appendChild(title);
+
+  if (!student) {
+    var empty = document.createElement("div");
+    empty.className = "confusion-timeline-empty";
+    empty.textContent = "No student assigned to this seat.";
+    popup.appendChild(empty);
+  } else {
+    var poll = seatMapResponsePollData;
+    var responded = studentRespondedToPoll(poll, student.username);
+    var statusLine = document.createElement("div");
+    statusLine.className = "seat-popup-meta";
+    statusLine.textContent = responded ? "✅ Responded" : "❌ No response yet";
+    popup.appendChild(statusLine);
+
+    if (responded && poll) {
+      var entries = (poll.history || []).filter(function(h) { return h.username === student.username; });
+      if (poll.type === "mc") {
+        var respDiv = document.createElement("div");
+        respDiv.className = "seat-response-text";
+        respDiv.textContent = getStudentMCResponseText(poll, student.username);
+        popup.appendChild(respDiv);
+      } else if (poll.type === "free") {
+        var last = entries[entries.length - 1];
+        var respDiv = document.createElement("div");
+        respDiv.className = "seat-response-text";
+        respDiv.textContent = last ? last.response : "";
+        popup.appendChild(respDiv);
+      } else if (poll.type === "draw") {
+        var lastImg = entries.filter(function(e) { return e.imageUrl; }).slice(-1)[0];
+        if (lastImg) {
+          var img = document.createElement("img");
+          img.className = "seat-response-thumb";
+          img.src = lastImg.imageUrl;
+          (function(url) { img.onclick = function() { showImageLightbox(url); }; })(lastImg.imageUrl);
+          popup.appendChild(img);
+        }
+      }
+    }
+  }
+
+  positionSeatPopup(popup, seatId);
+}
+
 function openSeatPopup(seatId) {
   closeSeatPopup();
   var seat = seatingSeatsCache.filter(function(s) { return s.id === seatId; })[0];
   if (!seat) { return; }
   openSeatPopupId = seatId;
   var student = seat.studentId ? seatingStudentsCache[seat.studentId] : null;
+
+  if (seatMapResponsePollId) {
+    renderSeatResponsePopup(seatId, student);
+    return;
+  }
+
   var unassignedStudents = Object.keys(seatingStudentsCache)
     .map(function(id) { return seatingStudentsCache[id]; })
     .filter(function(s) {
@@ -1975,27 +2175,7 @@ function openSeatPopup(seatId) {
   };
   popup.appendChild(delSeatBtn);
 
-  document.body.appendChild(popup);
-  var seatEl = seatCanvas.querySelector('[data-seat-id="' + seatId + '"]');
-  if (seatEl) {
-    var r = seatEl.getBoundingClientRect();
-    var popupWidth = 240;
-    var left = Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - popupWidth - 16);
-    left = Math.max(16, left);
-    popup.style.left = left + "px";
-    popup.style.top = (window.scrollY + r.bottom + 10) + "px";
-    // apple-design §7: scale the popup in from the seat that opened it,
-    // not from its own center -- keeps the spatial link between trigger and content
-    var seatCenterX = window.scrollX + r.left + r.width / 2;
-    var originXPct = Math.max(10, Math.min(90, ((seatCenterX - left) / popupWidth) * 100));
-    popup.style.setProperty("--seat-popup-origin", originXPct + "% 0%");
-  }
-  setTimeout(function() {
-    seatPopupOutsideClickHandler = function(e) {
-      if (!popup.contains(e.target) && !seatCanvas.contains(e.target)) { closeSeatPopup(); }
-    };
-    document.addEventListener("click", seatPopupOutsideClickHandler);
-  }, 0);
+  positionSeatPopup(popup, seatId);
 }
 
 postImageBtn.onclick = function() { postImageInput.click(); };
@@ -2781,6 +2961,18 @@ async function loadPolls() {
             })(pollId, poll.correctVisible, poll.correctIndices, poll.pointsAwarded);
             controlsDiv.appendChild(cToggle);
           }
+
+          var seatMapBtn = document.createElement("button");
+          seatMapBtn.type = "button";
+          seatMapBtn.textContent = "🪑 View on Seating Map";
+          seatMapBtn.className = "teacher-control";
+          (function(pid, pQuestion) {
+            seatMapBtn.onclick = function(e) {
+              e.stopPropagation();
+              enterSeatMapResponseView(pid, pQuestion);
+            };
+          })(pollId, poll.question);
+          controlsDiv.appendChild(seatMapBtn);
 
           var resetBtn = document.createElement("button");
           resetBtn.type = "button";
