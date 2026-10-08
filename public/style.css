@@ -31,7 +31,8 @@
   --checkbox-checked: #0071e3;
   --noise-opacity: 0.025;
   --card-bg-translucent: rgba(255, 255, 255, 0.78);
-  --motion-glow-color: rgba(0, 0, 0, 0.08);
+  --motion-glow-color: rgba(0, 0, 0, 0.15);
+  --confusion-none-color: #d1d1d6;
 }
 
 [data-theme="dark"] {
@@ -64,6 +65,7 @@
   --noise-opacity: 0.04;
   --card-bg-translucent: rgba(28, 28, 30, 0.78);
   --motion-glow-color: rgba(10, 132, 255, 0.14);
+  --confusion-none-color: #2c2c2e;
 }
 
 * { box-sizing: border-box; }
@@ -540,23 +542,6 @@ button.hide-toggle, .reply button.hide-toggle {
 }
 .emoji-animate { display: inline-block; animation: emoji-wiggle 2.4s ease-in-out infinite; }
 
-#emojiPickerContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  margin-bottom: 20px;
-  padding: 12px 20px;
-  background: linear-gradient(135deg, var(--card-gradient-start) 0%, var(--card-gradient-end) 100%);
-  border: 1.5px solid var(--border-color);
-  border-radius: 999px;
-  max-width: 260px;
-  margin-left: auto;
-  margin-right: auto;
-  box-shadow: var(--shadow-sm);
-}
-#emojiPickerContainer:not(.hidden) { display: flex !important; }
-
 .emoji-label {
   font-size: 0.9rem;
   font-weight: 600;
@@ -592,19 +577,28 @@ button.hide-toggle, .reply button.hide-toggle {
   background: linear-gradient(135deg, #34c759, #0a84ff);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
-.daily-metrics-text { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.8; text-align: center; }
+.daily-metrics-text { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.8; text-align: center; margin-top: 12px; }
 
-.daily-engagement-row {
+.daily-seat-map-widget { margin-top: 4px; }
+
+.class-confusion-timeline {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 1px;
+  max-height: 240px;
+  overflow-y: auto;
+  margin-top: 12px;
+}
+.class-confusion-timeline-row {
+  height: 7px;
+  border-radius: 2px;
+  background: var(--confusion-none-color);
+  flex-shrink: 0;
 }
 #dailySeatMapCanvas {
   position: relative;
-  width: 170px;
-  min-height: 110px;
+  width: 100%;
+  min-height: 480px;
   border-radius: 16px;
   background: var(--bg-secondary);
   border: 1.5px solid var(--border-color);
@@ -693,7 +687,7 @@ button.hide-toggle, .reply button.hide-toggle {
   .metrics-grid { grid-template-columns: 1fr; }
   .board-card { flex-direction: column; align-items: flex-start; gap: 12px; }
   .board-card-actions { width: 100%; justify-content: flex-start; }
-  #emojiPickerContainer { max-width: 220px; padding: 10px 14px; }
+  .identity-popup { max-width: calc(100vw - 24px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -721,6 +715,23 @@ button.hide-toggle, .reply button.hide-toggle {
   margin: 12px auto;
   gap: 12px;
 }
+
+/* Floating popup opened by clicking your own leaderboard row (see
+   openIdentityPopup/positionIdentityPopup in app.js). Visual language
+   matches .seat-popup (card bg, border, scale-in) but sized to fit its
+   content (the identity group is ~270px+ wide) instead of a fixed width. */
+.identity-popup {
+  position: fixed;
+  z-index: 200;
+  background: var(--card-bg);
+  border: 1.5px solid var(--border-color);
+  border-radius: 20px;
+  padding: 12px 16px;
+  box-shadow: var(--shadow-lg);
+  transform-origin: var(--identity-popup-origin, top center);
+  animation: seat-popup-in 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.identity-popup .leaderboard-identity-group { margin: 0; }
 
 #emojiCircle {
   width: 56px;
@@ -773,13 +784,6 @@ button.hide-toggle, .reply button.hide-toggle {
   height: 56px;
   box-sizing: border-box;
   vertical-align: middle;
-}
-
-#emojiPickerContainer {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  padding: 0;
 }
 
 @keyframes pollSlideIn {
@@ -1132,16 +1136,16 @@ button.hide-toggle, .reply button.hide-toggle {
 .seat.seat-view-only, .seat.seat-view-only:active { cursor: pointer; }
 
 .seat.seat-mini {
-  width: 24px;
-  height: 24px;
-  margin-left: -12px;
-  margin-top: -12px;
-  font-size: 0.7rem;
+  width: 48px;
+  height: 48px;
+  margin-left: -24px;
+  margin-top: -24px;
+  font-size: 1rem;
   border-width: 1.5px;
   cursor: pointer;
 }
 .seat.seat-mini .seat-name-line { display: none; }
-.seat.seat-mini .seat-icon-line { font-size: 0.65rem; }
+.seat.seat-mini .seat-icon-line { font-size: 1.1rem; }
 
 .seat-mode-bar {
   display: flex;
@@ -1240,9 +1244,10 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
   border-radius: 2px;
   min-width: 3px;
 }
-.confusion-timeline .tick.red { background: #ff453a; }
-.confusion-timeline .tick.orange { background: #ff9500; }
-.confusion-timeline .tick.green { background: #34c759; }
+.confusion-timeline .tick.red { background: #8c1f4b; }
+.confusion-timeline .tick.orange { background: #c76a17; }
+.confusion-timeline .tick.green { background: #c3f5d6; }
+.confusion-timeline .tick.none { background: var(--confusion-none-color); }
 .confusion-timeline-empty { font-size: 0.78rem; color: var(--text-secondary); margin-top: 10px; }
 
 .poll-waiting-placeholder {
@@ -1293,9 +1298,10 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
 }
 .confusion-btn.confusion-active { border-color: transparent; box-shadow: 0 0 0 2px var(--accent); }
 .confusion-dot { display: block; width: 11px; height: 11px; border-radius: 50%; }
-.confusion-dot-green { background: #34c759; }
-.confusion-dot-orange { background: #ff9500; }
-.confusion-dot-red { background: #ff453a; }
+.confusion-dot-green { background: #c3f5d6; }
+.confusion-dot-orange { background: #c76a17; }
+.confusion-dot-red { background: #8c1f4b; }
+.confusion-dot-none { background: var(--confusion-none-color); }
 
 /* Minimalistic real-time timeline: a thin colored strip at the bottom inner
    edge of #confusionIndicator (which is already position:fixed), sitting
@@ -1306,9 +1312,40 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
   position: absolute;
   left: 0; right: 0; bottom: 0;
   height: 4px;
-  background: var(--border-color);
+  background: var(--confusion-none-color);
   pointer-events: none;
 }
+
+/* ── Pill-shaped state controls (class Live/Paused toggle + the bigger
+   "are you still confused?" confirm prompt) ──────────────────────────── */
+.state-pill { min-width: 140px; font-weight: 700; }
+.state-pill.is-live { background: var(--accent); color: #ffffff; border-color: var(--accent); }
+.state-pill.is-paused { opacity: 0.85; }
+.state-pill-meta { font-size: 0.78rem; color: var(--text-secondary); white-space: nowrap; }
+.state-pill-lg { font-size: 1.05rem; padding: 16px 32px; min-width: 100px; }
+.state-pill-yes { background: var(--accent); color: #ffffff; border-color: var(--accent); }
+.state-pill-no { background: transparent; }
+.state-pill-prompt {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+  background: var(--card-bg-translucent);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1.5px solid var(--border-color);
+  border-radius: 24px;
+  padding: 24px 28px;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: calc(100vw - 32px);
+}
+.state-pill-prompt-text { font-size: 1.1rem; font-weight: 600; }
+.state-pill-prompt-buttons { display: flex; gap: 12px; }
 
 .icon-svg { width: 1em; height: 1em; vertical-align: -0.15em; margin-right: 4px; flex-shrink: 0; }
 
