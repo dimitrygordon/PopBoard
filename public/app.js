@@ -31,6 +31,10 @@ let currentBoardId = "";
 let currentStudentId = "";
 let sortMode = "new";
 let leaderboardVisible = true;
+let classSessionActive = false;
+let classSessionStartAt = null;
+let classSessionEndAt = null;
+let classTimelineRedrawInterval = null;
 let studentEmoji = "";
 let myUpvotedPostIds = new Set();
 let myPollVotes = new Map();
@@ -47,6 +51,7 @@ let celebratedPollIds = new Set();
 let unsubSeats = null;
 let unsubOwnConfusion = null;
 let confusionSparklineInterval = null;
+let confusionPromptInterval = null;
 let seatingStudentsCache = {};
 let seatingSeatsCache = [];
 let draggingSeatId = null;
@@ -126,6 +131,10 @@ const confusionGreenBtn = document.getElementById("confusionGreenBtn");
 const confusionOrangeBtn = document.getElementById("confusionOrangeBtn");
 const confusionRedBtn = document.getElementById("confusionRedBtn");
 const confusionSparkline = document.getElementById("confusionSparkline");
+const confusionPrompt = document.getElementById("confusionPrompt");
+const confusionPromptText = document.getElementById("confusionPromptText");
+const confusionPromptYesBtn = document.getElementById("confusionPromptYesBtn");
+const confusionPromptNoBtn = document.getElementById("confusionPromptNoBtn");
 const postInput = document.getElementById("postInput");
 const postBtn = document.getElementById("postBtn");
 const postsDiv = document.getElementById("posts");
@@ -141,12 +150,17 @@ const dashboardContent = document.getElementById("dashboardContent");
 const leaderboardSection = document.getElementById("leaderboardSection");
 const leaderboardToggleContainer = document.getElementById("leaderboardToggleContainer");
 const leaderboardVisibilityBtn = document.getElementById("leaderboardVisibilityBtn");
-const emojiPickerContainer = document.getElementById("emojiPickerContainer");
+const classSessionToggleContainer = document.getElementById("classSessionToggleContainer");
+const classSessionToggleBtn = document.getElementById("classSessionToggleBtn");
+const classSessionTimestampStart = document.getElementById("classSessionTimestampStart");
+const classSessionTimestampEnd = document.getElementById("classSessionTimestampEnd");
+const identityPopup = document.getElementById("identityPopup");
 const emojiCircle = document.getElementById("emojiCircle");
 const emojiDisplay = document.getElementById("emojiDisplay");
 const emojiInput = document.getElementById("emojiInput");
 const dailyDashboard = document.getElementById("dailyDashboard");
 const dailySeatMapCanvasEl = document.getElementById("dailySeatMapCanvas");
+const classConfusionTimelineEl = document.getElementById("classConfusionTimeline");
 const themeToggle = document.getElementById("themeToggle");
 const themeTogglePortal = document.getElementById("themeTogglePortal");
 const themeToggleStudents = document.getElementById("themeToggleStudents");
@@ -478,6 +492,7 @@ joinBtn.onclick = async function() {
   studentsBtn.classList.add("hidden");
   seatsBtn.classList.add("hidden");
   leaderboardToggleContainer.classList.add("hidden");
+  classSessionToggleContainer.classList.add("hidden");
   dailyDashboard.classList.add("hidden");
   confusionIndicator.classList.remove("hidden");
   startBoard();
@@ -783,8 +798,8 @@ function enterBoard(boardId) {
   studentsBtn.classList.remove("hidden");
   seatsBtn.classList.remove("hidden");
   leaderboardToggleContainer.classList.remove("hidden");
+  classSessionToggleContainer.classList.remove("hidden");
   dailyDashboard.classList.remove("hidden");
-  emojiPickerContainer.classList.add("hidden");
   confusionIndicator.classList.add("hidden");
   document.getElementById("newPost").classList.remove("hidden");
   startBoard();
@@ -812,8 +827,8 @@ function enterDisplayMode(boardId) {
   studentsBtn.classList.add("hidden");
   seatsBtn.classList.add("hidden");
   leaderboardToggleContainer.classList.add("hidden");
+  classSessionToggleContainer.classList.add("hidden");
   dailyDashboard.classList.add("hidden");
-  emojiPickerContainer.classList.add("hidden");
   confusionIndicator.classList.add("hidden");
   document.getElementById("newPost").classList.add("hidden");
   startBoard();
@@ -847,8 +862,13 @@ function listenBoardSettings() {
   if (!currentBoardId) { return; }
   unsubBoardSettings = onSnapshot(doc(db, "boards", currentBoardId), function(d) {
     if (!d.exists()) { return; }
-    leaderboardVisible = d.data().leaderboardVisible !== false;
+    var data = d.data();
+    leaderboardVisible = data.leaderboardVisible !== false;
     applyLeaderboardVisibility();
+    classSessionActive = data.classSessionActive === true;
+    classSessionStartAt = data.classSessionStartAt || null;
+    classSessionEndAt = data.classSessionEndAt || null;
+    applyClassSessionUI();
   });
 }
 
@@ -858,19 +878,40 @@ function applyLeaderboardVisibility() {
     leaderboardVisibilityBtn.innerHTML = eyeLabel(leaderboardVisible, "Leaderboard Shown", "Leaderboard Hidden");
     return;
   }
-  var nicknameContainer = document.getElementById("nicknameInputContainer");
-  if (leaderboardVisible) {
-    leaderboardSection.style.display = "";
-    if (!isDisplayMode) {
-      emojiPickerContainer.classList.remove("hidden");
-      if (nicknameContainer) { nicknameContainer.style.display = "inline-flex"; }
-    }
-  } else {
-    leaderboardSection.style.display = "none";
-    emojiPickerContainer.classList.add("hidden");
-    if (nicknameContainer) { nicknameContainer.style.display = "none"; }
-  }
+  leaderboardSection.style.display = leaderboardVisible ? "" : "none";
 }
+
+// "MM/DD/YY HH:MM", zero-padded -- no date library anywhere in this codebase.
+function formatSessionTimestamp(ms) {
+  var d = new Date(ms);
+  var pad = function(n) { return String(n).padStart(2, "0"); };
+  return pad(d.getMonth() + 1) + "/" + pad(d.getDate()) + "/" + pad(d.getFullYear() % 100) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+}
+
+// Reflects classSessionActive/-StartAt/-EndAt (read via listenBoardSettings)
+// onto the pill + its start/end timestamp labels, and re-triggers the two
+// session-windowed views so pausing immediately freezes them at [start,end].
+function applyClassSessionUI() {
+  if (!classSessionToggleBtn) { return; }
+  classSessionToggleBtn.textContent = classSessionActive ? "🔴 Class Live" : "🔘 Class Paused";
+  classSessionToggleBtn.classList.toggle("is-live", classSessionActive);
+  classSessionToggleBtn.classList.toggle("is-paused", !classSessionActive);
+  classSessionTimestampStart.textContent = classSessionStartAt ? formatSessionTimestamp(classSessionStartAt) : "";
+  classSessionTimestampEnd.textContent = classSessionEndAt ? formatSessionTimestamp(classSessionEndAt) : "";
+  if (isTeacher) { updateDailyDashboard(); renderClassConfusionTimelineRows(); }
+}
+
+classSessionToggleBtn.onclick = async function() {
+  if (!currentBoardId) { return; }
+  var now = Date.now();
+  if (classSessionActive) {
+    await updateDoc(doc(db, "boards", currentBoardId), { classSessionActive: false, classSessionEndAt: now });
+  } else {
+    // Starting a new session IS "reset all daily metrics" -- moving the
+    // window's start forward is enough; no data is ever deleted.
+    await updateDoc(doc(db, "boards", currentBoardId), { classSessionActive: true, classSessionStartAt: now, classSessionEndAt: null });
+  }
+};
 
 leaderboardVisibilityBtn.onclick = async function() {
   if (!currentBoardId) { return; }
@@ -959,6 +1000,11 @@ function initLeaderboard() {
     if (!isTeacher && myRank > LEADERBOARD_TOP_N) {
       var me = scores[myRank - 1];
       personalRow = { name: me.name, displayName: me.displayName, score: me.score, emoji: me.emoji, rank: myRank };
+    } else if (!isTeacher && !isDisplayMode && currentStudentId && myRank === -1) {
+      // Never scored yet (no leaderboard doc exists for them at all) --
+      // synthesize a 0-point personal row so there's always something to
+      // click to edit identity, even before their first point.
+      personalRow = { name: username, displayName: studentNickname || username, score: 0, emoji: studentEmoji, rank: null };
     }
     renderLeaderboardUI(topRows, personalRow);
   });
@@ -1068,7 +1114,7 @@ function renderLeaderboardUI(topRows, personalRow) {
     var medalSpan = document.createElement("span");
     medalSpan.className = "lb-medal";
     if (isPersonal) {
-      medalSpan.textContent = "#" + entry.rank;
+      medalSpan.textContent = entry.rank == null ? "New" : "#" + entry.rank;
     } else if (colorIndex < 3) {
       medalSpan.textContent = medals[colorIndex];
     } else {
@@ -1274,6 +1320,50 @@ function setupEmojiPicker() {
     emojiInput.style.cssText = "width:0;height:0;opacity:0;position:absolute;pointer-events:none;";
   };
 }
+
+// Floating "edit my identity" popup, opened by clicking your own row in the
+// leaderboard (works identically in expanded and collapsed mode, since it's
+// an overlay anchored to the row's current position, not an inline change
+// within the row). A dedicated trio rather than reusing positionSeatPopup/
+// closeSeatPopup -- those hardcode seat-hover-only globals and a seat-id
+// anchor lookup that don't apply here.
+var identityPopupOutsideClickHandler = null;
+
+function closeIdentityPopup() {
+  identityPopup.classList.add("hidden");
+  if (identityPopupOutsideClickHandler) {
+    document.removeEventListener("mousedown", identityPopupOutsideClickHandler);
+    identityPopupOutsideClickHandler = null;
+  }
+}
+
+function positionIdentityPopup(popup, anchorEl) {
+  var rect = anchorEl.getBoundingClientRect();
+  popup.classList.remove("hidden");
+  var popupRect = popup.getBoundingClientRect();
+  var left = rect.left + rect.width / 2 - popupRect.width / 2;
+  left = Math.max(8, Math.min(left, window.innerWidth - popupRect.width - 8));
+  var top = rect.bottom + 8;
+  if (top + popupRect.height > window.innerHeight - 8) { top = rect.top - popupRect.height - 8; }
+  popup.style.left = left + "px";
+  popup.style.top = Math.max(8, top) + "px";
+  popup.style.setProperty("--identity-popup-origin", "top center");
+}
+
+function openIdentityPopup(anchorEl) {
+  closeIdentityPopup(); // tear down any previous listener first -- repeat clicks on the same row would otherwise leak one mousedown listener per click
+  positionIdentityPopup(identityPopup, anchorEl);
+  identityPopupOutsideClickHandler = function(e) {
+    if (!identityPopup.contains(e.target) && !anchorEl.contains(e.target)) { closeIdentityPopup(); }
+  };
+  document.addEventListener("mousedown", identityPopupOutsideClickHandler);
+}
+
+leaderboardSection.addEventListener("click", function(e) {
+  var row = e.target.closest(".lb-row");
+  if (!row || isTeacher || isDisplayMode || row.dataset.lbName !== username) { return; }
+  openIdentityPopup(row);
+});
 
 function renderEmojiCircle() {
   emojiDisplay.innerHTML = "";
@@ -1949,16 +2039,31 @@ function showImageLightbox(imageUrl) {
 
 // ─── CONFUSION STATE (shared by seating map + student indicator) ───────────
 
-var CONFUSION_DURATION_MS = 5 * 60 * 1000;
-var CONFUSION_COLORS = { red: "#ff453a", orange: "#ff9500", green: "#34c759" };
+var CONFUSION_DURATION_MS = 5 * 60 * 1000; // green's simple cosmetic-only fade window
+// Colorblind-friendly palette: spread across lightness (dark -> medium ->
+// light) rather than relying on red/green hue discrimination, which is what
+// actually helps deuteranopia/protanopia -- not just picking "different" hues.
+var CONFUSION_COLORS = { red: "#8c1f4b", orange: "#c76a17", green: "#c3f5d6" };
+// States that run the "are you still confused?" prompt/auto-fade cycle below.
+var CONFUSION_FADE_STATES = { red: true, orange: true };
+var CONFUSION_PROMPT_AT_MS = 5 * 60 * 1000;                             // red/orange: prompt fires here
+var CONFUSION_GRACE_MS = 60 * 1000;                                     // red/orange: respond-or-fade window after the prompt
+var CONFUSION_FADE_DURATION_MS = 2 * 60 * 1000;                         // red/orange: real fade duration
+var CONFUSION_FADE_START_MS = CONFUSION_PROMPT_AT_MS + CONFUSION_GRACE_MS;    // 6 min: real fade begins
+var CONFUSION_RESOLVE_AT_MS = CONFUSION_FADE_START_MS + CONFUSION_FADE_DURATION_MS; // 8 min: auto-resolves to None
 
 // Fades `el`'s background from the full confusion color to the theme-neutral
-// color over whatever time remains in the 5-minute window. Using a CSS
-// transition (rather than a setInterval countdown) means re-calling this on
-// every snapshot update is safe and cheap: the remaining time is always
-// recomputed from the absolute `setAtMs` timestamp, so the visual always
-// lands in the correct spot in its fade regardless of when/how often we redraw.
-function applyConfusionVisual(el, state, setAtMs) {
+// color over whatever time remains in the fade window. Using a CSS transition
+// (rather than a setInterval countdown) means re-calling this on every
+// snapshot update is safe and cheap: the remaining time is always recomputed
+// from the absolute `setAtMs` timestamp, so the visual always lands in the
+// correct spot in its fade regardless of when/how often we redraw.
+// `fadeStartMs`/`fadeDurationMs` (both optional, defaulting to green's simple
+// flat fade) let red/orange delay the fade's start without a separate
+// function: before `fadeStartMs` has elapsed the color just stays solid.
+function applyConfusionVisual(el, state, setAtMs, fadeStartMs, fadeDurationMs) {
+  fadeStartMs = fadeStartMs || 0;
+  fadeDurationMs = fadeDurationMs || CONFUSION_DURATION_MS;
   // Force-cancel any in-flight fade first: clearing the inline `transition`
   // override below doesn't disable transitions, it falls back to the
   // stylesheet's global `button { transition: all 0.2s ease; }` -- and since
@@ -1968,7 +2073,9 @@ function applyConfusionVisual(el, state, setAtMs) {
   // instead of snapping off immediately.
   el.getAnimations().forEach(function(a) { a.cancel(); });
   var neutral = getComputedStyle(document.documentElement).getPropertyValue("--bg-secondary").trim() || "#ffffff";
-  var remaining = (state && setAtMs) ? CONFUSION_DURATION_MS - (Date.now() - setAtMs) : 0;
+  var elapsed = (state && setAtMs) ? Date.now() - setAtMs : null;
+  var fadeElapsed = elapsed === null ? null : elapsed - fadeStartMs;
+  var remaining = fadeElapsed === null ? 0 : (fadeElapsed < 0 ? fadeDurationMs : fadeDurationMs - fadeElapsed);
   if (!state || !CONFUSION_COLORS[state] || remaining <= 0) {
     el.style.transition = "";
     el.style.backgroundColor = neutral;
@@ -1977,8 +2084,18 @@ function applyConfusionVisual(el, state, setAtMs) {
   el.style.transition = "none";
   el.style.backgroundColor = CONFUSION_COLORS[state];
   void el.offsetWidth; // force reflow so the "full color, no transition" frame commits
+  if (fadeElapsed < 0) { return; } // still fully solid -- the fade hasn't started yet
   el.style.transition = "background-color " + remaining + "ms linear";
   el.style.backgroundColor = neutral;
+}
+
+// Picks the correct fade schedule for `state` (red/orange get the delayed,
+// prompt-driven schedule; everything else gets green's simple flat fade) so
+// every teacher-facing seat-view call site stays consistent with the
+// student's own indicator without repeating the fade-param logic everywhere.
+function applyConfusionVisualForState(el, state, setAtMs) {
+  if (CONFUSION_FADE_STATES[state]) { applyConfusionVisual(el, state, setAtMs, CONFUSION_FADE_START_MS, CONFUSION_FADE_DURATION_MS); }
+  else { applyConfusionVisual(el, state, setAtMs); }
 }
 
 async function setMyConfusionState(state) {
@@ -1990,78 +2107,179 @@ async function setMyConfusionState(state) {
     confusionSetAt: now,
     confusionHistory: arrayUnion({ state: state, setAt: now })
   });
-  // Trim history to the most recent ~40 entries so the array doesn't grow unbounded.
+  // Trim history to the most recent ~100 entries so the array doesn't grow
+  // unbounded (bumped up from 40: the prompt/auto-fade cycle below can add
+  // several entries per long confused stretch, on top of manual toggling).
   var snap = await getDoc(studentRef);
   var hist = (snap.data() || {}).confusionHistory || [];
-  if (hist.length > 40) { await updateDoc(studentRef, { confusionHistory: hist.slice(hist.length - 40) }); }
+  if (hist.length > 100) { await updateDoc(studentRef, { confusionHistory: hist.slice(hist.length - 100) }); }
+}
+
+// Pure function (no DOM, no Date.now() call) describing what stage of the
+// prompt/auto-fade cycle a red/orange confusion state is currently in, given
+// only the state and when it was set -- recomputed fresh each time rather
+// than tracked by a running countdown, so a closed/reopened tab (or a missed
+// interval tick) always lands in the correct stage instead of needing to
+// replay a multi-minute animation.
+function getConfusionFadeStage(state, setAtMs, now) {
+  if (!CONFUSION_FADE_STATES[state] || !setAtMs) { return null; }
+  var elapsed = now - setAtMs;
+  if (elapsed < CONFUSION_PROMPT_AT_MS) { return "active"; }
+  if (elapsed < CONFUSION_FADE_START_MS) { return "prompting"; }
+  if (elapsed < CONFUSION_RESOLVE_AT_MS) { return "fading"; }
+  return "resolved";
 }
 
 var CONFUSION_SPARKLINE_WINDOW_MS = 15 * 60 * 1000;
 
 // Builds a time-proportional (not index-proportional, unlike the teacher-
-// facing discrete "tick" timelines elsewhere) CSS linear-gradient string
-// from history entries falling in [now - windowMs, now], carrying in
-// whichever state was active at the window's left edge so the strip never
-// shows a false gap. Pure function (no DOM, no Date.now() call) so the
-// window-clamping/carry-in/color-mapping logic is unit-testable in isolation.
-function buildConfusionSparklineGradient(history, now, windowMs, colors, neutralColor) {
-  var windowStart = now - windowMs;
+// facing discrete "tick" timelines elsewhere) CSS linear-gradient string from
+// history entries falling in [windowStart, windowEnd], carrying in whichever
+// state was active at the window's left edge so the strip never shows a
+// false gap. Pure function (no DOM, no Date.now() call) so the window-
+// clamping/carry-in/color-mapping/fade-tail logic is unit-testable in
+// isolation. Shared by the student's own sparkline AND the teacher's
+// class-wide timeline, so both visualize red/orange fading identically:
+// - a CLOSED red/orange interval that ends in None (manual toggle-off or the
+//   automated fade) draws its final min(2min, duration) as a gradient to
+//   `neutralColor` -- a short toggle-on/off renders as one fully-compressed
+//   fade rather than solid color, matching the "compresses proportionally"
+//   requirement.
+// - a CLOSED red/orange interval that ends in a DIFFERENT explicit state
+//   (switching straight to green/orange/red) is a flat instant cut, no fade,
+//   matching every other state transition's existing snap behavior.
+// - a still-OPEN red/orange interval independently re-derives the same
+//   prompt/fade/resolve schedule `getConfusionFadeStage` uses, anchored to
+//   its own setAt (not to windowEnd), so the chart stays accurate even if the
+//   owning student's own client never got to perform the resolve-to-None
+//   write (e.g. the tab was closed mid-fade and never reopened).
+function buildConfusionGradient(history, windowStart, windowEnd, colors, neutralColor) {
+  var windowMs = windowEnd - windowStart;
+  function pct(t) { return Math.max(0, Math.min(100, ((t - windowStart) / windowMs) * 100)); }
+  function pushFlat(stops, color, start, end) {
+    if (end - start <= 0) { return; }
+    stops.push(color + " " + pct(start) + "%", color + " " + pct(end) + "%");
+  }
+  function pushClosedFade(stops, color, start, end) {
+    var duration = end - start;
+    if (duration <= 0) { return; }
+    var tail = Math.min(CONFUSION_FADE_DURATION_MS, duration);
+    var tailStart = end - tail;
+    if (tailStart > start) { stops.push(color + " " + pct(start) + "%", color + " " + pct(tailStart) + "%"); }
+    stops.push(color + " " + pct(tailStart) + "%", neutralColor + " " + pct(end) + "%");
+  }
+  function pushOpenFade(stops, color, setAtMs) {
+    var fadeStart = setAtMs + CONFUSION_FADE_START_MS;
+    var resolveAt = setAtMs + CONFUSION_RESOLVE_AT_MS;
+    if (windowEnd <= fadeStart) {
+      stops.push(color + " " + pct(setAtMs) + "%", color + " " + pct(windowEnd) + "%");
+      return;
+    }
+    stops.push(color + " " + pct(setAtMs) + "%", color + " " + pct(fadeStart) + "%");
+    if (windowEnd <= resolveAt) {
+      stops.push(color + " " + pct(fadeStart) + "%", neutralColor + " " + pct(windowEnd) + "%");
+      return;
+    }
+    stops.push(color + " " + pct(fadeStart) + "%", neutralColor + " " + pct(resolveAt) + "%");
+    stops.push(neutralColor + " " + pct(resolveAt) + "%", neutralColor + " " + pct(windowEnd) + "%");
+  }
+
   var hist = (history || []).slice().sort(function(a, b) { return a.setAt - b.setAt; });
   var carryInState = null;
+  var carryInSetAt = windowStart;
   var inWindow = [];
   for (var i = 0; i < hist.length; i++) {
-    if (hist[i].setAt <= windowStart) { carryInState = hist[i].state; }
+    if (hist[i].setAt <= windowStart) { carryInState = hist[i].state; carryInSetAt = hist[i].setAt; }
     else { inWindow.push(hist[i]); }
   }
+
   var stops = [];
-  function pushSegment(state, start, end) {
-    var color = colors[state] || neutralColor;
-    var pctStart = Math.max(0, Math.min(100, ((start - windowStart) / windowMs) * 100));
-    var pctEnd = Math.max(0, Math.min(100, ((end - windowStart) / windowMs) * 100));
-    stops.push(color + " " + pctStart + "%", color + " " + pctEnd + "%");
-  }
-  var cursor = windowStart;
+  var segStart = carryInSetAt; // true start time of the currently-running segment (may be before windowStart)
   var currentState = carryInState;
   inWindow.forEach(function(h) {
-    pushSegment(currentState, cursor, h.setAt);
-    cursor = h.setAt;
+    var color = colors[currentState] || neutralColor;
+    if (CONFUSION_FADE_STATES[currentState] && h.state == null) { pushClosedFade(stops, color, segStart, h.setAt); }
+    else { pushFlat(stops, color, segStart, h.setAt); }
+    segStart = h.setAt;
     currentState = h.state;
   });
-  pushSegment(currentState, cursor, now);
+  var finalColor = colors[currentState] || neutralColor;
+  if (CONFUSION_FADE_STATES[currentState]) { pushOpenFade(stops, finalColor, segStart); }
+  else { pushFlat(stops, finalColor, segStart, windowEnd); }
+
+  if (stops.length === 0) { return neutralColor; }
   return "linear-gradient(to right, " + stops.join(", ") + ")";
+}
+
+// Thin wrapper preserving the original rolling-window call shape used by the
+// student's own sparkline.
+function buildConfusionSparklineGradient(history, now, windowMs, colors, neutralColor) {
+  return buildConfusionGradient(history, now - windowMs, now, colors, neutralColor);
 }
 
 function renderConfusionSparkline(history) {
   if (!confusionSparkline) { return; }
   confusionSparkline.style.background = buildConfusionSparklineGradient(
-    history, Date.now(), CONFUSION_SPARKLINE_WINDOW_MS, CONFUSION_COLORS, "var(--border-color)"
+    history, Date.now(), CONFUSION_SPARKLINE_WINDOW_MS, CONFUSION_COLORS, "var(--confusion-none-color)"
   );
 }
 
 function initConfusionIndicator() {
   if (unsubOwnConfusion) { unsubOwnConfusion(); unsubOwnConfusion = null; }
   if (confusionSparklineInterval) { clearInterval(confusionSparklineInterval); confusionSparklineInterval = null; }
+  if (confusionPromptInterval) { clearInterval(confusionPromptInterval); confusionPromptInterval = null; }
   if (!currentStudentId || !currentBoardId) { return; }
-  confusionGreenBtn.onclick = function() { playPop(); setMyConfusionState("green"); };
-  confusionOrangeBtn.onclick = function() { playPop(); setMyConfusionState("orange"); };
-  confusionRedBtn.onclick = function() { playPop(); setMyConfusionState("red"); };
+
+  var myConfusionState = null;
+  var myConfusionSetAt = null;
   var latestConfusionHistory = [];
+  var autoResolvedFor = null; // "<state>@<setAtMs>" guard so the periodic re-check can't double-write the resolve
+
+  confusionGreenBtn.onclick = function() { playPop(); setMyConfusionState("green"); };
+  confusionOrangeBtn.onclick = function() { playPop(); setMyConfusionState(myConfusionState === "orange" ? null : "orange"); };
+  confusionRedBtn.onclick = function() { playPop(); setMyConfusionState(myConfusionState === "red" ? null : "red"); };
+  confusionPromptYesBtn.onclick = function() {
+    confusionPrompt.classList.add("hidden");
+    setMyConfusionState(myConfusionState); // re-set the same state with a fresh setAt -- fully resets the clock
+  };
+  confusionPromptNoBtn.onclick = function() {
+    confusionPrompt.classList.add("hidden"); // dismiss only -- the fade is already on schedule regardless
+  };
+
+  function checkConfusionFadeStage() {
+    var stage = getConfusionFadeStage(myConfusionState, myConfusionSetAt, Date.now());
+    if (stage === "prompting") {
+      confusionPromptText.textContent = myConfusionState === "red" ? "Are you still confused?" : "Still somewhat confused?";
+      confusionPrompt.classList.remove("hidden");
+    } else {
+      confusionPrompt.classList.add("hidden");
+    }
+    if (stage === "resolved") {
+      var key = myConfusionState + "@" + myConfusionSetAt;
+      if (autoResolvedFor !== key) { autoResolvedFor = key; setMyConfusionState(null); }
+    }
+    applyConfusionVisual(confusionRedBtn, myConfusionState === "red" ? "red" : null, myConfusionSetAt, CONFUSION_FADE_START_MS, CONFUSION_FADE_DURATION_MS);
+    applyConfusionVisual(confusionOrangeBtn, myConfusionState === "orange" ? "orange" : null, myConfusionSetAt, CONFUSION_FADE_START_MS, CONFUSION_FADE_DURATION_MS);
+  }
+
   unsubOwnConfusion = onSnapshot(doc(db, "boards", currentBoardId, "students", currentStudentId), function(d) {
     if (!d.exists()) { return; }
     var data = d.data();
-    confusionGreenBtn.classList.toggle("confusion-active", data.confusionState === "green");
-    confusionOrangeBtn.classList.toggle("confusion-active", data.confusionState === "orange");
-    confusionRedBtn.classList.toggle("confusion-active", data.confusionState === "red");
-    applyConfusionVisual(confusionGreenBtn, data.confusionState === "green" ? "green" : null, data.confusionSetAt);
-    applyConfusionVisual(confusionOrangeBtn, data.confusionState === "orange" ? "orange" : null, data.confusionSetAt);
-    applyConfusionVisual(confusionRedBtn, data.confusionState === "red" ? "red" : null, data.confusionSetAt);
+    myConfusionState = data.confusionState || null;
+    myConfusionSetAt = data.confusionSetAt || null;
+    confusionGreenBtn.classList.toggle("confusion-active", myConfusionState === "green");
+    confusionOrangeBtn.classList.toggle("confusion-active", myConfusionState === "orange");
+    confusionRedBtn.classList.toggle("confusion-active", myConfusionState === "red");
+    applyConfusionVisual(confusionGreenBtn, myConfusionState === "green" ? "green" : null, myConfusionSetAt);
+    checkConfusionFadeStage();
     latestConfusionHistory = data.confusionHistory || [];
     renderConfusionSparkline(latestConfusionHistory);
   });
-  // The sparkline's right edge represents "now," which keeps advancing even
-  // without a new confusion-state write -- redraw on a timer too, not just
-  // on each Firestore snapshot, so it visibly stays live.
+  // The sparkline's right edge represents "now," and the prompt/fade stage
+  // both keep advancing even without a new confusion-state write -- redraw
+  // on a timer too, not just on each Firestore snapshot, so both stay live.
   confusionSparklineInterval = setInterval(function() { renderConfusionSparkline(latestConfusionHistory); }, 15000);
+  confusionPromptInterval = setInterval(checkConfusionFadeStage, 15000);
 }
 
 // ─── SEATING MAP (teacher-only sandbox) ─────────────────────────────────────
@@ -2179,7 +2397,7 @@ function renderSeats() {
         el.style.transition = "";
         el.style.backgroundColor = responded ? CONFUSION_COLORS.green : CONFUSION_COLORS.red;
       } else {
-        applyConfusionVisual(el, student.confusionState, student.confusionSetAt);
+        applyConfusionVisualForState(el, student.confusionState, student.confusionSetAt);
       }
     } else {
       el.textContent = "+";
@@ -2607,12 +2825,14 @@ wireSeatHoverDelegation(seatCanvas, openSeatPopup);
 
 function loadDashboardSeatMap() {
   if (unsubDashSeats) { unsubDashSeats(); unsubDashSeats = null; }
+  if (classTimelineRedrawInterval) { clearInterval(classTimelineRedrawInterval); classTimelineRedrawInterval = null; }
   if (!currentBoardId || !dailySeatMapCanvasEl) { return; }
   var unsubStudentsLocal = onSnapshot(collection(db, "boards", currentBoardId, "students"), function(snap) {
     var map = {};
     snap.forEach(function(d) { map[d.id] = Object.assign({ id: d.id }, d.data()); });
     dashSeatStudentsCache = map;
     renderDashboardSeatMap();
+    renderClassConfusionTimelineRows();
   });
   var unsubSeatsLocal = onSnapshot(collection(db, "boards", currentBoardId, "seats"), function(snap) {
     var list = [];
@@ -2621,6 +2841,29 @@ function loadDashboardSeatMap() {
     renderDashboardSeatMap();
   });
   unsubDashSeats = function() { unsubStudentsLocal(); unsubSeatsLocal(); };
+  // Each row's "now" edge keeps advancing even without new student data --
+  // redraw on a timer too, matching the student sparkline's 15s cadence.
+  classTimelineRedrawInterval = setInterval(renderClassConfusionTimelineRows, 15000);
+}
+
+// One thin horizontal bar per student, time-proportional over the current
+// class session window [classSessionStartAt, classSessionEndAt || now] --
+// uses the exact same buildConfusionGradient() the student's own sparkline
+// uses, so both visualize red/orange fading identically.
+function renderClassConfusionTimelineRows() {
+  if (!classConfusionTimelineEl) { return; }
+  var windowStart = classSessionStartAt || 0;
+  var windowEnd = classSessionEndAt || Date.now();
+  var students = Object.keys(dashSeatStudentsCache).map(function(id) { return dashSeatStudentsCache[id]; });
+  students.sort(function(a, b) { return (a.username || "").localeCompare(b.username || ""); });
+  classConfusionTimelineEl.innerHTML = "";
+  students.forEach(function(student) {
+    var row = document.createElement("div");
+    row.className = "class-confusion-timeline-row";
+    row.title = student.nickname || student.username || "";
+    row.style.background = buildConfusionGradient(student.confusionHistory, windowStart, windowEnd, CONFUSION_COLORS, "var(--confusion-none-color)");
+    classConfusionTimelineEl.appendChild(row);
+  });
 }
 
 function renderDashboardSeatMap() {
@@ -2648,7 +2891,7 @@ function renderDashboardSeatMap() {
       iconLine.textContent = student.emoji ? student.emoji : (student.username ? student.username.charAt(0).toUpperCase() : "?");
       el.appendChild(iconLine);
       el.title = student.username || "";
-      applyConfusionVisual(el, student.confusionState, student.confusionSetAt);
+      applyConfusionVisualForState(el, student.confusionState, student.confusionSetAt);
     } else {
       el.textContent = "+";
       el.title = "Unassigned seat";
@@ -4577,51 +4820,77 @@ function renderMCPoll(div, poll, pollId, totalStudents) {
   }
 }
 
+// Scopes every metric to the current class session window
+// [classSessionStartAt, classSessionEndAt || now] -- a fresh "Paused->Live"
+// click moves winStart forward (that *is* "reset daily metrics," no data is
+// ever deleted), and pausing freezes winEnd so the numbers stop advancing
+// until the next session starts (per the confirmed "freeze while paused"
+// decision). Posts/replies use their own `timestamp` (a Firestore
+// Timestamp -- note the .toMillis() conversion, these are NOT plain
+// numbers like confusionSetAt/history[].timestamp are). Polls have no
+// single consistent timestamp field at all: `voters` (multiple-choice) is a
+// flat array with no time info whatsoever and can never be session-
+// windowed, so poll engagement is derived entirely from `history` entries
+// (which DO carry a client Date.now() timestamp on every poll type) instead.
 async function updateDailyDashboard() {
   if (!isTeacher || !currentBoardId) { return; }
   try {
+    var winStart = classSessionStartAt || 0;
+    var winEnd = classSessionEndAt || Date.now();
+    function inWindow(ms) { return ms >= winStart && ms <= winEnd; }
+    function firestoreTsInWindow(ts) { return !!ts && typeof ts.toMillis === "function" && inWindow(ts.toMillis()); }
+
     var postsSnap = await getDocs(collection(db, "boards", currentBoardId, "posts"));
     var repliesSnap = await getDocs(collection(db, "boards", currentBoardId, "replies"));
     var pollsSnap = await getDocs(collection(db, "boards", currentBoardId, "polls"));
     var studentsSnap = await getDocs(collection(db, "boards", currentBoardId, "students"));
+
+    var postsInWindow = [];
+    postsSnap.forEach(function(d) { var p = d.data(); if (firestoreTsInWindow(p.timestamp)) { postsInWindow.push(p); } });
+    var repliesInWindow = [];
+    repliesSnap.forEach(function(d) { var r = d.data(); if (firestoreTsInWindow(r.timestamp)) { repliesInWindow.push(r); } });
+
     var activeStudents = new Set();
-    postsSnap.forEach(function(d) { activeStudents.add(d.data().author); });
-    repliesSnap.forEach(function(d) { activeStudents.add(d.data().author); });
+    postsInWindow.forEach(function(p) { activeStudents.add(p.author); });
+    repliesInWindow.forEach(function(r) { activeStudents.add(r.author); });
     pollsSnap.forEach(function(pd) {
-      var p = pd.data();
-      (p.voters || []).forEach(function(v) { activeStudents.add(v); });
-      (p.history || []).forEach(function(h) { activeStudents.add(h.username); });
+      (pd.data().history || []).forEach(function(h) { if (inWindow(h.timestamp)) { activeStudents.add(h.username); } });
     });
     var attendance = activeStudents.size;
     var totalStudents = studentsSnap.size;
+
     var totalComments = 0;
     var totalUpvotes = 0;
     var anonCount = 0;
     var totalCommentCount = 0;
-    var pollParticipationSum = 0;
-    var pollCount = 0;
-    postsSnap.forEach(function(d) {
-      var p = d.data();
+    postsInWindow.forEach(function(p) {
       totalComments++;
+      totalCommentCount++;
       totalUpvotes += p.upvotes || 0;
       if (p.anonymous) { anonCount++; }
-      totalCommentCount++;
     });
-    repliesSnap.forEach(function(d) {
-      var r = d.data();
+    repliesInWindow.forEach(function(r) {
+      totalCommentCount++;
       if (r.anonymous) { anonCount++; }
-      totalCommentCount++;
     });
+
+    var pollParticipationSum = 0;
+    var pollCount = 0;
     pollsSnap.forEach(function(pd) {
       var p = pd.data();
-      var hasInteraction = (p.history && p.history.length > 0) || (p.voters && p.voters.length > 0);
-      if (!hasInteraction) { return; }
-      pollCount++;
       var resp = new Set();
-      if (p.type === "mc") { (p.voters || []).forEach(function(v) { resp.add(v); }); }
-      else { (p.history || []).forEach(function(h) { resp.add(h.username); }); }
+      (p.history || []).forEach(function(h) {
+        if (!inWindow(h.timestamp)) { return; }
+        // mc polls log both "Voted: X" and "Removed vote: X" to the same
+        // history array -- only a vote should count toward participation.
+        if (p.type === "mc" && h.response && h.response.indexOf("Removed vote: ") === 0) { return; }
+        resp.add(h.username);
+      });
+      if (resp.size === 0) { return; }
+      pollCount++;
       if (attendance > 0) { pollParticipationSum += resp.size / attendance; }
     });
+
     var engagementPct = pollCount > 0 ? Math.round((pollParticipationSum / pollCount) * 100) : 0;
     var anonPct = totalCommentCount > 0 ? Math.round((anonCount / totalCommentCount) * 100) : 0;
     var engDisplay = document.getElementById("dailyEngagementDisplay");

@@ -153,19 +153,15 @@
     <button id="leaderboardVisibilityBtn" class="teacher-control">👁️ Leaderboard Shown</button>
   </div>
 
+  <!-- Teacher: Class Live/Paused session toggle -->
+  <div id="classSessionToggleContainer" class="hidden" style="display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:12px;">
+    <span id="classSessionTimestampStart" class="state-pill-meta"></span>
+    <button id="classSessionToggleBtn" type="button" class="state-pill is-paused">🔘 Class Paused</button>
+    <span id="classSessionTimestampEnd" class="state-pill-meta"></span>
+  </div>
+
   <!-- Leaderboard -->
   <section id="leaderboardSection"></section>
-
-  <!-- Student emoji picker + nickname (students only) -->
-  <div id="emojiPickerContainer" class="hidden">
-    <div class="leaderboard-identity-group">
-      <div id="emojiCircle" title="Click to choose your emoji">
-        <span id="emojiDisplay">Choose Emoji</span>
-      </div>
-      <div id="nicknameInputContainer"></div>
-    </div>
-    <input id="emojiInput" maxlength="2" placeholder="" />
-  </div>
 
   <!-- Poll Section -->
   <section id="pollSection"></section>
@@ -181,12 +177,10 @@
   <!-- Daily Dashboard (teacher only) -->
   <section id="dailyDashboard" class="hidden">
     <div class="daily-dashboard-card">
-      <h3>📊 Daily Dashboard</h3>
-      <div class="daily-engagement-row">
-        <div id="dailyEngagementDisplay" class="daily-engagement-big"></div>
-        <div id="dailySeatMapWidget" class="daily-seat-map-widget"><div id="dailySeatMapCanvas"></div></div>
-      </div>
+      <div id="dailyEngagementDisplay" class="daily-engagement-big"></div>
+      <div id="dailySeatMapWidget" class="daily-seat-map-widget"><div id="dailySeatMapCanvas"></div></div>
       <div id="dailyMetricsText" class="daily-metrics-text"></div>
+      <div id="classConfusionTimeline" class="class-confusion-timeline"></div>
     </div>
   </section>
 
@@ -199,6 +193,15 @@
       <button type="button" id="confusionRedBtn" class="confusion-btn" data-state="red" title="I'm confused"><span class="confusion-dot confusion-dot-red"></span></button>
     </div>
     <div id="confusionSparkline" class="confusion-sparkline"></div>
+  </div>
+
+  <!-- "Are you still confused?" auto-check-in prompt (students only) -->
+  <div id="confusionPrompt" class="hidden state-pill-prompt">
+    <span id="confusionPromptText" class="state-pill-prompt-text"></span>
+    <div class="state-pill-prompt-buttons">
+      <button type="button" id="confusionPromptYesBtn" class="state-pill state-pill-lg state-pill-yes">Yes</button>
+      <button type="button" id="confusionPromptNoBtn" class="state-pill state-pill-lg state-pill-no">No</button>
+    </div>
   </div>
 
   <!-- New Post Section (sticky bottom) -->
@@ -236,6 +239,19 @@
   <!-- Archived Polls (hidden + interacted, teacher only) -->
   <section id="archivedPolls"></section>
 
+</div>
+
+<!-- Floating "edit my identity" popup, opened by clicking your own row in
+     the leaderboard (both expanded and collapsed) -- same content that used
+     to live in a permanently-visible block above the posts. -->
+<div id="identityPopup" class="hidden identity-popup">
+  <div class="leaderboard-identity-group">
+    <div id="emojiCircle" title="Click to choose your emoji">
+      <span id="emojiDisplay">Choose Emoji</span>
+    </div>
+    <div id="nicknameInputContainer"></div>
+  </div>
+  <input id="emojiInput" maxlength="2" placeholder="" />
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/compromise@14/builds/compromise.min.js"></script>
