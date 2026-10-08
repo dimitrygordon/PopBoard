@@ -762,7 +762,12 @@ button.hide-toggle, .reply button.hide-toggle {
 }
 
 .poll {
-  animation: pollSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+  /* `backwards` (not `both`) -- the end-of-animation state here is a no-op
+     (opacity:1, translateY(0) match the resting state anyway), and `both`
+     left it permanently applied, which created a stray transform turning
+     every .poll into an unwanted CSS containing block for any
+     position:fixed descendant (see the drawing poll's fullscreen toggle). */
+  animation: pollSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
 }
 
 @keyframes goldSheen {
@@ -1331,6 +1336,15 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
   cursor: pointer;
 }
 .draw-expand-btn .icon-svg { margin-right: 0; }
+
+.draw-eraser-cursor {
+  position: absolute;
+  border: 1.5px solid var(--text-color);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+  z-index: 5;
+}
 
 .draw-container.draw-fullscreen {
   position: fixed;
