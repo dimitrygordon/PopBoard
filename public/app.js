@@ -3772,7 +3772,7 @@ function renderFreePoll(div, poll, pollId, totalStudents) {
 }
 
 var DRAW_COLORS = ["#1d1d1f", "#ff453a", "#0a84ff", "#34c759"];
-var DRAW_GRID_SIZE = 300;
+var DRAW_GRID_SIZE = 500;
 // Index 0 is the background/eraser color; 1-4 are the selectable pen colors.
 var DRAW_PALETTE = ["#ffffff"].concat(DRAW_COLORS);
 
@@ -3784,10 +3784,11 @@ function hexToRgb(hex) {
   };
 }
 
-// A drawing is a flat 300x300 grid of palette indices, serialized as one hex
-// digit per pixel (90,000 chars, fixed size regardless of how much is drawn)
-// -- stored in its own Firestore document (see renderDrawPoll's submit flow)
-// rather than as an uploaded image, so there's no Storage round trip to hang.
+// A drawing is a flat 500x500 grid of palette indices, serialized as one hex
+// digit per pixel (250,000 chars, fixed size regardless of how much is
+// drawn) -- stored in its own Firestore document (see renderDrawPoll's
+// submit flow) rather than as an uploaded image, so there's no Storage
+// round trip to hang. Still comfortably under Firestore's 1MB/doc cap.
 function packGridToString(grid) {
   var out = "";
   for (var i = 0; i < grid.length; i++) { out += grid[i].toString(16); }
@@ -3826,7 +3827,7 @@ function showPixelArtLightbox(pixelsString) {
 
 // Interpolates from (x0,y0) to (x1,y1), stamping an NxN square brush (size
 // cells per side) at ~1-grid-cell steps so fast pointer moves don't leave
-// gaps on the 300-cell grid. Bounds-checked per cell, not just at the
+// gaps on the grid. Bounds-checked per cell, not just at the
 // stamp's center -- imageData.data is a flat buffer, so an unguarded
 // out-of-range pixel index wraps into the next row instead of clipping.
 function stampLine(grid, imageData, x0, y0, x1, y1, size, paletteIndex) {
@@ -3897,7 +3898,7 @@ function renderDrawPoll(div, poll, pollId, totalStudents) {
     }
     div.appendChild(gridDiv);
 
-    // New-format drawings (a 300x300 pixel grid, stored in its own
+    // New-format drawings (a 500x500 pixel grid, stored in its own
     // subcollection document per student rather than embedded in the poll
     // doc) are fetched asynchronously and appended once ready. This stays
     // fire-and-forget rather than making renderDrawPoll itself async --
@@ -3960,6 +3961,10 @@ function renderDrawPoll(div, poll, pollId, totalStudents) {
     var erasing = false;
     var brushSize = 4;
 
+    var eraserCursor = document.createElement("div");
+    eraserCursor.className = "draw-eraser-cursor";
+    eraserCursor.style.display = "none";
+
     var colorBtns = DRAW_COLORS.map(function(c, i) {
       var swatch = document.createElement("button");
       swatch.type = "button";
@@ -3972,6 +3977,7 @@ function renderDrawPoll(div, poll, pollId, totalStudents) {
         colorBtns.forEach(function(b) { b.classList.remove("draw-color-active"); });
         eraserBtn.classList.remove("draw-tool-active");
         swatch.classList.add("draw-color-active");
+        eraserCursor.style.display = "none";
       };
       return swatch;
     });
@@ -4028,14 +4034,55 @@ function renderDrawPoll(div, poll, pollId, totalStudents) {
     expandBtn.innerHTML = ICONS.maximize;
     expandBtn.title = "Expand to full screen";
     var isFullscreen = false;
+    var fullscreenPlaceholder = null;
+    var fullscreenCleanupObserver = null;
+
+    function exitFullscreen() {
+      isFullscreen = false;
+      drawContainer.classList.remove("draw-fullscreen");
+      if (fullscreenPlaceholder && fullscreenPlaceholder.parentNode) {
+        fullscreenPlaceholder.parentNode.replaceChild(drawContainer, fullscreenPlaceholder);
+      }
+      fullscreenPlaceholder = null;
+      if (fullscreenCleanupObserver) { fullscreenCleanupObserver.disconnect(); fullscreenCleanupObserver = null; }
+      expandBtn.innerHTML = ICONS.maximize;
+      expandBtn.title = "Expand to full screen";
+    }
+
     expandBtn.onclick = function(e) {
       e.stopPropagation();
-      isFullscreen = !isFullscreen;
-      drawContainer.classList.toggle("draw-fullscreen", isFullscreen);
-      expandBtn.innerHTML = isFullscreen ? ICONS.minimize : ICONS.maximize;
-      expandBtn.title = isFullscreen ? "Exit full screen" : "Expand to full screen";
+      if (isFullscreen) { exitFullscreen(); return; }
+      isFullscreen = true;
+      // `position: fixed` is relative to the nearest ancestor with a
+      // transform/filter/backdrop-filter, not necessarily the viewport --
+      // and every .poll card has exactly that (a lingering identity
+      // transform left behind by its entrance animation's fill-mode), which
+      // is why fullscreen previously only expanded within the poll's own
+      // box. Reparenting straight onto <body> sidesteps that regardless of
+      // which ancestor (now or in the future) would otherwise trap it.
+      fullscreenPlaceholder = document.createComment("draw-fullscreen-placeholder");
+      drawContainer.parentNode.insertBefore(fullscreenPlaceholder, drawContainer);
+      document.body.appendChild(drawContainer);
+      drawContainer.classList.add("draw-fullscreen");
+      expandBtn.innerHTML = ICONS.minimize;
+      expandBtn.title = "Exit full screen";
+      // Reparenting also lifts drawContainer out of pollSection, so it would
+      // otherwise survive (and become a permanent orphan) across the full
+      // innerHTML="" rebuild that loadPolls() does on every snapshot. Watch
+      // for this specific poll's own container leaving the document and
+      // tear the fullscreen overlay down if it does.
+      fullscreenCleanupObserver = new MutationObserver(function() {
+        if (!div.isConnected) {
+          if (fullscreenCleanupObserver) { fullscreenCleanupObserver.disconnect(); fullscreenCleanupObserver = null; }
+          drawContainer.remove();
+          fullscreenPlaceholder = null;
+          isFullscreen = false;
+        }
+      });
+      fullscreenCleanupObserver.observe(document.body, { childList: true, subtree: true });
     };
     canvasWrapper.appendChild(canvas);
+    canvasWrapper.appendChild(eraserCursor);
     canvasWrapper.appendChild(expandBtn);
 
     var submitBtn = document.createElement("button");
@@ -4054,6 +4101,22 @@ function renderDrawPoll(div, poll, pollId, totalStudents) {
       stampLine(grid, imageData, from.x, from.y, to.x, to.y, brushSize, erasing ? 0 : currentColorIndex);
       ctx.putImageData(imageData, 0, 0);
     }
+    // Shows a circle sized to the current brush at the pointer's position so
+    // students can see exactly what area the eraser will cover -- only while
+    // the eraser tool is active, not the color pen.
+    function updateEraserCursor(e) {
+      if (!erasing) { eraserCursor.style.display = "none"; return; }
+      var rect = canvas.getBoundingClientRect();
+      var cssPerCell = rect.width / DRAW_GRID_SIZE;
+      var size = brushSize * cssPerCell;
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      eraserCursor.style.width = size + "px";
+      eraserCursor.style.height = size + "px";
+      eraserCursor.style.left = (x - size / 2) + "px";
+      eraserCursor.style.top = (y - size / 2) + "px";
+      eraserCursor.style.display = "block";
+    }
     canvas.addEventListener("pointerdown", function(e) {
       e.preventDefault();
       drawing = true;
@@ -4063,11 +4126,14 @@ function renderDrawPoll(div, poll, pollId, totalStudents) {
       stampAndRedraw(p, p);
     });
     canvas.addEventListener("pointermove", function(e) {
+      updateEraserCursor(e);
       if (!drawing) { return; }
       var p = canvasPoint(e);
       stampAndRedraw(lastPoint, p);
       lastPoint = p;
     });
+    canvas.addEventListener("pointerenter", function(e) { updateEraserCursor(e); });
+    canvas.addEventListener("pointerleave", function() { eraserCursor.style.display = "none"; });
     function stopDrawing() { drawing = false; lastPoint = null; }
     canvas.addEventListener("pointerup", stopDrawing);
     canvas.addEventListener("pointercancel", stopDrawing);
