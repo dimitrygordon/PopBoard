@@ -31,6 +31,7 @@
   --checkbox-checked: #0071e3;
   --noise-opacity: 0.025;
   --card-bg-translucent: rgba(255, 255, 255, 0.78);
+  --motion-glow-color: rgba(0, 0, 0, 0.08);
 }
 
 [data-theme="dark"] {
@@ -62,6 +63,7 @@
   --checkbox-checked: #0a84ff;
   --noise-opacity: 0.04;
   --card-bg-translucent: rgba(28, 28, 30, 0.78);
+  --motion-glow-color: rgba(10, 132, 255, 0.14);
 }
 
 * { box-sizing: border-box; }
@@ -241,16 +243,32 @@ button:active { transform: scale(0.97); }
     background: color-mix(in srgb, var(--delete-color) 85%, black) !important;
     border-color: color-mix(in srgb, var(--delete-color) 85%, black) !important;
   }
-  .post:hover, .poll:hover, .teacher-panel:hover {
-    box-shadow: var(--shadow-md); border-color: rgba(255,255,255,0.12); transform: translateY(-2px);
+  .post:hover, .poll:hover, .teacher-panel:hover, .metric-card:hover {
+    box-shadow: var(--shadow-md); border-color: rgba(255,255,255,0.12); transform: translateY(-2px) scale(1.015);
   }
   .upvote:hover { background: var(--button-hover-bg); border-color: var(--upvote-active); transform: scale(1.05); }
   .board-card:hover { box-shadow: var(--shadow-md); border-color: var(--accent); transform: translateY(-2px); }
   #emojiCircle:hover { border-color: var(--accent); box-shadow: var(--shadow-md); }
   .comment-image:hover, .poll-image:hover { transform: scale(1.02); box-shadow: var(--shadow-md); }
   ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+  /* seat stays scaled for the whole drag too, since the dragged seat's
+     cursor position tracks its own moving left/top -- harmless, reads fine */
+  .seat:hover { transform: scale(1.06); }
   .seat:hover .seat-delete { display: block; }
+  .confusion-btn:hover, .draw-color:hover { transform: scale(1.06); }
   button:hover { background: var(--button-hover-bg); border-color: var(--text-color); transform: translateY(-1px); }
+  /* Cursor-tracked spotlight: a soft shadow in light mode, an accent-tinted
+     glow in dark mode (see --motion-glow-color), confined to the "major
+     card" surfaces. ::after is already taken on these by the noise-texture
+     overlay, so this uses ::before, which is free everywhere. --glow-x/-y
+     are written by wireMotionGlow() in app.js on pointermove; border-radius:
+     inherit clips it to each shape (rounded cards, circular buttons/seats). */
+  .post::before, .poll::before, .confusion-btn::before, .seat::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit;
+    background: radial-gradient(circle at var(--glow-x, 50%) var(--glow-y, 50%), var(--motion-glow-color) 0%, transparent 60%);
+    opacity: 0; transition: opacity 0.25s ease; pointer-events: none;
+  }
+  .motion-glow-active::before { opacity: 1; }
   .keyword-chip:hover { background: var(--button-hover-bg); border-color: var(--accent); }
   /* hover-capable pointers get the count tucked away until hovered; touch
      devices (outside this media query) fall back to always showing it */
@@ -638,10 +656,24 @@ button.hide-toggle, .reply button.hide-toggle {
   30% { transform: scale(1.4) translate(var(--tx), var(--ty)); opacity: 1; }
   100% { transform: scale(0.1); opacity: 0; }
 }
-.upvote.pop { animation: pop 0.25s ease; }
-@keyframes pop {
+/* Sitewide click feedback: .motion-pop on the clicked element itself,
+   .motion-pop-wave (smaller peak, slightly delayed) rippled to its
+   neighbors -- applied via the delegated click listener in app.js. */
+/* Doubled class selector (valid CSS, bumps specificity to 0,2,0) so this
+   reliably wins over a card's own single-class `animation` rule (e.g.
+   .poll's entrance animation below) regardless of stylesheet order --
+   without it, two same-specificity rules on the same element tie-break by
+   source order, and .poll's later position would silently swallow the pop. */
+.motion-pop.motion-pop { animation: motion-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.motion-pop-wave.motion-pop-wave { animation: motion-pop-wave 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); animation-delay: 60ms; }
+@keyframes motion-pop {
   0% { transform: scale(1); }
   50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+@keyframes motion-pop-wave {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.06); }
   100% { transform: scale(1); }
 }
 
@@ -1246,6 +1278,7 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
 .confusion-label { font-size: 0.8rem; color: var(--text-secondary); }
 .confusion-buttons { display: flex; gap: 10px; }
 .confusion-btn {
+  position: relative;
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -1263,6 +1296,19 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
 .confusion-dot-green { background: #34c759; }
 .confusion-dot-orange { background: #ff9500; }
 .confusion-dot-red { background: #ff453a; }
+
+/* Minimalistic real-time timeline: a thin colored strip at the bottom inner
+   edge of #confusionIndicator (which is already position:fixed), sitting
+   right at the seam above #newPost. Built by renderConfusionSparkline() in
+   app.js as a time-proportional linear-gradient; no JS-driven positioning
+   needed here since it's just an overlay child, not a layout participant. */
+.confusion-sparkline {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 4px;
+  background: var(--border-color);
+  pointer-events: none;
+}
 
 .icon-svg { width: 1em; height: 1em; vertical-align: -0.15em; margin-right: 4px; flex-shrink: 0; }
 

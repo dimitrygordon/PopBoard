@@ -46,6 +46,7 @@ let studentCorrectStreak = 0;
 let celebratedPollIds = new Set();
 let unsubSeats = null;
 let unsubOwnConfusion = null;
+let confusionSparklineInterval = null;
 let seatingStudentsCache = {};
 let seatingSeatsCache = [];
 let draggingSeatId = null;
@@ -124,6 +125,7 @@ const confusionIndicator = document.getElementById("confusionIndicator");
 const confusionGreenBtn = document.getElementById("confusionGreenBtn");
 const confusionOrangeBtn = document.getElementById("confusionOrangeBtn");
 const confusionRedBtn = document.getElementById("confusionRedBtn");
+const confusionSparkline = document.getElementById("confusionSparkline");
 const postInput = document.getElementById("postInput");
 const postBtn = document.getElementById("postBtn");
 const postsDiv = document.getElementById("posts");
@@ -360,6 +362,69 @@ function teardownBoardListeners() {
   if (unsubDashSeats) { unsubDashSeats(); unsubDashSeats = null; }
   if (unsubOwnConfusion) { unsubOwnConfusion(); unsubOwnConfusion = null; }
 }
+
+// ─── SITEWIDE MOTION: click "pop" + ripple to neighbors ─────────────────────
+// Page-global, wired once (not per-board, not per-render) since it's plain
+// event delegation on `document` -- survives every full innerHTML rebuild of
+// posts/polls/seats without needing to be re-attached.
+
+// Restart-safe: removing then re-adding the class forces the animation to
+// play from scratch even if it's re-triggered before the previous run finished.
+function restartAnimationClass(el, cls) {
+  el.classList.remove(cls);
+  void el.offsetWidth; // force reflow so the removal commits before re-adding
+  el.classList.add(cls);
+}
+function applyMotionPop(el) { restartAnimationClass(el, "motion-pop"); }
+function applyMotionWave(el) { restartAnimationClass(el, "motion-pop-wave"); }
+
+// Finds the 1-2 elements that should "wave" (a smaller, delayed pop) when
+// `el` is clicked, using whichever adjacency model actually matches the
+// container's real layout: DOM order maps to visual order for the flex-row
+// (confusion buttons, draw-poll color swatches) and vertical-stack (posts)
+// containers, but NOT for seats (free-form x/y placement, so this uses real
+// spatial distance instead) or polls (carousel siblings are never
+// simultaneously visible, so there's no visible neighbor to wave to).
+function findMotionNeighbors(el) {
+  if (el.classList.contains("confusion-btn") || el.classList.contains("draw-color")) {
+    return [el.previousElementSibling, el.nextElementSibling].filter(function(n) { return n; });
+  }
+  if (el.classList.contains("post")) {
+    var postsContainer = document.getElementById("posts");
+    if (!postsContainer || !postsContainer.contains(el)) { return []; }
+    return [el.previousElementSibling, el.nextElementSibling]
+      .filter(function(n) { return n && n.classList && n.classList.contains("post"); });
+  }
+  if (el.classList.contains("seat")) {
+    var canvas = el.closest("#seatCanvas, #dailySeatMapCanvas");
+    if (!canvas) { return []; }
+    var cache = canvas.id === "dailySeatMapCanvas" ? dashSeatSeatsCache : seatingSeatsCache;
+    var seatId = el.dataset.seatId;
+    var seat = cache.filter(function(s) { return s.id === seatId; })[0];
+    if (!seat) { return []; }
+    var nearestIds = cache
+      .filter(function(s) { return s.id !== seatId; })
+      .map(function(s) { return { id: s.id, dist: Math.hypot((s.x || 0) - (seat.x || 0), (s.y || 0) - (seat.y || 0)) }; })
+      .sort(function(a, b) { return a.dist - b.dist; })
+      .slice(0, 2);
+    return nearestIds
+      .map(function(n) { return canvas.querySelector('.seat[data-seat-id="' + n.id + '"]'); })
+      .filter(function(n) { return n; });
+  }
+  return []; // polls, and anything else: no visible neighbor to wave to
+}
+
+// Capture phase is required here, not bubble: many existing handlers (e.g.
+// upvote, poll-vote, seat-delete) call e.stopPropagation() in their own
+// bubble-phase click handler, which would silently stop a bubble-phase
+// document listener from ever seeing the event. A capture-phase listener on
+// document runs before the target's own handler, so it's unaffected.
+document.addEventListener("click", function(e) {
+  var el = e.target.closest("button, .post, .poll, .confusion-btn, .seat");
+  if (!el) { return; }
+  applyMotionPop(el);
+  findMotionNeighbors(el).forEach(applyMotionWave);
+}, true);
 
 joinBtn.onclick = async function() {
   username = usernameInput.value.trim();
@@ -1894,6 +1959,14 @@ var CONFUSION_COLORS = { red: "#ff453a", orange: "#ff9500", green: "#34c759" };
 // recomputed from the absolute `setAtMs` timestamp, so the visual always
 // lands in the correct spot in its fade regardless of when/how often we redraw.
 function applyConfusionVisual(el, state, setAtMs) {
+  // Force-cancel any in-flight fade first: clearing the inline `transition`
+  // override below doesn't disable transitions, it falls back to the
+  // stylesheet's global `button { transition: all 0.2s ease; }` -- and since
+  // the target backgroundColor value isn't actually changing in the
+  // deactivate branch, no new transition would be detected, so without this
+  // the *old* multi-minute fade just keeps running on its original schedule
+  // instead of snapping off immediately.
+  el.getAnimations().forEach(function(a) { a.cancel(); });
   var neutral = getComputedStyle(document.documentElement).getPropertyValue("--bg-secondary").trim() || "#ffffff";
   var remaining = (state && setAtMs) ? CONFUSION_DURATION_MS - (Date.now() - setAtMs) : 0;
   if (!state || !CONFUSION_COLORS[state] || remaining <= 0) {
@@ -1923,12 +1996,56 @@ async function setMyConfusionState(state) {
   if (hist.length > 40) { await updateDoc(studentRef, { confusionHistory: hist.slice(hist.length - 40) }); }
 }
 
+var CONFUSION_SPARKLINE_WINDOW_MS = 15 * 60 * 1000;
+
+// Builds a time-proportional (not index-proportional, unlike the teacher-
+// facing discrete "tick" timelines elsewhere) CSS linear-gradient string
+// from history entries falling in [now - windowMs, now], carrying in
+// whichever state was active at the window's left edge so the strip never
+// shows a false gap. Pure function (no DOM, no Date.now() call) so the
+// window-clamping/carry-in/color-mapping logic is unit-testable in isolation.
+function buildConfusionSparklineGradient(history, now, windowMs, colors, neutralColor) {
+  var windowStart = now - windowMs;
+  var hist = (history || []).slice().sort(function(a, b) { return a.setAt - b.setAt; });
+  var carryInState = null;
+  var inWindow = [];
+  for (var i = 0; i < hist.length; i++) {
+    if (hist[i].setAt <= windowStart) { carryInState = hist[i].state; }
+    else { inWindow.push(hist[i]); }
+  }
+  var stops = [];
+  function pushSegment(state, start, end) {
+    var color = colors[state] || neutralColor;
+    var pctStart = Math.max(0, Math.min(100, ((start - windowStart) / windowMs) * 100));
+    var pctEnd = Math.max(0, Math.min(100, ((end - windowStart) / windowMs) * 100));
+    stops.push(color + " " + pctStart + "%", color + " " + pctEnd + "%");
+  }
+  var cursor = windowStart;
+  var currentState = carryInState;
+  inWindow.forEach(function(h) {
+    pushSegment(currentState, cursor, h.setAt);
+    cursor = h.setAt;
+    currentState = h.state;
+  });
+  pushSegment(currentState, cursor, now);
+  return "linear-gradient(to right, " + stops.join(", ") + ")";
+}
+
+function renderConfusionSparkline(history) {
+  if (!confusionSparkline) { return; }
+  confusionSparkline.style.background = buildConfusionSparklineGradient(
+    history, Date.now(), CONFUSION_SPARKLINE_WINDOW_MS, CONFUSION_COLORS, "var(--border-color)"
+  );
+}
+
 function initConfusionIndicator() {
   if (unsubOwnConfusion) { unsubOwnConfusion(); unsubOwnConfusion = null; }
+  if (confusionSparklineInterval) { clearInterval(confusionSparklineInterval); confusionSparklineInterval = null; }
   if (!currentStudentId || !currentBoardId) { return; }
   confusionGreenBtn.onclick = function() { playPop(); setMyConfusionState("green"); };
   confusionOrangeBtn.onclick = function() { playPop(); setMyConfusionState("orange"); };
   confusionRedBtn.onclick = function() { playPop(); setMyConfusionState("red"); };
+  var latestConfusionHistory = [];
   unsubOwnConfusion = onSnapshot(doc(db, "boards", currentBoardId, "students", currentStudentId), function(d) {
     if (!d.exists()) { return; }
     var data = d.data();
@@ -1938,7 +2055,13 @@ function initConfusionIndicator() {
     applyConfusionVisual(confusionGreenBtn, data.confusionState === "green" ? "green" : null, data.confusionSetAt);
     applyConfusionVisual(confusionOrangeBtn, data.confusionState === "orange" ? "orange" : null, data.confusionSetAt);
     applyConfusionVisual(confusionRedBtn, data.confusionState === "red" ? "red" : null, data.confusionSetAt);
+    latestConfusionHistory = data.confusionHistory || [];
+    renderConfusionSparkline(latestConfusionHistory);
   });
+  // The sparkline's right edge represents "now," which keeps advancing even
+  // without a new confusion-state write -- redraw on a timer too, not just
+  // on each Firestore snapshot, so it visibly stays live.
+  confusionSparklineInterval = setInterval(function() { renderConfusionSparkline(latestConfusionHistory); }, 15000);
 }
 
 // ─── SEATING MAP (teacher-only sandbox) ─────────────────────────────────────
@@ -2225,6 +2348,48 @@ function wireSeatHoverDelegation(canvasEl, openPopupFn) {
     if (seatPopupOpenedByHover && openSeatPopupId === seatEl.dataset.seatId) { closeSeatPopup(); }
   });
 }
+
+// Cursor-tracked "spotlight" on the major interactive cards: a single
+// delegated, rAF-throttled pointermove listener (not one per card, and not
+// re-wired on every post/poll/seat rebuild) writes --glow-x/--glow-y custom
+// properties that each card's own ::before radial-gradient reads (see
+// style.css). Skipped entirely on touch (no persistent hover/cursor to
+// track, matching wireSeatHoverDelegation's own guard above) and under
+// prefers-reduced-motion (this is a continuous per-frame JS loop, not a CSS
+// transition, so the global reduced-motion CSS catch-all doesn't cover it).
+function wireMotionGlow(selector) {
+  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) { return; }
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { return; }
+  var activeEl = null;
+  var pendingEvent = null;
+  var frameQueued = false;
+  function processFrame() {
+    frameQueued = false;
+    var e = pendingEvent;
+    if (!e) { return; }
+    var el = e.target.closest(selector);
+    if (el !== activeEl) {
+      if (activeEl) { activeEl.classList.remove("motion-glow-active"); }
+      activeEl = el;
+      if (activeEl) { activeEl.classList.add("motion-glow-active"); }
+    }
+    if (activeEl) {
+      var rect = activeEl.getBoundingClientRect();
+      activeEl.style.setProperty("--glow-x", ((e.clientX - rect.left) / rect.width * 100) + "%");
+      activeEl.style.setProperty("--glow-y", ((e.clientY - rect.top) / rect.height * 100) + "%");
+    }
+  }
+  document.addEventListener("pointermove", function(e) {
+    pendingEvent = e;
+    if (!frameQueued) { frameQueued = true; requestAnimationFrame(processFrame); }
+  });
+  // pointerout bubbles (unlike pointerleave) and fires with relatedTarget
+  // null when the pointer leaves the browser viewport entirely.
+  document.addEventListener("pointerout", function(e) {
+    if (!e.relatedTarget && activeEl) { activeEl.classList.remove("motion-glow-active"); activeEl = null; }
+  });
+}
+wireMotionGlow(".post, .poll, .confusion-btn, .seat");
 
 function getStudentMCResponseText(poll, studentUsername) {
   var options = poll.options || [];
