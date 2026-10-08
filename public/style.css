@@ -609,6 +609,14 @@ button.hide-toggle, .reply button.hide-toggle {
   justify-content: center; z-index: 1000; cursor: pointer;
 }
 .image-lightbox img { max-width: 90%; max-height: 90%; border-radius: 8px; }
+.pixel-art-lightbox-canvas {
+  width: 90vmin;
+  height: 90vmin;
+  max-width: 90%;
+  max-height: 90%;
+  image-rendering: pixelated;
+  border-radius: 8px;
+}
 
 .master-admin-section { margin-top: 48px; padding-top: 32px; border-top: 2px solid var(--border-color); }
 .master-admin-section h2 { color: var(--delete-color); font-size: 1.5rem; margin-bottom: 16px; }
@@ -1126,6 +1134,7 @@ button.hide-toggle, .reply button.hide-toggle {
   border-radius: 10px;
   cursor: pointer;
 }
+canvas.seat-response-thumb { image-rendering: pixelated; }
 
 .seat-delete {
   position: absolute;
@@ -1195,6 +1204,7 @@ button.hide-toggle, .reply button.hide-toggle {
   min-width: 3px;
 }
 .confusion-timeline .tick.red { background: #ff453a; }
+.confusion-timeline .tick.orange { background: #ff9500; }
 .confusion-timeline .tick.green { background: #34c759; }
 .confusion-timeline-empty { font-size: 0.78rem; color: var(--text-secondary); margin-top: 10px; }
 
@@ -1246,6 +1256,7 @@ button.hide-toggle, .reply button.hide-toggle {
 .confusion-btn.confusion-active { border-color: transparent; box-shadow: 0 0 0 2px var(--accent); }
 .confusion-dot { display: block; width: 11px; height: 11px; border-radius: 50%; }
 .confusion-dot-green { background: #34c759; }
+.confusion-dot-orange { background: #ff9500; }
 .confusion-dot-red { background: #ff453a; }
 
 .icon-svg { width: 1em; height: 1em; vertical-align: -0.15em; margin-right: 4px; flex-shrink: 0; }
@@ -1274,18 +1285,75 @@ button.hide-toggle, .reply button.hide-toggle {
   min-width: auto;
   cursor: pointer;
 }
-.draw-color.draw-color-active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.draw-color.draw-color-active, .draw-eraser-btn.draw-tool-active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.draw-eraser-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  color: var(--text-color);
+}
+.draw-eraser-btn .icon-svg { margin-right: 0; }
+.draw-size-container { display: flex; align-items: center; gap: 6px; }
+.draw-size-slider { width: 90px; }
+.draw-size-label { font-size: 0.78rem; color: var(--text-secondary); min-width: 1.4em; text-align: right; }
+
+.draw-canvas-wrapper { position: relative; }
 .draw-canvas {
   width: 100%;
-  max-width: 480px;
-  aspect-ratio: 3 / 2;
+  max-width: 600px;
+  aspect-ratio: 1 / 1;
   background: #ffffff;
   border: 1.5px solid var(--border-color);
   border-radius: 12px;
   touch-action: none;
   display: block;
   cursor: crosshair;
+  image-rendering: pixelated;
 }
+.draw-expand-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  min-width: auto;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--card-bg-translucent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid var(--border-color);
+  color: var(--text-color);
+  cursor: pointer;
+}
+.draw-expand-btn .icon-svg { margin-right: 0; }
+
+.draw-container.draw-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--bg-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  overflow: auto;
+}
+.draw-container.draw-fullscreen .draw-canvas-wrapper {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: min(90vw, 90vh);
+  max-height: min(90vw, 90vh);
+  aspect-ratio: 1 / 1;
+}
+.draw-container.draw-fullscreen .draw-canvas { width: 100%; height: 100%; max-width: none; }
+
 .draw-thumb-grid {
   display: flex;
   flex-wrap: wrap;
@@ -1293,12 +1361,13 @@ button.hide-toggle, .reply button.hide-toggle {
   margin-top: 8px;
 }
 .draw-thumb { text-align: center; }
-.draw-thumb img {
+.draw-thumb img, .draw-thumb-canvas {
   width: 110px;
-  height: 74px;
+  height: 110px;
   object-fit: cover;
   border-radius: 8px;
   border: 1.5px solid var(--border-color);
   cursor: pointer;
 }
+.draw-thumb-canvas { image-rendering: pixelated; display: block; }
 .draw-thumb span { display: block; font-size: 0.72rem; color: var(--text-secondary); margin-top: 4px; }

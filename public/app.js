@@ -79,7 +79,10 @@ var ICONS = {
   moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></svg>',
   sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v3M12 18.5v3M3.5 12h3M17.5 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>',
   mask: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M2 9c2-1.5 5-2.2 10-2.2S20 7.5 22 9c-.3 4-2.3 7-5 7-2 0-2.6-1.7-5-1.7S7 16 5 16c-2.7 0-4.7-3-5-7Z"/><circle cx="7.5" cy="10.3" r="0.9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="10.3" r="0.9" fill="currentColor" stroke="none"/></svg>',
-  book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H12v18H5.5A1.5 1.5 0 0 1 4 19.5Z"/><path d="M20 4.5A1.5 1.5 0 0 0 18.5 3H12v18h6.5a1.5 1.5 0 0 0 1.5-1.5Z"/></svg>'
+  book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H12v18H5.5A1.5 1.5 0 0 1 4 19.5Z"/><path d="M20 4.5A1.5 1.5 0 0 0 18.5 3H12v18h6.5a1.5 1.5 0 0 0 1.5-1.5Z"/></svg>',
+  maximize: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M4 9V4h5"/><path d="M15 4h5v5"/><path d="M20 15v5h-5"/><path d="M9 20H4v-5"/></svg>',
+  minimize: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M9 4v5H4"/><path d="M15 4v5h5"/><path d="M20 15h-5v5"/><path d="M9 20v-5H4"/></svg>',
+  eraser: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M3.5 16.5 12 8l5 5-5.5 5.5a2 2 0 0 1-2.8 0l-4.7-4.7a2 2 0 0 1 0-2.8Z"/><path d="M7 20h11"/></svg>'
 };
 
 function iconLabel(name, text) { return ICONS[name] + (text ? " " + text : ""); }
@@ -119,6 +122,7 @@ const logoutBtnSeats = document.getElementById("logoutBtnSeats");
 const themeToggleSeats = document.getElementById("themeToggleSeats");
 const confusionIndicator = document.getElementById("confusionIndicator");
 const confusionGreenBtn = document.getElementById("confusionGreenBtn");
+const confusionOrangeBtn = document.getElementById("confusionOrangeBtn");
 const confusionRedBtn = document.getElementById("confusionRedBtn");
 const postInput = document.getElementById("postInput");
 const postBtn = document.getElementById("postBtn");
@@ -1881,7 +1885,7 @@ function showImageLightbox(imageUrl) {
 // ─── CONFUSION STATE (shared by seating map + student indicator) ───────────
 
 var CONFUSION_DURATION_MS = 5 * 60 * 1000;
-var CONFUSION_COLORS = { red: "#ff453a", green: "#34c759" };
+var CONFUSION_COLORS = { red: "#ff453a", orange: "#ff9500", green: "#34c759" };
 
 // Fades `el`'s background from the full confusion color to the theme-neutral
 // color over whatever time remains in the 5-minute window. Using a CSS
@@ -1923,13 +1927,16 @@ function initConfusionIndicator() {
   if (unsubOwnConfusion) { unsubOwnConfusion(); unsubOwnConfusion = null; }
   if (!currentStudentId || !currentBoardId) { return; }
   confusionGreenBtn.onclick = function() { playPop(); setMyConfusionState("green"); };
+  confusionOrangeBtn.onclick = function() { playPop(); setMyConfusionState("orange"); };
   confusionRedBtn.onclick = function() { playPop(); setMyConfusionState("red"); };
   unsubOwnConfusion = onSnapshot(doc(db, "boards", currentBoardId, "students", currentStudentId), function(d) {
     if (!d.exists()) { return; }
     var data = d.data();
     confusionGreenBtn.classList.toggle("confusion-active", data.confusionState === "green");
+    confusionOrangeBtn.classList.toggle("confusion-active", data.confusionState === "orange");
     confusionRedBtn.classList.toggle("confusion-active", data.confusionState === "red");
     applyConfusionVisual(confusionGreenBtn, data.confusionState === "green" ? "green" : null, data.confusionSetAt);
+    applyConfusionVisual(confusionOrangeBtn, data.confusionState === "orange" ? "orange" : null, data.confusionSetAt);
     applyConfusionVisual(confusionRedBtn, data.confusionState === "red" ? "red" : null, data.confusionSetAt);
   });
 }
@@ -2300,11 +2307,32 @@ function renderSeatResponsePopup(seatId, student) {
       } else if (poll.type === "draw") {
         var lastImg = entries.filter(function(e) { return e.imageUrl; }).slice(-1)[0];
         if (lastImg) {
+          // Legacy (pre-pixel-grid-rework) submission -- still an uploaded image.
           var img = document.createElement("img");
           img.className = "seat-response-thumb";
           img.src = lastImg.imageUrl;
           (function(url) { img.onclick = function() { showImageLightbox(url); }; })(lastImg.imageUrl);
           popup.appendChild(img);
+        } else {
+          // New-format drawing lives in its own subcollection doc, so this
+          // popup must stay synchronous (positionSeatPopup below is what
+          // actually attaches it to the DOM and wires its hover/outside-click
+          // close handlers -- an inline await here would delay the popup's
+          // very existence on every hover transition across seats). Fetch
+          // and append fire-and-forget once the popup is already live.
+          (function(pid, uname, popupEl) {
+            (async function() {
+              var q = query(collection(db, "boards", currentBoardId, "polls", pid, "drawings"), where("username", "==", uname));
+              var snap = await getDocs(q);
+              if (snap.empty) { return; }
+              var canvasEl = document.createElement("canvas");
+              canvasEl.className = "seat-response-thumb";
+              var pixels = snap.docs[snap.docs.length - 1].data().pixels;
+              renderPixelGridToCanvas(canvasEl, pixels);
+              (function(px) { canvasEl.onclick = function() { showPixelArtLightbox(px); }; })(pixels);
+              popupEl.appendChild(canvasEl);
+            })();
+          })(seatMapResponsePollId, student.username, popup);
         }
       }
     }
@@ -2358,7 +2386,7 @@ function openSeatPopup(seatId) {
       timeline.className = "confusion-timeline";
       hist.forEach(function(h) {
         var tick = document.createElement("div");
-        tick.className = "tick " + (h.state === "red" ? "red" : "green");
+        tick.className = "tick " + (h.state === "red" ? "red" : h.state === "orange" ? "orange" : "green");
         tick.title = new Date(h.setAt).toLocaleString();
         timeline.appendChild(tick);
       });
@@ -2493,7 +2521,7 @@ function renderConfusionDetailPopup(seatId, student) {
       timeline.className = "confusion-timeline";
       hist.forEach(function(h) {
         var tick = document.createElement("div");
-        tick.className = "tick " + (h.state === "red" ? "red" : "green");
+        tick.className = "tick " + (h.state === "red" ? "red" : h.state === "orange" ? "orange" : "green");
         tick.title = new Date(h.setAt).toLocaleString();
         timeline.appendChild(tick);
       });
@@ -3744,6 +3772,88 @@ function renderFreePoll(div, poll, pollId, totalStudents) {
 }
 
 var DRAW_COLORS = ["#1d1d1f", "#ff453a", "#0a84ff", "#34c759"];
+var DRAW_GRID_SIZE = 300;
+// Index 0 is the background/eraser color; 1-4 are the selectable pen colors.
+var DRAW_PALETTE = ["#ffffff"].concat(DRAW_COLORS);
+
+function hexToRgb(hex) {
+  return {
+    r: parseInt(hex.slice(1, 3), 16),
+    g: parseInt(hex.slice(3, 5), 16),
+    b: parseInt(hex.slice(5, 7), 16)
+  };
+}
+
+// A drawing is a flat 300x300 grid of palette indices, serialized as one hex
+// digit per pixel (90,000 chars, fixed size regardless of how much is drawn)
+// -- stored in its own Firestore document (see renderDrawPoll's submit flow)
+// rather than as an uploaded image, so there's no Storage round trip to hang.
+function packGridToString(grid) {
+  var out = "";
+  for (var i = 0; i < grid.length; i++) { out += grid[i].toString(16); }
+  return out;
+}
+
+function renderPixelGridToCanvas(canvasEl, pixelsString) {
+  canvasEl.width = DRAW_GRID_SIZE;
+  canvasEl.height = DRAW_GRID_SIZE;
+  var ctx = canvasEl.getContext("2d");
+  var imageData = ctx.createImageData(DRAW_GRID_SIZE, DRAW_GRID_SIZE);
+  var paletteRgb = DRAW_PALETTE.map(hexToRgb);
+  var total = DRAW_GRID_SIZE * DRAW_GRID_SIZE;
+  for (var i = 0; i < total && i < pixelsString.length; i++) {
+    var idx = parseInt(pixelsString[i], 16) || 0;
+    var rgb = paletteRgb[idx] || paletteRgb[0];
+    var o = i * 4;
+    imageData.data[o] = rgb.r;
+    imageData.data[o + 1] = rgb.g;
+    imageData.data[o + 2] = rgb.b;
+    imageData.data[o + 3] = 255;
+  }
+  ctx.putImageData(imageData, 0, 0);
+}
+
+function showPixelArtLightbox(pixelsString) {
+  var lb = document.createElement("div");
+  lb.className = "image-lightbox";
+  var canvas = document.createElement("canvas");
+  canvas.className = "pixel-art-lightbox-canvas";
+  renderPixelGridToCanvas(canvas, pixelsString);
+  lb.appendChild(canvas);
+  lb.onclick = function() { lb.remove(); };
+  document.body.appendChild(lb);
+}
+
+// Interpolates from (x0,y0) to (x1,y1), stamping an NxN square brush (size
+// cells per side) at ~1-grid-cell steps so fast pointer moves don't leave
+// gaps on the 300-cell grid. Bounds-checked per cell, not just at the
+// stamp's center -- imageData.data is a flat buffer, so an unguarded
+// out-of-range pixel index wraps into the next row instead of clipping.
+function stampLine(grid, imageData, x0, y0, x1, y1, size, paletteIndex) {
+  var rgb = hexToRgb(DRAW_PALETTE[paletteIndex]);
+  var steps = Math.max(1, Math.round(Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0))));
+  var loOffset = -Math.floor(size / 2);
+  var hiOffset = size - Math.floor(size / 2) - 1;
+  for (var s = 0; s <= steps; s++) {
+    var cx = Math.round(x0 + (x1 - x0) * (s / steps));
+    var cy = Math.round(y0 + (y1 - y0) * (s / steps));
+    for (var dy = loOffset; dy <= hiOffset; dy++) {
+      var py = cy + dy;
+      if (py < 0 || py >= DRAW_GRID_SIZE) { continue; }
+      for (var dx = loOffset; dx <= hiOffset; dx++) {
+        var px = cx + dx;
+        if (px < 0 || px >= DRAW_GRID_SIZE) { continue; }
+        var idx = py * DRAW_GRID_SIZE + px;
+        grid[idx] = paletteIndex;
+        var o = idx * 4;
+        imageData.data[o] = rgb.r;
+        imageData.data[o + 1] = rgb.g;
+        imageData.data[o + 2] = rgb.b;
+        imageData.data[o + 3] = 255;
+      }
+    }
+  }
+}
 
 function renderDrawPoll(div, poll, pollId, totalStudents) {
   var uniqueResponders = new Set();
@@ -3760,6 +3870,8 @@ function renderDrawPoll(div, poll, pollId, totalStudents) {
   if (isTeacher || poll.responsesVisible) {
     var gridDiv = document.createElement("div");
     gridDiv.className = "draw-thumb-grid";
+    // Legacy drawings (submitted before the pixel-grid rework) still carry
+    // an uploaded imageUrl -- render those as-is.
     (poll.history || []).forEach(function(e) {
       if (!e.imageUrl) { return; }
       var thumb = document.createElement("div");
@@ -3773,13 +3885,42 @@ function renderDrawPoll(div, poll, pollId, totalStudents) {
       thumb.appendChild(label);
       gridDiv.appendChild(thumb);
     });
-    if (!gridDiv.children.length) {
+    // uniqueResponders already reflects every submission (legacy or new --
+    // both write the same lightweight history marker), so this is a
+    // reliable synchronous "has anyone responded at all" check even before
+    // the async fetch below resolves.
+    if (uniqueResponders.size === 0) {
       var emptyMsg = document.createElement("div");
       emptyMsg.className = "confusion-timeline-empty";
       emptyMsg.textContent = "No drawings submitted yet.";
       gridDiv.appendChild(emptyMsg);
     }
     div.appendChild(gridDiv);
+
+    // New-format drawings (a 300x300 pixel grid, stored in its own
+    // subcollection document per student rather than embedded in the poll
+    // doc) are fetched asynchronously and appended once ready. This stays
+    // fire-and-forget rather than making renderDrawPoll itself async --
+    // code below (the student's own canvas/toolbar, and the isDisplayMode
+    // placeholder) must not get delayed behind this fetch, since
+    // poll.responsesVisible isn't gated on !isTeacher.
+    (async function() {
+      var drawingsSnap = await getDocs(collection(db, "boards", currentBoardId, "polls", pollId, "drawings"));
+      drawingsSnap.forEach(function(d) {
+        var data = d.data();
+        var thumb = document.createElement("div");
+        thumb.className = "draw-thumb";
+        var canvasEl = document.createElement("canvas");
+        canvasEl.className = "draw-thumb-canvas";
+        renderPixelGridToCanvas(canvasEl, data.pixels);
+        (function(pixels) { canvasEl.onclick = function() { showPixelArtLightbox(pixels); }; })(data.pixels);
+        var label = document.createElement("span");
+        label.textContent = data.username;
+        thumb.appendChild(canvasEl);
+        thumb.appendChild(label);
+        gridDiv.appendChild(thumb);
+      });
+    })();
   }
 
   if (!isTeacher && !isDisplayMode) {
@@ -3792,20 +3933,32 @@ function renderDrawPoll(div, poll, pollId, totalStudents) {
       return;
     }
 
+    var drawContainer = document.createElement("div");
+    drawContainer.className = "draw-container";
+
     var toolbar = document.createElement("div");
     toolbar.className = "draw-toolbar";
+
+    var canvasWrapper = document.createElement("div");
+    canvasWrapper.className = "draw-canvas-wrapper";
+
     var canvas = document.createElement("canvas");
     canvas.className = "draw-canvas";
-    canvas.width = 480;
-    canvas.height = 320;
+    canvas.width = DRAW_GRID_SIZE;
+    canvas.height = DRAW_GRID_SIZE;
     var ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.lineWidth = 4;
-    var currentColor = DRAW_COLORS[0];
-    ctx.strokeStyle = currentColor;
+    // Pixel-grid state: `grid` (palette indices, 0 = background) is what
+    // actually gets serialized and submitted; `imageData` is kept in sync
+    // alongside it purely so each stroke can be redrawn with one
+    // putImageData call instead of rebuilding the canvas from `grid` every time.
+    var grid = new Uint8Array(DRAW_GRID_SIZE * DRAW_GRID_SIZE);
+    var imageData = ctx.createImageData(DRAW_GRID_SIZE, DRAW_GRID_SIZE);
+    for (var wi = 0; wi < imageData.data.length; wi++) { imageData.data[wi] = 255; } // all-white, fully opaque
+    ctx.putImageData(imageData, 0, 0);
+
+    var currentColorIndex = 1; // DRAW_PALETTE[0] is the background/eraser color
+    var erasing = false;
+    var brushSize = 4;
 
     var colorBtns = DRAW_COLORS.map(function(c, i) {
       var swatch = document.createElement("button");
@@ -3814,14 +3967,48 @@ function renderDrawPoll(div, poll, pollId, totalStudents) {
       swatch.style.background = c;
       swatch.onclick = function(e) {
         e.stopPropagation();
-        currentColor = c;
-        ctx.strokeStyle = c;
+        erasing = false;
+        currentColorIndex = i + 1;
         colorBtns.forEach(function(b) { b.classList.remove("draw-color-active"); });
+        eraserBtn.classList.remove("draw-tool-active");
         swatch.classList.add("draw-color-active");
       };
       return swatch;
     });
     colorBtns.forEach(function(b) { toolbar.appendChild(b); });
+
+    var eraserBtn = document.createElement("button");
+    eraserBtn.type = "button";
+    eraserBtn.className = "draw-color draw-eraser-btn";
+    eraserBtn.innerHTML = ICONS.eraser;
+    eraserBtn.title = "Eraser";
+    eraserBtn.onclick = function(e) {
+      e.stopPropagation();
+      erasing = true;
+      colorBtns.forEach(function(b) { b.classList.remove("draw-color-active"); });
+      eraserBtn.classList.add("draw-tool-active");
+    };
+    toolbar.appendChild(eraserBtn);
+
+    var sizeContainer = document.createElement("div");
+    sizeContainer.className = "draw-size-container";
+    var sizeSlider = document.createElement("input");
+    sizeSlider.type = "range";
+    sizeSlider.min = "1";
+    sizeSlider.max = "20";
+    sizeSlider.value = String(brushSize);
+    sizeSlider.className = "draw-size-slider";
+    sizeSlider.title = "Brush size";
+    var sizeLabel = document.createElement("span");
+    sizeLabel.className = "draw-size-label";
+    sizeLabel.textContent = brushSize;
+    sizeSlider.oninput = function() {
+      brushSize = parseInt(sizeSlider.value, 10);
+      sizeLabel.textContent = brushSize;
+    };
+    sizeContainer.appendChild(sizeSlider);
+    sizeContainer.appendChild(sizeLabel);
+    toolbar.appendChild(sizeContainer);
 
     var clearBtn = document.createElement("button");
     clearBtn.type = "button";
@@ -3829,67 +4016,90 @@ function renderDrawPoll(div, poll, pollId, totalStudents) {
     clearBtn.textContent = "Clear";
     clearBtn.onclick = function(e) {
       e.stopPropagation();
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      grid.fill(0);
+      for (var ci = 0; ci < imageData.data.length; ci++) { imageData.data[ci] = 255; }
+      ctx.putImageData(imageData, 0, 0);
     };
     toolbar.appendChild(clearBtn);
+
+    var expandBtn = document.createElement("button");
+    expandBtn.type = "button";
+    expandBtn.className = "draw-expand-btn";
+    expandBtn.innerHTML = ICONS.maximize;
+    expandBtn.title = "Expand to full screen";
+    var isFullscreen = false;
+    expandBtn.onclick = function(e) {
+      e.stopPropagation();
+      isFullscreen = !isFullscreen;
+      drawContainer.classList.toggle("draw-fullscreen", isFullscreen);
+      expandBtn.innerHTML = isFullscreen ? ICONS.minimize : ICONS.maximize;
+      expandBtn.title = isFullscreen ? "Exit full screen" : "Expand to full screen";
+    };
+    canvasWrapper.appendChild(canvas);
+    canvasWrapper.appendChild(expandBtn);
 
     var submitBtn = document.createElement("button");
     submitBtn.type = "button";
     submitBtn.textContent = "Submit Drawing";
 
     var drawing = false;
+    var lastPoint = null;
     function canvasPoint(e) {
       var rect = canvas.getBoundingClientRect();
-      var scaleX = canvas.width / rect.width;
-      var scaleY = canvas.height / rect.height;
+      var scaleX = DRAW_GRID_SIZE / rect.width;
+      var scaleY = DRAW_GRID_SIZE / rect.height;
       return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
+    }
+    function stampAndRedraw(from, to) {
+      stampLine(grid, imageData, from.x, from.y, to.x, to.y, brushSize, erasing ? 0 : currentColorIndex);
+      ctx.putImageData(imageData, 0, 0);
     }
     canvas.addEventListener("pointerdown", function(e) {
       e.preventDefault();
       drawing = true;
       canvas.setPointerCapture(e.pointerId);
       var p = canvasPoint(e);
-      ctx.beginPath();
-      ctx.moveTo(p.x, p.y);
+      lastPoint = p;
+      stampAndRedraw(p, p);
     });
     canvas.addEventListener("pointermove", function(e) {
       if (!drawing) { return; }
       var p = canvasPoint(e);
-      ctx.lineTo(p.x, p.y);
-      ctx.stroke();
+      stampAndRedraw(lastPoint, p);
+      lastPoint = p;
     });
-    function stopDrawing() { drawing = false; }
+    function stopDrawing() { drawing = false; lastPoint = null; }
     canvas.addEventListener("pointerup", stopDrawing);
     canvas.addEventListener("pointercancel", stopDrawing);
 
-    (function(pid, cv, sb) {
-      sb.onclick = function(e) {
+    (function(pid, sb) {
+      sb.onclick = async function(e) {
         e.stopPropagation();
         sb.disabled = true;
         sb.textContent = "Submitting...";
-        cv.toBlob(async function(blob) {
-          try {
-            var file = new File([blob], username + "-" + Date.now() + ".png", { type: "image/png" });
-            var url = await uploadImage(file, "boards/" + currentBoardId + "/polls/" + pid + "/drawings");
-            await updateDoc(doc(db, "boards", currentBoardId, "polls", pid), {
-              history: arrayUnion({ username: username, response: "Submitted a drawing", imageUrl: url, timestamp: Date.now() })
-            });
-            playPop();
-            if (currentStudentId) { await incrementStudentStat(currentStudentId, "pollsCast"); }
-          } catch (err) {
-            console.error("Error submitting drawing:", err);
-            alert("Something went wrong submitting your drawing. Please try again.");
-            sb.disabled = false;
-            sb.textContent = "Submit Drawing";
-          }
-        }, "image/png");
+        try {
+          var pixelsString = packGridToString(grid);
+          await addDoc(collection(db, "boards", currentBoardId, "polls", pid, "drawings"), {
+            username: username, pixels: pixelsString, timestamp: Date.now()
+          });
+          await updateDoc(doc(db, "boards", currentBoardId, "polls", pid), {
+            history: arrayUnion({ username: username, response: "Submitted a drawing", timestamp: Date.now() })
+          });
+          playPop();
+          if (currentStudentId) { await incrementStudentStat(currentStudentId, "pollsCast"); }
+        } catch (err) {
+          console.error("Error submitting drawing:", err);
+          alert("Something went wrong submitting your drawing. Please try again.");
+          sb.disabled = false;
+          sb.textContent = "Submit Drawing";
+        }
       };
-    })(pollId, canvas, submitBtn);
+    })(pollId, submitBtn);
 
-    div.appendChild(toolbar);
-    div.appendChild(canvas);
-    div.appendChild(submitBtn);
+    drawContainer.appendChild(toolbar);
+    drawContainer.appendChild(canvasWrapper);
+    drawContainer.appendChild(submitBtn);
+    div.appendChild(drawContainer);
   } else if (isDisplayMode) {
     var waitingEl = document.createElement("div");
     waitingEl.className = "poll-waiting-placeholder";
