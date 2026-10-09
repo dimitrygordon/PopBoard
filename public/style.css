@@ -653,7 +653,13 @@ button.hide-toggle, .reply button.hide-toggle {
 .lb-bar-track { flex: 1; background: var(--input-bg); border-radius: 999px; height: 30px; position: relative; overflow: visible; border: 1.5px solid var(--border-color); }
 .lb-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--upvote-active), #e9c46a); transition: width 0.5s ease; min-width: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; }
 .lb-score { font-size: 0.78rem; font-weight: 700; color: white; white-space: nowrap; }
-.lb-medal { font-size: 1.1rem; margin-left: 6px; flex-shrink: 0; }
+/* apple-design §19: fixed width regardless of content (medal emoji, "#4",
+   or empty) -- the medal column previously sized to its own content, so a
+   wider-rendered 🥇🥈🥉 glyph left LESS room for places 1st-3rd's bar
+   track (flex:1) than the narrower "#4"/"#5" text left for 4th+, making
+   otherwise-identical-percentage bars visibly different lengths row to
+   row. A fixed width makes every row's track the same pixel width. */
+.lb-medal { font-size: 1.1rem; margin-left: 6px; flex-shrink: 0; width: 1.5rem; display: inline-block; text-align: center; }
 
 @keyframes emoji-wiggle {
   0%   { transform: rotate(-5deg) scale(0.93); }
@@ -711,7 +717,14 @@ button.hide-toggle, .reply button.hide-toggle {
   overflow-y: auto;
   margin-top: 12px;
 }
+.class-confusion-timeline-row-wrap { display: flex; align-items: center; gap: 6px; }
+.class-confusion-timeline-label {
+  flex: 0 0 auto; width: 92px; height: 7px; line-height: 7px;
+  font-size: 0.6rem; color: var(--text-secondary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
 .class-confusion-timeline-row {
+  flex: 1 1 auto;
   height: 7px;
   border-radius: 2px;
   background: var(--confusion-none-color);
@@ -1541,6 +1554,12 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
 .confusion-dot-orange { background: #c76a17; }
 .confusion-dot-red { background: #8c1f4b; }
 .confusion-dot-none { background: var(--confusion-none-color); }
+
+.confusion-pie-legend {
+  display: flex; justify-content: center; flex-wrap: wrap; gap: 14px;
+  margin-top: 8px; font-size: 0.78rem; color: var(--text-secondary);
+}
+.confusion-pie-legend span { display: inline-flex; align-items: center; gap: 5px; }
 
 /* apple-design §17: raise-hand control, visually matching .confusion-btn's
    circular sizing but deliberately NOT sharing that class -- findMotionNeighbors()
