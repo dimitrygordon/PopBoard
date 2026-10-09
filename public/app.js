@@ -2615,7 +2615,10 @@ var CONFUSION_SPARKLINE_WINDOW_MS = 15 * 60 * 1000;
 //   its own setAt (not to windowEnd), so the chart stays accurate even if the
 //   owning student's own client never got to perform the resolve-to-None
 //   write (e.g. the tab was closed mid-fade and never reopened).
-function buildConfusionGradient(history, windowStart, windowEnd, colors, neutralColor) {
+// `markerMs`/`markerColor` (both optional) splice a thin, sharp color-stop
+// marking a single instant -- used to mark a student's first-ever raised
+// hand consistently across every timeline that shares this builder.
+function buildConfusionGradient(history, windowStart, windowEnd, colors, neutralColor, markerMs, markerColor) {
   var windowMs = windowEnd - windowStart;
   function pct(t) { return Math.max(0, Math.min(100, ((t - windowStart) / windowMs) * 100)); }
   function pushFlat(stops, color, start, end) {
@@ -2669,20 +2672,40 @@ function buildConfusionGradient(history, windowStart, windowEnd, colors, neutral
   if (CONFUSION_FADE_STATES[currentState]) { pushOpenFade(stops, finalColor, segStart); }
   else { pushFlat(stops, finalColor, segStart, windowEnd); }
 
+  if (markerMs && markerColor && markerMs >= windowStart && markerMs <= windowEnd) {
+    var markerPct = pct(markerMs);
+    var halfWidth = 0.6;
+    var loPct = Math.max(0, markerPct - halfWidth);
+    var hiPct = Math.min(100, markerPct + halfWidth);
+    var insertAt = stops.length;
+    for (var si = 0; si < stops.length; si++) {
+      var spct = parseFloat(stops[si].slice(stops[si].lastIndexOf(" ") + 1));
+      if (spct > loPct) { insertAt = si; break; }
+    }
+    stops.splice(insertAt, 0, markerColor + " " + loPct.toFixed(2) + "%", markerColor + " " + hiPct.toFixed(2) + "%");
+  }
+
   if (stops.length === 0) { return neutralColor; }
   return "linear-gradient(to right, " + stops.join(", ") + ")";
 }
 
 // Thin wrapper preserving the original rolling-window call shape used by the
 // student's own sparkline.
-function buildConfusionSparklineGradient(history, now, windowMs, colors, neutralColor) {
-  return buildConfusionGradient(history, now - windowMs, now, colors, neutralColor);
+function buildConfusionSparklineGradient(history, now, windowMs, colors, neutralColor, markerMs, markerColor) {
+  return buildConfusionGradient(history, now - windowMs, now, colors, neutralColor, markerMs, markerColor);
 }
 
-function renderConfusionSparkline(history) {
+// Theme-aware color for the "first ever raised hand" timeline marker --
+// white in dark mode, black in light mode, so it reads against either.
+function firstHandRaiseMarkerColor() {
+  return document.documentElement.getAttribute("data-theme") === "dark" ? "white" : "black";
+}
+
+function renderConfusionSparkline(history, firstHandRaisedAtMs) {
   if (!confusionSparkline) { return; }
   confusionSparkline.style.background = buildConfusionSparklineGradient(
-    history, Date.now(), CONFUSION_SPARKLINE_WINDOW_MS, CONFUSION_COLORS, "var(--confusion-none-color)"
+    history, Date.now(), CONFUSION_SPARKLINE_WINDOW_MS, CONFUSION_COLORS, "var(--confusion-none-color)",
+    firstHandRaisedAtMs, firstHandRaisedAtMs ? firstHandRaiseMarkerColor() : null
   );
 }
 
@@ -2695,6 +2718,9 @@ function initConfusionIndicator() {
   var myConfusionState = null;
   var myConfusionSetAt = null;
   var latestConfusionHistory = [];
+  var myFirstHandRaisedAt = null;
+  var wasHandRaised = false;
+  var handWaveTimeout = null;
   var autoResolvedFor = null; // "<state>@<setAtMs>" guard so the periodic re-check can't double-write the resolve
   var promptAnsweredFor = null; // "<state>@<setAtMs>" guard so a dismissed "No" doesn't re-show the prompt before the next real state change
 
@@ -2716,10 +2742,19 @@ function initConfusionIndicator() {
     setMyConfusionState(null);
   };
   raiseHandBtn.onclick = function() {
-    if (raiseHandBtn.classList.contains("hand-is-raised")) { return; } // teacher-only dismissal, see the dashboard seat click handler
     playPop();
+    var studentRef = doc(db, "boards", currentBoardId, "students", currentStudentId);
+    if (raiseHandBtn.classList.contains("hand-is-raised")) {
+      // Students can now lower their own hand by clicking again (overrides
+      // the earlier teacher-only-dismissal design).
+      updateDoc(studentRef, { handRaised: false, handRaisedAt: null });
+      return;
+    }
     restartAnimationClass(raiseHandIcon, "hand-raise-pop"); // custom lift on the inner span, not the button -- see style.css comment
-    updateDoc(doc(db, "boards", currentBoardId, "students", currentStudentId), { handRaised: true, handRaisedAt: Date.now(), handsRaisedCount: increment(1) });
+    var update = { handRaised: true, handRaisedAt: Date.now(), handsRaisedCount: increment(1) };
+    // Mark only the very first ever hand-raise, for the timeline marker.
+    if (!myFirstHandRaisedAt) { update.firstHandRaisedAt = Date.now(); }
+    updateDoc(studentRef, update);
   };
 
   function checkConfusionFadeStage() {
@@ -2750,17 +2785,31 @@ function initConfusionIndicator() {
     applyConfusionVisual(confusionGreenBtn, myConfusionState === "green" ? "green" : null, myConfusionSetAt);
     checkConfusionFadeStage();
     latestConfusionHistory = data.confusionHistory || [];
-    renderConfusionSparkline(latestConfusionHistory);
+    myFirstHandRaisedAt = data.firstHandRaisedAt || null;
+    renderConfusionSparkline(latestConfusionHistory, myFirstHandRaisedAt);
     // Reuses this SAME per-own-doc listener (not a new one) -- this is
     // exactly what re-enables the button the moment the teacher clears
     // handRaised from the dashboard seat map, since this listener already
     // fires on that write.
-    raiseHandBtn.classList.toggle("hand-is-raised", !!data.handRaised);
+    var handRaised = !!data.handRaised;
+    raiseHandBtn.classList.toggle("hand-is-raised", handRaised);
+    if (handRaised && !wasHandRaised) {
+      // Rising edge only -- let hand-raise-pop's one-shot 0.4s lift finish
+      // undisturbed, then hand off to the continuous wave (see style.css).
+      if (handWaveTimeout) { clearTimeout(handWaveTimeout); }
+      handWaveTimeout = setTimeout(function() {
+        if (raiseHandBtn.classList.contains("hand-is-raised")) { raiseHandIcon.classList.add("hand-wave-loop"); }
+      }, 400);
+    } else if (!handRaised) {
+      if (handWaveTimeout) { clearTimeout(handWaveTimeout); handWaveTimeout = null; }
+      raiseHandIcon.classList.remove("hand-wave-loop");
+    }
+    wasHandRaised = handRaised;
   });
   // The sparkline's right edge represents "now," and the prompt/fade stage
   // both keep advancing even without a new confusion-state write -- redraw
   // on a timer too, not just on each Firestore snapshot, so both stay live.
-  confusionSparklineInterval = setInterval(function() { renderConfusionSparkline(latestConfusionHistory); }, 15000);
+  confusionSparklineInterval = setInterval(function() { renderConfusionSparkline(latestConfusionHistory, myFirstHandRaisedAt); }, 15000);
   confusionPromptInterval = setInterval(checkConfusionFadeStage, 15000);
 }
 
@@ -3519,7 +3568,10 @@ function renderClassConfusionTimelineRows() {
     var row = document.createElement("div");
     row.className = "class-confusion-timeline-row";
     row.title = student.nickname || student.username || "";
-    row.style.background = buildConfusionGradient(student.confusionHistory, windowStart, windowEnd, CONFUSION_COLORS, "var(--confusion-none-color)");
+    row.style.background = buildConfusionGradient(
+      student.confusionHistory, windowStart, windowEnd, CONFUSION_COLORS, "var(--confusion-none-color)",
+      student.firstHandRaisedAt, student.firstHandRaisedAt ? firstHandRaiseMarkerColor() : null
+    );
     wrap.appendChild(label);
     wrap.appendChild(row);
     classConfusionTimelineEl.appendChild(wrap);
@@ -4547,6 +4599,16 @@ async function loadPolls() {
         div.dataset.pollId = pollId;
         var hasInteraction = (poll.history && poll.history.length > 0) || (poll.voters && poll.voters.length > 0);
         if (isTeacher && !pollVisible && !hasInteraction) { div.style.opacity = "0.4"; div.style.filter = "grayscale(30%)"; }
+        // Rainbow glow inside the card, fading toward the center -- a plain
+        // child div (not a pseudo-element: .poll's ::before/::after are
+        // already taken by the cursor-glow spotlight and the noise overlay)
+        // relying on .poll's own overflow:hidden to clip it, rather than the
+        // old outside-the-card carousel-slide-wrapper approach.
+        if (pollVisible) {
+          var insetGlow = document.createElement("div");
+          insetGlow.className = "inset-live-glow-fill";
+          div.appendChild(insetGlow);
+        }
         var questionEl = document.createElement("strong");
         questionEl.textContent = poll.question;
         div.appendChild(questionEl);
@@ -4660,20 +4722,7 @@ async function loadPolls() {
           div.appendChild(controlsDiv);
         }
 
-        // apple-design §18: rainbow glow around/behind any currently-live
-        // poll, for both roles -- a sibling of .poll (not a child, nor a
-        // ::before on .poll itself), since .poll's own overflow:hidden
-        // would otherwise clip it. See .poll-carousel-slide/.poll-live-glow
-        // in style.css for the full reasoning.
-        var slide = document.createElement("div");
-        slide.className = "poll-carousel-slide";
-        if (pollVisible) {
-          var liveGlow = document.createElement("div");
-          liveGlow.className = "poll-live-glow";
-          slide.appendChild(liveGlow);
-        }
-        slide.appendChild(div);
-        carouselTrack.appendChild(slide);
+        carouselTrack.appendChild(div);
       });
 
       wirePollCarouselNav(carouselTrack, carouselPrevBtn, carouselNextBtn, activePollDocs.map(function(d) { return d.id; }));
