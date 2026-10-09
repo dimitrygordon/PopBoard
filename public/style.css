@@ -30,7 +30,12 @@
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
   --upvote-active: #d4a373;
   --upvoted-bg: #fff9f0;
-  --delete-color: #ff3b30;
+  /* apple-design §19: less visually alarming than the previous vivid system
+     red -- a pale pink-red background paired with dark-red text for
+     legibility (white would be too low-contrast against a background this
+     light). */
+  --delete-color: #ffd7d2;
+  --delete-text-color: #8a2f2f;
   --hidden-text-color: #ff3b30;
   --checkbox-bg: #e0e0e0;
   --checkbox-checked: #0071e3;
@@ -70,7 +75,11 @@
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
   --upvote-active: #d4a373;
   --upvoted-bg: rgba(212, 163, 115, 0.1);
-  --delete-color: #ff453a;
+  /* apple-design §19: a dark maroon, less visually alarming than the
+     previous vivid system red -- dark enough that white text still reads
+     clearly on top of it. */
+  --delete-color: #5c1a1a;
+  --delete-text-color: #ffffff;
   --hidden-text-color: #ff453a;
   --checkbox-bg: rgba(255, 255, 255, 0.15);
   --checkbox-checked: #0a84ff;
@@ -330,7 +339,7 @@ button.hide-toggle, .reply button.hide-toggle {
   border: 1.5px solid var(--button-border) !important;
 }
 .post button.delete, .reply button.delete-btn, button.delete-poll {
-  background: var(--delete-color) !important; color: white !important; border-color: var(--delete-color) !important;
+  background: var(--delete-color) !important; color: var(--delete-text-color) !important; border-color: var(--delete-color) !important;
 }
 
 .post, .poll, .teacher-panel, #newPost, .metric-card {
@@ -738,7 +747,7 @@ button.hide-toggle, .reply button.hide-toggle {
 .image-preview { margin: 12px 0; position: relative; }
 .image-preview img { max-width: 100%; max-height: 300px; border-radius: 12px; border: 1.5px solid var(--border-color); }
 .image-preview .remove-image {
-  position: absolute; top: 8px; right: 8px; background: var(--delete-color); color: white;
+  position: absolute; top: 8px; right: 8px; background: var(--delete-color); color: var(--delete-text-color);
   border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 1.2rem;
   cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;
 }
@@ -762,12 +771,12 @@ button.hide-toggle, .reply button.hide-toggle {
 }
 
 .master-admin-section { margin-top: 48px; padding-top: 32px; border-top: 2px solid var(--border-color); }
-.master-admin-section h2 { color: var(--delete-color); font-size: 1.5rem; margin-bottom: 16px; }
+.master-admin-section h2 { color: var(--hidden-text-color); font-size: 1.5rem; margin-bottom: 16px; }
 .teacher-card {
   background: linear-gradient(135deg, rgba(255,69,58,0.05) 0%, var(--card-gradient-end) 100%);
   border: 1.5px solid rgba(255,69,58,0.2); border-radius: 24px; padding: 20px; margin-bottom: 16px;
 }
-.teacher-card h4 { margin: 0 0 12px 0; color: var(--delete-color); font-size: 1.1rem; }
+.teacher-card h4 { margin: 0 0 12px 0; color: var(--hidden-text-color); font-size: 1.1rem; }
 .teacher-boards { margin-left: 20px; margin-top: 12px; }
 .teacher-boards .board-card { background: rgba(255,255,255,0.03); margin-bottom: 8px; }
 
@@ -806,6 +815,28 @@ button.hide-toggle, .reply button.hide-toggle {
   0% { transform: scale(1); filter: brightness(1); }
   50% { transform: scale(1.1); filter: brightness(1.08); }
   100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* Hold-to-confirm delete (see wireHoldToConfirmDelete() in app.js): a
+   loading-bar overlay filling left-to-right while the trash icon shakes in
+   place. The fill's width is driven directly from JS (not a CSS
+   transition), since it must be cancelable mid-flight at an arbitrary
+   point if the hold is released early. */
+/* Every delete button needs a positioning context + clipping for the fill
+   overlay above -- the base `button` rule is position:static otherwise. */
+.delete-poll, .delete-btn, .delete, .seat-delete {
+  position: relative; overflow: hidden;
+}
+.hold-delete-fill {
+  position: absolute; inset: 0; width: 0%;
+  background: currentColor; opacity: 0.25; pointer-events: none;
+  border-radius: inherit;
+}
+.delete-icon-shaking { animation: delete-icon-shake 0.3s linear infinite; }
+@keyframes delete-icon-shake {
+  0%, 100% { transform: translateX(0) rotate(0); }
+  25%      { transform: translateX(-2px) rotate(-6deg); }
+  75%      { transform: translateX(2px) rotate(6deg); }
 }
 
 /* apple-design §15: scroll-entrance reveal, .post only -- deliberately not
@@ -1425,7 +1456,7 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
   height: 20px;
   border-radius: 50%;
   background: var(--delete-color, #ff453a);
-  color: #fff;
+  color: var(--delete-text-color, #fff);
   font-size: 0.7rem;
   line-height: 18px;
   text-align: center;
