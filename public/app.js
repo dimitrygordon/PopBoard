@@ -369,6 +369,7 @@ document.addEventListener("touchstart", function() {
 
 function teardownBoardListeners() {
   if (unsubPosts) { unsubPosts(); unsubPosts = null; }
+  animatedPostIds.clear(); // a freshly (re-)entered board should replay its own entrance reveal
   if (unsubPolls) { unsubPolls(); unsubPolls = null; }
   if (unsubLeaderboard) { unsubLeaderboard(); unsubLeaderboard = null; }
   if (unsubBoardSettings) { unsubBoardSettings(); unsubBoardSettings = null; }
@@ -1035,7 +1036,7 @@ function renderLeaderboardUI(topRows, personalRow) {
   leaderboardSection.innerHTML = "";
   if (!isTeacher && !leaderboardVisible) { return; }
   var card = document.createElement("div");
-  card.className = "leaderboard-card";
+  card.className = "leaderboard-card glass-specular";
   card.innerHTML = "<h3>🏆 Leaderboard</h3>";
   if (topRows.length === 0 && !personalRow) {
     var empty = document.createElement("p");
@@ -2609,6 +2610,47 @@ function wireMotionGlow(selector) {
 }
 wireMotionGlow(".post, .poll, .confusion-btn, .seat");
 
+// Scroll-reactive specular highlight for the tier-1 glass surfaces (see
+// .glass-specular in style.css) -- a web-appropriate substitute for Apple's
+// device-motion-driven highlight, since a page has no tilt sensor but does
+// have scroll position. Gated only by prefers-reduced-motion, not hover-
+// capability, since scrolling happens on touch devices too (unlike the
+// cursor-tracked glow above, which needs an actual pointer to track).
+function wireScrollGlassHighlight() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { return; }
+  var ticking = false;
+  function update() {
+    ticking = false;
+    var maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    var progress = maxScroll > 0 ? Math.max(0, Math.min(1, window.scrollY / maxScroll)) : 0;
+    var pos = -60 + progress * 220; // sweeps -60% to 160%, matching .glass-specular::before's 220% background-size
+    document.documentElement.style.setProperty("--scroll-highlight", pos + "%");
+  }
+  window.addEventListener("scroll", function() {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }, { passive: true });
+  update();
+}
+wireScrollGlassHighlight();
+
+// Shared singleton (wired once, like wireMotionGlow/wireScrollGlassHighlight
+// above) backing the .post scroll-entrance reveal -- see the
+// animatedPostIds guard at the .post creation site in loadPosts().
+var postRevealObserver = null;
+var animatedPostIds = new Set();
+function wirePostRevealObserver() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { return; }
+  postRevealObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("post-reveal-in");
+        postRevealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+}
+wirePostRevealObserver();
+
 function getStudentMCResponseText(poll, studentUsername) {
   var options = poll.options || [];
   if (poll.requireAllCorrect) {
@@ -2648,7 +2690,7 @@ function getStudentMCResponseText(poll, studentUsername) {
 
 function renderSeatResponsePopup(seatId, student) {
   var popup = document.createElement("div");
-  popup.className = "seat-popup";
+  popup.className = "seat-popup glass-specular";
 
   var closeBtn = document.createElement("button");
   closeBtn.type = "button";
@@ -2744,7 +2786,7 @@ function openSeatPopup(seatId) {
     });
 
   var popup = document.createElement("div");
-  popup.className = "seat-popup";
+  popup.className = "seat-popup glass-specular";
 
   var closeBtn = document.createElement("button");
   closeBtn.type = "button";
@@ -2904,7 +2946,7 @@ function renderConfusionDetailPopup(seatId, student) {
   closeSeatPopup();
   openSeatPopupId = seatId;
   var popup = document.createElement("div");
-  popup.className = "seat-popup";
+  popup.className = "seat-popup glass-specular";
 
   var closeBtn = document.createElement("button");
   closeBtn.type = "button";
@@ -3296,6 +3338,16 @@ function loadPosts() {
       div.className = "post";
       if (myUpvotedPostIds.has(postId)) { div.classList.add("upvoted-by-me"); }
       if (!post.visible) { div.classList.add("hidden-comment"); }
+      // Scroll-entrance reveal, genuinely-new posts only (see
+      // wirePostRevealObserver) -- loadPosts() fully rebuilds every post on
+      // nearly every write, so without this guard an unrelated action (one
+      // upvote, anywhere) would re-trigger the reveal for every post
+      // already on screen, which would read as constant distracting flicker.
+      if (!animatedPostIds.has(postId)) {
+        animatedPostIds.add(postId);
+        div.classList.add("post-reveal-pending");
+        if (postRevealObserver) { postRevealObserver.observe(div); }
+      }
       var displayName = post.anonymous && !isTeacher ? "🥷🏼 Anonymous" : post.author;
       div.innerHTML = "<strong>" + displayName + "</strong><br>" + post.text + "<br><span class='upvote'>🍿 <span class='upvote-count'>" + (post.upvotes || 0) + "</span></span><button class='reply-btn teacher-control'>Reply</button>";
       if (post.imageUrl) {
