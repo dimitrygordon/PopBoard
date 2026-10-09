@@ -83,7 +83,29 @@
     <div style="text-align:center;margin-bottom:16px;">
       <button id="dailyDataToggleBtn" class="teacher-control subtle-toggle-btn">👁️‍🗨️ Daily Data Hidden</button>
     </div>
+    <div class="create-board-section">
+      <input id="newStudentNameInput" placeholder="New student name" />
+      <button id="addStudentBtn">Add Student</button>
+    </div>
     <div id="studentsList"></div>
+  </div>
+</div>
+
+<!-- Edit Student popup (teacher only) -->
+<div id="studentEditPopup" class="hidden state-pill-prompt">
+  <input id="studentEditNameInput" placeholder="Student name" />
+  <div class="leaderboard-identity-group">
+    <div id="studentEditEmojiCircle" title="Click to choose an emoji">
+      <span id="studentEditEmojiDisplay">Choose Emoji</span>
+    </div>
+    <div class="student-edit-nickname-wrap">
+      <input id="studentEditNicknameInput" maxlength="20" placeholder="Leaderboard nickname" />
+    </div>
+  </div>
+  <input id="studentEditEmojiInput" maxlength="2" placeholder="" />
+  <div class="state-pill-prompt-buttons">
+    <button type="button" id="studentEditSaveBtn" class="state-pill state-pill-lg state-pill-yes">Save</button>
+    <button type="button" id="studentEditCancelBtn" class="state-pill state-pill-lg state-pill-no">Cancel</button>
   </div>
 </div>
 
@@ -213,7 +235,15 @@
       <button type="button" id="confusionOrangeBtn" class="confusion-btn" data-state="orange" title="Somewhat confused"><span class="confusion-dot confusion-dot-orange"></span></button>
       <button type="button" id="confusionRedBtn" class="confusion-btn" data-state="red" title="I'm confused"><span class="confusion-dot confusion-dot-red"></span></button>
     </div>
+    <div class="confusion-divider"></div>
+    <button type="button" id="raiseHandBtn" title="Raise your hand"><span id="raiseHandIcon" class="raise-hand-icon"></span></button>
     <div id="confusionSparkline" class="confusion-sparkline"></div>
+  </div>
+
+  <!-- Raised-hand queue (teachers only) -->
+  <div id="teacherHandRaiseBar" class="hidden">
+    <span class="confusion-label">✋ Raised Hands</span>
+    <div id="handRaiseQueue" class="hand-raise-queue"></div>
   </div>
 
   <!-- "Are you still confused?" auto-check-in prompt (students only) -->

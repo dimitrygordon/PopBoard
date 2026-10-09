@@ -223,7 +223,8 @@ textarea,
 input[type="text"],
 input[type="password"],
 #usernameInput, #boardNameInput, #studentPasswordInput,
-#newBoardNameInput, #teacherNameInput, #teacherPasswordInput {
+#newBoardNameInput, #teacherNameInput, #teacherPasswordInput,
+#newStudentNameInput, #studentEditNameInput, #studentEditNicknameInput {
   width: 100%; padding: 16px 20px; margin-bottom: 12px;
   background: var(--input-bg); color: var(--input-text);
   border: 1.5px solid var(--input-border); border-radius: 16px;
@@ -288,6 +289,9 @@ button:active { transform: scale(0.97); }
   .seat:hover { transform: scale(1.12); }
   .seat:hover .seat-delete { display: block; }
   .confusion-btn:hover, .draw-color:hover { transform: scale(1.12); }
+  /* "starting to raise" hint -- only while not already raised, so hover
+     doesn't fight the persistent raised pose's own static transform */
+  #raiseHandBtn:not(.hand-is-raised):hover .raise-hand-icon { transform: translateY(-3px) rotate(-6deg); }
   button:hover { background: var(--button-hover-bg); border-color: var(--text-color); transform: translateY(-1px); }
   /* Cursor-tracked spotlight: a soft shadow in light mode, an accent-tinted
      glow in dark mode (see --motion-glow-color), confined to the "major
@@ -829,7 +833,7 @@ button.hide-toggle, .reply button.hide-toggle {
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  #newPost, #confusionIndicator, .leaderboard-card, .identity-popup, .seat-popup, .state-pill-prompt {
+  #newPost, #confusionIndicator, #teacherHandRaiseBar, .leaderboard-card, .identity-popup, .seat-popup, .state-pill-prompt {
     background: var(--card-bg);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
@@ -956,6 +960,25 @@ button.hide-toggle, .reply button.hide-toggle {
   line-height: 56px; height: 56px; box-sizing: border-box; vertical-align: middle;
 }
 #lbEntryEmojiInput { width: 0; height: 0; opacity: 0; position: absolute; pointer-events: none; }
+
+/* apple-design §17: teacher-facing "edit student" popup -- same emoji-
+   circle/nickname-pill visual language as #identityPopup/#lbEntryBox, own
+   element IDs so none of the three surfaces collide. */
+#studentEditPopup .leaderboard-identity-group { margin: 16px auto; }
+#studentEditEmojiCircle {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--card-bg); border: 2px solid var(--border-color);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; font-size: 1.4rem; position: relative;
+}
+#studentEditEmojiDisplay { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.2; text-align: center; max-width: 44px; }
+.student-edit-nickname-wrap {
+  display: flex; align-items: center; height: 56px; min-width: 200px;
+  background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 999px;
+  box-sizing: border-box; padding: 0 16px;
+}
+.student-edit-nickname-wrap input { background: transparent; border: none; outline: none; margin-bottom: 0; padding: 0; height: 100%; text-align: center; }
+#studentEditEmojiInput { width: 0; height: 0; opacity: 0; position: absolute; pointer-events: none; }
 
 @keyframes pollSlideIn {
   from {
@@ -1438,7 +1461,10 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
 }
 
 /* ── Confusion Indicator (students) ─────────────────────────────────── */
-#confusionIndicator {
+/* #teacherHandRaiseBar shares this exact fixed-bar formula -- the two are
+   mutually exclusive (student-only vs. teacher-only), never rendered at
+   the same time, so there's nothing to duplicate separately. */
+#confusionIndicator, #teacherHandRaiseBar {
   position: fixed;
   left: 0;
   right: 0;
@@ -1480,6 +1506,85 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
 .confusion-dot-orange { background: #c76a17; }
 .confusion-dot-red { background: #8c1f4b; }
 .confusion-dot-none { background: var(--confusion-none-color); }
+
+/* apple-design §17: raise-hand control, visually matching .confusion-btn's
+   circular sizing but deliberately NOT sharing that class -- findMotionNeighbors()
+   treats .confusion-btn siblings as a tri-state group for its wave-ripple
+   effect, which isn't semantically relevant to a one-off hand-raise action. */
+.confusion-divider { width: 1px; height: 24px; background: var(--border-color); }
+#raiseHandBtn {
+  position: relative; width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; padding: 0; min-width: auto;
+  background: var(--bg-secondary); border: 2px solid var(--border-color);
+}
+.raise-hand-icon { display: block; transition: transform 0.2s ease; }
+#raiseHandBtn.hand-is-raised { border-color: transparent; box-shadow: 0 0 0 2px var(--accent); cursor: default; }
+#raiseHandBtn.hand-is-raised .raise-hand-icon { transform: translateY(-6px) rotate(4deg); }
+/* Click-commit lift: applied to the INNER icon span, never the button
+   itself -- every <button> already gets a generic .motion-pop scale/
+   brightness pop for free from the document-level capture-phase click
+   listener (see app.js), and a second animation competing for the SAME
+   element's `transform` would fight it (the exact collision class this
+   codebase already solved once for .motion-pop vs .poll's own animation).
+   Targeting a different element sidesteps the collision entirely -- the
+   button's generic pop and this icon's custom lift compose for free. */
+.hand-raise-pop.hand-raise-pop { animation: hand-raise-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes hand-raise-pop {
+  0%   { transform: translateY(0) rotate(0); }
+  50%  { transform: translateY(-10px) rotate(8deg); }
+  100% { transform: translateY(-6px) rotate(4deg); }
+}
+
+.hand-raise-queue { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: center; }
+.hand-raise-item { display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; }
+.hand-raise-circle {
+  position: relative; width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; font-weight: 700; color: var(--text-color);
+  background: var(--bg-secondary); border: 2px solid var(--accent);
+}
+.hand-raise-mini-badge {
+  position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center;
+}
+.hand-raise-mini-badge .icon-svg { width: 10px; height: 10px; margin-right: 0; }
+.hand-raise-name {
+  font-size: 0.68rem; color: var(--text-secondary); max-width: 64px; text-align: center;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-height: 0; opacity: 0; transition: all 0.2s ease;
+}
+.hand-raise-name.revealed { max-height: 1.2em; opacity: 1; }
+
+/* apple-design §17: dashboard-seat-map-only hand-raise glow + badge (see
+   renderDashboardSeatMap() in app.js) -- scoped to #dailySeatMapCanvas,
+   deliberately NOT the teacher's editable #seatCanvas/renderSeats(),
+   matching this codebase's existing convention of keeping those two
+   render paths deliberate near-duplicates rather than generalizing them.
+   Both are siblings of .seat, not children -- see the app.js comment for
+   why (.seat's overflow:hidden + no stacking context of its own, plus the
+   data-seat-id collision risk with positionSeatPopup()'s generic attribute
+   selector). Positioned on the exact same left%/top% point as their seat,
+   using .seat-mini's own centering trick (bigger box + bigger -half margin
+   for the glow; a deliberately off-center margin for the badge). */
+.seat-hand-raise-glow {
+  position: absolute; width: 76px; height: 76px; margin-left: -38px; margin-top: -38px;
+  border-radius: 50%; pointer-events: none;
+  background: conic-gradient(red, orange, yellow, green, blue, violet, red);
+  filter: blur(10px) hue-rotate(0deg); opacity: 0.6;
+  animation: hand-raise-glow-pulse 3s linear infinite;
+}
+@keyframes hand-raise-glow-pulse {
+  0%   { filter: blur(10px) hue-rotate(0deg);   transform: scale(1);    opacity: 0.55; }
+  50%  { filter: blur(14px) hue-rotate(180deg); transform: scale(1.15); opacity: 0.8; }
+  100% { filter: blur(10px) hue-rotate(360deg); transform: scale(1);    opacity: 0.55; }
+}
+.seat-hand-raise-badge {
+  position: absolute; width: 18px; height: 18px; margin-left: 12px; margin-top: -30px;
+  border-radius: 50%; pointer-events: none; display: flex; align-items: center; justify-content: center;
+  background: var(--accent); color: #fff;
+}
+.seat-hand-raise-badge .icon-svg { width: 11px; height: 11px; margin-right: 0; }
 
 /* Minimalistic real-time timeline: a thin colored strip at the bottom inner
    edge of #confusionIndicator (which is already position:fixed), sitting
