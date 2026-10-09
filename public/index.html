@@ -81,7 +81,7 @@
   <div class="portal-container">
     <h2>Students</h2>
     <div style="text-align:center;margin-bottom:16px;">
-      <button id="dailyDataToggleBtn" class="teacher-control">👁️‍🗨️ Daily Data Hidden</button>
+      <button id="dailyDataToggleBtn" class="teacher-control subtle-toggle-btn">👁️‍🗨️ Daily Data Hidden</button>
     </div>
     <div id="studentsList"></div>
   </div>
@@ -150,7 +150,7 @@
 
   <!-- Teacher: Leaderboard visibility toggle -->
   <div id="leaderboardToggleContainer" class="hidden" style="text-align:center; margin-bottom:12px;">
-    <button id="leaderboardVisibilityBtn" class="teacher-control">👁️ Leaderboard Shown</button>
+    <button id="leaderboardVisibilityBtn" class="teacher-control subtle-toggle-btn">👁️ Leaderboard Shown</button>
   </div>
 
   <!-- Teacher: Class Live/Paused session toggle -->
@@ -162,6 +162,27 @@
 
   <!-- Leaderboard -->
   <section id="leaderboardSection"></section>
+
+  <!-- First-time "set up your leaderboard identity" entry box (students
+       only, current student only) -- kept as a sibling of #leaderboardSection
+       rather than nested inside it, since renderLeaderboardUI() does a full
+       `leaderboardSection.innerHTML = ""` rebuild on every snapshot and would
+       otherwise wipe this out. Granularly shown/hidden by
+       renderIdentityEntryBox() based on whether studentEmoji/studentNickname
+       are already set -- see app.js. Uses separate element IDs from
+       #identityPopup's #emojiCircle/#emojiInput/#nicknameInputContainer so
+       the two surfaces (this persistent box vs. the floating edit popup) can
+       coexist without ID collisions. -->
+  <div id="lbEntryBox" class="hidden lb-entry-box glass-specular">
+    <p class="lb-entry-box-title">Set up your leaderboard identity</p>
+    <div class="leaderboard-identity-group">
+      <div id="lbEntryEmojiCircle" title="Click to choose your emoji">
+        <span id="lbEntryEmojiDisplay">Choose Emoji</span>
+      </div>
+      <div id="lbEntryNicknameContainer"></div>
+    </div>
+    <input id="lbEntryEmojiInput" maxlength="2" placeholder="" />
+  </div>
 
   <!-- Poll Section -->
   <section id="pollSection"></section>

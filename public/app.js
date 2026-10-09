@@ -845,7 +845,7 @@ async function startBoard() {
   loadPosts();
   await loadPolls();
   if (isTeacher) { updateDailyDashboard(); loadDashboardSeatMap(); }
-  if (!isTeacher && !isDisplayMode) { setupEmojiPicker(); initConfusionIndicator(); }
+  if (!isTeacher && !isDisplayMode) { setupEmojiPicker(); setupLeaderboardEntryBox(); initConfusionIndicator(); }
 }
 
 createBoardBtn.onclick = async function() {
@@ -1034,7 +1034,7 @@ function showFirstBadge() {
 
 function renderLeaderboardUI(topRows, personalRow) {
   leaderboardSection.innerHTML = "";
-  if (!isTeacher && !leaderboardVisible) { return; }
+  if (!isTeacher && !leaderboardVisible) { renderIdentityEntryBox(); return; }
   var card = document.createElement("div");
   card.className = "leaderboard-card glass-specular";
   card.innerHTML = "<h3>🏆 Leaderboard</h3>";
@@ -1044,6 +1044,7 @@ function renderLeaderboardUI(topRows, personalRow) {
     card.appendChild(empty);
     leaderboardSection.appendChild(card);
     initStickyLeaderboard();
+    renderIdentityEntryBox();
     return;
   }
 
@@ -1162,6 +1163,7 @@ function renderLeaderboardUI(topRows, personalRow) {
   card.appendChild(rowContainer);
   leaderboardSection.appendChild(card);
   initStickyLeaderboard();
+  renderIdentityEntryBox();
 }
 
 function mcHistoryActionPhrase(resp) {
@@ -1366,21 +1368,30 @@ leaderboardSection.addEventListener("click", function(e) {
   openIdentityPopup(row);
 });
 
-function renderEmojiCircle() {
-  emojiDisplay.innerHTML = "";
+// `displayElId` lets this render into either #identityPopup's #emojiDisplay
+// (default, unchanged call sites) or the first-time entry box's own
+// #lbEntryEmojiDisplay -- same studentEmoji source of truth, two independent
+// display surfaces, no shared DOM ID.
+function renderEmojiCircle(displayElId) {
+  var emojiDisplayEl = document.getElementById(displayElId || "emojiDisplay");
+  if (!emojiDisplayEl) { return; }
+  emojiDisplayEl.innerHTML = "";
   if (studentEmoji) {
     var span = document.createElement("span");
     span.className = "emoji-animate";
     span.style.fontSize = "1.6rem";
     span.textContent = studentEmoji;
-    emojiDisplay.appendChild(span);
+    emojiDisplayEl.appendChild(span);
   } else {
-    emojiDisplay.textContent = "Choose Emoji";
+    emojiDisplayEl.textContent = "Choose Emoji";
   }
 }
 
-function renderNicknameInput() {
-  var container = document.getElementById("nicknameInputContainer");
+// `containerElId` lets this render into either #identityPopup's
+// #nicknameInputContainer (default) or the entry box's own
+// #lbEntryNicknameContainer.
+function renderNicknameInput(containerElId) {
+  var container = document.getElementById(containerElId || "nicknameInputContainer");
   if (!container) { return; }
   container.innerHTML = "";
   var input = document.createElement("input");
@@ -1403,6 +1414,7 @@ function renderNicknameInput() {
 
 async function saveStudentNickname() {
   if (!currentStudentId || !currentBoardId) { return; }
+  renderIdentityEntryBox(); // studentNickname is already updated by the caller -- toggle instantly, don't wait on the writes below
   await updateDoc(doc(db, "boards", currentBoardId, "students", currentStudentId), { nickname: studentNickname });
   var lbRef = doc(db, "boards", currentBoardId, "leaderboard", username);
   var lbSnap = await getDoc(lbRef);
@@ -1413,6 +1425,7 @@ async function saveStudentNickname() {
 
 async function saveStudentEmoji() {
   if (!currentStudentId || !currentBoardId) { return; }
+  renderIdentityEntryBox(); // studentEmoji is already updated by the caller -- toggle instantly, don't wait on the writes below
   await updateDoc(doc(db, "boards", currentBoardId, "students", currentStudentId), { emoji: studentEmoji });
   var lbRef = doc(db, "boards", currentBoardId, "leaderboard", username);
   var lbSnap = await getDoc(lbRef);
@@ -1421,6 +1434,62 @@ async function saveStudentEmoji() {
   }
   // Do NOT recreate the leaderboard doc if it doesn't exist —
   // it should only be created when points are awarded
+}
+
+// First-time "set up your identity" entry box (see #lbEntryBox in
+// index.html) -- a persistent, always-rendered sibling of #leaderboardSection
+// (never nested inside it, since renderLeaderboardUI() fully rebuilds that
+// section's innerHTML on every snapshot). Purely derived from the
+// studentEmoji/studentNickname globals, so it's safe to call from anywhere
+// those change: the whole box disappears once BOTH are set, and each
+// sub-element (emoji circle vs. nickname input) independently disappears
+// the moment THAT specific field is set, regardless of the other -- matching
+// the same rule whether the field was set here or via #identityPopup.
+function renderIdentityEntryBox() {
+  var box = document.getElementById("lbEntryBox");
+  if (!box) { return; }
+  if (isTeacher || isDisplayMode || !currentStudentId || !leaderboardVisible) { box.classList.add("hidden"); return; }
+  var hasEmoji = !!studentEmoji;
+  var hasNickname = !!studentNickname;
+  box.classList.toggle("hidden", hasEmoji && hasNickname);
+  var emojiSub = document.getElementById("lbEntryEmojiCircle");
+  var nicknameSub = document.getElementById("lbEntryNicknameContainer");
+  if (emojiSub) { emojiSub.classList.toggle("hidden", hasEmoji); }
+  if (nicknameSub) { nicknameSub.classList.toggle("hidden", hasNickname); }
+  renderEmojiCircle("lbEntryEmojiDisplay");
+  renderNicknameInput("lbEntryNicknameContainer");
+}
+
+// Wires the entry box's own emoji-circle/emoji-input/nickname-input handlers
+// -- mirrors setupEmojiPicker()'s handlers exactly (same emoji regex match,
+// same save calls), just targeting the entry box's own element IDs so the
+// two surfaces never fight over the same DOM nodes.
+function setupLeaderboardEntryBox() {
+  var circle = document.getElementById("lbEntryEmojiCircle");
+  var input = document.getElementById("lbEntryEmojiInput");
+  if (!circle || !input) { return; }
+  circle.onclick = function() {
+    input.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:72px;height:72px;font-size:2rem;text-align:center;z-index:9999;border-radius:50%;opacity:1;pointer-events:all;border:2px solid #0071e3;outline:none;";
+    input.value = "";
+    input.focus();
+  };
+  input.oninput = function() {
+    var val = input.value;
+    var matches = val.match(/\p{Emoji_Presentation}|\p{Emoji}️/gu);
+    if (matches && matches.length > 0) {
+      studentEmoji = matches[0];
+      input.style.cssText = "width:0;height:0;opacity:0;position:absolute;pointer-events:none;";
+      saveStudentEmoji();
+      renderEmojiCircle("lbEntryEmojiDisplay");
+      pulseEmojiRing("lbEntryEmojiCircle");
+    } else if (val.length > 0) {
+      input.value = "";
+    }
+  };
+  input.onblur = function() {
+    input.style.cssText = "width:0;height:0;opacity:0;position:absolute;pointer-events:none;";
+  };
+  renderIdentityEntryBox();
 }
 
 async function loadStudentsPortal() {
@@ -1460,7 +1529,7 @@ async function loadStudentsPortal() {
       for (var ei = 0; ei < engagementData.length; ei++) {
         if (engagementData[ei].key === currentMonthKey) { currentEngagement = Math.round(engagementData[ei].value); break; }
       }
-      info.innerHTML = "<h3>" + student.username + "</h3><p class='student-stats'>📊 Engagement: " + currentEngagement + "% | Polls: " + stats.pollsVoted + " (" + pollPct + "%) | Comments: " + stats.comments + " | Upvotes Given: " + stats.upvotesGiven + " | Upvotes Received: " + stats.upvotesReceived + " | 🥷🏼 Anonymous: " + stats.anonymousPercentage + "%</p>";
+      info.innerHTML = "<h3>" + student.username + "</h3><p class='student-stats'>📊 Engagement: " + currentEngagement + "% | Polls: " + stats.pollsVoted + " (" + pollPct + "%) | Comments: " + stats.comments + " | Upvotes Given: " + stats.upvotesGiven + " | Upvotes Received: " + stats.upvotesReceived + " | " + iconLabel("mask", "Anonymous: " + stats.anonymousPercentage + "%") + "</p>";
     } else {
       info.innerHTML = "<h3>" + student.username + "</h3>";
     }
@@ -1526,7 +1595,7 @@ async function viewStudentDashboard(studentId) {
   grid.appendChild(lbCard);
   addPercentageMetricCard(grid, "📊 Engagement %", monthlyEngagement, "engagementChart");
   addPercentageMetricCard(grid, "🗳️ Polls Cast %", monthlyPollsCastPct, "pollsCastPctChart");
-  addPercentageMetricCard(grid, "🥷🏼 Anonymous %", monthlyAnonPct, "anonPctChart");
+  addPercentageMetricCard(grid, iconLabel("mask", "Anonymous %"), monthlyAnonPct, "anonPctChart");
   addPercentageMetricCard(grid, "🎯 Poll Accuracy %", monthlyPollAccuracy, "pollAccuracyChart");
   addHistoricMetricCard(grid, "Comments Made: " + (student.historicalComments || 0), student.monthlyStats || {}, "comments", "commentsChart");
   addHistoricMetricCard(grid, "Upvotes Given: " + (student.historicalUpvotesGiven || 0), student.monthlyStats || {}, "upvotesGiven", "upvotesGivenChart");
@@ -1595,7 +1664,7 @@ async function viewClassAggregateDashboard(allStudentDocs, totalPolls, pollsSnap
   grid.appendChild(lbCard);
   addPercentageMetricCard(grid, "📊 Engagement %", await computeClassAggregatePercent(allStudentDocs, "engagement"), "aggEngagementChart");
   addPercentageMetricCard(grid, "🗳️ Polls Cast %", await computeClassAggregatePercent(allStudentDocs, "pollsCast"), "aggPollsChart");
-  addPercentageMetricCard(grid, "🥷🏼 Anonymous %", await computeClassAggregatePercent(allStudentDocs, "anon"), "aggAnonChart");
+  addPercentageMetricCard(grid, iconLabel("mask", "Anonymous %"), await computeClassAggregatePercent(allStudentDocs, "anon"), "aggAnonChart");
   addPercentageMetricCard(grid, "🎯 Poll Accuracy %", await computeClassAggregatePercent(allStudentDocs, "accuracy"), "aggAccuracyChart");
   addHistoricMetricCard(grid, "Comments (avg): " + Math.round(totComments / n), avgMonthlyStats, "comments", "aggCommentsChart");
   addHistoricMetricCard(grid, "Upvotes Given (avg): " + Math.round(totUpvGiven / n), avgMonthlyStats, "upvotesGiven", "aggUpvGivenChart");
@@ -2044,7 +2113,17 @@ var CONFUSION_DURATION_MS = 5 * 60 * 1000; // green's simple cosmetic-only fade 
 // Colorblind-friendly palette: spread across lightness (dark -> medium ->
 // light) rather than relying on red/green hue discrimination, which is what
 // actually helps deuteranopia/protanopia -- not just picking "different" hues.
-var CONFUSION_COLORS = { red: "#8c1f4b", orange: "#c76a17", green: "#c3f5d6" };
+var CONFUSION_COLORS = { red: "#8c1f4b", orange: "#c76a17", green: "#8fdba8" };
+// Theme-invariant background colors (chosen for colorblind-friendliness)
+// paired with the text color that actually reads against each of them,
+// regardless of theme -- .seat's own `color` is theme-dependent
+// (var(--text-color)), which only happens to have contrast against these
+// specific hardcoded backgrounds in one theme each (dark text reads fine on
+// light green, but is illegible on the dark red/orange in light mode, where
+// --text-color is itself near-black; the inverse risk exists in dark mode
+// for green). Applied alongside the background wherever these colors are
+// set directly (applyConfusionVisual below, and the poll-response seat view).
+var CONFUSION_TEXT_COLORS = { red: "#ffffff", orange: "#ffffff", green: "#1d1d1f" };
 // States that run the "are you still confused?" prompt/auto-fade cycle below.
 var CONFUSION_FADE_STATES = { red: true, orange: true };
 var CONFUSION_PROMPT_AT_MS = 5 * 60 * 1000;                             // red/orange: prompt fires here
@@ -2080,10 +2159,12 @@ function applyConfusionVisual(el, state, setAtMs, fadeStartMs, fadeDurationMs) {
   if (!state || !CONFUSION_COLORS[state] || remaining <= 0) {
     el.style.transition = "";
     el.style.backgroundColor = neutral;
+    el.style.color = ""; // re-inherit .seat's theme-correct var(--text-color)
     return;
   }
   el.style.transition = "none";
   el.style.backgroundColor = CONFUSION_COLORS[state];
+  el.style.color = CONFUSION_TEXT_COLORS[state] || "";
   void el.offsetWidth; // force reflow so the "full color, no transition" frame commits
   if (fadeElapsed < 0) { return; } // still fully solid -- the fade hasn't started yet
   el.style.transition = "background-color " + remaining + "ms linear";
@@ -2397,6 +2478,7 @@ function renderSeats() {
         var responded = studentRespondedToPoll(seatMapResponsePollData, student.username);
         el.style.transition = "";
         el.style.backgroundColor = responded ? CONFUSION_COLORS.green : CONFUSION_COLORS.red;
+        el.style.color = responded ? CONFUSION_TEXT_COLORS.green : CONFUSION_TEXT_COLORS.red;
       } else {
         applyConfusionVisualForState(el, student.confusionState, student.confusionSetAt);
       }
@@ -2650,6 +2732,77 @@ function wirePostRevealObserver() {
   }, { threshold: 0.15 });
 }
 wirePostRevealObserver();
+
+// apple-design §16: scroll "jelly" lag/drift/overshoot, .post feed only --
+// each post's wrapper (.post-jelly-wrap, see loadPosts()) trails the scroll
+// gesture slightly and springs back with a gentle overshoot when scrolling
+// stops. Deliberately NOT applied to .poll: that lives in a horizontal
+// swipe carousel (different interaction model from vertical scroll), and it
+// already owns the one steady-state animation (pollSlideIn) that previously
+// collided with another `transform` source in this codebase -- reopening
+// that risk for an effect that doesn't semantically fit a carousel isn't
+// worth it.
+//
+// Deliberately one shared spring rather than independent per-card physics:
+// the ask ("lag, follow, overshoot, gently bump") is dominated by a single
+// scroll gesture, not independent per-card motion, and N independent rAF
+// integrations at 100+ posts (loadPosts() has no limit()/pagination) would
+// be wasteful for the same visual result. A small per-index stagger below
+// is what makes adjacent cards read as nudging against each other instead
+// of moving in perfect lockstep.
+var jellyVisibleWraps = new Set();
+var jellyObserver = null;
+function wireJellyScrollObserver() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { return; }
+  // Expanded rootMargin (not the reveal observer's default) so wrappers
+  // start/stop being animated slightly before/after they're actually on
+  // screen, bounding the per-frame cost in wireJellyScroll() to a small
+  // window regardless of how many hundred posts are loaded. A separate
+  // instance from postRevealObserver -- that one unobserve()s after its
+  // one-shot reveal fires; this one must keep tracking entry/exit forever.
+  jellyObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        jellyVisibleWraps.add(entry.target);
+        entry.target.classList.add("jelly-active");
+      } else {
+        jellyVisibleWraps.delete(entry.target);
+        entry.target.classList.remove("jelly-active");
+        entry.target.style.transform = "";
+      }
+    });
+  }, { rootMargin: "200px 0px 200px 0px" });
+}
+wireJellyScrollObserver();
+
+function wireJellyScroll() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { return; }
+  var velocity = 0, pos = 0, lastY = window.scrollY, running = false;
+  function tick() {
+    var y = window.scrollY;
+    velocity = velocity * 0.8 + (y - lastY) * 0.2;
+    lastY = y;
+    var target = Math.abs(velocity) > 0.5 ? velocity * 2 : 0;
+    pos += (target - pos) * 0.18; // critically-damped-ish approach to target
+    velocity *= 0.85; // decay so `target` relaxes to 0 once scrolling stops, letting `pos` overshoot past it and settle -- the "jelly" bounce
+    var i = 0;
+    jellyVisibleWraps.forEach(function(w) {
+      var stagger = 1 - (i % 4) * 0.12; // small per-index offset so adjacent cards don't move in perfect lockstep
+      w.style.transform = pos ? "translateY(" + (pos * stagger).toFixed(2) + "px)" : "";
+      i++;
+    });
+    if (Math.abs(pos) > 0.3 || Math.abs(velocity) > 0.3) {
+      requestAnimationFrame(tick);
+    } else {
+      running = false;
+      jellyVisibleWraps.forEach(function(w) { w.style.transform = ""; });
+    }
+  }
+  window.addEventListener("scroll", function() {
+    if (!running) { running = true; requestAnimationFrame(tick); }
+  }, { passive: true });
+}
+wireJellyScroll();
 
 function getStudentMCResponseText(poll, studentUsername) {
   var options = poll.options || [];
@@ -3097,8 +3250,8 @@ function triggerPopcornConfetti() {
   }
 }
 
-function pulseEmojiRing() {
-  var circle = document.getElementById("emojiCircle");
+function pulseEmojiRing(circleElId) {
+  var circle = document.getElementById(circleElId || "emojiCircle");
   if (!circle) { return; }
   var ring = document.createElement("div");
   ring.style.cssText = "position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(1);width:56px;height:56px;border-radius:50%;border:2px solid var(--accent);opacity:0.8;pointer-events:none;z-index:10;transition:transform 0.6s ease-out,opacity 0.6s ease-out;";
@@ -3234,7 +3387,7 @@ function loadReplies(postId, container, parentVisible) {
       var div = document.createElement("div");
       div.className = "reply";
       if (!r.visible) { div.classList.add("hidden-comment"); }
-      div.innerHTML = "<strong>" + (r.anonymous && !isTeacher ? "🥷🏼 Anonymous" : r.author) + "</strong> " + r.text;
+      div.innerHTML = "<strong>" + (r.anonymous && !isTeacher ? iconLabel("mask", "Anonymous") : r.author) + "</strong> " + r.text;
       if (r.imageUrl) {
         var img = document.createElement("img");
         img.src = r.imageUrl;
@@ -3243,20 +3396,23 @@ function loadReplies(postId, container, parentVisible) {
         div.appendChild(img);
       }
       if (isTeacher) {
+        var actionsRow = document.createElement("div");
+        actionsRow.className = "post-actions-row";
         var hBtn = document.createElement("button");
         hBtn.innerHTML = eyeLabel(r.visible, "Shown", "Hidden");
         hBtn.className = "hide-toggle teacher-control";
         (function(docId, vis) {
           hBtn.onclick = async function() { await updateDoc(doc(db, "boards", currentBoardId, "replies", docId), { visible: !vis }); };
         })(d.id, r.visible);
-        div.appendChild(hBtn);
+        actionsRow.appendChild(hBtn);
         var delBtn = document.createElement("button");
         delBtn.innerHTML = iconLabel("trash", "Delete");
         delBtn.className = "delete-btn teacher-control";
         (function(docId) {
           delBtn.onclick = async function() { await deleteDoc(doc(db, "boards", currentBoardId, "replies", docId)); };
         })(d.id);
-        div.appendChild(delBtn);
+        actionsRow.appendChild(delBtn);
+        div.appendChild(actionsRow);
       }
       container.appendChild(div);
     });
@@ -3270,6 +3426,11 @@ function loadPosts() {
   var q = query(collection(db, "boards", currentBoardId, "posts"), orderBy(orderField, "desc"));
   unsubPosts = onSnapshot(q, function(snapshot) {
     postsDiv.innerHTML = "";
+    // The rebuild above orphans every existing .post-jelly-wrap -- proactively
+    // drop them from the visible-set rather than waiting on the
+    // IntersectionObserver to notice detached elements, which would leave
+    // wireJellyScroll() writing `transform` to dead nodes every frame.
+    jellyVisibleWraps.clear();
     var archivedComments = document.getElementById("archivedComments");
     if (archivedComments) { archivedComments.innerHTML = ""; }
     snapshot.forEach(function(docSnap) {
@@ -3290,8 +3451,8 @@ function loadPosts() {
           }
           var aDiv = document.createElement("div");
           aDiv.className = "post hidden-comment";
-          var displayName = post.anonymous ? "🥷🏼 Anonymous" : post.author;
-          aDiv.innerHTML = "<strong>" + displayName + "</strong><br>" + post.text + "<br><span class='upvote'>🍿 " + (post.upvotes || 0) + "</span>";
+          var displayName = post.anonymous ? iconLabel("mask", "Anonymous") : post.author;
+          aDiv.innerHTML = "<strong>" + displayName + "</strong><br>" + post.text + "<br><div class='post-actions-row'><span class='upvote'>🍿 " + (post.upvotes || 0) + "</span></div>";
           if (post.imageUrl) {
             var aImg = document.createElement("img");
             aImg.src = post.imageUrl;
@@ -3312,7 +3473,7 @@ function loadPosts() {
               });
             };
           })(postId);
-          aDiv.appendChild(aHBtn);
+          aDiv.querySelector(".post-actions-row").appendChild(aHBtn);
           var aDelBtn = document.createElement("button");
           aDelBtn.innerHTML = iconLabel("trash", "Delete");
           aDelBtn.className = "delete teacher-control";
@@ -3325,7 +3486,7 @@ function loadPosts() {
               await deleteDoc(doc(db, "boards", currentBoardId, "posts", pid));
             };
           })(postId);
-          aDiv.appendChild(aDelBtn);
+          aDiv.querySelector(".post-actions-row").appendChild(aDelBtn);
           var aRepliesDiv = document.createElement("div");
           loadReplies(postId, aRepliesDiv, true);
           aDiv.appendChild(aRepliesDiv);
@@ -3348,8 +3509,8 @@ function loadPosts() {
         div.classList.add("post-reveal-pending");
         if (postRevealObserver) { postRevealObserver.observe(div); }
       }
-      var displayName = post.anonymous && !isTeacher ? "🥷🏼 Anonymous" : post.author;
-      div.innerHTML = "<strong>" + displayName + "</strong><br>" + post.text + "<br><span class='upvote'>🍿 <span class='upvote-count'>" + (post.upvotes || 0) + "</span></span><button class='reply-btn teacher-control'>Reply</button>";
+      var displayName = post.anonymous && !isTeacher ? iconLabel("mask", "Anonymous") : post.author;
+      div.innerHTML = "<strong>" + displayName + "</strong><br>" + post.text + "<br><div class='post-actions-row'><span class='upvote'>🍿 <span class='upvote-count'>" + (post.upvotes || 0) + "</span></span><button class='reply-btn teacher-control'>Reply</button></div>";
       if (post.imageUrl) {
         var img = document.createElement("img");
         img.src = post.imageUrl;
@@ -3372,7 +3533,7 @@ function loadPosts() {
             });
           };
         })(postId, post.visible);
-        div.appendChild(hBtn);
+        div.querySelector(".post-actions-row").appendChild(hBtn);
         var delBtn = document.createElement("button");
         delBtn.innerHTML = iconLabel("trash", "Delete");
         delBtn.className = "delete teacher-control";
@@ -3384,7 +3545,7 @@ function loadPosts() {
             await deleteDoc(doc(db, "boards", currentBoardId, "posts", pid));
           };
         })(postId);
-        div.appendChild(delBtn);
+        div.querySelector(".post-actions-row").appendChild(delBtn);
       }
       var upvoteSpan = div.querySelector(".upvote");
       (function(pid, postData) {
@@ -3490,7 +3651,16 @@ function loadPosts() {
         };
       })(postId);
       div.appendChild(repliesDiv);
-      postsDiv.appendChild(div);
+      // apple-design §16: scroll "jelly" lag/overshoot lives on a wrapper,
+      // not on .post itself -- .post already owns hover-lift and the
+      // motion-pop click animation's `transform`, and a second JS-driven
+      // per-frame `transform` on the same element would fight those for the
+      // same CSS property instead of composing (see wireJellyScroll below).
+      var jellyWrap = document.createElement("div");
+      jellyWrap.className = "post-jelly-wrap";
+      jellyWrap.appendChild(div);
+      postsDiv.appendChild(jellyWrap);
+      if (jellyObserver) { jellyObserver.observe(jellyWrap); }
     });
   });
 }
@@ -3774,7 +3944,7 @@ async function loadPolls() {
         var topToggleBtn = document.createElement("button");
         topToggleBtn.type = "button";
         topToggleBtn.id = "pollCollapseToggleTop";
-        topToggleBtn.className = "teacher-control";
+        topToggleBtn.className = "teacher-control subtle-toggle-btn";
         topToggleBtn.textContent = pollSectionCollapsed ? "▸ Show Polls" : "▾ Hide Polls";
         topToggleBtn.onclick = function() { pollSectionCollapsed = !pollSectionCollapsed; applyPollSectionCollapse(); };
         topRow.appendChild(topToggleBtn);
@@ -3813,7 +3983,7 @@ async function loadPolls() {
         var bottomToggleBtn = document.createElement("button");
         bottomToggleBtn.type = "button";
         bottomToggleBtn.id = "pollCollapseToggleBottom";
-        bottomToggleBtn.className = "teacher-control";
+        bottomToggleBtn.className = "teacher-control subtle-toggle-btn";
         bottomToggleBtn.textContent = pollSectionCollapsed ? "▸ Show Polls" : "▾ Hide Polls";
         bottomToggleBtn.onclick = function() { pollSectionCollapsed = !pollSectionCollapsed; applyPollSectionCollapse(); };
         bottomRow.appendChild(bottomToggleBtn);
@@ -4949,7 +5119,7 @@ async function updateDailyDashboard() {
     var metricsText = document.getElementById("dailyMetricsText");
     if (engDisplay) { engDisplay.textContent = engagementPct + "% Engagement"; }
     if (metricsText) {
-      metricsText.innerHTML = "Attendance: " + attendance + "/" + totalStudents + " &nbsp;|&nbsp; Upvotes: " + totalUpvotes + " &nbsp;|&nbsp; Comments: " + totalComments + " &nbsp;|&nbsp; Poll Participation: " + engagementPct + "% &nbsp;|&nbsp; 🥷🏼 Anonymity: " + anonPct + "%";
+      metricsText.innerHTML = "Attendance: " + attendance + "/" + totalStudents + " &nbsp;|&nbsp; Upvotes: " + totalUpvotes + " &nbsp;|&nbsp; Comments: " + totalComments + " &nbsp;|&nbsp; Poll Participation: " + engagementPct + "% &nbsp;|&nbsp; " + iconLabel("mask", "Anonymity: " + anonPct + "%");
     }
   } catch (err) {
     console.error("Daily dashboard error:", err);
