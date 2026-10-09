@@ -77,7 +77,7 @@ var seatPopupOpenedByHover = false;
 // adapts to light/dark theme automatically -- no extra CSS vars needed.
 var ICONS = {
   eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M2 12C4.5 7 8 5 12 5s7.5 2 10 7c-2.5 5-6 7-10 7s-7.5-2-10-7Z"/><circle cx="12" cy="12" r="2.5"/></svg>',
-  eyeOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M3.5 7C5.8 5.3 8.6 4.3 12 4.3c4 0 7.5 2 10 6.7-1 1.9-2.2 3.4-3.6 4.5M9.5 9.6a3 3 0 0 0 4.2 4.2M6.2 17.3C4.3 16 2.9 14.1 2 12c.5-1 1.1-1.9 1.8-2.8"/><line x1="3" y1="3" x2="21" y2="21"/></svg>',
+  eyeOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M2 12c2.5 5 6 7 10 7s7.5-2 10-7"/><path d="M7 17.5l-1 2.3M12 19v2.5M17 17.5l1 2.3"/></svg>',
   trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M4 7h16"/><path d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>',
   refresh: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M3 12a9 9 0 0 1 15.3-6.4L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.3 6.4L3 16"/><path d="M3 21v-5h5"/></svg>',
   camera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3.5"/></svg>',
@@ -108,6 +108,40 @@ var ICONS = {
 function iconLabel(name, text) { return ICONS[name] + (text ? " " + text : ""); }
 function eyeLabel(visible, shownText, hiddenText) { return iconLabel(visible ? "eye" : "eyeOff", visible ? shownText : hiddenText); }
 
+// Same end result as `el.innerHTML = eyeLabel(...)`, but animated: the icon
+// blinks twice (closing/opening) before settling into its final state,
+// instead of swapping instantly. Keeps a persistent icon-wrapper span
+// across calls (instead of destroying/recreating it via innerHTML each
+// time) specifically so the blink keyframe -- declared on that span itself
+// -- keeps running uninterrupted while its SVG content is swapped out
+// mid-animation; destroying and recreating the node would cut the
+// animation short at the swap point.
+function setEyeLabelAnimated(el, visible, shownText, hiddenText) {
+  if (!el) { return; }
+  var iconSpan = el.querySelector(".eye-blink-icon");
+  var firstRender = !iconSpan;
+  if (firstRender) {
+    el.innerHTML = "";
+    iconSpan = document.createElement("span");
+    iconSpan.className = "eye-blink-icon";
+    el.appendChild(iconSpan);
+    el.appendChild(document.createTextNode(""));
+  }
+  var textNode = el.lastChild;
+  function applyIcon() {
+    iconSpan.innerHTML = ICONS[visible ? "eye" : "eyeOff"];
+    textNode.textContent = " " + (visible ? shownText : hiddenText);
+  }
+  // No blink on first mount (nothing was visibly "toggled" yet), and skip
+  // it entirely under prefers-reduced-motion.
+  if (firstRender || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    applyIcon();
+    return;
+  }
+  restartAnimationClass(iconSpan, "eye-blink-playing");
+  setTimeout(applyIcon, 90); // swaps the icon while the first blink is fully closed
+}
+
 const loginDiv = document.getElementById("login");
 const teacherLoginDiv = document.getElementById("teacherLogin");
 const boardsPortalDiv = document.getElementById("boardsPortal");
@@ -137,6 +171,7 @@ const seatsBtn = document.getElementById("seatsBtn");
 const seatingMapDiv = document.getElementById("seatingMap");
 const seatCanvas = document.getElementById("seatCanvas");
 const addSeatBtn = document.getElementById("addSeatBtn");
+const copyLayoutBtn = document.getElementById("copyLayoutBtn");
 const backToBoardFromSeats = document.getElementById("backToBoardFromSeats");
 const logoutBtnSeats = document.getElementById("logoutBtnSeats");
 const themeToggleSeats = document.getElementById("themeToggleSeats");
@@ -689,6 +724,33 @@ addSeatBtn.onclick = async function() {
   });
 };
 
+copyLayoutBtn.onclick = async function() {
+  if (!currentBoardId) { return; }
+  var q = query(collection(db, "boards"), where("teacherAccount", "==", teacherAccount));
+  var snap = await getDocs(q);
+  var boards = [];
+  snap.forEach(function(d) { if (d.id !== currentBoardId) { boards.push({ id: d.id, name: d.data().name }); } });
+  if (!boards.length) { alert("No other boards to copy a layout from."); return; }
+  var promptText = "Select a board to copy its seat layout from:\n\n";
+  for (var i = 0; i < boards.length; i++) { promptText += (i + 1) + ". " + boards[i].name + "\n"; }
+  promptText += "\nEnter number:";
+  var sel = prompt(promptText);
+  var idx = parseInt(sel) - 1;
+  if (isNaN(idx) || idx < 0 || idx >= boards.length) { alert("Invalid selection."); return; }
+  var sourceSeatsSnap = await getDocs(collection(db, "boards", boards[idx].id, "seats"));
+  if (sourceSeatsSnap.empty) { alert(boards[idx].name + " has no seats to copy."); return; }
+  var copyPromises = [];
+  sourceSeatsSnap.forEach(function(d) {
+    var seat = d.data();
+    // Positions only -- studentId is deliberately dropped, since seat
+    // assignments are per-board/per-roster and should never be copied.
+    copyPromises.push(addDoc(collection(db, "boards", currentBoardId, "seats"), {
+      x: seat.x, y: seat.y, studentId: null, createdAt: serverTimestamp()
+    }));
+  });
+  await Promise.all(copyPromises);
+};
+
 backToStudentsFromDashboard.onclick = function() {
   studentDashboardDiv.classList.add("hidden");
   studentsPortalDiv.classList.remove("hidden");
@@ -940,7 +1002,7 @@ function listenBoardSettings() {
 function applyLeaderboardVisibility() {
   if (isTeacher) {
     leaderboardSection.style.display = "";
-    leaderboardVisibilityBtn.innerHTML = eyeLabel(leaderboardVisible, "Leaderboard Shown", "Leaderboard Hidden");
+    setEyeLabelAnimated(leaderboardVisibilityBtn, leaderboardVisible, "Leaderboard Shown", "Leaderboard Hidden");
     return;
   }
   leaderboardSection.style.display = leaderboardVisible ? "" : "none";
@@ -1575,10 +1637,10 @@ async function loadStudentsPortal() {
   }
   var toggleBtn = document.getElementById("dailyDataToggleBtn");
   if (toggleBtn) {
-    toggleBtn.innerHTML = eyeLabel(dailyDataVisible, "Daily Data Shown", "Daily Data Hidden");
+    setEyeLabelAnimated(toggleBtn, dailyDataVisible, "Daily Data Shown", "Daily Data Hidden");
     toggleBtn.onclick = async function() {
       dailyDataVisible = !dailyDataVisible;
-      toggleBtn.innerHTML = eyeLabel(dailyDataVisible, "Daily Data Shown", "Daily Data Hidden");
+      setEyeLabelAnimated(toggleBtn, dailyDataVisible, "Daily Data Shown", "Daily Data Hidden");
       await loadStudentsPortal();
     };
   }
@@ -1817,6 +1879,7 @@ async function viewStudentDashboard(studentId) {
   handsCard.className = "metric-card";
   handsCard.innerHTML = "<h3>" + iconLabel("hand", "Hands Raised") + "</h3><div style='font-size:1.4rem;padding:8px 0;text-align:center;'>" + (student.handsRaisedCount || 0) + "</div>";
   grid.appendChild(handsCard);
+  addHistoricMetricCard(grid, iconLabel("hand", "Hands Raised (Monthly)"), student.monthlyStats || {}, "handsRaised", "handsRaisedMonthlyChart");
 
   // All-time (not monthly) -- joinedAt anchors the start of the very
   // first "none" segment, so a student who's never touched the
@@ -2779,6 +2842,7 @@ function initConfusionIndicator() {
     // Mark only the very first ever hand-raise, for the timeline marker.
     if (!myFirstHandRaisedAt) { update.firstHandRaisedAt = Date.now(); }
     updateDoc(studentRef, update);
+    incrementStudentStat(currentStudentId, "handsRaised");
   };
 
   function checkConfusionFadeStage() {
@@ -3673,13 +3737,9 @@ function renderConfusionDetailPopup(seatId, student) {
   openSeatPopupId = seatId;
   var popup = document.createElement("div");
   popup.className = "seat-popup glass-specular";
-
-  var closeBtn = document.createElement("button");
-  closeBtn.type = "button";
-  closeBtn.className = "seat-popup-close";
-  closeBtn.textContent = "✕";
-  closeBtn.onclick = function() { closeSeatPopup(); };
-  popup.appendChild(closeBtn);
+  // No close button -- the existing outside-click handler (see
+  // wireSeatHoverDelegation's canvas listener) already closes any open
+  // seat popup, making a dedicated "✕" redundant clutter.
 
   var title = document.createElement("h4");
   title.textContent = student ? (student.nickname || student.username) : "Unassigned seat";
@@ -3691,23 +3751,20 @@ function renderConfusionDetailPopup(seatId, student) {
     meta.textContent = "@" + student.username;
     popup.appendChild(meta);
 
-    var hist = (student.confusionHistory || []).slice(-24);
-    if (hist.length) {
-      var timeline = document.createElement("div");
-      timeline.className = "confusion-timeline";
-      hist.forEach(function(h) {
-        var tick = document.createElement("div");
-        tick.className = "tick " + (h.state === "red" ? "red" : h.state === "orange" ? "orange" : "green");
-        tick.title = new Date(h.setAt).toLocaleString();
-        timeline.appendChild(tick);
-      });
-      popup.appendChild(timeline);
-    } else {
-      var empty = document.createElement("div");
-      empty.className = "confusion-timeline-empty";
-      empty.textContent = "No confusion reports yet this class.";
-      popup.appendChild(empty);
-    }
+    // Same time-proportional gradient style (and session window) as the
+    // dashboard's class-wide timeline rows, instead of this popup's own
+    // discrete per-entry ticks -- also incidentally fixes a latent bug
+    // where a cleared/null-state history entry had no "none" branch and
+    // was miscolored green.
+    var windowStart = classSessionStartAt || 0;
+    var windowEnd = classSessionEndAt || Date.now();
+    var timeline = document.createElement("div");
+    timeline.className = "class-confusion-timeline-row";
+    timeline.style.background = buildConfusionGradient(
+      student.confusionHistory, windowStart, windowEnd, CONFUSION_COLORS, "var(--confusion-none-color)",
+      student.firstHandRaisedAt, student.firstHandRaisedAt ? firstHandRaiseMarkerColor() : null
+    );
+    popup.appendChild(timeline);
   }
 
   positionSeatPopup(popup, seatId, dailySeatMapCanvasEl);
@@ -3980,7 +4037,7 @@ function loadReplies(postId, container, parentVisible) {
         var actionsRow = document.createElement("div");
         actionsRow.className = "post-actions-row";
         var hBtn = document.createElement("button");
-        hBtn.innerHTML = eyeLabel(r.visible, "Shown", "Hidden");
+        setEyeLabelAnimated(hBtn, r.visible, "Shown", "Hidden");
         hBtn.className = "hide-toggle teacher-control";
         (function(docId, vis) {
           hBtn.onclick = async function() { await updateDoc(doc(db, "boards", currentBoardId, "replies", docId), { visible: !vis }); };
@@ -4042,7 +4099,7 @@ function loadPosts() {
             aDiv.appendChild(aImg);
           }
           var aHBtn = document.createElement("button");
-          aHBtn.innerHTML = eyeLabel(false, "Shown", "Hidden");
+          setEyeLabelAnimated(aHBtn, false, "Shown", "Hidden");
           aHBtn.className = "hide-toggle teacher-control";
           (function(pid) {
             aHBtn.onclick = async function(e) {
@@ -4101,7 +4158,7 @@ function loadPosts() {
       }
       if (isTeacher) {
         var hBtn = document.createElement("button");
-        hBtn.innerHTML = eyeLabel(post.visible, "Shown", "Hidden");
+        setEyeLabelAnimated(hBtn, post.visible, "Shown", "Hidden");
         hBtn.className = "hide-toggle teacher-control";
         (function(pid, vis) {
           hBtn.onclick = async function(e) {
@@ -4655,7 +4712,7 @@ async function loadPolls() {
 
           var toggleBtn = document.createElement("button");
           toggleBtn.type = "button";
-          toggleBtn.innerHTML = eyeLabel(pollVisible, "Shown", "Hidden");
+          setEyeLabelAnimated(toggleBtn, pollVisible, "Shown", "Hidden");
           toggleBtn.className = "hide-toggle teacher-control";
           (function(pid, vis) {
             toggleBtn.onclick = async function(e) {
@@ -4667,7 +4724,7 @@ async function loadPolls() {
 
           var rToggle = document.createElement("button");
           rToggle.type = "button";
-          rToggle.innerHTML = eyeLabel(poll.responsesVisible, "Responses Shown", "Responses Hidden");
+          setEyeLabelAnimated(rToggle, poll.responsesVisible, "Responses Shown", "Responses Hidden");
           rToggle.className = "hide-toggle teacher-control";
           (function(pid, rv) {
             rToggle.onclick = async function(e) {
@@ -4680,7 +4737,7 @@ async function loadPolls() {
           if (poll.type === "mc" && poll.responsesVisible) {
             var cToggle = document.createElement("button");
             cToggle.type = "button";
-            cToggle.innerHTML = eyeLabel(poll.correctVisible, "Correct Shown", "Correct Hidden");
+            setEyeLabelAnimated(cToggle, poll.correctVisible, "Correct Shown", "Correct Hidden");
             cToggle.className = "hide-toggle teacher-control";
             (function(pid, cv, ci, pa) {
               cToggle.onclick = async function(e) {
@@ -4779,7 +4836,7 @@ async function loadPolls() {
           controlsDiv.style.cssText = "margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;";
           var toggleBtn = document.createElement("button");
           toggleBtn.type = "button";
-          toggleBtn.innerHTML = eyeLabel(false, "Shown", "Hidden");
+          setEyeLabelAnimated(toggleBtn, false, "Shown", "Hidden");
           toggleBtn.className = "hide-toggle teacher-control";
           (function(pid) {
             toggleBtn.onclick = async function(e) {
@@ -5141,7 +5198,7 @@ function renderFreePoll(div, poll, pollId, totalStudents) {
     var kToggle = document.createElement("button");
     kToggle.type = "button";
     kToggle.className = "hide-toggle teacher-control";
-    kToggle.innerHTML = eyeLabel(poll.keywordsVisible, "Keywords Shown", "Keywords Hidden");
+    setEyeLabelAnimated(kToggle, poll.keywordsVisible, "Keywords Shown", "Keywords Hidden");
     (function(pid, kv) {
       kToggle.onclick = async function(e) {
         e.stopPropagation();

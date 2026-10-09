@@ -1708,6 +1708,20 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
 
 .icon-svg { width: 1em; height: 1em; vertical-align: -0.15em; margin-right: 4px; flex-shrink: 0; }
 
+/* Wraps just the icon (not the trailing label text) so setEyeLabelAnimated()
+   can scale only the eye glyph for its blink transition, not the whole
+   button's text alongside it. display:inline-block is needed for transform
+   to apply at all on what would otherwise be an inline element. */
+.eye-blink-icon { display: inline-block; }
+.eye-blink-playing { animation: eye-blink 0.6s ease-in-out; }
+@keyframes eye-blink {
+  0%, 100% { transform: scaleY(1); }
+  15%      { transform: scaleY(0.08); }
+  30%      { transform: scaleY(1); }
+  55%      { transform: scaleY(0.08); }
+  70%      { transform: scaleY(1); }
+}
+
 @media (max-width: 640px) {
   #seatCanvas { min-height: 420px; }
   .seat { width: 52px; height: 52px; margin-left: -26px; margin-top: -26px; font-size: 1.15rem; }
