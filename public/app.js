@@ -90,7 +90,19 @@ var ICONS = {
   maximize: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M4 9V4h5"/><path d="M15 4h5v5"/><path d="M20 15v5h-5"/><path d="M9 20H4v-5"/></svg>',
   minimize: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M9 4v5H4"/><path d="M15 4v5h5"/><path d="M20 15h-5v5"/><path d="M9 20v-5H4"/></svg>',
   eraser: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M3.5 16.5 12 8l5 5-5.5 5.5a2 2 0 0 1-2.8 0l-4.7-4.7a2 2 0 0 1 0-2.8Z"/><path d="M7 20h11"/></svg>',
-  hand: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M18 11V6a2 2 0 0 0-4 0"/><path d="M14 10V4a2 2 0 0 0-4 0v6"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>'
+  hand: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M18 11V6a2 2 0 0 0-4 0"/><path d="M14 10V4a2 2 0 0 0-4 0v6"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>',
+  trophy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M7 5H4a1 1 0 0 0-1 1v1a4 4 0 0 0 4 4"/><path d="M17 5h3a1 1 0 0 1 1 1v1a4 4 0 0 1-4 4"/><path d="M9 17h6"/><path d="M12 13v4"/><path d="M8 21h8"/></svg>',
+  barChart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="7" width="4" height="13" rx="1"/><rect x="16" y="3" width="4" height="17" rx="1"/></svg>',
+  ballot: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12l3 3 5-6"/></svg>',
+  target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg>',
+  commentBubble: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><rect x="3" y="4" width="18" height="12" rx="3"/><path d="M8 16l-2 4 5-4Z"/></svg>',
+  arrowUp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><line x1="12" y1="19" x2="12" y2="5"/><path d="M6 11l6-6 6 6"/></svg>',
+  arrowDown: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><line x1="12" y1="5" x2="12" y2="19"/><path d="M6 13l6 6 6-6"/></svg>',
+  pieChart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M12 3a9 9 0 1 0 9 9h-9Z"/><path d="M12 3v9"/></svg>',
+  stackedBars: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><rect x="4" y="3" width="4" height="18" rx="1"/><line x1="4" y1="9" x2="8" y2="9"/><line x1="4" y1="15" x2="8" y2="15"/><rect x="10" y="3" width="4" height="18" rx="1"/><line x1="10" y1="7" x2="14" y2="7"/><line x1="10" y1="13" x2="14" y2="13"/><rect x="16" y="3" width="4" height="18" rx="1"/><line x1="16" y1="11" x2="20" y2="11"/><line x1="16" y1="17" x2="20" y2="17"/></svg>',
+  checklist: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><path d="M4 6l1 1 2-2"/><path d="M4 12l1 1 2-2"/><path d="M4 18l1 1 2-2"/></svg>',
+  textBubble: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><rect x="3" y="4" width="18" height="12" rx="3"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="11.5" x2="14" y2="11.5"/><path d="M8 16l-2 4 5-4Z"/></svg>',
+  pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg>'
 };
 
 function iconLabel(name, text) { return ICONS[name] + (text ? " " + text : ""); }
@@ -455,7 +467,7 @@ function findMotionNeighbors(el) {
 // document listener from ever seeing the event. A capture-phase listener on
 // document runs before the target's own handler, so it's unaffected.
 document.addEventListener("click", function(e) {
-  var el = e.target.closest("button, .post, .poll, .confusion-btn, .seat");
+  var el = e.target.closest("button, .post, .poll, .confusion-btn, .seat, .metric-card, .board-card");
   if (!el) { return; }
   applyMotionPop(el);
   findMotionNeighbors(el).forEach(applyMotionWave);
@@ -1589,7 +1601,7 @@ async function loadStudentsPortal() {
       for (var ei = 0; ei < engagementData.length; ei++) {
         if (engagementData[ei].key === currentMonthKey) { currentEngagement = Math.round(engagementData[ei].value); break; }
       }
-      info.innerHTML = "<h3>" + student.username + "</h3><p class='student-stats'>📊 Engagement: " + currentEngagement + "% | Polls: " + stats.pollsVoted + " (" + pollPct + "%) | Comments: " + stats.comments + " | Upvotes Given: " + stats.upvotesGiven + " | Upvotes Received: " + stats.upvotesReceived + " | " + iconLabel("mask", "Anonymous: " + stats.anonymousPercentage + "%") + "</p>";
+      info.innerHTML = "<h3>" + student.username + "</h3><p class='student-stats'>" + iconLabel("barChart", "Engagement: " + currentEngagement + "%") + " | Polls: " + stats.pollsVoted + " (" + pollPct + "%) | Comments: " + stats.comments + " | Upvotes Given: " + stats.upvotesGiven + " | Upvotes Received: " + stats.upvotesReceived + " | " + iconLabel("mask", "Anonymous: " + stats.anonymousPercentage + "%") + "</p>";
     } else {
       info.innerHTML = "<h3>" + student.username + "</h3>";
     }
@@ -1763,7 +1775,7 @@ async function buildClassAggregateCard(allStudentDocs, totalPolls, pollsSnapshot
   card.className = "board-card class-aggregate-card";
   var info = document.createElement("div");
   info.className = "board-card-info";
-  info.innerHTML = "<h3>📊 Class Aggregate</h3><p>Average across all students</p>";
+  info.innerHTML = "<h3>" + iconLabel("barChart", "Class Aggregate") + "</h3><p>Average across all students</p>";
   var actions = document.createElement("div");
   actions.className = "board-card-actions";
   var enterBtn = document.createElement("button");
@@ -1791,15 +1803,15 @@ async function viewStudentDashboard(studentId) {
   var grid = document.getElementById("metricsGrid");
   var lbCard = document.createElement("div");
   lbCard.className = "metric-card";
-  lbCard.innerHTML = "<h3>🏆 Medals</h3><div style='font-size:1.4rem;padding:8px 0;'>🥇 " + (lbData.gold || 0) + " &nbsp; 🥈 " + (lbData.silver || 0) + " &nbsp; 🥉 " + (lbData.bronze || 0) + "</div>";
+  lbCard.innerHTML = "<h3>" + iconLabel("trophy", "Medals") + "</h3><div style='font-size:1.4rem;padding:8px 0;'>🥇 " + (lbData.gold || 0) + " &nbsp; 🥈 " + (lbData.silver || 0) + " &nbsp; 🥉 " + (lbData.bronze || 0) + "</div>";
   grid.appendChild(lbCard);
-  addPercentageMetricCard(grid, "📊 Engagement %", monthlyEngagement, "engagementChart");
-  addPercentageMetricCard(grid, "🗳️ Polls Cast %", monthlyPollsCastPct, "pollsCastPctChart");
+  addPercentageMetricCard(grid, iconLabel("barChart", "Engagement %"), monthlyEngagement, "engagementChart");
+  addPercentageMetricCard(grid, iconLabel("ballot", "Polls Cast %"), monthlyPollsCastPct, "pollsCastPctChart");
   addPercentageMetricCard(grid, iconLabel("mask", "Anonymous %"), monthlyAnonPct, "anonPctChart");
-  addPercentageMetricCard(grid, "🎯 Poll Accuracy %", monthlyPollAccuracy, "pollAccuracyChart");
-  addHistoricMetricCard(grid, "Comments Made: " + (student.historicalComments || 0), student.monthlyStats || {}, "comments", "commentsChart");
-  addHistoricMetricCard(grid, "Upvotes Given: " + (student.historicalUpvotesGiven || 0), student.monthlyStats || {}, "upvotesGiven", "upvotesGivenChart");
-  addHistoricMetricCard(grid, "Upvotes Received: " + (student.historicalUpvotesReceived || 0), student.monthlyStats || {}, "upvotesReceived", "upvotesReceivedChart");
+  addPercentageMetricCard(grid, iconLabel("target", "Poll Accuracy %"), monthlyPollAccuracy, "pollAccuracyChart");
+  addHistoricMetricCard(grid, iconLabel("commentBubble", "Comments Made: " + (student.historicalComments || 0)), student.monthlyStats || {}, "comments", "commentsChart");
+  addHistoricMetricCard(grid, iconLabel("arrowUp", "Upvotes Given: " + (student.historicalUpvotesGiven || 0)), student.monthlyStats || {}, "upvotesGiven", "upvotesGivenChart");
+  addHistoricMetricCard(grid, iconLabel("arrowDown", "Upvotes Received: " + (student.historicalUpvotesReceived || 0)), student.monthlyStats || {}, "upvotesReceived", "upvotesReceivedChart");
 
   var handsCard = document.createElement("div");
   handsCard.className = "metric-card";
@@ -1815,7 +1827,7 @@ async function viewStudentDashboard(studentId) {
   var confusionTotals = computeConfusionStateDurations(student.confusionHistory || [], joinedAtMs);
   var pieCard = document.createElement("div");
   pieCard.className = "metric-card";
-  pieCard.innerHTML = "<h3>Confusion State Distribution</h3><canvas id='confusionPieChart" + studentId + "' width='400' height='200'></canvas><div class='confusion-pie-legend'>" +
+  pieCard.innerHTML = "<h3>" + iconLabel("pieChart", "Confusion State Distribution") + "</h3><canvas id='confusionPieChart" + studentId + "' width='400' height='200'></canvas><div class='confusion-pie-legend'>" +
     "<span><span class='confusion-dot confusion-dot-red'></span>" + formatDurationMs(confusionTotals.red) + "</span>" +
     "<span><span class='confusion-dot confusion-dot-orange'></span>" + formatDurationMs(confusionTotals.orange) + "</span>" +
     "<span><span class='confusion-dot confusion-dot-green'></span>" + formatDurationMs(confusionTotals.green) + "</span>" +
@@ -1827,7 +1839,7 @@ async function viewStudentDashboard(studentId) {
   var monthlyConfusion = computeMonthlyConfusionDurations(student.confusionHistory || [], joinedAtMs);
   var confusionBarCard = document.createElement("div");
   confusionBarCard.className = "metric-card";
-  confusionBarCard.innerHTML = "<h3>Monthly Confusion State Timeline</h3><canvas id='confusionBarChart" + studentId + "' width='400' height='200'></canvas>";
+  confusionBarCard.innerHTML = "<h3>" + iconLabel("stackedBars", "Monthly Confusion State Timeline") + "</h3><canvas id='confusionBarChart" + studentId + "' width='400' height='200'></canvas>";
   grid.appendChild(confusionBarCard);
   drawConfusionStackedBarChart("confusionBarChart" + studentId, monthlyConfusion);
 
@@ -1885,21 +1897,21 @@ async function viewClassAggregateDashboard(allStudentDocs, totalPolls, pollsSnap
   });
   lbScores.sort(function(a, b) { return b.pts - a.pts; });
   var top3 = lbScores.slice(0, 3);
-  dashboardContent.innerHTML = "<div class='dashboard-header'><h2>📊 Class Aggregate</h2><p>Mean across all " + n + " students</p></div><div class='metrics-grid' id='metricsGridAgg'></div>";
+  dashboardContent.innerHTML = "<div class='dashboard-header'><h2>" + iconLabel("barChart", "Class Aggregate") + "</h2><p>Mean across all " + n + " students</p></div><div class='metrics-grid' id='metricsGridAgg'></div>";
   var grid = document.getElementById("metricsGridAgg");
   var medals = ["🥇", "🥈", "🥉"];
   var top3Html = top3.length > 0 ? top3.map(function(s, i) { return medals[i] + " " + s.name; }).join("<br>") : "No data yet";
   var lbCard = document.createElement("div");
   lbCard.className = "metric-card";
-  lbCard.innerHTML = "<h3>🏆 Top Students</h3><div class='leaderboard-summary-box'>" + top3Html + "</div>";
+  lbCard.innerHTML = "<h3>" + iconLabel("trophy", "Top Students") + "</h3><div class='leaderboard-summary-box'>" + top3Html + "</div>";
   grid.appendChild(lbCard);
-  addPercentageMetricCard(grid, "📊 Engagement %", await computeClassAggregatePercent(allStudentDocs, "engagement"), "aggEngagementChart");
-  addPercentageMetricCard(grid, "🗳️ Polls Cast %", await computeClassAggregatePercent(allStudentDocs, "pollsCast"), "aggPollsChart");
+  addPercentageMetricCard(grid, iconLabel("barChart", "Engagement %"), await computeClassAggregatePercent(allStudentDocs, "engagement"), "aggEngagementChart");
+  addPercentageMetricCard(grid, iconLabel("ballot", "Polls Cast %"), await computeClassAggregatePercent(allStudentDocs, "pollsCast"), "aggPollsChart");
   addPercentageMetricCard(grid, iconLabel("mask", "Anonymous %"), await computeClassAggregatePercent(allStudentDocs, "anon"), "aggAnonChart");
-  addPercentageMetricCard(grid, "🎯 Poll Accuracy %", await computeClassAggregatePercent(allStudentDocs, "accuracy"), "aggAccuracyChart");
-  addHistoricMetricCard(grid, "Comments (avg): " + Math.round(totComments / n), avgMonthlyStats, "comments", "aggCommentsChart");
-  addHistoricMetricCard(grid, "Upvotes Given (avg): " + Math.round(totUpvGiven / n), avgMonthlyStats, "upvotesGiven", "aggUpvGivenChart");
-  addHistoricMetricCard(grid, "Upvotes Received (avg): " + Math.round(totUpvReceived / n), avgMonthlyStats, "upvotesReceived", "aggUpvRecChart");
+  addPercentageMetricCard(grid, iconLabel("target", "Poll Accuracy %"), await computeClassAggregatePercent(allStudentDocs, "accuracy"), "aggAccuracyChart");
+  addHistoricMetricCard(grid, iconLabel("commentBubble", "Comments (avg): " + Math.round(totComments / n)), avgMonthlyStats, "comments", "aggCommentsChart");
+  addHistoricMetricCard(grid, iconLabel("arrowUp", "Upvotes Given (avg): " + Math.round(totUpvGiven / n)), avgMonthlyStats, "upvotesGiven", "aggUpvGivenChart");
+  addHistoricMetricCard(grid, iconLabel("arrowDown", "Upvotes Received (avg): " + Math.round(totUpvReceived / n)), avgMonthlyStats, "upvotesReceived", "aggUpvRecChart");
 }
 
 async function computeClassAggregatePercent(allStudentDocs, type) {
@@ -2096,6 +2108,16 @@ function getMonthLabel(monthKey) {
   return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, 1).toLocaleString("en", { month: "short" }).toUpperCase();
 }
 
+// Small, subtle numeric label drawn just above a chart point's dot.
+function drawPointValueLabel(ctx, x, y, text) {
+  ctx.save();
+  ctx.fillStyle = "rgba(142, 142, 147, 0.85)"; // --text-secondary-ish gray, theme-neutral
+  ctx.font = "9px system-ui";
+  ctx.textAlign = "center";
+  ctx.fillText(text, x, y - 10);
+  ctx.restore();
+}
+
 function drawChart(canvasId, monthlyStats, metric) {
   var canvas = document.getElementById(canvasId);
   if (!canvas) { return; }
@@ -2132,6 +2154,7 @@ function drawChart(canvasId, monthlyStats, metric) {
     ctx.beginPath();
     ctx.arc(x, y, 4, 0, Math.PI * 2);
     ctx.fill();
+    drawPointValueLabel(ctx, x, y, Math.round(data[i].value));
   }
   ctx.fillStyle = "#1d1d1f";
   ctx.font = "11px system-ui";
@@ -2205,6 +2228,7 @@ function drawColoredLine(ctx, data, padding, chartWidth, chartHeight, pointSpaci
       ctx.beginPath();
       ctx.arc(x, y, 4, 0, Math.PI * 2);
       ctx.fill();
+      drawPointValueLabel(ctx, x, y, Math.round(data[i].value) + "%");
     }
   }
   ctx.restore();
@@ -3197,7 +3221,7 @@ function wireMotionGlow(selector) {
     if (!e.relatedTarget && activeEl) { activeEl.classList.remove("motion-glow-active"); activeEl = null; }
   });
 }
-wireMotionGlow(".post, .poll, .confusion-btn, .seat");
+wireMotionGlow(".post, .poll, .confusion-btn, .seat, .metric-card, .board-card");
 
 // Scroll-reactive specular highlight for the tier-1 glass surfaces (see
 // .glass-specular in style.css) -- a web-appropriate substitute for Apple's
@@ -4228,7 +4252,7 @@ teacherBtn.addEventListener("click", function() {
     pollCreation.innerHTML = "";
     return;
   }
-  pollCreation.innerHTML = "<h3>Create Poll</h3><div class='poll-type-buttons' id='pollTypeBtns'><button type='button' id='mcBtn' class='teacher-control'>Multiple Choice</button><button type='button' id='freeBtn' class='teacher-control'>Free Response</button><button type='button' id='drawBtn' class='teacher-control'>✏️ Drawing</button></div><input type='text' id='pollQuestionInput' placeholder='Poll question' style='display:none;' /><div id='mcOptionsContainer' style='display:none;'><div class='mc-options-list' id='mcOptionsList'></div><button type='button' class='add-option-btn teacher-control' id='addOptionBtn'>+</button><div class='require-all-row' style='margin-top:10px;'><input type='checkbox' id='requireAllCorrect' /><label for='requireAllCorrect'>Require All Correct</label></div></div><input type='file' id='pollImageInput' accept='image/*' style='display:none;' /><button type='button' id='pollImageBtn' class='secondary-btn teacher-control' style='display:none;'>" + iconLabel("camera", "Add Image") + "</button><div id='pollImagePreviewInner' class='image-preview'></div><button type='button' id='createPollBtn' class='teacher-control' style='display:none;'>Create Poll</button><button type='button' id='cancelPollBtn' class='teacher-control' style='display:none;margin-left:8px;'>Cancel</button>";
+  pollCreation.innerHTML = "<h3>Create Poll</h3><div class='poll-type-buttons' id='pollTypeBtns'><button type='button' id='mcBtn' class='teacher-control'>" + iconLabel("checklist", "Multiple Choice") + "</button><button type='button' id='freeBtn' class='teacher-control'>" + iconLabel("textBubble", "Free Response") + "</button><button type='button' id='drawBtn' class='teacher-control'>" + iconLabel("pencil", "Drawing") + "</button></div><input type='text' id='pollQuestionInput' placeholder='Poll question' style='display:none;' /><div id='mcOptionsContainer' style='display:none;'><div class='mc-options-list' id='mcOptionsList'></div><button type='button' class='add-option-btn teacher-control' id='addOptionBtn'>+</button><div class='require-all-row' style='margin-top:10px;'><input type='checkbox' id='requireAllCorrect' /><label for='requireAllCorrect'>Require All Correct</label></div></div><input type='file' id='pollImageInput' accept='image/*' style='display:none;' /><button type='button' id='pollImageBtn' class='secondary-btn teacher-control' style='display:none;'>" + iconLabel("camera", "Add Image") + "</button><div id='pollImagePreviewInner' class='image-preview'></div><button type='button' id='createPollBtn' class='teacher-control' style='display:none;'>Create Poll</button><button type='button' id='cancelPollBtn' class='teacher-control' style='display:none;margin-left:8px;'>Cancel</button>";
   pollCreation.classList.remove("hidden");
 
   var currentPollType = "";
