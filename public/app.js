@@ -461,6 +461,86 @@ function restartAnimationClass(el, cls) {
 function applyMotionPop(el) { restartAnimationClass(el, "motion-pop"); }
 function applyMotionWave(el) { restartAnimationClass(el, "motion-pop-wave"); }
 
+// ─── Hold-to-confirm delete ─────────────────────────────────────────────────
+// Replaces confirm() across every delete button: a loading bar fills
+// left-to-right over HOLD_DELETE_MS while the trash icon shakes in place;
+// releasing early cancels (snaps back, nothing deleted, no popup); reaching
+// full fill calls `onConfirmed` exactly once. Keyboard-accessible via
+// Enter/Space, which don't dispatch pointer events for a "held" button.
+var HOLD_DELETE_MS = 900;
+function wireHoldToConfirmDelete(btn, iconEl, onConfirmed) {
+  var fill = document.createElement("span");
+  fill.className = "hold-delete-fill";
+  btn.appendChild(fill);
+  var rafId = null;
+  var startedAt = null;
+  var done = false;
+
+  function cancelHold() {
+    if (done) { return; } // already completed -- don't reset after the fact
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    startedAt = null;
+    fill.style.width = "0%";
+    if (iconEl) { iconEl.classList.remove("delete-icon-shaking"); }
+  }
+  function tick() {
+    if (done) { return; }
+    var elapsed = Date.now() - startedAt;
+    var pct = Math.min(100, (elapsed / HOLD_DELETE_MS) * 100);
+    fill.style.width = pct + "%";
+    if (pct >= 100) {
+      done = true;
+      if (iconEl) { iconEl.classList.remove("delete-icon-shaking"); }
+      fill.style.width = "0%";
+      onConfirmed();
+      return;
+    }
+    rafId = requestAnimationFrame(tick);
+  }
+  function startHold() {
+    if (startedAt) { return; }
+    done = false;
+    startedAt = Date.now();
+    if (iconEl) { iconEl.classList.add("delete-icon-shaking"); }
+    rafId = requestAnimationFrame(tick);
+  }
+
+  btn.addEventListener("pointerdown", function(e) { e.preventDefault(); startHold(); });
+  btn.addEventListener("pointerup", cancelHold);
+  btn.addEventListener("pointerleave", cancelHold);
+  btn.addEventListener("pointercancel", cancelHold);
+  btn.addEventListener("keydown", function(e) {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); startHold(); }
+  });
+  btn.addEventListener("keyup", function(e) {
+    if (e.key === "Enter" || e.key === " ") { cancelHold(); }
+  });
+  // A full press-release cycle (even a 900ms hold) still dispatches a native
+  // "click" afterward -- swallow it so it can't also fire some OTHER click
+  // handler or bubble to a parent's own onclick (several of these buttons
+  // sit inside a card whose own click enters/opens something).
+  btn.addEventListener("click", function(e) { e.preventDefault(); e.stopPropagation(); });
+}
+
+// WAAPI-animates `itemEl` shrinking/fading toward `trashBtnEl`'s center,
+// resolving once finished so callers can sequence the actual delete after
+// the animation completes -- never in parallel with it, since every delete
+// site here relies on a full container rebuild (a live onSnapshot listener
+// or an explicit manual reload) that would otherwise yank `itemEl` out of
+// the DOM out from under the still-running WAAPI animation.
+function animateSuckIntoTrash(itemEl, trashBtnEl) {
+  var itemRect = itemEl.getBoundingClientRect();
+  var trashRect = trashBtnEl.getBoundingClientRect();
+  var dx = (trashRect.left + trashRect.width / 2) - (itemRect.left + itemRect.width / 2);
+  var dy = (trashRect.top + trashRect.height / 2) - (itemRect.top + itemRect.height / 2);
+  var anim = itemEl.animate([
+    { transform: "translate(0, 0) scale(1)", opacity: 1 },
+    { transform: "translate(" + (dx * 0.6) + "px, " + (dy * 0.6) + "px) scale(0.6)", opacity: 0.6, offset: 0.6 },
+    { transform: "translate(" + dx + "px, " + dy + "px) scale(0.05)", opacity: 0 }
+  ], { duration: 450, easing: "ease-in", fill: "forwards" });
+  return anim.finished.catch(function() {}); // swallow AbortError if itemEl is removed externally mid-flight
+}
+
 // Finds the 1-2 elements that should "wave" (a smaller, delayed pop) when
 // `el` is clicked, using whichever adjacency model actually matches the
 // container's real layout: DOM order maps to visual order for the flex-row
@@ -789,12 +869,12 @@ async function loadBoardsPortal() {
       dtBtn.className = "delete-poll teacher-control";
       dtBtn.style.marginTop = "12px";
       (function(t2, boards2) {
-        dtBtn.onclick = async function() {
-          if (!confirm("Delete teacher " + t2 + " and all boards?")) { return; }
+        wireHoldToConfirmDelete(dtBtn, dtBtn.querySelector(".icon-svg"), async function() {
+          await animateSuckIntoTrash(tc, dtBtn);
           for (var bi = 0; bi < boards2.length; bi++) { await deleteBoard(boards2[bi].id); }
           await deleteDoc(doc(db, "teachers", t2));
           loadBoardsPortal();
-        };
+        });
       })(teacher, teacherBoards[teacher]);
       tc.appendChild(bd);
       tc.appendChild(dtBtn);
@@ -853,12 +933,11 @@ function createBoardCard(board, isMasterView) {
   deleteBtn.innerHTML = iconLabel("trash", "Delete");
   deleteBtn.className = "delete-poll teacher-control";
   (function(bid, bname) {
-    deleteBtn.onclick = async function(e) {
-      e.stopPropagation();
-      if (!confirm("Delete " + bname + "?")) { return; }
+    wireHoldToConfirmDelete(deleteBtn, deleteBtn.querySelector(".icon-svg"), async function() {
+      await animateSuckIntoTrash(card, deleteBtn);
       await deleteBoard(bid);
       if (isMasterView) { loadBoardsPortal(); }
-    };
+    });
   })(board.id, board.name);
   actions.appendChild(deleteBtn);
   card.appendChild(info);
@@ -1694,12 +1773,11 @@ async function loadStudentsPortal() {
     deleteBtn.innerHTML = iconLabel("trash", "Delete");
     deleteBtn.className = "delete-poll teacher-control";
     (function(sid, sname) {
-      deleteBtn.onclick = async function(e) {
-        e.stopPropagation();
-        if (!confirm("Delete student " + sname + "?")) { return; }
+      wireHoldToConfirmDelete(deleteBtn, deleteBtn.querySelector(".icon-svg"), async function() {
+        await animateSuckIntoTrash(card, deleteBtn);
         await deleteDoc(doc(db, "boards", currentBoardId, "students", sid));
         loadStudentsPortal();
-      };
+      });
     })(studentId, student.username);
     actions.appendChild(enterBtn);
     actions.appendChild(editBtn);
@@ -3122,14 +3200,18 @@ function renderSeats() {
     delBtn.type = "button";
     delBtn.className = "seat-delete";
     delBtn.textContent = "✕";
-    delBtn.title = "Delete seat";
+    delBtn.title = "Hold to delete seat";
     (function(seatId) {
-      delBtn.onclick = async function(e) {
-        e.stopPropagation();
-        if (!confirm("Delete this seat?")) { return; }
+      // Pass delBtn itself as the "icon" to shake -- it's just a bare "✕"
+      // text node, not worth wrapping in a dedicated span, and
+      // wireSeatDrag()'s own pointerdown handler excludes drags that
+      // originate on this exact element (e.target === el.querySelector(
+      // ".seat-delete")), which a wrapping child span would have broken.
+      wireHoldToConfirmDelete(delBtn, delBtn, async function() {
+        await animateSuckIntoTrash(el, delBtn);
         await deleteDoc(doc(db, "boards", currentBoardId, "seats", seatId));
         if (openSeatPopupId === seatId) { closeSeatPopup(); }
-      };
+      });
     })(seat.id);
     el.appendChild(delBtn);
 
@@ -3628,13 +3710,17 @@ function openSeatPopup(seatId) {
 
   var delSeatBtn = document.createElement("button");
   delSeatBtn.type = "button";
-  delSeatBtn.className = "teacher-control";
+  delSeatBtn.className = "delete-poll teacher-control";
   delSeatBtn.innerHTML = iconLabel("trash", "Delete Seat");
-  delSeatBtn.onclick = async function() {
-    if (!confirm("Delete this seat?")) { return; }
+  wireHoldToConfirmDelete(delSeatBtn, delSeatBtn.querySelector(".icon-svg"), async function() {
+    // The popup itself is a separate floating element, not the item being
+    // deleted -- find the actual on-canvas seat element to suck into the
+    // trash (positionSeatPopup()'s own lookup convention, see its comment).
+    var seatEl = seatCanvas.querySelector('[data-seat-id="' + seatId + '"]');
+    if (seatEl) { await animateSuckIntoTrash(seatEl, delSeatBtn); }
     await deleteDoc(doc(db, "boards", currentBoardId, "seats", seatId));
     closeSeatPopup();
-  };
+  });
   popup.appendChild(delSeatBtn);
 
   positionSeatPopup(popup, seatId, seatCanvas);
@@ -4083,7 +4169,10 @@ function loadReplies(postId, container, parentVisible) {
         delBtn.innerHTML = iconLabel("trash", "Delete");
         delBtn.className = "delete-btn teacher-control";
         (function(docId) {
-          delBtn.onclick = async function() { await deleteDoc(doc(db, "boards", currentBoardId, "replies", docId)); };
+          wireHoldToConfirmDelete(delBtn, delBtn.querySelector(".icon-svg"), async function() {
+            await animateSuckIntoTrash(div, delBtn);
+            await deleteDoc(doc(db, "boards", currentBoardId, "replies", docId));
+          });
         })(d.id);
         actionsRow.appendChild(delBtn);
         div.appendChild(actionsRow);
@@ -4152,13 +4241,12 @@ function loadPosts() {
           aDelBtn.innerHTML = iconLabel("trash", "Delete");
           aDelBtn.className = "delete teacher-control";
           (function(pid) {
-            aDelBtn.onclick = async function(e) {
-              e.stopPropagation();
-              if (!confirm("Delete this post?")) { return; }
+            wireHoldToConfirmDelete(aDelBtn, aDelBtn.querySelector(".icon-svg"), async function() {
+              await animateSuckIntoTrash(aDiv, aDelBtn);
               var rSnap = await getDocs(collection(db, "boards", currentBoardId, "replies"));
               rSnap.forEach(function(rd) { if (rd.data().postId === pid) { deleteDoc(doc(db, "boards", currentBoardId, "replies", rd.id)); } });
               await deleteDoc(doc(db, "boards", currentBoardId, "posts", pid));
-            };
+            });
           })(postId);
           aDiv.querySelector(".post-actions-row").appendChild(aDelBtn);
           var aRepliesDiv = document.createElement("div");
@@ -4212,12 +4300,12 @@ function loadPosts() {
         delBtn.innerHTML = iconLabel("trash", "Delete");
         delBtn.className = "delete teacher-control";
         (function(pid) {
-          delBtn.onclick = async function(e) {
-            e.stopPropagation();
+          wireHoldToConfirmDelete(delBtn, delBtn.querySelector(".icon-svg"), async function() {
+            await animateSuckIntoTrash(div, delBtn);
             var rSnap = await getDocs(collection(db, "boards", currentBoardId, "replies"));
             rSnap.forEach(function(rd) { if (rd.data().postId === pid) { deleteDoc(doc(db, "boards", currentBoardId, "replies", rd.id)); } });
             await deleteDoc(doc(db, "boards", currentBoardId, "posts", pid));
-          };
+          });
         })(postId);
         div.querySelector(".post-actions-row").appendChild(delBtn);
       }
@@ -4829,11 +4917,10 @@ async function loadPolls() {
           delBtn.innerHTML = iconLabel("trash", "Delete");
           delBtn.className = "delete-poll teacher-control";
           (function(pid) {
-            delBtn.onclick = async function(e) {
-              e.stopPropagation();
-              if (!confirm("Delete this poll?")) { return; }
+            wireHoldToConfirmDelete(delBtn, delBtn.querySelector(".icon-svg"), async function() {
+              await animateSuckIntoTrash(div, delBtn);
               await deleteDoc(doc(db, "boards", currentBoardId, "polls", pid));
-            };
+            });
           })(pollId);
           controlsDiv.appendChild(delBtn);
           div.appendChild(controlsDiv);
@@ -4886,11 +4973,10 @@ async function loadPolls() {
           delBtn.innerHTML = iconLabel("trash", "Delete");
           delBtn.className = "delete-poll teacher-control";
           (function(pid) {
-            delBtn.onclick = async function(e) {
-              e.stopPropagation();
-              if (!confirm("Delete this poll?")) { return; }
+            wireHoldToConfirmDelete(delBtn, delBtn.querySelector(".icon-svg"), async function() {
+              await animateSuckIntoTrash(div, delBtn);
               await deleteDoc(doc(db, "boards", currentBoardId, "polls", pid));
-            };
+            });
           })(pollId);
           controlsDiv.appendChild(delBtn);
           div.appendChild(controlsDiv);
