@@ -443,45 +443,42 @@ button.hide-toggle, .reply button.hide-toggle {
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  /* apple-design §18: breathing room for the live-poll glow (see
-     .poll-live-glow below) to bleed into without being clipped --
-     overflow-x:auto here forces the computed overflow-y to also be
-     non-"visible" per the CSS Overflow spec, so ANY descendant content
-     (including an absolutely-positioned sibling of .poll) that extends
-     past this track's own content box gets clipped regardless of z-index
-     or stacking tricks. Padding sized to exactly match the glow's own
-     `inset` below is what gives it room to exist at all. */
-  padding: 16px 14px;
 }
 #pollCarouselTrack::-webkit-scrollbar { display: none; }
-/* Wrapper per poll slide -- carries the sizing/snap properties that used
-   to live directly on `.poll` (see the apple-design §15 comment at the
-   .post,.poll,.seat box-shadow rule for why .poll itself keeps
-   overflow:hidden), so .poll-live-glow can be a SIBLING of .poll rather
-   than a child: .poll's own overflow:hidden would otherwise clip it, and
-   .poll has no stacking context of its own to escape that clipping via
-   z-index. wirePollCarouselNav()'s indexing (track.children[index],
-   card.offsetLeft) is purely positional, so swapping what's directly
-   inside the track from `.poll` to this wrapper needs no JS changes. */
-.poll-carousel-slide {
-  position: relative;
+#pollCarouselTrack .poll {
   flex: 0 0 100%;
   scroll-snap-align: start;
+  margin-bottom: 0;
 }
-#pollCarouselTrack .poll { margin-bottom: 0; }
-/* Only present in the DOM when its poll is actually live (poll.visible
-   === true, see loadPolls()) -- inserted BEFORE .poll in the slide so
-   plain DOM order (no z-index needed) paints .poll on top of it, same
-   precedent as the dashboard seat-map's hand-raise glow. */
-.poll-live-glow {
+
+/* Rainbow glow living INSIDE a card's own edges, fading toward the center,
+   rather than escaping around its outside -- shared appearance (same inset,
+   mask, animation) between any currently-live poll and the "are you still
+   confused?" prompt, but applied two different ways since .poll's ::before
+   is already taken by its cursor-glow spotlight:
+   - .poll gets a plain CHILD div, class .inset-live-glow-fill (.poll
+     already has position:relative + overflow:hidden natively, no wrapper
+     class needed).
+   - #confusionPrompt/.state-pill-prompt, which has no competing
+     pseudo-element, gets the .inset-live-glow wrapper class (adding
+     overflow:hidden; it's position:fixed already, still a valid positioning
+     context) plus its own always-on ::before. */
+.inset-live-glow { position: relative; overflow: hidden; }
+.inset-live-glow-fill,
+.inset-live-glow::before {
+  content: "";
   position: absolute;
-  inset: -14px;
-  border-radius: 36px;
+  inset: 0;
+  border-radius: inherit;
   pointer-events: none;
   background: conic-gradient(red, orange, yellow, green, blue, violet, red);
-  filter: blur(14px) hue-rotate(0deg);
-  opacity: 0.55;
-  animation: hand-raise-glow-pulse 3s linear infinite;
+  mask-image: radial-gradient(circle, transparent 45%, black 100%);
+  -webkit-mask-image: radial-gradient(circle, transparent 45%, black 100%);
+  animation: inset-live-glow-pulse 6s linear infinite;
+}
+@keyframes inset-live-glow-pulse {
+  0%, 100% { filter: blur(10px) hue-rotate(0deg);   opacity: 0.22; }
+  50%      { filter: blur(14px) hue-rotate(180deg); opacity: 0.32; }
 }
 
 .poll-carousel-nav {
@@ -1554,6 +1551,18 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
   border: 2px solid var(--border-color);
 }
 .confusion-btn.confusion-active { border-color: transparent; box-shadow: 0 0 0 2px var(--accent); }
+/* Rainbow glow around/behind a selected confusion state or the raised-hand
+   button, reusing the exact hand-raise-glow-pulse keyframe already shipped
+   for the dashboard seat badge. ::before is taken on both elements already
+   (cursor-glow spotlight / none respectively) but ::after is free, and both
+   already have position:relative with no overflow:hidden, so no clipping or
+   stacking-context work is needed here. */
+.confusion-btn.confusion-active::after, #raiseHandBtn.hand-is-raised::after {
+  content: ""; position: absolute; inset: -8px; border-radius: 50%; z-index: -1; pointer-events: none;
+  background: conic-gradient(red, orange, yellow, green, blue, violet, red);
+  filter: blur(8px) hue-rotate(0deg); opacity: 0.5;
+  animation: hand-raise-glow-pulse 3s linear infinite;
+}
 .confusion-dot { display: block; width: 11px; height: 11px; border-radius: 50%; }
 .confusion-dot-green { background: #8fdba8; }
 .confusion-dot-orange { background: #c76a17; }
@@ -1578,8 +1587,22 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
   background: var(--bg-secondary); border: 2px solid var(--border-color);
 }
 .raise-hand-icon { display: block; transition: transform 0.2s ease; }
-#raiseHandBtn.hand-is-raised { border-color: transparent; box-shadow: 0 0 0 2px var(--accent); cursor: default; }
-#raiseHandBtn.hand-is-raised .raise-hand-icon { transform: translateY(-6px) rotate(4deg); }
+#raiseHandBtn.hand-is-raised { border-color: transparent; box-shadow: 0 0 0 2px var(--accent); }
+/* Continuous subtle wave while raised, oscillating around the same resting
+   pose the lift used to hold statically. Deliberately a standalone class
+   (JS-toggled ~400ms after the raise, matching hand-raise-pop's duration)
+   rather than an ancestor-matched rule keyed off .hand-is-raised: both
+   would otherwise compete for the SAME `animation` property on the SAME
+   element, and -- unlike `transform`, which an active animation overrides
+   for its own duration regardless of a static rule's specificity -- two
+   rules both setting `animation` don't hand off sequentially, the
+   higher-specificity one simply wins outright for as long as both classes
+   are present, which would cut the one-shot lift short. */
+.raise-hand-icon.hand-wave-loop { animation: hand-wave 1.4s ease-in-out infinite; }
+@keyframes hand-wave {
+  0%, 100% { transform: translateY(-6px) rotate(-4deg); }
+  50%      { transform: translateY(-6px) rotate(12deg); }
+}
 /* Click-commit lift: applied to the INNER icon span, never the button
    itself -- every <button> already gets a generic .motion-pop scale/
    brightness pop for free from the document-level capture-phase click
