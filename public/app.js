@@ -2521,7 +2521,10 @@ function applyConfusionVisual(el, state, setAtMs, fadeStartMs, fadeDurationMs) {
   var remaining = fadeElapsed === null ? 0 : (fadeElapsed < 0 ? fadeDurationMs : fadeDurationMs - fadeElapsed);
   if (!state || !CONFUSION_COLORS[state] || remaining <= 0) {
     el.style.transition = "";
-    el.style.backgroundColor = neutral;
+    // Clear the inline background entirely (rather than freezing a resolved
+    // --bg-secondary snapshot) so it falls back to .seat's own live CSS rule
+    // and stays correct across a theme toggle, which never re-renders seats.
+    el.style.backgroundColor = "";
     el.style.color = ""; // re-inherit .seat's theme-correct var(--text-color)
     return;
   }
@@ -2539,7 +2542,11 @@ function applyConfusionVisual(el, state, setAtMs, fadeStartMs, fadeDurationMs) {
 // every teacher-facing seat-view call site stays consistent with the
 // student's own indicator without repeating the fade-param logic everywhere.
 function applyConfusionVisualForState(el, state, setAtMs) {
-  if (CONFUSION_FADE_STATES[state]) { applyConfusionVisual(el, state, setAtMs, CONFUSION_FADE_START_MS, CONFUSION_FADE_DURATION_MS); }
+  // Green gets the same "stay solid, then fade" visual schedule as red/orange
+  // (without joining CONFUSION_FADE_STATES, which separately gates the "are
+  // you still confused?" prompt/auto-resolve -- green should never trigger
+  // that, just needs to not already look faded by the time a teacher looks).
+  if (CONFUSION_FADE_STATES[state] || state === "green") { applyConfusionVisual(el, state, setAtMs, CONFUSION_FADE_START_MS, CONFUSION_FADE_DURATION_MS); }
   else { applyConfusionVisual(el, state, setAtMs); }
 }
 
@@ -2679,8 +2686,9 @@ function initConfusionIndicator() {
   var myConfusionSetAt = null;
   var latestConfusionHistory = [];
   var autoResolvedFor = null; // "<state>@<setAtMs>" guard so the periodic re-check can't double-write the resolve
+  var promptAnsweredFor = null; // "<state>@<setAtMs>" guard so a dismissed "No" doesn't re-show the prompt before the next real state change
 
-  confusionGreenBtn.onclick = function() { playPop(); setMyConfusionState("green"); };
+  confusionGreenBtn.onclick = function() { playPop(); setMyConfusionState(myConfusionState === "green" ? null : "green"); };
   confusionOrangeBtn.onclick = function() { playPop(); setMyConfusionState(myConfusionState === "orange" ? null : "orange"); };
   confusionRedBtn.onclick = function() { playPop(); setMyConfusionState(myConfusionState === "red" ? null : "red"); };
   confusionPromptYesBtn.onclick = function() {
@@ -2688,7 +2696,14 @@ function initConfusionIndicator() {
     setMyConfusionState(myConfusionState); // re-set the same state with a fresh setAt -- fully resets the clock
   };
   confusionPromptNoBtn.onclick = function() {
-    confusionPrompt.classList.add("hidden"); // dismiss only -- the fade is already on schedule regardless
+    confusionPrompt.classList.add("hidden");
+    promptAnsweredFor = myConfusionState + "@" + myConfusionSetAt;
+    // Optimistic local update -- don't wait on the Firestore round-trip for
+    // the deselect to feel instant, and this also stops checkConfusionFadeStage
+    // from recomputing a "prompting" stage on its next tick.
+    myConfusionState = null;
+    myConfusionSetAt = null;
+    setMyConfusionState(null);
   };
   raiseHandBtn.onclick = function() {
     if (raiseHandBtn.classList.contains("hand-is-raised")) { return; } // teacher-only dismissal, see the dashboard seat click handler
@@ -2698,7 +2713,8 @@ function initConfusionIndicator() {
   };
 
   function checkConfusionFadeStage() {
-    var stage = getConfusionFadeStage(myConfusionState, myConfusionSetAt, Date.now());
+    var key = myConfusionState + "@" + myConfusionSetAt;
+    var stage = (promptAnsweredFor === key) ? null : getConfusionFadeStage(myConfusionState, myConfusionSetAt, Date.now());
     if (stage === "prompting") {
       confusionPromptText.textContent = myConfusionState === "red" ? "Are you still confused?" : "Still somewhat confused?";
       confusionPrompt.classList.remove("hidden");
