@@ -277,14 +277,13 @@ button:active { transform: scale(0.97); }
     background: color-mix(in srgb, var(--delete-color) 85%, black) !important;
     border-color: color-mix(in srgb, var(--delete-color) 85%, black) !important;
   }
-  .post:hover, .poll:hover, .teacher-panel:hover, .metric-card:hover {
+  .post:hover, .poll:hover, .teacher-panel:hover, .metric-card:hover, .board-card:hover {
     /* apple-design §15: bumped substantially (-2px/1.5% -> -6px/3%) -- the
        old magnitude was confirmed too subtle to notice against these now-
        translucent cards. */
     box-shadow: var(--shadow-md); border-color: rgba(255,255,255,0.12); transform: translateY(-6px) scale(1.03);
   }
   .upvote:hover { background: var(--button-hover-bg); border-color: var(--upvote-active); transform: scale(1.05); }
-  .board-card:hover { box-shadow: var(--shadow-md); border-color: var(--accent); transform: translateY(-2px); }
   #emojiCircle:hover { border-color: var(--accent); box-shadow: var(--shadow-md); }
   .comment-image:hover, .poll-image:hover { transform: scale(1.02); box-shadow: var(--shadow-md); }
   ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
@@ -303,7 +302,7 @@ button:active { transform: scale(0.97); }
      overlay, so this uses ::before, which is free everywhere. --glow-x/-y
      are written by wireMotionGlow() in app.js on pointermove; border-radius:
      inherit clips it to each shape (rounded cards, circular buttons/seats). */
-  .post::before, .poll::before, .confusion-btn::before, .seat::before {
+  .post::before, .poll::before, .confusion-btn::before, .seat::before, .metric-card::before, .board-card::before {
     content: ""; position: absolute; inset: 0; border-radius: inherit;
     background: radial-gradient(circle at var(--glow-x, 50%) var(--glow-y, 50%), var(--motion-glow-color) 0%, transparent 60%);
     opacity: 0; transition: opacity 0.25s ease; pointer-events: none;
@@ -350,7 +349,7 @@ button.hide-toggle, .reply button.hide-toggle {
 .post, .poll, .seat {
   box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.08);
 }
-.post::after, .poll::after, .metric-card::after {
+.post::after, .poll::after, .metric-card::after, .board-card::after {
   content: ""; position: absolute; inset: 0; border-radius: 24px;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
   opacity: var(--noise-opacity); pointer-events: none;
@@ -603,11 +602,6 @@ button.hide-toggle, .reply button.hide-toggle {
   border: 1.5px solid var(--border-color); border-radius: 24px; padding: 24px;
   display: flex; justify-content: space-between; align-items: center;
   transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden;
-}
-.board-card::after {
-  content: ""; position: absolute; inset: 0; border-radius: 24px;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  opacity: var(--noise-opacity); pointer-events: none;
 }
 .board-card-info { flex: 1; }
 .board-card-info h3 { margin: 0 0 8px 0; font-size: 1.3rem; font-weight: 600; }
