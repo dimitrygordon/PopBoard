@@ -1084,12 +1084,19 @@ function showFirstBadge() {
   }, 2500);
 }
 
+// Falls back to a student's first initial when they have no emoji set
+// (e.g. "Mike" -> "M"), so the leaderboard's leftmost icon slot is never
+// empty and every row keeps the same structure.
+function firstNameInitial(name) {
+  var n = (name || "").trim();
+  return n ? n.split(/\s+/)[0].charAt(0).toUpperCase() : "?";
+}
+
 function renderLeaderboardUI(topRows, personalRow) {
   leaderboardSection.innerHTML = "";
   if (!isTeacher && !leaderboardVisible) { renderIdentityEntryBox(); return; }
   var card = document.createElement("div");
   card.className = "leaderboard-card glass-specular";
-  card.innerHTML = "<h3>🏆 Leaderboard</h3>";
   if (topRows.length === 0 && !personalRow) {
     var empty = document.createElement("p");
     empty.textContent = "No scores yet. Answer polls to earn points!";
@@ -1137,14 +1144,17 @@ function renderLeaderboardUI(topRows, personalRow) {
     var nameDiv = document.createElement("div");
     nameDiv.className = "lb-name";
     var nameSpan = document.createElement("span");
+    nameSpan.className = "lb-name-text";
     nameSpan.textContent = entry.displayName || entry.name;
     nameDiv.appendChild(nameSpan);
-    if (entry.emoji) {
-      var eSpan = document.createElement("span");
-      eSpan.className = "lb-emoji emoji-animate";
-      eSpan.textContent = entry.emoji;
-      nameDiv.insertBefore(eSpan, nameSpan);
-    }
+    // Always create the emoji/initial span (never absent) so every row has
+    // identical structure -- a row without one previously had no element
+    // there at all, which is what let long names push past .lb-name's
+    // overflow:hidden boundary and skewed widths in compressed mode.
+    var eSpan = document.createElement("span");
+    eSpan.className = "lb-emoji emoji-animate";
+    eSpan.textContent = entry.emoji ? entry.emoji : firstNameInitial(entry.displayName || entry.name);
+    nameDiv.insertBefore(eSpan, nameSpan);
 
     var track = document.createElement("div");
     track.className = "lb-bar-track";
@@ -5912,7 +5922,7 @@ function applyLeaderboardCompression(compress, animated) {
       // Move emoji out of nameDiv into row directly so it stays visible
       if (emoji && nameDiv && emoji.parentNode === nameDiv) {
         nameDiv.removeChild(emoji);
-        emoji.style.cssText = "font-size:1.2rem;display:inline-block;transition:all 0.4s ease;flex-shrink:0;";
+        emoji.style.cssText = "font-size:1.2rem;display:inline-block;transition:all 0.4s ease;flex-shrink:0;width:1.4rem;text-align:center;";
         row.insertBefore(emoji, nameDiv);
       }
 
@@ -5942,7 +5952,7 @@ function applyLeaderboardCompression(compress, animated) {
       var pEmoji = personalRow.querySelector(".lb-emoji");
       if (pEmoji && pNameDiv && pEmoji.parentNode === pNameDiv) {
         pNameDiv.removeChild(pEmoji);
-        pEmoji.style.cssText = "font-size:1.2rem;display:inline-block;transition:all 0.4s ease;flex-shrink:0;";
+        pEmoji.style.cssText = "font-size:1.2rem;display:inline-block;transition:all 0.4s ease;flex-shrink:0;width:1.4rem;text-align:center;";
         personalRow.insertBefore(pEmoji, pNameDiv);
       }
       if (pNameDiv) { pNameDiv.style.cssText = "opacity:0;width:0;overflow:hidden;min-width:0;flex-shrink:1;transition:all 0.4s ease;"; }
