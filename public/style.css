@@ -91,13 +91,17 @@ html {
   -webkit-tap-highlight-color: transparent; /* kill the gray/blue flash on tap */
   -webkit-text-size-adjust: 100%; /* no font inflation in landscape */
   overscroll-behavior: none; /* don't let pull-to-refresh hijack the app */
-  /* apple-design §16: defensive safety net -- any future horizontal overflow
-     (unwrapped flex rows, a fixed-width element, etc) would otherwise force
-     mobile browsers to compute a shrunk initial zoom to fit the whole page,
-     exactly the "have to pinch-zoom to fill the screen" bug this round fixed
-     at its root cause (see .header-top-row/.header-bottom-row below). This
-     just clips the symptom so a regression degrades instead of recurring. */
-  overflow-x: hidden;
+  /* apple-design §20: REMOVED overflow-x:hidden (previously added here as a
+     defensive safety net against header-row overflow, apple-design §16).
+     `overflow` other than `visible` on <html>/<body> is a known WebKit
+     containing-block hazard: it can make mobile Safari stop tracking the
+     true visual viewport for `position: fixed` descendants, causing exactly
+     the "comment bar / confusion bar drift up the page while scrolling"
+     bug reported after this line was added. The header-overflow bug this
+     was guarding against is already fixed at its real root cause
+     (.header-top-row/.header-bottom-row's flex-wrap, below) -- this line
+     was only ever a belt-and-suspenders extra, not load-bearing, so it's
+     safe to drop entirely rather than find a narrower substitute. */
 }
 
 body {
