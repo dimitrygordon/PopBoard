@@ -34,6 +34,7 @@ let leaderboardVisible = true;
 let classSessionActive = false;
 let classSessionStartAt = null;
 let classSessionEndAt = null;
+let classSessionHistory = []; // completed {start,end} live-class windows -- see buildSessionWindows()
 let classTimelineRedrawInterval = null;
 let studentEmoji = "";
 let myUpvotedPostIds = new Set();
@@ -995,6 +996,7 @@ function listenBoardSettings() {
     classSessionActive = data.classSessionActive === true;
     classSessionStartAt = data.classSessionStartAt || null;
     classSessionEndAt = data.classSessionEndAt || null;
+    classSessionHistory = data.classSessionHistory || [];
     applyClassSessionUI();
   });
 }
@@ -1031,12 +1033,24 @@ function applyClassSessionUI() {
 classSessionToggleBtn.onclick = async function() {
   if (!currentBoardId) { return; }
   var now = Date.now();
+  var boardRef = doc(db, "boards", currentBoardId);
   if (classSessionActive) {
-    await updateDoc(doc(db, "boards", currentBoardId), { classSessionActive: false, classSessionEndAt: now });
+    // Record the just-finished session's window -- confusion duration
+    // tracking is bounded to exactly these recorded live-class windows
+    // (see buildSessionWindows()), so this is what makes that possible.
+    await updateDoc(boardRef, {
+      classSessionActive: false,
+      classSessionEndAt: now,
+      classSessionHistory: arrayUnion({ start: classSessionStartAt, end: now })
+    });
+    // Trim to the most recent 500 entries, same cap pattern confusionHistory already uses.
+    var snap = await getDoc(boardRef);
+    var hist = (snap.data() || {}).classSessionHistory || [];
+    if (hist.length > 500) { await updateDoc(boardRef, { classSessionHistory: hist.slice(hist.length - 500) }); }
   } else {
     // Starting a new session IS "reset all daily metrics" -- moving the
     // window's start forward is enough; no data is ever deleted.
-    await updateDoc(doc(db, "boards", currentBoardId), { classSessionActive: true, classSessionStartAt: now, classSessionEndAt: null });
+    await updateDoc(boardRef, { classSessionActive: true, classSessionStartAt: now, classSessionEndAt: null });
   }
 };
 
@@ -1881,13 +1895,15 @@ async function viewStudentDashboard(studentId) {
   grid.appendChild(handsCard);
   addHistoricMetricCard(grid, iconLabel("hand", "Hands Raised (Monthly)"), student.monthlyStats || {}, "handsRaised", "handsRaisedMonthlyChart");
 
-  // All-time (not monthly) -- joinedAt anchors the start of the very
-  // first "none" segment, so a student who's never touched the
-  // confusion buttons at all still gets a full pie of "none" rather than
-  // an empty chart, and the none/colored split naturally reflects each
-  // student's own tracked-time length (see walkConfusionSegments).
+  // All-time (not monthly), bounded to every recorded LIVE class-session
+  // window (see buildSessionWindows()) -- joinedAt still clamps each
+  // window's start so a student who joined mid-session never accrues
+  // time from before they joined, but time outside any live session is
+  // never counted at all now, for any state including "none" (see
+  // walkConfusionSegmentsInWindows).
   var joinedAtMs = student.joinedAt && student.joinedAt.toDate ? student.joinedAt.toDate().getTime() : 0;
-  var confusionTotals = computeConfusionStateDurations(student.confusionHistory || [], joinedAtMs);
+  var confusionSessionWindows = buildSessionWindows();
+  var confusionTotals = computeConfusionStateDurations(student.confusionHistory || [], joinedAtMs, confusionSessionWindows);
   var pieCard = document.createElement("div");
   pieCard.className = "metric-card";
   pieCard.innerHTML = "<h3>" + iconLabel("pieChart", "Confusion State Distribution") + "</h3><canvas id='confusionPieChart" + studentId + "' width='400' height='200'></canvas><div class='confusion-pie-legend'>" +
@@ -1899,7 +1915,7 @@ async function viewStudentDashboard(studentId) {
   grid.appendChild(pieCard);
   drawConfusionPieChart("confusionPieChart" + studentId, confusionTotals);
 
-  var monthlyConfusion = computeMonthlyConfusionDurations(student.confusionHistory || [], joinedAtMs);
+  var monthlyConfusion = computeMonthlyConfusionDurations(student.confusionHistory || [], joinedAtMs, confusionSessionWindows);
   var confusionBarCard = document.createElement("div");
   confusionBarCard.className = "metric-card";
   confusionBarCard.innerHTML = "<h3>" + iconLabel("stackedBars", "Monthly Confusion State Timeline") + "</h3><canvas id='confusionBarChart" + studentId + "' width='400' height='200'></canvas>";
@@ -2297,40 +2313,60 @@ function drawColoredLine(ctx, data, padding, chartWidth, chartHeight, pointSpaci
   ctx.restore();
 }
 
-// Walks a student's confusionHistory (sorted by setAt) as a sequence of
-// contiguous [startMs, endMs, state] segments covering their ENTIRE
-// tracked span -- from joinedAtMs through now -- not just the gaps
-// between recorded entries. This is what makes "no confusion state"
-// time meaningful: the span before their first entry (or the whole span,
-// if they have no history at all) counts as "none," and the final
-// segment (their current state, or "none") extends to the current
-// moment. Every state-change write (including the auto-resolve-to-null
-// that fires when a red/orange state times out, see
-// checkConfusionFadeStage -> setMyConfusionState(null)) already appends
-// to confusionHistory, so this history is a complete timeline with no
-// gaps to reconstruct beyond the two span edges.
-function walkConfusionSegments(history, joinedAtMs, onSegment) {
-  var sorted = (history || []).slice().sort(function(a, b) { return (a.setAt || 0) - (b.setAt || 0); });
-  var nowMs = Date.now();
-  // Explicit >0 check, not `||` -- joinedAtMs legitimately being exactly
-  // 0 (vs. a real epoch-ms timestamp, which is never 0 in practice) only
-  // ever means "missing," and `0 || x` would otherwise silently discard
-  // a genuine (if contrived) 0 anchor the same way as a missing one.
-  var cursor = (joinedAtMs > 0) ? joinedAtMs : (sorted.length ? sorted[0].setAt : nowMs);
-  var cursorState = "none";
-  for (var i = 0; i < sorted.length; i++) {
-    var entryAt = sorted[i].setAt || cursor;
-    if (entryAt > cursor) { onSegment(cursor, entryAt, cursorState); }
-    cursor = entryAt;
-    cursorState = sorted[i].state || "none";
+// Builds the set of [start,end] windows representing actual LIVE class
+// time -- completed sessions from classSessionHistory, plus a synthetic
+// trailing window for the current in-progress session if one is live.
+// Confusion duration tracking is bounded to exactly these windows, so
+// time outside a live class session (paused, or before this tracking
+// started) is never counted for ANY state, including "none."
+function buildSessionWindows() {
+  var windows = (classSessionHistory || []).slice();
+  if (classSessionActive && classSessionStartAt) {
+    windows.push({ start: classSessionStartAt, end: Date.now() });
   }
-  if (nowMs > cursor) { onSegment(cursor, nowMs, cursorState); }
+  return windows;
 }
 
-// All-time total ms spent in each state -- for the per-student pie chart.
-function computeConfusionStateDurations(history, joinedAtMs) {
+// Walks a student's confusionHistory (sorted by setAt) as a sequence of
+// contiguous [startMs, endMs, state] segments, but ONLY within the given
+// live-class-session `windows` -- time in the gaps BETWEEN windows
+// (paused / no live session) is never visited, so it contributes to no
+// state's total, including "none." Each window is clamped so it never
+// starts before joinedAtMs (a student who joined mid-session never
+// accrues time from before they joined) and is skipped entirely if that
+// clamp empties it out. A window's "carrying-in" state is whichever
+// history entry was last active at-or-before the window's start -- so a
+// state set during a gap between sessions (e.g. right before the teacher
+// resumes) is correctly already active when the next session begins,
+// not misattributed to "none."
+function walkConfusionSegmentsInWindows(history, joinedAtMs, windows, onSegment) {
+  var sorted = (history || []).slice().sort(function(a, b) { return (a.setAt || 0) - (b.setAt || 0); });
+  (windows || []).forEach(function(win) {
+    var start = (joinedAtMs > 0) ? Math.max(win.start, joinedAtMs) : win.start;
+    var end = win.end;
+    if (end <= start) { return; }
+    var carryInState = "none";
+    for (var i = 0; i < sorted.length; i++) {
+      if (sorted[i].setAt <= start) { carryInState = sorted[i].state || "none"; }
+    }
+    var cursor = start;
+    var cursorState = carryInState;
+    for (var j = 0; j < sorted.length; j++) {
+      var entryAt = sorted[j].setAt;
+      if (entryAt == null || entryAt <= start || entryAt >= end) { continue; }
+      if (entryAt > cursor) { onSegment(cursor, entryAt, cursorState); }
+      cursor = entryAt;
+      cursorState = sorted[j].state || "none";
+    }
+    if (end > cursor) { onSegment(cursor, end, cursorState); }
+  });
+}
+
+// All-time (across every recorded live-class window) total ms spent in
+// each state -- for the per-student pie chart.
+function computeConfusionStateDurations(history, joinedAtMs, windows) {
   var totals = { red: 0, orange: 0, green: 0, none: 0 };
-  walkConfusionSegments(history, joinedAtMs, function(startMs, endMs, state) {
+  walkConfusionSegmentsInWindows(history, joinedAtMs, windows, function(startMs, endMs, state) {
     totals[state] = (totals[state] || 0) + (endMs - startMs);
   });
   return totals;
@@ -2340,11 +2376,11 @@ function computeConfusionStateDurations(history, joinedAtMs) {
 // segment's START month (no fractional splitting across a month
 // boundary -- matches this codebase's existing monthlyStats convention
 // of bucketing an event by the month it happened in, not pro-rating it).
-function computeMonthlyConfusionDurations(history, joinedAtMs) {
+function computeMonthlyConfusionDurations(history, joinedAtMs, windows) {
   var months = getLastTwelveMonthKeys();
   var byMonth = {};
   months.forEach(function(k) { byMonth[k] = { red: 0, orange: 0, green: 0, none: 0 }; });
-  walkConfusionSegments(history, joinedAtMs, function(startMs, endMs, state) {
+  walkConfusionSegmentsInWindows(history, joinedAtMs, windows, function(startMs, endMs, state) {
     var d = new Date(startMs);
     var key = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
     if (byMonth[key]) { byMonth[key][state] += (endMs - startMs); }
