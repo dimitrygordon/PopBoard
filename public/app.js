@@ -502,7 +502,8 @@ joinBtn.onclick = async function() {
       confusionSetAt: null,
       confusionHistory: [],
       handRaised: false,
-      handRaisedAt: null
+      handRaisedAt: null,
+      handsRaisedCount: 0
     });
     currentStudentId = newStudent.id;
     studentEmoji = "";
@@ -902,7 +903,8 @@ addStudentBtn.onclick = async function() {
     confusionSetAt: null,
     confusionHistory: [],
     handRaised: false,
-    handRaisedAt: null
+    handRaisedAt: null,
+    handsRaisedCount: 0
   });
   newStudentNameInput.value = "";
   loadStudentsPortal();
@@ -1166,13 +1168,11 @@ function renderLeaderboardUI(topRows, personalRow) {
     var medalSpan = document.createElement("span");
     medalSpan.className = "lb-medal";
     if (isPersonal) {
-      medalSpan.textContent = entry.rank == null ? "New" : "#" + entry.rank;
+      medalSpan.textContent = entry.rank == null ? "" : "#" + entry.rank;
     } else if (colorIndex < 3) {
       medalSpan.textContent = medals[colorIndex];
     } else {
       medalSpan.textContent = "";
-      medalSpan.style.width = "1.5rem";
-      medalSpan.style.display = "inline-block";
     }
 
     row.appendChild(nameDiv);
@@ -1790,6 +1790,37 @@ async function viewStudentDashboard(studentId) {
   addHistoricMetricCard(grid, "Comments Made: " + (student.historicalComments || 0), student.monthlyStats || {}, "comments", "commentsChart");
   addHistoricMetricCard(grid, "Upvotes Given: " + (student.historicalUpvotesGiven || 0), student.monthlyStats || {}, "upvotesGiven", "upvotesGivenChart");
   addHistoricMetricCard(grid, "Upvotes Received: " + (student.historicalUpvotesReceived || 0), student.monthlyStats || {}, "upvotesReceived", "upvotesReceivedChart");
+
+  var handsCard = document.createElement("div");
+  handsCard.className = "metric-card";
+  handsCard.innerHTML = "<h3>" + iconLabel("hand", "Hands Raised") + "</h3><div style='font-size:1.4rem;padding:8px 0;text-align:center;'>" + (student.handsRaisedCount || 0) + "</div>";
+  grid.appendChild(handsCard);
+
+  // All-time (not monthly) -- joinedAt anchors the start of the very
+  // first "none" segment, so a student who's never touched the
+  // confusion buttons at all still gets a full pie of "none" rather than
+  // an empty chart, and the none/colored split naturally reflects each
+  // student's own tracked-time length (see walkConfusionSegments).
+  var joinedAtMs = student.joinedAt && student.joinedAt.toDate ? student.joinedAt.toDate().getTime() : 0;
+  var confusionTotals = computeConfusionStateDurations(student.confusionHistory || [], joinedAtMs);
+  var pieCard = document.createElement("div");
+  pieCard.className = "metric-card";
+  pieCard.innerHTML = "<h3>Confusion State Distribution</h3><canvas id='confusionPieChart" + studentId + "' width='400' height='200'></canvas><div class='confusion-pie-legend'>" +
+    "<span><span class='confusion-dot confusion-dot-red'></span>" + formatDurationMs(confusionTotals.red) + "</span>" +
+    "<span><span class='confusion-dot confusion-dot-orange'></span>" + formatDurationMs(confusionTotals.orange) + "</span>" +
+    "<span><span class='confusion-dot confusion-dot-green'></span>" + formatDurationMs(confusionTotals.green) + "</span>" +
+    "<span><span class='confusion-dot confusion-dot-none'></span>" + formatDurationMs(confusionTotals.none) + "</span>" +
+    "</div>";
+  grid.appendChild(pieCard);
+  drawConfusionPieChart("confusionPieChart" + studentId, confusionTotals);
+
+  var monthlyConfusion = computeMonthlyConfusionDurations(student.confusionHistory || [], joinedAtMs);
+  var confusionBarCard = document.createElement("div");
+  confusionBarCard.className = "metric-card";
+  confusionBarCard.innerHTML = "<h3>Monthly Confusion State Timeline</h3><canvas id='confusionBarChart" + studentId + "' width='400' height='200'></canvas>";
+  grid.appendChild(confusionBarCard);
+  drawConfusionStackedBarChart("confusionBarChart" + studentId, monthlyConfusion);
+
   document.getElementById("mergeStudentBtn").onclick = async function() { await showMergeDialog(studentId); };
 }
 
@@ -2169,6 +2200,148 @@ function drawColoredLine(ctx, data, padding, chartWidth, chartHeight, pointSpaci
   ctx.restore();
 }
 
+// Walks a student's confusionHistory (sorted by setAt) as a sequence of
+// contiguous [startMs, endMs, state] segments covering their ENTIRE
+// tracked span -- from joinedAtMs through now -- not just the gaps
+// between recorded entries. This is what makes "no confusion state"
+// time meaningful: the span before their first entry (or the whole span,
+// if they have no history at all) counts as "none," and the final
+// segment (their current state, or "none") extends to the current
+// moment. Every state-change write (including the auto-resolve-to-null
+// that fires when a red/orange state times out, see
+// checkConfusionFadeStage -> setMyConfusionState(null)) already appends
+// to confusionHistory, so this history is a complete timeline with no
+// gaps to reconstruct beyond the two span edges.
+function walkConfusionSegments(history, joinedAtMs, onSegment) {
+  var sorted = (history || []).slice().sort(function(a, b) { return (a.setAt || 0) - (b.setAt || 0); });
+  var nowMs = Date.now();
+  // Explicit >0 check, not `||` -- joinedAtMs legitimately being exactly
+  // 0 (vs. a real epoch-ms timestamp, which is never 0 in practice) only
+  // ever means "missing," and `0 || x` would otherwise silently discard
+  // a genuine (if contrived) 0 anchor the same way as a missing one.
+  var cursor = (joinedAtMs > 0) ? joinedAtMs : (sorted.length ? sorted[0].setAt : nowMs);
+  var cursorState = "none";
+  for (var i = 0; i < sorted.length; i++) {
+    var entryAt = sorted[i].setAt || cursor;
+    if (entryAt > cursor) { onSegment(cursor, entryAt, cursorState); }
+    cursor = entryAt;
+    cursorState = sorted[i].state || "none";
+  }
+  if (nowMs > cursor) { onSegment(cursor, nowMs, cursorState); }
+}
+
+// All-time total ms spent in each state -- for the per-student pie chart.
+function computeConfusionStateDurations(history, joinedAtMs) {
+  var totals = { red: 0, orange: 0, green: 0, none: 0 };
+  walkConfusionSegments(history, joinedAtMs, function(startMs, endMs, state) {
+    totals[state] = (totals[state] || 0) + (endMs - startMs);
+  });
+  return totals;
+}
+
+// Same totals, bucketed into the last 12 calendar months by each
+// segment's START month (no fractional splitting across a month
+// boundary -- matches this codebase's existing monthlyStats convention
+// of bucketing an event by the month it happened in, not pro-rating it).
+function computeMonthlyConfusionDurations(history, joinedAtMs) {
+  var months = getLastTwelveMonthKeys();
+  var byMonth = {};
+  months.forEach(function(k) { byMonth[k] = { red: 0, orange: 0, green: 0, none: 0 }; });
+  walkConfusionSegments(history, joinedAtMs, function(startMs, endMs, state) {
+    var d = new Date(startMs);
+    var key = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+    if (byMonth[key]) { byMonth[key][state] += (endMs - startMs); }
+  });
+  return months.map(function(k) { return Object.assign({ key: k, label: getMonthLabel(k) }, byMonth[k]); });
+}
+
+function formatDurationMs(ms) {
+  var totalMin = Math.round(ms / 60000);
+  var h = Math.floor(totalMin / 60);
+  var m = totalMin % 60;
+  if (h === 0 && m === 0) { return "<1m"; }
+  if (h === 0) { return m + "m"; }
+  return h + "h " + m + "m";
+}
+
+function drawConfusionPieChart(canvasId, totals) {
+  var canvas = document.getElementById(canvasId);
+  if (!canvas) { return; }
+  var ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  var noneColor = getComputedStyle(document.documentElement).getPropertyValue("--confusion-none-color").trim() || "#d1d1d6";
+  var slices = [
+    { value: totals.red || 0, color: CONFUSION_COLORS.red },
+    { value: totals.orange || 0, color: CONFUSION_COLORS.orange },
+    { value: totals.green || 0, color: CONFUSION_COLORS.green },
+    { value: totals.none || 0, color: noneColor }
+  ];
+  var total = slices.reduce(function(sum, s) { return sum + s.value; }, 0);
+  if (total <= 0) { return; }
+  var cx = canvas.width / 2, cy = canvas.height / 2;
+  var radius = Math.min(cx, cy) - 10;
+  var startAngle = -Math.PI / 2;
+  slices.forEach(function(s) {
+    if (s.value <= 0) { return; }
+    var sliceAngle = (s.value / total) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, radius, startAngle, startAngle + sliceAngle);
+    ctx.closePath();
+    ctx.fillStyle = s.color;
+    ctx.fill();
+    startAngle += sliceAngle;
+  });
+}
+
+function drawConfusionStackedBarChart(canvasId, monthlyDurations) {
+  var canvas = document.getElementById(canvasId);
+  if (!canvas) { return; }
+  var ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  var noneColor = getComputedStyle(document.documentElement).getPropertyValue("--confusion-none-color").trim() || "#d1d1d6";
+  var padding = 40;
+  var chartWidth = canvas.width - padding * 2;
+  var chartHeight = canvas.height - padding * 2;
+  var n = monthlyDurations.length;
+  if (n === 0) { return; }
+  var barSlotWidth = chartWidth / n;
+  var barWidth = barSlotWidth * 0.6;
+  var maxTotal = 1;
+  monthlyDurations.forEach(function(m) {
+    var t = (m.red || 0) + (m.orange || 0) + (m.green || 0) + (m.none || 0);
+    if (t > maxTotal) { maxTotal = t; }
+  });
+  // Stacked bottom-to-top: baseline "none" first, then green/orange/red --
+  // a rough "calm -> confused" visual ordering.
+  var order = [
+    { state: "none", color: noneColor },
+    { state: "green", color: CONFUSION_COLORS.green },
+    { state: "orange", color: CONFUSION_COLORS.orange },
+    { state: "red", color: CONFUSION_COLORS.red }
+  ];
+  monthlyDurations.forEach(function(m, i) {
+    var x = padding + i * barSlotWidth + (barSlotWidth - barWidth) / 2;
+    var y = padding + chartHeight;
+    order.forEach(function(seg) {
+      var val = m[seg.state] || 0;
+      if (val <= 0) { return; }
+      var h = (val / maxTotal) * chartHeight;
+      y -= h;
+      ctx.fillStyle = seg.color;
+      ctx.fillRect(x, y, barWidth, h);
+    });
+  });
+  ctx.fillStyle = "#1d1d1f";
+  ctx.font = "11px system-ui";
+  ctx.textAlign = "center";
+  monthlyDurations.forEach(function(m, i) {
+    if (i % 2 === 0 || i === n - 1) {
+      ctx.fillText(m.label, padding + i * barSlotWidth + barSlotWidth / 2, canvas.height - 10);
+    }
+  });
+}
+
 async function showMergeDialog(sid) {
   var snap = await getDocs(collection(db, "boards", currentBoardId, "students"));
   var students = [];
@@ -2316,11 +2489,11 @@ var CONFUSION_COLORS = { red: "#8c1f4b", orange: "#c76a17", green: "#8fdba8" };
 var CONFUSION_TEXT_COLORS = { red: "#ffffff", orange: "#ffffff", green: "#1d1d1f" };
 // States that run the "are you still confused?" prompt/auto-fade cycle below.
 var CONFUSION_FADE_STATES = { red: true, orange: true };
-var CONFUSION_PROMPT_AT_MS = 5 * 60 * 1000;                             // red/orange: prompt fires here
+var CONFUSION_PROMPT_AT_MS = 3 * 60 * 1000;                             // red/orange: prompt fires here
 var CONFUSION_GRACE_MS = 60 * 1000;                                     // red/orange: respond-or-fade window after the prompt
 var CONFUSION_FADE_DURATION_MS = 2 * 60 * 1000;                         // red/orange: real fade duration
-var CONFUSION_FADE_START_MS = CONFUSION_PROMPT_AT_MS + CONFUSION_GRACE_MS;    // 6 min: real fade begins
-var CONFUSION_RESOLVE_AT_MS = CONFUSION_FADE_START_MS + CONFUSION_FADE_DURATION_MS; // 8 min: auto-resolves to None
+var CONFUSION_FADE_START_MS = CONFUSION_PROMPT_AT_MS + CONFUSION_GRACE_MS;    // 4 min: real fade begins
+var CONFUSION_RESOLVE_AT_MS = CONFUSION_FADE_START_MS + CONFUSION_FADE_DURATION_MS; // 6 min: auto-resolves to None
 
 // Fades `el`'s background from the full confusion color to the theme-neutral
 // color over whatever time remains in the fade window. Using a CSS transition
@@ -2521,7 +2694,7 @@ function initConfusionIndicator() {
     if (raiseHandBtn.classList.contains("hand-is-raised")) { return; } // teacher-only dismissal, see the dashboard seat click handler
     playPop();
     restartAnimationClass(raiseHandIcon, "hand-raise-pop"); // custom lift on the inner span, not the button -- see style.css comment
-    updateDoc(doc(db, "boards", currentBoardId, "students", currentStudentId), { handRaised: true, handRaisedAt: Date.now() });
+    updateDoc(doc(db, "boards", currentBoardId, "students", currentStudentId), { handRaised: true, handRaisedAt: Date.now(), handsRaisedCount: increment(1) });
   };
 
   function checkConfusionFadeStage() {
@@ -3312,11 +3485,18 @@ function renderClassConfusionTimelineRows() {
   students.sort(function(a, b) { return (a.username || "").localeCompare(b.username || ""); });
   classConfusionTimelineEl.innerHTML = "";
   students.forEach(function(student) {
+    var wrap = document.createElement("div");
+    wrap.className = "class-confusion-timeline-row-wrap";
+    var label = document.createElement("span");
+    label.className = "class-confusion-timeline-label";
+    label.textContent = (student.emoji ? student.emoji + " " : "") + (student.username || "");
     var row = document.createElement("div");
     row.className = "class-confusion-timeline-row";
     row.title = student.nickname || student.username || "";
     row.style.background = buildConfusionGradient(student.confusionHistory, windowStart, windowEnd, CONFUSION_COLORS, "var(--confusion-none-color)");
-    classConfusionTimelineEl.appendChild(row);
+    wrap.appendChild(label);
+    wrap.appendChild(row);
+    classConfusionTimelineEl.appendChild(wrap);
   });
 }
 
