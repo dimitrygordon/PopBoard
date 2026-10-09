@@ -653,7 +653,8 @@ button.hide-toggle, .reply button.hide-toggle {
 .leaderboard-card h3 { margin: 0 0 16px 0; font-size: 1rem; font-weight: 700; }
 .lb-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .lb-name { width: 110px; font-size: 0.88rem; text-align: right; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 5px; justify-content: flex-end; }
-.lb-emoji { display: inline-block; }
+.lb-name-text { flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-emoji { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 1.1rem; font-size: 0.68rem; }
 .lb-bar-track { flex: 1; background: var(--input-bg); border-radius: 999px; height: 30px; position: relative; overflow: visible; border: 1.5px solid var(--border-color); }
 .lb-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--upvote-active), #e9c46a); transition: width 0.5s ease; min-width: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; }
 .lb-score { font-size: 0.78rem; font-weight: 700; color: white; white-space: nowrap; }
@@ -1161,8 +1162,8 @@ button.hide-toggle, .reply button.hide-toggle {
   /* apple-design §12: fixed chrome reads as a floating material layer, not an
      opaque bar — content underneath should feel like it continues beneath it */
   background: var(--card-bg-translucent);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   border-top: 1px solid var(--border-color);
   padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px)) 16px;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1528,8 +1529,8 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
   gap: 12px;
   padding: 8px 16px;
   background: var(--card-bg-translucent);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   border-top: 1px solid var(--border-color);
   transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
