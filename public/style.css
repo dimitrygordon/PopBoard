@@ -8,8 +8,13 @@
   --text-color: #1d1d1f;
   --text-secondary: #6e6e73;
   --card-bg: #ffffff;
-  --card-gradient-start: #ffffff;
-  --card-gradient-end: #fafafa;
+  /* apple-design §15: Liquid Glass -- these two were fully opaque; making
+     them translucent ripples a glass-tinted baseline across every card that
+     shares them (.post, .poll, #pollCreation, .leaderboard-card, etc, 9+
+     selectors) in one edit, with no legibility cost since both the card
+     tone and --bg-color are already near-white in this theme. */
+  --card-gradient-start: rgba(255, 255, 255, 0.86);
+  --card-gradient-end: rgba(250, 250, 250, 0.86);
   --input-bg: #ffffff;
   --input-text: #1d1d1f;
   --input-border: rgba(0, 0, 0, 0.1);
@@ -31,8 +36,15 @@
   --checkbox-checked: #0071e3;
   --noise-opacity: 0.025;
   --card-bg-translucent: rgba(255, 255, 255, 0.78);
-  --motion-glow-color: rgba(0, 0, 0, 0.15);
+  --motion-glow-color: rgba(0, 0, 0, 0.25);
   --confusion-none-color: #d1d1d6;
+  /* apple-design §15: Liquid Glass -- shared recipe for the new tier-1 real-
+     glass surfaces (promoted out of 4 duplicated hardcoded values) plus the
+     scroll-reactive specular sweep color (see .glass-specular in app.js's
+     scroll listener). */
+  --glass-blur: 24px;
+  --glass-saturate: 180%;
+  --glass-specular: rgba(255, 255, 255, 0.55);
 }
 
 [data-theme="dark"] {
@@ -41,8 +53,8 @@
   --text-color: #f5f5f7;
   --text-secondary: #a1a1a6;
   --card-bg: #1c1c1e;
-  --card-gradient-start: rgba(28, 28, 30, 1);
-  --card-gradient-end: rgba(20, 20, 22, 1);
+  --card-gradient-start: rgba(28, 28, 30, 0.82);
+  --card-gradient-end: rgba(20, 20, 22, 0.82);
   --input-bg: rgba(255, 255, 255, 0.05);
   --input-text: #f5f5f7;
   --input-border: rgba(255, 255, 255, 0.1);
@@ -64,8 +76,11 @@
   --checkbox-checked: #0a84ff;
   --noise-opacity: 0.04;
   --card-bg-translucent: rgba(28, 28, 30, 0.78);
-  --motion-glow-color: rgba(10, 132, 255, 0.14);
+  --motion-glow-color: rgba(10, 132, 255, 0.28);
   --confusion-none-color: #2c2c2e;
+  --glass-blur: 24px;
+  --glass-saturate: 180%;
+  --glass-specular: rgba(255, 255, 255, 0.12);
 }
 
 * { box-sizing: border-box; }
@@ -246,7 +261,10 @@ button:active { transform: scale(0.97); }
     border-color: color-mix(in srgb, var(--delete-color) 85%, black) !important;
   }
   .post:hover, .poll:hover, .teacher-panel:hover, .metric-card:hover {
-    box-shadow: var(--shadow-md); border-color: rgba(255,255,255,0.12); transform: translateY(-2px) scale(1.015);
+    /* apple-design §15: bumped substantially (-2px/1.5% -> -6px/3%) -- the
+       old magnitude was confirmed too subtle to notice against these now-
+       translucent cards. */
+    box-shadow: var(--shadow-md); border-color: rgba(255,255,255,0.12); transform: translateY(-6px) scale(1.03);
   }
   .upvote:hover { background: var(--button-hover-bg); border-color: var(--upvote-active); transform: scale(1.05); }
   .board-card:hover { box-shadow: var(--shadow-md); border-color: var(--accent); transform: translateY(-2px); }
@@ -255,9 +273,9 @@ button:active { transform: scale(0.97); }
   ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
   /* seat stays scaled for the whole drag too, since the dragged seat's
      cursor position tracks its own moving left/top -- harmless, reads fine */
-  .seat:hover { transform: scale(1.06); }
+  .seat:hover { transform: scale(1.12); }
   .seat:hover .seat-delete { display: block; }
-  .confusion-btn:hover, .draw-color:hover { transform: scale(1.06); }
+  .confusion-btn:hover, .draw-color:hover { transform: scale(1.12); }
   button:hover { background: var(--button-hover-bg); border-color: var(--text-color); transform: translateY(-1px); }
   /* Cursor-tracked spotlight: a soft shadow in light mode, an accent-tinted
      glow in dark mode (see --motion-glow-color), confined to the "major
@@ -301,6 +319,16 @@ button.hide-toggle, .reply button.hide-toggle {
   border: 1.5px solid var(--border-color); border-radius: 24px;
   padding: 24px; margin-bottom: 16px; box-shadow: var(--shadow-sm);
   transition: all 0.3s ease; position: relative; overflow: hidden;
+}
+/* apple-design §15: cheap glass-edge bevel (tier-2, no backdrop-filter --
+   .post is unbounded and .poll keeps a steady-state transform/filter-free
+   surface, see the pollSlideIn/containing-block comment at line ~880) --
+   box-shadow only, never touches `background`, so it's safe on .seat/
+   .confusion-btn too even though their background is JS-controlled
+   (applyConfusionVisual sets backgroundColor inline for the confusion-state
+   color/fade, never box-shadow). */
+.post, .poll, .seat {
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.08);
 }
 .post::after, .poll::after, .metric-card::after {
   content: ""; position: absolute; inset: 0; border-radius: 24px;
@@ -518,6 +546,11 @@ button.hide-toggle, .reply button.hide-toggle {
   background: linear-gradient(135deg, var(--card-gradient-start) 0%, var(--card-gradient-end) 100%);
   border: 1.5px solid var(--border-color); border-radius: 24px;
   padding: 20px 24px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+  /* apple-design §15: tier-1 real glass -- this is the one surface in the
+     app that's position:sticky and visibly overlaps scrolling content
+     underneath it, so backdrop-filter has genuine varied content to blur. */
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
 }
 .leaderboard-card::after {
   content: ""; position: absolute; inset: 0; border-radius: 24px;
@@ -660,15 +693,33 @@ button.hide-toggle, .reply button.hide-toggle {
    source order, and .poll's later position would silently swallow the pop. */
 .motion-pop.motion-pop { animation: motion-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .motion-pop-wave.motion-pop-wave { animation: motion-pop-wave 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); animation-delay: 60ms; }
+/* apple-design §15: bumped the peak scale and added a brightness pulse
+   alongside it ("illuminate," matching Apple's documented "scale, bounce,
+   shimmer, illuminate" interactive response) -- edited in place rather than
+   adding a new rule, so this stays inside the doubled-class selector above
+   that already correctly beats .poll's animation, instead of reopening
+   that collision with a second competing rule. */
 @keyframes motion-pop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.15); }
-  100% { transform: scale(1); }
+  0% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.22); filter: brightness(1.15); }
+  100% { transform: scale(1); filter: brightness(1); }
 }
 @keyframes motion-pop-wave {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.06); }
-  100% { transform: scale(1); }
+  0% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.1); filter: brightness(1.08); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* apple-design §15: scroll-entrance reveal, .post only -- deliberately not
+   .poll, which already has its own pollSlideIn entrance choreography and is
+   the one element already scarred by the animation/specificity collision
+   above, so it's simplest left out rather than re-solving that. Guarded in
+   app.js (animatedPostIds) against re-triggering every time an unrelated
+   write causes loadPosts()'s full rebuild. */
+.post-reveal-pending { opacity: 0; transform: translateY(24px) scale(0.98); }
+.post-reveal-pending.post-reveal-in {
+  opacity: 1; transform: translateY(0) scale(1);
+  transition: opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 ::-webkit-scrollbar { width: 8px; }
@@ -696,8 +747,27 @@ button.hide-toggle, .reply button.hide-toggle {
 
 /* apple-design §14: translucency is a preference, not a given -- go solid
    and drop the blur when the user has asked for less transparency */
+/* apple-design §15: a scroll-reactive specular sweep for the tier-1 glass
+   surfaces -- a diagonal highlight band that moves across the material as
+   the page scrolls, standing in for Apple's device-motion-driven highlight
+   (there's no tilt sensor on a web page, scroll position is the web-
+   appropriate substitute). Driven by --scroll-highlight, written by a
+   single rAF-throttled scroll listener in app.js (wireScrollGlassHighlight),
+   mirroring wireMotionGlow's existing pointermove pattern. */
+.glass-specular { position: relative; }
+.glass-specular::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(115deg, transparent 35%, var(--glass-specular) 50%, transparent 65%);
+  background-size: 220% 220%;
+  background-position: var(--scroll-highlight, -60%) 0%;
+  pointer-events: none;
+}
+
 @media (prefers-reduced-transparency: reduce) {
-  #newPost, #confusionIndicator {
+  #newPost, #confusionIndicator, .leaderboard-card, .identity-popup, .seat-popup, .state-pill-prompt {
     background: var(--card-bg);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
@@ -723,7 +793,11 @@ button.hide-toggle, .reply button.hide-toggle {
 .identity-popup {
   position: fixed;
   z-index: 200;
-  background: var(--card-bg);
+  /* apple-design §15: tier-1 real glass -- a floating popup genuinely
+     overlaps whatever's underneath it at the click point. */
+  background: var(--card-bg-translucent);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   border: 1.5px solid var(--border-color);
   border-radius: 20px;
   padding: 12px 16px;
@@ -844,7 +918,11 @@ button.hide-toggle, .reply button.hide-toggle {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--bg-color);
+  /* apple-design §15: was solid var(--bg-color) -- that fully opaque layer
+     sat directly behind .leaderboard-card and would have blocked its new
+     backdrop-filter from ever seeing the posts actually scrolling beneath
+     it, defeating the glass effect entirely. */
+  background: transparent;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 4px 0;
   max-width: 100%;
@@ -1197,7 +1275,10 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
 .seat-popup {
   position: absolute;
   z-index: 200;
-  background: var(--card-bg);
+  /* apple-design §15: tier-1 real glass, same reasoning as .identity-popup */
+  background: var(--card-bg-translucent);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   border: 1.5px solid var(--border-color);
   border-radius: 16px;
   padding: 16px;
