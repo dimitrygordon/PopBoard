@@ -140,6 +140,7 @@ const confusionPromptNoBtn = document.getElementById("confusionPromptNoBtn");
 const raiseHandBtn = document.getElementById("raiseHandBtn");
 const raiseHandIcon = document.getElementById("raiseHandIcon");
 const teacherHandRaiseBar = document.getElementById("teacherHandRaiseBar");
+const teacherHandRaiseBarIcon = document.getElementById("teacherHandRaiseBarIcon");
 const handRaiseQueue = document.getElementById("handRaiseQueue");
 const postInput = document.getElementById("postInput");
 const postBtn = document.getElementById("postBtn");
@@ -192,6 +193,7 @@ if (postImageBtn) { postImageBtn.innerHTML = iconLabel("camera", "Add Image"); }
 if (seatsBtn) { seatsBtn.innerHTML = iconLabel("seat", "Seats"); }
 if (studyBtn) { studyBtn.innerHTML = iconLabel("book", "Study"); }
 if (raiseHandIcon) { raiseHandIcon.innerHTML = ICONS.hand; }
+if (teacherHandRaiseBarIcon) { teacherHandRaiseBarIcon.innerHTML = ICONS.hand; }
 (function() {
   var anonLabel = document.querySelector('label[for="anonymousToggle"]');
   if (anonLabel) { anonLabel.innerHTML = iconLabel("mask", "Anonymous"); }
@@ -2604,9 +2606,17 @@ function initTeacherHandRaiseBar() {
       item.appendChild(nameLabel);
       // Read-only -- clicking reveals the name, it does NOT clear the
       // raised hand (only the dashboard seat click does that).
+      // First click reveals the name; a second click (name already
+      // revealed) answers their question -- resets the raised hand. The
+      // item then simply vanishes on the next snapshot once handRaised
+      // flips false, so there's no need to also manage un-revealing here.
       item.onclick = function() {
-        if (revealedNames.has(entry.id)) { revealedNames.delete(entry.id); } else { revealedNames.add(entry.id); }
-        nameLabel.classList.toggle("revealed", revealedNames.has(entry.id));
+        if (revealedNames.has(entry.id)) {
+          updateDoc(doc(db, "boards", currentBoardId, "students", entry.id), { handRaised: false, handRaisedAt: null });
+        } else {
+          revealedNames.add(entry.id);
+          nameLabel.classList.add("revealed");
+        }
       };
       handRaiseQueue.appendChild(item);
     });
@@ -4444,7 +4454,20 @@ async function loadPolls() {
           div.appendChild(controlsDiv);
         }
 
-        carouselTrack.appendChild(div);
+        // apple-design §18: rainbow glow around/behind any currently-live
+        // poll, for both roles -- a sibling of .poll (not a child, nor a
+        // ::before on .poll itself), since .poll's own overflow:hidden
+        // would otherwise clip it. See .poll-carousel-slide/.poll-live-glow
+        // in style.css for the full reasoning.
+        var slide = document.createElement("div");
+        slide.className = "poll-carousel-slide";
+        if (pollVisible) {
+          var liveGlow = document.createElement("div");
+          liveGlow.className = "poll-live-glow";
+          slide.appendChild(liveGlow);
+        }
+        slide.appendChild(div);
+        carouselTrack.appendChild(slide);
       });
 
       wirePollCarouselNav(carouselTrack, carouselPrevBtn, carouselNextBtn, activePollDocs.map(function(d) { return d.id; }));
@@ -4502,9 +4525,224 @@ async function loadPolls() {
           archivedSection.appendChild(div);
         });
       }
+
+      // Student-facing mirror of the teacher's archived-polls section above
+      // -- scoped to only the polls THIS student actually interacted with
+      // (a history entry or a voters-array membership), since an archived
+      // poll they never answered has nothing of theirs to show. Always
+      // shows their own response regardless of any visibility toggle;
+      // additionally shows whatever aggregate data the teacher has turned
+      // on for everyone (poll.responsesVisible/keywordsVisible/
+      // correctVisible), mirroring renderFreePoll/renderMCPoll/
+      // renderDrawPoll's own existing "isTeacher || poll.xVisible" gating.
+      if (!isTeacher && !isDisplayMode && archivedSection) {
+        var myArchivedPollDocs = archivedPollDocs.filter(function(d) {
+          var p = d.data();
+          return (p.history || []).some(function(h) { return h.username === username; }) || (p.voters || []).indexOf(username) !== -1;
+        });
+        if (myArchivedPollDocs.length > 0) {
+          var studentHeader = document.createElement("div");
+          studentHeader.style.cssText = "text-align:center;color:var(--text-secondary,#888);font-size:0.85rem;margin:24px 0 8px;letter-spacing:0.05em;";
+          studentHeader.textContent = "── Archived Polls ──";
+          archivedSection.appendChild(studentHeader);
+          myArchivedPollDocs.forEach(function(docSnap) {
+            var poll = docSnap.data();
+            var pollId = docSnap.id;
+            var div = document.createElement("div");
+            div.className = "poll";
+            div.style.opacity = "0.6";
+            var questionEl = document.createElement("strong");
+            questionEl.textContent = poll.question;
+            div.appendChild(questionEl);
+            if (poll.imageUrl) {
+              var img = document.createElement("img");
+              img.src = poll.imageUrl;
+              img.className = "poll-image";
+              (function(url) { img.onclick = function() { showImageLightbox(url); }; })(poll.imageUrl);
+              div.appendChild(img);
+            }
+            div.appendChild(buildStudentArchivedPollSummary(poll, pollId));
+            archivedSection.appendChild(div);
+          });
+        }
+      }
     },
     function(error) { console.error("Poll listener error:", error); }
   );
+}
+
+// Builds the "your response" + (conditionally) aggregate-data block for one
+// of a student's own archived polls -- see the student archived-polls
+// branch inside loadPolls() above. Deliberately a compact, self-contained
+// renderer rather than reusing renderFreePoll()/renderMCPoll()/
+// renderDrawPoll() directly: those functions' !isTeacher branches render a
+// LIVE voting UI (vote buttons / an editable textarea / a drawing canvas)
+// whenever the relevant visibility toggle is off, which is correct for an
+// active poll but wrong for an archived, read-only one -- this codebase
+// already tolerates sibling near-duplicate render functions for exactly
+// this kind of role/context split (e.g. renderSeats() vs
+// renderDashboardSeatMap()).
+function buildStudentArchivedPollSummary(poll, pollId) {
+  var wrap = document.createElement("div");
+  var options = poll.options || [];
+
+  if (poll.type === "mc") {
+    var myEntries = (poll.history || []).filter(function(h) { return h.username === username; });
+    var isMulti = !!poll.requireAllCorrect;
+    var finalState = computeFinalMCState(poll, myEntries, isMulti);
+    var myAnswerText;
+    if (isMulti) {
+      var idxArr = Array.from(finalState).sort(function(a, b) { return a - b; });
+      myAnswerText = idxArr.length > 0 ? idxArr.map(function(i) { return options[i]; }).join(", ") : "No answer";
+    } else {
+      myAnswerText = finalState !== null ? options[finalState] : "No answer";
+    }
+    var respDiv = document.createElement("div");
+    respDiv.className = "poll-stat";
+    respDiv.innerHTML = "<strong>Your response:</strong> " + myAnswerText;
+    wrap.appendChild(respDiv);
+
+    if (poll.responsesVisible) {
+      var votes = getVotesArray(poll);
+      var correctIndices = poll.correctIndices || [];
+      var correctShown = poll.correctVisible === true;
+      var maxVotes = 1;
+      for (var vi = 0; vi < votes.length; vi++) { if ((votes[vi] || 0) > maxVotes) { maxVotes = votes[vi] || 0; } }
+      var chart = document.createElement("div");
+      chart.className = "mc-bar-chart";
+      for (var oi = 0; oi < options.length; oi++) {
+        var voteCount = Number(votes[oi]) || 0;
+        var row = document.createElement("div");
+        row.className = "mc-bar-row";
+        var barLabel = document.createElement("div");
+        barLabel.className = "mc-bar-label";
+        barLabel.textContent = options[oi];
+        var track = document.createElement("div");
+        track.className = "mc-bar-track";
+        var fill = document.createElement("div");
+        fill.className = "mc-bar-fill";
+        fill.style.background = correctShown ? (correctIndices.indexOf(oi) !== -1 ? "#34c759" : "#ff453a") : "#0071e3";
+        fill.style.width = (voteCount === 0 ? 0 : Math.max(4, (voteCount / maxVotes) * 100)) + "%";
+        var countSpan = document.createElement("span");
+        countSpan.className = "mc-bar-count";
+        countSpan.textContent = voteCount;
+        track.appendChild(fill);
+        track.appendChild(countSpan);
+        row.appendChild(barLabel);
+        row.appendChild(track);
+        chart.appendChild(row);
+      }
+      wrap.appendChild(chart);
+    }
+    return wrap;
+  }
+
+  if (poll.type === "free") {
+    var myFreeEntries = (poll.history || []).filter(function(h) { return h.username === username; });
+    var respDiv2 = document.createElement("div");
+    respDiv2.className = "poll-stat";
+    respDiv2.innerHTML = "<strong>Your response:</strong> " + (myFreeEntries.length > 0 ? myFreeEntries.map(function(e) { return e.response; }).join(" / ") : "No answer");
+    wrap.appendChild(respDiv2);
+
+    if (poll.keywordsVisible) { wrap.appendChild(renderKeywordMap(poll)); }
+    if (poll.responsesVisible) {
+      var logDiv = document.createElement("div");
+      logDiv.className = "poll-log";
+      logDiv.innerHTML = "<strong>Poll Log:</strong>";
+      groupHistoryByStudent(poll.history).forEach(function(group) {
+        var p = document.createElement("div");
+        var texts = group.entries.map(function(e) { return e.response; });
+        p.textContent = group.username + ": " + texts.join(", ");
+        logDiv.appendChild(p);
+      });
+      wrap.appendChild(logDiv);
+    }
+    return wrap;
+  }
+
+  // draw
+  var myDrawLabel = document.createElement("div");
+  myDrawLabel.className = "poll-stat";
+  myDrawLabel.innerHTML = "<strong>Your drawing:</strong>";
+  wrap.appendChild(myDrawLabel);
+  var myThumbGrid = document.createElement("div");
+  myThumbGrid.className = "draw-thumb-grid";
+  wrap.appendChild(myThumbGrid);
+  // Legacy drawings (pre pixel-grid rework) carry an uploaded imageUrl
+  // directly on the history entry.
+  (poll.history || []).filter(function(h) { return h.username === username && h.imageUrl; }).forEach(function(h) {
+    var thumb = document.createElement("div");
+    thumb.className = "draw-thumb";
+    var img = document.createElement("img");
+    img.src = h.imageUrl;
+    (function(url) { img.onclick = function() { showImageLightbox(url); }; })(h.imageUrl);
+    thumb.appendChild(img);
+    myThumbGrid.appendChild(thumb);
+  });
+  (async function() {
+    var drawingsSnap = await getDocs(collection(db, "boards", currentBoardId, "polls", pollId, "drawings"));
+    var foundMine = myThumbGrid.children.length > 0;
+    drawingsSnap.forEach(function(d) {
+      var data = d.data();
+      if (data.username !== username) { return; }
+      foundMine = true;
+      var thumb = document.createElement("div");
+      thumb.className = "draw-thumb";
+      var canvasEl = document.createElement("canvas");
+      canvasEl.className = "draw-thumb-canvas";
+      renderPixelGridToCanvas(canvasEl, data.pixels);
+      (function(pixels) { canvasEl.onclick = function() { showPixelArtLightbox(pixels); }; })(data.pixels);
+      thumb.appendChild(canvasEl);
+      myThumbGrid.appendChild(thumb);
+    });
+    if (!foundMine) {
+      var emptyMsg = document.createElement("div");
+      emptyMsg.className = "confusion-timeline-empty";
+      emptyMsg.textContent = "No drawing on file.";
+      myThumbGrid.appendChild(emptyMsg);
+    }
+  })();
+
+  if (poll.responsesVisible) {
+    var allLabel = document.createElement("div");
+    allLabel.className = "poll-stat";
+    allLabel.innerHTML = "<strong>Everyone's drawings:</strong>";
+    wrap.appendChild(allLabel);
+    var allGrid = document.createElement("div");
+    allGrid.className = "draw-thumb-grid";
+    wrap.appendChild(allGrid);
+    (poll.history || []).filter(function(h) { return h.imageUrl; }).forEach(function(h) {
+      var thumb = document.createElement("div");
+      thumb.className = "draw-thumb";
+      var img = document.createElement("img");
+      img.src = h.imageUrl;
+      (function(url) { img.onclick = function() { showImageLightbox(url); }; })(h.imageUrl);
+      var label = document.createElement("span");
+      label.textContent = h.username;
+      thumb.appendChild(img);
+      thumb.appendChild(label);
+      allGrid.appendChild(thumb);
+    });
+    (async function() {
+      var drawingsSnap = await getDocs(collection(db, "boards", currentBoardId, "polls", pollId, "drawings"));
+      drawingsSnap.forEach(function(d) {
+        var data = d.data();
+        var thumb = document.createElement("div");
+        thumb.className = "draw-thumb";
+        var canvasEl = document.createElement("canvas");
+        canvasEl.className = "draw-thumb-canvas";
+        renderPixelGridToCanvas(canvasEl, data.pixels);
+        (function(pixels) { canvasEl.onclick = function() { showPixelArtLightbox(pixels); }; })(data.pixels);
+        var label = document.createElement("span");
+        label.textContent = data.username;
+        thumb.appendChild(canvasEl);
+        thumb.appendChild(label);
+        allGrid.appendChild(thumb);
+      });
+    })();
+  }
+
+  return wrap;
 }
 
 // Domain-neutral nouns/verbs that survive compromise's tagging but carry no

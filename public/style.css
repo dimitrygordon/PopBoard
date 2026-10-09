@@ -439,12 +439,45 @@ button.hide-toggle, .reply button.hide-toggle {
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  /* apple-design §18: breathing room for the live-poll glow (see
+     .poll-live-glow below) to bleed into without being clipped --
+     overflow-x:auto here forces the computed overflow-y to also be
+     non-"visible" per the CSS Overflow spec, so ANY descendant content
+     (including an absolutely-positioned sibling of .poll) that extends
+     past this track's own content box gets clipped regardless of z-index
+     or stacking tricks. Padding sized to exactly match the glow's own
+     `inset` below is what gives it room to exist at all. */
+  padding: 16px 14px;
 }
 #pollCarouselTrack::-webkit-scrollbar { display: none; }
-#pollCarouselTrack .poll {
+/* Wrapper per poll slide -- carries the sizing/snap properties that used
+   to live directly on `.poll` (see the apple-design §15 comment at the
+   .post,.poll,.seat box-shadow rule for why .poll itself keeps
+   overflow:hidden), so .poll-live-glow can be a SIBLING of .poll rather
+   than a child: .poll's own overflow:hidden would otherwise clip it, and
+   .poll has no stacking context of its own to escape that clipping via
+   z-index. wirePollCarouselNav()'s indexing (track.children[index],
+   card.offsetLeft) is purely positional, so swapping what's directly
+   inside the track from `.poll` to this wrapper needs no JS changes. */
+.poll-carousel-slide {
+  position: relative;
   flex: 0 0 100%;
   scroll-snap-align: start;
-  margin-bottom: 0;
+}
+#pollCarouselTrack .poll { margin-bottom: 0; }
+/* Only present in the DOM when its poll is actually live (poll.visible
+   === true, see loadPolls()) -- inserted BEFORE .poll in the slide so
+   plain DOM order (no z-index needed) paints .poll on top of it, same
+   precedent as the dashboard seat-map's hand-raise glow. */
+.poll-live-glow {
+  position: absolute;
+  inset: -14px;
+  border-radius: 36px;
+  pointer-events: none;
+  background: conic-gradient(red, orange, yellow, green, blue, violet, red);
+  filter: blur(14px) hue-rotate(0deg);
+  opacity: 0.55;
+  animation: hand-raise-glow-pulse 3s linear infinite;
 }
 
 .poll-carousel-nav {
@@ -1485,6 +1518,8 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
 }
 #confusionIndicator.indicator-raised { bottom: calc(150px + env(safe-area-inset-bottom, 0px)); }
 .confusion-label { font-size: 0.8rem; color: var(--text-secondary); }
+.hand-raise-bar-icon { display: flex; color: var(--text-secondary); }
+.hand-raise-bar-icon .icon-svg { width: 18px; height: 18px; margin-right: 0; }
 .confusion-buttons { display: flex; gap: 10px; }
 .confusion-btn {
   position: relative;
