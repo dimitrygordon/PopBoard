@@ -50,6 +50,7 @@ let studentCorrectStreak = 0;
 let celebratedPollIds = new Set();
 let unsubSeats = null;
 let unsubOwnConfusion = null;
+let unsubHandRaiseBar = null;
 let confusionSparklineInterval = null;
 let confusionPromptInterval = null;
 let seatingStudentsCache = {};
@@ -88,7 +89,8 @@ var ICONS = {
   book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H12v18H5.5A1.5 1.5 0 0 1 4 19.5Z"/><path d="M20 4.5A1.5 1.5 0 0 0 18.5 3H12v18h6.5a1.5 1.5 0 0 0 1.5-1.5Z"/></svg>',
   maximize: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M4 9V4h5"/><path d="M15 4h5v5"/><path d="M20 15v5h-5"/><path d="M9 20H4v-5"/></svg>',
   minimize: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M9 4v5H4"/><path d="M15 4v5h5"/><path d="M20 15h-5v5"/><path d="M9 20v-5H4"/></svg>',
-  eraser: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M3.5 16.5 12 8l5 5-5.5 5.5a2 2 0 0 1-2.8 0l-4.7-4.7a2 2 0 0 1 0-2.8Z"/><path d="M7 20h11"/></svg>'
+  eraser: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M3.5 16.5 12 8l5 5-5.5 5.5a2 2 0 0 1-2.8 0l-4.7-4.7a2 2 0 0 1 0-2.8Z"/><path d="M7 20h11"/></svg>',
+  hand: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M18 11V6a2 2 0 0 0-4 0"/><path d="M14 10V4a2 2 0 0 0-4 0v6"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>'
 };
 
 function iconLabel(name, text) { return ICONS[name] + (text ? " " + text : ""); }
@@ -135,6 +137,10 @@ const confusionPrompt = document.getElementById("confusionPrompt");
 const confusionPromptText = document.getElementById("confusionPromptText");
 const confusionPromptYesBtn = document.getElementById("confusionPromptYesBtn");
 const confusionPromptNoBtn = document.getElementById("confusionPromptNoBtn");
+const raiseHandBtn = document.getElementById("raiseHandBtn");
+const raiseHandIcon = document.getElementById("raiseHandIcon");
+const teacherHandRaiseBar = document.getElementById("teacherHandRaiseBar");
+const handRaiseQueue = document.getElementById("handRaiseQueue");
 const postInput = document.getElementById("postInput");
 const postBtn = document.getElementById("postBtn");
 const postsDiv = document.getElementById("posts");
@@ -146,6 +152,16 @@ const postImageInput = document.getElementById("postImageInput");
 const postImageBtn = document.getElementById("postImageBtn");
 const postImagePreview = document.getElementById("postImagePreview");
 const studentsList = document.getElementById("studentsList");
+const newStudentNameInput = document.getElementById("newStudentNameInput");
+const addStudentBtn = document.getElementById("addStudentBtn");
+const studentEditPopup = document.getElementById("studentEditPopup");
+const studentEditNameInput = document.getElementById("studentEditNameInput");
+const studentEditEmojiCircle = document.getElementById("studentEditEmojiCircle");
+const studentEditEmojiDisplay = document.getElementById("studentEditEmojiDisplay");
+const studentEditEmojiInput = document.getElementById("studentEditEmojiInput");
+const studentEditNicknameInput = document.getElementById("studentEditNicknameInput");
+const studentEditSaveBtn = document.getElementById("studentEditSaveBtn");
+const studentEditCancelBtn = document.getElementById("studentEditCancelBtn");
 const dashboardContent = document.getElementById("dashboardContent");
 const leaderboardSection = document.getElementById("leaderboardSection");
 const leaderboardToggleContainer = document.getElementById("leaderboardToggleContainer");
@@ -175,6 +191,7 @@ const studentPasswordInput = document.getElementById("studentPasswordInput");
 if (postImageBtn) { postImageBtn.innerHTML = iconLabel("camera", "Add Image"); }
 if (seatsBtn) { seatsBtn.innerHTML = iconLabel("seat", "Seats"); }
 if (studyBtn) { studyBtn.innerHTML = iconLabel("book", "Study"); }
+if (raiseHandIcon) { raiseHandIcon.innerHTML = ICONS.hand; }
 (function() {
   var anonLabel = document.querySelector('label[for="anonymousToggle"]');
   if (anonLabel) { anonLabel.innerHTML = iconLabel("mask", "Anonymous"); }
@@ -376,6 +393,7 @@ function teardownBoardListeners() {
   if (unsubSeats) { unsubSeats(); unsubSeats = null; }
   if (unsubDashSeats) { unsubDashSeats(); unsubDashSeats = null; }
   if (unsubOwnConfusion) { unsubOwnConfusion(); unsubOwnConfusion = null; }
+  if (unsubHandRaiseBar) { unsubHandRaiseBar(); unsubHandRaiseBar = null; }
 }
 
 // ─── SITEWIDE MOTION: click "pop" + ripple to neighbors ─────────────────────
@@ -480,7 +498,9 @@ joinBtn.onclick = async function() {
       nickname: "",
       confusionState: null,
       confusionSetAt: null,
-      confusionHistory: []
+      confusionHistory: [],
+      handRaised: false,
+      handRaisedAt: null
     });
     currentStudentId = newStudent.id;
     studentEmoji = "";
@@ -844,7 +864,7 @@ async function startBoard() {
   if (!isDisplayMode) { initStickyCommentBar(); }
   loadPosts();
   await loadPolls();
-  if (isTeacher) { updateDailyDashboard(); loadDashboardSeatMap(); }
+  if (isTeacher) { updateDailyDashboard(); loadDashboardSeatMap(); initTeacherHandRaiseBar(); }
   if (!isTeacher && !isDisplayMode) { setupEmojiPicker(); setupLeaderboardEntryBox(); initConfusionIndicator(); }
 }
 
@@ -856,6 +876,34 @@ createBoardBtn.onclick = async function() {
   if (!snapshot.empty) { alert("PopBoard name is already taken. Pick a fresh kernel!"); return; }
   await addDoc(collection(db, "boards"), { name: boardName, teacherAccount: teacherAccount, createdAt: serverTimestamp() });
   newBoardNameInput.value = "";
+};
+
+addStudentBtn.onclick = async function() {
+  var name = newStudentNameInput.value.trim();
+  if (!name) { alert("Enter a student name."); return; }
+  if (name.toLowerCase() === "dimitry" || name === teacherAccount) { alert("That name is reserved."); return; }
+  var studentsRef = collection(db, "boards", currentBoardId, "students");
+  var dupSnap = await getDocs(query(studentsRef, where("username", "==", name)));
+  if (!dupSnap.empty) { alert("A student with that name already exists."); return; }
+  await addDoc(studentsRef, {
+    username: name,
+    password: "",
+    joinedAt: serverTimestamp(),
+    historicalComments: 0,
+    historicalUpvotesGiven: 0,
+    historicalUpvotesReceived: 0,
+    historicalPollsCast: 0,
+    monthlyStats: {},
+    emoji: "",
+    nickname: "",
+    confusionState: null,
+    confusionSetAt: null,
+    confusionHistory: [],
+    handRaised: false,
+    handRaisedAt: null
+  });
+  newStudentNameInput.value = "";
+  loadStudentsPortal();
 };
 
 function listenBoardSettings() {
@@ -1538,6 +1586,10 @@ async function loadStudentsPortal() {
     var enterBtn = document.createElement("button");
     enterBtn.textContent = "Enter";
     (function(sid) { enterBtn.onclick = function(e) { e.stopPropagation(); viewStudentDashboard(sid); }; })(studentId);
+    var editBtn = document.createElement("button");
+    editBtn.textContent = "Edit";
+    editBtn.className = "teacher-control";
+    (function(sid, sdata) { editBtn.onclick = function(e) { e.stopPropagation(); openStudentEditPopup(sid, sdata); }; })(studentId, student);
     var deleteBtn = document.createElement("button");
     deleteBtn.innerHTML = iconLabel("trash", "Delete");
     deleteBtn.className = "delete-poll teacher-control";
@@ -1550,12 +1602,148 @@ async function loadStudentsPortal() {
       };
     })(studentId, student.username);
     actions.appendChild(enterBtn);
+    actions.appendChild(editBtn);
     actions.appendChild(deleteBtn);
     card.appendChild(info);
     card.appendChild(actions);
     (function(sid) { card.onclick = function() { viewStudentDashboard(sid); }; })(studentId);
     studentsList.appendChild(card);
   }
+}
+
+// Full-propagation username rename -- the codebase's only existing
+// precedent for an identity change (mergeStudents, below) deliberately only
+// merges aggregate counters and never touches the leaderboard collection or
+// rewrites author/upvoter/voter references. A rename needs to reach further
+// so old content doesn't stay attributed to a name nothing else recognizes.
+// Order matters for partial-failure safety: the student doc's own
+// `username` is updated LAST, so if this throws partway through, every
+// OTHER piece of data still consistently points at the old name (safe to
+// re-run to completion) rather than the student actively posting/voting
+// under a new name nothing else has caught up to yet.
+async function renameStudentUsername(studentId, oldUsername, newUsername) {
+  newUsername = newUsername.trim();
+  if (!newUsername || newUsername === oldUsername) { return; }
+  if (newUsername.toLowerCase() === "dimitry" || newUsername === teacherAccount) { alert("That name is reserved."); return; }
+  var dupSnap = await getDocs(query(collection(db, "boards", currentBoardId, "students"), where("username", "==", newUsername)));
+  if (dupSnap.docs.some(function(d) { return d.id !== studentId; })) { alert("That username is already taken."); return; }
+  if (!confirm('Rename "' + oldUsername + '" to "' + newUsername + '"? This rewrites their name on every past post, reply, and poll.')) { return; }
+
+  var oldLbRef = doc(db, "boards", currentBoardId, "leaderboard", oldUsername);
+  var oldLbSnap = await getDoc(oldLbRef);
+  if (oldLbSnap.exists()) {
+    await setDoc(doc(db, "boards", currentBoardId, "leaderboard", newUsername), oldLbSnap.data());
+    await deleteDoc(oldLbRef);
+  }
+
+  var authoredPosts = await getDocs(query(collection(db, "boards", currentBoardId, "posts"), where("author", "==", oldUsername)));
+  for (var i = 0; i < authoredPosts.docs.length; i++) { await updateDoc(authoredPosts.docs[i].ref, { author: newUsername }); }
+
+  var authoredReplies = await getDocs(query(collection(db, "boards", currentBoardId, "replies"), where("author", "==", oldUsername)));
+  for (var i = 0; i < authoredReplies.docs.length; i++) { await updateDoc(authoredReplies.docs[i].ref, { author: newUsername }); }
+
+  // Full scan (not a where() query) -- upvoters/upvoteHistory can contain
+  // oldUsername on posts NOT authored by them, same idiom this codebase
+  // already uses for single-student aggregation (computeMonthlyEngagement).
+  var allPosts = await getDocs(collection(db, "boards", currentBoardId, "posts"));
+  for (var i = 0; i < allPosts.docs.length; i++) {
+    var post = allPosts.docs[i].data();
+    var hitUp = (post.upvoters || []).indexOf(oldUsername) !== -1;
+    var hitHist = (post.upvoteHistory || []).some(function(h) { return h.username === oldUsername; });
+    if (!hitUp && !hitHist) { continue; }
+    await updateDoc(allPosts.docs[i].ref, {
+      upvoters: (post.upvoters || []).map(function(u) { return u === oldUsername ? newUsername : u; }),
+      upvoteHistory: (post.upvoteHistory || []).map(function(h) { return h.username === oldUsername ? Object.assign({}, h, { username: newUsername }) : h; })
+    });
+  }
+
+  var allPolls = await getDocs(collection(db, "boards", currentBoardId, "polls"));
+  for (var i = 0; i < allPolls.docs.length; i++) {
+    var poll = allPolls.docs[i].data();
+    var hitV = (poll.voters || []).indexOf(oldUsername) !== -1;
+    var hitH = (poll.history || []).some(function(h) { return h.username === oldUsername; });
+    if (!hitV && !hitH) { continue; }
+    await updateDoc(allPolls.docs[i].ref, {
+      voters: (poll.voters || []).map(function(u) { return u === oldUsername ? newUsername : u; }),
+      history: (poll.history || []).map(function(h) { return h.username === oldUsername ? Object.assign({}, h, { username: newUsername }) : h; })
+    });
+  }
+
+  await updateDoc(doc(db, "boards", currentBoardId, "students", studentId), { username: newUsername });
+}
+
+// Teacher-facing "edit student" popup -- deliberately does NOT reuse
+// renderEmojiCircle()/renderNicknameInput()/saveStudentEmoji()/
+// saveStudentNickname(), which all operate on the single module-level
+// studentEmoji/studentNickname/currentStudentId globals representing
+// "whichever student is the logged-in user." Editing an arbitrary OTHER
+// student by ID needs its own self-contained local state instead.
+function openStudentEditPopup(studentId, studentData) {
+  var oldUsername = studentData.username || "";
+  var oldNickname = studentData.nickname || "";
+  var editEmoji = studentData.emoji || "";
+
+  studentEditNameInput.value = oldUsername;
+  studentEditNicknameInput.value = oldNickname;
+
+  function renderEditEmojiDisplay() {
+    studentEditEmojiDisplay.innerHTML = "";
+    if (editEmoji) {
+      var span = document.createElement("span");
+      span.className = "emoji-animate";
+      span.style.fontSize = "1.6rem";
+      span.textContent = editEmoji;
+      studentEditEmojiDisplay.appendChild(span);
+    } else {
+      studentEditEmojiDisplay.textContent = "Choose Emoji";
+    }
+  }
+  renderEditEmojiDisplay();
+
+  studentEditEmojiCircle.onclick = function() {
+    studentEditEmojiInput.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:72px;height:72px;font-size:2rem;text-align:center;z-index:9999;border-radius:50%;opacity:1;pointer-events:all;border:2px solid #0071e3;outline:none;";
+    studentEditEmojiInput.value = "";
+    studentEditEmojiInput.focus();
+  };
+  studentEditEmojiInput.oninput = function() {
+    var val = studentEditEmojiInput.value;
+    var matches = val.match(/\p{Emoji_Presentation}|\p{Emoji}️/gu);
+    if (matches && matches.length > 0) {
+      editEmoji = matches[0];
+      studentEditEmojiInput.style.cssText = "width:0;height:0;opacity:0;position:absolute;pointer-events:none;";
+      renderEditEmojiDisplay();
+    } else if (val.length > 0) {
+      studentEditEmojiInput.value = "";
+    }
+  };
+  studentEditEmojiInput.onblur = function() {
+    studentEditEmojiInput.style.cssText = "width:0;height:0;opacity:0;position:absolute;pointer-events:none;";
+  };
+
+  studentEditCancelBtn.onclick = function() { studentEditPopup.classList.add("hidden"); };
+
+  studentEditSaveBtn.onclick = async function() {
+    var newUsername = studentEditNameInput.value.trim();
+    if (!newUsername) { alert("Name can't be empty."); return; }
+    var newNickname = studentEditNicknameInput.value.trim();
+
+    if (newUsername !== oldUsername) { await renameStudentUsername(studentId, oldUsername, newUsername); }
+
+    var updates = {};
+    if (newNickname !== oldNickname) { updates.nickname = newNickname; }
+    if (editEmoji !== (studentData.emoji || "")) { updates.emoji = editEmoji; }
+    if (Object.keys(updates).length > 0) {
+      await updateDoc(doc(db, "boards", currentBoardId, "students", studentId), updates);
+      var lbRef = doc(db, "boards", currentBoardId, "leaderboard", newUsername);
+      var lbSnap = await getDoc(lbRef);
+      if (lbSnap.exists()) { await updateDoc(lbRef, updates); }
+    }
+
+    studentEditPopup.classList.add("hidden");
+    loadStudentsPortal();
+  };
+
+  studentEditPopup.classList.remove("hidden");
 }
 
 async function buildClassAggregateCard(allStudentDocs, totalPolls, pollsSnapshot) {
@@ -2327,6 +2515,12 @@ function initConfusionIndicator() {
   confusionPromptNoBtn.onclick = function() {
     confusionPrompt.classList.add("hidden"); // dismiss only -- the fade is already on schedule regardless
   };
+  raiseHandBtn.onclick = function() {
+    if (raiseHandBtn.classList.contains("hand-is-raised")) { return; } // teacher-only dismissal, see the dashboard seat click handler
+    playPop();
+    restartAnimationClass(raiseHandIcon, "hand-raise-pop"); // custom lift on the inner span, not the button -- see style.css comment
+    updateDoc(doc(db, "boards", currentBoardId, "students", currentStudentId), { handRaised: true, handRaisedAt: Date.now() });
+  };
 
   function checkConfusionFadeStage() {
     var stage = getConfusionFadeStage(myConfusionState, myConfusionSetAt, Date.now());
@@ -2356,12 +2550,67 @@ function initConfusionIndicator() {
     checkConfusionFadeStage();
     latestConfusionHistory = data.confusionHistory || [];
     renderConfusionSparkline(latestConfusionHistory);
+    // Reuses this SAME per-own-doc listener (not a new one) -- this is
+    // exactly what re-enables the button the moment the teacher clears
+    // handRaised from the dashboard seat map, since this listener already
+    // fires on that write.
+    raiseHandBtn.classList.toggle("hand-is-raised", !!data.handRaised);
   });
   // The sparkline's right edge represents "now," and the prompt/fade stage
   // both keep advancing even without a new confusion-state write -- redraw
   // on a timer too, not just on each Firestore snapshot, so both stay live.
   confusionSparklineInterval = setInterval(function() { renderConfusionSparkline(latestConfusionHistory); }, 15000);
   confusionPromptInterval = setInterval(checkConfusionFadeStage, 15000);
+}
+
+// Teacher-facing raised-hand queue, sitting in the exact same bottom-bar
+// slot as the student's own #confusionIndicator (the two are mutually
+// exclusive by role). Its own independent onSnapshot on `students` --
+// matches this codebase's established one-listener-per-feature convention
+// (unsubPosts/unsubPolls/unsubLeaderboard/unsubSeats/unsubDashSeats/
+// unsubOwnConfusion are all separate) rather than piggybacking on
+// loadDashboardSeatMap()'s listener, which would couple this bar's
+// lifecycle to an unrelated view.
+function initTeacherHandRaiseBar() {
+  if (unsubHandRaiseBar) { unsubHandRaiseBar(); unsubHandRaiseBar = null; }
+  if (!currentBoardId || !teacherHandRaiseBar) { return; }
+
+  var revealedNames = new Set(); // student doc IDs whose name label is currently toggled on
+
+  unsubHandRaiseBar = onSnapshot(collection(db, "boards", currentBoardId, "students"), function(snap) {
+    var raised = [];
+    snap.forEach(function(d) {
+      var data = d.data();
+      if (data.handRaised) { raised.push({ id: d.id, username: data.username || "", emoji: data.emoji || "", handRaisedAt: data.handRaisedAt || 0 }); }
+    });
+    raised.sort(function(a, b) { return a.handRaisedAt - b.handRaisedAt; }); // first-raised-first-shown queue
+
+    teacherHandRaiseBar.classList.toggle("hidden", raised.length === 0);
+    handRaiseQueue.innerHTML = "";
+    raised.forEach(function(entry) {
+      var item = document.createElement("div");
+      item.className = "hand-raise-item";
+      var circle = document.createElement("div");
+      circle.className = "hand-raise-circle";
+      circle.textContent = entry.emoji ? entry.emoji : (entry.username ? entry.username.charAt(0).toUpperCase() : "?");
+      var badge = document.createElement("span");
+      badge.className = "hand-raise-mini-badge";
+      badge.innerHTML = ICONS.hand;
+      circle.appendChild(badge);
+      var nameLabel = document.createElement("span");
+      nameLabel.className = "hand-raise-name" + (revealedNames.has(entry.id) ? " revealed" : "");
+      nameLabel.textContent = entry.username;
+      item.appendChild(circle);
+      item.appendChild(nameLabel);
+      // Read-only -- clicking reveals the name, it does NOT clear the
+      // raised hand (only the dashboard seat click does that).
+      item.onclick = function() {
+        if (revealedNames.has(entry.id)) { revealedNames.delete(entry.id); } else { revealedNames.add(entry.id); }
+        nameLabel.classList.toggle("revealed", revealedNames.has(entry.id));
+      };
+      handRaiseQueue.appendChild(item);
+    });
+  });
 }
 
 // ─── SEATING MAP (teacher-only sandbox) ─────────────────────────────────────
@@ -3075,10 +3324,31 @@ function renderDashboardSeatMap() {
   }
   dashSeatSeatsCache.forEach(function(seat) {
     var student = seat.studentId ? dashSeatStudentsCache[seat.studentId] : null;
+    var seatLeft = (seat.x != null ? seat.x : 50) + "%";
+    var seatTop = (seat.y != null ? seat.y : 50) + "%";
+
+    // apple-design §17: hand-raise glow, inserted BEFORE the seat so plain
+    // DOM order (no z-index changes needed) paints the seat on top of it.
+    // A sibling, not a child of .seat -- .seat's own overflow:hidden would
+    // clip anything positioned outside its box, and it has no stacking
+    // context of its own to rely on either. Deliberately no dataset.seatId
+    // here: positionSeatPopup() looks up a seat via a generic
+    // `[data-seat-id="..."]` attribute selector (not scoped to .seat), so
+    // giving this decoration the same attribute could make that querySelector
+    // return the glow instead of the real seat and silently corrupt the
+    // popup's position math.
+    if (student && student.handRaised) {
+      var glow = document.createElement("div");
+      glow.className = "seat-hand-raise-glow";
+      glow.style.left = seatLeft;
+      glow.style.top = seatTop;
+      dailySeatMapCanvasEl.appendChild(glow);
+    }
+
     var el = document.createElement("div");
     el.className = "seat seat-mini seat-view-only" + (student ? "" : " seat-unassigned");
-    el.style.left = (seat.x != null ? seat.x : 50) + "%";
-    el.style.top = (seat.y != null ? seat.y : 50) + "%";
+    el.style.left = seatLeft;
+    el.style.top = seatTop;
     el.dataset.seatId = seat.id;
     if (student) {
       var iconLine = document.createElement("span");
@@ -3092,6 +3362,17 @@ function renderDashboardSeatMap() {
       el.title = "Unassigned seat";
     }
     dailySeatMapCanvasEl.appendChild(el);
+
+    // Badge, inserted AFTER the seat -- same reasoning as the glow above,
+    // just on the other side so it paints on top of everything.
+    if (student && student.handRaised) {
+      var badge = document.createElement("div");
+      badge.className = "seat-hand-raise-badge";
+      badge.innerHTML = ICONS.hand;
+      badge.style.left = seatLeft;
+      badge.style.top = seatTop;
+      dailySeatMapCanvasEl.appendChild(badge);
+    }
   });
 }
 
@@ -3152,6 +3433,14 @@ if (dailySeatMapCanvasEl) {
     var seatEl = e.target.closest(".seat");
     if (!seatEl) { return; }
     seatPopupOpenedByHover = false;
+    // Clicking the seat is the only way to clear a raised hand (per spec) --
+    // additive to the existing popup-opening behavior below, not a
+    // replacement for it.
+    var seat = dashSeatSeatsCache.filter(function(s) { return s.id === seatEl.dataset.seatId; })[0];
+    var student = seat && seat.studentId ? dashSeatStudentsCache[seat.studentId] : null; // map lookup, keyed by student doc ID, not an array
+    if (student && student.handRaised) {
+      updateDoc(doc(db, "boards", currentBoardId, "students", seat.studentId), { handRaised: false, handRaisedAt: null });
+    }
     openDashboardSeatPopup(seatEl.dataset.seatId);
   });
   wireSeatHoverDelegation(dailySeatMapCanvasEl, openDashboardSeatPopup);
