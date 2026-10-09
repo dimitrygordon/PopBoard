@@ -91,6 +91,13 @@ html {
   -webkit-tap-highlight-color: transparent; /* kill the gray/blue flash on tap */
   -webkit-text-size-adjust: 100%; /* no font inflation in landscape */
   overscroll-behavior: none; /* don't let pull-to-refresh hijack the app */
+  /* apple-design §16: defensive safety net -- any future horizontal overflow
+     (unwrapped flex rows, a fixed-width element, etc) would otherwise force
+     mobile browsers to compute a shrunk initial zoom to fit the whole page,
+     exactly the "have to pinch-zoom to fill the screen" bug this round fixed
+     at its root cause (see .header-top-row/.header-bottom-row below). This
+     just clips the symptom so a regression degrades instead of recurring. */
+  overflow-x: hidden;
 }
 
 body {
@@ -156,7 +163,12 @@ header {
 }
 
 .header-right { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
-.header-top-row, .header-bottom-row { display: flex; gap: 12px; align-items: center; }
+/* apple-design §16: root cause of the "must pinch-zoom to fill the screen"
+   mobile bug -- these rows held white-space:nowrap buttons with no wrap
+   allowed, so 4 buttons ("Back to Boards"/"Students"/"Seats"/"Poll") could
+   exceed a phone's viewport width with nowhere to go but overflow the page,
+   which is exactly what forces the browser to shrink its initial zoom. */
+.header-top-row, .header-bottom-row { display: flex; flex-wrap: wrap; gap: 12px; row-gap: 8px; align-items: center; justify-content: flex-end; }
 
 #pollCreation {
   background: linear-gradient(135deg, var(--card-gradient-start) 0%, var(--card-gradient-end) 100%);
@@ -346,12 +358,35 @@ button.hide-toggle, .reply button.hide-toggle {
 
 .upvote {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 16px; margin-top: 12px; margin-right: 8px;
+  padding: 8px 16px;
   font-size: 0.95rem; font-weight: 600; color: var(--text-color);
   background: var(--input-bg); border: 1.5px solid var(--border-color);
   border-radius: 999px; cursor: pointer; user-select: none; transition: all 0.2s ease;
 }
 .upvote:active { transform: scale(0.98); }
+
+/* apple-design §16: groups the upvote pill + reply/hide-toggle/delete
+   buttons that previously sat as unwrapped inline-flow siblings directly
+   after the post text -- with no flex/gap container, the browser wrapped
+   them at arbitrary points, reading as buttons touching/overlapping rather
+   than a clean row. flex-wrap is the fallback for when they still don't
+   fit one line; the narrower sizing in the mobile media query below is
+   what lets them fit a single line more often in the first place. */
+.post-actions-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+/* apple-design §16: scroll "jelly" lag/overshoot wrapper (see
+   wireJellyScroll in app.js) -- owns the JS-driven per-frame `transform`
+   so .post itself keeps its own hover-lift/click-pop/reveal transforms
+   completely untouched (no collision over the same CSS property). Pure
+   inline-style-driven, deliberately not a CSS `animation`/`transition`, so
+   there's no second animation engine fighting the spring's own easing.
+   `will-change` is applied only via .jelly-active (toggled alongside
+   IntersectionObserver membership in wireJellyScrollObserver), not
+   unconditionally on every wrapper -- loadPosts() has no limit()/
+   pagination, so promoting 100+ off-screen wrappers to their own
+   compositor layer at once would undercut the whole point of bounding
+   this effect's cost to the visible window. */
+.post-jelly-wrap.jelly-active { will-change: transform; }
 
 .reply {
   margin-left: 24px; margin-top: 12px; padding: 14px 18px;
@@ -373,7 +408,19 @@ button.hide-toggle, .reply button.hide-toggle {
 .poll button.voted-by-me::after { content: " ✓"; font-weight: bold; }
 .poll textarea { margin-top: 12px; min-height: 100px; }
 
-.poll-collapse-row { text-align: center; margin-bottom: 12px; }
+.poll-collapse-row { text-align: center; margin: 12px 0; }
+
+/* apple-design §16: shared "subtle disclosure toggle" treatment, matching
+   the leaderboard compress button's (.lb-compress-btn) design language --
+   dim until hovered, thin border, transparent fill -- for every OTHER
+   collapse/visibility toggle in the app, which previously fell through to
+   the full-weight default button style (heavy pill, always full opacity)
+   despite being the same low-stakes category of control. */
+.subtle-toggle-btn {
+  opacity: 0.45; background: transparent; border: 1.5px solid var(--border-color);
+  padding: 6px 14px; font-size: 0.78rem; transition: opacity 0.25s ease, background 0.2s ease;
+}
+.subtle-toggle-btn:hover { opacity: 1; background: var(--button-hover-bg); }
 
 .poll-carousel-wrapper {
   display: flex;
@@ -494,7 +541,12 @@ button.hide-toggle, .reply button.hide-toggle {
   transition: opacity 0.2s ease, max-width 0.2s ease;
 }
 
-#sortSection { margin-bottom: 20px; display: flex; justify-content: flex-end; }
+/* apple-design §16: the carousel's .poll card intentionally zeroes its own
+   margin-bottom (see #pollCarouselTrack .poll below) for carousel layout
+   reasons, which left zero clearance against whatever follows it in flow --
+   margin-top here (previously absent) is the fix, not reinstating that
+   margin on the carousel. */
+#sortSection { margin-top: 20px; margin-bottom: 20px; display: flex; justify-content: flex-end; }
 
 .portal-container { max-width: 720px; margin: 0 auto; }
 .portal-container h2 { font-size: 2rem; font-weight: 700; letter-spacing: -0.015em; margin-bottom: 24px; text-align: center; }
@@ -734,7 +786,17 @@ button.hide-toggle, .reply button.hide-toggle {
   .poll > button { min-width: 120px; padding: 12px 20px; }
   header { flex-direction: column; align-items: flex-start; }
   .header-right { width: 100%; align-items: stretch; }
-  .header-top-row, .header-bottom-row { width: 100%; justify-content: space-between; }
+  .header-top-row, .header-bottom-row { width: 100%; justify-content: flex-end; gap: 8px; row-gap: 8px; }
+  /* smaller than the generic mobile `button` rule above -- header chrome
+     buttons don't need to match post/poll action-button weight, and this
+     is what lets all 4 top-row buttons realistically fit 1-2 lines instead
+     of 3-4 on a narrow phone. */
+  header button { padding: 8px 14px; font-size: 0.82rem; }
+  /* shrink teacher-control buttons further than their existing !important
+     override so Reply/hide-toggle/Delete have a better chance of fitting a
+     single line on a narrow phone before falling back to .post-actions-row's
+     flex-wrap. */
+  .post-actions-row button.teacher-control { padding: 5px 11px !important; font-size: 0.74rem !important; }
   .metrics-grid { grid-template-columns: 1fr; }
   .board-card { flex-direction: column; align-items: flex-start; gap: 12px; }
   .board-card-actions { width: 100%; justify-content: flex-start; }
@@ -859,6 +921,41 @@ button.hide-toggle, .reply button.hide-toggle {
   box-sizing: border-box;
   vertical-align: middle;
 }
+
+/* apple-design §16: first-time leaderboard identity entry box -- same
+   visual language as .identity-popup/#emojiCircle/#nicknameInputContainer
+   above (translucent glass card, same circle/pill sub-elements) but sits in
+   normal flow below the leaderboard rather than floating/anchored to a row,
+   since it's meant to be a persistent, scroll-past invitation rather than a
+   transient edit surface. */
+.lb-entry-box {
+  max-width: 720px; margin: 0 auto 20px auto; padding: 16px 20px;
+  background: var(--card-bg-translucent);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1.5px solid var(--border-color); border-radius: 20px;
+  text-align: center;
+}
+.lb-entry-box-title { margin: 0 0 12px 0; font-size: 0.88rem; color: var(--text-secondary); }
+.lb-entry-box .leaderboard-identity-group { flex-wrap: wrap; }
+#lbEntryEmojiCircle {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--card-bg); border: 2px solid var(--border-color);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; font-size: 1.4rem; position: relative;
+}
+#lbEntryEmojiDisplay { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.2; text-align: center; max-width: 44px; }
+#lbEntryNicknameContainer {
+  display: flex; align-items: center; padding: 0 16px; height: 56px; min-width: 200px;
+  background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 999px;
+  box-sizing: border-box;
+}
+#lbEntryNicknameContainer input {
+  background: transparent; border: none; outline: none; font-size: 1rem; color: var(--text-color);
+  width: 100%; padding: 0; text-align: center; letter-spacing: 0.02em;
+  line-height: 56px; height: 56px; box-sizing: border-box; vertical-align: middle;
+}
+#lbEntryEmojiInput { width: 0; height: 0; opacity: 0; position: absolute; pointer-events: none; }
 
 @keyframes pollSlideIn {
   from {
@@ -1327,7 +1424,7 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
 }
 .confusion-timeline .tick.red { background: #8c1f4b; }
 .confusion-timeline .tick.orange { background: #c76a17; }
-.confusion-timeline .tick.green { background: #c3f5d6; }
+.confusion-timeline .tick.green { background: #8fdba8; }
 .confusion-timeline .tick.none { background: var(--confusion-none-color); }
 .confusion-timeline-empty { font-size: 0.78rem; color: var(--text-secondary); margin-top: 10px; }
 
@@ -1379,7 +1476,7 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
 }
 .confusion-btn.confusion-active { border-color: transparent; box-shadow: 0 0 0 2px var(--accent); }
 .confusion-dot { display: block; width: 11px; height: 11px; border-radius: 50%; }
-.confusion-dot-green { background: #c3f5d6; }
+.confusion-dot-green { background: #8fdba8; }
 .confusion-dot-orange { background: #c76a17; }
 .confusion-dot-red { background: #8c1f4b; }
 .confusion-dot-none { background: var(--confusion-none-color); }
