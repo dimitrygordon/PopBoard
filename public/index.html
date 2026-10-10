@@ -186,47 +186,58 @@
   <!-- Leaderboard -->
   <section id="leaderboardSection"></section>
 
-  <!-- First-time "set up your leaderboard identity" entry box (students
-       only, current student only) -- kept as a sibling of #leaderboardSection
-       rather than nested inside it, since renderLeaderboardUI() does a full
-       `leaderboardSection.innerHTML = ""` rebuild on every snapshot and would
-       otherwise wipe this out. Granularly shown/hidden by
-       renderIdentityEntryBox() based on whether studentEmoji/studentNickname
-       are already set -- see app.js. Uses separate element IDs from
-       #identityPopup's #emojiCircle/#emojiInput/#nicknameInputContainer so
-       the two surfaces (this persistent box vs. the floating edit popup) can
-       coexist without ID collisions. -->
-  <div id="lbEntryBox" class="hidden lb-entry-box glass-specular">
-    <p class="lb-entry-box-title">Set up your leaderboard identity</p>
-    <div class="leaderboard-identity-group">
-      <div id="lbEntryEmojiCircle" title="Click to choose your emoji">
-        <span id="lbEntryEmojiDisplay">Choose Emoji</span>
+  <!-- Content that scrolls up and passes behind the sticky leaderboard --
+       wrapped (in two pieces, split around the position:fixed bars below,
+       which must stay direct children of #app so their fixed positioning
+       stays anchored to the viewport -- mask/filter on an ancestor would
+       otherwise retarget them to that ancestor's box instead) so
+       wireLeaderboardContentFade() in app.js can mask just this content's
+       opacity as it scrolls through the leaderboard's on-screen band,
+       without touching the leaderboard card's own Liquid Glass rendering
+       at all. See .lb-content-fade in style.css for the mask itself. -->
+  <div id="lbFadeWrapTop" class="lb-content-fade">
+    <!-- First-time "set up your leaderboard identity" entry box (students
+         only, current student only) -- kept as a sibling of #leaderboardSection
+         rather than nested inside it, since renderLeaderboardUI() does a full
+         `leaderboardSection.innerHTML = ""` rebuild on every snapshot and would
+         otherwise wipe this out. Granularly shown/hidden by
+         renderIdentityEntryBox() based on whether studentEmoji/studentNickname
+         are already set -- see app.js. Uses separate element IDs from
+         #identityPopup's #emojiCircle/#emojiInput/#nicknameInputContainer so
+         the two surfaces (this persistent box vs. the floating edit popup) can
+         coexist without ID collisions. -->
+    <div id="lbEntryBox" class="hidden lb-entry-box glass-specular">
+      <p class="lb-entry-box-title">Set up your leaderboard identity</p>
+      <div class="leaderboard-identity-group">
+        <div id="lbEntryEmojiCircle" title="Click to choose your emoji">
+          <span id="lbEntryEmojiDisplay">Choose Emoji</span>
+        </div>
+        <div id="lbEntryNicknameContainer"></div>
       </div>
-      <div id="lbEntryNicknameContainer"></div>
+      <input id="lbEntryEmojiInput" maxlength="2" placeholder="" />
     </div>
-    <input id="lbEntryEmojiInput" maxlength="2" placeholder="" />
+
+    <!-- Poll Section -->
+    <section id="pollSection"></section>
+
+    <!-- Teacher Panel -->
+    <section id="teacherPanel" class="hidden">
+      <div id="upvote-history-container" class="teacher-panel">
+        <h3>Upvote History</h3>
+        <div id="upvote-history-log" class="history-log"></div>
+      </div>
+    </section>
+
+    <!-- Daily Dashboard (teacher only) -->
+    <section id="dailyDashboard" class="hidden">
+      <div class="daily-dashboard-card">
+        <div id="dailyEngagementDisplay" class="daily-engagement-big"></div>
+        <div id="dailySeatMapWidget" class="daily-seat-map-widget"><div id="dailySeatMapCanvas"></div></div>
+        <div id="dailyMetricsText" class="daily-metrics-text"></div>
+        <div id="classConfusionTimeline" class="class-confusion-timeline"></div>
+      </div>
+    </section>
   </div>
-
-  <!-- Poll Section -->
-  <section id="pollSection"></section>
-
-  <!-- Teacher Panel -->
-  <section id="teacherPanel" class="hidden">
-    <div id="upvote-history-container" class="teacher-panel">
-      <h3>Upvote History</h3>
-      <div id="upvote-history-log" class="history-log"></div>
-    </div>
-  </section>
-
-  <!-- Daily Dashboard (teacher only) -->
-  <section id="dailyDashboard" class="hidden">
-    <div class="daily-dashboard-card">
-      <div id="dailyEngagementDisplay" class="daily-engagement-big"></div>
-      <div id="dailySeatMapWidget" class="daily-seat-map-widget"><div id="dailySeatMapCanvas"></div></div>
-      <div id="dailyMetricsText" class="daily-metrics-text"></div>
-      <div id="classConfusionTimeline" class="class-confusion-timeline"></div>
-    </div>
-  </section>
 
   <!-- Confusion indicator (students only) -->
   <div id="confusionIndicator" class="hidden glass-specular">
@@ -274,22 +285,26 @@
     <div id="postImagePreview" class="image-preview"></div>
   </section>
 
-  <!-- Sorting -->
-  <section id="sortSection">
-    <select id="sortSelect">
-      <option value="new">Newest</option>
-      <option value="top">Top</option>
-    </select>
-  </section>
+  <!-- See the #lbFadeWrapTop comment above -- same fade, continuing below
+       the position:fixed bars. -->
+  <div id="lbFadeWrapBottom" class="lb-content-fade">
+    <!-- Sorting -->
+    <section id="sortSection">
+      <select id="sortSelect">
+        <option value="new">Newest</option>
+        <option value="top">Top</option>
+      </select>
+    </section>
 
-  <!-- Posts -->
-  <section id="posts"></section>
+    <!-- Posts -->
+    <section id="posts"></section>
 
-  <!-- Archived Comments (hidden primary comments, teacher only) -->
-  <section id="archivedComments"></section>
+    <!-- Archived Comments (hidden primary comments, teacher only) -->
+    <section id="archivedComments"></section>
 
-  <!-- Archived Polls (hidden + interacted, teacher only) -->
-  <section id="archivedPolls"></section>
+    <!-- Archived Polls (hidden + interacted, teacher only) -->
+    <section id="archivedPolls"></section>
+  </div>
 
 </div>
 
