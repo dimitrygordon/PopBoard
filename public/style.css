@@ -1134,22 +1134,39 @@ button.hide-toggle, .reply button.hide-toggle {
    the viewport's own hard clip edge -- Liquid Glass's blur/noise/specular
    on the leaderboard card itself (above) is completely untouched; this
    only masks the OPACITY of whatever's scrolling underneath it.
-   mask-size:100% 100% always matches this element's own current height
-   exactly (however tall its content currently is), so the "black
-   var(--lb-fade-height)" stop is a fixed PHYSICAL pixel distance (the
-   leaderboard's own current on-screen height) regardless of how long the
-   content below it grows; --lb-fade-offset (set per-element, since each
-   wrapper sits at a different point in the document) is what keeps that
-   fade zone pinned to the viewport position where the leaderboard actually
-   sits, rather than to this element's own scrolling local coordinates.
-   Both variables are written by wireLeaderboardContentFade() in app.js. */
+
+   mask-size's height is a large fixed pixel value (var(--lb-fade-mask-h),
+   computed in app.js from the document's own scroll height) rather than
+   100% of this element's own box -- it must NOT be tied to this element's
+   own height, because mask-position-y below shifts that sized image by
+   this element's current (possibly large) distance from the viewport's
+   top, and a mask image no taller than a SHORT element (e.g. a wrapper
+   holding just one poll) gets shifted completely clear of that element's
+   own box at most scroll positions, leaving it with no mask coverage at
+   all there -- which CSS renders as fully transparent, not fully opaque,
+   the exact bug this fixed (a poll going solid-invisible well before it
+   ever neared the leaderboard). Sizing the image to the document's own
+   scroll height instead guarantees it's always at least as tall as any
+   individual element's distance from the viewport, so some part of the
+   image always overlaps whatever's currently on screen.
+
+   Within that tall image, "black var(--lb-fade-height)" (the leaderboard's
+   own current on-screen height, so the fade zone's PHYSICAL size tracks
+   it exactly) and "black 100%" being the same color just means "stay fully
+   opaque for the entire rest of the image," regardless of how tall that
+   total extent is. mask-position-y (var(--lb-fade-offset), set per-element
+   since each wrapper sits at a different point in the document) is what
+   keeps the fade zone pinned to the viewport position where the
+   leaderboard actually sits, rather than to this element's own scrolling
+   local coordinates. All three variables are written by
+   wireLeaderboardContentFade() in app.js. */
 .lb-content-fade {
   mask-image: linear-gradient(to bottom, transparent 0, black var(--lb-fade-height, 150px), black 100%);
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, black var(--lb-fade-height, 150px), black 100%);
   mask-repeat: no-repeat;
   -webkit-mask-repeat: no-repeat;
-  mask-size: 100% 100%;
-  -webkit-mask-size: 100% 100%;
+  mask-size: 100% var(--lb-fade-mask-h, 100000px);
+  -webkit-mask-size: 100% var(--lb-fade-mask-h, 100000px);
   mask-position: 0 var(--lb-fade-offset, 0px);
   -webkit-mask-position: 0 var(--lb-fade-offset, 0px);
 }

@@ -3463,6 +3463,13 @@ function wireLeaderboardContentFade() {
     var lbRect = leaderboardSection.getBoundingClientRect();
     var fadeHeight = Math.max(1, Math.round(lbRect.height));
     document.documentElement.style.setProperty("--lb-fade-height", fadeHeight + "px");
+    // The mask image's own rendered height must stay at least as tall as
+    // any element's possible distance from the viewport (see the CSS
+    // comment) -- the document's own scroll height is a safe, cheap bound
+    // for that, since nothing on the page can be positioned further from
+    // the viewport than the document itself is tall.
+    var maskHeight = document.documentElement.scrollHeight + window.innerHeight;
+    document.documentElement.style.setProperty("--lb-fade-mask-h", maskHeight + "px");
     wraps.forEach(function(wrap) {
       var rect = wrap.getBoundingClientRect();
       wrap.style.setProperty("--lb-fade-offset", (-rect.top) + "px");
