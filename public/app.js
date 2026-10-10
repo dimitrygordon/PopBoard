@@ -213,6 +213,8 @@ const studentEditSaveBtn = document.getElementById("studentEditSaveBtn");
 const studentEditCancelBtn = document.getElementById("studentEditCancelBtn");
 const dashboardContent = document.getElementById("dashboardContent");
 const leaderboardSection = document.getElementById("leaderboardSection");
+const lbFadeWrapTop = document.getElementById("lbFadeWrapTop");
+const lbFadeWrapBottom = document.getElementById("lbFadeWrapBottom");
 const leaderboardToggleContainer = document.getElementById("leaderboardToggleContainer");
 const leaderboardVisibilityBtn = document.getElementById("leaderboardVisibilityBtn");
 const classSessionToggleContainer = document.getElementById("classSessionToggleContainer");
@@ -3439,6 +3441,40 @@ function wireScrollGlassHighlight() {
   update();
 }
 wireScrollGlassHighlight();
+
+// Fades #lbFadeWrapTop/#lbFadeWrapBottom's content (see .lb-content-fade in
+// style.css) out as it scrolls up and passes behind the sticky leaderboard,
+// so it visually disappears by the time it would reach the leaderboard's
+// own top edge instead of staying visible-but-blurred right up to the
+// viewport's hard clip edge. Same rAF-throttled scroll-listener shape as
+// wireScrollGlassHighlight() above (plus a resize listener, since the
+// leaderboard's own height -- and therefore the fade zone's size -- can
+// change without any scrolling, e.g. the expand/collapse toggle or a
+// window resize), and gated behind the same prefers-reduced-motion check:
+// a scroll-position-driven mask is squarely the kind of parallax-like
+// effect that preference means to suppress.
+function wireLeaderboardContentFade() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { return; }
+  var wraps = [lbFadeWrapTop, lbFadeWrapBottom].filter(function(el) { return el; });
+  if (!wraps.length || !leaderboardSection) { return; }
+  var ticking = false;
+  function update() {
+    ticking = false;
+    var lbRect = leaderboardSection.getBoundingClientRect();
+    var fadeHeight = Math.max(1, Math.round(lbRect.height));
+    document.documentElement.style.setProperty("--lb-fade-height", fadeHeight + "px");
+    wraps.forEach(function(wrap) {
+      var rect = wrap.getBoundingClientRect();
+      wrap.style.setProperty("--lb-fade-offset", (-rect.top) + "px");
+    });
+  }
+  window.addEventListener("scroll", function() {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }, { passive: true });
+  window.addEventListener("resize", update);
+  update();
+}
+wireLeaderboardContentFade();
 
 // Shared singleton (wired once, like wireMotionGlow/wireScrollGlassHighlight
 // above) backing the .post scroll-entrance reveal -- see the

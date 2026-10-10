@@ -1129,6 +1129,31 @@ button.hide-toggle, .reply button.hide-toggle {
   overflow: hidden;
 }
 
+/* Fades content out as it scrolls up and passes behind the sticky
+   leaderboard, rather than staying visible-but-blurred the whole way up to
+   the viewport's own hard clip edge -- Liquid Glass's blur/noise/specular
+   on the leaderboard card itself (above) is completely untouched; this
+   only masks the OPACITY of whatever's scrolling underneath it.
+   mask-size:100% 100% always matches this element's own current height
+   exactly (however tall its content currently is), so the "black
+   var(--lb-fade-height)" stop is a fixed PHYSICAL pixel distance (the
+   leaderboard's own current on-screen height) regardless of how long the
+   content below it grows; --lb-fade-offset (set per-element, since each
+   wrapper sits at a different point in the document) is what keeps that
+   fade zone pinned to the viewport position where the leaderboard actually
+   sits, rather than to this element's own scrolling local coordinates.
+   Both variables are written by wireLeaderboardContentFade() in app.js. */
+.lb-content-fade {
+  mask-image: linear-gradient(to bottom, transparent 0, black var(--lb-fade-height, 150px), black 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, black var(--lb-fade-height, 150px), black 100%);
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+  mask-position: 0 var(--lb-fade-offset, 0px);
+  -webkit-mask-position: 0 var(--lb-fade-offset, 0px);
+}
+
 .lb-row {
   transition: opacity 0.4s ease, top 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
