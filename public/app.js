@@ -772,18 +772,45 @@ seatsBtn.onclick = function() {
   seatMapResponsePollId = null;
   seatMapResponsePollQuestion = "";
   seatMapResponsePollData = null;
+  seatingMapDiv.classList.remove("seating-map-poll-modal"); // defensive -- this is the full editable page, never the poll-response popup
   appDiv.classList.add("hidden");
   seatingMapDiv.classList.remove("hidden");
   loadSeatingMap();
 };
 
+// Viewing a specific poll's responses on the seat map is a focused POPUP
+// over the current board (where the poll itself lives), not a page
+// navigation -- the board stays exactly as it was underneath, and
+// exitSeatMapResponseView() below just closes the popup, landing the
+// teacher right back on the poll they were viewing rather than on the
+// (fully different, editable) confusion-state Seats page.
 function enterSeatMapResponseView(pollId, pollQuestion) {
   seatMapResponsePollId = pollId;
   seatMapResponsePollQuestion = pollQuestion || "";
   seatMapResponsePollData = null;
-  appDiv.classList.add("hidden");
+  seatingMapDiv.classList.add("seating-map-poll-modal");
   seatingMapDiv.classList.remove("hidden");
   loadSeatingMap();
+}
+
+// Clicking the dark backdrop around the popup card closes it too, like any
+// other modal -- guarded so this is a no-op in the Seats page's full-page
+// mode, where #seatingMap is never the actual click target behind its own
+// content anyway.
+seatingMapDiv.onclick = function(e) {
+  if (e.target === seatingMapDiv && seatMapResponsePollId) { exitSeatMapResponseView(); }
+};
+
+function exitSeatMapResponseView() {
+  if (unsubSeats) { unsubSeats(); unsubSeats = null; }
+  seatMapResponsePollId = null;
+  seatMapResponsePollQuestion = "";
+  seatMapResponsePollData = null;
+  closeSeatPopup();
+  seatingMapDiv.classList.add("hidden");
+  seatingMapDiv.classList.remove("seating-map-poll-modal");
+  // appDiv was never hidden for the popup -- nothing to show again, the
+  // teacher is simply still looking at the same board/poll underneath.
 }
 
 backToBoardFromSeats.onclick = function() {
@@ -793,6 +820,7 @@ backToBoardFromSeats.onclick = function() {
   seatMapResponsePollData = null;
   closeSeatPopup();
   seatingMapDiv.classList.add("hidden");
+  seatingMapDiv.classList.remove("seating-map-poll-modal");
   appDiv.classList.remove("hidden");
 };
 
@@ -1967,11 +1995,7 @@ async function viewStudentDashboard(studentId) {
   addHistoricMetricCard(grid, iconLabel("arrowUp", "Upvotes Given: " + (student.historicalUpvotesGiven || 0)), student.monthlyStats || {}, "upvotesGiven", "upvotesGivenChart");
   addHistoricMetricCard(grid, iconLabel("arrowDown", "Upvotes Received: " + (student.historicalUpvotesReceived || 0)), student.monthlyStats || {}, "upvotesReceived", "upvotesReceivedChart");
 
-  var handsCard = document.createElement("div");
-  handsCard.className = "metric-card";
-  handsCard.innerHTML = "<h3>" + iconLabel("hand", "Hands Raised") + "</h3><div style='font-size:1.4rem;padding:8px 0;text-align:center;'>" + (student.handsRaisedCount || 0) + "</div>";
-  grid.appendChild(handsCard);
-  addHistoricMetricCard(grid, iconLabel("hand", "Hands Raised (Monthly)"), student.monthlyStats || {}, "handsRaised", "handsRaisedMonthlyChart");
+  addHistoricMetricCard(grid, iconLabel("hand", "Hands Raised: " + (student.handsRaisedCount || 0)), student.monthlyStats || {}, "handsRaised", "handsRaisedChart");
 
   // All-time (not monthly), bounded to every recorded LIVE class-session
   // window (see buildSessionWindows()) -- joinedAt still clamps each
@@ -2920,8 +2944,6 @@ function initConfusionIndicator() {
   var myConfusionSetAt = null;
   var latestConfusionHistory = [];
   var myFirstHandRaisedAt = null;
-  var wasHandRaised = false;
-  var handWaveTimeout = null;
   var autoResolvedFor = null; // "<state>@<setAtMs>" guard so the periodic re-check can't double-write the resolve
   var promptAnsweredFor = null; // "<state>@<setAtMs>" guard so a dismissed "No" doesn't re-show the prompt before the next real state change
 
@@ -2993,20 +3015,7 @@ function initConfusionIndicator() {
     // exactly what re-enables the button the moment the teacher clears
     // handRaised from the dashboard seat map, since this listener already
     // fires on that write.
-    var handRaised = !!data.handRaised;
-    raiseHandBtn.classList.toggle("hand-is-raised", handRaised);
-    if (handRaised && !wasHandRaised) {
-      // Rising edge only -- let hand-raise-pop's one-shot 0.4s lift finish
-      // undisturbed, then hand off to the continuous wave (see style.css).
-      if (handWaveTimeout) { clearTimeout(handWaveTimeout); }
-      handWaveTimeout = setTimeout(function() {
-        if (raiseHandBtn.classList.contains("hand-is-raised")) { raiseHandIcon.classList.add("hand-wave-loop"); }
-      }, 400);
-    } else if (!handRaised) {
-      if (handWaveTimeout) { clearTimeout(handWaveTimeout); handWaveTimeout = null; }
-      raiseHandIcon.classList.remove("hand-wave-loop");
-    }
-    wasHandRaised = handRaised;
+    raiseHandBtn.classList.toggle("hand-is-raised", !!data.handRaised);
   });
   // The sparkline's right edge represents "now," and the prompt/fade stage
   // both keep advancing even without a new confusion-state write -- redraw
@@ -3130,6 +3139,8 @@ function loadSeatingMap() {
 function renderSeatMapModeBar() {
   var existing = document.getElementById("seatModeBar");
   if (existing) { existing.remove(); }
+  var existingClose = document.getElementById("seatMapModalClose");
+  if (existingClose) { existingClose.remove(); }
   if (!seatMapResponsePollId) { return; }
   var bar = document.createElement("div");
   bar.id = "seatModeBar";
@@ -3142,18 +3153,19 @@ function renderSeatMapModeBar() {
   // via innerHTML, so it stays exactly as inert as it was before this change.
   label.appendChild(document.createTextNode(" Viewing responses: " + (seatMapResponsePollQuestion || "this poll")));
   bar.appendChild(label);
-  var backBtn = document.createElement("button");
-  backBtn.type = "button";
-  backBtn.className = "teacher-control";
-  backBtn.textContent = "← Back to confusion view";
-  backBtn.onclick = function() {
-    seatMapResponsePollId = null;
-    seatMapResponsePollQuestion = "";
-    seatMapResponsePollData = null;
-    loadSeatingMap();
-  };
-  bar.appendChild(backBtn);
   seatCanvas.parentNode.insertBefore(bar, seatCanvas);
+
+  // A small "✕" in the popup's own upper corner, not a text button in the
+  // flow -- this just closes the popup (see exitSeatMapResponseView), it
+  // never navigates to the editable confusion-state Seats page.
+  var closeBtn = document.createElement("button");
+  closeBtn.type = "button";
+  closeBtn.id = "seatMapModalClose";
+  closeBtn.className = "seat-map-modal-close";
+  closeBtn.textContent = "✕";
+  closeBtn.title = "Close";
+  closeBtn.onclick = exitSeatMapResponseView;
+  seatCanvas.parentNode.insertBefore(closeBtn, seatCanvas.parentNode.firstChild);
 }
 
 function studentRespondedToPoll(poll, studentUsername) {
@@ -3774,7 +3786,18 @@ function renderClassConfusionTimelineRows() {
     wrap.className = "class-confusion-timeline-row-wrap";
     var label = document.createElement("span");
     label.className = "class-confusion-timeline-label";
-    label.textContent = (student.emoji ? student.emoji + " " : "") + (student.username || "");
+    // The emoji needs its own (much smaller) font-size than the username
+    // text -- at the label's own 0.6rem it was taller than the row's 7px
+    // line-height and got visibly cut off, unlike plain text which mostly
+    // survives that mismatch.
+    if (student.emoji) {
+      var emojiSpan = document.createElement("span");
+      emojiSpan.className = "class-confusion-timeline-emoji";
+      emojiSpan.textContent = student.emoji;
+      label.appendChild(emojiSpan);
+      label.appendChild(document.createTextNode(" "));
+    }
+    label.appendChild(document.createTextNode(student.username || ""));
     var row = document.createElement("div");
     row.className = "class-confusion-timeline-row";
     row.title = student.nickname || student.username || "";

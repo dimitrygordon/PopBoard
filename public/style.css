@@ -728,6 +728,7 @@ button.hide-toggle, .reply button.hide-toggle {
   font-size: 0.6rem; color: var(--text-secondary);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+.class-confusion-timeline-emoji { font-size: 6px; line-height: 7px; vertical-align: middle; }
 .class-confusion-timeline-row {
   flex: 1 1 auto;
   height: 7px;
@@ -1348,6 +1349,59 @@ button.hide-toggle, .reply button.hide-toggle {
 /* ── Seating Map ─────────────────────────────────────────────────── */
 #seatingMap .portal-container { max-width: 960px; }
 
+/* Viewing a specific poll's responses on the seat map is a focused POPUP
+   on top of the current board (where the poll lives), not a page
+   navigation -- teachers should only see the poll results here, so the
+   full page's header/logo/logout/theme chrome and the editable page's
+   "Seating Map" heading + Add Seat / Copy Layout controls are all hidden,
+   leaving just the seat grid and a small close "✕". */
+#seatingMap.seating-map-poll-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 20px;
+  overflow-y: auto;
+}
+#seatingMap.seating-map-poll-modal > header,
+#seatingMap.seating-map-poll-modal .portal-container > h2,
+#seatingMap.seating-map-poll-modal #seatEditControls {
+  display: none;
+}
+#seatingMap.seating-map-poll-modal .portal-container {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  max-height: 90vh;
+  overflow-y: auto;
+  margin: auto;
+  background: var(--card-bg);
+  border: 1.5px solid var(--border-color);
+  border-radius: 24px;
+  box-shadow: var(--shadow-lg);
+  padding: 48px 24px 24px;
+}
+.seat-map-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  min-width: auto;
+  padding: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  line-height: 1;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border-color);
+}
+
 #seatCanvas {
   position: relative;
   width: 100%;
@@ -1613,21 +1667,7 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
 }
 .raise-hand-icon { display: block; transition: transform 0.2s ease; }
 #raiseHandBtn.hand-is-raised { border-color: transparent; box-shadow: 0 0 0 2px var(--accent); }
-/* Continuous subtle wave while raised, oscillating around the same resting
-   pose the lift used to hold statically. Deliberately a standalone class
-   (JS-toggled ~400ms after the raise, matching hand-raise-pop's duration)
-   rather than an ancestor-matched rule keyed off .hand-is-raised: both
-   would otherwise compete for the SAME `animation` property on the SAME
-   element, and -- unlike `transform`, which an active animation overrides
-   for its own duration regardless of a static rule's specificity -- two
-   rules both setting `animation` don't hand off sequentially, the
-   higher-specificity one simply wins outright for as long as both classes
-   are present, which would cut the one-shot lift short. */
-.raise-hand-icon.hand-wave-loop { animation: hand-wave 1.4s ease-in-out infinite; }
-@keyframes hand-wave {
-  0%, 100% { transform: translateY(-6px) rotate(-4deg); }
-  50%      { transform: translateY(-6px) rotate(12deg); }
-}
+#raiseHandBtn.hand-is-raised .raise-hand-icon { transform: translateY(-6px) rotate(4deg); }
 /* Click-commit lift: applied to the INNER icon span, never the button
    itself -- every <button> already gets a generic .motion-pop scale/
    brightness pop for free from the document-level capture-phase click
