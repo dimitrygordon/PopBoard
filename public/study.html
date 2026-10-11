@@ -209,6 +209,25 @@ select{background:var(--panel-2); border:1px solid var(--border); color:var(--te
 <div id="app"></div>
 
 <script>
+/* Parsed synchronously, before the main engine script, so STORE_KEY below
+   can scope localStorage per-student. __studySyncReady is always a Promise
+   (resolved immediately with null when there's no identity to sync), so
+   boot() can safely await it regardless of whether the module script
+   further down has run yet (module scripts defer until after parsing). */
+window.__studyIdentity = (function(){
+  try{
+    var p = new URLSearchParams(location.search);
+    var board = p.get("board");
+    var student = p.get("student");
+    if(!board || !student) return null;
+    return { boardId: board, studentId: student, name: p.get("name") || "" };
+  }catch(e){ return null; }
+})();
+window.__studySyncReady = new Promise(function(resolve){ window.__resolveStudySync = resolve; });
+if (!window.__studyIdentity) { window.__resolveStudySync(null); }
+</script>
+
+<script>
 /* ============================================================
    CHECKRIDE — Praxis Physics (5266) practice engine
    Original practice content only. Not affiliated with ETS.
@@ -1274,7 +1293,7 @@ const fmtTime = s => { s=Math.max(0,Math.floor(s)); const m=Math.floor(s/60); co
 const pct = (n,d) => d===0 ? 0 : Math.round((n/d)*100);
 
 /* ---------- storage layer (browser localStorage) ---------- */
-const STORE_KEY = "ppdb-v1";
+const STORE_KEY = window.__studyIdentity ? ("ppdb-v1-" + window.__studyIdentity.boardId + "-" + window.__studyIdentity.studentId) : "ppdb-v1";
 let DB = null; // {questions, stats, sessions}
 let saveTimer = null;
 
@@ -1378,6 +1397,7 @@ function topbar(){
     <div class="readout">
       <div>BANK: <b>${DB.questions.length}</b> ITEMS</div>
       <div>LIFETIME ACCURACY: <b>${om.pct}%</b> (${om.correct}/${om.attempts})</div>
+      ${window.__studyIdentity ? `<div>ACCOUNT SYNC: <b>${window.__studySyncStatus || "Connecting…"}</b></div>` : `<div>LOCAL ONLY (NOT SIGNED IN)</div>`}
     </div>
   </div>`;
 }
@@ -1846,11 +1866,13 @@ function finishSession(){
   const total = SESSION.questions.length;
   let correct = 0;
   SESSION.questions.forEach(q=>{ const a=SESSION.answers[q.id]; if(a && a.correct) correct++; });
-  DB.sessions.push({
+  const record = {
     id: uid(), date: Date.now(), modeLabel: SESSION.modeLabel,
     total, correct, durationSec: (Date.now()-SESSION.startTime)/1000
-  });
+  };
+  DB.sessions.push(record);
   persist(true);
+  if (window.__saveStudySessionToCloud) { window.__saveStudySessionToCloud(record, total); }
   render();
 }
 
@@ -2085,8 +2107,85 @@ function wireGlobalEvents(){
 (async function boot(){
   document.getElementById('app').innerHTML = '<div style="padding:60px; text-align:center; color:#93A0AC; font-family:JetBrains Mono, monospace;">Loading question bank…</div>';
   await loadDB();
+  try{
+    const cloudSessions = await window.__studySyncReady;
+    if (cloudSessions && cloudSessions.length) {
+      const localIds = new Set(DB.sessions.map(s=>s.id));
+      cloudSessions.forEach(s=>{ if(!localIds.has(s.id)) DB.sessions.push(s); });
+      DB.sessions.sort((a,b)=>(a.date||0)-(b.date||0));
+      if (DB.sessions.length > 200) DB.sessions = DB.sessions.slice(DB.sessions.length - 200);
+      persist(true);
+    }
+  }catch(e){ console.error("cloud sync merge failed", e); }
   render();
 })();
+</script>
+
+<script type="module">
+/* Deferred (runs after full document parse, after the classic script above
+   has already run and defined boot()'s pending await on
+   window.__studySyncReady). Syncs this student's study sessions + a
+   questions-practiced count to Firestore, reusing the same project/config
+   app.js uses. Fully optional: with no identity in the URL (the teacher's
+   own study.html, opened with no query params), this never touches the
+   network and the page behaves exactly as it did before this feature. */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const identity = window.__studyIdentity;
+
+if (identity) {
+  const firebaseConfig = {
+    apiKey: "AIzaSyClkHjUnQ96VNRj1FxyY-ca-AcDWYoX_m8",
+    authDomain: "hotseat-4f661.firebaseapp.com",
+    projectId: "hotseat-4f661",
+    storageBucket: "hotseat-4f661.firebasestorage.app",
+    messagingSenderId: "1052089495081",
+    appId: "1:1052089495081:web:15293be177ad3a6f577638"
+  };
+  const fbApp = initializeApp(firebaseConfig);
+  const db = getFirestore(fbApp);
+  const studentRef = doc(db, "boards", identity.boardId, "students", identity.studentId);
+
+  window.__studySyncStatus = "Connecting…";
+  (async function(){
+    try{
+      const snap = await getDoc(studentRef);
+      window.__studySyncStatus = snap.exists() ? "Synced" : "Offline";
+      window.__resolveStudySync(snap.exists() ? (snap.data().studySessions || []) : null);
+    }catch(e){
+      console.error("study cloud load failed", e);
+      window.__studySyncStatus = "Offline";
+      window.__resolveStudySync(null);
+    }
+  })();
+
+  window.__saveStudySessionToCloud = async function(record, questionCount){
+    try{
+      window.__studySyncStatus = "Syncing…";
+      const snap = await getDoc(studentRef);
+      if (!snap.exists()) { window.__studySyncStatus = "Offline"; return; }
+      const data = snap.data();
+      const sessions = (data.studySessions || []).concat([record]);
+      const trimmed = sessions.length > 200 ? sessions.slice(sessions.length - 200) : sessions;
+      const monthKey = new Date().toISOString().slice(0, 7);
+      const monthlyStats = Object.assign({}, data.monthlyStats || {});
+      const monthEntry = Object.assign({}, monthlyStats[monthKey] || {});
+      monthEntry.questionsPracticed = (monthEntry.questionsPracticed || 0) + questionCount;
+      monthlyStats[monthKey] = monthEntry;
+      const historicalQuestionsPracticed = (data.historicalQuestionsPracticed || 0) + questionCount;
+      await updateDoc(studentRef, {
+        studySessions: trimmed,
+        monthlyStats: monthlyStats,
+        historicalQuestionsPracticed: historicalQuestionsPracticed
+      });
+      window.__studySyncStatus = "Synced";
+    }catch(e){
+      console.error("study cloud save failed", e);
+      window.__studySyncStatus = "Offline";
+    }
+  };
+}
 </script>
 </body>
 </html>

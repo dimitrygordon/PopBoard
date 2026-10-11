@@ -160,6 +160,7 @@ const newBoardNameInput = document.getElementById("newBoardNameInput");
 const createBoardBtn = document.getElementById("createBoardBtn");
 const boardsList = document.getElementById("boardsList");
 const studyBtn = document.getElementById("studyBtn");
+const studyBtnApp = document.getElementById("studyBtnApp");
 const logoutBtnPortal = document.getElementById("logoutBtnPortal");
 const logoutBtnApp = document.getElementById("logoutBtnApp");
 const logoutBtnStudents = document.getElementById("logoutBtnStudents");
@@ -242,6 +243,7 @@ const studentPasswordInput = document.getElementById("studentPasswordInput");
 if (postImageBtn) { postImageBtn.innerHTML = iconLabel("camera", "Add Image"); }
 if (seatsBtn) { seatsBtn.innerHTML = iconLabel("seat", "Seats"); }
 if (studyBtn) { studyBtn.innerHTML = iconLabel("book", "Study"); }
+if (studyBtnApp) { studyBtnApp.innerHTML = iconLabel("book", "Study"); }
 if (raiseHandIcon) { raiseHandIcon.innerHTML = ICONS.hand; }
 if (teacherHandRaiseBarIcon) { teacherHandRaiseBarIcon.innerHTML = ICONS.hand; }
 (function() {
@@ -707,6 +709,17 @@ teacherSignInBtn.onclick = async function() {
 
 studyBtn.onclick = function() { window.open("study.html", "_blank"); };
 
+if (studyBtnApp) {
+  studyBtnApp.onclick = function() {
+    if (!isTeacher && currentBoardId && currentStudentId) {
+      var url = "study.html?board=" + encodeURIComponent(currentBoardId) + "&student=" + encodeURIComponent(currentStudentId) + "&name=" + encodeURIComponent(username || "");
+      window.open(url, "_blank");
+    } else {
+      window.open("study.html", "_blank");
+    }
+  };
+}
+
 logoutBtnPortal.onclick = function() { resetAndLogout(); };
 logoutBtnApp.onclick = function() { resetAndLogout(); };
 logoutBtnStudents.onclick = function() { resetAndLogout(); };
@@ -723,6 +736,7 @@ function resetAndLogout() {
   isMasterAdmin = false;
   teacherAccount = "";
   studyBtn.classList.add("hidden");
+  if (studyBtnApp) { studyBtnApp.classList.remove("hidden"); }
   currentBoardId = "";
   currentStudentId = "";
   studentEmoji = "";
@@ -1005,6 +1019,7 @@ function enterBoard(boardId) {
   backToPortalBtn.classList.remove("hidden");
   studentsBtn.classList.remove("hidden");
   seatsBtn.classList.remove("hidden");
+  if (studyBtnApp) { studyBtnApp.classList.remove("hidden"); }
   leaderboardToggleContainer.classList.remove("hidden");
   classSessionToggleContainer.classList.remove("hidden");
   dailyDashboard.classList.remove("hidden");
@@ -1034,6 +1049,7 @@ function enterDisplayMode(boardId) {
   backToPortalBtn.classList.remove("hidden");
   studentsBtn.classList.add("hidden");
   seatsBtn.classList.add("hidden");
+  if (studyBtnApp) { studyBtnApp.classList.add("hidden"); }
   leaderboardToggleContainer.classList.add("hidden");
   classSessionToggleContainer.classList.add("hidden");
   dailyDashboard.classList.add("hidden");
@@ -1998,6 +2014,22 @@ async function viewStudentDashboard(studentId) {
   addHistoricMetricCard(grid, iconLabel("arrowDown", "Upvotes Received: " + (student.historicalUpvotesReceived || 0)), student.monthlyStats || {}, "upvotesReceived", "upvotesReceivedChart");
 
   addHistoricMetricCard(grid, iconLabel("hand", "Hands Raised: " + (student.handsRaisedCount || 0)), student.monthlyStats || {}, "handsRaised", "handsRaisedChart");
+  addHistoricMetricCard(grid, iconLabel("book", "Questions Practiced: " + (student.historicalQuestionsPracticed || 0)), student.monthlyStats || {}, "questionsPracticed", "questionsPracticedChart");
+
+  var studySessions = (student.studySessions || []).slice().sort(function(a, b) { return (b.date || 0) - (a.date || 0); }).slice(0, 10);
+  var sessionsCard = document.createElement("div");
+  sessionsCard.className = "metric-card";
+  var sessionsRowsHtml = studySessions.length ? studySessions.map(function(s) {
+    var pctCorrect = s.total ? Math.round((s.correct / s.total) * 100) : 0;
+    return "<div class='study-session-row'>" +
+      "<span class='study-session-date'>" + formatSessionTimestamp(s.date || 0) + "</span>" +
+      "<span class='study-session-mode'>" + (s.modeLabel || "Session") + "</span>" +
+      "<span class='study-session-score'>" + (s.correct || 0) + "/" + (s.total || 0) + " (" + pctCorrect + "%)</span>" +
+      "<span class='study-session-duration'>" + formatDurationMs((s.durationSec || 0) * 1000) + "</span>" +
+      "</div>";
+  }).join("") : "<div class='study-session-empty'>No study sessions yet.</div>";
+  sessionsCard.innerHTML = "<h3>" + iconLabel("book", "Recent Study Sessions") + "</h3><div class='study-sessions-list'>" + sessionsRowsHtml + "</div>";
+  grid.appendChild(sessionsCard);
 
   // All-time (not monthly), bounded to every recorded LIVE class-session
   // window (see buildSessionWindows()) -- joinedAt still clamps each
