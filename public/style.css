@@ -629,6 +629,16 @@ button.hide-toggle, .reply button.hide-toggle {
 .metric-card h3 { margin: 0 0 16px 0; font-size: 1rem; font-weight: 600; color: var(--text-color); }
 .metric-card canvas { width: 100% !important; height: auto !important; }
 
+.study-sessions-list { display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; }
+.study-session-row {
+  display: grid; grid-template-columns: auto 1fr auto auto; gap: 12px; align-items: center;
+  padding: 8px 10px; border-radius: 10px; background: var(--input-bg); font-size: 0.85rem;
+}
+.study-session-date { color: var(--text-secondary); white-space: nowrap; }
+.study-session-mode { font-weight: 600; }
+.study-session-score, .study-session-duration { color: var(--text-secondary); white-space: nowrap; text-align: right; }
+.study-session-empty { color: var(--text-secondary); font-size: 0.9rem; padding: 8px 0; }
+
 .leaderboard-summary-box {
   background: var(--input-bg); border-radius: 16px; padding: 16px 20px;
   margin-top: 8px; font-size: 1.05rem; line-height: 2;
