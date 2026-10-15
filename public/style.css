@@ -618,7 +618,13 @@ button.hide-toggle, .reply button.hide-toggle {
 .board-card-info .student-stats { font-size: 0.78rem; line-height: 1.5; margin-top: 8px; }
 .board-card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .board-card button { padding: 8px 16px; font-size: 0.85rem; }
-.drag-reorder-card { cursor: grab; }
+/* Static, not toggled from JS at pointerdown -- some mobile browsers
+   decide whether a touch becomes a scroll based on the touch-action
+   value already in effect when the gesture starts, so this needs to be
+   in place up front, not set reactively once the press is detected. The
+   tradeoff (a touch landing directly on a card can no longer be used to
+   scroll the page) is an acceptable cost for the drag actually working. */
+.drag-reorder-card { cursor: grab; touch-action: none; }
 .drag-reorder-card.drag-ghost {
   cursor: grabbing; opacity: 0.95; box-shadow: var(--shadow-lg); pointer-events: none;
 }
@@ -629,6 +635,9 @@ button.hide-toggle, .reply button.hide-toggle {
 /* Belt-and-suspenders scroll lock while a reorder drag is in progress or
    the poll-reorder overlay is open -- the actual fix for the drag itself
    not working on touch is wireDragReorder's switch to Pointer Events. */
+/* `overflow:hidden` on body alone is unreliable on iOS Safari -- the page
+   can still rubber-band/bounce-scroll underneath. html needs it too. */
+html.drag-reorder-active, html.simple-picker-open,
 body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 
 .class-aggregate-card { margin-bottom: 32px; border-color: var(--accent) !important; }
@@ -1659,8 +1668,14 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
 }
 
 /* Teacher-answers-on-behalf editor (MC options / free textarea / a small
-   draw canvas) needs more room than the plain read-only popup did. */
-.seat-response-popup { width: 340px; max-width: 90vw; }
+   draw canvas) needs more room than the plain read-only popup did, and
+   needs to actually render above #seatingMap.seating-map-poll-modal
+   (z-index: 10000) -- this is the only .seat-popup variant that's ever
+   shown while that modal is also up, so scoping the z-index bump to this
+   class specifically leaves the other two .seat-popup uses (the plain
+   editable-seat popup, and the dashboard's confusion-detail popup, which
+   never coexist with that modal) untouched. */
+.seat-response-popup { width: 340px; max-width: 90vw; z-index: 10001; }
 .seat-response-editor { margin-top: 10px; }
 .seat-response-option {
   text-align: left;
@@ -1788,31 +1803,14 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
   background: var(--bg-secondary); border: 2px solid var(--border-color);
 }
 .raise-hand-icon { display: block; transition: transform 0.2s ease; }
-/* The glow used to only ever show behind/around the button (the ::after
-   above); the button's own circular background now carries the same
-   animated rainbow for as long as the hand stays raised too, so the color
-   actually fills the inside of the circle the icon sits in -- matching
-   the brief "fills the inside" look the ::after's blur already gives at
-   the instant hand-raise-pop fires, just made to persist instead of
-   fading back to a flat fill once that one-shot animation ends. */
-#raiseHandBtn.hand-is-raised {
-  border-color: transparent; box-shadow: 0 0 0 2px var(--accent);
-  background: conic-gradient(red, orange, yellow, green, blue, violet, red);
-  animation: hand-raise-fill-pulse 3s linear infinite;
-}
-/* A dedicated keyframe, not a reuse of hand-raise-glow-pulse -- that one
-   also blurs and scales, which is right for a soft ambient glow behind
-   the button but would blur the button's own icon and visibly resize a
-   real interactive element. This only cycles the gradient's hue. */
-@keyframes hand-raise-fill-pulse {
-  from { filter: hue-rotate(0deg); }
-  to { filter: hue-rotate(360deg); }
-}
-#raiseHandBtn.hand-is-raised .raise-hand-icon {
-  transform: translateY(-6px) rotate(4deg);
-  color: #fff;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.55));
-}
+/* Reverted: filling the button's own background with an animated
+   hue-rotating conic-gradient rendered as a hard-edged box around the
+   circle on real devices instead of a clean fill (likely the `filter`
+   animation forcing a compositing layer that didn't respect the
+   border-radius clip). Back to the original -- just the ::after glow
+   behind/around the button above. */
+#raiseHandBtn.hand-is-raised { border-color: transparent; box-shadow: 0 0 0 2px var(--accent); }
+#raiseHandBtn.hand-is-raised .raise-hand-icon { transform: translateY(-6px) rotate(4deg); }
 /* Click-commit lift: applied to the INNER icon span, never the button
    itself -- every <button> already gets a generic .motion-pop scale/
    brightness pop for free from the document-level capture-phase click

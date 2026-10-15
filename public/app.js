@@ -918,12 +918,14 @@ function openSimplePicker(title, items, getLabel, onPick) {
   // HTML5 drag with Pointer Events below, but locking the page while any
   // modal like this is open is correct regardless).
   document.body.classList.add("simple-picker-open");
+  document.documentElement.classList.add("simple-picker-open");
 }
 
 function closeSimplePicker() {
   var existing = document.getElementById("simplePickerOverlay");
   if (existing) { existing.remove(); }
   document.body.classList.remove("simple-picker-open");
+  document.documentElement.classList.remove("simple-picker-open");
 }
 
 // The poll carousel only ever shows one poll at a time (swipe-based), so
@@ -970,6 +972,7 @@ function openPollReorderOverlay(pollDocs) {
   overlay.appendChild(card);
   document.body.appendChild(overlay);
   document.body.classList.add("simple-picker-open");
+  document.documentElement.classList.add("simple-picker-open");
 }
 
 backToStudentsFromDashboard.onclick = function() {
@@ -986,9 +989,16 @@ backToStudentsFromDashboard.onclick = function() {
 // browser falls back to its default touch-scroll instead, which is
 // exactly the "it scrolls the page behind the popup" bug this replaces.
 // Pointer Events fire uniformly for mouse/touch/pen, so one implementation
-// covers both, and `touch-action` is toggled on the pressed card at
-// pointerdown time (before any move), which is what actually suppresses
-// the browser's native touch-scroll for that gesture.
+// covers both. `.drag-reorder-card` sets `touch-action: none` statically
+// in CSS (not toggled dynamically from JS at pointerdown) -- some mobile
+// browsers decide whether a touch becomes a scroll based on the
+// touch-action value already in place when the gesture *starts*, so a
+// same-tick inline-style change can be too late; a permanent CSS rule is
+// the reliable version of the same idea. preventDefault() on every
+// pointermove (not just once a drag is confirmed) is the second line of
+// defense, for the same reason -- once a browser lets one early
+// unprevented touchmove through, it can commit to a scroll for the rest
+// of that gesture regardless of later preventDefault() calls.
 //
 // Technique: a plain pressed-and-moved-past-threshold gesture lifts the
 // card to `position:fixed` (so it tracks the pointer exactly) and leaves a
@@ -1056,10 +1066,7 @@ function wireDragReorder(container, cardSelector, idAttr, pathFn, setDraggingFla
     startX = e.clientX;
     startY = e.clientY;
     dragging = false;
-    // Set before any move is seen -- this is what actually tells the
-    // browser not to start its own touch-scroll for this press.
-    card.style.touchAction = "none";
-    document.addEventListener("pointermove", onPointerMove);
+    document.addEventListener("pointermove", onPointerMove, { passive: false });
     document.addEventListener("pointerup", onPointerUp);
     document.addEventListener("pointercancel", onPointerUp);
   }
@@ -1069,6 +1076,7 @@ function wireDragReorder(container, cardSelector, idAttr, pathFn, setDraggingFla
     activeCard = pressedCard;
     setDraggingFlag(true);
     document.body.classList.add("drag-reorder-active");
+    document.documentElement.classList.add("drag-reorder-active");
     var rect = activeCard.getBoundingClientRect();
     cardWidth = rect.width;
     cardHeight = rect.height;
@@ -1092,12 +1100,19 @@ function wireDragReorder(container, cardSelector, idAttr, pathFn, setDraggingFla
 
   function onPointerMove(e) {
     if (e.pointerId !== pointerId) { return; }
+    // Prevented on every move from the very first one, not only once
+    // dragging is confirmed -- once a touch browser lets an early,
+    // unprevented touchmove go by, it can commit to treating the whole
+    // gesture as a page scroll, and calling preventDefault() later in the
+    // same gesture no longer undoes that. Static touch-action:none on
+    // .drag-reorder-card (see style.css) is the primary fix; this is the
+    // belt to its suspenders.
+    e.preventDefault();
     if (!dragging) {
       var dx = e.clientX - startX, dy = e.clientY - startY;
       if (Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) { return; }
       beginDrag();
     }
-    e.preventDefault();
     activeCard.style.left = (e.clientX - grabOffsetX) + "px";
     activeCard.style.top = (e.clientY - grabOffsetY) + "px";
 
@@ -1123,7 +1138,6 @@ function wireDragReorder(container, cardSelector, idAttr, pathFn, setDraggingFla
     document.removeEventListener("pointermove", onPointerMove);
     document.removeEventListener("pointerup", onPointerUp);
     document.removeEventListener("pointercancel", onPointerUp);
-    if (pressedCard) { pressedCard.style.touchAction = ""; }
     pointerId = null;
     if (!dragging) { pressedCard = null; return; }
     suppressNextClick = true;
@@ -1139,6 +1153,7 @@ function wireDragReorder(container, cardSelector, idAttr, pathFn, setDraggingFla
     activeCard.style.zIndex = "";
     activeCard.style.margin = "";
     document.body.classList.remove("drag-reorder-active");
+    document.documentElement.classList.remove("drag-reorder-active");
 
     var cards = cardsInOrder();
     var batch = writeBatch(db);
@@ -3168,8 +3183,6 @@ function getConfusionFadeStage(state, setAtMs, now) {
   return "resolved";
 }
 
-var CONFUSION_SPARKLINE_WINDOW_MS = 15 * 60 * 1000;
-
 // Builds a time-proportional (not index-proportional, unlike the teacher-
 // facing discrete "tick" timelines elsewhere) CSS linear-gradient string from
 // history entries falling in [windowStart, windowEnd], carrying in whichever
@@ -3265,12 +3278,6 @@ function buildConfusionGradient(history, windowStart, windowEnd, colors, neutral
   return "linear-gradient(to right, " + stops.join(", ") + ")";
 }
 
-// Thin wrapper preserving the original rolling-window call shape used by the
-// student's own sparkline.
-function buildConfusionSparklineGradient(history, now, windowMs, colors, neutralColor, markerMs, markerColor) {
-  return buildConfusionGradient(history, now - windowMs, now, colors, neutralColor, markerMs, markerColor);
-}
-
 // Theme-aware color for the "first ever raised hand" timeline marker --
 // white in dark mode, black in light mode, so it reads against either.
 function firstHandRaiseMarkerColor() {
@@ -3279,8 +3286,14 @@ function firstHandRaiseMarkerColor() {
 
 function renderConfusionSparkline(history, firstHandRaisedAtMs) {
   if (!confusionSparkline) { return; }
-  confusionSparkline.style.background = buildConfusionSparklineGradient(
-    history, Date.now(), CONFUSION_SPARKLINE_WINDOW_MS, CONFUSION_COLORS, "var(--confusion-none-color)",
+  // Session-window-bounded, same as the teacher's per-student row in
+  // renderClassConfusionTimelineRows() -- not a rolling "last N minutes"
+  // window, so a fresh "Paused->Live" toggle resets this scale exactly
+  // the same way it already resets the dashboard's.
+  var windowStart = classSessionStartAt || 0;
+  var windowEnd = classSessionEndAt || Date.now();
+  confusionSparkline.style.background = buildConfusionGradient(
+    history, windowStart, windowEnd, CONFUSION_COLORS, "var(--confusion-none-color)",
     firstHandRaisedAtMs, firstHandRaisedAtMs ? firstHandRaiseMarkerColor() : null
   );
 }
