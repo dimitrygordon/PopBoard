@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Space Sandbox // PopBoard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;overflow:hidden;background:#000;height:100%;}
+body{font-family:'Inter',system-ui,sans-serif;color:#fff;-webkit-font-smoothing:antialiased;touch-action:none;}
+button,input{font-family:inherit;}
+#sandboxCanvas{display:block;width:100vw;height:100vh;background:#000;touch-action:none;}
+
+/* ---------- top / bottom bars ---------- */
+.bar{position:fixed;left:0;right:0;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;pointer-events:none;z-index:50;}
+.bar-top{top:0;}
+.bar-bottom{bottom:0;}
+.bar button{pointer-events:auto;background:none;border:none;color:#0A84FF;font-size:15px;cursor:pointer;padding:4px 2px;}
+.bar button:active{opacity:0.6;}
+.bar-top .bar-center{position:absolute;left:50%;transform:translateX(-50%);}
+
+/* ---------- floating panels ---------- */
+.panel{
+  position:fixed;z-index:60;width:300px;max-width:calc(100vw - 32px);
+  background:rgba(22,24,28,0.86);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:18px;
+  box-shadow:0 12px 32px rgba(0,0,0,0.5);
+  max-height:calc(100vh - 100px);overflow-y:auto;
+}
+.panel.hidden{display:none;}
+.panel h3{margin:0 0 14px 0;text-align:center;font-size:14px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:#fff;}
+.panel-row{margin-bottom:14px;}
+.panel-row:last-child{margin-bottom:0;}
+.panel-label{font-size:13px;color:#e5e5e7;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+.panel-hint{font-size:11.5px;color:#8e8e93;line-height:1.5;margin-top:10px;}
+.panel-link{display:block;text-align:center;color:#0A84FF;font-size:13px;margin-top:12px;cursor:pointer;background:none;border:none;width:100%;padding:4px;}
+.panel-link:active{opacity:0.6;}
+
+input[type="range"]{
+  -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:#48484a;outline:none;margin:0;
+}
+input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,0.4);
+}
+input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:none;cursor:pointer;}
+.slider-red::-webkit-slider-thumb{background:#ff453a;}
+.slider-green::-webkit-slider-thumb{background:#34c759;}
+.slider-blue::-webkit-slider-thumb{background:#0A84FF;}
+.slider-red{background:linear-gradient(90deg,#3a1414,#ff453a);}
+.slider-green{background:linear-gradient(90deg,#143a1c,#34c759);}
+.slider-blue{background:linear-gradient(90deg,#14233a,#0A84FF);}
+
+.color-swatch{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.3);display:inline-block;vertical-align:middle;}
+
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;font-size:13px;color:#e5e5e7;}
+.toggle-switch{position:relative;width:42px;height:24px;border-radius:12px;background:#3a3a3c;cursor:pointer;flex-shrink:0;transition:background 0.15s ease;}
+.toggle-switch.on{background:#34c759;}
+.toggle-switch .knob{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform 0.15s ease;}
+.toggle-switch.on .knob{transform:translateX(18px);}
+
+.panel-section-title{text-align:center;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#6e6e73;margin:16px 0 8px;}
+
+.segmented{display:flex;background:#1c1c1e;border-radius:8px;padding:2px;gap:2px;}
+.segmented button{flex:1;pointer-events:auto;background:none;border:none;color:#e5e5e7;font-size:11.5px;padding:7px 2px;border-radius:6px;cursor:pointer;}
+.segmented button.active{background:#48484a;color:#fff;}
+
+.inline-slider{display:none;margin-top:6px;}
+.inline-slider.shown{display:block;}
+
+/* ---------- zoom buttons (bottom-right, laptop affordance) ---------- */
+#zoomControls{position:fixed;right:18px;bottom:64px;z-index:55;display:flex;flex-direction:column;gap:8px;}
+.zoom-btn{
+  width:40px;height:40px;border-radius:50%;background:rgba(28,28,30,0.8);border:1px solid rgba(255,255,255,0.15);
+  color:#fff;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+.zoom-btn:active{opacity:0.6;}
+
+/* ---------- dev stats overlay ---------- */
+#devStats{
+  position:fixed;top:56px;left:18px;z-index:40;font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:#5FD3C4;line-height:1.6;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,0.8);
+  display:none;
+}
+#devStats.shown{display:block;}
+
+/* ---------- modal (Tutorial / More Placeable Objects) ---------- */
+.modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.hidden{display:none;}
+.modal-card{
+  background:rgba(22,24,28,0.96);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:24px;
+  max-width:420px;width:100%;max-height:80vh;overflow-y:auto;
+}
+.modal-card h2{margin:0 0 14px 0;font-size:17px;text-align:center;}
+.modal-card p{font-size:13.5px;line-height:1.6;color:#d1d1d6;margin:0 0 10px 0;}
+.modal-card .close-link{display:block;text-align:center;color:#0A84FF;margin-top:16px;cursor:pointer;background:none;border:none;font-size:14px;width:100%;padding:6px;}
+.preset-option{
+  display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;background:#1c1c1e;margin-bottom:10px;cursor:pointer;
+}
+.preset-option:active{opacity:0.7;}
+.preset-option .preset-icon{width:36px;height:36px;border-radius:50%;flex-shrink:0;}
+.preset-option .preset-text h4{margin:0 0 2px 0;font-size:14px;}
+.preset-option .preset-text p{margin:0;font-size:12px;color:#8e8e93;}
+</style>
+</head>
+<body>
+
+<canvas id="sandboxCanvas"></canvas>
+
+<div class="bar bar-top">
+  <button id="propertiesBtn">Properties</button>
+  <button id="pauseBtn" class="bar-center">Pause</button>
+  <button id="clearBtn">Clear</button>
+</div>
+<div class="bar bar-bottom">
+  <button id="tutorialBtn">Tutorial</button>
+  <button id="extrasBtn">Extras</button>
+</div>
+
+<div id="zoomControls">
+  <div class="zoom-btn" id="zoomInBtn">+</div>
+  <div class="zoom-btn" id="zoomOutBtn">&minus;</div>
+</div>
+
+<div id="devStats"></div>
+
+<div id="propertiesPanel" class="panel hidden" style="top:56px;left:18px;"></div>
+<div id="extrasPanel" class="panel hidden" style="bottom:56px;right:18px;"></div>
+
+<div id="tutorialModal" class="modal-overlay hidden"></div>
+<div id="objectsModal" class="modal-overlay hidden"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   SPACE SANDBOX -- an N-body gravity playground.
+   Original implementation; no shared code with the other study
+   modules or app.js (each module in the library is fully self-
+   contained). No identity parsing, no Firestore, no persistence
+   of any kind -- a pure client-side sandbox.
+   ============================================================ */
+
+/* ---------- tunable constants ---------- */
+var G = 0.6;                 // gravitational constant for this unit system (not SI -- tuned for a satisfying sim speed)
+var SOFTENING = 4;           // world-unit softening length, avoids force singularities at near-zero separation
+var EARTH_MASS = 1, EARTH_RADIUS = 1;      // "1 Earth" reference units, for the Properties panel's small-object labels
+var SUN_MASS = 50, SUN_RADIUS = 20;        // "1 Sun" reference units, for the large-object labels
+var STAR_RADIUS_CUTOFF = 6;  // radius >= this (and not a black hole) renders/labels as a star rather than a planet
+var BLACK_HOLE_DENSITY = 6;  // mass / radius^3 above this renders as a black hole, regardless of absolute size
+var MASS_MIN = 0.05, MASS_MAX = 4000;
+var RADIUS_MIN = 0.15, RADIUS_MAX = 60;
+var DEFAULT_MASS = EARTH_MASS, DEFAULT_RADIUS = EARTH_RADIUS;
+var TRAIL_MAX_POINTS = 260;
+var LAUNCH_SPEED_SCALE = 0.35;   // drag-distance (world units) -> initial velocity scale when flinging a new object
+var MERGE_OVERLAP_FRACTION = 0.65; // particles merge once overlap exceeds this fraction of the smaller radius
+
+/* ---------- pure math: gravity, integration, merging, classification, camera ----------
+   Kept free of DOM/canvas/global-state references so they can be extracted and unit
+   tested in isolation (see scratchpad/verify_space_sandbox_physics.js). */
+
+function computeAccelerations(particles, gConst, softening) {
+  var n = particles.length;
+  var ax = new Array(n).fill(0);
+  var ay = new Array(n).fill(0);
+  var soft2 = softening * softening;
+  for (var i = 0; i < n; i++) {
+    for (var j = i + 1; j < n; j++) {
+      var dx = particles[j].x - particles[i].x;
+      var dy = particles[j].y - particles[i].y;
+      var distSq = dx * dx + dy * dy + soft2;
+      var dist = Math.sqrt(distSq);
+      var f = gConst / (distSq * dist); // = G / dist^3, so f*dx and f*dy give the unit-vector-scaled force factor
+      ax[i] += f * dx * particles[j].mass;
+      ay[i] += f * dy * particles[j].mass;
+      ax[j] -= f * dx * particles[i].mass;
+      ay[j] -= f * dy * particles[i].mass;
+    }
+  }
+  return { ax: ax, ay: ay };
+}
+
+// Semi-implicit (symplectic) Euler: velocity is updated from the OLD
+// acceleration, then position from the NEW velocity -- more stable for
+// orbital motion than naive forward Euler, at the same cost.
+function stepPhysics(particles, dt, gConst, softening) {
+  var n = particles.length;
+  if (n === 0 || dt === 0) { return; }
+  var acc = computeAccelerations(particles, gConst, softening);
+  for (var i = 0; i < n; i++) {
+    particles[i].ax = acc.ax[i];
+    particles[i].ay = acc.ay[i];
+    particles[i].vx += acc.ax[i] * dt;
+    particles[i].vy += acc.ay[i] * dt;
+  }
+  for (var i = 0; i < n; i++) {
+    particles[i].x += particles[i].vx * dt;
+    particles[i].y += particles[i].vy * dt;
+  }
+}
+
+// Momentum- and mass-conserving merge. Radius combines by volume
+// (r^3 additive, as if the two spheres' volumes simply summed), color
+// blends by mass weight, position settles at the mass-weighted midpoint.
+function mergeParticles(a, b) {
+  var totalMass = a.mass + b.mass;
+  var wa = a.mass / totalMass, wb = b.mass / totalMass;
+  return {
+    mass: totalMass,
+    x: a.x * wa + b.x * wb,
+    y: a.y * wa + b.y * wb,
+    vx: a.vx * wa + b.vx * wb,
+    vy: a.vy * wa + b.vy * wb,
+    radius: Math.cbrt(a.radius * a.radius * a.radius + b.radius * b.radius * b.radius),
+    color: {
+      r: Math.round(a.color.r * wa + b.color.r * wb),
+      g: Math.round(a.color.g * wa + b.color.g * wb),
+      b: Math.round(a.color.b * wa + b.color.b * wb)
+    }
+  };
+}
+
+function classify(mass, radius) {
+  var density = mass / (radius * radius * radius);
+  if (density > BLACK_HOLE_DENSITY) { return "blackhole"; }
+  if (radius >= STAR_RADIUS_CUTOFF) { return "star"; }
+  return "planet";
+}
+
+// Exponential slider mapping: a 0-100 linear slider position maps to a
+// value between min/max on a log curve, giving fine control at the low
+// end while still reaching a wide top end (mass/radius both span several
+// orders of magnitude across the Properties panel's useful range).
+function sliderToValue(sliderPct, min, max) {
+  var t = Math.max(0, Math.min(100, sliderPct)) / 100;
+  return min * Math.pow(max / min, t);
+}
+function valueToSlider(value, min, max) {
+  var v = Math.max(min, Math.min(max, value));
+  var t = Math.log(v / min) / Math.log(max / min);
+  return Math.max(0, Math.min(100, t * 100));
+}
+
+// World<->screen transform for a camera {x,y,zoom,rotation}. Rotation
+// only ever changes when "Crazy Rotation" is on; zero otherwise, so the
+// common case is a plain translate+scale.
+function worldToScreen(camera, canvasW, canvasH, wx, wy) {
+  var dx = wx - camera.x, dy = wy - camera.y;
+  var cos = Math.cos(camera.rotation), sin = Math.sin(camera.rotation);
+  var rx = dx * cos - dy * sin, ry = dx * sin + dy * cos;
+  return { x: canvasW / 2 + rx * camera.zoom, y: canvasH / 2 + ry * camera.zoom };
+}
+function screenToWorld(camera, canvasW, canvasH, sx, sy) {
+  var rx = (sx - canvasW / 2) / camera.zoom;
+  var ry = (sy - canvasH / 2) / camera.zoom;
+  var cos = Math.cos(-camera.rotation), sin = Math.sin(-camera.rotation);
+  var dx = rx * cos - ry * sin, dy = rx * sin + ry * cos;
+  return { x: camera.x + dx, y: camera.y + dy };
+}
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+/* ---------- canvas setup ---------- */
+var canvas = document.getElementById("sandboxCanvas");
+var ctx = canvas.getContext("2d");
+var dpr = Math.max(1, window.devicePixelRatio || 1);
+var canvasW = 0, canvasH = 0; // CSS pixels (not device pixels) -- all world<->screen math works in these
+
+function resizeCanvas() {
+  canvasW = window.innerWidth;
+  canvasH = window.innerHeight;
+  canvas.width = Math.round(canvasW * dpr);
+  canvas.height = Math.round(canvasH * dpr);
+  canvas.style.width = canvasW + "px";
+  canvas.style.height = canvasH + "px";
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+/* ---------- state ---------- */
+var particles = [];
+var nextId = 1;
+var camera = { x: 0, y: 0, zoom: 1, rotation: 0 };
+var paused = false;
+var selectedId = null;          // particle currently shown/edited in the Properties panel, or null -> edits the template
+var nextObjectTemplate = { mass: DEFAULT_MASS, radius: DEFAULT_RADIUS, color: { r: 90, g: 200, b: 120 } };
+var speedMultiplier = 1;
+var lastFrameTime = null;
+
+var extras = {
+  starryBackground: true,
+  crazyRotation: false,
+  speedControlSlider: false,
+  developerStatistics: false,
+  accelerationVectors: false,
+  velocityVectors: false,
+  planetTrails: true,
+  autoCenter: true,
+  orbitAssist: "biggest" // "off" | "smart" | "closest" | "biggest"
+};
+
+function makeParticle(x, y, vx, vy, mass, radius, color) {
+  return {
+    id: nextId++,
+    x: x, y: y, vx: vx, vy: vy, mass: mass, radius: radius,
+    color: { r: color.r, g: color.g, b: color.b },
+    trail: [], ax: 0, ay: 0
+  };
+}
+
+function findParticle(id) {
+  for (var i = 0; i < particles.length; i++) { if (particles[i].id === id) { return particles[i]; } }
+  return null;
+}
+
+function removeParticleAt(index) {
+  var p = particles[index];
+  particles.splice(index, 1);
+  if (selectedId === p.id) { selectedId = null; }
+}
+
+/* ---------- starfield: seeded pseudo-random points on a repeating
+   world-space grid, so panning never visibly repeats a pattern close up
+   and nothing unbounded needs to be stored for an "infinite" canvas. */
+var STAR_CELL = 600;      // world units per repeating cell
+var STARS_PER_CELL = 14;
+function mulberry32(seed) {
+  return function() {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function cellStars(cx, cy) {
+  var rand = mulberry32((cx * 374761393 + cy * 668265263) | 0);
+  var stars = [];
+  for (var i = 0; i < STARS_PER_CELL; i++) {
+    stars.push({
+      x: cx * STAR_CELL + rand() * STAR_CELL,
+      y: cy * STAR_CELL + rand() * STAR_CELL,
+      r: 0.5 + rand() * 1.3,
+      a: 0.35 + rand() * 0.65
+    });
+  }
+  return stars;
+}
+
+/* ---------- camera follow target (Orbit Assist) ---------- */
+function pickFollowTarget() {
+  if (!particles.length) { return null; }
+  if (extras.orbitAssist === "off") { return null; }
+  if (extras.orbitAssist === "biggest") {
+    var biggest = particles[0];
+    for (var i = 1; i < particles.length; i++) { if (particles[i].mass > biggest.mass) { biggest = particles[i]; } }
+    return biggest;
+  }
+  if (extras.orbitAssist === "closest") {
+    var closest = particles[0], bestDist = Infinity;
+    for (var i = 0; i < particles.length; i++) {
+      var d = (particles[i].x - camera.x) * (particles[i].x - camera.x) + (particles[i].y - camera.y) * (particles[i].y - camera.y);
+      if (d < bestDist) { bestDist = d; closest = particles[i]; }
+    }
+    return closest;
+  }
+  // "smart" -- the particle with the most OTHER particles orbiting nearby
+  // (within a radius scaled to its own mass), i.e. the busiest hub.
+  var best = particles[0], bestCount = -1;
+  for (var i = 0; i < particles.length; i++) {
+    var hub = particles[i];
+    var reach = 40 + Math.sqrt(hub.mass) * 25;
+    var count = 0;
+    for (var j = 0; j < particles.length; j++) {
+      if (i === j) { continue; }
+      var dx = particles[j].x - hub.x, dy = particles[j].y - hub.y;
+      if (dx * dx + dy * dy <= reach * reach) { count++; }
+    }
+    if (count > bestCount) { bestCount = count; best = hub; }
+  }
+  return best;
+}
+
+/* ---------- hit testing ---------- */
+var MIN_HIT_RADIUS_PX = 14; // smallest particles still need to be easily tappable
+function hitTestParticle(screenX, screenY) {
+  for (var i = particles.length - 1; i >= 0; i--) {
+    var p = particles[i];
+    var s = worldToScreen(camera, canvasW, canvasH, p.x, p.y);
+    var hitR = Math.max(MIN_HIT_RADIUS_PX, p.radius * camera.zoom);
+    var dx = screenX - s.x, dy = screenY - s.y;
+    if (dx * dx + dy * dy <= hitR * hitR) { return p; }
+  }
+  return null;
+}
+
+/* ---------- input: place/fling (1 pointer), pan/zoom (2 pointers, wheel) ----------
+   A single press on empty space places a new particle; dragging before
+   release gives it a velocity in the drag direction (an aim line is drawn
+   live). A single press ON an existing particle selects it instead. A
+   second pointer touching down cancels any in-progress placement and
+   switches to two-finger pan/zoom for the rest of that gesture. */
+var activePointers = new Map(); // pointerId -> {x,y}
+var placeGesture = null;        // {startWorld:{x,y}, particle} while placing+aiming
+var panZoomGesture = null;      // {startDist, startMid, startCamera} while two-finger
+
+function eventIsOverUi(e) {
+  var el = e.target;
+  return !!(el.closest && el.closest(".bar, .panel, .modal-overlay, #zoomControls"));
+}
+
+canvas.addEventListener("pointerdown", function(e) {
+  if (eventIsOverUi(e)) { return; }
+  canvas.setPointerCapture(e.pointerId);
+  activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+  if (activePointers.size === 1) {
+    var world = screenToWorld(camera, canvasW, canvasH, e.clientX, e.clientY);
+    var hit = pendingPreset ? null : hitTestParticle(e.clientX, e.clientY);
+    if (hit) {
+      selectedId = hit.id;
+      refreshPropertiesPanel();
+      placeGesture = null;
+    } else if (pendingPreset === "cluster") {
+      spawnAsteroidCluster(world.x, world.y);
+      pendingPreset = null;
+      placeGesture = null;
+    } else {
+      var p = pendingPreset === "comet" ? makeCometParticle(world.x, world.y)
+        : makeParticle(world.x, world.y, 0, 0, nextObjectTemplate.mass, nextObjectTemplate.radius, nextObjectTemplate.color);
+      pendingPreset = null;
+      particles.push(p);
+      selectedId = p.id;
+      refreshPropertiesPanel();
+      placeGesture = { startWorld: world, particle: p };
+    }
+  } else if (activePointers.size === 2) {
+    // A second finger landed mid-placement -- the object placed by the
+    // first finger stays (already pushed into `particles` above with
+    // zero velocity), it just won't get a fling from this gesture.
+    placeGesture = null;
+    var pts = Array.from(activePointers.values());
+    panZoomGesture = {
+      startDist: pointerDistance(pts[0], pts[1]),
+      startMid: pointerMidpoint(pts[0], pts[1]),
+      startCamera: { x: camera.x, y: camera.y, zoom: camera.zoom }
+    };
+  }
+});
+
+canvas.addEventListener("pointermove", function(e) {
+  if (!activePointers.has(e.pointerId)) { return; }
+  activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+  if (placeGesture && activePointers.size === 1) {
+    var world = screenToWorld(camera, canvasW, canvasH, e.clientX, e.clientY);
+    placeGesture.aimWorld = world;
+  } else if (panZoomGesture && activePointers.size === 2) {
+    var pts = Array.from(activePointers.values());
+    var dist = pointerDistance(pts[0], pts[1]);
+    var mid = pointerMidpoint(pts[0], pts[1]);
+    var zoomRatio = dist / Math.max(1, panZoomGesture.startDist);
+    camera.zoom = clamp(panZoomGesture.startCamera.zoom * zoomRatio, 0.02, 40);
+    // Pan so the midpoint stays under the fingers (translate by the
+    // midpoint's screen delta, converted at the ORIGINAL zoom so a
+    // simultaneous pinch doesn't fight the pan). Rotated into world space
+    // too, so panning still tracks the fingers correctly while Crazy
+    // Rotation has the camera spinning.
+    var dxScreen = mid.x - panZoomGesture.startMid.x;
+    var dyScreen = mid.y - panZoomGesture.startMid.y;
+    var rot = camera.rotation;
+    var cos = Math.cos(-rot), sin = Math.sin(-rot);
+    var dxWorld = (dxScreen * cos - dyScreen * sin) / panZoomGesture.startCamera.zoom;
+    var dyWorld = (dxScreen * sin + dyScreen * cos) / panZoomGesture.startCamera.zoom;
+    camera.x = panZoomGesture.startCamera.x - dxWorld;
+    camera.y = panZoomGesture.startCamera.y - dyWorld;
+  }
+});
+
+function endPointer(e) {
+  if (!activePointers.has(e.pointerId)) { return; }
+  activePointers.delete(e.pointerId);
+
+  if (placeGesture && placeGesture.particle) {
+    if (placeGesture.aimWorld) {
+      var dx = placeGesture.aimWorld.x - placeGesture.startWorld.x;
+      var dy = placeGesture.aimWorld.y - placeGesture.startWorld.y;
+      placeGesture.particle.vx = dx * LAUNCH_SPEED_SCALE;
+      placeGesture.particle.vy = dy * LAUNCH_SPEED_SCALE;
+    }
+    placeGesture = null;
+  }
+  if (activePointers.size < 2) { panZoomGesture = null; }
+  if (activePointers.size === 0) { placeGesture = null; }
+}
+canvas.addEventListener("pointerup", endPointer);
+canvas.addEventListener("pointercancel", endPointer);
+
+function pointerDistance(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+function pointerMidpoint(a, b) { return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }; }
+
+/* ---------- wheel: plain scroll pans (covers trackpad two-finger swipe),
+   ctrlKey+wheel is how browsers report a trackpad pinch gesture -> zoom.
+   A real mouse wheel with ctrlKey held zooms too, which is a reasonable
+   secondary affordance. */
+canvas.addEventListener("wheel", function(e) {
+  e.preventDefault();
+  if (e.ctrlKey) {
+    var factor = Math.exp(-e.deltaY * 0.01);
+    camera.zoom = clamp(camera.zoom * factor, 0.02, 40);
+  } else {
+    var cos = Math.cos(-camera.rotation), sin = Math.sin(-camera.rotation);
+    var dxWorld = (e.deltaX * cos - e.deltaY * sin) / camera.zoom;
+    var dyWorld = (e.deltaX * sin + e.deltaY * cos) / camera.zoom;
+    camera.x += dxWorld;
+    camera.y += dyWorld;
+  }
+}, { passive: false });
+
+/* ---------- on-screen zoom buttons (explicit laptop affordance) ---------- */
+document.getElementById("zoomInBtn").addEventListener("click", function() { camera.zoom = clamp(camera.zoom * 1.35, 0.02, 40); });
+document.getElementById("zoomOutBtn").addEventListener("click", function() { camera.zoom = clamp(camera.zoom / 1.35, 0.02, 40); });
+
+/* ============================================================
+   UI: Properties panel, Extras panel, Tutorial, More Placeable Objects
+   ============================================================ */
+
+var DEFAULT_COLOR = { r: 90, g: 200, b: 120 };
+
+/* ---------- Properties panel ---------- */
+var propertiesPanel = document.getElementById("propertiesPanel");
+var propertiesOpen = false;
+
+function currentPropsTarget() {
+  var sel = selectedId ? findParticle(selectedId) : null;
+  return sel || nextObjectTemplate;
+}
+
+function applyToTarget(mutator) {
+  mutator(currentPropsTarget());
+  refreshPropertiesPanel();
+}
+
+function makeSliderRow(labelText, value, min, max, sliderClass, onInput) {
+  var row = document.createElement("div");
+  row.className = "panel-row";
+  if (labelText) {
+    var label = document.createElement("div");
+    label.className = "panel-label";
+    label.textContent = labelText;
+    row.appendChild(label);
+  }
+  var slider = document.createElement("input");
+  slider.type = "range";
+  slider.min = "0"; slider.max = "100"; slider.step = "0.1";
+  if (sliderClass) { slider.className = sliderClass; }
+  slider.value = valueToSlider(value, min, max);
+  slider.addEventListener("input", function() { onInput(sliderToValue(parseFloat(slider.value), min, max)); });
+  row.appendChild(slider);
+  return row;
+}
+
+function refreshPropertiesPanel() {
+  if (!propertiesOpen) { return; }
+  var target = currentPropsTarget();
+  var isStarScale = target.radius >= STAR_RADIUS_CUTOFF;
+  var unitLabel = isStarScale ? "Sun" : "Earth";
+  var massUnits = isStarScale ? SUN_MASS : EARTH_MASS;
+  var radiusUnits = isStarScale ? SUN_RADIUS : EARTH_RADIUS;
+
+  propertiesPanel.innerHTML = "";
+  var h3 = document.createElement("h3");
+  h3.textContent = "Object Properties";
+  propertiesPanel.appendChild(h3);
+
+  propertiesPanel.appendChild(makeSliderRow(
+    unitLabel + " Masses: " + (target.mass / massUnits).toFixed(2),
+    target.mass, MASS_MIN, MASS_MAX, null,
+    function(v) { applyToTarget(function(t) { t.mass = v; }); }
+  ));
+  propertiesPanel.appendChild(makeSliderRow(
+    unitLabel + " Radii: " + (target.radius / radiusUnits).toFixed(2),
+    target.radius, RADIUS_MIN, RADIUS_MAX, null,
+    function(v) { applyToTarget(function(t) { t.radius = v; }); }
+  ));
+
+  var colorRow = document.createElement("div");
+  colorRow.className = "panel-row";
+  var colorLabel = document.createElement("div");
+  colorLabel.className = "panel-label";
+  var swatch = document.createElement("span");
+  swatch.className = "color-swatch";
+  swatch.style.background = "rgb(" + target.color.r + "," + target.color.g + "," + target.color.b + ")";
+  colorLabel.appendChild(document.createTextNode("Planet Color:"));
+  colorLabel.appendChild(swatch);
+  colorRow.appendChild(colorLabel);
+  propertiesPanel.appendChild(colorRow);
+
+  propertiesPanel.appendChild(makeSliderRow(null, target.color.r, 0, 255, "slider-red", function(v) { applyToTarget(function(t) { t.color.r = Math.round(v); }); }));
+  propertiesPanel.appendChild(makeSliderRow(null, target.color.g, 0, 255, "slider-green", function(v) { applyToTarget(function(t) { t.color.g = Math.round(v); }); }));
+  propertiesPanel.appendChild(makeSliderRow(null, target.color.b, 0, 255, "slider-blue", function(v) { applyToTarget(function(t) { t.color.b = Math.round(v); }); }));
+
+  var resetLink = document.createElement("button");
+  resetLink.className = "panel-link";
+  resetLink.textContent = "Reset All";
+  resetLink.onclick = function() {
+    applyToTarget(function(t) { t.mass = DEFAULT_MASS; t.radius = DEFAULT_RADIUS; t.color = { r: DEFAULT_COLOR.r, g: DEFAULT_COLOR.g, b: DEFAULT_COLOR.b }; });
+  };
+  propertiesPanel.appendChild(resetLink);
+
+  var hint = document.createElement("div");
+  hint.className = "panel-hint";
+  hint.style.textAlign = "center";
+  hint.textContent = "An object with large mass but a small radius will become a black hole! (The size at which this happens has been exaggerated to make black holes more visible.)";
+  propertiesPanel.appendChild(hint);
+}
+
+document.getElementById("propertiesBtn").addEventListener("click", function(e) {
+  e.stopPropagation();
+  propertiesOpen = !propertiesOpen;
+  propertiesPanel.classList.toggle("hidden", !propertiesOpen);
+  if (propertiesOpen) { refreshPropertiesPanel(); }
+});
+
+/* ---------- Extras panel ---------- */
+var extrasPanel = document.getElementById("extrasPanel");
+var extrasOpen = false;
+
+function makeToggleRow(labelText, key) {
+  var row = document.createElement("div");
+  row.className = "toggle-row";
+  var label = document.createElement("span");
+  label.textContent = labelText;
+  row.appendChild(label);
+  var sw = document.createElement("div");
+  sw.className = "toggle-switch" + (extras[key] ? " on" : "");
+  var knob = document.createElement("div");
+  knob.className = "knob";
+  sw.appendChild(knob);
+  sw.onclick = function() {
+    extras[key] = !extras[key];
+    refreshExtrasPanel();
+  };
+  row.appendChild(sw);
+  return row;
+}
+
+function refreshExtrasPanel() {
+  if (!extrasOpen) { return; }
+  extrasPanel.innerHTML = "";
+  var h3 = document.createElement("h3");
+  h3.textContent = "Extras";
+  extrasPanel.appendChild(h3);
+
+  extrasPanel.appendChild(makeToggleRow("Starry Background", "starryBackground"));
+  extrasPanel.appendChild(makeToggleRow("Crazy Rotation", "crazyRotation"));
+
+  var speedRow = makeToggleRow("Speed Control Slider", "speedControlSlider");
+  extrasPanel.appendChild(speedRow);
+  var speedSliderWrap = document.createElement("div");
+  speedSliderWrap.className = "inline-slider" + (extras.speedControlSlider ? " shown" : "");
+  var speedSlider = document.createElement("input");
+  speedSlider.type = "range"; speedSlider.min = "1"; speedSlider.max = "500"; speedSlider.value = String(speedMultiplier * 100);
+  speedSlider.addEventListener("input", function() { speedMultiplier = parseFloat(speedSlider.value) / 100; });
+  speedSliderWrap.appendChild(speedSlider);
+  extrasPanel.appendChild(speedSliderWrap);
+
+  extrasPanel.appendChild(makeToggleRow("Developer Statistics", "developerStatistics"));
+  extrasPanel.appendChild(makeToggleRow("Acceleration Vectors", "accelerationVectors"));
+  extrasPanel.appendChild(makeToggleRow("Velocity Vectors", "velocityVectors"));
+
+  var sectionTitle = document.createElement("div");
+  sectionTitle.className = "panel-section-title";
+  sectionTitle.textContent = "Gravity Sandbox Extended";
+  extrasPanel.appendChild(sectionTitle);
+
+  extrasPanel.appendChild(makeToggleRow("Planet Trails", "planetTrails"));
+  extrasPanel.appendChild(makeToggleRow("Auto-Center", "autoCenter"));
+
+  var assistLabel = document.createElement("div");
+  assistLabel.className = "panel-label";
+  assistLabel.textContent = "Orbit Assist:";
+  extrasPanel.appendChild(assistLabel);
+  var seg = document.createElement("div");
+  seg.className = "segmented";
+  [["off", "Off"], ["smart", "Smart"], ["closest", "Closest"], ["biggest", "Biggest"]].forEach(function(opt) {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = opt[1];
+    if (extras.orbitAssist === opt[0]) { btn.className = "active"; }
+    btn.onclick = function() { extras.orbitAssist = opt[0]; refreshExtrasPanel(); };
+    seg.appendChild(btn);
+  });
+  extrasPanel.appendChild(seg);
+  var assistHint = document.createElement("div");
+  assistHint.className = "panel-hint";
+  assistHint.textContent = "Attempts to orbit around the biggest object or cluster, even if a smaller object is closer.";
+  extrasPanel.appendChild(assistHint);
+
+  var moreBtn = document.createElement("button");
+  moreBtn.className = "panel-link";
+  moreBtn.textContent = "More Placeable Objects";
+  moreBtn.onclick = function() { openObjectsModal(); };
+  extrasPanel.appendChild(moreBtn);
+}
+
+document.getElementById("extrasBtn").addEventListener("click", function(e) {
+  e.stopPropagation();
+  extrasOpen = !extrasOpen;
+  extrasPanel.classList.toggle("hidden", !extrasOpen);
+  if (extrasOpen) { refreshExtrasPanel(); }
+});
+
+// Clicking anywhere outside an open panel closes it (consistent with
+// every other dismiss-by-outside-click pattern in this app).
+document.addEventListener("click", function(e) {
+  if (propertiesOpen && !e.target.closest("#propertiesPanel, #propertiesBtn")) {
+    propertiesOpen = false; propertiesPanel.classList.add("hidden");
+  }
+  if (extrasOpen && !e.target.closest("#extrasPanel, #extrasBtn")) {
+    extrasOpen = false; extrasPanel.classList.add("hidden");
+  }
+});
+
+/* ---------- Tutorial modal ---------- */
+var tutorialModal = document.getElementById("tutorialModal");
+document.getElementById("tutorialBtn").addEventListener("click", function(e) {
+  e.stopPropagation();
+  tutorialModal.innerHTML = "";
+  var card = document.createElement("div");
+  card.className = "modal-card";
+  card.innerHTML =
+    "<h2>How Space Sandbox Works</h2>" +
+    "<p><strong>Tap</strong> empty space to place an object. <strong>Press and drag</strong> before releasing to fling it -- it launches in the direction you drag.</p>" +
+    "<p><strong>Tap an existing object</strong> to select it, then use Properties to adjust its mass, radius, and color.</p>" +
+    "<p>Use <strong>two fingers</strong> to pan and pinch-zoom (or scroll + the on-screen +/&minus; buttons on a laptop).</p>" +
+    "<p>Every object pulls on every other object with real gravity. Make an object dense enough -- high mass, small radius -- and it becomes a black hole. It won't suck anything in artificially; gravity alone still applies.</p>" +
+    "<p>Objects that collide merge into one, combining their mass, momentum, and size.</p>";
+  var closeBtn = document.createElement("button");
+  closeBtn.className = "close-link";
+  closeBtn.textContent = "Got it";
+  closeBtn.onclick = function() { tutorialModal.classList.add("hidden"); };
+  card.appendChild(closeBtn);
+  tutorialModal.appendChild(card);
+  tutorialModal.classList.remove("hidden");
+});
+tutorialModal.addEventListener("click", function(e) { if (e.target === tutorialModal) { tutorialModal.classList.add("hidden"); } });
+
+/* ---------- More Placeable Objects modal ---------- */
+var objectsModal = document.getElementById("objectsModal");
+// Returns a new (not-yet-pushed) comet particle -- the caller (pointerdown)
+// pushes it and wires up the same place-then-aim-drag flow a normal
+// object gets, so a comet can be flung just like anything else.
+function makeCometParticle(worldX, worldY) {
+  var p = makeParticle(worldX, worldY, 0, 0, 0.08, 0.3, { r: 210, g: 230, b: 255 });
+  p.isComet = true;
+  return p;
+}
+// Spawns the whole cluster immediately -- a burst of many particles has
+// no single "aim" to drag, unlike one object.
+function spawnAsteroidCluster(worldX, worldY) {
+  var count = 30 + Math.floor(Math.random() * 20);
+  var clusterRadius = 60;
+  for (var i = 0; i < count; i++) {
+    var angle = Math.random() * Math.PI * 2;
+    var dist = Math.random() * clusterRadius;
+    var x = worldX + Math.cos(angle) * dist;
+    var y = worldY + Math.sin(angle) * dist;
+    var speed = (Math.random() - 0.5) * 6;
+    var tint = { r: 120 + Math.floor(Math.random() * 120), g: 90 + Math.floor(Math.random() * 100), b: 60 + Math.floor(Math.random() * 100) };
+    particles.push(makeParticle(x, y, Math.cos(angle + Math.PI / 2) * speed, Math.sin(angle + Math.PI / 2) * speed, 0.02 + Math.random() * 0.3, 0.2 + Math.random() * 0.5, tint));
+  }
+}
+function openObjectsModal() {
+  objectsModal.innerHTML = "";
+  var card = document.createElement("div");
+  card.className = "modal-card";
+  card.innerHTML = "<h2>More Placeable Objects</h2><p>Pick one, then tap anywhere on the canvas to place it.</p>";
+
+  var cometOpt = document.createElement("div");
+  cometOpt.className = "preset-option";
+  cometOpt.innerHTML = "<div class='preset-icon' style='background:radial-gradient(circle, #fff, #9fd0ff)'></div><div class='preset-text'><h4>Comet</h4><p>A small icy body with a bright tail.</p></div>";
+  cometOpt.onclick = function() { pendingPreset = "comet"; objectsModal.classList.add("hidden"); };
+  card.appendChild(cometOpt);
+
+  var clusterOpt = document.createElement("div");
+  clusterOpt.className = "preset-option";
+  clusterOpt.innerHTML = "<div class='preset-icon' style='background:conic-gradient(#ff7a59,#59c3ff,#8cff8c,#ffd65c)'></div><div class='preset-text'><h4>Asteroid Cluster</h4><p>A loose cloud of small rocky debris.</p></div>";
+  clusterOpt.onclick = function() { pendingPreset = "cluster"; objectsModal.classList.add("hidden"); };
+  card.appendChild(clusterOpt);
+
+  var closeBtn = document.createElement("button");
+  closeBtn.className = "close-link";
+  closeBtn.textContent = "Cancel";
+  closeBtn.onclick = function() { objectsModal.classList.add("hidden"); };
+  card.appendChild(closeBtn);
+
+  objectsModal.appendChild(card);
+  objectsModal.classList.remove("hidden");
+}
+objectsModal.addEventListener("click", function(e) { if (e.target === objectsModal) { objectsModal.classList.add("hidden"); } });
+
+// When a preset is chosen, the NEXT tap on empty canvas places it instead
+// of a normal templated particle -- consumed after one placement.
+var pendingPreset = null;
+
+/* ============================================================
+   Top bar: Pause / Clear
+   ============================================================ */
+var pauseBtn = document.getElementById("pauseBtn");
+pauseBtn.addEventListener("click", function() {
+  paused = !paused;
+  pauseBtn.textContent = paused ? "Unpause" : "Pause";
+});
+document.getElementById("clearBtn").addEventListener("click", function() {
+  particles.length = 0;
+  selectedId = null;
+  placeGesture = null;
+  pendingPreset = null;
+  if (propertiesOpen) { refreshPropertiesPanel(); }
+});
+
+/* ============================================================
+   Collision merging -- repeated single-pass scans (particle counts here
+   are small, tens to low hundreds, so this stays cheap) until a pass
+   finds no overlapping pair, so simultaneous/chained merges (three or
+   more objects overlapping at once) resolve correctly within one frame.
+   ============================================================ */
+function resolveCollisions() {
+  var MAX_PASSES = 6;
+  for (var pass = 0; pass < MAX_PASSES; pass++) {
+    var mergedAny = false;
+    for (var i = 0; i < particles.length && !mergedAny; i++) {
+      for (var j = i + 1; j < particles.length; j++) {
+        var a = particles[i], b = particles[j];
+        var dx = a.x - b.x, dy = a.y - b.y;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < (a.radius + b.radius) * MERGE_OVERLAP_FRACTION) {
+          var merged = mergeParticles(a, b);
+          var wasSelected = selectedId === a.id || selectedId === b.id;
+          particles.splice(j, 1);
+          particles.splice(i, 1);
+          var newParticle = makeParticle(merged.x, merged.y, merged.vx, merged.vy, merged.mass, merged.radius, merged.color);
+          newParticle.trail = (a.mass >= b.mass ? a.trail : b.trail) || [];
+          particles.push(newParticle);
+          if (wasSelected) { selectedId = newParticle.id; }
+          mergedAny = true;
+          break;
+        }
+      }
+    }
+    if (!mergedAny) { break; }
+  }
+}
+
+/* ============================================================
+   Camera auto-follow + crazy rotation
+   ============================================================ */
+function updateCamera(dt) {
+  if (extras.crazyRotation) { camera.rotation += dt * 0.15; }
+  else if (camera.rotation !== 0) {
+    // Ease back to level once turned off, rather than snapping.
+    camera.rotation *= Math.max(0, 1 - dt * 2);
+    if (Math.abs(camera.rotation) < 0.001) { camera.rotation = 0; }
+  }
+  if (extras.autoCenter) {
+    var target = pickFollowTarget();
+    if (target) {
+      var lerp = 1 - Math.pow(0.001, dt);
+      camera.x += (target.x - camera.x) * lerp;
+      camera.y += (target.y - camera.y) * lerp;
+    }
+  }
+}
+
+/* ============================================================
+   Rendering
+   ============================================================ */
+function visibleCellRange() {
+  var topLeft = screenToWorld(camera, canvasW, canvasH, 0, 0);
+  var bottomRight = screenToWorld(camera, canvasW, canvasH, canvasW, canvasH);
+  var minX = Math.min(topLeft.x, bottomRight.x), maxX = Math.max(topLeft.x, bottomRight.x);
+  var minY = Math.min(topLeft.y, bottomRight.y), maxY = Math.max(topLeft.y, bottomRight.y);
+  return {
+    cx0: Math.floor(minX / STAR_CELL) - 1, cx1: Math.ceil(maxX / STAR_CELL) + 1,
+    cy0: Math.floor(minY / STAR_CELL) - 1, cy1: Math.ceil(maxY / STAR_CELL) + 1
+  };
+}
+
+function drawStarfield() {
+  var range = visibleCellRange();
+  // Rotation makes per-cell culling unreliable (a cell outside the
+  // axis-aligned bounds can still rotate into view) -- widen the range a
+  // little rather than tracking a rotated bounding shape, cheap enough at
+  // this star density.
+  var pad = camera.rotation !== 0 ? 1 : 0;
+  for (var cx = range.cx0 - pad; cx <= range.cx1 + pad; cx++) {
+    for (var cy = range.cy0 - pad; cy <= range.cy1 + pad; cy++) {
+      var stars = cellStars(cx, cy);
+      for (var i = 0; i < stars.length; i++) {
+        var s = worldToScreen(camera, canvasW, canvasH, stars[i].x, stars[i].y);
+        if (s.x < -4 || s.x > canvasW + 4 || s.y < -4 || s.y > canvasH + 4) { continue; }
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(255,255,255," + stars[i].a + ")";
+        ctx.arc(s.x, s.y, Math.max(0.4, stars[i].r * Math.min(1.4, camera.zoom)), 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  }
+}
+
+function drawTrails() {
+  for (var i = 0; i < particles.length; i++) {
+    var p = particles[i];
+    if (p.trail.length < 2) { continue; }
+    ctx.beginPath();
+    for (var k = 0; k < p.trail.length; k++) {
+      var s = worldToScreen(camera, canvasW, canvasH, p.trail[k].x, p.trail[k].y);
+      if (k === 0) { ctx.moveTo(s.x, s.y); } else { ctx.lineTo(s.x, s.y); }
+    }
+    ctx.strokeStyle = "rgb(" + p.color.r + "," + p.color.g + "," + p.color.b + ")";
+    ctx.globalAlpha = 0.55;
+    ctx.lineWidth = Math.max(1, Math.min(2.5, p.radius * camera.zoom * 0.15));
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+}
+
+function drawParticle(p) {
+  var s = worldToScreen(camera, canvasW, canvasH, p.x, p.y);
+  var r = Math.max(1, p.radius * camera.zoom);
+  var cls = classify(p.mass, p.radius);
+
+  if (cls === "blackhole") {
+    ctx.beginPath();
+    ctx.fillStyle = "#000";
+    ctx.arc(s.x, s.y, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.strokeStyle = "rgba(255,255,255,0.85)";
+    ctx.lineWidth = Math.max(1, r * 0.08);
+    ctx.arc(s.x, s.y, r, 0, Math.PI * 2);
+    ctx.stroke();
+  } else if (cls === "star") {
+    var glow = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, r * 2.2);
+    var core = "rgb(" + p.color.r + "," + p.color.g + "," + p.color.b + ")";
+    glow.addColorStop(0, core);
+    glow.addColorStop(0.5, core);
+    glow.addColorStop(1, "rgba(" + p.color.r + "," + p.color.g + "," + p.color.b + ",0)");
+    ctx.beginPath();
+    ctx.fillStyle = glow;
+    ctx.arc(s.x, s.y, r * 2.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.fillStyle = core;
+    ctx.arc(s.x, s.y, r, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    ctx.beginPath();
+    ctx.fillStyle = "rgb(" + p.color.r + "," + p.color.g + "," + p.color.b + ")";
+    ctx.arc(s.x, s.y, r, 0, Math.PI * 2);
+    ctx.fill();
+    if (p.isComet) {
+      ctx.beginPath();
+      ctx.fillStyle = "rgba(255,255,255,0.9)";
+      ctx.arc(s.x, s.y, r * 0.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  if (selectedId === p.id) {
+    ctx.beginPath();
+    ctx.strokeStyle = "rgba(10,132,255,0.9)";
+    ctx.lineWidth = 2;
+    ctx.arc(s.x, s.y, r + 5, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+}
+
+function drawVector(p, dx, dy, color, scale) {
+  var s = worldToScreen(camera, canvasW, canvasH, p.x, p.y);
+  var mag = Math.hypot(dx, dy);
+  if (mag < 1e-6) { return; }
+  var endX = s.x + dx * scale;
+  var endY = s.y + dy * scale;
+  ctx.beginPath();
+  ctx.moveTo(s.x, s.y);
+  ctx.lineTo(endX, endY);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  var angle = Math.atan2(endY - s.y, endX - s.x);
+  var headLen = 6;
+  ctx.beginPath();
+  ctx.moveTo(endX, endY);
+  ctx.lineTo(endX - headLen * Math.cos(angle - 0.4), endY - headLen * Math.sin(angle - 0.4));
+  ctx.lineTo(endX - headLen * Math.cos(angle + 0.4), endY - headLen * Math.sin(angle + 0.4));
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+}
+
+function drawAimLine() {
+  if (!placeGesture || !placeGesture.aimWorld) { return; }
+  var start = worldToScreen(camera, canvasW, canvasH, placeGesture.startWorld.x, placeGesture.startWorld.y);
+  var end = worldToScreen(camera, canvasW, canvasH, placeGesture.aimWorld.x, placeGesture.aimWorld.y);
+  ctx.save();
+  ctx.setLineDash([6, 6]);
+  ctx.strokeStyle = "rgba(255,255,255,0.7)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(start.x, start.y);
+  ctx.lineTo(end.x, end.y);
+  ctx.stroke();
+  ctx.restore();
+  var angle = Math.atan2(end.y - start.y, end.x - start.x);
+  var headLen = 10;
+  ctx.beginPath();
+  ctx.moveTo(end.x, end.y);
+  ctx.lineTo(end.x - headLen * Math.cos(angle - 0.4), end.y - headLen * Math.sin(angle - 0.4));
+  ctx.lineTo(end.x - headLen * Math.cos(angle + 0.4), end.y - headLen * Math.sin(angle + 0.4));
+  ctx.closePath();
+  ctx.fillStyle = "rgba(255,255,255,0.9)";
+  ctx.fill();
+}
+
+var devStatsEl = document.getElementById("devStats");
+var fpsSmoothed = 60;
+function updateDevStats(dt) {
+  if (!extras.developerStatistics) { devStatsEl.classList.remove("shown"); return; }
+  devStatsEl.classList.add("shown");
+  if (dt > 0) { fpsSmoothed += ((1 / dt) - fpsSmoothed) * 0.1; }
+  var totalMass = 0, px = 0, py = 0, ke = 0;
+  for (var i = 0; i < particles.length; i++) {
+    var p = particles[i];
+    totalMass += p.mass;
+    px += p.mass * p.vx; py += p.mass * p.vy;
+    ke += 0.5 * p.mass * (p.vx * p.vx + p.vy * p.vy);
+  }
+  var momentum = Math.hypot(px, py);
+  devStatsEl.innerHTML =
+    "FPS: " + fpsSmoothed.toFixed(0) + "<br>" +
+    "Objects: " + particles.length + "<br>" +
+    "Total Mass: " + totalMass.toFixed(2) + "<br>" +
+    "Momentum: " + momentum.toFixed(2) + "<br>" +
+    "Kinetic Energy: " + ke.toFixed(2) + "<br>" +
+    "Zoom: " + camera.zoom.toFixed(2) + "x";
+}
+
+/* ============================================================
+   Main loop
+   ============================================================ */
+function frame(now) {
+  if (lastFrameTime === null) { lastFrameTime = now; }
+  var dt = Math.min(0.1, (now - lastFrameTime) / 1000); // clamp so a backgrounded tab doesn't jump the sim forward wildly
+  lastFrameTime = now;
+
+  if (!paused) {
+    var simDt = dt * speedMultiplier;
+    stepPhysics(particles, simDt, G, SOFTENING);
+    resolveCollisions();
+    if (extras.planetTrails) {
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+        p.trail.push({ x: p.x, y: p.y });
+        if (p.trail.length > TRAIL_MAX_POINTS) { p.trail.shift(); }
+      }
+    }
+  }
+  updateCamera(dt);
+
+  ctx.clearRect(0, 0, canvasW, canvasH);
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0, 0, canvasW, canvasH);
+  if (extras.starryBackground) { drawStarfield(); }
+  if (extras.planetTrails) { drawTrails(); }
+  for (var i = 0; i < particles.length; i++) { drawParticle(particles[i]); }
+  if (extras.velocityVectors) {
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      drawVector(p, p.vx, p.vy, "rgba(94,211,255,0.85)", 4);
+    }
+  }
+  if (extras.accelerationVectors) {
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      drawVector(p, p.ax, p.ay, "rgba(255,159,10,0.85)", 400);
+    }
+  }
+  drawAimLine();
+  updateDevStats(dt);
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
