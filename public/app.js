@@ -695,6 +695,7 @@ teacherSignInBtn.onclick = async function() {
       isTeacher = true;
       teacherLoginDiv.classList.add("hidden");
       boardsPortalDiv.classList.remove("hidden");
+      studyBtn.classList.remove("hidden");
       loadBoardsPortal();
     } else {
       alert("That password didn't pop! Double-check your kernel key!");
@@ -706,11 +707,16 @@ teacherSignInBtn.onclick = async function() {
     await setDoc(teacherRef, { name: name, password: password, createdAt: serverTimestamp() });
     teacherLoginDiv.classList.add("hidden");
     boardsPortalDiv.classList.remove("hidden");
+    studyBtn.classList.remove("hidden");
     loadBoardsPortal();
   }
 };
 
-studyBtn.onclick = function() { window.open("study.html", "_blank"); };
+studyBtn.onclick = function() {
+  var url = "study.html";
+  if (teacherAccount) { url += "?teacher=" + encodeURIComponent(teacherAccount); }
+  window.open(url, "_blank");
+};
 
 if (studyBtnApp) {
   studyBtnApp.onclick = function() {
