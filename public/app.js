@@ -2,7 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import {
   getFirestore, collection, addDoc, onSnapshot, getDocs,
   serverTimestamp, query, orderBy, doc, updateDoc, deleteDoc,
-  increment, arrayUnion, arrayRemove, where, getDoc, setDoc
+  increment, arrayUnion, arrayRemove, where, getDoc, setDoc, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import {
   getStorage, ref, uploadBytes, getDownloadURL
@@ -57,6 +57,8 @@ let confusionPromptInterval = null;
 let seatingStudentsCache = {};
 let seatingSeatsCache = [];
 let draggingSeatId = null;
+let isDraggingBoards = false;
+let isDraggingPolls = false;
 let openSeatPopupId = null;
 let pollSectionCollapsed = false;
 let currentCarouselPollId = null;
@@ -918,11 +920,106 @@ function closeSimplePicker() {
   if (existing) { existing.remove(); }
 }
 
+// The poll carousel only ever shows one poll at a time (swipe-based), so
+// dragging a card directly within it would mean dragging something onto a
+// target the teacher can't see -- this opens a dedicated, always-fully-
+// visible vertical list of the active polls' questions instead, which the
+// teacher drags into the desired order; the carousel then reflects that
+// saved order (see activePollDocs.sort() in loadPolls()). Persists live
+// as each drag completes (wireDragReorder's own dragend handler), same as
+// the board list.
+function openPollReorderOverlay(pollDocs) {
+  closeSimplePicker();
+  var overlay = document.createElement("div");
+  overlay.id = "simplePickerOverlay";
+  overlay.className = "simple-picker-overlay";
+  overlay.onclick = function(e) { if (e.target === overlay) { closeSimplePicker(); } };
+  var card = document.createElement("div");
+  card.className = "simple-picker-card glass-specular";
+  var heading = document.createElement("h3");
+  heading.textContent = "Reorder Polls";
+  card.appendChild(heading);
+  var hint = document.createElement("p");
+  hint.className = "poll-reorder-hint";
+  hint.textContent = "Drag to set the order polls appear in.";
+  card.appendChild(hint);
+  var list = document.createElement("div");
+  list.className = "poll-reorder-list";
+  pollDocs.forEach(function(docSnap) {
+    var row = document.createElement("div");
+    row.className = "poll-reorder-row";
+    row.draggable = true;
+    row.setAttribute("data-poll-id", docSnap.id);
+    row.textContent = docSnap.data().question || "(untitled poll)";
+    list.appendChild(row);
+  });
+  card.appendChild(list);
+  wireDragReorder(list, ".poll-reorder-row", "data-poll-id", function(id) { return ["boards", currentBoardId, "polls", id]; }, function(v) { isDraggingPolls = v; });
+  var closeBtn = document.createElement("button");
+  closeBtn.type = "button";
+  closeBtn.className = "seat-map-modal-close";
+  closeBtn.textContent = "✕";
+  closeBtn.title = "Close";
+  closeBtn.onclick = function() { closeSimplePicker(); };
+  card.appendChild(closeBtn);
+  overlay.appendChild(card);
+  document.body.appendChild(overlay);
+}
+
 backToStudentsFromDashboard.onclick = function() {
   studentDashboardDiv.classList.add("hidden");
   studentsPortalDiv.classList.remove("hidden");
   loadStudentsPortal();
 };
+
+// Generic native-HTML5-drag reorder wiring for a vertical/grid list of
+// cards inside `container` (each already draggable="true" and carrying
+// `idAttr` with its Firestore doc id). On drop, persists the new order by
+// writing a fresh sequential `order` value to every card currently in the
+// list via one writeBatch commit -- Date.now()-based spacing so a brand
+// new item created later still sorts after everything just reordered.
+// `setDraggingFlag` is set true for the duration of the drag so the
+// list's own onSnapshot listener can skip rebuilding out from under the
+// gesture (both boardsList and the poll-reorder list are live-listener-
+// driven and fully rebuild on any matching write).
+function wireDragReorder(container, cardSelector, idAttr, pathFn, setDraggingFlag) {
+  var draggedEl = null;
+  container.addEventListener("dragstart", function(e) {
+    var card = e.target.closest(cardSelector);
+    if (!card || !container.contains(card)) { return; }
+    draggedEl = card;
+    setDraggingFlag(true);
+    e.dataTransfer.effectAllowed = "move";
+    card.classList.add("drag-ghost");
+  });
+  container.addEventListener("dragover", function(e) {
+    if (!draggedEl) { return; }
+    e.preventDefault();
+    var card = e.target.closest(cardSelector);
+    if (!card || card === draggedEl || !container.contains(card)) { return; }
+    var rect = card.getBoundingClientRect();
+    var before = (e.clientY - rect.top) < rect.height / 2;
+    container.insertBefore(draggedEl, before ? card : card.nextSibling);
+  });
+  container.addEventListener("dragend", async function() {
+    if (!draggedEl) { return; }
+    draggedEl.classList.remove("drag-ghost");
+    var cards = Array.prototype.slice.call(container.querySelectorAll(cardSelector));
+    var batch = writeBatch(db);
+    var base = Date.now();
+    cards.forEach(function(card, idx) {
+      batch.update(doc(db, ...pathFn(card.getAttribute(idAttr))), { order: base + idx });
+    });
+    draggedEl = null;
+    try { await batch.commit(); } finally { setDraggingFlag(false); }
+  });
+}
+// boardsList is a stable, module-scoped DOM node (see its const declaration
+// above) that persists across every loadBoardsPortal() call -- wiring the
+// delegated drag listeners once here, rather than inside loadBoardsPortal
+// itself (which re-runs on every portal visit), avoids stacking duplicate
+// listeners that would each fire their own batch write per drag.
+wireDragReorder(boardsList, ".board-card", "data-board-id", function(id) { return ["boards", id]; }, function(v) { isDraggingBoards = v; });
 
 async function loadBoardsPortal() {
   boardsList.innerHTML = "";
@@ -971,12 +1068,24 @@ async function loadBoardsPortal() {
     backToPortalBtn.classList.add("hidden");
     var q = query(collection(db, "boards"), where("teacherAccount", "==", teacherAccount));
     onSnapshot(q, function(snapshot) {
+      if (isDraggingBoards) { return; }
       boardsList.innerHTML = "";
       if (snapshot.empty) {
         boardsList.innerHTML = "<p style='text-align:center;margin-top:40px;'>No boards yet.</p>";
         return;
       }
-      snapshot.forEach(function(d) {
+      var boardDocs = [];
+      snapshot.forEach(function(d) { boardDocs.push(d); });
+      // No orderBy() in the query above (avoids needing a where+orderBy
+      // composite index) -- sorted client-side instead. Boards with no
+      // `order` yet (pre-existing, or never dragged) sort after everything
+      // that has one.
+      boardDocs.sort(function(a, b) {
+        var orderA = a.data().order; orderA = (orderA === undefined || orderA === null) ? Infinity : orderA;
+        var orderB = b.data().order; orderB = (orderB === undefined || orderB === null) ? Infinity : orderB;
+        return orderA - orderB;
+      });
+      boardDocs.forEach(function(d) {
         boardsList.appendChild(createBoardCard({ id: d.id, name: d.data().name, createdAt: d.data().createdAt }, false));
       });
     });
@@ -986,6 +1095,13 @@ async function loadBoardsPortal() {
 function createBoardCard(board, isMasterView) {
   var card = document.createElement("div");
   card.className = "board-card";
+  if (!isMasterView) {
+    // Drag-to-reorder is only meaningful in the teacher's own board list --
+    // the master-admin view groups boards across every teacher purely for
+    // administration, where a manual order has no clear owner.
+    card.draggable = true;
+    card.setAttribute("data-board-id", board.id);
+  }
   var info = document.createElement("div");
   info.className = "board-card-info";
   info.innerHTML = "<h3>" + board.name + "</h3><p>Created " + (board.createdAt ? new Date(board.createdAt.seconds * 1000).toLocaleDateString() : "recently") + "</p>";
@@ -1119,7 +1235,7 @@ createBoardBtn.onclick = async function() {
   var q = query(collection(db, "boards"), where("name", "==", boardName));
   var snapshot = await getDocs(q);
   if (!snapshot.empty) { alert("PopBoard name is already taken. Pick a fresh kernel!"); return; }
-  await addDoc(collection(db, "boards"), { name: boardName, teacherAccount: teacherAccount, createdAt: serverTimestamp() });
+  await addDoc(collection(db, "boards"), { name: boardName, teacherAccount: teacherAccount, createdAt: serverTimestamp(), order: Date.now() });
   newBoardNameInput.value = "";
 };
 
@@ -4914,12 +5030,14 @@ teacherBtn.addEventListener("click", function() {
           votes: Array(options.length).fill(0), voters: [], visible: false,
           imageUrl: imageUrl, history: [], correctIndices: correctIndices,
           requireAllCorrect: requireAll, responsesVisible: false,
-          correctVisible: false, pointsAwarded: false, createdAt: serverTimestamp()
+          correctVisible: false, pointsAwarded: false, createdAt: serverTimestamp(),
+          order: Date.now()
         });
       } else {
         await addDoc(collection(db, "boards", currentBoardId, "polls"), {
           question: question, type: currentPollType, responses: {}, visible: false,
-          responsesVisible: false, imageUrl: imageUrl, history: [], createdAt: serverTimestamp()
+          responsesVisible: false, imageUrl: imageUrl, history: [], createdAt: serverTimestamp(),
+          order: Date.now()
         });
       }
       pollCreation.classList.add("hidden");
@@ -5057,6 +5175,16 @@ async function loadPolls() {
         var hasInteraction = (p.history && p.history.length > 0) || (p.voters && p.voters.length > 0);
         return p.visible || !hasInteraction;
       });
+      // Within the active bucket, a teacher's manual drag-reorder (see the
+      // "Reorder Polls" list) takes over from the automatic priority sort
+      // above -- polls with no `order` yet (never dragged) sort to the end,
+      // falling back to that priority order among themselves since sort()
+      // is stable and they tie at Infinity.
+      activePollDocs.sort(function(a, b) {
+        var orderA = a.data().order; orderA = (orderA === undefined || orderA === null) ? Infinity : orderA;
+        var orderB = b.data().order; orderB = (orderB === undefined || orderB === null) ? Infinity : orderB;
+        return orderA - orderB;
+      });
       var archivedPollDocs = pollDocs.filter(function(d) {
         var p = d.data();
         var hasInteraction = (p.history && p.history.length > 0) || (p.voters && p.voters.length > 0);
@@ -5073,6 +5201,14 @@ async function loadPolls() {
         topToggleBtn.textContent = pollSectionCollapsed ? "▸ Show Polls" : "▾ Hide Polls";
         topToggleBtn.onclick = function() { pollSectionCollapsed = !pollSectionCollapsed; applyPollSectionCollapse(); };
         topRow.appendChild(topToggleBtn);
+        if (activePollDocs.length > 1) {
+          var reorderBtn = document.createElement("button");
+          reorderBtn.type = "button";
+          reorderBtn.className = "teacher-control subtle-toggle-btn";
+          reorderBtn.textContent = "⠿ Reorder Polls";
+          (function(docs) { reorderBtn.onclick = function() { openPollReorderOverlay(docs); }; })(activePollDocs);
+          topRow.appendChild(reorderBtn);
+        }
         pollSection.appendChild(topRow);
       }
 
