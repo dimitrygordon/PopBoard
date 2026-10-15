@@ -3418,12 +3418,12 @@ function refreshOpenSeatPopup() {
   if (openSeatPopupId) { openSeatPopup(openSeatPopupId); }
 }
 
-function positionSeatPopup(popup, seatId, canvasEl) {
+function positionSeatPopup(popup, seatId, canvasEl, popupWidthOverride) {
   document.body.appendChild(popup);
   var seatEl = canvasEl.querySelector('[data-seat-id="' + seatId + '"]');
   if (seatEl) {
     var r = seatEl.getBoundingClientRect();
-    var popupWidth = 240;
+    var popupWidth = popupWidthOverride || 240;
     var left = Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - popupWidth - 16);
     left = Math.max(16, left);
     popup.style.left = left + "px";
@@ -3672,46 +3672,9 @@ function wireJellyScroll() {
 }
 wireJellyScroll();
 
-function getStudentMCResponseText(poll, studentUsername) {
-  var options = poll.options || [];
-  if (poll.requireAllCorrect) {
-    var set = new Set();
-    (poll.history || []).forEach(function(h) {
-      if (h.username !== studentUsername) { return; }
-      var resp = h.response || "";
-      if (resp.indexOf("Voted: ") === 0) {
-        var idx = options.indexOf(resp.slice(7));
-        if (idx !== -1) { set.add(idx); }
-      } else if (resp.indexOf("Removed vote: ") === 0) {
-        var idx = options.indexOf(resp.slice(14));
-        if (idx !== -1) { set.delete(idx); }
-      }
-    });
-    var picked = Array.from(set).sort(function(a, b) { return a - b; }).map(function(idx) { return options[idx]; });
-    return picked.length ? picked.join(", ") : "(no current selection)";
-  }
-  var lastIdx = null;
-  (poll.history || []).forEach(function(h) {
-    if (h.username !== studentUsername) { return; }
-    var resp = h.response || "";
-    if (resp.indexOf("Changed vote: ") === 0) {
-      var toSep = resp.indexOf(" to ");
-      var optText = toSep === -1 ? "" : resp.slice(toSep + 4);
-      var idx = options.indexOf(optText);
-      if (idx !== -1) { lastIdx = idx; }
-    } else if (resp.indexOf("Voted: ") === 0) {
-      var idx = options.indexOf(resp.slice(7));
-      if (idx !== -1) { lastIdx = idx; }
-    } else if (resp.indexOf("Removed vote: ") === 0) {
-      lastIdx = null;
-    }
-  });
-  return lastIdx !== null ? options[lastIdx] : "(no current selection)";
-}
-
 function renderSeatResponsePopup(seatId, student) {
   var popup = document.createElement("div");
-  popup.className = "seat-popup glass-specular";
+  popup.className = "seat-popup glass-specular seat-response-popup";
 
   var closeBtn = document.createElement("button");
   closeBtn.type = "button";
@@ -3737,54 +3700,288 @@ function renderSeatResponsePopup(seatId, student) {
     statusLine.textContent = responded ? "✅ Responded" : "❌ No response yet";
     popup.appendChild(statusLine);
 
-    if (responded && poll) {
-      var entries = (poll.history || []).filter(function(h) { return h.username === student.username; });
-      if (poll.type === "mc") {
-        var respDiv = document.createElement("div");
-        respDiv.className = "seat-response-text";
-        respDiv.textContent = getStudentMCResponseText(poll, student.username);
-        popup.appendChild(respDiv);
-      } else if (poll.type === "free") {
-        var last = entries[entries.length - 1];
-        var respDiv = document.createElement("div");
-        respDiv.className = "seat-response-text";
-        respDiv.textContent = last ? last.response : "";
-        popup.appendChild(respDiv);
-      } else if (poll.type === "draw") {
-        var lastImg = entries.filter(function(e) { return e.imageUrl; }).slice(-1)[0];
-        if (lastImg) {
-          // Legacy (pre-pixel-grid-rework) submission -- still an uploaded image.
-          var img = document.createElement("img");
-          img.className = "seat-response-thumb";
-          img.src = lastImg.imageUrl;
-          (function(url) { img.onclick = function() { showImageLightbox(url); }; })(lastImg.imageUrl);
-          popup.appendChild(img);
-        } else {
-          // New-format drawing lives in its own subcollection doc, so this
-          // popup must stay synchronous (positionSeatPopup below is what
-          // actually attaches it to the DOM and wires its hover/outside-click
-          // close handlers -- an inline await here would delay the popup's
-          // very existence on every hover transition across seats). Fetch
-          // and append fire-and-forget once the popup is already live.
-          (function(pid, uname, popupEl) {
-            (async function() {
-              var q = query(collection(db, "boards", currentBoardId, "polls", pid, "drawings"), where("username", "==", uname));
-              var snap = await getDocs(q);
-              if (snap.empty) { return; }
-              var canvasEl = document.createElement("canvas");
-              canvasEl.className = "seat-response-thumb";
-              var pixels = snap.docs[snap.docs.length - 1].data().pixels;
-              renderPixelGridToCanvas(canvasEl, pixels);
-              (function(px) { canvasEl.onclick = function() { showPixelArtLightbox(px); }; })(pixels);
-              popupEl.appendChild(canvasEl);
-            })();
-          })(seatMapResponsePollId, student.username, popup);
-        }
-      }
+    // Editable, not just a read-out: the teacher can set or change this
+    // student's answer right here, writing with the student's own
+    // username so it's indistinguishable from the student having
+    // answered themselves (same Firestore shapes the real student flow uses).
+    if (poll && poll.type === "mc") {
+      renderTeacherMCEditor(popup, poll, seatMapResponsePollId, student);
+    } else if (poll && poll.type === "free") {
+      renderTeacherFreeEditor(popup, poll, seatMapResponsePollId, student);
+    } else if (poll && poll.type === "draw") {
+      renderTeacherDrawEditor(popup, poll, seatMapResponsePollId, student);
     }
   }
 
-  positionSeatPopup(popup, seatId, seatCanvas);
+  positionSeatPopup(popup, seatId, seatCanvas, 340);
+}
+
+function renderTeacherMCEditor(popup, poll, pollId, student) {
+  var options = poll.options || [];
+  var isMulti = !!poll.requireAllCorrect;
+  var entries = (poll.history || []).filter(function(h) { return h.username === student.username; });
+  var currentSet = isMulti ? computeFinalMCState(poll, entries, true) : null;
+  var currentIdx = isMulti ? null : computeFinalMCState(poll, entries, false);
+
+  var wrap = document.createElement("div");
+  wrap.className = "seat-response-editor";
+  options.forEach(function(optText, idx) {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "seat-response-option";
+    btn.textContent = optText;
+    var selected = isMulti ? currentSet.has(idx) : currentIdx === idx;
+    if (selected) { btn.classList.add("seat-response-option-selected"); }
+    btn.onclick = function() { teacherSetStudentMCVote(poll, pollId, student, idx, isMulti); };
+    wrap.appendChild(btn);
+  });
+  popup.appendChild(wrap);
+}
+
+// Mirrors the real student MC-vote flow (vote / change vote / remove vote,
+// same votes./voters/history Firestore shapes) but computes the "current
+// choice" directly from poll.history for the TARGET student instead of the
+// module-level myPollVotes map (which only ever tracks the logged-in
+// teacher's own, nonexistent, vote), and writes with student.username.
+async function teacherSetStudentMCVote(poll, pollId, student, optIndex, isMulti) {
+  var pollRef = doc(db, "boards", currentBoardId, "polls", pollId);
+  var entries = (poll.history || []).filter(function(h) { return h.username === student.username; });
+  var optText = (poll.options || [])[optIndex];
+  if (isMulti) {
+    var currentSet = computeFinalMCState(poll, entries, true);
+    if (currentSet.has(optIndex)) {
+      currentSet.delete(optIndex);
+      await updateDoc(pollRef, {
+        ["votes." + optIndex]: increment(-1),
+        voters: currentSet.size === 0 ? arrayRemove(student.username) : arrayUnion(student.username),
+        history: arrayUnion({ username: student.username, response: "Removed vote: " + optText, timestamp: Date.now() })
+      });
+    } else {
+      await updateDoc(pollRef, {
+        ["votes." + optIndex]: increment(1),
+        voters: arrayUnion(student.username),
+        history: arrayUnion({ username: student.username, response: "Voted: " + optText, timestamp: Date.now() })
+      });
+    }
+  } else {
+    var prevChoice = computeFinalMCState(poll, entries, false);
+    if (prevChoice === optIndex) {
+      await updateDoc(pollRef, {
+        ["votes." + optIndex]: increment(-1),
+        voters: arrayRemove(student.username),
+        history: arrayUnion({ username: student.username, response: "Removed vote: " + optText, timestamp: Date.now() })
+      });
+      await incrementStudentStat(student.id, "pollsCast", -1);
+    } else if (prevChoice === null) {
+      await updateDoc(pollRef, {
+        ["votes." + optIndex]: increment(1),
+        voters: arrayUnion(student.username),
+        history: arrayUnion({ username: student.username, response: "Voted: " + optText, timestamp: Date.now() })
+      });
+      await incrementStudentStat(student.id, "pollsCast", 1);
+    } else {
+      var prevOptText = (poll.options || [])[prevChoice];
+      await updateDoc(pollRef, {
+        ["votes." + optIndex]: increment(1),
+        ["votes." + prevChoice]: increment(-1),
+        history: arrayUnion({ username: student.username, response: "Changed vote: " + prevOptText + " to " + optText, timestamp: Date.now() })
+      });
+    }
+  }
+}
+
+function renderTeacherFreeEditor(popup, poll, pollId, student) {
+  var entries = (poll.history || []).filter(function(h) { return h.username === student.username; });
+  var last = entries[entries.length - 1];
+  var wrap = document.createElement("div");
+  wrap.className = "seat-response-editor";
+  var textarea = document.createElement("textarea");
+  textarea.className = "seat-response-textarea";
+  textarea.value = last ? last.response : "";
+  textarea.placeholder = "Enter an answer for this student...";
+  wrap.appendChild(textarea);
+  var saveBtn = document.createElement("button");
+  saveBtn.type = "button";
+  saveBtn.textContent = "Save Answer";
+  saveBtn.onclick = async function() {
+    var text = textarea.value.trim();
+    if (!text) { return; }
+    var hadPriorAnswer = entries.length > 0;
+    // The real student flow only ever allows one submission per poll, so
+    // "change their answer" here means replacing that single entry rather
+    // than accumulating a growing history of edits.
+    var newHistory = (poll.history || []).filter(function(h) { return h.username !== student.username; });
+    newHistory.push({ username: student.username, response: text, timestamp: Date.now() });
+    await updateDoc(doc(db, "boards", currentBoardId, "polls", pollId), { history: newHistory });
+    if (!hadPriorAnswer) { await incrementStudentStat(student.id, "pollsCast", 1); }
+  };
+  wrap.appendChild(saveBtn);
+  popup.appendChild(wrap);
+}
+
+// A smaller, self-contained pixel-canvas editor (reusing the same
+// DRAW_GRID_SIZE/DRAW_COLORS/stampLine/packGridToString globals the real
+// draw-poll flow uses) rather than factoring renderDrawPoll's full
+// toolbar+canvas out of that function -- that component is deeply closure-
+// coupled to its own poll card, and duplicating just the drawing mechanics
+// here keeps this new feature from risking any regression to the existing
+// student-facing draw flow. Brush size is fixed and there's no fullscreen
+// toggle, unlike the student-facing version, since this is a compact
+// in-popup editor, not the primary drawing experience.
+function renderTeacherDrawEditor(popup, poll, pollId, student) {
+  var wrap = document.createElement("div");
+  wrap.className = "seat-response-editor draw-container seat-response-draw";
+
+  var toolbar = document.createElement("div");
+  toolbar.className = "draw-toolbar";
+
+  var canvasWrapper = document.createElement("div");
+  canvasWrapper.className = "draw-canvas-wrapper";
+
+  var canvas = document.createElement("canvas");
+  canvas.className = "draw-canvas";
+  canvas.width = DRAW_GRID_SIZE;
+  canvas.height = DRAW_GRID_SIZE;
+  var ctx = canvas.getContext("2d");
+  var grid = new Uint8Array(DRAW_GRID_SIZE * DRAW_GRID_SIZE);
+  var imageData = ctx.createImageData(DRAW_GRID_SIZE, DRAW_GRID_SIZE);
+  for (var wi = 0; wi < imageData.data.length; wi++) { imageData.data[wi] = 255; }
+  ctx.putImageData(imageData, 0, 0);
+
+  var currentColorIndex = 1;
+  var erasing = false;
+  var brushSize = 6;
+
+  var colorBtns = DRAW_COLORS.map(function(c, i) {
+    var swatch = document.createElement("button");
+    swatch.type = "button";
+    swatch.className = "draw-color" + (i === 0 ? " draw-color-active" : "");
+    swatch.style.background = c;
+    swatch.onclick = function(e) {
+      e.stopPropagation();
+      erasing = false;
+      currentColorIndex = i + 1;
+      colorBtns.forEach(function(b) { b.classList.remove("draw-color-active"); });
+      eraserBtn.classList.remove("draw-tool-active");
+      swatch.classList.add("draw-color-active");
+    };
+    return swatch;
+  });
+  colorBtns.forEach(function(b) { toolbar.appendChild(b); });
+
+  var eraserBtn = document.createElement("button");
+  eraserBtn.type = "button";
+  eraserBtn.className = "draw-color draw-eraser-btn";
+  eraserBtn.innerHTML = ICONS.eraser;
+  eraserBtn.title = "Eraser";
+  eraserBtn.onclick = function(e) {
+    e.stopPropagation();
+    erasing = true;
+    colorBtns.forEach(function(b) { b.classList.remove("draw-color-active"); });
+    eraserBtn.classList.add("draw-tool-active");
+  };
+  toolbar.appendChild(eraserBtn);
+
+  var clearBtn = document.createElement("button");
+  clearBtn.type = "button";
+  clearBtn.className = "secondary-btn";
+  clearBtn.textContent = "Clear";
+  clearBtn.onclick = function(e) {
+    e.stopPropagation();
+    grid.fill(0);
+    for (var ci = 0; ci < imageData.data.length; ci++) { imageData.data[ci] = 255; }
+    ctx.putImageData(imageData, 0, 0);
+  };
+  toolbar.appendChild(clearBtn);
+
+  canvasWrapper.appendChild(canvas);
+
+  var submitBtn = document.createElement("button");
+  submitBtn.type = "button";
+  submitBtn.textContent = "Save Drawing";
+
+  var drawing = false;
+  var lastPoint = null;
+  function canvasPoint(e) {
+    var rect = canvas.getBoundingClientRect();
+    var scaleX = DRAW_GRID_SIZE / rect.width;
+    var scaleY = DRAW_GRID_SIZE / rect.height;
+    return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
+  }
+  function stampAndRedraw(from, to) {
+    stampLine(grid, imageData, from.x, from.y, to.x, to.y, brushSize, erasing ? 0 : currentColorIndex);
+    ctx.putImageData(imageData, 0, 0);
+  }
+  canvas.addEventListener("pointerdown", function(e) {
+    e.preventDefault();
+    drawing = true;
+    canvas.setPointerCapture(e.pointerId);
+    var p = canvasPoint(e);
+    lastPoint = p;
+    stampAndRedraw(p, p);
+  });
+  canvas.addEventListener("pointermove", function(e) {
+    if (!drawing) { return; }
+    var p = canvasPoint(e);
+    stampAndRedraw(lastPoint, p);
+    lastPoint = p;
+  });
+  function stopDrawing() { drawing = false; lastPoint = null; }
+  canvas.addEventListener("pointerup", stopDrawing);
+  canvas.addEventListener("pointercancel", stopDrawing);
+
+  (function(pid, uname, sb) {
+    sb.onclick = async function(e) {
+      e.stopPropagation();
+      sb.disabled = true;
+      sb.textContent = "Saving...";
+      try {
+        var hadPriorDrawing = (poll.history || []).some(function(h) { return h.username === uname; });
+        var pixelsString = packGridToString(grid);
+        await addDoc(collection(db, "boards", currentBoardId, "polls", pid, "drawings"), {
+          username: uname, pixels: pixelsString, timestamp: Date.now()
+        });
+        await updateDoc(doc(db, "boards", currentBoardId, "polls", pid), {
+          history: arrayUnion({ username: uname, response: "Submitted a drawing", timestamp: Date.now() })
+        });
+        if (!hadPriorDrawing) { await incrementStudentStat(student.id, "pollsCast", 1); }
+      } catch (err) {
+        console.error("Error saving drawing on student's behalf:", err);
+        alert("Something went wrong saving this drawing. Please try again.");
+        sb.disabled = false;
+        sb.textContent = "Save Drawing";
+      }
+    };
+  })(pollId, student.username, submitBtn);
+
+  wrap.appendChild(toolbar);
+  wrap.appendChild(canvasWrapper);
+  wrap.appendChild(submitBtn);
+  popup.appendChild(wrap);
+
+  // Preload the student's existing drawing (if any) into the editable grid,
+  // so "change their answer" starts from what's already there -- fire-and-
+  // forget, same reasoning as the old read-only popup's async drawing fetch:
+  // this must not delay the popup/canvas's own synchronous creation above.
+  (async function() {
+    var q = query(collection(db, "boards", currentBoardId, "polls", pollId, "drawings"), where("username", "==", student.username));
+    var snap = await getDocs(q);
+    if (snap.empty) { return; }
+    var pixelsString = snap.docs[snap.docs.length - 1].data().pixels;
+    var paletteRgb = DRAW_PALETTE.map(hexToRgb);
+    var total = DRAW_GRID_SIZE * DRAW_GRID_SIZE;
+    for (var i = 0; i < total && i < pixelsString.length; i++) {
+      var idx = parseInt(pixelsString[i], 16) || 0;
+      grid[i] = idx;
+      var rgb = paletteRgb[idx] || paletteRgb[0];
+      var o = i * 4;
+      imageData.data[o] = rgb.r;
+      imageData.data[o + 1] = rgb.g;
+      imageData.data[o + 2] = rgb.b;
+      imageData.data[o + 3] = 255;
+    }
+    ctx.putImageData(imageData, 0, 0);
+  })();
 }
 
 function openSeatPopup(seatId) {
