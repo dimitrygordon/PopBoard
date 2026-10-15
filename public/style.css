@@ -618,8 +618,18 @@ button.hide-toggle, .reply button.hide-toggle {
 .board-card-info .student-stats { font-size: 0.78rem; line-height: 1.5; margin-top: 8px; }
 .board-card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .board-card button { padding: 8px 16px; font-size: 0.85rem; }
-.board-card[draggable="true"] { cursor: grab; }
-.board-card.drag-ghost, .poll-reorder-row.drag-ghost { opacity: 0.4; cursor: grabbing; }
+.drag-reorder-card { cursor: grab; }
+.drag-reorder-card.drag-ghost {
+  cursor: grabbing; opacity: 0.95; box-shadow: var(--shadow-lg); pointer-events: none;
+}
+.drag-reorder-placeholder {
+  border-radius: 24px; border: 2px dashed var(--accent); background: transparent;
+}
+.poll-reorder-list .drag-reorder-placeholder { border-radius: 12px; }
+/* Belt-and-suspenders scroll lock while a reorder drag is in progress or
+   the poll-reorder overlay is open -- the actual fix for the drag itself
+   not working on touch is wireDragReorder's switch to Pointer Events. */
+body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 
 .class-aggregate-card { margin-bottom: 32px; border-color: var(--accent) !important; }
 .class-aggregate-card .board-card-info h3 { color: var(--accent); }
