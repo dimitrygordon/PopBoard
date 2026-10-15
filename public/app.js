@@ -3838,12 +3838,15 @@ function renderSeatResponsePopup(seatId, student) {
     // Editable, not just a read-out: the teacher can set or change this
     // student's answer right here, writing with the student's own
     // username so it's indistinguishable from the student having
-    // answered themselves (same Firestore shapes the real student flow uses).
-    if (poll && poll.type === "mc") {
+    // answered themselves (same Firestore shapes the real student flow
+    // uses). Display Mode reached "View on Seating Map" too (one of its
+    // curated controls), but it only ever gets the read-only status line
+    // above -- answering on a student's behalf stays teacher-only.
+    if (isTeacher && poll && poll.type === "mc") {
       renderTeacherMCEditor(popup, poll, seatMapResponsePollId, student);
-    } else if (poll && poll.type === "free") {
+    } else if (isTeacher && poll && poll.type === "free") {
       renderTeacherFreeEditor(popup, poll, seatMapResponsePollId, student);
-    } else if (poll && poll.type === "draw") {
+    } else if (isTeacher && poll && poll.type === "draw") {
       renderTeacherDrawEditor(popup, poll, seatMapResponsePollId, student);
     }
   }
@@ -4653,9 +4656,13 @@ function loadReplies(postId, container, parentVisible) {
         (function(url) { img.onclick = function() { showImageLightbox(url); }; })(r.imageUrl);
         div.appendChild(img);
       }
-      if (isTeacher) {
+      if (isTeacher || (isDisplayMode && r.visible)) {
         var actionsRow = document.createElement("div");
         actionsRow.className = "post-actions-row";
+        // Same one-way-hide rule as the top-level post toggle just above:
+        // Display Mode only gets this button while still visible, and
+        // once hidden it never renders again for Display Mode (the
+        // !r.visible && !isTeacher return above already drops it).
         var hBtn = document.createElement("button");
         setEyeLabelAnimated(hBtn, r.visible, "Shown", "Hidden");
         hBtn.className = "hide-toggle teacher-control";
@@ -4663,16 +4670,18 @@ function loadReplies(postId, container, parentVisible) {
           hBtn.onclick = async function() { await updateDoc(doc(db, "boards", currentBoardId, "replies", docId), { visible: !vis }); };
         })(d.id, r.visible);
         actionsRow.appendChild(hBtn);
-        var delBtn = document.createElement("button");
-        delBtn.innerHTML = iconLabel("trash", "Delete");
-        delBtn.className = "delete-btn teacher-control";
-        (function(docId) {
-          wireHoldToConfirmDelete(delBtn, delBtn.querySelector(".icon-svg"), async function() {
-            await animateSuckIntoTrash(div, delBtn);
-            await deleteDoc(doc(db, "boards", currentBoardId, "replies", docId));
-          });
-        })(d.id);
-        actionsRow.appendChild(delBtn);
+        if (isTeacher) {
+          var delBtn = document.createElement("button");
+          delBtn.innerHTML = iconLabel("trash", "Delete");
+          delBtn.className = "delete-btn teacher-control";
+          (function(docId) {
+            wireHoldToConfirmDelete(delBtn, delBtn.querySelector(".icon-svg"), async function() {
+              await animateSuckIntoTrash(div, delBtn);
+              await deleteDoc(doc(db, "boards", currentBoardId, "replies", docId));
+            });
+          })(d.id);
+          actionsRow.appendChild(delBtn);
+        }
         div.appendChild(actionsRow);
       }
       container.appendChild(div);
@@ -4778,7 +4787,13 @@ function loadPosts() {
         (function(url) { img.onclick = function() { showImageLightbox(url); }; })(post.imageUrl);
         div.appendChild(img);
       }
-      if (isTeacher) {
+      if (isTeacher || (isDisplayMode && post.visible)) {
+        // Display Mode only ever gets this button while the post is
+        // currently visible -- clicking it hides, and once hidden, no
+        // button renders for Display Mode at all (this re-render never
+        // reaches here, since !post.visible && !isTeacher already returns
+        // above), so Display Mode has no way to unhide it again. Only the
+        // teacher portal's Archived Comments section can.
         var hBtn = document.createElement("button");
         setEyeLabelAnimated(hBtn, post.visible, "Shown", "Hidden");
         hBtn.className = "hide-toggle teacher-control";
@@ -4794,6 +4809,8 @@ function loadPosts() {
           };
         })(postId, post.visible);
         div.querySelector(".post-actions-row").appendChild(hBtn);
+      }
+      if (isTeacher) {
         var delBtn = document.createElement("button");
         delBtn.innerHTML = iconLabel("trash", "Delete");
         delBtn.className = "delete teacher-control";
@@ -5275,7 +5292,36 @@ async function loadPolls() {
         var pollId = docSnap.id;
         var pollVisible = poll.visible !== undefined ? poll.visible : false;
 
-        if (!isTeacher && !pollVisible) { return; }
+        if (!isTeacher && !pollVisible) {
+          if (!isDisplayMode) { return; }
+          // Display Mode still gets a card here, but only the prompt --
+          // no image, no type-specific rendering (vote buttons/results/
+          // drawing canvas), no full controls block. Just enough to show
+          // something is coming and let Display Mode unhide it, via the
+          // same Shown/Hidden toggle the visible-poll branch below uses.
+          var promptOnlyDiv = document.createElement("div");
+          promptOnlyDiv.className = "poll";
+          promptOnlyDiv.dataset.pollId = pollId;
+          var promptOnlyQuestionEl = document.createElement("strong");
+          promptOnlyQuestionEl.textContent = poll.question;
+          promptOnlyDiv.appendChild(promptOnlyQuestionEl);
+          var promptOnlyControls = document.createElement("div");
+          promptOnlyControls.style.cssText = "margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;";
+          var promptOnlyToggleBtn = document.createElement("button");
+          promptOnlyToggleBtn.type = "button";
+          setEyeLabelAnimated(promptOnlyToggleBtn, pollVisible, "Shown", "Hidden");
+          promptOnlyToggleBtn.className = "hide-toggle teacher-control";
+          (function(pid, vis) {
+            promptOnlyToggleBtn.onclick = async function(e) {
+              e.stopPropagation();
+              await updateDoc(doc(db, "boards", currentBoardId, "polls", pid), { visible: !vis });
+            };
+          })(pollId, pollVisible);
+          promptOnlyControls.appendChild(promptOnlyToggleBtn);
+          promptOnlyDiv.appendChild(promptOnlyControls);
+          carouselTrack.appendChild(promptOnlyDiv);
+          return;
+        }
 
         // Restore vote state from history on reload
         if (!isTeacher && currentStudentId) {
@@ -5348,7 +5394,7 @@ async function loadPolls() {
         else if (poll.type === "mc") { renderMCPoll(div, poll, pollId, totalStudents); }
         else if (poll.type === "draw") { renderDrawPoll(div, poll, pollId, totalStudents); }
 
-        if (isTeacher) {
+        if (isTeacher || isDisplayMode) {
           var controlsDiv = document.createElement("div");
           controlsDiv.style.cssText = "margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;";
 
@@ -5376,7 +5422,7 @@ async function loadPolls() {
           })(pollId, poll.responsesVisible);
           controlsDiv.appendChild(rToggle);
 
-          if (poll.type === "mc" && poll.responsesVisible) {
+          if (isTeacher && poll.type === "mc" && poll.responsesVisible) {
             var cToggle = document.createElement("button");
             cToggle.type = "button";
             setEyeLabelAnimated(cToggle, poll.correctVisible, "Correct Shown", "Correct Hidden");
@@ -5430,17 +5476,19 @@ async function loadPolls() {
           })(pollId, poll);
           controlsDiv.appendChild(resetBtn);
 
-          var delBtn = document.createElement("button");
-          delBtn.type = "button";
-          delBtn.innerHTML = iconLabel("trash", "Delete");
-          delBtn.className = "delete-poll teacher-control";
-          (function(pid) {
-            wireHoldToConfirmDelete(delBtn, delBtn.querySelector(".icon-svg"), async function() {
-              await animateSuckIntoTrash(div, delBtn);
-              await deleteDoc(doc(db, "boards", currentBoardId, "polls", pid));
-            });
-          })(pollId);
-          controlsDiv.appendChild(delBtn);
+          if (isTeacher) {
+            var delBtn = document.createElement("button");
+            delBtn.type = "button";
+            delBtn.innerHTML = iconLabel("trash", "Delete");
+            delBtn.className = "delete-poll teacher-control";
+            (function(pid) {
+              wireHoldToConfirmDelete(delBtn, delBtn.querySelector(".icon-svg"), async function() {
+                await animateSuckIntoTrash(div, delBtn);
+                await deleteDoc(doc(db, "boards", currentBoardId, "polls", pid));
+              });
+            })(pollId);
+            controlsDiv.appendChild(delBtn);
+          }
           div.appendChild(controlsDiv);
         }
 
@@ -5834,7 +5882,9 @@ function renderFreePoll(div, poll, pollId, totalStudents) {
     pDiv.className = "poll-stat";
     pDiv.innerHTML = "<strong>🗳️ Responded: " + pct + "%</strong>";
     div.appendChild(pDiv);
+  }
 
+  if (isTeacher || isDisplayMode) {
     var kToggle = document.createElement("button");
     kToggle.type = "button";
     kToggle.className = "hide-toggle teacher-control";
@@ -5852,7 +5902,11 @@ function renderFreePoll(div, poll, pollId, totalStudents) {
     div.appendChild(renderKeywordMap(poll));
   }
 
-  if (isTeacher || poll.responsesVisible) {
+  // The poll log never shows for Display Mode -- unlike every other
+  // control on this card, Display Mode's new Responses Shown/Hidden
+  // toggle would otherwise leak it in via the `|| poll.responsesVisible`
+  // branch below, the same way it already does for a plain student.
+  if ((isTeacher || poll.responsesVisible) && !isDisplayMode) {
     var logDiv = document.createElement("div");
     logDiv.className = "poll-log";
     logDiv.innerHTML = "<strong>Poll Log:</strong>";
