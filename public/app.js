@@ -812,12 +812,16 @@ function enterSeatMapResponseView(pollId, pollQuestion) {
   loadSeatingMap();
 }
 
-// Clicking the dark backdrop around the popup card closes it too, like any
-// other modal -- guarded so this is a no-op in the Seats page's full-page
-// mode, where #seatingMap is never the actual click target behind its own
-// content anyway.
+// Clicking the dark backdrop closes whatever's open -- just the answer
+// popup if one is up (same as clicking anywhere else outside it, per
+// positionSeatPopup's closeOnAnyOutsideClick), or the whole seating-map
+// poll view if not. Guarded so this is a no-op in the Seats page's
+// full-page mode, where #seatingMap is never the actual click target
+// behind its own content anyway.
 seatingMapDiv.onclick = function(e) {
-  if (e.target === seatingMapDiv && seatMapResponsePollId) { exitSeatMapResponseView(); }
+  if (e.target !== seatingMapDiv) { return; }
+  if (openSeatPopupId) { closeSeatPopup(); return; }
+  if (seatMapResponsePollId) { exitSeatMapResponseView(); }
 };
 
 function exitSeatMapResponseView() {
@@ -3706,7 +3710,7 @@ function refreshOpenSeatPopup() {
   if (openSeatPopupId) { openSeatPopup(openSeatPopupId); }
 }
 
-function positionSeatPopup(popup, seatId, canvasEl, popupWidthOverride) {
+function positionSeatPopup(popup, seatId, canvasEl, popupWidthOverride, closeOnAnyOutsideClick) {
   document.body.appendChild(popup);
   var seatEl = canvasEl.querySelector('[data-seat-id="' + seatId + '"]');
   if (seatEl) {
@@ -3724,7 +3728,16 @@ function positionSeatPopup(popup, seatId, canvasEl, popupWidthOverride) {
   }
   setTimeout(function() {
     seatPopupOutsideClickHandler = function(e) {
-      if (!popup.contains(e.target) && !canvasEl.contains(e.target)) { closeSeatPopup(); }
+      // The teacher-answers-on-behalf popup wants ANY click outside its
+      // own box to dismiss it, including clicks on the seating grid
+      // itself (not just the dark backdrop) -- the other two uses of
+      // this popup (the editable seat-assignment popup, and the
+      // dashboard's confusion-detail popup) keep the original behavior
+      // of ignoring clicks elsewhere on the same canvas, since those are
+      // more often "look at another seat while this one stays open."
+      var outsidePopup = !popup.contains(e.target);
+      var outsideCanvas = closeOnAnyOutsideClick || !canvasEl.contains(e.target);
+      if (outsidePopup && outsideCanvas) { closeSeatPopup(); }
     };
     document.addEventListener("click", seatPopupOutsideClickHandler);
   }, 0);
@@ -3964,13 +3977,11 @@ function renderSeatResponsePopup(seatId, student) {
   var popup = document.createElement("div");
   popup.className = "seat-popup glass-specular seat-response-popup";
 
-  var closeBtn = document.createElement("button");
-  closeBtn.type = "button";
-  closeBtn.className = "seat-popup-close";
-  closeBtn.textContent = "✕";
-  closeBtn.onclick = function() { closeSeatPopup(); };
-  popup.appendChild(closeBtn);
-
+  // No explicit close button -- clicking anywhere outside this popup
+  // closes it (see positionSeatPopup's outside-click handler and the
+  // seatingMapDiv backdrop-click branch below, both of which now close
+  // just this popup rather than exiting the whole seating-map poll view
+  // while one is open).
   var title = document.createElement("h4");
   title.textContent = student ? (student.nickname || student.username) : "Unassigned seat";
   popup.appendChild(title);
@@ -4004,7 +4015,7 @@ function renderSeatResponsePopup(seatId, student) {
     }
   }
 
-  positionSeatPopup(popup, seatId, seatCanvas, 340);
+  positionSeatPopup(popup, seatId, seatCanvas, 340, true);
 }
 
 function renderTeacherMCEditor(popup, poll, pollId, student) {
