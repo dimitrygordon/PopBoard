@@ -1778,8 +1778,31 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
   background: var(--bg-secondary); border: 2px solid var(--border-color);
 }
 .raise-hand-icon { display: block; transition: transform 0.2s ease; }
-#raiseHandBtn.hand-is-raised { border-color: transparent; box-shadow: 0 0 0 2px var(--accent); }
-#raiseHandBtn.hand-is-raised .raise-hand-icon { transform: translateY(-6px) rotate(4deg); }
+/* The glow used to only ever show behind/around the button (the ::after
+   above); the button's own circular background now carries the same
+   animated rainbow for as long as the hand stays raised too, so the color
+   actually fills the inside of the circle the icon sits in -- matching
+   the brief "fills the inside" look the ::after's blur already gives at
+   the instant hand-raise-pop fires, just made to persist instead of
+   fading back to a flat fill once that one-shot animation ends. */
+#raiseHandBtn.hand-is-raised {
+  border-color: transparent; box-shadow: 0 0 0 2px var(--accent);
+  background: conic-gradient(red, orange, yellow, green, blue, violet, red);
+  animation: hand-raise-fill-pulse 3s linear infinite;
+}
+/* A dedicated keyframe, not a reuse of hand-raise-glow-pulse -- that one
+   also blurs and scales, which is right for a soft ambient glow behind
+   the button but would blur the button's own icon and visibly resize a
+   real interactive element. This only cycles the gradient's hue. */
+@keyframes hand-raise-fill-pulse {
+  from { filter: hue-rotate(0deg); }
+  to { filter: hue-rotate(360deg); }
+}
+#raiseHandBtn.hand-is-raised .raise-hand-icon {
+  transform: translateY(-6px) rotate(4deg);
+  color: #fff;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.55));
+}
 /* Click-commit lift: applied to the INNER icon span, never the button
    itself -- every <button> already gets a generic .motion-pop scale/
    brightness pop for free from the document-level capture-phase click

@@ -1313,6 +1313,24 @@ function applyClassSessionUI() {
   if (isTeacher) { updateDailyDashboard(); renderClassConfusionTimelineRows(); }
 }
 
+// Clears every student's CURRENT confusion state back to neutral -- a
+// presentation-layer reset only. confusionHistory (the permanent record,
+// already session-window-bounded via buildSessionWindows()) is never
+// touched, so nothing recorded during a live session is ever lost; this
+// just stops a state set before the toggle from visually lingering into
+// the next one, on both the student's own indicator and the dashboard
+// seat map (both already react live to confusionState via their own
+// onSnapshot listeners -- no rendering changes needed, only this write).
+async function resetAllStudentsConfusionState(boardId) {
+  var studentsSnap = await getDocs(collection(db, "boards", boardId, "students"));
+  if (studentsSnap.empty) { return; }
+  var batch = writeBatch(db);
+  studentsSnap.forEach(function(d) {
+    batch.update(doc(db, "boards", boardId, "students", d.id), { confusionState: null, confusionSetAt: null });
+  });
+  await batch.commit();
+}
+
 classSessionToggleBtn.onclick = async function() {
   if (!currentBoardId) { return; }
   var now = Date.now();
@@ -1335,6 +1353,7 @@ classSessionToggleBtn.onclick = async function() {
     // window's start forward is enough; no data is ever deleted.
     await updateDoc(boardRef, { classSessionActive: true, classSessionStartAt: now, classSessionEndAt: null });
   }
+  await resetAllStudentsConfusionState(currentBoardId);
 };
 
 leaderboardVisibilityBtn.onclick = async function() {
