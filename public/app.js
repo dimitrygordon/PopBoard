@@ -913,11 +913,17 @@ function openSimplePicker(title, items, getLabel, onPick) {
   card.appendChild(closeBtn);
   overlay.appendChild(card);
   document.body.appendChild(overlay);
+  // Belt-and-suspenders against background scroll leaking through behind
+  // the modal (the actual reorder-drag bug was fixed by replacing native
+  // HTML5 drag with Pointer Events below, but locking the page while any
+  // modal like this is open is correct regardless).
+  document.body.classList.add("simple-picker-open");
 }
 
 function closeSimplePicker() {
   var existing = document.getElementById("simplePickerOverlay");
   if (existing) { existing.remove(); }
+  document.body.classList.remove("simple-picker-open");
 }
 
 // The poll carousel only ever shows one poll at a time (swipe-based), so
@@ -947,8 +953,7 @@ function openPollReorderOverlay(pollDocs) {
   list.className = "poll-reorder-list";
   pollDocs.forEach(function(docSnap) {
     var row = document.createElement("div");
-    row.className = "poll-reorder-row";
-    row.draggable = true;
+    row.className = "poll-reorder-row drag-reorder-card";
     row.setAttribute("data-poll-id", docSnap.id);
     row.textContent = docSnap.data().question || "(untitled poll)";
     list.appendChild(row);
@@ -964,6 +969,7 @@ function openPollReorderOverlay(pollDocs) {
   card.appendChild(closeBtn);
   overlay.appendChild(card);
   document.body.appendChild(overlay);
+  document.body.classList.add("simple-picker-open");
 }
 
 backToStudentsFromDashboard.onclick = function() {
@@ -972,47 +978,181 @@ backToStudentsFromDashboard.onclick = function() {
   loadStudentsPortal();
 };
 
-// Generic native-HTML5-drag reorder wiring for a vertical/grid list of
-// cards inside `container` (each already draggable="true" and carrying
-// `idAttr` with its Firestore doc id). On drop, persists the new order by
-// writing a fresh sequential `order` value to every card currently in the
-// list via one writeBatch commit -- Date.now()-based spacing so a brand
-// new item created later still sorts after everything just reordered.
-// `setDraggingFlag` is set true for the duration of the drag so the
-// list's own onSnapshot listener can skip rebuilding out from under the
-// gesture (both boardsList and the poll-reorder list are live-listener-
-// driven and fully rebuild on any matching write).
+// Generic press-and-drag reorder wiring for a vertical list of cards
+// inside `container` (each carrying `idAttr` with its Firestore doc id).
+// Built on Pointer Events (not the HTML5 Drag and Drop API) because native
+// `draggable` drags are mouse-only -- on a touchscreen, pressing and
+// moving a `draggable=true` element never fires a drag at all, and the
+// browser falls back to its default touch-scroll instead, which is
+// exactly the "it scrolls the page behind the popup" bug this replaces.
+// Pointer Events fire uniformly for mouse/touch/pen, so one implementation
+// covers both, and `touch-action` is toggled on the pressed card at
+// pointerdown time (before any move), which is what actually suppresses
+// the browser's native touch-scroll for that gesture.
+//
+// Technique: a plain pressed-and-moved-past-threshold gesture lifts the
+// card to `position:fixed` (so it tracks the pointer exactly) and leaves a
+// same-sized placeholder in its place in the flow. As the pointer crosses
+// a neighboring card's midpoint, the placeholder swaps past that
+// neighbor in the DOM -- every other card is normal flow-positioned, so
+// this alone makes them "shift to fit the new spot" immediately; a FLIP
+// transform (capture each sibling's rect before the swap, then transition
+// from the resulting visual offset back to zero) makes that reflow slide
+// smoothly instead of snapping, which is what makes it read as "live"
+// rather than an instant jump cut. On release, the card drops into the
+// placeholder's slot and a fresh sequential `order` value is written to
+// every doc in the list's current order via one writeBatch commit.
 function wireDragReorder(container, cardSelector, idAttr, pathFn, setDraggingFlag) {
-  var draggedEl = null;
-  container.addEventListener("dragstart", function(e) {
+  var DRAG_THRESHOLD = 6;
+  var pointerId = null;
+  var pressedCard = null;
+  var activeCard = null;
+  var placeholder = null;
+  var dragging = false;
+  var startX = 0, startY = 0;
+  var grabOffsetX = 0, grabOffsetY = 0;
+  var cardWidth = 0, cardHeight = 0;
+  var suppressNextClick = false;
+
+  function cardsInOrder() {
+    return Array.prototype.slice.call(container.querySelectorAll(cardSelector));
+  }
+
+  // A real drag (even a small one, just past the threshold) can end with
+  // the pointer back over a card's own clickable area (e.g. its "Enter"
+  // navigation) -- swallow exactly one click after any such drag so it
+  // never also fires that card's normal click action.
+  container.addEventListener("click", function(e) {
+    if (suppressNextClick) { suppressNextClick = false; e.preventDefault(); e.stopPropagation(); }
+  }, true);
+
+  // FLIP: snapshot every sibling's current rect, run `mutate` (a DOM
+  // reorder), then offset each sibling that actually moved back to its
+  // pre-mutate screen position and transition it to zero -- a smooth
+  // slide instead of the instant snap a raw reflow would otherwise show.
+  function animateReflow(mutate) {
+    var cards = cardsInOrder().filter(function(c) { return c !== activeCard; });
+    var before = cards.map(function(c) { return c.getBoundingClientRect(); });
+    mutate();
+    cards.forEach(function(c, i) {
+      var after = c.getBoundingClientRect();
+      var dy = before[i].top - after.top;
+      if (Math.abs(dy) < 0.5) { return; }
+      c.style.transition = "none";
+      c.style.transform = "translateY(" + dy + "px)";
+      requestAnimationFrame(function() {
+        c.style.transition = "transform 160ms ease";
+        c.style.transform = "";
+      });
+    });
+  }
+
+  function onPointerDown(e) {
+    if (e.target.closest("button, a, input, textarea, select")) { return; }
     var card = e.target.closest(cardSelector);
     if (!card || !container.contains(card)) { return; }
-    draggedEl = card;
+    pressedCard = card;
+    pointerId = e.pointerId;
+    startX = e.clientX;
+    startY = e.clientY;
+    dragging = false;
+    // Set before any move is seen -- this is what actually tells the
+    // browser not to start its own touch-scroll for this press.
+    card.style.touchAction = "none";
+    document.addEventListener("pointermove", onPointerMove);
+    document.addEventListener("pointerup", onPointerUp);
+    document.addEventListener("pointercancel", onPointerUp);
+  }
+
+  function beginDrag() {
+    dragging = true;
+    activeCard = pressedCard;
     setDraggingFlag(true);
-    e.dataTransfer.effectAllowed = "move";
-    card.classList.add("drag-ghost");
-  });
-  container.addEventListener("dragover", function(e) {
-    if (!draggedEl) { return; }
+    document.body.classList.add("drag-reorder-active");
+    var rect = activeCard.getBoundingClientRect();
+    cardWidth = rect.width;
+    cardHeight = rect.height;
+    grabOffsetX = startX - rect.left;
+    grabOffsetY = startY - rect.top;
+
+    placeholder = document.createElement("div");
+    placeholder.className = "drag-reorder-placeholder";
+    placeholder.style.height = cardHeight + "px";
+    container.insertBefore(placeholder, activeCard);
+
+    activeCard.classList.add("drag-ghost");
+    activeCard.style.position = "fixed";
+    activeCard.style.left = rect.left + "px";
+    activeCard.style.top = rect.top + "px";
+    activeCard.style.width = cardWidth + "px";
+    activeCard.style.zIndex = "10001";
+    activeCard.style.margin = "0";
+    document.body.appendChild(activeCard);
+  }
+
+  function onPointerMove(e) {
+    if (e.pointerId !== pointerId) { return; }
+    if (!dragging) {
+      var dx = e.clientX - startX, dy = e.clientY - startY;
+      if (Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) { return; }
+      beginDrag();
+    }
     e.preventDefault();
-    var card = e.target.closest(cardSelector);
-    if (!card || card === draggedEl || !container.contains(card)) { return; }
-    var rect = card.getBoundingClientRect();
-    var before = (e.clientY - rect.top) < rect.height / 2;
-    container.insertBefore(draggedEl, before ? card : card.nextSibling);
-  });
-  container.addEventListener("dragend", async function() {
-    if (!draggedEl) { return; }
-    draggedEl.classList.remove("drag-ghost");
-    var cards = Array.prototype.slice.call(container.querySelectorAll(cardSelector));
+    activeCard.style.left = (e.clientX - grabOffsetX) + "px";
+    activeCard.style.top = (e.clientY - grabOffsetY) + "px";
+
+    var pointerY = e.clientY;
+    var siblings = cardsInOrder().filter(function(c) { return c !== activeCard; });
+    var target = null;
+    for (var i = 0; i < siblings.length; i++) {
+      var r = siblings[i].getBoundingClientRect();
+      if (pointerY < r.top + r.height / 2) { target = siblings[i]; break; }
+    }
+    var currentNext = placeholder.nextSibling;
+    var alreadyInPlace = target ? currentNext === target : currentNext === null;
+    if (!alreadyInPlace) {
+      animateReflow(function() {
+        if (target) { container.insertBefore(placeholder, target); }
+        else { container.appendChild(placeholder); }
+      });
+    }
+  }
+
+  async function onPointerUp(e) {
+    if (e.pointerId !== pointerId) { return; }
+    document.removeEventListener("pointermove", onPointerMove);
+    document.removeEventListener("pointerup", onPointerUp);
+    document.removeEventListener("pointercancel", onPointerUp);
+    if (pressedCard) { pressedCard.style.touchAction = ""; }
+    pointerId = null;
+    if (!dragging) { pressedCard = null; return; }
+    suppressNextClick = true;
+
+    container.insertBefore(activeCard, placeholder);
+    placeholder.remove();
+    placeholder = null;
+    activeCard.classList.remove("drag-ghost");
+    activeCard.style.position = "";
+    activeCard.style.left = "";
+    activeCard.style.top = "";
+    activeCard.style.width = "";
+    activeCard.style.zIndex = "";
+    activeCard.style.margin = "";
+    document.body.classList.remove("drag-reorder-active");
+
+    var cards = cardsInOrder();
     var batch = writeBatch(db);
     var base = Date.now();
     cards.forEach(function(card, idx) {
       batch.update(doc(db, ...pathFn(card.getAttribute(idAttr))), { order: base + idx });
     });
-    draggedEl = null;
+    dragging = false;
+    pressedCard = null;
+    activeCard = null;
     try { await batch.commit(); } finally { setDraggingFlag(false); }
-  });
+  }
+
+  container.addEventListener("pointerdown", onPointerDown);
 }
 // boardsList is a stable, module-scoped DOM node (see its const declaration
 // above) that persists across every loadBoardsPortal() call -- wiring the
@@ -1099,7 +1239,7 @@ function createBoardCard(board, isMasterView) {
     // Drag-to-reorder is only meaningful in the teacher's own board list --
     // the master-admin view groups boards across every teacher purely for
     // administration, where a manual order has no clear owner.
-    card.draggable = true;
+    card.classList.add("drag-reorder-card");
     card.setAttribute("data-board-id", board.id);
   }
   var info = document.createElement("div");
