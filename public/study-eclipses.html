@@ -55,7 +55,7 @@ button,input{font-family:inherit;}
 .bar-bottom{bottom:0;}
 .bar button{pointer-events:auto;background:none;border:none;color:#0A84FF;font-size:15px;cursor:pointer;padding:4px 2px;}
 .bar button:active{opacity:0.6;}
-.bar-top .bar-center{position:absolute;left:50%;transform:translateX(-50%);}
+.bar-top .bar-center, .bar-bottom .bar-center{position:absolute;left:50%;transform:translateX(-50%);}
 
 /* ---------- status banner ---------- */
 #statusBanner{
@@ -86,6 +86,42 @@ button,input{font-family:inherit;}
 .panel-link{display:block;text-align:center;color:#0A84FF;font-size:13px;margin-top:12px;cursor:pointer;background:none;border:none;width:100%;padding:4px;}
 .panel-link:active{opacity:0.6;}
 .panel-section-title{text-align:center;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#6e6e73;margin:16px 0 8px;}
+
+/* ---------- scale toggle / eclipse presets / scrub (Controls panel) ---------- */
+.seg-row{display:flex;gap:6px;margin-bottom:16px;}
+.seg-btn{flex:1;padding:8px 4px;border-radius:8px;border:1px solid var(--border-lit);background:var(--panel-2);
+  color:var(--text-dim);font-size:11.5px;text-align:center;cursor:pointer;}
+.seg-btn.active{background:var(--amber-dim);color:#fff;border-color:var(--amber);}
+.seg-btn:active{opacity:0.7;}
+.preset-group-label{font-size:10px;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-dimmer);margin:10px 0 4px;}
+.preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.preset-btn{padding:8px 6px;border-radius:8px;border:1px solid var(--border-lit);background:var(--panel-2);
+  color:var(--text);font-size:11px;text-align:center;cursor:pointer;line-height:1.3;}
+.preset-btn:active{opacity:0.6;}
+.scrub-row{display:flex;align-items:center;gap:8px;}
+.scrub-step-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border-lit);background:var(--panel-2);
+  color:#fff;font-size:15px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.scrub-step-btn:active{opacity:0.6;}
+
+/* ---------- collapsible side-profile shadow diagram ---------- */
+#diagramDock{
+  position:fixed;left:50%;bottom:50px;transform:translateX(-50%);z-index:58;
+  width:min(94vw,640px);
+  background:rgba(15,18,22,0.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--border-lit);border-bottom:none;border-radius:14px 14px 0 0;
+  overflow:hidden;transition:height 0.25s ease;
+  display:flex;flex-direction:column;
+}
+#diagramHeader{
+  flex-shrink:0;padding:8px 14px;text-align:center;cursor:pointer;
+  font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-dim);
+  border-bottom:1px solid var(--border);
+}
+#diagramHeader:active{opacity:0.7;}
+#diagramDock.collapsed{height:34px;}
+#diagramDock.collapsed #diagramHeader{border-bottom:none;}
+#diagramDock:not(.collapsed){height:230px;}
+#diagramCanvas{display:block;width:100%;flex:1;min-height:0;touch-action:none;}
 
 input[type="range"]{
   -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:#48484a;outline:none;margin:0;
@@ -135,6 +171,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 </div>
 <div class="bar bar-bottom">
   <button id="tutorialBtn">Tutorial</button>
+  <button id="diagramToggleBtn" class="bar-center">Diagram &#9662;</button>
   <button id="viewToggleBtn">Ground View</button>
 </div>
 
@@ -149,6 +186,13 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 </div>
 
 <div id="controlsPanel" class="panel hidden" style="top:56px;left:18px;"></div>
+
+<div id="diagramDock">
+  <div id="diagramHeader">
+    <span id="diagramHeaderLabel">Shadow Diagram</span>
+  </div>
+  <canvas id="diagramCanvas"></canvas>
+</div>
 
 <div id="tutorialModal" class="modal-overlay hidden"></div>
 
@@ -181,7 +225,7 @@ var EARTH_ORBIT_DAYS = 365.25;
 var MOON_ORBIT_DAYS = 27.321661; // sidereal month
 
 // Slider ranges, in the same real-world km/degree units.
-var RANGE = {
+var RANGE_REAL = {
   sunRadius: { min: 100000, max: 1400000 },
   earthRadius: { min: 2000, max: 15000 },
   moonRadius: { min: 400, max: 5500 },
@@ -190,6 +234,37 @@ var RANGE = {
   inclinationDeg: { min: 0, max: 20 },
   timeScale: { min: 0, max: 30 } // simulated days per real second
 };
+
+// "Visualizer scale" -- a second preset that is deliberately NOT
+// proportional to reality. Real distances (the Moon ~60 Earth-radii out,
+// the Sun ~23,000) can never all fit on screen at once, which is why the
+// default (real) view opens zoomed in on Earth alone and treats finding
+// the Moon and Sun as a discovery arc. This preset instead compresses
+// distances enough that Sun, Earth, and Moon are all visible together at
+// a sane default zoom, and nudges the Moon slightly larger relative to
+// Earth than reality so eclipses read clearly -- purely for legibility,
+// not accuracy. Every mechanic (classification, presets, ground view,
+// scrubbing) runs off the exact same pure math either way, since that
+// math only ever cares about the ratios between whatever params are set,
+// never this app's own idea of which preset is "real."
+var VISUAL = {
+  sunRadius: 30000,
+  earthRadius: 9000,
+  moonRadius: 4000,
+  earthSunDistance: 500000,
+  earthMoonDistance: 50000,
+  inclinationDeg: 5.145
+};
+var RANGE_VISUAL = {
+  sunRadius: { min: 5000, max: 150000 },
+  earthRadius: { min: 2000, max: 20000 },
+  moonRadius: { min: 500, max: 15000 },
+  earthSunDistance: { min: 80000, max: 3000000 },
+  earthMoonDistance: { min: 10000, max: 300000 },
+  inclinationDeg: { min: 0, max: 20 },
+  timeScale: { min: 0, max: 30 }
+};
+var RANGE = RANGE_REAL;
 
 // 1 scene unit = this many km -- keeps world-space numbers in a range
 // WebGL's float32 pipeline handles cleanly (hundreds of thousands,
@@ -339,6 +414,15 @@ var SOLAR_LABELS = {
 var LUNAR_LABELS = {
   total: "Total Lunar Eclipse", partial: "Partial Lunar Eclipse", penumbral: "Penumbral Lunar Eclipse", none: null
 };
+// Whichever cycle (new moon -> solar geometry, full moon -> lunar
+// geometry) the Moon is currently closer to -- shared by the status
+// banner's "why not" fallback and the side-profile diagram's choice of
+// which alignment to draw.
+function nearerCycle(geom) {
+  var newMoonSep = radToDeg(angleBetween(vSub(geom.moonPos, geom.earthPos), vSub(geom.sunPos, geom.earthPos)));
+  return newMoonSep < 90 ? "solar" : "lunar";
+}
+
 function describeStatus(geom) {
   var solar = classifySolarEclipse(geom);
   var lunar = classifyLunarEclipse(geom);
@@ -351,14 +435,152 @@ function describeStatus(geom) {
       reason: "Moon is " + lunar.deltaFromAntiSunDeg.toFixed(2) + "° from dead-center in Earth's shadow" };
   }
   // Explain why not, using whichever cycle (new/full moon) is closer right now.
-  var newMoonSep = radToDeg(angleBetween(vSub(geom.moonPos, geom.earthPos), vSub(geom.sunPos, geom.earthPos)));
-  var fullMoonSep = 180 - newMoonSep;
-  if (newMoonSep < fullMoonSep) {
+  if (nearerCycle(geom) === "solar") {
     return { active: false, kind: "solar", type: "none", label: "No Eclipse This Cycle",
       reason: "Moon is " + solar.deltaFromAxisDeg.toFixed(1) + "° off-axis at new moon -- too far from its node" };
   }
   return { active: false, kind: "lunar", type: "none", label: "No Eclipse This Cycle",
     reason: "Moon is " + lunar.deltaFromAntiSunDeg.toFixed(1) + "° off-axis at full moon -- too far from its node" };
+}
+
+/* ============================================================
+   Eclipse-type presets -- "jump to a moment that demonstrates this
+   type." Pure, testable search: for a given (kind, type) and the
+   CURRENT params (any slider values, either scale mode), find the
+   simDays + earthMoonDistance that best demonstrates it.
+
+   Key simplification: whether a given type is even POSSIBLE is almost
+   entirely a function of earthMoonDistance and the current radii, not
+   of simDays -- the umbra/antumbra radius at Earth (or at the Moon, for
+   lunar) barely changes as Earth orbits (earthMoonDistance is tiny next
+   to earthSunDistance), so distance and day are near-separable: first
+   pick a distance that makes the type's radius-condition true, then
+   search days for the closest alignment at that distance. Distance
+   candidates always try the CURRENT slider value first, so a preset
+   never moves a slider the user hasn't effectively already set. ---------- */
+var PRESET_DAY_SCAN_DAYS = 800; // several draconic "eclipse seasons" (~173 days apart)
+var PRESET_DAY_SCAN_STEP = 0.25;
+var PRESET_DAY_REFINE_STEP = 0.01;
+
+function geometryAtDistance(dist, dayOverride) {
+  var p = { sunRadius: params.sunRadius, earthRadius: params.earthRadius, moonRadius: params.moonRadius,
+    earthSunDistance: params.earthSunDistance, earthMoonDistance: dist, inclinationDeg: params.inclinationDeg };
+  return computeGeometry(p, dayOverride);
+}
+
+// Signed "how deep inside this type's region" margin -- used only to
+// pick the single best day among same-type matches (bigger = more
+// clearly that type, i.e. closer to dead-center for total/annular/
+// hybrid/total-lunar, or closer to the middle of its own band for the
+// partial/penumbral fallback types).
+function marginForType(kind, type, geom) {
+  if (kind === "solar") {
+    var s = classifySolarEclipse(geom);
+    if (s.type !== type) { return null; }
+    if (type === "total" || type === "hybrid") { return s.umbraRadiusAtEarthKm - s.earthOffsetFromAxisKm; }
+    if (type === "annular") { return -s.umbraRadiusAtEarthKm - s.earthOffsetFromAxisKm; }
+    return s.penumbraRadiusAtEarthKm - s.earthOffsetFromAxisKm; // partial
+  }
+  var l = classifyLunarEclipse(geom);
+  if (l.type !== type) { return null; }
+  if (type === "total") { return l.umbraRadiusAtMoonKm - l.impactParamKm; }
+  if (type === "partial") { return l.umbraRadiusAtMoonKm + (l.penumbraRadiusAtMoonKm - l.umbraRadiusAtMoonKm) / 2 - l.impactParamKm; }
+  return l.penumbraRadiusAtMoonKm - l.impactParamKm; // penumbral
+}
+
+// Coarse-then-fine scan over simDays at a fixed earthMoonDistance.
+// Returns { day, margin } for the best-matching day, or null if that
+// type never occurs across the scan window at this distance.
+function bestDayForDistance(kind, type, dist) {
+  var bestDay = null, bestMargin = -Infinity;
+  for (var d = 0; d <= PRESET_DAY_SCAN_DAYS; d += PRESET_DAY_SCAN_STEP) {
+    var geom = geometryAtDistance(dist, d);
+    var m = marginForType(kind, type, geom);
+    if (m !== null && m > bestMargin) { bestMargin = m; bestDay = d; }
+  }
+  if (bestDay === null) { return null; }
+  // Refine in a tight window around the coarse winner.
+  var lo = Math.max(0, bestDay - PRESET_DAY_SCAN_STEP), hi = bestDay + PRESET_DAY_SCAN_STEP;
+  for (var d2 = lo; d2 <= hi; d2 += PRESET_DAY_REFINE_STEP) {
+    var geom2 = geometryAtDistance(dist, d2);
+    var m2 = marginForType(kind, type, geom2);
+    if (m2 !== null && m2 > bestMargin) { bestMargin = m2; bestDay = d2; }
+  }
+  return { day: bestDay, margin: bestMargin };
+}
+
+// Analytic anchor distances -- "where would the radius condition for
+// this type actually hold," derived from the umbra apex (the distance
+// at which the umbra cone converges to a point). For the lunar case the
+// occluder-to-light distance (earthSunDistance) doesn't depend on the
+// very thing we're solving for, so the plain formula is exact. For the
+// solar case it does: the Moon sits between Sun and Earth, so
+// sunMoonDistance = earthSunDistance - earthMoonDistance -- and
+// earthMoonDistance is the apex distance we're looking for. At real
+// scale that self-reference is negligible (earthMoonDistance is ~0.26%
+// of earthSunDistance) but at a compressed "visualizer" scale it isn't,
+// so this solves it self-consistently: letting k = rOcc/(rLight-rOcc),
+// apex = k*lightOccluderDistance/(1+k) is the exact fixed point of
+// apex = rOcc*(lightOccluderDistance-apex)/(rLight-rOcc).
+function apexDistanceKm(rLight, rOcc, lightOccluderDistance, selfReferential) {
+  var denom = rLight - rOcc;
+  if (denom <= 0) { return Infinity; }
+  var k = rOcc / denom;
+  return selfReferential ? (k * lightOccluderDistance / (1 + k)) : (k * lightOccluderDistance);
+}
+function clampToRange(v, range) { return Math.max(range.min, Math.min(range.max, v)); }
+
+function candidateDistancesFor(kind, type) {
+  var range = RANGE.earthMoonDistance;
+  var current = params.earthMoonDistance;
+  var apex = kind === "solar"
+    ? apexDistanceKm(params.sunRadius, params.moonRadius, params.earthSunDistance, true)
+    : apexDistanceKm(params.sunRadius, params.earthRadius, params.earthSunDistance, false);
+  var anchors;
+  if (kind === "solar") {
+    if (type === "total") { anchors = [apex * 0.5, apex * 0.75, range.min]; }
+    else if (type === "annular") { anchors = [apex * 1.3, apex * 1.8, range.max]; }
+    else if (type === "hybrid") { anchors = [apex * 0.97, apex, apex * 1.03]; }
+    else { anchors = [current, apex * 1.1, apex * 0.9, range.min, range.max]; } // partial
+  } else {
+    if (type === "total") { anchors = [apex * 0.5, apex * 0.75, range.min]; }
+    else if (type === "partial") { anchors = [apex * 0.9, apex * 1.1, current]; }
+    else { anchors = [apex * 1.3, apex * 1.8, range.max]; } // penumbral
+  }
+  var list = [current];
+  for (var i = 0; i < anchors.length; i++) {
+    if (isFinite(anchors[i])) { list.push(clampToRange(anchors[i], range)); }
+  }
+  // Dedupe (within 1km) while preserving order -- current distance stays first.
+  var out = [];
+  for (var j = 0; j < list.length; j++) {
+    var dup = false;
+    for (var k = 0; k < out.length; k++) { if (Math.abs(out[k] - list[j]) < 1) { dup = true; break; } }
+    if (!dup) { out.push(list[j]); }
+  }
+  return out;
+}
+
+// Finds the (simDays, earthMoonDistance) that best demonstrates the
+// given eclipse type given the CURRENT params (any other slider the
+// user has set stays untouched). Prefers leaving earthMoonDistance
+// exactly where the user left it; only nudges it if that type is
+// otherwise unreachable at the current distance. Returns null in the
+// (rare, extreme-slider) case where no candidate distance ever produces
+// the type across the whole scan window.
+function searchEclipseMoment(kind, type) {
+  var candidates = candidateDistancesFor(kind, type);
+  var current = params.earthMoonDistance;
+  var best = null;
+  for (var i = 0; i < candidates.length; i++) {
+    var dist = candidates[i];
+    var found = bestDayForDistance(kind, type, dist);
+    if (!found) { continue; }
+    var cost = Math.abs(dist - current);
+    if (!best || cost < best.cost) { best = { day: found.day, earthMoonDistance: dist, cost: cost }; }
+    if (dist === current) { break; } // can't beat zero change
+  }
+  return best;
 }
 
 /* ---------- exponential slider mapping (wide-range sliders: radii,
@@ -418,6 +640,30 @@ var params = {
 var simDays = 0;
 var paused = false;
 var lastFrameTime = null;
+
+/* ---------- scale mode: "real" (true astronomical values) vs "visual"
+   (compressed for legibility -- see VISUAL above). Every slider, preset,
+   and the diagram all key off `RANGE` and `params`, so switching modes
+   is just: swap which defaults/bounds those point at, then re-apply. ---------- */
+var scaleMode = "real"; // "real" | "visual"
+function defaultsFor(mode) { return mode === "visual" ? VISUAL : REAL; }
+function rangeFor(mode) { return mode === "visual" ? RANGE_VISUAL : RANGE_REAL; }
+function applyScaleDefaults(mode) {
+  var d = defaultsFor(mode);
+  params.sunRadius = d.sunRadius; params.earthRadius = d.earthRadius; params.moonRadius = d.moonRadius;
+  params.earthSunDistance = d.earthSunDistance; params.earthMoonDistance = d.earthMoonDistance;
+  params.inclinationDeg = d.inclinationDeg;
+}
+function setScaleMode(mode) {
+  if (mode === scaleMode) { return; }
+  scaleMode = mode;
+  RANGE = rangeFor(mode);
+  applyScaleDefaults(mode);
+  orbitCam.distance = toScene(params.earthRadius) * 6;
+  orbitCam.followEarth = true;
+  applyBodyScales();
+  refreshControlsPanel();
+}
 
 /* ---------- orbital camera (hand-rolled -- no OrbitControls addon,
    consistent with the decision to avoid Three.js addons entirely) ---------- */
@@ -677,8 +923,8 @@ function wireOrbitCameraInput() {
       var dx = e.clientX - lastX, dy = e.clientY - lastY;
       lastX = e.clientX; lastY = e.clientY;
       gestureMoved = Math.max(gestureMoved, Math.hypot(e.clientX - gestureStartX, e.clientY - gestureStartY));
-      orbitCam.azimuth -= dx * 0.005;
-      orbitCam.elevation = clamp(orbitCam.elevation - dy * 0.005, -1.5, 1.5);
+      orbitCam.azimuth += dx * 0.005;
+      orbitCam.elevation = clamp(orbitCam.elevation + dy * 0.005, -1.5, 1.5);
     } else if (activePointers.size === 2 && pinchStartDist) {
       var pts = Array.from(activePointers.values());
       var dist = pointerDistance(pts[0], pts[1]);
@@ -893,9 +1139,8 @@ function wireControlsPanel() {
     document.getElementById("pauseBtn").textContent = paused ? "Unpause" : "Pause";
   });
   document.getElementById("resetBtn").addEventListener("click", function() {
-    params.sunRadius = REAL.sunRadius; params.earthRadius = REAL.earthRadius; params.moonRadius = REAL.moonRadius;
-    params.earthSunDistance = REAL.earthSunDistance; params.earthMoonDistance = REAL.earthMoonDistance;
-    params.inclinationDeg = REAL.inclinationDeg; params.timeScale = 2;
+    applyScaleDefaults(scaleMode);
+    params.timeScale = 2;
     applyBodyScales();
     refreshControlsPanel();
   });
@@ -911,7 +1156,10 @@ function wireControlsPanel() {
       "<p><strong>Drag</strong> to orbit the camera, <strong>scroll or pinch</strong> to zoom. <strong>Tap Earth</strong> to stand on that exact spot and look up at the sky, or use <strong>Ground View</strong> in the corner.</p>" +
       "<p>The status banner at the top always tells you what's happening right now -- solar or lunar, and which type -- straight from the real geometry below it, not a script.</p>" +
       "<p>Open <strong>Controls</strong> to change the Sun, Earth, and Moon's size and distance, the Moon's orbital tilt, and time speed. Every slider is a real lever on why eclipses happen: shrink the Moon and totality becomes impossible -- its shadow can no longer reach Earth, so every solar eclipse turns annular. Push the tilt to 0&deg; and nearly <em>every</em> month becomes an eclipse month, because the Moon's shadow no longer has to thread the needle between Earth's path and its own.</p>" +
-      "<p>A solar eclipse only grazes a narrow path on Earth -- stand there in Ground View during totality to see the corona flare out around the Moon's silhouette. A lunar eclipse is visible from Earth's whole night side at once, and the deeper the Moon sits in Earth's shadow, the redder it turns -- a real blood moon.</p>";
+      "<p>A solar eclipse only grazes a narrow path on Earth -- stand there in Ground View during totality to see the corona flare out around the Moon's silhouette. A lunar eclipse is visible from Earth's whole night side at once, and the deeper the Moon sits in Earth's shadow, the redder it turns -- a real blood moon.</p>" +
+      "<p><strong>Jump to Eclipse Type</strong> in Controls instantly finds and pauses on a moment that demonstrates any of the 7 real types. From there, <strong>Scrub Time</strong> lets you drag through that moment in fine (±" + SCRUB_WINDOW_DAYS + "-day) steps instead of racing past it in real time.</p>" +
+      "<p><strong>Real Scale</strong> uses true astronomical sizes and distances, which is why the default view opens zoomed in on Earth -- at true scale nothing else fits on screen at once. <strong>Visualizer Scale</strong> compresses everything down so the whole system fits together at a glance; it's not physically proportional, but every mechanic works exactly the same.</p>" +
+      "<p>The <strong>Shadow Diagram</strong> at the bottom (tap to expand/collapse) draws a true side-on cross-section of whichever alignment is currently relevant, with the umbra/penumbra cone drawn at its scientifically exact angle.</p>";
     var closeBtn = document.createElement("button");
     closeBtn.className = "close-link";
     closeBtn.textContent = "Got it";
@@ -923,11 +1171,133 @@ function wireControlsPanel() {
   tutorialModal.addEventListener("click", function(e) { if (e.target === tutorialModal) { tutorialModal.classList.add("hidden"); } });
 }
 
+/* ---------- scale toggle ---------- */
+function makeScaleToggleRow() {
+  var row = document.createElement("div");
+  row.className = "seg-row";
+  var realBtn = document.createElement("div");
+  realBtn.className = "seg-btn" + (scaleMode === "real" ? " active" : "");
+  realBtn.textContent = "Real Scale";
+  realBtn.addEventListener("click", function(e) { e.stopPropagation(); setScaleMode("real"); });
+  var visBtn = document.createElement("div");
+  visBtn.className = "seg-btn" + (scaleMode === "visual" ? " active" : "");
+  visBtn.textContent = "Visualizer Scale";
+  visBtn.addEventListener("click", function(e) { e.stopPropagation(); setScaleMode("visual"); });
+  row.appendChild(realBtn);
+  row.appendChild(visBtn);
+  return row;
+}
+
+/* ---------- eclipse-type presets ---------- */
+var SOLAR_TYPE_LABELS = { total: "Total", annular: "Annular", hybrid: "Hybrid", partial: "Partial" };
+var LUNAR_TYPE_LABELS = { total: "Total", partial: "Partial", penumbral: "Penumbral" };
+function jumpToPreset(kind, type) {
+  var result = searchEclipseMoment(kind, type);
+  if (!result) { return; } // no reachable moment at the current radii -- leave state as-is
+  params.earthMoonDistance = result.earthMoonDistance;
+  simDays = result.day;
+  scrubAnchorDays = result.day;
+  paused = true;
+  document.getElementById("pauseBtn").textContent = "Unpause";
+  applyBodyScales();
+  refreshControlsPanel();
+}
+function makePresetGrid(groupLabel, kind, types, typeLabels) {
+  var wrap = document.createElement("div");
+  var label = document.createElement("div");
+  label.className = "preset-group-label";
+  label.textContent = groupLabel;
+  wrap.appendChild(label);
+  var grid = document.createElement("div");
+  grid.className = "preset-grid";
+  types.forEach(function(type) {
+    var btn = document.createElement("div");
+    btn.className = "preset-btn";
+    btn.textContent = typeLabels[type];
+    btn.addEventListener("click", function(e) { e.stopPropagation(); jumpToPreset(kind, type); });
+    grid.appendChild(btn);
+  });
+  wrap.appendChild(grid);
+  return wrap;
+}
+
+/* ---------- time scrub ---------- */
+var SCRUB_WINDOW_DAYS = 40;
+var scrubAnchorDays = 0;
+var scrubbingActive = false;
+var scrubSlider = null;
+function nudgeSimDays(deltaDays) {
+  paused = true;
+  document.getElementById("pauseBtn").textContent = "Unpause";
+  simDays += deltaDays;
+  scrubAnchorDays = simDays;
+  if (scrubSlider) { scrubSlider.value = "0"; }
+}
+function makeScrubRow() {
+  var wrap = document.createElement("div");
+  wrap.className = "panel-row";
+  var row = document.createElement("div");
+  row.className = "scrub-row";
+
+  var backBtn = document.createElement("div");
+  backBtn.className = "scrub-step-btn";
+  backBtn.textContent = "◀";
+  backBtn.addEventListener("click", function() { nudgeSimDays(-0.5); });
+
+  var slider = document.createElement("input");
+  slider.type = "range"; slider.min = String(-SCRUB_WINDOW_DAYS); slider.max = String(SCRUB_WINDOW_DAYS); slider.step = "0.02";
+  slider.value = "0";
+  slider.style.flex = "1";
+  slider.addEventListener("pointerdown", function() { scrubbingActive = true; });
+  slider.addEventListener("input", function() {
+    paused = true;
+    document.getElementById("pauseBtn").textContent = "Unpause";
+    simDays = scrubAnchorDays + parseFloat(slider.value);
+  });
+  function releaseScrub() { scrubbingActive = false; scrubAnchorDays = simDays; slider.value = "0"; }
+  slider.addEventListener("pointerup", releaseScrub);
+  slider.addEventListener("pointercancel", releaseScrub);
+
+  var fwdBtn = document.createElement("div");
+  fwdBtn.className = "scrub-step-btn";
+  fwdBtn.textContent = "▶";
+  fwdBtn.addEventListener("click", function() { nudgeSimDays(0.5); });
+
+  row.appendChild(backBtn);
+  row.appendChild(slider);
+  row.appendChild(fwdBtn);
+  wrap.appendChild(row);
+  scrubSlider = slider;
+  return wrap;
+}
+
 function refreshControlsPanel() {
   controlsPanel.innerHTML = "";
   var h3 = document.createElement("h3");
-  h3.textContent = "Orbital Controls";
+  h3.textContent = "Controls";
   controlsPanel.appendChild(h3);
+
+  controlsPanel.appendChild(makeScaleToggleRow());
+
+  var presetsTitle = document.createElement("div");
+  presetsTitle.className = "panel-section-title";
+  presetsTitle.textContent = "Jump to Eclipse Type";
+  controlsPanel.appendChild(presetsTitle);
+  controlsPanel.appendChild(makePresetGrid("Solar", "solar", ["total", "annular", "hybrid", "partial"], SOLAR_TYPE_LABELS));
+  var lunarGrid = makePresetGrid("Lunar", "lunar", ["total", "partial", "penumbral"], LUNAR_TYPE_LABELS);
+  lunarGrid.style.marginTop = "10px";
+  controlsPanel.appendChild(lunarGrid);
+
+  var scrubTitle = document.createElement("div");
+  scrubTitle.className = "panel-section-title";
+  scrubTitle.textContent = "Scrub Time (±" + SCRUB_WINDOW_DAYS + " days, fine control)";
+  controlsPanel.appendChild(scrubTitle);
+  controlsPanel.appendChild(makeScrubRow());
+
+  var slidersTitle = document.createElement("div");
+  slidersTitle.className = "panel-section-title";
+  slidersTitle.textContent = "Orbital Controls";
+  controlsPanel.appendChild(slidersTitle);
 
   controlsPanel.appendChild(makeSliderRow(function(v) { return "Sun Radius: " + fmtKm(v); }, params.sunRadius, RANGE.sunRadius.min, RANGE.sunRadius.max, function(v) { params.sunRadius = v; applyBodyScales(); }));
   controlsPanel.appendChild(makeSliderRow(function(v) { return "Earth Radius: " + fmtKm(v); }, params.earthRadius, RANGE.earthRadius.min, RANGE.earthRadius.max, function(v) { params.earthRadius = v; applyBodyScales(); }));
@@ -966,6 +1336,7 @@ function frame(now) {
   lastFrameTime = now;
 
   if (!paused) { simDays += dt * params.timeScale; }
+  if (!scrubbingActive) { scrubAnchorDays = simDays; }
 
   var geom = computeGeometry(params, simDays);
 
@@ -990,6 +1361,7 @@ function frame(now) {
   updateDiamondRingGlint(solar);
   updateEarthShadowOverlay(solar);
   updateMoonBloodColor(lunar);
+  drawDiagram(geom, solar, lunar);
 
   // Orbit-path guide rings are a "see the mechanics" aid for the orbital
   // view -- a real sky observer wouldn't see them, so hide them in/while
@@ -1087,6 +1459,187 @@ function updateMoonBloodColor(lunar) {
   }
   moonMat.color.copy(MOON_BASE_COLOR).lerp(MOON_ECLIPSE_COLOR, depth);
   moonMat.emissive.copy(MOON_ECLIPSE_COLOR).multiplyScalar(depth * 0.12);
+}
+
+/* ============================================================
+   Side-profile shadow diagram -- a plain 2D canvas (not Three.js; this
+   is a flat diagnostic drawing, not part of the 3D scene), collapsible
+   like the leaderboard. Shows a true cross-section of whichever
+   alignment (solar or lunar) is currently relevant, using the exact
+   same classifier output the status banner and 3D scene use, so it can
+   never disagree with either.
+
+   Real distances can never be drawn to one linear scale together with
+   real radii (the Moon-Earth gap is ~60 Earth-radii; the Earth-Sun gap
+   is ~23,000) -- no screen can show both honestly. The standard
+   textbook compromise, used here: draw the NEAR pair (occluder and
+   target -- Moon+Earth for solar, Earth+Moon for lunar) to one true
+   linear km-to-pixel scale, since those two distances/radii ARE within
+   a drawable range of each other, and draw the Sun only as a schematic
+   disc off to the side with a "not to scale" label. The umbra/penumbra
+   cone LINES are still exact: their slopes are derived directly from
+   the classifier's own real umbra/penumbra radii at the target's real
+   distance, so the cone's convergence angle is scientifically accurate
+   even though the Sun's distance isn't literally drawn to scale --
+   exactly how real eclipse-geometry diagrams are conventionally made.
+   ============================================================ */
+var diagramDock = document.getElementById("diagramDock");
+var diagramHeader = document.getElementById("diagramHeader");
+var diagramCanvas = document.getElementById("diagramCanvas");
+var diagramCtx = diagramCanvas.getContext("2d");
+var diagramCollapsed = false;
+
+function resizeDiagramCanvas() {
+  var dpr = Math.min(2, window.devicePixelRatio || 1);
+  var rectW = diagramCanvas.clientWidth, rectH = diagramCanvas.clientHeight;
+  if (rectW <= 0 || rectH <= 0) { return; }
+  diagramCanvas.width = Math.round(rectW * dpr);
+  diagramCanvas.height = Math.round(rectH * dpr);
+  diagramCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+var diagramToggleBtn = document.getElementById("diagramToggleBtn");
+diagramHeader.addEventListener("click", function() {
+  diagramCollapsed = !diagramCollapsed;
+  diagramDock.classList.toggle("collapsed", diagramCollapsed);
+  var chevron = diagramCollapsed ? "&#9652;" : "&#9662;";
+  diagramHeaderLabel.innerHTML = "Shadow Diagram " + chevron;
+  diagramToggleBtn.innerHTML = "Diagram " + chevron;
+  if (!diagramCollapsed) { requestAnimationFrame(resizeDiagramCanvas); }
+});
+diagramToggleBtn.addEventListener("click", function(e) {
+  e.stopPropagation();
+  diagramHeader.click();
+});
+var diagramHeaderLabel = document.getElementById("diagramHeaderLabel");
+window.addEventListener("resize", resizeDiagramCanvas);
+requestAnimationFrame(resizeDiagramCanvas);
+
+function fmtKmShort(v) {
+  var av = Math.abs(v);
+  if (av >= 1000000) { return (v / 1000000).toFixed(2) + "M km"; }
+  if (av >= 1000) { return Math.round(v / 1000) + "K km"; }
+  return Math.round(v) + " km";
+}
+
+function drawSunSchematic(ctx, x, y, label) {
+  var grad = ctx.createRadialGradient(x, y, 0, x, y, 16);
+  grad.addColorStop(0, "rgba(255,241,201,1)");
+  grad.addColorStop(1, "rgba(255,241,201,0)");
+  ctx.beginPath(); ctx.arc(x, y, 16, 0, Math.PI * 2); ctx.fillStyle = grad; ctx.fill();
+  ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI * 2); ctx.fillStyle = "#fff1c9"; ctx.fill();
+  ctx.fillStyle = "rgba(255,255,255,0.4)"; ctx.font = "9px 'JetBrains Mono', monospace"; ctx.textAlign = "left";
+  ctx.fillText(label, x - 20, y + 26);
+}
+
+// Draws one side-profile cross-section: an occluder body at x=0 casting
+// a shadow cone toward a target body at x=targetDistanceKm, offset
+// `targetOffsetKm` off the shadow axis (always plotted upward -- the
+// real 3D offset direction is an arbitrary azimuth around the axis, so
+// only the MAGNITUDE matters for showing whether the target pokes into
+// the cone). umbraRadiusAtTargetKm/penumbraRadiusAtTargetKm come
+// straight from the classifier, so the cone's drawn slope is exact.
+function drawShadowProfile(ctx, w, h, occluderRadiusKm, occluderLabel, targetRadiusKm, targetLabel,
+    targetDistanceKm, targetOffsetKm, umbraRadiusAtTargetKm, penumbraRadiusAtTargetKm, sunRadiusKm, sunDistanceLabel) {
+  var marginL = 56, marginR = 20, marginT = 14, marginB = 8;
+  var plotW = w - marginL - marginR, plotH = h - marginT - marginB;
+  var midY = marginT + plotH * 0.62;
+
+  // The vertical scale is set by the cone geometry (occluder/penumbra
+  // radii) alone, NOT by how far off-axis the target currently sits --
+  // a "way off, no eclipse" moment can be hundreds of times the
+  // penumbra's radius, and letting that dictate the scale would crush
+  // the cone itself down to an imperceptible sliver right when seeing
+  // it matters least. The target is still positioned at its true offset
+  // when that fits the plot; once it doesn't, it's clamped to hug the
+  // top edge (with an arrow + the real distance still labeled) rather
+  // than blowing out the whole diagram.
+  var maxX = targetDistanceKm * 1.2;
+  var maxY = Math.max(occluderRadiusKm, penumbraRadiusAtTargetKm * 1.6);
+  var scale = Math.min(plotW / maxX, (midY - marginT) / Math.max(1, maxY));
+  if (!isFinite(scale) || scale <= 0) { scale = plotW / Math.max(1, maxX); }
+
+  function X(km) { return marginL + km * scale; }
+  function Y(km) { return midY - km * scale; }
+
+  var offAxisClamped = false;
+  var drawnOffsetKm = targetOffsetKm;
+  var topLimitKm = (midY - marginT - Math.max(2.5, targetRadiusKm * scale) - 10) / scale;
+  if (Math.abs(targetOffsetKm) > topLimitKm) { drawnOffsetKm = topLimitKm; offAxisClamped = true; }
+
+  var tanUmbra = (occluderRadiusKm - umbraRadiusAtTargetKm) / targetDistanceKm;
+  var tanPenumbra = (penumbraRadiusAtTargetKm - occluderRadiusKm) / targetDistanceKm;
+
+  // penumbra (outer, dim)
+  ctx.beginPath();
+  ctx.moveTo(X(0), Y(occluderRadiusKm)); ctx.lineTo(X(maxX), Y(occluderRadiusKm + tanPenumbra * maxX));
+  ctx.moveTo(X(0), Y(-occluderRadiusKm)); ctx.lineTo(X(maxX), Y(-(occluderRadiusKm + tanPenumbra * maxX)));
+  ctx.strokeStyle = "rgba(255,200,120,0.4)"; ctx.lineWidth = 1.25; ctx.stroke();
+
+  // umbra/antumbra (inner, bright -- continues straight through the apex)
+  ctx.beginPath();
+  ctx.moveTo(X(0), Y(occluderRadiusKm)); ctx.lineTo(X(maxX), Y(occluderRadiusKm - tanUmbra * maxX));
+  ctx.moveTo(X(0), Y(-occluderRadiusKm)); ctx.lineTo(X(maxX), Y(-(occluderRadiusKm - tanUmbra * maxX)));
+  ctx.strokeStyle = "rgba(255,179,0,0.85)"; ctx.lineWidth = 1.75; ctx.stroke();
+
+  // baseline axis (faint)
+  ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(maxX), Y(0));
+  ctx.strokeStyle = "rgba(255,255,255,0.1)"; ctx.lineWidth = 1; ctx.stroke();
+
+  // Sun, schematic, off the left edge
+  drawSunSchematic(ctx, 20, midY, "Sun (" + sunDistanceLabel + ", not to scale)");
+
+  // occluder body
+  ctx.beginPath(); ctx.arc(X(0), Y(0), Math.max(2.5, occluderRadiusKm * scale), 0, Math.PI * 2);
+  ctx.fillStyle = "#9aa6b0"; ctx.fill();
+  ctx.fillStyle = "rgba(255,255,255,0.75)"; ctx.font = "10px 'JetBrains Mono', monospace"; ctx.textAlign = "center";
+  ctx.fillText(occluderLabel, X(0), Y(0) - Math.max(2.5, occluderRadiusKm * scale) - 8);
+
+  // target body (position clamped per offAxisClamped above; real offset
+  // value is always what's shown in the label, regardless of clamping)
+  var tx = X(targetDistanceKm), ty = Y(drawnOffsetKm);
+  ctx.beginPath(); ctx.arc(tx, ty, Math.max(2.5, targetRadiusKm * scale), 0, Math.PI * 2);
+  ctx.fillStyle = "#4a7ab5"; ctx.fill();
+  ctx.fillStyle = "rgba(255,255,255,0.75)"; ctx.font = "10px 'JetBrains Mono', monospace"; ctx.textAlign = "center";
+  var targetLabelFull = targetLabel + (offAxisClamped ? " ↑" : "");
+  ctx.fillText(targetLabelFull, tx, ty - Math.max(2.5, targetRadiusKm * scale) - 8);
+
+  // distance label between the two bodies
+  ctx.fillStyle = "rgba(255,255,255,0.45)"; ctx.font = "9.5px 'JetBrains Mono', monospace"; ctx.textAlign = "center";
+  ctx.fillText(fmtKmShort(targetDistanceKm), (X(0) + tx) / 2, midY + 16);
+  if (Math.abs(targetOffsetKm) > 0.5) {
+    var offsetText = fmtKmShort(targetOffsetKm) + " off-axis" + (offAxisClamped ? " (off diagram)" : "");
+    var labelX = tx + Math.max(8, targetRadiusKm * scale) + 6;
+    var fitsOnRight = labelX + ctx.measureText(offsetText).width < w - 4;
+    ctx.textAlign = fitsOnRight ? "left" : "right";
+    ctx.fillText(offsetText, fitsOnRight ? labelX : (tx - Math.max(8, targetRadiusKm * scale) - 6), ty + 3);
+  }
+}
+
+function drawDiagram(geom, solar, lunar) {
+  if (diagramCollapsed || !diagramCanvas.clientWidth) { return; }
+  var ctx = diagramCtx, w = diagramCanvas.clientWidth, h = diagramCanvas.clientHeight;
+  ctx.clearRect(0, 0, w, h);
+
+  var showSolar = solar.type !== "none" ? true : (lunar.type !== "none" ? false : (nearerCycle(geom) === "solar"));
+  var sunDistLabel = fmtKmShort(params.earthSunDistance);
+
+  ctx.font = "11px 'Oswald', sans-serif"; ctx.textAlign = "left";
+  ctx.fillStyle = showSolar ? "#FFB300" : "#5FD3C4";
+  ctx.fillText(showSolar ? "SOLAR ALIGNMENT (Moon's shadow on Earth)" : "LUNAR ALIGNMENT (Earth's shadow on Moon)", 8, 12);
+
+  if (showSolar) {
+    drawShadowProfile(ctx, w, h,
+      params.moonRadius, "Moon", params.earthRadius, "Earth",
+      params.earthMoonDistance, solar.earthOffsetFromAxisKm,
+      solar.umbraRadiusAtEarthKm, solar.penumbraRadiusAtEarthKm,
+      params.sunRadius, sunDistLabel);
+  } else {
+    drawShadowProfile(ctx, w, h,
+      params.earthRadius, "Earth", params.moonRadius, "Moon",
+      params.earthMoonDistance, lunar.impactParamKm,
+      lunar.umbraRadiusAtMoonKm, lunar.penumbraRadiusAtMoonKm,
+      params.sunRadius, sunDistLabel);
+  }
 }
 </script>
 </body>
