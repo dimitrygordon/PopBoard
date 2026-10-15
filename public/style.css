@@ -1420,7 +1420,8 @@ button.hide-toggle, .reply button.hide-toggle {
 }
 #seatingMap.seating-map-poll-modal > header,
 #seatingMap.seating-map-poll-modal .portal-container > h2,
-#seatingMap.seating-map-poll-modal #seatEditControls {
+#seatingMap.seating-map-poll-modal #seatEditControls,
+#seatingMap.seating-map-poll-modal #unassignedStudentsList {
   display: none;
 }
 #seatingMap.seating-map-poll-modal .portal-container {
@@ -1454,6 +1455,26 @@ button.hide-toggle, .reply button.hide-toggle {
   border: 1.5px solid var(--border-color);
 }
 
+/* Generic "pick one item from a clickable list" overlay, replacing the
+   numbered-prompt() idiom for flows like Copy Layout From... */
+.simple-picker-overlay {
+  position: fixed; inset: 0; z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0, 0, 0, 0.6); padding: 20px;
+}
+.simple-picker-card {
+  position: relative; width: 100%; max-width: 420px; max-height: 80vh;
+  overflow-y: auto; background: var(--card-bg); border: 1.5px solid var(--border-color);
+  border-radius: 24px; box-shadow: var(--shadow-lg); padding: 48px 20px 20px;
+}
+.simple-picker-card h3 { margin: 0 0 16px 0; text-align: center; }
+.simple-picker-list { display: flex; flex-direction: column; gap: 8px; }
+.simple-picker-row {
+  width: 100%; text-align: left; padding: 12px 16px; border-radius: 12px;
+  background: var(--bg-secondary); border: 1.5px solid var(--border-color); font-size: 0.95rem;
+}
+.simple-picker-row:hover { border-color: var(--accent); }
+
 #seatCanvas {
   position: relative;
   width: 100%;
@@ -1465,6 +1486,13 @@ button.hide-toggle, .reply button.hide-toggle {
   border-radius: 24px;
   overflow: hidden;
   touch-action: none;
+}
+
+#unassignedStudentsList h3 { margin: 24px 0 12px 0; font-size: 1rem; font-weight: 600; color: var(--text-secondary); }
+.unassigned-students-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.unassigned-student-pill {
+  padding: 6px 14px; border-radius: 999px; background: var(--bg-secondary);
+  border: 1.5px solid var(--border-color); font-size: 0.9rem;
 }
 
 .seat {
