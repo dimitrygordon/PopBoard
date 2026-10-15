@@ -1676,6 +1676,7 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
    editable-seat popup, and the dashboard's confusion-detail popup, which
    never coexist with that modal) untouched. */
 .seat-response-popup { width: 340px; max-width: 90vw; z-index: 10001; }
+.seat-response-popup h4 { padding-right: 0; }
 .seat-response-editor { margin-top: 10px; }
 .seat-response-option {
   text-align: left;
