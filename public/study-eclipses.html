@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Eclipses // PopBoard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05060a;
+  --panel:#171C22;
+  --panel-2:#1E252D;
+  --panel-3:#252E38;
+  --border:#2C3742;
+  --border-lit:#3A4854;
+  --amber:#FFB300;
+  --amber-dim:#8a640f;
+  --cyan:#5FD3C4;
+  --text:#E9E6DE;
+  --text-dim:#93A0AC;
+  --text-dimmer:#5C6874;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;overflow:hidden;background:#000;height:100%;}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;touch-action:none;}
+h1,h2,h3{font-family:'Oswald',sans-serif;letter-spacing:0.03em;text-transform:uppercase;}
+.mono{font-family:'JetBrains Mono',monospace;}
+button,input{font-family:inherit;}
+#eclipseCanvas{display:block;width:100vw;height:100vh;background:#000;touch-action:none;}
+
+/* ---------- loading / error overlay ---------- */
+#loadingOverlay{
+  position:fixed;inset:0;z-index:200;background:#05060a;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px;
+}
+#loadingOverlay.hidden{display:none;}
+#loadingOverlay .spinner{
+  width:36px;height:36px;border-radius:50%;border:3px solid rgba(255,179,0,0.25);border-top-color:var(--amber);
+  animation:spin 0.9s linear infinite;
+}
+#loadingOverlay.error .spinner{display:none;}
+#loadingOverlay p{color:var(--text-dim);font-size:14px;max-width:360px;line-height:1.5;margin:0;}
+#loadingOverlay button{
+  display:none;margin-top:6px;padding:10px 20px;border-radius:10px;border:1px solid var(--border-lit);
+  background:var(--panel-2);color:var(--text);font-size:13px;cursor:pointer;
+}
+#loadingOverlay.error button{display:block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ---------- top / bottom bars ---------- */
+.bar{position:fixed;left:0;right:0;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;pointer-events:none;z-index:50;}
+.bar-top{top:0;}
+.bar-bottom{bottom:0;}
+.bar button{pointer-events:auto;background:none;border:none;color:#0A84FF;font-size:15px;cursor:pointer;padding:4px 2px;}
+.bar button:active{opacity:0.6;}
+.bar-top .bar-center{position:absolute;left:50%;transform:translateX(-50%);}
+
+/* ---------- status banner ---------- */
+#statusBanner{
+  position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:45;
+  background:rgba(15,18,22,0.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--border-lit);border-radius:14px;padding:10px 22px;text-align:center;
+  max-width:min(92vw,560px);pointer-events:none;transition:border-color 0.3s ease, box-shadow 0.3s ease;
+}
+#statusBanner .status-type{font-family:'Oswald',sans-serif;font-size:15px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text);}
+#statusBanner .status-reason{font-size:11.5px;color:var(--text-dim);margin-top:3px;font-family:'JetBrains Mono',monospace;}
+#statusBanner.eclipsing{border-color:var(--amber-dim);box-shadow:0 0 24px rgba(255,179,0,0.18);}
+#statusBanner.eclipsing .status-type{color:var(--amber);}
+
+/* ---------- floating panels ---------- */
+.panel{
+  position:fixed;z-index:60;width:320px;max-width:calc(100vw - 32px);
+  background:rgba(22,24,28,0.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:18px;
+  box-shadow:0 12px 32px rgba(0,0,0,0.5);
+  max-height:calc(100vh - 110px);overflow-y:auto;
+}
+.panel.hidden{display:none;}
+.panel h3{margin:0 0 14px 0;text-align:center;font-size:14px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:#fff;}
+.panel-row{margin-bottom:14px;}
+.panel-row:last-child{margin-bottom:0;}
+.panel-label{font-size:13px;color:#e5e5e7;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+.panel-hint{font-size:11.5px;color:#8e8e93;line-height:1.5;margin-top:10px;}
+.panel-link{display:block;text-align:center;color:#0A84FF;font-size:13px;margin-top:12px;cursor:pointer;background:none;border:none;width:100%;padding:4px;}
+.panel-link:active{opacity:0.6;}
+.panel-section-title{text-align:center;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#6e6e73;margin:16px 0 8px;}
+
+input[type="range"]{
+  -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:#48484a;outline:none;margin:0;
+}
+input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,0.4);
+}
+input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:none;cursor:pointer;}
+
+/* ---------- zoom / camera-mode buttons ---------- */
+#cameraControls{position:fixed;right:18px;bottom:64px;z-index:55;display:flex;flex-direction:column;gap:8px;}
+.round-btn{
+  width:40px;height:40px;border-radius:50%;background:rgba(28,28,30,0.8);border:1px solid rgba(255,255,255,0.15);
+  color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+.round-btn:active{opacity:0.6;}
+.round-btn svg{width:18px;height:18px;}
+
+/* ---------- modal ---------- */
+.modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.hidden{display:none;}
+.modal-card{
+  background:rgba(22,24,28,0.96);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:24px;
+  max-width:440px;width:100%;max-height:80vh;overflow-y:auto;
+}
+.modal-card h2{margin:0 0 14px 0;font-size:17px;text-align:center;}
+.modal-card p{font-size:13.5px;line-height:1.6;color:#d1d1d6;margin:0 0 10px 0;}
+.modal-card .close-link{display:block;text-align:center;color:#0A84FF;margin-top:16px;cursor:pointer;background:none;border:none;font-size:14px;width:100%;padding:6px;}
+</style>
+</head>
+<body>
+
+<canvas id="eclipseCanvas"></canvas>
+
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <p id="loadingText">Loading the 3D engine&hellip;</p>
+  <button id="loadingRetryBtn" type="button">Reload</button>
+</div>
+
+<div class="bar bar-top">
+  <button id="controlsBtn">Controls</button>
+  <button id="pauseBtn" class="bar-center">Pause</button>
+  <button id="resetBtn">Reset</button>
+</div>
+<div class="bar bar-bottom">
+  <button id="tutorialBtn">Tutorial</button>
+  <button id="viewToggleBtn">Ground View</button>
+</div>
+
+<div id="statusBanner">
+  <div class="status-type" id="statusType">&mdash;</div>
+  <div class="status-reason" id="statusReason">&mdash;</div>
+</div>
+
+<div id="cameraControls">
+  <div class="round-btn" id="zoomInBtn">+</div>
+  <div class="round-btn" id="zoomOutBtn">&minus;</div>
+</div>
+
+<div id="controlsPanel" class="panel hidden" style="top:56px;left:18px;"></div>
+
+<div id="tutorialModal" class="modal-overlay hidden"></div>
+
+<script type="module">
+"use strict";
+/* ============================================================
+   ECLIPSES -- a real-3D solar + lunar eclipse sandbox (Three.js/WebGL).
+   Original implementation; no shared code with the other study modules
+   or app.js (each module in the library is fully self-contained). This
+   is the one module in the library that departs from the app's usual
+   zero-dependency, hand-rolled-canvas convention -- the continuous
+   camera fly-through and a real rotating textured Earth need true 3D to
+   work, not a series of flat-canvas illusions. See the approved plan
+   for the full rationale.
+   ============================================================ */
+
+/* ---------- real-world constants (km, degrees, days) ----------
+   These are the single source of truth for both the 3D scene (converted
+   to scene units below) and the eclipse-classification math, which
+   operates on these same real units so the two can never drift apart. */
+var REAL = {
+  sunRadius: 696000,
+  earthRadius: 6371,
+  moonRadius: 1737,
+  earthSunDistance: 149600000,
+  earthMoonDistance: 384400,
+  inclinationDeg: 5.145
+};
+var EARTH_ORBIT_DAYS = 365.25;
+var MOON_ORBIT_DAYS = 27.321661; // sidereal month
+
+// Slider ranges, in the same real-world km/degree units.
+var RANGE = {
+  sunRadius: { min: 100000, max: 1400000 },
+  earthRadius: { min: 2000, max: 15000 },
+  moonRadius: { min: 400, max: 5500 },
+  earthSunDistance: { min: 50000000, max: 300000000 },
+  earthMoonDistance: { min: 150000, max: 500000 },
+  inclinationDeg: { min: 0, max: 20 },
+  timeScale: { min: 0, max: 30 } // simulated days per real second
+};
+
+// 1 scene unit = this many km -- keeps world-space numbers in a range
+// WebGL's float32 pipeline handles cleanly (hundreds of thousands,
+// rather than hundreds of millions) while staying a single uniform
+// scale, so the classification math (real km) and the rendered scene
+// never need separate bookkeeping.
+var KM_PER_UNIT = 1000;
+function toScene(km) { return km / KM_PER_UNIT; }
+
+/* ---------- pure math: orbital positions + eclipse classification ----------
+   Kept free of Three.js/DOM references so it can be extracted and unit
+   tested in isolation (see scratchpad/verify_eclipse_physics.js), and so
+   the 3D scene and the classifier are provably looking at the same
+   numbers -- every frame builds one `geom` object (positions in km) that
+   both the renderer and the classifier read from. */
+
+function degToRad(d) { return d * Math.PI / 180; }
+function radToDeg(r) { return r * 180 / Math.PI; }
+
+function vec(x, y, z) { return { x: x, y: y, z: z }; }
+function vSub(a, b) { return vec(a.x - b.x, a.y - b.y, a.z - b.z); }
+function vLen(a) { return Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z); }
+function vNorm(a) { var l = vLen(a) || 1; return vec(a.x / l, a.y / l, a.z / l); }
+function vDot(a, b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+function vNeg(a) { return vec(-a.x, -a.y, -a.z); }
+function angleBetween(a, b) {
+  var d = vDot(vNorm(a), vNorm(b));
+  d = Math.max(-1, Math.min(1, d));
+  return Math.acos(d);
+}
+
+// Sun fixed at the origin. Earth orbits the Sun in the XZ plane (the
+// ecliptic). The Moon orbits Earth in its own plane, tilted by
+// `inclinationDeg` around the X axis -- a fixed, non-precessing line of
+// nodes. (Real nodes precess over an 18.6-year cycle; that's not central
+// to "why eclipses happen" and is omitted for scope.)
+function earthPosition(orbitAngleRad, earthSunDistance) {
+  return vec(earthSunDistance * Math.cos(orbitAngleRad), 0, earthSunDistance * Math.sin(orbitAngleRad));
+}
+function moonRelativePosition(orbitAngleRad, earthMoonDistance, inclinationDeg) {
+  var i = degToRad(inclinationDeg);
+  var xOrb = earthMoonDistance * Math.cos(orbitAngleRad);
+  var yOrb = earthMoonDistance * Math.sin(orbitAngleRad);
+  return vec(xOrb, -yOrb * Math.sin(i), yOrb * Math.cos(i));
+}
+
+// A cone cast by a near "occluder" body (radius rOcc) blocking a distant
+// "light" body (radius rLight) separated by distance d: the umbra's
+// half-angle tangent is (rLight-rOcc)/d; the penumbra's is (rLight+rOcc)/d.
+// The umbra's cross-section radius at a further distance x from the
+// occluder is rOcc - x*tanUmbra (goes negative past the apex -- its
+// absolute value is then the antumbra's radius, i.e. the "ring of fire"
+// shadow beyond where the umbra converges to nothing). The penumbra's
+// radius at distance x is always rOcc + x*tanPenumbra (only ever grows).
+function shadowCone(rLight, rOcc, lightOccluderDistance) {
+  return { tanUmbra: (rLight - rOcc) / lightOccluderDistance, tanPenumbra: (rLight + rOcc) / lightOccluderDistance };
+}
+function umbraRadiusAt(cone, rOcc, x) { return rOcc - x * cone.tanUmbra; }
+function penumbraRadiusAt(cone, rOcc, x) { return rOcc + x * cone.tanPenumbra; }
+
+// "Best case this cycle" -- is there SOME point on Earth that sees each
+// type, given the current Sun/Earth/Moon geometry?
+function classifySolarEclipse(p) {
+  var sunMoonDistance = vLen(vSub(p.sunPos, p.moonPos));
+  var cone = shadowCone(p.sunRadius, p.moonRadius, sunMoonDistance);
+  var distMoonToEarth = p.earthMoonDistance;
+  var rUmbraAtEarth = umbraRadiusAt(cone, p.moonRadius, distMoonToEarth);
+  var rPenumbraAtEarth = penumbraRadiusAt(cone, p.moonRadius, distMoonToEarth);
+
+  var sunFromMoon = vSub(p.sunPos, p.moonPos);
+  var earthFromMoon = vSub(p.earthPos, p.moonPos);
+  var deltaFromAxis = angleBetween(earthFromMoon, vNeg(sunFromMoon));
+  var earthOffsetFromAxis = distMoonToEarth * Math.sin(deltaFromAxis);
+
+  // The shadow-cone math above implicitly assumes the Moon sits between
+  // the Sun and Earth (new-moon geometry) -- Earth "beyond" the Moon
+  // along the Sun-Moon axis at distance earthMoonDistance. sin() can't
+  // tell 1 degree from 179 degrees apart, so without this guard the same
+  // small-offset math would also false-positive at full moon (Earth and
+  // Sun on the SAME side of the Moon), where the formulas don't apply at
+  // all. Only proceed when deltaFromAxis confirms we're actually on the
+  // new-moon side.
+  var type = "none";
+  if (deltaFromAxis < Math.PI / 2) {
+    var apexDistance = cone.tanUmbra !== 0 ? (p.moonRadius / cone.tanUmbra) : Infinity;
+    var hybridBand = p.earthRadius;
+    if (Math.abs(apexDistance - distMoonToEarth) <= hybridBand && earthOffsetFromAxis < Math.abs(rUmbraAtEarth) + p.earthRadius) {
+      type = "hybrid";
+    } else if (rUmbraAtEarth > 0 && earthOffsetFromAxis < rUmbraAtEarth + p.earthRadius) {
+      type = "total";
+    } else if (rUmbraAtEarth <= 0 && earthOffsetFromAxis < -rUmbraAtEarth + p.earthRadius) {
+      type = "annular";
+    }
+    if (type === "none" && earthOffsetFromAxis < rPenumbraAtEarth + p.earthRadius) { type = "partial"; }
+  }
+
+  return { type: type, earthOffsetFromAxisKm: earthOffsetFromAxis, umbraRadiusAtEarthKm: rUmbraAtEarth, penumbraRadiusAtEarthKm: rPenumbraAtEarth, deltaFromAxisDeg: radToDeg(deltaFromAxis) };
+}
+
+function classifyLunarEclipse(p) {
+  var cone = shadowCone(p.sunRadius, p.earthRadius, p.earthSunDistance);
+  var distEarthToMoon = p.earthMoonDistance;
+  var rUmbraAtMoon = umbraRadiusAt(cone, p.earthRadius, distEarthToMoon);
+  var rPenumbraAtMoon = penumbraRadiusAt(cone, p.earthRadius, distEarthToMoon);
+
+  var sunFromEarth = vSub(p.sunPos, p.earthPos);
+  var moonFromEarth = vSub(p.moonPos, p.earthPos);
+  var deltaFromAntiSun = angleBetween(moonFromEarth, vNeg(sunFromEarth));
+  var impactParam = distEarthToMoon * Math.sin(deltaFromAntiSun);
+
+  // Same guard as the solar case: this math assumes the Moon is roughly
+  // opposite the Sun as seen from Earth (full-moon geometry); without
+  // checking deltaFromAntiSun, new-moon geometry (Sun and Moon on the
+  // SAME side of Earth) could false-positive the same way.
+  var type = "none";
+  if (deltaFromAntiSun < Math.PI / 2) {
+    if (impactParam + p.moonRadius <= rUmbraAtMoon) { type = "total"; }
+    else if (impactParam < rUmbraAtMoon + p.moonRadius) { type = "partial"; }
+    else if (impactParam < rPenumbraAtMoon + p.moonRadius) { type = "penumbral"; }
+  }
+
+  return { type: type, impactParamKm: impactParam, umbraRadiusAtMoonKm: rUmbraAtMoon, penumbraRadiusAtMoonKm: rPenumbraAtMoon, deltaFromAntiSunDeg: radToDeg(deltaFromAntiSun) };
+}
+
+// Builds the full-precision geometry snapshot both the renderer and the
+// classifier read from, given current params + accumulated sim time.
+function computeGeometry(params, simDays) {
+  var earthAngle = (simDays / EARTH_ORBIT_DAYS) * Math.PI * 2;
+  var moonAngle = (simDays / MOON_ORBIT_DAYS) * Math.PI * 2;
+  var sunPos = vec(0, 0, 0);
+  var earthPos = earthPosition(earthAngle, params.earthSunDistance);
+  var moonRel = moonRelativePosition(moonAngle, params.earthMoonDistance, params.inclinationDeg);
+  var moonPos = vec(earthPos.x + moonRel.x, earthPos.y + moonRel.y, earthPos.z + moonRel.z);
+  return {
+    sunRadius: params.sunRadius, earthRadius: params.earthRadius, moonRadius: params.moonRadius,
+    earthSunDistance: params.earthSunDistance, earthMoonDistance: params.earthMoonDistance,
+    sunPos: sunPos, earthPos: earthPos, moonPos: moonPos,
+    earthAngle: earthAngle, moonAngle: moonAngle
+  };
+}
+
+/* ---------- human-readable classification labels ---------- */
+var SOLAR_LABELS = {
+  total: "Total Solar Eclipse", annular: "Annular Solar Eclipse", hybrid: "Hybrid Solar Eclipse",
+  partial: "Partial Solar Eclipse", none: null
+};
+var LUNAR_LABELS = {
+  total: "Total Lunar Eclipse", partial: "Partial Lunar Eclipse", penumbral: "Penumbral Lunar Eclipse", none: null
+};
+function describeStatus(geom) {
+  var solar = classifySolarEclipse(geom);
+  var lunar = classifyLunarEclipse(geom);
+  if (SOLAR_LABELS[solar.type]) {
+    return { active: true, kind: "solar", type: solar.type, label: SOLAR_LABELS[solar.type],
+      reason: "Moon is " + solar.deltaFromAxisDeg.toFixed(2) + "° from dead-center alignment with the Sun" };
+  }
+  if (LUNAR_LABELS[lunar.type]) {
+    return { active: true, kind: "lunar", type: lunar.type, label: LUNAR_LABELS[lunar.type],
+      reason: "Moon is " + lunar.deltaFromAntiSunDeg.toFixed(2) + "° from dead-center in Earth's shadow" };
+  }
+  // Explain why not, using whichever cycle (new/full moon) is closer right now.
+  var newMoonSep = radToDeg(angleBetween(vSub(geom.moonPos, geom.earthPos), vSub(geom.sunPos, geom.earthPos)));
+  var fullMoonSep = 180 - newMoonSep;
+  if (newMoonSep < fullMoonSep) {
+    return { active: false, kind: "solar", type: "none", label: "No Eclipse This Cycle",
+      reason: "Moon is " + solar.deltaFromAxisDeg.toFixed(1) + "° off-axis at new moon -- too far from its node" };
+  }
+  return { active: false, kind: "lunar", type: "none", label: "No Eclipse This Cycle",
+    reason: "Moon is " + lunar.deltaFromAntiSunDeg.toFixed(1) + "° off-axis at full moon -- too far from its node" };
+}
+
+/* ---------- exponential slider mapping (wide-range sliders: radii,
+   distances) -- same technique as Space Sandbox's Properties panel. ---------- */
+function sliderToValue(sliderPct, min, max) {
+  var t = Math.max(0, Math.min(100, sliderPct)) / 100;
+  return min * Math.pow(max / min, t);
+}
+function valueToSlider(value, min, max) {
+  var v = Math.max(min, Math.min(max, value));
+  var t = Math.log(v / min) / Math.log(max / min);
+  return Math.max(0, Math.min(100, t * 100));
+}
+
+/* ============================================================
+   From here on: Three.js-dependent code (scene, camera, UI wiring).
+   ============================================================ */
+
+var loadingOverlay = document.getElementById("loadingOverlay");
+var loadingText = document.getElementById("loadingText");
+var loadingRetryBtn = document.getElementById("loadingRetryBtn");
+loadingRetryBtn.onclick = function() { location.reload(); };
+
+var THREE = null;
+async function loadThree() {
+  try {
+    THREE = await import("https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js");
+    return true;
+  } catch (e) {
+    console.error("Three.js failed to load", e);
+    loadingText.textContent = "Couldn't load the 3D engine. Check your connection and reload.";
+    loadingOverlay.classList.add("error");
+    return false;
+  }
+}
+
+(async function boot() {
+  var ok = await loadThree();
+  if (!ok) { return; }
+  initScene();
+  loadingOverlay.classList.add("hidden");
+  requestAnimationFrame(frame);
+})();
+
+/* ---------- scene state ---------- */
+var canvas, renderer, scene, camera;
+var sunMesh, earthMesh, cloudsMesh, moonMesh, starField, moonMat;
+var coronaSprite, diamondRingSprite;
+var umbraOverlay, penumbraOverlay;
+var earthOrbitLine, moonOrbitLine;
+
+var params = {
+  sunRadius: REAL.sunRadius, earthRadius: REAL.earthRadius, moonRadius: REAL.moonRadius,
+  earthSunDistance: REAL.earthSunDistance, earthMoonDistance: REAL.earthMoonDistance,
+  inclinationDeg: REAL.inclinationDeg, timeScale: 2
+};
+var simDays = 0;
+var paused = false;
+var lastFrameTime = null;
+
+/* ---------- orbital camera (hand-rolled -- no OrbitControls addon,
+   consistent with the decision to avoid Three.js addons entirely) ---------- */
+// Opens close on Earth itself -- a clearly visible, recognizably textured
+// planet, not a speck -- the same "start zoomed in enough to be
+// immediately impressive" choice made for Space Sandbox's default
+// object. At true scale nothing else fits in the same shot anyway (the
+// Moon's orbit is ~60 Earth-radii out, the Sun ~23,000); scrolling out
+// to find the Moon, then further to find the Sun, is the intended
+// discovery arc, not a flaw to engineer around. The target follows Earth
+// every frame (see updateOrbitCamera) so the framing holds steady as
+// Earth orbits.
+var orbitCam = { azimuth: 0.6, elevation: 0.35, distance: toScene(REAL.earthRadius) * 6, target: null, followEarth: true };
+
+function initScene() {
+  MOON_BASE_COLOR = new THREE.Color(0xaaaaaa);
+  MOON_ECLIPSE_COLOR = new THREE.Color(0x8a2a12);
+
+  canvas = document.getElementById("eclipseCanvas");
+  renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, logarithmicDepthBuffer: true });
+  renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.05, 2e6);
+
+  orbitCam.target = new THREE.Vector3(0, 0, 0);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.06));
+  var sunLight = new THREE.PointLight(0xfff4e0, 2.4, 0, 0);
+  scene.add(sunLight);
+
+  // Sun
+  var sunGeo = new THREE.SphereGeometry(toScene(params.sunRadius), 48, 48);
+  var sunMat = new THREE.MeshBasicMaterial({ color: 0xfff1c9 });
+  sunMesh = new THREE.Mesh(sunGeo, sunMat);
+  scene.add(sunMesh);
+
+  // Corona/glow -- a depth-tested, additively-blended billboard sprite
+  // sized larger than the Sun's disc. It's always present (a sun just
+  // looks better with a soft halo), and because it's a real 3D object
+  // positioned at the Sun's own depth, the Moon sphere -- being a real,
+  // closer, opaque object whenever it passes in front -- naturally
+  // occludes the sprite's central portion via ordinary depth testing
+  // while its outer glow (extending past the Moon's angular radius)
+  // stays visible. That occlusion IS the corona effect during a solar
+  // eclipse; no special-cased "eclipse mode" rendering needed.
+  var coronaTex = new THREE.CanvasTexture(makeCoronaCanvas());
+  var coronaMat = new THREE.SpriteMaterial({ map: coronaTex, color: 0xffffff, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, depthTest: true });
+  coronaSprite = new THREE.Sprite(coronaMat);
+  scene.add(coronaSprite);
+
+  // Diamond-ring glint -- a small bright point near the Moon's limb,
+  // shown only in the brief window where the eclipse is on the knife's
+  // edge of totality (angular separation very close to, but not quite,
+  // the total/annular threshold).
+  var glintTex = new THREE.CanvasTexture(makeGlintCanvas());
+  var glintMat = new THREE.SpriteMaterial({ map: glintTex, color: 0xffffff, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, depthTest: true, opacity: 0 });
+  diamondRingSprite = new THREE.Sprite(glintMat);
+  scene.add(diamondRingSprite);
+
+  // Earth
+  var earthGeo = new THREE.SphereGeometry(toScene(params.earthRadius), 64, 64);
+  var earthMat = new THREE.MeshPhongMaterial({ color: 0x8aa0b8, shininess: 6 });
+  earthMesh = new THREE.Mesh(earthGeo, earthMat);
+  scene.add(earthMesh);
+  loadEarthTextures(earthMat);
+
+  var cloudsGeo = new THREE.SphereGeometry(toScene(params.earthRadius) * 1.015, 48, 48);
+  var cloudsMat = new THREE.MeshPhongMaterial({ color: 0xffffff, transparent: true, opacity: 0.55, depthWrite: false });
+  cloudsMesh = new THREE.Mesh(cloudsGeo, cloudsMat);
+  scene.add(cloudsMesh);
+  new THREE.TextureLoader().load("https://threejs.org/examples/textures/planets/earth_clouds_1024.png", function(tex) {
+    tex.colorSpace = THREE.SRGBColorSpace;
+    cloudsMat.alphaMap = tex;
+    cloudsMat.needsUpdate = true;
+  });
+
+  // Moon
+  var moonGeo = new THREE.SphereGeometry(toScene(params.moonRadius), 48, 48);
+  moonMat = new THREE.MeshPhongMaterial({ color: 0xaaaaaa, shininess: 2 });
+  moonMesh = new THREE.Mesh(moonGeo, moonMat);
+  scene.add(moonMesh);
+  new THREE.TextureLoader().load("https://threejs.org/examples/textures/planets/moon_1024.jpg", function(tex) {
+    tex.colorSpace = THREE.SRGBColorSpace;
+    moonMat.map = tex;
+    moonMat.needsUpdate = true;
+  });
+
+  // Orbit path guides -- help show the tilt between the two orbital planes.
+  earthOrbitLine = makeOrbitRing(toScene(params.earthSunDistance), 0, 0x3a4854);
+  moonOrbitLine = makeOrbitRing(toScene(params.earthMoonDistance), params.inclinationDeg, 0x5a6a78);
+  scene.add(earthOrbitLine);
+  earthMesh.add(moonOrbitLine); // ring follows Earth's current position
+
+  // Umbra/penumbra footprint on Earth's surface during a solar eclipse --
+  // flat discs tangent to the surface at the point directly under the
+  // Sun-Moon shadow axis, sized from the exact same umbra/penumbra radii
+  // the classifier computes (see updateEarthShadowOverlay). A simpler
+  // stand-in for a fully curvature-correct equirectangular shadow texture:
+  // visually reads as "the shadow path on the globe" at normal viewing
+  // distances without repainting a large texture every frame.
+  var penumbraGeo = new THREE.CircleGeometry(1, 64);
+  var penumbraMat = new THREE.MeshBasicMaterial({ color: 0x334049, transparent: true, opacity: 0.4, depthWrite: false, side: THREE.DoubleSide });
+  penumbraOverlay = new THREE.Mesh(penumbraGeo, penumbraMat);
+  penumbraOverlay.visible = false;
+  scene.add(penumbraOverlay);
+  var umbraGeo = new THREE.CircleGeometry(1, 64);
+  var umbraMat = new THREE.MeshBasicMaterial({ color: 0x05070a, transparent: true, opacity: 0.8, depthWrite: false, side: THREE.DoubleSide });
+  umbraOverlay = new THREE.Mesh(umbraGeo, umbraMat);
+  umbraOverlay.visible = false;
+  scene.add(umbraOverlay);
+
+  starField = makeStarField();
+  scene.add(starField);
+
+  wireOrbitCameraInput();
+  wireControlsPanel();
+  window.addEventListener("resize", onResize);
+}
+
+function loadEarthTextures(mat) {
+  var loader = new THREE.TextureLoader();
+  loader.load("https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg", function(tex) {
+    tex.colorSpace = THREE.SRGBColorSpace;
+    mat.map = tex; mat.needsUpdate = true;
+  });
+  loader.load("https://threejs.org/examples/textures/planets/earth_normal_2048.jpg", function(tex) {
+    mat.normalMap = tex; mat.needsUpdate = true;
+  });
+  loader.load("https://threejs.org/examples/textures/planets/earth_specular_2048.jpg", function(tex) {
+    mat.specularMap = tex; mat.needsUpdate = true;
+  });
+  // City lights: added as a low-intensity emissive map. Phong's emissive
+  // term is added regardless of lighting, so on the sunlit side it's
+  // barely perceptible under the strong diffuse light, while on the
+  // night side (where diffuse light drops to ~0) it reads as a soft
+  // city-lights glow -- a reasonable day/night approximation without a
+  // custom shader.
+  loader.load("https://threejs.org/examples/textures/planets/earth_lights_2048.png", function(tex) {
+    tex.colorSpace = THREE.SRGBColorSpace;
+    mat.emissiveMap = tex; mat.emissive = new THREE.Color(0xffffff); mat.emissiveIntensity = 0.55;
+    mat.needsUpdate = true;
+  });
+}
+
+function makeOrbitRing(radius, tiltDeg, color) {
+  var points = [];
+  var tilt = degToRad(tiltDeg);
+  for (var a = 0; a <= 128; a++) {
+    var t = (a / 128) * Math.PI * 2;
+    var x = radius * Math.cos(t), yOrb = radius * Math.sin(t);
+    points.push(new THREE.Vector3(x, -yOrb * Math.sin(tilt), yOrb * Math.cos(tilt)));
+  }
+  var geo = new THREE.BufferGeometry().setFromPoints(points);
+  var mat = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.5 });
+  return new THREE.Line(geo, mat);
+}
+
+function makeStarField() {
+  var count = 6000;
+  var radius = 1.5e6;
+  var positions = new Float32Array(count * 3);
+  for (var i = 0; i < count; i++) {
+    // uniform distribution on a sphere shell
+    var u = Math.random(), v = Math.random();
+    var theta = 2 * Math.PI * u, phi = Math.acos(2 * v - 1);
+    positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+    positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+    positions[i * 3 + 2] = radius * Math.cos(phi);
+  }
+  var geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  var mat = new THREE.PointsMaterial({ color: 0xffffff, size: 1600, sizeAttenuation: true });
+  return new THREE.Points(geo, mat);
+}
+
+// Procedural corona texture: a soft radial glow plus a ring of wispy
+// streamer rays at varying length/width, drawn once on an offscreen 2D
+// canvas and handed to Three.js as a CanvasTexture -- the same
+// canvas-drawing technique as Space Sandbox's starfield, just feeding a
+// GPU texture instead of painting the visible canvas directly.
+function makeCoronaCanvas() {
+  var size = 512, cx = size / 2, cy = size / 2;
+  var c = document.createElement("canvas");
+  c.width = size; c.height = size;
+  var ctx = c.getContext("2d");
+  var grad = ctx.createRadialGradient(cx, cy, size * 0.11, cx, cy, size * 0.5);
+  grad.addColorStop(0, "rgba(255,248,230,0.95)");
+  grad.addColorStop(0.22, "rgba(255,238,205,0.55)");
+  grad.addColorStop(0.55, "rgba(255,222,175,0.16)");
+  grad.addColorStop(1, "rgba(255,222,175,0)");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, size, size);
+  ctx.globalCompositeOperation = "lighter";
+  var rayCount = 30;
+  for (var i = 0; i < rayCount; i++) {
+    var angle = (i / rayCount) * Math.PI * 2 + Math.random() * 0.12;
+    var len = size * (0.3 + Math.random() * 0.18);
+    var width = size * (0.008 + Math.random() * 0.02);
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(angle);
+    var rayGrad = ctx.createLinearGradient(0, size * 0.1, 0, len);
+    rayGrad.addColorStop(0, "rgba(255,244,218,0.32)");
+    rayGrad.addColorStop(1, "rgba(255,244,218,0)");
+    ctx.fillStyle = rayGrad;
+    ctx.fillRect(-width / 2, size * 0.1, width, len - size * 0.1);
+    ctx.restore();
+  }
+  return c;
+}
+
+// A tight, very bright point for the diamond-ring glint.
+function makeGlintCanvas() {
+  var size = 128, cx = size / 2, cy = size / 2;
+  var c = document.createElement("canvas");
+  c.width = size; c.height = size;
+  var ctx = c.getContext("2d");
+  var grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, size * 0.5);
+  grad.addColorStop(0, "rgba(255,255,255,1)");
+  grad.addColorStop(0.15, "rgba(255,250,235,0.9)");
+  grad.addColorStop(0.5, "rgba(255,240,200,0.25)");
+  grad.addColorStop(1, "rgba(255,240,200,0)");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, size, size);
+  return c;
+}
+
+/* ---------- orbital camera input: drag to orbit, wheel/pinch to zoom,
+   tap (no drag) on Earth to pick a ground-view location ---------- */
+function wireOrbitCameraInput() {
+  var dragging = false, lastX = 0, lastY = 0;
+  var activePointers = new Map();
+  var pinchStartDist = null, pinchStartCamDist = null;
+  var gestureMoved = 0, gestureStartX = 0, gestureStartY = 0;
+
+  function pointerDistance(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+
+  canvas.addEventListener("pointerdown", function(e) {
+    canvas.setPointerCapture(e.pointerId);
+    activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (activePointers.size === 1) {
+      dragging = true; lastX = e.clientX; lastY = e.clientY;
+      gestureMoved = 0; gestureStartX = e.clientX; gestureStartY = e.clientY;
+    } else if (activePointers.size === 2) {
+      dragging = false;
+      var pts = Array.from(activePointers.values());
+      pinchStartDist = pointerDistance(pts[0], pts[1]);
+      pinchStartCamDist = orbitCam.distance;
+    }
+  });
+  canvas.addEventListener("pointermove", function(e) {
+    if (!activePointers.has(e.pointerId)) { return; }
+    activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (activePointers.size === 1 && dragging) {
+      var dx = e.clientX - lastX, dy = e.clientY - lastY;
+      lastX = e.clientX; lastY = e.clientY;
+      gestureMoved = Math.max(gestureMoved, Math.hypot(e.clientX - gestureStartX, e.clientY - gestureStartY));
+      orbitCam.azimuth -= dx * 0.005;
+      orbitCam.elevation = clamp(orbitCam.elevation - dy * 0.005, -1.5, 1.5);
+    } else if (activePointers.size === 2 && pinchStartDist) {
+      var pts = Array.from(activePointers.values());
+      var dist = pointerDistance(pts[0], pts[1]);
+      var ratio = pinchStartDist / Math.max(1, dist);
+      orbitCam.distance = clamp(pinchStartCamDist * ratio, 1, 2e6);
+    }
+  });
+  function endPointer(e) {
+    var wasSingleTap = activePointers.size === 1 && dragging && gestureMoved < 6;
+    activePointers.delete(e.pointerId);
+    if (activePointers.size < 2) { pinchStartDist = null; }
+    if (activePointers.size === 0) { dragging = false; }
+    if (wasSingleTap && cameraMode === "orbital") { tryPickEarthPoint(e.clientX, e.clientY); }
+  }
+  canvas.addEventListener("pointerup", endPointer);
+  canvas.addEventListener("pointercancel", endPointer);
+
+  canvas.addEventListener("wheel", function(e) {
+    e.preventDefault();
+    var factor = Math.exp(e.deltaY * 0.0015);
+    orbitCam.distance = clamp(orbitCam.distance * factor, 1, 2e6);
+  }, { passive: false });
+
+  document.getElementById("zoomInBtn").onclick = function() { orbitCam.distance = clamp(orbitCam.distance / 1.4, 1, 2e6); };
+  document.getElementById("zoomOutBtn").onclick = function() { orbitCam.distance = clamp(orbitCam.distance * 1.4, 1, 2e6); };
+}
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+function updateOrbitCamera() {
+  if (orbitCam.followEarth) { orbitCam.target.copy(earthMesh.position); }
+  var d = orbitCam.distance;
+  var az = orbitCam.azimuth, el = orbitCam.elevation;
+  var x = orbitCam.target.x + d * Math.cos(el) * Math.cos(az);
+  var y = orbitCam.target.y + d * Math.sin(el);
+  var z = orbitCam.target.z + d * Math.cos(el) * Math.sin(az);
+  camera.position.set(x, y, z);
+  camera.lookAt(orbitCam.target);
+}
+
+/* ============================================================
+   Ground view -- stand at a chosen point on Earth's surface and look up
+   at the sky. The point is stored relative to Earth's position WITHOUT
+   Earth's spin rotation applied (see worldToEarthLocalStable), so ground
+   view doesn't inherit Earth's visual spin animation, which runs far
+   faster than real time at any noticeable time-speed setting and would
+   otherwise spin the sky sickeningly fast.
+   ============================================================ */
+var cameraMode = "orbital"; // "orbital" | "ground" | "transitioning"
+var groundPointLocal = null; // THREE.Vector3 or null (no point chosen yet)
+var cameraTransition = null;
+var raycaster = null;
+
+function worldToEarthLocalStable(worldPoint) {
+  var local = worldPoint.clone().sub(earthMesh.position);
+  var invQuat = earthMesh.quaternion.clone().invert();
+  local.applyQuaternion(invQuat);
+  return local;
+}
+function earthLocalToWorldStable(localPoint) {
+  return localPoint.clone().add(earthMesh.position);
+}
+
+function tryPickEarthPoint(clientX, clientY) {
+  if (!raycaster) { raycaster = new THREE.Raycaster(); }
+  var ndc = new THREE.Vector2((clientX / window.innerWidth) * 2 - 1, -(clientY / window.innerHeight) * 2 + 1);
+  raycaster.setFromCamera(ndc, camera);
+  var hits = raycaster.intersectObject(earthMesh, false);
+  if (hits.length) {
+    groundPointLocal = worldToEarthLocalStable(hits[0].point);
+    enterGroundView();
+  }
+}
+
+// Computes the current world-space camera pose for ground view (recomputed
+// every frame it's needed, since Earth/Sun/Moon keep moving): standing
+// just above the chosen surface point, looking outward along the local
+// "up" (the surface normal) toward the sky -- defaulting to facing the
+// Sun's current direction when it's above this point's horizon, or
+// roughly north otherwise.
+function computeGroundCameraPose() {
+  var worldPt = earthLocalToWorldStable(groundPointLocal);
+  var normal = worldPt.clone().sub(earthMesh.position).normalize();
+  var altitude = toScene(params.earthRadius) * 0.015;
+  var camPos = worldPt.clone().addScaledVector(normal, altitude);
+  var refUp = Math.abs(normal.y) > 0.95 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0);
+  var east = new THREE.Vector3().crossVectors(refUp, normal).normalize();
+  var north = new THREE.Vector3().crossVectors(normal, east).normalize();
+  var toSun = sunMesh.position.clone().sub(camPos);
+  var lookDir = toSun.dot(normal) > 0 ? toSun.normalize() : north.clone().addScaledVector(normal, 0.3).normalize();
+  return { position: camPos, lookAt: camPos.clone().add(lookDir), up: normal };
+}
+
+function poseToQuat(pos, lookAt, up) {
+  var m = new THREE.Matrix4();
+  m.lookAt(pos, lookAt, up || new THREE.Vector3(0, 1, 0));
+  return new THREE.Quaternion().setFromRotationMatrix(m);
+}
+
+function startCameraTransition(toMode) {
+  cameraTransition = { toMode: toMode, fromPos: camera.position.clone(), fromQuat: camera.quaternion.clone(), startTime: performance.now(), duration: 1800 };
+  cameraMode = "transitioning";
+}
+function enterGroundView() {
+  if (!groundPointLocal) {
+    var dir = sunMesh.position.clone().sub(earthMesh.position).normalize();
+    var worldPt = earthMesh.position.clone().addScaledVector(dir, toScene(params.earthRadius));
+    groundPointLocal = worldToEarthLocalStable(worldPt);
+  }
+  startCameraTransition("ground");
+  viewToggleBtn.textContent = "Orbital View";
+}
+function enterOrbitalView() {
+  startCameraTransition("orbital");
+  viewToggleBtn.textContent = "Ground View";
+}
+
+function updateCameraTransition(now) {
+  var t = (now - cameraTransition.startTime) / cameraTransition.duration;
+  var done = t >= 1;
+  var eased = done ? 1 : (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+  var toPos, toLookAt, toUp;
+  if (cameraTransition.toMode === "orbital") {
+    if (orbitCam.followEarth) { orbitCam.target.copy(earthMesh.position); }
+    var d = orbitCam.distance, az = orbitCam.azimuth, el = orbitCam.elevation;
+    toPos = new THREE.Vector3(orbitCam.target.x + d * Math.cos(el) * Math.cos(az), orbitCam.target.y + d * Math.sin(el), orbitCam.target.z + d * Math.cos(el) * Math.sin(az));
+    toLookAt = orbitCam.target; toUp = new THREE.Vector3(0, 1, 0);
+  } else {
+    var pose = computeGroundCameraPose();
+    toPos = pose.position; toLookAt = pose.lookAt; toUp = pose.up;
+  }
+  var toQuat = poseToQuat(toPos, toLookAt, toUp);
+  camera.position.lerpVectors(cameraTransition.fromPos, toPos, eased);
+  camera.quaternion.slerpQuaternions(cameraTransition.fromQuat, toQuat, eased);
+  if (done) { cameraMode = cameraTransition.toMode; cameraTransition = null; }
+}
+
+function onResize() {
+  if (!renderer) { return; }
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+}
+
+/* ============================================================
+   Controls panel (sliders)
+   ============================================================ */
+var statusType = document.getElementById("statusType");
+var statusReason = document.getElementById("statusReason");
+var statusBanner = document.getElementById("statusBanner");
+var controlsPanel = document.getElementById("controlsPanel");
+var controlsOpen = false;
+var viewToggleBtn = document.getElementById("viewToggleBtn");
+viewToggleBtn.addEventListener("click", function() {
+  if (cameraMode === "orbital") { enterGroundView(); }
+  else if (cameraMode === "ground") { enterOrbitalView(); }
+  // mid-transition clicks are ignored -- let the current fly finish first
+});
+
+function makeSliderRow(labelFn, value, min, max, onInput) {
+  var row = document.createElement("div");
+  row.className = "panel-row";
+  var label = document.createElement("div");
+  label.className = "panel-label";
+  label.textContent = labelFn(value);
+  row.appendChild(label);
+  var slider = document.createElement("input");
+  slider.type = "range"; slider.min = "0"; slider.max = "100"; slider.step = "0.1";
+  slider.value = String(valueToSlider(value, min, max));
+  slider.addEventListener("input", function() {
+    var v = sliderToValue(parseFloat(slider.value), min, max);
+    label.textContent = labelFn(v);
+    onInput(v);
+  });
+  row.appendChild(slider);
+  return row;
+}
+function makeLinearSliderRow(labelFn, value, min, max, step, onInput) {
+  var row = document.createElement("div");
+  row.className = "panel-row";
+  var label = document.createElement("div");
+  label.className = "panel-label";
+  label.textContent = labelFn(value);
+  row.appendChild(label);
+  var slider = document.createElement("input");
+  slider.type = "range"; slider.min = String(min); slider.max = String(max); slider.step = String(step);
+  slider.value = String(value);
+  slider.addEventListener("input", function() {
+    var v = parseFloat(slider.value);
+    label.textContent = labelFn(v);
+    onInput(v);
+  });
+  row.appendChild(slider);
+  return row;
+}
+
+function fmtKm(v) { return v >= 1000000 ? (v / 1000000).toFixed(2) + "M km" : Math.round(v).toLocaleString() + " km"; }
+
+function wireControlsPanel() {
+  refreshControlsPanel();
+  document.getElementById("controlsBtn").addEventListener("click", function(e) {
+    e.stopPropagation();
+    controlsOpen = !controlsOpen;
+    controlsPanel.classList.toggle("hidden", !controlsOpen);
+  });
+  document.addEventListener("click", function(e) {
+    if (controlsOpen && !e.target.closest("#controlsPanel, #controlsBtn")) {
+      controlsOpen = false; controlsPanel.classList.add("hidden");
+    }
+  });
+  document.getElementById("pauseBtn").addEventListener("click", function() {
+    paused = !paused;
+    document.getElementById("pauseBtn").textContent = paused ? "Unpause" : "Pause";
+  });
+  document.getElementById("resetBtn").addEventListener("click", function() {
+    params.sunRadius = REAL.sunRadius; params.earthRadius = REAL.earthRadius; params.moonRadius = REAL.moonRadius;
+    params.earthSunDistance = REAL.earthSunDistance; params.earthMoonDistance = REAL.earthMoonDistance;
+    params.inclinationDeg = REAL.inclinationDeg; params.timeScale = 2;
+    applyBodyScales();
+    refreshControlsPanel();
+  });
+
+  var tutorialModal = document.getElementById("tutorialModal");
+  document.getElementById("tutorialBtn").addEventListener("click", function(e) {
+    e.stopPropagation();
+    tutorialModal.innerHTML = "";
+    var card = document.createElement("div");
+    card.className = "modal-card";
+    card.innerHTML =
+      "<h2>How Eclipses Works</h2>" +
+      "<p><strong>Drag</strong> to orbit the camera, <strong>scroll or pinch</strong> to zoom. <strong>Tap Earth</strong> to stand on that exact spot and look up at the sky, or use <strong>Ground View</strong> in the corner.</p>" +
+      "<p>The status banner at the top always tells you what's happening right now -- solar or lunar, and which type -- straight from the real geometry below it, not a script.</p>" +
+      "<p>Open <strong>Controls</strong> to change the Sun, Earth, and Moon's size and distance, the Moon's orbital tilt, and time speed. Every slider is a real lever on why eclipses happen: shrink the Moon and totality becomes impossible -- its shadow can no longer reach Earth, so every solar eclipse turns annular. Push the tilt to 0&deg; and nearly <em>every</em> month becomes an eclipse month, because the Moon's shadow no longer has to thread the needle between Earth's path and its own.</p>" +
+      "<p>A solar eclipse only grazes a narrow path on Earth -- stand there in Ground View during totality to see the corona flare out around the Moon's silhouette. A lunar eclipse is visible from Earth's whole night side at once, and the deeper the Moon sits in Earth's shadow, the redder it turns -- a real blood moon.</p>";
+    var closeBtn = document.createElement("button");
+    closeBtn.className = "close-link";
+    closeBtn.textContent = "Got it";
+    closeBtn.onclick = function() { tutorialModal.classList.add("hidden"); };
+    card.appendChild(closeBtn);
+    tutorialModal.appendChild(card);
+    tutorialModal.classList.remove("hidden");
+  });
+  tutorialModal.addEventListener("click", function(e) { if (e.target === tutorialModal) { tutorialModal.classList.add("hidden"); } });
+}
+
+function refreshControlsPanel() {
+  controlsPanel.innerHTML = "";
+  var h3 = document.createElement("h3");
+  h3.textContent = "Orbital Controls";
+  controlsPanel.appendChild(h3);
+
+  controlsPanel.appendChild(makeSliderRow(function(v) { return "Sun Radius: " + fmtKm(v); }, params.sunRadius, RANGE.sunRadius.min, RANGE.sunRadius.max, function(v) { params.sunRadius = v; applyBodyScales(); }));
+  controlsPanel.appendChild(makeSliderRow(function(v) { return "Earth Radius: " + fmtKm(v); }, params.earthRadius, RANGE.earthRadius.min, RANGE.earthRadius.max, function(v) { params.earthRadius = v; applyBodyScales(); }));
+  controlsPanel.appendChild(makeSliderRow(function(v) { return "Moon Radius: " + fmtKm(v); }, params.moonRadius, RANGE.moonRadius.min, RANGE.moonRadius.max, function(v) { params.moonRadius = v; applyBodyScales(); }));
+  controlsPanel.appendChild(makeSliderRow(function(v) { return "Earth–Sun Distance: " + fmtKm(v); }, params.earthSunDistance, RANGE.earthSunDistance.min, RANGE.earthSunDistance.max, function(v) { params.earthSunDistance = v; applyBodyScales(); }));
+  controlsPanel.appendChild(makeSliderRow(function(v) { return "Earth–Moon Distance: " + fmtKm(v); }, params.earthMoonDistance, RANGE.earthMoonDistance.min, RANGE.earthMoonDistance.max, function(v) { params.earthMoonDistance = v; applyBodyScales(); }));
+  controlsPanel.appendChild(makeLinearSliderRow(function(v) { return "Moon Orbit Tilt: " + v.toFixed(1) + "°"; }, params.inclinationDeg, RANGE.inclinationDeg.min, RANGE.inclinationDeg.max, 0.1, function(v) { params.inclinationDeg = v; applyBodyScales(); }));
+  controlsPanel.appendChild(makeLinearSliderRow(function(v) { return "Time Speed: " + v.toFixed(1) + " days/sec"; }, params.timeScale, RANGE.timeScale.min, RANGE.timeScale.max, 0.1, function(v) { params.timeScale = v; }));
+
+  var hint = document.createElement("div");
+  hint.className = "panel-hint";
+  hint.textContent = "Drag to orbit, scroll/pinch to zoom. Everything here is real orbital geometry -- crank a slider and watch the eclipse type above change live.";
+  controlsPanel.appendChild(hint);
+}
+
+function applyBodyScales() {
+  sunMesh.scale.setScalar(toScene(params.sunRadius) / sunMesh.geometry.parameters.radius);
+  earthMesh.scale.setScalar(toScene(params.earthRadius) / earthMesh.geometry.parameters.radius);
+  cloudsMesh.scale.setScalar((toScene(params.earthRadius) * 1.015) / cloudsMesh.geometry.parameters.radius);
+  moonMesh.scale.setScalar(toScene(params.moonRadius) / moonMesh.geometry.parameters.radius);
+
+  scene.remove(earthOrbitLine);
+  earthOrbitLine = makeOrbitRing(toScene(params.earthSunDistance), 0, 0x3a4854);
+  scene.add(earthOrbitLine);
+  earthMesh.remove(moonOrbitLine);
+  moonOrbitLine = makeOrbitRing(toScene(params.earthMoonDistance), params.inclinationDeg, 0x5a6a78);
+  earthMesh.add(moonOrbitLine);
+}
+
+/* ============================================================
+   Main loop
+   ============================================================ */
+function frame(now) {
+  if (lastFrameTime === null) { lastFrameTime = now; }
+  var dt = Math.min(0.1, (now - lastFrameTime) / 1000);
+  lastFrameTime = now;
+
+  if (!paused) { simDays += dt * params.timeScale; }
+
+  var geom = computeGeometry(params, simDays);
+
+  sunMesh.position.set(toScene(geom.sunPos.x), toScene(geom.sunPos.y), toScene(geom.sunPos.z));
+  earthMesh.position.set(toScene(geom.earthPos.x), toScene(geom.earthPos.y), toScene(geom.earthPos.z));
+  cloudsMesh.position.copy(earthMesh.position);
+  moonMesh.position.set(toScene(geom.moonPos.x), toScene(geom.moonPos.y), toScene(geom.moonPos.z));
+  earthMesh.rotation.y += dt * 0.6;
+  cloudsMesh.rotation.y += dt * 0.5;
+
+  coronaSprite.position.copy(sunMesh.position);
+  var coronaDiameter = toScene(params.sunRadius) * 2 * 3.1;
+  coronaSprite.scale.set(coronaDiameter, coronaDiameter, 1);
+
+  var solar = classifySolarEclipse(geom);
+  var lunar = classifyLunarEclipse(geom);
+  var status = describeStatus(geom);
+  statusType.textContent = status.label;
+  statusReason.textContent = status.reason;
+  statusBanner.classList.toggle("eclipsing", status.active);
+
+  updateDiamondRingGlint(solar);
+  updateEarthShadowOverlay(solar);
+  updateMoonBloodColor(lunar);
+
+  // Orbit-path guide rings are a "see the mechanics" aid for the orbital
+  // view -- a real sky observer wouldn't see them, so hide them in/while
+  // flying to ground view.
+  // The orbit guide rings and the Earth shadow-path discs are a "see the
+  // mechanics from space" aid; up close in ground view a shadow disc sits
+  // almost edge-on right where you're standing and reads as a stray band
+  // across the sky, so both are orbital-view-only.
+  var showGuides = cameraMode === "orbital";
+  earthOrbitLine.visible = showGuides;
+  moonOrbitLine.visible = showGuides;
+  if (!showGuides) { umbraOverlay.visible = false; penumbraOverlay.visible = false; }
+
+  if (cameraMode === "orbital") { updateOrbitCamera(); }
+  else if (cameraMode === "ground") {
+    var pose = computeGroundCameraPose();
+    camera.position.copy(pose.position);
+    camera.up.copy(pose.up);
+    camera.lookAt(pose.lookAt);
+  } else if (cameraMode === "transitioning") {
+    updateCameraTransition(now);
+  }
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+
+// Shows a tight, bright glint near the Moon's sunward limb only in the
+// brief window right at the edge of totality (2nd/3rd contact), fading
+// in as the alignment approaches the umbra's edge from inside it --
+// approximating the diamond-ring effect without scripting a fixed
+// animation, so it emerges naturally from wherever the sliders/time
+// currently put the Moon.
+function updateDiamondRingGlint(solar) {
+  var opacity = 0;
+  if (solar.type === "total" && solar.umbraRadiusAtEarthKm > 0) {
+    var edgeCloseness = solar.earthOffsetFromAxisKm / solar.umbraRadiusAtEarthKm;
+    if (edgeCloseness > 0.7) { opacity = Math.min(1, (edgeCloseness - 0.7) / 0.3); }
+  }
+  diamondRingSprite.material.opacity = opacity;
+  if (opacity > 0) {
+    var dirMoonToSun = new THREE.Vector3().subVectors(sunMesh.position, moonMesh.position).normalize();
+    diamondRingSprite.position.copy(moonMesh.position).addScaledVector(dirMoonToSun, toScene(params.moonRadius));
+    var glintSize = toScene(params.moonRadius) * 0.55;
+    diamondRingSprite.scale.set(glintSize, glintSize, 1);
+  }
+}
+
+// Paints the umbra/penumbra footprint on Earth's surface at the point
+// directly under the Sun-Moon shadow axis, sized from the exact same
+// radii the classifier uses -- so the footprint shown is always
+// consistent with whatever the status banner currently says, and
+// reshapes live as any slider changes the geometry.
+function updateEarthShadowOverlay(solar) {
+  if (solar.type === "none") { umbraOverlay.visible = false; penumbraOverlay.visible = false; return; }
+
+  var moonToSun = new THREE.Vector3().subVectors(sunMesh.position, moonMesh.position).normalize();
+  var toEarth = new THREE.Vector3().subVectors(earthMesh.position, moonMesh.position);
+  var t = toEarth.dot(moonToSun);
+  var closestPointOnAxis = moonMesh.position.clone().addScaledVector(moonToSun, t);
+  var dirFromEarthCenter = closestPointOnAxis.clone().sub(earthMesh.position).normalize();
+  var surfacePoint = earthMesh.position.clone().addScaledVector(dirFromEarthCenter, toScene(params.earthRadius) * 1.004);
+  var faceTarget = surfacePoint.clone().add(dirFromEarthCenter);
+
+  penumbraOverlay.visible = true;
+  penumbraOverlay.position.copy(surfacePoint);
+  penumbraOverlay.lookAt(faceTarget);
+  var penumbraRadiusScene = toScene(solar.penumbraRadiusAtEarthKm);
+  penumbraOverlay.scale.set(penumbraRadiusScene, penumbraRadiusScene, 1);
+
+  var hasUmbraOrAntumbra = solar.type === "total" || solar.type === "annular" || solar.type === "hybrid";
+  umbraOverlay.visible = hasUmbraOrAntumbra;
+  if (hasUmbraOrAntumbra) {
+    umbraOverlay.position.copy(surfacePoint).addScaledVector(dirFromEarthCenter, 0.0005 * toScene(params.earthRadius));
+    umbraOverlay.lookAt(faceTarget);
+    var umbraRadiusScene = Math.max(0.01, toScene(Math.abs(solar.umbraRadiusAtEarthKm)));
+    umbraOverlay.scale.set(umbraRadiusScene, umbraRadiusScene, 1);
+  }
+}
+
+// Tints the Moon's material toward deep red/copper during a lunar
+// eclipse, proportional to how deep into Earth's umbra it currently is --
+// a continuous transition, not a hard on/off, so it visibly deepens as
+// the Moon moves toward dead-center and fades back as it exits.
+// Created lazily inside initScene() (not here at module top-level) --
+// THREE is still null at this point in the script's synchronous
+// execution, since it's loaded via the dynamic import() in loadThree().
+var MOON_BASE_COLOR, MOON_ECLIPSE_COLOR;
+function updateMoonBloodColor(lunar) {
+  var depth = 0;
+  if (lunar.type === "total" || lunar.type === "partial") {
+    depth = clamp(1 - lunar.impactParamKm / Math.max(1, lunar.umbraRadiusAtMoonKm), 0, 1);
+  } else if (lunar.type === "penumbral") {
+    depth = 0.15; // a faint dimming, not a red tint -- real penumbral eclipses are subtle
+  }
+  moonMat.color.copy(MOON_BASE_COLOR).lerp(MOON_ECLIPSE_COLOR, depth);
+  moonMat.emissive.copy(MOON_ECLIPSE_COLOR).multiplyScalar(depth * 0.12);
+}
+</script>
+</body>
+</html>
