@@ -618,6 +618,8 @@ button.hide-toggle, .reply button.hide-toggle {
 .board-card-info .student-stats { font-size: 0.78rem; line-height: 1.5; margin-top: 8px; }
 .board-card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .board-card button { padding: 8px 16px; font-size: 0.85rem; }
+.board-card[draggable="true"] { cursor: grab; }
+.board-card.drag-ghost, .poll-reorder-row.drag-ghost { opacity: 0.4; cursor: grabbing; }
 
 .class-aggregate-card { margin-bottom: 32px; border-color: var(--accent) !important; }
 .class-aggregate-card .board-card-info h3 { color: var(--accent); }
@@ -1474,6 +1476,13 @@ button.hide-toggle, .reply button.hide-toggle {
   background: var(--bg-secondary); border: 1.5px solid var(--border-color); font-size: 0.95rem;
 }
 .simple-picker-row:hover { border-color: var(--accent); }
+
+.poll-reorder-hint { margin: -8px 0 12px 0; text-align: center; font-size: 0.82rem; color: var(--text-secondary); }
+.poll-reorder-list { display: flex; flex-direction: column; gap: 8px; }
+.poll-reorder-row {
+  padding: 12px 16px; border-radius: 12px; background: var(--bg-secondary);
+  border: 1.5px solid var(--border-color); font-size: 0.95rem; cursor: grab;
+}
 
 #seatCanvas {
   position: relative;
