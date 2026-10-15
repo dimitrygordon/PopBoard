@@ -174,6 +174,7 @@ const seatingMapDiv = document.getElementById("seatingMap");
 const seatCanvas = document.getElementById("seatCanvas");
 const addSeatBtn = document.getElementById("addSeatBtn");
 const copyLayoutBtn = document.getElementById("copyLayoutBtn");
+const unassignedStudentsListDiv = document.getElementById("unassignedStudentsList");
 const backToBoardFromSeats = document.getElementById("backToBoardFromSeats");
 const logoutBtnSeats = document.getElementById("logoutBtnSeats");
 const themeToggleSeats = document.getElementById("themeToggleSeats");
@@ -856,14 +857,14 @@ copyLayoutBtn.onclick = async function() {
   var boards = [];
   snap.forEach(function(d) { if (d.id !== currentBoardId) { boards.push({ id: d.id, name: d.data().name }); } });
   if (!boards.length) { alert("No other boards to copy a layout from."); return; }
-  var promptText = "Select a board to copy its seat layout from:\n\n";
-  for (var i = 0; i < boards.length; i++) { promptText += (i + 1) + ". " + boards[i].name + "\n"; }
-  promptText += "\nEnter number:";
-  var sel = prompt(promptText);
-  var idx = parseInt(sel) - 1;
-  if (isNaN(idx) || idx < 0 || idx >= boards.length) { alert("Invalid selection."); return; }
-  var sourceSeatsSnap = await getDocs(collection(db, "boards", boards[idx].id, "seats"));
-  if (sourceSeatsSnap.empty) { alert(boards[idx].name + " has no seats to copy."); return; }
+  openSimplePicker("Copy Layout From...", boards, function(b) { return b.name; }, function(b) {
+    copySeatLayoutFrom(b.id, b.name);
+  });
+};
+
+async function copySeatLayoutFrom(sourceBoardId, sourceBoardName) {
+  var sourceSeatsSnap = await getDocs(collection(db, "boards", sourceBoardId, "seats"));
+  if (sourceSeatsSnap.empty) { alert(sourceBoardName + " has no seats to copy."); return; }
   var copyPromises = [];
   sourceSeatsSnap.forEach(function(d) {
     var seat = d.data();
@@ -874,7 +875,48 @@ copyLayoutBtn.onclick = async function() {
     }));
   });
   await Promise.all(copyPromises);
-};
+}
+
+// Generic "pick one item from a list" overlay, replacing the old
+// numbered-prompt() idiom (still used by showMergeDialog) with a clickable
+// list -- clicking a row immediately runs onPick(item) and closes.
+function openSimplePicker(title, items, getLabel, onPick) {
+  closeSimplePicker();
+  var overlay = document.createElement("div");
+  overlay.id = "simplePickerOverlay";
+  overlay.className = "simple-picker-overlay";
+  overlay.onclick = function(e) { if (e.target === overlay) { closeSimplePicker(); } };
+  var card = document.createElement("div");
+  card.className = "simple-picker-card glass-specular";
+  var heading = document.createElement("h3");
+  heading.textContent = title;
+  card.appendChild(heading);
+  var list = document.createElement("div");
+  list.className = "simple-picker-list";
+  items.forEach(function(item) {
+    var row = document.createElement("button");
+    row.type = "button";
+    row.className = "simple-picker-row";
+    row.textContent = getLabel(item);
+    row.onclick = function() { closeSimplePicker(); onPick(item); };
+    list.appendChild(row);
+  });
+  card.appendChild(list);
+  var closeBtn = document.createElement("button");
+  closeBtn.type = "button";
+  closeBtn.className = "seat-map-modal-close";
+  closeBtn.textContent = "✕";
+  closeBtn.title = "Close";
+  closeBtn.onclick = function() { closeSimplePicker(); };
+  card.appendChild(closeBtn);
+  overlay.appendChild(card);
+  document.body.appendChild(overlay);
+}
+
+function closeSimplePicker() {
+  var existing = document.getElementById("simplePickerOverlay");
+  if (existing) { existing.remove(); }
+}
 
 backToStudentsFromDashboard.onclick = function() {
   studentDashboardDiv.classList.add("hidden");
@@ -3134,6 +3176,7 @@ function loadSeatingMap() {
   if (unsubSeats) { unsubSeats(); unsubSeats = null; }
   if (!currentBoardId) { return; }
   seatCanvas.innerHTML = "";
+  if (unassignedStudentsListDiv) { unassignedStudentsListDiv.innerHTML = ""; }
   closeSeatPopup();
   seatingStudentsCache = {};
   seatingSeatsCache = [];
@@ -3143,14 +3186,14 @@ function loadSeatingMap() {
     var map = {};
     snap.forEach(function(d) { map[d.id] = Object.assign({ id: d.id }, d.data()); });
     seatingStudentsCache = map;
-    if (!draggingSeatId) { renderSeats(); }
+    if (!draggingSeatId) { renderSeats(); renderUnassignedStudentsList(); }
     refreshOpenSeatPopup();
   });
   var unsubSeatsLocal = onSnapshot(collection(db, "boards", currentBoardId, "seats"), function(snap) {
     var list = [];
     snap.forEach(function(d) { list.push(Object.assign({ id: d.id }, d.data())); });
     seatingSeatsCache = list;
-    if (!draggingSeatId) { renderSeats(); }
+    if (!draggingSeatId) { renderSeats(); renderUnassignedStudentsList(); }
     refreshOpenSeatPopup();
   });
   var unsubResponsePollLocal = null;
@@ -3206,6 +3249,31 @@ function studentRespondedToPoll(poll, studentUsername) {
   if (!poll) { return false; }
   if (poll.type === "mc") { return (poll.voters || []).indexOf(studentUsername) !== -1; }
   return (poll.history || []).some(function(h) { return h.username === studentUsername; });
+}
+
+// Lists every student with no seat at all (not just "free for THIS seat",
+// unlike the popup's own assignment dropdown at openSeatPopup) below the
+// seat grid, so a teacher can see at a glance who still needs a spot.
+function renderUnassignedStudentsList() {
+  if (!unassignedStudentsListDiv) { return; }
+  if (seatMapResponsePollId) { unassignedStudentsListDiv.innerHTML = ""; return; }
+  var noSeatStudents = Object.keys(seatingStudentsCache)
+    .map(function(id) { return seatingStudentsCache[id]; })
+    .filter(function(s) { return !seatingSeatsCache.some(function(seat) { return seat.studentId === s.id; }); });
+  if (!noSeatStudents.length) { unassignedStudentsListDiv.innerHTML = ""; return; }
+  unassignedStudentsListDiv.innerHTML = "";
+  var heading = document.createElement("h3");
+  heading.innerHTML = iconLabel("seat", "Students Without a Seat (" + noSeatStudents.length + ")");
+  unassignedStudentsListDiv.appendChild(heading);
+  var pillsDiv = document.createElement("div");
+  pillsDiv.className = "unassigned-students-pills";
+  noSeatStudents.forEach(function(s) {
+    var pill = document.createElement("span");
+    pill.className = "unassigned-student-pill";
+    pill.appendChild(document.createTextNode((s.emoji ? s.emoji + " " : "") + (s.nickname || s.username || "")));
+    pillsDiv.appendChild(pill);
+  });
+  unassignedStudentsListDiv.appendChild(pillsDiv);
 }
 
 function renderSeats() {
