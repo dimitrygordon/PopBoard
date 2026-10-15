@@ -157,6 +157,9 @@ var DEFAULT_MASS = EARTH_MASS, DEFAULT_RADIUS = EARTH_RADIUS;
 var TRAIL_MAX_POINTS = 260;
 var LAUNCH_SPEED_SCALE = 0.35;   // drag-distance (world units) -> initial velocity scale when flinging a new object
 var MERGE_OVERLAP_FRACTION = 0.65; // particles merge once overlap exceeds this fraction of the smaller radius
+var MAX_SUBSTEP_DT = 1 / 120;    // physics sub-step cap, so orbits stay accurate regardless of frame rate or speed multiplier
+var ZOOM_MIN = 0.02, ZOOM_MAX = 250;
+var PINCH_DETECT_DELAY_MS = 130; // how long a single-finger press waits before placing an object, to give a second finger time to land and turn it into a pinch instead
 
 /* ---------- pure math: gravity, integration, merging, classification, camera ----------
    Kept free of DOM/canvas/global-state references so they can be extracted and unit
@@ -284,7 +287,13 @@ resizeCanvas();
 /* ---------- state ---------- */
 var particles = [];
 var nextId = 1;
-var camera = { x: 0, y: 0, zoom: 1, rotation: 0 };
+// A default-sized object (radius = DEFAULT_RADIUS, 1 world unit) should
+// read as a real object on first use, not a 2px dot -- start zoomed in so
+// its diameter is roughly a fifth of the screen's shorter side. Computed
+// once here (canvasW/canvasH are already set by the resizeCanvas() call
+// above) rather than on every later resize, so rotating/resizing the
+// browser window never yanks the student's own zoom back.
+var camera = { x: 0, y: 0, zoom: clamp((Math.min(canvasW, canvasH) * 0.1) / DEFAULT_RADIUS, ZOOM_MIN, ZOOM_MAX), rotation: 0 };
 var paused = false;
 var selectedId = null;          // particle currently shown/edited in the Properties panel, or null -> edits the template
 var nextObjectTemplate = { mass: DEFAULT_MASS, radius: DEFAULT_RADIUS, color: { r: 90, g: 200, b: 120 } };
@@ -308,7 +317,8 @@ function makeParticle(x, y, vx, vy, mass, radius, color) {
     id: nextId++,
     x: x, y: y, vx: vx, vy: vy, mass: mass, radius: radius,
     color: { r: color.r, g: color.g, b: color.b },
-    trail: [], ax: 0, ay: 0
+    trail: [], ax: 0, ay: 0,
+    wasBlackHole: false // sticky once true -- see updateBlackHoleFlags()
   };
 }
 
@@ -325,8 +335,15 @@ function removeParticleAt(index) {
 
 /* ---------- starfield: seeded pseudo-random points on a repeating
    world-space grid, so panning never visibly repeats a pattern close up
-   and nothing unbounded needs to be stored for an "infinite" canvas. */
-var STAR_CELL = 600;      // world units per repeating cell
+   and nothing unbounded needs to be stored for an "infinite" canvas.
+   The cell size isn't fixed: with zoom ranging from 0.02x to 250x+, a
+   single world-space cell size would either blow up to cover the whole
+   screen (no stars in view) or shrink to a speck (thousands of cells to
+   scan), so the cell size is picked per-frame from the current zoom,
+   snapped to the nearest power-of-2 octave so it only re-snaps (and stars
+   only "jump" to a new layer) at zoom-octave boundaries, not continuously. */
+var STAR_TARGET_SCREEN_PX = 180; // aim for roughly one cell per this many screen px
+var STAR_CELL_UNIT = 1;          // smallest octave step, world units
 var STARS_PER_CELL = 14;
 function mulberry32(seed) {
   return function() {
@@ -336,13 +353,19 @@ function mulberry32(seed) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-function cellStars(cx, cy) {
-  var rand = mulberry32((cx * 374761393 + cy * 668265263) | 0);
+function starCellSizeForZoom(zoom) {
+  var raw = STAR_TARGET_SCREEN_PX / Math.max(1e-6, zoom);
+  var octave = Math.round(Math.log2(raw / STAR_CELL_UNIT));
+  return STAR_CELL_UNIT * Math.pow(2, octave);
+}
+function cellStars(cx, cy, cellSize) {
+  var seed = (cx * 374761393 + cy * 668265263 + Math.round(cellSize) * 2654435761) | 0;
+  var rand = mulberry32(seed);
   var stars = [];
   for (var i = 0; i < STARS_PER_CELL; i++) {
     stars.push({
-      x: cx * STAR_CELL + rand() * STAR_CELL,
-      y: cy * STAR_CELL + rand() * STAR_CELL,
+      x: cx * cellSize + rand() * cellSize,
+      y: cy * cellSize + rand() * cellSize,
       r: 0.5 + rand() * 1.3,
       a: 0.35 + rand() * 0.65
     });
@@ -404,12 +427,59 @@ function hitTestParticle(screenX, screenY) {
    second pointer touching down cancels any in-progress placement and
    switches to two-finger pan/zoom for the rest of that gesture. */
 var activePointers = new Map(); // pointerId -> {x,y}
-var placeGesture = null;        // {startWorld:{x,y}, particle} while placing+aiming
+var placeGesture = null;        // {startWorld:{x,y}, particle, aimWorld} while placing+aiming
 var panZoomGesture = null;      // {startDist, startMid, startCamera} while two-finger
+// A single-finger press doesn't place an object right away -- it waits
+// briefly so a second finger landing for a pinch can cancel it instead.
+// {pointerId, startWorld, lastWorld, timer} while waiting to decide.
+var pendingPlacement = null;
 
 function eventIsOverUi(e) {
   var el = e.target;
   return !!(el.closest && el.closest(".bar, .panel, .modal-overlay, #zoomControls"));
+}
+
+function cancelPendingPlacement() {
+  if (pendingPlacement) { clearTimeout(pendingPlacement.timer); pendingPlacement = null; }
+}
+
+// Actually creates the deferred object (template/comet/cluster), using
+// whatever the pointer's net drag was by the time this runs. `fromRelease`
+// is true when the pointer was lifted before the delay elapsed (an
+// ordinary quick tap) -- in that case there's no further move/up event
+// coming, so the fling velocity is applied immediately instead of opening
+// an aim gesture that would never close.
+function finalizePendingPlacement(fromRelease) {
+  if (!pendingPlacement) { return; }
+  var pending = pendingPlacement;
+  pendingPlacement = null;
+  clearTimeout(pending.timer);
+
+  if (pendingPreset === "cluster") {
+    spawnAsteroidCluster(pending.startWorld.x, pending.startWorld.y);
+    pendingPreset = null;
+    placeGesture = null;
+    return;
+  }
+  var p = pendingPreset === "comet" ? makeCometParticle(pending.startWorld.x, pending.startWorld.y)
+    : makeParticle(pending.startWorld.x, pending.startWorld.y, 0, 0, nextObjectTemplate.mass, nextObjectTemplate.radius, nextObjectTemplate.color);
+  pendingPreset = null;
+  particles.push(p);
+  selectedId = p.id;
+  refreshPropertiesPanel();
+
+  var moved = pending.lastWorld.x !== pending.startWorld.x || pending.lastWorld.y !== pending.startWorld.y;
+  if (fromRelease) {
+    if (moved) {
+      var dx = pending.lastWorld.x - pending.startWorld.x, dy = pending.lastWorld.y - pending.startWorld.y;
+      p.vx = dx * LAUNCH_SPEED_SCALE;
+      p.vy = dy * LAUNCH_SPEED_SCALE;
+    }
+    placeGesture = null;
+  } else {
+    placeGesture = { startWorld: pending.startWorld, particle: p };
+    if (moved) { placeGesture.aimWorld = pending.lastWorld; }
+  }
 }
 
 canvas.addEventListener("pointerdown", function(e) {
@@ -424,23 +494,19 @@ canvas.addEventListener("pointerdown", function(e) {
       selectedId = hit.id;
       refreshPropertiesPanel();
       placeGesture = null;
-    } else if (pendingPreset === "cluster") {
-      spawnAsteroidCluster(world.x, world.y);
-      pendingPreset = null;
-      placeGesture = null;
     } else {
-      var p = pendingPreset === "comet" ? makeCometParticle(world.x, world.y)
-        : makeParticle(world.x, world.y, 0, 0, nextObjectTemplate.mass, nextObjectTemplate.radius, nextObjectTemplate.color);
-      pendingPreset = null;
-      particles.push(p);
-      selectedId = p.id;
-      refreshPropertiesPanel();
-      placeGesture = { startWorld: world, particle: p };
+      pendingPlacement = {
+        pointerId: e.pointerId,
+        startWorld: world,
+        lastWorld: world,
+        timer: setTimeout(function() { finalizePendingPlacement(false); }, PINCH_DETECT_DELAY_MS)
+      };
     }
   } else if (activePointers.size === 2) {
-    // A second finger landed mid-placement -- the object placed by the
-    // first finger stays (already pushed into `particles` above with
-    // zero velocity), it just won't get a fling from this gesture.
+    // A second finger landed -- this is a pinch, not a tap, so cancel any
+    // placement the first finger was about to make; nothing has been
+    // created yet, so there's nothing to undo.
+    cancelPendingPlacement();
     placeGesture = null;
     var pts = Array.from(activePointers.values());
     panZoomGesture = {
@@ -455,7 +521,9 @@ canvas.addEventListener("pointermove", function(e) {
   if (!activePointers.has(e.pointerId)) { return; }
   activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
-  if (placeGesture && activePointers.size === 1) {
+  if (pendingPlacement && pendingPlacement.pointerId === e.pointerId && activePointers.size === 1) {
+    pendingPlacement.lastWorld = screenToWorld(camera, canvasW, canvasH, e.clientX, e.clientY);
+  } else if (placeGesture && activePointers.size === 1) {
     var world = screenToWorld(camera, canvasW, canvasH, e.clientX, e.clientY);
     placeGesture.aimWorld = world;
   } else if (panZoomGesture && activePointers.size === 2) {
@@ -463,7 +531,7 @@ canvas.addEventListener("pointermove", function(e) {
     var dist = pointerDistance(pts[0], pts[1]);
     var mid = pointerMidpoint(pts[0], pts[1]);
     var zoomRatio = dist / Math.max(1, panZoomGesture.startDist);
-    camera.zoom = clamp(panZoomGesture.startCamera.zoom * zoomRatio, 0.02, 40);
+    camera.zoom = clamp(panZoomGesture.startCamera.zoom * zoomRatio, ZOOM_MIN, ZOOM_MAX);
     // Pan so the midpoint stays under the fingers (translate by the
     // midpoint's screen delta, converted at the ORIGINAL zoom so a
     // simultaneous pinch doesn't fight the pan). Rotated into world space
@@ -483,6 +551,18 @@ canvas.addEventListener("pointermove", function(e) {
 function endPointer(e) {
   if (!activePointers.has(e.pointerId)) { return; }
   activePointers.delete(e.pointerId);
+
+  if (pendingPlacement && pendingPlacement.pointerId === e.pointerId) {
+    if (e.type === "pointerup") {
+      // The finger lifted before the pinch-detection delay elapsed -- an
+      // ordinary quick tap, so place (and fling, if dragged) right now.
+      finalizePendingPlacement(true);
+    } else {
+      // pointercancel -- the gesture was aborted, not completed; don't
+      // place anything.
+      cancelPendingPlacement();
+    }
+  }
 
   if (placeGesture && placeGesture.particle) {
     if (placeGesture.aimWorld) {
@@ -510,7 +590,7 @@ canvas.addEventListener("wheel", function(e) {
   e.preventDefault();
   if (e.ctrlKey) {
     var factor = Math.exp(-e.deltaY * 0.01);
-    camera.zoom = clamp(camera.zoom * factor, 0.02, 40);
+    camera.zoom = clamp(camera.zoom * factor, ZOOM_MIN, ZOOM_MAX);
   } else {
     var cos = Math.cos(-camera.rotation), sin = Math.sin(-camera.rotation);
     var dxWorld = (e.deltaX * cos - e.deltaY * sin) / camera.zoom;
@@ -521,8 +601,8 @@ canvas.addEventListener("wheel", function(e) {
 }, { passive: false });
 
 /* ---------- on-screen zoom buttons (explicit laptop affordance) ---------- */
-document.getElementById("zoomInBtn").addEventListener("click", function() { camera.zoom = clamp(camera.zoom * 1.35, 0.02, 40); });
-document.getElementById("zoomOutBtn").addEventListener("click", function() { camera.zoom = clamp(camera.zoom / 1.35, 0.02, 40); });
+document.getElementById("zoomInBtn").addEventListener("click", function() { camera.zoom = clamp(camera.zoom * 1.35, ZOOM_MIN, ZOOM_MAX); });
+document.getElementById("zoomOutBtn").addEventListener("click", function() { camera.zoom = clamp(camera.zoom / 1.35, ZOOM_MIN, ZOOM_MAX); });
 
 /* ============================================================
    UI: Properties panel, Extras panel, Tutorial, More Placeable Objects
@@ -539,53 +619,81 @@ function currentPropsTarget() {
   return sel || nextObjectTemplate;
 }
 
-function applyToTarget(mutator) {
-  mutator(currentPropsTarget());
-  refreshPropertiesPanel();
-}
-
-function makeSliderRow(labelText, value, min, max, sliderClass, onInput) {
+// `opts.linear` gives a plain min..max slider (used for 0-255 color
+// channels, where the exponential mapping below would divide by a zero
+// `min` and produce NaN); omitted/false keeps the exponential mapping
+// (fine control at the low end, still reaching a wide top end) used for
+// mass/radius. Returns the live elements instead of just the row so the
+// caller can patch a label or swatch directly on 'input' -- rebuilding
+// the whole panel's DOM on every drag tick (the previous approach) tore
+// down the slider the user's pointer was actively dragging, which is why
+// sliders only ever registered as a single click instead of a drag.
+function makeSliderRow(labelText, value, min, max, sliderClass, onInput, opts) {
+  opts = opts || {};
   var row = document.createElement("div");
   row.className = "panel-row";
-  if (labelText) {
-    var label = document.createElement("div");
+  var label = null;
+  if (labelText !== null) {
+    label = document.createElement("div");
     label.className = "panel-label";
     label.textContent = labelText;
     row.appendChild(label);
   }
   var slider = document.createElement("input");
   slider.type = "range";
-  slider.min = "0"; slider.max = "100"; slider.step = "0.1";
   if (sliderClass) { slider.className = sliderClass; }
-  slider.value = valueToSlider(value, min, max);
-  slider.addEventListener("input", function() { onInput(sliderToValue(parseFloat(slider.value), min, max)); });
+  if (opts.linear) {
+    slider.min = String(min); slider.max = String(max); slider.step = String(opts.step || 1);
+    slider.value = String(value);
+    slider.addEventListener("input", function() { onInput(parseFloat(slider.value)); });
+  } else {
+    slider.min = "0"; slider.max = "100"; slider.step = "0.1";
+    slider.value = String(valueToSlider(value, min, max));
+    slider.addEventListener("input", function() { onInput(sliderToValue(parseFloat(slider.value), min, max)); });
+  }
   row.appendChild(slider);
-  return row;
+  return { row: row, slider: slider, label: label };
 }
 
 function refreshPropertiesPanel() {
   if (!propertiesOpen) { return; }
   var target = currentPropsTarget();
-  var isStarScale = target.radius >= STAR_RADIUS_CUTOFF;
-  var unitLabel = isStarScale ? "Sun" : "Earth";
-  var massUnits = isStarScale ? SUN_MASS : EARTH_MASS;
-  var radiusUnits = isStarScale ? SUN_RADIUS : EARTH_RADIUS;
+
+  function unitLabels() {
+    var isStarScale = target.radius >= STAR_RADIUS_CUTOFF;
+    var unitLabel = isStarScale ? "Sun" : "Earth";
+    var massUnits = isStarScale ? SUN_MASS : EARTH_MASS;
+    var radiusUnits = isStarScale ? SUN_RADIUS : EARTH_RADIUS;
+    return {
+      mass: unitLabel + " Masses: " + (target.mass / massUnits).toFixed(2),
+      radius: unitLabel + " Radii: " + (target.radius / radiusUnits).toFixed(2)
+    };
+  }
+  // Both labels (not just the one being dragged) are kept in sync on every
+  // input, since the Earth<->Sun unit switch is driven by radius alone and
+  // would otherwise go stale on the mass label while radius is dragged.
+  function syncUnitLabels() {
+    var t = unitLabels();
+    if (massRow.label) { massRow.label.textContent = t.mass; }
+    if (radiusRow.label) { radiusRow.label.textContent = t.radius; }
+  }
 
   propertiesPanel.innerHTML = "";
   var h3 = document.createElement("h3");
   h3.textContent = "Object Properties";
   propertiesPanel.appendChild(h3);
 
-  propertiesPanel.appendChild(makeSliderRow(
-    unitLabel + " Masses: " + (target.mass / massUnits).toFixed(2),
-    target.mass, MASS_MIN, MASS_MAX, null,
-    function(v) { applyToTarget(function(t) { t.mass = v; }); }
-  ));
-  propertiesPanel.appendChild(makeSliderRow(
-    unitLabel + " Radii: " + (target.radius / radiusUnits).toFixed(2),
-    target.radius, RADIUS_MIN, RADIUS_MAX, null,
-    function(v) { applyToTarget(function(t) { t.radius = v; }); }
-  ));
+  var massRow = makeSliderRow(unitLabels().mass, target.mass, MASS_MIN, MASS_MAX, null, function(v) {
+    target.mass = v;
+    syncUnitLabels();
+  });
+  propertiesPanel.appendChild(massRow.row);
+
+  var radiusRow = makeSliderRow(unitLabels().radius, target.radius, RADIUS_MIN, RADIUS_MAX, null, function(v) {
+    target.radius = v;
+    syncUnitLabels();
+  });
+  propertiesPanel.appendChild(radiusRow.row);
 
   var colorRow = document.createElement("div");
   colorRow.className = "panel-row";
@@ -599,15 +707,22 @@ function refreshPropertiesPanel() {
   colorRow.appendChild(colorLabel);
   propertiesPanel.appendChild(colorRow);
 
-  propertiesPanel.appendChild(makeSliderRow(null, target.color.r, 0, 255, "slider-red", function(v) { applyToTarget(function(t) { t.color.r = Math.round(v); }); }));
-  propertiesPanel.appendChild(makeSliderRow(null, target.color.g, 0, 255, "slider-green", function(v) { applyToTarget(function(t) { t.color.g = Math.round(v); }); }));
-  propertiesPanel.appendChild(makeSliderRow(null, target.color.b, 0, 255, "slider-blue", function(v) { applyToTarget(function(t) { t.color.b = Math.round(v); }); }));
+  function syncSwatch() {
+    swatch.style.background = "rgb(" + target.color.r + "," + target.color.g + "," + target.color.b + ")";
+  }
+
+  propertiesPanel.appendChild(makeSliderRow(null, target.color.r, 0, 255, "slider-red", function(v) { target.color.r = Math.round(v); syncSwatch(); }, { linear: true }).row);
+  propertiesPanel.appendChild(makeSliderRow(null, target.color.g, 0, 255, "slider-green", function(v) { target.color.g = Math.round(v); syncSwatch(); }, { linear: true }).row);
+  propertiesPanel.appendChild(makeSliderRow(null, target.color.b, 0, 255, "slider-blue", function(v) { target.color.b = Math.round(v); syncSwatch(); }, { linear: true }).row);
 
   var resetLink = document.createElement("button");
   resetLink.className = "panel-link";
   resetLink.textContent = "Reset All";
   resetLink.onclick = function() {
-    applyToTarget(function(t) { t.mass = DEFAULT_MASS; t.radius = DEFAULT_RADIUS; t.color = { r: DEFAULT_COLOR.r, g: DEFAULT_COLOR.g, b: DEFAULT_COLOR.b }; });
+    target.mass = DEFAULT_MASS; target.radius = DEFAULT_RADIUS;
+    target.color = { r: DEFAULT_COLOR.r, g: DEFAULT_COLOR.g, b: DEFAULT_COLOR.b };
+    target.wasBlackHole = false;
+    refreshPropertiesPanel(); // discrete click, not a drag -- a full rebuild here is fine
   };
   propertiesPanel.appendChild(resetLink);
 
@@ -845,6 +960,11 @@ function resolveCollisions() {
           particles.splice(i, 1);
           var newParticle = makeParticle(merged.x, merged.y, merged.vx, merged.vy, merged.mass, merged.radius, merged.color);
           newParticle.trail = (a.mass >= b.mass ? a.trail : b.trail) || [];
+          // A black hole absorbing ordinary matter shouldn't un-collapse just
+          // because the merge's volume-additive radius dilutes its average
+          // density below the threshold -- once either parent was a black
+          // hole (or the merge result itself already is one), stays one.
+          newParticle.wasBlackHole = a.wasBlackHole || b.wasBlackHole || classify(merged.mass, merged.radius) === "blackhole";
           particles.push(newParticle);
           if (wasSelected) { selectedId = newParticle.id; }
           mergedAny = true;
@@ -853,6 +973,18 @@ function resolveCollisions() {
       }
     }
     if (!mergedAny) { break; }
+  }
+}
+
+// Marks any particle currently dense enough as a permanent black hole, so
+// it can never read as "not a black hole" again later just because its
+// density happened to dip (e.g. after absorbing lighter matter in a merge).
+// Runs every frame (even while paused) so adjusting a selected object's
+// sliders in the Properties panel reflects the black-hole threshold live.
+function updateBlackHoleFlags() {
+  for (var i = 0; i < particles.length; i++) {
+    var p = particles[i];
+    if (!p.wasBlackHole && classify(p.mass, p.radius) === "blackhole") { p.wasBlackHole = true; }
   }
 }
 
@@ -879,19 +1011,20 @@ function updateCamera(dt) {
 /* ============================================================
    Rendering
    ============================================================ */
-function visibleCellRange() {
+function visibleCellRange(cellSize) {
   var topLeft = screenToWorld(camera, canvasW, canvasH, 0, 0);
   var bottomRight = screenToWorld(camera, canvasW, canvasH, canvasW, canvasH);
   var minX = Math.min(topLeft.x, bottomRight.x), maxX = Math.max(topLeft.x, bottomRight.x);
   var minY = Math.min(topLeft.y, bottomRight.y), maxY = Math.max(topLeft.y, bottomRight.y);
   return {
-    cx0: Math.floor(minX / STAR_CELL) - 1, cx1: Math.ceil(maxX / STAR_CELL) + 1,
-    cy0: Math.floor(minY / STAR_CELL) - 1, cy1: Math.ceil(maxY / STAR_CELL) + 1
+    cx0: Math.floor(minX / cellSize) - 1, cx1: Math.ceil(maxX / cellSize) + 1,
+    cy0: Math.floor(minY / cellSize) - 1, cy1: Math.ceil(maxY / cellSize) + 1
   };
 }
 
 function drawStarfield() {
-  var range = visibleCellRange();
+  var cellSize = starCellSizeForZoom(camera.zoom);
+  var range = visibleCellRange(cellSize);
   // Rotation makes per-cell culling unreliable (a cell outside the
   // axis-aligned bounds can still rotate into view) -- widen the range a
   // little rather than tracking a rotated bounding shape, cheap enough at
@@ -899,7 +1032,7 @@ function drawStarfield() {
   var pad = camera.rotation !== 0 ? 1 : 0;
   for (var cx = range.cx0 - pad; cx <= range.cx1 + pad; cx++) {
     for (var cy = range.cy0 - pad; cy <= range.cy1 + pad; cy++) {
-      var stars = cellStars(cx, cy);
+      var stars = cellStars(cx, cy, cellSize);
       for (var i = 0; i < stars.length; i++) {
         var s = worldToScreen(camera, canvasW, canvasH, stars[i].x, stars[i].y);
         if (s.x < -4 || s.x > canvasW + 4 || s.y < -4 || s.y > canvasH + 4) { continue; }
@@ -934,7 +1067,7 @@ function drawTrails() {
 function drawParticle(p) {
   var s = worldToScreen(camera, canvasW, canvasH, p.x, p.y);
   var r = Math.max(1, p.radius * camera.zoom);
-  var cls = classify(p.mass, p.radius);
+  var cls = p.wasBlackHole ? "blackhole" : classify(p.mass, p.radius);
 
   if (cls === "blackhole") {
     ctx.beginPath();
@@ -1062,8 +1195,16 @@ function frame(now) {
 
   if (!paused) {
     var simDt = dt * speedMultiplier;
-    stepPhysics(particles, simDt, G, SOFTENING);
-    resolveCollisions();
+    // A single large step per frame makes orbits visibly precess/wobble
+    // instead of staying elliptical (classic symplectic-Euler error at
+    // large dt) -- so split into fixed-size sub-steps instead of one step
+    // scaled to the frame's (variable, and speed-multiplied) dt.
+    var steps = Math.max(1, Math.ceil(simDt / MAX_SUBSTEP_DT));
+    var subDt = simDt / steps;
+    for (var s = 0; s < steps; s++) {
+      stepPhysics(particles, subDt, G, SOFTENING);
+      resolveCollisions();
+    }
     if (extras.planetTrails) {
       for (var i = 0; i < particles.length; i++) {
         var p = particles[i];
@@ -1073,6 +1214,7 @@ function frame(now) {
     }
   }
   updateCamera(dt);
+  updateBlackHoleFlags();
 
   ctx.clearRect(0, 0, canvasW, canvasH);
   ctx.fillStyle = "#000";
