@@ -1639,6 +1639,29 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
   min-width: auto;
 }
 
+/* Teacher-answers-on-behalf editor (MC options / free textarea / a small
+   draw canvas) needs more room than the plain read-only popup did. */
+.seat-response-popup { width: 340px; max-width: 90vw; }
+.seat-response-editor { margin-top: 10px; }
+.seat-response-option {
+  text-align: left;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border-color);
+}
+.seat-response-option-selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.seat-popup textarea.seat-response-textarea {
+  width: 100%;
+  margin-top: 10px;
+  min-height: 70px;
+  font-family: inherit;
+  resize: vertical;
+}
+/* .seat-popup button {width:100%} outranks .draw-color/.secondary-btn on
+   specificity alone -- these two-class overrides restore the toolbar's
+   normal compact layout inside the narrower seat popup. */
+.seat-popup .draw-toolbar button { width: auto; margin-top: 0; }
+.seat-popup .draw-canvas { max-width: 260px; margin: 0 auto; display: block; }
+
 .confusion-timeline {
   display: flex;
   gap: 2px;
