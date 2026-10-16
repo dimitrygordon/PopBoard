@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Friction Lab // PopBoard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05060a;
+  --panel:#171C22;
+  --panel-2:#1E252D;
+  --panel-3:#252E38;
+  --border:#2C3742;
+  --border-lit:#3A4854;
+  --amber:#FFB300;
+  --amber-dim:#8a640f;
+  --cyan:#5FD3C4;
+  --violet:#B07CFF;
+  --violet-dim:#6b4a99;
+  --text:#E9E6DE;
+  --text-dim:#93A0AC;
+  --text-dimmer:#5C6874;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;overflow:hidden;background:var(--bg);height:100%;}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;touch-action:none;}
+h1,h2,h3{font-family:'Oswald',sans-serif;letter-spacing:0.03em;text-transform:uppercase;}
+.mono{font-family:'JetBrains Mono',monospace;}
+button,input{font-family:inherit;}
+#stage{display:block;width:100vw;height:100vh;background:var(--bg);touch-action:none;}
+
+/* ---------- top / bottom bars ---------- */
+.bar{position:fixed;left:0;right:0;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;pointer-events:none;z-index:50;}
+.bar-top{top:0;}
+.bar-bottom{bottom:0;}
+.bar button{pointer-events:auto;background:none;border:none;color:#0A84FF;font-size:15px;cursor:pointer;padding:4px 2px;}
+.bar button:active{opacity:0.6;}
+.bar-top .bar-center, .bar-bottom .bar-center{position:absolute;left:50%;transform:translateX(-50%);}
+
+/* ---------- status banner ---------- */
+#statusBanner{
+  position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:45;
+  background:rgba(15,18,22,0.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--border-lit);border-radius:14px;padding:10px 22px;text-align:center;
+  max-width:min(92vw,600px);pointer-events:none;transition:border-color 0.3s ease, box-shadow 0.3s ease;
+}
+#statusBanner .status-type{font-family:'Oswald',sans-serif;font-size:15px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text);}
+#statusBanner .status-reason{font-size:11.5px;color:var(--text-dim);margin-top:3px;font-family:'JetBrains Mono',monospace;}
+#statusBanner.sliding{border-color:var(--amber-dim);box-shadow:0 0 24px rgba(255,179,0,0.18);}
+#statusBanner.sliding .status-type{color:var(--amber);}
+
+/* ---------- floating panels ---------- */
+.panel{
+  position:fixed;z-index:60;width:320px;max-width:calc(100vw - 32px);
+  background:rgba(22,24,28,0.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:18px;
+  box-shadow:0 12px 32px rgba(0,0,0,0.5);
+  max-height:calc(100vh - 110px);overflow-y:auto;
+}
+.panel.wide{width:380px;}
+.panel.hidden{display:none;}
+.panel h3{margin:0 0 14px 0;text-align:center;font-size:14px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:#fff;}
+.panel-row{margin-bottom:14px;}
+.panel-row:last-child{margin-bottom:0;}
+.panel-label{font-size:13px;color:#e5e5e7;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+.panel-hint{font-size:11.5px;color:#8e8e93;line-height:1.5;margin-top:10px;}
+.panel-link{display:block;text-align:center;color:#0A84FF;font-size:13px;margin-top:12px;cursor:pointer;background:none;border:none;width:100%;padding:4px;}
+.panel-link:active{opacity:0.6;}
+.panel-section-title{text-align:center;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#6e6e73;margin:16px 0 8px;}
+
+input[type="range"]{
+  -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:#48484a;outline:none;margin:0;
+}
+input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,0.4);
+}
+input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:none;cursor:pointer;}
+
+/* ---------- segmented control / material swatches / toggles ---------- */
+.seg-row{display:flex;gap:6px;margin-bottom:16px;}
+.seg-btn{flex:1;padding:8px 4px;border-radius:8px;border:1px solid var(--border-lit);background:var(--panel-2);
+  color:var(--text-dim);font-size:11.5px;text-align:center;cursor:pointer;}
+.seg-btn.active{background:var(--amber-dim);color:#fff;border-color:var(--amber);}
+.seg-btn:active{opacity:0.7;}
+.swatch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:6px;}
+.swatch-btn{aspect-ratio:1;border-radius:10px;border:2px solid var(--border-lit);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(255,255,255,0.85);
+  text-transform:uppercase;letter-spacing:0.01em;text-align:center;padding:2px;overflow:hidden;}
+.swatch-btn.active{border-color:#fff;box-shadow:0 0 12px rgba(255,255,255,0.35);}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:12.5px;color:#e5e5e7;}
+.toggle-switch{width:40px;height:24px;border-radius:12px;background:#3a3a3c;position:relative;cursor:pointer;flex-shrink:0;}
+.toggle-switch .knob{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left 0.15s ease;}
+.toggle-switch.on{background:var(--violet-dim);}
+.toggle-switch.on .knob{left:18px;}
+
+/* ---------- zoom / mode buttons ---------- */
+#stageControls{position:fixed;right:18px;bottom:64px;z-index:55;display:flex;flex-direction:column;gap:8px;}
+.round-btn{
+  width:40px;height:40px;border-radius:50%;background:rgba(28,28,30,0.8);border:1px solid rgba(255,255,255,0.15);
+  color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+.round-btn:active{opacity:0.6;}
+
+/* ---------- modal ---------- */
+.modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.hidden{display:none;}
+.modal-card{
+  background:rgba(22,24,28,0.96);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:24px;
+  max-width:460px;width:100%;max-height:80vh;overflow-y:auto;
+}
+.modal-card h2{margin:0 0 14px 0;font-size:17px;text-align:center;}
+.modal-card p{font-size:13.5px;line-height:1.6;color:#d1d1d6;margin:0 0 10px 0;}
+.modal-card .close-link{display:block;text-align:center;color:#0A84FF;margin-top:16px;cursor:pointer;background:none;border:none;font-size:14px;width:100%;padding:6px;}
+
+/* ---------- lab table ---------- */
+#labTable{width:100%;border-collapse:collapse;font-size:10.5px;font-family:'JetBrains Mono',monospace;}
+#labTable th,#labTable td{padding:5px 4px;text-align:center;border-bottom:1px solid var(--border);white-space:nowrap;}
+#labTable th{color:var(--text-dim);font-weight:500;font-size:9px;text-transform:uppercase;letter-spacing:0.03em;}
+#labTable td{color:var(--text);}
+#labTable tr:last-child td{border-bottom:none;}
+.lab-empty{text-align:center;color:var(--text-dimmer);font-size:12px;padding:14px 0;}
+.lab-row-del{color:#ff6b6b;cursor:pointer;}
+canvas.lab-graph{width:100%;height:140px;display:block;border-radius:10px;background:rgba(0,0,0,0.25);margin-top:8px;}
+</style>
+</head>
+<body>
+
+<canvas id="stage"></canvas>
+
+<div class="bar bar-top">
+  <button id="controlsBtn">Controls</button>
+  <button id="pauseBtn" class="bar-center">Pause</button>
+  <button id="resetBtn">Reset</button>
+</div>
+<div class="bar bar-bottom">
+  <button id="tutorialBtn">Tutorial</button>
+  <button id="labBtn">Lab</button>
+</div>
+
+<div id="statusBanner">
+  <div class="status-type" id="statusType">&mdash;</div>
+  <div class="status-reason" id="statusReason">&mdash;</div>
+</div>
+
+<div id="stageControls">
+  <div class="round-btn" id="stepBtn" title="Step">&#9654;&#124;</div>
+</div>
+
+<div id="controlsPanel" class="panel hidden" style="top:56px;left:18px;"></div>
+<div id="labPanel" class="panel wide hidden" style="top:56px;right:18px;"></div>
+
+<div id="tutorialModal" class="modal-overlay hidden"></div>
+
+<script type="module">
+"use strict";
+/* ============================================================
+   FRICTION LAB -- an interactive friction sandbox + virtual lab
+   (hand-rolled 2D canvas). Original implementation; no shared code
+   with the other study modules or app.js (each module in the
+   library is fully self-contained).
+   ============================================================ */
+
+/* ============================================================
+   Pure physics -- no DOM/canvas references, so it can be (and was)
+   unit tested in isolation before any rendering code was written
+   (see scratchpad/verify_friction_physics.js). Kept verbatim from
+   that validated scratchpad copy.
+   ============================================================ */
+var G = 9.81;
+
+var OBJECT_MATERIALS = ["wood", "metal", "cardboard", "rubber", "stone"];
+var SURFACE_MATERIALS = ["wood", "metal", "rubber", "ice", "concrete"];
+
+// Representative introductory-model coefficients per (object, surface)
+// pair. Real friction also depends on surface condition, lubrication,
+// and temperature -- these are curated teaching values, not a materials
+// database.
+var FRICTION_TABLE = {
+  "wood|wood": { mus: 0.50, muk: 0.30 },
+  "wood|metal": { mus: 0.40, muk: 0.25 },
+  "wood|rubber": { mus: 0.55, muk: 0.40 },
+  "wood|ice": { mus: 0.06, muk: 0.04 },
+  "wood|concrete": { mus: 0.55, muk: 0.35 },
+
+  "metal|wood": { mus: 0.40, muk: 0.25 },
+  "metal|metal": { mus: 0.35, muk: 0.25 },
+  "metal|rubber": { mus: 0.60, muk: 0.45 },
+  "metal|ice": { mus: 0.03, muk: 0.02 },
+  "metal|concrete": { mus: 0.50, muk: 0.40 },
+
+  "cardboard|wood": { mus: 0.45, muk: 0.30 },
+  "cardboard|metal": { mus: 0.35, muk: 0.22 },
+  "cardboard|rubber": { mus: 0.50, muk: 0.35 },
+  "cardboard|ice": { mus: 0.05, muk: 0.03 },
+  "cardboard|concrete": { mus: 0.45, muk: 0.30 },
+
+  "rubber|wood": { mus: 0.60, muk: 0.45 },
+  "rubber|metal": { mus: 0.65, muk: 0.50 },
+  "rubber|rubber": { mus: 0.95, muk: 0.80 },
+  "rubber|ice": { mus: 0.15, muk: 0.08 },
+  "rubber|concrete": { mus: 0.90, muk: 0.70 },
+
+  "stone|wood": { mus: 0.45, muk: 0.30 },
+  "stone|metal": { mus: 0.40, muk: 0.28 },
+  "stone|rubber": { mus: 0.70, muk: 0.55 },
+  "stone|ice": { mus: 0.04, muk: 0.025 },
+  "stone|concrete": { mus: 0.60, muk: 0.45 }
+};
+
+function getFriction(objectMat, surfaceMat) {
+  var entry = FRICTION_TABLE[objectMat + "|" + surfaceMat];
+  if (!entry) { throw new Error("No friction entry for " + objectMat + "|" + surfaceMat); }
+  return entry;
+}
+
+function normalForceFlat(mass) { return mass * G; }
+function normalForceIncline(mass, angleRad) { return mass * G * Math.cos(angleRad); }
+// Positive = pulls the object DOWN the ramp.
+function gravityAlongIncline(mass, angleRad) { return mass * G * Math.sin(angleRad); }
+
+/* ---------- core static/kinetic resolver ----------
+   Operates in a 1D coordinate system along the "motion axis" -- horizontal
+   for a flat surface, along-the-ramp for an incline. `biasForce` is
+   whatever non-friction, non-applied force already acts along that axis
+   (0 on the flat; gravityAlongIncline on a ramp, positive = down-ramp).
+   `appliedForce` is whatever the student dials in. Their sum is the
+   "drive force": everything pushing the object along the axis except
+   friction itself.
+
+   While static, friction exactly cancels the drive force up to its
+   maximum (mus*N); crossing that threshold flips the regime to sliding.
+   While sliding, kinetic friction (muk*N) opposes velocity -- except at
+   the instant velocity is ~0 (just started, or just decelerated back to
+   a stop), where it opposes the drive force instead, and re-captures to
+   the static regime if the drive force no longer exceeds mus*N. This is
+   what lets a sliding object come to a natural, non-jittering stop, and
+   is also exactly what makes the incline's critical angle fall out for
+   free: at zero applied force, raising the angle past atan(mus) is the
+   same transition as pushing an object on the flat past its static
+   threshold -- no special-cased "critical angle" logic anywhere. */
+var REST_VELOCITY_EPS = 0.005; // m/s
+
+function resolveFriction(p) {
+  var driveForce = p.appliedForce + p.biasForce;
+  var maxStatic = p.mus * p.normalForce;
+
+  if (p.regime === "static" && Math.abs(driveForce) <= maxStatic) {
+    return { regime: "static", frictionForce: -driveForce, netForce: 0, acceleration: 0 };
+  }
+
+  if (Math.abs(p.velocity) < REST_VELOCITY_EPS) {
+    if (Math.abs(driveForce) <= maxStatic) {
+      return { regime: "static", frictionForce: -driveForce, netForce: 0, acceleration: 0 };
+    }
+    var dir = driveForce > 0 ? 1 : -1;
+    var frictionAtRest = -dir * p.muk * p.normalForce;
+    var netAtRest = driveForce + frictionAtRest;
+    return { regime: "sliding", frictionForce: frictionAtRest, netForce: netAtRest, acceleration: netAtRest / p.mass };
+  }
+
+  var vDir = p.velocity > 0 ? 1 : -1;
+  var frictionForce = -vDir * p.muk * p.normalForce;
+  var netForce = driveForce + frictionForce;
+  return { regime: "sliding", frictionForce: frictionForce, netForce: netForce, acceleration: netForce / p.mass };
+}
+
+/* ---------- single integration step (semi-implicit Euler) ----------
+   Pure: takes the current {regime, velocity, position} plus the physical
+   parameters for this instant, returns the next state. The render loop
+   sub-steps a frame's dt into several calls of this, matching Space
+   Sandbox's stepPhysics/MAX_SUBSTEP_DT pattern. */
+function stepFriction(state, phys, dt) {
+  var resolved = resolveFriction({
+    regime: state.regime, velocity: state.velocity,
+    appliedForce: phys.appliedForce, biasForce: phys.biasForce,
+    normalForce: phys.normalForce, mus: phys.mus, muk: phys.muk, mass: phys.mass
+  });
+  var velocity = resolved.regime === "static" ? 0 : state.velocity + resolved.acceleration * dt;
+  var position = state.position + velocity * dt;
+  return {
+    regime: resolved.regime, velocity: velocity, position: position,
+    frictionForce: resolved.frictionForce, netForce: resolved.netForce, acceleration: resolved.acceleration
+  };
+}
+
+/* ---------- least-squares fit through the origin ----------
+   f = mu*N is a line through the origin, so the lab's "measured mu"
+   fits a single-parameter slope (not a general y=mx+b) -- the standard
+   regression-through-origin estimator, slope = sum(x*y) / sum(x*x).
+   Returns null if there isn't enough information (all x == 0). */
+function fitSlopeThroughOrigin(points) {
+  var sumXY = 0, sumXX = 0;
+  for (var i = 0; i < points.length; i++) {
+    sumXY += points[i].x * points[i].y;
+    sumXX += points[i].x * points[i].x;
+  }
+  if (sumXX === 0) { return null; }
+  return sumXY / sumXX;
+}
+
+/* ============================================================
+   Scene / rendering state
+   ============================================================ */
+var canvas = document.getElementById("stage");
+var ctx = canvas.getContext("2d");
+var dpr = 1;
+
+function resizeCanvas() {
+  dpr = Math.min(2, window.devicePixelRatio || 1);
+  canvas.width = Math.round(window.innerWidth * dpr);
+  canvas.height = Math.round(window.innerHeight * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+var MASS_RANGE = { min: 0.5, max: 60 };
+var FORCE_RANGE = { min: -400, max: 400 };
+var ANGLE_RANGE = { min: 0, max: 55 }; // degrees
+
+var params = {
+  objectMaterial: "wood",
+  surfaceMaterial: "wood",
+  mass: 10,
+  appliedForce: 0,
+  scenario: "flat", // "flat" | "incline"
+  angleDeg: 20
+};
+
+var state = { regime: "static", velocity: 0, position: 0 };
+var paused = false;
+var lastFrameTime = null;
+var cameraOffsetM = 0;
+var MAX_SUBSTEP_DT = 1 / 120;
+
+var vectorsOn = { gravity: true, normal: true, applied: true, friction: true, net: true };
+
+var PX_PER_M = 70;
+
+function currentPhys() {
+  var f = getFriction(params.objectMaterial, params.surfaceMaterial);
+  var thetaRad = params.scenario === "incline" ? (params.angleDeg * Math.PI / 180) : 0;
+  var normalForce = params.scenario === "incline" ? normalForceIncline(params.mass, thetaRad) : normalForceFlat(params.mass);
+  var biasForce = params.scenario === "incline" ? gravityAlongIncline(params.mass, thetaRad) : 0;
+  return { mus: f.mus, muk: f.muk, mass: params.mass, normalForce: normalForce, biasForce: biasForce, appliedForce: params.appliedForce, thetaRad: thetaRad };
+}
+
+function resetState() {
+  state = { regime: "static", velocity: 0, position: 0 };
+  cameraOffsetM = 0;
+}
+
+/* ============================================================
+   World <-> screen mapping. Physics stays in simple 1D "along-axis"
+   coordinates (position, in meters) for both flat and incline; only
+   rendering rotates that axis into screen space by the current ramp
+   angle (0 for flat). Gravity is the one vector that does NOT rotate
+   with the ramp -- it always points straight down on screen, exactly
+   as it does in reality.
+   ============================================================ */
+function stageCenter() { return { x: canvas.width / dpr * 0.46, y: canvas.height / dpr * 0.56 }; }
+function alongDir(theta) { return { x: Math.cos(theta), y: -Math.sin(theta) }; } // world frame, +y = up
+function normalDir(theta) { return { x: Math.sin(theta), y: Math.cos(theta) }; }
+
+function worldToScreen(worldX, worldY) {
+  var c = stageCenter();
+  return { x: c.x + worldX * PX_PER_M, y: c.y - worldY * PX_PER_M };
+}
+
+// Contact point (where the object touches the surface) for the current
+// state.position, camera-relative.
+function contactPointWorld() {
+  var theta = currentPhys().thetaRad;
+  var a = alongDir(theta);
+  var s = state.position - cameraOffsetM;
+  return { x: a.x * s, y: a.y * s };
+}
+
+function crateHalfThickness() {
+  return 0.22 + Math.min(0.18, params.mass / 300); // meters, mild size-with-mass cue
+}
+
+/* ============================================================
+   Material rendering: surfaces and the crate are drawn with procedural
+   canvas gradients (no texture images), color-coded consistently
+   between the ground strip and the crate's own material accent.
+   ============================================================ */
+var SURFACE_COLORS = {
+  wood: { base: "#5a3d22", light: "#8a6338", accent: "#C9924B" },
+  metal: { base: "#4a525c", light: "#9aa6b2", accent: "#AEB8C2" },
+  rubber: { base: "#201a1a", light: "#3a2426", accent: "#B5463D" },
+  ice: { base: "#9fd9e8", light: "#eafcff", accent: "#BFF3FF" },
+  concrete: { base: "#5c6168", light: "#7d838b", accent: "#9AA3AC" }
+};
+var OBJECT_COLORS = {
+  wood: "#C9924B", metal: "#AEB8C2", cardboard: "#C2A878", rubber: "#B5463D", stone: "#8C93A0"
+};
+
+function drawGroundStrip(theta) {
+  var c = stageCenter();
+  var a = alongDir(theta), n = normalDir(theta);
+  var diag = Math.hypot(canvas.width / dpr, canvas.height / dpr);
+  var p0 = { x: c.x - a.x * diag, y: c.y + a.y * diag };
+  var p1 = { x: c.x + a.x * diag, y: c.y - a.y * diag };
+  var thickness = 22;
+  var nx = n.x, ny = -n.y; // screen-space normal (already accounts for y flip)
+
+  var colors = SURFACE_COLORS[params.surfaceMaterial];
+  var grad = ctx.createLinearGradient(p0.x - nx * thickness, p0.y - ny * thickness, p0.x + nx * thickness, p0.y + ny * thickness);
+  grad.addColorStop(0, colors.light);
+  grad.addColorStop(0.45, colors.base);
+  grad.addColorStop(1, "#05060a");
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(p0.x - nx * thickness, p0.y - ny * thickness);
+  ctx.lineTo(p1.x - nx * thickness, p1.y - ny * thickness);
+  ctx.lineTo(p1.x + nx * thickness * 2.4, p1.y + ny * thickness * 2.4);
+  ctx.lineTo(p0.x + nx * thickness * 2.4, p0.y + ny * thickness * 2.4);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // glowing top edge -- the actual contact line
+  ctx.beginPath();
+  ctx.moveTo(p0.x - nx * thickness, p0.y - ny * thickness);
+  ctx.lineTo(p1.x - nx * thickness, p1.y - ny * thickness);
+  ctx.strokeStyle = colors.accent;
+  ctx.lineWidth = 2;
+  ctx.shadowColor = colors.accent;
+  ctx.shadowBlur = 12;
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawCrate(theta) {
+  var contact = contactPointWorld();
+  var n = normalDir(theta);
+  var halfT = crateHalfThickness();
+  var centerWorld = { x: contact.x + n.x * halfT, y: contact.y + n.y * halfT };
+  var s = worldToScreen(centerWorld.x, centerWorld.y);
+
+  var sizePx = 46 + Math.min(26, params.mass * 0.9);
+  var color = OBJECT_COLORS[params.objectMaterial];
+
+  ctx.save();
+  ctx.translate(s.x, s.y);
+  ctx.rotate(-theta);
+
+  // soft glow halo behind the crate
+  var halo = ctx.createRadialGradient(0, 0, sizePx * 0.2, 0, 0, sizePx * 1.1);
+  halo.addColorStop(0, color + "55");
+  halo.addColorStop(1, color + "00");
+  ctx.fillStyle = halo;
+  ctx.fillRect(-sizePx * 1.1, -sizePx * 1.1, sizePx * 2.2, sizePx * 2.2);
+
+  // body with a subtle top-highlight gradient
+  var bodyGrad = ctx.createLinearGradient(0, -sizePx / 2, 0, sizePx / 2);
+  bodyGrad.addColorStop(0, shadeColor(color, 0.35));
+  bodyGrad.addColorStop(0.5, color);
+  bodyGrad.addColorStop(1, shadeColor(color, -0.35));
+  roundRectPath(-sizePx / 2, -sizePx / 2, sizePx, sizePx, 8);
+  ctx.fillStyle = bodyGrad;
+  ctx.fill();
+
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 14;
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = color;
+  roundRectPath(-sizePx / 2, -sizePx / 2, sizePx, sizePx, 8);
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  ctx.restore();
+  return s;
+}
+
+function roundRectPath(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function shadeColor(hex, amt) {
+  var c = hex.replace("#", "");
+  var r = parseInt(c.substring(0, 2), 16), g = parseInt(c.substring(2, 4), 16), b = parseInt(c.substring(4, 6), 16);
+  function adj(v) { return Math.max(0, Math.min(255, Math.round(v + (amt > 0 ? (255 - v) * amt : v * amt)))); }
+  return "rgb(" + adj(r) + "," + adj(g) + "," + adj(b) + ")";
+}
+
+/* ---------- force vectors ----------
+   Each vector is a scalar magnitude along a known world direction
+   (gravity: fixed straight down; normal/applied/friction/net: along the
+   current ramp basis). Drawn with a glow, color-coded, individually
+   toggleable. */
+var VEC_SCALE = 0.55; // screen px per newton
+var VEC_COLORS = { gravity: "#FFB300", normal: "#5FD3C4", applied: "#FFFFFF", friction: "#B07CFF", net: "#FF5FAE" };
+
+function drawVector(originScreen, worldDx, worldDy, color) {
+  var mag = Math.hypot(worldDx, worldDy);
+  if (mag < 0.5) { return; }
+  var endX = originScreen.x + worldDx * VEC_SCALE;
+  var endY = originScreen.y - worldDy * VEC_SCALE;
+  ctx.save();
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 8;
+  ctx.beginPath();
+  ctx.moveTo(originScreen.x, originScreen.y);
+  ctx.lineTo(endX, endY);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  var angle = Math.atan2(endY - originScreen.y, endX - originScreen.x);
+  var headLen = 9;
+  ctx.beginPath();
+  ctx.moveTo(endX, endY);
+  ctx.lineTo(endX - headLen * Math.cos(angle - 0.4), endY - headLen * Math.sin(angle - 0.4));
+  ctx.lineTo(endX - headLen * Math.cos(angle + 0.4), endY - headLen * Math.sin(angle + 0.4));
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawAllVectors(origin, phys, result, theta) {
+  var a = alongDir(theta), n = normalDir(theta);
+  var weight = phys.mass * G;
+  if (vectorsOn.gravity) { drawVector(origin, 0, -weight, VEC_COLORS.gravity); }
+  if (vectorsOn.normal) { drawVector(origin, n.x * phys.normalForce, n.y * phys.normalForce, VEC_COLORS.normal); }
+  if (vectorsOn.applied && Math.abs(params.appliedForce) > 0.5) { drawVector(origin, a.x * params.appliedForce, a.y * params.appliedForce, VEC_COLORS.applied); }
+  if (vectorsOn.friction && Math.abs(result.frictionForce) > 0.5) { drawVector(origin, a.x * result.frictionForce, a.y * result.frictionForce, VEC_COLORS.friction); }
+  if (vectorsOn.net && Math.abs(result.netForce) > 0.5) { drawVector(origin, a.x * result.netForce, a.y * result.netForce, VEC_COLORS.net); }
+}
+
+/* ============================================================
+   Status banner + HUD text
+   ============================================================ */
+var statusType = document.getElementById("statusType");
+var statusReason = document.getElementById("statusReason");
+var statusBanner = document.getElementById("statusBanner");
+
+function fmtN(v) { return v.toFixed(1) + " N"; }
+
+function updateStatusBanner(phys, result) {
+  var maxStatic = phys.mus * phys.normalForce;
+  statusBanner.classList.toggle("sliding", result.regime === "sliding");
+  if (result.regime === "static") {
+    statusType.textContent = "Holding Static";
+    statusReason.textContent = "Friction " + fmtN(Math.abs(result.frictionForce)) + " of a max " + fmtN(maxStatic) + " available (μs·N)";
+  } else {
+    statusType.textContent = "Sliding -- Kinetic Friction";
+    statusReason.textContent = "f_k = " + fmtN(Math.abs(result.frictionForce)) + " · net " + fmtN(result.netForce) + " · a = " + result.acceleration.toFixed(2) + " m/s²";
+  }
+}
+
+/* ============================================================
+   Main loop
+   ============================================================ */
+function frame(now) {
+  if (lastFrameTime === null) { lastFrameTime = now; }
+  var dt = Math.min(0.1, (now - lastFrameTime) / 1000);
+  lastFrameTime = now;
+
+  var phys = currentPhys();
+  var result = { regime: state.regime, frictionForce: 0, netForce: 0, acceleration: 0 };
+
+  if (!paused) {
+    var steps = Math.max(1, Math.ceil(dt / MAX_SUBSTEP_DT));
+    var subDt = dt / steps;
+    for (var i = 0; i < steps; i++) {
+      result = stepFriction(state, phys, subDt);
+      state.regime = result.regime; state.velocity = result.velocity; state.position = result.position;
+    }
+  } else {
+    result = resolveFriction({ regime: state.regime, velocity: state.velocity, appliedForce: phys.appliedForce, biasForce: phys.biasForce, normalForce: phys.normalForce, mus: phys.mus, muk: phys.muk, mass: phys.mass });
+  }
+
+  cameraOffsetM += (state.position - cameraOffsetM) * 0.08;
+  if (result.regime === "static") {
+    lastStaticPeakForce = Math.max(lastStaticPeakForce, Math.abs(params.appliedForce));
+  }
+
+  ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+  drawGroundStrip(phys.thetaRad);
+  var crateScreen = drawCrate(phys.thetaRad);
+  drawAllVectors(crateScreen, phys, result, phys.thetaRad);
+  updateStatusBanner(phys, result);
+  updateLabLiveReadout(phys, result);
+
+  if (!labPanel.classList.contains("hidden") && forceTimeCanvasEl) {
+    var nowT = (now - labClockStart) / 1000;
+    forceTimeHistory.push({ t: nowT, applied: params.appliedForce, friction: result.frictionForce });
+    var cutoff = nowT - FORCE_TIME_WINDOW - 1;
+    while (forceTimeHistory.length && forceTimeHistory[0].t < cutoff) { forceTimeHistory.shift(); }
+    drawForceTimeGraph(forceTimeCtx, forceTimeCanvasEl.width, forceTimeCanvasEl.height);
+  }
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* ============================================================
+   Exponential slider mapping (mass spans a wide range) -- same
+   technique as Space Sandbox's Properties panel / Eclipses' Controls.
+   ============================================================ */
+function sliderToValue(sliderPct, min, max) {
+  var t = Math.max(0, Math.min(100, sliderPct)) / 100;
+  return min * Math.pow(max / min, t);
+}
+function valueToSlider(value, min, max) {
+  var v = Math.max(min, Math.min(max, value));
+  var t = Math.log(v / min) / Math.log(max / min);
+  return Math.max(0, Math.min(100, t * 100));
+}
+
+/* ============================================================
+   Controls panel
+   ============================================================ */
+var controlsPanel = document.getElementById("controlsPanel");
+var controlsOpen = false;
+
+// Rebuilding the whole panel on every slider tick tears down the input
+// mid-drag (same lesson learned building Space Sandbox's Properties
+// panel), so live-dragged rows return {row, slider, label} and the
+// caller patches labels directly instead of calling refreshControlsPanel()
+// on every input event. A full rebuild only happens on discrete actions
+// (material pick, scenario toggle, vector toggle, Reset).
+function makeExpSliderRow(labelFn, value, min, max, onInput) {
+  var row = document.createElement("div");
+  row.className = "panel-row";
+  var label = document.createElement("div");
+  label.className = "panel-label";
+  label.textContent = labelFn(value);
+  row.appendChild(label);
+  var slider = document.createElement("input");
+  slider.type = "range"; slider.min = "0"; slider.max = "100"; slider.step = "0.1";
+  slider.value = String(valueToSlider(value, min, max));
+  slider.addEventListener("input", function() {
+    var v = sliderToValue(parseFloat(slider.value), min, max);
+    label.textContent = labelFn(v);
+    onInput(v);
+  });
+  row.appendChild(slider);
+  return { row: row, slider: slider, label: label };
+}
+function makeLinearSliderRow(labelFn, value, min, max, step, onInput) {
+  var row = document.createElement("div");
+  row.className = "panel-row";
+  var label = document.createElement("div");
+  label.className = "panel-label";
+  label.textContent = labelFn(value);
+  row.appendChild(label);
+  var slider = document.createElement("input");
+  slider.type = "range"; slider.min = String(min); slider.max = String(max); slider.step = String(step);
+  slider.value = String(value);
+  slider.addEventListener("input", function() {
+    var v = parseFloat(slider.value);
+    label.textContent = labelFn(v);
+    onInput(v);
+  });
+  row.appendChild(slider);
+  return { row: row, slider: slider, label: label };
+}
+
+function makeSwatchGrid(materials, activeMaterial, colorMap, onPick) {
+  var grid = document.createElement("div");
+  grid.className = "swatch-grid";
+  materials.forEach(function(mat) {
+    var btn = document.createElement("div");
+    btn.className = "swatch-btn" + (mat === activeMaterial ? " active" : "");
+    var bg = typeof colorMap[mat] === "string" ? colorMap[mat] : colorMap[mat].accent;
+    btn.style.background = "linear-gradient(145deg," + shadeColor(bg, 0.25) + "," + shadeColor(bg, -0.25) + ")";
+    btn.textContent = mat;
+    btn.addEventListener("click", function(e) {
+      e.stopPropagation();
+      onPick(mat);
+      refreshControlsPanel();
+    });
+    grid.appendChild(btn);
+  });
+  return grid;
+}
+
+function makeToggleRow(labelText, isOn, onToggle) {
+  var row = document.createElement("div");
+  row.className = "toggle-row";
+  var label = document.createElement("span");
+  label.textContent = labelText;
+  var sw = document.createElement("div");
+  sw.className = "toggle-switch" + (isOn ? " on" : "");
+  var knob = document.createElement("div");
+  knob.className = "knob";
+  sw.appendChild(knob);
+  sw.addEventListener("click", function(e) {
+    e.stopPropagation();
+    var next = !sw.classList.contains("on");
+    sw.classList.toggle("on", next);
+    onToggle(next);
+  });
+  row.appendChild(label); row.appendChild(sw);
+  return row;
+}
+
+function fmtKg(v) { return v.toFixed(v < 10 ? 1 : 0) + " kg"; }
+function fmtForceLabel(v) { return (v >= 0 ? "+" : "") + v.toFixed(0) + " N"; }
+
+function refreshControlsPanel() {
+  controlsPanel.innerHTML = "";
+  var h3 = document.createElement("h3");
+  h3.textContent = "Controls";
+  controlsPanel.appendChild(h3);
+
+  // Scenario: Flat / Incline
+  var segRow = document.createElement("div");
+  segRow.className = "seg-row";
+  ["flat", "incline"].forEach(function(mode) {
+    var btn = document.createElement("div");
+    btn.id = mode === "flat" ? "scenarioFlatBtn" : "scenarioInclineBtn";
+    btn.className = "seg-btn" + (params.scenario === mode ? " active" : "");
+    btn.textContent = mode === "flat" ? "Flat Surface" : "Incline";
+    btn.addEventListener("click", function(e) {
+      e.stopPropagation();
+      if (params.scenario === mode) { return; }
+      params.scenario = mode;
+      resetState();
+      resetStaticPeakTracker();
+      refreshControlsPanel();
+    });
+    segRow.appendChild(btn);
+  });
+  controlsPanel.appendChild(segRow);
+
+  if (params.scenario === "incline") {
+    controlsPanel.appendChild(makeLinearSliderRow(function(v) { return "Ramp Angle: " + v.toFixed(0) + "°"; }, params.angleDeg, ANGLE_RANGE.min, ANGLE_RANGE.max, 1, function(v) { params.angleDeg = v; resetStaticPeakTracker(); }).row);
+  }
+
+  var objTitle = document.createElement("div");
+  objTitle.className = "panel-section-title";
+  objTitle.textContent = "Object Material";
+  controlsPanel.appendChild(objTitle);
+  controlsPanel.appendChild(makeSwatchGrid(OBJECT_MATERIALS, params.objectMaterial, OBJECT_COLORS, function(mat) { params.objectMaterial = mat; resetStaticPeakTracker(); }));
+
+  var surfTitle = document.createElement("div");
+  surfTitle.className = "panel-section-title";
+  surfTitle.textContent = "Surface Material";
+  controlsPanel.appendChild(surfTitle);
+  controlsPanel.appendChild(makeSwatchGrid(SURFACE_MATERIALS, params.surfaceMaterial, SURFACE_COLORS, function(mat) { params.surfaceMaterial = mat; resetStaticPeakTracker(); }));
+
+  var massRow = makeExpSliderRow(function(v) { return "Mass: " + fmtKg(v); }, params.mass, MASS_RANGE.min, MASS_RANGE.max, function(v) { params.mass = v; resetStaticPeakTracker(); });
+  controlsPanel.appendChild(massRow.row);
+  var weightBtnRow = document.createElement("div");
+  weightBtnRow.className = "seg-row";
+  [["-5 kg", -5], ["+5 kg", 5]].forEach(function(pair) {
+    var btn = document.createElement("div");
+    btn.className = "seg-btn";
+    btn.textContent = pair[0];
+    btn.addEventListener("click", function(e) {
+      e.stopPropagation();
+      params.mass = Math.max(MASS_RANGE.min, Math.min(MASS_RANGE.max, params.mass + pair[1]));
+      massRow.slider.value = String(valueToSlider(params.mass, MASS_RANGE.min, MASS_RANGE.max));
+      massRow.label.textContent = "Mass: " + fmtKg(params.mass);
+      resetStaticPeakTracker();
+    });
+    weightBtnRow.appendChild(btn);
+  });
+  controlsPanel.appendChild(weightBtnRow);
+
+  controlsPanel.appendChild(makeLinearSliderRow(function(v) { return "Applied Force: " + fmtForceLabel(v); }, params.appliedForce, FORCE_RANGE.min, FORCE_RANGE.max, 1, function(v) { params.appliedForce = v; }).row);
+
+  var vecTitle = document.createElement("div");
+  vecTitle.className = "panel-section-title";
+  vecTitle.textContent = "Force Vectors";
+  controlsPanel.appendChild(vecTitle);
+  [["gravity", "Gravity"], ["normal", "Normal"], ["applied", "Applied"], ["friction", "Friction"], ["net", "Net Force"]].forEach(function(pair) {
+    controlsPanel.appendChild(makeToggleRow(pair[1], vectorsOn[pair[0]], function(v) { vectorsOn[pair[0]] = v; }));
+  });
+
+  var resetAllBtn = document.createElement("button");
+  resetAllBtn.className = "panel-link";
+  resetAllBtn.textContent = "Reset All";
+  resetAllBtn.addEventListener("click", function(e) {
+    e.stopPropagation();
+    params.objectMaterial = "wood"; params.surfaceMaterial = "wood"; params.mass = 10;
+    params.appliedForce = 0; params.scenario = "flat"; params.angleDeg = 20;
+    resetState();
+    refreshControlsPanel();
+  });
+  controlsPanel.appendChild(resetAllBtn);
+
+  var hint = document.createElement("div");
+  hint.className = "panel-hint";
+  hint.textContent = "Pick an object and a surface, add mass, then push. Watch static friction hold up to μs·N before the object breaks free into kinetic friction.";
+  controlsPanel.appendChild(hint);
+}
+
+document.getElementById("controlsBtn").addEventListener("click", function(e) {
+  e.stopPropagation();
+  controlsOpen = !controlsOpen;
+  controlsPanel.classList.toggle("hidden", !controlsOpen);
+});
+document.addEventListener("click", function(e) {
+  if (controlsOpen && !e.target.closest("#controlsPanel, #controlsBtn")) {
+    controlsOpen = false; controlsPanel.classList.add("hidden");
+  }
+});
+refreshControlsPanel();
+
+/* ============================================================
+   Virtual lab -- trial recording, data table, CSV export. Graphing
+   (Stage 6) is added separately below. Reuses the exact same physics
+   state/params the sandbox already drives; recording a trial is just
+   reading off the current live numbers at the moment the student
+   clicks, matching how your spec describes the student workflow
+   (push until it slides, note the peak; hold it at ~constant velocity,
+   note the steady force) rather than automating the measurement.
+   ============================================================ */
+var labPanel = document.getElementById("labPanel");
+var labOpen = false;
+var labTrials = []; // {id, objectMaterial, surfaceMaterial, mass, scenario, angleDeg, normalForce, fsMax, fk, notes}
+var lastStaticPeakForce = 0;
+var nextTrialId = 1;
+var forceTimeCanvasEl = null, forceTimeCtx = null;
+var forceTimeHistory = []; // {t, applied, friction}, trimmed to FORCE_TIME_WINDOW seconds
+var FORCE_TIME_WINDOW = 8;
+var labClockStart = performance.now();
+
+function resetStaticPeakTracker() { lastStaticPeakForce = 0; }
+
+function findOrCreateTrial() {
+  var last = labTrials[labTrials.length - 1];
+  var sameConfig = last && last.objectMaterial === params.objectMaterial && last.surfaceMaterial === params.surfaceMaterial &&
+    last.mass === params.mass && last.scenario === params.scenario &&
+    (params.scenario === "flat" || last.angleDeg === params.angleDeg) && (last.fsMax === null || last.fk === null);
+  if (sameConfig) { return last; }
+  var phys = currentPhys();
+  var trial = {
+    id: nextTrialId++, objectMaterial: params.objectMaterial, surfaceMaterial: params.surfaceMaterial,
+    mass: params.mass, scenario: params.scenario, angleDeg: params.angleDeg, normalForce: phys.normalForce,
+    fsMax: null, fk: null, notes: ""
+  };
+  labTrials.push(trial);
+  return trial;
+}
+
+function fmtMu(v) { return v === null ? "—" : v.toFixed(3); }
+function fmtMaybeN(v) { return v === null ? "—" : v.toFixed(1); }
+
+function downloadLabCSV() {
+  var header = ["Object", "Surface", "Scenario", "AngleDeg", "MassKg", "NormalForceN", "FsMaxN", "MuS_measured", "FkN", "MuK_measured", "Notes"];
+  var lines = [header.join(",")];
+  labTrials.forEach(function(t) {
+    var mus = t.fsMax !== null ? (t.fsMax / t.normalForce).toFixed(3) : "";
+    var muk = t.fk !== null ? (t.fk / t.normalForce).toFixed(3) : "";
+    var row = [
+      t.objectMaterial, t.surfaceMaterial, t.scenario, t.scenario === "incline" ? t.angleDeg : "",
+      t.mass.toFixed(1), t.normalForce.toFixed(1),
+      t.fsMax !== null ? t.fsMax.toFixed(1) : "", mus,
+      t.fk !== null ? t.fk.toFixed(1) : "", muk,
+      "\"" + (t.notes || "").replace(/"/g, "\"\"") + "\""
+    ];
+    lines.push(row.join(","));
+  });
+  var blob = new Blob([lines.join("\n")], { type: "text/csv" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url; a.download = "friction-lab-data.csv";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ---------- graphs ----------
+   Plain canvas line/scatter charts, extending the padding+scale
+   technique app.js already uses for the student-dashboard's monthly
+   charts -- but with axis lines and gridlines added (the dashboard
+   charts have neither), since reading a slope off these actually
+   matters here. */
+function graphAxes(ctx, w, h, pad, yMin, yMax, yLabelFn) {
+  ctx.clearRect(0, 0, w, h);
+  ctx.strokeStyle = "rgba(255,255,255,0.12)";
+  ctx.lineWidth = 1;
+  ctx.font = "10px 'JetBrains Mono', monospace";
+  ctx.fillStyle = "rgba(255,255,255,0.35)";
+  ctx.textAlign = "right";
+  var gridLines = 4;
+  for (var i = 0; i <= gridLines; i++) {
+    var y = pad + (h - 2 * pad) * (i / gridLines);
+    ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(w - pad, y); ctx.stroke();
+    var val = yMax - (yMax - yMin) * (i / gridLines);
+    ctx.fillText(yLabelFn(val), pad - 6, y + 3);
+  }
+  // zero line, brighter, if in range
+  if (yMin < 0 && yMax > 0) {
+    var zeroY = pad + (h - 2 * pad) * (yMax / (yMax - yMin));
+    ctx.strokeStyle = "rgba(255,255,255,0.3)";
+    ctx.beginPath(); ctx.moveTo(pad, zeroY); ctx.lineTo(w - pad, zeroY); ctx.stroke();
+  }
+}
+
+function drawForceTimeGraph(ctx, w, h) {
+  var pad = 36;
+  var nowT = (performance.now() - labClockStart) / 1000;
+  var windowStart = nowT - FORCE_TIME_WINDOW;
+  var visible = forceTimeHistory.filter(function(s) { return s.t >= windowStart; });
+  var maxAbs = 10;
+  visible.forEach(function(s) { maxAbs = Math.max(maxAbs, Math.abs(s.applied), Math.abs(s.friction)); });
+  maxAbs *= 1.15;
+
+  graphAxes(ctx, w, h, pad, -maxAbs, maxAbs, function(v) { return v.toFixed(0); });
+
+  function X(t) { return pad + (w - 2 * pad) * ((t - windowStart) / FORCE_TIME_WINDOW); }
+  function Y(f) { return pad + (h - 2 * pad) * ((maxAbs - f) / (2 * maxAbs)); }
+
+  function plotSeries(key, color) {
+    if (visible.length < 2) { return; }
+    ctx.beginPath();
+    visible.forEach(function(s, i) {
+      var x = X(s.t), y = Y(s[key]);
+      if (i === 0) { ctx.moveTo(x, y); } else { ctx.lineTo(x, y); }
+    });
+    ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.lineJoin = "round"; ctx.stroke();
+  }
+  plotSeries("applied", VEC_COLORS.applied);
+  plotSeries("friction", VEC_COLORS.friction);
+
+  ctx.textAlign = "left";
+  ctx.fillStyle = VEC_COLORS.applied; ctx.fillText("— Applied", pad, h - 8);
+  ctx.fillStyle = VEC_COLORS.friction; ctx.fillText("— Friction", pad + 80, h - 8);
+}
+
+function drawFrictionNormalGraph(ctx, w, h) {
+  var pad = 36;
+  var staticPts = [], kineticPts = [];
+  labTrials.forEach(function(t) {
+    if (t.fsMax !== null) { staticPts.push({ x: t.normalForce, y: t.fsMax }); }
+    if (t.fk !== null) { kineticPts.push({ x: t.normalForce, y: t.fk }); }
+  });
+  var allPts = staticPts.concat(kineticPts);
+  var maxX = 50, maxY = 50;
+  allPts.forEach(function(p) { maxX = Math.max(maxX, p.x); maxY = Math.max(maxY, p.y); });
+  maxX *= 1.15; maxY *= 1.15;
+
+  graphAxes(ctx, w, h, pad, 0, maxY, function(v) { return v.toFixed(0); });
+
+  function X(x) { return pad + (w - 2 * pad) * (x / maxX); }
+  function Y(y) { return pad + (h - 2 * pad) * (1 - y / maxY); }
+
+  function plotScatterAndFit(pts, color) {
+    pts.forEach(function(p) {
+      ctx.beginPath(); ctx.arc(X(p.x), Y(p.y), 4, 0, Math.PI * 2);
+      ctx.fillStyle = color; ctx.fill();
+    });
+    var slope = fitSlopeThroughOrigin(pts);
+    if (slope !== null) {
+      ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(maxX), Y(slope * maxX));
+      ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]); ctx.stroke(); ctx.setLineDash([]);
+    }
+    return slope;
+  }
+  var musFit = plotScatterAndFit(staticPts, VEC_COLORS.net);
+  var mukFit = plotScatterAndFit(kineticPts, VEC_COLORS.friction);
+
+  ctx.textAlign = "left"; ctx.font = "10px 'JetBrains Mono', monospace";
+  ctx.fillStyle = VEC_COLORS.net;
+  ctx.fillText("• f_s,max  (slope ≈ μs = " + (musFit !== null ? musFit.toFixed(3) : "—") + ")", pad, h - 22);
+  ctx.fillStyle = VEC_COLORS.friction;
+  ctx.fillText("• f_k  (slope ≈ μk = " + (mukFit !== null ? mukFit.toFixed(3) : "—") + ")", pad, h - 8);
+}
+
+function refreshLabPanel() {
+  labPanel.innerHTML = "";
+  var h3 = document.createElement("h3");
+  h3.textContent = "Virtual Lab";
+  labPanel.appendChild(h3);
+
+  var live = document.createElement("div");
+  live.className = "panel-row mono";
+  live.style.fontSize = "11.5px";
+  live.style.lineHeight = "1.7";
+  live.innerHTML =
+    "Normal force: <span id=\"labLiveN\">—</span><br>" +
+    "Applied force: <span id=\"labLiveApplied\">—</span><br>" +
+    "Acceleration: <span id=\"labLiveAccel\">—</span><br>" +
+    "Regime: <span id=\"labLiveRegime\">—</span><br>" +
+    "Static peak reached: <span id=\"labLivePeak\">—</span>";
+  labPanel.appendChild(live);
+
+  var recordRow = document.createElement("div");
+  recordRow.className = "seg-row";
+  var recStatic = document.createElement("div");
+  recStatic.className = "seg-btn";
+  recStatic.textContent = "Record Max Static";
+  recStatic.addEventListener("click", function(e) {
+    e.stopPropagation();
+    var trial = findOrCreateTrial();
+    trial.fsMax = lastStaticPeakForce;
+    resetStaticPeakTracker();
+    refreshLabPanel();
+  });
+  var recKinetic = document.createElement("div");
+  recKinetic.className = "seg-btn";
+  recKinetic.textContent = "Record Steady Kinetic";
+  recKinetic.addEventListener("click", function(e) {
+    e.stopPropagation();
+    var trial = findOrCreateTrial();
+    trial.fk = Math.abs(params.appliedForce);
+    refreshLabPanel();
+  });
+  recordRow.appendChild(recStatic); recordRow.appendChild(recKinetic);
+  labPanel.appendChild(recordRow);
+
+  var hint1 = document.createElement("div");
+  hint1.className = "panel-hint";
+  hint1.textContent = "Slowly raise Applied Force until it slides, then click Record Max Static. Then ease the force back until acceleration is ~0 while sliding, and click Record Steady Kinetic.";
+  labPanel.appendChild(hint1);
+
+  var ftTitle = document.createElement("div");
+  ftTitle.className = "panel-section-title";
+  ftTitle.textContent = "Applied vs. Friction Force (live)";
+  labPanel.appendChild(ftTitle);
+  var ftCanvas = document.createElement("canvas");
+  ftCanvas.id = "forceTimeCanvas"; ftCanvas.className = "lab-graph"; ftCanvas.width = 600; ftCanvas.height = 200;
+  labPanel.appendChild(ftCanvas);
+  forceTimeCanvasEl = ftCanvas; forceTimeCtx = ftCanvas.getContext("2d");
+
+  var tableTitle = document.createElement("div");
+  tableTitle.className = "panel-section-title";
+  tableTitle.textContent = "Trial Data (" + labTrials.length + ")";
+  labPanel.appendChild(tableTitle);
+
+  if (labTrials.length === 0) {
+    var empty = document.createElement("div");
+    empty.className = "lab-empty";
+    empty.textContent = "No trials recorded yet.";
+    labPanel.appendChild(empty);
+  } else {
+    var table = document.createElement("table");
+    table.id = "labTable";
+    var thead = document.createElement("thead");
+    thead.innerHTML = "<tr><th>#</th><th>Pair</th><th>m</th><th>N</th><th>f<sub>s,max</sub></th><th>μ<sub>s</sub></th><th>f<sub>k</sub></th><th>μ<sub>k</sub></th><th></th></tr>";
+    table.appendChild(thead);
+    var tbody = document.createElement("tbody");
+    labTrials.forEach(function(t, idx) {
+      var tr = document.createElement("tr");
+      var mus = t.fsMax !== null ? t.fsMax / t.normalForce : null;
+      var muk = t.fk !== null ? t.fk / t.normalForce : null;
+      var delTd = document.createElement("td");
+      delTd.className = "lab-row-del";
+      delTd.textContent = "×";
+      delTd.addEventListener("click", function(e) {
+        e.stopPropagation();
+        labTrials.splice(idx, 1);
+        refreshLabPanel();
+      });
+      tr.innerHTML = "<td>" + t.id + "</td><td>" + t.objectMaterial + "/" + t.surfaceMaterial + "</td><td>" + t.mass.toFixed(0) + "kg</td><td>" + t.normalForce.toFixed(0) + "</td><td>" + fmtMaybeN(t.fsMax) + "</td><td>" + fmtMu(mus) + "</td><td>" + fmtMaybeN(t.fk) + "</td><td>" + fmtMu(muk) + "</td>";
+      tr.appendChild(delTd);
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    labPanel.appendChild(table);
+  }
+
+  var fnTitle = document.createElement("div");
+  fnTitle.className = "panel-section-title";
+  fnTitle.textContent = "Friction vs. Normal Force (recorded trials)";
+  labPanel.appendChild(fnTitle);
+  var fnCanvas = document.createElement("canvas");
+  fnCanvas.id = "frictionNormalCanvas"; fnCanvas.className = "lab-graph"; fnCanvas.width = 600; fnCanvas.height = 200;
+  labPanel.appendChild(fnCanvas);
+  drawFrictionNormalGraph(fnCanvas.getContext("2d"), fnCanvas.width, fnCanvas.height);
+
+  var exportBtn = document.createElement("button");
+  exportBtn.className = "panel-link";
+  exportBtn.textContent = "Export CSV";
+  exportBtn.disabled = labTrials.length === 0;
+  exportBtn.style.opacity = labTrials.length === 0 ? "0.4" : "1";
+  exportBtn.addEventListener("click", function(e) {
+    e.stopPropagation();
+    if (labTrials.length > 0) { downloadLabCSV(); }
+  });
+  labPanel.appendChild(exportBtn);
+}
+
+function updateLabLiveReadout(phys, result) {
+  if (labPanel.classList.contains("hidden")) { return; }
+  var nEl = document.getElementById("labLiveN"), aEl = document.getElementById("labLiveApplied"),
+    accEl = document.getElementById("labLiveAccel"), rEl = document.getElementById("labLiveRegime"),
+    pEl = document.getElementById("labLivePeak");
+  if (!nEl) { return; }
+  nEl.textContent = phys.normalForce.toFixed(1) + " N";
+  aEl.textContent = params.appliedForce.toFixed(1) + " N";
+  accEl.textContent = result.acceleration.toFixed(2) + " m/s²";
+  rEl.textContent = result.regime === "static" ? "Static" : "Sliding";
+  pEl.textContent = lastStaticPeakForce.toFixed(1) + " N";
+}
+
+document.getElementById("labBtn").addEventListener("click", function(e) {
+  e.stopPropagation();
+  labOpen = !labOpen;
+  labPanel.classList.toggle("hidden", !labOpen);
+});
+document.addEventListener("click", function(e) {
+  if (labOpen && !e.target.closest("#labPanel, #labBtn")) {
+    labOpen = false; labPanel.classList.add("hidden");
+  }
+});
+refreshLabPanel();
+
+/* ============================================================
+   Top/bottom bar wiring
+   ============================================================ */
+document.getElementById("pauseBtn").addEventListener("click", function() {
+  paused = !paused;
+  document.getElementById("pauseBtn").textContent = paused ? "Unpause" : "Pause";
+});
+document.getElementById("stepBtn").addEventListener("click", function() {
+  var phys = currentPhys();
+  var result = stepFriction(state, phys, 1 / 60);
+  state.regime = result.regime; state.velocity = result.velocity; state.position = result.position;
+});
+document.getElementById("resetBtn").addEventListener("click", function() {
+  params.appliedForce = 0;
+  resetState();
+  refreshControlsPanel();
+});
+
+/* ============================================================
+   Tutorial modal
+   ============================================================ */
+var tutorialModal = document.getElementById("tutorialModal");
+document.getElementById("tutorialBtn").addEventListener("click", function(e) {
+  e.stopPropagation();
+  tutorialModal.innerHTML = "";
+  var card = document.createElement("div");
+  card.className = "modal-card";
+  card.innerHTML =
+    "<h2>How Friction Lab Works</h2>" +
+    "<p>Pick an object and a surface in <strong>Controls</strong>, add mass, then slide <strong>Applied Force</strong> up. Watch <strong>static friction</strong> rise to match it, right up until it hits its maximum -- μs·N -- at which point the object breaks free and <strong>kinetic friction</strong> takes over at a steady μk·N. The status banner at the top always says exactly which regime you're in and why.</p>" +
+    "<p>Toggle <strong>Flat Surface / Incline</strong> to try a ramp instead. With zero applied force, raise the angle slider past arctan(μs) and the object starts sliding on its own -- that's the same physics as pushing past the static threshold, just gravity doing the pushing instead of you.</p>" +
+    "<p>Every vector (gravity, normal, applied, friction, net) can be toggled on or off in Controls so you can isolate exactly what you're studying.</p>" +
+    "<p>Open the <strong>Lab</strong> to turn exploration into measurement: raise the force until it slides and click <strong>Record Max Static</strong>; while it's sliding, ease the force down until acceleration reads ~0 and click <strong>Record Steady Kinetic</strong>. The lab computes μs and μk from your own numbers and plots them against the live force-vs-time trace and a friction-vs-normal-force graph -- the slope of that graph <em>is</em> the coefficient of friction. Export your trial table as a CSV any time.</p>" +
+    "<p>The friction coefficients here are representative introductory-model values for each object/surface pairing -- real friction also depends on surface condition, lubrication, and temperature.</p>";
+  var closeBtn = document.createElement("button");
+  closeBtn.className = "close-link";
+  closeBtn.textContent = "Got it";
+  closeBtn.onclick = function() { tutorialModal.classList.add("hidden"); };
+  card.appendChild(closeBtn);
+  tutorialModal.appendChild(card);
+  tutorialModal.classList.remove("hidden");
+});
+tutorialModal.addEventListener("click", function(e) { if (e.target === tutorialModal) { tutorialModal.classList.add("hidden"); } });
+</script>
+</body>
+</html>
