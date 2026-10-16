@@ -52,6 +52,14 @@ button,input{font-family:inherit;}
 #statusBanner.sliding{border-color:var(--amber-dim);box-shadow:0 0 24px rgba(255,179,0,0.18);}
 #statusBanner.sliding .status-type{color:var(--amber);}
 
+/* ---------- motion HUD: big digital velocity/acceleration readout ---------- */
+#motionHud{position:fixed;top:118px;left:50%;transform:translateX(-50%);z-index:44;display:flex;gap:10px;pointer-events:none;}
+.motion-tile{background:rgba(15,18,22,0.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--border-lit);border-radius:14px;padding:8px 18px 10px;text-align:center;min-width:128px;}
+.motion-tile .motion-label{font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);}
+.motion-tile .motion-value{font-family:'JetBrains Mono',monospace;font-size:38px;font-weight:700;line-height:1.15;color:var(--text);transition:color 0.15s ease;}
+.motion-tile .motion-unit{font-size:12.5px;color:var(--text-dim);margin-left:3px;}
+
 /* ---------- floating panels ---------- */
 .panel{
   position:fixed;z-index:60;width:320px;max-width:calc(100vw - 32px);
@@ -147,7 +155,19 @@ canvas.lab-graph{width:100%;height:140px;display:block;border-radius:10px;backgr
   <div class="status-reason" id="statusReason">&mdash;</div>
 </div>
 
+<div id="motionHud">
+  <div class="motion-tile">
+    <div class="motion-label">Velocity</div>
+    <div><span class="motion-value" id="hudVelocity">0.0</span><span class="motion-unit">m/s</span></div>
+  </div>
+  <div class="motion-tile">
+    <div class="motion-label">Acceleration</div>
+    <div><span class="motion-value" id="hudAccel">0.0</span><span class="motion-unit">m/s&sup2;</span></div>
+  </div>
+</div>
+
 <div id="stageControls">
+  <div class="round-btn" id="muteBtn" title="Mute/unmute sound">&#128266;</div>
   <div class="round-btn" id="stepBtn" title="Step">&#9654;&#124;</div>
 </div>
 
@@ -303,6 +323,23 @@ function fitSlopeThroughOrigin(points) {
   return sumXY / sumXX;
 }
 
+/* ---------- motion-HUD state classification ----------
+   "Speeding up" vs "slowing down" is acceleration's sign RELATIVE TO
+   velocity's sign, not acceleration's sign alone (e.g. a=-3 is slowing
+   down while moving forward, but speeding up while moving backward).
+   "starting" covers the near-rest instant right as motion begins (too
+   little velocity yet to compare signs against); "steady" covers
+   near-zero acceleration (constant velocity, including being fully at
+   rest in the static regime). */
+var MOTION_ACCEL_EPS = 0.05; // m/s^2
+var MOTION_VEL_EPS = 0.02; // m/s
+function classifyMotionState(velocity, acceleration) {
+  if (Math.abs(acceleration) < MOTION_ACCEL_EPS) { return "steady"; }
+  if (Math.abs(velocity) < MOTION_VEL_EPS) { return "starting"; }
+  var sameSign = (acceleration > 0) === (velocity > 0);
+  return sameSign ? "speeding" : "slowing";
+}
+
 /* ============================================================
    Scene / rendering state
    ============================================================ */
@@ -438,6 +475,47 @@ function drawGroundStrip(theta) {
   ctx.restore();
 }
 
+// Distance markers scrolling past along the ground/ramp -- with the
+// crate locked dead-center (see frame()), this is the thing that
+// actually carries "am I moving, and how fast" now that the crate
+// itself never visibly drifts. Minor ticks every 1m, a brighter major
+// tick + distance label every 5m, anchored to world position 0 (where
+// the sim starts/resets), so it doubles as a literal odometer.
+function drawGroundMarkers(theta) {
+  var a = alongDir(theta), n = normalDir(theta);
+  var nx = n.x, ny = -n.y;
+  var halfRangeM = (canvas.width / dpr) / PX_PER_M / 2 + 3;
+  var startM = Math.floor(cameraOffsetM - halfRangeM);
+  var endM = Math.ceil(cameraOffsetM + halfRangeM);
+  var colors = SURFACE_COLORS[params.surfaceMaterial];
+
+  ctx.save();
+  for (var m = startM; m <= endM; m++) {
+    var s = m - cameraOffsetM;
+    var worldPt = { x: a.x * s, y: a.y * s };
+    var p = worldToScreen(worldPt.x, worldPt.y);
+    var isMajor = m % 5 === 0;
+    var tickLen = isMajor ? 18 : 8;
+
+    ctx.beginPath();
+    ctx.moveTo(p.x - nx * tickLen * 0.5, p.y - ny * tickLen * 0.5);
+    ctx.lineTo(p.x + nx * tickLen * 0.5, p.y + ny * tickLen * 0.5);
+    ctx.strokeStyle = isMajor ? colors.accent : "rgba(255,255,255,0.22)";
+    ctx.lineWidth = isMajor ? 2 : 1;
+    if (isMajor) { ctx.shadowColor = colors.accent; ctx.shadowBlur = 6; } else { ctx.shadowBlur = 0; }
+    ctx.stroke();
+
+    if (isMajor) {
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "rgba(255,255,255,0.55)";
+      ctx.font = "10px 'JetBrains Mono', monospace";
+      ctx.textAlign = "center";
+      ctx.fillText(m + "m", p.x + nx * (tickLen + 12), p.y + ny * (tickLen + 12));
+    }
+  }
+  ctx.restore();
+}
+
 function drawCrate(theta) {
   var contact = contactPointWorld();
   var n = normalDir(theta);
@@ -562,6 +640,16 @@ function updateStatusBanner(phys, result) {
   }
 }
 
+/* ---------- motion HUD: big digital velocity/acceleration readout ---------- */
+var hudVelocityEl = document.getElementById("hudVelocity");
+var hudAccelEl = document.getElementById("hudAccel");
+var MOTION_COLORS = { speeding: "#4CD96A", slowing: "#FF6B5B", starting: "#FFE066", steady: "#E9E6DE" };
+function updateMotionHud(result) {
+  hudVelocityEl.textContent = result.velocity.toFixed(1);
+  hudAccelEl.textContent = result.acceleration.toFixed(2);
+  hudAccelEl.style.color = MOTION_COLORS[classifyMotionState(result.velocity, result.acceleration)];
+}
+
 /* ============================================================
    Main loop
    ============================================================ */
@@ -584,16 +672,21 @@ function frame(now) {
     result = resolveFriction({ regime: state.regime, velocity: state.velocity, appliedForce: phys.appliedForce, biasForce: phys.biasForce, normalForce: phys.normalForce, mus: phys.mus, muk: phys.muk, mass: phys.mass });
   }
 
-  cameraOffsetM += (state.position - cameraOffsetM) * 0.08;
+  // The crate stays locked dead-center; all motion reads through the
+  // scrolling ground markers instead of the crate drifting on screen.
+  cameraOffsetM = state.position;
   if (result.regime === "static") {
     lastStaticPeakForce = Math.max(lastStaticPeakForce, Math.abs(params.appliedForce));
   }
 
   ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
   drawGroundStrip(phys.thetaRad);
+  drawGroundMarkers(phys.thetaRad);
   var crateScreen = drawCrate(phys.thetaRad);
   drawAllVectors(crateScreen, phys, result, phys.thetaRad);
   updateStatusBanner(phys, result);
+  updateMotionHud(result);
+  updateMotionSound(result);
   updateLabLiveReadout(phys, result);
 
   if (!labPanel.classList.contains("hidden") && forceTimeCanvasEl) {
@@ -1131,6 +1224,132 @@ document.getElementById("resetBtn").addEventListener("click", function() {
   resetState();
   refreshControlsPanel();
 });
+
+/* ============================================================
+   Sound design -- procedural Web Audio, no external audio assets
+   (same zero-asset spirit as Eclipses' canvas-generated corona
+   texture). A filtered-noise loop reads as a scrape/slide sound while
+   kinetic friction is active, with its pitch and volume tied to
+   speed; a short percussive "thud" fires once on the sliding-to-
+   static transition. Lazily created on first user gesture (autoplay
+   policy) and fully guarded -- if Web Audio isn't available, sound is
+   silently a no-op rather than breaking anything else.
+   ============================================================ */
+var audioCtx = null;
+var masterGain = null;
+var scrapeSource = null, scrapeFilter = null, scrapeGain = null;
+var soundMuted = false;
+var soundSupported = !!(window.AudioContext || window.webkitAudioContext);
+var lastRegimeForSound = "static";
+var muteBtn = document.getElementById("muteBtn");
+
+function ensureAudioContext() {
+  if (audioCtx || !soundSupported) { return; }
+  try {
+    var Ctor = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new Ctor();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = soundMuted ? 0 : 1;
+    masterGain.connect(audioCtx.destination);
+  } catch (e) {
+    soundSupported = false;
+  }
+}
+
+function makeNoiseBuffer(ctxForBuffer) {
+  var length = ctxForBuffer.sampleRate * 2;
+  var buffer = ctxForBuffer.createBuffer(1, length, ctxForBuffer.sampleRate);
+  var data = buffer.getChannelData(0);
+  for (var i = 0; i < length; i++) { data[i] = Math.random() * 2 - 1; }
+  return buffer;
+}
+
+function startScrapeLoop() {
+  if (!soundSupported) { return; }
+  ensureAudioContext();
+  if (!audioCtx || scrapeSource) { return; }
+  try {
+    if (audioCtx.state === "suspended") { audioCtx.resume(); }
+    scrapeSource = audioCtx.createBufferSource();
+    scrapeSource.buffer = makeNoiseBuffer(audioCtx);
+    scrapeSource.loop = true;
+    scrapeFilter = audioCtx.createBiquadFilter();
+    scrapeFilter.type = "bandpass";
+    scrapeFilter.frequency.value = 400;
+    scrapeFilter.Q.value = 0.9;
+    scrapeGain = audioCtx.createGain();
+    scrapeGain.gain.value = 0;
+    scrapeSource.connect(scrapeFilter);
+    scrapeFilter.connect(scrapeGain);
+    scrapeGain.connect(masterGain);
+    scrapeSource.start();
+  } catch (e) { scrapeSource = null; scrapeFilter = null; scrapeGain = null; }
+}
+
+function stopScrapeLoop() {
+  if (!scrapeSource) { return; }
+  try {
+    scrapeGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.03);
+    var src = scrapeSource;
+    setTimeout(function() { try { src.stop(); } catch (e) { /* already stopped */ } }, 80);
+  } catch (e) { /* ignore */ }
+  scrapeSource = null; scrapeFilter = null; scrapeGain = null;
+}
+
+function updateScrapeSound(speed) {
+  if (!scrapeSource || !audioCtx) { return; }
+  var clampedSpeed = Math.min(speed, 12);
+  var targetGain = Math.min(0.32, 0.05 + clampedSpeed * 0.022);
+  var targetFreq = 260 + clampedSpeed * 90;
+  scrapeGain.gain.setTargetAtTime(targetGain, audioCtx.currentTime, 0.05);
+  scrapeFilter.frequency.setTargetAtTime(targetFreq, audioCtx.currentTime, 0.05);
+}
+
+function playThud() {
+  if (!soundSupported) { return; }
+  ensureAudioContext();
+  if (!audioCtx) { return; }
+  try {
+    if (audioCtx.state === "suspended") { audioCtx.resume(); }
+    var osc = audioCtx.createOscillator();
+    var gain = audioCtx.createGain();
+    osc.type = "sine";
+    var now = audioCtx.currentTime;
+    osc.frequency.setValueAtTime(120, now);
+    osc.frequency.exponentialRampToValueAtTime(55, now + 0.18);
+    gain.gain.setValueAtTime(0.5, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+    osc.connect(gain);
+    gain.connect(masterGain);
+    osc.start(now);
+    osc.stop(now + 0.25);
+  } catch (e) { /* ignore */ }
+}
+
+muteBtn.addEventListener("click", function(e) {
+  e.stopPropagation();
+  ensureAudioContext();
+  soundMuted = !soundMuted;
+  muteBtn.innerHTML = soundMuted ? "&#128263;" : "&#128266;";
+  if (masterGain) { masterGain.gain.setTargetAtTime(soundMuted ? 0 : 1, audioCtx.currentTime, 0.05); }
+});
+
+/* Called once per frame with the latest physics result: starts/stops the
+   scrape loop based on the current regime, keeps its pitch/volume tracking
+   speed while sliding, and fires the thud exactly once on the
+   sliding->static transition. */
+function updateMotionSound(result) {
+  if (result.regime === "sliding") {
+    startScrapeLoop();
+    updateScrapeSound(Math.abs(result.velocity));
+  } else {
+    stopScrapeLoop();
+  }
+  if (lastRegimeForSound === "sliding" && result.regime === "static") {
+    playThud();
+  }
+  lastRegimeForSound = result.regime;
+}
 
 /* ============================================================
    Tutorial modal
