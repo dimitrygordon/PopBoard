@@ -59,6 +59,8 @@ button,input{font-family:inherit;}
 .motion-tile .motion-label{font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);}
 .motion-tile .motion-value{font-family:'JetBrains Mono',monospace;font-size:38px;font-weight:700;line-height:1.15;color:var(--text);transition:color 0.15s ease;}
 .motion-tile .motion-unit{font-size:12.5px;color:var(--text-dim);margin-left:3px;}
+#hudAccelTile{pointer-events:auto;cursor:pointer;}
+#hudAccelTile:active{background:rgba(255,255,255,0.08);}
 
 /* ---------- floating panels ---------- */
 .panel{
@@ -160,7 +162,7 @@ canvas.lab-graph{width:100%;height:140px;display:block;border-radius:10px;backgr
     <div class="motion-label">Velocity</div>
     <div><span class="motion-value" id="hudVelocity">0.0</span><span class="motion-unit">m/s</span></div>
   </div>
-  <div class="motion-tile">
+  <div class="motion-tile" id="hudAccelTile" title="Tap to zero the applied force">
     <div class="motion-label">Acceleration</div>
     <div><span class="motion-value" id="hudAccel">0.0</span><span class="motion-unit">m/s&sup2;</span></div>
   </div>
@@ -193,8 +195,14 @@ canvas.lab-graph{width:100%;height:140px;display:block;border-radius:10px;backgr
    ============================================================ */
 var G = 9.81;
 
-var OBJECT_MATERIALS = ["wood", "metal", "cardboard", "rubber", "stone"];
-var SURFACE_MATERIALS = ["wood", "metal", "rubber", "ice", "concrete"];
+var OBJECT_MATERIALS = ["wood", "cardboard", "leather", "rubber", "glass", "stone", "steel", "castiron"];
+var SURFACE_MATERIALS = ["wood", "rubber", "leather", "glass", "ice", "concrete", "steel", "castiron"];
+
+// Display labels for materials whose key isn't already the label (keys
+// stay single-word/no-space so they work as plain object-literal keys
+// and in "object|surface" lookup strings).
+var MATERIAL_LABELS = { castiron: "Cast Iron" };
+function materialLabel(mat) { return MATERIAL_LABELS[mat] || mat; }
 
 // Representative introductory-model coefficients per (object, surface)
 // pair. Real friction also depends on surface condition, lubrication,
@@ -202,34 +210,76 @@ var SURFACE_MATERIALS = ["wood", "metal", "rubber", "ice", "concrete"];
 // database.
 var FRICTION_TABLE = {
   "wood|wood": { mus: 0.50, muk: 0.30 },
-  "wood|metal": { mus: 0.40, muk: 0.25 },
+  "wood|steel": { mus: 0.40, muk: 0.25 },
   "wood|rubber": { mus: 0.55, muk: 0.40 },
   "wood|ice": { mus: 0.06, muk: 0.04 },
   "wood|concrete": { mus: 0.55, muk: 0.35 },
+  "wood|glass": { mus: 0.35, muk: 0.22 },
+  "wood|castiron": { mus: 0.42, muk: 0.28 },
+  "wood|leather": { mus: 0.40, muk: 0.28 },
 
-  "metal|wood": { mus: 0.40, muk: 0.25 },
-  "metal|metal": { mus: 0.35, muk: 0.25 },
-  "metal|rubber": { mus: 0.60, muk: 0.45 },
-  "metal|ice": { mus: 0.03, muk: 0.02 },
-  "metal|concrete": { mus: 0.50, muk: 0.40 },
+  "steel|wood": { mus: 0.40, muk: 0.25 },
+  "steel|steel": { mus: 0.35, muk: 0.25 },
+  "steel|rubber": { mus: 0.60, muk: 0.45 },
+  "steel|ice": { mus: 0.03, muk: 0.02 },
+  "steel|concrete": { mus: 0.50, muk: 0.40 },
+  "steel|glass": { mus: 0.25, muk: 0.18 },
+  "steel|castiron": { mus: 0.40, muk: 0.29 },
+  "steel|leather": { mus: 0.35, muk: 0.24 },
 
   "cardboard|wood": { mus: 0.45, muk: 0.30 },
-  "cardboard|metal": { mus: 0.35, muk: 0.22 },
+  "cardboard|steel": { mus: 0.35, muk: 0.22 },
   "cardboard|rubber": { mus: 0.50, muk: 0.35 },
   "cardboard|ice": { mus: 0.05, muk: 0.03 },
   "cardboard|concrete": { mus: 0.45, muk: 0.30 },
+  "cardboard|glass": { mus: 0.30, muk: 0.20 },
+  "cardboard|castiron": { mus: 0.38, muk: 0.25 },
+  "cardboard|leather": { mus: 0.42, muk: 0.28 },
 
   "rubber|wood": { mus: 0.60, muk: 0.45 },
-  "rubber|metal": { mus: 0.65, muk: 0.50 },
+  "rubber|steel": { mus: 0.65, muk: 0.50 },
   "rubber|rubber": { mus: 0.95, muk: 0.80 },
   "rubber|ice": { mus: 0.15, muk: 0.08 },
   "rubber|concrete": { mus: 0.90, muk: 0.70 },
+  "rubber|glass": { mus: 0.70, muk: 0.55 },
+  "rubber|castiron": { mus: 0.68, muk: 0.52 },
+  "rubber|leather": { mus: 0.75, muk: 0.58 },
 
   "stone|wood": { mus: 0.45, muk: 0.30 },
-  "stone|metal": { mus: 0.40, muk: 0.28 },
+  "stone|steel": { mus: 0.40, muk: 0.28 },
   "stone|rubber": { mus: 0.70, muk: 0.55 },
   "stone|ice": { mus: 0.04, muk: 0.025 },
-  "stone|concrete": { mus: 0.60, muk: 0.45 }
+  "stone|concrete": { mus: 0.60, muk: 0.45 },
+  "stone|glass": { mus: 0.30, muk: 0.20 },
+  "stone|castiron": { mus: 0.45, muk: 0.32 },
+  "stone|leather": { mus: 0.42, muk: 0.29 },
+
+  "glass|wood": { mus: 0.35, muk: 0.22 },
+  "glass|steel": { mus: 0.25, muk: 0.18 },
+  "glass|rubber": { mus: 0.65, muk: 0.50 },
+  "glass|ice": { mus: 0.02, muk: 0.015 },
+  "glass|concrete": { mus: 0.40, muk: 0.28 },
+  "glass|glass": { mus: 0.30, muk: 0.20 },
+  "glass|castiron": { mus: 0.32, muk: 0.22 },
+  "glass|leather": { mus: 0.30, muk: 0.20 },
+
+  "castiron|wood": { mus: 0.42, muk: 0.28 },
+  "castiron|steel": { mus: 0.40, muk: 0.29 },
+  "castiron|rubber": { mus: 0.68, muk: 0.52 },
+  "castiron|ice": { mus: 0.025, muk: 0.018 },
+  "castiron|concrete": { mus: 0.52, muk: 0.40 },
+  "castiron|glass": { mus: 0.32, muk: 0.22 },
+  "castiron|castiron": { mus: 0.45, muk: 0.35 },
+  "castiron|leather": { mus: 0.40, muk: 0.28 },
+
+  "leather|wood": { mus: 0.40, muk: 0.28 },
+  "leather|steel": { mus: 0.35, muk: 0.24 },
+  "leather|rubber": { mus: 0.75, muk: 0.58 },
+  "leather|ice": { mus: 0.05, muk: 0.03 },
+  "leather|concrete": { mus: 0.55, muk: 0.40 },
+  "leather|glass": { mus: 0.30, muk: 0.20 },
+  "leather|castiron": { mus: 0.40, muk: 0.28 },
+  "leather|leather": { mus: 0.50, muk: 0.38 }
 };
 
 function getFriction(objectMat, surfaceMat) {
@@ -358,7 +408,10 @@ window.addEventListener("resize", resizeCanvas);
 
 var MASS_RANGE = { min: 0.5, max: 60 };
 var FORCE_RANGE = { min: -400, max: 400 };
-var ANGLE_RANGE = { min: 0, max: 55 }; // degrees
+// Symmetric around 0 so the slider's center is a flat ramp and either
+// side tilts the incline the opposite direction -- same physics either
+// way, since resolveFriction already works off signed drive forces.
+var ANGLE_RANGE = { min: -55, max: 55 }; // degrees
 
 var params = {
   objectMaterial: "wood",
@@ -374,6 +427,19 @@ var paused = false;
 var lastFrameTime = null;
 var cameraOffsetM = 0;
 var MAX_SUBSTEP_DT = 1 / 120;
+
+// Tracks the live Applied Force slider row (if the controls panel is
+// currently showing one) so other ways of changing the force --
+// dragging the crate, the zero-force button, clicking the accel HUD --
+// can keep it in sync instead of only mutating params directly.
+var forceSliderRow = null;
+function setAppliedForce(value) {
+  params.appliedForce = Math.max(FORCE_RANGE.min, Math.min(FORCE_RANGE.max, value));
+  if (forceSliderRow) {
+    forceSliderRow.slider.value = String(params.appliedForce);
+    forceSliderRow.label.textContent = "Applied Force: " + fmtForceLabel(params.appliedForce);
+  }
+}
 
 var vectorsOn = { gravity: true, normal: true, applied: true, friction: true, net: true };
 
@@ -429,13 +495,17 @@ function crateHalfThickness() {
    ============================================================ */
 var SURFACE_COLORS = {
   wood: { base: "#5a3d22", light: "#8a6338", accent: "#C9924B" },
-  metal: { base: "#4a525c", light: "#9aa6b2", accent: "#AEB8C2" },
+  steel: { base: "#4a525c", light: "#9aa6b2", accent: "#AEB8C2" },
   rubber: { base: "#201a1a", light: "#3a2426", accent: "#B5463D" },
   ice: { base: "#9fd9e8", light: "#eafcff", accent: "#BFF3FF" },
-  concrete: { base: "#5c6168", light: "#7d838b", accent: "#9AA3AC" }
+  concrete: { base: "#5c6168", light: "#7d838b", accent: "#9AA3AC" },
+  glass: { base: "#39474c", light: "#dff3f5", accent: "#AEE9EE" },
+  castiron: { base: "#2b2d30", light: "#6d7278", accent: "#9AA0A6" },
+  leather: { base: "#3c2415", light: "#7a4a2e", accent: "#B97A46" }
 };
 var OBJECT_COLORS = {
-  wood: "#C9924B", metal: "#AEB8C2", cardboard: "#C2A878", rubber: "#B5463D", stone: "#8C93A0"
+  wood: "#C9924B", steel: "#AEB8C2", cardboard: "#C2A878", rubber: "#B5463D", stone: "#8C93A0",
+  glass: "#CFEFF5", castiron: "#4A4D52", leather: "#8B5A2B"
 };
 
 function drawGroundStrip(theta) {
@@ -516,6 +586,12 @@ function drawGroundMarkers(theta) {
   ctx.restore();
 }
 
+// Updated by drawCrate every frame so the drag-to-set-applied-force
+// pointer handlers can hit-test against the crate's current screen
+// position/size without redoing the world->screen math themselves.
+var lastCrateScreenPos = { x: 0, y: 0 };
+var lastCrateSizePx = 60;
+
 function drawCrate(theta) {
   var contact = contactPointWorld();
   var n = normalDir(theta);
@@ -525,6 +601,8 @@ function drawCrate(theta) {
 
   var sizePx = 46 + Math.min(26, params.mass * 0.9);
   var color = OBJECT_COLORS[params.objectMaterial];
+  lastCrateScreenPos = s;
+  lastCrateSizePx = sizePx;
 
   ctx.save();
   ctx.translate(s.x, s.y);
@@ -772,7 +850,7 @@ function makeSwatchGrid(materials, activeMaterial, colorMap, onPick) {
     btn.className = "swatch-btn" + (mat === activeMaterial ? " active" : "");
     var bg = typeof colorMap[mat] === "string" ? colorMap[mat] : colorMap[mat].accent;
     btn.style.background = "linear-gradient(145deg," + shadeColor(bg, 0.25) + "," + shadeColor(bg, -0.25) + ")";
-    btn.textContent = mat;
+    btn.textContent = materialLabel(mat);
     btn.addEventListener("click", function(e) {
       e.stopPropagation();
       onPick(mat);
@@ -867,7 +945,16 @@ function refreshControlsPanel() {
   });
   controlsPanel.appendChild(weightBtnRow);
 
-  controlsPanel.appendChild(makeLinearSliderRow(function(v) { return "Applied Force: " + fmtForceLabel(v); }, params.appliedForce, FORCE_RANGE.min, FORCE_RANGE.max, 1, function(v) { params.appliedForce = v; }).row);
+  forceSliderRow = makeLinearSliderRow(function(v) { return "Applied Force: " + fmtForceLabel(v); }, params.appliedForce, FORCE_RANGE.min, FORCE_RANGE.max, 1, function(v) { params.appliedForce = v; });
+  controlsPanel.appendChild(forceSliderRow.row);
+  var zeroForceBtn = document.createElement("button");
+  zeroForceBtn.className = "panel-link";
+  zeroForceBtn.textContent = "Reset Applied Force to 0";
+  zeroForceBtn.addEventListener("click", function(e) {
+    e.stopPropagation();
+    setAppliedForce(0);
+  });
+  controlsPanel.appendChild(zeroForceBtn);
 
   var vecTitle = document.createElement("div");
   vecTitle.className = "panel-section-title";
@@ -1153,7 +1240,7 @@ function refreshLabPanel() {
         labTrials.splice(idx, 1);
         refreshLabPanel();
       });
-      tr.innerHTML = "<td>" + t.id + "</td><td>" + t.objectMaterial + "/" + t.surfaceMaterial + "</td><td>" + t.mass.toFixed(0) + "kg</td><td>" + t.normalForce.toFixed(0) + "</td><td>" + fmtMaybeN(t.fsMax) + "</td><td>" + fmtMu(mus) + "</td><td>" + fmtMaybeN(t.fk) + "</td><td>" + fmtMu(muk) + "</td>";
+      tr.innerHTML = "<td>" + t.id + "</td><td>" + materialLabel(t.objectMaterial) + "/" + materialLabel(t.surfaceMaterial) + "</td><td>" + t.mass.toFixed(0) + "kg</td><td>" + t.normalForce.toFixed(0) + "</td><td>" + fmtMaybeN(t.fsMax) + "</td><td>" + fmtMu(mus) + "</td><td>" + fmtMaybeN(t.fk) + "</td><td>" + fmtMu(muk) + "</td>";
       tr.appendChild(delTd);
       tbody.appendChild(tr);
     });
@@ -1223,6 +1310,64 @@ document.getElementById("resetBtn").addEventListener("click", function() {
   params.appliedForce = 0;
   resetState();
   refreshControlsPanel();
+});
+
+/* ============================================================
+   Drag-the-crate as an alternative to the Applied Force slider.
+   The crate itself never moves on screen (locked dead-center), so its
+   hit box is static between frames -- press near it and drag along the
+   ramp's screen direction to push the applied force up or down, exactly
+   like dragging the slider but directly on the object.
+   ============================================================ */
+var crateDrag = null;
+var DRAG_FORCE_PER_PX = 3;
+
+function canvasPointerPos(e) {
+  var rect = canvas.getBoundingClientRect();
+  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+}
+function isNearCrate(pos) {
+  var dx = pos.x - lastCrateScreenPos.x, dy = pos.y - lastCrateScreenPos.y;
+  return Math.hypot(dx, dy) < lastCrateSizePx * 0.85;
+}
+
+canvas.addEventListener("pointerdown", function(e) {
+  var pos = canvasPointerPos(e);
+  if (!isNearCrate(pos)) { return; }
+  crateDrag = { startX: pos.x, startY: pos.y, startForce: params.appliedForce, pointerId: e.pointerId };
+  canvas.style.cursor = "grabbing";
+  try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* unsupported, ignore */ }
+});
+canvas.addEventListener("pointermove", function(e) {
+  var pos = canvasPointerPos(e);
+  if (crateDrag) {
+    var theta = currentPhys().thetaRad;
+    var alongScreen = { x: Math.cos(theta), y: Math.sin(theta) };
+    var dx = pos.x - crateDrag.startX, dy = pos.y - crateDrag.startY;
+    var alongPx = dx * alongScreen.x + dy * alongScreen.y;
+    setAppliedForce(crateDrag.startForce + alongPx * DRAG_FORCE_PER_PX);
+    e.preventDefault();
+  } else {
+    canvas.style.cursor = isNearCrate(pos) ? "grab" : "default";
+  }
+});
+function endCrateDrag(e) {
+  if (crateDrag) {
+    try { canvas.releasePointerCapture(crateDrag.pointerId); } catch (err) { /* ignore */ }
+  }
+  crateDrag = null;
+  canvas.style.cursor = "default";
+}
+canvas.addEventListener("pointerup", endCrateDrag);
+canvas.addEventListener("pointercancel", endCrateDrag);
+
+// Tapping the acceleration readout is a quick way to ask "what if there
+// were no net push" -- zero the applied force, same as the controls-
+// panel button, achieving zero acceleration (modulo friction already
+// at rest).
+document.getElementById("hudAccelTile").addEventListener("click", function(e) {
+  e.stopPropagation();
+  setAppliedForce(0);
 });
 
 /* ============================================================
