@@ -60,6 +60,17 @@ button,input{font-family:inherit;}
 .hud-tile .hud-value{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;line-height:1.15;color:var(--text);}
 .hud-tile .hud-unit{font-size:11px;color:var(--text-dim);margin-left:3px;}
 
+/* ---------- per-star lifespan scrub ---------- */
+#starScrubBar{
+  position:fixed;top:176px;left:50%;transform:translateX(-50%);z-index:44;
+  background:rgba(15,18,22,0.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--border-lit);border-radius:14px;padding:8px 16px;
+  display:flex;align-items:center;gap:10px;width:min(90vw,340px);
+}
+#starScrubBar.hidden{display:none;}
+#starScrubBar .scrub-readout{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text-dim);white-space:nowrap;}
+#starScrubBar input[type="range"]{width:100%;}
+
 /* ---------- floating panels ---------- */
 .panel{
   position:fixed;z-index:60;width:320px;max-width:calc(100vw - 32px);
@@ -168,6 +179,11 @@ canvas.cross-section-canvas{width:100%;height:180px;display:block;border-radius:
     <div class="hud-label">Age</div>
     <div><span class="hud-value" id="hudAge">&mdash;</span><span class="hud-unit">Myr</span></div>
   </div>
+</div>
+
+<div id="starScrubBar" class="hidden">
+  <input type="range" id="starScrubInput" min="0" max="100" step="0.01" value="0">
+  <div class="scrub-readout mono" id="starScrubReadout">&mdash;</div>
 </div>
 
 <div id="stageControls">
@@ -358,6 +374,13 @@ function logLerp(a, b, t) {
   if (a <= 0 || b <= 0) { return lerp(a, b, t); }
   return Math.exp(lerp(Math.log(a), Math.log(b), t));
 }
+// Smootherstep (Perlin's ease-in-out): identical endpoints to linear
+// progress (0 and 1 still land exactly on the anchor), but velocity eases
+// to zero approaching each anchor instead of changing direction abruptly --
+// this is what turns a visually sharp "elbow" at every stage boundary into
+// a graceful sweep, with no change to the anchor values themselves or to
+// how long each stage lasts.
+function smootherstep(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
 
 function interpolateAnchors(massSolar, stageName) {
   // Group by which mass bins actually have this named stage in their anchor
@@ -418,7 +441,13 @@ function luminosityRadiusAt(massSolar, ageMyr) {
     var isTerminal = i === sequence.length - 1;
     if (isTerminal || postMsAge < cursor + duration) {
       var prevAnchor = interpolateAnchors(massSolar, sequence[i - 1]);
-      var progress = isTerminal ? 1 : Math.max(0, Math.min(1, (postMsAge - cursor) / duration));
+      var linearProgress = isTerminal ? 1 : Math.max(0, Math.min(1, (postMsAge - cursor) / duration));
+      // Eased, not linear: still hits the anchor exactly at progress 0/1
+      // (smootherstep(0)=0, smootherstep(1)=1), but velocity tapers toward
+      // zero approaching each anchor instead of cutting straight toward it
+      // at constant speed, which is what makes the transition into the
+      // next stage read as a sweep instead of a sharp elbow.
+      var progress = smootherstep(linearProgress);
       if (isTerminal && stageName === "WHITE_DWARF") {
         var formedAnchor = anchor;
         var ageSinceFormed = Math.max(0, postMsAge - cursor);
@@ -534,8 +563,88 @@ function hrToScreen(tKelvin, lSolar) {
 }
 
 /* ---------- OBAFGKM color coding (traditional star colors) ---------- */
-var SPECTRAL_COLORS = { O: "#9bb0ff", B: "#aabfff", A: "#cad7ff", F: "#f8f7ff", G: "#fff4ea", K: "#ffd2a1", M: "#ffb56c" };
+// Exaggerated, "classic illustration" star colors rather than the
+// physically-realistic (and famously subtle/washed-out) blackbody colors --
+// deliberately requested: a vivid, saturated palette so the hottest and
+// coolest classes read as unmistakably different at a glance.
+var SPECTRAL_COLORS = { O: "#7B2FFF", B: "#2F6FFF", A: "#9FD8FF", F: "#FFFFFF", G: "#FFD23F", K: "#FF7A1A", M: "#C2103D" };
 function colorForSpectralClass(cls) { return SPECTRAL_COLORS[cls] || "#ffffff"; }
+
+// The same exaggerated palette, but as a continuous function of
+// temperature (interpolated in log-T space between the class boundaries
+// above) instead of a discrete per-letter swap -- a star's rendered color
+// shifts smoothly as it evolves, with no visible jump the instant it
+// crosses a spectral-class boundary. Used for the live star marker/trail;
+// colorForSpectralClass + spectralClassForT still drive the text labels
+// (Properties panel, axis strip), which should stay as discrete letters.
+var VIVID_COLOR_STOPS = [
+  { t: 1800, c: [122, 10, 42] },
+  { t: 3700, c: [194, 16, 61] },
+  { t: 5200, c: [255, 122, 26] },
+  { t: 6000, c: [255, 210, 63] },
+  { t: 7500, c: [255, 255, 255] },
+  { t: 10000, c: [159, 216, 255] },
+  { t: 30000, c: [47, 111, 255] },
+  { t: 60000, c: [123, 47, 255] }
+];
+function colorForTemperatureVivid(tKelvin) {
+  var lastIdx = VIVID_COLOR_STOPS.length - 1;
+  var t = Math.max(VIVID_COLOR_STOPS[0].t, Math.min(VIVID_COLOR_STOPS[lastIdx].t, tKelvin));
+  var logT = Math.log10(t);
+  for (var i = 0; i < lastIdx; i++) {
+    var lo = VIVID_COLOR_STOPS[i], hi = VIVID_COLOR_STOPS[i + 1];
+    if (t >= lo.t && t <= hi.t) {
+      var frac = (logT - Math.log10(lo.t)) / (Math.log10(hi.t) - Math.log10(lo.t));
+      var r = Math.round(lerp(lo.c[0], hi.c[0], frac));
+      var g = Math.round(lerp(lo.c[1], hi.c[1], frac));
+      var b = Math.round(lerp(lo.c[2], hi.c[2], frac));
+      return "rgb(" + r + "," + g + "," + b + ")";
+    }
+  }
+  var last = VIVID_COLOR_STOPS[lastIdx].c;
+  return "rgb(" + last[0] + "," + last[1] + "," + last[2] + ")";
+}
+
+// A plain-language classification for the status banner -- whatever the
+// selected star is CURRENTLY classified as at its current age, never a
+// fixed label chosen at creation. Giant/supergiant stages borrow their
+// "Red/Yellow/Blue" qualifier from the star's live temperature rather
+// than a hardcoded color, since a blue-loop star genuinely is hot for
+// part of that stage (see HELIUM_BURNING in the physics module's anchor
+// table) and should read as such while it's there.
+function colorWordForT(tKelvin) {
+  var cls = spectralClassForT(tKelvin);
+  if (cls === "M" || cls === "K") { return "Red"; }
+  if (cls === "G" || cls === "F") { return "Yellow"; }
+  return "Blue";
+}
+function classifyStarLabel(state, tKelvin) {
+  var cls = spectralClassForT(tKelvin);
+  switch (state.stage) {
+    case "MAIN_SEQUENCE":
+      return cls === "M" ? "Red Dwarf (M Main Sequence)" : cls + "-Type Main Sequence";
+    case "SUBGIANT":
+      return "Subgiant";
+    case "RGB_TIP":
+    case "HELIUM_IGNITION":
+    case "HELIUM_BURNING":
+    case "AGB_TIP":
+      return colorWordForT(tKelvin) + " Giant";
+    case "RED_SUPERGIANT":
+    case "CORE_COLLAPSE":
+      return colorWordForT(tKelvin) + " Supergiant";
+    case "PLANETARY_NEBULA":
+      return "Planetary Nebula";
+    case "WHITE_DWARF":
+      return "White Dwarf";
+    case "NEUTRON_STAR":
+      return "Neutron Star";
+    case "BLACK_HOLE":
+      return "Black Hole";
+    default:
+      return state.stage.replace(/_/g, " ");
+  }
+}
 
 /* ---------- stellar cross-section schematics ----------
    An honest, illustrative layered-circle schematic per evolutionary
@@ -1027,8 +1136,65 @@ function refreshPropertiesPanel() {
 }
 document.getElementById("propertiesBtn").addEventListener("click", function () {
   propertiesOpen = !propertiesOpen;
+  // Properties (top-left, grows downward) and Extras (bottom-left, grows
+  // upward) can both get tall enough to visually collide in the middle of
+  // a short viewport -- keep them mutually exclusive rather than bounding
+  // their heights, since either can keep growing as features are added.
+  if (propertiesOpen) { extrasOpen = false; refreshExtrasPanel(); }
   refreshPropertiesPanel();
 });
+
+/* ---------- per-star lifespan scrub ----------
+   Scrubs the SELECTED star's own age independent of the others -- dragging
+   it re-pins that star's bornAtMyr so the shown age matches the handle
+   exactly, and simulated time keeps advancing from wherever it's left once
+   released. Exact in both directions for the same reason rewind is: (L,R)
+   is a pure function of (mass, age), so there's nothing to interpolate
+   across a scrub, only to recompute. */
+var starScrubInput = document.getElementById("starScrubInput");
+var starScrubBar = document.getElementById("starScrubBar");
+var starScrubReadout = document.getElementById("starScrubReadout");
+var isDraggingStarScrub = false;
+var starScrubBoundStarId = null;
+
+function scrubMaxAgeMyr(star) {
+  var onset = terminalOnsetAgeMyr(star.massSolar);
+  if (fateForMass(star.massSolar) === "white_dwarf") { return onset + Math.max(500, onset * 0.4); }
+  return onset * 1.02;
+}
+function scrubReadoutText(star, ageMyr) {
+  var state = luminosityRadiusAt(star.massSolar, ageMyr);
+  var ageText = ageMyr < 10 ? ageMyr.toFixed(2) : (ageMyr < 10000 ? Math.round(ageMyr) : (ageMyr / 1000).toFixed(1) + "k") + " Myr";
+  return ageText + " — " + classifyStarLabel(state, temperatureFromLR(state.L, state.R));
+}
+function updateStarScrubBar() {
+  var star = selectedStar();
+  if (!star) { starScrubBar.classList.add("hidden"); starScrubBoundStarId = null; return; }
+  starScrubBar.classList.remove("hidden");
+  if (starScrubBoundStarId !== star.id) {
+    starScrubInput.max = String(scrubMaxAgeMyr(star));
+    starScrubBoundStarId = star.id;
+  }
+  if (!isDraggingStarScrub) {
+    starScrubInput.value = String(star.ageMyr);
+  }
+  starScrubReadout.textContent = scrubReadoutText(star, star.ageMyr);
+}
+starScrubInput.addEventListener("pointerdown", function () {
+  isDraggingStarScrub = true;
+  paused = true;
+  pauseBtn.textContent = "Play";
+});
+starScrubInput.addEventListener("input", function () {
+  var star = selectedStar();
+  if (!star) { return; }
+  var newAge = Math.max(0, parseFloat(starScrubInput.value));
+  star.ageMyr = newAge;
+  star.bornAtMyr = simTimeMyr - newAge;
+  starScrubReadout.textContent = scrubReadoutText(star, newAge);
+  refreshPropertiesPanel();
+});
+starScrubInput.addEventListener("pointerup", function () { isDraggingStarScrub = false; });
 
 /* ---------- Extras: reference Sun + overlay theoretical tracks ---------- */
 var extrasOpen = false;
@@ -1140,6 +1306,7 @@ function refreshExtrasPanel() {
 }
 document.getElementById("extrasBtn").addEventListener("click", function () {
   extrasOpen = !extrasOpen;
+  if (extrasOpen) { propertiesOpen = false; refreshPropertiesPanel(); }
   refreshExtrasPanel();
 });
 
@@ -1291,7 +1458,7 @@ function buildTimeControl() {
 }
 buildTimeControl();
 
-/* ---------- canvas pointer handling: tap to select a star, zoom buttons ---------- */
+/* ---------- canvas pointer handling: tap to select, drag to pan, pinch to zoom ---------- */
 document.getElementById("zoomInBtn").addEventListener("click", function () { diagram.zoom = clamp(diagram.zoom * 1.35, 1, 10); });
 document.getElementById("zoomOutBtn").addEventListener("click", function () { diagram.zoom = clamp(diagram.zoom / 1.35, 1, 10); });
 canvas.addEventListener("wheel", function (e) {
@@ -1300,31 +1467,98 @@ canvas.addEventListener("wheel", function (e) {
   diagram.zoom = clamp(diagram.zoom * factor, 1, 10);
 }, { passive: false });
 
-var pointerDownX = 0, pointerDownY = 0, pointerIsDown = false, pointerMoved = false;
+// Shifts the pan so content under the fingers/cursor follows the drag --
+// derived from hrToScreen's own transform: at fixed zoom, the visible
+// (logT,logL) window shifts by exactly -deltaPixels*(visibleSpan/pixelSpan)
+// for a pan delta of deltaPixels, so this stays correct at any zoom level.
+function panBy(dxPixels, dyPixels) {
+  var r = plotRect();
+  var spanT = (Math.log10(T_MAX) - Math.log10(T_MIN)) / diagram.zoom;
+  var spanL = (Math.log10(L_MAX) - Math.log10(L_MIN)) / diagram.zoom;
+  diagram.panLogT += -dxPixels * (spanT / r.w);
+  diagram.panLogL += -dyPixels * (spanL / r.h);
+  var maxPanT = Math.log10(T_MAX) - Math.log10(T_MIN);
+  var maxPanL = Math.log10(L_MAX) - Math.log10(L_MIN);
+  diagram.panLogT = clamp(diagram.panLogT, -maxPanT, maxPanT);
+  diagram.panLogL = clamp(diagram.panLogL, -maxPanL, maxPanL);
+}
+
+// Multi-touch gesture tracking: any number of active pointers' centroid
+// movement pans the view (so a single finger/mouse drag pans, and a
+// two-finger pinch pans too if your hand drifts while pinching); exactly 2
+// pointers additionally scales zoom by how their separation has changed
+// since the gesture started. A tap (no pan threshold crossed, never more
+// than 1 pointer down) still selects a star, same as before.
+var activePointers = new Map();
+var pointerDownX = 0, pointerDownY = 0, pointerMoved = false, hadMultiTouch = false;
+var gestureLastCentroid = null, gestureStartDist = 0, gestureStartZoom = 1;
+
+function pointerCentroid() {
+  var pts = Array.from(activePointers.values());
+  var sx = 0, sy = 0;
+  pts.forEach(function (p) { sx += p.x; sy += p.y; });
+  return { x: sx / pts.length, y: sy / pts.length };
+}
+function pointerPairDistance() {
+  var pts = Array.from(activePointers.values());
+  if (pts.length < 2) { return 0; }
+  return Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+}
+
 canvas.addEventListener("pointerdown", function (e) {
-  pointerIsDown = true; pointerMoved = false;
+  try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* capture is a nicety; gesture tracking below still works without it */ }
+  activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (activePointers.size === 1) { pointerMoved = false; hadMultiTouch = false; }
+  else { hadMultiTouch = true; }
   pointerDownX = e.clientX; pointerDownY = e.clientY;
+  gestureLastCentroid = pointerCentroid();
+  if (activePointers.size === 2) {
+    gestureStartDist = pointerPairDistance();
+    gestureStartZoom = diagram.zoom;
+  }
 });
 canvas.addEventListener("pointermove", function (e) {
-  if (!pointerIsDown) { return; }
-  if (Math.abs(e.clientX - pointerDownX) > 6 || Math.abs(e.clientY - pointerDownY) > 6) { pointerMoved = true; }
+  if (!activePointers.has(e.pointerId)) { return; }
+  activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+  if (activePointers.size === 1) {
+    if (Math.abs(e.clientX - pointerDownX) > 6 || Math.abs(e.clientY - pointerDownY) > 6) { pointerMoved = true; }
+  } else {
+    pointerMoved = true;
+  }
+
+  var centroid = pointerCentroid();
+  if (gestureLastCentroid && pointerMoved) { panBy(centroid.x - gestureLastCentroid.x, centroid.y - gestureLastCentroid.y); }
+  gestureLastCentroid = centroid;
+
+  if (activePointers.size === 2 && gestureStartDist > 0) {
+    diagram.zoom = clamp(gestureStartZoom * (pointerPairDistance() / gestureStartDist), 1, 10);
+  }
 });
+function releasePointer(e) {
+  activePointers.delete(e.pointerId);
+  if (activePointers.size < 2) { gestureStartDist = 0; }
+  gestureLastCentroid = activePointers.size > 0 ? pointerCentroid() : null;
+}
 canvas.addEventListener("pointerup", function (e) {
-  pointerIsDown = false;
-  if (pointerMoved) { return; }
-  var rect = canvas.getBoundingClientRect();
-  var px = e.clientX - rect.left, py = e.clientY - rect.top;
-  var best = null, bestDist = SELECT_PIXEL_RADIUS;
-  stars.forEach(function (star) {
-    var state = luminosityRadiusAt(star.massSolar, star.ageMyr);
-    var T = temperatureFromLR(state.L, state.R);
-    var p = starDisplayPos(star, state, T);
-    var d = Math.hypot(p.x - px, p.y - py);
-    if (d < bestDist) { bestDist = d; best = star; }
-  });
-  selectedStarId = best ? best.id : null;
-  refreshPropertiesPanel();
+  var wasTap = activePointers.size === 1 && !pointerMoved && !hadMultiTouch;
+  if (wasTap) {
+    var rect = canvas.getBoundingClientRect();
+    var px = e.clientX - rect.left, py = e.clientY - rect.top;
+    var best = null, bestDist = SELECT_PIXEL_RADIUS;
+    stars.forEach(function (star) {
+      var state = luminosityRadiusAt(star.massSolar, star.ageMyr);
+      var T = temperatureFromLR(state.L, state.R);
+      var p = starDisplayPos(star, state, T);
+      var d = Math.hypot(p.x - px, p.y - py);
+      if (d < bestDist) { bestDist = d; best = star; }
+    });
+    selectedStarId = best ? best.id : null;
+    refreshPropertiesPanel();
+  }
+  releasePointer(e);
 });
+canvas.addEventListener("pointercancel", releasePointer);
 
 /* ---------- reference Sun + overlay theoretical tracks ---------- */
 function drawReferenceSun() {
@@ -1353,17 +1587,10 @@ function drawReferenceSun() {
 function drawOverlayTracks() {
   overlayTracks.forEach(function (ov) {
     var points = computeFullTrack(ov.massSolar);
-    ctx.save();
+    var screenPts = points.map(function (pt) { return hrToScreen(pt.T, pt.L); });
     ctx.setLineDash([4, 4]);
-    ctx.strokeStyle = "rgba(200,210,255,0.4)";
-    ctx.lineWidth = 1.3;
-    ctx.beginPath();
-    points.forEach(function (pt, i) {
-      var sp = hrToScreen(pt.T, pt.L);
-      if (i === 0) { ctx.moveTo(sp.x, sp.y); } else { ctx.lineTo(sp.x, sp.y); }
-    });
-    ctx.stroke();
-    ctx.restore();
+    strokeSmoothSegment(screenPts, "rgba(200,210,255,0.4)", 1, 1.3);
+    ctx.setLineDash([]);
     var mid = points[Math.floor(points.length * 0.35)];
     var midP = hrToScreen(mid.T, mid.L);
     ctx.save();
@@ -1534,6 +1761,44 @@ function starDisplayPos(star, state, T) {
   return hrToScreen(T, state.L);
 }
 
+// Slightly exaggerated size scaling -- a bigger spread between a compact
+// remnant and a bloated giant than the real R^0 (apparent-magnitude)
+// relationship would give, purely for legibility at this canvas scale.
+function starRadiusPx(state) {
+  return clamp(4 + Math.log10(Math.max(0.01, state.R)) * 3.2, 3, 22);
+}
+
+// Draws a smooth curve through a run of screen points using the classic
+// "quadratic through midpoints" freehand-smoothing technique: each point
+// becomes a control point and the curve passes through the midpoint
+// between consecutive points, rounding what would otherwise be a sharp
+// polyline corner at every sampled trail point into a continuous sweep.
+// Physically-exact data is untouched -- this only changes how already-
+// correct sampled points are connected on screen.
+function strokeSmoothSegment(points, strokeStyle, alpha, lineWidth) {
+  if (points.length < 2) { return; }
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, points[0].y);
+  if (points.length === 2) {
+    ctx.lineTo(points[1].x, points[1].y);
+  } else {
+    for (var i = 1; i < points.length - 1; i++) {
+      var midX = (points[i].x + points[i + 1].x) / 2;
+      var midY = (points[i].y + points[i + 1].y) / 2;
+      ctx.quadraticCurveTo(points[i].x, points[i].y, midX, midY);
+    }
+    ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+  }
+  ctx.strokeStyle = strokeStyle;
+  ctx.globalAlpha = alpha;
+  ctx.lineWidth = lineWidth;
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+  ctx.stroke();
+  ctx.restore();
+}
+
 /* ---------- star rendering ---------- */
 function drawStars() {
   var pulse = 0.7 + 0.3 * Math.sin(performance.now() / 220);
@@ -1541,7 +1806,7 @@ function drawStars() {
     var state = luminosityRadiusAt(star.massSolar, star.ageMyr);
     var T = temperatureFromLR(state.L, state.R);
     var p = starDisplayPos(star, state, T);
-    var color = colorForSpectralClass(spectralClassForT(T));
+    var color = colorForTemperatureVivid(T);
     var isBlackHole = state.stage === "BLACK_HOLE";
 
     // A black hole radiates nothing classical to trail across the diagram;
@@ -1552,23 +1817,24 @@ function drawStars() {
     }
 
     if (showTrails && star.trail.length > 1) {
-      ctx.save();
-      ctx.beginPath();
-      star.trail.forEach(function (pt, i) {
-        var sp = hrToScreen(pt.t, pt.l);
+      var screenPts = star.trail.map(function (pt) { return hrToScreen(pt.t, pt.l); });
+      var segment = [screenPts[0]];
+      for (var ti = 1; ti < star.trail.length; ti++) {
         // A core-collapse supernova is a genuine instantaneous jump in
         // (L,R), not a smooth transition (see the physics module's header
-        // comment) -- draw it as a break in the trail rather than a
-        // connecting line implying the star glided across the diagram.
-        var prevStage = i > 0 ? star.trail[i - 1].stage : null;
-        var isSupernovaJump = pt.stage === "NEUTRON_STAR" && prevStage !== "NEUTRON_STAR";
-        if (i === 0 || isSupernovaJump) { ctx.moveTo(sp.x, sp.y); } else { ctx.lineTo(sp.x, sp.y); }
-      });
-      ctx.strokeStyle = color;
-      ctx.globalAlpha = 0.35;
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      ctx.restore();
+        // comment) -- break the trail into a new segment rather than
+        // smoothing a curve across it, which would imply the star glided
+        // across the diagram instead of jumping.
+        var prevStage = star.trail[ti - 1].stage;
+        var isSupernovaJump = star.trail[ti].stage === "NEUTRON_STAR" && prevStage !== "NEUTRON_STAR";
+        if (isSupernovaJump) {
+          strokeSmoothSegment(segment, color, 0.35, 1.5);
+          segment = [screenPts[ti]];
+        } else {
+          segment.push(screenPts[ti]);
+        }
+      }
+      strokeSmoothSegment(segment, color, 0.35, 1.5);
     }
 
     var isSelected = star.id === selectedStarId;
@@ -1590,7 +1856,7 @@ function drawStars() {
       ctx.fillText(star.label, p.x - 14, p.y + 3);
       ctx.restore();
     } else {
-      var radiusPx = clamp(4 + Math.log10(Math.max(0.01, state.R)) * 2.5, 3, 18);
+      var radiusPx = starRadiusPx(state);
       var isNeutronStar = state.stage === "NEUTRON_STAR";
       var glowMult = isNeutronStar ? pulse : 1;
       ctx.save();
@@ -1605,7 +1871,7 @@ function drawStars() {
     }
 
     if (isSelected) {
-      var ringR = isBlackHole ? 16 : clamp(4 + Math.log10(Math.max(0.01, state.R)) * 2.5, 3, 18) + 6;
+      var ringR = isBlackHole ? 16 : starRadiusPx(state) + 6;
       ctx.save();
       ctx.strokeStyle = "rgba(255,255,255,0.85)";
       ctx.lineWidth = 1.5;
@@ -1620,13 +1886,26 @@ function drawStars() {
 function updateStarHud() {
   var star = selectedStar();
   var tempEl = document.getElementById("hudTemp"), lumEl = document.getElementById("hudLum"), ageEl = document.getElementById("hudAge");
-  if (!star) { tempEl.textContent = "—"; lumEl.textContent = "—"; ageEl.textContent = "—"; return; }
+  var banner = document.getElementById("statusBanner");
+  var typeEl = document.getElementById("statusType"), reasonEl = document.getElementById("statusReason");
+  if (!star) {
+    tempEl.textContent = "—"; lumEl.textContent = "—"; ageEl.textContent = "—";
+    typeEl.textContent = "No Star Selected";
+    reasonEl.textContent = "Place a star, or tap one on the diagram";
+    banner.classList.remove("terminal");
+    return;
+  }
   var state = luminosityRadiusAt(star.massSolar, star.ageMyr);
   var T = temperatureFromLR(state.L, state.R);
   var isBlackHole = state.stage === "BLACK_HOLE";
   tempEl.textContent = isBlackHole ? "—" : String(Math.round(T));
   lumEl.textContent = isBlackHole ? "—" : (state.L < 0.01 ? state.L.toExponential(1) : state.L.toFixed(state.L < 10 ? 2 : 0));
   ageEl.textContent = star.ageMyr < 10 ? star.ageMyr.toFixed(2) : String(Math.round(star.ageMyr));
+
+  typeEl.textContent = classifyStarLabel(state, T);
+  reasonEl.textContent = star.label + " • " + star.massSolar.toFixed(2) + " M☉";
+  var isTerminalStage = state.stage === "WHITE_DWARF" || state.stage === "NEUTRON_STAR" || state.stage === "BLACK_HOLE";
+  banner.classList.toggle("terminal", isTerminalStage);
 }
 
 var lastFrameTime = null;
@@ -1669,6 +1948,7 @@ function frame(now) {
   drawActiveEffects(now);
   drawCrossSection();
   updateStarHud();
+  updateStarScrubBar();
   requestAnimationFrame(frame);
 }
 
@@ -1694,7 +1974,11 @@ window.__hrDebug = {
   computeFullTrack: computeFullTrack,
   getActiveEffects: function () { return activeEffects; },
   setSimTime: function (v) { simTimeMyr = v; },
-  blackHoleSlotPosition: blackHoleSlotPosition
+  blackHoleSlotPosition: blackHoleSlotPosition,
+  getDiagram: function () { return diagram; },
+  colorForTemperatureVivid: colorForTemperatureVivid,
+  classifyStarLabel: classifyStarLabel,
+  scrubMaxAgeMyr: scrubMaxAgeMyr
 };
 </script>
 </body>
