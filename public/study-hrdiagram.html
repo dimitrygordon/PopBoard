@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>H-R Diagram // PopBoard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05060a;
+  --panel:#171C22;
+  --panel-2:#1E252D;
+  --panel-3:#252E38;
+  --border:#2C3742;
+  --border-lit:#3A4854;
+  --amber:#FFB300;
+  --amber-dim:#8a640f;
+  --cyan:#5FD3C4;
+  --violet:#B07CFF;
+  --violet-dim:#6b4a99;
+  --text:#E9E6DE;
+  --text-dim:#93A0AC;
+  --text-dimmer:#5C6874;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;overflow:hidden;background:var(--bg);height:100%;}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;touch-action:none;}
+h1,h2,h3{font-family:'Oswald',sans-serif;letter-spacing:0.03em;text-transform:uppercase;}
+.mono{font-family:'JetBrains Mono',monospace;}
+button,input{font-family:inherit;}
+#stage{display:block;width:100vw;height:100vh;background:var(--bg);touch-action:none;}
+
+/* ---------- top / bottom bars ---------- */
+.bar{position:fixed;left:0;right:0;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;pointer-events:none;z-index:50;}
+.bar-top{top:0;}
+.bar-bottom{bottom:0;}
+.bar button{pointer-events:auto;background:none;border:none;color:#0A84FF;font-size:15px;cursor:pointer;padding:4px 2px;}
+.bar button:active{opacity:0.6;}
+.bar-top .bar-center, .bar-bottom .bar-center{position:absolute;left:50%;transform:translateX(-50%);}
+
+/* ---------- status banner ---------- */
+#statusBanner{
+  position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:45;
+  background:rgba(15,18,22,0.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--border-lit);border-radius:14px;padding:10px 22px;text-align:center;
+  max-width:min(92vw,620px);pointer-events:none;transition:border-color 0.3s ease, box-shadow 0.3s ease;
+}
+#statusBanner .status-type{font-family:'Oswald',sans-serif;font-size:15px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text);}
+#statusBanner .status-reason{font-size:11.5px;color:var(--text-dim);margin-top:3px;font-family:'JetBrains Mono',monospace;}
+#statusBanner.terminal{border-color:#8a2f2f;box-shadow:0 0 24px rgba(255,80,80,0.18);}
+#statusBanner.terminal .status-type{color:#ff6b6b;}
+
+/* ---------- big digital readout HUD ---------- */
+#starHud{position:fixed;top:108px;left:50%;transform:translateX(-50%);z-index:44;display:flex;gap:10px;pointer-events:none;}
+.hud-tile{background:rgba(15,18,22,0.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--border-lit);border-radius:14px;padding:8px 16px 10px;text-align:center;min-width:108px;}
+.hud-tile .hud-label{font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);}
+.hud-tile .hud-value{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;line-height:1.15;color:var(--text);}
+.hud-tile .hud-unit{font-size:11px;color:var(--text-dim);margin-left:3px;}
+
+/* ---------- floating panels ---------- */
+.panel{
+  position:fixed;z-index:60;width:320px;max-width:calc(100vw - 32px);
+  background:rgba(22,24,28,0.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:18px;
+  box-shadow:0 12px 32px rgba(0,0,0,0.5);
+  max-height:calc(100vh - 110px);overflow-y:auto;
+}
+.panel.wide{width:380px;}
+.panel.hidden{display:none;}
+.panel h3{margin:0 0 14px 0;text-align:center;font-size:14px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:#fff;}
+.panel-row{margin-bottom:14px;}
+.panel-row:last-child{margin-bottom:0;}
+.panel-label{font-size:13px;color:#e5e5e7;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+.panel-hint{font-size:11.5px;color:#8e8e93;line-height:1.5;margin-top:10px;}
+.panel-link{display:block;text-align:center;color:#0A84FF;font-size:13px;margin-top:12px;cursor:pointer;background:none;border:none;width:100%;padding:4px;}
+.panel-link:active{opacity:0.6;}
+.panel-link[disabled]{opacity:0.4;cursor:default;}
+.panel-section-title{text-align:center;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#6e6e73;margin:16px 0 8px;}
+
+input[type="range"]{
+  -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:#48484a;outline:none;margin:0;
+}
+input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,0.4);
+}
+input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:none;cursor:pointer;}
+
+/* ---------- segmented control / toggles ---------- */
+.seg-row{display:flex;gap:6px;margin-bottom:16px;}
+.seg-btn{flex:1;padding:8px 4px;border-radius:8px;border:1px solid var(--border-lit);background:var(--panel-2);
+  color:var(--text-dim);font-size:11.5px;text-align:center;cursor:pointer;}
+.seg-btn.active{background:var(--amber-dim);color:#fff;border-color:var(--amber);}
+.seg-btn:active{opacity:0.7;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:12.5px;color:#e5e5e7;}
+.toggle-switch{width:40px;height:24px;border-radius:12px;background:#3a3a3c;position:relative;cursor:pointer;flex-shrink:0;}
+.toggle-switch .knob{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left 0.15s ease;}
+.toggle-switch.on{background:var(--violet-dim);}
+.toggle-switch.on .knob{left:18px;}
+
+/* ---------- zoom / mode buttons ---------- */
+#stageControls{position:fixed;right:18px;bottom:64px;z-index:55;display:flex;flex-direction:column;gap:8px;}
+.round-btn{
+  width:40px;height:40px;border-radius:50%;background:rgba(28,28,30,0.8);border:1px solid rgba(255,255,255,0.15);
+  color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+.round-btn:active{opacity:0.6;}
+
+/* ---------- modal ---------- */
+.modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.hidden{display:none;}
+.modal-card{
+  background:rgba(22,24,28,0.96);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:24px;
+  max-width:480px;width:100%;max-height:80vh;overflow-y:auto;
+}
+.modal-card h2{margin:0 0 14px 0;font-size:17px;text-align:center;}
+.modal-card p{font-size:13.5px;line-height:1.6;color:#d1d1d6;margin:0 0 10px 0;}
+.modal-card .close-link{display:block;text-align:center;color:#0A84FF;margin-top:16px;cursor:pointer;background:none;border:none;font-size:14px;width:100%;padding:6px;}
+
+/* ---------- cross-section view ---------- */
+#crossSectionPanel{width:220px;}
+canvas.cross-section-canvas{width:100%;height:180px;display:block;border-radius:10px;background:rgba(0,0,0,0.25);}
+
+/* ---------- time control strip ---------- */
+#timeControl{
+  position:fixed;left:50%;bottom:54px;transform:translateX(-50%);z-index:54;
+  background:rgba(15,18,22,0.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--border-lit);border-radius:14px;padding:8px 16px;
+  display:flex;align-items:center;gap:10px;width:min(90vw,380px);
+}
+#timeControl .time-readout{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);white-space:nowrap;min-width:92px;text-align:right;}
+#timeControl input[type="range"]{width:150px;}
+</style>
+</head>
+<body>
+
+<canvas id="stage"></canvas>
+
+<div class="bar bar-top">
+  <button id="propertiesBtn">Properties</button>
+  <button id="pauseBtn" class="bar-center">Pause</button>
+  <button id="clearBtn">Clear</button>
+</div>
+<div class="bar bar-bottom">
+  <button id="tutorialBtn">Tutorial</button>
+  <button id="extrasBtn" class="bar-center">Extras</button>
+</div>
+
+<div id="statusBanner">
+  <div class="status-type" id="statusType">&mdash;</div>
+  <div class="status-reason" id="statusReason">&mdash;</div>
+</div>
+
+<div id="starHud">
+  <div class="hud-tile">
+    <div class="hud-label">Temp</div>
+    <div><span class="hud-value" id="hudTemp">&mdash;</span><span class="hud-unit">K</span></div>
+  </div>
+  <div class="hud-tile">
+    <div class="hud-label">Luminosity</div>
+    <div><span class="hud-value" id="hudLum">&mdash;</span><span class="hud-unit">L&#9737;</span></div>
+  </div>
+  <div class="hud-tile">
+    <div class="hud-label">Age</div>
+    <div><span class="hud-value" id="hudAge">&mdash;</span><span class="hud-unit">Myr</span></div>
+  </div>
+</div>
+
+<div id="stageControls">
+  <div class="round-btn" id="newStarBtn" title="New star">&#9733;</div>
+  <div class="round-btn" id="zoomInBtn" title="Zoom in">+</div>
+  <div class="round-btn" id="zoomOutBtn" title="Zoom out">&minus;</div>
+</div>
+
+<div id="timeControl"></div>
+
+<div id="propertiesPanel" class="panel hidden" style="top:56px;left:18px;"></div>
+<div id="extrasPanel" class="panel hidden" style="bottom:64px;left:18px;"></div>
+<div id="crossSectionPanel" class="panel hidden" style="top:56px;right:18px;"></div>
+<div id="newStarPanel" class="panel hidden" style="bottom:64px;right:18px;"></div>
+
+<div id="tutorialModal" class="modal-overlay hidden"></div>
+
+<script type="module">
+"use strict";
+/* ============================================================
+   H-R DIAGRAM -- a stellar evolution sandbox (hand-rolled 2D canvas).
+   Original implementation; no shared code with the other study modules
+   or app.js (each module in the library is fully self-contained).
+   ============================================================ */
+
+/* ============================================================
+   Pure physics/data -- no DOM/canvas references, so it can be (and was)
+   unit tested in isolation before any rendering code was written (see
+   scratchpad/verify_hr_physics.js). Kept verbatim from that validated
+   scratchpad copy.
+
+   Units: solar masses (Msun), solar luminosities (Lsun), solar radii
+   (Rsun), Kelvin, millions of years (Myr).
+
+   Core design principle: temperature is NEVER stored, always derived
+   from (L, R) via Stefan-Boltzmann -- this is not a simplification,
+   T_eff is DEFINED this way for any blackbody-like photosphere at every
+   evolutionary stage, so every (L, T) a star ever shows is automatically
+   physically consistent with some real radius. The evolutionary model
+   only ever has to produce (L, R) as a function of (mass, age); it never
+   has to produce T, and never can produce an impossible T.
+
+   Every star's (L, R) is a pure function of (mass, age) -- a
+   deterministic lookup/interpolation, not an integrated ODE state like
+   Kepler's orbits. That means "rewind" is exact and trivial: set age to
+   any value, forward or backward, and recompute; there is no
+   accumulated state to lose and no sub-stepping to get right.
+   ============================================================ */
+var TSUN = 5772;
+
+var ZAMS_L_HIGH_MASS_EXPONENT = 2.2;
+var ZAMS_L_HIGH_MASS_COEFF = (1.5 * Math.pow(20, 3.5)) / Math.pow(20, ZAMS_L_HIGH_MASS_EXPONENT);
+
+function zamsLuminosity(massSolar) {
+  var m = massSolar;
+  if (m < 0.43) { return 0.23 * Math.pow(m, 2.3); }
+  if (m < 2) { return Math.pow(m, 4.0); }
+  if (m < 20) { return 1.5 * Math.pow(m, 3.5); }
+  return ZAMS_L_HIGH_MASS_COEFF * Math.pow(m, ZAMS_L_HIGH_MASS_EXPONENT);
+}
+
+function temperatureFromLR(luminositySolar, radiusSolar) {
+  return TSUN * Math.pow(luminositySolar, 0.25) / Math.pow(radiusSolar, 0.5);
+}
+
+var SPECTRAL_BOUNDARIES = [
+  { cls: "O", min: 30000 },
+  { cls: "B", min: 10000 },
+  { cls: "A", min: 7500 },
+  { cls: "F", min: 6000 },
+  { cls: "G", min: 5200 },
+  { cls: "K", min: 3700 },
+  { cls: "M", min: -Infinity }
+];
+function spectralClassForT(tKelvin) {
+  for (var i = 0; i < SPECTRAL_BOUNDARIES.length; i++) {
+    if (tKelvin >= SPECTRAL_BOUNDARIES[i].min) { return SPECTRAL_BOUNDARIES[i].cls; }
+  }
+  return "M";
+}
+
+var SOLAR_MS_LIFETIME_MYR = 10000;
+function mainSequenceLifetimeMyr(massSolar) {
+  return SOLAR_MS_LIFETIME_MYR * massSolar / zamsLuminosity(massSolar);
+}
+
+var WD_MASS_THRESHOLD = 8;
+var BH_MASS_THRESHOLD = 20;
+var CHANDRASEKHAR_LIMIT = 1.4;
+
+function fateForMass(massSolar) {
+  if (massSolar < WD_MASS_THRESHOLD) { return "white_dwarf"; }
+  if (massSolar < BH_MASS_THRESHOLD) { return "neutron_star"; }
+  return "black_hole";
+}
+
+function remnantMass(massSolar, fate) {
+  if (fate === "white_dwarf") { return Math.min(CHANDRASEKHAR_LIMIT, 0.4 + 0.05 * massSolar); }
+  if (fate === "neutron_star") { return 1.4 + 0.02 * (massSolar - WD_MASS_THRESHOLD); }
+  return Math.max(5, 0.4 * massSolar);
+}
+
+var WD_FATE_STAGES = ["ZAMS", "SUBGIANT", "RGB_TIP", "HELIUM_IGNITION", "HELIUM_BURNING", "AGB_TIP", "PLANETARY_NEBULA", "WHITE_DWARF"];
+var MASSIVE_FATE_PREFIX = ["ZAMS", "SUBGIANT", "RED_SUPERGIANT", "CORE_COLLAPSE"];
+
+function stageSequenceForMass(massSolar) {
+  var fate = fateForMass(massSolar);
+  if (fate === "white_dwarf") { return WD_FATE_STAGES.slice(); }
+  var terminal = fate === "neutron_star" ? "NEUTRON_STAR" : "BLACK_HOLE";
+  return MASSIVE_FATE_PREFIX.concat([terminal]);
+}
+
+var MASS_BINS = [0.5, 1, 2, 5, 10, 20, 40];
+
+var ANCHOR_TABLE = {
+  0.5: [
+    { stage: "ZAMS", L: zamsLuminosity(0.5), R: 0.50, durationMyr: null },
+    { stage: "SUBGIANT", L: 0.09, R: 0.65, durationMyr: 3000 },
+    { stage: "RGB_TIP", L: 1800, R: 160, durationMyr: 600 },
+    { stage: "HELIUM_IGNITION", L: 1800, R: 160, durationMyr: 0.01 },
+    { stage: "HELIUM_BURNING", L: 35, R: 7, durationMyr: 2000 },
+    { stage: "AGB_TIP", L: 2800, R: 230, durationMyr: 30 },
+    { stage: "PLANETARY_NEBULA", L: 10, R: 0.013, durationMyr: 0.05 },
+    { stage: "WHITE_DWARF", L: 10, R: 0.013, durationMyr: null }
+  ],
+  1: [
+    { stage: "ZAMS", L: zamsLuminosity(1), R: 1.00, durationMyr: null },
+    { stage: "SUBGIANT", L: 2.2, R: 1.8, durationMyr: 1800 },
+    { stage: "RGB_TIP", L: 2300, R: 180, durationMyr: 400 },
+    { stage: "HELIUM_IGNITION", L: 2300, R: 180, durationMyr: 0.01 },
+    { stage: "HELIUM_BURNING", L: 45, R: 8, durationMyr: 100 },
+    { stage: "AGB_TIP", L: 4000, R: 300, durationMyr: 20 },
+    { stage: "PLANETARY_NEBULA", L: 15, R: 0.0125, durationMyr: 0.05 },
+    { stage: "WHITE_DWARF", L: 15, R: 0.0125, durationMyr: null }
+  ],
+  2: [
+    { stage: "ZAMS", L: zamsLuminosity(2), R: 1.80, durationMyr: null },
+    { stage: "SUBGIANT", L: 40, R: 3.5, durationMyr: 100 },
+    { stage: "RGB_TIP", L: 1500, R: 100, durationMyr: 10 },
+    { stage: "HELIUM_IGNITION", L: 1500, R: 100, durationMyr: 1 },
+    { stage: "HELIUM_BURNING", L: 150, R: 10, durationMyr: 90 },
+    { stage: "AGB_TIP", L: 6000, R: 350, durationMyr: 5 },
+    { stage: "PLANETARY_NEBULA", L: 28, R: 0.0145, durationMyr: 0.05 },
+    { stage: "WHITE_DWARF", L: 28, R: 0.0145, durationMyr: null }
+  ],
+  5: [
+    { stage: "ZAMS", L: zamsLuminosity(5), R: 2.70, durationMyr: null },
+    { stage: "SUBGIANT", L: 600, R: 4, durationMyr: 10 },
+    { stage: "RGB_TIP", L: 3000, R: 150, durationMyr: 2 },
+    { stage: "HELIUM_IGNITION", L: 3000, R: 150, durationMyr: 0.5 },
+    { stage: "HELIUM_BURNING", L: 3000, R: 15, durationMyr: 20 },
+    { stage: "AGB_TIP", L: 8000, R: 400, durationMyr: 1 },
+    { stage: "PLANETARY_NEBULA", L: 65, R: 0.0155, durationMyr: 0.05 },
+    { stage: "WHITE_DWARF", L: 65, R: 0.0155, durationMyr: null }
+  ],
+  10: [
+    { stage: "ZAMS", L: zamsLuminosity(10), R: 4.50, durationMyr: null },
+    { stage: "SUBGIANT", L: 10000, R: 10, durationMyr: 2 },
+    { stage: "RED_SUPERGIANT", L: 60000, R: 600, durationMyr: 1 },
+    { stage: "CORE_COLLAPSE", L: 60000, R: 600, durationMyr: 0.001 },
+    { stage: "NEUTRON_STAR", L: 0.0004, R: 0.000014, durationMyr: null }
+  ],
+  20: [
+    { stage: "ZAMS", L: zamsLuminosity(20), R: 8.50, durationMyr: null },
+    { stage: "SUBGIANT", L: 150000, R: 18, durationMyr: 0.5 },
+    { stage: "RED_SUPERGIANT", L: 300000, R: 800, durationMyr: 0.3 },
+    { stage: "CORE_COLLAPSE", L: 300000, R: 800, durationMyr: 0.001 },
+    { stage: "BLACK_HOLE", L: 0, R: 0.00003, durationMyr: null }
+  ],
+  40: [
+    { stage: "ZAMS", L: zamsLuminosity(40), R: 13.0, durationMyr: null },
+    { stage: "SUBGIANT", L: 400000, R: 25, durationMyr: 0.2 },
+    { stage: "RED_SUPERGIANT", L: 700000, R: 1000, durationMyr: 0.1 },
+    { stage: "CORE_COLLAPSE", L: 700000, R: 1000, durationMyr: 0.001 },
+    { stage: "BLACK_HOLE", L: 0, R: 0.00006, durationMyr: null }
+  ]
+};
+
+function clampMassForAnchors(massSolar) {
+  return Math.max(MASS_BINS[0], Math.min(MASS_BINS[MASS_BINS.length - 1], massSolar));
+}
+function massInterpFactor(m, mLo, mHi) {
+  if (mHi === mLo) { return 0; }
+  return (Math.log(m) - Math.log(mLo)) / (Math.log(mHi) - Math.log(mLo));
+}
+function lerp(a, b, t) { return a + (b - a) * t; }
+function logLerp(a, b, t) {
+  if (a <= 0 || b <= 0) { return lerp(a, b, t); }
+  return Math.exp(lerp(Math.log(a), Math.log(b), t));
+}
+
+function interpolateAnchors(massSolar, stageName) {
+  // Group by which mass bins actually have this named stage in their anchor
+  // sequence, NOT by terminal fate -- fate only coincides with stage
+  // availability for the fate-specific terminal stages (WHITE_DWARF,
+  // NEUTRON_STAR, BLACK_HOLE). A shared stage name like ZAMS or SUBGIANT
+  // exists in every bin regardless of eventual fate, and RED_SUPERGIANT /
+  // CORE_COLLAPSE are shared across the neutron-star and black-hole mass
+  // bins; filtering those by exact fate collapses the interpolation range
+  // to a single bin (or divides by zero), producing a flat plateau instead
+  // of a smooth curve across the mass range.
+  var relevantBins = MASS_BINS.filter(function (m) {
+    return ANCHOR_TABLE[m].some(function (a) { return a.stage === stageName; });
+  });
+  if (relevantBins.length === 0) { relevantBins = MASS_BINS.slice(); }
+  var m = Math.max(relevantBins[0], Math.min(relevantBins[relevantBins.length - 1], massSolar));
+  var lo = relevantBins[0], hi = relevantBins[relevantBins.length - 1];
+  for (var i = 0; i < relevantBins.length - 1; i++) {
+    if (m >= relevantBins[i] && m <= relevantBins[i + 1]) { lo = relevantBins[i]; hi = relevantBins[i + 1]; break; }
+  }
+  var t = lo === hi ? 0 : massInterpFactor(m, lo, hi);
+  var anchorLo = findStageAnchor(lo, stageName);
+  var anchorHi = findStageAnchor(hi, stageName);
+  return {
+    L: logLerp(anchorLo.L, anchorHi.L, t),
+    R: logLerp(anchorLo.R, anchorHi.R, t),
+    durationMyr: lerp(anchorLo.durationMyr === null ? 0 : anchorLo.durationMyr, anchorHi.durationMyr === null ? 0 : anchorHi.durationMyr, t)
+  };
+}
+function findStageAnchor(binMass, stageName) {
+  var seq = ANCHOR_TABLE[binMass];
+  for (var i = 0; i < seq.length; i++) { if (seq[i].stage === stageName) { return seq[i]; } }
+  return seq[seq.length - 1];
+}
+
+var MESTEL_T1_MYR = 5;
+function mestelCoolingL(L0, ageSinceFormedMyr) {
+  var t = Math.max(0, ageSinceFormedMyr);
+  return L0 * Math.pow((t + MESTEL_T1_MYR) / MESTEL_T1_MYR, -1.4);
+}
+
+function luminosityRadiusAt(massSolar, ageMyr) {
+  var sequence = stageSequenceForMass(massSolar);
+  var msLifetime = mainSequenceLifetimeMyr(massSolar);
+  var age = Math.max(0, ageMyr);
+
+  if (age <= msLifetime) {
+    var zamsAnchor = interpolateAnchors(massSolar, "ZAMS");
+    return { L: zamsAnchor.L, R: zamsAnchor.R, stage: "MAIN_SEQUENCE", stageProgress: age / msLifetime };
+  }
+
+  var postMsAge = age - msLifetime;
+  var cursor = 0;
+  for (var i = 1; i < sequence.length; i++) {
+    var stageName = sequence[i];
+    var anchor = interpolateAnchors(massSolar, stageName);
+    var duration = Math.max(0.0001, anchor.durationMyr);
+    var isTerminal = i === sequence.length - 1;
+    if (isTerminal || postMsAge < cursor + duration) {
+      var prevAnchor = interpolateAnchors(massSolar, sequence[i - 1]);
+      var progress = isTerminal ? 1 : Math.max(0, Math.min(1, (postMsAge - cursor) / duration));
+      if (isTerminal && stageName === "WHITE_DWARF") {
+        var formedAnchor = anchor;
+        var ageSinceFormed = Math.max(0, postMsAge - cursor);
+        return { L: mestelCoolingL(formedAnchor.L, ageSinceFormed), R: formedAnchor.R, stage: stageName, stageProgress: 1 };
+      }
+      if (isTerminal) {
+        return { L: anchor.L, R: anchor.R, stage: stageName, stageProgress: 1 };
+      }
+      return {
+        L: logLerp(prevAnchor.L, anchor.L, progress),
+        R: logLerp(prevAnchor.R, anchor.R, progress),
+        stage: stageName,
+        stageProgress: progress
+      };
+    }
+    cursor += duration;
+  }
+  var last = interpolateAnchors(massSolar, sequence[sequence.length - 1]);
+  return { L: last.L, R: last.R, stage: sequence[sequence.length - 1], stageProgress: 1 };
+}
+
+// Age at which a star of this mass enters its terminal stage (WHITE_DWARF /
+// NEUTRON_STAR / BLACK_HOLE) -- the sum of the main-sequence lifetime and
+// every non-terminal post-MS stage's duration, using the identical cursor
+// walk luminosityRadiusAt performs, so this can never disagree with it.
+function terminalOnsetAgeMyr(massSolar) {
+  var msLifetime = mainSequenceLifetimeMyr(massSolar);
+  var sequence = stageSequenceForMass(massSolar);
+  var cursor = msLifetime;
+  for (var i = 1; i < sequence.length - 1; i++) {
+    var anchor = interpolateAnchors(massSolar, sequence[i]);
+    cursor += Math.max(0.0001, anchor.durationMyr);
+  }
+  return cursor;
+}
+
+// Full theoretical evolutionary track for a given mass, sampled with the
+// SAME luminosityRadiusAt function every live star uses -- an overlay
+// track is never a separately-faked curve. The main-sequence phase is a
+// single (L,R) point held for its whole lifetime in this model, so it only
+// needs two samples; the post-MS phase is where the track moves, so it
+// gets dense sampling.
+function computeFullTrack(massSolar) {
+  var msLifetime = mainSequenceLifetimeMyr(massSolar);
+  var onsetAge = terminalOnsetAgeMyr(massSolar);
+  var ages = [0, msLifetime * 0.999];
+  var steps = 160;
+  for (var s = 0; s <= steps; s++) { ages.push(msLifetime + (onsetAge - msLifetime) * (s / steps)); }
+  ages.push(onsetAge, onsetAge + Math.max(1, (onsetAge - msLifetime) * 0.02));
+  return ages.map(function (age) {
+    var state = luminosityRadiusAt(massSolar, age);
+    return { T: temperatureFromLR(state.L, state.R), L: state.L, age: age, stage: state.stage };
+  });
+}
+
+/* ============================================================
+   Scene / rendering state
+   ============================================================ */
+var canvas = document.getElementById("stage");
+var ctx = canvas.getContext("2d");
+var dpr = Math.max(1, window.devicePixelRatio || 1);
+var canvasW = 0, canvasH = 0;
+
+function resizeCanvas() {
+  canvasW = window.innerWidth;
+  canvasH = window.innerHeight;
+  canvas.width = Math.round(canvasW * dpr);
+  canvas.height = Math.round(canvasH * dpr);
+  canvas.style.width = canvasW + "px";
+  canvas.style.height = canvasH + "px";
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+window.addEventListener("resize", resizeCanvas);
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+/* ---------- H-R diagram log-log axes ----------
+   Temperature DECREASES left-to-right (hot/blue stars on the left, cool/
+   red stars on the right -- the defining H-R diagram convention);
+   luminosity increases upward. zoom scales the plotted range around a
+   fixed center, like a camera zoom, but the axes themselves always stay
+   log-log. */
+// T_MAX extends well past the main sequence's O-star end (~50000K) to fit
+// white dwarf formation temperatures (documented ~50,000-150,000K) and
+// neutron star surface temperatures (~2x10^5 K) on-screen -- without this
+// headroom both remnant types plot off the left edge of the canvas and
+// become impossible to see or select. A bare black hole has no classical
+// T or L at all (L=0 by design) and is handled as a special fixed marker
+// rather than a plotted (T,L) point -- see drawStars().
+var T_MIN = 1800, T_MAX = 260000;
+var L_MIN = 1e-5, L_MAX = 2e6;
+var diagram = { zoom: 1, panLogT: 0, panLogL: 0 };
+var PLOT_MARGIN = { left: 70, right: 30, top: 30, bottom: 50 };
+
+function plotRect() {
+  return { x: PLOT_MARGIN.left, y: PLOT_MARGIN.top, w: canvasW - PLOT_MARGIN.left - PLOT_MARGIN.right, h: canvasH - PLOT_MARGIN.top - PLOT_MARGIN.bottom };
+}
+function hrToScreen(tKelvin, lSolar) {
+  var r = plotRect();
+  var logTmin = Math.log10(T_MIN) - diagram.panLogT, logTmax = Math.log10(T_MAX) - diagram.panLogT;
+  var span = (logTmax - logTmin) / diagram.zoom;
+  var midT = (logTmax + logTmin) / 2;
+  logTmin = midT - span / 2; logTmax = midT + span / 2;
+  var logLmin = Math.log10(L_MIN) - diagram.panLogL, logLmax = Math.log10(L_MAX) - diagram.panLogL;
+  var spanL = (logLmax - logLmin) / diagram.zoom;
+  var midL = (logLmax + logLmin) / 2;
+  logLmin = midL - spanL / 2; logLmax = midL + spanL / 2;
+
+  var logT = Math.log10(Math.max(1, tKelvin));
+  var logL = Math.log10(Math.max(1e-12, lSolar));
+  var x = r.x + ((logTmax - logT) / (logTmax - logTmin)) * r.w;
+  var y = r.y + ((logLmax - logL) / (logLmax - logLmin)) * r.h;
+  return { x: x, y: y };
+}
+
+/* ---------- OBAFGKM color coding (traditional star colors) ---------- */
+var SPECTRAL_COLORS = { O: "#9bb0ff", B: "#aabfff", A: "#cad7ff", F: "#f8f7ff", G: "#fff4ea", K: "#ffd2a1", M: "#ffb56c" };
+function colorForSpectralClass(cls) { return SPECTRAL_COLORS[cls] || "#ffffff"; }
+
+/* ---------- stellar cross-section schematics ----------
+   An honest, illustrative layered-circle schematic per evolutionary
+   stage -- NOT a structure simulation. Layer fractions are chosen for
+   legibility, not sourced to stellar-structure models; what IS accurate
+   is which fusion process is active and roughly which layer it's in,
+   which is standard introductory-astronomy teaching material. Listed
+   outermost layer first; drawn outermost-first so each smaller circle
+   paints over the one before it. */
+var CROSS_SECTIONS = {
+  MAIN_SEQUENCE: {
+    fusion: "Hydrogen core burning (proton-proton chain / CNO cycle)",
+    layers: [
+      { frac: 0.95, color: "#2a3a55", label: "envelope (radiative/convective)" },
+      { frac: 0.45, color: "#ffb347", label: "H-burning core" }
+    ]
+  },
+  SUBGIANT: {
+    fusion: "Hydrogen shell burning around an inert helium core",
+    layers: [
+      { frac: 0.95, color: "#2a3a55", label: "envelope" },
+      { frac: 0.4, color: "#ffb347", label: "H-burning shell" },
+      { frac: 0.16, color: "#9aa3ad", label: "inert He core" }
+    ]
+  },
+  RGB_TIP: {
+    fusion: "Hydrogen shell burning intensifies around a growing inert He core",
+    layers: [
+      { frac: 0.95, color: "#2a3a55", label: "envelope (greatly expanded)" },
+      { frac: 0.45, color: "#ffb347", label: "H-burning shell" },
+      { frac: 0.2, color: "#9aa3ad", label: "inert He core" }
+    ]
+  },
+  HELIUM_IGNITION: {
+    fusion: "Helium core ignites (often a brief, non-explosive flash)",
+    layers: [
+      { frac: 0.95, color: "#2a3a55", label: "envelope" },
+      { frac: 0.45, color: "#ffb347", label: "H-burning shell" },
+      { frac: 0.2, color: "#8ec9ff", label: "He core, igniting" }
+    ]
+  },
+  HELIUM_BURNING: {
+    fusion: "Helium core burning (triple-alpha) + hydrogen shell burning",
+    layers: [
+      { frac: 0.95, color: "#2a3a55", label: "envelope" },
+      { frac: 0.5, color: "#ffb347", label: "H-burning shell" },
+      { frac: 0.26, color: "#8ec9ff", label: "He-burning core" }
+    ]
+  },
+  AGB_TIP: {
+    fusion: "Double shell burning (He + H) around an inert carbon-oxygen core",
+    layers: [
+      { frac: 0.95, color: "#2a3a55", label: "envelope (greatly expanded)" },
+      { frac: 0.55, color: "#ffb347", label: "H-burning shell" },
+      { frac: 0.35, color: "#8ec9ff", label: "He-burning shell" },
+      { frac: 0.13, color: "#6b6f76", label: "inert C/O core" }
+    ]
+  },
+  PLANETARY_NEBULA: {
+    fusion: "Envelope ejected into space; exposed core still fading, fusion ending",
+    layers: [
+      { frac: 0.95, color: "rgba(143,232,216,0.3)", label: "ejected envelope (the nebula)" },
+      { frac: 0.16, color: "#eaf2ff", label: "exposed hot core" }
+    ]
+  },
+  WHITE_DWARF: {
+    fusion: "No fusion -- electron-degenerate carbon-oxygen remnant, cooling",
+    layers: [{ frac: 0.3, color: "#eaf2ff", label: "degenerate C/O matter" }]
+  },
+  RED_SUPERGIANT: {
+    fusion: "Multiple concurrent burning shells (\"onion layers\"), inert core growing",
+    layers: [
+      { frac: 0.95, color: "#2a3a55", label: "envelope (immense)" },
+      { frac: 0.5, color: "#ffb347", label: "H-burning shell" },
+      { frac: 0.33, color: "#8ec9ff", label: "He-burning shell" },
+      { frac: 0.18, color: "#ff8f6b", label: "heavier-element shells (C, O, Si...)" },
+      { frac: 0.08, color: "#6b6f76", label: "inert iron core" }
+    ]
+  },
+  CORE_COLLAPSE: {
+    fusion: "Iron core can no longer fuse exothermically -- sudden gravitational collapse",
+    layers: [
+      { frac: 0.95, color: "#2a3a55", label: "envelope (about to be blown off)" },
+      { frac: 0.12, color: "#ffffff", label: "collapsing core" }
+    ]
+  },
+  NEUTRON_STAR: {
+    fusion: "No fusion -- degenerate neutron matter",
+    layers: [{ frac: 0.26, color: "#eaf2ff", label: "neutron matter" }]
+  },
+  BLACK_HOLE: {
+    fusion: "No matter, no fusion -- an event horizon, not a stellar surface",
+    layers: [{ frac: 0.3, color: "#000000", label: "event horizon" }]
+  }
+};
+
+/* ---------- axes + background population bands ---------- */
+function drawAxes() {
+  var r = plotRect();
+  ctx.save();
+  ctx.strokeStyle = "rgba(255,255,255,0.14)";
+  ctx.fillStyle = "rgba(255,255,255,0.4)";
+  ctx.font = "10px 'JetBrains Mono', monospace";
+  ctx.lineWidth = 1;
+
+  // Temperature gridlines (log-spaced, decade + half-decade), decreasing left->right.
+  var tTicks = [2000, 3000, 5000, 7500, 10000, 15000, 20000, 30000, 50000, 100000, 200000];
+  tTicks.forEach(function (t) {
+    if (t < T_MIN || t > T_MAX) { return; }
+    var p = hrToScreen(t, L_MIN);
+    if (p.x < r.x - 5 || p.x > r.x + r.w + 5) { return; }
+    ctx.beginPath(); ctx.moveTo(p.x, r.y); ctx.lineTo(p.x, r.y + r.h); ctx.stroke();
+    ctx.textAlign = "center";
+    ctx.fillText(t >= 1000 ? (t / 1000) + "k" : String(t), p.x, r.y + r.h + 16);
+  });
+
+  // Luminosity gridlines (log decades), increasing upward.
+  var lTicks = [1e-4, 1e-2, 1, 1e2, 1e4, 1e6];
+  lTicks.forEach(function (l) {
+    if (l < L_MIN || l > L_MAX) { return; }
+    var p = hrToScreen(T_MIN, l);
+    if (p.y < r.y - 5 || p.y > r.y + r.h + 5) { return; }
+    ctx.beginPath(); ctx.moveTo(r.x, p.y); ctx.lineTo(r.x + r.w, p.y); ctx.stroke();
+    ctx.textAlign = "right";
+    ctx.fillText(l >= 1 ? "1e" + Math.round(Math.log10(l)) : l.toExponential(0), r.x - 8, p.y + 3);
+  });
+
+  ctx.textAlign = "center";
+  ctx.fillStyle = "rgba(255,255,255,0.55)";
+  ctx.font = "11px 'Oswald', sans-serif";
+  ctx.fillText("SURFACE TEMPERATURE (K) — HOT → COOL", r.x + r.w / 2, r.y + r.h + 36);
+  ctx.save();
+  ctx.translate(18, r.y + r.h / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText("LUMINOSITY (L☉, log scale)", 0, 0);
+  ctx.restore();
+  ctx.restore();
+
+  drawSpectralClassStrip(r);
+}
+
+// OBAFGKM letter strip along the top of the plot, each letter centered in
+// its own temperature band and colored with the same traditional star
+// color used for live stars of that class -- the classic H-R diagram
+// top-axis convention, and a visual legend for colorForSpectralClass.
+function drawSpectralClassStrip(r) {
+  var boundaries = SPECTRAL_BOUNDARIES.slice().reverse(); // ascending by min T: M,K,G,F,A,B,O
+  ctx.save();
+  ctx.font = "600 11px 'Oswald', sans-serif";
+  ctx.textAlign = "center";
+  for (var i = 0; i < boundaries.length; i++) {
+    var lo = boundaries[i].min === -Infinity ? T_MIN : boundaries[i].min;
+    // Cap the hottest (O) band's label placement to the realistic O-star
+    // range rather than stretching it out to T_MAX, which now extends far
+    // past any main-sequence star to fit white dwarfs/neutron stars.
+    var hi = i + 1 < boundaries.length ? boundaries[i + 1].min : Math.min(T_MAX, 60000);
+    if (hi <= T_MIN || lo >= T_MAX) { continue; }
+    lo = Math.max(lo, T_MIN); hi = Math.min(hi, T_MAX);
+    var midLogT = (Math.log10(lo) + Math.log10(hi)) / 2;
+    var midT = Math.pow(10, midLogT);
+    var p = hrToScreen(midT, L_MAX);
+    if (p.x < r.x || p.x > r.x + r.w) { continue; }
+    ctx.fillStyle = colorForSpectralClass(boundaries[i].cls);
+    ctx.globalAlpha = 0.85;
+    ctx.fillText(boundaries[i].cls, p.x, r.y + 16);
+  }
+  ctx.restore();
+}
+
+// Samples the ZAMS across a fine mass grid for the main-sequence band,
+// using the SAME functions a live star uses -- not a separately-faked line.
+function zamsRadiusAt(massSolar) {
+  var anchor = interpolateAnchors(massSolar, "ZAMS");
+  return anchor.R;
+}
+function drawMainSequenceBand() {
+  var pts = [];
+  for (var m = 0.15; m <= 60; m *= 1.06) {
+    var L = zamsLuminosity(m);
+    var R = zamsRadiusAt(m);
+    var T = temperatureFromLR(L, R);
+    pts.push(hrToScreen(T, L));
+  }
+  ctx.save();
+  ctx.beginPath();
+  pts.forEach(function (p, i) { if (i === 0) { ctx.moveTo(p.x, p.y); } else { ctx.lineTo(p.x, p.y); } });
+  ctx.strokeStyle = "rgba(255, 221, 150, 0.45)";
+  ctx.lineWidth = 10;
+  ctx.lineCap = "round";
+  ctx.shadowColor = "rgba(255, 221, 150, 0.3)";
+  ctx.shadowBlur = 16;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = "rgba(255, 236, 200, 0.85)";
+  ctx.stroke();
+  ctx.restore();
+
+  ctx.save();
+  ctx.fillStyle = "rgba(255,255,255,0.5)";
+  ctx.font = "11px 'Oswald', sans-serif";
+  ctx.textAlign = "left";
+  var labelPt = hrToScreen(9000, 30);
+  ctx.save();
+  ctx.translate(labelPt.x, labelPt.y);
+  ctx.rotate(-0.5);
+  ctx.fillText("MAIN SEQUENCE", 0, 0);
+  ctx.restore();
+  ctx.restore();
+}
+
+function drawRegionLabel(tKelvin, lSolar, text, color) {
+  var p = hrToScreen(tKelvin, lSolar);
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.font = "11px 'Oswald', sans-serif";
+  ctx.textAlign = "center";
+  ctx.globalAlpha = 0.5;
+  ctx.fillText(text, p.x, p.y);
+  ctx.restore();
+}
+// A rectangle in (T,L) is a rectangle in (logT,logL), and the log-log axis
+// transform is linear in each log coordinate independently, so it stays an
+// axis-aligned rectangle in screen space -- no polygon sampling needed.
+// Hot/bright corner maps to the smallest (x,y) since temperature decreases
+// rightward and luminosity increases upward.
+function fillLogRegion(tLo, tHi, lLo, lHi, fillStyle) {
+  var topLeft = hrToScreen(tHi, lHi);
+  var botRight = hrToScreen(tLo, lLo);
+  ctx.save();
+  ctx.fillStyle = fillStyle;
+  ctx.fillRect(topLeft.x, topLeft.y, botRight.x - topLeft.x, botRight.y - topLeft.y);
+  ctx.restore();
+}
+var showInstabilityStrip = true;
+function drawPopulationBands() {
+  // Rough, illustrative region boundaries -- not sourced to a formal
+  // catalog, just enough to make the diagram legible with zero stars
+  // placed. Real populations blur across these lines.
+  fillLogRegion(3000, 5200, 10, 3000, "rgba(255,140,120,0.06)");
+  fillLogRegion(3000, 30000, 1e4, 1e6, "rgba(255,180,255,0.05)");
+  fillLogRegion(6000, 150000, 1e-5, 0.1, "rgba(150,200,255,0.05)");
+  if (showInstabilityStrip) {
+    // Cepheid instability strip: a near-vertical band of pulsating variables
+    // crossed by blue-loop intermediate-mass stars during core helium burning.
+    fillLogRegion(6000, 7500, 10, 1e6, "rgba(255,230,120,0.045)");
+    drawRegionLabel(6750, 6e5, "INSTABILITY STRIP", "rgba(255,230,120,0.85)");
+  }
+
+  drawRegionLabel(4000, 3e4, "GIANTS", "rgba(255,140,120,0.9)");
+  drawRegionLabel(6000, 3e5, "SUPERGIANTS", "rgba(255,180,255,0.9)");
+  drawRegionLabel(12000, 3e-3, "WHITE DWARFS", "rgba(150,200,255,0.9)");
+}
+
+/* ============================================================
+   Stars, time engine, placement, selection
+   ============================================================ */
+var MASS_MIN = 0.3, MASS_MAX = 60;
+var TRAIL_MAX_POINTS = 600;
+var SELECT_PIXEL_RADIUS = 20;
+
+var stars = [];
+var nextStarId = 1;
+var selectedStarId = null;
+
+// A single global simulation clock. Each star's age is derived from how
+// much simulated time has elapsed since IT was placed, not wall-clock time,
+// so stars placed at different points on the timeline still start their
+// own evolution at age 0. Since (L, R) is a pure function of (mass, age)
+// with no integrated state, recomputing every star from simTimeMyr every
+// frame is exact in either time direction -- this is what makes rewind
+// trivial (see the physics module's header comment).
+var simTimeMyr = 0;
+var paused = false;
+var SPEED_MIN_MAGNITUDE = 0.02, SPEED_MAX_MYR_PER_SEC = 400;
+var simRawSpeedSlider = 55; // -100..100, bipolar; see speedFromSlider
+var simSpeedMyrPerSec = 0;
+
+function speedFromSlider(raw) {
+  var mag = Math.abs(raw);
+  if (mag < 1) { return 0; }
+  var scaled = SPEED_MIN_MAGNITUDE * Math.pow(SPEED_MAX_MYR_PER_SEC / SPEED_MIN_MAGNITUDE, mag / 100);
+  return raw < 0 ? -scaled : scaled;
+}
+simSpeedMyrPerSec = speedFromSlider(simRawSpeedSlider);
+
+function sliderToValue(sliderPct, min, max) {
+  var t = Math.max(0, Math.min(100, sliderPct)) / 100;
+  return min * Math.pow(max / min, t);
+}
+function valueToSlider(value, min, max) {
+  var v = Math.max(min, Math.min(max, value));
+  var t = Math.log(v / min) / Math.log(max / min);
+  return Math.max(0, Math.min(100, t * 100));
+}
+
+// Fine control at both ends of a wide exponential range (mass), reused for
+// every mass slider in this module -- same convention as the other study
+// sandboxes' makeSliderRow. Rebuilding the row via onInput (not the whole
+// panel) is what keeps a drag from being torn down into a single click.
+function makeSliderRow(labelText, value, min, max, onInput) {
+  var row = document.createElement("div");
+  row.className = "panel-row";
+  var label = document.createElement("div");
+  label.className = "panel-label";
+  label.textContent = labelText;
+  row.appendChild(label);
+  var slider = document.createElement("input");
+  slider.type = "range";
+  slider.min = "0"; slider.max = "100"; slider.step = "0.1";
+  slider.value = String(valueToSlider(value, min, max));
+  slider.addEventListener("input", function () { onInput(sliderToValue(parseFloat(slider.value), min, max)); });
+  row.appendChild(slider);
+  return { row: row, slider: slider, label: label };
+}
+
+function createStar(massSolar, label) {
+  var id = nextStarId++;
+  var star = {
+    id: id,
+    massSolar: massSolar,
+    bornAtMyr: simTimeMyr,
+    ageMyr: 0,
+    label: label || ("Star " + id),
+    trail: [] // physical (T,L) points, not screen coords, so zoom/pan never distorts history
+  };
+  stars.push(star);
+  selectedStarId = id;
+  return star;
+}
+
+function clearAllStars() {
+  stars = [];
+  selectedStarId = null;
+}
+
+function selectedStar() {
+  if (selectedStarId === null) { return null; }
+  for (var i = 0; i < stars.length; i++) { if (stars[i].id === selectedStarId) { return stars[i]; } }
+  return null;
+}
+
+/* ---------- New Star panel ---------- */
+var newStarOpen = false;
+var pendingMass = 1;
+function refreshNewStarPanel() {
+  var panel = document.getElementById("newStarPanel");
+  if (!newStarOpen) { panel.classList.add("hidden"); return; }
+  panel.classList.remove("hidden");
+  panel.innerHTML = "";
+  var h3 = document.createElement("h3");
+  h3.textContent = "New Star";
+  panel.appendChild(h3);
+
+  var massRow = makeSliderRow("Mass: " + pendingMass.toFixed(2) + " M☉", pendingMass, MASS_MIN, MASS_MAX, function (v) {
+    pendingMass = v;
+    massRow.label.textContent = "Mass: " + pendingMass.toFixed(2) + " M☉";
+    classHint.textContent = previewSpectralHint(pendingMass);
+  });
+  panel.appendChild(massRow.row);
+
+  var classHint = document.createElement("div");
+  classHint.className = "panel-hint";
+  classHint.textContent = previewSpectralHint(pendingMass);
+  panel.appendChild(classHint);
+
+  var placeBtn = document.createElement("button");
+  placeBtn.className = "panel-link";
+  placeBtn.textContent = "Place Star";
+  placeBtn.addEventListener("click", function () {
+    createStar(pendingMass);
+    newStarOpen = false;
+    refreshNewStarPanel();
+    refreshPropertiesPanel();
+  });
+  panel.appendChild(placeBtn);
+
+  var cancelBtn = document.createElement("button");
+  cancelBtn.className = "panel-link";
+  cancelBtn.textContent = "Cancel";
+  cancelBtn.addEventListener("click", function () { newStarOpen = false; refreshNewStarPanel(); });
+  panel.appendChild(cancelBtn);
+}
+function previewSpectralHint(massSolar) {
+  var L = zamsLuminosity(massSolar);
+  var R = interpolateAnchors(massSolar, "ZAMS").R;
+  var T = temperatureFromLR(L, R);
+  var cls = spectralClassForT(T);
+  var fate = fateForMass(massSolar);
+  var fateLabel = fate === "white_dwarf" ? "white dwarf" : fate === "neutron_star" ? "neutron star" : "black hole";
+  return "ZAMS: class " + cls + ", " + Math.round(T) + "K, " + L.toFixed(2) + " L☉ — ends as a " + fateLabel + ".";
+}
+document.getElementById("newStarBtn").addEventListener("click", function () {
+  newStarOpen = !newStarOpen;
+  refreshNewStarPanel();
+});
+
+/* ---------- Properties panel (minimal Stage-3 stub: live selected-star readout) ---------- */
+var propertiesOpen = false;
+function refreshPropertiesPanel() {
+  var panel = document.getElementById("propertiesPanel");
+  if (!propertiesOpen) { panel.classList.add("hidden"); return; }
+  panel.classList.remove("hidden");
+  var star = selectedStar();
+  panel.innerHTML = "";
+  var h3 = document.createElement("h3");
+  h3.textContent = "Properties";
+  panel.appendChild(h3);
+
+  if (stars.length > 1) {
+    var chipRow = document.createElement("div");
+    chipRow.style.cssText = "display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;";
+    stars.forEach(function (s) {
+      var chip = document.createElement("button");
+      chip.className = "seg-btn";
+      chip.style.flex = "none";
+      chip.textContent = s.label;
+      if (s.id === selectedStarId) { chip.classList.add("active"); }
+      chip.addEventListener("click", function () { selectedStarId = s.id; refreshPropertiesPanel(); });
+      chipRow.appendChild(chip);
+    });
+    panel.appendChild(chipRow);
+  }
+
+  if (!star) {
+    var hint = document.createElement("div");
+    hint.className = "panel-hint";
+    hint.textContent = "No star selected. Tap a star on the diagram, or place a new one.";
+    panel.appendChild(hint);
+    return;
+  }
+  var state = luminosityRadiusAt(star.massSolar, star.ageMyr);
+  var T = temperatureFromLR(state.L, state.R);
+  var isTerminal = state.stage === "WHITE_DWARF" || state.stage === "NEUTRON_STAR" || state.stage === "BLACK_HOLE";
+  var remainingMyr = terminalOnsetAgeMyr(star.massSolar) - star.ageMyr;
+  var remainingText;
+  if (isTerminal) {
+    remainingText = "Reached (" + state.stage.replace(/_/g, " ").toLowerCase() + ")";
+  } else if (remainingMyr >= 1) {
+    remainingText = (remainingMyr >= 1000 ? (remainingMyr / 1000).toFixed(2) + " Gyr" : remainingMyr.toFixed(1) + " Myr") + " to go";
+  } else {
+    remainingText = (remainingMyr * 1000).toFixed(1) + " kyr to go";
+  }
+  var isBlackHole = state.stage === "BLACK_HOLE";
+  var rows = [
+    ["Label", star.label],
+    ["Mass", star.massSolar.toFixed(2) + " M☉"],
+    ["Age", state.stage === "MAIN_SEQUENCE" ? star.ageMyr.toFixed(1) + " Myr" : star.ageMyr.toFixed(2) + " Myr"],
+    ["Stage", state.stage.replace(/_/g, " ")],
+    // A bare black hole radiates nothing classical -- no spectral class or
+    // meaningful surface temperature applies, so this says so plainly
+    // instead of showing the fallback "M" the boundary lookup defaults to.
+    ["Spectral class", isBlackHole ? "— (none)" : spectralClassForT(T)],
+    ["Temperature", isBlackHole ? "— (no photosphere)" : Math.round(T) + " K"],
+    ["Luminosity", state.L < 0.01 ? state.L.toExponential(2) + " L☉" : state.L.toFixed(2) + " L☉"],
+    ["Radius", state.R < 0.01 ? state.R.toExponential(2) + " R☉" : state.R.toFixed(2) + " R☉"],
+    ["Time to fate", remainingText],
+    ["Eventual fate", fateForMass(star.massSolar).replace(/_/g, " ")]
+  ];
+  rows.forEach(function (pair) {
+    var row = document.createElement("div");
+    row.className = "panel-label";
+    var k = document.createElement("span"); k.textContent = pair[0];
+    var v = document.createElement("span"); v.className = "mono"; v.textContent = pair[1];
+    row.appendChild(k); row.appendChild(v);
+    panel.appendChild(row);
+  });
+
+  var crossSectionBtn = document.createElement("button");
+  crossSectionBtn.className = "panel-link";
+  crossSectionBtn.textContent = crossSectionOpen ? "Hide Cross-Section" : "Cross-Section View";
+  crossSectionBtn.addEventListener("click", function () {
+    crossSectionOpen = !crossSectionOpen;
+    if (crossSectionOpen) { openCrossSectionPanel(); } else { closeCrossSectionPanel(); }
+    refreshPropertiesPanel();
+  });
+  panel.appendChild(crossSectionBtn);
+
+  var removeBtn = document.createElement("button");
+  removeBtn.className = "panel-link";
+  removeBtn.textContent = "Remove This Star";
+  removeBtn.addEventListener("click", function () {
+    stars = stars.filter(function (s) { return s.id !== star.id; });
+    selectedStarId = stars.length ? stars[stars.length - 1].id : null;
+    closeCrossSectionPanel();
+    refreshPropertiesPanel();
+  });
+  panel.appendChild(removeBtn);
+}
+document.getElementById("propertiesBtn").addEventListener("click", function () {
+  propertiesOpen = !propertiesOpen;
+  refreshPropertiesPanel();
+});
+
+/* ---------- Extras: reference Sun + overlay theoretical tracks ---------- */
+var extrasOpen = false;
+var referenceSunOn = true;
+var showTrails = true;
+var overlayTracks = []; // [{id, massSolar}]
+var nextOverlayId = 1;
+var pendingOverlayMass = 10;
+
+function refreshExtrasPanel() {
+  var panel = document.getElementById("extrasPanel");
+  if (!extrasOpen) { panel.classList.add("hidden"); return; }
+  panel.classList.remove("hidden");
+  panel.innerHTML = "";
+  var h3 = document.createElement("h3");
+  h3.textContent = "Extras";
+  panel.appendChild(h3);
+
+  var toggleRow = document.createElement("div");
+  toggleRow.className = "toggle-row";
+  var toggleLabel = document.createElement("span");
+  toggleLabel.textContent = "Reference Sun";
+  var toggleSwitch = document.createElement("div");
+  toggleSwitch.className = "toggle-switch" + (referenceSunOn ? " on" : "");
+  toggleSwitch.innerHTML = '<div class="knob"></div>';
+  toggleSwitch.addEventListener("click", function () {
+    referenceSunOn = !referenceSunOn;
+    toggleSwitch.classList.toggle("on", referenceSunOn);
+  });
+  toggleRow.appendChild(toggleLabel);
+  toggleRow.appendChild(toggleSwitch);
+  panel.appendChild(toggleRow);
+
+  var trailRow = document.createElement("div");
+  trailRow.className = "toggle-row";
+  var trailLabel = document.createElement("span");
+  trailLabel.textContent = "Star Trails";
+  var trailSwitch = document.createElement("div");
+  trailSwitch.className = "toggle-switch" + (showTrails ? " on" : "");
+  trailSwitch.innerHTML = '<div class="knob"></div>';
+  trailSwitch.addEventListener("click", function () {
+    showTrails = !showTrails;
+    trailSwitch.classList.toggle("on", showTrails);
+  });
+  trailRow.appendChild(trailLabel);
+  trailRow.appendChild(trailSwitch);
+  panel.appendChild(trailRow);
+
+  var stripRow = document.createElement("div");
+  stripRow.className = "toggle-row";
+  var stripLabel = document.createElement("span");
+  stripLabel.textContent = "Instability Strip";
+  var stripSwitch = document.createElement("div");
+  stripSwitch.className = "toggle-switch" + (showInstabilityStrip ? " on" : "");
+  stripSwitch.innerHTML = '<div class="knob"></div>';
+  stripSwitch.addEventListener("click", function () {
+    showInstabilityStrip = !showInstabilityStrip;
+    stripSwitch.classList.toggle("on", showInstabilityStrip);
+  });
+  stripRow.appendChild(stripLabel);
+  stripRow.appendChild(stripSwitch);
+  panel.appendChild(stripRow);
+  var stripHint = document.createElement("div");
+  stripHint.className = "panel-hint";
+  stripHint.textContent = "A narrow band of pulsating variables. Intermediate-mass stars (roughly 2-8 M☉) cross it during a blue loop in core helium burning and visibly pulse in brightness -- the same Cepheid pulsation astronomers use as a cosmic distance ladder.";
+  panel.appendChild(stripHint);
+
+  var sectionTitle = document.createElement("div");
+  sectionTitle.className = "panel-section-title";
+  sectionTitle.textContent = "Overlay Theoretical Tracks";
+  panel.appendChild(sectionTitle);
+
+  var hint = document.createElement("div");
+  hint.className = "panel-hint";
+  hint.textContent = "Draws a chosen mass's full lifetime track (ZAMS to its eventual fate) as a faint dashed reference curve, sampled from the same evolution function every live star uses.";
+  panel.appendChild(hint);
+
+  var massRow = makeSliderRow("Track mass: " + pendingOverlayMass.toFixed(2) + " M☉", pendingOverlayMass, MASS_MIN, MASS_MAX, function (v) {
+    pendingOverlayMass = v;
+    massRow.label.textContent = "Track mass: " + pendingOverlayMass.toFixed(2) + " M☉";
+  });
+  panel.appendChild(massRow.row);
+
+  var addBtn = document.createElement("button");
+  addBtn.className = "panel-link";
+  addBtn.textContent = "Add Overlay Track";
+  addBtn.addEventListener("click", function () {
+    overlayTracks.push({ id: nextOverlayId++, massSolar: pendingOverlayMass });
+    refreshExtrasPanel();
+  });
+  panel.appendChild(addBtn);
+
+  overlayTracks.forEach(function (ov) {
+    var row = document.createElement("div");
+    row.className = "panel-label";
+    var k = document.createElement("span"); k.textContent = ov.massSolar.toFixed(2) + " M☉ track";
+    var rm = document.createElement("span");
+    rm.className = "mono";
+    rm.textContent = "Remove";
+    rm.style.cursor = "pointer";
+    rm.style.color = "#0A84FF";
+    rm.addEventListener("click", function () {
+      overlayTracks = overlayTracks.filter(function (t) { return t.id !== ov.id; });
+      refreshExtrasPanel();
+    });
+    row.appendChild(k); row.appendChild(rm);
+    panel.appendChild(row);
+  });
+}
+document.getElementById("extrasBtn").addEventListener("click", function () {
+  extrasOpen = !extrasOpen;
+  refreshExtrasPanel();
+});
+
+/* ---------- stellar cross-section panel ---------- */
+var crossSectionOpen = false;
+var crossSectionEls = null; // cached DOM refs, built once per open so re-drawing every frame is just a canvas repaint
+
+function openCrossSectionPanel() {
+  var panel = document.getElementById("crossSectionPanel");
+  panel.classList.remove("hidden");
+  panel.innerHTML = "";
+  var h3 = document.createElement("h3");
+  h3.textContent = "Cross-Section";
+  panel.appendChild(h3);
+
+  var canvas2 = document.createElement("canvas");
+  canvas2.className = "cross-section-canvas";
+  panel.appendChild(canvas2);
+
+  var fusionEl = document.createElement("div");
+  fusionEl.className = "panel-hint";
+  fusionEl.style.marginTop = "10px";
+  panel.appendChild(fusionEl);
+
+  var legendEl = document.createElement("div");
+  legendEl.style.marginTop = "8px";
+  panel.appendChild(legendEl);
+
+  var closeBtn = document.createElement("button");
+  closeBtn.className = "panel-link";
+  closeBtn.textContent = "Close";
+  closeBtn.addEventListener("click", function () {
+    crossSectionOpen = false;
+    closeCrossSectionPanel();
+    refreshPropertiesPanel();
+  });
+  panel.appendChild(closeBtn);
+
+  var dpr2 = Math.max(1, window.devicePixelRatio || 1);
+  var cssW = canvas2.clientWidth || 284, cssH = 180;
+  canvas2.width = Math.round(cssW * dpr2);
+  canvas2.height = Math.round(cssH * dpr2);
+  var ctx2 = canvas2.getContext("2d");
+  ctx2.setTransform(dpr2, 0, 0, dpr2, 0, 0);
+
+  crossSectionEls = { canvas: canvas2, ctx: ctx2, cssW: cssW, cssH: cssH, fusionEl: fusionEl, legendEl: legendEl };
+  drawCrossSection();
+}
+function closeCrossSectionPanel() {
+  document.getElementById("crossSectionPanel").classList.add("hidden");
+  crossSectionEls = null;
+}
+function drawCrossSection() {
+  if (!crossSectionOpen || !crossSectionEls) { return; }
+  var star = selectedStar();
+  var els = crossSectionEls;
+  var ctx2 = els.ctx;
+  ctx2.clearRect(0, 0, els.cssW, els.cssH);
+  if (!star) {
+    els.fusionEl.textContent = "No star selected.";
+    els.legendEl.innerHTML = "";
+    return;
+  }
+  var state = luminosityRadiusAt(star.massSolar, star.ageMyr);
+  var schema = CROSS_SECTIONS[state.stage] || CROSS_SECTIONS.MAIN_SEQUENCE;
+  var cx = els.cssW / 2, cy = els.cssH / 2;
+  var maxR = Math.min(els.cssW, els.cssH) / 2 - 6;
+
+  schema.layers.forEach(function (layer) {
+    ctx2.beginPath();
+    ctx2.arc(cx, cy, Math.max(2, layer.frac * maxR), 0, Math.PI * 2);
+    ctx2.fillStyle = layer.color;
+    ctx2.fill();
+  });
+  ctx2.strokeStyle = "rgba(255,255,255,0.15)";
+  ctx2.lineWidth = 1;
+  ctx2.beginPath();
+  ctx2.arc(cx, cy, schema.layers[0].frac * maxR, 0, Math.PI * 2);
+  ctx2.stroke();
+
+  els.fusionEl.textContent = schema.fusion;
+  els.legendEl.innerHTML = "";
+  schema.layers.slice().reverse().forEach(function (layer) {
+    var row = document.createElement("div");
+    row.style.cssText = "display:flex;align-items:center;gap:6px;font-size:11px;color:#c7c7cc;margin-bottom:3px;";
+    var swatch = document.createElement("span");
+    swatch.style.cssText = "width:10px;height:10px;border-radius:50%;background:" + layer.color + ";flex-shrink:0;display:inline-block;";
+    var text = document.createElement("span");
+    text.textContent = layer.label;
+    row.appendChild(swatch); row.appendChild(text);
+    els.legendEl.appendChild(row);
+  });
+}
+
+/* ---------- Tutorial modal ---------- */
+document.getElementById("tutorialBtn").addEventListener("click", function (e) {
+  e.stopPropagation();
+  var modal = document.getElementById("tutorialModal");
+  modal.innerHTML =
+    '<div class="modal-card">' +
+    "<h2>H-R Diagram</h2>" +
+    "<p>Place a star by mass (★, bottom-right) and watch it move across the Hertzsprung-Russell diagram as simulated time advances -- temperature decreasing left to right, luminosity increasing upward, exactly the classic astronomer's convention. Tap a star to select it; open <strong>Properties</strong> for its full live readout, or place several stars and compare their paths side by side.</p>" +
+    "<p><strong>Temperature is never stored, always derived.</strong> Every star's surface temperature comes from its luminosity and radius via the Stefan-Boltzmann law, T = T☉·(L/L☉)^0.25/(R/R☉)^0.5 -- not a simplification, that's the actual definition of a star's effective temperature at any stage. The evolution model only ever produces (luminosity, radius); temperature and spectral class fall out automatically, always physically consistent.</p>" +
+    "<p><strong>A validated interpolation system, not a generic animated curve.</strong> Seven representative masses (0.5 to 40 M☉) each carry a short sequence of named evolutionary-stage anchor points -- ZAMS, subgiant, giant-branch tip, helium burning, and on to a white dwarf, neutron star, or black hole -- sourced from real stellar-evolution teaching values. A star's live position is interpolated between the two bracketing masses and the two bracketing stage anchors, so every point on its path traces back to a cited anchor, not a faked trajectory.</p>" +
+    "<p><strong>Rewind is exact, unlike an orbit simulation.</strong> A star's (luminosity, radius) is a pure function of its mass and age -- nothing is integrated step by step, so there's no accumulated error to worry about. Setting the simulation clock to any age, forward or backward, recomputes every star exactly. Drag the time control (bottom) left of center to rewind.</p>" +
+    "<p><strong>Endings, stated plainly.</strong> Below about 8 M☉ a star sheds its envelope as a planetary nebula and leaves a white dwarf; from about 8-20 M☉ it ends in a core-collapse supernova and a neutron star; above that, a black hole. These thresholds (and the black hole's remnant mass) are the commonly-taught values, not precision astrophysics -- real stellar fates depend on composition and other factors this sandbox doesn't model.</p>" +
+    "<p>Toggle the Reference Sun, overlay a theoretical mass track, or open a star's <strong>Cross-Section View</strong> for an illustrative (not simulated) look at its internal fusion layers -- all from the Properties and Extras panels.</p>" +
+    '<button class="close-link">Got it</button></div>';
+  modal.classList.remove("hidden");
+  modal.querySelector(".close-link").addEventListener("click", function () { modal.classList.add("hidden"); });
+  modal.addEventListener("click", function (ev) { if (ev.target === modal) { modal.classList.add("hidden"); } });
+});
+
+/* ---------- Pause / Clear ---------- */
+var pauseBtn = document.getElementById("pauseBtn");
+document.getElementById("pauseBtn").addEventListener("click", function () {
+  paused = !paused;
+  pauseBtn.textContent = paused ? "Play" : "Pause";
+});
+document.getElementById("clearBtn").addEventListener("click", function () {
+  clearAllStars();
+  refreshPropertiesPanel();
+});
+
+/* ---------- time control strip ---------- */
+function timeReadoutText() {
+  if (simSpeedMyrPerSec === 0) { return "‖ Paused"; }
+  var mag = Math.abs(simSpeedMyrPerSec);
+  var magText = mag >= 10 ? Math.round(mag) : mag.toFixed(mag >= 1 ? 1 : 2);
+  return (simSpeedMyrPerSec < 0 ? "◀ " : "▶ ") + magText + " Myr/s";
+}
+function buildTimeControl() {
+  var el = document.getElementById("timeControl");
+  el.innerHTML = "";
+  var slider = document.createElement("input");
+  slider.type = "range";
+  slider.min = "-100"; slider.max = "100"; slider.step = "1";
+  slider.value = String(simRawSpeedSlider);
+  var readout = document.createElement("div");
+  readout.className = "time-readout mono";
+  readout.textContent = timeReadoutText();
+  slider.addEventListener("input", function () {
+    simRawSpeedSlider = parseFloat(slider.value);
+    simSpeedMyrPerSec = speedFromSlider(simRawSpeedSlider);
+    readout.textContent = timeReadoutText();
+  });
+  el.appendChild(slider);
+  el.appendChild(readout);
+}
+buildTimeControl();
+
+/* ---------- canvas pointer handling: tap to select a star, zoom buttons ---------- */
+document.getElementById("zoomInBtn").addEventListener("click", function () { diagram.zoom = clamp(diagram.zoom * 1.35, 1, 10); });
+document.getElementById("zoomOutBtn").addEventListener("click", function () { diagram.zoom = clamp(diagram.zoom / 1.35, 1, 10); });
+canvas.addEventListener("wheel", function (e) {
+  e.preventDefault();
+  var factor = Math.exp(-e.deltaY * 0.01);
+  diagram.zoom = clamp(diagram.zoom * factor, 1, 10);
+}, { passive: false });
+
+var pointerDownX = 0, pointerDownY = 0, pointerIsDown = false, pointerMoved = false;
+canvas.addEventListener("pointerdown", function (e) {
+  pointerIsDown = true; pointerMoved = false;
+  pointerDownX = e.clientX; pointerDownY = e.clientY;
+});
+canvas.addEventListener("pointermove", function (e) {
+  if (!pointerIsDown) { return; }
+  if (Math.abs(e.clientX - pointerDownX) > 6 || Math.abs(e.clientY - pointerDownY) > 6) { pointerMoved = true; }
+});
+canvas.addEventListener("pointerup", function (e) {
+  pointerIsDown = false;
+  if (pointerMoved) { return; }
+  var rect = canvas.getBoundingClientRect();
+  var px = e.clientX - rect.left, py = e.clientY - rect.top;
+  var best = null, bestDist = SELECT_PIXEL_RADIUS;
+  stars.forEach(function (star) {
+    var state = luminosityRadiusAt(star.massSolar, star.ageMyr);
+    var T = temperatureFromLR(state.L, state.R);
+    var p = starDisplayPos(star, state, T);
+    var d = Math.hypot(p.x - px, p.y - py);
+    if (d < bestDist) { bestDist = d; best = star; }
+  });
+  selectedStarId = best ? best.id : null;
+  refreshPropertiesPanel();
+});
+
+/* ---------- reference Sun + overlay theoretical tracks ---------- */
+function drawReferenceSun() {
+  if (!referenceSunOn) { return; }
+  var p = hrToScreen(TSUN, 1);
+  ctx.save();
+  ctx.shadowColor = "#FFE9B0";
+  ctx.shadowBlur = 16;
+  ctx.fillStyle = "#FFE9B0";
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+  ctx.save();
+  ctx.strokeStyle = "rgba(255,233,176,0.6)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, 10, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(255,233,176,0.75)";
+  ctx.font = "10px 'JetBrains Mono', monospace";
+  ctx.textAlign = "left";
+  ctx.fillText("☉ Sun", p.x + 14, p.y + 3);
+  ctx.restore();
+}
+function drawOverlayTracks() {
+  overlayTracks.forEach(function (ov) {
+    var points = computeFullTrack(ov.massSolar);
+    ctx.save();
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = "rgba(200,210,255,0.4)";
+    ctx.lineWidth = 1.3;
+    ctx.beginPath();
+    points.forEach(function (pt, i) {
+      var sp = hrToScreen(pt.T, pt.L);
+      if (i === 0) { ctx.moveTo(sp.x, sp.y); } else { ctx.lineTo(sp.x, sp.y); }
+    });
+    ctx.stroke();
+    ctx.restore();
+    var mid = points[Math.floor(points.length * 0.35)];
+    var midP = hrToScreen(mid.T, mid.L);
+    ctx.save();
+    ctx.setLineDash([]);
+    ctx.fillStyle = "rgba(200,210,255,0.85)";
+    ctx.font = "10px 'JetBrains Mono', monospace";
+    ctx.textAlign = "left";
+    ctx.fillText(ov.massSolar.toFixed(1) + " M☉ track", midP.x + 6, midP.y - 6);
+    ctx.restore();
+  });
+}
+
+/* ---------- terminal-event animations ----------
+   Triggered once, the real-time instant a star's evolution crosses INTO
+   its terminal stage (WHITE_DWARF / NEUTRON_STAR / BLACK_HOLE). These are
+   wall-clock-timed visual flourishes layered on top of the already-correct
+   physics -- they never feed back into (L, R, age), so they're safe to
+   iterate on independently. Rewinding back out of a terminal stage simply
+   stops new effects from spawning; an in-flight effect is left to finish
+   and fade rather than reversed, since a half-undone explosion reads as a
+   glitch, not as "time going backward". */
+var activeEffects = [];
+
+function spawnPlanetaryNebula(x, y) {
+  activeEffects.push({ type: "nebula", x: x, y: y, startMs: performance.now(), durationMs: 2600 });
+}
+function spawnSupernova(x, y) {
+  var particles = [];
+  for (var i = 0; i < 32; i++) {
+    particles.push({ angle: Math.random() * Math.PI * 2, speed: 70 + Math.random() * 170 });
+  }
+  activeEffects.push({ type: "supernova", x: x, y: y, startMs: performance.now(), durationMs: 1300, particles: particles });
+}
+function spawnBlackHoleCollapse(x, y, targetX, targetY) {
+  var particles = [];
+  for (var i = 0; i < 26; i++) {
+    particles.push({ angle: Math.random() * Math.PI * 2, startDist: 36 + Math.random() * 70 });
+  }
+  activeEffects.push({
+    type: "blackhole", x: x, y: y, targetX: targetX, targetY: targetY,
+    startMs: performance.now(), durationMs: 1900, particles: particles
+  });
+}
+
+function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+function easeInCubic(t) { return t * t * t; }
+
+function drawActiveEffects(nowMs) {
+  activeEffects = activeEffects.filter(function (fx) { return nowMs - fx.startMs < fx.durationMs; });
+  activeEffects.forEach(function (fx) {
+    var t = clamp((nowMs - fx.startMs) / fx.durationMs, 0, 1);
+    if (fx.type === "nebula") { drawNebulaFrame(fx, t); }
+    else if (fx.type === "supernova") { drawSupernovaFrame(fx, t); }
+    else if (fx.type === "blackhole") { drawBlackHoleCollapseFrame(fx, t); }
+  });
+}
+
+// Planetary nebula: a slow, gentle, expanding translucent shell -- gas
+// drifting outward from a low/intermediate-mass star shedding its envelope,
+// not an explosion. Two staggered rings give it a soft "puffing" quality.
+function drawNebulaFrame(fx, t) {
+  ctx.save();
+  [0, 0.25].forEach(function (phaseOffset) {
+    var pt = clamp(t + phaseOffset, 0, 1);
+    if (pt <= 0 || (phaseOffset > 0 && t < 0.02)) { return; }
+    var radius = easeOutCubic(pt) * 60;
+    var alpha = (1 - pt) * 0.5;
+    ctx.beginPath();
+    ctx.arc(fx.x, fx.y, radius, 0, Math.PI * 2);
+    ctx.strokeStyle = "rgba(143,232,216," + alpha.toFixed(3) + ")";
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+  });
+  var coreAlpha = (1 - t) * 0.9;
+  ctx.shadowColor = "#8fe8d8";
+  ctx.shadowBlur = 20;
+  ctx.fillStyle = "rgba(220,255,248," + coreAlpha.toFixed(3) + ")";
+  ctx.beginPath();
+  ctx.arc(fx.x, fx.y, 5 + (1 - t) * 4, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+// Supernova: fast, bright, radial -- a flash disc that blooms and fades in
+// well under a second, plus streaking ejecta particles outrunning it.
+function drawSupernovaFrame(fx, t) {
+  ctx.save();
+  var flashT = clamp(t / 0.35, 0, 1);
+  var flashRadius = easeOutCubic(flashT) * 46;
+  var flashAlpha = (1 - t) * 1.0;
+  ctx.shadowColor = "#eaf2ff";
+  ctx.shadowBlur = 30;
+  ctx.fillStyle = "rgba(234,242,255," + (flashAlpha * (1 - flashT * 0.4)).toFixed(3) + ")";
+  ctx.beginPath();
+  ctx.arc(fx.x, fx.y, flashRadius, 0, Math.PI * 2);
+  ctx.fill();
+
+  fx.particles.forEach(function (p) {
+    var dist = easeOutCubic(t) * p.speed;
+    var x2 = fx.x + Math.cos(p.angle) * dist;
+    var y2 = fx.y + Math.sin(p.angle) * dist;
+    var x1 = fx.x + Math.cos(p.angle) * Math.max(0, dist - 14);
+    var y1 = fx.y + Math.sin(p.angle) * Math.max(0, dist - 14);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = "rgba(255,230,180," + ((1 - t) * 0.85).toFixed(3) + ")";
+    ctx.lineWidth = 1.6;
+    ctx.stroke();
+  });
+  ctx.restore();
+}
+
+// Black hole formation: the visual inverse of a supernova -- matter and
+// light drawn INWARD and swallowed, ending on a small persistent dark disc
+// ringed by a thin glowing accretion line at the parked marker position
+// (see blackHoleSlotPosition) rather than a plotted (T,L) point, since a
+// bare black hole radiates nothing classical to plot.
+function drawBlackHoleCollapseFrame(fx, t) {
+  ctx.save();
+  fx.particles.forEach(function (p) {
+    var dist = p.startDist * (1 - easeInCubic(t));
+    var cx = fx.targetX + (fx.x - fx.targetX) * (1 - t);
+    var cy = fx.targetY + (fx.y - fx.targetY) * (1 - t);
+    var px = cx + Math.cos(p.angle) * dist;
+    var py = cy + Math.sin(p.angle) * dist;
+    ctx.beginPath();
+    ctx.arc(px, py, 1.6, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(190,170,255," + (0.3 + t * 0.5).toFixed(3) + ")";
+    ctx.fill();
+  });
+  var cx2 = fx.targetX + (fx.x - fx.targetX) * (1 - easeOutCubic(t));
+  var cy2 = fx.targetY + (fx.y - fx.targetY) * (1 - easeOutCubic(t));
+  var horizonR = 3 + easeOutCubic(t) * 7;
+  ctx.fillStyle = "#000000";
+  ctx.beginPath();
+  ctx.arc(cx2, cy2, horizonR, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "rgba(176,124,255," + (0.5 + 0.4 * Math.sin(t * Math.PI)).toFixed(3) + ")";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.arc(cx2, cy2, horizonR + 3, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+}
+
+// Fixed slots along the plot's top-right corner for bare black holes,
+// which have no classical (T,L) to plot (L=0, T=0 by design). Multiple
+// black holes stack into their own small column rather than overlapping.
+function blackHoleSlotPosition(star) {
+  var r = plotRect();
+  var blackHoles = stars.filter(function (s) {
+    return fateForMass(s.massSolar) === "black_hole" && luminosityRadiusAt(s.massSolar, s.ageMyr).stage === "BLACK_HOLE";
+  }).sort(function (a, b) { return a.id - b.id; });
+  var idx = blackHoles.indexOf(star);
+  if (idx < 0) { idx = 0; }
+  return { x: r.x + r.w - 30, y: r.y + 24 + idx * 28 };
+}
+
+// A bare black hole has no classical (T,L) -- L=0, T=0 by design -- so it
+// is pinned to its parked slot instead of a plotted point. Every other
+// stage (including white dwarfs and neutron stars, both hot/dim enough to
+// need the extended T_MAX) plots normally. Shared by rendering, selection
+// hit-testing, and the HUD so none of them can disagree about where a star
+// actually is.
+function starDisplayPos(star, state, T) {
+  if (state.stage === "BLACK_HOLE") { return blackHoleSlotPosition(star); }
+  return hrToScreen(T, state.L);
+}
+
+/* ---------- star rendering ---------- */
+function drawStars() {
+  var pulse = 0.7 + 0.3 * Math.sin(performance.now() / 220);
+  stars.forEach(function (star) {
+    var state = luminosityRadiusAt(star.massSolar, star.ageMyr);
+    var T = temperatureFromLR(state.L, state.R);
+    var p = starDisplayPos(star, state, T);
+    var color = colorForSpectralClass(spectralClassForT(T));
+    var isBlackHole = state.stage === "BLACK_HOLE";
+
+    // A black hole radiates nothing classical to trail across the diagram;
+    // its trail simply stops where it collapsed, left as a historical record.
+    if (!isBlackHole) {
+      star.trail.push({ t: T, l: state.L, stage: state.stage });
+      if (star.trail.length > TRAIL_MAX_POINTS) { star.trail.shift(); }
+    }
+
+    if (showTrails && star.trail.length > 1) {
+      ctx.save();
+      ctx.beginPath();
+      star.trail.forEach(function (pt, i) {
+        var sp = hrToScreen(pt.t, pt.l);
+        // A core-collapse supernova is a genuine instantaneous jump in
+        // (L,R), not a smooth transition (see the physics module's header
+        // comment) -- draw it as a break in the trail rather than a
+        // connecting line implying the star glided across the diagram.
+        var prevStage = i > 0 ? star.trail[i - 1].stage : null;
+        var isSupernovaJump = pt.stage === "NEUTRON_STAR" && prevStage !== "NEUTRON_STAR";
+        if (i === 0 || isSupernovaJump) { ctx.moveTo(sp.x, sp.y); } else { ctx.lineTo(sp.x, sp.y); }
+      });
+      ctx.strokeStyle = color;
+      ctx.globalAlpha = 0.35;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    var isSelected = star.id === selectedStarId;
+
+    if (isBlackHole) {
+      ctx.save();
+      ctx.fillStyle = "#000000";
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(176,124,255,0.8)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 10, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(176,124,255,0.85)";
+      ctx.font = "9px 'JetBrains Mono', monospace";
+      ctx.textAlign = "right";
+      ctx.fillText(star.label, p.x - 14, p.y + 3);
+      ctx.restore();
+    } else {
+      var radiusPx = clamp(4 + Math.log10(Math.max(0.01, state.R)) * 2.5, 3, 18);
+      var isNeutronStar = state.stage === "NEUTRON_STAR";
+      var glowMult = isNeutronStar ? pulse : 1;
+      ctx.save();
+      ctx.shadowColor = color;
+      ctx.shadowBlur = (isSelected ? 24 : 14) * glowMult;
+      ctx.fillStyle = color;
+      ctx.globalAlpha = isNeutronStar ? glowMult : 1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, isNeutronStar ? radiusPx * glowMult : radiusPx, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    if (isSelected) {
+      var ringR = isBlackHole ? 16 : clamp(4 + Math.log10(Math.max(0.01, state.R)) * 2.5, 3, 18) + 6;
+      ctx.save();
+      ctx.strokeStyle = "rgba(255,255,255,0.85)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, ringR, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+  });
+}
+
+function updateStarHud() {
+  var star = selectedStar();
+  var tempEl = document.getElementById("hudTemp"), lumEl = document.getElementById("hudLum"), ageEl = document.getElementById("hudAge");
+  if (!star) { tempEl.textContent = "—"; lumEl.textContent = "—"; ageEl.textContent = "—"; return; }
+  var state = luminosityRadiusAt(star.massSolar, star.ageMyr);
+  var T = temperatureFromLR(state.L, state.R);
+  var isBlackHole = state.stage === "BLACK_HOLE";
+  tempEl.textContent = isBlackHole ? "—" : String(Math.round(T));
+  lumEl.textContent = isBlackHole ? "—" : (state.L < 0.01 ? state.L.toExponential(1) : state.L.toFixed(state.L < 10 ? 2 : 0));
+  ageEl.textContent = star.ageMyr < 10 ? star.ageMyr.toFixed(2) : String(Math.round(star.ageMyr));
+}
+
+var lastFrameTime = null;
+function frame(now) {
+  if (lastFrameTime === null) { lastFrameTime = now; }
+  var dt = Math.min(0.1, (now - lastFrameTime) / 1000);
+  lastFrameTime = now;
+
+  if (!paused && simSpeedMyrPerSec !== 0) {
+    simTimeMyr += simSpeedMyrPerSec * dt;
+    stars.forEach(function (star) {
+      var oldState = luminosityRadiusAt(star.massSolar, star.ageMyr);
+      star.ageMyr = Math.max(0, simTimeMyr - star.bornAtMyr);
+      var newState = luminosityRadiusAt(star.massSolar, star.ageMyr);
+      var wasTerminal = oldState.stage === "WHITE_DWARF" || oldState.stage === "NEUTRON_STAR" || oldState.stage === "BLACK_HOLE";
+      var isTerminalNow = newState.stage === "WHITE_DWARF" || newState.stage === "NEUTRON_STAR" || newState.stage === "BLACK_HOLE";
+      if (isTerminalNow && !wasTerminal) {
+        var fromT = temperatureFromLR(oldState.L, oldState.R);
+        var fromPos = hrToScreen(fromT, oldState.L);
+        if (newState.stage === "WHITE_DWARF") {
+          spawnPlanetaryNebula(fromPos.x, fromPos.y);
+        } else if (newState.stage === "NEUTRON_STAR") {
+          spawnSupernova(fromPos.x, fromPos.y);
+        } else if (newState.stage === "BLACK_HOLE") {
+          spawnSupernova(fromPos.x, fromPos.y);
+          var toPos = blackHoleSlotPosition(star);
+          spawnBlackHoleCollapse(fromPos.x, fromPos.y, toPos.x, toPos.y);
+        }
+      }
+    });
+  }
+
+  ctx.clearRect(0, 0, canvasW, canvasH);
+  drawPopulationBands();
+  drawMainSequenceBand();
+  drawAxes();
+  drawOverlayTracks();
+  drawReferenceSun();
+  drawStars();
+  drawActiveEffects(now);
+  drawCrossSection();
+  updateStarHud();
+  requestAnimationFrame(frame);
+}
+
+resizeCanvas();
+createStar(1, "Sol-mass");
+requestAnimationFrame(frame);
+
+// Read-only inspection hooks for automated verification -- module-scoped
+// vars aren't reachable from outside, and this module has no other
+// externally observable state besides the DOM text it renders.
+window.__hrDebug = {
+  getStars: function () { return stars; },
+  getSelectedId: function () { return selectedStarId; },
+  getSimTime: function () { return simTimeMyr; },
+  getZoom: function () { return diagram.zoom; },
+  getOverlayTracks: function () { return overlayTracks; },
+  getReferenceSunOn: function () { return referenceSunOn; },
+  getShowInstabilityStrip: function () { return showInstabilityStrip; },
+  hrToScreen: hrToScreen,
+  luminosityRadiusAt: luminosityRadiusAt,
+  temperatureFromLR: temperatureFromLR,
+  terminalOnsetAgeMyr: terminalOnsetAgeMyr,
+  computeFullTrack: computeFullTrack,
+  getActiveEffects: function () { return activeEffects; },
+  setSimTime: function (v) { simTimeMyr = v; },
+  blackHoleSlotPosition: blackHoleSlotPosition
+};
+</script>
+</body>
+</html>
