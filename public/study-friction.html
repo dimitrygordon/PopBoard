@@ -204,6 +204,37 @@ var SURFACE_MATERIALS = ["wood", "rubber", "leather", "glass", "ice", "concrete"
 var MATERIAL_LABELS = { castiron: "Cast Iron" };
 function materialLabel(mat) { return MATERIAL_LABELS[mat] || mat; }
 
+// Per-material acoustic fingerprint for the scrape/thud sound design
+// (see the Sound design section near the bottom): freqHz/q shape a
+// bandpass filter on noise -- low freq + low Q reads as a broad rumble
+// (soft/rough materials), high freq + high Q reads as a glassy/metallic
+// ring (hard/smooth materials). hardness (0-1) shapes the stop "thud":
+// higher = a brighter, shorter clunk; lower = a duller, longer bump.
+// Every object/surface material pair combines its two fingerprints
+// (see combinedSoundProfile) rather than needing all 64 pairs tuned
+// by hand.
+var MATERIAL_SOUND = {
+  wood: { freqHz: 300, q: 1.0, hardness: 0.35 },
+  cardboard: { freqHz: 240, q: 0.6, hardness: 0.15 },
+  leather: { freqHz: 220, q: 0.8, hardness: 0.25 },
+  rubber: { freqHz: 160, q: 0.6, hardness: 0.20 },
+  glass: { freqHz: 900, q: 2.6, hardness: 0.85 },
+  stone: { freqHz: 380, q: 1.1, hardness: 0.75 },
+  steel: { freqHz: 700, q: 2.2, hardness: 0.90 },
+  castiron: { freqHz: 500, q: 1.7, hardness: 0.95 },
+  ice: { freqHz: 950, q: 3.2, hardness: 0.15 },
+  concrete: { freqHz: 340, q: 0.9, hardness: 0.70 }
+};
+
+function combinedSoundProfile(objectMat, surfaceMat) {
+  var o = MATERIAL_SOUND[objectMat], s = MATERIAL_SOUND[surfaceMat];
+  return {
+    freqHz: Math.sqrt(o.freqHz * s.freqHz),
+    q: (o.q + s.q) / 2,
+    hardness: (o.hardness + s.hardness) / 2
+  };
+}
+
 // Representative introductory-model coefficients per (object, surface)
 // pair. Real friction also depends on surface condition, lubrication,
 // and temperature -- these are curated teaching values, not a materials
@@ -764,7 +795,7 @@ function frame(now) {
   drawAllVectors(crateScreen, phys, result, phys.thetaRad);
   updateStatusBanner(phys, result);
   updateMotionHud(result);
-  updateMotionSound(result);
+  updateMotionSound(phys, result);
   updateLabLiveReadout(phys, result);
 
   if (!labPanel.classList.contains("hidden") && forceTimeCanvasEl) {
@@ -1409,7 +1440,7 @@ function makeNoiseBuffer(ctxForBuffer) {
   return buffer;
 }
 
-function startScrapeLoop() {
+function startScrapeLoop(profile) {
   if (!soundSupported) { return; }
   ensureAudioContext();
   if (!audioCtx || scrapeSource) { return; }
@@ -1420,8 +1451,8 @@ function startScrapeLoop() {
     scrapeSource.loop = true;
     scrapeFilter = audioCtx.createBiquadFilter();
     scrapeFilter.type = "bandpass";
-    scrapeFilter.frequency.value = 400;
-    scrapeFilter.Q.value = 0.9;
+    scrapeFilter.frequency.value = profile.freqHz;
+    scrapeFilter.Q.value = profile.q;
     scrapeGain = audioCtx.createGain();
     scrapeGain.gain.value = 0;
     scrapeSource.connect(scrapeFilter);
@@ -1441,16 +1472,23 @@ function stopScrapeLoop() {
   scrapeSource = null; scrapeFilter = null; scrapeGain = null;
 }
 
-function updateScrapeSound(speed) {
+// volumeScale (0-1) comes from the pair's kinetic friction coefficient --
+// a slicker pair (lower muk, e.g. anything on ice) drags with less force
+// and so should sound quieter, not just differently pitched.
+function updateScrapeSound(speed, profile, volumeScale) {
   if (!scrapeSource || !audioCtx) { return; }
   var clampedSpeed = Math.min(speed, 12);
-  var targetGain = Math.min(0.32, 0.05 + clampedSpeed * 0.022);
-  var targetFreq = 260 + clampedSpeed * 90;
+  var targetGain = Math.min(0.32, (0.05 + clampedSpeed * 0.022) * volumeScale);
+  var targetFreq = profile.freqHz + clampedSpeed * (40 + profile.q * 20);
   scrapeGain.gain.setTargetAtTime(targetGain, audioCtx.currentTime, 0.05);
   scrapeFilter.frequency.setTargetAtTime(targetFreq, audioCtx.currentTime, 0.05);
+  scrapeFilter.Q.setTargetAtTime(profile.q, audioCtx.currentTime, 0.05);
 }
 
-function playThud() {
+// hardness (0-1) shapes the stop "thud": a harder pair (glass, steel,
+// cast iron) rings brighter and shorter, a softer pair (cardboard,
+// leather, ice) lands duller and a touch longer.
+function playThud(profile) {
   if (!soundSupported) { return; }
   ensureAudioContext();
   if (!audioCtx) { return; }
@@ -1460,14 +1498,17 @@ function playThud() {
     var gain = audioCtx.createGain();
     osc.type = "sine";
     var now = audioCtx.currentTime;
-    osc.frequency.setValueAtTime(120, now);
-    osc.frequency.exponentialRampToValueAtTime(55, now + 0.18);
+    var startFreq = 90 + profile.hardness * 110;
+    var endFreq = 40 + profile.hardness * 50;
+    var decay = 0.28 - profile.hardness * 0.12;
+    osc.frequency.setValueAtTime(startFreq, now);
+    osc.frequency.exponentialRampToValueAtTime(endFreq, now + decay * 0.7);
     gain.gain.setValueAtTime(0.5, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + decay);
     osc.connect(gain);
     gain.connect(masterGain);
     osc.start(now);
-    osc.stop(now + 0.25);
+    osc.stop(now + decay + 0.03);
   } catch (e) { /* ignore */ }
 }
 
@@ -1479,19 +1520,26 @@ muteBtn.addEventListener("click", function(e) {
   if (masterGain) { masterGain.gain.setTargetAtTime(soundMuted ? 0 : 1, audioCtx.currentTime, 0.05); }
 });
 
+var SOUND_MUK_REF = 0.5; // muk roughly at/above this scales to full volume
+function volumeScaleForMuk(muk) {
+  return 0.15 + 0.85 * Math.min(1, muk / SOUND_MUK_REF);
+}
+
 /* Called once per frame with the latest physics result: starts/stops the
    scrape loop based on the current regime, keeps its pitch/volume tracking
-   speed while sliding, and fires the thud exactly once on the
-   sliding->static transition. */
-function updateMotionSound(result) {
+   speed and the current object/surface material pair while sliding, and
+   fires a material-matched thud exactly once on the sliding->static
+   transition. */
+function updateMotionSound(phys, result) {
+  var profile = combinedSoundProfile(params.objectMaterial, params.surfaceMaterial);
   if (result.regime === "sliding") {
-    startScrapeLoop();
-    updateScrapeSound(Math.abs(result.velocity));
+    startScrapeLoop(profile);
+    updateScrapeSound(Math.abs(result.velocity), profile, volumeScaleForMuk(phys.muk));
   } else {
     stopScrapeLoop();
   }
   if (lastRegimeForSound === "sliding" && result.regime === "static") {
-    playThud();
+    playThud(profile);
   }
   lastRegimeForSound = result.regime;
 }
