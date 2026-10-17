@@ -19,33 +19,52 @@
     <img src="/popboard-logo.png" alt="PopBoard Logo" id="login-logo-img" />
   </div>
   <h2>Join PopBoard</h2>
-  <input id="usernameInput" placeholder="Your name" />
-  <input id="boardNameInput" placeholder="PopBoard name" />
-  <input id="studentPasswordInput" type="password" placeholder="Password (optional: protects your name)" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" />
-  <p class="login-hint" style="text-align:center;margin:4px 0 0;font-size:0.8rem;opacity:0.6;">Leave the password blank to join quickly on this device. Add one (6+ characters) to keep your name safe and sign in from any device.</p>
+  <input id="usernameInput" class="login-input" placeholder="Your name" />
+  <input id="boardNameInput" class="login-input" placeholder="PopBoard name" />
+  <input id="studentPasswordInput" class="login-input" type="password" placeholder="Password (optional: protects your name)" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" />
   <div class="login-buttons">
     <button id="joinBtn">Join</button>
   </div>
-  <p style="text-align:center;margin-top:16px;font-size:0.85rem;opacity:0.6;">
-    <a id="teacherLoginBtn" href="#" style="color:inherit;text-decoration:underline;cursor:pointer;">Teacher? Sign in here</a>
+  <p class="login-link-row">
+    <a id="teacherLoginBtn" class="login-link" href="#" role="button">Teacher? Sign in here</a>
   </p>
 </div>
 
-<!-- Teacher Login -->
+<!-- Teacher Login: name or email + password -->
 <div id="teacherLogin" class="hidden">
   <div class="login-logo">
     <img src="/popboard-logo.png" alt="PopBoard Logo" id="teacher-logo-img" />
   </div>
   <h2>Teacher Login</h2>
-  <input id="teacherEmailInput" type="email" placeholder="Email" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" />
-  <input id="teacherPasswordInput" type="password" placeholder="Password" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" />
-  <input id="teacherNameInput" placeholder="Your name (only for creating a new account)" />
+  <input id="teacherIdInput" class="login-input" type="text" placeholder="Name or Email" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" />
+  <input id="teacherPasswordInput" class="login-input" type="password" placeholder="Password" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" />
   <div class="login-buttons">
     <button id="teacherSignInBtn">Sign In</button>
-    <button id="teacherSignUpBtn" class="secondary-btn">Create Account</button>
-    <button id="backToMainLoginBtn" class="secondary-btn">Back</button>
   </div>
-  <p style="text-align:center;margin-top:12px;font-size:0.8rem;opacity:0.6;">New teacher accounts need approval from the PopBoard admin before they can create boards.</p>
+  <p class="login-link-row">
+    <a id="showTeacherSignUpBtn" class="login-link" href="#" role="button">Create account</a>
+  </p>
+  <p class="login-link-row">
+    <a id="backToMainLoginBtn" class="login-link" href="#" role="button">Back to student sign-in</a>
+  </p>
+</div>
+
+<!-- Teacher Create Account -->
+<div id="teacherSignup" class="hidden">
+  <div class="login-logo">
+    <img src="/popboard-logo.png" alt="PopBoard Logo" id="teacher-signup-logo-img" />
+  </div>
+  <h2>Create Account</h2>
+  <input id="teacherEmailInput" class="login-input" type="email" placeholder="Email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" />
+  <input id="teacherNameInput" class="login-input" type="text" placeholder="Username (your name)" autocomplete="nickname" />
+  <input id="teacherNewPasswordInput" class="login-input" type="password" placeholder="Password (6+ characters)" autocomplete="new-password" autocapitalize="none" autocorrect="off" spellcheck="false" />
+  <div class="login-buttons">
+    <button id="teacherSignUpBtn">Create Account</button>
+  </div>
+  <p class="login-link-row">
+    <a id="backToTeacherLoginBtn" class="login-link" href="#" role="button">Already have an account? Sign in</a>
+  </p>
+  <p class="login-note">New teacher accounts need approval from the PopBoard admin before they can create boards.</p>
 </div>
 
 <!-- PopBoards Portal (Teacher) -->

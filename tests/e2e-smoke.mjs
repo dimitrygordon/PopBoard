@@ -10,7 +10,7 @@ import { extname, join } from "node:path";
 import puppeteer from "puppeteer-core";
 import { initializeTestEnvironment } from "@firebase/rules-unit-testing";
 import { readFileSync } from "node:fs";
-import { doc, getDoc, getDocs, collection, updateDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, getDocs, collection, updateDoc, setDoc, deleteDoc } from "firebase/firestore";
 
 const ROOT = new URL("../public/", import.meta.url).pathname;
 const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".png": "image/png", ".json": "application/json" };
@@ -53,9 +53,11 @@ try {
   // ---- teacher signs up -> pending approval ----
   const t = await newPage();
   await t.click("#teacherLoginBtn");
+  await t.click("#showTeacherSignUpBtn");
+  check(await visible(t, "teacherSignup"), "Create account link opens the create-account view");
   await type(t, "#teacherEmailInput", "teacher@example.com");
-  await type(t, "#teacherPasswordInput", "teachpass1");
   await type(t, "#teacherNameInput", "Ms T");
+  await type(t, "#teacherNewPasswordInput", "teachpass1");
   await t.click("#teacherSignUpBtn");
   await sleep(2500);
   check(t.alerts.some(a => /waiting for approval/i.test(a)), "new teacher is told they're waiting for approval");
@@ -66,10 +68,30 @@ try {
     check(snap.size === 1 && snap.docs[0].data().approved === false && !("password" in snap.docs[0].data()), "teacher profile saved unapproved, with no password field");
     tUid = snap.docs[0].id;
     await updateDoc(doc(db, "teachers", tUid), { approved: true });
+    const n = await getDoc(doc(db, "teacherNames", "ms t"));
+    check(n.exists() && n.data().uid === tUid && n.data().email === "teacher@example.com", "sign-up saved the teacherNames entry for name sign-in");
   });
 
-  // ---- approved teacher signs in and creates a board ----
+  // ---- a second sign-up with the same name (different case) is refused ----
+  const dup = await newPage();
+  await dup.click("#teacherLoginBtn");
+  await dup.click("#showTeacherSignUpBtn");
+  await type(dup, "#teacherEmailInput", "copycat@example.com");
+  await type(dup, "#teacherNameInput", "MS T");
+  await type(dup, "#teacherNewPasswordInput", "copypass1");
+  await dup.click("#teacherSignUpBtn");
+  await sleep(2000);
+  check(dup.alerts.some(a => /already taken/i.test(a)), "duplicate teacher name (case-insensitive) gets a friendly error");
+  await admin(async db => {
+    const snap = await getDocs(collection(db, "teachers"));
+    check(!snap.docs.some(d => d.data().email === "copycat@example.com"), "no account is created for the duplicate name");
+  });
+
+  // ---- approved teacher signs in WITH THEIR NAME and creates a board ----
   t.alerts.length = 0;
+  check(await visible(t, "teacherLogin"), "after sign-up the teacher is back on the sign-in view");
+  await type(t, "#teacherIdInput", "ms t");
+  await type(t, "#teacherPasswordInput", "teachpass1");
   await t.click("#teacherSignInBtn");
   await sleep(2500);
   check(await visible(t, "boardsPortal"), "approved teacher reaches the boards portal");
@@ -223,15 +245,17 @@ try {
   // ---- admin: sign up, get admins/{uid} in the console, approve a teacher ----
   const pend = await newPage();
   await pend.click("#teacherLoginBtn");
+  await pend.click("#showTeacherSignUpBtn");
   await type(pend, "#teacherEmailInput", "pending@example.com");
-  await type(pend, "#teacherPasswordInput", "pendpass1");
+  await type(pend, "#teacherNewPasswordInput", "pendpass1");
   await type(pend, "#teacherNameInput", "Mr P");
   await pend.click("#teacherSignUpBtn");
   await sleep(2500);
   const a = await newPage();
   await a.click("#teacherLoginBtn");
+  await a.click("#showTeacherSignUpBtn");
   await type(a, "#teacherEmailInput", "admin@example.com");
-  await type(a, "#teacherPasswordInput", "adminpass1");
+  await type(a, "#teacherNewPasswordInput", "adminpass1");
   await type(a, "#teacherNameInput", "Dimitry");
   await a.click("#teacherSignUpBtn");
   await sleep(2500);
@@ -243,6 +267,9 @@ try {
     await setDoc(doc(db, "admins", adminUid), { role: "admin" }); // what you do in the console
   });
   a.alerts.length = 0;
+  // admin signs in with EMAIL this time
+  await type(a, "#teacherIdInput", "admin@example.com");
+  await type(a, "#teacherPasswordInput", "adminpass1");
   await a.click("#teacherSignInBtn");
   await sleep(3500);
   const adminText = await a.$eval("#boardsList", el => el.textContent).catch(() => "");
@@ -258,7 +285,27 @@ try {
     check(clickedApprove && p2 && p2.data().approved === true, "admin's Approve button approves the pending teacher");
   });
 
-  for (const [name, p] of [["admin", a], ["carol", s4], ["teacher", t], ["alice", s1], ["s2/bob", s2], ["s3/bob", s3]]) {
+  // ---- an older account with no teacherNames entry gets one on its next email sign-in ----
+  await admin(async db => { await deleteDoc(doc(db, "teacherNames", "mr p")); });
+  const old = await newPage();
+  await old.click("#teacherLoginBtn");
+  await type(old, "#teacherIdInput", "Mr P");
+  await type(old, "#teacherPasswordInput", "pendpass1");
+  await old.click("#teacherSignInBtn");
+  await sleep(1500);
+  check(old.alerts.some(a => /No teacher account has that name/i.test(a)), "name sign-in without an entry explains to use email");
+  old.alerts.length = 0;
+  await type(old, "#teacherIdInput", "pending@example.com");
+  await type(old, "#teacherPasswordInput", "pendpass1");
+  await old.click("#teacherSignInBtn");
+  await sleep(3000);
+  check(await visible(old, "boardsPortal"), "older teacher signs in by email");
+  await admin(async db => {
+    const n = await getDoc(doc(db, "teacherNames", "mr p"));
+    check(n.exists() && n.data().email === "pending@example.com", "email sign-in backfilled the missing teacherNames entry");
+  });
+
+  for (const [name, p] of [["old-teacher", old], ["dup", dup], ["admin", a], ["carol", s4], ["teacher", t], ["alice", s1], ["s2/bob", s2], ["s3/bob", s3]]) {
     check(p.errors.length === 0, name + " page had no uncaught JS errors" + (p.errors.length ? ": " + p.errors.join(" | ") : ""));
   }
 } catch (e) {

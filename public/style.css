@@ -126,11 +126,11 @@ body {
 
 .hidden { display: none !important; }
 
-#login, #app, #boardNameEntry, #teacherLogin { max-width: 720px; margin: 0 auto; }
+#login, #app, #boardNameEntry, #teacherLogin, #teacherSignup { max-width: 720px; margin: 0 auto; }
 
-#login, #teacherLogin { margin-top: 80px; text-align: center; }
+#login, #teacherLogin, #teacherSignup { margin-top: 80px; text-align: center; }
 
-#login h2, #teacherLogin h2 {
+#login h2, #teacherLogin h2, #teacherSignup h2 {
   font-size: 2.5rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 32px;
   background: linear-gradient(135deg, var(--text-color) 0%, var(--text-secondary) 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
@@ -145,17 +145,25 @@ body {
 
 .login-logo { text-align: center; margin-bottom: 32px; }
 
-#login-logo-img, #boardname-logo-img, #teacher-logo-img {
+#login-logo-img, #boardname-logo-img, #teacher-logo-img, #teacher-signup-logo-img {
   height: 80px; width: auto; max-width: 280px; display: inline-block;
   object-fit: contain; filter: drop-shadow(0 4px 16px rgba(0,0,0,0.15));
 }
 [data-theme="dark"] #login-logo-img,
 [data-theme="dark"] #boardname-logo-img,
-[data-theme="dark"] #teacher-logo-img {
+[data-theme="dark"] #teacher-logo-img,
+[data-theme="dark"] #teacher-signup-logo-img {
   filter: brightness(1.1) drop-shadow(0 4px 16px rgba(255,255,255,0.1));
 }
 
 .login-buttons { display: flex; gap: 12px; justify-content: center; }
+
+/* Small underlined text links under the sign-in forms ("Teacher? Sign in
+   here", "Create account", "Back ..."). One shared look for all of them. */
+.login-link-row { text-align: center; margin-top: 16px; margin-bottom: 0; font-size: 0.85rem; opacity: 0.6; }
+.login-link-row + .login-link-row { margin-top: 10px; }
+.login-link { color: inherit; text-decoration: underline; cursor: pointer; }
+.login-note { text-align: center; margin-top: 12px; font-size: 0.8rem; opacity: 0.6; }
 
 .secondary-btn {
   background: transparent !important; color: var(--text-secondary) !important;
@@ -235,6 +243,8 @@ header {
 textarea,
 input[type="text"],
 input[type="password"],
+input[type="email"],
+.login-input,
 #usernameInput, #boardNameInput, #studentPasswordInput,
 #newBoardNameInput, #teacherNameInput, #teacherPasswordInput,
 #newStudentNameInput, #studentEditNameInput, #studentEditNicknameInput {
@@ -245,6 +255,7 @@ input[type="password"],
   resize: vertical; min-height: 52px;
 }
 textarea:focus, input[type="text"]:focus, input[type="password"]:focus,
+input[type="email"]:focus, .login-input:focus,
 #usernameInput:focus, #boardNameInput:focus, #studentPasswordInput:focus,
 #newBoardNameInput:focus, #teacherNameInput:focus, #teacherPasswordInput:focus {
   outline: none; border-color: var(--accent);
@@ -889,7 +900,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 
 @media (max-width: 640px) {
   body { padding: 12px; }
-  #login h2, #boardNameEntry h2, #teacherLogin h2 { font-size: 2rem; }
+  #login h2, #boardNameEntry h2, #teacherLogin h2, #teacherSignup h2 { font-size: 2rem; }
   .post, .poll, .teacher-panel, #newPost { padding: 18px; border-radius: 20px; }
   button { padding: 10px 20px; font-size: 0.9rem; }
   .poll > button { min-width: 120px; padding: 12px 20px; }
@@ -945,7 +956,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
   }
 }
 
-#logo-img, #login-logo-img, #boardname-logo-img, #teacher-logo-img {
+#logo-img, #login-logo-img, #boardname-logo-img, #teacher-logo-img, #teacher-signup-logo-img {
   animation: emoji-wiggle 2.4s ease-in-out infinite;
 }
 

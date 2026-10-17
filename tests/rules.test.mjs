@@ -99,6 +99,75 @@ test("study links: only the owning teacher writes; signed-in users read", async 
   await assertSucceeds(getDocs(collection(anon("zz"), "teachers/T/studyLinks")));
 });
 
+// ---------- teacher names (name + password sign-in) ----------
+const teacherCtx = (uid, email) => env.authenticatedContext(uid, { email, firebase: { sign_in_provider: "password" } }).firestore();
+async function seedTeacherNameDoc() {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), "teachers/T"), { name: "Ms T", approved: true, email: "t@school.edu" });
+    await setDoc(doc(ctx.firestore(), "teacherNames/ms t"), { uid: "T", email: "t@school.edu", name: "Ms T" });
+  });
+}
+test("teacherNames: anyone (even signed out) can look up one name, but nobody can list them", async () => {
+  await seedTeacherNameDoc();
+  await assertSucceeds(getDoc(doc(nobody(), "teacherNames/ms t")));
+  await assertSucceeds(getDoc(doc(nobody(), "teacherNames/nobody-here")));
+  await assertFails(getDocs(collection(nobody(), "teacherNames")));
+  await assertFails(getDocs(collection(anon("zz"), "teacherNames")));
+  await assertFails(getDocs(collection(user("admin1"), "teacherNames")));
+});
+test("teacherNames: a teacher can claim their own profile name, mapped to their own uid and email", async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), "teachers/N"), { name: "Mr New", approved: false, email: "new@school.edu" });
+  });
+  const db = teacherCtx("N", "new@school.edu");
+  await assertSucceeds(setDoc(doc(db, "teacherNames/mr new"), { uid: "N", email: "new@school.edu", name: "Mr New" }));
+});
+test("teacherNames: can't point a name at someone else's uid or email", async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), "teachers/N"), { name: "Mr New", approved: false, email: "new@school.edu" });
+  });
+  const db = teacherCtx("N", "new@school.edu");
+  await assertFails(setDoc(doc(db, "teacherNames/mr new"), { uid: "T", email: "new@school.edu", name: "Mr New" }));
+  await assertFails(setDoc(doc(db, "teacherNames/mr new"), { uid: "N", email: "victim@school.edu", name: "Mr New" }));
+  await assertFails(setDoc(doc(db, "teacherNames/mr new"), { uid: "N", email: "new@school.edu", name: "Mr New", approved: true }));
+});
+test("teacherNames: the doc id must be the lowercased name on the caller's teacher profile", async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), "teachers/N"), { name: "Mr New", approved: false, email: "new@school.edu" });
+  });
+  const db = teacherCtx("N", "new@school.edu");
+  await assertFails(setDoc(doc(db, "teacherNames/Mr New"), { uid: "N", email: "new@school.edu", name: "Mr New" }));
+  await assertFails(setDoc(doc(db, "teacherNames/principal"), { uid: "N", email: "new@school.edu", name: "Principal" }));
+  // no teacher profile at all
+  await assertFails(setDoc(doc(teacherCtx("X", "x@school.edu"), "teacherNames/x"), { uid: "X", email: "x@school.edu", name: "X" }));
+});
+test("teacherNames: anonymous users and student accounts can't claim names", async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), "teachers/a1"), { name: "alice", approved: false });
+  });
+  await assertFails(setDoc(doc(anon("a1"), "teacherNames/alice"), { uid: "a1", email: null, name: "alice" }));
+  await assertFails(setDoc(doc(withEmail("a1"), "teacherNames/alice"), { uid: "a1", email: "a1@students.popboard.invalid", name: "alice" }));
+});
+test("teacherNames: names are unique (case-insensitive) and can't be overwritten", async () => {
+  await seedTeacherNameDoc();
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), "teachers/E"), { name: "MS T", approved: false, email: "evil@x.com" });
+  });
+  const evil = teacherCtx("E", "evil@x.com");
+  await assertFails(setDoc(doc(evil, "teacherNames/ms t"), { uid: "E", email: "evil@x.com", name: "MS T" }));
+  await assertFails(updateDoc(doc(evil, "teacherNames/ms t"), { email: "evil@x.com" }));
+  // even the owner can't edit in place (delete + re-create instead)
+  await assertFails(updateDoc(doc(teacherCtx("T", "t@school.edu"), "teacherNames/ms t"), { email: "other@school.edu" }));
+});
+test("teacherNames: only the owner or an admin can delete", async () => {
+  await seedTeacherNameDoc();
+  await assertFails(deleteDoc(doc(teacherCtx("E", "evil@x.com"), "teacherNames/ms t")));
+  await assertFails(deleteDoc(doc(nobody(), "teacherNames/ms t")));
+  await assertSucceeds(deleteDoc(doc(user("admin1"), "teacherNames/ms t")));
+  await seedTeacherNameDoc();
+  await assertSucceeds(deleteDoc(doc(teacherCtx("T", "t@school.edu"), "teacherNames/ms t")));
+});
+
 // ---------- students joining ----------
 test("an anonymous student can join with a new name", async () => {
   await assertSucceeds(joinBatch(anon("b1"), "b1", "sB", "bob").commit());

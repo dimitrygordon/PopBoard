@@ -53,6 +53,8 @@ button{font-family:inherit; cursor:pointer;}
   border:1px solid var(--border); border-radius:var(--radius);
 }
 .brand{display:flex; align-items:center; gap:10px;}
+.topbar-left{display:flex; align-items:center; gap:14px;}
+.study-back-btn{padding:8px 12px 8px 9px; font-size:12px; gap:4px;}
 .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--amber); box-shadow:0 0 8px var(--amber);}
 .brand h1{font-size:18px; margin:0; color:var(--text); letter-spacing:0.06em;}
 .brand .sub{font-size:10px; color:var(--text-dimmer); font-family:'JetBrains Mono',monospace; letter-spacing:0.08em;}
@@ -1387,12 +1389,15 @@ function topbar(){
   const om = overallMastery();
   return `
   <div class="topbar">
+    <div class="topbar-left">
+    <button class="btn btn-ghost study-back-btn" id="studyBackBtn" type="button" data-study-back aria-label="Back to Study library"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>Back</button>
     <div class="brand">
       <div class="dot"></div>
       <div>
         <h1>CHECKRIDE</h1>
         <div class="sub">PHYSICS · PRAXIS 5266 · FLIGHT PREP ENGINE</div>
       </div>
+    </div>
     </div>
     <div class="readout">
       <div>BANK: <b>${DB.questions.length}</b> ITEMS</div>
@@ -2194,6 +2199,16 @@ if (identity) {
     }
   };
 }
+</script>
+<script>
+/* Back -> the Study module library, keeping this page's URL parameters
+   (board / student / name / teacher) so the library opens in the same mode. */
+document.addEventListener("click", function(e){
+  var b = e.target.closest && e.target.closest("[data-study-back]");
+  if (!b) return;
+  e.preventDefault();
+  location.href = "study.html" + location.search;
+});
 </script>
 </body>
 </html>
