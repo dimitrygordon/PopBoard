@@ -140,6 +140,13 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 .lab-empty{text-align:center;color:var(--text-dimmer);font-size:12px;padding:14px 0;}
 .lab-row-del{color:#ff6b6b;cursor:pointer;}
 canvas.lab-graph{width:100%;height:140px;display:block;border-radius:10px;background:rgba(0,0,0,0.25);margin-top:8px;}
+#eqStrip{position:fixed;top:198px;left:50%;transform:translateX(-50%);z-index:44;background:rgba(15,18,22,0.78);backdrop-filter:blur(14px);border:1px solid var(--border-lit);border-radius:12px;padding:7px 16px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--cyan);text-align:center;max-width:94vw;pointer-events:none;line-height:1.6;}
+.feedback{font-size:12.5px;line-height:1.55;min-height:20px;margin-top:8px;}
+.feedback.good{color:#57d38c;}.feedback.bad{color:#ff7a7a;}
+input[type="number"].num-input{background:var(--panel-2);border:1px solid var(--border-lit);color:var(--text);border-radius:8px;padding:9px;width:100%;font-size:13px;}
+.chip-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.chip{padding:7px 12px;border-radius:999px;border:1px solid var(--border-lit);background:var(--panel-2);color:var(--text);font-size:11.5px;cursor:pointer;}
+@media(max-width:520px){#eqStrip{top:248px;font-size:10px;}}
 </style>
 </head>
 <body>
@@ -156,6 +163,7 @@ canvas.lab-graph{width:100%;height:140px;display:block;border-radius:10px;backgr
 </div>
 <div class="bar bar-bottom">
   <button id="tutorialBtn">Tutorial</button>
+  <button id="guidedBtn" class="bar-center">Challenges</button>
   <button id="labBtn">Lab</button>
 </div>
 
@@ -175,6 +183,7 @@ canvas.lab-graph{width:100%;height:140px;display:block;border-radius:10px;backgr
   </div>
 </div>
 
+<div id="eqStrip" class="mono">—</div>
 <div id="stageControls">
   <div class="round-btn" id="muteBtn" title="Mute/unmute sound">&#128266;</div>
   <div class="round-btn" id="stepBtn" title="Step">&#9654;&#124;</div>
@@ -182,6 +191,7 @@ canvas.lab-graph{width:100%;height:140px;display:block;border-radius:10px;backgr
 
 <div id="controlsPanel" class="panel hidden" style="top:56px;left:18px;"></div>
 <div id="labPanel" class="panel wide hidden" style="top:56px;right:18px;"></div>
+<div id="guidedPanel" class="panel wide hidden" style="top:56px;right:18px;"></div>
 
 <div id="tutorialModal" class="modal-overlay hidden"></div>
 
@@ -274,8 +284,8 @@ var FRICTION_TABLE = {
   "cardboard|castiron": { mus: 0.38, muk: 0.25 },
   "cardboard|leather": { mus: 0.42, muk: 0.28 },
 
-  "rubber|wood": { mus: 0.60, muk: 0.45 },
-  "rubber|steel": { mus: 0.65, muk: 0.50 },
+  "rubber|wood": { mus: 0.55, muk: 0.40 },
+  "rubber|steel": { mus: 0.60, muk: 0.45 },
   "rubber|rubber": { mus: 0.95, muk: 0.80 },
   "rubber|ice": { mus: 0.15, muk: 0.08 },
   "rubber|concrete": { mus: 0.90, muk: 0.70 },
@@ -294,7 +304,7 @@ var FRICTION_TABLE = {
 
   "glass|wood": { mus: 0.35, muk: 0.22 },
   "glass|steel": { mus: 0.25, muk: 0.18 },
-  "glass|rubber": { mus: 0.65, muk: 0.50 },
+  "glass|rubber": { mus: 0.70, muk: 0.55 },
   "glass|ice": { mus: 0.02, muk: 0.015 },
   "glass|concrete": { mus: 0.40, muk: 0.28 },
   "glass|glass": { mus: 0.30, muk: 0.20 },
@@ -457,11 +467,19 @@ var params = {
   mass: 10,
   appliedForce: 0,
   scenario: "flat", // "flat" | "incline"
-  angleDeg: 20
+  angleDeg: 20,
+  pullAngleDeg: 0
 };
 
 var state = { regime: "static", velocity: 0, position: 0 };
 var paused = false;
+var lastResult = { regime: "static", frictionForce: 0, netForce: 0, acceleration: 0, velocity: 0 };
+var hasBrokenAway = false;
+var breakawayDriveForce = 0;
+var autoRampOn = false;
+var AUTO_RAMP_RATE = 25; // N/s
+var labMessage = "", labMessageGood = false;
+var frictionAppliedCanvasEl = null, frictionAppliedCtx = null;
 var lastFrameTime = null;
 var cameraOffsetM = 0;
 var MAX_SUBSTEP_DT = 1 / 120;
@@ -475,21 +493,34 @@ function setAppliedForce(value) {
   params.appliedForce = Math.max(FORCE_RANGE.min, Math.min(FORCE_RANGE.max, value));
   if (forceSliderRow) {
     forceSliderRow.slider.value = String(params.appliedForce);
-    forceSliderRow.label.textContent = "Applied Force: " + fmtForceLabel(params.appliedForce);
+    forceSliderRow.label.textContent = forceLabelPrefix() + fmtForceLabel(params.appliedForce);
   }
 }
 
-var vectorsOn = { gravity: true, normal: true, applied: true, friction: true, net: true };
+var vectorsOn = { gravity: true, normal: true, applied: true, friction: true, net: true, gravComp: false };
 
 var PX_PER_M = 70;
 
 function currentPhys() {
   var f = getFriction(params.objectMaterial, params.surfaceMaterial);
   var thetaRad = params.scenario === "incline" ? (params.angleDeg * Math.PI / 180) : 0;
-  var normalForce = params.scenario === "incline" ? normalForceIncline(params.mass, thetaRad) : normalForceFlat(params.mass);
   var biasForce = params.scenario === "incline" ? gravityAlongIncline(params.mass, thetaRad) : 0;
-  return { mus: f.mus, muk: f.muk, mass: params.mass, normalForce: normalForce, biasForce: biasForce, appliedForce: params.appliedForce, thetaRad: thetaRad };
+  var pullRad = params.scenario === "flat" ? (params.pullAngleDeg * Math.PI / 180) : 0;
+  var alongForce, liftForce, normalForce;
+  if (params.scenario === "flat") {
+    // Rope-pull at angle theta above horizontal: F*cos(theta) drives along
+    // the surface, F*sin(theta) lifts and so reduces FN = mg - F*sin(theta).
+    alongForce = params.appliedForce * Math.cos(pullRad);
+    liftForce = Math.abs(params.appliedForce) * Math.sin(pullRad);
+    normalForce = Math.max(0, normalForceFlat(params.mass) - liftForce);
+  } else {
+    // On an incline the applied force acts along the ramp; pull angle ignored.
+    alongForce = params.appliedForce; liftForce = 0;
+    normalForce = normalForceIncline(params.mass, thetaRad);
+  }
+  return { mus: f.mus, muk: f.muk, mass: params.mass, normalForce: normalForce, biasForce: biasForce, appliedForce: alongForce, rawAppliedForce: params.appliedForce, pullAngleRad: pullRad, liftForce: liftForce, thetaRad: thetaRad };
 }
+function forceLabelPrefix() { return params.scenario === "incline" ? "Applied Force (along ramp): " : "Applied Force: "; }
 
 function resetState() {
   state = { regime: "static", velocity: 0, position: 0 };
@@ -699,7 +730,7 @@ function shadeColor(hex, amt) {
 var VEC_SCALE = 0.55; // screen px per newton
 var VEC_COLORS = { gravity: "#FFB300", normal: "#5FD3C4", applied: "#FFFFFF", friction: "#B07CFF", net: "#FF5FAE" };
 
-function drawVector(originScreen, worldDx, worldDy, color) {
+function drawVector(originScreen, worldDx, worldDy, color, label) {
   var mag = Math.hypot(worldDx, worldDy);
   if (mag < 0.5) { return; }
   var endX = originScreen.x + worldDx * VEC_SCALE;
@@ -722,17 +753,51 @@ function drawVector(originScreen, worldDx, worldDy, color) {
   ctx.closePath();
   ctx.fillStyle = color;
   ctx.fill();
+  if (label) {
+    var len = Math.max(1, Math.hypot(endX - originScreen.x, endY - originScreen.y));
+    var lx = endX + (endX - originScreen.x) / len * 10, ly = endY + (endY - originScreen.y) / len * 10;
+    ctx.shadowBlur = 0; ctx.font = "700 10px 'JetBrains Mono', monospace"; ctx.textAlign = "center";
+    ctx.fillStyle = color; ctx.fillText(label, lx, ly);
+  }
+  ctx.restore();
+}
+function drawDashedVector(originScreen, worldDx, worldDy, color, label) {
+  var mag = Math.hypot(worldDx, worldDy);
+  if (mag < 0.5) { return; }
+  var endX = originScreen.x + worldDx * VEC_SCALE, endY = originScreen.y - worldDy * VEC_SCALE;
+  ctx.save(); ctx.setLineDash([5, 4]); ctx.beginPath(); ctx.moveTo(originScreen.x, originScreen.y); ctx.lineTo(endX, endY);
+  ctx.strokeStyle = color; ctx.lineWidth = 1.6; ctx.stroke(); ctx.setLineDash([]);
+  if (label) { ctx.font = "10px 'JetBrains Mono', monospace"; ctx.textAlign = "center"; ctx.fillStyle = color; ctx.fillText(label, endX + 6, endY - 6); }
   ctx.restore();
 }
 
 function drawAllVectors(origin, phys, result, theta) {
   var a = alongDir(theta), n = normalDir(theta);
   var weight = phys.mass * G;
-  if (vectorsOn.gravity) { drawVector(origin, 0, -weight, VEC_COLORS.gravity); }
-  if (vectorsOn.normal) { drawVector(origin, n.x * phys.normalForce, n.y * phys.normalForce, VEC_COLORS.normal); }
-  if (vectorsOn.applied && Math.abs(params.appliedForce) > 0.5) { drawVector(origin, a.x * params.appliedForce, a.y * params.appliedForce, VEC_COLORS.applied); }
-  if (vectorsOn.friction && Math.abs(result.frictionForce) > 0.5) { drawVector(origin, a.x * result.frictionForce, a.y * result.frictionForce, VEC_COLORS.friction); }
-  if (vectorsOn.net && Math.abs(result.netForce) > 0.5) { drawVector(origin, a.x * result.netForce, a.y * result.netForce, VEC_COLORS.net); }
+  if (vectorsOn.gravity) { drawVector(origin, 0, -weight, VEC_COLORS.gravity, "Fg = " + fmtN(weight)); }
+  if (params.scenario === "incline" && vectorsOn.gravComp) {
+    drawDashedVector(origin, a.x * phys.biasForce, a.y * phys.biasForce, "#FFD54A", "mg·sinθ = " + fmtN(Math.abs(phys.biasForce)));
+    drawDashedVector(origin, -n.x * phys.normalForce, -n.y * phys.normalForce, "#FFE082", "mg·cosθ = " + fmtN(phys.normalForce));
+    // small angle arc between horizontal and the ramp direction
+    ctx.save(); ctx.strokeStyle = "rgba(255,213,74,0.8)"; ctx.setLineDash([3, 3]); ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(origin.x + 58, origin.y); ctx.stroke(); ctx.setLineDash([]);
+    var rampAng = Math.atan2(-a.y, a.x);
+    ctx.beginPath(); ctx.arc(origin.x, origin.y, 40, 0, rampAng, rampAng < 0); ctx.stroke();
+    ctx.fillStyle = "#FFD54A"; ctx.font = "10px 'JetBrains Mono', monospace"; ctx.textAlign = "left";
+    ctx.fillText(Math.abs(params.angleDeg).toFixed(0) + "°", origin.x + 46, origin.y - 6); ctx.restore();
+  }
+  if (vectorsOn.normal) { drawVector(origin, n.x * phys.normalForce, n.y * phys.normalForce, VEC_COLORS.normal, "FN = " + fmtN(phys.normalForce)); }
+  if (vectorsOn.applied && Math.abs(params.appliedForce) > 0.5) {
+    if (params.scenario === "flat" && params.pullAngleDeg > 0.5) {
+      drawVector(origin, phys.appliedForce, phys.liftForce, VEC_COLORS.applied, "Fapp = " + fmtN(Math.abs(params.appliedForce)) + " @ " + params.pullAngleDeg.toFixed(0) + "°");
+      drawDashedVector(origin, phys.appliedForce, 0, "rgba(255,255,255,0.65)", "F·cosθ");
+      drawDashedVector(origin, 0, phys.liftForce, "rgba(255,255,255,0.65)", "F·sinθ");
+    } else {
+      drawVector(origin, a.x * phys.appliedForce, a.y * phys.appliedForce, VEC_COLORS.applied, "Fapp = " + fmtN(Math.abs(phys.rawAppliedForce)));
+    }
+  }
+  if (vectorsOn.friction && Math.abs(result.frictionForce) > 0.5) { drawVector(origin, a.x * result.frictionForce, a.y * result.frictionForce, VEC_COLORS.friction, "Ff = " + fmtN(Math.abs(result.frictionForce)) + (result.regime === "static" ? " static" : " kinetic")); }
+  if (vectorsOn.net && Math.abs(result.netForce) > 0.5) { drawVector(origin, a.x * result.netForce, a.y * result.netForce, VEC_COLORS.net, "Fnet = " + fmtN(Math.abs(result.netForce))); }
 }
 
 /* ============================================================
@@ -760,6 +825,14 @@ function updateStatusBanner(phys, result) {
 var hudVelocityEl = document.getElementById("hudVelocity");
 var hudAccelEl = document.getElementById("hudAccel");
 var MOTION_COLORS = { speeding: "#4CD96A", slowing: "#FF6B5B", starting: "#FFE066", steady: "#E9E6DE" };
+var MOTION_WORDS = { speeding: "Speeding up", slowing: "Slowing down", starting: "Starting", steady: "Steady" };
+function updateEqStrip(phys, result) {
+  var el = document.getElementById("eqStrip"); if (!el) { return; }
+  var fsMax = phys.mus * phys.normalForce, fk = phys.muk * phys.normalForce;
+  var fricTerm = result.regime === "sliding" ? ("fk = μk·FN = " + fmtN(fk)) : ("fs,max = μs·FN = " + fmtN(fsMax));
+  var word = result.regime === "static" ? "Steady (holding still)" : (MOTION_WORDS[classifyMotionState(result.velocity, result.acceleration)] || "Steady");
+  el.textContent = "FN = " + fmtN(phys.normalForce) + " · " + fricTerm + " · Fnet = " + fmtN(result.netForce) + " · a = " + result.acceleration.toFixed(2) + " m/s² · " + word;
+}
 function updateMotionHud(result) {
   hudVelocityEl.textContent = result.velocity.toFixed(1);
   hudAccelEl.textContent = result.acceleration.toFixed(2);
@@ -776,6 +849,11 @@ function frame(now) {
 
   var phys = currentPhys();
   var result = { regime: state.regime, frictionForce: 0, netForce: 0, acceleration: 0 };
+  var prevRegime = state.regime;
+  if (autoRampOn && !paused) {
+    setAppliedForce(params.appliedForce + AUTO_RAMP_RATE * dt);
+    phys = currentPhys();
+  }
 
   if (!paused) {
     var steps = Math.max(1, Math.ceil(dt / MAX_SUBSTEP_DT));
@@ -791,8 +869,18 @@ function frame(now) {
   // The crate stays locked dead-center; all motion reads through the
   // scrolling ground markers instead of the crate drifting on screen.
   cameraOffsetM = state.position;
+  result.velocity = state.velocity;
+  lastResult = result;
+  if (prevRegime === "static" && result.regime === "sliding") {
+    // Breakaway: the total drive (applied along axis + gravity along ramp)
+    // at this instant is the measured maximum static friction force.
+    hasBrokenAway = true;
+    breakawayDriveForce = Math.abs(phys.appliedForce + phys.biasForce);
+    lastStaticPeakForce = Math.max(lastStaticPeakForce, breakawayDriveForce);
+    autoRampOn = false; // freeze the ramp at the slip point
+  }
   if (result.regime === "static") {
-    lastStaticPeakForce = Math.max(lastStaticPeakForce, Math.abs(params.appliedForce));
+    lastStaticPeakForce = Math.max(lastStaticPeakForce, Math.abs(phys.appliedForce + phys.biasForce));
   }
 
   ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
@@ -802,6 +890,7 @@ function frame(now) {
   drawAllVectors(crateScreen, phys, result, phys.thetaRad);
   updateStatusBanner(phys, result);
   updateMotionHud(result);
+  updateEqStrip(phys, result);
   updateMotionSound(phys, result);
   updateLabLiveReadout(phys, result);
 
@@ -811,6 +900,7 @@ function frame(now) {
     var cutoff = nowT - FORCE_TIME_WINDOW - 1;
     while (forceTimeHistory.length && forceTimeHistory[0].t < cutoff) { forceTimeHistory.shift(); }
     drawForceTimeGraph(forceTimeCtx, forceTimeCanvasEl.width, forceTimeCanvasEl.height);
+    if (frictionAppliedCtx && frictionAppliedCanvasEl) { drawFrictionAppliedGraph(frictionAppliedCtx, frictionAppliedCanvasEl.width, frictionAppliedCanvasEl.height); }
   }
 
   requestAnimationFrame(frame);
@@ -950,6 +1040,11 @@ function refreshControlsPanel() {
 
   if (params.scenario === "incline") {
     controlsPanel.appendChild(makeLinearSliderRow(function(v) { return "Ramp Angle: " + v.toFixed(0) + "°"; }, params.angleDeg, ANGLE_RANGE.min, ANGLE_RANGE.max, 1, function(v) { params.angleDeg = v; resetStaticPeakTracker(); }).row);
+    var incNote = document.createElement("div"); incNote.className = "panel-hint";
+    incNote.textContent = "On an incline the applied force acts along the ramp, so the flat-only rope-pull angle is ignored here.";
+    controlsPanel.appendChild(incNote);
+  } else {
+    controlsPanel.appendChild(makeLinearSliderRow(function(v) { return "Rope-Pull Angle (flat only): " + v.toFixed(0) + "° above horizontal"; }, params.pullAngleDeg, 0, 60, 1, function(v) { params.pullAngleDeg = v; resetStaticPeakTracker(); }).row);
   }
 
   var objTitle = document.createElement("div");
@@ -963,6 +1058,22 @@ function refreshControlsPanel() {
   surfTitle.textContent = "Surface Material";
   controlsPanel.appendChild(surfTitle);
   controlsPanel.appendChild(makeSwatchGrid(SURFACE_MATERIALS, params.surfaceMaterial, SURFACE_COLORS, function(mat) { params.surfaceMaterial = mat; resetStaticPeakTracker(); }));
+
+  (function(){
+    var phys0 = currentPhys(); var fr = getFriction(params.objectMaterial, params.surfaceMaterial);
+    var muDiv = document.createElement("div"); muDiv.className = "panel-hint mono"; muDiv.id = "muReadout";
+    muDiv.style.color = "var(--cyan)";
+    muDiv.textContent = materialLabel(params.objectMaterial) + " on " + materialLabel(params.surfaceMaterial) + ": μs = " + fr.mus.toFixed(2) + " · μk = " + fr.muk.toFixed(2) + " · at " + fmtKg(params.mass) + " FN = " + phys0.normalForce.toFixed(1) + " N, fs,max = " + (fr.mus*phys0.normalForce).toFixed(1) + " N, fk = " + (fr.muk*phys0.normalForce).toFixed(1) + " N";
+    controlsPanel.appendChild(muDiv);
+    var presetTitle = document.createElement("div"); presetTitle.className = "panel-section-title"; presetTitle.textContent = "Pair Presets"; controlsPanel.appendChild(presetTitle);
+    var prow = document.createElement("div"); prow.className = "seg-row";
+    [["Slickest","glass","ice"],["Grippiest","rubber","rubber"],["Everyday","wood","wood"]].forEach(function(pr){
+      var b=document.createElement("div"); b.className="seg-btn"; b.textContent=pr[0];
+      b.addEventListener("click",function(e){ e.stopPropagation(); params.objectMaterial=pr[1]; params.surfaceMaterial=pr[2]; resetStaticPeakTracker(); refreshControlsPanel(); });
+      prow.appendChild(b);
+    });
+    controlsPanel.appendChild(prow);
+  })();
 
   var massRow = makeExpSliderRow(function(v) { return "Mass: " + fmtKg(v); }, params.mass, MASS_RANGE.min, MASS_RANGE.max, function(v) { params.mass = v; resetStaticPeakTracker(); });
   controlsPanel.appendChild(massRow.row);
@@ -983,8 +1094,15 @@ function refreshControlsPanel() {
   });
   controlsPanel.appendChild(weightBtnRow);
 
-  forceSliderRow = makeLinearSliderRow(function(v) { return "Applied Force: " + fmtForceLabel(v); }, params.appliedForce, FORCE_RANGE.min, FORCE_RANGE.max, 1, function(v) { params.appliedForce = v; });
+  forceSliderRow = makeLinearSliderRow(function(v) { return forceLabelPrefix() + fmtForceLabel(v); }, params.appliedForce, FORCE_RANGE.min, FORCE_RANGE.max, 1, function(v) { params.appliedForce = v; });
   controlsPanel.appendChild(forceSliderRow.row);
+  var autoBtn = document.createElement("button"); autoBtn.className = "panel-link"; autoBtn.id = "autoRampBtn";
+  autoBtn.textContent = autoRampOn ? "Stop Auto-Ramp" : "Auto-Ramp Force (raise until slip)";
+  autoBtn.addEventListener("click", function(e){ e.stopPropagation(); autoRampOn = !autoRampOn; autoBtn.textContent = autoRampOn ? "Stop Auto-Ramp" : "Auto-Ramp Force (raise until slip)"; });
+  controlsPanel.appendChild(autoBtn);
+  var autoHint = document.createElement("div"); autoHint.className = "panel-hint";
+  autoHint.textContent = "Auto-Ramp raises the applied force at " + AUTO_RAMP_RATE + " N/s and freezes the instant the block slips — a repeatable way to Record Max Static in the Lab.";
+  controlsPanel.appendChild(autoHint);
   var zeroForceBtn = document.createElement("button");
   zeroForceBtn.className = "panel-link";
   zeroForceBtn.textContent = "Reset Applied Force to 0";
@@ -998,7 +1116,7 @@ function refreshControlsPanel() {
   vecTitle.className = "panel-section-title";
   vecTitle.textContent = "Force Vectors";
   controlsPanel.appendChild(vecTitle);
-  [["gravity", "Gravity"], ["normal", "Normal"], ["applied", "Applied"], ["friction", "Friction"], ["net", "Net Force"]].forEach(function(pair) {
+  [["gravity", "Gravity"], ["normal", "Normal"], ["applied", "Applied"], ["friction", "Friction"], ["net", "Net Force"], ["gravComp", "Gravity components mg·sinθ / mg·cosθ (incline)"]].forEach(function(pair) {
     controlsPanel.appendChild(makeToggleRow(pair[1], vectorsOn[pair[0]], function(v) { vectorsOn[pair[0]] = v; }));
   });
 
@@ -1008,7 +1126,7 @@ function refreshControlsPanel() {
   resetAllBtn.addEventListener("click", function(e) {
     e.stopPropagation();
     params.objectMaterial = "wood"; params.surfaceMaterial = "wood"; params.mass = 10;
-    params.appliedForce = 0; params.scenario = "flat"; params.angleDeg = 20;
+    params.appliedForce = 0; params.scenario = "flat"; params.angleDeg = 20; params.pullAngleDeg = 0; autoRampOn = false;
     resetState();
     refreshControlsPanel();
   });
@@ -1051,7 +1169,7 @@ var forceTimeHistory = []; // {t, applied, friction}, trimmed to FORCE_TIME_WIND
 var FORCE_TIME_WINDOW = 8;
 var labClockStart = performance.now();
 
-function resetStaticPeakTracker() { lastStaticPeakForce = 0; }
+function resetStaticPeakTracker() { lastStaticPeakForce = 0; hasBrokenAway = false; breakawayDriveForce = 0; autoRampOn = false; }
 
 function findOrCreateTrial() {
   var last = labTrials[labTrials.length - 1];
@@ -1193,6 +1311,35 @@ function drawFrictionNormalGraph(ctx, w, h) {
   ctx.fillText("• f_k  (slope ≈ μk = " + (mukFit !== null ? mukFit.toFixed(3) : "—") + ")", pad, h - 8);
 }
 
+function drawFrictionAppliedGraph(ctx, w, h) {
+  var phys = currentPhys();
+  var fsMax = phys.mus * phys.normalForce, fk = phys.muk * phys.normalForce;
+  var drive = phys.appliedForce + phys.biasForce;
+  var pad = 38, padB = 30;
+  var maxX = Math.max(60, fsMax * 1.5, Math.abs(drive) * 1.2);
+  var maxY = Math.max(40, fsMax * 1.25);
+  ctx.clearRect(0, 0, w, h);
+  function X(x){ return pad + (w - pad - 12) * (x / maxX); }
+  function Y(y){ return 12 + (h - 12 - padB) * (1 - y / maxY); }
+  // shaded regions
+  ctx.fillStyle = "rgba(176,124,255,0.13)"; ctx.fillRect(X(0), 12, Math.max(0, X(fsMax)-X(0)), h-12-padB);
+  ctx.fillStyle = "rgba(255,179,0,0.10)"; ctx.fillRect(X(fsMax), 12, Math.max(0, X(maxX)-X(fsMax)), h-12-padB);
+  ctx.strokeStyle = "rgba(255,255,255,0.25)"; ctx.beginPath(); ctx.moveTo(pad,12); ctx.lineTo(pad,h-padB); ctx.lineTo(w-12,h-padB); ctx.stroke();
+  // classic curve: 45-degree static line, drop at fs,max, kinetic plateau
+  ctx.strokeStyle = "#B07CFF"; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(X(0),Y(0)); ctx.lineTo(X(fsMax),Y(fsMax)); ctx.lineTo(X(fsMax),Y(fk)); ctx.lineTo(X(maxX),Y(fk)); ctx.stroke(); ctx.lineWidth = 1;
+  ctx.setLineDash([4,4]); ctx.strokeStyle = "rgba(255,255,255,0.45)"; ctx.beginPath(); ctx.moveTo(X(fsMax),Y(0)); ctx.lineTo(X(fsMax),Y(fsMax)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.font = "10px 'JetBrains Mono', monospace"; ctx.textAlign = "center";
+  ctx.fillStyle = "#B07CFF"; ctx.fillText("STATIC", Math.max(pad+28,(X(0)+X(fsMax))/2), h-padB-10);
+  ctx.fillStyle = "#FFB300"; ctx.fillText("KINETIC", (X(fsMax)+X(maxX))/2, h-padB-10);
+  ctx.fillStyle = "rgba(255,255,255,0.7)"; ctx.fillText("fs,max = " + fsMax.toFixed(1) + " N", X(fsMax), Y(fsMax)-8);
+  ctx.fillText("fk = " + fk.toFixed(1) + " N", Math.min(w-50, X(maxX)-30), Y(fk)-8);
+  ctx.fillText(params.scenario === "incline" ? "total drive force (applied + mg·sinθ) →" : "applied force →", (pad+w)/2, h-8);
+  ctx.save(); ctx.translate(11,h/2); ctx.rotate(-Math.PI/2); ctx.fillText("friction force",0,0); ctx.restore();
+  // live marker
+  var lx = X(Math.min(maxX, Math.abs(drive))), ly = Y(Math.min(maxY, Math.abs(lastResult.frictionForce)));
+  ctx.fillStyle = "#FF5FAE"; ctx.beginPath(); ctx.arc(lx, ly, 6, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = "#FF5FAE"; ctx.fillText("you: " + Math.abs(lastResult.frictionForce).toFixed(1) + " N", lx, Math.max(36, ly-12));
+}
 function refreshLabPanel() {
   labPanel.innerHTML = "";
   var h3 = document.createElement("h3");
@@ -1208,8 +1355,9 @@ function refreshLabPanel() {
     "Applied force: <span id=\"labLiveApplied\">—</span><br>" +
     "Acceleration: <span id=\"labLiveAccel\">—</span><br>" +
     "Regime: <span id=\"labLiveRegime\">—</span><br>" +
-    "Static peak reached: <span id=\"labLivePeak\">—</span>";
+    "Breakaway total drive: <span id=\"labLivePeak\">—</span>";
   labPanel.appendChild(live);
+  if (labMessage) { var lm=document.createElement("p"); lm.className="feedback "+(labMessageGood?"good":"bad"); lm.id="labMessage"; lm.textContent=labMessage; labPanel.appendChild(lm); }
 
   var recordRow = document.createElement("div");
   recordRow.className = "seg-row";
@@ -1218,8 +1366,13 @@ function refreshLabPanel() {
   recStatic.textContent = "Record Max Static";
   recStatic.addEventListener("click", function(e) {
     e.stopPropagation();
+    if (!hasBrokenAway) { labMessage = "Not yet — first raise the drive force (try Auto-Ramp in Controls) until the block actually slips, then record. On an incline, gravity along the ramp counts toward the drive."; labMessageGood = false; refreshLabPanel(); return; }
     var trial = findOrCreateTrial();
-    trial.fsMax = lastStaticPeakForce;
+    // Record the TOTAL drive at breakaway (applied along axis + gravity
+    // along the ramp), which equals fs,max — not the applied force alone.
+    trial.fsMax = breakawayDriveForce || lastStaticPeakForce;
+    trial.normalForce = currentPhys().normalForce;
+    labMessage = "Recorded fs,max = " + trial.fsMax.toFixed(1) + " N (total drive at breakaway), μs ≈ " + (trial.fsMax/trial.normalForce).toFixed(3) + "."; labMessageGood = true;
     resetStaticPeakTracker();
     refreshLabPanel();
   });
@@ -1228,8 +1381,13 @@ function refreshLabPanel() {
   recKinetic.textContent = "Record Steady Kinetic";
   recKinetic.addEventListener("click", function(e) {
     e.stopPropagation();
+    if (lastResult.regime !== "sliding" || Math.abs(state.velocity) < 0.02) { labMessage = "Not yet — the block must be sliding first. Push it past breakaway, then ease the force back until acceleration is ~0."; labMessageGood = false; refreshLabPanel(); return; }
+    if (Math.abs(lastResult.acceleration) >= 0.15) { labMessage = "Almost — it is sliding but still accelerating (a = " + lastResult.acceleration.toFixed(2) + " m/s²). Ease the drive until |a| < 0.15 m/s² so drive balances fk, then record."; labMessageGood = false; refreshLabPanel(); return; }
     var trial = findOrCreateTrial();
-    trial.fk = Math.abs(params.appliedForce);
+    // fk is the measured friction force itself — correct on flat and incline.
+    trial.fk = Math.abs(lastResult.frictionForce);
+    trial.normalForce = currentPhys().normalForce;
+    labMessage = "Recorded fk = " + trial.fk.toFixed(1) + " N at ~steady sliding, μk ≈ " + (trial.fk/trial.normalForce).toFixed(3) + "."; labMessageGood = true;
     refreshLabPanel();
   });
   recordRow.appendChild(recStatic); recordRow.appendChild(recKinetic);
@@ -1237,8 +1395,18 @@ function refreshLabPanel() {
 
   var hint1 = document.createElement("div");
   hint1.className = "panel-hint";
-  hint1.textContent = "Slowly raise Applied Force until it slides, then click Record Max Static. Then ease the force back until acceleration is ~0 while sliding, and click Record Steady Kinetic.";
+  hint1.textContent = "Slowly raise the drive force until it slips (Auto-Ramp in Controls helps), then click Record Max Static. Then ease back until acceleration is ~0 while sliding, and click Record Steady Kinetic. On an incline the drive includes gravity along the ramp, and fk is read from the actual friction force.";
   labPanel.appendChild(hint1);
+
+  var faTitle = document.createElement("div");
+  faTitle.className = "panel-section-title";
+  faTitle.textContent = "Friction vs. Applied Force (classic curve)";
+  labPanel.appendChild(faTitle);
+  var faCanvas = document.createElement("canvas");
+  faCanvas.id = "frictionAppliedCanvas"; faCanvas.className = "lab-graph"; faCanvas.width = 600; faCanvas.height = 220;
+  labPanel.appendChild(faCanvas);
+  frictionAppliedCanvasEl = faCanvas; frictionAppliedCtx = faCanvas.getContext("2d");
+  drawFrictionAppliedGraph(frictionAppliedCtx, faCanvas.width, faCanvas.height);
 
   var ftTitle = document.createElement("div");
   ftTitle.className = "panel-section-title";
@@ -1317,7 +1485,7 @@ function updateLabLiveReadout(phys, result) {
   aEl.textContent = params.appliedForce.toFixed(1) + " N";
   accEl.textContent = result.acceleration.toFixed(2) + " m/s²";
   rEl.textContent = result.regime === "static" ? "Static" : "Sliding";
-  pEl.textContent = lastStaticPeakForce.toFixed(1) + " N";
+  pEl.textContent = hasBrokenAway ? (breakawayDriveForce.toFixed(1) + " N (slipped!)") : (lastStaticPeakForce.toFixed(1) + " N (not slipped yet)");
 }
 
 document.getElementById("labBtn").addEventListener("click", function(e) {
@@ -1551,6 +1719,111 @@ function updateMotionSound(phys, result) {
   lastRegimeForSound = result.regime;
 }
 
+
+/* ============================================================
+   Guided Challenges -- house style (cf. Harmonics Guided Lab):
+   predict first, then test in the live sim; scored with feedback
+   and worked steps. Uses the exact same engine/params.
+   ============================================================ */
+var guidedPanel = document.getElementById("guidedPanel");
+var guidedOpen = false;
+var guidedScore = { ok: 0, total: 0 };
+var guidedSlip = null; // {drive, willSlip, fsMax}
+function guidedPhysSnapshot() { return currentPhys(); }
+function scoreGuided(good) { guidedScore.total++; if (good) { guidedScore.ok++; } }
+function refreshGuidedPanel() {
+  guidedPanel.innerHTML = "";
+  var phys = guidedPhysSnapshot();
+  var fsMax = phys.mus * phys.normalForce, fk = phys.muk * phys.normalForce;
+  var driveNow = phys.appliedForce + phys.biasForce;
+  if (!guidedSlip) { var over = Math.random() < 0.5; var d = fsMax * (over ? 1.25 : 0.7); guidedSlip = { drive: Math.round(d), willSlip: Math.abs(d) > fsMax, fsMax: fsMax }; }
+  var h3 = document.createElement("h3"); h3.textContent = "Guided Challenges"; guidedPanel.appendChild(h3);
+  var score = document.createElement("p"); score.className = "panel-hint mono"; score.id = "guidedScore";
+  score.textContent = "Score: " + guidedScore.ok + " / " + guidedScore.total + " · Setup: " + materialLabel(params.objectMaterial) + " on " + materialLabel(params.surfaceMaterial) + ", " + fmtKg(params.mass) + ", " + params.scenario + (params.scenario==="incline" ? " " + params.angleDeg + "°" : "") + " · FN = " + phys.normalForce.toFixed(1) + " N";
+  guidedPanel.appendChild(score);
+  function section(title) { var t=document.createElement("div"); t.className="panel-section-title"; t.textContent=title; guidedPanel.appendChild(t); }
+  function hint(txt) { var d=document.createElement("p"); d.className="panel-hint"; d.textContent=txt; guidedPanel.appendChild(d); return d; }
+  function feedbackEl() { var d=document.createElement("p"); d.className="feedback"; d.setAttribute("aria-live","polite"); guidedPanel.appendChild(d); return d; }
+  function numInput(ph) { var i=document.createElement("input"); i.type="number"; i.step="any"; i.className="num-input"; i.placeholder=ph; guidedPanel.appendChild(i); return i; }
+  function btnRow(labels, cb) { var r=document.createElement("div"); r.className="chip-row"; labels.forEach(function(L){ var b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=L; b.addEventListener("click",function(e){ e.stopPropagation(); cb(L); }); r.appendChild(b); }); guidedPanel.appendChild(r); }
+
+  section("1 · Predict the breakaway force");
+  hint("Predict fs,max = μs·FN for the current setup, check it, then test it in the sim.");
+  var in1 = numInput("Your predicted breakaway force (N)");
+  var fb1 = feedbackEl();
+  btnRow(["Check prediction","Test my prediction in the sim"], function(L){
+    var guess = parseFloat(in1.value);
+    if (L.indexOf("Test")===0) {
+      if (!isFinite(guess)) { fb1.textContent="Enter a prediction first, then test it."; fb1.className="feedback bad"; return; }
+      // Set the raw applied force so total drive = guess.
+      var needAlong = guess - phys.biasForce;
+      var raw = params.scenario==="flat" && phys.pullAngleRad ? needAlong/Math.cos(phys.pullAngleRad) : needAlong;
+      setAppliedForce(raw); resetState();
+      fb1.textContent="Applied set so total drive = " + guess.toFixed(1) + " N (fs,max = " + fsMax.toFixed(1) + " N). Watch: slips only if your drive beats fs,max."; fb1.className="feedback";
+      return;
+    }
+    if (!isFinite(guess)) { fb1.textContent="Enter a number first — fs,max = μs·FN."; fb1.className="feedback bad"; return; }
+    var err = Math.abs(guess-fsMax)/Math.max(1,fsMax)*100; var good = err<=5; scoreGuided(good);
+    fb1.textContent=(good?"Correct (within 5%). ":"Not yet ("+err.toFixed(0)+"% off). ")+"Steps: FN = "+phys.normalForce.toFixed(1)+" N · fs,max = μs·FN = "+phys.mus.toFixed(2)+" × "+phys.normalForce.toFixed(1)+" = "+fsMax.toFixed(1)+" N. Score "+guidedScore.ok+"/"+guidedScore.total+".";
+    fb1.className="feedback "+(good?"good":"bad"); score.textContent="Score: "+guidedScore.ok+" / "+guidedScore.total;
+  });
+
+  section("2 · Will it slip?");
+  hint("Total drive is " + guidedSlip.drive.toFixed(0) + " N (fs,max = " + guidedSlip.fsMax.toFixed(1) + " N). Will the block slip?");
+  var fb2 = feedbackEl();
+  btnRow(["Yes — it slips","No — static holds"], function(L){
+    var yes = L.indexOf("Yes")===0; var good = yes===guidedSlip.willSlip; scoreGuided(good);
+    fb2.textContent=good?("Correct — drive "+guidedSlip.drive.toFixed(0)+" N "+(guidedSlip.willSlip?">":"≤")+" fs,max "+guidedSlip.fsMax.toFixed(1)+" N.") : ("Not quite — compare: drive "+guidedSlip.drive.toFixed(0)+" N vs fs,max "+guidedSlip.fsMax.toFixed(1)+" N, so it "+(guidedSlip.willSlip?"does slip.":"stays put."))+" Score "+guidedScore.ok+"/"+guidedScore.total+".";
+    fb2.className="feedback "+(good?"good":"bad"); score.textContent="Score: "+guidedScore.ok+" / "+guidedScore.total;
+  });
+  var newSlip=document.createElement("button"); newSlip.className="panel-link"; newSlip.textContent="New will-it-slip force";
+  newSlip.addEventListener("click",function(e){ e.stopPropagation(); guidedSlip=null; refreshGuidedPanel(); }); guidedPanel.appendChild(newSlip);
+
+  section("3 · Hold constant velocity while sliding");
+  hint("It is sliding steadily. What total drive keeps a ≈ 0? On the flat that means applied ≈ fk; on a ramp, gravity along the ramp helps or fights you.");
+  var in3 = numInput("Applied force needed (N, as the slider reads)");
+  var fb3 = feedbackEl();
+  var needRaw3 = params.scenario==="flat" && phys.pullAngleRad ? (fk-phys.biasForce)/Math.cos(phys.pullAngleRad) : (fk - phys.biasForce);
+  // drive must equal fk in the direction of motion (assume + direction); applied = drive - bias
+  needRaw3 = params.scenario==="flat" && phys.pullAngleRad ? (fk)/Math.cos(phys.pullAngleRad) : fk - phys.biasForce;
+  btnRow(["Check steady-force"], function(){
+    var guess=parseFloat(in3.value); if(!isFinite(guess)){ fb3.textContent="Enter a number first."; fb3.className="feedback bad"; return; }
+    var err=Math.abs(guess-needRaw3)/Math.max(1,Math.abs(needRaw3))*100; var good=err<=7; scoreGuided(good);
+    fb3.textContent=(good?"Correct (within 7%). ":"Not yet ("+err.toFixed(0)+"% off). ")+"Steps: steady ⇒ Fnet = 0 ⇒ drive = fk = μk·FN = "+phys.muk.toFixed(2)+" × "+phys.normalForce.toFixed(1)+" = "+fk.toFixed(1)+" N. Applied (slider) = drive − gravity-along-ramp ("+phys.biasForce.toFixed(1)+" N) = "+needRaw3.toFixed(1)+" N. Score "+guidedScore.ok+"/"+guidedScore.total+".";
+    fb3.className="feedback "+(good?"good":"bad"); score.textContent="Score: "+guidedScore.ok+" / "+guidedScore.total;
+  });
+
+  section("4 · Which way does friction point? (flat)");
+  hint("The block is moving RIGHT, but the push points LEFT (slowing it). Which way does kinetic friction point?");
+  var fb4 = feedbackEl();
+  btnRow(["Friction points left","Friction points right"], function(L){
+    var good = L.indexOf("left")!==-1; scoreGuided(good);
+    fb4.textContent=good?("Correct — kinetic friction opposes the velocity. The block moves right, so friction points left (the same way as the leftward push here — both slow the block). Score "+guidedScore.ok+"/"+guidedScore.total+"."):("Not quite — friction opposes velocity, not the applied force. Moving right ⇒ friction points left. Score "+guidedScore.ok+"/"+guidedScore.total+".");
+    fb4.className="feedback "+(good?"good":"bad"); score.textContent="Score: "+guidedScore.ok+" / "+guidedScore.total;
+  });
+
+  section("5 · Which way on an incline?");
+  hint("A block on a ramp is sliding (or about to slide) DOWN the ramp. Which way does friction point?");
+  var fb5 = feedbackEl();
+  btnRow(["Up the ramp","Down the ramp"], function(L){
+    var good = L.indexOf("Up")===0; scoreGuided(good);
+    fb5.textContent=good?("Correct — friction opposes the (impending) motion down the ramp, so it points up the ramp. Score "+guidedScore.ok+"/"+guidedScore.total+"."):("Not quite — motion/impending motion is down the ramp, so friction points up the ramp. Score "+guidedScore.ok+"/"+guidedScore.total+".");
+    fb5.className="feedback "+(good?"good":"bad"); score.textContent="Score: "+guidedScore.ok+" / "+guidedScore.total;
+  });
+  hint("Tip: change materials, mass, scenario or pull angle in Controls, then reopen Challenges — the numbers regenerate from the live setup.");
+}
+document.getElementById("guidedBtn").addEventListener("click", function(e) {
+  e.stopPropagation(); guidedOpen = !guidedOpen;
+  if (guidedOpen) { refreshGuidedPanel(); }
+  guidedPanel.classList.toggle("hidden", !guidedOpen);
+  if (guidedOpen) { labOpen = false; labPanel.classList.add("hidden"); }
+});
+document.addEventListener("click", function(e) {
+  if (guidedOpen && !e.target.closest("#guidedPanel, #guidedBtn")) { guidedOpen = false; guidedPanel.classList.add("hidden"); }
+});
+refreshGuidedPanel();
+window.FrictionLab = { resolveFriction: resolveFriction, stepFriction: stepFriction, getFriction: getFriction, currentPhys: currentPhys, classifyMotionState: classifyMotionState, fitSlopeThroughOrigin: fitSlopeThroughOrigin, params: params, state: state, FRICTION_TABLE: FRICTION_TABLE };
+
 /* ============================================================
    Tutorial modal
    ============================================================ */
@@ -1566,6 +1839,7 @@ document.getElementById("tutorialBtn").addEventListener("click", function(e) {
     "<p>Toggle <strong>Flat Surface / Incline</strong> to try a ramp instead. With zero applied force, raise the angle slider past arctan(μs) and the object starts sliding on its own -- that's the same physics as pushing past the static threshold, just gravity doing the pushing instead of you.</p>" +
     "<p>Every vector (gravity, normal, applied, friction, net) can be toggled on or off in Controls so you can isolate exactly what you're studying.</p>" +
     "<p>Open the <strong>Lab</strong> to turn exploration into measurement: raise the force until it slides and click <strong>Record Max Static</strong>; while it's sliding, ease the force down until acceleration reads ~0 and click <strong>Record Steady Kinetic</strong>. The lab computes μs and μk from your own numbers and plots them against the live force-vs-time trace and a friction-vs-normal-force graph -- the slope of that graph <em>is</em> the coefficient of friction. Export your trial table as a CSV any time.</p>" +
+    "<p>In this introductory model, kinetic friction is treated as speed-independent (its size does not change with sliding speed, only with μk·N) and friction does not depend on contact area — notice the crate grows visually as you add mass, yet only the normal force changes the friction, not how big the contact patch looks.</p>" +
     "<p>The friction coefficients here are representative introductory-model values for each object/surface pairing -- real friction also depends on surface condition, lubrication, and temperature.</p>";
   var closeBtn = document.createElement("button");
   closeBtn.className = "close-link";
