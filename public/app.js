@@ -108,6 +108,23 @@ var ICONS = {
   pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg>'
 };
 
+// Escapes a value for safe insertion into an HTML string (text content or a
+// quoted attribute). Use it for ANY data that came from Firestore, a user, or
+// the URL before concatenating it into innerHTML -- e.g. names, post text,
+// poll options, free responses. Trusted static markup (ICONS) doesn't need it.
+function escapeHTML(value) {
+  return String(value == null ? "" : value)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+// Only allow http(s) and blob/data image URLs into <img src>, so a stored
+// "javascript:" or other odd scheme can't be smuggled in via imageUrl.
+function safeImageUrl(url) {
+  var u = String(url == null ? "" : url).trim();
+  return /^(https?:|blob:|data:image\/)/i.test(u) ? u : "";
+}
+
 function iconLabel(name, text) { return ICONS[name] + (text ? " " + text : ""); }
 function eyeLabel(visible, shownText, hiddenText) { return iconLabel(visible ? "eye" : "eyeOff", visible ? shownText : hiddenText); }
 
@@ -674,18 +691,10 @@ teacherSignInBtn.onclick = async function() {
   var name = teacherNameInput.value.trim();
   var password = teacherPasswordInput.value.trim();
   if (!name || !password) { alert("Enter name and password to enter the kernel command center!"); return; }
-  if (name.toLowerCase() === "dimitry" && password === "301718Dag") {
-    isMasterAdmin = true;
-    isTeacher = true;
-    teacherAccount = "Dimitry";
-    username = "Dimitry";
-    await setDoc(doc(db, "teachers", "Dimitry"), { name: "Dimitry", password: "301718Dag", createdAt: serverTimestamp() }, { merge: true });
-    teacherLoginDiv.classList.add("hidden");
-    boardsPortalDiv.classList.remove("hidden");
-    studyBtn.classList.remove("hidden");
-    loadBoardsPortal();
-    return;
-  }
+  // The old hard-coded master-admin sign-in that used to live here was removed
+  // for security (its password was readable by anyone viewing the page
+  // source). Admin access comes back in the Firebase Auth change via an
+  // admins/{uid} doc that only the project owner can create in the console.
   var teacherRef = doc(db, "teachers", name);
   var teacherDoc = await getDoc(teacherRef);
   if (teacherDoc.exists()) {
@@ -1208,7 +1217,7 @@ async function loadBoardsPortal() {
     for (var teacher in teacherBoards) {
       var tc = document.createElement("div");
       tc.className = "teacher-card";
-      tc.innerHTML = "<h4>Teacher: " + teacher + "</h4>";
+      tc.innerHTML = "<h4>Teacher: " + escapeHTML(teacher) + "</h4>";
       var bd = document.createElement("div");
       bd.className = "teacher-boards";
       teacherBoards[teacher].forEach(function(board) { bd.appendChild(createBoardCard(board, true)); });
@@ -1269,7 +1278,7 @@ function createBoardCard(board, isMasterView) {
   }
   var info = document.createElement("div");
   info.className = "board-card-info";
-  info.innerHTML = "<h3>" + board.name + "</h3><p>Created " + (board.createdAt ? new Date(board.createdAt.seconds * 1000).toLocaleDateString() : "recently") + "</p>";
+  info.innerHTML = "<h3>" + escapeHTML(board.name) + "</h3><p>Created " + (board.createdAt ? new Date(board.createdAt.seconds * 1000).toLocaleDateString() : "recently") + "</p>";
   var actions = document.createElement("div");
   actions.className = "board-card-actions";
   var enterBtn = document.createElement("button");
@@ -2144,9 +2153,9 @@ async function loadStudentsPortal() {
       for (var ei = 0; ei < engagementData.length; ei++) {
         if (engagementData[ei].key === currentMonthKey) { currentEngagement = Math.round(engagementData[ei].value); break; }
       }
-      info.innerHTML = "<h3>" + student.username + "</h3><p class='student-stats'>" + iconLabel("barChart", "Engagement: " + currentEngagement + "%") + " | Polls: " + stats.pollsVoted + " (" + pollPct + "%) | Comments: " + stats.comments + " | Upvotes Given: " + stats.upvotesGiven + " | Upvotes Received: " + stats.upvotesReceived + " | " + iconLabel("mask", "Anonymous: " + stats.anonymousPercentage + "%") + "</p>";
+      info.innerHTML = "<h3>" + escapeHTML(student.username) + "</h3><p class='student-stats'>" + iconLabel("barChart", "Engagement: " + escapeHTML(currentEngagement) + "%") + " | Polls: " + escapeHTML(stats.pollsVoted) + " (" + escapeHTML(pollPct) + "%) | Comments: " + escapeHTML(stats.comments) + " | Upvotes Given: " + escapeHTML(stats.upvotesGiven) + " | Upvotes Received: " + escapeHTML(stats.upvotesReceived) + " | " + iconLabel("mask", "Anonymous: " + escapeHTML(stats.anonymousPercentage) + "%") + "</p>";
     } else {
-      info.innerHTML = "<h3>" + student.username + "</h3>";
+      info.innerHTML = "<h3>" + escapeHTML(student.username) + "</h3>";
     }
     var actions = document.createElement("div");
     actions.className = "board-card-actions";
@@ -2341,22 +2350,22 @@ async function viewStudentDashboard(studentId) {
   var monthlyPollsCastPct = await computeMonthlyPollsCastPct(studentId, student);
   var monthlyAnonPct = await computeMonthlyAnonPct(studentId, student);
   var monthlyPollAccuracy = await computeMonthlyPollAccuracy(studentId, student);
-  dashboardContent.innerHTML = "<div class='dashboard-header'><h2>" + student.username + "</h2><p>" + (student.password ? "Password: " + student.password : "No password set") + "</p><button id='mergeStudentBtn' class='teacher-control' style='margin-top:16px;'>Merge Student</button></div><div class='metrics-grid' id='metricsGrid'></div>";
+  dashboardContent.innerHTML = "<div class='dashboard-header'><h2>" + escapeHTML(student.username) + "</h2><p>" + (student.password ? "Password: " + escapeHTML(student.password) : "No password set") + "</p><button id='mergeStudentBtn' class='teacher-control' style='margin-top:16px;'>Merge Student</button></div><div class='metrics-grid' id='metricsGrid'></div>";
   var grid = document.getElementById("metricsGrid");
   var lbCard = document.createElement("div");
   lbCard.className = "metric-card";
-  lbCard.innerHTML = "<h3>" + iconLabel("trophy", "Medals") + "</h3><div style='font-size:1.4rem;padding:8px 0;'>🥇 " + (lbData.gold || 0) + " &nbsp; 🥈 " + (lbData.silver || 0) + " &nbsp; 🥉 " + (lbData.bronze || 0) + "</div>";
+  lbCard.innerHTML = "<h3>" + iconLabel("trophy", "Medals") + "</h3><div style='font-size:1.4rem;padding:8px 0;'>🥇 " + escapeHTML(lbData.gold || 0) + " &nbsp; 🥈 " + escapeHTML(lbData.silver || 0) + " &nbsp; 🥉 " + escapeHTML(lbData.bronze || 0) + "</div>";
   grid.appendChild(lbCard);
   addPercentageMetricCard(grid, iconLabel("barChart", "Engagement %"), monthlyEngagement, "engagementChart");
   addPercentageMetricCard(grid, iconLabel("ballot", "Polls Cast %"), monthlyPollsCastPct, "pollsCastPctChart");
   addPercentageMetricCard(grid, iconLabel("mask", "Anonymous %"), monthlyAnonPct, "anonPctChart");
   addPercentageMetricCard(grid, iconLabel("target", "Poll Accuracy %"), monthlyPollAccuracy, "pollAccuracyChart");
-  addHistoricMetricCard(grid, iconLabel("commentBubble", "Comments Made: " + (student.historicalComments || 0)), student.monthlyStats || {}, "comments", "commentsChart");
-  addHistoricMetricCard(grid, iconLabel("arrowUp", "Upvotes Given: " + (student.historicalUpvotesGiven || 0)), student.monthlyStats || {}, "upvotesGiven", "upvotesGivenChart");
-  addHistoricMetricCard(grid, iconLabel("arrowDown", "Upvotes Received: " + (student.historicalUpvotesReceived || 0)), student.monthlyStats || {}, "upvotesReceived", "upvotesReceivedChart");
+  addHistoricMetricCard(grid, iconLabel("commentBubble", "Comments Made: " + escapeHTML(student.historicalComments || 0)), student.monthlyStats || {}, "comments", "commentsChart");
+  addHistoricMetricCard(grid, iconLabel("arrowUp", "Upvotes Given: " + escapeHTML(student.historicalUpvotesGiven || 0)), student.monthlyStats || {}, "upvotesGiven", "upvotesGivenChart");
+  addHistoricMetricCard(grid, iconLabel("arrowDown", "Upvotes Received: " + escapeHTML(student.historicalUpvotesReceived || 0)), student.monthlyStats || {}, "upvotesReceived", "upvotesReceivedChart");
 
-  addHistoricMetricCard(grid, iconLabel("hand", "Hands Raised: " + (student.handsRaisedCount || 0)), student.monthlyStats || {}, "handsRaised", "handsRaisedChart");
-  addHistoricMetricCard(grid, iconLabel("book", "Questions Practiced: " + (student.historicalQuestionsPracticed || 0)), student.monthlyStats || {}, "questionsPracticed", "questionsPracticedChart");
+  addHistoricMetricCard(grid, iconLabel("hand", "Hands Raised: " + escapeHTML(student.handsRaisedCount || 0)), student.monthlyStats || {}, "handsRaised", "handsRaisedChart");
+  addHistoricMetricCard(grid, iconLabel("book", "Questions Practiced: " + escapeHTML(student.historicalQuestionsPracticed || 0)), student.monthlyStats || {}, "questionsPracticed", "questionsPracticedChart");
 
   var studySessions = (student.studySessions || []).slice().sort(function(a, b) { return (b.date || 0) - (a.date || 0); }).slice(0, 10);
   var sessionsCard = document.createElement("div");
@@ -2365,8 +2374,8 @@ async function viewStudentDashboard(studentId) {
     var pctCorrect = s.total ? Math.round((s.correct / s.total) * 100) : 0;
     return "<div class='study-session-row'>" +
       "<span class='study-session-date'>" + formatSessionTimestamp(s.date || 0) + "</span>" +
-      "<span class='study-session-mode'>" + (s.modeLabel || "Session") + "</span>" +
-      "<span class='study-session-score'>" + (s.correct || 0) + "/" + (s.total || 0) + " (" + pctCorrect + "%)</span>" +
+      "<span class='study-session-mode'>" + escapeHTML(s.modeLabel || "Session") + "</span>" +
+      "<span class='study-session-score'>" + escapeHTML(s.correct || 0) + "/" + escapeHTML(s.total || 0) + " (" + escapeHTML(pctCorrect) + "%)</span>" +
       "<span class='study-session-duration'>" + formatDurationMs((s.durationSec || 0) * 1000) + "</span>" +
       "</div>";
   }).join("") : "<div class='study-session-empty'>No study sessions yet.</div>";
@@ -2384,7 +2393,7 @@ async function viewStudentDashboard(studentId) {
   var confusionTotals = computeConfusionStateDurations(student.confusionHistory || [], joinedAtMs, confusionSessionWindows);
   var pieCard = document.createElement("div");
   pieCard.className = "metric-card";
-  pieCard.innerHTML = "<h3>" + iconLabel("pieChart", "Confusion State Distribution") + "</h3><canvas id='confusionPieChart" + studentId + "' width='400' height='200'></canvas><div class='confusion-pie-legend'>" +
+  pieCard.innerHTML = "<h3>" + iconLabel("pieChart", "Confusion State Distribution") + "</h3><canvas id='confusionPieChart" + escapeHTML(studentId) + "' width='400' height='200'></canvas><div class='confusion-pie-legend'>" +
     "<span><span class='confusion-dot confusion-dot-red'></span>" + formatDurationMs(confusionTotals.red) + "</span>" +
     "<span><span class='confusion-dot confusion-dot-orange'></span>" + formatDurationMs(confusionTotals.orange) + "</span>" +
     "<span><span class='confusion-dot confusion-dot-green'></span>" + formatDurationMs(confusionTotals.green) + "</span>" +
@@ -2396,7 +2405,7 @@ async function viewStudentDashboard(studentId) {
   var monthlyConfusion = computeMonthlyConfusionDurations(student.confusionHistory || [], joinedAtMs, confusionSessionWindows);
   var confusionBarCard = document.createElement("div");
   confusionBarCard.className = "metric-card";
-  confusionBarCard.innerHTML = "<h3>" + iconLabel("stackedBars", "Monthly Confusion State Timeline") + "</h3><canvas id='confusionBarChart" + studentId + "' width='400' height='200'></canvas>";
+  confusionBarCard.innerHTML = "<h3>" + iconLabel("stackedBars", "Monthly Confusion State Timeline") + "</h3><canvas id='confusionBarChart" + escapeHTML(studentId) + "' width='400' height='200'></canvas>";
   grid.appendChild(confusionBarCard);
   drawConfusionStackedBarChart("confusionBarChart" + studentId, monthlyConfusion);
 
@@ -2457,7 +2466,7 @@ async function viewClassAggregateDashboard(allStudentDocs, totalPolls, pollsSnap
   dashboardContent.innerHTML = "<div class='dashboard-header'><h2>" + iconLabel("barChart", "Class Aggregate") + "</h2><p>Mean across all " + n + " students</p></div><div class='metrics-grid' id='metricsGridAgg'></div>";
   var grid = document.getElementById("metricsGridAgg");
   var medals = ["🥇", "🥈", "🥉"];
-  var top3Html = top3.length > 0 ? top3.map(function(s, i) { return medals[i] + " " + s.name; }).join("<br>") : "No data yet";
+  var top3Html = top3.length > 0 ? top3.map(function(s, i) { return medals[i] + " " + escapeHTML(s.name); }).join("<br>") : "No data yet";
   var lbCard = document.createElement("div");
   lbCard.className = "metric-card";
   lbCard.innerHTML = "<h3>" + iconLabel("trophy", "Top Students") + "</h3><div class='leaderboard-summary-box'>" + top3Html + "</div>";
@@ -3067,7 +3076,7 @@ async function uploadImage(file, folder) {
 function showImagePreview(file, previewElement, removeCallback) {
   var reader = new FileReader();
   reader.onload = function(e) {
-    previewElement.innerHTML = "<img src='" + e.target.result + "' /><button class='remove-image'>x</button>";
+    previewElement.innerHTML = "<img src='" + escapeHTML(safeImageUrl(e.target.result)) + "' /><button class='remove-image'>x</button>";
     previewElement.querySelector(".remove-image").onclick = removeCallback;
   };
   reader.readAsDataURL(file);
@@ -3076,7 +3085,7 @@ function showImagePreview(file, previewElement, removeCallback) {
 function showImageLightbox(imageUrl) {
   var lb = document.createElement("div");
   lb.className = "image-lightbox";
-  lb.innerHTML = "<img src='" + imageUrl + "' />";
+  lb.innerHTML = "<img src='" + escapeHTML(safeImageUrl(imageUrl)) + "' />";
   lb.onclick = function() { lb.remove(); };
   document.body.appendChild(lb);
 }
@@ -4818,7 +4827,7 @@ function loadReplies(postId, container, parentVisible) {
       var div = document.createElement("div");
       div.className = "reply";
       if (!r.visible) { div.classList.add("hidden-comment"); }
-      div.innerHTML = "<strong>" + (r.anonymous && !isTeacher ? iconLabel("mask", "Anonymous") : r.author) + "</strong> " + r.text;
+      div.innerHTML = "<strong>" + (r.anonymous && !isTeacher ? iconLabel("mask", "Anonymous") : escapeHTML(r.author)) + "</strong> " + escapeHTML(r.text);
       if (r.imageUrl) {
         var img = document.createElement("img");
         img.src = r.imageUrl;
@@ -4891,8 +4900,8 @@ function loadPosts() {
           }
           var aDiv = document.createElement("div");
           aDiv.className = "post hidden-comment";
-          var displayName = post.anonymous ? iconLabel("mask", "Anonymous") : post.author;
-          aDiv.innerHTML = "<strong>" + displayName + "</strong><br>" + post.text + "<br><div class='post-actions-row'><span class='upvote'>🍿 " + (post.upvotes || 0) + "</span></div>";
+          var displayName = post.anonymous ? iconLabel("mask", "Anonymous") : escapeHTML(post.author);
+          aDiv.innerHTML = "<strong>" + displayName + "</strong><br>" + escapeHTML(post.text) + "<br><div class='post-actions-row'><span class='upvote'>🍿 " + escapeHTML(post.upvotes || 0) + "</span></div>";
           if (post.imageUrl) {
             var aImg = document.createElement("img");
             aImg.src = post.imageUrl;
@@ -4948,8 +4957,8 @@ function loadPosts() {
         div.classList.add("post-reveal-pending");
         if (postRevealObserver) { postRevealObserver.observe(div); }
       }
-      var displayName = post.anonymous && !isTeacher ? iconLabel("mask", "Anonymous") : post.author;
-      div.innerHTML = "<strong>" + displayName + "</strong><br>" + post.text + "<br><div class='post-actions-row'><span class='upvote'>🍿 <span class='upvote-count'>" + (post.upvotes || 0) + "</span></span><button class='reply-btn teacher-control'>Reply</button></div>";
+      var displayName = post.anonymous && !isTeacher ? iconLabel("mask", "Anonymous") : escapeHTML(post.author);
+      div.innerHTML = "<strong>" + displayName + "</strong><br>" + escapeHTML(post.text) + "<br><div class='post-actions-row'><span class='upvote'>🍿 <span class='upvote-count'>" + escapeHTML(post.upvotes || 0) + "</span></span><button class='reply-btn teacher-control'>Reply</button></div>";
       if (post.imageUrl) {
         var img = document.createElement("img");
         img.src = post.imageUrl;
@@ -5793,7 +5802,7 @@ function buildStudentArchivedPollSummary(poll, pollId) {
     }
     var respDiv = document.createElement("div");
     respDiv.className = "poll-stat";
-    respDiv.innerHTML = "<strong>Your response:</strong> " + myAnswerText;
+    respDiv.innerHTML = "<strong>Your response:</strong> " + escapeHTML(myAnswerText);
     wrap.appendChild(respDiv);
 
     if (poll.responsesVisible) {
@@ -5835,7 +5844,7 @@ function buildStudentArchivedPollSummary(poll, pollId) {
     var myFreeEntries = (poll.history || []).filter(function(h) { return h.username === username; });
     var respDiv2 = document.createElement("div");
     respDiv2.className = "poll-stat";
-    respDiv2.innerHTML = "<strong>Your response:</strong> " + (myFreeEntries.length > 0 ? myFreeEntries.map(function(e) { return e.response; }).join(" / ") : "No answer");
+    respDiv2.innerHTML = "<strong>Your response:</strong> " + escapeHTML(myFreeEntries.length > 0 ? myFreeEntries.map(function(e) { return e.response; }).join(" / ") : "No answer");
     wrap.appendChild(respDiv2);
 
     if (poll.keywordsVisible) { wrap.appendChild(renderKeywordMap(poll)); }
