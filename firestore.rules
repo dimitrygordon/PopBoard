@@ -1,0 +1,249 @@
+rules_version = '2';
+
+// PopBoard Firestore security rules.
+//
+// Every write is tied to the signed-in Firebase Auth user (request.auth.uid):
+//   * Teachers sign in with email/password. Their profile is teachers/{uid}.
+//     A new teacher starts with approved == false; only an admin can approve.
+//   * Admins are users with a doc at admins/{uid}. That doc can only be
+//     created in the Firebase console (the client can never write it).
+//   * Students sign in anonymously (or with a password-protected account,
+//     linked from the anonymous one). Each board keeps:
+//       students/{studentId}  the student record (uid == the owner's auth uid)
+//       names/{username}      username -> { studentId, uid, secured, authSalt }
+//                             (one doc per name, so names are unique)
+//       members/{uid}         auth uid -> { studentId, username }
+//     The rules use members/{uid} to find "who is this signed-in user" when
+//     checking that votes, upvotes, posts, etc. carry the caller's own name.
+//
+// Known limits (no server code): vote/upvote *counters* can't be fully
+// cross-checked, and students can change their own stats. Names, authorship
+// and ownership can't be faked.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- helpers ----------
+    function signedIn() { return request.auth != null; }
+    function uid() { return request.auth.uid; }
+    function hasEmail() { return signedIn() && request.auth.token.email != null; }
+    function isAdmin() {
+      return signedIn() && exists(/databases/$(database)/documents/admins/$(uid()));
+    }
+    function teacherDoc() { return get(/databases/$(database)/documents/teachers/$(uid())); }
+    function isApprovedTeacher() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/teachers/$(uid()))
+        && teacherDoc().data.get('approved', false) == true;
+    }
+    function boardPath(b) { return /databases/$(database)/documents/boards/$(b); }
+    function isOwner(b) {
+      return signedIn() && get(boardPath(b)).data.get('ownerUid', '') == uid();
+    }
+    function canManage(b) { return isOwner(b) || isAdmin(); }
+    function memberPath(b) { return /databases/$(database)/documents/boards/$(b)/members/$(uid()); }
+    function isMember(b) { return signedIn() && exists(memberPath(b)); }
+    function myName(b) { return get(memberPath(b)).data.username; }
+    function myStudentId(b) { return get(memberPath(b)).data.studentId; }
+    function canRead(b) { return isMember(b) || canManage(b); }
+
+    function changed() { return request.resource.data.diff(resource.data).affectedKeys(); }
+    function onlyChanged(keys) { return changed().hasOnly(keys); }
+
+    // A list field may only gain/lose the caller's own name (or stay the same).
+    function listDeltaIsOnly(field, name) {
+      return request.resource.data.get(field, []).toSet()
+               .difference(resource.data.get(field, []).toSet()).hasOnly([name])
+          && resource.data.get(field, []).toSet()
+               .difference(request.resource.data.get(field, []).toSet()).hasOnly([name]);
+    }
+    // A history list may only be unchanged, or grow by exactly one entry
+    // appended at the end, written under the caller's own name.
+    function historyAppendOnly(field, name) {
+      let before = resource.data.get(field, []);
+      let after = request.resource.data.get(field, []);
+      return after == before
+        || (after.size() == before.size() + 1
+            && (before.size() == 0 || after[0:before.size()] == before)
+            && after[before.size()].username == name);
+    }
+
+    // ---------- admins ----------
+    match /admins/{adminUid} {
+      allow read: if signedIn() && adminUid == uid();
+      allow write: if false; // console only
+    }
+
+    // ---------- teachers ----------
+    match /teachers/{teacherUid} {
+      allow read: if signedIn() && (teacherUid == uid() || isAdmin());
+      allow create: if signedIn() && teacherUid == uid()
+        && (request.resource.data.get('approved', false) == false || isAdmin());
+      allow update: if isAdmin()
+        || (signedIn() && teacherUid == uid() && !changed().hasAny(['approved']));
+      allow delete: if isAdmin();
+
+      // Study gallery links. Students can read them (the gallery shows the
+      // owning teacher's links); only that teacher can change them.
+      match /studyLinks/{linkId} {
+        allow read: if signedIn();
+        allow write: if signedIn() && teacherUid == uid()
+          && (isApprovedTeacher() || isAdmin());
+      }
+    }
+
+    // ---------- boards ----------
+    match /boards/{boardId} {
+      // Signed-in users (incl. anonymous students) can look a board up by
+      // name to join it.
+      allow read: if signedIn();
+      allow create: if (isApprovedTeacher() || isAdmin())
+        && request.resource.data.ownerUid == uid();
+      allow update: if canManage(boardId)
+        && request.resource.data.ownerUid == resource.data.ownerUid;
+      allow delete: if canManage(boardId);
+
+      // Username registry: one doc per name, readable by any signed-in user so
+      // the join screen can tell "new name" / "your name" / "protected name".
+      match /names/{name} {
+        allow read: if signedIn();
+        // A student registering a brand-new name for the student record
+        // they are creating in the same batch.
+        allow create: if canManage(boardId)
+          || (signedIn()
+              && request.resource.data.uid == uid()
+              && request.resource.data.get('secured', false) == false
+              && getAfter(/databases/$(database)/documents/boards/$(boardId)/students/$(request.resource.data.studentId)).data.uid == uid()
+              && getAfter(/databases/$(database)/documents/boards/$(boardId)/students/$(request.resource.data.studentId)).data.username == name);
+        allow update: if canManage(boardId)
+          // claiming a teacher-created (unclaimed) name
+          || (signedIn() && resource.data.get('uid', null) == null
+              && !exists(memberPath(boardId))
+              && request.resource.data.uid == uid()
+              && onlyChanged(['uid']))
+          // the name's owner protecting it with a password
+          || (signedIn() && resource.data.get('uid', null) == uid()
+              && hasEmail()
+              && request.resource.data.secured == true
+              && onlyChanged(['secured', 'authSalt']));
+        allow delete: if canManage(boardId);
+      }
+
+      // uid -> student record, used by these rules to identify the caller.
+      match /members/{memberUid} {
+        allow read: if signedIn() && (memberUid == uid() || canManage(boardId));
+        allow create: if signedIn() && memberUid == uid()
+          && getAfter(/databases/$(database)/documents/boards/$(boardId)/students/$(request.resource.data.studentId)).data.uid == uid()
+          && getAfter(/databases/$(database)/documents/boards/$(boardId)/students/$(request.resource.data.studentId)).data.username == request.resource.data.username;
+        allow update: if canManage(boardId);
+        allow delete: if canManage(boardId);
+      }
+
+      match /students/{studentId} {
+        allow read: if canRead(boardId);
+        allow create: if canManage(boardId)
+          || (signedIn()
+              && request.resource.data.uid == uid()
+              && request.resource.data.get('secured', false) == false
+              && !exists(memberPath(boardId))
+              && !request.resource.data.keys().hasAny(['gold', 'silver', 'bronze'])
+              && getAfter(/databases/$(database)/documents/boards/$(boardId)/names/$(request.resource.data.username)).data.studentId == studentId);
+        allow update: if canManage(boardId)
+          // the student updating their own record (but not who they are)
+          || (signedIn() && resource.data.get('uid', null) == uid()
+              && !changed().hasAny(['uid', 'username', 'secured', 'gold', 'silver', 'bronze']))
+          // the student marking their own record as password-protected
+          || (signedIn() && resource.data.get('uid', null) == uid()
+              && hasEmail() && onlyChanged(['secured']) && request.resource.data.secured == true)
+          // claiming a teacher-created (unclaimed) record
+          || (signedIn() && resource.data.get('uid', null) == null
+              && !exists(memberPath(boardId))
+              && request.resource.data.uid == uid()
+              && onlyChanged(['uid']))
+          // another student's upvote crediting this student's "upvotes received"
+          || (isMember(boardId)
+              && onlyChanged(['monthlyStats', 'historicalUpvotesReceived'])
+              && request.resource.data.get('historicalUpvotesReceived', 0)
+                   == resource.data.get('historicalUpvotesReceived', 0) + 1);
+        allow delete: if canManage(boardId);
+      }
+
+      // A post/reply is either signed (author == your name, authorUid == your
+      // uid) or anonymous: then it carries NO author fields, and the real
+      // author is written to postAuthors/{id} in the same batch.
+      function authoredCreateOk(boardId, docId) {
+        return isMember(boardId) && (
+          (request.resource.data.get('anonymous', false) != true
+            && request.resource.data.author == myName(boardId)
+            && request.resource.data.authorUid == uid())
+          || (request.resource.data.get('anonymous', false) == true
+            && request.resource.data.get('author', '') == ''
+            && !request.resource.data.keys().hasAny(['authorUid'])
+            && getAfter(/databases/$(database)/documents/boards/$(boardId)/postAuthors/$(docId)).data.authorUid == uid()));
+      }
+
+      // Hidden authors of anonymous posts/replies: teacher (and admin) only.
+      match /postAuthors/{docId} {
+        allow read: if canManage(boardId);
+        allow create: if canManage(boardId)
+          || (isMember(boardId)
+              && request.resource.data.author == myName(boardId)
+              && request.resource.data.authorUid == uid());
+        allow update, delete: if canManage(boardId);
+      }
+
+      match /posts/{postId} {
+        allow read: if canRead(boardId);
+        allow create: if canManage(boardId) || authoredCreateOk(boardId, postId);
+        allow update: if canManage(boardId)
+          || (isMember(boardId)
+              && onlyChanged(['upvoters', 'upvotes', 'upvoteHistory'])
+              && math.abs(request.resource.data.get('upvotes', 0) - resource.data.get('upvotes', 0)) <= 1
+              && listDeltaIsOnly('upvoters', myName(boardId))
+              && historyAppendOnly('upvoteHistory', myName(boardId)));
+        allow delete: if canManage(boardId);
+      }
+
+      match /replies/{replyId} {
+        allow read: if canRead(boardId);
+        allow create: if canManage(boardId) || authoredCreateOk(boardId, replyId);
+        allow update, delete: if canManage(boardId);
+      }
+
+      match /polls/{pollId} {
+        allow read: if canRead(boardId);
+        allow create, delete: if canManage(boardId);
+        allow update: if canManage(boardId)
+          || (isMember(boardId)
+              && onlyChanged(['votes', 'voters', 'history'])
+              && listDeltaIsOnly('voters', myName(boardId))
+              && historyAppendOnly('history', myName(boardId)));
+
+        match /drawings/{drawingId} {
+          allow read: if canRead(boardId);
+          allow create: if canManage(boardId)
+            || (isMember(boardId) && request.resource.data.username == myName(boardId));
+          allow update, delete: if canManage(boardId);
+        }
+      }
+
+      match /leaderboard/{name} {
+        allow read: if canRead(boardId);
+        allow create, delete: if canManage(boardId);
+        allow update: if canManage(boardId)
+          || (isMember(boardId) && name == myName(boardId)
+              && onlyChanged(['emoji', 'nickname']));
+      }
+
+      match /seats/{seatId} {
+        allow read: if canRead(boardId);
+        allow write: if canManage(boardId);
+      }
+    }
+
+    // Everything else is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

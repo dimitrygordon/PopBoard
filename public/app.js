@@ -1,12 +1,16 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
-  getFirestore, collection, addDoc, onSnapshot, getDocs,
+  getFirestore, connectFirestoreEmulator, collection, addDoc, onSnapshot, getDocs,
   serverTimestamp, query, orderBy, doc, updateDoc, deleteDoc,
   increment, arrayUnion, arrayRemove, where, getDoc, setDoc, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import {
-  getStorage, ref, uploadBytes, getDownloadURL
+  getStorage, connectStorageEmulator, ref, uploadBytes, getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+import {
+  getAuth, signInAnonymously, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  linkWithCredential, EmailAuthProvider, signOut, updateProfile, connectAuthEmulator
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClkHjUnQ96VNRj1FxyY-ca-AcDWYoX_m8",
@@ -20,12 +24,139 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
+const auth = getAuth(app);
+
+// Local testing only: http://localhost:<port>/?emulators=1 talks to the
+// Firebase Emulator Suite instead of the real project. Has no effect on the
+// live site (different hostname).
+if ((location.hostname === "localhost" || location.hostname === "127.0.0.1") && new URLSearchParams(location.search).has("emulators")) {
+  connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
+  connectFirestoreEmulator(db, "127.0.0.1", 8080);
+  connectStorageEmulator(storage, "127.0.0.1", 9199);
+}
+
+// ─── FIREBASE AUTH HELPERS ──────────────────────────────────────────────────
+// Who-is-who is decided by Firebase Auth (request.auth.uid in the security
+// rules, see firestore.rules), never by anything the browser claims:
+//   * Teachers: email + password accounts; profile at teachers/{uid}.
+//     New teachers wait for an admin (admins/{uid}) to approve them.
+//   * Students: "easy" mode signs in anonymously (stays on this device).
+//     Adding a password links that same account to an email/password login
+//     with a made-up address, so they can sign back in on any device and
+//     nobody else can take their name.
+// Per-board student bookkeeping (all enforced by the rules):
+//   boards/{b}/students/{studentId}  student record, .uid = owner's auth uid
+//   boards/{b}/names/{username}      { studentId, uid, secured, authSalt }
+//   boards/{b}/members/{uid}         { studentId, username }
+
+const STUDENT_EMAIL_DOMAIN = "students.popboard.invalid"; // never receives mail
+const MIN_PASSWORD_LENGTH = 6; // Firebase Auth minimum
+
+async function waitForAuth() {
+  if (auth.authStateReady) { await auth.authStateReady(); }
+  return auth.currentUser;
+}
+
+function randomToken(bytes) {
+  var a = new Uint8Array(bytes || 8);
+  crypto.getRandomValues(a);
+  return Array.from(a, function(b) { return b.toString(16).padStart(2, "0"); }).join("");
+}
+
+// Synthetic sign-in email for a password-protected student. Built from the
+// board, the student record and a per-account random salt (stored on the
+// name doc), so renaming a student doesn't break their login and a teacher
+// "reset sign-in" frees the name for a fresh account.
+async function studentAuthEmail(boardId, studentId, salt) {
+  var data = new TextEncoder().encode(boardId + ":" + studentId + ":" + salt);
+  var digest = await crypto.subtle.digest("SHA-256", data);
+  var hex = Array.from(new Uint8Array(digest), function(b) { return b.toString(16).padStart(2, "0"); }).join("");
+  return "s" + hex.slice(0, 40) + "@" + STUDENT_EMAIL_DOMAIN;
+}
+
+// Firestore doc IDs can't contain "/" or be "." / ".." / "__x__", and the
+// username is used as a doc ID in names/{username}.
+function isValidStudentName(name) {
+  if (!name || name.length > 60) { return false; }
+  if (name.indexOf("/") !== -1) { return false; }
+  if (name === "." || name === "..") { return false; }
+  if (/^__.*__$/.test(name)) { return false; }
+  return true;
+}
+
+// Make sure we have an anonymous Firebase user that isn't already some other
+// student on this board. An email-linked (password) account belongs to
+// exactly one student, so joining as anyone else starts a fresh anonymous
+// session on this device.
+async function ensureAnonymousUserFor(boardId) {
+  var u = await waitForAuth();
+  if (u && u.isAnonymous) {
+    var m = await getDoc(doc(db, "boards", boardId, "members", u.uid));
+    if (!m.exists()) { return u; }
+  }
+  if (u) { await signOut(auth); }
+  var cred = await signInAnonymously(auth);
+  return cred.user;
+}
+
+// Link the current (anonymous) user to a password login for this student.
+async function secureStudentAccount(boardId, studentId, name, password) {
+  var u = auth.currentUser;
+  if (!u) { throw new Error("Not signed in"); }
+  var salt = randomToken(8);
+  var email = await studentAuthEmail(boardId, studentId, salt);
+  await linkWithCredential(u, EmailAuthProvider.credential(email, password));
+  await u.getIdToken(true); // refresh so the rules see the new email claim
+  var batch = writeBatch(db);
+  batch.update(doc(db, "boards", boardId, "names", name), { secured: true, authSalt: salt });
+  batch.update(doc(db, "boards", boardId, "students", studentId), { secured: true });
+  await batch.commit();
+}
+
+function newStudentFields(name, uid) {
+  return {
+    username: name,
+    uid: uid || null,
+    secured: false,
+    joinedAt: serverTimestamp(),
+    historicalComments: 0,
+    historicalUpvotesGiven: 0,
+    historicalUpvotesReceived: 0,
+    historicalPollsCast: 0,
+    monthlyStats: {},
+    emoji: "",
+    nickname: "",
+    confusionState: null,
+    confusionSetAt: null,
+    confusionHistory: [],
+    handRaised: false,
+    handRaisedAt: null,
+    handsRaisedCount: 0
+  };
+}
+
+function authErrorMessage(err) {
+  var code = (err && err.code) || "";
+  if (code === "auth/invalid-credential" || code === "auth/wrong-password" || code === "auth/user-not-found" || code === "auth/invalid-email") {
+    return "That password didn't pop! Double-check your kernel key!";
+  }
+  if (code === "auth/email-already-in-use") { return "That email already has a PopBoard account. Try Sign In instead."; }
+  if (code === "auth/weak-password") { return "Passwords need at least " + MIN_PASSWORD_LENGTH + " characters."; }
+  if (code === "auth/admin-restricted-operation" || code === "auth/operation-not-allowed") {
+    return "Sign-in isn't switched on for this PopBoard yet (Firebase Authentication setup). Ask the PopBoard admin.";
+  }
+  if (code === "auth/too-many-requests") { return "Too many tries. Wait a minute and try again."; }
+  if (code === "permission-denied") { return "PopBoard's security rules blocked that. If this keeps happening, tell your teacher."; }
+  if (code === "auth/network-request-failed" || code === "unavailable") { return "Couldn't reach PopBoard. Check your connection and try again."; }
+  return "Something went wrong: " + ((err && err.message) || err);
+}
 
 let username = "";
 let studentPassword = "";
 let isTeacher = false;
 let isDisplayMode = false;
 let isMasterAdmin = false;
+let unsubBoardsPortal = null;
 let teacherAccount = "";
 let currentBoardId = "";
 let currentStudentId = "";
@@ -173,6 +304,8 @@ const joinBtn = document.getElementById("joinBtn");
 const teacherLoginBtn = document.getElementById("teacherLoginBtn");
 const teacherNameInput = document.getElementById("teacherNameInput");
 const teacherPasswordInput = document.getElementById("teacherPasswordInput");
+const teacherEmailInput = document.getElementById("teacherEmailInput");
+const teacherSignUpBtn = document.getElementById("teacherSignUpBtn");
 const teacherSignInBtn = document.getElementById("teacherSignInBtn");
 const backToMainLoginBtn = document.getElementById("backToMainLoginBtn");
 const newBoardNameInput = document.getElementById("newBoardNameInput");
@@ -458,7 +591,72 @@ document.addEventListener("touchstart", function() {
   getAudioCtx();
 }, { once: true });
 
+
+// ─── ANONYMOUS POST AUTHORS (teacher-only) ─────────────────────────────────
+// Anonymous posts/replies don't store the author on the post itself (every
+// student can read posts). The real author goes in
+// boards/{b}/postAuthors/{postOrReplyId}, which only the board's teacher
+// (and admins) can read -- see firestore.rules. Teacher views fill the
+// author back in with withAuthor().
+var anonAuthorMap = {};
+var anonAuthorsBoardId = "";
+var anonAuthorsPromise = null;
+var unsubAnonAuthors = null;
+
+function anonAuthorsLoaded() {
+  if (!isTeacher || !currentBoardId) { return Promise.resolve(); }
+  if (anonAuthorsBoardId === currentBoardId && anonAuthorsPromise) { return anonAuthorsPromise; }
+  if (unsubAnonAuthors) { unsubAnonAuthors(); unsubAnonAuthors = null; }
+  anonAuthorsBoardId = currentBoardId;
+  anonAuthorMap = {};
+  anonAuthorsPromise = new Promise(function(resolve) {
+    var firstSnapshot = true;
+    unsubAnonAuthors = onSnapshot(collection(db, "boards", currentBoardId, "postAuthors"), function(snap) {
+      var m = {};
+      snap.forEach(function(d) { m[d.id] = d.data().author || ""; });
+      anonAuthorMap = m;
+      // A new anonymous post can land before its hidden author does --
+      // re-render the feed so the teacher sees the name.
+      if (!firstSnapshot && unsubPosts) { loadPosts(); }
+      firstSnapshot = false;
+      resolve();
+    }, function(err) { console.error("postAuthors listener failed", err); resolve(); });
+  });
+  return anonAuthorsPromise;
+}
+
+function stopAnonAuthors() {
+  if (unsubAnonAuthors) { unsubAnonAuthors(); unsubAnonAuthors = null; }
+  anonAuthorsBoardId = "";
+  anonAuthorsPromise = null;
+  anonAuthorMap = {};
+}
+
+// docSnap.data(), with the hidden author of an anonymous post/reply filled
+// in when the current user is allowed to know it (teacher views only).
+function withAuthor(docSnap) {
+  var d = docSnap.data();
+  if (d && !d.author && anonAuthorMap[docSnap.id]) { d = Object.assign({}, d, { author: anonAuthorMap[docSnap.id] }); }
+  return d;
+}
+
+// Writes a post or reply. Anonymous ones keep the author in postAuthors.
+async function writeAuthoredDoc(colName, fields, anonymous) {
+  var ref = doc(collection(db, "boards", currentBoardId, colName));
+  var uidNow = auth.currentUser ? auth.currentUser.uid : null;
+  if (!anonymous) {
+    await setDoc(ref, Object.assign({ author: username, authorUid: uidNow }, fields, { anonymous: false }));
+    return ref;
+  }
+  var b = writeBatch(db);
+  b.set(ref, Object.assign({ author: "" }, fields, { anonymous: true }));
+  b.set(doc(db, "boards", currentBoardId, "postAuthors", ref.id), { author: username, authorUid: uidNow, kind: colName });
+  await b.commit();
+  return ref;
+}
+
 function teardownBoardListeners() {
+  stopAnonAuthors();
   if (unsubPosts) { unsubPosts(); unsubPosts = null; }
   animatedPostIds.clear(); // a freshly (re-)entered board should replay its own entrance reveal
   if (unsubPolls) { unsubPolls(); unsubPolls = null; }
@@ -616,51 +814,85 @@ document.addEventListener("click", function(e) {
 joinBtn.onclick = async function() {
   username = usernameInput.value.trim();
   var boardName = boardNameInput.value.trim();
-  studentPassword = studentPasswordInput.value.trim();
+  studentPassword = studentPasswordInput.value;
   if (!username) { alert("Enter your name to join!"); return; }
   if (!boardName) { alert("Enter the PopBoard name to join!"); return; }
   if (username.toLowerCase() === "dimitry") { alert("This name is reserved."); return; }
+  if (!isValidStudentName(username)) { alert("Names can't contain \"/\" and must be 60 characters or fewer."); return; }
+  if (studentPassword && studentPassword.length < MIN_PASSWORD_LENGTH) { alert("Passwords need at least " + MIN_PASSWORD_LENGTH + " characters (or leave it blank for quick join)."); return; }
   isTeacher = false;
   isDisplayMode = false;
-  var q = query(collection(db, "boards"), where("name", "==", boardName));
-  var snapshot = await getDocs(q);
-  if (snapshot.empty) { alert("Oops! That PopBoard hasn't popped yet. Double-check the name and try again!"); return; }
-  var boardData = snapshot.docs[0].data();
-  currentBoardId = snapshot.docs[0].id;
-  if (username === boardData.teacherAccount) { alert("Nice try, but that's the teacher's name! Choose another to join the popcorn party!"); return; }
-  var studentsRef = collection(db, "boards", currentBoardId, "students");
-  var studentQuery = query(studentsRef, where("username", "==", username));
-  var studentSnapshot = await getDocs(studentQuery);
-  if (!studentSnapshot.empty) {
-    var existingStudent = studentSnapshot.docs[0];
-    var existingPassword = existingStudent.data().password || "";
-    if (existingPassword && existingPassword !== studentPassword) { alert("That password didn't pop! Double-check your kernel key!"); return; }
-    currentStudentId = existingStudent.id;
-    studentEmoji = existingStudent.data().emoji || "";
-    studentNickname = existingStudent.data().nickname || "";
-  } else {
-    var newStudent = await addDoc(studentsRef, {
-      username: username,
-      password: studentPassword,
-      joinedAt: serverTimestamp(),
-      historicalComments: 0,
-      historicalUpvotesGiven: 0,
-      historicalUpvotesReceived: 0,
-      historicalPollsCast: 0,
-      monthlyStats: {},
-      emoji: "",
-      nickname: "",
-      confusionState: null,
-      confusionSetAt: null,
-      confusionHistory: [],
-      handRaised: false,
-      handRaisedAt: null,
-      handsRaisedCount: 0
-    });
-    currentStudentId = newStudent.id;
-    studentEmoji = "";
-    studentNickname = "";
+  joinBtn.disabled = true;
+  try {
+    // Any signed-in user (anonymous is fine) may look boards up by name.
+    var u0 = await waitForAuth();
+    if (!u0) { await signInAnonymously(auth); }
+    var q = query(collection(db, "boards"), where("name", "==", boardName));
+    var snapshot = await getDocs(q);
+    if (snapshot.empty) { alert("Oops! That PopBoard hasn't popped yet. Double-check the name and try again!"); return; }
+    var boardData = snapshot.docs[0].data();
+    currentBoardId = snapshot.docs[0].id;
+    if (username === boardData.teacherAccount) { alert("Nice try, but that's the teacher's name! Choose another to join the popcorn party!"); return; }
+
+    var nameRef = doc(db, "boards", currentBoardId, "names", username);
+    var nameSnap = await getDoc(nameRef);
+    if (nameSnap.exists()) {
+      var nd = nameSnap.data();
+      var me = auth.currentUser;
+      if (nd.uid && me && nd.uid === me.uid) {
+        // Returning on the same device/account.
+        currentStudentId = nd.studentId;
+        if (studentPassword && !nd.secured) { await secureStudentAccount(currentBoardId, currentStudentId, username, studentPassword); }
+      } else if (nd.uid && nd.secured) {
+        if (!studentPassword) { alert("This name is protected with a password. Enter it to sign in."); return; }
+        var email = await studentAuthEmail(currentBoardId, nd.studentId, nd.authSalt || "");
+        try {
+          if (auth.currentUser) { await signOut(auth); }
+          await signInWithEmailAndPassword(auth, email, studentPassword);
+        } catch (signInErr) {
+          console.error(signInErr);
+          alert(authErrorMessage(signInErr));
+          return;
+        }
+        currentStudentId = nd.studentId;
+      } else if (nd.uid) {
+        alert("That name is already in use on another device. Pick a different name, or ask your teacher to reset sign-in for it.");
+        return;
+      } else {
+        // A name the teacher created that nobody has claimed yet.
+        var claimer = await ensureAnonymousUserFor(currentBoardId);
+        var claim = writeBatch(db);
+        claim.update(doc(db, "boards", currentBoardId, "students", nd.studentId), { uid: claimer.uid });
+        claim.update(nameRef, { uid: claimer.uid });
+        claim.set(doc(db, "boards", currentBoardId, "members", claimer.uid), { studentId: nd.studentId, username: username });
+        await claim.commit();
+        currentStudentId = nd.studentId;
+        if (studentPassword) { await secureStudentAccount(currentBoardId, currentStudentId, username, studentPassword); }
+      }
+    } else {
+      var joiner = await ensureAnonymousUserFor(currentBoardId);
+      var newStudentRef = doc(collection(db, "boards", currentBoardId, "students"));
+      var join = writeBatch(db);
+      join.set(newStudentRef, newStudentFields(username, joiner.uid));
+      join.set(nameRef, { studentId: newStudentRef.id, uid: joiner.uid, secured: false });
+      join.set(doc(db, "boards", currentBoardId, "members", joiner.uid), { studentId: newStudentRef.id, username: username });
+      await join.commit();
+      currentStudentId = newStudentRef.id;
+      if (studentPassword) { await secureStudentAccount(currentBoardId, currentStudentId, username, studentPassword); }
+    }
+    var studentDocSnap = await getDoc(doc(db, "boards", currentBoardId, "students", currentStudentId));
+    var sd = studentDocSnap.exists() ? studentDocSnap.data() : {};
+    studentEmoji = sd.emoji || "";
+    studentNickname = sd.nickname || "";
+  } catch (err) {
+    console.error("Join failed", err);
+    alert(authErrorMessage(err));
+    return;
+  } finally {
+    joinBtn.disabled = false;
   }
+  studentPassword = "";
+  studentPasswordInput.value = "";
   loginDiv.classList.add("hidden");
   appDiv.classList.remove("hidden");
   teacherBtn.classList.add("hidden");
@@ -684,46 +916,85 @@ backToMainLoginBtn.onclick = function() {
   teacherLoginDiv.classList.add("hidden");
   loginDiv.classList.remove("hidden");
   teacherNameInput.value = "";
+  teacherEmailInput.value = "";
   teacherPasswordInput.value = "";
 };
 
+// After Firebase Auth has signed a teacher in: load their profile, check
+// approval/admin status, and open the portal.
+async function enterTeacherPortal() {
+  var u = auth.currentUser;
+  if (!u || u.isAnonymous) { return; }
+  var adminSnap = await getDoc(doc(db, "admins", u.uid));
+  isMasterAdmin = adminSnap.exists();
+  var teacherRef = doc(db, "teachers", u.uid);
+  var teacherSnap = await getDoc(teacherRef);
+  if (!teacherSnap.exists()) {
+    // e.g. the admin's first sign-in, or a profile that was never written.
+    var fallbackName = (teacherNameInput.value.trim() || u.displayName || (u.email || "Teacher").split("@")[0]);
+    await setDoc(teacherRef, { name: fallbackName, email: u.email || "", approved: isMasterAdmin, createdAt: serverTimestamp() });
+    teacherSnap = await getDoc(teacherRef);
+  }
+  var t = teacherSnap.data();
+  if (!t.approved && !isMasterAdmin) {
+    alert("Thanks for signing up! Your teacher account is waiting for approval from the PopBoard admin. Try again once you've been approved.");
+    await signOut(auth);
+    isMasterAdmin = false;
+    return;
+  }
+  teacherAccount = t.name || "Teacher";
+  username = teacherAccount;
+  isTeacher = true;
+  teacherPasswordInput.value = "";
+  teacherLoginDiv.classList.add("hidden");
+  boardsPortalDiv.classList.remove("hidden");
+  studyBtn.classList.remove("hidden");
+  loadBoardsPortal();
+}
+
 teacherSignInBtn.onclick = async function() {
+  var email = teacherEmailInput.value.trim();
+  var password = teacherPasswordInput.value;
+  if (!email || !password) { alert("Enter your email and password to enter the kernel command center!"); return; }
+  teacherSignInBtn.disabled = true;
+  try {
+    var u = await waitForAuth();
+    if (u) { await signOut(auth); }
+    await signInWithEmailAndPassword(auth, email, password);
+    await enterTeacherPortal();
+  } catch (err) {
+    console.error("Teacher sign-in failed", err);
+    alert(authErrorMessage(err));
+  } finally {
+    teacherSignInBtn.disabled = false;
+  }
+};
+
+teacherSignUpBtn.onclick = async function() {
   var name = teacherNameInput.value.trim();
-  var password = teacherPasswordInput.value.trim();
-  if (!name || !password) { alert("Enter name and password to enter the kernel command center!"); return; }
-  // The old hard-coded master-admin sign-in that used to live here was removed
-  // for security (its password was readable by anyone viewing the page
-  // source). Admin access comes back in the Firebase Auth change via an
-  // admins/{uid} doc that only the project owner can create in the console.
-  var teacherRef = doc(db, "teachers", name);
-  var teacherDoc = await getDoc(teacherRef);
-  if (teacherDoc.exists()) {
-    if (teacherDoc.data().password === password) {
-      teacherAccount = name;
-      username = name;
-      isTeacher = true;
-      teacherLoginDiv.classList.add("hidden");
-      boardsPortalDiv.classList.remove("hidden");
-      studyBtn.classList.remove("hidden");
-      loadBoardsPortal();
-    } else {
-      alert("That password didn't pop! Double-check your kernel key!");
-    }
-  } else {
-    teacherAccount = name;
-    username = name;
-    isTeacher = true;
-    await setDoc(teacherRef, { name: name, password: password, createdAt: serverTimestamp() });
-    teacherLoginDiv.classList.add("hidden");
-    boardsPortalDiv.classList.remove("hidden");
-    studyBtn.classList.remove("hidden");
-    loadBoardsPortal();
+  var email = teacherEmailInput.value.trim();
+  var password = teacherPasswordInput.value;
+  if (!name || !email || !password) { alert("To create a teacher account, enter your name, email, and a password."); return; }
+  if (password.length < MIN_PASSWORD_LENGTH) { alert("Passwords need at least " + MIN_PASSWORD_LENGTH + " characters."); return; }
+  teacherSignUpBtn.disabled = true;
+  try {
+    var u = await waitForAuth();
+    if (u) { await signOut(auth); }
+    var cred = await createUserWithEmailAndPassword(auth, email, password);
+    try { await updateProfile(cred.user, { displayName: name }); } catch (e) { console.warn("displayName not saved", e); }
+    await setDoc(doc(db, "teachers", cred.user.uid), { name: name, email: email, approved: false, createdAt: serverTimestamp() });
+    await enterTeacherPortal();
+  } catch (err) {
+    console.error("Teacher sign-up failed", err);
+    alert(authErrorMessage(err));
+  } finally {
+    teacherSignUpBtn.disabled = false;
   }
 };
 
 studyBtn.onclick = function() {
   var url = "study.html";
-  if (teacherAccount) { url += "?teacher=" + encodeURIComponent(teacherAccount); }
+  if (teacherAccount && auth.currentUser) { url += "?teacher=" + encodeURIComponent(auth.currentUser.uid); }
   window.open(url, "_blank");
 };
 
@@ -746,6 +1017,11 @@ logoutBtnSeats.onclick = function() { resetAndLogout(); };
 
 function resetAndLogout() {
   teardownBoardListeners();
+  if (unsubBoardsPortal) { unsubBoardsPortal(); unsubBoardsPortal = null; }
+  // Teachers and password-protected students sign out of Firebase. A quick-
+  // join (anonymous) student stays signed in on this device, otherwise they
+  // could never get their name back without a password.
+  if (auth.currentUser && !auth.currentUser.isAnonymous) { signOut(auth).catch(function(e) { console.error("signOut failed", e); }); }
   closeSeatPopup();
   username = "";
   studentPassword = "";
@@ -769,6 +1045,7 @@ function resetAndLogout() {
   if (document.getElementById("boardNameInput")) { document.getElementById("boardNameInput").value = ""; }
   if (document.getElementById("studentPasswordInput")) { document.getElementById("studentPasswordInput").value = ""; }
   teacherNameInput.value = "";
+  if (teacherEmailInput) { teacherEmailInput.value = ""; }
   teacherPasswordInput.value = "";
   pollSection.innerHTML = "";
   postsDiv.innerHTML = "";
@@ -873,7 +1150,7 @@ addSeatBtn.onclick = async function() {
 
 copyLayoutBtn.onclick = async function() {
   if (!currentBoardId) { return; }
-  var q = query(collection(db, "boards"), where("teacherAccount", "==", teacherAccount));
+  var q = query(collection(db, "boards"), where("ownerUid", "==", auth.currentUser.uid));
   var snap = await getDocs(q);
   var boards = [];
   snap.forEach(function(d) { if (d.id !== currentBoardId) { boards.push({ id: d.id, name: d.data().name }); } });
@@ -1202,13 +1479,16 @@ async function loadBoardsPortal() {
     var teachersSnapshot = await getDocs(collection(db, "teachers"));
     var boardsSnapshot = await getDocs(collection(db, "boards"));
     var teacherBoards = {};
+    var teacherInfo = {};
+    var myUid = auth.currentUser ? auth.currentUser.uid : "";
     teachersSnapshot.forEach(function(d) {
-      if (d.id !== "Dimitry") { teacherBoards[d.id] = []; }
+      if (d.id !== myUid) { teacherBoards[d.id] = []; teacherInfo[d.id] = d.data(); }
     });
     boardsSnapshot.forEach(function(d) {
       var b = d.data();
-      var t = b.teacherAccount || "Unknown";
-      if (!teacherBoards[t]) { teacherBoards[t] = []; }
+      var t = b.ownerUid || "unknown";
+      if (t === myUid) { return; }
+      if (!teacherBoards[t]) { teacherBoards[t] = []; teacherInfo[t] = { name: b.teacherAccount || "Unknown", approved: true }; }
       teacherBoards[t].push({ id: d.id, name: b.name, createdAt: b.createdAt, teacherAccount: b.teacherAccount });
     });
     var masterSection = document.createElement("div");
@@ -1217,7 +1497,21 @@ async function loadBoardsPortal() {
     for (var teacher in teacherBoards) {
       var tc = document.createElement("div");
       tc.className = "teacher-card";
-      tc.innerHTML = "<h4>Teacher: " + escapeHTML(teacher) + "</h4>";
+      var tInfo = teacherInfo[teacher] || {};
+      tc.innerHTML = "<h4>Teacher: " + escapeHTML(tInfo.name || "Unknown") + (tInfo.email ? " <span style='opacity:0.6;font-weight:normal;'>(" + escapeHTML(tInfo.email) + ")</span>" : "") + "</h4>";
+      if (!tInfo.approved) {
+        var approveBtn = document.createElement("button");
+        approveBtn.className = "teacher-control";
+        approveBtn.textContent = "✓ Approve teacher";
+        approveBtn.style.marginBottom = "12px";
+        (function(tUid) {
+          approveBtn.onclick = async function() {
+            try { await updateDoc(doc(db, "teachers", tUid), { approved: true }); loadBoardsPortal(); }
+            catch (err) { console.error(err); alert(authErrorMessage(err)); }
+          };
+        })(teacher);
+        tc.appendChild(approveBtn);
+      }
       var bd = document.createElement("div");
       bd.className = "teacher-boards";
       teacherBoards[teacher].forEach(function(board) { bd.appendChild(createBoardCard(board, true)); });
@@ -1240,8 +1534,9 @@ async function loadBoardsPortal() {
     boardsList.appendChild(masterSection);
   } else {
     backToPortalBtn.classList.add("hidden");
-    var q = query(collection(db, "boards"), where("teacherAccount", "==", teacherAccount));
-    onSnapshot(q, function(snapshot) {
+    var q = query(collection(db, "boards"), where("ownerUid", "==", auth.currentUser.uid));
+    if (unsubBoardsPortal) { unsubBoardsPortal(); unsubBoardsPortal = null; }
+    unsubBoardsPortal = onSnapshot(q, function(snapshot) {
       if (isDraggingBoards) { return; }
       boardsList.innerHTML = "";
       if (snapshot.empty) {
@@ -1323,7 +1618,7 @@ function createBoardCard(board, isMasterView) {
 }
 
 async function resetBoard(boardId) {
-  var cols = ["posts", "replies", "polls", "leaderboard"];
+  var cols = ["posts", "replies", "polls", "leaderboard", "postAuthors"];
   for (var i = 0; i < cols.length; i++) {
     var snap = await getDocs(collection(db, "boards", boardId, cols[i]));
     for (var j = 0; j < snap.docs.length; j++) { await deleteDoc(snap.docs[j].ref); }
@@ -1331,7 +1626,7 @@ async function resetBoard(boardId) {
 }
 
 async function deleteBoard(boardId) {
-  var cols = ["posts", "replies", "polls", "leaderboard"];
+  var cols = ["posts", "replies", "polls", "leaderboard", "postAuthors", "seats", "names", "members"];
   for (var i = 0; i < cols.length; i++) {
     var snap = await getDocs(collection(db, "boards", boardId, cols[i]));
     for (var j = 0; j < snap.docs.length; j++) { await deleteDoc(snap.docs[j].ref); }
@@ -1397,6 +1692,7 @@ async function startBoard() {
   listenBoardSettings();
   initLeaderboard();
   if (!isDisplayMode) { initStickyCommentBar(); }
+  if (isTeacher) { await anonAuthorsLoaded(); }
   loadPosts();
   await loadPolls();
   if (isTeacher) { updateDailyDashboard(); loadDashboardSeatMap(); initTeacherHandRaiseBar(); }
@@ -1409,7 +1705,7 @@ createBoardBtn.onclick = async function() {
   var q = query(collection(db, "boards"), where("name", "==", boardName));
   var snapshot = await getDocs(q);
   if (!snapshot.empty) { alert("PopBoard name is already taken. Pick a fresh kernel!"); return; }
-  await addDoc(collection(db, "boards"), { name: boardName, teacherAccount: teacherAccount, createdAt: serverTimestamp(), order: Date.now() });
+  await addDoc(collection(db, "boards"), { name: boardName, teacherAccount: teacherAccount, ownerUid: auth.currentUser.uid, createdAt: serverTimestamp(), order: Date.now() });
   newBoardNameInput.value = "";
 };
 
@@ -1417,27 +1713,14 @@ addStudentBtn.onclick = async function() {
   var name = newStudentNameInput.value.trim();
   if (!name) { alert("Enter a student name."); return; }
   if (name.toLowerCase() === "dimitry" || name === teacherAccount) { alert("That name is reserved."); return; }
-  var studentsRef = collection(db, "boards", currentBoardId, "students");
-  var dupSnap = await getDocs(query(studentsRef, where("username", "==", name)));
-  if (!dupSnap.empty) { alert("A student with that name already exists."); return; }
-  await addDoc(studentsRef, {
-    username: name,
-    password: "",
-    joinedAt: serverTimestamp(),
-    historicalComments: 0,
-    historicalUpvotesGiven: 0,
-    historicalUpvotesReceived: 0,
-    historicalPollsCast: 0,
-    monthlyStats: {},
-    emoji: "",
-    nickname: "",
-    confusionState: null,
-    confusionSetAt: null,
-    confusionHistory: [],
-    handRaised: false,
-    handRaisedAt: null,
-    handsRaisedCount: 0
-  });
+  if (!isValidStudentName(name)) { alert("Names can't contain \"/\" and must be 60 characters or fewer."); return; }
+  var nameRef = doc(db, "boards", currentBoardId, "names", name);
+  if ((await getDoc(nameRef)).exists()) { alert("A student with that name already exists."); return; }
+  var newRef = doc(collection(db, "boards", currentBoardId, "students"));
+  var addBatch = writeBatch(db);
+  addBatch.set(newRef, newStudentFields(name, null));
+  addBatch.set(nameRef, { studentId: newRef.id, uid: null, secured: false });
+  await addBatch.commit();
   newStudentNameInput.value = "";
   loadStudentsPortal();
 };
@@ -2169,13 +2452,13 @@ async function loadStudentsPortal() {
     var deleteBtn = document.createElement("button");
     deleteBtn.innerHTML = iconLabel("trash", "Delete");
     deleteBtn.className = "delete-poll teacher-control";
-    (function(sid, sname) {
+    (function(sid, sname, sdata2) {
       wireHoldToConfirmDelete(deleteBtn, deleteBtn.querySelector(".icon-svg"), async function() {
         await animateSuckIntoTrash(card, deleteBtn);
-        await deleteDoc(doc(db, "boards", currentBoardId, "students", sid));
+        await deleteStudentRecord(sid, sname, sdata2 && sdata2.uid);
         loadStudentsPortal();
       });
-    })(studentId, student.username);
+    })(studentId, student.username, student);
     actions.appendChild(enterBtn);
     actions.appendChild(editBtn);
     actions.appendChild(deleteBtn);
@@ -2217,6 +2500,9 @@ async function renameStudentUsername(studentId, oldUsername, newUsername) {
   var authoredReplies = await getDocs(query(collection(db, "boards", currentBoardId, "replies"), where("author", "==", oldUsername)));
   for (var i = 0; i < authoredReplies.docs.length; i++) { await updateDoc(authoredReplies.docs[i].ref, { author: newUsername }); }
 
+  var hiddenAuthored = await getDocs(query(collection(db, "boards", currentBoardId, "postAuthors"), where("author", "==", oldUsername)));
+  for (var i = 0; i < hiddenAuthored.docs.length; i++) { await updateDoc(hiddenAuthored.docs[i].ref, { author: newUsername }); }
+
   // Full scan (not a where() query) -- upvoters/upvoteHistory can contain
   // oldUsername on posts NOT authored by them, same idiom this codebase
   // already uses for single-student aggregation (computeMonthlyEngagement).
@@ -2244,7 +2530,37 @@ async function renameStudentUsername(studentId, oldUsername, newUsername) {
     });
   }
 
-  await updateDoc(doc(db, "boards", currentBoardId, "students", studentId), { username: newUsername });
+  var oldNameRef = doc(db, "boards", currentBoardId, "names", oldUsername);
+  var oldNameSnap = await getDoc(oldNameRef);
+  var nameData = oldNameSnap.exists() ? oldNameSnap.data() : { studentId: studentId, uid: null, secured: false };
+  var renameBatch = writeBatch(db);
+  renameBatch.set(doc(db, "boards", currentBoardId, "names", newUsername), nameData);
+  if (oldNameSnap.exists()) { renameBatch.delete(oldNameRef); }
+  if (nameData.uid) { renameBatch.set(doc(db, "boards", currentBoardId, "members", nameData.uid), { studentId: studentId, username: newUsername }); }
+  renameBatch.update(doc(db, "boards", currentBoardId, "students", studentId), { username: newUsername });
+  await renameBatch.commit();
+}
+
+// Removes a student record plus its name registration and device/account
+// link, so the name can be used again.
+async function deleteStudentRecord(studentId, studentName, studentUid) {
+  var b = writeBatch(db);
+  if (studentName) { b.delete(doc(db, "boards", currentBoardId, "names", studentName)); }
+  if (studentUid) { b.delete(doc(db, "boards", currentBoardId, "members", studentUid)); }
+  b.delete(doc(db, "boards", currentBoardId, "students", studentId));
+  await b.commit();
+}
+
+// Teacher-only: detach a name from the device/account that claimed it, so
+// the student can join again (e.g. new device, or forgot their password).
+// Their posts, votes and stats stay; the next person to join with this name
+// claims it, so tell the student to rejoin right away.
+async function resetStudentSignIn(studentId, studentName, studentUid) {
+  var b = writeBatch(db);
+  b.update(doc(db, "boards", currentBoardId, "students", studentId), { uid: null, secured: false });
+  b.set(doc(db, "boards", currentBoardId, "names", studentName), { studentId: studentId, uid: null, secured: false });
+  if (studentUid) { b.delete(doc(db, "boards", currentBoardId, "members", studentUid)); }
+  await b.commit();
 }
 
 // Teacher-facing "edit student" popup -- deliberately does NOT reuse
@@ -2350,7 +2666,7 @@ async function viewStudentDashboard(studentId) {
   var monthlyPollsCastPct = await computeMonthlyPollsCastPct(studentId, student);
   var monthlyAnonPct = await computeMonthlyAnonPct(studentId, student);
   var monthlyPollAccuracy = await computeMonthlyPollAccuracy(studentId, student);
-  dashboardContent.innerHTML = "<div class='dashboard-header'><h2>" + escapeHTML(student.username) + "</h2><p>" + (student.password ? "Password: " + escapeHTML(student.password) : "No password set") + "</p><button id='mergeStudentBtn' class='teacher-control' style='margin-top:16px;'>Merge Student</button></div><div class='metrics-grid' id='metricsGrid'></div>";
+  dashboardContent.innerHTML = "<div class='dashboard-header'><h2>" + escapeHTML(student.username) + "</h2><p>" + (student.secured ? "🔒 Protected with a password" : (student.uid ? "Quick join (this device only)" : "Not joined yet")) + "</p><button id='mergeStudentBtn' class='teacher-control' style='margin-top:16px;'>Merge Student</button>" + (student.uid ? " <button id='resetSignInBtn' class='teacher-control' style='margin-top:16px;'>Reset Sign-in</button>" : "") + "</div><div class='metrics-grid' id='metricsGrid'></div>";
   var grid = document.getElementById("metricsGrid");
   var lbCard = document.createElement("div");
   lbCard.className = "metric-card";
@@ -2410,6 +2726,14 @@ async function viewStudentDashboard(studentId) {
   drawConfusionStackedBarChart("confusionBarChart" + studentId, monthlyConfusion);
 
   document.getElementById("mergeStudentBtn").onclick = async function() { await showMergeDialog(studentId); };
+  var resetSignInBtn = document.getElementById("resetSignInBtn");
+  if (resetSignInBtn) {
+    resetSignInBtn.onclick = async function() {
+      if (!confirm("Reset sign-in for \"" + student.username + "\"? Their posts and stats stay. They (or anyone) can then join again with this name, so have them rejoin right away and add a password if they want it protected.")) { return; }
+      try { await resetStudentSignIn(studentId, student.username, student.uid); viewStudentDashboard(studentId); }
+      catch (err) { console.error(err); alert(authErrorMessage(err)); }
+    };
+  }
 }
 
 function addHistoricMetricCard(grid, title, monthlyStats, metric, canvasId) {
@@ -2519,6 +2843,7 @@ function getLastTwelveMonthKeys() {
 }
 
 async function computeMonthlyEngagement(studentId, student) {
+  await anonAuthorsLoaded();
   var months = getLastTwelveMonthKeys();
   var joinedAt = student.joinedAt && student.joinedAt.toDate ? student.joinedAt.toDate() : new Date(0);
   var pollsSnap = await getDocs(collection(db, "boards", currentBoardId, "polls"));
@@ -2549,7 +2874,7 @@ async function computeMonthlyEngagement(studentId, student) {
       if (voted) { participated++; }
     });
     postsSnap.forEach(function(pd) {
-      var post = pd.data();
+      var post = withAuthor(pd);
       var postTime = post.timestamp && post.timestamp.toDate ? post.timestamp.toDate() : null;
       if (!postTime || postTime < joinedAt) { return; }
       var pk = postTime.getFullYear() + "-" + String(postTime.getMonth() + 1).padStart(2, "0");
@@ -2557,7 +2882,7 @@ async function computeMonthlyEngagement(studentId, student) {
       if (post.author === student.username) { primaryCommentCount++; return; }
       totalOpp++;
       var upvoted = (post.upvoters || []).indexOf(student.username) !== -1;
-      var replied = repliesSnap.docs.some(function(rd) { return rd.data().postId === pd.id && rd.data().author === student.username; });
+      var replied = repliesSnap.docs.some(function(rd) { return rd.data().postId === pd.id && withAuthor(rd).author === student.username; });
       if (upvoted || replied) { participated++; }
     });
     var pct = totalOpp > 0 ? (participated / totalOpp) * 100 : 0;
@@ -2600,6 +2925,7 @@ async function computeMonthlyPollsCastPct(studentId, student) {
 }
 
 async function computeMonthlyAnonPct(studentId, student) {
+  await anonAuthorsLoaded();
   var months = getLastTwelveMonthKeys();
   var postsSnap = await getDocs(collection(db, "boards", currentBoardId, "posts"));
   var repliesSnap = await getDocs(collection(db, "boards", currentBoardId, "replies"));
@@ -2609,7 +2935,7 @@ async function computeMonthlyAnonPct(studentId, student) {
     var total = 0;
     var anon = 0;
     postsSnap.forEach(function(pd) {
-      var p = pd.data();
+      var p = withAuthor(pd);
       if (p.author !== student.username) { return; }
       var t = p.timestamp && p.timestamp.toDate ? p.timestamp.toDate() : null;
       if (!t) { return; }
@@ -2619,7 +2945,7 @@ async function computeMonthlyAnonPct(studentId, student) {
       if (p.anonymous) { anon++; }
     });
     repliesSnap.forEach(function(rd) {
-      var r = rd.data();
+      var r = withAuthor(rd);
       if (r.author !== student.username) { return; }
       var t = r.timestamp && r.timestamp.toDate ? r.timestamp.toDate() : null;
       if (!t) { return; }
@@ -3004,12 +3330,13 @@ async function mergeStudents(keepId, mergeId) {
   var updateData = { monthlyStats: mergedM };
   for (var key in mergedH) { updateData[key] = mergedH[key]; }
   await updateDoc(keepRef, updateData);
-  await deleteDoc(mergeRef);
+  await deleteStudentRecord(mergeId, mergeData.username, mergeData.uid);
   alert("Students merged successfully.");
   viewStudentDashboard(keepId);
 }
 
 async function calculateStudentStats(studentId, totalPolls, pollsSnapshot) {
+  await anonAuthorsLoaded();
   var student = (await getDoc(doc(db, "boards", currentBoardId, "students", studentId))).data();
   var pollsVoted = 0;
   pollsSnapshot.forEach(function(pd) {
@@ -3024,19 +3351,19 @@ async function calculateStudentStats(studentId, totalPolls, pollsSnapshot) {
   var upvotesGiven = 0;
   var upvotesReceived = 0;
   postsSnap.forEach(function(pd) {
-    var p = pd.data();
+    var p = withAuthor(pd);
     if (p.author !== student.username) { return; }
     comments++;
     if (p.anonymous) { anonComments++; }
   });
   repliesSnap.forEach(function(rd) {
-    var r = rd.data();
+    var r = withAuthor(rd);
     if (r.author !== student.username) { return; }
     comments++;
     if (r.anonymous) { anonComments++; }
   });
   postsSnap.forEach(function(pd) {
-    var p = pd.data();
+    var p = withAuthor(pd);
     if ((p.upvoters || []).indexOf(student.username) !== -1) { upvotesGiven++; }
     if (p.author === student.username) { upvotesReceived += p.upvotes || 0; }
   });
@@ -4614,10 +4941,10 @@ postBtn.onclick = async function() {
   var imageUrl = null;
   if (postImageFile) { imageUrl = await uploadImage(postImageFile, "boards/" + currentBoardId + "/posts"); }
   playWhoosh();
-  await addDoc(collection(db, "boards", currentBoardId, "posts"), {
-    author: username, text: text, anonymous: anonymous, imageUrl: imageUrl,
+  await writeAuthoredDoc("posts", {
+    text: text, imageUrl: imageUrl,
     upvotes: 0, upvoters: [], upvoteHistory: [], timestamp: serverTimestamp()
-  });
+  }, !!anonymous);
   if (currentStudentId) { await incrementStudentStat(currentStudentId, "comments"); }
   postInput.value = "";
   postImageFile = null;
@@ -4807,9 +5134,9 @@ async function addReply(postId, text, anonymous, imageUrl) {
   if (!anonymous) { anonymous = false; }
   if (!imageUrl) { imageUrl = null; }
   if (!text && !imageUrl) { return; }
-  await addDoc(collection(db, "boards", currentBoardId, "replies"), {
-    postId: postId, author: username, text: text, anonymous: anonymous, imageUrl: imageUrl, timestamp: serverTimestamp()
-  });
+  await writeAuthoredDoc("replies", {
+    postId: postId, text: text, imageUrl: imageUrl, timestamp: serverTimestamp()
+  }, !!anonymous);
   if (currentStudentId) { await incrementStudentStat(currentStudentId, "comments"); }
 }
 
@@ -4819,7 +5146,7 @@ function loadReplies(postId, container, parentVisible) {
   onSnapshot(q, function(snap) {
     container.innerHTML = "";
     snap.forEach(function(d) {
-      var r = d.data();
+      var r = isTeacher ? withAuthor(d) : d.data();
       if (r.postId !== postId) { return; }
       if (r.visible === undefined) { r.visible = true; }
       if (!r.visible && !isTeacher) { return; }
@@ -4827,7 +5154,7 @@ function loadReplies(postId, container, parentVisible) {
       var div = document.createElement("div");
       div.className = "reply";
       if (!r.visible) { div.classList.add("hidden-comment"); }
-      div.innerHTML = "<strong>" + (r.anonymous && !isTeacher ? iconLabel("mask", "Anonymous") : escapeHTML(r.author)) + "</strong> " + escapeHTML(r.text);
+      div.innerHTML = "<strong>" + (r.anonymous && (!isTeacher || !r.author) ? iconLabel("mask", "Anonymous") : escapeHTML(r.author)) + "</strong> " + escapeHTML(r.text);
       if (r.imageUrl) {
         var img = document.createElement("img");
         img.src = r.imageUrl;
@@ -4883,7 +5210,7 @@ function loadPosts() {
     var archivedComments = document.getElementById("archivedComments");
     if (archivedComments) { archivedComments.innerHTML = ""; }
     snapshot.forEach(function(docSnap) {
-      var post = docSnap.data();
+      var post = isTeacher ? withAuthor(docSnap) : docSnap.data();
       var postId = docSnap.id;
       if (post.visible === undefined) { post.visible = true; }
       if (!post.visible && !isTeacher) { return; }
@@ -4957,7 +5284,7 @@ function loadPosts() {
         div.classList.add("post-reveal-pending");
         if (postRevealObserver) { postRevealObserver.observe(div); }
       }
-      var displayName = post.anonymous && !isTeacher ? iconLabel("mask", "Anonymous") : escapeHTML(post.author);
+      var displayName = post.anonymous && (!isTeacher || !post.author) ? iconLabel("mask", "Anonymous") : escapeHTML(post.author);
       div.innerHTML = "<strong>" + displayName + "</strong><br>" + escapeHTML(post.text) + "<br><div class='post-actions-row'><span class='upvote'>🍿 <span class='upvote-count'>" + escapeHTML(post.upvotes || 0) + "</span></span><button class='reply-btn teacher-control'>Reply</button></div>";
       if (post.imageUrl) {
         var img = document.createElement("img");
@@ -5025,7 +5352,7 @@ function loadPosts() {
           } else {
             await updateDoc(postRef, { upvoters: arrayUnion(username), upvotes: increment(1), upvoteHistory: arrayUnion({ username: username, action: "Upvoted", timestamp: Date.now() }) });
             if (currentStudentId) { await incrementStudentStat(currentStudentId, "upvotesGiven", 1); }
-            if (postData.author !== username) {
+            if (postData.author && postData.author !== username) {
               var aq = query(collection(db, "boards", currentBoardId, "students"), where("username", "==", postData.author));
               var aSnap = await getDocs(aq);
               if (!aSnap.empty) { await incrementStudentStat(aSnap.docs[0].id, "upvotesReceived", 1); }
@@ -6791,6 +7118,7 @@ function renderMCPoll(div, poll, pollId, totalStudents) {
 // windowed, so poll engagement is derived entirely from `history` entries
 // (which DO carry a client Date.now() timestamp on every poll type) instead.
 async function updateDailyDashboard() {
+  await anonAuthorsLoaded();
   if (!isTeacher || !currentBoardId) { return; }
   try {
     var winStart = classSessionStartAt || 0;
@@ -6804,9 +7132,9 @@ async function updateDailyDashboard() {
     var studentsSnap = await getDocs(collection(db, "boards", currentBoardId, "students"));
 
     var postsInWindow = [];
-    postsSnap.forEach(function(d) { var p = d.data(); if (firestoreTsInWindow(p.timestamp)) { postsInWindow.push(p); } });
+    postsSnap.forEach(function(d) { var p = withAuthor(d); if (firestoreTsInWindow(p.timestamp)) { postsInWindow.push(p); } });
     var repliesInWindow = [];
-    repliesSnap.forEach(function(d) { var r = d.data(); if (firestoreTsInWindow(r.timestamp)) { repliesInWindow.push(r); } });
+    repliesSnap.forEach(function(d) { var r = withAuthor(d); if (firestoreTsInWindow(r.timestamp)) { repliesInWindow.push(r); } });
 
     var activeStudents = new Set();
     postsInWindow.forEach(function(p) { activeStudents.add(p.author); });
