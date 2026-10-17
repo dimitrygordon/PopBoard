@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luminosity &amp; Brightness Sandbox // PopBoard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05060a;--panel:#171C22;--panel-2:#1E252D;--panel-3:#252E38;--border:#2C3742;--border-lit:#3A4854;--amber:#FFB300;--amber-dim:#8a640f;--cyan:#5FD3C4;--violet:#B07CFF;--text:#E9E6DE;--text-dim:#93A0AC;--text-dimmer:#5C6874;--green:#57d38c;--red:#ff7a7a}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Oswald',sans-serif;letter-spacing:.03em;text-transform:uppercase}.mono{font-family:'JetBrains Mono',monospace}button,input,select{font-family:inherit}
+.bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(5,6,10,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.bar button{background:none;border:none;color:#0A84FF;font-size:15px;cursor:pointer;padding:4px 2px}.bar-left{display:flex;gap:16px;align-items:center}.study-back-btn{display:inline-flex;align-items:center;gap:2px}
+@media(max-width:400px){.study-back-btn .back-label{display:none}}
+.title{text-align:center;padding:14px 12px 4px}.title h1{font-size:20px;margin:0}.title p{color:var(--text-dim);font-size:12.5px;max-width:820px;margin:6px auto 0;line-height:1.55}
+#statusBanner{margin:10px auto;max-width:920px;background:rgba(15,18,22,.9);border:1px solid var(--border-lit);border-radius:14px;padding:10px 18px;text-align:center}
+#statusBanner .status-type{font-family:'Oswald',sans-serif;font-size:16px;letter-spacing:.05em;text-transform:uppercase;color:var(--amber)}
+#statusBanner .status-reason{font-size:11.5px;color:var(--text-dim);margin-top:3px;font-family:'JetBrains Mono',monospace;line-height:1.55}
+main{max-width:1180px;margin:0 auto;padding:6px 14px 40px}
+.grid{display:grid;grid-template-columns:1.55fr 1fr;gap:14px}.grid.eq{grid-template-columns:1fr 1fr}@media(max-width:820px){.grid,.grid.eq{grid-template-columns:1fr}}
+.card{background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-top:14px}
+.grid .card{margin-top:0}.card h2{font-size:13px;margin:0 0 4px;text-align:center}.card .sub{font-size:11px;color:var(--text-dimmer);text-align:center;font-family:'JetBrains Mono',monospace;margin-bottom:8px;line-height:1.5}
+canvas.view{width:100%;display:block;border-radius:12px;background:#070a12;touch-action:none}
+#mainCanvas{height:400px;cursor:grab}#magCanvas{height:170px}#blendCanvas{height:180px}@media(max-width:520px){#mainCanvas{height:330px}}
+.readouts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}@media(max-width:520px){.readouts{grid-template-columns:1fr 1fr}}
+.tile{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:10px;padding:8px;text-align:center}.tile .l{font-family:'Oswald',sans-serif;font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-dim)}.tile .v{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;margin-top:2px}.tile .s{font-size:10px;color:var(--text-dimmer);font-family:'JetBrains Mono',monospace}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:820px){.controls{grid-template-columns:1fr}}
+.panel-label{font-size:13px;color:#e5e5e7;margin-bottom:6px}.panel-row{margin-bottom:13px}.panel-hint{font-size:11.5px;color:#8e8e93;line-height:1.6}.panel-section-title{text-align:center;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#6e6e73;margin:14px 0 8px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:#48484a;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:none}
+input[type=number],select{background:var(--panel-2);border:1px solid var(--border-lit);color:var(--text);border-radius:8px;padding:8px;width:100%;font-size:13px}
+.seg-row{display:flex;gap:6px;flex-wrap:wrap}.seg-btn{flex:1;padding:8px 4px;border-radius:8px;border:1px solid var(--border-lit);background:var(--panel-2);color:var(--text-dim);font-size:11.5px;text-align:center;cursor:pointer;min-width:70px}.seg-btn.active{background:var(--amber-dim);color:#fff;border-color:var(--amber)}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}.btn-row[hidden]{display:none}.btn{flex:1;padding:10px;border-radius:10px;border:1px solid var(--border-lit);background:var(--panel-3);color:var(--text);cursor:pointer;font-size:13px;min-width:90px}.btn.primary{background:var(--amber);color:#1a1200;border:none;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{padding:7px 9px;border-radius:999px;border:1px solid var(--border-lit);background:var(--panel-2);color:var(--text);font-size:11px;cursor:pointer}.chip.active{border-color:var(--amber);color:var(--amber)}
+table{width:100%;border-collapse:collapse;font-size:11.5px}th,td{border-bottom:1px solid var(--border);padding:7px 5px;text-align:right;font-family:'JetBrains Mono',monospace}th:first-child,td:first-child{text-align:left}th{color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase}
+.tblwrap{overflow-x:auto}
+.explain p,.card p.body{font-size:13px;line-height:1.65;color:#d1d1d6}
+.eq{font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,.28);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.7;color:var(--cyan);text-align:center}
+.feedback{font-size:13px;line-height:1.55;min-height:22px;margin-top:8px}.good{color:var(--green)}.bad{color:var(--red)}
+.option{display:block;width:100%;text-align:left;margin:7px 0;padding:11px 13px;border-radius:10px;border:1px solid var(--border-lit);background:var(--panel-2);color:var(--text);cursor:pointer;font-size:13px}.option.correct{border-color:#2e7d4f;background:rgba(46,125,79,.25)}.option.wrong{border-color:#8a2f2f;background:rgba(138,47,47,.22)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:12.5px}
+.toggle-switch{width:40px;height:24px;border-radius:12px;background:#3a3a3c;position:relative;cursor:pointer;flex-shrink:0;border:none}.toggle-switch .knob{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .15s}.toggle-switch.on{background:#6b4a99}.toggle-switch.on .knob{left:18px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
+footer{color:var(--text-dimmer);font-size:11px;text-align:center;padding:0 16px 28px;font-family:'JetBrains Mono',monospace;line-height:1.6}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="bar">
+  <div class="bar-left">
+    <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg><span class="back-label">Back</span></button>
+    <button id="controlsJumpBtn" type="button">Controls</button>
+  </div>
+  <button id="pauseBtn" type="button">Pause</button>
+  <button id="resetBtn" type="button">Reset</button>
+</div>
+
+<div class="title">
+  <h1>Luminosity &amp; Brightness Sandbox</h1>
+  <p>A star pours the same light over bigger and bigger spheres. Move the observer, change the star, and watch brightness, magnitudes, and distance stay locked to one set of equations.</p>
+</div>
+
+<div style="padding:0 14px"><div id="statusBanner" role="status" aria-live="polite">
+  <div class="status-type" id="statusType">Inverse-square law</div>
+  <div class="status-reason" id="statusReason">&mdash;</div>
+</div></div>
+
+<main>
+  <div class="grid">
+    <section class="card" aria-label="Main visualization">
+      <h2 id="viewTitle">3D View &mdash; Expanding Light Shells</h2>
+      <div class="sub" id="viewSub">Drag to rotate &middot; shells are spheres of area 4&pi;r&sup2; &middot; the same energy spreads thinner</div>
+      <div class="seg-row" style="margin-bottom:8px" role="tablist" aria-label="View mode">
+        <button class="seg-btn active" data-view="3d" type="button">3D Shells</button>
+        <button class="seg-btn" data-view="2d" type="button">2D Diagram</button>
+        <button class="seg-btn" data-view="graph" type="button">Graph</button>
+      </div>
+      <canvas id="mainCanvas" class="view"></canvas>
+      <div class="btn-row" style="margin-top:8px" id="graphToggleRow" hidden>
+        <button class="btn" id="graphScaleBtn" type="button">Graph y-axis: Log</button>
+        <button class="btn" id="graphXBtn" type="button">Graph x-axis: Log distance</button>
+      </div>
+      <div class="readouts">
+        <div class="tile"><div class="l">Luminosity L</div><div class="v" id="roL">&mdash;</div><div class="s">intrinsic power</div></div>
+        <div class="tile"><div class="l">Distance d</div><div class="v" id="roD">&mdash;</div><div class="s" id="roDly">&mdash;</div></div>
+        <div class="tile"><div class="l">Brightness F = L/(4&pi;d&sup2;)</div><div class="v" id="roF">&mdash;</div><div class="s">rel. to Sun at 10 pc</div></div>
+        <div class="tile"><div class="l">Apparent mag m</div><div class="v" id="roMapp">&mdash;</div><div class="s">how bright it looks</div></div>
+        <div class="tile"><div class="l">Absolute mag M</div><div class="v" id="roMabs">&mdash;</div><div class="s">m if placed at 10 pc</div></div>
+        <div class="tile"><div class="l">Distance modulus m&minus;M</div><div class="v" id="roDM">&mdash;</div><div class="s">5 log&#8321;&#8320;(d) &minus; 5</div></div>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Star controls" id="controls">
+      <h2>Stars &amp; Observer</h2>
+      <div class="sub">Track 2&ndash;4 stars at once &middot; edit the selected star</div>
+      <div class="chips" id="starChips"></div>
+      <div class="btn-row" style="margin-top:8px">
+        <button class="btn" id="addStarBtn" type="button">+ Add star</button>
+        <button class="btn" id="removeStarBtn" type="button">Remove selected</button>
+      </div>
+      <div class="panel-row" style="margin-top:12px"><div class="panel-label" id="lumLabel">Luminosity</div>
+        <input type="range" id="lumSlider" min="-2" max="5" step="0.01" value="1.4" aria-label="Luminosity in solar luminosities, logarithmic">
+        <p class="panel-hint">Log scale: 0.01 to 100,000 L&#9737;. Sirius is about 25.4 L&#9737;.</p></div>
+      <div class="panel-row"><div class="panel-label" id="distLabel">Observer distance</div>
+        <input type="range" id="distSlider" min="-1" max="2.3" step="0.01" value="0.42" aria-label="Distance in parsecs, logarithmic">
+        <p class="panel-hint">Log scale: 0.1 to about 200 pc (1 pc = 3.26 light-years). Drag the cyan observer in the views too.</p></div>
+      <div class="btn-row">
+        <button class="btn" id="halfDistBtn" type="button">&frac12;&times; distance</button>
+        <button class="btn" id="doubleDistBtn" type="button">2&times; distance</button>
+        <button class="btn" id="tripleDistBtn" type="button">3&times; distance</button>
+      </div>
+      <p class="panel-hint" id="inverseReadout">&mdash;</p>
+      <div class="toggle-row"><span>Animate expanding shells</span><button class="toggle-switch on" id="animToggle" type="button" aria-label="Animate expanding shells"><span class="knob"></span></button></div>
+      <div class="panel-section-title">Real-star presets (selected star)</div>
+      <div class="chips" id="presetChips"></div>
+    </section>
+  </div>
+
+  <section class="card" aria-label="All tracked stars">
+    <h2>All Tracked Stars &mdash; Side by Side</h2>
+    <div class="sub">Same equations for every row &middot; M never changes when you only move a star</div>
+    <div class="tblwrap"><table><thead><tr><th>Star</th><th>L (L&#9737;)</th><th>d (pc)</th><th>d (ly)</th><th>F (rel.)</th><th>m</th><th>M</th></tr></thead><tbody id="starTable"></tbody></table></div>
+    <div class="eq">F = L / (4&pi;d&sup2;) &nbsp;&middot;&nbsp; m &minus; M = 5 log&#8321;&#8320;(d) &minus; 5 &nbsp;&middot;&nbsp; M = 4.83 &minus; 2.5 log&#8321;&#8320;(L/L&#9737;) &nbsp;&middot;&nbsp; brightness ratio = 10<sup>&minus;0.4 &Delta;m</sup></div>
+  </section>
+
+  <section class="card" aria-label="Guided investigations">
+    <h2>Guided Investigations</h2>
+    <div class="sub">Try it, predict first, then check the readouts</div>
+    <div class="btn-row">
+      <button class="btn" data-inv="double" type="button">1. Double the distance</button>
+      <button class="btn" data-inv="triple" type="button">2. Triple the distance</button>
+      <button class="btn" data-inv="equal" type="button">3. Same look, different star</button>
+      <button class="btn" data-inv="percent" type="button">4. Small % change</button>
+    </div>
+    <p class="body" id="investigationText">1) Predict: if the observer moves twice as far away, what happens to F and to m? Press &ldquo;Double the distance&rdquo; in the controls &mdash; F falls to 1/4 and m grows by 2.5&times;log&#8321;&#8320;(4) &asymp; +1.51 mag. Tripling gives 1/9 and +2.39 mag.</p>
+    <div class="panel-row"><div class="panel-label" id="pctLabel">Brightness change: +10%</div>
+      <input type="range" id="pctSlider" min="-90" max="200" step="1" value="10" aria-label="Percent change in brightness">
+      <p class="panel-hint" id="pctReadout">&mdash;</p>
+      <p class="panel-hint">A small %-change activity: &Delta;m = &minus;2.5 log&#8321;&#8320;(1 + x), where x is the fractional change. A +10% brightness bump is only about &minus;0.10 mag &mdash; magnitudes compress changes.</p></div>
+  </section>
+
+  <div class="grid eq">
+    <section class="card" aria-label="Magnitude Scale Explorer">
+      <h2>Magnitude Scale Explorer</h2>
+      <div class="sub">Smaller (even negative) = brighter &middot; 5 mag = exactly 100&times;</div>
+      <p class="body"><strong>Hipparchus</strong> (about 150 BCE) sorted visible stars into six classes: 1st magnitude brightest, 6th faintest. In 1856 <strong>Norman Pogson</strong> made it quantitative: a difference of <strong>5 magnitudes = a factor of exactly 100</strong> in brightness, so 1 mag = 100<sup>1/5</sup> &asymp; 2.512&times;. The scale runs backwards and past zero &mdash; Sirius is m &asymp; &minus;1.46 and the Sun is m &asymp; &minus;26.7.</p>
+      <canvas id="magCanvas" class="view"></canvas>
+      <div class="panel-row"><div class="panel-label" id="mag1Label">Star A magnitude</div><input type="range" id="mag1Slider" min="-2" max="12" step="0.1" value="0" aria-label="Star A magnitude"></div>
+      <div class="panel-row"><div class="panel-label" id="mag2Label">Star B magnitude</div><input type="range" id="mag2Slider" min="-2" max="12" step="0.1" value="5" aria-label="Star B magnitude"></div>
+      <p class="panel-hint" id="magCompareReadout">&mdash;</p>
+      <div class="btn-row">
+        <button class="btn" data-dm="1" type="button">Set &Delta;m = 1</button>
+        <button class="btn" data-dm="5" type="button">Set &Delta;m = 5</button>
+        <button class="btn" data-dm="10" type="button">Set &Delta;m = 10</button>
+      </div>
+      <p class="panel-hint">Challenges: &Delta;m = 1 &rarr; 2.512&times; &middot; &Delta;m = 5 &rarr; 100&times; &middot; &Delta;m = 10 &rarr; 10,000&times;. Which star looks brighter &mdash; the one with the smaller number.</p>
+    </section>
+
+    <section class="card" aria-label="Apparent vs Absolute Magnitude Explorer">
+      <h2>Apparent vs. Absolute Explorer</h2>
+      <div class="sub">m is how it looks &middot; M is m at 10 pc &middot; L stays put when you move it</div>
+      <div class="chips" id="realStarChips"></div>
+      <div class="panel-row" style="margin-top:10px"><div class="panel-label" id="realDistLabel">Move this star to</div>
+        <input type="range" id="realDistSlider" min="-1" max="2.7" step="0.01" value="0.42" aria-label="Real star distance in parsecs, logarithmic"></div>
+      <div class="readouts" style="grid-template-columns:1fr 1fr">
+        <div class="tile"><div class="l">Apparent m</div><div class="v" id="realM">&mdash;</div></div>
+        <div class="tile"><div class="l">Absolute M (fixed)</div><div class="v" id="realMAbs">&mdash;</div></div>
+        <div class="tile"><div class="l">Luminosity (fixed)</div><div class="v" id="realL">&mdash;</div></div>
+        <div class="tile"><div class="l">Brightness F</div><div class="v" id="realF">&mdash;</div></div>
+      </div>
+      <p class="panel-hint" id="realReadout">&mdash;</p>
+      <p class="panel-hint">Reference: Sirius &mdash; L &asymp; 25.4 L&#9737;, d &asymp; 2.64 pc, m &asymp; &minus;1.46, M &asymp; +1.42. Catalog L values are approximate (visual vs. total/bolometric light differ slightly), while m, M and d here obey m &minus; M = 5 log&#8321;&#8320;(d) &minus; 5 exactly. Two stars can look equally bright (same m) at different distances &mdash; the farther one must be intrinsically more luminous. Apparent brightness alone cannot tell you which star emits more energy.</p>
+      <div class="tblwrap"><table><thead><tr><th>Real star</th><th>L (L&#9737;)</th><th>Actual d (pc)</th><th>m</th><th>M</th></tr></thead><tbody id="realTable"></tbody></table></div>
+    </section>
+  </div>
+
+  <div class="grid eq">
+    <section class="card" aria-label="Distance to the Star Virtual Lab">
+      <h2>Distance-to-the-Star Virtual Lab</h2>
+      <div class="sub">Use m and M to find d &middot; extinction assumed zero unless you add it</div>
+      <p class="body" id="labPrompt">&mdash;</p>
+      <div class="eq" id="labSteps">&mdash;</div>
+      <div class="panel-row"><div class="panel-label">Your distance estimate (pc)</div><input type="number" id="labGuess" min="0" step="any" placeholder="e.g. 25"></div>
+      <div class="btn-row"><button class="btn primary" id="labCheckBtn" type="button">Check my distance</button><button class="btn" id="labNewBtn" type="button">New star</button></div>
+      <p class="feedback" id="labFeedback" aria-live="polite"></p>
+      <div class="panel-section-title">Extension &mdash; interstellar dust</div>
+      <div class="panel-row"><div class="panel-label" id="dustLabel">Extinction A: 0.0 mag</div><input type="range" id="dustSlider" min="0" max="2" step="0.1" value="0" aria-label="Extinction in magnitudes"></div>
+      <p class="panel-hint" id="dustReadout">&mdash;</p>
+      <p class="panel-hint">Dust dims a star by A magnitudes: m<sub>observed</sub> = m + A. If you ignore dust, you overestimate the distance by a factor 10<sup>A/5</sup> &mdash; the star only <em>looks</em> farther away. Errors work the same way: a 0.5 mag error in m or M shifts the inferred distance by about 26%.</p>
+    </section>
+
+    <section class="card" aria-label="Blended Starlight Challenge">
+      <h2>Blended Starlight Challenge</h2>
+      <div class="sub">Unresolved stars add in brightness &mdash; never in magnitude</div>
+      <canvas id="blendCanvas" class="view"></canvas>
+      <div id="blendControls"></div>
+      <div class="eq" id="blendSteps">&mdash;</div>
+      <p class="panel-hint">Recipe: convert each magnitude to a linear brightness, b = 10<sup>&minus;0.4m</sup>; add the b values; convert back, m<sub>combined</sub> = &minus;2.5 log&#8321;&#8320;(b<sub>total</sub>). Two stars at m = 0 blend to m &asymp; &minus;0.75, not 0 and not &minus;0 or 0+0.</p>
+      <div class="panel-section-title">Brightest-looking vs. most luminous</div>
+      <p class="body">Sirius looks brightest in our night sky (m &asymp; &minus;1.46), but it is only about 25 L&#9737; and very nearby. Betelgeuse looks fainter (m &asymp; +0.4) yet radiates tens of thousands of times more light &mdash; it is simply far away. Which is which?</p>
+      <div id="quizOptions"></div>
+      <p class="feedback" id="quizFeedback" aria-live="polite"></p>
+      <div class="btn-row"><button class="btn" id="quizBtn" type="button">New brightest-vs-luminous question</button></div>
+    </section>
+  </div>
+
+  <section class="card explain" aria-label="The big idea">
+    <h2>The Big Idea</h2>
+    <p><strong>Luminosity is what a star emits; brightness is what we receive.</strong> The same luminosity L spreads over a sphere of area 4&pi;d&sup2;, so the received brightness is F = L/(4&pi;d&sup2;) &mdash; the inverse-square law. Double the distance and F drops to 1/4; triple it and F drops to 1/9. Magnitudes are a logarithmic shorthand for F: smaller is brighter, 5 steps are 100&times;, and absolute magnitude M simply asks, &ldquo;what m would this star have at the standard distance of 10 pc?&rdquo; That one question separates how a star <em>looks</em> from how <em>powerful</em> it is &mdash; and, run backwards through the distance modulus, it turns a brightness measurement into a distance.</p>
+  </section>
+</main>
+<footer>PopBoard Study &middot; Luminosity &amp; Brightness Sandbox &middot; F = L/(4&pi;d&sup2;) &middot; m &minus; M = 5 log&#8321;&#8320;(d/pc) &minus; 5 &middot; M&#9737; = 4.83 &middot; 1 pc = 3.26 ly<br>Brightness F is shown relative to the Sun seen from 10 pc, so F = (L/L&#9737;) / (d/10 pc)&sup2;.</footer>
+
+<script type="module">
+"use strict";
+/* ============================================================
+   LUMINOSITY & BRIGHTNESS SANDBOX -- canvas 2.5D, no deps.
+   One physics core used by every view/panel/lab:
+     F_rel = (L/Lsun) / (d/10pc)^2      [= L/(4pi d^2), scaled]
+     M     = 4.83 - 2.5 log10(L/Lsun)   [Sun M = 4.83]
+     m     = M + 5 log10(d/pc) - 5
+     ratio = 10^(-0.4 * delta_m)
+     combined m = -2.5 log10( sum 10^(-0.4 m_i) )
+   ============================================================ */
+var M_SUN = 4.83, PC_LY = 3.26156;
+function fluxRel(L, dPc){ return L / Math.pow(dPc/10, 2); }              // = L/(4pi d^2) up to the shared 4pi/unit scaling
+function fluxSI(L, dPc){ return L / (4*Math.PI*dPc*dPc); }                  // proportional physical flux, Lsun/pc^2 units
+function absMagFromL(L){ return M_SUN - 2.5*Math.log10(L); }
+function lumFromAbsMag(M){ return Math.pow(10, (M_SUN-M)/2.5); }
+function appMag(M, dPc){ return M + 5*Math.log10(dPc) - 5; }
+function distanceModulus(dPc){ return 5*Math.log10(dPc) - 5; }
+function distFromModulus(dm){ return Math.pow(10, (dm+5)/5); }
+function ratioFromDeltaM(dm){ return Math.pow(10, -0.4*dm); }
+function combinedMag(mags){ var s=0; for(var i=0;i<mags.length;i++) s+=Math.pow(10,-0.4*mags[i]); return -2.5*Math.log10(s); }
+function deltaMagFromFraction(x){ return -2.5*Math.log10(1+x); }
+function fmt(x, n){ if(!isFinite(x)) return "—"; if(x!==0 && (Math.abs(x)>=10000||Math.abs(x)<0.01)) return x.toExponential(2); return Number(x.toFixed(n==null?2:n)).toLocaleString("en-US"); }
+window.LuminositySandbox = { fluxRel:fluxRel, fluxSI:fluxSI, absMagFromL:absMagFromL, lumFromAbsMag:lumFromAbsMag, appMag:appMag, distanceModulus:distanceModulus, distFromModulus:distFromModulus, ratioFromDeltaM:ratioFromDeltaM, combinedMag:combinedMag, deltaMagFromFraction:deltaMagFromFraction, M_SUN:M_SUN };
+
+var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+var COLORS = ["#FFB300","#5FD3C4","#B07CFF","#7ab8ff"];
+var REAL_STARS = [
+  { name:"Sirius", L:25.4, d:2.64, M:1.42 },
+  { name:"Vega", L:40, d:7.68, M:0.58 },
+  { name:"Sun (for scale)", L:1, d:10, M:4.83 },
+  { name:"Proxima Centauri", L:0.0017, d:1.30, M:15.60 },
+  { name:"Betelgeuse", L:90000, d:168, M:-5.85 },
+  { name:"Rigel", L:120000, d:264, M:-7.0 },
+  { name:"Deneb", L:200000, d:802, M:-8.5 }
+];
+var state = {
+  view:"3d", playing:!reduceMotion, animate:!reduceMotion, rot:-0.55, tilt:0.42, shellPhase:0,
+  graphLogY:true, graphLogX:true, selected:0,
+  stars:[
+    { name:"Star A (Sirius-like)", L:25.4, d:2.64 },
+    { name:"Star B (Sun-like)", L:1, d:10 }
+  ],
+  realIdx:0, realD:2.64
+};
+function starDerived(s){ var M=absMagFromL(s.L); return { M:M, m:appMag(M,s.d), F:fluxRel(s.L,s.d) }; }
+function active(){ return state.stars[state.selected]; }
+
+function fitCanvas(cv){ var dpr=Math.min(2,window.devicePixelRatio||1); var w=cv.clientWidth,h=cv.clientHeight; if(!w||!h) return null; if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);} var ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0); return {ctx:ctx,w:w,h:h}; }
+function drawStarsBg(ctx,w,h,seed){ ctx.fillStyle="#070a12"; ctx.fillRect(0,0,w,h); var s=seed||7; for(var i=0;i<70;i++){ s=(s*16807)%2147483647; var x=(s%1000)/1000*w; s=(s*16807)%2147483647; var y=(s%1000)/1000*h; ctx.beginPath(); ctx.arc(x,y,(i%3)*0.4+0.5,0,Math.PI*2); ctx.fillStyle="rgba(255,255,255,"+(0.16+(i%5)*0.09)+")"; ctx.fill(); } }
+function project(x,y,z,cx,cy,scale){ var ca=Math.cos(state.rot),sa=Math.sin(state.rot); var x1=x*ca-z*sa, z1=x*sa+z*ca; var ct=Math.cos(state.tilt),st=Math.sin(state.tilt); var y2=y*ct-z1*st, z2=y*st+z1*ct; var f=3.2, p=f/(f+z2*0.55); return {x:cx+x1*scale*p, y:cy+y2*scale*p, p:p, z:z2}; }
+
+var mainCanvas=document.getElementById("mainCanvas");
+function draw3D(ctx,w,h){
+  drawStarsBg(ctx,w,h,11);
+  var s=active(), der=starDerived(s), cx=w*0.42, cy=h*0.52, base=Math.min(w,h)*0.34;
+  var obsDist = 0.55 + 0.45*Math.min(1, Math.log10(s.d/0.1)/Math.log10(200/0.1)); // log-scaled observer radius
+  // expanding shells (unit spheres scaled), labelled by area growth
+  var shells=[0.32,0.58,0.84,1.0];
+  if(state.animate && state.playing){ var ph=(state.shellPhase%1); shells=[0.18+0.27*ph,0.45+0.27*ph,0.72+0.27*ph,1.0]; }
+  shells.forEach(function(rf,si){
+    var R=base*rf*obsDist+18*rf, alpha=0.10+0.10*(1-rf);
+    // equator + two meridians as projected ellipses via sampled circles
+    [[1,0,0],[0,1,0]].forEach(function(plane,pi){
+      ctx.beginPath();
+      for(var i=0;i<=60;i++){ var a=i/60*Math.PI*2, px=0,py=0,pz=0;
+        if(pi===0){px=Math.cos(a)*R/base*base*0+Math.cos(a); py=Math.sin(a); pz=0; px=Math.cos(a); }
+        if(pi===1){px=Math.cos(a); py=0; pz=Math.sin(a);}
+        if(pi===2){px=0; py=Math.cos(a); pz=Math.sin(a);}
+        var pr=project(px*R/base*base/base*R*0+px*R, py*R, pz*R, cx, cy, 1); // px*R already in px units via scale=1 trick below
+        // project expects world units; R here is pixels so use direct:
+        pr=project(px*rf*obsDist, py*rf*obsDist, pz*rf*obsDist, cx, cy, base);
+        if(i===0)ctx.moveTo(pr.x,pr.y); else ctx.lineTo(pr.x,pr.y);
+      }
+      ctx.strokeStyle="rgba(255,200,90,"+(alpha+0.10)+")"; ctx.lineWidth=1; ctx.stroke();
+    });
+    var lab=project(rf*obsDist,0,0,cx,cy,base);
+    ctx.fillStyle="rgba(255,220,150,0.75)"; ctx.font="9.5px 'JetBrains Mono',monospace"; ctx.textAlign="left";
+    if(si===shells.length-1) ctx.fillText("shell area = 4πr²", lab.x+4, lab.y-4);
+  });
+  // star
+  var glow=ctx.createRadialGradient(cx,cy,0,cx,cy,34); glow.addColorStop(0,"rgba(255,230,160,0.95)"); glow.addColorStop(0.35,"rgba(255,180,60,0.55)"); glow.addColorStop(1,"rgba(255,160,40,0)"); ctx.fillStyle=glow; ctx.beginPath(); ctx.arc(cx,cy,34,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx,cy,11+Math.min(8,Math.log10(s.L+1)*2),0,Math.PI*2); ctx.fillStyle="#ffe9a8"; ctx.fill();
+  ctx.fillStyle="#E9E6DE"; ctx.font="11px 'JetBrains Mono',monospace"; ctx.textAlign="center"; ctx.fillText(s.name.split(" (")[0], cx, cy+52);
+  // observer
+  var ob=project(obsDist,0,0,cx,cy,base);
+  ctx.strokeStyle="rgba(95,211,196,0.65)"; ctx.setLineDash([4,4]); ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(ob.x,ob.y); ctx.stroke(); ctx.setLineDash([]);
+  ctx.beginPath(); ctx.arc(ob.x,ob.y,8,0,Math.PI*2); ctx.fillStyle="#5FD3C4"; ctx.fill(); ctx.strokeStyle="#dff"; ctx.stroke();
+  ctx.fillStyle="#5FD3C4"; ctx.font="11px 'JetBrains Mono',monospace"; ctx.fillText("observer · "+fmt(s.d)+" pc", Math.max(54,Math.min(w-54,ob.x)), ob.y-16);
+  ctx.fillStyle="rgba(255,255,255,0.65)"; ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign="left";
+  ctx.fillText("Same light on each shell · area 4πr² · brightness ∝ 1/d²", 10, h-12);
+  ctx.fillText("F = "+fmt(der.F,3)+" (rel.) · m = "+fmt(der.m)+" · drag to rotate", 10, 18);
+}
+function draw2D(ctx,w,h){
+  drawStarsBg(ctx,w,h,23);
+  var s=active(), der=starDerived(s), cx=w*0.24, cy=h/2, maxR=Math.min(w*0.68,h*0.44);
+  var obsR=maxR*Math.min(1,0.25+0.75*Math.log10(s.d/0.1)/Math.log10(200/0.1));
+  [0.33,0.66,1].forEach(function(f,i){ ctx.beginPath(); ctx.arc(cx,cy,obsR*f,0,Math.PI*2); ctx.strokeStyle="rgba(255,200,90,"+(0.5-i*0.13)+")"; ctx.lineWidth=1.2; ctx.stroke(); ctx.fillStyle="rgba(255,220,150,0.7)"; ctx.font="9.5px 'JetBrains Mono',monospace"; ctx.textAlign="left"; ctx.fillText("r="+fmt(s.d*f,2)+" pc · area ∝ r²", cx+obsR*f*0.72, cy-obsR*f*0.72); });
+  // photon dots thinning outward
+  for(var i=0;i<90;i++){ var a=(i*2.399)%(Math.PI*2), rr=18+ (i/90)*obsR; ctx.beginPath(); ctx.arc(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr,1.4,0,Math.PI*2); ctx.fillStyle="rgba(255,210,110,"+Math.max(0.12,0.9-rr/(obsR+1))+")"; ctx.fill(); }
+  ctx.beginPath(); ctx.arc(cx,cy,13,0,Math.PI*2); ctx.fillStyle="#ffe9a8"; ctx.fill();
+  ctx.fillStyle="#E9E6DE"; ctx.font="11px 'JetBrains Mono',monospace"; ctx.textAlign="center"; ctx.fillText("star", cx, cy+30);
+  var ox=cx+obsR, oy=cy;
+  ctx.beginPath(); ctx.arc(ox,oy,8,0,Math.PI*2); ctx.fillStyle="#5FD3C4"; ctx.fill();
+  ctx.fillStyle="#5FD3C4"; ctx.fillText("observer · d="+fmt(s.d)+" pc ("+fmt(s.d*PC_LY,1)+" ly)", Math.min(w-90,ox), oy-14);
+  ctx.strokeStyle="rgba(95,211,196,0.6)"; ctx.setLineDash([4,4]); ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(ox,oy); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle="rgba(255,255,255,0.65)"; ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign="left"; ctx.fillText("2D top-down: dot spacing grows with distance — same light, thinner spread. F ∝ 1/d².", 10, h-12);
+  mainGeom={cx:cx,cy:cy,obsR:obsR};
+}
+var mainGeom=null;
+function drawGraph(ctx,w,h){
+  drawStarsBg(ctx,w,h,31);
+  var s=active(), padL=54,padR=14,padT=16,padB=34, gw=w-padL-padR, gh=h-padT-padB;
+  var dMin=0.1,dMax=200;
+  function X(d){ return padL + (state.graphLogX ? (Math.log10(d)-Math.log10(dMin))/(Math.log10(dMax)-Math.log10(dMin)) : (d-dMin)/(dMax-dMin))*gw; }
+  var fAt=function(d){ return fluxRel(s.L,d); };
+  var fMin=fAt(dMax), fMax=fAt(dMin);
+  function Y(f){ if(state.graphLogY){ return padT+gh - (Math.log10(f)-Math.log10(fMin))/(Math.log10(fMax)-Math.log10(fMin))*gh; } var lo=0,hi=fAt(0.1); return padT+gh - (f-lo)/(hi-lo)*gh; }
+  ctx.strokeStyle="rgba(255,255,255,0.35)"; ctx.beginPath(); ctx.moveTo(padL,padT); ctx.lineTo(padL,padT+gh); ctx.lineTo(padL+gw,padT+gh); ctx.stroke();
+  ctx.fillStyle="rgba(255,255,255,0.65)"; ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign="center";
+  [0.1,1,10,100,200].forEach(function(d){ ctx.fillText(fmt(d, d<1?1:0), X(d), padT+gh+16); });
+  ctx.fillText("distance d (pc)"+(state.graphLogX?" — log":""), padL+gw/2, h-4);
+  ctx.save(); ctx.translate(12,padT+gh/2); ctx.rotate(-Math.PI/2); ctx.fillText("brightness F (rel.)"+(state.graphLogY?" — log":""),0,0); ctx.restore();
+  state.stars.forEach(function(st,idx){
+    ctx.beginPath();
+    for(var i=0;i<=100;i++){ var d=dMin*Math.pow(dMax/dMin,i/100); if(!state.graphLogX) d=dMin+(dMax-dMin)*i/100; var x=X(d), y=Y(fluxRel(st.L,d)); if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+    ctx.strokeStyle=COLORS[idx%4]; ctx.lineWidth= idx===state.selected?2.4:1.3; ctx.stroke();
+  });
+  var der=starDerived(s), px=X(s.d), py=Y(der.F);
+  ctx.beginPath(); ctx.arc(px,py,5,0,Math.PI*2); ctx.fillStyle="#fff"; ctx.fill();
+  ctx.fillStyle="#E9E6DE"; ctx.textAlign="left"; ctx.fillText("now: d="+fmt(s.d)+" pc, F="+fmt(der.F,3), Math.min(w-190,px+8), Math.max(14,py-8));
+  ctx.fillStyle="rgba(255,255,255,0.6)"; ctx.fillText("Straight line on log–log = power law F ∝ d⁻² (slope −2).", padL+6, padT+14);
+}
+function drawMain(){
+  var f=fitCanvas(mainCanvas); if(!f) return;
+  document.getElementById("graphToggleRow").hidden = state.view!=="graph";
+  if(state.view==="3d") draw3D(f.ctx,f.w,f.h); else if(state.view==="2d") draw2D(f.ctx,f.w,f.h); else drawGraph(f.ctx,f.w,f.h);
+  document.getElementById("viewTitle").textContent = state.view==="3d" ? "3D View — Expanding Light Shells" : state.view==="2d" ? "2D Diagram — Top-Down Light Spreading" : "Graph — Brightness vs. Distance";
+  document.getElementById("viewSub").textContent = state.view==="3d" ? "Drag to rotate · shells are spheres of area 4πr² · the same energy spreads thinner" : state.view==="2d" ? "Top-down · drag the cyan observer in or out · brightness thins as 1/d²" : "One curve per tracked star · log / linear toggles below the graph";
+}
+/* magnitude scale canvas */
+function drawMagScale(){
+  var cv=document.getElementById("magCanvas"), f=fitCanvas(cv); if(!f) return; var ctx=f.ctx,w=f.w,h=f.h;
+  drawStarsBg(ctx,w,h,41);
+  var objs=[["Sun",-26.7],["Full Moon",-12.7],["Venus",-4.6],["Sirius",-1.46],["Vega",0],["Naked-eye limit",6],["Binoculars",10],["Hubble limit",30]];
+  var x0=54,x1=w-14, mn=-28,mx=31;
+  function X(m){ return x0+(m-mn)/(mx-mn)*(x1-x0); }
+  ctx.strokeStyle="rgba(255,255,255,0.4)"; ctx.beginPath(); ctx.moveTo(x0,h/2); ctx.lineTo(x1,h/2); ctx.stroke();
+  objs.forEach(function(o,i){ var x=X(o[1]); ctx.beginPath(); ctx.arc(x,h/2,4,0,Math.PI*2); ctx.fillStyle=i<4?"#FFB300":"#5FD3C4"; ctx.fill(); ctx.fillStyle="rgba(255,255,255,0.8)"; ctx.font="9px 'JetBrains Mono',monospace"; ctx.textAlign="center"; ctx.fillText(o[0],x, h/2 + (i%2?26:-16)); ctx.fillText(fmt(o[1],2),x,h/2+(i%2?38:-28)); });
+  ctx.fillStyle="rgba(255,255,255,0.55)"; ctx.font="9.5px 'JetBrains Mono',monospace"; ctx.textAlign="left"; ctx.fillText("← brighter (smaller / negative)",x0,h-8); ctx.textAlign="right"; ctx.fillText("fainter →",x1,h-8);
+  // comparator markers
+  var m1=parseFloat(document.getElementById("mag1Slider").value), m2=parseFloat(document.getElementById("mag2Slider").value);
+  [[m1,"#FFB300","A"],[m2,"#5FD3C4","B"]].forEach(function(t){ var x=X(t[0]); ctx.strokeStyle=t[1]; ctx.beginPath(); ctx.moveTo(x,14); ctx.lineTo(x,h-24); ctx.stroke(); ctx.fillStyle=t[1]; ctx.fillText(t[2],x,12); });
+}
+/* blended canvas */
+var blendMags=[0,0,3], blendOn=[true,true,false];
+function drawBlend(){
+  var cv=document.getElementById("blendCanvas"), f=fitCanvas(cv); if(!f) return; var ctx=f.ctx,w=f.w,h=f.h;
+  drawStarsBg(ctx,w,h,53);
+  var used=[]; blendMags.forEach(function(m,i){ if(blendOn[i]) used.push(m); });
+  blendMags.forEach(function(m,i){
+    var x=w*(0.22+0.28*i), y=h*0.42, r=Math.max(5, 26*Math.pow(10,-0.12*m));
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fillStyle=blendOn[i]?COLORS[i]:"rgba(120,120,120,0.35)"; ctx.globalAlpha=blendOn[i]?0.9:0.4; ctx.fill(); ctx.globalAlpha=1;
+    ctx.fillStyle="#E9E6DE"; ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign="center"; ctx.fillText("Star "+(i+1)+" · m="+fmt(m,1)+(blendOn[i]?"":" (off)"), x, y+r+16);
+  });
+  if(used.length){ var cm=combinedMag(used); ctx.fillStyle="#FFB300"; ctx.font="700 12px 'JetBrains Mono',monospace"; ctx.textAlign="center"; ctx.fillText("Unresolved: one dot · combined m = "+fmt(cm,2), w/2, h-12); ctx.beginPath(); ctx.arc(w/2,h*0.78,7,0,Math.PI*2); ctx.fillStyle="#fff3c4"; ctx.fill(); }
+}
+/* ---------- render all ---------- */
+function render(){
+  drawMain(); drawMagScale(); drawBlend();
+  var s=active(), d=starDerived(s);
+  document.getElementById("statusType").textContent = s.name+" · m "+fmt(d.m)+" at "+fmt(s.d)+" pc";
+  document.getElementById("statusReason").textContent = "L = "+fmt(s.L)+" L☉ · F = L/(4πd²) = "+fmt(d.F,3)+" rel. · M = "+fmt(d.M)+" (at 10 pc) · m−M = "+fmt(distanceModulus(s.d));
+  document.getElementById("roL").textContent=fmt(s.L)+" L☉";
+  document.getElementById("roD").textContent=fmt(s.d)+" pc"; document.getElementById("roDly").textContent=fmt(s.d*PC_LY,1)+" light-years";
+  document.getElementById("roF").textContent=fmt(d.F,3);
+  document.getElementById("roMapp").textContent=fmt(d.m); document.getElementById("roMabs").textContent=fmt(d.M); document.getElementById("roDM").textContent=fmt(distanceModulus(s.d));
+  document.getElementById("lumLabel").textContent="Luminosity: "+fmt(s.L)+" L☉  ("+s.name+")";
+  document.getElementById("distLabel").textContent="Observer distance: "+fmt(s.d)+" pc · "+fmt(s.d*PC_LY,1)+" ly";
+  document.getElementById("inverseReadout").textContent="Try it: 2× distance → F ÷4, m +1.51 · 3× distance → F ÷9, m +2.39 · ½× distance → F ×4, m −1.51. Current F = "+fmt(d.F,3)+", m = "+fmt(d.m)+".";
+  // chips
+  var chips=document.getElementById("starChips"); chips.innerHTML="";
+  state.stars.forEach(function(st,i){ var b=document.createElement("button"); b.type="button"; b.className="chip"+(i===state.selected?" active":""); b.innerHTML='<span class="dot" style="background:'+COLORS[i%4]+'"></span>'+st.name; b.addEventListener("click",function(){ state.selected=i; syncControls(); render(); }); chips.appendChild(b); });
+  document.getElementById("addStarBtn").disabled = state.stars.length>=4;
+  document.getElementById("removeStarBtn").disabled = state.stars.length<=2;
+  // table
+  var tb=document.getElementById("starTable"); tb.innerHTML="";
+  state.stars.forEach(function(st,i){ var dd=starDerived(st); var tr=document.createElement("tr"); tr.innerHTML="<td><span class='dot' style='background:"+COLORS[i%4]+"'></span>"+st.name+"</td><td>"+fmt(st.L)+"</td><td>"+fmt(st.d)+"</td><td>"+fmt(st.d*PC_LY,1)+"</td><td>"+fmt(dd.F,3)+"</td><td>"+fmt(dd.m)+"</td><td>"+fmt(dd.M)+"</td>"; tb.appendChild(tr); });
+  // magnitude comparator
+  var m1=parseFloat(document.getElementById("mag1Slider").value), m2=parseFloat(document.getElementById("mag2Slider").value);
+  document.getElementById("mag1Label").textContent="Star A magnitude: "+fmt(m1,1);
+  document.getElementById("mag2Label").textContent="Star B magnitude: "+fmt(m2,1);
+  var ratioAB=ratioFromDeltaM(m1-m2);
+  document.getElementById("magCompareReadout").textContent="Δm (A−B) = "+fmt(m1-m2,1)+" · brightness ratio A/B = 10^(−0.4×Δm) = "+fmt(ratioAB,3)+"×. "+(m1<m2?"Star A looks brighter (smaller magnitude).":m2<m1?"Star B looks brighter (smaller magnitude).":"They look equally bright.")+"  Δm=5 is exactly 100×; Δm=1 is 2.512×; Δm=10 is 10,000×.";
+  // pct
+  var pct=parseFloat(document.getElementById("pctSlider").value);
+  document.getElementById("pctLabel").textContent="Brightness change: "+(pct>0?"+":"")+pct+"%";
+  document.getElementById("pctReadout").textContent="Δm = −2.5 log10(1 + "+(pct/100).toFixed(2)+") = "+fmt(deltaMagFromFraction(pct/100),3)+" mag. "+(pct>=0?"Brighter, so magnitude goes down.":"Fainter, so magnitude goes up.");
+  renderReal(); renderLab(false); renderBlendPanel();
+}
+function syncControls(){ var s=active(); document.getElementById("lumSlider").value=String(Math.log10(s.L)); document.getElementById("distSlider").value=String(Math.log10(s.d)); }
+/* presets */
+var presetWrap=document.getElementById("presetChips");
+REAL_STARS.forEach(function(r){ var b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=r.name; b.addEventListener("click",function(){ var s=active(); s.L=r.L; s.d=r.d; s.name=r.name+"-like"; if(r.name.indexOf("Sun")===0){s.L=1;s.d=10;} syncControls(); render(); }); presetWrap.appendChild(b); });
+
+/* real star explorer */
+function renderReal(){
+  var r=REAL_STARS[state.realIdx], d=state.realD, m=appMag(r.M,d), F=fluxRel(r.L, d);
+  document.getElementById("realDistLabel").textContent="Move "+r.name+" to: "+fmt(d)+" pc ("+fmt(d*PC_LY,1)+" ly) · actual "+fmt(r.d)+" pc";
+  document.getElementById("realM").textContent=fmt(m); document.getElementById("realMAbs").textContent=fmt(r.M); document.getElementById("realL").textContent=fmt(r.L)+" L☉"; document.getElementById("realF").textContent=fmt(F,3);
+  document.getElementById("realReadout").textContent=r.name+": moving it changes m and F, but M ("+fmt(r.M)+") and L ("+fmt(r.L)+" L☉) stay fixed — they describe the star itself. At 10 pc, m would equal M exactly.";
+  var wrap=document.getElementById("realStarChips"); if(!wrap.children.length){ REAL_STARS.forEach(function(rr,i){ var b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=rr.name; b.addEventListener("click",function(){ state.realIdx=i; state.realD=rr.d; document.getElementById("realDistSlider").value=String(Math.log10(rr.d)); render(); }); wrap.appendChild(b); }); }
+  Array.prototype.forEach.call(wrap.children,function(c,i){ c.classList.toggle("active",i===state.realIdx); });
+  var tb=document.getElementById("realTable"); tb.innerHTML="";
+  REAL_STARS.forEach(function(rr){ var tr=document.createElement("tr"); tr.innerHTML="<td>"+rr.name+"</td><td>"+fmt(rr.L)+"</td><td>"+fmt(rr.d)+"</td><td>"+fmt(appMag(rr.M,rr.d))+"</td><td>"+fmt(rr.M)+"</td>"; tb.appendChild(tr); });
+}
+/* distance lab */
+var lab={ M:1.42, m:-1.46, d:2.64, name:"Lab Star 1", revealed:false };
+function newLab(randomize){
+  var pool=REAL_STARS.concat([{name:"Mystery Star",L:100,d:47,M:absMagFromL(100)},{name:"Dim Giant",L:5000,d:210,M:absMagFromL(5000)}]);
+  var r=pool[Math.floor(Math.random()*pool.length)];
+  lab={ M:r.M, d:r.d, name:r.name+" (hidden distance)", revealed:false };
+  lab.m=appMag(lab.M, lab.d);
+  document.getElementById("labGuess").value=""; document.getElementById("labFeedback").textContent=""; renderLab(true);
+}
+function renderLab(fresh){
+  var dust=parseFloat(document.getElementById("dustSlider").value);
+  var mObs=(lab.m||appMag(lab.M,lab.d))+dust;
+  if(fresh || !document.getElementById("labPrompt").dataset.done){
+    document.getElementById("labPrompt").innerHTML="Known: absolute magnitude <strong>M = "+fmt(lab.M)+"</strong> · measured apparent magnitude <strong>m = "+fmt(mObs)+"</strong>"+(dust>0?" (includes dust)":"")+". Find the distance. Extinction is zero unless the dust slider says otherwise.";
+    document.getElementById("labPrompt").dataset.done="1";
+  } else {
+    document.getElementById("labPrompt").innerHTML="Known: <strong>M = "+fmt(lab.M)+"</strong> · measured <strong>m = "+fmt(mObs)+"</strong>"+(dust>0?" (dust A = "+fmt(dust,1)+" mag included in this m)":"")+". Find d.";
+  }
+  var dm=mObs-lab.M;
+  document.getElementById("labSteps").innerHTML="Step 1: distance modulus m − M = "+fmt(mObs)+" − ("+fmt(lab.M)+") = "+fmt(dm)+"<br>Step 2: m − M = 5 log₁₀(d) − 5 &nbsp;→&nbsp; log₁₀(d) = ( (m−M) + 5 ) / 5 = "+fmt((dm+5)/5,3)+"<br>Step 3: d = 10<sup>"+fmt((dm+5)/5,3)+"</sup> pc &nbsp;·&nbsp; "+(lab.revealed?("<strong>Hidden true distance: "+fmt(lab.d)+" pc</strong>"):"(hidden until you Check)");
+  document.getElementById("dustLabel").textContent="Extinction A: "+fmt(dust,1)+" mag";
+  var inferred=distFromModulus(dm), over=inferred/lab.d;
+  document.getElementById("dustReadout").textContent = dust===0 ? "No dust: inferred distance = true distance if m and M are exact." :
+    "With A = "+fmt(dust,1)+" mag ignored: you would infer "+fmt(inferred)+" pc instead of the true "+fmt(lab.d)+" pc — overestimated by ×"+fmt(over,2)+" (= 10^(A/5) = 10^"+fmt(dust/5,2)+"). Correcting for dust: subtract A from m first.";
+}
+/* blended panel */
+function renderBlendPanel(){
+  var wrap=document.getElementById("blendControls");
+  if(!wrap.children.length){
+    blendMags.forEach(function(m,i){
+      var row=document.createElement("div"); row.className="panel-row";
+      row.innerHTML='<div class="panel-label" id="blendLabel'+i+'"></div><input type="range" min="-2" max="10" step="0.1" value="'+m+'" data-blend="'+i+'" aria-label="Blended star '+(i+1)+' magnitude"><label style="font-size:12px"><input type="checkbox" data-blend-on="'+i+'" '+(blendOn[i]?"checked":"")+'> Include star '+(i+1)+'</label>';
+      wrap.appendChild(row);
+    });
+    wrap.querySelectorAll("[data-blend]").forEach(function(inp){ inp.addEventListener("input",function(){ blendMags[Number(inp.dataset.blend)]=parseFloat(inp.value); render(); }); });
+    wrap.querySelectorAll("[data-blend-on]").forEach(function(inp){ inp.addEventListener("change",function(){ blendOn[Number(inp.dataset.blendOn)]=inp.checked; render(); }); });
+  }
+  blendMags.forEach(function(m,i){ var el=document.getElementById("blendLabel"+i); if(el) el.textContent="Star "+(i+1)+" magnitude: "+fmt(m,1); });
+  var used=[], parts=[];
+  blendMags.forEach(function(m,i){ if(blendOn[i]){ used.push(m); parts.push("10^(−0.4×"+fmt(m,1)+") = "+fmt(Math.pow(10,-0.4*m),4)); } });
+  var el=document.getElementById("blendSteps");
+  if(!used.length){ el.textContent="Include at least one star."; return; }
+  var sum=used.reduce(function(a,m){return a+Math.pow(10,-0.4*m);},0);
+  el.innerHTML="Linear brightnesses: "+parts.join(" + ")+" = "+fmt(sum,4)+"<br>Combined: m = −2.5 log₁₀("+fmt(sum,4)+") = <strong>"+fmt(combinedMag(used),2)+"</strong> &nbsp;·&nbsp; Check: two m = 0 stars → m = −0.75.";
+}
+/* quiz */
+var quizPairs=[
+  {q:"Which looks brighter from Earth?", a:"Sirius (m ≈ −1.46) looks brighter than Betelgeuse (m ≈ +0.4).", opts:["Sirius","Betelgeuse","They look the same"], correct:0, why:"Smaller magnitude = brighter-looking. Sirius wins on looks."},
+  {q:"Which is intrinsically more luminous?", a:"Betelgeuse (tens of thousands of L☉) vastly outshines Sirius (≈25 L☉).", opts:["Sirius","Betelgeuse","They emit the same"], correct:1, why:"Betelgeuse only looks fainter because it is far away (~168 pc vs 2.64 pc). Distance hides power."},
+  {q:"Two stars have the same m, but Star X is 10× farther than Star Y. Which emits more?", a:"Star X must be 100× more luminous (F ∝ L/d², so at 10× distance it needs 100× L for the same F).", opts:["Star X — 100× more luminous","Star Y","Same luminosity"], correct:0, why:"Same apparent brightness at 10× distance requires 100× the luminosity."}
+];
+var quizIdx=0;
+function renderQuiz(){
+  var q=quizPairs[quizIdx], wrap=document.getElementById("quizOptions"); wrap.innerHTML="";
+  document.getElementById("quizFeedback").textContent="";
+  q.opts.forEach(function(txt,i){ var b=document.createElement("button"); b.type="button"; b.className="option"; b.textContent=txt; b.addEventListener("click",function(){ var good=i===q.correct; b.classList.add(good?"correct":"wrong"); wrap.querySelectorAll(".option").forEach(function(o,j){ o.disabled=true; if(j===q.correct)o.classList.add("correct"); }); var fb=document.getElementById("quizFeedback"); fb.textContent=(good?"Correct. ":"Not quite. ")+q.a+" "+q.why; fb.className="feedback "+(good?"good":"bad"); }); wrap.appendChild(b); });
+  var prompt=document.createElement("p"); prompt.className="body"; prompt.textContent=q.q; wrap.prepend(prompt);
+}
+/* wiring */
+document.getElementById("lumSlider").addEventListener("input",function(e){ active().L=Math.pow(10,parseFloat(e.target.value)); render(); });
+document.getElementById("distSlider").addEventListener("input",function(e){ active().d=Math.pow(10,parseFloat(e.target.value)); render(); });
+document.getElementById("realDistSlider").addEventListener("input",function(e){ state.realD=Math.pow(10,parseFloat(e.target.value)); render(); });
+document.getElementById("mag1Slider").addEventListener("input",render);
+document.getElementById("mag2Slider").addEventListener("input",render);
+document.getElementById("pctSlider").addEventListener("input",render);
+document.getElementById("dustSlider").addEventListener("input",function(){ document.getElementById("labPrompt").dataset.done=""; render(); });
+function scaleDist(f){ active().d=Math.min(500,Math.max(0.05,active().d*f)); syncControls(); render(); }
+document.getElementById("doubleDistBtn").addEventListener("click",function(){ scaleDist(2); });
+document.getElementById("tripleDistBtn").addEventListener("click",function(){ scaleDist(3); });
+document.getElementById("halfDistBtn").addEventListener("click",function(){ scaleDist(0.5); });
+document.getElementById("addStarBtn").addEventListener("click",function(){ if(state.stars.length>=4) return; state.stars.push({name:"Star "+String.fromCharCode(65+state.stars.length), L:10*state.stars.length, d:15*state.stars.length}); state.selected=state.stars.length-1; syncControls(); render(); });
+document.getElementById("removeStarBtn").addEventListener("click",function(){ if(state.stars.length<=2) return; state.stars.splice(state.selected,1); state.selected=0; syncControls(); render(); });
+document.querySelectorAll("[data-view]").forEach(function(b){ b.addEventListener("click",function(){ state.view=b.dataset.view; document.querySelectorAll("[data-view]").forEach(function(x){x.classList.toggle("active",x===b);}); render(); }); });
+document.getElementById("graphScaleBtn").addEventListener("click",function(){ state.graphLogY=!state.graphLogY; this.textContent="Graph y-axis: "+(state.graphLogY?"Log":"Linear"); render(); });
+document.getElementById("graphXBtn").addEventListener("click",function(){ state.graphLogX=!state.graphLogX; this.textContent="Graph x-axis: "+(state.graphLogX?"Log distance":"Linear distance"); render(); });
+document.querySelectorAll("[data-dm]").forEach(function(b){ b.addEventListener("click",function(){ var dm=Number(b.dataset.dm); document.getElementById("mag1Slider").value="0"; document.getElementById("mag2Slider").value=String(dm); render(); }); });
+var INV={
+ double:"1) Doubling distance: F falls to 1/4 (inverse-square), and m increases by −2.5 log₁₀(1/4) = +1.51 mag. Use the 2× button and watch both tiles.",
+ triple:"2) Tripling distance: F falls to 1/9, m increases by +2.39 mag. Notice the shells: at 3r the same light covers 9× the area (4π(3r)² = 9·4πr²).",
+ equal:"3) Same look, different star: add a star, give it 100× the luminosity and 10× the distance — same F and same m, completely different L. Apparent brightness alone cannot rank power.",
+ percent:"4) Small changes: slide the % change below. +100% (twice as bright) is only −0.75 mag; +10% is −0.10 mag. That compression is why astronomers love magnitudes for huge ranges."
+};
+document.querySelectorAll("[data-inv]").forEach(function(b){ b.addEventListener("click",function(){ document.getElementById("investigationText").textContent=INV[b.dataset.inv]; if(b.dataset.inv==="percent") document.getElementById("pctSlider").scrollIntoView({block:"center"}); }); });
+document.getElementById("labCheckBtn").addEventListener("click",function(){
+  var guess=parseFloat(document.getElementById("labGuess").value), dust=parseFloat(document.getElementById("dustSlider").value);
+  var fb=document.getElementById("labFeedback");
+  if(!isFinite(guess)||guess<=0){ fb.textContent="Enter a positive distance in parsecs first — work Steps 1–3 above."; fb.className="feedback bad"; return; }
+  lab.revealed=true;
+  var expected = dust>0 ? distFromModulus((lab.m+dust)-lab.M) : lab.d; // if dust in m and not corrected, expected inferred value
+  var targetMsg = dust>0 ? "Because dust was included in m, the uncorrected calculation gives "+fmt(expected)+" pc; the true distance is "+fmt(lab.d)+" pc. Subtract A = "+fmt(dust,1)+" from m to recover it." : "True distance: "+fmt(lab.d)+" pc for "+lab.name+".";
+  var err=Math.abs(guess-lab.d)/lab.d*100, errInf=Math.abs(guess-expected)/expected*100;
+  var close=(dust>0?errInf:err)<=10;
+  fb.textContent=(close?"Close! ":"Check the steps. ")+"Your estimate: "+fmt(guess)+" pc · error vs. "+(dust>0?"the dust-uncorrected value":"true value")+": "+fmt(dust>0?errInf:err,1)+"%. "+targetMsg;
+  fb.className="feedback "+(close?"good":"bad"); renderLab(false);
+  // re-show steps with revealed value
+  render();
+});
+document.getElementById("labNewBtn").addEventListener("click",function(){ document.getElementById("labPrompt").dataset.done=""; newLab(true); render(); });
+document.getElementById("quizBtn").addEventListener("click",function(){ quizIdx=(quizIdx+1)%quizPairs.length; renderQuiz(); });
+var pauseBtn=document.getElementById("pauseBtn");
+function setPlaying(p){ state.playing=p; pauseBtn.textContent=p?"Pause":"Play"; }
+pauseBtn.addEventListener("click",function(){ setPlaying(!state.playing); });
+document.getElementById("resetBtn").addEventListener("click",function(){ state.stars=[{name:"Star A (Sirius-like)",L:25.4,d:2.64},{name:"Star B (Sun-like)",L:1,d:10}]; state.selected=0; state.realIdx=0; state.realD=2.64; syncControls(); setPlaying(!reduceMotion); render(); });
+document.getElementById("controlsJumpBtn").addEventListener("click",function(){ document.getElementById("controls").scrollIntoView({behavior:reduceMotion?"auto":"smooth"}); });
+var animToggle=document.getElementById("animToggle");
+animToggle.classList.toggle("on",state.animate);
+animToggle.addEventListener("click",function(){ state.animate=!state.animate; animToggle.classList.toggle("on",state.animate); });
+/* drag: rotate 3D, move observer in 2D */
+var dragging=false,lastPX=0,lastPY=0,dragObs=false;
+mainCanvas.addEventListener("pointerdown",function(e){ dragging=true; lastPX=e.clientX; lastPY=e.clientY; dragObs=false;
+  if(state.view==="2d" && mainGeom){ var r=mainCanvas.getBoundingClientRect(), x=e.clientX-r.left, y=e.clientY-r.top; if(Math.hypot(x-(mainGeom.cx+mainGeom.obsR), y-mainGeom.cy)<24) dragObs=true; }
+  mainCanvas.setPointerCapture(e.pointerId); });
+mainCanvas.addEventListener("pointermove",function(e){ if(!dragging) return;
+  if(state.view==="3d"){ state.rot+=(e.clientX-lastPX)*0.01; state.tilt=Math.max(-1.1,Math.min(1.1,state.tilt+(e.clientY-lastPY)*0.005)); }
+  else if(state.view==="2d" && dragObs && mainGeom){ var r=mainCanvas.getBoundingClientRect(), x=e.clientX-r.left; var frac=Math.max(0.05,Math.min(1,(x-mainGeom.cx)/ (Math.min(r.width*0.68,r.height*0.44)||1) )); /* invert approx log mapping */ var logd=Math.log10(0.1)+ ((frac-0.25)/0.75)*Math.log10(200/0.1); if(frac<=0.25) logd=Math.log10(active().d); active().d=Math.pow(10,Math.max(-1,Math.min(2.3,logd))); syncControls(); }
+  lastPX=e.clientX; lastPY=e.clientY; render(); });
+mainCanvas.addEventListener("pointerup",function(){ dragging=false; }); mainCanvas.addEventListener("pointercancel",function(){ dragging=false; });
+/* deep links */
+(function(){ var q=new URLSearchParams(location.search);
+  if(q.has("view") && ["3d","2d","graph"].indexOf(q.get("view"))>=0){ state.view=q.get("view"); document.querySelectorAll("[data-view]").forEach(function(x){x.classList.toggle("active",x.dataset.view===state.view);}); }
+  if(q.has("L")){ var L=parseFloat(q.get("L")); if(isFinite(L)&&L>0) active().L=L; }
+  if(q.has("d")){ var dd=parseFloat(q.get("d")); if(isFinite(dd)&&dd>0) active().d=dd; }
+})();
+syncControls(); newLab(true); renderQuiz(); render();
+var lastT=null;
+function frame(now){ if(lastT===null)lastT=now; var dt=Math.min(0.1,(now-lastT)/1000); lastT=now; if(state.playing && state.animate && state.view==="3d"){ state.shellPhase+=dt*0.35; state.rot+=dt*0.12; drawMain(); } requestAnimationFrame(frame); }
+if(!reduceMotion) requestAnimationFrame(frame);
+window.addEventListener("resize",render);
+</script>
+<script>
+/* Back -> Study library, preserving params (board/student/name/teacher). */
+document.addEventListener("click", function(e){
+  var b = e.target.closest && e.target.closest("[data-study-back]");
+  if (!b) return;
+  e.preventDefault();
+  location.href = "study.html" + location.search;
+});
+</script>
+</body>
+</html>
