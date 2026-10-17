@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vectors &amp; Forces in 2D // PopBoard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05060a;--panel:#171C22;--panel-2:#1E252D;--panel-3:#252E38;--border:#2C3742;--border-lit:#3A4854;--amber:#FFB300;--amber-dim:#8a640f;--cyan:#5FD3C4;--violet:#B07CFF;--pink:#FF5FAE;--text:#E9E6DE;--text-dim:#93A0AC;--text-dimmer:#5C6874;--green:#57d38c;--red:#ff7a7a}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Oswald',sans-serif;letter-spacing:.03em;text-transform:uppercase}.mono{font-family:'JetBrains Mono',monospace}button,input,select{font-family:inherit}
+.bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(5,6,10,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.bar button{background:none;border:none;color:#0A84FF;font-size:15px;cursor:pointer;padding:4px 2px}.bar-left{display:flex;gap:16px;align-items:center}.study-back-btn{display:inline-flex;align-items:center;gap:2px}
+@media(max-width:400px){.study-back-btn .back-label{display:none}}
+.title{text-align:center;padding:14px 12px 4px}.title h1{font-size:20px;margin:0}.title p{color:var(--text-dim);font-size:12.5px;max-width:900px;margin:6px auto 0;line-height:1.55}
+#statusBanner{margin:10px auto;max-width:920px;background:rgba(15,18,22,.9);border:1px solid var(--border-lit);border-radius:14px;padding:10px 18px;text-align:center}
+#statusBanner .status-type{font-family:'Oswald',sans-serif;font-size:16px;letter-spacing:.05em;text-transform:uppercase;color:var(--amber)}
+#statusBanner .status-reason{font-size:11.5px;color:var(--text-dim);margin-top:3px;font-family:'JetBrains Mono',monospace;line-height:1.55}
+main{max-width:1180px;margin:0 auto;padding:6px 14px 40px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 0}.tab{flex:1;min-width:150px;padding:10px 6px;border-radius:10px;border:1px solid var(--border-lit);background:var(--panel-2);color:var(--text-dim);cursor:pointer;font-size:12.5px;text-align:center}.tab.active{background:var(--amber-dim);color:#fff;border-color:var(--amber)}
+.mode{display:none}.mode.active{display:block}
+.card{background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-top:14px}
+.card h2{font-size:13px;margin:0 0 4px;text-align:center}.card .sub{font-size:11px;color:var(--text-dimmer);text-align:center;font-family:'JetBrains Mono',monospace;margin-bottom:8px;line-height:1.5}
+.grid{display:grid;grid-template-columns:1.55fr 1fr;gap:14px}.grid .card{margin-top:14px}@media(max-width:820px){.grid{grid-template-columns:1fr}}
+canvas.view{width:100%;display:block;border-radius:12px;background:#070a12;touch-action:none}
+.play{height:340px}.graph{height:260px}.small{height:230px}@media(max-width:520px){.play{height:300px}}
+.readouts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}@media(max-width:520px){.readouts{grid-template-columns:1fr 1fr}}
+.tile{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:10px;padding:8px;text-align:center}.tile .l{font-family:'Oswald',sans-serif;font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-dim)}.tile .v{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;margin-top:2px}.tile .s{font-size:10px;color:var(--text-dimmer);font-family:'JetBrains Mono',monospace}
+.panel-label{font-size:13px;color:#e5e5e7;margin-bottom:6px}.panel-row{margin-bottom:13px}.panel-hint{font-size:11.5px;color:#8e8e93;line-height:1.6}.panel-section-title{text-align:center;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#6e6e73;margin:14px 0 8px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:#48484a;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:none}
+select,input[type=number]{background:var(--panel-2);border:1px solid var(--border-lit);color:var(--text);border-radius:8px;padding:8px;width:100%;font-size:13px}
+.seg-row{display:flex;gap:6px;flex-wrap:wrap}.btn{flex:1;padding:10px;border-radius:10px;border:1px solid var(--border-lit);background:var(--panel-3);color:var(--text);cursor:pointer;font-size:13px;min-width:86px}.btn.primary{background:var(--amber);color:#1a1200;border:none;font-weight:700}.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{padding:7px 10px;border-radius:999px;border:1px solid var(--border-lit);background:var(--panel-2);color:var(--text);font-size:11px;cursor:pointer}.chip.active,.chip.sel{border-color:var(--amber);color:var(--amber)}
+.check{display:flex;gap:8px;align-items:center;font-size:12.5px;padding:5px 0;color:#e5e5e7}
+.eq{font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,.28);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.7;color:var(--cyan);text-align:center}
+.feedback{font-size:13px;line-height:1.55;min-height:22px;margin-top:8px}.good{color:var(--green)}.bad{color:var(--red)}
+.card p.body{font-size:13px;line-height:1.65;color:#d1d1d6}
+table{width:100%;border-collapse:collapse;font-size:11.5px}th,td{border-bottom:1px solid var(--border);padding:6px 5px;text-align:right;font-family:'JetBrains Mono',monospace}th:first-child,td:first-child{text-align:left}th{color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase}
+.tblwrap{overflow-x:auto}
+footer{color:var(--text-dimmer);font-size:11px;text-align:center;padding:0 16px 28px;font-family:'JetBrains Mono',monospace;line-height:1.6}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<div class="bar"><div class="bar-left">
+<button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg><span class="back-label">Back</span></button>
+<button id="controlsJumpBtn" type="button">Controls</button></div>
+<div class="bar-left"><button id="resetBtn" type="button">Reset</button></div></div>
+<div class="title"><h1>Vectors &amp; Forces in 2D</h1><p>Add vectors tip-to-tail or by components, find resultants and equilibrants, and split gravity on a ramp — two lessons in one lab, each with its own score.</p></div>
+<div style="padding:0 14px"><div id="statusBanner" role="status" aria-live="polite"><div class="status-type" id="statusType">—</div><div class="status-reason" id="statusReason">—</div></div></div>
+<main>
+<div class="tabs" role="tablist" aria-label="Acts">
+<button class="tab active" data-mode="act1" type="button">Act 1 · Vectors</button>
+<button class="tab" data-mode="act2" type="button">Act 2 · Forces in 2D</button></div>
+
+<!-- ================= ACT 1 ================= -->
+<section class="mode active" id="mode-act1">
+<div class="grid">
+<section class="card" aria-label="Tip-to-tail playground"><h2>Scene 1 · Tip-to-Tail Playground</h2>
+<div class="sub">Drag an arrow tip to change that vector · solid chain = tip-to-tail in the order below · dashed pink = resultant</div>
+<canvas id="playCanvas" class="view play"></canvas>
+<div class="readouts">
+<div class="tile"><div class="l">Resultant magnitude |R|</div><div class="v" id="roR">—</div></div>
+<div class="tile"><div class="l">Resultant direction θ</div><div class="v" id="roTheta">—</div><div class="s">from +x, counter-clockwise</div></div>
+<div class="tile"><div class="l">Act 1 score</div><div class="v" id="score1">0 / 0</div></div></div>
+<h2 style="margin-top:14px">Scene 3 · Resultant by Components</h2>
+<div class="sub">The same resultant, found by adding x- and y-parts — the dashed pink arrow above is both answers at once (they coincide)</div>
+<div class="eq" id="resultantEq">—</div>
+<div class="panel-section-title">Law of cosines / sines check (vectors A &amp; B)</div>
+<p class="panel-hint" id="lawPanel">—</p>
+</section>
+<section class="card" id="controls" aria-label="Vector controls"><h2>Vector Controls</h2>
+<div id="vecSliders"></div>
+<div class="panel-section-title">Tip-to-tail order</div>
+<div class="chips" id="orderChips"></div>
+<div class="btn-row" style="margin-top:10px"><button class="btn primary" id="snapBtn" type="button">Snap head-to-tail</button><button class="btn" id="shuffleBtn" type="button">Shuffle order (challenge)</button></div>
+<p class="panel-hint">Challenge: shuffle the order, then — before looking at the pink arrow — predict the new resultant. Does reordering change it?</p>
+<div class="panel-row"><input type="number" id="reorderInput" step="any" placeholder="Predicted |R| after shuffling" aria-label="Predicted resultant after shuffling"></div>
+<div class="btn-row"><button class="btn primary" id="reorderCheck" type="button">Check prediction</button></div>
+<p class="feedback" id="reorderFeedback" aria-live="polite"></p>
+<div class="eq">Fx = F·cosθ · Fy = F·sinθ<br>signs come from the quadrant of θ</div>
+</section></div>
+
+<section class="card" aria-label="Components table"><h2>Scene 2 · Components Table</h2>
+<div class="sub">Every vector split into x- and y-parts · the sums ΣFx and ΣFy are the resultant's parts</div>
+<div class="tblwrap"><table><thead><tr><th>Vector</th><th>|F|</th><th>θ</th><th>Fx = F·cosθ</th><th>Fy = F·sinθ</th><th>Quadrant signs</th></tr></thead><tbody id="compTable"></tbody></table></div>
+<div class="eq" id="sumEq">—</div>
+<p class="panel-hint">Quadrant signs: QI (+,+) · QII (−,+) · QIII (−,−) · QIV (+,−). Cosine gives the x-sign and sine gives the y-sign automatically — that is why components beat measuring angles off a drawing.</p>
+</section>
+</section>
+
+<!-- ================= ACT 2 ================= -->
+<section class="mode" id="mode-act2">
+<div class="grid">
+<section class="card" aria-label="Equilibrant challenge"><h2>Scene 4 · Equilibrant Challenge — Add One Force to Balance</h2>
+<div class="sub">Amber / cyan / violet = given forces · green dashed = your added force · success when ΣFx ≈ ΣFy ≈ 0</div>
+<canvas id="eqCanvas" class="view play"></canvas>
+<div class="readouts">
+<div class="tile"><div class="l">ΣFx</div><div class="v" id="eqSumX">—</div></div>
+<div class="tile"><div class="l">ΣFy</div><div class="v" id="eqSumY">—</div></div>
+<div class="tile"><div class="l">Act 2 score</div><div class="v" id="score2">0 / 0</div></div></div>
+<div class="eq" id="eqEq">—</div>
+</section>
+<section class="card" aria-label="Equilibrant controls"><h2>Your Balancing Force</h2>
+<div class="panel-row"><div class="panel-label" id="myMagLabel">Your force magnitude</div><input type="range" id="myMag" min="0" max="140" step="1" value="0" aria-label="Your force magnitude"></div>
+<div class="panel-row"><div class="panel-label" id="myAngLabel">Your force angle</div><input type="range" id="myAng" min="0" max="360" step="1" value="0" aria-label="Your force angle"></div>
+<div class="btn-row"><button class="btn primary" id="eqCheck" type="button">Check balance</button><button class="btn" id="eqNew" type="button">New given forces</button></div>
+<p class="feedback" id="eqFeedback" aria-live="polite"></p>
+<div class="eq">equilibrant = −resultant<br>same size, opposite direction ⇒ ΣF = 0 ⇒ no acceleration (Newton's 1st law)</div>
+<div class="panel-section-title">Name that force — inventory prompt</div>
+<p class="panel-hint">A crate is pushed across the floor but does <strong>not</strong> move. Tap every force that acts <strong>on the crate</strong>, then check.</p>
+<div class="chips" id="invChips"></div>
+<div class="btn-row" style="margin-top:8px"><button class="btn primary" id="invCheck" type="button">Check inventory</button></div>
+<p class="feedback" id="invFeedback" aria-live="polite"></p>
+<label class="check"><input type="checkbox" id="thirdLawToggle"> Show Newton's 3rd-law partner forces (friction scene)</label>
+<canvas id="thirdCanvas" class="view small"></canvas>
+<p class="panel-hint">Partner forces act on <strong>different</strong> objects, so they never cancel on one object: friction on the crate (by the floor) pairs with friction on the floor (by the crate); normal on the crate pairs with the crate pushing down on the floor.</p>
+</section></div>
+
+<div class="grid">
+<section class="card" aria-label="Incline decomposition lab"><h2>Scene 5 · Incline Decomposition Lab</h2>
+<div class="sub">Gravity (amber) split into dashed mg·sinθ down the plane and mg·cosθ into the plane · FN balances the into-plane part · friction points up the plane</div>
+<canvas id="incCanvas" class="view play"></canvas>
+<div class="readouts">
+<div class="tile"><div class="l">mg·sinθ (down plane)</div><div class="v" id="incPar">—</div></div>
+<div class="tile"><div class="l">mg·cosθ = FN (into plane)</div><div class="v" id="incPerp">—</div></div>
+<div class="tile"><div class="l">Will it slip?</div><div class="v" id="incSlip">—</div><div class="s" id="incSlipNote">—</div></div></div>
+</section>
+<section class="card" aria-label="Incline controls"><h2>Ramp Controls &amp; Challenges</h2>
+<div class="panel-row"><div class="panel-label" id="incAngLabel">Ramp angle θ</div><input type="range" id="incAng" min="0" max="55" step="1" value="30" aria-label="Ramp angle"></div>
+<div class="panel-row"><div class="panel-label" id="incMassLabel">Mass</div><input type="range" id="incMass" min="1" max="30" step="0.5" value="10" aria-label="Mass"></div>
+<div class="panel-row"><div class="panel-label" id="incMuLabel">μs (static coefficient)</div><input type="range" id="incMu" min="0.05" max="1" step="0.05" value="0.5" aria-label="Static coefficient"></div>
+<div class="eq">mg·sinθ down the plane · mg·cosθ into the plane<br>FN = mg·cosθ · slips when mg·sinθ &gt; μs·FN, i.e. tanθ &gt; μs</div>
+<div class="panel-section-title">Challenge A · Angle where it just slips</div>
+<div class="panel-row"><input type="number" id="critInput" step="any" placeholder="Critical angle (degrees)" aria-label="Critical angle"></div>
+<div class="btn-row"><button class="btn primary" id="critCheck" type="button">Check critical angle</button></div>
+<p class="feedback" id="critFeedback" aria-live="polite"></p>
+<div class="panel-section-title">Challenge B · Hold it still on a smooth ramp</div>
+<p class="panel-hint">On a <strong>smooth</strong> (frictionless) ramp at the current angle, what single up-plane force holds the block still? That force is the equilibrant of the down-plane pull.</p>
+<div class="panel-row"><input type="number" id="holdInput" step="any" placeholder="Up-plane holding force (N)" aria-label="Holding force"></div>
+<div class="btn-row"><button class="btn primary" id="holdCheck" type="button">Check holding force</button></div>
+<p class="feedback" id="holdFeedback" aria-live="polite"></p>
+</section></div>
+</section>
+
+<section class="card"><h2>The Big Idea</h2>
+<p class="body"><strong>A vector is fully described by its components.</strong> Tip-to-tail addition and component addition are the same addition in two outfits: draw it and you <em>see</em> the resultant; split into Fx = F·cosθ and Fy = F·sinθ, add the columns, rebuild with R = √(Rx²+Ry²) and θ = atan2(Ry, Rx), and you get a number you can trust to a decimal place. The equilibrant is just the resultant with the opposite sign — add it and the forces balance, which by Newton's 1st law means no change in motion. On a ramp, gravity itself gets the component treatment: mg·sinθ pulls down the plane, mg·cosθ presses into it (and is what the normal force answers), and slip begins exactly when the down-plane part outgrows μs·FN.</p></section>
+</main>
+<footer>PopBoard Study · Vectors &amp; Forces in 2D · Fx = F·cosθ · Fy = F·sinθ · R = √(Rx²+Ry²) · θ = atan2(Ry, Rx) · equilibrant = −R · incline: mg·sinθ / mg·cosθ, FN = mg·cosθ</footer>
+<script type="module">
+"use strict";
+/* ---------- pure physics (DOM-free, unit-tested headlessly) ---------- */
+var G = 9.81;
+function vectorComponents(mag, angleDeg) { var r = angleDeg * Math.PI / 180; return { x: mag * Math.cos(r), y: mag * Math.sin(r) }; }
+function sumVectors(list) { var x = 0, y = 0; list.forEach(function(v){ var c = vectorComponents(v.mag, v.angle); x += c.x; y += c.y; }); return { x: x, y: y, mag: Math.hypot(x, y), angleDeg: normAngle(Math.atan2(y, x) * 180 / Math.PI) }; }
+function normAngle(a) { a = a % 360; return a < 0 ? a + 360 : a; }
+function equilibrantOf(list) { var s = sumVectors(list); return { mag: s.mag, angleDeg: normAngle(s.angleDeg + 180), x: -s.x, y: -s.y }; }
+function lawCosResultant(a, b) { var d = Math.abs(normAngle(a.angle - b.angle)); if (d > 180) d = 360 - d; var interior = 180 - d; var r2 = a.mag*a.mag + b.mag*b.mag - 2*a.mag*b.mag*Math.cos(interior*Math.PI/180); return Math.sqrt(Math.max(0, r2)); }
+function inclineDecomp(mass, angleDeg, mus) { var th = angleDeg*Math.PI/180; var mg = mass*G; var par = mg*Math.sin(th); var perp = mg*Math.cos(th); return { mg: mg, parallel: par, perpendicular: perp, normal: perp, fsMax: mus*perp, slips: par > mus*perp, criticalDeg: Math.atan(mus)*180/Math.PI, smoothHold: par }; }
+function quadrantSigns(angleDeg) { var a = normAngle(angleDeg); if (a === 0) return "(+, 0)"; if (a === 90) return "(0, +)"; if (a === 180) return "(−, 0)"; if (a === 270) return "(0, −)"; if (a < 90) return "(+, +) QI"; if (a < 180) return "(−, +) QII"; if (a < 270) return "(−, −) QIII"; return "(+, −) QIV"; }
+function fmt(x, n) { if (!isFinite(x)) return "—"; return Number(x.toFixed(n == null ? 1 : n)).toLocaleString("en-US"); }
+
+var COLORS = ["#FFB300", "#5FD3C4", "#B07CFF"];
+var state = {
+  mode: "act1",
+  vectors: [ { name: "A", mag: 4, angle: 0 }, { name: "B", mag: 3, angle: 90 }, { name: "C", mag: 2, angle: 200 } ],
+  order: [0, 1, 2], snapped: true,
+  given: [ { name: "F1", mag: 60, angle: 20 }, { name: "F2", mag: 50, angle: 130 }, { name: "F3", mag: 40, angle: 260 } ],
+  myMag: 0, myAng: 0, showThird: false,
+  incAngle: 30, incMass: 10, incMu: 0.5,
+  score1: { ok: 0, total: 0 }, score2: { ok: 0, total: 0 },
+  inventorySel: {}
+};
+window.VectorsForces = { vectorComponents: vectorComponents, sumVectors: sumVectors, equilibrantOf: equilibrantOf, lawCosResultant: lawCosResultant, inclineDecomp: inclineDecomp, quadrantSigns: quadrantSigns, state: state };
+function $(id){ return document.getElementById(id); }
+function fitCanvas(cv){ var dpr=Math.min(2,window.devicePixelRatio||1); var w=cv.clientWidth,h=cv.clientHeight; if(!w||!h) return null; if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){ cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr);} var ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0); return {ctx:ctx,w:w,h:h}; }
+function bg(ctx,w,h){ ctx.fillStyle="#070a12"; ctx.fillRect(0,0,w,h); }
+function arrow(ctx,x,y,dx,dy,color,label,dashed){
+  var len=Math.hypot(dx,dy); if(len<2) return {x:x,y:y};
+  var ex=x+dx, ey=y-dy;
+  ctx.save(); if(dashed) ctx.setLineDash([6,5]); ctx.strokeStyle=color; ctx.lineWidth=2.6; ctx.shadowColor=color; ctx.shadowBlur=dashed?0:6;
+  ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(ex,ey); ctx.stroke(); ctx.setLineDash([]); ctx.shadowBlur=0;
+  var a=Math.atan2(ey-y,ex-x), hl=10; ctx.fillStyle=color; ctx.beginPath(); ctx.moveTo(ex,ey); ctx.lineTo(ex-hl*Math.cos(a-0.4),ey-hl*Math.sin(a-0.4)); ctx.lineTo(ex-hl*Math.cos(a+0.4),ey-hl*Math.sin(a+0.4)); ctx.closePath(); ctx.fill();
+  if(label){ ctx.font="700 10px 'JetBrains Mono',monospace"; ctx.textAlign="center"; ctx.fillText(label, ex+(ex-x)/len*14, ey+(ey-y)/len*14); }
+  ctx.restore(); return {x:ex,y:ey};
+}
+function grid(ctx,w,h,ox,oy,step){ ctx.strokeStyle="rgba(255,255,255,0.07)"; ctx.lineWidth=1; for(var x=ox%step;x<w;x+=step){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();} for(var y=oy%step;y<h;y+=step){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();} ctx.strokeStyle="rgba(255,255,255,0.28)"; ctx.beginPath(); ctx.moveTo(0,oy); ctx.lineTo(w,oy); ctx.moveTo(ox,0); ctx.lineTo(ox,h); ctx.stroke(); ctx.fillStyle="rgba(255,255,255,0.55)"; ctx.font="9px 'JetBrains Mono',monospace"; ctx.textAlign="left"; ctx.fillText("+x",w-22,oy-6); ctx.fillText("+y",ox+6,14); }
+
+/* ---------- Scene 1 ---------- */
+var chainStarts = [];
+function drawPlay(){
+  var f=fitCanvas($("playCanvas")); if(!f) return; var ctx=f.ctx,w=f.w,h=f.h; bg(ctx,w,h);
+  var ox=70, oy=h-60, scale=42; grid(ctx,w,h,ox,oy,scale);
+  // light "free" copies from origin
+  state.vectors.forEach(function(v,i){ var c=vectorComponents(v.mag,v.angle); ctx.globalAlpha=0.28; arrow(ctx,ox,oy,c.x*scale,c.y*scale,COLORS[i],""); ctx.globalAlpha=1; });
+  // tip-to-tail chain in order
+  var x=ox,y=oy; chainStarts=[];
+  state.order.forEach(function(vi){ var v=state.vectors[vi]; chainStarts.push({x:x,y:y,idx:vi}); var c=vectorComponents(v.mag,v.angle); var end=arrow(ctx,x,y,c.x*scale,c.y*scale,COLORS[vi], v.name+" "+fmt(v.mag,1)+" @ "+fmt(normAngle(v.angle),0)+"°"); x=end.x; y=end.y; });
+  var R=sumVectors(state.vectors);
+  arrow(ctx,ox,oy,R.x*scale,R.y*scale,"#FF5FAE","R",true);
+  ctx.fillStyle="#FF5FAE"; ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign="left"; ctx.fillText("order: "+state.order.map(function(i){return state.vectors[i].name;}).join(" → "), ox, 18);
+  $("roR").textContent=fmt(R.mag,2); $("roTheta").textContent=fmt(R.angleDeg,1)+"°";
+  $("resultantEq").innerHTML="Rx = ΣFx = "+fmt(R.x,2)+" · Ry = ΣFy = "+fmt(R.y,2)+"<br>R = √(Rx²+Ry²) = "+fmt(R.mag,2)+" · θ = atan2(Ry, Rx) = "+fmt(R.angleDeg,1)+"° ("+quadrantSigns(R.angleDeg)+")";
+  var a=state.vectors[0], b=state.vectors[1]; var lawR=lawCosResultant(a,b); var compR=sumVectors([a,b]);
+  $("lawPanel").innerHTML="For <strong>A + B</strong>: components give R = "+fmt(compR.mag,2)+" @ "+fmt(compR.angleDeg,1)+"°. Law of cosines on the tip-to-tail triangle gives R = "+fmt(lawR,2)+" — same answer. Use the <strong>law of cosines</strong> when you know two sides and the triangle's included angle, the <strong>law of sines</strong> to then find the triangle's other angles, and plain <strong>Pythagoras</strong> only when the two vectors are perpendicular (the triangle is right-angled, e.g. A⊥B above would give √(4²+3²) = 5). Components work in every case, which is why Scene 3 is the general method — the graphical and component resultants drawn here are the <em>same</em> pink arrow.";
+  buildCompTable(R);
+  if(state.mode==="act1"){ $("statusType").textContent="Act 1 · Vectors — Resultant "+fmt(R.mag,2)+" @ "+fmt(R.angleDeg,1)+"°"; $("statusReason").textContent="Act 1 score "+state.score1.ok+"/"+state.score1.total+" · Act 2 score "+state.score2.ok+"/"+state.score2.total+" · order "+state.order.map(function(i){return state.vectors[i].name;}).join("→")+" · reordering never changes R"; }
+}
+function buildCompTable(R){
+  var tb=$("compTable"); tb.innerHTML="";
+  state.vectors.forEach(function(v,i){ var c=vectorComponents(v.mag,v.angle); var tr=document.createElement("tr"); tr.innerHTML="<td style='color:"+COLORS[i]+"'>"+v.name+"</td><td>"+fmt(v.mag,2)+"</td><td>"+fmt(normAngle(v.angle),1)+"°</td><td>"+fmt(c.x,2)+"</td><td>"+fmt(c.y,2)+"</td><td>"+quadrantSigns(v.angle)+"</td>"; tb.appendChild(tr); });
+  var tr=document.createElement("tr"); tr.innerHTML="<td><strong>Σ (R)</strong></td><td><strong>"+fmt(R.mag,2)+"</strong></td><td><strong>"+fmt(R.angleDeg,1)+"°</strong></td><td><strong>"+fmt(R.x,2)+"</strong></td><td><strong>"+fmt(R.y,2)+"</strong></td><td>"+quadrantSigns(R.angleDeg)+"</td>"; tb.appendChild(tr);
+  $("sumEq").textContent="ΣFx = "+fmt(R.x,2)+" · ΣFy = "+fmt(R.y,2)+" · R = "+fmt(R.mag,2)+" @ "+fmt(R.angleDeg,1)+"°";
+}
+/* drag tips */
+(function(){
+  var cv=$("playCanvas"), dragIdx=-1;
+  function pos(e){ var r=cv.getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; }
+  cv.addEventListener("pointerdown",function(e){ var p=pos(e); for(var k=0;k<chainStarts.length;k++){ var s=chainStarts[k]; var v=state.vectors[s.idx]; var c=vectorComponents(v.mag,v.angle); var tip={x:s.x+c.x*42, y:s.y-c.y*42}; if(Math.hypot(p.x-tip.x,p.y-tip.y)<24){ dragIdx=k; cv.setPointerCapture(e.pointerId); break; } } });
+  cv.addEventListener("pointermove",function(e){ if(dragIdx<0) return; var p=pos(e); var s=chainStarts[dragIdx]; var dx=(p.x-s.x)/42, dy=(s.y-p.y)/42; var v=state.vectors[s.idx]; v.mag=Math.max(0,Math.round(Math.hypot(dx,dy)*2)/2); v.angle=Math.round(normAngle(Math.atan2(dy,dx)*180/Math.PI)); syncVecSliders(); drawPlay(); });
+  function end(){ dragIdx=-1; } cv.addEventListener("pointerup",end); cv.addEventListener("pointercancel",end);
+})();
+/* vector sliders */
+function syncVecSliders(){ state.vectors.forEach(function(v,i){ var m=$("vmag"+i), a=$("vang"+i); if(m){ m.value=String(v.mag); $("vmagL"+i).textContent="Vector "+v.name+" magnitude: "+fmt(v.mag,1); } if(a){ a.value=String(Math.round(normAngle(v.angle))); $("vangL"+i).textContent="Vector "+v.name+" angle: "+fmt(normAngle(v.angle),0)+"°"; } }); buildOrderChips(); }
+function buildVecSliders(){
+  var wrap=$("vecSliders"); wrap.innerHTML="";
+  state.vectors.forEach(function(v,i){
+    [["mag",0,10,0.5],["ang",0,360,1]].forEach(function(cfg){
+      var row=document.createElement("div"); row.className="panel-row";
+      var lab=document.createElement("div"); lab.className="panel-label"; lab.id="v"+cfg[0]+"L"+i; row.appendChild(lab);
+      var inp=document.createElement("input"); inp.type="range"; inp.min=cfg[1]; inp.max=cfg[2]; inp.step=cfg[3]; inp.id="v"+cfg[0]+i; inp.setAttribute("aria-label","Vector "+v.name+" "+cfg[0]);
+      inp.addEventListener("input",function(e){ var val=parseFloat(e.target.value); if(cfg[0]==="mag") v.mag=val; else v.angle=val; syncVecSliders(); drawPlay(); });
+      row.appendChild(inp); wrap.appendChild(row);
+    });
+  }); syncVecSliders();
+}
+function buildOrderChips(){
+  var wrap=$("orderChips"); if(!wrap) return; wrap.innerHTML="";
+  state.order.forEach(function(vi,pos){ var b=document.createElement("button"); b.type="button"; b.className="chip active"; b.textContent=(pos+1)+". "+state.vectors[vi].name; b.title="Click to move this vector later in the order"; b.addEventListener("click",function(){ if(pos<state.order.length-1){ var t=state.order[pos]; state.order[pos]=state.order[pos+1]; state.order[pos+1]=t; buildOrderChips(); drawPlay(); } }); wrap.appendChild(b); });
+}
+$("snapBtn").addEventListener("click",function(){ state.snapped=true; drawPlay(); $("reorderFeedback").textContent="Snapped head-to-tail in the order shown. The resultant (pink) runs from the first tail to the last tip."; $("reorderFeedback").className="feedback"; });
+$("shuffleBtn").addEventListener("click",function(){ state.order=state.order.slice().sort(function(){return Math.random()-0.5;}); buildOrderChips(); drawPlay(); $("reorderFeedback").textContent="Order shuffled to "+state.order.map(function(i){return state.vectors[i].name;}).join(" → ")+". Predict |R| before checking."; $("reorderFeedback").className="feedback"; });
+$("reorderCheck").addEventListener("click",function(){ var g=parseFloat($("reorderInput").value); var R=sumVectors(state.vectors); var fb=$("reorderFeedback"); if(!isFinite(g)){ fb.textContent="Enter a predicted |R| first."; fb.className="feedback bad"; return; } var good=Math.abs(g-R.mag)<=Math.max(0.25,R.mag*0.05); state.score1.total++; if(good) state.score1.ok++; $("score1").textContent=state.score1.ok+" / "+state.score1.total; fb.textContent=(good?"Correct. ":"Not quite. ")+"|R| is still "+fmt(R.mag,2)+" — vector addition is commutative: reordering changes the path, never the resultant. Steps: ΣFx = "+fmt(R.x,2)+", ΣFy = "+fmt(R.y,2)+", R = √(ΣFx²+ΣFy²). Score "+state.score1.ok+"/"+state.score1.total+"."; fb.className="feedback "+(good?"good":"bad"); });
+
+/* ---------- Scene 4 equilibrant ---------- */
+function drawEq(){
+  var f=fitCanvas($("eqCanvas")); if(!f) return; var ctx=f.ctx,w=f.w,h=f.h; bg(ctx,w,h);
+  var ox=w/2, oy=h/2, scale=1.15; grid(ctx,w,h,ox,oy,28);
+  var all=state.given.concat([{name:"You",mag:state.myMag,angle:state.myAng}]);
+  state.given.forEach(function(v,i){ var c=vectorComponents(v.mag,v.angle); arrow(ctx,ox,oy,c.x*scale,c.y*scale,COLORS[i], v.name+" "+fmt(v.mag,0)+"N @ "+fmt(normAngle(v.angle),0)+"°"); });
+  var mc=vectorComponents(state.myMag,state.myAng); arrow(ctx,ox,oy,mc.x*scale,mc.y*scale,"#57d38c","You",true);
+  var S=sumVectors(all); var E=equilibrantOf(state.given);
+  $("eqSumX").textContent=fmt(S.x,1)+" N"; $("eqSumY").textContent=fmt(S.y,1)+" N";
+  $("eqEq").innerHTML="given resultant R = "+fmt(sumVectors(state.given).mag,1)+" N @ "+fmt(sumVectors(state.given).angleDeg,1)+"°<br>equilibrant needed = "+fmt(E.mag,1)+" N @ "+fmt(E.angleDeg,1)+"° · your ΣF = ("+fmt(S.x,1)+", "+fmt(S.y,1)+") N";
+  if(state.mode==="act2"){ $("statusType").textContent="Act 2 · Forces — ΣF = ("+fmt(S.x,1)+", "+fmt(S.y,1)+") N"; $("statusReason").textContent="Act 1 score "+state.score1.ok+"/"+state.score1.total+" · Act 2 score "+state.score2.ok+"/"+state.score2.total+" · balanced when both sums are ≈ 0 ⇒ a = 0 (Newton's 1st law)"; }
+  drawThird();
+}
+$("myMag").addEventListener("input",function(e){ state.myMag=parseFloat(e.target.value); $("myMagLabel").textContent="Your force magnitude: "+fmt(state.myMag,0)+" N"; drawEq(); });
+$("myAng").addEventListener("input",function(e){ state.myAng=parseFloat(e.target.value); $("myAngLabel").textContent="Your force angle: "+fmt(state.myAng,0)+"°"; drawEq(); });
+$("eqCheck").addEventListener("click",function(){ var all=state.given.concat([{mag:state.myMag,angle:state.myAng}]); var S=sumVectors(all); var E=equilibrantOf(state.given); var good=S.mag<=5 && state.myMag>1; state.score2.total++; if(good) state.score2.ok++; $("score2").textContent=state.score2.ok+" / "+state.score2.total; var fb=$("eqFeedback"); fb.textContent=(good?"Balanced! ΣF ≈ 0, so no acceleration — Newton's 1st law. ":"Not balanced yet — |ΣF| = "+fmt(S.mag,1)+" N. ")+"The force you need is the equilibrant: equal and opposite to the given resultant, "+fmt(E.mag,1)+" N @ "+fmt(E.angleDeg,1)+"°. Score "+state.score2.ok+"/"+state.score2.total+"."; fb.className="feedback "+(good?"good":"bad"); drawEq(); });
+$("eqNew").addEventListener("click",function(){ state.given=[1,2,3].map(function(n){ return {name:"F"+n, mag:30+Math.round(Math.random()*60), angle:Math.round(Math.random()*350/10)*10}; }); state.myMag=0; $("myMag").value="0"; $("myMagLabel").textContent="Your force magnitude: 0 N"; drawEq(); });
+/* inventory */
+var INV=[["Gravity (Earth on crate)",true],["Normal (floor on crate)",true],["Static friction (floor on crate)",true],["Push (hand on crate)",true],["Friction the crate exerts on the floor",false],["The crate pushing down on the floor",false]];
+var invWrap=$("invChips"); INV.forEach(function(item){ var b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=item[0]; b.addEventListener("click",function(){ state.inventorySel[item[0]]=!state.inventorySel[item[0]]; b.classList.toggle("sel",!!state.inventorySel[item[0]]); }); invWrap.appendChild(b); });
+$("invCheck").addEventListener("click",function(){ var good=true; INV.forEach(function(item){ if(!!state.inventorySel[item[0]]!==item[1]) good=false; }); state.score2.total++; if(good) state.score2.ok++; $("score2").textContent=state.score2.ok+" / "+state.score2.total; var fb=$("invFeedback"); fb.textContent=good?"Correct — on the crate: gravity, normal, push, and static friction (the last two cancel, as do the first two). The other two act on the floor, not the crate.":"Not quite — only forces acting ON the crate count for the crate's ΣF. On the crate: gravity, normal, the push, and static friction opposing the push. Forces the crate exerts on the floor belong to the floor's inventory (Newton's 3rd-law partners). Score "+state.score2.ok+"/"+state.score2.total+"."; fb.className="feedback "+(good?"good":"bad"); });
+/* 3rd law mini scene */
+function drawThird(){
+  var f=fitCanvas($("thirdCanvas")); if(!f) return; var ctx=f.ctx,w=f.w,h=f.h; bg(ctx,w,h);
+  var cx=w/2, cy=h/2+20;
+  ctx.fillStyle="#5a3d22"; ctx.fillRect(30,cy+26,w-60,14); ctx.fillStyle="#C9924B"; ctx.fillRect(cx-34,cy-12,68,38);
+  ctx.fillStyle="rgba(255,255,255,0.7)"; ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign="center"; ctx.fillText("crate",cx,cy+8); ctx.fillText("floor",cx,cy+56);
+  arrow(ctx,cx,cy,70,0,"#FFFFFF","push →");
+  arrow(ctx,cx-10,cy+18,-52,0,"#B07CFF","friction on crate");
+  arrow(ctx,cx,cy-20,0,-42,"#FFB300",""); ctx.fillStyle="#FFB300"; ctx.fillText("gravity",cx+44,cy-52);
+  arrow(ctx,cx,cy+24,0,42,"#5FD3C4",""); ctx.fillStyle="#5FD3C4"; ctx.fillText("normal on crate",cx+52,cy+70);
+  if(state.showThird){
+    arrow(ctx,cx+10,cy+34,52,0,"#B07CFF","friction on floor (partner)");
+    arrow(ctx,cx-16,cy+34,0,34,"#5FD3C4","crate on floor (partner)");
+    ctx.fillStyle="#E9E6DE"; ctx.fillText("partners act on the FLOOR — equal, opposite, different object",cx,cy+92);
+  } else { ctx.fillStyle="rgba(255,255,255,0.55)"; ctx.fillText("toggle above to reveal the partner forces on the floor",cx,cy+92); }
+}
+$("thirdLawToggle").addEventListener("change",function(e){ state.showThird=e.target.checked; drawThird(); });
+
+/* ---------- Scene 5 incline ---------- */
+function drawIncline(){
+  var d=inclineDecomp(state.incMass,state.incAngle,state.incMu);
+  var f=fitCanvas($("incCanvas")); if(!f) return; var ctx=f.ctx,w=f.w,h=f.h; bg(ctx,w,h);
+  var x0=60,y0=h-60, x1=w-60, y1=y0-Math.tan(state.incAngle*Math.PI/180)*(x1-x0); if(y1<50){ y1=50; }
+  ctx.strokeStyle="#C9924B"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.lineTo(x1,y0); ctx.closePath(); ctx.stroke(); ctx.lineWidth=1;
+  ctx.setLineDash([4,4]); ctx.strokeStyle="rgba(255,255,255,0.4)"; ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y0); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle="#FFD54A"; ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign="left"; ctx.fillText(fmt(state.incAngle,0)+"°",x0+38,y0-8);
+  var t=0.45, bx=x0+(x1-x0)*t, by=y0+(y1-y0)*t;
+  ctx.save(); ctx.translate(bx,by-16); ctx.rotate(-state.incAngle*Math.PI/180); ctx.fillStyle="#C9924B"; ctx.fillRect(-26,-26,52,26); ctx.restore();
+  var scale=0.55;
+  // arrow() takes (dx, dyUp) in screen terms. Ramp-up is (cosθ, +sinθ) in
+  // dyUp terms; outward normal is (-sinθ, +cosθ); gravity is (0, -mg).
+  var th=state.incAngle*Math.PI/180, c=Math.cos(th), sn=Math.sin(th);
+  arrow(ctx,bx,by-16,0,-d.mg*scale, "#FFB300","mg = "+fmt(d.mg,1)+" N");
+  arrow(ctx,bx,by-16,-c*d.parallel*scale, -sn*d.parallel*scale, "#FFD54A","mg·sinθ = "+fmt(d.parallel,1)+" N",true); // down-plane
+  arrow(ctx,bx,by-16,sn*d.perpendicular*scale, -c*d.perpendicular*scale, "#FFE082","mg·cosθ = "+fmt(d.perpendicular,1)+" N",true); // into-plane
+  arrow(ctx,bx,by-16,-sn*d.normal*scale, c*d.normal*scale, "#5FD3C4","FN = "+fmt(d.normal,1)+" N"); // outward, balances into-plane part
+  var fric=Math.min(d.fsMax,d.parallel);
+  arrow(ctx,bx,by-16,c*fric*scale, sn*fric*scale, "#B07CFF", d.slips?"friction (maxed)":"friction up plane"); // up-plane
+  $("incPar").textContent=fmt(d.parallel,1)+" N"; $("incPerp").textContent=fmt(d.perpendicular,1)+" N";
+  $("incSlip").textContent=d.slips?"Yes — slips":"No — holds"; $("incSlip").style.color=d.slips?"#ff7a7a":"#57d38c";
+  $("incSlipNote").textContent="fs,max = "+fmt(d.fsMax,1)+" N · critical angle "+fmt(d.criticalDeg,1)+"°";
+  if(state.mode==="act2"){ $("statusType").textContent="Act 2 · Incline "+fmt(state.incAngle,0)+"° — "+(d.slips?"Slips":"Holds"); $("statusReason").textContent="mg·sinθ = "+fmt(d.parallel,1)+" N vs fs,max = μs·mg·cosθ = "+fmt(d.fsMax,1)+" N · FN = "+fmt(d.normal,1)+" N · critical angle atan(μs) = "+fmt(d.criticalDeg,1)+"°"; }
+}
+$("incAng").addEventListener("input",function(e){ state.incAngle=parseFloat(e.target.value); $("incAngLabel").textContent="Ramp angle θ: "+fmt(state.incAngle,0)+"°"; drawIncline(); });
+$("incMass").addEventListener("input",function(e){ state.incMass=parseFloat(e.target.value); $("incMassLabel").textContent="Mass: "+fmt(state.incMass,1)+" kg"; drawIncline(); });
+$("incMu").addEventListener("input",function(e){ state.incMu=parseFloat(e.target.value); $("incMuLabel").textContent="μs (static coefficient): "+fmt(state.incMu,2); drawIncline(); });
+$("critCheck").addEventListener("click",function(){ var d=inclineDecomp(state.incMass,state.incAngle,state.incMu); var g=parseFloat($("critInput").value); var fb=$("critFeedback"); if(!isFinite(g)){ fb.textContent="Enter an angle first."; fb.className="feedback bad"; return; } var good=Math.abs(g-d.criticalDeg)<=1.5; state.score2.total++; if(good) state.score2.ok++; $("score2").textContent=state.score2.ok+" / "+state.score2.total; fb.textContent=(good?"Correct. ":"Not quite. ")+"Slip starts when mg·sinθ = μs·mg·cosθ ⇒ tanθ = μs ⇒ θ = atan("+fmt(state.incMu,2)+") = "+fmt(d.criticalDeg,1)+"° (mass cancels!). Score "+state.score2.ok+"/"+state.score2.total+"."; fb.className="feedback "+(good?"good":"bad"); });
+$("holdCheck").addEventListener("click",function(){ var d=inclineDecomp(state.incMass,state.incAngle,state.incMu); var g=parseFloat($("holdInput").value); var fb=$("holdFeedback"); if(!isFinite(g)){ fb.textContent="Enter a force first."; fb.className="feedback bad"; return; } var good=Math.abs(g-d.smoothHold)<=Math.max(2,d.smoothHold*0.05); state.score2.total++; if(good) state.score2.ok++; $("score2").textContent=state.score2.ok+" / "+state.score2.total; fb.textContent=(good?"Correct. ":"Not quite. ")+"On a smooth ramp the only down-plane pull is mg·sinθ = "+fmt(state.incMass,1)+"×9.81×sin("+fmt(state.incAngle,0)+"°) = "+fmt(d.smoothHold,1)+" N, so the up-plane equilibrant must be exactly that. Score "+state.score2.ok+"/"+state.score2.total+"."; fb.className="feedback "+(good?"good":"bad"); });
+
+/* tabs, deep links, reset */
+function setMode(m){ state.mode=m; document.querySelectorAll("[data-mode]").forEach(function(x){x.classList.toggle("active",x.dataset.mode===m);}); document.querySelectorAll(".mode").forEach(function(mm){mm.classList.toggle("active",mm.id==="mode-"+m);}); render(); }
+document.querySelectorAll("[data-mode]").forEach(function(b){ b.addEventListener("click",function(){ setMode(b.dataset.mode); }); });
+$("resetBtn").addEventListener("click",function(){ location.href=location.pathname+location.search; });
+$("controlsJumpBtn").addEventListener("click",function(){ var el=document.getElementById("controls"); if(el) el.scrollIntoView({behavior:"smooth"}); });
+function render(){ drawPlay(); drawEq(); drawIncline(); }
+(function(){ var q=new URLSearchParams(location.search); var m=q.get("mode"); var map={act1:"act1",vectors:"act1",vector:"act1",scene1:"act1",scene2:"act1",scene3:"act1",act2:"act2",forces:"act2",scene4:"act2",scene5:"act2"}; if(m && map[m]) state.mode=map[m]; document.querySelectorAll("[data-mode]").forEach(function(x){x.classList.toggle("active",x.dataset.mode===state.mode);}); document.querySelectorAll(".mode").forEach(function(mm){mm.classList.toggle("active",mm.id==="mode-"+state.mode);}); })();
+$("myMagLabel").textContent="Your force magnitude: 0 N"; $("myAngLabel").textContent="Your force angle: 0°";
+$("incAngLabel").textContent="Ramp angle θ: 30°"; $("incMassLabel").textContent="Mass: 10.0 kg"; $("incMuLabel").textContent="μs (static coefficient): 0.50";
+buildVecSliders(); buildOrderChips(); render();
+window.addEventListener("resize",render);
+</script>
+<script>
+document.addEventListener("click", function(e){ var b = e.target.closest && e.target.closest("[data-study-back]"); if (!b) return; e.preventDefault(); location.href = "study.html" + location.search; });
+</script>
+</body></html>
