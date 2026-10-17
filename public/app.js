@@ -295,6 +295,7 @@ function setEyeLabelAnimated(el, visible, shownText, hiddenText) {
 
 const loginDiv = document.getElementById("login");
 const teacherLoginDiv = document.getElementById("teacherLogin");
+const teacherSignupDiv = document.getElementById("teacherSignup");
 const boardsPortalDiv = document.getElementById("boardsPortal");
 const studentsPortalDiv = document.getElementById("studentsPortal");
 const studentDashboardDiv = document.getElementById("studentDashboard");
@@ -305,8 +306,12 @@ const teacherLoginBtn = document.getElementById("teacherLoginBtn");
 const teacherNameInput = document.getElementById("teacherNameInput");
 const teacherPasswordInput = document.getElementById("teacherPasswordInput");
 const teacherEmailInput = document.getElementById("teacherEmailInput");
+const teacherIdInput = document.getElementById("teacherIdInput");
+const teacherNewPasswordInput = document.getElementById("teacherNewPasswordInput");
 const teacherSignUpBtn = document.getElementById("teacherSignUpBtn");
 const teacherSignInBtn = document.getElementById("teacherSignInBtn");
+const showTeacherSignUpBtn = document.getElementById("showTeacherSignUpBtn");
+const backToTeacherLoginBtn = document.getElementById("backToTeacherLoginBtn");
 const backToMainLoginBtn = document.getElementById("backToMainLoginBtn");
 const newBoardNameInput = document.getElementById("newBoardNameInput");
 const createBoardBtn = document.getElementById("createBoardBtn");
@@ -906,18 +911,86 @@ joinBtn.onclick = async function() {
   startBoard();
 };
 
+// ─── TEACHER SIGN-IN / CREATE ACCOUNT ───────────────────────────────────────
+// Teachers sign in with their name OR email, plus password. Firebase Auth
+// needs an email, so names are looked up in teacherNames/{lowercased name}
+// -> { uid, email, name }, written by the teacher at sign-up (or on their
+// next email sign-in, for accounts made before this existed). One doc per
+// name keeps names unique, ignoring upper/lower case. See firestore.rules.
+
+function clearTeacherForms() {
+  teacherIdInput.value = "";
+  teacherPasswordInput.value = "";
+  teacherEmailInput.value = "";
+  teacherNameInput.value = "";
+  teacherNewPasswordInput.value = "";
+}
+
+function showTeacherView(which) {
+  loginDiv.classList.add("hidden");
+  teacherLoginDiv.classList.toggle("hidden", which !== "signin");
+  teacherSignupDiv.classList.toggle("hidden", which !== "signup");
+}
+
+// "  Ms. Smith " -> "ms. smith" (the teacherNames doc id).
+function teacherNameKey(name) {
+  return String(name || "").trim().toLowerCase();
+}
+
+// Names must work as a Firestore doc id and must not look like an email.
+function teacherNameProblem(name) {
+  var n = String(name || "").trim();
+  if (!n) { return "Enter a username."; }
+  if (n.length > 60) { return "Usernames must be 60 characters or fewer."; }
+  if (n.indexOf("/") !== -1 || n.indexOf("@") !== -1) { return "Usernames can't contain \"/\" or \"@\"."; }
+  if (n === "." || n === ".." || /^__.*__$/.test(n)) { return "Please choose a different username."; }
+  return "";
+}
+
+// Make sure this teacher's name has a teacherNames entry (best effort; never
+// blocks sign-in). Used for accounts created before name sign-in existed.
+async function ensureTeacherNameEntry(u, name) {
+  try {
+    if (!u || !u.email || teacherNameProblem(name)) { return; }
+    var key = teacherNameKey(name);
+    var ref = doc(db, "teacherNames", key);
+    var snap = await getDoc(ref);
+    if (snap.exists()) {
+      if (snap.data().uid !== u.uid) { console.info("Teacher name \"" + name + "\" is already used by another account; sign in with your email."); }
+      return;
+    }
+    await setDoc(ref, { uid: u.uid, email: u.email, name: String(name).trim(), createdAt: serverTimestamp() });
+  } catch (e) {
+    console.warn("Couldn't save the name sign-in entry", e);
+  }
+}
+
 document.getElementById("teacherLoginBtn").onclick = function(e) {
   e.preventDefault();
-  loginDiv.classList.add("hidden");
-  teacherLoginDiv.classList.remove("hidden");
+  showTeacherView("signin");
 };
 
-backToMainLoginBtn.onclick = function() {
+showTeacherSignUpBtn.onclick = function(e) {
+  e.preventDefault();
+  // Carry over whatever they already typed, if it fits.
+  var typed = teacherIdInput.value.trim();
+  if (typed && !teacherEmailInput.value) {
+    if (typed.indexOf("@") !== -1) { teacherEmailInput.value = typed; } else if (!teacherNameInput.value) { teacherNameInput.value = typed; }
+  }
+  showTeacherView("signup");
+};
+
+backToTeacherLoginBtn.onclick = function(e) {
+  e.preventDefault();
+  showTeacherView("signin");
+};
+
+backToMainLoginBtn.onclick = function(e) {
+  if (e) { e.preventDefault(); }
   teacherLoginDiv.classList.add("hidden");
+  teacherSignupDiv.classList.add("hidden");
   loginDiv.classList.remove("hidden");
-  teacherNameInput.value = "";
-  teacherEmailInput.value = "";
-  teacherPasswordInput.value = "";
+  clearTeacherForms();
 };
 
 // After Firebase Auth has signed a teacher in: load their profile, check
@@ -936,28 +1009,45 @@ async function enterTeacherPortal() {
     teacherSnap = await getDoc(teacherRef);
   }
   var t = teacherSnap.data();
+  await ensureTeacherNameEntry(u, t.name);
   if (!t.approved && !isMasterAdmin) {
     alert("Thanks for signing up! Your teacher account is waiting for approval from the PopBoard admin. Try again once you've been approved.");
     await signOut(auth);
     isMasterAdmin = false;
+    if (!teacherIdInput.value) { teacherIdInput.value = t.name || u.email || ""; }
+    teacherPasswordInput.value = "";
+    teacherNewPasswordInput.value = "";
+    showTeacherView("signin");
     return;
   }
   teacherAccount = t.name || "Teacher";
   username = teacherAccount;
   isTeacher = true;
-  teacherPasswordInput.value = "";
+  clearTeacherForms();
   teacherLoginDiv.classList.add("hidden");
+  teacherSignupDiv.classList.add("hidden");
   boardsPortalDiv.classList.remove("hidden");
   studyBtn.classList.remove("hidden");
   loadBoardsPortal();
 }
 
 teacherSignInBtn.onclick = async function() {
-  var email = teacherEmailInput.value.trim();
+  var id = teacherIdInput.value.trim();
   var password = teacherPasswordInput.value;
-  if (!email || !password) { alert("Enter your email and password to enter the kernel command center!"); return; }
+  if (!id || !password) { alert("Enter your name or email and your password to enter the kernel command center!"); return; }
   teacherSignInBtn.disabled = true;
   try {
+    var email = id;
+    if (id.indexOf("@") === -1) {
+      // A name: look up the email it belongs to.
+      if (teacherNameProblem(id)) { alert("No teacher account has that name. Try signing in with your email."); return; }
+      var nameSnap = await getDoc(doc(db, "teacherNames", teacherNameKey(id)));
+      if (!nameSnap.exists() || !nameSnap.data().email) {
+        alert("No teacher account has that name. Try signing in with your email (your name will work next time).");
+        return;
+      }
+      email = nameSnap.data().email;
+    }
     var u = await waitForAuth();
     if (u) { await signOut(auth); }
     await signInWithEmailAndPassword(auth, email, password);
@@ -973,16 +1063,30 @@ teacherSignInBtn.onclick = async function() {
 teacherSignUpBtn.onclick = async function() {
   var name = teacherNameInput.value.trim();
   var email = teacherEmailInput.value.trim();
-  var password = teacherPasswordInput.value;
-  if (!name || !email || !password) { alert("To create a teacher account, enter your name, email, and a password."); return; }
+  var password = teacherNewPasswordInput.value;
+  if (!name || !email || !password) { alert("To create a teacher account, enter your email, a username, and a password."); return; }
+  if (email.indexOf("@") === -1) { alert("Enter a valid email address."); return; }
+  var problem = teacherNameProblem(name);
+  if (problem) { alert(problem); return; }
   if (password.length < MIN_PASSWORD_LENGTH) { alert("Passwords need at least " + MIN_PASSWORD_LENGTH + " characters."); return; }
   teacherSignUpBtn.disabled = true;
   try {
+    var nameRef = doc(db, "teacherNames", teacherNameKey(name));
+    var taken = await getDoc(nameRef);
+    if (taken.exists()) { alert("The username \"" + name + "\" is already taken. Please choose a different one."); return; }
     var u = await waitForAuth();
     if (u) { await signOut(auth); }
     var cred = await createUserWithEmailAndPassword(auth, email, password);
     try { await updateProfile(cred.user, { displayName: name }); } catch (e) { console.warn("displayName not saved", e); }
     await setDoc(doc(db, "teachers", cred.user.uid), { name: name, email: email, approved: false, createdAt: serverTimestamp() });
+    try {
+      await setDoc(nameRef, { uid: cred.user.uid, email: cred.user.email || email, name: name, createdAt: serverTimestamp() });
+    } catch (nameErr) {
+      // Someone grabbed the name a moment ago. The account still works by email.
+      console.warn("Name entry not saved", nameErr);
+      alert("Your account was created, but the username \"" + name + "\" was just taken by someone else. Sign in with your email for now.");
+    }
+    teacherIdInput.value = name;
     await enterTeacherPortal();
   } catch (err) {
     console.error("Teacher sign-up failed", err);
@@ -1036,7 +1140,7 @@ function resetAndLogout() {
   studentEmoji = "";
   myUpvotedPostIds.clear();
   myPollVotes.clear();
-  var panels = [boardsPortalDiv, studentsPortalDiv, studentDashboardDiv, appDiv, teacherLoginDiv, seatingMapDiv];
+  var panels = [boardsPortalDiv, studentsPortalDiv, studentDashboardDiv, appDiv, teacherLoginDiv, teacherSignupDiv, seatingMapDiv];
   for (var i = 0; i < panels.length; i++) { panels[i].classList.add("hidden"); }
   confusionIndicator.classList.add("hidden");
   document.getElementById("newPost").classList.remove("hidden");
@@ -1044,9 +1148,7 @@ function resetAndLogout() {
   usernameInput.value = "";
   if (document.getElementById("boardNameInput")) { document.getElementById("boardNameInput").value = ""; }
   if (document.getElementById("studentPasswordInput")) { document.getElementById("studentPasswordInput").value = ""; }
-  teacherNameInput.value = "";
-  if (teacherEmailInput) { teacherEmailInput.value = ""; }
-  teacherPasswordInput.value = "";
+  clearTeacherForms();
   pollSection.innerHTML = "";
   postsDiv.innerHTML = "";
   leaderboardSection.innerHTML = "";

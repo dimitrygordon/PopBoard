@@ -10,7 +10,7 @@ A classroom discussion app: students join a teacher's board to post comments and
 
 | Who | How they sign in | Notes |
 |---|---|---|
-| Teacher | Email + password (Create Account / Sign In) | New teachers wait for an admin to approve them before they can create boards. |
+| Teacher | Name **or** email + password (Create account / Sign In) | New teachers wait for an admin to approve them before they can create boards. Names are unique (ignoring case); `teacherNames/{lowercased name}` maps a name to the sign-in email. |
 | Admin | A teacher account plus a doc at `admins/{uid}` | That doc can only be created in the Firebase console. Admins see every teacher and can approve or delete them. |
 | Student, quick join | Name + board name, no password | Uses an anonymous Firebase sign-in that stays on that device. Nobody on another device can take the name while it's in use. |
 | Student, protected | Name + board name + password (6+ characters) | Links that same account to a password login, so the student can sign in from any device. The teacher can **Reset Sign-in** from the student's dashboard if a student loses their device or password. |
@@ -20,6 +20,7 @@ A classroom discussion app: students join a teacher's board to post comments and
 ```
 admins/{uid}                         console-only admin marker
 teachers/{uid}                       { name, email, approved }
+teacherNames/{lowercased name}       { uid, email, name } for name sign-in (single-doc reads are public; listing is blocked)
 teachers/{uid}/studyLinks/{id}       teacher's Study-gallery links
 boards/{boardId}                     { name, ownerUid, teacherAccount, ...settings }
   students/{studentId}               { username, uid, secured, stats... }

@@ -5,6 +5,8 @@ rules_version = '2';
 // Every write is tied to the signed-in Firebase Auth user (request.auth.uid):
 //   * Teachers sign in with email/password. Their profile is teachers/{uid}.
 //     A new teacher starts with approved == false; only an admin can approve.
+//     teacherNames/{lowercased name} maps a teacher's name to their sign-in
+//     email so they can also sign in with name + password.
 //   * Admins are users with a doc at admins/{uid}. That doc can only be
 //     created in the Firebase console (the client can never write it).
 //   * Students sign in anonymously (or with a password-protected account,
@@ -90,6 +92,32 @@ service cloud.firestore {
         allow write: if signedIn() && teacherUid == uid()
           && (isApprovedTeacher() || isAdmin());
       }
+    }
+
+    // ---------- teacher names (sign in with name + password) ----------
+    // teacherNames/{lowercased name} -> { uid, email, name, createdAt }.
+    // Firebase Auth signs in with an email, so the sign-in page looks the
+    // email up here BEFORE anyone is signed in. That means a single doc can be
+    // read by anyone who knows the exact name (it reveals that teacher's
+    // email); listing/searching the collection is NOT allowed.
+    // One doc per name makes names unique (case-insensitive).
+    match /teacherNames/{nameKey} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if hasEmail()
+        && request.resource.data.keys().hasOnly(['uid', 'email', 'name', 'createdAt'])
+        && request.resource.data.uid == uid()
+        && request.resource.data.email == request.auth.token.email
+        // student password accounts use made-up emails; they can't claim names
+        && !request.auth.token.email.matches('.*@students[.]popboard[.]invalid$')
+        && request.resource.data.name is string
+        && request.resource.data.name.lower() == nameKey
+        // must be the name on this user's own teacher profile
+        && exists(/databases/$(database)/documents/teachers/$(uid()))
+        && teacherDoc().data.get('name', '').trim().lower() == nameKey;
+      allow update: if false;
+      allow delete: if isAdmin()
+        || (signedIn() && resource.data.uid == uid());
     }
 
     // ---------- boards ----------

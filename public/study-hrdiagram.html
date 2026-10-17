@@ -38,6 +38,10 @@ button,input{font-family:inherit;}
 .bar-bottom{bottom:0;}
 .bar button{pointer-events:auto;background:none;border:none;color:#0A84FF;font-size:15px;cursor:pointer;padding:4px 2px;}
 .bar button:active{opacity:0.6;}
+.bar-left{display:flex;align-items:center;gap:18px;}
+.bar button.study-back-btn{display:inline-flex;align-items:center;gap:2px;}
+/* Phones: chevron only, so the left buttons never run into the centered one. */
+@media (max-width:400px){.bar-left{gap:12px;}.bar button.study-back-btn .back-label{display:none;}.bar button.study-back-btn svg{width:20px;height:20px;}}
 .bar-top .bar-center, .bar-bottom .bar-center{position:absolute;left:50%;transform:translateX(-50%);}
 
 /* ---------- status banner ---------- */
@@ -152,7 +156,10 @@ canvas.cross-section-canvas{width:100%;height:180px;display:block;border-radius:
 <canvas id="stage"></canvas>
 
 <div class="bar bar-top">
-  <button id="propertiesBtn">Properties</button>
+  <div class="bar-left">
+    <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg><span class="back-label">Back</span></button>
+    <button id="propertiesBtn">Properties</button>
+  </div>
   <button id="pauseBtn" class="bar-center">Pause</button>
   <button id="clearBtn">Clear</button>
 </div>
@@ -1980,6 +1987,16 @@ window.__hrDebug = {
   classifyStarLabel: classifyStarLabel,
   scrubMaxAgeMyr: scrubMaxAgeMyr
 };
+</script>
+<script>
+/* Back -> the Study module library, keeping this page's URL parameters
+   (board / student / name / teacher) so the library opens in the same mode. */
+document.addEventListener("click", function(e){
+  var b = e.target.closest && e.target.closest("[data-study-back]");
+  if (!b) return;
+  e.preventDefault();
+  location.href = "study.html" + location.search;
+});
 </script>
 </body>
 </html>
