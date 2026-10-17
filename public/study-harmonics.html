@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmonics and Standing Waves Sandbox // PopBoard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05060a;--panel:#171C22;--panel-2:#1E252D;--panel-3:#252E38;--border:#2C3742;--border-lit:#3A4854;--amber:#FFB300;--amber-dim:#8a640f;--cyan:#5FD3C4;--violet:#B07CFF;--text:#E9E6DE;--text-dim:#93A0AC;--text-dimmer:#5C6874;--green:#57d38c;--red:#ff7a7a}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Oswald',sans-serif;letter-spacing:.03em;text-transform:uppercase}.mono{font-family:'JetBrains Mono',monospace}button,input,select{font-family:inherit}
+.bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(5,6,10,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.bar button{background:none;border:none;color:#0A84FF;font-size:15px;cursor:pointer;padding:4px 2px}.bar-left{display:flex;gap:16px;align-items:center}.study-back-btn{display:inline-flex;align-items:center;gap:2px}
+@media(max-width:400px){.study-back-btn .back-label{display:none}}
+.title{text-align:center;padding:14px 12px 4px}.title h1{font-size:20px;margin:0}.title p{color:var(--text-dim);font-size:12.5px;max-width:900px;margin:6px auto 0;line-height:1.55}
+#statusBanner{margin:10px auto;max-width:920px;background:rgba(15,18,22,.9);border:1px solid var(--border-lit);border-radius:14px;padding:10px 18px;text-align:center}
+#statusBanner .status-type{font-family:'Oswald',sans-serif;font-size:16px;letter-spacing:.05em;text-transform:uppercase;color:var(--amber)}
+#statusBanner .status-reason{font-size:11.5px;color:var(--text-dim);margin-top:3px;font-family:'JetBrains Mono',monospace;line-height:1.55}
+main{max-width:1180px;margin:0 auto;padding:6px 14px 40px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 0}.tab{flex:1;min-width:118px;padding:10px 6px;border-radius:10px;border:1px solid var(--border-lit);background:var(--panel-2);color:var(--text-dim);cursor:pointer;font-size:12.5px;text-align:center}.tab.active{background:var(--amber-dim);color:#fff;border-color:var(--amber)}
+.mode{display:none}.mode.active{display:block}
+.card{background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-top:14px}
+.card h2{font-size:13px;margin:0 0 4px;text-align:center}.card .sub{font-size:11px;color:var(--text-dimmer);text-align:center;font-family:'JetBrains Mono',monospace;margin-bottom:8px;line-height:1.5}
+.grid{display:grid;grid-template-columns:1.55fr 1fr;gap:14px}.grid .card{margin-top:14px}@media(max-width:820px){.grid{grid-template-columns:1fr}}
+canvas.view{width:100%;display:block;border-radius:12px;background:#070a12;touch-action:none}
+.wave{height:300px}.graph{height:220px}.scope{height:220px}.smallwave{height:190px}@media(max-width:520px){.wave{height:260px}}
+.readouts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}@media(max-width:520px){.readouts{grid-template-columns:1fr 1fr}}
+.tile{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:10px;padding:8px;text-align:center}.tile .l{font-family:'Oswald',sans-serif;font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-dim)}.tile .v{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;margin-top:2px}.tile .s{font-size:10px;color:var(--text-dimmer);font-family:'JetBrains Mono',monospace}
+.panel-label{font-size:13px;color:#e5e5e7;margin-bottom:6px}.panel-row{margin-bottom:13px}.panel-hint{font-size:11.5px;color:#8e8e93;line-height:1.6}.panel-section-title{text-align:center;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#6e6e73;margin:14px 0 8px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:#48484a;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:none}
+select,input[type=number]{background:var(--panel-2);border:1px solid var(--border-lit);color:var(--text);border-radius:8px;padding:8px;width:100%;font-size:13px}
+.seg-row{display:flex;gap:6px;flex-wrap:wrap}.seg-btn{flex:1;padding:8px 4px;border-radius:8px;border:1px solid var(--border-lit);background:var(--panel-2);color:var(--text-dim);font-size:11.5px;text-align:center;cursor:pointer;min-width:62px}.seg-btn.active{background:var(--amber-dim);color:#fff;border-color:var(--amber)}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}.btn{flex:1;padding:10px;border-radius:10px;border:1px solid var(--border-lit);background:var(--panel-3);color:var(--text);cursor:pointer;font-size:13px;min-width:86px}.btn.primary{background:var(--amber);color:#1a1200;border:none;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{padding:7px 10px;border-radius:999px;border:1px solid var(--border-lit);background:var(--panel-2);color:var(--text);font-size:11px;cursor:pointer}.chip.active{border-color:var(--amber);color:var(--amber)}
+.check{display:flex;gap:8px;align-items:center;font-size:12.5px;padding:5px 0;color:#e5e5e7}
+.eq{font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,.28);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.7;color:var(--cyan);text-align:center}
+.feedback{font-size:13px;line-height:1.55;min-height:22px;margin-top:8px}.good{color:var(--green)}.bad{color:var(--red)}
+.card p.body,.explain p{font-size:13px;line-height:1.65;color:#d1d1d6}
+table{width:100%;border-collapse:collapse;font-size:11.5px}th,td{border-bottom:1px solid var(--border);padding:6px 5px;text-align:right;font-family:'JetBrains Mono',monospace}th:first-child,td:first-child{text-align:left}th{color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase}
+.tblwrap{overflow-x:auto}.global-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px;background:var(--panel-2);border:1px solid var(--border);border-radius:12px;padding:10px 12px}.global-tools .grow{flex:1;min-width:180px}
+footer{color:var(--text-dimmer);font-size:11px;text-align:center;padding:0 16px 28px;font-family:'JetBrains Mono',monospace;line-height:1.6}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<div class="bar"><div class="bar-left">
+<button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg><span class="back-label">Back</span></button>
+<button id="controlsJumpBtn" type="button">Controls</button></div>
+<div class="bar-left"><button id="pauseBtn" type="button">Pause</button><button id="resetBtn" type="button">Reset</button></div></div>
+<div class="title"><h1>Harmonics and Standing Waves Sandbox</h1><p>Pluck a string, drive it to resonance, open and close air columns, mix harmonics you can hear, and combine waves — standing waves appear when boundary conditions pick out special frequencies.</p></div>
+<div style="padding:0 14px"><div id="statusBanner" role="status" aria-live="polite"><div class="status-type" id="statusType">String — Harmonic 1</div><div class="status-reason" id="statusReason">—</div></div></div>
+<main>
+<div class="global-tools"><button class="btn" id="playPause2" type="button">Pause</button><div class="grow"><div class="panel-label" id="speedLabel">Simulation speed: 1.0×</div><input type="range" id="speed" min="0.1" max="3" step="0.1" value="1" aria-label="Simulation speed"></div><span class="panel-hint">Play / pause and speed apply to every animated lab. Sound starts only when you tap Play sound.</span></div>
+<div class="tabs" role="tablist" aria-label="Harmonics modes">
+<button class="tab active" data-mode="string" type="button">String Lab</button>
+<button class="tab" data-mode="air" type="button">Air Columns</button>
+<button class="tab" data-mode="timbre" type="button">Sound &amp; Timbre</button>
+<button class="tab" data-mode="interference" type="button">Interference</button>
+<button class="tab" data-mode="guided" type="button">Guided Lab</button></div>
+<section class="mode active" id="mode-string"><div class="grid">
+<section class="card" aria-label="Vibrating string"><h2>Vibrating String — Fixed at Both Ends</h2>
+<div class="sub">Amber = standing-wave sum · cyan / violet (optional) = incident + reflected travelling waves · N = node, A = antinode · ends are always nodes</div>
+<canvas id="stringCanvas" class="view wave"></canvas>
+<div class="readouts">
+<div class="tile"><div class="l">Wave speed v = √(T/μ)</div><div class="v" id="roV">—</div></div>
+<div class="tile"><div class="l">Fundamental f₁ = v/2L</div><div class="v" id="roF1">—</div></div>
+<div class="tile"><div class="l">Harmonic fₙ</div><div class="v" id="roFn">—</div></div>
+<div class="tile"><div class="l">λₙ = 2L/n</div><div class="v" id="roLambda">—</div></div>
+<div class="tile"><div class="l">Nodes / Antinodes</div><div class="v" id="roNodes">—</div><div class="s" id="roSeg">—</div></div>
+<div class="tile"><div class="l">Drive response</div><div class="v" id="roResp">—</div><div class="s" id="roResNote">—</div></div></div>
+<h2 style="margin-top:14px">Frequency Sweep — Resonance Spectrum</h2>
+<div class="sub">Response vs driving frequency · peaks at f₁, 2f₁, 3f₁ … · amber marker = your driver</div>
+<canvas id="spectrumCanvas" class="view graph"></canvas></section>
+<section class="card" id="controls" aria-label="String controls"><h2>String Controls</h2>
+<div class="panel-row"><div class="panel-label">Harmonic n</div><div class="chips" id="nChips"></div><p class="panel-hint">Picking a harmonic snaps the driver to that resonance. Then detune the driver and watch the response collapse.</p></div>
+<div class="btn-row"><button class="btn primary" id="pluckBtn" type="button">Pluck</button><button class="btn" id="snapBtn" type="button">Snap driver to fₙ</button></div>
+<div class="panel-row" style="margin-top:12px"><div class="panel-label" id="driveFLabel">Driving frequency</div><input type="range" id="driveF" min="10" max="400" step="1" value="50" aria-label="Driving frequency in hertz"></div>
+<div class="panel-row"><div class="panel-label" id="driveALabel">Driving amplitude</div><input type="range" id="driveA" min="0.1" max="1" step="0.05" value="0.7" aria-label="Driving amplitude"></div>
+<div class="panel-row"><div class="panel-label" id="LLabel">String length L</div><input type="range" id="strL" min="0.4" max="2" step="0.05" value="1" aria-label="String length"></div>
+<div class="panel-row"><div class="panel-label" id="TLabel">Tension T</div><input type="range" id="strT" min="10" max="400" step="5" value="100" aria-label="Tension"></div>
+<div class="panel-row"><div class="panel-label" id="muLabel">Linear density μ</div><input type="range" id="strMu" min="0.002" max="0.05" step="0.001" value="0.01" aria-label="Linear mass density"></div>
+<div class="panel-row"><div class="panel-label" id="qLabel">Resonance sharpness Q (low Q = more damping)</div><input type="range" id="strQ" min="3" max="40" step="1" value="18" aria-label="Quality factor"></div>
+<label class="check"><input type="checkbox" id="showComp" checked> Show incident + reflected waves</label>
+<label class="check"><input type="checkbox" id="showLabels" checked> Label nodes (N) and antinodes (A)</label>
+<div class="eq">v = √(T/μ) · v = fλ<br>fₙ = (n / 2L)·√(T/μ), n = 1, 2, 3 …<br>λₙ = 2L/n · nodes = n+1 · antinodes = n</div>
+<p class="panel-hint">Try it: T = 100 N, μ = 0.010 kg/m, L = 1.00 m gives v = 100 m/s and f₁ = 50 Hz, so f₃ = 150 Hz. Off resonance the string barely responds; on resonance the same driver builds a large standing wave. Idealised: no string stiffness, so harmonics are exactly integer multiples (real strings are slightly sharp — inharmonicity).</p>
+</section></div></section>
+
+<section class="mode" id="mode-air"><div class="grid">
+<section class="card" aria-label="Air column"><h2 id="airTitle">Air Column — Open–Open</h2>
+<div class="sub">Displacement view: open end = displacement antinode (pressure node) · closed end = displacement node (pressure antinode)</div>
+<canvas id="airCanvas" class="view wave"></canvas>
+<div class="readouts">
+<div class="tile"><div class="l">Speed of sound v</div><div class="v" id="airV">—</div><div class="s" id="airTempNote">—</div></div>
+<div class="tile"><div class="l">Fundamental f₁</div><div class="v" id="airF1">—</div></div>
+<div class="tile"><div class="l">This mode</div><div class="v" id="airFn">—</div><div class="s" id="airModeLabel">—</div></div>
+<div class="tile"><div class="l">Wavelength λ</div><div class="v" id="airLambda">—</div></div>
+<div class="tile"><div class="l">Nodes / Antinodes</div><div class="v" id="airNodes">—</div></div>
+<div class="tile"><div class="l">Harmonics allowed</div><div class="v" id="airAllowed" style="font-size:12px">—</div></div></div></section>
+<section class="card" aria-label="Air column controls"><h2>Air Column Controls</h2>
+<div class="panel-row"><div class="panel-label">Tube type</div><div class="seg-row"><button class="seg-btn active" data-air="openopen" type="button">Open–Open</button><button class="seg-btn" data-air="openclosed" type="button">Open–Closed</button></div></div>
+<div class="panel-row"><div class="panel-label">Mode (standing-wave pattern)</div><div class="chips" id="airChips"></div><p class="panel-hint" id="airChipHint">Open–open modes are harmonics 1, 2, 3, 4 …</p></div>
+<div class="panel-row"><div class="panel-label" id="airLLabel">Tube length L</div><input type="range" id="airL" min="0.2" max="2" step="0.05" value="0.85" aria-label="Tube length"></div>
+<div class="panel-row"><div class="panel-label" id="airTempLabel">Air temperature</div><input type="range" id="airTemp" min="-10" max="40" step="1" value="20" aria-label="Air temperature"><p class="panel-hint">v ≈ 331 + 0.6·T°C m/s, so v ≈ 343 m/s at 20 °C. Warmer air = faster sound = higher pitch for the same tube.</p></div>
+<div class="eq">Open–open: fₙ = nv / 2L, n = 1, 2, 3 … (all harmonics)<br>Open–closed: f = (2m−1)v / 4L, m = 1, 2, 3 … → harmonics 1, 3, 5 … only</div>
+<p class="panel-hint">Check: an open–closed tube with L = 0.85 m at 20 °C has f₁ ≈ 343/(4×0.85) ≈ 100.9 Hz — and it has <strong>no 2nd harmonic</strong>; the next mode is the 3rd harmonic at ≈ 302.6 Hz. Idealised: the open-end antinode is drawn exactly at the rim; real tubes need an end correction (≈ 0.3× diameter).</p>
+</section></div></section>
+
+<section class="mode" id="mode-timbre"><div class="grid">
+<section class="card" aria-label="Oscilloscope and spectrum"><h2>Virtual Oscilloscope — Summed Waveform</h2>
+<div class="sub">Sum of the harmonic sine waves below · two periods shown</div>
+<canvas id="scopeCanvas" class="view scope"></canvas>
+<h2 style="margin-top:14px">Frequency Spectrum</h2><div class="sub">One bar per harmonic · bar height = amplitude you set</div>
+<canvas id="timbreSpecCanvas" class="view graph"></canvas>
+<div class="readouts"><div class="tile"><div class="l">Fundamental</div><div class="v" id="timF0">—</div></div>
+<div class="tile"><div class="l">Loudest harmonic</div><div class="v" id="timLoud">—</div></div>
+<div class="tile"><div class="l">Waveform peak</div><div class="v" id="timPeak">—</div><div class="s">normalised on scope</div></div></div></section>
+<section class="card" aria-label="Timbre controls"><h2>Harmonic Mixer</h2>
+<div class="panel-row"><div class="panel-label" id="timFLabel">Fundamental frequency</div><input type="range" id="timF" min="110" max="440" step="1" value="220" aria-label="Fundamental frequency"></div>
+<div class="panel-section-title">Presets</div>
+<div class="btn-row"><button class="btn" data-preset="pure" type="button">Pure tone</button><button class="btn" data-preset="string" type="button">String-like 1/n</button><button class="btn" data-preset="clarinet" type="button">Clarinet-like (odd)</button><button class="btn" data-preset="bright" type="button">Bright / reedy</button></div>
+<div id="harmSliders"></div>
+<div class="btn-row" style="margin-top:10px"><button class="btn primary" id="soundBtn" type="button">Play sound</button><button class="btn" id="stopSoundBtn" type="button">Stop</button></div>
+<p class="panel-hint">Sound starts only when you tap Play (browser autoplay policy) and plays at modest volume. Same fundamental, different harmonic mix = different <strong>timbre</strong>. A clarinet-like tone emphasises odd harmonics — the signature of an open–closed tube. Idealised sine partials: real instruments have time-varying, slightly inharmonic partials.</p>
+<div class="eq">tone(t) = Σ Aₙ · sin(2π · n·f₁ · t)</div>
+</section></div></section>
+<section class="mode" id="mode-interference"><div class="grid">
+<section class="card" aria-label="Interference waves"><h2>Wave Interference — Two Waves, One Sum</h2>
+<div class="sub">Cyan + violet = amber sum · in phase → constructive (up to A₁+A₂) · opposite phase → destructive</div>
+<canvas id="interCanvas" class="view wave"></canvas>
+<div class="readouts"><div class="tile"><div class="l">Beat frequency |f₁−f₂|</div><div class="v" id="intBeat">—</div></div>
+<div class="tile"><div class="l">Sum peak (max)</div><div class="v" id="intPeak">—</div></div>
+<div class="tile"><div class="l">Phase difference</div><div class="v" id="intPhase">—</div></div></div>
+<h2 style="margin-top:14px">Resonance &amp; Damping Curve</h2><div class="sub">Driven response · more damping (lower Q) = lower, wider peak</div>
+<canvas id="resCanvas" class="view graph"></canvas></section>
+<section class="card" aria-label="Interference controls"><h2>Interference Controls</h2>
+<div class="btn-row"><button class="btn" id="beatsBtn" type="button">Beats preset 440 / 442 Hz</button><button class="btn" id="constructBtn" type="button">In-phase preset</button><button class="btn" id="destructBtn" type="button">Opposite-phase preset</button></div>
+<div class="panel-row" style="margin-top:12px"><div class="panel-label" id="iF1Label">Wave 1 frequency</div><input type="range" id="iF1" min="400" max="480" step="1" value="440" aria-label="Wave 1 frequency"></div>
+<div class="panel-row"><div class="panel-label" id="iF2Label">Wave 2 frequency</div><input type="range" id="iF2" min="400" max="480" step="1" value="442" aria-label="Wave 2 frequency"></div>
+<div class="panel-row"><div class="panel-label" id="iA1Label">Wave 1 amplitude</div><input type="range" id="iA1" min="0" max="1" step="0.05" value="0.8" aria-label="Wave 1 amplitude"></div>
+<div class="panel-row"><div class="panel-label" id="iA2Label">Wave 2 amplitude</div><input type="range" id="iA2" min="0" max="1" step="0.05" value="0.8" aria-label="Wave 2 amplitude"></div>
+<div class="panel-row"><div class="panel-label" id="iPhaseLabel">Phase difference (wave 2)</div><input type="range" id="iPhase" min="0" max="360" step="5" value="0" aria-label="Phase difference"></div>
+<div class="panel-row"><div class="panel-label" id="iQLabel">Resonance Q (damping)</div><input type="range" id="iQ" min="2" max="30" step="1" value="12" aria-label="Interference resonance Q"><p class="panel-hint">Drag Q down: the resonance peak shrinks and widens — damped systems respond weakly but broadly; lightly damped systems ring strongly at one sharp frequency.</p></div>
+<div class="eq">beats: f_beat = |f₁ − f₂| · 440 Hz + 442 Hz → 2 Hz<br>sum peak ≤ A₁ + A₂ (equality only in phase)</div>
+<p class="panel-hint">With 440/442 Hz the loudness swells twice per second. The dashed envelope is ±(A₁+A₂)·|cos(π·f_beat·t)|.</p>
+</section></div></section>
+
+<section class="mode" id="mode-guided"><div class="grid">
+<section class="card" aria-label="Guided lab challenges"><h2>Guided Lab — Predict, Identify, Infer</h2>
+<div class="sub">Work it out first, then reveal · vary one parameter at a time</div>
+<div class="panel-section-title">1 · Predict a harmonic</div>
+<p class="panel-hint" id="predPrompt">—</p>
+<div class="panel-row"><input type="number" id="predInput" step="any" placeholder="Your predicted frequency (Hz)" aria-label="Predicted frequency"></div>
+<div class="btn-row"><button class="btn primary" id="predCheck" type="button">Check prediction</button><button class="btn" id="predNew" type="button">New problem</button></div>
+<p class="feedback" id="predFeedback" aria-live="polite"></p>
+<div class="panel-section-title">2 · Identify the unknown harmonic</div>
+<canvas id="guidedCanvas" class="view smallwave"></canvas>
+<div class="chips" id="idChips" style="margin-top:8px"></div>
+<p class="feedback" id="idFeedback" aria-live="polite"></p>
+<div class="btn-row"><button class="btn" id="idNew" type="button">New unknown pattern</button></div>
+<div class="panel-section-title">3 · Infer the string (inverse problem)</div>
+<p class="panel-hint" id="inferPrompt">—</p>
+<div class="panel-row"><input type="number" id="inferInput" step="any" placeholder="Your inferred value" aria-label="Inferred value"></div>
+<div class="btn-row"><button class="btn primary" id="inferCheck" type="button">Check inference</button><button class="btn" id="inferNew" type="button">New inference</button></div>
+<p class="feedback" id="inferFeedback" aria-live="polite"></p>
+<div class="eq">f₁ = (1/2L)√(T/μ) ⇒ μ = T / (2L·f₁)² and T = μ·(2L·f₁)²</div></section>
+<section class="card" aria-label="Tension investigation"><h2>Investigation — Tension vs Pitch</h2>
+<div class="sub">Record points from the String Lab settings, then look for the pattern</div>
+<p class="panel-hint">Set L and μ in the String Lab, change only T, and record each point. Theory says f₁ ∝ √T — so f₁ plotted against √T should be a straight line through the origin with slope 1/(2L√μ).</p>
+<div class="btn-row"><button class="btn primary" id="recordBtn" type="button">Record current string point</button><button class="btn" id="clearDataBtn" type="button">Clear table</button></div>
+<div class="tblwrap" style="margin-top:10px"><table><thead><tr><th>#</th><th>T (N)</th><th>√T</th><th>f₁ (Hz)</th><th>L (m)</th><th>μ (kg/m)</th></tr></thead><tbody id="dataTable"></tbody></table></div>
+<canvas id="dataCanvas" class="view graph" style="margin-top:10px"></canvas>
+<p class="panel-hint mono" id="dataReadout">No points yet — record at least two at different tensions.</p>
+<p class="panel-hint mono" id="scoreReadout">Guided score: 0 / 0</p>
+</section></div></section>
+
+<section class="card explain"><h2>The Big Idea</h2>
+<p><strong>Standing waves are interference with rules.</strong> A wave reflecting off a fixed end (or the pressure/displacement conditions at a tube's ends) interferes with itself. For most frequencies the interference is messy and weak, but at the natural frequencies — set by length and wave speed through fₙ = (n/2L)·√(T/μ) on a string, nv/2L in an open tube, or odd multiples of v/4L in a closed tube — reflections reinforce, nodes and antinodes lock into place, and a small driver builds a large response: resonance. Change velocity or length and every harmonic moves together; change only the harmonic mix and pitch stays while timbre changes. The same “allowed modes only” logic describes guitar strings, organ pipes, and quantised modes in other physical systems.</p></section>
+</main>
+<footer>PopBoard Study · Harmonics and Standing Waves Sandbox · v = √(T/μ) · fₙ = (n/2L)√(T/μ) · open–open fₙ = nv/2L · open–closed f = (2m−1)v/4L · v_sound ≈ 331 + 0.6T°C m/s · f_beat = |f₁−f₂|<br>Idealised models: no string stiffness / inharmonicity, no pipe end correction, sine-wave partials.</footer>
+<script type="module">
+"use strict";
+function stringSpeed(T,mu){ return Math.sqrt(T/mu); }
+function stringFundamental(L,T,mu){ return stringSpeed(T,mu)/(2*L); }
+function stringHarmonic(n,L,T,mu){ return n*stringFundamental(L,T,mu); }
+function stringWavelength(n,L){ return 2*L/n; }
+function resonanceResponse(f,f1,Q){ var best=0; for(var n=1;n<=8;n++){ var fn=n*f1; var d=(f-fn)/(fn/(2*Q)); var r=1/Math.sqrt(1+d*d); if(r>best)best=r; } return best; }
+function soundSpeed(tempC){ return 331+0.6*tempC; }
+function airFrequency(type,mode,L,tempC){ var v=soundSpeed(tempC); if(type==="openclosed"){ return (2*mode-1)*v/(4*L); } return mode*v/(2*L); }
+function airHarmonicNumber(type,mode){ return type==="openclosed" ? 2*mode-1 : mode; }
+function beatFrequency(f1,f2){ return Math.abs(f1-f2); }
+function sumSample(comps,t){ var s=0; for(var i=0;i<comps.length;i++){ var c=comps[i]; s+=c.a*Math.sin(2*Math.PI*c.f*t+(c.phase||0)); } return s; }
+function fmt(x,n){ if(!isFinite(x)) return "—"; if(x!==0&&(Math.abs(x)>=10000||Math.abs(x)<0.01)) return x.toExponential(2); return Number(x.toFixed(n==null?2:n)).toLocaleString("en-US"); }
+var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+var state={mode:"string",playing:!reduceMotion,speed:1,phase:0,pluckPhase:99,n:1,driveF:50,driveA:0.7,L:1,T:100,mu:0.01,Q:18,showComp:true,showLabels:true,airType:"openopen",airMode:1,airL:0.85,airTemp:20,timF:220,harmonics:[1,0.5,0.33,0.25,0.2,0.16],iF1:440,iF2:442,iA1:0.8,iA2:0.8,iPhase:0,iQ:12,data:[],score:{ok:0,total:0}};
+window.HarmonicsSandbox={stringSpeed:stringSpeed,stringFundamental:stringFundamental,stringHarmonic:stringHarmonic,stringWavelength:stringWavelength,resonanceResponse:resonanceResponse,soundSpeed:soundSpeed,airFrequency:airFrequency,airHarmonicNumber:airHarmonicNumber,beatFrequency:beatFrequency,sumSample:sumSample,state:state};
+function $(id){ return document.getElementById(id); }
+function fitCanvas(cv){ var dpr=Math.min(2,window.devicePixelRatio||1); var w=cv.clientWidth,h=cv.clientHeight; if(!w||!h) return null; if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);} var ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0); return {ctx:ctx,w:w,h:h}; }
+function bg(ctx,w,h){ ctx.fillStyle="#070a12"; ctx.fillRect(0,0,w,h); }
+function axes(ctx,w,h,padL,padB){ ctx.strokeStyle="rgba(255,255,255,0.3)"; ctx.beginPath(); ctx.moveTo(padL,8); ctx.lineTo(padL,h-padB); ctx.lineTo(w-8,h-padB); ctx.stroke(); }
+
+function drawString(){
+  var f=fitCanvas($("stringCanvas")); if(!f) return; var ctx=f.ctx,w=f.w,h=f.h; bg(ctx,w,h);
+  var x0=54,x1=w-30,cy=h/2,ampMax=h*0.32;
+  var v=stringSpeed(state.T,state.mu), f1=stringFundamental(state.L,state.T,state.mu), fn=state.n*f1;
+  var resp=resonanceResponse(state.driveF,f1,state.Q);
+  var nearN=Math.max(1,Math.min(8,Math.round(state.driveF/f1)));
+  var pluckAmp=Math.exp(-state.pluckPhase*0.7);
+  var driveAmp=state.driveA*(0.12+0.88*resp);
+  ctx.strokeStyle="rgba(255,255,255,0.2)"; ctx.beginPath(); ctx.moveTo(x0,cy); ctx.lineTo(x1,cy); ctx.stroke();
+  function Y(xf){
+    var standing=driveAmp*Math.sin(nearN*Math.PI*xf)*Math.cos(state.phase*2*Math.PI*0.9);
+    var pluck=0; if(pluckAmp>0.01){ for(var m=1;m<=4;m++){ pluck+=(0.55/m)*pluckAmp*Math.sin(m*Math.PI*xf)*Math.cos(state.phase*2*Math.PI*m*0.9+m); } }
+    var messy=(1-resp)*0.18*state.driveA*Math.sin(2*Math.PI*(state.driveF/f1)*xf - state.phase*2*Math.PI*0.9);
+    return cy-(standing+pluck+messy)*ampMax;
+  }
+  if(state.showComp){
+    [["#5FD3C4",-1],["#B07CFF",1]].forEach(function(pair){
+      ctx.strokeStyle=pair[0]; ctx.globalAlpha=0.75; ctx.setLineDash([5,4]); ctx.beginPath();
+      for(var i=0;i<=160;i++){ var xf=i/160; var y=cy-0.5*driveAmp*ampMax*Math.sin(nearN*Math.PI*xf + pair[1]*state.phase*2*Math.PI*0.9); if(i===0)ctx.moveTo(x0+xf*(x1-x0),y); else ctx.lineTo(x0+xf*(x1-x0),y); }
+      ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1;
+    });
+    ctx.fillStyle="#5FD3C4"; ctx.font="9px 'JetBrains Mono',monospace"; ctx.textAlign="left"; ctx.fillText("incident →",x0,18);
+    ctx.fillStyle="#B07CFF"; ctx.fillText("← reflected",x0+90,18);
+  }
+  ctx.strokeStyle="#FFB300"; ctx.lineWidth=2.6; ctx.beginPath();
+  for(var i=0;i<=200;i++){ var xf=i/200; var y=Y(xf); if(i===0)ctx.moveTo(x0,y); else ctx.lineTo(x0+xf*(x1-x0),y); }
+  ctx.stroke(); ctx.lineWidth=1;
+  ctx.fillStyle="#E9E6DE"; ctx.fillRect(x0-5,cy-26,6,52); ctx.fillRect(x1-1,cy-26,6,52);
+  ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign="center";
+  if(state.showLabels){
+    for(var nd=0;nd<=nearN;nd++){ var nx=x0+(nd/nearN)*(x1-x0); ctx.fillStyle="#ff7a7a"; ctx.beginPath(); ctx.arc(nx,cy,4,0,Math.PI*2); ctx.fill(); ctx.fillText("N",nx,cy+ampMax+22); }
+    for(var an=0;an<nearN;an++){ var ax=x0+((an+0.5)/nearN)*(x1-x0); ctx.fillStyle="#57d38c"; ctx.beginPath(); ctx.arc(ax,cy,4,0,Math.PI*2); ctx.fill(); ctx.fillText("A",ax,cy-ampMax-10); }
+  }
+  ctx.fillStyle="rgba(255,255,255,0.65)"; ctx.fillText("fixed end (node)",x0,cy+ampMax+38); ctx.fillText("fixed end (node)",x1,cy+ampMax+38);
+  $("roV").textContent=fmt(v,1)+" m/s"; $("roF1").textContent=fmt(f1,1)+" Hz"; $("roFn").textContent=fmt(fn,1)+" Hz (n="+state.n+")";
+  $("roLambda").textContent=fmt(stringWavelength(state.n,state.L),2)+" m"; $("roNodes").textContent=(nearN+1)+" / "+nearN;
+  $("roSeg").textContent=nearN+" segment"+(nearN>1?"s":"")+" · dominant mode n="+nearN; $("roResp").textContent=Math.round(resp*100)+"%";
+  $("roResNote").textContent=resp>0.7?"near resonance — large response":resp>0.3?"partly resonant":"off resonance — weak / messy";
+  if(state.mode==="string"){ $("statusType").textContent="String — Harmonic "+state.n+(resp>0.7?" · On resonance":" · Drive "+fmt(state.driveF,0)+" Hz"); $("statusReason").textContent="v=√("+fmt(state.T,0)+"/"+state.mu+")="+fmt(v,1)+" m/s · f₁=v/2L="+fmt(f1,1)+" Hz · f"+state.n+"="+fmt(fn,1)+" Hz · λ="+fmt(stringWavelength(state.n,state.L),2)+" m · drive response "+Math.round(resp*100)+"%"; }
+}
+function drawSpectrum(){
+  var f=fitCanvas($("spectrumCanvas")); if(!f) return; var ctx=f.ctx,w=f.w,h=f.h; bg(ctx,w,h); axes(ctx,w,h,44,28);
+  var f1=stringFundamental(state.L,state.T,state.mu), fMax=Math.max(120,f1*8.6), padL=44,padB=28,gw=w-padL-14,gh=h-16-padB;
+  ctx.fillStyle="rgba(255,255,255,0.6)"; ctx.font="9px 'JetBrains Mono',monospace"; ctx.textAlign="center";
+  for(var n=1;n<=8;n++){ var fx=padL+(n*f1/fMax)*gw; ctx.strokeStyle="rgba(95,211,196,0.5)"; ctx.setLineDash([3,4]); ctx.beginPath(); ctx.moveTo(fx,10); ctx.lineTo(fx,10+gh); ctx.stroke(); ctx.setLineDash([]); ctx.fillText("f"+n,fx,h-14); }
+  ctx.strokeStyle="#5FD3C4"; ctx.lineWidth=2; ctx.beginPath();
+  for(var i=0;i<=220;i++){ var fr=fMax*i/220; var y=10+gh-resonanceResponse(fr,f1,state.Q)*gh*0.92; var x=padL+i/220*gw; if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+  ctx.stroke(); ctx.lineWidth=1;
+  var dx=padL+(state.driveF/fMax)*gw; ctx.strokeStyle="#FFB300"; ctx.beginPath(); ctx.moveTo(dx,10); ctx.lineTo(dx,10+gh); ctx.stroke(); ctx.fillStyle="#FFB300"; ctx.fillText("driver "+fmt(state.driveF,0)+" Hz",Math.min(w-50,dx),14);
+}
+function drawAir(){
+  var f=fitCanvas($("airCanvas")); if(!f) return; var ctx=f.ctx,w=f.w,h=f.h; bg(ctx,w,h);
+  var closed=state.airType==="openclosed", mode=state.airMode, harm=airHarmonicNumber(state.airType,mode);
+  var x0=60,x1=w-40,cy=h/2,amp=h*0.30;
+  ctx.strokeStyle="rgba(255,255,255,0.55)"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x0,cy-amp-18); ctx.lineTo(x1,cy-amp-18); ctx.moveTo(x0,cy+amp+18); ctx.lineTo(x1,cy+amp+18); ctx.stroke(); ctx.lineWidth=1;
+  if(closed){ ctx.fillStyle="#E9E6DE"; ctx.fillRect(x0-7,cy-amp-20,7,amp*2+40); }
+  ctx.fillStyle="rgba(255,255,255,0.7)"; ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign="center";
+  if(closed){ ctx.fillText("CLOSED",x0,cy-amp-26); ctx.fillText("OPEN",x1,cy-amp-26); } else { ctx.fillText("OPEN",x0,cy-amp-26); ctx.fillText("OPEN",x1,cy-amp-26); }
+  function shape(xf){ return closed ? Math.sin(harm*Math.PI*xf/2) : Math.cos(harm*Math.PI*xf); }
+  ctx.strokeStyle="#FFB300"; ctx.lineWidth=2.6; ctx.beginPath();
+  for(var i=0;i<=200;i++){ var xf=i/200; var y=cy-shape(xf)*Math.cos(state.phase*2*Math.PI*0.9)*amp; if(i===0)ctx.moveTo(x0+xf*(x1-x0),y); else ctx.lineTo(x0+xf*(x1-x0),y); }
+  ctx.stroke(); ctx.lineWidth=1;
+  ctx.strokeStyle="rgba(255,255,255,0.35)"; ctx.setLineDash([4,4]); ctx.beginPath();
+  for(var j=0;j<=200;j++){ var xf2=j/200; var ye=cy-Math.abs(shape(xf2))*amp; if(j===0)ctx.moveTo(x0+xf2*(x1-x0),ye); else ctx.lineTo(x0+xf2*(x1-x0),ye); } ctx.stroke(); ctx.setLineDash([]);
+  ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign="center";
+  var pos=[];
+  if(!closed){ for(var qa=0;qa<=harm;qa++){ pos.push({x:qa/harm,type:"A"}); } for(var qn=0;qn<harm;qn++){ pos.push({x:(qn+0.5)/harm,type:"N"}); } }
+  else { for(var qk=0;;qk++){ var xn=2*qk/harm; if(xn>1.001) break; pos.push({x:Math.min(1,xn),type:"N"}); var xa=(2*qk+1)/harm; if(xa<=1.001) pos.push({x:Math.min(1,xa),type:"A"}); } }
+  pos.sort(function(a,b){return a.x-b.x;});
+  pos.forEach(function(p){ var px=x0+p.x*(x1-x0); ctx.fillStyle=p.type==="N"?"#ff7a7a":"#57d38c"; ctx.beginPath(); ctx.arc(px,cy,4,0,Math.PI*2); ctx.fill(); ctx.fillText(p.type,px,cy+amp+36); });
+  var v=soundSpeed(state.airTemp), f1=airFrequency(state.airType,1,state.airL,state.airTemp), fn=airFrequency(state.airType,mode,state.airL,state.airTemp);
+  var lam=closed? 4*state.airL/harm : 2*state.airL/harm;
+  var nodes=pos.filter(function(p){return p.type==="N";}).length, antis=pos.filter(function(p){return p.type==="A";}).length;
+  $("airTitle").textContent=closed?"Air Column — Open–Closed":"Air Column — Open–Open";
+  $("airV").textContent=fmt(v,0)+" m/s"; $("airTempNote").textContent="at "+state.airTemp+" °C";
+  $("airF1").textContent=fmt(f1,1)+" Hz"; $("airFn").textContent=fmt(fn,1)+" Hz";
+  $("airModeLabel").textContent=closed?("mode "+mode+" = harmonic "+harm):("harmonic "+harm);
+  $("airLambda").textContent=fmt(lam,2)+" m"; $("airNodes").textContent=nodes+" / "+antis;
+  $("airAllowed").textContent=closed?"1, 3, 5, 7 … (odd only)":"1, 2, 3, 4 … (all)";
+  $("airChipHint").textContent=closed?"Open–closed modes are labelled by mode count; they are harmonics 1, 3, 5, 7 …":"Open–open modes are harmonics 1, 2, 3, 4 …";
+  if(state.mode==="air"){ $("statusType").textContent=(closed?"Open–Closed":"Open–Open")+" — Harmonic "+harm; $("statusReason").textContent="v≈"+fmt(v,0)+" m/s · L="+fmt(state.airL,2)+" m · f="+fmt(fn,1)+" Hz · λ="+fmt(lam,2)+" m · "+(closed?"odd harmonics only":"all harmonics"); }
+}
+function drawTimbre(){
+  var f=fitCanvas($("scopeCanvas")); if(f){ var ctx=f.ctx,w=f.w,h=f.h; bg(ctx,w,h);
+    var norm=state.harmonics.map(function(a,i){ return {a:a,f:i+1}; }); var peak=0;
+    for(var i2=0;i2<=400;i2++){ var vv=Math.abs(sumSample(norm,i2/400*2)); if(vv>peak)peak=vv; } if(peak<0.001)peak=1;
+    ctx.strokeStyle="rgba(255,255,255,0.25)"; ctx.beginPath(); ctx.moveTo(10,h/2); ctx.lineTo(w-10,h/2); ctx.stroke();
+    ctx.strokeStyle="#FFB300"; ctx.lineWidth=2.4; ctx.beginPath();
+    for(var i3=0;i3<=300;i3++){ var t=i3/300*2; var y=h/2 - sumSample(norm,t + state.phase*0.15)/peak*(h*0.38); if(i3===0)ctx.moveTo(10,y); else ctx.lineTo(10+(w-20)*i3/300,y); } ctx.stroke(); ctx.lineWidth=1;
+    $("timPeak").textContent=fmt(peak,2);
+  }
+  var f2=fitCanvas($("timbreSpecCanvas")); if(f2){ var c2=f2.ctx,w2=f2.w,h2=f2.h; bg(c2,w2,h2); var maxA=Math.max.apply(null,state.harmonics.concat([0.01])); var bw=(w2-70)/6;
+    state.harmonics.forEach(function(a,i){ var bh=(a/maxA)*(h2-60); var x=44+i*bw+bw*0.2; c2.fillStyle=i===0?"#FFB300":"#5FD3C4"; c2.fillRect(x,h2-28-bh,bw*0.6,bh); c2.fillStyle="rgba(255,255,255,0.7)"; c2.font="10px 'JetBrains Mono',monospace"; c2.textAlign="center"; c2.fillText((i+1)+"f₁",x+bw*0.3,h2-10); c2.fillText(fmt(a,2),x+bw*0.3,h2-32-bh); });
+  }
+  $("timF0").textContent=fmt(state.timF,0)+" Hz";
+  var loud=state.harmonics.indexOf(Math.max.apply(null,state.harmonics)); $("timLoud").textContent="Harmonic "+(loud+1)+" ("+fmt((loud+1)*state.timF,0)+" Hz)";
+  if(state.mode==="timbre"){ $("statusType").textContent="Timbre — f₁ "+fmt(state.timF,0)+" Hz"; $("statusReason").textContent="Mix: "+state.harmonics.map(function(a,i){return (i+1)+"×"+fmt(a,2);}).join(" · "); }
+}
+function drawInterference(){
+  var f=fitCanvas($("interCanvas")); if(!f) return; var ctx=f.ctx,w=f.w,h=f.h; bg(ctx,w,h);
+  var mid=h/2, amp=h*0.34;
+  var beat=beatFrequency(state.iF1,state.iF2); var D=beat>0.5? Math.min(2.5/beat,1.5):0.015;
+  function val(fq,a,ph,t){ return a*Math.sin(2*Math.PI*fq*t+ph); }
+  var ph2=state.iPhase*Math.PI/180;
+  ctx.strokeStyle="rgba(255,255,255,0.4)"; ctx.setLineDash([5,4]); [-1,1].forEach(function(sgn){ ctx.beginPath(); for(var i=0;i<=260;i++){ var t=D*i/260; var env=Math.abs(Math.cos(Math.PI*beat*t))*(state.iA1+state.iA2); var y=mid-sgn*env*amp*0.85; if(i===0)ctx.moveTo(12,y); else ctx.lineTo(12+(w-24)*i/260,y); } ctx.stroke(); }); ctx.setLineDash([]);
+  [["#5FD3C4",state.iF1,state.iA1,0],["#B07CFF",state.iF2,state.iA2,ph2]].forEach(function(cfg){ ctx.strokeStyle=cfg[0]; ctx.globalAlpha=0.8; ctx.beginPath(); for(var i=0;i<=260;i++){ var t=D*i/260; var y=mid-val(cfg[1],cfg[2],cfg[3],t)*amp; if(i===0)ctx.moveTo(12,y); else ctx.lineTo(12+(w-24)*i/260,y); } ctx.stroke(); ctx.globalAlpha=1; });
+  ctx.strokeStyle="#FFB300"; ctx.lineWidth=2.6; ctx.beginPath(); for(var i4=0;i4<=260;i4++){ var t4=D*i4/260; var y4=mid-(val(state.iF1,state.iA1,0,t4)+val(state.iF2,state.iA2,ph2,t4))*amp*0.75; if(i4===0)ctx.moveTo(12,y4); else ctx.lineTo(12+(w-24)*i4/260,y4); } ctx.stroke(); ctx.lineWidth=1;
+  ctx.fillStyle="rgba(255,255,255,0.6)"; ctx.font="9px 'JetBrains Mono',monospace"; ctx.textAlign="left"; ctx.fillText("time window "+fmt(D,3)+" s · dashed = beat envelope",12,16);
+  $("intBeat").textContent=fmt(beat,1)+" Hz"; $("intPeak").textContent=fmt(state.iA1+state.iA2,2)+" (if in phase)"; $("intPhase").textContent=fmt(state.iPhase,0)+"°";
+  if(state.mode==="interference"){ $("statusType").textContent="Interference — Beat "+fmt(beat,1)+" Hz"; $("statusReason").textContent=fmt(state.iF1,0)+" Hz + "+fmt(state.iF2,0)+" Hz · phase "+fmt(state.iPhase,0)+"° · f_beat=|f₁−f₂|="+fmt(beat,1)+" Hz"; }
+  var f2=fitCanvas($("resCanvas")); if(f2){ var c2=f2.ctx,w2=f2.w,h2=f2.h; bg(c2,w2,h2); axes(c2,w2,h2,44,28); var f0=440,fMax=600,padL=44,padB=28,gw=w2-padL-14,gh=h2-16-padB;
+    c2.strokeStyle="#5FD3C4"; c2.lineWidth=2; c2.beginPath(); for(var i5=0;i5<=220;i5++){ var fr=380+(fMax-380)*i5/220; var d=(fr-f0)/(f0/(2*state.iQ)); var r=1/Math.sqrt(1+d*d); var x=padL+i5/220*gw, y=10+gh-r*gh*0.92; if(i5===0)c2.moveTo(x,y); else c2.lineTo(x,y); } c2.stroke(); c2.lineWidth=1;
+    c2.fillStyle="#FFB300"; c2.font="10px 'JetBrains Mono',monospace"; c2.textAlign="center"; c2.fillText("f₀ = 440 Hz · Q="+state.iQ+(state.iQ<6?" (heavy damping: low, wide)":state.iQ>20?" (light damping: tall, sharp)":""),w2/2,16);
+  }
+}
+var guided={pred:null,unknownN:3,infer:null};
+function newPredict(){ var Ls=[0.5,0.65,0.8,1,1.25],Ts=[40,80,100,160,250],mus=[0.004,0.006,0.01,0.015,0.02]; guided.pred={L:Ls[Math.floor(Math.random()*Ls.length)],T:Ts[Math.floor(Math.random()*Ts.length)],mu:mus[Math.floor(Math.random()*mus.length)],n:1+Math.floor(Math.random()*6)}; $("predPrompt").textContent="A string has L = "+guided.pred.L+" m, T = "+guided.pred.T+" N, μ = "+guided.pred.mu+" kg/m. Predict f"+guided.pred.n+" before revealing. (First find v = √(T/μ), then f₁ = v/2L, then multiply by n.)"; $("predFeedback").textContent=""; $("predInput").value=""; }
+function newUnknown(){ guided.unknownN=1+Math.floor(Math.random()*6); $("idFeedback").textContent=""; drawGuided(); var chips=$("idChips"); chips.innerHTML=""; for(var n=1;n<=6;n++){ (function(nn){ var b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent="n = "+nn; b.addEventListener("click",function(){ state.score.total++; var good=nn===guided.unknownN; if(good)state.score.ok++; var fb=$("idFeedback"); fb.textContent=good?"Correct — "+guided.unknownN+" antinode(s), "+(guided.unknownN+1)+" nodes. That is harmonic "+guided.unknownN+".":"Not quite — count antinodes: there are "+guided.unknownN+", so n = "+guided.unknownN+"."; fb.className="feedback "+(good?"good":"bad"); updateScore(); }); chips.appendChild(b); })(n); } }
+function drawGuided(){ if(state.mode==="guided"){ $("statusType").textContent="Guided Lab — Predict · Identify · Infer"; $("statusReason").textContent="Score "+state.score.ok+" / "+state.score.total+" · record tension points, plot f₁ vs √T, and work each problem before revealing"; } var f=fitCanvas($("guidedCanvas")); if(!f)return; var ctx=f.ctx,w=f.w,h=f.h; bg(ctx,w,h); var x0=44,x1=w-30,cy=h/2,amp=h*0.32,n=guided.unknownN; ctx.strokeStyle="#FFB300"; ctx.lineWidth=2.6; ctx.beginPath(); for(var i=0;i<=200;i++){ var xf=i/200; var y=cy-Math.sin(n*Math.PI*xf)*Math.cos(state.phase*2*Math.PI*0.9)*amp; if(i===0)ctx.moveTo(x0,y); else ctx.lineTo(x0+xf*(x1-x0),y); } ctx.stroke(); ctx.lineWidth=1; ctx.fillStyle="#E9E6DE"; ctx.fillRect(x0-5,cy-22,6,44); ctx.fillRect(x1-1,cy-22,6,44); ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign="center"; for(var nd=0;nd<=n;nd++){ var nx=x0+nd/n*(x1-x0); ctx.fillStyle="#ff7a7a"; ctx.beginPath(); ctx.arc(nx,cy,4,0,Math.PI*2); ctx.fill(); ctx.fillText("N",nx,cy+amp+18); } for(var an=0;an<n;an++){ var ax=x0+(an+0.5)/n*(x1-x0); ctx.fillStyle="#57d38c"; ctx.beginPath(); ctx.arc(ax,cy,4,0,Math.PI*2); ctx.fill(); ctx.fillText("A",ax,cy-amp-8); } }
+function newInfer(){ var useMu=Math.random()<0.5; var L=[0.6,0.8,1,1.2][Math.floor(Math.random()*4)], T=[60,100,180][Math.floor(Math.random()*3)], mu=[0.005,0.01,0.02][Math.floor(Math.random()*3)]; var f1=stringFundamental(L,T,mu); guided.infer={kind:useMu?"mu":"T",L:L,T:T,mu:mu,f1:f1,answer:useMu?mu:T}; $("inferPrompt").textContent=useMu?("Measured f₁ = "+fmt(f1,1)+" Hz for L = "+L+" m under T = "+T+" N. Infer μ (kg/m). Steps: μ = T / (2L·f₁)².") : ("Measured f₁ = "+fmt(f1,1)+" Hz for L = "+L+" m with μ = "+mu+" kg/m. Infer T (N). Steps: T = μ·(2L·f₁)²."); $("inferFeedback").textContent=""; $("inferInput").value=""; }
+function updateScore(){ $("scoreReadout").textContent="Guided score: "+state.score.ok+" / "+state.score.total; }
+function drawData(){ var tb=$("dataTable"); tb.innerHTML=""; state.data.forEach(function(d,i){ var tr=document.createElement("tr"); tr.innerHTML="<td>"+(i+1)+"</td><td>"+fmt(d.T,0)+"</td><td>"+fmt(Math.sqrt(d.T),2)+"</td><td>"+fmt(d.f1,1)+"</td><td>"+fmt(d.L,2)+"</td><td>"+d.mu+"</td>"; tb.appendChild(tr); });
+  var f=fitCanvas($("dataCanvas")); if(!f)return; var ctx=f.ctx,w=f.w,h=f.h; bg(ctx,w,h); axes(ctx,w,h,48,30); ctx.fillStyle="rgba(255,255,255,0.65)"; ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign="center"; ctx.fillText("f₁ (Hz) vs √T (√N) — straight line ⇒ f₁ ∝ √T",w/2,16);
+  if(state.data.length){ var maxX=Math.max.apply(null,state.data.map(function(d){return Math.sqrt(d.T);}).concat([10])); var maxY=Math.max.apply(null,state.data.map(function(d){return d.f1;}).concat([10])); var padL=48,padB=30,gw=w-padL-16,gh=h-30-padB;
+    var d0=state.data[0]; ctx.strokeStyle="rgba(95,211,196,0.7)"; ctx.setLineDash([5,4]); ctx.beginPath(); ctx.moveTo(padL,10+gh); ctx.lineTo(padL+gw,10+gh-((1/(2*d0.L*Math.sqrt(d0.mu)))*maxX)/maxY*gh); ctx.stroke(); ctx.setLineDash([]);
+    state.data.forEach(function(d){ var x=padL+Math.sqrt(d.T)/maxX*gw, y=10+gh-d.f1/maxY*gh; ctx.fillStyle="#FFB300"; ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2); ctx.fill(); });
+    $("dataReadout").textContent=state.data.length+" point(s). Quadrupling T should double f₁ (√4 = 2). Compare points with the dashed theory line for the first point's L and μ.";
+  } else { $("dataReadout").textContent="No points yet — record at least two at different tensions."; }
+}
+function render(){ drawString(); drawSpectrum(); drawAir(); drawTimbre(); drawInterference(); drawGuided(); drawData(); }
+var nChips=$("nChips"); for(var nn=1;nn<=8;nn++){ (function(n){ var b=document.createElement("button"); b.type="button"; b.className="chip"+(n===1?" active":""); b.textContent="n="+n; b.addEventListener("click",function(){ state.n=n; state.driveF=Math.round(stringHarmonic(n,state.L,state.T,state.mu)); $("driveF").value=String(Math.max(10,Math.min(400,state.driveF))); nChips.querySelectorAll(".chip").forEach(function(c){c.classList.remove("active");}); b.classList.add("active"); render(); }); nChips.appendChild(b); })(nn); }
+function buildAirChips(){ var wrap=$("airChips"); wrap.innerHTML=""; var max=state.airType==="openclosed"?4:6; if(state.airMode>max)state.airMode=1; for(var m=1;m<=max;m++){ (function(mm){ var b=document.createElement("button"); b.type="button"; b.className="chip"+(mm===state.airMode?" active":""); b.textContent=state.airType==="openclosed"?("mode "+mm+" (harm "+(2*mm-1)+")"):("n="+mm); b.addEventListener("click",function(){ state.airMode=mm; buildAirChips(); render(); }); wrap.appendChild(b); })(m); } }
+buildAirChips();
+document.querySelectorAll("[data-air]").forEach(function(b){ b.addEventListener("click",function(){ state.airType=b.dataset.air; state.airMode=1; document.querySelectorAll("[data-air]").forEach(function(x){x.classList.toggle("active",x===b);}); buildAirChips(); render(); }); });
+$("driveF").addEventListener("input",function(e){ state.driveF=parseFloat(e.target.value); $("driveFLabel").textContent="Driving frequency: "+fmt(state.driveF,0)+" Hz (f₁="+fmt(stringFundamental(state.L,state.T,state.mu),1)+" Hz)"; render(); });
+$("driveA").addEventListener("input",function(e){ state.driveA=parseFloat(e.target.value); $("driveALabel").textContent="Driving amplitude: "+fmt(state.driveA,2); render(); });
+$("strL").addEventListener("input",function(e){ state.L=parseFloat(e.target.value); $("LLabel").textContent="String length L: "+fmt(state.L,2)+" m"; render(); });
+$("strT").addEventListener("input",function(e){ state.T=parseFloat(e.target.value); $("TLabel").textContent="Tension T: "+fmt(state.T,0)+" N"; render(); });
+$("strMu").addEventListener("input",function(e){ state.mu=parseFloat(e.target.value); $("muLabel").textContent="Linear density μ: "+state.mu.toFixed(3)+" kg/m"; render(); });
+$("strQ").addEventListener("input",function(e){ state.Q=parseFloat(e.target.value); $("qLabel").textContent="Resonance sharpness Q: "+state.Q+" (low Q = more damping)"; render(); });
+$("showComp").addEventListener("change",function(e){ state.showComp=e.target.checked; render(); });
+$("showLabels").addEventListener("change",function(e){ state.showLabels=e.target.checked; render(); });
+$("pluckBtn").addEventListener("click",function(){ state.pluckPhase=0; });
+$("snapBtn").addEventListener("click",function(){ state.driveF=Math.round(stringHarmonic(state.n,state.L,state.T,state.mu)); $("driveF").value=String(Math.max(10,Math.min(400,state.driveF))); render(); });
+$("airL").addEventListener("input",function(e){ state.airL=parseFloat(e.target.value); $("airLLabel").textContent="Tube length L: "+fmt(state.airL,2)+" m"; render(); });
+$("airTemp").addEventListener("input",function(e){ state.airTemp=parseFloat(e.target.value); $("airTempLabel").textContent="Air temperature: "+state.airTemp+" °C (v≈"+fmt(soundSpeed(state.airTemp),0)+" m/s)"; render(); });
+$("timF").addEventListener("input",function(e){ state.timF=parseFloat(e.target.value); $("timFLabel").textContent="Fundamental frequency: "+fmt(state.timF,0)+" Hz"; stopSound(); render(); });
+var harmWrap=$("harmSliders"); state.harmonics.forEach(function(a,i){ var row=document.createElement("div"); row.className="panel-row"; var lab=document.createElement("div"); lab.className="panel-label"; lab.id="harmLabel"+i; lab.textContent="Harmonic "+(i+1)+" ("+(i+1)+"f₁) amplitude: "+fmt(a,2); row.appendChild(lab); var inp=document.createElement("input"); inp.type="range"; inp.min="0"; inp.max="1"; inp.step="0.01"; inp.value=String(a); inp.setAttribute("aria-label","Harmonic "+(i+1)+" amplitude"); inp.addEventListener("input",function(e){ state.harmonics[i]=parseFloat(e.target.value); document.getElementById("harmLabel"+i).textContent="Harmonic "+(i+1)+" ("+(i+1)+"f₁) amplitude: "+fmt(state.harmonics[i],2); render(); }); row.appendChild(inp); harmWrap.appendChild(row); });
+function setPreset(name){ if(name==="pure") state.harmonics=[1,0,0,0,0,0]; else if(name==="string") state.harmonics=[1,0.5,0.33,0.25,0.2,0.17]; else if(name==="clarinet") state.harmonics=[1,0,0.55,0,0.3,0,0.15]; else state.harmonics=[1,0.8,0.65,0.5,0.4,0.3]; harmWrap.querySelectorAll("input[type=range]").forEach(function(inp,i){ inp.value=String(state.harmonics[i]); document.getElementById("harmLabel"+i).textContent="Harmonic "+(i+1)+" ("+(i+1)+"f₁) amplitude: "+fmt(state.harmonics[i],2); }); render(); }
+document.querySelectorAll("[data-preset]").forEach(function(b){ b.addEventListener("click",function(){ setPreset(b.dataset.preset); }); });
+var audio={ctx:null,on:false,nodes:[]};
+function stopSound(){ if(audio.ctx){ audio.nodes.forEach(function(n){ try{n.o.stop();}catch(e){} }); try{audio.ctx.close();}catch(e){} } audio={ctx:null,on:false,nodes:[]}; var b=$("soundBtn"); if(b)b.textContent="Play sound"; }
+$("soundBtn").addEventListener("click",function(){ if(audio.on){ stopSound(); return; } var AC=window.AudioContext||window.webkitAudioContext; if(!AC){ alert("WebAudio is not available in this browser — the oscilloscope still shows the waveform."); return; } audio.ctx=new AC(); var master=audio.ctx.createGain(); master.gain.value=0.16; master.connect(audio.ctx.destination); audio.nodes=[]; state.harmonics.forEach(function(a,i){ if(a<=0.001) return; var o=audio.ctx.createOscillator(); o.type="sine"; o.frequency.value=(i+1)*state.timF; var g=audio.ctx.createGain(); g.gain.value=a*0.22; o.connect(g); g.connect(master); o.start(); audio.nodes.push({o:o,g:g}); }); audio.on=true; $("soundBtn").textContent="Stop sound"; });
+$("stopSoundBtn").addEventListener("click",function(){ stopSound(); });
+$("iF1").addEventListener("input",function(e){ state.iF1=parseFloat(e.target.value); $("iF1Label").textContent="Wave 1 frequency: "+state.iF1+" Hz"; render(); });
+$("iF2").addEventListener("input",function(e){ state.iF2=parseFloat(e.target.value); $("iF2Label").textContent="Wave 2 frequency: "+state.iF2+" Hz"; render(); });
+$("iA1").addEventListener("input",function(e){ state.iA1=parseFloat(e.target.value); $("iA1Label").textContent="Wave 1 amplitude: "+fmt(state.iA1,2); render(); });
+$("iA2").addEventListener("input",function(e){ state.iA2=parseFloat(e.target.value); $("iA2Label").textContent="Wave 2 amplitude: "+fmt(state.iA2,2); render(); });
+$("iPhase").addEventListener("input",function(e){ state.iPhase=parseFloat(e.target.value); $("iPhaseLabel").textContent="Phase difference (wave 2): "+state.iPhase+"°"; render(); });
+$("iQ").addEventListener("input",function(e){ state.iQ=parseFloat(e.target.value); $("iQLabel").textContent="Resonance Q (damping): "+state.iQ; render(); });
+function setInter(f1,f2,ph){ state.iF1=f1; state.iF2=f2; state.iPhase=ph; $("iF1").value=String(f1); $("iF2").value=String(f2); $("iPhase").value=String(ph); $("iF1Label").textContent="Wave 1 frequency: "+f1+" Hz"; $("iF2Label").textContent="Wave 2 frequency: "+f2+" Hz"; $("iPhaseLabel").textContent="Phase difference (wave 2): "+ph+"°"; render(); }
+$("beatsBtn").addEventListener("click",function(){ setInter(440,442,0); });
+$("constructBtn").addEventListener("click",function(){ setInter(440,440,0); });
+$("destructBtn").addEventListener("click",function(){ setInter(440,440,180); });
+$("predCheck").addEventListener("click",function(){ var guess=parseFloat($("predInput").value); var fb=$("predFeedback"); if(!isFinite(guess)){ fb.textContent="Enter a number first — work through v, then f₁, then ×n."; fb.className="feedback bad"; return; } var ans=stringHarmonic(guided.pred.n,guided.pred.L,guided.pred.T,guided.pred.mu); var err=Math.abs(guess-ans)/ans*100; state.score.total++; var good=err<=5; if(good)state.score.ok++; fb.textContent=(good?"Correct (within 5%). ":"Not yet — answer is "+fmt(ans,1)+" Hz ("+fmt(err,0)+"% off). ")+"Steps: v=√("+guided.pred.T+"/"+guided.pred.mu+")="+fmt(stringSpeed(guided.pred.T,guided.pred.mu),1)+" m/s · f₁=v/(2×"+guided.pred.L+")="+fmt(stringFundamental(guided.pred.L,guided.pred.T,guided.pred.mu),1)+" Hz · f"+guided.pred.n+"="+guided.pred.n+"×f₁="+fmt(ans,1)+" Hz."; fb.className="feedback "+(good?"good":"bad"); updateScore(); });
+$("predNew").addEventListener("click",newPredict);
+$("idNew").addEventListener("click",newUnknown);
+$("inferCheck").addEventListener("click",function(){ var guess=parseFloat($("inferInput").value); var fb=$("inferFeedback"); if(!isFinite(guess)){ fb.textContent="Enter a number first."; fb.className="feedback bad"; return; } var ans=guided.infer.answer; var err=Math.abs(guess-ans)/ans*100; state.score.total++; var good=err<=8; if(good)state.score.ok++; var steps=guided.infer.kind==="mu" ? "μ = T/(2L·f₁)² = "+guided.infer.T+"/(2×"+guided.infer.L+"×"+fmt(guided.infer.f1,1)+")² = "+ans+" kg/m" : "T = μ(2L·f₁)² = "+guided.infer.mu+"×(2×"+guided.infer.L+"×"+fmt(guided.infer.f1,1)+")² = "+fmt(ans,1)+" N"; fb.textContent=(good?"Correct (within 8%). ":"Not yet ("+fmt(err,0)+"% off). ")+steps+"."; fb.className="feedback "+(good?"good":"bad"); updateScore(); });
+$("inferNew").addEventListener("click",newInfer);
+$("recordBtn").addEventListener("click",function(){ state.data.push({T:state.T,L:state.L,mu:state.mu,f1:stringFundamental(state.L,state.T,state.mu)}); render(); });
+$("clearDataBtn").addEventListener("click",function(){ state.data=[]; render(); });
+document.querySelectorAll("[data-mode]").forEach(function(b){ b.addEventListener("click",function(){ state.mode=b.dataset.mode; document.querySelectorAll("[data-mode]").forEach(function(x){x.classList.toggle("active",x===b);}); document.querySelectorAll(".mode").forEach(function(m){m.classList.toggle("active",m.id==="mode-"+state.mode);}); render(); }); });
+function setPlaying(p){ state.playing=p; $("pauseBtn").textContent=p?"Pause":"Play"; $("playPause2").textContent=p?"Pause":"Play"; }
+$("pauseBtn").addEventListener("click",function(){ setPlaying(!state.playing); });
+$("playPause2").addEventListener("click",function(){ setPlaying(!state.playing); });
+$("speed").addEventListener("input",function(e){ state.speed=parseFloat(e.target.value); $("speedLabel").textContent="Simulation speed: "+fmt(state.speed,1)+"×"; });
+$("resetBtn").addEventListener("click",function(){ location.href=location.pathname+location.search; });
+$("controlsJumpBtn").addEventListener("click",function(){ var el=document.getElementById("controls"); if(el) el.scrollIntoView({behavior:reduceMotion?"auto":"smooth"}); });
+$("driveFLabel").textContent="Driving frequency: 50 Hz (f₁=50.0 Hz)"; $("TLabel").textContent="Tension T: 100 N"; $("muLabel").textContent="Linear density μ: 0.010 kg/m"; $("airLLabel").textContent="Tube length L: 0.85 m"; $("timFLabel").textContent="Fundamental frequency: 220 Hz";
+(function(){ var q=new URLSearchParams(location.search); if(q.has("n")){ var n=parseInt(q.get("n"),10); if(n>=1&&n<=8){ state.n=n; state.driveF=Math.round(stringHarmonic(n,state.L,state.T,state.mu)); $("driveF").value=String(state.driveF); nChips.querySelectorAll(".chip").forEach(function(c,i){ c.classList.toggle("active",i===n-1); }); } } if(q.has("air")){ var a=q.get("air"); if(a==="openclosed"||a==="openopen"){ state.airType=a; document.querySelectorAll("[data-air]").forEach(function(x){x.classList.toggle("active",x.dataset.air===a);}); buildAirChips(); } } if(q.has("mode")){ var m=q.get("mode"); if(["string","air","timbre","interference","guided"].indexOf(m)>=0){ state.mode=m; document.querySelectorAll("[data-mode]").forEach(function(x){x.classList.toggle("active",x.dataset.mode===m);}); document.querySelectorAll(".mode").forEach(function(mm){mm.classList.toggle("active",mm.id==="mode-"+m);}); } } })();
+newPredict(); newUnknown(); newInfer(); setPlaying(state.playing); render();
+var lastT=null;
+function frame(now){ if(lastT===null)lastT=now; var dt=Math.min(0.05,(now-lastT)/1000); lastT=now; if(state.playing){ state.phase+=dt*state.speed; state.pluckPhase+=dt*state.speed; } render(); requestAnimationFrame(frame); }
+requestAnimationFrame(frame);
+window.addEventListener("resize",render);
+</script>
+<script>
+document.addEventListener("click", function(e){ var b = e.target.closest && e.target.closest("[data-study-back]"); if (!b) return; e.preventDefault(); location.href = "study.html" + location.search; });
+</script>
+</body></html>
