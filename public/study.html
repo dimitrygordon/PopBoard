@@ -202,7 +202,7 @@ input.icon-cell::placeholder{ color:var(--text-dimmer); font-size:17px; }
 
 /* ============================================================
    Identity / mode resolution.
-   - ?teacher=<name>            -> teacher mode (the gallery gets
+   - ?teacher=<uid>             -> teacher mode (the gallery gets
      create/edit/delete controls for that teacher's own study links).
    - ?board=<id>&student=<id>   -> student mode, read-only (the owning
      teacher is looked up from the board doc below).
@@ -244,8 +244,14 @@ var firebaseReady = (async function loadFirebase() {
   try {
     var appMod = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
     var fsMod = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+    var authMod = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
     var fbApp = appMod.initializeApp(firebaseConfig);
     db = fsMod.getFirestore(fbApp);
+    // Reuse the PopBoard sign-in from the main app (same site, so Firebase
+    // Auth restores it). Firestore security rules only allow reads/writes for
+    // signed-in users, and only the owning teacher can change study links.
+    var fbAuth = authMod.getAuth(fbApp);
+    if (fbAuth.authStateReady) { await fbAuth.authStateReady(); }
     fsDoc = fsMod.doc; fsGetDoc = fsMod.getDoc; fsCollection = fsMod.collection; fsGetDocs = fsMod.getDocs;
     fsAddDoc = fsMod.addDoc; fsUpdateDoc = fsMod.updateDoc; fsDeleteDoc = fsMod.deleteDoc; fsServerTimestamp = fsMod.serverTimestamp;
     return true;
@@ -408,7 +414,7 @@ var BUILTIN_MODULES = [
 
 /* ============================================================
    Teacher-created study links: Firestore I/O against
-   teachers/{teacherAccount}/studyLinks -- a subcollection off the
+   teachers/{teacherUid}/studyLinks -- a subcollection off the
    existing `teachers` doc, matching this app's existing flat schema
    (teachers/{name}, boards/{id} are the only two top-level collections).
    This app never uses Firestore orderBy() -- always fetch-then-sort
@@ -451,7 +457,7 @@ async function resolveTeacherAccount() {
   if (!ready) { return ""; }
   try {
     var snap = await fsGetDoc(fsDoc(db, "boards", boardParam));
-    if (snap.exists() && snap.data().teacherAccount) { return snap.data().teacherAccount; }
+    if (snap.exists() && snap.data().ownerUid) { return snap.data().ownerUid; }
   } catch (e) {
     console.error("board->teacher lookup failed", e);
   }

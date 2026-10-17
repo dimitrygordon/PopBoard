@@ -21,7 +21,8 @@
   <h2>Join PopBoard</h2>
   <input id="usernameInput" placeholder="Your name" />
   <input id="boardNameInput" placeholder="PopBoard name" />
-  <input id="studentPasswordInput" type="password" placeholder="Password (protects your account)" autocapitalize="none" autocorrect="off" spellcheck="false" />
+  <input id="studentPasswordInput" type="password" placeholder="Password (optional: protects your name)" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" />
+  <p class="login-hint" style="text-align:center;margin:4px 0 0;font-size:0.8rem;opacity:0.6;">Leave the password blank to join quickly on this device. Add one (6+ characters) to keep your name safe and sign in from any device.</p>
   <div class="login-buttons">
     <button id="joinBtn">Join</button>
   </div>
@@ -36,12 +37,15 @@
     <img src="/popboard-logo.png" alt="PopBoard Logo" id="teacher-logo-img" />
   </div>
   <h2>Teacher Login</h2>
-  <input id="teacherNameInput" placeholder="Teacher name" />
-  <input id="teacherPasswordInput" type="password" placeholder="Password" autocapitalize="none" autocorrect="off" spellcheck="false" />
+  <input id="teacherEmailInput" type="email" placeholder="Email" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" />
+  <input id="teacherPasswordInput" type="password" placeholder="Password" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" />
+  <input id="teacherNameInput" placeholder="Your name (only for creating a new account)" />
   <div class="login-buttons">
     <button id="teacherSignInBtn">Sign In</button>
+    <button id="teacherSignUpBtn" class="secondary-btn">Create Account</button>
     <button id="backToMainLoginBtn" class="secondary-btn">Back</button>
   </div>
+  <p style="text-align:center;margin-top:12px;font-size:0.8rem;opacity:0.6;">New teacher accounts need approval from the PopBoard admin before they can create boards.</p>
 </div>
 
 <!-- PopBoards Portal (Teacher) -->
