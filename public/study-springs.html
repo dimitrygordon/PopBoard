@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hooke's Law and Springs Sandbox // PopBoard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05060a;--panel:#171C22;--panel-2:#1E252D;--panel-3:#252E38;--border:#2C3742;--border-lit:#3A4854;--amber:#FFB300;--amber-dim:#8a640f;--cyan:#5FD3C4;--violet:#B07CFF;--pink:#FF5FAE;--text:#E9E6DE;--text-dim:#93A0AC;--text-dimmer:#5C6874;--green:#57d38c;--red:#ff7a7a}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Oswald',sans-serif;letter-spacing:.03em;text-transform:uppercase}.mono{font-family:'JetBrains Mono',monospace}button,input,select{font-family:inherit}
+.bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(5,6,10,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.bar button{background:none;border:none;color:#0A84FF;font-size:15px;cursor:pointer;padding:4px 2px}.bar-left{display:flex;gap:16px;align-items:center}.study-back-btn{display:inline-flex;align-items:center;gap:2px}
+@media(max-width:400px){.study-back-btn .back-label{display:none}}
+.title{text-align:center;padding:14px 12px 4px}.title h1{font-size:20px;margin:0}.title p{color:var(--text-dim);font-size:12.5px;max-width:920px;margin:6px auto 0;line-height:1.55}
+#statusBanner{margin:10px auto;max-width:920px;background:rgba(15,18,22,.9);border:1px solid var(--border-lit);border-radius:14px;padding:10px 18px;text-align:center}
+#statusBanner .status-type{font-family:'Oswald',sans-serif;font-size:16px;letter-spacing:.05em;text-transform:uppercase;color:var(--amber)}
+#statusBanner .status-reason{font-size:11.5px;color:var(--text-dim);margin-top:3px;font-family:'JetBrains Mono',monospace;line-height:1.55}
+main{max-width:1180px;margin:0 auto;padding:6px 14px 40px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 0}.tab{flex:1;min-width:128px;padding:10px 6px;border-radius:10px;border:1px solid var(--border-lit);background:var(--panel-2);color:var(--text-dim);cursor:pointer;font-size:12.5px;text-align:center}.tab.active{background:var(--amber-dim);color:#fff;border-color:var(--amber)}
+.mode{display:none}.mode.active{display:block}
+.card{background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-top:14px}
+.card h2{font-size:13px;margin:0 0 4px;text-align:center}.card .sub{font-size:11px;color:var(--text-dimmer);text-align:center;font-family:'JetBrains Mono',monospace;margin-bottom:8px;line-height:1.5}
+.grid{display:grid;grid-template-columns:1.55fr 1fr;gap:14px}.grid .card{margin-top:14px}@media(max-width:820px){.grid{grid-template-columns:1fr}}
+canvas.view{width:100%;display:block;border-radius:12px;background:#070a12;touch-action:none}
+.play{height:320px}.tall{height:380px}.graph{height:250px}.small{height:210px}@media(max-width:520px){.play{height:290px}.tall{height:340px}}
+.readouts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}@media(max-width:520px){.readouts{grid-template-columns:1fr 1fr}}
+.tile{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:10px;padding:8px;text-align:center}.tile .l{font-family:'Oswald',sans-serif;font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-dim)}.tile .v{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;margin-top:2px}.tile .s{font-size:10px;color:var(--text-dimmer);font-family:'JetBrains Mono',monospace}
+.panel-label{font-size:13px;color:#e5e5e7;margin-bottom:6px}.panel-row{margin-bottom:13px}.panel-hint{font-size:11.5px;color:#8e8e93;line-height:1.6}.panel-section-title{text-align:center;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#6e6e73;margin:14px 0 8px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:#48484a;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#fff;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:none}
+select,input[type=number]{background:var(--panel-2);border:1px solid var(--border-lit);color:var(--text);border-radius:8px;padding:8px;width:100%;font-size:13px}
+.btn{flex:1;padding:10px;border-radius:10px;border:1px solid var(--border-lit);background:var(--panel-3);color:var(--text);cursor:pointer;font-size:13px;min-width:86px}.btn.primary{background:var(--amber);color:#1a1200;border:none;font-weight:700}.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{padding:7px 10px;border-radius:999px;border:1px solid var(--border-lit);background:var(--panel-2);color:var(--text);font-size:11px;cursor:pointer}.chip.active,.chip.sel{border-color:var(--amber);color:var(--amber)}
+.check{display:flex;gap:8px;align-items:center;font-size:12.5px;padding:5px 0;color:#e5e5e7}
+.eq{font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,.28);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.7;color:var(--cyan);text-align:center}
+.feedback{font-size:13px;line-height:1.55;min-height:22px;margin-top:8px}.good{color:var(--green)}.bad{color:var(--red)}
+.card p.body{font-size:13px;line-height:1.65;color:#d1d1d6}
+table{width:100%;border-collapse:collapse;font-size:11.5px}th,td{border-bottom:1px solid var(--border);padding:6px 5px;text-align:right;font-family:'JetBrains Mono',monospace}th:first-child,td:first-child{text-align:left}th{color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase}
+.tblwrap{overflow-x:auto}
+.barwrap{margin-top:10px}.bar-row{display:flex;align-items:center;gap:8px;margin:6px 0;font-family:'JetBrains Mono',monospace;font-size:11px}.bar-row .bl{width:110px;color:var(--text-dim)}.bar-track{flex:1;height:16px;background:rgba(0,0,0,.35);border-radius:6px;overflow:hidden}.bar-fill{height:100%;border-radius:6px}.bar-row .bv{width:86px;text-align:right}
+footer{color:var(--text-dimmer);font-size:11px;text-align:center;padding:0 16px 28px;font-family:'JetBrains Mono',monospace;line-height:1.6}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<div class="bar"><div class="bar-left">
+<button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg><span class="back-label">Back</span></button>
+<button id="controlsJumpBtn" type="button">Controls</button></div>
+<div class="bar-left"><button id="pauseBtn" type="button">Pause</button><button id="resetBtn" type="button">Reset</button></div></div>
+<div class="title"><h1>Hooke's Law and Springs Sandbox</h1><p>Stretch, compress, hang, and release virtual springs — measure force against displacement, find equilibrium, watch simple harmonic motion trade energy back and forth, push past the elastic limit, and combine springs in series and parallel.</p></div>
+<div style="padding:0 14px"><div id="statusBanner" role="status" aria-live="polite"><div class="status-type" id="statusType">—</div><div class="status-reason" id="statusReason">—</div></div></div>
+<main>
+<div class="tabs" role="tablist" aria-label="Springs modes">
+<button class="tab active" data-mode="playground" type="button">Playground · F = −kx</button>
+<button class="tab" data-mode="equilibrium" type="button">Static Equilibrium</button>
+<button class="tab" data-mode="shm" type="button">SHM</button>
+<button class="tab" data-mode="elasticity" type="button">Elasticity &amp; Limits</button>
+<button class="tab" data-mode="series" type="button">Series / Parallel</button>
+<button class="tab" data-mode="damping" type="button">Damping &amp; Drive</button>
+<button class="tab" data-mode="guided" type="button">Guided Challenges</button></div>
+<section class="mode active" id="mode-playground"><div class="grid">
+<section class="card" aria-label="Horizontal spring playground"><h2>Horizontal Spring — Drag the Mass</h2>
+<div class="sub">Drag the mass left/right · dashed line = equilibrium (x = 0) · cyan arrow = restoring force F = −kx, always pointing back toward equilibrium</div>
+<canvas id="pgCanvas" class="view play"></canvas>
+<div class="readouts">
+<div class="tile"><div class="l">Displacement x</div><div class="v" id="pgX">—</div><div class="s">+ stretched · − compressed</div></div>
+<div class="tile"><div class="l">Restoring force −kx</div><div class="v" id="pgF">—</div></div>
+<div class="tile"><div class="l">Elastic PE ½kx²</div><div class="v" id="pgE">—</div></div>
+<div class="tile"><div class="l">Applied force</div><div class="v" id="pgApp">—</div></div>
+<div class="tile"><div class="l">k (set)</div><div class="v" id="pgK">—</div></div>
+<div class="tile"><div class="l">k from fitted slope</div><div class="v" id="pgKfit">—</div><div class="s" id="pgKfitNote">record ≥ 2 points</div></div></div>
+<h2 style="margin-top:14px">Live Graph · Restoring Force vs Displacement</h2>
+<div class="sub">Straight line through the origin · slope = −k · amber dots = points you recorded · cyan dot = now</div>
+<canvas id="pgGraph" class="view graph"></canvas></section>
+<section class="card" id="controls" aria-label="Playground controls"><h2>Playground Controls</h2>
+<div class="panel-row"><div class="panel-label" id="pgKLabel">Spring constant k</div><input type="range" id="pgKRange" min="10" max="400" step="5" value="100" aria-label="Spring constant"></div>
+<div class="panel-row"><div class="panel-label" id="pgMLabel">Mass m</div><input type="range" id="pgM" min="0.2" max="5" step="0.1" value="1.5" aria-label="Mass"></div>
+<div class="panel-row"><div class="panel-label" id="pgCLabel">Damping c</div><input type="range" id="pgC" min="0" max="8" step="0.1" value="0.4" aria-label="Damping"></div>
+<div class="panel-row"><div class="panel-label" id="pgX0Label">Initial displacement</div><input type="range" id="pgX0" min="-0.4" max="0.4" step="0.01" value="0.2" aria-label="Initial displacement"></div>
+<div class="btn-row"><button class="btn primary" id="pgRelease" type="button">Release from x₀</button><button class="btn" id="pgHold" type="button">Hold at x₀</button></div>
+<div class="panel-section-title">Apply a known force instead</div>
+<div class="panel-row"><div class="panel-label" id="pgAppLabel">Applied force (holds the mass where kx balances it)</div><input type="range" id="pgAppRange" min="-40" max="40" step="1" value="0" aria-label="Applied force"></div>
+<div class="btn-row"><button class="btn" id="pgRecord" type="button">Record point (x, F)</button><button class="btn" id="pgClear" type="button">Clear points</button></div>
+<p class="feedback" id="pgFitFeedback" aria-live="polite"></p>
+<div class="tblwrap"><table><thead><tr><th>#</th><th>x (m)</th><th>F = −kx (N)</th><th>|F|/|x| (N/m)</th></tr></thead><tbody id="pgTable"></tbody></table></div>
+<div class="eq" style="margin-top:10px">F = −kx · the minus sign is the physics:<br>the force always opposes the displacement<br>slope of F-vs-x = −k · EPE = ½kx²</div>
+<p class="panel-hint">Check: k = 100 N/m stretched x = 0.20 m gives a restoring force of −20 N (20 N back toward equilibrium). Double the stretch, double the force — that straight line <em>is</em> Hooke's law. Gravity does not appear here: on a frictionless horizontal surface it is balanced by the normal force.</p>
+</section></div></section>
+
+<section class="mode" id="mode-equilibrium"><div class="grid">
+<section class="card" aria-label="Vertical hanging spring"><h2>Vertical Spring — Hanging in Equilibrium</h2>
+<div class="sub">Ghost outline = natural (unstretched) length · solid spring = stretched length · labelled arrows = force diagram</div>
+<canvas id="eqCanvas" class="view tall"></canvas>
+<div class="readouts">
+<div class="tile"><div class="l">Weight mg ↓</div><div class="v" id="eqW">—</div></div>
+<div class="tile"><div class="l">Spring force kx ↑</div><div class="v" id="eqSF">—</div></div>
+<div class="tile"><div class="l">Net force</div><div class="v" id="eqNet">—</div><div class="s">0 at equilibrium</div></div>
+<div class="tile"><div class="l">Extension x = mg/k</div><div class="v" id="eqX">—</div></div>
+<div class="tile"><div class="l">Natural length L₀</div><div class="v" id="eqL0">—</div></div>
+<div class="tile"><div class="l">Stretched length L₀+x</div><div class="v" id="eqL">—</div></div></div>
+<h2 style="margin-top:14px">Same Load, Two Orientations</h2>
+<div class="sub">Vertical: gravity stretches the spring to kx = mg · Horizontal (frictionless): the same extension needs an applied force of mg — gravity alone does nothing</div>
+<canvas id="eqCompare" class="view small"></canvas></section>
+<section class="card" aria-label="Equilibrium controls"><h2>Equilibrium Controls</h2>
+<div class="panel-row"><div class="panel-label" id="eqMLabel">Hanging mass m</div><input type="range" id="eqM" min="0.1" max="5" step="0.1" value="1" aria-label="Hanging mass"></div>
+<div class="panel-row"><div class="panel-label" id="eqKLabel">Spring constant k</div><input type="range" id="eqK" min="10" max="400" step="5" value="100" aria-label="Equilibrium spring constant"></div>
+<div class="panel-row"><div class="panel-label" id="eqGLabel">Gravitational field g</div><input type="range" id="eqG" min="1" max="25" step="0.01" value="9.8" aria-label="Gravitational field"></div>
+<div class="chips" id="gChips"><button class="chip" data-g="1.62" type="button">Moon 1.62</button><button class="chip active" data-g="9.8" type="button">Earth 9.8</button><button class="chip" data-g="3.71" type="button">Mars 3.71</button><button class="chip" data-g="24.79" type="button">Jupiter 24.79</button></div>
+<div class="panel-row" style="margin-top:10px"><div class="panel-label" id="eqAppLabel">Extra downward applied force</div><input type="range" id="eqApp" min="0" max="40" step="1" value="0" aria-label="Extra applied force"></div>
+<div class="btn-row"><button class="btn primary" id="eqDouble" type="button">Double the mass — test it</button><button class="btn" id="eqResetM" type="button">Back to 1.0 kg</button></div>
+<p class="feedback" id="eqFeedback" aria-live="polite"></p>
+<div class="eq">equilibrium: kx = mg (+ F applied)<br>x_eq = (mg + F applied) / k<br>natural length ≠ stretched length ≠ extension:<br>extension x is the <em>change</em> in length</div>
+<p class="panel-hint">Check: m = 1.0 kg on k = 100 N/m at g = 9.8 m/s² hangs at x = 9.8/100 = 0.098 m. Double the mass and the extension doubles; double k and it halves. A stiffer spring answers the same load with less stretch.</p>
+</section></div></section>
+<section class="mode" id="mode-shm"><div class="grid">
+<section class="card" aria-label="Simple harmonic motion"><h2>Spring–Mass Oscillator — Displace &amp; Release</h2>
+<div class="sub">Green arrow = velocity (biggest at equilibrium) · red arrow = acceleration / restoring force (biggest at the endpoints) · pause any time to inspect</div>
+<canvas id="shmCanvas" class="view play"></canvas>
+<div class="readouts">
+<div class="tile"><div class="l">Position x</div><div class="v" id="shmX">—</div></div>
+<div class="tile"><div class="l">Velocity v</div><div class="v" id="shmV">—</div></div>
+<div class="tile"><div class="l">Acceleration a = −kx/m</div><div class="v" id="shmA">—</div></div>
+<div class="tile"><div class="l">Theory T = 2π√(m/k)</div><div class="v" id="shmT">—</div></div>
+<div class="tile"><div class="l">Measured T (zero crossings)</div><div class="v" id="shmTm">—</div><div class="s" id="shmTmNote">release to measure</div></div>
+<div class="tile"><div class="l">Frequency f = 1/T</div><div class="v" id="shmFreq">—</div></div></div>
+<h2 style="margin-top:14px">x, v, a vs Time — Synchronised</h2>
+<div class="sub">Cyan = x · green = v (¼ cycle ahead of x) · violet = a (opposite to x at every instant) · each scaled to its own maximum</div>
+<canvas id="shmGraph" class="view graph"></canvas>
+<div class="barwrap">
+<div class="bar-row"><span class="bl">Kinetic ½mv²</span><div class="bar-track"><div class="bar-fill" id="keBar" style="background:var(--green);width:0%"></div></div><span class="bv" id="keVal">—</span></div>
+<div class="bar-row"><span class="bl">Elastic ½kx²</span><div class="bar-track"><div class="bar-fill" id="epeBar" style="background:var(--amber);width:0%"></div></div><span class="bv" id="epeVal">—</span></div>
+<div class="bar-row"><span class="bl">Total (KE+EPE)</span><div class="bar-track"><div class="bar-fill" id="totBar" style="background:var(--cyan);width:0%"></div></div><span class="bv" id="totVal">—</span></div></div>
+<p class="panel-hint">With no damping the total stays constant — energy just trades between motion and stretch. (Vertical note: a hanging oscillator also trades gravitational PE, but the <em>sum</em> KE + EPE + GPE is constant and it still oscillates about the equilibrium extension with the same T = 2π√(m/k).)</p>
+</section>
+<section class="card" aria-label="SHM controls"><h2>SHM Controls</h2>
+<div class="panel-row"><div class="panel-label" id="shmMLabel">Mass m</div><input type="range" id="shmM" min="0.1" max="3" step="0.05" value="0.5" aria-label="SHM mass"></div>
+<div class="panel-row"><div class="panel-label" id="shmKLabel">Spring constant k</div><input type="range" id="shmK" min="10" max="400" step="5" value="200" aria-label="SHM spring constant"></div>
+<div class="panel-row"><div class="panel-label" id="shmALabel">Amplitude (release displacement)</div><input type="range" id="shmAmp" min="0.05" max="0.4" step="0.01" value="0.3" aria-label="Amplitude"></div>
+<div class="panel-row"><div class="panel-label" id="shmCLabel">Damping c</div><input type="range" id="shmC" min="0" max="6" step="0.05" value="0" aria-label="SHM damping"></div>
+<div class="btn-row"><button class="btn primary" id="shmRelease" type="button">Displace &amp; release</button><button class="btn" id="shmPause" type="button">Pause &amp; inspect</button></div>
+<p class="feedback" id="shmFeedback" aria-live="polite"></p>
+<div class="eq">T = 2π√(m/k) · f = (1/2π)√(k/m)<br>a = −(k/m)x — acceleration ∝ −displacement:<br>that proportionality <em>is</em> SHM<br>amplitude does not change T (ideal spring)</div>
+<p class="panel-hint">Check: m = 0.50 kg, k = 200 N/m → T = 2π√(0.5/200) ≈ 0.314 s. Quadruple m (or quarter k) and T doubles. Time 10 cycles and divide by 10 to measure T precisely.</p>
+</section></div></section>
+
+<section class="mode" id="mode-elasticity"><div class="grid">
+<section class="card" aria-label="Elasticity and limits"><h2>Beyond Hooke — Where the Straight Line Ends</h2>
+<div class="sub">Illustrative material model only — real springs and materials each have their own limits; these curves are teaching models, not data for any real spring</div>
+<canvas id="elCanvas" class="view play"></canvas>
+<h2 style="margin-top:14px">Applied Force vs Extension</h2>
+<div class="sub">Linear to the proportional limit · curving to the elastic limit · beyond it, unloading leaves a permanent set</div>
+<canvas id="elGraph" class="view graph"></canvas>
+<div class="readouts">
+<div class="tile"><div class="l">Region</div><div class="v" id="elRegion" style="font-size:12px">—</div></div>
+<div class="tile"><div class="l">Extension now</div><div class="v" id="elX">—</div></div>
+<div class="tile"><div class="l">Permanent set</div><div class="v" id="elPerm">—</div><div class="s">left after unloading</div></div></div></section>
+<section class="card" aria-label="Elasticity controls"><h2>Elasticity Controls</h2>
+<div class="panel-row"><div class="panel-label">Illustrative material (invented teaching curves)</div>
+<select id="elMat" aria-label="Illustrative material"><option value="0">Material A — stiff, steel-like (illustrative)</option><option value="1">Material B — softer alloy-like (illustrative)</option><option value="2">Material C — soft polymer-like (illustrative)</option></select></div>
+<div class="panel-row"><div class="panel-label" id="elFLabel">Applied force</div><input type="range" id="elF" min="0" max="120" step="1" value="20" aria-label="Elasticity applied force"></div>
+<div class="btn-row"><button class="btn primary" id="elUnload" type="button">Remove the force — does it return?</button><button class="btn" id="elReset" type="button">New specimen</button></div>
+<p class="feedback" id="elFeedback" aria-live="polite"></p>
+<div class="eq" id="elEq">—</div>
+<p class="panel-hint">Hooke's law is a <strong>model with a range</strong>: inside the proportional limit, F ∝ x and unloading retraces the line to zero. Past the elastic limit the specimen keeps a permanent deformation when the force is removed. Never quote these illustrative limits as properties of a real spring — measure the real one.</p>
+</section></div></section>
+
+<section class="mode" id="mode-series"><div class="grid">
+<section class="card" aria-label="Series and parallel springs"><h2>Two Springs, Two Ways to Connect Them</h2>
+<div class="sub">Same load on both rigs · left = series (end to end) · right = parallel (side by side) · watch which stretches further</div>
+<canvas id="spCanvas" class="view tall"></canvas>
+<div class="readouts">
+<div class="tile"><div class="l">Series k_eq = k₁k₂/(k₁+k₂)</div><div class="v" id="spKs">—</div></div>
+<div class="tile"><div class="l">Parallel k_eq = k₁+k₂</div><div class="v" id="spKp">—</div></div>
+<div class="tile"><div class="l">Series extension</div><div class="v" id="spXs">—</div></div>
+<div class="tile"><div class="l">Parallel extension</div><div class="v" id="spXp">—</div></div>
+<div class="tile"><div class="l">Single k₁ alone</div><div class="v" id="spX1">—</div></div>
+<div class="tile"><div class="l">Load force mg</div><div class="v" id="spF">—</div></div></div></section>
+<section class="card" aria-label="Series parallel controls"><h2>Builder Controls</h2>
+<div class="panel-row"><div class="panel-label" id="spK1Label">Spring 1 · k₁</div><input type="range" id="spK1" min="20" max="300" step="5" value="100" aria-label="Spring 1 constant"></div>
+<div class="panel-row"><div class="panel-label" id="spK2Label">Spring 2 · k₂</div><input type="range" id="spK2" min="20" max="300" step="5" value="100" aria-label="Spring 2 constant"></div>
+<div class="panel-row"><div class="panel-label" id="spMLabel">Load mass (same on both rigs)</div><input type="range" id="spM" min="0.2" max="4" step="0.1" value="1" aria-label="Series parallel load mass"></div>
+<div class="eq">series: same force in each spring, extensions add<br>1/k_eq = 1/k₁ + 1/k₂ ⇒ k_eq = k₁k₂/(k₁+k₂) (softer overall)<br><br>parallel: same extension, forces add<br>k_eq = k₁ + k₂ (stiffer overall)</div>
+<p class="panel-hint">Check: two 100 N/m springs give 50 N/m in series (each carries the full load and both stretch) and 200 N/m in parallel (they share the load at the same stretch). Series is always softer than the softest spring; parallel is stiffer than the stiffest.</p>
+</section></div></section>
+<section class="mode" id="mode-damping"><div class="grid">
+<section class="card" aria-label="Damping and driven oscillation"><h2>Damped &amp; Driven Oscillator</h2>
+<div class="sub">Release it and watch damping kill the motion — or switch the driver on and hunt for resonance near f₀</div>
+<canvas id="dampCanvas" class="view play"></canvas>
+<div class="readouts">
+<div class="tile"><div class="l">Damping ratio ζ = c/(2√(mk))</div><div class="v" id="dampZ">—</div></div>
+<div class="tile"><div class="l">Regime</div><div class="v" id="dampClass" style="font-size:12px">—</div></div>
+<div class="tile"><div class="l">Natural f₀ = (1/2π)√(k/m)</div><div class="v" id="dampF0">—</div></div>
+<div class="tile"><div class="l">Drive frequency</div><div class="v" id="dampFd">—</div></div>
+<div class="tile"><div class="l">Steady amplitude (theory)</div><div class="v" id="dampAmp">—</div></div>
+<div class="tile"><div class="l">Position x</div><div class="v" id="dampX">—</div></div></div>
+<h2 style="margin-top:14px">Resonance Curve — Steady Amplitude vs Drive Frequency</h2>
+<div class="sub">Peak sits near f₀ · more damping = lower, wider peak · amber marker = your driver</div>
+<canvas id="dampGraph" class="view graph"></canvas></section>
+<section class="card" aria-label="Damping controls"><h2>Damping &amp; Drive Controls</h2>
+<div class="panel-row"><div class="panel-label" id="dampMLabel">Mass m</div><input type="range" id="dampM" min="0.1" max="3" step="0.05" value="0.5" aria-label="Damping mass"></div>
+<div class="panel-row"><div class="panel-label" id="dampKLabel">Spring constant k</div><input type="range" id="dampK" min="10" max="400" step="5" value="200" aria-label="Damping spring constant"></div>
+<div class="panel-row"><div class="panel-label" id="dampCLabel">Damping c</div><input type="range" id="dampC" min="0" max="30" step="0.1" value="1" aria-label="Damping coefficient"></div>
+<div class="btn-row"><button class="btn primary" id="dampRelease" type="button">Displace &amp; release (no drive)</button></div>
+<label class="check"><input type="checkbox" id="driveOn"> Driving force on</label>
+<div class="panel-row"><div class="panel-label" id="driveF0Label">Drive amplitude F₀</div><input type="range" id="driveF0" min="1" max="30" step="1" value="10" aria-label="Drive amplitude"></div>
+<div class="panel-row"><div class="panel-label" id="driveFdLabel">Drive frequency f_d</div><input type="range" id="driveFd" min="0.1" max="3" step="0.02" value="1" aria-label="Drive frequency"></div>
+<div class="btn-row"><button class="btn" id="driveSnap" type="button">Snap driver to f₀ (resonance)</button></div>
+<p class="feedback" id="dampFeedback" aria-live="polite"></p>
+<div class="eq">m·x″ = −kx − c·x′ + F₀cos(2πf_d t)<br>ζ &lt; 1 underdamped (rings, decaying) · ζ = 1 critical<br>ζ &gt; 1 overdamped (creeps back, no ring)<br>resonance: biggest steady amplitude near f_d ≈ f₀</div>
+</section></div></section>
+
+<section class="mode" id="mode-guided"><div class="grid">
+<section class="card" aria-label="Guided challenges"><h2>Guided Challenges</h2>
+<div class="sub">Work it out from the data first, then check · one shared score</div>
+<div class="readouts"><div class="tile"><div class="l">Guided score</div><div class="v" id="gScore">0 / 0</div></div><div class="tile"><div class="l">Unknown k (hidden)</div><div class="v" style="font-size:12px">from slope</div></div><div class="tile"><div class="l">Method</div><div class="v" style="font-size:12px">k = slope of F-vs-x</div></div></div>
+<div class="panel-section-title">1 · Find the unknown spring constant</div>
+<p class="panel-hint" id="g1Prompt">—</p>
+<div class="tblwrap"><table><thead><tr><th>x (m)</th><th>Applied force (N)</th></tr></thead><tbody id="g1Table"></tbody></table></div>
+<div class="panel-row" style="margin-top:8px"><input type="number" id="g1Input" step="any" placeholder="Your k from the slope (N/m)" aria-label="Unknown spring constant"></div>
+<div class="btn-row"><button class="btn primary" id="g1Check" type="button">Check k</button><button class="btn" id="g1New" type="button">New unknown spring</button></div>
+<p class="feedback" id="g1Feedback" aria-live="polite"></p>
+<div class="panel-section-title">2 · Predict the equilibrium extension</div>
+<p class="panel-hint" id="g2Prompt">—</p>
+<div class="panel-row"><input type="number" id="g2Input" step="any" placeholder="Predicted extension x = mg/k (m)" aria-label="Predicted equilibrium extension"></div>
+<div class="btn-row"><button class="btn primary" id="g2Check" type="button">Check prediction</button><button class="btn" id="g2New" type="button">New prediction</button></div>
+<p class="feedback" id="g2Feedback" aria-live="polite"></p>
+<div class="panel-section-title">3 · Calculate the oscillation period</div>
+<p class="panel-hint" id="g3Prompt">—</p>
+<div class="panel-row"><input type="number" id="g3Input" step="any" placeholder="Predicted period T = 2π√(m/k) (s)" aria-label="Predicted period"></div>
+<div class="btn-row"><button class="btn primary" id="g3Check" type="button">Check period</button><button class="btn" id="g3New" type="button">New period problem</button></div>
+<p class="feedback" id="g3Feedback" aria-live="polite"></p>
+</section>
+<section class="card" aria-label="Big idea"><h2>The Big Idea</h2>
+<p class="body"><strong>One law, four faces.</strong> F = −kx says a spring's restoring force is proportional to displacement and always aimed at equilibrium. Graph it and you get a straight line whose slope is −k. Hang a mass and equilibrium is where that force grows to match weight, kx = mg. Release a displaced mass and the same proportionality makes acceleration proportional to −x — the defining condition for simple harmonic motion, with T = 2π√(m/k) set by inertia and stiffness alone, never by amplitude. Push too far and the model itself expires: past the proportional and elastic limits the line bends and the spring may not come back. Springs combine like the extensions and forces they share — series adds extensions (softer), parallel adds forces (stiffer) — and damping and driving decide whether the oscillation rings, creeps, or resonates.</p>
+<div class="eq">F = −kx · x_eq = mg/k · T = 2π√(m/k)<br>series k_eq = k₁k₂/(k₁+k₂) · parallel k_eq = k₁+k₂<br>KE = ½mv² · EPE = ½kx² · ζ = c/(2√(mk))</div>
+</section></div></section>
+</main>
+<footer>PopBoard Study · Hooke's Law and Springs Sandbox · F = −kx · kx = mg at equilibrium · T = 2π√(m/k) · f = (1/2π)√(k/m) · series k₁k₂/(k₁+k₂) · parallel k₁+k₂<br>Ideal springs except in Elasticity &amp; Limits, whose material curves are clearly-labelled illustrative teaching models, not data for any real material.</footer>
+<script type="module">
+"use strict";
+function springForce(k,x){ return -k*x; }
+function equilibriumExtension(m,k,g){ return m*g/k; }
+function period(m,k){ return 2*Math.PI*Math.sqrt(m/k); }
+function frequency(m,k){ return 1/period(m,k); }
+function seriesK(k1,k2){ return k1*k2/(k1+k2); }
+function parallelK(k1,k2){ return k1+k2; }
+function dampingRatio(c,m,k){ return c/(2*Math.sqrt(m*k)); }
+function dampingClass(z){ return z<0.98 ? "Underdamped" : (z>1.02 ? "Overdamped" : "Critically damped"); }
+function energies(m,k,x,v){ var ke=0.5*m*v*v, epe=0.5*k*x*x; return {ke:ke,epe:epe,total:ke+epe}; }
+function stepSpring(s,p,dt){
+  var drive=(p.driveAmp||0)*Math.cos(2*Math.PI*(p.driveFreq||0)*s.t);
+  var a=(-p.k*s.x - (p.c||0)*s.v + drive)/p.m;
+  s.v+=a*dt; s.x+=s.v*dt; s.t+=dt; s.a=a; s.drive=drive; return s;
+}
+function integrateSpring(s,p,frameDt){
+  var n=Math.max(1,Math.min(960,Math.ceil(frameDt/(1/1920))));
+  var dt=frameDt/n;
+  for(var i=0;i<n;i++) stepSpring(s,p,dt);
+  return s;
+}
+function fitKThroughOrigin(points){
+  var sxx=0,sxf=0;
+  points.forEach(function(pt){ sxx+=pt.x*pt.x; sxf+=pt.x*pt.f; });
+  if(sxx===0) return null;
+  return -sxf/sxx;
+}
+var MATERIALS=[
+ {name:"Material A — stiff, steel-like (illustrative)",k:800,Fp:64,Fe:80,maxF:120},
+ {name:"Material B — softer alloy-like (illustrative)",k:350,Fp:35,Fe:49,maxF:100},
+ {name:"Material C — soft polymer-like (illustrative)",k:120,Fp:14.4,Fe:24,maxF:70}
+];
+function materialExtension(F,mat){
+  var xp=mat.Fp/mat.k;
+  if(F<=mat.Fp) return F/mat.k;
+  var xe=xp+(mat.Fe-mat.Fp)/(0.35*mat.k);
+  if(F<=mat.Fe) return xp+(F-mat.Fp)/(0.35*mat.k);
+  return xe+(F-mat.Fe)/(0.25*mat.k);
+}
+function materialRegion(F,mat){ return F<=mat.Fp ? "Proportional (Hooke) region" : (F<=mat.Fe ? "Elastic, non-linear region" : "Beyond elastic limit — permanent deformation"); }
+function drivenAmplitude(F0,m,k,c,fd){
+  var w=2*Math.PI*fd;
+  var den=Math.sqrt(Math.pow(k-m*w*w,2)+Math.pow(c*w,2));
+  return den===0 ? Infinity : F0/den;
+}
+function fmt(x,n){ if(!isFinite(x)) return "—"; if(x!==0&&(Math.abs(x)>=10000||Math.abs(x)<0.001)) return x.toExponential(2); return Number(x.toFixed(n==null?2:n)).toLocaleString("en-US"); }
+var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+var state={
+  mode:"playground", playing:!reduceMotion,
+  pg:{k:100,m:1.5,c:0.4,x0:0.2,app:0,sim:{x:0.2,v:0,t:0,a:0},points:[],drag:false},
+  eq:{m:1,k:100,g:9.8,app:0,L0:0.45},
+  shm:{m:0.5,k:200,amp:0.3,c:0,sim:{x:0.3,v:0,t:0,a:0},hist:[],cross:[],measured:null,running:false},
+  el:{mat:0,F:20,maxF:0,perm:0,unloaded:false},
+  sp:{k1:100,k2:100,m:1,g:9.8},
+  damp:{m:0.5,k:200,c:1,sim:{x:0.3,v:0,t:0,a:0},hist:[],driveOn:false,F0:10,fd:1},
+  score:{ok:0,total:0}, guided:{}
+};
+window.SpringsSandbox={springForce:springForce,equilibriumExtension:equilibriumExtension,period:period,frequency:frequency,seriesK:seriesK,parallelK:parallelK,dampingRatio:dampingRatio,dampingClass:dampingClass,energies:energies,stepSpring:stepSpring,integrateSpring:integrateSpring,fitKThroughOrigin:fitKThroughOrigin,MATERIALS:MATERIALS,materialExtension:materialExtension,materialRegion:materialRegion,drivenAmplitude:drivenAmplitude,state:state};
+function $(id){ return document.getElementById(id); }
+function fitCanvas(cv){ var dpr=Math.min(2,window.devicePixelRatio||1); var w=cv.clientWidth,h=cv.clientHeight; if(!w||!h) return null; if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){ cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr);} var ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0); return {ctx:ctx,w:w,h:h}; }
+function bg(ctx,w,h){ ctx.fillStyle="#070a12"; ctx.fillRect(0,0,w,h); }
+function arrow(ctx,x,y,dx,dy,color,label){
+  var len=Math.hypot(dx,dy); if(len<3) return;
+  var ex=x+dx, ey=y-dy;
+  ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=2.6; ctx.shadowColor=color; ctx.shadowBlur=6;
+  ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(ex,ey); ctx.stroke(); ctx.shadowBlur=0;
+  var a=Math.atan2(ey-y,ex-x), hl=10; ctx.fillStyle=color; ctx.beginPath(); ctx.moveTo(ex,ey); ctx.lineTo(ex-hl*Math.cos(a-0.4),ey-hl*Math.sin(a-0.4)); ctx.lineTo(ex-hl*Math.cos(a+0.4),ey-hl*Math.sin(a+0.4)); ctx.closePath(); ctx.fill();
+  if(label){ ctx.font="700 10px 'JetBrains Mono',monospace"; ctx.textAlign="center"; ctx.fillText(label, ex+(ex-x)/len*16, ey+(ey-y)/len*16); }
+  ctx.restore();
+}
+function coil(ctx,x1,y1,x2,y2,coils,color,width){
+  var dx=x2-x1, dy=y2-y1, len=Math.hypot(dx,dy); if(len<8) return;
+  var ux=dx/len, uy=dy/len, px=-uy, py=ux, amp=Math.min(13,len*0.16);
+  ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=width||2.4; ctx.shadowColor=color; ctx.shadowBlur=4;
+  ctx.beginPath(); ctx.moveTo(x1,y1);
+  var lead=0.12; ctx.lineTo(x1+dx*lead,y1+dy*lead);
+  var n=Math.max(6,coils*2);
+  for(var i=1;i<n;i++){ var f=lead+(1-2*lead)*i/n; var s=(i%2===0?-1:1)*amp; ctx.lineTo(x1+dx*f+px*s, y1+dy*f+py*s); }
+  ctx.lineTo(x2,y2); ctx.stroke(); ctx.restore();
+}
+function massBlock(ctx,cx,cy,w,h,label){
+  ctx.save(); ctx.fillStyle="#C9924B"; ctx.strokeStyle="#FFD54A"; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.roundRect(cx-w/2,cy-h/2,w,h,7); ctx.fill(); ctx.stroke();
+  ctx.fillStyle="#1a1200"; ctx.font="700 11px 'JetBrains Mono',monospace"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(label,cx,cy); ctx.restore();
+}
+function setStatus(type,reason){ $("statusType").textContent=type; $("statusReason").textContent=reason; }
+function pgParams(){ return {m:state.pg.m,k:state.pg.k,c:state.pg.c}; }
+function drawPlayground(){
+  var s=state.pg.sim, F=springForce(state.pg.k,s.x), e=energies(state.pg.m,state.pg.k,s.x,s.v);
+  var f=fitCanvas($("pgCanvas"));
+  if(f){ var ctx=f.ctx,w=f.w,h=f.h; bg(ctx,w,h);
+    var cy=h/2, wallX=54, eqX=w*0.52, scale=(w*0.36)/0.45;
+    ctx.fillStyle="#E9E6DE"; ctx.fillRect(wallX-8,cy-86,8,172);
+    ctx.strokeStyle="rgba(255,255,255,0.5)"; ctx.setLineDash([5,5]); ctx.beginPath(); ctx.moveTo(eqX,34); ctx.lineTo(eqX,h-30); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle="rgba(255,255,255,0.6)"; ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign="center"; ctx.fillText("equilibrium x = 0",eqX,24);
+    var mx=eqX+s.x*scale;
+    coil(ctx,wallX,cy,mx-34,cy,9, s.x>=0?"#5FD3C4":"#FFB300",2.6);
+    massBlock(ctx,mx,cy,68,58,fmt(state.pg.m,1)+" kg");
+    ctx.fillStyle="rgba(255,255,255,0.65)"; ctx.fillText("drag me ↔",mx,cy+48);
+    if(Math.abs(s.x)>0.01) arrow(ctx,eqX,h-42,s.x*scale,0,"#E9E6DE","x = "+fmt(s.x,2)+" m");
+    if(Math.abs(F)>0.5) arrow(ctx,mx,cy-52,Math.sign(F)*Math.min(110,Math.abs(F)*1.6),0,"#5FD3C4","F = "+fmt(F,1)+" N");
+    if(Math.abs(state.pg.app)>0.5) arrow(ctx,mx,cy+58,state.pg.app*1.6,0,"#FFB300","applied "+fmt(state.pg.app,0)+" N");
+    ctx.fillStyle="rgba(255,255,255,0.55)"; ctx.textAlign="left"; ctx.fillText(s.x>0.02?"stretched → restoring force pulls back":s.x<-0.02?"compressed → restoring force pushes back":"at equilibrium — no displacement, no spring force",18,h-12);
+  }
+  $("pgX").textContent=fmt(s.x,3)+" m"; $("pgF").textContent=fmt(F,1)+" N"; $("pgE").textContent=fmt(e.epe,2)+" J";
+  $("pgApp").textContent=fmt(state.pg.app,0)+" N"; $("pgK").textContent=fmt(state.pg.k,0)+" N/m";
+  var fit=fitKThroughOrigin(state.pg.points);
+  $("pgKfit").textContent=fit==null?"—":fmt(fit,1)+" N/m"; $("pgKfitNote").textContent=fit==null?"record ≥ 2 points":state.pg.points.length+" point(s) · slope = "+fmt(-fit,1);
+  var g=fitCanvas($("pgGraph"));
+  if(g){ var c2=g.ctx,w2=g.w,h2=g.h; bg(c2,w2,h2);
+    var padL=48,padB=30,gw=w2-padL-16,gh=h2-26-padB, xMax=0.45, fMax=state.pg.k*xMax*1.15;
+    var X=function(x){ return padL+(x+xMax)/(2*xMax)*gw; }, Y=function(Fv){ return 14+gh/2-(Fv/fMax)*(gh/2); };
+    c2.strokeStyle="rgba(255,255,255,0.3)"; c2.beginPath(); c2.moveTo(padL,14); c2.lineTo(padL,14+gh); c2.lineTo(padL+gw,14+gh); c2.stroke();
+    c2.strokeStyle="rgba(255,255,255,0.45)"; c2.beginPath(); c2.moveTo(X(-xMax),Y(0)); c2.lineTo(X(xMax),Y(0)); c2.moveTo(X(0),Y(-fMax)); c2.lineTo(X(0),Y(fMax)); c2.stroke();
+    c2.strokeStyle="#5FD3C4"; c2.lineWidth=2.2; c2.beginPath(); c2.moveTo(X(-xMax),Y(springForce(state.pg.k,-xMax))); c2.lineTo(X(xMax),Y(springForce(state.pg.k,xMax))); c2.stroke(); c2.lineWidth=1;
+    if(fit!=null){ c2.strokeStyle="#B07CFF"; c2.setLineDash([5,4]); c2.beginPath(); c2.moveTo(X(-xMax),Y(springForce(fit,-xMax))); c2.lineTo(X(xMax),Y(springForce(fit,xMax))); c2.stroke(); c2.setLineDash([]); }
+    state.pg.points.forEach(function(p){ c2.fillStyle="#FFB300"; c2.beginPath(); c2.arc(X(p.x),Y(p.f),5,0,Math.PI*2); c2.fill(); });
+    c2.fillStyle="#5FD3C4"; c2.beginPath(); c2.arc(X(s.x),Y(F),6,0,Math.PI*2); c2.fill();
+    c2.fillStyle="rgba(255,255,255,0.65)"; c2.font="9px 'JetBrains Mono',monospace"; c2.textAlign="center";
+    c2.fillText("x (m) →",padL+gw/2,h2-8); c2.fillText("slope = −k = "+fmt(-state.pg.k,0)+" N/m",padL+gw/2,16);
+  }
+  if(state.mode==="playground") setStatus("Playground — F = −kx = "+fmt(F,1)+" N at x = "+fmt(s.x,2)+" m","k = "+fmt(state.pg.k,0)+" N/m · m = "+fmt(state.pg.m,1)+" kg · record points and fit the slope to recover k yourself");
+}
+(function(){
+  var cv=$("pgCanvas");
+  function pos(e){ var r=cv.getBoundingClientRect(); return {x:e.clientX-r.left,y:e.clientY-r.top}; }
+  cv.addEventListener("pointerdown",function(e){ var f=fitCanvas(cv); if(!f) return; var p=pos(e); var eqX=f.w*0.52, scale=(f.w*0.36)/0.45; var mx=eqX+state.pg.sim.x*scale; if(Math.abs(p.x-mx)<52 && Math.abs(p.y-f.h/2)<52){ state.pg.drag=true; setPlaying(false); cv.setPointerCapture(e.pointerId); } });
+  cv.addEventListener("pointermove",function(e){ if(!state.pg.drag) return; var f=fitCanvas(cv); if(!f) return; var p=pos(e); var eqX=f.w*0.52, scale=(f.w*0.36)/0.45; state.pg.sim.x=Math.max(-0.42,Math.min(0.42,(p.x-eqX)/scale)); state.pg.sim.v=0; state.pg.app=0; $("pgAppRange").value="0"; });
+  function end(){ state.pg.drag=false; } cv.addEventListener("pointerup",end); cv.addEventListener("pointercancel",end);
+})();
+function syncPgTable(){
+  var tb=$("pgTable"); tb.innerHTML="";
+  state.pg.points.forEach(function(p,i){ var tr=document.createElement("tr"); tr.innerHTML="<td>"+(i+1)+"</td><td>"+fmt(p.x,3)+"</td><td>"+fmt(p.f,1)+"</td><td>"+(Math.abs(p.x)>0.001?fmt(Math.abs(p.f/p.x),1):"—")+"</td>"; tb.appendChild(tr); });
+}
+$("pgKRange").addEventListener("input",function(e){ state.pg.k=parseFloat(e.target.value); $("pgKLabel").textContent="Spring constant k: "+fmt(state.pg.k,0)+" N/m"; });
+$("pgM").addEventListener("input",function(e){ state.pg.m=parseFloat(e.target.value); $("pgMLabel").textContent="Mass m: "+fmt(state.pg.m,1)+" kg"; });
+$("pgC").addEventListener("input",function(e){ state.pg.c=parseFloat(e.target.value); $("pgCLabel").textContent="Damping c: "+fmt(state.pg.c,1)+" N·s/m"; });
+$("pgX0").addEventListener("input",function(e){ state.pg.x0=parseFloat(e.target.value); $("pgX0Label").textContent="Initial displacement: "+fmt(state.pg.x0,2)+" m"; });
+$("pgAppRange").addEventListener("input",function(e){ state.pg.app=parseFloat(e.target.value); $("pgAppLabel").textContent="Applied force: "+fmt(state.pg.app,0)+" N (holds the mass where kx balances it)"; state.pg.sim.x=Math.max(-0.42,Math.min(0.42,state.pg.app/state.pg.k)); state.pg.sim.v=0; setPlaying(false); });
+$("pgRelease").addEventListener("click",function(){ state.pg.sim.x=state.pg.x0; state.pg.sim.v=0; state.pg.sim.t=0; setPlaying(true); });
+$("pgHold").addEventListener("click",function(){ state.pg.sim.x=state.pg.x0; state.pg.sim.v=0; setPlaying(false); });
+$("pgRecord").addEventListener("click",function(){ var s=state.pg.sim; state.pg.points.push({x:s.x,f:springForce(state.pg.k,s.x)}); syncPgTable(); var fit=fitKThroughOrigin(state.pg.points); var fb=$("pgFitFeedback"); if(fit!=null && state.pg.points.length>=2){ fb.textContent="Fitted slope = "+fmt(-fit,1)+" N/m ⇒ k ≈ "+fmt(fit,1)+" N/m (true k = "+fmt(state.pg.k,0)+"). Slope through the origin: k = −Σ(x·F)/Σx²."; fb.className="feedback good"; } else { fb.textContent="Recorded x = "+fmt(s.x,3)+" m, F = "+fmt(springForce(state.pg.k,s.x),1)+" N. Record one more at a different stretch to fit a slope."; fb.className="feedback"; } });
+$("pgClear").addEventListener("click",function(){ state.pg.points=[]; syncPgTable(); $("pgFitFeedback").textContent="Points cleared."; $("pgFitFeedback").className="feedback"; });
+function drawEquilibrium(){
+  var eq=state.eq, totalForce=eq.m*eq.g+eq.app, x=totalForce/eq.k, W=eq.m*eq.g;
+  var f=fitCanvas($("eqCanvas"));
+  if(f){ var ctx=f.ctx,w=f.w,h=f.h; bg(ctx,w,h);
+    var cx=w/2, top=44;
+    var pxPerM=190; var natEnd=top+eq.L0*pxPerM; var stretchedEnd=natEnd+x*pxPerM*2.2;
+    if(stretchedEnd>h-92){ var shrink=(h-92-top)/((eq.L0+x)*pxPerM*1.4); pxPerM*=shrink; natEnd=top+eq.L0*pxPerM; stretchedEnd=natEnd+x*pxPerM*2.2; }
+    ctx.fillStyle="#E9E6DE"; ctx.fillRect(34,top-10,w-68,8);
+    ctx.fillStyle="rgba(255,255,255,0.6)"; ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign="center"; ctx.fillText("ceiling",cx,top-16);
+    ctx.save(); ctx.globalAlpha=0.35; coil(ctx,cx-64,top,cx-64,natEnd,8,"#93A0AC",2); massBlock(ctx,cx-64,natEnd+22,58,42,"ghost"); ctx.restore();
+    ctx.fillStyle="rgba(255,255,255,0.55)"; ctx.fillText("natural length L₀ (no load)",cx-64,natEnd+58);
+    coil(ctx,cx+44,top,cx+44,stretchedEnd,10,"#5FD3C4",2.6);
+    massBlock(ctx,cx+44,stretchedEnd+26,64,50,fmt(eq.m,1)+" kg");
+    var my=stretchedEnd+26;
+    arrow(ctx,cx+44,my,0,Math.min(86,eq.k*x*1.2+16),"#5FD3C4","");
+    arrow(ctx,cx+44,my,0,-Math.min(86,W*1.4+16),"#FFB300","");
+    ctx.fillStyle="#5FD3C4"; ctx.textAlign="right"; ctx.fillText("spring ↑ "+fmt(eq.k*x,1)+" N",w-10,my-28);
+    ctx.fillStyle="#FFB300"; ctx.fillText("weight ↓ "+fmt(W,1)+" N",w-10,my+34);
+    if(eq.app>0){ ctx.fillStyle="#FF5FAE"; ctx.fillText("applied ↓ "+fmt(eq.app,0)+" N",w-10,my+50); }
+    ctx.strokeStyle="rgba(255,255,255,0.5)"; ctx.setLineDash([4,4]); ctx.beginPath(); ctx.moveTo(cx-118,natEnd); ctx.lineTo(cx+118,natEnd); ctx.moveTo(cx-118,stretchedEnd); ctx.lineTo(cx+118,stretchedEnd); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle="#E9E6DE"; ctx.textAlign="left"; ctx.fillText("extension x = "+fmt(x,3)+" m",8,Math.max(top+14,natEnd-8));
+    ctx.fillStyle="rgba(255,255,255,0.6)"; ctx.textAlign="center"; ctx.fillText("stretched length L = L₀ + x",cx+44,Math.min(h-10,stretchedEnd+86));
+  }
+  $("eqW").textContent=fmt(W,1)+" N"; $("eqSF").textContent=fmt(eq.k*x,1)+" N"; $("eqNet").textContent=fmt(eq.k*x-W-eq.app,2)+" N";
+  $("eqX").textContent=fmt(x,3)+" m"; $("eqL0").textContent=fmt(eq.L0,2)+" m"; $("eqL").textContent=fmt(eq.L0+x,3)+" m";
+  var c=fitCanvas($("eqCompare"));
+  if(c){ var ctx2=c.ctx,w2=c.w,h2=c.h; bg(ctx2,w2,h2);
+    ctx2.font="10px 'JetBrains Mono',monospace"; ctx2.textAlign="center"; ctx2.fillStyle="rgba(255,255,255,0.7)";
+    ctx2.fillText("VERTICAL: gravity does it",w2*0.25,20); ctx2.fillText("HORIZONTAL: gravity does nothing",w2*0.74,20);
+    ctx2.fillStyle="#E9E6DE"; ctx2.fillRect(w2*0.08,30,w2*0.34,6);
+    var vx=w2*0.25, vy=36+Math.min(80,x*260);
+    coil(ctx2,vx,36,vx,vy,7,"#5FD3C4",2); massBlock(ctx2,vx,vy+20,52,36,fmt(eq.m,1)+" kg");
+    ctx2.fillStyle="#5FD3C4"; ctx2.fillText("x = mg/k = "+fmt(eq.m*eq.g/eq.k,3)+" m",vx,Math.min(h2-10,vy+52));
+    var hy=h2*0.52, wall=w2*0.54, eqHx=w2*0.78, hx=eqHx+Math.min(70,(W/eq.k)*260);
+    ctx2.fillStyle="#E9E6DE"; ctx2.fillRect(wall,hy-42,6,84);
+    coil(ctx2,wall+6,hy,hx-26,hy,7,"#FFB300",2); massBlock(ctx2,hx,hy,52,36,fmt(eq.m,1)+" kg");
+    ctx2.fillStyle="#FFB300"; ctx2.fillText("needs applied F = mg = "+fmt(W,1)+" N → same x",w2*0.74,hy+58);
+  }
+  if(state.mode==="equilibrium") setStatus("Equilibrium — kx = mg ⇒ x = "+fmt(x,3)+" m","weight "+fmt(W,1)+" N ↓ vs spring "+fmt(eq.k*x,1)+" N ↑ · net "+fmt(eq.k*x-W-eq.app,1)+" N · L₀ = "+fmt(eq.L0,2)+" m, L = "+fmt(eq.L0+x,3)+" m, extension is the difference");
+}
+$("eqM").addEventListener("input",function(e){ state.eq.m=parseFloat(e.target.value); $("eqMLabel").textContent="Hanging mass m: "+fmt(state.eq.m,1)+" kg"; });
+$("eqK").addEventListener("input",function(e){ state.eq.k=parseFloat(e.target.value); $("eqKLabel").textContent="Spring constant k: "+fmt(state.eq.k,0)+" N/m"; });
+$("eqG").addEventListener("input",function(e){ state.eq.g=parseFloat(e.target.value); $("eqGLabel").textContent="Gravitational field g: "+fmt(state.eq.g,2)+" m/s²"; document.querySelectorAll("#gChips .chip").forEach(function(ch){ ch.classList.toggle("active",Math.abs(parseFloat(ch.dataset.g)-state.eq.g)<0.01); }); });
+document.querySelectorAll("#gChips .chip").forEach(function(ch){ ch.addEventListener("click",function(){ state.eq.g=parseFloat(ch.dataset.g); $("eqG").value=String(state.eq.g); $("eqGLabel").textContent="Gravitational field g: "+fmt(state.eq.g,2)+" m/s²"; document.querySelectorAll("#gChips .chip").forEach(function(x){ x.classList.toggle("active",x===ch); }); }); });
+$("eqApp").addEventListener("input",function(e){ state.eq.app=parseFloat(e.target.value); $("eqAppLabel").textContent="Extra downward applied force: "+fmt(state.eq.app,0)+" N"; });
+$("eqDouble").addEventListener("click",function(){ var before=equilibriumExtension(state.eq.m,state.eq.k,state.eq.g); state.eq.m=Math.min(5,state.eq.m*2); $("eqM").value=String(state.eq.m); $("eqMLabel").textContent="Hanging mass m: "+fmt(state.eq.m,1)+" kg"; var after=equilibriumExtension(state.eq.m,state.eq.k,state.eq.g); var fb=$("eqFeedback"); fb.textContent="Mass doubled → extension went "+fmt(before,3)+" m → "+fmt(after,3)+" m. Doubled: x ∝ m when k and g are fixed, because kx must grow to match the doubled weight."; fb.className="feedback good"; });
+$("eqResetM").addEventListener("click",function(){ state.eq.m=1; $("eqM").value="1"; $("eqMLabel").textContent="Hanging mass m: 1.0 kg"; });
+
+function resetSHM(){
+  state.shm.sim={x:state.shm.amp,v:0,t:0,a:-state.shm.k*state.shm.amp/state.shm.m};
+  state.shm.hist=[]; state.shm.cross=[]; state.shm.measured=null; state.shm.running=true;
+}
+function drawSHM(dt){
+  var sh=state.shm, s=sh.sim;
+  if(state.playing && state.mode==="shm" && sh.running){
+    var prevX=s.x;
+    integrateSpring(s,{m:sh.m,k:sh.k,c:sh.c},dt);
+    if(prevX<0 && s.x>=0 && s.v>0){ sh.cross.push(s.t); if(sh.cross.length>=2){ var intervals=[]; for(var i=1;i<sh.cross.length;i++) intervals.push(sh.cross[i]-sh.cross[i-1]); sh.measured=intervals.reduce(function(a,b){return a+b;},0)/intervals.length; } if(sh.cross.length>6) sh.cross.shift(); }
+    sh.hist.push({t:s.t,x:s.x,v:s.v,a:-(sh.k/sh.m)*s.x});
+    while(sh.hist.length && sh.hist[0].t<s.t-6) sh.hist.shift();
+  }
+  var f=fitCanvas($("shmCanvas"));
+  if(f){ var ctx=f.ctx,w=f.w,h=f.h; bg(ctx,w,h);
+    var cy=h/2, wallX=54, eqX=w*0.5, scale=(w*0.34)/0.45, mx=eqX+s.x*scale;
+    ctx.fillStyle="#E9E6DE"; ctx.fillRect(wallX-8,cy-80,8,160);
+    ctx.strokeStyle="rgba(255,255,255,0.5)"; ctx.setLineDash([5,5]); ctx.beginPath(); ctx.moveTo(eqX,30); ctx.lineTo(eqX,h-26); ctx.stroke(); ctx.setLineDash([]);
+    coil(ctx,wallX,cy,mx-34,cy,9,"#5FD3C4",2.6); massBlock(ctx,mx,cy,68,58,fmt(sh.m,2)+" kg");
+    var vMax=Math.max(0.01,Math.sqrt(sh.k/sh.m)*Math.max(sh.amp,Math.abs(s.x))); if(Math.abs(s.v)>0.02) arrow(ctx,mx,cy-52,s.v/vMax*105,0,"#57d38c","v = "+fmt(s.v,2)+" m/s");
+    var acc=-(sh.k/sh.m)*s.x;
+    var aMax=Math.max(0.01,(sh.k/sh.m)*Math.max(sh.amp,Math.abs(s.x))); if(Math.abs(acc)>0.2) arrow(ctx,mx,cy+58,acc/aMax*105,0,"#ff7a7a","a = "+fmt(acc,1)+" m/s²");
+    ctx.fillStyle="rgba(255,255,255,0.6)"; ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign="center";
+    ctx.fillText(Math.abs(s.x)<0.03?"through equilibrium — v max, a ≈ 0":(Math.abs(s.v)<0.25?"near an endpoint — v ≈ 0, |a| max":"x = "+fmt(s.x,2)+" m"),w/2,h-10);
+  }
+  var e=energies(sh.m,sh.k,s.x,s.v), acc2=-(sh.k/sh.m)*s.x;
+  $("shmX").textContent=fmt(s.x,3)+" m"; $("shmV").textContent=fmt(s.v,2)+" m/s"; $("shmA").textContent=fmt(acc2,1)+" m/s²";
+  var T=period(sh.m,sh.k); $("shmT").textContent=fmt(T,3)+" s"; $("shmFreq").textContent=fmt(frequency(sh.m,sh.k),2)+" Hz";
+  $("shmTm").textContent=sh.measured?fmt(sh.measured,3)+" s":"—";
+  $("shmTmNote").textContent=sh.measured?("theory "+fmt(T,3)+" s · "+fmt(Math.abs(sh.measured-T)/T*100,1)+"% off"):"release to measure";
+  var maxE=Math.max(0.001,0.5*sh.k*sh.amp*sh.amp);
+  $("keBar").style.width=Math.min(100,e.ke/maxE*100)+"%"; $("epeBar").style.width=Math.min(100,e.epe/maxE*100)+"%"; $("totBar").style.width=Math.min(100,e.total/maxE*100)+"%";
+  $("keVal").textContent=fmt(e.ke,3)+" J"; $("epeVal").textContent=fmt(e.epe,3)+" J"; $("totVal").textContent=fmt(e.total,3)+" J";
+  var g=fitCanvas($("shmGraph"));
+  if(g){ var c2=g.ctx,w2=g.w,h2=g.h; bg(c2,w2,h2);
+    var padL=40,padB=24,gw=w2-padL-14,gh=h2-24-padB, mid=12+gh/2;
+    c2.strokeStyle="rgba(255,255,255,0.3)"; c2.beginPath(); c2.moveTo(padL,12); c2.lineTo(padL,12+gh); c2.lineTo(padL+gw,12+gh); c2.moveTo(padL,mid); c2.lineTo(padL+gw,mid); c2.stroke();
+    var vmax=Math.sqrt(sh.k/sh.m)*sh.amp, amax=(sh.k/sh.m)*sh.amp;
+    var series=[["x","#5FD3C4",sh.amp],["v","#57d38c",vmax],["a","#B07CFF",amax]];
+    var tStart=Math.max(0,s.t-6);
+    series.forEach(function(cfg){
+      c2.strokeStyle=cfg[1]; c2.lineWidth=2; c2.beginPath(); var started=false;
+      sh.hist.forEach(function(p){ if(p.t<tStart) return; var px=padL+(p.t-tStart)/6*gw; var val=cfg[0]==="x"?p.x:cfg[0]==="v"?p.v:p.a; var py=mid-(val/cfg[2])*(gh*0.42); if(!started){ c2.moveTo(px,py); started=true; } else c2.lineTo(px,py); });
+      c2.stroke(); c2.lineWidth=1;
+    });
+    c2.font="10px 'JetBrains Mono',monospace"; c2.textAlign="left"; c2.fillStyle="#5FD3C4"; c2.fillText("— x",padL+8,20); c2.fillStyle="#57d38c"; c2.fillText("— v",padL+52,20); c2.fillStyle="#B07CFF"; c2.fillText("— a (opposite x)",padL+96,20);
+    c2.fillStyle="rgba(255,255,255,0.55)"; c2.fillText("last 6 s · each curve scaled to its own max",padL+8,h2-6);
+  }
+  if(state.mode==="shm") setStatus("SHM — T theory "+fmt(T,3)+" s"+(sh.measured?", measured "+fmt(sh.measured,3)+" s":""),"m = "+fmt(sh.m,2)+" kg · k = "+fmt(sh.k,0)+" N/m · f = "+fmt(frequency(sh.m,sh.k),2)+" Hz · KE "+fmt(e.ke,2)+" J + EPE "+fmt(e.epe,2)+" J = "+fmt(e.total,2)+" J"+(sh.c>0?" · damping is draining the total":" · total constant (no damping)"));
+}
+$("shmM").addEventListener("input",function(e){ state.shm.m=parseFloat(e.target.value); $("shmMLabel").textContent="Mass m: "+fmt(state.shm.m,2)+" kg"; });
+$("shmK").addEventListener("input",function(e){ state.shm.k=parseFloat(e.target.value); $("shmKLabel").textContent="Spring constant k: "+fmt(state.shm.k,0)+" N/m"; });
+$("shmAmp").addEventListener("input",function(e){ state.shm.amp=parseFloat(e.target.value); $("shmALabel").textContent="Amplitude (release displacement): "+fmt(state.shm.amp,2)+" m"; });
+$("shmC").addEventListener("input",function(e){ state.shm.c=parseFloat(e.target.value); $("shmCLabel").textContent="Damping c: "+fmt(state.shm.c,2)+" N·s/m"; });
+$("shmRelease").addEventListener("click",function(){ resetSHM(); setPlaying(true); $("shmPause").textContent="Pause & inspect"; $("shmFeedback").textContent="Released from x = "+fmt(state.shm.amp,2)+" m. Watch: v peaks at equilibrium, a peaks at the endpoints and always points opposite x."; $("shmFeedback").className="feedback"; });
+$("shmPause").addEventListener("click",function(){ setPlaying(!state.playing); var s=state.shm.sim, sh=state.shm; $("shmFeedback").textContent=state.playing?"Resumed.":"Paused — inspect: x = "+fmt(s.x,3)+" m, v = "+fmt(s.v,2)+" m/s, a = "+fmt(-(sh.k/sh.m)*s.x,1)+" m/s², F = "+fmt(springForce(sh.k,s.x),1)+" N. Animation, graphs, bars and readouts share this one state."; $("shmFeedback").className="feedback"; $("shmPause").textContent=state.playing?"Pause & inspect":"Resume"; });
+function drawElasticity(){
+  var el=state.el, mat=MATERIALS[el.mat];
+  var F=el.unloaded?0:el.F;
+  if(!el.unloaded) el.maxF=Math.max(el.maxF,F);
+  var xe=materialExtension(mat.Fe,mat);
+  var xLoad=materialExtension(F,mat);
+  var x;
+  if(el.unloaded) x=el.perm;
+  else if(F>mat.Fe){ x=xLoad; el.perm=Math.max(el.perm, xLoad-xe); }
+  else if(el.maxF>mat.Fe) x=el.perm+F/mat.k;
+  else x=xLoad;
+  var f=fitCanvas($("elCanvas"));
+  if(f){ var ctx=f.ctx,w=f.w,h=f.h; bg(ctx,w,h);
+    var wallX=60, cy=h/2, base=110, scale=900;
+    ctx.fillStyle="#E9E6DE"; ctx.fillRect(wallX-8,cy-76,8,152);
+    var mx=Math.min(w-46,wallX+base+x*scale);
+    coil(ctx,wallX,cy,mx-32,cy,10, F>mat.Fe?"#ff7a7a":F>mat.Fp?"#FFB300":"#5FD3C4",2.6);
+    massBlock(ctx,mx,cy,64,54,fmt(F,0)+" N →");
+    ctx.strokeStyle="rgba(255,255,255,0.45)"; ctx.setLineDash([4,4]); ctx.beginPath(); var natX=wallX+base; ctx.moveTo(natX,cy-92); ctx.lineTo(natX,cy+92); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle="rgba(255,255,255,0.6)"; ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign="center";
+    ctx.fillText("original length",natX,cy+108);
+    if(el.perm>0.001){ ctx.fillStyle="#ff7a7a"; ctx.fillText("permanent set "+fmt(el.perm*1000,1)+" mm remains",mx,cy-58); }
+    ctx.fillStyle="#E9E6DE"; ctx.fillText(el.unloaded?"force removed":materialRegion(F,mat),w/2,24);
+  }
+  var g=fitCanvas($("elGraph"));
+  if(g){ var c2=g.ctx,w2=g.w,h2=g.h; bg(c2,w2,h2);
+    var padL=48,padB=30,gw=w2-padL-16,gh=h2-28-padB;
+    var xMaxGraph=materialExtension(mat.maxF,mat)*1.25, fMaxGraph=mat.maxF*1.08;
+    var X=function(xx){ return padL+xx/xMaxGraph*gw; }, Y=function(ff){ return 12+gh-ff/fMaxGraph*gh; };
+    var xp=mat.Fp/mat.k;
+    c2.fillStyle="rgba(95,211,196,0.10)"; c2.fillRect(X(0),12,X(xp)-X(0),gh);
+    c2.fillStyle="rgba(255,179,0,0.10)"; c2.fillRect(X(xp),12,X(xe)-X(xp),gh);
+    c2.fillStyle="rgba(255,122,122,0.10)"; c2.fillRect(X(xe),12,X(xMaxGraph)-X(xe),gh);
+    c2.strokeStyle="rgba(255,255,255,0.3)"; c2.beginPath(); c2.moveTo(padL,12); c2.lineTo(padL,12+gh); c2.lineTo(padL+gw,12+gh); c2.stroke();
+    c2.strokeStyle="#E9E6DE"; c2.lineWidth=2.2; c2.beginPath();
+    for(var i=0;i<=120;i++){ var ff=mat.maxF*i/120; var xx=materialExtension(ff,mat); if(i===0)c2.moveTo(X(xx),Y(ff)); else c2.lineTo(X(xx),Y(ff)); }
+    c2.stroke(); c2.lineWidth=1;
+    if(el.maxF>mat.Fe){ c2.strokeStyle="#ff7a7a"; c2.setLineDash([5,4]); c2.beginPath(); c2.moveTo(X(materialExtension(el.maxF,mat)),Y(el.maxF)); c2.lineTo(X(el.perm),Y(0)); c2.stroke(); c2.setLineDash([]); }
+    [[mat.Fp,xp,"proportional limit"],[mat.Fe,xe,"elastic limit"]].forEach(function(mk){ c2.strokeStyle="rgba(255,255,255,0.55)"; c2.setLineDash([3,4]); c2.beginPath(); c2.moveTo(X(mk[1]),12); c2.lineTo(X(mk[1]),12+gh); c2.stroke(); c2.setLineDash([]); c2.fillStyle="#E9E6DE"; c2.font="9px 'JetBrains Mono',monospace"; c2.textAlign="center"; c2.fillText(mk[2],X(mk[1]),22); });
+    c2.fillStyle="#FFB300"; c2.beginPath(); c2.arc(X(x),Y(F),6,0,Math.PI*2); c2.fill();
+    c2.fillStyle="rgba(255,255,255,0.65)"; c2.font="9px 'JetBrains Mono',monospace"; c2.textAlign="center"; c2.fillText("extension (m) →",padL+gw/2,h2-8); c2.fillText("applied force (N) ↑",padL,16);
+  }
+  $("elRegion").textContent=el.unloaded?(el.perm>0.001?"Unloaded — permanent set remains":"Unloaded — returned to original length"):materialRegion(F,mat);
+  $("elRegion").style.color=(F>mat.Fe||(el.unloaded&&el.perm>0.001))?"#ff7a7a":F>mat.Fp?"#FFB300":"#57d38c";
+  $("elX").textContent=fmt(x*1000,1)+" mm"; $("elPerm").textContent=fmt(el.perm*1000,1)+" mm";
+  $("elEq").innerHTML=mat.name+"<br>illustrative only: k₀ = "+fmt(mat.k,0)+" N/m · proportional limit "+fmt(mat.Fp,1)+" N · elastic limit "+fmt(mat.Fe,1)+" N<br>Hooke's law F = kx is only the first straight segment";
+  if(state.mode==="elasticity") setStatus("Elasticity — "+(el.unloaded?"force removed":materialRegion(F,mat)),"applied "+fmt(F,0)+" N · extension "+fmt(x*1000,1)+" mm · permanent set "+fmt(el.perm*1000,1)+" mm · illustrative model, not a real material");
+}
+$("elMat").addEventListener("change",function(e){ state.el.mat=parseInt(e.target.value,10); var mat=MATERIALS[state.el.mat]; $("elF").max=String(mat.maxF); if(state.el.F>mat.maxF){ state.el.F=mat.maxF; $("elF").value=String(mat.maxF); } state.el.maxF=0; state.el.perm=0; state.el.unloaded=false; $("elFLabel").textContent="Applied force: "+fmt(state.el.F,0)+" N (max for this specimen "+mat.maxF+" N)"; });
+$("elF").addEventListener("input",function(e){ state.el.F=parseFloat(e.target.value); state.el.unloaded=false; state.el.maxF=Math.max(state.el.maxF,state.el.F); var mm=MATERIALS[state.el.mat]; if(state.el.F>mm.Fe) state.el.perm=Math.max(state.el.perm, materialExtension(state.el.F,mm)-materialExtension(mm.Fe,mm)); $("elFLabel").textContent="Applied force: "+fmt(state.el.F,0)+" N (max for this specimen "+MATERIALS[state.el.mat].maxF+" N)"; });
+$("elUnload").addEventListener("click",function(){ var el=state.el, mat=MATERIALS[el.mat]; el.maxF=Math.max(el.maxF,el.F); if(el.maxF>mat.Fe) el.perm=Math.max(el.perm, materialExtension(el.maxF,mat)-materialExtension(mat.Fe,mat)); el.unloaded=true; var fb=$("elFeedback"); if(el.maxF>mat.Fe){ fb.textContent="Force removed after reaching "+fmt(el.maxF,0)+" N (past the elastic limit "+fmt(mat.Fe,1)+" N): it sprang back only part-way and keeps a permanent set of "+fmt(el.perm*1000,1)+" mm."; fb.className="feedback bad"; } else { fb.textContent="Force removed from "+fmt(el.maxF,0)+" N (never past the elastic limit "+fmt(mat.Fe,1)+" N): it returned to its original length — no permanent set. Elastic means reversible."; fb.className="feedback good"; } });
+$("elReset").addEventListener("click",function(){ state.el.maxF=0; state.el.perm=0; state.el.unloaded=false; state.el.F=20; $("elF").value="20"; $("elFLabel").textContent="Applied force: 20 N (max for this specimen "+MATERIALS[state.el.mat].maxF+" N)"; $("elFeedback").textContent="Fresh specimen: no load history, no permanent set."; $("elFeedback").className="feedback"; });
+
+function drawSeries(){
+  var sp=state.sp, F=sp.m*sp.g, ks=seriesK(sp.k1,sp.k2), kp=parallelK(sp.k1,sp.k2);
+  var xs=F/ks, xp=F/kp, x1=F/sp.k1;
+  var f=fitCanvas($("spCanvas"));
+  if(f){ var ctx=f.ctx,w=f.w,h=f.h; bg(ctx,w,h);
+    ctx.font="11px 'JetBrains Mono',monospace"; ctx.textAlign="center";
+    var lx=w*0.26; ctx.fillStyle="#E9E6DE"; ctx.fillRect(lx-70,34,140,7); ctx.fillText("SERIES",lx,24);
+    var pxS=Math.min(260/Math.max(xs,0.01),900);
+    var y1=41+(F/sp.k1)*pxS*0.55, y2=y1+(F/sp.k2)*pxS*0.55;
+    if(y2>h-86){ var shrink=(h-86-41)/((F/sp.k1+F/sp.k2)*pxS*0.55); pxS*=shrink; y1=41+(F/sp.k1)*pxS*0.55; y2=y1+(F/sp.k2)*pxS*0.55; }
+    coil(ctx,lx,41,lx,y1,7,"#FFB300",2.4); coil(ctx,lx,y1,lx,y2,7,"#5FD3C4",2.4);
+    ctx.fillStyle="#FFB300"; ctx.textAlign="left"; ctx.font="9px 'JetBrains Mono',monospace"; ctx.fillText("k₁: "+fmt(F/sp.k1,3)+" m",lx+20,(41+y1)/2);
+    ctx.fillStyle="#5FD3C4"; ctx.fillText("k₂: "+fmt(F/sp.k2,3)+" m",lx+20,(y1+y2)/2);
+    massBlock(ctx,lx,y2+24,64,44,fmt(sp.m,1)+" kg");
+    ctx.fillStyle="#E9E6DE"; ctx.textAlign="center"; ctx.fillText("total "+fmt(xs,3)+" m",lx,Math.min(h-8,y2+58));
+    var rx=w*0.74; ctx.fillStyle="#E9E6DE"; ctx.fillRect(rx-80,34,160,7); ctx.fillText("PARALLEL",rx,24);
+    var py=41+xp*pxS*0.55;
+    coil(ctx,rx-34,41,rx-34,py,7,"#FFB300",2.4); coil(ctx,rx+34,41,rx+34,py,7,"#5FD3C4",2.4);
+    ctx.fillStyle="#E9E6DE"; ctx.fillRect(rx-58,py,116,7);
+    massBlock(ctx,rx,py+30,64,44,fmt(sp.m,1)+" kg");
+    ctx.fillStyle="#E9E6DE"; ctx.fillText("both: "+fmt(xp,3)+" m",rx,Math.min(h-8,py+68));
+    ctx.fillStyle="rgba(255,255,255,0.55)"; ctx.fillText("same load, same visual scale on both rigs",w/2,h-8);
+  }
+  $("spKs").textContent=fmt(ks,1)+" N/m"; $("spKp").textContent=fmt(kp,1)+" N/m";
+  $("spXs").textContent=fmt(xs,3)+" m"; $("spXp").textContent=fmt(xp,3)+" m"; $("spX1").textContent=fmt(x1,3)+" m"; $("spF").textContent=fmt(F,1)+" N";
+  if(state.mode==="series") setStatus("Series "+fmt(ks,1)+" N/m (softer) · Parallel "+fmt(kp,1)+" N/m (stiffer)","same "+fmt(F,1)+" N load: series stretches "+fmt(xs,3)+" m, parallel only "+fmt(xp,3)+" m · k₁ = "+fmt(sp.k1,0)+", k₂ = "+fmt(sp.k2,0)+" N/m");
+}
+$("spK1").addEventListener("input",function(e){ state.sp.k1=parseFloat(e.target.value); $("spK1Label").textContent="Spring 1 · k₁: "+fmt(state.sp.k1,0)+" N/m"; });
+$("spK2").addEventListener("input",function(e){ state.sp.k2=parseFloat(e.target.value); $("spK2Label").textContent="Spring 2 · k₂: "+fmt(state.sp.k2,0)+" N/m"; });
+$("spM").addEventListener("input",function(e){ state.sp.m=parseFloat(e.target.value); $("spMLabel").textContent="Load mass (same on both rigs): "+fmt(state.sp.m,1)+" kg"; });
+function drawDamping(dt){
+  var d=state.damp, s=d.sim;
+  if(state.playing && state.mode==="damping"){
+    integrateSpring(s,{m:d.m,k:d.k,c:d.c,driveAmp:d.driveOn?d.F0:0,driveFreq:d.fd},dt);
+    d.hist.push({t:s.t,x:s.x}); while(d.hist.length && d.hist[0].t<s.t-6) d.hist.shift();
+  }
+  var z=dampingRatio(d.c,d.m,d.k), f0=frequency(d.m,d.k);
+  var f=fitCanvas($("dampCanvas"));
+  if(f){ var ctx=f.ctx,w=f.w,h=f.h; bg(ctx,w,h);
+    var cy=h/2, wallX=54, eqX=w*0.5, scale=(w*0.34)/0.45, mx=eqX+Math.max(-0.42,Math.min(0.42,s.x))*scale;
+    ctx.fillStyle="#E9E6DE"; ctx.fillRect(wallX-8,cy-80,8,160);
+    ctx.strokeStyle="rgba(255,255,255,0.5)"; ctx.setLineDash([5,5]); ctx.beginPath(); ctx.moveTo(eqX,30); ctx.lineTo(eqX,h-26); ctx.stroke(); ctx.setLineDash([]);
+    coil(ctx,wallX,cy,mx-34,cy,9, d.driveOn?"#FFB300":"#5FD3C4",2.6); massBlock(ctx,mx,cy,68,58,fmt(d.m,2)+" kg");
+    ctx.fillStyle="rgba(255,255,255,0.65)"; ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign="center";
+    ctx.fillText(d.driveOn?"driver on at "+fmt(d.fd,2)+" Hz":"x = "+fmt(s.x,3)+" m · t = "+fmt(s.t,1)+" s",w/2,h-10);
+    if(d.hist.length>1){ ctx.strokeStyle="rgba(95,211,196,0.75)"; ctx.beginPath(); d.hist.forEach(function(p,i){ var px=20+(p.t-Math.max(0,s.t-6))/6*(w-40); var py=44-p.x*70; if(i===0)ctx.moveTo(px,py); else ctx.lineTo(px,py); }); ctx.stroke(); ctx.fillStyle="rgba(255,255,255,0.5)"; ctx.textAlign="left"; ctx.fillText("x(t) trace (top)",20,20); }
+  }
+  $("dampZ").textContent=fmt(z,2); $("dampClass").textContent=dampingClass(z); $("dampClass").style.color=z<0.98?"#57d38c":z>1.02?"#ff7a7a":"#FFB300";
+  $("dampF0").textContent=fmt(f0,2)+" Hz"; $("dampFd").textContent=d.driveOn?fmt(d.fd,2)+" Hz":"off";
+  $("dampAmp").textContent=d.driveOn?fmt(drivenAmplitude(d.F0,d.m,d.k,d.c,d.fd),3)+" m":"—"; $("dampX").textContent=fmt(s.x,3)+" m";
+  var g=fitCanvas($("dampGraph"));
+  if(g){ var c2=g.ctx,w2=g.w,h2=g.h; bg(c2,w2,h2);
+    var padL=48,padB=30,gw=w2-padL-16,gh=h2-28-padB, fMax=Math.max(2.5,f0*2.2);
+    var ampAt=function(fd){ return drivenAmplitude(d.F0,d.m,d.k,Math.max(d.c,0.15),fd); };
+    var aMax=ampAt(f0); for(var i=0;i<=80;i++){ aMax=Math.max(aMax,ampAt(0.05+fMax*i/80)); } if(!isFinite(aMax)||aMax<=0)aMax=1;
+    c2.strokeStyle="rgba(255,255,255,0.3)"; c2.beginPath(); c2.moveTo(padL,12); c2.lineTo(padL,12+gh); c2.lineTo(padL+gw,12+gh); c2.stroke();
+    c2.strokeStyle="#5FD3C4"; c2.lineWidth=2.2; c2.beginPath();
+    for(var j=0;j<=180;j++){ var fd=0.02+fMax*j/180; var px=padL+j/180*gw, py=12+gh-Math.min(1,ampAt(fd)/aMax)*gh*0.94; if(j===0)c2.moveTo(px,py); else c2.lineTo(px,py); }
+    c2.stroke(); c2.lineWidth=1;
+    var fx=padL+(f0/fMax)*gw; c2.strokeStyle="rgba(255,255,255,0.55)"; c2.setLineDash([4,4]); c2.beginPath(); c2.moveTo(fx,12); c2.lineTo(fx,12+gh); c2.stroke(); c2.setLineDash([]);
+    c2.fillStyle="#E9E6DE"; c2.font="9px 'JetBrains Mono',monospace"; c2.textAlign="center"; c2.fillText("f₀",fx,h2-16);
+    if(d.driveOn){ var dx=padL+(d.fd/fMax)*gw; c2.strokeStyle="#FFB300"; c2.beginPath(); c2.moveTo(dx,12); c2.lineTo(dx,12+gh); c2.stroke(); c2.fillStyle="#FFB300"; c2.fillText("driver",dx,20); }
+    c2.fillStyle="rgba(255,255,255,0.65)"; c2.fillText("drive frequency (Hz) →",padL+gw/2,h2-4);
+  }
+  if(state.mode==="damping") setStatus(dampingClass(z)+" — ζ = "+fmt(z,2)+(d.driveOn?" · driving at "+fmt(d.fd,2)+" Hz vs f₀ "+fmt(f0,2)+" Hz":" · undriven"),"c = "+fmt(d.c,1)+" N·s/m · critical c = "+fmt(2*Math.sqrt(d.m*d.k),1)+" · m = "+fmt(d.m,2)+" kg, k = "+fmt(d.k,0)+" N/m"+(d.driveOn?" · steady amplitude ≈ "+fmt(drivenAmplitude(d.F0,d.m,d.k,d.c,d.fd),3)+" m":""));
+}
+$("dampM").addEventListener("input",function(e){ state.damp.m=parseFloat(e.target.value); $("dampMLabel").textContent="Mass m: "+fmt(state.damp.m,2)+" kg"; });
+$("dampK").addEventListener("input",function(e){ state.damp.k=parseFloat(e.target.value); $("dampKLabel").textContent="Spring constant k: "+fmt(state.damp.k,0)+" N/m"; });
+$("dampC").addEventListener("input",function(e){ state.damp.c=parseFloat(e.target.value); $("dampCLabel").textContent="Damping c: "+fmt(state.damp.c,1)+" N·s/m (critical = "+fmt(2*Math.sqrt(state.damp.m*state.damp.k),1)+")"; });
+$("dampRelease").addEventListener("click",function(){ state.damp.driveOn=false; $("driveOn").checked=false; state.damp.sim={x:0.3,v:0,t:0,a:0}; state.damp.hist=[]; setPlaying(true); var z=dampingRatio(state.damp.c,state.damp.m,state.damp.k); $("dampFeedback").textContent="Released from 0.30 m with no drive. ζ = "+fmt(z,2)+" — "+dampingClass(z).toLowerCase()+" behaviour expected."; $("dampFeedback").className="feedback"; });
+$("driveOn").addEventListener("change",function(e){ state.damp.driveOn=e.target.checked; if(state.damp.driveOn){ state.damp.sim={x:0,v:0,t:0,a:0}; state.damp.hist=[]; setPlaying(true); } });
+$("driveF0").addEventListener("input",function(e){ state.damp.F0=parseFloat(e.target.value); $("driveF0Label").textContent="Drive amplitude F₀: "+fmt(state.damp.F0,0)+" N"; });
+$("driveFd").addEventListener("input",function(e){ state.damp.fd=parseFloat(e.target.value); $("driveFdLabel").textContent="Drive frequency f_d: "+fmt(state.damp.fd,2)+" Hz"; });
+$("driveSnap").addEventListener("click",function(){ state.damp.fd=Number(frequency(state.damp.m,state.damp.k).toFixed(2)); $("driveFd").value=String(state.damp.fd); $("driveFdLabel").textContent="Drive frequency f_d: "+fmt(state.damp.fd,2)+" Hz"; state.damp.driveOn=true; $("driveOn").checked=true; state.damp.sim={x:0,v:0,t:0,a:0}; state.damp.hist=[]; setPlaying(true); $("dampFeedback").textContent="Driver snapped to f₀ = "+fmt(state.damp.fd,2)+" Hz. Give it a few seconds: the amplitude builds to the resonance peak. Detune f_d and the steady amplitude collapses."; $("dampFeedback").className="feedback good"; });
+
+function updateScore(){ $("gScore").textContent=state.score.ok+" / "+state.score.total; }
+function checkAnswer(inputId,fbId,guess,answer,tolFrac,steps){
+  var fb=$(fbId);
+  if(!isFinite(guess)){ fb.textContent="Enter a number first — work the steps, then check."; fb.className="feedback bad"; return; }
+  var err=Math.abs(guess-answer)/Math.abs(answer)*100;
+  var good=err<=tolFrac*100;
+  state.score.total++; if(good) state.score.ok++; updateScore();
+  fb.textContent=(good?"Correct (within "+fmt(tolFrac*100,0)+"%). ":"Not yet — answer is "+fmt(answer,3)+" ("+fmt(err,0)+"% off). ")+steps+" Score "+state.score.ok+"/"+state.score.total+".";
+  fb.className="feedback "+(good?"good":"bad");
+}
+function newG1(){
+  var k=[40,60,80,120,150,200,250][Math.floor(Math.random()*7)];
+  var pts=[0.05,0.1,0.15,0.2].map(function(x){ return {x:x,F:k*x}; });
+  state.guided.g1={k:k,pts:pts};
+  $("g1Prompt").textContent="A mystery spring was loaded with known forces and its extension measured. The slope of applied-force vs extension is k. Find k in N/m.";
+  var tb=$("g1Table"); tb.innerHTML=""; pts.forEach(function(p){ var tr=document.createElement("tr"); tr.innerHTML="<td>"+fmt(p.x,2)+"</td><td>"+fmt(p.F,1)+"</td>"; tb.appendChild(tr); });
+  $("g1Feedback").textContent=""; $("g1Input").value="";
+}
+function newG2(){
+  var m=[0.5,1,1.5,2,2.5][Math.floor(Math.random()*5)], k=[50,80,100,160,200][Math.floor(Math.random()*5)], g=[9.8,9.8,1.62,3.71][Math.floor(Math.random()*4)];
+  state.guided.g2={m:m,k:k,g:g,answer:equilibriumExtension(m,k,g)};
+  $("g2Prompt").textContent="A "+fmt(m,1)+" kg mass hangs from a k = "+fmt(k,0)+" N/m spring where g = "+fmt(g,2)+" m/s². Predict the equilibrium extension in metres (kx = mg). Then verify it in the Static Equilibrium tab.";
+  $("g2Feedback").textContent=""; $("g2Input").value="";
+}
+function newG3(){
+  var m=[0.25,0.5,1,2][Math.floor(Math.random()*4)], k=[50,100,200,320][Math.floor(Math.random()*4)];
+  state.guided.g3={m:m,k:k,answer:period(m,k)};
+  $("g3Prompt").textContent="A "+fmt(m,2)+" kg mass on a k = "+fmt(k,0)+" N/m spring is displaced and released. Calculate T = 2π√(m/k) in seconds. Then set the same m and k in the SHM tab and compare with the measured period.";
+  $("g3Feedback").textContent=""; $("g3Input").value="";
+}
+$("g1Check").addEventListener("click",function(){ var g=state.guided.g1; checkAnswer("g1Input","g1Feedback",parseFloat($("g1Input").value),g.k,0.06,"Slope = ΔF/Δx: ("+fmt(g.pts[3].F,1)+"−"+fmt(g.pts[0].F,1)+")/("+fmt(g.pts[3].x,2)+"−"+fmt(g.pts[0].x,2)+") = "+fmt(g.k,0)+" N/m."); });
+$("g2Check").addEventListener("click",function(){ var g=state.guided.g2; checkAnswer("g2Input","g2Feedback",parseFloat($("g2Input").value),g.answer,0.05,"x = mg/k = "+fmt(g.m,1)+"×"+fmt(g.g,2)+"/"+fmt(g.k,0)+" = "+fmt(g.answer,3)+" m."); });
+$("g3Check").addEventListener("click",function(){ var g=state.guided.g3; checkAnswer("g3Input","g3Feedback",parseFloat($("g3Input").value),g.answer,0.05,"T = 2π√("+fmt(g.m,2)+"/"+fmt(g.k,0)+") = "+fmt(g.answer,3)+" s (f = "+fmt(1/g.answer,2)+" Hz)."); });
+$("g1New").addEventListener("click",newG1); $("g2New").addEventListener("click",newG2); $("g3New").addEventListener("click",newG3);
+
+function setMode(m){
+  state.mode=m;
+  document.querySelectorAll("[data-mode]").forEach(function(x){ x.classList.toggle("active",x.dataset.mode===m); });
+  document.querySelectorAll(".mode").forEach(function(mm){ mm.classList.toggle("active",mm.id==="mode-"+m); });
+  render(0);
+}
+document.querySelectorAll("[data-mode]").forEach(function(b){ b.addEventListener("click",function(){ setMode(b.dataset.mode); }); });
+function setPlaying(p){ state.playing=p; $("pauseBtn").textContent=p?"Pause":"Play"; var sb=$("shmPause"); if(sb && state.mode==="shm") sb.textContent=p?"Pause & inspect":"Resume"; }
+$("pauseBtn").addEventListener("click",function(){ setPlaying(!state.playing); });
+$("resetBtn").addEventListener("click",function(){ location.href=location.pathname+location.search; });
+$("controlsJumpBtn").addEventListener("click",function(){ var el=document.getElementById("controls"); if(el) el.scrollIntoView({behavior:reduceMotion?"auto":"smooth"}); });
+function render(dt){
+  drawPlayground(); drawEquilibrium(); drawSHM(dt||0); drawElasticity(); drawSeries(); drawDamping(dt||0);
+  if(state.mode==="guided") setStatus("Guided Challenges — score "+state.score.ok+" / "+state.score.total,"Find k from a slope · predict kx = mg equilibrium · calculate T = 2π√(m/k) and verify in the SHM tab");
+}
+(function initFromParams(){
+  var q=new URLSearchParams(location.search);
+  if(q.has("k")){ var k=parseFloat(q.get("k")); if(k>=10&&k<=400){ state.pg.k=k; $("pgKRange").value=String(k); } }
+  if(q.has("mode")){ var map={playground:"playground",hooke:"playground",equilibrium:"equilibrium",static:"equilibrium",shm:"shm",oscillation:"shm",elasticity:"elasticity",limits:"elasticity",series:"series",parallel:"series",damping:"damping",drive:"damping",guided:"guided",challenges:"guided"}; var m=map[q.get("mode")]; if(m) state.mode=m; }
+  document.querySelectorAll("[data-mode]").forEach(function(x){ x.classList.toggle("active",x.dataset.mode===state.mode); });
+  document.querySelectorAll(".mode").forEach(function(mm){ mm.classList.toggle("active",mm.id==="mode-"+state.mode); });
+})();
+$("pgKLabel").textContent="Spring constant k: "+fmt(state.pg.k,0)+" N/m"; $("pgMLabel").textContent="Mass m: 1.5 kg"; $("pgCLabel").textContent="Damping c: 0.4 N·s/m"; $("pgX0Label").textContent="Initial displacement: 0.20 m";
+$("eqMLabel").textContent="Hanging mass m: 1.0 kg"; $("eqKLabel").textContent="Spring constant k: 100 N/m"; $("eqGLabel").textContent="Gravitational field g: 9.80 m/s²";
+$("shmMLabel").textContent="Mass m: 0.50 kg"; $("shmKLabel").textContent="Spring constant k: 200 N/m"; $("shmALabel").textContent="Amplitude (release displacement): 0.30 m"; $("shmCLabel").textContent="Damping c: 0.00 N·s/m";
+$("elFLabel").textContent="Applied force: 20 N (max for this specimen 120 N)";
+$("spK1Label").textContent="Spring 1 · k₁: 100 N/m"; $("spK2Label").textContent="Spring 2 · k₂: 100 N/m"; $("spMLabel").textContent="Load mass (same on both rigs): 1.0 kg";
+$("dampMLabel").textContent="Mass m: 0.50 kg"; $("dampKLabel").textContent="Spring constant k: 200 N/m"; $("dampCLabel").textContent="Damping c: 1.0 N·s/m (critical = "+fmt(2*Math.sqrt(0.5*200),1)+")";
+$("driveF0Label").textContent="Drive amplitude F₀: 10 N"; $("driveFdLabel").textContent="Drive frequency f_d: 1.00 Hz";
+newG1(); newG2(); newG3(); resetSHM(); setPlaying(state.playing);
+if(reduceMotion) setPlaying(false);
+render(0);
+var lastT=null;
+function frame(now){
+  if(lastT===null) lastT=now;
+  var dt=Math.min(0.05,(now-lastT)/1000); lastT=now;
+  if(state.playing && state.mode==="playground" && !state.pg.drag) integrateSpring(state.pg.sim,pgParams(),dt);
+  render(state.playing?dt:0);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+window.addEventListener("resize",function(){ render(0); });
+</script>
+<script>
+document.addEventListener("click", function(e){ var b = e.target.closest && e.target.closest("[data-study-back]"); if (!b) return; e.preventDefault(); location.href = "study.html" + location.search; });
+</script>
+</body></html>
