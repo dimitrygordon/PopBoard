@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RBMK Reactor Simulator // PopBoard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e1110;--panel:#171C22;--panel-2:#1E252D;--panel-3:#252E38;--border:#2C3742;--border-lit:#3A4854;
+  --cream:#E8E0CC;--teal:#3F5A54;--concrete:#6B6F6C;--graphite:#1C1E1E;--phosphor:#7DFFB0;--amber:#FFB43A;--alarm:#E6392B;
+  --text:#E9E6DE;--text-dim:#93A0AC;--text-dimmer:#5C6874;--blue:#6aa6c9;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);padding-bottom:env(safe-area-inset-bottom)}
+h1,h2,h3{font-family:Oswald,sans-serif;letter-spacing:.03em;text-transform:uppercase}
+button,input,select{font-family:inherit}
+.bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));background:rgba(14,17,16,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.bar button{background:none;border:none;color:#0A84FF;font-size:15px;cursor:pointer;padding:8px 4px;min-height:44px}
+.bar-left{display:flex;gap:12px;align-items:center}
+.study-back-btn{display:inline-flex;align-items:center;gap:2px}
+@media(max-width:400px){.study-back-btn .back-label{display:none}}
+.title{text-align:center;padding:14px 16px 4px}
+.title h1{font-size:22px;margin:0}
+.title p{color:var(--text-dim);font-size:13px;max-width:920px;margin:8px auto 0;line-height:1.55}
+#statusBanner{margin:10px auto;max-width:960px;background:rgba(15,18,22,.92);border:1px solid var(--border-lit);border-radius:14px;padding:12px 16px;text-align:center}
+#statusBanner .status-type{font-family:Oswald,sans-serif;font-size:18px;letter-spacing:.06em;text-transform:uppercase;color:var(--cream)}
+#statusBanner .status-reason{font-size:12px;color:var(--text-dim);margin-top:4px;font-family:"JetBrains Mono",monospace;line-height:1.5}
+#statusBanner.alarm{animation:alarm 0.7s linear infinite}
+#statusBanner.alarm .status-type{color:var(--alarm)}
+#statusBanner.saved .status-type{color:var(--phosphor)}
+#statusBanner.warn .status-type{color:var(--amber)}
+@keyframes alarm{0%,100%{border-color:var(--alarm)}50%{border-color:#5a2420}}
+main{max-width:1180px;margin:0 auto;padding:6px 14px 48px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0}
+.tab{flex:1;min-width:140px;min-height:44px;padding:10px 8px;border-radius:10px;border:1px solid var(--border-lit);background:var(--panel-2);color:var(--text-dim);cursor:pointer;font-size:13px}
+.tab.active{background:#3a3424;color:var(--cream);border-color:var(--amber)}
+.card{background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1.5px solid var(--border);border-radius:16px;padding:14px;margin-top:14px}
+.card h2{font-size:14px;margin:0 0 6px}
+.card h3{font-size:12px;margin:14px 0 6px;color:var(--cream)}
+.sub,.panel-hint{font-size:12px;color:var(--text-dim);line-height:1.55}
+.card p.body{font-size:14px;line-height:1.6;color:#d7d3c8;margin:0}
+.views{display:grid;grid-template-columns:1.35fr .9fr;gap:12px}
+@media(max-width:860px){.views{grid-template-columns:1fr}}
+.room-frame{position:relative;height:440px;background:#141614;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.room-frame canvas{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+.room-note{position:absolute;left:10px;bottom:8px;margin:0;font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--cream);opacity:.8;pointer-events:none}
+@media(max-width:800px){.room-frame{height:240px}}
+.side{display:flex;flex-direction:column;gap:12px}
+#cctv{width:100%;aspect-ratio:4/3;background:#111;border-radius:12px;display:block;border:1px solid var(--border)}
+#core{width:100%;height:230px;background:#f4f1ea;border-radius:12px;display:block;border:1px solid var(--border)}
+@media(max-width:520px){#core{height:200px}}
+.readouts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+@media(max-width:800px){.readouts{grid-template-columns:1fr 1fr}}
+.tile{background:rgba(0,0,0,.28);border:1px solid var(--border);border-radius:10px;padding:8px;text-align:center;min-height:64px}
+.tile .l{font-family:Oswald,sans-serif;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-dim)}
+.tile .v{font-family:"JetBrains Mono",monospace;font-size:16px;font-weight:700;margin-top:3px;color:var(--phosphor)}
+.tile .s{font-size:10px;color:var(--text-dimmer);font-family:"JetBrains Mono",monospace}
+.tile.bad{border-color:var(--alarm)} .tile.bad .v{color:var(--alarm)}
+.tile.warn{border-color:var(--amber)} .tile.warn .v{color:var(--amber)}
+.tile.plain .v{color:var(--cream)}
+.panel-label{font-size:13px;color:var(--cream);margin-bottom:6px}
+.panel-row{margin-bottom:12px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;background:#3a403c;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--cream);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--cream);border:none}
+.btn{min-height:44px;padding:10px 12px;border-radius:10px;border:1px solid var(--border-lit);background:var(--panel-3);color:var(--text);cursor:pointer;font-size:13px}
+.btn.primary{background:var(--amber);color:#1a1200;border:none;font-weight:700}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-row,.chips,.pumps{display:flex;gap:8px;flex-wrap:wrap}
+.chip,.pump{min-height:44px;padding:8px 12px;border-radius:999px;border:1px solid var(--border-lit);background:var(--panel-2);color:var(--text);font-size:12px;cursor:pointer}
+.pump{min-width:44px;border-radius:10px;font-family:"JetBrains Mono",monospace}
+.chip.active,.pump.on{border-color:var(--amber);color:var(--amber)}
+.pump.coast{border-color:var(--blue);color:var(--blue)}
+#az5{background:var(--alarm);color:#fff;border:none;font-family:Oswald,sans-serif;letter-spacing:.08em;min-width:120px}
+#az5:disabled{background:#3a2422;color:#8a7572}
+.check{display:flex;gap:8px;align-items:center;font-size:13px;min-height:44px}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:760px){.charts{grid-template-columns:1fr}}
+canvas.chart{width:100%;height:168px;background:#101412;border-radius:10px;display:block}
+.rho-table{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;margin-top:8px}
+.rho-row{display:flex;justify-content:space-between;gap:8px;font-family:"JetBrains Mono",monospace;font-size:11px;border-left:3px solid var(--concrete);padding:3px 0 3px 6px}
+.bar-row{display:flex;align-items:center;gap:8px;margin:5px 0;font-family:"JetBrains Mono",monospace;font-size:11px}
+.bar-row .bl{width:132px;color:var(--text-dim)}
+.bar-track{flex:1;height:14px;background:rgba(0,0,0,.35);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%}
+.bar-row .bv{width:92px;text-align:right}
+#logList{max-height:220px;overflow:auto;font-family:"JetBrains Mono",monospace;font-size:11.5px;line-height:1.45;background:rgba(0,0,0,.25);border-radius:10px;padding:8px}
+.log-line{padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.log-line .ts{color:var(--text-dimmer);margin-right:6px}
+.facts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:760px){.facts{grid-template-columns:1fr}}
+.fact{background:rgba(0,0,0,.22);border-radius:10px;padding:10px}
+.fact h3{margin-top:0}
+.fact p,.card li{font-size:13px;line-height:1.5;color:#d7d3c8}
+ul.clean{margin:6px 0 0;padding-left:18px}
+footer{color:var(--text-dimmer);font-size:11px;text-align:center;padding:0 16px 28px;font-family:"JetBrains Mono",monospace;line-height:1.6}
+[hidden]{display:none!important}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  #statusBanner.alarm{border-color:var(--alarm)}
+}
+</style>
+</head>
+<body>
+<div class="bar">
+  <div class="bar-left">
+    <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg><span class="back-label">Back</span></button>
+    <button id="controlsJumpBtn" type="button">Controls</button>
+  </div>
+  <div class="bar-left">
+    <button id="pauseBtn" type="button">Pause</button>
+    <button id="resetBtn" type="button">Reset</button>
+  </div>
+</div>
+<div class="title">
+  <h1>RBMK Reactor Simulator</h1>
+  <p>A two-zone classroom model of an RBMK-1000, the Chernobyl Unit 4 type: 3200 MWt, graphite moderator fixed in the stack, water as coolant and neutron absorber. The same physics runs the sandbox and the night of 25–26 April 1986. A pressure failure here is a <strong>steam explosion, not a nuclear detonation</strong>. Peak power in that failure reads OFF SCALE.</p>
+</div>
+<div style="padding:0 14px">
+  <div id="statusBanner" role="status" aria-live="polite">
+    <div class="status-type" id="statusType">Stable</div>
+    <div class="status-reason" id="statusReason">—</div>
+  </div>
+</div>
+<main>
+  <div class="tabs" role="tablist" aria-label="Simulator mode">
+    <button class="tab active" id="tabSandbox" type="button" data-mode="sandbox">Sandbox</button>
+    <button class="tab" id="tabStory" type="button" data-mode="chernobyl">Chernobyl night</button>
+  </div>
+
+  <section class="card" id="storyCard" hidden>
+    <h2 id="storyTitle">Chernobyl night</h2>
+    <p class="body" id="storyBody"></p>
+    <p class="sub" id="storyMeta"></p>
+    <div class="btn-row" id="storyActions" style="margin-top:10px"></div>
+  </section>
+
+  <section class="card">
+    <h2>Control room, hall camera, core</h2>
+    <p class="sub">You stay seated. Drag the room to look (±40° yaw, ±18° pitch). The 3D panel is what you would feel. Numbers are on this page, not inside the room. CAM 04 is a teaching camera of the upper shield, not an archive tape. The cross-section is a schematic, not all 1,661 channels.</p>
+    <div class="views">
+      <div class="room-frame">
+        <canvas id="room" aria-label="Seated view of a simplified RBMK control room"></canvas>
+        <p class="room-note" id="roomNote">Drag to look. The seat stays put.</p>
+      </div>
+      <div class="side">
+        <canvas id="cctv" width="192" height="144" aria-label="Teaching camera CAM 04, reactor lid"></canvas>
+        <canvas id="core" aria-label="Schematic core cross-section"></canvas>
+      </div>
+    </div>
+    <div class="readouts" id="readouts">
+      <div class="tile" id="tilePower"><div class="l">Power</div><div class="v" id="tPower">—</div><div class="s" id="tPct">—</div></div>
+      <div class="tile plain" id="tileTime"><div class="l">Time</div><div class="v" id="tTime" style="font-size:12px">—</div><div class="s" id="tScale">1×</div></div>
+      <div class="tile plain"><div class="l">Pressure</div><div class="v" id="tPress">—</div><div class="s">MPa · drum</div></div>
+      <div class="tile" id="tileOrm"><div class="l">ORM</div><div class="v" id="tOrm">—</div><div class="s">safe floor 30</div></div>
+      <div class="tile plain"><div class="l">Rod insertion</div><div class="v" id="tRod">—</div><div class="s">0% withdrawn · full stroke ~20 s</div></div>
+      <div class="tile plain"><div class="l">Pumps / flow</div><div class="v" id="tFlow">—</div><div class="s" id="tCoast">6 running = 100%</div></div>
+      <div class="tile plain"><div class="l">Coolant in → out</div><div class="v" id="tTemp">—</div><div class="s">°C · inlet fixed 270</div></div>
+      <div class="tile plain"><div class="l">Void</div><div class="v" id="tVoid">—</div><div class="s" id="tVoidNote">steam in coolant</div></div>
+      <div class="tile plain"><div class="l">Xenon-135</div><div class="v" id="tXe">—</div><div class="s" id="tI">iodine —</div></div>
+      <div class="tile plain"><div class="l">Lower / upper zone</div><div class="v" id="tZone" style="font-size:13px">—</div><div class="s">MWt · two axial zones</div></div>
+      <div class="tile plain"><div class="l">Thermal / fast flux</div><div class="v" id="tFlux" style="font-size:13px">—</div><div class="s">relative · more void, harder spectrum</div></div>
+      <div class="tile plain"><div class="l">State</div><div class="v" id="tStage" style="font-size:14px">—</div><div class="s" id="tBanner">—</div></div>
+    </div>
+  </section>
+
+  <section class="card" id="controls">
+    <h2>Controls</h2>
+    <p class="sub" id="noiseNote">Digits on the tiles carry a little sensor noise. Charts and the reactivity table use the model. Noise never goes back into the physics.</p>
+    <div class="panel-row">
+      <div class="panel-label" id="rodLabel">Control-rod bank insertion</div>
+      <input type="range" id="rodSlider" min="0" max="100" step="0.1" value="36" aria-label="Control rod insertion percent">
+    </div>
+    <div class="chips" id="rodGroups" aria-label="Rod groups">
+      <button class="chip active" type="button" data-group="manual">Manual</button>
+      <button class="chip active" type="button" data-group="auto">Automatic</button>
+      <button class="chip active" type="button" data-group="short">Shortened bottom</button>
+    </div>
+    <p class="panel-hint">Those three groups existed on a real RBMK. In this model they move as one bank. Insertion percent is the mechanical stroke. ORM is absorber-equivalent and is not the same number: on the night line the absorbers are still above the fuel.</p>
+    <div class="btn-row" style="margin-top:10px">
+      <label class="check"><input type="checkbox" id="guard"> Lift the AZ-5 guard</label>
+      <button id="az5" type="button" disabled>AZ-5</button>
+    </div>
+    <p class="panel-hint">AZ-5 is the scram. It was the correct button. Rods take about 20 seconds, and they are not magic: from a fully withdrawn line the graphite followers enter the core before the absorbers. That positive bump is a design flaw, not sabotage.</p>
+    <div class="panel-label" style="margin-top:12px">Main circulation pumps</div>
+    <div class="pumps" id="pumpBox"></div>
+    <p class="panel-hint">Eight pumps. Six running is the 100% flow used at full power. Switching a pump off coasts it down over about 30–60 seconds. Flow is one number for the whole core.</p>
+    <div class="panel-label">Time scale</div>
+    <div class="chips" id="rateBox">
+      <button class="chip active" type="button" data-rate="1">1×</button>
+      <button class="chip" type="button" data-rate="60">60×</button>
+      <button class="chip" type="button" data-rate="600">600×</button>
+    </div>
+    <p class="panel-hint" id="rateNote">1× is real time. 60× and 600× are for the hours xenon actually takes. The rundown stays at 1× so the coast-down can be watched.</p>
+    <div class="btn-row" id="presetRow" style="margin-top:10px">
+      <button class="btn" type="button" id="presetNominal">Nominal 3200 MWt</button>
+      <button class="btn" type="button" id="presetNight">Documented night line</button>
+      <button class="btn" type="button" id="presetShutdown">Scram from full power</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Readouts</h2>
+    <p class="sub">Power below 700 MWt is marked. It is the forbidden, unstable region for this design. A failure pins the power trace at the top of the chart and labels it OFF SCALE — the chart does not grow a precise peak.</p>
+    <div class="charts">
+      <div><h3>Power</h3><canvas class="chart" id="chartPower"></canvas></div>
+      <div><h3>Reactivity by source</h3><canvas class="chart" id="chartRho"></canvas></div>
+      <div><h3>Rod insertion</h3><canvas class="chart" id="chartRod"></canvas></div>
+      <div><h3>Thermal and fast flux</h3><canvas class="chart" id="chartFlux"></canvas></div>
+      <div><h3>Void — steam in the coolant</h3><canvas class="chart" id="chartVoid"></canvas></div>
+      <div><h3>Coolant temperatures</h3><canvas class="chart" id="chartTemp"></canvas></div>
+      <div><h3>Iodine-135 and xenon-135</h3><canvas class="chart" id="chartXe"></canvas></div>
+      <div>
+        <h3>Reactivity now</h3>
+        <div class="rho-table" id="rhoNow"></div>
+        <p class="sub" id="rhoNote"></p>
+      </div>
+    </div>
+    <h3>Inventory</h3>
+    <p class="sub">Uranium, inert products, and the graphite stack stay fixed on this night. Iodine and xenon are multiples of their full-power equilibrium. Water is the liquid fraction of the coolant (1 − void).</p>
+    <div id="compBars"></div>
+  </section>
+
+  <section class="card">
+    <h2>Event log</h2>
+    <div id="logList" aria-live="polite"></div>
+    <div class="panel-row" style="margin-top:12px">
+      <div class="panel-label" id="scrubLabel">Replay</div>
+      <input type="range" id="scrub" min="0" max="0" value="0" aria-label="Replay scrubber">
+    </div>
+    <div class="btn-row">
+      <button class="btn" type="button" id="liveBtn">Live</button>
+    </div>
+    <p class="panel-hint">Scrub pauses on a recorded sample. It does not re-run the physics. Play or Live returns to the present.</p>
+  </section>
+
+  <section class="card">
+    <h2>What is fact, reconstruction, and unknown</h2>
+    <div class="facts">
+      <div class="fact">
+        <h3>Fact</h3>
+        <p>Chernobyl Unit 4 was an RBMK-1000. A steam explosion destroyed the reactor and lifted the upper shield. Graphite is the moderator and stays in the stack, except the graphite followers on the control rods. Water is the coolant and a neutron absorber. The void coefficient was positive. The operators pressed AZ-5.</p>
+      </div>
+      <div class="fact">
+        <h3>Reconstruction</h3>
+        <p>Power was cut from 3200 MWt toward the test range, then held for hours near 1600 MWt. After midnight it fell to tens of megawatts and was recovered only to about 200 MWt, with the operating reactivity margin near 8. Extra pumps were on for the test. Four coasted down. AZ-5 was pressed as power rose.</p>
+      </div>
+      <div class="fact">
+        <h3>Unknown</h3>
+        <p>The precise peak power. This module will not invent one. A second explosion followed seconds later and exposed the core. Its mechanism is disputed: more steam, hydrogen, or another power pulse. The module shows the steam explosion and an exposed core, and it labels the second blast as disputed.</p>
+      </div>
+    </div>
+    <h3>Accuracy traps</h3>
+    <ul class="clean">
+      <li>There are no moderator rods. Graphite does not move, except the control-rod followers.</li>
+      <li>Water is not the main moderator. Losing water adds reactivity in this design.</li>
+      <li>Scram is not instant. AZ-5 was not sabotage.</li>
+      <li>Xenon-135 builds and decays over hours, not minutes. Iodine-135 is 6.6 h. Xenon-135 is 9.2 h.</li>
+      <li>Burnup and inert products stay frozen. The fuel does not melt first.</li>
+      <li>Nothing here is a nuclear weapon. There is no mushroom cloud and no green “radiation” glow. Phosphor green is only for instrument digits.</li>
+    </ul>
+    <h3>Simplifications in this classroom model</h3>
+    <ul class="clean" id="simpList"></ul>
+  </section>
+</main>
+<footer id="footNote">RBMK study module · not a licensing model · steam explosion, not a nuclear detonation</footer>
+<script type="module">
+import {
+  PARAMS, clamp, ormOf, powerOf, reactivity, fluxes, composition, nominalState,
+  setPumpCount, driveStory, tripCoastingPumps, advance, rodForOrm,
+  stateSavePoint1, stateSavePoint2, classify, lidPose, noisy, displayPower,
+  SIMPLIFICATIONS
+} from "./rbmk-physics.js";
+
+const $ = (id) => document.getElementById(id);
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const DEG = Math.PI / 180;
+
+const q = new URLSearchParams(location.search);
+const qMode = (q.get("mode") || "").toLowerCase();
+let mode = qMode === "chernobyl" || qMode === "story" || qMode === "night" ? "chernobyl" : "sandbox";
+
+let sim = nominalState();
+let story = { beat: "sandbox", enteredAt: 0, waitUntil: 0 };
+let playing = false;
+let timescale = 1;
+let ff = null;
+let replay = null;
+let samples = [];
+let logLines = [];
+let frozenRho = null;
+let visualArmed = false;
+let secondLogged = false;
+let rodLock = false;
+let lowDetail = false;
+let slowFrames = 0;
+
+const logList = $("logList");
+const storyActions = $("storyActions");
+
+function fmtClock(t) {
+  if (mode === "chernobyl") {
+    const d = new Date(Date.UTC(1986, 3, 25, 1, 6, 0) + t * 1000);
+    const p = (n) => String(n).padStart(2, "0");
+    return d.getUTCFullYear() + "-" + p(d.getUTCMonth() + 1) + "-" + p(d.getUTCDate()) + " " + p(d.getUTCHours()) + ":" + p(d.getUTCMinutes()) + ":" + p(d.getUTCSeconds()) + " UTC";
+  }
+  const s = Math.max(0, Math.floor(t));
+  const p = (n) => String(n).padStart(2, "0");
+  return "T+" + p(Math.floor(s / 3600)) + ":" + p(Math.floor((s % 3600) / 60)) + ":" + p(s % 60);
+}
+
+function log(msg) {
+  logLines.push({ t: sim.t, msg });
+  if (logLines.length > 100) logLines.shift();
+}
+
+function pullEvents() {
+  for (const e of sim.events) {
+    if (e._seen) continue;
+    e._seen = true;
+    logLines.push({ t: e.t, msg: e.msg });
+  }
+}
+
+function pcm(n) {
+  const v = Math.round(n);
+  return (v > 0 ? "+" : "") + v + " pcm";
+}
+
+function makeView(s) {
+  const rho = reactivity(s);
+  const dp = displayPower(s);
+  const cls = classify(s);
+  const fx = fluxes(s);
+  const pNow = powerOf(s);
+  // Pegged or failed instruments must not carry a numeric peak into the page.
+  const powerKnown = dp.known && pNow <= PARAMS.pegMWt;
+  if (!s.failed && !s.offscale) frozenRho = rho;
+  const r = (s.failed || s.offscale) && frozenRho ? frozenRho : rho;
+  let pumpsMask = 0, coastMask = 0, pumpsOn = 0, coasting = 0;
+  for (let i = 0; i < 8; i++) {
+    if (s.pumps[i]) { pumpsMask |= 1 << i; pumpsOn++; }
+    if (s.coast[i] > 0.05) { coastMask |= 1 << i; coasting++; }
+  }
+  return {
+    t: s.t, P: powerKnown ? pNow : null, known: powerKnown, dpText: powerKnown ? dp.text : "OFF SCALE",
+    rod: s.rod, orm: ormOf(s.rod), alpha: s.alpha, pressure: s.pressure,
+    flow: s.flow, Tout: s.Tout, Tin: PARAMS.Tin, Tf: s.Tf, Tg: s.Tg,
+    Xe: s.Xe, I: s.I, nL: powerKnown ? s.nL : null, nU: powerKnown ? s.nU : null,
+    rods: r.rods, tip: r.tip, voidR: r.void, fuel: r.fuel, graphite: r.graphite,
+    xenon: r.xenon, lower: r.lower, upper: r.upper, total: r.total,
+    rhoFresh: !s.failed && !s.offscale, fast: powerKnown ? fx.fast : null, thermal: powerKnown ? fx.thermal : null,
+    failed: !!s.failed, offscale: !!(s.offscale || s.failed), saved: !!s.saved,
+    failAge: s.failAge || 0, scram: !!s.scram,
+    pumpsMask, coastMask, pumpsOn, coasting,
+    stage: cls.stage, banner: cls.banner, forbidden: cls.forbidden, margin: s.margin
+  };
+}
+
+function gap() {
+  if (ff && story.beat === "waitxe") return 180;
+  if (ff) return 45;
+  if (story.beat === "rundown" || story.beat === "aborting") return 0.25;
+  if (timescale >= 600) return 60;
+  if (timescale >= 60) return 30;
+  return 0.5;
+}
+
+function maybeSample(force) {
+  const v = makeView(sim);
+  const prev = samples[samples.length - 1];
+  if (!force && prev && v.t - prev.t < gap() && v.known === prev.known) return;
+  samples.push(v);
+  if (samples.length > 2400) samples.splice(0, samples.length - 2400);
+}
+
+function storyDriving() {
+  return mode === "chernobyl" && ["reduce", "hold", "drop", "recover", "prep"].includes(story.beat);
+}
+function storyDriveMode() {
+  if (story.beat === "drop") return "drop";
+  if (story.beat === "recover" || story.beat === "prep") return "recover";
+  return "to1600";
+}
+function effectiveRate() {
+  if (mode === "chernobyl" && story.beat === "rundown") return 1;
+  if (mode === "chernobyl" && story.beat === "aborting") return 10;
+  return timescale;
+}
+
+function enter(beat) {
+  story.beat = beat;
+  story.enteredAt = sim.t;
+  maybeSample(true);
+  const line = shortLine(beat);
+  if (line) log(line);
+  updateStoryUI();
+}
+
+function shortLine(beat) {
+  const P = powerOf(sim);
+  const orm = ormOf(sim.rod);
+  if (beat === "hold") return "Near 1600 MWt. The dispatcher hold begins. Xenon keeps building for hours.";
+  if (beat === "drop") return "Further reduction. A control error drives the core down through the forbidden region.";
+  if (beat === "recover") return "Withdrawing the bank to recover power against xenon. ORM will enter the red zone.";
+  if (beat === "save1") return "SAVE POINT 1 — " + P.toFixed(0) + " MWt, ORM " + orm.toFixed(1) + ". Shut down and wait, or continue the night.";
+  if (beat === "prep") return "Eight pumps on, separator margin lowered for the test. Not the rundown yet.";
+  if (beat === "save2") return "SAVE POINT 2 — abort and restore ORM, or start the turbine rundown.";
+  if (beat === "waitxe") return "Rods are driving in. Xenon will peak hours from now and then decay. 30 h on this clock.";
+  if (beat === "rundown") return "Turbine rundown. Four pumps coasting. Abort is still open. AZ-5 is not instant.";
+  if (beat === "aborting") return "Aborting the test: margin restored, target ORM 48, six pumps.";
+  if (beat === "saved") return "Reactor saved.";
+  if (beat === "failed") return "CCTV loses the picture first. The cross-section stays available. Peak power is OFF SCALE.";
+  if (beat === "stuck") return "The wait ended without a clean shutdown. Read the instruments.";
+  return "";
+}
+
+function storyCopy() {
+  const P = powerOf(sim);
+  const orm = ormOf(sim.rod);
+  const xe = sim.Xe;
+  if (story.beat === "intro") return {
+    title: "25 April 1986, 01:06 UTC",
+    body: "Unit 4 is at full power, 3200 MWt. The turbine rundown test needs something like 700–1000 MWt. You are about to reduce power. Iodine-135 and xenon-135 will move on their real half-lives, so the interesting part of this night is measured in hours."
+  };
+  if (story.beat === "reduce") return {
+    title: "Power reduction",
+    body: "Rods drive in and power comes down toward 1600 MWt. Play runs the segment. Skip jumps it on the same controller. Nothing about the later failure is scripted on a clock — if the core is stable, it stays stable."
+  };
+  if (story.beat === "hold") return {
+    title: "Dispatcher hold",
+    body: "The unit sits near 1600 MWt for about nine hours. That delay is why so much xenon is in the core after midnight. You can watch it at 60× or 600×, or skip the hold."
+  };
+  if (story.beat === "drop") return {
+    title: "The drop",
+    body: "The reduction continues and a control error pushes the reactor far below the test target, through the region under 700 MWt. Xenon is already high, so the core does not want to stay at a low power without the rods coming out."
+  };
+  if (story.beat === "recover") return {
+    title: "Trying to recover",
+    body: "The bank withdraws to bring power back. It will not honestly sit at the old full-power rod line. Watch ORM. The safe floor is 30."
+  };
+  if (story.beat === "save1") return {
+    title: "Save point 1",
+    body: "Power is about " + P.toFixed(0) + " MWt. ORM is " + orm.toFixed(1) + ", under the safe floor of 30. Xenon is " + xe.toFixed(2) + " times its full-power equilibrium. The live prelude does not reach ORM 8: after nine hours at 1600 MWt there is not enough xenon to hold the core critical that far out. Shut down and wait 30 hours for xenon to decay, or continue the night. AZ-5 from this live line is also a shutdown — the graphite followers are already through the core."
+  };
+  if (story.beat === "prep") return {
+    title: "Lining up the test",
+    body: "Eight pumps are running and the separator margin is low, which is the test lineup. Void should still be modest. This is not yet the coast-down."
+  };
+  if (story.beat === "save2") return {
+    title: "Save point 2",
+    body: "Power is about " + P.toFixed(0) + " MWt, ORM " + orm.toFixed(1) + ", flow " + sim.flow.toFixed(0) + "%. Abort: put the rod target back near ORM 48, restore the separator margin, and return to six pumps. Or start the rundown. The rundown itself continues from the documented rod line, ORM about 8, on this same model — the only place the graphite-tip bump is in front of the rods."
+  };
+  if (story.beat === "waitxe") return {
+    title: "Waiting out xenon",
+    body: "The bank is in. Iodine decays into xenon, xenon peaks several hours later, then both fall. Thirty hours is inside the real 24–48 hour wait. The chart is the model. If this works, the log says the reactor is saved, and that is all."
+  };
+  if (story.beat === "rundown") return {
+    title: "Turbine rundown",
+    body: "This beat uses the documented night line: ORM " + orm.toFixed(1) + ", about 200 MWt, xenon set so that line is critical. Four of eight pumps are coasting down over about 40 seconds. At this low power a low separator margin lets the positive void coefficient climb. Abort — restore margin, aim at ORM 48, six pumps — still saves the core while power is only drifting. AZ-5 from this withdrawn line drives the graphite followers in first. Early in the coast-down that bump is survived. Once the void is already rising, AZ-5 does not save it. Doing nothing also fails: the void does not need the button."
+  };
+  if (story.beat === "aborting") return {
+    title: "Aborting",
+    body: "Rods travel at the real stroke speed, about 20 seconds full scale. The followers still pass through the core on the way from the night line. Margin and flow are being restored at the same time."
+  };
+  if (story.beat === "saved") {
+    const kind = story.saveKind;
+    return {
+      title: "Reactor saved",
+      body: kind === "xenon"
+        ? "The core is shut down and the xenon has been waited out. Power is a number near zero, not a trophy. Reset if you want the other branch."
+        : kind === "az5"
+          ? "AZ-5 finished while the void was still low. The graphite tip added reactivity on the way in, then the absorbers shut the core down. Reset if you want the branch that does not come back."
+          : "The test is cancelled. ORM is back above 30. Reset if you want to see the branch that does not come back."
+    };
+  }
+  if (story.beat === "failed") return {
+    title: "Pressure failure",
+    body: "Power instruments read OFF SCALE. There is no peak megawatt number in this record. The pressure boundary failed: a steam explosion, not a nuclear detonation. The upper shield lifts and tilts on the cross-section. The hall camera whites out first; the room shake follows. A second explosion seconds later is disputed and is not given a power."
+  };
+  return { title: "Chernobyl night", body: "Read the instruments." };
+}
+
+function updateStoryUI() {
+  const card = $("storyCard");
+  card.hidden = mode !== "chernobyl";
+  $("presetRow").hidden = mode !== "chernobyl" ? false : true;
+  if (mode !== "chernobyl") return;
+  const copy = storyCopy();
+  $("storyTitle").textContent = copy.title;
+  $("storyBody").textContent = copy.body;
+  storyActions.replaceChildren();
+  const add = (label, fn, primary) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "btn" + (primary ? " primary" : "");
+    b.textContent = label;
+    b.addEventListener("click", fn);
+    storyActions.appendChild(b);
+  };
+  const b = story.beat;
+  if (b === "intro") add("Begin the power reduction", beginStory, true);
+  if (["reduce", "hold", "drop", "recover", "prep"].includes(b)) add("Skip this segment", () => { ff = { skip: true }; playing = true; syncPause(); }, true);
+  if (b === "save1") {
+    add("Shut down and wait out xenon", () => startWait("SAVE POINT 1 taken. Shutting down and waiting out xenon."), true);
+    add("Continue the night", continueNight, false);
+  }
+  if (b === "save2") {
+    add("Abort the test and restore ORM", abortTestNow, true);
+    add("Start the turbine rundown", startRundown, false);
+  }
+  if (b === "rundown" && !sim.failed) add("Abort now — restore ORM", abortTestNow, true);
+  if (b === "saved" || b === "failed" || b === "stuck") add("Reset this night", () => boot("chernobyl"), false);
+  paintMeta();
+}
+
+function paintMeta() {
+  if (mode !== "chernobyl") return;
+  const age = sim.t - (story.enteredAt || 0);
+  const pNow = powerOf(sim);
+  const onScale = !sim.failed && !sim.offscale && pNow <= PARAMS.pegMWt;
+  let text = "Power " + (onScale ? Math.max(0, pNow).toFixed(0) + " MWt" : "OFF SCALE") + " · ORM " + ormOf(sim.rod).toFixed(1) + " · Xe " + sim.Xe.toFixed(2);
+  if (story.beat === "hold") text += " · hold " + (age / 3600).toFixed(2) + " h / 9 h";
+  if (story.beat === "reduce") text += " · reduction " + Math.min(30, age / 60).toFixed(1) + " / 30 min";
+  if (story.beat === "drop") text += " · drop " + (age / 60).toFixed(1) + " / 40 min";
+  if (story.beat === "recover") text += " · recovery " + (age / 60).toFixed(1) + " / 25 min";
+  if (story.beat === "prep") text += " · lineup " + (age / 60).toFixed(1) + " / 18 min";
+  if (story.beat === "waitxe") {
+    const left = Math.max(0, story.waitUntil - sim.t);
+    text += " · xenon wait " + ((30 * 3600 - left) / 3600).toFixed(2) + " h / 30 h";
+  }
+  if (story.beat === "rundown") text += " · " + age.toFixed(1) + " s · time scale locked at 1×";
+  if (story.beat === "aborting") text += " · abort at 10× — rods finish the stroke, pumps finish the coast";
+  $("storyMeta").textContent = text;
+}
+
+function beginStory() {
+  if (story.beat !== "intro") return;
+  timescale = 60;
+  playing = true;
+  enter("reduce");
+  syncRates();
+  syncPause();
+}
+
+function startWait(reason) {
+  sim.scram = false;
+  sim.scram = true;
+  story.waitUntil = sim.t + 30 * 3600;
+  ff = { skip: true };
+  playing = true;
+  enter("waitxe");
+  log(reason);
+  syncPause();
+}
+
+function continueNight() {
+  sim.margin = 0.55;
+  setPumpCount(sim, 8, false);
+  timescale = 60;
+  playing = true;
+  enter("prep");
+  syncRates();
+  syncPause();
+}
+
+function abortTestNow() {
+  if (sim.failed) return;
+  sim.scram = false;
+  sim.margin = 0.1;
+  sim.rodTarget = rodForOrm(48);
+  setPumpCount(sim, 6, true);
+  ff = null;
+  timescale = 1;
+  playing = true;
+  enter("aborting");
+  syncRates();
+  syncPause();
+}
+
+function startRundown() {
+  const clock = sim.t;
+  const preludeOrm = ormOf(sim.rod);
+  const next = stateSavePoint2();
+  next.t = clock;
+  next.events = [];
+  next.margin = 0.6;
+  sim = next;
+  tripCoastingPumps(sim, 4);
+  frozenRho = null;
+  visualArmed = false;
+  secondLogged = false;
+  ff = null;
+  timescale = 1;
+  playing = true;
+  log("Rundown continues from the documented rod line, ORM " + ormOf(sim.rod).toFixed(1) + ". The prelude had reached ORM " + preludeOrm.toFixed(1) + " on the same rod model; xenon after the hold cannot sit critical at ORM 8, so this beat uses the critical xenon for that documented line.");
+  enter("rundown");
+  syncRates();
+  syncPause();
+}
+
+function advanceBeat() {
+  if (mode !== "chernobyl") return false;
+  if (sim.failed && story.beat !== "failed") {
+    ff = null;
+    playing = false;
+    pullEvents();
+    enter("failed");
+    return true;
+  }
+  const b = story.beat;
+  const P = powerOf(sim);
+  const orm = ormOf(sim.rod);
+  const age = sim.t - story.enteredAt;
+  if (b === "reduce" && sim.t >= 30 * 60) { enter("hold"); return true; }
+  if (b === "hold" && sim.t >= 30 * 60 + 9 * 3600) { enter("drop"); return true; }
+  if (b === "drop" && age >= 40 * 60) { enter("recover"); return true; }
+  if (b === "recover" && age >= 25 * 60) {
+    timescale = 1; playing = false; ff = null; enter("save1"); syncRates(); return true;
+  }
+  if (b === "prep" && age >= 18 * 60) {
+    timescale = 1; playing = false; ff = null; enter("save2"); syncRates(); return true;
+  }
+  if (b === "waitxe" && sim.t >= story.waitUntil) {
+    ff = null;
+    playing = false;
+    if (!sim.failed && P < 15 && sim.rod > 0.9) {
+      sim.saved = true;
+      story.saveKind = "xenon";
+      log("REACTOR SAVED — shut down, xenon waited out.");
+      enter("saved");
+    } else {
+      enter("stuck");
+    }
+    return true;
+  }
+  if (b === "aborting" && !sim.failed && orm >= 45 && P < 25 && sim.flow < 108 && Math.abs(sim.rod - sim.rodTarget) < 0.01) {
+    sim.saved = true;
+    story.saveKind = "abort";
+    playing = false;
+    log("REACTOR SAVED — test aborted, ORM restored, pumps reduced.");
+    enter("saved");
+    return true;
+  }
+  if (b === "rundown" && sim.scram && !sim.failed && sim.rod > 0.98 && P < 20) {
+    sim.saved = true;
+    story.saveKind = "az5";
+    playing = false;
+    log("REACTOR SAVED — AZ-5 finished while the void was still low. The graphite tip added reactivity on the way in, then the absorbers shut the core down.");
+    enter("saved");
+    return true;
+  }
+  return false;
+}
+
+function stepSim(dt) {
+  let left = dt;
+  let n = 0;
+  while (left > 1e-6 && n++ < 8 && playing && !sim.failed) {
+    const before = story.beat;
+    const h = Math.min(left, storyDriving() ? 8 : left);
+    if (storyDriving()) driveStory(sim, storyDriveMode());
+    advance(sim, h);
+    left -= h;
+    if (advanceBeat() || story.beat !== before) break;
+  }
+}
+
+function chew(budgetMs) {
+  const t0 = performance.now();
+  while (ff && playing && !sim.failed && performance.now() - t0 < budgetMs) {
+    const before = story.beat;
+    const h = story.beat === "waitxe" ? 120 : 8;
+    if (storyDriving()) driveStory(sim, storyDriveMode());
+    advance(sim, h);
+    maybeSample(false);
+    const changed = advanceBeat() || story.beat !== before;
+    if (changed) {
+      const skipping = ff && ff.skip;
+      ff = null;
+      if (skipping && story.beat !== "waitxe" && story.beat !== "saved" && story.beat !== "failed") playing = false;
+      break;
+    }
+  }
+}
+
+function boot(nextMode) {
+  mode = nextMode;
+  replay = null;
+  ff = null;
+  samples = [];
+  logLines = [];
+  frozenRho = null;
+  visualArmed = false;
+  secondLogged = false;
+  timescale = 1;
+  sim = nominalState();
+  sim._prevP = powerOf(sim);
+  if (mode === "chernobyl") {
+    story = { beat: "intro", enteredAt: 0, waitUntil: 0 };
+    playing = false;
+    log("25 April 1986, 01:06 UTC. Unit 4 is at 3200 MWt. The rundown test still needs a lower power.");
+  } else {
+    story = { beat: "sandbox", enteredAt: 0, waitUntil: 0 };
+    playing = !reduceMotion;
+    log("Sandbox. Nominal 3200 MWt, six of eight pumps, rods on the operating line. The band under 700 MWt is forbidden.");
+  }
+  $("guard").checked = false;
+  maybeSample(true);
+  syncTabs();
+  syncRates();
+  updateStoryUI();
+  syncPause();
+  paintLog();
+}
+
+function loadPreset(kind) {
+  if (mode !== "sandbox") return;
+  frozenRho = null;
+  visualArmed = false;
+  secondLogged = false;
+  ff = null;
+  replay = null;
+  samples = [];
+  logLines = [];
+  if (kind === "night") {
+    sim = stateSavePoint1();
+    log("Documented night line on this model: about 200 MWt, ORM about 8, xenon solved so that line is critical. Void is still low. AZ-5 from here is a bump, then a shutdown, if you leave the pumps alone.");
+  } else if (kind === "shutdown") {
+    sim = nominalState();
+    sim.scram = true;
+    log("AZ-5 from the operating line. Followers are not in the core. Rods travel in over about " + PARAMS.rodTravel.toFixed(0) + " s.");
+  } else {
+    sim = nominalState();
+    log("Back to nominal 3200 MWt.");
+  }
+  sim._prevP = powerOf(sim);
+  playing = !reduceMotion;
+  maybeSample(true);
+  syncPause();
+}
+
+function pressAZ5() {
+  if (sim.failed || sim.saved || !$("guard").checked || replay != null) return;
+  sim.scram = true;
+  log("AZ-5 pressed. Rods travel in over about " + PARAMS.rodTravel.toFixed(0) + " s. From a withdrawn line the graphite followers enter before the absorbers.");
+  if (mode === "chernobyl" && !["rundown", "waitxe", "aborting", "failed", "saved"].includes(story.beat)) {
+    startWait("AZ-5 outside the rundown. Treating that as a shutdown and waiting out xenon.");
+  }
+}
+
+function togglePump(i) {
+  if (replay != null || sim.failed || sim.saved) return;
+  if (mode === "chernobyl" && !["rundown", "aborting", "sandbox", "save2"].includes(story.beat)) return;
+  if (sim.pumps[i]) {
+    sim.pumps[i] = 0;
+    sim.coast[i] = 1;
+    log("Pump " + (i + 1) + " tripped and is coasting down.");
+  } else {
+    sim.pumps[i] = 1;
+    sim.coast[i] = 0;
+    log("Pump " + (i + 1) + " started.");
+  }
+}
+
+function syncTabs() {
+  $("tabSandbox").classList.toggle("active", mode === "sandbox");
+  $("tabStory").classList.toggle("active", mode === "chernobyl");
+  $("tabSandbox").setAttribute("aria-selected", mode === "sandbox" ? "true" : "false");
+  $("tabStory").setAttribute("aria-selected", mode === "chernobyl" ? "true" : "false");
+}
+function syncPause() {
+  $("pauseBtn").textContent = playing ? "Pause" : (replay != null ? "Back to live" : "Play");
+}
+function syncRates() {
+  const rate = effectiveRate();
+  document.querySelectorAll("[data-rate]").forEach((ch) => {
+    const locked = mode === "chernobyl" && (story.beat === "rundown" || story.beat === "aborting");
+    ch.disabled = locked;
+    ch.classList.toggle("active", Number(ch.dataset.rate) === rate);
+  });
+  $("tScale").textContent = rate + "×" + (rate !== timescale ? " locked" : "");
+}
+
+function currentView() {
+  if (replay != null && samples[replay]) return samples[replay];
+  return makeView(sim);
+}
+
+let shownNoise = null;
+function paintTiles(view, noisyPower) {
+  const powerEl = $("tPower");
+  const tileP = $("tilePower");
+  tileP.classList.remove("bad", "warn", "plain");
+  if (!view.known) {
+    powerEl.textContent = "OFF SCALE";
+    $("tPct").textContent = "no peak number";
+    $("tZone").textContent = "OFF SCALE";
+    tileP.classList.add("bad");
+  } else {
+    let shown = Math.max(0, view.P || 0);
+    if (noisyPower != null && shown >= 5) shown = Math.max(0, noisyPower);
+    powerEl.textContent = (shown >= 100 ? shown.toFixed(0) : shown < 0.05 ? "0.0" : shown.toFixed(1)) + " MWt";
+    $("tPct").textContent = (view.P / PARAMS.Pnom * 100).toFixed(1) + "% of 3200";
+    $("tZone").textContent = view.nL.toFixed(0) + " / " + view.nU.toFixed(0);
+    tileP.classList.add(view.forbidden ? "warn" : "plain");
+  }
+  $("tTime").textContent = fmtClock(view.t);
+  $("tPress").textContent = view.pressure.toFixed(2);
+  const ormTile = $("tileOrm");
+  ormTile.classList.toggle("bad", view.orm < PARAMS.ormSafe && !view.saved && !view.failed);
+  ormTile.classList.toggle("plain", !(view.orm < PARAMS.ormSafe && !view.saved && !view.failed));
+  $("tOrm").textContent = view.orm.toFixed(1);
+  $("tRod").textContent = (view.rod * 100).toFixed(1) + "%";
+  $("tFlow").textContent = view.flow.toFixed(0) + "%";
+  $("tCoast").textContent = view.pumpsOn + " running" + (view.coasting ? " · " + view.coasting + " coasting" : "");
+  $("tTemp").textContent = view.Tin.toFixed(0) + " → " + view.Tout.toFixed(0);
+  $("tVoid").textContent = (view.alpha * 100).toFixed(1) + "% steam";
+  $("tVoidNote").textContent = (100 - view.alpha * 100).toFixed(0) + "% water";
+  $("tXe").textContent = view.Xe.toFixed(2) + " ×";
+  $("tI").textContent = "iodine " + view.I.toFixed(2) + " ×";
+  $("tFlux").textContent = view.thermal == null || view.fast == null ? "—" : view.thermal.toFixed(2) + " / " + view.fast.toFixed(2);
+  $("tStage").textContent = view.stage;
+  $("tBanner").textContent = view.banner;
+  $("rodLabel").textContent = "Control-rod bank insertion " + (view.rod * 100).toFixed(1) + "% · ORM " + view.orm.toFixed(1);
+  const slider = $("rodSlider");
+  if (!rodLock && document.activeElement !== slider) {
+    const v = String(view.rod * 100);
+    if (slider.value !== v) {
+      lastEcho = v;
+      slider.value = v;
+    }
+  }
+}
+
+function paintBanner(view) {
+  const banner = $("statusBanner");
+  banner.classList.remove("alarm", "saved", "warn");
+  $("statusType").textContent = view.banner;
+  const bits = [view.stage];
+  if (view.forbidden) bits.push("Forbidden region — below 700 MWt this design is unstable");
+  if (!view.known) bits.push("Steam explosion, not a nuclear detonation. Peak power is OFF SCALE.");
+  if (view.saved) bits.push("The core is shut down. The log is the whole announcement.");
+  if (view.banner === "Prompt risk") bits.push("Reactivity is near or above the delayed-neutron fraction.");
+  if (view.banner === "Xenon limited") bits.push("Xenon-135 is holding power down. It moves on an hour scale.");
+  $("statusReason").textContent = bits.join(" · ");
+  if (view.banner === "Pressure failure" || view.banner === "Prompt risk") banner.classList.add("alarm");
+  else if (view.banner === "Reactor saved") banner.classList.add("saved");
+  else if (view.forbidden || view.banner === "Void driven rise" || view.banner === "Xenon limited") banner.classList.add("warn");
+}
+
+const RHO_ROWS = [
+  ["rods", "Rods", "#8aa0b8"],
+  ["tip", "Graphite tip", "#FFB43A"],
+  ["voidR", "Void", "#6aa6c9"],
+  ["fuel", "Fuel Doppler", "#c47a4a"],
+  ["graphite", "Graphite temp", "#d9d3c5"],
+  ["xenon", "Xenon", "#b79cff"],
+  ["lower", "Lower zone", "#E8E0CC"],
+  ["upper", "Upper zone", "#9bb0c4"],
+  ["total", "Total", "#ffffff"]
+];
+function ensureRho() {
+  const host = $("rhoNow");
+  if (host.childElementCount) return;
+  for (const [key, label, color] of RHO_ROWS) {
+    const row = document.createElement("div");
+    row.className = "rho-row";
+    row.style.borderColor = color;
+    row.dataset.key = key;
+    const a = document.createElement("span");
+    a.textContent = label;
+    const b = document.createElement("span");
+    b.dataset.val = key;
+    row.append(a, b);
+    host.appendChild(row);
+  }
+}
+function paintRho(view) {
+  ensureRho();
+  for (const [key] of RHO_ROWS) {
+    const el = $("rhoNow").querySelector('[data-val="' + key + '"]');
+    el.textContent = pcm(view[key]);
+  }
+  $("rhoNote").textContent = view.rhoFresh
+    ? "pcm, model, no sensor noise. Lower and upper differ by the graphite tip only. Void, fuel, graphite temperature, and xenon are core-average."
+    : "Power is OFF SCALE. These components are the last on-scale reading, not a peak power.";
+}
+
+const COMP_SPEC = [
+  ["uranium", "Uranium fuel", "fixed this night", "#c4b89a", 1],
+  ["inert", "Inert products", "frozen", "#6B6F6C", 1],
+  ["iodine", "Iodine-135", "× full-power eq.", "#FFB43A", 3],
+  ["xenon", "Xenon-135", "× full-power eq.", "#b79cff", 3],
+  ["water", "Water in coolant", "fraction", "#6aa6c9", 1],
+  ["graphite", "Graphite moderator", "fixed — not a rod", "#2a2e2e", 1]
+];
+function ensureComp() {
+  const host = $("compBars");
+  if (host.childElementCount) return;
+  for (const [key, label, unit, color] of COMP_SPEC) {
+    const row = document.createElement("div");
+    row.className = "bar-row";
+    row.innerHTML = '<span class="bl"></span><div class="bar-track"><div class="bar-fill"></div></div><span class="bv"></span>';
+    row.querySelector(".bl").textContent = label;
+    row.querySelector(".bar-fill").style.background = color;
+    row.dataset.key = key;
+    row.dataset.unit = unit;
+    host.appendChild(row);
+  }
+}
+function paintComp(view) {
+  ensureComp();
+  const c = composition({ I: view.I, Xe: view.Xe, alpha: view.alpha });
+  for (const [key, , , , scale] of COMP_SPEC) {
+    const row = $("compBars").querySelector('[data-key="' + key + '"]');
+    const val = c[key];
+    row.querySelector(".bar-fill").style.width = (clamp(val / scale, 0, 1) * 100).toFixed(1) + "%";
+    row.querySelector(".bv").textContent = val.toFixed(2) + " " + row.dataset.unit;
+  }
+}
+
+function paintPumps(view) {
+  const buttons = $("pumpBox").querySelectorAll("button");
+  buttons.forEach((b, i) => {
+    const on = (view.pumpsMask & (1 << i)) !== 0;
+    const coast = (view.coastMask & (1 << i)) !== 0;
+    b.classList.toggle("on", on);
+    b.classList.toggle("coast", !on && coast);
+    b.textContent = (i + 1) + (on ? " on" : coast ? " coast" : " off");
+  });
+}
+
+function paintLog() {
+  const frag = document.createDocumentFragment();
+  const start = Math.max(0, logLines.length - 40);
+  for (let i = start; i < logLines.length; i++) {
+    const row = document.createElement("div");
+    row.className = "log-line";
+    const ts = document.createElement("span");
+    ts.className = "ts";
+    ts.textContent = fmtClock(logLines[i].t);
+    row.append(ts, document.createTextNode(logLines[i].msg));
+    frag.appendChild(row);
+  }
+  logList.replaceChildren(frag);
+  logList.scrollTop = logList.scrollHeight;
+}
+function syncScrub() {
+  const scrub = $("scrub");
+  const n = Math.max(0, samples.length - 1);
+  scrub.max = String(n);
+  if (replay == null && document.activeElement !== scrub) scrub.value = String(n);
+  $("scrubLabel").textContent = replay == null ? "Replay · live" : "Replay · sample " + (replay + 1) + " / " + samples.length + " · " + fmtClock(samples[replay].t);
+}
+
+function applyPolicy() {
+  const auto = mode === "chernobyl" && ["intro", "reduce", "hold", "drop", "recover", "prep", "waitxe", "saved", "failed", "stuck", "save1", "save2", "rundown", "aborting"].includes(story.beat);
+  $("rodSlider").disabled = replay != null || auto || sim.saved;
+  $("az5").disabled = replay != null || sim.failed || sim.saved || !$("guard").checked;
+  $("guard").disabled = replay != null;
+  const pumpLock = replay != null || sim.failed || sim.saved || (mode === "chernobyl" && !["rundown", "aborting", "save2"].includes(story.beat));
+  $("pumpBox").querySelectorAll("button").forEach((b) => { b.disabled = pumpLock; });
+  document.querySelectorAll("#presetRow .btn").forEach((b) => { b.disabled = mode !== "sandbox"; });
+  syncRates();
+  syncPause();
+}
+
+function fitCanvas(canvas) {
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  const w = canvas.clientWidth || 300;
+  const h = canvas.clientHeight || 160;
+  if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+  }
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w, h };
+}
+
+function drawSeries(canvas, spec) {
+  const { ctx, w, h } = fitCanvas(canvas);
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = "#101412";
+  ctx.fillRect(0, 0, w, h);
+  const pad = { l: 44, r: 10, t: 16, b: 22 };
+  const iw = Math.max(10, w - pad.l - pad.r);
+  const ih = Math.max(10, h - pad.t - pad.b);
+  const data = samples;
+  if (data.length < 1) return;
+  const t0 = data[0].t;
+  const t1 = Math.max(data[data.length - 1].t, t0 + 1);
+  const xOf = (t) => pad.l + (t - t0) / (t1 - t0) * iw;
+  let y0 = spec.min;
+  let y1 = spec.max;
+  if (spec.auto) {
+    y0 = spec.min;
+    y1 = spec.min + 1;
+    for (const s of data) {
+      for (const series of spec.series) {
+        const val = series.value(s);
+        if (val == null || !isFinite(val)) continue;
+        y0 = Math.min(y0, val);
+        y1 = Math.max(y1, val);
+      }
+    }
+    if (spec.floor != null) y1 = Math.max(y1, spec.floor);
+    const padY = (y1 - y0) * 0.12 + 0.001;
+    y0 -= padY; y1 += padY;
+    if (spec.clampMin != null) y0 = spec.clampMin;
+  }
+  const yOf = (v) => pad.t + (1 - (v - y0) / (y1 - y0 || 1)) * ih;
+  if (spec.band) {
+    const yA = yOf(spec.band.to);
+    const yB = yOf(spec.band.from);
+    ctx.fillStyle = "rgba(230,57,43,0.16)";
+    ctx.fillRect(pad.l, Math.min(yA, yB), iw, Math.abs(yA - yB));
+  }
+  ctx.strokeStyle = "rgba(232,224,204,0.25)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(pad.l, yOf(0));
+  ctx.lineTo(pad.l + iw, yOf(0));
+  ctx.stroke();
+  ctx.fillStyle = "#93A0AC";
+  ctx.font = "10px JetBrains Mono, monospace";
+  ctx.fillText(spec.ytick(y1), 2, pad.t + 8);
+  ctx.fillText(spec.ytick(y0), 2, pad.t + ih);
+  for (const series of spec.series) {
+    ctx.beginPath();
+    let started = false;
+    for (const s of data) {
+      let val = series.value(s);
+      if (val == null || !isFinite(val)) { started = false; continue; }
+      if (spec.clipHi != null && (s.offscale || val > spec.clipHi)) val = y1;
+      const x = xOf(s.t);
+      const y = yOf(val);
+      if (!started) { ctx.moveTo(x, y); started = true; }
+      else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = series.color;
+    ctx.lineWidth = series.width || 1.5;
+    ctx.stroke();
+  }
+  if (replay != null && samples[replay]) {
+    const x = xOf(samples[replay].t);
+    ctx.strokeStyle = "rgba(255,180,58,0.8)";
+    ctx.beginPath();
+    ctx.moveTo(x, pad.t);
+    ctx.lineTo(x, pad.t + ih);
+    ctx.stroke();
+  }
+  ctx.fillStyle = "#E8E0CC";
+  ctx.font = "11px Inter, sans-serif";
+  let lx = pad.l;
+  for (const series of spec.series) {
+    const label = series.name;
+    ctx.fillStyle = series.color;
+    ctx.fillText(label, lx, 12);
+    lx += ctx.measureText(label).width + 10;
+  }
+  if (spec.offscale && data.some((s) => !s.known)) {
+    ctx.fillStyle = "#E6392B";
+    ctx.font = "700 12px Oswald, sans-serif";
+    ctx.fillText("OFF SCALE", pad.l + iw - 78, pad.t + 14);
+  }
+}
+
+function drawCharts() {
+  const num = (v) => (isFinite(v) ? String(Math.round(v)) : "");
+  drawSeries($("chartPower"), {
+    min: 0, max: 3600,
+    band: { from: 0, to: 700 }, offscale: true, clipHi: 3600,
+    ytick: (v) => v > 3400 ? "" : Math.round(v) + "",
+    series: [{ name: "MWt", color: "#E8E0CC", width: 1.75, value: (s) => s.known ? s.P : 3600 }]
+  });
+  drawSeries($("chartRho"), {
+    auto: true, min: -200, floor: 200, clampMin: null, ytick: num,
+    series: [
+      { name: "rods", color: "#8aa0b8", value: (s) => s.rods },
+      { name: "tip", color: "#FFB43A", value: (s) => s.tip },
+      { name: "void", color: "#6aa6c9", value: (s) => s.voidR },
+      { name: "fuel", color: "#c47a4a", value: (s) => s.fuel },
+      { name: "graphite", color: "#d9d3c5", value: (s) => s.graphite },
+      { name: "xenon", color: "#b79cff", value: (s) => s.xenon }
+    ]
+  });
+  drawSeries($("chartRod"), {
+    min: 0, max: 100, ytick: (v) => Math.round(v) + "%",
+    series: [{ name: "insertion %", color: "#E8E0CC", value: (s) => s.rod * 100 }]
+  });
+  drawSeries($("chartFlux"), {
+    auto: true, min: 0, floor: 0.2, clampMin: 0, ytick: (v) => v.toFixed(2),
+    series: [
+      { name: "thermal", color: "#9bb0c4", value: (s) => s.thermal },
+      { name: "fast", color: "#E8E0CC", value: (s) => s.fast }
+    ]
+  });
+  drawSeries($("chartVoid"), {
+    min: 0, max: 100, ytick: (v) => Math.round(v) + "%",
+    series: [
+      { name: "steam", color: "#6aa6c9", value: (s) => s.alpha * 100 },
+      { name: "water", color: "#3F5A54", value: (s) => (1 - s.alpha) * 100 }
+    ]
+  });
+  drawSeries($("chartTemp"), {
+    auto: true, min: 260, floor: 300, ytick: (v) => Math.round(v) + "°",
+    series: [
+      { name: "inlet", color: "#6aa6c9", value: (s) => s.Tin },
+      { name: "outlet", color: "#FFB43A", value: (s) => s.Tout }
+    ]
+  });
+  drawSeries($("chartXe"), {
+    auto: true, min: 0, floor: 1.2, clampMin: 0, ytick: (v) => v.toFixed(1),
+    series: [
+      { name: "I-135", color: "#FFB43A", value: (s) => s.I },
+      { name: "Xe-135", color: "#b79cff", value: (s) => s.Xe }
+    ]
+  });
+}
+
+function heatColor(tf, powerFrac) {
+  const u = clamp((tf - 280) / 520, 0, 1) * 0.35 + clamp(powerFrac, 0, 1.3) / 1.3 * 0.65;
+  const L = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+  const rgb = u < 0.35 ? L([70, 110, 160], [232, 224, 204], u / 0.35)
+    : u < 0.75 ? L([232, 224, 204], [255, 180, 58], (u - 0.35) / 0.4)
+    : L([255, 180, 58], [255, 248, 236], clamp((u - 0.75) / 0.45, 0, 1));
+  return "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
+}
+
+function drawCore(view) {
+  const canvas = $("core");
+  const { ctx, w, h } = fitCanvas(canvas);
+  const pose = lidPose({ failed: view.failed, failAge: view.failAge, pressure: view.pressure });
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = "#f3f0e8";
+  ctx.fillRect(0, 0, w, h);
+  const left = 36, right = w - 28, top = 46, bottom = h - 28;
+  const gw = right - left, gh = bottom - top;
+  ctx.fillStyle = "#c8c2b4";
+  ctx.fillRect(left - 8, top, gw + 16, gh);
+  ctx.fillStyle = "#1C1E1E";
+  ctx.fillRect(left, top + 8, gw, gh - 16);
+  const nChan = 9;
+  const cw = gw / nChan;
+  const powerFrac = view.known ? view.P / PARAMS.Pnom : 1.4;
+  for (let i = 0; i < nChan; i++) {
+    const x = left + i * cw + cw * 0.5;
+    const control = i === 2 || i === 6;
+    const x0 = x - cw * 0.28;
+    const ww = cw * 0.56;
+    ctx.fillStyle = control ? "#2a2e2e" : heatColor(view.Tf, powerFrac);
+    ctx.fillRect(x0, top + 14, ww, gh - 28);
+    const waterH = (gh - 36) * clamp(1 - view.alpha, 0.05, 1) * 0.55;
+    ctx.fillStyle = "rgba(90,140,180,0.55)";
+    ctx.fillRect(x0, bottom - 18 - waterH, ww, waterH);
+    const bubbles = Math.round(view.alpha * 8);
+    ctx.fillStyle = "rgba(255,255,255,0.75)";
+    for (let b = 0; b < bubbles; b++) {
+      const by = top + 20 + ((i * 17 + b * 29) % Math.max(8, gh - 40));
+      ctx.beginPath();
+      ctx.arc(x, by, 1.5 + (b % 3), 0, Math.PI * 2);
+      ctx.fill();
+    }
+    if (control) {
+      const travel = (gh - 36) * view.rod;
+      const absH = (gh - 36) * 0.62;
+      const folH = (gh - 36) * 0.18;
+      const yAbs = top + 10 + travel;
+      ctx.fillStyle = "#E8E0CC";
+      ctx.fillRect(x - 2, yAbs, 4, folH);
+      ctx.fillStyle = "#3a342c";
+      ctx.fillRect(x - 3, yAbs - absH, 6, absH);
+    }
+  }
+  ctx.save();
+  ctx.translate(left + gw / 2, top + 4);
+  ctx.rotate(pose.tilt * 0.35);
+  ctx.translate(0, -pose.lift * 18);
+  ctx.fillStyle = view.failed ? "#6B6F6C" : "#4d524f";
+  ctx.fillRect(-gw / 2 - 10, -16, gw + 20, 18);
+  ctx.restore();
+  if (view.failed && pose.debris > 0.2) {
+    ctx.fillStyle = "rgba(90,70,50,0.35)";
+    ctx.fillRect(left, top + 16, gw, (gh - 30) * pose.debris);
+    ctx.fillStyle = "rgba(255,180,58,0.45)";
+    ctx.fillRect(left + gw * 0.3, top + gh * 0.45, gw * 0.25, 10 + 20 * pose.debris);
+  }
+  ctx.fillStyle = "#1C1E1E";
+  ctx.font = "11px Inter, sans-serif";
+  ctx.fillText("Schematic cross-section · graphite stack fixed · water in low · steam out high", 8, 16);
+  ctx.font = "10px JetBrains Mono, monospace";
+  ctx.fillText("cream segment on a control rod = graphite follower", 8, h - 8);
+  ctx.fillStyle = "#3F5A54";
+  ctx.fillRect(right - 6, top + 8, 10, 16);
+  ctx.beginPath();
+  ctx.moveTo(right - 1, top + 8);
+  ctx.lineTo(right + 8, top);
+  ctx.strokeStyle = "#6aa6c9";
+  ctx.stroke();
+}
+
+const cctvScene = document.createElement("canvas");
+cctvScene.width = 192;
+cctvScene.height = 144;
+function drawCctv(view, now) {
+  const pose = lidPose({ failed: view.failed, failAge: view.failAge, pressure: view.pressure });
+  const w = 192, h = 144;
+  const sctx = cctvScene.getContext("2d");
+  sctx.fillStyle = "#3c403e";
+  sctx.fillRect(0, 0, w, h);
+  sctx.fillStyle = "#2a2e2c";
+  sctx.fillRect(0, 0, w, 28);
+  const shake = reduceMotion ? 0 : Math.min(2.5, pose.shake * 2.5);
+  const jx = reduceMotion ? 0 : Math.sin(now / 90) * shake;
+  const jy = reduceMotion ? 0 : Math.cos(now / 70) * shake * 0.6;
+  sctx.save();
+  sctx.translate(w / 2 + jx, h * 0.58 + jy - pose.lift * 28);
+  sctx.rotate((reduceMotion ? 0 : Math.sin(now / 1400) * 0.015) + pose.tilt * 0.55);
+  sctx.fillStyle = "#5c615e";
+  sctx.beginPath();
+  sctx.ellipse(0, 0, 62, 36, 0, 0, Math.PI * 2);
+  sctx.fill();
+  sctx.fillStyle = "#1C1E1E";
+  for (let r = 0; r < 5; r++) {
+    for (let c = 0; c < 8; c++) {
+      const x = -48 + c * 13.5;
+      const y = -20 + r * 10;
+      if (x * x / (58 * 58) + y * y / (32 * 32) > 1) continue;
+      sctx.beginPath();
+      sctx.arc(x, y, 2.2, 0, Math.PI * 2);
+      sctx.fill();
+    }
+  }
+  if (pose.wisps > 0.05) {
+    sctx.fillStyle = "rgba(230,224,210," + (0.15 + pose.wisps * 0.35) + ")";
+    for (let i = 0; i < 7; i++) {
+      sctx.fillRect(-30 + i * 9, -8 - pose.wisps * 10 - (i % 3) * 4, 4, 8 + pose.wisps * 12);
+    }
+  }
+  if (pose.debris > 0.05) {
+    sctx.fillStyle = "#1C1E1E";
+    for (let i = 0; i < 8; i++) {
+      sctx.fillRect(-40 + (i * 17) % 80, -30 - pose.debris * (10 + i * 4), 4, 3);
+    }
+  }
+  sctx.restore();
+  if (pose.lost > 0.02) {
+    sctx.fillStyle = "rgba(245,242,234," + Math.min(1, pose.lost) + ")";
+    sctx.fillRect(0, 0, w, h);
+  }
+  const out = $("cctv");
+  const ctx = out.getContext("2d");
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  if (lowDetail) {
+    ctx.drawImage(cctvScene, 0, 0);
+  } else {
+    const src = sctx.getImageData(0, 0, w, h);
+    const img = ctx.createImageData(w, h);
+    const k = 0.18;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const nx = (x / w - 0.5) * 2;
+        const ny = (y / h - 0.5) * 2;
+        const f = 1 + k * (nx * nx + ny * ny);
+        const sx = clamp(Math.round((nx * f * 0.5 + 0.5) * (w - 1)), 0, w - 1);
+        const sy = clamp(Math.round((ny * f * 0.5 + 0.5) * (h - 1)), 0, h - 1);
+        const si = (sy * w + sx) * 4;
+        const di = (y * w + x) * 4;
+        img.data[di] = src.data[si];
+        img.data[di + 1] = src.data[si + 1];
+        img.data[di + 2] = src.data[si + 2];
+        img.data[di + 3] = 255;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+  ctx.fillStyle = "rgba(0,0,0,0.18)";
+  for (let y = 0; y < h; y += 2) ctx.fillRect(0, y, w, 1);
+  const g = ctx.createRadialGradient(w / 2, h / 2, 30, w / 2, h / 2, 110);
+  g.addColorStop(0, "rgba(0,0,0,0)");
+  g.addColorStop(1, "rgba(0,0,0,0.65)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = "#E8E0CC";
+  ctx.font = "10px JetBrains Mono, monospace";
+  ctx.fillText("CAM 04", 6, 12);
+  ctx.fillText(fmtClock(view.t), 6, 24);
+  ctx.fillText("TEACHING CAMERA", w - 108, 12);
+  if (pose.lost > 0.72) {
+    ctx.fillStyle = "#E6392B";
+    ctx.font = "700 16px Oswald, sans-serif";
+    ctx.fillText("SIGNAL LOST", 46, 78);
+  }
+}
+
+let THREE = null;
+let renderer, scene, camera;
+let roomReady = false;
+let yaw = 0, pitch = 0;
+let handles = null;
+const roomCanvas = $("room");
+
+function buildRoom() {
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x141614);
+  scene.fog = new THREE.Fog(0x141614, 7, 18);
+  camera = new THREE.PerspectiveCamera(48, 1, 0.08, 40);
+  renderer = new THREE.WebGLRenderer({ canvas: roomCanvas, antialias: false, powerPreference: "low-power", alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+  renderer.setSize(roomCanvas.clientWidth || 640, roomCanvas.clientHeight || 440, false);
+  renderer.shadowMap.enabled = false;
+  const amb = new THREE.AmbientLight(0xc5d0cc, 0.72);
+  const key = new THREE.DirectionalLight(0xe8e0cc, 0.55);
+  key.position.set(-2, 4, 3);
+  const warm = new THREE.PointLight(0xffb43a, 0.35, 6);
+  warm.position.set(0.1, 1.15, -0.7);
+  const emergency = new THREE.PointLight(0xe6392b, 0, 8);
+  emergency.position.set(0, 2.4, -1);
+  scene.add(amb, key, warm, emergency);
+  const concrete = new THREE.MeshLambertMaterial({ color: 0x6b6f6c });
+  const teal = new THREE.MeshLambertMaterial({ color: 0x3f5a54 });
+  const dark = new THREE.MeshLambertMaterial({ color: 0x1c1e1e });
+  const cream = new THREE.MeshLambertMaterial({ color: 0xe8e0cc });
+  const steel = new THREE.MeshLambertMaterial({ color: 0x8d928e });
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(14, 16), new THREE.MeshLambertMaterial({ color: 0x3a3d3b }));
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.set(0, 0, -2);
+  const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(14, 16), new THREE.MeshLambertMaterial({ color: 0x2c302e }));
+  ceiling.rotation.x = Math.PI / 2;
+  ceiling.position.set(0, 3.05, -2);
+  const back = new THREE.Mesh(new THREE.PlaneGeometry(14, 3.05), concrete);
+  back.position.set(0, 1.52, -6.2);
+  const leftW = new THREE.Mesh(new THREE.PlaneGeometry(10, 3.05), concrete);
+  leftW.rotation.y = Math.PI / 2;
+  leftW.position.set(-4.2, 1.52, -2);
+  const rightW = new THREE.Mesh(new THREE.PlaneGeometry(10, 3.05), new THREE.MeshLambertMaterial({ color: 0x626663 }));
+  rightW.rotation.y = -Math.PI / 2;
+  rightW.position.set(4.2, 1.52, -2);
+  const windowM = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 1.1), new THREE.MeshLambertMaterial({ color: 0x1a2428 }));
+  windowM.position.set(-2.3, 1.8, -6.15);
+  const blind = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.55, 0.04), new THREE.MeshLambertMaterial({ color: 0x8a8474 }));
+  blind.position.set(-2.3, 2.15, -6.08);
+  const desk = new THREE.Mesh(new THREE.BoxGeometry(6.4, 0.08, 1.5), teal);
+  desk.position.set(0, 0.78, -0.35);
+  const rear = new THREE.Mesh(new THREE.BoxGeometry(5.5, 0.7, 0.7), teal);
+  rear.position.set(0.4, 0.7, -3.4);
+  const panel = new THREE.Mesh(new THREE.BoxGeometry(2.05, 0.78, 0.12), teal);
+  panel.position.set(0, 1.18, -1.22);
+  const shelf = new THREE.Mesh(new THREE.BoxGeometry(2.05, 0.05, 0.28), new THREE.MeshLambertMaterial({ color: 0x2e3a36 }));
+  shelf.position.set(0, 0.82, -1.05);
+  const stripe = new THREE.Mesh(new THREE.BoxGeometry(2.05, 0.03, 0.02), cream);
+  stripe.position.set(0, 1.52, -1.15);
+  function chair(x) {
+    const seat = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.08, 0.48), dark);
+    seat.position.set(x, 0.48, 0.45);
+    const backr = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.55, 0.06), dark);
+    backr.position.set(x, 0.78, 0.68);
+    scene.add(seat, backr);
+  }
+  chair(0.15);
+  chair(1.7);
+  const clock = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.36, 0.04), cream);
+  clock.position.set(-4.05, 2.15, -2.2);
+  const lights = [];
+  for (let i = 0; i < 3; i++) {
+    const L = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.05, 0.16), new THREE.MeshLambertMaterial({ color: 0xdfe7e2, emissive: 0xc5ddd4, emissiveIntensity: 0.4 }));
+    L.position.set(-1.4 + i * 1.4, 2.98, -1.2);
+    lights.push(L);
+    scene.add(L);
+  }
+  const az = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.04, 12), new THREE.MeshLambertMaterial({ color: 0xe6392b, emissive: 0x8a1c16, emissiveIntensity: 0.5 }));
+  az.position.set(0.22, 1.02, -1.14);
+  const guard = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.08, 0.12), new THREE.MeshLambertMaterial({ color: 0xd5d0c4, transparent: true, opacity: 0.45 }));
+  guard.position.set(0.22, 1.1, -1.12);
+  const gPower = new THREE.Mesh(new THREE.CircleGeometry(0.16, 18), dark);
+  gPower.position.set(-0.22, 1.28, -1.15);
+  const gPress = new THREE.Mesh(new THREE.CircleGeometry(0.13, 16), dark);
+  gPress.position.set(0.62, 1.28, -1.15);
+  const nGeo = new THREE.BoxGeometry(0.18, 0.012, 0.008);
+  nGeo.translate(0.06, 0, 0);
+  const nPower = new THREE.Mesh(nGeo, cream);
+  nPower.position.set(-0.22, 1.28, -1.14);
+  const nPress = new THREE.Mesh(nGeo.clone(), cream);
+  nPress.position.set(0.62, 1.28, -1.14);
+  const digiCanvas = document.createElement("canvas");
+  digiCanvas.width = 256;
+  digiCanvas.height = 64;
+  const digiTex = new THREE.CanvasTexture(digiCanvas);
+  const digi = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.12), new THREE.MeshLambertMaterial({ map: digiTex, emissive: 0x203028, emissiveMap: digiTex, emissiveIntensity: 0.35 }));
+  digi.position.set(-0.22, 1.05, -1.15);
+  const voidBar = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.28, 0.02), new THREE.MeshLambertMaterial({ color: 0x6aa6c9 }));
+  voidBar.position.set(0.92, 1.16, -1.15);
+  const housing = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.42, 0.04), new THREE.MeshLambertMaterial({ color: 0x24302c }));
+  housing.position.set(-0.78, 1.2, -1.15);
+  const rodMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(0.018, 0.22, 0.02), cream, 6);
+  rodMesh.frustumCulled = false;
+  rodMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  const pumpMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(0.06, 0.05, 0.02), new THREE.MeshLambertMaterial({ color: 0xffffff }), 8);
+  pumpMesh.frustumCulled = false;
+  pumpMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  const debris = new THREE.InstancedMesh(new THREE.BoxGeometry(0.03, 0.012, 0.02), steel, 12);
+  debris.frustumCulled = false;
+  debris.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  debris.visible = false;
+  const cable = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.04, 0.8), dark);
+  cable.position.set(0.9, 0.84, -0.7);
+  const doc = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.01, 0.2), cream);
+  doc.position.set(-0.7, 0.83, -0.2);
+  scene.add(floor, ceiling, back, leftW, rightW, windowM, blind, desk, rear, panel, shelf, stripe, clock, az, guard, gPower, gPress, nPower, nPress, digi, voidBar, housing, rodMesh, pumpMesh, debris, cable, doc);
+  handles = { warm, emergency, lights, az, guard, nPower, nPress, digiCanvas, digiTex, digiCtx: digiCanvas.getContext("2d"), voidBar, rodMesh, pumpMesh, debris, amb, colorOn: new THREE.Color(0xffb43a), colorOff: new THREE.Color(0x3a403c) };
+  const dummy = new THREE.Object3D();
+  for (let i = 0; i < 8; i++) {
+    dummy.position.set(0.55 + (i % 4) * 0.09, i < 4 ? 0.98 : 0.9, -1.14);
+    dummy.rotation.set(0, 0, 0);
+    dummy.scale.set(1, 1, 1);
+    dummy.updateMatrix();
+    pumpMesh.setMatrixAt(i, dummy.matrix);
+  }
+  pumpMesh.instanceMatrix.needsUpdate = true;
+  roomReady = true;
+  $("roomNote").textContent = "Drag to look. The seat stays put.";
+}
+
+function paintDigi(text, color) {
+  const ctx = handles.digiCtx;
+  ctx.fillStyle = "#121614";
+  ctx.fillRect(0, 0, 256, 64);
+  ctx.fillStyle = color;
+  ctx.font = "700 34px JetBrains Mono, monospace";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(text, 128, 34);
+  handles.digiTex.needsUpdate = true;
+}
+
+let dummy = null;
+let lastDigi = "";
+let roomFrames = 0;
+function drawRoom(view, now, wall) {
+  if (!roomReady) return;
+  try {
+  drawRoomInner(view, now, wall);
+  } catch (err) {
+    console.error(err);
+    roomReady = false;
+    $("roomNote").textContent = "3D control room stopped. CCTV, the cross-section, and the instruments still run.";
+  }
+}
+function drawRoomInner(view, now, wall) {
+  if (!dummy) dummy = new THREE.Object3D();
+  if (wall > 0.034) slowFrames++; else slowFrames = Math.max(0, slowFrames - 1);
+  if (slowFrames > 12) lowDetail = true;
+  roomFrames++;
+  if (lowDetail && roomFrames % 2 === 1) return;
+  const pose = lidPose({ failed: view.failed, failAge: view.failAge, pressure: view.pressure });
+  const shake = reduceMotion ? 0 : Math.min(0.012, pose.shake * 0.012);
+  camera.position.set(Math.sin(now / 90) * shake, 1.28 + Math.cos(now / 80) * shake * 0.4, 0.62);
+  const look = new THREE.Vector3(0, 1.08, -1.25);
+  const dir = look.sub(camera.position);
+  const yawQ = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
+  dir.applyQuaternion(yawQ);
+  const right = new THREE.Vector3(1, 0, 0).applyQuaternion(yawQ);
+  dir.applyQuaternion(new THREE.Quaternion().setFromAxisAngle(right, pitch));
+  camera.lookAt(camera.position.clone().add(dir));
+  const frac = view.known ? clamp(view.P / PARAMS.Pnom, 0, 1.3) : 1;
+  handles.nPower.rotation.z = -0.9 + frac * 1.5;
+  handles.nPress.rotation.z = -0.9 + clamp((view.pressure - 5) / 6, 0, 1) * 1.5;
+  handles.guard.position.y = $("guard").checked || view.scram ? 1.24 : 1.1;
+  const text = view.known ? (view.P >= 100 ? view.P.toFixed(0) : view.P.toFixed(1)) : "OFF SCALE";
+  const color = view.known ? "#7DFFB0" : "#E6392B";
+  if (text !== lastDigi) { lastDigi = text; paintDigi(text, color); }
+  handles.voidBar.scale.y = 0.15 + view.alpha * 1.4;
+  handles.warm.intensity = 0.22 + (view.known ? clamp(view.P / 4000, 0, 1) : 0.2) * 0.45;
+  const flicker = !reduceMotion && view.pressure > 8.15 && !view.failed && Math.sin(now / 1000 * Math.PI * 2) > 0.82;
+  handles.lights.forEach((L, i) => {
+    let e = view.failed ? (i === 0 ? 0.15 : 0.02) : (flicker && i === 1 ? 0.05 : 0.45);
+    if (reduceMotion && view.pressure > 8.15 && !view.failed) e = 0.22;
+    L.material.emissiveIntensity = e;
+  });
+  const pulseHz = 1.5;
+  const pulse = reduceMotion ? 0.65 : (0.35 + 0.65 * (0.5 + 0.5 * Math.sin(now / 1000 * Math.PI * 2 * pulseHz)));
+  handles.emergency.intensity = view.failed ? pulse * Math.min(1, view.failAge / 0.5) : 0;
+  for (let i = 0; i < 6; i++) {
+    const x = -0.9 + i * 0.045;
+    dummy.position.set(x, 1.28 - view.rod * 0.16, -1.13);
+    dummy.rotation.set(0, 0, 0);
+    dummy.scale.set(1, 1, 1);
+    dummy.updateMatrix();
+    handles.rodMesh.setMatrixAt(i, dummy.matrix);
+  }
+  handles.rodMesh.instanceMatrix.needsUpdate = true;
+  for (let i = 0; i < 8; i++) {
+    const on = (view.pumpsMask & (1 << i)) !== 0;
+    dummy.position.set(-0.15 + (i % 8) * 0.07, 0.9, -1.14);
+    dummy.rotation.set(0, 0, 0);
+    dummy.scale.set(1, 1, 1);
+    dummy.updateMatrix();
+    handles.pumpMesh.setMatrixAt(i, dummy.matrix);
+    handles.pumpMesh.setColorAt(i, on ? handles.colorOn : handles.colorOff);
+  }
+  handles.pumpMesh.instanceMatrix.needsUpdate = true;
+  if (handles.pumpMesh.instanceColor) handles.pumpMesh.instanceColor.needsUpdate = true;
+  const showDebris = view.failed && pose.debris > 0.05 && !lowDetail;
+  handles.debris.visible = showDebris;
+  if (showDebris) {
+    for (let i = 0; i < 12; i++) {
+      dummy.position.set(-0.8 + (i % 6) * 0.3, 1.3 + pose.debris * (0.2 + (i % 5) * 0.12), -1.6 - (i % 4) * 0.3);
+      dummy.rotation.set(0, 0, pose.tilt * (i % 2 ? 1 : -1));
+      dummy.scale.set(1, 1, 1);
+      dummy.updateMatrix();
+      handles.debris.setMatrixAt(i, dummy.matrix);
+    }
+    handles.debris.instanceMatrix.needsUpdate = true;
+  }
+  renderer.render(scene, camera);
+  if (roomFrames % 30 === 0) {
+    const calls = renderer.info.render.calls;
+    $("footNote").textContent = "RBMK study module · not a licensing model · steam explosion, not a nuclear detonation · room draw calls " + calls + (lowDetail ? " · 30 fps fallback" : "");
+  }
+}
+
+function resizeRoom() {
+  if (!renderer || !camera) return;
+  const w = roomCanvas.clientWidth, h = roomCanvas.clientHeight;
+  if (!w || !h) return;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h, false);
+}
+
+async function loadThree() {
+  try {
+    THREE = await import("https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js");
+    buildRoom();
+    resizeRoom();
+  } catch (err) {
+    console.error(err);
+    $("roomNote").textContent = "3D control room did not load. CCTV, the cross-section, and the instruments still run.";
+  }
+}
+
+function pointerLook() {
+  let drag = null;
+  roomCanvas.addEventListener("pointerdown", (e) => {
+    drag = { x: e.clientX, y: e.clientY, yaw, pitch };
+    roomCanvas.setPointerCapture(e.pointerId);
+  });
+  roomCanvas.addEventListener("pointermove", (e) => {
+    if (!drag) return;
+    yaw = clamp(drag.yaw - (e.clientX - drag.x) * 0.005, -40 * DEG, 40 * DEG);
+    pitch = clamp(drag.pitch + (e.clientY - drag.y) * 0.004, -18 * DEG, 18 * DEG);
+  });
+  const end = () => { drag = null; };
+  roomCanvas.addEventListener("pointerup", end);
+  roomCanvas.addEventListener("pointercancel", end);
+}
+
+function fillNotes() {
+  const list = $("simpList");
+  const extra = [
+    "Void is one core-average number in both zones. The axial difference is the graphite tip, which the lower zone feels more strongly. The lid and the cross-section show the upper shield; they are not a second reactor model.",
+    "The low-power boiling cliff is a tuned stand-in. At 200 MWt the real core is heavily subcooled, so flow falling only from about 133% to 70% would not boil it in a bulk-enthalpy model. The cliff is how this page lets low flow or a low separator margin drive the positive void coefficient.",
+    "The live prelude stops with ORM in the teens, under the safe floor of 30, not at 8. Xenon after the nine-hour hold cannot hold this model critical at ORM 8. The rundown continues from the documented rod line (ORM about 8) on the same rods and the same xenon equations, with xenon set to the critical value for that line.",
+    "The xenon flux factor and the fuel-temperature scale are tuned so 3200 MWt is steady and the shutdown xenon peak lands between 8 and 11 hours. Half-lives are the real ones.",
+    "An internal power ceiling keeps the arithmetic from diverging after the instruments saturate. It is never shown. OFF SCALE means the peak is unknown."
+  ];
+  for (const text of SIMPLIFICATIONS.concat(extra)) {
+    const li = document.createElement("li");
+    li.textContent = text;
+    list.appendChild(li);
+  }
+}
+
+function wire() {
+  for (let i = 0; i < 8; i++) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "pump";
+    b.textContent = String(i + 1);
+    b.addEventListener("click", () => togglePump(i));
+    $("pumpBox").appendChild(b);
+  }
+  $("tabSandbox").addEventListener("click", () => boot("sandbox"));
+  $("tabStory").addEventListener("click", () => boot("chernobyl"));
+  $("pauseBtn").addEventListener("click", () => {
+    if (replay != null) { replay = null; playing = true; syncPause(); return; }
+    if (mode === "chernobyl" && story.beat === "intro") { beginStory(); return; }
+    playing = !playing;
+    syncPause();
+  });
+  $("resetBtn").addEventListener("click", () => boot(mode));
+  $("controlsJumpBtn").addEventListener("click", () => {
+    $("controls").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+  });
+  $("rodSlider").addEventListener("pointerdown", () => { rodLock = true; });
+  $("rodSlider").addEventListener("pointerup", () => { rodLock = false; });
+  $("rodSlider").addEventListener("pointercancel", () => { rodLock = false; });
+  $("rodSlider").addEventListener("input", () => {
+    const slider = $("rodSlider");
+    if (slider.disabled || slider.value === lastEcho) return;
+    lastEcho = "";
+    sim.rodTarget = Number(slider.value) / 100;
+    if (mode === "sandbox") sim.scram = false;
+  });
+  $("guard").addEventListener("change", applyPolicy);
+  $("az5").addEventListener("click", pressAZ5);
+  document.querySelectorAll("[data-rate]").forEach((ch) => {
+    ch.addEventListener("click", () => {
+      if (ch.disabled) return;
+      timescale = Number(ch.dataset.rate);
+      syncRates();
+    });
+  });
+  document.querySelectorAll("#rodGroups .chip").forEach((ch) => {
+    ch.addEventListener("click", () => {
+      log("Manual, automatic, and shortened bottom rods move as one bank in this model.");
+    });
+  });
+  $("presetNominal").addEventListener("click", () => loadPreset("nominal"));
+  $("presetNight").addEventListener("click", () => loadPreset("night"));
+  $("presetShutdown").addEventListener("click", () => loadPreset("shutdown"));
+  $("scrub").addEventListener("input", () => {
+    replay = Number($("scrub").value);
+    playing = false;
+    ff = null;
+    syncPause();
+  });
+  $("liveBtn").addEventListener("click", () => { replay = null; syncPause(); });
+  document.querySelectorAll("[data-study-back]").forEach((b) => {
+    b.addEventListener("click", (e) => {
+      e.preventDefault();
+      location.href = "study.html" + location.search;
+    });
+  });
+  window.addEventListener("resize", () => { resizeRoom(); drawCharts(); drawCore(currentView()); });
+  pointerLook();
+  fillNotes();
+  if (reduceMotion) $("noiseNote").textContent = "Reduced motion is on: digits show the model without jitter, and the room does not shake. Charts always use the model.";
+}
+
+let lastFrame = performance.now();
+let lastChart = 0;
+let lastCctv = 0;
+let lastNoise = 0;
+let noisyPower = null;
+let lastEcho = "";
+function frame(now) {
+  try { frameBody(now); } catch (err) { console.error(err); }
+  requestAnimationFrame(frame);
+}
+function frameBody(now) {
+  const wall = Math.min(0.05, (now - lastFrame) / 1000);
+  lastFrame = now;
+  if (replay == null) {
+    if (sim.failed) {
+      if (!visualArmed) {
+        visualArmed = true;
+        if (sim.failAge > 0.35) sim.failAge = 0.02;
+      }
+      if (sim.failAge < 5) advance(sim, Math.min(wall, 0.05));
+      if (!secondLogged && sim.failAge > 2.6) {
+        secondLogged = true;
+        log("Second explosion, a few seconds later. Mechanism disputed — more steam, hydrogen, or another power pulse. No power number is assigned to it.");
+        paintLog();
+      }
+    }
+    if (playing) {
+      if (ff) chew(14);
+      else stepSim(wall * effectiveRate());
+      pullEvents();
+      maybeSample(false);
+    }
+  }
+  const view = currentView();
+  if (!reduceMotion && view.known && now - lastNoise > 200) {
+    lastNoise = now;
+    noisyPower = noisy(view.P, 0.004, Math.random);
+  }
+  if (reduceMotion || !view.known || replay != null) noisyPower = null;
+  paintBanner(view);
+  paintTiles(view, replay == null && view.known ? noisyPower : null);
+  paintRho(view);
+  paintComp(view);
+  paintPumps(view);
+  paintMeta();
+  applyPolicy();
+  if (now - lastChart > 160) {
+    lastChart = now;
+    drawCharts();
+    paintLog();
+    syncScrub();
+  }
+  if (now - lastCctv > 100) {
+    lastCctv = now;
+    drawCctv(view, now);
+  }
+  drawCore(view);
+  if (roomReady) drawRoom(view, now, wall);
+}
+
+wire();
+boot(mode);
+loadThree();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
