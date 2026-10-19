@@ -386,7 +386,8 @@ function storyDriveMode() {
   return "to1600";
 }
 function effectiveRate() {
-  if (mode === "chernobyl" && (story.beat === "rundown" || story.beat === "aborting")) return 1;
+  if (mode === "chernobyl" && story.beat === "rundown") return 1;
+  if (mode === "chernobyl" && story.beat === "aborting") return 10;
   return timescale;
 }
 
@@ -519,8 +520,9 @@ function updateStoryUI() {
 function paintMeta() {
   if (mode !== "chernobyl") return;
   const age = sim.t - (story.enteredAt || 0);
-  const P = powerOf(sim);
-  let text = "Power " + (sim.failed ? "OFF SCALE" : P.toFixed(0) + " MWt") + " · ORM " + ormOf(sim.rod).toFixed(1) + " · Xe " + sim.Xe.toFixed(2);
+  const pNow = powerOf(sim);
+  const onScale = !sim.failed && !sim.offscale && pNow <= PARAMS.pegMWt;
+  let text = "Power " + (onScale ? Math.max(0, pNow).toFixed(0) + " MWt" : "OFF SCALE") + " · ORM " + ormOf(sim.rod).toFixed(1) + " · Xe " + sim.Xe.toFixed(2);
   if (story.beat === "hold") text += " · hold " + (age / 3600).toFixed(2) + " h / 9 h";
   if (story.beat === "reduce") text += " · reduction " + Math.min(30, age / 60).toFixed(1) + " / 30 min";
   if (story.beat === "drop") text += " · drop " + (age / 60).toFixed(1) + " / 40 min";
@@ -530,7 +532,8 @@ function paintMeta() {
     const left = Math.max(0, story.waitUntil - sim.t);
     text += " · xenon wait " + ((30 * 3600 - left) / 3600).toFixed(2) + " h / 30 h";
   }
-  if (story.beat === "rundown" || story.beat === "aborting") text += " · segment " + age.toFixed(1) + " s · time scale locked at 1×";
+  if (story.beat === "rundown") text += " · " + age.toFixed(1) + " s · time scale locked at 1×";
+  if (story.beat === "aborting") text += " · abort at 10× — rods finish the stroke, pumps finish the coast";
   $("storyMeta").textContent = text;
 }
 
@@ -634,7 +637,7 @@ function advanceBeat() {
     }
     return true;
   }
-  if (b === "aborting" && !sim.failed && orm >= PARAMS.ormSafe && P < PARAMS.forbiddenMWt && Math.abs(sim.rod - sim.rodTarget) < 0.03) {
+  if (b === "aborting" && !sim.failed && orm >= 45 && P < 25 && sim.flow < 108 && Math.abs(sim.rod - sim.rodTarget) < 0.01) {
     sim.saved = true;
     story.saveKind = "abort";
     playing = false;
@@ -798,8 +801,9 @@ function paintTiles(view, noisyPower) {
     $("tZone").textContent = "OFF SCALE";
     tileP.classList.add("bad");
   } else {
-    const shown = noisyPower == null ? view.P : noisyPower;
-    powerEl.textContent = (shown >= 100 ? shown.toFixed(0) : shown.toFixed(1)) + " MWt";
+    let shown = Math.max(0, view.P || 0);
+    if (noisyPower != null && shown >= 5) shown = Math.max(0, noisyPower);
+    powerEl.textContent = (shown >= 100 ? shown.toFixed(0) : shown < 0.05 ? "0.0" : shown.toFixed(1)) + " MWt";
     $("tPct").textContent = (view.P / PARAMS.Pnom * 100).toFixed(1) + "% of 3200";
     $("tZone").textContent = view.nL.toFixed(0) + " / " + view.nU.toFixed(0);
     tileP.classList.add(view.forbidden ? "warn" : "plain");
@@ -818,11 +822,18 @@ function paintTiles(view, noisyPower) {
   $("tVoidNote").textContent = (100 - view.alpha * 100).toFixed(0) + "% water";
   $("tXe").textContent = view.Xe.toFixed(2) + " ×";
   $("tI").textContent = "iodine " + view.I.toFixed(2) + " ×";
-  $("tFlux").textContent = view.thermal.toFixed(2) + " / " + view.fast.toFixed(2);
+  $("tFlux").textContent = view.thermal == null || view.fast == null ? "—" : view.thermal.toFixed(2) + " / " + view.fast.toFixed(2);
   $("tStage").textContent = view.stage;
   $("tBanner").textContent = view.banner;
   $("rodLabel").textContent = "Control-rod bank insertion " + (view.rod * 100).toFixed(1) + "% · ORM " + view.orm.toFixed(1);
-  if (!rodLock && document.activeElement !== $("rodSlider")) $("rodSlider").value = String(view.rod * 100);
+  const slider = $("rodSlider");
+  if (!rodLock && document.activeElement !== slider) {
+    const v = String(view.rod * 100);
+    if (slider.value !== v) {
+      lastEcho = v;
+      slider.value = v;
+    }
+  }
 }
 
 function paintBanner(view) {
@@ -947,7 +958,7 @@ function syncScrub() {
 }
 
 function applyPolicy() {
-  const auto = mode === "chernobyl" && ["intro", "reduce", "hold", "drop", "recover", "prep", "waitxe", "saved", "failed", "stuck", "save1", "save2"].includes(story.beat);
+  const auto = mode === "chernobyl" && ["intro", "reduce", "hold", "drop", "recover", "prep", "waitxe", "saved", "failed", "stuck", "save1", "save2", "rundown", "aborting"].includes(story.beat);
   $("rodSlider").disabled = replay != null || auto || sim.saved;
   $("az5").disabled = replay != null || sim.failed || sim.saved || !$("guard").checked;
   $("guard").disabled = replay != null;
@@ -1590,8 +1601,10 @@ function wire() {
   $("rodSlider").addEventListener("pointerup", () => { rodLock = false; });
   $("rodSlider").addEventListener("pointercancel", () => { rodLock = false; });
   $("rodSlider").addEventListener("input", () => {
-    if ($("rodSlider").disabled) return;
-    sim.rodTarget = Number($("rodSlider").value) / 100;
+    const slider = $("rodSlider");
+    if (slider.disabled || slider.value === lastEcho) return;
+    lastEcho = "";
+    sim.rodTarget = Number(slider.value) / 100;
     if (mode === "sandbox") sim.scram = false;
   });
   $("guard").addEventListener("change", applyPolicy);
@@ -1635,7 +1648,12 @@ let lastChart = 0;
 let lastCctv = 0;
 let lastNoise = 0;
 let noisyPower = null;
+let lastEcho = "";
 function frame(now) {
+  try { frameBody(now); } catch (err) { console.error(err); }
+  requestAnimationFrame(frame);
+}
+function frameBody(now) {
   const wall = Math.min(0.05, (now - lastFrame) / 1000);
   lastFrame = now;
   if (replay == null) {
@@ -1683,7 +1701,6 @@ function frame(now) {
   }
   drawCore(view);
   if (roomReady) drawRoom(view, now, wall);
-  requestAnimationFrame(frame);
 }
 
 wire();
