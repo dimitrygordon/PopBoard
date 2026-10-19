@@ -42,16 +42,46 @@ main{max-width:1180px;margin:0 auto;padding:6px 14px 48px}
 .card h3{font-size:12px;margin:14px 0 6px;color:var(--cream)}
 .sub,.panel-hint{font-size:12px;color:var(--text-dim);line-height:1.55}
 .card p.body{font-size:14px;line-height:1.6;color:#d7d3c8;margin:0}
-.views{display:grid;grid-template-columns:1.35fr .9fr;gap:12px}
-@media(max-width:860px){.views{grid-template-columns:1fr}}
-.room-frame{position:relative;height:440px;background:#141614;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.faux{font-family:Oswald,sans-serif;letter-spacing:.12em;color:var(--text-dimmer);margin-left:8px}
+.ru{font-family:Oswald,sans-serif;letter-spacing:.14em;color:#8fb2a8}
+#moduleStage{position:relative}
+.stage-grid{position:relative}
+.room-frame{position:relative;height:min(62vh,560px);min-height:380px;background:#141614;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
 .room-frame canvas{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
-.room-note{position:absolute;left:10px;bottom:8px;margin:0;font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--cream);opacity:.8;pointer-events:none}
-@media(max-width:800px){.room-frame{height:240px}}
-.side{display:flex;flex-direction:column;gap:12px}
-#cctv{width:100%;aspect-ratio:4/3;background:#111;border-radius:12px;display:block;border:1px solid var(--border)}
-#core{width:100%;height:230px;background:#f4f1ea;border-radius:12px;display:block;border:1px solid var(--border)}
-@media(max-width:520px){#core{height:200px}}
+.room-note,.rod-lost{position:absolute;left:10px;margin:0;font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--cream);pointer-events:none}
+.room-note{bottom:8px;opacity:.8;max-width:70%}
+.rod-lost{top:8px;left:64px;right:120px;color:var(--alarm);background:rgba(14,17,16,.72);padding:4px 6px;border-radius:6px}
+.pip{position:absolute;top:58px;right:12px;width:22%;min-width:120px;z-index:4;border-radius:10px;overflow:hidden;border:1px solid var(--border);box-shadow:0 8px 24px rgba(0,0,0,.45);background:#111}
+#cctv{width:100%;aspect-ratio:4/3;background:#111;display:block}
+#moduleStage.s5 .pip{width:35%}
+.stage-tools{position:absolute;top:8px;right:8px;z-index:6;display:flex;gap:6px}
+.stage-tools button{min-width:44px;min-height:44px;padding:8px 12px}
+.drawer{margin-top:12px}
+.drawer-pane{margin-top:8px}
+#core,#particles{width:100%;height:280px;background:#f4f1ea;border-radius:12px;display:block;border:1px solid var(--border)}
+#particles{background:#121614}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:8px;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--text-dim);line-height:1.45}
+.swatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+#particleReadout{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--cream);margin:8px 0 0}
+.nixies{position:absolute;inset:0;pointer-events:none;z-index:2}
+.nixie{position:absolute;left:0;top:0;min-width:92px}
+.nix-label{font-family:Oswald,sans-serif;font-size:9px;letter-spacing:.08em;color:#c4b8a4;text-transform:uppercase}
+.nix-digits{display:flex;gap:2px;margin-top:2px;padding:2px 4px;border-radius:4px;background:linear-gradient(180deg,rgba(40,18,8,.72),rgba(20,10,4,.28));box-shadow:inset 0 0 10px rgba(255,154,60,.45),0 0 12px rgba(255,154,60,.18)}
+.nix-digits span{position:relative;font-family:"JetBrains Mono",monospace;font-weight:700;font-size:18px;line-height:1.1;color:#FF9A3C;text-shadow:0 0 6px #FF9A3C,0 0 14px rgba(255,154,60,.85);transition:opacity .25s linear}
+.nix-digits span::after{content:"";position:absolute;left:0;right:0;top:0;height:46%;background:linear-gradient(180deg,rgba(255,255,255,.32),rgba(255,255,255,0));pointer-events:none}
+#joystick{position:absolute;left:16px;bottom:16px;width:110px;height:110px;border-radius:50%;background:rgba(20,24,22,.5);border:1px solid rgba(232,224,204,.4);z-index:5;touch-action:none}
+#joyKnob{position:absolute;width:44px;height:44px;left:33px;top:33px;border-radius:50%;background:rgba(232,224,204,.88)}
+#floatCluster{position:absolute;right:12px;bottom:12px;width:min(280px,70%);background:rgba(23,28,34,.94);border:1px solid var(--border-lit);border-radius:12px;padding:10px;z-index:5}
+#floatCluster .pump{min-width:36px;padding:6px}
+#moduleStage:fullscreen,#moduleStage.fs-fallback{background:#0e1110;overflow:auto;padding:12px;width:100%;height:100%}
+#moduleStage.fs-fallback{position:fixed;inset:0;z-index:80}
+#moduleStage:fullscreen .room-frame,#moduleStage.fs-fallback .room-frame{height:calc(100vh - 360px);min-height:300px}
+@media(max-width:800px){
+  .room-frame{height:62vh;min-height:320px}
+  .pip{min-width:100px;width:28%}
+  #core,#particles{height:220px}
+  .nix-digits span{font-size:14px}
+}
 .readouts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
 @media(max-width:800px){.readouts{grid-template-columns:1fr 1fr}}
 .tile{background:rgba(0,0,0,.28);border:1px solid var(--border);border-radius:10px;padding:8px;text-align:center;min-height:64px}
@@ -116,8 +146,8 @@ footer{color:var(--text-dimmer);font-size:11px;text-align:center;padding:0 16px 
   </div>
 </div>
 <div class="title">
-  <h1>RBMK Reactor Simulator</h1>
-  <p>A two-zone classroom model of an RBMK-1000, the Chernobyl Unit 4 type: 3200 MWt, graphite moderator fixed in the stack, water as coolant and neutron absorber. The same physics runs the sandbox and the night of 25–26 April 1986. A pressure failure here is a <strong>steam explosion, not a nuclear detonation</strong>. Peak power in that failure reads OFF SCALE.</p>
+  <h1>RBMK Reactor Simulator <span class="faux" aria-hidden="true">ЯБМК</span></h1>
+  <p>A two-zone classroom model of an RBMK-1000, the Chernobyl Unit 4 type: 3200 MWt, graphite moderator fixed in the stack, water as coolant and neutron absorber. The same physics runs the sandbox and the night of 25–26 April 1986. A pressure failure here is a <strong>steam explosion, not a nuclear detonation</strong>. Peak power in that failure reads OFF SCALE. The particle view is an illustration of that model. It does not feed it.</p>
 </div>
 <div style="padding:0 14px">
   <div id="statusBanner" role="status" aria-live="polite">
@@ -138,17 +168,50 @@ footer{color:var(--text-dimmer);font-size:11px;text-align:center;padding:0 16px 
     <div class="btn-row" id="storyActions" style="margin-top:10px"></div>
   </section>
 
-  <section class="card">
-    <h2>Control room, hall camera, core</h2>
-    <p class="sub">You stay seated. Drag the room to look (±40° yaw, ±18° pitch). The 3D panel is what you would feel. Numbers are on this page, not inside the room. CAM 04 is a teaching camera of the upper shield, not an archive tape. The cross-section is a schematic, not all 1,661 channels.</p>
-    <div class="views">
-      <div class="room-frame">
-        <canvas id="room" aria-label="Seated view of a simplified RBMK control room"></canvas>
-        <p class="room-note" id="roomNote">Drag to look. The seat stays put.</p>
+  <section class="card" id="stageCard">
+    <h2>Control room <span class="ru">РБМК-1000</span> <span class="ru">АЭС</span></h2>
+    <p class="sub">The room is the main view. CAM 04 stays in the corner, and it grows only when the lid camera whites out. Core and Particles are two drawings of the same core; open one at a time. Expand to stand up and walk. Drag turns your head: right turns right, up looks up. The bottom strip stays on the numbers. There are no people in the room. <span class="ru">ВНИМАНИЕ</span> ATTENTION: the door does not open onto the hall.</p>
+    <div id="moduleStage">
+    <div class="stage-grid">
+      <div class="room-frame" id="roomFrame">
+        <canvas id="room" aria-label="Simplified RBMK control room"></canvas>
+        <div class="nixies" id="nixies">
+          <div class="nixie" data-nix="power"><div class="nix-label"><span class="ru">МОЩНОСТЬ</span> Power</div><div class="nix-digits" id="nixPower"></div></div>
+          <div class="nixie" data-nix="pressure"><div class="nix-label"><span class="ru">ДАВЛЕНИЕ</span> Pressure</div><div class="nix-digits" id="nixPressure"></div></div>
+          <div class="nixie" data-nix="temp"><div class="nix-label"><span class="ru">ТЕМПЕРАТУРА</span> Water</div><div class="nix-digits" id="nixTemp"></div></div>
+          <div class="nixie" data-nix="rod"><div class="nix-label"><span class="ru">СТЕРЖНИ</span> Rods</div><div class="nix-digits" id="nixRod"></div></div>
+        </div>
+        <div class="stage-tools">
+          <button id="expandBtn" class="btn" type="button">Expand</button>
+          <button id="exitBtn" class="btn" type="button" hidden>EXIT</button>
+        </div>
+        <div id="joystick" hidden role="application" aria-label="Walk. Drag to move. Looking is a drag on the right side of the room."><div id="joyKnob"></div></div>
+        <div id="floatCluster" hidden>
+          <div class="panel-label"><span class="ru">СТЕРЖНИ</span> Rods · <span class="ru">ЩИТ</span></div>
+          <input type="range" id="floatRod" min="0" max="100" step="0.1" value="36" aria-label="Control rod insertion percent, away from the desk">
+          <label class="check"><input type="checkbox" id="floatGuard"> Lift the AZ-5 guard</label>
+          <button id="floatAz" class="btn" type="button" disabled>AZ-5</button>
+          <div class="pumps" id="floatPumps"></div>
+          <p class="panel-hint">Same bank, same pumps. The particle count is not a setpoint.</p>
+        </div>
+        <p class="rod-lost" id="rodLost" hidden>rod drive lost, core damaged (exact sequence uncertain)</p>
+        <p class="room-note" id="roomNote">Drag to look. Expand to walk.</p>
       </div>
-      <div class="side">
+      <div class="pip" id="pip">
         <canvas id="cctv" width="192" height="144" aria-label="Teaching camera CAM 04, reactor lid"></canvas>
-        <canvas id="core" aria-label="Schematic core cross-section"></canvas>
+      </div>
+    </div>
+    <div class="drawer">
+      <div class="chips" role="tablist" aria-label="Core drawing">
+        <button class="chip active" id="tabCore" type="button">Core</button>
+        <button class="chip" id="tabParticles" type="button">Particles</button>
+      </div>
+      <canvas id="core" class="drawer-pane" aria-label="Schematic core cross-section"></canvas>
+      <div id="particlePane" class="drawer-pane" hidden>
+        <canvas id="particles" aria-label="Illustrative particle view of the core. Not the physics."></canvas>
+        <p id="particleReadout"></p>
+        <div class="legend" id="particleLegend"></div>
+        <label class="check"><input type="checkbox" id="showIodine" checked> Show iodine-135</label>
       </div>
     </div>
     <div class="readouts" id="readouts">
@@ -165,6 +228,28 @@ footer{color:var(--text-dimmer);font-size:11px;text-align:center;padding:0 16px 
       <div class="tile plain"><div class="l">Thermal / fast flux</div><div class="v" id="tFlux" style="font-size:13px">—</div><div class="s">relative · more void, harder spectrum</div></div>
       <div class="tile plain"><div class="l">State</div><div class="v" id="tStage" style="font-size:14px">—</div><div class="s" id="tBanner">—</div></div>
     </div>
+    <div class="hud-strip">
+    <h2>Readouts</h2>
+    <p class="sub">Power below 700 MWt is marked. It is the forbidden, unstable region for this design. A failure pins the power trace at the top of the chart and labels it OFF SCALE — the chart does not grow a precise peak. Nixie tubes are the plant's four displays. This strip is the student instrument. It stays visible.</p>
+    <div class="charts">
+      <div><h3>Power</h3><canvas class="chart" id="chartPower"></canvas></div>
+      <div><h3>Reactivity by source</h3><canvas class="chart" id="chartRho"></canvas></div>
+      <div><h3>Rod insertion</h3><canvas class="chart" id="chartRod"></canvas></div>
+      <div><h3>Thermal and fast flux</h3><canvas class="chart" id="chartFlux"></canvas></div>
+      <div><h3>Void — steam in the coolant</h3><canvas class="chart" id="chartVoid"></canvas></div>
+      <div><h3>Coolant temperatures</h3><canvas class="chart" id="chartTemp"></canvas></div>
+      <div><h3>Iodine-135 and xenon-135</h3><canvas class="chart" id="chartXe"></canvas></div>
+      <div>
+        <h3>Reactivity now</h3>
+        <div class="rho-table" id="rhoNow"></div>
+        <p class="sub" id="rhoNote"></p>
+      </div>
+    </div>
+    <h3>Inventory</h3>
+    <p class="sub">Uranium, inert products, and the graphite stack stay fixed on this night. Iodine and xenon are multiples of their full-power equilibrium. Water is the liquid fraction of the coolant (1 − void).</p>
+    <div id="compBars"></div>
+    </div>
+    </div>
   </section>
 
   <section class="card" id="controls">
@@ -180,6 +265,11 @@ footer{color:var(--text-dimmer);font-size:11px;text-align:center;padding:0 16px 
       <button class="chip active" type="button" data-group="short">Shortened bottom</button>
     </div>
     <p class="panel-hint">Those three groups existed on a real RBMK. In this model they move as one bank. Insertion percent is the mechanical stroke. ORM is absorber-equivalent and is not the same number: on the night line the absorbers are still above the fuel.</p>
+    <label class="check"><input type="checkbox" id="autoRods"> Hold power with automatic rods <span class="ru">СТЕРЖНИ</span></label>
+    <p class="panel-hint" id="autoRodNote">Sandbox only. The loop reads smoothed power, waits one second, and moves at most 5% of the stroke per second. It ignores a band of ±3%. The 20 and 40 marks on the particle view are a display key, not this setpoint. Off during the Chernobyl night.</p>
+    <label class="check"><input type="checkbox" id="refuel"> On-load refuelling</label>
+    <p class="panel-hint" id="refuelNote">About one spent bundle a few seconds, fission products only. The tally is on the particle view. Off during the Chernobyl night, so burnup stays where the story left it.</p>
+    <label class="check"><input type="checkbox" id="invertY"> Invert look up/down</label>
     <div class="btn-row" style="margin-top:10px">
       <label class="check"><input type="checkbox" id="guard"> Lift the AZ-5 guard</label>
       <button id="az5" type="button" disabled>AZ-5</button>
@@ -200,28 +290,6 @@ footer{color:var(--text-dimmer);font-size:11px;text-align:center;padding:0 16px 
       <button class="btn" type="button" id="presetNight">Documented night line</button>
       <button class="btn" type="button" id="presetShutdown">Scram from full power</button>
     </div>
-  </section>
-
-  <section class="card">
-    <h2>Readouts</h2>
-    <p class="sub">Power below 700 MWt is marked. It is the forbidden, unstable region for this design. A failure pins the power trace at the top of the chart and labels it OFF SCALE — the chart does not grow a precise peak.</p>
-    <div class="charts">
-      <div><h3>Power</h3><canvas class="chart" id="chartPower"></canvas></div>
-      <div><h3>Reactivity by source</h3><canvas class="chart" id="chartRho"></canvas></div>
-      <div><h3>Rod insertion</h3><canvas class="chart" id="chartRod"></canvas></div>
-      <div><h3>Thermal and fast flux</h3><canvas class="chart" id="chartFlux"></canvas></div>
-      <div><h3>Void — steam in the coolant</h3><canvas class="chart" id="chartVoid"></canvas></div>
-      <div><h3>Coolant temperatures</h3><canvas class="chart" id="chartTemp"></canvas></div>
-      <div><h3>Iodine-135 and xenon-135</h3><canvas class="chart" id="chartXe"></canvas></div>
-      <div>
-        <h3>Reactivity now</h3>
-        <div class="rho-table" id="rhoNow"></div>
-        <p class="sub" id="rhoNote"></p>
-      </div>
-    </div>
-    <h3>Inventory</h3>
-    <p class="sub">Uranium, inert products, and the graphite stack stay fixed on this night. Iodine and xenon are multiples of their full-power equilibrium. Water is the liquid fraction of the coolant (1 − void).</p>
-    <div id="compBars"></div>
   </section>
 
   <section class="card">
@@ -274,6 +342,15 @@ import {
   stateSavePoint1, stateSavePoint2, classify, lidPose, noisy, displayPower,
   SIMPLIFICATIONS
 } from "./rbmk-physics.js";
+import {
+  applyLookGesture, lookForward, poseSnapshot, restorePose, walkStep,
+  autoRodCommand, rodDriveStatus, awayFromDesk, neutronDisplayMap, lookLimits,
+  DESK_POSE, GLIDE_MS, EYE_HEIGHT, RU_LABELS
+} from "./rbmk-look.js";
+import {
+  createLattice, stepParticles, stepPoisonClock, neutronDot, waterPaint, fuelPaint,
+  ILLUSTRATIVE_NOTE, macroXeCount, COLORS
+} from "./rbmk-particles.js";
 
 const $ = (id) => document.getElementById(id);
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -297,6 +374,18 @@ let secondLogged = false;
 let rodLock = false;
 let lowDetail = false;
 let slowFrames = 0;
+let pose = poseSnapshot(DESK_POSE);
+let glide = null;
+let expanded = false;
+let lattice = createLattice(20260426);
+let poisonT = 0;
+let autoAcc = 0;
+let smoothPct = 100;
+let autoSetpoint = 100;
+let lastNix = 0;
+let lastPart = 0;
+const joy = { x: 0, y: 0, id: null };
+const heldKeys = new Set();
 
 const logList = $("logList");
 const storyActions = $("storyActions");
@@ -709,6 +798,12 @@ function boot(nextMode) {
     log("Sandbox. Nominal 3200 MWt, six of eight pumps, rods on the operating line. The band under 700 MWt is forbidden.");
   }
   $("guard").checked = false;
+  $("floatGuard").checked = false;
+  $("autoRods").checked = false;
+  $("refuel").checked = false;
+  lattice = createLattice(20260426);
+  poisonT = sim.t;
+  autoAcc = 0;
   maybeSample(true);
   syncTabs();
   syncRates();
@@ -739,6 +834,8 @@ function loadPreset(kind) {
   }
   sim._prevP = powerOf(sim);
   playing = !reduceMotion;
+  lattice = createLattice(20260426);
+  poisonT = sim.t;
   maybeSample(true);
   syncPause();
 }
@@ -826,13 +923,14 @@ function paintTiles(view, noisyPower) {
   $("tStage").textContent = view.stage;
   $("tBanner").textContent = view.banner;
   $("rodLabel").textContent = "Control-rod bank insertion " + (view.rod * 100).toFixed(1) + "% · ORM " + view.orm.toFixed(1);
-  const slider = $("rodSlider");
-  if (!rodLock && document.activeElement !== slider) {
-    const v = String(view.rod * 100);
-    if (slider.value !== v) {
-      lastEcho = v;
-      slider.value = v;
-    }
+  const v = String(view.rod * 100);
+  for (const slider of [$("rodSlider"), $("floatRod")]) echoSlider(slider, v);
+}
+function echoSlider(slider, value) {
+  if (!slider || rodLock || document.activeElement === slider) return;
+  if (slider.value !== value) {
+    lastEcho = value;
+    slider.value = value;
   }
 }
 
@@ -924,13 +1022,14 @@ function paintComp(view) {
 }
 
 function paintPumps(view) {
-  const buttons = $("pumpBox").querySelectorAll("button");
+  const buttons = [...$("pumpBox").querySelectorAll("button"), ...$("floatPumps").querySelectorAll("button")];
   buttons.forEach((b, i) => {
-    const on = (view.pumpsMask & (1 << i)) !== 0;
-    const coast = (view.coastMask & (1 << i)) !== 0;
+    const idx = i % 8;
+    const on = (view.pumpsMask & (1 << idx)) !== 0;
+    const coast = (view.coastMask & (1 << idx)) !== 0;
     b.classList.toggle("on", on);
     b.classList.toggle("coast", !on && coast);
-    b.textContent = (i + 1) + (on ? " on" : coast ? " coast" : " off");
+    b.textContent = (idx + 1) + (on ? " on" : coast ? " coast" : " off");
   });
 }
 
@@ -959,12 +1058,27 @@ function syncScrub() {
 
 function applyPolicy() {
   const auto = mode === "chernobyl" && ["intro", "reduce", "hold", "drop", "recover", "prep", "waitxe", "saved", "failed", "stuck", "save1", "save2", "rundown", "aborting"].includes(story.beat);
-  $("rodSlider").disabled = replay != null || auto || sim.saved;
-  $("az5").disabled = replay != null || sim.failed || sim.saved || !$("guard").checked;
+  if (mode !== "sandbox") {
+    $("autoRods").checked = false;
+    $("refuel").checked = false;
+  }
+  const rodDisabled = replay != null || auto || sim.saved || sim.failed || $("autoRods").checked;
+  $("rodSlider").disabled = rodDisabled;
+  $("floatRod").disabled = rodDisabled;
+  const azOff = replay != null || sim.failed || sim.saved || !$("guard").checked;
+  $("az5").disabled = azOff;
+  $("floatAz").disabled = azOff;
   $("guard").disabled = replay != null;
+  $("floatGuard").disabled = replay != null;
   const pumpLock = replay != null || sim.failed || sim.saved || (mode === "chernobyl" && !["rundown", "aborting", "save2"].includes(story.beat));
   $("pumpBox").querySelectorAll("button").forEach((b) => { b.disabled = pumpLock; });
+  $("floatPumps").querySelectorAll("button").forEach((b) => { b.disabled = pumpLock; });
   document.querySelectorAll("#presetRow .btn").forEach((b) => { b.disabled = mode !== "sandbox"; });
+  $("autoRods").disabled = mode !== "sandbox" || sim.failed || sim.saved;
+  $("refuel").disabled = mode !== "sandbox";
+  const lost = rodDriveStatus(!!(sim.failed || (replay != null && currentView().failed)));
+  $("rodLost").hidden = !lost;
+  if (lost) $("rodLost").textContent = lost;
   syncRates();
   syncPause();
 }
@@ -1301,7 +1415,6 @@ function drawCctv(view, now) {
 let THREE = null;
 let renderer, scene, camera;
 let roomReady = false;
-let yaw = 0, pitch = 0;
 let handles = null;
 const roomCanvas = $("room");
 
@@ -1321,7 +1434,9 @@ function buildRoom() {
   warm.position.set(0.1, 1.15, -0.7);
   const emergency = new THREE.PointLight(0xe6392b, 0, 8);
   emergency.position.set(0, 2.4, -1);
-  scene.add(amb, key, warm, emergency);
+  const overhead = new THREE.PointLight(0xff9a3c, 0.62, 11);
+  overhead.position.set(0, 2.88, -1.5);
+  scene.add(amb, key, warm, emergency, overhead);
   const concrete = new THREE.MeshLambertMaterial({ color: 0x6b6f6c });
   const teal = new THREE.MeshLambertMaterial({ color: 0x3f5a54 });
   const dark = new THREE.MeshLambertMaterial({ color: 0x1c1e1e });
@@ -1345,7 +1460,7 @@ function buildRoom() {
   windowM.position.set(-2.3, 1.8, -6.15);
   const blind = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.55, 0.04), new THREE.MeshLambertMaterial({ color: 0x8a8474 }));
   blind.position.set(-2.3, 2.15, -6.08);
-  const desk = new THREE.Mesh(new THREE.BoxGeometry(6.4, 0.08, 1.5), teal);
+  const desk = new THREE.Mesh(new THREE.BoxGeometry(7.4, 0.08, 1.5), teal);
   desk.position.set(0, 0.78, -0.35);
   const rear = new THREE.Mesh(new THREE.BoxGeometry(5.5, 0.7, 0.7), teal);
   rear.position.set(0.4, 0.7, -3.4);
@@ -1363,7 +1478,7 @@ function buildRoom() {
     scene.add(seat, backr);
   }
   chair(0.15);
-  chair(1.7);
+  chair(2.45);
   const clock = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.36, 0.04), cream);
   clock.position.set(-4.05, 2.15, -2.2);
   const lights = [];
@@ -1411,8 +1526,116 @@ function buildRoom() {
   cable.position.set(0.9, 0.84, -0.7);
   const doc = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.01, 0.2), cream);
   doc.position.set(-0.7, 0.83, -0.2);
-  scene.add(floor, ceiling, back, leftW, rightW, windowM, blind, desk, rear, panel, shelf, stripe, clock, az, guard, gPower, gPress, nPower, nPress, digi, voidBar, housing, rodMesh, pumpMesh, debris, cable, doc);
-  handles = { warm, emergency, lights, az, guard, nPower, nPress, digiCanvas, digiTex, digiCtx: digiCanvas.getContext("2d"), voidBar, rodMesh, pumpMesh, debris, amb, colorOn: new THREE.Color(0xffb43a), colorOff: new THREE.Color(0x3a403c) };
+  const doorMat = new THREE.MeshLambertMaterial({ color: 0x4a4036 });
+  const door = new THREE.Mesh(new THREE.BoxGeometry(0.08, 2.15, 0.92), doorMat);
+  door.position.set(4.14, 1.08, -0.15);
+  const jamb = new THREE.Mesh(new THREE.BoxGeometry(0.12, 2.35, 1.1), new THREE.MeshLambertMaterial({ color: 0x2c2824 }));
+  jamb.position.set(4.18, 1.15, -0.15);
+  const beige = new THREE.InstancedMesh(new THREE.BoxGeometry(1.15, 0.72, 0.04), new THREE.MeshLambertMaterial({ color: 0xc4b49a }), 4);
+  beige.frustumCulled = false;
+  const beigeDummy = new THREE.Object3D();
+  for (let i = 0; i < 4; i++) {
+    beigeDummy.rotation.set(0, i >= 2 ? Math.PI / 2 : 0, 0);
+    beigeDummy.position.set(i < 2 ? -0.6 + i * 2.4 : (i === 2 ? -4.12 : 4.12), 1.65, i < 2 ? -6.12 : -1.2);
+    beigeDummy.updateMatrix();
+    beige.setMatrixAt(i, beigeDummy.matrix);
+  }
+  const labelRedraws = [];
+  function labelTexture(paint, w, h) {
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const tex = new THREE.CanvasTexture(canvas);
+    const redraw = () => {
+      paint(canvas.getContext("2d"), w, h);
+      tex.needsUpdate = true;
+    };
+    redraw();
+    labelRedraws.push(redraw);
+    return tex;
+  }
+  const plaqueTex = labelTexture((ctx, w, h) => {
+    ctx.fillStyle = "#3f5a54";
+    ctx.fillRect(0, 0, w, h);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "#e8e0cc";
+    ctx.font = "700 36px Oswald, sans-serif";
+    ctx.fillText(RU_LABELS.reactor, w / 2, 48);
+    ctx.font = "20px Inter, sans-serif";
+    ctx.fillText("RBMK-1000", w / 2, 92);
+    ctx.font = "700 28px Oswald, sans-serif";
+    ctx.fillText(RU_LABELS.panel + "   PANEL", w / 2, 150);
+    ctx.fillStyle = "#ffb43a";
+    ctx.font = "700 24px Oswald, sans-serif";
+    ctx.fillText(RU_LABELS.attention + "   ATTENTION", w / 2, 200);
+    ctx.fillStyle = "#e8e0cc";
+    ctx.font = "22px Oswald, sans-serif";
+    ctx.fillText(RU_LABELS.plant + "   NUCLEAR PLANT", w / 2, 246);
+  }, 512, 288);
+  const plaque = new THREE.Mesh(new THREE.PlaneGeometry(0.92, 0.52), new THREE.MeshLambertMaterial({ map: plaqueTex }));
+  plaque.position.set(1.55, 1.85, -6.12);
+  const signTex = labelTexture((ctx, w, h) => {
+    ctx.fillStyle = "#e8e0cc";
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = "#1c1e1e";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "700 48px Oswald, sans-serif";
+    ctx.fillText("ЯБМК", w / 2, h * 0.38);
+    ctx.font = "22px Inter, sans-serif";
+    ctx.fillText("RBMK", w / 2, h * 0.72);
+  }, 256, 128);
+  const sign = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.35), new THREE.MeshLambertMaterial({ map: signTex }));
+  sign.position.set(-3.3, 2.2, -6.12);
+  const spineTex = labelTexture((ctx, w, h) => {
+    ctx.fillStyle = "#3f5a54";
+    ctx.fillRect(0, 0, w, h);
+    ctx.save();
+    ctx.translate(w / 2, h / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillStyle = "#e8e0cc";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "700 28px Oswald, sans-serif";
+    ctx.fillText("ЯБМК", 0, -16);
+    ctx.font = "16px Inter, sans-serif";
+    ctx.fillText("RBMK", 0, 18);
+    ctx.restore();
+  }, 128, 256);
+  const binder = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.28, 0.2), new THREE.MeshLambertMaterial({ map: spineTex }));
+  binder.position.set(-1.15, 0.96, -0.15);
+  const stampTex = labelTexture((ctx, w, h) => {
+    ctx.clearRect(0, 0, w, h);
+    ctx.strokeStyle = "#8a3a2a";
+    ctx.lineWidth = 6;
+    ctx.strokeRect(8, 8, w - 16, h - 16);
+    ctx.fillStyle = "#8a3a2a";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "700 28px Oswald, sans-serif";
+    ctx.fillText("ЯБМК", w / 2, h * 0.38);
+    ctx.font = "16px Inter, sans-serif";
+    ctx.fillText("RBMK", w / 2, h * 0.68);
+  }, 256, 128);
+  const stamp = new THREE.Mesh(new THREE.PlaneGeometry(0.16, 0.08), new THREE.MeshLambertMaterial({ map: stampTex, transparent: true }));
+  stamp.rotation.x = -Math.PI / 2;
+  stamp.position.set(-0.85, 0.84, -0.05);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => labelRedraws.forEach((redraw) => redraw()));
+  }
+  scene.add(floor, ceiling, back, leftW, rightW, windowM, blind, desk, rear, panel, shelf, stripe, clock, az, guard, gPower, gPress, nPower, nPress, digi, voidBar, housing, rodMesh, pumpMesh, debris, cable, doc, door, jamb, beige, plaque, sign, binder, stamp);
+  handles = {
+    warm, emergency, overhead, lights, az, guard, nPower, nPress, digiCanvas, digiTex,
+    digiCtx: digiCanvas.getContext("2d"), voidBar, rodMesh, pumpMesh, debris, amb,
+    colorOn: new THREE.Color(0xffb43a), colorOff: new THREE.Color(0x3a403c),
+    nixieAnchors: [
+      new THREE.Vector3(-0.62, 1.46, -1.16),
+      new THREE.Vector3(-0.02, 1.46, -1.16),
+      new THREE.Vector3(0.58, 1.46, -1.16),
+      new THREE.Vector3(0.18, 1.08, -1.16)
+    ]
+  };
   const dummy = new THREE.Object3D();
   for (let i = 0; i < 8; i++) {
     dummy.position.set(0.55 + (i % 4) * 0.09, i < 4 ? 0.98 : 0.9, -1.14);
@@ -1423,7 +1646,8 @@ function buildRoom() {
   }
   pumpMesh.instanceMatrix.needsUpdate = true;
   roomReady = true;
-  $("roomNote").textContent = "Drag to look. The seat stays put.";
+  paintDigi("RBMK", "#c4b8a4");
+  $("roomNote").textContent = expanded ? "WASD to walk. Drag to look." : "Drag to look. Expand to walk.";
 }
 
 function paintDigi(text, color) {
@@ -1439,7 +1663,6 @@ function paintDigi(text, color) {
 }
 
 let dummy = null;
-let lastDigi = "";
 let roomFrames = 0;
 function drawRoom(view, now, wall) {
   if (!roomReady) return;
@@ -1457,31 +1680,32 @@ function drawRoomInner(view, now, wall) {
   if (slowFrames > 12) lowDetail = true;
   roomFrames++;
   if (lowDetail && roomFrames % 2 === 1) return;
-  const pose = lidPose({ failed: view.failed, failAge: view.failAge, pressure: view.pressure });
-  const shake = reduceMotion ? 0 : Math.min(0.012, pose.shake * 0.012);
-  camera.position.set(Math.sin(now / 90) * shake, 1.28 + Math.cos(now / 80) * shake * 0.4, 0.62);
-  const look = new THREE.Vector3(0, 1.08, -1.25);
-  const dir = look.sub(camera.position);
-  const yawQ = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
-  dir.applyQuaternion(yawQ);
-  const right = new THREE.Vector3(1, 0, 0).applyQuaternion(yawQ);
-  dir.applyQuaternion(new THREE.Quaternion().setFromAxisAngle(right, pitch));
-  camera.lookAt(camera.position.clone().add(dir));
+  const lid = lidPose({ failed: view.failed, failAge: view.failAge, pressure: view.pressure });
+  const shake = reduceMotion ? 0 : Math.min(0.012, lid.shake * 0.012);
+  const camPose = poseNow(now);
+  const fwd = lookForward(camPose.yaw, camPose.pitch);
+  const dolly = camPose.dolly || 0;
+  camera.position.set(
+    camPose.x + Math.sin(now / 90) * shake + fwd.x * dolly,
+    camPose.y + Math.cos(now / 80) * shake * 0.4 + fwd.y * dolly,
+    camPose.z + fwd.z * dolly
+  );
+  camera.up.set(0, 1, 0);
+  camera.lookAt(camera.position.x + fwd.x, camera.position.y + fwd.y, camera.position.z + fwd.z);
   const frac = view.known ? clamp(view.P / PARAMS.Pnom, 0, 1.3) : 1;
   handles.nPower.rotation.z = -0.9 + frac * 1.5;
   handles.nPress.rotation.z = -0.9 + clamp((view.pressure - 5) / 6, 0, 1) * 1.5;
   handles.guard.position.y = $("guard").checked || view.scram ? 1.24 : 1.1;
-  const text = view.known ? (view.P >= 100 ? view.P.toFixed(0) : view.P.toFixed(1)) : "OFF SCALE";
-  const color = view.known ? "#7DFFB0" : "#E6392B";
-  if (text !== lastDigi) { lastDigi = text; paintDigi(text, color); }
   handles.voidBar.scale.y = 0.15 + view.alpha * 1.4;
   handles.warm.intensity = 0.22 + (view.known ? clamp(view.P / 4000, 0, 1) : 0.2) * 0.45;
   const flicker = !reduceMotion && view.pressure > 8.15 && !view.failed && Math.sin(now / 1000 * Math.PI * 2) > 0.82;
   handles.lights.forEach((L, i) => {
     let e = view.failed ? (i === 0 ? 0.15 : 0.02) : (flicker && i === 1 ? 0.05 : 0.45);
+    if (!reduceMotion && !view.failed) e += Math.sin(now / 1000 * Math.PI * 2 * 1.6) * 0.04;
     if (reduceMotion && view.pressure > 8.15 && !view.failed) e = 0.22;
     L.material.emissiveIntensity = e;
   });
+  if (handles.overhead) handles.overhead.intensity = view.failed ? 0.18 : 0.62;
   const pulseHz = 1.5;
   const pulse = reduceMotion ? 0.65 : (0.35 + 0.65 * (0.5 + 0.5 * Math.sin(now / 1000 * Math.PI * 2 * pulseHz)));
   handles.emergency.intensity = view.failed ? pulse * Math.min(1, view.failAge / 0.5) : 0;
@@ -1505,18 +1729,20 @@ function drawRoomInner(view, now, wall) {
   }
   handles.pumpMesh.instanceMatrix.needsUpdate = true;
   if (handles.pumpMesh.instanceColor) handles.pumpMesh.instanceColor.needsUpdate = true;
-  const showDebris = view.failed && pose.debris > 0.05 && !lowDetail;
+  const showDebris = view.failed && lid.debris > 0.05 && !lowDetail;
   handles.debris.visible = showDebris;
   if (showDebris) {
     for (let i = 0; i < 12; i++) {
-      dummy.position.set(-0.8 + (i % 6) * 0.3, 1.3 + pose.debris * (0.2 + (i % 5) * 0.12), -1.6 - (i % 4) * 0.3);
-      dummy.rotation.set(0, 0, pose.tilt * (i % 2 ? 1 : -1));
+      dummy.position.set(-0.8 + (i % 6) * 0.3, 1.3 + lid.debris * (0.2 + (i % 5) * 0.12), -1.6 - (i % 4) * 0.3);
+      dummy.rotation.set(0, 0, lid.tilt * (i % 2 ? 1 : -1));
       dummy.scale.set(1, 1, 1);
       dummy.updateMatrix();
       handles.debris.setMatrixAt(i, dummy.matrix);
     }
     handles.debris.instanceMatrix.needsUpdate = true;
   }
+  camera.updateMatrixWorld();
+  placeNixies();
   renderer.render(scene, camera);
   if (roomFrames % 30 === 0) {
     const calls = renderer.info.render.calls;
@@ -1544,20 +1770,309 @@ async function loadThree() {
   }
 }
 
+function poseNow(now) {
+  if (!glide) return pose;
+  const elapsed = now - glide.start;
+  const next = restorePose(glide.from, reduceMotion ? GLIDE_MS : elapsed, reduceMotion);
+  if (reduceMotion || elapsed >= GLIDE_MS) {
+    pose = next;
+    glide = null;
+    return pose;
+  }
+  return next;
+}
+function moveInput() {
+  let forward = joy.y;
+  let strafe = joy.x;
+  if (heldKeys.has("w") || heldKeys.has("W") || heldKeys.has("ArrowUp")) forward += 1;
+  if (heldKeys.has("s") || heldKeys.has("S") || heldKeys.has("ArrowDown")) forward -= 1;
+  if (heldKeys.has("d") || heldKeys.has("D") || heldKeys.has("ArrowRight")) strafe += 1;
+  if (heldKeys.has("a") || heldKeys.has("A") || heldKeys.has("ArrowLeft")) strafe -= 1;
+  return { forward, strafe, sprint: heldKeys.has("Shift") };
+}
+function enterExpand() {
+  if (expanded) return;
+  expanded = true;
+  const stage = $("moduleStage");
+  $("expandBtn").hidden = true;
+  $("exitBtn").hidden = false;
+  $("joystick").hidden = false;
+  pose = { ...pose, y: EYE_HEIGHT };
+  const lim = lookLimits(true);
+  pose.yaw = clamp(pose.yaw, -lim.yaw, lim.yaw);
+  pose.pitch = clamp(pose.pitch, -lim.pitch, lim.pitch);
+  $("roomNote").textContent = "WASD to walk. Drag to look. EXIT, Esc, or double-click to sit down.";
+  const finish = () => requestAnimationFrame(resizeRoom);
+  if (stage.requestFullscreen) {
+    stage.requestFullscreen().then(finish).catch(() => {
+      stage.classList.add("fs-fallback");
+      finish();
+    });
+  } else {
+    stage.classList.add("fs-fallback");
+    finish();
+  }
+}
+function exitExpand() {
+  if (!expanded) return;
+  expanded = false;
+  const stage = $("moduleStage");
+  stage.classList.remove("fs-fallback");
+  $("expandBtn").hidden = false;
+  $("exitBtn").hidden = true;
+  $("joystick").hidden = true;
+  $("floatCluster").hidden = true;
+  joy.x = 0;
+  joy.y = 0;
+  joy.id = null;
+  $("joyKnob").style.transform = "";
+  glide = { from: poseSnapshot(pose), start: performance.now() };
+  $("roomNote").textContent = "Drag to look. Expand to walk.";
+  if (document.fullscreenElement === stage) document.exitFullscreen().catch(() => {});
+  requestAnimationFrame(resizeRoom);
+}
+function toggleExpand() {
+  if (expanded) exitExpand();
+  else enterExpand();
+}
+const NIX_IDS = ["nixPower", "nixPressure", "nixTemp", "nixRod"];
+function buildNixies() {
+  for (const id of NIX_IDS) {
+    const host = $(id);
+    host.replaceChildren();
+    for (let i = 0; i < 5; i++) {
+      const span = document.createElement("span");
+      span.textContent = "–";
+      span.dataset.glow = String(0.78 + (i % 5) * 0.04);
+      span.style.opacity = span.dataset.glow;
+      host.appendChild(span);
+    }
+  }
+}
+function setNix(id, text) {
+  const host = $(id);
+  const chars = String(text).slice(0, 5).padEnd(5, " ");
+  for (let i = 0; i < host.children.length; i++) {
+    const el = host.children[i];
+    if (el.textContent === chars[i]) continue;
+    el.textContent = chars[i];
+    if (!reduceMotion) {
+      el.style.opacity = "0.4";
+      requestAnimationFrame(() => { el.style.opacity = el.dataset.glow; });
+    }
+  }
+}
+function nixText(view) {
+  const power = !view.known ? "----" : (view.P >= 100 ? view.P.toFixed(0) : view.P.toFixed(1));
+  return [
+    power,
+    view.pressure.toFixed(2),
+    String(Math.round(view.Tout)),
+    (view.rod * 100).toFixed(1)
+  ];
+}
+function placeNixies() {
+  if (!handles || !camera) return;
+  const frame = $("roomFrame");
+  const w = frame.clientWidth;
+  const h = frame.clientHeight;
+  const names = ["power", "pressure", "temp", "rod"];
+  handles.nixieAnchors.forEach((anchor, i) => {
+    const el = frame.querySelector('[data-nix="' + names[i] + '"]');
+    if (!el) return;
+    const v = anchor.clone();
+    const dx = anchor.x - camera.position.x;
+    const dy = anchor.y - camera.position.y;
+    const dz = anchor.z - camera.position.z;
+    const forward = new THREE.Vector3();
+    camera.getWorldDirection(forward);
+    const facing = dx * forward.x + dy * forward.y + dz * forward.z;
+    v.project(camera);
+    if (facing < 0.15 || v.z < -1 || v.z > 1) {
+      el.style.visibility = "hidden";
+      return;
+    }
+    el.style.visibility = "visible";
+    el.style.transform = "translate(" + ((v.x * 0.5 + 0.5) * w) + "px," + ((-v.y * 0.5 + 0.5) * h) + "px) translate(-50%, -50%)";
+  });
+}
+function drawParticles(view) {
+  const canvas = $("particles");
+  const { ctx, w, h } = fitCanvas(canvas);
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = "#121614";
+  ctx.fillRect(0, 0, w, h);
+  const cols = lattice.cols;
+  const rows = lattice.rows;
+  const cw = w / cols;
+  const ch = h / rows;
+  const showI = $("showIodine").checked;
+  const macro = new Set(lattice.macroXe);
+  for (let i = 0; i < lattice.tiles.length; i++) {
+    const tile = lattice.tiles[i];
+    const c = i % cols;
+    const r = (i / cols) | 0;
+    const x = c * cw;
+    const y = r * ch;
+    if (tile.kind === "graphite") {
+      ctx.fillStyle = COLORS.graphite;
+      ctx.fillRect(x, y, cw + 0.4, ch + 0.4);
+      continue;
+    }
+    if (tile.kind === "water") {
+      const paint = waterPaint(tile.voided, tile.heat);
+      ctx.fillStyle = "rgba(" + paint.r + "," + paint.g + "," + paint.b + "," + paint.a + ")";
+      ctx.fillRect(x, y, cw, ch);
+      if (tile.voided) {
+        ctx.strokeStyle = "rgba(255,255,255,0.7)";
+        ctx.strokeRect(x + 0.5, y + 0.5, Math.max(1, cw - 1), Math.max(1, ch - 1));
+      }
+      continue;
+    }
+    ctx.fillStyle = "#1a1c1b";
+    ctx.fillRect(x, y, cw, ch);
+    if (tile.kind === "rod") {
+      if ((r / rows) < view.rod) {
+        ctx.fillStyle = COLORS.rod;
+        ctx.fillRect(x + cw * 0.28, y, cw * 0.44, ch + 0.4);
+      }
+      continue;
+    }
+    const paint = fuelPaint(tile.kind, tile.heat, tile.poison, showI);
+    ctx.fillStyle = "rgb(" + paint.r + "," + paint.g + "," + paint.b + ")";
+    if (tile.kind === "fp") {
+      ctx.beginPath();
+      ctx.moveTo(x + cw * 0.5, y + 1);
+      ctx.lineTo(x + cw - 1, y + ch - 1);
+      ctx.lineTo(x + 1, y + ch - 1);
+      ctx.fill();
+    } else if (tile.kind === "source") {
+      ctx.fillRect(x, y, cw, ch);
+    } else {
+      ctx.beginPath();
+      ctx.arc(x + cw / 2, y + ch / 2, Math.min(cw, ch) * 0.36, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    if (tile.flash > 0.05) {
+      ctx.fillStyle = "rgba(255,244,220," + Math.min(1, tile.flash) + ")";
+      ctx.fillRect(x, y, cw, ch);
+    }
+    if (macro.has(i) && tile.poison !== "Xe") {
+      ctx.fillStyle = COLORS.xe;
+      ctx.fillRect(x + cw * 0.58, y + 1, Math.max(1.5, cw * 0.28), Math.max(1.5, ch * 0.28));
+    }
+  }
+  for (const n of lattice.neutrons) {
+    const dot = neutronDot(n.stage);
+    const x = (n.x / cols) * w;
+    const y = (n.y / rows) * h;
+    ctx.fillStyle = "#f4f1ea";
+    ctx.beginPath();
+    ctx.arc(x, y, dot.radius, 0, Math.PI * 2);
+    ctx.fill();
+    if (dot.core) {
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(x, y, 1.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  const src = lattice.source;
+  ctx.strokeStyle = COLORS.source;
+  ctx.strokeRect(src.c * cw + 0.5, src.r * ch + 0.5, cw - 1, ch - 1);
+  ctx.fillStyle = "#e8e0cc";
+  ctx.font = "12px Inter, sans-serif";
+  ctx.fillText("STARTUP NEUTRON SOURCE", 8, 16);
+}
+function paintParticleReadout(view) {
+  const map = neutronDisplayMap(lattice.neutrons.length);
+  const power = view.known ? view.P.toFixed(0) + " MWt" : "OFF SCALE";
+  $("particleReadout").textContent = [
+    map.note,
+    "count " + map.illustrative,
+    "display map " + map.band,
+    power,
+    (view.P != null ? (view.P / PARAMS.Pnom * 100).toFixed(1) : "—") + "%",
+    "void " + (view.alpha * 100).toFixed(1) + "%",
+    "rods " + pcm(view.rods),
+    "void " + pcm(view.voidR),
+    "xenon " + pcm(view.xenon),
+    "Doppler " + pcm(view.fuel),
+    "ORM " + view.orm.toFixed(1),
+    "I " + view.I.toFixed(2),
+    "Xe " + view.Xe.toFixed(2),
+    "rod " + (view.rod * 100).toFixed(1) + "%",
+    "bundles replaced " + lattice.replaced,
+    "spent removed " + lattice.spent
+  ].join(" · ");
+}
+function fillLegend() {
+  const host = $("particleLegend");
+  const rows = [
+    [COLORS.u235, "U-235"],
+    [COLORS.u238, "U-238"],
+    [COLORS.fp, "fission products"],
+    [COLORS.iodine, "I-135"],
+    [COLORS.xe, "Xe-135"],
+    [COLORS.graphite, "graphite block"],
+    [COLORS.water, "water"],
+    [COLORS.rod, "control rod"],
+    [COLORS.source, "startup source"]
+  ];
+  for (const [color, name] of rows) {
+    const span = document.createElement("span");
+    const sw = document.createElement("i");
+    sw.className = "swatch";
+    sw.style.background = color;
+    span.append(sw, document.createTextNode(name));
+    host.appendChild(span);
+  }
+  const note = document.createElement("p");
+  note.className = "sub";
+  note.textContent = ILLUSTRATIVE_NOTE + " Purple corner marks follow the model's xenon so the poison is visible at 1×. The iodine and xenon tiles use the real half-lives, 6.6 h and 9.2 h. A fast neutron is thermal after two slowing hits. Passing neutrons add no heat.";
+  host.appendChild(note);
+}
 function pointerLook() {
   let drag = null;
   roomCanvas.addEventListener("pointerdown", (e) => {
-    drag = { x: e.clientX, y: e.clientY, yaw, pitch };
+    if (e.target.closest && e.target.closest("#joystick, #floatCluster, button, input, label")) return;
+    const rect = roomCanvas.getBoundingClientRect();
+    if (e.pointerType === "touch" && (e.clientX - rect.left) < rect.width / 3) return;
+    drag = { x: e.clientX, y: e.clientY, yaw: pose.yaw, pitch: pose.pitch, dolly: pose.dolly };
     roomCanvas.setPointerCapture(e.pointerId);
   });
   roomCanvas.addEventListener("pointermove", (e) => {
     if (!drag) return;
-    yaw = clamp(drag.yaw - (e.clientX - drag.x) * 0.005, -40 * DEG, 40 * DEG);
-    pitch = clamp(drag.pitch + (e.clientY - drag.y) * 0.004, -18 * DEG, 18 * DEG);
+    const lim = lookLimits(expanded);
+    const next = applyLookGesture(
+      { yaw: drag.yaw, pitch: drag.pitch, dolly: drag.dolly },
+      {
+        dx: e.clientX - drag.x,
+        dy: e.clientY - drag.y,
+        yawLimit: lim.yaw,
+        pitchLimit: lim.pitch,
+        invertY: $("invertY").checked
+      }
+    );
+    pose.yaw = next.yaw;
+    pose.pitch = next.pitch;
+    pose.dolly = next.dolly;
   });
   const end = () => { drag = null; };
   roomCanvas.addEventListener("pointerup", end);
   roomCanvas.addEventListener("pointercancel", end);
+  roomCanvas.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const lim = lookLimits(expanded);
+    const next = applyLookGesture(pose, { wheel: e.deltaY, yawLimit: lim.yaw, pitchLimit: lim.pitch });
+    pose.yaw = next.yaw;
+    pose.pitch = next.pitch;
+    pose.dolly = next.dolly;
+  }, { passive: false });
+  $("roomFrame").addEventListener("dblclick", (e) => {
+    if (e.target.closest("button, input, #joystick, #floatCluster, label")) return;
+    toggleExpand();
+  });
 }
 
 function fillNotes() {
@@ -1567,7 +2082,9 @@ function fillNotes() {
     "The low-power boiling cliff is a tuned stand-in. At 200 MWt the real core is heavily subcooled, so flow falling only from about 133% to 70% would not boil it in a bulk-enthalpy model. The cliff is how this page lets low flow or a low separator margin drive the positive void coefficient.",
     "The live prelude stops with ORM in the teens, under the safe floor of 30, not at 8. Xenon after the nine-hour hold cannot hold this model critical at ORM 8. The rundown continues from the documented rod line (ORM about 8) on the same rods and the same xenon equations, with xenon set to the critical value for that line.",
     "The xenon flux factor and the fuel-temperature scale are tuned so 3200 MWt is steady and the shutdown xenon peak lands between 8 and 11 hours. Half-lives are the real ones.",
-    "An internal power ceiling keeps the arithmetic from diverging after the instruments saturate. It is never shown. OFF SCALE means the peak is unknown."
+    "An internal power ceiling keeps the arithmetic from diverging after the instruments saturate. It is never shown. OFF SCALE means the peak is unknown.",
+    "The particle view is an illustration driven by this model. It does not feed reactivity, rod motion, or the xenon equations. About 15% of the tiles are drawn as U-235 so the blue fuel is visible; real RBMK fuel is about 2% U-235. Each icon stands for many atoms. A fast neutron becomes thermal after two slowing hits (fast, then intermediate, then thermal). Intermediate uranium-238 is not in the classroom table: it is 4% capture and no fission, between the fast and thermal rows. Purple xenon tiles follow iodine decay, and separate purple marks follow the model's xenon so the poison is visible on a 1× night. The half-lives are the real ones. Automatic rods and on-load refuelling are sandbox tools and stay off on the Chernobyl night. The 20 and 40 neutron marks are a display key, not setpoints. The neutron cap and the 0.3 s cooldown are a classroom picture, not a transport calculation.",
+    "The short Russian words are РБМК-1000, МОЩНОСТЬ, ДАВЛЕНИЕ, ТЕМПЕРАТУРА, СТЕРЖНИ, АЭС, ВНИМАНИЕ, and ЩИТ, each beside English. The Da Vinci brief's exact strings were not in the v2 note, so these are the standard terms for that list. ЯБМК is decoration only."
   ];
   for (const text of SIMPLIFICATIONS.concat(extra)) {
     const li = document.createElement("li");
@@ -1584,7 +2101,15 @@ function wire() {
     b.textContent = String(i + 1);
     b.addEventListener("click", () => togglePump(i));
     $("pumpBox").appendChild(b);
+    const f = document.createElement("button");
+    f.type = "button";
+    f.className = "pump";
+    f.textContent = String(i + 1);
+    f.addEventListener("click", () => togglePump(i));
+    $("floatPumps").appendChild(f);
   }
+  buildNixies();
+  fillLegend();
   $("tabSandbox").addEventListener("click", () => boot("sandbox"));
   $("tabStory").addEventListener("click", () => boot("chernobyl"));
   $("pauseBtn").addEventListener("click", () => {
@@ -1597,18 +2122,88 @@ function wire() {
   $("controlsJumpBtn").addEventListener("click", () => {
     $("controls").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
   });
-  $("rodSlider").addEventListener("pointerdown", () => { rodLock = true; });
-  $("rodSlider").addEventListener("pointerup", () => { rodLock = false; });
-  $("rodSlider").addEventListener("pointercancel", () => { rodLock = false; });
-  $("rodSlider").addEventListener("input", () => {
-    const slider = $("rodSlider");
-    if (slider.disabled || slider.value === lastEcho) return;
-    lastEcho = "";
-    sim.rodTarget = Number(slider.value) / 100;
-    if (mode === "sandbox") sim.scram = false;
-  });
-  $("guard").addEventListener("change", applyPolicy);
+  function bindRod(slider) {
+    slider.addEventListener("pointerdown", () => { rodLock = true; });
+    slider.addEventListener("pointerup", () => { rodLock = false; });
+    slider.addEventListener("pointercancel", () => { rodLock = false; });
+    slider.addEventListener("input", () => {
+      if (slider.disabled || slider.value === lastEcho) return;
+      lastEcho = "";
+      sim.rodTarget = Number(slider.value) / 100;
+      if (mode === "sandbox") sim.scram = false;
+      if ($("autoRods").checked) {
+        $("autoRods").checked = false;
+        log("Automatic rods released.");
+      }
+    });
+  }
+  bindRod($("rodSlider"));
+  bindRod($("floatRod"));
+  function syncGuard(source) {
+    const on = source.checked;
+    $("guard").checked = on;
+    $("floatGuard").checked = on;
+    applyPolicy();
+  }
+  $("guard").addEventListener("change", () => syncGuard($("guard")));
+  $("floatGuard").addEventListener("change", () => syncGuard($("floatGuard")));
   $("az5").addEventListener("click", pressAZ5);
+  $("floatAz").addEventListener("click", pressAZ5);
+  $("autoRods").addEventListener("change", () => {
+    if (!$("autoRods").checked || mode !== "sandbox") return;
+    autoSetpoint = powerOf(sim) / PARAMS.Pnom * 100;
+    smoothPct = autoSetpoint;
+    autoAcc = 0;
+    log("Automatic rods hold " + autoSetpoint.toFixed(0) + "% power. Deadband ±3%. They follow the model, not the particle count.");
+  });
+  $("tabCore").addEventListener("click", () => setDrawer("core"));
+  $("tabParticles").addEventListener("click", () => setDrawer("particles"));
+  $("expandBtn").addEventListener("click", enterExpand);
+  $("exitBtn").addEventListener("click", exitExpand);
+  const joyEl = $("joystick");
+  const joyMove = (e) => {
+    const rect = joyEl.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    let dx = e.clientX - cx;
+    let dy = e.clientY - cy;
+    const max = rect.width / 2 - 18;
+    const mag = Math.hypot(dx, dy) || 1;
+    if (mag > max) { dx *= max / mag; dy *= max / mag; }
+    joy.x = dx / max;
+    joy.y = -dy / max;
+    $("joyKnob").style.transform = "translate(" + dx.toFixed(1) + "px," + dy.toFixed(1) + "px)";
+  };
+  joyEl.addEventListener("pointerdown", (e) => {
+    joy.id = e.pointerId;
+    joyEl.setPointerCapture(e.pointerId);
+    joyMove(e);
+  });
+  joyEl.addEventListener("pointermove", (e) => { if (joy.id === e.pointerId) joyMove(e); });
+  const joyEnd = (e) => {
+    if (joy.id != null && e.pointerId !== joy.id) return;
+    joy.id = null;
+    joy.x = 0;
+    joy.y = 0;
+    $("joyKnob").style.transform = "";
+  };
+  joyEl.addEventListener("pointerup", joyEnd);
+  joyEl.addEventListener("pointercancel", joyEnd);
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && expanded) { exitExpand(); return; }
+    if (!expanded) return;
+    if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
+    if (["w", "a", "s", "d", "W", "A", "S", "D", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Shift"].includes(e.key)) {
+      heldKeys.add(e.key);
+      e.preventDefault();
+    }
+  });
+  window.addEventListener("keyup", (e) => heldKeys.delete(e.key));
+  window.addEventListener("blur", () => heldKeys.clear());
+  document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement && expanded) exitExpand();
+    requestAnimationFrame(resizeRoom);
+  });
   document.querySelectorAll("[data-rate]").forEach((ch) => {
     ch.addEventListener("click", () => {
       if (ch.disabled) return;
@@ -1637,7 +2232,13 @@ function wire() {
       location.href = "study.html" + location.search;
     });
   });
-  window.addEventListener("resize", () => { resizeRoom(); drawCharts(); drawCore(currentView()); });
+  window.addEventListener("resize", () => {
+    resizeRoom();
+    const view = currentView();
+    drawCharts();
+    if (!$("core").hidden) drawCore(view);
+    if (!$("particlePane").hidden) drawParticles(view);
+  });
   pointerLook();
   fillNotes();
   if (reduceMotion) $("noiseNote").textContent = "Reduced motion is on: digits show the model without jitter, and the room does not shake. Charts always use the model.";
@@ -1699,8 +2300,54 @@ function frameBody(now) {
     lastCctv = now;
     drawCctv(view, now);
   }
-  drawCore(view);
+  if (expanded && !glide) pose = walkStep(pose, moveInput(), wall);
+  $("floatCluster").hidden = !(expanded && awayFromDesk(pose));
+  $("moduleStage").classList.toggle("s5", !!(view.failed && view.failAge > 0.15));
+  if ($("autoRods").checked && mode === "sandbox" && playing && replay == null && !sim.failed && !sim.saved && !sim.scram) {
+    const pct = powerOf(sim) / PARAMS.Pnom * 100;
+    smoothPct += (pct - smoothPct) * Math.min(1, wall * effectiveRate());
+    autoAcc += wall * effectiveRate();
+    if (autoAcc >= 1) {
+      autoAcc = 0;
+      sim.rodTarget = autoRodCommand({ rod: sim.rod, powerPct: smoothPct, setpointPct: autoSetpoint, dt: 1 });
+    }
+  }
+  const particleSnap = {
+    power: view.known ? view.P : 0,
+    alpha: view.alpha,
+    xenon: view.Xe,
+    iodine: view.I,
+    rod: view.rod,
+    failed: view.failed,
+    refuel: mode === "sandbox" && $("refuel").checked && !view.failed
+  };
+  stepParticles(lattice, particleSnap, wall);
+  if (replay == null) {
+    const dh = (sim.t - poisonT) / 3600;
+    if (playing && dh > 0) stepPoisonClock(lattice, Math.min(dh, 12));
+    poisonT = sim.t;
+  }
+  if (!$("core").hidden) drawCore(view);
+  if (now - lastNix > 250) {
+    lastNix = now;
+    const texts = nixText(view);
+    NIX_IDS.forEach((id, i) => setNix(id, texts[i]));
+  }
+  if (!$("particlePane").hidden && now - lastPart > 100) {
+    lastPart = now;
+    drawParticles(view);
+    paintParticleReadout(view);
+  }
   if (roomReady) drawRoom(view, now, wall);
+}
+function setDrawer(which) {
+  $("core").hidden = which !== "core";
+  $("particlePane").hidden = which !== "particles";
+  $("tabCore").classList.toggle("active", which === "core");
+  $("tabParticles").classList.toggle("active", which === "particles");
+  const view = currentView();
+  if (which === "core") drawCore(view);
+  if (which === "particles") { drawParticles(view); paintParticleReadout(view); }
 }
 
 wire();
