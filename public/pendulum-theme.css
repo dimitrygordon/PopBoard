@@ -20,13 +20,13 @@
   --green: #57d38c;
   --red: #ff7a7a;
   --link: #0A84FF;
-  --bob: #5FD3C4;
-  --ghost: #FFB300;
+  --bob: #FFB300;            /* hero: the bob is amber */
+  --ghost: rgba(233, 230, 222, 0.55); /* ideal small-angle model: neutral, dashed */
   --rod: #E9E6DE;
-  --pair-a: #5FD3C4;
-  --pair-b: #FFB300;
+  --pair-a: #FFB300;
+  --pair-b: #5FD3C4;
   --student: #B07CFF;
-  --playhead: #FFB300;
+  --playhead: rgba(233, 230, 222, 0.75);
   --canvas: #0b0e13;
   --good: #57d38c;
   --radius: 16px;
@@ -35,6 +35,18 @@
   --font-body: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  /* Da Vinci tokens: fixed meanings across every mode (later phases read these) */
+  --ruler: #5FD3C4;          /* length always cyan, distinct from mass */
+  --v-gravity: #FF5FAE;
+  --v-tension: #5FD3C4;
+  --v-net: #FFFFFF;
+  --v-tangential: #B07CFF;   /* restoring component */
+  --v-radial: #57d38c;       /* centripetal component */
+  --ke: #FFB300;
+  --pe: #5FD3C4;
+  --e-total: #E9E6DE;
+  --e-loss: #ff7a7a;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   color-scheme: dark;
 }
 
@@ -478,4 +490,18 @@ th {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+
+/* ---- Da Vinci polish ---- */
+.readouts .v, .tile .v, .stopwatch { font-variant-numeric: tabular-nums; } /* no jitter mid-swing */
+.btn, .chip, .mode { transition: transform 120ms var(--ease-out), background-color 200ms var(--ease-out), color 200ms var(--ease-out); }
+.btn:active, .chip:active, .mode:active { transform: scale(0.97); } /* feedback on press */
+:focus-visible { outline: 2px solid var(--ruler); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .btn, .chip, .mode { transition: none; }
+  .btn:active, .chip:active, .mode:active { transform: none; }
+}
+@media (prefers-contrast: more) {
+  :root { --border: #6B7884; --text-dim: #C7CFD6; --ghost: rgba(233, 230, 222, 0.8); }
 }
