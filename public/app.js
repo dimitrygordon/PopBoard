@@ -2757,10 +2757,15 @@ async function buildClassAggregateCard(allStudentDocs, totalPolls, pollsSnapshot
   return card;
 }
 
-async function viewStudentDashboard(studentId) {
+async function viewStudentDashboard(studentId, opts) {
+  var background = !!(opts && opts.background);
   currentStudentId = studentId;
-  studentsPortalDiv.classList.add("hidden");
-  studentDashboardDiv.classList.remove("hidden");
+  // background: fill the dashboard for PDF export without leaving the
+  // screen the teacher is looking at.
+  if (!background) {
+    studentsPortalDiv.classList.add("hidden");
+    studentDashboardDiv.classList.remove("hidden");
+  }
   var studentDoc = await getDoc(doc(db, "boards", currentBoardId, "students", studentId));
   var student = studentDoc.data();
   var lbData = { gold: studentDoc.data().goldMedals || 0, silver: studentDoc.data().silverMedals || 0, bronze: studentDoc.data().bronzeMedals || 0 };
@@ -6107,6 +6112,7 @@ async function loadPolls() {
 
       if (isTeacher && archivedSection && archivedPollDocs.length > 0) {
         var header = document.createElement("div");
+        header.className = "archived-polls-header";
         header.style.cssText = "text-align:center;color:var(--text-secondary,#888);font-size:0.85rem;margin:24px 0 8px;letter-spacing:0.05em;";
         header.textContent = "── Archived Polls ──";
         archivedSection.appendChild(header);
@@ -7492,4 +7498,60 @@ function initStickyCommentBar() {
       newPost.classList.add("comment-collapsed");
     });
   }
+}
+
+// Teacher-only PDF export. The button is created in pdf-export.js only when
+// canShowPdfExport() passes: signed-in, non-anonymous, isTeacher, and an
+// approved teachers/{uid} profile (or admins/{uid}). Students, signed-out
+// users, and Display mode (isTeacher cleared) never get the element.
+if (window.PopboardPdf && window.PopboardPdf.install) {
+  window.PopboardPdf.install({
+    getSession: function() {
+      var u = auth.currentUser;
+      return {
+        authUser: u ? { uid: u.uid, isAnonymous: !!u.isAnonymous } : null,
+        isTeacher: isTeacher === true,
+        isDisplayMode: isDisplayMode === true,
+        isMasterAdmin: isMasterAdmin === true,
+        teacherApproved: isTeacher === true
+      };
+    },
+    ensureScreen: function(key) {
+      if (isTeacher !== true || !currentBoardId) return Promise.resolve();
+      if (key === "students" && studentsList && studentsList.childElementCount === 0) {
+        return loadStudentsPortal();
+      }
+      if (key === "seating" && seatCanvas && seatCanvas.childElementCount === 0 && !unsubSeats) {
+        loadSeatingMap();
+        return new Promise(function(resolve) {
+          var done = false;
+          function finish() {
+            if (done) return;
+            done = true;
+            obs.disconnect();
+            resolve();
+          }
+          var obs = new MutationObserver(function() {
+            if (seatCanvas.childElementCount > 0) finish();
+          });
+          obs.observe(seatCanvas, { childList: true });
+          setTimeout(finish, 1800);
+        });
+      }
+      if (key === "student" && dashboardContent && dashboardContent.childElementCount === 0) {
+        var previousStudentId = currentStudentId;
+        return (async function() {
+          try {
+            if (studentsList && studentsList.childElementCount === 0) await loadStudentsPortal();
+            var snap = await getDocs(collection(db, "boards", currentBoardId, "students"));
+            if (snap.empty) return;
+            await viewStudentDashboard(snap.docs[0].id, { background: true });
+          } finally {
+            currentStudentId = previousStudentId;
+          }
+        })();
+      }
+      return Promise.resolve();
+    }
+  });
 }

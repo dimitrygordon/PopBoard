@@ -1,0 +1,230 @@
+/* Teacher PDF export. The button itself uses the site's default pill
+   `button` rule (style.css). This file only places it, draws the chooser
+   spacing, and builds the print pages. */
+
+.pdf-export-footer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 8px;
+  padding: 28px 16px 36px;
+}
+
+/* The comment bar is position:fixed on the PopBoard. Keep the button in
+   normal flow at the bottom, clear of that bar. */
+#app > .pdf-export-footer {
+  padding-bottom: 108px;
+}
+
+.pdf-chooser {
+  z-index: 100001;
+}
+
+.pdf-chooser-card h3 {
+  margin: 0 0 16px 0;
+  text-align: center;
+}
+
+.pdf-chooser-options {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.pdf-chooser-options button {
+  min-width: 220px;
+}
+
+.pdf-export-toolbar {
+  position: fixed;
+  z-index: 100002;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  background: #ffffff;
+  padding: 10px 12px;
+  border-radius: 999px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+.pdf-measure-host {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 7.5in;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.pdf-measure-host > *,
+.pdf-sheet .pdf-block-fit > * {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  transform: none !important;
+}
+
+.pdf-measure-host .post-reveal-pending,
+.pdf-sheet .post-reveal-pending {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.pdf-export-root,
+.pdf-sheet {
+  color-scheme: light;
+  --bg-color: #ffffff;
+  --bg-secondary: #ffffff;
+  --text-color: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --card-bg: #ffffff;
+  --card-gradient-start: #ffffff;
+  --card-gradient-end: #fafafa;
+  --input-bg: #ffffff;
+  --input-text: #1d1d1f;
+  --button-text: #1d1d1f;
+  --button-border: rgba(0, 0, 0, 0.2);
+  --border-color: rgba(0, 0, 0, 0.12);
+  --card-bg-translucent: #ffffff;
+  color: #1d1d1f;
+}
+
+.pdf-sheet {
+  width: 8.5in;
+  height: 11in;
+  padding: 0.5in;
+  box-sizing: border-box;
+  background: #ffffff;
+  overflow: hidden;
+  break-after: page;
+  page-break-after: always;
+}
+
+.pdf-sheet:last-child {
+  break-after: auto;
+  page-break-after: auto;
+}
+
+.pdf-sheet-inner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.pdf-block,
+.pdf-block-fit,
+.pdf-sheet .post,
+.pdf-sheet .poll,
+.pdf-sheet .reply,
+.pdf-sheet .metric-card,
+.pdf-sheet .board-card,
+.pdf-sheet .teacher-panel,
+.pdf-sheet .daily-dashboard-card,
+.pdf-sheet .leaderboard-card,
+.pdf-sheet img,
+.pdf-sheet h1,
+.pdf-sheet h2,
+.pdf-sheet h3,
+.pdf-sheet p,
+.pdf-sheet li,
+.pdf-sheet #seatCanvas,
+.pdf-sheet .seat {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.pdf-sheet .post,
+.pdf-sheet .poll,
+.pdf-sheet .metric-card,
+.pdf-sheet .board-card,
+.pdf-sheet .teacher-panel,
+.pdf-sheet .daily-dashboard-card,
+.pdf-sheet .leaderboard-card,
+.pdf-sheet #newPost {
+  background: #ffffff !important;
+  color: #1d1d1f;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  animation: none !important;
+}
+
+.pdf-sheet .pdf-screen-title {
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: #1d1d1f;
+}
+
+.pdf-sheet .pdf-empty-note,
+.pdf-chooser .pdf-empty-note {
+  text-align: center;
+  color: var(--text-secondary, #6e6e73);
+  margin: 0;
+}
+
+.pdf-sheet #leaderboardSection,
+.pdf-sheet .leaderboard-card,
+.pdf-sheet header {
+  position: static !important;
+}
+
+.pdf-sheet .lb-content-fade {
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+@media screen {
+  body.pdf-printing {
+    background: #d8d8de;
+    padding: 16px 0 96px;
+  }
+  body.pdf-printing > :not(#pdf-export-root):not(.pdf-export-toolbar) {
+    display: none !important;
+  }
+  .pdf-sheet {
+    margin: 0 auto 16px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
+  }
+}
+
+@page {
+  size: letter;
+  margin: 0;
+}
+
+@media print {
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+  body.pdf-printing > :not(#pdf-export-root) {
+    display: none !important;
+  }
+  .pdf-export-toolbar,
+  .pdf-export-footer,
+  .pdf-chooser,
+  header,
+  #newPost,
+  #confusionIndicator,
+  #teacherHandRaiseBar {
+    display: none !important;
+  }
+  .pdf-sheet {
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+  .pdf-sheet,
+  .pdf-sheet * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
