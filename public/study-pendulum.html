@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0F1216">
+<title>Pendulum Physics Sandbox // PopBoard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<link rel="stylesheet" href="pendulum-theme.css">
+</head>
+<body>
+<header class="bar">
+  <div class="bar-group">
+    <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      <span class="back-label">Back</span>
+    </button>
+    <button id="controlsJumpBtn" type="button">Controls</button>
+  </div>
+  <div class="bar-group">
+    <button id="pauseBtn" type="button">Pause</button>
+    <button id="stepBtn" type="button">Step</button>
+    <button id="resetBtn" type="button">Reset</button>
+  </div>
+</header>
+
+<div class="title">
+  <h1>Pendulum Physics Sandbox</h1>
+  <p>Drag the bob. The rod follows θ″ = −(g/L) sin θ − b θ′. A dashed ghost swings with the exact small-angle solution from the same release, so the drift you see is real. Mass does not change the undamped motion.</p>
+</div>
+
+<main class="wrap">
+  <div id="statusBanner" role="status" aria-live="polite">
+    <div class="status-type" id="statusType">Pendulum</div>
+    <div class="status-reason" id="statusReason">Loading the sandbox.</div>
+  </div>
+  <div class="tabs" id="tabs" role="tablist" aria-label="Pendulum modes"></div>
+
+  <section class="mode" id="mode-sandbox">
+    <div class="layout">
+      <div class="stack">
+        <section class="card" aria-label="Pendulum sandbox">
+          <h2>Sandbox</h2>
+          <p class="sub">Drag the bob to set the release angle. Solid rod = full equation. Dashed ghost = small-angle theory from this release, undamped.</p>
+          <canvas id="sandboxCanvas" class="view view-play" aria-label="Pendulum. Drag the bob to set the starting angle."></canvas>
+          <div class="legend">
+            <span><i class="swatch bob"></i> Full equation</span>
+            <span><i class="swatch ghost"></i> Small-angle theory</span>
+          </div>
+          <div class="readouts">
+            <div class="tile"><div class="l">Position x</div><div class="v" id="posX">—</div><div class="s">+ right, pivot origin</div></div>
+            <div class="tile"><div class="l">Position y</div><div class="v" id="posY">—</div><div class="s">+ down</div></div>
+            <div class="tile"><div class="l">Angle θ</div><div class="v" id="angDeg">—</div><div class="s" id="angRad">from straight down</div></div>
+            <div class="tile"><div class="l">Angular velocity ω</div><div class="v" id="angVel">—</div><div class="s">rad/s</div></div>
+            <div class="tile"><div class="l">Angular acceleration α</div><div class="v" id="angAcc">—</div><div class="s">rad/s²</div></div>
+            <div class="tile"><div class="l">Measured period</div><div class="v" id="periodMeas">—</div><div class="s">same-direction zero crossings</div></div>
+            <div class="tile tile-theory"><div class="l">Small-angle period</div><div class="v" id="periodTheory">—</div><div class="s">theory overlay · 2π√(L/g)</div></div>
+            <div class="tile"><div class="l">Mechanical energy</div><div class="v" id="energyVal">—</div><div class="s">KE + PE, zero at the bottom</div></div>
+          </div>
+        </section>
+        <section class="card" aria-label="Time graphs">
+          <h2>Angle vs time</h2>
+          <p class="sub">Both traces and the playhead read pendulum.history, the one shared time buffer.</p>
+          <canvas id="angleGraph" class="view view-graph" aria-label="Angle versus time, with a playhead locked to the bob."></canvas>
+          <div class="legend">
+            <span><i class="swatch bob"></i> θ full equation</span>
+            <span><i class="swatch ghost"></i> θ small-angle</span>
+            <span><i class="swatch play"></i> playhead</span>
+          </div>
+          <h3>Angular velocity vs time</h3>
+          <canvas id="omegaGraph" class="view view-graph" aria-label="Angular velocity versus time, same playhead."></canvas>
+          <label class="scrub-label" for="playheadSandbox">Playhead — drag while paused to move the bob along the trace</label>
+          <input id="playheadSandbox" class="playhead" type="range" min="0" max="1" step="1" value="0" aria-label="Time playhead">
+        </section>
+      </div>
+      <section class="card controls" id="controls" aria-label="Sandbox controls">
+        <h2>Sandbox controls</h2>
+        <div class="panel-row">
+          <div class="panel-label" id="lenLabel">Length L</div>
+          <input id="lenRange" type="range" min="0.25" max="3.5" step="0.01" value="1" aria-label="Length">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="massLabel">Bob mass m</div>
+          <input id="massRange" type="range" min="0.1" max="8" step="0.01" value="1" aria-label="Bob mass">
+        </div>
+        <p class="panel-hint">The drawn size follows the mass. The undamped equation does not: weight and inertia both scale with m, so they cancel.</p>
+        <div class="panel-row">
+          <div class="panel-label" id="gLabel">Gravity g</div>
+          <input id="gRange" type="range" min="0.5" max="28" step="0.01" value="9.81" aria-label="Gravity">
+        </div>
+        <div class="chips" id="gChips"></div>
+        <div class="panel-row spaced">
+          <div class="panel-label" id="angLabel">Release angle</div>
+          <input id="angRange" type="range" min="-170" max="170" step="0.5" value="50" aria-label="Release angle">
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" id="releaseBtn" type="button">Release</button>
+        </div>
+        <div class="section-label">Damping</div>
+        <div class="chips" id="dampChips">
+          <button class="chip active" id="dampAngular" type="button">Angular rate b</button>
+          <button class="chip" id="dampDrag" type="button">Linear drag c</button>
+        </div>
+        <div class="panel-row" id="dampRow">
+          <div class="panel-label" id="dampLabel">Angular damping b</div>
+          <input id="dampRange" type="range" min="0" max="1.5" step="0.01" value="0" aria-label="Angular damping">
+        </div>
+        <div class="panel-row hidden" id="dragRow">
+          <div class="panel-label" id="dragLabel">Drag coefficient c</div>
+          <input id="dragRange" type="range" min="0" max="8" step="0.01" value="0" aria-label="Linear drag coefficient">
+        </div>
+        <p class="panel-hint" id="dampExplain">b is an angular damping rate in s⁻¹, not a force. Mass does not enter.</p>
+        <div class="section-label">Sim clock</div>
+        <div class="chips" id="rates">
+          <button class="chip" type="button" data-rate="0.1">0.1×</button>
+          <button class="chip" type="button" data-rate="0.25">0.25×</button>
+          <button class="chip" type="button" data-rate="0.5">0.5×</button>
+          <button class="chip active" type="button" data-rate="1">1×</button>
+          <button class="chip" type="button" data-rate="2">2×</button>
+        </div>
+        <p class="panel-hint" id="simClock">Sim time 0.00 s · 1×. Pause and Step are in the top bar. Step moves 1/60 s of simulation time.</p>
+        <label class="check"><input id="showGhost" type="checkbox" checked> Show the small-angle ghost</label>
+        <label class="check"><input id="showTrail" type="checkbox" checked> Show the path</label>
+        <div class="eq" id="eqBox">θ″ = −(g/L) sin θ − b θ′</div>
+      </section>
+    </div>
+  </section>
+
+  <section class="mode" id="mode-period" hidden>
+    <div class="layout">
+      <div class="stack">
+        <section class="card" aria-label="Period lab pendulum">
+          <h2>Time one variable</h2>
+          <p class="sub">Same pendulum as the sandbox. Drag the bob, or move only the variable you picked. The trace below uses the shared time buffer, so its playhead matches the bob.</p>
+          <canvas id="labCanvas" class="view view-lab" aria-label="Period lab pendulum. Drag the bob to set the release angle."></canvas>
+          <canvas id="labTime" class="view view-graph" aria-label="Lab angle versus time, shared playhead."></canvas>
+          <label class="scrub-label" for="playheadLab">Playhead</label>
+          <input id="playheadLab" class="playhead" type="range" min="0" max="1" step="1" value="0" aria-label="Lab time playhead">
+        </section>
+        <section class="card" aria-label="Stopwatch and cycle counter">
+          <h2>Stopwatch</h2>
+          <p class="sub">Simulation seconds. Pause and slow-mo move this clock with the bob, so a 0.25× swing still times the physical period.</p>
+          <div class="stopwatch" id="stopwatch">00:00.0</div>
+          <div class="btn-row">
+            <button class="btn primary" id="swToggle" type="button">Start</button>
+            <button class="btn" id="swMark" type="button">Mark a pass</button>
+            <button class="btn" id="swReset" type="button">Reset watch</button>
+          </div>
+          <p class="marks" id="marksLine">No marks yet.</p>
+          <p class="marks" id="cycleLine">Automatic cycle counter waiting.</p>
+        </section>
+      </div>
+      <section class="card controls" id="labControls" aria-label="Period lab controls">
+        <h2>Vary one thing</h2>
+        <p class="sub">Pick the quantity under test. The others stay locked until you switch.</p>
+        <div class="chips" id="varyChips">
+          <button class="chip active" type="button" data-vary="L">Length</button>
+          <button class="chip" type="button" data-vary="g">Gravity</button>
+          <button class="chip" type="button" data-vary="m">Mass</button>
+          <button class="chip" type="button" data-vary="theta">Angle</button>
+          <button class="chip" type="button" data-vary="b">Damping</button>
+        </div>
+        <div class="panel-row spaced">
+          <div class="panel-label" id="varyLabel">Length</div>
+          <input id="varyRange" type="range" min="0.25" max="3.5" step="0.01" value="1" aria-label="Variable under test">
+        </div>
+        <p class="panel-hint" id="lockedLine">Locked values.</p>
+        <div class="btn-row">
+          <button class="btn primary" id="labRelease" type="button">Release &amp; time</button>
+          <button class="btn" id="recordBtn" type="button">Record trial</button>
+          <button class="btn" id="clearBtn" type="button">Clear table</button>
+        </div>
+        <p class="feedback" id="recordFeedback" aria-live="polite"></p>
+      </section>
+    </div>
+
+    <section class="card" aria-label="Side by side pendulums">
+      <h2>Side by side — same length, different mass</h2>
+      <p class="sub">Released together. With damping off they stay in sync: mass cancelled. Turn on linear drag and the lighter bob dies first, because b = c/m.</p>
+      <canvas id="pairCanvas" class="view view-pair" aria-label="Two pendulums of equal length and different mass."></canvas>
+      <div class="legend">
+        <span><i class="swatch pair-a"></i> Bob A</span>
+        <span><i class="swatch pair-b"></i> Bob B</span>
+      </div>
+      <div class="layout">
+        <div class="stack">
+          <div class="panel-row">
+            <div class="panel-label" id="pairLLabel">Shared length</div>
+            <input id="pairL" type="range" min="0.3" max="2" step="0.01" value="1" aria-label="Shared comparison length">
+          </div>
+          <div class="panel-row">
+            <div class="panel-label" id="pairMALabel">Mass A</div>
+            <input id="pairMA" type="range" min="0.1" max="8" step="0.01" value="0.5" aria-label="Mass of pendulum A">
+          </div>
+          <div class="panel-row">
+            <div class="panel-label" id="pairMBLabel">Mass B</div>
+            <input id="pairMB" type="range" min="0.1" max="8" step="0.01" value="4" aria-label="Mass of pendulum B">
+          </div>
+        </div>
+        <div class="stack">
+          <div class="panel-row">
+            <div class="panel-label" id="pairAngLabel">Shared release angle</div>
+            <input id="pairAng" type="range" min="-80" max="80" step="0.5" value="35" aria-label="Shared release angle">
+          </div>
+          <div class="chips" id="pairModes">
+            <button class="chip active" id="pairNone" type="button">Damping off</button>
+            <button class="chip" id="pairAngular" type="button">Same b</button>
+            <button class="chip" id="pairDrag" type="button">Linear drag</button>
+          </div>
+          <div class="panel-row hidden" id="pairBRow">
+            <div class="panel-label" id="pairBLabel">Shared b</div>
+            <input id="pairB" type="range" min="0" max="1.5" step="0.01" value="0.4" aria-label="Shared angular damping">
+          </div>
+          <div class="panel-row hidden" id="pairCRow">
+            <div class="panel-label" id="pairCLabel">Drag c</div>
+            <input id="pairC" type="range" min="0" max="2" step="0.01" value="0.35" aria-label="Shared drag coefficient">
+          </div>
+          <div class="btn-row">
+            <button class="btn primary" id="pairRelease" type="button">Release both together</button>
+          </div>
+        </div>
+      </div>
+      <p class="panel-hint" id="pairReadout">Both use the sandbox gravity. Bob size shows mass.</p>
+    </section>
+
+    <section class="card" aria-label="Doubling length check">
+      <h2>Does doubling L double T?</h2>
+      <p class="sub">Same release angle, same g, no damping. Left pendulum, and the one with twice the length.</p>
+      <canvas id="doubCanvas" class="view view-pair" aria-label="Two pendulums, one with twice the length."></canvas>
+      <div class="callout" id="doubNote">Measuring the check…</div>
+      <p class="marks" id="doubLive">Live cycle counter warming up.</p>
+      <div class="btn-row">
+        <button class="btn" id="doubRecheck" type="button">Re-check at the sandbox g</button>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Data table">
+      <h2>Data table</h2>
+      <p class="sub">Auto T is the cycle counter. Manual T is your stopwatch mean. Theory is 2π√(L/g), the small-angle overlay — not a fit to the bob.</p>
+      <div class="tblwrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Varied</th><th>Value</th><th>Auto T (s)</th><th>Manual T (s)</th><th>Theory T (s)</th></tr>
+          </thead>
+          <tbody id="trialBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Period graphs">
+      <h2>T vs L</h2>
+      <p class="sub">Dashed = small-angle theory. Cyan = automatic 5° sweep. Violet = your length trials.</p>
+      <canvas id="graphTL" class="view view-graph" aria-label="Period versus length"></canvas>
+      <h3>T vs g</h3>
+      <p class="sub">Same marks. Period falls as gravity rises, and not in a straight line.</p>
+      <canvas id="graphTG" class="view view-graph" aria-label="Period versus gravity"></canvas>
+      <h3>T² vs L</h3>
+      <p class="sub">Small-angle theory is a straight line through the origin. Slope = 4π²/g.</p>
+      <canvas id="graphT2" class="view view-graph" aria-label="Period squared versus length, with a linear fit"></canvas>
+      <div class="legend">
+        <span><i class="swatch ghost"></i> theory</span>
+        <span><i class="swatch bob"></i> 5° sweep</span>
+        <span><i class="swatch student"></i> your trials</span>
+      </div>
+      <p class="panel-hint" id="fitNote">Measuring the sweep…</p>
+      <div class="btn-row">
+        <button class="btn" id="remeasureBtn" type="button">Remeasure sweeps at the locked g and L</button>
+      </div>
+    </section>
+  </section>
+
+  <section class="mode" id="mode-forces" hidden>
+    <section class="card later-card">
+      <h2>Forces &amp; Energy</h2>
+      <p>Later phase. This tab is the plug-in point for the free-body diagram, tension, and the trade between kinetic energy, potential energy, and the work damping does.</p>
+      <p>The engine underneath is already the full pendulum. A later phase fills this panel and keeps the same hook.</p>
+      <p><code>pendulum.state.mode === "forces"</code></p>
+    </section>
+  </section>
+
+  <section class="mode" id="mode-amplitude" hidden>
+    <section class="card later-card">
+      <h2>Amplitude, nonlinear &amp; driven</h2>
+      <p>Later phase. Large-angle period, the elliptic correction, and a driven pivot plug in here. The Period Lab already shows that a large release runs long compared with 2π√(L/g).</p>
+      <p><code>pendulum.state.mode === "amplitude"</code></p>
+    </section>
+  </section>
+
+  <section class="mode" id="mode-foucault" hidden>
+    <section class="card later-card">
+      <h2>Comparison &amp; Foucault</h2>
+      <p>Later phase. Planet-versus-planet comparisons beyond the Period Lab, and a Foucault precession view, plug in here. This build is a plane pendulum with uniform g.</p>
+      <p><code>pendulum.state.mode === "foucault"</code></p>
+    </section>
+  </section>
+</main>
+
+<footer class="footnote">
+  A point bob on a rigid massless rod, so the swing can pass horizontal. One linear damping term. Uniform g, no Earth rotation.
+  The dashed ghost is the exact small-angle solution from the release — a theory overlay, not a second integration.
+  Mass cancels out of the undamped motion. Linear drag is labeled b = c/m.
+  Time graphs read pendulum.history. The T-versus-variable graphs are trial data, not that buffer.
+</footer>
+<script type="module" src="pendulum-ui.js"></script>
+</body>
+</html>
