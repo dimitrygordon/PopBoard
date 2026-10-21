@@ -14,7 +14,7 @@ import {
 import {
   BOARD_RETURN_STORAGE_KEY, buildReturnState, serializeReturnState, chooseReturnTarget,
   returnStateFromSearch, studyOpenHref, searchWithoutReturn, shouldUseEmulators
-} from "./board-return.js?v=20261021g";
+} from "./board-return.js?v=20261021h";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClkHjUnQ96VNRj1FxyY-ca-AcDWYoX_m8",
@@ -1983,23 +1983,7 @@ function initLeaderboard() {
     if (!isTeacher) {
       scores.forEach(function(entry, newRank) {
         var oldRank = prevLeaderboardRanks[entry.name];
-        if (oldRank !== undefined && oldRank > newRank) {
-          var improvement = oldRank - newRank;
-          setTimeout(function() {
-            var rows = leaderboardSection.querySelectorAll(".lb-row");
-            rows.forEach(function(row) {
-              if (row.dataset.lbName === entry.name) {
-                var badge = document.createElement("span");
-                badge.textContent = "↑" + improvement;
-                badge.style.cssText = "position:absolute;right:-36px;top:50%;transform:translateY(-50%);color:#34c759;font-size:0.75rem;font-weight:700;opacity:1;transition:opacity 0.5s ease,top 0.5s ease;pointer-events:none;";
-                row.style.position = "relative";
-                row.appendChild(badge);
-                setTimeout(function() { badge.style.opacity = "0"; badge.style.top = "0%"; }, 1500);
-                setTimeout(function() { badge.remove(); }, 2000);
-              }
-            });
-          }, 600);
-        }
+        // (rank-change ▲/▼ chips are drawn by renderLeaderboardUI)
         prevLeaderboardRanks[entry.name] = newRank;
       });
     }
@@ -2072,7 +2056,11 @@ function firstNameInitial(name) {
   return n ? n.split(/\s+/)[0].charAt(0).toUpperCase() : "?";
 }
 
+var lbPrevTop = {};   // name -> top px from the previous render (rank motion)
+var lbPrevRank = {};  // name -> rank index from the previous render
+var lbChips = {};     // name -> recent rank change {up, n, at}
 function renderLeaderboardUI(topRows, personalRow) {
+  var lbNextTop = {}, lbNextRank = {};
   leaderboardSection.innerHTML = "";
   if (!isTeacher && !leaderboardVisible) { renderIdentityEntryBox(); return; }
   var card = document.createElement("div");
@@ -2118,8 +2106,34 @@ function renderLeaderboardUI(topRows, personalRow) {
     row.className = "lb-row" + (isPersonal ? " lb-personal-row" : "");
     row.dataset.lbName = entry.name;
 
-    // Position each row absolutely so we can animate it
-    row.style.cssText = "position:absolute;width:100%;top:" + topPx + "px;transition:top 0.5s cubic-bezier(0.4,0,0.2,1);";
+    // Position each row absolutely so we can animate it. A row that was on
+    // the board last render starts where it was and glides to its new rank.
+    var key = (isPersonal ? "me:" : "") + entry.name;
+    var fromTop = lbPrevTop[key];
+    lbNextTop[key] = topPx;
+    row.style.cssText = "position:absolute;width:100%;top:" + (fromTop !== undefined ? fromTop : topPx) + "px;transition:top 0.5s cubic-bezier(0.4,0,0.2,1);";
+    if (fromTop !== undefined && fromTop !== topPx) {
+      requestAnimationFrame(function() { requestAnimationFrame(function() { row.style.top = topPx + "px"; }); });
+    }
+    if (!isPersonal) {
+      lbNextRank[entry.name] = colorIndex;
+      var was = lbPrevRank[entry.name];
+      if (was !== undefined && was !== colorIndex) {
+        lbChips[entry.name] = { up: colorIndex < was, n: Math.abs(was - colorIndex), at: performance.now() };
+      }
+      // Several snapshots can land in a burst; keep a recent chip alive
+      // across re-renders (continuing its animation) instead of losing it.
+      var chipInfo = lbChips[entry.name];
+      if (chipInfo && performance.now() - chipInfo.at < 2800) {
+        var chip = document.createElement("span");
+        chip.className = "lb-rank-chip " + (chipInfo.up ? "is-up" : "is-down");
+        chip.textContent = (chipInfo.up ? "▲" : "▼") + chipInfo.n;
+        chip.setAttribute("aria-label", (chipInfo.up ? "moved up " : "moved down ") + chipInfo.n);
+        chip.style.animationDelay = (-(performance.now() - chipInfo.at)).toFixed(0) + "ms";
+        row.appendChild(chip);
+      }
+      if (!isTeacher && username && entry.name === username) { row.classList.add("lb-me"); }
+    }
 
     var nameDiv = document.createElement("div");
     nameDiv.className = "lb-name";
@@ -2211,6 +2225,8 @@ function renderLeaderboardUI(topRows, personalRow) {
 
   card.appendChild(rowContainer);
   leaderboardSection.appendChild(card);
+  lbPrevTop = lbNextTop;
+  lbPrevRank = lbNextRank;
   initStickyLeaderboard();
   renderIdentityEntryBox();
 }
@@ -4178,6 +4194,18 @@ function wireSeatDrag(el, seat, editable) {
     // Snap back inside the sandbox if the rubber-band let it overshoot.
     finalX = Math.max(2, Math.min(98, finalX));
     finalY = Math.max(2, Math.min(98, finalY));
+    // Snap the seat's centre onto the canvas's 24px dot grid.
+    if (moved) {
+      var cRect = seatCanvas.getBoundingClientRect();
+      if (cRect.width > 0 && cRect.height > 0) {
+        var snapX = (Math.round((finalX / 100 * cRect.width - 12) / 24) * 24 + 12) / cRect.width * 100;
+        var snapY = (Math.round((finalY / 100 * cRect.height - 12) / 24) * 24 + 12) / cRect.height * 100;
+        if (snapX >= 2 && snapX <= 98) { finalX = snapX; }
+        if (snapY >= 2 && snapY <= 98) { finalY = snapY; }
+        el.classList.add("seat-snapped");
+        setTimeout(function() { el.classList.remove("seat-snapped"); }, 320);
+      }
+    }
     el.style.transition = "left 200ms cubic-bezier(0.23, 1, 0.32, 1), top 200ms cubic-bezier(0.23, 1, 0.32, 1)";
     el.style.left = finalX + "%";
     el.style.top = finalY + "%";
@@ -5349,7 +5377,10 @@ function loadPosts() {
   if (unsubPosts) { unsubPosts(); unsubPosts = null; }
   var orderField = sortMode === "new" ? "timestamp" : "upvotes";
   var q = query(collection(db, "boards", currentBoardId, "posts"), orderBy(orderField, "desc"));
+  var flipFirstSnapshot = true;
   unsubPosts = onSnapshot(q, function(snapshot) {
+    // FLIP: remember where each post sat before the full rebuild below.
+    var flipPrev = uiCapturePostRects();
     postsDiv.innerHTML = "";
     // The rebuild above orphans every existing .post-jelly-wrap -- proactively
     // drop them from the visible-set rather than waiting on the
@@ -5486,11 +5517,27 @@ function loadPosts() {
         div.querySelector(".post-actions-row").appendChild(delBtn);
       }
       var upvoteSpan = div.querySelector(".upvote");
+      // The snapshot from this user's own vote rebuilds the post within a few
+      // ms -- carry the squish over to the new element, already in progress.
+      if (uiLastVote && uiLastVote.id === postId && performance.now() - uiLastVote.at < 420) {
+        upvoteSpan.classList.add(uiLastVote.cls);
+        upvoteSpan.style.animationDelay = (-(performance.now() - uiLastVote.at)).toFixed(0) + "ms";
+        if (uiLastVote.cls === "vote-squish") { upvoteSpan.classList.add("vote-on"); }
+      }
+      upvoteSpan.setAttribute("role", "button");
+      upvoteSpan.tabIndex = 0;
+      upvoteSpan.setAttribute("aria-pressed", myUpvotedPostIds.has(postId) ? "true" : "false");
+      upvoteSpan.setAttribute("aria-label", "Upvote (" + (post.upvotes || 0) + ")");
+      upvoteSpan.addEventListener("keydown", function(e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); this.click(); } });
       (function(pid, postData) {
         upvoteSpan.onclick = async function(e) {
           e.stopPropagation();
           if (isDisplayMode) { return; }
           var already = postData.upvoters && postData.upvoters.indexOf(username) !== -1;
+          restartAnimationClass(upvoteSpan, already ? "vote-squish-off" : "vote-squish");
+          uiLastVote = { id: pid, at: performance.now(), cls: already ? "vote-squish-off" : "vote-squish" };
+          upvoteSpan.classList.toggle("vote-on", !already);
+          upvoteSpan.setAttribute("aria-pressed", already ? "false" : "true");
           createPopcornConfetti(upvoteSpan);
           playPop();
           if (navigator.vibrate) { navigator.vibrate(25); }
@@ -5596,11 +5643,78 @@ function loadPosts() {
       // same CSS property instead of composing (see wireJellyScroll below).
       var jellyWrap = document.createElement("div");
       jellyWrap.className = "post-jelly-wrap";
+      jellyWrap.dataset.postId = postId;
       jellyWrap.appendChild(div);
       postsDiv.appendChild(jellyWrap);
       if (jellyObserver) { jellyObserver.observe(jellyWrap); }
     });
+    uiPlayPostFlip(flipPrev, flipFirstSnapshot, snapshot);
+    flipFirstSnapshot = false;
   });
+}
+
+// ─── Post reorder (FLIP), live-arrival glow and "N new posts" pill ───────────
+var uiLastVote = null;
+var uiReduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+var uiUnseenPostIds = new Set();
+function uiCapturePostRects() {
+  var m = {};
+  postsDiv.querySelectorAll(".post-jelly-wrap[data-post-id]").forEach(function(w) { m[w.dataset.postId] = w.getBoundingClientRect().top; });
+  return m;
+}
+function uiPlayPostFlip(prev, first, snapshot) {
+  var wraps = postsDiv.querySelectorAll(".post-jelly-wrap[data-post-id]");
+  var hadPrev = Object.keys(prev).length > 0;
+  wraps.forEach(function(w) {
+    var id = w.dataset.postId, post = w.querySelector(".post");
+    if (!post) { return; }
+    if (prev[id] !== undefined) {
+      var dy = prev[id] - w.getBoundingClientRect().top;
+      if (Math.abs(dy) > 2 && !uiReduceMotion && post.animate) {
+        post.animate([{ transform: "translateY(" + dy + "px)" }, { transform: "translateY(0)" }], { duration: 420, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)", composite: "add" });
+        window.__uiFlipCount = (window.__uiFlipCount || 0) + 1;
+      }
+    } else if (!first && hadPrev) {
+      // arrived live (not on first load, not just a re-sort)
+      var data = null;
+      snapshot.forEach(function(d) { if (d.id === id) { data = d.data(); } });
+      var mine = data && data.author === username && !data.anonymous;
+      post.classList.add("post-live-new");
+      setTimeout(function() { post.classList.remove("post-live-new"); }, 2600);
+      if (!mine) {
+        var r = w.getBoundingClientRect();
+        if (r.bottom < 80 || r.top > window.innerHeight - 80) { uiUnseenPostIds.add(id); }
+      }
+    }
+  });
+  uiUpdateNewPostsPill();
+}
+var uiNewPostsPill = null;
+function uiUpdateNewPostsPill() {
+  // drop ids that have scrolled into view
+  uiUnseenPostIds.forEach(function(id) {
+    var w = postsDiv.querySelector('.post-jelly-wrap[data-post-id="' + id + '"]');
+    if (!w) { uiUnseenPostIds.delete(id); return; }
+    var r = w.getBoundingClientRect();
+    if (r.top < window.innerHeight - 80 && r.bottom > 80) { uiUnseenPostIds.delete(id); }
+  });
+  var n = uiUnseenPostIds.size;
+  if (!uiNewPostsPill) {
+    uiNewPostsPill = document.createElement("button");
+    uiNewPostsPill.type = "button";
+    uiNewPostsPill.className = "ui-new-posts-pill";
+    uiNewPostsPill.onclick = function() {
+      var target = null;
+      uiUnseenPostIds.forEach(function(id) { var w = postsDiv.querySelector('.post-jelly-wrap[data-post-id="' + id + '"]'); if (w && (!target || w.getBoundingClientRect().top < target.getBoundingClientRect().top)) { target = w; } });
+      if (target) { target.scrollIntoView({ behavior: uiReduceMotion ? "auto" : "smooth", block: "center" }); }
+      uiUnseenPostIds.clear();
+      uiUpdateNewPostsPill();
+    };
+    appDiv.appendChild(uiNewPostsPill);
+    window.addEventListener("scroll", function() { if (uiUnseenPostIds.size) { uiUpdateNewPostsPill(); } }, { passive: true });
+  }
+  uiNewPostsPill.textContent = "↑ " + n + " new post" + (n === 1 ? "" : "s");
+  uiNewPostsPill.classList.toggle("is-shown", n > 0 && !appDiv.classList.contains("hidden"));
 }
 
 teacherBtn.addEventListener("click", function() {
@@ -7338,7 +7452,7 @@ async function updateDailyDashboard() {
     var anonPct = totalCommentCount > 0 ? Math.round((anonCount / totalCommentCount) * 100) : 0;
     var engDisplay = document.getElementById("dailyEngagementDisplay");
     var metricsText = document.getElementById("dailyMetricsText");
-    if (engDisplay) { engDisplay.textContent = engagementPct + "% Engagement"; }
+    if (engDisplay) { uiCountUp(engDisplay, engagementPct, "% Engagement"); }
     if (metricsText) {
       metricsText.innerHTML = "Attendance: " + attendance + "/" + totalStudents + " &nbsp;|&nbsp; Upvotes: " + totalUpvotes + " &nbsp;|&nbsp; Comments: " + totalComments + " &nbsp;|&nbsp; Poll Participation: " + engagementPct + "% &nbsp;|&nbsp; " + iconLabel("mask", "Anonymity: " + anonPct + "%");
     }
@@ -7346,6 +7460,19 @@ async function updateDailyDashboard() {
     console.error("Daily dashboard error:", err);
   }
   setTimeout(function() { updateDailyDashboard(); }, 60000);
+}
+
+// Counts a "<n><suffix>" label from its current number to `to`.
+function uiCountUp(el, to, suffix) {
+  var from = parseInt(el.textContent, 10);
+  if (isNaN(from) || from === to || uiReduceMotion) { el.textContent = to + suffix; return; }
+  var t0 = performance.now(), dur = 700;
+  if (el._uiCountRaf) { cancelAnimationFrame(el._uiCountRaf); }
+  (function step(now) {
+    var k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+    el.textContent = Math.round(from + (to - from) * e) + suffix;
+    if (k < 1) { el._uiCountRaf = requestAnimationFrame(step); }
+  })(t0);
 }
 
 function initStickyLeaderboard() {

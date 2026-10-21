@@ -12,9 +12,9 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="pdf-export.css" />
   <link rel="preload" href="/fonts/fredoka-latin.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="login-alive.css?v=20261021g" />
-  <link rel="stylesheet" href="astro-mode.css?v=20261021g" />
-  <link rel="stylesheet" href="ui-design.css?v=20261021g" />
+  <link rel="stylesheet" href="login-alive.css?v=20261021h" />
+  <link rel="stylesheet" href="astro-mode.css?v=20261021h" />
+  <link rel="stylesheet" href="ui-design.css?v=20261021h" />
   <style>
     html.pb-restoring #login,
     html.pb-restoring #teacherLogin,
@@ -291,12 +291,12 @@
   <div id="confusionIndicator" class="hidden glass-specular">
     <span class="confusion-label">How's it going?</span>
     <div class="confusion-buttons">
-      <button type="button" id="confusionGreenBtn" class="confusion-btn" data-state="green" title="I've got it"><span class="confusion-dot confusion-dot-green"></span></button>
-      <button type="button" id="confusionOrangeBtn" class="confusion-btn" data-state="orange" title="Somewhat confused"><span class="confusion-dot confusion-dot-orange"></span></button>
-      <button type="button" id="confusionRedBtn" class="confusion-btn" data-state="red" title="I'm confused"><span class="confusion-dot confusion-dot-red"></span></button>
+      <button type="button" id="confusionGreenBtn" class="confusion-btn" data-state="green" title="I've got it" aria-label="Got it" data-label="Got it"><span class="confusion-dot confusion-dot-green"></span></button>
+      <button type="button" id="confusionOrangeBtn" class="confusion-btn" data-state="orange" title="Somewhat confused" aria-label="Unsure" data-label="Unsure"><span class="confusion-dot confusion-dot-orange"></span></button>
+      <button type="button" id="confusionRedBtn" class="confusion-btn" data-state="red" title="I'm confused" aria-label="Lost" data-label="Lost"><span class="confusion-dot confusion-dot-red"></span></button>
     </div>
     <div class="confusion-divider"></div>
-    <button type="button" id="raiseHandBtn" title="Raise your hand"><span id="raiseHandIcon" class="raise-hand-icon"></span></button>
+    <button type="button" id="raiseHandBtn" title="Raise your hand" aria-label="Raise your hand" data-label="Hand"><span id="raiseHandIcon" class="raise-hand-icon"></span></button>
     <div id="confusionSparkline" class="confusion-sparkline"></div>
   </div>
 
@@ -371,10 +371,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/compromise@14/builds/compromise.min.js"></script>
 <script type="module" src="pdf-export.js"></script>
-<script type="module" src="app.js?v=20261021g"></script>
-<script defer src="ui-toast.js?v=20261021g"></script>
-<script defer src="login-sky.js?v=20261021g"></script>
-<script defer src="login-alive.js?v=20261021g"></script>
-<script defer src="astro-mode.js?v=20261021g"></script>
+<script type="module" src="app.js?v=20261021h"></script>
+<script defer src="ui-toast.js?v=20261021h"></script>
+<script defer src="login-sky.js?v=20261021h"></script>
+<script defer src="login-alive.js?v=20261021h"></script>
+<script defer src="astro-mode.js?v=20261021h"></script>
 </body>
 </html>
