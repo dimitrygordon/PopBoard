@@ -1,0 +1,23 @@
+/* astro-mode.css — Astronomy Mode surfaces (on top of dark-mode tokens). */
+#la-sky { z-index: -1; }                       /* always behind in-flow content; never interactive */
+html[data-astro] #la-sky { opacity: 1 !important; pointer-events: none !important; }
+html[data-astro] { background: #0b1024; }
+html[data-astro][data-theme="dark"] {
+  --bg-color: transparent;
+  --bg-secondary: rgba(16, 20, 40, .74);
+  --card-bg: rgba(20, 24, 46, .80);
+  --card-bg-translucent: rgba(18, 22, 42, .70);
+  --card-gradient-start: rgba(22, 26, 50, .78);
+  --card-gradient-end: rgba(16, 20, 40, .78);
+  --input-bg: rgba(255, 255, 255, .08);
+  --text-secondary: #c3c8da;                   /* ≥ 4.5:1 on the glass panels */
+  --border-color: rgba(190, 205, 255, .16);
+  --confusion-none-color: rgba(44, 46, 66, .9);
+  --glass-blur: 22px;
+}
+html[data-astro] body { background: transparent !important; }
+html[data-astro] #boardsPortal > *, html[data-astro] #studentsPortal > *, html[data-astro] #seatingMap > *,
+html[data-astro] .post, html[data-astro] .reply, html[data-astro] [class*="popup"], html[data-astro] .state-pill-prompt {
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%); backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+}
+.astro-ic { vertical-align: -0.15em; }
