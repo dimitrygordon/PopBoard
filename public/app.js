@@ -14,7 +14,7 @@ import {
 import {
   BOARD_RETURN_STORAGE_KEY, buildReturnState, serializeReturnState, chooseReturnTarget,
   returnStateFromSearch, studyOpenHref, searchWithoutReturn, shouldUseEmulators
-} from "./board-return.js?v=20261021f";
+} from "./board-return.js?v=20261021g";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClkHjUnQ96VNRj1FxyY-ca-AcDWYoX_m8",
@@ -691,6 +691,12 @@ function restartAnimationClass(el, cls) {
 }
 function applyMotionPop(el) { restartAnimationClass(el, "motion-pop"); }
 function applyMotionWave(el) { restartAnimationClass(el, "motion-pop-wave"); }
+
+// Styled, non-blocking confirm (ui-toast.js); falls back to the native one.
+function uiConfirmAsync(message, opts) {
+  if (typeof window.uiConfirm === "function") { return window.uiConfirm(message, opts); }
+  return Promise.resolve(window.confirm(message));
+}
 
 // ─── Hold-to-confirm delete ─────────────────────────────────────────────────
 // Replaces confirm() across every delete button: a loading bar fills
@@ -1716,7 +1722,7 @@ function createBoardCard(board, isMasterView) {
   (function(bid, bname) {
     resetBtn.onclick = async function(e) {
       e.stopPropagation();
-      if (!confirm("Reset " + bname + "?")) { return; }
+      if (!await uiConfirmAsync("Reset " + bname + "?", { confirmLabel: "Reset" })) { return; }
       await resetBoard(bid);
     };
   })(board.id, board.name);
@@ -2621,7 +2627,7 @@ async function renameStudentUsername(studentId, oldUsername, newUsername) {
   if (newUsername.toLowerCase() === "dimitry" || newUsername === teacherAccount) { alert("That name is reserved."); return; }
   var dupSnap = await getDocs(query(collection(db, "boards", currentBoardId, "students"), where("username", "==", newUsername)));
   if (dupSnap.docs.some(function(d) { return d.id !== studentId; })) { alert("That username is already taken."); return; }
-  if (!confirm('Rename "' + oldUsername + '" to "' + newUsername + '"? This rewrites their name on every past post, reply, and poll.')) { return; }
+  if (!await uiConfirmAsync('Rename "' + oldUsername + '" to "' + newUsername + '"? This rewrites their name on every past post, reply, and poll.')) { return; }
 
   var oldLbRef = doc(db, "boards", currentBoardId, "leaderboard", oldUsername);
   var oldLbSnap = await getDoc(oldLbRef);
@@ -2870,7 +2876,7 @@ async function viewStudentDashboard(studentId, opts) {
   var resetSignInBtn = document.getElementById("resetSignInBtn");
   if (resetSignInBtn) {
     resetSignInBtn.onclick = async function() {
-      if (!confirm("Reset sign-in for \"" + student.username + "\"? Their posts and stats stay. They (or anyone) can then join again with this name, so have them rejoin right away and add a password if they want it protected.")) { return; }
+      if (!await uiConfirmAsync("Reset sign-in for \"" + student.username + "\"? Their posts and stats stay. They (or anyone) can then join again with this name, so have them rejoin right away and add a password if they want it protected.")) { return; }
       try { await resetStudentSignIn(studentId, student.username, student.uid); viewStudentDashboard(studentId); }
       catch (err) { console.error(err); alert(authErrorMessage(err)); }
     };
@@ -3440,7 +3446,7 @@ async function showMergeDialog(sid) {
   var sel = prompt(promptText);
   var idx = parseInt(sel) - 1;
   if (isNaN(idx) || idx < 0 || idx >= students.length) { alert("Invalid selection."); return; }
-  if (!confirm("Merge " + students[idx].username + " into current student?")) { return; }
+  if (!await uiConfirmAsync("Merge " + students[idx].username + " into current student?")) { return; }
   await mergeStudents(sid, students[idx].id);
 }
 
@@ -5447,14 +5453,20 @@ function loadPosts() {
         setEyeLabelAnimated(hBtn, post.visible, "Shown", "Hidden");
         hBtn.className = "hide-toggle teacher-control";
         (function(pid, vis) {
-          hBtn.onclick = async function(e) {
-            e.stopPropagation();
-            var newV = !vis;
+          async function setPostVisible(newV) {
             await updateDoc(doc(db, "boards", currentBoardId, "posts", pid), { visible: newV });
             var rSnap = await getDocs(collection(db, "boards", currentBoardId, "replies"));
             rSnap.forEach(function(rd) {
               if (rd.data().postId === pid) { updateDoc(doc(db, "boards", currentBoardId, "replies", rd.id), { visible: newV }); }
             });
+          }
+          hBtn.onclick = async function(e) {
+            e.stopPropagation();
+            var newV = !vis;
+            await setPostVisible(newV);
+            if (!newV && window.uiToast) {
+              window.uiToast("Post hidden from students.", { type: "info", action: "Undo", onAction: function() { setPostVisible(true); } });
+            }
           };
         })(postId, post.visible);
         div.querySelector(".post-actions-row").appendChild(hBtn);
@@ -6110,7 +6122,7 @@ async function loadPolls() {
           (function(pid, pdata) {
             resetBtn.onclick = async function(e) {
               e.stopPropagation();
-              if (!confirm("Reset this poll?")) { return; }
+              if (!await uiConfirmAsync("Reset this poll?", { confirmLabel: "Reset poll" })) { return; }
               var updates = { history: [], pointsAwarded: false };
               if (pdata.type === "mc") {
                 updates.votes = Array(pdata.options.length).fill(0);
