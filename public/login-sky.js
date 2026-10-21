@@ -233,15 +233,62 @@
         ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(p[0], p[1], r * 4, 0, 6.283); ctx.fill(); });
     });
   }
-  function drawMoon() {
-    var vis = clamp(st.night * 1.2 + st.twi * .3, 0, 1) * (1 - WXCLOUD[wx.kind] * .7); if (vis < .03) return;
+  /* ---------- moon ↔ cloud interaction ---------- */
+  var MS = { x: 0, y: 0, r: 22, vis: 0, cov: 0, near: 0, on: false };
+  function cloudBox(c) { var sc = Math.max(1, W / 1280), w = 360 * c.s * sc, h = 220 * c.s * sc;
+    return { cx: c.x * W + c.ox, cy: c.y * H + c.oy + h * .04, rx: w * .4, ry: h * .3, w: w, h: h }; }
+  function smooth(a, b, x) { var t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); }
+  function moonCover(dt) { // eased cloud coverage of the moon disc (0 clear … 1 hidden) and cloud proximity
+    var free = 1, near = 0;
+    for (var i = 0; i < clouds.length; i++) { var B = cloudBox(clouds[i]);
+      var dn = Math.hypot((MS.x - B.cx) / (B.rx + MS.r), (MS.y - B.cy) / (B.ry + MS.r));
+      free *= 1 - smooth(1.05, .45, dn) * .92; near = Math.max(near, smooth(1.9, 1.0, dn)); }
+    var k = dt ? 1 - Math.exp(-dt * 2.5) : 1;
+    MS.cov += ((1 - free) - MS.cov) * k; MS.near += (near - MS.near) * k;
+  }
+  function drawMoonCloudLight() { // after clouds: corona, glow patch, silver lining
+    if (!MS.on || MS.vis < .03) return;
+    var x = MS.x, y = MS.y, r = MS.r, cov = MS.cov, thin = clamp(Math.max(MS.near * (1 - cov), 4 * cov * (1 - cov)), 0, 1), v = MS.vis;
+    ctx.save(); ctx.globalCompositeOperation = "lighter";
+    // diffuse corona through thin cloud + dim glow patch when fully behind
+    var g = ctx.createRadialGradient(x, y, 0, x, y, r * 9);
+    g.addColorStop(0, "rgba(235,238,255," + (v * (.10 * thin + .26 * cov)).toFixed(3) + ")");
+    g.addColorStop(.18, "rgba(210,220,250," + (v * (.08 * thin + .07 * cov)).toFixed(3) + ")");
+    g.addColorStop(1, "rgba(200,210,245,0)"); ctx.fillStyle = g; ctx.fillRect(x - r * 9, y - r * 9, r * 18, r * 18);
+    if (cov > .02) { var gp = ctx.createRadialGradient(x, y, 0, x, y, r * 3.2); gp.addColorStop(0, "rgba(240,240,255," + (v * cov * .22).toFixed(3) + ")"); gp.addColorStop(1, "rgba(220,228,255,0)");
+      ctx.fillStyle = gp; ctx.fillRect(x - r * 3.2, y - r * 3.2, r * 6.4, r * 6.4); } // dim glow patch where the moon hides
+    // faint iridescent ring (cloud iridescence) only while the edge is thin
+    if (thin > .05) { var ir = ctx.createRadialGradient(x, y, r * 1.6, x, y, r * 3.2), a = v * thin * .07;
+      ir.addColorStop(0, "rgba(255,190,220,0)"); ir.addColorStop(.35, "rgba(255,200,230," + a.toFixed(3) + ")"); ir.addColorStop(.6, "rgba(190,255,230," + (a * .8).toFixed(3) + ")");
+      ir.addColorStop(.85, "rgba(180,200,255," + (a * .7).toFixed(3) + ")"); ir.addColorStop(1, "rgba(180,200,255,0)"); ctx.fillStyle = ir; ctx.fillRect(x - r * 4, y - r * 4, r * 8, r * 8); }
+    ctx.restore();
+    // silver lining: cloud rims near the moon, lit from behind
+    var amt = v * clamp(MS.near * .9 + thin * .5, 0, 1); if (amt < .02) return;
+    var R = r * 8, S = silverCanvas(R * 2), sg = S.getContext("2d");
+    sg.setTransform(1, 0, 0, 1, 0, 0); sg.globalCompositeOperation = "source-over"; sg.clearRect(0, 0, S.width, S.height);
+    var silver = litSprite();
+    for (var i = 0; i < clouds.length; i++) { var B = cloudBox(clouds[i]); if (Math.abs(B.cx - x) > R + B.w / 2 || Math.abs(B.cy - y) > R + B.h / 2) continue;
+      var ox = B.cx - B.w / 2 - (x - R), oy = B.cy - B.h * .04 - B.h / 2 - (y - R);
+      sg.globalCompositeOperation = "source-over"; sg.drawImage(silver, ox, oy, B.w, B.h);
+      sg.globalCompositeOperation = "destination-out"; sg.drawImage(silver, ox + B.w * .07, oy + B.h * .09, B.w * .86, B.h * .82); } // keep only the rim band
+    sg.globalCompositeOperation = "destination-in"; var m = sg.createRadialGradient(R, R, r * .8, R, R, R);
+    m.addColorStop(0, "rgba(0,0,0,1)"); m.addColorStop(.35, "rgba(0,0,0,.6)"); m.addColorStop(1, "rgba(0,0,0,0)"); sg.fillStyle = m; sg.fillRect(0, 0, S.width, S.height);
+    ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = clamp(amt * .85, 0, .85); ctx.drawImage(S, x - R, y - R); ctx.restore();
+  }
+  var silverCv = null;
+  function silverCanvas(sz) { sz = Math.ceil(sz); if (!silverCv || silverCv.width !== sz) { silverCv = doc.createElement("canvas"); silverCv.width = silverCv.height = sz; } return silverCv; }
+  function drawMoon(dt) {
+    var vis = clamp(st.night * 1.2 + st.twi * .3, 0, 1); MS.on = false; if (vis < .03) return;
     var d = jd2000(Date.now()), m = moonRaDec(d), aa = altAz(m[0], m[1], d, loc.lat, loc.lon), x, y;
     if (aa[0] > 8 && !dbgSky) { var p = proj(aa[0], aa[1]); x = p[0]; y = p[1]; } else { x = W * .8; y = H * .18; } // keep it on screen
     x = clamp(x, 60, W - 60); y = clamp(y, 60, H * .5);
     var r = 22, ph = moonPhase(Date.now());
-    var halo = ctx.createRadialGradient(x, y, r * .8, x, y, r * 6); halo.addColorStop(0, "rgba(255,246,220," + (.28 * vis * (.3 + Math.abs(Math.cos(ph * 6.283 / 2)) * .7)).toFixed(3) + ")"); halo.addColorStop(1, "rgba(255,246,220,0)");
+    MS.x = x; MS.y = y; MS.r = r; MS.vis = vis; MS.on = true; moonCover(dt);
+    var disc = 1 - smooth(.5, .93, MS.cov); // fades out behind thick cloud
+    var halo = ctx.createRadialGradient(x, y, r * .8, x, y, r * 6); halo.addColorStop(0, "rgba(255,246,220," + (.28 * vis * (1 - MS.cov * .6) * (.3 + Math.abs(Math.cos(ph * 6.283 / 2)) * .7)).toFixed(3) + ")"); halo.addColorStop(1, "rgba(255,246,220,0)");
     ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(x, y, r * 6, 0, 6.283); ctx.fill();
-    ctx.save(); ctx.globalAlpha = vis;
+    if (disc < .01) return;
+    ctx.save(); ctx.globalAlpha = vis * disc;
     ctx.fillStyle = "rgba(40,44,70,.85)"; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.fill();            // earthshine side
     // lit portion: half-disc + terminator ellipse (waxing lit on the right, northern hemisphere)
     var waxing = ph < .5, k = Math.cos(ph * 6.283); // 1 new → -1 full
@@ -265,6 +312,7 @@
       if (cl.rim > .02) { ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = cl.rim; ctx.drawImage(rimSprite(cl), cx, cy + h * .06, w, h); ctx.globalCompositeOperation = "source-over"; }
       if (lit > .01) { ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = clamp(lit * (st.night > .5 ? .7 : .35), 0, .8); ctx.drawImage(litSprite(), cx, cy, w, h); ctx.globalCompositeOperation = "source-over"; } }
     ctx.globalAlpha = 1;
+    if (clouds.length) drawMoonCloudLight();
     if (wx.kind === "fog") { var fg = ctx.createLinearGradient(0, H * .3, 0, H); fg.addColorStop(0, "rgba(220,224,230,0)"); fg.addColorStop(1, css([220, 224, 230], .7 - st.night * .4)); ctx.fillStyle = fg; ctx.fillRect(0, 0, W, H);
       for (var f = 0; f < drops.length; f++) { var q = drops[f]; if (!reduce) { q.x += .006 * q.z * dt; if (q.x > 1.3) q.x = -.3; }
         var fx = q.x * W, fy = (.35 + q.y * .6) * H; swoosh(q, fx, fy, 220, .7, 1.6, dt);
@@ -276,7 +324,9 @@
         var px = r.x * W, py = r.y * H; swoosh(r, px, py, 120, 1.4, 1.2, dt);
         var len = 14 * r.z + 6, sx = -len * .18 + clamp(r.vx * .02, -10, 10); px += r.ox; py += r.oy; ctx.moveTo(px, py); ctx.lineTo(px + sx, py + len); } ctx.stroke();
     }
-    if (wx.kind === "snow") { ctx.fillStyle = "rgba(255,255,255,.85)";
+    if (wx.kind === "snow") { // tinted + dimmed by sky light: moonlit blue-grey at night, warm at dusk, white by day
+      var dl = clamp((st.alt + 2) / 14, 0, 1), sn = dl < .5 ? mixc([150, 166, 196], [255, 214, 196], dl * 2) : mixc([255, 214, 196], [255, 255, 255], (dl - .5) * 2);
+      ctx.fillStyle = css(sn, lerp(.42, .85, dl));
       for (var s = 0; s < drops.length; s++) { var q2 = drops[s]; if (!reduce) { q2.y += .06 * q2.z * dt; q2.ph += dt; if (q2.y > 1.02) { q2.y = -.02; q2.ox = q2.oy = 0; } }
         var nx = q2.x * W + Math.sin(q2.ph) * 12 * q2.z, ny = q2.y * H; swoosh(q2, nx, ny, 130, 1.1, .6, dt);
         ctx.beginPath(); ctx.arc(nx + q2.ox, ny + q2.oy, 1.2 + q2.z * 1.8, 0, 6.283); ctx.fill(); } }
@@ -349,7 +399,7 @@
     applyMode(false);
     if (now - lastUpd > 30000) { update(); lastUpd = now; }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    dt = dt || 0; drawSky(now); drawStars(now, dt); drawMoon(); drawWx(now, dt);
+    dt = dt || 0; drawSky(now); drawStars(now, dt); drawMoon(dt); drawWx(now, dt);
   }
   function paintStatic() { if (reduce && cv) frame(performance.now(), 0); }
   function init() {
@@ -360,6 +410,6 @@
     applyMode(true); loadCat(); lastUpd = performance.now(); resize(); win.addEventListener("resize", resize);
     setTimeout(function () { geo(); fetchWx(); }, 400); // never block first paint on permission/network
   }
-  win.__laSky = { setMode: function (m) { skyMode = m === "astro" ? "astro" : "weather"; applyMode(true); if (cv) frame(performance.now(), 0); }, mode: function () { return effMode; }, show: function () { if (cv) { W = 0; resize(); } }, frame: frame, update: update, state: st, weather: wx, loc: function () { return loc; }, moonPhase: moonPhase, sunTimes: sunTimes };
+  win.__laSky = { _clouds: function () { return clouds; }, _moon: MS, setMode: function (m) { skyMode = m === "astro" ? "astro" : "weather"; applyMode(true); if (cv) frame(performance.now(), 0); }, mode: function () { return effMode; }, show: function () { if (cv) { W = 0; resize(); } }, frame: frame, update: update, state: st, weather: wx, loc: function () { return loc; }, moonPhase: moonPhase, sunTimes: sunTimes };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", init); else init();
 })();
