@@ -13,16 +13,19 @@
  *   On the workbench, state.lever / state.pulley / state.plane are those snapshots.
  *   machines.addEventListener("dragstart", ...)
  *   machines.addEventListener("released", ...)
- *   machines.registerMachine(id, analyzer)  // later phases
+ *   machines.registerMachine(id, analyzer)
  *
  * Canvas and SVG colors are read every frame from machines-theme.css:
- *   --effort, --load, --ideal-ghost, --work-lost, --tension-low, --tension-high.
+ *   --effort, --load, --ideal-ghost, --work-lost, --tension-low, --tension-high,
+ *   and the machine, material, stage, icon, pitch, and radius tokens.
  */
 import {
   G, MODES, MODE_ALIASES, LATER_PHASES, LEVER_PRESETS,
   analyzeLever, analyzePulley, analyzePlane, analyzeWorkbench,
+  analyzeWheelAxle, analyzeWedge, analyzeScrew,
   leverGeometry, snapshot, registerMachine
 } from "./machines-physics.js";
+import { mountLabs, syncLabs, resetLabMode } from "./machines-labs.js";
 
 const FONT = "JetBrains Mono, ui-monospace, monospace";
 const $ = (id) => document.getElementById(id);
@@ -39,6 +42,17 @@ const INITIAL = {
   plane: {
     length: 2.5, angleDeg: 30, mu: 0.25, mass: 10, push: 70, pushLocked: true, progress: 0.58
   },
+  wheel: {
+    R: 0.2, r: 0.05, loadMass: 12, revolutions: 0.5, friction: 0, push: 30,
+    pushLocked: true, reversed: false, preset: "winch"
+  },
+  wedge: {
+    L: 0.24, t: 0.06, loadForce: 400, penetration: 0.12, mu: 0.2, deformation: 0.05,
+    push: 120, pushLocked: true
+  },
+  screw: {
+    R: 0.12, pitch: 0.008, loadMass: 20, revolutions: 0.75, mu: 0.12, push: 8, pushLocked: true
+  },
   bench: { mass: 10, height: 0.4 }
 };
 
@@ -48,7 +62,13 @@ const ui = {
   lever: { ...INITIAL.lever },
   pulley: { ...INITIAL.pulley },
   plane: { ...INITIAL.plane },
-  bench: { ...INITIAL.bench }
+  wheel: { ...INITIAL.wheel },
+  wedge: { ...INITIAL.wedge },
+  screw: { ...INITIAL.screw },
+  bench: { ...INITIAL.bench },
+  build: null,
+  identify: null,
+  guided: null
 };
 
 const color = {};
@@ -61,6 +81,20 @@ function readColors() {
   color.workLost = get("--work-lost", "#FF4D4D");
   color.tensionLow = get("--tension-low", "#8C6239");
   color.tensionHigh = get("--tension-high", "#FFC14D");
+  color.mLever = get("--m-lever", "#E0A15A");
+  color.mPulley = get("--m-pulley", "#7EB6D9");
+  color.mIncline = get("--m-incline", "#C4A574");
+  color.mWheel = get("--m-wheel", "#D98B6A");
+  color.mWedge = get("--m-wedge", "#B7C48A");
+  color.mScrew = get("--m-screw", "#C98BB9");
+  color.steel = get("--steel", "#A8B3BE");
+  color.wood = get("--wood", "#8B5A2B");
+  color.woodGrain = get("--wood-grain", "#C48A4A");
+  color.stageCard = get("--stage-card", "#141B22");
+  color.stageLink = get("--stage-link", "#8AA0B4");
+  color.iconStroke = get("--icon-stroke", "#E9E6DE");
+  color.pitchTick = get("--pitch-tick", "#D5DDE6");
+  color.radiusRuler = get("--radius-ruler", "#E7C27A");
   color.canvas = get("--canvas", "#0b0e13");
   color.text = get("--text", "#E9E6DE");
   color.textDim = get("--text-dim", "#93A0AC");
@@ -144,6 +178,44 @@ function compute() {
     g: G,
     appliedForce: ui.plane.pushLocked ? null : ui.plane.push
   });
+  ui.wheel.R = clamp(ui.wheel.R, 0.02, 0.6);
+  ui.wheel.r = clamp(ui.wheel.r, 0.004, ui.wheel.R * 0.92);
+  ui.wheel.revolutions = clamp(ui.wheel.revolutions, 0.05, 2);
+  ui.wedge.L = clamp(ui.wedge.L, 0.08, 0.5);
+  ui.wedge.t = clamp(ui.wedge.t, 0.01, ui.wedge.L * 0.9);
+  ui.wedge.penetration = clamp(ui.wedge.penetration, 0.02, ui.wedge.L);
+  ui.screw.R = clamp(ui.screw.R, 0.04, 0.4);
+  ui.screw.pitch = clamp(ui.screw.pitch, 0.002, Math.min(0.04, 2 * Math.PI * ui.screw.R * 0.8));
+  ui.screw.revolutions = clamp(ui.screw.revolutions, 0.05, 3);
+  const wheel = analyzeWheelAxle({
+    wheelRadius: ui.wheel.R,
+    axleRadius: ui.wheel.r,
+    reversed: !!ui.wheel.reversed,
+    frictionTorque: ui.wheel.friction,
+    loadMass: ui.wheel.loadMass,
+    revolutions: ui.wheel.revolutions,
+    g: G,
+    appliedForce: ui.wheel.pushLocked ? null : ui.wheel.push
+  });
+  const wedge = analyzeWedge({
+    length: ui.wedge.L,
+    thickness: ui.wedge.t,
+    loadForce: ui.wedge.loadForce,
+    penetration: ui.wedge.penetration,
+    mu: ui.wedge.mu,
+    deformation: ui.wedge.deformation,
+    g: G,
+    appliedForce: ui.wedge.pushLocked ? null : ui.wedge.push
+  });
+  const screw = analyzeScrew({
+    handleRadius: ui.screw.R,
+    pitch: ui.screw.pitch,
+    loadMass: ui.screw.loadMass,
+    revolutions: ui.screw.revolutions,
+    mu: ui.screw.mu,
+    g: G,
+    appliedForce: ui.screw.pushLocked ? null : ui.screw.push
+  });
   const bench = analyzeWorkbench({
     mass: ui.bench.mass,
     height: ui.bench.height,
@@ -165,9 +237,26 @@ function compute() {
       linearDensity: ui.pulley.linearDensity,
       span: ui.pulley.liftHeight
     },
-    plane: { angle: plane.angle, mu: plane.mu }
+    plane: { angle: plane.angle, mu: plane.mu },
+    wheel: {
+      wheelRadius: wheel.wheelRadius,
+      axleRadius: wheel.axleRadius,
+      reversed: wheel.reversed,
+      frictionTorque: wheel.frictionTorque
+    },
+    wedge: {
+      length: wedge.length,
+      thickness: wedge.thickness,
+      mu: wedge.mu,
+      deformation: wedge.deformation
+    },
+    screw: {
+      handleRadius: screw.handleRadius,
+      pitch: screw.pitch,
+      mu: screw.mu
+    }
   });
-  return { lever, pulley, plane, bench };
+  return { lever, pulley, plane, wheel, wedge, screw, bench };
 }
 
 function publish(current) {
@@ -809,6 +898,26 @@ function setMeter(id, kind, real, max, ideal, lost) {
   }
 }
 
+function paintMeters(list) {
+  const ready = list.filter(Boolean);
+  if (!ready.length) return;
+  const maxF = Math.max(...ready.map((m) => Math.max(m.appliedForce, m.ideal.appliedForce, 1e-6)));
+  const maxD = Math.max(...ready.map((m) => Math.max(m.inputDisplacement, m.outputDisplacement, 1e-6)));
+  const maxW = Math.max(...ready.map((m) => Math.max(m.inputWork, m.outputWork, 1e-6)));
+  for (const m of ready) {
+    setMeter(m.machine, "force", m.appliedForce, maxF, m.ideal.appliedForce, 0);
+    setMeter(m.machine, "distance", m.inputDisplacement, maxD, m.outputDisplacement, 0);
+    setMeter(m.machine, "work", m.inputWork, maxW, null, m.lostWork);
+    const val = (kind) => document.querySelector(`[data-wb-val="${m.machine}-${kind}"]`);
+    const force = val("force");
+    const distance = val("distance");
+    const work = val("work");
+    if (force) force.textContent = fmt(m.appliedForce, 1) + " N  ·  ideal " + fmt(m.ideal.appliedForce, 1) + " N";
+    if (distance) distance.textContent = fmt(m.inputDisplacement, 2) + " m in  ·  " + fmt(m.outputDisplacement, 2) + " m out";
+    if (work) work.textContent = fmt(m.inputWork, 1) + " J in  ·  " + fmt(m.outputWork, 1) + " J out";
+  }
+}
+
 function fillStats(id, result) {
   const el = $(id);
   if (!el) return;
@@ -871,13 +980,31 @@ function render() {
   model = next;
   readColors();
   const { lever, pulley, plane, bench } = model;
+  const lab = syncLabs(model);
 
   const current = ui.mode === "workbench" ? bench
     : ui.mode === "lever" ? lever
     : ui.mode === "pulley" ? pulley
     : ui.mode === "plane" ? plane
+    : ui.mode === "wheel-axle" ? model.wheel
+    : ui.mode === "wedge" ? model.wedge
+    : ui.mode === "screw" ? model.screw
+    : ui.mode === "build" ? lab.build
+    : ui.mode === "guided" ? lab.guidedResult
     : null;
   publish(current);
+  if (ui.mode === "identify") {
+    const solved = ui.identify ? Object.keys(ui.identify.solved || {}).length : 0;
+    machines.state.ready = true;
+    machines.state.item = ui.identify ? ui.identify.selected : null;
+    machines.state.correct = !!(ui.identify && ui.identify.ok);
+    machines.state.solved = solved;
+  }
+  if (ui.mode === "guided" && ui.guided) {
+    machines.state.prediction = ui.guided.prediction;
+    machines.state.guidedMachine = ui.guided.machine;
+    machines.state.stepLocked = !!ui.guided.locked;
+  }
 
   syncSlider("leverBar", ui.lever.barLength);
   syncSlider("leverSplit", leverFraction());
@@ -953,22 +1080,14 @@ function render() {
   updateTorque(lever);
   updateCompare(lever);
 
-  const trio = [bench.lever, bench.pulley, bench.plane];
-  const maxF = Math.max(...trio.map((m) => Math.max(m.appliedForce, m.ideal.appliedForce)));
-  const maxD = Math.max(...trio.map((m) => Math.max(m.inputDisplacement, m.outputDisplacement)));
-  const maxW = Math.max(...trio.map((m) => Math.max(m.inputWork, m.outputWork)));
-  for (const m of trio) {
-    setMeter(m.machine, "force", m.appliedForce, maxF, m.ideal.appliedForce, 0);
-    setMeter(m.machine, "distance", m.inputDisplacement, maxD, m.outputDisplacement, 0);
-    setMeter(m.machine, "work", m.inputWork, maxW, null, m.lostWork);
-    const val = (kind) => document.querySelector(`[data-wb-val="${m.machine}-${kind}"]`);
-    val("force").textContent = fmt(m.appliedForce, 1) + " N  ·  ideal " + fmt(m.ideal.appliedForce, 1) + " N";
-    val("distance").textContent = fmt(m.inputDisplacement, 2) + " m in  ·  " + fmt(m.outputDisplacement, 2) + " m out";
-    val("work").textContent = fmt(m.inputWork, 1) + " J in  ·  " + fmt(m.outputWork, 1) + " J out";
-  }
+  paintMeters([bench.lever, bench.pulley, bench.plane]);
+  paintMeters([bench.wheel, bench.wedge, bench.screw]);
   fillStats("wbLeverStats", bench.lever);
   fillStats("wbPulleyStats", bench.pulley);
   fillStats("wbPlaneStats", bench.plane);
+  fillStats("wbWheelStats", bench.wheel);
+  fillStats("wbWedgeStats", bench.wedge);
+  fillStats("wbScrewStats", bench.screw);
 
   drawIf($("leverCanvas"), ({ ctx, w, h }) => {
     $("leverCanvas")._hit = drawLever(ctx, w, h, lever, false);
@@ -1016,6 +1135,8 @@ function render() {
       `Along the ramp, a steady lift takes ${fmt(plane.requiredForce, 1)} N over ${fmt(plane.length, 3)} m. ` +
       (plane.mu > 0 ? `μ = ${fmt(plane.mu, 2)} drops efficiency to ${fmt(plane.efficiency, 1)}%.` : "No friction, so the areas match.")
     );
+  } else if (lab && lab.status) {
+    status(lab.status.title, lab.status.reason);
   } else {
     const info = LATER_PHASES[ui.mode];
     status((info ? info.title : ui.mode) + " — later phase", info ? info.hook : "This tab is reserved.");
@@ -1201,7 +1322,7 @@ function buildReadouts() {
     ["actualMA", "Actual MA", "forces", ""],
     ["efficiency", "Efficiency", "out / in × 100%", ""]
   ];
-  for (const name of ["lever", "pulley", "plane"]) {
+  for (const name of ["lever", "pulley", "plane", "wheel", "wedge", "screw"]) {
     const root = document.querySelector(`[data-readout="${name}"]`);
     for (const [key, label, sub, kind] of tiles) {
       const tile = document.createElement("div");
@@ -1236,6 +1357,7 @@ function buildCompare() {
 
 function buildLater() {
   const row = $("laterRow");
+  if (row && row.dataset.live === "yes") return;
   for (const id of ["wheel-axle", "wedge", "screw"]) {
     const info = LATER_PHASES[id];
     const card = document.createElement("article");
@@ -1270,6 +1392,7 @@ function wire() {
     if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
   });
   $("resetBtn").addEventListener("click", () => {
+    if (resetLabMode(ui.mode)) return;
     if (ui.mode === "lever") ui.lever = { ...INITIAL.lever };
     else if (ui.mode === "pulley") ui.pulley = { ...INITIAL.pulley };
     else if (ui.mode === "plane") ui.plane = { ...INITIAL.plane };
@@ -1278,6 +1401,9 @@ function wire() {
       ui.lever = { ...INITIAL.lever };
       ui.pulley = { ...INITIAL.pulley };
       ui.plane = { ...INITIAL.plane };
+      ui.wheel = { ...INITIAL.wheel };
+      ui.wedge = { ...INITIAL.wedge };
+      ui.screw = { ...INITIAL.screw };
     }
   });
 
@@ -1333,6 +1459,19 @@ function wire() {
   if (raw === "movable") ui.pulley.segments = 2;
   if (raw === "tackle" || raw === "block" || raw === "block-and-tackle") ui.pulley.segments = 4;
   setMode(MODE_ALIASES[raw] || "workbench", false);
+  mountLabs({
+    ui, INITIAL, $,
+    fmt, clamp, color,
+    emit, render,
+    drawIf, backdrop, drawArrow, drawRuler, strokeLine, halo, drawWork,
+    fillReadout, fillDist, workCaption, syncSlider,
+    leverFraction, applyFraction,
+    bindRange,
+    setActiveSlider: (el) => { activeSlider = el; },
+    clearActiveSlider: (el) => { if (activeSlider === el) activeSlider = null; },
+    isActiveSlider: (el) => activeSlider === el,
+    drawLever, drawPulley, drawPlane
+  });
 }
 
 wire();

@@ -28,7 +28,7 @@
 
 <div class="title">
   <h1>Simple Machines Sandbox</h1>
-  <p>One model drives every arrow, ruler, and number. A smaller force has to act through a longer distance. The dashed ghost is the ideal machine. The solid picture includes friction and extra mass. Work is the area of a force-versus-distance rectangle, and W = Fd.</p>
+  <p>One model drives every arrow, ruler, and number. A smaller force has to act through a longer distance. The dashed ghost is the ideal machine. The solid picture includes friction and extra mass. Work is the area of a force-versus-distance rectangle, and W = Fd. In a compound machine the ideal mechanical advantages multiply, and so do the efficiencies.</p>
 </div>
 
 <main class="wrap">
@@ -76,7 +76,32 @@
         <div class="wb-stats" id="wbPlaneStats"></div>
       </article>
     </div>
-    <div class="later-row" id="laterRow"></div>
+    <div class="wb-grid" id="laterRow" data-live="yes">
+      <article class="card" id="wb-wheel">
+        <h2>Wheel &amp; axle</h2>
+        <canvas id="wbWheel" class="view view-mini" aria-label="Wheel and axle lifting the shared load"></canvas>
+        <div class="meter"><div class="meter-name">Force</div><div class="meter-track" data-wb="wheel-axle" data-kind="force"><div class="meter-fill effort"></div><i class="meter-ghost"></i></div><div class="meter-val" data-wb-val="wheel-axle-force"></div></div>
+        <div class="meter"><div class="meter-name">Distance</div><div class="meter-track" data-wb="wheel-axle" data-kind="distance"><div class="meter-fill effort"></div></div><div class="meter-val" data-wb-val="wheel-axle-distance"></div></div>
+        <div class="meter"><div class="meter-name">Work</div><div class="meter-track" data-wb="wheel-axle" data-kind="work"><div class="meter-fill effort"></div><div class="meter-lost"></div></div><div class="meter-val" data-wb-val="wheel-axle-work"></div></div>
+        <div class="wb-stats" id="wbWheelStats"></div>
+      </article>
+      <article class="card" id="wb-wedge">
+        <h2>Wedge</h2>
+        <canvas id="wbWedge" class="view view-mini" aria-label="Wedge opening the shared load"></canvas>
+        <div class="meter"><div class="meter-name">Force</div><div class="meter-track" data-wb="wedge" data-kind="force"><div class="meter-fill effort"></div><i class="meter-ghost"></i></div><div class="meter-val" data-wb-val="wedge-force"></div></div>
+        <div class="meter"><div class="meter-name">Distance</div><div class="meter-track" data-wb="wedge" data-kind="distance"><div class="meter-fill effort"></div></div><div class="meter-val" data-wb-val="wedge-distance"></div></div>
+        <div class="meter"><div class="meter-name">Work</div><div class="meter-track" data-wb="wedge" data-kind="work"><div class="meter-fill effort"></div><div class="meter-lost"></div></div><div class="meter-val" data-wb-val="wedge-work"></div></div>
+        <div class="wb-stats" id="wbWedgeStats"></div>
+      </article>
+      <article class="card" id="wb-screw">
+        <h2>Screw</h2>
+        <canvas id="wbScrew" class="view view-mini" aria-label="Screw lifting the shared load"></canvas>
+        <div class="meter"><div class="meter-name">Force</div><div class="meter-track" data-wb="screw" data-kind="force"><div class="meter-fill effort"></div><i class="meter-ghost"></i></div><div class="meter-val" data-wb-val="screw-force"></div></div>
+        <div class="meter"><div class="meter-name">Distance</div><div class="meter-track" data-wb="screw" data-kind="distance"><div class="meter-fill effort"></div></div><div class="meter-val" data-wb-val="screw-distance"></div></div>
+        <div class="meter"><div class="meter-name">Work</div><div class="meter-track" data-wb="screw" data-kind="work"><div class="meter-fill effort"></div><div class="meter-lost"></div></div><div class="meter-val" data-wb-val="screw-work"></div></div>
+        <div class="wb-stats" id="wbScrewStats"></div>
+      </article>
+    </div>
   </section>
 
   <section class="mode" id="mode-lever" hidden>
@@ -285,51 +310,264 @@
   </section>
 
   <section class="mode" id="mode-wheel-axle" hidden>
-    <section class="card later-card">
-      <h2>Wheel &amp; Axle</h2>
-      <p class="hook"></p>
-      <p><code>machines.state.mode === "wheel-axle"</code></p>
-    </section>
+    <div class="layout">
+      <div class="stack">
+        <section class="card" aria-label="Wheel and axle lab">
+          <h2>Wheel &amp; axle</h2>
+          <p class="sub">Side view. Drag the wheel to turn it. The amber effort rope and the cyan load rope pay out together. Ideal MA = R/r when the effort is on the rim.</p>
+          <canvas id="wheelCanvas" class="view view-play" aria-label="Wheel and axle. Drag to turn."></canvas>
+          <div class="legend">
+            <span><i class="swatch effort"></i> Effort</span>
+            <span><i class="swatch load"></i> Load</span>
+            <span><i class="swatch ghost"></i> Ideal</span>
+            <span><i class="swatch" style="background:var(--radius-ruler)"></i> Radii</span>
+          </div>
+          <div class="dist" data-dist="wheel">
+            <div class="dist-row"><span>Effort travels</span><div class="track"><div class="fill effort" data-bar="in"></div></div><b data-k="din">—</b></div>
+            <div class="dist-row"><span>Load travels</span><div class="track"><div class="fill load" data-bar="out"></div></div><b data-k="dout">—</b></div>
+          </div>
+          <div class="readouts" data-readout="wheel"></div>
+          <h3>Work = force × distance</h3>
+          <canvas id="wheelWork" class="view view-work" aria-label="Wheel and axle work as areas"></canvas>
+          <p class="work-caption" id="wheelWorkCaption"></p>
+        </section>
+      </div>
+      <section class="card controls" id="wheelControls" aria-label="Wheel and axle controls">
+        <h2>Wheel controls</h2>
+        <div class="chips" id="wheelPresets">
+          <button class="chip" type="button" data-wheel="steering">Steering wheel</button>
+          <button class="chip" type="button" data-wheel="doorknob">Doorknob</button>
+          <button class="chip active" type="button" data-wheel="winch">Winch</button>
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="wheelRLabel">Wheel radius</div>
+          <input id="wheelR" type="range" min="0.02" max="0.6" step="0.005" value="0.2" aria-label="Wheel radius">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="wheelrLabel">Axle radius</div>
+          <input id="wheelr" type="range" min="0.004" max="0.25" step="0.001" value="0.05" aria-label="Axle radius">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="wheelMassLabel">Load mass</div>
+          <input id="wheelMass" type="range" min="0.2" max="80" step="0.1" value="12" aria-label="Wheel load mass">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="wheelTurnsLabel">Turns</div>
+          <input id="wheelTurns" type="range" min="0.05" max="2" step="0.01" value="0.5" aria-label="Wheel revolutions">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="wheelFrictionLabel">Bearing friction</div>
+          <input id="wheelFriction" type="range" min="0" max="20" step="0.1" value="0" aria-label="Bearing friction torque">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="wheelPushLabel">Your effort</div>
+          <input id="wheelPush" type="range" min="0" max="400" step="0.1" value="30" aria-label="Wheel applied force">
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" id="wheelBalance" type="button">Match the torque</button>
+        </div>
+        <label class="check"><input id="wheelReversed" type="checkbox"> Reversed — effort on the axle</label>
+        <label class="check"><input id="wheelIdeal" type="checkbox" checked> Show the ideal ghost</label>
+        <div class="eq" id="wheelEq">MA = R/r</div>
+      </section>
+    </div>
   </section>
+
   <section class="mode" id="mode-wedge" hidden>
-    <section class="card later-card">
-      <h2>Wedge</h2>
-      <p class="hook"></p>
-      <p><code>machines.state.mode === "wedge"</code></p>
-    </section>
+    <div class="layout">
+      <div class="stack">
+        <section class="card" aria-label="Wedge lab">
+          <h2>Wedge</h2>
+          <p class="sub">Flat cutaway. Drag the wedge into the block. The halves open by the separation d · t/L. Ideal MA = L/t. Red slivers on the faces are friction and deformation.</p>
+          <canvas id="wedgeCanvas" class="view view-play" aria-label="Wedge splitting a block. Drag the wedge."></canvas>
+          <div class="legend">
+            <span><i class="swatch effort"></i> Effort</span>
+            <span><i class="swatch load"></i> Split</span>
+            <span><i class="swatch ghost"></i> Ideal L/t</span>
+            <span><i class="swatch lost"></i> Friction and deformation</span>
+          </div>
+          <div class="dist" data-dist="wedge">
+            <div class="dist-row"><span>Push</span><div class="track"><div class="fill effort" data-bar="in"></div></div><b data-k="din">—</b></div>
+            <div class="dist-row"><span>Separation</span><div class="track"><div class="fill load" data-bar="out"></div></div><b data-k="dout">—</b></div>
+          </div>
+          <div class="readouts" data-readout="wedge"></div>
+          <h3>Work = force × distance</h3>
+          <canvas id="wedgeWork" class="view view-work" aria-label="Wedge work as areas"></canvas>
+          <p class="work-caption" id="wedgeWorkCaption"></p>
+        </section>
+      </div>
+      <section class="card controls" id="wedgeControls" aria-label="Wedge controls">
+        <h2>Wedge controls</h2>
+        <div class="panel-row">
+          <div class="panel-label" id="wedgeLLabel">Length L</div>
+          <input id="wedgeL" type="range" min="0.08" max="0.5" step="0.005" value="0.24" aria-label="Wedge length">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="wedgeTLabel">Thickness t</div>
+          <input id="wedgeT" type="range" min="0.01" max="0.4" step="0.005" value="0.06" aria-label="Wedge thickness">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="wedgeLoadLabel">Splitting resistance</div>
+          <input id="wedgeLoad" type="range" min="50" max="2000" step="5" value="400" aria-label="Splitting resistance">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="wedgePenLabel">Penetration</div>
+          <input id="wedgePen" type="range" min="0.02" max="0.5" step="0.005" value="0.12" aria-label="Wedge penetration">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="wedgeMuLabel">Face friction μ</div>
+          <input id="wedgeMu" type="range" min="0" max="0.8" step="0.01" value="0.2" aria-label="Wedge friction">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="wedgeDefLabel">Deformation k</div>
+          <input id="wedgeDef" type="range" min="0" max="0.4" step="0.01" value="0.05" aria-label="Wedge deformation">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="wedgePushLabel">Your push</div>
+          <input id="wedgePush" type="range" min="0" max="2000" step="1" value="100" aria-label="Wedge applied force">
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" id="wedgeBalance" type="button">Use the steady push</button>
+        </div>
+        <label class="check"><input id="wedgeIdeal" type="checkbox" checked> Show the ideal ghost</label>
+        <div class="eq" id="wedgeEq">MA = L/t</div>
+      </section>
+    </div>
   </section>
+
   <section class="mode" id="mode-screw" hidden>
-    <section class="card later-card">
-      <h2>Screw</h2>
-      <p class="hook"></p>
-      <p><code>machines.state.mode === "screw"</code></p>
-    </section>
+    <div class="layout">
+      <div class="stack">
+        <section class="card" aria-label="Screw lab">
+          <h2>Screw</h2>
+          <p class="sub">Cutaway on the left, unrolled thread on the right. Drag the handle. One turn travels 2πR and lifts the load by one pitch. Ideal MA = 2πR/p.</p>
+          <canvas id="screwCanvas" class="view view-play" aria-label="Screw jack and its unrolled thread. Drag the handle."></canvas>
+          <div class="legend">
+            <span><i class="swatch effort"></i> Handle arc</span>
+            <span><i class="swatch load"></i> Pitch</span>
+            <span><i class="swatch ghost"></i> Ideal</span>
+            <span><i class="swatch" style="background:var(--pitch-tick)"></i> Pitch ticks</span>
+          </div>
+          <div class="dist" data-dist="screw">
+            <div class="dist-row"><span>Handle travels</span><div class="track"><div class="fill effort" data-bar="in"></div></div><b data-k="din">—</b></div>
+            <div class="dist-row"><span>Load rises</span><div class="track"><div class="fill load" data-bar="out"></div></div><b data-k="dout">—</b></div>
+          </div>
+          <div class="readouts" data-readout="screw"></div>
+          <h3>Work = force × distance</h3>
+          <canvas id="screwWork" class="view view-work" aria-label="Screw work as areas"></canvas>
+          <p class="work-caption" id="screwWorkCaption"></p>
+        </section>
+      </div>
+      <section class="card controls" id="screwControls" aria-label="Screw controls">
+        <h2>Screw controls</h2>
+        <div class="panel-row">
+          <div class="panel-label" id="screwRLabel">Handle radius R</div>
+          <input id="screwR" type="range" min="0.04" max="0.4" step="0.005" value="0.12" aria-label="Handle radius">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="screwPLabel">Pitch p</div>
+          <input id="screwP" type="range" min="0.002" max="0.04" step="0.001" value="0.008" aria-label="Screw pitch">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="screwMassLabel">Load mass</div>
+          <input id="screwMass" type="range" min="1" max="200" step="0.5" value="20" aria-label="Screw load mass">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="screwTurnsLabel">Turns</div>
+          <input id="screwTurns" type="range" min="0.05" max="3" step="0.01" value="0.75" aria-label="Handle turns">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="screwMuLabel">Thread friction μ</div>
+          <input id="screwMu" type="range" min="0" max="0.6" step="0.01" value="0.12" aria-label="Screw friction">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="screwPushLabel">Your effort</div>
+          <input id="screwPush" type="range" min="0" max="400" step="0.1" value="8" aria-label="Screw applied force">
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" id="screwBalance" type="button">Use the steady effort</button>
+        </div>
+        <label class="check"><input id="screwIdeal" type="checkbox" checked> Show the ideal ghost</label>
+        <div class="eq" id="screwEq">MA = 2πR/p</div>
+      </section>
+    </div>
   </section>
+
   <section class="mode" id="mode-build" hidden>
-    <section class="card later-card">
-      <h2>Free-build</h2>
-      <p class="hook"></p>
-      <p><code>machines.state.mode === "build"</code></p>
+    <section class="card" aria-label="Free-build challenges">
+      <h2>Build</h2>
+      <p class="sub">Left is your effort. Right is the load. Ideal MA multiplies. Efficiency multiplies. The spring when a stage snaps in is only the card — the numbers update immediately.</p>
+      <div class="chips" id="buildChallenges"></div>
+      <div class="goal" id="buildGoal"></div>
+      <div class="chips" id="buildAdd" style="margin-top:12px">
+        <button class="chip" type="button" data-add="lever">+ Lever</button>
+        <button class="chip" type="button" data-add="pulley">+ Pulley</button>
+        <button class="chip" type="button" data-add="plane">+ Ramp</button>
+        <button class="chip" type="button" data-add="wheel-axle">+ Wheel</button>
+        <button class="chip" type="button" data-add="wedge">+ Wedge</button>
+        <button class="chip" type="button" data-add="screw">+ Screw</button>
+      </div>
+      <div class="pipeline" id="buildPipeline"></div>
     </section>
   </section>
+
   <section class="mode" id="mode-identify" hidden>
-    <section class="card later-card">
+    <section class="card" aria-label="Identify simple machines">
       <h2>Identify</h2>
-      <p class="hook"></p>
-      <p><code>machines.state.mode === "identify"</code></p>
+      <p class="sub">Tap an object. The part that does the work lights in that machine's color, and the badge names the class. Then pick the type and the lever class and check.</p>
+      <div class="legend" id="identifyLegend">
+        <span><i class="swatch machine m-lever"></i> Lever</span>
+        <span><i class="swatch machine m-pulley"></i> Pulley</span>
+        <span><i class="swatch machine m-incline"></i> Inclined plane</span>
+        <span><i class="swatch machine m-wheel"></i> Wheel &amp; axle</span>
+        <span><i class="swatch machine m-wedge"></i> Wedge</span>
+        <span><i class="swatch machine m-screw"></i> Screw</span>
+      </div>
+      <p class="sub" id="identifyScore"></p>
+      <div class="id-grid" id="identifyGrid"></div>
+    </section>
+    <section class="card id-detail controls" id="identifyDetail" aria-label="Identification answer">
+      <h2 id="identifyName">Scissors</h2>
+      <p class="sub" id="identifyPrompt">Select every machine you see, then the lever class when the object is a lever.</p>
+      <div class="badge" id="identifyBadge" hidden></div>
+      <div class="section-label">Machine type</div>
+      <div class="chips" id="identifyTypes"></div>
+      <div class="section-label">Lever class, if it is a lever</div>
+      <div class="chips" id="identifyClass">
+        <button class="chip" type="button" data-class="1">Class 1</button>
+        <button class="chip" type="button" data-class="2">Class 2</button>
+        <button class="chip" type="button" data-class="3">Class 3</button>
+        <button class="chip" type="button" data-class="0">Not a lever</button>
+      </div>
+      <div class="btn-row" style="margin-top:8px">
+        <button class="btn primary" id="identifyCheck" type="button">Check</button>
+      </div>
+      <p class="feedback" id="identifyFeedback" aria-live="polite"></p>
     </section>
   </section>
+
   <section class="mode" id="mode-guided" hidden>
-    <section class="card later-card">
-      <h2>Guided labs</h2>
-      <p class="hook"></p>
-      <p><code>machines.state.mode === "guided"</code></p>
-    </section>
+    <div class="guided-layout">
+      <ol class="steps" id="guidedSteps"></ol>
+      <div class="stack">
+        <section class="card" aria-label="Guided machine">
+          <h2 id="guidedTitle">Lever</h2>
+          <p class="sub" id="guidedFormula">MA = d_in / d_out</p>
+          <div class="chips" id="guidedMachines"></div>
+          <canvas id="guidedCanvas" class="view view-play" aria-label="Guided lab machine"></canvas>
+          <div class="ghost-row" id="guidedCompare"></div>
+          <h3>Work = force × distance</h3>
+          <canvas id="guidedWork" class="view view-work" aria-label="Guided lab work graph"></canvas>
+          <p class="work-caption" id="guidedWorkCaption"></p>
+        </section>
+        <section class="card controls" id="guidedControls" aria-label="Guided lab controls"></section>
+      </div>
+    </div>
   </section>
 </main>
 
 <footer class="footnote">
-  Ideal machines conserve energy, so W_in = W_out and a smaller force travels farther. Friction, rope mass, and pulley mass are the real machine: useful work stays mgh (or F_load times the load's distance) and efficiency = useful output / input × 100%. g = 9.80665 m/s². W = Fd for a constant force parallel to the displacement.
+  Ideal machines conserve energy, so W_in = W_out and a smaller force travels farther. Friction, rope mass, pulley mass, bearing torque, and wedge deformation are the real machine: useful work stays F_load times the load's distance and efficiency = useful output / input × 100%. A compound machine multiplies the stage MAs and multiplies the stage efficiencies. g = 9.80665 m/s². W = Fd for a constant force parallel to the displacement.
 </footer>
 <script type="module" src="machines-ui.js"></script>
 </body>
