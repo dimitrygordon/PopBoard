@@ -166,7 +166,8 @@ body.la-on::before {
 
 /* real sky canvas (login-sky.js) sits under the kernel canvas */
 /* display:none outside the login view (and astro) so no full-viewport fixed layer lingers on app pages */
-#la-sky { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; display: none; }
+/* top-level fixed layer sized to the large viewport (no resize/clear when iOS toolbars collapse), own compositing layer */
+#la-sky { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100lvh; pointer-events: none; z-index: -1; display: none; transform: translateZ(0); -webkit-transform: translateZ(0); }
 body.la-on #la-sky, body.la-sendoff #la-sky { display: block; }
 .la-sky-on body.la-on::before { display: none; }
 /* readable over every sky: slightly denser glass on dark or busy skies */

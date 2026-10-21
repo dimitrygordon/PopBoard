@@ -129,7 +129,13 @@
         o.vx += (dx / d * (260 + sp * .9) + ptr.vx * .9) * f * gain * dt; o.vy += (dy / d * (260 + sp * .9) + ptr.vy * .9) * f * gain * dt; } }
     o.vx += -o.ox * back * dt; o.vy += -o.oy * back * dt; var damp = Math.pow(.05, dt); o.vx *= damp; o.vy *= damp; o.ox += o.vx * dt; o.oy += o.vy * dt;
   }
-  function resize() { dpr = Math.min(win.devicePixelRatio || 1, 1.5); W = win.innerWidth; H = win.innerHeight; cv.width = W * dpr; cv.height = H * dpr; paintStatic(); }
+  function resize() {
+    var d = Math.min(win.devicePixelRatio || 1, 1.5), r = cv.getBoundingClientRect();
+    var w = Math.round(r.width || win.innerWidth), h = Math.round(r.height || win.innerHeight);
+    if (w === W && h === H && d === dpr && cv.width) return; // e.g. iOS toolbar show/hide: canvas is 100lvh, nothing to do
+    dpr = d; W = w; H = h; cv.width = W * dpr; cv.height = H * dpr;
+    if (lastUpd) frame(performance.now(), 0); // redraw immediately; never leave a cleared canvas on screen
+  }
   // zenith-centred fisheye, south at the bottom
   function proj(alt, az) { var R = Math.hypot(W, H) * .5, r = (90 - alt) / 90 * R; return [W / 2 + Math.sin(az) * r, H * .5 + Math.cos(az) * r]; } // looking up: N top, S bottom, W right
   function drawSky(now) {
@@ -285,6 +291,6 @@
     setupWx(); loadCat(); update(true); lastUpd = performance.now(); resize(); win.addEventListener("resize", resize);
     setTimeout(function () { geo(); fetchWx(); }, 400); // never block first paint on permission/network
   }
-  win.__laSky = { show: function () { if (cv) { resize(); } }, frame: frame, update: update, state: st, weather: wx, loc: function () { return loc; }, moonPhase: moonPhase, sunTimes: sunTimes };
+  win.__laSky = { show: function () { if (cv) { W = 0; resize(); } }, frame: frame, update: update, state: st, weather: wx, loc: function () { return loc; }, moonPhase: moonPhase, sunTimes: sunTimes };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", init); else init();
 })();
