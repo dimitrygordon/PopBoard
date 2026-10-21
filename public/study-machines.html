@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0F1216">
+<title>Simple Machines Sandbox // PopBoard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<link rel="stylesheet" href="machines-theme.css">
+</head>
+<body>
+<header class="bar">
+  <div class="bar-group">
+    <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      <span class="back-label">Back</span>
+    </button>
+    <button id="controlsJumpBtn" type="button">Controls</button>
+  </div>
+  <div class="bar-group">
+    <button id="resetBtn" type="button">Reset</button>
+  </div>
+</header>
+
+<div class="title">
+  <h1>Simple Machines Sandbox</h1>
+  <p>One model drives every arrow, ruler, and number. A smaller force has to act through a longer distance. The dashed ghost is the ideal machine. The solid picture includes friction and extra mass. Work is the area of a force-versus-distance rectangle, and W = Fd.</p>
+</div>
+
+<main class="wrap">
+  <div id="statusBanner" role="status" aria-live="polite">
+    <div class="status-type" id="statusType">Workbench</div>
+    <div class="status-reason" id="statusReason">Loading the sandbox.</div>
+  </div>
+  <div class="tabs" id="tabs" role="tablist" aria-label="Simple machine labs"></div>
+
+  <section class="mode" id="mode-workbench">
+    <p class="sub">Same load, same height. Force, distance, and work bars share one scale. Geometry and losses come from each lab.</p>
+    <div class="wb-controls card">
+      <div class="panel-row">
+        <div class="panel-label" id="benchMassLabel">Load</div>
+        <input id="benchMass" type="range" min="1" max="30" step="0.1" value="10" aria-label="Workbench load mass">
+      </div>
+      <div class="panel-row">
+        <div class="panel-label" id="benchHeightLabel">Height</div>
+        <input id="benchHeight" type="range" min="0.1" max="1" step="0.01" value="0.4" aria-label="Workbench lift height">
+      </div>
+    </div>
+    <div class="wb-grid">
+      <article class="card" id="wb-lever">
+        <h2>Lever</h2>
+        <canvas id="wbLever" class="view view-mini" aria-label="Lever lifting the shared load"></canvas>
+        <div class="meter"><div class="meter-name">Force</div><div class="meter-track" data-wb="lever" data-kind="force"><div class="meter-fill effort"></div><i class="meter-ghost"></i></div><div class="meter-val" data-wb-val="lever-force"></div></div>
+        <div class="meter"><div class="meter-name">Distance</div><div class="meter-track" data-wb="lever" data-kind="distance"><div class="meter-fill effort"></div></div><div class="meter-val" data-wb-val="lever-distance"></div></div>
+        <div class="meter"><div class="meter-name">Work</div><div class="meter-track" data-wb="lever" data-kind="work"><div class="meter-fill effort"></div><div class="meter-lost"></div></div><div class="meter-val" data-wb-val="lever-work"></div></div>
+        <div class="wb-stats" id="wbLeverStats"></div>
+      </article>
+      <article class="card" id="wb-pulley">
+        <h2>Pulley</h2>
+        <canvas id="wbPulley" class="view view-mini" aria-label="Pulley lifting the shared load"></canvas>
+        <div class="meter"><div class="meter-name">Force</div><div class="meter-track" data-wb="pulley" data-kind="force"><div class="meter-fill effort"></div><i class="meter-ghost"></i></div><div class="meter-val" data-wb-val="pulley-force"></div></div>
+        <div class="meter"><div class="meter-name">Distance</div><div class="meter-track" data-wb="pulley" data-kind="distance"><div class="meter-fill effort"></div></div><div class="meter-val" data-wb-val="pulley-distance"></div></div>
+        <div class="meter"><div class="meter-name">Work</div><div class="meter-track" data-wb="pulley" data-kind="work"><div class="meter-fill effort"></div><div class="meter-lost"></div></div><div class="meter-val" data-wb-val="pulley-work"></div></div>
+        <div class="wb-stats" id="wbPulleyStats"></div>
+      </article>
+      <article class="card" id="wb-plane">
+        <h2>Inclined plane</h2>
+        <canvas id="wbPlane" class="view view-mini" aria-label="Inclined plane lifting the shared load"></canvas>
+        <div class="meter"><div class="meter-name">Force</div><div class="meter-track" data-wb="plane" data-kind="force"><div class="meter-fill effort"></div><i class="meter-ghost"></i></div><div class="meter-val" data-wb-val="plane-force"></div></div>
+        <div class="meter"><div class="meter-name">Distance</div><div class="meter-track" data-wb="plane" data-kind="distance"><div class="meter-fill effort"></div></div><div class="meter-val" data-wb-val="plane-distance"></div></div>
+        <div class="meter"><div class="meter-name">Work</div><div class="meter-track" data-wb="plane" data-kind="work"><div class="meter-fill effort"></div><div class="meter-lost"></div></div><div class="meter-val" data-wb-val="plane-work"></div></div>
+        <div class="wb-stats" id="wbPlaneStats"></div>
+      </article>
+    </div>
+    <div class="later-row" id="laterRow"></div>
+  </section>
+
+  <section class="mode" id="mode-lever" hidden>
+    <div class="layout">
+      <div class="stack">
+        <section class="card" aria-label="Lever lab">
+          <h2 id="leverTitle">Lever</h2>
+          <p class="sub">Drag the fulcrum, the movable point, or the tip of the amber arrow. Arm highlights, arrows, and the torque needle all read the same lever.</p>
+          <canvas id="leverCanvas" class="view view-play" aria-label="Lever. Drag the fulcrum or the effort arrow."></canvas>
+          <div class="legend">
+            <span><i class="swatch effort"></i> Effort</span>
+            <span><i class="swatch load"></i> Load</span>
+            <span><i class="swatch ghost"></i> Ideal</span>
+            <span><i class="swatch lost"></i> Lost</span>
+          </div>
+          <svg id="torqueSvg" class="torque-svg" viewBox="0 0 360 170" role="img" aria-labelledby="torqueTitle">
+            <title id="torqueTitle">Torque meter, centered when the lever is balanced</title>
+            <path id="torqueArc" d="M70,120 A110,110 0 0 1 290,120" fill="none" stroke-width="8" stroke-linecap="round"></path>
+            <line id="torqueZero" x1="180" y1="28" x2="180" y2="78" stroke-width="2" stroke-dasharray="3 4"></line>
+            <g id="torqueNeedle">
+              <line id="torqueNeedleLine" x1="180" y1="120" x2="180" y2="36" stroke-width="4" stroke-linecap="round"></line>
+              <circle id="torqueHub" cx="180" cy="120" r="8"></circle>
+            </g>
+            <text id="torqueLeft" x="54" y="146" text-anchor="middle">load</text>
+            <text id="torqueRight" x="306" y="146" text-anchor="middle">effort</text>
+            <text id="torqueReadout" x="180" y="164" text-anchor="middle">τ_net = 0</text>
+          </svg>
+          <div class="dist" data-dist="lever">
+            <div class="dist-row"><span>Input distance</span><div class="track"><div class="fill effort" data-bar="in"></div></div><b data-k="din">—</b></div>
+            <div class="dist-row"><span>Output distance</span><div class="track"><div class="fill load" data-bar="out"></div></div><b data-k="dout">—</b></div>
+          </div>
+          <div class="readouts" data-readout="lever"></div>
+          <h3>Work = force × distance</h3>
+          <canvas id="leverWork" class="view view-work" aria-label="Input and output work as areas"></canvas>
+          <p class="work-caption" id="leverWorkCaption"></p>
+        </section>
+        <section class="card" aria-label="Class comparison">
+          <h2>Three classes, one formula</h2>
+          <p class="sub">MA = d_in / d_out when the push is perpendicular. The class only decides which arm is longer.</p>
+          <div class="compare" id="classCompare"></div>
+        </section>
+      </div>
+      <section class="card controls" id="leverControls" aria-label="Lever controls">
+        <h2>Lever controls</h2>
+        <div class="chips" id="leverPresets">
+          <button class="chip active" type="button" data-preset="seesaw">Seesaw</button>
+          <button class="chip" type="button" data-preset="wheelbarrow">Wheelbarrow</button>
+          <button class="chip" type="button" data-preset="tweezers">Tweezers</button>
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="leverBarLabel">Bar length</div>
+          <input id="leverBar" type="range" min="0.6" max="4" step="0.01" value="2.4" aria-label="Bar length">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="leverSplitLabel">Fulcrum</div>
+          <input id="leverSplit" type="range" min="0.08" max="0.92" step="0.005" value="0.667" aria-label="Fulcrum or arm position">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="leverMassLabel">Load mass</div>
+          <input id="leverMass" type="range" min="0.2" max="40" step="0.1" value="10" aria-label="Load mass">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="leverAngleLabel">Effort angle</div>
+          <input id="leverAngle" type="range" min="-70" max="70" step="1" value="0" aria-label="Effort angle from perpendicular">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="leverLiftLabel">Load moves</div>
+          <input id="leverLift" type="range" min="0.05" max="0.8" step="0.01" value="0.4" aria-label="Output displacement">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="leverFrictionLabel">Pivot friction</div>
+          <input id="leverFriction" type="range" min="0" max="40" step="0.1" value="0" aria-label="Friction torque">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="leverPushLabel">Your push</div>
+          <input id="leverPush" type="range" min="0" max="400" step="0.1" value="50" aria-label="Applied force">
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" id="leverBalance" type="button">Match balance</button>
+        </div>
+        <label class="check"><input id="leverIdeal" type="checkbox" checked> Show the ideal ghost</label>
+        <div class="eq" id="leverEq">τ_net = 0</div>
+      </section>
+    </div>
+  </section>
+
+  <section class="mode" id="mode-pulley" hidden>
+    <div class="layout">
+      <div class="stack">
+        <section class="card" aria-label="Pulley lab">
+          <h2>Pulley</h2>
+          <p class="sub">Count the numbered supporting segments. That count is the ideal MA. Drag the load to change the lift. The rope gets thicker and warmer as tension rises.</p>
+          <canvas id="pulleyCanvas" class="view view-play" aria-label="Pulley system. Drag the load to set the lift."></canvas>
+          <div class="legend">
+            <span><i class="swatch effort"></i> Effort</span>
+            <span><i class="swatch load"></i> Load</span>
+            <span><i class="swatch ghost"></i> Ideal rope</span>
+            <span><i class="swatch tension"></i> Tension</span>
+          </div>
+          <div class="dist" data-dist="pulley">
+            <div class="dist-row"><span>Pull distance</span><div class="track"><div class="fill effort" data-bar="in"></div></div><b data-k="din">—</b></div>
+            <div class="dist-row"><span>Lift height</span><div class="track"><div class="fill load" data-bar="out"></div></div><b data-k="dout">—</b></div>
+          </div>
+          <div class="readouts" data-readout="pulley"></div>
+          <h3>Work = force × distance</h3>
+          <canvas id="pulleyWork" class="view view-work" aria-label="Pulley input and output work as areas"></canvas>
+          <p class="work-caption" id="pulleyWorkCaption"></p>
+        </section>
+      </div>
+      <section class="card controls" id="pulleyControls" aria-label="Pulley controls">
+        <h2>Build the rig</h2>
+        <div class="chips" id="pulleyPresets">
+          <button class="chip" type="button" data-segments="1">Fixed</button>
+          <button class="chip" type="button" data-segments="2">Movable</button>
+          <button class="chip active" type="button" data-segments="4">Block &amp; tackle</button>
+        </div>
+        <div class="section-label">Supporting segments</div>
+        <div class="chips" id="pulleySegments">
+          <button class="chip" type="button" data-segments="1">1</button>
+          <button class="chip" type="button" data-segments="2">2</button>
+          <button class="chip" type="button" data-segments="3">3</button>
+          <button class="chip active" type="button" data-segments="4">4</button>
+          <button class="chip" type="button" data-segments="5">5</button>
+          <button class="chip" type="button" data-segments="6">6</button>
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="pulleyMassLabel">Load mass</div>
+          <input id="pulleyMass" type="range" min="0.5" max="40" step="0.1" value="10" aria-label="Pulley load mass">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="pulleyLiftLabel">Lift height</div>
+          <input id="pulleyLift" type="range" min="0.1" max="1.2" step="0.01" value="0.4" aria-label="Lift height">
+        </div>
+        <label class="check"><input id="pulleyFriction" type="checkbox" checked> Pulley friction</label>
+        <div class="panel-row">
+          <div class="panel-label" id="pulleyRatioLabel">Tension ratio r</div>
+          <input id="pulleyRatio" type="range" min="1" max="1.6" step="0.01" value="1.2" aria-label="Pulley friction ratio">
+        </div>
+        <label class="check"><input id="pulleyMassOn" type="checkbox"> Rope and pulley mass</label>
+        <div class="panel-row">
+          <div class="panel-label" id="ropeDensityLabel">Rope density</div>
+          <input id="ropeDensity" type="range" min="0" max="0.5" step="0.01" value="0.12" disabled aria-label="Rope linear density">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="wheelMassLabel">Each movable pulley</div>
+          <input id="wheelMass" type="range" min="0" max="2" step="0.01" value="0.4" disabled aria-label="Movable pulley mass">
+        </div>
+        <label class="check"><input id="pulleyIdeal" type="checkbox" checked> Show the ideal ghost</label>
+        <div class="eq" id="pulleyEq">MA = n</div>
+      </section>
+    </div>
+  </section>
+
+  <section class="mode" id="mode-plane" hidden>
+    <div class="layout">
+      <div class="stack">
+        <section class="card" aria-label="Inclined plane lab">
+          <h2>Inclined plane</h2>
+          <p class="sub">Drag the top of the ramp to change the angle, or the block to slide it. Weight splits into components parallel and perpendicular to the ramp. Compare that push with lifting the same load straight up.</p>
+          <canvas id="planeCanvas" class="view view-play" aria-label="Inclined plane. Drag the ramp tip or the block."></canvas>
+          <div class="legend">
+            <span><i class="swatch effort"></i> Along the ramp</span>
+            <span><i class="swatch load"></i> Straight up</span>
+            <span><i class="swatch ghost"></i> Ideal, no friction</span>
+            <span><i class="swatch lost"></i> Friction</span>
+          </div>
+          <div class="dist" data-dist="plane">
+            <div class="dist-row"><span>Along the ramp</span><div class="track"><div class="fill effort" data-bar="in"></div></div><b data-k="din">—</b></div>
+            <div class="dist-row"><span>Straight up</span><div class="track"><div class="fill load" data-bar="out"></div></div><b data-k="dout">—</b></div>
+          </div>
+          <div class="readouts" data-readout="plane"></div>
+          <h3>Work = force × distance</h3>
+          <canvas id="planeWork" class="view view-work" aria-label="Ramp work compared as areas"></canvas>
+          <p class="work-caption" id="planeWorkCaption"></p>
+        </section>
+      </div>
+      <section class="card controls" id="planeControls" aria-label="Inclined plane controls">
+        <h2>Ramp controls</h2>
+        <div class="panel-row">
+          <div class="panel-label" id="planeLengthLabel">Ramp length</div>
+          <input id="planeLength" type="range" min="0.4" max="5" step="0.01" value="2.5" aria-label="Ramp length">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="planeAngleLabel">Angle</div>
+          <input id="planeAngle" type="range" min="8" max="65" step="0.5" value="30" aria-label="Ramp angle">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="planeMuLabel">Friction μ</div>
+          <input id="planeMu" type="range" min="0" max="1" step="0.01" value="0.25" aria-label="Coefficient of friction">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="planeMassLabel">Load mass</div>
+          <input id="planeMass" type="range" min="0.2" max="40" step="0.1" value="10" aria-label="Plane load mass">
+        </div>
+        <div class="panel-row">
+          <div class="panel-label" id="planePushLabel">Your push</div>
+          <input id="planePush" type="range" min="0" max="500" step="0.1" value="70" aria-label="Applied force along the ramp">
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" id="planeBalance" type="button">Use the steady-lift force</button>
+        </div>
+        <label class="check"><input id="planeIdeal" type="checkbox" checked> Show the ideal ghost</label>
+        <div class="eq" id="planeEq">MA = L/h</div>
+      </section>
+    </div>
+  </section>
+
+  <section class="mode" id="mode-wheel-axle" hidden>
+    <section class="card later-card">
+      <h2>Wheel &amp; Axle</h2>
+      <p class="hook"></p>
+      <p><code>machines.state.mode === "wheel-axle"</code></p>
+    </section>
+  </section>
+  <section class="mode" id="mode-wedge" hidden>
+    <section class="card later-card">
+      <h2>Wedge</h2>
+      <p class="hook"></p>
+      <p><code>machines.state.mode === "wedge"</code></p>
+    </section>
+  </section>
+  <section class="mode" id="mode-screw" hidden>
+    <section class="card later-card">
+      <h2>Screw</h2>
+      <p class="hook"></p>
+      <p><code>machines.state.mode === "screw"</code></p>
+    </section>
+  </section>
+  <section class="mode" id="mode-build" hidden>
+    <section class="card later-card">
+      <h2>Free-build</h2>
+      <p class="hook"></p>
+      <p><code>machines.state.mode === "build"</code></p>
+    </section>
+  </section>
+  <section class="mode" id="mode-identify" hidden>
+    <section class="card later-card">
+      <h2>Identify</h2>
+      <p class="hook"></p>
+      <p><code>machines.state.mode === "identify"</code></p>
+    </section>
+  </section>
+  <section class="mode" id="mode-guided" hidden>
+    <section class="card later-card">
+      <h2>Guided labs</h2>
+      <p class="hook"></p>
+      <p><code>machines.state.mode === "guided"</code></p>
+    </section>
+  </section>
+</main>
+
+<footer class="footnote">
+  Ideal machines conserve energy, so W_in = W_out and a smaller force travels farther. Friction, rope mass, and pulley mass are the real machine: useful work stays mgh (or F_load times the load's distance) and efficiency = useful output / input × 100%. g = 9.80665 m/s². W = Fd for a constant force parallel to the displacement.
+</footer>
+<script type="module" src="machines-ui.js"></script>
+</body>
+</html>
