@@ -1,0 +1,92 @@
+/* login-alive.css — decorative layer for the login / sign-up screens.
+   Purely visual: no IDs or behavior from app.js are changed. */
+:root {
+  --la-glow: rgba(255, 196, 92, 0.22);
+  --la-kernel-a: rgba(232, 170, 70, 0.7);
+  --la-kernel-b: rgba(255, 236, 190, 0.95);
+  --la-card-bg: rgba(255, 255, 255, 0.62);
+  --la-card-border: rgba(0, 0, 0, 0.06);
+}
+[data-theme="dark"] {
+  --la-glow: rgba(255, 170, 60, 0.16);
+  --la-kernel-a: rgba(255, 190, 100, 0.28);
+  --la-kernel-b: rgba(255, 236, 200, 0.22);
+  --la-card-bg: rgba(28, 28, 30, 0.55);
+  --la-card-border: rgba(255, 255, 255, 0.07);
+}
+
+/* background canvas */
+#la-bg {
+  position: fixed; inset: 0; width: 100vw; height: 100vh;
+  pointer-events: none; z-index: 0; opacity: 0; transition: opacity .6s ease;
+}
+body.la-on #la-bg { opacity: 1; }
+body.la-on #login, body.la-on #teacherLogin, body.la-on #teacherSignup { position: relative; z-index: 1; }
+
+/* card */
+.la-card {
+  --mx: 50%; --my: 0%;
+  padding: 36px 40px 32px; border-radius: 28px;
+  background:
+    radial-gradient(420px circle at var(--mx) var(--my), var(--la-glow), transparent 60%),
+    var(--la-card-bg);
+  border: 1px solid var(--la-card-border);
+  box-shadow: var(--shadow-lg);
+  -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%);
+  max-width: 480px !important; box-sizing: border-box;
+}
+@media (max-width: 560px) { .la-card { padding: 28px 20px 24px; margin-left: 12px !important; margin-right: 12px !important; } }
+.la-card.la-enter { animation: la-card-in .9s cubic-bezier(.2, 1.4, .35, 1) both; }
+@keyframes la-card-in {
+  0% { opacity: 0; transform: translateY(28px) scale(.96); }
+  100% { opacity: 1; transform: none; }
+}
+.la-card h2 { margin-bottom: 24px !important; }
+
+/* inputs */
+.la-card .login-input {
+  transition: border-color .2s ease, box-shadow .25s ease, transform .25s cubic-bezier(.2,1.6,.4,1), background-color .2s ease;
+}
+.la-card .login-input:hover { border-color: color-mix(in srgb, var(--accent) 35%, var(--input-border)); }
+.la-card .login-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent), 0 6px 18px rgba(255, 170, 60, .12);
+  transform: translateY(-1px);
+}
+.la-card .login-input:focus-visible { outline: none; }
+.la-card a.login-link:focus-visible,
+.la-card button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+/* magnetic primary button */
+.la-card .login-buttons button {
+  background: var(--accent) !important; color: #fff !important; border-color: transparent !important;
+  min-width: 160px; box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 35%, transparent);
+  transition: box-shadow .2s ease, background-color .2s ease;
+  will-change: transform;
+}
+.la-card .login-buttons button:hover { background: var(--accent-hover) !important; }
+
+/* ----- mascot rig ----- */
+.la-logo { position: relative; display: inline-block; width: 150px; height: 150px; margin: -12px 0 -8px; }
+.la-logo > img.la-src { position: absolute; inset: 0; width: 100% !important; height: 100% !important; max-width: none !important; animation: none !important; }
+.la-logo.la-ready > img.la-src { opacity: 0; }
+.la-rig {
+  position: absolute; inset: 0; cursor: pointer; transform-origin: 50% 85%;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, .16)); will-change: transform; opacity: 0;
+}
+[data-theme="dark"] .la-rig { filter: brightness(1.06) drop-shadow(0 6px 18px rgba(255, 190, 110, .14)); }
+.la-logo.la-ready .la-rig { opacity: 1; }
+.la-rig img { position: absolute; display: block; pointer-events: none; user-select: none; -webkit-user-drag: none; will-change: transform; max-width: none; }
+.la-rig .la-base { inset: 0; width: 100%; height: 100%; }
+.la-blush { position: absolute; width: 9%; height: 5%; border-radius: 50%; background: rgba(255, 110, 110, .55); filter: blur(2px); opacity: 0; transition: opacity .35s ease; }
+.la-logo.la-shy .la-blush { opacity: 1; }
+.la-kernel { position: absolute; width: 14%; height: 14%; left: 43%; top: 30%; pointer-events: none; }
+.la-logo:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-radius: 24px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .la-card.la-enter { animation: la-fade .4s ease both; }
+  @keyframes la-fade { from { opacity: 0; } to { opacity: 1; } }
+  #la-bg { display: none; }
+  .la-logo > img.la-src { opacity: 1 !important; }
+  .la-rig { display: none; }
+}
