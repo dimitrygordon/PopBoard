@@ -242,8 +242,6 @@
         burstEls.push({ k: k, t0: performance.now() });
       })(i);
     }
-    var lb = logo ? logo.getBoundingClientRect() : rc;
-    burstBg(lb.left + lb.width / 2, lb.top + lb.height / 2);
     sendoffUntil = performance.now() + 1600;
     doc.body.classList.add("la-sendoff");
     requestAnimationFrame(function () { ghost.classList.add("la-ghost-go"); });
@@ -259,53 +257,7 @@
     }
   }
 
-  /* ---------------- background kernels ---------------- */
-  var cv, ctx, kernels = [], W = 0, H = 0, dpr = 1;
-  function setupCanvas() {
-    if (reduce) return;
-    cv = doc.createElement("canvas"); cv.id = "la-bg"; cv.setAttribute("aria-hidden", "true");
-    doc.body.insertBefore(cv, doc.body.firstChild); ctx = cv.getContext("2d");
-    if (!ctx) { cv.remove(); cv = null; return; }
-    resize(); win.addEventListener("resize", resize);
-    var n = Math.round(clamp(W * H / 26000, 18, 60));
-    for (var i = 0; i < n; i++) kernels.push(mkKernel(true));
-  }
-  function resize() { if (!cv) return; dpr = Math.min(win.devicePixelRatio || 1, 1.75); W = win.innerWidth; H = win.innerHeight; cv.width = W * dpr; cv.height = H * dpr; }
-  function mkKernel(any) {
-    var z = 0.35 + Math.random() * 0.65;
-    return { x: Math.random() * W, y: any ? Math.random() * H : H + 30, z: z, r: (14 + Math.random() * 16) * z, ox: 0, oy: 0, vx: 0, vy: 0,
-      sp: (8 + Math.random() * 14) * z, ph: Math.random() * 6.28, rot: Math.random() * 6.28, vr: (Math.random() - .5) * .4, lobes: 4 + (Math.random() * 3 | 0) };
-  }
-  var css = null;
-  function colors() { var cs = getComputedStyle(doc.documentElement); return [(cs.getPropertyValue("--la-mood-kernel-a").trim() || cs.getPropertyValue("--la-kernel-a").trim()) || "rgba(255,214,140,.5)", (cs.getPropertyValue("--la-mood-kernel-b").trim() || cs.getPropertyValue("--la-kernel-b").trim()) || "rgba(255,246,222,.7)"]; }
-  function drawKernel(k, px, py, c) {
-    ctx.save(); ctx.translate(px, py); ctx.rotate(k.rot);
-    ctx.fillStyle = c[1];
-    for (var i = 0; i < k.lobes; i++) { var a = i / k.lobes * 6.283; ctx.beginPath(); ctx.arc(Math.cos(a) * k.r * .5, Math.sin(a) * k.r * .5, k.r * .62, 0, 6.283); ctx.fill(); }
-    ctx.fillStyle = c[0]; ctx.beginPath(); ctx.arc(0, k.r * .25, k.r * .45, 0, 6.283); ctx.fill();
-    ctx.restore();
-  }
-  function drawBg(now, dt) {
-    if (!cv) return;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-    if (!css || now - css.t > 1000) css = { c: colors(), t: now };
-    var pmx = mouse.has ? (mouse.x / W - .5) : 0, pmy = mouse.has ? (mouse.y / H - .5) : 0;
-    for (var i = 0; i < kernels.length; i++) {
-      var k = kernels[i];
-      k.y -= k.sp * dt; k.x += Math.sin(now / 1000 * .5 + k.ph) * 6 * k.z * dt; k.rot += k.vr * dt;
-      var px = k.x - pmx * 40 * k.z + k.ox, py = k.y - pmy * 30 * k.z + k.oy;
-      if (mouse.has) { var dx = px - mouse.x, dy = py - mouse.y, d2 = dx * dx + dy * dy, R0 = 140; if (d2 < R0 * R0) { var d = Math.sqrt(d2) || 1, f = (1 - d / R0) * 900 * k.z; k.vx += dx / d * f * dt; k.vy += dy / d * f * dt; } }
-      k.vx += -k.ox * 6 * dt; k.vy += -k.oy * 6 * dt; k.vx *= Math.pow(.04, dt); k.vy *= Math.pow(.04, dt);
-      k.ox += k.vx * dt; k.oy += k.vy * dt;
-      if (k.y < -40) { kernels[i] = mkKernel(false); continue; }
-      drawKernel(k, px, py, css.c);
-    }
-  }
-  function burstBg(x, y) {
-    if (!cv) return;
-    for (var i = 0; i < 26; i++) { var k = mkKernel(true), a = Math.random() * 6.283, s = 300 + Math.random() * 500; k.x = x; k.y = y; k.vx = Math.cos(a) * s; k.vy = Math.sin(a) * s; kernels.push(k); }
-    setTimeout(function () { kernels.splice(60); }, 2500);
-  }
+  var css = null; // mood cache (background kernel canvas removed)
 
   /* ---------------- card / button ---------------- */
   function decoratePanel(p) {
@@ -357,7 +309,7 @@
     doc.body.classList.toggle("la-on", !!p);
     if (wasVisible && !p && performance.now() - lastSubmit < 15000) {
       // signed in: celebratory burst on the background
-      if (!reduce) sendOff(); else burstBg(W / 2, H * 0.35);
+      if (!reduce) sendOff();
     }
     if (p && p !== wasVisible) { p.classList.add("la-enter"); var R = rigFor(p); if (R) setTimeout(function () { hop(R, 1.2); }, 260); }
     wasVisible = p;
@@ -373,9 +325,8 @@
     if (ap) { var br = ap.getBoundingClientRect(); if (br.width) lastRect = { el: ap, r: br }; }
     typing.energy *= Math.pow(0.25, dt);
     if ((ap || now < sendoffUntil) && win.__laSky) win.__laSky.frame(now, dt);
-    if (now < sendoffUntil) { drawBg(now, dt); stepBurst(now, dt); }
+    if (now < sendoffUntil) stepBurst(now, dt);
     else if (ap) {
-      drawBg(now, dt);
       for (var i = 0; i < rigs.length; i++) updateRig(rigs[i], now, dt);
       stepButtons(dt);
     }
@@ -396,7 +347,6 @@
       var R = buildRig(p, $(LOGOS[id])); if (R) { rigs.push(R); }
     });
     applyMood(); setInterval(applyMood, 60000);
-    setupCanvas();
     new MutationObserver(watchPanels).observe(doc.body, { attributes: true, attributeFilter: ["class"], subtree: true });
     watchPanels();
     rigs.forEach(function (R) { if (visible(R.panel)) setTimeout(function () { hop(R, 1.3); }, 350); });
