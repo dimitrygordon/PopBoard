@@ -24,7 +24,7 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", backCanvases); else backCanvases();
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (document.getElementById("sandboxCanvas") || /study-sandbox/.test(location.pathname)) return; // sky would be fully hidden behind the sandbox canvas
-  var s = document.createElement("script"); s.src = "/login-sky.js?v=20261021b"; s.defer = true;
+  var s = document.createElement("script"); s.src = "/login-sky.js?v=20261021c"; s.defer = true;
   s.onload = function () {
     var last = performance.now();
     function loop(now) { // the sky's only rAF loop on this page; sims keep their own
