@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#070b18">
+<title>Relativity Sandbox // PopBoard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<link rel="stylesheet" href="relativity-theme.css">
+<link rel="stylesheet" href="astro-study.css?v=20261021i">
+<script src="astro-study.js?v=20261021i"></script>
+</head>
+<body>
+<header class="bar">
+  <div class="bar-group">
+    <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      <span class="back-label">Back</span>
+    </button>
+    <button id="controlsJumpBtn" type="button">Controls</button>
+  </div>
+  <div class="bar-group speed" id="speedChips">
+    <button type="button" data-speed="0.25">0.25×</button>
+    <button type="button" data-speed="1" class="active">1×</button>
+    <button type="button" data-speed="2">2×</button>
+    <button type="button" data-speed="4">4×</button>
+  </div>
+  <div class="bar-group">
+    <button id="pauseBtn" type="button">Pause</button>
+    <button id="resetBtn" type="button">Reset</button>
+  </div>
+</header>
+
+<div class="title">
+  <h1>Relativity Sandbox</h1>
+  <p>Special relativity and gravity, side by side. Clocks, grids, and orbits use one shared setup, so changing tabs keeps the masses and the speed. Pictures that stretch the truth wear an Illustrative tag. The white panel is what the equations actually say.</p>
+</div>
+
+<main class="wrap">
+  <div id="statusBanner" role="status" aria-live="polite">
+    <div class="status-type" id="statusType">Special relativity</div>
+    <div class="status-reason" id="statusReason">Loading the sandbox.</div>
+  </div>
+  <div class="tabs" id="tabs" role="tablist" aria-label="Relativity modes">
+    <button class="tab active" type="button" data-mode="sr">Special relativity</button>
+    <button class="tab" type="button" data-mode="gravity">Gravity &amp; orbits</button>
+    <button class="tab" type="button" data-mode="curvature">Curvature</button>
+    <button class="tab" type="button" data-mode="clocks">Clocks</button>
+    <button class="tab" type="button" data-mode="lensing">Light bending</button>
+    <button class="tab" type="button" data-mode="guided">Challenges</button>
+  </div>
+
+  <section class="mode" id="mode-sr">
+    <div class="layout">
+      <div class="stack">
+        <section class="card" aria-label="Ship and station clocks">
+          <h2>Clocks</h2>
+          <p class="sub">Same kind of face in every mode. The ship clock accumulates proper time. The station clock accumulates coordinate time.</p>
+          <canvas id="clocksCanvas" class="view short" aria-label="Station clock and ship clock"></canvas>
+        </section>
+        <section class="card" aria-label="Light clock">
+          <h2>Light clock</h2>
+          <p class="sub">Ship frame: the light bounces straight up and down. Station frame: the same bounce is a diagonal, and the zig-zag stretches as v grows. Both still measure c. Equal scale, so the angle is the measured one.</p>
+          <canvas id="lightCanvas" class="view" aria-label="Light clock in the ship frame and the station frame"></canvas>
+        </section>
+        <section class="card" aria-label="Length contraction">
+          <h2>Measured shape</h2>
+          <p class="sub">The grid contracts only along the motion. This is the measured length, not the photograph: light delay and Terrell rotation are left out.</p>
+          <canvas id="gridCanvas" class="view" aria-label="Reference grid, contracted only along the direction of motion"></canvas>
+        </section>
+        <section class="card" aria-label="Spacetime diagram">
+          <h2>Spacetime</h2>
+          <p class="sub">ct is vertical, x is horizontal, and one second has the same pixels as one light-second, so the light cone is exactly 45°. Ticks mark one second of proper time. The twin preset draws the turnaround and the jump in the line of simultaneity.</p>
+          <canvas id="minkowskiCanvas" class="view tall" aria-label="Minkowski diagram with worldlines and a light cone"></canvas>
+        </section>
+        <section class="card" aria-label="Energy curve">
+          <h2>Energy to reach v</h2>
+          <p class="sub">E = γmc² uses the invariant mass. The curve is kinetic energy in units of mc². It leaves ½β² behind and climbs without bound as v approaches c.</p>
+          <canvas id="energyCanvas" class="view measured-frame" aria-label="Relativistic kinetic energy compared with one half m v squared"></canvas>
+        </section>
+      </div>
+      <div class="stack side">
+        <section class="card measured" id="dataPanel" aria-label="Measured values">
+          <div class="pill pill-measured">Measured</div>
+          <div id="dataRows"></div>
+        </section>
+        <section class="card controls" id="controls-sr" aria-label="Special relativity controls">
+          <h2>Speed</h2>
+          <div class="panel-row">
+            <div class="panel-label"><span>Ship speed</span><span id="betaLabel">0.600 c</span></div>
+            <input id="betaRange" type="range" min="0" max="0.999" step="0.001" value="0.6" aria-label="Ship speed as a fraction of c">
+          </div>
+          <div class="gamma-meter" id="gammaMeter">
+            <div class="pill pill-measured">Measured</div>
+            <div>γ = <span id="gammaRead">1.000</span></div>
+            <div class="gamma-track" id="gammaTrack">
+              <div class="gamma-fill" id="gammaFill"></div>
+              <i class="gamma-mark" id="gammaMark" title="gamma = 2"></i>
+            </div>
+            <div class="gamma-caption">Log scale. The gold tick is γ = 2, at 0.866c.</div>
+          </div>
+          <div class="panel-row">
+            <div class="panel-label"><span>Ship length</span><span id="lengthLabel">1.00 light-second</span></div>
+            <input id="lengthRange" type="range" min="0.25" max="4" step="0.01" value="1" aria-label="Proper length in light-seconds">
+          </div>
+          <div class="panel-row">
+            <div class="panel-label"><span>Invariant mass</span><span id="massLabel">1 kg</span></div>
+            <input id="massRange" type="range" min="0.1" max="10" step="0.1" value="1" aria-label="Invariant mass in kilograms">
+          </div>
+          <div class="section-label" style="margin-top:12px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-dim)">Flashes simultaneous in</div>
+          <div class="chips" id="simChips" style="margin-top:6px">
+            <button class="chip active" type="button" data-sim="ship">Ship</button>
+            <button class="chip" type="button" data-sim="station">Station</button>
+          </div>
+          <h3>Velocity addition</h3>
+          <div class="panel-row">
+            <div class="panel-label"><span>u</span><span id="addULabel">0.90 c</span></div>
+            <input id="addU" type="range" min="0" max="0.999" step="0.001" value="0.9" aria-label="First velocity as a fraction of c">
+          </div>
+          <div class="panel-row">
+            <div class="panel-label"><span>v</span><span id="addVLabel">0.90 c</span></div>
+            <input id="addV" type="range" min="0" max="0.999" step="0.001" value="0.9" aria-label="Second velocity as a fraction of c">
+          </div>
+          <div class="btn-row">
+            <button class="btn" id="addPreset" type="button">Set 0.9c (+) 0.9c</button>
+            <button class="btn" id="twinBtn" type="button">Twin-paradox preset</button>
+          </div>
+          <p class="sub" id="twinNote" hidden>The traveler goes out and back. At the turn, their line of simultaneity jumps. The age gap is the two different paths through spacetime. Acceleration only joins the two inertial legs. It is not what makes one twin older.</p>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <section class="mode" id="mode-gravity" hidden>
+    <div class="layout">
+      <div class="stack">
+        <section class="card" aria-label="Gravity map">
+          <h2>Field and orbits</h2>
+          <p class="sub">Top-down. Drag a mass to move it. Drag empty space to launch a test particle: the drag is its velocity. Newtonian arrows and the Mercury rosette are exaggerated and tagged. The orbit itself is integrated, not rolled on a sheet.</p>
+          <canvas id="gravityCanvas" class="view tall illus-frame" aria-label="Gravity map with masses, field arrows, and orbits"></canvas>
+        </section>
+      </div>
+      <div class="stack side">
+      <section class="card controls" id="controls-gravity" aria-label="Gravity controls">
+        <h2>Masses</h2>
+        <p class="sub">Shared with Curvature and Clocks. Black-hole presets are non-rotating (Schwarzschild).</p>
+        <div class="chips" id="bodyChips"></div>
+        <div class="btn-row">
+          <button class="btn" id="addCompanion" type="button">Add companion</button>
+          <button class="btn" id="closeHoles" type="button">Bring black holes close</button>
+        </div>
+        <h3>View</h3>
+        <div class="chips" id="gravToggle">
+          <button class="chip active" type="button" data-grav="newton">Newtonian</button>
+          <button class="chip" type="button" data-grav="gr">Schwarzschild</button>
+        </div>
+        <p class="sub" id="gravBlendNote">The two views crossfade. Reduced motion snaps.</p>
+        <h3>Launch</h3>
+        <div class="chips" id="orbitChips">
+          <button class="chip" type="button" data-orbit="circular">Circular</button>
+          <button class="chip" type="button" data-orbit="ellipse">Zoom-whirl</button>
+          <button class="chip" type="button" data-orbit="mercury">Mercury</button>
+          <button class="chip" type="button" data-orbit="isco">Inside the ISCO</button>
+        </div>
+        <p class="sub">Or arm a drag on the map.</p>
+        <div class="btn-row">
+          <button class="btn primary" id="armLaunch" type="button">Arm a velocity drag</button>
+          <button class="btn" id="clearParticles" type="button">Clear particles</button>
+        </div>
+        <label class="check" style="display:flex;gap:8px;align-items:center;margin-top:10px;min-height:44px">
+          <input id="showArrows" type="checkbox" checked> g arrows and contours
+        </label>
+      </section>
+      </div>
+    </div>
+  </section>
+
+  <section class="mode" id="mode-curvature" hidden>
+    <div class="layout">
+      <div class="stack">
+        <div class="banner" id="curveBanner">
+          <strong>Teaching model.</strong>
+          This sheet is only a picture of spatial curvature on one constant-time slice. Real curvature is four-dimensional, and slow objects fall mostly because of curvature in time. Nothing here is pulled down by gravity, and no marble rolls on the sheet. Orbits are drawn from the equations and laid on top.
+        </div>
+        <section class="card" aria-label="Curvature map">
+          <h2>Embedding</h2>
+          <p class="sub">Drag to orbit the camera. Scroll or pinch to zoom. One mass uses the Flamm paraboloid outside the body. Several masses switch to a weak-field well.</p>
+          <canvas id="curveCanvas" class="view tall illus-frame" aria-label="Spacetime curvature embedding"></canvas>
+        </section>
+      </div>
+      <div class="stack side">
+      <section class="card controls" id="controls-curvature" aria-label="Curvature controls">
+        <h2>Exaggeration</h2>
+        <div class="panel-row">
+          <div class="panel-label"><span>Depth scale</span><span id="exagLabel">×8</span></div>
+          <input id="exagRange" type="range" min="1" max="40" step="1" value="8" aria-label="Embedding depth exaggeration">
+        </div>
+        <div class="chips">
+          <button class="chip" type="button" id="camReset" >Reset camera</button>
+          <button class="chip" type="button" id="zoomIn">Zoom in</button>
+          <button class="chip" type="button" id="zoomOut">Zoom out</button>
+        </div>
+        <p class="sub">The true Flamm height is in the measured panel. The sheet uses the scale above. A ripple while you drag a mass is illustrative.</p>
+        <div class="chips" id="bodyChips2"></div>
+        <div class="btn-row">
+          <button class="btn" id="addCompanionCurve" type="button">Add companion</button>
+          <button class="btn" id="closeHolesCurve" type="button">Bring black holes close</button>
+        </div>
+      </section>
+      </div>
+    </div>
+  </section>
+
+  <section class="mode" id="mode-clocks" hidden>
+    <div class="layout">
+      <div class="stack">
+        <section class="card" aria-label="Gravitational clocks">
+          <h2>Radial ladder</h2>
+          <p class="sub">Hovering clocks run at √(1 − r_s/r). Orbiting clocks use the Schwarzschild rate, which is √(1 − 1.5 r_s/r) on a circle and is zero at the photon sphere. The faces match the special-relativity clocks.</p>
+          <canvas id="ladderCanvas" class="view tall" aria-label="Clocks at chosen radii"></canvas>
+        </section>
+      </div>
+      <div class="stack side">
+      <section class="card controls" id="controls-clocks" aria-label="Clock controls">
+        <h2>Rates</h2>
+        <div class="chips" id="clockMode">
+          <button class="chip active" type="button" data-clock="hover">Hovering</button>
+          <button class="chip" type="button" data-clock="orbit">Orbiting</button>
+        </div>
+        <div class="panel-row">
+          <div class="panel-label"><span>Ladder radius</span><span id="ladderLabel">6.0 r_s</span></div>
+          <input id="ladderRange" type="range" min="1.2" max="40" step="0.1" value="6" aria-label="Clock radius in Schwarzschild radii">
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" id="gpsPreset" type="button">GPS preset</button>
+        </div>
+        <p class="sub">GPS uses the weak-field split and is labeled “about”. It is not the exact orbit formula. The shared mass becomes Earth.</p>
+      </section>
+      </div>
+    </div>
+  </section>
+
+  <section class="mode" id="mode-lensing" hidden>
+    <div class="layout">
+      <div class="stack">
+        <section class="card" aria-label="Light bending">
+          <h2>Star field</h2>
+          <p class="sub">Drag the gold source. Weak lens: two images and, on axis, an Einstein ring. Inside about 10 r_s the point-lens pictures turn off and the null geodesic takes over.</p>
+          <canvas id="lensCanvas" class="view tall illus-frame" aria-label="Lensed star field or photon paths"></canvas>
+        </section>
+      </div>
+      <div class="stack side">
+      <section class="card controls" id="controls-lensing" aria-label="Lensing controls">
+        <h2>Source</h2>
+        <div class="panel-row">
+          <div class="panel-label"><span>Offset β / θ_E</span><span id="betaLensLabel">0.35</span></div>
+          <input id="betaLens" type="range" min="0" max="1.6" step="0.01" value="0.35" aria-label="Source offset in Einstein radii">
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="alignBtn" type="button">Align for a ring</button>
+          <button class="btn" id="strongBtn" type="button">Black-hole rays</button>
+        </div>
+        <p class="sub">Solar-limb deflection stays in the measured panel: 4GM/(c²b) at the Sun’s radius. The star field is a teaching lens, not a picture of that 1.75 arcsec.</p>
+      </section>
+      </div>
+    </div>
+  </section>
+
+  <section class="mode" id="mode-guided" hidden>
+    <div class="layout">
+      <div class="stack">
+        <section class="card" aria-label="Challenge gamma equals 2">
+          <h2>1 · Speed for γ = 2</h2>
+          <p class="sub">Use the shared speed slider. γ = 1/√(1−β²). Check when you think γ is 2.</p>
+          <div class="panel-row">
+            <div class="panel-label"><span>β</span><span id="chBetaLabel">0.600 c</span></div>
+            <input id="chBeta" type="range" min="0" max="0.999" step="0.001" value="0.6" aria-label="Challenge speed as a fraction of c">
+          </div>
+          <div class="btn-row"><button class="btn primary" id="chGamma" type="button">Check γ</button></div>
+          <p class="feedback" id="chGammaMsg" aria-live="polite"></p>
+        </section>
+        <section class="card" aria-label="Challenge equal mass different radius">
+          <h2>2 · Same mass, different radius</h2>
+          <p class="sub">Two objects, each one solar mass. One has the Sun’s radius. The other is compact, with a surface at 4 r_s. The Flamm slope at the surface is √(r_s / (R − r_s)). Which surface is steeper?</p>
+          <div class="chips" id="chSlope">
+            <button class="chip" type="button" data-pick="sun">The Sun’s surface</button>
+            <button class="chip" type="button" data-pick="compact">The compact surface</button>
+            <button class="chip" type="button" data-pick="same">Same — only mass matters</button>
+          </div>
+          <div class="btn-row"><button class="btn primary" id="chSlopeBtn" type="button">Check slope</button></div>
+          <p class="feedback" id="chSlopeMsg" aria-live="polite"></p>
+        </section>
+        <section class="card" aria-label="Challenge solar deflection">
+          <h2>3 · Deflection at the Sun</h2>
+          <p class="sub">A ray that just grazes the Sun. α = 4GM/(c²b). Which value does that formula give?</p>
+          <div class="chips" id="chDeflect">
+            <button class="chip" type="button" data-pick="0.175">0.175 arcsec</button>
+            <button class="chip" type="button" data-pick="1.75">1.75 arcsec</button>
+            <button class="chip" type="button" data-pick="17.5">17.5 arcsec</button>
+            <button class="chip" type="button" data-pick="deg">1.75 degrees</button>
+          </div>
+          <div class="btn-row"><button class="btn primary" id="chDeflectBtn" type="button">Check deflection</button></div>
+          <p class="feedback" id="chDeflectMsg" aria-live="polite"></p>
+        </section>
+        <section class="card" aria-label="Challenge GPS net">
+          <h2>4 · GPS net offset</h2>
+          <p class="sub">Weak-field split for a GPS satellite: about +45.7 μs/day from gravity and about −7.2 μs/day from speed. What is the net, per day?</p>
+          <div class="chips" id="chGps">
+            <button class="chip" type="button" data-pick="45.7">about +45.7 μs</button>
+            <button class="chip" type="button" data-pick="-7.2">about −7.2 μs</button>
+            <button class="chip" type="button" data-pick="38.5">about +38.5 μs</button>
+            <button class="chip" type="button" data-pick="0">about 0</button>
+          </div>
+          <div class="btn-row"><button class="btn primary" id="chGpsBtn" type="button">Check GPS</button></div>
+          <p class="feedback" id="chGpsMsg" aria-live="polite"></p>
+        </section>
+      </div>
+      <div class="stack side">
+      <section class="card controls" id="controls-guided" aria-label="Challenge score">
+        <h2>Score</h2>
+        <p class="sub" id="scoreLine">0 / 0 checked.</p>
+        <p class="sub">These use the same formulas as the labs. A correct check does not change the shared masses unless you say so in that lab.</p>
+      </section>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footnote">
+  Invariant mass only: E = γmc² is total energy and p = γmv. Contracted drawings are measured lengths, not what a camera would see. The twin gap is two different spacetime paths. Schwarzschild orbits are non-rotating, stepped in φ, and share coordinate time with the Newtonian particle. GPS figures are the weak-field sum, labeled “about”. The sheet is a constant-time spatial slice, exaggerated on purpose. Point-lens images are only for impact parameters well outside 10 r_s. Closer rays are the null geodesic, labeled as modeled.
+</footer>
+<script type="module" src="relativity-ui.js"></script>
+</body>
+</html>

@@ -9,6 +9,7 @@
     "test:rbmk": "node --test rbmk-physics.test.mjs rbmk-v2.test.mjs",
     "test:pendulum": "node --test pendulum-physics.test.mjs",
     "test:machines": "node --test machines-physics.test.mjs",
+    "test:relativity": "node --test relativity-physics.test.mjs",
     "test:pdf": "node --test pdf-export.test.mjs",
     "test:return": "node --test board-return.test.mjs",
     "test:return:browser": "firebase emulators:exec --project hotseat-4f661 --only auth,firestore,storage --config ../firebase.json \"node board-return-browser.mjs\""
