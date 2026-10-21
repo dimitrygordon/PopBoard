@@ -207,8 +207,9 @@ function drawPill(ctx, x, y, text, kind) {
   ctx.save();
   ctx.font = "600 11px Oswald, sans-serif";
   const padX = 8;
+  ctx.textBaseline = "middle";
   const tw = ctx.measureText(text.toUpperCase()).width;
-  const w = tw + padX * 2;
+  const w = Math.ceil(tw) + padX * 2;
   const h = 18;
   roundRect(ctx, x, y, w, h, 9);
   ctx.fillStyle = rgba(color.bg, 0.88);
@@ -1205,18 +1206,27 @@ function drawMarkers(ctx, view) {
   ];
   ctx.font = `11px ${FONT}`;
   ctx.textAlign = "left";
-  for (const [r, label, stroke] of rings) {
-    const px = r * view.scale;
-    if (px < 6 || px > Math.max(view.w, view.h)) continue;
+  const c = toScreen(view, body.x, body.y);
+  const shown = rings.filter(([r]) => { const px = r * view.scale; return px >= 6 && px <= Math.max(view.w, view.h); });
+  const maxPx = Math.max(0, ...shown.map(([r]) => r * view.scale));
+  const lx = c.x + maxPx + 26;
+  const top = c.y - maxPx - 6 - shown.length * 15;
+  shown.forEach(([r, label, stroke], i) => {
     ctx.strokeStyle = stroke;
     ctx.lineWidth = r === body.rs ? 1.5 : 1;
     ctx.setLineDash(r === body.rs ? [] : [4, 3]);
     circle(ctx, view, body.x, body.y, r);
     ctx.setLineDash([]);
-    const p = toScreen(view, body.x + r, body.y);
-    ctx.fillStyle = stroke;
-    ctx.fillText(label, p.x + 4, p.y - 4);
-  }
+    const a = -Math.PI / 4;
+    const px = c.x + r * view.scale * Math.cos(a), py = c.y + r * view.scale * Math.sin(a);
+    const ly = top + i * 15;
+    ctx.globalAlpha = 0.55;
+    ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(lx - 4, ly); ctx.stroke();
+    ctx.globalAlpha = 1;
+    ctx.beginPath(); ctx.arc(px, py, 1.8, 0, Math.PI * 2); ctx.fillStyle = stroke; ctx.fill();
+    ctx.textAlign = "left";
+    ctx.fillText(label, lx, ly + 4);
+  });
 }
 
 function circle(ctx, view, x, y, r) {
