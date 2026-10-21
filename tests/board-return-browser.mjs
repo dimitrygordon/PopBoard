@@ -58,10 +58,22 @@ const check = (cond, msg) => {
   if (!cond) failures++;
 };
 
-function track(page) {
+async function track(page) {
   page.errors = [];
   page.alerts = [];
   page.on("dialog", async (d) => { page.alerts.push(d.message()); await d.accept(); });
+  // alert() now shows a toast and confirm() a styled modal (ui-toast.js):
+  // record toast text like a dialog message and accept confirm modals.
+  await page.exposeFunction("__pbAlert", (m) => { page.alerts.push(m); });
+  await page.evaluateOnNewDocument(() => {
+    new MutationObserver((muts) => {
+      for (const m of muts) for (const n of m.addedNodes) {
+        if (!(n instanceof HTMLElement)) continue;
+        if (n.classList.contains("ui-toast")) window.__pbAlert(n.querySelector(".ui-toast-text").textContent);
+        const ok = n.querySelector && n.querySelector(".ui-confirm-ok"); if (ok) setTimeout(() => ok.click(), 50);
+      }
+    }).observe(document, { childList: true, subtree: true });
+  });
   page.on("pageerror", (e) => page.errors.push(String(e)));
   page.on("console", (msg) => {
     if (msg.type() === "error") page.errors.push("console: " + msg.text());
@@ -71,7 +83,7 @@ function track(page) {
 async function newPage() {
   const ctx = await browser.createBrowserContext();
   const page = await ctx.newPage();
-  track(page);
+  await track(page);
   return page;
 }
 
@@ -130,7 +142,7 @@ function waitForPopup(opener) {
       clearTimeout(timer);
       browser.off("targetcreated", onTarget);
       const page = await target.page();
-      track(page);
+      await track(page);
       resolve(page);
     }
     browser.on("targetcreated", onTarget);

@@ -41,6 +41,18 @@ async function newPage() {
   page.alerts = [];
   page.errors = [];
   page.on("dialog", async d => { page.alerts.push(d.message()); await d.accept(); });
+  // alert() now shows a toast and confirm() a styled modal (ui-toast.js):
+  // record toast text like a dialog message and accept confirm modals.
+  await page.exposeFunction("__pbAlert", (m) => { page.alerts.push(m); });
+  await page.evaluateOnNewDocument(() => {
+    new MutationObserver((muts) => {
+      for (const m of muts) for (const n of m.addedNodes) {
+        if (!(n instanceof HTMLElement)) continue;
+        if (n.classList.contains("ui-toast")) window.__pbAlert(n.querySelector(".ui-toast-text").textContent);
+        const ok = n.querySelector && n.querySelector(".ui-confirm-ok"); if (ok) setTimeout(() => ok.click(), 50);
+      }
+    }).observe(document, { childList: true, subtree: true });
+  });
   page.on("pageerror", e => page.errors.push(e.message));
   page.on("console", m => { if (m.type() === "error" && /permission|insufficient/i.test(m.text())) page.errors.push("console: " + m.text()); });
   await page.goto(URL0, { waitUntil: "networkidle0" });

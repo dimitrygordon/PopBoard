@@ -99,3 +99,66 @@ html[data-astro] #app > header .header-top-row > button:hover { background: rgba
   #app > header .header-top-row > button { padding: 8px 12px; }
 }
 .daily-engagement-big { font-size: clamp(2rem, 7vw, 3rem) !important; }
+
+/* ══ Toasts ══════════════════════════════════════════════════════════════ */
+.ui-toast-host { position: fixed; z-index: 10000; top: 16px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; width: min(92vw, 460px); pointer-events: none; }
+.ui-toast {
+  pointer-events: auto; display: flex; align-items: flex-start; gap: 8px; width: 100%; box-sizing: border-box;
+  padding: 12px 8px 12px 16px; border-radius: 16px; font-size: 0.9375rem; line-height: 1.4;
+  color: #1d1d1f; background: rgba(255, 255, 255, .94); border: 1px solid rgba(0, 0, 0, .08);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .16); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  animation: ui-toast-in .28s cubic-bezier(.2, .9, .3, 1.2);
+}
+.ui-toast.is-leaving { animation: ui-toast-out .2s ease forwards; }
+.ui-toast-icon svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; display: block; margin-top: 1px; }
+.ui-toast-error .ui-toast-icon { color: #c4242b; } .ui-toast-success .ui-toast-icon { color: #1f8a3e; } .ui-toast-info .ui-toast-icon { color: #0060c7; }
+.ui-toast-error { border-left: 4px solid #c4242b; } .ui-toast-success { border-left: 4px solid #1f8a3e; } .ui-toast-info { border-left: 4px solid #0060c7; }
+.ui-toast-text { flex: 1; padding-top: 1px; }
+.ui-toast-action { flex: none; border: 0; background: transparent; color: #0060c7; font-weight: 700; padding: 2px 8px; border-radius: 8px; cursor: pointer; }
+.ui-toast-action:hover { background: rgba(0, 96, 199, .1); }
+.ui-toast-close { flex: none; border: 0; background: transparent; color: inherit; opacity: .55; font-size: 1.25rem; line-height: 1; width: 28px; height: 28px; border-radius: 8px; padding: 0; cursor: pointer; }
+.ui-toast-close:hover { opacity: 1; background: rgba(0, 0, 0, .06); }
+[data-theme="dark"] .ui-toast { color: #f5f5f7; background: rgba(30, 32, 44, .94); border-color: rgba(255, 255, 255, .12); }
+[data-theme="dark"] .ui-toast-error .ui-toast-icon { color: #ff8a8a; } [data-theme="dark"] .ui-toast-success .ui-toast-icon { color: #6ee59a; } [data-theme="dark"] .ui-toast-info .ui-toast-icon, [data-theme="dark"] .ui-toast-action { color: #7ab8ff; }
+[data-theme="dark"] .ui-toast-error { border-left-color: #ff6b6b; } [data-theme="dark"] .ui-toast-success { border-left-color: #4cd27a; } [data-theme="dark"] .ui-toast-info { border-left-color: #5aa6ff; }
+@keyframes ui-toast-in { from { opacity: 0; transform: translateY(-12px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes ui-toast-out { to { opacity: 0; transform: translateY(-8px) scale(.97); } }
+
+/* ══ Confirm modal ═══════════════════════════════════════════════════════ */
+.ui-modal-backdrop { position: fixed; inset: 0; z-index: 10001; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(10, 12, 24, .42); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); animation: ui-fade-in .16s ease; }
+.ui-modal-backdrop.is-leaving { animation: ui-fade-out .16s ease forwards; }
+.ui-modal { width: min(440px, 100%); box-sizing: border-box; padding: 24px; border-radius: 24px; background: var(--card-bg, #fff); color: var(--text-color); border: 1px solid var(--border-color); box-shadow: 0 24px 64px rgba(0, 0, 0, .28); animation: ui-pop-in .22s cubic-bezier(.2, .9, .3, 1.15); }
+html[data-astro] .ui-modal { background: rgba(22, 28, 54, .96); }
+.ui-modal-text { margin: 0 0 24px; font-size: 1rem; line-height: 1.5; }
+.ui-modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+@keyframes ui-fade-in { from { opacity: 0; } } @keyframes ui-fade-out { to { opacity: 0; } }
+@keyframes ui-pop-in { from { opacity: 0; transform: translateY(8px) scale(.96); } }
+
+/* ══ Button system ═══════════════════════════════════════════════════════ */
+.ui-btn { font: inherit; font-weight: 600; font-size: 0.9375rem; padding: 8px 20px; min-height: 40px; border-radius: 999px; cursor: pointer; border: 1px solid var(--button-border); background: transparent; color: var(--text-color); transition: transform .12s ease, background-color .15s ease, box-shadow .15s ease; }
+.ui-btn-primary { background: #0060c7; border-color: #0060c7; color: #fff; }
+.ui-btn-danger { background: #b3261e; border-color: #b3261e; color: #fff; }
+.ui-btn:hover { box-shadow: 0 4px 14px rgba(0, 0, 0, .14); }
+.ui-btn:active { transform: scale(.97); }
+.ui-btn:focus-visible { outline: 3px solid rgba(10, 132, 255, .55); outline-offset: 2px; }
+
+/* ══ Busy spinner on async buttons ═══════════════════════════════════════ */
+button.is-busy { position: relative; color: transparent !important; }
+button.is-busy > * { visibility: hidden; }
+button.is-busy::after { content: ""; position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; border: 2px solid currentColor; border-color: rgba(127, 127, 127, .35); border-top-color: var(--text-color, #1d1d1f); animation: ui-spin .7s linear infinite; }
+#joinBtn.is-busy::after { border-color: rgba(255, 255, 255, .4); border-top-color: #fff; }
+@keyframes ui-spin { to { transform: rotate(360deg); } }
+
+/* ══ Skeleton loaders ═══════════════════════════════════════════════════ */
+.ui-skeleton-list { display: flex; flex-direction: column; gap: 16px; margin: 0 auto 16px; max-width: 720px; }
+.ui-skeleton-card { padding: 24px; border-radius: 24px; background: var(--card-bg-translucent, rgba(255,255,255,.7)); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 12px; }
+.ui-skeleton-card i { display: block; height: 12px; border-radius: 6px; background: linear-gradient(90deg, rgba(127,127,127,.14) 0%, rgba(127,127,127,.26) 50%, rgba(127,127,127,.14) 100%); background-size: 200% 100%; animation: ui-shimmer 1.3s linear infinite; }
+.ui-skeleton-card i:nth-child(1) { width: 28%; height: 14px; } .ui-skeleton-card i:nth-child(2) { width: 86%; } .ui-skeleton-card i:nth-child(3) { width: 54%; }
+@keyframes ui-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-toast, .ui-toast.is-leaving, .ui-modal, .ui-modal-backdrop, .ui-modal-backdrop.is-leaving { animation: none !important; }
+  .ui-skeleton-card i { animation: none; }
+  button.is-busy::after { animation-duration: 2s; }
+  .ui-btn { transition: none; }
+}
