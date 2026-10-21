@@ -1,0 +1,63 @@
+/* portal-moon.css — Da Vinci. The moon is the door to the Study Lab. */
+a.study-pill {
+  background: rgba(18, 22, 44, 0.42);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #f4f1ff;
+  box-shadow: 0 8px 28px rgba(10, 8, 30, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: background .25s, border-color .25s, box-shadow .25s, transform .2s cubic-bezier(.2,.8,.2,1);
+  animation: pm-bob 8s ease-in-out 2s infinite;
+}
+a.study-pill:hover, a.study-pill:focus-visible {
+  background: rgba(30, 36, 70, 0.6);
+  border-color: rgba(255, 236, 190, 0.55);
+  color: #fff;
+  box-shadow: 0 10px 34px rgba(10, 8, 30, 0.35), 0 0 22px rgba(255, 226, 160, 0.28);
+}
+a.study-pill:active { transform: translateX(-50%) scale(0.97); }
+.study-pill-moon { width: 18px; height: 18px; border-radius: 50%; position: relative; }
+.study-pill-moon svg { width: 18px; height: 18px; overflow: visible; }
+.study-pill-moon::after {
+  content: ""; position: absolute; inset: -5px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 232, 170, 0.45), transparent 70%);
+  opacity: .55; transition: opacity .3s, transform .3s; pointer-events: none;
+}
+a.study-pill:hover .study-pill-moon::after { opacity: 1; transform: scale(1.25); }
+@keyframes pm-bob {
+  0%, 88%, 100% { transform: translateX(-50%) translateY(0); }
+  93% { transform: translateX(-50%) translateY(-4px); }
+}
+
+/* the growing moon */
+.pm-moon {
+  position: fixed; z-index: 9999; pointer-events: none;
+  left: var(--portal-x, 50vw); top: var(--portal-y, 90vh);
+  width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 30%, rgba(160,150,130,.35) 0 7%, transparent 8%),
+    radial-gradient(circle at 62% 58%, rgba(160,150,130,.3) 0 10%, transparent 11%),
+    radial-gradient(circle at 45% 72%, rgba(160,150,130,.25) 0 5%, transparent 6%),
+    radial-gradient(circle at 40% 38%, #fffaf0, #efe6d2 55%, #cfc3a8);
+  box-shadow: 0 0 40px 10px rgba(255, 236, 190, 0.45);
+  will-change: transform;
+}
+html.pm-leaving #login, html.pm-leaving .la-sky, html.pm-leaving #la-sky { transition: opacity .45s, filter .45s; opacity: 0; filter: blur(4px); }
+
+/* study gallery: reveal through the moon */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-new(root) { animation: pm-reveal .75s cubic-bezier(.2,.75,.2,1) both; }
+  ::view-transition-old(root) { animation: pm-hold .75s linear both; }
+  ::view-transition-group(study-moon) { animation-duration: .75s; animation-timing-function: cubic-bezier(.2,.75,.2,1); }
+  html.pm-closing body { animation: pm-unreveal .55s cubic-bezier(.55,0,.75,.3) forwards; }
+}
+@keyframes pm-reveal {
+  from { clip-path: circle(0 at var(--portal-x, 50%) var(--portal-y, 90%)); }
+  to { clip-path: circle(150vmax at var(--portal-x, 50%) var(--portal-y, 90%)); }
+}
+@keyframes pm-hold { to { opacity: 1; } }
+@keyframes pm-unreveal {
+  from { clip-path: circle(150vmax at var(--portal-x, 50%) var(--portal-y, 10%)); }
+  to { clip-path: circle(12px at var(--portal-x, 50%) var(--portal-y, 10%)); opacity: .6; }
+}
+@media (prefers-reduced-motion: reduce) {
+  a.study-pill { animation: none; }
+}
