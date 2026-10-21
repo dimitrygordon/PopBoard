@@ -165,6 +165,57 @@ body {
 .login-link { color: inherit; text-decoration: underline; cursor: pointer; }
 .login-note { text-align: center; margin-top: 12px; font-size: 0.8rem; opacity: 0.6; }
 
+/* Guest Study entry. Fixed under the login card; login-alive.css may
+   restyle it. Hidden once the sign-in form itself is dismissed. */
+a.study-pill {
+  position: fixed;
+  left: 50%;
+  bottom: max(20px, env(safe-area-inset-bottom, 0px));
+  z-index: 4;
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  height: 44px;
+  padding: 0 18px 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.62);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+  color: #24180f;
+  text-decoration: none;
+  font-family: "Fredoka", "Avenir Next Rounded", ui-rounded, system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: 0 8px 28px rgba(20, 12, 40, 0.12);
+}
+.study-pill-moon {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  view-transition-name: study-moon;
+}
+.study-pill-moon svg { width: 16px; height: 16px; display: block; }
+a.study-pill:hover,
+a.study-pill:focus-visible {
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(255, 255, 255, 0.55);
+  color: #24180f;
+}
+a.study-pill:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(36, 24, 15, 0.45), 0 8px 28px rgba(20, 12, 40, 0.12);
+}
+#login.hidden ~ a.study-pill,
+html.pb-restoring a.study-pill { display: none !important; }
+
 .secondary-btn {
   background: transparent !important; color: var(--text-secondary) !important;
   border-color: var(--border-color) !important;

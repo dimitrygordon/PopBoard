@@ -12,10 +12,15 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="pdf-export.css" />
   <link rel="preload" href="/fonts/fredoka-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="prefetch" href="/study" />
   <link rel="stylesheet" href="login-alive.css?v=20261021i" />
   <link rel="stylesheet" href="astro-mode.css?v=20261021i" />
   <link rel="stylesheet" href="ui-design.css?v=20261021i" />
   <style>
+    @view-transition { navigation: auto; }
+    @media (prefers-reduced-motion: reduce) {
+      @view-transition { navigation: none; }
+    }
     html.pb-restoring #login,
     html.pb-restoring #teacherLogin,
     html.pb-restoring #teacherSignup { display: none !important; }
@@ -52,6 +57,15 @@
     <a id="teacherLoginBtn" class="login-link la-pill" href="#" role="button">Teacher Login</a>
   </p>
 </div>
+
+<a class="study-pill" href="/study" aria-label="Explore the Study Lab, no account needed">
+  <span class="study-pill-moon" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/>
+    </svg>
+  </span>
+  Explore the Study Lab
+</a>
 
 <!-- Teacher Login: name or email + password -->
 <div id="teacherLogin" class="hidden">
@@ -375,6 +389,7 @@
 <script defer src="ui-toast.js?v=20261021i"></script>
 <script defer src="ui-polish.js?v=20261021i"></script>
 <script defer src="login-sky.js?v=20261021i"></script>
+<script type="module" src="study-portal.js?v=20261021j"></script>
 <script defer src="login-alive.js?v=20261021i"></script>
 <script defer src="astro-mode.js?v=20261021i"></script>
 </body>
