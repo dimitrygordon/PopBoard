@@ -1,11 +1,18 @@
-/* astro-study.js — Astronomy Mode for the Study pages. Reads the same saved
-   theme as the main app (localStorage theme=dark + astroMode=1) and, if on,
-   shows the live sky (login-sky.js) behind the page with glass panels. */
+/* astro-study.js — Weather / Astronomy sky modes for the Study pages. Reads the
+   same saved theme as the main app (theme=dark + skyMode=weather|astro; legacy
+   astroMode=1 → weather) and, if on, shows the sky (login-sky.js) behind the page. */
 (function () {
   "use strict";
-  var on = false; try { on = localStorage.getItem("theme") === "dark" && localStorage.getItem("astroMode") === "1"; } catch (e) {}
-  if (!on) return;
-  var root = document.documentElement; root.setAttribute("data-astro", "");
+  var mode = "off";
+  try {
+    mode = localStorage.getItem("skyMode") || "off";
+    if (mode === "off" && localStorage.getItem("astroMode") === "1") { mode = "weather"; localStorage.setItem("skyMode", mode); }
+    localStorage.removeItem("astroMode");
+    if (localStorage.getItem("theme") !== "dark") mode = "off";
+  } catch (e) {}
+  if (mode !== "weather" && mode !== "astro") return;
+  window.__laSkyMode = mode;
+  var root = document.documentElement; root.setAttribute("data-astro", ""); root.setAttribute("data-sky", mode);
   // solid dark backing for in-flow sim canvases (absolute overlays stay transparent so the canvas below shows through)
   function backCanvases() {
     if (document.getElementById("sandboxCanvas")) return; // full-screen sim: already opaque
@@ -17,7 +24,7 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", backCanvases); else backCanvases();
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (document.getElementById("sandboxCanvas") || /study-sandbox/.test(location.pathname)) return; // sky would be fully hidden behind the sandbox canvas
-  var s = document.createElement("script"); s.src = "/login-sky.js?v=20261021"; s.defer = true;
+  var s = document.createElement("script"); s.src = "/login-sky.js?v=20261021b"; s.defer = true;
   s.onload = function () {
     var last = performance.now();
     function loop(now) { // the sky's only rAF loop on this page; sims keep their own
