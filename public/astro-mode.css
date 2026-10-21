@@ -1,4 +1,4 @@
-/* astro-mode.css — Astronomy Mode surfaces (on top of dark-mode tokens) + theme toggle alignment. */
+/* astro-mode.css — sky-mode (Weather / Astronomy) surfaces on top of dark-mode tokens + theme toggle alignment. */
 
 /* Theme toggle: icon + label centred, consistent size in every mode */
 .theme-toggle-btn { display: inline-flex !important; align-items: center; justify-content: center; gap: 7px; line-height: 1; white-space: nowrap; min-width: 128px; }

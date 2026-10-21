@@ -1,4 +1,4 @@
-/* astro-study.css — Astronomy Mode for study / pendulum / machines pages. */
+/* astro-study.css — Weather / Astronomy sky modes for the study pages. */
 #la-sky { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100lvh; pointer-events: none; z-index: -1; display: none; transform: translateZ(0); -webkit-transform: translateZ(0); }
 html[data-astro] #la-sky { display: block; }
 html[data-astro] { background: #0b1024 !important; }

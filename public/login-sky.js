@@ -8,7 +8,9 @@
   if (window.__laSky) return;
   var doc = document, win = window, RAD = Math.PI / 180;
   var reduce = win.matchMedia && win.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var qs = new URLSearchParams(location.search), dbgSky = qs.get("sky"), dbgWx = qs.get("wx");
+  var qs = new URLSearchParams(location.search), dbgSky = qs.get("sky"), dbgWx = qs.get("wx"), dbgMode = qs.get("mode");
+  // "weather": real sun-based sky + live weather (login always uses this). "astro": always-night stars, no weather.
+  var skyMode = dbgMode === "astro" ? "astro" : (win.__laSkyMode === "astro" ? "astro" : "weather"), effMode = null;
   var loc = { lat: 38.3914, lon: -86.9311, src: "fallback" }; // Jasper, IN 47546
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
   function lerp(a, b, t) { return a + (b - a) * t; }
@@ -55,7 +57,7 @@
     Object.keys(CONST).forEach(function (k) { CONST[k].s.forEach(function (s) { s.push(r() * 6.28); }); }); })();
 
   /* ---------- weather ---------- */
-  var wx = { kind: dbgWx || "clear", cloud: 0, src: dbgWx ? "debug" : "default" };
+  var wx = { kind: dbgWx || "clear", real: dbgWx || "clear", cloud: 0, src: dbgWx ? "debug" : "default" };
   var WXCLOUD = { clear: 0, partly: .45, cloudy: .9, fog: .6, rain: .85, storm: 1, snow: .8 };
   function wmo(c) { if (c <= 1) return "clear"; if (c === 2) return "partly"; if (c === 3) return "cloudy"; if (c === 45 || c === 48) return "fog";
     if ((c >= 51 && c <= 67) || (c >= 80 && c <= 82)) return "rain"; if ((c >= 71 && c <= 77) || c === 85 || c === 86) return "snow"; if (c >= 95) return "storm"; return "clear"; }
@@ -64,7 +66,7 @@
     var u = "https://api.open-meteo.com/v1/forecast?latitude=" + loc.lat.toFixed(3) + "&longitude=" + loc.lon.toFixed(3) + "&current=weather_code,cloud_cover,is_day";
     var ctl = win.AbortController ? new AbortController() : null; if (ctl) setTimeout(function () { ctl.abort(); }, 6000);
     fetch(u, ctl ? { signal: ctl.signal } : {}).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
-      if (!j || !j.current) return; wx.kind = wmo(j.current.weather_code | 0); wx.src = "open-meteo"; setupWx(); paintStatic();
+      if (!j || !j.current) return; wx.real = wmo(j.current.weather_code | 0); wx.src = "open-meteo"; applyMode(true); paintStatic();
     }).catch(function () {});
   }
   function geo() {
@@ -78,6 +80,7 @@
   function update(force) {
     var now = Date.now(), sa = sunAlt(now), alt = sa[0], rising = sunAlt(now + 6e5)[0] > alt;
     if (dbgSky) { alt = { dawn: 1.5, day: 42, dusk: 1.5, night: -30 }[dbgSky]; rising = dbgSky === "dawn"; if (alt == null) alt = sa[0]; }
+    if (effMode === "astro") { alt = -30; } // always night, any time of day
     st.alt = alt; st.rising = rising; st.sunAz = dbgSky ? (rising ? -1.75 : 1.75) * (dbgSky === "day" ? .25 : 1) : sa[1];
     st.night = clamp((-alt - 4) / 10, 0, 1);                 // 0 above -4°, 1 below -14°
     st.twi = clamp(1 - Math.abs(alt - 1) / 9, 0, 1);         // peak near the horizon
@@ -108,13 +111,18 @@
   }
 
   /* ---------- canvas ---------- */
-  var cv, ctx, W, H, dpr, clouds = [], drops = [], flash = 0, bolt = null, nextBolt = 0, cloudLight, cloudDark;
+  var cv, ctx, W, H, dpr, clouds = [], drops = [], cloudLight, cloudDark;
   function cloudSprite(col) {
     var c = doc.createElement("canvas"); c.width = 360; c.height = 220; var g = c.getContext("2d");
     [[90, 120, 58], [150, 96, 72], [215, 108, 62], [268, 126, 46], [180, 134, 56], [120, 138, 46]].forEach(function (b) {
       var r = g.createRadialGradient(b[0], b[1], 0, b[0], b[1], b[2]); r.addColorStop(0, col); r.addColorStop(.6, col.replace(/[\d.]+\)$/, ".55)")); r.addColorStop(1, col.replace(/[\d.]+\)$/, "0)"));
       g.fillStyle = r; g.beginPath(); g.arc(b[0], b[1], b[2], 0, 6.283); g.fill(); });
     return c;
+  }
+  function wantMode() { var b = doc.body; return (b && (b.classList.contains("la-on") || b.classList.contains("la-sendoff"))) ? "weather" : skyMode; }
+  function applyMode(force) {
+    var m = wantMode(); if (!force && m === effMode) return;
+    effMode = m; wx.kind = m === "astro" ? "clear" : wx.real; setupWx(); update(true);
   }
   function setupWx() {
     var cov = WXCLOUD[wx.kind] || 0, n = Math.round(cov * 14), area = (win.innerWidth * win.innerHeight) / (1280 * 820);
@@ -245,14 +253,17 @@
     ctx.restore();
   }
   function drawWx(now, dt) {
-    var dark = st.night * .8 + (wx.kind === "storm" ? .5 : wx.kind === "rain" ? .3 : 0), sc = Math.max(1, W / 1280);
+    var sc = Math.max(1, W / 1280), cl = cloudLook(), lit = 0;
+    if (wx.kind === "storm") lit = stepLightning(now, dt);
     ptr.vx *= Math.pow(.02, dt); ptr.vy *= Math.pow(.02, dt);
     for (var i = 0; i < clouds.length; i++) { var c = clouds[i]; if (!reduce) { c.x += c.v * dt * (wx.kind === "storm" ? 2 : 1); if (c.x > 1.25) c.x = -.35; }
       var w = 360 * c.s * sc, h = 220 * c.s * sc;
       swoosh(c, c.x * W, c.y * H, w * .45, .55, 2.2, dt);
       var cx = c.x * W + c.ox - w / 2, cy = c.y * H + c.oy - h / 2;
-      ctx.globalAlpha = .85 * (1 - dark * .5); ctx.drawImage(cloudLight, cx, cy, w, h);
-      if (dark > .05) { ctx.globalAlpha = clamp(dark, 0, .9); ctx.drawImage(cloudDark, cx, cy, w, h); } }
+      var spr = tintSprite(cl);
+      ctx.globalAlpha = cl.a; ctx.drawImage(spr, cx, cy, w, h);
+      if (cl.rim > .02) { ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = cl.rim; ctx.drawImage(rimSprite(cl), cx, cy + h * .06, w, h); ctx.globalCompositeOperation = "source-over"; }
+      if (lit > .01) { ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = clamp(lit * (st.night > .5 ? .7 : .35), 0, .8); ctx.drawImage(litSprite(), cx, cy, w, h); ctx.globalCompositeOperation = "source-over"; } }
     ctx.globalAlpha = 1;
     if (wx.kind === "fog") { var fg = ctx.createLinearGradient(0, H * .3, 0, H); fg.addColorStop(0, "rgba(220,224,230,0)"); fg.addColorStop(1, css([220, 224, 230], .7 - st.night * .4)); ctx.fillStyle = fg; ctx.fillRect(0, 0, W, H);
       for (var f = 0; f < drops.length; f++) { var q = drops[f]; if (!reduce) { q.x += .006 * q.z * dt; if (q.x > 1.3) q.x = -.3; }
@@ -269,15 +280,73 @@
       for (var s = 0; s < drops.length; s++) { var q2 = drops[s]; if (!reduce) { q2.y += .06 * q2.z * dt; q2.ph += dt; if (q2.y > 1.02) { q2.y = -.02; q2.ox = q2.oy = 0; } }
         var nx = q2.x * W + Math.sin(q2.ph) * 12 * q2.z, ny = q2.y * H; swoosh(q2, nx, ny, 130, 1.1, .6, dt);
         ctx.beginPath(); ctx.arc(nx + q2.ox, ny + q2.oy, 1.2 + q2.z * 1.8, 0, 6.283); ctx.fill(); } }
-    if (wx.kind === "storm" && !reduce) {
-      if (now > nextBolt) { flash = 1; nextBolt = now + 2500 + Math.random() * 5000; var bx = W * (.15 + Math.random() * .7), by = 0, pts = [[bx, by]]; while (by < H * .6) { by += 20 + Math.random() * 30; bx += (Math.random() - .5) * 50; pts.push([bx, by]); } bolt = { pts: pts, t: now }; }
-      if (flash > 0) { ctx.fillStyle = "rgba(235,240,255," + (flash * .35).toFixed(3) + ")"; ctx.fillRect(0, 0, W, H); flash = Math.max(0, flash - dt * (flash > .5 ? 2.5 : 4)); if (flash < .55 && flash > .45 && Math.random() < .3) flash = .9; }
-      if (bolt && now - bolt.t < 180) { ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.lineWidth = 2; ctx.shadowColor = "#bcd"; ctx.shadowBlur = 14; ctx.beginPath(); bolt.pts.forEach(function (p, i) { if (i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); }); ctx.stroke(); ctx.shadowBlur = 0; }
+    if (wx.kind === "storm" && lit > .005) drawLightning(lit, now);
+  }
+  /* ---------- cloud light: tint by sun altitude ---------- */
+  // night: dark moonlit blue-grey, low contrast. twilight: warm rim from the horizon. day: white.
+  function cloudLook() {
+    var day = clamp((st.alt + 2) / 14, 0, 1), heavy = wx.kind === "storm" ? .55 : wx.kind === "rain" || wx.kind === "snow" ? .3 : 0;
+    var night = [62, 72, 96], dusk = [150, 120, 140], noon = [250, 252, 255], c;
+    c = day < .5 ? mixc(night, dusk, day * 2) : mixc(dusk, noon, (day - .5) * 2);
+    c = mixc(c, [c[0] * .55, c[1] * .58, c[2] * .66], heavy);
+    return { c: c, a: lerp(.62, .9, day) * (1 - st.night * .12), rim: st.twi * .55 * (1 - heavy * .6), key: (c[0] | 0) + "," + (c[1] | 0) + "," + (c[2] | 0) };
+  }
+  var tintCache = { key: "", cv: null }, rimCache = null, litCache = null;
+  function recolor(col) { var c = doc.createElement("canvas"); c.width = cloudLight.width; c.height = cloudLight.height; var g = c.getContext("2d");
+    g.drawImage(cloudLight, 0, 0); g.globalCompositeOperation = "source-atop"; g.fillStyle = col; g.fillRect(0, 0, c.width, c.height); return c; }
+  function tintSprite(cl) { if (tintCache.key !== cl.key) { tintCache = { key: cl.key, cv: recolor("rgb(" + cl.key + ")") }; } return tintCache.cv; }
+  function rimSprite() { if (!rimCache) { // warm underside: horizon colors, strongest at the bottom edge
+      var c = recolor("#ff9a6a"), g = c.getContext("2d"), lg = g.createLinearGradient(0, 0, 0, c.height);
+      lg.addColorStop(0, "rgba(0,0,0,1)"); lg.addColorStop(.55, "rgba(0,0,0,.6)"); lg.addColorStop(1, "rgba(0,0,0,0)");
+      g.globalCompositeOperation = "destination-out"; g.fillStyle = lg; g.fillRect(0, 0, c.width, c.height); rimCache = c; } return rimCache; }
+  function litSprite() { if (!litCache) litCache = recolor("#dfe6ff"); return litCache; }
+
+  /* ---------- lightning (photosensitivity-aware) ---------- */
+  // ≤ 1 strike per 3 s, each ~0.35 s, at most one soft re-flicker; none at all with reduced motion.
+  var strike = null, nextStrike = 0;
+  function stepLightning(now) {
+    if (reduce) return 0;
+    if (!nextStrike) nextStrike = now + 1200;
+    if (!strike && now > nextStrike) {
+      var ox = W * (.15 + Math.random() * .7), oy = H * (.08 + Math.random() * .18);
+      strike = { t: now, x: ox, y: oy, dbl: Math.random() < .45, bolt: Math.random() < .7 ? makeBolt(ox, oy) : null };
+      nextStrike = now + 3200 + Math.random() * 5500;
+    }
+    if (!strike) return 0;
+    var e = (now - strike.t) / 1000, v = 0;
+    v = e < .05 ? e / .05 : Math.exp(-(e - .05) * 11);                   // fast attack, quick decay
+    if (strike.dbl && e > .16) v = Math.max(v, .55 * Math.exp(-(e - .16) * 14) * (e > .16 && e < .2 ? (e - .16) / .04 : 1));
+    if (e > .6) { strike = null; return 0; }
+    return v;
+  }
+  function makeBolt(x, y) {
+    var main = [[x, y]], br = [], cx = x, cy = y, end = H * (.55 + Math.random() * .3);
+    while (cy < end) { cy += 14 + Math.random() * 26; cx += (Math.random() - .5) * 46; main.push([cx, cy]);
+      if (Math.random() < .18) { var b = [[cx, cy]], bx = cx, by = cy, dir = Math.random() < .5 ? -1 : 1; for (var k = 0; k < 4 + Math.random() * 5; k++) { by += 10 + Math.random() * 18; bx += dir * (8 + Math.random() * 22); b.push([bx, by]); } br.push(b); } }
+    return { main: main, br: br };
+  }
+  function drawLightning(v, now) {
+    var nightK = .45 + st.night * .55, S = strike;
+    // full-sky brightening
+    ctx.fillStyle = "rgba(205,215,255," + (v * .22 * nightK).toFixed(3) + ")"; ctx.fillRect(0, 0, W, H);
+    // dispersed bloom around the strike origin (lights clouds from within)
+    if (S) { ctx.globalCompositeOperation = "lighter";
+      var R = Math.max(W, H) * .55, g = ctx.createRadialGradient(S.x, S.y, 0, S.x, S.y, R);
+      g.addColorStop(0, "rgba(225,232,255," + (v * .55 * nightK).toFixed(3) + ")"); g.addColorStop(.25, "rgba(170,185,255," + (v * .22 * nightK).toFixed(3) + ")"); g.addColorStop(1, "rgba(150,165,255,0)");
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); ctx.globalCompositeOperation = "source-over";
+      if (S.bolt && now - S.t < 260) {
+        var a = clamp(1 - (now - S.t) / 260, 0, 1);
+        ctx.save(); ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.shadowColor = "rgba(190,205,255,.95)"; ctx.shadowBlur = 18;
+        function path(pts, w, al) { ctx.strokeStyle = "rgba(245,248,255," + al.toFixed(3) + ")"; ctx.lineWidth = w; ctx.beginPath(); pts.forEach(function (p, i) { if (i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); }); ctx.stroke(); }
+        path(S.bolt.main, 2.4, a); S.bolt.br.forEach(function (b) { path(b, 1.2, a * .7); });
+        ctx.restore();
+      }
     }
   }
   var lastUpd = 0;
   function frame(now, dt) {
     if (!cv) return;
+    applyMode(false);
     if (now - lastUpd > 30000) { update(); lastUpd = now; }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     dt = dt || 0; drawSky(now); drawStars(now, dt); drawMoon(); drawWx(now, dt);
@@ -287,10 +356,10 @@
     cv = doc.createElement("canvas"); cv.id = "la-sky"; cv.setAttribute("aria-hidden", "true");
     doc.body.insertBefore(cv, doc.body.firstChild); ctx = cv.getContext("2d"); if (!ctx) { cv.remove(); cv = null; return; }
     doc.documentElement.classList.add("la-sky-on");
-    cloudLight = cloudSprite("rgba(255,255,255,.95)"); cloudDark = cloudSprite("rgba(70,76,92,.95)");
-    setupWx(); loadCat(); update(true); lastUpd = performance.now(); resize(); win.addEventListener("resize", resize);
+    cloudLight = cloudSprite("rgba(255,255,255,.95)");
+    applyMode(true); loadCat(); lastUpd = performance.now(); resize(); win.addEventListener("resize", resize);
     setTimeout(function () { geo(); fetchWx(); }, 400); // never block first paint on permission/network
   }
-  win.__laSky = { show: function () { if (cv) { W = 0; resize(); } }, frame: frame, update: update, state: st, weather: wx, loc: function () { return loc; }, moonPhase: moonPhase, sunTimes: sunTimes };
+  win.__laSky = { setMode: function (m) { skyMode = m === "astro" ? "astro" : "weather"; applyMode(true); if (cv) frame(performance.now(), 0); }, mode: function () { return effMode; }, show: function () { if (cv) { W = 0; resize(); } }, frame: frame, update: update, state: st, weather: wx, loc: function () { return loc; }, moonPhase: moonPhase, sunTimes: sunTimes };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", init); else init();
 })();
