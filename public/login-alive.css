@@ -171,3 +171,13 @@ body.la-sendoff #la-bg { opacity: 1; }
   .la-card::after { background: linear-gradient(160deg, rgba(255,255,255,.7), rgba(255,255,255,.12) 40%, rgba(255, 196, 92, .45)); }
   .la-ghost { display: none; }
 }
+
+/* real sky canvas (login-sky.js) sits under the kernel canvas */
+#la-sky { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; opacity: 0; transition: opacity .8s ease; }
+body.la-on #la-sky, body.la-sendoff #la-sky { opacity: 1; }
+#la-bg { z-index: 1; }
+.la-sky-on body.la-on::before { display: none; }
+/* readable over every sky: slightly denser glass on dark or busy skies */
+[data-la-wx="storm"] body.la-on .la-card, [data-la-wx="rain"] body.la-on .la-card { --la-card-bg: rgba(255, 255, 255, .78); }
+[data-theme="dark"][data-la-wx] body.la-on .la-card { --la-card-bg: rgba(22, 24, 40, .66); }
+@media (prefers-reduced-motion: reduce) { #la-sky { transition: none; } }

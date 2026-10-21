@@ -199,6 +199,7 @@
     var d = new Date(); return d.getHours() + d.getMinutes() / 60;
   }
   function applyMood() {
+    if (win.__laSky) { win.__laSky.update(); css = null; return; } // real sky system owns the palette
     var h = moodHour(), i = 0; while (i < MOOD.length - 2 && MOOD[i + 1][0] <= h) i++;
     var A = MOOD[i], B = MOOD[i + 1], t = (h - A[0]) / (B[0] - A[0]);
     t = t * t * (3 - 2 * t); // smoothstep between stops
@@ -371,6 +372,7 @@
     var ap = activePanel();
     if (ap) { var br = ap.getBoundingClientRect(); if (br.width) lastRect = { el: ap, r: br }; }
     typing.energy *= Math.pow(0.25, dt);
+    if ((ap || now < sendoffUntil) && win.__laSky) win.__laSky.frame(now, dt);
     if (now < sendoffUntil) { drawBg(now, dt); stepBurst(now, dt); }
     else if (ap) {
       drawBg(now, dt);
