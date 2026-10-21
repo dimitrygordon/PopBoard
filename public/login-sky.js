@@ -246,21 +246,23 @@
     var k = dt ? 1 - Math.exp(-dt * 2.5) : 1;
     MS.cov += ((1 - free) - MS.cov) * k; MS.near += (near - MS.near) * k;
   }
+  // radial glow whose alpha follows a gaussian (rescaled to hit exactly 0 at R); drawn with fillRect, never clipped
+  function softGlow(x, y, R, c, peak, k) { if (peak < .002) return; var g = ctx.createRadialGradient(x, y, 0, x, y, R), e = Math.exp(-k * k);
+    for (var i = 0; i <= 12; i++) { var t = i / 12, a = i === 12 ? 0 : peak * Math.max(0, (Math.exp(-k * k * t * t) - e) / (1 - e)); g.addColorStop(t, "rgba(" + c[0] + "," + c[1] + "," + c[2] + "," + a.toFixed(4) + ")"); }
+    ctx.fillStyle = g; ctx.fillRect(x - R, y - R, R * 2, R * 2); }
+  function softRing(x, y, rc, w, a) { if (a < .002) return; var R = rc + w * 1.5, g = ctx.createRadialGradient(x, y, 0, x, y, R), cols = [[255, 200, 230], [200, 245, 230], [185, 200, 255]];
+    for (var i = 0; i <= 16; i++) { var t = i / 16, d = (t * R - rc) / w, q = Math.exp(-d * d * 2.2), cc = cols[Math.min(2, Math.max(0, Math.round(1 + d)))], al = (i === 0 || i === 16) ? 0 : a * q;
+      g.addColorStop(t, "rgba(" + cc[0] + "," + cc[1] + "," + cc[2] + "," + al.toFixed(4) + ")"); }
+    ctx.fillStyle = g; ctx.fillRect(x - R, y - R, R * 2, R * 2); }
   function drawMoonCloudLight() { // after clouds: corona, glow patch, silver lining
     if (!MS.on || MS.vis < .03) return;
     var x = MS.x, y = MS.y, r = MS.r, cov = MS.cov, thin = clamp(Math.max(MS.near * (1 - cov), 4 * cov * (1 - cov)), 0, 1), v = MS.vis;
     ctx.save(); ctx.globalCompositeOperation = "lighter";
-    // diffuse corona through thin cloud + dim glow patch when fully behind
-    var g = ctx.createRadialGradient(x, y, 0, x, y, r * 9);
-    g.addColorStop(0, "rgba(235,238,255," + (v * (.10 * thin + .26 * cov)).toFixed(3) + ")");
-    g.addColorStop(.18, "rgba(210,220,250," + (v * (.08 * thin + .07 * cov)).toFixed(3) + ")");
-    g.addColorStop(1, "rgba(200,210,245,0)"); ctx.fillStyle = g; ctx.fillRect(x - r * 9, y - r * 9, r * 18, r * 18);
-    if (cov > .02) { var gp = ctx.createRadialGradient(x, y, 0, x, y, r * 3.2); gp.addColorStop(0, "rgba(240,240,255," + (v * cov * .22).toFixed(3) + ")"); gp.addColorStop(1, "rgba(220,228,255,0)");
-      ctx.fillStyle = gp; ctx.fillRect(x - r * 3.2, y - r * 3.2, r * 6.4, r * 6.4); } // dim glow patch where the moon hides
-    // faint iridescent ring (cloud iridescence) only while the edge is thin
-    if (thin > .05) { var ir = ctx.createRadialGradient(x, y, r * 1.6, x, y, r * 3.2), a = v * thin * .07;
-      ir.addColorStop(0, "rgba(255,190,220,0)"); ir.addColorStop(.35, "rgba(255,200,230," + a.toFixed(3) + ")"); ir.addColorStop(.6, "rgba(190,255,230," + (a * .8).toFixed(3) + ")");
-      ir.addColorStop(.85, "rgba(180,200,255," + (a * .7).toFixed(3) + ")"); ir.addColorStop(1, "rgba(180,200,255,0)"); ctx.fillStyle = ir; ctx.fillRect(x - r * 4, y - r * 4, r * 8, r * 8); }
+    // diffuse corona + glow patch: gaussian falloff to exactly 0, no clip
+    softGlow(x, y, r * 9, [228, 234, 255], v * (.05 * thin + .11 * cov), 2.6);
+    if (cov > .02) softGlow(x, y, r * 3.4, [238, 240, 255], v * cov * .10, 2.4); // dim glow patch where the moon hides
+    // faint feathered iridescent ring only while the edge is thin
+    if (thin > .05) softRing(x, y, r * 2.4, r * .8, v * thin * .03);
     ctx.restore();
     // silver lining: cloud rims near the moon, lit from behind
     var amt = v * clamp(MS.near * .9 + thin * .5, 0, 1); if (amt < .02) return;
@@ -273,7 +275,7 @@
       sg.globalCompositeOperation = "destination-out"; sg.drawImage(silver, ox + B.w * .07, oy + B.h * .09, B.w * .86, B.h * .82); } // keep only the rim band
     sg.globalCompositeOperation = "destination-in"; var m = sg.createRadialGradient(R, R, r * .8, R, R, R);
     m.addColorStop(0, "rgba(0,0,0,1)"); m.addColorStop(.35, "rgba(0,0,0,.6)"); m.addColorStop(1, "rgba(0,0,0,0)"); sg.fillStyle = m; sg.fillRect(0, 0, S.width, S.height);
-    ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = clamp(amt * .85, 0, .85); ctx.drawImage(S, x - R, y - R); ctx.restore();
+    ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = clamp(amt * .45, 0, .45); ctx.drawImage(S, x - R, y - R); ctx.restore();
   }
   var silverCv = null;
   function silverCanvas(sz) { sz = Math.ceil(sz); if (!silverCv || silverCv.width !== sz) { silverCv = doc.createElement("canvas"); silverCv.width = silverCv.height = sz; } return silverCv; }
@@ -285,8 +287,7 @@
     var r = 22, ph = moonPhase(Date.now());
     MS.x = x; MS.y = y; MS.r = r; MS.vis = vis; MS.on = true; moonCover(dt);
     var disc = 1 - smooth(.5, .93, MS.cov); // fades out behind thick cloud
-    var halo = ctx.createRadialGradient(x, y, r * .8, x, y, r * 6); halo.addColorStop(0, "rgba(255,246,220," + (.28 * vis * (1 - MS.cov * .6) * (.3 + Math.abs(Math.cos(ph * 6.283 / 2)) * .7)).toFixed(3) + ")"); halo.addColorStop(1, "rgba(255,246,220,0)");
-    ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(x, y, r * 6, 0, 6.283); ctx.fill();
+    softGlow(x, y, r * 6, [255, 246, 220], .13 * vis * (1 - MS.cov * .6) * (.3 + Math.abs(Math.cos(ph * 6.283 / 2)) * .7), 2.4);
     if (disc < .01) return;
     ctx.save(); ctx.globalAlpha = vis * disc;
     ctx.fillStyle = "rgba(40,44,70,.85)"; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.fill();            // earthshine side
