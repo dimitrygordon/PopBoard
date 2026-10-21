@@ -557,7 +557,7 @@ function animateUpvoteCount(el, from, to) {
 function setTheme(theme) {
   htmlElement.setAttribute("data-theme", theme);
   localStorage.setItem("theme", theme);
-  var text = theme === "dark" ? iconLabel("sun", "Light Mode") : iconLabel("moon", "Dark Mode");
+  var text = theme === "dark" ? iconLabel("moon", "Dark") : iconLabel("sun", "Light"); // shows the CURRENT mode; astro-mode.js relabels for Astronomy
   if (themeToggle) { themeToggle.innerHTML = text; }
   if (themeTogglePortal) { themeTogglePortal.innerHTML = text; }
   if (themeToggleStudents) { themeToggleStudents.innerHTML = text; }
