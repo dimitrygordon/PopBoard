@@ -1,0 +1,101 @@
+/* ui-design.css — PopBoard UI refresh (fixes, motion, toasts, polish).
+   Loaded after style.css / astro-mode.css. Every animation here is gated by
+   prefers-reduced-motion at the bottom of the file. */
+
+/* ── Header: logo · board title · account, with the board nav as one
+   segmented toolbar underneath (no more ragged wrapping) ─────────────── */
+header { display: flex; align-items: center; flex-wrap: nowrap; gap: 16px; padding: 16px 0 24px; }
+header #logo { flex: none; }
+.header-right { flex-direction: row !important; flex-wrap: wrap; align-items: center !important; justify-content: flex-end; gap: 8px !important; margin-left: auto; }
+.header-right button { white-space: nowrap; }
+#app > header { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "logo title account" "nav nav nav"; align-items: center; column-gap: 16px; row-gap: 16px; }
+#app > header #logo { grid-area: logo; }
+#app > header .header-right { display: contents; }
+#app > header .header-bottom-row { grid-area: account; display: flex; gap: 8px; flex-wrap: nowrap; }
+#app > header .header-top-row { grid-area: nav; justify-self: center; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; padding: 4px; border-radius: 999px;
+  background: var(--card-bg-translucent); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); }
+#app > header .header-top-row:not(:has(> button:not(.hidden))) { display: none; }
+#app > header .header-top-row > button { border: 0 !important; background: transparent; padding: 8px 16px; font-size: 0.875rem; }
+#app > header .header-top-row > button:hover { background: var(--button-hover-bg); }
+.board-title-badge {
+  grid-area: title; min-width: 0; margin: 0; text-align: left;
+  font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-color);
+}
+.board-title-badge.hidden { display: block !important; visibility: hidden; }
+@media (max-width: 560px) {
+  #app > header { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "logo account" "title title" "nav nav"; row-gap: 8px; }
+  #app > header .header-bottom-row { justify-self: end; }
+}
+
+/* ── Sky modes: header fade spans the whole viewport, follows the sky ───── */
+html[data-astro] body { overflow-x: clip; }
+html[data-astro] header::before {
+  left: 50% !important; right: auto !important; width: 100vw; transform: translateX(-50%);
+  top: -40px !important; bottom: -24px !important;
+  background: linear-gradient(180deg, rgba(6, 9, 24, .42) 0%, rgba(6, 9, 24, .18) 55%, rgba(6, 9, 24, 0) 100%) !important;
+  transition: opacity .8s ease;
+}
+html[data-astro][data-la-mood="day"] header::before { opacity: 0; }
+
+/* Sky-tinted glass: by day the cards take a blue tint from the sky instead
+   of reading as black boxes; at night they stay deep navy. White text stays
+   ≥ 4.5:1 on both. */
+html[data-astro][data-la-mood="day"][data-theme="dark"] {
+  --bg-secondary: rgba(22, 46, 92, .80);
+  --card-bg: rgba(24, 50, 98, .84);
+  --card-bg-translucent: rgba(22, 46, 92, .78);
+  --card-gradient-start: rgba(28, 56, 108, .82);
+  --card-gradient-end: rgba(20, 44, 90, .84);
+  --text-secondary: #d6e2f5;
+  --border-color: rgba(220, 235, 255, .26);
+}
+/* Text sitting straight on the sky gets a soft legibility backing */
+html[data-astro] .portal-container > h2,
+html[data-astro] .subtle-toggle-btn,
+html[data-astro] .state-pill-meta,
+html[data-astro] .board-title-badge { text-shadow: 0 1px 12px rgba(6, 12, 32, .55), 0 0 2px rgba(6, 12, 32, .5); }
+html[data-astro] .subtle-toggle-btn { background: rgba(12, 20, 44, .42) !important; color: #eef2ff !important; border-radius: 999px; padding: 6px 12px; }
+html[data-astro] .board-title-badge { color: #fff; }
+
+/* ── Leaderboard: no stray "⋮" / empty pill when nobody has scored ─────── */
+.leaderboard-card.lb-solo .lb-solo-label { margin: 0 0 8px; font-size: 0.85rem; color: var(--text-secondary); text-align: center; }
+.leaderboard-card.lb-solo .lb-bar-track { background: var(--border-color); border-radius: 999px; }
+.lb-personal-row .lb-bar-track { box-shadow: inset 0 0 0 1px var(--border-color); }
+
+/* ── Poll carousel: nothing to page through → no arrows, one toggle ───── */
+#pollSection.poll-section-empty .poll-carousel-wrapper,
+#pollSection.poll-section-empty .poll-collapse-row { display: none !important; }
+#pollCollapseBottomRow { display: none !important; } /* the top toggle is enough */
+
+/* ── Identity card: emoji button + name field as one balanced row ───────── */
+.lb-entry-box { padding: 16px 24px; }
+.lb-entry-box-title { font-weight: 600; color: var(--text-color) !important; font-size: 0.95rem !important; }
+.lb-entry-box .leaderboard-identity-group { gap: 8px; margin: 0 auto; }
+#lbEntryEmojiCircle, #studentEditEmojiCircle, #emojiCircle { width: 48px !important; height: 48px !important; transition: transform .15s ease, border-color .15s ease; }
+#lbEntryEmojiCircle:hover, #studentEditEmojiCircle:hover, #emojiCircle:hover { border-color: var(--accent) !important; transform: scale(1.05); }
+#lbEntryEmojiDisplay, #studentEditEmojiDisplay, #emojiDisplay { max-width: none !important; display: flex; flex-direction: column; align-items: center; line-height: 1 !important; }
+.emoji-placeholder { font-size: 1.3rem; line-height: 1; color: var(--text-secondary); }
+.emoji-placeholder-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+#lbEntryNicknameContainer { height: 48px !important; min-width: 220px; }
+#lbEntryNicknameContainer input { height: 48px !important; line-height: 48px !important; text-align: left !important; }
+
+/* ── Engagement panel ─────────────────────────────────────────────────── */
+.daily-seat-map-widget.is-empty #dailySeatMapCanvas { min-height: 0; border-style: dashed; }
+.daily-seat-map-widget.is-empty .confusion-timeline-empty { padding: 16px 8px !important; }
+.daily-metrics-text { font-size: 0.875rem !important; }
+.class-confusion-timeline { gap: 3px; }
+.class-confusion-timeline-label { width: 120px !important; height: 14px !important; line-height: 14px !important; font-size: 0.75rem !important; }
+.class-confusion-timeline-row { height: 10px !important; }
+.class-confusion-timeline-emoji { font-size: 11px !important; line-height: 14px !important; }
+
+/* ── Seating map hint ─────────────────────────────────────────────────── */
+.seat-hint { text-align: center; margin: -4px auto 16px; max-width: 520px; font-size: 0.875rem; color: var(--text-secondary); }
+html[data-astro] #app > header .header-top-row { background: rgba(14, 20, 44, .5); border-color: rgba(190, 205, 255, .22); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+html[data-astro] #app > header .header-top-row > button { background: transparent !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+html[data-astro] #app > header .header-top-row > button:hover { background: rgba(255, 255, 255, .10) !important; }
+@media (max-width: 560px) {
+  #app > header .header-top-row { flex-wrap: nowrap; overflow-x: auto; justify-self: stretch; justify-content: flex-start; border-radius: 20px; scrollbar-width: none; }
+  #app > header .header-top-row > button { padding: 8px 12px; }
+}
+.daily-engagement-big { font-size: clamp(2rem, 7vw, 3rem) !important; }

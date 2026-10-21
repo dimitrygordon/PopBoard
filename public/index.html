@@ -12,8 +12,9 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="pdf-export.css" />
   <link rel="preload" href="/fonts/fredoka-latin.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="login-alive.css?v=20261021d" />
-  <link rel="stylesheet" href="astro-mode.css?v=20261021d" />
+  <link rel="stylesheet" href="login-alive.css?v=20261021f" />
+  <link rel="stylesheet" href="astro-mode.css?v=20261021f" />
+  <link rel="stylesheet" href="ui-design.css?v=20261021f" />
   <style>
     html.pb-restoring #login,
     html.pb-restoring #teacherLogin,
@@ -139,7 +140,7 @@
   <input id="studentEditNameInput" placeholder="Student name" />
   <div class="leaderboard-identity-group">
     <div id="studentEditEmojiCircle" title="Click to choose an emoji">
-      <span id="studentEditEmojiDisplay">Choose Emoji</span>
+      <span id="studentEditEmojiDisplay"><span class="emoji-placeholder" aria-hidden="true">☺︎</span><span class="emoji-placeholder-label">Emoji</span></span>
     </div>
     <div class="student-edit-nickname-wrap">
       <input id="studentEditNicknameInput" maxlength="20" placeholder="Leaderboard nickname" />
@@ -170,6 +171,7 @@
       <button id="addSeatBtn" class="teacher-control">+ Add Seat</button>
       <button id="copyLayoutBtn" class="teacher-control">+ Copy Layout From...</button>
     </div>
+    <p class="seat-hint" id="seatHint">Add seats, drag them into place, then click a seat to assign a student.</p>
     <div id="seatCanvas"></div>
     <div id="unassignedStudentsList"></div>
   </div>
@@ -198,6 +200,7 @@
     <div id="logo">
       <img src="/popboard-logo.png" alt="PopBoard Logo" id="logo-img" loading="lazy" />
     </div>
+    <h1 id="boardTitleBadge" class="board-title-badge hidden" aria-live="polite"></h1>
     <div class="header-right">
       <div class="header-top-row">
         <button id="backToPortalBtn" class="hidden">Back to Boards</button>
@@ -255,7 +258,7 @@
       <p class="lb-entry-box-title">Set up your leaderboard identity</p>
       <div class="leaderboard-identity-group">
         <div id="lbEntryEmojiCircle" title="Click to choose your emoji">
-          <span id="lbEntryEmojiDisplay">Choose Emoji</span>
+          <span id="lbEntryEmojiDisplay"><span class="emoji-placeholder" aria-hidden="true">☺︎</span><span class="emoji-placeholder-label">Emoji</span></span>
         </div>
         <div id="lbEntryNicknameContainer"></div>
       </div>
@@ -314,7 +317,7 @@
 
   <!-- New Post Section (sticky bottom) -->
   <section id="newPost" class="comment-collapsed glass-specular">
-    <textarea id="postInput" placeholder="Write a comment..."></textarea>
+    <textarea id="postInput" placeholder="Ask a question or share a thought…"></textarea>
     <div class="post-options-row">
       <div class="post-options-left">
         <input type="checkbox" id="anonymousToggle" />
@@ -359,7 +362,7 @@
 <div id="identityPopup" class="hidden identity-popup glass-specular">
   <div class="leaderboard-identity-group">
     <div id="emojiCircle" title="Click to choose your emoji">
-      <span id="emojiDisplay">Choose Emoji</span>
+      <span id="emojiDisplay"><span class="emoji-placeholder" aria-hidden="true">☺︎</span><span class="emoji-placeholder-label">Emoji</span></span>
     </div>
     <div id="nicknameInputContainer"></div>
   </div>
@@ -368,9 +371,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/compromise@14/builds/compromise.min.js"></script>
 <script type="module" src="pdf-export.js"></script>
-<script type="module" src="app.js?v=20261021e"></script>
-<script defer src="login-sky.js?v=20261021d"></script>
-<script defer src="login-alive.js?v=20261021d"></script>
-<script defer src="astro-mode.js?v=20261021d"></script>
+<script type="module" src="app.js?v=20261021f"></script>
+<script defer src="login-sky.js?v=20261021f"></script>
+<script defer src="login-alive.js?v=20261021f"></script>
+<script defer src="astro-mode.js?v=20261021f"></script>
 </body>
 </html>

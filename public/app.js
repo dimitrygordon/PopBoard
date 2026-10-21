@@ -14,7 +14,7 @@ import {
 import {
   BOARD_RETURN_STORAGE_KEY, buildReturnState, serializeReturnState, chooseReturnTarget,
   returnStateFromSearch, studyOpenHref, searchWithoutReturn, shouldUseEmulators
-} from "./board-return.js?v=20261021e";
+} from "./board-return.js?v=20261021f";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClkHjUnQ96VNRj1FxyY-ca-AcDWYoX_m8",
@@ -1856,6 +1856,8 @@ function listenBoardSettings() {
   unsubBoardSettings = onSnapshot(doc(db, "boards", currentBoardId), function(d) {
     if (!d.exists()) { return; }
     var data = d.data();
+    var titleEl = document.getElementById("boardTitleBadge");
+    if (titleEl) { titleEl.textContent = data.name || ""; titleEl.classList.toggle("hidden", !data.name); }
     leaderboardVisible = data.leaderboardVisible !== false;
     applyLeaderboardVisibility();
     classSessionActive = data.classSessionActive === true;
@@ -2182,7 +2184,16 @@ function renderLeaderboardUI(topRows, personalRow) {
     buildRow(topRows[i], i * ROW_HEIGHT, i, false);
   }
 
-  if (personalRow) {
+  if (personalRow && topRows.length === 0) {
+    // Nobody has scored yet: no "⋮" gap marker, just a labelled "your score" row.
+    card.classList.add("lb-solo");
+    var soloLabel = document.createElement("p");
+    soloLabel.className = "lb-solo-label";
+    soloLabel.textContent = "No scores yet. Answer polls to earn points!";
+    card.appendChild(soloLabel);
+    rowContainer.style.height = ROW_HEIGHT + "px";
+    buildRow(personalRow, 0, -1, true);
+  } else if (personalRow) {
     var dividerTop = topRows.length * ROW_HEIGHT;
     var divider = document.createElement("div");
     divider.className = "lb-divider";
@@ -2415,7 +2426,7 @@ function renderEmojiCircle(displayElId) {
     span.textContent = studentEmoji;
     emojiDisplayEl.appendChild(span);
   } else {
-    emojiDisplayEl.textContent = "Choose Emoji";
+    emojiDisplayEl.innerHTML = '<span class="emoji-placeholder" aria-hidden="true">☺︎</span><span class="emoji-placeholder-label">Emoji</span>';
   }
 }
 
@@ -2711,7 +2722,7 @@ function openStudentEditPopup(studentId, studentData) {
       span.textContent = editEmoji;
       studentEditEmojiDisplay.appendChild(span);
     } else {
-      studentEditEmojiDisplay.textContent = "Choose Emoji";
+      studentEditEmojiDisplay.innerHTML = '<span class="emoji-placeholder" aria-hidden="true">☺︎</span><span class="emoji-placeholder-label">Emoji</span>';
     }
   }
   renderEditEmojiDisplay();
@@ -4928,6 +4939,7 @@ function renderClassConfusionTimelineRows() {
 function renderDashboardSeatMap() {
   if (!dailySeatMapCanvasEl) { return; }
   dailySeatMapCanvasEl.innerHTML = "";
+  if (dailySeatMapCanvasEl.parentElement) { dailySeatMapCanvasEl.parentElement.classList.remove("is-empty"); }
   if (dashSeatSeatsCache.length === 0) {
     var empty = document.createElement("div");
     empty.className = "confusion-timeline-empty";
@@ -4935,6 +4947,7 @@ function renderDashboardSeatMap() {
     empty.style.padding = "40px 8px";
     empty.textContent = "No seats configured yet — set them up from Seats";
     dailySeatMapCanvasEl.appendChild(empty);
+    if (dailySeatMapCanvasEl.parentElement) { dailySeatMapCanvasEl.parentElement.classList.add("is-empty"); }
     return;
   }
   dashSeatSeatsCache.forEach(function(seat) {
@@ -5863,6 +5876,7 @@ async function loadPolls() {
         return !p.visible && hasInteraction;
       });
 
+      pollSection.classList.toggle("poll-section-empty", activePollDocs.length === 0);
       if (isTeacher) {
         var topRow = document.createElement("div");
         topRow.className = "poll-collapse-row";
