@@ -285,6 +285,6 @@
     setupWx(); loadCat(); update(true); lastUpd = performance.now(); resize(); win.addEventListener("resize", resize);
     setTimeout(function () { geo(); fetchWx(); }, 400); // never block first paint on permission/network
   }
-  win.__laSky = { frame: frame, update: update, state: st, weather: wx, loc: function () { return loc; }, moonPhase: moonPhase, sunTimes: sunTimes };
+  win.__laSky = { show: function () { if (cv) { resize(); } }, frame: frame, update: update, state: st, weather: wx, loc: function () { return loc; }, moonPhase: moonPhase, sunTimes: sunTimes };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", init); else init();
 })();

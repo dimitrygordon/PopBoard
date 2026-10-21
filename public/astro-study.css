@@ -1,0 +1,12 @@
+/* astro-study.css — Astronomy Mode for study / pendulum / machines pages. */
+#la-sky { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; display: none; }
+html[data-astro] #la-sky { display: block; }
+html[data-astro] { background: #0b1024 !important; }
+html[data-astro] body { background: transparent !important; background-image: none !important; }
+html[data-astro] {
+  --panel: rgba(18, 22, 40, .84);
+  --panel-2: rgba(24, 29, 50, .86);
+  --panel-3: rgba(32, 38, 62, .88);
+}
+/* simulation canvases keep a solid dark backing so plots stay readable */
+html[data-astro] canvas:not(#la-sky) { background-color: #0f1318; }

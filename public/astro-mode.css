@@ -1,14 +1,19 @@
-/* astro-mode.css — Astronomy Mode surfaces (on top of dark-mode tokens). */
-#la-sky { z-index: -1; }                       /* always behind in-flow content; never interactive */
-html[data-astro] #la-sky { opacity: 1 !important; pointer-events: none !important; }
+/* astro-mode.css — Astronomy Mode surfaces (on top of dark-mode tokens) + theme toggle alignment. */
+
+/* Theme toggle: icon + label centred, consistent size in every mode */
+.theme-toggle-btn { display: inline-flex !important; align-items: center; justify-content: center; gap: 7px; line-height: 1; white-space: nowrap; min-width: 128px; }
+.theme-toggle-btn .icon-svg { width: 16px; height: 16px; margin: 0 !important; flex: none; display: block; }
+
+/* Sky canvas: only rendered while it's actually in use (login view, send-off, astro). */
+html[data-astro] #la-sky { display: block !important; opacity: 1 !important; }
 html[data-astro] { background: #0b1024; }
 html[data-astro][data-theme="dark"] {
   --bg-color: transparent;
   --bg-secondary: rgba(16, 20, 40, .74);
   --card-bg: rgba(20, 24, 46, .80);
-  --card-bg-translucent: rgba(18, 22, 42, .70);
-  --card-gradient-start: rgba(22, 26, 50, .78);
-  --card-gradient-end: rgba(16, 20, 40, .78);
+  --card-bg-translucent: rgba(18, 22, 42, .72);
+  --card-gradient-start: rgba(22, 26, 50, .80);
+  --card-gradient-end: rgba(16, 20, 40, .80);
   --input-bg: rgba(255, 255, 255, .08);
   --text-secondary: #c3c8da;                   /* ≥ 4.5:1 on the glass panels */
   --border-color: rgba(190, 205, 255, .16);
@@ -16,8 +21,20 @@ html[data-astro][data-theme="dark"] {
   --glass-blur: 22px;
 }
 html[data-astro] body { background: transparent !important; }
-html[data-astro] #boardsPortal > *, html[data-astro] #studentsPortal > *, html[data-astro] #seatingMap > *,
-html[data-astro] .post, html[data-astro] .reply, html[data-astro] [class*="popup"], html[data-astro] .state-pill-prompt {
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%); backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+
+/* Frosted glass only on real, rounded UI surfaces */
+html[data-astro] .board-card, html[data-astro] .post, html[data-astro] .teacher-card,
+html[data-astro] .create-board-section, html[data-astro] [class*="popup"]:not(.hidden), html[data-astro] .state-pill-prompt {
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(150%); backdrop-filter: blur(var(--glass-blur)) saturate(150%);
 }
-.astro-ic { vertical-align: -0.15em; }
+
+/* Header: no box — a soft top fade so the logo/buttons read over the sky */
+html[data-astro] header { background: transparent !important; box-shadow: none !important; border: 0 !important; position: relative; }
+html[data-astro] header::before {
+  content: ""; position: absolute; left: -20px; right: -20px; top: -20px; bottom: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(6, 9, 24, .55), rgba(6, 9, 24, 0));
+}
+html[data-astro] .header-right button {
+  background: rgba(20, 24, 46, .55) !important; border-color: rgba(190, 205, 255, .22) !important;
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
