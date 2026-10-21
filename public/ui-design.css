@@ -65,6 +65,7 @@ html[data-astro] .board-title-badge { color: #fff; }
 
 /* ── Poll carousel: nothing to page through → no arrows, one toggle ───── */
 #pollSection.poll-section-empty .poll-carousel-wrapper,
+#pollSection.poll-view-empty .poll-carousel-wrapper,
 #pollSection.poll-section-empty .poll-collapse-row { display: none !important; }
 #pollCollapseBottomRow { display: none !important; } /* the top toggle is enough */
 
@@ -224,3 +225,69 @@ button.is-busy::after { content: ""; position: absolute; left: 50%; top: 50%; wi
   .seat.seat-dragging { transform: none; }
   .lb-row { transition: none !important; }
 }
+
+/* ══ Type scale & 8px rhythm ════════════════════════════════════════════
+   12 · 14 · 16 · 20 · 24 · 32 (rem: .75 .875 1 1.25 1.5 2); spacing in 8s. */
+:root { --fs-xs: .75rem; --fs-sm: .875rem; --fs-md: 1rem; --fs-lg: 1.25rem; --fs-xl: 1.5rem; --fs-2xl: 2rem; --sp-1: 8px; --sp-2: 16px; --sp-3: 24px; --sp-4: 32px; }
+.portal-container h2 { font-size: var(--fs-2xl); margin: 0 0 var(--sp-3); }
+.post, .poll, .board-card, .teacher-card, .create-board-section, .leaderboard-card, .daily-dashboard-card { padding: var(--sp-3) !important; }
+.post { font-size: var(--fs-md); line-height: 1.5; }
+.post > strong:first-child { font-size: var(--fs-sm); letter-spacing: .01em; }
+#boardsList, #studentsList { display: flex; flex-direction: column; gap: var(--sp-2); }
+#boardsList > *, #studentsList > * { margin-bottom: 0 !important; }
+.board-card h3, .board-card .board-name { font-size: var(--fs-lg); }
+.state-pill-meta, .subtle-toggle-btn { font-size: var(--fs-xs) !important; }
+
+/* ══ Button system: one size scale, consistent hover / press / focus ═════ */
+button { transition: transform .12s ease, background-color .15s ease, border-color .15s ease, box-shadow .15s ease, color .15s ease, opacity .15s ease; }
+button:focus-visible, [role="button"]:focus-visible, .board-card:focus-visible { outline: 3px solid rgba(10, 132, 255, .6); outline-offset: 2px; }
+button:active { transform: scale(.97); }
+@media (hover: hover) and (pointer: fine) { button:hover { box-shadow: 0 4px 14px rgba(0, 0, 0, .10); } }
+.header-right button, .create-board-section button, #addStudentBtn { padding: 8px 20px; font-size: var(--fs-sm); min-height: 40px; }
+.board-card button, #studentsList button { padding: 6px 14px; font-size: var(--fs-sm); min-height: 32px; }
+#createBoardBtn, #addStudentBtn, #postBtn { background: #0060c7 !important; border-color: #0060c7 !important; color: #fff !important; }
+@media (hover: hover) and (pointer: fine) { #createBoardBtn:hover, #addStudentBtn:hover, #postBtn:hover { background: #0052ab !important; } }
+#postBtn.is-empty { opacity: .55; }
+/* Delete: outlined, readable red instead of a pale pink blob */
+:root { --delete-color: rgba(196, 36, 43, .08); --delete-text-color: #a11d24; }
+[data-theme="dark"] { --delete-color: rgba(255, 107, 107, .14); --delete-text-color: #ffb3ad; }
+.post button.delete, .reply button.delete-btn, button.delete-poll { border-color: rgba(196, 36, 43, .38) !important; }
+[data-theme="dark"] .post button.delete, [data-theme="dark"] .reply button.delete-btn, [data-theme="dark"] button.delete-poll { border-color: rgba(255, 140, 130, .4) !important; }
+@media (hover: hover) and (pointer: fine) {
+  .post button.delete:hover, .reply button.delete-btn:hover, button.delete-poll:hover { background: rgba(196, 36, 43, .16) !important; border-color: rgba(196, 36, 43, .6) !important; }
+  [data-theme="dark"] .post button.delete:hover, [data-theme="dark"] .reply button.delete-btn:hover, [data-theme="dark"] button.delete-poll:hover { background: rgba(255, 107, 107, .24) !important; }
+}
+
+/* Class Live / Paused: a status dot instead of 🔴/🔘 */
+.state-pill .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; vertical-align: 1px; background: #8e8e93; }
+.state-pill.is-live .status-dot { background: #fff; box-shadow: 0 0 0 0 rgba(255, 255, 255, .7); animation: ui-live-dot 1.8s ease-out infinite; }
+@keyframes ui-live-dot { 0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, .7); } 100% { box-shadow: 0 0 0 8px rgba(255, 255, 255, 0); } }
+
+/* ══ Composer ═══════════════════════════════════════════════════════════ */
+#postInput { transition: height .28s cubic-bezier(.2, .8, .2, 1), min-height .28s cubic-bezier(.2, .8, .2, 1), border-radius .28s ease, padding .28s ease; }
+#newPost.comment-expanded .post-options-row { animation: ui-fade-up .24s ease; }
+@keyframes ui-fade-up { from { opacity: 0; transform: translateY(6px); } }
+.ui-char-count { font-size: var(--fs-xs); color: var(--text-secondary); margin-right: var(--sp-1); align-self: center; font-variant-numeric: tabular-nums; }
+
+/* ══ Mascot empty states ════════════════════════════════════════════════ */
+.ui-empty { text-align: center; margin: var(--sp-4) auto; max-width: 420px; padding: var(--sp-3); color: var(--text-color); animation: ui-fade-up .4s ease; }
+.ui-empty-inside { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); margin: 0; width: min(420px, 90%); pointer-events: none; }
+.ui-empty-title { margin: var(--sp-2) 0 var(--sp-1); font-size: var(--fs-lg); font-weight: 700; }
+.ui-empty-body { margin: 0; font-size: var(--fs-sm); line-height: 1.5; color: var(--text-secondary); }
+.ui-mascot { position: relative; width: 112px; height: 112px; margin: 0 auto; animation: ui-mascot-bob 3.2s ease-in-out infinite; }
+.ui-mascot img { position: absolute; display: block; pointer-events: none; user-select: none; }
+.ui-mascot .ui-mascot-base { inset: 0; width: 100%; height: 100%; }
+.ui-mascot .ui-mascot-tassel { transform-origin: 82.7% 5.3%; animation: ui-tassel 3.2s ease-in-out infinite; }
+.ui-mascot .ui-mascot-eyeL, .ui-mascot .ui-mascot-eyeR { transform-origin: 50% 55%; animation: ui-blink 4.6s infinite; }
+@keyframes ui-mascot-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes ui-tassel { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(5deg); } }
+@keyframes ui-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+html[data-astro] .ui-empty-title, html[data-astro] .ui-empty-body { text-shadow: 0 1px 10px rgba(6, 12, 32, .6); color: #eef2ff; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-mascot, .ui-mascot img, .ui-empty, .state-pill.is-live .status-dot, #newPost.comment-expanded .post-options-row { animation: none !important; }
+  #postInput, button { transition: none !important; }
+  button:active { transform: none; }
+}
+/* AA: white on the live pill needs a deeper blue than the dark-theme accent */
+.state-pill.is-live { background: #0060c7 !important; border-color: #0060c7 !important; color: #fff !important; }

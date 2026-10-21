@@ -14,7 +14,7 @@ import {
 import {
   BOARD_RETURN_STORAGE_KEY, buildReturnState, serializeReturnState, chooseReturnTarget,
   returnStateFromSearch, studyOpenHref, searchWithoutReturn, shouldUseEmulators
-} from "./board-return.js?v=20261021h";
+} from "./board-return.js?v=20261021i";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClkHjUnQ96VNRj1FxyY-ca-AcDWYoX_m8",
@@ -214,6 +214,9 @@ var seatPopupOpenedByHover = false;
 // button's own text color (incl. the red delete button's forced white) and
 // adapts to light/dark theme automatically -- no extra CSS vars needed.
 var ICONS = {
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.6 2.6L16 9.5"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
   eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M2 12C4.5 7 8 5 12 5s7.5 2 10 7c-2.5 5-6 7-10 7s-7.5-2-10-7Z"/><circle cx="12" cy="12" r="2.5"/></svg>',
   eyeOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M2 12c2.5 5 6 7 10 7s7.5-2 10-7"/><path d="M7 17.5l-1 2.3M12 19v2.5M17 17.5l1 2.3"/></svg>',
   trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="icon-svg"><path d="M4 7h16"/><path d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>',
@@ -1895,7 +1898,7 @@ function formatSessionTimestamp(ms) {
 // session-windowed views so pausing immediately freezes them at [start,end].
 function applyClassSessionUI() {
   if (!classSessionToggleBtn) { return; }
-  classSessionToggleBtn.textContent = classSessionActive ? "🔴 Class Live" : "🔘 Class Paused";
+  classSessionToggleBtn.innerHTML = '<span class="status-dot" aria-hidden="true"></span>' + (classSessionActive ? "Class Live" : "Class Paused");
   classSessionToggleBtn.classList.toggle("is-live", classSessionActive);
   classSessionToggleBtn.classList.toggle("is-paused", !classSessionActive);
   classSessionTimestampStart.textContent = classSessionStartAt ? formatSessionTimestamp(classSessionStartAt) : "";
@@ -2829,7 +2832,7 @@ async function viewStudentDashboard(studentId, opts) {
   var monthlyPollsCastPct = await computeMonthlyPollsCastPct(studentId, student);
   var monthlyAnonPct = await computeMonthlyAnonPct(studentId, student);
   var monthlyPollAccuracy = await computeMonthlyPollAccuracy(studentId, student);
-  dashboardContent.innerHTML = "<div class='dashboard-header'><h2>" + escapeHTML(student.username) + "</h2><p>" + (student.secured ? "🔒 Protected with a password" : (student.uid ? "Quick join (this device only)" : "Not joined yet")) + "</p><button id='mergeStudentBtn' class='teacher-control' style='margin-top:16px;'>Merge Student</button>" + (student.uid ? " <button id='resetSignInBtn' class='teacher-control' style='margin-top:16px;'>Reset Sign-in</button>" : "") + "</div><div class='metrics-grid' id='metricsGrid'></div>";
+  dashboardContent.innerHTML = "<div class='dashboard-header'><h2>" + escapeHTML(student.username) + "</h2><p>" + (student.secured ? iconLabel("lock", "Protected with a password") : (student.uid ? "Quick join (this device only)" : "Not joined yet")) + "</p><button id='mergeStudentBtn' class='teacher-control' style='margin-top:16px;'>Merge Student</button>" + (student.uid ? " <button id='resetSignInBtn' class='teacher-control' style='margin-top:16px;'>Reset Sign-in</button>" : "") + "</div><div class='metrics-grid' id='metricsGrid'></div>";
   var grid = document.getElementById("metricsGrid");
   var lbCard = document.createElement("div");
   lbCard.className = "metric-card";
@@ -4513,7 +4516,7 @@ function renderSeatResponsePopup(seatId, student) {
     var responded = studentRespondedToPoll(poll, student.username);
     var statusLine = document.createElement("div");
     statusLine.className = "seat-popup-meta";
-    statusLine.textContent = responded ? "✅ Responded" : "❌ No response yet";
+    statusLine.innerHTML = responded ? iconLabel("check", "Responded") : iconLabel("clock", "No response yet");
     popup.appendChild(statusLine);
 
     // Editable, not just a read-out: the teacher can set or change this
@@ -6657,7 +6660,7 @@ function renderFreePoll(div, poll, pollId, totalStudents) {
   if (isTeacher) {
     var pDiv = document.createElement("div");
     pDiv.className = "poll-stat";
-    pDiv.innerHTML = "<strong>🗳️ Responded: " + pct + "%</strong>";
+    pDiv.innerHTML = "<strong>" + iconLabel("ballot", "Responded: " + pct + "%") + "</strong>";
     div.appendChild(pDiv);
   }
 
@@ -6828,7 +6831,7 @@ function renderDrawPoll(div, poll, pollId, totalStudents) {
   if (isTeacher) {
     var pDiv = document.createElement("div");
     pDiv.className = "poll-stat";
-    pDiv.innerHTML = "<strong>🗳️ Responded: " + pct + "%</strong>";
+    pDiv.innerHTML = "<strong>" + iconLabel("ballot", "Responded: " + pct + "%") + "</strong>";
     div.appendChild(pDiv);
   }
 
@@ -7150,7 +7153,7 @@ function renderMCPoll(div, poll, pollId, totalStudents) {
   if (isTeacher) {
     var pDiv = document.createElement("div");
     pDiv.className = "poll-stat";
-    pDiv.innerHTML = "<strong>🗳️ Responded: " + pct + "%</strong>";
+    pDiv.innerHTML = "<strong>" + iconLabel("ballot", "Responded: " + pct + "%") + "</strong>";
     div.appendChild(pDiv);
 
     var chart = document.createElement("div");
