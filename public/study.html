@@ -169,6 +169,18 @@ input.icon-cell::placeholder{ color:var(--text-dimmer); font-size:17px; }
 .btn-save:disabled{ opacity:0.6; cursor:default; }
 .btn-cancel{ background:var(--panel-3); color:var(--text-dim); border:1px solid var(--border-lit); }
 .btn-cancel:hover{ color:var(--text); }
+
+@view-transition { navigation: auto; }
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+}
+.study-portal-moon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--amber);
+  view-transition-name: study-moon;
+}
+.study-portal-moon svg { width: 22px; height: 22px; display: block; }
 </style>
 <link rel="stylesheet" href="astro-study.css?v=20261021i">
 <script src="astro-study.js?v=20261021i"></script>
@@ -176,7 +188,7 @@ input.icon-cell::placeholder{ color:var(--text-dimmer); font-size:17px; }
 <body>
 <div id="shell">
   <a id="studyBackBtn" class="study-back-btn" href="./"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>Back</a>
-  <div class="brand"><div class="dot"></div><h1>Study</h1></div>
+  <div class="brand"><span class="study-portal-moon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></svg></span><div class="dot"></div><h1>Study</h1></div>
   <div class="subtitle">POPBOARD MODULE LIBRARY</div>
   <div class="search-wrap">
     <span class="search-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
@@ -927,5 +939,6 @@ render(""); // built-ins (and the add-tile, in teacher mode) show immediately, n
   }
 })();
 </script>
+<script type="module" src="study-portal.js?v=20261021j"></script>
 </body>
 </html>

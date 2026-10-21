@@ -11,6 +11,8 @@
     "test:machines": "node --test machines-physics.test.mjs",
     "test:pdf": "node --test pdf-export.test.mjs",
     "test:return": "node --test board-return.test.mjs",
+    "test:study": "node --test study-portal.test.mjs",
+    "test:study:browser": "node study-guest-browser.mjs",
     "test:return:browser": "firebase emulators:exec --project hotseat-4f661 --only auth,firestore,storage --config ../firebase.json \"node board-return-browser.mjs\""
   },
   "devDependencies": {
