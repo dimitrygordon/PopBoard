@@ -27,25 +27,18 @@ a.study-pill:hover .study-pill-moon::after { opacity: 1; transform: scale(1.25);
   93% { transform: translateX(-50%) translateY(-4px); }
 }
 
-/* the growing moon */
-.pm-moon {
-  position: fixed; z-index: 9999; pointer-events: none;
-  left: var(--portal-x, 50vw); top: var(--portal-y, 90vh);
-  width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%;
-  background:
-    radial-gradient(circle at 34% 30%, rgba(160,150,130,.35) 0 7%, transparent 8%),
-    radial-gradient(circle at 62% 58%, rgba(160,150,130,.3) 0 10%, transparent 11%),
-    radial-gradient(circle at 45% 72%, rgba(160,150,130,.25) 0 5%, transparent 6%),
-    radial-gradient(circle at 40% 38%, #fffaf0, #efe6d2 55%, #cfc3a8);
-  box-shadow: 0 0 40px 10px rgba(255, 236, 190, 0.45);
-  will-change: transform;
-}
-html.pm-leaving #login, html.pm-leaving .la-sky, html.pm-leaving #la-sky { transition: opacity .45s, filter .45s; opacity: 0; filter: blur(4px); }
+/* Saturn V launch: rocket rises, exhaust billows into the wipe */
+.pm-smoke { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 9998; pointer-events: none; }
+.pm-rocket { position: fixed; left: 50%; top: 0; z-index: 9999; pointer-events: none; transform-origin: 50% 0; will-change: transform; filter: drop-shadow(0 0 6px rgba(255, 220, 170, .35)); }
+.pm-rocket svg { display: block; overflow: visible; }
+html.pm-leaving a.study-pill, html.pm-leaving #login, html.pm-leaving .la-sky, html.pm-leaving #la-sky { transition: opacity .45s, filter .45s; opacity: 0; filter: blur(4px); }
 
 /* study gallery: reveal through the moon */
 @media (prefers-reduced-motion: no-preference) {
   ::view-transition-new(root) { animation: pm-reveal .75s cubic-bezier(.2,.75,.2,1) both; }
   ::view-transition-old(root) { animation: pm-hold .75s linear both; }
+  html:has(#studyBackBtn)::view-transition-new(root) { animation: pm-clear .7s cubic-bezier(.3,.6,.3,1) both; }
+  html:has(#studyBackBtn)::view-transition-old(root) { animation: pm-hold .7s linear both; }
   ::view-transition-group(study-moon) { animation-duration: .75s; animation-timing-function: cubic-bezier(.2,.75,.2,1); }
   html.pm-closing body { animation: pm-unreveal .55s cubic-bezier(.55,0,.75,.3) forwards; }
 }
@@ -53,6 +46,7 @@ html.pm-leaving #login, html.pm-leaving .la-sky, html.pm-leaving #la-sky { trans
   from { clip-path: circle(0 at var(--portal-x, 50%) var(--portal-y, 90%)); }
   to { clip-path: circle(150vmax at var(--portal-x, 50%) var(--portal-y, 90%)); }
 }
+@keyframes pm-clear { from { opacity: 0; filter: blur(14px) brightness(1.6); } to { opacity: 1; filter: none; } }
 @keyframes pm-hold { to { opacity: 1; } }
 @keyframes pm-unreveal {
   from { clip-path: circle(150vmax at var(--portal-x, 50%) var(--portal-y, 10%)); }
@@ -61,3 +55,6 @@ html.pm-leaving #login, html.pm-leaving .la-sky, html.pm-leaving #la-sky { trans
 @media (prefers-reduced-motion: reduce) {
   a.study-pill { animation: none; }
 }
+
+/* Study header moon: the glow the old dot had */
+.study-portal-moon { filter: drop-shadow(0 0 4px rgba(255, 214, 140, .75)) drop-shadow(0 0 10px rgba(255, 190, 90, .35)); }
