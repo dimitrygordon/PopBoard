@@ -9,3 +9,10 @@ html[data-astro] {
   --panel-3: rgba(32, 38, 62, .88);
 }
 /* sim canvases get a solid dark backing from astro-study.js (in-flow canvases only) */
+
+/* Full-bleed sky behind the iOS status bar and toolbar */
+html.la-sky-on, html[data-astro] {
+  background: linear-gradient(180deg, var(--la-sky-top, #0b1024), var(--la-sky-bot, #0b1024)) fixed !important;
+  background-color: var(--la-sky-bot, #0b1024) !important;
+}
+#la-sky { top: calc(-1 * env(safe-area-inset-top, 0px)) !important; height: calc(100lvh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px)) !important; }
