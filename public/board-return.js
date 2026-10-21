@@ -14,6 +14,13 @@ var ROLES = { teacher: true, student: true, display: true, portal: true };
 var RETURN_QUERY_KEYS = ["board", "student", "name", "pbreturn"];
 var FORWARD_QUERY_KEYS = ["board", "student", "name", "teacher", "pbreturn", "emulators"];
 
+// The emulator switch is a localhost testing flag. The live site must
+// keep talking to the real Firebase project even if the query is copied.
+export function shouldUseEmulators(hostname, search) {
+  if (hostname !== "localhost" && hostname !== "127.0.0.1") return false;
+  return toParams(search).has("emulators");
+}
+
 export function normalizeId(value) {
   if (typeof value !== "string") return "";
   var id = value.trim();

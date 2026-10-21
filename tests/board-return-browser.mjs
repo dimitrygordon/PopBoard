@@ -63,6 +63,9 @@ function track(page) {
   page.alerts = [];
   page.on("dialog", async (d) => { page.alerts.push(d.message()); await d.accept(); });
   page.on("pageerror", (e) => page.errors.push(String(e)));
+  page.on("console", (msg) => {
+    if (msg.type() === "error") page.errors.push("console: " + msg.text());
+  });
 }
 
 async function newPage() {
@@ -88,10 +91,30 @@ async function panels(page) {
 }
 
 async function waitPanel(page, name) {
-  await page.waitForFunction((which) => {
-    const el = document.getElementById(which === "login" ? "login" : which === "portal" ? "boardsPortal" : "app");
-    return !!(el && !el.classList.contains("hidden"));
-  }, { timeout: 25000 }, name);
+  try {
+    await page.waitForFunction((which) => {
+      const el = document.getElementById(which === "login" ? "login" : which === "portal" ? "boardsPortal" : "app");
+      return !!(el && !el.classList.contains("hidden"));
+    }, { timeout: 25000 }, name);
+  } catch (err) {
+    const info = await page.evaluate(() => {
+      const on = (id) => {
+        const el = document.getElementById(id);
+        return !!(el && !el.classList.contains("hidden"));
+      };
+      return {
+        href: location.href,
+        login: on("login"),
+        teacherLogin: on("teacherLogin"),
+        portal: on("boardsPortal"),
+        app: on("app"),
+        restoring: document.documentElement.classList.contains("pb-restoring"),
+        stored: sessionStorage.getItem("popboard.boardReturn")
+      };
+    }).catch((e) => String(e));
+    console.error("waitPanel(" + name + ") failed", JSON.stringify(info), "errors:", page.errors, "alerts:", page.alerts);
+    throw err;
+  }
 }
 
 function waitForPopup(opener) {
@@ -167,12 +190,18 @@ try {
   await t.click("#createBoardBtn");
   await t.waitForSelector(".board-card", { timeout: 15000 });
   let boardId = "";
-  await admin(async (db) => {
-    const snap = await getDocs(collection(db, "boards"));
-    const row = snap.docs.find((d) => d.data().name === "Return Physics");
-    boardId = row.id;
-    check(row.data().ownerUid === teacherUid, "board is owned by the teacher");
-  });
+  for (let attempt = 0; attempt < 10 && !boardId; attempt++) {
+    await admin(async (db) => {
+      const snap = await getDocs(collection(db, "boards"));
+      const row = snap.docs.find((d) => d.data().name === "Return Physics");
+      if (row) {
+        boardId = row.id;
+        check(row.data().ownerUid === teacherUid, "board is owned by the teacher");
+      }
+    });
+    if (!boardId) await new Promise((r) => setTimeout(r, 300));
+  }
+  if (!boardId) throw new Error("Return Physics was not saved");
 
   await t.evaluate(() => {
     const btn = [...document.querySelectorAll(".board-card button")].find((b) => b.textContent.trim() === "Enter");

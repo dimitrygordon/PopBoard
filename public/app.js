@@ -13,7 +13,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import {
   BOARD_RETURN_STORAGE_KEY, buildReturnState, serializeReturnState, chooseReturnTarget,
-  returnStateFromSearch, studyOpenHref, searchWithoutReturn
+  returnStateFromSearch, studyOpenHref, searchWithoutReturn, shouldUseEmulators
 } from "./board-return.js?v=20261021e";
 
 const firebaseConfig = {
@@ -33,7 +33,7 @@ const auth = getAuth(app);
 // Local testing only: http://localhost:<port>/?emulators=1 talks to the
 // Firebase Emulator Suite instead of the real project. Has no effect on the
 // live site (different hostname).
-if ((location.hostname === "localhost" || location.hostname === "127.0.0.1") && new URLSearchParams(location.search).has("emulators")) {
+if (shouldUseEmulators(location.hostname, location.search)) {
   connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
   connectFirestoreEmulator(db, "127.0.0.1", 8080);
   connectStorageEmulator(storage, "127.0.0.1", 9199);
@@ -7587,7 +7587,7 @@ if (window.PopboardPdf && window.PopboardPdf.install) {
 // or signs anybody in.
 
 function pageHasEmulators() {
-  return new URLSearchParams(location.search).has("emulators");
+  return shouldUseEmulators(location.hostname, location.search);
 }
 
 function persistReturnState(state) {

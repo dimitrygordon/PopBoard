@@ -14,13 +14,22 @@ import {
   studyOpenHref,
   moduleOpenHref,
   forwardStudyQuery,
-  searchWithoutReturn
+  searchWithoutReturn,
+  shouldUseEmulators
 } from "../public/board-return.js";
 
 function query(href) {
   var i = String(href).indexOf("?");
   return new URLSearchParams(i === -1 ? "" : href.slice(i + 1));
 }
+
+test("emulator flag only applies on localhost", () => {
+  assert.equal(shouldUseEmulators("127.0.0.1", "?emulators=1"), true);
+  assert.equal(shouldUseEmulators("localhost", "?emulators=1&board=b"), true);
+  assert.equal(shouldUseEmulators("localhost", ""), false);
+  assert.equal(shouldUseEmulators("popboard.us", "?emulators=1"), false);
+  assert.equal(shouldUseEmulators("hotseat-4f661.web.app", "?emulators=1"), false);
+});
 
 test("storage key matches the pre-paint check in index.html", () => {
   const html = readFileSync(new URL("../public/index.html", import.meta.url), "utf8");
