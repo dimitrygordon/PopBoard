@@ -188,3 +188,10 @@ body.la-on #la-sky, body.la-sendoff #la-sky { display: block; }
 [data-theme="dark"] .la-card a.login-link.la-pill { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.14); box-shadow: none; }
 .la-card .login-note { font-size: 12.5px; opacity: .7; margin-top: 10px; }
 @media (prefers-reduced-motion: reduce) { .la-card a.login-link.la-pill { transition: none; } }
+
+/* Full-bleed sky behind the iOS status bar and toolbar */
+html.la-sky-on {
+  background: linear-gradient(180deg, var(--la-sky-top), var(--la-sky-bot)) fixed !important;
+  background-color: var(--la-sky-bot) !important;
+}
+#la-sky { top: calc(-1 * env(safe-area-inset-top, 0px)); height: calc(100lvh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px)); }

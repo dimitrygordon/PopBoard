@@ -86,7 +86,7 @@
     st.twi = clamp(1 - Math.abs(alt - 1) / 9, 0, 1);         // peak near the horizon
     if (force || !st.times || now - st.times.at > 36e5) { st.times = sunTimes(now); st.times.at = now; }
     var root = doc.documentElement, g = grad();
-    root.style.setProperty("--la-sky-top", g[0]); root.style.setProperty("--la-sky-bot", g[2]);
+    root.style.setProperty("--la-sky-top", g[0]); root.style.setProperty("--la-sky-bot", g[2]); if (root.classList.contains("la-sky-on") || root.hasAttribute("data-astro")) { var tc = doc.querySelector('meta[name="theme-color"]'); if (!tc) { tc = doc.createElement("meta"); tc.name = "theme-color"; doc.head.appendChild(tc); } tc.content = g[0]; }
     root.style.setProperty("--la-mood-glow", st.night > .5 ? "rgba(140,160,255,.16)" : "rgba(255,190,100,.24)");
     root.style.setProperty("--la-mood-kernel-a", st.night > .5 ? "rgba(255,200,120,.30)" : "rgba(232,165,70,.62)");
     root.style.setProperty("--la-mood-kernel-b", st.night > .5 ? "rgba(255,240,210,.24)" : "rgba(255,244,218,.92)");
