@@ -180,3 +180,18 @@ body.la-on #la-sky, body.la-sendoff #la-sky { opacity: 1; }
 [data-la-wx="storm"] body.la-on .la-card, [data-la-wx="rain"] body.la-on .la-card { --la-card-bg: rgba(255, 255, 255, .78); }
 [data-theme="dark"][data-la-wx] body.la-on .la-card { --la-card-bg: rgba(22, 24, 40, .66); }
 @media (prefers-reduced-motion: reduce) { #la-sky { transition: none; } }
+
+/* subtle glass pill links (Teacher Login / Request Account / Back) */
+.la-card .login-link-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.la-card a.login-link.la-pill {
+  display: inline-flex; align-items: center; padding: 7px 16px; border-radius: 999px; font-size: 13.5px; font-weight: 500;
+  text-decoration: none !important; color: inherit; opacity: .86;
+  background: rgba(255, 255, 255, .38); border: 1px solid rgba(255, 255, 255, .55);
+  box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 2px 8px rgba(20, 12, 40, .08);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  transition: opacity .2s ease, background-color .2s ease, transform .2s cubic-bezier(.2,1.6,.4,1);
+}
+.la-card a.login-link.la-pill:hover { opacity: 1; background: rgba(255, 255, 255, .6); transform: translateY(-1px); }
+[data-theme="dark"] .la-card a.login-link.la-pill { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.14); box-shadow: none; }
+.la-card .login-note { font-size: 12.5px; opacity: .7; margin-top: 10px; }
+@media (prefers-reduced-motion: reduce) { .la-card a.login-link.la-pill { transition: none; } }

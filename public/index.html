@@ -24,12 +24,12 @@
   <h2>Join PopBoard</h2>
   <input id="usernameInput" class="login-input" placeholder="Your name" />
   <input id="boardNameInput" class="login-input" placeholder="PopBoard name" />
-  <input id="studentPasswordInput" class="login-input" type="password" placeholder="Password (optional: protects your name)" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" />
+  <input id="studentPasswordInput" class="login-input" type="password" placeholder="Password (optional)" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false" />
   <div class="login-buttons">
     <button id="joinBtn">Join</button>
   </div>
   <p class="login-link-row">
-    <a id="teacherLoginBtn" class="login-link" href="#" role="button">Teacher? Sign in here</a>
+    <a id="teacherLoginBtn" class="login-link la-pill" href="#" role="button">Teacher Login</a>
   </p>
 </div>
 
@@ -44,11 +44,9 @@
   <div class="login-buttons">
     <button id="teacherSignInBtn">Sign In</button>
   </div>
-  <p class="login-link-row">
-    <a id="showTeacherSignUpBtn" class="login-link" href="#" role="button">Create account</a>
-  </p>
-  <p class="login-link-row">
-    <a id="backToMainLoginBtn" class="login-link" href="#" role="button">Back to student sign-in</a>
+  <p class="login-link-row la-pill-row">
+    <a id="showTeacherSignUpBtn" class="login-link la-pill" href="#" role="button">Request Account</a>
+    <a id="backToMainLoginBtn" class="login-link la-pill" href="#" role="button">Back</a>
   </p>
 </div>
 
@@ -57,17 +55,17 @@
   <div class="login-logo">
     <img src="/popboard-logo.png" alt="PopBoard Logo" id="teacher-signup-logo-img" />
   </div>
-  <h2>Create Account</h2>
+  <h2>Request Account</h2>
   <input id="teacherEmailInput" class="login-input" type="email" placeholder="Email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" />
-  <input id="teacherNameInput" class="login-input" type="text" placeholder="Username (your name)" autocomplete="nickname" />
-  <input id="teacherNewPasswordInput" class="login-input" type="password" placeholder="Password (6+ characters)" autocomplete="new-password" autocapitalize="none" autocorrect="off" spellcheck="false" />
+  <input id="teacherNameInput" class="login-input" type="text" placeholder="Your name" autocomplete="nickname" />
+  <input id="teacherNewPasswordInput" class="login-input" type="password" placeholder="Password (6+)" autocomplete="new-password" autocapitalize="none" autocorrect="off" spellcheck="false" />
   <div class="login-buttons">
-    <button id="teacherSignUpBtn">Create Account</button>
+    <button id="teacherSignUpBtn">Request Account</button>
   </div>
   <p class="login-link-row">
-    <a id="backToTeacherLoginBtn" class="login-link" href="#" role="button">Already have an account? Sign in</a>
+    <a id="backToTeacherLoginBtn" class="login-link la-pill" href="#" role="button">Back</a>
   </p>
-  <p class="login-note">New teacher accounts need approval from the PopBoard admin before they can create boards.</p>
+  <p class="login-note">Accounts are approved by the PopBoard admin.</p>
 </div>
 
 <!-- PopBoards Portal (Teacher) -->
