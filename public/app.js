@@ -11,6 +11,10 @@ import {
   getAuth, signInAnonymously, signInWithEmailAndPassword, createUserWithEmailAndPassword,
   linkWithCredential, EmailAuthProvider, signOut, updateProfile, connectAuthEmulator
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  BOARD_RETURN_STORAGE_KEY, buildReturnState, serializeReturnState, chooseReturnTarget,
+  returnStateFromSearch, studyOpenHref, searchWithoutReturn, shouldUseEmulators
+} from "./board-return.js?v=20261021e";
 
 const firebaseConfig = {
   apiKey: "AIzaSyClkHjUnQ96VNRj1FxyY-ca-AcDWYoX_m8",
@@ -29,7 +33,7 @@ const auth = getAuth(app);
 // Local testing only: http://localhost:<port>/?emulators=1 talks to the
 // Firebase Emulator Suite instead of the real project. Has no effect on the
 // live site (different hostname).
-if ((location.hostname === "localhost" || location.hostname === "127.0.0.1") && new URLSearchParams(location.search).has("emulators")) {
+if (shouldUseEmulators(location.hostname, location.search)) {
   connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
   connectFirestoreEmulator(db, "127.0.0.1", 8080);
   connectStorageEmulator(storage, "127.0.0.1", 9199);
@@ -896,19 +900,7 @@ joinBtn.onclick = async function() {
   } finally {
     joinBtn.disabled = false;
   }
-  studentPassword = "";
-  studentPasswordInput.value = "";
-  loginDiv.classList.add("hidden");
-  appDiv.classList.remove("hidden");
-  teacherBtn.classList.add("hidden");
-  backToPortalBtn.classList.add("hidden");
-  studentsBtn.classList.add("hidden");
-  seatsBtn.classList.add("hidden");
-  leaderboardToggleContainer.classList.add("hidden");
-  classSessionToggleContainer.classList.add("hidden");
-  dailyDashboard.classList.add("hidden");
-  confusionIndicator.classList.remove("hidden");
-  startBoard();
+  showJoinedStudentBoard();
 };
 
 // ─── TEACHER SIGN-IN / CREATE ACCOUNT ───────────────────────────────────────
@@ -1023,12 +1015,8 @@ async function enterTeacherPortal() {
   teacherAccount = t.name || "Teacher";
   username = teacherAccount;
   isTeacher = true;
-  clearTeacherForms();
-  teacherLoginDiv.classList.add("hidden");
-  teacherSignupDiv.classList.add("hidden");
-  boardsPortalDiv.classList.remove("hidden");
-  studyBtn.classList.remove("hidden");
-  loadBoardsPortal();
+  showTeacherPortal();
+  await maybeOpenReturnBoard();
 }
 
 teacherSignInBtn.onclick = async function() {
@@ -1097,19 +1085,46 @@ teacherSignUpBtn.onclick = async function() {
 };
 
 studyBtn.onclick = function() {
-  var url = "study.html";
-  if (teacherAccount && auth.currentUser) { url += "?teacher=" + encodeURIComponent(auth.currentUser.uid); }
-  window.open(url, "_blank");
+  var teacherUid = (teacherAccount && auth.currentUser && !auth.currentUser.isAnonymous) ? auth.currentUser.uid : "";
+  window.open(studyOpenHref({
+    role: "portal",
+    teacherUid: teacherUid,
+    emulators: pageHasEmulators()
+  }), "_blank");
 };
 
 if (studyBtnApp) {
   studyBtnApp.onclick = function() {
-    if (!isTeacher && currentBoardId && currentStudentId) {
-      var url = "study.html?board=" + encodeURIComponent(currentBoardId) + "&student=" + encodeURIComponent(currentStudentId) + "&name=" + encodeURIComponent(username || "");
-      window.open(url, "_blank");
-    } else {
-      window.open("study.html", "_blank");
+    var emulators = pageHasEmulators();
+    if (isDisplayMode && currentBoardId) {
+      window.open(studyOpenHref({
+        role: "display",
+        boardId: currentBoardId,
+        teacherUid: auth.currentUser ? auth.currentUser.uid : "",
+        emulators: emulators
+      }), "_blank");
+      return;
     }
+    if (!isTeacher && currentBoardId && currentStudentId) {
+      window.open(studyOpenHref({
+        role: "student",
+        boardId: currentBoardId,
+        studentId: currentStudentId,
+        name: username || "",
+        emulators: emulators
+      }), "_blank");
+      return;
+    }
+    if (isTeacher && currentBoardId) {
+      window.open(studyOpenHref({
+        role: "teacher",
+        boardId: currentBoardId,
+        teacherUid: auth.currentUser ? auth.currentUser.uid : "",
+        emulators: emulators
+      }), "_blank");
+      return;
+    }
+    window.open(studyOpenHref({ emulators: emulators }), "_blank");
   };
 }
 
@@ -1122,6 +1137,9 @@ logoutBtnSeats.onclick = function() { resetAndLogout(); };
 function resetAndLogout() {
   teardownBoardListeners();
   if (unsubBoardsPortal) { unsubBoardsPortal(); unsubBoardsPortal = null; }
+  persistReturnState(null);
+  stripReturnParams();
+  document.documentElement.classList.remove("pb-restoring");
   // Teachers and password-protected students sign out of Firebase. A quick-
   // join (anonymous) student stays signed in on this device, otherwise they
   // could never get their name back without a password.
@@ -1167,6 +1185,7 @@ backToPortalBtn.onclick = function() {
   username = "";
   appDiv.classList.add("hidden");
   boardsPortalDiv.classList.remove("hidden");
+  rememberPortalSession();
   loadBoardsPortal();
 };
 
@@ -1742,6 +1761,7 @@ function enterBoard(boardId) {
   teardownBoardListeners();
   currentBoardId = boardId;
   isDisplayMode = false;
+  hideAuthScreens();
   boardsPortalDiv.classList.add("hidden");
   appDiv.classList.remove("hidden");
   teacherBtn.classList.remove("hidden");
@@ -1754,6 +1774,7 @@ function enterBoard(boardId) {
   dailyDashboard.classList.remove("hidden");
   confusionIndicator.classList.add("hidden");
   document.getElementById("newPost").classList.remove("hidden");
+  rememberBoardSession();
   startBoard();
 }
 
@@ -1772,6 +1793,7 @@ function enterDisplayMode(boardId) {
   username = "";
   studentEmoji = "";
   studentNickname = "";
+  hideAuthScreens();
   boardsPortalDiv.classList.add("hidden");
   appDiv.classList.remove("hidden");
   teacherBtn.classList.add("hidden");
@@ -1784,6 +1806,7 @@ function enterDisplayMode(boardId) {
   dailyDashboard.classList.add("hidden");
   confusionIndicator.classList.add("hidden");
   document.getElementById("newPost").classList.add("hidden");
+  rememberBoardSession();
   startBoard();
 }
 
@@ -7555,3 +7578,234 @@ if (window.PopboardPdf && window.PopboardPdf.install) {
     }
   });
 }
+
+// ─── RETURNING FROM STUDY / RELOAD ──────────────────────────────────────────
+// The open board used to live only in memory, so any load of / (the Study
+// gallery's Back link, or a reload) painted the sign-in form. A return
+// target in the URL or in sessionStorage is checked against Firebase Auth
+// and membership before the board is shown. Nothing here creates a student
+// or signs anybody in.
+
+function pageHasEmulators() {
+  return shouldUseEmulators(location.hostname, location.search);
+}
+
+function persistReturnState(state) {
+  try {
+    if (!state) sessionStorage.removeItem(BOARD_RETURN_STORAGE_KEY);
+    else sessionStorage.setItem(BOARD_RETURN_STORAGE_KEY, serializeReturnState(state));
+  } catch (e) { /* private mode / blocked storage: the URL target still works */ }
+}
+
+function rememberBoardSession() {
+  var role = isDisplayMode ? "display" : (isTeacher ? "teacher" : "student");
+  var state = buildReturnState({
+    role: role,
+    boardId: currentBoardId,
+    studentId: currentStudentId,
+    name: username
+  });
+  if (state) persistReturnState(state);
+}
+
+function rememberPortalSession() {
+  var state = buildReturnState({ role: "portal" });
+  if (state) persistReturnState(state);
+}
+
+function hideAuthScreens() {
+  document.documentElement.classList.remove("pb-restoring");
+  if (loginDiv) loginDiv.classList.add("hidden");
+  if (teacherLoginDiv) teacherLoginDiv.classList.add("hidden");
+  if (teacherSignupDiv) teacherSignupDiv.classList.add("hidden");
+}
+
+function stripReturnParams() {
+  var next = searchWithoutReturn(location.search);
+  if (next === (location.search || "")) return;
+  try { history.replaceState(null, "", location.pathname + next + location.hash); } catch (e) {}
+}
+
+function showJoinedStudentBoard() {
+  studentPassword = "";
+  if (studentPasswordInput) studentPasswordInput.value = "";
+  isTeacher = false;
+  isDisplayMode = false;
+  hideAuthScreens();
+  if (boardsPortalDiv) boardsPortalDiv.classList.add("hidden");
+  appDiv.classList.remove("hidden");
+  teacherBtn.classList.add("hidden");
+  backToPortalBtn.classList.add("hidden");
+  studentsBtn.classList.add("hidden");
+  seatsBtn.classList.add("hidden");
+  if (studyBtnApp) studyBtnApp.classList.remove("hidden");
+  leaderboardToggleContainer.classList.add("hidden");
+  classSessionToggleContainer.classList.add("hidden");
+  dailyDashboard.classList.add("hidden");
+  confusionIndicator.classList.remove("hidden");
+  var newPostEl = document.getElementById("newPost");
+  if (newPostEl) newPostEl.classList.remove("hidden");
+  rememberBoardSession();
+  stripReturnParams();
+  startBoard();
+}
+
+function showTeacherPortal() {
+  clearTeacherForms();
+  hideAuthScreens();
+  if (appDiv) appDiv.classList.add("hidden");
+  boardsPortalDiv.classList.remove("hidden");
+  if (studyBtn) studyBtn.classList.remove("hidden");
+  rememberPortalSession();
+  loadBoardsPortal();
+}
+
+function showJoinScreen() {
+  document.documentElement.classList.remove("pb-restoring");
+  try { teardownBoardListeners(); } catch (e) {}
+  isTeacher = false;
+  isDisplayMode = false;
+  isMasterAdmin = false;
+  currentBoardId = "";
+  currentStudentId = "";
+  var panels = [boardsPortalDiv, studentsPortalDiv, studentDashboardDiv, appDiv, teacherLoginDiv, teacherSignupDiv, seatingMapDiv];
+  for (var i = 0; i < panels.length; i++) {
+    if (panels[i]) panels[i].classList.add("hidden");
+  }
+  if (confusionIndicator) confusionIndicator.classList.add("hidden");
+  if (loginDiv) loginDiv.classList.remove("hidden");
+}
+
+async function loadTeacherIdentity(user) {
+  if (!user || user.isAnonymous) return false;
+  var adminSnap = await getDoc(doc(db, "admins", user.uid));
+  isMasterAdmin = adminSnap.exists();
+  var teacherSnap = await getDoc(doc(db, "teachers", user.uid));
+  if (!teacherSnap.exists()) return false;
+  var t = teacherSnap.data() || {};
+  if (!t.approved && !isMasterAdmin) return false;
+  teacherAccount = t.name || "Teacher";
+  username = teacherAccount;
+  isTeacher = true;
+  isDisplayMode = false;
+  return true;
+}
+
+async function showTeacherPortalIfApproved(user) {
+  if (!(await loadTeacherIdentity(user))) return false;
+  showTeacherPortal();
+  return true;
+}
+
+async function restoreStudentBoard(state, user) {
+  if (!user || !state || state.role !== "student") return false;
+  var memberSnap = await getDoc(doc(db, "boards", state.boardId, "members", user.uid));
+  if (!memberSnap.exists()) return false;
+  var member = memberSnap.data() || {};
+  if (member.studentId !== state.studentId) return false;
+  var studentSnap = await getDoc(doc(db, "boards", state.boardId, "students", state.studentId));
+  if (!studentSnap.exists()) return false;
+  var sd = studentSnap.data() || {};
+  if (sd.uid !== user.uid) return false;
+  isTeacher = false;
+  isDisplayMode = false;
+  isMasterAdmin = false;
+  teacherAccount = "";
+  currentBoardId = state.boardId;
+  currentStudentId = state.studentId;
+  username = member.username || sd.username || state.name || "";
+  studentEmoji = sd.emoji || "";
+  studentNickname = sd.nickname || "";
+  showJoinedStudentBoard();
+  return true;
+}
+
+async function restoreTeacherBoard(state, user) {
+  if (!user || !state) return false;
+  if (state.role !== "teacher" && state.role !== "display") return false;
+  if (!(await loadTeacherIdentity(user))) return false;
+  var boardSnap = await getDoc(doc(db, "boards", state.boardId));
+  if (!boardSnap.exists()) return false;
+  var owner = (boardSnap.data() || {}).ownerUid || "";
+  if (owner !== user.uid && !isMasterAdmin) return false;
+  if (state.role === "display") enterDisplayMode(state.boardId);
+  else enterBoard(state.boardId);
+  return true;
+}
+
+async function applyReturnState(state, user) {
+  if (!state || !user) return false;
+  if (state.role === "portal") return showTeacherPortalIfApproved(user);
+  if (state.role === "student") return restoreStudentBoard(state, user);
+  if (state.role === "teacher" || state.role === "display") return restoreTeacherBoard(state, user);
+  return false;
+}
+
+// After a teacher signs in on a page that still carries a return URL
+// (auth was not restored automatically), open that board.
+async function maybeOpenReturnBoard() {
+  var state = returnStateFromSearch(location.search);
+  if (!state || state.role === "portal") {
+    if (state) stripReturnParams();
+    return;
+  }
+  var user = auth.currentUser;
+  if (!user) return;
+  try {
+    await applyReturnState(state, user);
+  } catch (err) {
+    console.error("Return to board failed", err);
+  }
+  stripReturnParams();
+}
+
+async function tryRestoreReturnTarget() {
+  var stored = "";
+  try { stored = sessionStorage.getItem(BOARD_RETURN_STORAGE_KEY) || ""; } catch (e) {}
+  var chosen = chooseReturnTarget(location.search, stored);
+  if (!chosen) {
+    document.documentElement.classList.remove("pb-restoring");
+    return;
+  }
+  document.documentElement.classList.add("pb-restoring");
+  if (loginDiv) loginDiv.classList.add("hidden");
+  var finished = false;
+  // A hung auth call must not leave the page blank.
+  var giveUp = setTimeout(function() {
+    if (finished) return;
+    if (appDiv && !appDiv.classList.contains("hidden")) return;
+    if (boardsPortalDiv && !boardsPortalDiv.classList.contains("hidden")) return;
+    showJoinScreen();
+  }, 20000);
+  try {
+    var user = await waitForAuth();
+    if (!user) {
+      if (chosen.source === "storage") persistReturnState(null);
+      showJoinScreen();
+      return;
+    }
+    var ok = await applyReturnState(chosen.state, user);
+    if (ok) {
+      stripReturnParams();
+      return;
+    }
+    if (!user.isAnonymous && chosen.state.role !== "portal") {
+      if (await showTeacherPortalIfApproved(user)) {
+        stripReturnParams();
+        return;
+      }
+    }
+    if (chosen.source === "storage") persistReturnState(null);
+    showJoinScreen();
+  } catch (err) {
+    console.error("Board restore failed", err);
+    try { teardownBoardListeners(); } catch (e) {}
+    if (chosen && chosen.source === "storage") persistReturnState(null);
+    showJoinScreen();
+  } finally {
+    finished = true;
+    clearTimeout(giveUp);
+  }
+}
+
+tryRestoreReturnTarget();

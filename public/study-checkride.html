@@ -2137,8 +2137,9 @@ function wireGlobalEvents(){
    own study.html, opened with no query params), this never touches the
    network and the page behaves exactly as it did before this feature. */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, connectFirestoreEmulator, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, connectAuthEmulator } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { shouldUseEmulators } from "./board-return.js?v=20261021e";
 
 const identity = window.__studyIdentity;
 
@@ -2153,11 +2154,16 @@ if (identity) {
   };
   const fbApp = initializeApp(firebaseConfig);
   const db = getFirestore(fbApp);
-  const studentRef = doc(db, "boards", identity.boardId, "students", identity.studentId);
   // Wait for the PopBoard sign-in (restored from the main app on this site)
   // before touching Firestore: the security rules only let a student read
-  // and update their OWN record.
+  // and update their OWN record. Match app.js's emulator switch so this
+  // page does not clear a localhost emulator session.
   const fbAuth = getAuth(fbApp);
+  if (shouldUseEmulators(location.hostname, location.search)) {
+    connectAuthEmulator(fbAuth, "http://127.0.0.1:9099", { disableWarnings: true });
+    connectFirestoreEmulator(db, "127.0.0.1", 8080);
+  }
+  const studentRef = doc(db, "boards", identity.boardId, "students", identity.studentId);
   const authReady = fbAuth.authStateReady ? fbAuth.authStateReady() : Promise.resolve();
 
   window.__studySyncStatus = "Connecting…";
