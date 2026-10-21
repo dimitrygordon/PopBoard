@@ -213,6 +213,10 @@ input.icon-cell::placeholder{ color:var(--text-dimmer); font-size:17px; }
 </div>
 
 <script type="module">
+import {
+  BOARD_RETURN_STORAGE_KEY, returnStateFromSearch, serializeReturnState,
+  studyLibraryBackHref, moduleOpenHref
+} from "./board-return.js?v=20261021e";
 "use strict";
 
 /* ============================================================
@@ -237,13 +241,18 @@ window.__studyIdentity = (boardParam && studentParam) ? { boardId: boardParam, s
 
 var isTeacherMode = !!teacherParam;
 
-// Back -> the PopBoard app. (The app keeps its sign-in in the browser, so
-// no board/student params are needed there; only the local-testing
-// ?emulators flag is carried over.)
+// Back -> the PopBoard this gallery was opened from. The return target is
+// the board/student/pbreturn params on this page (module pages keep them in
+// location.search). sessionStorage covers a reload of this tab. With no
+// board, Back is / (plus ?emulators=1 when this page was opened that way).
 (function wireBackButton() {
   var back = document.getElementById("studyBackBtn");
   if (!back) { return; }
-  back.href = "./" + (params.has("emulators") ? "?emulators=1" : "");
+  var state = returnStateFromSearch(location.search);
+  if (state) {
+    try { sessionStorage.setItem(BOARD_RETURN_STORAGE_KEY, serializeReturnState(state)); } catch (e) {}
+  }
+  back.href = studyLibraryBackHref(location.search);
 })();
 var teacherAccount = teacherParam || "";
 
@@ -694,19 +703,11 @@ function buildCombinedList() {
 
 function openModule(m) {
   if (m.kind === "builtin") {
-    var url = m.file;
-    if (window.__studyIdentity) {
-      url += "?board=" + encodeURIComponent(window.__studyIdentity.boardId) +
-        "&student=" + encodeURIComponent(window.__studyIdentity.studentId) +
-        "&name=" + encodeURIComponent(window.__studyIdentity.name || "");
-    }
-    // Keep teacher mode (and local-testing flags) when the module's Back
-    // button returns here.
-    var extra = new URLSearchParams();
-    if (teacherParam) { extra.set("teacher", teacherParam); }
-    if (params.has("emulators")) { extra.set("emulators", "1"); }
-    if (extra.toString()) { url += (url.indexOf("?") === -1 ? "?" : "&") + extra.toString(); }
-    window.open(url, "_blank");
+    // Forward board / student / teacher / pbreturn / emulators so the
+    // module's Back button (study.html + location.search) still knows
+    // which PopBoard to return to. Module deep links such as mode= and
+    // view= are not copied onto the next module.
+    window.open(moduleOpenHref(m.file, location.search), "_blank");
   } else {
     window.open(m.url, "_blank");
   }

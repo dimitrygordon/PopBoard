@@ -14,6 +14,24 @@
   <link rel="preload" href="/fonts/fredoka-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="login-alive.css?v=20261021d" />
   <link rel="stylesheet" href="astro-mode.css?v=20261021d" />
+  <style>
+    html.pb-restoring #login,
+    html.pb-restoring #teacherLogin,
+    html.pb-restoring #teacherSignup { display: none !important; }
+  </style>
+  <script>
+    // Same key as BOARD_RETURN_STORAGE_KEY in board-return.js. Hides the
+    // sign-in form before app.js runs when a return target is already known.
+    (function () {
+      try {
+        var q = new URLSearchParams(location.search);
+        var stored = sessionStorage.getItem("popboard.boardReturn");
+        if (q.get("board") || q.get("pbreturn") || stored) {
+          document.documentElement.classList.add("pb-restoring");
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
 
@@ -350,7 +368,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/compromise@14/builds/compromise.min.js"></script>
 <script type="module" src="pdf-export.js"></script>
-<script type="module" src="app.js?v=20261021d"></script>
+<script type="module" src="app.js?v=20261021e"></script>
 <script defer src="login-sky.js?v=20261021d"></script>
 <script defer src="login-alive.js?v=20261021d"></script>
 <script defer src="astro-mode.js?v=20261021d"></script>
