@@ -222,10 +222,109 @@ const drawer = await tokens.$eval("#partDrawer", (el) => {
 check(drawer.buttons === 6 && drawer.svgs === 6 && drawer.letters === "", "tile drawer inlines the art kit (" + JSON.stringify(drawer) + ")");
 check(drawer.pivot === "100 70" && drawer.fromPivot === "50% 35%" && drawer.box === "view-box" && /100px/.test(drawer.origin), "wheel pivot is in viewBox coordinates (" + drawer.fromPivot + " -> " + drawer.origin + ")");
 check(drawer.motion === "mp-rock" && drawer.loop === "5s" && drawer.idle === "35deg" && drawer.hot === "55deg", "tiles loop on --mp-loop and grow when active");
+const rig = await tokens.evaluate(() => {
+  const name = (sel) => getComputedStyle(document.querySelector(sel)).animationName;
+  const pairs = [
+    ["#wheel", "#wheel-shadow .mp-shm"],
+    ["#weightL", "#weightL-shadow .mp-shm"],
+    ["#coils", "#coils-shadow .mp-shm"],
+    ["#block", "#block-shadow .mp-shm"],
+    ["#bob", "#bob-shadow .mp-shm"],
+    ["#rocket", "#rocket-shadow .mp-shm"],
+    ["#magnet", "#magnet-shadow .mp-shm"]
+  ];
+  const shadows = pairs.map(([part, shim]) => ({ part: name(part), shim: name(shim) }));
+  const coils = Array.from(document.querySelectorAll('[id^="coil-"]')).map((el) => ({
+    id: el.id,
+    n: getComputedStyle(el).getPropertyValue("--n").trim(),
+    delay: getComputedStyle(el).animationDelay
+  }));
+  const rope = getComputedStyle(document.querySelector("#rope-L"));
+  return {
+    shadows,
+    ropes: name("#rope-L") + "/" + name("#rope-R"),
+    ropeOrigin: document.querySelector("#rope-L").dataset.mpOrigin,
+    coils,
+    arrow: document.querySelector("#arrowFriction").getAttribute("data-pivot"),
+    art: ["#mpPul-wheelArt", "#mpSpr-coilsArt", "#mpRmp-blockArt", "#mpPen-bobArt", "#mpRkt-rocketArt", "#mpMag-magnetArt"].map((id) => !!document.querySelector(id))
+  };
+});
+check(rig.shadows.every((pair) => pair.part && pair.part !== "none" && pair.part === pair.shim), "shadow shims share the part motion (" + JSON.stringify(rig.shadows) + ")");
+check(rig.ropes === "mp-rope/mp-rope" && rig.ropeOrigin === "35% 36%", "ropes stretch from the wheel pivot (" + rig.ropes + " @ " + rig.ropeOrigin + ")");
+check(rig.coils.length === 8 && rig.coils.every((coil, i) => coil.n === String(i + 1)) && new Set(rig.coils.map((coil) => coil.delay)).size === 8, "coils stagger on --n (" + rig.coils.map((coil) => coil.n + ":" + coil.delay).join(" ") + ")");
+check(rig.arrow === "96 132" && rig.art.every(Boolean), "friction arrow pivot and inner art groups (" + rig.arrow + ")");
+
+function rotationDeg(transform) {
+  const match = String(transform).match(/matrix\(([^)]+)\)/);
+  if (!match) return null;
+  const [a, b] = match[1].split(",").map((n) => Number(n.trim()));
+  return Math.atan2(b, a) * 180 / Math.PI;
+}
+async function seekTiles(progress) {
+  await tokens.evaluate((fraction) => {
+    document.querySelectorAll(".tile *").forEach((el) => {
+      const dur = parseFloat(getComputedStyle(el).animationDuration);
+      if (!Number.isFinite(dur) || dur <= 0) return;
+      el.style.animationTimingFunction = "linear";
+      el.style.animationDelay = (-fraction * dur) + "s";
+      el.style.animationPlayState = "paused";
+    });
+  }, progress);
+}
+await seekTiles(0);
+const ropeLong = await tokens.$eval("#rope-L", (el) => getComputedStyle(el).transform);
+await seekTiles(0.38);
+const posed = await tokens.evaluate(() => {
+  const read = (sel) => getComputedStyle(document.querySelector(sel)).transform;
+  return { wheel: read("#wheel"), shim: read("#wheel-shadow .mp-shm"), rope: read("#rope-L") };
+});
+const idleRock = rotationDeg(posed.wheel);
+const shimRock = rotationDeg(posed.shim);
+await tokens.hover(".t-pulley");
+await tokens.evaluate(() => new Promise((resolve) => {
+  const tile = document.querySelector(".t-pulley");
+  const done = () => resolve();
+  tile.addEventListener("transitionend", done, { once: true });
+  setTimeout(done, 700);
+}));
+const hover = await tokens.$eval(".t-pulley", (el) => getComputedStyle(el).transform);
+const hoverParts = String(hover).match(/matrix\(([^)]+)\)/);
+const hoverNums = hoverParts ? hoverParts[1].split(",").map((n) => Number(n.trim())) : [];
+const hoverScale = Math.hypot(hoverNums[0] || 0, hoverNums[1] || 0);
+const hoverAngle = hoverNums.length ? Math.atan2(hoverNums[1], hoverNums[0]) * 180 / Math.PI : 0;
+const hoverTy = hoverNums[5] || 0;
+check(hoverScale > 1.02 && hoverAngle < -1 && hoverTy < -8, "hover lifts and tips the tile (scale " + hoverScale.toFixed(3) + ", " + hoverAngle.toFixed(1) + "deg, " + hoverTy.toFixed(1) + "px)");
+await mkdir(SHOTS, { recursive: true });
+const drawerEl = await tokens.$("#partDrawer");
+await drawerEl.screenshot({ path: SHOTS + "/mechanics-tiles-hover.png" });
+await tokens.mouse.move(700, 400);
+await tokens.evaluate(() => document.querySelectorAll(".tile").forEach((el) => el.classList.add("is-active")));
+await seekTiles(0.38);
+const hotRock = rotationDeg(await tokens.$eval("#wheel", (el) => getComputedStyle(el).transform));
+check(idleRock > 36 && idleRock < 46 && hotRock > idleRock + 15 && Math.abs(shimRock - idleRock) < 2, "active overshoots past the idle rock (" + idleRock.toFixed(1) + " -> " + hotRock.toFixed(1) + ", shadow " + shimRock.toFixed(1) + ")");
+const ropeShort = posed.rope;
+check(/matrix/.test(ropeLong) && /matrix/.test(ropeShort) && ropeLong !== ropeShort, "the rope length changes with the weights");
+await drawerEl.screenshot({ path: SHOTS + "/mechanics-tiles-active.png" });
+await tokens.evaluate(() => document.querySelectorAll(".tile").forEach((el) => el.classList.remove("is-active")));
 await tokens.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "reduce" }]);
-const held = await tokens.$eval("#wheel", (el) => getComputedStyle(el).animationName);
-check(held === "none", "reduced motion holds the tiles still (" + held + ")");
+await tokens.hover(".t-pulley");
+const held = await tokens.evaluate(() => {
+  const wheel = getComputedStyle(document.querySelector("#wheel"));
+  const shim = getComputedStyle(document.querySelector("#wheel-shadow .mp-shm"));
+  const tile = getComputedStyle(document.querySelector(".t-pulley"));
+  return { wheel: wheel.animationName, shim: shim.animationName, transform: tile.transform };
+});
+check(held.wheel === "none" && held.shim === "none" && held.transform === "none", "reduced motion holds the tiles still (" + JSON.stringify(held) + ")");
+await drawerEl.screenshot({ path: SHOTS + "/mechanics-tiles-reduced.png" });
+await tokens.mouse.move(700, 400);
 await tokens.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "no-preference" }]);
+await tokens.evaluate(() => {
+  document.querySelectorAll(".tile *").forEach((el) => {
+    el.style.animationTimingFunction = "";
+    el.style.animationDelay = "";
+    el.style.animationPlayState = "";
+  });
+});
 const magnetsBefore = await tokens.evaluate(() => window.mechanics.state.bodies.filter((body) => Math.abs(body.magnet) > 0).length);
 const magnetTile = await tokens.$(".t-magnet");
 const magnetBox = await magnetTile.boundingBox();

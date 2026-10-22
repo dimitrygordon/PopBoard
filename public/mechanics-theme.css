@@ -204,6 +204,7 @@ button:focus-visible {
   gap: 8px;
   max-height: calc(100dvh - 132px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   overflow: auto;
+  padding: 16px 8px 14px;
   pointer-events: auto;
 }
 .tile {
@@ -230,6 +231,13 @@ button:focus-visible {
   touch-action: none;
   cursor: grab;
   position: relative;
+  transition: transform .3s cubic-bezier(.3, 1.6, .5, 1), filter .3s;
+  filter: drop-shadow(0 3px 3px rgba(70, 40, 10, .25));
+}
+.tile:hover,
+.tile:focus-visible {
+  transform: translateY(-12px) rotate(-1.8deg) scale(1.03);
+  filter: drop-shadow(4px 20px 14px rgba(70, 40, 10, .45));
 }
 .tile.is-active {
   --pa: 55deg;
@@ -453,7 +461,7 @@ button:focus-visible {
     max-height: none;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 8px calc(8px + env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) calc(8px + env(safe-area-inset-left));
+    padding: 16px calc(8px + env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) calc(8px + env(safe-area-inset-left));
     touch-action: pan-x;
   }
   .tile { touch-action: none; }
@@ -461,6 +469,6 @@ button:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
   * { scroll-behavior: auto !important; transition: none !important; }
-  .tile, .tile * { animation: none !important; }
-  .tile:hover { transform: none; }
+  .tile, .tile * { animation: none !important; transition: none !important; }
+  .tile:hover, .tile:focus-visible { transform: none; filter: drop-shadow(0 3px 3px rgba(70, 40, 10, .25)); }
 }
