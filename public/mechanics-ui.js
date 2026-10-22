@@ -25,8 +25,22 @@ const MATERIAL_CYCLE = ["ice", "wood", "rubber"];
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const $ = (id) => document.getElementById(id);
 
+function sanitizeTileSvg(svg) {
+  if (!svg || typeof svg.querySelectorAll !== "function") return svg;
+  svg.querySelectorAll("script").forEach((node) => node.remove());
+  const nodes = [svg, ...svg.querySelectorAll("*")];
+  for (const node of nodes) {
+    if (!node.attributes) continue;
+    for (const attr of [...node.attributes]) {
+      if (attr.name.length > 1 && attr.name.slice(0, 2).toLowerCase() === "on") node.removeAttribute(attr.name);
+    }
+  }
+  return svg;
+}
+
 const mechanics = new EventTarget();
 mechanics.state = { bodies: [], joints: [], time: 0, paused: true };
+mechanics.sanitizeTileSvg = sanitizeTileSvg;
 mechanics.createCraftDrawLayer = createCraftDrawLayer;
 mechanics.createPlaceholderDrawLayer = createPlaceholderDrawLayer;
 mechanics.createSchematicDrawLayer = createSchematicDrawLayer;
@@ -56,6 +70,7 @@ function boot(planck) {
   const sim = createSimulation(planck, buildPreset(mode));
   sim.setPaused(reducedMotion);
   let snapOn = false;
+  let editScenery = false;
   let radialId = null;
   let tileGesture = null;
   const pointers = new Map();
@@ -113,6 +128,7 @@ function boot(planck) {
         svg.removeAttribute("height");
         svg.setAttribute("aria-hidden", "true");
         svg.setAttribute("focusable", "false");
+        sanitizeTileSvg(svg);
         entry.button.replaceChildren(document.importNode(svg, true));
         applyPivots(entry.button);
       }).catch(() => {
@@ -501,13 +517,43 @@ function boot(planck) {
     return best;
   }
 
+  function sceneryLocked(body) {
+    if (!body || editScenery) return false;
+    return body.type === "ground" || body.type === "wall";
+  }
+
+  function pixelsPerMeter() {
+    const origin = drawLayer.screenFromWorld(0, 0);
+    const unit = drawLayer.screenFromWorld(1, 0);
+    return Math.hypot(unit.x - origin.x, unit.y - origin.y) || 1;
+  }
+
+  function touchHits(body, world, sx, sy, scale, ppm) {
+    if (hitBody([body], world.x, world.y)) return true;
+    const minRadius = 22 * scale;
+    const half = (body.shape === "circle" ? body.radius || 0 : Math.max(body.hx || 0, body.hy || 0)) * ppm;
+    if (half >= minRadius) return false;
+    const center = drawLayer.screenFromWorld(body.x, body.y);
+    return Math.hypot(center.x - sx, center.y - sy) <= minRadius;
+  }
+
+  function pickBody(snap, world, sx, sy, scale) {
+    const ppm = pixelsPerMeter();
+    for (let i = snap.bodies.length - 1; i >= 0; i--) {
+      const body = snap.bodies[i];
+      if (touchHits(body, world, sx, sy, scale, ppm)) return body;
+    }
+    return null;
+  }
+
   function hitHandle(snap, sx, sy, scale) {
     const body = snap.bodies.find((item) => item.selected);
-    if (!body || typeof drawLayer.handleOf !== "function") return null;
+    if (!body || sceneryLocked(body) || typeof drawLayer.handleOf !== "function") return null;
     const handle = drawLayer.handleOf(body);
     if (!handle) return null;
-    if (Math.hypot(handle.screen.x - sx, handle.screen.y - sy) <= 22 * scale) return body.id;
-    return null;
+    const dist = Math.hypot(handle.screen.x - sx, handle.screen.y - sy);
+    if (dist > 14 * scale) return null;
+    return { id: body.id, dist };
   }
 
   function angleDelta(next, prev) {
@@ -587,9 +633,15 @@ function boot(planck) {
     const pos = canvasPos(event);
     const world = drawLayer.worldFromScreen(pos.sx, pos.sy);
     const snap = sim.snapshot();
-    const handleId = hitHandle(snap, pos.sx, pos.sy, pos.scale);
+    let touched = pickBody(snap, world, pos.sx, pos.sy, pos.scale);
+    if (sceneryLocked(touched)) touched = null;
+    const handle = hitHandle(snap, pos.sx, pos.sy, pos.scale);
+    const touchedScreen = touched ? drawLayer.screenFromWorld(touched.x, touched.y) : null;
+    const touchedDist = touchedScreen ? Math.hypot(touchedScreen.x - pos.sx, touchedScreen.y - pos.sy) : Infinity;
+    const handleWins = !!handle && handle.dist < touchedDist;
+    const handleId = handleWins ? handle.id : null;
     const endpoint = handleId ? null : hitEndpoint(snap, pos.sx, pos.sy, pos.scale);
-    const bodyId = handleId || (endpoint && endpoint.bodyId) || hitBody(snap.bodies, world.x, world.y);
+    const bodyId = handleId || (endpoint && endpoint.bodyId) || (touched && touched.id) || null;
     pointers.set(event.pointerId, {
       sx: pos.sx,
       sy: pos.sy,
@@ -745,6 +797,9 @@ function boot(planck) {
       sim.rotateBy(id, Math.PI / 12);
       sim.endDrag();
       publish("change");
+    } else if (event.key.toLowerCase() === "e" && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      editScenery = !editScenery;
+      say(editScenery ? "Stage edit on." : "Stage locked.");
     } else if (event.key.toLowerCase() === "g") {
       snapOn = !snapOn;
       sim.setOverlay({ snap: snapOn });

@@ -284,6 +284,17 @@ test("friction race: ice outruns wood, rubber stays put", () => {
   assert.ok(rubber < 0.25, "rubber should stick, speed " + rubber);
 });
 
+test("friction blocks stay on the tray after 10s", () => {
+  const sim = createSimulation(planck, buildPreset("friction"));
+  assert.ok(sim.snapshot().bodies.some((item) => item.id === "tray" && item.type === "ground"));
+  sim.run(10);
+  const snap = sim.snapshot();
+  for (const id of ["blockice", "blockwood", "blockrubber"]) {
+    const item = body(snap, id);
+    assert.ok(item.y > -0.2, id + " fell past the tray, y=" + item.y);
+  }
+});
+
 test("rube preset passes motion along the chain", () => {
   const sim = createSimulation(planck, buildPreset("rube"));
   const start = body(sim.snapshot(), "cargo").x;

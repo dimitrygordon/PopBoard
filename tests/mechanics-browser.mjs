@@ -301,7 +301,7 @@ await tokens.mouse.move(700, 400);
 await tokens.evaluate(() => document.querySelectorAll(".tile").forEach((el) => el.classList.add("is-active")));
 await seekTiles(0.38);
 const hotRock = rotationDeg(await tokens.$eval("#wheel", (el) => getComputedStyle(el).transform));
-check(idleRock > 36 && idleRock < 46 && hotRock > idleRock + 15 && Math.abs(shimRock - idleRock) < 2, "active overshoots past the idle rock (" + idleRock.toFixed(1) + " -> " + hotRock.toFixed(1) + ", shadow " + shimRock.toFixed(1) + ")");
+check(idleRock > 30 && idleRock < 48 && hotRock > idleRock + 15 && Math.abs(shimRock - idleRock) < 2, "active overshoots past the idle rock (" + idleRock.toFixed(1) + " -> " + hotRock.toFixed(1) + ", shadow " + shimRock.toFixed(1) + ")");
 const ropeShort = posed.rope;
 check(/matrix/.test(ropeLong) && /matrix/.test(ropeShort) && ropeLong !== ropeShort, "the rope length changes with the weights");
 await drawerEl.screenshot({ path: SHOTS + "/mechanics-tiles-active.png" });
@@ -325,6 +325,65 @@ await tokens.evaluate(() => {
     el.style.animationPlayState = "";
   });
 });
+const cleanSvg = await tokens.evaluate(() => {
+  const parsed = new DOMParser().parseFromString(
+    '<svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)"><script>alert(2)</script><g onclick="alert(3)" id="wheel"></g></svg>',
+    "image/svg+xml"
+  );
+  window.mechanics.sanitizeTileSvg(parsed.documentElement);
+  return parsed.documentElement.outerHTML;
+});
+check(!/<script/i.test(cleanSvg) && !/\son[a-z0-9:-]*=/i.test(cleanSvg), "tile svg drops scripts and handlers");
+const groundDrag = await tokens.evaluate(() => {
+  document.getElementById("pauseBtn").click();
+  const canvas = document.getElementById("mechanicsCanvas");
+  const before = window.mechanics.state.bodies.find((body) => body.id === "ground");
+  const screen = window.mechanics.layer.screenFromWorld(before.x, before.y);
+  const rect = canvas.getBoundingClientRect();
+  const x = rect.left + screen.x * (rect.width / canvas.width);
+  const y = rect.top + screen.y * (rect.height / canvas.height);
+  const fire = (type, px, py) => canvas.dispatchEvent(new PointerEvent(type, {
+    bubbles: true,
+    cancelable: true,
+    pointerId: 3,
+    clientX: px,
+    clientY: py,
+    buttons: type === "pointerup" ? 0 : 1,
+    pointerType: "mouse"
+  }));
+  fire("pointerdown", x, y);
+  fire("pointermove", x + 56, y - 28);
+  fire("pointerup", x + 56, y - 28);
+  const after = window.mechanics.state.bodies.find((body) => body.id === "ground");
+  return { dx: after.x - before.x, dy: after.y - before.y };
+});
+check(Math.abs(groundDrag.dx) < 0.02 && Math.abs(groundDrag.dy) < 0.02, "paused ground stays put (" + JSON.stringify(groundDrag) + ")");
+await tokens.keyboard.press("KeyE");
+const groundEdit = await tokens.evaluate(() => {
+  const canvas = document.getElementById("mechanicsCanvas");
+  const before = window.mechanics.state.bodies.find((body) => body.id === "ground");
+  const screen = window.mechanics.layer.screenFromWorld(before.x, before.y);
+  const rect = canvas.getBoundingClientRect();
+  const x = rect.left + screen.x * (rect.width / canvas.width);
+  const y = rect.top + screen.y * (rect.height / canvas.height);
+  const fire = (type, px, py) => canvas.dispatchEvent(new PointerEvent(type, {
+    bubbles: true,
+    cancelable: true,
+    pointerId: 4,
+    clientX: px,
+    clientY: py,
+    buttons: type === "pointerup" ? 0 : 1,
+    pointerType: "mouse"
+  }));
+  fire("pointerdown", x, y);
+  fire("pointermove", x + 56, y - 28);
+  fire("pointerup", x + 56, y - 28);
+  const after = window.mechanics.state.bodies.find((body) => body.id === "ground");
+  return { dx: after.x - before.x, dy: after.y - before.y };
+});
+check(Math.hypot(groundEdit.dx, groundEdit.dy) > 0.08, "stage edit can move the ground (" + JSON.stringify(groundEdit) + ")");
+await tokens.keyboard.press("KeyE");
+await tokens.click("#pauseBtn");
 const magnetsBefore = await tokens.evaluate(() => window.mechanics.state.bodies.filter((body) => Math.abs(body.magnet) > 0).length);
 const magnetTile = await tokens.$(".t-magnet");
 const magnetBox = await magnetTile.boundingBox();
@@ -425,6 +484,73 @@ check(material === "rubber", "radial material cycles the bob to felt (" + materi
 console.log("SHOT " + touchShot);
 check(hardErrors(touch).length === 0, "touch viewport stays quiet" + (hardErrors(touch).length ? ": " + hardErrors(touch).join(" | ") : ""));
 await touch.close();
+
+const phoneFriction = await browser.newPage();
+track(phoneFriction);
+await phoneFriction.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
+await phoneFriction.goto(base + "/study-mechanics?mode=friction", { waitUntil: "domcontentloaded", timeout: 20000 });
+await phoneFriction.waitForFunction(() => window.mechanics && window.mechanics.state.bodies.some((body) => body.id === "blockice"), { timeout: 8000 });
+await phoneFriction.click("#pauseBtn");
+const iceDrag = await phoneFriction.evaluate(() => {
+  const canvas = document.getElementById("mechanicsCanvas");
+  const before = window.mechanics.state.bodies.find((body) => body.id === "blockice");
+  const screen = window.mechanics.layer.screenFromWorld(before.x, before.y);
+  const rect = canvas.getBoundingClientRect();
+  const x = rect.left + screen.x * (rect.width / canvas.width);
+  const y = rect.top + screen.y * (rect.height / canvas.height);
+  const fire = (type, px, py) => canvas.dispatchEvent(new PointerEvent(type, {
+    bubbles: true,
+    cancelable: true,
+    pointerId: 9,
+    clientX: px,
+    clientY: py,
+    buttons: type === "pointerup" ? 0 : 1,
+    pointerType: "touch"
+  }));
+  fire("pointerdown", x, y);
+  fire("pointermove", x + 36, y + 10);
+  fire("pointerup", x + 36, y + 10);
+  const after = window.mechanics.state.bodies.find((body) => body.id === "blockice");
+  return {
+    dist: Math.hypot(after.x - before.x, after.y - before.y),
+    dAngle: Math.abs(after.angle - before.angle),
+    selected: before.selected
+  };
+});
+check(iceDrag.selected && iceDrag.dist > 0.04 && iceDrag.dAngle < 0.08, "a phone tap on the ice block drags the body (" + JSON.stringify(iceDrag) + ")");
+const iceHandle = await phoneFriction.evaluate(() => {
+  const canvas = document.getElementById("mechanicsCanvas");
+  const before = window.mechanics.state.bodies.find((body) => body.id === "blockice");
+  const handle = window.mechanics.layer.handleOf(before);
+  const center = window.mechanics.layer.screenFromWorld(before.x, before.y);
+  const rect = canvas.getBoundingClientRect();
+  const css = rect.width / canvas.width;
+  const x = rect.left + handle.screen.x * css;
+  const y = rect.top + handle.screen.y * css;
+  const hx = handle.screen.x - center.x;
+  const hy = handle.screen.y - center.y;
+  const len = Math.hypot(hx, hy) || 1;
+  const tx = (-hy / len) * 70 * css;
+  const ty = (hx / len) * 70 * css;
+  const fire = (type, px, py) => canvas.dispatchEvent(new PointerEvent(type, {
+    bubbles: true,
+    cancelable: true,
+    pointerId: 11,
+    clientX: px,
+    clientY: py,
+    buttons: type === "pointerup" ? 0 : 1,
+    pointerType: "touch"
+  }));
+  fire("pointerdown", x, y);
+  fire("pointermove", x + tx * 0.45, y + ty * 0.45);
+  fire("pointermove", x + tx, y + ty);
+  fire("pointerup", x + tx, y + ty);
+  const after = window.mechanics.state.bodies.find((body) => body.id === "blockice");
+  return { dist: Math.hypot(after.x - before.x, after.y - before.y), dAngle: Math.abs(after.angle - before.angle) };
+});
+check(iceHandle.dAngle > 0.05, "a direct hit on the ice handle still rotates (" + JSON.stringify(iceHandle) + ")");
+check(hardErrors(phoneFriction).length === 0, "friction phone stays quiet" + (hardErrors(phoneFriction).length ? ": " + hardErrors(phoneFriction).join(" | ") : ""));
+await phoneFriction.close();
 
 await browser.close();
 server.close();

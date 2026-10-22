@@ -702,7 +702,31 @@ function frictionPreset() {
   const rise = run * Math.tan(degrees * Math.PI / 180);
   const halfHeight = 0.14;
   const materials = ["ice", "wood", "rubber"];
-  const parts = [];
+  const parts = [
+    part({
+      id: "tray",
+      type: "ground",
+      x: 5.2,
+      y: -0.27,
+      width: 18,
+      height: 0.5,
+      static: true,
+      material: "wood",
+      friction: 0.6,
+      restitution: 0
+    }),
+    part({
+      id: "stop",
+      type: "wall",
+      x: -2.4,
+      y: 1.4,
+      width: 0.4,
+      height: 2.8,
+      static: true,
+      material: "wood",
+      restitution: 0
+    })
+  ];
   materials.forEach((material, index) => {
     const origin = { x: index * 4.4, y: 0 };
     const pose = blockOnWedge(origin, run, rise, 2.35, halfHeight, 0.002);
