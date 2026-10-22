@@ -173,6 +173,7 @@ function boot(planck) {
     }
     craftLayer.resize();
     schematicLayer.resize();
+    if (!craftLayer.userAdjusted()) frameBoth();
   }
 
   function canvasPos(event) {
@@ -190,10 +191,36 @@ function boot(planck) {
     return drawLayer.worldFromScreen(canvas.width / 2, canvas.height / 2);
   }
 
+  function frameInsets() {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / (rect.width || 1);
+    const scaleY = canvas.height / (rect.height || 1);
+    let top = 0;
+    let bottom = 0;
+    let left = 0;
+    const hud = document.querySelector(".hud");
+    if (hud) top = Math.max(0, hud.getBoundingClientRect().bottom - rect.top);
+    const drawer = document.getElementById("partDrawer");
+    if (drawer) {
+      const box = drawer.getBoundingClientRect();
+      const alongBottom = box.width > rect.width * 0.6 && box.top > rect.top + rect.height * 0.45;
+      if (alongBottom) bottom = Math.max(0, rect.bottom - box.top);
+      else left = Math.max(0, box.right - rect.left);
+    }
+    const gap = 14;
+    return {
+      top: (top + gap) * scaleY,
+      bottom: (bottom + gap) * scaleY,
+      left: (left + (left ? gap : 8)) * scaleX,
+      right: 10 * scaleX
+    };
+  }
+
   function frameBoth() {
     const snap = sim.snapshot();
-    craftLayer.frame(snap);
-    schematicLayer.frame(snap);
+    const insets = frameInsets();
+    craftLayer.frame(snap, insets);
+    schematicLayer.frame(snap, insets);
   }
 
   function loadMode(next) {

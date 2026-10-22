@@ -183,33 +183,72 @@ function mulberry(seed) {
   };
 }
 
+function bodyPoints(body) {
+  if (!body) return [];
+  if (body.vertices && body.vertices.length) return body.vertices;
+  if (body.radius) {
+    const r = body.radius;
+    return [
+      { x: body.x - r, y: body.y - r },
+      { x: body.x + r, y: body.y + r }
+    ];
+  }
+  const hx = body.hx || (body.width || 0) / 2;
+  const hy = body.hy || (body.height || 0) / 2;
+  if (hx || hy) {
+    return [
+      { x: body.x - hx, y: body.y - hy },
+      { x: body.x + hx, y: body.y + hy }
+    ];
+  }
+  return [{ x: body.x, y: body.y }];
+}
+
+function enclose(points) {
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+  for (const point of points) {
+    if (!point || !Number.isFinite(point.x) || !Number.isFinite(point.y)) continue;
+    minX = Math.min(minX, point.x);
+    maxX = Math.max(maxX, point.x);
+    minY = Math.min(minY, point.y);
+    maxY = Math.max(maxY, point.y);
+  }
+  if (!Number.isFinite(minX)) return null;
+  return { minX, maxX, minY, maxY };
+}
+
 function boundsOf(snapshot) {
-  let minX = -4;
-  let maxX = 4;
-  let minY = -1;
-  let maxY = 4;
-  const visit = (x, y) => {
-    if (!Number.isFinite(x) || !Number.isFinite(y)) return;
-    minX = Math.min(minX, x);
-    maxX = Math.max(maxX, x);
-    minY = Math.min(minY, y);
-    maxY = Math.max(maxY, y);
-  };
+  const action = [];
+  const floors = [];
   for (const body of snapshot.bodies || []) {
-    visit(body.x, body.y);
-    if (body.vertices) body.vertices.forEach((vertex) => visit(vertex.x, vertex.y));
-    if (body.radius) {
-      visit(body.x - body.radius, body.y - body.radius);
-      visit(body.x + body.radius, body.y + body.radius);
-    }
+    if (body.type === "ground") floors.push(body);
+    else action.push(...bodyPoints(body));
   }
   for (const joint of snapshot.joints || []) {
-    visit(joint.ax, joint.ay);
-    visit(joint.bx, joint.by);
-    if (joint.groundA) visit(joint.groundA.x, joint.groundA.y);
-    if (joint.groundB) visit(joint.groundB.x, joint.groundB.y);
+    action.push({ x: joint.ax, y: joint.ay }, { x: joint.bx, y: joint.by });
+    if (joint.groundA) action.push(joint.groundA);
+    if (joint.groundB) action.push(joint.groundB);
   }
-  return { minX, maxX, minY, maxY };
+  let box = enclose(action);
+  if (!box) {
+    const all = [];
+    for (const body of snapshot.bodies || []) all.push(...bodyPoints(body));
+    return enclose(all) || { minX: -4, maxX: 4, minY: -1, maxY: 4 };
+  }
+  // A long floor should not zoom the shot out. Keep its surface under the
+  // parts, and let the plank run off the sides of the frame.
+  for (const ground of floors) {
+    const span = enclose(bodyPoints(ground));
+    if (!span) continue;
+    const overlaps = span.maxX >= box.minX && span.minX <= box.maxX;
+    if (!overlaps) continue;
+    box.minY = Math.min(box.minY, span.minY);
+    box.maxY = Math.max(box.maxY, span.maxY);
+  }
+  return box;
 }
 
 const PPM_MIN = 20;
@@ -243,17 +282,36 @@ function cameraProjector(width, height, camera) {
   };
 }
 
-function frameCamera(camera, width, height, snapshot) {
+function frameInsetsOf(insets, width, height) {
+  const src = insets || {};
+  const left = Math.max(0, Number(src.left) || 0);
+  const right = Math.max(0, Number(src.right) || 0);
+  const top = Math.max(0, Number(src.top) || 0);
+  const bottom = Math.max(0, Number(src.bottom) || 0);
+  const roomW = Math.max(48, width - left - right);
+  const roomH = Math.max(48, height - top - bottom);
+  return { left, top, roomW, roomH };
+}
+
+function frameCamera(camera, width, height, snapshot, insets) {
   if (!(width >= 2) || !(height >= 2)) return;
+  const view = frameInsetsOf(insets, width, height);
   const bounds = boundsOf(snapshot || { bodies: [] });
-  const worldW = Math.max(2.5, bounds.maxX - bounds.minX);
-  const worldH = Math.max(2.5, bounds.maxY - bounds.minY);
-  const ppm = Math.min(width / (worldW * 1.35), height / (worldH * 1.35));
+  const worldW = Math.max(1.6, bounds.maxX - bounds.minX);
+  const worldH = Math.max(1.6, bounds.maxY - bounds.minY);
+  const margin = 1.22;
+  const ppm = Math.min(view.roomW / (worldW * margin), view.roomH / (worldH * margin));
   camera.ppm = Math.max(PPM_MIN, Math.min(PPM_MAX, ppm));
-  camera.cx = (bounds.minX + bounds.maxX) / 2;
-  camera.cy = (bounds.minY + bounds.maxY) / 2;
+  const wx = (bounds.minX + bounds.maxX) / 2;
+  const wy = (bounds.minY + bounds.maxY) / 2;
+  const sx = view.left + view.roomW / 2;
+  const sy = view.top + view.roomH / 2;
+  camera.cx = wx - (sx - width / 2) / camera.ppm;
+  camera.cy = wy + (sy - height / 2) / camera.ppm;
   camera.framed = true;
   camera.followId = null;
+  camera.userAdjusted = false;
+  clampCamera(camera);
 }
 
 function clampCamera(camera) {
@@ -281,24 +339,100 @@ function handlePoint(body) {
   };
 }
 
-function paintGrabHandle(ctx, project, snapshot, theme) {
+function crayonArc(ctx, cx, cy, radius, a0, a1, color, theme, unit) {
+  const width = num(theme, "--mp-crayon-width", 3.2) * unit;
+  const jitter = num(theme, "--mp-crayon-jitter", 1.35) * unit;
+  const steps = 12;
+  const rand = mulberry((Math.round(cx) * 17) ^ (Math.round(cy) * 31) ^ Math.round(radius));
+  const point = (i, wobble) => {
+    const t = i / steps;
+    const angle = a0 + (a1 - a0) * t;
+    const extra = wobble && i && i < steps ? (rand() - 0.5) * jitter : 0;
+    return {
+      x: cx + Math.cos(angle) * (radius + extra),
+      y: cy + Math.sin(angle) * (radius + extra)
+    };
+  };
+  ctx.save();
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.strokeStyle = theme["--mp-arrow-halo"] || "rgba(35,20,6,0.55)";
+  ctx.lineWidth = width * 2.15;
+  ctx.beginPath();
+  for (let i = 0; i <= steps; i++) {
+    const p = point(i, false);
+    if (i === 0) ctx.moveTo(p.x, p.y);
+    else ctx.lineTo(p.x, p.y);
+  }
+  ctx.stroke();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width * 1.35;
+  ctx.beginPath();
+  for (let i = 0; i <= steps; i++) {
+    const p = point(i, true);
+    if (i === 0) ctx.moveTo(p.x, p.y);
+    else ctx.lineTo(p.x, p.y);
+  }
+  ctx.stroke();
+  ctx.globalAlpha = 0.55;
+  ctx.fillStyle = theme["--mp-crayon-grain"] || "rgba(255,255,255,0.45)";
+  for (let i = 1; i < steps; i += 2) {
+    const p = point(i, false);
+    ctx.fillRect(p.x, p.y, 1.1 * unit, 1.1 * unit);
+  }
+  ctx.restore();
+}
+
+function paintGrabHandle(ctx, project, snapshot, theme, u) {
   const body = (snapshot.bodies || []).find((item) => item.selected);
   if (!body) return;
+  const unit = u || unitOf(ctx);
   const handle = handlePoint(body);
   const hub = project.screenFromWorld(body.x, body.y);
   const tip = project.screenFromWorld(handle.x, handle.y);
+  const dx = tip.x - hub.x;
+  const dy = tip.y - hub.y;
+  const len = Math.hypot(dx, dy) || 1;
+  const ux = dx / len;
+  const uy = dy / len;
+  const aim = Math.atan2(dy, dx);
+  const felt = 13 * unit;
   ctx.save();
-  ctx.strokeStyle = theme["--mp-stitch"] || "#2a2118";
-  ctx.fillStyle = theme["--mp-cardboard"] || "#d7a15e";
-  ctx.lineWidth = 2;
+  crayonArc(ctx, hub.x, hub.y, Math.max(22 * unit, len * 0.62), aim - 0.95, aim + 0.35, theme["--mp-yarn"] || "#c8372a", theme, unit);
+  ctx.strokeStyle = theme["--mp-twine"] || "#c2a36a";
+  ctx.lineWidth = num(theme, "--mp-twine-width", 2.4) * unit;
+  ctx.lineCap = "round";
   ctx.beginPath();
-  ctx.moveTo(hub.x, hub.y);
-  ctx.lineTo(tip.x, tip.y);
+  ctx.moveTo(hub.x + ux * len * 0.42, hub.y + uy * len * 0.42);
+  ctx.lineTo(tip.x - ux * (felt + 2 * unit), tip.y - uy * (felt + 2 * unit));
   ctx.stroke();
+  softShadow(ctx, () => {
+    ctx.beginPath();
+    ctx.arc(tip.x, tip.y, felt, 0, Math.PI * 2);
+  }, 3 * unit, 5 * unit, theme);
   ctx.beginPath();
-  ctx.arc(tip.x, tip.y, 12, 0, Math.PI * 2);
+  ctx.arc(tip.x, tip.y, felt, 0, Math.PI * 2);
+  ctx.fillStyle = theme["--mp-button-felt"] || theme["--mp-felt"] || "#4f78a8";
   ctx.fill();
+  ctx.save();
+  ctx.clip();
+  ctx.strokeStyle = theme["--mp-felt-fiber"] || "rgba(70,16,12,0.55)";
+  ctx.lineWidth = 0.8 * unit;
+  ctx.beginPath();
+  for (let i = -2; i <= 2; i++) {
+    ctx.moveTo(tip.x - felt, tip.y + i * 3.2 * unit);
+    ctx.lineTo(tip.x + felt, tip.y + i * 3.2 * unit + 2 * unit);
+  }
   ctx.stroke();
+  ctx.restore();
+  ctx.beginPath();
+  ctx.arc(tip.x, tip.y, felt - 1.4 * unit, 0, Math.PI * 2);
+  ctx.strokeStyle = theme["--mp-stitch"] || "#2a2118";
+  ctx.lineWidth = 1.1 * unit;
+  ctx.setLineDash([2.2 * unit, 2.4 * unit]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  paintBrass(ctx, tip, felt * 0.42, theme, unit);
   ctx.restore();
 }
 
@@ -2261,7 +2395,7 @@ function install(canvas, tiltFor, id, paint) {
       const theme = readTheme(typeof document !== "undefined" ? document.documentElement : null);
       camera.shear = reduced ? 0 : Math.tan(tiltFor.tilt(theme) || 0);
       const box = size();
-      if (!camera.framed) frameCamera(camera, box.width, box.height, snap);
+      if (!camera.framed) frameCamera(camera, box.width, box.height, snap, camera.insets);
       easeFollow(camera, snap, dt);
       refreshProject();
       const ctx = canvas.getContext("2d");
@@ -2282,6 +2416,7 @@ function install(canvas, tiltFor, id, paint) {
       camera.cx += after.x - before.x;
       camera.cy += after.y - before.y;
       camera.followId = null;
+      camera.userAdjusted = true;
       clampCamera(camera);
       refreshProject();
     },
@@ -2294,12 +2429,17 @@ function install(canvas, tiltFor, id, paint) {
       camera.cx += before.x - after.x;
       camera.cy += before.y - after.y;
       camera.followId = null;
+      camera.userAdjusted = true;
       clampCamera(camera);
       refreshProject();
     },
-    frame(snapshot) {
-      frameCamera(camera, size().width, size().height, snapshot || { bodies: [] });
+    frame(snapshot, insets) {
+      if (insets) camera.insets = insets;
+      frameCamera(camera, size().width, size().height, snapshot || { bodies: [] }, camera.insets);
       refreshProject();
+    },
+    userAdjusted() {
+      return !!camera.userAdjusted;
     },
     setFollow(bodyId) {
       camera.followId = bodyId || null;
@@ -2350,7 +2490,7 @@ export function createCraftDrawLayer(canvas, options) {
     for (const item of bodies) paintCraftBody(ctx, project, snapshot, item.body, theme, clock, still, u);
     paintRuler(ctx, snapshot, theme, project, u);
     paintVectors(ctx, snapshot, theme, project, still, u);
-    paintGrabHandle(ctx, project, snapshot, theme);
+    paintGrabHandle(ctx, project, snapshot, theme, u);
   });
 }
 
