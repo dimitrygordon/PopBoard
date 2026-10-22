@@ -12,7 +12,7 @@ import {
   circularGeodesic, circularOrbitClockRate, orbitingClockRate,
   circularCoordinateAngularSpeed, staticClockRate,
   stepSchwarzschild, advanceSchwarzschild, coordinateDtDphi,
-  schwarzschildCoordinateVelocity, precessionPerOrbit, mercuryPrecession, measurePrecession,
+  schwarzschildCoordinateVelocity, precessionPerOrbit, mercuryPrecession, measurePrecession, exactPrecession,
   integrateNewtonian, verletNewtonian, specificMechanicalEnergy, gravitationalField,
   presetBody, gpsWeakField, GPS_ABOUT,
   deflectionAngle, solarLimbDeflection, pointLensImages, weakDeflectionApplies,
@@ -137,6 +137,18 @@ test("a tight orbit's periapsis advance matches 6 π G M / (c² a (1−e²))", (
   assert.equal(sim.crossed, false);
   assert.ok(sim.precession > 0);
   assert.ok(Math.abs(sim.precession - theory) / theory < 0.08);
+});
+
+test("integrated periapsis advance matches the exact quadrature at two step sizes", () => {
+  const rs = schwarzschildRadius(M_SUN);
+  const exact = exactPrecession(80 * rs, 0.2, M_SUN);
+  const tol = 0.01 * Math.PI / 180;
+  assert.ok(Math.abs(exact * 180 / Math.PI - 7.2447) < 1e-3);
+  for (const dphi of [2.5e-4, 1.25e-4]) {
+    const sim = measurePrecession(80 * rs, 0.2, M_SUN, { dphi, maxSteps: 200000 });
+    assert.equal(sim.crossed, false);
+    assert.ok(Math.abs(sim.precession - exact) < tol, `dphi ${dphi}: ${sim.precession * 180 / Math.PI}°`);
+  }
 });
 
 test("Newtonian RK4 and velocity Verlet conserve orbital energy", () => {

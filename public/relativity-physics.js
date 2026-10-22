@@ -613,7 +613,25 @@ export function circularCoordinateAngularSpeed(r, mass) {
   return (geo.h * f) / (r * r * geo.E);
 }
 
-/** 1PN periapsis advance, radians per revolution: 6 π G M / (c² a (1−e²)). */
+/**
+ * Exact Schwarzschild periapsis advance per orbit for turning points
+ * a(1−e) and a(1+e), by quadrature with u = u_a + (u_p − u_a) sin²ψ.
+ */
+export function exactPrecession(a, e, mass, n = 20000) {
+  const rs = schwarzschildRadius(mass);
+  const up = 1 / (a * (1 - e));
+  const ua = 1 / (a * (1 + e));
+  const u3 = 1 / rs - up - ua;
+  let sum = 0;
+  for (let i = 0; i < n; i++) {
+    const psi = ((i + 0.5) / n) * (Math.PI / 2);
+    const u = ua + (up - ua) * Math.sin(psi) ** 2;
+    sum += 2 / Math.sqrt(rs * (u3 - u));
+  }
+  return 2 * sum * (Math.PI / 2 / n) - 2 * Math.PI;
+}
+
+/** First-order approximation (1PN) to the periapsis advance, radians per revolution: 6 π G M / (c² a (1−e²)). */
 export function precessionPerOrbit(a, e, mass, g = G, c = C) {
   return (6 * Math.PI * g * mass) / (c * c * a * (1 - e * e));
 }
@@ -626,7 +644,7 @@ export function mercuryPrecession() {
 }
 
 /**
- * Integrate the orbit equation from Newtonian periapsis and return the
+ * Integrate the orbit equation from periapsis and return the
  * advance of the next periapsis past 2π. Useful for a tight orbit where
  * the 1PN formula is still a good check. Mercury itself is too small to
  * measure this way in a short test; use mercuryPrecession() for 43″/cy.
@@ -635,7 +653,12 @@ export function measurePrecession(a, e, mass, opts = {}) {
   const rs = schwarzschildRadius(mass);
   const rp = a * (1 - e);
   if (!(rp > 1.5 * rs)) return { crossed: true, precession: null };
-  const h = Math.sqrt(G * mass * a * (1 - e * e));
+  // h from the turning points r_p = a(1−e), r_a = a(1+e). The Newtonian
+  // h² = GM·a(1−e²) puts apoapsis elsewhere and overstates the advance.
+  const upr = 1 / rp;
+  const uap = 1 / (a * (1 + e));
+  const u3 = 1 / rs - upr - uap;
+  const h = Math.sqrt((2 * G * mass) / (rs * (upr * uap + (upr + uap) * u3)));
   const f = 1 - rs / rp;
   const E = Math.sqrt(f * (1 + (h * h) / (C * C * rp * rp)));
   let s = { u: 1 / rp, up: 0, phi: 0, t: 0, tau: 0, h, E, mass, rs, crossed: false, r: rp };
