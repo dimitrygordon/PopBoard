@@ -1,0 +1,129 @@
+/* Mechanics Playground — prototype theme.
+   Da Vinci owns these tokens. The draw layer reads them from :root
+   on every frame. Force arrows and the free-body diagram use the
+   --mp-force-* colors. Thrust uses --mp-force-applied. Velocity uses
+   --mp-velocity. */
+
+:root {
+  --mp-bg: #14181f;
+  --mp-far: #1c2430;
+  --mp-mid: #2a3544;
+  --mp-near: #3d4d62;
+  --mp-body: #d7c4a3;
+  --mp-body-side: #8d7352;
+  --mp-shadow: rgba(0, 0, 0, 0.35);
+  --mp-rope: #e6d7a2;
+  --mp-spring: #c5d4de;
+  --mp-ice: #b9e4ff;
+  --mp-rubber: #e07a5f;
+  --mp-thrust: #ff7a3c;
+  --mp-vector-force: #f4f4f4;
+  --mp-vector-velocity: var(--mp-velocity);
+  --mp-grid: rgba(255, 255, 255, 0.08);
+  --mp-ui-card: #1a212b;
+  --mp-force-gravity: red;
+  --mp-force-normal: blue;
+  --mp-force-tension: gold;
+  --mp-force-friction: orange;
+  --mp-force-applied: green;
+  --mp-velocity: cyan;
+
+  --text: #e7e4dc;
+  --text-dim: #a7b0ba;
+  --border: #2c3742;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-display: "Oswald", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  background: var(--mp-bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.4;
+}
+h1, h2 { font-family: var(--font-display); letter-spacing: 0.04em; text-transform: uppercase; }
+button, input, select { font: inherit; color: inherit; }
+button { min-height: 44px; min-width: 44px; }
+button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid var(--mp-velocity);
+  outline-offset: 2px;
+}
+
+.bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--mp-ui-card);
+}
+.bar-group { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.study-back-btn { display: inline-flex; align-items: center; gap: 4px; }
+.title { padding: 12px 16px 0; }
+.title h1 { margin: 0 0 4px; font-size: 28px; }
+.title p { margin: 0; color: var(--text-dim); max-width: 70ch; }
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 12px;
+  padding: 12px;
+}
+.stage { min-width: 0; }
+#mechanicsCanvas {
+  width: 100%;
+  height: min(68vh, 640px);
+  background: var(--mp-bg);
+  border: 1px solid var(--border);
+  touch-action: none;
+  display: block;
+}
+#readout, #statusLine {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-dim);
+  margin: 8px 0 0;
+}
+#statusLine { min-height: 1.4em; }
+.card {
+  background: var(--mp-ui-card);
+  border: 1px solid var(--border);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.card h2 { margin: 8px 0 0; font-size: 16px; }
+.row { display: flex; flex-wrap: wrap; gap: 6px; }
+.row button, .row select, .card input[type="number"], .card input[type="text"], .card input[type="range"] {
+  background: var(--mp-bg);
+  border: 1px solid var(--border);
+  padding: 6px 8px;
+}
+.card label { display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: var(--text-dim); }
+.check { flex-direction: row; align-items: center; gap: 8px; min-height: 44px; }
+.keys { color: var(--text-dim); font-size: 13px; margin: 0; }
+.prototype-tag {
+  display: inline-block;
+  border: 1px solid var(--mp-force-friction);
+  color: var(--mp-force-friction);
+  padding: 0 6px;
+  margin-left: 8px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; }
+  .study-back-btn .back-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; transition: none !important; }
+}
