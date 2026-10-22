@@ -1,0 +1,474 @@
+/* Mechanics Playground — craft diorama theme.
+   Da Vinci owns every token below. The draw layer reads them from :root
+   on every frame: colors, grain, crayon width, and the amounts for
+   felt squash, paper flutter, and tape flap.
+   Force arrows and the free-body diagram use the --mp-force-* colors.
+   Thrust, as a force arrow, uses --mp-force-applied. The tissue plume
+   uses --mp-tissue, --mp-tissue-hot, and --mp-thrust. Velocity uses
+   --mp-velocity. */
+
+:root {
+  --mp-bg: #14181f;
+  --mp-far: #1c2430;
+  --mp-mid: #2a3544;
+  --mp-near: #3d4d62;
+  --mp-body: #d7a15e;
+  --mp-body-side: #8d5a2b;
+  --mp-shadow: rgba(20, 10, 4, 0.38);
+  --mp-rope: #c2a36a;
+  --mp-spring: #e0b56a;
+  --mp-ice: #f4efe2;
+  --mp-rubber: #c4493a;
+  --mp-thrust: #ff7a3c;
+  --mp-vector-force: #f4f4f4;
+  --mp-vector-velocity: var(--mp-velocity);
+  --mp-grid: rgba(90, 60, 30, 0.16);
+  --mp-ui-card: rgba(20, 24, 32, 0.92);
+  --mp-force-gravity: red;
+  --mp-force-normal: blue;
+  --mp-force-tension: gold;
+  --mp-force-friction: orange;
+  --mp-force-applied: green;
+  --mp-velocity: cyan;
+
+  --mp-desk: #241910;
+  --mp-paper: #f3e6c8;
+  --mp-paper-fiber: rgba(90, 60, 30, 0.16);
+  --mp-paper-fold: rgba(120, 80, 40, 0.45);
+  --mp-cardboard: #d7a15e;
+  --mp-cardboard-edge: #8d5a2b;
+  --mp-corrugation: rgba(90, 50, 20, 0.28);
+  --mp-felt: #c4493a;
+  --mp-felt-fiber: rgba(70, 16, 12, 0.55);
+  --mp-tape: #e6d28a;
+  --mp-tape-shine: rgba(255, 255, 255, 0.7);
+  --mp-stitch: #2a2118;
+  --mp-twine: #c2a36a;
+  --mp-yarn: #6f8fbf;
+  --mp-button: #f7f4ee;
+  --mp-button-rim: #c5bfb2;
+  --mp-button-hole: #2c2622;
+  --mp-cap: #d5d8de;
+  --mp-cap-rim: #8e939c;
+  --mp-brad: #b08d57;
+  --mp-tissue: #ffb08a;
+  --mp-tissue-hot: #ff5a3c;
+  --mp-crayon-grain: rgba(255, 255, 255, 0.45);
+  --mp-ruler: #f7f1dc;
+
+  --mp-diorama-tilt: 0.06;
+  --mp-shadow-x: 10;
+  --mp-shadow-y: 14;
+  --mp-extrude-x: 5;
+  --mp-extrude-y: 7;
+  --mp-felt-squash: 0.22;
+  --mp-felt-squash-rate: 0.06;
+  --mp-felt-breathe: 0.035;
+  --mp-paper-flutter: 5;
+  --mp-paper-flutter-rate: 4.5;
+  --mp-tape-flap: 0.42;
+  --mp-tape-flap-rate: 3.2;
+  --mp-stitch-gap: 7;
+  --mp-corrugation-pitch: 6;
+  --mp-torn-amp: 2.2;
+  --mp-crayon-width: 3.2;
+  --mp-crayon-jitter: 1.35;
+  --mp-yarn-width: 2.2;
+  --mp-yarn-wave: 3.5;
+  --mp-twine-width: 2.4;
+  --mp-coil-width: 9;
+  --mp-coil-pitch: 11;
+  --mp-coil-stroke: 4.5;
+  --mp-cap-max-radius: 0.12;
+  --mp-tape-size: 16;
+  --mp-button-holes: 4;
+  --mp-loop: 5s;
+
+  --text: #e7e4dc;
+  --text-dim: #a7b0ba;
+  --border: #3a322c;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-display: "Oswald", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: none;
+}
+body {
+  min-height: 100dvh;
+  height: 100dvh;
+  width: 100dvw;
+  background: var(--mp-desk);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.4;
+}
+button { font: inherit; color: inherit; }
+button { min-height: 44px; min-width: 44px; }
+button:focus-visible {
+  outline: 2px solid var(--mp-velocity);
+  outline-offset: 2px;
+}
+
+#mechanicsCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100dvw;
+  height: 100dvh;
+  display: block;
+  background: var(--mp-desk);
+  touch-action: none;
+  z-index: 0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.hud {
+  position: fixed;
+  z-index: 4;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  padding: calc(10px + env(safe-area-inset-top)) calc(10px + env(safe-area-inset-right)) 0 calc(10px + env(safe-area-inset-left));
+  pointer-events: none;
+}
+.hud-play { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.hud button {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--mp-cardboard-edge);
+  background: var(--mp-paper);
+  color: var(--mp-stitch);
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: 0 6px 0 rgba(42, 33, 24, 0.28);
+}
+.hud button[aria-pressed="true"] {
+  background: var(--mp-tape);
+  box-shadow: inset 0 0 0 2px var(--mp-stitch);
+}
+.study-back-btn { display: inline-flex; align-items: center; gap: 4px; }
+
+.toast:empty { display: none; }
+.toast {
+  position: fixed;
+  z-index: 4;
+  left: 50%;
+  top: calc(62px + env(safe-area-inset-top));
+  transform: translateX(-50%);
+  margin: 0;
+  max-width: min(92vw, 520px);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(36, 25, 16, 0.78);
+  color: var(--mp-paper);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  pointer-events: none;
+  text-align: center;
+}
+
+.drawer {
+  position: fixed;
+  z-index: 4;
+  left: calc(10px + env(safe-area-inset-left));
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: calc(100dvh - 132px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow: auto;
+  padding: 16px 8px 14px;
+  pointer-events: auto;
+}
+.tile {
+  --pa: 35deg;
+  --pd: 14px;
+  --pdn: .29;
+  --sq: .25;
+  --bx: 46px;
+  --by: 32.4px;
+  --sw: 25deg;
+  --rh: 8px;
+  --fs: 1;
+  --ma: 7deg;
+  --L: var(--mp-loop);
+  width: 76px;
+  height: 76px;
+  min-width: 76px;
+  min-height: 76px;
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  overflow: visible;
+  background: transparent;
+  touch-action: none;
+  cursor: grab;
+  position: relative;
+  transition: transform .3s cubic-bezier(.3, 1.6, .5, 1), filter .3s;
+  filter: drop-shadow(0 3px 3px rgba(70, 40, 10, .25));
+}
+.tile:hover,
+.tile:focus-visible {
+  transform: translateY(-12px) rotate(-1.8deg) scale(1.03);
+  filter: drop-shadow(4px 20px 14px rgba(70, 40, 10, .45));
+}
+.tile.is-active {
+  --pa: 55deg;
+  --pd: 22px;
+  --pdn: .45;
+  --sq: .42;
+  --bx: 70px;
+  --by: 49px;
+  --sw: 40deg;
+  --rh: 16px;
+  --fs: 1.35;
+  --ma: 16deg;
+}
+.tile.is-lifted { cursor: grabbing; filter: drop-shadow(4px 18px 12px rgba(42, 33, 24, 0.45)); }
+.tile-slot { display: block; flex: 0 0 auto; }
+.tile svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+}
+.tile g { transform-box: view-box; }
+.tile:focus-visible { outline: 2px solid var(--mp-velocity); outline-offset: 3px; }
+
+.t-pulley #wheel,
+.t-pulley #wheel-shadow .mp-shm { animation: mp-rock calc(var(--L) / 2) ease-in-out infinite; }
+.t-pulley #weightL,
+.t-pulley #weightL-shadow,
+.t-pulley #rope-L { --dir: 1; }
+.t-pulley #weightR,
+.t-pulley #weightR-shadow,
+.t-pulley #rope-R { --dir: -1; }
+.t-pulley #weightL,
+.t-pulley #weightR,
+.t-pulley #weightL-shadow .mp-shm,
+.t-pulley #weightR-shadow .mp-shm { animation: mp-weight calc(var(--L) / 2) ease-in-out infinite; }
+.t-pulley #rope-L,
+.t-pulley #rope-R { animation: mp-rope calc(var(--L) / 2) ease-in-out infinite; }
+.t-pulley #weightL-shadow,
+.t-pulley #weightR-shadow { animation: mp-wlift calc(var(--L) / 2) ease-in-out infinite; }
+
+.t-spring #coils,
+.t-spring #coils-shadow .mp-shm { animation: mp-squash calc(var(--L) / 5) cubic-bezier(.45, 0, .4, 1) infinite; }
+.t-spring [id^="coil-"] { animation: mp-bunch calc(var(--L) / 5) ease-in-out infinite; animation-delay: calc(var(--n) * .035s); }
+.t-spring #coils-shadow { animation: mp-slift calc(var(--L) / 5) ease-in-out infinite; }
+
+.t-ramp #block,
+.t-ramp #block-shadow .mp-shm { animation: mp-slide calc(var(--L) / 3) linear infinite; }
+.t-ramp #block-shadow { animation: mp-blift calc(var(--L) / 3) linear infinite; }
+.t-ramp #arrowFriction { animation: mp-arrow calc(var(--L) / 3) ease-in-out infinite; }
+
+.t-pendulum #bob,
+.t-pendulum #bob-shadow .mp-shm { animation: mp-swing calc(var(--L) / 3) ease-in-out infinite; }
+.t-pendulum #bob-shadow { animation: mp-sway calc(var(--L) / 3) ease-in-out infinite; }
+
+.t-rocket #rocket,
+.t-rocket #flame,
+.t-rocket #rocket-shadow .mp-shm { animation: mp-hover calc(var(--L) / 2) ease-in-out infinite; }
+.t-rocket #rocket-shadow { animation: mp-rlift calc(var(--L) / 2) ease-in-out infinite; }
+.t-rocket #flame-1 { animation: mp-flick calc(var(--L) / 20) ease-in-out infinite alternate; }
+.t-rocket #flame-2 { animation: mp-flick calc(var(--L) / 25) ease-in-out infinite alternate-reverse; }
+.t-rocket #flame-3 { animation: mp-flick calc(var(--L) / 16) ease-in-out infinite alternate; }
+
+.t-magnet #magnet,
+.t-magnet #magnet-shadow .mp-shm { animation: mp-wob calc(var(--L) / 4) ease-in-out infinite; }
+.t-magnet #magnet-shadow { animation: mp-mlift calc(var(--L) / 4) ease-in-out infinite; }
+
+@keyframes mp-rock {
+  0% { transform: rotate(calc(var(--pa) * -1)); }
+  6% { transform: rotate(calc(var(--pa) * -1.1)); }
+  38% { transform: rotate(calc(var(--pa) * 1.15)); }
+  44% { transform: rotate(calc(var(--pa) * .93)); }
+  50% { transform: rotate(var(--pa)); }
+  56% { transform: rotate(calc(var(--pa) * 1.1)); }
+  88% { transform: rotate(calc(var(--pa) * -1.15)); }
+  94% { transform: rotate(calc(var(--pa) * -.93)); }
+  100% { transform: rotate(calc(var(--pa) * -1)); }
+}
+@keyframes mp-weight {
+  0% { transform: translateY(calc(var(--pd) * var(--dir))) scale(1.14, .86); }
+  6% { transform: translateY(calc(var(--pd) * var(--dir) * 1.1)) scale(1, 1); }
+  22% { transform: translateY(0) scale(.92, 1.1); }
+  38% { transform: translateY(calc(var(--pd) * var(--dir) * -1.15)) scale(1, 1); }
+  44% { transform: translateY(calc(var(--pd) * var(--dir) * -.93)) scale(1.12, .88); }
+  50% { transform: translateY(calc(var(--pd) * var(--dir) * -1)) scale(1, 1); }
+  56% { transform: translateY(calc(var(--pd) * var(--dir) * -1.1)) scale(1, 1); }
+  72% { transform: translateY(0) scale(.92, 1.1); }
+  88% { transform: translateY(calc(var(--pd) * var(--dir) * 1.15)) scale(1, 1); }
+  94% { transform: translateY(calc(var(--pd) * var(--dir) * .93)) scale(1.14, .86); }
+  100% { transform: translateY(calc(var(--pd) * var(--dir))) scale(1.14, .86); }
+}
+@keyframes mp-rope {
+  0% { transform: scaleY(calc(1 + var(--pdn) * var(--dir))); }
+  6% { transform: scaleY(calc(1 + var(--pdn) * var(--dir) * 1.1)); }
+  38% { transform: scaleY(calc(1 - var(--pdn) * var(--dir) * 1.15)); }
+  50% { transform: scaleY(calc(1 - var(--pdn) * var(--dir))); }
+  56% { transform: scaleY(calc(1 - var(--pdn) * var(--dir) * 1.1)); }
+  88% { transform: scaleY(calc(1 + var(--pdn) * var(--dir) * 1.15)); }
+  100% { transform: scaleY(calc(1 + var(--pdn) * var(--dir))); }
+}
+@keyframes mp-wlift {
+  0%, 100% { transform: translate(calc(2px - var(--dir) * 2px), calc(2px - var(--dir) * 2px)); filter: blur(calc(1.4px - var(--dir) * 1px)); opacity: calc(.8 + var(--dir) * .2); }
+  50% { transform: translate(calc(2px + var(--dir) * 2px), calc(2px + var(--dir) * 2px)); filter: blur(calc(1.4px + var(--dir) * 1px)); opacity: calc(.8 - var(--dir) * .2); }
+}
+@keyframes mp-squash {
+  0% { transform: scaleY(1); }
+  15% { transform: scaleY(1.06); }
+  45% { transform: scaleY(calc(1 - var(--sq))); }
+  55% { transform: scaleY(calc(1 - var(--sq) * .9)) scaleX(1.04); }
+  72% { transform: scaleY(calc(1 + var(--sq) * .3)); }
+  86% { transform: scaleY(.97); }
+  100% { transform: scaleY(1); }
+}
+@keyframes mp-bunch {
+  0%, 100% { transform: translateY(0); }
+  48% { transform: translateY(calc(var(--n) * var(--sq) * 4px)); }
+  70% { transform: translateY(calc(var(--n) * var(--sq) * -1.6px)); }
+}
+@keyframes mp-slift {
+  0%, 100% { filter: blur(.8px); }
+  45% { filter: blur(.3px); opacity: 1; }
+  72% { filter: blur(1.8px); opacity: .75; }
+}
+@keyframes mp-slide {
+  0% { transform: translate(0, 0); animation-timing-function: ease-out; }
+  10% { transform: translate(calc(var(--bx) * -.06), calc(var(--by) * -.06)); animation-timing-function: ease-in; }
+  52% { transform: translate(calc(var(--bx) * 1.07), calc(var(--by) * 1.07)); animation-timing-function: ease-out; }
+  58% { transform: translate(calc(var(--bx) * .95), calc(var(--by) * .95)); }
+  64% { transform: translate(calc(var(--bx) * 1.02), calc(var(--by) * 1.02)); }
+  68%, 80% { transform: translate(var(--bx), var(--by)); animation-timing-function: ease-in-out; }
+  90% { transform: translate(calc(var(--bx) * .4), calc(var(--by) * .4 - 12px)); }
+  96% { transform: translate(calc(var(--bx) * -.04), calc(var(--by) * -.04)); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes mp-blift {
+  0%, 80%, 100% { transform: translate(0, 0); filter: blur(.5px); }
+  90% { transform: translate(5px, 13px); filter: blur(2.6px); opacity: .6; }
+}
+@keyframes mp-arrow {
+  0%, 10%, 80%, 100% { transform: scale(.9); opacity: .8; }
+  40% { transform: scale(1.18); opacity: 1; }
+  64% { transform: scale(1); }
+}
+@keyframes mp-swing {
+  0% { transform: rotate(calc(var(--sw) * -1)); }
+  45% { transform: rotate(calc(var(--sw) * 1.05)); }
+  50% { transform: rotate(var(--sw)); }
+  95% { transform: rotate(calc(var(--sw) * -1.05)); }
+  100% { transform: rotate(calc(var(--sw) * -1)); }
+}
+@keyframes mp-sway {
+  0%, 50%, 100% { transform: translate(4px, 5px); filter: blur(2.2px); opacity: .7; }
+  25%, 75% { transform: translate(0, 0); filter: blur(.6px); opacity: 1; }
+}
+@keyframes mp-hover {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  18% { transform: translateY(calc(var(--rh) * .35)) rotate(-1.5deg); }
+  55% { transform: translateY(calc(var(--rh) * -1.15)) rotate(2deg); }
+  70% { transform: translateY(calc(var(--rh) * -.88)) rotate(-1deg); }
+  82% { transform: translateY(calc(var(--rh) * -1)); }
+}
+@keyframes mp-rlift {
+  0%, 100% { transform: translate(0, 0); filter: blur(.6px); }
+  18% { transform: translate(-1px, -2px); filter: blur(.3px); }
+  55% { transform: translate(calc(var(--rh) * .6), calc(var(--rh) * 1.4)); filter: blur(3.2px); opacity: .55; }
+}
+@keyframes mp-flick {
+  0% { transform: scale(var(--fs)) skewX(0); }
+  30% { transform: scale(calc(var(--fs) * .88), calc(var(--fs) * 1.2)) skewX(6deg); }
+  65% { transform: scale(calc(var(--fs) * 1.06), calc(var(--fs) * .86)) skewX(-5deg); }
+  100% { transform: scale(calc(var(--fs) * .94), calc(var(--fs) * 1.12)) skewX(3deg); }
+}
+@keyframes mp-wob {
+  0%, 100% { transform: rotate(calc(var(--ma) * -1)); }
+  8% { transform: rotate(calc(var(--ma) * -1.25)); }
+  42% { transform: rotate(calc(var(--ma) * 1.25)) translateY(-3px); }
+  52% { transform: rotate(calc(var(--ma) * .85)); }
+  58% { transform: rotate(var(--ma)); }
+}
+@keyframes mp-mlift {
+  0%, 100% { filter: blur(.6px); }
+  42% { transform: translate(2px, 4px); filter: blur(2px); opacity: .75; }
+}
+
+.radial {
+  position: fixed;
+  z-index: 5;
+  width: 0;
+  height: 0;
+  overflow: visible;
+}
+.radial button {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  min-width: 44px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--mp-cardboard-edge);
+  background: var(--mp-paper);
+  color: var(--mp-stitch);
+  font-family: var(--font-display);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-size: 13px;
+  box-shadow: 0 5px 0 rgba(42, 33, 24, 0.28);
+  white-space: nowrap;
+}
+.radial button:nth-child(1) { left: -62px; top: -28px; }
+.radial button:nth-child(2) { left: 0; top: -72px; }
+.radial button:nth-child(3) { left: 62px; top: -28px; }
+
+@media (max-width: 720px), (orientation: landscape) and (max-height: 500px) {
+  .drawer {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: none;
+    flex-direction: row;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 16px calc(8px + env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) calc(8px + env(safe-area-inset-left));
+    touch-action: pan-x;
+  }
+  .tile { touch-action: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; transition: none !important; }
+  .tile, .tile * { animation: none !important; transition: none !important; }
+  .tile:hover, .tile:focus-visible { transform: none; filter: drop-shadow(0 3px 3px rgba(70, 40, 10, .25)); }
+}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#241910">
+<title>Mechanics Playground // PopBoard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<link rel="stylesheet" href="mechanics-theme.css">
+<link rel="stylesheet" href="astro-study.css?v=20261021k">
+<script src="astro-study.js?v=20261021k"></script>
+</head>
+<body>
+<h1 class="sr-only">Mechanics Playground</h1>
+<p class="sr-only">Grab a part and fling it. Drag empty paper to look around. Pinch or scroll to zoom.</p>
+<canvas id="mechanicsCanvas" aria-label="Mechanics playground. Drag a part to fling it. Drag empty space to pan."></canvas>
+<p id="readout" class="sr-only"></p>
+<p id="statusLine" class="toast" role="status" aria-live="polite"></p>
+
+<div class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <div class="hud-play">
+    <button id="diagramBtn" type="button" aria-pressed="false">Diagram</button>
+    <button id="pauseBtn" type="button" aria-pressed="false">Pause</button>
+    <button id="resetBtn" type="button">Reset</button>
+  </div>
+</div>
+
+<div id="partDrawer" class="drawer" role="group" aria-label="Scenes and parts"></div>
+
+<div id="radial" class="radial" hidden>
+  <button id="radialMaterial" type="button" data-act="material">Cardboard</button>
+  <button id="radialPin" type="button" data-act="pin">Pin</button>
+  <button id="radialDelete" type="button" data-act="delete">Delete</button>
+</div>
+
+<script src="vendor/planck.min.js"></script>
+<script type="module" src="mechanics-ui.js"></script>
+</body>
+</html>
