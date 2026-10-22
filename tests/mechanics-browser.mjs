@@ -191,15 +191,54 @@ const fit = await tokens.evaluate(() => {
 });
 check(fit.w >= fit.vw - 2 && fit.h >= fit.vh - 2 && !fit.columns && !fit.slider, "desktop canvas fills the viewport (" + JSON.stringify(fit) + ")");
 await tokens.waitForFunction(() => {
-  const imgs = [...document.querySelectorAll("#partDrawer img")];
-  return imgs.length === 6 && imgs.every((img) => img.complete && img.naturalWidth > 0);
+  const root = document.getElementById("partDrawer");
+  if (!root) return false;
+  const need = ["#wheel", "#coils", "#block", "#bob", "#flame-1", "#flame-2", "#flame-3", "#magnet"];
+  return root.querySelectorAll("svg").length === 6 && need.every((id) => root.querySelector(id));
 }, { timeout: 8000 });
-const drawer = await tokens.$eval("#partDrawer", (el) => ({
-  buttons: el.querySelectorAll("button").length,
-  images: el.querySelectorAll("img").length,
-  letters: (el.innerText || "").replace(/\s+/g, "")
-}));
-check(drawer.buttons === 6 && drawer.images === 6 && drawer.letters === "", "tile drawer is the art kit (" + JSON.stringify(drawer) + ")");
+const drawer = await tokens.$eval("#partDrawer", (el) => {
+  const wheel = el.querySelector("#wheel");
+  const style = getComputedStyle(wheel);
+  const tile = el.querySelector(".t-pulley");
+  const idle = getComputedStyle(tile).getPropertyValue("--pa").trim();
+  tile.classList.add("is-active");
+  const hot = getComputedStyle(tile).getPropertyValue("--pa").trim();
+  tile.classList.remove("is-active");
+  const loop = getComputedStyle(document.documentElement).getPropertyValue("--mp-loop").trim();
+  return {
+    buttons: el.querySelectorAll("button").length,
+    svgs: el.querySelectorAll("svg").length,
+    letters: (el.innerText || "").replace(/\s+/g, ""),
+    pivot: wheel.getAttribute("data-pivot"),
+    fromPivot: wheel.dataset.mpOrigin,
+    origin: style.transformOrigin,
+    box: style.transformBox,
+    motion: style.animationName,
+    idle,
+    hot,
+    loop
+  };
+});
+check(drawer.buttons === 6 && drawer.svgs === 6 && drawer.letters === "", "tile drawer inlines the art kit (" + JSON.stringify(drawer) + ")");
+check(drawer.pivot === "100 70" && drawer.fromPivot === "50% 35%" && drawer.box === "view-box" && /100px/.test(drawer.origin), "wheel pivot is in viewBox coordinates (" + drawer.fromPivot + " -> " + drawer.origin + ")");
+check(drawer.motion === "mp-rock" && drawer.loop === "5s" && drawer.idle === "35deg" && drawer.hot === "55deg", "tiles loop on --mp-loop and grow when active");
+await tokens.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "reduce" }]);
+const held = await tokens.$eval("#wheel", (el) => getComputedStyle(el).animationName);
+check(held === "none", "reduced motion holds the tiles still (" + held + ")");
+await tokens.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "no-preference" }]);
+const magnetsBefore = await tokens.evaluate(() => window.mechanics.state.bodies.filter((body) => Math.abs(body.magnet) > 0).length);
+const magnetTile = await tokens.$(".t-magnet");
+const magnetBox = await magnetTile.boundingBox();
+const dropPoint = await tokens.$eval("#mechanicsCanvas", (el) => {
+  const rect = el.getBoundingClientRect();
+  return { x: rect.left + rect.width * 0.62, y: rect.top + rect.height * 0.4 };
+});
+await tokens.mouse.move(magnetBox.x + magnetBox.width / 2, magnetBox.y + magnetBox.height / 2);
+await tokens.mouse.down();
+await tokens.mouse.move(dropPoint.x, dropPoint.y, { steps: 12 });
+await tokens.mouse.up();
+await tokens.waitForFunction((count) => window.mechanics.state.bodies.filter((body) => Math.abs(body.magnet) > 0).length > count, { timeout: 4000 }, magnetsBefore);
+check(true, "dragging the magnet tile into the world places a magnet");
 await tokens.click("#partDrawer button");
 await tokens.waitForFunction(() => window.mechanics.state.mode === "pulley" && window.mechanics.state.bodies.some((body) => body.id === "heavy"), { timeout: 8000 });
 check(true, "tapping the pulley tile loads that scene");

@@ -11,12 +11,12 @@ import {
 } from "./mechanics-physics.js";
 
 const TILES = [
-  { src: "mechanics/tiles/pulley.svg", label: "Pulley", mode: "pulley", drop: "pulley" },
-  { src: "mechanics/tiles/spring.svg", label: "Spring", mode: "springs", drop: "spring" },
-  { src: "mechanics/tiles/ramp.svg", label: "Ramp", mode: "incline", drop: "wedge" },
-  { src: "mechanics/tiles/pendulum.svg", label: "Pendulum", mode: "pendulum", drop: "pendulum" },
-  { src: "mechanics/tiles/rocket.svg", label: "Rocket", mode: "rocket", drop: "rocket" },
-  { src: "mechanics/tiles/magnet.svg", label: "Magnet", mode: null, drop: "magnet" }
+  { src: "mechanics/tiles/pulley.svg", kind: "t-pulley", label: "Pulley", mode: "pulley", drop: "pulley" },
+  { src: "mechanics/tiles/spring.svg", kind: "t-spring", label: "Spring", mode: "springs", drop: "spring" },
+  { src: "mechanics/tiles/ramp.svg", kind: "t-ramp", label: "Ramp", mode: "incline", drop: "wedge" },
+  { src: "mechanics/tiles/pendulum.svg", kind: "t-pendulum", label: "Pendulum", mode: "pendulum", drop: "pendulum" },
+  { src: "mechanics/tiles/rocket.svg", kind: "t-rocket", label: "Rocket", mode: "rocket", drop: "rocket" },
+  { src: "mechanics/tiles/magnet.svg", kind: "t-magnet", label: "Magnet", mode: null, drop: "magnet" }
 ];
 
 const MATERIAL_LABEL = { ice: "Wax paper", wood: "Cardboard", rubber: "Felt", custom: "Custom" };
@@ -68,20 +68,57 @@ function boot(planck) {
   }
 
   const drawer = $("partDrawer");
-  for (const tile of TILES) {
+  const tileButtons = TILES.map((tile) => {
     const button = document.createElement("button");
     button.type = "button";
-    button.className = "tile";
+    button.className = "tile " + tile.kind;
     button.dataset.drop = tile.drop;
     if (tile.mode) button.dataset.mode = tile.mode;
     button.setAttribute("aria-label", tile.label);
-    const img = document.createElement("img");
-    img.src = tile.src;
-    img.alt = "";
-    img.draggable = false;
-    button.appendChild(img);
     button.addEventListener("pointerdown", (event) => startTile(event, tile, button));
     drawer.appendChild(button);
+    return { tile, button };
+  });
+  mountTiles(tileButtons);
+
+  function pivotOrigin(node) {
+    const raw = node.getAttribute("data-pivot");
+    if (!raw) return "";
+    const parts = raw.trim().split(/[\s,]+/).map(Number);
+    if (parts.length < 2 || !Number.isFinite(parts[0]) || !Number.isFinite(parts[1])) return "";
+    return (parts[0] / 200 * 100) + "% " + (parts[1] / 200 * 100) + "%";
+  }
+
+  function applyPivots(root) {
+    root.querySelectorAll("[data-pivot]").forEach((node) => {
+      const origin = pivotOrigin(node);
+      if (!origin) return;
+      node.dataset.mpOrigin = origin;
+      node.style.transformBox = "view-box";
+      node.style.transformOrigin = origin;
+      node.querySelectorAll(".mp-shm").forEach((shim) => {
+        shim.style.transformBox = "view-box";
+        shim.style.transformOrigin = origin;
+      });
+    });
+  }
+
+  function mountTiles(entries) {
+    for (const entry of entries) {
+      fetch(entry.tile.src).then((response) => response.text()).then((markup) => {
+        const parsed = new DOMParser().parseFromString(markup, "image/svg+xml");
+        const svg = parsed.documentElement;
+        if (!svg || String(svg.tagName).toLowerCase() !== "svg") return;
+        svg.removeAttribute("width");
+        svg.removeAttribute("height");
+        svg.setAttribute("aria-hidden", "true");
+        svg.setAttribute("focusable", "false");
+        entry.button.replaceChildren(document.importNode(svg, true));
+        applyPivots(entry.button);
+      }).catch(() => {
+        say("A tool tile did not load.");
+      });
+    }
   }
 
   function publish(name) {
@@ -235,12 +272,53 @@ function boot(planck) {
     say("Placed.");
   }
 
+  function armTile(button) {
+    drawer.querySelectorAll(".tile").forEach((el) => el.classList.toggle("is-active", el === button));
+  }
+
+  function liftTile(gesture, event) {
+    const button = gesture.button;
+    if (!gesture.lifted) {
+      gesture.lifted = true;
+      const slot = document.createElement("span");
+      slot.className = "tile-slot";
+      slot.style.width = button.offsetWidth + "px";
+      slot.style.height = button.offsetHeight + "px";
+      button.before(slot);
+      gesture.slot = slot;
+      button.classList.add("is-lifted");
+      button.style.position = "fixed";
+      button.style.zIndex = "8";
+      button.style.margin = "0";
+      button.style.pointerEvents = "none";
+    }
+    button.style.left = event.clientX + "px";
+    button.style.top = event.clientY + "px";
+    button.style.transform = "translate(-50%, -62%)";
+  }
+
+  function settleTile(gesture) {
+    const button = gesture.button;
+    if (!button) return;
+    button.classList.remove("is-lifted");
+    button.style.position = "";
+    button.style.zIndex = "";
+    button.style.left = "";
+    button.style.top = "";
+    button.style.transform = "";
+    button.style.margin = "";
+    button.style.pointerEvents = "";
+    if (gesture.slot && gesture.slot.parentNode) gesture.slot.replaceWith(button);
+  }
+
   function startTile(event, tile, button) {
     event.preventDefault();
     event.stopPropagation();
+    armTile(button);
     tileGesture = {
       pointerId: event.pointerId,
       tile,
+      button,
       x: event.clientX,
       y: event.clientY,
       moved: false
@@ -253,7 +331,10 @@ function boot(planck) {
 
   function moveTile(event) {
     if (!tileGesture || event.pointerId !== tileGesture.pointerId) return;
-    if (Math.hypot(event.clientX - tileGesture.x, event.clientY - tileGesture.y) > 8) tileGesture.moved = true;
+    if (Math.hypot(event.clientX - tileGesture.x, event.clientY - tileGesture.y) > 8) {
+      tileGesture.moved = true;
+      liftTile(tileGesture, event);
+    }
   }
 
   function endTile(event) {
@@ -263,6 +344,7 @@ function boot(planck) {
     window.removeEventListener("pointermove", moveTile);
     window.removeEventListener("pointerup", endTile);
     window.removeEventListener("pointercancel", endTile);
+    settleTile(current);
     if (!current.moved) {
       if (current.tile.mode) loadMode(current.tile.mode);
       else dropAt(current.tile.drop, viewCenter());
