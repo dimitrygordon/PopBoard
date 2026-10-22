@@ -146,6 +146,7 @@ test("force arrows use the designer tokens, including thrust as applied", () => 
   const layer = createCraftDrawLayer({ width: 8, height: 8, getContext() { return null; } });
   assert.equal(typeof layer.draw, "function");
   assert.equal(typeof layer.worldFromScreen, "function");
+  assert.equal(typeof layer.screenFromWorld, "function");
   const study = readFileSync(new URL("../public/study.html", import.meta.url), "utf8");
   assert.match(study, /study-mechanics\.html/);
   assert.match(study, /Mechanics Playground/);
@@ -393,4 +394,82 @@ test("snapshot is plain data and fixed steps advance time", () => {
     { t: 3, value: -1 }
   ]);
   assert.equal(meanPeriod(crossings), 2);
+});
+
+test("paused endpoint drags retune a spring and a rope without a rebuild", () => {
+  const sim = createSimulation(planck, buildPreset("springs"));
+  sim.setPaused(true);
+  const before = sim.snapshot().joints.find((joint) => joint.id === "coil");
+  const mass = body(sim.snapshot(), "mass");
+  const parts = sim.snapshot().bodies.length;
+  assert.equal(sim.setPose("mass", mass.x, mass.y - 0.5, mass.angle).ok, true);
+  const stretched = sim.stretchJoint("coil", true);
+  assert.equal(stretched.ok, true);
+  sim.endDrag();
+  const after = sim.snapshot();
+  const coil = after.joints.find((joint) => joint.id === "coil");
+  assert.equal(after.bodies.length, parts);
+  assert.ok(Math.abs(coil.restLength - (before.length + 0.5)) < 0.06, "rest " + coil.restLength + " from " + before.length);
+  assert.ok(Math.abs(coil.extension) < 0.06, "extension " + coil.extension);
+
+  const rope = createSimulation(planck, buildPreset("sandbox"));
+  rope.setGravity(0);
+  const anchor = rope.addPart({ ...defaultPart("ball", 0, 3), static: true, radius: 0.1 }).id;
+  const bob = rope.addPart(defaultPart("ball", 1, 3)).id;
+  const joint = rope.addJoint({
+    type: "rope",
+    bodyA: anchor,
+    bodyB: bob,
+    anchorA: { x: 0, y: 0 },
+    anchorB: { x: 0, y: 0 }
+  });
+  assert.equal(joint.ok, true);
+  const slack = rope.snapshot().joints.find((item) => item.id === joint.id).restLength;
+  rope.setPaused(true);
+  assert.equal(rope.setPose(bob, 2.4, 3, 0).ok, true);
+  assert.equal(rope.stretchJoint(joint.id, true).ok, true);
+  rope.endDrag();
+  const paid = rope.snapshot().joints.find((item) => item.id === joint.id).restLength;
+  assert.ok(paid > slack + 0.8, "rope " + paid + " vs " + slack);
+});
+
+test("rotate keeps a throw, and a pin refuses the mouse joint", () => {
+  const toss = createSimulation(planck, buildPreset("sandbox"));
+  toss.setGravity(0);
+  const id = toss.addPart(defaultPart("box", 0, 2)).id;
+  toss.beginDrag(id, 0, 2);
+  toss.drag(1.2, 2);
+  toss.run(0.2);
+  toss.endDrag();
+  const moving = body(toss.snapshot(), id);
+  const speed = Math.hypot(moving.vx, moving.vy);
+  assert.ok(speed > 0.2);
+  assert.equal(toss.rotateBy(id, Math.PI / 2).ok, true);
+  const spun = body(toss.snapshot(), id);
+  const turn = Math.atan2(Math.sin(spun.angle - moving.angle), Math.cos(spun.angle - moving.angle));
+  assert.ok(Math.abs(turn - Math.PI / 2) < 0.05, "turn " + turn);
+  assert.ok(Math.abs(Math.hypot(spun.vx, spun.vy) - speed) < 0.02);
+  assert.equal(toss.updatePart(id, { static: true }).ok, true);
+  assert.equal(body(toss.snapshot(), id).isStatic, true);
+  assert.equal(toss.beginDrag(id, spun.x, spun.y).ok, false);
+});
+
+test("the camera pans, zooms, and follows on the draw layer", () => {
+  const canvas = { width: 400, height: 300, getContext() { return null; } };
+  const layer = createCraftDrawLayer(canvas);
+  layer.frame({ bodies: [{ id: "m", x: 0, y: 1, isStatic: false }], joints: [] });
+  const mid = layer.worldFromScreen(200, 150);
+  layer.panBy(90, 0);
+  const shifted = layer.worldFromScreen(200, 150);
+  assert.ok(shifted.x < mid.x - 0.4, shifted.x + " vs " + mid.x);
+  const parked = layer.screenFromWorld(shifted.x, shifted.y);
+  layer.zoomAt(200, 150, 1.8);
+  const still = layer.screenFromWorld(shifted.x, shifted.y);
+  assert.ok(Math.abs(still.x - parked.x) < 1.5 && Math.abs(still.y - parked.y) < 1.5, still.x + "," + still.y);
+  layer.setFollow("m");
+  layer.draw({ bodies: [{ id: "m", x: mid.x + 4, y: mid.y, isStatic: false }], joints: [] });
+  const followed = layer.worldFromScreen(200, 150);
+  assert.ok(followed.x > shifted.x + 0.15, "follow " + followed.x + " vs " + shifted.x);
+  const handle = layer.handleOf({ x: 0, y: 1, angle: 0, shape: "circle", radius: 0.2 });
+  assert.ok(handle && Number.isFinite(handle.screen.x) && Number.isFinite(handle.screen.y));
 });

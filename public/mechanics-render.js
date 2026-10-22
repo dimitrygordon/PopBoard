@@ -4,7 +4,8 @@
  * Each layer only reads a plain snapshot and the theme variables. Swap the
  * whole layer: every factory below returns draw(snapshot) and worldFromScreen.
  * The craft layer is the handmade diorama. Its clock is presentational and
- * is never written back onto the world.
+ * is never written back onto the world. Pan, zoom, and follow live on the
+ * layer as a camera. The world does not know about the view.
  *
  * Force arrows and the free-body diagram are chalk crayon in the
  * --mp-force-* colors. Thrust is an applied force, so it uses
@@ -194,19 +195,25 @@ function boundsOf(snapshot) {
   return { minX, maxX, minY, maxY };
 }
 
-function createProjector(width, height, snapshot, tilt) {
-  const bounds = boundsOf(snapshot);
-  const worldW = Math.max(2.5, bounds.maxX - bounds.minX);
-  const worldH = Math.max(2.5, bounds.maxY - bounds.minY);
-  const ppm = Math.min(width / (worldW * 1.28), height / (worldH * 1.28));
-  const cx = (bounds.minX + bounds.maxX) / 2;
-  const cy = (bounds.minY + bounds.maxY) / 2;
-  const shear = Math.tan(tilt || 0);
+const PPM_MIN = 20;
+const PPM_MAX = 220;
+
+function createCamera() {
+  return { cx: 0, cy: 1.5, ppm: 64, shear: 0, framed: false, followId: null };
+}
+
+function cameraProjector(width, height, camera) {
+  const ppm = camera.ppm || 64;
+  const cx = camera.cx;
+  const cy = camera.cy;
+  const shear = camera.shear || 0;
+  const w = width || 1;
+  const h = height || 1;
   return {
     ppm,
     worldFromScreen(sx, sy) {
-      let px = sx - width / 2;
-      const py = sy - height / 2;
+      let px = sx - w / 2;
+      const py = sy - h / 2;
       px -= py * shear;
       return { x: cx + px / ppm, y: cy - py / ppm };
     },
@@ -214,16 +221,68 @@ function createProjector(width, height, snapshot, tilt) {
       let px = (x - cx) * ppm;
       const py = -(y - cy) * ppm;
       px += py * shear;
-      return { x: px + width / 2, y: py + height / 2 };
+      return { x: px + w / 2, y: py + h / 2 };
     }
   };
 }
 
-function frameTheme(canvas) {
-  const ctx = canvas.getContext("2d");
-  const theme = readTheme(typeof document !== "undefined" ? document.documentElement : null);
-  if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
-  return { ctx, theme };
+function frameCamera(camera, width, height, snapshot) {
+  if (!(width >= 2) || !(height >= 2)) return;
+  const bounds = boundsOf(snapshot || { bodies: [] });
+  const worldW = Math.max(2.5, bounds.maxX - bounds.minX);
+  const worldH = Math.max(2.5, bounds.maxY - bounds.minY);
+  const ppm = Math.min(width / (worldW * 1.35), height / (worldH * 1.35));
+  camera.ppm = Math.max(PPM_MIN, Math.min(PPM_MAX, ppm));
+  camera.cx = (bounds.minX + bounds.maxX) / 2;
+  camera.cy = (bounds.minY + bounds.maxY) / 2;
+  camera.framed = true;
+  camera.followId = null;
+}
+
+function clampCamera(camera) {
+  camera.cx = Math.max(-48, Math.min(48, camera.cx));
+  camera.cy = Math.max(-16, Math.min(40, camera.cy));
+  camera.ppm = Math.max(PPM_MIN, Math.min(PPM_MAX, camera.ppm));
+}
+
+function easeFollow(camera, snapshot, dt) {
+  if (!camera.followId) return;
+  const body = (snapshot.bodies || []).find((item) => item.id === camera.followId && !item.isStatic);
+  if (!body) return;
+  const step = dt > 0 ? dt : 1 / 60;
+  const t = 1 - Math.exp(-step * 3.2);
+  camera.cx += (body.x - camera.cx) * t;
+  camera.cy += (body.y - camera.cy) * t;
+  clampCamera(camera);
+}
+
+function handlePoint(body) {
+  const reach = (body.shape === "circle" ? (body.radius || 0.2) : Math.max(body.hx || 0.2, body.hy || 0.15)) + 0.34;
+  return {
+    x: body.x + Math.cos(body.angle || 0) * reach,
+    y: body.y + Math.sin(body.angle || 0) * reach
+  };
+}
+
+function paintGrabHandle(ctx, project, snapshot, theme) {
+  const body = (snapshot.bodies || []).find((item) => item.selected);
+  if (!body) return;
+  const handle = handlePoint(body);
+  const hub = project.screenFromWorld(body.x, body.y);
+  const tip = project.screenFromWorld(handle.x, handle.y);
+  ctx.save();
+  ctx.strokeStyle = theme["--mp-stitch"] || "#2a2118";
+  ctx.fillStyle = theme["--mp-cardboard"] || "#d7a15e";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(hub.x, hub.y);
+  ctx.lineTo(tip.x, tip.y);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(tip.x, tip.y, 12, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
 }
 
 function centroid(pts) {
@@ -1122,26 +1181,83 @@ function paintPlainBodies(ctx, snapshot, theme, project, extruded) {
 }
 
 function install(canvas, tiltFor, id, paint) {
-  let project = createProjector(canvas.width || 1, canvas.height || 1, { bodies: [] }, 0);
+  const camera = createCamera();
+  let project = cameraProjector(canvas.width || 1, canvas.height || 1, camera);
   let clock = 0;
   let last = 0;
+
+  function size() {
+    return { width: canvas.width || 1, height: canvas.height || 1 };
+  }
+
+  function refreshProject() {
+    const box = size();
+    project = cameraProjector(box.width, box.height, camera);
+  }
+
   return {
     id,
     draw(snapshot) {
       const now = typeof performance !== "undefined" ? performance.now() : 0;
       const reduced = tiltFor.reduced;
-      if (!reduced && last) clock += Math.min(0.05, (now - last) / 1000);
+      const dt = last ? Math.min(0.05, (now - last) / 1000) : 0;
+      if (!reduced && last) clock += dt;
       last = now;
-      const { ctx, theme } = frameTheme(canvas);
+      const snap = snapshot || { bodies: [] };
+      const theme = readTheme(typeof document !== "undefined" ? document.documentElement : null);
+      camera.shear = reduced ? 0 : Math.tan(tiltFor.tilt(theme) || 0);
+      const box = size();
+      if (!camera.framed) frameCamera(camera, box.width, box.height, snap);
+      easeFollow(camera, snap, dt);
+      refreshProject();
+      const ctx = canvas.getContext("2d");
       if (!ctx) return;
-      const tilt = reduced ? 0 : tiltFor.tilt(theme);
-      project = createProjector(canvas.width, canvas.height, snapshot || { bodies: [] }, tilt);
-      paint({ ctx, theme, project, snapshot: snapshot || { bodies: [] }, clock, reduced });
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      paint({ ctx, theme, project, snapshot: snap, clock, reduced });
     },
     worldFromScreen(x, y) {
       return project.worldFromScreen(x, y);
     },
-    resize() {}
+    screenFromWorld(x, y) {
+      return project.screenFromWorld(x, y);
+    },
+    panBy(dx, dy) {
+      const box = size();
+      const before = project.worldFromScreen(box.width / 2, box.height / 2);
+      const after = project.worldFromScreen(box.width / 2 - dx, box.height / 2 - dy);
+      camera.cx += after.x - before.x;
+      camera.cy += after.y - before.y;
+      camera.followId = null;
+      clampCamera(camera);
+      refreshProject();
+    },
+    zoomAt(sx, sy, factor) {
+      if (!(factor > 0)) return;
+      const before = project.worldFromScreen(sx, sy);
+      camera.ppm = Math.max(PPM_MIN, Math.min(PPM_MAX, camera.ppm * factor));
+      refreshProject();
+      const after = project.worldFromScreen(sx, sy);
+      camera.cx += before.x - after.x;
+      camera.cy += before.y - after.y;
+      camera.followId = null;
+      clampCamera(camera);
+      refreshProject();
+    },
+    frame(snapshot) {
+      frameCamera(camera, size().width, size().height, snapshot || { bodies: [] });
+      refreshProject();
+    },
+    setFollow(bodyId) {
+      camera.followId = bodyId || null;
+    },
+    handleOf(body) {
+      if (!body) return null;
+      const world = handlePoint(body);
+      return { x: world.x, y: world.y, screen: project.screenFromWorld(world.x, world.y) };
+    },
+    resize() {
+      refreshProject();
+    }
   };
 }
 
@@ -1171,6 +1287,7 @@ export function createCraftDrawLayer(canvas, options) {
     }
     paintRuler(ctx, snapshot, theme, project);
     paintVectors(ctx, snapshot, theme, project, still);
+    paintGrabHandle(ctx, project, snapshot, theme);
   });
 }
 
@@ -1187,6 +1304,7 @@ export function createPlaceholderDrawLayer(canvas, options) {
     paintPlainJoints(ctx, snapshot, theme, project);
     paintPlainBodies(ctx, snapshot, theme, project, true);
     paintVectors(ctx, snapshot, theme, project, still);
+    paintGrabHandle(ctx, project, snapshot, theme);
   });
 }
 
@@ -1202,5 +1320,6 @@ export function createSchematicDrawLayer(canvas) {
     paintPlainJoints(ctx, snapshot, theme, project);
     paintPlainBodies(ctx, snapshot, theme, project, false);
     paintVectors(ctx, snapshot, theme, project, true);
+    paintGrabHandle(ctx, project, snapshot, theme);
   });
 }

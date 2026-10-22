@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#14181f">
+<meta name="theme-color" content="#241910">
 <title>Mechanics Playground // PopBoard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,135 +15,32 @@
 <script src="astro-study.js?v=20261021k"></script>
 </head>
 <body>
-<header class="bar">
-  <div class="bar-group">
-    <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-      <span class="back-label">Back</span>
-    </button>
-    <button id="controlsJumpBtn" type="button">Controls</button>
-  </div>
-  <div class="bar-group" role="group" aria-label="Draw layer">
-    <button id="craftViewBtn" type="button" aria-pressed="true">Diorama</button>
-    <button id="schematicViewBtn" type="button" aria-pressed="false">Diagram</button>
-  </div>
-  <div class="bar-group">
-    <button id="pauseBtn" type="button" aria-pressed="false">Pause</button>
-    <button id="stepBtn" type="button">Step</button>
-    <button id="resetBtn" type="button">Reset build</button>
-  </div>
-</header>
+<h1 class="sr-only">Mechanics Playground</h1>
+<p class="sr-only">Grab a part and fling it. Drag empty paper to look around. Pinch or scroll to zoom.</p>
+<canvas id="mechanicsCanvas" aria-label="Mechanics playground. Drag a part to fling it. Drag empty space to pan."></canvas>
+<p id="readout" class="sr-only"></p>
+<p id="statusLine" class="toast" role="status" aria-live="polite"></p>
 
-<div class="title">
-  <h1>Mechanics Playground</h1>
-  <p>A handmade diorama of one rigid-body world. Cardboard, felt, and paper sit on the table; buttons, yarn, twine, and cardboard coils hold them together; crayon arrows are the forces. Drag a part to throw it. Saves stay on this device.</p>
+<div class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <div class="hud-play">
+    <button id="diagramBtn" type="button" aria-pressed="false">Diagram</button>
+    <button id="pauseBtn" type="button" aria-pressed="false">Pause</button>
+    <button id="resetBtn" type="button">Reset</button>
+  </div>
 </div>
 
-<main class="layout">
-  <section class="stage">
-    <canvas id="mechanicsCanvas" aria-label="Mechanics playground diorama. Drag a part to move it."></canvas>
-    <div class="meters" aria-hidden="true">
-      <div class="meter"><span>Time</span><strong id="meterTime">0.00 s</strong></div>
-      <div class="meter"><span>Kinetic</span><strong id="meterKe">0 J</strong></div>
-      <div class="meter"><span>Potential</span><strong id="meterPe">0 J</strong></div>
-      <div class="meter"><span>Spring</span><strong id="meterSpring">0 J</strong></div>
-      <div class="meter"><span>Thermal</span><strong id="meterHeat">0 J</strong></div>
-      <div class="meter"><span>Watch</span><strong id="meterWatch">0.00 s</strong></div>
-    </div>
-    <p id="readout" class="sr-only"></p>
-    <p id="statusLine" role="status" aria-live="polite">Loading the playground.</p>
-    <ul class="legend" aria-label="Crayon colors">
-      <li><i class="swatch gravity"></i> Gravity</li>
-      <li><i class="swatch normal"></i> Normal</li>
-      <li><i class="swatch tension"></i> Tension</li>
-      <li><i class="swatch friction"></i> Friction</li>
-      <li><i class="swatch applied"></i> Applied</li>
-      <li><i class="swatch velocity"></i> Velocity</li>
-    </ul>
-  </section>
-  <aside id="controls" class="card" aria-label="Playground controls">
-    <label>Scene
-      <select id="modeSelect" aria-label="Scene preset"></select>
-    </label>
-    <div class="row" role="group" aria-label="Simulation speed">
-      <button type="button" data-speed="0.25" aria-pressed="false">0.25×</button>
-      <button type="button" data-speed="0.5" aria-pressed="false">0.5×</button>
-      <button type="button" data-speed="1" aria-pressed="true">1×</button>
-    </div>
-    <label>Gravity
-      <select id="gravityPreset" aria-label="Gravity preset">
-        <option value="earth">Earth</option>
-        <option value="moon">Moon</option>
-        <option value="mars">Mars</option>
-        <option value="zero">Zero</option>
-      </select>
-    </label>
-    <label>g (m/s²)
-      <input id="gravityRange" type="range" min="0" max="25" step="0.01" value="9.81" aria-label="Gravity magnitude">
-    </label>
-    <label class="check"><input id="airDrag" type="checkbox"> Air drag</label>
-    <label class="check"><input id="defriction" type="checkbox"> Defriction</label>
-    <label class="check"><input id="showVectors" type="checkbox" checked> Velocity arrows</label>
-    <label class="check"><input id="showFbd" type="checkbox" checked> Free-body diagram</label>
-    <label class="check"><input id="showTrails" type="checkbox"> Chalk trails</label>
-    <label class="check"><input id="snap" type="checkbox"> Snap to grid</label>
+<div id="partDrawer" class="drawer" role="group" aria-label="Scenes and parts"></div>
 
-    <h2>Parts</h2>
-    <div class="drawer" id="partTools" role="group" aria-label="Place a part"></div>
-    <h2>Joints</h2>
-    <div class="drawer" id="jointTools" role="group" aria-label="Connect two parts"></div>
-    <div class="row">
-      <button id="deleteBtn" type="button">Delete</button>
-      <button id="duplicateBtn" type="button">Duplicate</button>
-      <button id="rotateBtn" type="button">Rotate</button>
-      <button id="growBtn" type="button" aria-label="Make the selected part larger">Larger</button>
-      <button id="shrinkBtn" type="button" aria-label="Make the selected part smaller">Smaller</button>
-      <button id="undoBtn" type="button">Undo</button>
-      <button id="redoBtn" type="button">Redo</button>
-    </div>
+<div id="radial" class="radial" hidden>
+  <button id="radialMaterial" type="button" data-act="material">Cardboard</button>
+  <button id="radialPin" type="button" data-act="pin">Pin</button>
+  <button id="radialDelete" type="button" data-act="delete">Delete</button>
+</div>
 
-    <h2>Selected</h2>
-    <p id="selectionLabel">Nothing selected.</p>
-    <label>Mass (kg) <input id="massInput" type="number" min="0.05" max="500" step="0.1" aria-label="Mass"></label>
-    <label>Material
-      <select id="materialInput" aria-label="Surface material">
-        <option value="ice">Wax paper</option>
-        <option value="wood">Cardboard</option>
-        <option value="rubber">Felt</option>
-        <option value="custom">Custom</option>
-      </select>
-    </label>
-    <label>Friction μ <input id="frictionInput" type="number" min="0" max="2" step="0.01" aria-label="Friction coefficient"></label>
-    <label>Restitution <input id="restitutionInput" type="number" min="0" max="1" step="0.01" aria-label="Restitution"></label>
-    <label>Thrust (N) <input id="thrustInput" type="number" min="0" max="400" step="0.5" aria-label="Thrust"></label>
-    <label class="check"><input id="thrustOn" type="checkbox"> Thrust on</label>
-    <label>Ramp angle (°) <input id="rampInput" type="number" min="5" max="80" step="1" aria-label="Ramp angle"></label>
-    <label>Spring k (N/m) <input id="stiffnessInput" type="number" min="0" max="800" step="1" aria-label="Spring stiffness"></label>
-    <label>Spring damping <input id="dampingInput" type="number" min="0" max="80" step="0.1" aria-label="Spring damping"></label>
-    <label>Motor speed (rad/s) <input id="motorSpeedInput" type="number" min="-30" max="30" step="0.1" aria-label="Motor speed"></label>
-    <label class="check"><input id="motorOn" type="checkbox"> Motor on</label>
-
-    <h2>Measure</h2>
-    <div class="row">
-      <button id="watchBtn" type="button">Start stopwatch</button>
-      <button id="watchResetBtn" type="button">Reset stopwatch</button>
-      <button id="rulerBtn" type="button" aria-pressed="false">Ruler</button>
-    </div>
-
-    <h2>Build file</h2>
-    <label>Name <input id="saveName" type="text" maxlength="60" aria-label="Build name"></label>
-    <div class="row">
-      <button id="saveBtn" type="button">Save here</button>
-      <button id="loadBtn" type="button">Load</button>
-      <button id="exportBtn" type="button">Export JSON</button>
-      <label class="check import-label">Import <input id="importFile" type="file" accept="application/json,.json" aria-label="Import a build JSON file"></label>
-    </div>
-    <label>Saved
-      <select id="saveList" aria-label="Saved builds"></select>
-    </label>
-    <p class="keys">Space pauses. Period steps. Delete removes the selection. Ctrl+Z undoes, Ctrl+Shift+Z redoes, Ctrl+D duplicates, R rotates, G snaps. Drag a part to throw it.</p>
-  </aside>
-</main>
 <script src="vendor/planck.min.js"></script>
 <script type="module" src="mechanics-ui.js"></script>
 </body>

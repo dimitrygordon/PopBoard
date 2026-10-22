@@ -178,24 +178,115 @@ const colors = await tokens.evaluate(() => {
 check(colors.gravity === "red" && colors.normal === "blue" && colors.tension === "gold", "force tokens are the named colors (" + JSON.stringify(colors) + ")");
 check(colors.friction === "orange" && colors.applied === "green" && colors.velocity === "cyan", "friction, applied, and velocity tokens");
 check(!!colors.bg, "background token is set");
-const drawer = await tokens.$eval("#partTools", (el) => ({
+const fit = await tokens.evaluate(() => {
+  const rect = document.getElementById("mechanicsCanvas").getBoundingClientRect();
+  return {
+    w: rect.width,
+    h: rect.height,
+    vw: window.innerWidth,
+    vh: window.innerHeight,
+    columns: !!document.querySelector(".layout"),
+    slider: !!document.querySelector("input[type=range]")
+  };
+});
+check(fit.w >= fit.vw - 2 && fit.h >= fit.vh - 2 && !fit.columns && !fit.slider, "desktop canvas fills the viewport (" + JSON.stringify(fit) + ")");
+await tokens.waitForFunction(() => {
+  const imgs = [...document.querySelectorAll("#partDrawer img")];
+  return imgs.length === 6 && imgs.every((img) => img.complete && img.naturalWidth > 0);
+}, { timeout: 8000 });
+const drawer = await tokens.$eval("#partDrawer", (el) => ({
   buttons: el.querySelectorAll("button").length,
-  svgs: el.querySelectorAll("svg").length,
+  images: el.querySelectorAll("img").length,
   letters: (el.innerText || "").replace(/\s+/g, "")
 }));
-check(drawer.buttons === 8 && drawer.svgs === 8 && drawer.letters === "", "parts drawer is icons (" + JSON.stringify(drawer) + ")");
-await tokens.click("#partTools button");
-const pressed = await tokens.$eval("#partTools button", (el) => el.getAttribute("aria-pressed"));
-const said = await tokens.$eval("#statusLine", (el) => el.textContent);
-check(pressed === "true" && /drag/i.test(said), "placing a part arms the drawer (" + said + ")");
-await tokens.click("#schematicViewBtn");
-await tokens.click("#craftViewBtn");
-const layers = await tokens.evaluate(() => ({
-  diagram: document.getElementById("schematicViewBtn").getAttribute("aria-pressed"),
-  diorama: document.getElementById("craftViewBtn").getAttribute("aria-pressed")
-}));
-check(layers.diorama === "true" && layers.diagram === "false", "diorama layer is selected again");
-check(hardErrors(tokens).length === 0, "icon drawer and layer swap stay quiet");
+check(drawer.buttons === 6 && drawer.images === 6 && drawer.letters === "", "tile drawer is the art kit (" + JSON.stringify(drawer) + ")");
+await tokens.click("#partDrawer button");
+await tokens.waitForFunction(() => window.mechanics.state.mode === "pulley" && window.mechanics.state.bodies.some((body) => body.id === "heavy"), { timeout: 8000 });
+check(true, "tapping the pulley tile loads that scene");
+await tokens.evaluate(() => {
+  const canvas = document.getElementById("mechanicsCanvas");
+  const rect = canvas.getBoundingClientRect();
+  const fire = (type, x, y) => canvas.dispatchEvent(new PointerEvent(type, {
+    bubbles: true,
+    cancelable: true,
+    pointerId: 1,
+    clientX: x,
+    clientY: y,
+    buttons: type === "pointerup" ? 0 : 1,
+    pointerType: "mouse"
+  }));
+  const x = rect.left + 12;
+  const y = rect.top + rect.height * 0.45;
+  fire("pointerdown", x, y);
+  fire("pointermove", x + 48, y + 10);
+  fire("pointerup", x + 48, y + 10);
+});
+await tokens.click("#diagramBtn");
+const diagramOn = await tokens.$eval("#diagramBtn", (el) => el.getAttribute("aria-pressed"));
+await tokens.click("#diagramBtn");
+const diagramOff = await tokens.$eval("#diagramBtn", (el) => el.getAttribute("aria-pressed"));
+check(diagramOn === "true" && diagramOff === "false", "diagram toggle returns to the diorama");
+check(hardErrors(tokens).length === 0, "tile drawer, pan, and diagram stay quiet" + (hardErrors(tokens).length ? ": " + hardErrors(tokens).join(" | ") : ""));
+
+const touch = await browser.newPage();
+track(touch);
+await touch.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
+await touch.goto(base + "/study-mechanics?mode=pendulum", { waitUntil: "domcontentloaded", timeout: 20000 });
+await touch.waitForFunction(() => window.mechanics && window.mechanics.state.time > 0.2, { timeout: 8000 });
+const phone = await touch.evaluate(() => {
+  const rect = document.getElementById("mechanicsCanvas").getBoundingClientRect();
+  const drawer = document.getElementById("partDrawer");
+  return {
+    w: rect.width,
+    h: rect.height,
+    vw: window.innerWidth,
+    vh: window.innerHeight,
+    back: !!document.querySelector("[data-study-back]"),
+    diagram: !!document.getElementById("diagramBtn"),
+    pause: !!document.getElementById("pauseBtn"),
+    reset: !!document.getElementById("resetBtn"),
+    tiles: drawer ? drawer.querySelectorAll("button").length : 0,
+    columns: !!document.querySelector(".layout"),
+    slider: !!document.querySelector("input[type=range]")
+  };
+});
+check(phone.w >= phone.vw - 2 && phone.h >= phone.vh - 2, "touch canvas fills the viewport (" + JSON.stringify(phone) + ")");
+check(phone.back && phone.diagram && phone.pause && phone.reset && phone.tiles === 6, "touch overlays are the drawer, diagram, back, and transport");
+check(!phone.columns && !phone.slider, "touch layout has no columns or sliders");
+await touch.waitForFunction(() => window.mechanics.state.time > 0.55, { timeout: 8000 });
+const radial = await touch.evaluate(() => {
+  const bob = window.mechanics.state.bodies.find((body) => body.id === "bob");
+  const screen = window.mechanics.layer.screenFromWorld(bob.x, bob.y);
+  const canvas = document.getElementById("mechanicsCanvas");
+  const rect = canvas.getBoundingClientRect();
+  const x = rect.left + screen.x * (rect.width / canvas.width);
+  const y = rect.top + screen.y * (rect.height / canvas.height);
+  const fire = (type) => canvas.dispatchEvent(new PointerEvent(type, {
+    bubbles: true,
+    cancelable: true,
+    pointerId: 7,
+    clientX: x,
+    clientY: y,
+    buttons: type === "pointerup" ? 0 : 1,
+    pointerType: "touch"
+  }));
+  fire("pointerdown");
+  fire("pointerup");
+  const menu = document.getElementById("radial");
+  return { hidden: menu.hidden, text: (menu.innerText || "").replace(/\s+/g, " ").trim() };
+});
+check(!radial.hidden && /pin/i.test(radial.text) && /delete/i.test(radial.text), "tap opens the radial menu (" + radial.text + ")");
+const touchShot = SHOTS + "/mechanics-touch.png";
+await touch.screenshot({ path: touchShot });
+await touch.click("#radialMaterial");
+const material = await touch.evaluate(() => {
+  const bob = window.mechanics.state.bodies.find((body) => body.id === "bob");
+  return bob && bob.material;
+});
+check(material === "rubber", "radial material cycles the bob to felt (" + material + ")");
+console.log("SHOT " + touchShot);
+check(hardErrors(touch).length === 0, "touch viewport stays quiet" + (hardErrors(touch).length ? ": " + hardErrors(touch).join(" | ") : ""));
+await touch.close();
 
 await browser.close();
 server.close();

@@ -1,61 +1,26 @@
 /**
  * Mechanics Playground page. Wires the simulation to a swappable draw
  * layer and to window.mechanics. The draw layer only receives snapshots.
+ * The camera (pan, zoom, follow) stays on the layer.
  */
 import { forwardStudyQuery } from "./board-return.js?v=20261022a";
 import { createSimulation } from "./mechanics-world.js";
 import { createCraftDrawLayer, createPlaceholderDrawLayer, createSchematicDrawLayer } from "./mechanics-render.js";
 import {
-  MODES, MODE_ALIASES, GRAVITY_PRESETS, PART_TYPES, JOINT_TYPES, MATERIALS,
-  modeFromSearch, buildPreset, defaultPart, parseBuild, hitBody, localPoint,
-  readSaves, writeSave, wedgeAngle
+  modeFromSearch, buildPreset, defaultPart, hitBody
 } from "./mechanics-physics.js";
 
-const PART_LABELS = {
-  box: "cardboard box",
-  ball: "ball",
-  plank: "paper plane",
-  wedge: "cardboard ramp",
-  ground: "cardboard floor",
-  wall: "cardboard wall",
-  "pulley-wheel": "button",
-  rocket: "rocket"
-};
+const TILES = [
+  { src: "mechanics/tiles/pulley.svg", label: "Pulley", mode: "pulley", drop: "pulley" },
+  { src: "mechanics/tiles/spring.svg", label: "Spring", mode: "springs", drop: "spring" },
+  { src: "mechanics/tiles/ramp.svg", label: "Ramp", mode: "incline", drop: "wedge" },
+  { src: "mechanics/tiles/pendulum.svg", label: "Pendulum", mode: "pendulum", drop: "pendulum" },
+  { src: "mechanics/tiles/rocket.svg", label: "Rocket", mode: "rocket", drop: "rocket" },
+  { src: "mechanics/tiles/magnet.svg", label: "Magnet", mode: null, drop: "magnet" }
+];
 
-const JOINT_LABELS = {
-  revolute: "brad hinge",
-  prismatic: "sliding slot",
-  distance: "yarn",
-  rope: "twine",
-  spring: "cardboard coil",
-  weld: "tape join",
-  wheel: "wheel",
-  pulley: "pulley string"
-};
-
-const svg = (body) => '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' + body + "</svg>";
-
-const PART_ICONS = {
-  box: svg('<path d="M4 8h12v10H4z"/><path d="M4 8l3-3h12v10l-3 3"/><path d="M16 5v10M7 8v10"/><path d="M4 15h3l2 2"/>'),
-  ball: svg('<circle cx="12" cy="12" r="6.5"/><path d="M8 10c1.2 1 2 .4 3.2 1.2M13 14c1 .8 2 .2 3 1"/>'),
-  plank: svg('<path d="M3 13.5 12 6l9 7.5-9 3.2z"/><path d="M12 6v10.7M3 13.5l9 3.2 9-3.2"/>'),
-  wedge: svg('<path d="M4 18h16L4 8z"/><path d="M4 14h6"/>'),
-  ground: svg('<path d="M3 10h18v5H3z"/><path d="M3 12.5h18"/>'),
-  wall: svg('<path d="M8 3h8v18H8z"/><path d="M8 8h8M8 13h8"/>'),
-  "pulley-wheel": svg('<circle cx="12" cy="12" r="7"/><circle cx="12" cy="8.2" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.8" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="15.8" r="1.1" fill="currentColor" stroke="none"/><circle cx="8.2" cy="12" r="1.1" fill="currentColor" stroke="none"/>'),
-  rocket: svg('<path d="M12 3c2.2 2.4 3 5.2 3 8.2V16H9v-4.8C9 8.2 9.8 5.4 12 3z"/><path d="M9 14c-2 .4-3 2-3 3.5h3M15 14c2 .4 3 2 3 3.5h-3"/><path d="M10.2 19.5c.4 1.2.8 1.6 1.8 1.6s1.4-.4 1.8-1.6"/>')
-};
-
-const JOINT_ICONS = {
-  revolute: svg('<circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/>'),
-  prismatic: svg('<path d="M4 8h16v8H4z"/><path d="M8 12h8M14 10l2 2-2 2M10 10l-2 2 2 2"/>'),
-  distance: svg('<path d="M4 15c2-4 4-4 6 0s4 4 6 0 2-2 4 0"/><circle cx="5" cy="14" r="1.4"/>'),
-  rope: svg('<path d="M5 6c4 2 3 4 7 4s3-2 7-4"/><path d="M5 12c4 2 3 4 7 4s3-2 7-4"/><path d="M5 18c4-2 3-4 7-4s3 2 7 4"/>'),
-  spring: svg('<path d="M5 5h4l2 4 2-4h2l2 4 2-4h2"/><path d="M7 9v10M17 9v10"/><path d="M7 19h10"/>'),
-  weld: svg('<path d="M3 9h7v6H3zM14 9h7v6h-7z"/><path d="M8 10.5h8v3H8z"/>'),
-  wheel: svg('<path d="M12 3v6"/><circle cx="12" cy="15" r="5"/><circle cx="12" cy="15" r="1.3" fill="currentColor" stroke="none"/>'),
-  pulley: svg('<circle cx="7" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M7 11v7M17 11v7M7 18h10"/>')
-};
+const MATERIAL_LABEL = { ice: "Wax paper", wood: "Cardboard", rubber: "Felt", custom: "Custom" };
+const MATERIAL_CYCLE = ["ice", "wood", "rubber"];
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const $ = (id) => document.getElementById(id);
@@ -76,6 +41,7 @@ mechanics.setDrawLayer = (layer) => {
     drawLayer = layer;
   }
 };
+Object.defineProperty(mechanics, "layer", { get() { return drawLayer; } });
 
 const planckApi = window.planck;
 const statusLine = $("statusLine");
@@ -85,78 +51,37 @@ if (!planckApi || typeof planckApi.World !== "function") {
   boot(planckApi);
 }
 
-function boot(planckApi) {
+function boot(planck) {
   const mode = modeFromSearch(location.search);
-  const sim = createSimulation(planckApi, buildPreset(mode));
+  const sim = createSimulation(planck, buildPreset(mode));
   sim.setPaused(reducedMotion);
-  let tool = { kind: "select", type: "box" };
-  let pendingJoint = null;
-  let rulerPoint = null;
-  let filledFor = null;
-  let writingForm = false;
+  let snapOn = false;
+  let radialId = null;
+  let tileGesture = null;
+  const pointers = new Map();
+  let gesture = null;
 
   function focusDynamic() {
     const body = sim.snapshot().bodies.find((item) => !item.isStatic);
     if (body) sim.select(body.id);
-    filledFor = null;
+    else sim.select(null);
   }
 
-  const modeSelect = $("modeSelect");
-  for (const entry of MODES) {
-    const option = document.createElement("option");
-    option.value = entry.id;
-    option.textContent = entry.label;
-    modeSelect.appendChild(option);
-  }
-  modeSelect.value = MODE_ALIASES[mode] || "sandbox";
-
-  const partTools = $("partTools");
-  for (const type of PART_TYPES) {
+  const drawer = $("partDrawer");
+  for (const tile of TILES) {
     const button = document.createElement("button");
     button.type = "button";
-    button.className = "icon-tool";
-    button.dataset.type = type;
-    button.innerHTML = PART_ICONS[type];
-    button.title = PART_LABELS[type];
-    button.setAttribute("aria-label", "Place a " + PART_LABELS[type]);
-    button.setAttribute("aria-pressed", "false");
-    button.addEventListener("click", () => {
-      tool = { kind: "place", type };
-      pendingJoint = null;
-      markTools();
-      say("Drag on the view to place a " + PART_LABELS[type] + ".");
-    });
-    partTools.appendChild(button);
-  }
-  const jointTools = $("jointTools");
-  for (const type of JOINT_TYPES) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "icon-tool";
-    button.dataset.type = type;
-    button.innerHTML = JOINT_ICONS[type];
-    button.title = JOINT_LABELS[type];
-    button.setAttribute("aria-label", "Connect with " + JOINT_LABELS[type]);
-    button.setAttribute("aria-pressed", "false");
-    button.addEventListener("click", () => {
-      tool = { kind: "joint", type };
-      pendingJoint = null;
-      markTools();
-      say("Click the first part, then the second, to add " + JOINT_LABELS[type] + ".");
-    });
-    jointTools.appendChild(button);
-  }
-
-  function markTools() {
-    document.querySelectorAll("#partTools button").forEach((button) => {
-      const on = tool.kind === "place" && button.dataset.type === tool.type;
-      button.setAttribute("aria-pressed", on ? "true" : "false");
-    });
-    document.querySelectorAll("#jointTools button").forEach((button) => {
-      const on = tool.kind === "joint" && button.dataset.type === tool.type;
-      button.setAttribute("aria-pressed", on ? "true" : "false");
-    });
-    $("rulerBtn").setAttribute("aria-pressed", tool.kind === "ruler" ? "true" : "false");
+    button.className = "tile";
+    button.dataset.drop = tile.drop;
+    if (tile.mode) button.dataset.mode = tile.mode;
+    button.setAttribute("aria-label", tile.label);
+    const img = document.createElement("img");
+    img.src = tile.src;
+    img.alt = "";
+    img.draggable = false;
+    button.appendChild(img);
+    button.addEventListener("pointerdown", (event) => startTile(event, tile, button));
+    drawer.appendChild(button);
   }
 
   function publish(name) {
@@ -174,246 +99,256 @@ function boot(planckApi) {
     return snap;
   }
 
+  let said = 0;
   function say(text) {
+    said += 1;
+    const token = said;
     statusLine.textContent = text;
+    window.setTimeout(() => {
+      if (said === token) statusLine.textContent = "";
+    }, 2200);
   }
 
   function resize() {
     const rect = canvas.getBoundingClientRect();
     const dpr = Math.min(2, window.devicePixelRatio || 1);
-    canvas.width = Math.max(2, Math.round(rect.width * dpr));
-    canvas.height = Math.max(2, Math.round(rect.height * dpr));
+    const width = Math.max(2, Math.round((rect.width || window.innerWidth) * dpr));
+    const height = Math.max(2, Math.round((rect.height || window.innerHeight) * dpr));
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+    }
+    craftLayer.resize();
+    schematicLayer.resize();
   }
 
-  function worldPoint(event) {
+  function canvasPos(event) {
     const rect = canvas.getBoundingClientRect();
-    const x = (event.clientX - rect.left) * (canvas.width / rect.width);
-    const y = (event.clientY - rect.top) * (canvas.height / rect.height);
-    return drawLayer.worldFromScreen(x, y);
+    const scaleX = canvas.width / (rect.width || 1);
+    const scaleY = canvas.height / (rect.height || 1);
+    return {
+      sx: (event.clientX - rect.left) * scaleX,
+      sy: (event.clientY - rect.top) * scaleY,
+      scale: scaleX
+    };
   }
 
-  function refreshSaves() {
-    const list = $("saveList");
-    const saves = readSaves(safeStorage());
-    list.replaceChildren();
-    const names = Object.keys(saves);
-    if (!names.length) {
-      const option = document.createElement("option");
-      option.textContent = "No saves yet";
-      option.value = "";
-      list.appendChild(option);
+  function viewCenter() {
+    return drawLayer.worldFromScreen(canvas.width / 2, canvas.height / 2);
+  }
+
+  function frameBoth() {
+    const snap = sim.snapshot();
+    craftLayer.frame(snap);
+    schematicLayer.frame(snap);
+  }
+
+  function loadMode(next) {
+    const url = new URL(location.href);
+    url.searchParams.set("mode", next);
+    history.replaceState(null, "", url);
+    sim.load(buildPreset(next));
+    sim.setPaused(reducedMotion);
+    sim.setOverlay({ snap: snapOn });
+    hideRadial();
+    focusDynamic();
+    frameBoth();
+    publish("change");
+    say(next.charAt(0).toUpperCase() + next.slice(1) + ".");
+  }
+
+  function spawn(kind, x, y) {
+    if (kind === "wedge") return sim.addPart(defaultPart("wedge", x, y));
+    if (kind === "pulley") return sim.addPart(defaultPart("pulley-wheel", x, y));
+    if (kind === "rocket") {
+      const part = defaultPart("rocket", x, y);
+      part.thrust = 22;
+      part.thrustOn = true;
+      return sim.addPart(part);
+    }
+    if (kind === "magnet") {
+      const part = defaultPart("ball", x, y);
+      part.magnet = 8;
+      return sim.addPart(part);
+    }
+    if (kind === "pendulum") {
+      const pivot = sim.addPart({
+        ...defaultPart("ball", x, y + 1.6),
+        radius: 0.08,
+        static: true,
+        material: "wood",
+        mass: 0.2
+      });
+      if (!pivot.ok) return pivot;
+      const theta = 5 * Math.PI / 180;
+      const bob = sim.addPart({
+        ...defaultPart("ball", x + Math.sin(theta) * 2, y + 1.6 - Math.cos(theta) * 2),
+        radius: 0.07,
+        mass: 1,
+        material: "wood"
+      });
+      if (!bob.ok) return bob;
+      const joint = sim.addJoint({
+        type: "distance",
+        bodyA: pivot.id,
+        bodyB: bob.id,
+        anchorA: { x: 0, y: 0 },
+        anchorB: { x: 0, y: 0 },
+        length: 2
+      });
+      if (joint.ok) sim.select(bob.id);
+      return joint;
+    }
+    const anchor = sim.addPart({
+      ...defaultPart("box", x, y + 1.5),
+      width: 0.7,
+      height: 0.28,
+      static: true
+    });
+    if (!anchor.ok) return anchor;
+    const mass = sim.addPart({ ...defaultPart("box", x, y), width: 0.5, height: 0.4, mass: 1 });
+    if (!mass.ok) return mass;
+    const joint = sim.addJoint({
+      type: "spring",
+      bodyA: anchor.id,
+      bodyB: mass.id,
+      anchorA: { x: 0, y: 0 },
+      anchorB: { x: 0, y: 0 },
+      stiffness: 40,
+      damping: 0.6,
+      restLength: 1.2
+    });
+    if (joint.ok) sim.select(mass.id);
+    return joint;
+  }
+
+  function dropAt(kind, world) {
+    const result = spawn(kind, world.x, world.y);
+    if (!result.ok) {
+      say(result.error || "Could not place that.");
       return;
     }
-    for (const name of names) {
-      const option = document.createElement("option");
-      option.value = name;
-      option.textContent = name;
-      list.appendChild(option);
-    }
+    hideRadial();
+    const selected = sim.snapshot().bodies.find((body) => body.id === sim.selectedId());
+    if (selected && !selected.isStatic) drawLayer.setFollow(selected.id);
+    publish("change");
+    say("Placed.");
   }
 
-  function safeStorage() {
-    try {
-      const key = "__mp";
-      localStorage.setItem(key, "1");
-      localStorage.removeItem(key);
-      return localStorage;
-    } catch (e) {
-      return { getItem() { return null; }, setItem() {} };
-    }
+  function startTile(event, tile, button) {
+    event.preventDefault();
+    event.stopPropagation();
+    tileGesture = {
+      pointerId: event.pointerId,
+      tile,
+      x: event.clientX,
+      y: event.clientY,
+      moved: false
+    };
+    try { button.setPointerCapture(event.pointerId); } catch (e) { /* synthetic pointers have no capture */ }
+    window.addEventListener("pointermove", moveTile);
+    window.addEventListener("pointerup", endTile);
+    window.addEventListener("pointercancel", endTile);
   }
 
-  function fillForm(snap) {
-    if (writingForm) return;
-    if (snap.selectedId === filledFor) return;
-    filledFor = snap.selectedId;
-    const body = snap.bodies.find((item) => item.id === snap.selectedId);
-    const joint = snap.joints.find((item) => item.id === snap.selectedId);
-    writingForm = true;
-    if (body) {
-      $("selectionLabel").textContent = body.type + " " + body.id;
-      $("massInput").value = round(body.mass);
-      $("materialInput").value = MATERIALS[body.material] ? body.material : "custom";
-      $("frictionInput").value = round(body.friction);
-      $("restitutionInput").value = round(body.restitution);
-      $("thrustInput").value = round(body.thrust);
-      $("thrustOn").checked = !!body.thrustOn;
-      $("rampInput").value = body.shape === "polygon" ? String(Math.round(wedgeAngle(body) * 180 / Math.PI)) : "";
-    } else if (joint) {
-      $("selectionLabel").textContent = joint.type + " " + joint.id + "  tension " + joint.tension.toFixed(2) + " N";
-      $("stiffnessInput").value = round(joint.stiffness);
-      $("dampingInput").value = round(joint.damping);
-      $("motorSpeedInput").value = round(joint.motorSpeed);
-      $("motorOn").checked = !!joint.motor;
-    } else {
-      $("selectionLabel").textContent = "Nothing selected.";
-    }
-    writingForm = false;
+  function moveTile(event) {
+    if (!tileGesture || event.pointerId !== tileGesture.pointerId) return;
+    if (Math.hypot(event.clientX - tileGesture.x, event.clientY - tileGesture.y) > 8) tileGesture.moved = true;
   }
 
-  function round(value) {
-    return Number.isFinite(value) ? String(Math.round(value * 1000) / 1000) : "";
+  function endTile(event) {
+    if (!tileGesture || event.pointerId !== tileGesture.pointerId) return;
+    const current = tileGesture;
+    tileGesture = null;
+    window.removeEventListener("pointermove", moveTile);
+    window.removeEventListener("pointerup", endTile);
+    window.removeEventListener("pointercancel", endTile);
+    if (!current.moved) {
+      if (current.tile.mode) loadMode(current.tile.mode);
+      else dropAt(current.tile.drop, viewCenter());
+      return;
+    }
+    const rect = canvas.getBoundingClientRect();
+    const inside = event.clientX >= rect.left && event.clientX <= rect.right
+      && event.clientY >= rect.top && event.clientY <= rect.bottom;
+    if (!inside) return;
+    const pos = canvasPos(event);
+    dropAt(current.tile.drop, drawLayer.worldFromScreen(pos.sx, pos.sy));
   }
 
   function describe(snap) {
     const energy = snap.energy;
-    const selected = snap.joints.find((joint) => joint.selected);
-    const tension = selected ? " · " + selected.type + " " + selected.tension.toFixed(2) + " N" : "";
-    const watch = snap.stopwatch.running || snap.stopwatch.elapsed
-      ? " · watch " + snap.stopwatch.elapsed.toFixed(2) + " s"
-      : "";
-    const ruler = snap.ruler ? " · ruler " + snap.ruler.distance.toFixed(3) + " m" : "";
     return [
       snap.mode,
       "t " + snap.time.toFixed(2) + " s",
       snap.bodies.length + " parts",
       "KE " + energy.kinetic.toFixed(2) + " J",
       "PE " + energy.gravitational.toFixed(2) + " J",
-      "spring " + energy.spring.toFixed(2) + " J",
-      "thermal " + energy.thermal.toFixed(2) + " J"
-    ].join(" · ") + tension + watch + ruler;
+      "spring " + energy.spring.toFixed(2) + " J"
+    ].join(" · ");
+  }
+
+  function placeRadial(snap) {
+    const radial = $("radial");
+    if (!radialId) {
+      radial.hidden = true;
+      return;
+    }
+    const body = snap.bodies.find((item) => item.id === radialId);
+    if (!body) {
+      hideRadial();
+      return;
+    }
+    const screen = drawLayer.screenFromWorld(body.x, body.y);
+    const rect = canvas.getBoundingClientRect();
+    const x = rect.left + screen.x * (rect.width / canvas.width);
+    const y = rect.top + screen.y * (rect.height / canvas.height);
+    radial.hidden = false;
+    radial.style.left = x + "px";
+    radial.style.top = y + "px";
+    $("radialMaterial").textContent = MATERIAL_LABEL[body.material] || "Material";
+    $("radialPin").textContent = body.isStatic ? "Unpin" : "Pin";
+  }
+
+  function showRadial(id) {
+    radialId = id;
+    placeRadial(sim.snapshot());
+  }
+
+  function hideRadial() {
+    radialId = null;
+    $("radial").hidden = true;
   }
 
   function paint(snap) {
     drawLayer.draw(snap);
     $("pauseBtn").textContent = snap.paused ? "Play" : "Pause";
     $("pauseBtn").setAttribute("aria-pressed", snap.paused ? "false" : "true");
-    if (document.activeElement !== $("gravityRange")) $("gravityRange").value = String(snap.gravity);
-    fillForm(snap);
-    const text = describe(snap);
-    $("readout").textContent = text;
-    const energy = snap.energy;
-    $("meterTime").textContent = snap.time.toFixed(2) + " s";
-    $("meterKe").textContent = energy.kinetic.toFixed(2) + " J";
-    $("meterPe").textContent = energy.gravitational.toFixed(2) + " J";
-    $("meterSpring").textContent = energy.spring.toFixed(2) + " J";
-    $("meterHeat").textContent = energy.thermal.toFixed(2) + " J";
-    $("meterWatch").textContent = snap.stopwatch.elapsed.toFixed(2) + " s";
+    $("readout").textContent = describe(snap);
+    placeRadial(snap);
   }
 
-  function showLayer(layer, button) {
-    mechanics.setDrawLayer(layer);
-    $("craftViewBtn").setAttribute("aria-pressed", button === "craft" ? "true" : "false");
-    $("schematicViewBtn").setAttribute("aria-pressed", button === "schematic" ? "true" : "false");
+  function showDiagram(on) {
+    mechanics.setDrawLayer(on ? schematicLayer : craftLayer);
+    $("diagramBtn").setAttribute("aria-pressed", on ? "true" : "false");
     paint(sim.snapshot());
   }
 
-  $("craftViewBtn").addEventListener("click", () => showLayer(craftLayer, "craft"));
-  $("schematicViewBtn").addEventListener("click", () => showLayer(schematicLayer, "schematic"));
+  $("diagramBtn").addEventListener("click", () => {
+    showDiagram($("diagramBtn").getAttribute("aria-pressed") !== "true");
+  });
   $("pauseBtn").addEventListener("click", () => {
     const paused = !sim.snapshot().paused;
     sim.setPaused(paused);
     publish(paused ? "pause" : "play");
   });
-  $("stepBtn").addEventListener("click", () => {
-    sim.stepOnce();
-    publish("step");
-  });
   $("resetBtn").addEventListener("click", () => {
     sim.reset();
-    filledFor = null;
+    hideRadial();
+    focusDynamic();
+    frameBoth();
     publish("reset");
   });
-  $("controlsJumpBtn").addEventListener("click", () => {
-    $("controls").scrollIntoView({ block: "start" });
-    modeSelect.focus();
-  });
-  modeSelect.addEventListener("change", () => {
-    const next = MODE_ALIASES[modeSelect.value] || "sandbox";
-    const url = new URL(location.href);
-    url.searchParams.set("mode", next);
-    history.replaceState(null, "", url);
-    sim.load(buildPreset(next));
-    sim.setPaused(reducedMotion);
-    focusDynamic();
-    publish("change");
-  });
-  document.querySelectorAll("[data-speed]").forEach((button) => {
-    button.addEventListener("click", () => {
-      sim.setTimeScale(Number(button.getAttribute("data-speed")));
-      document.querySelectorAll("[data-speed]").forEach((other) => {
-        other.setAttribute("aria-pressed", other === button ? "true" : "false");
-      });
-    });
-  });
-  $("gravityPreset").addEventListener("change", () => {
-    const preset = GRAVITY_PRESETS.find((item) => item.id === $("gravityPreset").value);
-    if (!preset) return;
-    sim.setGravity(preset.g);
-    publish("change");
-  });
-  $("gravityRange").addEventListener("input", () => {
-    sim.setGravity(Number($("gravityRange").value));
-  });
-  $("airDrag").addEventListener("change", () => sim.setAirDrag($("airDrag").checked));
-  $("defriction").addEventListener("change", () => sim.setDefriction($("defriction").checked));
-  $("showVectors").addEventListener("change", () => sim.setOverlay({ showVectors: $("showVectors").checked }));
-  $("showFbd").addEventListener("change", () => sim.setOverlay({ showFbd: $("showFbd").checked }));
-  $("showTrails").addEventListener("change", () => sim.setOverlay({ showTrails: $("showTrails").checked }));
-  $("snap").addEventListener("change", () => sim.setOverlay({ snap: $("snap").checked }));
-
-  function editSelected(patch, jointPatch) {
-    const id = sim.selectedId();
-    if (!id) return;
-    const snap = sim.snapshot();
-    if (snap.bodies.some((body) => body.id === id) && patch) {
-      const result = sim.updatePart(id, patch);
-      if (!result.ok) say(result.error);
-    } else if (jointPatch) {
-      const result = sim.updateJoint(id, jointPatch);
-      if (!result.ok) say(result.error);
-    }
-    filledFor = null;
-    publish("change");
-  }
-
-  $("massInput").addEventListener("change", () => editSelected({ mass: Number($("massInput").value) }));
-  $("materialInput").addEventListener("change", () => editSelected({ material: $("materialInput").value }));
-  $("frictionInput").addEventListener("change", () => editSelected({ friction: Number($("frictionInput").value), material: "custom" }));
-  $("restitutionInput").addEventListener("change", () => editSelected({ restitution: Number($("restitutionInput").value), material: "custom" }));
-  $("thrustInput").addEventListener("change", () => editSelected({ thrust: Number($("thrustInput").value) }));
-  $("thrustOn").addEventListener("change", () => editSelected({ thrustOn: $("thrustOn").checked }));
-  $("rampInput").addEventListener("change", () => {
-    const snap = sim.snapshot();
-    const body = snap.bodies.find((item) => item.id === sim.selectedId());
-    if (!body || body.shape !== "polygon") return;
-    const degrees = Number($("rampInput").value) * Math.PI / 180;
-    editSelected({ rise: body.run * Math.tan(degrees) });
-  });
-  $("stiffnessInput").addEventListener("change", () => editSelected(null, { stiffness: Number($("stiffnessInput").value) }));
-  $("dampingInput").addEventListener("change", () => editSelected(null, { damping: Number($("dampingInput").value) }));
-  $("motorSpeedInput").addEventListener("change", () => editSelected(null, { motorSpeed: Number($("motorSpeedInput").value) }));
-  $("motorOn").addEventListener("change", () => editSelected(null, { motor: $("motorOn").checked }));
-
-  $("deleteBtn").addEventListener("click", () => removeSelected());
-  $("duplicateBtn").addEventListener("click", () => {
-    const result = sim.duplicatePart(sim.selectedId());
-    if (!result.ok) say(result.error);
-    else publish("change");
-  });
-  $("rotateBtn").addEventListener("click", () => {
-    const snap = sim.snapshot();
-    const body = snap.bodies.find((item) => item.id === sim.selectedId());
-    if (!body) return;
-    editSelected({ angle: body.angle + Math.PI / 12 });
-  });
-  $("growBtn").addEventListener("click", () => scaleSelected(1.1));
-  $("shrinkBtn").addEventListener("click", () => scaleSelected(1 / 1.1));
-  $("undoBtn").addEventListener("click", () => { if (sim.undo()) { filledFor = null; publish("change"); } });
-  $("redoBtn").addEventListener("click", () => { if (sim.redo()) { filledFor = null; publish("change"); } });
-
-  function scaleSelected(factor) {
-    const snap = sim.snapshot();
-    const body = snap.bodies.find((item) => item.id === sim.selectedId());
-    if (!body) return;
-    const patch = {};
-    if (body.width) patch.width = body.width * factor;
-    if (body.height) patch.height = body.height * factor;
-    if (body.radius) patch.radius = body.radius * factor;
-    if (body.run) patch.run = body.run * factor;
-    if (body.rise) patch.rise = body.rise * factor;
-    editSelected(patch);
-  }
 
   function removeSelected() {
     const id = sim.selectedId();
@@ -421,128 +356,277 @@ function boot(planckApi) {
     const snap = sim.snapshot();
     const result = snap.joints.some((joint) => joint.id === id) ? sim.removeJoint(id) : sim.removePart(id);
     if (!result.ok) say(result.error);
-    else { filledFor = null; publish("change"); }
+    else {
+      if (radialId === id) hideRadial();
+      publish("change");
+    }
   }
 
-  $("watchBtn").addEventListener("click", () => {
-    const running = !sim.snapshot().stopwatch.running;
-    sim.setStopwatch(running);
-    $("watchBtn").textContent = running ? "Stop stopwatch" : "Start stopwatch";
+  $("radialMaterial").addEventListener("click", (event) => {
+    event.stopPropagation();
+    const body = sim.snapshot().bodies.find((item) => item.id === radialId);
+    if (!body) return;
+    const index = MATERIAL_CYCLE.indexOf(body.material);
+    const next = MATERIAL_CYCLE[(index + 1) % MATERIAL_CYCLE.length];
+    const result = sim.updatePart(body.id, { material: next });
+    if (!result.ok) say(result.error);
+    else {
+      say(MATERIAL_LABEL[next] + ".");
+      publish("change");
+    }
   });
-  $("watchResetBtn").addEventListener("click", () => {
-    sim.resetStopwatch();
-    $("watchBtn").textContent = "Start stopwatch";
+  $("radialPin").addEventListener("click", (event) => {
+    event.stopPropagation();
+    const body = sim.snapshot().bodies.find((item) => item.id === radialId);
+    if (!body) return;
+    if (body.type === "ground") {
+      say("The floor stays pinned.");
+      return;
+    }
+    const result = sim.updatePart(body.id, { static: !body.isStatic });
+    if (!result.ok) say(result.error);
+    else {
+      say(body.isStatic ? "Loose." : "Pinned.");
+      publish("change");
+    }
   });
-  $("rulerBtn").addEventListener("click", () => {
-    tool = { kind: "ruler" };
-    rulerPoint = null;
-    markTools();
-    say("Click the first ruler mark, then the second.");
+  $("radialDelete").addEventListener("click", (event) => {
+    event.stopPropagation();
+    if (radialId) sim.select(radialId);
+    removeSelected();
+    hideRadial();
   });
 
-  $("saveBtn").addEventListener("click", () => {
-    const result = writeSave(safeStorage(), $("saveName").value, sim.document());
-    say(result.ok ? "Saved “" + result.name + "” on this device." : result.error);
-    refreshSaves();
-  });
-  $("loadBtn").addEventListener("click", () => {
-    const name = $("saveList").value;
-    const doc = readSaves(safeStorage())[name];
-    if (!doc) { say("Pick a saved build."); return; }
-    sim.load(doc);
-    modeSelect.value = doc.mode;
-    filledFor = null;
-    publish("change");
-  });
-  $("exportBtn").addEventListener("click", () => {
-    const blob = new Blob([JSON.stringify(sim.document(), null, 2)], { type: "application/json" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "mechanics-build.json";
-    link.click();
-    URL.revokeObjectURL(link.href);
-  });
-  $("importFile").addEventListener("change", async () => {
-    const file = $("importFile").files && $("importFile").files[0];
-    if (!file) return;
-    const parsed = parseBuild(await file.text());
-    if (!parsed) { say("That file is not a playground build."); return; }
-    sim.load(parsed);
-    modeSelect.value = parsed.mode;
-    filledFor = null;
-    publish("change");
-  });
+  function hitEndpoint(snap, sx, sy, scale) {
+    const tol = 26 * scale;
+    let best = null;
+    let bestD = tol;
+    for (const joint of snap.joints) {
+      if (joint.type !== "spring" && joint.type !== "rope" && joint.type !== "distance") continue;
+      const ends = [
+        [joint.ax, joint.ay, joint.bodyA],
+        [joint.bx, joint.by, joint.bodyB]
+      ];
+      for (const end of ends) {
+        const screen = drawLayer.screenFromWorld(end[0], end[1]);
+        const distance = Math.hypot(screen.x - sx, screen.y - sy);
+        if (distance <= bestD) {
+          bestD = distance;
+          best = { jointId: joint.id, bodyId: end[2], type: joint.type };
+        }
+      }
+    }
+    return best;
+  }
+
+  function hitHandle(snap, sx, sy, scale) {
+    const body = snap.bodies.find((item) => item.selected);
+    if (!body || typeof drawLayer.handleOf !== "function") return null;
+    const handle = drawLayer.handleOf(body);
+    if (!handle) return null;
+    if (Math.hypot(handle.screen.x - sx, handle.screen.y - sy) <= 22 * scale) return body.id;
+    return null;
+  }
+
+  function angleDelta(next, prev) {
+    let delta = next - prev;
+    while (delta > Math.PI) delta -= Math.PI * 2;
+    while (delta < -Math.PI) delta += Math.PI * 2;
+    return delta;
+  }
+
+  function pointerWorld(record) {
+    return drawLayer.worldFromScreen(record.sx, record.sy);
+  }
+
+  function beginGesture(record) {
+    const snap = sim.snapshot();
+    const moved = Math.hypot(record.sx - record.ox, record.sy - record.oy);
+    if (moved < 8 * record.scale) return;
+    if (record.handleId) {
+      const body = snap.bodies.find((item) => item.id === record.handleId);
+      const world = pointerWorld(record);
+      gesture = {
+        kind: "rotate",
+        bodyId: record.handleId,
+        cx: body ? body.x : world.x,
+        cy: body ? body.y : world.y,
+        angle: Math.atan2(world.y - (body ? body.y : world.y), world.x - (body ? body.x : world.x))
+      };
+      sim.select(record.handleId);
+      return;
+    }
+    if (record.bodyId) {
+      const body = snap.bodies.find((item) => item.id === record.bodyId);
+      const world = pointerWorld(record);
+      const paused = snap.paused || !body || body.isStatic;
+      if (paused && body) {
+        const ox = body.x - record.downWorld.x;
+        const oy = body.y - record.downWorld.y;
+        gesture = { kind: "pose", bodyId: record.bodyId, endpoint: record.endpoint, ox, oy };
+        sim.setPose(record.bodyId, world.x + ox, world.y + oy, body.angle);
+      } else if (body) {
+        gesture = { kind: "drag", bodyId: record.bodyId, endpoint: record.endpoint };
+        sim.beginDrag(record.bodyId, record.downWorld.x, record.downWorld.y);
+        sim.drag(world.x, world.y);
+      }
+      return;
+    }
+    gesture = { kind: "pan" };
+  }
+
+  function startTwoFinger() {
+    const pts = [...pointers.values()];
+    if (pts.length < 2) return;
+    if (gesture && (gesture.kind === "drag" || gesture.kind === "pose" || gesture.kind === "rotate")) sim.endDrag();
+    const shared = pts.find((item) => item.bodyId);
+    if (shared && shared.bodyId) {
+      const a = pointerWorld(pts[0]);
+      const b = pointerWorld(pts[1]);
+      gesture = {
+        kind: "twist",
+        bodyId: shared.bodyId,
+        angle: Math.atan2(b.y - a.y, b.x - a.x)
+      };
+      sim.select(shared.bodyId);
+      return;
+    }
+    gesture = {
+      kind: "pinch",
+      dist: Math.hypot(pts[1].sx - pts[0].sx, pts[1].sy - pts[0].sy) || 1,
+      cx: (pts[0].sx + pts[1].sx) / 2,
+      cy: (pts[0].sy + pts[1].sy) / 2
+    };
+  }
 
   canvas.addEventListener("pointerdown", (event) => {
-    canvas.setPointerCapture(event.pointerId);
-    const point = worldPoint(event);
+    if (tileGesture) return;
+    try { canvas.setPointerCapture(event.pointerId); } catch (e) { /* synthetic pointers have no capture */ }
+    const pos = canvasPos(event);
+    const world = drawLayer.worldFromScreen(pos.sx, pos.sy);
     const snap = sim.snapshot();
-    const id = hitBody(snap.bodies, point.x, point.y);
-    if (tool.kind === "place") {
-      const added = sim.addPart(defaultPart(tool.type, point.x, point.y));
-      if (!added.ok) { say(added.error); return; }
-      sim.beginDrag(added.id, point.x, point.y);
-      publish("change");
-      return;
+    const handleId = hitHandle(snap, pos.sx, pos.sy, pos.scale);
+    const endpoint = handleId ? null : hitEndpoint(snap, pos.sx, pos.sy, pos.scale);
+    const bodyId = handleId || (endpoint && endpoint.bodyId) || hitBody(snap.bodies, world.x, world.y);
+    pointers.set(event.pointerId, {
+      sx: pos.sx,
+      sy: pos.sy,
+      ox: pos.sx,
+      oy: pos.sy,
+      lx: pos.sx,
+      ly: pos.sy,
+      scale: pos.scale,
+      bodyId,
+      handleId,
+      endpoint,
+      downWorld: world
+    });
+    hideRadial();
+    if (pointers.size >= 2) startTwoFinger();
+    else {
+      gesture = {
+        kind: "pending",
+        pointerId: event.pointerId,
+        bodyId,
+        handleId,
+        endpoint
+      };
     }
-    if (tool.kind === "ruler") {
-      if (!rulerPoint) {
-        rulerPoint = point;
-        say("Click the second ruler mark.");
-      } else {
-        sim.setRuler(rulerPoint.x, rulerPoint.y, point.x, point.y);
-        rulerPoint = null;
-        tool = { kind: "select" };
-        markTools();
-      }
-      return;
-    }
-    if (tool.kind === "joint") {
-      if (!id) return;
-      const body = snap.bodies.find((item) => item.id === id);
-      const anchor = localPoint(body, point.x, point.y);
-      if (!pendingJoint) {
-        pendingJoint = { bodyId: id, anchor };
-        say("Now click the second part.");
-        return;
-      }
-      const result = sim.addJoint({
-        type: tool.type,
-        bodyA: pendingJoint.bodyId,
-        bodyB: id,
-        anchorA: pendingJoint.anchor,
-        anchorB: anchor
-      });
-      pendingJoint = null;
-      say(result.ok ? "Joint added." : result.error);
-      if (result.ok) publish("change");
-      return;
-    }
-    if (!id) {
-      sim.select(null);
-      sim.endDrag();
-      publish("select");
-      return;
-    }
-    const body = snap.bodies.find((item) => item.id === id);
-    if (body.isStatic) {
-      sim.select(id);
-      publish("select");
-      return;
-    }
-    sim.beginDrag(id, point.x, point.y);
-    publish("select");
   });
+
   canvas.addEventListener("pointermove", (event) => {
-    if (!event.buttons && event.pointerType !== "touch") return;
-    const point = worldPoint(event);
-    sim.drag(point.x, point.y);
+    const record = pointers.get(event.pointerId);
+    if (!record) return;
+    const pos = canvasPos(event);
+    record.sx = pos.sx;
+    record.sy = pos.sy;
+    if (!gesture) return;
+    if (gesture.kind === "pending" && gesture.pointerId === event.pointerId) beginGesture(record);
+    if (!gesture || gesture.kind === "pending") return;
+    if (gesture.kind === "pan") {
+      drawLayer.panBy(pos.sx - record.lx, pos.sy - record.ly);
+    } else if (gesture.kind === "drag") {
+      const world = pointerWorld(record);
+      sim.drag(world.x, world.y);
+    } else if (gesture.kind === "pose") {
+      const body = sim.snapshot().bodies.find((item) => item.id === gesture.bodyId);
+      const world = pointerWorld(record);
+      if (body) sim.setPose(gesture.bodyId, world.x + gesture.ox, world.y + gesture.oy, body.angle);
+    } else if (gesture.kind === "rotate") {
+      const world = pointerWorld(record);
+      const angle = Math.atan2(world.y - gesture.cy, world.x - gesture.cx);
+      sim.rotateBy(gesture.bodyId, angleDelta(angle, gesture.angle));
+      gesture.angle = angle;
+    } else if (gesture.kind === "twist") {
+      const pts = [...pointers.values()];
+      if (pts.length >= 2) {
+        const a = pointerWorld(pts[0]);
+        const b = pointerWorld(pts[1]);
+        const angle = Math.atan2(b.y - a.y, b.x - a.x);
+        sim.rotateBy(gesture.bodyId, angleDelta(angle, gesture.angle));
+        gesture.angle = angle;
+      }
+    } else if (gesture.kind === "pinch") {
+      const pts = [...pointers.values()];
+      if (pts.length >= 2) {
+        const dist = Math.hypot(pts[1].sx - pts[0].sx, pts[1].sy - pts[0].sy) || 1;
+        const cx = (pts[0].sx + pts[1].sx) / 2;
+        const cy = (pts[0].sy + pts[1].sy) / 2;
+        drawLayer.zoomAt(gesture.cx, gesture.cy, dist / gesture.dist);
+        drawLayer.panBy(cx - gesture.cx, cy - gesture.cy);
+        gesture.dist = dist;
+        gesture.cx = cx;
+        gesture.cy = cy;
+      }
+    }
+    record.lx = pos.sx;
+    record.ly = pos.sy;
   });
-  canvas.addEventListener("pointerup", () => {
-    sim.endDrag();
-    publish("change");
-  });
-  canvas.addEventListener("pointercancel", () => sim.endDrag());
+
+  function finishPointer(event) {
+    if (!pointers.has(event.pointerId)) return;
+    pointers.delete(event.pointerId);
+    if (pointers.size >= 2) return;
+    if (pointers.size === 1 && gesture && (gesture.kind === "pinch" || gesture.kind === "twist")) {
+      sim.endDrag();
+      gesture = { kind: "ignore" };
+      return;
+    }
+    if (pointers.size > 0) return;
+    const done = gesture;
+    gesture = null;
+    if (!done || done.kind === "ignore") return;
+    if (done.kind === "pending") {
+      if (done.bodyId) {
+        sim.select(done.bodyId);
+        showRadial(done.bodyId);
+        publish("select");
+      } else {
+        sim.select(null);
+        publish("select");
+      }
+      return;
+    }
+    if (done.kind === "pose" && done.endpoint) {
+      const snap = sim.snapshot();
+      if (snap.paused || done.endpoint.type !== "spring") sim.stretchJoint(done.endpoint.jointId, true);
+    }
+    if (done.kind === "drag" || done.kind === "pose" || done.kind === "rotate" || done.kind === "twist") {
+      sim.endDrag();
+      const body = sim.snapshot().bodies.find((item) => item.id === done.bodyId);
+      if (body && !body.isStatic && !sim.snapshot().paused) drawLayer.setFollow(body.id);
+      publish("change");
+    }
+  }
+
+  canvas.addEventListener("pointerup", finishPointer);
+  canvas.addEventListener("pointercancel", finishPointer);
+  canvas.addEventListener("wheel", (event) => {
+    event.preventDefault();
+    const pos = canvasPos(event);
+    const factor = Math.exp(-event.deltaY * 0.0011);
+    drawLayer.zoomAt(pos.sx, pos.sy, factor);
+  }, { passive: false });
 
   document.addEventListener("keydown", (event) => {
     const typing = event.target && event.target.closest && event.target.closest("input, textarea, select");
@@ -560,26 +644,34 @@ function boot(planckApi) {
       event.preventDefault();
       if (event.shiftKey) sim.redo();
       else sim.undo();
-      filledFor = null;
+      hideRadial();
       publish("change");
     } else if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "y") {
       event.preventDefault();
       sim.redo();
-      filledFor = null;
+      hideRadial();
       publish("change");
     } else if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "d") {
       event.preventDefault();
-      $("duplicateBtn").click();
+      const result = sim.duplicatePart(sim.selectedId());
+      if (!result.ok) say(result.error);
+      else publish("change");
     } else if (event.key.toLowerCase() === "r") {
-      $("rotateBtn").click();
+      const id = sim.selectedId();
+      const body = sim.snapshot().bodies.find((item) => item.id === id);
+      if (!body) return;
+      sim.rotateBy(id, Math.PI / 12);
+      sim.endDrag();
+      publish("change");
     } else if (event.key.toLowerCase() === "g") {
-      $("snap").checked = !$("snap").checked;
-      sim.setOverlay({ snap: $("snap").checked });
+      snapOn = !snapOn;
+      sim.setOverlay({ snap: snapOn });
+      say(snapOn ? "Snap on." : "Snap off.");
     } else if (event.key === "Escape") {
-      tool = { kind: "select" };
-      pendingJoint = null;
-      rulerPoint = null;
-      markTools();
+      hideRadial();
+      sim.select(null);
+      sim.endDrag();
+      gesture = null;
     }
   });
 
@@ -593,10 +685,13 @@ function boot(planckApi) {
   });
 
   window.addEventListener("resize", resize);
+  window.addEventListener("orientationchange", resize);
+  if (window.visualViewport) window.visualViewport.addEventListener("resize", resize);
   resize();
-  refreshSaves();
   focusDynamic();
+  frameBoth();
   publish("change");
+  statusLine.textContent = "";
 
   let last = performance.now();
   function frame(now) {

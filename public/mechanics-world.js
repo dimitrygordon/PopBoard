@@ -989,6 +989,65 @@ export function createSimulation(planck, initial) {
       dragArmed = false;
       commitEdit();
     },
+    setPose(id, x, y, angle) {
+      const part = findPart(id);
+      const body = bodies.get(id);
+      if (!part || !body || !Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(angle)) {
+        return { ok: false };
+      }
+      if (mouse) {
+        world.destroyJoint(mouse);
+        mouse = null;
+      }
+      if (!dragArmed) {
+        remember();
+        dragArmed = true;
+      }
+      body.setTransform({ x, y }, angle);
+      part.x = x;
+      part.y = y;
+      part.angle = angle;
+      if (doc.settings.paused) {
+        body.setLinearVelocity({ x: 0, y: 0 });
+        body.setAngularVelocity(0);
+        part.vx = 0;
+        part.vy = 0;
+        part.omega = 0;
+      }
+      body.setAwake(true);
+      selectedId = id;
+      return { ok: true };
+    },
+    rotateBy(id, delta) {
+      const body = bodies.get(id);
+      if (!body || !Number.isFinite(delta)) return { ok: false };
+      const position = body.getPosition();
+      return api.setPose(id, position.x, position.y, body.getAngle() + delta);
+    },
+    stretchJoint(id, commit) {
+      const spec = doc.joints.find((joint) => joint.id === id);
+      if (!spec || (spec.type !== "spring" && spec.type !== "rope" && spec.type !== "distance")) {
+        return { ok: false };
+      }
+      const bodyA = bodies.get(spec.bodyA);
+      const bodyB = bodies.get(spec.bodyB);
+      if (!bodyA || !bodyB) return { ok: false };
+      const a = bodyA.getWorldPoint(spec.anchorA);
+      const b = bodyB.getWorldPoint(spec.anchorB);
+      const length = Math.max(0.05, Math.hypot(b.x - a.x, b.y - a.y));
+      if (spec.type === "rope") {
+        spec.maxLength = length;
+        const live = joints.get(spec.id);
+        if (live && typeof live.setMaxLength === "function") live.setMaxLength(length);
+      } else if (spec.type === "distance") {
+        spec.length = length;
+        const live = joints.get(spec.id);
+        if (live && typeof live.setLength === "function") live.setLength(length);
+      } else if (commit) {
+        spec.restLength = length;
+      }
+      return { ok: true, length };
+    },
     setRuler(x1, y1, x2, y2) {
       doc.ruler = { x1, y1, x2, y2 };
     },
