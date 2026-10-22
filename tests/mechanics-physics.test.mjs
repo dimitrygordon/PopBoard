@@ -483,4 +483,50 @@ test("the camera pans, zooms, and follows on the draw layer", () => {
   assert.ok(followed.x > shifted.x + 0.15, "follow " + followed.x + " vs " + shifted.x);
   const handle = layer.handleOf({ x: 0, y: 1, angle: 0, shape: "circle", radius: 0.2 });
   assert.ok(handle && Number.isFinite(handle.screen.x) && Number.isFinite(handle.screen.y));
+  assert.equal(layer.userAdjusted(), true);
+  layer.frame({ bodies: [{ id: "m", x: 0, y: 1, isStatic: false }], joints: [] });
+  assert.equal(layer.userAdjusted(), false);
+});
+
+test("presets frame into the phone and desktop free area", () => {
+  const modes = ["sandbox", "pulley", "incline", "springs", "pendulum", "rocket", "friction", "rube"];
+  const views = [
+    {
+      label: "phone",
+      canvas: { width: 780, height: 1688, getContext() { return null; } },
+      insets: { top: 160, bottom: 260, left: 16, right: 20 }
+    },
+    {
+      label: "desk",
+      canvas: { width: 1440, height: 900, getContext() { return null; } },
+      insets: { top: 72, bottom: 16, left: 120, right: 16 }
+    }
+  ];
+  for (const mode of modes) {
+    const snap = createSimulation(planck, buildPreset(mode)).snapshot();
+    for (const view of views) {
+      const layer = createCraftDrawLayer(view.canvas);
+      layer.frame(snap, view.insets);
+      const free = {
+        left: view.insets.left,
+        top: view.insets.top,
+        right: view.canvas.width - view.insets.right,
+        bottom: view.canvas.height - view.insets.bottom
+      };
+      for (const item of snap.bodies) {
+        if (item.type === "ground") continue;
+        const p = layer.screenFromWorld(item.x, item.y);
+        assert.ok(
+          p.x >= free.left - 12 && p.x <= free.right + 12 && p.y >= free.top - 12 && p.y <= free.bottom + 12,
+          mode + " " + view.label + " " + item.id + " at " + p.x.toFixed(0) + "," + p.y.toFixed(0)
+        );
+      }
+      if (mode === "pulley") {
+        const wheel = layer.screenFromWorld(-1.2, 7);
+        const mass = layer.screenFromWorld(-1.2, 3.2);
+        const span = Math.abs(mass.y - wheel.y);
+        assert.ok(span > (free.bottom - free.top) * 0.22, view.label + " pulley span " + span.toFixed(0));
+      }
+    }
+  }
 });

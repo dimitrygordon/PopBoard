@@ -552,6 +552,75 @@ check(iceHandle.dAngle > 0.05, "a direct hit on the ice handle still rotates (" 
 check(hardErrors(phoneFriction).length === 0, "friction phone stays quiet" + (hardErrors(phoneFriction).length ? ": " + hardErrors(phoneFriction).join(" | ") : ""));
 await phoneFriction.close();
 
+async function readFraming(page) {
+  return page.evaluate(() => {
+    const canvas = document.getElementById("mechanicsCanvas");
+    const rect = canvas.getBoundingClientRect();
+    const hud = document.querySelector(".hud").getBoundingClientRect();
+    const drawer = document.getElementById("partDrawer").getBoundingClientRect();
+    const alongBottom = drawer.width > rect.width * 0.6 && drawer.top > rect.top + rect.height * 0.45;
+    const free = {
+      left: alongBottom ? rect.left + 4 : drawer.right - 4,
+      right: rect.right - 4,
+      top: hud.bottom - 4,
+      bottom: alongBottom ? drawer.top + 4 : rect.bottom - 4
+    };
+    const css = rect.width / canvas.width;
+    const bodies = window.mechanics.state.bodies.filter((body) => body.type !== "ground").map((body) => {
+      const screen = window.mechanics.layer.screenFromWorld(body.x, body.y);
+      return { id: body.id, x: rect.left + screen.x * css, y: rect.top + screen.y * css };
+    });
+    return { free, bodies };
+  });
+}
+
+for (const view of [
+  { label: "phone", width: 390, height: 844, mobile: true },
+  { label: "desk", width: 1440, height: 900, mobile: false }
+]) {
+  const page = await browser.newPage();
+  track(page);
+  await page.setViewport({
+    width: view.width,
+    height: view.height,
+    isMobile: view.mobile,
+    hasTouch: view.mobile,
+    deviceScaleFactor: view.mobile ? 2 : 1
+  });
+  for (const mode of MODES) {
+    await page.goto(base + "/study-mechanics?mode=" + mode, { waitUntil: "domcontentloaded", timeout: 20000 });
+    await page.waitForFunction(() => window.mechanics && window.mechanics.state.bodies.length > 0, { timeout: 8000 });
+    await page.click("#pauseBtn");
+    const framed = await readFraming(page);
+    const outside = framed.bodies.filter((body) => body.x < framed.free.left - 24 || body.x > framed.free.right + 24 || body.y < framed.free.top - 24 || body.y > framed.free.bottom + 24);
+    check(outside.length === 0, view.label + " " + mode + " parts sit in the free area" + (outside.length ? " " + JSON.stringify(outside) : ""));
+    if (view.label === "phone" && mode === "pulley") {
+      await page.screenshot({ path: SHOTS + "/after-pulley-phone.png" });
+      const clip = await page.evaluate(() => {
+        const heavy = window.mechanics.state.bodies.find((body) => body.id === "heavy");
+        const handle = window.mechanics.layer.handleOf(heavy);
+        const canvas = document.getElementById("mechanicsCanvas");
+        const rect = canvas.getBoundingClientRect();
+        const css = rect.width / canvas.width;
+        const x = handle.screen.x * css;
+        const y = handle.screen.y * css;
+        return {
+          x: Math.max(0, Math.min(rect.width - 180, x - 90)),
+          y: Math.max(0, Math.min(rect.height - 180, y - 90)),
+          width: 180,
+          height: 180
+        };
+      });
+      await page.screenshot({ path: SHOTS + "/after-handle-phone.png", clip });
+    }
+    if (view.label === "desk" && mode === "pulley") {
+      await page.screenshot({ path: SHOTS + "/after-pulley-desk.png" });
+    }
+  }
+  check(hardErrors(page).length === 0, view.label + " framing stays quiet" + (hardErrors(page).length ? ": " + hardErrors(page).join(" | ") : ""));
+  await page.close();
+}
+
 await browser.close();
 server.close();
 if (failures) {
