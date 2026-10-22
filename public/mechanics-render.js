@@ -810,6 +810,68 @@ function setPatternFrame(pattern, cx, cy, angle, scale) {
   pattern.setTransform(m);
 }
 
+/* ---- cached unit-space gradients ---------------------------------------
+ * Gradients are built once in a 0..1 box and placed with a transform at
+ * fill time. The path is already in device space, so only the style moves. */
+
+function unitGradient(ctx, key, build) {
+  const hit = patternCache.get("grad|" + key);
+  if (hit) return hit;
+  const grad = build(ctx);
+  patternCache.set("grad|" + key, grad);
+  return grad;
+}
+
+function fillInBox(ctx, style, x, y, w, h) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(Math.max(0.001, w), Math.max(0.001, h));
+  ctx.fillStyle = style;
+  ctx.fill();
+  ctx.restore();
+}
+
+function litGradient(ctx, k) {
+  return unitGradient(ctx, "lit|" + k.toFixed(2), (g) => {
+    const grad = g.createLinearGradient(0, 0, 1, 1);
+    grad.addColorStop(0, "rgba(255,248,230," + (0.26 * k).toFixed(3) + ")");
+    grad.addColorStop(0.45, "rgba(255,248,230,0)");
+    grad.addColorStop(1, "rgba(50,25,5," + (0.22 * k).toFixed(3) + ")");
+    return grad;
+  });
+}
+
+function discGradient(ctx) {
+  return unitGradient(ctx, "disc", (g) => {
+    const grad = g.createLinearGradient(-1, -1, 1, 1);
+    grad.addColorStop(0, "rgba(255,248,230,0.3)");
+    grad.addColorStop(0.5, "rgba(255,248,230,0)");
+    grad.addColorStop(1, "rgba(40,20,5,0.25)");
+    return grad;
+  });
+}
+
+function metalUnit(ctx) {
+  return unitGradient(ctx, "metal", (g) => {
+    const grad = g.createRadialGradient(-0.4, -0.45, 0.05, 0, 0, 1.05);
+    grad.addColorStop(0, "#fbfcfd");
+    grad.addColorStop(0.45, "#c3c9cf");
+    grad.addColorStop(1, "#6c747b");
+    return grad;
+  });
+}
+
+function brassUnit(ctx, theme) {
+  const mid = theme["--mp-brad"] || "#c9a35d";
+  return unitGradient(ctx, "brass|" + mid, (g) => {
+    const grad = g.createRadialGradient(-0.4, -0.4, 0.05, 0, 0, 1);
+    grad.addColorStop(0, "#fff1c4");
+    grad.addColorStop(0.5, mid);
+    grad.addColorStop(1, "#7a5a28");
+    return grad;
+  });
+}
+
 /* ---- geometry helpers -------------------------------------------------- */
 
 function polyNormals(pts) {
@@ -878,13 +940,8 @@ function paintLighting(ctx, pts, strength) {
     minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);
   }
   const k = strength == null ? 1 : strength;
-  const grad = ctx.createLinearGradient(minX, minY, maxX, maxY);
-  grad.addColorStop(0, "rgba(255,248,230," + (0.26 * k).toFixed(3) + ")");
-  grad.addColorStop(0.45, "rgba(255,248,230,0)");
-  grad.addColorStop(1, "rgba(50,25,5," + (0.22 * k).toFixed(3) + ")");
   tracePoly(ctx, pts);
-  ctx.fillStyle = grad;
-  ctx.fill();
+  fillInBox(ctx, litGradient(ctx, k), minX, minY, maxX - minX, maxY - minY);
 }
 
 function paintRims(ctx, pts, u, light, dark) {
@@ -1109,7 +1166,40 @@ function feltSource(color, key) {
   });
 }
 
-function paintBackdrop(ctx, theme, project, clock, reduced, u) {
+let backdropCache = null;
+
+/**
+ * The backdrop only depends on canvas size, camera, and theme, so it is
+ * painted once into an offscreen canvas and blitted. It repaints when the
+ * view pans, zooms, or resizes. Gears sit still in the cached plate.
+ */
+function paintBackdrop(ctx, theme, project, clock, reduced, u, extraKey, paintExtra) {
+  const w = ctx.canvas.width;
+  const h = ctx.canvas.height;
+  const center = project.worldFromScreen(w / 2, h / 2);
+  const key = [w, h, u, Math.round(center.x * project.ppm * 2), Math.round(center.y * project.ppm * 2),
+    project.ppm.toFixed(3), theme["--mp-sky"], theme["--mp-desk"], theme["--mp-hill-near"], theme["--mp-cardboard"], theme["--mp-grid"], extraKey || ""].join("|");
+  if (!backdropCache || backdropCache.key !== key) {
+    const plate = (backdropCache && backdropCache.canvas && backdropCache.canvas.width === w && backdropCache.canvas.height === h)
+      ? backdropCache.canvas : makeCanvas(w, h);
+    const g = plate && plate.getContext("2d");
+    if (!g) {
+      renderBackdrop(ctx, theme, project, u);
+      if (paintExtra) paintExtra(ctx);
+      return;
+    }
+    g.clearRect(0, 0, w, h);
+    renderBackdrop(g, theme, project, u);
+    if (paintExtra) paintExtra(g);
+    backdropCache = { key, canvas: plate };
+  }
+  ctx.drawImage(backdropCache.canvas, 0, 0);
+  void clock; void reduced;
+}
+
+function renderBackdrop(ctx, theme, project, u) {
+  const clock = 0;
+  const reduced = true;
   const w = ctx.canvas.width;
   const h = ctx.canvas.height;
   const sky = skyPattern(theme);
@@ -1459,13 +1549,8 @@ function paintCutCircle(ctx, c, r, theme, u, depth, faceFill, edgeFill, line, an
   trace();
   ctx.fillStyle = faceFill;
   ctx.fill();
-  const grad = ctx.createLinearGradient(c.x - r, c.y - r, c.x + r, c.y + r);
-  grad.addColorStop(0, "rgba(255,248,230,0.3)");
-  grad.addColorStop(0.5, "rgba(255,248,230,0)");
-  grad.addColorStop(1, "rgba(40,20,5,0.25)");
   trace();
-  ctx.fillStyle = grad;
-  ctx.fill();
+  fillInBox(ctx, discGradient(ctx), c.x, c.y, r, r);
   ctx.save();
   ctx.lineWidth = 1.3 * u;
   ctx.strokeStyle = "rgba(255,248,226,0.8)";
@@ -1522,13 +1607,6 @@ function paintFeltButton(ctx, c, r, theme, u, angle) {
   }
 }
 
-function metalGradient(ctx, c, r) {
-  const g = ctx.createRadialGradient(c.x - r * 0.4, c.y - r * 0.45, r * 0.05, c.x, c.y, r * 1.05);
-  g.addColorStop(0, "#fbfcfd");
-  g.addColorStop(0.45, "#c3c9cf");
-  g.addColorStop(1, "#6c747b");
-  return g;
-}
 
 function paintBottleCap(ctx, c, r, theme, u, angle) {
   softShadow(ctx, () => { ctx.beginPath(); ctx.arc(c.x, c.y, r, 0, Math.PI * 2); }, 3 * u + r * 0.15, 4 * u + r * 0.2, theme);
@@ -1549,8 +1627,7 @@ function paintBottleCap(ctx, c, r, theme, u, angle) {
   ctx.fillStyle = "#4c5359";
   ctx.fill();
   crimp(0, 0);
-  ctx.fillStyle = metalGradient(ctx, c, r);
-  ctx.fill();
+  fillInBox(ctx, metalUnit(ctx), c.x, c.y, r, r);
   ctx.strokeStyle = "rgba(60,66,72,0.7)";
   ctx.lineWidth = 0.7 * u;
   ctx.stroke();
@@ -1560,8 +1637,7 @@ function paintBottleCap(ctx, c, r, theme, u, angle) {
   ctx.fill();
   ctx.beginPath();
   ctx.arc(c.x, c.y, r * 0.62, 0, Math.PI * 2);
-  ctx.fillStyle = metalGradient(ctx, c, r * 0.7);
-  ctx.fill();
+  fillInBox(ctx, metalUnit(ctx), c.x, c.y, r * 0.7, r * 0.7);
   ctx.strokeStyle = "rgba(255,255,255,0.85)";
   ctx.lineWidth = Math.max(1, r * 0.08);
   ctx.lineCap = "round";
@@ -1576,14 +1652,9 @@ function paintBrass(ctx, c, r, theme, u) {
   ctx.arc(c.x + 0.8 * u, c.y + 1 * u, r, 0, Math.PI * 2);
   ctx.fillStyle = "#6d5226";
   ctx.fill();
-  const g = ctx.createRadialGradient(c.x - r * 0.4, c.y - r * 0.4, r * 0.05, c.x, c.y, r);
-  g.addColorStop(0, "#fff1c4");
-  g.addColorStop(0.5, theme["--mp-brad"] || "#c9a35d");
-  g.addColorStop(1, "#7a5a28");
   ctx.beginPath();
   ctx.arc(c.x, c.y, r, 0, Math.PI * 2);
-  ctx.fillStyle = g;
-  ctx.fill();
+  fillInBox(ctx, brassUnit(ctx, theme), c.x, c.y, r, r);
   ctx.strokeStyle = "rgba(80,55,20,0.5)";
   ctx.lineWidth = 0.6 * u;
   ctx.beginPath();
@@ -1664,6 +1735,13 @@ function paintRocketParts(ctx, project, body, theme, u, depth) {
   ctx.stroke();
 }
 
+
+function isBakeable(item, snapshot, theme) {
+  const body = item.body;
+  if (!body.isStatic || body.selected || item.geom.kind !== "poly") return false;
+  const kind = craftKind(body, snapshot, theme);
+  return kind === "shelf" || kind === "wedge" || kind === "wall" || kind === "foil";
+}
 
 function unitOf(ctx) {
   const c = ctx.canvas;
@@ -1793,8 +1871,10 @@ function twistedCord(ctx, points, colors, width, u, phase) {
   ctx.lineWidth = width;
   trace(0, 0);
   ctx.stroke();
-  // twist: short diagonal strands every few pixels
+  // twist: short diagonal strands, batched into two paths per cord
   const step = Math.max(2.6 * u, width * 1.15);
+  const dark = new Path2D();
+  const light = new Path2D();
   let carry = phase || 0;
   for (let i = 0; i < points.length - 1; i++) {
     const a = points[i];
@@ -1808,25 +1888,23 @@ function twistedCord(ctx, points, colors, width, u, phase) {
     const nx = -uy;
     const ny = ux;
     const hw = width * 0.5;
-    ctx.lineWidth = Math.max(0.7, width * 0.32);
     for (let t = carry; t < len; t += step) {
       const x = a.x + ux * t;
       const y = a.y + uy * t;
-      ctx.strokeStyle = colors[2];
-      ctx.beginPath();
-      ctx.moveTo(x - nx * hw - ux * hw * 0.8, y - ny * hw - uy * hw * 0.8);
-      ctx.lineTo(x + nx * hw + ux * hw * 0.8, y + ny * hw + uy * hw * 0.8);
-      ctx.stroke();
-      ctx.strokeStyle = colors[3];
-      ctx.globalAlpha = 0.7;
-      ctx.beginPath();
-      ctx.moveTo(x - nx * hw * 0.5 + ux * step * 0.35, y - ny * hw * 0.5 + uy * step * 0.35);
-      ctx.lineTo(x + ux * step * 0.6, y + uy * step * 0.6);
-      ctx.stroke();
-      ctx.globalAlpha = 1;
+      dark.moveTo(x - nx * hw - ux * hw * 0.8, y - ny * hw - uy * hw * 0.8);
+      dark.lineTo(x + nx * hw + ux * hw * 0.8, y + ny * hw + uy * hw * 0.8);
+      light.moveTo(x - nx * hw * 0.5 + ux * step * 0.35, y - ny * hw * 0.5 + uy * step * 0.35);
+      light.lineTo(x + ux * step * 0.6, y + uy * step * 0.6);
     }
     carry = (carry + step - (len % step)) % step;
   }
+  ctx.lineWidth = Math.max(0.7, width * 0.32);
+  ctx.strokeStyle = colors[2];
+  ctx.stroke(dark);
+  ctx.strokeStyle = colors[3];
+  ctx.globalAlpha = 0.7;
+  ctx.stroke(light);
+  ctx.globalAlpha = 1;
   ctx.restore();
 }
 
@@ -2250,14 +2328,22 @@ export function createCraftDrawLayer(canvas, options) {
     tilt(theme) { return num(theme, "--mp-diorama-tilt", 0.06); }
   }, "craft", ({ ctx, theme, project, snapshot, clock, reduced: still }) => {
     const u = unitOf(ctx);
-    paintBackdrop(ctx, theme, project, clock, still, u);
-    drawGrid(ctx, project, theme["--mp-grid"], 0.5);
-    paintTrails(ctx, snapshot, theme, project, u);
-    paintCraftJoints(ctx, snapshot, theme, project, clock, still, u);
-    const bodies = (snapshot.bodies || [])
+    const all = (snapshot.bodies || [])
       .map((body) => ({ body, geom: screenGeom(project, body) }))
       .filter((item) => item.geom)
       .sort((a, b) => a.geom.front - b.geom.front);
+    // Static scenery (shelves, trays, ramps, walls) never moves, so it is
+    // baked into the cached backdrop plate together with the grid.
+    const baked = [];
+    const bodies = [];
+    for (const item of all) (isBakeable(item, snapshot, theme) ? baked : bodies).push(item);
+    const bakedKey = baked.map((item) => item.body.id + ":" + item.geom.pts.map((p) => Math.round(p.x) + "," + Math.round(p.y)).join(";")).join("/");
+    paintBackdrop(ctx, theme, project, clock, still, u, bakedKey, (g) => {
+      drawGrid(g, project, theme["--mp-grid"], 0.5);
+      for (const item of baked) paintCraftBody(g, project, snapshot, item.body, theme, 0, true, u);
+    });
+    paintTrails(ctx, snapshot, theme, project, u);
+    paintCraftJoints(ctx, snapshot, theme, project, clock, still, u);
     for (const body of snapshot.bodies || []) {
       if (body.thrustOn) paintFlames(ctx, project, body, theme, clock, still, u);
     }
