@@ -13,7 +13,7 @@ import {
   blockOnWedge, inclineFrame, readSaves, writeSave, SAVE_KEY, surfaceFriction
 } from "../public/mechanics-physics.js";
 import { createSimulation } from "../public/mechanics-world.js";
-import { vectorStyleToken, VECTOR_TOKENS } from "../public/mechanics-render.js";
+import { vectorStyleToken, VECTOR_TOKENS, createCraftDrawLayer } from "../public/mechanics-render.js";
 
 function loadPlanck() {
   const code = readFileSync(new URL("../public/vendor/planck.min.js", import.meta.url), "utf8");
@@ -133,13 +133,22 @@ test("force arrows use the designer tokens, including thrust as applied", () => 
   assert.match(css, /--mp-force-friction:\s*orange\s*;/);
   assert.match(css, /--mp-force-applied:\s*green\s*;/);
   assert.match(css, /--mp-velocity:\s*cyan\s*;/);
+  assert.match(css, /--mp-felt-squash:/);
+  assert.match(css, /--mp-paper-flutter:/);
+  assert.match(css, /--mp-tape-flap:/);
+  assert.match(css, /--mp-crayon-width:/);
   const render = readFileSync(new URL("../public/mechanics-render.js", import.meta.url), "utf8");
   const world = readFileSync(new URL("../public/mechanics-world.js", import.meta.url), "utf8");
   assert.equal(render.includes("planck"), false);
   assert.equal(render.includes("mechanics-world"), false);
   assert.equal(world.includes("mechanics-render"), false);
+  assert.equal(typeof createCraftDrawLayer, "function");
+  const layer = createCraftDrawLayer({ width: 8, height: 8, getContext() { return null; } });
+  assert.equal(typeof layer.draw, "function");
+  assert.equal(typeof layer.worldFromScreen, "function");
   const study = readFileSync(new URL("../public/study.html", import.meta.url), "utf8");
-  assert.equal(study.includes("study-mechanics"), false);
+  assert.match(study, /study-mechanics\.html/);
+  assert.match(study, /Mechanics Playground/);
 });
 
 test("Atwood acceleration matches (m1-m2)g/(m1+m2) within 3%", () => {

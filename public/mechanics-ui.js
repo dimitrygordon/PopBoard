@@ -4,24 +4,73 @@
  */
 import { forwardStudyQuery } from "./board-return.js?v=20261022a";
 import { createSimulation } from "./mechanics-world.js";
-import { createPlaceholderDrawLayer, createSchematicDrawLayer } from "./mechanics-render.js";
+import { createCraftDrawLayer, createPlaceholderDrawLayer, createSchematicDrawLayer } from "./mechanics-render.js";
 import {
   MODES, MODE_ALIASES, GRAVITY_PRESETS, PART_TYPES, JOINT_TYPES, MATERIALS,
   modeFromSearch, buildPreset, defaultPart, parseBuild, hitBody, localPoint,
   readSaves, writeSave, wedgeAngle
 } from "./mechanics-physics.js";
 
+const PART_LABELS = {
+  box: "cardboard box",
+  ball: "ball",
+  plank: "paper plane",
+  wedge: "cardboard ramp",
+  ground: "cardboard floor",
+  wall: "cardboard wall",
+  "pulley-wheel": "button",
+  rocket: "rocket"
+};
+
+const JOINT_LABELS = {
+  revolute: "brad hinge",
+  prismatic: "sliding slot",
+  distance: "yarn",
+  rope: "twine",
+  spring: "cardboard coil",
+  weld: "tape join",
+  wheel: "wheel",
+  pulley: "pulley string"
+};
+
+const svg = (body) => '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' + body + "</svg>";
+
+const PART_ICONS = {
+  box: svg('<path d="M4 8h12v10H4z"/><path d="M4 8l3-3h12v10l-3 3"/><path d="M16 5v10M7 8v10"/><path d="M4 15h3l2 2"/>'),
+  ball: svg('<circle cx="12" cy="12" r="6.5"/><path d="M8 10c1.2 1 2 .4 3.2 1.2M13 14c1 .8 2 .2 3 1"/>'),
+  plank: svg('<path d="M3 13.5 12 6l9 7.5-9 3.2z"/><path d="M12 6v10.7M3 13.5l9 3.2 9-3.2"/>'),
+  wedge: svg('<path d="M4 18h16L4 8z"/><path d="M4 14h6"/>'),
+  ground: svg('<path d="M3 10h18v5H3z"/><path d="M3 12.5h18"/>'),
+  wall: svg('<path d="M8 3h8v18H8z"/><path d="M8 8h8M8 13h8"/>'),
+  "pulley-wheel": svg('<circle cx="12" cy="12" r="7"/><circle cx="12" cy="8.2" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.8" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="15.8" r="1.1" fill="currentColor" stroke="none"/><circle cx="8.2" cy="12" r="1.1" fill="currentColor" stroke="none"/>'),
+  rocket: svg('<path d="M12 3c2.2 2.4 3 5.2 3 8.2V16H9v-4.8C9 8.2 9.8 5.4 12 3z"/><path d="M9 14c-2 .4-3 2-3 3.5h3M15 14c2 .4 3 2 3 3.5h-3"/><path d="M10.2 19.5c.4 1.2.8 1.6 1.8 1.6s1.4-.4 1.8-1.6"/>')
+};
+
+const JOINT_ICONS = {
+  revolute: svg('<circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/>'),
+  prismatic: svg('<path d="M4 8h16v8H4z"/><path d="M8 12h8M14 10l2 2-2 2M10 10l-2 2 2 2"/>'),
+  distance: svg('<path d="M4 15c2-4 4-4 6 0s4 4 6 0 2-2 4 0"/><circle cx="5" cy="14" r="1.4"/>'),
+  rope: svg('<path d="M5 6c4 2 3 4 7 4s3-2 7-4"/><path d="M5 12c4 2 3 4 7 4s3-2 7-4"/><path d="M5 18c4-2 3-4 7-4s3 2 7 4"/>'),
+  spring: svg('<path d="M5 5h4l2 4 2-4h2l2 4 2-4h2"/><path d="M7 9v10M17 9v10"/><path d="M7 19h10"/>'),
+  weld: svg('<path d="M3 9h7v6H3zM14 9h7v6h-7z"/><path d="M8 10.5h8v3H8z"/>'),
+  wheel: svg('<path d="M12 3v6"/><circle cx="12" cy="15" r="5"/><circle cx="12" cy="15" r="1.3" fill="currentColor" stroke="none"/>'),
+  pulley: svg('<circle cx="7" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M7 11v7M17 11v7M7 18h10"/>')
+};
+
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const $ = (id) => document.getElementById(id);
 
 const mechanics = new EventTarget();
 mechanics.state = { bodies: [], joints: [], time: 0, paused: true };
+mechanics.createCraftDrawLayer = createCraftDrawLayer;
 mechanics.createPlaceholderDrawLayer = createPlaceholderDrawLayer;
 mechanics.createSchematicDrawLayer = createSchematicDrawLayer;
 window.mechanics = mechanics;
 
 const canvas = $("mechanicsCanvas");
-let drawLayer = createPlaceholderDrawLayer(canvas, { reducedMotion });
+const craftLayer = createCraftDrawLayer(canvas, { reducedMotion });
+const schematicLayer = createSchematicDrawLayer(canvas);
+let drawLayer = craftLayer;
 mechanics.setDrawLayer = (layer) => {
   if (layer && typeof layer.draw === "function" && typeof layer.worldFromScreen === "function") {
     drawLayer = layer;
@@ -65,12 +114,17 @@ function boot(planckApi) {
   for (const type of PART_TYPES) {
     const button = document.createElement("button");
     button.type = "button";
-    button.textContent = type;
-    button.setAttribute("aria-label", "Place " + type);
+    button.className = "icon-tool";
+    button.dataset.type = type;
+    button.innerHTML = PART_ICONS[type];
+    button.title = PART_LABELS[type];
+    button.setAttribute("aria-label", "Place a " + PART_LABELS[type]);
+    button.setAttribute("aria-pressed", "false");
     button.addEventListener("click", () => {
       tool = { kind: "place", type };
       pendingJoint = null;
-      say("Drag on the view to place a " + type + ".");
+      markTools();
+      say("Drag on the view to place a " + PART_LABELS[type] + ".");
     });
     partTools.appendChild(button);
   }
@@ -78,14 +132,31 @@ function boot(planckApi) {
   for (const type of JOINT_TYPES) {
     const button = document.createElement("button");
     button.type = "button";
-    button.textContent = type;
-    button.setAttribute("aria-label", "Connect with " + type);
+    button.className = "icon-tool";
+    button.dataset.type = type;
+    button.innerHTML = JOINT_ICONS[type];
+    button.title = JOINT_LABELS[type];
+    button.setAttribute("aria-label", "Connect with " + JOINT_LABELS[type]);
+    button.setAttribute("aria-pressed", "false");
     button.addEventListener("click", () => {
       tool = { kind: "joint", type };
       pendingJoint = null;
-      say("Click the first part, then the second, to add a " + type + ".");
+      markTools();
+      say("Click the first part, then the second, to add " + JOINT_LABELS[type] + ".");
     });
     jointTools.appendChild(button);
+  }
+
+  function markTools() {
+    document.querySelectorAll("#partTools button").forEach((button) => {
+      const on = tool.kind === "place" && button.dataset.type === tool.type;
+      button.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    document.querySelectorAll("#jointTools button").forEach((button) => {
+      const on = tool.kind === "joint" && button.dataset.type === tool.type;
+      button.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    $("rulerBtn").setAttribute("aria-pressed", tool.kind === "ruler" ? "true" : "false");
   }
 
   function publish(name) {
@@ -209,9 +280,26 @@ function boot(planckApi) {
     $("pauseBtn").setAttribute("aria-pressed", snap.paused ? "false" : "true");
     if (document.activeElement !== $("gravityRange")) $("gravityRange").value = String(snap.gravity);
     fillForm(snap);
-    $("readout").textContent = describe(snap);
+    const text = describe(snap);
+    $("readout").textContent = text;
+    const energy = snap.energy;
+    $("meterTime").textContent = snap.time.toFixed(2) + " s";
+    $("meterKe").textContent = energy.kinetic.toFixed(2) + " J";
+    $("meterPe").textContent = energy.gravitational.toFixed(2) + " J";
+    $("meterSpring").textContent = energy.spring.toFixed(2) + " J";
+    $("meterHeat").textContent = energy.thermal.toFixed(2) + " J";
+    $("meterWatch").textContent = snap.stopwatch.elapsed.toFixed(2) + " s";
   }
 
+  function showLayer(layer, button) {
+    mechanics.setDrawLayer(layer);
+    $("craftViewBtn").setAttribute("aria-pressed", button === "craft" ? "true" : "false");
+    $("schematicViewBtn").setAttribute("aria-pressed", button === "schematic" ? "true" : "false");
+    paint(sim.snapshot());
+  }
+
+  $("craftViewBtn").addEventListener("click", () => showLayer(craftLayer, "craft"));
+  $("schematicViewBtn").addEventListener("click", () => showLayer(schematicLayer, "schematic"));
   $("pauseBtn").addEventListener("click", () => {
     const paused = !sim.snapshot().paused;
     sim.setPaused(paused);
@@ -348,6 +436,7 @@ function boot(planckApi) {
   $("rulerBtn").addEventListener("click", () => {
     tool = { kind: "ruler" };
     rulerPoint = null;
+    markTools();
     say("Click the first ruler mark, then the second.");
   });
 
@@ -404,6 +493,7 @@ function boot(planckApi) {
         sim.setRuler(rulerPoint.x, rulerPoint.y, point.x, point.y);
         rulerPoint = null;
         tool = { kind: "select" };
+        markTools();
       }
       return;
     }
@@ -489,6 +579,7 @@ function boot(planckApi) {
       tool = { kind: "select" };
       pendingJoint = null;
       rulerPoint = null;
+      markTools();
     }
   });
 

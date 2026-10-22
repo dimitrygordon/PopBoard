@@ -119,7 +119,8 @@ for (const mode of MODES) {
   if (mode === "rocket") check(info.rocketY > 0.7, "rocket has lifted");
   if (mode === "friction") check(info.ice > info.rubber + 0.2, "ice is ahead of rubber");
   if (mode === "sandbox" || mode === "rube") check(info.joints >= 0, mode + " snapshot is readable");
-  if (mode === "pulley" || mode === "friction" || mode === "rocket") {
+  if (mode === "pulley" || mode === "friction" || mode === "rocket" || mode === "pendulum" || mode === "springs") {
+    await page.waitForFunction(() => window.mechanics.state.time > 0.55, { timeout: 8000 });
     await mkdir(SHOTS, { recursive: true });
     const file = SHOTS + "/mechanics-" + mode + ".png";
     await page.screenshot({ path: file });
@@ -153,7 +154,7 @@ const guestGallery = await back.evaluate(() => {
   const names = Array.from(document.querySelectorAll(".module-card h3")).map((el) => el.textContent);
   return names;
 });
-check(!guestGallery.some((name) => /mechanics playground/i.test(name)), "gallery card is not listed yet");
+check(guestGallery.some((name) => /mechanics playground/i.test(name)), "gallery lists Mechanics Playground");
 check(hardErrors(back).length === 0, "return path has no unexpected errors" + (hardErrors(back).length ? ": " + hardErrors(back).join(" | ") : ""));
 
 const tokens = await browser.newPage();
@@ -177,6 +178,24 @@ const colors = await tokens.evaluate(() => {
 check(colors.gravity === "red" && colors.normal === "blue" && colors.tension === "gold", "force tokens are the named colors (" + JSON.stringify(colors) + ")");
 check(colors.friction === "orange" && colors.applied === "green" && colors.velocity === "cyan", "friction, applied, and velocity tokens");
 check(!!colors.bg, "background token is set");
+const drawer = await tokens.$eval("#partTools", (el) => ({
+  buttons: el.querySelectorAll("button").length,
+  svgs: el.querySelectorAll("svg").length,
+  letters: (el.innerText || "").replace(/\s+/g, "")
+}));
+check(drawer.buttons === 8 && drawer.svgs === 8 && drawer.letters === "", "parts drawer is icons (" + JSON.stringify(drawer) + ")");
+await tokens.click("#partTools button");
+const pressed = await tokens.$eval("#partTools button", (el) => el.getAttribute("aria-pressed"));
+const said = await tokens.$eval("#statusLine", (el) => el.textContent);
+check(pressed === "true" && /drag/i.test(said), "placing a part arms the drawer (" + said + ")");
+await tokens.click("#schematicViewBtn");
+await tokens.click("#craftViewBtn");
+const layers = await tokens.evaluate(() => ({
+  diagram: document.getElementById("schematicViewBtn").getAttribute("aria-pressed"),
+  diorama: document.getElementById("craftViewBtn").getAttribute("aria-pressed")
+}));
+check(layers.diorama === "true" && layers.diagram === "false", "diorama layer is selected again");
+check(hardErrors(tokens).length === 0, "icon drawer and layer swap stay quiet");
 
 await browser.close();
 server.close();
