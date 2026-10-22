@@ -8,21 +8,21 @@
    --mp-velocity. */
 
 :root {
-  --mp-bg: #14181f;
+  --mp-bg: #d8b56a;
   --mp-far: #1c2430;
   --mp-mid: #2a3544;
   --mp-near: #3d4d62;
   --mp-body: #d7a15e;
   --mp-body-side: #8d5a2b;
-  --mp-shadow: rgba(20, 10, 4, 0.38);
+  --mp-shadow: rgba(52, 30, 8, 0.2);
   --mp-rope: #c2a36a;
-  --mp-spring: #e0b56a;
+  --mp-spring: #d5b483;
   --mp-ice: #f4efe2;
   --mp-rubber: #c4493a;
   --mp-thrust: #ff7a3c;
   --mp-vector-force: #f4f4f4;
   --mp-vector-velocity: var(--mp-velocity);
-  --mp-grid: rgba(90, 60, 30, 0.16);
+  --mp-grid: rgba(110, 72, 28, 0.08);
   --mp-ui-card: rgba(20, 24, 32, 0.92);
   --mp-force-gravity: red;
   --mp-force-normal: blue;
@@ -31,26 +31,26 @@
   --mp-force-applied: green;
   --mp-velocity: cyan;
 
-  --mp-desk: #241910;
+  --mp-desk: #b8914c;
   --mp-paper: #f3e6c8;
   --mp-paper-fiber: rgba(90, 60, 30, 0.16);
   --mp-paper-fold: rgba(120, 80, 40, 0.45);
-  --mp-cardboard: #d7a15e;
-  --mp-cardboard-edge: #8d5a2b;
+  --mp-cardboard: #c9a777;
+  --mp-cardboard-edge: #6e4f2d;
   --mp-corrugation: rgba(90, 50, 20, 0.28);
   --mp-felt: #c4493a;
   --mp-felt-fiber: rgba(70, 16, 12, 0.55);
-  --mp-tape: #e6d28a;
+  --mp-tape: #efe3bd;
   --mp-tape-shine: rgba(255, 255, 255, 0.7);
   --mp-stitch: #2a2118;
   --mp-twine: #c2a36a;
-  --mp-yarn: #6f8fbf;
+  --mp-yarn: #c8372a;
   --mp-button: #f7f4ee;
   --mp-button-rim: #c5bfb2;
   --mp-button-hole: #2c2622;
   --mp-cap: #d5d8de;
   --mp-cap-rim: #8e939c;
-  --mp-brad: #b08d57;
+  --mp-brad: #c9a35d;
   --mp-tissue: #ffb08a;
   --mp-tissue-hot: #ff5a3c;
   --mp-crayon-grain: rgba(255, 255, 255, 0.45);
@@ -71,7 +71,7 @@
   --mp-stitch-gap: 7;
   --mp-corrugation-pitch: 6;
   --mp-torn-amp: 2.2;
-  --mp-crayon-width: 3.2;
+  --mp-crayon-width: 4;
   --mp-crayon-jitter: 1.35;
   --mp-yarn-width: 2.2;
   --mp-yarn-wave: 3.5;
@@ -83,6 +83,24 @@
   --mp-tape-size: 16;
   --mp-button-holes: 4;
   --mp-loop: 5s;
+
+  /* paper-craft scene art (Da Vinci) */
+  --mp-sky: #d8b56a;
+  --mp-hill-far: #c3b77e;
+  --mp-hill-mid: #a2ad6b;
+  --mp-hill-near: #86985a;
+  --mp-gear: #a77a45;
+  --mp-wood: #c98f52;
+  --mp-wood-grain: #8a5527;
+  --mp-cellophane: #8fcbea;
+  --mp-rubber-mat: #3a3639;
+  --mp-foil: #c9ced4;
+  --mp-sandpaper: #6f6a63;
+  --mp-flute-light: #c79a5e;
+  --mp-button-felt: #4f78a8;
+  --mp-motor: #c8372a;
+  --mp-flame-core: #f7c948;
+  --mp-arrow-halo: rgba(35, 20, 6, 0.55);
 
   --text: #e7e4dc;
   --text-dim: #a7b0ba;
