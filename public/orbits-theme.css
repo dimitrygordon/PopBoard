@@ -1,0 +1,98 @@
+/* Orbital Mechanics & Gravity Playground: theme tokens.
+   Leo owns the art. The renderer (orbits-render.js) reads every --orb-*
+   token from :root on resize and on theme change, so new art can drop in
+   by editing this file and the draw functions only.
+   Target look: indigo void, warm star glow, gold orbit trails, marble planets. */
+
+:root {
+  /* Placeholder names kept as aliases of Leo's --ob-* tokens (orbits/assets/tokens.css). */
+  --orb-void: var(--ob-void-mid);
+  --orb-void-edge: var(--ob-void-bottom);
+  --orb-grid: rgba(var(--ob-gold-rgb), 0.05);
+  --orb-trail-rgb: var(--ob-trail-color);
+  --orb-trail-width: var(--ob-trail-width);
+  --orb-trail-head: var(--ob-trail-alpha-head);
+  --orb-trail-length: var(--ob-trail-length);
+  --orb-ghost-alpha: var(--ob-ghost-alpha);
+  --orb-gold-rgb: var(--ob-gold-rgb);
+  --orb-sling: var(--ob-velocity-arrow);
+  --orb-select: var(--ob-gold-100);
+  --orb-lagrange: var(--ob-stable);
+  --orb-escape: var(--ob-danger);
+  --orb-text: var(--ob-gold-100);
+  --orb-text-dim: var(--ob-ink-dim);
+  --orb-ui-bg: var(--ob-hud-bg);
+  --orb-ui-border: rgba(var(--ob-gold-rgb), 0.35);
+  --orb-ui-active: var(--ob-ink);
+  --orb-ui-active-text: var(--ob-void-bottom);
+  --orb-font: "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --orb-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --orb-target: var(--ob-hud-hit);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--ob-void-gradient), var(--orb-void); color: var(--orb-text); font-family: var(--orb-font); overscroll-behavior: none; }
+canvas#orbitsCanvas { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; display: block; touch-action: none; cursor: crosshair; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.hud { position: fixed; z-index: 4; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;
+  padding: calc(10px + env(safe-area-inset-top)) calc(10px + env(safe-area-inset-right)) 0 calc(10px + env(safe-area-inset-left)); pointer-events: none; }
+.hud-right { display: flex; gap: 8px; }
+.hud button, .toolbar .tool, .preset-menu button {
+  pointer-events: auto; min-width: var(--orb-target); min-height: var(--orb-target); display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+  padding: 8px 14px; border-radius: 999px; border: 1px solid var(--orb-ui-border); background: var(--orb-ui-bg); color: var(--orb-text);
+  font: 600 14px var(--orb-font); cursor: pointer; -webkit-backdrop-filter: var(--ob-hud-blur); backdrop-filter: var(--ob-hud-blur); -webkit-tap-highlight-color: transparent; }
+.hud button svg, .toolbar svg { width: 22px; height: 22px; }
+.study-back-btn svg { width: 14px !important; height: 14px !important; }
+button:focus-visible { outline: 2px solid var(--orb-ui-active); outline-offset: 2px; }
+
+.toolbar { position: fixed; z-index: 4; left: 50%; transform: translateX(-50%); bottom: calc(12px + env(safe-area-inset-bottom));
+  display: flex; align-items: center; gap: 6px; padding: 6px; border-radius: 999px; background: var(--orb-ui-bg); border: 1px solid var(--orb-ui-border);
+  max-width: calc(100vw - 16px); overflow-x: auto; scrollbar-width: none; }
+.toolbar .tool { position: relative; padding: 0; width: var(--orb-target); border: 0; background: transparent; flex: 0 0 auto; }
+.toolbar .tool[aria-pressed="true"] { background: var(--orb-ui-active); color: var(--orb-ui-active-text); }
+.tool-badge { position: absolute; right: 1px; bottom: 1px; font: 700 10px var(--orb-mono); padding: 0 3px; border-radius: 6px; background: var(--orb-void-edge); color: var(--orb-text); }
+.toolbar .sep { width: 1px; height: 28px; background: var(--orb-ui-border); flex: 0 0 auto; }
+#playBtn .ic-play { display: none; }
+#playBtn.paused .ic-play { display: block; }
+#playBtn.paused .ic-pause { display: none; }
+
+.preset-menu { position: fixed; z-index: 5; top: calc(64px + env(safe-area-inset-top)); right: calc(10px + env(safe-area-inset-right)); display: flex; flex-direction: column; gap: 6px;
+  padding: 8px; border-radius: 18px; background: var(--orb-ui-bg); border: 1px solid var(--orb-ui-border); max-height: 70vh; overflow-y: auto; }
+.preset-menu button { justify-content: flex-start; border-radius: 12px; width: 100%; }
+.preset-menu button[aria-current="true"] { border-color: var(--orb-ui-active); }
+
+.readout { position: fixed; z-index: 3; left: calc(12px + env(safe-area-inset-left)); top: calc(66px + env(safe-area-inset-top)); margin: 0; max-width: min(320px, 70vw);
+  font: 500 12px/1.5 var(--orb-mono); color: var(--orb-text-dim); white-space: pre-line; pointer-events: none; text-shadow: 0 1px 2px var(--orb-void-edge); }
+.toast { position: fixed; z-index: 4; left: 50%; transform: translateX(-50%); bottom: calc(82px + env(safe-area-inset-bottom)); margin: 0; padding: 8px 14px; border-radius: 999px;
+  background: var(--orb-ui-bg); border: 1px solid var(--orb-ui-border); font-size: 14px; opacity: 0; transition: opacity 0.25s; pointer-events: none; white-space: nowrap; max-width: 92vw; overflow: hidden; text-overflow: ellipsis; }
+.toast.show { opacity: 1; }
+
+@media (max-width: 520px) {
+  .study-back-btn .back-label { display: none; }
+  .toolbar { gap: 2px; }
+  .toolbar .sep { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toast { transition: none; }
+}
+@media (max-width: 520px) {
+  /* Two-finger drag pans on touch, so the pan tool can go. */
+  .toolbar [data-tool="pan"] { display: none; }
+  .toolbar { padding: 4px; }
+}
+
+/* Icon-only HUD in Leo's ink. */
+.toolbar .tool, .hud button { color: var(--ob-ink-dim); }
+.toolbar .tool svg, .hud-right svg { width: var(--ob-hud-icon-size); height: var(--ob-hud-icon-size); }
+.hud-right button { padding: 0; width: var(--orb-target); }
+.toolbar .tool[aria-pressed="true"] { background: rgba(var(--ob-gold-rgb), 0.16); color: var(--ob-ink); filter: var(--ob-icon-glow); }
+.toolbar { box-shadow: var(--ob-hud-shadow); }
+.study-back-btn { color: var(--ob-ink) !important; }
+.stable-badge { position: fixed; z-index: 4; right: calc(14px + env(safe-area-inset-right)); top: calc(64px + env(safe-area-inset-top)); width: 56px; height: 56px; color: var(--ob-stable); pointer-events: none; }
+.stable-badge svg { width: 100%; height: 100%; }
+.stable-badge:not([hidden]) { animation: ob-stable-badge 900ms var(--ob-ease-spring) both, ob-glow-breathe 3s ease-in-out 900ms infinite; }
+@media (prefers-reduced-motion: reduce) { .stable-badge:not([hidden]) { animation: none; filter: var(--ob-icon-glow); } }
+.preset-menu[hidden], .stable-badge[hidden] { display: none !important; }
+#deleteBtn { color: var(--ob-ink); }
+#deleteBtn[hidden] { display: none !important; }
