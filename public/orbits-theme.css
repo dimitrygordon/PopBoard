@@ -94,3 +94,5 @@ button:focus-visible { outline: 2px solid var(--orb-ui-active); outline-offset: 
 .stable-badge:not([hidden]) { animation: ob-stable-badge 900ms var(--ob-ease-spring) both, ob-glow-breathe 3s ease-in-out 900ms infinite; }
 @media (prefers-reduced-motion: reduce) { .stable-badge:not([hidden]) { animation: none; filter: var(--ob-icon-glow); } }
 .preset-menu[hidden], .stable-badge[hidden] { display: none !important; }
+#deleteBtn { color: var(--ob-ink); }
+#deleteBtn[hidden] { display: none !important; }

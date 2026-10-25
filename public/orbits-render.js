@@ -1,5 +1,6 @@
 // Orbital Mechanics & Gravity Playground: renderer.
 // Art by Leo (public/orbits/assets/, recipes from the pack README).
+// Bodies are 256px WebP (planets/), FX stay PNG (fx/).
 // Layer order per frame: far tile, near tile (lighter), trails + ghost,
 // glows (lighter), bodies (planets source-over, stars lighter), FX, then
 // the DOM HUD. Colors and trail numbers come from tokens.css via --ob-*.
@@ -71,7 +72,7 @@ export function createRenderer(canvas, opts = {}) {
   const reducedMotion = !!opts.reducedMotion;
   let tokens = readTokens();
   const img = {};
-  for (const k of IMAGES) { const i = new Image(); i.decoding = "async"; i.src = ASSET + k + ".png"; img[k] = i; }
+  for (const k of IMAGES) { const i = new Image(); i.decoding = "async"; i.src = ASSET + k + (k.startsWith("planets/") ? ".webp" : ".png"); img[k] = i; }
   const ready = (k) => img[k] && img[k].complete && img[k].naturalWidth > 0;
   const cache = new Map();
   let patterns = null, bg = null, dprNow = 1;

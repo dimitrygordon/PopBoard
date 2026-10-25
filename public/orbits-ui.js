@@ -15,6 +15,7 @@ const canvas = document.getElementById("orbitsCanvas");
 const readout = document.getElementById("readout");
 const statusLine = document.getElementById("statusLine");
 const stableBadge = document.getElementById("stableBadge");
+const deleteBtn = document.getElementById("deleteBtn");
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const renderer = createRenderer(canvas, { reducedMotion });
 
@@ -274,6 +275,16 @@ function syncToggles() {
   $("lagrangeBtn").setAttribute("aria-pressed", String(state.showLagrange));
   $("escapeBtn").setAttribute("aria-pressed", String(state.showEscape));
 }
+function deleteSelected() {
+  const id = state.selectedId;
+  if (!id) return;
+  const gone = state.sys.bodies.find((b) => b.id === id);
+  state.sys.bodies = state.sys.bodies.filter((b) => b.id !== id);
+  state.trails.delete(id); state.selectedId = null; state.ghost = null;
+  if (state.tracker && gone) state.tracker = null;
+  toast((gone && gone.name ? gone.name : "Body") + " deleted");
+}
+$("deleteBtn").addEventListener("click", deleteSelected);
 $("resetBtn").addEventListener("click", () => loadScene(state.mode));
 
 const presetMenu = $("presetMenu");
@@ -296,10 +307,7 @@ function renderPresetMenu() {
 document.addEventListener("keydown", (e) => {
   if (e.target.closest && e.target.closest("button") && (e.key === " " || e.key === "Enter")) return;
   if (e.key === " ") { e.preventDefault(); state.paused = !state.paused; syncPlay(); }
-  else if ((e.key === "Delete" || e.key === "Backspace") && state.selectedId) {
-    state.sys.bodies = state.sys.bodies.filter((b) => b.id !== state.selectedId);
-    state.trails.delete(state.selectedId); state.selectedId = null;
-  } else if (e.key === "Escape") { closePresetMenu(); state.selectedId = null; }
+  else if ((e.key === "Delete" || e.key === "Backspace") && state.selectedId) deleteSelected(); else if (e.key === "Escape") { closePresetMenu(); state.selectedId = null; }
 });
 
 // Back: same contract as the Mechanics Playground.
@@ -449,6 +457,8 @@ function frame(now) {
     sling: gesture && gesture.type === "place" ? { x: gesture.wx, y: gesture.wy, px: gesture.px, py: gesture.py, kind: state.tool === "star" ? "star" : "planet", m: 0 } : null,
     escape: state.showEscape && state.pointer && !selected() ? toWorld(state.pointer.x, state.pointer.y) : null
   });
+  const delHidden = !selected();
+  if (deleteBtn.hidden !== delHidden) deleteBtn.hidden = delHidden;
   if (++readoutTick % 6 === 0) updateReadout();
   requestAnimationFrame(frame);
 }
