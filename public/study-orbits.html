@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0d0b2a">
+<title>Orbital Mechanics &amp; Gravity Playground // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<link rel="stylesheet" href="orbits/assets/tokens.css">
+<link rel="stylesheet" href="orbits-theme.css">
+<link rel="stylesheet" href="astro-study.css?v=20261021k">
+<script src="astro-study.js?v=20261021k"></script>
+</head>
+<body>
+<h1 class="sr-only">Orbital Mechanics &amp; Gravity Playground</h1>
+<p class="sr-only">Tap to drop a star or planet. Pull back and let go to sling it. Drag a body to move it. Pinch or scroll to zoom.</p>
+<canvas id="orbitsCanvas" aria-label="Orbit playground. Tap to place a body, pull back to set its velocity, drag a body to move it."></canvas>
+<p id="readout" class="readout" aria-live="off"></p>
+<div id="stableBadge" class="stable-badge" hidden aria-label="Stable orbit"><svg aria-hidden="true"><use href="orbits/assets/icons/sprite.svg#ob-challenge-badge"/></svg></div>
+<p id="statusLine" class="toast" role="status" aria-live="polite"></p>
+
+<div class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <div class="hud-right">
+    <button id="presetBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Scenes"><svg aria-hidden="true"><use href="orbits/assets/icons/sprite.svg#ob-presets"/></svg></button>
+    <button id="resetBtn" type="button" aria-label="Reset scene"><svg aria-hidden="true"><use href="orbits/assets/icons/sprite.svg#ob-reset"/></svg></button>
+  </div>
+</div>
+
+<div id="presetMenu" class="preset-menu" role="menu" hidden></div>
+
+<nav class="toolbar" aria-label="Tools">
+  <button type="button" class="tool" data-tool="star" aria-pressed="false" aria-label="Place star" title="Star"><svg aria-hidden="true"><use href="orbits/assets/icons/sprite.svg#ob-star"/></svg></button>
+  <button type="button" class="tool" data-tool="planet" aria-pressed="true" aria-label="Place planet" title="Planet"><svg aria-hidden="true"><use href="orbits/assets/icons/sprite.svg#ob-planet"/></svg></button>
+  <button type="button" class="tool" data-tool="pan" aria-pressed="false" aria-label="Move view" title="Pan"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg></button>
+  <button type="button" id="massBtn" class="tool" aria-label="Mass: medium" title="Mass"><svg aria-hidden="true"><use href="orbits/assets/icons/sprite.svg#ob-mass-dial"/></svg><span class="tool-badge" id="massBadge">M</span></button>
+  <span class="sep" aria-hidden="true"></span>
+  <button type="button" id="playBtn" class="tool" aria-label="Pause" title="Play / pause"><svg aria-hidden="true" class="ic-pause"><use href="orbits/assets/icons/sprite.svg#ob-pause"/></svg><svg aria-hidden="true" class="ic-play"><use href="orbits/assets/icons/sprite.svg#ob-play"/></svg></button>
+  <button type="button" id="warpBtn" class="tool" aria-label="Time warp 1x" title="Time warp"><svg aria-hidden="true"><use href="orbits/assets/icons/sprite.svg#ob-time-warp"/></svg><span class="tool-badge" id="warpBadge">1×</span></button>
+  <span class="sep" aria-hidden="true"></span>
+  <button type="button" id="lagrangeBtn" class="tool" aria-pressed="false" aria-label="Show Lagrange points" title="Lagrange points"><svg aria-hidden="true"><use href="orbits/assets/icons/sprite.svg#ob-lagrange"/></svg></button>
+  <button type="button" id="escapeBtn" class="tool" aria-pressed="false" aria-label="Show escape velocity" title="Escape velocity"><svg aria-hidden="true"><use href="orbits/assets/icons/sprite.svg#ob-velocity"/></svg></button>
+</nav>
+
+<script type="module" src="orbits-ui.js"></script>
+</body>
+</html>

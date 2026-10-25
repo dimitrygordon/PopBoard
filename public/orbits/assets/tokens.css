@@ -1,0 +1,114 @@
+/* PopBoard: Orbital Mechanics & Gravity Playground design tokens */
+:root {
+  /* Void */
+  --ob-void-top: #14123a;
+  --ob-void-mid: #0b0a22;
+  --ob-void-bottom: #030308;
+  --ob-void-gradient: radial-gradient(120% 90% at 50% 35%, var(--ob-void-top) 0%, var(--ob-void-mid) 45%, var(--ob-void-bottom) 100%);
+
+  /* Gold */
+  --ob-gold-100: #fff1d0;
+  --ob-gold-300: #f6d58e;
+  --ob-gold-500: #e2b35c;
+  --ob-gold-700: #a87a32;
+  --ob-gold-rgb: 226, 179, 92;
+  --ob-ink: var(--ob-gold-300);          /* icon currentColor */
+  --ob-ink-dim: rgba(var(--ob-gold-rgb), 0.45);
+
+  /* Bodies */
+  --ob-star-yellow: #ffc24a;
+  --ob-star-red: #ff4a2e;
+  --ob-star-blue: #8cc0ff;
+  --ob-white-dwarf: #eef2ff;
+  --ob-teal: #1f6e78;
+  --ob-rust: #c2622a;
+  --ob-danger: #ff7a4a;
+  --ob-stable: #9fe3c4;
+
+  /* Glow */
+  --ob-glow-sm: 0 0 6px rgba(var(--ob-gold-rgb), 0.55);
+  --ob-glow-md: 0 0 14px rgba(var(--ob-gold-rgb), 0.45), 0 0 2px rgba(255, 241, 208, 0.9);
+  --ob-glow-lg: 0 0 40px rgba(255, 194, 74, 0.45), 0 0 90px rgba(255, 160, 40, 0.2);
+  --ob-icon-glow: drop-shadow(0 0 4px rgba(var(--ob-gold-rgb), 0.6));
+
+  /* Trails (canvas values; read via getComputedStyle) */
+  --ob-trail-color: 246, 213, 142;       /* rgb triplet */
+  --ob-trail-width: 1.25;                /* px at DPR 1 */
+  --ob-trail-alpha-head: 0.85;
+  --ob-trail-alpha-tail: 0;
+  --ob-trail-length: 240;                /* points kept */
+  --ob-ghost-dash: 1 6;                  /* setLineDash, round caps */
+  --ob-ghost-alpha: 0.55;
+  --ob-orbit-ring-alpha: 0.18;
+  --ob-velocity-arrow: var(--ob-gold-300);
+  --ob-velocity-width: 1.5;
+
+  /* HUD glass panel */
+  --ob-hud-bg: rgba(14, 12, 40, 0.55);
+  --ob-hud-border: 1px solid rgba(var(--ob-gold-rgb), 0.35);
+  --ob-hud-radius: 18px;
+  --ob-hud-blur: blur(14px) saturate(140%);
+  --ob-hud-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 241, 208, 0.08);
+  --ob-hud-icon-size: 28px;
+  --ob-hud-hit: 44px;                    /* iOS min touch target */
+  --ob-hud-gap: 8px;
+  --ob-safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Motion */
+  --ob-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ob-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ob-dur-fast: 140ms;
+  --ob-dur-med: 280ms;
+  --ob-pulse-period: 2.6s;
+}
+
+.ob-stage { background: var(--ob-void-gradient); color: var(--ob-ink); }
+
+.ob-hud {
+  display: flex; gap: var(--ob-hud-gap); align-items: center; justify-content: space-around;
+  padding: 8px 12px calc(8px + var(--ob-safe-bottom));
+  background: var(--ob-hud-bg);
+  border: var(--ob-hud-border);
+  border-radius: var(--ob-hud-radius);
+  box-shadow: var(--ob-hud-shadow);
+  -webkit-backdrop-filter: var(--ob-hud-blur);
+  backdrop-filter: var(--ob-hud-blur);
+}
+.ob-hud button {
+  width: var(--ob-hud-hit); height: var(--ob-hud-hit);
+  display: grid; place-items: center; border: 0; background: none;
+  color: var(--ob-ink-dim); border-radius: 50%;
+  transition: color var(--ob-dur-fast) var(--ob-ease-out), transform var(--ob-dur-fast) var(--ob-ease-spring);
+  -webkit-tap-highlight-color: transparent;
+}
+.ob-hud button svg { width: var(--ob-hud-icon-size); height: var(--ob-hud-icon-size); }
+.ob-hud button:active { transform: scale(0.9); }
+.ob-hud button[aria-pressed="true"] { color: var(--ob-ink); filter: var(--ob-icon-glow); }
+
+.ob-lagrange { animation: ob-pulse var(--ob-pulse-period) ease-in-out infinite; mix-blend-mode: screen; }
+.ob-flash { animation: ob-flash 600ms var(--ob-ease-out) forwards; mix-blend-mode: screen; pointer-events: none; }
+.ob-badge-stable { animation: ob-stable-badge 900ms var(--ob-ease-spring) both, ob-glow-breathe 3s ease-in-out 900ms infinite; }
+
+@keyframes ob-pulse {
+  0%, 100% { opacity: 0.45; transform: scale(0.85) rotate(0deg); }
+  50%      { opacity: 1;    transform: scale(1.15) rotate(45deg); }
+}
+@keyframes ob-flash {
+  0%   { opacity: 0;   transform: scale(0.2); }
+  15%  { opacity: 1;   transform: scale(1); }
+  100% { opacity: 0;   transform: scale(1.8); }
+}
+@keyframes ob-stable-badge {
+  0%   { opacity: 0; transform: scale(0.4) rotate(-30deg); filter: drop-shadow(0 0 0 rgba(var(--ob-gold-rgb), 0)); }
+  60%  { opacity: 1; transform: scale(1.12) rotate(4deg); filter: drop-shadow(0 0 14px rgba(var(--ob-gold-rgb), 0.9)); }
+  100% { opacity: 1; transform: scale(1) rotate(0); filter: var(--ob-icon-glow); }
+}
+@keyframes ob-glow-breathe {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(var(--ob-gold-rgb), 0.5)); }
+  50%      { filter: drop-shadow(0 0 10px rgba(var(--ob-gold-rgb), 0.9)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ob-lagrange, .ob-badge-stable { animation: none; opacity: 1; }
+  .ob-flash { animation-duration: 1ms; }
+}
