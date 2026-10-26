@@ -6,7 +6,7 @@ import { loadSprites, readTokens, fluxRange, drawLightCurve, drawFold, drawRV, d
 import {
   generateField, generateTarget, modeFromSearch, seedFromSearch, phaseFold, binPhase, bls, modelFlux,
   radiusFromDepth, massFromK, semiMajorAxis, habitableZone, scoreVerdict, truthSummary, bulkDensity, insolation,
-  orbitState, M_SUN, R_SUN, R_EARTH, M_EARTH, AU, DAY
+  orbitState, BINARY_CAPTION, M_SUN, R_SUN, R_EARTH, M_EARTH, AU, DAY
 } from "./exoplanets-physics.js";
 
 const $ = (id) => document.getElementById(id);
@@ -155,7 +155,7 @@ $("submitBtn").addEventListener("click", () => {
     msg += `\nTruth: P ${p0.period.toFixed(3)} d · Rp ${p0.radiusEarth.toFixed(2)} R⊕ · Mp ${p0.massEarth.toFixed(1)} M⊕ · ρ ${rho.toFixed(2)} g/cm³`;
     msg += `\na ${p0.aAU.toFixed(3)} AU · S ${insolation(st.target.star.lum, p0.aAU).toFixed(1)} S⊕ · ${p0.aAU >= tr.hz.inner && p0.aAU <= tr.hz.outer ? "inside" : "outside"} the habitable zone`;
     if (!p0.transits) msg += "\nIt does not transit, so RV gives only Mp sin i.";
-  } else if (tr.kind === "binary") msg += `\nTell: unequal primary and secondary eclipses, and K in km/s. P ${tr.period.toFixed(3)} d`;
+  } else if (tr.kind === "binary") msg += `\n${tr.eclipse === "full" ? "Full eclipse (flat-bottomed)" : "Grazing eclipse (V-shaped)"}, P ${tr.period.toFixed(3)} d, K in km/s.\n${BINARY_CAPTION}`;
   $("result").textContent = msg;
   done.set(st.target.seed, res.score);
   markAll();

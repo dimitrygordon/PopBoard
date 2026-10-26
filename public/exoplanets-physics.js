@@ -243,6 +243,7 @@ export function modelFlux(target, tDays) {
 
 // ---------- generator ----------
 
+export const BINARY_CAPTION = "V-shaped dips can also come from grazing planets; the shallow secondary eclipse and huge RV are the real giveaway.";
 export const KINDS = ["planet", "none", "binary", "multi"];
 const PLANET_TYPES = [
   { name: "hot Jupiter", rMin: 0.8 * R_JUP, rMax: 1.6 * R_JUP, mMin: 0.3 * M_JUP, mMax: 3 * M_JUP, pMin: 1.2, pMax: 6 },
@@ -259,8 +260,9 @@ export function generateTarget(seed, opts = {}) {
   const roll = rng.next();
   const kind = opts.kind || (roll < 0.45 ? "planet" : roll < 0.65 ? "none" : roll < 0.8 ? "binary" : "multi");
   const star = mainSequenceStar(rng.uniform(0.45, 1.35));
-  star.u1 = Math.max(0, 0.6 - 0.1 * (star.teff - 4000) / 2000); // cooler stars darken more
-  star.u2 = 0.2;
+  // Quadratic limb darkening, Kepler band (close to Claret 2011 solar ~0.40, 0.26).
+  star.u1 = Math.max(0, 0.65 - 0.25 * (star.teff - 4000) / 2000); // cooler stars darken more
+  star.u2 = 0.25;
   const baseline = opts.baseline || 40;     // days of photometry
   const cadence = opts.cadence || 1 / 48;   // 30 min
   const noise = opts.noise != null ? opts.noise : rng.logUniform(2e-4, 1.5e-3);
@@ -304,9 +306,12 @@ export function generateTarget(seed, opts = {}) {
     const mass = comp.mass * M_SUN, radius = comp.radius * R_SUN;
     const aGuess = semiMajorAxis(period, star.mass * M_SUN, mass);
     const k = radius / (star.radius * R_SUN);
-    const b = rng.uniform(0.95, 1 + 0.8 * k);
+    // About a third are full eclipses (b < 1 - k): flat or U-shaped bottoms, a deep
+    // primary and a flat, shallow secondary. The rest graze (V-shaped).
+    const full = rng.next() < 1 / 3;
+    const b = full ? rng.uniform(0, 0.9 * (1 - k)) : rng.uniform(0.95, 1 + 0.8 * k);
     const inc = Math.acos(b * star.radius * R_SUN / aGuess);
-    const p = { name: "eclipsing binary", radius, mass, period, e: 0, omega: Math.PI / 2, inc, t0: rng.uniform(0.5, period), stellar: true };
+    const p = { name: "eclipsing binary", radius, mass, period, e: 0, omega: Math.PI / 2, inc, t0: rng.uniform(0.5, period), stellar: true, eclipse: full ? "full" : "grazing" };
     target.planets.push(p);
     const o = prepareOrbit(star, p);
     o.secondaryFlux = comp.lum / (comp.lum + star.lum);
@@ -533,14 +538,14 @@ export function seff(limit, teff) {
   return c[0] + c[1] * T + c[2] * T ** 2 + c[3] * T ** 3 + c[4] * T ** 4;
 }
 // Distances in AU. conservative = moist greenhouse to maximum greenhouse,
-// optimistic = recent Venus to early Mars. simple = Kasting et al. (1993)
-// sqrt(L) bounds 0.95 and 1.67 AU scaled by sqrt(L).
+// optimistic = recent Venus to early Mars. simple = 0.95-1.67 AU (Kasting 1993
+// water-loss to maximum-greenhouse limits), scaled by sqrt(L). Not the conservative zone.
 export function habitableZone(lumSun, teff = T_SUN) {
   const d = (limit) => Math.sqrt(lumSun / seff(limit, teff));
   return {
     conservative: { inner: d("moistGreenhouse"), outer: d("maximumGreenhouse") },
     optimistic: { inner: d("recentVenus"), outer: d("earlyMars") },
-    simple: { inner: 0.95 * Math.sqrt(lumSun), outer: 1.67 * Math.sqrt(lumSun) }
+    simple: { inner: 0.95 * Math.sqrt(lumSun), outer: 1.67 * Math.sqrt(lumSun), label: "0.95-1.67 AU (Kasting 1993 water-loss to maximum-greenhouse limits)" }
   };
 }
 // Insolation relative to Earth's (S = L / d^2 in solar units and AU).
@@ -551,7 +556,7 @@ export function insolation(lumSun, aAU) { return lumSun / (aAU * aAU); }
 export function truthSummary(target) {
   const main = target.orbits[0];
   if (target.kind === "none") return { kind: "none" };
-  if (target.kind === "binary") return { kind: "binary", period: main.period };
+  if (target.kind === "binary") return { kind: "binary", period: main.period, eclipse: main.eclipse };
   const s = target.star;
   return {
     kind: "planet",

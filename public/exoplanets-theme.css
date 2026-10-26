@@ -83,3 +83,4 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--ob-ink); ou
 }
 @media (min-width: 761px) { .panel.active { box-shadow: 0 0 0 1px var(--ob-gold-300); } }
 @media (prefers-reduced-motion: reduce) { .toast { transition: none; } .ex-marker[aria-selected="true"] { animation: none; } }
+.verdict-caption { padding: 0; text-align: center; }

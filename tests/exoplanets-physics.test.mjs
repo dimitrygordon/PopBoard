@@ -122,7 +122,7 @@ test("inference round trip: depth -> radius, K -> mass, density", () => {
   assert.ok(Math.abs(rhoE - 5500) < 100, `rho ${rhoE}`);
 });
 
-test("habitable zone for the Sun (Kopparapu 2013 conservative and Kasting 1993)", () => {
+test("habitable zone for the Sun (Kopparapu 2013 conservative; 0.95-1.67 AU Kasting 1993 water-loss to maximum-greenhouse limits)", () => {
   const hz = X.habitableZone(1, 5780);
   assert.ok(Math.abs(hz.conservative.inner - 0.99) < 0.01);
   assert.ok(Math.abs(hz.conservative.outer - 1.70) < 0.01);
@@ -130,6 +130,7 @@ test("habitable zone for the Sun (Kopparapu 2013 conservative and Kasting 1993)"
   assert.ok(Math.abs(hz.optimistic.outer - 1.77) < 0.01);
   assert.equal(hz.simple.inner, 0.95);
   assert.equal(hz.simple.outer, 1.67);
+  assert.match(hz.simple.label, /water-loss to maximum-greenhouse/);
   // matches the art pack's F-star caption (1.9 Lsun, 6500 K -> 1.3 to 2.2 AU)
   const f = X.habitableZone(1.9, 6500).conservative;
   assert.ok(Math.abs(f.inner - 1.3) < 0.05 && Math.abs(f.outer - 2.2) < 0.05);
@@ -162,4 +163,37 @@ test("verdict scoring", () => {
   assert.equal(X.scoreVerdict(X.generateTarget(5, { kind: "none" }), { kind: "none" }).score, 100);
   assert.equal(X.modeFromSearch("?mode=RV"), "rv");
   assert.equal(X.modeFromSearch("?mode=bogus"), "field");
+});
+
+test("limb darkening coefficients follow the reviewed Kepler-band law", () => {
+  const sunLike = X.generateTarget(1, { kind: "planet" }).star;
+  assert.equal(sunLike.u2, 0.25);
+  assert.ok(Math.abs(sunLike.u1 - Math.max(0, 0.65 - 0.25 * (sunLike.teff - 4000) / 2000)) < 1e-12);
+  assert.ok(Math.abs((0.65 - 0.25 * 1800 / 2000) - 0.425) < 1e-12);  // ~0.43 at 5800 K
+});
+
+test("about a third of binaries are full eclipses with flat bottoms", () => {
+  let full = 0, n = 0;
+  for (let seed = 1; seed <= 90; seed++) {
+    const t = X.generateTarget(seed, { kind: "binary", noise: 0 });
+    const o = t.orbits[0], k = o.radius / o.Rs, b = X.impactParameter(o);
+    n++;
+    if (o.eclipse !== "full") { assert.ok(b >= 0.95 - 1e-9); continue; }
+    full++;
+    assert.ok(b < 1 - k, `seed ${seed} b ${b} k ${k}`);
+    const sys = { ...t, variability: null };
+    // totality: sample around the secondary eclipse where the companion is fully hidden
+    const tot = [];
+    for (let dt = -0.3; dt <= 0.3; dt += 0.002) {
+      const tt = o.t0 + o.period / 2 + dt;
+      if (X.orbitState(o, tt).sep <= 1 - k) tot.push(X.modelFlux(sys, tt));
+    }
+    assert.ok(tot.length >= 5, "secondary totality is resolved");
+    assert.ok(Math.max(...tot) - Math.min(...tot) < 1e-12, "flat secondary bottom");
+    const prim = 1 - X.modelFlux(sys, o.t0), sec = 1 - tot[0];
+    assert.ok(sec > 0 && sec < prim, "deep primary, shallow secondary");
+    assert.ok(o.K > 1000, "K in km/s");
+  }
+  const frac = full / n;
+  assert.ok(frac > 0.2 && frac < 0.47, `full fraction ${frac}`);
 });

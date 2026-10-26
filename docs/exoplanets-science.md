@@ -29,7 +29,7 @@ Host masses are drawn uniformly from 0.45 to 1.35 M☉. Main-sequence relations 
 - Teff = T☉ (L / R²)^(1/4) (Stefan–Boltzmann)
 - Spectral class from Teff: M < 3900 K, K < 5300 K, G < 6000 K, otherwise F
 
-Quadratic limb darkening: u1 = max(0, 0.6 − 0.1 (Teff − 4000)/2000), u2 = 0.2. Ballpark values; real coefficients come from Claret tables. **Check:** whether these are acceptable for teaching.
+Quadratic limb darkening (Kepler band, per Tesla's review): u1 = max(0, 0.65 − 0.25 (Teff − 4000)/2000), u2 = 0.25. At 5800 K, u1 ≈ 0.43, close to Claret's (2011) Kepler-band solar values of about 0.40 and 0.26. Cooler stars darken more (4000 K gives 0.65).
 
 ## 3. Orbits
 
@@ -54,7 +54,7 @@ Quadratic limb darkening: u1 = max(0, 0.6 − 0.1 (Teff − 4000)/2000), u2 = 0.
 - Noise: white Gaussian, σ drawn log-uniform from 200 to 1500 ppm per 30-minute point. Optional stellar variability (40% of stars): a sinusoid with amplitude 200–2000 ppm and period 8–30 d.
 - Cadence: 30 minutes over 40 days, 1920 points.
 
-**Art pack note:** the README recipe uses linear limb darkening with u = 0.6, and `--ex-limb-u` affects the sprites only. The physics uses the quadratic law above. The README dip-depth rule (≈ (Rp/R*)², about 1% for a Jupiter and about 0.01% (84 ppm) for an Earth around a Sun-like star) agrees with the code. Because the light-curve y axis is auto-stretched, the panel always shows the "⌕ stretched y" mark.
+**Art pack note:** the README recipe uses linear limb darkening with u = 0.6, and `--ex-limb-u` affects the sprites only. The physics uses the quadratic law above. The README dip-depth rule (≈ (Rp/R*)², about 1% for a Jupiter and about 0.008% (84 ppm) for an Earth around a Sun-like star) agrees with the code. Because the light-curve y axis is auto-stretched, the panel always shows the "⌕ stretched y" mark.
 
 ## 5. Radial velocity
 
@@ -68,11 +68,15 @@ Quadratic limb darkening: u1 = max(0, 0.6 − 0.1 (Teff − 4000)/2000), u2 = 0.
 
 ## 6. Eclipsing-binary impostor
 
-- The companion is a 0.15–0.40 M☉ main-sequence star, with P = 1.5–8 d, e = 0, and b drawn from 0.95 to 1 + 0.8k (grazing, so V-shaped).
+- The companion is a 0.15–0.40 M☉ main-sequence star, with P = 1.5–8 d and e = 0.
+- About one third are full eclipses: b drawn from 0 to 0.9(1 − k), so b < 1 − k. These have flat or U-shaped bottoms (U from the primary's limb darkening), a deep primary and a perfectly flat, shallow secondary (the companion is fully hidden). Leo's target look is panel_eclipsing_binary_sample.
+- The other two thirds graze: b drawn from 0.95 to 1 + 0.8k, giving V-shaped dips.
+- A test checks that the full-eclipse fraction is about 1/3 (0.2–0.47 over 90 seeds) and that totality is flat.
+- Caption shown in the verdict drawer and after the reveal: "V-shaped dips can also come from grazing planets; the shallow secondary eclipse and huge RV are the real giveaway."
 - Primary eclipse: the companion blocks the primary. It is diluted by the primary's light share L1/(L1+L2).
 - Secondary eclipse at phase 0.5: lost flux = L2/(L1+L2) × covered fraction of the companion (two-circle overlap, companion treated as uniform). It is shallower than the primary (tested), which is the tell.
 - K comes out in km/s (tested > 1 km/s).
-- README rule: "alternate deep and shallow eclipses; only grazing systems look V-shaped". Our impostors are all grazing. **Gap:** there are no flat-bottomed, fully eclipsing binaries yet.
+- README rule: "alternate deep and shallow eclipses; only grazing systems look V-shaped". Both kinds are now generated.
 
 ## 7. Target generator (seeded)
 
@@ -117,7 +121,7 @@ S_eff = S0 + aT + bT² + cT³ + dT⁴, with T = Teff − 5780 K (clamped to 2600
 
 - Conservative zone (drawn on the orbit view) runs from moist greenhouse to maximum greenhouse. For the Sun it is 0.993–1.705 AU; the paper quotes 0.99–1.70 (tested).
 - Optimistic zone runs from recent Venus to early Mars: 0.750–1.769 AU for the Sun (tested).
-- Simple model: Kasting et al. 1993, 0.95–1.67 AU × √L (tested).
+- Simple model: 0.95–1.67 AU (Kasting 1993 water-loss to maximum-greenhouse limits), × √L (tested). This is not the conservative zone, and the page never draws it.
 - Note: Kopparapu et al. 2014 revised the moist-greenhouse limit. We use the 2013 table as published.
 
 Comparison with the art pack after Tesla's review (`tokens.css` `--ex-L-*` / `--ex-hz-*`):
