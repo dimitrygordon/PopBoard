@@ -1,0 +1,86 @@
+/* Exoplanet Hunter: layout and theme. Colors come from Leo's --ob-* and
+   --ex-* tokens (exoplanets/assets/tokens.css). The renderer reads the
+   --ex-* tokens at runtime, so art fixes drop in by editing tokens.css. */
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; overflow: hidden; color: var(--ob-gold-100); overscroll-behavior: none;
+  background: url("exoplanets/assets/img/starfield_tile.jpg") repeat, var(--ob-void-gradient), var(--ob-void-mid); background-blend-mode: screen;
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+button { font: inherit; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--ob-ink); outline-offset: 2px; }
+
+.hud { position: fixed; z-index: 6; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  padding: calc(10px + env(safe-area-inset-top)) calc(10px + env(safe-area-inset-right)) 0 calc(10px + env(safe-area-inset-left)); pointer-events: none; }
+.hud-right { display: flex; gap: 8px; }
+.hud button, .toolbar .tool, .nudge button, .est button, .submit {
+  pointer-events: auto; min-width: var(--ob-hud-hit); min-height: var(--ob-hud-hit); display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px 14px; border-radius: 999px; border: var(--ob-hud-border); background: var(--ob-hud-bg); color: var(--ob-gold-100);
+  font-weight: 600; font-size: 14px; cursor: pointer; -webkit-backdrop-filter: var(--ob-hud-blur); backdrop-filter: var(--ob-hud-blur); -webkit-tap-highlight-color: transparent; }
+.hud button svg, .toolbar svg, .submit svg { width: 22px; height: 22px; }
+.hud button[aria-pressed="true"] { color: var(--ob-void-bottom); background: var(--ob-ink); }
+.study-back-btn svg { width: 14px !important; height: 14px !important; }
+.target-title { margin: 0; font: 600 14px "JetBrains Mono", ui-monospace, monospace; color: var(--ob-gold-300); text-shadow: 0 1px 3px #000; text-align: center; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.field-view { position: fixed; inset: 0; }
+.field-hint { position: absolute; left: 0; right: 0; bottom: calc(24px + env(safe-area-inset-bottom)); text-align: center; color: var(--ob-ink-dim); margin: 0; }
+.field-stars { position: absolute; inset: 64px 8px 64px 8px; }
+.field-star { position: absolute; width: 64px; height: 64px; transform: translate(-50%, -50%); border: 0; padding: 0; background: none; cursor: pointer; }
+.field-star img { width: 100%; height: 100%; pointer-events: none; }
+.field-star .core { position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; margin: -6px; border-radius: 50%; box-shadow: 0 0 10px 3px currentColor; background: currentColor; }
+.field-star .lab { position: absolute; top: 58px; left: 50%; transform: translateX(-50%); font: 500 11px ui-monospace, monospace; color: var(--ob-ink-dim); white-space: nowrap; }
+.field-star.done .lab { color: var(--ob-stable); }
+
+.analysis { position: fixed; inset: calc(64px + env(safe-area-inset-top)) 10px calc(76px + env(safe-area-inset-bottom)) 10px;
+  display: grid; gap: 10px; grid-template-columns: 1.3fr 1fr 1fr; grid-template-rows: 1fr 1fr;
+  grid-template-areas: "lc lc orbit" "fold rv inc"; }
+.panel { position: relative; display: flex; flex-direction: column; min-height: 0; min-width: 0; overflow: hidden; }
+.panel[data-panel="lightcurve"] { grid-area: lc; } .panel[data-panel="fold"] { grid-area: fold; } .panel[data-panel="rv"] { grid-area: rv; }
+.panel[data-panel="orbit"] { grid-area: orbit; } .panel[data-panel="inclination"] { grid-area: inc; }
+.panel h2 { margin: 0; padding: 8px 12px 0; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--ob-gold-300); }
+.panel h2 svg { width: 18px; height: 18px; flex: none; }
+.panel h2 output { margin-left: auto; font: 500 12px ui-monospace, monospace; color: var(--ob-gold-100); }
+.stretch { margin-left: auto; font: italic 500 11px ui-monospace, monospace; color: var(--ob-ink-dim); }
+.stretch::before { content: "⌕ "; font-style: normal; }
+.panel h2 output + .stretch, .panel h2 .stretch + output { margin-left: 8px; }
+.panel canvas { flex: 1; width: 100%; min-height: 0; display: block; touch-action: none; cursor: grab; }
+.panel[data-panel="fold"] canvas { cursor: ew-resize; } .panel[data-panel="rv"] canvas, .panel[data-panel="inclination"] canvas { cursor: ns-resize; }
+.nudge { position: absolute; right: 12px; top: 40px; display: flex; gap: 6px; }
+.nudge button { padding: 0; width: var(--ob-hud-hit); font-size: 20px; }
+.caption { margin: 0; padding: 0 12px 8px; font-size: 12px; color: var(--ob-ink-dim); }
+
+.verdict { position: fixed; z-index: 7; right: 10px; bottom: calc(76px + env(safe-area-inset-bottom)); width: min(380px, calc(100vw - 20px)); padding: 12px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--ob-hud-shadow); max-height: calc(100dvh - 160px); overflow-y: auto; }
+.verdict-kinds { display: flex; justify-content: space-around; }
+.ex-verdict { border-radius: 50%; cursor: pointer; }
+.ex-verdict svg { width: 30px; height: 30px; }
+.estimates { display: flex; flex-direction: column; gap: 6px; }
+.est { display: grid; grid-template-columns: 1fr auto 84px auto; align-items: center; gap: 6px; font-size: 13px; color: var(--ob-gold-300); }
+.est span { display: flex; align-items: center; gap: 6px; } .est span svg { width: 16px; height: 16px; }
+.est button { padding: 0; width: var(--ob-hud-hit); font-size: 20px; }
+.est input { width: 84px; min-height: var(--ob-hud-hit); border-radius: 12px; border: var(--ob-hud-border); background: rgba(3,3,8,0.5); color: var(--ob-gold-100); text-align: center; font: 600 15px ui-monospace, monospace; }
+.submit { align-self: stretch; background: var(--ob-ink); color: var(--ob-void-bottom); }
+.result { margin: 0; font-size: 13px; line-height: 1.5; white-space: pre-line; }
+
+.toolbar { position: fixed; z-index: 6; left: 50%; transform: translateX(-50%); bottom: calc(12px + env(safe-area-inset-bottom));
+  display: flex; align-items: center; gap: 6px; padding: 6px; border-radius: 999px; background: var(--ob-hud-bg); border: var(--ob-hud-border); max-width: calc(100vw - 16px); overflow-x: auto; scrollbar-width: none; }
+.toolbar .tool { padding: 0; width: var(--ob-hud-hit); border: 0; background: transparent; flex: 0 0 auto; color: var(--ob-ink-dim); }
+.toolbar .tool[aria-pressed="true"] { background: var(--ob-ink); color: var(--ob-void-bottom); }
+.toolbar .sep { width: 1px; height: 28px; background: rgba(var(--ob-gold-rgb), 0.35); flex: none; }
+.ic-play, .ic-pause { display: inline-flex; } #playBtn .ic-play { display: none; } #playBtn.paused .ic-play { display: inline-flex; } #playBtn.paused .ic-pause { display: none; }
+.toast { position: fixed; z-index: 8; left: 50%; transform: translateX(-50%); bottom: calc(82px + env(safe-area-inset-bottom)); margin: 0; padding: 8px 14px; border-radius: 999px;
+  background: var(--ob-hud-bg); border: var(--ob-hud-border); font-size: 14px; opacity: 0; transition: opacity 0.25s; pointer-events: none; white-space: nowrap; max-width: 92vw; overflow: hidden; text-overflow: ellipsis; }
+.toast.show { opacity: 1; }
+
+/* Desktop shows the grid; the toolbar's panel buttons scroll a panel into focus.
+   Phones show one panel at a time. */
+@media (max-width: 760px) {
+  .analysis { grid-template-columns: 1fr; grid-template-rows: 1fr; grid-template-areas: "only"; }
+  .panel { grid-area: only !important; display: none; }
+  .panel.active { display: flex; }
+  .study-back-btn .back-label { display: none; }
+  .toolbar { gap: 2px; } .toolbar .sep { display: none; }
+  .verdict { left: 10px; right: 10px; width: auto; }
+}
+@media (min-width: 761px) { .panel.active { box-shadow: 0 0 0 1px var(--ob-gold-300); } }
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } .ex-marker[aria-selected="true"] { animation: none; } }
+.verdict-caption { padding: 0; text-align: center; }
