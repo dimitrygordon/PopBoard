@@ -12,6 +12,7 @@
     "test:relativity": "node --test relativity-physics.test.mjs",
     "test:mechanics": "node --test mechanics-physics.test.mjs",
     "test:orbits": "node --test orbits-physics.test.mjs",
+    "test:exoplanets": "node --test exoplanets-physics.test.mjs",
     "test:mechanics:browser": "node mechanics-browser.mjs",
     "test:pdf": "node --test pdf-export.test.mjs",
     "test:return": "node --test board-return.test.mjs",

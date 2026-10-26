@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0d0b2a">
+<title>Exoplanet Hunter // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<link rel="stylesheet" href="exoplanets/assets/tokens.css">
+<link rel="stylesheet" href="exoplanets-theme.css">
+<link rel="stylesheet" href="astro-study.css?v=20261021k">
+<script src="astro-study.js?v=20261021k"></script>
+</head>
+<body>
+<h1 class="sr-only">Exoplanet Hunter</h1>
+<p class="sr-only">Pick a star from the field. Fold its light curve by dragging, measure the dip and the wobble, then decide: planet, no planet, or eclipsing binary.</p>
+
+<div class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p id="targetTitle" class="target-title" aria-live="polite"></p>
+  <div class="hud-right">
+    <button id="fieldBtn" type="button" aria-label="Back to the star field" title="Star field"><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-target-field"/></svg></button>
+    <button id="noiseBtn" type="button" aria-pressed="false" aria-label="Show noise-free model" title="Noise"><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-noise"/></svg></button>
+  </div>
+</div>
+
+<section id="fieldView" class="field-view" aria-label="Star field">
+  <p class="field-hint">Tap a star to observe it</p>
+  <div id="fieldStars" class="field-stars" role="listbox" aria-label="Target stars"></div>
+</section>
+
+<main id="analysis" class="analysis" hidden>
+  <section class="ex-panel panel" data-panel="lightcurve" aria-label="Light curve. Drag to pan, scroll or pinch to zoom.">
+    <h2><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-light-curve"/></svg><span>Light curve</span><em id="lcStretch" class="stretch" title="Y axis stretched">stretched y</em></h2>
+    <canvas id="lcCanvas"></canvas>
+  </section>
+  <section class="ex-panel panel" data-panel="fold" aria-label="Phase fold. Drag sideways to change the period, drag the gold line to set the dip depth, tap the periodogram for a peak.">
+    <h2><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-phase-fold"/></svg><span>Fold</span><output id="foldReadout"></output></h2>
+    <canvas id="foldCanvas"></canvas>
+    <div class="nudge"><button type="button" id="pDown" aria-label="Shorter period">−</button><button type="button" id="pUp" aria-label="Longer period">+</button></div>
+  </section>
+  <section class="ex-panel panel" data-panel="rv" aria-label="Radial velocity folded at your period. Drag up or down to set the amplitude K.">
+    <h2><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-radial-velocity"/></svg><span>Radial velocity</span><output id="rvReadout"></output></h2>
+    <canvas id="rvCanvas"></canvas>
+  </section>
+  <section class="ex-panel panel" data-panel="orbit" aria-label="Top-down orbit with the star's wobble and the habitable zone">
+    <h2><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-wobble"/></svg><span>Orbit &amp; habitable zone</span><em class="stretch">wobble exaggerated</em></h2>
+    <canvas id="orbitCanvas"></canvas>
+  </section>
+  <section class="ex-panel panel" data-panel="inclination" aria-label="Inclination. Drag up or down to tilt the orbit.">
+    <h2><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-inclination"/></svg><span>Inclination</span><output id="incReadout"></output></h2>
+    <canvas id="incCanvas"></canvas>
+    <p id="incCaption" class="caption"></p>
+  </section>
+</main>
+
+<aside id="verdict" class="verdict ex-panel" hidden aria-label="Verdict">
+  <div class="verdict-kinds" role="group" aria-label="What is it?">
+    <button type="button" class="ex-verdict" data-kind="planet" aria-pressed="false" aria-label="Planet"><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-verdict-planet"/></svg></button>
+    <button type="button" class="ex-verdict" data-kind="none" aria-pressed="false" aria-label="No planet"><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-verdict-no-planet"/></svg></button>
+    <button type="button" class="ex-verdict" data-kind="binary" aria-pressed="false" aria-label="Eclipsing binary"><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-verdict-binary"/></svg></button>
+  </div>
+  <div class="estimates">
+    <label class="est"><span><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-phase-fold"/></svg> Period (d)</span><button type="button" data-step="period" data-dir="-1" aria-label="Decrease period">−</button><input id="estPeriod" inputmode="decimal"><button type="button" data-step="period" data-dir="1" aria-label="Increase period">+</button></label>
+    <label class="est"><span><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-radius"/></svg> Radius (R⊕)</span><button type="button" data-step="radius" data-dir="-1" aria-label="Decrease radius">−</button><input id="estRadius" inputmode="decimal"><button type="button" data-step="radius" data-dir="1" aria-label="Increase radius">+</button></label>
+    <label class="est"><span><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-mass"/></svg> Mass (M⊕)</span><button type="button" data-step="mass" data-dir="-1" aria-label="Decrease mass">−</button><input id="estMass" inputmode="decimal"><button type="button" data-step="mass" data-dir="1" aria-label="Increase mass">+</button></label>
+  </div>
+  <button type="button" id="submitBtn" class="submit" aria-label="Submit verdict"><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-check"/></svg><span>Submit</span></button>
+  <p id="result" class="result" aria-live="polite"></p>
+</aside>
+
+<p id="statusLine" class="toast" role="status" aria-live="polite"></p>
+
+<nav id="toolbar" class="toolbar" aria-label="Panels" hidden>
+  <button type="button" class="tool" data-show="lightcurve" aria-pressed="true" aria-label="Light curve" title="Light curve"><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-light-curve"/></svg></button>
+  <button type="button" class="tool" data-show="fold" aria-pressed="false" aria-label="Phase fold" title="Fold"><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-phase-fold"/></svg></button>
+  <button type="button" class="tool" data-show="rv" aria-pressed="false" aria-label="Radial velocity" title="Radial velocity"><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-radial-velocity"/></svg></button>
+  <button type="button" class="tool" data-show="orbit" aria-pressed="false" aria-label="Orbit and habitable zone" title="Orbit"><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-habitable-zone"/></svg></button>
+  <button type="button" class="tool" data-show="inclination" aria-pressed="false" aria-label="Inclination" title="Inclination"><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-inclination"/></svg></button>
+  <span class="sep" aria-hidden="true"></span>
+  <button type="button" id="playBtn" class="tool" aria-label="Pause orbit" title="Play / pause"><span class="ic-pause"><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-pause"/></svg></span><span class="ic-play"><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-play"/></svg></span></button>
+  <button type="button" id="verdictBtn" class="tool" aria-pressed="false" aria-label="Open verdict" title="Verdict"><svg aria-hidden="true"><use href="exoplanets/assets/icons/sprite.svg#ex-verdict-planet"/></svg></button>
+</nav>
+
+<script type="module" src="exoplanets-ui.js"></script>
+</body>
+</html>
