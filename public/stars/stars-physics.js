@@ -110,6 +110,17 @@ export function baseLifetime(m) {
   return 0.0044 * Math.pow(m / 40, -0.45);
 }
 
+export const LIFE_RAMP_HI = 0.5;
+/**
+ * Smooth step-up from the power law at 0.5 M_sun to 1 trillion yr at 0.35 M_sun (log-log),
+ * so the 1 trillion yr floor below 0.35 does not jump 7x. Nearly convective stars burn more of their hydrogen.
+ */
+export function lifetimeRamp(m) {
+  if (m >= LIFE_RAMP_HI || m < VERY_LONG_MAX) return 1;
+  const f = Math.log(LIFE_RAMP_HI / m) / Math.log(LIFE_RAMP_HI / VERY_LONG_MAX);
+  return Math.pow(VERY_LONG_GYR / baseLifetime(VERY_LONG_MAX), f);
+}
+
 /** Lifetime as shown to students. Below 0.35 M_sun: about 1 trillion years or more (Laughlin et al. 1997). */
 export function lifetimeLabel(ms) {
   return ms.mass < VERY_LONG_MAX ? "about 1 trillion years or more" : formatYears(ms.lifetime);
@@ -129,7 +140,16 @@ export function coreTemperature(m, comp = SOLAR_MIX) {
  * Fully convective stars (M < 0.35) use a lower coefficient, 8.7e14 Pa (about 1.2e16 Pa at 0.2 M_sun).
  */
 export const PC_LOW = 8.7e14;
-export function corePressure(m, r = baseRadius(m)) { return (m < FULLY_CONVECTIVE_MAX ? PC_LOW : PC_SUN) * (m * m) / Math.pow(r, 4); }
+export const PC_BLEND_LO = 0.3;
+export const PC_BLEND_HI = 0.8;
+/** Pressure coefficient: 8.7e14 Pa at M <= 0.3, 2.5e16 Pa at M >= 0.8, log-log interpolation between (no jump). */
+export function pressureCoefficient(m) {
+  if (m <= PC_BLEND_LO) return PC_LOW;
+  if (m >= PC_BLEND_HI) return PC_SUN;
+  const f = Math.log10(m / PC_BLEND_LO) / Math.log10(PC_BLEND_HI / PC_BLEND_LO);
+  return Math.pow(10, Math.log10(PC_LOW) + f * (Math.log10(PC_SUN) - Math.log10(PC_LOW)));
+}
+export function corePressure(m, r = baseRadius(m)) { return pressureCoefficient(m) * (m * m) / Math.pow(r, 4); }
 
 /** Rough order-of-magnitude scale: Pc ~ G M^2 / R^4 in SI (no calibration), for the docs comparison. */
 export function rawPressureScale(m, r = baseRadius(m)) {
@@ -170,7 +190,7 @@ export function mainSequence(m, z = Z_SUN, y = null) {
   const Tc = coreTemperature(M, comp);
   const Pc = corePressure(M, R);
   // Lifetime ~ fuel / burn rate: hydrogen supply X M, burn rate L.
-  let lifetime = baseLifetime(M) * (comp.X / SOLAR_MIX.X) / lf;
+  let lifetime = baseLifetime(M) * lifetimeRamp(M) * (comp.X / SOLAR_MIX.X) / lf;
   if (M < VERY_LONG_MAX) lifetime = Math.max(lifetime, VERY_LONG_GYR);
   const teff = effectiveTemperature(L, R);
   return {

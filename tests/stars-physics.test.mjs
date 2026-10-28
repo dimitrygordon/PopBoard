@@ -32,7 +32,7 @@ test("luminosity, core temperature and temperature rise with mass; lifetime fall
       assert.ok(s.Tc > prev.Tc, `Tc at ${m}`);
       if (m <= 60) assert.ok(s.teff > prev.teff, `Teff at ${m}`);
       assert.ok(s.R > prev.R, `R at ${m}`);
-      assert.ok(s.lifetime < prev.lifetime, `lifetime at ${m}`);
+      assert.ok(s.lifetime < prev.lifetime || (prev.lifetime === S.VERY_LONG_GYR && s.lifetime <= prev.lifetime), `lifetime at ${m}`);
       assert.ok(s.cno >= prev.cno, `CNO share at ${m}`);
     }
     prev = s;
@@ -190,4 +190,28 @@ test("year formatting", () => {
   assert.equal(S.formatYears(559), "559 Gyr");
   assert.equal(S.formatYears(5520), "5.5 trillion yr");
   assert.equal(S.formatYears(0.0069), "6.9 Myr");
+});
+
+test("slider sweep: no jump larger than 2x between neighboring mass steps", () => {
+  for (const z of [S.Z_SUN, 0.0005, 0.03]) {
+    let prev = null;
+    for (let i = 0; i <= 1000; i++) {
+      const m = S.sliderToMass(i / 1000);
+      const s = S.mainSequence(m, z);
+      const v = { Pc: s.Pc, teff: s.teff, Tc: s.Tc, lifetime: s.lifetime };
+      if (prev) for (const k of Object.keys(v)) {
+        const r = v[k] / prev[k];
+        assert.ok(r < 2 && r > 0.5, `${k} jumps ${r.toFixed(2)}x at ${m.toFixed(3)} Msun, Z=${z}`);
+      }
+      prev = v;
+    }
+  }
+});
+
+test("pressure coefficient blends smoothly from 0.3 to 0.8 Msun", () => {
+  assert.equal(S.pressureCoefficient(0.2), 8.7e14);
+  assert.equal(S.pressureCoefficient(0.3), 8.7e14);
+  assert.equal(S.pressureCoefficient(0.8), 2.5e16);
+  assert.ok(Math.abs(S.corePressure(0.2) / 1.2e16 - 1) < 0.05);
+  assert.ok(Math.abs(S.corePressure(1) / 2.5e16 - 1) < 1e-9);
 });
