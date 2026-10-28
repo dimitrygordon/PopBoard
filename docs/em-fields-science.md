@@ -10,7 +10,7 @@ Theme: a Dark/Light button in the header. The first visit follows the system `pr
 
 | Symbol | Value | Source |
 |---|---|---|
-| e | 1.602 176 634e-19 C (exact) | SI 2019, NIST CODATA [1] |
+| e | 1.602 176 634e-19 C (exact) | SI 2019, CODATA 2018 [1] |
 | epsilon0 | 8.854 187 8128e-12 F/m | CODATA 2018 [1] |
 | mu0 | 1.256 637 062 12e-6 N/A^2 (about 4 pi x 1e-7) | CODATA 2018 [1] |
 | k = 1/(4 pi epsilon0) | 8.987 551 79e9 N m^2/C^2 (derived) | [1] |
@@ -42,7 +42,7 @@ Check: 1/sqrt(mu0 epsilon0) = 299 792 458 m/s (tested).
 - Field lines: RK2 steps along the unit field from + charges (or back from - charges when there are none). Lines per charge = 6 per nC of |q|, at least 4 and at most 48.
 - Equipotentials: marching squares on a 6 px grid, every 50 V from -1500 V to +1500 V, red for + and blue for -, labels at +/-100, 200 and 400 V.
 - B lines: A_z contours spaced so neighboring rings around one wire differ in radius by a factor e^0.3, about 1.35.
-- Field vectors and the superposition arrows are log scaled (length grows by a fixed amount per factor of 10 in field strength), so they show direction and rough size, not exact proportion.
+- Field vectors and the superposition arrows are log scaled (length grows by a fixed amount per factor of 10 in field strength), so they show direction and rough size, not exact proportion. On-screen caption: "Arrow length is not to scale. Longer means stronger, but not in proportion."
 
 ## 4. Scenes and values shown
 
@@ -64,7 +64,7 @@ Every slider is logarithmic with 200 steps. Adjacent steps differ by (max/min)^(
 ## 6. Captions (claims shown to students)
 
 - Each charge makes its own field E = kq/r^2, pointing away from + and toward -. The net field is the vector sum (superposition).
-- Field lines start on + charges and end on - charges; where they crowd together the field is stronger.
+- Field lines start on + charges and end on - charges, or run off to far away. Where they crowd together the field is stronger.
 - Potential adds as plain numbers, V = sum kq/r, with no directions. The field points from high to low potential and crosses every equipotential at a right angle. Moving a charge along an equipotential takes no work.
 - A long straight wire's field circles the wire (right-hand rule) with B = mu0 I/(2 pi r). Compass needles line up with the net field; the red end points along B. Parallel currents attract; opposite currents repel.
 - A magnetic force is always at right angles to the motion, so it bends the path into a circle but never changes the speed. Faster particles make bigger circles, but the time for one lap does not depend on speed. That is the idea behind the cyclotron [10].
