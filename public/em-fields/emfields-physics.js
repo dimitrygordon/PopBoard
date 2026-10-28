@@ -10,7 +10,7 @@ export const EPS0 = 8.8541878128e-12;        // F/m
 export const MU0 = 1.25663706212e-6;         // N/A^2
 export const K = 1 / (4 * Math.PI * EPS0);   // ~8.98755e9 N m^2/C^2
 export const NC = 1e-9;                      // 1 nC in C
-export const PARTICLES = Object.freeze({
+export const PARTICLES = Object.freeze({     // masses: CODATA 2018
   proton: Object.freeze({ id: "proton", name: "Proton", q: E_CHARGE, m: 1.67262192369e-27, art: "test-charge" }),
   alpha: Object.freeze({ id: "alpha", name: "Alpha particle", q: 2 * E_CHARGE, m: 6.6446573357e-27, art: "test-charge" }),
   electron: Object.freeze({ id: "electron", name: "Electron", q: -E_CHARGE, m: 9.1093837015e-31, art: "electron" })
