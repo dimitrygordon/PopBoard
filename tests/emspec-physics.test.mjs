@@ -158,3 +158,19 @@ test("page, gallery card and module files follow the study pattern", () => {
   // only WebP art ships
   for (const n of readdirSync(new URL("em-spectrum/assets/", pub))) assert.match(n, /\.webp$/);
 });
+
+test("science captions: band boundaries, X-ray Sun, gamma stop", () => {
+  assert.match(P.BAND_BOUNDARY_NOTE, /^Boundaries between bands are conventions, not sharp edges\./);
+  assert.match(P.BAND_BOUNDARY_NOTE, /by source/);
+  assert.match(P.objectById("sun").views.xray, /coronal holes/);
+  assert.match(P.ATMOSPHERE.gamma.by, /Gamma rays are more penetrating, so they reach lower before the air stops them\./);
+  assert.ok(P.ATMOSPHERE.gamma.stopKm < P.ATMOSPHERE.xray.stopKm);
+});
+
+test("no em-dashes in em-spectrum sources", async () => {
+  const fs = await import("node:fs");
+  for (const f of ["emspec-physics.js", "emspec-ui.js", "emspec-render.js"]) {
+    const s = fs.readFileSync(new URL(`../public/em-spectrum/${f}`, import.meta.url), "utf8");
+    assert.ok(!s.includes("\u2014"), f);
+  }
+});

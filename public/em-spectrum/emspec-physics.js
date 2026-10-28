@@ -40,6 +40,12 @@ export function frequencyToSlider(f) { return 1 - wavelengthToSlider(C / f); }
 // Microwaves are folded into radio. The X-ray / gamma split is set at
 // 0.01 nm (about 124 keV) here; in practice the two overlap and are often
 // named by their source (electrons vs nuclei), not by energy.
+export const BAND_BOUNDARY_NOTE = "Boundaries between bands are conventions, not sharp edges. X-rays and gamma rays overlap in energy and are often split by source (electrons vs atomic nuclei) rather than by wavelength.";
+
+// Fermi-LAT angular resolution, 68% containment, P8R3_SOURCE_V3 total,
+// acceptance weighted (SLAC lat_Performance page, PSF68 table).
+export const GAMMA_PSF68 = Object.freeze({ at100MeV: "about 5 deg", at1GeV: "about 0.8 deg", above10GeV: "about 0.1 to 0.15 deg" });
+
 export const BANDS = Object.freeze([
   { id: "radio", name: "Radio", min: 1e-3, max: Infinity, center: 0.21, color: "#ff785a" },
   { id: "infrared", name: "Infrared", min: 700e-9, max: 1e-3, center: 10e-6, color: "#ff5a3c" },
@@ -144,7 +150,7 @@ export const ATMOSPHERE = Object.freeze({
   visible: { stopKm: 0, reaches: true, by: "Reaches the ground. Air scatters blue light more than red." },
   ultraviolet: { stopKm: 30, reaches: "partly", by: "Ozone in the stratosphere absorbs most UV shorter than about 300 nm. Some UV-A reaches the ground." },
   xray: { stopKm: 80, reaches: false, by: "Absorbed high in the atmosphere by nitrogen and oxygen atoms." },
-  gamma: { stopKm: 25, reaches: false, by: "Absorbed in the upper atmosphere, where each photon starts a shower of particles." }
+  gamma: { stopKm: 25, reaches: false, by: "Absorbed in the upper atmosphere, where each photon starts a shower of particles. Gamma rays are more penetrating, so they reach lower before the air stops them." }
 });
 // Layer tops (km) for the art: troposphere, stratosphere, mesosphere, top of panel.
 export const LAYERS_KM = Object.freeze({ troposphere: 12, stratosphere: 50, mesosphere: 85, top: 150 });
@@ -202,7 +208,7 @@ export const OBJECTS = Object.freeze([
     infrared: "A smooth, low-contrast disk.",
     visible: "The photosphere, darker toward the edge (limb darkening), with sunspots.",
     ultraviolet: "Hot gas above active regions (plage) and loops at the edge.",
-    xray: "The disk is dark. Million-degree gas over active regions and the corona glows.",
+    xray: "In X-rays the Sun's visible surface is dark; we see the million-degree corona as bright loops over active regions, with dark coronal holes.",
     gamma: "Usually dark. Gamma rays appear during strong solar flares." } }
 ].map(Object.freeze));
 export function objectById(id) { return OBJECTS.find((o) => o.id === id) || null; }

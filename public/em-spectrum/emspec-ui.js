@@ -5,7 +5,7 @@ import { forwardStudyQuery } from "../board-return.js?v=20261022a";
 import { loadImages, readTokens, drawSpectrumBar, drawWave, drawEnergy, drawAtmosphere, drawOpacity, drawOptics, drawSky, posOf, lambdaAt } from "./emspec-render.js";
 import {
   BANDS, bandById, bandOf, sliderToWavelength, wavelengthToSlider, sliderToFrequency, frequencyToSlider,
-  frequencyFromWavelength, photonEnergyEV, photonEnergyJ, energyFromWavelengthEV, isIonizing, nearestScale,
+  frequencyFromWavelength, BAND_BOUNDARY_NOTE, photonEnergyEV, photonEnergyJ, energyFromWavelengthEV, isIonizing, nearestScale,
   ENERGY_MARKS, ATMOSPHERE, transmission, TELESCOPES, telescopeFor, diffractionLimitArcsec, OBJECTS, objectById,
   parseQuery, MODES, sci, formatLength, formatFrequency, formatEnergyEV
 } from "./emspec-physics.js";
@@ -131,6 +131,7 @@ function sync() {
   $("waveFormula").textContent = `c = \u03bb f\n${sci(l)} m \u00d7 ${sci(f)} Hz = ${sci(l * f)} m/s`;
   $("waveEnergy").textContent = `E = h f = ${formatEnergyEV(eV)} = ${sci(J)} J`;
   const n = nearestScale(l);
+  $("bandNote").textContent = BAND_BOUNDARY_NOTE;
   $("waveScale").textContent = `${b.name}. One wavelength is about the size of a ${n.label}. Longer wavelength means lower frequency: the two sliders move in opposite directions because their product is always the speed of light.`;
 
   const lB = st.lambdaB, eA = eV, eB = energyFromWavelengthEV(lB);
@@ -139,7 +140,7 @@ function sync() {
   $("bOut").textContent = `${formatLength(lB)}: ${formatEnergyEV(eB)} = ${sci(eB * 1.602176634e-19)} J (${bandOf(lB).name})`;
   const ratio = eA / eB;
   $("energyRatio").textContent = ratio >= 1 ? `E_A / E_B = ${sci(ratio)}\nOne photon A carries ${sci(ratio)} times the energy of photon B.` : `E_B / E_A = ${sci(1 / ratio)}\nOne photon B carries ${sci(1 / ratio)} times the energy of photon A.`;
-  $("energyNote").textContent = `${isIonizing(eA) ? "Photon A is ionizing: above about 10 eV a single photon can knock electrons off atoms, which is why UV, X-rays and gamma rays can damage cells." : "Photon A is not ionizing: below about 10 eV a single photon cannot knock electrons off most atoms, however bright the light."} 1 eV = 1.602 \u00d7 10\u207b\u00b9\u2079 J.`;
+  $("energyNote").textContent = `${isIonizing(eA) ? "Photon A is ionizing (above about 10 eV). Far UV, X-rays and gamma rays ionize atoms. UVB (280 to 315 nm) can still damage DNA without ionizing." : "Photon A is not ionizing: below about 10 eV a single photon cannot knock electrons off most atoms, however bright the light."} 1 eV = 1.602 \u00d7 10\u207b\u00b9\u2079 J.`;
 
   const tr = transmission(l), a = ATMOSPHERE[b.id];
   $("atmoReadout").textContent = `${formatLength(l)} (${b.name})\nAbout ${Math.round(tr * 100)}% reaches sea level, ${Math.round((1 - tr) * 100)}% is absorbed or reflected.`;
@@ -150,7 +151,7 @@ function sync() {
   $("scopeHow").textContent = t.how;
   $("scopeRes").textContent = t.D ? `Sharpest detail: \u03b8 = 1.22 \u03bb / D\n= 1.22 \u00d7 ${formatLength(t.lambda)} / ${t.D} m = ${fmtArc(diffractionLimitArcsec(t.lambda, t.D))}` +
     (t.optics === "grazing" ? "\nReal X-ray mirrors are limited by surface shape, not by this number (about 0.5 arcsec for the best)." : "")
-    : "No mirror or lens: direction comes from particle tracks, good to about a degree at low energy and a tenth of a degree at high energy.";
+    : "No mirror or lens: direction comes from particle tracks. Fermi-LAT (68% containment): about 5 deg at 100 MeV, about 0.8 deg at 1 GeV, about 0.15 deg at 10 GeV and about 0.1 deg above 30 GeV.";
 
   const o = objectById(st.object);
   $("skyTitle").textContent = `${o.name} seen in ${{ radio: "radio waves", infrared: "infrared", visible: "visible light", ultraviolet: "ultraviolet", xray: "X-rays", gamma: "gamma rays" }[b.id]}`;

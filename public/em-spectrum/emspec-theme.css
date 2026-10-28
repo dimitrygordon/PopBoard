@@ -97,3 +97,4 @@ input[type="range"] { width: 100%; min-height: var(--es-hit); margin: 0; accent-
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }
+.bandbar .caption.band-note { margin: 6px 4px 0; font-size: 13px; color: #d6d3e6; }

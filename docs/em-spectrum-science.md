@@ -37,7 +37,7 @@ One log slider, t in [0, 1]: lambda = 10^(-14 + 18 t) m, from 10 fm to 10 km. Th
 | X-ray | 0.01 nm to 10 nm (about 124 eV to 124 keV) | 0.1 nm (12.4 keV) |
 | Gamma | below 0.01 nm (above about 124 keV) | 1 pm (1.24 MeV) |
 
-Boundaries are conventions. X-rays and gamma rays overlap in energy; astronomers often name them by source. Band colors on screen are false colors from the style frame, except the visible strip, which uses an approximate rainbow (display only).
+Boundaries between bands are conventions, not sharp edges (shown under the spectrum bar). X-rays and gamma rays overlap in energy and are often split by source (electrons for X-rays, atomic nuclei and particle processes for gamma rays) rather than by wavelength; the page uses 0.01 nm only as a drawing convention. Band colors on screen are false colors from the style frame, except the visible strip, which uses an approximate rainbow (display only).
 
 ## 5. Photon energy reference marks
 
@@ -49,6 +49,8 @@ Boundaries are conventions. X-rays and gamma rays overlap in energy; astronomers
 | Ionize hydrogen | 13.6 eV |
 | Electron rest energy | 511.0 keV (510 998.95 eV) |
 | "Ionizing" threshold drawn | 10 eV (round number; first ionization energies of common atoms and molecules are about 10 to 15 eV) |
+
+Ionizing caption: "Far UV, X-rays and gamma rays ionize atoms. UVB (280 to 315 nm) can still damage DNA without ionizing." The 10 eV line is kept.
 
 ## 6. Size scale ("one wavelength is about the size of a ...")
 
@@ -100,7 +102,7 @@ The atmosphere panel draws one arrow per band ending at this altitude. Layer top
 | Visible | 0 (ground) | Reaches the ground. Air scatters blue light more than red. |
 | Ultraviolet | 30 km, dashed to ground | Ozone in the stratosphere absorbs most UV shorter than about 300 nm. Some UV-A reaches the ground. |
 | X-ray | 80 km | Absorbed high in the atmosphere by nitrogen and oxygen atoms. |
-| Gamma | 25 km | Absorbed in the upper atmosphere, where each photon starts a shower of particles. |
+| Gamma | 25 km | Absorbed in the upper atmosphere, where each photon starts a shower of particles. Gamma rays are more penetrating, so they reach lower before the air stops them. |
 
 ## 8. Telescopes
 
@@ -113,7 +115,7 @@ Diffraction limit shown for one representative (lambda, D):
 | Visible | telescope-optical-reflector (refractor art kept as alt) | ground | 2.4 m | 550 nm | 0.058 arcsec |
 | Ultraviolet | telescope-ultraviolet | space | 2.4 m | 150 nm | 0.016 arcsec |
 | X-ray | telescope-xray-grazing | space | 1.2 m | 0.1 nm | 2.1e-5 arcsec; the page adds that real X-ray mirrors are limited by surface shape, about 0.5 arcsec for the best |
-| Gamma | telescope-gamma-ray | space | none | 1 pm | not shown; text: direction from particle tracks, about 1 degree at low energy, about 0.1 degree at high energy |
+| Gamma | telescope-gamma-ray | space | none | 1 pm | not shown; text: direction from particle tracks; Fermi-LAT 68% containment about 5 deg at 100 MeV, 0.8 deg at 1 GeV, 0.15 deg at 10 GeV, 0.1 deg above 30 GeV (see below) |
 
 Explanations shown:
 - Radio: a curved metal dish reflects radio waves to a receiver at the focus; the surface only needs to be smooth to a small fraction of the wavelength, so mesh or panels work.
@@ -121,6 +123,20 @@ Explanations shown:
 - Visible: a lens (refractor) or curved mirror (reflector) brings light to a focus; big research telescopes use mirrors.
 - Ultraviolet: ozone blocks most UV, so UV telescopes fly above the atmosphere; mirrors still work, with special coatings.
 - X-ray: X-rays reflect only when they skim the surface at under about 1 degree, so nested barrel-shaped mirrors guide them to a focus (diagram angle exaggerated).
+### Gamma-ray angular resolution (verified)
+
+Source: Fermi LAT Performance, https://www.slac.stanford.edu/exp/glast/groups/canda/lat_Performance.htm, table "PSF68 Acc. weighted Total" (P8R3_SOURCE_V3, 68% containment, acceptance weighted), fetched 2026-10-28:
+
+| Energy | PSF68 |
+|---|---|
+| 99 MeV | 5.29 deg |
+| 981 MeV | 0.85 deg |
+| 9.7 GeV | 0.16 deg |
+| 30.6 GeV | 0.11 deg |
+| 96 GeV | 0.10 deg |
+
+The brief's "3 to 5 deg at 100 MeV" matches the total at the top of that range (FRONT-converting events are about a factor of two sharper). The brief's "0.1 deg above 10 GeV" is slightly optimistic at exactly 10 GeV (0.16 deg); the table reaches about 0.1 deg from about 30 GeV, so the page says 0.15 deg at 10 GeV and 0.1 deg above 30 GeV.
+
 - Gamma: too energetic to focus; each photon converts to an electron and positron in the detector (pair production), and their tracks point back to the source; a calorimeter measures the energy.
 
 ## 9. Band views
@@ -129,4 +145,4 @@ Leo's masks, tinted by multiplying luminance with the band color (false color). 
 
 - Crab Nebula: radio, synchrotron light from fast electrons in magnetic fields across the whole nebula; infrared, warm dust and gas trace the filaments; visible, glowing filaments of hot gas from the supernova seen in 1054; UV, a smaller inner nebula of the most energetic electrons; X-ray, the pulsar powers a ring and jets of very hot, fast particles; gamma, a compact point at the pulsar.
 - Spiral galaxy: radio, cold hydrogen (21 cm line) beyond the stars; infrared, dust warmed by starlight and the old stars of the bulge; visible, starlight in arms with dark dust lanes; UV, hot young massive stars in knots; X-ray, scattered points from gas falling onto neutron stars and black holes, plus the nucleus; gamma, only a faint core (cosmic rays striking gas, or the central black hole).
-- Sun: radio, from the hot corona above the surface, so the disk looks bigger and blotchy; infrared, a smooth low-contrast disk; visible, the photosphere with limb darkening and sunspots; UV, hot gas over active regions (plage) and loops at the edge; X-ray, dark disk with million-degree gas over active regions and corona; gamma, usually dark, gamma rays appear during strong flares.
+- Sun: radio, from the hot corona above the surface, so the disk looks bigger and blotchy; infrared, a smooth low-contrast disk; visible, the photosphere with limb darkening and sunspots; UV, hot gas over active regions (plage) and loops at the edge; X-ray, "In X-rays the Sun's visible surface is dark; we see the million-degree corona as bright loops over active regions, with dark coronal holes."; gamma, usually dark, gamma rays appear during strong flares.
