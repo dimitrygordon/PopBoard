@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#20232e">
+<title>E&amp;M Field Sandbox // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  // Theme before first paint: a saved choice wins, else the system setting.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.emfields.theme"); } catch (e) {}
+    if (t !== "dark" && t !== "light") t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
+<link rel="stylesheet" href="em-fields/emfields-theme.css">
+<link rel="stylesheet" href="astro-study.css?v=20261021k">
+<script src="astro-study.js?v=20261021k"></script>
+</head>
+<body>
+<h1 class="sr-only">E&amp;M Field Sandbox</h1>
+<p class="sr-only">Place point charges and currents, see field lines, field vectors and equipotentials, read the force on a test charge, add fields by superposition, and watch charged particles move in electric and magnetic fields.</p>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title">E&amp;M Field Sandbox</p>
+  <button id="themeBtn" class="theme-btn" type="button" aria-pressed="false" aria-label="Dark mode">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <span id="themeLabel">Dark</span>
+  </button>
+</header>
+
+<main id="stage" class="stage">
+  <div class="paper canvas-box">
+    <canvas id="fieldCanvas" tabindex="0" role="img" aria-label="Field view. Drag charges, wires and the test charge."></canvas>
+    <p id="canvasHint" class="canvas-hint"></p>
+  </div>
+  <div class="controls paper" id="controls">
+
+    <section class="panel" data-panel="field" hidden>
+      <div class="row" role="group" aria-label="Presets">
+        <button type="button" data-preset="single">One charge</button>
+        <button type="button" data-preset="dipole">Dipole</button>
+        <button type="button" data-preset="like">Like pair</button>
+        <button type="button" data-preset="three">Three</button>
+      </div>
+      <div class="row" role="group" aria-label="Edit charges">
+        <button type="button" data-add="1">Add +</button>
+        <button type="button" data-add="-1">Add &minus;</button>
+        <button type="button" data-flip>Flip sign</button>
+        <button type="button" data-remove>Remove</button>
+      </div>
+      <label class="slider"><span>Selected charge |q|</span><input data-slider="charge" type="range" min="0" max="200" step="1"><output data-out="charge"></output></label>
+      <label class="slider"><span>Test charge q&#8320;</span><input data-slider="testCharge" type="range" min="0" max="200" step="1"><output data-out="testCharge"></output></label>
+      <div class="row toggles" role="group" aria-label="Show">
+        <button type="button" data-toggle="lines" aria-pressed="true">Field lines</button>
+        <button type="button" data-toggle="vectors" aria-pressed="false">Vectors</button>
+        <button type="button" data-toggle="parts" aria-pressed="true">Superposition</button>
+      </div>
+      <p class="formula" data-read="field" aria-live="polite"></p>
+      <p class="caption" data-note="field"></p>
+    </section>
+
+    <section class="panel" data-panel="potential" hidden>
+      <div class="row" role="group" aria-label="Presets">
+        <button type="button" data-preset="single">One charge</button>
+        <button type="button" data-preset="dipole">Dipole</button>
+        <button type="button" data-preset="like">Like pair</button>
+        <button type="button" data-preset="three">Three</button>
+      </div>
+      <div class="row" role="group" aria-label="Edit charges">
+        <button type="button" data-add="1">Add +</button>
+        <button type="button" data-add="-1">Add &minus;</button>
+        <button type="button" data-flip>Flip sign</button>
+        <button type="button" data-remove>Remove</button>
+      </div>
+      <label class="slider"><span>Selected charge |q|</span><input data-slider="charge" type="range" min="0" max="200" step="1"><output data-out="charge"></output></label>
+      <label class="slider"><span>Test charge q&#8320;</span><input data-slider="testCharge" type="range" min="0" max="200" step="1"><output data-out="testCharge"></output></label>
+      <div class="row toggles" role="group" aria-label="Show">
+        <button type="button" data-toggle="lines" aria-pressed="false">Field lines</button>
+      </div>
+      <p class="formula" data-read="potential" aria-live="polite"></p>
+      <p class="caption" data-note="potential"></p>
+    </section>
+
+    <section class="panel" data-panel="magnetic" hidden>
+      <div class="row" role="group" aria-label="Presets">
+        <button type="button" data-wpreset="one">One wire</button>
+        <button type="button" data-wpreset="parallel">Same way</button>
+        <button type="button" data-wpreset="opposite">Opposite</button>
+      </div>
+      <div class="row" role="group" aria-label="Edit wires">
+        <button type="button" data-addwire="1">Add out &#8857;</button>
+        <button type="button" data-addwire="-1">Add in &#8855;</button>
+        <button type="button" data-flipwire>Reverse</button>
+        <button type="button" data-removewire>Remove</button>
+      </div>
+      <label class="slider"><span>Selected current I</span><input data-slider="current" type="range" min="0" max="200" step="1"><output data-out="current"></output></label>
+      <div class="row toggles" role="group" aria-label="Show">
+        <button type="button" data-toggle="blines" aria-pressed="true">Field lines</button>
+        <button type="button" data-toggle="compass" aria-pressed="true">Compasses</button>
+      </div>
+      <p class="formula" data-read="magnetic" aria-live="polite"></p>
+      <p class="caption" data-note="magnetic"></p>
+    </section>
+
+    <section class="panel" data-panel="cyclotron" hidden>
+      <div class="row" role="group" aria-label="Particle" data-particles="cyc"></div>
+      <label class="slider"><span>Magnetic field B</span><input data-slider="cycB" type="range" min="0" max="200" step="1"><output data-out="cycB"></output></label>
+      <label class="slider"><span>Speed v</span><input data-slider="cycV" type="range" min="0" max="200" step="1"><output data-out="cycV"></output></label>
+      <div class="row" role="group" aria-label="Field direction">
+        <button type="button" data-bdir="-1">B into page &#8855;</button>
+        <button type="button" data-bdir="1">B out of page &#8857;</button>
+      </div>
+      <div class="row"><button type="button" data-run>Pause</button><button type="button" data-reset>Restart</button></div>
+      <p class="formula" data-read="cyclotron" aria-live="polite"></p>
+      <p class="caption" data-note="cyclotron"></p>
+    </section>
+
+    <section class="panel" data-panel="selector" hidden>
+      <div class="row" role="group" aria-label="Particle" data-particles="sel"></div>
+      <label class="slider"><span>Electric field E</span><input data-slider="selE" type="range" min="0" max="200" step="1"><output data-out="selE"></output></label>
+      <label class="slider"><span>Magnetic field B</span><input data-slider="selB" type="range" min="0" max="200" step="1"><output data-out="selB"></output></label>
+      <label class="slider"><span>Speed v</span><input data-slider="selV" type="range" min="0" max="200" step="1"><output data-out="selV"></output></label>
+      <div class="row"><button type="button" data-match>Set v = E/B</button><button type="button" data-reset>Fire again</button></div>
+      <p class="formula" data-read="selector" aria-live="polite"></p>
+      <p class="caption" data-note="selector"></p>
+    </section>
+
+    <section class="panel" data-panel="sandbox" hidden>
+      <div class="row tools" role="group" aria-label="Tap the field to place">
+        <button type="button" data-tool="plus" aria-pressed="false">+ charge</button>
+        <button type="button" data-tool="minus" aria-pressed="false">&minus; charge</button>
+        <button type="button" data-tool="out" aria-pressed="false">Wire &#8857;</button>
+        <button type="button" data-tool="in" aria-pressed="false">Wire &#8855;</button>
+        <button type="button" data-tool="launch" aria-pressed="false">Launch point</button>
+        <button type="button" data-tool="erase" aria-pressed="false">Erase</button>
+        <button type="button" data-tool="move" aria-pressed="true">Move</button>
+      </div>
+      <label class="slider"><span>Selected charge |q|</span><input data-slider="charge" type="range" min="0" max="200" step="1"><output data-out="charge"></output></label>
+      <label class="slider"><span>Selected current I</span><input data-slider="current" type="range" min="0" max="200" step="1"><output data-out="current"></output></label>
+      <div class="row" role="group" aria-label="Uniform electric field">
+        <button type="button" data-toggle="boxEOn" aria-pressed="false">Uniform E</button>
+        <button type="button" data-edir="0" aria-label="E points right">&rarr;</button>
+        <button type="button" data-edir="90" aria-label="E points up">&uarr;</button>
+        <button type="button" data-edir="180" aria-label="E points left">&larr;</button>
+        <button type="button" data-edir="270" aria-label="E points down">&darr;</button>
+      </div>
+      <label class="slider"><span>Uniform E</span><input data-slider="boxE" type="range" min="0" max="200" step="1"><output data-out="boxE"></output></label>
+      <div class="row" role="group" aria-label="Uniform magnetic field">
+        <button type="button" data-toggle="boxBOn" aria-pressed="false">Uniform B</button>
+        <button type="button" data-boxbdir="-1">Into &#8855;</button>
+        <button type="button" data-boxbdir="1">Out &#8857;</button>
+      </div>
+      <label class="slider"><span>Uniform B</span><input data-slider="boxB" type="range" min="0" max="200" step="1"><output data-out="boxB"></output></label>
+      <div class="row" role="group" aria-label="Particle" data-particles="box"></div>
+      <label class="slider"><span>Launch speed v</span><input data-slider="boxV" type="range" min="0" max="200" step="1"><output data-out="boxV"></output></label>
+      <div class="row dirs" role="group" aria-label="Launch direction">
+        <button type="button" data-vdir="0" aria-label="Launch right">&rarr;</button>
+        <button type="button" data-vdir="45" aria-label="Launch up and right">&nearr;</button>
+        <button type="button" data-vdir="90" aria-label="Launch up">&uarr;</button>
+        <button type="button" data-vdir="135" aria-label="Launch up and left">&nwarr;</button>
+        <button type="button" data-vdir="180" aria-label="Launch left">&larr;</button>
+        <button type="button" data-vdir="225" aria-label="Launch down and left">&swarr;</button>
+        <button type="button" data-vdir="270" aria-label="Launch down">&darr;</button>
+        <button type="button" data-vdir="315" aria-label="Launch down and right">&searr;</button>
+      </div>
+      <label class="slider"><span>Slow motion</span><input data-slider="slowmo" type="range" min="0" max="200" step="1"><output data-out="slowmo"></output></label>
+      <div class="row"><button type="button" data-run>Run</button><button type="button" data-reset>Reset particle</button><button type="button" data-clear>Clear all</button></div>
+      <div class="row toggles" role="group" aria-label="Show">
+        <button type="button" data-toggle="lines" aria-pressed="true">E lines</button>
+        <button type="button" data-toggle="blines" aria-pressed="true">B lines</button>
+        <button type="button" data-toggle="vectors" aria-pressed="false">Vectors</button>
+        <button type="button" data-toggle="equip" aria-pressed="false">Equipotentials</button>
+      </div>
+      <p class="formula" data-read="sandbox" aria-live="polite"></p>
+      <p class="caption" data-note="sandbox"></p>
+    </section>
+  </div>
+</main>
+
+<nav id="toolbar" class="toolbar" aria-label="Activities">
+  <button type="button" class="tool" data-show="field" aria-pressed="false">E field</button>
+  <button type="button" class="tool" data-show="potential" aria-pressed="false">Potential</button>
+  <button type="button" class="tool" data-show="magnetic" aria-pressed="false">B field</button>
+  <button type="button" class="tool" data-show="cyclotron" aria-pressed="false">Circles</button>
+  <button type="button" class="tool" data-show="selector" aria-pressed="false">Selector</button>
+  <button type="button" class="tool" data-show="sandbox" aria-pressed="false">Sandbox</button>
+</nav>
+
+<script type="module" src="em-fields/emfields-ui.js"></script>
+</body>
+</html>
