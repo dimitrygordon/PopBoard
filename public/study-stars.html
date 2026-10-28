@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#141414">
+<title>Build a Star // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<link rel="preload" as="image" href="stars/assets/cutaway-sun-like-4-surface-shell.webp" type="image/webp">
+<link rel="stylesheet" href="stars/stars-theme.css">
+</head>
+<body>
+<header class="bar">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <h1>Build a Star<span class="sub">: Stellar Evolution Laboratory</span></h1>
+  <span class="brand">PopBoard</span>
+</header>
+<p class="sr-only">Choose a star's starting mass and composition, then look inside it: core temperature and pressure, the balance between gravity and pressure, which fusion reactions run, how energy moves out, how long it lives, and how it dies.</p>
+
+<main class="lab">
+  <section class="stage" aria-label="The star">
+    <canvas id="starCanvas" role="img" aria-label="Cutaway of the star"></canvas>
+    <p id="stageName" class="stage-name" aria-live="polite"></p>
+    <button id="replayBtn" class="pill replay" type="button" hidden>Replay supernova</button>
+  </section>
+
+  <section class="controls" aria-label="Build your star">
+    <canvas id="reactionCanvas" class="reaction" role="img" aria-label="Main fusion reaction"></canvas>
+    <label class="slider"><span class="lab-label">Initial mass (M☉) <output id="massOut"></output></span>
+      <input id="massRange" type="range" min="0" max="1000" step="1" aria-label="Initial mass, solar masses"></label>
+    <div class="presets" role="group" aria-label="Example masses">
+      <button type="button" class="pill" data-mass="0.2">0.2</button><button type="button" class="pill" data-mass="1">1 (Sun)</button><button type="button" class="pill" data-mass="5">5</button><button type="button" class="pill" data-mass="15">15</button><button type="button" class="pill" data-mass="40">40</button>
+    </div>
+    <label class="slider"><span class="lab-label">Metallicity Z <output id="zOut"></output></span>
+      <input id="zRange" type="range" min="0" max="1000" step="1" aria-label="Metallicity Z"></label>
+    <details class="helium"><summary>Helium fraction Y <output id="yOut"></output></summary>
+      <label class="slider"><span class="sr-only">Helium fraction Y</span><input id="yRange" type="range" min="0.24" max="0.4" step="0.005" aria-label="Helium mass fraction Y"></label>
+      <button type="button" id="yReset" class="pill">Solar Y = 0.27</button>
+    </details>
+    <div class="slider time"><span class="lab-label">Time <output id="ageOut"></output></span>
+      <div class="time-row">
+        <button type="button" id="playBtn" class="pill icon" aria-label="Play the star's life"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="ic-play" d="M8 5l11 7-11 7z"/><path class="ic-pause" d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
+        <input id="timeRange" type="range" min="0" max="1000" step="1" aria-label="Time through the star's life">
+      </div>
+    </div>
+    <dl class="readouts">
+      <div><dt>Core T</dt><dd id="rTc"></dd></div>
+      <div><dt>Core P</dt><dd id="rPc"></dd></div>
+      <div><dt>L</dt><dd id="rL"></dd></div>
+      <div><dt>Surface</dt><dd id="rTeff"></dd></div>
+      <div><dt>Lifetime</dt><dd id="rLife"></dd></div>
+    </dl>
+
+    <nav class="tabs" role="tablist" aria-label="Explore">
+      <button type="button" role="tab" data-mode="build">H-R</button>
+      <button type="button" role="tab" data-mode="equilibrium">Balance</button>
+      <button type="button" role="tab" data-mode="fusion">Fusion</button>
+      <button type="button" role="tab" data-mode="transport">Energy</button>
+      <button type="button" role="tab" data-mode="lifetime">Lifetime</button>
+      <button type="button" role="tab" data-mode="fate">Fate</button>
+    </nav>
+    <div class="detail" role="tabpanel">
+      <canvas id="detailCanvas" role="img"></canvas>
+      <div class="detail-actions">
+        <button type="button" id="squeezeBtn" class="pill" hidden>Squeeze the star</button>
+        <a id="hrLink" class="pill" href="study-hrdiagram.html" hidden>Open the H-R Diagram</a>
+      </div>
+      <p id="detailCaption" class="caption" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section class="fate" aria-label="Fate strip">
+    <h2>Fate strip</h2>
+    <div id="fateStrip" class="fate-strip"></div>
+  </section>
+</main>
+
+<script type="module" src="stars/stars-ui.js"></script>
+</body>
+</html>
