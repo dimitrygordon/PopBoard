@@ -29,9 +29,13 @@ export const HE_IGNITION_T = 1e8;          // K: triple-alpha helium burning
 export const LOW_MASS_GIANT_MIN = 0.5;     // below: no red giant or planetary nebula, slow fade to a helium white dwarf
 export const SUPERNOVA_MIN = 8;            // at or above: core collapse
 export const BLACK_HOLE_MIN = 20;          // at or above: black hole instead of a neutron star
-export const DIRECT_COLLAPSE_MIN = 25;     // at or above with low Z: collapse with a faint or no supernova
+export const DIRECT_COLLAPSE_MIN = 40;     // at or above with low Z: direct collapse, faint or no supernova (25 to 40: fallback)
 export const DIRECT_COLLAPSE_Z = 0.1 * Z_SUN;
-export const CHANDRASEKHAR = 1.4;
+export const CHANDRASEKHAR = 1.44;
+export const HYPOTHETICAL_MAX = 0.9;        // below: no star this small has died yet
+export const ONE_WD_MIN = 7;               // oxygen-neon white dwarfs above about 7 M_sun
+export const VERY_LONG_MAX = 0.35;         // below: lifetime shown as about 1 trillion years or more
+export const VERY_LONG_GYR = 1000;
 
 export const MODE_ALIASES = Object.freeze({
   build: "build", sandbox: "build", star: "build",
@@ -80,23 +84,39 @@ const SOLAR_MIX = composition(Z_SUN, Y_SUN);
 export function baseLuminosity(m) {
   if (m < 0.43) return 0.23 * Math.pow(m, 2.3);
   if (m < 2) return Math.pow(m, 4);
-  if (m < 55) return 1.4 * Math.pow(m, 3.5);
-  return 32000 * m;
+  if (m < 30) return 1.4 * Math.pow(m, 3.5);
+  // Flatter above 30 M_sun: log L ~5.46 at 38 and ~5.54 at 43 (Mamajek O-star table).
+  return 1.4 * Math.pow(30, 3.5) * Math.pow(m / 30, 1.435);
 }
 
-/** Mass-radius relation (R_sun): R = M^0.8 below 1 M_sun, M^0.57 above. */
-export function baseRadius(m) { return m < 1 ? Math.pow(m, 0.8) : Math.pow(m, 0.57); }
+/** Mass-radius relation (R_sun), piecewise power laws, continuous at the joins. */
+export function baseRadius(m) {
+  if (m < 0.35) return Math.pow(0.35, 0.8) * Math.pow(m / 0.35, 1.125); // 0.23 R_sun at 0.2 M_sun
+  if (m < 1) return Math.pow(m, 0.8);
+  if (m < 2) return Math.pow(m, 1.06);
+  return 1.41 * Math.pow(m, 0.56);
+}
 
 /** Composition nudges. Homology gives L ~ mu^4; lower Z means lower opacity and a brighter star. */
 export function luminosityFactor(comp) {
   return Math.pow(comp.mu / SOLAR_MIX.mu, 4) * Math.pow(comp.Z / Z_SUN, -0.15);
 }
 
-/** Base main-sequence lifetime (Gyr): 10 (M)^-2.5 up to 10 M_sun, then 10^-1.5 (M/10)^-1.1. */
+/** Base main-sequence lifetime (Gyr), piecewise power laws continuous at 1, 5 and 40 M_sun. */
 export function baseLifetime(m) {
-  if (m <= 10) return T_MS_SUN * Math.pow(m, -2.5);
-  return T_MS_SUN * Math.pow(10, -2.5) * Math.pow(m / 10, -1.1);
+  if (m < 1) return T_MS_SUN * Math.pow(m, -2.5);
+  if (m < 5) return T_MS_SUN * Math.pow(m, -2.86);
+  if (m < 40) return 0.1 * Math.pow(m / 5, -1.5);
+  return 0.0044 * Math.pow(m / 40, -0.45);
 }
+
+/** Lifetime as shown to students. Below 0.35 M_sun: about 1 trillion years or more (Laughlin et al. 1997). */
+export function lifetimeLabel(ms) {
+  return ms.mass < VERY_LONG_MAX ? "about 1 trillion years or more" : formatYears(ms.lifetime);
+}
+
+/** Core helium burning lasts t_He = min(0.15 t_MS, 110 Myr). */
+export function heliumBurningTime(tMS) { return Math.min(0.15 * tMS, 0.11); }
 
 /** Core temperature (K): fit Tc = 15.7 MK M^0.5 (M<1), M^0.3 (M>=1), scaled by mu (homology) and a small Z nudge. */
 export function coreTemperature(m, comp = SOLAR_MIX) {
@@ -104,8 +124,12 @@ export function coreTemperature(m, comp = SOLAR_MIX) {
   return TC_SUN * fit * (comp.mu / SOLAR_MIX.mu) * Math.pow(comp.Z / Z_SUN, -0.03);
 }
 
-/** Core pressure (Pa) from homology: Pc ~ G M^2 / R^4, calibrated to 2.5e16 Pa for the Sun. */
-export function corePressure(m, r = baseRadius(m)) { return PC_SUN * (m * m) / Math.pow(r, 4); }
+/**
+ * Core pressure (Pa) from homology: Pc ~ G M^2 / R^4, calibrated to 2.5e16 Pa for the Sun.
+ * Fully convective stars (M < 0.35) use a lower coefficient, 8.7e14 Pa (about 1.2e16 Pa at 0.2 M_sun).
+ */
+export const PC_LOW = 8.7e14;
+export function corePressure(m, r = baseRadius(m)) { return (m < FULLY_CONVECTIVE_MAX ? PC_LOW : PC_SUN) * (m * m) / Math.pow(r, 4); }
 
 /** Rough order-of-magnitude scale: Pc ~ G M^2 / R^4 in SI (no calibration), for the docs comparison. */
 export function rawPressureScale(m, r = baseRadius(m)) {
@@ -116,7 +140,8 @@ export function effectiveTemperature(L, R) { return T_SUN * Math.pow(L / (R * R)
 
 /**
  * Fraction of core energy from the CNO cycle on the main sequence.
- * ratio CNO/pp = (Z/Z_sun) (X_sun/X) (Tc / 17 MK)^52 (effective calibration).
+ * ratio CNO/pp = (Z/Z_sun) (X_sun/X) (Tc / 17 MK)^52.
+ * The 52 is a calibration, not a rate law (Sun's CNO share ~1%, Borexino 2020).
  */
 export function cnoFraction(tc, comp = SOLAR_MIX) {
   const ratio = (comp.Z / Z_SUN) * (SOLAR_MIX.X / comp.X) * Math.pow(tc / CNO_CROSSOVER_T, CNO_STEEPNESS);
@@ -145,7 +170,8 @@ export function mainSequence(m, z = Z_SUN, y = null) {
   const Tc = coreTemperature(M, comp);
   const Pc = corePressure(M, R);
   // Lifetime ~ fuel / burn rate: hydrogen supply X M, burn rate L.
-  const lifetime = baseLifetime(M) * (comp.X / SOLAR_MIX.X) / lf;
+  let lifetime = baseLifetime(M) * (comp.X / SOLAR_MIX.X) / lf;
+  if (M < VERY_LONG_MAX) lifetime = Math.max(lifetime, VERY_LONG_GYR);
   const teff = effectiveTemperature(L, R);
   return {
     mass: M, comp, L, R, teff, spectral: spectralClass(teff), Tc, Pc, lifetime,
@@ -156,11 +182,12 @@ export function mainSequence(m, z = Z_SUN, y = null) {
 // ---------- fate ----------
 
 export function fate(m, z = Z_SUN) {
-  if (m < LOW_MASS_GIANT_MIN) return { id: "white-dwarf", path: "low", remnant: "white-dwarf", nebula: false, supernova: false, wdKind: "helium" };
-  if (m < SUPERNOVA_MIN) return { id: "white-dwarf", path: "low", remnant: "white-dwarf", nebula: true, supernova: false, wdKind: m < 6 ? "carbon-oxygen" : "oxygen-neon" };
+  const hypothetical = m < HYPOTHETICAL_MAX;
+  if (m < LOW_MASS_GIANT_MIN) return { id: "white-dwarf", path: "low", remnant: "white-dwarf", nebula: false, supernova: false, wdKind: "helium", hypothetical };
+  if (m < SUPERNOVA_MIN) return { id: "white-dwarf", path: "low", remnant: "white-dwarf", nebula: true, supernova: false, wdKind: m < ONE_WD_MIN ? "carbon-oxygen" : "oxygen-neon", hypothetical };
   if (m < BLACK_HOLE_MIN) return { id: "neutron-star", path: "high", remnant: "neutron-star", nebula: false, supernova: true };
   const direct = m >= DIRECT_COLLAPSE_MIN && z <= DIRECT_COLLAPSE_Z;
-  return { id: "black-hole", path: "high", remnant: "black-hole", nebula: false, supernova: !direct, direct };
+  return { id: "black-hole", path: "high", remnant: "black-hole", nebula: false, supernova: !direct, direct, fallback: !direct };
 }
 
 /** White dwarf mass from the initial-final mass relation (Kalirai et al. 2008), capped below Chandrasekhar. */
@@ -178,9 +205,9 @@ export const STAGE_INFO = Object.freeze({
   "agb": { name: "Asymptotic giant", core: "Inert carbon-oxygen core, helium and hydrogen burn in shells. The star swells and sheds mass." },
   "planetary-nebula": { name: "Planetary nebula", core: "The outer layers drift away; the hot core lights them up." },
   "red-supergiant": { name: "Red supergiant", core: "Helium, then carbon, neon, oxygen and silicon burn in nested shells until the core is iron." },
-  "supernova": { name: "Core-collapse supernova", core: "The iron core cannot release energy by fusion. It collapses in under a second and the rebound blows the star apart." },
-  "white-dwarf": { name: "White dwarf", core: "No fusion. An Earth-sized ember held up by electron degeneracy pressure, cooling for billions of years." },
-  "neutron-star": { name: "Neutron star", core: "About 1.4 solar masses packed into a ball about 20 km across, held up by neutron degeneracy." },
+  "supernova": { name: "Core-collapse supernova", core: "The iron core cannot release energy by fusion. It collapses in under a second and the rebound blows the star apart. About 3 billion K in silicon burning, about 10 billion K in the collapsing core, about 100 billion K in the newborn neutron star." },
+  "white-dwarf": { name: "White dwarf", core: "No fusion. An Earth-sized ember held up by electron degeneracy pressure. It starts near 100,000 K and cools for billions of years." },
+  "neutron-star": { name: "Neutron star", core: "About 1.4 solar masses packed into a ball about 24 km across (radius 11 to 13 km), held up by neutron degeneracy." },
   "black-hole": { name: "Black hole", core: "Gravity wins completely. Not even light escapes." }
 });
 
@@ -192,10 +219,10 @@ export function lifeStages(m, z = Z_SUN, y = null) {
   if (ms.mass < LOW_MASS_GIANT_MIN) {
     s.push({ id: "white-dwarf", dur: Infinity });
   } else if (ms.mass < SUPERNOVA_MIN) {
-    s.push({ id: "red-giant", dur: 0.1 * t }, { id: "helium-burning", dur: 0.012 * t }, { id: "agb", dur: 0.002 * t },
+    s.push({ id: "red-giant", dur: 0.1 * t }, { id: "helium-burning", dur: heliumBurningTime(t) }, { id: "agb", dur: 0.002 * t },
       { id: "planetary-nebula", dur: 2e-5 }, { id: "white-dwarf", dur: Infinity });
   } else {
-    s.push({ id: "red-supergiant", dur: 0.1 * t });
+    s.push({ id: "red-supergiant", dur: heliumBurningTime(t) });
     if (f.supernova) s.push({ id: "supernova", dur: 1e-9 });
     s.push({ id: f.remnant, dur: Infinity });
   }
@@ -236,7 +263,7 @@ export function stageState(m, z, y, stageId, frac = 0) {
     case "planetary-nebula": L = 3000 * Math.pow(M, 0.5); teff = 100000; Tc = 2e8; fusion = "none"; where = "none"; break;
     case "red-supergiant": L = ms.L; teff = 3600; Tc = 2e8; fusion = "helium"; where = "core"; break;
     case "supernova": L = 1e9; teff = ms.teff; Tc = 1e10; fusion = "none"; where = "none"; onHR = false; break;
-    case "white-dwarf": L = 0.01; teff = 20000; Tc = 1e7; fusion = "none"; where = "none"; break;
+    case "white-dwarf": teff = 100000 * Math.pow(0.1, frac); L = 0.012 * 0.012 * Math.pow(teff / T_SUN, 4); Tc = 1e7; fusion = "none"; where = "none"; break;
     default: L = 0; teff = 0; Tc = 0; fusion = "none"; where = "none"; onHR = false;
   }
   const R = teff > 0 ? Math.sqrt(L) / Math.pow(teff / T_SUN, 2) : 0;

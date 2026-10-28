@@ -154,7 +154,7 @@ export function drawReaction(g, W, H, fusionKind, cnoShare, onload, dpr) {
   if (name) contain(g, tinted(name, null, Math.min(512, H * dpr * 2.2), onload), 0, 0, H * 1.6, H);
   const label = fusionKind === "helium" ? "Triple-alpha: 3 \u2074He \u2192 \u00b9\u00b2C + \u03b3"
     : fusionKind === "none" ? "No fusion"
-    : cnoShare > 0.5 ? "CNO cycle: 4 \u00b9H \u2192 \u2074He (C, N, O as catalysts)" : "Proton-proton chain: 4 \u00b9H \u2192 \u2074He";
+    : cnoShare > 0.5 ? "CNO cycle: 4 \u00b9H \u2192 \u2074He (C, N, O as catalysts)" : "Proton-proton chain (ppI only, the main branch in the Sun): 4 \u00b9H \u2192 \u2074He";
   text(g, label, name ? H * 1.6 + 10 : 0, H / 2, { size: 14, weight: 600, base: "middle" });
 }
 
@@ -234,7 +234,7 @@ export function drawFusion(g, W, H, d, onload, dpr) {
     y += 30;
     const steps = d.cno > 0.5
       ? ["\u00b9\u00b2C + p \u2192 \u00b9\u00b3N + \u03b3", "\u00b9\u00b3N \u2192 \u00b9\u00b3C + e\u207a + \u03bd", "\u00b9\u00b3C + p \u2192 \u00b9\u2074N + \u03b3", "\u00b9\u2074N + p \u2192 \u00b9\u2075O + \u03b3", "\u00b9\u2075O \u2192 \u00b9\u2075N + e\u207a + \u03bd", "\u00b9\u2075N + p \u2192 \u00b9\u00b2C + \u2074He"]
-      : ["1. p + p \u2192 \u00b2H + e\u207a + \u03bd", "2. \u00b2H + p \u2192 \u00b3He + \u03b3", "3. \u00b3He + \u00b3He \u2192 \u2074He + 2p", "Net: 4p \u2192 \u2074He + 2e\u207a + 2\u03bd + energy"];
+      : ["1. p + p \u2192 \u00b2H + e\u207a + \u03bd", "2. \u00b2H + p \u2192 \u00b3He + \u03b3", "3. \u00b3He + \u00b3He \u2192 \u2074He + 2p", "Net: 4p \u2192 \u2074He + 2e\u207a + 2\u03bd + energy", "ppI only, the main branch in the Sun"];
     drawSteps(g, W, H, y, steps, d.cno > 0.5 ? "fusion-cno-cycle" : "fusion-pp-chain", onload, dpr);
   } else if (d.fusion === "helium") {
     if (d.where === "shell") { text(g, "Core: inert carbon and oxygen. Helium and hydrogen burn in shells.", 10, y + 12, { size: 13, weight: 700 }); y += 22; }
@@ -250,7 +250,7 @@ const pct = (f) => (f < 0.001 ? "<0.1" : f > 0.999 ? ">99.9" : (f * 100).toFixed
 function drawSteps(g, W, H, y, steps, art, onload, dpr) {
   const aw = Math.min(W * 0.4, H - y - 4);
   contain(g, tinted(art, null, Math.min(512, aw * dpr), onload), W - aw - 6, y, aw, aw);
-  steps.forEach((s, i) => text(g, s, 10, y + 16 + i * 22, { size: 14, weight: i === steps.length - 1 && /Net|Needs/.test(s) ? 700 : 500 }));
+  steps.forEach((s, i) => text(g, s, 10, y + 16 + i * 22, { size: 14, weight: i === steps.length - 1 && /Net|Needs|ppI/.test(s) ? 700 : 500 }));
 }
 
 /** Zone diagram: radius from center to surface with each zone labeled. */

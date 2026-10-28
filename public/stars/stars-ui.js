@@ -89,7 +89,7 @@ function drawDetail(now, at, ss, color) {
     const f = P.perturbedForces(x);
     const scale = 0.55 + 0.45 * P.clamp((Math.log10(ms.Pc) - 15.5) / 2.5, 0, 1);
     R.drawEquilibrium(g, W, H, { x, gravity: f.gravity, pressure: f.pressure, scale, color });
-    cap = `At the center, gas pressure of about ${sci(ms.Pc)} Pa holds up the weight of the star above it. Squeeze the star and pressure rises faster than gravity (P \u221d R\u207b\u2075 versus R\u207b\u2074), so it springs back. It settles within a few dynamical times: about ${fmtMin(P.dynamicalTimeMinutes(ms.mass, ms.R))}.` +
+    cap = `At the center, gas pressure of about ${sci(ms.Pc)} Pa holds up the weight of the star above it. Squeeze the star and pressure rises faster than gravity (P \u221d R\u207b\u2075 versus R\u207b\u2074), so it springs back. It settles within a few dynamical times (dynamical time about ${fmtMin(P.dynamicalTimeMinutes(ms.mass, ms.R))}).` +
       (at.stage.id === "main-sequence" ? "" : " (Squeeze demo works on the main sequence.)");
   } else if (mode === "fusion") {
     R.drawFusion(g, W, H, { fusion: ss.fusion, where: ss.where, cno: ms.cno, color }, mark, dpr);
@@ -106,9 +106,9 @@ function drawDetail(now, at, ss, color) {
     const msLeft = at.stage.id === "main-sequence" ? 1 - at.frac : 0;
     R.drawHourglass(g, W, H, {
       sand: msLeft, flowing: st.playing && at.stage.id === "main-sequence", color: model.color, index: at.index,
-      title: `Main sequence: ${P.formatYears(ms.lifetime)}`,
-      sub: `About 10 Gyr \u00d7 (M/M\u2609)\u207b\u00b2\u00b7\u2075. Lifetime \u221d fuel / burn rate, and luminosity climbs much faster than mass.${ms.lifetime > P.AGE_UNIVERSE ? " Longer than the universe has existed (13.8 Gyr)." : ""}`,
-      stages: model.stages.map((s) => ({ name: P.STAGE_INFO[s.id].name, dur: Number.isFinite(s.dur) ? P.formatYears(s.dur) : "end" }))
+      title: `Main sequence: ${P.lifetimeLabel(ms)}`,
+      sub: `Lifetime \u221d fuel / burn rate, and luminosity climbs much faster than mass: about 10 Gyr \u00d7 (M/M\u2609)\u207b\u00b2\u00b7\u2075 for Sun-like stars, flattening for the heaviest.${ms.lifetime > P.AGE_UNIVERSE ? " Longer than the universe has existed (13.8 Gyr)." : ""}`,
+      stages: model.stages.map((s, i) => ({ name: P.STAGE_INFO[s.id].name, dur: i === 0 ? P.lifetimeLabel(ms).replace("about 1 trillion years or more", "\u2265 1 trillion yr") : Number.isFinite(s.dur) ? P.formatYears(s.dur) : "end" }))
     });
     cap = "Press play: the hourglass drains faster for heavier stars.";
   } else if (mode === "fate") {
@@ -120,7 +120,7 @@ function drawDetail(now, at, ss, color) {
       { from: P.BLACK_HOLE_MIN, to: 100, label: "black hole" }
     ];
     R.drawFateMap(g, W, H, { bands, ticks: [0.1, 0.5, 1, 8, 20, 100], mass: ms.mass, color: model.color, summary: fateSummary(f, ms) });
-    cap = "Thresholds are approximate and shift with composition, rotation and binary companions.";
+    cap = "Thresholds are approximate and shift with composition, rotation and binary companions. At low metallicity, 25 to 40 M\u2609 makes a black hole by fallback; direct collapse needs about 40 M\u2609 or more.";
   }
   canvases.detail.setAttribute("aria-label", cap);
   $("detailCaption").textContent = cap;
@@ -133,11 +133,12 @@ function zonesFor(kind) {
 }
 
 function fateSummary(f, ms) {
-  if (f.remnant === "white-dwarf" && !f.nebula) return `A ${fmtM(ms.mass)} M\u2609 star never becomes a red giant. Over trillions of years it slowly turns into a helium white dwarf. No such star has finished yet: the universe is only 13.8 Gyr old.`;
-  if (f.remnant === "white-dwarf") return `A ${fmtM(ms.mass)} M\u2609 star swells into a red giant, puffs off a planetary nebula, and leaves a ${f.wdKind.replace("-", "-")} white dwarf of about ${P.whiteDwarfMass(ms.mass).toFixed(2)} M\u2609 (always below the 1.4 M\u2609 Chandrasekhar limit).`;
-  if (f.remnant === "neutron-star") return `A ${fmtM(ms.mass)} M\u2609 star builds an iron core that collapses: a core-collapse supernova, leaving a neutron star of about 1.4 M\u2609, roughly 20 km across.`;
+  const hypo = f.hypothetical ? "Hypothetical: no star this small has died yet. " : "";
+  if (f.remnant === "white-dwarf" && !f.nebula) return `${hypo}A ${fmtM(ms.mass)} M\u2609 star never becomes a red giant. Over about a trillion years or more it slowly turns into a helium white dwarf; the universe is only 13.8 Gyr old.`;
+  if (f.remnant === "white-dwarf") return `${hypo}A ${fmtM(ms.mass)} M\u2609 star swells into a red giant, puffs off a planetary nebula, and leaves a ${f.wdKind} white dwarf of about ${P.whiteDwarfMass(ms.mass).toFixed(2)} M\u2609 (always below the 1.44 M\u2609 Chandrasekhar limit).`;
+  if (f.remnant === "neutron-star") return `A ${fmtM(ms.mass)} M\u2609 star builds an iron core that collapses: a core-collapse supernova, leaving a neutron star of about 1.4 M\u2609, about 24 km across (radius 11 to 13 km).`;
   return f.direct ? `A ${fmtM(ms.mass)} M\u2609 star with so few metals keeps most of its mass and collapses almost directly into a black hole, with a faint or no supernova.`
-    : `A ${fmtM(ms.mass)} M\u2609 star explodes as a core-collapse supernova, but its core is too heavy to stop as a neutron star: it becomes a black hole.`;
+    : `A ${fmtM(ms.mass)} M\u2609 star explodes as a core-collapse supernova, but so much material falls back onto the core that it becomes a black hole.`;
 }
 
 // Supernova: frame index follows the scrubber; changing frames crossfades over 300 ms.
@@ -218,7 +219,7 @@ function syncTime() {
   $("rPc").textContent = at.stage.id === "main-sequence" ? sci(ms.Pc) + " Pa" : "n/a";
   $("rL").textContent = ss.onHR ? fmtL(ss.L) + " L\u2609" : "n/a";
   $("rTeff").textContent = ss.onHR ? Math.round(ss.teff).toLocaleString("en-US") + " K" : "n/a";
-  $("rLife").textContent = P.formatYears(ms.lifetime);
+  $("rLife").textContent = P.lifetimeLabel(ms);
   drawStrip();
   mark();
 }
@@ -279,8 +280,8 @@ $("squeezeBtn").addEventListener("click", () => { st.squeezeT = performance.now(
 
 $("studyBackBtn").addEventListener("click", (e) => {
   e.preventDefault();
-  // Only the board-return keys go back; this page's own mass/z/mode stay here.
-  location.href = "study.html" + returnQuery();
+  forwardStudyQuery(location.search);
+  location.href = "study.html" + location.search;
 });
 
 let capTimer = 0;

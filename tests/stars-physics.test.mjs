@@ -39,12 +39,26 @@ test("luminosity, core temperature and temperature rise with mass; lifetime fall
   }
 });
 
-test("lifetime follows about 10 Gyr (M)^-2.5 in the Sun-like range", () => {
-  for (const m of [0.5, 0.8, 1.5, 3, 8]) {
-    assert.ok(near(S.mainSequence(m).lifetime, 10 * Math.pow(m, -2.5), 0.02), `m=${m}`);
-  }
-  const big = S.mainSequence(40).lifetime * 1000;
-  assert.ok(big > 3 && big < 12, `40 Msun lives ${big} Myr`);
+test("lifetime follows the piecewise power laws", () => {
+  for (const m of [0.5, 0.8]) assert.ok(near(S.mainSequence(m).lifetime, 10 * Math.pow(m, -2.5), 0.02), `m=${m}`);
+  for (const m of [1.5, 3]) assert.ok(near(S.mainSequence(m).lifetime, 10 * Math.pow(m, -2.86), 0.02), `m=${m}`);
+  for (const m of [8, 15, 30]) assert.ok(near(S.mainSequence(m).lifetime, 0.1 * Math.pow(m / 5, -1.5), 0.02), `m=${m}`);
+  assert.ok(near(S.mainSequence(5).lifetime, 0.1, 0.02));
+  assert.ok(near(S.mainSequence(40).lifetime, 0.0044, 0.02));
+  assert.ok(near(S.mainSequence(100).lifetime, 0.0044 * Math.pow(2.5, -0.45), 0.02));
+  for (const m of [0.999, 4.999, 39.99]) assert.ok(near(S.baseLifetime(m), S.baseLifetime(m + 0.002), 0.01), `continuous at ${m}`);
+  assert.equal(S.lifetimeLabel(S.mainSequence(0.2)), "about 1 trillion years or more");
+  assert.ok(S.mainSequence(0.2).lifetime >= 1000);
+  assert.equal(S.lifetimeLabel(S.mainSequence(1)), "10 Gyr");
+});
+
+test("O stars land near the Mamajek table; low-mass radius and pressure match the corrections", () => {
+  for (const m of [38, 43]) { const lg = Math.log10(S.mainSequence(m).L); assert.ok(lg > 5.42 && lg < 5.56, `log L ${lg} at ${m}`); }
+  assert.ok(Math.abs(S.mainSequence(43).teff - 41400) < 1000, `Teff ${S.mainSequence(43).teff}`);
+  assert.ok(near(S.mainSequence(0.2).R, 0.23, 0.02));
+  assert.ok(near(S.mainSequence(0.2).Pc, 1.2e16, 0.05), `Pc ${S.mainSequence(0.2).Pc}`);
+  for (const m of [0.35, 1, 2]) assert.ok(near(S.baseRadius(m - 1e-6), S.baseRadius(m), 0.01), `R continuous at ${m}`);
+  assert.ok(near(S.baseRadius(5), 1.41 * Math.pow(5, 0.56), 1e-9));
 });
 
 test("lower metallicity makes a star brighter and shorter-lived; more helium does too", () => {
@@ -92,7 +106,14 @@ test("fate thresholds", () => {
   assert.equal(S.fate(40).supernova, true);
   assert.equal(S.fate(40, 0.0005).direct, true);
   assert.equal(S.fate(40, 0.0005).supernova, false);
+  assert.equal(S.fate(30, 0.0005).direct, false);
+  assert.equal(S.fate(30, 0.0005).fallback, true);
   assert.equal(S.fate(22, 0.0005).supernova, true);
+  assert.equal(S.fate(0.8).hypothetical, true);
+  assert.equal(S.fate(1).hypothetical, false);
+  assert.equal(S.fate(6.5).wdKind, "carbon-oxygen");
+  assert.equal(S.fate(7.5).wdKind, "oxygen-neon");
+  assert.equal(S.CHANDRASEKHAR, 1.44);
 });
 
 test("white dwarfs stay below the Chandrasekhar mass", () => {
@@ -107,6 +128,11 @@ test("life stages: order, start times and the scrubber", () => {
   assert.equal(ids(15), "main-sequence,red-supergiant,supernova,neutron-star");
   assert.equal(ids(40), "main-sequence,red-supergiant,supernova,black-hole");
   assert.equal(ids(40, 0.0005), "main-sequence,red-supergiant,black-hole");
+  assert.equal(ids(30, 0.0005), "main-sequence,red-supergiant,supernova,black-hole");
+  assert.ok(near(S.lifeStages(1)[2].dur, 0.11, 1e-9));
+  assert.ok(near(S.lifeStages(15)[1].dur, 0.15 * S.mainSequence(15).lifetime, 1e-9));
+  const wd0 = S.stageState(1, S.Z_SUN, null, "white-dwarf", 0), wd1 = S.stageState(1, S.Z_SUN, null, "white-dwarf", 1);
+  assert.equal(wd0.teff, 100000); assert.ok(wd1.teff < wd0.teff && wd1.L < wd0.L);
   const st = S.lifeStages(1);
   assert.equal(S.stageAt(st, 0).stage.id, "main-sequence");
   assert.equal(S.stageAt(st, 1).stage.id, "white-dwarf");
@@ -131,7 +157,7 @@ test("a squeezed star pushes back: pressure beats gravity when compressed", () =
   assert.equal(eq.pressure, eq.gravity);
   assert.ok(Math.abs(S.perturbationRadius(20)) < Math.abs(S.perturbationRadius(0)) / 100);
   const td = S.dynamicalTimeMinutes(1, 1);
-  assert.ok(td > 20 && td < 35, `solar dynamical time ${td} min`);
+  assert.ok(td > 24 && td < 30, `solar dynamical time ${td} min`);
 });
 
 test("tint runs red to blue with temperature", () => {
