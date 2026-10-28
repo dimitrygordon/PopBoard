@@ -276,7 +276,7 @@ function drawDaylightMap(ctx, W, H, dpr, cache, T, st, snap) {
   // 12 h contour
   const x = (d) => l + (d + 0.5) / 365 * w, y = (lat) => t + (90 - lat) / 180 * h;
   ctx.strokeStyle = T.grid; ctx.lineWidth = 1;
-  for (const lat of [-66.5, -23.5, 0, 23.5, 66.5]) { ctx.beginPath(); ctx.moveTo(l, y(lat)); ctx.lineTo(l + w, y(lat)); ctx.stroke(); }
+  for (const lat of [-66.6, -23.4, 0, 23.4, 66.6]) { ctx.beginPath(); ctx.moveTo(l, y(lat)); ctx.lineTo(l + w, y(lat)); ctx.stroke(); }
   // subsolar track
   ctx.strokeStyle = T.gold; ctx.lineWidth = 1.6; ctx.beginPath();
   for (let d = 0; d < 365; d++) { const yy = y(P.declination(P.sunAt(d + 0.5).lon, st.tilt)); d ? ctx.lineTo(x(d), yy) : ctx.moveTo(x(d), yy); } ctx.stroke();
@@ -284,11 +284,11 @@ function drawDaylightMap(ctx, W, H, dpr, cache, T, st, snap) {
   const cx = x(st.date), cy = y(st.lat);
   ctx.strokeStyle = T.ink; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(cx, cy, 7, 0, 7); ctx.stroke();
   ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(cx, cy, 7, 0, 7); ctx.stroke();
-  for (const lat of [90, 66.5, 23.5, 0, -23.5, -66.5, -90]) text(ctx, lat === 0 ? "0\u00b0" : `${Math.abs(lat)}\u00b0${lat > 0 ? "N" : "S"}`, l - 4, y(lat), T.dim, 10, "right");
+  for (const lat of [90, 66.6, 23.4, 0, -23.4, -66.6, -90]) text(ctx, lat === 0 ? "0\u00b0" : `${Math.abs(lat)}\u00b0${lat > 0 ? "N" : "S"}`, l - 4, y(lat), T.dim, 10, "right");
   const months = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
   for (let m = 0; m < 12; m++) text(ctx, W > 500 ? ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][m] : months[m], x(P.dayOfYear(m, 15)), t + h + 12, T.dim, 10, "center");
   text(ctx, "Daylight hours by latitude and date: black 0 h, white 24 h. Gold: where the Sun is overhead at noon.", l, 16, T.light, 11);
-  text(ctx, "Thin lines: equator, 23.5\u00b0 and 66.5\u00b0 for reference.", l, H - 12, T.dim, 10);
+  text(ctx, "Thin lines: equator, 23.4\u00b0 and 66.6\u00b0 (real tropics and polar circles) for reference.", l, H - 12, T.dim, 10);
 }
 
 function drawNodes(ctx, W, H, art, T, st, snap) {
@@ -433,9 +433,10 @@ function drawEclipseStage(ctx, W, H, art, T, st, snap) {
 function lab(ctx, s, x, y, T, color, align = "center", weight = 500) { text(ctx, s, x, y, color || T.ink, 12, align, weight); }
 
 // ---------- sky view (horizon panel, like the mockup) ----------
-export function skyProjector(W, H, lat) {
+export function skyProjector(W, H, lat, dec = null) {
   const horizonY = H * 0.74, top = 26;
-  const center = lat >= 0 ? 180 : 0; // face the equator
+  // face the noon Sun: south when it passes south of the zenith, north when it passes north (tropics in summer, southern hemisphere)
+  const center = dec === null ? (lat >= 0 ? 180 : 0) : (dec > lat ? 0 : 180);
   return {
     horizonY, top, center,
     x: (az) => { let d = P.norm360(az - center + 180) - 180; return W / 2 + d / 180 * (W / 2 - 10); },
@@ -443,7 +444,7 @@ export function skyProjector(W, H, lat) {
   };
 }
 function drawSky(ctx, W, H, art, T, st, snap) {
-  const pj = skyProjector(W, H, st.lat);
+  const pj = skyProjector(W, H, st.lat, snap.dec);
   const sunAlt = snap.sunSky.alt;
   const f = Math.max(0, Math.min(1, (sunAlt + 8) / 10));
   ctx.fillStyle = mix(T.night, T.sky, f); ctx.fillRect(0, 0, W, H);
@@ -602,18 +603,19 @@ function drawEclipseView(ctx, W, H, art, T, st, snap) {
   const solar = snap.theta < 90 || snap.theta > 270, g = snap.ecl.g;
   const cx = W / 2, cy = H / 2 + 8;
   if (solar) {
-    frame(ctx, W, H, T, "View from the best spot on Earth");
+    frame(ctx, W, H, T, "Sun and Moon seen from Earth (sizes from Earth's center)");
     const so = snap.ecl.solar;
-    const sunA = Math.asin(P.REAL.sunRadius / g.earthSunDistance);
+    const sz = P.apparentSizes(g);
+    const sunA = sz.sunArcmin / 120 * DEG;
     const dObs = g.earthMoonDistance - P.REAL.earthRadius;
-    const moonA = Math.asin(P.REAL.moonRadius / dObs);
+    const moonA = sunA * sz.ratio; // same ratio as the arcminute readouts
     const s = Math.max(0, so.earthOffsetFromAxisKm - P.REAL.earthRadius);
     const sep = s / dObs;
     const px = Math.min(H, W) * 0.28 / sunA;
     body(ctx, art.sunBare || art.sun, cx, cy, sunA * px);
     const dx = Math.min(W, sep * px);
     if (so.deltaFromAxisDeg < 90) { ctx.fillStyle = "#11141c"; ctx.beginPath(); ctx.arc(cx + dx * 0.0 + dx, cy + 0, moonA * px, 0, 7); ctx.fill(); }
-    text(ctx, `Moon looks ${P.fmtNum(moonA / sunA * 100, 0)}% as wide as the Sun`, 12, H - 10, T.dim, 10);
+    text(ctx, P.sizeComparison(sz.ratio), 12, H - 10, T.dim, 10);
   } else {
     frame(ctx, W, H, T, "Earth's shadow at the Moon's distance");
     const lu = snap.ecl.lunar, sc = Math.min(H, W) * 0.36 / lu.penumbraRadiusAtMoonKm;

@@ -78,7 +78,7 @@ function buildControls() {
   if (["seasons", "sunlight", "daylight"].includes(st.mode)) {
     chip("Mar 20", () => setV({ date: P.dayOfYear(2, 20) })); chip("Jun 21", () => setV({ date: P.dayOfYear(5, 21) }));
     chip("Sep 22", () => setV({ date: P.dayOfYear(8, 22) })); chip("Dec 21", () => setV({ date: P.dayOfYear(11, 21) }));
-    chip("Tilt 0\u00b0", () => setV({ tilt: 0 }), st.tilt === 0); chip("Tilt 23.5\u00b0", () => setV({ tilt: 23.5 }), st.tilt === 23.5); chip("Tilt 90\u00b0", () => setV({ tilt: 90 }), st.tilt === 90);
+    chip("Tilt 0\u00b0", () => setV({ tilt: 0 }), st.tilt === 0); chip("Tilt 23.4\u00b0", () => setV({ tilt: 23.4 }), st.tilt === 23.4); chip("Tilt 90\u00b0", () => setV({ tilt: 90 }), st.tilt === 90);
   } else if (st.mode === "eclipses") {
     for (const e of P.ECLIPSES_2026) chip(e.label, () => jumpTo(P.nearestSyzygy(e.t, e.kind === "solar" ? 0 : 180)));
     chip("Next new Moon", () => jumpTo(nextSyzygy(0))); chip("Next full Moon", () => jumpTo(nextSyzygy(180)));

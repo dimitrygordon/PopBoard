@@ -268,6 +268,24 @@ export function sunNodeAngle(t) {
   const d = norm360(sunAt(t).lon - moonAt(t).node) % 180;
   return d > 90 ? 180 - d : d;
 }
+/** Apparent diameters (arcmin) of Sun and Moon seen from Earth's center, and the Moon/Sun ratio built from the shown (rounded) values so every percent agrees with the arcminute readouts. */
+export function apparentSizes(g) {
+  const sunArcmin = 2 * Math.asin(REAL.sunRadius / g.earthSunDistance) / DEG * 60;
+  const moonArcmin = 2 * Math.asin(REAL.moonRadius / g.earthMoonDistance) / DEG * 60;
+  const ratio = Math.round(moonArcmin * 10) / Math.round(sunArcmin * 10);
+  return { sunArcmin, moonArcmin, ratio };
+}
+/** Plain sentence comparing the Moon's and Sun's widths, from apparentSizes().ratio. */
+export function sizeComparison(ratio) {
+  const pct = Math.round(Math.abs(ratio - 1) * 100);
+  if (pct === 0) return "The Moon looks about as wide as the Sun";
+  return ratio > 1 ? `The Moon looks about ${pct}% wider than the Sun, so it can cover the Sun completely` : `The Moon looks about ${pct}% narrower than the Sun, so it leaves a ring`;
+}
+/** Where the noon Sun stands for an observer: "overhead", "due south" or "due north". */
+export function noonDirection(latDeg, decDeg) {
+  if (Math.abs(latDeg - decDeg) < 0.05) return "overhead";
+  return decDeg < latDeg ? "due south" : "due north";
+}
 /** Ecliptic limits from the cone geometry: Sun-node angle inside which an eclipse can happen at syzygy. */
 export function eclipseLimits(inclinationDeg = REAL.inclinationDeg, dEM = REAL.earthMoonMean, dES = REAL.au) {
   const tp = (REAL.sunRadius + REAL.moonRadius) / dES;         // Moon's penumbra flare
@@ -337,7 +355,7 @@ export function perihelionDayOfYear(year) {
 
 // ---------- sliders, modes, deep links ----------
 export const SLIDERS = {
-  tilt: { min: 0, max: 90, step: 0.5, value: 23.5, label: "Axial tilt" },
+  tilt: { min: 0, max: 90, step: 0.1, value: 23.4, label: "Axial tilt" },
   date: { min: 0, max: 364, step: 1, value: 171, label: "Date" },
   lat: { min: -90, max: 90, step: 1, value: 42, label: "Latitude" },
   hour: { min: 0, max: 23.75, step: 0.25, value: 12, label: "Local solar time" },
@@ -447,16 +465,16 @@ export function readouts(mode, st, snap = snapshot(st)) {
     add("Shortest day this year", fmtHours(mn), mn, { zeroOk: true });
   } else if (mode === "eclipses") {
     const g = s.ecl.g, so = s.ecl.solar, lu = s.ecl.lunar;
-    const sunAng = 2 * Math.asin(REAL.sunRadius / g.earthSunDistance) / DEG * 60;
-    const moonAng = 2 * Math.asin(REAL.moonRadius / g.earthMoonDistance) / DEG * 60;
+    const sz = apparentSizes(g), sunAng = sz.sunArcmin, moonAng = sz.moonArcmin;
     add("Moon phase", `${phaseName(s.theta)}, ${fmtNum(s.theta / 360 * SYNODIC_DAYS, 1)} days old`, null);
     add("Result", s.theta < 90 || s.theta > 270 ? SOLAR_LABELS[so.type] : LUNAR_LABELS[lu.type], null);
     add("Moon above or below the Sun's path", `${fmtNum(Math.abs(s.moon.lat), 2)}\u00b0 ${s.moon.lat >= 0 ? "north" : "south"}`, s.moon.lat, { zeroOk: true });
     add("Sun to nearest node", `${fmtNum(sunNodeAngle(s.t), 1)}\u00b0`, sunNodeAngle(s.t), { zeroOk: true });
     add("Earth to Moon", fmtKm(g.earthMoonDistance), g.earthMoonDistance);
     add("Sun / Moon size in the sky", `${fmtNum(sunAng, 1)}\u2032 / ${fmtNum(moonAng, 1)}\u2032`, moonAng / sunAng);
+    add("Moon compared with the Sun", sizeComparison(sz.ratio), null);
     const ur = so.umbraRadiusAtEarthKm;
-    add(ur >= 0 ? "Moon's umbra at Earth, width" : "Moon's antumbra at Earth, width", fmtKm(2 * Math.abs(ur)), ur, { zeroOk: true, noSweep: Math.abs(ur) < 60 }); // near the cone tip the width really does shrink to 0
+    add(ur >= 0 ? "Moon's umbra, width square to the shadow axis" : "Moon's antumbra, width square to the shadow axis", fmtKm(2 * Math.abs(ur)), ur, { zeroOk: true, noSweep: Math.abs(ur) < 60 }); // near the cone tip the width really does shrink to 0
     add("Moon's penumbra at Earth, width", fmtKm(2 * so.penumbraRadiusAtEarthKm), so.penumbraRadiusAtEarthKm);
     add("Earth's umbra at the Moon, width", fmtKm(2 * lu.umbraRadiusAtMoonKm), lu.umbraRadiusAtMoonKm);
   } else if (mode === "nodes") {
@@ -464,7 +482,7 @@ export function readouts(mode, st, snap = snapshot(st)) {
     add("Moon orbit tilt", `${fmtNum(st.incl, 2)}\u00b0`, st.incl, { zeroOk: true });
     add("Sun to nearest node", `${fmtNum(sunNodeAngle(s.t), 1)}\u00b0`, sunNodeAngle(s.t), { zeroOk: true });
     add("Solar eclipse possible within", lim.solar >= 90 ? "every new Moon" : `${fmtNum(lim.solar, 1)}\u00b0 of a node`, lim.solar);
-    add("Lunar (umbral) eclipse within", lim.lunarUmbral >= 90 ? "every full Moon" : `${fmtNum(lim.lunarUmbral, 1)}\u00b0 of a node`, lim.lunarUmbral);
+    add("Umbral lunar eclipse within", lim.lunarUmbral >= 90 ? "every full Moon" : `${fmtNum(lim.lunarUmbral, 1)}\u00b0 of a node`, lim.lunarUmbral);
     add("Moon above or below the Sun's path", `${fmtNum(Math.abs(s.moon.lat), 2)}\u00b0 ${s.moon.lat >= 0 ? "north" : "south"}`, s.moon.lat, { zeroOk: true });
     add("Nodes circle the sky every", `${NODE_PERIOD_YEARS} years (westward)`, null);
     add("Eclipse seasons repeat every", `about ${fmtNum(ECLIPSE_YEAR_DAYS / 2, 1)} days`, null);
@@ -493,10 +511,11 @@ export function readouts(mode, st, snap = snapshot(st)) {
     add("Date and solar time", `${date}, ${fmtClock(st.hour)}`, null);
     add("Sun height / direction", `${fmtNum(s.sunSky.alt, 1)}\u00b0 / ${Math.round(s.sunSky.az)}\u00b0 ${compass(s.sunSky.az)}`, s.sunSky.alt, { zeroOk: true });
     add("Noon Sun height", `${fmtNum(noon, 1)}\u00b0`, noon, { zeroOk: true });
+    add("Noon Sun direction", noonDirection(st.lat, s.dec), null);
     add("Sunrise / sunset", rs.kind === "normal" ? `${fmtClock(rs.rise)} / ${fmtClock(rs.set)}` : rs.kind, null);
     add("Moon height / direction", `${fmtNum(s.moonSky.alt, 1)}\u00b0 / ${Math.round(s.moonSky.az)}\u00b0 ${compass(s.moonSky.az)}`, s.moonSky.alt, { zeroOk: true });
     add("Moon phase", `${phaseName(s.theta)}, ${Math.round(illuminatedFraction(s.theta) * 100)}% lit`, illuminatedFraction(s.theta), { zeroOk: true });
-    add("Pole star height", st.lat >= 0 ? `${fmtNum(st.lat, 0)}\u00b0 (equals your latitude)` : "below the horizon (south of the equator)", st.lat, { zeroOk: true });
+    add("Pole star height", st.lat >= 0 ? `${fmtNum(st.lat, 0)}\u00b0 (almost exactly your latitude)` : "below the horizon (south of the equator)", st.lat, { zeroOk: true });
   }
   return rows;
 }
@@ -505,9 +524,9 @@ export const CAPTIONS = {
   seasons: "Seasons come from the tilt of Earth's axis, not from distance. The axis keeps pointing the same way in space, so in June the north half leans toward the Sun and in December the south half does. Earth is actually closest to the Sun in early January. Set the tilt to 0 and the seasons vanish; set it near 90 and the poles take turns facing the Sun.",
   sunlight: "When the Sun is low, the same beam of sunlight is spread over more ground, so each square meter gets less energy. Long summer days add to this. Together they make summer warm and winter cold.",
   daylight: "On the equinoxes daylight is close to 12 hours everywhere (a few minutes more, because the air bends sunlight and the Sun is a disk, not a point), and it stays near 12 hours all year at the equator. Toward the poles the days stretch in summer and shrink in winter, until the Sun never sets (midnight Sun) or never rises (polar night) inside the polar circles.",
-  eclipses: "A solar eclipse happens when the Moon's shadow falls on Earth at new Moon. Inside the dark umbra the Sun is fully hidden; in the lighter penumbra it is partly hidden. When the umbra ends before reaching Earth, the Moon looks smaller than the Sun and leaves a ring: an annular eclipse. A lunar eclipse happens when the full Moon moves into Earth's shadow. Shadow drawing: sizes and widths are true, distances are squeezed.",
-  nodes: "The Moon's orbit is tilted about 5.1\u00b0 to Earth's orbit, so most new and full Moons pass above or below the shadow. Eclipses can only happen near the two nodes, where the orbits cross. The Sun lines up with a node about every 173 days, giving two eclipse seasons a year. Set the tilt to 0 and there would be an eclipse every new and full Moon. Tilt drawn 3 times larger.",
+  eclipses: "A solar eclipse happens when the Moon's shadow falls on Earth at new Moon. Inside the dark umbra the Sun is fully hidden; in the lighter penumbra it is partly hidden. When the umbra ends before reaching Earth, the Moon looks smaller than the Sun and leaves a ring: an annular eclipse. A lunar eclipse happens when the full Moon moves into Earth's shadow. Shadow drawing: sizes and widths are true, distances are squeezed. The shadow widths shown are measured square to the shadow axis; where the shadow meets the curved ground at a slant the track is wider. On Aug 12 2026 the Moon looks about 4% wider than the Sun, so it can cover the Sun completely, and the path of totality on the ground is up to about 290 km wide.",
+  nodes: "The Moon's orbit is tilted about 5.1\u00b0 to Earth's orbit, so most new and full Moons pass above or below the shadow. Eclipses can only happen near the two nodes, where the orbits cross. A solar eclipse can happen only if new Moon falls within about 17\u00b0 of a node. An umbral lunar eclipse needs full Moon within about 11\u00b0. The Sun lines up with a node about every 173 days, giving two eclipse seasons a year. Set the tilt to 0 and there would be an eclipse every new and full Moon. Tilt drawn 3 times larger.",
   precession: "Earth's axis wobbles like a spinning top, tracing a circle in the sky about every 25,800 years. Today it points close to Polaris. About 4,800 years ago Thuban was the pole star, and in about 12,000 years Vega will be near the pole. The tilt stays about the same, and the seasons stay in the same months; what changes is the pole star and the time of year when Earth is closest to the Sun.",
   sandbox: "Free play: set any tilt, date, time, latitude, Moon tilt and year, then press Play to run the model forward at the speed you pick. The orbit view, the sky view and every readout use the same model as the other modes.",
-  sky: "From the ground, the Sun rises in the east, peaks due south at noon (north of the equator) and sets in the west. In summer its path is higher and longer, in winter lower and shorter. The pole star sits at a height equal to your latitude."
+  sky: "From the ground, the Sun rises in the east and sets in the west. North of the Tropic of Cancer, the noon Sun is always due south. Between the equator and the Tropic, it can be overhead or even in the north in summer. In summer its path is higher and longer, in winter lower and shorter. The pole star's height is almost exactly your latitude."
 };

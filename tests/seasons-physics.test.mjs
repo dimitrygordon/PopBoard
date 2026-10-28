@@ -166,3 +166,23 @@ test("no em-dashes in the new files", () => {
     assert.ok(!pub(f).includes("\u2014"), f);
   assert.ok(!readFileSync(new URL("../docs/seasons-eclipses-science.md", import.meta.url), "utf8").includes("\u2014"));
 });
+
+test("science fixes: size percent agrees with arcminute readouts on Aug 12 2026", () => {
+  const e = P.ECLIPSES_2026.find((x) => x.id === "aug12"), d = Math.floor(e.t);
+  const rows = P.readouts("eclipses", { ...defaults(), date: d, hour: (e.t - d) * 24 });
+  const m = rows.find((r) => r.label === "Sun / Moon size in the sky").text.match(/([\d.]+)\u2032 \/ ([\d.]+)\u2032/);
+  const pct = Math.round((Number(m[2]) / Number(m[1]) - 1) * 100);
+  assert.equal(pct, 3);
+  assert.match(rows.find((r) => r.label === "Moon compared with the Sun").text, new RegExp(`about ${pct}% wider`));
+  assert.ok(rows.some((r) => /square to the shadow axis/.test(r.label)));
+});
+test("science fixes: noon Sun direction in the tropics, day length at 42N on the equinox", () => {
+  assert.equal(P.noonDirection(42, 23.4), "due south");
+  assert.equal(P.noonDirection(10, 23.4), "due north");
+  assert.equal(P.noonDirection(23.4, 23.4), "overhead");
+  assert.equal(P.noonDirection(-30, -23.4), "due north");
+  assert.equal(P.fmtHours(P.dayLength(42, 0)), "12 h 09 min");
+  const lim = P.eclipseLimits();
+  assert.equal(Math.round(lim.solar), 17); assert.equal(Math.round(lim.lunarUmbral), 11);
+  assert.equal(P.SLIDERS.tilt.value, 23.4);
+});
