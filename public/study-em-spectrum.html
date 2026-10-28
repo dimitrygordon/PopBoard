@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#20232e">
+<title>Electromagnetic Spectrum Explorer // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<link rel="stylesheet" href="em-spectrum/emspec-theme.css">
+<link rel="stylesheet" href="astro-study.css?v=20261021k">
+<script src="astro-study.js?v=20261021k"></script>
+</head>
+<body>
+<h1 class="sr-only">Electromagnetic Spectrum Explorer</h1>
+<p class="sr-only">Slide through the spectrum from radio to gamma rays. See the wavelength, frequency and photon energy, which bands get through the atmosphere, how telescopes catch each band, and how the same objects look in each band.</p>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title">Seeing the Invisible: the Electromagnetic Spectrum</p>
+</header>
+
+<section class="bandbar" aria-label="Bands">
+  <div id="bandButtons" class="band-buttons" role="group" aria-label="Pick a band"></div>
+  <canvas id="specCanvas" class="spec" aria-label="Spectrum bar. Tap or drag to pick a wavelength." role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="1000"></canvas>
+</section>
+
+<main id="stage" class="stage">
+  <section class="mode" data-mode="wave" aria-label="Wavelength and frequency" hidden>
+    <div class="paper canvas-box"><canvas id="waveCanvas"></canvas></div>
+    <div class="controls paper">
+      <label class="slider"><span>Wavelength &lambda;</span><input id="lambdaSlider" type="range" min="0" max="1000" step="1" aria-label="Wavelength, log scale"><output id="lambdaOut"></output></label>
+      <label class="slider"><span>Frequency f</span><input id="freqSlider" type="range" min="0" max="1000" step="1" aria-label="Frequency, log scale"><output id="freqOut"></output></label>
+      <p class="formula" id="waveFormula" aria-live="polite"></p>
+      <p class="formula" id="waveEnergy"></p>
+      <p class="caption" id="waveScale"></p>
+    </div>
+  </section>
+
+  <section class="mode" data-mode="energy" aria-label="Photon energy" hidden>
+    <div class="paper canvas-box"><canvas id="energyCanvas"></canvas></div>
+    <div class="controls paper">
+      <label class="slider"><span>Photon A &lambda;</span><input id="lambdaSliderA" type="range" min="0" max="1000" step="1" aria-label="Photon A wavelength, log scale"><output id="aOut"></output></label>
+      <label class="slider"><span>Photon B &lambda;</span><input id="lambdaSliderB" type="range" min="0" max="1000" step="1" aria-label="Photon B wavelength, log scale"><output id="bOut"></output></label>
+      <p class="formula" id="energyRatio" aria-live="polite"></p>
+      <p class="caption" id="energyNote"></p>
+    </div>
+  </section>
+
+  <section class="mode" data-mode="atmosphere" aria-label="Atmospheric absorption" hidden>
+    <div class="atmo-grid">
+      <div class="paper canvas-box atmo-art"><canvas id="atmoCanvas"></canvas></div>
+      <div class="paper canvas-box"><canvas id="opacityCanvas"></canvas></div>
+    </div>
+    <div class="controls paper">
+      <p class="formula" id="atmoReadout" aria-live="polite"></p>
+      <p class="caption" id="atmoNote"></p>
+    </div>
+  </section>
+
+  <section class="mode" data-mode="telescopes" aria-label="Telescopes" hidden>
+    <div id="scopeCards" class="scope-cards paper" role="group" aria-label="Telescopes by band"></div>
+    <div class="scope-detail">
+      <div class="paper canvas-box"><canvas id="opticsCanvas"></canvas></div>
+      <div class="controls paper">
+        <p class="formula" id="scopeTitle" aria-live="polite"></p>
+        <p class="caption" id="scopeHow"></p>
+        <p class="formula" id="scopeRes"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mode" data-mode="sky" aria-label="Band views of objects" hidden>
+    <div id="objectButtons" class="object-buttons" role="group" aria-label="Pick an object"></div>
+    <div class="sky-box"><canvas id="skyCanvas"></canvas><p id="skyLabel" class="sky-label"></p></div>
+    <div class="controls paper">
+      <p class="formula" id="skyTitle" aria-live="polite"></p>
+      <p class="caption" id="skyCaption"></p>
+      <figure class="seen-by"><img id="skyScope" alt="" width="120" height="120"><figcaption id="skyScopeCap"></figcaption></figure>
+    </div>
+  </section>
+</main>
+
+<nav id="toolbar" class="toolbar" aria-label="Activities">
+  <button type="button" class="tool" data-show="wave" aria-pressed="false">Wave</button>
+  <button type="button" class="tool" data-show="energy" aria-pressed="false">Energy</button>
+  <button type="button" class="tool" data-show="atmosphere" aria-pressed="false">Atmosphere</button>
+  <button type="button" class="tool" data-show="telescopes" aria-pressed="false">Telescopes</button>
+  <button type="button" class="tool" data-show="sky" aria-pressed="false">Sky views</button>
+</nav>
+
+<script type="module" src="em-spectrum/emspec-ui.js"></script>
+</body>
+</html>
