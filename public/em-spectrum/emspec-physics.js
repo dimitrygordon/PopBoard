@@ -266,3 +266,17 @@ export function formatFrequency(f, digits = 3) {
 export function formatEnergyEV(eV, digits = 3) {
   return withUnit(eV, [[1e9, "GeV"], [1e6, "MeV"], [1e3, "keV"], [1, "eV"], [1e-3, "meV"], [1e-6, "\u00b5eV"], [1e-9, "neV"]], digits);
 }
+
+// ---------- art anchors (from assets/MANIFEST.md, 1024 px art space) ----------
+export const ART_ANCHORS = Object.freeze({
+  sun: Object.freeze({ center: [512, 512], diskR: 300, radioMedianR: 366, xrayCoronaMedianR: 321, gammaFlare: [608, 578] }),
+  galaxy: Object.freeze({ center: [512, 512], halfAxes: [447, 284], radioHalfAxes: [479, 312] }),
+  crab: Object.freeze({ center: [512, 512], halfAxes: [416, 288], radioHalfAxes: [416, 300], tiltDeg: -20 }),
+  reflector: Object.freeze({ center: [476, 511], focuserBase: [296, 253], eyepieceTip: [249, 312] })
+});
+// CSS transform that recenters art whose object is not centered in its square.
+export function artRecenter(art) {
+  if (art !== "telescope-optical-reflector") return "";
+  const [cx, cy] = ART_ANCHORS.reflector.center;
+  return `translate(${((512 - cx) / 1024 * 100).toFixed(2)}%, ${((512 - cy) / 1024 * 100).toFixed(2)}%)`;
+}

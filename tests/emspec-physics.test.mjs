@@ -174,3 +174,14 @@ test("no em-dashes in em-spectrum sources", async () => {
     assert.ok(!s.includes("\u2014"), f);
   }
 });
+
+test("art anchors match MANIFEST", () => {
+  const A = P.ART_ANCHORS;
+  assert.equal(A.sun.xrayCoronaMedianR, 321); assert.equal(A.sun.diskR, 300); assert.deepEqual(A.sun.center, [512, 512]);
+  assert.deepEqual(A.galaxy.halfAxes, [447, 284]); assert.deepEqual(A.galaxy.radioHalfAxes, [479, 312]);
+  assert.deepEqual(A.crab.halfAxes, [416, 288]); assert.deepEqual(A.crab.radioHalfAxes, [416, 300]); assert.equal(A.crab.tiltDeg, -20);
+  assert.deepEqual(A.reflector.center, [476, 511]);
+  assert.ok(A.reflector.eyepieceTip[1] < 512, "eyepiece near the front (top) end");
+  assert.equal(P.artRecenter("telescope-optical-reflector"), "translate(3.52%, 0.10%)");
+  assert.equal(P.artRecenter("telescope-radio-dish"), "");
+});

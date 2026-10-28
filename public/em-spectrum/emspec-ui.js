@@ -6,7 +6,7 @@ import { loadImages, readTokens, drawSpectrumBar, drawWave, drawEnergy, drawAtmo
 import {
   BANDS, bandById, bandOf, sliderToWavelength, wavelengthToSlider, sliderToFrequency, frequencyToSlider,
   frequencyFromWavelength, BAND_BOUNDARY_NOTE, photonEnergyEV, photonEnergyJ, energyFromWavelengthEV, isIonizing, nearestScale,
-  ENERGY_MARKS, ATMOSPHERE, transmission, TELESCOPES, telescopeFor, diffractionLimitArcsec, OBJECTS, objectById,
+  ENERGY_MARKS, ATMOSPHERE, artRecenter, transmission, TELESCOPES, telescopeFor, diffractionLimitArcsec, OBJECTS, objectById,
   parseQuery, MODES, sci, formatLength, formatFrequency, formatEnergyEV
 } from "./emspec-physics.js";
 
@@ -57,7 +57,7 @@ for (const t of TELESCOPES) {
   const el = document.createElement("button");
   el.type = "button"; el.className = "scope-card"; el.dataset.band = t.band; el.setAttribute("aria-pressed", "false");
   el.setAttribute("aria-label", `${t.name}, ${bandById(t.band).name}`);
-  el.innerHTML = `<img alt="" src="em-spectrum/assets/${t.art}.webp" loading="lazy" decoding="async"><span>${bandById(t.band).name}<br>${t.where === "space" ? "in space" : "on the ground"}</span>`;
+  el.innerHTML = `<img alt="" src="em-spectrum/assets/${t.art}.webp" style="transform:${artRecenter(t.art)}" loading="lazy" decoding="async"><span>${bandById(t.band).name}<br>${t.where === "space" ? "in space" : "on the ground"}</span>`;
   el.addEventListener("click", () => setBand(t.band));
   $("scopeCards").appendChild(el);
 }
@@ -157,6 +157,7 @@ function sync() {
   $("skyTitle").textContent = `${o.name} seen in ${{ radio: "radio waves", infrared: "infrared", visible: "visible light", ultraviolet: "ultraviolet", xray: "X-rays", gamma: "gamma rays" }[b.id]}`;
   $("skyCaption").textContent = o.views[b.id] + " Colors are false: each band is tinted with its color from the bar so you can tell them apart.";
   $("skyScope").src = `em-spectrum/assets/${t.art}.webp`;
+  $("skyScope").style.transform = artRecenter(t.art);
   $("skyScopeCap").textContent = `Seen with: ${t.name.toLowerCase()}, ${t.where === "space" ? "in space" : "on the ground"}.`;
   $("skyLabel").textContent = `${b.name} view`;
   writeUrl();
