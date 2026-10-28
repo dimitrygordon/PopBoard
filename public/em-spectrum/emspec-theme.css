@@ -1,0 +1,100 @@
+/* Electromagnetic Spectrum Explorer: layout and theme.
+   Look follows Leo's style frame (modules/em-spectrum/style-frame.png):
+   dark slate chrome, light paper panels with ink line art, band colors
+   from the spectrum bar. The renderer reads the --es-* tokens at runtime. */
+:root {
+  --es-bg: #16181f;
+  --es-chrome: #20232e;
+  --es-btn: #2d303e;
+  --es-btn-border: #4a4e60;
+  --es-text: #e8e8ea;
+  --es-dim: #a6a8b2;
+  --es-gold: #ffc43c;
+  --es-paper: #f0f0ec;
+  --es-ink: #1c1c1c;
+  --es-ink-dim: #6b6b6b;
+  --es-radio: #ff785a;
+  --es-infrared: #ff5a3c;
+  --es-visible: #fff0c8;
+  --es-ultraviolet: #aa8cff;
+  --es-xray: #78c8ff;
+  --es-gamma: #c878ff;
+  --es-hit: 44px;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; background: var(--es-bg); color: var(--es-text);
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif; overscroll-behavior: none; }
+body { display: flex; flex-direction: column; min-height: 100%; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+button { font: inherit; }
+button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 2px solid var(--es-gold); outline-offset: 2px; }
+
+.hud { display: flex; align-items: center; gap: 12px; background: var(--es-chrome);
+  padding: calc(6px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) 6px calc(12px + env(safe-area-inset-left)); }
+.title { margin: 0; font-size: 18px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hud button, .band-buttons button, .toolbar .tool, .object-buttons button, .scope-card {
+  min-width: var(--es-hit); min-height: var(--es-hit); display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px 14px; border-radius: 8px; border: 1px solid var(--es-btn-border); background: var(--es-btn); color: var(--es-text);
+  font-size: 14px; cursor: pointer; touch-action: manipulation; }
+.band-buttons button[aria-pressed="true"], .toolbar .tool[aria-pressed="true"], .object-buttons button[aria-pressed="true"] {
+  background: var(--es-gold); border-color: var(--es-gold); color: #1c1c1c; font-weight: 600; }
+
+.bandbar { padding: 10px 12px 4px; }
+.band-buttons { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.band-buttons button { padding: 6px 4px; justify-content: flex-start; padding-left: 10px; }
+.spec { display: block; width: 100%; height: 44px; margin-top: 6px; cursor: pointer; touch-action: none; }
+
+.stage { flex: 1; overflow: auto; padding: 8px 12px 12px; }
+.mode { display: grid; grid-template-columns: minmax(0, 3fr) minmax(260px, 2fr); gap: 12px; height: 100%; min-height: 360px; }
+.paper { background: var(--es-paper); color: var(--es-ink); border-radius: 10px; }
+.canvas-box { position: relative; min-height: 300px; overflow: hidden; }
+.canvas-box canvas, .sky-box canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.controls { padding: 14px; display: flex; flex-direction: column; gap: 12px; overflow: auto; }
+.slider { display: grid; grid-template-columns: 1fr; gap: 4px; font-size: 14px; }
+.slider span { font-weight: 600; }
+.slider output { font: 14px ui-monospace, Menlo, monospace; }
+input[type="range"] { width: 100%; min-height: var(--es-hit); margin: 0; accent-color: #1c1c1c; touch-action: pan-y; }
+.formula { margin: 0; font: 15px ui-monospace, Menlo, monospace; white-space: pre-line; }
+.caption { margin: 0; font-size: 14px; line-height: 1.45; color: #333; }
+
+.atmo-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 12px; min-height: 0; }
+[data-mode="atmosphere"] { grid-template-columns: 1fr; grid-template-rows: minmax(320px, 1fr) auto; }
+.atmo-art { min-width: 0; }
+
+[data-mode="telescopes"] { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+.scope-cards { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; padding: 10px; }
+.scope-card { flex-direction: column; background: transparent; border-color: transparent; color: var(--es-ink); padding: 6px; border-radius: 10px; }
+.scope-card img { width: 100%; max-width: 110px; aspect-ratio: 1; object-fit: contain; }
+.scope-card span { font-size: 12px; text-align: center; }
+.scope-card[aria-pressed="true"] { border: 2px solid var(--es-ink); background: #fff; }
+.scope-detail { display: grid; grid-template-columns: minmax(0, 3fr) minmax(260px, 2fr); gap: 12px; min-height: 0; }
+
+[data-mode="sky"] { grid-template-columns: minmax(0, 3fr) minmax(260px, 2fr); grid-template-rows: auto 1fr; }
+.object-buttons { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; }
+.sky-box { position: relative; min-height: 320px; border-radius: 10px; background: #0d0e13; overflow: hidden; }
+.sky-label { position: absolute; left: 0; right: 0; bottom: 8px; margin: 0; text-align: center; color: var(--es-dim); font-size: 14px; }
+
+.seen-by { margin: 0; display: flex; align-items: center; gap: 12px; font-size: 14px; }
+.seen-by img { width: 120px; height: 120px; object-fit: contain; }
+.toolbar { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; background: var(--es-chrome);
+  padding: 8px calc(12px + env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left)); }
+
+@media (max-width: 760px) {
+  html, body { height: auto; }
+  .stage { overflow: visible; }
+  .toolbar { position: sticky; bottom: 0; z-index: 5; display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+  .toolbar .tool { padding: 6px 2px; font-size: 11.5px; min-width: 0; }
+  .title { font-size: 15px; }
+  .band-buttons { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .mode, .scope-detail, [data-mode="sky"], .atmo-grid { grid-template-columns: 1fr; height: auto; }
+  .canvas-box { min-height: 260px; }
+  [data-mode="energy"] .canvas-box { min-height: 380px; }
+  .atmo-art { min-height: 300px; }
+  .scope-cards { grid-template-columns: repeat(3, 1fr); }
+  .sky-box { min-height: 340px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+.bandbar .caption.band-note { margin: 6px 4px 0; font-size: 13px; color: #d6d3e6; }
