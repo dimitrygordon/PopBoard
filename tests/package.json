@@ -13,6 +13,7 @@
     "test:mechanics": "node --test mechanics-physics.test.mjs",
     "test:orbits": "node --test orbits-physics.test.mjs",
     "test:exoplanets": "node --test exoplanets-physics.test.mjs",
+    "test:doublependulum": "node --test double-pendulum-physics.test.mjs",
     "test:emspec": "node --test emspec-physics.test.mjs",
     "test:stars": "node --test stars-physics.test.mjs",
     "test:emfields": "node --test emfields-physics.test.mjs",

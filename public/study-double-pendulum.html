@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#15171f">
+<title>Chaos and the Double Pendulum // PopBoard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<link rel="preload" as="image" href="double-pendulum/assets/rod-upper.webp" type="image/webp">
+<link rel="stylesheet" href="double-pendulum-theme.css">
+<link rel="stylesheet" href="astro-study.css?v=20261021k">
+<script src="astro-study.js?v=20261021k"></script>
+<script>
+  /* Set the theme before first paint so there is no flash. */
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard-dp-theme"); } catch (e) {}
+    if (t !== "dark" && t !== "light") t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+</head>
+<body>
+<h1 class="sr-only">Chaos and the Double Pendulum</h1>
+<header class="dp-bar">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <div class="dp-title" aria-hidden="true">Chaos Lab <span>The Double Pendulum</span></div>
+  <nav class="dp-tabs" id="tabs" aria-label="Modes"></nav>
+  <button id="themeBtn" class="dp-btn dp-theme-btn" type="button" aria-pressed="false" aria-label="Dark mode">Dark mode</button>
+</header>
+
+<main class="dp-main">
+  <div class="dp-left">
+    <section class="dp-stage-card" aria-label="Pendulum stage">
+      <canvas id="stage" class="dp-stage" role="img" aria-label="Two double pendulums swinging"></canvas>
+      <div class="dp-legend" id="legend"></div>
+    </section>
+    <section class="dp-graph-card" aria-label="Graph">
+      <canvas id="graph" class="dp-graph" role="img" aria-label="Graph"></canvas>
+      <p class="dp-caption" id="caption"></p>
+    </section>
+  </div>
+
+  <aside class="dp-panel" aria-label="Controls and readouts">
+    <p class="dp-lede" id="lede"></p>
+
+    <div class="dp-toolbar">
+      <button id="playBtn" class="dp-btn dp-primary" type="button">Release</button>
+      <button id="resetBtn" class="dp-btn" type="button">Reset</button>
+      <button id="trailBtn" class="dp-btn" type="button" aria-pressed="true">Trails</button>
+      <button id="replayBtn" class="dp-btn" type="button" data-modes="determinism">Replay from start</button>
+    </div>
+
+    <div class="dp-readouts" id="readouts"></div>
+
+    <div class="dp-controls" data-modes="sensitivity phase determinism prediction sandbox">
+      <label class="dp-slider"><span>Upper angle <b id="th1Val"></b></span>
+        <input id="th1" type="range" min="5" max="175" step="1"></label>
+      <label class="dp-slider"><span>Lower angle <b id="th2Val"></b></span>
+        <input id="th2" type="range" min="5" max="175" step="1"></label>
+      <div class="dp-seg" role="group" aria-label="Lower rod starts on which side">
+        <span>Lower rod starts</span>
+        <button type="button" class="dp-btn" data-side="-1" aria-pressed="true">Left</button>
+        <button type="button" class="dp-btn" data-side="1" aria-pressed="false">Right</button>
+      </div>
+      <label class="dp-slider"><span>Upper mass <b id="m1Val"></b></span>
+        <input id="m1" type="range" min="0.5" max="5" step="0.1"></label>
+      <label class="dp-slider"><span>Lower mass <b id="m2Val"></b></span>
+        <input id="m2" type="range" min="0.5" max="5" step="0.1"></label>
+      <div data-modes="sandbox" class="dp-controls">
+        <label class="dp-slider"><span>Upper rod length <b id="L1Val"></b></span>
+          <input id="L1" type="range" min="0.5" max="2" step="0.05"></label>
+        <label class="dp-slider"><span>Lower rod length <b id="L2Val"></b></span>
+          <input id="L2" type="range" min="0.5" max="2" step="0.05"></label>
+        <label class="dp-slider"><span>Gravity g <b id="gVal"></b></span>
+          <input id="g" type="range" min="1" max="25" step="0.1"></label>
+        <label class="dp-slider"><span>Playback speed <b id="speedVal"></b></span>
+          <input id="speed" type="range" min="0.5" max="2" step="0.25"></label>
+        <button id="twinBtn" class="dp-btn" type="button" aria-pressed="true">Nudged twin</button>
+      </div>
+      <label class="dp-slider" data-modes="sensitivity phase prediction sandbox"><span>Orange run starts off by <b id="offVal"></b></span>
+        <input id="off" type="range" min="0" max="120" step="1"></label>
+    </div>
+
+    <div class="dp-presets" data-modes="sensitivity phase prediction">
+      <span>Try</span>
+      <button type="button" class="dp-btn" data-preset="calm">Small swing 10 deg</button>
+      <button type="button" class="dp-btn" data-preset="wild">Big swing 120 deg</button>
+    </div>
+
+
+    <p class="dp-foot" id="foot">RK4 integrator, fixed step 0.5 ms. Rods 1 m each, g = 9.81 m/s&sup2;, no friction.</p>
+  </aside>
+</main>
+
+<script type="module" src="double-pendulum-ui.js"></script>
+</body>
+</html>
