@@ -180,3 +180,14 @@ test("page wiring: guest page, shared Back pattern, gallery card", () => {
   assert.match(study, /file: "study-black-hole\.html"/);
   assert.match(ui, /prefers-reduced-motion/);
 });
+
+test("time dial: 60 min hovering at r = 2.5 is 134 min far away, rate = sqrt(1 - 2/r) for any r", () => {
+  const R = P.readouts({ massSun: 10, a: 0, r: 2.5 });
+  assert.ok(Math.abs(R.hover - Math.sqrt(0.2)) < 1e-12);
+  assert.equal(Math.round(60 * R.hoverFactor), 134);
+  for (const r of [2.1, 3, 6, 12, 200]) {
+    const x = P.readouts({ massSun: 4.3e6, a: 0.5, r });
+    assert.ok(Math.abs(x.hover - Math.sqrt(1 - 2 / r)) < 1e-12);
+    assert.ok(Math.abs(x.hoverFactor * x.hover - 1) < 1e-12);
+  }
+});

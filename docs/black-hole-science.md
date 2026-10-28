@@ -4,7 +4,7 @@ For fact-checking. Every number the page prints comes from `public/black-hole/bh
 
 ## 1. Units and constants
 
-Lengths are printed in units of GM/c² (written "GM/c²", often called M) and converted to m, km or AU for the chosen mass. Spin is the dimensionless a* = Jc/(GM²), 0 ≤ a* ≤ 0.998.
+Lengths are printed in units of GM/c² (written "GM/c²", often called M; GM/c² is half the Schwarzschild radius 2GM/c²). Every radius or impact parameter on the page (r, b, r+, ISCO, photon orbit, shadow edges) is labeled "in units of GM/c²" and converted to m, km or AU for the chosen mass. Spin is the dimensionless a* = Jc/(GM²), 0 ≤ a* ≤ 0.998.
 
 | Symbol | Value | Source |
 |---|---|---|
@@ -35,7 +35,7 @@ All from Bardeen, Press and Teukolsky (1972), ApJ 178, 347. "Prograde" means orb
 | Circular-orbit energy E | (1 − 2/r ± a r^(−3/2)) / √(1 − 3/r ± 2a r^(−3/2)) | √(8/9) at ISCO | |
 | Disk efficiency η | 1 − E(ISCO) | 5.72% | 32.1% pro, 3.78% retro |
 | Orbit period (far clock) | 2π (r^(3/2) ± a) GM/c³ | 4.55 ms at ISCO for 10 M☉ | |
-| Shadow edge (equatorial photon orbit impact parameter) | b = ∓a + 6 cos(arccos(∓a)/3) | 3√3 = 5.196 | 2.111 pro, 6.997 retro |
+| Shadow edge seen edge-on, i.e. for a viewer in the plane of the disk (equatorial photon orbit impact parameter) | b = ∓a + 6 cos(arccos(∓a)/3) | 3√3 = 5.196 | 2.111 pro, 6.997 retro |
 
 Orbit status at the probe distance (prograde): "inside horizon" if r ≤ r+, "impossible" if r ≤ photon orbit, "unstable" if r < ISCO, else "stable". Period and energy are only printed for stable orbits.
 
@@ -43,10 +43,13 @@ Orbit status at the probe distance (prograde): "inside horizon" if r ≤ r+, "im
 
 - Hovering clock: dτ/dt = √(1 − 2/r). This is the Relativity Sandbox's `staticClockRate`; in Kerr it is exact in the equatorial plane because g_tt = −(1 − 2Mr/Σ) and Σ = r² there. It is zero at the ergosphere (r = 2), so the distance slider starts at 2.1.
 - Orbiting clock (prograde circular, Bardeen et al.): dτ/dt = √(1 − 3/r + 2a r^(−3/2)) / (1 + a r^(−3/2)). At a* = 0 this is the sandbox's `circularOrbitClockRate`, √(1 − 3/r). Printed only where the orbit is stable.
-- "1 h there = X h far away" uses X = 1 / (dτ/dt).
-- Clock dials: the far clock advances 6 minutes per real second when motion is allowed; the probe clocks advance by the same factor times their rate. With reduced motion they stay at 45 minutes.
+- "60 min hovering = X min far away" uses X = 60 / (dτ/dt). Worked example at r = 2.5: dτ/dt = √(1 − 2/2.5) = √0.2 = 0.4472, so 60 min hovering = 134 min (2 h 14 min) far away.
+- Clock dials: the hovering clock is the reference. It advances 6 minutes per real second when motion is allowed (starting at 60 min, so with reduced motion it stays at 60 min). The far clock shows hovering / √(1 − 2/r) and the orbiting clock shows far × its rate, so the dials agree with the readout for any r.
 
 ## 4. Lensing
+
+- Images: each star shows two main images, plus fainter ones ever closer to the shadow edge (light that loops the hole once or more).
+- Shadow size (a* = 0): 3√3 GM/c² ≈ 5.2 GM/c², about 2.6 times the horizon radius 2 GM/c², because light bends around it.
 
 - Capture impact parameter (a* = 0): b_c = 3√3 GM/c² (sandbox `CRITICAL_B_OVER_RS` × 2).
 - Exact Schwarzschild bending angle: α = 2∫₀^{u₁} du / √(1/b² − u² + 2u³) − π, with u₁ the smallest positive root (closest approach r_min = 1/u₁) and the substitution u = u₁(1 − t²); 20 000-point midpoint rule. Checked in the tests against the sandbox's `traceNullRay` closest approach (agree to 1e-6) and against the weak-field series 4/b + 15π/(4b²) + 401/(12b³) at b = 200.
@@ -56,15 +59,15 @@ Orbit status at the probe distance (prograde): "inside horizon" if r ≤ r+, "im
 ## 5. Tides
 
 - Head-to-foot stretch on a body of length L at radius r: Δa = 2GML/r³ (Newtonian radial tidal term). At a* = 0 and r = r_s this is c⁶L/(4G²M²), so it falls as 1/M².
-- Tidal disruption radius of a Sun-like star: r_t = R☉ (M/M☉)^(1/3).
-- Hills mass (star crosses the horizon before it is torn apart): r_t = r+, giving M_H = [R☉ / (r+ · GM☉/c²)]^(3/2) ≈ 1.14e8 M☉ at a* = 0 and 2.95e8 M☉ at a* = 0.998.
+- Tidal disruption radius: in general r_t = R_star (M_bh/M_star)^(1/3). The page uses a Sun-like star, r_t = R☉ (M/M☉)^(1/3).
+- Hills mass (star crosses the horizon before it is torn apart): r_t = r+, giving M_H = [R☉ / (r+ · GM☉/c²)]^(3/2) ≈ 1.14e8 M☉ at a* = 0 and 2.95e8 M☉ at a* = 0.998. So the Hills mass of about 1e8 M☉ applies to a Sun-like star and a non-spinning hole; rapid spin raises it.
 - Values: 10 M☉ at r = 12: 9.7e4 g; at the 10 M☉ horizon: 2.1e7 g; at the Sgr A* horizon (a* = 0): 1.1e-4 g.
 
 ## 6. What the pictures do (and every simplification)
 
 1. Art scale: the round shadow (radius 150 px in a 1024 px layer) is drawn at the a* = 0 capture radius 3√3 GM/c², fixing 28.9 art px per GM/c². The code-drawn horizon circle, ISCO ellipses, probe orbit and 5 GM/c² scale bar use that scale.
 2. The picture is identical for every mass; only the km scale bar changes. This is physical: every length scales with M.
-3. Shadow with spin: the round and the spinning (D-shaped) shadow and ring layers are crossfaded by min(1, a*/0.9) and stretched horizontally so their left and right edges sit on the exact equatorial edges b_pro and b_retro above. The top and bottom of the shadow are the art, not a ray-traced Kerr shadow. The edges are for an observer in the equatorial plane; the art views the disk from about 15° above edge-on.
+3. Shadow with spin: the round and the spinning (D-shaped) shadow and ring layers are crossfaded by min(1, a*/0.9) and stretched horizontally so their left and right edges sit on the exact equatorial edges b_pro and b_retro above. The top and bottom of the shadow are the art, not a ray-traced Kerr shadow. The edges (2.11 and 7 GM/c² at a* = 0.998) apply only seen edge-on, meaning for a viewer in the plane of the disk; the art views the disk from about 15° above edge-on.
 4. The lensed arc of the disk's far side follows the round shadow's horizontal mapping. Its shape is the art's.
 5. The accretion disk layers are not to scale (art inner edge 200 px ≈ 6.9 GM/c², whatever the spin). The code draws the prograde and retrograde ISCO to scale in the disk plane (y-scale 0.26) without lensing.
 6. Doppler beaming and gravitational redshift of the disk are not drawn. The left side is the approaching side, matching the art's brighter left ring.

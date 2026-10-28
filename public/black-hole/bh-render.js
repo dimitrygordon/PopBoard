@@ -258,7 +258,7 @@ function drawEnergy(ctx, W, H, T, st) {
   const X = (r) => L + ((Math.log10(r) - lx0) / (lx1 - lx0)) * (Rr - L), Y = (E) => B - ((E - E0) / (E1 - E0)) * (B - Tp);
   ctx.strokeStyle = T.ink; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(L, Tp); ctx.lineTo(L, B); ctx.lineTo(Rr, B); ctx.stroke();
   for (const r of [1, 2, 3, 6, 10, 20, 40]) { text(ctx, String(r), X(r), B + 10, T.ink2, "center", 10); }
-  text(ctx, "r (GM/c\u00b2, log)", Rr, B + 22, T.ink2, "right", 10);
+  text(ctx, "r in units of GM/c\u00b2 (log)", Rr, B + 22, T.ink2, "right", 10);
   for (const E of [0.6, 0.8, 1.0]) text(ctx, E.toFixed(1), L - 4, Y(E), T.ink2, "right", 10);
   ctx.save(); ctx.setLineDash([2, 3]); ctx.strokeStyle = T.ink3; ctx.beginPath(); ctx.moveTo(L, Y(1)); ctx.lineTo(Rr, Y(1)); ctx.stroke(); ctx.restore();
   text(ctx, "E = 1: just unbound", Rr - 2, Y(1) - 8, T.ink3, "right", 10);
@@ -297,10 +297,12 @@ function dial(ctx, x, y, rad, frac, T, title, sub) {
 }
 function drawClocks(ctx, W, H, T, st) {
   const R = st.readouts, rad = Math.min(W / 7.5, H / 3.4), y = H / 2 - 12;
-  const far = st.clockMinutes / 60;
-  dial(ctx, W * 0.18, y, rad, far % 1, T, "far away", st.clockMinutes.toFixed(0) + " min");
-  dial(ctx, W * 0.5, y, rad, (far * R.hover) % 1, T, "hovering probe", (st.clockMinutes * R.hover).toFixed(1) + " min");
-  dial(ctx, W * 0.82, y, rad, R.orbit ? (far * R.orbit) % 1 : null, T, "orbiting probe", R.orbit ? (st.clockMinutes * R.orbit).toFixed(1) + " min" : "no stable orbit");
+  // Reference: the hovering clock reads st.clockMinutes; far = hovering / rate, rate = sqrt(1 - 2/r).
+  const hov = st.clockMinutes, far = R.hover > 0 ? hov / R.hover : 0;
+  const orb = R.orbit ? far * R.orbit : null;
+  dial(ctx, W * 0.18, y, rad, (far / 60) % 1, T, "far away", far.toFixed(0) + " min");
+  dial(ctx, W * 0.5, y, rad, (hov / 60) % 1, T, "hovering probe", hov.toFixed(0) + " min");
+  dial(ctx, W * 0.82, y, rad, orb == null ? null : (orb / 60) % 1, T, "orbiting probe", orb == null ? "no stable orbit" : orb.toFixed(1) + " min");
   text(ctx, "one minute hand turn = 60 minutes on that clock", W / 2, 12, T.ink2, "center", 11);
 }
 

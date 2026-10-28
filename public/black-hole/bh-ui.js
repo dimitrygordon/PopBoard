@@ -13,7 +13,7 @@ const init = paramsFromSearch(location.search);
 const st = {
   mode: modeFromSearch(location.search),
   massSun: init.massSun, a: init.a, r: init.r,
-  lensOn: true, lensMix: 1, phase: 0.6, clockMinutes: 45,
+  lensOn: true, lensMix: 1, phase: 0.6, clockMinutes: 60,
   quality: 1, frameMs: 16, dirty: true, compositeDirty: true
 };
 let R = readouts(st);
@@ -68,52 +68,52 @@ $("studyBackBtn").addEventListener("click", (e) => {
 // ---------- text ----------
 
 const CAPTIONS = {
-  horizon: "The event horizon r+ is the point of no return. At zero spin its shadow looks about 2.6 times bigger than r+ because light that passes inside the photon orbit is captured, so the dark patch is the capture zone seen through bent light. With spin, light moving with the rotation (left) can orbit closer, which flattens that side. Simplification: the shadow's left and right edges are the exact equatorial values; its top and bottom are Leo's art, not ray traced.",
-  lensing: "Gravity bends starlight around the hole, so background stars crowd into a ring and each star can appear twice. The bending angle is exact for a non-spinning hole. Far away it falls to the Einstein value 4GM/(c\u00b2b). Rays with b below 3\u221a3 GM/c\u00b2 are captured. Simplification: the lensed star field uses a fixed, illustrative Einstein radius.",
+  horizon: "The event horizon r+ is the point of no return. At zero spin its shadow is about 2.6 times the horizon radius, because light bends around it: light that passes inside the photon orbit is captured, so the dark patch is the capture zone seen through bent light. With spin, light moving with the rotation (left) can orbit closer, which flattens that side. The spinning shadow edges (2.11 and 7 GM/c\u00b2 at a* = 0.998) apply only seen edge-on, meaning for a viewer in the plane of the disk. Radii are in units of GM/c\u00b2 (half the Schwarzschild radius). Simplification: the shadow's left and right edges are the exact equatorial values; its top and bottom are Leo's art, not ray traced.",
+  lensing: "Gravity bends starlight around the hole, so background stars crowd into a ring. Each star shows two main images, plus fainter ones ever closer to the shadow edge. The bending angle is exact for a non-spinning hole. Far away it falls to the Einstein value 4GM/(c\u00b2b). Rays with b below 3\u221a3 GM/c\u00b2 are captured (b in units of GM/c\u00b2). Simplification: the lensed star field uses a fixed, illustrative Einstein radius.",
   disk: "Gas spirals in through a thin disk until the innermost stable circular orbit (ISCO), then plunges. A prograde disk around a fast spinner reaches far closer, so each kilogram releases more of its rest energy as light. Simplification: the disk art is not to scale and Doppler beaming is not drawn. The dashed ISCO rings are to scale but drawn without lensing.",
   orbits: "A circular orbit is stable only at or outside the ISCO, the bottom of the energy curve. Between the photon orbit and the ISCO a circular orbit exists but any nudge sends the probe in or out. Inside the photon orbit no circular orbit exists. The probe's animation speed is slowed for viewing.",
-  time: "Clocks near the hole tick slower than clocks far away. A hovering clock runs at \u221a(1 \u2212 2GM/(rc\u00b2)). An orbiting clock also loses time to its speed. The ratio depends only on r in units of GM/c\u00b2, so it is the same for every mass at the same scaled distance.",
-  tides: "The pull on your feet is stronger than on your head. For a 2 m body the stretch is 2GML/r\u00b3, so at the horizon it falls as 1/M\u00b2: small holes spaghettify you far outside the horizon, while above about 100 million Msun a Sun-like star crosses the horizon before it is torn apart. Simplification: Newtonian tidal formula; astronaut frames are illustrative bins (under 1 g, 1 to 10 g, 10 to 100 g, over 100 g)."
+  time: "Clocks near the hole tick slower than clocks far away. A hovering clock runs at \u221a(1 \u2212 2GM/(rc\u00b2)). An orbiting clock also loses time to its speed. The ratio depends only on r in units of GM/c\u00b2, so it is the same for every mass at the same scaled distance. Example: at r = 2.5 the rate is \u221a(1 \u2212 2/2.5) = 0.447, so 60 min hovering = 134 min (2 h 14 min) far away.",
+  tides: "The pull on your feet is stronger than on your head. For a 2 m body the stretch is 2GML/r\u00b3, so at the horizon it falls as 1/M\u00b2: small holes spaghettify you far outside the horizon, while above about 1e8 Msun (the Hills mass for a Sun-like star and a non-spinning hole; rapid spin raises it) a Sun-like star crosses the horizon before it is torn apart. The disruption radius shown is for a Sun-like star; in general it is R_star (M_bh/M_star)^(1/3). Simplification: Newtonian tidal formula; astronaut frames are illustrative bins (under 1 g, 1 to 10 g, 10 to 100 g, over 100 g)."
 };
 
 function rows() {
   const L = (x) => fmtLen(x * meterPerM(st.massSun));
   switch (st.mode) {
     case "horizon": return [
-      ["Event horizon r+", fmtNum(R.rPlus) + " GM/c\u00b2 = " + fmtLen(R.rPlusKm * 1000)],
+      ["Event horizon r+, in units of GM/c\u00b2", fmtNum(R.rPlus) + " GM/c\u00b2 = " + fmtLen(R.rPlusKm * 1000)],
       ["Schwarzschild radius 2GM/c\u00b2", fmtLen(R.rsKm * 1000)],
-      ["Ergosphere (equator)", "2 GM/c\u00b2 = " + L(2)],
-      ["Photon orbit, prograde", fmtNum(R.photonPro) + " GM/c\u00b2"],
-      ["Photon orbit, retrograde", fmtNum(R.photonRetro) + " GM/c\u00b2"],
-      ["Shadow edges (pro | retro)", fmtNum(R.shadowPro) + " | " + fmtNum(R.shadowRetro) + " GM/c\u00b2"],
+      ["Ergosphere (equator), in units of GM/c\u00b2", "2 GM/c\u00b2 = " + L(2)],
+      ["Photon orbit, prograde, in units of GM/c\u00b2", fmtNum(R.photonPro) + " GM/c\u00b2"],
+      ["Photon orbit, retrograde, in units of GM/c\u00b2", fmtNum(R.photonRetro) + " GM/c\u00b2"],
+      ["Shadow edges seen edge-on (pro | retro), in units of GM/c\u00b2", fmtNum(R.shadowPro) + " | " + fmtNum(R.shadowRetro) + " GM/c\u00b2"],
       ["Shadow width", fmtLen(R.shadowWidthKm * 1000)]];
     case "lensing": return [
-      ["Impact parameter b", fmtNum(R.r) + " GM/c\u00b2 = " + fmtLen(R.rKm * 1000)],
+      ["Impact parameter b, in units of GM/c\u00b2", fmtNum(R.r) + " GM/c\u00b2 = " + fmtLen(R.rKm * 1000)],
       ["Bending angle (exact, a = 0)", R.bend == null ? "captured" : fmtAngle(R.bend)],
       ["Einstein formula 4GM/(c\u00b2b)", fmtAngle(R.weakBend)],
       ["Capture limit 3\u221a3 GM/c\u00b2", L(5.196152422706632)]];
     case "disk": return [
-      ["ISCO, prograde", fmtNum(R.iscoPro) + " GM/c\u00b2 = " + fmtLen(R.iscoProKm * 1000)],
-      ["ISCO, retrograde", fmtNum(R.iscoRetro) + " GM/c\u00b2 = " + fmtLen(R.iscoRetroKm * 1000)],
+      ["ISCO, prograde, in units of GM/c\u00b2", fmtNum(R.iscoPro) + " GM/c\u00b2 = " + fmtLen(R.iscoProKm * 1000)],
+      ["ISCO, retrograde, in units of GM/c\u00b2", fmtNum(R.iscoRetro) + " GM/c\u00b2 = " + fmtLen(R.iscoRetroKm * 1000)],
       ["Efficiency, prograde disk", fmtPct(R.etaPro)],
       ["Efficiency, retrograde disk", fmtPct(R.etaRetro)],
       ["Orbit period at prograde ISCO", fmtTime(R.iscoPeriod)]];
     case "orbits": return [
-      ["Probe distance", fmtNum(R.r) + " GM/c\u00b2 = " + fmtLen(R.rKm * 1000)],
+      ["Probe distance r, in units of GM/c\u00b2", fmtNum(R.r) + " GM/c\u00b2 = " + fmtLen(R.rKm * 1000)],
       ["Prograde circular orbit", { stable: "stable", unstable: "unstable (inside ISCO)", none: "impossible (inside photon orbit)", inside: "inside horizon" }[R.status]],
       ["Orbit period (far clock)", R.period == null ? "none" : fmtTime(R.period)],
       ["Orbit energy E", R.energy == null ? "none" : R.energy.toFixed(4)],
-      ["Prograde ISCO", fmtNum(R.iscoPro) + " GM/c\u00b2"]];
+      ["Prograde ISCO, in units of GM/c\u00b2", fmtNum(R.iscoPro) + " GM/c\u00b2"]];
     case "time": return [
-      ["Probe distance", fmtNum(R.r) + " GM/c\u00b2 = " + fmtLen(R.rKm * 1000)],
-      ["Hovering clock rate", fmtNum(R.hover, 4) + " (1 h there = " + fmtNum(R.hoverFactor, 4) + " h far away)"],
-      ["Orbiting clock rate", R.orbit ? fmtNum(R.orbit, 4) + " (1 h there = " + fmtNum(R.orbitFactor, 4) + " h far away)" : "no stable orbit here"]];
+      ["Probe distance r, in units of GM/c\u00b2", fmtNum(R.r) + " GM/c\u00b2 = " + fmtLen(R.rKm * 1000)],
+      ["Hovering clock rate", fmtNum(R.hover, 4) + " (60 min hovering = " + fmtNum(60 * R.hoverFactor, 3) + " min far away)"],
+      ["Orbiting clock rate", R.orbit ? fmtNum(R.orbit, 4) + " (60 min orbiting = " + fmtNum(60 * R.orbitFactor, 3) + " min far away)" : "no stable orbit here"]];
     case "tides": return [
-      ["Probe distance", fmtNum(R.r) + " GM/c\u00b2 = " + fmtLen(R.rKm * 1000)],
+      ["Probe distance r, in units of GM/c\u00b2", fmtNum(R.r) + " GM/c\u00b2 = " + fmtLen(R.rKm * 1000)],
       ["Stretch on 2 m astronaut here", fmtG(R.stretchG)],
       ["Stretch at the horizon", fmtG(R.horizonStretchG)],
-      ["Sun-like star torn apart at", fmtNum(R.rtOverRp) + " \u00d7 r+"],
-      ["Swallowed-whole mass (Hills)", fmtMass(R.hills)]];
+      ["Sun-like star torn apart at (r_t = R_star (M_bh/M_star)^(1/3))", fmtNum(R.rtOverRp) + " \u00d7 r+"],
+      ["Hills mass, Sun-like star (rises with spin)", fmtMass(R.hills)]];
   }
   return [];
 }
@@ -123,7 +123,7 @@ function renderText() {
   $("spinOut").textContent = st.a.toFixed(3);
   $("distOut").textContent = fmtNum(st.r) + " GM/c\u00b2";
   for (const id of ["distIn", "distLabel"]) (id === "distIn" ? $(id) : $(id).parentElement).hidden = st.mode === "horizon";
-  $("distLabel").textContent = st.mode === "lensing" ? "Light ray impact parameter b" : "Probe distance";
+  $("distLabel").textContent = st.mode === "lensing" ? "Light ray impact parameter b (GM/c\u00b2)" : "Probe distance r (GM/c\u00b2)";
   const dl = $("readouts"); dl.textContent = "";
   for (const [k, v] of rows()) {
     const dt = document.createElement("dt"), dd = document.createElement("dd");
@@ -185,7 +185,7 @@ function frame(now) {
     st.compositeDirty = true;
   }
   if (R.status === "stable") st.phase += dt * (2 * Math.PI) / (2.5 * Math.pow(Math.max(R.r, 1) / 6, 1.5)); // viewing speed, not real
-  st.clockMinutes = (st.clockMinutes + dt * 6) % 600;
+  st.clockMinutes = (st.clockMinutes + dt * 6) % 600; // hovering-probe minutes
   const t0 = performance.now();
   draw();
   const cost = performance.now() - t0;
