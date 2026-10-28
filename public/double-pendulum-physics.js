@@ -191,6 +191,13 @@ export function predictionHorizon(start, offsetDeg, opts = {}) {
   return null;
 }
 
+/**
+ * Growth rate implied by a forecast-horizon fit: if each 10x smaller start
+ * adds dt seconds, the gap grows by 10x every dt seconds, so rate = ln(10)/dt.
+ * Takes the fitted slope (seconds per decade of starting error, negative).
+ */
+export function impliedRate(slope) { return Math.LN10 / Math.abs(slope); }
+
 /** Small-angle normal-mode angular frequencies (rad/s) of the linearised system. */
 export function normalModeFrequencies(p) {
   const { m1, m2, L1, L2, g } = p;

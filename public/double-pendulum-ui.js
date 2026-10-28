@@ -239,15 +239,15 @@ function currentHorizon() {
 // ---------- text ----------
 const LEDE = {
   sensitivity: "Two pendulums start almost together: the orange one is tilted by a tiny extra angle. Watch the gap between them grow. On a log scale, steady exponential growth is a straight line.",
-  phase: "Phase space plots angle against angular velocity. Every point is one complete state of a rod. Regular motion traces neat loops; chaotic motion scribbles over the whole plot.",
-  determinism: "Chaos is not randomness. Two pendulums started from exactly the same numbers stay together forever, and a replay lands inside the rings left by the previous run.",
-  regimes: "Same tiny 0.001 deg nudge, two different swings. Small swings stay regular and predictable. Big swings are chaotic and the gap explodes.",
+  phase: "This plot is a picture of the motion: each rod's angle against its angular speed, traced as the pendulum swings. Regular motion traces neat loops; chaotic motion scribbles across the plot.",
+  determinism: "Chaos is not randomness. Two runs started from exactly the same numbers stay together, and a replay matches the previous run exactly, because the computer repeats the same arithmetic exactly. A real pendulum can't be restarted that precisely.",
+  regimes: "Same tiny 0.001 deg nudge, two different swings. Small swings stay regular and predictable. Big swings are usually chaotic, and then the gap explodes.",
   sandbox: "Free play. Set any angles, masses, rod lengths and gravity, then let it run as long as you like. Turn on the nudged twin to see whether your setup is chaotic.",
-  prediction: "Forecasts fail when the gap passes 10 deg. Measuring the start 10 times more precisely only buys a fixed extra slice of time, not 10 times longer."
+  prediction: "Forecasts fail when the gap passes 10 deg. Measuring the start 10 times more precisely only buys a fixed extra slice of time, not 10 times longer. The gap grows faster later in the motion than at the start, so the rate implied here is higher than the Butterfly effect estimate."
 };
 const CAPTION = {
   sensitivity: "Orange line: separation between the runs in phase space (angles plus scaled angular velocities). Dashed: straight-line fit over the growth stretch; its slope is the Lyapunov-style estimate. Grey dashed: where the gap saturates.",
-  phase: "Blue: main run. Orange: nudged run. Angles wrap at plus or minus 180 deg.",
+  phase: "Angle (across) against angular speed (up) for each rod. Blue: main run. Orange: nudged run. Angles wrap at plus or minus 180 deg.",
   determinism: "Separation between the two identical runs: exactly zero, so the curve sits on the floor of the plot.",
   regimes: "Green: small swing. Red: big swing. Both start 0.001 deg apart.",
   sandbox: "Phase space of your run (blue) and its nudged twin (orange). Angles wrap at plus or minus 180 deg.",
@@ -316,9 +316,11 @@ function readouts() {
   } else {
     const hz = currentHorizon();
     const per = st.horizonFit ? (-st.horizonFit.slope).toFixed(1) + " s" : "computing...";
+    const rate = st.horizonFit ? P.impliedRate(st.horizonFit.slope).toFixed(2) + " /s" : "computing...";
     html = tile("Starting error", fmtDeg(offsetDeg()), "")
       + tile("Forecast holds for", hz == null ? (r.a.t.toFixed(1) + " s so far") : hz.toFixed(1) + " s", "until the gap passes 10 deg")
       + tile("Each 10x better start buys", per, "slope of the dashed fit")
+      + tile("Growth rate this implies", rate, "ln(10) / time per 10x; growth speeds up later in the motion")
       + driftTile;
   }
   $("readouts").innerHTML = html;

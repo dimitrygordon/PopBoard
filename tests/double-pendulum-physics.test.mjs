@@ -100,6 +100,29 @@ test("theme: stored choice wins, otherwise system preference", () => {
   assert.equal(P.resolveTheme("junk", false), "light");
 });
 
+test("horizon slope and its implied rate agree, and growth is faster late than early", () => {
+  const start = { theta1: 120 * D, theta2: -10 * D };
+  const offs = [1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8];
+  const h = offs.map((o) => P.predictionHorizon(start, o, { tMax: 30 }));
+  const fit = P.linearFit(offs.map(Math.log10), h);
+  assert.ok(-fit.slope > 1.5 && -fit.slope < 1.9, String(fit.slope));
+  const rate = P.impliedRate(fit.slope);
+  assert.ok(Math.abs(rate * -fit.slope - Math.LN10) < 1e-12);
+  assert.ok(rate > 1.2 && rate < 1.5, String(rate));
+  // The 0.001 deg Butterfly fit is slower: it is weighted by the slow first seconds.
+  const early = P.lyapunovFit(...Object.values(pair(start, 0.001, 20)).slice(2));
+  assert.ok(early.lambda < rate - 0.2, JSON.stringify(early));
+});
+
+test("science wording: phase plot, usually chaotic, exact replay", () => {
+  const ui = read("double-pendulum-ui.js");
+  assert.ok(!/map of all|all futures|every future/i.test(ui));
+  assert.ok(ui.includes("picture of the motion") && ui.includes("angular speed"));
+  assert.ok(ui.includes("usually chaotic") && !/Big swings are chaotic/.test(ui));
+  assert.ok(ui.includes("same arithmetic exactly") && ui.includes("can't be restarted that precisely"));
+  assert.ok(ui.includes("Growth rate this implies") && ui.includes("speeds up later"));
+});
+
 function lum(hex) {
   const c = hex.match(/[0-9a-f]{2}/gi).map((x) => parseInt(x, 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
   return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];

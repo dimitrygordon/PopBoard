@@ -21,6 +21,10 @@ This is a finite-time estimate from one pair of runs. It is not the true largest
 
 Measured values for the default 120 deg / -10 deg start with a 0.001 deg offset: λ ≈ 0.85 to 0.97 /s, so the gap doubles roughly every 0.7 to 0.8 s.
 For the 10 deg / 10 deg start the fitted slope is about 0. That swing is regular, quasi-periodic motion.
+Big swings are usually chaotic, not always, so the page says "usually".
+
+## Phase space
+The phase plot is a picture of the motion: each rod's angle against its angular speed, traced over time. It shows the path of this one run, nothing more.
 
 ## Prediction horizon
 A forecast is counted as failed once either rod angle differs by more than 10 deg.
@@ -37,11 +41,19 @@ Simulated horizons for the default start:
 | 1e-7 deg | 16.3 s |
 | 1e-8 deg | 17.8 s |
 
-Each 10x improvement in the starting measurement adds about 1.7 s. As a rule of thumb, ln(10)/λ is about 2.4 s at λ = 0.95 /s; the measured gain is smaller because the gap first grows faster than the average rate.
+Each 10x improvement in the starting measurement adds about 1.7 s (least-squares fit over the table: 1.72 s per decade).
+If the gap grew at one steady rate λ, each decade would add ln(10)/λ. Reading that backwards, 1.72 s per decade implies an effective rate of ln(10)/1.72 ≈ 1.34 /s. The page shows both numbers side by side: "Each 10x better start buys 1.7 s" and "Growth rate this implies 1.34 /s".
+
+Why this is faster than the 0.85 to 0.97 /s from the Butterfly effect mode (checked with the physics module, default start):
+- Growth is not steady. Local slopes of ln(separation) over 2 s windows for a 1e-8 deg start run 0.46 /s (0 to 2 s), 1.45, 0.76, 1.96, 1.51, 1.08, 1.58, 1.17 /s. The first couple of seconds are slow.
+- The 0.001 deg Butterfly fit covers 0.5 to 9.5 s and so is weighted by that slow start. The extra time bought by tiny starting errors is spent later, from about 6 to 18 s, where growth is faster. Fitting the 1e-8 deg run over 0.5 to 17.9 s already gives 1.22 /s.
+- The 10 deg threshold matters little: thresholds of 1, 3, 10 and 30 deg give 1.88, 1.79, 1.72 and 1.63 s per decade.
+So the two numbers measure growth over different parts of the motion; they do not contradict each other. Students see the prediction text say that growth speeds up later in the motion, so the implied rate is higher than the Butterfly effect estimate.
 A ten-million-fold better measurement only triples the forecast. This is why long-term prediction fails even though the laws are exact.
 
 ## Determinism
 Two runs from bit-identical numbers stay bit-identical, so the separation is exactly 0. A replay reproduces the earlier run to 0 m.
+The replay matches exactly because the computer repeats the same arithmetic exactly. A real pendulum can't be restarted that precisely.
 Chaos is extreme sensitivity, not randomness.
 
 ## Small-angle check
