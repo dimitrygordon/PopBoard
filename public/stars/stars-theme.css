@@ -1,0 +1,78 @@
+/* Build a Star: Physics Style. Ink outlines and grayscale on white paper;
+   the star is the only color. 44px minimum touch targets throughout. */
+:root { --ink: #1a1a1a; --ink-2: #4a4a4a; --ink-3: #8a8a8a; --paper: #ffffff; --rule: #d6d6d6;
+  --bar: #141414; --gold: #c9a13b; --hit: 44px; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; background: var(--paper); color: var(--ink);
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+button, input, a { font: inherit; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.bar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 12px; background: var(--bar); color: #fff;
+  padding: calc(6px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 6px calc(10px + env(safe-area-inset-left)); }
+.bar h1 { margin: 0; flex: 1; min-width: 0; font-size: 18px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar .brand { color: var(--gold); font-size: 14px; }
+.study-back-btn { min-width: var(--hit); min-height: var(--hit); display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px;
+  border-radius: 999px; border: 1px solid #3a3a3a; background: #222; color: #fff; cursor: pointer; font-weight: 600; font-size: 14px; }
+
+.lab { display: grid; gap: 16px 28px; padding: 16px 24px 24px; max-width: 1280px; margin: 0 auto;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "stage controls" "fate fate"; }
+.stage { grid-area: stage; position: relative; display: flex; flex-direction: column; align-items: center; }
+.stage canvas { width: 100%; max-width: 520px; aspect-ratio: 1; display: block; }
+.stage-name { margin: 4px 0 0; font-weight: 700; font-size: 15px; text-align: center; min-height: 1.3em; }
+.replay { position: absolute; right: 0; top: 0; }
+.controls { grid-area: controls; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.reaction { width: 100%; height: 72px; display: block; }
+.slider { display: flex; flex-direction: column; gap: 2px; }
+.lab-label, .helium summary { font-weight: 700; font-size: 14px; display: flex; gap: 8px; align-items: baseline; }
+.lab-label output, .helium output { font-weight: 500; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.helium summary { min-height: var(--hit); cursor: pointer; align-items: center; }
+.helium { display: block; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: var(--hit); background: transparent; margin: 0; cursor: pointer;
+  --fill: 50%; }
+input[type=range]::-webkit-slider-runnable-track { height: 3px; background: linear-gradient(90deg, var(--gold) var(--fill), #7a7a7a var(--fill)); border-radius: 2px; }
+input[type=range]::-moz-range-track { height: 3px; background: linear-gradient(90deg, var(--gold) var(--fill), #7a7a7a var(--fill)); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -7.5px; border-radius: 50%; background: #fff; border: 2px solid var(--ink); }
+input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 2px solid var(--ink); }
+.time-row { display: flex; gap: 8px; align-items: center; }
+.pill { min-height: var(--hit); min-width: var(--hit); padding: 6px 14px; border-radius: 999px; border: 1.5px solid var(--ink); background: #fff; color: var(--ink);
+  cursor: pointer; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+.pill[aria-pressed="true"] { background: var(--ink); color: #fff; }
+.pill.icon { padding: 0; width: var(--hit); flex: none; }
+.pill.icon svg { width: 20px; height: 20px; fill: currentColor; }
+#playBtn .ic-pause, #playBtn.playing .ic-play { display: none; }
+#playBtn.playing .ic-pause { display: inline; }
+.presets { display: flex; flex-wrap: wrap; gap: 6px; }
+.readouts { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 4px 0; font-size: 14px; }
+.readouts div { display: flex; gap: 6px; }
+.readouts dt { color: var(--ink-2); }
+.readouts dd { margin: 0; font-variant-numeric: tabular-nums; }
+.tabs { display: flex; flex-wrap: wrap; gap: 0; border-bottom: 1.5px solid var(--ink); }
+.tabs button { min-height: var(--hit); min-width: var(--hit); padding: 6px 12px; border: 0; background: none; cursor: pointer; font-weight: 600; color: var(--ink-2);
+  border-bottom: 3px solid transparent; margin-bottom: -1.5px; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--gold); }
+.detail canvas { width: 100%; height: 250px; display: block; }
+.detail-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.caption { margin: 6px 0 0; font-size: 14px; line-height: 1.45; color: var(--ink-2); }
+.fate { grid-area: fate; }
+.fate h2 { margin: 0; font-size: 15px; padding-bottom: 6px; border-bottom: 1px solid var(--ink-2); }
+.fate-strip { display: grid; grid-template-columns: repeat(4, 1fr) 2px repeat(4, 1fr); gap: 6px; align-items: center; padding-top: 10px; }
+.fate-strip .div { width: 2px; align-self: stretch; background: var(--gold); }
+.fate-slot { min-height: var(--hit); border: 0; background: none; padding: 2px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  color: var(--ink-3); font-size: 12px; border-radius: 10px; }
+.fate-slot canvas { width: 100%; max-width: 110px; aspect-ratio: 1; display: block; opacity: .28; filter: grayscale(.6); transition: opacity .2s; }
+.fate-slot.on canvas { opacity: 1; filter: none; }
+.fate-slot.on { color: var(--ink); }
+.fate-slot.now { box-shadow: inset 0 -3px 0 var(--gold); }
+.fate-slot.end span { font-weight: 700; }
+
+@media (max-width: 820px) {
+  .lab { grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "controls" "fate"; padding: 10px 14px 24px; }
+  .bar h1 .sub { display: none; }
+  .stage canvas { max-width: 360px; }
+  .fate-strip { grid-template-columns: repeat(4, 1fr); }
+  .fate-strip .div { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
