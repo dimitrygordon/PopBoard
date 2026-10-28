@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#151923">
+<title>Seasons, Eclipses &amp; Celestial Geometry // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<link rel="preload" as="image" href="seasons/assets/earth.webp" type="image/webp">
+<link rel="stylesheet" href="seasons-theme.css">
+<link rel="stylesheet" href="astro-study.css?v=20261021k">
+<script src="astro-study.js?v=20261021k"></script>
+</head>
+<body>
+<header class="se-top">
+  <button id="studyBackBtn" class="study-back-btn se-hit" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <h1>Seasons, Eclipses &amp; Celestial Geometry</h1>
+  <button id="themeBtn" class="se-theme se-hit" type="button" aria-pressed="false">Dark mode</button>
+  <nav id="tabs" class="se-tabs" role="tablist" aria-label="Modes"></nav>
+</header>
+
+<main class="se-main">
+  <section class="se-stage-wrap" aria-label="Main view">
+    <canvas id="stage" class="se-stage" role="img" aria-label="Sun, Earth and Moon model"></canvas>
+  </section>
+  <section class="se-side">
+    <div id="controls" class="se-controls"></div>
+    <canvas id="diagram" class="se-diagram" role="img" aria-label="Second view"></canvas>
+    <dl id="readouts" class="se-readouts" aria-live="polite"></dl>
+    <p id="caption" class="se-caption"></p>
+  </section>
+</main>
+
+<script type="module" src="seasons-ui.js"></script>
+</body>
+</html>
