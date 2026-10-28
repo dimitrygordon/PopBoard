@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#ffffff">
+<title>Black Hole Explorer // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<link rel="preload" as="image" href="black-hole/assets/bh-shadow.webp" type="image/webp">
+<link rel="stylesheet" href="black-hole/bh-theme.css">
+<link rel="stylesheet" href="astro-study.css?v=20261021k">
+<script src="astro-study.js?v=20261021k"></script>
+</head>
+<body>
+<h1 class="sr-only">Black Hole Explorer</h1>
+<p class="sr-only">Change the black hole's mass and spin, move the probe, and switch views to explore the event horizon, photon orbits, lensing, the accretion disk, orbit stability, clocks, and tides.</p>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title">Black Hole Explorer</p>
+  <nav id="modeTabs" class="tabs" role="tablist" aria-label="Views"></nav>
+</header>
+
+<main class="layout">
+  <section class="stage" aria-label="Black hole picture">
+    <canvas id="stageCanvas" role="img" aria-label="Layered black hole with its accretion disk, photon ring, shadow and lensed stars"></canvas>
+    <button id="lensBtn" class="chip stage-chip" type="button" aria-pressed="true" hidden>Lensing on</button>
+    <p id="stageNote" class="stage-note"></p>
+  </section>
+
+  <section class="side" aria-label="Controls and readouts">
+    <div class="controls">
+      <label class="ctl" for="massIn"><span>Mass</span><output id="massOut" for="massIn"></output></label>
+      <input id="massIn" type="range" aria-describedby="massOut">
+      <div class="presets" id="presets" role="group" aria-label="Mass presets"></div>
+      <label class="ctl" for="spinIn"><span>Spin a*</span><output id="spinOut" for="spinIn"></output></label>
+      <input id="spinIn" type="range" aria-describedby="spinOut">
+      <label class="ctl" for="distIn"><span id="distLabel">Probe distance</span><output id="distOut" for="distIn"></output></label>
+      <input id="distIn" type="range" aria-describedby="distOut">
+    </div>
+    <canvas id="diagramCanvas" class="diagram" role="img" aria-label="Diagram for this view"></canvas>
+    <dl id="readouts" class="readouts" aria-live="polite"></dl>
+    <p id="caption" class="caption"></p>
+  </section>
+</main>
+
+<script type="module" src="black-hole/bh-ui.js"></script>
+</body>
+</html>
