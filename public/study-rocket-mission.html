@@ -20,6 +20,18 @@
 <link rel="stylesheet" href="rocket-mission/rocket-theme.css">
 <link rel="stylesheet" href="astro-study.css?v=20261021k">
 <script src="astro-study.js?v=20261021k"></script>
+<script>
+  // Mars Lander mode (?mode=mars-lander) shares this page with the other modes but has its own
+  // themes and styles. Set them before first paint so neither flashes.
+  (function () {
+    if (new URLSearchParams(location.search).get("mode") !== "mars-lander") return;
+    var r = document.documentElement, t = null;
+    try { t = localStorage.getItem("popboard.rocket.lander.theme"); } catch (e) {}
+    r.classList.add("ml-mode");
+    r.setAttribute("data-theme", t === "light" ? "light" : "dark");
+    document.write('<link rel="stylesheet" href="shared/fun/fun.css"><link rel="stylesheet" href="rocket-mission/lander/lander-theme.css">');
+  })();
+</script>
 </head>
 <body>
 <h1 class="sr-only">Rocket Science &amp; Space Mission</h1>
@@ -58,8 +70,13 @@
   <button type="button" class="tool" data-show="orbits" aria-pressed="false">Orbits</button>
   <button type="button" class="tool" data-show="hohmann" aria-pressed="false">To Mars</button>
   <button type="button" class="tool" data-show="sandbox" aria-pressed="false">Sandbox</button>
+  <button type="button" class="tool" id="marsLanderBtn">Mars Lander</button>
 </nav>
 
-<script type="module" src="rocket-mission/rocket-ui.js"></script>
+<script type="module">
+  // The rocket modes and Mars Lander never run together.
+  if (document.documentElement.classList.contains("ml-mode")) import("./rocket-mission/lander/ml-ui.js");
+  else import("./rocket-mission/rocket-ui.js");
+</script>
 </body>
 </html>
