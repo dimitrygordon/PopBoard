@@ -1,0 +1,55 @@
+/* Seasons, Eclipses & Celestial Geometry: layout and theme.
+   Colors follow style-frame.png: dark space, paper eclipse panel, blue sky, one muted gold. */
+:root {
+  --se-space: #151923; --se-bar: #1f2330; --se-panel: #1c2130; --se-paper: #f1f1ec; --se-sky: #78acd9; --se-night: #1b2333;
+  --se-ink: #1a1a1a; --se-ink-soft: #6b6b6b; --se-light: #e8e8e8; --se-dim: #9aa1ad; --se-line: #2e3444; --se-gold: #e2b23f;
+  --se-text: #e8e8e8; --se-grid: rgba(220,224,232,0.45); --se-rim: rgba(255,255,255,0.6);
+  --se-btn: #2a2f3d; --se-btn-line: #3a4152; --se-body: #cfd3da;
+  --se-hit: 44px;
+}
+/* Light theme: Physics Style white page, ink text. Contrast of every text token is at least 4.5:1. */
+html[data-theme="light"] {
+  --se-space: #f4f5f7; --se-bar: #ffffff; --se-panel: #ffffff; --se-light: #1a1a1a; --se-text: #1a1a1a; --se-dim: #555b66;
+  --se-grid: rgba(26,26,26,0.28); --se-rim: rgba(26,26,26,0); --se-btn: #ffffff; --se-btn-line: #c3c7cf; --se-body: #2b2f36; --se-gold: #b8892b;
+}
+html[data-theme="light"] .se-stage-wrap, html[data-theme="light"] .se-diagram { border: 1px solid #d5d8de; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--se-space); color: var(--se-text); font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+button { font: inherit; }
+.se-top { display: flex; align-items: center; gap: 12px; padding: calc(8px + env(safe-area-inset-top)) 12px 8px; background: var(--se-bar); position: sticky; top: 0; z-index: 3; }
+.se-top h1 { font-size: 18px; font-weight: 600; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 0 1 auto; min-width: 0; }
+.se-theme { margin-left: auto; padding: 0 12px; border-radius: 10px; border: 1px solid var(--se-btn-line); background: var(--se-btn); color: var(--se-text); cursor: pointer; font-size: 13px; }
+.se-hit, .se-tabs button, .se-chip, .se-play { min-height: var(--se-hit); min-width: var(--se-hit); }
+.study-back-btn { display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--se-btn-line); background: transparent; color: var(--se-text); cursor: pointer; }
+.se-tabs { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.se-tabs button { padding: 0 12px; border-radius: 10px; border: 1px solid var(--se-btn-line); background: var(--se-btn); color: var(--se-text); cursor: pointer; font-size: 14px; }
+.se-tabs button[aria-selected="true"] { background: var(--se-gold); color: #1a1a1a; border-color: var(--se-gold); font-weight: 600; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--se-gold); outline-offset: 2px; }
+.se-main { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(320px, 1fr); gap: 12px; padding: 12px; height: calc(100vh - 60px); height: calc(100dvh - 60px - env(safe-area-inset-top)); }
+.se-stage-wrap { min-height: 0; border-radius: 14px; overflow: hidden; background: var(--se-panel); }
+.se-stage { width: 100%; height: 100%; display: block; touch-action: none; }
+.se-side { min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.se-controls { display: flex; flex-direction: column; gap: 6px; }
+.se-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 10px; }
+.se-row label { font-size: 14px; font-weight: 600; }
+.se-row output { font: 500 13px "JetBrains Mono", ui-monospace, monospace; color: var(--se-dim); }
+.se-row input[type=range] { grid-column: 1 / -1; width: 100%; height: var(--se-hit); margin: 0; accent-color: var(--se-gold); }
+.se-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.se-chip, .se-play { padding: 0 12px; border-radius: 10px; border: 1px solid var(--se-btn-line); background: var(--se-btn); color: var(--se-text); cursor: pointer; font-size: 13px; }
+.se-chip[aria-pressed="true"] { background: var(--se-gold); color: #1a1a1a; border-color: var(--se-gold); }
+.se-play { font-weight: 600; }
+.se-diagram { width: 100%; height: 220px; flex: 0 0 auto; border-radius: 12px; background: var(--se-panel); display: block; }
+.se-readouts { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: 13px; }
+.se-readouts dt { color: var(--se-dim); }
+.se-readouts dd { margin: 0; text-align: right; font: 500 13px "JetBrains Mono", ui-monospace, monospace; }
+.se-caption { margin: 0 0 12px; font-size: 14px; line-height: 1.45; color: var(--se-body); }
+@media (max-width: 820px) {
+  .se-top { flex-wrap: wrap; }
+  .se-top h1 { font-size: 16px; flex: 1 1 0; }
+  .se-theme { margin-left: 0; }
+  .se-tabs { margin-left: 0; justify-content: flex-start; width: 100%; }
+  .se-main { display: block; height: auto; padding: 8px; }
+  .se-stage-wrap { height: 62vw; min-height: 300px; margin-bottom: 10px; }
+  .se-side { overflow: visible; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
