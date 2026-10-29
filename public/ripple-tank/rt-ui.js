@@ -2,7 +2,7 @@
 // Model and grid: rt-model.js. Drawing: rt-scene.js.
 import { forwardStudyQuery } from "../board-return.js?v=20261022a";
 import {
-  MODULE_ID, TANK_CM, WAVE_SPEED, F_MIN, F_MAX, MAX_SOURCES, SLOW, COURANT, LEVELS, SLIT_A, SLIT_D, TANK_CAPTION, MODEL_NOTE, BLOCK_CM,
+  MODULE_ID, TANK_CM, WAVE_SPEED, F_MIN, F_MAX, MAX_SOURCES, SLOW, COURANT, LEVELS, SLIT_A, SLIT_D, WALL_X, TANK_CAPTION, MODEL_NOTE, NODAL_NOTE, BLOCK_CM,
   wavelength, settleTime, sanitizeConfig, wallRects, blockRects, analyze, GOALS, PREDICT, trend, judgePrediction, SCENES,
   SHARE_SCHEMA, toShare, fromShare, createGrid, step, fillWalls, splash, createGovernor, clamp
 } from "./rt-model.js";
@@ -23,6 +23,7 @@ const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { ret
 const f1 = (x) => (Math.round(x * 10) / 10).toFixed(1);
 $("tankCap").textContent = TANK_CAPTION;
 $("aboutNote").textContent = MODEL_NOTE;
+$("nodalNote").textContent = NODAL_NOTE;
 $("wavesLink").href = "study-waves.html" + location.search;
 
 // ---------- theme, sound, back, about ----------
@@ -135,6 +136,7 @@ function common() {
   rows.push(el("div", { className: "row" },
     pressed(btn("Nodal lines", () => { st.nodal = !st.nodal; renderMode(); }), st.nodal),
     pressed(btn("Slow motion", () => { st.slow = !st.slow; renderMode(); }), st.slow)));
+  if (st.nodal) rows.push(el("p", { className: "dim nodal-note", textContent: NODAL_NOTE }));
   if (analyze(st).kind === "two-source") {
     const row = el("div", { className: "row fun-predict" }, el("span", { className: "dim", textContent: "Next change: more or fewer dark lines?" }));
     for (const p of PREDICT) row.appendChild(pressed(btn(p.label, () => { guess = guess === p.id ? null : p.id; guessBefore = analyze(st).nodal; prediction.predict(guess); renderMode(); }), guess === p.id));
@@ -203,7 +205,10 @@ canvas.addEventListener("keydown", (e) => { if (e.key === " " || e.key === "Ente
 
 // ---------- layout: stage box and bottom sheet (opens at the half stop on phones) ----------
 let sheet = null;
-const snaps = () => { const tabs = $("controls").querySelector(".tabs"); const peek = Math.ceil(tabs.offsetHeight + 56); const full = Math.max(peek + 40, Math.ceil(tabs.offsetHeight + body.scrollHeight + ($("toast").hidden ? 0 : $("toast").offsetHeight + 8) + 64)); return [peek, Math.max(peek + 1, Math.round((peek + full) / 2)), full]; };
+const snaps = () => { const tabs = $("controls").querySelector(".tabs"); const peek = Math.ceil(tabs.offsetHeight + 56); const full = Math.max(peek + 40, Math.ceil(tabs.offsetHeight + body.scrollHeight + ($("toast").hidden ? 0 : $("toast").offsetHeight + 8) + 64)); // The half stop rises to just under the tank caption, so no empty band is left between them.
+  const capB = $("tankCap").getBoundingClientRect().bottom, room = capB > 0 ? Math.floor(innerHeight - capB - 12) : 0;
+  const half = Math.min(full, Math.max(Math.round((peek + full) / 2), room));
+  return [peek, Math.max(peek + 1, half), Math.max(full, half + 1)]; };
 function phoneSync() {
   if (phone.matches && !sheet) { $("controls").classList.add("fun-sheet-on", "fun-sheet"); sheet = bottomSheet($("controls"), $("sheetHandle"), { getSnaps: snaps, start: 1, onSnap: () => setTimeout(requestFit, 350) }); $("controls").dataset.snap = "half"; }
   else if (!phone.matches && sheet) { sheet.destroy(); sheet = null; $("controls").classList.remove("fun-sheet-on", "fun-sheet"); }
@@ -214,7 +219,7 @@ function fit() {
   const ctl = $("controls").getBoundingClientRect(), stt = $("status").getBoundingClientRect(), capH = $("tankCap").offsetHeight || 20;
   const top = stt.bottom + 10;
   const box = wide.matches ? { x: 16, y: top, w: innerWidth - 404 - 16, h: innerHeight - top - 12 } : { x: 12, y: top, w: innerWidth - 24, h: Math.max(160, Math.min(innerHeight, ctl.top) - 10 - top) };
-  const oldH = scene.view.H, v = scene.setBox(box, TANK_CM, capH);
+  const oldH = scene.view.H, v = scene.setBox(box, TANK_CM, capH, !wide.matches); // phones and tablets: the tank sits right under the readout, so the sheet can sit higher
   $("tankCap").style.left = Math.round(v.x + v.w / 2) + "px"; $("tankCap").style.top = Math.round(v.y + v.h + CAPTION_GAP) + "px";
   $("tankCap").style.maxWidth = Math.round(Math.max(200, v.w)) + "px";
   if (Math.abs(oldH - v.H) > 0.05 || !g) { st = sanitizeConfig(st, TANK_CM, v.H); rebuild(); configChanged(); }
@@ -243,11 +248,16 @@ function frame(now) {
     step(g);
   }
   // Time-averaged energy per cell (for the nodal lines) and an auto gain for the shading.
-  const { u, avg } = g, N = u.length; let sum = 0, cnt = 0;
+  // With a slit wall, the water past it is scaled on its own, so the weaker diffracted ripples
+  // keep their contrast and the nodal tint is judged against that side's own energy.
+  const { u, avg } = g, N = u.length, split = st.barrier !== "none" ? Math.min(g.nx - 1, Math.ceil((WALL_X + 0.8) / cell)) : g.nx;
+  let s0 = 0, c0 = 0, s1 = 0, c1 = 0;
   for (let k = 0; k < N; k++) { avg[k] += (u[k] * u[k] - avg[k]) * 0.04; }
-  for (let k = 0; k < N; k += 7) { if (!g.wall[k]) { sum += avg[k]; cnt++; } }
-  avgRef = cnt ? (sum / cnt) * 2.4 : 0; gain = clamp(0.75 / Math.sqrt(sum / Math.max(1, cnt) + 1e-6), 0.8, 4);
-  scene.draw(g, st, { gain, avgRef, walls: [...wallRects(st, H()), ...blockRects(st)], drag: drag?.kind === "source" ? drag.i : null });
+  for (let k = 0; k < N; k += 7) { if (g.wall[k] || g.sponge[k] < 0.97) continue; if (k % g.nx >= split) { s1 += avg[k]; c1++; } else { s0 += avg[k]; c0++; } }
+  const ref = (s, c) => (c ? (s / c) * 2.4 : 0), gn = (s, c) => clamp(0.75 / Math.sqrt(s / Math.max(1, c) + 1e-6), 0.8, 6);
+  avgRef = ref(s0, c0); gain = gn(s0, c0);
+  const behind = split < g.nx && c1 ? { split, gain: gn(s1, c1), avgRef: ref(s1, c1) } : null;
+  scene.draw(g, st, { gain, avgRef, behind, walls: [...wallRects(st, H()), ...blockRects(st)], drag: drag?.kind === "source" ? drag.i : null });
   if (frames % 20 === 0) report();
   requestAnimationFrame(frame);
 }

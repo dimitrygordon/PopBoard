@@ -80,3 +80,36 @@ test("no em-dashes and no Jasper in module copy", () => {
   const card = read("study.html").split('id: "ripple-tank"')[1].split("}")[0];
   for (const t of [...FILES.map(read), card]) { assert.ok(!t.includes("\u2014")); assert.ok(!/jasper/i.test(t)); }
 });
+
+test("slit barriers reflect waves; only the outer sponge border absorbs", () => {
+  const nx = 220, ny = 160, cm = 0.2, C = M.COURANT, W = 140;
+  const energy = (g, i0, i1) => { let e = 0; for (let j = 0; j < g.ny; j++) for (let i = i0; i < i1; i++) { const k = j * g.nx + i; e += g.u[k] * g.u[k]; } return e; };
+  // A plane pulse that travels right (u(x - ct)), started at i = 90, toward a solid wall at i = W.
+  const run = (withWall, steps) => {
+    const g = M.createGrid(nx, ny);
+    if (withWall) M.fillWalls(g, [{ x0: W * cm, y0: 0, x1: (W + 2) * cm, y1: ny * cm }], cm);
+    for (let j = 1; j < ny - 1; j++) for (let i = 70; i < 110; i++) { g.u[j * nx + i] = Math.exp(-((i - 90) ** 2) / 12); g.prev[j * nx + i] = Math.exp(-((i - 90 + C) ** 2) / 12); }
+    for (let s = 0; s < steps; s++) M.step(g);
+    return g;
+  };
+  const T = Math.round((2 * (W - 90) - 30) / C); // long enough to reach the wall and travel most of the way back
+  const wall = run(true, T), open = run(false, T);
+  const back = energy(wall, 40, W - 2), none = energy(open, 40, W - 2);
+  assert.ok(back > 5 * none + 1, `reflected ${back} vs open ${none}`); // energy returns from the barrier
+  assert.ok(energy(wall, W + 3, nx) < 1e-6 * back); // nothing leaks through a solid wall
+  // The outer sponge border absorbs: in the open tank the pulse runs into the edge and does not come back.
+  // Measured as motion, (u - prev)^2: the sponge damps velocity, so a flat leftover level is not a wave.
+  const kin = (g) => { let e = 0; for (let k = 0; k < g.u.length; k++) e += (g.u[k] - g.prev[k]) ** 2; return e; };
+  const g = run(false, T), e0 = kin(g); for (let s = 0; s < Math.round(3 * nx / C); s++) M.step(g);
+  const e1 = kin(g); assert.ok(e1 < 0.05 * e0, `sponge left ${e1} of ${e0}`);
+});
+
+test("dark-line wording and 5% display threshold", () => {
+  assert.equal(M.NODAL_NOTE, "Dark lines: here a crest from one dipper always meets a trough from the other, so the water stays almost still.");
+  assert.equal(M.NODAL_THRESHOLD, 0.05);
+});
+
+test("science doc is cleared by Tesla", () => {
+  const doc = readFileSync(new URL("../docs/ripple-tank-science.md", import.meta.url), "utf8");
+  assert.ok(doc.includes("Cleared by Tesla 2026-10-29") && !doc.includes("TODO-TESLA") && doc.includes("Lighthill, Waves in Fluids"));
+});

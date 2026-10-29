@@ -11,6 +11,8 @@ export const COURANT = 0.5;           // v dt / dx; stable in 2D up to 1/sqrt(2)
 export const LEVELS = [200, 150, 110, 80]; // grid cells along the long side, best first
 export const WALL_X = 12;             // barrier position for slit scenes, cm from the dipper side
 export const SLIT_A = { min: 1, max: 8 }, SLIT_D = { min: 3, max: 16 };
+export const NODAL_NOTE = "Dark lines: here a crest from one dipper always meets a trough from the other, so the water stays almost still.";
+export const NODAL_THRESHOLD = 0.05; // display threshold: tint where time-averaged energy < 5% of twice the tank average
 export const TANK_CAPTION = "Top view of a ripple tank, 40 cm long. Light bands are crests, dark bands are troughs.";
 export const MODEL_NOTE = "Waves on real water also spread out and fade; this tank keeps the speed fixed so only the frequency changes the wavelength.";
 
@@ -88,7 +90,8 @@ export function toShare(st) { const o = { f: st.f, line: st.line, barrier: st.ba
 export function fromShare(o) { const sources = []; for (let i = 0; i < MAX_SOURCES; i++) if (Number.isFinite(o[`s${i}x`]) && Number.isFinite(o[`s${i}y`])) sources.push({ x: o[`s${i}x`], y: o[`s${i}y`] }); return { ...o, sources }; }
 
 // ---------- the grid ----------
-// Leapfrog finite differences with a sponge border so waves leave instead of bouncing back.
+// Leapfrog finite differences. Only the outer sponge border absorbs waves; wall and block cells
+// hold the water at zero (a fixed edge), so waves hitting a barrier reflect off it.
 export function createGrid(nx, ny) {
   const n = nx * ny, sponge = new Float32Array(n), S = Math.max(8, Math.round(nx * 0.14)); // about 5 cm of gentle sponge
   for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {

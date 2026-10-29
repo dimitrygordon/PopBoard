@@ -63,15 +63,15 @@ Stamps: `popboard.fun.powers-of-ten.stamps`. Share link (sandbox): `SHARE_SCHEMA
 
 ## Ripple Tank
 
-All thresholds TODO-TESLA. A goal only counts once the pattern has formed: the waves must have run for `settleTime()` = 0.8 x 40 cm / 24 cm/s = 1.33 s of tank time since the last change (TODO-TESLA).
+All thresholds Cleared by Tesla 2026-10-29. A goal only counts once the pattern has formed: the waves must have run for `settleTime()` = 0.8 x 40 cm / 24 cm/s = 1.33 s of tank time since the last change (Cleared by Tesla 2026-10-29).
 
 | Tier | Goal | Threshold |
 | --- | --- | --- |
-| Bronze | Exactly 2 dark lines with two dippers | 2 floor(d/lambda + 1/2) = 2, so 0.5 <= d/lambda < 1.5 (TODO-TESLA) |
-| Silver | One-slit diffraction | Straight dipper, one slit, a/lambda <= 1 (`FUN.slitMax`, TODO-TESLA) |
-| Gold | Double-slit pattern | Straight dipper, two slits, a/lambda <= 1 and d/lambda >= 2 (`FUN.dMin`, TODO-TESLA) |
+| Bronze | Exactly 2 dark lines with two dippers | 2 floor(d/lambda + 1/2) = 2, so 0.5 <= d/lambda < 1.5 (Cleared by Tesla 2026-10-29) |
+| Silver | One-slit diffraction | Straight dipper, one slit, a/lambda <= 1 (`FUN.slitMax`, Cleared by Tesla 2026-10-29) |
+| Gold | Double-slit pattern | Straight dipper, two slits, a/lambda <= 1 and d/lambda >= 2 (`FUN.dMin`, Cleared by Tesla 2026-10-29) |
 
-- Prediction: with two dippers, "Next change: more or fewer dark lines?" resolves when the frequency slider is released or a dipper is dropped (TODO-TESLA).
+- Prediction: with two dippers, "Next change: more or fewer dark lines?" resolves when the frequency slider is released or a dipper is dropped (Cleared by Tesla 2026-10-29).
 
 ## Shared layer constants (`public/shared/fun/`)
 These are feel constants from Leo's spec, not physics, but they're listed here for completeness:
