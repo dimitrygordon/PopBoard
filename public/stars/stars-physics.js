@@ -38,7 +38,8 @@ export const VERY_LONG_MAX = 0.35;         // below: lifetime shown as about 1 t
 export const VERY_LONG_GYR = 1000;
 
 export const MODE_ALIASES = Object.freeze({
-  build: "build", sandbox: "build", star: "build",
+  build: "build", star: "build",
+  sandbox: "sandbox", free: "sandbox", play: "sandbox",
   equilibrium: "equilibrium", hydrostatic: "equilibrium", balance: "equilibrium", pressure: "equilibrium",
   fusion: "fusion", pp: "fusion", cno: "fusion",
   transport: "transport", convection: "transport", energy: "transport",

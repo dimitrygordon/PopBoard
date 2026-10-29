@@ -27,13 +27,17 @@ export function readTokens() {
   const g = (n, d) => cs.getPropertyValue(n).trim() || d;
   const band = {};
   for (const b of BANDS) band[b.id] = g("--es-" + b.id, b.color);
-  return { ink: g("--es-ink", "#1c1c1c"), dim: g("--es-ink-dim", "#6b6b6b"), paper: g("--es-paper", "#f0f0ec"),
-    gold: g("--es-gold", "#ffc43c"), text: g("--es-text", "#e8e8ea"), textDim: g("--es-dim", "#a6a8b2"), band };
+  const t = { ink: g("--es-ink", "#1c1c1c"), dim: g("--es-ink-dim", "#6b6b6b"), paper: g("--es-paper", "#f0f0ec"),
+    gold: g("--es-gold", "#ffc43c"), text: g("--es-text", "#e8e8ea"), textDim: g("--es-dim", "#a6a8b2"), band,
+    card: g("--es-card", "#fff"), shade: g("--es-shade", "rgba(0,0,0,0.06)"), shade2: g("--es-shade-2", "rgba(0,0,0,0.12)"), shade3: g("--es-shade-3", "rgba(0,0,0,0.28)") };
+  INK = t.ink;
+  return t;
 }
+let INK = "#1c1c1c";   // default text color, the current theme's ink
 
 const FONT = (px, w = 400) => `${w} ${px}px Inter, system-ui, sans-serif`;
 const MONO = (px) => `${px}px ui-monospace, Menlo, monospace`;
-function text(ctx, s, x, y, { font = FONT(12), color = "#1c1c1c", align = "left", base = "middle" } = {}) {
+function text(ctx, s, x, y, { font = FONT(12), color = INK, align = "left", base = "middle" } = {}) {
   ctx.font = font; ctx.fillStyle = color; ctx.textAlign = align; ctx.textBaseline = base; ctx.fillText(s, x, y);
 }
 function arrow(ctx, x0, y0, x1, y1, color, width = 2, head = 8) {
@@ -119,7 +123,7 @@ export function drawWave(ctx, w, h, T, { lambda, phase, icons }) {
   SCALE.forEach((s, i) => {
     const cx = 10 + cell * (i + 0.5);
     if (i === near) {
-      ctx.fillStyle = "#fff"; ctx.strokeStyle = T.ink; ctx.lineWidth = 2;
+      ctx.fillStyle = T.card; ctx.strokeStyle = T.ink; ctx.lineWidth = 2;
       roundRect(ctx, cx - cell / 2 + 2, sy - 4, cell - 4, sh, 8); ctx.fill(); ctx.stroke();
     }
     if (icon > 10) fitImage(ctx, icons["scale-" + s.id], cx - icon / 2, sy, icon, icon);
@@ -156,7 +160,7 @@ export function drawEnergy(ctx, w, h, T, { eA, eB, marks }) {
   text(ctx, "Photon energy, E = h f (log scale)", 14, 16, { font: FONT(13, 600) });
   // ionizing region
   const xi = X(IONIZING_EV);
-  ctx.fillStyle = "rgba(0,0,0,0.06)"; ctx.fillRect(xi, 30, w - pad.r - xi, ay - 30);
+  ctx.fillStyle = T.shade; ctx.fillRect(xi, 30, w - pad.r - xi, ay - 30);
   ctx.strokeStyle = T.ink; ctx.setLineDash([5, 4]); ctx.lineWidth = 1;
   ctx.beginPath(); ctx.moveTo(xi, 30); ctx.lineTo(xi, ay); ctx.stroke(); ctx.setLineDash([]);
   text(ctx, "ionizing \u2192", xi + 6, 40, { font: FONT(12, 600) });
@@ -188,7 +192,7 @@ export function drawEnergy(ctx, w, h, T, { eA, eB, marks }) {
     arrow(ctx, x, y, x, ay - 2, T.ink, 2.5, 10);
     ctx.fillStyle = T.gold; ctx.strokeStyle = T.ink; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.arc(x, y, 13, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    text(ctx, label, x, y + 1, { font: FONT(13, 700), align: "center" });
+    text(ctx, label, x, y + 1, { font: FONT(13, 700), color: "#1c1c1c", align: "center" });
     text(ctx, formatEnergyEV(eV), Math.min(w - 30, Math.max(30, x)), y - 22, { font: MONO(12), align: "center" });
   };
   pin(eA, "A", ay - 110 > 70 ? ay - 110 : 80);
@@ -240,7 +244,7 @@ export function drawOpacity(ctx, w, h, T, { lambda }) {
   const pw = w - pad.l - pad.r, ph = h - pad.t - pad.b;
   const X = (l) => pad.l + pw * posOf(l), Y = (op) => pad.t + ph * (1 - op);
   text(ctx, "Atmospheric opacity (sea level, looking straight up)", 10, 14, { font: FONT(13, 600) });
-  ctx.strokeStyle = "rgba(0,0,0,0.12)"; ctx.lineWidth = 1;
+  ctx.strokeStyle = T.shade2; ctx.lineWidth = 1;
   for (let i = 0; i <= 4; i++) { ctx.beginPath(); ctx.moveTo(pad.l, Y(i / 4)); ctx.lineTo(pad.l + pw, Y(i / 4)); ctx.stroke(); }
   for (const [op, s] of [[0, "0%"], [0.5, "50%"], [1, "100%"]]) text(ctx, s, pad.l - 6, Y(op), { font: MONO(10), align: "right" });
   text(ctx, "opaque", pad.l + 4, Y(1) + 9, { font: FONT(10), color: T.dim });
@@ -249,7 +253,7 @@ export function drawOpacity(ctx, w, h, T, { lambda }) {
   ctx.beginPath(); ctx.moveTo(pad.l, Y(0));
   for (let i = 0; i <= pw; i++) ctx.lineTo(pad.l + i, Y(1 - transmission(lambdaAt(i / pw))));
   ctx.lineTo(pad.l + pw, Y(0)); ctx.closePath();
-  ctx.fillStyle = "rgba(0,0,0,0.28)"; ctx.fill();
+  ctx.fillStyle = T.shade3; ctx.fill();
   ctx.strokeStyle = T.ink; ctx.lineWidth = 2;
   ctx.beginPath();
   for (let i = 0; i <= pw; i++) { const y = Y(1 - transmission(lambdaAt(i / pw))); if (i) ctx.lineTo(pad.l + i, y); else ctx.moveTo(pad.l, y); }

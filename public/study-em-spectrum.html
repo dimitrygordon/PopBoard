@@ -3,17 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#20232e">
 <title>Electromagnetic Spectrum Explorer // PopBoard</title>
 <link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  // Theme before first paint: a saved choice wins, else the system setting.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.em-spectrum.theme"); } catch (e) {}
+    if (t !== "dark" && t !== "light") t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
 <link rel="stylesheet" href="em-spectrum/emspec-theme.css">
 <link rel="stylesheet" href="astro-study.css?v=20261021k">
 <script src="astro-study.js?v=20261021k"></script>
 </head>
 <body>
 <h1 class="sr-only">Electromagnetic Spectrum Explorer</h1>
-<p class="sr-only">Slide through the spectrum from radio to gamma rays. See the wavelength, frequency and photon energy, which bands get through the atmosphere, how telescopes catch each band, and how the same objects look in each band.</p>
+<p class="sr-only">Slide through the spectrum from radio to gamma rays. See the wavelength, frequency and photon energy, which bands get through the atmosphere, how telescopes catch each band, and how the same objects look in each band, or open every control at once in a free-play sandbox.</p>
 
 <header class="hud">
   <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
@@ -21,6 +30,10 @@
     <span class="back-label">Back</span>
   </button>
   <p class="title">Seeing the Invisible: the Electromagnetic Spectrum</p>
+  <button id="themeBtn" class="theme-btn" type="button" aria-pressed="false" aria-label="Dark mode">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <span id="themeLabel">Dark</span>
+  </button>
 </header>
 
 <section class="bandbar" aria-label="Bands">
@@ -83,6 +96,21 @@
       <figure class="seen-by"><img id="skyScope" alt="" width="120" height="120"><figcaption id="skyScopeCap"></figcaption></figure>
     </div>
   </section>
+  <section class="mode" data-mode="sandbox" aria-label="Sandbox" hidden>
+    <div class="sb-art">
+      <div class="paper canvas-box"><canvas id="sbWaveCanvas"></canvas></div>
+      <div class="sky-box sb-sky"><canvas id="sbSkyCanvas"></canvas><p id="sbSkyLabel" class="sky-label"></p></div>
+    </div>
+    <div class="controls paper">
+      <p class="caption" id="sbHelp"></p>
+      <label class="slider"><span>Wavelength &lambda;</span><input id="sbLambda" type="range" min="0" max="1000" step="1" aria-label="Sandbox wavelength, log scale"><output id="sbLambdaOut"></output></label>
+      <label class="slider"><span>Frequency f</span><input id="sbFreq" type="range" min="0" max="1000" step="1" aria-label="Sandbox frequency, log scale"><output id="sbFreqOut"></output></label>
+      <label class="slider"><span>Compare with photon B &lambda;</span><input id="sbLambdaB" type="range" min="0" max="1000" step="1" aria-label="Sandbox photon B wavelength, log scale"><output id="sbBOut"></output></label>
+      <div id="sbObjects" class="object-buttons" role="group" aria-label="Pick an object for the sky view"></div>
+      <p class="formula" id="sbReadout" aria-live="polite"></p>
+      <p class="caption" id="sbNote"></p>
+    </div>
+  </section>
 </main>
 
 <nav id="toolbar" class="toolbar" aria-label="Activities">
@@ -91,6 +119,7 @@
   <button type="button" class="tool" data-show="atmosphere" aria-pressed="false">Atmosphere</button>
   <button type="button" class="tool" data-show="telescopes" aria-pressed="false">Telescopes</button>
   <button type="button" class="tool" data-show="sky" aria-pressed="false">Sky views</button>
+  <button type="button" class="tool" data-show="sandbox" aria-pressed="false">Sandbox</button>
 </nav>
 
 <script type="module" src="em-spectrum/emspec-ui.js"></script>

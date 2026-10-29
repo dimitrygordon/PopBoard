@@ -94,3 +94,7 @@ Measured from the alpha channel of the WebP layers (center 512, 512):
 | Spinning shadow "shifted 18 px left, left side flattened" | edges at −137 and +133 (center about 2 px left), 270 px wide instead of 303, only mildly flattened | does not match; the code measures the real edges (137, 133) and maps them to the physics |
 | Spinning ring "left side brighter" | left 255, right 170 | matches |
 | Astronaut frame 1 about 330 px wide | 327 px | matches |
+
+## Sandbox mode (?mode=sandbox)
+
+The sandbox shows every control (mass, spin, probe distance, lensing toggle) and the union of the readouts from the other views, each once. The stage shows the ISCO ellipses and the probe, and the side diagram is the radius map. The probe distance r doubles as the light ray impact parameter b, as in the lensing view. No new numbers or formulas are introduced.

@@ -97,3 +97,7 @@ Revised after Tesla's review (O-star temperatures were too hot; low-mass radius 
 ## 9. Color
 
 Star tint by surface temperature, interpolated in log T: 2,500 K deep red, 3,500 K red-orange, 4,500 K orange, 5,772 K gold, 7,500 K white, 10,000 K pale blue, 30,000 K blue. Artistic, not a blackbody conversion. The supernova art uses a fixed 4,400 K orange tint.
+
+## Sandbox mode (?mode=sandbox)
+
+The sandbox opens every control at once: mass, helium (opened by default) and the stage scrubber, with the H-R plot. Its caption repeats numbers the other views already show (luminosity, surface temperature, spectral class, radius, core temperature, pp and CNO shares, energy transport zones, lifetime and fate). It adds no new numbers or claims. Note: ?mode=sandbox used to be an alias for the H-R view; it now opens the sandbox.

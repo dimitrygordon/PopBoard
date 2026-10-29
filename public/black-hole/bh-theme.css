@@ -5,13 +5,26 @@
   --bh-paper: #ffffff;
   --bh-ink: #161616;
   --bh-ink-2: #4a4a4a;
-  --bh-ink-3: #8a8a8a;
+  --bh-ink-3: #6e6e6e;
   --bh-rule: #d6d6d6;
   --bh-wash: #f2f2f2;
   --bh-sky: #0c0c0e;
   --bh-accent: #b8892b;          /* the one muted accent (photon ring tint, ISCO) */
+  --bh-accent-ink: #8a6516;      /* the same accent, dark enough for text on paper */
+  --bh-hole: #161616;
   --bh-hit: 44px;
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+:root[data-theme="dark"] {
+  --bh-paper: #16181d;
+  --bh-ink: #ececec;
+  --bh-ink-2: #bdbdbd;
+  --bh-ink-3: #9a9a9a;
+  --bh-rule: #3a3d46;
+  --bh-wash: #23262e;
+  --bh-accent: #d4a54a;
+  --bh-accent-ink: #e0b860;
+  --bh-hole: #000000;
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -28,6 +41,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--bh-accent);
   padding: 6px 14px; border-radius: 8px; border: 1.5px solid var(--bh-ink); background: var(--bh-paper); color: var(--bh-ink);
   font-weight: 600; font-size: 14px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .hud button[aria-selected="true"], .chip[aria-pressed="true"], .presets button[aria-pressed="true"] { background: var(--bh-ink); color: var(--bh-paper); }
+.theme-btn[aria-pressed="true"] { background: var(--bh-accent); border-color: var(--bh-accent); color: #161616; }
 .title { margin: 0; font-weight: 700; font-size: 17px; }
 .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto; }
 
