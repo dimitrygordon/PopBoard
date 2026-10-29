@@ -8,7 +8,26 @@ export const FX_MS = { plume: 900, quake: 700 };
 
 export function loadArt(base = "plate-tectonics/art/") {
   const imgs = {};
-  return Promise.all(ART.map((n) => new Promise((res) => { const i = new Image(); i.onload = i.onerror = () => res(); i.src = base + n + ".webp"; imgs[n] = i; }))).then(() => imgs);
+  return Promise.all(ART.map((n) => new Promise((res) => { const i = new Image(); i.onload = i.onerror = () => res(); i.src = base + n + ".webp"; imgs[n] = i; })))
+    .then(() => { for (const n of ART) if (!n.startsWith("tex-") && imgs[n].naturalWidth) imgs[n] = stripHalo(imgs[n]); return imgs; });
+}
+
+// The sprites carry a white sticker halo (about 8 px of near-white around the outline). Peel it off:
+// near-white pixels connected to the transparent outside become transparent, a few px at a time.
+export function stripHalo(img, passes = 10) {
+  const w = img.naturalWidth, h = img.naturalHeight, c = document.createElement("canvas"); c.width = w; c.height = h;
+  const g = c.getContext("2d", { willReadFrequently: true }); g.drawImage(img, 0, 0);
+  const d = g.getImageData(0, 0, w, h), a = d.data, white = (i) => a[i] >= 236 && a[i + 1] >= 236 && a[i + 2] >= 236;
+  for (let k = 0; k < passes; k++) {
+    const clear = [];
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4; if (a[i + 3] < 16 || !white(i)) continue;
+      const out = (xx, yy) => xx < 0 || yy < 0 || xx >= w || yy >= h || a[(yy * w + xx) * 4 + 3] < 16;
+      if (out(x - 1, y) || out(x + 1, y) || out(x, y - 1) || out(x, y + 1)) clear.push(i);
+    }
+    if (!clear.length) break; for (const i of clear) a[i + 3] = 0;
+  }
+  g.putImageData(d, 0, 0); c.naturalWidth = w; c.naturalHeight = h; return c;
 }
 
 export function createScene(canvas, imgs) {
@@ -32,6 +51,15 @@ export function createScene(canvas, imgs) {
     return { x: cx - w / 2, y: bottom - h * anchor, w, h };
   }
   function rect(x0, x1, y0, y1, style) { if (x1 <= x0) return; ctx.fillStyle = style; ctx.fillRect(x0, y0, x1 - x0, y1 - y0); ctx.strokeStyle = pal.ink; ctx.lineWidth = 1.5; ctx.strokeRect(x0, y0, x1 - x0, y1 - y0); }
+  // Small paper pill behind a canvas label, matching the HTML .tag pills (Volcano etc.).
+  function pill(text, x, y, align = "left") {
+    ctx.font = "600 12px system-ui, sans-serif"; const cs = getComputedStyle(canvas), tw = ctx.measureText(text).width, padX = 8, hgt = 20;
+    const x0 = align === "right" ? x - tw - padX : x - padX, y0 = y - 14;
+    ctx.beginPath(); ctx.roundRect(x0, y0, tw + padX * 2, hgt, hgt / 2);
+    ctx.fillStyle = cs.getPropertyValue("--pt-chip").trim() || "rgba(255,252,245,0.86)"; ctx.fill();
+    ctx.strokeStyle = cs.getPropertyValue("--pt-border").trim() || "#a39c8a"; ctx.lineWidth = 1; ctx.stroke();
+    label(text, x, y, align, cs.getPropertyValue("--pt-ink").trim() || pal.ink);
+  }
   function label(text, x, y, align = "left", color = pal.dim) { ctx.font = "600 12px system-ui, sans-serif"; ctx.textAlign = align; ctx.fillStyle = color; ctx.fillText(text, x, y); }
 
   // ---------- geometry ----------
@@ -80,7 +108,7 @@ export function createScene(canvas, imgs) {
     ctx.beginPath(); ctx.arc(ax, ay, 7, 0, Math.PI * 2); ctx.fillStyle = pal.handle; ctx.fill(); ctx.strokeStyle = pal.ink; ctx.lineWidth = 2; ctx.stroke();
     ctx.restore();
     ctx.strokeStyle = pal.ink; ctx.lineWidth = 1.5; ctx.strokeRect(g.x, y0, g.w, g.mapH);
-    label("Top view", g.x + 8, y0 + 16, "left", pal.ink);
+    pill("Top view", g.x + 14, y0 + 20, "left");
   }
 
   function drawSection(st, o, g, now, fx, dx) {
@@ -111,8 +139,10 @@ export function createScene(canvas, imgs) {
         water(lx, rx, "oceanic"); rect(lx, rx, g.ocean[0], g.ocean[1], fill(pats.ocean));
         if (st.hotspot) { ctx.fillStyle = pal.plume; ctx.fillRect(g.cx - 14, g.ocean[1], 28, g.bottom - g.ocean[1]); }
         const rw = Math.min(g.w * 0.34, 260), b = sprite("mid-ocean-ridge", g.cx + dx / 2, g.ocean[1] + rw * 0.05, rw);
-        if (o.islandKm > 0) { const iw = Math.min(g.w * 0.22, 170) * (0.5 + 0.5 * o.islandKm / 2.1); sprite("volcano", g.cx + dx / 2, g.seaY + iw * 0.08, iw); }
-        if (b) anchors.ridge = { x: g.cx + dx / 2, y: (o.islandKm > 0 ? g.seaY - Math.min(g.w * 0.22, 170) * 0.62 : b.y) - 6 };
+        // The island volcano sits on the crust at the ridge crest (its base on the sea floor), not on the water line.
+        let isl = null;
+        if (o.islandKm > 0) { const iw = Math.min(g.w * 0.22, 170) * (0.5 + 0.5 * o.islandKm / 2.1); isl = sprite("volcano", g.cx + dx / 2, (b ? b.y + b.h * 0.12 : g.ocean[0]) + iw * 0.02, iw); }
+        if (b) anchors.ridge = { x: g.cx + dx / 2, y: (isl ? isl.y : b.y) - 6 };
       }
     } else if (o.type === "convergent" && o.shortenKm > 0) {
       if (o.feature === "mountains") {
@@ -121,8 +151,11 @@ export function createScene(canvas, imgs) {
         if (b) anchors.mountains = { x: g.cx, y: b.y - 6 };
       } else {
         const flip = o.subducting === "right", tw = Math.min(g.w * 0.62, 470);
-        sprite("trench", g.cx + dx * 0.5, g.ocean[1] + tw * 0.32, tw, { alpha: Math.min(1, o.shortenKm / 80), flip });
-        const over = flip ? st.left : st.right, vxPos = g.cx + (flip ? -1 : 1) * tw * 0.3;
+        const tr = sprite("trench", g.cx + dx * 0.5, g.ocean[1] + tw * 0.32, tw, { alpha: Math.min(1, o.shortenKm / 80), flip });
+        // Tuck the slab under the overriding plate: redraw that plate's crust over the sprite from the trench axis outward.
+        const over = flip ? st.left : st.right;
+        if (tr) { const axis = g.cx + dx * 0.5 + (flip ? 1 : -1) * tw * 0.04; if (flip) plateRect(over, g.x - 2, axis, g); else plateRect(over, axis, g.x + g.w + 2, g); }
+        const vxPos = g.cx + (flip ? -1 : 1) * tw * 0.3;
         const top = over === "continental" ? g.cont[0] : g.seaY;
         if (o.volcano) {
           const vw = Math.min(g.w * 0.2, 150), v = sprite("volcano", vxPos, top + vw * 0.06, vw);
@@ -141,8 +174,8 @@ export function createScene(canvas, imgs) {
     if (o.type === "transform") { ctx.strokeStyle = pal.ink; ctx.setLineDash([5, 4]); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(g.cx, g.top); ctx.lineTo(g.cx, g.cont[1] + 20); ctx.stroke(); ctx.setLineDash([]); anchors.fault = { x: g.cx, y: g.cont[0] - 10 }; }
     ctx.restore();
     // Layer labels (crust types and the mantle).
-    label(st.left === "continental" ? "Continental crust" : "Oceanic crust", g.x + 8, crustBand(st.left, g)[1] - 6, "left", pal.inkOn);
-    label(st.right === "continental" ? "Continental crust" : "Oceanic crust", g.x + g.w - 8, crustBand(st.right, g)[1] - 6, "right", pal.inkOn);
+    pill(st.left === "continental" ? "Continental crust" : "Oceanic crust", g.x + 14, crustBand(st.left, g)[1] - 8, "left");
+    pill(st.right === "continental" ? "Continental crust" : "Oceanic crust", g.x + g.w - 14, crustBand(st.right, g)[1] - 8, "right");
     ctx.strokeStyle = pal.ink; ctx.lineWidth = 1.5; ctx.strokeRect(g.x, g.top, g.w, g.bottom - g.top);
     anchors.mantle = { x: g.x + 8, y: g.bottom - 10 };
     return anchors;

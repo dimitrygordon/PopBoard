@@ -2,7 +2,7 @@
 // the time scrubber, predict-then-run and the fun layer. Model: pt-model.js. View: pt-scene.js.
 import { forwardStudyQuery } from "../board-return.js?v=20261022a";
 import {
-  MODULE_ID, RIDGE_CAPTION, MANTLE_LABEL, SCALE_LABEL, MAX_RATE, MAX_TIME, BOUNDARY, T, FUN, GOALS, PREDICT, SCENES, SHARE_SCHEMA, FOSSILS,
+  MODULE_ID, RIDGE_CAPTION, MANTLE_LABEL, MANTLE_INFO, SCALE_LABEL, MAX_RATE, MAX_TIME, BOUNDARY, T, FUN, GOALS, PREDICT, SCENES, SHARE_SCHEMA, FOSSILS,
   classify, outcome, stepFault, judgePrediction, isIceland, fossilFit
 } from "./pt-model.js";
 import { createScene, loadArt, FX_MS } from "./pt-scene.js";
@@ -22,7 +22,7 @@ const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { ret
 const fmt = (v) => (Math.abs(v) < 0.05 ? "0" : v.toFixed(1));
 
 // ---------- about card ("?") ----------
-$("aboutMantle").textContent = MANTLE_LABEL + " It is not melted. Magma only forms in small pockets, like under the ridge and above the sinking slab.";
+$("aboutMantle").textContent = MANTLE_INFO;
 $("aboutScale").textContent = SCALE_LABEL + " Plates move a few centimeters a year, so time here runs in millions of years.";
 const syncLabel = () => { $("modelLabel").textContent = phone.matches ? "Mantle: solid rock that flows slowly. Not to scale." : MANTLE_LABEL + " " + SCALE_LABEL; };
 let lastFocus = null;
@@ -121,9 +121,12 @@ function predictRow() {
   for (const p of PREDICT) row.appendChild(pressed(btn(p.label, () => { guess = guess === p.id ? null : p.id; prediction.predict(guess); renderMode(); }), guess === p.id));
   return row;
 }
+// The crust buttons always reflect st, even when st changes outside the buttons (share links, scenes, hooks).
+let shownCrust = "";
 function crustPick(side) {
+  shownCrust = st.left + "/" + st.right;
   const row = el("div", { className: "row" }, el("span", { className: "dim", textContent: side === "left" ? "Left plate" : "Right plate" }));
-  for (const [v, label] of [["oceanic", "Oceanic"], ["continental", "Continental"]]) row.appendChild(pressed(btn(label, () => { st[side] = v; resetRun(); }), st[side] === v));
+  for (const [v, label] of [["oceanic", "Oceanic"], ["continental", "Continental"]]) { const b = pressed(btn(label, () => { st[side] = v; resetRun(); }), st[side] === v); b.dataset.crust = side; row.appendChild(b); }
   return row;
 }
 function renderMode() {
@@ -149,6 +152,7 @@ function renderMode() {
 
 // ---------- time ----------
 function advance(dMyr) {
+  if (shownCrust && shownCrust !== st.left + "/" + st.right && body.querySelector("[data-crust]")) renderMode();
   const before = st.t; st.t = Math.min(MAX_TIME, Math.max(0, st.t + dMyr)); const d = st.t - before;
   if (d > 0 && classify(st.vx, st.vy) === "transform") {
     fault = stepFault(fault, st.vy, d);

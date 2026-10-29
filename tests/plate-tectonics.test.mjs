@@ -31,6 +31,21 @@ test("subduction: the oceanic plate sinks, volcano after ~200 km of slab", () =>
   assert.equal(M.outcome({ left: "continental", right: "oceanic", vx: -5, t: 4 }).subducting, "right");
   assert.equal(M.outcome({ left: "oceanic", right: "continental", vx: -5, t: 4 }).volcano, true);
 });
+test("continent vs continent: no trench, no slab, no volcano, only fold mountains (Leo)", () => {
+  for (const t of [2, 4, 10, 30, 60]) {
+    const o = M.outcome({ left: "continental", right: "continental", vx: -5, t });
+    assert.equal(o.feature, "mountains"); assert.ok(!o.subducting); assert.ok(!o.volcano); assert.ok(o.mountainKm > 0);
+  }
+  const ui = read("plate-tectonics/pt-ui.js"); // crust buttons resync when st changes outside them
+  assert.match(ui, /shownCrust !== st\.left \+ "\/" \+ st\.right/);
+});
+test("Tesla: fossils, ocean meets ocean, India hint", () => {
+  assert.deepEqual(M.FOSSILS.map((f) => f.name), ["Mesosaurus", "Glossopteris", "Cynognathus"]);
+  const all = FILES.map(read).join("\n") + read("study.html"); assert.ok(!/Lystrosaurus/.test(all));
+  const doc = readFileSync(new URL("../docs/plate-tectonics-science.md", import.meta.url), "utf8");
+  assert.match(doc, /This Dynamic Earth/); assert.match(doc, /one plate sinks/); assert.ok(!/moving plate's edge sinks/.test(doc));
+  assert.match(M.SCENES.find((s) => s.id === "himalaya").hint, /^Push India \(south\) north into Asia\./);
+});
 test("continents collide into mountains that level off near 8.8 km", () => {
   const c = { left: "continental", right: "continental" };
   assert.equal(M.outcome({ ...c, vx: -5, t: 10 }).feature, "mountains");
@@ -71,13 +86,18 @@ test("share schema clamps and drops junk", async () => {
   const { sanitizeState } = await import("../public/shared/fun/fun-core.js");
   assert.deepEqual(sanitizeState({ left: "lava", right: "continental", vx: 99, vy: -99, t: 500, hotspot: "yes" }, M.SHARE_SCHEMA), { right: "continental", vx: 10, vy: -10, t: 60 });
 });
-test("Leo: ridge caption is live text, mantle is solid rock (never liquid)", () => {
+test("Tesla: ridge caption is live text, mantle is solid rock that flows, not a sea of magma", () => {
   assert.equal(M.RIDGE_CAPTION, "Magma rises here.");
   assert.match(read("study-plate-tectonics.html"), /<p class="tag ridge-caption" id="ridgeCaption"/);
   assert.match(read("plate-tectonics/pt-ui.js"), /\$\("ridgeCaption"\)\.textContent = RIDGE_CAPTION/);
   assert.match(M.MANTLE_LABEL, /solid rock that flows slowly/);
   const copy = FILES.map(read).join("\n") + read("study.html").split('id: "plate-tectonics"')[1].split("}")[0];
-  assert.ok(!/(liquid|molten|melted) (mantle|rock layer)|mantle (is|of) (liquid|molten|lava)|sea of (magma|lava)/i.test(copy));
+  assert.equal(M.MANTLE_INFO, "The mantle is solid rock that flows slowly, not a sea of magma. Melting happens only in small zones, like under ridges and above sinking plates.");
+  assert.match(read("plate-tectonics/pt-ui.js"), /\$\("aboutMantle"\)\.textContent = MANTLE_INFO/);
+  assert.ok(read("study.html").includes(M.MANTLE_INFO));
+  const phoneLabel = read("plate-tectonics/pt-ui.js").match(/phone\.matches \? "([^"]+)"/)[1]; assert.ok(!/liquid/i.test(phoneLabel), phoneLabel);
+  assert.ok(!/liquid/i.test(copy.replace(/never drawn as liquid/g, "")));
+  assert.ok(!/(liquid|molten|melted) (mantle|rock layer)|mantle (is|of) (liquid|molten|lava)/i.test(copy));
 });
 test("Leo: terracotta is the one accent, no glow on the slab", () => {
   const css = read("plate-tectonics/plate-tectonics-theme.css"), scene = read("plate-tectonics/pt-scene.js");
@@ -99,7 +119,7 @@ test("page wiring: modes, themes, phone sheet at half, study card, docs", () => 
   assert.match(ui, /bottomSheet\(\$\("controls"\), \$\("sheetHandle"\), \{ getSnaps: snaps, start: 1,/);
   assert.match(ui, /forwardStudyQuery/);
   const study = read("study.html"); assert.match(study, /id: "plate-tectonics"/); assert.match(study, /file: "study-plate-tectonics.html"/);
-  assert.ok(readFileSync(new URL("../docs/plate-tectonics-science.md", import.meta.url), "utf8").includes("TODO-TESLA"));
+  const doc = readFileSync(new URL("../docs/plate-tectonics-science.md", import.meta.url), "utf8"); assert.ok(doc.includes("Cleared by Tesla 2026-10-29") && !doc.includes("TODO-TESLA"));
 });
 test("no em-dashes and no Jasper in module copy", () => {
   for (const f of FILES) { const t = read(f); assert.ok(!t.includes("\u2014"), f); assert.ok(!/jasper/i.test(t), f); }

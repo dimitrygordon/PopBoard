@@ -1,9 +1,10 @@
 // Plate Tectonics: pure model (no DOM). A schematic cross-section of two plates meeting at one
-// boundary. The left plate stays put; the student drags the right plate. Numbers are TODO-TESLA,
+// boundary. The left plate stays put; the student drags the right plate. Numbers are Cleared by Tesla 2026-10-29,
 // see docs/plate-tectonics-science.md.
 
 export const MODULE_ID = "plate-tectonics";
 export const RIDGE_CAPTION = "Magma rises here.";
+export const MANTLE_INFO = "The mantle is solid rock that flows slowly, not a sea of magma. Melting happens only in small zones, like under ridges and above sinking plates.";
 export const MANTLE_LABEL = "Mantle: solid rock that flows slowly, a few centimeters a year.";
 export const SCALE_LABEL = "Not to scale: heights are stretched so you can see them.";
 
@@ -59,7 +60,8 @@ export function outcome({ left = "oceanic", right = "oceanic", vx = 0, vy = 0, t
   out.shortenKm = -vx * tt * KM_PER_CMYR_MYR;
   if (out.shortenKm <= 0) return out;
   if (left === "continental" && right === "continental") { out.feature = "mountains"; out.mountainKm = mountainHeight(out.shortenKm); return out; }
-  // Denser oceanic rock sinks. Ocean meets ocean: the moving (right) plate's edge dives under.
+  // Denser oceanic rock sinks under continental crust. Ocean meets ocean: one plate sinks (the model does not
+  // track plate age, so it draws the right plate's edge diving under; in reality the older, colder, denser plate sinks).
   out.subducting = left === "oceanic" && right === "continental" ? "left" : "right";
   out.feature = "subduction";
   out.volcano = out.shortenKm >= T.volcanoSlabKm;
@@ -83,7 +85,7 @@ export const PREDICT = [
 ];
 export const judgePrediction = (guess, feature) => guess === (feature === "rift" ? "ridge" : feature);
 
-// ---------- challenges (TODO-TESLA thresholds) ----------
+// ---------- challenges (Cleared by Tesla 2026-10-29 thresholds) ----------
 export const FUN = { himalayaKm: 8, islandKm: 0.5 };
 export const isIceland = (s, o) => s.left === "oceanic" && s.right === "oceanic" && s.hotspot && o.feature === "ridge" && o.islandKm >= FUN.islandKm;
 export const GOALS = [
@@ -98,7 +100,7 @@ export const GOALS = [
 export const FOSSILS = [
   { id: "mesosaurus", name: "Mesosaurus", note: "a small freshwater reptile", y0: 30, y1: 40 },
   { id: "glossopteris", name: "Glossopteris", note: "a seed fern", y0: 55, y1: 66 },
-  { id: "lystrosaurus", name: "Lystrosaurus", note: "a land reptile", y0: 78, y1: 86 }
+  { id: "cynognathus", name: "Cynognathus", note: "a land reptile", y0: 78, y1: 86 }
 ];
 export const SEAM = [[52, 4], [57, 14], [54, 24], [60, 34], [56, 46], [62, 58], [58, 70], [63, 82], [57, 96]];
 export const PIECES = {
@@ -118,6 +120,6 @@ export const SHARE_SCHEMA = {
 // Guided scenes: each sets the crust types; the student still does the dragging.
 export const SCENES = [
   { id: "iceland", name: "Make Iceland", left: "oceanic", right: "oceanic", hotspot: true, hint: "Pull the plates apart, then run time." },
-  { id: "himalaya", name: "Build the Himalaya", left: "continental", right: "continental", hotspot: false, hint: "Push India (right) into Asia (left) and run time." },
+  { id: "himalaya", name: "Build the Himalaya", left: "continental", right: "continental", hotspot: false, hint: "Push India (south) north into Asia. On screen, drag the right plate left, then run time." },
   { id: "sanandreas", name: "Quake on a transform fault", left: "continental", right: "continental", hotspot: false, hint: "Drag the right plate sideways (up or down), then run time." }
 ];
