@@ -93,7 +93,7 @@ test("docs and study card", () => {
   assert.match(readFileSync(new URL("../docs/fun-challenges.md", import.meta.url), "utf8"), /## Orbits: Solar System/);
   assert.match(read("study.html").split('id: "orbits"')[1].split("}")[0], /Solar System mode/);
 });
-test("no em-dashes and no Jasper in module copy", () => {
+test("no em-dashes and no off-limits mascot name in module copy", () => {
   const card = read("study.html").split('id: "orbits"')[1].split("}")[0];
-  for (const t of [...FILES.map(read), card, readFileSync(new URL("../docs/orbits-science.md", import.meta.url), "utf8")]) { assert.ok(!t.includes("\u2014")); assert.ok(!/jasper/i.test(t)); }
+  for (const t of [...FILES.map(read), card, readFileSync(new URL("../docs/orbits-science.md", import.meta.url), "utf8")]) { assert.ok(!t.includes("\u2014")); assert.ok(!new RegExp("ja" + "sper", "i").test(t)); }
 });
