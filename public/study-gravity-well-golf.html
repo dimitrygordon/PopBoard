@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#141b26">
+<title>Gravity Well Golf // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.gravity-well-golf.theme"); } catch (e) {}
+    document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");
+  })();
+</script>
+<link rel="stylesheet" href="shared/fun/fun.css">
+<link rel="stylesheet" href="gravity-well-golf/gravity-well-golf-theme.css">
+</head>
+<body>
+<h1 class="sr-only">Gravity Well Golf</h1>
+<p class="sr-only">Mini golf on a stretchy sheet that models curved spacetime. Masses pull the ball with a Newtonian inverse-square pull. Drag masses into place, pull back from the ball and let go to putt.</p>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title">Gravity Well Golf</p>
+  <button id="helpBtn" type="button" class="fun-help" aria-label="About the sheet model" aria-haspopup="dialog">?</button>
+  <button id="soundBtn" type="button" aria-pressed="false" aria-label="Sound is off">Sound</button>
+  <button id="themeBtn" type="button"><span id="themeLabel">Paper</span></button>
+</header>
+
+<section class="scorecard" aria-live="polite">
+  <p class="hole-name" id="holeName"></p>
+  <p class="hole-stats" id="holeStats"></p>
+</section>
+
+<main id="stage" class="stage">
+  <canvas id="scene" role="img" tabindex="0" aria-label="Golf course on a stretchy sheet"></canvas>
+</main>
+<p class="toast" id="toast" role="status" aria-live="polite" hidden></p>
+<p class="model-label" id="modelLabel"></p>
+
+<div class="canvas-box" id="funBox"></div>
+
+<section class="controls" id="controls" aria-label="Golf controls">
+  <button type="button" class="fun-handle" id="sheetHandle" aria-label="Resize controls"></button>
+  <div class="tabs" role="tablist" aria-label="Mode">
+    <button type="button" role="tab" data-mode="course" aria-selected="true">Course</button>
+    <button type="button" role="tab" data-mode="sandbox" aria-selected="false">Sandbox</button>
+  </div>
+  <div id="modeBody" class="mode-body"></div>
+</section>
+
+<div class="caveat-wrap" id="caveat" hidden>
+  <section class="caveat" role="dialog" aria-modal="true" aria-labelledby="caveatTitle">
+    <p class="caveat-title" id="caveatTitle">About this model</p>
+    <p id="caveatText"></p>
+    <p class="caveat-small" id="caveatModel"></p>
+    <button type="button" id="caveatOk" class="primary">Got it</button>
+  </section>
+</div>
+
+<script type="module" src="gravity-well-golf/gwg-ui.js"></script>
+</body>
+</html>

@@ -20,6 +20,7 @@ Every equation, constant, number and claim the Rocket Science & Space Mission mo
 - [SUTTON] G. P. Sutton and O. Biblarz, Rocket Propulsion Elements, 9th ed., ch. 2 and 4 (thrust, Isp, flight performance, about 9.3 to 9.5 km/s total to low Earth orbit including losses).
 - [NASA-MARS] NASA Mars Exploration: launch windows to Mars open about every 26 months. https://mars.nasa.gov/mars2020/timeline/launch/
 - [NASA-ISS] NASA, International Space Station facts: about 400 km up, about 7.66 km/s, an orbit about every 92 to 93 minutes. https://www.nasa.gov/reference/international-space-station-facts-and-figures/
+- [NASA-MARS-FACT] NASA NSSDCA, Mars Fact Sheet (surface gravity 3.71 m/s^2, surface density about 0.020 kg/m^3). https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html (Mars Lander mode, Cleared by Tesla 2026-10-29)
 - [FAI] Federation Aeronautique Internationale: 100 km (the Karman line) is the commonly used edge of space.
 
 ## Constants
@@ -98,3 +99,33 @@ Sandbox parts (model values): tanks small/medium/large 100/200/395 t propellant 
 - Staging default (F-1 Isp, payload 2%, structure 10%): one stage 6.37 km/s, two stages 8.83 km/s.
 - Orbits: at 400 km, circular speed 7.67 km/s, escape speed 10.9 km/s, period 92.4 min, gravity 8.69 m/s^2 (matches [NASA-ISS]). Escape speed at Earth's surface 11.2 km/s.
 - Hohmann Earth to Mars: delta-v1 2.95 km/s, delta-v2 2.65 km/s, 259 days (8.5 months), Mars 44.4 degrees ahead at launch, windows every 780 days (2.13 years, about 26 months, matching [NASA-MARS]); from a 300 km parking orbit 3.59 km/s. Venus: 146 days, Venus must be about 54 degrees behind Earth. Jupiter: 997 days (about 2.7 years), Jupiter 97 degrees ahead.
+
+## Mars Lander mode (`?mode=mars-lander`)
+
+Status: every claim and number in this section was cleared by Tesla on 2026-10-29. Code: `public/rocket-mission/lander/ml-model.js` (physics and rules), `ml-scene.js` (drawing), `ml-ui.js` (page). Tests: `tests/mars-lander.test.mjs` (`npm run test:marslander`).
+
+### Physics
+- Mars surface gravity is 3.71 m/s^2, about 38% of Earth's 9.81 m/s^2. Source: [NASA-MARS-FACT] https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html Cleared by Tesla 2026-10-29
+- Mars surface air density is about 0.020 kg/m^3, about 1.6% of Earth's 1.225 kg/m^3 at sea level. Copy: "Mars air is less than 2% as dense as Earth's, so it barely slows the lander." Source: [NASA-MARS-FACT]. Cleared by Tesla 2026-10-29
+- Sandbox worlds: Moon 1.62 m/s^2 with no air, Earth 9.81 m/s^2 with 1.225 kg/m^3. Cleared by Tesla 2026-10-29
+- Drag is a = 0.5 rho Cd A v^2 / m, opposite the velocity, with Cd A = 12 m^2. Cleared by Tesla 2026-10-29
+- Thrust points along the lander's axis: a tilt of theta sends sin(theta) of the thrust sideways and cos(theta) upward. Cleared by Tesla 2026-10-29
+- Fuel use is mdot = F / (Isp g0). With F = 6,000 N and Isp = 225 s (a hydrazine engine like the ones on Viking and Phoenix), mdot is about 2.72 kg/s, so 200 kg lasts about 73.5 s of full burn. Cleared by Tesla 2026-10-29
+- Lander: 600 kg dry, 200 kg of fuel, one 6,000 N engine, on or off. Thrust to weight on Mars at the start is 6,000 / (800 x 3.71) = 2.02, so the engine can stop the fall; the Sandbox shows the same lander on Earth (0.76) cannot. Cleared by Tesla 2026-10-29
+- Turning is limited to 60 degrees per second and 45 degrees either way. Cleared by Tesla 2026-10-29
+- Motion uses semi-implicit Euler at 120 steps per second. Cleared by Tesla 2026-10-29
+- Mission start: 170 m above the ground, falling 12 m/s and drifting 5 m/s right, about 100 m left of the pad centre. Cleared by Tesla 2026-10-29
+
+### What counts as a landing
+- Safe touchdown: 3 m/s or slower going down, 1.5 m/s or slower sideways, and within 10 degrees of upright when the first footpad touches. Anything else is a crash ("too fast", "sliding sideways" or "tipped over"). For scale, Phoenix touched down at about 2.4 m/s. Cleared by Tesla 2026-10-29
+- On the pad: both footpads over the 90 m slab (the full drawn pad, `PAD.w`). Cleared by Tesla 2026-10-29
+- Soft: 1.5 m/s or slower going down. Cleared by Tesla 2026-10-29
+
+### Medals (Mission tab only; see docs/fun-challenges.md)
+- Bronze: land safely anywhere. Cleared by Tesla 2026-10-29
+- Silver: land safely on the pad. Cleared by Tesla 2026-10-29
+- Gold: soft landing (1.5 m/s or slower) on the pad with at least 60% of the fuel left (`FUN.goldFuel`). The built-in autopilot used by the tests lands at about 0.9 m/s with about 75% left. Cleared by Tesla 2026-10-29
+
+### Display
+- "Lander and pad not to scale." The lander is modelled 24 m wide and drawn 1.5 times larger (`DRAW_SCALE`, 36 m), about six times a real Mars lander; the pad is 90 m wide, and the on-pad check uses that same full drawn width, so a landing that looks on the pad scores on the pad. Lander physics uses the 24 m model size. The ground outline comes from the top edge of Leo's terrain strip, which spans the 240 m wide world. After touchdown or a crash the view pans (snaps with reduced motion) so the ground sits two thirds of the way down the stage. Cleared by Tesla 2026-10-29
+- Engine glow and landing dust are drawn with radial gradients. Cleared by Tesla 2026-10-29

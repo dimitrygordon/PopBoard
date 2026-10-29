@@ -1,0 +1,241 @@
+// Plate Tectonics view: a 2D canvas with a map strip (top view) over an inked cross-section.
+// Art from art/*.webp (Tesla-cleared). Terracotta is the one accent. The sinking slab is plain
+// gray cold rock: no glow, no blur, no additive blending anywhere near it.
+import { outcome as modelOutcome, PIECES, FOSSILS, MAX_RATE } from "./pt-model.js";
+
+export const ART = ["tex-continental-crust", "tex-oceanic-crust", "tex-mantle", "ridge-crest", "trench", "volcano", "eruption-plume", "lava-glow", "quake-burst", "mountains-fold", "slab-cross-section"];
+// Ridge crest box (Leo, option A): always a true 4:1 with its base flush on the bottom of the oceanic crust.
+// grow = 0 (plain spreading): width set by the layout so the peak (5% down the art) sits 8px below the sea line.
+// grow = 1 (Iceland): 60% of the panel, breaking the surface. Never narrower than the gap + 8px onto each plate.
+export const CREST_EASE_MS = 600;
+export function crestBox(g, lx, rx, dx, grow = 0) {
+  const plainH = Math.max(8, (g.ocean[1] - g.seaY - 8) / 0.95), plainW = plainH * 4, fullW = g.w * 0.6;
+  const cx = g.cx + dx / 2, w = Math.max(plainW + (fullW - plainW) * grow, rx - lx + 16), h = w / 4;
+  return { cx, x: cx - w / 2, y: g.ocean[1] - h, w, h, peakY: g.ocean[1] - 0.95 * h };
+}
+export const FX_MS = { plume: 900, quake: 700 };
+
+export function loadArt(base = "plate-tectonics/art/") {
+  const imgs = {};
+  return Promise.all(ART.map((n) => new Promise((res) => { const i = new Image(); i.onload = i.onerror = () => res(); i.src = base + n + ".webp"; imgs[n] = i; })))
+    .then(() => { for (const n of ART) if (!n.startsWith("tex-") && imgs[n].naturalWidth) imgs[n] = stripHalo(imgs[n]); return imgs; });
+}
+
+// The sprites carry a white sticker halo (about 8 px of near-white around the outline). Peel it off:
+// near-white pixels connected to the transparent outside become transparent, a few px at a time.
+export function stripHalo(img, passes = 10) {
+  const w = img.naturalWidth, h = img.naturalHeight, c = document.createElement("canvas"); c.width = w; c.height = h;
+  const g = c.getContext("2d", { willReadFrequently: true }); g.drawImage(img, 0, 0);
+  const d = g.getImageData(0, 0, w, h), a = d.data, white = (i) => a[i] >= 236 && a[i + 1] >= 236 && a[i + 2] >= 236;
+  for (let k = 0; k < passes; k++) {
+    const clear = [];
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4; if (a[i + 3] < 16 || !white(i)) continue;
+      const out = (xx, yy) => xx < 0 || yy < 0 || xx >= w || yy >= h || a[(yy * w + xx) * 4 + 3] < 16;
+      if (out(x - 1, y) || out(x + 1, y) || out(x, y - 1) || out(x, y + 1)) clear.push(i);
+    }
+    if (!clear.length) break; for (const i of clear) a[i + 3] = 0;
+  }
+  g.putImageData(d, 0, 0); c.naturalWidth = w; c.naturalHeight = h; return c;
+}
+
+export function createScene(canvas, imgs) {
+  const ctx = canvas.getContext("2d");
+  let dpr = 1, box = { x: 0, y: 0, w: 300, h: 300 }, pal = {}, pats = {}, geo = null;
+  const tile = (img, size) => { const c = document.createElement("canvas"); c.width = c.height = size; const g = c.getContext("2d"); g.imageSmoothingQuality = "high"; if (img.naturalWidth) g.drawImage(img, 0, 0, size, size); return c; };
+  function makePatterns() {
+    for (const [k, n, s] of [["cont", "tex-continental-crust", 220], ["ocean", "tex-oceanic-crust", 200], ["mantle", "tex-mantle", 320]]) pats[k] = ctx.createPattern(tile(imgs[n], Math.round(s * dpr)), "repeat");
+  }
+  function resize() {
+    dpr = Math.min(2, devicePixelRatio || 1);
+    canvas.width = Math.round(canvas.clientWidth * dpr); canvas.height = Math.round(canvas.clientHeight * dpr);
+    makePatterns();
+  }
+  const fill = (pat) => { const m = new DOMMatrix().scale(1 / dpr); pat.setTransform?.(m); return pat; };
+  function sprite(name, cx, bottom, w, { alpha = 1, flip = false, anchor = 1 } = {}) {
+    const img = imgs[name]; if (!img || !img.naturalWidth || w <= 1) return null;
+    const h = w * img.naturalHeight / img.naturalWidth;
+    ctx.save(); ctx.globalAlpha *= alpha; ctx.translate(cx, bottom - h * anchor); if (flip) { ctx.translate(w / 2, 0); ctx.scale(-1, 1); ctx.translate(-w / 2, 0); }
+    ctx.drawImage(img, flip ? 0 : -w / 2, 0, w, h); ctx.restore();
+    return { x: cx - w / 2, y: bottom - h * anchor, w, h };
+  }
+  // Ridge crest with its outer 8px (4% on wide panels) feathered (1px slices at rising alpha) so the ends blend into the plate crust.
+  const crestEase = { t: null, now: null };
+  function crest(b) {
+    const img = imgs["ridge-crest"]; if (!img || !img.naturalWidth) return null;
+    const k = img.naturalWidth / b.w, F = Math.max(8, Math.round(b.w * 0.04)), slice = (dx0, dw, a) => { ctx.globalAlpha = a; ctx.drawImage(img, dx0 * k, 0, dw * k, img.naturalHeight, b.x + dx0, b.y, dw, b.h); };
+    ctx.save(); const a0 = ctx.globalAlpha;
+    slice(F, b.w - 2 * F, a0);
+    for (let i = 0; i < F; i++) { const a = a0 * (i + 0.5) / F; slice(i, 1, a); slice(b.w - 1 - i, 1, a); }
+    ctx.restore(); return b;
+  }
+  function rect(x0, x1, y0, y1, style) { if (x1 <= x0) return; ctx.fillStyle = style; ctx.fillRect(x0, y0, x1 - x0, y1 - y0); ctx.strokeStyle = pal.ink; ctx.lineWidth = 1.5; ctx.strokeRect(x0, y0, x1 - x0, y1 - y0); }
+  // Small paper pill behind a canvas label, matching the HTML .tag pills (Volcano etc.).
+  function pill(text, x, y, align = "left") {
+    ctx.font = "600 12px system-ui, sans-serif"; const cs = getComputedStyle(canvas), tw = ctx.measureText(text).width, padX = 8, hgt = 20;
+    const x0 = align === "right" ? x - tw - padX : x - padX, y0 = y - 14;
+    ctx.beginPath(); ctx.roundRect(x0, y0, tw + padX * 2, hgt, hgt / 2);
+    ctx.fillStyle = cs.getPropertyValue("--pt-chip").trim() || "rgba(255,252,245,0.86)"; ctx.fill();
+    ctx.strokeStyle = cs.getPropertyValue("--pt-border").trim() || "#a39c8a"; ctx.lineWidth = 1; ctx.stroke();
+    label(text, x, y, align, cs.getPropertyValue("--pt-ink").trim() || pal.ink);
+  }
+  function label(text, x, y, align = "left", color = pal.dim) { ctx.font = "600 12px system-ui, sans-serif"; ctx.textAlign = align; ctx.fillStyle = color; ctx.fillText(text, x, y); }
+
+  // ---------- geometry ----------
+  function layout() {
+    const { x, y, w, h } = box;
+    const mapH = Math.round(Math.min(130, h * 0.24)), top = y + mapH + 18, xsH = h - mapH - 18;
+    const seaY = top + xsH * 0.3;
+    return { x, y, w, h, mapH, top, xsH, cx: x + w / 2, kmPx: w / 3000, seaY,
+      cont: [seaY - xsH * 0.07, seaY + xsH * 0.2], ocean: [seaY + xsH * 0.09, seaY + xsH * 0.16], bottom: y + h };
+  }
+
+  // ---------- frame ----------
+  function draw(st, now, fx, drag) {
+    const o = modelOutcome(st), g = layout(); geo = g;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (fx.shake && !fx.reduced) { const k = Math.max(0, 1 - (now - fx.shake) / 400) * 4; ctx.translate((Math.random() - 0.5) * k, (Math.random() - 0.5) * k); }
+    const dx = drag?.dx || 0, dy = drag?.dy || 0;
+    drawMap(st, o, g, dx, dy);
+    const anchors = drawSection(st, o, g, now, fx, dx);
+    return { o, anchors };
+  }
+  function crustBand(type, g) { return type === "continental" ? g.cont : g.ocean; }
+  function plateRect(type, x0, x1, g) { const [a, b] = crustBand(type, g); rect(x0, x1, a, b, fill(type === "continental" ? pats.cont : pats.ocean)); }
+
+  function drawMap(st, o, g, dx, dy) {
+    const y0 = g.y, y1 = g.y + g.mapH, half = Math.min(g.w * 0.3, (o.openKm * g.kmPx) / 2) - Math.min(g.w * 0.06, o.shortenKm * g.kmPx * 0.02);
+    ctx.save(); ctx.beginPath(); ctx.rect(g.x, y0, g.w, g.mapH); ctx.clip();
+    const lx = g.cx - Math.max(0, half), rx = g.cx + Math.max(0, half) + dx;
+    rect(g.x, lx, y0, y1, fill(st.left === "continental" ? pats.cont : pats.ocean));
+    if (half > 0) rect(lx, rx, y0, y1, fill(pats.ocean));
+    rect(rx, g.x + g.w + 40, y0, y1, fill(st.right === "continental" ? pats.cont : pats.ocean));
+    // A straight road drawn across both plates shows sideways slip.
+    const slipPx = ((st.vy >= 0 ? 1 : -1) * o.slipKm * g.kmPx * 0.6 + dy) % (g.mapH * 0.8);
+    ctx.strokeStyle = pal.ink; ctx.lineWidth = 2.5; ctx.setLineDash([7, 5]);
+    ctx.beginPath(); ctx.moveTo(g.x, y0 + g.mapH / 2); ctx.lineTo(lx, y0 + g.mapH / 2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(rx, y0 + g.mapH / 2 + slipPx); ctx.lineTo(g.x + g.w, y0 + g.mapH / 2 + slipPx); ctx.stroke(); ctx.setLineDash([]);
+    // Velocity arrow on the right plate (the accent).
+    const ax = (rx + g.x + g.w) / 2, ay = y0 + g.mapH / 2, k = Math.min(g.w * 0.14, g.mapH * 0.9) / MAX_RATE;
+    const ex = ax + st.vx * k, ey = ay + st.vy * k;
+    if (Math.hypot(st.vx, st.vy) > 0.3) {
+      ctx.strokeStyle = pal.accent; ctx.fillStyle = pal.accent; ctx.lineWidth = 4; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ex, ey); ctx.stroke();
+      const an = Math.atan2(ey - ay, ex - ax); ctx.beginPath(); ctx.moveTo(ex + Math.cos(an) * 8, ey + Math.sin(an) * 8);
+      ctx.lineTo(ex + Math.cos(an + 2.4) * 10, ey + Math.sin(an + 2.4) * 10); ctx.lineTo(ex + Math.cos(an - 2.4) * 10, ey + Math.sin(an - 2.4) * 10); ctx.fill();
+    }
+    ctx.beginPath(); ctx.arc(ax, ay, 7, 0, Math.PI * 2); ctx.fillStyle = pal.handle; ctx.fill(); ctx.strokeStyle = pal.ink; ctx.lineWidth = 2; ctx.stroke();
+    ctx.restore();
+    ctx.strokeStyle = pal.ink; ctx.lineWidth = 1.5; ctx.strokeRect(g.x, y0, g.w, g.mapH);
+    pill("Top view", g.x + 14, y0 + 20, "left");
+  }
+
+  function drawSection(st, o, g, now, fx, dx) {
+    const anchors = {};
+    ctx.save(); ctx.beginPath(); ctx.rect(g.x, g.top, g.w, g.bottom - g.top); ctx.clip();
+    // Mantle: solid rock (textured, never drawn as liquid) with slow flow chevrons.
+    rect(g.x, g.x + g.w, Math.min(g.ocean[1], g.cont[1]) - 1, g.bottom + 2, fill(pats.mantle));
+    ctx.fillStyle = pal.sky; ctx.fillRect(g.x, g.top, g.w, g.cont[0] - g.top + 1);
+    const flow = fx.reduced ? 0 : (now / 1000) * 6;
+    ctx.strokeStyle = pal.flow; ctx.lineWidth = 1.5;
+    for (let i = 0; i < 10; i++) {
+      const yy = g.cont[1] + (g.bottom - g.cont[1]) * (0.35 + 0.4 * (i % 2)), dir = i % 2 ? -1 : 1;
+      const xx = g.x + ((i * g.w / 5 + dir * flow) % g.w + g.w) % g.w;
+      ctx.beginPath(); ctx.moveTo(xx - 6 * dir, yy - 5); ctx.lineTo(xx, yy); ctx.lineTo(xx - 6 * dir, yy + 5); ctx.stroke();
+    }
+    // Plates.
+    const half = o.type === "divergent" ? Math.min(g.w * 0.32, (o.openKm * g.kmPx) / 2) : 0;
+    const lx = g.cx - half, rx = g.cx + half + dx;
+    const water = (x0, x1, type) => { if (type === "oceanic" && x1 > x0) { ctx.fillStyle = pal.sea; ctx.fillRect(x0, g.seaY, x1 - x0, g.ocean[0] - g.seaY); } };
+    water(g.x, lx, st.left); water(rx, g.x + g.w, st.right);
+    plateRect(st.left, g.x - 2, lx, g); plateRect(st.right, rx, g.x + g.w + 2, g);
+    ctx.strokeStyle = pal.ink; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(g.x, g.seaY); ctx.lineTo(g.x + g.w, g.seaY); ctx.stroke();
+    if (o.type === "divergent" && half > 0.5) {
+      if (o.feature === "rift") {
+        const vy = g.cont[0] + (g.cont[1] - g.cont[0]) * 0.35;
+        rect(lx, rx, vy, g.cont[1], fill(pats.cont)); anchors.rift = { x: g.cx + dx / 2, y: vy - 10 };
+      } else {
+        water(lx, rx, "oceanic"); rect(lx, rx, g.ocean[0], g.ocean[1], fill(pats.ocean));
+        // Leo's ridge-crest sprite (1600x400): a true 4:1 (h = w / 4 exactly), about 60% of the cross-section wide,
+        // never narrower than the gap plus 8px overlap onto each plate's crust. Its end faces (top at 40% of the
+        // sprite height) are seated flush with the sea floor, and the outer 8px are feathered into the crust.
+        // Ease between the plain and Iceland widths over CREST_EASE_MS (snap when reduced motion is on).
+        const goal = o.islandKm > 0 ? 1 : 0, dt = crestEase.now == null ? Infinity : now - crestEase.now; crestEase.now = now;
+        crestEase.t = fx.reduced || crestEase.t == null ? goal : goal > crestEase.t ? Math.min(goal, crestEase.t + dt / CREST_EASE_MS) : Math.max(goal, crestEase.t - dt / CREST_EASE_MS);
+        const e = crestEase.t * crestEase.t * (3 - 2 * crestEase.t), b = crestBox(g, lx, rx, dx, e), rcx = b.cx, rw = b.w;
+        // Magma column under the terracotta crack (crack at x = 50% of the sprite).
+        if (st.hotspot) { ctx.fillStyle = pal.plume; ctx.fillRect(rcx - 14, b.y + b.h, 28, g.bottom - b.y - b.h); }
+        crest(b);
+        // Iceland: about 1/3 of the ridge width, base seated in the rift notch (21% down the sprite), vent over the crack.
+        let isl = null;
+        if (o.islandKm > 0) { const iw = (rw / 3) * (0.75 + 0.25 * Math.min(1, o.islandKm / 2.1)); isl = sprite("volcano", rcx, b.y + b.h * 0.21 + iw * (628 / 1008) * (15 / 628), iw); }
+        // Caption anchor: 12px below the crest's base (top edge of the caption pill).
+        if (b) anchors.ridge = { x: rcx, y: b.y + b.h + 12, below: true };
+        anchors.crest = { ...b, panelW: g.w, seaY: g.seaY, crustBottom: g.ocean[1], grow: crestEase.t };
+      }
+    } else if (o.type === "convergent" && o.shortenKm > 0) {
+      if (o.feature === "mountains") {
+        const frac = o.mountainKm / 8.8, hgt = (g.cont[0] - g.top - 6) * frac + (g.cont[1] - g.cont[0]) * 0.5, w = Math.min(g.w * 0.62, hgt * 1226 / 579);
+        const b = sprite("mountains-fold", g.cx + dx * 0.5, g.cont[0] + (g.cont[1] - g.cont[0]) * 0.5, w);
+        if (b) anchors.mountains = { x: g.cx, y: b.y - 6 };
+      } else {
+        const flip = o.subducting === "right", tw = Math.min(g.w * 0.62, 470);
+        const tr = sprite("trench", g.cx + dx * 0.5, g.ocean[1] + tw * 0.32, tw, { alpha: Math.min(1, o.shortenKm / 80), flip });
+        // Tuck the slab under the overriding plate: redraw that plate's crust over the sprite from the trench axis outward.
+        const over = flip ? st.left : st.right;
+        if (tr) { const axis = g.cx + dx * 0.5 + (flip ? 1 : -1) * tw * 0.04; if (flip) plateRect(over, g.x - 2, axis, g); else plateRect(over, axis, g.x + g.w + 2, g); }
+        const vxPos = g.cx + (flip ? -1 : 1) * tw * 0.3;
+        const top = over === "continental" ? g.cont[0] : g.seaY;
+        if (o.volcano) {
+          const vw = Math.min(g.w * 0.2, 150), v = sprite("volcano", vxPos, top + vw * 0.06, vw);
+          if (v) { anchors.volcano = { x: vxPos, y: v.y - 6 }; anchors.crater = { x: vxPos, y: v.y + v.h * 0.06 }; }
+        }
+        anchors.trench = { x: g.cx + (flip ? 1 : -1) * tw * 0.12, y: g.ocean[0] - 8 };
+      }
+    }
+    // Short particle puffs: eruption ash and quake rings.
+    for (const p of fx.puffs) {
+      const a = (now - p.t) / FX_MS[p.kind]; if (a >= 1) continue;
+      if (p.kind === "plume" && anchors.crater) sprite("eruption-plume", anchors.crater.x, anchors.crater.y - a * 30, 60 + a * 30, { alpha: (1 - a) * 0.95 });
+      if (p.kind === "plume" && anchors.crater && a < 0.6) sprite("lava-glow", anchors.crater.x, anchors.crater.y + 8, 44, { alpha: 0.9 * (1 - a / 0.6) });
+      if (p.kind === "quake") sprite("quake-burst", g.cx, g.cont[0] + 40, 90 + a * 40, { alpha: 1 - a });
+    }
+    if (o.type === "transform") { ctx.strokeStyle = pal.ink; ctx.setLineDash([5, 4]); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(g.cx, g.top); ctx.lineTo(g.cx, g.cont[1] + 20); ctx.stroke(); ctx.setLineDash([]); anchors.fault = { x: g.cx, y: g.cont[0] - 10 }; }
+    ctx.restore();
+    // Layer labels (crust types and the mantle).
+    pill(st.left === "continental" ? "Continental crust" : "Oceanic crust", g.x + 14, crustBand(st.left, g)[1] - 8, "left");
+    pill(st.right === "continental" ? "Continental crust" : "Oceanic crust", g.x + g.w - 14, crustBand(st.right, g)[1] - 8, "right");
+    ctx.strokeStyle = pal.ink; ctx.lineWidth = 1.5; ctx.strokeRect(g.x, g.top, g.w, g.bottom - g.top);
+    anchors.mantle = { x: g.x + 8, y: g.bottom - 10 };
+    return anchors;
+  }
+
+  // ---------- fossil match ----------
+  function puzzleGeo() { const s = Math.min(box.w / 150, box.h / 110), ox = box.x + (box.w - 130 * s) / 2, oy = box.y + (box.h - 100 * s) / 2; return { s, ox, oy }; }
+  function drawPuzzle(off, fit) {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const { s, ox, oy } = puzzleGeo();
+    const piece = (pc, dx, dy, pat) => {
+      const path = new Path2D(); pc.outline.forEach(([px, py], i) => (i ? path.lineTo : path.moveTo).call(path, ox + (px + dx) * s, oy + (py + dy) * s)); path.closePath();
+      ctx.fillStyle = fill(pat); ctx.fill(path);
+      ctx.save(); ctx.clip(path);
+      FOSSILS.forEach((f, i) => { ctx.fillStyle = pal.fossil[i]; ctx.fillRect(box.x, oy + (f.y0 + dy) * s, box.w, (f.y1 - f.y0) * s); });
+      ctx.restore();
+      ctx.strokeStyle = pal.ink; ctx.lineWidth = 2; ctx.stroke(path);
+      const c = pc.outline.reduce((a, [px, py]) => [a[0] + px, a[1] + py], [0, 0]).map((v) => v / pc.outline.length);
+      ctx.font = "700 14px system-ui, sans-serif"; ctx.textAlign = "center"; ctx.fillStyle = pal.inkOn; ctx.fillText(pc.name, ox + (c[0] + dx) * s, oy + (14 + dy) * s);
+    };
+    piece(PIECES.west, 0, 0, pats.cont); piece(PIECES.east, off.x, off.y, pats.cont);
+    FOSSILS.forEach((f, i) => label(f.name, ox + 2 * s, oy + (f.y0 + f.y1) / 2 * s + 4, "left", pal.inkOn));
+    if (fit) { ctx.strokeStyle = pal.accent; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(ox + 52 * s, oy + 4 * s); ctx.lineTo(ox + 57 * s, oy + 96 * s); ctx.stroke(); }
+  }
+  const puzzleToUnits = (px, py) => { const { s, ox, oy } = puzzleGeo(); return { x: (px - ox) / s, y: (py - oy) / s }; };
+
+  return {
+    resize, draw, drawPuzzle, puzzleToUnits,
+    setBox(b) { box = b; }, get box() { return box; }, get geo() { return geo || layout(); },
+    setPalette(p) { pal = p; },
+    // Is a canvas point on the draggable right plate (either view)?
+    hitRight(px, py) { const g = geo || layout(); return px > g.cx - 10 && px < g.x + g.w && py > g.y && py < g.bottom; }
+  };
+}

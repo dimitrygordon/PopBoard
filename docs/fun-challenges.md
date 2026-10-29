@@ -33,6 +33,119 @@ Ideas from the brief not wired as medals yet (the engine has one goal per tier; 
 Chapter stamps: one per chapter, earned on reaching the chapter's last page (`popboard.fun.fourth-dimension.stamps`). No numbers to check.
 Share link (sandbox): `SHARE_SCHEMA` clamps knife position c to −1.8…1.8; shape and projection are enums.
 
+## Plate Tectonics
+
+Source: `public/plate-tectonics/pt-model.js` (`FUN`, `GOALS`, `T`). All rows Cleared by Tesla 2026-10-29.
+
+| Key | Value | Where it's used | Status |
+|---|---|---|---|
+| Bronze | 1 quake | Bronze: trigger a quake on a transform fault (sideways motion, run time until the fault stress meter fills). | Cleared by Tesla 2026-10-29 |
+| `islandKm` | 0.5 km | Silver, "Make Iceland": two oceanic plates pulling apart, hotspot on, island top at least 0.5 km above sea level (island breaks the surface after `T.islandMyr` = 4 Myr, grows 0.5 km per Myr, cap 2.1 km). | Cleared by Tesla 2026-10-29 |
+| `himalayaKm` | 8 km | Gold, "Build the Himalaya": continent meets continent, mountains at least 8 km high (needs about 1,440 km of shortening). | Cleared by Tesla 2026-10-29 |
+| `T.quakeLoad` | 5 (cm/yr x Myr) | Sideways slip that fills the fault stress meter once (time-lapse; real faults load in tens to hundreds of years). | Cleared by Tesla 2026-10-29 |
+| `T.transformRatio` | 2 | Sideways rate at least twice the apart/together rate counts as a transform boundary. | Cleared by Tesla 2026-10-29 |
+| `T.stillRate` | 0.5 cm/yr | Below this the boundary reads "No motion". | Cleared by Tesla 2026-10-29 |
+| Predict | 4 choices | Predict, then run: "What will form?" (a ridge, a trench and volcano, mountains, earthquakes). Time runs at 1.5 Myr/s instead of 6 Myr/s while a guess is waiting, until the feature appears. A rift valley counts as "a ridge". | Cleared by Tesla 2026-10-29 |
+| Fossil match | 4 box units | Africa snaps home when within `FIT_TOLERANCE` of the fit; not a medal, saved as `popboard.fun.plate-tectonics.pangaea`. | Cleared by Tesla 2026-10-29 |
+
+Share link (sandbox): `SHARE_SCHEMA` keeps the crust types (enum), rates clamped to plus or minus 10 cm/yr, time to 0 to 60 Myr, and the hotspot flag.
+
+## Gravity Well Golf
+
+Source: `public/gravity-well-golf/gwg-physics.js` (`FUN`, `GOALS`, `P`). All rows Cleared by Tesla 2026-10-29.
+
+| Key | Value | Where it's used | Status |
+|---|---|---|---|
+| Bronze | any sink | Bronze: sink a ball in any cup (course or sandbox). | Cleared by Tesla 2026-10-29 |
+| `silverParHoles` | 3 | Silver: par or better on 3 different course holes (saved across visits, `popboard.fun.gravity-well-golf.parHoles`). | Cleared by Tesla 2026-10-29 |
+| `goldMinHole` | 2 | Gold: a hole in one on course hole 2 or later (hole 1 has no masses, so it does not count). Every hole 1 to 9 has at least one hole-in-one line (tests check this). | Cleared by Tesla 2026-10-29 |
+| `cupR` | 0.36 units (ball radius 0.25) | Cup capture radius (game rule, not gravity). | Cleared by Tesla 2026-10-29 |
+| `cupMaxSpeed` | 2.6 units/s | Faster than this and the ball lips out (game rule). | Cleared by Tesla 2026-10-29 |
+| Pars | 1, 2, 2, 2, 2, 3, 3, 3, 4 | Par for holes 1 to 9 (`COURSE`). | Cleared by Tesla 2026-10-29 |
+| Predict | Yes / No | Predict, then run: "Will the next putt go in?"; slow motion (0.35x) within 1.4 units of the cup while a guess is waiting. | Cleared by Tesla 2026-10-29 |
+
+Share link (sandbox): `SHARE_SCHEMA` clamps tee and cup to the field; masses are packed as `k,x,y` (up to 12) and clamped.
+
+## Powers of Ten
+
+Source: `public/powers-of-ten/p10-logic.js` (`FUN`, `GOALS`). All rows cleared by Tesla 2026-10-29.
+
+| Key | Value | Where it's used | Status |
+|---|---|---|---|
+| `huntTol` | 0.5 powers | Size Hunt: the target counts as found when the view comes to rest within 0.5 of a power of the plate's focus (log10(size / 0.6)). | Cleared by Tesla 2026-10-29 |
+| `bronzeHuntFinds` | 3 | Bronze: find 3 objects in Size Hunt (one session). | Cleared by Tesla 2026-10-29 |
+| `silverStreak` | 3 | Silver: 3 correct "how many powers of ten" predictions in a row. | Cleared by Tesla 2026-10-29 |
+| `goldPowers` | 44 | Gold: stamp every whole power from 10⁻¹⁶ m to 10²⁷ m (spec: "visit all 40+ powers"). A power is stamped when the view passes through it. | Cleared by Tesla 2026-10-29 |
+
+Stamps: `popboard.fun.powers-of-ten.stamps`. Share link (sandbox): `SHARE_SCHEMA` clamps z to −16…27; objects are enums.
+
+## Ripple Tank
+
+All thresholds Cleared by Tesla 2026-10-29. A goal only counts once the pattern has formed: the waves must have run for `settleTime()` = 0.8 x 40 cm / 24 cm/s = 1.33 s of tank time since the last change (Cleared by Tesla 2026-10-29).
+
+| Tier | Goal | Threshold |
+| --- | --- | --- |
+| Bronze | Exactly 2 dark lines with two dippers | 2 floor(d/lambda + 1/2) = 2, so 0.5 <= d/lambda < 1.5 (Cleared by Tesla 2026-10-29) |
+| Silver | One-slit diffraction | Straight dipper, one slit, a/lambda <= 1 (`FUN.slitMax`, Cleared by Tesla 2026-10-29) |
+| Gold | Double-slit pattern | Straight dipper, two slits, a/lambda <= 1 and d/lambda >= 2 (`FUN.dMin`, Cleared by Tesla 2026-10-29) |
+
+- Prediction: with two dippers, "Next change: more or fewer dark lines?" resolves when the frequency slider is released or a dipper is dropped (Cleared by Tesla 2026-10-29).
+
+## Orbits: Solar System
+
+Mode `?mode=solar-system` of `study-orbits.html`. All thresholds Cleared by Tesla 2026-10-29. Medals count only in the Build tab, where each of the eight planets is placed by hand (the Sandbox "Real solar system" button does not earn medals). Stable time is simulated years since the last placement, removal, drag, merge, fall into the star or ejection, with every planet bound to the star (Cleared by Tesla 2026-10-29).
+
+| Tier | Goal | Threshold |
+| --- | --- | --- |
+| Bronze | Keep 2 planets stable for 10 years | 2 or more planets, 10 simulated years stable (`FUN.bronze`, Cleared by Tesla 2026-10-29) |
+| Silver | Keep 4 planets stable for 100 years | 4 or more planets, 100 simulated years stable (`FUN.silver`, Cleared by Tesla 2026-10-29) |
+| Gold | Keep 4 planets stable for 1,000 simulated years | 4 or more planets, 1,000 simulated years stable (`FUN.gold`, Cleared by Tesla 2026-10-29) |
+
+## Rocket & Mission: Mars Lander
+
+Mode `?mode=mars-lander` of `study-rocket-mission.html`. Source: `public/rocket-mission/lander/ml-model.js` (`LIMITS`, `FUN`, `GOALS`). Medals count only in the Mission tab; the Sandbox (other worlds, other engines, endless fuel) earns none. A landing is judged when the first footpad touches. All thresholds Cleared by Tesla 2026-10-29.
+
+| Tier | Goal | Threshold | Status |
+| --- | --- | --- | --- |
+| Bronze | Land safely anywhere | 3 m/s or slower down, 1.5 m/s or slower sideways, within 10 degrees of upright (`LIMITS`) | Cleared by Tesla 2026-10-29 |
+| Silver | Land safely on the pad | Safe, with both footpads over the 90 m pad (full drawn width, `PAD.w`) | Cleared by Tesla 2026-10-29 |
+| Gold | Soft landing on the pad with 60% of the fuel left | On the pad at 1.5 m/s or slower (`LIMITS.softV`), at least 60% fuel left (`FUN.goldFuel`) | Cleared by Tesla 2026-10-29 |
+
+## Atom Builder
+
+All thresholds Cleared by Tesla 2026-10-29.
+
+| Tier | Goal | Threshold |
+| --- | --- | --- |
+| Bronze | Make a neutral carbon-12 atom | 6 protons, 6 neutrons, 6 electrons (Cleared by Tesla 2026-10-29) |
+| Silver | Make an ion | Stable nucleus with electrons != protons (Cleared by Tesla 2026-10-29) |
+| Gold | Make stable isotopes of one element | 2 neutral stable isotopes of the same element collected (`FUN.isotopesNeeded`, Cleared by Tesla 2026-10-29) |
+
+- Prediction: "Next particle: will the nucleus be stable?" resolves on the next nucleus change (Cleared by Tesla 2026-10-29).
+- Table: a neutral atom with a stable nucleus is collected once per mass number (Cleared by Tesla 2026-10-29).
+
+## Circuit Builder
+
+All thresholds Cleared by Tesla 2026-10-29 (values live in `public/circuit-builder/cb-model.js`).
+
+| Tier | Goal | Threshold |
+| --- | --- | --- |
+| Bronze | Light two bulbs in series, then in parallel | Both arrangements seen this visit, one battery, both bulbs at glow 0.2 or more, currents matching within 2% (Cleared by Tesla 2026-10-29) |
+| Silver | Make the ammeter read 0.30 A | Any ammeter within 0.01 A of 0.30 A (`FUN.targetA`, `FUN.tolA`), no short (Cleared by Tesla 2026-10-29) |
+| Gold | Fix the broken circuit so its bulb glows brightly | In the Fix the circuit scene, a bulb at glow 0.9 or more (`FUN.fullGlow`) with no short. The puzzle starts with three faults: an open switch, a missing wire and a voltmeter in the loop (Cleared by Tesla 2026-10-29) |
+
+- Prediction: "Switch to parallel (or series): will bulb 1 get brighter, dimmer or the same?" resolves on the next wiring change; a glow change under 0.05 counts as the same (Cleared by Tesla 2026-10-29).
+
+## Relativity: Lightspeed Ride
+
+Mode `?mode=lightspeed-ride` of `study-relativity.html`. Source: `public/relativity/lightspeed/ls-model.js` (`FUN`, `GOALS`). All thresholds Cleared by Tesla 2026-10-29. Medals count only in the Ride tab, where every effect is on (the Sandbox tab can switch effects off and does not earn medals).
+
+| Tier | Goal | Threshold |
+| --- | --- | --- |
+| Bronze | Ride at half the speed of light | beta at least 0.5 (`FUN.bronzeBeta`, Cleared by Tesla 2026-10-29) |
+| Silver | Squeeze half of all the stars into the forward 45 degree cone | At least 50% of the sky's stars seen within 45 degrees of straight ahead (`FUN.silverFraction`, `CONE_DEG`); for an even sky this needs beta of about 0.707 (Cleared by Tesla 2026-10-29) |
+| Gold | Hold the ship at gamma 10 for 3 seconds | gamma within 0.25 of 10 (beta about 0.9947 to 0.9952; gamma 10 is beta 0.99499) for 3 s in a row (`FUN.goldGamma`, `FUN.goldTol`, `FUN.goldHoldS`, Cleared by Tesla 2026-10-29) |
+
 ## Shared layer constants (`public/shared/fun/`)
 These are feel constants from Leo's spec, not physics, but they're listed here for completeness:
 - press scale 0.97 over 100 ms

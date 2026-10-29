@@ -162,6 +162,7 @@ function sync() {
   $("runBtn").textContent = st.running ? "Pause" : "Play";
   $("readout").textContent = readText();
   $("note").textContent = NOTES[st.mode];
+  $("rippleLink").hidden = !["ripple", "slit"].includes(st.mode); // link to the free-form Ripple Tank module
   $("canvasHint").textContent = HINTS[st.mode];
   canvas.setAttribute("aria-label", `${st.mode} view. ${readText().split("\n")[0]}`);
   writeUrl();
@@ -222,6 +223,7 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 
+$("rippleHref").href = "study-ripple-tank.html" + location.search;
 $("studyBackBtn").addEventListener("click", (e) => {
   e.preventDefault();
   // Back to the Study library with the board return keys only: drop this

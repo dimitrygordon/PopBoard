@@ -1,0 +1,81 @@
+/* Relativity "Lightspeed Ride" mode: dark by default, Paper on request. Muted teal is the one
+   accent (it matches the indicator strip in Leo's cockpit). Scoped to html.ls-mode so the
+   Relativity Sandbox's own styles are untouched. */
+html.ls-mode {
+  --ls-bg: #0b0f17; --ls-ink: #e9eef0; --ls-dim: #a3afb5; --ls-accent: #3f8f8a;
+  --ls-chip: rgba(18, 24, 33, 0.92); --ls-border: #3b4a50; --ls-btn: rgba(27, 35, 44, 0.95); --ls-hit: 44px;
+  --pj-paper: #151c26; --pj-ink: var(--ls-ink); --pj-ink-dim: var(--ls-dim); --pj-chip: var(--ls-chip); --pj-chip-border: var(--ls-border); --fun-gold: var(--ls-accent);
+}
+html.ls-mode[data-theme="light"] {
+  --ls-bg: #f3efe4; --ls-ink: #1f2328; --ls-dim: #50575e; --ls-accent: #2f7d7a;
+  --ls-chip: rgba(255, 252, 245, 0.94); --ls-border: #a1a7aa; --ls-btn: rgba(255, 252, 245, 0.97); --pj-paper: #fbf8f0;
+}
+html.ls-mode body > *:not(.ls-root) { display: none !important; }
+html.ls-mode, html.ls-mode body { margin: 0; background: var(--ls-bg); color: var(--ls-ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.5; -webkit-tap-highlight-color: transparent; overflow: hidden; }
+.ls-root [hidden] { display: none !important; }
+.ls-root .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.ls-root button { font: inherit; color: var(--ls-ink); background: var(--ls-btn); border: 1px solid var(--ls-border); border-radius: 12px;
+  min-width: var(--ls-hit); min-height: var(--ls-hit); padding: 0 12px; cursor: pointer; }
+.ls-root button[aria-pressed="true"], .ls-root button[aria-selected="true"], .ls-root button.primary { background: var(--ls-accent); border-color: var(--ls-accent); color: #fff; font-weight: 700; }
+.ls-root button:focus-visible, .ls-root canvas:focus-visible, .ls-root input:focus-visible { outline: 3px solid var(--ls-accent); outline-offset: 2px; }
+
+.ls-hud { position: fixed; z-index: 6; top: max(8px, env(safe-area-inset-top)); left: 12px; right: 12px; display: flex; gap: 8px; align-items: center; }
+.ls-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; margin: 0 auto 0 4px; font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; line-height: 1.05; }
+.ls-back { display: inline-flex; gap: 4px; align-items: center; }
+.ls-status { position: fixed; z-index: 4; top: calc(max(8px, env(safe-area-inset-top)) + 56px); left: 16px; right: 200px; pointer-events: none; }
+.ls-status p { margin: 0; }
+.ls-big { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.ls-meter { width: min(260px, 100%); height: 6px; margin: 4px 0; border-radius: 3px; background: var(--ls-border); overflow: hidden; }
+.ls-meter i { display: block; height: 100%; width: 0; background: var(--ls-accent); }
+.ls-readout { color: var(--ls-dim); font-variant-numeric: tabular-nums; white-space: pre-line; font-size: 0.9rem; line-height: 1.35; }
+.ls-stage { position: fixed; inset: 0; }
+#lsScene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ls-cap { position: absolute; z-index: 3; margin: 0; transform: translateX(-50%); font-size: 0.85rem; line-height: 1.3; color: var(--ls-dim); text-align: center; pointer-events: none; width: max-content; }
+.ls-toast { margin: 0; padding: 6px 12px; border-radius: 10px; background: var(--ls-btn); border: 1px solid var(--ls-accent); font-weight: 700; font-size: 0.9rem; }
+
+.ls-controls { position: fixed; z-index: 5; bottom: max(12px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: min(560px, calc(100% - 24px));
+  padding: 12px 14px; border-radius: 16px; background: var(--ls-chip); border: 1px solid var(--ls-border); display: grid; gap: 8px; box-sizing: border-box; }
+.ls-controls .fun-handle { display: none; }
+.ls-tabs { display: flex; gap: 6px; }
+.ls-tabs button { flex: 1 1 0; }
+.ls-body { display: grid; gap: 6px; font-size: 0.9rem; }
+.ls-body p { margin: 0; }
+.ls-body .dim, .ls-slider .dim { color: var(--ls-dim); }
+.ls-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ls-row > button { flex: 1 1 auto; }
+.ls-root .ls-presets button { padding: 0 6px; min-width: 0; font-size: 0.85rem; }
+.ls-slider { display: grid !important; grid-template-columns: 5.5em 1fr auto; }
+.ls-slider input[type=range] { width: 100%; accent-color: var(--ls-accent); min-height: var(--ls-hit); }
+.ls-slider output { font-variant-numeric: tabular-nums; min-width: 5.5em; text-align: right; }
+.ls-link-row { margin: 0; font-size: 0.85rem; color: var(--ls-dim); }
+.ls-link-row a { color: var(--ls-accent); font-weight: 700; }
+html.ls-mode[data-theme="light"] .ls-link-row a { color: #22615e; }
+
+.ls-funbox { position: fixed; inset: 0; pointer-events: none; z-index: 5; }
+.ls-funbox > * { pointer-events: auto; }
+.ls-funbox .fun-chip { top: calc(max(8px, env(safe-area-inset-top)) + 56px); right: 12px; min-height: var(--ls-hit); }
+.ls-funbox .fun-pop { top: calc(max(8px, env(safe-area-inset-top)) + 108px); right: 12px; }
+
+.ls-about-wrap { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 16px; background: rgba(5, 8, 14, 0.55); }
+.ls-about { width: min(480px, 100%); max-height: calc(100vh - 32px); overflow: auto; box-sizing: border-box; padding: 18px 18px 14px; border-radius: 16px; background: var(--pj-paper); color: var(--ls-ink); border: 1px solid var(--ls-border); display: grid; gap: 10px; }
+.ls-about p { margin: 0; }
+.ls-about-title { font-weight: 800; font-size: 1.15rem; letter-spacing: -0.02em; line-height: 1.1; }
+.ls-small { font-size: 0.85rem; color: var(--ls-dim); }
+
+@media (min-width: 900px) {
+  .ls-controls { left: auto; right: 12px; transform: none; top: calc(max(8px, env(safe-area-inset-top)) + 60px); bottom: auto; width: 380px; max-height: calc(100% - 84px); overflow: auto; align-content: start; }
+  .ls-funbox .fun-chip, .ls-funbox .fun-pop { right: 404px; }
+  .ls-status { right: 580px; }
+}
+@media (max-width: 600px) {
+  .ls-hud { gap: 6px; }
+  .ls-title { font-size: 0.95rem; }
+  .ls-hud button { padding: 0 8px; font-size: 0.85rem; white-space: nowrap; flex: none; }
+  .ls-hud .back-label { display: none; }
+  .ls-big { font-size: 1.25rem; }
+  .ls-status { right: 140px; }
+  .ls-readout { font-size: 0.78rem; line-height: 1.3; }
+  .ls-cap { font-size: 0.75rem; }
+  .ls-controls.fun-sheet-on { left: 0; right: 0; bottom: 0; transform: none; width: auto; border-radius: 16px 16px 0 0; padding-bottom: max(12px, env(safe-area-inset-bottom)); align-content: start; overflow: hidden; }
+  .ls-controls.fun-sheet-on .fun-handle { display: flex; }
+}

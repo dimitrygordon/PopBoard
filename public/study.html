@@ -234,7 +234,8 @@ import {
 } from "./board-return.js?v=20261021i";
 "use strict";
 
-/* ============================================================
+/* =====================================================  },
+  {
    Identity / mode resolution.
    - ?teacher=<uid>             -> teacher mode (the gallery gets
      create/edit/delete controls for that teacher's own study links).
@@ -525,7 +526,7 @@ var BUILTIN_MODULES = [
     id: "relativity",
     kind: "builtin",
     name: "Relativity Sandbox",
-    description: "Special relativity and gravity for high school — dilated clocks, a Minkowski diagram, Newtonian and Schwarzschild orbits, a Flamm curvature map, GPS clocks, and light bending. Measured numbers stay separate from the illustrative pictures.",
+    description: "Special relativity and gravity for high school — dilated clocks, a Minkowski diagram, Newtonian and Schwarzschild orbits, a Flamm curvature map, GPS clocks, and light bending. Measured numbers stay separate from the illustrative pictures. Lightspeed Ride mode puts you in a cockpit flying toward c, where the stars bunch forward and change color.",
     file: "study-relativity.html",
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V4"/><path d="M5 17 12 4l7 13"/><path d="M7.2 14h9.6" opacity="0.7"/><circle cx="12" cy="4" r="1.1" fill="currentColor" stroke="none"/></svg>'
   },
@@ -565,7 +566,7 @@ var BUILTIN_MODULES = [
     id: "orbits",
     kind: "builtin",
     name: "Orbital Mechanics & Gravity Playground",
-    description: "A full-screen gravity game -- drop stars and planets, pull back to sling them with a live predicted path, and watch N-body orbits, merges, and ejections. Find the Lagrange points, ride a 2:1 resonance, and keep a world stable for 10 orbits.",
+    description: "A full-screen gravity game -- drop stars and planets, pull back to sling them with a live predicted path, and watch N-body orbits, merges, and ejections. Find the Lagrange points, ride a 2:1 resonance, and keep a world stable for 10 orbits. Solar System mode lets you fling the real planets around the Sun and keep them stable for 1,000 years.",
     file: "study-orbits.html",
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.6"/><ellipse cx="12" cy="12" rx="9.5" ry="5" transform="rotate(-25 12 12)"/><circle cx="19.6" cy="8.4" r="1.4" fill="currentColor" stroke="none"/></svg>'
   },
@@ -693,7 +694,7 @@ var BUILTIN_MODULES = [
     id: "rocket-mission",
     kind: "builtin",
     name: "Rocket Science & Space Mission",
-    description: "See where thrust comes from with Newton's third law (F = ṁvₑ), use the Tsiolkovsky rocket equation Δv = vₑ ln(m₀/m_f) with real engines' specific impulse, find out why rockets drop stages, fly a two-stage launch to orbit with a gravity turn against gravity and drag, fire Newton's cannonball at orbital speed √(GM/r) and escape speed, plan a Hohmann transfer to Mars with its Δv, trip time and launch window, and build and fly your own rocket in a sandbox.",
+    description: "See where thrust comes from with Newton's third law (F = ṁvₑ), use the Tsiolkovsky rocket equation Δv = vₑ ln(m₀/m_f) with real engines' specific impulse, find out why rockets drop stages, fly a two-stage launch to orbit with a gravity turn against gravity and drag, fire Newton's cannonball at orbital speed √(GM/r) and escape speed, plan a Hohmann transfer to Mars with its Δv, trip time and launch window, and build and fly your own rocket in a sandbox. Mars Lander mode lets you fly a lander down to a pad on Mars with the engine and tilt, landing softly with fuel to spare.",
     file: "study-rocket-mission.html",
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c2.5 2 3.5 5 3.5 8v6h-7v-6c0-3 1-6 3.5-8z"/><circle cx="12" cy="9" r="1.5"/><path d="M8.5 12l-3 3v3l3-1.5M15.5 12l3 3v3l-3-1.5"/><path d="M10.5 19l1.5 3 1.5-3"/></svg>'
   },
@@ -704,6 +705,53 @@ var BUILTIN_MODULES = [
     description: "Turn the pages of a picture book about dimensions: drag a point into a line, a square and a cube, help a flatlander make sense of a ball passing through their world, spin a cube above a lamp and follow its gold face in the shadow, slice a cube into triangles and hexagons, count corners and edges (2\u207f and n\u00b72\u207f\u207b\u00b9) up to the tesseract's 16 and 32, turn a tesseract's 3D shadow in 3D and in 4D (XW, YW, ZW), slice it and a hypersphere, unfold a cube and a tesseract into nets, and play in a sandbox with the 16-cell and 24-cell.",
     file: "study-fourth-dimension.html",
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1"/><rect x="8" y="8" width="8" height="8" rx="0.5"/><path d="M3 3l5 5M21 3l-5 5M3 21l5-5M21 21l-5-5"/></svg>'
+=======
+    id: "plate-tectonics",
+    kind: "builtin",
+    name: "Plate Tectonics",
+    description: "Cut away a slab of Earth and drag the plates apart, together or sideways, then run time in millions of years: ridges open where magma rises, trenches swallow cold ocean floor, volcanoes erupt, mountains fold up and stuck faults snap in quakes. Make Iceland, build the Himalaya, and fit South America back against Africa by matching fossils. The mantle is solid rock that flows slowly, not a sea of magma. Melting happens only in small zones, like under ridges and above sinking plates.",
+    file: "study-plate-tectonics.html",
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10l5-4 3 3 3-5 4 4 5-2"/><path d="M2 14h20M2 19h20"/><path d="M12 14l-2 5"/></svg>'
+  },
+  {
+    id: "gravity-well-golf",
+    kind: "builtin",
+    name: "Gravity Well Golf",
+    description: "Play nine holes of mini golf on a stretchy sheet that models curved spacetime: moons, planets, stars and a heavy mass pull the ball with a Newtonian 1/r\u00b2 pull, so you aim around them, slingshot past them and drag extra masses into place. Pull back to putt, predict whether each putt drops, chase par and a hole in one, then build and share your own hole in a sandbox. The sheet is an analogy, and the card that opens first says how real gravity differs.",
+    file: "study-gravity-well-golf.html",
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8c4 0 6 1 8 5 1 2 3 2 4 0 2-4 4-5 8-5"/><path d="M2 14c4 0 6 1 8 4M22 14c-4 0-6 1-8 4"/><circle cx="6" cy="5" r="1.5"/><path d="M18 3v6M18 3l3 1.5L18 6"/></svg>'
+  },
+  {
+    id: "powers-of-ten",
+    kind: "builtin",
+    name: "Powers of Ten",
+    description: "Zoom in one continuous trip from a proton to the cosmic web, stopping at every power of ten from 10\u207b\u00b9\u2076 m to 10\u00b2\u2077 m: atoms, DNA, a virus, a cell, an ant, you, a city, Earth, the solar system, nearby stars, the Milky Way and beyond. Hunt for objects on a card, predict how many powers of ten separate two things, collect a stamp for every power, and compare any two objects in a sandbox.",
+    file: "study-powers-of-ten.html",
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="19" height="19" rx="1"/><rect x="8" y="8" width="8" height="8" rx="0.5"/><rect x="10.75" y="10.75" width="2.5" height="2.5" rx="0.3"/></svg>'
+  },
+  {
+    id: "ripple-tank",
+    kind: "builtin",
+    name: "Ripple Tank",
+    description: "A top-down tank of shallow water you can touch. Tap to drop dippers, drag them around and change the frequency to see how the wavelength follows, splash the surface, and switch on nodal lines to find where the water stays still. Make exactly 2 dark lines with two dippers, squeeze a straight wave through one narrow slit to see it spread out, and line up two slits for a double-slit pattern. Slow motion and a sandbox with walls and blocks are built in.",
+    file: "study-ripple-tank.html",
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="9" stroke-dasharray="3 2.5"/></svg>'
+  },
+  {
+    id: "atom-builder",
+    kind: "builtin",
+    name: "Atom Builder",
+    description: "Drag protons, neutrons and electrons onto an atom and watch its name, symbol, charge and mass number change as you build. Make a neutral carbon-12, turn sodium and chlorine into ions, and find isotopes that share an element but not a mass number. Unstable nuclei wobble, and every stable atom you build fills in your own periodic table. Electrons are shown as clouds of where they are likely to be, not little planets on orbits.",
+    file: "study-atom-builder.html",
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" stroke-dasharray="2 3"/><circle cx="11" cy="12" r="1.6"/><circle cx="13.2" cy="11" r="1.6"/><circle cx="12.4" cy="13.4" r="1.6"/><circle cx="18" cy="7" r="0.8"/></svg>'
+  },
+  {
+    id: "circuit-builder",
+    kind: "builtin",
+    name: "Circuit Builder",
+    description: "Build circuits on a board from batteries, bulbs, resistors, switches, an ammeter and a voltmeter. Drag parts, snap wires from lead to lead, and watch current flow as moving dots while a real circuit solver updates every reading. Light two bulbs in series and then in parallel, hit a target current using V = IR, fix a broken circuit, and see why a voltmeter goes across a part and an ammeter goes in the loop.",
+    file: "study-circuit-builder.html",
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l1.5-3 3 6 3-6 1.5 3h5"/><circle cx="3" cy="12" r="1"/><circle cx="21" cy="12" r="1"/><path d="M7 19h10M9 21.5h6"/></svg>'
   }
 ];
 

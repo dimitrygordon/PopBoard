@@ -16,7 +16,7 @@
  *   --rel-bg, --rel-measured, --rel-illus, --rel-light,
  *   --rel-moving, --rel-rest, --rel-horizon, --rel-horizon-rim.
  */
-import { forwardStudyQuery } from "./board-return.js?v=20261021i";
+import { forwardStudyQuery, moduleOpenHref } from "./board-return.js?v=20261021i";
 import {
   C, G, M_SUN, R_SUN, R_EARTH, BODY_PRESETS, MODES, precessionPerOrbit,
   gamma, gammaMinusOne, betaForGamma, betaOf,
@@ -1725,6 +1725,9 @@ function score(id, ok) {
 }
 
 function bind() {
+  // Lightspeed Ride lives on this page under its own ?mode, with its own UI (relativity/lightspeed/).
+  const ride = $("lightspeedLink");
+  if (ride) { const base = moduleOpenHref("study-relativity.html", location.search); ride.href = base + (base.includes("?") ? "&" : "?") + "mode=lightspeed-ride"; }
   document.querySelectorAll(".tab").forEach((btn) => {
     btn.addEventListener("click", () => setMode(btn.dataset.mode, true));
   });

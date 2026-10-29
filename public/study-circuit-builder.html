@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#12171d">
+<title>Circuit Builder // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.circuit-builder.theme"); } catch (e) {}
+    document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");
+  })();
+</script>
+<link rel="stylesheet" href="shared/fun/fun.css">
+<link rel="stylesheet" href="circuit-builder/circuit-builder-theme.css">
+</head>
+<body>
+<h1 class="sr-only">Circuit Builder</h1>
+<p class="sr-only">Build circuits on a board from batteries, bulbs, resistors, switches and meters. Drag a part to move it, drag from one lead to another to add a wire, and tap a switch to flip it. Readings update live from a real circuit solver.</p>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title">Circuit Builder</p>
+  <button id="helpBtn" type="button" class="fun-help" aria-label="About this model" aria-haspopup="dialog">?</button>
+  <button id="soundBtn" type="button" aria-pressed="false" aria-label="Sound is off">Sound</button>
+  <button id="themeBtn" type="button"><span id="themeLabel">Paper</span></button>
+</header>
+
+<section class="status" id="status" aria-live="polite">
+  <p class="big" id="big"></p>
+  <p class="readout" id="readout"></p>
+  <p class="state" id="state"></p>
+</section>
+
+<main id="stage" class="stage">
+  <canvas id="scene" role="img" tabindex="0" aria-label="Circuit board"></canvas>
+  <p class="cap" id="boardCap"></p>
+</main>
+
+<div class="canvas-box" id="funBox"></div>
+
+<section class="controls" id="controls" aria-label="Circuit controls">
+  <button type="button" class="fun-handle" id="sheetHandle" aria-label="Resize controls"></button>
+  <p class="toast" id="toast" role="status" aria-live="polite" hidden></p>
+  <div class="tabs" role="tablist" aria-label="Mode">
+    <button type="button" role="tab" data-mode="guided" aria-selected="true">Guided</button>
+    <button type="button" role="tab" data-mode="sandbox" aria-selected="false">Sandbox</button>
+  </div>
+  <div id="modeBody" class="mode-body"></div>
+</section>
+
+<div class="caveat-wrap" id="about" hidden>
+  <section class="caveat" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+    <p class="caveat-title" id="aboutTitle">About this board</p>
+    <p>Drag a part to move it, and drag it off the board to remove it. Drag from one lead (the small ring at either end of a part) to another to add a wire, and tap a wire to remove it. Tap a switch to flip it, and tap any part to read its current and voltage.</p>
+    <p class="caveat-small" id="aboutNote"></p>
+    <p class="caveat-small" id="nodalNote"></p>
+    <p class="caveat-small">Put an ammeter in the loop, in series. Put a voltmeter across a part, in parallel: the Clip voltmeter button does this for the part you have selected.</p>
+    <button type="button" id="aboutOk" class="primary">Got it</button>
+  </section>
+</div>
+
+<script type="module" src="circuit-builder/cb-ui.js"></script>
+</body>
+</html>
