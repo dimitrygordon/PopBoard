@@ -241,7 +241,10 @@ test("every study module returns to the gallery and keeps its query string", () 
     let source = html;
     const extra = html.match(/src="([^"]+-ui\.js)"/);
     if (extra) source += "\n" + readFileSync(new URL(extra[1], dir), "utf8");
-    assert.match(source, /study\.html"\s*\+\s*location\.search/, name);
+    // Pages that pick a UI at load time (Orbits: playground or Solar System mode): every UI must return.
+    const picked = [...html.matchAll(/import\("\.\/([^"]+-ui\.js)"\)/g)].map((m) => m[1]);
+    for (const file of picked) assert.match(readFileSync(new URL(file, dir), "utf8"), /study\.html"\s*\+\s*location\.search/, `${name}: ${file}`);
+    if (!picked.length) assert.match(source, /study\.html"\s*\+\s*location\.search/, name);
   }
 });
 

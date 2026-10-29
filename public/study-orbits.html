@@ -11,6 +11,18 @@
 <link rel="stylesheet" href="orbits-theme.css">
 <link rel="stylesheet" href="astro-study.css?v=20261021k">
 <script src="astro-study.js?v=20261021k"></script>
+<script>
+  // Solar System mode (?mode=solar-system) shares this page with the playground but has its own
+  // themes and styles. Set them before first paint so neither flashes.
+  (function () {
+    if (new URLSearchParams(location.search).get("mode") !== "solar-system") return;
+    var r = document.documentElement, t = null;
+    try { t = localStorage.getItem("popboard.orbits.solar.theme"); } catch (e) {}
+    r.classList.add("ss-mode");
+    r.setAttribute("data-theme", t === "light" ? "light" : "dark");
+    document.write('<link rel="stylesheet" href="shared/fun/fun.css"><link rel="stylesheet" href="orbits/solar/solar-theme.css">');
+  })();
+</script>
 </head>
 <body>
 <h1 class="sr-only">Orbital Mechanics &amp; Gravity Playground</h1>
@@ -47,6 +59,10 @@
   <button type="button" id="escapeBtn" class="tool" aria-pressed="false" aria-label="Show escape velocity" title="Escape velocity"><svg aria-hidden="true"><use href="orbits/assets/icons/sprite.svg#ob-velocity"/></svg></button>
 </nav>
 
-<script type="module" src="orbits-ui.js"></script>
+<script type="module">
+  // The playground and Solar System mode never run together.
+  if (document.documentElement.classList.contains("ss-mode")) import("./orbits/solar/so-ui.js");
+  else import("./orbits-ui.js");
+</script>
 </body>
 </html>
