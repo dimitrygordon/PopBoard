@@ -2,8 +2,8 @@
 // Paper sky. Glows use createRadialGradient only. World y points up; metres map to pixels by view.k.
 import { WORLD, LANDER, ART, PAD, PAD_TOP, PAD_H, feetDrop } from "./ml-model.js";
 export const CAPTION_GAP = 12;
-// Leo: the lander and pad are drawn 1.5 times their model size so they read on every screen.
-// Draw scale only: the lander's feet and the pad's top stay where the physics puts them.
+// Leo: the lander is drawn 1.5 times its model size so it reads on every screen (draw scale only,
+// its feet stay where the physics puts them). The pad is drawn at its full 90 m scoring width.
 export const DRAW_SCALE = 1.5;
 // After touchdown the view pans so the ground sits at this fraction of the stage height
 // (terrain fills the lower third). PAN_RATE is the easing speed per second.
@@ -58,7 +58,7 @@ export function createScene(canvas, base = "") {
     return { x: c.x, w: b.w, h: b.h, top: Math.min(...ys), bottom: Math.max(...ys) };
   }
   // The pad art keeps its top on the model's pad surface and grows downward and outward.
-  function padRect() { const c = scr(PAD.x, PAD_TOP), w = PAD.w * view.k * DRAW_SCALE, h = PAD_H * view.k * DRAW_SCALE; return { x: c.x, w, h, top: c.y, bottom: c.y + h }; }
+  function padRect() { const c = scr(PAD.x, PAD_TOP), w = PAD.w * view.k, h = PAD_H * view.k; return { x: c.x, w, h, top: c.y, bottom: c.y + h }; }
 
   function glow(x, y, r, rgb, a) {
     const g = ctx.createRadialGradient(x, y, 0, x, y, r);

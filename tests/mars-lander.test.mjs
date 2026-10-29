@@ -120,10 +120,10 @@ test("Leo: lander and pad are drawn 1.5x, anchored where the physics puts them",
   const L = M.createLander(); L.x = M.PAD.x; L.y = M.PAD_TOP + M.feetDrop(); L.tilt = 0;
   const lr = sc.landerRect(L), pr = sc.padRect();
   near(lr.w, M.LANDER.w * k * 1.5, 1e-9); near(lr.h, M.LANDER.h * k * 1.5, 1e-9);
-  near(pr.w, M.PAD.w * k * 1.5, 1e-9); near(pr.top, sc.scr(0, M.PAD_TOP).y, 1e-9, "pad top on the model surface");
+  near(pr.w, M.PAD.w * k, 1e-9, "pad drawn at its scoring width"); near(pr.top, sc.scr(0, M.PAD_TOP).y, 1e-9, "pad top on the model surface");
   near(lr.top + lr.h * M.ART.footY, sc.scr(0, M.PAD_TOP).y, 1e-9, "feet stay on the pad");
   // physics unchanged
-  assert.equal(M.LANDER.w, 24); assert.equal(M.PAD.w, 60); assert.equal(M.NOT_TO_SCALE, "Lander and pad not to scale.");
+  assert.equal(M.LANDER.w, 24); assert.equal(M.PAD.w, 90); assert.equal(M.NOT_TO_SCALE, "Lander and pad not to scale.");
 });
 test("Leo: after touchdown the view eases so the ground sits at the lower third; reduced motion snaps", async () => {
   const { S, sc } = await stubScene(false), box = { x: 0, y: 20, w: 390, h: 400 };
@@ -142,4 +142,13 @@ test("Leo: after touchdown the view eases so the ground sits at the lower third;
   const ui = read("rocket-mission/lander/ml-ui.js");
   assert.match(ui, /function finish\(\) \{[^}]*scene\.panTo\(true, prefers\.reducedMotion, groundAt\(L\.x\)\)/);
   assert.match(ui, /function reset\(\) \{[^}]*scene\.panTo\(false, true\)/);
+});
+
+test("on the pad means the full drawn 90 m pad: just inside the edge counts, just outside does not", () => {
+  const land = (dx) => { const L = M.createLander(); L.state = "flying"; L.tilt = 0; L.vx = 0; L.vy = -1;
+    const half = Math.max(...M.feet({ ...L, x: 0, y: 0 }).map((p) => Math.abs(p.x)));
+    L.x = M.PAD.x + M.PAD.w / 2 - half + dx; L.y = M.PAD_TOP + M.feetDrop(); M.touchdown(L); return L.result; };
+  assert.equal(M.PAD.w, 90);
+  assert.equal(land(-0.1).onPad, true, "outer footpad 0.1 m inside the drawn edge");
+  assert.equal(land(0.1).onPad, false, "outer footpad 0.1 m past the drawn edge");
 });

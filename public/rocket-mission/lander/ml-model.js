@@ -21,7 +21,7 @@ export const LANDER = Object.freeze({            // the mission lander (Cleared 
 // Where the art's features sit, as fractions of Leo's lander.webp (802 x 535 px).
 export const ART = Object.freeze({ footX: 0.479, footY: 0.983, nozzleY: 0.837, aspect: 535 / 802, padAspect: 176 / 1198, stripAspect: 382 / 2048 });
 export const WORLD = Object.freeze({ w: 240, top: 235 }); // m: the strip spans the width; the view shows 0 to top
-export const PAD = Object.freeze({ x: 138, w: 60 });      // m: pad centre and width, on the flattest stretch of the strip
+export const PAD = Object.freeze({ x: 138, w: 90 });      // m: pad centre and width (drawn width = scoring width), on the flattest stretch of the strip
 export const START = Object.freeze({ x: 40, alt: 170, vx: 5, vy: -12 }); // mission start, altitude above the ground (Cleared by Tesla 2026-10-29)
 export const LIMITS = Object.freeze({ safeV: 3, softV: 1.5, sideV: 1.5, tilt: 10 }); // touchdown rules, m/s and degrees (Cleared by Tesla 2026-10-29)
 export const FUN = Object.freeze({ goldFuel: 0.60 }); // Gold: at least 60% of the fuel left (Cleared by Tesla 2026-10-29)

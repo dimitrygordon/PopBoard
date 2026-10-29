@@ -90,7 +90,7 @@ Mode `?mode=mars-lander` of `study-rocket-mission.html`. Source: `public/rocket-
 | Tier | Goal | Threshold | Status |
 | --- | --- | --- | --- |
 | Bronze | Land safely anywhere | 3 m/s or slower down, 1.5 m/s or slower sideways, within 10 degrees of upright (`LIMITS`) | Cleared by Tesla 2026-10-29 |
-| Silver | Land safely on the pad | Safe, with both footpads over the 60 m pad | Cleared by Tesla 2026-10-29 |
+| Silver | Land safely on the pad | Safe, with both footpads over the 90 m pad (full drawn width, `PAD.w`) | Cleared by Tesla 2026-10-29 |
 | Gold | Soft landing on the pad with 60% of the fuel left | On the pad at 1.5 m/s or slower (`LIMITS.softV`), at least 60% fuel left (`FUN.goldFuel`) | Cleared by Tesla 2026-10-29 |
 
 ## Atom Builder

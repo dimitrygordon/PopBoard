@@ -118,7 +118,7 @@ Status: every claim and number in this section was cleared by Tesla on 2026-10-2
 
 ### What counts as a landing
 - Safe touchdown: 3 m/s or slower going down, 1.5 m/s or slower sideways, and within 10 degrees of upright when the first footpad touches. Anything else is a crash ("too fast", "sliding sideways" or "tipped over"). For scale, Phoenix touched down at about 2.4 m/s. Cleared by Tesla 2026-10-29
-- On the pad: both footpads over the 60 m slab. Cleared by Tesla 2026-10-29
+- On the pad: both footpads over the 90 m slab (the full drawn pad, `PAD.w`). Cleared by Tesla 2026-10-29
 - Soft: 1.5 m/s or slower going down. Cleared by Tesla 2026-10-29
 
 ### Medals (Mission tab only; see docs/fun-challenges.md)
@@ -127,5 +127,5 @@ Status: every claim and number in this section was cleared by Tesla on 2026-10-2
 - Gold: soft landing (1.5 m/s or slower) on the pad with at least 60% of the fuel left (`FUN.goldFuel`). The built-in autopilot used by the tests lands at about 0.9 m/s with about 75% left. Cleared by Tesla 2026-10-29
 
 ### Display
-- "Lander and pad not to scale." The lander is modelled 24 m wide and drawn 1.5 times larger (`DRAW_SCALE`, 36 m), about six times a real Mars lander; the pad is modelled 60 m wide and drawn 90 m wide, so both read on a phone. Physics and the on-pad check use the model sizes. The ground outline comes from the top edge of Leo's terrain strip, which spans the 240 m wide world. After touchdown or a crash the view pans (snaps with reduced motion) so the ground sits two thirds of the way down the stage. Cleared by Tesla 2026-10-29
+- "Lander and pad not to scale." The lander is modelled 24 m wide and drawn 1.5 times larger (`DRAW_SCALE`, 36 m), about six times a real Mars lander; the pad is 90 m wide, and the on-pad check uses that same full drawn width, so a landing that looks on the pad scores on the pad. Lander physics uses the 24 m model size. The ground outline comes from the top edge of Leo's terrain strip, which spans the 240 m wide world. After touchdown or a crash the view pans (snaps with reduced motion) so the ground sits two thirds of the way down the stage. Cleared by Tesla 2026-10-29
 - Engine glow and landing dust are drawn with radial gradients. Cleared by Tesla 2026-10-29
