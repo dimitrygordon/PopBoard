@@ -32,13 +32,14 @@
 
 <div class="title">
   <h1>Simple Machines Sandbox</h1>
-  <p>One model drives every arrow, ruler, and number. A smaller force has to act through a longer distance. The dashed ghost is the ideal machine. The solid picture includes friction and extra mass. Work is the area of a force-versus-distance rectangle, and W = Fd. In a compound machine the ideal mechanical advantages multiply, and so do the efficiencies.</p>
+  <p id="introText">One model drives every arrow, ruler, and number. A smaller force has to act through a longer distance. The dashed ghost is the ideal machine. The solid picture includes friction and extra mass. Work is the area of a force-versus-distance rectangle, and W = Fd. In a compound machine the ideal mechanical advantages multiply, and so do the efficiencies.</p>
 </div>
 
 <main class="wrap">
   <div id="statusBanner" role="status" aria-live="polite">
     <div class="status-type" id="statusType">Workbench</div>
     <div class="status-reason" id="statusReason">Loading the sandbox.</div>
+    <button type="button" class="status-toggle" id="statusToggle" aria-controls="statusReason" aria-expanded="true">Hide details</button>
   </div>
   <div class="tabs" id="tabs" role="tablist" aria-label="Simple machine labs"></div>
 
@@ -573,6 +574,36 @@
 <footer class="footnote">
   Ideal machines conserve energy, so W_in = W_out and a smaller force travels farther. Friction, rope mass, pulley mass, bearing torque, and wedge deformation are the real machine: useful work stays F_load times the load's distance and efficiency = useful output / input × 100%. A compound machine multiplies the stage MAs and multiplies the stage efficiencies. g = 9.80665 m/s². W = Fd for a constant force parallel to the displacement.
 </footer>
+<script>
+/* Phones: the intro shows its first sentence plus "More", and the status card folds. */
+(function () {
+  var mq = window.matchMedia("(max-width: 600px)");
+  var intro = document.getElementById("introText"), full = intro.textContent.trim();
+  var first = (full.match(/^.*?[.!?](\s|$)/) || [full])[0].trim();
+  var more = document.createElement("button");
+  more.type = "button"; more.className = "intro-more"; more.setAttribute("aria-controls", "introText");
+  intro.after(more);
+  var introOpen = false;
+  function paintIntro() {
+    var short = mq.matches && !introOpen && first.length < full.length;
+    intro.textContent = short ? first : full;
+    more.hidden = !mq.matches || first.length >= full.length;
+    more.textContent = introOpen ? "Less" : "More";
+    more.setAttribute("aria-expanded", String(introOpen));
+  }
+  more.addEventListener("click", function () { introOpen = !introOpen; paintIntro(); });
+  var banner = document.getElementById("statusBanner"), tog = document.getElementById("statusToggle");
+  var cardOpen = !mq.matches;
+  function paintCard() {
+    banner.classList.toggle("folded", !cardOpen);
+    tog.setAttribute("aria-expanded", String(cardOpen));
+    tog.textContent = cardOpen ? "Hide details" : "Show details";
+  }
+  tog.addEventListener("click", function () { cardOpen = !cardOpen; paintCard(); });
+  mq.addEventListener("change", function () { cardOpen = !mq.matches; paintIntro(); paintCard(); });
+  paintIntro(); paintCard();
+})();
+</script>
 <script type="module" src="machines-ui.js"></script>
 </body>
 </html>
