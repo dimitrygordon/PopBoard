@@ -134,7 +134,10 @@ export function pageChecks({ minText, minTap, touch }) {
     if (x1 <= x0 || y1 <= y0) continue;
     for (const fx of [0.15, 0.5, 0.85]) pts.push([x0 + (x1 - x0) * fx, y0 + (y1 - y0) * 0.5]);
     let hits = 0, by = null;
+    // A point scrolled out of its own scroll box is clipped, not covered.
+    const sp = scrollParent(e), spr = sp === document.scrollingElement ? null : sp.getBoundingClientRect();
     for (const [x, y] of pts) {
+      if (spr && (y < spr.top || y > spr.bottom || x < spr.left || x > spr.right)) continue;
       const top = document.elementFromPoint(x, y); if (!top) continue;
       if (top === e || e.contains(top) || top.contains(e)) continue;
       // label wrapping its input, or a sibling text inside the same control, is fine
@@ -147,6 +150,8 @@ export function pageChecks({ minText, minTap, touch }) {
         const sc = scrollParent(e), tr = top.getBoundingClientRect(), atBottom = tr.top + tr.height / 2 > vh / 2;
         if (atBottom ? sc.scrollTop + sc.clientHeight < sc.scrollHeight - 2 : sc.scrollTop > 2) continue;
       }
+      // A bottom sheet parked partway open runs past the screen edge; the part behind the bar is reached by dragging it up.
+      if (pinned(top) && pinned(e)) { let q = e; while (q && getComputedStyle(q).position !== "fixed") q = q.parentElement; if (q && q.getBoundingClientRect().bottom > vh + 1) continue; }
       const ctl = e.closest("button,label,a,[role=button]"); if (ctl && ctl.contains(top)) continue;
       hits++; by = top;
     }
