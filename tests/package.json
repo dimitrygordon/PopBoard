@@ -23,6 +23,7 @@
     "test:momentum": "node --test momentum-physics.test.mjs",
     "test:induction": "node --test induction-physics.test.mjs",
     "test:optics": "node --test optics-physics.test.mjs",
+    "test:rocket": "node --test rocket-physics.test.mjs",
     "test:quantum": "node --test quantum-physics.test.mjs",
     "test:climate": "node --test climate-physics.test.mjs",
     "test:mechanics:browser": "node mechanics-browser.mjs",

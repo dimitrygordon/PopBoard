@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#1f2128">
+<title>Rocket Science &amp; Space Mission // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  // Theme before first paint: a saved choice wins, else the system setting.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.rocket.theme"); } catch (e) {}
+    if (t !== "dark" && t !== "light") t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
+<link rel="preload" as="image" href="rocket-mission/assets/launch-pad.webp" type="image/webp">
+<link rel="stylesheet" href="rocket-mission/rocket-theme.css">
+<link rel="stylesheet" href="astro-study.css?v=20261021k">
+<script src="astro-study.js?v=20261021k"></script>
+</head>
+<body>
+<h1 class="sr-only">Rocket Science &amp; Space Mission</h1>
+<p class="sr-only">Rockets from the ground up: thrust from Newton's third law (F = mass flow times exhaust speed), the Tsiolkovsky rocket equation with real engines, why rockets use stages, a two-stage launch to orbit with gravity, drag and a gravity turn, orbital and escape speed, a Hohmann transfer from Earth to Mars with its launch window, and a sandbox for building a rocket and flying it.</p>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title">Rocket Science &amp; Space Mission</p>
+  <button id="themeBtn" class="theme-btn" type="button" aria-pressed="false" aria-label="Dark mode">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <span id="themeLabel">Dark</span>
+  </button>
+</header>
+
+<main id="stage" class="stage">
+  <div class="paper canvas-box scene-box">
+    <canvas id="scene" role="img" tabindex="0" aria-label="Rocket scene"></canvas>
+  </div>
+  <div class="controls paper" id="controls">
+    <h2 class="panel-title" id="panelTitle"></h2>
+    <div class="sliders" data-sliders></div>
+    <div class="choices" data-choices></div>
+    <p class="formula" id="readout" aria-live="polite"></p>
+    <p class="caption" id="note"></p>
+  </div>
+</main>
+
+<nav id="toolbar" class="toolbar" aria-label="Activities">
+  <button type="button" class="tool" data-show="thrust" aria-pressed="false">Thrust</button>
+  <button type="button" class="tool" data-show="equation" aria-pressed="false">Rocket equation</button>
+  <button type="button" class="tool" data-show="staging" aria-pressed="false">Staging</button>
+  <button type="button" class="tool" data-show="launch" aria-pressed="false">Launch</button>
+  <button type="button" class="tool" data-show="orbits" aria-pressed="false">Orbits</button>
+  <button type="button" class="tool" data-show="hohmann" aria-pressed="false">To Mars</button>
+  <button type="button" class="tool" data-show="sandbox" aria-pressed="false">Sandbox</button>
+</nav>
+
+<script type="module" src="rocket-mission/rocket-ui.js"></script>
+</body>
+</html>
