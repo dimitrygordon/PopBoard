@@ -49,10 +49,76 @@ function buildField() {
     if (done.has(s.seed)) b.classList.add("done");
     b.addEventListener("pointerenter", () => { b.querySelector("img").src = "exoplanets/assets/img/star_marker_hover.webp"; });
     b.addEventListener("pointerleave", () => { b.querySelector("img").src = "exoplanets/assets/img/star_marker_idle.webp"; });
-    b.addEventListener("click", () => openTarget(s.seed));
+    b.addEventListener("click", () => { lastSeed = s.seed; openTarget(s.seed); });
+    b.dataset.seed = s.seed;
     box.appendChild(b);
   });
+  layoutField();
 }
+
+// ---------- phone field layout ----------
+// Below 600px: stars are spread so no two crosshairs sit within 48px, only the last tapped star and its
+// 3 nearest neighbors are labeled, and labels are clamped inside the stage with 8px padding.
+const PHONE_FIELD = matchMedia("(max-width: 599.98px)");
+const MIN_GAP = 48, LABEL_PAD = 8;
+let lastSeed = null;
+function spread(pts, w, h, pad) {
+  const P = pts.map((p) => ({ x: pad + p.x * (w - 2 * pad), y: pad + p.y * (h - 2 * pad) }));
+  for (let it = 0; it < 200; it++) {
+    let moved = false;
+    for (let i = 0; i < P.length; i++) for (let j = i + 1; j < P.length; j++) {
+      let dx = P[j].x - P[i].x, dy = P[j].y - P[i].y, d = Math.hypot(dx, dy);
+      if (d >= MIN_GAP + 0.5) continue;
+      if (d < 1e-3) { dx = 1; dy = 0; d = 1; }
+      const push = (MIN_GAP + 1 - d) / 2, ux = dx / d, uy = dy / d;
+      P[i].x -= ux * push; P[i].y -= uy * push; P[j].x += ux * push; P[j].y += uy * push; moved = true;
+    }
+    for (const q of P) { q.x = Math.max(pad, Math.min(w - pad, q.x)); q.y = Math.max(pad, Math.min(h - pad, q.y)); }
+    if (!moved) break;
+  }
+  return P;
+}
+function layoutField() {
+  const box = $("fieldStars"), view = $("fieldView"); if (!box || view.hidden) return;
+  const btns = [...box.querySelectorAll(".field-star")]; if (!btns.length) return;
+  const r = box.getBoundingClientRect();
+  const phone = PHONE_FIELD.matches;
+  const pos = phone ? spread(field, r.width, r.height, 28) : field.map((s) => ({ x: s.x * r.width, y: s.y * r.height }));
+  btns.forEach((b, i) => { b.style.left = pos[i].x + "px"; b.style.top = pos[i].y + "px"; });
+  // Which stars get a label.
+  let show = null;
+  if (phone) {
+    let a = field.findIndex((s) => s.seed === lastSeed);
+    if (a < 0) { let best = Infinity; pos.forEach((p, i) => { const d = Math.hypot(p.x - r.width / 2, p.y - r.height / 2); if (d < best) { best = d; a = i; } }); }
+    const near = pos.map((p, i) => [Math.hypot(p.x - pos[a].x, p.y - pos[a].y), i]).sort((x, y) => x[0] - y[0]).slice(0, 4).map((x) => x[1]);
+    show = new Set(near);
+  }
+  const vr = view.getBoundingClientRect(), placed = [];
+  const hit = (a) => placed.some((b) => a.left < b.right + 4 && a.right > b.left - 4 && a.top < b.bottom + 2 && a.bottom > b.top - 2);
+  btns.forEach((b, i) => {
+    const lab = b.querySelector(".lab"); if (!lab) return;
+    lab.hidden = !!show && !show.has(i);
+    lab.style.marginLeft = "0px"; lab.style.top = "";
+    if (lab.hidden) return;
+    // Try below the marker, then above, then further down, so labels never sit on each other.
+    const tops = [58, -18, 76, -36, 94];
+    let lr = null;
+    for (const t of tops) {
+      lab.style.top = t + "px"; lab.style.marginLeft = "0px";
+      lr = lab.getBoundingClientRect();
+      let dx = 0;
+      if (lr.left < vr.left + LABEL_PAD) dx = vr.left + LABEL_PAD - lr.left;
+      else if (lr.right > vr.right - LABEL_PAD) dx = vr.right - LABEL_PAD - lr.right;
+      lab.style.marginLeft = dx + "px";
+      lr = { left: lr.left + dx, right: lr.right + dx, top: lr.top, bottom: lr.bottom };
+      if (!hit(lr)) break;
+    }
+    placed.push(lr);
+  });
+}
+addEventListener("resize", () => requestAnimationFrame(layoutField));
+PHONE_FIELD.addEventListener?.("change", layoutField);
+document.fonts?.ready?.then(() => layoutField());
 
 function showField() {
   $("fieldView").hidden = false; $("analysis").hidden = true; $("toolbar").hidden = true; $("verdict").hidden = true;
@@ -367,9 +433,17 @@ $("studyBackBtn").addEventListener("click", (e) => {
 });
 
 let toastTimer = 0;
+// The toast takes the title's slot in the top bar (as in Atom Builder), never over the star field or plots.
 function toast(msg) {
-  const el = $("statusLine"); el.textContent = msg; el.classList.add("show");
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 3200);
+  const el = $("statusLine"), title = $("targetTitle"), hud = document.querySelector(".hud");
+  const hr = hud.getBoundingClientRect(), tr = title.getBoundingClientRect();
+  const leftEdge = $("studyBackBtn").getBoundingClientRect().right + 8;
+  const rightBtns = [...hud.querySelectorAll(".hud-right button")].filter((b) => !b.hidden);
+  const rightEdge = rightBtns.length ? Math.min(...rightBtns.map((b) => b.getBoundingClientRect().left)) - 8 : hr.right - 10;
+  el.textContent = msg; el.classList.add("show", "in-bar");
+  Object.assign(el.style, { left: (leftEdge + rightEdge) / 2 + "px", top: tr.top + tr.height / 2 + "px", maxWidth: Math.max(80, rightEdge - leftEdge) + "px" });
+  title.style.visibility = "hidden";
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.classList.remove("show"); title.style.visibility = ""; }, 3200);
 }
 
 // ---------- loop ----------

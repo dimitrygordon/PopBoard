@@ -28,7 +28,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--ob-ink); ou
 .field-star { position: absolute; width: 64px; height: 64px; transform: translate(-50%, -50%); border: 0; padding: 0; background: none; cursor: pointer; }
 .field-star img { width: 100%; height: 100%; pointer-events: none; }
 .field-star .core { position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; margin: -6px; border-radius: 50%; box-shadow: 0 0 10px 3px currentColor; background: currentColor; }
-.field-star .lab { position: absolute; top: 58px; left: 50%; transform: translateX(-50%); font: 500 11px ui-monospace, monospace; color: var(--ob-ink-dim); white-space: nowrap; }
+.field-star .lab { position: absolute; top: 58px; left: 50%; transform: translateX(-50%); font: 500 13px ui-monospace, monospace; color: var(--ob-gold-100); white-space: nowrap; padding: 1px 6px; border-radius: 999px; background: rgba(8, 7, 26, 0.82); }
+/* 4.5:1 or better on the starfield: light ink on a dark pill. */
 .field-star.done .lab { color: var(--ob-stable); }
 
 .analysis { position: fixed; inset: calc(64px + env(safe-area-inset-top)) 10px calc(76px + env(safe-area-inset-bottom)) 10px;
@@ -70,6 +71,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--ob-ink); ou
 .toast { position: fixed; z-index: 8; left: 50%; transform: translateX(-50%); bottom: calc(82px + env(safe-area-inset-bottom)); margin: 0; padding: 8px 14px; border-radius: 999px;
   background: var(--ob-hud-bg); border: var(--ob-hud-border); font-size: 14px; opacity: 0; transition: opacity 0.25s; pointer-events: none; white-space: nowrap; max-width: 92vw; overflow: hidden; text-overflow: ellipsis; }
 .toast.show { opacity: 1; }
+/* In the top bar (placed by toast()): centred on the title's slot, wraps instead of clipping. */
+.toast.in-bar { bottom: auto; transform: translate(-50%, -50%); white-space: normal; text-align: center; overflow: visible; text-overflow: clip; }
 
 /* Desktop shows the grid; the toolbar's panel buttons scroll a panel into focus.
    Phones show one panel at a time. */
