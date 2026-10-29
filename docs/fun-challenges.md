@@ -15,6 +15,19 @@ Source: `public/projectile/projectile-fun.js` (`FUN` and `GOALS`).
 
 Copy to check: "Max range: about 45° from the ground". This holds only from level ground with no air drag.
 
+## Powers of Ten
+
+Source: `public/powers-of-ten/p10-logic.js` (`FUN`, `GOALS`). All rows TODO-TESLA.
+
+| Key | Value | Where it's used | Status |
+|---|---|---|---|
+| `huntTol` | 0.5 powers | Size Hunt: the target counts as found when the view comes to rest within 0.5 of a power of the plate's focus (log10(size / 0.6)). | TODO-TESLA |
+| `bronzeHuntFinds` | 3 | Bronze: find 3 objects in Size Hunt (one session). | TODO-TESLA |
+| `silverStreak` | 3 | Silver: 3 correct "how many powers of ten" predictions in a row. | TODO-TESLA |
+| `goldPowers` | 44 | Gold: stamp every whole power from 10⁻¹⁶ m to 10²⁷ m (spec: "visit all 40+ powers"). A power is stamped when the view passes through it. | TODO-TESLA |
+
+Stamps: `popboard.fun.powers-of-ten.stamps`. Share link (sandbox): `SHARE_SCHEMA` clamps z to −16…27; objects are enums.
+
 ## Shared layer constants (`public/shared/fun/`)
 These are feel constants from Leo's spec, not physics, but they're listed here for completeness:
 - press scale 0.97 over 100 ms

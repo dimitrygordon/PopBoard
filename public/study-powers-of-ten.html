@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#11151d">
+<title>Powers of Ten // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  // Dark is the default look; the Paper theme is remembered per module.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.powers-of-ten.theme"); } catch (e) {}
+    document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");
+  })();
+</script>
+<link rel="stylesheet" href="shared/fun/fun.css">
+<link rel="stylesheet" href="powers-of-ten/powers-of-ten-theme.css">
+</head>
+<body>
+<h1 class="sr-only">Powers of Ten</h1>
+<p class="sr-only">One continuous zoom from a proton to the cosmic web. Every whole power of ten is a stop on the way. Use the slider, the scroll wheel, a pinch, or the plus and minus keys.</p>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title">Powers of Ten</p>
+  <button id="soundBtn" type="button" aria-pressed="false">Sound off</button>
+  <button id="themeBtn" type="button"><span id="themeLabel">Paper</span></button>
+</header>
+
+<section class="readout" aria-live="polite">
+  <p class="power" id="power">10&#8304; m</p>
+  <p class="about" id="about"></p>
+</section>
+
+<main id="stage" class="stage">
+  <canvas id="scene" role="img" tabindex="0" aria-label="Zoom view"></canvas>
+  <p class="plate-caption" id="plateCaption" aria-live="polite"><span class="pc-name" id="pcName"></span><span class="pc-size" id="pcSize"></span><span class="pc-note" id="pcNote"></span></p>
+</main>
+
+<div class="canvas-box" id="funBox"></div>
+
+<section class="controls" id="controls" aria-label="Zoom controls">
+  <button type="button" class="fun-handle" id="sheetHandle" aria-label="Resize controls"></button>
+  <div class="tabs" role="tablist" aria-label="Mode">
+    <button type="button" role="tab" data-mode="zoom" aria-selected="true">Zoom</button>
+    <button type="button" role="tab" data-mode="hunt" aria-selected="false">Size Hunt</button>
+    <button type="button" role="tab" data-mode="predict" aria-selected="false">Predict</button>
+    <button type="button" role="tab" data-mode="sandbox" aria-selected="false">Sandbox</button>
+  </div>
+  <label class="zoom-row"><span class="sr-only">Zoom level, powers of ten</span>
+    <button type="button" id="zoomIn" aria-label="One power smaller">&minus;</button>
+    <input type="range" id="zoom" min="-16" max="27" step="0.01" value="0" aria-valuetext="10 to the 0 meters">
+    <button type="button" id="zoomOut" aria-label="One power bigger">+</button>
+  </label>
+  <div id="modeBody" class="mode-body"></div>
+</section>
+
+<script type="module" src="powers-of-ten/p10-ui.js"></script>
+</body>
+</html>
