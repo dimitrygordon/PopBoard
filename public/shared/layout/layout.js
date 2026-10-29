@@ -1,7 +1,9 @@
 // PopBoard shared layout rule (JS half). Loaded by every study page as a module.
 // 1) Text floor: any caption or label rendered under 13px is raised to 13px (table cells keep their size;
 //    their table scrolls sideways instead, see contain()).
-// 2) Keeps --pb-vh exact on browsers without dvh and re-runs on resize/rotation.
+// 2) Touch screens: sliders get a 44px tall hit area. Transparent padding grows the box; background-clip keeps
+//    a module's painted track at its own height, so the slider looks the same.
+// 3) Keeps --pb-vh exact on browsers without dvh and re-runs on resize/rotation.
 // Opt out on one element (and its children) with data-pb-free.
 export const MIN_TEXT_PX = 13;
 
@@ -20,6 +22,25 @@ export function raiseSmallText(root = document.body, min = MIN_TEXT_PX) {
     checked.add(el);
     const fs = parseFloat(getComputedStyle(el).fontSize);
     if (fs > 0 && fs < min - 0.05) { el.style.fontSize = min + "px"; el.dataset.pbRaised = "1"; n++; }
+  }
+  return n;
+}
+
+export const MIN_TAP_PX = 44;
+const sized = new WeakSet();
+export function growSliders(root = document.body, min = MIN_TAP_PX) {
+  if (!root || !matchMedia?.("(pointer: coarse)").matches) return 0;
+  let n = 0;
+  for (const el of root.querySelectorAll('input[type="range"]')) {
+    if (sized.has(el) || el.closest("[data-pb-free]")) continue;
+    const h = el.offsetHeight; if (!h) continue; // hidden for now; check again later
+    sized.add(el);
+    if (h >= min - 0.5) continue;
+    const cs = getComputedStyle(el), inner = h - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - parseFloat(cs.borderTopWidth) - parseFloat(cs.borderBottomWidth);
+    const pad = Math.ceil((min - inner - parseFloat(cs.borderTopWidth) - parseFloat(cs.borderBottomWidth)) / 2);
+    el.style.boxSizing = "content-box"; el.style.height = inner + "px";
+    el.style.paddingTop = el.style.paddingBottom = pad + "px";
+    el.style.backgroundClip = "content-box"; el.dataset.pbTap = "1"; n++;
   }
   return n;
 }
@@ -48,6 +69,7 @@ function run() {
   timer = 0;
   if (!CSS.supports?.("height", "100dvh")) document.documentElement.style.setProperty("--pb-vh", innerHeight + "px");
   raiseSmallText();
+  growSliders();
   contain();
 }
 export function schedule(reset = false) { if (reset === true) checked = new WeakSet(); if (!timer) timer = setTimeout(run, 120); }
