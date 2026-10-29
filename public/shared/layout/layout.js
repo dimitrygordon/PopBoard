@@ -5,7 +5,7 @@
 // Opt out on one element (and its children) with data-pb-free.
 export const MIN_TEXT_PX = 13;
 
-const TEXT_SEL = "p,span,small,label,output,figcaption,caption,dt,dd,li,a,button,summary,legend,h1,h2,h3,h4,h5,h6,div,b,strong,em,i,sub,sup,abbr,time,kbd,code";
+const TEXT_SEL = "footer,p,span,small,label,output,figcaption,caption,dt,dd,li,a,button,summary,legend,h1,h2,h3,h4,h5,h6,div,b,strong,em,i,sub,sup,abbr,time,kbd,code";
 function ownText(el) { for (const n of el.childNodes) if (n.nodeType === 3 && n.textContent.trim()) return true; return false; }
 
 let checked = new WeakSet();
@@ -14,9 +14,9 @@ export function raiseSmallText(root = document.body, min = MIN_TEXT_PX) {
   let n = 0;
   for (const el of root.querySelectorAll(TEXT_SEL)) {
     if (checked.has(el)) continue;
+    if (el.closest("[data-pb-free],svg,.sr-only")) { checked.add(el); continue; }
+    if (!ownText(el)) continue; // text may arrive later; check again then
     checked.add(el);
-    if (el.closest("[data-pb-free],svg,.sr-only")) continue;
-    if (!ownText(el)) continue;
     const fs = parseFloat(getComputedStyle(el).fontSize);
     if (fs > 0 && fs < min - 0.05) { el.style.fontSize = min + "px"; el.dataset.pbRaised = "1"; n++; }
   }
