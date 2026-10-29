@@ -46,16 +46,16 @@ Stamps: `popboard.fun.powers-of-ten.stamps`. Share link (sandbox): `SHARE_SCHEMA
 
 ## Atom Builder
 
-All thresholds TODO-TESLA.
+All thresholds Cleared by Tesla 2026-10-29.
 
 | Tier | Goal | Threshold |
 | --- | --- | --- |
-| Bronze | Make a neutral carbon-12 atom | 6 protons, 6 neutrons, 6 electrons (TODO-TESLA) |
-| Silver | Make an ion | Stable nucleus with electrons != protons (TODO-TESLA) |
-| Gold | Make stable isotopes of one element | 2 neutral stable isotopes of the same element collected (`FUN.isotopesNeeded`, TODO-TESLA) |
+| Bronze | Make a neutral carbon-12 atom | 6 protons, 6 neutrons, 6 electrons (Cleared by Tesla 2026-10-29) |
+| Silver | Make an ion | Stable nucleus with electrons != protons (Cleared by Tesla 2026-10-29) |
+| Gold | Make stable isotopes of one element | 2 neutral stable isotopes of the same element collected (`FUN.isotopesNeeded`, Cleared by Tesla 2026-10-29) |
 
-- Prediction: "Next particle: will the nucleus be stable?" resolves on the next nucleus change (TODO-TESLA).
-- Table: a neutral atom with a stable nucleus is collected once per mass number (TODO-TESLA).
+- Prediction: "Next particle: will the nucleus be stable?" resolves on the next nucleus change (Cleared by Tesla 2026-10-29).
+- Table: a neutral atom with a stable nucleus is collected once per mass number (Cleared by Tesla 2026-10-29).
 
 ## Shared layer constants (`public/shared/fun/`)
 These are feel constants from Leo's spec, not physics, but they're listed here for completeness:

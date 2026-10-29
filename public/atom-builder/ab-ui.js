@@ -3,7 +3,7 @@
 import { forwardStudyQuery } from "../board-return.js?v=20261022a";
 import {
   MODULE_ID, SCALE_CAPTION, MAX_Z, MAX_N, MAX_E, SHELLS, ELEMENTS, TABLE_POS, GOALS, FUN, TARGETS, SHARE_SCHEMA,
-  sanitizeAtom, describe, shellCounts, isStable, judgePrediction, collect, sanitizeTable
+  sanitizeAtom, describe, shellCounts, isStable, judgePrediction, collect, sanitizeTable, nucleonSize, nucleusRadius, electronBand
 } from "./ab-model.js";
 import { createScene, loadArt, KINDS } from "./ab-scene.js";
 import {
@@ -66,7 +66,16 @@ function chipSync() {
   card.update(earned);
 }
 chipSync(); card.streak(0, streak.best);
-function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => { t.hidden = true; }, 2200); }
+// Toasts live in the header band, in the title's slot between Back and Sound, so they never cover the atom.
+function toast(msg) {
+  const t = $("toast"), title = document.querySelector(".hud .title"), hud = document.querySelector(".hud").getBoundingClientRect();
+  const left = $("studyBackBtn").getBoundingClientRect().right + 8, right = $("soundBtn").getBoundingClientRect().left - 8;
+  if (t.parentElement !== document.body) document.body.appendChild(t); // fixed to the viewport, not a transformed box
+  t.textContent = msg; t.hidden = false;
+  Object.assign(t.style, { left: (left + right) / 2 + "px", transform: "translateX(-50%)", maxWidth: Math.max(80, right - left) + "px", top: hud.top + "px", minHeight: hud.height + "px" });
+  title.style.visibility = "hidden";
+  clearTimeout(toast._t); toast._t = setTimeout(() => { t.hidden = true; title.style.visibility = ""; }, 2200);
+}
 let table = (() => { try { return sanitizeTable(JSON.parse(store.get(TABLE_KEY) || "{}")); } catch (e) { return {}; } })();
 
 // ---------- particles ----------
@@ -74,18 +83,17 @@ let table = (() => { try { return sanitizeTable(JSON.parse(store.get(TABLE_KEY) 
 const nuc = [], els = [];
 let mode = "build", targetIdx = 0, guess = null;
 const counts = () => ({ p: nuc.filter((t) => t.kind === "proton").length, n: nuc.filter((t) => t.kind === "neutron").length, e: els.length });
+const nS = () => nucleonSize(nuc.length, scene.geo.S, scene.geo.R);
 function nucSlot(i, S) { if (i === 0) return { x: 0, y: 0 }; const r = S * 0.36 * Math.sqrt(i + 0.3), a = i * 2.39996; return { x: r * Math.cos(a), y: r * Math.sin(a) }; }
-const nucRadius = (n, S) => (n ? S * 0.36 * Math.sqrt(n) + S * 0.5 : 0);
 function electronSpot(shell, j, cap) {
-  const g = scene.geo, rIn = shell === 0 ? Math.max(nucRadius(nuc.length, g.S) + g.S * 0.15, g.radii[0] * 0.3) : g.radii[shell - 1] * 0.95;
-  const rOut = g.radii[shell] * (shell === 0 ? 0.8 : 0.9);
+  const g = scene.geo, [rIn, rOut] = electronBand(shell, nucleusRadius(nuc.length, nS()), g.radii, g.S);
   const a = (j / cap) * Math.PI * 2 + shell * 0.7 + (Math.random() - 0.5) * (Math.PI / cap);
   const r = rIn + (rOut - rIn) * (0.2 + 0.7 * Math.random());
   return { x: r * Math.cos(a), y: r * Math.sin(a) };
 }
 function retarget() {
   const S = scene.geo.S;
-  nuc.forEach((t, i) => { t.slot = nucSlot(i, S); });
+  const s = nucleonSize(nuc.length, S, scene.geo.R); nuc.forEach((t, i) => { t.slot = nucSlot(i, s); });
   const per = shellCounts(els.length); let k = 0;
   per.forEach((c, shell) => { for (let j = 0; j < c; j++, k++) { const e = els[k]; if (e.shell !== shell || !e.spot) { e.shell = shell; e.spot = electronSpot(shell, j, SHELLS[shell]); } } });
 }
@@ -111,7 +119,7 @@ function changed(nucleusChanged) {
   $("symbol").textContent = d.el ? d.el.symbol : "?";
   $("name").textContent = d.el ? `${d.nuclide}` : d.kind;
   $("facts").textContent = `Protons ${a.p}, neutrons ${a.n}, electrons ${a.e}. Mass number ${d.A}, charge ${d.chargeText}.`;
-  $("stab").textContent = d.el ? `${d.kind}. ${d.stability}.` : d.kind === "Empty" && !a.e ? "Drag a proton onto the atom to start." : "Add a proton to make an element.";
+  $("stab").textContent = d.el ? `${d.kind}. ${d.stability.replace(/\.$/, "")}.` : d.kind === "Empty" && !a.e ? "Drag a proton onto the atom to start." : "Add a proton to make an element.";
   $("stab").dataset.stable = String(d.stable);
   canvas.setAttribute("aria-label", `Atom: ${$("name").textContent}. ${$("facts").textContent} ${$("stab").textContent}`);
   for (const k of KINDS) $("cap-" + k).textContent = `${k[0].toUpperCase() + k.slice(1)}s ${a[k[0]]}`;
@@ -207,7 +215,6 @@ function fit() {
   const ctl = $("controls").getBoundingClientRect(), st = $("status").getBoundingClientRect();
   if (wide.matches) { const x = Math.max(st.right + 16, 300), w = innerWidth - 404 - x; scene.setBox({ x, y: 64, w, h: innerHeight - 64 - 12 }); }
   else { const top = st.bottom + 8, bottom = Math.min(innerHeight, ctl.top) - 8; scene.setBox({ x: 12, y: top, w: innerWidth - 24, h: Math.max(200, bottom - top) }); }
-  $("toast").style.top = Math.round(Math.max(st.bottom, 56) + 8) + "px"; // never on top of the readout
   retarget();
 }
 function layoutUI() { phoneSync(); sheet?.layout(); requestFit(); }
@@ -234,7 +241,7 @@ function frame(now) {
     if (e.fade) { const k = (now - e.fade) / 300; if (k < 0.5) e.alpha = 1 - 2 * k; else { if (!e.moved) { const j = Math.random() * SHELLS[e.shell]; e.spot = electronSpot(e.shell, j, SHELLS[e.shell]); e.x = e.spot.x; e.y = e.spot.y; e.moved = true; } e.alpha = Math.min(1, 2 * k - 1); if (k >= 1) { e.fade = 0; e.moved = false; e.alpha = 1; } } }
     else if (reduced()) { e.x = e.spot.x; e.y = e.spot.y; } else { const sx = springStep({ x: e.x, v: e.vx }, e.spot.x, real, opt), sy = springStep({ x: e.y, v: e.vy }, e.spot.y, real, opt); e.x = sx.x; e.vx = sx.v; e.y = sy.x; e.vy = sy.v; }
   }
-  const geo = scene.draw({ nucleons: nuc, electrons: els, shells: shellCounts(els.length), held }, now);
+  const geo = scene.draw({ nucleons: nuc, nS: nS(), electrons: els, shells: shellCounts(els.length), held }, now);
   // Live captions, each 12px below its art.
   place($("scaleCap"), geo.cx, geo.artBottom + CAPTION_GAP);
   for (const t of geo.trays) place($("cap-" + t.kind), t.x + t.w / 2, t.y + t.h + CAPTION_GAP);
@@ -245,6 +252,6 @@ const share = sanitizeState(decodeState(location.hash), SHARE_SCHEMA);
 renderMode();
 if (Object.keys(share).length) { setMode("sandbox"); setAtom(share); } else changed(false);
 requestAnimationFrame(frame);
-window.__ab = { counts, setAtom, add, remove, setMode, get geo() { return scene.geo; }, get table() { return table; }, CAPTION_GAP, get mode() { return mode; } };
+window.__ab = { counts, setAtom, setTarget(i) { targetIdx = i; renderMode(); }, get target() { return TARGETS[targetIdx].id; }, add, remove, setMode, get geo() { return scene.geo; }, get table() { return table; }, CAPTION_GAP, get mode() { return mode; } };
 // Re-fit the stage whenever the readout or the sheet changes height.
 if (typeof ResizeObserver === "function") { const ro = new ResizeObserver(() => requestFit()); ro.observe($("status")); ro.observe($("controls")); }

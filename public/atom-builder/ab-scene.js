@@ -50,7 +50,7 @@ export function createScene(canvas, imgs) {
     if (!st.nucleons.length && !st.electrons.length) {
       ctx.setLineDash([6, 6]); ctx.strokeStyle = pal.dim; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(g.cx, g.cy, g.S * 1.4, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
     }
-    for (const t of st.nucleons) token(t.kind, g.cx + t.x + (t.wx || 0), g.cy + t.y + (t.wy || 0), g.S, t.pressed);
+    for (const t of st.nucleons) token(t.kind, g.cx + t.x + (t.wx || 0), g.cy + t.y + (t.wy || 0), st.nS || g.S, t.pressed);
     for (const e of st.electrons) token("electron", g.cx + e.x, g.cy + e.y, g.S, e.pressed, e.alpha ?? 1);
     // Trays.
     for (const t of g.trays) {

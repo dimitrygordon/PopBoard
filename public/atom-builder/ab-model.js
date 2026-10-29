@@ -1,5 +1,5 @@
 // Atom Builder: pure model (no DOM). Elements 1 to 20, stable-isotope table, electron shell
-// filling (2, 8, 8, 2) and the challenges. Numbers are TODO-TESLA, see docs/atom-builder-science.md.
+// filling (2, 8, 8, 2) and the challenges. Numbers are Cleared by Tesla 2026-10-29, see docs/atom-builder-science.md.
 
 export const MODULE_ID = "atom-builder";
 export const SCALE_CAPTION = "Not to scale: the real nucleus is far tinier.";
@@ -7,7 +7,7 @@ export const CLOUD_CAPTION = "Electrons are spread out in clouds: the darker the
 export const MAX_Z = 20, MAX_N = 30, MAX_E = 22;
 export const SHELLS = [2, 8, 8, 4];  // electrons per cloud drawn, innermost first (1s, then outer bands)
 
-// Symbol, name, stable neutron counts (TODO-TESLA).
+// Symbol, name, stable neutron counts (Cleared by Tesla 2026-10-29).
 export const ELEMENTS = [
   null,
   ["H", "Hydrogen", [0, 1]], ["He", "Helium", [1, 2]], ["Li", "Lithium", [3, 4]], ["Be", "Beryllium", [5]],
@@ -32,16 +32,17 @@ export function chargeText(q) { return q === 0 ? "0 (neutral)" : q > 0 ? `+${q}`
 export function isStable({ p, n }) { if (p < 1 || p > MAX_Z) return false; return ELEMENTS[p][2].includes(n); }
 // Fill electron clouds innermost first.
 export function shellCounts(e) { const out = []; let left = e; for (const cap of SHELLS) { const k = Math.min(cap, left); out.push(k); left -= k; } return out; }
+export const UNSTABLE_TEXT = "Unstable nucleus: it would change by radioactive decay (some take seconds, some take billions of years).";
 export function describe(a) {
   const el = element(a.p), A = massNumber(a), q = charge(a);
   const stable = isStable(a);
   const kind = !el ? (a.n ? "Just neutrons: no element yet" : "Empty") : q === 0 ? "Neutral atom" : q > 0 ? "Positive ion" : "Negative ion";
   const nuclide = el ? `${el.name}-${A}` : "";
   return { el, A, q, stable, kind, nuclide, chargeText: chargeText(q),
-    stability: !el ? "" : stable ? "Stable nucleus" : "Unstable nucleus: it would change by radioactive decay" };
+    stability: !el ? "" : stable ? "Stable nucleus" : UNSTABLE_TEXT };
 }
 
-// ---------- challenges (TODO-TESLA) ----------
+// ---------- challenges (Cleared by Tesla 2026-10-29) ----------
 export const FUN = { isotopesNeeded: 2 };
 export const isCarbon12 = (a) => a.p === 6 && a.n === 6 && a.e === 6;
 export const isIon = (a) => a.p >= 1 && a.e !== a.p && isStable(a);
@@ -86,3 +87,21 @@ export const TARGETS = [
 export const SHARE_SCHEMA = {
   p: { type: "num", min: 0, max: MAX_Z }, n: { type: "num", min: 0, max: MAX_N }, e: { type: "num", min: 0, max: MAX_E }
 };
+
+// ---------- nucleus size cap (Leo) ----------
+// Nucleus diameter stays at most NUCLEUS_FRAC of the atom's full cloud diameter: past about 12
+// nucleons the tokens shrink instead of the nucleus swallowing the clouds.
+export const NUCLEUS_FRAC = 0.35;
+export const nucleusRadius = (n, s) => (n ? s * 0.36 * Math.sqrt(n) + s * 0.5 : 0);
+export const CLOUD_1S = 0.42; // 1s cloud radius as a fraction of R (matches CLOUD_RADII[0] in ab-scene.js)
+// Largest nucleus radius: NUCLEUS_FRAC of R, and always leave room for 1s electrons between nucleus and 1s cloud edge.
+export const nucleusCap = (S, R) => Math.min(NUCLEUS_FRAC * R, CLOUD_1S * R - S * 0.3);
+export function nucleonSize(n, S, R) { return n ? Math.min(S, nucleusCap(S, R) / (0.36 * Math.sqrt(n) + 0.5)) : S; }
+// Radial band [rIn, rOut] where electrons of a cloud may sit: always inside their cloud and
+// always clear of the nucleus (by at least half an electron draw box's dot, plus a margin).
+export function electronBand(shell, nucR, radii, S) {
+  const clear = nucR + S * 0.15;
+  const rIn = Math.max(clear, shell === 0 ? radii[0] * 0.3 : radii[shell - 1] * 0.95);
+  const rOut = Math.max(rIn + 1, radii[shell] * (shell === 0 ? 0.8 : 0.9));
+  return [rIn, Math.min(rOut, radii[shell] * 0.98)];
+}

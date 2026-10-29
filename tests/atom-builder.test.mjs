@@ -20,6 +20,28 @@ test("stability table: known stable nuclides only", () => {
   for (const [p, n] of [[1, 0], [1, 1], [2, 2], [6, 6], [6, 7], [8, 8], [11, 12], [17, 18], [17, 20], [20, 20]]) assert.ok(M.isStable({ p, n }), `${p},${n}`);
   for (const [p, n] of [[1, 2], [2, 4], [4, 4], [6, 8], [11, 11], [0, 1]]) assert.ok(!M.isStable({ p, n }), `${p},${n}`);
 });
+test("unstable nucleus line shown to students (Tesla wording)", () => {
+  assert.equal(M.describe({ p: 6, n: 9, e: 6 }).stability, "Unstable nucleus: it would change by radioactive decay (some take seconds, some take billions of years).");
+  assert.equal(M.describe({ p: 6, n: 6, e: 6 }).stability, "Stable nucleus");
+  assert.ok(M.isStable({ p: 20, n: 28 })); // Ca-48: observationally stable, listed as stable
+});
+test("Leo: nucleus stays within 35% of the cloud diameter, electrons stay in their cloud and off the nucleus", () => {
+  assert.equal(M.CLOUD_1S, CLOUD_RADII[0]);
+  for (const R of [60, 90, 120, 180, 260, 400]) { const S = Math.max(26, Math.min(56, R * 0.22));
+    const radii = CLOUD_RADII.map((k) => k * R);
+    for (let n = 1; n <= M.MAX_Z + M.MAX_N; n++) {
+      const s = M.nucleonSize(n, S, R), nucR = M.nucleusRadius(n, s);
+      assert.ok(s <= S && s > 0); assert.ok(2 * nucR <= M.NUCLEUS_FRAC * 2 * R + 1e-9, `n=${n} R=${R}`);
+      if (n <= 12 && S * 0.36 * Math.sqrt(n) + S * 0.5 <= M.NUCLEUS_FRAC * R) assert.equal(s, S); // small nuclei keep full-size tokens
+      for (let k = 0; k < radii.length; k++) { const [a, b] = M.electronBand(k, nucR, radii, S); assert.ok(a > nucR && b > a && b <= radii[k], `n=${n} R=${R} shell ${k}: ${a}..${b}`); }
+    }
+  }
+  const ui = read("atom-builder/ab-ui.js"); assert.match(ui, /electronBand\(shell, nucleusRadius\(nuc\.length, nS\(\)\)/);
+});
+test("Leo: toasts sit in the header band, not over the atom", () => {
+  const ui = read("atom-builder/ab-ui.js"), css = read("atom-builder/atom-builder-theme.css");
+  assert.match(ui, /top: hud\.top \+ "px"/); assert.ok(!/\.toast \{[^}]*\+ 120px/.test(css));
+});
 test("sanitizing clamps and rounds", () => {
   assert.deepEqual(M.sanitizeAtom({ p: 99, n: -3, e: "4" }), { p: M.MAX_Z, n: 0, e: 4 });
   assert.deepEqual(M.sanitizeAtom({ p: NaN }), { p: 0, n: 0, e: 0 });
