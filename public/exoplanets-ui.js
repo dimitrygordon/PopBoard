@@ -97,8 +97,8 @@ function layoutField() {
   }
   const vr = view.getBoundingClientRect(), placed = [];
   const over = (a, b) => a.left < b.right + 4 && a.right > b.left - 4 && a.top < b.bottom + 2 && a.bottom > b.top - 2;
-  // Wider screens show every label, so labels also keep off the other stars' markers there.
-  const marks = phone ? [] : btns.map((b) => b.getBoundingClientRect());
+  // Labels keep off the other stars' markers as well as each other.
+  const marks = btns.map((b) => b.getBoundingClientRect());
   let self = -1;
   const hit = (a) => placed.some((b) => over(a, b)) || marks.some((m, k) => k !== self && over(a, m));
   btns.forEach((b, i) => {
@@ -107,20 +107,25 @@ function layoutField() {
     lab.hidden = !!show && !show.has(i);
     lab.style.marginLeft = "0px"; lab.style.top = "";
     if (lab.hidden) return;
-    // Try below the marker, then above, then further down, so labels never sit on each other.
-    const tops = [58, -18, 76, -36, 94];
-    let lr = null, ok = false;
-    for (const t of tops) {
-      lab.style.top = t + "px"; lab.style.marginLeft = "0px";
-      lr = lab.getBoundingClientRect();
-      let dx = 0;
-      if (lr.left < vr.left + LABEL_PAD) dx = vr.left + LABEL_PAD - lr.left;
-      else if (lr.right > vr.right - LABEL_PAD) dx = vr.right - LABEL_PAD - lr.right;
-      lab.style.marginLeft = dx + "px";
-      lr = { left: lr.left + dx, right: lr.right + dx, top: lr.top, bottom: lr.bottom };
-      if (!hit(lr)) { ok = true; break; }
+    // Try spots below, above and beside the marker; take the first clear one, else the one that covers least.
+    const area = (a, b) => Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+    const cost = (a) => placed.reduce((n, b) => n + area(a, b) * 4, 0) + marks.reduce((n, m, k) => n + (k === self ? 0 : area(a, m)), 0);
+    const tops = [58, -18, 76, -36, 94, -54], shifts = [0, -44, 44, -88, 88];
+    let lr = null, best = null;
+    outer: for (const sx of shifts) for (const t of tops) {
+      lab.style.top = t + "px"; lab.style.marginLeft = sx + "px";
+      const r0 = lab.getBoundingClientRect();
+      let dx = sx;
+      if (r0.left < vr.left + LABEL_PAD) dx += vr.left + LABEL_PAD - r0.left;
+      else if (r0.right > vr.right - LABEL_PAD) dx += vr.right - LABEL_PAD - r0.right;
+      const r = { left: r0.left + dx - sx, right: r0.right + dx - sx, top: r0.top, bottom: r0.bottom };
+      if (r.top < vr.top + LABEL_PAD || r.bottom > vr.bottom - LABEL_PAD) continue;
+      const c = hit(r) ? cost(r) : 0;
+      if (!best || c < best.c) best = { c, t, dx, r };
+      if (c === 0) break outer;
     }
-    if (!ok && !phone) { lab.style.top = "58px"; lab.style.marginLeft = "0px"; lr = lab.getBoundingClientRect(); }
+    if (best) { lab.style.top = best.t + "px"; lab.style.marginLeft = best.dx + "px"; lr = best.r; }
+    else { lab.style.top = "58px"; lab.style.marginLeft = "0px"; lr = lab.getBoundingClientRect(); }
     placed.push(lr);
   });
 }
