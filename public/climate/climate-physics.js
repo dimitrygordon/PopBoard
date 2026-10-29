@@ -13,7 +13,7 @@ export const toC = (K) => K - 273.15;
 // ---------- planets (NASA NSSDCA planetary fact sheets) ----------
 export const PLANETS = Object.freeze({
   venus: Object.freeze({ name: "Venus", d: 0.723, S: 2601.3, albedo: 0.77, Tobs: 737, pBar: 92, co2: "96.5%" }),
-  earth: Object.freeze({ name: "Earth", d: 1.0, S: 1361.0, albedo: 0.294, Tobs: 288, pBar: 1.014, co2: "0.042% (420 ppm)" }),
+  earth: Object.freeze({ name: "Earth", d: 1.0, S: 1361.0, albedo: 0.294, Tobs: 288, pBar: 1.014, co2: "0.043% (427 ppm, 2025)" }),
   mars: Object.freeze({ name: "Mars", d: 1.524, S: 586.2, albedo: 0.25, Tobs: 214, pBar: 0.00636, co2: "95.1%" })
 });
 export const PLANET_IDS = Object.freeze(["venus", "earth", "mars"]);

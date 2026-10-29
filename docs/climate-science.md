@@ -21,9 +21,9 @@ Every equation, constant, number and claim shown in the Planetary Climate module
 1. Sunlight at distance d (AU): S(d) = S_Earth / d^2 (inverse square; OpenStax).
 2. Average sunlight per square metre = S/4 (disc pi R^2 versus sphere 4 pi R^2). Earth: 1361/4 = 340 W/m^2.
 3. Absorbed = (1 - a) S/4; reflected = a S/4. Earth: 240 W/m^2 absorbed.
-4. Equilibrium temperature T_e = [S(1 - a)/(4 sigma)]^(1/4). Earth 255 K (-18 C), Venus 227 K, Mars 210 K; matches the NASA blackbody values above.
+4. Equilibrium temperature T_e = [S(1 - a)/(4 sigma)]^(1/4). Earth 255 K (-18 C; Earth 254.0 K on the NASA sheet), Venus 227 K, Mars 210 K; matches the NASA blackbody values above.
 5. One-layer gray atmosphere: T_s = T_e [2/(2 - eps)]^(1/4), layer T_a = T_s / 2^(1/4). eps = 0.77 gives Earth 288 K, layer 242 K; ground emits sigma T_s^4 = 390 W/m^2, the layer sends about 150 W/m^2 back down.
-6. N opaque layers (sandbox): T_s = T_e (1 + N)^(1/4). Earth is about 0.62 layers, Venus about 110, Mars warms about 4 K.
+6. N opaque layers (sandbox): T_s = T_e (1 + N)^(1/4). Earth is about 0.62 layers, Venus about 110, Mars warms by only about 4 K.
 7. CO2 forcing: dF = 5.35 ln(C/280) W/m^2 (Myhre et al. 1998, used in IPCC TAR/AR5). Doubling gives 3.71 W/m^2; AR6 best estimate 3.93 W/m^2.
 8. Eventual warming dT = ECS x dF / F_2x. ECS best estimate 3 C, likely 2.5 to 4 C, very likely 2 to 5 C (IPCC AR6 WG1 SPM A.4.4, Ch. 7).
 9. Feedbacks: dT = -dF / lambda. AR6 Table 7.10: Planck -3.22, water vapour + lapse rate +1.30, surface albedo +0.35, clouds +0.42 W m^-2 K^-1; net -1.16 (includes -0.01 biogeophysical/other not shown). Module sum -1.15 gives 3.42 K for 3.93 W/m^2; Planck alone 1.22 K; gain 2.8.
