@@ -2,6 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="stylesheet" href="shared/paper/paper.css">
+<script src="shared/paper/paper.js" data-module="orbits"></script>
+<style data-paper-module>:root[data-theme="light"]{--amber:#8a5800;}</style>
+
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="stylesheet" href="shared/layout/layout.css">
 <script type="module" src="shared/layout/layout.js"></script>
@@ -29,7 +33,7 @@
 <body>
 <h1 class="sr-only">Orbital Mechanics &amp; Gravity Playground</h1>
 <p class="sr-only">Tap to drop a star or planet. Pull back and let go to sling it. Drag a body to move it. Pinch or scroll to zoom.</p>
-<canvas id="orbitsCanvas" aria-label="Orbit playground. Tap to place a body, pull back to set its velocity, drag a body to move it."></canvas>
+<canvas id="orbitsCanvas" data-paper="keep" aria-label="Orbit playground. Tap to place a body, pull back to set its velocity, drag a body to move it."></canvas>
 <p id="readout" class="readout" aria-live="off"></p>
 <div id="stableBadge" class="stable-badge" hidden aria-label="Stable orbit"><svg aria-hidden="true"><use href="orbits/assets/icons/sprite.svg#ob-challenge-badge"/></svg></div>
 <p id="statusLine" class="toast" role="status" aria-live="polite"></p>

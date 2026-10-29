@@ -2,6 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="stylesheet" href="shared/paper/paper.css">
+<script src="shared/paper/paper.js" data-module="sandbox"></script>
+<style data-paper-module>:root[data-theme="light"]{--amber:#8a5800;}</style>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <link rel="stylesheet" href="shared/layout/layout.css">
 <script type="module" src="shared/layout/layout.js"></script>
@@ -117,7 +121,7 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 </head>
 <body>
 
-<canvas id="sandboxCanvas"></canvas>
+<canvas id="sandboxCanvas" data-paper="keep"></canvas>
 
 <div class="bar bar-top">
   <div class="bar-left">

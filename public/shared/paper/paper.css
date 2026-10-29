@@ -1,0 +1,22 @@
+/* Paper theme for the older Study modules (the app's "light" theme).
+   Same palette as Kepler, Friction and Ripple Tank: warm cream page, off-white panels,
+   thin warm-gray borders, near-black text. Each module sets its one accent in --amber. */
+:root[data-theme="light"] {
+  --pp-paper: #f4efe4; --pp-panel: #fbf8f1; --pp-panel-2: #efe8da; --pp-line: #d6cbb6; --pp-line-2: #c4b69c;
+  --pp-ink: #1f1a14; --pp-ink-dim: #5b5144; --pp-ink-dimmer: #6a604f; --pp-link: #0a58b8; --pp-shadow: rgba(60, 45, 20, 0.18);
+  --bg: var(--pp-paper); --panel: var(--pp-panel); --panel-2: var(--pp-panel-2); --panel-3: #e6dccb;
+  --border: var(--pp-line); --border-lit: var(--pp-line-2);
+  --amber: #8a5800; --amber-dim: #7a4e00; --cyan: #0f766e; --violet: #6d3fc0; --violet-dim: #8e6ad6;
+  --green: #2f7a32; --red: #b3261e; --pink: #b0306f; --blue: #1f5fbf;
+  --text: var(--pp-ink); --text-dim: var(--pp-ink-dim); --text-dimmer: var(--pp-ink-dimmer);
+  color-scheme: light;
+}
+:root[data-theme="light"], :root[data-theme="light"] body { background-color: var(--pp-paper); color: var(--pp-ink); }
+:root[data-theme="light"] .bar button, :root[data-theme="light"] .panel-link, :root[data-theme="light"] .modal-card .close-link { color: var(--pp-link); }
+:root[data-theme="light"] .panel, :root[data-theme="light"] .modal-card { box-shadow: 0 12px 32px var(--pp-shadow); }
+:root[data-theme="light"] input[type="range"] { background: #cfc4ae; }
+:root[data-theme="light"] input[type="range"]::-webkit-slider-thumb { background: var(--pp-ink); box-shadow: none; }
+:root[data-theme="light"] input[type="range"]::-moz-range-thumb { background: var(--pp-ink); }
+/* Night-sky and space stages stay dark inside their frame (as in Lightspeed); chrome over them gets a paper chip. */
+:root[data-theme="light"] [data-paper="keep"] { background-color: #0b0f17; }
+:root[data-theme="light"] .pp-over-sky .bar button { background: rgba(251, 248, 241, 0.94); border: 1px solid var(--pp-line-2); border-radius: 999px; padding: 6px 12px; }
