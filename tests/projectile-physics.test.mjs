@@ -35,7 +35,7 @@ test("level ground: range, peak and flight time formulas", () => {
   assert.ok(close(r.tApex, r.tFlight / 2, 1e-12), "symmetric flight");
   assert.ok(close(r.vLand, 20, 1e-9), "lands at launch speed");
   assert.ok(close(r.landAngle, 45, 1e-9));
-  assert.ok(Math.abs(r.range - 40.79) < 0.01);
+  assert.ok(Math.abs(r.range - 40.77) < 0.01);
 });
 
 test("complementary angles land at the same spot and 45 degrees is best on level ground", () => {

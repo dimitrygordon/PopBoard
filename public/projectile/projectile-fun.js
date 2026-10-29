@@ -10,7 +10,7 @@ const MODULE_ID = "projectile";
 export const FUN = {
   bronzeHitsInARow: 3,          // Target mode: consecutive hits
   silverMaxRangeAngleTol: 1,    // Launch mode, ground, Earth: |angle - 45| <= this (deg)
-  silverMinRange: 40,           // ...and range >= this (m); 20 m/s at 45 deg is about 40.79 m
+  silverMinRange: 40,           // ...and range >= this (m); 20 m/s at 45 deg is about 40.77 m
   goldMinPoints: 8,             // Sandbox with air drag on and Target on: a hit worth >= this many points
   predictLine: 30               // Predict-then-run: "Will it land past 30 m?"
 };
