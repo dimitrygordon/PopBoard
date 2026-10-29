@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#20232e">
+<title>Momentum &amp; Collisions Lab // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  // Theme before first paint: a saved choice wins, else the system setting.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.momentum.theme"); } catch (e) {}
+    if (t !== "dark" && t !== "light") t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
+<link rel="stylesheet" href="momentum-collisions/momentum-theme.css">
+<link rel="stylesheet" href="astro-study.css?v=20261021k">
+<script src="astro-study.js?v=20261021k"></script>
+</head>
+<body>
+<h1 class="sr-only">Momentum &amp; Collisions Lab</h1>
+<p class="sr-only">Crash carts on a track with chosen masses and velocities. Compare elastic, inelastic and perfectly inelastic collisions with momentum and kinetic energy bar charts, read impulse from a force-time graph for a rigid wall and a crumple zone, watch the same collision from the center-of-mass frame, and try a two-dimensional glancing collision of air hockey pucks.</p>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title">Momentum &amp; Collisions Lab</p>
+  <button id="themeBtn" class="theme-btn" type="button" aria-pressed="false" aria-label="Dark mode">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <span id="themeLabel">Dark</span>
+  </button>
+</header>
+
+<main id="stage" class="stage">
+  <div class="left">
+    <div class="paper canvas-box">
+      <canvas id="sceneCanvas" role="img" aria-label="Collision view"></canvas>
+      <p id="canvasHint" class="canvas-hint"></p>
+    </div>
+    <div class="paper graph-box">
+      <canvas id="graphCanvas" role="img" aria-label="Graph"></canvas>
+    </div>
+  </div>
+  <div class="controls paper" id="controls">
+
+    <section class="panel" data-panel="carts" hidden>
+      <div class="row" role="group" aria-label="Presets">
+        <button type="button" data-preset="elastic">Elastic</button>
+        <button type="button" data-preset="inelastic">Inelastic</button>
+        <button type="button" data-preset="sticky">Sticky</button>
+        <button type="button" data-preset="equal">Equal masses</button>
+        <button type="button" data-preset="headon">Head-on</button>
+        <button type="button" data-preset="heavy">Heavy into light</button>
+      </div>
+      <label class="slider"><span>Cart A mass m<sub>A</sub></span><input data-slider="m1" type="range" min="0" max="200" step="1"><output data-out="m1"></output></label>
+      <label class="slider"><span>Cart A speed |v<sub>A</sub>|</span><input data-slider="v1" type="range" min="0" max="200" step="1"><output data-out="v1"></output></label>
+      <div class="row" role="group" aria-label="Cart A direction">
+        <button type="button" data-dir="1" data-val="-1" aria-label="Cart A moves left">&larr; Left</button>
+        <button type="button" data-dir="1" data-val="0">At rest</button>
+        <button type="button" data-dir="1" data-val="1" aria-label="Cart A moves right">Right &rarr;</button>
+      </div>
+      <label class="slider"><span>Cart B mass m<sub>B</sub></span><input data-slider="m2" type="range" min="0" max="200" step="1"><output data-out="m2"></output></label>
+      <label class="slider"><span>Cart B speed |v<sub>B</sub>|</span><input data-slider="v2" type="range" min="0" max="200" step="1"><output data-out="v2"></output></label>
+      <div class="row" role="group" aria-label="Cart B direction">
+        <button type="button" data-dir="2" data-val="-1" aria-label="Cart B moves left">&larr; Left</button>
+        <button type="button" data-dir="2" data-val="0">At rest</button>
+        <button type="button" data-dir="2" data-val="1" aria-label="Cart B moves right">Right &rarr;</button>
+      </div>
+      <div class="row" role="group" aria-label="Collision type">
+        <button type="button" data-etype="1">Elastic (e = 1)</button>
+        <button type="button" data-etype="0.5">Inelastic (e = 0.5)</button>
+        <button type="button" data-etype="0">Stick together (e = 0)</button>
+      </div>
+      <label class="slider"><span>Coefficient of restitution e</span><input data-slider="e" type="range" min="0" max="200" step="1"><output data-out="e"></output></label>
+      <div class="row"><button type="button" data-run>Run</button><button type="button" data-reset>Reset</button></div>
+      <p class="formula" data-read="carts" aria-live="polite"></p>
+      <p class="caption" data-note="carts"></p>
+    </section>
+
+    <section class="panel" data-panel="impulse" hidden>
+      <label class="slider"><span>Cart mass m</span><input data-slider="bm" type="range" min="0" max="200" step="1"><output data-out="bm"></output></label>
+      <label class="slider"><span>Speed toward the barrier v</span><input data-slider="bv" type="range" min="0" max="200" step="1"><output data-out="bv"></output></label>
+      <label class="slider"><span>Contact time &Delta;t</span><input data-slider="dt" type="range" min="0" max="200" step="1"><output data-out="dt"></output></label>
+      <div class="row" role="group" aria-label="Barrier front">
+        <button type="button" data-dtpreset="0.005">Rigid wall (5 ms)</button>
+        <button type="button" data-dtpreset="0.1">Crumple zone (100 ms)</button>
+      </div>
+      <div class="row" role="group" aria-label="Collision type">
+        <button type="button" data-etype="1">Elastic (e = 1)</button>
+        <button type="button" data-etype="0.5">Inelastic (e = 0.5)</button>
+        <button type="button" data-etype="0">Stick together (e = 0)</button>
+      </div>
+      <label class="slider"><span>Coefficient of restitution e</span><input data-slider="e" type="range" min="0" max="200" step="1"><output data-out="e"></output></label>
+      <div class="row"><button type="button" data-run>Run</button><button type="button" data-reset>Reset</button></div>
+      <p class="formula" data-read="impulse" aria-live="polite"></p>
+      <p class="caption" data-note="impulse"></p>
+    </section>
+
+    <section class="panel" data-panel="com" hidden>
+      <div class="row" role="group" aria-label="Reference frame">
+        <button type="button" data-frame="lab" aria-pressed="true">Lab frame</button>
+        <button type="button" data-frame="cm" aria-pressed="false">Center-of-mass frame</button>
+      </div>
+      <label class="slider"><span>Cart A mass m<sub>A</sub></span><input data-slider="m1" type="range" min="0" max="200" step="1"><output data-out="m1"></output></label>
+      <label class="slider"><span>Cart A speed |v<sub>A</sub>|</span><input data-slider="v1" type="range" min="0" max="200" step="1"><output data-out="v1"></output></label>
+      <div class="row" role="group" aria-label="Cart A direction">
+        <button type="button" data-dir="1" data-val="-1" aria-label="Cart A moves left">&larr; Left</button>
+        <button type="button" data-dir="1" data-val="0">At rest</button>
+        <button type="button" data-dir="1" data-val="1" aria-label="Cart A moves right">Right &rarr;</button>
+      </div>
+      <label class="slider"><span>Cart B mass m<sub>B</sub></span><input data-slider="m2" type="range" min="0" max="200" step="1"><output data-out="m2"></output></label>
+      <label class="slider"><span>Cart B speed |v<sub>B</sub>|</span><input data-slider="v2" type="range" min="0" max="200" step="1"><output data-out="v2"></output></label>
+      <div class="row" role="group" aria-label="Cart B direction">
+        <button type="button" data-dir="2" data-val="-1" aria-label="Cart B moves left">&larr; Left</button>
+        <button type="button" data-dir="2" data-val="0">At rest</button>
+        <button type="button" data-dir="2" data-val="1" aria-label="Cart B moves right">Right &rarr;</button>
+      </div>
+      <div class="row" role="group" aria-label="Collision type">
+        <button type="button" data-etype="1">Elastic (e = 1)</button>
+        <button type="button" data-etype="0.5">Inelastic (e = 0.5)</button>
+        <button type="button" data-etype="0">Stick together (e = 0)</button>
+      </div>
+      <label class="slider"><span>Coefficient of restitution e</span><input data-slider="e" type="range" min="0" max="200" step="1"><output data-out="e"></output></label>
+      <div class="row"><button type="button" data-run>Run</button><button type="button" data-reset>Reset</button></div>
+      <p class="formula" data-read="com" aria-live="polite"></p>
+      <p class="caption" data-note="com"></p>
+    </section>
+
+    <section class="panel" data-panel="glancing" hidden>
+      <label class="slider"><span>Red puck mass m<sub>1</sub></span><input data-slider="m1" type="range" min="0" max="200" step="1"><output data-out="m1"></output></label>
+      <label class="slider"><span>Blue puck mass m<sub>2</sub></span><input data-slider="m2" type="range" min="0" max="200" step="1"><output data-out="m2"></output></label>
+      <label class="slider"><span>Red puck speed v</span><input data-slider="v1" type="range" min="0" max="200" step="1"><output data-out="v1"></output></label>
+      <label class="slider"><span>Offset b (fraction of 2R)</span><input data-slider="impact" type="range" min="0" max="200" step="1"><output data-out="impact"></output></label>
+      <div class="row"><button type="button" data-headon>Head-on (b = 0)</button></div>
+      <div class="row" role="group" aria-label="Collision type">
+        <button type="button" data-etype="1">Elastic (e = 1)</button>
+        <button type="button" data-etype="0.5">Inelastic (e = 0.5)</button>
+        <button type="button" data-etype="0">Stick together (e = 0)</button>
+      </div>
+      <label class="slider"><span>Coefficient of restitution e</span><input data-slider="e" type="range" min="0" max="200" step="1"><output data-out="e"></output></label>
+      <div class="row"><button type="button" data-run>Run</button><button type="button" data-reset>Reset</button></div>
+      <p class="formula" data-read="glancing" aria-live="polite"></p>
+      <p class="caption" data-note="glancing"></p>
+    </section>
+
+    <section class="panel" data-panel="sandbox" hidden>
+      <div class="row" role="group" aria-label="Target">
+        <button type="button" data-target="cart" aria-pressed="true">Cart B</button>
+        <button type="button" data-target="barrier" aria-pressed="false">Barrier</button>
+      </div>
+      <div class="row" role="group" aria-label="Presets">
+        <button type="button" data-preset="elastic">Elastic</button>
+        <button type="button" data-preset="inelastic">Inelastic</button>
+        <button type="button" data-preset="sticky">Sticky</button>
+        <button type="button" data-preset="equal">Equal masses</button>
+        <button type="button" data-preset="headon">Head-on</button>
+        <button type="button" data-preset="heavy">Heavy into light</button>
+      </div>
+      <div class="row" role="group" aria-label="Reference frame">
+        <button type="button" data-frame="lab" aria-pressed="true">Lab frame</button>
+        <button type="button" data-frame="cm" aria-pressed="false">Center-of-mass frame</button>
+      </div>
+      <label class="slider"><span>Cart A mass m<sub>A</sub></span><input data-slider="m1" type="range" min="0" max="200" step="1"><output data-out="m1"></output></label>
+      <label class="slider"><span>Cart A speed |v<sub>A</sub>|</span><input data-slider="v1" type="range" min="0" max="200" step="1"><output data-out="v1"></output></label>
+      <div class="row" role="group" aria-label="Cart A direction">
+        <button type="button" data-dir="1" data-val="-1" aria-label="Cart A moves left">&larr; Left</button>
+        <button type="button" data-dir="1" data-val="0">At rest</button>
+        <button type="button" data-dir="1" data-val="1" aria-label="Cart A moves right">Right &rarr;</button>
+      </div>
+      <label class="slider"><span>Cart B mass m<sub>B</sub></span><input data-slider="m2" type="range" min="0" max="200" step="1"><output data-out="m2"></output></label>
+      <label class="slider"><span>Cart B speed |v<sub>B</sub>|</span><input data-slider="v2" type="range" min="0" max="200" step="1"><output data-out="v2"></output></label>
+      <div class="row" role="group" aria-label="Cart B direction">
+        <button type="button" data-dir="2" data-val="-1" aria-label="Cart B moves left">&larr; Left</button>
+        <button type="button" data-dir="2" data-val="0">At rest</button>
+        <button type="button" data-dir="2" data-val="1" aria-label="Cart B moves right">Right &rarr;</button>
+      </div>
+      <div class="row" role="group" aria-label="Collision type">
+        <button type="button" data-etype="1">Elastic (e = 1)</button>
+        <button type="button" data-etype="0.5">Inelastic (e = 0.5)</button>
+        <button type="button" data-etype="0">Stick together (e = 0)</button>
+      </div>
+      <label class="slider"><span>Coefficient of restitution e</span><input data-slider="e" type="range" min="0" max="200" step="1"><output data-out="e"></output></label>
+      <label class="slider"><span>Contact time &Delta;t</span><input data-slider="dt" type="range" min="0" max="200" step="1"><output data-out="dt"></output></label>
+      <div class="row" role="group" aria-label="Barrier front">
+        <button type="button" data-dtpreset="0.005">Rigid wall (5 ms)</button>
+        <button type="button" data-dtpreset="0.1">Crumple zone (100 ms)</button>
+      </div>
+      <div class="row"><button type="button" data-run>Run</button><button type="button" data-reset>Reset</button></div>
+      <p class="formula" data-read="sandbox" aria-live="polite"></p>
+      <p class="caption" data-note="sandbox"></p>
+    </section>
+
+  </div>
+</main>
+
+<nav id="toolbar" class="toolbar" aria-label="Activities">
+  <button type="button" class="tool" data-show="carts" aria-pressed="false">Collisions</button>
+  <button type="button" class="tool" data-show="impulse" aria-pressed="false">Impulse</button>
+  <button type="button" class="tool" data-show="com" aria-pressed="false">CM frame</button>
+  <button type="button" class="tool" data-show="glancing" aria-pressed="false">2D glancing</button>
+  <button type="button" class="tool" data-show="sandbox" aria-pressed="false">Sandbox</button>
+</nav>
+
+<script type="module" src="momentum-collisions/momentum-ui.js"></script>
+</body>
+</html>
