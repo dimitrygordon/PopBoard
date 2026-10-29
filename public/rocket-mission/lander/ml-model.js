@@ -1,20 +1,20 @@
 // Rocket & Mission "Mars Lander" mode: the physics and the rules, no DOM, so tests run in Node.
-// Units: metres, seconds, kilograms, newtons. Every number marked TODO-TESLA waits for Tesla's check
+// Units: metres, seconds, kilograms, newtons. Every number marked Cleared by Tesla 2026-10-29 was checked by Tesla
 // (see docs/rocket-mission-science.md, "Mars Lander mode").
 export const MODULE_ID = "rocket-mars-lander";
 export const G0 = 9.80665;                       // standard gravity, for Isp (exact by definition)
-export const BODIES = Object.freeze({            // surface gravity m/s^2 and surface air density kg/m^3 (TODO-TESLA)
+export const BODIES = Object.freeze({            // surface gravity m/s^2 and surface air density kg/m^3 (Cleared by Tesla 2026-10-29)
   mars:  { name: "Mars",  g: 3.71, rho: 0.020 },
   moon:  { name: "Moon",  g: 1.62, rho: 0 },
   earth: { name: "Earth", g: 9.81, rho: 1.225 }
 });
-export const LANDER = Object.freeze({            // the mission lander (TODO-TESLA)
+export const LANDER = Object.freeze({            // the mission lander (Cleared by Tesla 2026-10-29)
   dry: 600,        // kg without fuel
   fuel: 200,       // kg of fuel at the start
   thrust: 6000,    // N, one engine, on or off
   isp: 225,        // s, a hydrazine engine like the ones Phoenix and Viking used
   cdA: 12,         // m^2, drag coefficient times area
-  w: 24, h: 16,    // m, drawn size: "not to scale", about four times a real lander
+  w: 24, h: 16,    // m, model size; drawn 1.5x (DRAW_SCALE), "not to scale", about six times a real lander
   maxTilt: 45,     // degrees either way
   turnRate: 60     // degrees per second
 });
@@ -22,11 +22,11 @@ export const LANDER = Object.freeze({            // the mission lander (TODO-TES
 export const ART = Object.freeze({ footX: 0.479, footY: 0.983, nozzleY: 0.837, aspect: 535 / 802, padAspect: 176 / 1198, stripAspect: 382 / 2048 });
 export const WORLD = Object.freeze({ w: 240, top: 235 }); // m: the strip spans the width; the view shows 0 to top
 export const PAD = Object.freeze({ x: 138, w: 60 });      // m: pad centre and width, on the flattest stretch of the strip
-export const START = Object.freeze({ x: 40, alt: 170, vx: 5, vy: -12 }); // mission start, altitude above the ground (TODO-TESLA)
-export const LIMITS = Object.freeze({ safeV: 3, softV: 1.5, sideV: 1.5, tilt: 10 }); // touchdown rules, m/s and degrees (TODO-TESLA)
-export const FUN = Object.freeze({ goldFuel: 0.25 }); // Gold: at least a quarter of the fuel left (TODO-TESLA)
+export const START = Object.freeze({ x: 40, alt: 170, vx: 5, vy: -12 }); // mission start, altitude above the ground (Cleared by Tesla 2026-10-29)
+export const LIMITS = Object.freeze({ safeV: 3, softV: 1.5, sideV: 1.5, tilt: 10 }); // touchdown rules, m/s and degrees (Cleared by Tesla 2026-10-29)
+export const FUN = Object.freeze({ goldFuel: 0.60 }); // Gold: at least 60% of the fuel left (Cleared by Tesla 2026-10-29)
 export const NOT_TO_SCALE = "Lander and pad not to scale.";
-export const MODEL_NOTE = "Mars pulls with 3.71 m/s\u00b2, about 38% of Earth's gravity, and its air is about 1% as thick as Earth's, so it barely slows you down. Your engine pushes harder than Mars pulls, so firing it slows your fall. The lander and pad are drawn about four times bigger than real ones.";
+export const MODEL_NOTE = "Mars pulls with 3.71 m/s\u00b2, about 38% of Earth's gravity. Mars air is less than 2% as dense as Earth's, so it barely slows the lander. Your engine pushes harder than Mars pulls, so firing it slows your fall. The lander and pad are drawn about six times bigger than real ones.";
 
 // Top edge of Leo's terrain-strip.webp, 128 samples, in strip pixels above its bottom (strip is 382 px tall).
 export const PROFILE = Object.freeze([300, 309, 314, 323, 326, 333, 342, 342, 343, 350, 357, 369, 370, 365, 370, 372, 371, 371, 372, 373, 371, 364, 362, 357, 355, 349, 342, 338, 331, 324, 319, 312, 302, 297, 288, 284, 279, 274, 278, 277, 273, 258, 259, 261, 265, 267, 269, 274, 279, 283, 285, 287, 287, 284, 278, 277, 275, 271, 266, 256, 252, 251, 252, 252, 250, 244, 239, 234, 233, 234, 236, 240, 244, 248, 250, 254, 256, 256, 255, 248, 244, 240, 244, 247, 250, 253, 256, 260, 263, 268, 271, 274, 277, 282, 287, 290, 292, 295, 295, 295, 295, 295, 293, 287, 279, 276, 272, 267, 262, 257, 252, 248, 245, 241, 240, 242, 242, 245, 247, 250, 255, 261, 265, 269, 279, 282, 293, 301]);
@@ -136,7 +136,7 @@ export function fly(L, seconds, pilot = autopilot) { const end = L.t + seconds; 
 export const GOALS = [
   { tier: "bronze", title: "Land safely anywhere", check: (e) => e.type === "landing" && e.safe },
   { tier: "silver", title: "Land safely on the pad", check: (e) => e.type === "landing" && e.safe && e.onPad },
-  { tier: "gold", title: "Soft landing on the pad with a quarter of the fuel left", check: (e) => e.type === "landing" && e.soft && e.onPad && e.fuelFrac >= FUN.goldFuel }
+  { tier: "gold", title: "Soft landing on the pad with 60% of the fuel left", check: (e) => e.type === "landing" && e.soft && e.onPad && e.fuelFrac >= FUN.goldFuel }
 ];
 
 // ---------- sandbox ----------

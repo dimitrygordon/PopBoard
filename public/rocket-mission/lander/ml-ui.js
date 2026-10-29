@@ -4,7 +4,7 @@
 import { forwardStudyQuery, moduleOpenHref } from "../../board-return.js?v=20261022a";
 import {
   MODULE_ID, BODIES, LANDER, LIMITS, FUN, SANDBOX, NOT_TO_SCALE, MODEL_NOTE, GOALS, PAD,
-  missionConfig, sandboxConfig, createLander, stepOnce, fly, altitude, fuelFrac, mass, twr, headline, clamp, DT
+  missionConfig, sandboxConfig, createLander, stepOnce, fly, altitude, groundAt, fuelFrac, mass, twr, headline, clamp, DT
 } from "./ml-model.js";
 import { createScene, CAPTION_GAP } from "./ml-scene.js";
 import {
@@ -74,7 +74,7 @@ document.body.append(shell);
 const $ = (id) => document.getElementById(id);
 $("mlScale").textContent = NOT_TO_SCALE;
 $("mlAboutNote").textContent = MODEL_NOTE;
-$("mlAboutRules").textContent = `A safe touchdown is ${LIMITS.safeV} m/s or slower going down, ${LIMITS.sideV} m/s or slower sideways and within ${LIMITS.tilt}\u00b0 of upright. Gold: ${LIMITS.softV} m/s or slower on the pad with a quarter of the fuel left. Medals count in Mission mode.`;
+$("mlAboutRules").textContent = `A safe touchdown is ${LIMITS.safeV} m/s or slower going down, ${LIMITS.sideV} m/s or slower sideways and within ${LIMITS.tilt}\u00b0 of upright. Gold: ${LIMITS.softV} m/s or slower on the pad with 60% of the fuel left. Medals count in Mission mode.`;
 $("mlRocketLink").href = moduleOpenHref("study-rocket-mission.html", location.search);
 
 // ---------- theme, sound, back, about ----------
@@ -129,7 +129,7 @@ let mode = "mission", paused = false;
 const sand = { body: "mars", thrust: LANDER.thrust, fuel: LANDER.fuel, alt: 170, infinite: false, air: true };
 const cfg = () => (mode === "sandbox" ? sandboxConfig(sand) : missionConfig());
 let L = createLander(cfg());
-function reset() { L = createLander(cfg()); sync(); }
+function reset() { L = createLander(cfg()); scene.panTo(false, true); sync(); }
 function start() { if (L.state !== "ready") reset(); L.state = "flying"; tick(520); sync(); }
 function setFiring(v) {
   if (v && L.state === "ready") start();
@@ -147,11 +147,13 @@ function readout() {
   $("mlVy").classList.toggle("warn", fast); $("mlVx").classList.toggle("warn", slide);
   $("mlFuel").textContent = L.cfg.infinite ? "Endless" : `${Math.round(ff * 100)}%`;
   $("mlFuelBar").style.width = `${Math.round(ff * 100)}%`;
-  $("mlFuelBar").classList.toggle("low", ff < FUN.goldFuel);
+  $("mlFuelBar").classList.toggle("low", ff < 0.2);
   canvas.setAttribute("aria-label", `Mars lander. ${headline(L)}. Altitude ${alt.toFixed(0)} metres, falling ${f1(down)} metres per second, fuel ${Math.round(ff * 100)} percent.`);
 }
 function finish() {
   const r = L.result;
+  // Pan down so the terrain fills the lower third of the stage (snap with reduced motion).
+  scene.panTo(true, prefers.reducedMotion, groundAt(L.x));
   if (L.state === "landed") {
     tick(880); celebrate();
     toast(r.onPad ? `Touchdown at ${r.down.toFixed(1)} m/s on the pad` : `Safe, but ${Math.abs(L.x - PAD.x).toFixed(0)} m from the pad`);
@@ -171,7 +173,7 @@ function setMode(m) {
   if (m === mode) return;
   mode = m;
   for (const t of document.querySelectorAll(".ml-tabs [role=tab]")) t.setAttribute("aria-selected", String(t.dataset.mode === mode));
-  L = createLander(cfg());
+  L = createLander(cfg()); scene.panTo(false, true);
   toast(mode === "mission" ? "Mission: land on the pad" : "Sandbox: change the world and the lander");
   sync();
 }
@@ -318,7 +320,7 @@ function frame(now) {
 }
 function draw(dt = 0) {
   const firing = L.firing && L.state === "flying" && (L.cfg.infinite || L.fuel > 0);
-  scene.draw(L, { firing, flicker, alt: altitude(L), dt, guide: L.state !== "landed", lights: true });
+  scene.draw(L, { firing, flicker, alt: altitude(L), dt, guide: L.state === "ready" || L.state === "flying", lights: true });
 }
 
 // ---------- start: fill the controls first, then build the sheet so it measures its half stop ----------
@@ -334,6 +336,7 @@ scene.ready.then(() => { requestFit(); requestAnimationFrame(frame); });
 window.__lander = {
   get lander() { return L; }, get mode() { return mode; }, get view() { return scene.view; }, get sand() { return { ...sand }; },
   get sheet() { return sheet ? { index: sheet.index, snap: $("mlControls").dataset.snap } : null; }, CAPTION_GAP,
+  get rects() { return { lander: scene.landerRect(L), pad: scene.padRect(), box: { ...scene.view.box }, groundY: scene.scr(L.x, groundAt(L.x)).y, pan: scene.view.pan }; },
   setMode(m) { setMode(m); }, setTheme(t) { setTheme(t); },
   setSandbox(o) { Object.assign(sand, o); if (mode !== "sandbox") setMode("sandbox"); reset(); },
   reset, start() { start(); },

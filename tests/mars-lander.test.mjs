@@ -49,11 +49,12 @@ test("autopilot lands softly on the pad with fuel to spare: Gold is reachable", 
   assert.ok(M.GOALS.every((g) => g.check({ type: "landing", ...L.result })));
   near(M.altitude(L), 0, 0.05, "resting on the pad");
 });
-test("medals: bronze anywhere, silver on the pad, gold soft with a quarter of the fuel", () => {
-  const [b, s, g] = M.GOALS, ev = (o) => ({ type: "landing", safe: true, soft: true, onPad: true, fuelFrac: 0.5, ...o });
+test("medals: bronze anywhere, silver on the pad, gold soft with 60% of the fuel", () => {
+  const [b, s, g] = M.GOALS, ev = (o) => ({ type: "landing", safe: true, soft: true, onPad: true, fuelFrac: 0.7, ...o });
   assert.ok(b.check(ev({ onPad: false })) && !b.check(ev({ safe: false, soft: false, onPad: false })));
   assert.ok(s.check(ev({ soft: false })) && !s.check(ev({ onPad: false })));
-  assert.ok(g.check(ev({ fuelFrac: 0.25 })) && !g.check(ev({ fuelFrac: 0.24 })) && !g.check(ev({ soft: false })));
+  assert.equal(M.FUN.goldFuel, 0.6); assert.equal(M.LIMITS.softV, 1.5);
+  assert.ok(g.check(ev({ fuelFrac: 0.6 })) && !g.check(ev({ fuelFrac: 0.59 })) && !g.check(ev({ soft: false })));
 });
 test("sandbox: other worlds and engines, clamped; the weak Earth lander cannot stop", () => {
   const c = M.sandboxConfig({ body: "pluto", thrust: 1e9, fuel: -5, alt: 9999 });
@@ -85,10 +86,15 @@ test("house rules: caption 12px, toast in the panel, sheet built at half after t
 test("Leo's art is shipped as WebP and drawn", () => {
   for (const f of ["lander", "engine-plume", "landing-pad", "terrain-strip"]) assert.ok(existsSync(new URL(`rocket-mission/lander/assets/${f}.webp`, pub)), f);
 });
-test("docs, study card, TODO-TESLA marks", () => {
+test("docs, study card, cleared by Tesla", () => {
   const sci = doc("rocket-mission-science.md").split("## Mars Lander mode")[1];
-  assert.ok(sci && (sci.match(/TODO-TESLA/g) || []).length >= 10);
-  assert.match(doc("fun-challenges.md"), /## Rocket & Mission: Mars Lander[^]*TODO-TESLA/);
+  const fc = doc("fun-challenges.md").split("## Rocket & Mission: Mars Lander")[1].split("\n## ")[0];
+  const model = read("rocket-mission/lander/ml-model.js");
+  for (const t of [sci, fc, model, readFileSync(new URL(import.meta.url), "utf8").replace(/"TODO-" \+ "TESLA"/g, "")]) assert.ok(!t.includes("TODO-" + "TESLA"));
+  assert.ok((sci.match(/Cleared by Tesla 2026-10-29/g) || []).length >= 10 && /Cleared by Tesla 2026-10-29/.test(fc) && /Cleared by Tesla 2026-10-29/.test(model));
+  const air = "Mars air is less than 2% as dense as Earth's, so it barely slows the lander.";
+  assert.ok(sci.includes(air) && M.MODEL_NOTE.includes(air)); assert.ok(!/1% as thick/.test(sci + model));
+  assert.match(fc, /\| Gold \|[^\n]*60% fuel left/); assert.match(read("rocket-mission/lander/ml-ui.js"), /60% of the fuel left/);
   assert.match(read("study.html").split('id: "rocket-mission"')[1].split("}")[0], /Mars Lander mode/);
 });
 test("no em-dashes and no off-limits mascot name in module copy", () => {
@@ -96,4 +102,44 @@ test("no em-dashes and no off-limits mascot name in module copy", () => {
   for (const t of [...FILES.map(read), card, doc("rocket-mission-science.md").split("## Mars Lander mode")[1], doc("fun-challenges.md").split("## Rocket & Mission: Mars Lander")[1].split("\n## ")[0]]) {
     assert.ok(!t.includes("\u2014")); assert.ok(!new RegExp("ja" + "sper", "i").test(t));
   }
+});
+
+// ---------- Leo: draw scale and the landed pan (scene maths with a stub canvas) ----------
+async function stubScene(reduced = false) {
+  globalThis.Image = class { set src(v) { queueMicrotask(() => this.onload?.()); } };
+  globalThis.matchMedia = () => ({ matches: reduced });
+  const S = await import("../public/rocket-mission/lander/ml-scene.js");
+  const calls = [], ctx = new Proxy({}, { get: (_, k) => k === "createRadialGradient" || k === "createLinearGradient" ? () => ({ addColorStop() {} }) : k === "drawImage" ? (...a) => calls.push(a) : () => {}, set: () => true });
+  const sc = S.createScene({ getContext: () => ctx, width: 390, height: 600, clientWidth: 390, clientHeight: 600 });
+  return { S, sc, calls };
+}
+test("Leo: lander and pad are drawn 1.5x, anchored where the physics puts them", async () => {
+  const { S, sc } = await stubScene();
+  assert.equal(S.DRAW_SCALE, 1.5);
+  const v = sc.setBox({ x: 0, y: 0, w: 390, h: 400 }), k = v.k;
+  const L = M.createLander(); L.x = M.PAD.x; L.y = M.PAD_TOP + M.feetDrop(); L.tilt = 0;
+  const lr = sc.landerRect(L), pr = sc.padRect();
+  near(lr.w, M.LANDER.w * k * 1.5, 1e-9); near(lr.h, M.LANDER.h * k * 1.5, 1e-9);
+  near(pr.w, M.PAD.w * k * 1.5, 1e-9); near(pr.top, sc.scr(0, M.PAD_TOP).y, 1e-9, "pad top on the model surface");
+  near(lr.top + lr.h * M.ART.footY, sc.scr(0, M.PAD_TOP).y, 1e-9, "feet stay on the pad");
+  // physics unchanged
+  assert.equal(M.LANDER.w, 24); assert.equal(M.PAD.w, 60); assert.equal(M.NOT_TO_SCALE, "Lander and pad not to scale.");
+});
+test("Leo: after touchdown the view eases so the ground sits at the lower third; reduced motion snaps", async () => {
+  const { S, sc } = await stubScene(false), box = { x: 0, y: 20, w: 390, h: 400 };
+  sc.setBox(box);
+  const L = M.fly(M.createLander(), 200), g = M.groundAt(L.x), groundY = () => sc.scr(L.x, g).y;
+  assert.ok(groundY() > box.y + box.h * S.GROUND_AT + 5, "before landing the ground sits low on a phone");
+  sc.panTo(true, false, g); const y0 = groundY();
+  sc.draw(L, { dt: 0.05 }); const y1 = groundY();
+  assert.ok(y1 < y0 && y1 > box.y + box.h * S.GROUND_AT + 1, "moves a little each frame (smooth)");
+  for (let i = 0; i < 60; i++) sc.draw(L, { dt: 0.05 });
+  near(groundY(), box.y + box.h * S.GROUND_AT, 0.5, "ground at two thirds down");
+  sc.panTo(false, true); near(groundY(), sc.scr(0, 0).y - g * sc.view.k, 1e-9); near(sc.view.pan, 0, 1e-9, "reset snaps back");
+  globalThis.matchMedia = () => ({ matches: true });
+  sc.panTo(true, false, g); sc.draw(L, { dt: 0.016 });
+  near(groundY(), box.y + box.h * S.GROUND_AT, 1e-9, "reduced motion: one frame, no easing");
+  const ui = read("rocket-mission/lander/ml-ui.js");
+  assert.match(ui, /function finish\(\) \{[^}]*scene\.panTo\(true, prefers\.reducedMotion, groundAt\(L\.x\)\)/);
+  assert.match(ui, /function reset\(\) \{[^}]*scene\.panTo\(false, true\)/);
 });
