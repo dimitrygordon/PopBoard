@@ -3,7 +3,7 @@
 // Direct manipulation only: tap to place, pull back to sling, drag bodies,
 // pinch or scroll to zoom. No sliders.
 
-import { forwardStudyQuery } from "./board-return.js?v=20261022a";
+import { forwardStudyQuery, moduleOpenHref } from "./board-return.js?v=20261022a";
 import { createRenderer, drawRadius } from "./orbits-render.js";
 import {
   buildPreset, PRESETS, modeFromSearch, step, predict, makeBody, MAX_BODIES,
@@ -301,7 +301,14 @@ function renderPresetMenu() {
     if (k === state.mode) b.setAttribute("aria-current", "true");
     b.addEventListener("click", () => { closePresetMenu(); loadScene(k); });
     return b;
-  }));
+  }), solarLink());
+}
+// Solar System mode lives on this page under its own ?mode, with its own UI (orbits/solar/).
+function solarLink() {
+  const b = document.createElement("button");
+  b.type = "button"; b.setAttribute("role", "menuitem"); b.textContent = "Build a Solar System";
+  b.addEventListener("click", () => { location.href = moduleOpenHref("study-orbits.html", location.search) + (forwardStudyQuery(location.search).toString() ? "&" : "?") + "mode=solar-system"; });
+  return b;
 }
 
 document.addEventListener("keydown", (e) => {
