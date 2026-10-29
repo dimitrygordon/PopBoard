@@ -3,7 +3,7 @@
 // gray cold rock: no glow, no blur, no additive blending anywhere near it.
 import { outcome as modelOutcome, PIECES, FOSSILS, MAX_RATE } from "./pt-model.js";
 
-export const ART = ["tex-continental-crust", "tex-oceanic-crust", "tex-mantle", "mid-ocean-ridge", "trench", "volcano", "eruption-plume", "lava-glow", "quake-burst", "mountains-fold", "slab-cross-section"];
+export const ART = ["tex-continental-crust", "tex-oceanic-crust", "tex-mantle", "ridge-crest", "trench", "volcano", "eruption-plume", "lava-glow", "quake-burst", "mountains-fold", "slab-cross-section"];
 export const FX_MS = { plume: 900, quake: 700 };
 
 export function loadArt(base = "plate-tectonics/art/") {
@@ -138,11 +138,14 @@ export function createScene(canvas, imgs) {
       } else {
         water(lx, rx, "oceanic"); rect(lx, rx, g.ocean[0], g.ocean[1], fill(pats.ocean));
         if (st.hotspot) { ctx.fillStyle = pal.plume; ctx.fillRect(g.cx - 14, g.ocean[1], 28, g.bottom - g.ocean[1]); }
-        const rw = Math.min(g.w * 0.34, 260), b = sprite("mid-ocean-ridge", g.cx + dx / 2, g.ocean[1] + rw * 0.05, rw);
+        // Leo's ridge-crest sprite (1600x400, 4:1): drawn at its natural aspect, its flat base seated on the
+        // bottom of the oceanic crust so the crest bulges up out of the sea floor at the ridge.
+        const rw = Math.min(g.w * 0.34, 260), b = sprite("ridge-crest", g.cx + dx / 2, g.ocean[1], rw);
         // The island volcano sits on the crust at the ridge crest (its base on the sea floor), not on the water line.
         let isl = null;
-        if (o.islandKm > 0) { const iw = Math.min(g.w * 0.22, 170) * (0.5 + 0.5 * o.islandKm / 2.1); isl = sprite("volcano", g.cx + dx / 2, (b ? b.y + b.h * 0.12 : g.ocean[0]) + iw * 0.02, iw); }
-        if (b) anchors.ridge = { x: g.cx + dx / 2, y: (isl ? isl.y : b.y) - 6 };
+        if (o.islandKm > 0) { const iw = Math.min(g.w * 0.22, 170) * (0.5 + 0.5 * o.islandKm / 2.1); isl = sprite("volcano", g.cx + dx / 2, (b ? b.y + b.h * 0.1 : g.ocean[0]) + iw * 0.02, iw); }
+        // Caption anchor: 12px below the crest's base (top edge of the caption pill).
+        if (b) anchors.ridge = { x: g.cx + dx / 2, y: b.y + b.h + 12, below: true };
       }
     } else if (o.type === "convergent" && o.shortenKm > 0) {
       if (o.feature === "mountains") {

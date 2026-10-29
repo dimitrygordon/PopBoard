@@ -110,6 +110,13 @@ test("Leo: terracotta is the one accent, no glow on the slab", () => {
 });
 test("art: every Tesla-cleared asset ships as webp", () => {
   for (const n of ART) assert.ok(existsSync(new URL(`plate-tectonics/art/${n}.webp`, pub)), n);
+  assert.deepEqual(ART, ["tex-continental-crust", "tex-oceanic-crust", "tex-mantle", "ridge-crest", "trench", "volcano", "eruption-plume", "lava-glow", "quake-burst", "mountains-fold", "slab-cross-section"]);
+  assert.ok(!existsSync(new URL("plate-tectonics/art/mid-ocean-ridge.webp", pub)));
+  // Leo's ridge crest: 1600x400 VP8L/VP8X webp, drawn by sprite() at its natural 4:1 aspect.
+  const buf = readFileSync(new URL("plate-tectonics/art/ridge-crest.webp", pub)); assert.equal(buf.toString("ascii", 12, 16), "VP8X");
+  assert.equal(1 + buf.readUIntLE(24, 3), 1600); assert.equal(1 + buf.readUIntLE(27, 3), 400);
+  const scene = read("plate-tectonics/pt-scene.js"); assert.match(scene, /sprite\("ridge-crest", g\.cx \+ dx \/ 2, g\.ocean\[1\], rw\)/);
+  assert.match(scene, /anchors\.ridge = \{ x: g\.cx \+ dx \/ 2, y: b\.y \+ b\.h \+ 12/);
 });
 test("page wiring: modes, themes, phone sheet at half, study card, docs", () => {
   const html = read("study-plate-tectonics.html"), ui = read("plate-tectonics/pt-ui.js");
