@@ -32,6 +32,7 @@
     "test:powersoften": "node --test powers-of-ten.test.mjs",
     "test:rippletank": "node --test ripple-tank.test.mjs",
     "test:atombuilder": "node --test atom-builder.test.mjs",
+    "test:circuitbuilder": "node --test circuit-builder.test.mjs",
     "test:mechanics:browser": "node mechanics-browser.mjs",
     "test:pdf": "node --test pdf-export.test.mjs",
     "test:return": "node --test board-return.test.mjs",
