@@ -1,12 +1,14 @@
 // Beyond 3D: challenge goals, chapter stamps and share schema. Pure (Node-testable).
 export const MODULE_ID = "fourth-dimension";
-// TODO-TESLA: every number in this block (see docs/fun-challenges.md).
+// Cleared by Tesla 2026-10-29 (see docs/fun-challenges.md).
 export const FUN = {
   bronzeHiddenFacing: -0.2,   // gold face normal . (direction to camera) must be below this (face turned away)
   silverMaxCorners: 8,        // flat (orthographic) light: 16 tesseract corners collapse onto <= 8 visible points
-  silverMergeTol: 0.04,       // two projected corners closer than this (world units) count as one
+  silverMergeFrac: 0.02,      // two projected corners closer than 2% of one (scaled) edge count as one
   goldUnfold: 0.995           // tesseract net unfold fraction counted as "fully unfolded"
 };
+// Merge tolerance in world units for a shape drawn with edge length `edge` (tesseract edge = 2 * display scale).
+export const silverMergeTol = (edge) => FUN.silverMergeFrac * edge;
 export const GOALS = [
   { tier: "bronze", title: "Spin the cube until the gold face is hidden from you",
     check: (e) => e.type === "goldface" && e.user && e.facing < FUN.bronzeHiddenFacing },

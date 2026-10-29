@@ -4,6 +4,7 @@
 // page change.
 import * as THREE from "../vendor/three/three.module.min.js";
 import * as M from "./fd-math.js";
+import { silverMergeTol } from "./fd-fun.js";
 
 const V3 = THREE.Vector3;
 export const FLOOR_Y = -1.6;
@@ -396,7 +397,7 @@ function tesseractScene(stage, page, saved, { cellCycle = false } = {}) {
   const poly = M.hypercube(4), cells = M.tesseractCells();
   if (page.opts.tilt && !saved?.R) view.R = M.mul(M.rot("YW", 0.45), M.rot("XW", 0.6)); // start off-axis so the challenge needs work
   let cell = saved?.cell ?? 6; // axis w, sign -1: the small inner cube in perspective
-  const r = polyRenderer(stage, poly, { scale: 1.35, goldIds: cells[cell].ids });
+  const r = polyRenderer(stage, poly, { scale: 1.35, goldIds: cells[cell].ids }); // keep in sync with silverMergeTol below
   const disc = glowDisc(stage, stage.pal.edge, 6, 0.45);
   const shade = new Fan(16, stage.pal.shadow, 0.4), goldShade = new Fan(8, stage.pal.gold, 0.4);
   return {
@@ -414,7 +415,7 @@ function tesseractScene(stage, page, saved, { cellCycle = false } = {}) {
       // Which way is the gold cell facing in w? Its center's w after the 4D turn.
       const c = cells[cell], center = [0, 0, 0, 0]; center[c.axis] = c.sign;
       const cw = M.apply(view.R, center)[3];
-      const distinct = M.distinctCount(P);
+      const distinct = M.distinctCount(P, silverMergeTol(2 * 1.35)); // 2% of the scaled edge
       if (cellCycle) {
         const name = ["x", "y", "z", "w"][c.axis] + (c.sign > 0 ? " = +1" : " = \u22121");
         ctx.readout?.(`Cell ${cell + 1} of 8: the cube where ${name}`);
@@ -478,6 +479,7 @@ SCENES.hypersphere = (stage, page, saved) => {
   };
 };
 
+const UNFOLD4 = { scale: 0.62, offset: [0, 0.75, 0], camera: [0, 0.6, 9.4], look: [0, -0.2, 0] };
 function unfoldScene(stage, page, saved, n) {
   const pal = stage.pal, view = newView(saved);
   if (n === 3 && !saved?.q) view.q.setFromEuler(new THREE.Euler(-0.9, 0.3, 0));
@@ -487,15 +489,17 @@ function unfoldScene(stage, page, saved, n) {
   const disc = glowDisc(stage, pal.edge, 7, 0.35);
   return {
     objects: [disc, glass.obj, goldFill.obj, lines.obj, gold.obj], drag: "3d", view, has4d: false,
+    camera: n === 4 ? UNFOLD4.camera : undefined, look: n === 4 ? UNFOLD4.look : undefined,
     controls: { sliders: [{ key: "t", label: "Unfold", min: 0, max: 1, step: 0.005, value: t }] },
     set(k, v) { if (k === "t") t = v; },
     update(dt, ctx) {
       const cells = M.unfoldCells(n, t);
       lines.begin(); gold.begin(); glass.begin(); goldFill.begin();
-      const sc = n === 4 ? 1.1 : 0.75;
+      // Tesseract cross spans 8 cells tall: keep it small and centred ~40% from the top, clear of the caption.
+      const sc = n === 4 ? UNFOLD4.scale : 0.75;
       for (const cell of cells) {
         let P;
-        if (n === 4) P = cell.points.map((p) => to3(view, p, sc, [0, 1.3, 0]));
+        if (n === 4) P = cell.points.map((p) => to3(view, p, sc, UNFOLD4.offset));
         else P = cell.points.map((p) => q3(view, p, sc, [0, 0.6, 0]));
         const isGold = cell.key === "base";
         for (const [i, j] of cell.edges) (isGold ? gold : lines).seg(P[i], P[j]);

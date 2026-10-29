@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import * as M from "../public/fourth-dimension/fd-math.js";
 import { PAGES, CHAPTERS } from "../public/fourth-dimension/pages.js";
-import { GOALS, FUN, SHARE_SCHEMA, earnStamp, loadStamps, lastPageOfChapter } from "../public/fourth-dimension/fd-fun.js";
+import { GOALS, FUN, silverMergeTol, SHARE_SCHEMA, earnStamp, loadStamps, lastPageOfChapter } from "../public/fourth-dimension/fd-fun.js";
 
 const pub = new URL("../public/", import.meta.url);
 const read = (n) => readFileSync(new URL(n, pub), "utf8");
@@ -134,7 +134,7 @@ test("module card, page file and vendored Three.js are present and wired", () =>
   assert.match(read("fourth-dimension/fd-ui.js"), /shared\/fun\/fun-ui\.js/);
   assert.match(read("fourth-dimension/fd-scene.js"), /lowEnd \? 1\.5 : 2/, "DPR cap");
 });
-test("fun: three medal goals with TODO-TESLA numbers, stamps, share schema", () => {
+test("fun: three medal goals with Tesla-cleared numbers, stamps, share schema", () => {
   assert.deepEqual(GOALS.map((g) => g.tier), ["bronze", "silver", "gold"]);
   assert.ok(GOALS[0].check({ type: "goldface", user: true, facing: -0.5 }));
   assert.ok(!GOALS[0].check({ type: "goldface", user: false, facing: -0.5 }));
@@ -143,8 +143,24 @@ test("fun: three medal goals with TODO-TESLA numbers, stamps, share schema", () 
   assert.ok(GOALS[2].check({ type: "unfold", n: 4, t: 1 })); assert.ok(!GOALS[2].check({ type: "unfold", n: 3, t: 1 }));
   const doc = readFileSync(new URL("../docs/fun-challenges.md", import.meta.url), "utf8");
   for (const k of Object.keys(FUN)) assert.match(doc, new RegExp("`" + k + "`"));
-  assert.match(doc, /Beyond 3D[\s\S]*TODO-TESLA/);
+  assert.match(doc, /Beyond 3D[\s\S]*Cleared by Tesla 2026-10-29/);
   const mem = new Map(), s = { getItem: (k) => mem.get(k) ?? null, setItem: (k, v) => mem.set(k, v) };
   assert.equal(earnStamp(3, s), true); assert.equal(earnStamp(3, s), false); assert.deepEqual(loadStamps(s), [3]);
   assert.deepEqual(SHARE_SCHEMA.shape.values, ["cube", "tesseract", "16-cell", "24-cell"]);
+});
+
+test("silver merge tolerance is 2% of the scaled edge and separates real corners", () => {
+  assert.equal(FUN.silverMergeFrac, 0.02);
+  for (const scale of [1, 1.35, 2]) {
+    const edge = 2 * scale, tol = silverMergeTol(edge);
+    assert.ok(Math.abs(tol - 0.02 * edge) < 1e-12);
+    const S = (p) => p.map((x) => x * scale);
+    const T = M.hypercube(4).V;
+    assert.equal(M.distinctCount(T.map((p) => S(M.projectOrtho(p))), tol), 8, `ortho @${scale}`);
+    assert.equal(M.distinctCount(T.map((p) => S(M.projectPerspective(p))), tol), 16, `persp @${scale}`);
+    // a tiny 4D wobble (well under 2% of an edge) still reads as a plain cube; a clear tilt does not
+    const small = M.planeRotation(0, 3, 0.004), big = M.planeRotation(0, 3, 0.2);
+    assert.equal(M.distinctCount(T.map((p) => S(M.projectOrtho(M.apply(small, p)))), tol), 8);
+    assert.ok(M.distinctCount(T.map((p) => S(M.projectOrtho(M.apply(big, p)))), tol) > 8);
+  }
 });

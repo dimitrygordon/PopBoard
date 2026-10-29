@@ -103,3 +103,19 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--fd-gold); o
 }
 @media (prefers-reduced-motion: reduce) { #scene { transition: none; } }
 .caption .chapter .count { margin-left: auto; color: var(--fd-text-dim); font-weight: 600; letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
+
+/* Leo design fixes: text sits on a frosted card so wireframes never run behind words. */
+.caption { max-width: min(420px, calc(100% - 32px)); padding: 10px 12px; border-radius: 14px;
+  background: color-mix(in srgb, var(--fd-bg) 62%, transparent); border: 1px solid color-mix(in srgb, var(--fd-chip-border) 60%, transparent);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2); backdrop-filter: blur(10px) saturate(1.2); text-shadow: none; }
+:root[data-theme="light"] .caption { text-shadow: none; }
+:root[data-contrast="more"] .caption { background: var(--fd-bg); }
+/* Phones: one toolbar row (3D/4D left, YW/Flat/Reset right) directly above the arrows; Challenges chip above that. */
+@media (max-width: 600px) {
+  .caption { max-width: calc(100% - 24px); padding: 8px 10px; }
+  .rail { flex-direction: row; top: auto; transform: none; bottom: calc(var(--fd-sheet-peek, 0px) + 72px); gap: 6px; }
+  .rail.left { left: 12px; } .rail.right { right: 12px; }
+  .rail button { width: 46px; height: 46px; }
+  .canvas-box .fun-chip { bottom: calc(var(--fd-sheet-peek, 0px) + 130px); }
+  .canvas-box .fun-pop { bottom: calc(var(--fd-sheet-peek, 0px) + 182px); }
+}

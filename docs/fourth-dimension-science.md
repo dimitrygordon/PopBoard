@@ -2,7 +2,7 @@
 
 Every number, formula and claim the Beyond 3D module (`public/study-fourth-dimension.html`, slug `fourth-dimension`) shows to students, with sources. Math: `public/fourth-dimension/fd-math.js`. Narration (placeholder, Socrates to finalize): `public/fourth-dimension/pages.js`. Tests: `tests/fourth-dimension-math.test.mjs` (`npm run test:fourthdimension`). Everything here is pure geometry; no physical constants.
 
-Status: all claims TODO-TESLA.
+Status: all claims Cleared by Tesla 2026-10-29.
 
 ## Sources
 
@@ -29,12 +29,12 @@ Status: all claims TODO-TESLA.
 | 9 | `tesseract-4d` | 4D rotations act in a plane (XW, YW, ZW, …) rather than about an axis; a rotation in XW leaves y and z unchanged. Rotating 90° in XW swaps the roles of x and w, so the inner cell becomes an outer one ("inside out"); the object is rigid. | `planeRotation(i, j, a)`; tests check RRᵀ = I and det = +1 | [COXETER] |
 | 10 | `tesseract-ortho` | With orthographic ("flat light") projection, the unrotated tesseract's 16 corners land on 8 points: it looks like a single cube. | `projectOrtho`; `distinctCount` | test "perspective projection" |
 | 11 | `slice-tesseract` | Slicing the axis-aligned tesseract by the hyperplane w = c (|c| < 1) gives a cube of the same size; |c| > 1 gives nothing. | `slice(..., 3, c)`: 8 corners, 12 edges | [BANCHOFF] |
-| 12 | `slice-tilted` | Slicing a tesseract tilted in 4D gives other polyhedra (with triangles and hexagons), by analogy with the tilted cube. | `slice` after `rot(XW,0.7)·rot(YW,0.5)·rot(ZW,0.6)` | [BANCHOFF] — TODO-TESLA: wording "triangles and hexagons in them" is a qualitative claim; check a few c values. |
+| 12 | `slice-tilted` | Slicing a tilted tesseract gives other solids. Their faces can be triangles, four-sided shapes, pentagons or hexagons, just like the slices of a cube. Slices perpendicular to the long diagonal go tetrahedron, then a triangle-and-hexagon solid, then an octahedron at the center. | `slice` after `rot(XW,0.7)·rot(YW,0.5)·rot(ZW,0.6)` | [BANCHOFF]. Cleared by Tesla 2026-10-29 |
 | 13 | `hypersphere` | A 4D ball (radius 1.5) passing through 3D space appears as a ball that grows from a point, reaches radius 1.5, then shrinks and vanishes; radius √(R² − c²). | `sliceRadius` | [HYPERSPHERE] |
 | 14 | `net-cube` | A cube unfolds into a cross of 6 squares. | `unfoldCells(3, t)` | standard |
-| 15 | `net-tesseract`, `net-tesseract-turn` | A tesseract unfolds into 8 cubes in 3D: a column of 4 with 4 more around the second cube (Dalí's cross). Each side cell turns 90° about its shared square face in a plane containing w; the far cell rides on one of them and turns again. During unfolding the cells never intersect in 4D; the apparent overlaps are in the projection only. | `unfoldCells(4, t)`; tests check rigid edges and the cross shape at t = 1 | [DALI], [BANCHOFF] — TODO-TESLA: "never touch" is true for the hinge motion used; please confirm wording. |
-| 16 | `sandbox` | 16-cell: 8 vertices, 24 edges, 32 triangles. 24-cell: 24 vertices, 96 edges, 96 triangles; "it has no 3D cousin": the 24-cell is the only regular convex polytope with no analogue in any other dimension (the others belong to the simplex, cube or cross-polytope families, or the 3D/4D pairs icosahedron/600-cell and dodecahedron/120-cell). | `cell16()`, `cell24()` (edges = closest vertex pairs, faces = mutually adjacent triples) | [MW-24], [COXETER] — TODO-TESLA: simplify the "no 3D cousin" phrasing if needed. |
-| 17 | narration, page `extrude-4d` | "We cannot point to it [w], but the math does not mind." The fourth spatial dimension here is a mathematical one, not time. | — | TODO-TESLA (consider adding a line that this is not spacetime's time dimension). |
+| 15 | `net-tesseract`, `net-tesseract-turn` | A tesseract unfolds into 8 cubes in 3D: a column of 4 with 4 more around the second cube (Dalí's cross). Each side cell turns 90° about its shared square face in a plane containing w; the far cell rides on one of them and turns again. During unfolding the cubes never pass through each other in 4D; any overlap you see is only in the shadow. | `unfoldCells(4, t)`; tests check rigid edges and the cross shape at t = 1 | [DALI], [BANCHOFF]. Cleared by Tesla 2026-10-29 |
+| 16 | `sandbox` | 16-cell: 8 vertices, 24 edges, 32 triangles. 24-cell: 24 vertices, 96 edges, 96 triangles; The 24-cell is the only regular shape, in any dimension, with no matching shape in any other dimension. | `cell16()`, `cell24()` (edges = closest vertex pairs, faces = mutually adjacent triples) | [MW-24], [COXETER]. Cleared by Tesla 2026-10-29 |
+| 17 | narration, page `extrude-4d` | Here w is a fourth direction of space, not time. Relativity's spacetime is a different idea. | — | Cleared by Tesla 2026-10-29 |
 
 ## Display conventions (not claims)
 

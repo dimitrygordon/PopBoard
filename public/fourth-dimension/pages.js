@@ -41,7 +41,7 @@ export const PAGES = [
   { id: "counting", chapter: 4, scene: "counting",
     text: "Count the corners: 1, 2, 4, 8. Each new direction doubles them, because you copy the old shape and join the copies. Guess what comes next before you look at the last row." },
   { id: "extrude-4d", chapter: 4, scene: "extrude", opts: { n: 4 }, hint: "Drag to push the cube into the fourth direction",
-    text: "Now push the cube in a fourth direction, at a right angle to all three of ours. We call it w. We cannot point to it, but the math does not mind. The result is a tesseract." },
+    text: "Now push the cube in a fourth direction, called w, at a right angle to all three of ours. Here w is a fourth direction of space, not time. Relativity's spacetime is a different idea. The result is a tesseract." },
   { id: "cells", chapter: 4, scene: "cells", hint: "Tap the scene to light up the next cell",
     text: "A cube is wrapped in 6 square faces. A tesseract is wrapped in 8 cubes, called cells. Tap to light them up one at a time. Some look squashed: that is the shadow lying again." },
 
@@ -55,19 +55,19 @@ export const PAGES = [
   { id: "slice-tesseract", chapter: 6, scene: "slice4", hint: "Slide the 3D knife through w",
     text: "Back to Flick's ball trick, one step up. Slide a 3D 'knife' through a tesseract and look at the cut. Lined up straight, every slice is a cube that pops in, holds still, and pops out." },
   { id: "slice-tilted", chapter: 6, scene: "slice4", opts: { tilt: true }, hint: "Slide the knife. Use 4D to tilt the tesseract",
-    text: "Tilt the tesseract in 4D first and the slices get interesting: shapes with triangles and hexagons in them, growing and shrinking. Just like the tilted cube in Flatland." },
+    text: "Slicing a tilted tesseract gives other solids. Their faces can be triangles, four-sided shapes, pentagons or hexagons, just like the slices of a cube. Slice across the long diagonal and you get a tetrahedron, then a solid of triangles and hexagons, then an octahedron at the center." },
   { id: "hypersphere", chapter: 6, scene: "hypersphere", hint: "Slide the knife through the hypersphere",
     text: "A 4D ball passing through our world would look like a ball that appears from nowhere, swells, then shrinks to a dot and disappears. That is what Flick saw, one dimension up." },
 
   { id: "net-cube", chapter: 7, scene: "unfold3", hint: "Drag or slide to unfold",
     text: "Cut a cardboard box along some edges and lay it flat: 6 squares in a cross. A flatlander could cut that out of paper, but could never fold it up. There is no 'up' in Flatland." },
   { id: "net-tesseract", chapter: 7, scene: "unfold4", hint: "Drag or slide to unfold all the way",
-    text: "Unfold a tesseract and its 8 cubes lie flat in 3D: a cross of cubes stacked like a plus sign. We can build it out of blocks, but folding it back needs the fourth direction." },
+    text: "Unfold a tesseract and its 8 cubes lie flat in 3D: a cross of cubes stacked like a plus sign. During unfolding the cubes never pass through each other in 4D; any overlap you see is only in the shadow." },
   { id: "net-tesseract-turn", chapter: 7, scene: "unfold4", opts: { start: 0.5, mode: "3d" }, hint: "Drag to look around the net",
     text: "Halfway folded, the cubes seem to crash into each other. In 4D they never touch: each one turns into w, so there is always room. Our shadow just stacks them up." },
 
   { id: "recap", chapter: 8, scene: "counting", opts: { recap: true },
     text: "Point, line, square, cube, tesseract. Each one is two copies of the last, joined up. You now know more about the fourth dimension than most grown-ups. Time to play." },
   { id: "sandbox", chapter: 8, scene: "sandbox", hint: "Pick a shape, a light, a knife. Drag in 3D or 4D",
-    text: "Your turn. Pick a shape, spin it in 3D or 4D, switch the light, and slide the knife. Try the 24-cell: it has no 3D cousin at all." }
+    text: "Your turn. Pick a shape, spin it in 3D or 4D, switch the light, and slide the knife. Try the 24-cell: it is the only regular shape, in any dimension, with no matching shape in any other dimension." }
 ];
