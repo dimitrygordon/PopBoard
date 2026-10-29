@@ -4,6 +4,11 @@
 import { outcome as modelOutcome, PIECES, FOSSILS, MAX_RATE } from "./pt-model.js";
 
 export const ART = ["tex-continental-crust", "tex-oceanic-crust", "tex-mantle", "ridge-crest", "trench", "volcano", "eruption-plume", "lava-glow", "quake-burst", "mountains-fold", "slab-cross-section"];
+// Ridge crest box: true 4:1, ~60% of the panel wide (at least the gap + 8px onto each plate), end faces flush with the sea floor.
+export function crestBox(g, lx, rx, dx) {
+  const cx = g.cx + dx / 2, w = Math.max(g.w * 0.6, rx - lx + 16), h = w / 4;
+  return { cx, x: cx - w / 2, y: g.ocean[0] - 0.4 * h, w, h };
+}
 export const FX_MS = { plume: 900, quake: 700 };
 
 export function loadArt(base = "plate-tectonics/art/") {
@@ -49,6 +54,15 @@ export function createScene(canvas, imgs) {
     ctx.save(); ctx.globalAlpha *= alpha; ctx.translate(cx, bottom - h * anchor); if (flip) { ctx.translate(w / 2, 0); ctx.scale(-1, 1); ctx.translate(-w / 2, 0); }
     ctx.drawImage(img, flip ? 0 : -w / 2, 0, w, h); ctx.restore();
     return { x: cx - w / 2, y: bottom - h * anchor, w, h };
+  }
+  // Ridge crest with its outer 8px (4% on wide panels) feathered (1px slices at rising alpha) so the ends blend into the plate crust.
+  function crest(b) {
+    const img = imgs["ridge-crest"]; if (!img || !img.naturalWidth) return null;
+    const k = img.naturalWidth / b.w, F = Math.max(8, Math.round(b.w * 0.04)), slice = (dx0, dw, a) => { ctx.globalAlpha = a; ctx.drawImage(img, dx0 * k, 0, dw * k, img.naturalHeight, b.x + dx0, b.y, dw, b.h); };
+    ctx.save(); const a0 = ctx.globalAlpha;
+    slice(F, b.w - 2 * F, a0);
+    for (let i = 0; i < F; i++) { const a = a0 * (i + 0.5) / F; slice(i, 1, a); slice(b.w - 1 - i, 1, a); }
+    ctx.restore(); return b;
   }
   function rect(x0, x1, y0, y1, style) { if (x1 <= x0) return; ctx.fillStyle = style; ctx.fillRect(x0, y0, x1 - x0, y1 - y0); ctx.strokeStyle = pal.ink; ctx.lineWidth = 1.5; ctx.strokeRect(x0, y0, x1 - x0, y1 - y0); }
   // Small paper pill behind a canvas label, matching the HTML .tag pills (Volcano etc.).
@@ -137,15 +151,19 @@ export function createScene(canvas, imgs) {
         rect(lx, rx, vy, g.cont[1], fill(pats.cont)); anchors.rift = { x: g.cx + dx / 2, y: vy - 10 };
       } else {
         water(lx, rx, "oceanic"); rect(lx, rx, g.ocean[0], g.ocean[1], fill(pats.ocean));
-        if (st.hotspot) { ctx.fillStyle = pal.plume; ctx.fillRect(g.cx - 14, g.ocean[1], 28, g.bottom - g.ocean[1]); }
-        // Leo's ridge-crest sprite (1600x400, 4:1): drawn at its natural aspect, its flat base seated on the
-        // bottom of the oceanic crust so the crest bulges up out of the sea floor at the ridge.
-        const rw = Math.min(g.w * 0.34, 260), b = sprite("ridge-crest", g.cx + dx / 2, g.ocean[1], rw);
-        // The island volcano sits on the crust at the ridge crest (its base on the sea floor), not on the water line.
+        // Leo's ridge-crest sprite (1600x400): a true 4:1 (h = w / 4 exactly), about 60% of the cross-section wide,
+        // never narrower than the gap plus 8px overlap onto each plate's crust. Its end faces (top at 40% of the
+        // sprite height) are seated flush with the sea floor, and the outer 8px are feathered into the crust.
+        const b = crestBox(g, lx, rx, dx), rcx = b.cx, rw = b.w;
+        // Magma column under the terracotta crack (crack at x = 50% of the sprite).
+        if (st.hotspot) { ctx.fillStyle = pal.plume; ctx.fillRect(rcx - 14, b.y + b.h, 28, g.bottom - b.y - b.h); }
+        crest(b);
+        // Iceland: about 1/3 of the ridge width, base seated in the rift notch (21% down the sprite), vent over the crack.
         let isl = null;
-        if (o.islandKm > 0) { const iw = Math.min(g.w * 0.22, 170) * (0.5 + 0.5 * o.islandKm / 2.1); isl = sprite("volcano", g.cx + dx / 2, (b ? b.y + b.h * 0.1 : g.ocean[0]) + iw * 0.02, iw); }
+        if (o.islandKm > 0) { const iw = (rw / 3) * (0.75 + 0.25 * Math.min(1, o.islandKm / 2.1)); isl = sprite("volcano", rcx, b.y + b.h * 0.21 + iw * (628 / 1008) * (15 / 628), iw); }
         // Caption anchor: 12px below the crest's base (top edge of the caption pill).
-        if (b) anchors.ridge = { x: g.cx + dx / 2, y: b.y + b.h + 12, below: true };
+        if (b) anchors.ridge = { x: rcx, y: b.y + b.h + 12, below: true };
+        anchors.crest = { ...b, panelW: g.w };
       }
     } else if (o.type === "convergent" && o.shortenKm > 0) {
       if (o.feature === "mountains") {

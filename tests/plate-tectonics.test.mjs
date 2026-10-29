@@ -115,8 +115,8 @@ test("art: every Tesla-cleared asset ships as webp", () => {
   // Leo's ridge crest: 1600x400 VP8L/VP8X webp, drawn by sprite() at its natural 4:1 aspect.
   const buf = readFileSync(new URL("plate-tectonics/art/ridge-crest.webp", pub)); assert.equal(buf.toString("ascii", 12, 16), "VP8X");
   assert.equal(1 + buf.readUIntLE(24, 3), 1600); assert.equal(1 + buf.readUIntLE(27, 3), 400);
-  const scene = read("plate-tectonics/pt-scene.js"); assert.match(scene, /sprite\("ridge-crest", g\.cx \+ dx \/ 2, g\.ocean\[1\], rw\)/);
-  assert.match(scene, /anchors\.ridge = \{ x: g\.cx \+ dx \/ 2, y: b\.y \+ b\.h \+ 12/);
+  const scene = read("plate-tectonics/pt-scene.js"); assert.match(scene, /anchors\.ridge = \{ x: rcx, y: b\.y \+ b\.h \+ 12/);
+  assert.doesNotMatch(scene, /260/);
 });
 test("page wiring: modes, themes, phone sheet at half, study card, docs", () => {
   const html = read("study-plate-tectonics.html"), ui = read("plate-tectonics/pt-ui.js");
@@ -130,4 +130,18 @@ test("page wiring: modes, themes, phone sheet at half, study card, docs", () => 
 });
 test("no em-dashes and no Jasper in module copy", () => {
   for (const f of FILES) { const t = read(f); assert.ok(!t.includes("\u2014"), f); assert.ok(!/jasper/i.test(t), f); }
+});
+
+test("ridge crest renders a true 4:1 at about 60% of the panel, ends overlapping the crust", async () => {
+  const { crestBox } = await import(new URL("plate-tectonics/pt-scene.js", pub));
+  for (const w of [358, 690, 1100]) {
+    const g = { w, cx: w / 2, ocean: [200, 230] };
+    for (const [lx, rx, dx] of [[w / 2 - 20, w / 2 + 20, 0], [w / 2 - 60, w / 2 + 80, 20]]) {
+      const b = crestBox(g, lx, rx, dx);
+      assert.ok(Math.abs(b.w / b.h / 4 - 1) <= 0.02, `aspect ${b.w / b.h}`);
+      assert.ok(Math.abs(b.w / w - 0.6) <= 0.03, `width ${b.w / w}`);
+      assert.ok(b.x <= lx - 8 && b.x + b.w >= rx + 8, "ends overlap the crust by 8px");
+      assert.ok(Math.abs(b.y + 0.4 * b.h - g.ocean[0]) < 1e-9);
+    }
+  }
 });
