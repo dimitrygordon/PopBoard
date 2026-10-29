@@ -67,6 +67,11 @@ button,input{font-family:inherit;}
 .hud-tile .hud-unit{font-size:11px;color:var(--text-dim);margin-left:3px;}
 
 /* ---------- per-star lifespan scrub ---------- */
+@media (max-width:400px){
+  #starHud{gap:6px;max-width:calc(100vw - 16px);}
+  .hud-tile{min-width:0;padding:6px 10px 8px;}
+  .hud-tile .hud-value{font-size:22px;}
+}
 #starScrubBar{
   position:fixed;top:176px;left:50%;transform:translateX(-50%);z-index:44;
   background:rgba(15,18,22,0.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
@@ -550,7 +555,7 @@ function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 var T_MIN = 1800, T_MAX = 260000;
 var L_MIN = 1e-5, L_MAX = 2e6;
 var diagram = { zoom: 1, panLogT: 0, panLogL: 0 };
-var PLOT_MARGIN = { left: 70, right: 30, top: 30, bottom: 50 };
+var PLOT_MARGIN = window.HR_PLOT_MARGIN = { left: 70, right: 30, top: 30, bottom: 50 };
 
 function plotRect() {
   return { x: PLOT_MARGIN.left, y: PLOT_MARGIN.top, w: canvasW - PLOT_MARGIN.left - PLOT_MARGIN.right, h: canvasH - PLOT_MARGIN.top - PLOT_MARGIN.bottom };
@@ -2003,7 +2008,7 @@ document.addEventListener("click", function(e){
 });
 </script>
 <script>
-/* When the status banner wraps (narrow phones), the star readouts and the scrub bar drop below it instead of sitting under it. */
+/* When the status banner wraps (narrow phones), the star readouts and the scrub bar drop below it instead of sitting under it, and the chart starts below them. */
 (function () {
   var sb = document.getElementById("statusBanner"), hud = document.getElementById("starHud");
   if (!sb || !hud) return;
@@ -2012,6 +2017,11 @@ document.addEventListener("click", function(e){
     hud.style.top = ""; if (scrub) scrub.style.top = "";
     var b = sb.getBoundingClientRect().bottom; if (hud.getBoundingClientRect().top < b + 8) hud.style.top = Math.round(b + 8) + "px";
     var hb = hud.getBoundingClientRect().bottom; if (scrub && scrub.offsetHeight && scrub.getBoundingClientRect().top < hb + 8) scrub.style.top = Math.round(hb + 8) + "px";
+    // On phones the chart starts below the readout stack, so its top labels are never covered.
+    var PM = window.HR_PLOT_MARGIN; if (PM) {
+      var low = Math.max(b, hud.offsetHeight ? hud.getBoundingClientRect().bottom : 0, scrub && scrub.offsetHeight ? scrub.getBoundingClientRect().bottom : 0);
+      PM.top = innerWidth <= 480 ? Math.round(low + 24) : 30;
+    }
   }
   if (window.ResizeObserver) { var ro = new ResizeObserver(place); ro.observe(sb); ro.observe(hud); if (scrub) ro.observe(scrub); }
   addEventListener("resize", place); place();
