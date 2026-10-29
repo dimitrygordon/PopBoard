@@ -132,16 +132,24 @@ test("no em-dashes and no Jasper in module copy", () => {
   for (const f of FILES) { const t = read(f); assert.ok(!t.includes("\u2014"), f); assert.ok(!/jasper/i.test(t), f); }
 });
 
-test("ridge crest renders a true 4:1 at about 60% of the panel, ends overlapping the crust", async () => {
-  const { crestBox } = await import(new URL("plate-tectonics/pt-scene.js", pub));
-  for (const w of [358, 690, 1100]) {
-    const g = { w, cx: w / 2, ocean: [200, 230] };
-    for (const [lx, rx, dx] of [[w / 2 - 20, w / 2 + 20, 0], [w / 2 - 60, w / 2 + 80, 20]]) {
-      const b = crestBox(g, lx, rx, dx);
-      assert.ok(Math.abs(b.w / b.h / 4 - 1) <= 0.02, `aspect ${b.w / b.h}`);
-      assert.ok(Math.abs(b.w / w - 0.6) <= 0.03, `width ${b.w / w}`);
-      assert.ok(b.x <= lx - 8 && b.x + b.w >= rx + 8, "ends overlap the crust by 8px");
-      assert.ok(Math.abs(b.y + 0.4 * b.h - g.ocean[0]) < 1e-9);
+test("ridge crest: true 4:1, base flush on the crust bottom; plain peak 8px under the sea, Iceland at 60%", async () => {
+  const { crestBox, CREST_EASE_MS } = await import(new URL("plate-tectonics/pt-scene.js", pub));
+  assert.equal(CREST_EASE_MS, 600);
+  for (const [w, sea, c1] of [[864, 421, 497], [366, 332, 378], [1100, 300, 410]]) {
+    const g = { w, cx: w / 2, seaY: sea, ocean: [sea + 40, c1] };
+    for (const [lx, rx, dx] of [[w / 2 - 10, w / 2 + 10, 0], [w / 2 - 30, w / 2 + 40, 10]]) {
+      const plain = crestBox(g, lx, rx, dx, 0), ice = crestBox(g, lx, rx, dx, 1);
+      for (const b of [plain, ice, crestBox(g, lx, rx, dx, 0.5)]) {
+        assert.ok(Math.abs(b.w / b.h / 4 - 1) <= 0.02, `aspect ${b.w / b.h}`);
+        assert.ok(Math.abs(b.y + b.h - c1) < 1e-9, "base flush on the bottom of the oceanic crust");
+        assert.ok(b.x <= lx - 8 && b.x + b.w >= rx + 8, "ends overlap the crust by 8px");
+      }
+      assert.ok(Math.abs(plain.peakY - (sea + 8)) < 1e-9, `plain peak ${plain.peakY - sea}px under the sea`);
+      assert.ok(Math.abs(ice.w / w - 0.6) <= 0.02, `iceland width ${ice.w / w}`);
+      assert.ok(ice.peakY < sea, "Iceland crest breaks the surface");
     }
   }
+  const scene = read("plate-tectonics/pt-scene.js");
+  assert.match(scene, /fillRect\(rcx - 14, b\.y \+ b\.h,/); // magma column starts at the crest base
+  assert.match(scene, /fx\.reduced \|\| crestEase\.t == null \? goal/); // reduced motion snaps
 });

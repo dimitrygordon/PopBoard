@@ -4,10 +4,14 @@
 import { outcome as modelOutcome, PIECES, FOSSILS, MAX_RATE } from "./pt-model.js";
 
 export const ART = ["tex-continental-crust", "tex-oceanic-crust", "tex-mantle", "ridge-crest", "trench", "volcano", "eruption-plume", "lava-glow", "quake-burst", "mountains-fold", "slab-cross-section"];
-// Ridge crest box: true 4:1, ~60% of the panel wide (at least the gap + 8px onto each plate), end faces flush with the sea floor.
-export function crestBox(g, lx, rx, dx) {
-  const cx = g.cx + dx / 2, w = Math.max(g.w * 0.6, rx - lx + 16), h = w / 4;
-  return { cx, x: cx - w / 2, y: g.ocean[0] - 0.4 * h, w, h };
+// Ridge crest box (Leo, option A): always a true 4:1 with its base flush on the bottom of the oceanic crust.
+// grow = 0 (plain spreading): width set by the layout so the peak (5% down the art) sits 8px below the sea line.
+// grow = 1 (Iceland): 60% of the panel, breaking the surface. Never narrower than the gap + 8px onto each plate.
+export const CREST_EASE_MS = 600;
+export function crestBox(g, lx, rx, dx, grow = 0) {
+  const plainH = Math.max(8, (g.ocean[1] - g.seaY - 8) / 0.95), plainW = plainH * 4, fullW = g.w * 0.6;
+  const cx = g.cx + dx / 2, w = Math.max(plainW + (fullW - plainW) * grow, rx - lx + 16), h = w / 4;
+  return { cx, x: cx - w / 2, y: g.ocean[1] - h, w, h, peakY: g.ocean[1] - 0.95 * h };
 }
 export const FX_MS = { plume: 900, quake: 700 };
 
@@ -56,6 +60,7 @@ export function createScene(canvas, imgs) {
     return { x: cx - w / 2, y: bottom - h * anchor, w, h };
   }
   // Ridge crest with its outer 8px (4% on wide panels) feathered (1px slices at rising alpha) so the ends blend into the plate crust.
+  const crestEase = { t: null, now: null };
   function crest(b) {
     const img = imgs["ridge-crest"]; if (!img || !img.naturalWidth) return null;
     const k = img.naturalWidth / b.w, F = Math.max(8, Math.round(b.w * 0.04)), slice = (dx0, dw, a) => { ctx.globalAlpha = a; ctx.drawImage(img, dx0 * k, 0, dw * k, img.naturalHeight, b.x + dx0, b.y, dw, b.h); };
@@ -154,7 +159,10 @@ export function createScene(canvas, imgs) {
         // Leo's ridge-crest sprite (1600x400): a true 4:1 (h = w / 4 exactly), about 60% of the cross-section wide,
         // never narrower than the gap plus 8px overlap onto each plate's crust. Its end faces (top at 40% of the
         // sprite height) are seated flush with the sea floor, and the outer 8px are feathered into the crust.
-        const b = crestBox(g, lx, rx, dx), rcx = b.cx, rw = b.w;
+        // Ease between the plain and Iceland widths over CREST_EASE_MS (snap when reduced motion is on).
+        const goal = o.islandKm > 0 ? 1 : 0, dt = crestEase.now == null ? Infinity : now - crestEase.now; crestEase.now = now;
+        crestEase.t = fx.reduced || crestEase.t == null ? goal : goal > crestEase.t ? Math.min(goal, crestEase.t + dt / CREST_EASE_MS) : Math.max(goal, crestEase.t - dt / CREST_EASE_MS);
+        const e = crestEase.t * crestEase.t * (3 - 2 * crestEase.t), b = crestBox(g, lx, rx, dx, e), rcx = b.cx, rw = b.w;
         // Magma column under the terracotta crack (crack at x = 50% of the sprite).
         if (st.hotspot) { ctx.fillStyle = pal.plume; ctx.fillRect(rcx - 14, b.y + b.h, 28, g.bottom - b.y - b.h); }
         crest(b);
@@ -163,7 +171,7 @@ export function createScene(canvas, imgs) {
         if (o.islandKm > 0) { const iw = (rw / 3) * (0.75 + 0.25 * Math.min(1, o.islandKm / 2.1)); isl = sprite("volcano", rcx, b.y + b.h * 0.21 + iw * (628 / 1008) * (15 / 628), iw); }
         // Caption anchor: 12px below the crest's base (top edge of the caption pill).
         if (b) anchors.ridge = { x: rcx, y: b.y + b.h + 12, below: true };
-        anchors.crest = { ...b, panelW: g.w };
+        anchors.crest = { ...b, panelW: g.w, seaY: g.seaY, crustBottom: g.ocean[1], grow: crestEase.t };
       }
     } else if (o.type === "convergent" && o.shortenKm > 0) {
       if (o.feature === "mountains") {
