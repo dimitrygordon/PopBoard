@@ -16,6 +16,7 @@
     "test:doublependulum": "node --test double-pendulum-physics.test.mjs",
     "test:emspec": "node --test emspec-physics.test.mjs",
     "test:stars": "node --test stars-physics.test.mjs",
+    "test:projectile": "node --test projectile-physics.test.mjs",
     "test:emfields": "node --test emfields-physics.test.mjs",
     "test:momentum": "node --test momentum-physics.test.mjs",
     "test:mechanics:browser": "node mechanics-browser.mjs",
