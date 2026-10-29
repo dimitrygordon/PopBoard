@@ -61,16 +61,18 @@ function buildField() {
 // 3 nearest neighbors are labeled, and labels are clamped inside the stage with 8px padding.
 const PHONE_FIELD = matchMedia("(max-width: 599.98px)");
 const MIN_GAP = 48, LABEL_PAD = 8;
+// The 48px floor is a hard minimum; when the field has room, stars get more air (up to 72px) so no corner reads as a clump.
 let lastSeed = null;
 function spread(pts, w, h, pad) {
+  const gap = Math.max(MIN_GAP, Math.min(72, 0.55 * Math.sqrt(((w - 2 * pad) * (h - 2 * pad)) / Math.max(1, pts.length))));
   const P = pts.map((p) => ({ x: pad + p.x * (w - 2 * pad), y: pad + p.y * (h - 2 * pad) }));
-  for (let it = 0; it < 200; it++) {
+  for (let it = 0; it < 400; it++) {
     let moved = false;
     for (let i = 0; i < P.length; i++) for (let j = i + 1; j < P.length; j++) {
       let dx = P[j].x - P[i].x, dy = P[j].y - P[i].y, d = Math.hypot(dx, dy);
-      if (d >= MIN_GAP + 0.5) continue;
+      if (d >= gap + 0.5) continue;
       if (d < 1e-3) { dx = 1; dy = 0; d = 1; }
-      const push = (MIN_GAP + 1 - d) / 2, ux = dx / d, uy = dy / d;
+      const push = (gap + 1 - d) / 2, ux = dx / d, uy = dy / d;
       P[i].x -= ux * push; P[i].y -= uy * push; P[j].x += ux * push; P[j].y += uy * push; moved = true;
     }
     for (const q of P) { q.x = Math.max(pad, Math.min(w - pad, q.x)); q.y = Math.max(pad, Math.min(h - pad, q.y)); }
