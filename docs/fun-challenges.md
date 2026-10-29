@@ -83,6 +83,16 @@ Mode `?mode=solar-system` of `study-orbits.html`. All thresholds Cleared by Tesl
 | Silver | Keep 4 planets stable for 100 years | 4 or more planets, 100 simulated years stable (`FUN.silver`, Cleared by Tesla 2026-10-29) |
 | Gold | Keep 4 planets stable for 1,000 simulated years | 4 or more planets, 1,000 simulated years stable (`FUN.gold`, Cleared by Tesla 2026-10-29) |
 
+## Rocket & Mission: Mars Lander
+
+Mode `?mode=mars-lander` of `study-rocket-mission.html`. Source: `public/rocket-mission/lander/ml-model.js` (`LIMITS`, `FUN`, `GOALS`). Medals count only in the Mission tab; the Sandbox (other worlds, other engines, endless fuel) earns none. A landing is judged when the first footpad touches. All thresholds Cleared by Tesla 2026-10-29.
+
+| Tier | Goal | Threshold | Status |
+| --- | --- | --- | --- |
+| Bronze | Land safely anywhere | 3 m/s or slower down, 1.5 m/s or slower sideways, within 10 degrees of upright (`LIMITS`) | Cleared by Tesla 2026-10-29 |
+| Silver | Land safely on the pad | Safe, with both footpads over the 90 m pad (full drawn width, `PAD.w`) | Cleared by Tesla 2026-10-29 |
+| Gold | Soft landing on the pad with 60% of the fuel left | On the pad at 1.5 m/s or slower (`LIMITS.softV`), at least 60% fuel left (`FUN.goldFuel`) | Cleared by Tesla 2026-10-29 |
+
 ## Atom Builder
 
 All thresholds Cleared by Tesla 2026-10-29.

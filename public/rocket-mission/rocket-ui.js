@@ -1,7 +1,7 @@
 // Rocket Science & Space Mission: page wiring and the scenes for each mode.
 // Physics and data: rocket-physics.js. Drawing helpers: rocket-render.js.
 
-import { forwardStudyQuery } from "../board-return.js?v=20261022a";
+import { forwardStudyQuery, moduleOpenHref } from "../board-return.js?v=20261022a";
 import {
   loadImages, readTokens, text, line, arrow, disc, stars, axes, drawRocket, drawPad, PAD, drawFlight, drawOrbitScene, drawHohmann
 } from "./rocket-render.js";
@@ -228,7 +228,7 @@ function readout() {
 
 function setMode(m) {
   st.mode = m;
-  for (const b of $$(".toolbar .tool")) b.setAttribute("aria-pressed", String(b.dataset.show === m));
+  for (const b of $$(".toolbar .tool[data-show]")) b.setAttribute("aria-pressed", String(b.dataset.show === m));
   if (m === "launch") restartFlight();
   buildControls(); sync();
 }
@@ -237,7 +237,9 @@ function writeUrl() {
   p.set("mode", st.mode);
   history.replaceState(null, "", "?" + p.toString());
 }
-for (const b of $$(".toolbar .tool")) b.addEventListener("click", () => setMode(b.dataset.show));
+for (const b of $$(".toolbar .tool[data-show]")) b.addEventListener("click", () => setMode(b.dataset.show));
+// Mars Lander lives on this page under its own ?mode, with its own UI (rocket-mission/lander/).
+$("marsLanderBtn").addEventListener("click", () => { location.href = moduleOpenHref("study-rocket-mission.html", location.search) + (forwardStudyQuery(location.search).toString() ? "&" : "?") + "mode=mars-lander"; });
 function sync() {
   $("panelTitle").textContent = TITLES[st.mode];
   for (const el of $$("[data-slider]")) {

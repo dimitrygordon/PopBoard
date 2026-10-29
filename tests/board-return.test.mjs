@@ -241,9 +241,11 @@ test("every study module returns to the gallery and keeps its query string", () 
     let source = html;
     const extra = html.match(/src="([^"]+-ui\.js)"/);
     if (extra) source += "\n" + readFileSync(new URL(extra[1], dir), "utf8");
-    // Pages that pick a UI at load time (Relativity: sandbox or Lightspeed Ride; Orbits: playground or Solar System mode): every UI must return.
+    // Pages that pick a UI at load time (Relativity: sandbox or Lightspeed Ride; Orbits: playground or Solar System mode;
+    // Rocket & Mission: rocket modes or Mars Lander): every UI must return.
     const picked = [...html.matchAll(/import\("\.\/([^"]+-ui\.js)"\)/g)].map((m) => m[1]);
     for (const file of picked) assert.match(readFileSync(new URL(file, dir), "utf8"), /study\.html"\s*\+\s*location\.search/, `${name}: ${file}`);
+    if (name === "study-rocket-mission.html") assert.deepEqual(picked, ["rocket-mission/lander/ml-ui.js", "rocket-mission/rocket-ui.js"], name);
     if (!picked.length) assert.match(source, /study\.html"\s*\+\s*location\.search/, name);
   }
 });
