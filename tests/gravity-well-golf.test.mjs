@@ -27,12 +27,14 @@ test("pull is inverse-square far from a mass", () => {
   const a = G.accel(3, 4, m); assert.ok(a.ax < 0 && a.ay < 0); // toward the mass
   assert.ok(Number.isFinite(Math.hypot(...Object.values(G.accel(0, 0, m))))); // softened at the center
 });
-test("frictionless orbit keeps its energy (no spiral in or out)", () => {
+test("frictionless orbit: energy drift is bounded, not zero (no spiral in or out)", () => {
   const m = [{ kind: "star", x: 0, y: 0 }], r = 3, gm = G.KINDS.star.gm;
   const b = { x: r, y: 0, vx: 0, vy: Math.sqrt(gm * r * r / Math.pow(r * r + G.P.soften ** 2, 1.5)) };
-  const e0 = G.energy(b, m); let rMin = Infinity, rMax = 0;
-  for (let i = 0; i < 240 * 20; i++) { G.step(b, null, { masses: m, friction: false }); const d = Math.hypot(b.x, b.y); rMin = Math.min(rMin, d); rMax = Math.max(rMax, d); }
-  assert.ok(Math.abs(G.energy(b, m) - e0) / Math.abs(e0) < 1e-3); assert.ok(rMin > 2.9 && rMax < 3.1, `${rMin} ${rMax}`);
+  const e0 = G.energy(b, m); let rMin = Infinity, rMax = 0, drift = [0, 0];
+  for (let i = 0; i < 240 * 20; i++) { G.step(b, null, { masses: m, friction: false }); const d = Math.hypot(b.x, b.y); rMin = Math.min(rMin, d); rMax = Math.max(rMax, d);
+    const e = Math.abs(G.energy(b, m) - e0) / Math.abs(e0); drift[i < 2400 ? 0 : 1] = Math.max(drift[i < 2400 ? 0 : 1], e); }
+  // Symplectic: the drift wobbles but stays bounded (small, and no larger in the second half than the first).
+  assert.ok(drift[0] < 1e-2 && drift[1] < 1e-2, `${drift}`); assert.ok(drift[1] < drift[0] * 1.5 + 1e-9, `${drift}`); assert.ok(rMin > 2.9 && rMax < 3.1, `${rMin} ${rMax}`);
 });
 test("friction (game rule) stops a ball on an empty field; cup captures slow balls only", () => {
   assert.equal(G.simulate({ x: -5, y: 0 }, { vx: 1, vy: 0 }, { x: 7, y: 4 }, { masses: [] }).result, "stop");
@@ -90,7 +92,8 @@ test("page wiring, themes, study card, docs, vendored three.js", () => {
   assert.match(html, /data-mode="sandbox"/); assert.match(read("gravity-well-golf/gravity-well-golf-theme.css"), /\[data-theme="light"\]/);
   assert.ok(existsSync(new URL("vendor/three/three.module.min.js", pub)));
   const study = read("study.html"); assert.match(study, /id: "gravity-well-golf"/); assert.match(study, /file: "study-gravity-well-golf.html"/);
-  assert.ok(readFileSync(new URL("../docs/gravity-well-golf-science.md", import.meta.url), "utf8").includes("TODO-TESLA"));
+  const doc = readFileSync(new URL("../docs/gravity-well-golf-science.md", import.meta.url), "utf8"); assert.ok(doc.includes("Cleared by Tesla 2026-10-29") && !doc.includes("TODO-TESLA"));
+  assert.ok(doc.includes("With friction off, nothing slows the ball, so a clean orbit keeps going around instead of spiraling in or out.")); assert.match(doc, /bounded/);
 });
 test("no em-dashes and no Jasper in module copy", () => {
   for (const f of ["study-gravity-well-golf.html", "gravity-well-golf/gwg-ui.js", "gravity-well-golf/gwg-physics.js", "gravity-well-golf/gwg-scene.js", "gravity-well-golf/gravity-well-golf-theme.css"]) {

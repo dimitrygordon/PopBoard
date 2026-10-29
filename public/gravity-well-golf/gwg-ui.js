@@ -253,7 +253,7 @@ const phone = matchMedia("(max-width: 600px)");
 let sheet = null;
 const snaps = () => { const tabs = $("controls").querySelector(".tabs"); const peek = Math.ceil(tabs.offsetHeight + 56); const full = Math.max(peek + 40, Math.ceil(tabs.offsetHeight + body.scrollHeight + 64)); return [peek, Math.max(peek + 1, Math.round((peek + full) / 2)), full]; };
 function phoneSync() {
-  if (phone.matches && !sheet) { $("controls").classList.add("fun-sheet-on", "fun-sheet"); sheet = bottomSheet($("controls"), $("sheetHandle"), { getSnaps: snaps, start: 2, onSnap: () => setTimeout(requestFit, 350) }); }
+  if (phone.matches && !sheet) { $("controls").classList.add("fun-sheet-on", "fun-sheet"); sheet = bottomSheet($("controls"), $("sheetHandle"), { getSnaps: snaps, start: 1, onSnap: () => setTimeout(requestFit, 350) }); }
   else if (!phone.matches && sheet) { sheet.destroy(); sheet = null; $("controls").classList.remove("fun-sheet-on", "fun-sheet"); }
 }
 let fitQueued = false;
@@ -262,7 +262,7 @@ function requestFit() { if (fitQueued) return; fitQueued = true; requestAnimatio
 function fit() {
   scene.setFit(1, 0);
   const top = $("holeStats").getBoundingClientRect().bottom + 12, ctl = $("controls").getBoundingClientRect();
-  const bottom = Math.min(innerHeight, ctl.top) - 30;
+  const bottom = Math.min(innerHeight, ctl.top) - (phone.matches ? 30 : 42); // desktop: room for the caption 12px below the board
   root.style.setProperty("--gw-ctl", Math.max(0, innerHeight - ctl.top) + "px");
   let pad = 1, shift = 0;
   const box = () => { const pts = [[-W / 2, -H / 2], [W / 2, -H / 2], [W / 2, H / 2], [-W / 2, H / 2]].map(([x, y]) => scene.toScreen(x, y));
@@ -277,6 +277,10 @@ function fit() {
     shift -= ((c.minY + c.maxY) / 2 - (top + bottom) / 2) * wpp;
   }
   scene.setFit(pad, shift);
+  // Desktop: anchor the model caption 12px below the board's bounding box so it never touches the sheet.
+  const lbl = $("modelLabel");
+  if (phone.matches) { lbl.style.top = ""; lbl.style.bottom = ""; }
+  else { lbl.style.top = Math.round(box().maxY + 12) + "px"; lbl.style.bottom = "auto"; }
 }
 function layoutUI() { phoneSync(); sheet?.layout(); requestFit(); }
 phone.addEventListener?.("change", layoutUI);

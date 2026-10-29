@@ -2,7 +2,7 @@
 // Motion model (label it as such in the UI): each mass pulls the ball with a Newtonian
 // inverse-square force, a = G·M / r², softened near the center so the pull stays finite.
 // The rubber sheet drawn on screen is only an analogy. Rolling friction and the cup's
-// capture are GAME rules, not gravity. All numbers are TODO-TESLA (docs/fun-challenges.md,
+// capture are GAME rules, not gravity. All numbers are Cleared by Tesla 2026-10-29 (docs/fun-challenges.md,
 // docs/gravity-well-golf-science.md).
 export const MODULE_ID = "gravity-well-golf";
 
@@ -59,7 +59,7 @@ export function puttVelocity(pullX, pullY) {
   return { vx, vy };
 }
 
-// One substep (semi-implicit Euler: symplectic, so a frictionless orbit neither spirals in nor out).
+// One substep (semi-implicit Euler: symplectic, so on a frictionless orbit the energy drift stays bounded: it wobbles slightly, never grows).
 // Returns a list of events: {type:"wall"|"hit"|"cup"|"lip"|"stop", ...}.
 export function step(b, hole, opts) {
   const { masses, friction = true, dt = P.dt } = opts;
@@ -132,7 +132,7 @@ export function canPlace(kind, x, y, hole) {
   return true;
 }
 
-// ---------- challenges (TODO-TESLA) ----------
+// ---------- challenges (Cleared by Tesla 2026-10-29) ----------
 export const FUN = { silverParHoles: 3, goldMinHole: 2 };
 export const GOALS = [
   { tier: "bronze", title: "Sink a ball in any cup", check: (e) => e.type === "sunk" },

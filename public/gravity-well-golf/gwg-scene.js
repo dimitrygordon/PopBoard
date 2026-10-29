@@ -17,7 +17,7 @@ export function createScene(canvas) {
   const loader = new THREE.TextureLoader();
   const tex = {};
   for (const n of SPRITES) {
-    const t = loader.load(`gravity-well-golf/sprites/${n}.webp`, () => { dirty = true; });
+    const t = loader.load(`gravity-well-golf/sprites/${n}.webp`, () => { dirty = true; if (n === KINDS.star.sprite.replace(".webp", "")) applyHalo(); });
     t.colorSpace = THREE.SRGBColorSpace;
     // Mipmapped with trilinear + anisotropic filtering so the heavy mass texture never shimmers.
     t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter; t.magFilter = THREE.LinearFilter; t.anisotropy = maxAniso;
@@ -68,10 +68,26 @@ export function createScene(canvas) {
   const trail = new THREE.Line(trailGeo, new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 })); world.add(trail);
   let trailN = 0;
   // ---- masses ----
-  let massSprites = [];
+  let massSprites = [], lightTheme = false;
+  // Paper theme: the star's white halo (its ring of rays) reads as a hard faceted edge on a light
+  // sheet, so the Paper star uses a copy of the sprite with the halo faded out by a round mask.
+  let paperStar = null;
+  const starTex = () => {
+    const img = tex[KINDS.star.sprite.replace(".webp", "")]?.image; if (!img?.width) return null;
+    if (paperStar) return paperStar;
+    const c = document.createElement("canvas"); c.width = img.width; c.height = img.height; const g = c.getContext("2d"), h = img.width / 2;
+    g.drawImage(img, 0, 0); g.globalCompositeOperation = "destination-in";
+    const r = g.createRadialGradient(h, h, 0, h, h, h);
+    r.addColorStop(0, "#000"); r.addColorStop(0.7, "#000"); r.addColorStop(0.76, "rgba(0,0,0,0.15)"); r.addColorStop(0.86, "rgba(0,0,0,0)");
+    g.fillStyle = r; g.fillRect(0, 0, c.width, c.height);
+    paperStar = new THREE.CanvasTexture(c); paperStar.colorSpace = tex[KINDS.star.sprite.replace(".webp", "")].colorSpace; return paperStar;
+  };
+  function applyHalo() { masses_.forEach((m, i) => { const s = massSprites[i]; if (!s || m.kind !== "star") return; const t = lightTheme && starTex(); s.material.map = t || tex[KINDS.star.sprite.replace(".webp", "")]; s.material.needsUpdate = true; }); dirty = true; }
+  let masses_ = [];
   function setMasses(masses) {
     for (const s of massSprites) world.remove(s);
-    massSprites = masses.map((m) => { const s = sprite(KINDS[m.kind].sprite.replace(".webp", ""), D * KINDS[m.kind].scale); world.add(s); return s; });
+    massSprites = masses.map((m) => { const s = sprite(KINDS[m.kind].sprite.replace(".webp", ""), D * KINDS[m.kind].scale); s.material.depthTest = false; s.renderOrder = 4; world.add(s); return s; }); // drawn over the sheet so the dent never clips the sphere into facets
+    masses_ = masses; applyHalo();
     updateSheet(masses); placeMasses(masses);
   }
   function placeMasses(masses) { masses.forEach((m, i) => { const s = massSprites[i]; if (s) s.position.set(m.x, m.y, depth(m.x, m.y, masses) + D * KINDS[m.kind].scale * 0.35); }); dirty = true; }
@@ -113,7 +129,7 @@ export function createScene(canvas) {
   function setPalette(p) {
     planeMat.color.set(p.sheet); gridMat.color.set(p.grid); gridMat.opacity = p.gridOpacity;
     ring.material.color.set(p.ring); ring.material.blending = p.light ? THREE.NormalBlending : THREE.AdditiveBlending; ring.material.needsUpdate = true;
-    aim.material.color.set(p.aim); trail.material.color.set(p.aim); tee.material.color.set(p.tee); dirty = true;
+    aim.material.color.set(p.aim); trail.material.color.set(p.aim); tee.material.color.set(p.tee); lightTheme = !!p.light; applyHalo(); dirty = true;
   }
 
   return {
