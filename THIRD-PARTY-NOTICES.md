@@ -22,3 +22,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 ## Fredoka font
 
 `public/fonts/fredoka-latin.woff2` is Fredoka by Milena Brandao, licensed under the SIL Open Font License 1.1 (https://openfontlicense.org).
+
+## three.js r170
+
+`public/vendor/three/three.module.min.js` is three.js 0.170.0 (https://github.com/mrdoob/three.js), vendored unmodified from the npm package `three@0.170.0` (`build/three.module.min.js`). MIT License; full text in `public/vendor/three/three.LICENSE`.

@@ -15,6 +15,22 @@ Source: `public/projectile/projectile-fun.js` (`FUN` and `GOALS`).
 
 Copy to check: "Max range: about 45° from the ground". This holds only from level ground with no air drag.
 
+## Gravity Well Golf
+
+Source: `public/gravity-well-golf/gwg-physics.js` (`FUN`, `GOALS`, `P`). All rows Cleared by Tesla 2026-10-29.
+
+| Key | Value | Where it's used | Status |
+|---|---|---|---|
+| Bronze | any sink | Bronze: sink a ball in any cup (course or sandbox). | Cleared by Tesla 2026-10-29 |
+| `silverParHoles` | 3 | Silver: par or better on 3 different course holes (saved across visits, `popboard.fun.gravity-well-golf.parHoles`). | Cleared by Tesla 2026-10-29 |
+| `goldMinHole` | 2 | Gold: a hole in one on course hole 2 or later (hole 1 has no masses, so it does not count). Every hole 1 to 9 has at least one hole-in-one line (tests check this). | Cleared by Tesla 2026-10-29 |
+| `cupR` | 0.36 units (ball radius 0.25) | Cup capture radius (game rule, not gravity). | Cleared by Tesla 2026-10-29 |
+| `cupMaxSpeed` | 2.6 units/s | Faster than this and the ball lips out (game rule). | Cleared by Tesla 2026-10-29 |
+| Pars | 1, 2, 2, 2, 2, 3, 3, 3, 4 | Par for holes 1 to 9 (`COURSE`). | Cleared by Tesla 2026-10-29 |
+| Predict | Yes / No | Predict, then run: "Will the next putt go in?"; slow motion (0.35x) within 1.4 units of the cup while a guess is waiting. | Cleared by Tesla 2026-10-29 |
+
+Share link (sandbox): `SHARE_SCHEMA` clamps tee and cup to the field; masses are packed as `k,x,y` (up to 12) and clamped.
+
 ## Powers of Ten
 
 Source: `public/powers-of-ten/p10-logic.js` (`FUN`, `GOALS`). All rows cleared by Tesla 2026-10-29.
