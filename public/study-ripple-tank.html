@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#12171d">
+<title>Ripple Tank // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.ripple-tank.theme"); } catch (e) {}
+    document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");
+  })();
+</script>
+<link rel="stylesheet" href="shared/fun/fun.css">
+<link rel="stylesheet" href="ripple-tank/ripple-tank-theme.css">
+</head>
+<body>
+<h1 class="sr-only">Ripple Tank</h1>
+<p class="sr-only">A top-down view of shallow water. Tap to add dippers that make circular waves, drag them around, splash the surface, add walls with one or two slits, and change the frequency to see interference and diffraction.</p>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title">Ripple Tank</p>
+  <button id="helpBtn" type="button" class="fun-help" aria-label="About this model" aria-haspopup="dialog">?</button>
+  <button id="soundBtn" type="button" aria-pressed="false" aria-label="Sound is off">Sound</button>
+  <button id="themeBtn" type="button"><span id="themeLabel">Paper</span></button>
+</header>
+
+<section class="status" id="status" aria-live="polite">
+  <p class="lambda" id="lambda"></p>
+  <p class="readout" id="readout"></p>
+</section>
+
+<main id="stage" class="stage">
+  <canvas id="scene" role="img" tabindex="0" aria-label="Ripple tank"></canvas>
+  <p class="cap" id="tankCap"></p>
+</main>
+
+<div class="canvas-box" id="funBox"></div>
+
+<section class="controls" id="controls" aria-label="Ripple tank controls">
+  <button type="button" class="fun-handle" id="sheetHandle" aria-label="Resize controls"></button>
+  <p class="toast" id="toast" role="status" aria-live="polite" hidden></p>
+  <div class="tabs" role="tablist" aria-label="Mode">
+    <button type="button" role="tab" data-mode="guided" aria-selected="true">Guided</button>
+    <button type="button" role="tab" data-mode="sandbox" aria-selected="false">Sandbox</button>
+  </div>
+  <div id="modeBody" class="mode-body"></div>
+  <p class="dim link-row"><a id="wavesLink" href="study-waves.html">Waves &amp; Interference</a> has guided lessons on the same ideas.</p>
+</section>
+
+<div class="caveat-wrap" id="about" hidden>
+  <section class="caveat" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+    <p class="caveat-title" id="aboutTitle">About this tank</p>
+    <p>Tap the water to add a dipper, drag a dipper to move it, and drag it out of the tank to remove it. In Sandbox you can also splash the water or drop blocks.</p>
+    <p class="caveat-small" id="aboutNote"></p>
+    <p class="caveat-small">The grid gets coarser by itself if your device slows down, so the waves keep moving smoothly.</p>
+    <button type="button" id="aboutOk" class="primary">Got it</button>
+  </section>
+</div>
+
+<script type="module" src="ripple-tank/rt-ui.js"></script>
+</body>
+</html>
