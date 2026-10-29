@@ -3,10 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="light">
+<meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#ffffff">
 <title>Black Hole Explorer // PopBoard</title>
 <link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  // Theme before first paint: a saved choice wins, else the system setting.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.black-hole.theme"); } catch (e) {}
+    if (t !== "dark" && t !== "light") t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
 <link rel="preload" as="image" href="black-hole/assets/bh-shadow.webp" type="image/webp">
 <link rel="stylesheet" href="black-hole/bh-theme.css">
 <link rel="stylesheet" href="astro-study.css?v=20261021k">
@@ -14,7 +23,7 @@
 </head>
 <body>
 <h1 class="sr-only">Black Hole Explorer</h1>
-<p class="sr-only">Change the black hole's mass and spin, move the probe, and switch views to explore the event horizon, photon orbits, lensing, the accretion disk, orbit stability, clocks, and tides.</p>
+<p class="sr-only">Change the black hole's mass and spin, move the probe, and switch views to explore the event horizon, photon orbits, lensing, the accretion disk, orbit stability, clocks, and tides, or open every control at once in a free-play sandbox.</p>
 
 <header class="hud">
   <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
@@ -23,6 +32,10 @@
   </button>
   <p class="title">Black Hole Explorer</p>
   <nav id="modeTabs" class="tabs" role="tablist" aria-label="Views"></nav>
+  <button id="themeBtn" class="theme-btn" type="button" aria-pressed="false" aria-label="Dark mode">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <span id="themeLabel">Dark</span>
+  </button>
 </header>
 
 <main class="layout">

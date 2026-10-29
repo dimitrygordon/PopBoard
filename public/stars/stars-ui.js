@@ -8,6 +8,26 @@ import * as R from "./stars-render.js";
 const $ = (id) => document.getElementById(id);
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const init = P.paramsFromSearch(location.search);
+const THEME_KEY = "popboard.stars.theme";
+
+// ---------- theme ----------
+function applyTheme(t, save) {
+  document.documentElement.setAttribute("data-theme", t);
+  if (save) { try { localStorage.setItem(THEME_KEY, t); } catch (e) {} }
+  $("themeBtn").setAttribute("aria-pressed", String(t === "dark"));
+  $("themeLabel").textContent = t === "dark" ? "Light" : "Dark";
+  $("themeBtn").setAttribute("aria-label", t === "dark" ? "Switch to light mode" : "Switch to dark mode");
+  R.setTheme(t === "dark");
+  if (typeof model !== "undefined" && model) { drawStrip(); mark(); }
+}
+const isDark = () => document.documentElement.getAttribute("data-theme") === "dark";
+$("themeBtn").addEventListener("click", () => applyTheme(isDark() ? "light" : "dark", true));
+const darkMQ = window.matchMedia("(prefers-color-scheme: dark)");
+darkMQ.addEventListener?.("change", (e) => {
+  let saved = null; try { saved = localStorage.getItem(THEME_KEY); } catch (err) {}
+  if (!saved) applyTheme(e.matches ? "dark" : "light", false);
+});
+R.setTheme(isDark());
 
 const st = {
   mass: init.mass, z: init.z, y: init.y, u: 0, mode: P.modeFromSearch(location.search),
@@ -77,9 +97,12 @@ function drawDetail(now, at, ss, color) {
   const { W, H, dpr } = size(canvases.detail);
   const g = ctx.detail, ms = model.ms, mode = st.mode;
   $("squeezeBtn").hidden = mode !== "equilibrium" || at.stage.id !== "main-sequence";
-  $("hrLink").hidden = mode !== "build";
+  $("hrLink").hidden = mode !== "build" && mode !== "sandbox";
   let cap = "";
-  if (mode === "build") {
+  if (mode === "sandbox") {
+    R.drawHR(g, W, H, { msLine: model.msLine, track: model.track, here: ss.onHR ? { L: ss.L, teff: ss.teff } : null, color });
+    cap = sandboxCaption(at, ss, ms);
+  } else if (mode === "build") {
     R.drawHR(g, W, H, { msLine: model.msLine, track: model.track, here: ss.onHR ? { L: ss.L, teff: ss.teff } : null, color });
     cap = ss.onHR ? `${P.STAGE_INFO[at.stage.id].name}: about ${fmtL(ss.L)} L\u2609 at ${Math.round(ss.teff).toLocaleString("en-US")} K${at.stage.id === "main-sequence" ? `, spectral class ${ms.spectral}, radius ${fmtR(ms.R)} R\u2609` : ""}. The dashed line is this star's path through its life.`
       : "This stage has no ordinary surface to place on the H-R diagram.";
@@ -125,6 +148,15 @@ function drawDetail(now, at, ss, color) {
   canvases.detail.setAttribute("aria-label", cap);
   $("detailCaption").textContent = cap;
 }
+
+// Sandbox: every setting open at once. Only numbers the other tabs already show.
+function sandboxCaption(at, ss, ms) {
+  const help = "Free play: every setting is open. Drag mass, metallicity, helium and time in any order and watch every readout change together.";
+  const here = ss.onHR ? `${P.STAGE_INFO[at.stage.id].name}: about ${fmtL(ss.L)} L\u2609 at ${Math.round(ss.teff).toLocaleString("en-US")} K.` : `${P.STAGE_INFO[at.stage.id].name}: no ordinary surface to place on the H-R diagram.`;
+  const msLine = `On the main sequence: spectral class ${ms.spectral}, radius ${fmtR(ms.R)} R\u2609, core ${mk(ms.Tc)}, pp chain ${pctS(1 - ms.cno)} and CNO cycle ${pctS(ms.cno)}, ${zoneWords()}, lifetime ${P.lifetimeLabel(ms)}.`;
+  return `${help} ${here} ${msLine} Fate: ${fateSummary(model.fate, ms)}`;
+}
+const pctS = (f) => (f < 0.001 ? "<0.1" : f > 0.999 ? ">99.9" : (f * 100).toFixed(f < 0.1 || f > 0.9 ? 1 : 0)) + "%";
 
 function zonesFor(kind) {
   if (kind === "fully-convective") return [{ from: 0, to: 0.2, kind: "core", label: "core" }, { from: 0.2, to: 1, kind: "convective", label: "convective" }];
@@ -256,6 +288,7 @@ function setMode(m) {
     else setU(1);
     if (i >= 0 && !reducedMotion) playSupernova();
   }
+  if (m === "sandbox") $("heliumBox").open = true;
   writeUrl(); mark();
 }
 for (const b of document.querySelectorAll(".tabs [data-mode]")) b.addEventListener("click", () => setMode(b.dataset.mode));
@@ -337,6 +370,7 @@ function fmtMin(m) { return m < 120 ? Math.round(m) + " minutes" : (m / 60).toFi
 rebuild();
 if (init.stage) { const i = model.stages.findIndex((x) => x.id === init.stage); if (i >= 0) st.u = P.stageStartU(model.stages, i) + 0.02; }
 syncControls();
+applyTheme(isDark() ? "dark" : "light", false);
 setMode(st.mode);
 syncTime();
 writeUrl();

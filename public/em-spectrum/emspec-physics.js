@@ -214,13 +214,14 @@ export const OBJECTS = Object.freeze([
 export function objectById(id) { return OBJECTS.find((o) => o.id === id) || null; }
 
 // ---------- deep links ----------
-export const MODES = Object.freeze(["wave", "energy", "atmosphere", "telescopes", "sky"]);
+export const MODES = Object.freeze(["wave", "energy", "atmosphere", "telescopes", "sky", "sandbox"]);
 export const MODE_ALIASES = Object.freeze({
   wave: "wave", wavelength: "wave", frequency: "wave", slider: "wave",
   energy: "energy", photon: "energy", photons: "energy",
   atmosphere: "atmosphere", absorption: "atmosphere", opacity: "atmosphere",
   telescopes: "telescopes", telescope: "telescopes", detect: "telescopes",
-  sky: "sky", views: "sky", objects: "sky", bands: "sky"
+  sky: "sky", views: "sky", objects: "sky", bands: "sky",
+  sandbox: "sandbox", free: "sandbox", play: "sandbox"
 });
 const BAND_ALIASES = Object.freeze({ ir: "infrared", uv: "ultraviolet", "x-ray": "xray", optical: "visible", microwave: "radio" });
 export function parseQuery(search) {
@@ -232,6 +233,15 @@ export function parseQuery(search) {
   let object = (p.get("object") || "").trim().toLowerCase();
   if (!objectById(object)) object = null;
   return { mode, band, object };
+}
+
+// ---------- sandbox ----------
+// Sandbox sliders are 0..1000 positions on the same log scales as the other
+// views. sandboxShown lists every number the sandbox prints, for the 2x sweep test.
+export const SANDBOX_SLIDERS = Object.freeze({ lambda: { steps: 1000 }, freq: { steps: 1000 }, lambdaB: { steps: 1000 } });
+export function sandboxShown(lambda, lambdaB) {
+  const f = frequencyFromWavelength(lambda), eV = photonEnergyEV(f), eB = energyFromWavelengthEV(lambdaB);
+  return { lambda, f, eV, J: photonEnergyJ(f), lambdaB, eB, JB: eB * EV, ratio: Math.max(eV / eB, eB / eV) };
 }
 
 // ---------- number formatting (pure, shared by UI and tests) ----------

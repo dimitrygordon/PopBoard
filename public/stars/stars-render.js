@@ -27,7 +27,16 @@ export function image(name, onload) {
 }
 export function preload(group, onload) { for (const n of ASSETS[group]) image(n, onload); }
 
-export const INK = "#1a1a1a", INK2 = "#4a4a4a", INK3 = "#8a8a8a", RULE = "#d6d6d6", GOLD = "#c9a13b";
+// Palette: light by default; setTheme(true) swaps to the dark-mode values (stars-theme.css matches).
+export let INK = "#1a1a1a", INK2 = "#4a4a4a", INK3 = "#6e6e6e", RULE = "#d6d6d6", GOLD = "#c9a13b";
+let PAPER = "#ffffff", BAR_BG = "#e6e6e6", ZONE = { convective: "#c3c3c3", radiative: "#e1e1e1", core: "#f7f7f7" },
+  FATE_FILLS = ["#f4f4f4", "#e4e4e4", "#cfcfcf", "#b0b0b0"];
+export function setTheme(dark) {
+  INK = dark ? "#ececec" : "#1a1a1a"; INK2 = dark ? "#bdbdbd" : "#4a4a4a"; INK3 = dark ? "#9a9a9a" : "#6e6e6e"; RULE = dark ? "#3a3d46" : "#d6d6d6";
+  PAPER = dark ? "#16181d" : "#ffffff"; BAR_BG = dark ? "#2e313a" : "#e6e6e6";
+  ZONE = dark ? { convective: "#4a4e5a", radiative: "#353842", core: "#262930" } : { convective: "#c3c3c3", radiative: "#e1e1e1", core: "#f7f7f7" };
+  FATE_FILLS = dark ? ["#23262e", "#2e313a", "#3a3e48", "#4a4e5a"] : ["#f4f4f4", "#e4e4e4", "#cfcfcf", "#b0b0b0"];
+}
 export const rgb = (c, a = 1) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
 export const mix = (c, d, k) => c.map((v, i) => Math.round(v + (d[i] - v) * k));
 const WHITE = [255, 255, 255];
@@ -77,7 +86,8 @@ export function cutaway(variant, color, size, onload) {
   return c;
 }
 
-export function arrow(g, x0, y0, x1, y1, w, color = INK, head = 12) {
+export function arrow(g, x0, y0, x1, y1, w, color = null, head = 12) {
+  color = color || INK;
   const a = Math.atan2(y1 - y0, x1 - x0), len = Math.hypot(x1 - x0, y1 - y0);
   if (len < 2) return;
   const h = Math.min(head, len * 0.6);
@@ -89,8 +99,8 @@ export function arrow(g, x0, y0, x1, y1, w, color = INK, head = 12) {
   g.closePath(); g.fill(); g.restore();
 }
 
-function text(g, s, x, y, { size = 13, weight = 500, color = INK, align = "left", base = "alphabetic" } = {}) {
-  g.font = `${weight} ${size}px Inter, system-ui, sans-serif`; g.fillStyle = color; g.textAlign = align; g.textBaseline = base; g.fillText(s, x, y);
+function text(g, s, x, y, { size = 13, weight = 500, color = null, align = "left", base = "alphabetic" } = {}) {
+  g.font = `${weight} ${size}px Inter, system-ui, sans-serif`; g.fillStyle = color || INK; g.textAlign = align; g.textBaseline = base; g.fillText(s, x, y);
 }
 
 function contain(g, src, x, y, w, h) {
@@ -202,7 +212,7 @@ export function drawEquilibrium(g, W, H, d) {
   const gl = base * d.gravity, pl = base * d.pressure;
   arrow(g, px + 12 + gl, py - 16, px + 12, py - 16, 4, INK, 14);
   arrow(g, px + 12, py + 16, px + 12 + pl, py + 16, 4, INK2, 14);
-  g.fillStyle = "#fff"; g.strokeStyle = INK; g.lineWidth = 2; g.fillRect(px - 9, py - 9, 18, 18); g.strokeRect(px - 9, py - 9, 18, 18);
+  g.fillStyle = PAPER; g.strokeStyle = INK; g.lineWidth = 2; g.fillRect(px - 9, py - 9, 18, 18); g.strokeRect(px - 9, py - 9, 18, 18);
   const tx = narrow ? 12 : Math.max(cx + r0 * 1.9, px + base * 1.5 + 18);
   const ty = narrow ? H - 84 : cy;
   text(g, "Gravity (inward)", tx, ty - 40 + (narrow ? 20 : 0), { size: 14, weight: 700 });
@@ -228,7 +238,7 @@ export function drawFusion(g, W, H, d, onload, dpr) {
     text(g, `pp chain ${pct(pp)}`, 10, y + 12, { size: 13, weight: 700 });
     text(g, `CNO cycle ${pct(d.cno)}`, W - 10, y + 12, { size: 13, weight: 700, align: "right" });
     y += 20;
-    g.fillStyle = "#e6e6e6"; g.fillRect(10, y, bw, 14); g.fillStyle = rgb(d.color); g.fillRect(10, y, bw * pp, 14);
+    g.fillStyle = BAR_BG; g.fillRect(10, y, bw, 14); g.fillStyle = rgb(d.color); g.fillRect(10, y, bw * pp, 14);
     g.strokeStyle = INK; g.lineWidth = 1.5; g.strokeRect(10, y, bw, 14);
     g.beginPath(); g.moveTo(10 + bw * pp, y - 3); g.lineTo(10 + bw * pp, y + 17); g.stroke();
     y += 30;
@@ -259,7 +269,7 @@ export function drawTransport(g, W, H, d, onload, dpr) {
   const zones = d.zones, x0 = 12, x1 = W - 12, y = 26, h = 26;
   for (const z of zones) {
     const a = x0 + z.from * (x1 - x0), b = x0 + z.to * (x1 - x0);
-    g.fillStyle = z.kind === "convective" ? "#c3c3c3" : z.kind === "radiative" ? "#e1e1e1" : "#f7f7f7";
+    g.fillStyle = ZONE[z.kind] || ZONE.core;
     g.fillRect(a, y, b - a, h); g.strokeStyle = INK; g.lineWidth = 1.5; g.strokeRect(a, y, b - a, h);
     if (b - a > 60) text(g, z.label, (a + b) / 2, y + h / 2 + 1, { size: 12, weight: 600, align: "center", base: "middle" });
   }
@@ -306,7 +316,7 @@ export function drawHourglass(g, W, H, d) {
   const ty = top + 92;
   d.stages.forEach((s, i) => {
     const yy = ty + i * 22, on = i === d.index;
-    g.beginPath(); g.arc(tx + 6, yy - 4, 5, 0, Math.PI * 2); g.fillStyle = on ? col : i < d.index ? INK3 : "#fff"; g.fill(); g.strokeStyle = INK; g.lineWidth = 1.5; g.stroke();
+    g.beginPath(); g.arc(tx + 6, yy - 4, 5, 0, Math.PI * 2); g.fillStyle = on ? col : i < d.index ? INK3 : PAPER; g.fill(); g.strokeStyle = INK; g.lineWidth = 1.5; g.stroke();
     text(g, s.name, tx + 18, yy, { size: 13, weight: on ? 700 : 500, color: on ? INK : INK2 });
     text(g, s.dur, W - 10, yy, { size: 12, align: "right", color: INK2 });
   });
@@ -317,7 +327,7 @@ export function drawFateMap(g, W, H, d) {
   g.clearRect(0, 0, W, H);
   const x0 = 12, x1 = W - 12, y = 40, h = 34;
   const X = (m) => x0 + Math.log(m / 0.08) / Math.log(100 / 0.08) * (x1 - x0);
-  const fills = ["#f4f4f4", "#e4e4e4", "#cfcfcf", "#b0b0b0"];
+  const fills = FATE_FILLS;
   d.bands.forEach((b, i) => {
     const a = X(b.from), c = X(b.to);
     g.fillStyle = fills[i]; g.fillRect(a, y, c - a, h); g.strokeStyle = INK; g.lineWidth = 1.5; g.strokeRect(a, y, c - a, h);

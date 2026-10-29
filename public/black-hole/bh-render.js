@@ -43,6 +43,7 @@ export function readTokens() {
   const v = (k, d) => (cs.getPropertyValue(k) || d).trim();
   return { ink: v("--bh-ink", "#161616"), ink2: v("--bh-ink-2", "#4a4a4a"), ink3: v("--bh-ink-3", "#8a8a8a"),
     rule: v("--bh-rule", "#d6d6d6"), wash: v("--bh-wash", "#f2f2f2"), accent: v("--bh-accent", "#b8892b"),
+    accentInk: v("--bh-accent-ink", "#8a6516"), hole: v("--bh-hole", "#161616"),
     sky: v("--bh-sky", "#0c0c0e"), paper: v("--bh-paper", "#fff") };
 }
 
@@ -166,7 +167,7 @@ export function drawStage(ctx, W, H, dpr, cache, art, T, st) {
     ctx.beginPath(); ctx.arc(cx, cy, 202 * k, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
     label(ctx, "Einstein ring of this star field (size is illustrative)", cx, cy + 202 * k + 14, gray, "center", 11);
   }
-  if (st.mode === "disk" || st.mode === "orbits") {
+  if (st.mode === "disk" || st.mode === "orbits" || st.mode === "sandbox") {
     ellipse(ctx, cx, cy, R.iscoPro * pm, DISK_Y, T.accent, [6, 4]);
     ellipse(ctx, cx, cy, R.iscoRetro * pm, DISK_Y, white, [2, 4]);
     label(ctx, "prograde ISCO", cx + R.iscoPro * pm + 4, cy + 8, T.accent);
@@ -178,7 +179,7 @@ export function drawStage(ctx, W, H, dpr, cache, art, T, st) {
   const hovering = st.mode === "time" || st.mode === "tides" || R.status !== "stable";
   const px = cx + pr * (hovering ? 1 : Math.cos(ang)), py = cy + pr * DISK_Y * (hovering ? 0 : Math.sin(ang));
   const behind = !hovering && Math.sin(ang) < 0 && Math.abs(px - cx) < R.shadowRetro * pm;
-  if (st.mode === "orbits" || st.mode === "time" || st.mode === "tides") {
+  if (st.mode === "orbits" || st.mode === "time" || st.mode === "tides" || st.mode === "sandbox") {
     if (!hovering) ellipse(ctx, cx, cy, pr, DISK_Y, gray, [2, 5]);
     const img = art["probe-sprite"];
     if (px < W - 4 && !behind && img.naturalWidth) {
@@ -211,11 +212,11 @@ function text(ctx, s, x, y, color, align = "left", size = 12, weight = 500) {
 function drawMap(ctx, W, H, T, st) {
   const R = st.readouts, cx = W / 2, cy = H / 2 + 6, view = 10, s = (Math.min(W, H) / 2 - 18) / view;
   const circle = (r, color, dash, lw = 1.5) => { ctx.save(); ctx.setLineDash(dash || []); ctx.strokeStyle = color; ctx.lineWidth = lw; ctx.beginPath(); ctx.arc(cx, cy, r * s, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); };
-  ctx.fillStyle = T.ink; ctx.beginPath(); ctx.arc(cx, cy, R.rPlus * s, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = T.hole; ctx.beginPath(); ctx.arc(cx, cy, R.rPlus * s, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = T.ink2; ctx.lineWidth = 1; ctx.stroke();
   circle(ergosphereEquator(), T.ink2, [5, 4]);
   circle(R.photonPro, T.ink3); circle(R.photonRetro, T.ink3, [1, 3]);
-  circle(R.iscoPro, T.accent, [], 2); circle(R.iscoRetro, T.accent, [6, 4], 2);
-  const rows = [["horizon r+", T.ink, []], ["ergosphere (equator)", T.ink2, [5, 4]], ["photon orbit pro / retro", T.ink3, []], ["ISCO pro / retro", T.accent, []]];
+  circle(R.iscoPro, T.accentInk, [], 2); circle(R.iscoRetro, T.accentInk, [6, 4], 2);
+  const rows = [["horizon r+", T.ink, []], ["ergosphere (equator)", T.ink2, [5, 4]], ["photon orbit pro / retro", T.ink3, []], ["ISCO pro / retro", T.accentInk, []]];
   rows.forEach(([n, c, d], i) => { ctx.save(); ctx.strokeStyle = c; ctx.lineWidth = 2; ctx.setLineDash(d); ctx.beginPath(); ctx.moveTo(10, 14 + i * 16); ctx.lineTo(28, 14 + i * 16); ctx.stroke(); ctx.restore(); text(ctx, n, 34, 14 + i * 16, T.ink2, "left", 11); });
   if (st.a > 0.02) {
     ctx.save(); ctx.strokeStyle = T.ink; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(cx, cy, (view - 0.6) * s, -2.2, -0.9); ctx.stroke(); ctx.restore();
@@ -239,12 +240,12 @@ function cachedRay(b) {
 function drawRays(ctx, W, H, T, st) {
   const view = 16, s = W / (2 * view), cx = W / 2, cy = H / 2;
   const X = (x) => cx + x * s, Y = (y) => cy - y * s;
-  ctx.fillStyle = T.ink; ctx.beginPath(); ctx.arc(cx, cy, 2 * s, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = T.hole; ctx.beginPath(); ctx.arc(cx, cy, 2 * s, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = T.ink2; ctx.lineWidth = 1; ctx.stroke();
   ctx.save(); ctx.setLineDash([3, 3]); ctx.strokeStyle = T.ink3; ctx.beginPath(); ctx.arc(cx, cy, 3 * s, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
   const path = (pts, color, lw) => { ctx.strokeStyle = color; ctx.lineWidth = lw; ctx.beginPath(); pts.forEach((p, i) => (i ? ctx.lineTo(X(p.x), Y(p.y)) : ctx.moveTo(X(p.x), Y(p.y)))); ctx.stroke(); };
   for (const b of [2.5, 4, 5.0, 5.6, 7, 10, 14]) path(cachedRay(b).points, T.ink3, 1);
   const cur = cachedRay(Math.min(st.r, 40));
-  path(cur.points, T.accent, 2.5);
+  path(cur.points, T.accentInk, 2.5);
   text(ctx, "photon sphere 3M", X(0), Y(3.6), T.ink2, "center", 11);
   text(ctx, "light arrives from the left; gold ray uses b = probe distance", W / 2, 12, T.ink2, "center", 11);
   text(ctx, "a = 0 ray tracing (spin not included)", W / 2, H - 9, T.ink3, "center", 10);
@@ -273,12 +274,12 @@ function drawEnergy(ctx, W, H, T, st) {
     }
     ctx.stroke(); ctx.restore();
     const ri = iscoRadius(st.a, dir), Ei = circularEnergy(ri, st.a, dir);
-    ctx.fillStyle = T.accent; ctx.beginPath(); ctx.arc(X(ri), Y(Ei), 5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = T.accentInk; ctx.beginPath(); ctx.arc(X(ri), Y(Ei), 5, 0, Math.PI * 2); ctx.fill();
     text(ctx, dir > 0 ? "prograde ISCO" : "retrograde ISCO", X(ri), Y(Ei) + 14, T.ink, "center", 10, 600);
   }
   const xr = X(Math.min(st.r, 40));
-  ctx.strokeStyle = T.accent; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(xr, Tp); ctx.lineTo(xr, B); ctx.stroke();
-  text(ctx, "probe", xr + 4, Tp + 6, T.accent, "left", 11, 600);
+  ctx.strokeStyle = T.accentInk; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(xr, Tp); ctx.lineTo(xr, B); ctx.stroke();
+  text(ctx, "probe", xr + 4, Tp + 6, T.accentInk, "left", 11, 600);
   text(ctx, "energy per unit rest energy of circular orbits (solid prograde, dashed retrograde)", W / 2, 10, T.ink2, "center", 10);
 }
 
@@ -289,7 +290,7 @@ function dial(ctx, x, y, rad, frac, T, title, sub) {
   if (frac == null) { text(ctx, "cannot", x, y - 7, T.ink2, "center", 11, 600); text(ctx, "exist here", x, y + 8, T.ink2, "center", 11, 600); }
   else {
     const t = frac * Math.PI * 2;
-    ctx.strokeStyle = T.accent; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.sin(t) * rad * 0.75, y - Math.cos(t) * rad * 0.75); ctx.stroke();
+    ctx.strokeStyle = T.accentInk; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.sin(t) * rad * 0.75, y - Math.cos(t) * rad * 0.75); ctx.stroke();
     ctx.fillStyle = T.ink; ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill();
   }
   text(ctx, title, x, y + rad + 14, T.ink, "center", 12, 600);
@@ -341,7 +342,7 @@ function drawTides(ctx, W, H, T, st, art) {
   text(ctx, "Sun-like stars", X(hm) + (hl ? -4 : 4), Tp + 8, T.ink2, hl ? "right" : "left", 10);
   text(ctx, "swallowed whole " + (hl ? "→" : ""), X(hm) + (hl ? -4 : 4), Tp + 20, T.ink2, hl ? "right" : "left", 10);
   const lm = Math.log10(st.massSun), lg = Math.log10(R.horizonStretchG);
-  ctx.fillStyle = T.accent; ctx.beginPath(); ctx.arc(X(lm), Y(Math.max(y0, Math.min(y1, lg))), 5, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = T.accentInk; ctx.beginPath(); ctx.arc(X(lm), Y(Math.max(y0, Math.min(y1, lg))), 5, 0, Math.PI * 2); ctx.fill();
   text(ctx, "stretch on a 2 m body at the horizon (g)", L + 4, Tp - 10, T.ink2, "left", 10);
 }
 function sup(n) {

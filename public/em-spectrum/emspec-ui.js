@@ -7,12 +7,13 @@ import {
   BANDS, bandById, bandOf, sliderToWavelength, wavelengthToSlider, sliderToFrequency, frequencyToSlider,
   frequencyFromWavelength, BAND_BOUNDARY_NOTE, photonEnergyEV, photonEnergyJ, energyFromWavelengthEV, isIonizing, nearestScale,
   ENERGY_MARKS, ATMOSPHERE, artRecenter, transmission, TELESCOPES, telescopeFor, diffractionLimitArcsec, OBJECTS, objectById,
-  parseQuery, MODES, sci, formatLength, formatFrequency, formatEnergyEV
+  parseQuery, MODES, sci, formatLength, formatFrequency, formatEnergyEV, sandboxShown
 } from "./emspec-physics.js";
 
 const $ = (id) => document.getElementById(id);
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let T = readTokens();
+const THEME_KEY = "popboard.em-spectrum.theme";
 const q = parseQuery(location.search);
 
 const st = {
@@ -32,13 +33,14 @@ const img = loadImages(ART, () => markAll());
 const skyImg = {};
 function skyArt(objectId, bandId) {
   const name = `${objectById(objectId).art}-${bandId}-mask`;
-  if (!skyImg[name]) skyImg[name] = loadImages([name], () => { panels.sky.dirty = true; })[name];
+  if (!skyImg[name]) skyImg[name] = loadImages([name], () => { panels.sky.dirty = true; panels.sbSky.dirty = true; })[name];
   return skyImg[name];
 }
 
 const panels = {
   spec: { canvas: $("specCanvas") }, wave: { canvas: $("waveCanvas") }, energy: { canvas: $("energyCanvas") },
-  atmo: { canvas: $("atmoCanvas") }, opacity: { canvas: $("opacityCanvas") }, optics: { canvas: $("opticsCanvas") }, sky: { canvas: $("skyCanvas") }
+  atmo: { canvas: $("atmoCanvas") }, opacity: { canvas: $("opacityCanvas") }, optics: { canvas: $("opticsCanvas") }, sky: { canvas: $("skyCanvas") },
+  sbWave: { canvas: $("sbWaveCanvas") }, sbSky: { canvas: $("sbSkyCanvas") }
 };
 for (const p of Object.values(panels)) { p.ctx = p.canvas.getContext("2d"); p.dirty = true; p.w = p.h = 0; }
 function markAll() { for (const p of Object.values(panels)) p.dirty = true; }
@@ -66,6 +68,9 @@ for (const o of OBJECTS) {
   el.type = "button"; el.dataset.object = o.id; el.textContent = o.name; el.setAttribute("aria-pressed", "false");
   el.addEventListener("click", () => { st.object = o.id; st.fade = null; sync(); });
   $("objectButtons").appendChild(el);
+  const sb = el.cloneNode(true);
+  sb.addEventListener("click", () => { st.object = o.id; st.fade = null; sync(); });
+  $("sbObjects").appendChild(sb);
 }
 
 function setBand(id) { setLambda(bandById(id).center); }
@@ -73,7 +78,7 @@ function setLambda(l) {
   const before = band().id;
   st.lambda = Math.min(sliderToWavelength(1), Math.max(sliderToWavelength(0), l));
   const after = band().id;
-  if (before !== after && st.mode === "sky" && !reducedMotion) st.fade = { from: before, to: after, t0: performance.now() };
+  if (before !== after && (st.mode === "sky" || st.mode === "sandbox") && !reducedMotion) st.fade = { from: before, to: after, t0: performance.now() };
   sync();
 }
 
@@ -83,6 +88,9 @@ $("lambdaSlider").addEventListener("input", (e) => setLambda(sliderToWavelength(
 $("freqSlider").addEventListener("input", (e) => setLambda(frequencyToLambda(sliderToFrequency(e.target.value / 1000))));
 $("lambdaSliderA").addEventListener("input", (e) => setLambda(sliderToWavelength(e.target.value / 1000)));
 $("lambdaSliderB").addEventListener("input", (e) => { st.lambdaB = sliderToWavelength(e.target.value / 1000); sync(); });
+$("sbLambda").addEventListener("input", (e) => setLambda(sliderToWavelength(e.target.value / 1000)));
+$("sbFreq").addEventListener("input", (e) => setLambda(frequencyToLambda(sliderToFrequency(e.target.value / 1000))));
+$("sbLambdaB").addEventListener("input", (e) => { st.lambdaB = sliderToWavelength(e.target.value / 1000); sync(); });
 const frequencyToLambda = (f) => 299792458 / f;
 
 // spectrum bar: tap or drag; arrow keys step a twentieth of a decade
@@ -110,7 +118,7 @@ for (const b of document.querySelectorAll(".tool[data-show]")) b.addEventListene
 function writeUrl() {
   const p = forwardStudyQuery(location.search);
   p.set("mode", st.mode); p.set("band", band().id);
-  if (st.mode === "sky") p.set("object", st.object);
+  if (st.mode === "sky" || st.mode === "sandbox") p.set("object", st.object);
   history.replaceState(null, "", "?" + p.toString());
 }
 
@@ -120,7 +128,7 @@ function sync() {
   const eV = photonEnergyEV(f), J = photonEnergyJ(f);
   for (const el of document.querySelectorAll("#bandButtons button")) el.setAttribute("aria-pressed", String(el.dataset.band === b.id));
   for (const el of document.querySelectorAll(".scope-card")) el.setAttribute("aria-pressed", String(el.dataset.band === b.id));
-  for (const el of document.querySelectorAll("#objectButtons button")) el.setAttribute("aria-pressed", String(el.dataset.object === st.object));
+  for (const el of document.querySelectorAll("#objectButtons button, #sbObjects button")) el.setAttribute("aria-pressed", String(el.dataset.object === st.object));
   const spec = panels.spec.canvas;
   spec.setAttribute("aria-valuenow", String(S(posOf(l)))); spec.setAttribute("aria-valuetext", `${formatLength(l)}, ${b.name}`);
 
@@ -160,6 +168,18 @@ function sync() {
   $("skyScope").style.transform = artRecenter(t.art);
   $("skyScopeCap").textContent = `Seen with: ${t.name.toLowerCase()}, ${t.where === "space" ? "in space" : "on the ground"}.`;
   $("skyLabel").textContent = `${b.name} view`;
+
+  // Sandbox: every control at once; numbers come from sandboxShown only.
+  const sv = sandboxShown(l, lB);
+  $("sbLambda").value = S(wavelengthToSlider(l)); $("sbFreq").value = S(frequencyToSlider(f)); $("sbLambdaB").value = S(wavelengthToSlider(lB));
+  $("sbLambdaOut").textContent = `${formatLength(sv.lambda)}  (${sci(sv.lambda)} m), ${b.name}`;
+  $("sbFreqOut").textContent = `${formatFrequency(sv.f)}  (${sci(sv.f)} Hz)`;
+  $("sbBOut").textContent = `${formatLength(sv.lambdaB)}: ${formatEnergyEV(sv.eB)} = ${sci(sv.JB)} J (${bandOf(lB).name})`;
+  $("sbReadout").textContent = `c = \u03bb f = ${sci(sv.lambda * sv.f)} m/s\nE = h f = ${formatEnergyEV(sv.eV)} = ${sci(sv.J)} J\n` +
+    (sv.eV >= sv.eB ? `This photon carries ${sci(sv.ratio)} times the energy of photon B.` : `Photon B carries ${sci(sv.ratio)} times the energy of this photon.`);
+  $("sbHelp").textContent = "Free play: every control is open at once. Drag the bar, the wavelength or the frequency slider, set a second photon to compare, and pick an object to see it in the current band. Open the other views for the atmosphere and telescope details.";
+  $("sbNote").textContent = `${isIonizing(eV) ? "Ionizing (above about 10 eV)." : "Not ionizing (below about 10 eV)."} Seen with: ${t.name.toLowerCase()}, ${t.where === "space" ? "in space" : "on the ground"}. Sky colors are false.`;
+  $("sbSkyLabel").textContent = `${o.name}, ${b.name} view`;
   writeUrl();
   markAll();
 }
@@ -189,7 +209,8 @@ function draw(name, now) {
   else if (name === "atmo") drawAtmosphere(ctx, w, h, T, { img: img["atmosphere-cross-section"], bandId: b.id });
   else if (name === "opacity") drawOpacity(ctx, w, h, T, { lambda: st.lambda });
   else if (name === "optics") drawOptics(ctx, w, h, T, { optics: telescopeFor(b.id).optics, color: b.id === "visible" ? "#d9a400" : T.band[b.id] });
-  else if (name === "sky") {
+  else if (name === "sbWave") drawWave(ctx, w, h, T, { lambda: st.lambda, phase: st.phase, icons: img });
+  else if (name === "sky" || name === "sbSky") {
     const layer = (bid, alpha) => ({ img: skyArt(st.object, bid), color: T.band[bid], alpha, glow: st.object !== "sun" && GLOW[bid] });
     let layers = [layer(b.id, 1)];
     if (st.fade) {
@@ -202,7 +223,7 @@ function draw(name, now) {
 }
 
 function frame(now) {
-  if (st.mode === "wave" && !reducedMotion && !document.hidden) { st.phase = (st.phase - 0.03) % (Math.PI * 2); panels.wave.dirty = true; }
+  if ((st.mode === "wave" || st.mode === "sandbox") && !reducedMotion && !document.hidden) { st.phase = (st.phase - 0.03) % (Math.PI * 2); panels.wave.dirty = true; panels.sbWave.dirty = true; }
   for (const [n, p] of Object.entries(panels)) if (p.dirty) { p.dirty = false; draw(n, now); }
   requestAnimationFrame(frame);
 }
@@ -215,6 +236,23 @@ $("studyBackBtn").addEventListener("click", (e) => {
   history.replaceState(null, "", qs ? "?" + qs : location.pathname);
   location.href = "study.html" + location.search;
 });
+
+// ---------- theme ----------
+function applyTheme(t, save) {
+  document.documentElement.setAttribute("data-theme", t);
+  if (save) { try { localStorage.setItem(THEME_KEY, t); } catch (e) {} }
+  $("themeBtn").setAttribute("aria-pressed", String(t === "dark"));
+  $("themeLabel").textContent = t === "dark" ? "Light" : "Dark";
+  $("themeBtn").setAttribute("aria-label", t === "dark" ? "Switch to light mode" : "Switch to dark mode");
+  T = readTokens(); markAll();
+}
+const isDark = () => document.documentElement.getAttribute("data-theme") === "dark";
+$("themeBtn").addEventListener("click", () => applyTheme(isDark() ? "light" : "dark", true));
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", (e) => {
+  let saved = null; try { saved = localStorage.getItem(THEME_KEY); } catch (err) {}
+  if (!saved) applyTheme(e.matches ? "dark" : "light", false);
+});
+applyTheme(isDark() ? "dark" : "light", false);
 
 window.addEventListener("resize", () => { T = readTokens(); resize(); });
 new ResizeObserver(() => resize()).observe($("stage"));

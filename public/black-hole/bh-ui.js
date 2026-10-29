@@ -7,7 +7,8 @@ import { fmtLen, fmtTime, fmtMass, fmtNum, fmtPct, fmtG, fmtAngle } from "./bh-f
 
 const $ = (id) => document.getElementById(id);
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const T = readTokens();
+let T = readTokens();
+const THEME_KEY = "popboard.black-hole.theme";
 const init = paramsFromSearch(location.search);
 
 const st = {
@@ -22,6 +23,23 @@ stage.ctx = stage.canvas.getContext("2d");
 const diag = { canvas: $("diagramCanvas") };
 diag.ctx = diag.canvas.getContext("2d");
 const art = loadArt(() => { st.compositeDirty = true; st.dirty = true; kick(); });
+
+// ---------- theme ----------
+function applyTheme(t, save) {
+  document.documentElement.setAttribute("data-theme", t);
+  if (save) { try { localStorage.setItem(THEME_KEY, t); } catch (e) {} }
+  $("themeBtn").setAttribute("aria-pressed", String(t === "dark"));
+  $("themeLabel").textContent = t === "dark" ? "Light" : "Dark";
+  $("themeBtn").setAttribute("aria-label", t === "dark" ? "Switch to light mode" : "Switch to dark mode");
+  T = readTokens(); st.compositeDirty = true; st.dirty = true; kick();
+}
+const isDark = () => document.documentElement.getAttribute("data-theme") === "dark";
+$("themeBtn").addEventListener("click", () => applyTheme(isDark() ? "light" : "dark", true));
+const darkMQ = window.matchMedia("(prefers-color-scheme: dark)");
+darkMQ.addEventListener?.("change", (e) => {
+  let saved = null; try { saved = localStorage.getItem(THEME_KEY); } catch (err) {}
+  if (!saved) applyTheme(e.matches ? "dark" : "light", false);
+});
 
 // ---------- controls ----------
 
@@ -73,12 +91,13 @@ const CAPTIONS = {
   disk: "Gas spirals in through a thin disk until the innermost stable circular orbit (ISCO), then plunges. A prograde disk around a fast spinner reaches far closer, so each kilogram releases more of its rest energy as light. Simplification: the disk art is not to scale and Doppler beaming is not drawn. The dashed ISCO rings are to scale but drawn without lensing.",
   orbits: "A circular orbit is stable only at or outside the ISCO, the bottom of the energy curve. Between the photon orbit and the ISCO a circular orbit exists but any nudge sends the probe in or out. Inside the photon orbit no circular orbit exists. The probe's animation speed is slowed for viewing.",
   time: "Clocks near the hole tick slower than clocks far away. A hovering clock runs at \u221a(1 \u2212 2GM/(rc\u00b2)). An orbiting clock also loses time to its speed. The ratio depends only on r in units of GM/c\u00b2, so it is the same for every mass at the same scaled distance. Example: at r = 2.5 the rate is \u221a(1 \u2212 2/2.5) = 0.447, so 60 min hovering = 134 min (2 h 14 min) far away.",
+  sandbox: "Free play: every control is open at once. Change mass, spin and the probe distance in any order, turn lensing on or off, and read every number from the other views together. The probe orbits when a stable circular orbit exists at its distance and hovers otherwise. The same simplifications as in the other views apply.",
   tides: "The pull on your feet is stronger than on your head. For a 2 m body the stretch is 2GML/r\u00b3, so at the horizon it falls as 1/M\u00b2: small holes spaghettify you far outside the horizon, while above about 1e8 Msun (the Hills mass for a Sun-like star and a non-spinning hole; rapid spin raises it) a Sun-like star crosses the horizon before it is torn apart. The disruption radius shown is for a Sun-like star; in general it is R_star (M_bh/M_star)^(1/3). Simplification: Newtonian tidal formula; astronaut frames are illustrative bins (under 1 g, 1 to 10 g, 10 to 100 g, over 100 g)."
 };
 
-function rows() {
+function rows(mode = st.mode) {
   const L = (x) => fmtLen(x * meterPerM(st.massSun));
-  switch (st.mode) {
+  switch (mode) {
     case "horizon": return [
       ["Event horizon r+, in units of GM/c\u00b2", fmtNum(R.rPlus) + " GM/c\u00b2 = " + fmtLen(R.rPlusKm * 1000)],
       ["Schwarzschild radius 2GM/c\u00b2", fmtLen(R.rsKm * 1000)],
@@ -114,6 +133,14 @@ function rows() {
       ["Stretch at the horizon", fmtG(R.horizonStretchG)],
       ["Sun-like star torn apart at (r_t = R_star (M_bh/M_star)^(1/3))", fmtNum(R.rtOverRp) + " \u00d7 r+"],
       ["Hills mass, Sun-like star (rises with spin)", fmtMass(R.hills)]];
+    case "sandbox": {
+      // Every row from every other view, each shown once.
+      const seen = new Set(), out = [];
+      for (const m of ["horizon", "disk", "orbits", "lensing", "time", "tides"]) {
+        for (const row of rows(m)) if (!seen.has(row[0])) { seen.add(row[0]); out.push(row); }
+      }
+      return out;
+    }
   }
   return [];
 }
@@ -123,14 +150,14 @@ function renderText() {
   $("spinOut").textContent = st.a.toFixed(3);
   $("distOut").textContent = fmtNum(st.r) + " GM/c\u00b2";
   for (const id of ["distIn", "distLabel"]) (id === "distIn" ? $(id) : $(id).parentElement).hidden = st.mode === "horizon";
-  $("distLabel").textContent = st.mode === "lensing" ? "Light ray impact parameter b (GM/c\u00b2)" : "Probe distance r (GM/c\u00b2)";
+  $("distLabel").textContent = st.mode === "sandbox" ? "Probe distance r, also the light ray impact parameter b (GM/c\u00b2)" : st.mode === "lensing" ? "Light ray impact parameter b (GM/c\u00b2)" : "Probe distance r (GM/c\u00b2)";
   const dl = $("readouts"); dl.textContent = "";
   for (const [k, v] of rows()) {
     const dt = document.createElement("dt"), dd = document.createElement("dd");
     dt.textContent = k; dd.textContent = v; dl.append(dt, dd);
   }
   $("caption").textContent = CAPTIONS[st.mode];
-  $("lensBtn").hidden = st.mode !== "lensing";
+  $("lensBtn").hidden = st.mode !== "lensing" && st.mode !== "sandbox";
   $("lensBtn").setAttribute("aria-pressed", String(st.lensOn));
   $("lensBtn").textContent = st.lensOn ? "Lensing on" : "Lensing off";
   $("stageNote").textContent = "The picture is the same for every mass: only the km scale changes. Disk art is not to scale.";
@@ -173,7 +200,7 @@ let raf = 0, last = 0;
 function animating() {
   if (reducedMotion || document.hidden) return false;
   if (Math.abs(st.lensMix - (st.lensOn ? 1 : 0)) > 0.001) return true;
-  return st.mode === "orbits" || st.mode === "time" || st.mode === "disk";
+  return st.mode === "orbits" || st.mode === "time" || st.mode === "disk" || st.mode === "sandbox";
 }
 function frame(now) {
   raf = 0;
@@ -199,5 +226,6 @@ function kick() { if (!raf) raf = requestAnimationFrame(frame); }
 
 new ResizeObserver(() => { st.dirty = true; kick(); }).observe(stage.canvas);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) kick(); });
+applyTheme(isDark() ? "dark" : "light", false);
 renderText();
 kick();

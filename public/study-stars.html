@@ -3,10 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="light">
+<meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#141414">
 <title>Build a Star // PopBoard</title>
 <link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  // Theme before first paint: a saved choice wins, else the system setting.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.stars.theme"); } catch (e) {}
+    if (t !== "dark" && t !== "light") t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
 <link rel="preload" as="image" href="stars/assets/cutaway-sun-like-4-surface-shell.webp" type="image/webp">
 <link rel="stylesheet" href="stars/stars-theme.css">
 </head>
@@ -17,6 +26,10 @@
     <span class="back-label">Back</span>
   </button>
   <h1>Build a Star<span class="sub">: Stellar Evolution Laboratory</span></h1>
+  <button id="themeBtn" class="theme-btn" type="button" aria-pressed="false" aria-label="Dark mode">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <span id="themeLabel">Dark</span>
+  </button>
   <span class="brand">PopBoard</span>
 </header>
 <p class="sr-only">Choose a star's starting mass and composition, then look inside it: core temperature and pressure, the balance between gravity and pressure, which fusion reactions run, how energy moves out, how long it lives, and how it dies.</p>
@@ -37,7 +50,7 @@
     </div>
     <label class="slider"><span class="lab-label">Metallicity Z <output id="zOut"></output></span>
       <input id="zRange" type="range" min="0" max="1000" step="1" aria-label="Metallicity Z"></label>
-    <details class="helium"><summary>Helium fraction Y <output id="yOut"></output></summary>
+    <details class="helium" id="heliumBox"><summary>Helium fraction Y <output id="yOut"></output></summary>
       <label class="slider"><span class="sr-only">Helium fraction Y</span><input id="yRange" type="range" min="0.24" max="0.4" step="0.005" aria-label="Helium mass fraction Y"></label>
       <button type="button" id="yReset" class="pill">Solar Y = 0.27</button>
     </details>
@@ -62,6 +75,7 @@
       <button type="button" role="tab" data-mode="transport">Energy</button>
       <button type="button" role="tab" data-mode="lifetime">Lifetime</button>
       <button type="button" role="tab" data-mode="fate">Fate</button>
+      <button type="button" role="tab" data-mode="sandbox">Sandbox</button>
     </nav>
     <div class="detail" role="tabpanel">
       <canvas id="detailCanvas" role="img"></canvas>

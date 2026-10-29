@@ -63,7 +63,8 @@ export const MODES = Object.freeze([
   { id: "disk", label: "Disk & ISCO" },
   { id: "orbits", label: "Orbits" },
   { id: "time", label: "Time" },
-  { id: "tides", label: "Tides" }
+  { id: "tides", label: "Tides" },
+  { id: "sandbox", label: "Sandbox" }
 ]);
 export const MODE_ALIASES = Object.freeze({
   horizon: "horizon", anatomy: "horizon", photon: "horizon", shadow: "horizon", kerr: "horizon",
@@ -71,7 +72,8 @@ export const MODE_ALIASES = Object.freeze({
   disk: "disk", isco: "disk", accretion: "disk",
   orbits: "orbits", orbit: "orbits", stability: "orbits",
   time: "time", clocks: "time", dilation: "time",
-  tides: "tides", tidal: "tides", spaghetti: "tides", spaghettification: "tides"
+  tides: "tides", tidal: "tides", spaghetti: "tides", spaghettification: "tides",
+  sandbox: "sandbox", free: "sandbox", play: "sandbox"
 });
 export function modeFromSearch(search) {
   const v = new URLSearchParams(search || "").get("mode");
