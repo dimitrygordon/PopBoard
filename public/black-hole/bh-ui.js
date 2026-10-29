@@ -150,7 +150,7 @@ function renderText() {
   $("spinOut").textContent = st.a.toFixed(3);
   $("distOut").textContent = fmtNum(st.r) + " GM/c\u00b2";
   for (const id of ["distIn", "distLabel"]) (id === "distIn" ? $(id) : $(id).parentElement).hidden = st.mode === "horizon";
-  $("distLabel").textContent = st.mode === "sandbox" ? "Probe distance r, also the light ray impact parameter b (GM/c\u00b2)" : st.mode === "lensing" ? "Light ray impact parameter b (GM/c\u00b2)" : "Probe distance r (GM/c\u00b2)";
+  $("distLabel").textContent = st.mode === "sandbox" ? "Slider (in units of GM/c\u00b2): the probe's distance r, or the light ray's impact parameter b, its sideways aim offset" : st.mode === "lensing" ? "Light ray impact parameter b (GM/c\u00b2)" : "Probe distance r (GM/c\u00b2)";
   const dl = $("readouts"); dl.textContent = "";
   for (const [k, v] of rows()) {
     const dt = document.createElement("dt"), dd = document.createElement("dd");
