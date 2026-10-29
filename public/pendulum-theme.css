@@ -163,7 +163,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   gap: 6px;
 }
 .tab.active { background: var(--amber-dim); color: #fff; border-color: var(--amber); }
-.tab.later { color: var(--text-dimmer); }
+.tab.later { color: var(--text-dim); } /* 4.5:1 or better on the tab panel */
 .tab.later.active { color: var(--text); }
 .badge {
   font-family: var(--font-mono);
