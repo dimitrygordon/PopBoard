@@ -495,7 +495,16 @@ window.addEventListener("resize", resizeCanvas);
 function layoutPhone() {
   var sb = document.getElementById("statusBanner"), hud = document.getElementById("motionHud"), eq = document.getElementById("eqStrip"), sc = document.getElementById("stageControls");
   if (!sb || !hud || !eq || !sc) { return; }
-  if (window.innerWidth > 600) { hud.style.top = ""; eq.style.bottom = ""; phoneStageY = null; return; }
+  if (window.innerWidth > 600) {
+    // Wider screens: keep the CSS spots, but when the status banner wraps, push the readouts and formula strip below it.
+    hud.style.top = ""; eq.style.bottom = ""; eq.style.top = ""; phoneStageY = null;
+    var sbB = sb.getBoundingClientRect().bottom;
+    if (hud.getBoundingClientRect().top < sbB + 8) hud.style.top = Math.round(sbB + 8) + "px";
+    var hudB = hud.getBoundingClientRect().bottom;
+    if (eq.getBoundingClientRect().top < hudB + 8) eq.style.top = Math.round(hudB + 8) + "px";
+    return;
+  }
+  eq.style.top = "";
   hud.style.top = Math.round(sb.getBoundingClientRect().bottom + 8) + "px";
   eq.style.bottom = Math.round(window.innerHeight - sc.getBoundingClientRect().top + 8) + "px";
   var top = hud.getBoundingClientRect().bottom, bottom = eq.getBoundingClientRect().top;
