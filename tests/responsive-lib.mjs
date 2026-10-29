@@ -164,6 +164,28 @@ export function pageChecks({ minText, minTap, touch }) {
     if (fs < minText - 0.05) add("small-text", e, `${fs}px`);
     if ((cs.textOverflow === "ellipsis" || cs.overflow === "hidden" || cs.overflowX === "hidden") && e.scrollWidth > e.clientWidth + 1 && e.clientWidth > 0) add("clipped-label", e, `${e.scrollWidth}px of text in ${e.clientWidth}px`);
   }
+  // Contrast of text against the first solid background behind it (skipped over images and canvases).
+  const rgb = (c) => { const m = c.match(/[\d.]+/g); return m ? m.map(Number) : null; };
+  const lum = ([r, g, b]) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); };
+  const mix = (top, base) => { const a = top[3] ?? 1; return [0, 1, 2].map((i) => top[i] * a + base[i] * (1 - a)); };
+  function bgOf(el) {
+    const stack = [];
+    for (let p = el; p; p = p.parentElement) { const c = getComputedStyle(p); if (c.backgroundImage !== "none") return null; const b = rgb(c.backgroundColor); if (b && (b[3] ?? 1) > 0) { stack.push(b); if ((b[3] ?? 1) >= 1) break; } }
+    let base = [255, 255, 255]; const root = rgb(getComputedStyle(de).backgroundColor); if (root && (root[3] ?? 1) > 0) base = root.slice(0, 3);
+    for (let i = stack.length - 1; i >= 0; i--) base = mix(stack[i], base);
+    return base;
+  }
+  for (const e of texts) {
+    const cs = getComputedStyle(e), fg = rgb(cs.color); if (!fg) continue;
+    const r = e.getBoundingClientRect(), under = document.elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+    if (under.some((u) => u.tagName === "CANVAS" || u.tagName === "IMG" || u.tagName === "VIDEO")) continue;
+    const bg = bgOf(e); if (!bg) continue;
+    let op = 1; for (let p = e; p; p = p.parentElement) op *= +getComputedStyle(p).opacity;
+    const f = mix([...fg.slice(0, 3), (fg[3] ?? 1) * op], bg);
+    const L1 = lum(f), L2 = lum(bg), ratio = (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05);
+    const big = parseFloat(cs.fontSize) >= 24 || (parseFloat(cs.fontSize) >= 18.66 && +cs.fontWeight >= 700);
+    if (ratio < (big ? 3 : 4.5) - 0.01) add("low-contrast", e, `${ratio.toFixed(2)}:1`);
+  }
   if (touch) for (const e of vis.filter((e) => e.matches("input:not([type=range]):not([type=checkbox]):not([type=radio]):not([type=button]):not([type=color]),select,textarea"))) {
     const fs = parseFloat(getComputedStyle(e).fontSize); if (fs < 16) add("input-zoom", e, `${fs}px font (iOS zooms under 16px)`);
   }

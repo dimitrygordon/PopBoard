@@ -39,3 +39,14 @@ img[width][height] { height: auto; }
 /* Wide tables scroll inside their card instead of pushing the page sideways (layout.js adds the wrapper).
    inline-size 0 + min-inline-size 100% keeps the table from widening a grid or flex parent. */
 .pb-scroll-x { inline-size: 0; min-inline-size: 100%; max-inline-size: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+
+/* Footers and captions: readable text in the body font, at least 4.5:1 contrast.
+   They take the page's main text color (gray-on-dark monospace failed contrast). Size, spacing and
+   alignment stay as each module set them. */
+html body > footer:not([data-pb-free]), html body .footnote:not([data-pb-free]),
+html body figcaption:not([data-pb-free]), html body .caption:not([data-pb-free]),
+html body [class$="-cap"]:not([data-pb-free]), html body [id$="Cap"]:not([data-pb-free]) {
+  font-family: inherit; color: inherit; opacity: 1;
+}
+html body > footer:not([data-pb-free]) { font-family: var(--pb-body-font, inherit); }
+html body > footer code, html body .footnote code { font-family: var(--font-mono, ui-monospace, monospace); }
