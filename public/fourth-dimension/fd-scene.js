@@ -479,7 +479,7 @@ SCENES.hypersphere = (stage, page, saved) => {
   };
 };
 
-const UNFOLD4 = { scale: 0.62, offset: [0, 0.75, 0], camera: [0, 0.6, 9.4], look: [0, -0.2, 0] };
+const UNFOLD4 = { scale: 0.62, offset: [0, 0.75, 0], camera: [0, 0.6, 9.4], look: [0, -0.2, 0], phoneBoost: 1.3, phoneOffset: [0, 0.7, 0] };
 function unfoldScene(stage, page, saved, n) {
   const pal = stage.pal, view = newView(saved);
   if (n === 3 && !saved?.q) view.q.setFromEuler(new THREE.Euler(-0.9, 0.3, 0));
@@ -496,10 +496,11 @@ function unfoldScene(stage, page, saved, n) {
       const cells = M.unfoldCells(n, t);
       lines.begin(); gold.begin(); glass.begin(); goldFill.begin();
       // Tesseract cross spans 8 cells tall: keep it small and centred ~40% from the top, clear of the caption.
-      const sc = n === 4 ? UNFOLD4.scale : 0.75;
+      const phone = stage.camera.aspect < 0.8; // portrait phone: cross ~1.3x larger
+      const sc = n === 4 ? UNFOLD4.scale * (phone ? UNFOLD4.phoneBoost : 1) : 0.75;
       for (const cell of cells) {
         let P;
-        if (n === 4) P = cell.points.map((p) => to3(view, p, sc, UNFOLD4.offset));
+        if (n === 4) P = cell.points.map((p) => to3(view, p, sc, phone ? UNFOLD4.phoneOffset : UNFOLD4.offset));
         else P = cell.points.map((p) => q3(view, p, sc, [0, 0.6, 0]));
         const isGold = cell.key === "base";
         for (const [i, j] of cell.edges) (isGold ? gold : lines).seg(P[i], P[j]);
