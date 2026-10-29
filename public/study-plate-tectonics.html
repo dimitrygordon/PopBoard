@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#1b1714">
+<title>Plate Tectonics // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.plate-tectonics.theme"); } catch (e) {}
+    document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");
+  })();
+</script>
+<link rel="stylesheet" href="shared/fun/fun.css">
+<link rel="stylesheet" href="plate-tectonics/plate-tectonics-theme.css">
+</head>
+<body>
+<h1 class="sr-only">Plate Tectonics</h1>
+<p class="sr-only">A cutaway of two plates of Earth's crust riding on the mantle, which is solid rock that flows slowly. Drag the right plate apart, together or sideways and run time in millions of years to see ridges, trenches, volcanoes, mountains and earthquakes form.</p>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title">Plate Tectonics</p>
+  <button id="helpBtn" type="button" class="fun-help" aria-label="About this model" aria-haspopup="dialog">?</button>
+  <button id="soundBtn" type="button" aria-pressed="false" aria-label="Sound is off">Sound</button>
+  <button id="themeBtn" type="button"><span id="themeLabel">Paper</span></button>
+</header>
+
+<section class="status" id="status" aria-live="polite">
+  <p class="boundary" id="boundary">No motion</p>
+  <p class="readout" id="readout"></p>
+</section>
+
+<main id="stage" class="stage">
+  <canvas id="scene" role="img" tabindex="0" aria-label="Cross-section of two plates"></canvas>
+  <p class="tag ridge-caption" id="ridgeCaption" hidden></p>
+  <p class="tag" id="featureTag" hidden></p>
+</main>
+<p class="toast" id="toast" role="status" aria-live="polite" hidden></p>
+<p class="model-label" id="modelLabel"></p>
+
+<div class="canvas-box" id="funBox"></div>
+
+<section class="controls" id="controls" aria-label="Plate controls">
+  <button type="button" class="fun-handle" id="sheetHandle" aria-label="Resize controls"></button>
+  <div class="tabs" role="tablist" aria-label="Mode">
+    <button type="button" role="tab" data-mode="guided" aria-selected="true">Guided</button>
+    <button type="button" role="tab" data-mode="sandbox" aria-selected="false">Sandbox</button>
+    <button type="button" role="tab" data-mode="fossils" aria-selected="false">Fossils</button>
+  </div>
+  <div id="modeBody" class="mode-body"></div>
+</section>
+
+<div class="caveat-wrap" id="about" hidden>
+  <section class="caveat" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+    <p class="caveat-title" id="aboutTitle">About this model</p>
+    <p id="aboutMantle"></p>
+    <p class="caveat-small" id="aboutScale"></p>
+    <p class="caveat-small">Drag the right plate in either view: left and right moves it apart or together, up and down in the top view slides it sideways. Then run time.</p>
+    <button type="button" id="aboutOk" class="primary">Got it</button>
+  </section>
+</div>
+
+<script type="module" src="plate-tectonics/pt-ui.js"></script>
+</body>
+</html>

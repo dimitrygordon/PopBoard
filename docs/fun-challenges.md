@@ -15,6 +15,23 @@ Source: `public/projectile/projectile-fun.js` (`FUN` and `GOALS`).
 
 Copy to check: "Max range: about 45° from the ground". This holds only from level ground with no air drag.
 
+## Plate Tectonics
+
+Source: `public/plate-tectonics/pt-model.js` (`FUN`, `GOALS`, `T`). All rows Cleared by Tesla 2026-10-29.
+
+| Key | Value | Where it's used | Status |
+|---|---|---|---|
+| Bronze | 1 quake | Bronze: trigger a quake on a transform fault (sideways motion, run time until the fault stress meter fills). | Cleared by Tesla 2026-10-29 |
+| `islandKm` | 0.5 km | Silver, "Make Iceland": two oceanic plates pulling apart, hotspot on, island top at least 0.5 km above sea level (island breaks the surface after `T.islandMyr` = 4 Myr, grows 0.5 km per Myr, cap 2.1 km). | Cleared by Tesla 2026-10-29 |
+| `himalayaKm` | 8 km | Gold, "Build the Himalaya": continent meets continent, mountains at least 8 km high (needs about 1,440 km of shortening). | Cleared by Tesla 2026-10-29 |
+| `T.quakeLoad` | 5 (cm/yr x Myr) | Sideways slip that fills the fault stress meter once (time-lapse; real faults load in tens to hundreds of years). | Cleared by Tesla 2026-10-29 |
+| `T.transformRatio` | 2 | Sideways rate at least twice the apart/together rate counts as a transform boundary. | Cleared by Tesla 2026-10-29 |
+| `T.stillRate` | 0.5 cm/yr | Below this the boundary reads "No motion". | Cleared by Tesla 2026-10-29 |
+| Predict | 4 choices | Predict, then run: "What will form?" (a ridge, a trench and volcano, mountains, earthquakes). Time runs at 1.5 Myr/s instead of 6 Myr/s while a guess is waiting, until the feature appears. A rift valley counts as "a ridge". | Cleared by Tesla 2026-10-29 |
+| Fossil match | 4 box units | Africa snaps home when within `FIT_TOLERANCE` of the fit; not a medal, saved as `popboard.fun.plate-tectonics.pangaea`. | Cleared by Tesla 2026-10-29 |
+
+Share link (sandbox): `SHARE_SCHEMA` keeps the crust types (enum), rates clamped to plus or minus 10 cm/yr, time to 0 to 60 Myr, and the hotspot flag.
+
 ## Gravity Well Golf
 
 Source: `public/gravity-well-golf/gwg-physics.js` (`FUN`, `GOALS`, `P`). All rows Cleared by Tesla 2026-10-29.
