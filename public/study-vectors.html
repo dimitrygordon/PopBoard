@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="stylesheet" href="shared/layout/layout.css">
+<script type="module" src="shared/layout/layout.js"></script>
+<script src="shared/notation/notation.js"></script>
 <title>Vectors &amp; Forces in 2D // PopBoard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -35,9 +38,11 @@ select,input[type=number]{background:var(--panel-2);border:1px solid var(--borde
 .eq{font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,.28);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.7;color:var(--cyan);text-align:center}
 .feedback{font-size:13px;line-height:1.55;min-height:22px;margin-top:8px}.good{color:var(--green)}.bad{color:var(--red)}
 .card p.body{font-size:13px;line-height:1.65;color:#d1d1d6}
-table{width:100%;border-collapse:collapse;font-size:11.5px}th,td{border-bottom:1px solid var(--border);padding:6px 5px;text-align:right;font-family:'JetBrains Mono',monospace}th:first-child,td:first-child{text-align:left}th{color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--border);padding:6px 5px;text-align:right;font-family:'JetBrains Mono',monospace}th:first-child,td:first-child{text-align:left}th{color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:.05em;text-transform:uppercase}
 .tblwrap{overflow-x:auto}
 footer{color:var(--text-dimmer);font-size:11px;text-align:center;padding:0 16px 28px;font-family:'JetBrains Mono',monospace;line-height:1.6}
+.intro-more{display:none}
+@media(max-width:600px){.intro-more{display:inline-flex;align-items:center;min-height:44px;margin-top:2px;background:none;border:0;color:var(--text-dim);text-decoration:underline;font:inherit;font-size:14px;cursor:pointer}.title:not(.intro-open) #introText{display:none}#statusBanner{padding:8px 12px}#statusBanner .status-type{text-transform:none;letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#statusBanner .st-act,#statusBanner .status-reason{display:none}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style><link rel="stylesheet" href="astro-study.css?v=20261021k">
 <script src="astro-study.js?v=20261021k"></script>
@@ -46,7 +51,7 @@ footer{color:var(--text-dimmer);font-size:11px;text-align:center;padding:0 16px 
 <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg><span class="back-label">Back</span></button>
 <button id="controlsJumpBtn" type="button">Controls</button></div>
 <div class="bar-left"><button id="resetBtn" type="button">Reset</button></div></div>
-<div class="title"><h1>Vectors &amp; Forces in 2D</h1><p>Add vectors tip-to-tail or by components, find resultants and equilibrants, and split gravity on a ramp — two lessons in one lab, each with its own score.</p></div>
+<div class="title"><h1>Vectors &amp; Forces in 2D</h1><button type="button" class="intro-more" id="introMore" aria-controls="introText" aria-expanded="false">About this lab</button><p id="introText">Add vectors tip-to-tail or by components, find resultants and equilibrants, and split gravity on a ramp: two lessons in one lab, each with its own score.</p></div>
 <div style="padding:0 14px"><div id="statusBanner" role="status" aria-live="polite"><div class="status-type" id="statusType">—</div><div class="status-reason" id="statusReason">—</div></div></div>
 <main>
 <div class="tabs" role="tablist" aria-label="Acts">
@@ -119,18 +124,18 @@ footer{color:var(--text-dimmer);font-size:11px;text-align:center;padding:0 16px 
 
 <div class="grid">
 <section class="card" aria-label="Incline decomposition lab"><h2>Scene 5 · Incline Decomposition Lab</h2>
-<div class="sub">Gravity (amber) split into dashed mg·sinθ down the plane and mg·cosθ into the plane · FN balances the into-plane part · friction points up the plane</div>
+<div class="sub">Gravity (amber) split into dashed mg·sinθ down the plane and mg·cosθ into the plane · F<sub>N</sub> balances the into-plane part · friction points up the plane</div>
 <canvas id="incCanvas" class="view play"></canvas>
 <div class="readouts">
 <div class="tile"><div class="l">mg·sinθ (down plane)</div><div class="v" id="incPar">—</div></div>
-<div class="tile"><div class="l">mg·cosθ = FN (into plane)</div><div class="v" id="incPerp">—</div></div>
+<div class="tile"><div class="l">mg·cosθ = F<sub>N</sub> (into plane)</div><div class="v" id="incPerp">—</div></div>
 <div class="tile"><div class="l">Will it slip?</div><div class="v" id="incSlip">—</div><div class="s" id="incSlipNote">—</div></div></div>
 </section>
 <section class="card" aria-label="Incline controls"><h2>Ramp Controls &amp; Challenges</h2>
 <div class="panel-row"><div class="panel-label" id="incAngLabel">Ramp angle θ</div><input type="range" id="incAng" min="0" max="55" step="1" value="30" aria-label="Ramp angle"></div>
 <div class="panel-row"><div class="panel-label" id="incMassLabel">Mass</div><input type="range" id="incMass" min="1" max="30" step="0.5" value="10" aria-label="Mass"></div>
-<div class="panel-row"><div class="panel-label" id="incMuLabel">μs (static coefficient)</div><input type="range" id="incMu" min="0.05" max="1" step="0.05" value="0.5" aria-label="Static coefficient"></div>
-<div class="eq">mg·sinθ down the plane · mg·cosθ into the plane<br>FN = mg·cosθ · slips when mg·sinθ &gt; μs·FN, i.e. tanθ &gt; μs</div>
+<div class="panel-row"><div class="panel-label" id="incMuLabel">μ<sub>s</sub> (static coefficient)</div><input type="range" id="incMu" min="0.05" max="1" step="0.05" value="0.5" aria-label="Static coefficient"></div>
+<div class="eq">mg·sinθ down the plane · mg·cosθ into the plane<br>F<sub>N</sub> = mg·cosθ · slips when mg·sinθ &gt; μ<sub>s</sub>·F<sub>N</sub>, i.e. tanθ &gt; μ<sub>s</sub></div>
 <div class="panel-section-title">Challenge A · Angle where it just slips</div>
 <div class="panel-row"><input type="number" id="critInput" step="any" placeholder="Critical angle (degrees)" aria-label="Critical angle"></div>
 <div class="btn-row"><button class="btn primary" id="critCheck" type="button">Check critical angle</button></div>
@@ -144,9 +149,9 @@ footer{color:var(--text-dimmer);font-size:11px;text-align:center;padding:0 16px 
 </section>
 
 <section class="card"><h2>The Big Idea</h2>
-<p class="body"><strong>A vector is fully described by its components.</strong> Tip-to-tail addition and component addition are the same addition in two outfits: draw it and you <em>see</em> the resultant; split into Fx = F·cosθ and Fy = F·sinθ, add the columns, rebuild with R = √(Rx²+Ry²) and θ = atan2(Ry, Rx), and you get a number you can trust to a decimal place. The equilibrant is just the resultant with the opposite sign — add it and the forces balance, which by Newton's 1st law means no change in motion. On a ramp, gravity itself gets the component treatment: mg·sinθ pulls down the plane, mg·cosθ presses into it (and is what the normal force answers), and slip begins exactly when the down-plane part outgrows μs·FN.</p></section>
+<p class="body"><strong>A vector is fully described by its components.</strong> Tip-to-tail addition and component addition are the same addition in two outfits: draw it and you <em>see</em> the resultant; split into Fx = F·cosθ and Fy = F·sinθ, add the columns, rebuild with R = √(Rx²+Ry²) and θ = atan2(Ry, Rx), and you get a number you can trust to a decimal place. The equilibrant is just the resultant with the opposite sign — add it and the forces balance, which by Newton's 1st law means no change in motion. On a ramp, gravity itself gets the component treatment: mg·sinθ pulls down the plane, mg·cosθ presses into it (and is what the normal force answers), and slip begins exactly when the down-plane part outgrows μ<sub>s</sub>·F<sub>N</sub>.</p></section>
 </main>
-<footer>PopBoard Study · Vectors &amp; Forces in 2D · Fx = F·cosθ · Fy = F·sinθ · R = √(Rx²+Ry²) · θ = atan2(Ry, Rx) · equilibrant = −R · incline: mg·sinθ / mg·cosθ, FN = mg·cosθ</footer>
+<footer>PopBoard Study · Vectors &amp; Forces in 2D · Fx = F·cosθ · Fy = F·sinθ · R = √(Rx²+Ry²) · θ = atan2(Ry, Rx) · equilibrant = −R · incline: mg·sinθ / mg·cosθ, F<sub>N</sub> = mg·cosθ</footer>
 <script type="module">
 "use strict";
 /* ---------- pure physics (DOM-free, unit-tested headlessly) ---------- */
@@ -184,6 +189,13 @@ function arrow(ctx,x,y,dx,dy,color,label,dashed){
   if(label){ ctx.font="700 10px 'JetBrains Mono',monospace"; ctx.textAlign="center"; ctx.fillText(label, ex+(ex-x)/len*14, ey+(ey-y)/len*14); }
   ctx.restore(); return {x:ex,y:ey};
 }
+function pillLabel(ctx,text,x,y,color,align){
+  var w=ctx.measureText(text).width, h=14, pad=4, left=align==="left"?x:x-w/2;
+  if(left<4) left=4; var cw=ctx.canvas.clientWidth||ctx.canvas.width; if(left+w+pad*2>cw-4) left=Math.max(4,cw-4-w-pad*2);
+  ctx.save(); ctx.fillStyle="rgba(7,10,18,0.82)"; ctx.strokeStyle=color; ctx.globalAlpha=1; ctx.lineWidth=1;
+  ctx.beginPath(); if(ctx.roundRect) ctx.roundRect(left-pad,y-h+3,w+pad*2,h+2,7); else ctx.rect(left-pad,y-h+3,w+pad*2,h+2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle=color; ctx.textAlign="left"; ctx.fillText(text,left,y); ctx.restore();
+}
 function grid(ctx,w,h,ox,oy,step){ ctx.strokeStyle="rgba(255,255,255,0.07)"; ctx.lineWidth=1; for(var x=ox%step;x<w;x+=step){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();} for(var y=oy%step;y<h;y+=step){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();} ctx.strokeStyle="rgba(255,255,255,0.28)"; ctx.beginPath(); ctx.moveTo(0,oy); ctx.lineTo(w,oy); ctx.moveTo(ox,0); ctx.lineTo(ox,h); ctx.stroke(); ctx.fillStyle="rgba(255,255,255,0.55)"; ctx.font="9px 'JetBrains Mono',monospace"; ctx.textAlign="left"; ctx.fillText("+x",w-22,oy-6); ctx.fillText("+y",ox+6,14); }
 
 /* ---------- Scene 1 ---------- */
@@ -195,16 +207,21 @@ function drawPlay(){
   state.vectors.forEach(function(v,i){ var c=vectorComponents(v.mag,v.angle); ctx.globalAlpha=0.28; arrow(ctx,ox,oy,c.x*scale,c.y*scale,COLORS[i],""); ctx.globalAlpha=1; });
   // tip-to-tail chain in order
   var x=ox,y=oy; chainStarts=[];
-  state.order.forEach(function(vi){ var v=state.vectors[vi]; chainStarts.push({x:x,y:y,idx:vi}); var c=vectorComponents(v.mag,v.angle); var end=arrow(ctx,x,y,c.x*scale,c.y*scale,COLORS[vi], v.name+" "+fmt(v.mag,1)+" @ "+fmt(normAngle(v.angle),0)+"°"); x=end.x; y=end.y; });
-  var R=sumVectors(state.vectors);
-  arrow(ctx,ox,oy,R.x*scale,R.y*scale,"#FF5FAE","R",true);
-  ctx.fillStyle="#FF5FAE"; ctx.font="10px 'JetBrains Mono',monospace"; ctx.textAlign="left"; ctx.fillText("order: "+state.order.map(function(i){return state.vectors[i].name;}).join(" → "), ox, 18);
+  var R=sumVectors(state.vectors), chainLabels=[];
+  state.order.forEach(function(vi){ var v=state.vectors[vi]; chainStarts.push({x:x,y:y,idx:vi}); var c=vectorComponents(v.mag,v.angle); var end=arrow(ctx,x,y,c.x*scale,c.y*scale,COLORS[vi],""); chainLabels.push({sx:x,sy:y,ex:end.x,ey:end.y,color:COLORS[vi],text:v.name+" "+fmt(v.mag,1)+" @ "+fmt(normAngle(v.angle),0)+"°"}); x=end.x; y=end.y; });
+  arrow(ctx,ox,oy,R.x*scale,R.y*scale,"#FF5FAE","",true);
+  ctx.font="700 10px 'JetBrains Mono',monospace";
+  // Labels sit at each tip in a pill, nudged to the side away from the dashed resultant line.
+  var rl=Math.hypot(R.x,R.y)||1, rnx=-R.y/rl, rny=-R.x/rl;
+  chainLabels.forEach(function(L){ var dx=L.ex-L.sx, dy=L.ey-L.sy, len=Math.hypot(dx,dy)||1; var px=L.ex+dx/len*14, py=L.ey+dy/len*14; var side=((px-ox)*rnx+(py-oy)*rny)>=0?1:-1; px+=rnx*side*12; py+=rny*side*12; pillLabel(ctx,L.text,px,py,L.color,"center"); });
+  var rex=ox+R.x*scale, rey=oy-R.y*scale; pillLabel(ctx,"R",(ox+rex)/2+rnx*-14,(oy+rey)/2+rny*-14,"#FF5FAE","center");
+  ctx.font="10px 'JetBrains Mono',monospace"; pillLabel(ctx,"order: "+state.order.map(function(i){return state.vectors[i].name;}).join(" → "),8,18,"#FF5FAE","left");
   $("roR").textContent=fmt(R.mag,2); $("roTheta").textContent=fmt(R.angleDeg,1)+"°";
   $("resultantEq").innerHTML="Rx = ΣFx = "+fmt(R.x,2)+" · Ry = ΣFy = "+fmt(R.y,2)+"<br>R = √(Rx²+Ry²) = "+fmt(R.mag,2)+" · θ = atan2(Ry, Rx) = "+fmt(R.angleDeg,1)+"° ("+quadrantSigns(R.angleDeg)+")";
   var a=state.vectors[0], b=state.vectors[1]; var lawR=lawCosResultant(a,b); var compR=sumVectors([a,b]);
   $("lawPanel").innerHTML="For <strong>A + B</strong>: components give R = "+fmt(compR.mag,2)+" @ "+fmt(compR.angleDeg,1)+"°. Law of cosines on the tip-to-tail triangle gives R = "+fmt(lawR,2)+" — same answer. Use the <strong>law of cosines</strong> when you know two sides and the triangle's included angle, the <strong>law of sines</strong> to then find the triangle's other angles, and plain <strong>Pythagoras</strong> only when the two vectors are perpendicular (the triangle is right-angled, e.g. A⊥B above would give √(4²+3²) = 5). Components work in every case, which is why Scene 3 is the general method — the graphical and component resultants drawn here are the <em>same</em> pink arrow.";
   buildCompTable(R);
-  if(state.mode==="act1"){ $("statusType").textContent="Act 1 · Vectors — Resultant "+fmt(R.mag,2)+" @ "+fmt(R.angleDeg,1)+"°"; $("statusReason").textContent="Act 1 score "+state.score1.ok+"/"+state.score1.total+" · Act 2 score "+state.score2.ok+"/"+state.score2.total+" · order "+state.order.map(function(i){return state.vectors[i].name;}).join("→")+" · reordering never changes R"; }
+  if(state.mode==="act1"){ $("statusType").innerHTML='<span class="st-act">Act 1 · Vectors · </span>Resultant '+fmt(R.mag,2)+" @ "+fmt(R.angleDeg,1)+"°"; $("statusReason").textContent="Act 1 score "+state.score1.ok+"/"+state.score1.total+" · Act 2 score "+state.score2.ok+"/"+state.score2.total+" · order "+state.order.map(function(i){return state.vectors[i].name;}).join("→")+" · reordering never changes R"; }
 }
 function buildCompTable(R){
   var tb=$("compTable"); tb.innerHTML="";
@@ -252,7 +269,7 @@ function drawEq(){
   var S=sumVectors(all); var E=equilibrantOf(state.given);
   $("eqSumX").textContent=fmt(S.x,1)+" N"; $("eqSumY").textContent=fmt(S.y,1)+" N";
   $("eqEq").innerHTML="given resultant R = "+fmt(sumVectors(state.given).mag,1)+" N @ "+fmt(sumVectors(state.given).angleDeg,1)+"°<br>equilibrant needed = "+fmt(E.mag,1)+" N @ "+fmt(E.angleDeg,1)+"° · your ΣF = ("+fmt(S.x,1)+", "+fmt(S.y,1)+") N";
-  if(state.mode==="act2"){ $("statusType").textContent="Act 2 · Forces — ΣF = ("+fmt(S.x,1)+", "+fmt(S.y,1)+") N"; $("statusReason").textContent="Act 1 score "+state.score1.ok+"/"+state.score1.total+" · Act 2 score "+state.score2.ok+"/"+state.score2.total+" · balanced when both sums are ≈ 0 ⇒ a = 0 (Newton's 1st law)"; }
+  if(state.mode==="act2"){ $("statusType").innerHTML='<span class="st-act">Act 2 · Forces · </span>ΣF = ('+fmt(S.x,1)+", "+fmt(S.y,1)+") N"; $("statusReason").textContent="Act 1 score "+state.score1.ok+"/"+state.score1.total+" · Act 2 score "+state.score2.ok+"/"+state.score2.total+" · balanced when both sums are ≈ 0 ⇒ a = 0 (Newton's 1st law)"; }
   drawThird();
 }
 $("myMag").addEventListener("input",function(e){ state.myMag=parseFloat(e.target.value); $("myMagLabel").textContent="Your force magnitude: "+fmt(state.myMag,0)+" N"; drawEq(); });
@@ -298,18 +315,18 @@ function drawIncline(){
   arrow(ctx,bx,by-16,0,-d.mg*scale, "#FFB300","mg = "+fmt(d.mg,1)+" N");
   arrow(ctx,bx,by-16,-c*d.parallel*scale, -sn*d.parallel*scale, "#FFD54A","mg·sinθ = "+fmt(d.parallel,1)+" N",true); // down-plane
   arrow(ctx,bx,by-16,sn*d.perpendicular*scale, -c*d.perpendicular*scale, "#FFE082","mg·cosθ = "+fmt(d.perpendicular,1)+" N",true); // into-plane
-  arrow(ctx,bx,by-16,-sn*d.normal*scale, c*d.normal*scale, "#5FD3C4","FN = "+fmt(d.normal,1)+" N"); // outward, balances into-plane part
+  arrow(ctx,bx,by-16,-sn*d.normal*scale, c*d.normal*scale, "#5FD3C4","F_{N} = "+fmt(d.normal,1)+" N"); // outward, balances into-plane part
   var fric=Math.min(d.fsMax,d.parallel);
   arrow(ctx,bx,by-16,c*fric*scale, sn*fric*scale, "#B07CFF", d.slips?"friction (maxed)":"friction up plane"); // up-plane
   $("incPar").textContent=fmt(d.parallel,1)+" N"; $("incPerp").textContent=fmt(d.perpendicular,1)+" N";
   $("incSlip").textContent=d.slips?"Yes — slips":"No — holds"; $("incSlip").style.color=d.slips?"#ff7a7a":"#57d38c";
-  $("incSlipNote").textContent="fs,max = "+fmt(d.fsMax,1)+" N · critical angle "+fmt(d.criticalDeg,1)+"°";
-  if(state.mode==="act2"){ $("statusType").textContent="Act 2 · Incline "+fmt(state.incAngle,0)+"° — "+(d.slips?"Slips":"Holds"); $("statusReason").textContent="mg·sinθ = "+fmt(d.parallel,1)+" N vs fs,max = μs·mg·cosθ = "+fmt(d.fsMax,1)+" N · FN = "+fmt(d.normal,1)+" N · critical angle atan(μs) = "+fmt(d.criticalDeg,1)+"°"; }
+  $("incSlipNote").textContent="F_{f,static,max} = "+fmt(d.fsMax,1)+" N · critical angle "+fmt(d.criticalDeg,1)+"°";
+  if(state.mode==="act2"){ $("statusType").innerHTML='<span class="st-act">Act 2 · </span>Incline '+fmt(state.incAngle,0)+"° · "+(d.slips?"Slips":"Holds"); $("statusReason").textContent="mg·sinθ = "+fmt(d.parallel,1)+" N vs F_{f,static,max} = μ_{s}·mg·cosθ = "+fmt(d.fsMax,1)+" N · F_{N} = "+fmt(d.normal,1)+" N · critical angle atan(μ_{s}) = "+fmt(d.criticalDeg,1)+"°"; }
 }
 $("incAng").addEventListener("input",function(e){ state.incAngle=parseFloat(e.target.value); $("incAngLabel").textContent="Ramp angle θ: "+fmt(state.incAngle,0)+"°"; drawIncline(); });
 $("incMass").addEventListener("input",function(e){ state.incMass=parseFloat(e.target.value); $("incMassLabel").textContent="Mass: "+fmt(state.incMass,1)+" kg"; drawIncline(); });
-$("incMu").addEventListener("input",function(e){ state.incMu=parseFloat(e.target.value); $("incMuLabel").textContent="μs (static coefficient): "+fmt(state.incMu,2); drawIncline(); });
-$("critCheck").addEventListener("click",function(){ var d=inclineDecomp(state.incMass,state.incAngle,state.incMu); var g=parseFloat($("critInput").value); var fb=$("critFeedback"); if(!isFinite(g)){ fb.textContent="Enter an angle first."; fb.className="feedback bad"; return; } var good=Math.abs(g-d.criticalDeg)<=1.5; state.score2.total++; if(good) state.score2.ok++; $("score2").textContent=state.score2.ok+" / "+state.score2.total; fb.textContent=(good?"Correct. ":"Not quite. ")+"Slip starts when mg·sinθ = μs·mg·cosθ ⇒ tanθ = μs ⇒ θ = atan("+fmt(state.incMu,2)+") = "+fmt(d.criticalDeg,1)+"° (mass cancels!). Score "+state.score2.ok+"/"+state.score2.total+"."; fb.className="feedback "+(good?"good":"bad"); });
+$("incMu").addEventListener("input",function(e){ state.incMu=parseFloat(e.target.value); $("incMuLabel").textContent="μ_{s} (static coefficient): "+fmt(state.incMu,2); drawIncline(); });
+$("critCheck").addEventListener("click",function(){ var d=inclineDecomp(state.incMass,state.incAngle,state.incMu); var g=parseFloat($("critInput").value); var fb=$("critFeedback"); if(!isFinite(g)){ fb.textContent="Enter an angle first."; fb.className="feedback bad"; return; } var good=Math.abs(g-d.criticalDeg)<=1.5; state.score2.total++; if(good) state.score2.ok++; $("score2").textContent=state.score2.ok+" / "+state.score2.total; fb.textContent=(good?"Correct. ":"Not quite. ")+"Slip starts when mg·sinθ = μ_{s}·mg·cosθ ⇒ tanθ = μ_{s} ⇒ θ = atan("+fmt(state.incMu,2)+") = "+fmt(d.criticalDeg,1)+"° (mass cancels!). Score "+state.score2.ok+"/"+state.score2.total+"."; fb.className="feedback "+(good?"good":"bad"); });
 $("holdCheck").addEventListener("click",function(){ var d=inclineDecomp(state.incMass,state.incAngle,state.incMu); var g=parseFloat($("holdInput").value); var fb=$("holdFeedback"); if(!isFinite(g)){ fb.textContent="Enter a force first."; fb.className="feedback bad"; return; } var good=Math.abs(g-d.smoothHold)<=Math.max(2,d.smoothHold*0.05); state.score2.total++; if(good) state.score2.ok++; $("score2").textContent=state.score2.ok+" / "+state.score2.total; fb.textContent=(good?"Correct. ":"Not quite. ")+"On a smooth ramp the only down-plane pull is mg·sinθ = "+fmt(state.incMass,1)+"×9.81×sin("+fmt(state.incAngle,0)+"°) = "+fmt(d.smoothHold,1)+" N, so the up-plane equilibrant must be exactly that. Score "+state.score2.ok+"/"+state.score2.total+"."; fb.className="feedback "+(good?"good":"bad"); });
 
 /* tabs, deep links, reset */
@@ -320,8 +337,9 @@ $("controlsJumpBtn").addEventListener("click",function(){ var el=document.getEle
 function render(){ drawPlay(); drawEq(); drawIncline(); }
 (function(){ var q=new URLSearchParams(location.search); var m=q.get("mode"); var map={act1:"act1",vectors:"act1",vector:"act1",scene1:"act1",scene2:"act1",scene3:"act1",act2:"act2",forces:"act2",scene4:"act2",scene5:"act2"}; if(m && map[m]) state.mode=map[m]; document.querySelectorAll("[data-mode]").forEach(function(x){x.classList.toggle("active",x.dataset.mode===state.mode);}); document.querySelectorAll(".mode").forEach(function(mm){mm.classList.toggle("active",mm.id==="mode-"+state.mode);}); })();
 $("myMagLabel").textContent="Your force magnitude: 0 N"; $("myAngLabel").textContent="Your force angle: 0°";
-$("incAngLabel").textContent="Ramp angle θ: 30°"; $("incMassLabel").textContent="Mass: 10.0 kg"; $("incMuLabel").textContent="μs (static coefficient): 0.50";
+$("incAngLabel").textContent="Ramp angle θ: 30°"; $("incMassLabel").textContent="Mass: 10.0 kg"; $("incMuLabel").textContent="μ_{s} (static coefficient): 0.50";
 buildVecSliders(); buildOrderChips(); render();
+$("introMore").addEventListener("click",function(){ var t=document.querySelector(".title"); var open=t.classList.toggle("intro-open"); this.setAttribute("aria-expanded",String(open)); this.textContent=open?"Hide intro":"About this lab"; });
 window.addEventListener("resize",render);
 </script>
 <script>

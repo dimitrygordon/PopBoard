@@ -1555,3 +1555,13 @@ window.matchMedia("(prefers-reduced-motion: reduce)").addEventListener("change",
     syncPauseBtn();
   }
 });
+
+// Keep scroll-padding-top equal to the sticky bar height so focused or anchored content clears it.
+{
+  const bar = document.querySelector("header.bar");
+  if (bar) {
+    const setBarH = () => document.documentElement.style.setProperty("--bar-h", bar.offsetHeight + "px");
+    setBarH();
+    if ("ResizeObserver" in window) new ResizeObserver(setBarH).observe(bar);
+  }
+}

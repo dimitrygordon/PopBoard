@@ -41,7 +41,9 @@
     "test:return": "node --test board-return.test.mjs",
     "test:study": "node --test study-portal.test.mjs",
     "test:study:browser": "node study-guest-browser.mjs",
-    "test:return:browser": "firebase emulators:exec --project hotseat-4f661 --only auth,firestore,storage --config ../firebase.json \"node board-return-browser.mjs\""
+    "test:return:browser": "firebase emulators:exec --project hotseat-4f661 --only auth,firestore,storage --config ../firebase.json \"node board-return-browser.mjs\"",
+    "test:responsive": "node --test responsive.test.mjs",
+    "audit:responsive": "node responsive-audit.mjs"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.2",

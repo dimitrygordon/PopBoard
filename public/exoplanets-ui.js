@@ -49,10 +49,89 @@ function buildField() {
     if (done.has(s.seed)) b.classList.add("done");
     b.addEventListener("pointerenter", () => { b.querySelector("img").src = "exoplanets/assets/img/star_marker_hover.webp"; });
     b.addEventListener("pointerleave", () => { b.querySelector("img").src = "exoplanets/assets/img/star_marker_idle.webp"; });
-    b.addEventListener("click", () => openTarget(s.seed));
+    b.addEventListener("click", () => { lastSeed = s.seed; openTarget(s.seed); });
+    b.dataset.seed = s.seed;
     box.appendChild(b);
   });
+  layoutField();
 }
+
+// ---------- phone field layout ----------
+// Below 600px: stars are spread so no two crosshairs sit within 48px, only the last tapped star and its
+// 3 nearest neighbors are labeled, and labels are clamped inside the stage with 8px padding.
+const PHONE_FIELD = matchMedia("(max-width: 599.98px)");
+const MIN_GAP = 48, LABEL_PAD = 8;
+// The 48px floor is a hard minimum; when the field has room, stars get more air (up to 72px) so no corner reads as a clump.
+let lastSeed = null;
+function spread(pts, w, h, pad) {
+  const gap = Math.max(MIN_GAP, Math.min(72, 0.55 * Math.sqrt(((w - 2 * pad) * (h - 2 * pad)) / Math.max(1, pts.length))));
+  const P = pts.map((p) => ({ x: pad + p.x * (w - 2 * pad), y: pad + p.y * (h - 2 * pad) }));
+  for (let it = 0; it < 400; it++) {
+    let moved = false;
+    for (let i = 0; i < P.length; i++) for (let j = i + 1; j < P.length; j++) {
+      let dx = P[j].x - P[i].x, dy = P[j].y - P[i].y, d = Math.hypot(dx, dy);
+      if (d >= gap + 0.5) continue;
+      if (d < 1e-3) { dx = 1; dy = 0; d = 1; }
+      const push = (gap + 1 - d) / 2, ux = dx / d, uy = dy / d;
+      P[i].x -= ux * push; P[i].y -= uy * push; P[j].x += ux * push; P[j].y += uy * push; moved = true;
+    }
+    for (const q of P) { q.x = Math.max(pad, Math.min(w - pad, q.x)); q.y = Math.max(pad, Math.min(h - pad, q.y)); }
+    if (!moved) break;
+  }
+  return P;
+}
+function layoutField() {
+  const box = $("fieldStars"), view = $("fieldView"); if (!box || view.hidden) return;
+  const btns = [...box.querySelectorAll(".field-star")]; if (!btns.length) return;
+  const r = box.getBoundingClientRect();
+  const phone = PHONE_FIELD.matches;
+  const pos = phone ? spread(field, r.width, r.height, 28) : field.map((s) => ({ x: s.x * r.width, y: s.y * r.height }));
+  btns.forEach((b, i) => { b.style.left = pos[i].x + "px"; b.style.top = pos[i].y + "px"; });
+  // Which stars get a label.
+  let show = null;
+  if (phone) {
+    let a = field.findIndex((s) => s.seed === lastSeed);
+    if (a < 0) { let best = Infinity; pos.forEach((p, i) => { const d = Math.hypot(p.x - r.width / 2, p.y - r.height / 2); if (d < best) { best = d; a = i; } }); }
+    const near = pos.map((p, i) => [Math.hypot(p.x - pos[a].x, p.y - pos[a].y), i]).sort((x, y) => x[0] - y[0]).slice(0, 4).map((x) => x[1]);
+    show = new Set(near);
+  }
+  const vr = view.getBoundingClientRect(), placed = [];
+  const over = (a, b) => a.left < b.right + 4 && a.right > b.left - 4 && a.top < b.bottom + 2 && a.bottom > b.top - 2;
+  // Labels keep off the other stars' markers as well as each other.
+  const marks = btns.map((b) => b.getBoundingClientRect());
+  let self = -1;
+  const hit = (a) => placed.some((b) => over(a, b)) || marks.some((m, k) => k !== self && over(a, m));
+  btns.forEach((b, i) => {
+    const lab = b.querySelector(".lab"); if (!lab) return;
+    self = i;
+    lab.hidden = !!show && !show.has(i);
+    lab.style.marginLeft = "0px"; lab.style.top = "";
+    if (lab.hidden) return;
+    // Try spots below, above and beside the marker; take the first clear one, else the one that covers least.
+    const area = (a, b) => Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+    const cost = (a) => placed.reduce((n, b) => n + area(a, b) * 4, 0) + marks.reduce((n, m, k) => n + (k === self ? 0 : area(a, m)), 0);
+    const tops = [58, -18, 76, -36, 94, -54], shifts = [0, -44, 44, -88, 88];
+    let lr = null, best = null;
+    outer: for (const sx of shifts) for (const t of tops) {
+      lab.style.top = t + "px"; lab.style.marginLeft = sx + "px";
+      const r0 = lab.getBoundingClientRect();
+      let dx = sx;
+      if (r0.left < vr.left + LABEL_PAD) dx += vr.left + LABEL_PAD - r0.left;
+      else if (r0.right > vr.right - LABEL_PAD) dx += vr.right - LABEL_PAD - r0.right;
+      const r = { left: r0.left + dx - sx, right: r0.right + dx - sx, top: r0.top, bottom: r0.bottom };
+      if (r.top < vr.top + LABEL_PAD || r.bottom > vr.bottom - LABEL_PAD) continue;
+      const c = hit(r) ? cost(r) : 0;
+      if (!best || c < best.c) best = { c, t, dx, r };
+      if (c === 0) break outer;
+    }
+    if (best) { lab.style.top = best.t + "px"; lab.style.marginLeft = best.dx + "px"; lr = best.r; }
+    else { lab.style.top = "58px"; lab.style.marginLeft = "0px"; lr = lab.getBoundingClientRect(); }
+    placed.push(lr);
+  });
+}
+addEventListener("resize", () => requestAnimationFrame(layoutField));
+PHONE_FIELD.addEventListener?.("change", layoutField);
+document.fonts?.ready?.then(() => layoutField());
 
 function showField() {
   $("fieldView").hidden = false; $("analysis").hidden = true; $("toolbar").hidden = true; $("verdict").hidden = true;
@@ -367,9 +446,32 @@ $("studyBackBtn").addEventListener("click", (e) => {
 });
 
 let toastTimer = 0;
+// The toast takes the title's slot in the top bar (as in Atom Builder) at every size, never over the star
+// field or plots. placeToast() runs whenever the toast is shown, by toast() or by anything else.
+function placeToast() {
+  const el = $("statusLine"), title = $("targetTitle"), hud = document.querySelector(".hud");
+  if (!el || !title || !hud) return;
+  const showing = el.classList.contains("show") && el.textContent.trim() && !el.hidden;
+  title.style.visibility = showing ? "hidden" : "";
+  if (!showing) return;
+  const hr = hud.getBoundingClientRect(), tr = title.getBoundingClientRect();
+  const leftEdge = $("studyBackBtn").getBoundingClientRect().right + 8;
+  const rightBtns = [...hud.querySelectorAll(".hud-right button")].filter((b) => !b.hidden && b.offsetWidth);
+  const rightEdge = rightBtns.length ? Math.min(...rightBtns.map((b) => b.getBoundingClientRect().left)) - 8 : hr.right - 10;
+  if (!el.classList.contains("in-bar")) el.classList.add("in-bar");
+  const cy = tr.height ? tr.top + tr.height / 2 : hr.top + hr.height / 2;
+  Object.assign(el.style, { left: (leftEdge + rightEdge) / 2 + "px", top: cy + "px", maxWidth: Math.max(80, rightEdge - leftEdge) + "px" });
+}
 function toast(msg) {
-  const el = $("statusLine"); el.textContent = msg; el.classList.add("show");
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 3200);
+  const el = $("statusLine");
+  el.textContent = msg; if (!el.classList.contains("show")) el.classList.add("show");
+  placeToast();
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.classList.remove("show"); placeToast(); }, 3200);
+}
+{
+  const el = $("statusLine");
+  if (el) new MutationObserver(placeToast).observe(el, { attributes: true, attributeFilter: ["class", "hidden"], childList: true, characterData: true, subtree: true });
+  addEventListener("resize", placeToast);
 }
 
 // ---------- loop ----------

@@ -53,7 +53,7 @@
 html, body { margin: 0; padding: 0; }
 html { background: var(--bg); }
 body {
-  min-height: 100vh;
+  min-height: 100vh; min-height: 100dvh;
   background:
     radial-gradient(circle at 12% 0%, rgba(95, 211, 196, 0.06), transparent 36%),
     radial-gradient(circle at 90% 100%, rgba(255, 179, 0, 0.05), transparent 38%),
@@ -523,7 +523,7 @@ input[type="range"]:disabled { opacity: 0.4; }
   gap: 4px 8px;
   margin-top: 8px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-dim);
 }
 .wb-stats b { color: var(--text); font-weight: 500; }
@@ -851,8 +851,19 @@ input[type="range"]:disabled { opacity: 0.4; }
   .layout, .guided-layout { grid-template-columns: minmax(0, 1fr); }
   .steps { position: static; }
 }
+/* Phone-only disclosure controls: the intro's More, and the status card fold. */
+.intro-more, .status-toggle { display: none; }
+@media (max-width: 600px) {
+  .intro-more { display: inline-block; margin-top: 4px; background: none; border: 0; color: inherit; text-decoration: underline; font: inherit; cursor: pointer; }
+  .status-toggle { display: inline-block; margin-top: 6px; background: none; border: 0; color: inherit; text-decoration: underline; font: inherit; font-size: 13px; cursor: pointer; }
+  #statusBanner.folded .status-reason { display: none; }
+}
 @media (max-width: 720px) {
-  .tabs { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+  .tabs { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; scroll-snap-type: x proximity;
+    /* Edge fade says the row scrolls sideways. */
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 28px), transparent 100%);
+    padding-left: 8px; padding-right: 28px; }
   .tab { flex: 0 0 auto; }
   .wb-controls { grid-template-columns: 1fr; }
 }

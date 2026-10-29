@@ -1,0 +1,52 @@
+/* PopBoard shared layout rule. Linked by every study page so new modules get it for free.
+   Layout only: sizes, wrapping and safe areas. No colors, fonts or art.
+   Opt out on one element with data-pb-free. */
+:root {
+  --pb-safe-top: env(safe-area-inset-top, 0px);
+  --pb-safe-right: env(safe-area-inset-right, 0px);
+  --pb-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --pb-safe-left: env(safe-area-inset-left, 0px);
+  --pb-min-text: 13px;
+  --pb-tap: 44px;
+  --pb-gutter: clamp(8px, 3vw, 24px);
+  /* Use these instead of 100vh: the dynamic and small viewport heights follow the phone's URL bar. */
+  --pb-vh: 100vh;
+  --pb-svh: 100vh;
+}
+@supports (height: 100dvh) { :root { --pb-vh: 100dvh; --pb-svh: 100svh; } }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+/* Long words and numbers wrap instead of pushing the page sideways. */
+body { overflow-wrap: break-word; }
+img, video { max-inline-size: 100%; height: auto; }
+img[width][height] { height: auto; }
+
+/* Toasts: never wider than the screen, wrap long messages, stay above the home bar. */
+[class*="toast"]:not([data-pb-free]), [id$="oast"]:not([data-pb-free]) {
+  max-inline-size: calc(100vw - 16px - var(--pb-safe-left) - var(--pb-safe-right));
+  white-space: normal; overflow-wrap: anywhere; box-sizing: border-box;
+}
+
+/* Touch screens: 44px targets and 16px inputs (iOS zooms the page on smaller input text). */
+@media (pointer: coarse) {
+  :where(button, [role="button"], [role="tab"], summary, select):not([data-pb-free]) { min-block-size: var(--pb-tap); min-inline-size: var(--pb-tap); }
+  :where(input:not([type="range"], [type="checkbox"], [type="radio"], [type="color"], [type="button"], [type="submit"]), select, textarea):not([data-pb-free]) { font-size: max(16px, 1em) !important; }
+}
+
+/* Bottom sheets: never cover the whole stage at the half stop, and respect the home bar. */
+.fun-sheet-on { max-block-size: calc(var(--pb-vh) - var(--pb-safe-top)); }
+
+/* Wide tables scroll inside their card instead of pushing the page sideways (layout.js adds the wrapper).
+   inline-size 0 + min-inline-size 100% keeps the table from widening a grid or flex parent. */
+.pb-scroll-x { inline-size: 0; min-inline-size: 100%; max-inline-size: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+
+/* Footers and captions: readable text in the body font, at least 4.5:1 contrast.
+   They take the page's main text color (gray-on-dark monospace failed contrast). Size, spacing and
+   alignment stay as each module set them. */
+html body > footer:not([data-pb-free]), html body .footnote:not([data-pb-free]),
+html body figcaption:not([data-pb-free]), html body .caption:not([data-pb-free]),
+html body [class$="-cap"]:not([data-pb-free]), html body [id$="Cap"]:not([data-pb-free]) {
+  font-family: inherit; color: inherit; opacity: 1;
+}
+html body > footer:not([data-pb-free]) { font-family: var(--pb-body-font, inherit); }
+html body > footer code, html body .footnote code { font-family: var(--font-mono, ui-monospace, monospace); }
