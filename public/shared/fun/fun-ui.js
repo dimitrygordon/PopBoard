@@ -167,9 +167,18 @@ export async function shareLink(hash) {
 
 // ---------- mobile bottom sheet with snap points ----------
 // el: fixed-position sheet. handle: grab element. getSnaps(): ascending heights in px.
+// halfUnder (optional): the caption element the half stop should sit right under.
+// Snaps are re-measured after first layout, font load, resize, rotation and content size changes,
+// not only at creation (the half stop used to be measured once, before the caption had settled).
 // Animation is transform-only (translateY) so drag stays on the compositor.
 import { pickSnap } from "./fun-core.js";
-export function bottomSheet(el, handle, { getSnaps, onSnap, start = 0 } = {}) {
+import { halfUnder as halfUnderCaption } from "../layout/layout.js";
+export function bottomSheet(el, handle, { getSnaps: snapsFn, onSnap, start = 0, halfUnder = null } = {}) {
+  const getSnaps = () => {
+    const s = snapsFn();
+    if (halfUnder && s.length >= 3) s[1] = halfUnderCaption(typeof halfUnder === "function" ? halfUnder() : halfUnder, s[0], s[s.length - 1]);
+    return s;
+  };
   let snaps = getSnaps(), idx = start, h = snaps[idx], raf = 0, drag = null;
   const maxH = () => snaps[snaps.length - 1];
   const render = () => { el.style.transform = `translate3d(0, ${Math.round((maxH() - h) * 10) / 10}px, 0)`; };
@@ -214,8 +223,27 @@ export function bottomSheet(el, handle, { getSnaps, onSnap, start = 0 } = {}) {
     if (e.key === "ArrowDown") { e.preventDefault(); settle(Math.max(0, idx - 1)); }
   });
   layout(); settle(idx, false);
-  return { layout, snapTo: (i) => settle(i, false), get index() { return idx; },
-    destroy() { cancelAnimationFrame(raf); el.style.transform = ""; el.style.height = ""; delete el.dataset.snap; } };
+  // Re-measure once things settle. Skip while dragging or springing so a snap never jumps mid-gesture.
+  let relayoutRaf = 0, alive = true;
+  const relayout = () => {
+    if (!alive || relayoutRaf) return;
+    relayoutRaf = requestAnimationFrame(() => {
+      relayoutRaf = 0; if (!alive) return;
+      if (drag) return;
+      const before = snaps.join(",");
+      snaps = getSnaps(); if (snaps.join(",") === before) return;
+      cancelAnimationFrame(raf); el.style.height = maxH() + "px"; h = snaps[Math.min(idx, snaps.length - 1)]; render();
+    });
+  };
+  requestAnimationFrame(() => requestAnimationFrame(relayout));
+  document.fonts?.ready?.then(relayout);
+  addEventListener("resize", relayout, { passive: true });
+  addEventListener("orientationchange", relayout);
+  const ro = typeof ResizeObserver === "function" ? new ResizeObserver(relayout) : null;
+  if (ro) { for (const c of el.children) ro.observe(c); ro.observe(document.documentElement); }
+  return { layout, relayout, snapTo: (i) => settle(i, false), get index() { return idx; },
+    destroy() { alive = false; ro?.disconnect(); removeEventListener("resize", relayout); removeEventListener("orientationchange", relayout);
+      cancelAnimationFrame(raf); cancelAnimationFrame(relayoutRaf); el.style.transform = ""; el.style.height = ""; delete el.dataset.snap; } };
 }
 
 // Accessible disclosure: button toggles a region, keeps aria-expanded in sync.
