@@ -111,6 +111,10 @@ input[type="range"] { width: 100%; min-height: var(--pj-hit); margin: 0; accent-
 .slider input { grid-area: inp; }
 [data-group="actions"] [data-action="clear"] { margin-left: auto; }
 .fun-help { align-self: flex-start; }
+/* "Why?" disclosure for the teaching paragraph. */
+.controls .why-btn { align-self: flex-start; font-weight: 600; }
+.controls .why-btn::after { content: " +"; }
+.controls .why-btn[aria-expanded="true"]::after { content: " \2212"; }
 
 /* Phones: sim pinned at the top, controls in a bottom sheet (snap logic in shared/fun). */
 @media (max-width: 600px) {
@@ -125,6 +129,12 @@ input[type="range"] { width: 100%; min-height: var(--pj-hit); margin: 0; accent-
   .controls.fun-sheet-on [data-sliders] { order: -1; gap: 4px; }
   .controls.fun-sheet-on input[type="range"] { min-height: 30px; }
   .toolbar { position: fixed; left: 0; right: 0; bottom: 0; }
+  /* The header stays above the sheet; the sheet's scroll area starts below it when fully open. */
+  .hud { position: relative; z-index: 6; }
+  .controls.fun-sheet-on[data-snap="full"] { padding-top: var(--pj-header-h, 56px); scroll-padding-top: var(--pj-header-h, 56px); }
+  /* One equation per line, monospace, 13px or more, scrolling sideways only inside its box. */
+  .controls .formula { white-space: pre; overflow-x: auto; overscroll-behavior-x: contain; font-size: max(13px, 14px); max-inline-size: 100%;
+    padding: 6px 8px; border: 1px solid var(--pj-chip-border); border-radius: 8px; }
   /* Backup: soft fade where the sheet meets the tab bar, so a clipped row never reads as a hard cut. */
   .fun-sheet-fade { position: fixed; left: 0; right: 0; bottom: var(--pj-toolbar-h, 100px); height: 8px; z-index: 5; pointer-events: none;
     background: linear-gradient(to bottom, transparent, var(--pj-paper)); }

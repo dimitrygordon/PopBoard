@@ -237,7 +237,7 @@ function readout() {
   if (m === "launch" || (m === "sandbox" && !B.drag)) {
     rows([...(m === "sandbox" ? [["g", fmtG(B.g)]] : []), ["v\u2093", fmtV(r.vx)], ["v\u1d67 at launch", fmtV(r.vy)], ["Time to peak", fmtS(r.tApex)], ["Time of flight", fmtS(r.tFlight)],
       ["Peak height", `${fmtM(r.maxHeight)} above the ground`], ["Range", fmtM(r.range)], ["Landing speed", fmtV(r.vLand)]]);
-    f = "v\u2093 = v cos \u03b8, v\u1d67 = v sin \u03b8\nt_peak = v\u1d67 / g\nH = h + v\u1d67\u00b2 / (2g)\nT = (v\u1d67 + \u221a(v\u1d67\u00b2 + 2gh)) / g\nR = v\u2093 T" + (p.h === 0 ? "  (level ground: R = v\u00b2 sin 2\u03b8 / g)" : "");
+    f = "v\u2093 = v cos \u03b8\nv\u1d67 = v sin \u03b8\nt_peak = v\u1d67 / g\nH = h + v\u1d67\u00b2 / (2g)\nT = (v\u1d67 + \u221a(v\u1d67\u00b2 + 2gh)) / g\nR = v\u2093 T" + (p.h === 0 ? "\nLevel ground: R = v\u00b2 sin 2\u03b8 / g" : "");
   } else if (m === "components") {
     const t = st.comp.t, s = idealAt(p, t), sp = Math.hypot(s.vx, s.vy);
     rows([["Time t", fmtS(t)], ["x", fmtM(s.x)], ["y", fmtM(Math.max(0, s.y))], ["v\u2093", `${fmtV(s.vx)} (constant)`], ["v\u1d67", fmtV(s.vy)], ["Speed", fmtV(sp)]]);
@@ -251,7 +251,7 @@ function readout() {
       ["Landing angle", `${fmtDeg(r.landAngle)} \u2192 ${fmtDeg(s.landAngle)}`], ["Best angle", `${bestIdeal.angle}\u00b0 no air, ${best.angle}\u00b0 with air`],
       ["Terminal speed", fmtV(terminalSpeed({ ...p }))]);
     rows(list);
-    f = "F_drag = \u00bd \u03c1 C\u1d05 A v\u00b2, A = \u03c0d\u00b2/4\na = \u2212g \u0177 \u2212 (k/m) |v| v, k = \u00bd \u03c1 C\u1d05 A\nv_terminal = \u221a(m g / k)";
+    f = "F_drag = \u00bd \u03c1 C\u1d05 A v\u00b2\nA = \u03c0d\u00b2/4\na = \u2212g \u0177 \u2212 (k/m) |v| v\nk = \u00bd \u03c1 C\u1d05 A\nv_terminal = \u221a(m g / k)";
   } else if (m === "target") {
     const t = st.target;
     rows([["Target distance", fmtM(t.x)], ...(t.kind === "bullseye" ? [["Center height", fmtM(t.y)]] : [["Cart catch zone", `\u00b1${fmtM(CART_HALF)}`]]),
@@ -260,14 +260,14 @@ function readout() {
     res = st.result;
   } else if (m === "planets") {
     rows(S.worlds.map((w) => { const x = ideal(params(w)); return [WORLDS[w].name, `g ${fmtG(WORLDS[w].g)}: R ${fmtM(x.range)}, H ${fmtM(x.maxHeight)}, T ${fmtS(x.tFlight)}`]; }));
-    f = "R = v\u00b2 sin 2\u03b8 / g, H = v\u00b2 sin\u00b2\u03b8 / (2g), T = 2 v sin \u03b8 / g";
+    f = "R = v\u00b2 sin 2\u03b8 / g\nH = v\u00b2 sin\u00b2\u03b8 / (2g)\nT = 2 v sin \u03b8 / g";
   }
   if (m === "sandbox" && B.target) res = st.result || `Target at ${fmtM(st.boxTarget.x)}, center ${fmtM(st.boxTarget.y)} up.`;
   if (st.fired && st.anim.rate > 1 && m !== "components") res = (res ? res + " " : "") + `Playback sped up ${fmtNum(st.anim.rate, 2)}x.`;
   $("formula").textContent = f; $("result").textContent = res; $("note").textContent = NOTES[m];
-  // Sandbox explainer folds behind the "?" button; other modes show it as before.
+  // The teaching paragraph folds behind the "Why?" disclosure in every mode.
   const help = $("noteHelp");
-  if (help) { help.hidden = m !== "sandbox"; $("note").hidden = m === "sandbox" && help.getAttribute("aria-expanded") !== "true"; }
+  if (help) { help.hidden = !NOTES[m]; $("note").hidden = help.getAttribute("aria-expanded") !== "true"; }
 }
 
 function sync() {

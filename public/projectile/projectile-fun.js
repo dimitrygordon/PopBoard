@@ -86,6 +86,7 @@ if (typeof document !== "undefined") {
   const snaps = () => {
     const vh = innerHeight, tb = document.getElementById("toolbar").offsetHeight;
     document.documentElement.style.setProperty("--pj-toolbar-h", tb + "px");
+    document.documentElement.style.setProperty("--pj-header-h", document.querySelector(".hud").offsetHeight + "px");
     const simBottom = box.getBoundingClientRect().bottom, hudBottom = document.querySelector(".hud").getBoundingClientRect().bottom;
     const half = Math.max(120, Math.floor(vh - tb - simBottom - 4));
     const full = Math.max(half + 40, Math.floor(vh - tb - hudBottom));
