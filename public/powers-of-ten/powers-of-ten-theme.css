@@ -33,10 +33,11 @@ button:focus-visible, input:focus-visible, select:focus-visible, canvas:focus-vi
 .readout p { margin: 0; }
 .readout .power { font-size: 3rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; font-variant-numeric: tabular-nums; }
 .readout .about { font-size: 0.95rem; color: var(--pt-dim); }
+.readout .scale-note { font-size: 0.75rem; color: var(--pt-dim); max-width: 240px; margin-top: 4px; line-height: 1.3; }
 
 .stage { position: fixed; inset: 0; }
 #scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
-.plate-caption { position: absolute; z-index: 3; margin: 0; left: 0; top: 0; transform: translateX(-50%); max-width: min(360px, calc(100% - 24px)); text-align: center;
+.plate-caption { position: absolute; z-index: 3; margin: 0; left: 0; top: 0; transform: translateX(-50%); width: max-content; max-width: min(360px, calc(100% - 24px)); text-align: center;
   display: grid; gap: 0; pointer-events: none; font-size: 0.9rem; line-height: 1.35; padding: 4px 10px; border-radius: 10px;
   background: color-mix(in srgb, var(--pt-bg) 70%, transparent); }
 .plate-caption .pc-name { font-weight: 700; letter-spacing: -0.02em; }

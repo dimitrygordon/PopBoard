@@ -17,10 +17,11 @@ export function createRenderer(canvas, imgs) {
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
   }
   // opts: { z, anchor:{x,y} (CSS px, the point zoom is centered on), box:{top,bottom} free area, palette, ruler }
-  function draw({ z, anchor, box, palette, ruler }) {
+  function draw({ z, anchor, box, palette, ruler, reserve = 0 }) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
-    const top = box?.top ?? 0, bottom = box?.bottom ?? H, avail = Math.max(80, bottom - top);
+    // reserve: space kept free under the plate for its caption, so plates sit higher than the panel.
+    const top = box?.top ?? 0, bottom = box?.bottom ?? H, avail = Math.max(80, bottom - reserve - top);
     const cx = W / 2, cy = top + avail / 2, side = Math.min(W * 0.92, avail);
     const ax = anchor?.x ?? cx, ay = anchor?.y ?? cy;
     const w = plateWeights(z);

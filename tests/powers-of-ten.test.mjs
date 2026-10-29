@@ -80,7 +80,7 @@ test("page wiring: HTML, theme, study card, docs", () => {
   assert.match(html, /data-mode="sandbox"/); assert.match(html, /id="themeBtn"/);
   assert.match(read("powers-of-ten/powers-of-ten-theme.css"), /\[data-theme="light"\]/);
   const study = read("study.html"); assert.match(study, /id: "powers-of-ten"/); assert.match(study, /file: "study-powers-of-ten.html"/);
-  const doc = readFileSync(new URL("../docs/powers-of-ten-science.md", import.meta.url), "utf8"); assert.ok(doc.includes("TODO-TESLA"));
+  const doc = readFileSync(new URL("../docs/powers-of-ten-science.md", import.meta.url), "utf8"); assert.ok(!doc.includes("TODO-TESLA")); assert.ok(doc.includes("Cleared by Tesla 2026-10-29"));
 });
 test("no em-dashes and no Jasper in module copy; no baked-in halo code", () => {
   const files = ["study-powers-of-ten.html", "powers-of-ten/p10-ui.js", "powers-of-ten/p10-logic.js", "powers-of-ten/p10-render.js", "powers-of-ten/powers-of-ten-theme.css"];

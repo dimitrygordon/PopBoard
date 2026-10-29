@@ -224,7 +224,8 @@ function settled() {
 }
 
 // ---------- caption + readout ----------
-let lastMain = -1;
+let lastMain = -1, capH = 72;
+const CAP_GAP = 12;
 function syncText(main) {
   const n = Math.round(Z.z);
   $("power").textContent = formatPower(n);
@@ -242,12 +243,14 @@ function syncText(main) {
   cap.hidden = false;
   const box = freeBox(), h = cap.offsetHeight, W = canvas.clientWidth;
   const x = Math.min(W - 12 - cap.offsetWidth / 2, Math.max(12 + cap.offsetWidth / 2, main.x + main.s / 2));
-  const y = Math.min(box.bottom - h - 4, Math.max(box.top, main.y + main.s * 0.94));
+  // Caption sits CAP_GAP px under the plate's drawn box, never below the top of the controls.
+  const y = Math.min(box.bottom - h, Math.max(box.top, main.y + main.s + CAP_GAP));
+  if (h > capH) { capH = h; dirty = true; } // taller caption: redraw with more room under the plate
   cap.style.left = x + "px"; cap.style.top = y + "px";
 }
 // Area between the readout and the controls, where plates are drawn.
 function freeBox() {
-  const top = $("power").getBoundingClientRect().bottom + 28;
+  const top = $("scaleNote").getBoundingClientRect().bottom + 12;
   const cb = $("controls").getBoundingClientRect();
   const bottom = Math.min(window.innerHeight, cb.top) - 8;
   return { top, bottom };
@@ -289,7 +292,7 @@ function frame(now) {
   if (dirty) {
     dirty = false;
     const box = freeBox();
-    const main = R.draw({ z: Z.z, anchor, box, palette: palette(), ruler: mode === "sandbox" ? sandbox.ruler : false });
+    const main = R.draw({ z: Z.z, anchor, box, reserve: capH + CAP_GAP, palette: palette(), ruler: mode === "sandbox" ? sandbox.ruler : false });
     syncText(main);
   }
   requestAnimationFrame(frame);

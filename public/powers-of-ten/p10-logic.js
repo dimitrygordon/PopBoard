@@ -1,5 +1,5 @@
 // Powers of Ten: plate data, zoom math, detents, Size Hunt, predictions and challenge goals.
-// Pure (no DOM), so Node tests can import it. Every size and threshold is TODO-TESLA
+// Pure (no DOM), so Node tests can import it. Every size and threshold was cleared by Tesla 2026-10-29
 // (see docs/powers-of-ten-science.md and docs/fun-challenges.md).
 export const MODULE_ID = "powers-of-ten";
 
@@ -9,11 +9,11 @@ export const POWERS = Array.from({ length: Z_MAX - Z_MIN + 1 }, (_, i) => Z_MIN 
 // A plate fills FILL of the view when it is "in focus".
 export const FILL = 0.6;
 
-// Approximate sizes (m) from the plate manifest (cleared by Tesla 2026-10-29; TODO-TESLA recheck copy).
+// Approximate sizes (m) from the plate manifest (cleared by Tesla 2026-10-29; copy cleared by Tesla 2026-10-29).
 export const PLATES = [
-  { id: "proton", file: "01-proton.webp", name: "Proton", size: 1.7e-15, caption: "Three quarks held together inside.", alt: "A proton drawn as a ball holding three quarks" },
+  { id: "proton", file: "01-proton.webp", name: "Proton", size: 1.7e-15, caption: "Three quarks, held together by gluons.", alt: "A proton drawn as a ball holding three quarks" },
   { id: "atom", file: "02-atom.webp", name: "Atom", size: 1e-10, caption: "Nucleus enlarged; electrons form a cloud, not orbits.", alt: "An atom: a small nucleus inside a soft electron cloud" },
-  { id: "dna", file: "03-dna.webp", name: "DNA double helix", size: 2e-9, caption: "About two nanometers across.", alt: "A twisted DNA double helix" },
+  { id: "dna", file: "03-dna.webp", name: "DNA double helix", size: 2e-9, caption: "About two nanometers wide.", alt: "A twisted DNA double helix" },
   { id: "virus", file: "04-virus.webp", name: "Virus", size: 1e-7, caption: "Much smaller than a cell.", alt: "A round virus particle with spikes" },
   { id: "cell", file: "05-cell.webp", name: "Animal cell", size: 1e-5, caption: "A nucleus sits inside.", alt: "An animal cell with its nucleus" },
   { id: "ant", file: "06-ant.webp", name: "Ant", size: 1e-3, caption: "Six legs, all on the thorax.", alt: "An ant seen from above" },
@@ -24,7 +24,7 @@ export const PLATES = [
   { id: "earth-moon", file: "11-earth-moon.webp", name: "Earth and Moon", size: 7.7e8, caption: "Not to scale.", alt: "Earth and the Moon" },
   { id: "solar-system", file: "12-solar-system.webp", name: "Solar system", size: 1e13, caption: "Not to scale.", alt: "The Sun and eight planets, Mercury to Neptune" },
   { id: "nearby-stars", file: "13-nearby-stars.webp", name: "Nearby stars", size: 1e17, caption: "Our Sun's neighbors.", alt: "A scatter of nearby stars" },
-  { id: "milky-way", file: "14-milky-way.webp", name: "Milky Way", size: 1e21, caption: "Our galaxy, seen face on.", alt: "The spiral Milky Way galaxy" },
+  { id: "milky-way", file: "14-milky-way.webp", name: "Milky Way", size: 1e21, caption: "Our galaxy, as it would look face on.", alt: "The spiral Milky Way galaxy" },
   { id: "local-group", file: "15-local-group.webp", name: "Local Group", size: 1e23, caption: "Our galaxy's neighborhood.", alt: "A group of galaxies" },
   { id: "cosmic-web", file: "16-cosmic-web.webp", name: "Cosmic web", size: 1e26, caption: "Galaxies strung along threads.", alt: "Threads of galaxies forming a web" }
 ].map((p) => ({ ...p, exp: Math.log10(p.size), focus: Math.log10(p.size / FILL) }));
@@ -98,7 +98,7 @@ export function choicesFor(pred) {
 }
 export const judgePrediction = (guess, actual) => guess === actual;
 
-// ---------- challenge goals (TODO-TESLA: see docs/fun-challenges.md) ----------
+// ---------- challenge goals (Cleared by Tesla 2026-10-29: see docs/fun-challenges.md) ----------
 export const FUN = {
   huntTol: 0.5,          // |z - plate focus| (in powers) that counts as "found"
   bronzeHuntFinds: 3,    // Bronze: find 3 objects in Size Hunt
