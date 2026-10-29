@@ -185,6 +185,8 @@ input.icon-cell::placeholder{ color:var(--text-dimmer); font-size:17px; }
 <link rel="stylesheet" href="astro-study.css?v=20261021k">
 <link rel="stylesheet" href="portal-moon.css?v=dv2">
 <script src="astro-study.js?v=20261021k"></script>
+<link rel="stylesheet" href="shared/fun/fun.css?v=20261029a">
+<script src="shared/fun/fun-badges.js?v=20261029a"></script>
 </head>
 <body>
 <div id="shell">
@@ -857,7 +859,7 @@ function resolveIconHtml(iconType, iconValue) {
 
 function buildCombinedList() {
   var builtins = BUILTIN_MODULES.map(function(m) {
-    return { kind: "builtin", name: m.name, description: m.description, file: m.file, iconHtml: m.icon };
+    return { kind: "builtin", id: m.id, name: m.name, description: m.description, file: m.file, iconHtml: m.icon };
   });
   var custom = customLinks.map(function(link) {
     return {
@@ -903,6 +905,7 @@ function makeModuleCard(m) {
   p.textContent = m.description;
   card.appendChild(p);
   card.onclick = function() { openModule(m); };
+  if (m.kind === "builtin" && window.PopBoardFun) { var fb = window.PopBoardFun.badge(m.id); if (fb) card.appendChild(fb); }
 
   if (m.kind === "custom" && isTeacherMode) {
     card.classList.add("has-controls");
