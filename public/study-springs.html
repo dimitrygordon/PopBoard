@@ -37,10 +37,11 @@ select,input[type=number]{background:var(--panel-2);border:1px solid var(--borde
 .eq{font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,.28);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.7;color:var(--cyan);text-align:center}
 .feedback{font-size:13px;line-height:1.55;min-height:22px;margin-top:8px}.good{color:var(--green)}.bad{color:var(--red)}
 .card p.body{font-size:13px;line-height:1.65;color:#d1d1d6}
-table{width:100%;border-collapse:collapse;font-size:11.5px}th,td{border-bottom:1px solid var(--border);padding:6px 5px;text-align:right;font-family:'JetBrains Mono',monospace}th:first-child,td:first-child{text-align:left}th{color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase}
-.tblwrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--border);padding:6px 5px;text-align:right;font-family:'JetBrains Mono',monospace}th:first-child,td:first-child{text-align:left}th{color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:.05em;text-transform:uppercase}
+.tblwrap{overflow-x:auto}@media(min-width:521px){.tblwrap{max-height:260px;overflow-y:auto}.tblwrap thead th{position:sticky;top:0;background:var(--panel)}}
 .barwrap{margin-top:10px}.bar-row{display:flex;align-items:center;gap:8px;margin:6px 0;font-family:'JetBrains Mono',monospace;font-size:11px}.bar-row .bl{width:110px;color:var(--text-dim)}.bar-track{flex:1;height:16px;background:rgba(0,0,0,.35);border-radius:6px;overflow:hidden}.bar-fill{height:100%;border-radius:6px}.bar-row .bv{width:86px;text-align:right}
-footer{color:var(--text-dimmer);font-size:11px;text-align:center;padding:0 16px 28px;font-family:'JetBrains Mono',monospace;line-height:1.6}
+footer{color:var(--text-dim);font-size:14px;text-align:center;padding:0 16px max(28px,env(safe-area-inset-bottom));font-family:'Inter',system-ui,sans-serif;line-height:1.6;max-width:860px;margin:0 auto}.model-about summary{cursor:pointer;min-height:44px;display:inline-flex;align-items:center;color:var(--text);font-weight:600}.model-about p{margin:4px 0 0}
+@media(max-width:520px){.tblwrap table,.tblwrap tbody,.tblwrap tr,.tblwrap td{display:block;width:100%}.tblwrap thead{display:none}.tblwrap tr{border:1px solid var(--border);border-radius:10px;padding:6px 10px;margin:0 0 8px;background:var(--panel-2)}.tblwrap td{display:flex;justify-content:space-between;gap:12px;font-size:13px;border-bottom:0;padding:4px 0;text-align:right}.tblwrap td::before{content:attr(data-label);color:var(--text-dim);font-family:'Inter',system-ui,sans-serif;text-align:left}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style><link rel="stylesheet" href="astro-study.css?v=20261021k">
 <script src="astro-study.js?v=20261021k"></script>
@@ -237,7 +238,7 @@ footer{color:var(--text-dimmer);font-size:11px;text-align:center;padding:0 16px 
 <div class="eq">F = −kx · x_eq = mg/k · T = 2π√(m/k)<br>series k_eq = k₁k₂/(k₁+k₂) · parallel k_eq = k₁+k₂<br>KE = ½mv² · EPE = ½kx² · ζ = c/(2√(mk))</div>
 </section></div></section>
 </main>
-<footer>PopBoard Study · Hooke's Law and Springs Sandbox · F = −kx · kx = mg at equilibrium · T = 2π√(m/k) · f = (1/2π)√(k/m) · series k₁k₂/(k₁+k₂) · parallel k₁+k₂<br>Ideal springs except in Elasticity &amp; Limits, whose material curves are clearly-labelled illustrative teaching models, not data for any real material.</footer>
+<footer><details class="model-about"><summary>About the model</summary><p>PopBoard Study · Hooke's Law and Springs Sandbox · F = −kx · kx = mg at equilibrium · T = 2π√(m/k) · f = (1/2π)√(k/m) · series k₁k₂/(k₁+k₂) · parallel k₁+k₂<br>Ideal springs except in Elasticity &amp; Limits, whose material curves are clearly-labelled illustrative teaching models, not data for any real material.</p></details></footer>
 <script type="module">
 "use strict";
 function springForce(k,x){ return -k*x; }
@@ -694,5 +695,9 @@ window.addEventListener("resize",function(){ render(0); });
 </script>
 <script>
 document.addEventListener("click", function(e){ var b = e.target.closest && e.target.closest("[data-study-back]"); if (!b) return; e.preventDefault(); location.href = "study.html" + location.search; });
+</script>
+<script>
+// Phone stacked cards: give each data cell its column header as a label.
+(function(){document.querySelectorAll(".tblwrap table").forEach(function(t){var hs=Array.prototype.map.call(t.querySelectorAll("thead th"),function(h){return h.textContent.trim();});var tb=t.querySelector("tbody");if(!tb)return;var lab=function(){tb.querySelectorAll("tr").forEach(function(tr){Array.prototype.forEach.call(tr.children,function(td,i){if(hs[i]&&td.getAttribute("data-label")!==hs[i])td.setAttribute("data-label",hs[i]);});});};lab();new MutationObserver(lab).observe(tb,{childList:true});});})();
 </script>
 </body></html>

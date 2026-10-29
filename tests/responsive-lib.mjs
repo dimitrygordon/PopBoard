@@ -216,7 +216,7 @@ export function pageChecks({ minText, minTap, touch }) {
     if (c.width < vw * 0.72 && c.height > vh * 0.35) {
       const band = c.left > vw - c.right ? [0, c.left] : [c.right, vw];
       if (band[1] - band[0] > vw * 0.2) {
-        let empty = 0; for (const fy of [0.3, 0.5, 0.7]) { const t = document.elementFromPoint((band[0] + band[1]) / 2, c.top + c.height * fy); if (!t || t === document.body || t === de || (!ownText(t) && !t.matches("button,input,canvas,svg,img") && t.children.length > 0 && !t.innerText?.trim())) empty++; }
+        let empty = 0; for (const fy of [0.3, 0.5, 0.7]) { const py = c.top + c.height * fy; if (py < 0 || py > vh) continue; const t = document.elementFromPoint((band[0] + band[1]) / 2, py); if (!t || t === document.body || t === de || (!ownText(t) && !t.matches("button,input,canvas,svg,img") && t.children.length > 0 && !t.innerText?.trim())) empty++; }
         if (empty === 3) add("stage-gap", stage, `stage ${Math.round(c.width)}px wide leaves an empty ${Math.round(band[1] - band[0])}px band`);
       }
     }
