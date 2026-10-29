@@ -2,6 +2,7 @@
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <link rel="stylesheet" href="shared/layout/layout.css">
 <script type="module" src="shared/layout/layout.js"></script>
+<script src="shared/notation/notation.js"></script>
 <title>Vectors &amp; Forces in 2D // PopBoard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -121,18 +122,18 @@ footer{color:var(--text-dimmer);font-size:11px;text-align:center;padding:0 16px 
 
 <div class="grid">
 <section class="card" aria-label="Incline decomposition lab"><h2>Scene 5 · Incline Decomposition Lab</h2>
-<div class="sub">Gravity (amber) split into dashed mg·sinθ down the plane and mg·cosθ into the plane · FN balances the into-plane part · friction points up the plane</div>
+<div class="sub">Gravity (amber) split into dashed mg·sinθ down the plane and mg·cosθ into the plane · F<sub>N</sub> balances the into-plane part · friction points up the plane</div>
 <canvas id="incCanvas" class="view play"></canvas>
 <div class="readouts">
 <div class="tile"><div class="l">mg·sinθ (down plane)</div><div class="v" id="incPar">—</div></div>
-<div class="tile"><div class="l">mg·cosθ = FN (into plane)</div><div class="v" id="incPerp">—</div></div>
+<div class="tile"><div class="l">mg·cosθ = F<sub>N</sub> (into plane)</div><div class="v" id="incPerp">—</div></div>
 <div class="tile"><div class="l">Will it slip?</div><div class="v" id="incSlip">—</div><div class="s" id="incSlipNote">—</div></div></div>
 </section>
 <section class="card" aria-label="Incline controls"><h2>Ramp Controls &amp; Challenges</h2>
 <div class="panel-row"><div class="panel-label" id="incAngLabel">Ramp angle θ</div><input type="range" id="incAng" min="0" max="55" step="1" value="30" aria-label="Ramp angle"></div>
 <div class="panel-row"><div class="panel-label" id="incMassLabel">Mass</div><input type="range" id="incMass" min="1" max="30" step="0.5" value="10" aria-label="Mass"></div>
-<div class="panel-row"><div class="panel-label" id="incMuLabel">μs (static coefficient)</div><input type="range" id="incMu" min="0.05" max="1" step="0.05" value="0.5" aria-label="Static coefficient"></div>
-<div class="eq">mg·sinθ down the plane · mg·cosθ into the plane<br>FN = mg·cosθ · slips when mg·sinθ &gt; μs·FN, i.e. tanθ &gt; μs</div>
+<div class="panel-row"><div class="panel-label" id="incMuLabel">μ<sub>s</sub> (static coefficient)</div><input type="range" id="incMu" min="0.05" max="1" step="0.05" value="0.5" aria-label="Static coefficient"></div>
+<div class="eq">mg·sinθ down the plane · mg·cosθ into the plane<br>F<sub>N</sub> = mg·cosθ · slips when mg·sinθ &gt; μ<sub>s</sub>·F<sub>N</sub>, i.e. tanθ &gt; μ<sub>s</sub></div>
 <div class="panel-section-title">Challenge A · Angle where it just slips</div>
 <div class="panel-row"><input type="number" id="critInput" step="any" placeholder="Critical angle (degrees)" aria-label="Critical angle"></div>
 <div class="btn-row"><button class="btn primary" id="critCheck" type="button">Check critical angle</button></div>
@@ -146,9 +147,9 @@ footer{color:var(--text-dimmer);font-size:11px;text-align:center;padding:0 16px 
 </section>
 
 <section class="card"><h2>The Big Idea</h2>
-<p class="body"><strong>A vector is fully described by its components.</strong> Tip-to-tail addition and component addition are the same addition in two outfits: draw it and you <em>see</em> the resultant; split into Fx = F·cosθ and Fy = F·sinθ, add the columns, rebuild with R = √(Rx²+Ry²) and θ = atan2(Ry, Rx), and you get a number you can trust to a decimal place. The equilibrant is just the resultant with the opposite sign — add it and the forces balance, which by Newton's 1st law means no change in motion. On a ramp, gravity itself gets the component treatment: mg·sinθ pulls down the plane, mg·cosθ presses into it (and is what the normal force answers), and slip begins exactly when the down-plane part outgrows μs·FN.</p></section>
+<p class="body"><strong>A vector is fully described by its components.</strong> Tip-to-tail addition and component addition are the same addition in two outfits: draw it and you <em>see</em> the resultant; split into Fx = F·cosθ and Fy = F·sinθ, add the columns, rebuild with R = √(Rx²+Ry²) and θ = atan2(Ry, Rx), and you get a number you can trust to a decimal place. The equilibrant is just the resultant with the opposite sign — add it and the forces balance, which by Newton's 1st law means no change in motion. On a ramp, gravity itself gets the component treatment: mg·sinθ pulls down the plane, mg·cosθ presses into it (and is what the normal force answers), and slip begins exactly when the down-plane part outgrows μ<sub>s</sub>·F<sub>N</sub>.</p></section>
 </main>
-<footer>PopBoard Study · Vectors &amp; Forces in 2D · Fx = F·cosθ · Fy = F·sinθ · R = √(Rx²+Ry²) · θ = atan2(Ry, Rx) · equilibrant = −R · incline: mg·sinθ / mg·cosθ, FN = mg·cosθ</footer>
+<footer>PopBoard Study · Vectors &amp; Forces in 2D · Fx = F·cosθ · Fy = F·sinθ · R = √(Rx²+Ry²) · θ = atan2(Ry, Rx) · equilibrant = −R · incline: mg·sinθ / mg·cosθ, F<sub>N</sub> = mg·cosθ</footer>
 <script type="module">
 "use strict";
 /* ---------- pure physics (DOM-free, unit-tested headlessly) ---------- */
@@ -300,18 +301,18 @@ function drawIncline(){
   arrow(ctx,bx,by-16,0,-d.mg*scale, "#FFB300","mg = "+fmt(d.mg,1)+" N");
   arrow(ctx,bx,by-16,-c*d.parallel*scale, -sn*d.parallel*scale, "#FFD54A","mg·sinθ = "+fmt(d.parallel,1)+" N",true); // down-plane
   arrow(ctx,bx,by-16,sn*d.perpendicular*scale, -c*d.perpendicular*scale, "#FFE082","mg·cosθ = "+fmt(d.perpendicular,1)+" N",true); // into-plane
-  arrow(ctx,bx,by-16,-sn*d.normal*scale, c*d.normal*scale, "#5FD3C4","FN = "+fmt(d.normal,1)+" N"); // outward, balances into-plane part
+  arrow(ctx,bx,by-16,-sn*d.normal*scale, c*d.normal*scale, "#5FD3C4","F_{N} = "+fmt(d.normal,1)+" N"); // outward, balances into-plane part
   var fric=Math.min(d.fsMax,d.parallel);
   arrow(ctx,bx,by-16,c*fric*scale, sn*fric*scale, "#B07CFF", d.slips?"friction (maxed)":"friction up plane"); // up-plane
   $("incPar").textContent=fmt(d.parallel,1)+" N"; $("incPerp").textContent=fmt(d.perpendicular,1)+" N";
   $("incSlip").textContent=d.slips?"Yes — slips":"No — holds"; $("incSlip").style.color=d.slips?"#ff7a7a":"#57d38c";
-  $("incSlipNote").textContent="fs,max = "+fmt(d.fsMax,1)+" N · critical angle "+fmt(d.criticalDeg,1)+"°";
-  if(state.mode==="act2"){ $("statusType").textContent="Act 2 · Incline "+fmt(state.incAngle,0)+"° — "+(d.slips?"Slips":"Holds"); $("statusReason").textContent="mg·sinθ = "+fmt(d.parallel,1)+" N vs fs,max = μs·mg·cosθ = "+fmt(d.fsMax,1)+" N · FN = "+fmt(d.normal,1)+" N · critical angle atan(μs) = "+fmt(d.criticalDeg,1)+"°"; }
+  $("incSlipNote").textContent="F_{f,static,max} = "+fmt(d.fsMax,1)+" N · critical angle "+fmt(d.criticalDeg,1)+"°";
+  if(state.mode==="act2"){ $("statusType").textContent="Act 2 · Incline "+fmt(state.incAngle,0)+"° — "+(d.slips?"Slips":"Holds"); $("statusReason").textContent="mg·sinθ = "+fmt(d.parallel,1)+" N vs F_{f,static,max} = μ_{s}·mg·cosθ = "+fmt(d.fsMax,1)+" N · F_{N} = "+fmt(d.normal,1)+" N · critical angle atan(μ_{s}) = "+fmt(d.criticalDeg,1)+"°"; }
 }
 $("incAng").addEventListener("input",function(e){ state.incAngle=parseFloat(e.target.value); $("incAngLabel").textContent="Ramp angle θ: "+fmt(state.incAngle,0)+"°"; drawIncline(); });
 $("incMass").addEventListener("input",function(e){ state.incMass=parseFloat(e.target.value); $("incMassLabel").textContent="Mass: "+fmt(state.incMass,1)+" kg"; drawIncline(); });
-$("incMu").addEventListener("input",function(e){ state.incMu=parseFloat(e.target.value); $("incMuLabel").textContent="μs (static coefficient): "+fmt(state.incMu,2); drawIncline(); });
-$("critCheck").addEventListener("click",function(){ var d=inclineDecomp(state.incMass,state.incAngle,state.incMu); var g=parseFloat($("critInput").value); var fb=$("critFeedback"); if(!isFinite(g)){ fb.textContent="Enter an angle first."; fb.className="feedback bad"; return; } var good=Math.abs(g-d.criticalDeg)<=1.5; state.score2.total++; if(good) state.score2.ok++; $("score2").textContent=state.score2.ok+" / "+state.score2.total; fb.textContent=(good?"Correct. ":"Not quite. ")+"Slip starts when mg·sinθ = μs·mg·cosθ ⇒ tanθ = μs ⇒ θ = atan("+fmt(state.incMu,2)+") = "+fmt(d.criticalDeg,1)+"° (mass cancels!). Score "+state.score2.ok+"/"+state.score2.total+"."; fb.className="feedback "+(good?"good":"bad"); });
+$("incMu").addEventListener("input",function(e){ state.incMu=parseFloat(e.target.value); $("incMuLabel").textContent="μ_{s} (static coefficient): "+fmt(state.incMu,2); drawIncline(); });
+$("critCheck").addEventListener("click",function(){ var d=inclineDecomp(state.incMass,state.incAngle,state.incMu); var g=parseFloat($("critInput").value); var fb=$("critFeedback"); if(!isFinite(g)){ fb.textContent="Enter an angle first."; fb.className="feedback bad"; return; } var good=Math.abs(g-d.criticalDeg)<=1.5; state.score2.total++; if(good) state.score2.ok++; $("score2").textContent=state.score2.ok+" / "+state.score2.total; fb.textContent=(good?"Correct. ":"Not quite. ")+"Slip starts when mg·sinθ = μ_{s}·mg·cosθ ⇒ tanθ = μ_{s} ⇒ θ = atan("+fmt(state.incMu,2)+") = "+fmt(d.criticalDeg,1)+"° (mass cancels!). Score "+state.score2.ok+"/"+state.score2.total+"."; fb.className="feedback "+(good?"good":"bad"); });
 $("holdCheck").addEventListener("click",function(){ var d=inclineDecomp(state.incMass,state.incAngle,state.incMu); var g=parseFloat($("holdInput").value); var fb=$("holdFeedback"); if(!isFinite(g)){ fb.textContent="Enter a force first."; fb.className="feedback bad"; return; } var good=Math.abs(g-d.smoothHold)<=Math.max(2,d.smoothHold*0.05); state.score2.total++; if(good) state.score2.ok++; $("score2").textContent=state.score2.ok+" / "+state.score2.total; fb.textContent=(good?"Correct. ":"Not quite. ")+"On a smooth ramp the only down-plane pull is mg·sinθ = "+fmt(state.incMass,1)+"×9.81×sin("+fmt(state.incAngle,0)+"°) = "+fmt(d.smoothHold,1)+" N, so the up-plane equilibrant must be exactly that. Score "+state.score2.ok+"/"+state.score2.total+"."; fb.className="feedback "+(good?"good":"bad"); });
 
 /* tabs, deep links, reset */
@@ -322,7 +323,7 @@ $("controlsJumpBtn").addEventListener("click",function(){ var el=document.getEle
 function render(){ drawPlay(); drawEq(); drawIncline(); }
 (function(){ var q=new URLSearchParams(location.search); var m=q.get("mode"); var map={act1:"act1",vectors:"act1",vector:"act1",scene1:"act1",scene2:"act1",scene3:"act1",act2:"act2",forces:"act2",scene4:"act2",scene5:"act2"}; if(m && map[m]) state.mode=map[m]; document.querySelectorAll("[data-mode]").forEach(function(x){x.classList.toggle("active",x.dataset.mode===state.mode);}); document.querySelectorAll(".mode").forEach(function(mm){mm.classList.toggle("active",mm.id==="mode-"+state.mode);}); })();
 $("myMagLabel").textContent="Your force magnitude: 0 N"; $("myAngLabel").textContent="Your force angle: 0°";
-$("incAngLabel").textContent="Ramp angle θ: 30°"; $("incMassLabel").textContent="Mass: 10.0 kg"; $("incMuLabel").textContent="μs (static coefficient): 0.50";
+$("incAngLabel").textContent="Ramp angle θ: 30°"; $("incMassLabel").textContent="Mass: 10.0 kg"; $("incMuLabel").textContent="μ_{s} (static coefficient): 0.50";
 buildVecSliders(); buildOrderChips(); render();
 window.addEventListener("resize",render);
 </script>

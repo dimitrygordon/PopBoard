@@ -237,7 +237,7 @@ function readout() {
   if (m === "launch" || (m === "sandbox" && !B.drag)) {
     rows([...(m === "sandbox" ? [["g", fmtG(B.g)]] : []), ["v\u2093", fmtV(r.vx)], ["v\u1d67 at launch", fmtV(r.vy)], ["Time to peak", fmtS(r.tApex)], ["Time of flight", fmtS(r.tFlight)],
       ["Peak height", `${fmtM(r.maxHeight)} above the ground`], ["Range", fmtM(r.range)], ["Landing speed", fmtV(r.vLand)]]);
-    f = "v\u2093 = v cos \u03b8\nv\u1d67 = v sin \u03b8\nt_peak = v\u1d67 / g\nH = h + v\u1d67\u00b2 / (2g)\nT = (v\u1d67 + \u221a(v\u1d67\u00b2 + 2gh)) / g\nR = v\u2093 T" + (p.h === 0 ? "\nLevel ground: R = v\u00b2 sin 2\u03b8 / g" : "");
+    f = "v\u2093 = v cos \u03b8\nv\u1d67 = v sin \u03b8\nt_{peak} = v\u1d67 / g\nH = h + v\u1d67\u00b2 / (2g)\nT = (v\u1d67 + \u221a(v\u1d67\u00b2 + 2gh)) / g\nR = v\u2093 T" + (p.h === 0 ? "\nLevel ground: R = v\u00b2 sin 2\u03b8 / g" : "");
   } else if (m === "components") {
     const t = st.comp.t, s = idealAt(p, t), sp = Math.hypot(s.vx, s.vy);
     rows([["Time t", fmtS(t)], ["x", fmtM(s.x)], ["y", fmtM(Math.max(0, s.y))], ["v\u2093", `${fmtV(s.vx)} (constant)`], ["v\u1d67", fmtV(s.vy)], ["Speed", fmtV(sp)]]);
@@ -251,7 +251,7 @@ function readout() {
       ["Landing angle", `${fmtDeg(r.landAngle)} \u2192 ${fmtDeg(s.landAngle)}`], ["Best angle", `${bestIdeal.angle}\u00b0 no air, ${best.angle}\u00b0 with air`],
       ["Terminal speed", fmtV(terminalSpeed({ ...p }))]);
     rows(list);
-    f = "F_drag = \u00bd \u03c1 C\u1d05 A v\u00b2\nA = \u03c0d\u00b2/4\na = \u2212g \u0177 \u2212 (k/m) |v| v\nk = \u00bd \u03c1 C\u1d05 A\nv_terminal = \u221a(m g / k)";
+    f = "F_{drag} = \u00bd \u03c1 C\u1d05 A v\u00b2\nA = \u03c0d\u00b2/4\na = \u2212g \u0177 \u2212 (k/m) |v| v\nk = \u00bd \u03c1 C\u1d05 A\nv_{terminal} = \u221a(m g / k)";
   } else if (m === "target") {
     const t = st.target;
     rows([["Target distance", fmtM(t.x)], ...(t.kind === "bullseye" ? [["Center height", fmtM(t.y)]] : [["Cart catch zone", `\u00b1${fmtM(CART_HALF)}`]]),
