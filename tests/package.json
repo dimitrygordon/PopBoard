@@ -26,6 +26,7 @@
     "test:rocket": "node --test rocket-physics.test.mjs",
     "test:quantum": "node --test quantum-physics.test.mjs",
     "test:climate": "node --test climate-physics.test.mjs",
+    "test:platetectonics": "node --test plate-tectonics.test.mjs",
     "test:mechanics:browser": "node mechanics-browser.mjs",
     "test:pdf": "node --test pdf-export.test.mjs",
     "test:return": "node --test board-return.test.mjs",
