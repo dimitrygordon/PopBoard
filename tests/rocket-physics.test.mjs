@@ -53,7 +53,7 @@ test("staging: two stages always beat one when structure has mass, and tie when 
 test("orbits: ISS speed and period, escape speed, g at altitude", () => {
   const r = P.R_EARTH + 400e3;
   assert.ok(close(P.vCirc(r), 7670, 10));
-  assert.ok(close(P.period(r) / 60, 92.5, 0.3));
+  assert.ok(close(P.period(r) / 60, 92.41, 0.01), "92.4 min at 400 km");
   assert.ok(close(P.vEsc(P.R_EARTH), 11186, 5), "11.19 km/s at the surface");
   assert.ok(close(P.vEsc(r) / P.vCirc(r), Math.SQRT2, 1e-12));
   assert.ok(close(P.gAt(P.R_EARTH), 9.82, 0.01));
@@ -111,6 +111,18 @@ function stateGrid(mode) {
     for (const upper of [false, true]) for (const boosters of [0, 2]) for (const fins of [false, true]) out.push({ top, tank, engine, upper, boosters, fins, payload: 1 });
   return out;
 }
+test("presets: RS-25 snaps to 3590 m/s (Isp 366 s, 1.86 MN), F-1 about 6.7 MN, launch default 400 km gives 92.4 min", () => {
+  const sn = (k, v) => P.fromSlider(k, P.toSlider(k, v));
+  const ve = sn("ve", P.veFromIsp(P.ENGINES.rs25.ispSl));
+  assert.equal(ve, 3590);
+  assert.equal(Math.round(P.ispFromVe(ve)), 366);
+  assert.ok(close(ve * sn("mdot", P.ENGINES.rs25.thrustSl / ve) / 1e6, 1.86, 0.006));
+  const vf = sn("ve", P.veFromIsp(P.ENGINES.f1.ispSl));
+  assert.ok(close(vf * sn("mdot", P.ENGINES.f1.thrustSl / vf) / 1e6, 6.7, 0.05));
+  assert.equal(sn("altLaunch", 400), 400);
+  assert.equal(P.shown("launch", { alt: 400, kick: "medium" }).periodMin.toFixed(1), "92.4");
+});
+
 test("sliders: every shown number moves less than 2x per step and never flips sign or hits zero", () => {
   let checked = 0;
   for (const mode of P.MODES) for (const base of stateGrid(mode)) for (const sl of MODE_SLIDERS[mode]) {

@@ -12,10 +12,10 @@ Every equation, constant, number and claim the Rocket Science & Space Mission mo
 - [GLENN-THRUST] NASA Glenn Research Center, Beginner's Guide to Rockets: Rocket Thrust, Newton's third law, specific impulse. https://www.grc.nasa.gov/www/k-12/rocket/rktthsum.html and https://www.grc.nasa.gov/www/k-12/rocket/specimp.html
 - [OS-UP1-9.7] OpenStax University Physics Volume 1, 9.7 Rocket Propulsion (rocket equation). https://openstax.org/books/university-physics-volume-1/pages/9-7-rocket-propulsion
 - [OS-UP1-13] OpenStax University Physics Volume 1, 13.3 Gravitational Potential Energy and Total Energy (escape velocity), 13.4 Satellite Orbits and Energy (orbital speed and period), 13.5 Kepler's Laws of Planetary Motion (equal areas, Hohmann transfer example). https://openstax.org/books/university-physics-volume-1/pages/13-introduction
-- [NASA-SATURN] NASA Marshall, Saturn V News Reference, F-1 engine fact sheet (1,522,000 lbf = 6.77 MN sea-level thrust; Isp 263 s sea level, 304 s vacuum).
-- [NASA-RS25] NASA, RS-25 engine / Space Shuttle Main Engine (418,000 lbf = 1.86 MN sea-level thrust; Isp 366 s sea level, 452 s vacuum). https://www.nasa.gov/reference/space-launch-system-rs-25-core-stage-engine/
-- [NASA-SRB] NASA, Space Shuttle Solid Rocket Boosters (Isp about 242 s sea level, 268 s vacuum).
-- [SPACEX-F9] SpaceX, Falcon 9 vehicle page and user's guide (Merlin 1D Isp 282 s sea level, 311 s vacuum; Merlin Vacuum 981 kN, Isp 348 s; core diameter 3.7 m).
+- [NASA-SATURN] NASA Marshall, Saturn V News Reference, F-1 engine fact sheet (1,522,000 lbf = 6.77 MN sea-level thrust; Isp 263 s sea level, 304 s vacuum). Verified online: NASA NTRS, "Waking a Giant: Bringing the Saturn F-1 Engine Back to Life" (2014) lists 1,522,000 lbf sea level, 1,748,200 lbf vacuum, Isp 265.4 s sea level and 304.1 s vacuum: https://ntrs.nasa.gov/api/citations/20140011656/downloads/20140011656.pdf (the model keeps the commonly quoted 263 s sea-level value; 265.4 s is the as-measured figure in that paper).
+- [NASA-RS25] NASA, RS-25 engine / Space Shuttle Main Engine (418,000 lbf = 1.86 MN sea-level thrust and 512,300 lbf = 2.28 MN vacuum thrust at 109% power; Isp 366 s sea level, 452 s vacuum). Numbers verified on the L3Harris (formerly Aerojet Rocketdyne) RS-25 engine specification page: https://www.l3harris.com/all-capabilities/rs-25-engine . Background: https://www.nasa.gov/reference/space-launch-system-rs-25-core-stage-engine/
+- [NASA-SRB] NASA, Space Shuttle Solid Rocket Boosters (Isp about 242 s sea level, 268 s vacuum). Verified: B. J. Cantwell, Stanford AA283 ch. 10, Solid Rockets (Shuttle SRB: sea level 242 s, vacuum 268 s): https://web.stanford.edu/~cantwell/AA283_Course_Material/AA283_Lectures/AA283_Chapter_10_Solid_Rockets_Brian_J_Cantwell_2024.pdf
+- [SPACEX-F9] SpaceX, Falcon 9 vehicle page and user's guide (Merlin 1D Isp 282 s sea level, 311 s vacuum, verified on the archived SpaceX Falcon 9 page: https://web.archive.org/web/20130501002858/http://www.spacex.com/falcon9.php ; Merlin Vacuum 981 kN, Isp 348 s; core diameter 3.7 m).
 - [CURTIS] H. D. Curtis, Orbital Mechanics for Engineering Students, 4th ed.: ch. 2 (conics), 8.2 to 8.4 (Hohmann transfers, synodic period, departure from a parking orbit), 11.3 to 11.6 (gravity turn, gravity and drag losses, optimal staging).
 - [SUTTON] G. P. Sutton and O. Biblarz, Rocket Propulsion Elements, 9th ed., ch. 2 and 4 (thrust, Isp, flight performance, about 9.3 to 9.5 km/s total to low Earth orbit including losses).
 - [NASA-MARS] NASA Mars Exploration: launch windows to Mars open about every 26 months. https://mars.nasa.gov/mars2020/timeline/launch/
@@ -41,7 +41,7 @@ Every equation, constant, number and claim the Rocket Science & Space Mission mo
 |---|---|---|---|---|
 | Space Shuttle SRB (solid fuel) | 242 s | 268 s | | [NASA-SRB] |
 | F-1, Saturn V first stage (kerosene and liquid oxygen) | 263 s | 304 s | 6.77 MN sea level | [NASA-SATURN] |
-| RS-25, Space Shuttle and SLS (liquid hydrogen and liquid oxygen) | 366 s | 452 s | 1.86 MN sea level | [NASA-RS25] |
+| RS-25, Space Shuttle and SLS (liquid hydrogen and liquid oxygen) | 366 s | 452 s | 1.86 MN sea level, 2.28 MN vacuum (109% power) | [NASA-RS25] |
 | Merlin 1D-like core engine (model) | 282 s | 311 s | 2.5 MN sea level each (model, rounded) | [SPACEX-F9] for Isp |
 | Merlin Vacuum-like upper stage (model) | | 348 s | 981 kN | [SPACEX-F9] |
 
@@ -73,15 +73,15 @@ Every equation, constant, number and claim the Rocket Science & Space Mission mo
 2D point mass over a round, non-rotating Earth with inverse-square gravity and the exponential atmosphere above; step 0.2 s.
 Guidance: straight up to 60 m/s, then the velocity is tipped toward downrange by the chosen angle (0.4, 2 or 5 degrees) and thrust follows the velocity (a gravity turn). The upper stage steers to hold about 200 km, and cuts off when the lowest point of the orbit reaches 200 km (or 90% of the current height if lower). A fairing or escape tower is dropped above 110 km. "In orbit" means the lowest point is at least 120 km (a model threshold: lower orbits decay quickly from drag). [CURTIS 11.3]
 
-Launch preset (rounded, Falcon-9-like; model values, not a specific vehicle): first stage 395 t propellant, 22 t tank structure, three 2.5 MN engines (3 t), 1 t interstage; upper stage 92 t propellant, 4 t dry, 981 kN, Isp 348 s; fairing 1.9 t; payload 10 t. Liftoff mass 528.9 t, thrust-to-weight 1.45, ideal delta-v 10.7 km/s, core diameter 3.66 m, Cd 0.4.
-Results shown with the medium tip (2 degrees): orbit about 198 x 208 km, top speed 7.79 km/s, gravity loss about 1.5 km/s, drag loss about 0.03 km/s. Small tip (0.4 degrees): too steep, runs out of fuel before reaching orbit. Big tip (5 degrees): stays low in thick air and falls back.
+Launch preset (rounded, Falcon-9-like; model values, not a specific vehicle): first stage 395 t propellant, 22 t tank structure, three 2.5 MN engines (3 t), 1 t interstage; upper stage 92 t propellant, 4 t dry, 981 kN, Isp 348 s; fairing 1.9 t; payload 10 t. Liftoff mass 528.9 t, thrust-to-weight 1.45, ideal delta-v 10.7 km/s (uses vacuum Isp for every stage; with the first stage at sea-level Isp 282 s it is about 10.3 km/s), core diameter 3.66 m, Cd 0.4.
+Results shown with the medium tip (2 degrees): orbit about 198 x 208 km, top speed 7.79 km/s, gravity loss about 1.5 km/s, drag loss about 0.03 km/s (real rockets lose about 0.1 to 0.15 km/s to drag; this model is simplified, and the readout says so). Small tip (0.4 degrees): too steep, runs out of fuel before reaching orbit. Big tip (5 degrees): stays low in thick air and falls back.
 Sandbox parts (model values): tanks small/medium/large 100/200/395 t propellant with 7/12/22 t structure; one 2.5 MN engine (1 t) or a three-engine cluster (3 t); two strap-on solid boosters each 40 t propellant, 6 t dry, 1.5 MN sea level, Isp 242/268 s, 1.37 m wide; fins 0.5 t and +0.1 on Cd; nose cones 0.3 t (ogive) and 0.25 t (conical); fairing 1.9 t; capsule escape tower 4.0 t; upper stage as above. In this model fins only add mass and drag (real rockets mostly steer by gimballing their engines [SUTTON]).
 
 ## Claims shown to students
 
 - A rocket throws mass out of its nozzle; by Newton's third law the exhaust pushes the rocket with an equal and opposite force. Rockets do not push on the ground or the air, so they work in space. [GLENN-THRUST]
 - As a rocket burns fuel it gets lighter, so each kilogram of exhaust speeds it up more than the last. Because of the logarithm, doubling the mass ratio adds only a fixed amount of delta-v (ve ln 2). [OS-UP1-9.7]
-- Low Earth orbit needs about 9.4 km/s of delta-v including gravity and drag losses (orbital speed is about 7.8 km/s). [SUTTON]
+- Low Earth orbit needs about 9.4 km/s of delta-v including gravity and drag losses (orbital speed is about 7.8 km/s). [SUTTON] (textbook figure; no online copy verified.)
 - Staging drops empty tanks and engines so the remaining fuel pushes less mass. [CURTIS 11.6]
 - Gravity turn: climb fights gravity (gravity loss), the thick lower air causes drag loss; orbit is about going sideways fast enough that the ground curves away as fast as you fall. [CURTIS 11.3], [OS-UP1-13]
 - 100 km is the commonly used edge of space. [FAI]
@@ -90,11 +90,11 @@ Sandbox parts (model values): tanks small/medium/large 100/200/395 t propellant 
 
 ## Numbers students see (defaults and presets)
 
-- Thrust default (slider-snapped): 299 kg/s x 3000 m/s = 898 kN; a 59.6 t rocket weighs 585 kN; F/W 1.53; starting acceleration 5.2 m/s^2; Isp 306 s. "Load a real engine" (sea level, snapped to slider steps): F-1 2580 m/s x 2601 kg/s = 6.71 MN (Isp 263 s); RS-25 3580 m/s x 517 kg/s = 1.85 MN (Isp 365 s).
+- Thrust default (slider-snapped): 299 kg/s x 3000 m/s = 898 kN; a 59.6 t rocket weighs 585 kN; F/W 1.53; starting acceleration 5.2 m/s^2; Isp 306 s. "Load a real engine" (sea level, snapped to slider steps): F-1 2580 m/s x 2601 kg/s = 6.71 MN (Isp 263 s); RS-25 3590 m/s x 517 kg/s = 1.86 MN (Isp 366 s). The exhaust-speed slider moves in 10 m/s steps so 3590 m/s is reachable. On-screen wording: "F-1 at sea level: about 6.7 MN (the real engine made 6.77 MN; the slider rounds it)." "RS-25 at sea level: about 3,590 m/s exhaust speed (Isp about 366 s), about 1.86 MN of thrust." "RS-25: about 1.86 MN at sea level and about 2.28 MN in space, at 109% power."
 - Rocket equation default: F-1 vacuum ve 2981 m/s, mass ratio 7.98 gives 6.19 km/s and the rocket is 87% fuel.
-- Launch target altitude default 402 km: circular speed 7.67 km/s, period 92.5 min, gravity 8.69 m/s^2.
+- Launch target altitude default 400 km (the altitude slider moves in 10 km steps): circular speed 7.67 km/s, period 92.4 min (92.41 min from GM 3.986004418e14 and R 6371 km; 92.5 min would need about 402 km), gravity 8.69 m/s^2.
 - Orbits default: 7.70 km/s horizontal at 400 km gives a slight ellipse with a highest point near 498 km and a 93.4 min period.
 - Rocket equation: ve = 2628 (SRB), 2981 (F-1), 4433 (RS-25) m/s. Mass ratio for 9.4 km/s: 35.8 (SRB), 23.4 (F-1), 8.34 (RS-25).
 - Staging default (F-1 Isp, payload 2%, structure 10%): one stage 6.37 km/s, two stages 8.83 km/s.
-- Orbits: at 400 km, circular speed 7.67 km/s, escape speed 10.9 km/s, period 92.5 min, gravity 8.69 m/s^2 (matches [NASA-ISS]). Escape speed at Earth's surface 11.2 km/s.
+- Orbits: at 400 km, circular speed 7.67 km/s, escape speed 10.9 km/s, period 92.4 min, gravity 8.69 m/s^2 (matches [NASA-ISS]). Escape speed at Earth's surface 11.2 km/s.
 - Hohmann Earth to Mars: delta-v1 2.95 km/s, delta-v2 2.65 km/s, 259 days (8.5 months), Mars 44.4 degrees ahead at launch, windows every 780 days (2.13 years, about 26 months, matching [NASA-MARS]); from a 300 km parking orbit 3.59 km/s. Venus: 146 days, Venus must be about 54 degrees behind Earth. Jupiter: 997 days (about 2.7 years), Jupiter 97 degrees ahead.

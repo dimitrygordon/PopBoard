@@ -263,12 +263,12 @@ export const KICKS = Object.freeze({ small: 0.4, medium: 2, big: 5 });
 // ---------- sliders ----------
 export const SLIDERS = Object.freeze({
   mdot: Object.freeze({ min: 10, max: 3000, steps: 240, log: true }),        // kg/s
-  ve: Object.freeze({ min: 1000, max: 4600, steps: 180, log: false }),       // m/s
+  ve: Object.freeze({ min: 1000, max: 4600, steps: 360, log: false }),       // m/s, 10 m/s steps
   mass: Object.freeze({ min: 5, max: 3000, steps: 240, log: true }),         // t
   ratio: Object.freeze({ min: 1.1, max: 20, steps: 240, log: true }),
   payloadFrac: Object.freeze({ min: 0.005, max: 0.1, steps: 120, log: true }),
   struct: Object.freeze({ min: 0.04, max: 0.2, steps: 80, log: false }),
-  altLaunch: Object.freeze({ min: 160, max: 2000, steps: 200, log: true }), // km
+  altLaunch: Object.freeze({ min: 160, max: 2000, steps: 184, log: false }), // km, 10 km steps
   speed: Object.freeze({ min: 6, max: 12, steps: 300, log: false }),        // km/s
   altOrbit: Object.freeze({ min: 200, max: 2000, steps: 180, log: false }), // km
   park: Object.freeze({ min: 200, max: 1000, steps: 80, log: false }),      // km

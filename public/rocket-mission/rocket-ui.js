@@ -154,7 +154,7 @@ const TITLES = {
   orbits: "Orbits and escape speed", hohmann: "Hohmann transfer: Earth to another planet", sandbox: "Sandbox: build and fly"
 };
 const NOTES = {
-  thrust: "A rocket throws mass out of its nozzle very fast. By Newton's third law the exhaust pushes back on the rocket just as hard: thrust F = \u1e41v\u2091, the mass thrown out each second times its speed. The rocket lifts off only if the thrust is more than its weight (thrust-to-weight ratio above 1). It does not push on the ground or the air, which is why rockets work in space.",
+  thrust: "A rocket throws mass out of its nozzle very fast. By Newton's third law the exhaust pushes back on the rocket just as hard: thrust F = \u1e41v\u2091, the mass thrown out each second times its speed. The rocket lifts off only if the thrust is more than its weight (thrust-to-weight ratio above 1). It does not push on the ground or the air, which is why rockets work in space. Real engines (sea level): F-1 at sea level: about 6.7 MN (the real engine made 6.77 MN; the slider rounds it). RS-25 at sea level: about 3,590 m/s exhaust speed (Isp about 366 s), about 1.86 MN of thrust. RS-25: about 1.86 MN at sea level and about 2.28 MN in space, at 109% power.",
   equation: "As a rocket burns fuel it gets lighter, so each kilogram of exhaust speeds it up more than the last. Tsiolkovsky's rocket equation adds this up: \u0394v = v\u2091 ln(m\u2080/m_f), where m\u2080 is the full mass and m_f the mass when the fuel is gone. Specific impulse Isp measures how good an engine is: v\u2091 = g\u2080\u00b7Isp. Because of the logarithm, doubling the mass ratio adds only a fixed amount of speed.",
   staging: "A rocket carries empty tanks and engines it no longer needs. Staging throws them away partway up, so the rest of the fuel only has to push what is left. Here the same liftoff mass, payload and engine are compared as one big stage or two equal stages. Every stage's structure (tanks, engines) is the set share of that stage's mass.",
   launch: "A two-stage rocket (rounded, Falcon-9-like numbers) climbs straight up to 60 m/s, tips over by a small angle, then lets gravity bend its path toward horizontal: a gravity turn. Tip too little and it climbs too steeply and wastes fuel fighting gravity; tip too much and it stays low in thick air and falls back. Climbing fights gravity (gravity loss) and the thick lower air pushes back (drag loss). Orbit is about going sideways fast enough: at orbital speed v = \u221a(GM/r) the ground curves away as fast as you fall. Simplified: a 2D flight over a round Earth that does not spin, with engines at full thrust.",
@@ -176,7 +176,8 @@ function flightLines(sim) {
   else if (r.kind === "suborbital") out.push(`Highest point: ${kmF(r.maxKm)}`);
   out.push(`Top speed: ${kms(r.vMax)}`);
   out.push(`Lost to gravity: ${kms(r.gravLoss, 2)}, to drag: ${kms(r.dragLoss, 2)}`);
-  out.push(`Ideal \u0394v (no gravity, no air): ${kms(r.ideal)}`);
+  out.push("Real rockets lose about 0.1 to 0.15 km/s to drag; this model is simplified.");
+  out.push(`Ideal \u0394v (no gravity, no air, vacuum Isp): ${kms(r.ideal)}`);
   return out;
 }
 function readout() {
