@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <link rel="stylesheet" href="shared/layout/layout.css">
 <script type="module" src="shared/layout/layout.js"></script>
+<script src="shared/notation/notation.js"></script>
+<script>
+  // Paper theme (the app's "light" theme) applies here too, before first paint.
+  try { if (localStorage.getItem("theme") === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) {}
+</script>
 <title>Friction Lab // PopBoard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -31,13 +36,13 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--text);-webkit-font-smo
 h1,h2,h3{font-family:'Oswald',sans-serif;letter-spacing:0.03em;text-transform:uppercase;}
 .mono{font-family:'JetBrains Mono',monospace;}
 button,input{font-family:inherit;}
-#stage{display:block;width:100vw;height:100vh;background:var(--bg);touch-action:none;}
+#stage{display:block;width:100vw;height:100vh;height:100dvh;background:var(--bg);touch-action:none;}
 
 /* ---------- top / bottom bars ---------- */
 .bar{position:fixed;left:0;right:0;display:flex;align-items:center;justify-content:space-between;
   padding:14px 18px;pointer-events:none;z-index:50;}
-.bar-top{top:0;}
-.bar-bottom{bottom:0;}
+.bar-top{top:0;padding-top:max(14px, env(safe-area-inset-top));}
+.bar-bottom{bottom:0;padding-bottom:max(14px, env(safe-area-inset-bottom));}
 .bar button{pointer-events:auto;background:none;border:none;color:#0A84FF;font-size:15px;cursor:pointer;padding:4px 2px;}
 .bar button:active{opacity:0.6;}
 .bar-left{display:flex;align-items:center;gap:18px;}
@@ -74,7 +79,7 @@ button,input{font-family:inherit;}
   background:rgba(22,24,28,0.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
   border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:18px;
   box-shadow:0 12px 32px rgba(0,0,0,0.5);
-  max-height:calc(100vh - 110px);overflow-y:auto;
+  max-height:calc(100vh - 110px);max-height:calc(100dvh - 110px);overflow-y:auto;
 }
 .panel.wide{width:380px;}
 .panel.hidden{display:none;}
@@ -149,6 +154,34 @@ input[type="number"].num-input{background:var(--panel-2);border:1px solid var(--
 .chip-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
 .chip{padding:7px 12px;border-radius:999px;border:1px solid var(--border-lit);background:var(--panel-2);color:var(--text);font-size:11.5px;cursor:pointer;}
 @media(max-width:520px){#eqStrip{top:248px;font-size:10px;}}
+#eqStrip sub,#statusBanner sub{font-size:0.75em;}
+
+/* ---------- Paper theme ---------- */
+:root[data-theme="light"]{
+  --bg:#f4efe4; --panel:#fbf8f1; --panel-2:#efe8da; --panel-3:#e6dccb; --border:#d6cbb6; --border-lit:#c4b69c;
+  --amber:#9a6200; --amber-dim:#b07500; --cyan:#0f766e; --violet:#6d3fc0; --violet-dim:#8e6ad6;
+  --text:#1f1a14; --text-dim:#5b5144; --text-dimmer:#6f6556;
+}
+:root[data-theme="light"] .bar button,:root[data-theme="light"] .panel-link,:root[data-theme="light"] .modal-card .close-link{color:#0a58b8;}
+:root[data-theme="light"] #statusBanner,:root[data-theme="light"] .motion-tile,:root[data-theme="light"] #eqStrip{background:rgba(251,248,241,0.9);}
+:root[data-theme="light"] .panel,:root[data-theme="light"] .modal-card{background:rgba(251,248,241,0.96);border-color:var(--border);color:var(--text);box-shadow:0 12px 32px rgba(60,45,20,0.18);}
+:root[data-theme="light"] .panel h3,:root[data-theme="light"] .panel-label,:root[data-theme="light"] .toggle-row,:root[data-theme="light"] .modal-card p{color:var(--text);}
+:root[data-theme="light"] .panel-hint,:root[data-theme="light"] .panel-section-title{color:var(--text-dim);}
+:root[data-theme="light"] .round-btn{background:rgba(251,248,241,0.9);border-color:var(--border-lit);color:var(--text);}
+:root[data-theme="light"] input[type="range"]{background:#cfc4ae;}
+:root[data-theme="light"] input[type="range"]::-webkit-slider-thumb{background:#1f1a14;}
+:root[data-theme="light"] .toggle-switch{background:#cfc4ae;}
+:root[data-theme="light"] canvas.lab-graph{background:rgba(60,45,20,0.06);}
+:root[data-theme="light"] .seg-btn,:root[data-theme="light"] .chip{color:var(--text);}
+
+/* ---------- phones: status, the two readouts side by side, the stage, then the formula card below it ---------- */
+@media(max-width:600px){
+  #statusBanner{width:calc(100vw - 24px);padding:8px 12px;}
+  #motionHud{width:calc(100vw - 24px);gap:8px;}
+  .motion-tile{flex:1 1 0;min-width:0;padding:6px 8px 8px;}
+  .motion-tile .motion-value{font-size:28px;}
+  #eqStrip{top:auto;width:calc(100vw - 24px);max-width:none;font-size:13px;white-space:pre-line;text-align:left;}
+}
 </style>
 <link rel="stylesheet" href="astro-study.css?v=20261021k">
 <script src="astro-study.js?v=20261021k"></script>
@@ -458,6 +491,23 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
+// Phones: stack status, readouts, the stage, then the formula card above the round buttons. Nothing overlaps the stage.
+function layoutPhone() {
+  var sb = document.getElementById("statusBanner"), hud = document.getElementById("motionHud"), eq = document.getElementById("eqStrip"), sc = document.getElementById("stageControls");
+  if (!sb || !hud || !eq || !sc) { return; }
+  if (window.innerWidth > 600) { hud.style.top = ""; eq.style.bottom = ""; phoneStageY = null; return; }
+  hud.style.top = Math.round(sb.getBoundingClientRect().bottom + 8) + "px";
+  eq.style.bottom = Math.round(window.innerHeight - sc.getBoundingClientRect().top + 8) + "px";
+  var top = hud.getBoundingClientRect().bottom, bottom = eq.getBoundingClientRect().top;
+  phoneStageY = Math.round(top + (bottom - top) * 0.45);
+}
+window.addEventListener("resize", function () { requestAnimationFrame(layoutPhone); });
+document.addEventListener("DOMContentLoaded", function () {
+  if (window.ResizeObserver) { var ro = new ResizeObserver(layoutPhone); ["statusBanner", "eqStrip"].forEach(function (id) { var el = document.getElementById(id); if (el) { ro.observe(el); } }); }
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(layoutPhone); }
+  layoutPhone();
+});
+
 var MASS_RANGE = { min: 0.5, max: 60 };
 var FORCE_RANGE = { min: -400, max: 400 };
 // Symmetric around 0 so the slider's center is a flat ramp and either
@@ -539,7 +589,8 @@ function resetState() {
    with the ramp -- it always points straight down on screen, exactly
    as it does in reality.
    ============================================================ */
-function stageCenter() { return { x: canvas.width / dpr * 0.46, y: canvas.height / dpr * 0.56 }; }
+var phoneStageY = null; // set by layoutPhone(): the surface line sits between the readouts and the formula card
+function stageCenter() { return { x: canvas.width / dpr * 0.46, y: phoneStageY !== null ? phoneStageY : canvas.height / dpr * 0.56 }; }
 function alongDir(theta) { return { x: Math.cos(theta), y: -Math.sin(theta) }; } // world frame, +y = up
 function normalDir(theta) { return { x: Math.sin(theta), y: Math.cos(theta) }; }
 
@@ -594,7 +645,7 @@ function drawGroundStrip(theta) {
   var grad = ctx.createLinearGradient(p0.x - nx * thickness, p0.y - ny * thickness, p0.x + nx * thickness, p0.y + ny * thickness);
   grad.addColorStop(0, colors.light);
   grad.addColorStop(0.45, colors.base);
-  grad.addColorStop(1, "#05060a");
+  grad.addColorStop(1, PAPER ? "#f4efe4" : "#05060a");
 
   ctx.save();
   ctx.beginPath();
@@ -643,14 +694,14 @@ function drawGroundMarkers(theta) {
     ctx.beginPath();
     ctx.moveTo(p.x - nx * tickLen * 0.5, p.y - ny * tickLen * 0.5);
     ctx.lineTo(p.x + nx * tickLen * 0.5, p.y + ny * tickLen * 0.5);
-    ctx.strokeStyle = isMajor ? colors.accent : "rgba(255,255,255,0.22)";
+    ctx.strokeStyle = isMajor ? colors.accent : ink(0.22);
     ctx.lineWidth = isMajor ? 2 : 1;
     if (isMajor) { ctx.shadowColor = colors.accent; ctx.shadowBlur = 6; } else { ctx.shadowBlur = 0; }
     ctx.stroke();
 
     if (isMajor) {
       ctx.shadowBlur = 0;
-      ctx.fillStyle = "rgba(255,255,255,0.55)";
+      ctx.fillStyle = ink(0.55);
       ctx.font = "10px 'JetBrains Mono', monospace";
       ctx.textAlign = "center";
       ctx.fillText(m + "m", p.x + nx * (tickLen + 12), p.y + ny * (tickLen + 12));
@@ -732,9 +783,13 @@ function shadeColor(hex, amt) {
    current ramp basis). Drawn with a glow, color-coded, individually
    toggleable. */
 var VEC_SCALE = 0.55; // screen px per newton
-var VEC_COLORS = { gravity: "#FFB300", normal: "#5FD3C4", applied: "#FFFFFF", friction: "#B07CFF", net: "#FF5FAE" };
+var PAPER = document.documentElement.getAttribute("data-theme") === "light";
+function ink(a) { return (PAPER ? "rgba(31,26,20," : "rgba(255,255,255,") + a + ")"; }
+var VEC_COLORS = PAPER
+  ? { gravity: "#a86400", normal: "#0f766e", applied: "#1f1a14", friction: "#6d3fc0", net: "#c0266f" }
+  : { gravity: "#FFB300", normal: "#5FD3C4", applied: "#FFFFFF", friction: "#B07CFF", net: "#FF5FAE" };
 
-function drawVector(originScreen, worldDx, worldDy, color, label) {
+function drawVector(originScreen, worldDx, worldDy, color, label, beside) {
   var mag = Math.hypot(worldDx, worldDy);
   if (mag < 0.5) { return; }
   var endX = originScreen.x + worldDx * VEC_SCALE;
@@ -761,6 +816,16 @@ function drawVector(originScreen, worldDx, worldDy, color, label) {
     var len = Math.max(1, Math.hypot(endX - originScreen.x, endY - originScreen.y));
     var lx = endX + (endX - originScreen.x) / len * 10, ly = endY + (endY - originScreen.y) / len * 10;
     ctx.shadowBlur = 0; ctx.font = "700 10px 'JetBrains Mono', monospace"; ctx.textAlign = "center";
+    if (beside) {
+      // Beside the arrow tip, on a pill so it reads over the surface.
+      ctx.font = "700 13px 'JetBrains Mono', monospace"; ctx.textAlign = "left"; ctx.textBaseline = "middle";
+      var tw = ctx.measureText(label).width, px = endX + 12, py = endY - 6;
+      if (px + tw + 8 > canvas.width / dpr - 8) px = endX - 12 - tw;
+      ctx.fillStyle = PAPER ? "rgba(251,248,241,0.92)" : "rgba(15,18,22,0.85)";
+      ctx.beginPath(); ctx.roundRect ? ctx.roundRect(px - 6, py - 11, tw + 12, 22, 11) : ctx.rect(px - 6, py - 11, tw + 12, 22); ctx.fill();
+      ctx.fillStyle = color; ctx.fillText(label, px, py);
+      ctx.restore(); return;
+    }
     ctx.fillStyle = color; ctx.fillText(label, lx, ly);
   }
   ctx.restore();
@@ -778,7 +843,7 @@ function drawDashedVector(originScreen, worldDx, worldDy, color, label) {
 function drawAllVectors(origin, phys, result, theta) {
   var a = alongDir(theta), n = normalDir(theta);
   var weight = phys.mass * G;
-  if (vectorsOn.gravity) { drawVector(origin, 0, -weight, VEC_COLORS.gravity, "Fg = " + fmtN(weight)); }
+  if (vectorsOn.gravity) { drawVector(origin, 0, -weight, VEC_COLORS.gravity, "F_{g} = " + fmtN(weight), true); }
   if (params.scenario === "incline" && vectorsOn.gravComp) {
     drawDashedVector(origin, a.x * phys.biasForce, a.y * phys.biasForce, "#FFD54A", "mg·sinθ = " + fmtN(Math.abs(phys.biasForce)));
     drawDashedVector(origin, -n.x * phys.normalForce, -n.y * phys.normalForce, "#FFE082", "mg·cosθ = " + fmtN(phys.normalForce));
@@ -790,18 +855,18 @@ function drawAllVectors(origin, phys, result, theta) {
     ctx.fillStyle = "#FFD54A"; ctx.font = "10px 'JetBrains Mono', monospace"; ctx.textAlign = "left";
     ctx.fillText(Math.abs(params.angleDeg).toFixed(0) + "°", origin.x + 46, origin.y - 6); ctx.restore();
   }
-  if (vectorsOn.normal) { drawVector(origin, n.x * phys.normalForce, n.y * phys.normalForce, VEC_COLORS.normal, "FN = " + fmtN(phys.normalForce)); }
+  if (vectorsOn.normal) { drawVector(origin, n.x * phys.normalForce, n.y * phys.normalForce, VEC_COLORS.normal, "F_{N} = " + fmtN(phys.normalForce)); }
   if (vectorsOn.applied && Math.abs(params.appliedForce) > 0.5) {
     if (params.scenario === "flat" && params.pullAngleDeg > 0.5) {
-      drawVector(origin, phys.appliedForce, phys.liftForce, VEC_COLORS.applied, "Fapp = " + fmtN(Math.abs(params.appliedForce)) + " @ " + params.pullAngleDeg.toFixed(0) + "°");
-      drawDashedVector(origin, phys.appliedForce, 0, "rgba(255,255,255,0.65)", "F·cosθ");
-      drawDashedVector(origin, 0, phys.liftForce, "rgba(255,255,255,0.65)", "F·sinθ");
+      drawVector(origin, phys.appliedForce, phys.liftForce, VEC_COLORS.applied, "F_{app} = " + fmtN(Math.abs(params.appliedForce)) + " @ " + params.pullAngleDeg.toFixed(0) + "°");
+      drawDashedVector(origin, phys.appliedForce, 0, ink(0.65), "F·cosθ");
+      drawDashedVector(origin, 0, phys.liftForce, ink(0.65), "F·sinθ");
     } else {
-      drawVector(origin, a.x * phys.appliedForce, a.y * phys.appliedForce, VEC_COLORS.applied, "Fapp = " + fmtN(Math.abs(phys.rawAppliedForce)));
+      drawVector(origin, a.x * phys.appliedForce, a.y * phys.appliedForce, VEC_COLORS.applied, "F_{app} = " + fmtN(Math.abs(phys.rawAppliedForce)));
     }
   }
-  if (vectorsOn.friction && Math.abs(result.frictionForce) > 0.5) { drawVector(origin, a.x * result.frictionForce, a.y * result.frictionForce, VEC_COLORS.friction, "Ff = " + fmtN(Math.abs(result.frictionForce)) + (result.regime === "static" ? " static" : " kinetic")); }
-  if (vectorsOn.net && Math.abs(result.netForce) > 0.5) { drawVector(origin, a.x * result.netForce, a.y * result.netForce, VEC_COLORS.net, "Fnet = " + fmtN(Math.abs(result.netForce))); }
+  if (vectorsOn.friction && Math.abs(result.frictionForce) > 0.5) { drawVector(origin, a.x * result.frictionForce, a.y * result.frictionForce, VEC_COLORS.friction, (result.regime === "static" ? "F_{f,static} = " : "F_{f,kinetic} = ") + fmtN(Math.abs(result.frictionForce))); }
+  if (vectorsOn.net && Math.abs(result.netForce) > 0.5) { drawVector(origin, a.x * result.netForce, a.y * result.netForce, VEC_COLORS.net, "F_{net} = " + fmtN(Math.abs(result.netForce))); }
 }
 
 /* ============================================================
@@ -818,24 +883,27 @@ function updateStatusBanner(phys, result) {
   statusBanner.classList.toggle("sliding", result.regime === "sliding");
   if (result.regime === "static") {
     statusType.textContent = "Holding Static";
-    statusReason.textContent = "Friction " + fmtN(Math.abs(result.frictionForce)) + " of a max " + fmtN(maxStatic) + " available (μs·N)";
+    statusReason.textContent = "Friction " + fmtN(Math.abs(result.frictionForce)) + " of a max " + fmtN(maxStatic) + " available (μ_{s}·F_{N})";
   } else {
     statusType.textContent = "Sliding -- Kinetic Friction";
-    statusReason.textContent = "f_k = " + fmtN(Math.abs(result.frictionForce)) + " · net " + fmtN(result.netForce) + " · a = " + result.acceleration.toFixed(2) + " m/s²";
+    statusReason.textContent = "F_{f,kinetic} = " + fmtN(Math.abs(result.frictionForce)) + " · F_{net} = " + fmtN(result.netForce) + " · a = " + result.acceleration.toFixed(2) + " m/s²";
   }
 }
 
 /* ---------- motion HUD: big digital velocity/acceleration readout ---------- */
 var hudVelocityEl = document.getElementById("hudVelocity");
 var hudAccelEl = document.getElementById("hudAccel");
-var MOTION_COLORS = { speeding: "#4CD96A", slowing: "#FF6B5B", starting: "#FFE066", steady: "#E9E6DE" };
+var MOTION_COLORS = document.documentElement.getAttribute("data-theme") === "light"
+  ? { speeding: "#1f7a3a", slowing: "#b4321f", starting: "#8a6a00", steady: "#1f1a14" }
+  : { speeding: "#4CD96A", slowing: "#FF6B5B", starting: "#FFE066", steady: "#E9E6DE" };
 var MOTION_WORDS = { speeding: "Speeding up", slowing: "Slowing down", starting: "Starting", steady: "Steady" };
 function updateEqStrip(phys, result) {
   var el = document.getElementById("eqStrip"); if (!el) { return; }
   var fsMax = phys.mus * phys.normalForce, fk = phys.muk * phys.normalForce;
-  var fricTerm = result.regime === "sliding" ? ("fk = μk·FN = " + fmtN(fk)) : ("fs,max = μs·FN = " + fmtN(fsMax));
+  var fricTerm = result.regime === "sliding" ? ("F_{f,kinetic} = μ_{k}·F_{N} = " + fmtN(fk)) : ("F_{f,static,max} = μ_{s}·F_{N} = " + fmtN(fsMax));
   var word = result.regime === "static" ? "Steady (holding still)" : (MOTION_WORDS[classifyMotionState(result.velocity, result.acceleration)] || "Steady");
-  el.textContent = "FN = " + fmtN(phys.normalForce) + " · " + fricTerm + " · Fnet = " + fmtN(result.netForce) + " · a = " + result.acceleration.toFixed(2) + " m/s² · " + word;
+  var parts = ["F_{N} = " + fmtN(phys.normalForce), fricTerm, "F_{net} = " + fmtN(result.netForce), "a = " + result.acceleration.toFixed(2) + " m/s²", word];
+  el.textContent = parts.join(window.innerWidth <= 600 ? "\n" : " · ");
 }
 function updateMotionHud(result) {
   hudVelocityEl.textContent = result.velocity.toFixed(1);
@@ -1067,7 +1135,7 @@ function refreshControlsPanel() {
     var phys0 = currentPhys(); var fr = getFriction(params.objectMaterial, params.surfaceMaterial);
     var muDiv = document.createElement("div"); muDiv.className = "panel-hint mono"; muDiv.id = "muReadout";
     muDiv.style.color = "var(--cyan)";
-    muDiv.textContent = materialLabel(params.objectMaterial) + " on " + materialLabel(params.surfaceMaterial) + ": μs = " + fr.mus.toFixed(2) + " · μk = " + fr.muk.toFixed(2) + " · at " + fmtKg(params.mass) + " FN = " + phys0.normalForce.toFixed(1) + " N, fs,max = " + (fr.mus*phys0.normalForce).toFixed(1) + " N, fk = " + (fr.muk*phys0.normalForce).toFixed(1) + " N";
+    muDiv.textContent = materialLabel(params.objectMaterial) + " on " + materialLabel(params.surfaceMaterial) + ": μ_{s} = " + fr.mus.toFixed(2) + " · μ_{k} = " + fr.muk.toFixed(2) + " · at " + fmtKg(params.mass) + " F_{N} = " + phys0.normalForce.toFixed(1) + " N, F_{f,static,max} = " + (fr.mus*phys0.normalForce).toFixed(1) + " N, F_{f,kinetic} = " + (fr.muk*phys0.normalForce).toFixed(1) + " N";
     controlsPanel.appendChild(muDiv);
     var presetTitle = document.createElement("div"); presetTitle.className = "panel-section-title"; presetTitle.textContent = "Pair Presets"; controlsPanel.appendChild(presetTitle);
     var prow = document.createElement("div"); prow.className = "seg-row";
@@ -1138,7 +1206,7 @@ function refreshControlsPanel() {
 
   var hint = document.createElement("div");
   hint.className = "panel-hint";
-  hint.textContent = "Pick an object and a surface, add mass, then push. Watch static friction hold up to μs·N before the object breaks free into kinetic friction.";
+  hint.textContent = "Pick an object and a surface, add mass, then push. Watch static friction hold up to μ_{s}·F_{N} before the object breaks free into kinetic friction.";
   controlsPanel.appendChild(hint);
 }
 
@@ -1225,10 +1293,10 @@ function downloadLabCSV() {
    matters here. */
 function graphAxes(ctx, w, h, pad, yMin, yMax, yLabelFn) {
   ctx.clearRect(0, 0, w, h);
-  ctx.strokeStyle = "rgba(255,255,255,0.12)";
+  ctx.strokeStyle = ink(0.12);
   ctx.lineWidth = 1;
   ctx.font = "10px 'JetBrains Mono', monospace";
-  ctx.fillStyle = "rgba(255,255,255,0.35)";
+  ctx.fillStyle = ink(0.35);
   ctx.textAlign = "right";
   var gridLines = 4;
   for (var i = 0; i <= gridLines; i++) {
@@ -1240,7 +1308,7 @@ function graphAxes(ctx, w, h, pad, yMin, yMax, yLabelFn) {
   // zero line, brighter, if in range
   if (yMin < 0 && yMax > 0) {
     var zeroY = pad + (h - 2 * pad) * (yMax / (yMax - yMin));
-    ctx.strokeStyle = "rgba(255,255,255,0.3)";
+    ctx.strokeStyle = ink(0.3);
     ctx.beginPath(); ctx.moveTo(pad, zeroY); ctx.lineTo(w - pad, zeroY); ctx.stroke();
   }
 }
@@ -1310,9 +1378,9 @@ function drawFrictionNormalGraph(ctx, w, h) {
 
   ctx.textAlign = "left"; ctx.font = "10px 'JetBrains Mono', monospace";
   ctx.fillStyle = VEC_COLORS.net;
-  ctx.fillText("• f_s,max  (slope ≈ μs = " + (musFit !== null ? musFit.toFixed(3) : "—") + ")", pad, h - 22);
+  ctx.fillText("• F_{f,static,max}  (slope ≈ μ_{s} = " + (musFit !== null ? musFit.toFixed(3) : "—") + ")", pad, h - 22);
   ctx.fillStyle = VEC_COLORS.friction;
-  ctx.fillText("• f_k  (slope ≈ μk = " + (mukFit !== null ? mukFit.toFixed(3) : "—") + ")", pad, h - 8);
+  ctx.fillText("• F_{f,kinetic}  (slope ≈ μ_{k} = " + (mukFit !== null ? mukFit.toFixed(3) : "—") + ")", pad, h - 8);
 }
 
 function drawFrictionAppliedGraph(ctx, w, h) {
@@ -1328,15 +1396,15 @@ function drawFrictionAppliedGraph(ctx, w, h) {
   // shaded regions
   ctx.fillStyle = "rgba(176,124,255,0.13)"; ctx.fillRect(X(0), 12, Math.max(0, X(fsMax)-X(0)), h-12-padB);
   ctx.fillStyle = "rgba(255,179,0,0.10)"; ctx.fillRect(X(fsMax), 12, Math.max(0, X(maxX)-X(fsMax)), h-12-padB);
-  ctx.strokeStyle = "rgba(255,255,255,0.25)"; ctx.beginPath(); ctx.moveTo(pad,12); ctx.lineTo(pad,h-padB); ctx.lineTo(w-12,h-padB); ctx.stroke();
+  ctx.strokeStyle = ink(0.25); ctx.beginPath(); ctx.moveTo(pad,12); ctx.lineTo(pad,h-padB); ctx.lineTo(w-12,h-padB); ctx.stroke();
   // classic curve: 45-degree static line, drop at fs,max, kinetic plateau
   ctx.strokeStyle = "#B07CFF"; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(X(0),Y(0)); ctx.lineTo(X(fsMax),Y(fsMax)); ctx.lineTo(X(fsMax),Y(fk)); ctx.lineTo(X(maxX),Y(fk)); ctx.stroke(); ctx.lineWidth = 1;
-  ctx.setLineDash([4,4]); ctx.strokeStyle = "rgba(255,255,255,0.45)"; ctx.beginPath(); ctx.moveTo(X(fsMax),Y(0)); ctx.lineTo(X(fsMax),Y(fsMax)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.setLineDash([4,4]); ctx.strokeStyle = ink(0.45); ctx.beginPath(); ctx.moveTo(X(fsMax),Y(0)); ctx.lineTo(X(fsMax),Y(fsMax)); ctx.stroke(); ctx.setLineDash([]);
   ctx.font = "10px 'JetBrains Mono', monospace"; ctx.textAlign = "center";
   ctx.fillStyle = "#B07CFF"; ctx.fillText("STATIC", Math.max(pad+28,(X(0)+X(fsMax))/2), h-padB-10);
   ctx.fillStyle = "#FFB300"; ctx.fillText("KINETIC", (X(fsMax)+X(maxX))/2, h-padB-10);
-  ctx.fillStyle = "rgba(255,255,255,0.7)"; ctx.fillText("fs,max = " + fsMax.toFixed(1) + " N", X(fsMax), Y(fsMax)-8);
-  ctx.fillText("fk = " + fk.toFixed(1) + " N", Math.min(w-50, X(maxX)-30), Y(fk)-8);
+  ctx.fillStyle = ink(0.7); ctx.fillText("F_{f,static,max} = " + fsMax.toFixed(1) + " N", X(fsMax), Y(fsMax)-8);
+  ctx.fillText("F_{f,kinetic} = " + fk.toFixed(1) + " N", Math.min(w-50, X(maxX)-30), Y(fk)-8);
   ctx.fillText(params.scenario === "incline" ? "total drive force (applied + mg·sinθ) →" : "applied force →", (pad+w)/2, h-8);
   ctx.save(); ctx.translate(11,h/2); ctx.rotate(-Math.PI/2); ctx.fillText("friction force",0,0); ctx.restore();
   // live marker
@@ -1376,7 +1444,7 @@ function refreshLabPanel() {
     // along the ramp), which equals fs,max — not the applied force alone.
     trial.fsMax = breakawayDriveForce || lastStaticPeakForce;
     trial.normalForce = currentPhys().normalForce;
-    labMessage = "Recorded fs,max = " + trial.fsMax.toFixed(1) + " N (total drive at breakaway), μs ≈ " + (trial.fsMax/trial.normalForce).toFixed(3) + "."; labMessageGood = true;
+    labMessage = "Recorded F_{f,static,max} = " + trial.fsMax.toFixed(1) + " N (total drive at breakaway), μ_{s} ≈ " + (trial.fsMax/trial.normalForce).toFixed(3) + "."; labMessageGood = true;
     resetStaticPeakTracker();
     refreshLabPanel();
   });
@@ -1386,12 +1454,12 @@ function refreshLabPanel() {
   recKinetic.addEventListener("click", function(e) {
     e.stopPropagation();
     if (lastResult.regime !== "sliding" || Math.abs(state.velocity) < 0.02) { labMessage = "Not yet — the block must be sliding first. Push it past breakaway, then ease the force back until acceleration is ~0."; labMessageGood = false; refreshLabPanel(); return; }
-    if (Math.abs(lastResult.acceleration) >= 0.15) { labMessage = "Almost — it is sliding but still accelerating (a = " + lastResult.acceleration.toFixed(2) + " m/s²). Ease the drive until |a| < 0.15 m/s² so drive balances fk, then record."; labMessageGood = false; refreshLabPanel(); return; }
+    if (Math.abs(lastResult.acceleration) >= 0.15) { labMessage = "Almost — it is sliding but still accelerating (a = " + lastResult.acceleration.toFixed(2) + " m/s²). Ease the drive until |a| < 0.15 m/s² so drive balances F_{f,kinetic}, then record."; labMessageGood = false; refreshLabPanel(); return; }
     var trial = findOrCreateTrial();
     // fk is the measured friction force itself — correct on flat and incline.
     trial.fk = Math.abs(lastResult.frictionForce);
     trial.normalForce = currentPhys().normalForce;
-    labMessage = "Recorded fk = " + trial.fk.toFixed(1) + " N at ~steady sliding, μk ≈ " + (trial.fk/trial.normalForce).toFixed(3) + "."; labMessageGood = true;
+    labMessage = "Recorded F_{f,kinetic} = " + trial.fk.toFixed(1) + " N at ~steady sliding, μ_{k} ≈ " + (trial.fk/trial.normalForce).toFixed(3) + "."; labMessageGood = true;
     refreshLabPanel();
   });
   recordRow.appendChild(recStatic); recordRow.appendChild(recKinetic);
@@ -1399,7 +1467,7 @@ function refreshLabPanel() {
 
   var hint1 = document.createElement("div");
   hint1.className = "panel-hint";
-  hint1.textContent = "Slowly raise the drive force until it slips (Auto-Ramp in Controls helps), then click Record Max Static. Then ease back until acceleration is ~0 while sliding, and click Record Steady Kinetic. On an incline the drive includes gravity along the ramp, and fk is read from the actual friction force.";
+  hint1.textContent = "Slowly raise the drive force until it slips (Auto-Ramp in Controls helps), then click Record Max Static. Then ease back until acceleration is ~0 while sliding, and click Record Steady Kinetic. On an incline the drive includes gravity along the ramp, and F_{f,kinetic} is read from the actual friction force.";
   labPanel.appendChild(hint1);
 
   var faTitle = document.createElement("div");
@@ -1435,7 +1503,7 @@ function refreshLabPanel() {
     var table = document.createElement("table");
     table.id = "labTable";
     var thead = document.createElement("thead");
-    thead.innerHTML = "<tr><th>#</th><th>Pair</th><th>m</th><th>N</th><th>f<sub>s,max</sub></th><th>μ<sub>s</sub></th><th>f<sub>k</sub></th><th>μ<sub>k</sub></th><th></th></tr>";
+    thead.innerHTML = "<tr><th>#</th><th>Pair</th><th>m</th><th>F<sub>N</sub></th><th>F<sub>f,static,max</sub></th><th>μ<sub>s</sub></th><th>F<sub>f,kinetic</sub></th><th>μ<sub>k</sub></th><th></th></tr>";
     table.appendChild(thead);
     var tbody = document.createElement("tbody");
     labTrials.forEach(function(t, idx) {
@@ -1743,7 +1811,7 @@ function refreshGuidedPanel() {
   if (!guidedSlip) { var over = Math.random() < 0.5; var d = fsMax * (over ? 1.25 : 0.7); guidedSlip = { drive: Math.round(d), willSlip: Math.abs(d) > fsMax, fsMax: fsMax }; }
   var h3 = document.createElement("h3"); h3.textContent = "Guided Challenges"; guidedPanel.appendChild(h3);
   var score = document.createElement("p"); score.className = "panel-hint mono"; score.id = "guidedScore";
-  score.textContent = "Score: " + guidedScore.ok + " / " + guidedScore.total + " · Setup: " + materialLabel(params.objectMaterial) + " on " + materialLabel(params.surfaceMaterial) + ", " + fmtKg(params.mass) + ", " + params.scenario + (params.scenario==="incline" ? " " + params.angleDeg + "°" : "") + " · FN = " + phys.normalForce.toFixed(1) + " N";
+  score.textContent = "Score: " + guidedScore.ok + " / " + guidedScore.total + " · Setup: " + materialLabel(params.objectMaterial) + " on " + materialLabel(params.surfaceMaterial) + ", " + fmtKg(params.mass) + ", " + params.scenario + (params.scenario==="incline" ? " " + params.angleDeg + "°" : "") + " · F_{N} = " + phys.normalForce.toFixed(1) + " N";
   guidedPanel.appendChild(score);
   function section(title) { var t=document.createElement("div"); t.className="panel-section-title"; t.textContent=title; guidedPanel.appendChild(t); }
   function hint(txt) { var d=document.createElement("p"); d.className="panel-hint"; d.textContent=txt; guidedPanel.appendChild(d); return d; }
@@ -1752,7 +1820,7 @@ function refreshGuidedPanel() {
   function btnRow(labels, cb) { var r=document.createElement("div"); r.className="chip-row"; labels.forEach(function(L){ var b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=L; b.addEventListener("click",function(e){ e.stopPropagation(); cb(L); }); r.appendChild(b); }); guidedPanel.appendChild(r); }
 
   section("1 · Predict the breakaway force");
-  hint("Predict fs,max = μs·FN for the current setup, check it, then test it in the sim.");
+  hint("Predict F_{f,static,max} = μ_{s}·F_{N} for the current setup, check it, then test it in the sim.");
   var in1 = numInput("Your predicted breakaway force (N)");
   var fb1 = feedbackEl();
   btnRow(["Check prediction","Test my prediction in the sim"], function(L){
@@ -1763,28 +1831,28 @@ function refreshGuidedPanel() {
       var needAlong = guess - phys.biasForce;
       var raw = params.scenario==="flat" && phys.pullAngleRad ? needAlong/Math.cos(phys.pullAngleRad) : needAlong;
       setAppliedForce(raw); resetState();
-      fb1.textContent="Applied set so total drive = " + guess.toFixed(1) + " N (fs,max = " + fsMax.toFixed(1) + " N). Watch: slips only if your drive beats fs,max."; fb1.className="feedback";
+      fb1.textContent="Applied set so total drive = " + guess.toFixed(1) + " N (F_{f,static,max} = " + fsMax.toFixed(1) + " N). Watch: slips only if your drive beats F_{f,static,max}."; fb1.className="feedback";
       return;
     }
-    if (!isFinite(guess)) { fb1.textContent="Enter a number first — fs,max = μs·FN."; fb1.className="feedback bad"; return; }
+    if (!isFinite(guess)) { fb1.textContent="Enter a number first — F_{f,static,max} = μ_{s}·F_{N}."; fb1.className="feedback bad"; return; }
     var err = Math.abs(guess-fsMax)/Math.max(1,fsMax)*100; var good = err<=5; scoreGuided(good);
-    fb1.textContent=(good?"Correct (within 5%). ":"Not yet ("+err.toFixed(0)+"% off). ")+"Steps: FN = "+phys.normalForce.toFixed(1)+" N · fs,max = μs·FN = "+phys.mus.toFixed(2)+" × "+phys.normalForce.toFixed(1)+" = "+fsMax.toFixed(1)+" N. Score "+guidedScore.ok+"/"+guidedScore.total+".";
+    fb1.textContent=(good?"Correct (within 5%). ":"Not yet ("+err.toFixed(0)+"% off). ")+"Steps: F_{N} = "+phys.normalForce.toFixed(1)+" N · F_{f,static,max} = μ_{s}·F_{N} = "+phys.mus.toFixed(2)+" × "+phys.normalForce.toFixed(1)+" = "+fsMax.toFixed(1)+" N. Score "+guidedScore.ok+"/"+guidedScore.total+".";
     fb1.className="feedback "+(good?"good":"bad"); score.textContent="Score: "+guidedScore.ok+" / "+guidedScore.total;
   });
 
   section("2 · Will it slip?");
-  hint("Total drive is " + guidedSlip.drive.toFixed(0) + " N (fs,max = " + guidedSlip.fsMax.toFixed(1) + " N). Will the block slip?");
+  hint("Total drive is " + guidedSlip.drive.toFixed(0) + " N (F_{f,static,max} = " + guidedSlip.fsMax.toFixed(1) + " N). Will the block slip?");
   var fb2 = feedbackEl();
   btnRow(["Yes — it slips","No — static holds"], function(L){
     var yes = L.indexOf("Yes")===0; var good = yes===guidedSlip.willSlip; scoreGuided(good);
-    fb2.textContent=good?("Correct — drive "+guidedSlip.drive.toFixed(0)+" N "+(guidedSlip.willSlip?">":"≤")+" fs,max "+guidedSlip.fsMax.toFixed(1)+" N.") : ("Not quite — compare: drive "+guidedSlip.drive.toFixed(0)+" N vs fs,max "+guidedSlip.fsMax.toFixed(1)+" N, so it "+(guidedSlip.willSlip?"does slip.":"stays put."))+" Score "+guidedScore.ok+"/"+guidedScore.total+".";
+    fb2.textContent=good?("Correct — drive "+guidedSlip.drive.toFixed(0)+" N "+(guidedSlip.willSlip?">":"≤")+" F_{f,static,max} "+guidedSlip.fsMax.toFixed(1)+" N.") : ("Not quite — compare: drive "+guidedSlip.drive.toFixed(0)+" N vs F_{f,static,max} "+guidedSlip.fsMax.toFixed(1)+" N, so it "+(guidedSlip.willSlip?"does slip.":"stays put."))+" Score "+guidedScore.ok+"/"+guidedScore.total+".";
     fb2.className="feedback "+(good?"good":"bad"); score.textContent="Score: "+guidedScore.ok+" / "+guidedScore.total;
   });
   var newSlip=document.createElement("button"); newSlip.className="panel-link"; newSlip.textContent="New will-it-slip force";
   newSlip.addEventListener("click",function(e){ e.stopPropagation(); guidedSlip=null; refreshGuidedPanel(); }); guidedPanel.appendChild(newSlip);
 
   section("3 · Hold constant velocity while sliding");
-  hint("It is sliding steadily. What total drive keeps a ≈ 0? On the flat that means applied ≈ fk; on a ramp, gravity along the ramp helps or fights you.");
+  hint("It is sliding steadily. What total drive keeps a ≈ 0? On the flat that means applied ≈ F_{f,kinetic}; on a ramp, gravity along the ramp helps or fights you.");
   var in3 = numInput("Applied force needed (N, as the slider reads)");
   var fb3 = feedbackEl();
   var needRaw3 = params.scenario==="flat" && phys.pullAngleRad ? (fk-phys.biasForce)/Math.cos(phys.pullAngleRad) : (fk - phys.biasForce);
@@ -1793,7 +1861,7 @@ function refreshGuidedPanel() {
   btnRow(["Check steady-force"], function(){
     var guess=parseFloat(in3.value); if(!isFinite(guess)){ fb3.textContent="Enter a number first."; fb3.className="feedback bad"; return; }
     var err=Math.abs(guess-needRaw3)/Math.max(1,Math.abs(needRaw3))*100; var good=err<=7; scoreGuided(good);
-    fb3.textContent=(good?"Correct (within 7%). ":"Not yet ("+err.toFixed(0)+"% off). ")+"Steps: steady ⇒ Fnet = 0 ⇒ drive = fk = μk·FN = "+phys.muk.toFixed(2)+" × "+phys.normalForce.toFixed(1)+" = "+fk.toFixed(1)+" N. Applied (slider) = drive − gravity-along-ramp ("+phys.biasForce.toFixed(1)+" N) = "+needRaw3.toFixed(1)+" N. Score "+guidedScore.ok+"/"+guidedScore.total+".";
+    fb3.textContent=(good?"Correct (within 7%). ":"Not yet ("+err.toFixed(0)+"% off). ")+"Steps: steady ⇒ F_{net} = 0 ⇒ drive = F_{f,kinetic} = μ_{k}·F_{N} = "+phys.muk.toFixed(2)+" × "+phys.normalForce.toFixed(1)+" = "+fk.toFixed(1)+" N. Applied (slider) = drive − gravity-along-ramp ("+phys.biasForce.toFixed(1)+" N) = "+needRaw3.toFixed(1)+" N. Score "+guidedScore.ok+"/"+guidedScore.total+".";
     fb3.className="feedback "+(good?"good":"bad"); score.textContent="Score: "+guidedScore.ok+" / "+guidedScore.total;
   });
 
@@ -1839,11 +1907,11 @@ document.getElementById("tutorialBtn").addEventListener("click", function(e) {
   card.className = "modal-card";
   card.innerHTML =
     "<h2>How Friction Lab Works</h2>" +
-    "<p>Pick an object and a surface in <strong>Controls</strong>, add mass, then slide <strong>Applied Force</strong> up. Watch <strong>static friction</strong> rise to match it, right up until it hits its maximum -- μs·N -- at which point the object breaks free and <strong>kinetic friction</strong> takes over at a steady μk·N. The status banner at the top always says exactly which regime you're in and why.</p>" +
-    "<p>Toggle <strong>Flat Surface / Incline</strong> to try a ramp instead. With zero applied force, raise the angle slider past arctan(μs) and the object starts sliding on its own -- that's the same physics as pushing past the static threshold, just gravity doing the pushing instead of you.</p>" +
+    "<p>Pick an object and a surface in <strong>Controls</strong>, add mass, then slide <strong>Applied Force</strong> up. Watch <strong>static friction</strong> rise to match it, right up until it hits its maximum -- μ_{s}·F_{N} -- at which point the object breaks free and <strong>kinetic friction</strong> takes over at a steady μ_{k}·F_{N}. The status banner at the top always says exactly which regime you're in and why.</p>" +
+    "<p>Toggle <strong>Flat Surface / Incline</strong> to try a ramp instead. With zero applied force, raise the angle slider past arctan(μ_{s}) and the object starts sliding on its own -- that's the same physics as pushing past the static threshold, just gravity doing the pushing instead of you.</p>" +
     "<p>Every vector (gravity, normal, applied, friction, net) can be toggled on or off in Controls so you can isolate exactly what you're studying.</p>" +
-    "<p>Open the <strong>Lab</strong> to turn exploration into measurement: raise the force until it slides and click <strong>Record Max Static</strong>; while it's sliding, ease the force down until acceleration reads ~0 and click <strong>Record Steady Kinetic</strong>. The lab computes μs and μk from your own numbers and plots them against the live force-vs-time trace and a friction-vs-normal-force graph -- the slope of that graph <em>is</em> the coefficient of friction. Export your trial table as a CSV any time.</p>" +
-    "<p>In this introductory model, kinetic friction is treated as speed-independent (its size does not change with sliding speed, only with μk·N) and friction does not depend on contact area — notice the crate grows visually as you add mass, yet only the normal force changes the friction, not how big the contact patch looks.</p>" +
+    "<p>Open the <strong>Lab</strong> to turn exploration into measurement: raise the force until it slides and click <strong>Record Max Static</strong>; while it's sliding, ease the force down until acceleration reads ~0 and click <strong>Record Steady Kinetic</strong>. The lab computes μ_{s} and μ_{k} from your own numbers and plots them against the live force-vs-time trace and a friction-vs-normal-force graph -- the slope of that graph <em>is</em> the coefficient of friction. Export your trial table as a CSV any time.</p>" +
+    "<p>In this introductory model, kinetic friction is treated as speed-independent (its size does not change with sliding speed, only with μ_{k}·F_{N}) and friction does not depend on contact area — notice the crate grows visually as you add mass, yet only the normal force changes the friction, not how big the contact patch looks.</p>" +
     "<p>The friction coefficients here are representative introductory-model values for each object/surface pairing -- real friction also depends on surface condition, lubrication, and temperature.</p>";
   var closeBtn = document.createElement("button");
   closeBtn.className = "close-link";
