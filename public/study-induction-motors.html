@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#1f2128">
+<title>Induction &amp; Motors // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  // Theme before first paint: a saved choice wins, else the system setting.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.induction.theme"); } catch (e) {}
+    if (t !== "dark" && t !== "light") t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
+<link rel="stylesheet" href="induction-motors/induction-theme.css">
+<link rel="stylesheet" href="astro-study.css?v=20261021k">
+<script src="astro-study.js?v=20261021k"></script>
+</head>
+<body>
+<h1 class="sr-only">Induction &amp; Motors</h1>
+<p class="sr-only">Measure magnetic flux, push a magnet through a coil and read the induced emf on a galvanometer (Faraday's law), find the direction of the induced current (Lenz's law), spin a generator, run a DC motor with a commutator, step voltages up and down with a transformer, and play freely in a sandbox.</p>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title">Induction &amp; Motors</p>
+  <button id="themeBtn" class="theme-btn" type="button" aria-pressed="false" aria-label="Switch to dark mode">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <span id="themeLabel">Dark</span>
+  </button>
+</header>
+
+<main id="stage" class="stage">
+  <div class="paper canvas-box">
+    <canvas id="imCanvas" tabindex="0" role="img" aria-label="Induction view"></canvas>
+    <p id="canvasHint" class="canvas-hint"></p>
+  </div>
+  <div class="controls paper" id="controls">
+    <div class="row" id="choices" role="group" aria-label="Options"></div>
+    <div id="sliders"></div>
+    <div class="row"><button type="button" id="runBtn">Pause</button><button type="button" id="restartBtn">Restart</button></div>
+    <p class="formula" id="readout" aria-live="polite"></p>
+    <p class="caption" id="note"></p>
+  </div>
+</main>
+
+<nav id="toolbar" class="toolbar" aria-label="Activities">
+  <button type="button" class="tool" data-show="flux" aria-pressed="false">Flux</button>
+  <button type="button" class="tool" data-show="faraday" aria-pressed="false">Faraday</button>
+  <button type="button" class="tool" data-show="lenz" aria-pressed="false">Lenz</button>
+  <button type="button" class="tool" data-show="generator" aria-pressed="false">Generator</button>
+  <button type="button" class="tool" data-show="motor" aria-pressed="false">DC motor</button>
+  <button type="button" class="tool" data-show="transformer" aria-pressed="false">Transformer</button>
+  <button type="button" class="tool" data-show="sandbox" aria-pressed="false">Sandbox</button>
+</nav>
+
+<script type="module" src="induction-motors/induction-ui.js"></script>
+</body>
+</html>
