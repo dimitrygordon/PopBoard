@@ -51,7 +51,7 @@ Sources: NASA Glenn Research Center, "The Drag Equation" (https://www1.grc.nasa.
 |---|---|---|
 | Sea-level air density | 1.225 kg/m^3 | International Standard Atmosphere, ICAO Doc 7488; NASA Glenn "Earth Atmosphere Model" |
 | Sphere drag coefficient | 0.47 | Smooth sphere, subcritical Reynolds number. NASA Glenn "Shape Effects on Drag" (https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/shape-effects-on-drag/); Hoerner, *Fluid-Dynamic Drag* |
-| Mars surface air density | about 0.020 kg/m^3 (caption only) | NASA NSSDCA Mars Fact Sheet |
+| Mars surface air density | about 0.016 kg/m^3, roughly 1/75 of sea level (caption only) | NASA NSSDCA Mars Fact Sheet |
 | Venus surface air density | about 65 kg/m^3 (caption only) | NASA NSSDCA Venus Fact Sheet |
 
 Claims in the captions, checked in tests for a basketball at 20 m/s and 45 degrees:
