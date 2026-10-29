@@ -1,16 +1,16 @@
 // Relativity "Lightspeed Ride" model: what a pilot sees out the window at speed beta = v/c.
-// Pure functions, no DOM. Every number is TODO-TESLA (see docs/relativity-science.md).
+// Pure functions, no DOM. Every number is Cleared by Tesla 2026-10-29 (see docs/relativity-science.md).
 //
 // Angles: theta is a star's angle from the direction of motion as measured in the rest frame
 // of the distant stars; thetaShip is the same star's angle as seen from the ship.
 
 export const MODULE_ID = "relativity-lightspeed";
 export const MODE_PARAM = "lightspeed-ride";
-export const BETA_MAX = 0.999; // top of the throttle (gamma about 22.4), TODO-TESLA
+export const BETA_MAX = 0.999; // top of the throttle (gamma about 22.4), Cleared by Tesla 2026-10-29
 export const RAPIDITY_MAX = Math.atanh(BETA_MAX);
-export const CONE_DEG = 45; // half angle of the forward "view cone" the readout and Silver use, TODO-TESLA
+export const CONE_DEG = 45; // half angle of the forward "view cone" the readout and Silver use, Cleared by Tesla 2026-10-29
 export const STAR_COUNT = 900;
-export const TEMP_RANGE = { min: 1000, max: 40000 }; // color lookup clamp in kelvin, TODO-TESLA
+export const TEMP_RANGE = { min: 1000, max: 40000 }; // color lookup clamp in kelvin, Cleared by Tesla 2026-10-29
 export const PRESETS = [0, 0.5, 0.9, 0.99, 0.999];
 
 export const FUN = { bronzeBeta: 0.5, silverFraction: 0.5, goldGamma: 10, goldTol: 0.25, goldHoldS: 3 };
@@ -44,7 +44,7 @@ export function coneFraction(beta, halfDeg = CONE_DEG) {
 // Ship-frame angle (degrees) of a star at 90 degrees in the rest frame: sin(thetaShip) = 1 / gamma.
 export const sideStarDeg = (beta) => Math.acos(beta) * 180 / Math.PI;
 
-// A blackbody of temperature T shifted by D looks like a blackbody at D T (TODO-TESLA).
+// A blackbody of temperature T shifted by D looks like a blackbody at D T (Cleared by Tesla 2026-10-29).
 export const shiftedTemp = (T, D) => clamp(T * D, TEMP_RANGE.min, TEMP_RANGE.max);
 
 // Approximate sRGB of a blackbody (Tanner Helland's fit), good to a few percent from 1000 K to 40000 K.
@@ -85,6 +85,8 @@ export const fractionInCone = (seen, halfDeg = CONE_DEG) => {
   const c = Math.cos(halfDeg * Math.PI / 180);
   return seen.length ? seen.filter((s) => s.z >= c).length / seen.length : 0;
 };
-// Brightness factor on screen: D^4 for the bolometric flux of a point source, capped so the
-// picture stays readable (TODO-TESLA). Off when Doppler is off.
-export const brightness = (D) => clamp(Math.pow(D, 4), 0.02, 6);
+// Brightness factor on screen: D^2, the energy flux from a point-like star (McKinley & Doherty,
+// Am. J. Phys. 47, 309 (1979); Rybicki & Lightman ch. 4), capped so the picture stays readable.
+// Off when Doppler is off.
+export const BRIGHTNESS_POWER = 2;
+export const brightness = (D) => clamp(Math.pow(D, BRIGHTNESS_POWER), 0.02, 6);

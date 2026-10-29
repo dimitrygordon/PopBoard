@@ -46,6 +46,17 @@ test("cone fraction: analytic formula matches the sampled sky", () => {
   assert.ok(M.view(sky, 0.9, { dopplerOn: false }).every((s) => s.D === 1));
 });
 
+test("brightness: D^2 energy flux, capped 0.02 to 6", () => {
+  assert.equal(M.BRIGHTNESS_POWER, 2);
+  near(M.brightness(2), 4, 1e-12); near(M.brightness(0.5), 0.25, 1e-12); near(M.brightness(1.5), 2.25, 1e-12);
+  assert.equal(M.brightness(10), 6); assert.equal(M.brightness(0.1), 0.02);
+});
+
+test("gold window: gamma 9.75 to 10.25 is beta 0.9947 to 0.9952, gamma 10 is 0.99499", () => {
+  const b = (g) => Math.sqrt(1 - 1 / (g * g));
+  near(b(9.75), 0.9947, 5e-5); near(b(10.25), 0.9952, 5e-5); near(b(10), 0.99499, 5e-6);
+});
+
 test("medals: Bronze at 0.5 c, Silver at half the sky in the cone, Gold holds gamma 10", () => {
   const [bronze, silver, gold] = M.GOALS;
   assert.ok(bronze.check({ type: "ride", beta: 0.5 })); assert.ok(!bronze.check({ type: "ride", beta: 0.49 }));
@@ -94,10 +105,28 @@ test("UI requirements: sandbox, themes, sheet after controls, captions 12px, toa
 
 test("docs, study card, and package script", () => {
   const sci = readFileSync(new URL("../docs/relativity-science.md", import.meta.url), "utf8");
-  assert.ok((sci.match(/TODO-TESLA/g) || []).length >= 10);
+  assert.ok(!sci.includes("TODO-TESLA")); assert.ok((sci.match(/Cleared by Tesla 2026-10-29/g) || []).length >= 10);
+  assert.match(sci, /Brightness on screen scales as D\^2 \(the energy flux from a point-like star\), capped between 0\.02 and 6 so the picture stays readable\./);
+  assert.match(sci, /McKinley & Doherty, Am\. J\. Phys\. 47, 309 \(1979\)/); assert.match(sci, /Rybicki & Lightman/);
+  const fc = readFileSync(new URL("../docs/fun-challenges.md", import.meta.url), "utf8"), sec = fc.slice(fc.indexOf("## Relativity: Lightspeed Ride"), fc.indexOf("## Shared layer constants"));
+  assert.ok(!sec.includes("TODO-TESLA")); assert.match(sec, /0\.9947 to 0\.9952/); assert.match(sec, /0\.99499/);
   assert.match(readFileSync(new URL("../docs/fun-challenges.md", import.meta.url), "utf8"), /## Relativity: Lightspeed Ride/);
   assert.match(read("study.html").split('id: "relativity"')[1].split("}")[0], /Lightspeed Ride/);
   assert.match(readFileSync(new URL("./package.json", import.meta.url), "utf8"), /relativity-lightspeed\.test\.mjs/);
+});
+
+test("Paper keeps black space and true star colors in the windshield", () => {
+  const scene = read("relativity/lightspeed/ls-scene.js");
+  const dark = scene.match(/: \{ page: "#0b0f17", sky: "(#[0-9a-f]+)"/), light = scene.match(/\? \{ page: "#f3efe4", sky: "(#[0-9a-f]+)"/);
+  assert.ok(dark && light); assert.equal(light[1], dark[1]); assert.equal(light[1], "#03050b");
+  assert.ok(!/pal\.light \?/.test(scene) && !/if \(pal\.light/.test(scene), "no Paper-only star styling");
+});
+
+test("phones: full-width cockpit and the half stop right under the caption", () => {
+  const ui = read("relativity/lightspeed/ls-ui.js");
+  assert.match(ui, /phone\.matches \? \{ x: 0, y: top, w: innerWidth,/);
+  assert.match(ui, /room = capB > 0 \? Math\.floor\(innerHeight - capB - CAPTION_GAP\)/);
+  assert.match(ui, /const half = Math\.max\(peek \+ 1, room\)/);
 });
 
 test("no em-dashes and no off-limits mascot name in the new copy", () => {

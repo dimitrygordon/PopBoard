@@ -61,7 +61,7 @@ shell.innerHTML = `
   <section class="ls-about" role="dialog" aria-modal="true" aria-labelledby="lsAboutTitle">
     <p class="ls-about-title" id="lsAboutTitle">About the Lightspeed Ride</p>
     <p>Push the throttle and watch out the window. Light from every star reaches you at c, but because you are moving into it, it seems to come from farther ahead. The stars crowd toward the front (aberration). Light from ahead is squeezed to higher frequencies and looks bluer and brighter; light from behind is stretched, redder and dimmer (Doppler shift).</p>
-    <p class="ls-small">The throttle adds the same rapidity for each push, so it slows down near c and stops at 0.999 c. Stars are an even, made-up sky. Colors treat each star as a glowing body shifted to a new temperature, and brightness grows as the Doppler factor to the fourth power, capped so the picture stays readable. The speed dust is only a picture of motion, not something you would see.</p>
+    <p class="ls-small">The throttle adds the same rapidity for each push, so it slows down near c and stops at 0.999 c. Stars are an even, made-up sky. Colors treat each star as a glowing body shifted to a new temperature, and brightness grows as the Doppler factor squared, capped so the picture stays readable. The speed dust is only a picture of motion, not something you would see.</p>
     <p class="ls-small">Medals count in Ride mode. Reduced motion shows still before and after views.</p>
     <button type="button" id="lsAboutOk" class="primary">Got it</button>
   </section>
@@ -194,7 +194,7 @@ function placeCaption() {
     : "Stars ahead crowd together and turn bluer and brighter. Stars at the edges slide forward, redden and dim.";
   if (cap.textContent !== text) cap.textContent = text;
   cap.style.left = Math.round(a.x + a.w / 2) + "px"; cap.style.top = Math.round(a.y + a.h + CAPTION_GAP) + "px";
-  cap.style.maxWidth = Math.round(Math.max(200, a.w)) + "px";
+  cap.style.maxWidth = Math.round(Math.max(200, Math.min(a.w, innerWidth - 24))) + "px";
 }
 
 // ---------- layout: stage box and bottom sheet (opens at the half stop on phones) ----------
@@ -202,8 +202,10 @@ let sheet = null;
 const snaps = () => {
   const tabs = $("lsControls").querySelector(".ls-tabs"), peek = Math.ceil(tabs.offsetHeight + 56);
   const full = Math.max(peek + 40, Math.ceil(tabs.offsetHeight + body.scrollHeight + ($("lsToast").hidden ? 0 : $("lsToast").offsetHeight + 8) + 64));
-  const half = Math.min(full, Math.max(peek + 1, Math.round(innerHeight * 0.4)));
-  return [peek, Math.max(peek + 1, half), Math.max(full, half + 1)];
+  // The half stop rises to just under the cockpit caption, so no empty band is left between them.
+  const capB = $("lsCap").getBoundingClientRect().bottom, room = capB > 0 ? Math.floor(innerHeight - capB - CAPTION_GAP) : Math.round(innerHeight * 0.4);
+  const half = Math.max(peek + 1, room);
+  return [peek, half, Math.max(full, half + 1)];
 };
 // The shared bottomSheet measures its stops when it is created, so this only runs after
 // renderMode() has filled the controls.
@@ -221,10 +223,13 @@ function sheetTop() {
 function fit() {
   const stt = $("lsStatus").getBoundingClientRect(), top = stt.bottom + 10;
   const capRoom = CAPTION_GAP + $("lsCap").offsetHeight + 8;
+  // Phones: the cockpit spans the full width and the sheet's half stop sits under its caption.
   const box = wide.matches ? { x: 16, y: top, w: innerWidth - 404 - 16, h: innerHeight - top - 16 }
+    : phone.matches ? { x: 0, y: top, w: innerWidth, h: innerHeight - top }
     : { x: 12, y: top, w: innerWidth - 24, h: Math.max(140, Math.min(innerHeight, sheetTop()) - 12 - top) };
   scene.setBox(box, capRoom);
   placeCaption();
+  if (sheet) { const h = snaps().join(); if (h !== fit._snaps) { fit._snaps = h; sheet.layout(); } }
 }
 function layoutUI() { phoneSync(); sheet?.layout(); requestFit(); }
 phone.addEventListener?.("change", layoutUI); wide.addEventListener?.("change", layoutUI);
@@ -251,7 +256,7 @@ function frame(now) {
 // ---------- start: fill the controls first, then build the sheet so it measures its half stop ----------
 scene.resize();
 renderMode(); readout();
-phoneSync(); fit();
+fit(); phoneSync(); fit();
 layoutUI();
 if (prefers.reducedMotion) toast("Reduced motion: still before and after views.");
 scene.ready.then(() => requestAnimationFrame(frame));

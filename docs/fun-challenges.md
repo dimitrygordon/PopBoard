@@ -100,13 +100,13 @@ All thresholds Cleared by Tesla 2026-10-29 (values live in `public/circuit-build
 
 ## Relativity: Lightspeed Ride
 
-Mode `?mode=lightspeed-ride` of `study-relativity.html`. Source: `public/relativity/lightspeed/ls-model.js` (`FUN`, `GOALS`). All thresholds TODO-TESLA. Medals count only in the Ride tab, where every effect is on (the Sandbox tab can switch effects off and does not earn medals).
+Mode `?mode=lightspeed-ride` of `study-relativity.html`. Source: `public/relativity/lightspeed/ls-model.js` (`FUN`, `GOALS`). All thresholds Cleared by Tesla 2026-10-29. Medals count only in the Ride tab, where every effect is on (the Sandbox tab can switch effects off and does not earn medals).
 
 | Tier | Goal | Threshold |
 | --- | --- | --- |
-| Bronze | Ride at half the speed of light | beta at least 0.5 (`FUN.bronzeBeta`, TODO-TESLA) |
-| Silver | Squeeze half of all the stars into the forward 45 degree cone | At least 50% of the sky's stars seen within 45 degrees of straight ahead (`FUN.silverFraction`, `CONE_DEG`); for an even sky this needs beta of about 0.707 (TODO-TESLA) |
-| Gold | Hold the ship at gamma 10 for 3 seconds | gamma within 0.25 of 10 (beta about 0.9949 to 0.9952) for 3 s in a row (`FUN.goldGamma`, `FUN.goldTol`, `FUN.goldHoldS`, TODO-TESLA) |
+| Bronze | Ride at half the speed of light | beta at least 0.5 (`FUN.bronzeBeta`, Cleared by Tesla 2026-10-29) |
+| Silver | Squeeze half of all the stars into the forward 45 degree cone | At least 50% of the sky's stars seen within 45 degrees of straight ahead (`FUN.silverFraction`, `CONE_DEG`); for an even sky this needs beta of about 0.707 (Cleared by Tesla 2026-10-29) |
+| Gold | Hold the ship at gamma 10 for 3 seconds | gamma within 0.25 of 10 (beta about 0.9947 to 0.9952; gamma 10 is beta 0.99499) for 3 s in a row (`FUN.goldGamma`, `FUN.goldTol`, `FUN.goldHoldS`, Cleared by Tesla 2026-10-29) |
 
 ## Shared layer constants (`public/shared/fun/`)
 These are feel constants from Leo's spec, not physics, but they're listed here for completeness:

@@ -1,5 +1,6 @@
 // Relativity "Lightspeed Ride" view: an aberrated, Doppler-colored starfield seen through
-// Leo's cockpit frame. All three window panes in the art are transparent, so the stars are
+// Leo's cockpit frame. The view through the panes is black space in both themes; only the
+// frame, page and panel follow Paper. All three window panes in the art are transparent, so the stars are
 // drawn first and the frame is laid on top.
 import { view, brightness, tempToRGB, CONE_DEG } from "./ls-model.js";
 export const CAPTION_GAP = 12;
@@ -11,7 +12,7 @@ const ART = "relativity/assets/lightspeed/cockpit-frame.webp";
 
 export function palettes(theme) {
   return theme === "light"
-    ? { page: "#f3efe4", sky: "#e9e2d0", ink: "#1f2328", dim: "#50575e", accent: "#2f7d7a", dust: "rgba(31,35,40,0.35)", light: true }
+    ? { page: "#f3efe4", sky: "#03050b", ink: "#1f2328", dim: "#50575e", accent: "#5fb3ad", dust: "rgba(220,232,240,0.45)", light: true }
     : { page: "#0b0f17", sky: "#03050b", ink: "#e9eef0", dim: "#a3afb5", accent: "#5fb3ad", dust: "rgba(220,232,240,0.45)", light: false };
 }
 
@@ -46,10 +47,8 @@ export function createScene(canvas) {
       const b = opt.dopplerOn ? brightness(p.D) : 1, a = Math.min(1, 0.25 + 0.75 * p.mag * Math.min(1, b));
       const r = Math.min(4.2, (0.7 + 1.5 * p.mag) * Math.sqrt(Math.min(b, 4)) * s);
       let [R, G, B] = opt.dopplerOn ? tempToRGB(p.T) : [255, 255, 255];
-      if (pal.light) { R = Math.round(R * 0.62); G = Math.round(G * 0.62); B = Math.round(B * 0.62); }
       ctx.globalAlpha = a; ctx.fillStyle = `rgb(${R},${G},${B})`;
       ctx.beginPath(); ctx.arc(x, y, Math.max(0.6, r), 0, Math.PI * 2); ctx.fill();
-      if (pal.light && r > 1.2) { ctx.strokeStyle = pal.ink; ctx.lineWidth = 0.6; ctx.stroke(); }
     }
     ctx.globalAlpha = 1; ctx.restore();
     return seen;
@@ -70,8 +69,8 @@ export function createScene(canvas) {
   function label(text, x, y) {
     ctx.font = `600 ${Math.max(11, Math.round(15 * Math.min(1, art.s * 2)))}px system-ui, sans-serif`;
     const w = ctx.measureText(text).width + 14, h = 22;
-    ctx.fillStyle = pal.light ? "rgba(251,248,240,0.92)" : "rgba(11,15,23,0.85)"; ctx.fillRect(x - w / 2, y, w, h);
-    ctx.fillStyle = pal.ink; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(text, x, y + h / 2 + 1);
+    ctx.fillStyle = "rgba(11,15,23,0.85)"; ctx.fillRect(x - w / 2, y, w, h);
+    ctx.fillStyle = "#e9eef0"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(text, x, y + h / 2 + 1);
   }
   // o: { beta, aberration, dopplerOn, cone, dust, rapidity, dt, compare }
   function draw(stars, o) {
