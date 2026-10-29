@@ -73,7 +73,11 @@
       // Neutral: flip lightness onto the ink to paper ramp (dark ground -> cream, white line -> ink).
       var tt = 1 - l;
       o = tt > 0.9 ? mix(PANEL, PAPER, (tt - 0.9) * 10) : mix(INK, PANEL, tt / 0.9);
-      if (s >= 0.22 && l >= 0.2) { var c2 = rgb(h, Math.min(s, 0.6), 0.32); o = c2; }
+      if (s >= 0.22) {
+        // Tinted: dark grounds become a faint tint of their hue on paper; light tints become a dark ink of the hue.
+        if (l < 0.2 && role === "fill") o = mix(o, rgb(h, Math.min(s, 0.5), 0.86), 0.18);
+        else if (l > 0.94 || role !== "fill") o = rgb(h, Math.min(s, 0.6), 0.32);
+      }
     } else {
       // A hue: keep it, darken it so it reads on cream.
       o = rgb(h, Math.min(1, s * 0.95), Math.max(0.2, Math.min(l, 0.4)));
@@ -97,7 +101,17 @@
     if (ratio(o, bg) < 4.5) o = ratio(INK, bg) >= ratio(PANEL, bg) ? INK.concat(1) : PANEL.concat(1);
     o[3] = 1; return o;
   }
-  function mapStr(s, role) { var c = parse(s); return c ? fmt(map(c, role)) : s; }
+  // Colors that are already Paper (our own outputs and the Paper tokens) pass through, so a value read
+  // back from CSS and painted on a canvas is not flipped twice.
+  var DONE = new Set();
+  function key(c) { return Math.round(c[0]) + "," + Math.round(c[1]) + "," + Math.round(c[2]); }
+  function isDone(c) { return DONE.has(key(c)); }
+  function mark(o) { DONE.add(key(o)); return o; }
+  function mapStr(s, role) { var c = parse(s); if (!c) return s; if (isDone(c)) return s; return fmt(mark(map(c, role))); }
+  function learnTokens() {
+    var cs = getComputedStyle(root);
+    for (var i = 0; i < cs.length; i++) { var p = cs[i]; if (p.indexOf("--") !== 0) continue; var c = parse(cs.getPropertyValue(p).trim()); if (c) mark(c); }
+  }
 
   // ---------- canvas ----------
   var P = CanvasRenderingContext2D.prototype;
@@ -162,9 +176,10 @@
     var glowy = role === "shadow";
     return v.replace(TOK, function (tk) {
       var c = parse(tk); if (!c) return tk;
-      if (role === "text") return fmt(legible(map(c, "line"), bg));
-      if (glowy) { var H = hsl(c[0], c[1], c[2]); return fmt(H[2] < 0.35 ? map(c, "shadow") : map(c, "glow")); }
-      return fmt(map(c, role));
+      if (isDone(c)) return tk;
+      if (role === "text") return fmt(mark(legible(map(c, "line"), bg)));
+      if (glowy) { var H = hsl(c[0], c[1], c[2]); return fmt(mark(H[2] < 0.35 ? map(c, "shadow") : map(c, "glow"))); }
+      return fmt(mark(map(c, role)));
     });
   }
   function bgOf(style) {
@@ -211,16 +226,18 @@
       try { rules = sh.cssRules; } catch (e) { continue; }
       if (rules) walk(rules);
     }
+    learnTokens();
   }
   var written = new WeakMap();
   function inKeep(el) { return !!(el.closest && el.closest('[data-paper="keep"]')); }
   function inline(el) {
     if (el.nodeType !== 1 || inKeep(el)) return;
     var st = el.getAttribute("style");
-    if (st && written.get(el) !== st) { restyle(el.style, false); written.set(el, el.getAttribute("style")); }
+    var w = written.get(el); if (!w) { w = {}; written.set(el, w); }
+    if (st && w.style !== st) { restyle(el.style, false); w.style = el.getAttribute("style"); }
     ["fill", "stroke", "stop-color"].forEach(function (a) {
-      var v = el.getAttribute(a); if (!v || written.get(el) === a + v) return;
-      var nv = mapValue(v, a === "stroke" ? "line" : "fill"); if (nv && nv !== v) { el.setAttribute(a, nv); written.set(el, a + nv); }
+      var v = el.getAttribute(a); if (!v || w[a] === v) return;
+      var nv = mapValue(v, a === "stroke" ? "line" : "fill"); w[a] = nv || v; if (nv && nv !== v) el.setAttribute(a, nv);
     });
   }
   function sweep(node) { inline(node); if (node.querySelectorAll) { var l = node.querySelectorAll("[style],[fill],[stroke],[stop-color]"); for (var i = 0; i < l.length; i++) inline(l[i]); } }
