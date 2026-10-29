@@ -2118,3 +2118,11 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
 }
 .draw-thumb-canvas { image-rendering: pixelated; display: block; }
 .draw-thumb span { display: block; font-size: 0.72rem; color: var(--text-secondary); margin-top: 4px; }
+
+/* Print / Save as PDF: print the static logo, never a mid-wiggle frame. */
+@media print {
+  #logo-img, #login-logo-img, #boardname-logo-img, #teacher-logo-img, #teacher-signup-logo-img {
+    animation: none !important;
+    transform: none !important;
+  }
+}

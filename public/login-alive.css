@@ -195,3 +195,12 @@ html.la-sky-on {
   background-color: var(--la-sky-bot) !important;
 }
 #la-sky { top: calc(-1 * env(safe-area-inset-top, 0px)); height: calc(100lvh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px)); }
+
+/* Print / Save as PDF: the animated mascot is a stack of separately
+   positioned part images (.la-rig). Print engines that drop or re-flow
+   that positioning split the logo into its parts stacked vertically.
+   On paper, hide the rig and show the plain static logo it wraps. */
+@media print {
+  .la-rig, .la-kernel, .la-blush { display: none !important; }
+  .la-logo > img.la-src, .la-logo.la-ready > img.la-src { opacity: 1 !important; animation: none !important; transform: none !important; }
+}
