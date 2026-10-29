@@ -125,7 +125,12 @@ input[type="range"] { width: 100%; min-height: var(--pj-hit); margin: 0; accent-
   .controls.fun-sheet-on [data-sliders] { order: -1; gap: 4px; }
   .controls.fun-sheet-on input[type="range"] { min-height: 30px; }
   .toolbar { position: fixed; left: 0; right: 0; bottom: 0; }
+  /* Backup: soft fade where the sheet meets the tab bar, so a clipped row never reads as a hard cut. */
+  .fun-sheet-fade { position: fixed; left: 0; right: 0; bottom: var(--pj-toolbar-h, 100px); height: 8px; z-index: 5; pointer-events: none;
+    background: linear-gradient(to bottom, transparent, var(--pj-paper)); }
 }
+.fun-sheet-fade { display: none; }
+@media (max-width: 600px) { body:has(.controls.fun-sheet-on) .fun-sheet-fade { display: block; } }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }

@@ -92,7 +92,7 @@ if (typeof document !== "undefined") {
     const labs = controlsEl.querySelectorAll("[data-sliders] .slider");
     const anchor = labs[Math.min(1, labs.length - 1)] || controlsEl.querySelector('[data-group="actions"]');
     const top = controlsEl.getBoundingClientRect().top;
-    const peek = anchor ? Math.ceil(anchor.getBoundingClientRect().bottom - top + 10) : 140;
+    const peek = anchor ? Math.ceil(anchor.getBoundingClientRect().bottom - top + 2) : 140;
     return [Math.min(half, Math.max(120, peek)), half, full];
   };
   const phoneSync = () => {
