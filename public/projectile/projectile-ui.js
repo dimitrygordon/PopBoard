@@ -51,7 +51,7 @@ function applyTheme(t, save) {
   $("themeBtn").setAttribute("aria-label", t === "dark" ? "Switch to light mode" : "Switch to dark mode");
   T = readTokens(); maskTint = null; dirty = true;
 }
-$("themeBtn").addEventListener("click", () => applyTheme(T.dark ? "light" : "dark", true));
+$("themeBtn").addEventListener("click", () => { window.PopBoardFunTheme?.(); applyTheme(T.dark ? "light" : "dark", true); });
 const darkMQ = window.matchMedia("(prefers-color-scheme: dark)");
 darkMQ.addEventListener?.("change", (e) => {
   let saved = null; try { saved = localStorage.getItem(THEME_KEY); } catch (err) {}
@@ -97,19 +97,30 @@ function fire(animate = true) {
 function clearShots() { st.shots = []; st.history = []; st.fired = false; st.result = ""; st.anim.running = false; }
 function scoreShot() {
   if (st.scored) return; st.scored = true;
-  const shot = st.shots[st.shots.length - 1]; if (!shot) return;
+  const hit = scoreShotCore();
+  const shot = st.shots[st.shots.length - 1];
+  // Shared fun layer hook (projectile-fun.js): one event per finished shot.
+  if (shot) window.dispatchEvent(new CustomEvent("projectile:shot", { detail: {
+    mode: st.mode, angle: P().angle, speed: P().speed, h: params().h, g: params().g, drag: !!params().drag,
+    range: shot.sum.range, hit: hit.hit, points: hit.points, targetKind: hit.kind } }));
+}
+function scoreShotCore() {
+  const none = { hit: false, points: 0, kind: null };
+  const shot = st.shots[st.shots.length - 1]; if (!shot) return none;
   const tgt = st.mode === "target" ? st.target : st.mode === "sandbox" && B.target ? st.boxTarget : null;
-  if (!tgt) return;
+  if (!tgt) return none;
   if (st.mode === "target") st.tries++;
   if (tgt.kind === "cart") {
     const r = scoreCart(shot.sum.range, tgt.x);
     if (r.caught) { st.result = "Caught! The ball landed in the cart."; if (st.mode === "target") { st.hits++; st.score += 10; } }
     else st.result = `Missed: landed ${fmtM(Math.abs(r.off))} ${r.off < 0 ? "short of" : "past"} the cart.`;
+    return { hit: r.caught, points: r.caught ? 10 : 0, kind: "cart" };
   } else {
     const r = scoreBullseye(shot.path, tgt.x, tgt.y);
     if (r.y == null) st.result = `Missed: landed ${fmtM(r.miss)} short of the target.`;
     else if (r.points) { st.result = `Hit! ${r.points} point${r.points > 1 ? "s" : ""} (${fmtM(r.off)} from the center).`; if (st.mode === "target") { st.hits++; st.score += r.points; } }
     else st.result = `Missed: passed ${fmtM(Math.abs(r.y - tgt.y))} ${r.y > tgt.y ? "above" : "below"} the center.`;
+    return { hit: !!(r.y != null && r.points), points: (r.y != null && r.points) || 0, kind: "bullseye" };
   }
 }
 
@@ -427,3 +438,9 @@ sync();
 requestAnimationFrame(frame);
 // Read-only hook for the browser checks.
 window.__projectile = { state: st, shared: S, sandbox: B };
+// Hook for the shared fun layer (projectile-fun.js): sandbox share links.
+window.__projectileFun = {
+  mode: () => st.mode, sandbox: B,
+  applySandbox(v) { Object.assign(B, v); if (v.world && WORLDS[v.world] && v.g == null) B.g = WORLDS[v.world].g; setMode("sandbox"); fire(false); sync(); dirty = true; }
+};
+window.dispatchEvent(new Event("projectile:ready"));
