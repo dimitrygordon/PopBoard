@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#1f2128">
+<title>Planetary Climate // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  // Theme before first paint: a saved choice wins, else the system setting.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.climate.theme"); } catch (e) {}
+    if (t !== "dark" && t !== "light") t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
+<link rel="preload" as="image" href="climate/assets/earth.webp" type="image/webp">
+<link rel="stylesheet" href="climate/climate-theme.css">
+<link rel="stylesheet" href="astro-study.css?v=20261021k">
+<script src="astro-study.js?v=20261021k"></script>
+</head>
+<body>
+<h1 class="sr-only">Planetary Climate</h1>
+<p class="sr-only">Why planets have the temperatures they do: sunlight, albedo and the equilibrium temperature T = [S(1 &minus; a)/(4&sigma;)]<sup>1/4</sup>, a one-layer greenhouse model with infrared-absorbing gases, Venus, Earth and Mars compared with real data, carbon dioxide forcing &Delta;F = 5.35 ln(C/C<sub>0</sub>) with the IPCC climate sensitivity range and the Keeling curve, water vapor and ice-albedo feedbacks, and a sandbox for building your own planet.</p>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title">Planetary Climate</p>
+  <button id="themeBtn" class="theme-btn" type="button" aria-pressed="false" aria-label="Dark mode">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <span id="themeLabel">Dark</span>
+  </button>
+</header>
+
+<main id="stage" class="stage">
+  <div class="paper canvas-box scene-box">
+    <canvas id="scene" role="img" tabindex="0" aria-label="Planetary climate scene"></canvas>
+  </div>
+  <div class="controls paper" id="controls">
+    <h2 class="panel-title" id="panelTitle"></h2>
+    <div class="sliders" data-sliders></div>
+    <div class="choices" data-choices></div>
+    <p class="formula" id="readout" aria-live="polite"></p>
+    <p class="caption" id="note"></p>
+  </div>
+</main>
+
+<nav id="toolbar" class="toolbar" aria-label="Activities">
+  <button type="button" class="tool" data-show="energy" aria-pressed="false">Energy balance</button>
+  <button type="button" class="tool" data-show="greenhouse" aria-pressed="false">Greenhouse</button>
+  <button type="button" class="tool" data-show="compare" aria-pressed="false">Planets</button>
+  <button type="button" class="tool" data-show="co2" aria-pressed="false">CO&#8322; &amp; warming</button>
+  <button type="button" class="tool" data-show="feedbacks" aria-pressed="false">Feedbacks</button>
+  <button type="button" class="tool" data-show="sandbox" aria-pressed="false">Sandbox</button>
+</nav>
+
+<script type="module" src="climate/climate-ui.js"></script>
+</body>
+</html>
