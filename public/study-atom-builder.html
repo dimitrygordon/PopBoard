@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#121820">
+<title>Atom Builder // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.atom-builder.theme"); } catch (e) {}
+    document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");
+  })();
+</script>
+<link rel="stylesheet" href="shared/fun/fun.css">
+<link rel="stylesheet" href="atom-builder/atom-builder-theme.css">
+</head>
+<body>
+<h1 class="sr-only">Atom Builder</h1>
+<p class="sr-only">Build atoms from protons, neutrons and electrons. Drag particles from the trays onto the atom, or use the plus and minus buttons. Protons and neutrons go in the nucleus; electrons spread out in clouds around it.</p>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title">Atom Builder</p>
+  <button id="soundBtn" type="button" aria-pressed="false" aria-label="Sound is off">Sound</button>
+  <button id="themeBtn" type="button"><span id="themeLabel">Paper</span></button>
+</header>
+
+<section class="status" id="status" aria-live="polite">
+  <p class="symbol" id="symbol">?</p>
+  <p class="name" id="name">Empty</p>
+  <p class="facts" id="facts"></p>
+  <p class="facts stab" id="stab"></p>
+</section>
+
+<main id="stage" class="stage">
+  <canvas id="scene" role="img" tabindex="0" aria-label="Atom"></canvas>
+  <p class="cap scale" id="scaleCap"></p>
+  <p class="cap tray-cap" id="cap-proton"></p>
+  <p class="cap tray-cap" id="cap-neutron"></p>
+  <p class="cap tray-cap" id="cap-electron"></p>
+</main>
+<p class="toast" id="toast" role="status" aria-live="polite" hidden></p>
+
+<div class="canvas-box" id="funBox"></div>
+
+<section class="controls" id="controls" aria-label="Atom controls">
+  <button type="button" class="fun-handle" id="sheetHandle" aria-label="Resize controls"></button>
+  <div class="tabs" role="tablist" aria-label="Mode">
+    <button type="button" role="tab" data-mode="build" aria-selected="true">Build</button>
+    <button type="button" role="tab" data-mode="sandbox" aria-selected="false">Sandbox</button>
+    <button type="button" role="tab" data-mode="table" aria-selected="false">Table</button>
+  </div>
+  <div id="modeBody" class="mode-body"></div>
+</section>
+
+<script type="module" src="atom-builder/ab-ui.js"></script>
+</body>
+</html>
