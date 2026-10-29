@@ -13,6 +13,18 @@
 <link rel="stylesheet" href="relativity-theme.css">
 <link rel="stylesheet" href="astro-study.css?v=20261021k">
 <script src="astro-study.js?v=20261021k"></script>
+<script>
+  // Lightspeed Ride (?mode=lightspeed-ride) shares this page with the Relativity Sandbox but has
+  // its own themes and styles. Set them before first paint so neither flashes.
+  (function () {
+    if (new URLSearchParams(location.search).get("mode") !== "lightspeed-ride") return;
+    var r = document.documentElement, t = null;
+    try { t = localStorage.getItem("popboard.relativity.lightspeed.theme"); } catch (e) {}
+    r.classList.add("ls-mode");
+    r.setAttribute("data-theme", t === "light" ? "light" : "dark");
+    document.write('<link rel="stylesheet" href="shared/fun/fun.css"><link rel="stylesheet" href="relativity/lightspeed/lightspeed-theme.css">');
+  })();
+</script>
 </head>
 <body>
 <header class="bar">
@@ -38,6 +50,7 @@
 <div class="title">
   <h1>Relativity Sandbox</h1>
   <p>Special relativity and gravity, side by side. Clocks, grids, and orbits use one shared setup, so changing tabs keeps the masses and the speed. Pictures that stretch the truth wear an Illustrative tag. The white panel is what the equations actually say.</p>
+  <p class="ls-entry"><a id="lightspeedLink" href="study-relativity.html?mode=lightspeed-ride">Lightspeed Ride</a>: fly toward the speed of light and watch the stars bunch up and change color.</p>
 </div>
 
 <main class="wrap">
@@ -333,6 +346,10 @@
 <footer class="footnote">
   Invariant mass only: E = γmc² is total energy and p = γmv. Contracted drawings are measured lengths, not what a camera would see. The twin gap is two different spacetime paths. Schwarzschild orbits are non-rotating, stepped in φ, and share coordinate time with the Newtonian particle. GPS figures are the weak-field sum, labeled “about”. The sheet is a constant-time spatial slice, exaggerated on purpose. Point-lens images are only for impact parameters well outside 10 r_s. Closer rays are the null geodesic, labeled as modeled.
 </footer>
-<script type="module" src="relativity-ui.js"></script>
+<script type="module">
+  // The Relativity Sandbox and Lightspeed Ride never run together.
+  if (document.documentElement.classList.contains("ls-mode")) import("./relativity/lightspeed/ls-ui.js");
+  else import("./relativity-ui.js");
+</script>
 </body>
 </html>

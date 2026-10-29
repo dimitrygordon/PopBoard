@@ -93,6 +93,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 
 .title { text-align: center; padding: 16px 16px 4px; }
 .title h1 { font-size: 22px; margin: 0; }
+.title p.ls-entry { margin-top: 6px; }
+.title p.ls-entry a { color: var(--rel-moving); font-weight: 600; }
 .title p {
   color: var(--text-dim);
   font-size: 14px;
