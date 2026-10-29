@@ -672,12 +672,28 @@ var BUILTIN_MODULES = [
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></svg>'
   },
   {
+    id: "climate",
+    kind: "builtin",
+    name: "Planetary Climate",
+    description: "Balance sunlight against infrared glow to find a planet's equilibrium temperature with T = [S(1 \u2212 a)/(4\u03c3)]^\u00bc (Earth: 255 K without a greenhouse, 288 K observed), trap infrared in a one-layer greenhouse model and see which gases absorb it, compare Venus, Earth and Mars with real NASA data, add CO\u2082 with \u0394F = 5.35 ln(C/C\u2080) and the IPCC climate sensitivity range next to the Keeling curve, switch water vapor and ice-albedo feedbacks on and off, and build your own planet in a sandbox.",
+    file: "study-climate.html",
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="5" r="2.2"/><path d="M5 1v1M1 5h1M2.2 2.2l.7.7"/><circle cx="14" cy="14" r="5.5"/><circle cx="14" cy="14" r="8" stroke-dasharray="2 2.2"/><path d="M7.5 7.5l2.5 2.5"/></svg>'
+  },
+  {
     id: "induction-motors",
     kind: "builtin",
     name: "Induction & Motors",
     description: "Measure magnetic flux with Φ = BA cosθ, push a bar magnet through a coil and watch a galvanometer read emf = −N ΔΦ/Δt (Faraday's law), find which way the induced current flows and why it pushes back (Lenz's law), crank a generator and graph its sinusoidal emf = NBAω sinωt, see the force and torque on a DC motor's coil and what the commutator does, step voltages up and down with a transformer (Vs/Vp = Ns/Np), and play freely in a sandbox.",
     file: "study-induction-motors.html",
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="10" width="7" height="4" rx="0.5"/><path d="M12 7c1.2 0 1.2 10 0 10M15 7c1.2 0 1.2 10 0 10M18 7c1.2 0 1.2 10 0 10"/><path d="M12 7c-1.2 0-1.2 10 0 10M15 7c-1.2 0-1.2 10 0 10M18 7c-1.2 0-1.2 10 0 10"/><path d="M20 12h2"/></svg>'
+  },
+  {
+    id: "rocket-mission",
+    kind: "builtin",
+    name: "Rocket Science & Space Mission",
+    description: "See where thrust comes from with Newton's third law (F = ṁvₑ), use the Tsiolkovsky rocket equation Δv = vₑ ln(m₀/m_f) with real engines' specific impulse, find out why rockets drop stages, fly a two-stage launch to orbit with a gravity turn against gravity and drag, fire Newton's cannonball at orbital speed √(GM/r) and escape speed, plan a Hohmann transfer to Mars with its Δv, trip time and launch window, and build and fly your own rocket in a sandbox.",
+    file: "study-rocket-mission.html",
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c2.5 2 3.5 5 3.5 8v6h-7v-6c0-3 1-6 3.5-8z"/><circle cx="12" cy="9" r="1.5"/><path d="M8.5 12l-3 3v3l3-1.5M15.5 12l3 3v3l-3-1.5"/><path d="M10.5 19l1.5 3 1.5-3"/></svg>'
   }
 ];
 
