@@ -94,15 +94,20 @@ function layoutField() {
     show = new Set(near);
   }
   const vr = view.getBoundingClientRect(), placed = [];
-  const hit = (a) => placed.some((b) => a.left < b.right + 4 && a.right > b.left - 4 && a.top < b.bottom + 2 && a.bottom > b.top - 2);
+  const over = (a, b) => a.left < b.right + 4 && a.right > b.left - 4 && a.top < b.bottom + 2 && a.bottom > b.top - 2;
+  // Wider screens show every label, so labels also keep off the other stars' markers there.
+  const marks = phone ? [] : btns.map((b) => b.getBoundingClientRect());
+  let self = -1;
+  const hit = (a) => placed.some((b) => over(a, b)) || marks.some((m, k) => k !== self && over(a, m));
   btns.forEach((b, i) => {
     const lab = b.querySelector(".lab"); if (!lab) return;
+    self = i;
     lab.hidden = !!show && !show.has(i);
     lab.style.marginLeft = "0px"; lab.style.top = "";
     if (lab.hidden) return;
     // Try below the marker, then above, then further down, so labels never sit on each other.
     const tops = [58, -18, 76, -36, 94];
-    let lr = null;
+    let lr = null, ok = false;
     for (const t of tops) {
       lab.style.top = t + "px"; lab.style.marginLeft = "0px";
       lr = lab.getBoundingClientRect();
@@ -111,8 +116,9 @@ function layoutField() {
       else if (lr.right > vr.right - LABEL_PAD) dx = vr.right - LABEL_PAD - lr.right;
       lab.style.marginLeft = dx + "px";
       lr = { left: lr.left + dx, right: lr.right + dx, top: lr.top, bottom: lr.bottom };
-      if (!hit(lr)) break;
+      if (!hit(lr)) { ok = true; break; }
     }
+    if (!ok && !phone) { lab.style.top = "58px"; lab.style.marginLeft = "0px"; lr = lab.getBoundingClientRect(); }
     placed.push(lr);
   });
 }

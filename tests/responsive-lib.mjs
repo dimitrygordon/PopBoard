@@ -152,6 +152,8 @@ export function pageChecks({ minText, minTap, touch }) {
       }
       // A bottom sheet parked partway open runs past the screen edge; the part behind the bar is reached by dragging it up.
       if (pinned(top) && pinned(e)) { let q = e; while (q && getComputedStyle(q).position !== "fixed") q = q.parentElement; if (q && q.getBoundingClientRect().bottom > vh + 1) continue; }
+      // A sheet dragged to its full stop is meant to cover the stage area under it (the bar stays clear).
+      { const fs = top.closest(".fun-sheet-on[data-snap=full], .fun-sheet[data-snap=full]"); if (fs && !fs.contains(e) && !e.closest("header,[role=banner]")) continue; }
       const ctl = e.closest("button,label,a,[role=button]"); if (ctl && ctl.contains(top)) continue;
       hits++; by = top;
     }
