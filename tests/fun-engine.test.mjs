@@ -60,7 +60,7 @@ test("projectile goals: bronze needs hits in a row", () => {
   eng.report(hit); eng.report(hit); eng.report(miss); eng.report(hit); eng.report(hit);
   assert.deepEqual(eng.earned(), []);
   eng.report(hit); assert.deepEqual(eng.earned(), ["bronze"]);
-  eng.report({ mode: "launch", h: 0, angle: 45, range: 40.77 });
+  eng.report({ mode: "launch", h: 0, angle: 45, range: 40.79 });
   assert.ok(eng.earned().includes("silver"));
 });
 

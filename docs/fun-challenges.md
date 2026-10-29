@@ -9,7 +9,7 @@ Source: `public/projectile/projectile-fun.js` (`FUN` and `GOALS`).
 |---|---|---|---|
 | `bronzeHitsInARow` | 3 | Bronze: hit 3 targets in a row in Target mode (bullseye with points > 0, or a cart catch) | TODO-TESLA |
 | `silverMaxRangeAngleTol` | 1° | Silver: Launch mode, from the ground on Earth, with \|angle − 45°\| ≤ 1° | TODO-TESLA |
-| `silverMinRange` | 40 m | Silver: the range has to be at least 40 m (20 m/s at 45° gives about 40.77 m with g = 9.80665) | TODO-TESLA |
+| `silverMinRange` | 40 m | Silver: the range has to be at least 40 m (20 m/s at 45° gives about 40.79 m with g = 9.80665) | TODO-TESLA |
 | `goldMinPoints` | 8 | Gold: Sandbox with air drag and Target on, a bullseye hit worth at least 8 points (rings score 1, 2, 3, 5, 8, 10) | TODO-TESLA |
 | `predictLine` | 30 m | Predict-then-run (Launch mode): "Will it land past 30 m?" | TODO-TESLA |
 
