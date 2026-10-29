@@ -29,6 +29,7 @@
     "test:platetectonics": "node --test plate-tectonics.test.mjs",
     "test:gravitywellgolf": "node --test gravity-well-golf.test.mjs",
     "test:powersoften": "node --test powers-of-ten.test.mjs",
+    "test:rippletank": "node --test ripple-tank.test.mjs",
     "test:atombuilder": "node --test atom-builder.test.mjs",
     "test:circuitbuilder": "node --test circuit-builder.test.mjs",
     "test:mechanics:browser": "node mechanics-browser.mjs",

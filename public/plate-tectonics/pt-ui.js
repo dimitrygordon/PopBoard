@@ -262,7 +262,7 @@ function frame(now) {
     }
     if (!drag) for (const k of ["x", "y"]) { back[k] = springStep(back[k], 0, real); if (reduced() || Math.abs(back[k].x) < 0.3) back[k] = { x: 0, v: 0 }; }
     const off = drag ? { dx: drag.dx, dy: drag.dy } : { dx: back.x.x, dy: back.y.x };
-    const { o, anchors } = scene.draw(st, now, fx, off);
+    const { o, anchors } = scene.draw(st, now, fx, off); lastCrest = anchors.crest || null;
     if (o.volcano && playing && now - lastPuff > 1300) { fx.puffs.push({ kind: "plume", t: now }); lastPuff = now; }
     fx.puffs = fx.puffs.filter((p) => now - p.t < FX_MS[p.kind]);
     syncStatus(o); checkState(o);
@@ -279,4 +279,5 @@ function frame(now) {
 scene.resize();
 if (Object.keys(share).length) { mode = "sandbox"; setMode("sandbox"); } else setMode("guided");
 requestAnimationFrame(frame);
-window.__pt = { st, piece, setMode, applyScene, openAbout, closeAbout, advance, get playing() { return playing; }, set playing(v) { playing = v; }, T, FUN, outcome: () => outcome(st), get fault() { return fault; } };
+let lastCrest = null;
+window.__pt = { get crest() { return lastCrest; }, st, piece, setMode, applyScene, openAbout, closeAbout, advance, get playing() { return playing; }, set playing(v) { playing = v; }, T, FUN, outcome: () => outcome(st), get fault() { return fault; } };
