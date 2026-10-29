@@ -97,3 +97,54 @@ test("no em-dashes and no off-limits mascot name in module copy", () => {
   const card = read("study.html").split('id: "orbits"')[1].split("}")[0];
   for (const t of [...FILES.map(read), card, readFileSync(new URL("../docs/orbits-science.md", import.meta.url), "utf8")]) { assert.ok(!t.includes("\u2014")); assert.ok(!new RegExp("ja" + "sper", "i").test(t)); }
 });
+
+// ---------- Leo's art notes: Sun halo and desktop planet sizes ----------
+function mockScene() {
+  globalThis.Image ??= class { set src(v) { this._s = v; queueMicrotask(() => this.onload?.()); } };
+  globalThis.devicePixelRatio ??= 1;
+  const calls = [];
+  const ctx = new Proxy({}, {
+    get(t, k) {
+      if (k in t) return t[k];
+      if (k === "createRadialGradient") return (...a) => { calls.push(["grad", ...a]); return { addColorStop: (o, c) => calls.push(["stop", o, c]) }; };
+      return (...a) => calls.push([k, ...a, t.globalAlpha]);
+    },
+    set(t, k, v) { t[k] = v; if (k === "globalCompositeOperation") calls.push(["gco", v]); return true; }
+  });
+  const canvas = { clientWidth: 1280, clientHeight: 800, width: 1280, height: 800, getContext: () => ctx };
+  return { canvas, calls };
+}
+const S = await import("../public/orbits/solar/so-scene.js");
+const box = { x: 16, y: 110, w: 860, h: 654 };
+const sizes = (scene) => Object.fromEntries(M.ORDER.map((k) => [k, 2 * scene.radius(k)]));
+
+test("desktop planets are at least 20px across, Jupiter and Saturn the biggest; phone sizes unchanged", () => {
+  const scene = S.createScene(mockScene().canvas);
+  for (const desk of [{ ...box }, { x: 16, y: 110, w: 1500, h: 900 }, { x: 16, y: 110, w: 500, h: 400 }]) {
+    scene.setBox(desk, 30, 58, true);
+    const d = sizes(scene);
+    for (const k of M.ORDER) assert.ok(d[k] >= S.DESKTOP_MIN_PX, `${k} ${d[k]}`);
+    const others = M.ORDER.filter((k) => k !== "jupiter" && k !== "saturn").map((k) => d[k]);
+    assert.ok(d.jupiter > d.saturn && d.saturn > Math.max(...others), JSON.stringify(d));
+  }
+  const phone = { x: 12, y: 150, w: 366, h: 300 };
+  scene.setBox(phone, 30, 58, false);
+  const s = scene.view.s;
+  for (const k of M.ORDER) assert.equal(scene.radius(k), M.PLANETS[k].px * s, k);
+});
+
+test("the Sun has a soft muted gold halo: radial gradient to 1.8x radius at 35% opacity, both themes", () => {
+  for (const theme of ["dark", "light"]) {
+    const { canvas, calls } = mockScene();
+    const scene = S.createScene(canvas); scene.setTheme(theme); scene.setBox(box, 30, 58, true);
+    scene.draw(M.createSystem(), { trails: new Map(), moonAngle: 0 });
+    const r = scene.radius("sun"), g = calls.find((c) => c[0] === "grad");
+    assert.ok(g, theme);
+    assert.ok(Math.abs(g[6] - 1.8 * r) < 1e-9 && g[3] < r, theme);
+    assert.ok(calls.filter((c) => c[0] === "stop").some((c) => /^rgba\(214, 178, 96, /.test(c[2])));
+    const fill = calls.find((c, i) => c[0] === "fill" && i > calls.indexOf(g));
+    assert.equal(fill.at(-1), 0.35);
+    assert.ok(!calls.some((c) => c[0] === "gco"));
+  }
+  assert.ok(!/globalCompositeOperation|shadowBlur/.test(read("orbits/solar/so-scene.js")));
+});

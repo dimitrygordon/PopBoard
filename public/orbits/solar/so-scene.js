@@ -11,6 +11,12 @@ export function palettes(theme) {
     : { sky: "#0f1418", ink: "#e9eef0", dim: "#a3afb5", accent: "#5fb3ad", ring: "rgba(233,238,240,0.12)", ghost: "rgba(95,179,173,0.8)", puff: "95,179,173" };
 }
 
+// Desktop: every planet at least DESKTOP_MIN_PX across; bigger planets stay bigger
+// (Jupiter, then Saturn, keep the largest disks).
+export const DESKTOP_MIN_PX = 20;
+export const desktopRadius = (px) => DESKTOP_MIN_PX / 2 + (px - 7) * 0.6;
+export const HALO_SCALE = 1.8, HALO_ALPHA = 0.35, HALO_RGB = "rgba(214, 178, 96, ";
+
 export function createScene(canvas, base = "") {
   const ctx = canvas.getContext("2d");
   const img = {}; let loaded = 0;
@@ -21,7 +27,8 @@ export function createScene(canvas, base = "") {
   function resize() { dpr = Math.min(2, devicePixelRatio || 1); canvas.width = Math.round(canvas.clientWidth * dpr); canvas.height = Math.round(canvas.clientHeight * dpr); }
   // Fit the orbit of the farthest planet (at least Neptune's 30 AU) inside the box, leaving room
   // under the lowest body for its caption.
-  function setBox(box, rMax, capRoom) {
+  function setBox(box, rMax, capRoom, desktop = false) {
+    view.desktop = desktop;
     const s = Math.max(0.7, Math.min(1.3, Math.min(box.w, box.h) / 560)), pad = 22 * s;
     const R = Math.max(60, Math.min(box.w / 2 - pad, (box.h - capRoom - 2 * pad) / 2));
     Object.assign(view, { s, box, k: R / Math.pow(rMax, DIST_POWER), cx: box.x + box.w / 2, cy: box.y + pad + R });
@@ -30,7 +37,11 @@ export function createScene(canvas, base = "") {
   const scr = (x, y) => { const p = toScreen(x, y, view.k); return { x: view.cx + p.x, y: view.cy + p.y }; };
   const world = (px, py) => toWorld(px - view.cx, py - view.cy, view.k);
   // Half height of a body's art on screen: captions sit CAPTION_GAP below this.
-  const radius = (key) => (key === "sun" ? SUN.px : PLANETS[key].px) * view.s;
+  const radius = (key) => {
+    if (key === "sun") return SUN.px * view.s;
+    const px = PLANETS[key].px, r = px * view.s;
+    return view.desktop ? Math.max(r, desktopRadius(px)) : r; // phone sizes unchanged
+  };
   const artHalfH = (key) => key === "uranus" ? radius(key) * 512 / 280 / 1 : key === "saturn" ? radius(key) * 2.2 * 245 / 512 : radius(key);
   function sprite(key, x, y) {
     const r = radius(key);
@@ -40,6 +51,12 @@ export function createScene(canvas, base = "") {
       ctx.drawImage(img["uranus-rings"], x - 146.5 * sc, y - 256 * sc, 293 * sc, 512 * sc); return;
     }
     ctx.drawImage(img[key], x - r, y - r, 2 * r, 2 * r);
+  }
+  // Soft muted gold glow so the Sun reads as a star on dark and Paper skies.
+  function sunHalo(x, y, r) {
+    const g = ctx.createRadialGradient(x, y, r * 0.8, x, y, r * HALO_SCALE);
+    g.addColorStop(0, HALO_RGB + "1)"); g.addColorStop(0.5, HALO_RGB + "0.45)"); g.addColorStop(1, HALO_RGB + "0)");
+    ctx.globalAlpha = HALO_ALPHA; ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * HALO_SCALE, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1;
   }
   function puff(x, y) { puffs.push({ x, y, t: 0 }); }
   function draw(sys, o) {
@@ -62,6 +79,7 @@ export function createScene(canvas, base = "") {
       ctx.stroke(); ctx.setLineDash([]);
     }
     if (o.sling) { ctx.strokeStyle = pal.ink; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(o.sling.x, o.sling.y); ctx.lineTo(o.sling.px, o.sling.py); ctx.stroke(); ctx.globalAlpha = 0.6; sprite(o.sling.key, o.sling.x, o.sling.y); ctx.globalAlpha = 1; }
+    sunHalo(view.cx, view.cy, radius("sun"));
     sprite("sun", view.cx, view.cy);
     for (const b of sys.bodies) {
       const p = scr(b.x, b.y);

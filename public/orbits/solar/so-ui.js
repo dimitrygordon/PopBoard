@@ -280,7 +280,7 @@ function fit() {
   const capRoom = CAPTION_GAP + 46;
   const box = wide.matches ? { x: 16, y: top, w: innerWidth - 404 - 16, h: innerHeight - top - 36 }
     : { x: 12, y: top, w: innerWidth - 24, h: Math.max(160, Math.min(innerHeight, ctl.top) - 30 - top) };
-  scene.setBox(box, viewRadius(), capRoom);
+  scene.setBox(box, viewRadius(), capRoom, wide.matches);
   const sc = $("ssScale"); sc.style.left = box.x + "px"; sc.style.top = Math.round(box.y + box.h + 6) + "px";
 }
 // Zoom to the farthest orbit on screen (its far point) or the planet about to be placed,

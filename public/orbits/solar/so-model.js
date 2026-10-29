@@ -1,24 +1,24 @@
 // Orbits: "Solar System" mode model. Fling planets around a star, keep the system stable.
 // Units: AU, years, solar masses, so G = 4 pi^2 and a 1 AU circular orbit around 1 Msun takes 1 year.
-// Pure functions only (no DOM), so tests run in Node. Every value: TODO-TESLA.
+// Pure functions only (no DOM), so tests run in Node. Every value: Cleared by Tesla 2026-10-29.
 export const MODULE_ID = "orbits-solar";
-export const G = 4 * Math.PI * Math.PI;   // AU^3 / (Msun yr^2) (TODO-TESLA)
-export const STAR_MASS = { min: 0.5, max: 2, dflt: 1 }; // Msun, sandbox slider (TODO-TESLA)
+export const G = 4 * Math.PI * Math.PI;   // AU^3 / (Msun yr^2) (Cleared by Tesla 2026-10-29)
+export const STAR_MASS = { min: 0.5, max: 2, dflt: 1 }; // Msun, sandbox slider (Cleared by Tesla 2026-10-29)
 export const SPEEDS = [0.25, 1, 5, 20, 50, 100];        // simulated years per real second
 export const DEFAULT_SPEED = 2;                          // index into SPEEDS: 5 yr/s
 export const MAX_PLANETS = 12;
 export const SOFTENING = 1e-4;            // AU, Plummer softening for close passes
 export const STEPS_PER_ORBIT = 150;       // leapfrog steps per orbit of the innermost body
 export const MAX_SUBSTEPS = 1500;         // per frame; past this the sim falls behind real time
-export const SUN_CONTACT_AU = 0.15;       // closer than this to the star counts as falling in (display size, TODO-TESLA)
-export const EJECT_AU = 80;               // unbound and past this distance counts as ejected (TODO-TESLA)
+export const SUN_CONTACT_AU = 0.15;       // closer than this to the star counts as falling in (display size, Cleared by Tesla 2026-10-29)
+export const EJECT_AU = 80;               // unbound and past this distance counts as ejected (Cleared by Tesla 2026-10-29)
 export const DIST_POWER = 0.4;            // screen radius ~ r^0.4: "Not to scale." (display only)
 export const CONTACT_K = 0.08;            // planets merge closer than CONTACT_K * r^(1 - DIST_POWER) AU (display contact)
 export const PULL_PX = 70;                // a 70 px pull launches at the local circular speed
 export const NOT_TO_SCALE = "Not to scale.";
 export const MODEL_NOTE = "Sizes and distances are not to scale: distances are squeezed so Neptune fits on screen, and every planet is drawn far bigger than it really is. The motion itself uses real gravity in AU, years and solar masses.";
 
-// Real planets (TODO-TESLA): semi-major axis a in AU, mass in Msun, display radius in px at the reference scale.
+// Real planets (Cleared by Tesla 2026-10-29): semi-major axis a in AU, mass in Msun, display radius in px at the reference scale.
 export const PLANETS = Object.freeze({
   mercury: { name: "Mercury", a: 0.387, m: 1.66e-7, px: 7,  caption: "Heavily cratered, a lot like our Moon." },
   venus:   { name: "Venus",   a: 0.723, m: 2.45e-6, px: 10, caption: "Thick clouds hide the surface." },
@@ -163,7 +163,7 @@ export function predictPath(sys, x, y, vx, vy, years = 2, n = 240) {
 }
 
 // ---------- challenges (Build tab only) ----------
-export const FUN = { bronze: { n: 2, yr: 10 }, silver: { n: 4, yr: 100 }, gold: { n: 4, yr: 1000 } }; // TODO-TESLA
+export const FUN = { bronze: { n: 2, yr: 10 }, silver: { n: 4, yr: 100 }, gold: { n: 4, yr: 1000 } }; // Cleared by Tesla 2026-10-29
 export const GOALS = [
   { tier: "bronze", title: "Keep 2 planets stable for 10 years", check: (e) => e.type === "solar" && e.n >= FUN.bronze.n && e.stable >= FUN.bronze.yr },
   { tier: "silver", title: "Keep 4 planets stable for 100 years", check: (e) => e.type === "solar" && e.n >= FUN.silver.n && e.stable >= FUN.silver.yr },

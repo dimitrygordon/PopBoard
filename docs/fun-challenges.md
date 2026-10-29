@@ -75,13 +75,13 @@ All thresholds Cleared by Tesla 2026-10-29. A goal only counts once the pattern 
 
 ## Orbits: Solar System
 
-Mode `?mode=solar-system` of `study-orbits.html`. All thresholds TODO-TESLA. Medals count only in the Build tab, where each of the eight planets is placed by hand (the Sandbox "Real solar system" button does not earn medals). Stable time is simulated years since the last placement, removal, drag, merge, fall into the star or ejection, with every planet bound to the star (TODO-TESLA).
+Mode `?mode=solar-system` of `study-orbits.html`. All thresholds Cleared by Tesla 2026-10-29. Medals count only in the Build tab, where each of the eight planets is placed by hand (the Sandbox "Real solar system" button does not earn medals). Stable time is simulated years since the last placement, removal, drag, merge, fall into the star or ejection, with every planet bound to the star (Cleared by Tesla 2026-10-29).
 
 | Tier | Goal | Threshold |
 | --- | --- | --- |
-| Bronze | Keep 2 planets stable for 10 years | 2 or more planets, 10 simulated years stable (`FUN.bronze`, TODO-TESLA) |
-| Silver | Keep 4 planets stable for 100 years | 4 or more planets, 100 simulated years stable (`FUN.silver`, TODO-TESLA) |
-| Gold | Keep 4 planets stable for 1,000 simulated years | 4 or more planets, 1,000 simulated years stable (`FUN.gold`, TODO-TESLA) |
+| Bronze | Keep 2 planets stable for 10 years | 2 or more planets, 10 simulated years stable (`FUN.bronze`, Cleared by Tesla 2026-10-29) |
+| Silver | Keep 4 planets stable for 100 years | 4 or more planets, 100 simulated years stable (`FUN.silver`, Cleared by Tesla 2026-10-29) |
+| Gold | Keep 4 planets stable for 1,000 simulated years | 4 or more planets, 1,000 simulated years stable (`FUN.gold`, Cleared by Tesla 2026-10-29) |
 
 ## Atom Builder
 
