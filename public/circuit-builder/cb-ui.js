@@ -2,11 +2,11 @@
 // Model and solver: cb-model.js. Drawing: cb-scene.js.
 import { forwardStudyQuery } from "../board-return.js?v=20261022a";
 import {
-  MODULE_ID, BOARD_W, BOARD_H, PART_U, MAX_PARTS, MAX_WIRES, KINDS, NAMES, BATTERY_V, RESISTOR_R, FUN, LIT, BOARD_CAPTION, MODEL_NOTE,
+  MODULE_ID, clipAcross, BOARD_W, BOARD_H, PART_U, MAX_PARTS, MAX_WIRES, KINDS, NAMES, BATTERY_V, RESISTOR_R, FUN, LIT, BOARD_CAPTION, MODEL_NOTE,
   terminal, makePart, sanitizeCircuit, removePart, solve, bulbPair, describe, GOALS, PREDICT, glowTrend, judgePrediction, SCENES,
   SHARE_SCHEMA, toShare, fromShare, clamp
 } from "./cb-model.js";
-import { createScene, loadArt, CAPTION_GAP, FULL_SCALE, fmtA, fmtV } from "./cb-scene.js";
+import { createScene, loadArt, circuitExtent, CAPTION_GAP, FULL_SCALE, fmtA, fmtV } from "./cb-scene.js";
 import {
   initFun, pressFeedback, smoothTheme, prefers, springStep, challengeCard, disclosure, createChallenges, createStreak, createPrediction,
   TIERS, bottomSheet, encodeState, decodeState, sanitizeState, shareLink, celebrate, tick, buzz, sound
@@ -85,6 +85,7 @@ function changed({ structural = true } = {}) {
   if (dots.length !== circ.wires.length) dots = circ.wires.map((_, k) => dots[k] || 0);
   readout(); report();
   if (structural) renderMode();
+  if (typeof requestFit === "function") requestFit();
 }
 function applyScene(id, lay = "series") {
   sceneId = id; layout = lay; sel = -1; circ = SCENES.find((s) => s.id === id).build(lay);
@@ -207,7 +208,7 @@ function clipVoltmeter(i) {
     circ.parts.push(makePart("voltmeter", q.x, q.y)); vi = circ.parts.length - 1;
   }
   if (circ.wires.length + 2 > MAX_WIRES) { toast(`Up to ${MAX_WIRES} wires`); return; }
-  circ.wires.push({ a: 2 * vi, b: 2 * i }, { a: 2 * vi + 1, b: 2 * i + 1 }); sel = vi; tick(880); toast("Voltmeter clipped across the part, in parallel"); changed();
+  circ = clipAcross(circ, vi, i); sel = vi; tick(880); toast("Voltmeter clipped across the part, in parallel"); changed();
 }
 
 // ---------- input ----------
@@ -256,7 +257,8 @@ function endDrag() {
   } else if (d.kind === "part") {
     const p = circ.parts[d.i];
     if (!d.moved) { if (p.kind === "switch") flip(d.i); sel = d.i; readout(); renderMode(); return; }
-    if (p.x < 0 || p.y < 0 || p.x > BOARD_W || p.y > BOARD_H) { sel = -1; circ = removePart(circ, d.i); toast(`${NAMES[p.kind]} removed`); }
+    const sp = scene.toScreen(p.x, p.y);
+    if (p.x < 0 || p.y < 0 || p.x > BOARD_W || p.y > BOARD_H || !scene.onBoard(sp.x, sp.y)) { sel = -1; circ = removePart(circ, d.i); toast(`${NAMES[p.kind]} removed`); }
     else { sel = d.i; p.x = clamp(p.x, PART_U / 2, BOARD_W - PART_U / 2); p.y = clamp(p.y, 2, BOARD_H - 2); }
     changed(); resolvePrediction();
   } else if (d.kind === "wire-tap") { circ.wires.splice(d.w, 1); toast("Wire removed"); tick(420); changed(); resolvePrediction(); }
@@ -277,7 +279,8 @@ function fit() {
   const ctl = $("controls").getBoundingClientRect(), stt = $("status").getBoundingClientRect(), capH = $("boardCap").offsetHeight || 20;
   const top = stt.bottom + 10;
   const box = wide.matches ? { x: 16, y: top, w: innerWidth - 404 - 16, h: innerHeight - top - 12 } : { x: 12, y: top, w: innerWidth - 24, h: Math.max(160, Math.min(innerHeight, ctl.top) - 10 - top) };
-  const v = scene.setBox(box, capH);
+  // Phones: the board fills the box and the circuit is scaled to fit it (16 px padding).
+  const v = scene.setBox(box, capH, wide.matches ? null : circuitExtent(circ));
   $("boardCap").style.left = Math.round(v.x + v.w / 2) + "px"; $("boardCap").style.top = Math.round(v.y + v.h + CAPTION_GAP) + "px";
   $("boardCap").style.maxWidth = Math.round(Math.max(200, v.w)) + "px";
 }
@@ -316,7 +319,7 @@ layoutUI(); fit();
 requestAnimationFrame(frame);
 window.__cb = {
   get c() { return circ; }, set c(v) { circ = sanitizeCircuit(v); changed(); }, get sol() { return sol; }, applyScene, setMode, flip, addPart, clipVoltmeter, removePart: (i) => { circ = removePart(circ, i); sel = -1; changed(); },
-  select(i) { sel = i; readout(); renderMode(); }, get view() { return scene.view; }, labels: () => { const m = canvas.getContext("2d"); m.font = `700 ${scene.view.u * PART_U < 70 ? 11 : 13}px system-ui, sans-serif`; return circ.parts.map((p) => { const l = scene.labelGeo(p), g = scene.geo(p), w = m.measureText(l.text).width; return { ...l, bottom: g.bottom, art: { left: g.left + g.s * 0.12, right: g.right - g.s * 0.12, top: g.top, bottom: g.bottom }, box: { left: l.x - w / 2, right: l.x + w / 2, top: l.y, bottom: l.y + 14 } }; }); },
-  termScreen: (t) => { const p = circ.parts[t >> 1]; const q = terminal(p, t & 1); return scene.toScreen(q.x, q.y); }, partScreen: (i) => scene.toScreen(circ.parts[i].x, circ.parts[i].y),
+  select(i) { sel = i; readout(); renderMode(); }, get view() { return scene.view; }, labels: () => { const m = canvas.getContext("2d"); m.font = `700 ${scene.view.u * PART_U < 70 ? 11 : 13}px system-ui, sans-serif`; return circ.parts.map((p) => { const l = scene.labelGeo(p, circ), g = scene.geo(p); return { ...l, bottom: g.bottom, art: { left: g.left + g.s * 0.12, right: g.right - g.s * 0.12, top: g.top, bottom: g.bottom } }; }); },
+  wireSegs: () => scene.wireSegs(circ), termScreen: (t) => { const p = circ.parts[t >> 1]; const q = terminal(p, t & 1); return scene.toScreen(q.x, q.y); }, partScreen: (i) => scene.toScreen(circ.parts[i].x, circ.parts[i].y),
   CAPTION_GAP, snaps: () => (sheet ? snaps() : null), get mode() { return mode; }, get scene() { return sceneId; }, get layout() { return layout; }, openAbout, get glow() { return glow; }
 };

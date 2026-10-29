@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import * as M from "../public/circuit-builder/cb-model.js";
-import { route, ART_BOTTOM, partLabel } from "../public/circuit-builder/cb-scene.js";
+import { route, routeWire, boxHitsSeg, circuitExtent, ART_BOTTOM, ART_TOP, CAPTION_GAP, LABEL_BOX, FIT_PAD, partLabel } from "../public/circuit-builder/cb-scene.js";
 
 const pub = new URL("../public/", import.meta.url);
 const read = (n) => readFileSync(new URL(n, pub), "utf8");
@@ -96,5 +96,50 @@ test("house rules: files, card, test script, no em-dashes, no mascot, toasts in 
   assert.match(read("study.html"), /id: "circuit-builder"[^]*file: "study-circuit-builder.html"/);
   assert.match(readFileSync(new URL("./package.json", import.meta.url), "utf8"), /"test:circuitbuilder": "node --test circuit-builder.test.mjs"/);
   assert.match(read("circuit-builder/cb-ui.js"), /start: 1/);
-  for (const d of ["../docs/circuit-builder-science.md", "../docs/fun-challenges.md"]) { const s = read(d); assert.ok(s.includes("TODO-TESLA")); assert.ok(!s.includes("\u2014") || d.includes("fun-challenges")); }
+  for (const d of ["../docs/circuit-builder-science.md", "../docs/fun-challenges.md"]) { const s = read(d); assert.ok(s.includes("Cleared by Tesla 2026-10-29")); assert.ok(!s.includes("\u2014") || d.includes("fun-challenges")); }
+});
+
+// Leo's second round and Tesla's check.
+const SHOTS = { series: () => M.SCENES[0].build("series"), parallel: () => M.SCENES[0].build("parallel"), target: () => M.SCENES[1].build(), fix: () => M.SCENES[2].build(),
+  clip: () => M.clipAcross({ parts: [P("battery", 4, 3), P("bulb", 9, 3), P("ammeter", 14, 3), P("voltmeter", 9, 8)], wires: [W(1, 2), W(3, 4), W(5, 0)] }, 3, 1) };
+// The same label rule the scene uses, in board units at the phone scale (u px per unit).
+function labelBoxes(c, u = 20.875) {
+  const segs = []; for (const w of c.wires) { const p = routeWire(c, w); for (let i = 1; i < p.length; i++) segs.push([p[i - 1], p[i]].map((q) => ({ x: q.x * u, y: q.y * u }))); }
+  c.parts.forEach((p) => { const y = p.y * u, l = (p.x - 2) * u, r = (p.x + 2) * u; segs.push([{ x: l, y }, { x: l + 0.56 * u, y }], [{ x: r - 0.56 * u, y }, { x: r, y }]); });
+  return { segs, boxes: c.parts.map((p) => {
+    const k = p.kind === "switch" ? (p.closed ? "switch-closed" : "switch-open") : p.kind, w = partLabel(p).length * 7, h = LABEL_BOX, cx = p.x * u;
+    const top = (p.y - 2 + (ART_TOP[k] / 256) * 4) * u, bot = (p.y - 2 + (ART_BOTTOM[k] / 256) * 4) * u, s = 4 * u;
+    const at = (x, y) => ({ left: x - w / 2, right: x + w / 2, top: y, bottom: y + h });
+    const cands = [at(cx, bot + CAPTION_GAP), at(cx, top - CAPTION_GAP - h), at(cx + s / 2 + 4 + w / 2, p.y * u - h / 2 - s * 0.42), at(cx - s / 2 - 4 - w / 2, p.y * u - h / 2 - s * 0.42)];
+    return cands.find((b) => !segs.some(([a, z]) => boxHitsSeg(b, a, z, 3))) || cands[0];
+  }) };
+}
+test("Leo: no part label box crosses a wire or a lead in the shot scenes", () => {
+  for (const [id, build] of Object.entries(SHOTS)) {
+    const c = M.sanitizeCircuit(build()), { segs, boxes } = labelBoxes(c);
+    boxes.forEach((b, i) => assert.ok(!segs.some(([a, z]) => boxHitsSeg(b, a, z)), `${id}: label ${partLabel(c.parts[i])} crosses a wire`));
+  }
+  assert.ok(boxHitsSeg({ left: 0, right: 10, top: 0, bottom: 10 }, { x: -5, y: 5 }, { x: 15, y: 5 })); assert.ok(!boxHitsSeg({ left: 0, right: 10, top: 0, bottom: 10 }, { x: -5, y: 12 }, { x: 15, y: 12 }));
+});
+test("Leo: on a 390 px phone the circuit fits the board with 16 px padding, parts well over the old 61 px", () => {
+  const c = M.sanitizeCircuit(SHOTS.clip()), e = circuitExtent(c), bw = 390 - 24, u0 = bw / M.BOARD_W;
+  const u = Math.min((bw - 2 * FIT_PAD) / (e.x1 - e.x0), u0 * 2); assert.equal(FIT_PAD, 16);
+  assert.ok(u * M.PART_U > 1.3 * u0 * M.PART_U, `part ${u * M.PART_U} px`);
+});
+test("Leo: Clip voltmeter across a bulb uses the bulb's own leads and reads the bulb's I*R", () => {
+  const c = M.sanitizeCircuit(SHOTS.clip()), s = M.solve(c);
+  assert.deepEqual(c.wires.slice(-2), [W(6, 2), W(7, 3)]);
+  const IR = Math.abs(s.parts[1].I) * M.BULB_R, amm = Math.abs(s.parts[2].V);
+  assert.ok(Math.abs(Math.abs(s.parts[3].reading) - IR) < 1e-6, `reads ${s.parts[3].reading}, bulb I*R ${IR}`);
+  assert.ok(Math.abs(Math.abs(s.parts[3].reading) - (IR + amm)) > amm / 2, "not bulb plus ammeter");
+  const again = M.clipAcross(M.clipAcross(c, 3, 2), 3, 1); assert.equal(again.wires.filter((w) => w.a >> 1 === 3 || w.b >> 1 === 3).length, 2);
+  const pts = routeWire(c, c.wires.at(-1)); assert.deepEqual(pts.at(-1), M.terminal(c.parts[1], 1)); assert.equal(pts.at(-2).x, pts.at(-1).x, "arrives straight onto the bulb's lead");
+});
+test("Tesla: the Fix the circuit puzzle has a 6 V battery and its fix leaves one bulb in the loop, so Gold is reachable", () => {
+  const start = M.sanitizeCircuit(M.SCENES[2].build()), bat = start.parts.find((p) => p.kind === "battery");
+  assert.ok(bat.v >= 6); assert.equal(start.parts.filter((p) => p.kind === "bulb").length, 1);
+  let c = start; c.parts[1].closed = true; c.wires.push(W(7, 1)); c = M.removePart(c, 2); c.wires.push(W(3, 4));
+  const s = M.solve(c), bi = c.parts.findIndex((p) => p.kind === "bulb");
+  assert.equal(c.parts.filter((p) => p.kind === "bulb").length, 1); assert.ok(s.parts[bi].P >= 2.92, `P ${s.parts[bi].P}`);
+  assert.ok(s.parts[bi].glow >= M.FUN.fullGlow); assert.ok(M.GOALS[2].check({ type: "circuit", scene: "fix", short: s.short, maxGlow: s.parts[bi].glow }));
 });

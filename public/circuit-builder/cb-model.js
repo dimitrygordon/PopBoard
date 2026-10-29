@@ -53,6 +53,15 @@ export function removePart(c, i) {
   const fix = (t) => (t >= 2 * i + 2 ? t - 2 : t);
   return { parts: c.parts.filter((_, k) => k !== i), wires: c.wires.filter((w) => w.a >> 1 !== i && w.b >> 1 !== i).map((w) => ({ a: fix(w.a), b: fix(w.b) })) };
 }
+// Clip voltmeter vi across part i: its left lead to the part's own left lead and its right lead to
+// the part's own right lead, so it reads that part's voltage alone. Any old wires on the
+// voltmeter are dropped first, so it never ends up across a neighbour as well.
+export function clipAcross(c, vi, i) {
+  const mine = (t) => t >> 1 === vi;
+  const wires = c.wires.filter((w) => !mine(w.a) && !mine(w.b));
+  wires.push({ a: 2 * vi, b: 2 * i }, { a: 2 * vi + 1, b: 2 * i + 1 });
+  return { parts: c.parts, wires };
+}
 export function partR(p) {
   switch (p.kind) {
     case "bulb": return BULB_R;

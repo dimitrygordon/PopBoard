@@ -76,15 +76,15 @@ All thresholds Cleared by Tesla 2026-10-29.
 
 ## Circuit Builder
 
-All thresholds TODO-TESLA (values live in `public/circuit-builder/cb-model.js`).
+All thresholds Cleared by Tesla 2026-10-29 (values live in `public/circuit-builder/cb-model.js`).
 
 | Tier | Goal | Threshold |
 | --- | --- | --- |
-| Bronze | Light two bulbs in series, then in parallel | Both arrangements seen this visit, one battery, both bulbs at glow 0.2 or more, currents matching within 2% (TODO-TESLA) |
-| Silver | Make the ammeter read 0.30 A | Any ammeter within 0.01 A of 0.30 A (`FUN.targetA`, `FUN.tolA`), no short (TODO-TESLA) |
-| Gold | Fix the broken circuit so its bulb glows brightly | In the Fix the circuit scene, a bulb at glow 0.9 or more (`FUN.fullGlow`) with no short. The puzzle starts with three faults: an open switch, a missing wire and a voltmeter in the loop (TODO-TESLA) |
+| Bronze | Light two bulbs in series, then in parallel | Both arrangements seen this visit, one battery, both bulbs at glow 0.2 or more, currents matching within 2% (Cleared by Tesla 2026-10-29) |
+| Silver | Make the ammeter read 0.30 A | Any ammeter within 0.01 A of 0.30 A (`FUN.targetA`, `FUN.tolA`), no short (Cleared by Tesla 2026-10-29) |
+| Gold | Fix the broken circuit so its bulb glows brightly | In the Fix the circuit scene, a bulb at glow 0.9 or more (`FUN.fullGlow`) with no short. The puzzle starts with three faults: an open switch, a missing wire and a voltmeter in the loop (Cleared by Tesla 2026-10-29) |
 
-- Prediction: "Switch to parallel (or series): will bulb 1 get brighter, dimmer or the same?" resolves on the next wiring change; a glow change under 0.05 counts as the same (TODO-TESLA).
+- Prediction: "Switch to parallel (or series): will bulb 1 get brighter, dimmer or the same?" resolves on the next wiring change; a glow change under 0.05 counts as the same (Cleared by Tesla 2026-10-29).
 
 ## Shared layer constants (`public/shared/fun/`)
 These are feel constants from Leo's spec, not physics, but they're listed here for completeness:
