@@ -26,6 +26,7 @@
     "test:rocket": "node --test rocket-physics.test.mjs",
     "test:quantum": "node --test quantum-physics.test.mjs",
     "test:climate": "node --test climate-physics.test.mjs",
+    "test:platetectonics": "node --test plate-tectonics.test.mjs",
     "test:gravitywellgolf": "node --test gravity-well-golf.test.mjs",
     "test:powersoften": "node --test powers-of-ten.test.mjs",
     "test:atombuilder": "node --test atom-builder.test.mjs",
