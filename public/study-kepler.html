@@ -8,6 +8,10 @@
 <title>Kepler's Laws Sandbox // PopBoard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script>
+  // Paper theme (the app's "light" theme) applies here too, before first paint.
+  try { if (localStorage.getItem("theme") === "light") document.documentElement.setAttribute("data-theme", "light"); } catch (e) {}
+</script>
 <style>
 :root{
   --bg:#05060a;
@@ -31,7 +35,7 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--text);-webkit-font-smo
 h1,h2,h3{font-family:'Oswald',sans-serif;letter-spacing:0.03em;text-transform:uppercase;}
 .mono{font-family:'JetBrains Mono',monospace;}
 button,input{font-family:inherit;}
-#stage{display:block;width:100vw;height:100vh;background:var(--bg);touch-action:none;}
+#stage{display:block;width:100vw;height:100vh;height:100dvh;background:var(--bg);touch-action:none;}
 
 /* ---------- top / bottom bars ---------- */
 .bar{position:fixed;left:0;right:0;display:flex;align-items:center;justify-content:space-between;
@@ -83,7 +87,7 @@ button,input{font-family:inherit;}
   background:rgba(22,24,28,0.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
   border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:18px;
   box-shadow:0 12px 32px rgba(0,0,0,0.5);
-  max-height:calc(100vh - 110px);overflow-y:auto;
+  max-height:calc(100vh - 110px);max-height:calc(100dvh - 110px);overflow-y:auto;
 }
 .panel.wide{width:380px;}
 .panel.hidden{display:none;}
@@ -147,6 +151,36 @@ input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;b
 #keplerLabTable tr.stale td{color:var(--text-dimmer);}
 .lab-empty{text-align:center;color:var(--text-dimmer);font-size:12px;padding:14px 0;}
 .lab-row-del{color:#ff6b6b;cursor:pointer;}
+
+/* ---------- Paper theme ---------- */
+:root[data-theme="light"]{
+  --bg:#f4efe4; --panel:#fbf8f1; --panel-2:#efe8da; --panel-3:#e6dccb; --border:#d6cbb6; --border-lit:#c4b69c;
+  --amber:#9a6200; --amber-dim:#b07500; --cyan:#0f766e; --violet:#6d3fc0; --violet-dim:#8e6ad6;
+  --text:#1f1a14; --text-dim:#5b5144; --text-dimmer:#6f6556;
+}
+:root[data-theme="light"] .bar button,:root[data-theme="light"] .panel-link,:root[data-theme="light"] .modal-card .close-link{color:#0a58b8;}
+:root[data-theme="light"] #lawSwitcher,:root[data-theme="light"] #statusBanner,:root[data-theme="light"] .hud-tile{background:rgba(251,248,241,0.9);}
+:root[data-theme="light"] .panel,:root[data-theme="light"] .modal-card{background:rgba(251,248,241,0.96);border-color:var(--border);color:var(--text);box-shadow:0 12px 32px rgba(60,45,20,0.18);}
+:root[data-theme="light"] .panel h3,:root[data-theme="light"] .panel-label,:root[data-theme="light"] .toggle-row,:root[data-theme="light"] .modal-card p{color:var(--text);}
+:root[data-theme="light"] .panel-hint,:root[data-theme="light"] .panel-section-title{color:var(--text-dim);}
+:root[data-theme="light"] .round-btn{background:rgba(251,248,241,0.9);border-color:var(--border-lit);color:var(--text);}
+:root[data-theme="light"] input[type="range"]{background:#cfc4ae;}
+:root[data-theme="light"] input[type="range"]::-webkit-slider-thumb{background:#1f1a14;}
+:root[data-theme="light"] .toggle-switch{background:#cfc4ae;}
+:root[data-theme="light"] canvas.lab-graph{background:rgba(60,45,20,0.06);}
+
+/* ---------- phones: law pills, subtitle, then the e/a/T card and the readouts stacked below ---------- */
+#lawSub{display:none;}
+@media (max-width:600px){
+  #lawSwitcher{flex-wrap:wrap;justify-content:center;width:calc(100vw - 24px);max-width:420px;top:calc(50px + env(safe-area-inset-top));}
+  #lawSwitcher .law-btn{flex:1 1 0;border-radius:999px;font-size:13px;}
+  #lawSwitcher .law-btn .law-sub{display:none;}
+  #lawSub{display:block;flex-basis:100%;text-align:center;font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:0.04em;text-transform:uppercase;color:var(--text-dim);padding:2px 0 0;}
+  #statusBanner{width:calc(100vw - 24px);max-width:420px;padding:8px 12px;}
+  #keplerHud{width:calc(100vw - 24px);max-width:420px;gap:8px;}
+  .hud-tile{flex:1 1 0;min-width:0;padding:6px 8px 8px;}
+  .hud-tile .hud-value{font-size:24px;}
+}
 canvas.lab-graph{width:100%;height:140px;display:block;border-radius:10px;background:rgba(0,0,0,0.25);margin-top:8px;}
 </style>
 <link rel="stylesheet" href="astro-study.css?v=20261021k">
@@ -171,9 +205,10 @@ canvas.lab-graph{width:100%;height:140px;display:block;border-radius:10px;backgr
 </div>
 
 <div id="lawSwitcher">
-  <button class="law-btn" id="law1Btn" data-law="law1">Law 1 &middot; Orbits</button>
-  <button class="law-btn" id="law2Btn" data-law="law2">Law 2 &middot; Areas</button>
-  <button class="law-btn" id="law3Btn" data-law="law3">Law 3 &middot; Periods</button>
+  <button class="law-btn" id="law1Btn" data-law="law1"><span class="law-num">Law 1</span><span class="law-sub"> &middot; Orbits</span></button>
+  <button class="law-btn" id="law2Btn" data-law="law2"><span class="law-num">Law 2</span><span class="law-sub"> &middot; Areas</span></button>
+  <button class="law-btn" id="law3Btn" data-law="law3"><span class="law-num">Law 3</span><span class="law-sub"> &middot; Periods</span></button>
+  <div id="lawSub" aria-hidden="true"></div>
 </div>
 
 <div id="statusBanner">
@@ -478,7 +513,7 @@ function drawStarfield() {
         var s = worldToScreen(camera, canvasW, canvasH, stars[i].x, stars[i].y);
         if (s.x < -4 || s.x > canvasW + 4 || s.y < -4 || s.y > canvasH + 4) { continue; }
         ctx.beginPath();
-        ctx.fillStyle = "rgba(255,255,255," + stars[i].a + ")";
+        ctx.fillStyle = ink(PAPER ? stars[i].a * 0.5 : stars[i].a);
         ctx.arc(s.x, s.y, Math.max(0.4, stars[i].r), 0, Math.PI * 2);
         ctx.fill();
       }
@@ -489,6 +524,8 @@ function drawStarfield() {
 /* ---------- star + planet rendering ---------- */
 var STAR_RENDER_RADIUS_PX = 16; // fixed screen size regardless of zoom, like a glowing point source
 var STAR_COLLISION_RADIUS_AU = 0.06;
+var PAPER = document.documentElement.getAttribute("data-theme") === "light";
+function ink(a) { return (PAPER ? "rgba(31,26,20," : "rgba(255,255,255,") + a + ")"; }
 var PLANET_COLORS = ["#5FD3C4", "#FFB300", "#B07CFF", "#FF6B5B", "#6FE08A", "#F2D16B"];
 
 function drawStar() {
@@ -554,7 +591,7 @@ function drawPlanet(p, color) {
   ctx.shadowBlur = 0;
   if (p.id === selectedId) {
     ctx.beginPath(); ctx.arc(s.x, s.y, r + 5, 0, Math.PI * 2);
-    ctx.strokeStyle = "rgba(255,255,255,0.9)"; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.strokeStyle = ink(0.9); ctx.lineWidth = 1.5; ctx.stroke();
   }
 }
 
@@ -763,14 +800,14 @@ function drawAimLine() {
   var s0 = worldToScreen(camera, canvasW, canvasH, placeGesture.startWorld.x, placeGesture.startWorld.y);
   var s1 = worldToScreen(camera, canvasW, canvasH, placeGesture.aimWorld.x, placeGesture.aimWorld.y);
   ctx.save();
-  ctx.strokeStyle = "rgba(255,255,255,0.8)";
+  ctx.strokeStyle = ink(0.8);
   ctx.lineWidth = 1.5;
   ctx.setLineDash([5, 4]);
   ctx.beginPath(); ctx.moveTo(s0.x, s0.y); ctx.lineTo(s1.x, s1.y); ctx.stroke();
   ctx.setLineDash([]);
   var ang = Math.atan2(s1.y - s0.y, s1.x - s0.x);
   ctx.translate(s1.x, s1.y); ctx.rotate(ang);
-  ctx.fillStyle = "rgba(255,255,255,0.9)";
+  ctx.fillStyle = ink(0.9);
   ctx.beginPath(); ctx.moveTo(8, 0); ctx.lineTo(-4, 5); ctx.lineTo(-4, -5); ctx.closePath(); ctx.fill();
   ctx.restore();
 }
@@ -905,7 +942,7 @@ function refreshPropertiesPanel() {
     var readout = document.createElement("div");
     readout.className = "panel-row mono";
     readout.style.fontSize = "11.5px";
-    readout.style.color = "#cfd8df";
+    readout.style.color = PAPER ? "#5b5144" : "#cfd8df";
     panel.appendChild(readout);
     elementsReadoutEl = readout;
     refreshElementsReadout();
@@ -1071,12 +1108,27 @@ function setActiveLaw(law) {
   ["law1", "law2", "law3"].forEach(function (l) {
     document.getElementById(l + "Btn").classList.toggle("active", l === law);
   });
+  document.getElementById("lawSub").textContent = LAW_NAMES[law].split(" · ")[1];
   if (lawPanelOpen) { refreshLawPanel(); }
 }
 ["law1", "law2", "law3"].forEach(function (l) {
   document.getElementById(l + "Btn").addEventListener("click", function (e) { e.stopPropagation(); setActiveLaw(l); });
 });
 setActiveLaw("law1");
+
+// Phones: stack the law pills, the e/a/T card and the readouts top to bottom without overlap.
+(function () {
+  var sw = document.getElementById("lawSwitcher"), sb = document.getElementById("statusBanner"), hud = document.getElementById("keplerHud");
+  function stack() {
+    if (window.innerWidth > 600) { sb.style.top = ""; hud.style.top = ""; return; }
+    sb.style.top = Math.round(sw.getBoundingClientRect().bottom + 8) + "px";
+    hud.style.top = Math.round(sb.getBoundingClientRect().bottom + 8) + "px";
+  }
+  window.addEventListener("resize", stack);
+  if (window.ResizeObserver) { var ro = new ResizeObserver(stack); ro.observe(sw); ro.observe(sb); }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(stack);
+  stack();
+})();
 
 document.getElementById("lawToolsBtn").addEventListener("click", function (e) {
   e.stopPropagation();
@@ -1137,10 +1189,10 @@ function fitSlopeThroughOrigin(points) {
 
 function graphAxes(gctx, w, h, pad, yMin, yMax, yLabelFn) {
   gctx.clearRect(0, 0, w, h);
-  gctx.strokeStyle = "rgba(255,255,255,0.12)";
+  gctx.strokeStyle = ink(0.12);
   gctx.lineWidth = 1;
   gctx.font = "10px 'JetBrains Mono', monospace";
-  gctx.fillStyle = "rgba(255,255,255,0.35)";
+  gctx.fillStyle = ink(0.35);
   gctx.textAlign = "right";
   var gridLines = 4;
   for (var i = 0; i <= gridLines; i++) {
@@ -1193,7 +1245,7 @@ function drawPeriodAxisGraph(gctx, w, h) {
   gctx.textAlign = "left"; gctx.font = "10px 'JetBrains Mono', monospace";
   gctx.fillStyle = "#5FD3C4";
   gctx.fillText("• measured slope ≈ " + (slope !== null ? slope.toFixed(3) : "—") + " (T² vs a³)", pad, h - 22);
-  gctx.fillStyle = "rgba(255,255,255,0.55)";
+  gctx.fillStyle = ink(0.55);
   gctx.fillText("theoretical 1/M_star = " + theoretical.toFixed(3) + " at " + fmtSolar(starMassSolar), pad, h - 8);
 }
 
@@ -1216,7 +1268,7 @@ function refreshLawPanel() {
       var el1 = orbitalElementsFromState(p1.x, p1.y, p1.vx, p1.vy, muOf(starMassSolar), lastPeriapsisDirById[p1.id]);
       var g1 = document.createElement("div");
       g1.className = "panel-row mono";
-      g1.style.fontSize = "11.5px"; g1.style.color = "#cfd8df"; g1.style.marginTop = "12px";
+      g1.style.fontSize = "11.5px"; g1.style.color = PAPER ? "#5b5144" : "#cfd8df"; g1.style.marginTop = "12px";
       g1.innerHTML = el1.isEscape
         ? "This orbit is an escape trajectory -- open, not an ellipse, so it has no center or second focus."
         : "Semi-major axis a = " + fmtAU(el1.a) + "<br>Semi-minor axis b = " + fmtAU(el1.semiMinorAxis) + "<br>Focus-to-focus distance = " + fmtAU(2 * el1.a * el1.e);
@@ -1432,7 +1484,7 @@ function refreshLawTwoPanel(panel) {
 
   var readout = document.createElement("div");
   readout.className = "panel-row mono";
-  readout.style.fontSize = "11.5px"; readout.style.color = "#cfd8df"; readout.style.marginTop = "12px";
+  readout.style.fontSize = "11.5px"; readout.style.color = PAPER ? "#5b5144" : "#cfd8df"; readout.style.marginTop = "12px";
   panel.appendChild(readout);
   sweepReadoutEl = readout;
   refreshSweepReadout();
