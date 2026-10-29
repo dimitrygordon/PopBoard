@@ -72,7 +72,9 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--ob-ink); ou
   background: var(--ob-hud-bg); border: var(--ob-hud-border); font-size: 14px; opacity: 0; transition: opacity 0.25s; pointer-events: none; white-space: nowrap; max-width: 92vw; overflow: hidden; text-overflow: ellipsis; }
 .toast.show { opacity: 1; }
 /* In the top bar (placed by toast()): centred on the title's slot, wraps instead of clipping. */
-.toast.in-bar { bottom: auto; transform: translate(-50%, -50%); white-space: normal; text-align: center; overflow: visible; text-overflow: clip; }
+.toast.in-bar { bottom: auto; transform: translate(-50%, -50%); white-space: normal; text-align: center; overflow: hidden; text-overflow: clip;
+  font-size: 13px; line-height: 1.25; padding: 5px 12px; border-radius: 14px; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; }
+/* Two lines at most so the message stays inside the bar on a 360px phone. */
 
 /* Desktop shows the grid; the toolbar's panel buttons scroll a panel into focus.
    Phones show one panel at a time. */

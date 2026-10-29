@@ -439,17 +439,32 @@ $("studyBackBtn").addEventListener("click", (e) => {
 });
 
 let toastTimer = 0;
-// The toast takes the title's slot in the top bar (as in Atom Builder), never over the star field or plots.
-function toast(msg) {
+// The toast takes the title's slot in the top bar (as in Atom Builder) at every size, never over the star
+// field or plots. placeToast() runs whenever the toast is shown, by toast() or by anything else.
+function placeToast() {
   const el = $("statusLine"), title = $("targetTitle"), hud = document.querySelector(".hud");
+  if (!el || !title || !hud) return;
+  const showing = el.classList.contains("show") && el.textContent.trim() && !el.hidden;
+  title.style.visibility = showing ? "hidden" : "";
+  if (!showing) return;
   const hr = hud.getBoundingClientRect(), tr = title.getBoundingClientRect();
   const leftEdge = $("studyBackBtn").getBoundingClientRect().right + 8;
-  const rightBtns = [...hud.querySelectorAll(".hud-right button")].filter((b) => !b.hidden);
+  const rightBtns = [...hud.querySelectorAll(".hud-right button")].filter((b) => !b.hidden && b.offsetWidth);
   const rightEdge = rightBtns.length ? Math.min(...rightBtns.map((b) => b.getBoundingClientRect().left)) - 8 : hr.right - 10;
-  el.textContent = msg; el.classList.add("show", "in-bar");
-  Object.assign(el.style, { left: (leftEdge + rightEdge) / 2 + "px", top: tr.top + tr.height / 2 + "px", maxWidth: Math.max(80, rightEdge - leftEdge) + "px" });
-  title.style.visibility = "hidden";
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.classList.remove("show"); title.style.visibility = ""; }, 3200);
+  if (!el.classList.contains("in-bar")) el.classList.add("in-bar");
+  const cy = tr.height ? tr.top + tr.height / 2 : hr.top + hr.height / 2;
+  Object.assign(el.style, { left: (leftEdge + rightEdge) / 2 + "px", top: cy + "px", maxWidth: Math.max(80, rightEdge - leftEdge) + "px" });
+}
+function toast(msg) {
+  const el = $("statusLine");
+  el.textContent = msg; if (!el.classList.contains("show")) el.classList.add("show");
+  placeToast();
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.classList.remove("show"); placeToast(); }, 3200);
+}
+{
+  const el = $("statusLine");
+  if (el) new MutationObserver(placeToast).observe(el, { attributes: true, attributeFilter: ["class", "hidden"], childList: true, characterData: true, subtree: true });
+  addEventListener("resize", placeToast);
 }
 
 // ---------- loop ----------
