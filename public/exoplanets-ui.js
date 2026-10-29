@@ -63,8 +63,9 @@ const PHONE_FIELD = matchMedia("(max-width: 599.98px)");
 const MIN_GAP = 48, LABEL_PAD = 8;
 // The 48px floor is a hard minimum; when the field has room, stars get more air (up to 72px) so no corner reads as a clump.
 let lastSeed = null;
-function spread(pts, w, h, pad) {
-  const gap = Math.max(MIN_GAP, Math.min(72, 0.55 * Math.sqrt(((w - 2 * pad) * (h - 2 * pad)) / Math.max(1, pts.length))));
+// Wider screens use the same spread with more room (96 to 120px) so markers and their labels never touch.
+function spread(pts, w, h, pad, lo = MIN_GAP, hi = 72) {
+  const gap = Math.max(lo, Math.min(hi, 0.55 * Math.sqrt(((w - 2 * pad) * (h - 2 * pad)) / Math.max(1, pts.length))));
   const P = pts.map((p) => ({ x: pad + p.x * (w - 2 * pad), y: pad + p.y * (h - 2 * pad) }));
   for (let it = 0; it < 400; it++) {
     let moved = false;
@@ -85,7 +86,7 @@ function layoutField() {
   const btns = [...box.querySelectorAll(".field-star")]; if (!btns.length) return;
   const r = box.getBoundingClientRect();
   const phone = PHONE_FIELD.matches;
-  const pos = phone ? spread(field, r.width, r.height, 28) : field.map((s) => ({ x: s.x * r.width, y: s.y * r.height }));
+  const pos = phone ? spread(field, r.width, r.height, 28) : spread(field, r.width, r.height, 48, 96, 120);
   btns.forEach((b, i) => { b.style.left = pos[i].x + "px"; b.style.top = pos[i].y + "px"; });
   // Which stars get a label.
   let show = null;
