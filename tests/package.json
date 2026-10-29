@@ -20,6 +20,7 @@
     "test:emfields": "node --test emfields-physics.test.mjs",
     "test:gasthermo": "node --test gas-thermo-physics.test.mjs",
     "test:momentum": "node --test momentum-physics.test.mjs",
+    "test:optics": "node --test optics-physics.test.mjs",
     "test:mechanics:browser": "node mechanics-browser.mjs",
     "test:pdf": "node --test pdf-export.test.mjs",
     "test:return": "node --test board-return.test.mjs",
