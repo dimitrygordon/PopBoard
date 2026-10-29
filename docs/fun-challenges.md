@@ -73,6 +73,19 @@ All thresholds Cleared by Tesla 2026-10-29. A goal only counts once the pattern 
 
 - Prediction: with two dippers, "Next change: more or fewer dark lines?" resolves when the frequency slider is released or a dipper is dropped (Cleared by Tesla 2026-10-29).
 
+## Atom Builder
+
+All thresholds Cleared by Tesla 2026-10-29.
+
+| Tier | Goal | Threshold |
+| --- | --- | --- |
+| Bronze | Make a neutral carbon-12 atom | 6 protons, 6 neutrons, 6 electrons (Cleared by Tesla 2026-10-29) |
+| Silver | Make an ion | Stable nucleus with electrons != protons (Cleared by Tesla 2026-10-29) |
+| Gold | Make stable isotopes of one element | 2 neutral stable isotopes of the same element collected (`FUN.isotopesNeeded`, Cleared by Tesla 2026-10-29) |
+
+- Prediction: "Next particle: will the nucleus be stable?" resolves on the next nucleus change (Cleared by Tesla 2026-10-29).
+- Table: a neutral atom with a stable nucleus is collected once per mass number (Cleared by Tesla 2026-10-29).
+
 ## Shared layer constants (`public/shared/fun/`)
 These are feel constants from Leo's spec, not physics, but they're listed here for completeness:
 - press scale 0.97 over 100 ms
