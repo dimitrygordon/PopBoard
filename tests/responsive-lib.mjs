@@ -166,7 +166,9 @@ export function pageChecks({ minText, minTap, touch }) {
   }
   for (const e of texts) {
     const cs = getComputedStyle(e), fs = parseFloat(cs.fontSize);
-    if (fs < minText - 0.05) add("small-text", e, `${fs}px`);
+    // A subscript or superscript is part of a symbol (F_N, m/s²); it is fine when the symbol's own text meets the floor.
+    const symPart = e.matches("sub,sup") && parseFloat(getComputedStyle(e.parentElement).fontSize) >= minText - 0.05;
+    if (fs < minText - 0.05 && !symPart) add("small-text", e, `${fs}px`);
     if ((cs.textOverflow === "ellipsis" || cs.overflow === "hidden" || cs.overflowX === "hidden") && e.scrollWidth > e.clientWidth + 1 && e.clientWidth > 0) add("clipped-label", e, `${e.scrollWidth}px of text in ${e.clientWidth}px`);
   }
   // Contrast of text against the first solid background behind it (skipped over images and canvases).

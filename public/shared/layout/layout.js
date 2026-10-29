@@ -15,6 +15,7 @@ export function raiseSmallText(root = document.body, min = MIN_TEXT_PX) {
   for (const el of root.querySelectorAll(TEXT_SEL)) {
     if (checked.has(el)) continue;
     if (el.closest("[data-pb-free],svg,.sr-only")) { checked.add(el); continue; }
+    if (el.matches("sub,sup")) { checked.add(el); continue; } // part of a symbol; its parent carries the size
     if (!ownText(el)) continue; // text may arrive later; check again then
     checked.add(el);
     const fs = parseFloat(getComputedStyle(el).fontSize);
