@@ -32,6 +32,35 @@ Source: `public/plate-tectonics/pt-model.js` (`FUN`, `GOALS`, `T`). All rows Cle
 
 Share link (sandbox): `SHARE_SCHEMA` keeps the crust types (enum), rates clamped to plus or minus 10 cm/yr, time to 0 to 60 Myr, and the hotspot flag.
 
+## Gravity Well Golf
+
+Source: `public/gravity-well-golf/gwg-physics.js` (`FUN`, `GOALS`, `P`). All rows Cleared by Tesla 2026-10-29.
+
+| Key | Value | Where it's used | Status |
+|---|---|---|---|
+| Bronze | any sink | Bronze: sink a ball in any cup (course or sandbox). | Cleared by Tesla 2026-10-29 |
+| `silverParHoles` | 3 | Silver: par or better on 3 different course holes (saved across visits, `popboard.fun.gravity-well-golf.parHoles`). | Cleared by Tesla 2026-10-29 |
+| `goldMinHole` | 2 | Gold: a hole in one on course hole 2 or later (hole 1 has no masses, so it does not count). Every hole 1 to 9 has at least one hole-in-one line (tests check this). | Cleared by Tesla 2026-10-29 |
+| `cupR` | 0.36 units (ball radius 0.25) | Cup capture radius (game rule, not gravity). | Cleared by Tesla 2026-10-29 |
+| `cupMaxSpeed` | 2.6 units/s | Faster than this and the ball lips out (game rule). | Cleared by Tesla 2026-10-29 |
+| Pars | 1, 2, 2, 2, 2, 3, 3, 3, 4 | Par for holes 1 to 9 (`COURSE`). | Cleared by Tesla 2026-10-29 |
+| Predict | Yes / No | Predict, then run: "Will the next putt go in?"; slow motion (0.35x) within 1.4 units of the cup while a guess is waiting. | Cleared by Tesla 2026-10-29 |
+
+Share link (sandbox): `SHARE_SCHEMA` clamps tee and cup to the field; masses are packed as `k,x,y` (up to 12) and clamped.
+
+## Powers of Ten
+
+Source: `public/powers-of-ten/p10-logic.js` (`FUN`, `GOALS`). All rows cleared by Tesla 2026-10-29.
+
+| Key | Value | Where it's used | Status |
+|---|---|---|---|
+| `huntTol` | 0.5 powers | Size Hunt: the target counts as found when the view comes to rest within 0.5 of a power of the plate's focus (log10(size / 0.6)). | Cleared by Tesla 2026-10-29 |
+| `bronzeHuntFinds` | 3 | Bronze: find 3 objects in Size Hunt (one session). | Cleared by Tesla 2026-10-29 |
+| `silverStreak` | 3 | Silver: 3 correct "how many powers of ten" predictions in a row. | Cleared by Tesla 2026-10-29 |
+| `goldPowers` | 44 | Gold: stamp every whole power from 10⁻¹⁶ m to 10²⁷ m (spec: "visit all 40+ powers"). A power is stamped when the view passes through it. | Cleared by Tesla 2026-10-29 |
+
+Stamps: `popboard.fun.powers-of-ten.stamps`. Share link (sandbox): `SHARE_SCHEMA` clamps z to −16…27; objects are enums.
+
 ## Shared layer constants (`public/shared/fun/`)
 These are feel constants from Leo's spec, not physics, but they're listed here for completeness:
 - press scale 0.97 over 100 ms
