@@ -132,3 +132,20 @@ export function sanitizeState(obj, schema) {
   }
   return out;
 }
+
+// ---------- bottom-sheet snap selection ----------
+// snaps: visible heights in px, ascending (e.g. [peek, half, full]).
+// h: current visible height; v: release velocity in px/s (+ = growing / dragged up).
+// A flick (|v| >= flick) moves toward the projected rest point, at least one snap in the
+// flick direction. A slow release snaps to the nearest point. Returns { index, flicked }.
+export function pickSnap(snaps, h, v = 0, { flick = 400, d = 0.998 } = {}) {
+  if (!snaps.length) throw new Error("no snaps");
+  const nearest = (x, list) => list.reduce((bi, s, i) => (Math.abs(s - x) < Math.abs(list[bi] - x) ? i : bi), 0);
+  if (Math.abs(v) < flick || !Number.isFinite(v)) return { index: nearest(h, snaps), flicked: false };
+  const proj = h + (v / 1000) * d / (1 - d);
+  const ahead = snaps.map((s, i) => ({ s, i })).filter(({ s }) => (v > 0 ? s > h + 0.5 : s < h - 0.5));
+  if (!ahead.length) return { index: v > 0 ? snaps.length - 1 : 0, flicked: true };
+  const first = v > 0 ? ahead[0] : ahead[ahead.length - 1];
+  const best = ahead.reduce((b, c) => (Math.abs(c.s - proj) < Math.abs(b.s - proj) ? c : b), first);
+  return { index: best.i, flicked: true };
+}

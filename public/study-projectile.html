@@ -42,6 +42,7 @@
     <canvas id="pjCanvas" role="img" aria-label="Launch scene: cannon, trajectory and targets. Art is not to scale."></canvas>
   </div>
   <div class="controls paper" id="controls">
+    <button type="button" class="fun-handle" id="sheetHandle" aria-label="Controls sheet: tap or swipe to resize"></button>
     <section class="panel" id="panel">
       <div class="row" data-group="world" role="group" aria-label="World"></div>
       <div class="row" data-group="ball" role="group" aria-label="Projectile"></div>
@@ -53,6 +54,7 @@
       <p class="result" id="result" aria-live="polite"></p>
       <dl class="readout" id="readout"></dl>
       <p class="formula" id="formula"></p>
+      <button type="button" class="fun-help" id="noteHelp" aria-expanded="false" aria-controls="note" aria-label="About the sandbox" hidden>?</button>
       <p class="caption" id="note"></p>
     </section>
   </div>

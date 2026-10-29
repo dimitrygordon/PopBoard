@@ -36,3 +36,21 @@
 .fun-rm *, .fun-rm *::before { animation: none !important; }
 .fun-rm button:active, .fun-rm .fun-pressed { transform: none !important; }
 @media (prefers-reduced-motion: reduce) { .fun-goal.pop .fun-medal { animation: none; } .fun button:active, .fun .fun-pressed { transform: none; } }
+
+/* Primary / quiet buttons */
+.fun-primary { background: var(--fun-gold, #ffc43c) !important; border-color: var(--fun-gold, #ffc43c) !important; color: #1c1c1c !important; font-weight: 700; min-width: 96px; }
+.fun-quiet { background: transparent !important; border-color: transparent !important; color: var(--pj-ink-dim, #4a4a4a) !important; font-weight: 500; text-decoration: underline; text-underline-offset: 3px; }
+.fun-quiet[aria-pressed="true"] { color: var(--pj-ink, #1c1c1c) !important; font-weight: 600; }
+
+/* Bottom sheet */
+.fun-handle { display: none; }
+.fun-sheet-on .fun-handle { display: flex; justify-content: center; align-items: center; height: 28px; margin: -14px -14px 4px; cursor: grab; touch-action: none; border: 0; background: none; width: calc(100% + 28px); padding: 0; }
+.fun-sheet-on .fun-handle::before { content: ""; width: 40px; height: 5px; border-radius: 3px; background: var(--pj-chip-border, #8a8a8a); }
+.fun-sheet-dragging { will-change: transform; }
+
+/* Challenge chip and popover over the sim */
+.fun-chip { position: absolute; top: 8px; right: 8px; z-index: 3; min-height: 32px; padding: 4px 12px; border-radius: 999px;
+  border: 1px solid var(--pj-chip-border, #8a8a8a); background: var(--pj-chip, #fff); color: var(--pj-ink, #1c1c1c); font-size: 0.8125rem; font-weight: 600; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+.fun-chip .fun-medal { width: 10px; height: 10px; }
+.fun-pop { position: absolute; top: 46px; right: 8px; z-index: 3; width: min(320px, calc(100% - 16px)); background: var(--pj-paper, #f0f0ec); color: var(--pj-ink, #1c1c1c); }
+.fun-help { min-width: 32px !important; min-height: 32px !important; border-radius: 50% !important; padding: 0 !important; font-weight: 700; }

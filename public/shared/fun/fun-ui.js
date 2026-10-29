@@ -164,3 +164,64 @@ export async function shareLink(hash) {
   history.replaceState(null, "", hash);
   try { await navigator.clipboard.writeText(url); return { url, copied: true }; } catch (e) { return { url, copied: false }; }
 }
+
+// ---------- mobile bottom sheet with snap points ----------
+// el: fixed-position sheet. handle: grab element. getSnaps(): ascending heights in px.
+// Animation is transform-only (translateY) so drag stays on the compositor.
+import { pickSnap } from "./fun-core.js";
+export function bottomSheet(el, handle, { getSnaps, onSnap, start = 0 } = {}) {
+  let snaps = getSnaps(), idx = start, h = snaps[idx], raf = 0, drag = null;
+  const maxH = () => snaps[snaps.length - 1];
+  const render = () => { el.style.transform = `translate3d(0, ${Math.round((maxH() - h) * 10) / 10}px, 0)`; };
+  const layout = () => { snaps = getSnaps(); el.style.height = maxH() + "px"; h = snaps[Math.min(idx, snaps.length - 1)]; render(); };
+  const settle = (to, bounce) => {
+    cancelAnimationFrame(raf);
+    const target = snaps[to]; idx = to;
+    el.dataset.snap = ["peek", "half", "full"][to] || String(to);
+    onSnap?.(to);
+    if (prefers.reducedMotion) { h = target; render(); return; }
+    let s = { x: h, v: drag?.v || 0 }, prev = performance.now();
+    const opt = bounce ? { response: 0.4, damping: 0.72 } : { response: 0.32, damping: 1.0 };
+    const step = (now) => {
+      const dt = Math.min(0.032, (now - prev) / 1000); prev = now;
+      s = springStep(s, target, dt, opt); h = Math.min(maxH() + 24, s.x); render();
+      if (Math.abs(s.x - target) > 0.4 || Math.abs(s.v) > 8) raf = requestAnimationFrame(step); else { h = target; render(); }
+    };
+    raf = requestAnimationFrame(step);
+  };
+  handle.addEventListener("pointerdown", (e) => {
+    cancelAnimationFrame(raf); handle.setPointerCapture?.(e.pointerId);
+    drag = { y0: e.clientY, h0: h, ly: e.clientY, lt: performance.now(), v: 0 };
+    el.classList.add("fun-sheet-dragging");
+  });
+  handle.addEventListener("pointermove", (e) => {
+    if (!drag) return;
+    const now = performance.now(), dt = Math.max(1, now - drag.lt);
+    drag.v = 0.8 * ((drag.ly - e.clientY) / dt * 1000) + 0.2 * drag.v; drag.ly = e.clientY; drag.lt = now;
+    const raw = drag.h0 + (drag.y0 - e.clientY);
+    h = rubberBand(raw, snaps[0], maxH(), 80); render();
+  });
+  const end = () => {
+    if (!drag) return;
+    el.classList.remove("fun-sheet-dragging");
+    const r = pickSnap(snaps, h, drag.v);
+    if (Math.abs(drag.y0 - drag.ly) < 4) r.index = (idx + 1) % snaps.length; // tap cycles
+    settle(r.index, r.flicked && !prefers.reducedMotion); drag = null;
+  };
+  handle.addEventListener("pointerup", end); handle.addEventListener("pointercancel", end);
+  handle.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowUp") { e.preventDefault(); settle(Math.min(snaps.length - 1, idx + 1)); }
+    if (e.key === "ArrowDown") { e.preventDefault(); settle(Math.max(0, idx - 1)); }
+  });
+  layout(); settle(idx, false);
+  return { layout, snapTo: (i) => settle(i, false), get index() { return idx; },
+    destroy() { cancelAnimationFrame(raf); el.style.transform = ""; el.style.height = ""; delete el.dataset.snap; } };
+}
+
+// Accessible disclosure: button toggles a region, keeps aria-expanded in sync.
+export function disclosure(btn, region, open = false) {
+  const set = (v) => { btn.setAttribute("aria-expanded", String(v)); region.hidden = !v; };
+  btn.setAttribute("aria-controls", region.id); set(open);
+  btn.addEventListener("click", () => set(btn.getAttribute("aria-expanded") !== "true"));
+  return { set };
+}

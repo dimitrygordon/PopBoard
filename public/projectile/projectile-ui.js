@@ -51,6 +51,9 @@ function applyTheme(t, save) {
   $("themeBtn").setAttribute("aria-label", t === "dark" ? "Switch to light mode" : "Switch to dark mode");
   T = readTokens(); maskTint = null; dirty = true;
 }
+$("noteHelp")?.addEventListener("click", () => {
+  const b = $("noteHelp"); b.setAttribute("aria-expanded", String(b.getAttribute("aria-expanded") !== "true")); readout();
+});
 $("themeBtn").addEventListener("click", () => { window.PopBoardFunTheme?.(); applyTheme(T.dark ? "light" : "dark", true); });
 const darkMQ = window.matchMedia("(prefers-color-scheme: dark)");
 darkMQ.addEventListener?.("change", (e) => {
@@ -88,7 +91,7 @@ function computeShots() {
 }
 function fire(animate = true) {
   if (P().keep && st.shots.length) st.history = [...(st.history || []), ...st.shots.filter((s) => !s.ghost).map((s) => ({ ...s, old: true }))].slice(-6);
-  st.shots = computeShots(); st.fired = true; st.scored = false;
+  st.shots = computeShots(); st.fired = true; st.scored = false; st.byUser = animate;
   const Tm = Math.max(...st.shots.map((s) => s.sum.tFlight));
   st.anim = { t: animate && !reducedMotion ? 0 : Tm, T: Tm, rate: Math.max(1, Tm / 5), running: animate && !reducedMotion };
   if (!st.anim.running) scoreShot();
@@ -102,7 +105,7 @@ function scoreShot() {
   // Shared fun layer hook (projectile-fun.js): one event per finished shot.
   if (shot) window.dispatchEvent(new CustomEvent("projectile:shot", { detail: {
     mode: st.mode, angle: P().angle, speed: P().speed, h: params().h, g: params().g, drag: !!params().drag,
-    range: shot.sum.range, hit: hit.hit, points: hit.points, targetKind: hit.kind } }));
+    range: shot.sum.range, user: !!st.byUser, hit: hit.hit, points: hit.points, targetKind: hit.kind } }));
 }
 function scoreShotCore() {
   const none = { hit: false, points: 0, kind: null };
@@ -197,10 +200,10 @@ function build() {
     }));
   }
   const ga = grp("actions"); ga.hidden = false;
-  for (const a of cfg.actions) ga.appendChild(btn(ACTION[a], { "data-action": a }, () => doAction(a)));
+  for (const a of cfg.actions) ga.appendChild(btn(ACTION[a], { "data-action": a, ...(a === "fire" ? { class: "fun-primary" } : a === "clear" ? { class: "fun-quiet" } : {}) }, () => doAction(a)));
   if (cfg.toggles.length) {
     const g = grp("toggles"); g.hidden = false;
-    for (const t of cfg.toggles) g.appendChild(btn(TOGGLE[t], { "data-toggle": t, "aria-pressed": "false" }, () => {
+    for (const t of cfg.toggles) g.appendChild(btn(TOGGLE[t], { "data-toggle": t, "aria-pressed": "false", ...(t === "keep" ? { class: "fun-quiet" } : {}) }, () => {
       p[t] = !p[t];
       if (t === "target") st.result = "";
       if (t === "keep" && !p.keep) st.history = [];
@@ -262,6 +265,9 @@ function readout() {
   if (m === "sandbox" && B.target) res = st.result || `Target at ${fmtM(st.boxTarget.x)}, center ${fmtM(st.boxTarget.y)} up.`;
   if (st.fired && st.anim.rate > 1 && m !== "components") res = (res ? res + " " : "") + `Playback sped up ${fmtNum(st.anim.rate, 2)}x.`;
   $("formula").textContent = f; $("result").textContent = res; $("note").textContent = NOTES[m];
+  // Sandbox explainer folds behind the "?" button; other modes show it as before.
+  const help = $("noteHelp");
+  if (help) { help.hidden = m !== "sandbox"; $("note").hidden = m === "sandbox" && help.getAttribute("aria-expanded") !== "true"; }
 }
 
 function sync() {

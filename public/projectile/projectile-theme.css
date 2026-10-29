@@ -104,6 +104,28 @@ input[type="range"] { width: 100%; min-height: var(--pj-hit); margin: 0; accent-
   .title { font-size: 15px; }
   .hud button { padding: 8px 10px; }
 }
+/* Slider value sits on the label line. */
+.slider { grid-template-columns: 1fr auto; grid-template-areas: "lab out" "inp inp"; align-items: baseline; }
+.slider span { grid-area: lab; }
+.slider output { grid-area: out; }
+.slider input { grid-area: inp; }
+[data-group="actions"] [data-action="clear"] { margin-left: auto; }
+.fun-help { align-self: flex-start; }
+
+/* Phones: sim pinned at the top, controls in a bottom sheet (snap logic in shared/fun). */
+@media (max-width: 600px) {
+  html, body { height: 100%; overflow: hidden; }
+  body { height: 100dvh; }
+  .stage { display: block; overflow: hidden; padding: 8px; flex: 1; min-height: 0; }
+  .canvas-box { position: sticky; top: 0; height: 45vh; min-height: 0; }
+  .controls.fun-sheet-on { position: fixed; left: 0; right: 0; bottom: var(--pj-toolbar-h, 100px); z-index: 4; padding: 14px 14px 24px;
+    border-radius: 16px 16px 0 0; overflow-y: auto; overscroll-behavior: contain; }
+  .controls.fun-sheet-on .panel { gap: 8px; }
+  .controls.fun-sheet-on [data-group="actions"] { order: -2; }
+  .controls.fun-sheet-on [data-sliders] { order: -1; gap: 4px; }
+  .controls.fun-sheet-on input[type="range"] { min-height: 30px; }
+  .toolbar { position: fixed; left: 0; right: 0; bottom: 0; }
+}
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }

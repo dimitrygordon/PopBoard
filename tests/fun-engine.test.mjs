@@ -82,3 +82,31 @@ test("shared layer has no halos/outlines and wires into projectile + hub", () =>
   const hub = readFileSync(new URL("../public/study.html", import.meta.url), "utf8");
   assert.match(hub, /shared\/fun\/fun-badges\.js/);
 });
+
+import { pickSnap } from "../public/shared/fun/fun-core.js";
+test("pickSnap: slow release snaps to nearest", () => {
+  const S = [140, 360, 700];
+  assert.deepEqual(pickSnap(S, 150, 0), { index: 0, flicked: false });
+  assert.equal(pickSnap(S, 260, 100).index, 1);
+  assert.equal(pickSnap(S, 240, -300).index, 0, "below flick threshold: nearest wins");
+  assert.equal(pickSnap(S, 900, 0).index, 2);
+});
+test("pickSnap: flicks move at least one snap in the flick direction", () => {
+  const S = [140, 360, 700];
+  assert.deepEqual(pickSnap(S, 150, 500), { index: 1, flicked: true }, "gentle flick up from peek -> half");
+  assert.equal(pickSnap(S, 150, 3000).index, 2, "hard flick up skips to full");
+  assert.equal(pickSnap(S, 680, -500).index, 1, "flick down from full -> half");
+  assert.equal(pickSnap(S, 680, -4000).index, 0, "hard flick down -> peek");
+  assert.equal(pickSnap(S, 340, -450).index, 0, "flick down beats nearest (half)");
+  assert.equal(pickSnap(S, 700, 2000).index, 2, "flick past the top stays at full");
+  assert.equal(pickSnap(S, 140, -2000).index, 0);
+  assert.equal(pickSnap(S, 200, NaN).flicked, false);
+  assert.throws(() => pickSnap([], 0, 0));
+});
+
+test("projectile: page-load and slider previews cannot earn medals", () => {
+  const src = readFileSync(new URL("../public/projectile/projectile-fun.js", import.meta.url), "utf8");
+  assert.match(src, /if \(!e\.user\) return;/);
+  const ui = readFileSync(new URL("../public/projectile/projectile-ui.js", import.meta.url), "utf8");
+  assert.match(ui, /st\.byUser = animate;/);
+});

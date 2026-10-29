@@ -1,7 +1,7 @@
 // Projectile Motion: reference wiring for the shared fun layer (public/shared/fun/).
 // Every goal number below is a placeholder. TODO-TESLA: see docs/fun-challenges.md.
 import {
-  initFun, pressFeedback, smoothTheme, frostedSheet, challengeCard, createChallenges, createStreak, createPrediction,
+  initFun, pressFeedback, bottomSheet, disclosure, TIERS, smoothTheme, frostedSheet, challengeCard, createChallenges, createStreak, createPrediction,
   encodeState, decodeState, sanitizeState, shareLink, sound, celebrate
 } from "../shared/fun/fun-ui.js";
 
@@ -34,12 +34,27 @@ if (typeof document !== "undefined") {
   window.PopBoardFunTheme = smoothTheme;
   const startHash = location.hash;
 
-  const host = document.createElement("section"); host.id = "funCard";
-  document.getElementById("controls").appendChild(host);
+  // Challenge chip over the sim; tapping opens the challenge list.
+  const box = document.querySelector(".canvas-box");
+  const chip = document.createElement("button"); chip.type = "button"; chip.className = "fun-chip"; chip.id = "funChip";
+  const host = document.createElement("section"); host.id = "funCard"; host.className = "fun-pop";
+  box.append(chip, host);
   const card = challengeCard(host, GOALS);
+  disclosure(chip, host, false);
+  const chipSync = (earned) => {
+    const top = TIERS.filter((t) => earned.includes(t)).pop();
+    const name = top ? top[0].toUpperCase() + top.slice(1) : "Challenges";
+    chip.replaceChildren();
+    if (top) { const m = document.createElement("span"); m.className = "fun-medal fun-badge " + top; chip.appendChild(m); }
+    chip.append(`${name} ${earned.length}/${GOALS.length}`);
+    chip.setAttribute("aria-label", `Challenges: ${earned.length} of ${GOALS.length} medals earned. Show list`);
+  };
+  const controlsEl = document.getElementById("controls");
+  const extrasHost = document.createElement("section"); extrasHost.id = "funExtras"; extrasHost.className = "panel";
+  controlsEl.appendChild(extrasHost);
   const streak = createStreak({ moduleId: MODULE_ID });
   const engine = createChallenges({ moduleId: MODULE_ID, goals: GOALS, onEarn: (g) => card.flash(g.tier) });
-  card.update(engine.earned()); card.streak(0, streak.best);
+  card.update(engine.earned()); chipSync(engine.earned()); card.streak(0, streak.best);
 
   // Predict, then run (Launch mode).
   const pred = createPrediction({ judge: (g, r) => g === (r > FUN.predictLine), streak });
@@ -54,15 +69,44 @@ if (typeof document !== "undefined") {
   const soundSync = () => { soundBtn.textContent = sound.on ? "Sound on" : "Sound off"; soundBtn.setAttribute("aria-pressed", String(sound.on)); };
   soundBtn.addEventListener("click", () => { sound.on = !sound.on; soundSync(); }); soundSync();
   extras.append(shareBtn, soundBtn);
-  host.append(pbar, extras);
+  extrasHost.append(pbar, card.streakEl || host.querySelector(".fun-streak"), extras);
 
   const api = () => window.__projectileFun;
   const refresh = () => {
     const m = api()?.mode();
     pbar.hidden = m !== "launch";
     shareBtn.hidden = m !== "sandbox";
-    frostedSheet(document.getElementById("controls"), m === "sandbox");
+    frostedSheet(controlsEl, m === "sandbox");
+    if (sheet) requestAnimationFrame(() => sheet.layout());
   };
+
+  // Phones: controls become a bottom sheet with peek / half / full snaps.
+  const phone = matchMedia("(max-width: 600px)");
+  let sheet = null;
+  const snaps = () => {
+    const vh = innerHeight, tb = document.getElementById("toolbar").offsetHeight;
+    document.documentElement.style.setProperty("--pj-toolbar-h", tb + "px");
+    const simBottom = box.getBoundingClientRect().bottom, hudBottom = document.querySelector(".hud").getBoundingClientRect().bottom;
+    const half = Math.max(120, Math.floor(vh - tb - simBottom - 4));
+    const full = Math.max(half + 40, Math.floor(vh - tb - hudBottom));
+    const labs = controlsEl.querySelectorAll("[data-sliders] .slider");
+    const anchor = labs[Math.min(1, labs.length - 1)] || controlsEl.querySelector('[data-group="actions"]');
+    const top = controlsEl.getBoundingClientRect().top;
+    const peek = anchor ? Math.ceil(anchor.getBoundingClientRect().bottom - top + 10) : 140;
+    return [Math.min(half, Math.max(120, peek)), half, full];
+  };
+  const phoneSync = () => {
+    if (phone.matches && !sheet) {
+      controlsEl.classList.add("fun-sheet-on");
+      sheet = bottomSheet(controlsEl, document.getElementById("sheetHandle"), { getSnaps: snaps, start: 0 });
+      addEventListener("resize", onResize);
+    } else if (!phone.matches && sheet) {
+      sheet.destroy(); sheet = null; controlsEl.classList.remove("fun-sheet-on"); removeEventListener("resize", onResize);
+    }
+  };
+  const onResize = () => sheet?.layout();
+  phone.addEventListener?.("change", phoneSync);
+  window.__funSheet = () => sheet;
   shareBtn.addEventListener("click", async () => {
     const B = api().sandbox;
     const r = await shareLink(encodeState(sanitizeState(B, SHARE_SCHEMA)));
@@ -73,6 +117,8 @@ if (typeof document !== "undefined") {
 
   window.addEventListener("projectile:shot", (ev) => {
     const e = ev.detail;
+    // Only shots the student fired count; live previews from sliders and page load don't.
+    if (!e.user) return;
     if (e.mode === "launch" && pred.pending) {
       const r = pred.resolve(e.range);
       for (const x of pbar.querySelectorAll("button")) x.setAttribute("aria-pressed", "false");
@@ -80,13 +126,13 @@ if (typeof document !== "undefined") {
       card.streak(r.streak.count, r.streak.best);
     }
     engine.report(e);
-    card.update(engine.earned());
+    card.update(engine.earned()); chipSync(engine.earned());
   });
 
   const boot = () => {
     const shared = sanitizeState(decodeState(startHash), SHARE_SCHEMA);
     if (Object.keys(shared).length) api().applySandbox(shared);
-    refresh();
+    phoneSync(); refresh();
   };
   if (api()) boot(); else window.addEventListener("projectile:ready", boot, { once: true });
 }
