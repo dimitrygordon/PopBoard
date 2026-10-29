@@ -2002,5 +2002,20 @@ document.addEventListener("click", function(e){
   location.href = "study.html" + location.search;
 });
 </script>
+<script>
+/* When the status banner wraps (narrow phones), the star readouts and the scrub bar drop below it instead of sitting under it. */
+(function () {
+  var sb = document.getElementById("statusBanner"), hud = document.getElementById("starHud");
+  if (!sb || !hud) return;
+  var scrub = document.getElementById("starScrubBar");
+  function place() {
+    hud.style.top = ""; if (scrub) scrub.style.top = "";
+    var b = sb.getBoundingClientRect().bottom; if (hud.getBoundingClientRect().top < b + 8) hud.style.top = Math.round(b + 8) + "px";
+    var hb = hud.getBoundingClientRect().bottom; if (scrub && scrub.offsetHeight && scrub.getBoundingClientRect().top < hb + 8) scrub.style.top = Math.round(hb + 8) + "px";
+  }
+  if (window.ResizeObserver) { var ro = new ResizeObserver(place); ro.observe(sb); ro.observe(hud); if (scrub) ro.observe(scrub); }
+  addEventListener("resize", place); place();
+})();
+</script>
 </body>
 </html>
