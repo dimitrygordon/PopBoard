@@ -1,0 +1,103 @@
+/* Astronomy Course storybook page. Desktop: page on the left, tools on the right.
+   Phone: page on top, tools in a bottom sheet (peek, half, full). */
+html, body { height: 100%; }
+body { overflow: hidden; display: flex; flex-direction: column; }
+.ac-bar { position: relative; flex: none; }
+.ac-bar-title { font-size: 18px; }
+.story { position: relative; z-index: 1; flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 16px;
+  padding: 0 max(16px, var(--pb-safe-right)) max(12px, var(--pb-safe-bottom)) max(16px, var(--pb-safe-left)); }
+.book { min-width: 0; min-height: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.stage-wrap { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; }
+
+/* The page itself: a cream paper card with rough pencil edges. Art is never filtered. */
+.stage, .sandbox-stage { position: relative; flex: none; aspect-ratio: 16 / 9; width: var(--stage-w, 100%); background: var(--ac-card) center / cover no-repeat;
+  border-radius: 4px 10px 6px 12px / 12px 6px 10px 4px; box-shadow: 0 1px 0 rgba(60, 45, 20, 0.12), 3px 5px 0 rgba(60, 45, 20, 0.14); overflow: hidden; color: var(--ac-card-ink);
+  --u: calc(var(--stage-w, 960px) / 960); }
+:root[data-theme="dark"] .stage, :root[data-theme="dark"] .sandbox-stage { box-shadow: 0 0 0 2px #8a93a6, 4px 6px 0 rgba(0, 0, 0, 0.4); }
+.stage .ac-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.stage .ac-art { position: absolute; display: block; max-inline-size: none; user-select: none; -webkit-user-drag: none; pointer-events: none; }
+.stage .ac-tb { position: absolute; display: flex; flex-direction: column; margin: 0; padding: 0; border: 0; background: none; min-width: 0; min-height: 0; text-align: inherit; font: inherit; color: var(--ac-card-ink); overflow: visible; border-radius: 0; cursor: default; }
+.stage .ac-tb p { margin: 0; line-height: 1.2; color: var(--ac-card-ink); font-family: var(--ac-body-font); }
+.stage .ac-tb sup, .stage .ac-tb sub { font-size: 0.62em; line-height: 0; }
+.stage button.ac-opt { cursor: pointer; border-radius: 10px; }
+.stage button.ac-opt:hover { background: rgba(63, 111, 168, 0.08); }
+.stage button.ac-opt[data-state="right"] { background: rgba(63, 107, 58, 0.16); box-shadow: inset 0 0 0 3px #3f6b3a; }
+.stage button.ac-opt[data-state="wrong"] { background: rgba(163, 74, 62, 0.12); box-shadow: inset 0 0 0 3px #a34a3e; }
+@media (prefers-reduced-motion: no-preference) {
+  .stage.turn-next { animation: turnNext 0.38s ease-out; transform-origin: left center; }
+  .stage.turn-prev { animation: turnPrev 0.38s ease-out; transform-origin: right center; }
+}
+@keyframes turnNext { from { transform: perspective(1400px) rotateY(-14deg); opacity: 0.25; } to { transform: none; opacity: 1; } }
+@keyframes turnPrev { from { transform: perspective(1400px) rotateY(14deg); opacity: 0.25; } to { transform: none; opacity: 1; } }
+
+.sandbox-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: contain; touch-action: none; }
+
+.stage-cap { flex: none; display: flex; align-items: center; justify-content: center; gap: 12px; }
+.page-label { margin: 0; min-width: 9em; text-align: center; font-family: var(--ac-head-font); font-size: 17px; }
+.scrub { flex: none; width: min(560px, 100%); display: block; }
+.scrub input { width: 100%; accent-color: var(--ac-accent); margin: 0; height: 28px; }
+
+/* Tools panel */
+.panel { min-height: 0; display: flex; flex-direction: column; background: var(--ac-panel); border: 2px solid var(--ac-line); border-radius: 6px 16px 8px 14px / 14px 8px 16px 6px; }
+.sheet-handle { display: none; }
+.panel-body { overflow-y: auto; padding: 14px 16px 18px; display: grid; gap: 18px; align-content: start; overscroll-behavior: contain; }
+.panel-h { margin: 0 0 6px; font-family: var(--ac-head-font); font-size: 18px; font-weight: 400; color: var(--ac-text); }
+.panel-h::after { content: ""; display: block; height: 3px; width: 60px; margin-top: 2px; border-radius: 2px; background: var(--ac-gold-ui); opacity: 0.8; }
+.read { display: none; }
+.read p { margin: 0 0 6px; font-size: 18px; }
+.read sup, .tools sup { font-size: 0.7em; }
+#tools { display: grid; gap: 16px; }
+#tools:empty { display: none; }
+.tool p { margin: 0 0 8px; }
+.tool .note { font-family: var(--ac-note-font); color: var(--ac-dim); font-size: 17px; }
+.tool .reveal { padding: 10px 12px; border-left: 4px solid var(--ac-gold-ui); background: color-mix(in srgb, var(--ac-gold-ui) 12%, transparent); border-radius: 4px 10px 10px 4px; }
+.tool .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.tool .feedback { font-family: var(--ac-head-font); min-height: 1.4em; }
+.tool .feedback[data-ok="1"] { color: #3f6b3a; }
+.tool .feedback[data-ok="0"] { color: #a34a3e; }
+:root[data-theme="dark"] .tool .feedback[data-ok="1"] { color: #a9d39a; }
+:root[data-theme="dark"] .tool .feedback[data-ok="0"] { color: #f0a796; }
+
+/* "Try it" card: a small pencil-sketched link to a study module */
+.tryit { display: grid; grid-template-columns: 112px 1fr; gap: 10px; align-items: center; padding: 8px; color: var(--ac-card-ink); background: var(--ac-card); text-decoration: none;
+  border: 2px solid #6d6457; border-radius: 255px 12px 225px 12px / 12px 225px 12px 255px; transform: rotate(-0.6deg); min-height: 44px; }
+.tryit img { width: 112px; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 6px; border: 1.5px solid #8c8170; display: block; }
+.tryit b { display: block; font-family: var(--ac-head-font); font-weight: 400; font-size: 17px; color: #2f2b26; }
+.tryit span { display: block; font-size: 16px; color: #4a443b; line-height: 1.25; }
+.tryit .go { font-family: var(--ac-note-font); color: #2f4f86; }
+a.tryit:hover { transform: rotate(0.4deg); border-color: var(--ac-blue); }
+
+/* Kepler sandbox */
+.kp canvas { width: 100%; aspect-ratio: 1; display: block; background: var(--ac-card); border-radius: 8px 14px 10px 12px / 12px 10px 14px 8px; border: 2px solid #6d6457; touch-action: none; }
+.kp .read-out { font-family: var(--ac-head-font); font-size: 17px; margin: 6px 0; }
+.kp label { display: grid; gap: 2px; font-size: 16px; margin: 6px 0; }
+.kp input[type="range"] { width: 100%; accent-color: var(--ac-accent); }
+.kp select { font: inherit; font-size: 16px; min-height: 44px; color: var(--ac-text); background: var(--ac-chip); border: 2px solid var(--ac-line); border-radius: 10px; padding: 0 8px; }
+
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.toc button { width: 100%; justify-content: flex-start; text-align: left; border-color: transparent; background: none; font-family: var(--ac-body-font); font-size: 17px; padding: 4px 8px; }
+.toc button[aria-current="true"] { border-color: var(--ac-line); background: var(--ac-chip); }
+.toc .n { font-family: var(--ac-note-font); color: var(--ac-dim); min-width: 2.2em; display: inline-block; }
+
+/* Sandbox mode: the sandbox takes the page area */
+.story[data-mode="sandbox"] .stage, .story[data-mode="sandbox"] .stage-cap, .story[data-mode="sandbox"] .scrub, .story[data-mode="sandbox"] .toc { display: none; }
+
+/* Phones: page on top, tools in a bottom sheet */
+@media (max-width: 699px) {
+  .story { display: block; padding: 0 0 0 0; }
+  .book { padding: 0 max(8px, var(--pb-safe-left)) 0 max(8px, var(--pb-safe-right)); gap: 4px; }
+  .stage-wrap { flex: none; }
+  .scrub { display: none; }
+  .panel { position: fixed; z-index: 30; left: 0; right: 0; bottom: 0; height: var(--sheet-h, 45%); border-radius: 18px 18px 0 0; border-bottom: 0;
+    padding-bottom: var(--pb-safe-bottom); box-shadow: 0 -6px 18px rgba(30, 25, 15, 0.18); }
+  .sheet-handle { display: flex; align-self: center; flex: none; width: 100%; min-height: 44px; border: 0; background: none; border-radius: 0; touch-action: none; }
+  .sheet-handle span { width: 44px; height: 5px; border-radius: 3px; background: var(--ac-line); }
+  .panel-body { padding-top: 0; flex: 1; }
+  .read { display: block; }
+  @media (prefers-reduced-motion: no-preference) { .panel { transition: height 0.22s ease; } }
+}
+@media (max-height: 520px) and (min-width: 700px) {
+  .story { grid-template-columns: minmax(0, 1fr) 300px; gap: 10px; }
+  .scrub { display: none; }
+}
+.tool .feedback:empty { display: none; }

@@ -1,0 +1,35 @@
+/* Astronomy Course library: hand-lettered cover, pencil search bar, story cards. */
+.ac-spacer { flex: 1; }
+.lib { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; padding: 4px max(16px, var(--pb-safe-right)) calc(40px + var(--pb-safe-bottom)) max(16px, var(--pb-safe-left)); }
+.lib-cover { text-align: center; padding: 4px 0 18px; }
+.lib-title { margin: 0; font-family: var(--ac-title-font); font-weight: 700; font-size: clamp(40px, 8vw, 76px); line-height: 1; color: var(--ac-text); letter-spacing: 0.01em; }
+.lib-title::after { content: ""; display: block; width: min(420px, 70%); height: 10px; margin: 8px auto 0;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 10' preserveAspectRatio='none'><path d='M2 6 C40 2 70 9 100 5 S160 2 198 6' fill='none' stroke='%23c9962e' stroke-width='3' stroke-linecap='round' opacity='0.85'/></svg>") center / 100% 100% no-repeat; }
+.lib-lede { margin: 12px auto 16px; max-width: 560px; font-size: 19px; color: var(--ac-dim); }
+.lib-search { display: flex; align-items: center; gap: 10px; max-width: 620px; margin: 0 auto; padding: 4px 14px; background: var(--ac-panel); color: var(--ac-dim); }
+.lib-search input { flex: 1; min-width: 0; min-height: 44px; border: 0; outline: 0; background: transparent; color: var(--ac-text); font-family: var(--ac-body-font); font-size: 20px; }
+.lib-search input::placeholder { color: var(--ac-dim); opacity: 1; }
+.lib-search:focus-within { border-color: var(--ac-accent); }
+.lib-filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 14px 0 6px; }
+.lib-count { margin: 6px 0 0; color: var(--ac-dim); font-size: 16px; }
+.lib-empty { text-align: center; color: var(--ac-dim); }
+
+.lib-grid { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 22px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+.lib-card { position: relative; display: flex; flex-direction: column; height: 100%; color: var(--ac-card-ink); background: var(--ac-card); text-decoration: none;
+  border: 2px solid #6d6457; border-radius: 6px 18px 8px 16px / 16px 8px 18px 6px; box-shadow: 3px 4px 0 rgba(60, 45, 20, 0.16); overflow: hidden; }
+:root[data-theme="dark"] .lib-card { border-color: var(--ac-line); box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.35); }
+a.lib-card:hover { transform: rotate(-0.4deg) translateY(-2px); }
+@media (prefers-reduced-motion: no-preference) { a.lib-card { transition: transform 0.18s ease; } }
+.lib-card .strip { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 12px; font-family: var(--ac-head-font); font-size: 15px; color: #2f2b26; }
+.lib-card[data-q="1"] .strip { background: #e9d9a8; }
+.lib-card[data-q="2"] .strip { background: #cfe0c4; }
+.lib-card[data-q="3"] .strip { background: #d7cfea; }
+.lib-card[data-q="4"] .strip { background: #c9dbef; }
+.lib-card .cover { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-bottom: 1.5px dashed #b3a790; background: var(--ac-card); }
+.lib-card .body { padding: 10px 14px 14px; display: grid; gap: 4px; }
+.lib-card h2 { margin: 0; font-family: var(--ac-title-font); font-weight: 700; font-size: 25px; line-height: 1.05; color: #2f2b26; }
+.lib-card .sub { margin: 0; font-size: 17px; color: #4a443b; }
+.lib-card .meta { margin: 4px 0 0; font-family: var(--ac-note-font); font-size: 16px; color: #4a443b; }
+.lib-card .hit { margin: 4px 0 0; font-size: 16px; color: #3a3530; background: linear-gradient(transparent 55%, rgba(242, 196, 90, 0.45) 55%); }
+.lib-card .badge { font-family: var(--ac-note-font); font-size: 15px; padding: 0 8px; border-radius: 10px; border: 1.5px solid #6d6457; background: #fbf6e8; color: #3d3d3d; white-space: nowrap; }
+.lib-card[aria-disabled="true"] .cover { opacity: 0.88; }

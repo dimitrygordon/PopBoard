@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="shared/layout/layout.css">
+<script type="module" src="shared/layout/layout.js"></script>
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f4efe4">
+<title>Astronomy Course storybook // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  // Light notebook paper is the default; dark paper is remembered for the whole course.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.astronomy-course.theme"); } catch (e) {}
+    document.documentElement.setAttribute("data-theme", t === "dark" ? "dark" : "light");
+  })();
+</script>
+<link rel="stylesheet" href="shared/paper/paper.css">
+<script src="shared/notation/notation.js"></script>
+<link rel="stylesheet" href="astro-course/ac-theme.css">
+<link rel="stylesheet" href="astro-course/ac-story.css">
+</head>
+<body>
+<header class="ac-bar">
+  <button id="studyBackBtn" class="study-back-btn" type="button" aria-label="Back to the Astronomy Course library"><span class="back-icon"></span><span class="back-label">Library</span></button>
+  <h1 class="ac-bar-title" id="deckTitle">Astronomy Course</h1>
+  <button id="sandboxBtn" type="button" aria-pressed="false" hidden>Sandbox</button>
+  <button id="themeBtn" class="ac-theme-btn" type="button"></button>
+</header>
+
+<!-- Sandbox mode opens with ?mode=sandbox (the deck's sandboxes without the story). -->
+<main class="story" id="story">
+  <section class="book" aria-label="Storybook page">
+    <div class="stage-wrap" id="stageWrap">
+      <div class="stage" id="stage" data-pb-free aria-live="polite"></div>
+      <div class="sandbox-stage" id="sandboxStage" hidden></div>
+    </div>
+    <div class="stage-cap" id="stageCap">
+      <button type="button" id="prevBtn" aria-label="Previous page">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <p class="page-label" id="pageLabel">Page 1</p>
+      <button type="button" id="nextBtn" aria-label="Next page">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+    <label class="scrub" id="scrubRow"><span class="sr-only">Go to page</span><input type="range" id="scrub" min="1" max="1" step="1" value="1"></label>
+  </section>
+
+  <aside class="panel" id="panel" aria-label="Page tools">
+    <button type="button" class="sheet-handle" id="sheetHandle" aria-label="Resize page tools"><span></span></button>
+    <div class="panel-body" id="panelBody">
+      <section class="read" id="readBox" aria-label="This page in large print"><h2 class="panel-h">Read this page</h2><div id="readText"></div></section>
+      <section id="tools"></section>
+      <nav class="toc" id="toc" aria-label="Contents"><h2 class="panel-h">Contents</h2><ol id="tocList"></ol></nav>
+    </div>
+  </aside>
+</main>
+
+<script type="module" src="astro-course/ac-story.js"></script>
+</body>
+</html>
