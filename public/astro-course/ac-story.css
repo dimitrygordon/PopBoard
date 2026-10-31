@@ -204,3 +204,17 @@ body.v2 .read .rich p { font-size: 17px; line-height: 1.45; }
 .stage.v2.immersive .ac-tb { visibility: hidden; }
 .stage.v2.immersive .ac-opt { visibility: visible; }
 .stage.v2.immersive > canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+/* Layered hand-drawn pages (ac-artscene.js): the original art in depth planes, never filtered at rest */
+.stage.v2.artpage { background-image: none !important; }
+.art-scene { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.art-scene .art-l { position: absolute; display: block; will-change: transform; user-select: none; }
+.art-scene .art-dot { width: 1.6%; aspect-ratio: 1; margin: -0.8% 0 0 -0.8%; opacity: 0; }
+:root[data-theme="dark"] .art-scene .art-light { display: none; }
+.art-scene .art-fade { animation: artFade 0.3s ease-out both; }
+/* step 2 pencil lines wipe on as graphite, step 3 the colored hatching fills in, step 4 labels (writeOn) */
+.art-scene .art-draw { animation: artWipe 0.6s ease-out 0.2s both, artHatch 0.4s ease-out 0.8s both; }
+.art-scene .art-late { animation: artFade 0.6s ease-out 1.2s both; }
+@keyframes artFade { from { opacity: 0; } }
+@keyframes artWipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes artHatch { from { filter: grayscale(1) contrast(1.15); } to { filter: none; } }
+@media (prefers-reduced-motion: reduce) { .art-scene .art-l { animation: none !important; } }

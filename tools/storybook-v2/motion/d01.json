@@ -317,8 +317,6 @@
  },
  "immersive": true,
  "scene": {
-  "1": "sunOrbit",
-  "5": "addressRings",
   "8": "powersFly",
   "17": "gravityPair"
  }

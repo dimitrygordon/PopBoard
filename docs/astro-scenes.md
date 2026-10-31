@@ -85,3 +85,19 @@ See the full file for the Moon, the dashed light path and the label turned to fo
 ## Testing
 
 `cd tests && node --test astro-scenes.test.mjs` imports every module and builds it against the ctx above (using the real three.js). It then runs 30 frames, fires a drag and calls `dispose()`. For a visual check, serve `public/` and open `study-astronomy-story.html?deck=<deck>&page=<n>`.
+
+## Hand-drawn first (October 2026 direction)
+
+Hand-drawn art is the default on every page. 3D is used only where it fits (scene-setting or simulation).
+
+- **Non-custom pages** show the original slide art with its pop-up depth planes. They get no generic immersive mode and no procedural hero objects.
+- **Layered art pages** (`public/astro-course/ac-artscene.js`, the `ART` table): the original drawing, split into depth planes by Leo, lives in `decks/<deck>/v2/art/`.
+  - Parallax factors: bg 0.15, mid 0.45, fg 0.8. The cap is 14 px of a 1600 px page. Reduced motion turns it off.
+  - Reveal order: pencil lines wipe on, then the colored hatching fills in, then labels.
+  - Labels stay live text from deck.json.
+  - D01 p1 and p5 use this. Their entry in `ART` wins over any scene module, so `d01/p01.js` stays only as the contract example.
+- **3D scenes** (D01 p8 and p17) follow `mockups/style-kit/style-notes.md`:
+  - Drawings are cutouts of the slide's own art (`opts.art`).
+  - Lines are wobbly pencil strokes, built from the `pencil()` and `sheet()` helpers in ac-scenes.js and drawn in palette graphite.
+  - Fills use the kit hatch tile (`v2/art/hatch-tile-512.webp`) with mipmaps and anisotropy ON.
+  - No lit or glossy meshes.

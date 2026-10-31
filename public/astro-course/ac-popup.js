@@ -66,12 +66,12 @@ const spring = (x) => x <= 0 ? 0 : x >= 1 ? 1 : 1 - Math.exp(-6 * x) * Math.cos(
 
 export function createPopup({ stage, base, onFrame }) {
   let scene = null, cam = null, items = [], t0 = 0, raf = 0, alive = true, skip = false, slide = null;
-  let labels = [], stageScene = null;
+  let stageScene = null;
   let special = null, imm = false, look = null, pointers = new Map(), idleAt = 0; let par = { x: 0, y: 0, tx: 0, ty: 0 }, drag = null, last = performance.now(), fpsAcc = [0, 0];
   const flat = () => reduceMotion() || !webglOk();
 
   function dispose() {
-    cancelAnimationFrame(raf); raf = 0; labels = []; if (stageScene && stageScene.dispose) stageScene.dispose(); stageScene = null;
+    cancelAnimationFrame(raf); raf = 0; if (stageScene && stageScene.dispose) stageScene.dispose(); stageScene = null;
     if (scene) {
       scene.traverse((o) => { if (o.geometry) o.geometry.dispose(); if (o.material) { for (const k of ["map"]) if (o.material.uniforms && o.material.uniforms[k]) o.material.uniforms[k].value.dispose(); if (o.material.map) o.material.map.dispose(); o.material.dispose(); } });
       stats.scenesDisposed++;
@@ -163,19 +163,13 @@ export function createPopup({ stage, base, onFrame }) {
     });
     special = null;
     if (imm) {
-      // far layer: a deep star field (fog fades it), then the scene's billboard labels up front
-      const n = phone ? 260 : 800, pos = new Float32Array(n * 3);
-      for (let i = 0; i < n; i++) pos.set([(Math.random() - 0.5) * 90, (Math.random() - 0.5) * 50, -18 - Math.random() * 50], i * 3);
-      const sg = new T.BufferGeometry(); sg.setAttribute("position", new T.BufferAttribute(pos, 3));
+      // no generic star field or labels: each scene draws its own pieces, cut from the slide art
       const dark = document.documentElement.dataset.theme === "dark";
-      scene.add(new T.Points(sg, new T.PointsMaterial({ color: dark ? 0xf3ead7 : 0x6d6457, size: phone ? 0.16 : 0.12, transparent: true, opacity: dark ? 0.75 : 0.45 })));
-      scene.fog = new T.Fog(dark ? 0x1e2433 : 0xf6efdf, 22, 75);
+      scene.fog = new T.Fog(dark ? 0x1e2433 : 0xf6efdf, 40, 120);
       const lab = await import("./ac-scenes.js");
       if (slide !== s) return;
-      const labelsAt = items.reduce((a, it) => Math.max(a, it.delay), 0) + 0.4;
-      (opts.labels || []).forEach((L, i) => { const p = place(L.box, 2.2); const sp = lab.label(T, L.text, { color: L.color, h: L.h, maxW: L.maxW }); sp.position.set(p.cx - p.w / 2, p.cy, 2.2); scene.add(sp); labels.push({ sp, delay: labelsAt + i * TIMING.stagger }); });
-      if (opts.sceneModule) { try { const mod = await import(opts.sceneModule); if (slide !== s) return; stageScene = lab.runModule(mod, T, scene, { phone, dark, camera: cam, controls: opts.controls, still: reduceMotion(), DIST, W, H, place, base }); } catch (err) { console.info("scene module failed, using the generic scene", err); stageScene = null; } }
-      if (!stageScene && opts.scene) { const sc = lab.build(opts.scene, T, scene, { phone, dark, controls: opts.controls, still: reduceMotion(), DIST, W, H, place, label: lab.label }); if (sc) { stageScene = sc; } }
+      if (opts.sceneModule) { try { const mod = await import(opts.sceneModule); if (slide !== s) return; stageScene = lab.runModule(mod, T, scene, { phone, dark, camera: cam, controls: opts.controls, still: reduceMotion(), DIST, W, H, place, base, art: opts.art || "" }); } catch (err) { console.info("scene module failed, using the generic scene", err); stageScene = null; } }
+      if (!stageScene && opts.scene) { const sc = lab.build(opts.scene, T, scene, { phone, dark, controls: opts.controls, still: reduceMotion(), DIST, W, H, place, art: opts.art || "", kit: base + "v2/art/" }); if (sc) { stageScene = sc; } }
     }
     const kinds = [opts.special, opts.hero].filter(Boolean);
     if (kinds.length) {
@@ -232,7 +226,6 @@ export function createPopup({ stage, base, onFrame }) {
     const ce = skip ? 1 : ease(t / TIMING.sketch);
     if (imm) immersiveCamera(t, dt, ce);
     else { cam.position.set(par.x * 1.2, par.y * 0.8, DIST * (1 + 0.12 * (1 - ce))); cam.lookAt(0, 0, 0); }
-    for (const L of labels) { const k = skip ? 1 : ease((t - L.delay) / 0.5); L.sp.material.opacity = Math.min(1, k * 1.4); L.sp.material.map.repeat.x = Math.max(0.001, k); L.sp.scale.x = L.sp.userData.w * Math.max(0.001, k); }
     if (stageScene) stageScene.update(skip ? 99 : t, reduceMotion() ? 0 : dt, cam);
     for (const it of items) {
       const lt = skip ? 99 : t - it.delay, u = it.mat.uniforms;

@@ -3,6 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { darkInk } from "../public/astro-course/ac-ink.js";
+import { hasArt } from "../public/astro-course/ac-artscene.js";
 
 const PUB = new URL("../public/", import.meta.url).pathname;
 const AC = PUB + "astro-course/";
@@ -84,7 +85,7 @@ test("narration render script: words come from graph_chars, brackets become pare
   assert.ok(!/eleven/i.test(src));
 });
 
-test("every slide of every deck mounts a draggable 3D scene", async () => {
+test("every slide of every deck has layered art, a 3D set piece or a scene", async () => {
   const { readdirSync } = await import("node:fs");
   const src = readFileSync(AC + "ac-pop3d.js", "utf8");
   const heroes = JSON.parse(/HEROES = (\[[^\]]+\])/.exec(src)[1]);
@@ -97,14 +98,18 @@ test("every slide of every deck mounts a draggable 3D scene", async () => {
     const dk = JSON.parse(readFileSync(AC + `decks/${slug}/deck.json`, "utf8"));
     for (const s of dk.slides) {
       const v = st.slides[String(s.n)], k = v && (v.three || v.hero);
+      if (v && hasArt(slug, "p" + String(s.n).padStart(2, "0"))) { n++; continue; }
       if (v && v.scene) { assert.ok(st.immersive && SCENES.includes(v.scene), `${slug} page ${s.n} scene ${v.scene}`); n++; continue; }
       assert.ok(k && (heroes.includes(k) || pieces.includes(k)), `${slug} page ${s.n} has no 3D scene`);
       n++;
     }
   }
   assert.ok(n > 700);
-  // the page passes its hero to the shared engine, which builds set piece and hero together with drag hooks
-  assert.match(readFileSync(AC + "ac-story.js", "utf8"), /hero: webglReady\(\) \? sv\.hero/);
+  // hand-drawn art is the default: procedural heroes stay in the data but are not rendered,
+  // and only pages with their own scene go immersive
+  const story = readFileSync(AC + "ac-story.js", "utf8");
+  assert.match(story, /hero: null/);
+  assert.match(story, /const imm = [^;]*\(sv\.scene \|\| sceneMods\.has\(pn\)\)/);
   assert.match(readFileSync(AC + "ac-popup.js", "utf8"), /buildAll\(kinds/);
   assert.match(src, /pointer\(e, r, phs\)/);
 });

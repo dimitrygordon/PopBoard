@@ -69,7 +69,16 @@ test("touch hints breathe, fade after the first interaction, and hold still unde
 test("D01 grabbable objects carry the touch hint", () => {
   const src = (f) => fs.readFileSync(path.resolve(import.meta.dirname, "../public/astro-course/" + f), "utf8");
   const sc = src("ac-scenes.js");
-  for (const k of ["addressRings", "gravityPair", "sunOrbit"]) { const body = sc.slice(sc.indexOf(`  ${k}(T, g, o) {`)); assert.match(body.slice(0, body.indexOf("\n  },\n")), /o\.touch\.add\(/, k); }
+  for (const k of ["gravityPair"]) { const body = sc.slice(sc.indexOf(`  ${k}(T, g, o) {`)); assert.match(body.slice(0, body.indexOf("\n  },\n")), /o\.touch\.add\(/, k); }
   const p3 = src("ac-pop3d.js"); assert.ok((p3.match(/hintAt(: | = )\{/g) || []).length >= 4, "rings, cannon, seasons, heroes");
   assert.match(src("ac-popup.js"), /stageScene\.interact\(\)/);
+});
+
+test("layered hand-drawn pages: every art plane exists and the reveal runs lines, hatch, labels", async () => {
+  const { ART, REVEAL } = await import("../public/astro-course/ac-artscene.js");
+  for (const [deck, pages] of Object.entries(ART)) for (const [pn, layers] of Object.entries(pages)) {
+    assert.deepEqual(layers.map((l) => l.f).filter((f) => ![0.15, 0.45, 0.8].includes(f)), [], `${deck} ${pn} parallax factors`);
+    for (const l of layers) if (l.src) assert.ok(fs.existsSync(path.resolve(import.meta.dirname, `../public/astro-course/decks/${deck}/v2/art/${l.src}`)), `${deck} ${pn} ${l.src}`);
+  }
+  assert.ok(REVEAL.lines[0] < REVEAL.hatch[0] && REVEAL.hatch[0] < REVEAL.labels);
 });

@@ -10,6 +10,7 @@ import { mountDose } from "./ac-sb-dose.js";
 import { forwardStudyQuery } from "../board-return.js?v=20261022a";
 import { halfUnder } from "../shared/layout/layout.js";
 import { createPopup, darkInk, webglOk } from "./ac-popup.js";
+import { hasArt, mountArt, REVEAL } from "./ac-artscene.js";
 import { mountFx } from "./ac-fx.js";
 import { createNarrator } from "./ac-narrate.js";
 import { mountPowers, mountEclipse, mountWaves, mountDoppler, mountGravity } from "./ac-sb-v2.js";
@@ -38,7 +39,7 @@ const SANDBOXES = {
 };
 // 3D set pieces that are the sandbox on their own page (no separate canvas).
 const ONPAGE = { rings: "Cosmic address rings (3D)", cannon: "Newton's cannon (3D)", seasons: "Seasons orbit (3D)" };
-let v2 = null, popup = null, fxh = null;
+let v2 = null, popup = null, fxh = null, arth = null;
 const narrator = createNarrator($("narr"), "astro-course/");
 const sandboxKinds = () => [...new Set(Object.values(extra.sandboxes || {}))].filter((k) => SANDBOXES[k]);
 let sbKind = null;
@@ -254,19 +255,28 @@ function flipSheet(dir) {
 }
 function popPage(s, sv) {
   if (fxh) { fxh.destroy(); fxh = null; }
+  if (arth) { arth.destroy(); arth = null; }
   // Inside-the-slide pages: full-bleed 3D, the words live in the side panel (bottom sheet on phones).
-  const imm = !!(v2 && v2.immersive) && webglReady();
+  // Hand-drawn art is the default: only pages with their own scene (a module or a built-in) go 3D.
+  const pn = "p" + String(s.n).padStart(2, "0");
+  // Leo's layered art (the original drawing split into depth planes) wins over any 3D scene
+  const art = hasArt(meta.slug, pn);
+  stage.classList.toggle("artpage", art);
+  const imm = !art && !!(v2 && v2.immersive) && !!(sv.scene || sceneMods.has(pn)) && webglReady();
   stage.classList.toggle("immersive", imm);
-  const pn = "p" + String(s.n).padStart(2, "0"), mod = imm && sceneMods.has(pn) ? `../js/astro-scenes/${meta.slug}/${pn}.js` : null;
+  const mod = imm && sceneMods.has(pn) ? `../js/astro-scenes/${meta.slug}/${pn}.js` : null;
   const special = sv.three && webglReady() && !(imm && (sv.scene || mod)) ? sv.three : null;
   const layers = special ? sv.layers.filter((l) => !l.replaced3d) : sv.layers;
-  const opts = { special, hero: webglReady() ? sv.hero : null, controls: specialControls(sv.scene === "powersFly" ? "powers" : sv.three) };
-  // a hand-built module (js/astro-scenes/<deck>/pNN.js) wins; then the built-in scene; else the generic depth planes
-  const own = !!(mod || sv.scene);
-  if (imm) Object.assign(opts, { immersive: true, sceneModule: mod, scene: sv.scene || null, drop: own ? sv.layers.map((l) => l.src) : [], labels: own ? [] : sceneLabels(s) });
-  popup.show({ ...sv, layers }, opts);
+  const opts = { special, hero: null, controls: specialControls(sv.scene === "powersFly" ? "powers" : sv.three) };
+  // a hand-built module (js/astro-scenes/<deck>/pNN.js) wins over the built-in scene; both cut their
+  // objects out of the original slide drawing (opts.art)
+  if (imm) Object.assign(opts, { immersive: true, sceneModule: mod, scene: sv.scene || null, drop: sv.layers.map((l) => l.src), labels: [], art: slideArt(s) });
+  popup.show({ ...sv, layers: art ? [] : layers }, art ? { special: null, hero: null } : opts);
   if (imm) prewarm();
-  else {
+  else if (art) {
+    arth = mountArt(stage, base, meta.slug, pn, { still: reduceMotion() });
+    writeOn(reduceMotion() ? 0 : REVEAL.labels);
+  } else {
     const nPop = sv.layers.filter((l) => !l.flat).length;
     const labelsAt = reduceMotion() ? 0 : Math.min(2.4, 0.2 * (nPop + 1) + 0.6);
     writeOn(labelsAt);
@@ -274,7 +284,7 @@ function popPage(s, sv) {
   }
   // a sketched Try it tab on pages with a sandbox
   const kind = sv.sandbox;
-  if (kind && (SANDBOXES[kind] || ONPAGE[kind])) {
+  if (kind && (SANDBOXES[kind] || (ONPAGE[kind] && !art))) {
     const tab = document.createElement("button");
     tab.type = "button"; tab.className = "tryit-tab sketch";
     tab.textContent = ONPAGE[kind] ? "Try it: touch the 3D" : "Try it";
@@ -286,26 +296,14 @@ function popPage(s, sv) {
 let sceneMods = new Set();
 const webglReady = () => webglOk();
 // Short slide words become billboards floating in front of the art; long text stays in the panel only.
-function sceneLabels(s) {
-  const dark = document.documentElement.dataset.theme === "dark", out = [];
-  for (const it of s.items) {
-    if (it.t !== "text") continue;
-    const lines = boxText(it), txt = lines.join(" ").trim(), r = it.p[0] && it.p[0].r[0];
-    if (!txt || txt.length > 40 || lines.length > 2 || !r) continue;
-    const c = r.c || "#3D3D3D", h = Math.max(0.26, Math.min(0.7, (r.sz || 30) / 1080 * 9 * 1.3));
-    out.push({ text: txt, box: [it.box[0], it.box[1] + (h / 9 * 100) / 2, 0.01, 0.01], h, maxW: it.box[2] / 100 * 16, color: dark ? cssColor(darkInk(c)) || "#F3EAD7" : c });
-    if (out.length >= 6) break;
-  }
-  return out;
-}
-function cssColor(v) { const m = /^var\((--[\w-]+)\)$/.exec(v || ""); return m ? getComputedStyle(stage).getPropertyValue(m[1]).trim() || null : v; }
+function slideArt(s) { const im = (s.items || []).find((it) => it.t === "img" && /^s\d/.test(it.src)); return im ? base + im.src : ""; }
 // only the current page is mounted; the next page's art is fetched ahead
 function prewarm() { const nx = v2 && v2.slides[String(page + 1)]; if (nx) for (const l of nx.layers) { const im = new Image(); im.src = base + l.src; } }
 let ctlHtml = "";
 function specialControls(kind) {
   const box = () => $("tools").querySelector(".pop-ctl");
   if (kind === "rings") return {
-    onLevel(names, set) { setTimeout(() => { const b = box(); if (!b) return; b.innerHTML = `<label>Pull back: <b data-o="lv">${names[0]}</b><input type="range" min="0" max="5" step="0.01" value="0" data-k="lv"></label>`; const i = b.querySelector("input"); i.addEventListener("input", () => { set(+i.value); b.querySelector("b").textContent = names[Math.round(+i.value)]; }); this.setLevel = (v) => { i.value = v; b.querySelector("b").textContent = names[Math.round(v)]; }; }, 0); }
+    onLevel(names, set) { setTimeout(() => { const b = box(); if (!b) return; b.innerHTML = `<label>Pull back: <b data-o="lv">${names[0]}</b><input type="range" min="0" max="${names.length - 1}" step="0.01" value="0" data-k="lv"></label>`; const i = b.querySelector("input"); i.addEventListener("input", () => { set(+i.value); b.querySelector("b").textContent = names[Math.round(+i.value)]; }); this.setLevel = (v) => { i.value = v; b.querySelector("b").textContent = names[Math.round(v)]; }; }, 0); }
   };
   if (kind === "cannon") return {
     onCannon(setSpeed, fire) { setTimeout(() => { const b = box(); if (!b) return; b.innerHTML = `<label>Launch speed: <b>slow</b><input type="range" min="0.3" max="1" step="0.01" value="0.6"></label><div class="row"><button type="button">Launch</button></div>`; const i = b.querySelector("input"); i.addEventListener("input", () => { setSpeed(+i.value); b.querySelector("b").textContent = +i.value >= 0.99 ? "orbital" : +i.value > 0.7 ? "fast" : "slow"; }); b.querySelector("button").addEventListener("click", fire); }, 0); }
