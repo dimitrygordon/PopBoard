@@ -38,5 +38,11 @@ export const EXTRAS = {
   d05: { tryIt: { 19: "climate", 25: "plate-tectonics" } },
   d06: { sandboxes: { 18: "resonance" }, tryIt: { 14: "tides", 17: "tides", 24: "orbits" } },
   d07: { sandboxes: { 20: "pluto", 25: "crater", 27: "crater", 28: "crater", 29: "crater", 30: "crater" }, tryIt: { 16: "orbits" } },
-  d08: { tryIt: { 9: "plate-tectonics", 15: "climate", 22: "exoplanets" } }
+  d08: { tryIt: { 9: "plate-tectonics", 15: "climate", 22: "exoplanets" } },
+  d09: { tryIt: { 15: "plate-tectonics", 16: "plate-tectonics", 23: "plate-tectonics" } },
+  d10: { tryIt: { 7: "plate-tectonics" } },
+  d11: { tryIt: { 12: "climate", 15: "climate" } },
+  d12: { tryIt: { 10: "seasons-eclipses", 12: "seasons-eclipses", 19: "climate" } },
+  d13: { tryIt: { 4: "climate", 6: "climate" } },
+  d13b: { tryIt: { 10: "climate", 12: "climate" } }
 };
