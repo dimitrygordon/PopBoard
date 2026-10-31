@@ -180,7 +180,11 @@ function setMode(m) {
   mode = m;
   story.dataset.mode = m;
   $("sandboxBtn").setAttribute("aria-pressed", String(m === "sandbox"));
-  $("sandboxBtn").textContent = m === "sandbox" ? "Back to the story" : "Sandbox";
+  const sb = $("sandboxBtn");
+  if (m === "sandbox") {
+    sb.innerHTML = '<span class="sb-long">Back to the story</span><span class="sb-short" aria-hidden="true">\u2190 Story</span>';
+    sb.setAttribute("aria-label", "Back to the story");
+  } else { sb.textContent = "Sandbox"; sb.removeAttribute("aria-label"); }
   const sbs = $("sandboxStage");
   if (m === "sandbox") {
     if (orbit) { orbit.destroy(); orbit = null; }
