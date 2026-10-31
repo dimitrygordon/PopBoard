@@ -62,6 +62,20 @@ def touch(line):
     for kw, it in (("launch", "launch"), ("spin", "spin"), ("orbit", "orbit"), ("tap", "pulse"), ("drag", "toss"), ("toss", "toss")):
         if kw in t: return it
     return None
+# Every page gets one real 3D object that sketches in and spins on drag; the spec line and page text pick it.
+def hero_for(n, line, text):
+    t = (line + " " + re.sub(r"<[^>]+>", " ", text)).lower()
+    has = lambda *ks: any(re.search(r"\b" + k, t) for k in ks)
+    if has("moon", "lunar", "eclipse", "tide") and has("sun", "earth"): return "sem"
+    for kws, kind in ((("galax", "milky way", "universe", "cosmic", "big bang", "nebula"), "galaxy"),
+                      (("saturn", "jupiter", "uranus", "neptune", "gas giant", r"rings?\b"), "ringed"),
+                      (("mars", "red planet", "rover"), "mars"),
+                      (("rocket", "spacecraft", "probe", "satellite", "station", "voyager", "astronaut", "shuttle", "telescope"), "probe"),
+                      ((r"sun\b", r"stars?\b", "solar", "light-year", "fusion"), "sun"),
+                      (("moon", "lunar", "crater"), "moon"),
+                      (("earth", "season", "planet", "orbit", "gravity"), "earth")):
+        if has(*kws): return kind
+    return "sem"
 QUIET = {"d24-5": {"17", "18", "19", "20"}}  # remembrance pages: a quiet star field and nothing else
 slides = {}
 for n, ls in layers.items():
@@ -89,8 +103,9 @@ for n, ls in layers.items():
     if n in QUIET.get(slug, ()):
         for d in out: d["flat"] = True; d["motion"] = "none"; d.pop("interact", None)
         three = "starfield"
+    hero = None if three else (cfg.get("hero", {}).get(n) or hero_for(n, spec_lines.get(n, ""), texts.get(n, "")))
     slides[n] = {"layers": out, "text": texts.get(n, ""), "fx": cfg["fx"].get(n, []),
-                 "sandbox": cfg["sandboxes"].get(n), "three": three}
+                 "sandbox": cfg["sandboxes"].get(n), "three": three, "hero": hero}
 json.dump({"slug": slug, "popupSpec": "v2" if popup_v2 else "v1", "slides": slides},
           open(os.path.join(deck, "v2/story.json"), "w"), separators=(",", ":"))
 print(slug, "slides", len(slides), "text", len(texts), "spec", "v2" if popup_v2 else "v1",

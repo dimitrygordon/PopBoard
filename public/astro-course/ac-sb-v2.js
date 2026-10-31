@@ -1,18 +1,23 @@
 // Storybook v2 slide sandboxes (D01): powers of ten, eclipse, waves, Doppler, gravitation.
 // Each mount(host) builds a canvas plus controls and returns { destroy }.
 import { reduceMotion } from "./ac-common.js";
-const INK = "#3d3d3d", BLUE = "#3f6fa8", RED = "#a34a3e", GOLD = "#c9862a";
+// Pencil palette; dark paper swaps to navy/cream/gold/blue (#1E2433 #F3EAD7 #E2B654 #7FA6D9).
+let INK = "#3d3d3d", BLUE = "#3f6fa8", RED = "#a34a3e", GOLD = "#c9862a", MASS = "#9a9a9a";
+function palette() {
+  const dark = document.documentElement.dataset.theme === "dark";
+  [INK, BLUE, RED, GOLD, MASS] = dark ? ["#F3EAD7", "#7FA6D9", "#E2B654", "#E2B654", "#7FA6D9"] : ["#3d3d3d", "#3f6fa8", "#a34a3e", "#c9862a", "#9a9a9a"];
+}
 
 function shell(host, label, controls, note) {
   host.classList.add("kp");
   host.innerHTML = `<canvas width="800" height="450" aria-label="${label}"></canvas><p class="read-out" aria-live="polite"></p>${controls}<p class="note">${note}</p>`;
-  const cv = host.querySelector("canvas");
+  const cv = host.querySelector("canvas"); cv.classList.add("sbv2");
   return { cv, g: cv.getContext("2d"), out: host.querySelector(".read-out"), q: (s) => host.querySelector(s) };
 }
 function loop(draw) {
   let raf = 0, alive = true, t0 = performance.now();
-  const f = () => { if (!alive) return; draw((performance.now() - t0) / 1000); if (!reduceMotion()) raf = requestAnimationFrame(f); };
-  f(); return { redraw: () => draw((performance.now() - t0) / 1000), destroy() { alive = false; cancelAnimationFrame(raf); } };
+  const f = () => { if (!alive) return; palette(); draw((performance.now() - t0) / 1000); if (!reduceMotion()) raf = requestAnimationFrame(f); };
+  f(); return { redraw: () => (palette(), draw((performance.now() - t0) / 1000)), destroy() { alive = false; cancelAnimationFrame(raf); } };
 }
 function glow(g, x, y, r, c) { const gr = g.createRadialGradient(x, y, r * 0.2, x, y, r); gr.addColorStop(0, c); gr.addColorStop(1, "rgba(242,196,90,0)"); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); }
 
@@ -84,11 +89,11 @@ export function mountGravity(host) {
   const L = loop(() => {
     const d = +dIn.value, m = +mIn.value, F = m / (d * d), { g } = s; g.clearRect(0, 0, 800, 450);
     const a = 400 - d * 110, b = 400 + d * 110, len = 110 * F;
-    g.fillStyle = "#9a9a9a"; g.beginPath(); g.arc(a, 225, 24 * Math.cbrt(m), 0, 7); g.fill(); g.beginPath(); g.arc(b, 225, 24, 0, 7); g.fill();
+    g.fillStyle = MASS; g.beginPath(); g.arc(a, 225, 24 * Math.cbrt(m), 0, 7); g.fill(); g.beginPath(); g.arc(b, 225, 24, 0, 7); g.fill();
     const arrow = (x, dir) => { g.strokeStyle = RED; g.fillStyle = RED; g.lineWidth = 4; g.beginPath(); g.moveTo(x, 225); g.lineTo(x + dir * len, 225); g.stroke(); g.beginPath(); g.moveTo(x + dir * (len + 12), 225); g.lineTo(x + dir * len, 217); g.lineTo(x + dir * len, 233); g.fill(); g.font = "italic 20px Patrick Hand, sans-serif"; g.fillText("F", x + dir * len / 2 - 6, 205); g.font = "14px Patrick Hand, sans-serif"; g.fillText("g", x + dir * len / 2 + 5, 210); };
     arrow(a + 26, 1); arrow(b - 26, -1);
     s.q('[data-o="d"]').textContent = `${d.toFixed(1)} d`; s.q('[data-o="m"]').textContent = `${m} m`;
-    s.out.textContent = `F_g is ${F >= 1 ? F.toFixed(2) : "1/" + (1 / F).toFixed(1)} times the starting pull`;
+    s.out.textContent = `Fg is ${F >= 1 ? F.toFixed(2) : "1/" + (1 / F).toFixed(1)} times the starting pull`;
   });
   dIn.addEventListener("input", L.redraw); mIn.addEventListener("input", L.redraw); return L;
 }

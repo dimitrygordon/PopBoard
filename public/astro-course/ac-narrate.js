@@ -2,11 +2,12 @@
 // Hides itself when a page has no audio, so decks can ship before narration is rendered.
 const fold = (s) => String(s).toLowerCase().normalize("NFD").replace(/[^a-z0-9]/g, "");
 
+const SKIP = 5; // seconds per skip back/forward
 export function createNarrator(host, base) {
   host.innerHTML = `<div class="narr sketch" role="group" aria-label="Listen to this page">
-    <button type="button" data-k="back" aria-label="Back 10 seconds">&#8634;10</button>
+    <button type="button" data-k="back" aria-label="Back 5 seconds">&#8634;5</button>
     <button type="button" data-k="play" aria-label="Play narration">&#9654;</button>
-    <button type="button" data-k="fwd" aria-label="Forward 10 seconds">10&#8635;</button>
+    <button type="button" data-k="fwd" aria-label="Forward 5 seconds">5&#8635;</button>
     <label class="narr-bar"><span class="sr-only">Narration progress</span><input type="range" data-k="seek" min="0" max="1000" value="0"></label>
     <label class="narr-rate"><span class="sr-only">Speed</span><select data-k="rate">${[0.75, 1, 1.25, 1.5, 1.75, 2].map((r) => `<option value="${r}" ${r === 1 ? "selected" : ""}>${r}x</option>`).join("")}</select></label>
   </div>`;
@@ -20,8 +21,16 @@ export function createNarrator(host, base) {
   const playBtn = q("play"), seek = q("seek");
   const setPlay = (on) => { playBtn.innerHTML = on ? "&#10074;&#10074;" : "&#9654;"; playBtn.setAttribute("aria-label", on ? "Pause narration" : "Play narration"); };
   playBtn.addEventListener("click", () => { if (audio.paused) audio.play().catch(() => {}); else audio.pause(); });
-  q("back").addEventListener("click", () => { audio.currentTime = Math.max(0, audio.currentTime - 10); });
-  q("fwd").addEventListener("click", () => { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10); });
+  // keyboard: with focus in the player, Left/Right skip 5s (J and L too), K or Space toggles play
+  host.addEventListener("keydown", (e) => {
+    if (e.target.matches("input[type=range], select")) return;
+    const k = e.key.toLowerCase();
+    if (k === "arrowleft" || k === "j") { q("back").click(); e.preventDefault(); e.stopPropagation(); }
+    else if (k === "arrowright" || k === "l") { q("fwd").click(); e.preventDefault(); e.stopPropagation(); }
+    else if (k === "k") { playBtn.click(); e.preventDefault(); }
+  });
+  q("back").addEventListener("click", () => { audio.currentTime = Math.max(0, audio.currentTime - SKIP); });
+  q("fwd").addEventListener("click", () => { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + SKIP); });
   q("rate").addEventListener("change", (e) => { rate = +e.target.value; audio.playbackRate = rate; });
   seek.addEventListener("input", () => { if (audio.duration) audio.currentTime = seek.value / 1000 * audio.duration; });
   audio.addEventListener("play", () => setPlay(true));

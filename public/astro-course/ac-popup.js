@@ -12,8 +12,12 @@ let THREE = null, renderer = null;
 const stats = { scenesBuilt: 0, scenesDisposed: 0, frames: 0, fps: 0, dpr: 1, planes: 0, textures: 0, geometries: 0, live: 0 };
 if (typeof window !== "undefined") window.__popupStats = stats;
 
+// Probe once and release the probe context, so page turns never stack up WebGL contexts.
+let glProbe = null;
 export function webglOk() {
-  try { const c = document.createElement("canvas"); return !!(c.getContext("webgl2") || c.getContext("webgl")); } catch (e) { return false; }
+  if (glProbe !== null) return glProbe;
+  try { const c = document.createElement("canvas"), gl = c.getContext("webgl2") || c.getContext("webgl"); glProbe = !!gl; if (gl) gl.getExtension("WEBGL_lose_context")?.loseContext(); } catch (e) { glProbe = false; }
+  return glProbe;
 }
 async function three() {
   if (!THREE) THREE = await import("../vendor/three/three.module.min.js");
@@ -91,7 +95,7 @@ export function createPopup({ stage, base, onFrame }) {
     // DOM layers: flat ones always; popped ones only when 3D is off.
     // Every page gets a live scene: pages with only cards and text get gentle 3D (cards sketch in and tilt).
     const gentle = !layers.some((l) => !l.flat) && opts.special !== "starfield";
-    const useGL = webglOk() && ((!reduceMotion() && layers.length > 0) || !!opts.special);
+    const useGL = webglOk() && ((!reduceMotion() && layers.length > 0) || !!opts.special || !!opts.hero);
     const phone = isPhone(), maxPop = phone ? 5 : 12;
     const popped = useGL && !reduceMotion() && opts.special !== "starfield" ? layers.filter((l) => gentle ? l.box[3] >= 6 : !l.flat).sort((a, b) => b.box[2] * b.box[3] - a.box[2] * a.box[3]).slice(0, maxPop) : [];
     const order = entryOrder(layers, popped);
@@ -117,14 +121,23 @@ export function createPopup({ stage, base, onFrame }) {
     renderer.setPixelRatio(dpr);
     host.appendChild(renderer.domElement);
     resize();
-    const loader = new T.TextureLoader();
+    // ImageBitmaps arrive pre-flipped, so the upload never needs a GPU readback (no "GPU stall due to ReadPixels").
+    const bitmaps = typeof createImageBitmap === "function";
+    const loader = bitmaps ? new T.ImageBitmapLoader().setOptions({ imageOrientation: "flipY", premultiplyAlpha: "none" }) : new T.TextureLoader();
+    const loadTex = (url) => {
+      if (!bitmaps) return loader.load(url);
+      const t = new T.Texture(); t.flipY = false;
+      loader.load(url, (bmp) => { if (!alive) { bmp.close && bmp.close(); return; } t.image = bmp; t.needsUpdate = true; });
+      const d = t.dispose.bind(t); t.dispose = () => { d(); t.image && t.image.close && t.image.close(); };
+      return t;
+    };
     const geo = new T.PlaneGeometry(1, 1); geo.translate(0, 0.5, 0); // hinge on the bottom edge
     const halo = haloTexture(T);
     popped.forEach((l, i) => {
       const rank = popped.length - i; // smaller pieces stand in front
       const z = gentle ? 0.12 : 0.25 + 0.9 * (rank / popped.length);
       const p = place(l.box, z);
-      const tex = loader.load(base + l.src); tex.colorSpace = T.SRGBColorSpace; tex.anisotropy = 2;
+      const tex = loadTex(base + l.src); tex.colorSpace = T.SRGBColorSpace; tex.anisotropy = 2;
       const mat = new T.ShaderMaterial({ uniforms: { map: { value: tex }, uSketch: { value: 0 }, uColor: { value: 0 }, uTime: { value: 0 }, uShadow: { value: 0 }, uHalo: { value: 0 } }, vertexShader: VERT, fragmentShader: FRAG, transparent: true, depthWrite: false });
       const hinge = new T.Group(); hinge.position.set(p.cx, p.cy - p.h / 2, z);
       const mesh = new T.Mesh(geo, mat); mesh.scale.set(p.w, p.h, 1); hinge.add(mesh);
@@ -141,15 +154,29 @@ export function createPopup({ stage, base, onFrame }) {
       items.push({ gentle, l, hinge, mesh, mat, shadow, haloM, z, p, delay: order.get(l) * TIMING.stagger, ph: Math.random() * 6.28, user: { a: 0, va: 0, dx: 0, dy: 0, vx: 0, vy: 0, launch: -1 } });
     });
     special = null;
-    if (opts.special) {
+    const kinds = [opts.special, opts.hero].filter(Boolean);
+    if (kinds.length) {
       const mod = await import("./ac-pop3d.js");
       if (slide !== s) return;
-      special = mod.build(opts.special, T, scene, { phone, controls: opts.controls, still: reduceMotion() });
+      special = mod.buildAll(kinds, T, scene, { phone, controls: opts.controls, still: reduceMotion(), free: freeSpot(layers) });
     }
     stats.textures = renderer.info.memory.textures; stats.geometries = renderer.info.memory.geometries;
     t0 = performance.now(); loop();
   }
 
+  // The hero object sits in the page corner least covered by words and popped art.
+  function freeSpot(layers) {
+    const sr = stage.getBoundingClientRect(), boxes = [];
+    for (const tb of stage.querySelectorAll(".ac-tb")) { const r = tb.getBoundingClientRect(); if (r.width && tb.textContent.trim()) boxes.push([(r.left - sr.left) / sr.width * 100, (r.top - sr.top) / sr.height * 100, r.width / sr.width * 100, r.height / sr.height * 100, 3]); }
+    for (const l of layers) if (!l.flat) boxes.push([...l.box, 1]);
+    const rw = 9, rh = 16, spots = [[90, 17], [90, 82], [10, 82], [10, 17], [76, 17], [76, 82], [24, 82], [50, 84]];
+    let best = spots[0], bestC = Infinity;
+    for (const [cx, cy] of spots) {
+      let c = 0; for (const [x, y, w, h, k] of boxes) { const ox = Math.max(0, Math.min(cx + rw, x + w) - Math.max(cx - rw, x)), oy = Math.max(0, Math.min(cy + rh, y + h) - Math.max(cy - rh, y)); c += ox * oy * k; }
+      if (c < bestC - 1) { bestC = c; best = [cx, cy]; }
+    }
+    return { x: (best[0] / 100 - 0.5) * W, y: (0.5 - best[1] / 100) * H, r: isPhone() ? 0.75 : 0.62 };
+  }
   // Background (big, flat) first, then the main object, then the rest; labels write on after the art.
   function entryOrder(layers, popped) {
     const m = new Map(), flats = layers.filter((l) => l.flat), main = popped.length ? popped : layers.filter((l) => !l.flat);
@@ -233,7 +260,7 @@ export function createPopup({ stage, base, onFrame }) {
     if (e.target.closest("button, a, input, .ac-opt")) return;
     const t = (performance.now() - t0) / 1000;
     if (scene && !skip && t < entryEnd()) { skip = true; if (special) special.skip = true; stage.classList.remove("pop-entering"); stage.classList.add("pop-skip"); return; }
-    if (special && special.pointer && special.pointer(e, stage.getBoundingClientRect(), "down")) { drag = { special: true }; return; }
+    if (special && special.pointer && special.pointer(e, stage.getBoundingClientRect(), "down")) { drag = { special: true }; stage.dataset.dragging = "1"; e.stopPropagation(); stage.setPointerCapture && stage.setPointerCapture(e.pointerId); return; }
     const it = pick(e);
     if (it && it.l.interact) {
       e.stopPropagation();

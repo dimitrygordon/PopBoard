@@ -83,3 +83,48 @@ test("narration render script: words come from graph_chars, brackets become pare
   assert.match(src, /with_timestamps: true/);
   assert.ok(!/eleven/i.test(src));
 });
+
+test("every slide of every deck mounts a draggable 3D scene", async () => {
+  const { readdirSync } = await import("node:fs");
+  const src = readFileSync(AC + "ac-pop3d.js", "utf8");
+  const heroes = JSON.parse(/HEROES = (\[[^\]]+\])/.exec(src)[1]);
+  const pieces = ["rings", "cannon", "seasons", "starfield"];
+  for (const k of pieces) assert.match(src, new RegExp(`kind === "${k}"`), k);
+  let n = 0;
+  for (const slug of readdirSync(AC + "decks")) {
+    const st = JSON.parse(readFileSync(AC + `decks/${slug}/v2/story.json`, "utf8"));
+    const dk = JSON.parse(readFileSync(AC + `decks/${slug}/deck.json`, "utf8"));
+    for (const s of dk.slides) {
+      const v = st.slides[String(s.n)], k = v && (v.three || v.hero);
+      assert.ok(k && (heroes.includes(k) || pieces.includes(k)), `${slug} page ${s.n} has no 3D scene`);
+      n++;
+    }
+  }
+  assert.ok(n > 700);
+  // the page passes its hero to the shared engine, which builds set piece and hero together with drag hooks
+  assert.match(readFileSync(AC + "ac-story.js", "utf8"), /hero: webglReady\(\) \? sv\.hero/);
+  assert.match(readFileSync(AC + "ac-popup.js", "utf8"), /buildAll\(kinds/);
+  assert.match(src, /pointer\(e, r, phs\)/);
+});
+
+test("D24.5 remembrance pages stay a quiet star field with every name written on", () => {
+  const st = JSON.parse(readFileSync(AC + "decks/d24-5/v2/story.json", "utf8"));
+  for (const n of ["17", "18", "19", "20"]) { assert.equal(st.slides[n].three, "starfield"); assert.equal(st.slides[n].hero, null); }
+  assert.match(readFileSync(AC + "ac-story.css", "utf8"), /\.wo-done \.wo \{ animation: none !important; opacity: 1 !important; \}/);
+});
+
+test("page curl survives child animations and is opaque paper", () => {
+  const js = readFileSync(AC + "ac-story.js", "utf8");
+  assert.match(js, /animationend", \(e\) => \{ if \(e\.target === sh\) sh\.remove\(\); \}/);
+  assert.match(js, /background-color:\$\{paperColor\(\)\}/);
+});
+
+test("narration skips 5 seconds back and forward, by button and keyboard", () => {
+  const js = readFileSync(AC + "ac-narrate.js", "utf8");
+  assert.match(js, /const SKIP = 5;/);
+  assert.match(js, /aria-label="Back 5 seconds">&#8634;5</);
+  assert.match(js, /aria-label="Forward 5 seconds">5&#8635;</);
+  assert.match(js, /currentTime - SKIP/); assert.match(js, /currentTime \+ SKIP/);
+  assert.match(js, /k === "arrowleft" \|\| k === "j"/); assert.match(js, /k === "arrowright" \|\| k === "l"/);
+  assert.doesNotMatch(js, /10 seconds|currentTime [-+] 10\b/);
+});

@@ -127,8 +127,8 @@ a.tryit:hover { transform: rotate(0.4deg); border-color: var(--ac-blue); }
 .stage .pop-layer.touch { pointer-events: auto; cursor: grab; touch-action: none; }
 .stage .pop-gl { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; }
 .stage .pop-fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
-.tryit-tab { position: absolute; right: -2px; top: 10%; z-index: 6; min-height: 44px; min-width: 44px; padding: 8px 14px 8px 16px;
-  font-family: var(--ac-head-font); font-size: 16px; color: #3d3d3d; background: #f6e7b8; border: 2px solid #3d3d3d; border-radius: 12px 0 0 12px;
+.tryit-tab { position: absolute; right: 10px; top: 10%; max-width: calc(100% - 20px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 6; min-height: 44px; min-width: 44px; padding: 8px 14px 8px 16px;
+  font-family: var(--ac-head-font); font-size: 16px; color: #3d3d3d; background: #f6e7b8; border: 2px solid #3d3d3d; border-radius: 12px 9px 13px 10px;
   box-shadow: -2px 3px 0 rgba(0,0,0,.18); cursor: pointer; transform: rotate(-2deg); }
 :root[data-theme="dark"] .tryit-tab { background: #2a3248; color: #f3ead7; border-color: #e2b654; }
 .sb-menu { position: fixed; z-index: 50; top: 60px; right: 12px; max-width: min(420px, calc(100vw - 24px)); max-height: 70vh; overflow: auto;
@@ -151,7 +151,7 @@ a.tryit:hover { transform: rotate(0.4deg); border-color: var(--ac-blue); }
   .flip-sheet.fwd::after { background: linear-gradient(90deg, rgba(0,0,0,0) 55%, rgba(0,0,0,.18) 85%, rgba(255,255,255,.35) 100%); }
   .flip-sheet.back::after { background: linear-gradient(270deg, rgba(0,0,0,0) 55%, rgba(0,0,0,.18) 85%, rgba(255,255,255,.35) 100%); }
   .stage.pop-entering .pop-layer { animation: sketchIn 0.6s ease-out both, hatchIn 0.4s ease-out both; animation-delay: var(--d, 0s), calc(var(--d, 0s) + 0.6s); }
-  .stage.pop-entering .wo { animation: writeOn 0.12s linear both; animation-delay: calc(var(--wo0, 0s) + var(--wi) * 14ms); }
+  .stage.pop-entering .wo { animation: writeOn 0.12s linear both; animation-delay: calc(var(--wo0, 0s) + var(--wi) * var(--wstep, 14ms)); }
   .stage.pop-skip .pop-layer, .stage.pop-skip .wo { animation: none !important; }
   .stage.v2 .pop-layer.m-float { animation: idleFloat 6s ease-in-out infinite; }
   .stage.v2 .pop-layer.launched { animation: launchUp 2.4s ease-in both; }
@@ -189,3 +189,12 @@ body.sbmode #sbMenuBtn, body.sbmode #tiltBtn { display: none; }
 :root[data-theme="dark"] .panel .nw.hl { background: rgba(226, 182, 84, 0.3); color: #e2b654; }
 body.v2 .read { display: block; }
 body.v2 .read .rich p { font-size: 17px; line-height: 1.45; }
+
+/* v2 sandboxes on dark paper use the dark palette, never cream */
+:root[data-theme="dark"] .kp { color: #F3EAD7; }
+:root[data-theme="dark"] .kp canvas { background: #1E2433; border-color: #E2B654; }
+:root[data-theme="dark"] .kp input[type="range"] { accent-color: #E2B654; }
+@media (max-width: 480px) { .tryit-tab { font-size: 14px; padding: 6px 10px; } }
+/* labels finish writing on even if the entry is cut short */
+.stage.wo-done .wo { animation: none !important; opacity: 1 !important; }
+:root[data-theme="dark"] .sandbox-stage:has(canvas.sbv2), :root[data-theme="dark"] canvas.sbv2 { background: #1E2433; border-color: #E2B654; }

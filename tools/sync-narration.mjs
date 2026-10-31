@@ -4,6 +4,7 @@
 //   node tools/sync-narration.mjs [/workspace/astro-course/audio]
 import { readdirSync, mkdirSync, copyFileSync, existsSync, writeFileSync, renameSync, statSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
+import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = process.argv[2] || "/workspace/astro-course/audio";
@@ -21,7 +22,11 @@ for (const d of existsSync(SRC) ? readdirSync(SRC) : []) {
     try { JSON.parse(readFileSync(join(SRC, d, f), "utf8")); } catch (e) { continue; } // still being written
     for (const ext of ["mp3", "json"]) {
       const a = join(SRC, d, `s${m[1]}.${ext}`), b = join(OUT, slug, `s${m[1]}.${ext}`);
-      if (!existsSync(b) || statSync(b).size !== statSync(a).size) { copyFileSync(a, b); copied++; }
+      if (existsSync(b) && statSync(b).mtimeMs >= statSync(a).mtimeMs) continue;
+      // mp3s are re-encoded to 48 kbps mono at the source rate to keep the repo small
+      if (ext === "mp3") { execFileSync("ffmpeg", ["-v", "error", "-y", "-i", a, "-ac", "1", "-b:a", "48k", "-f", "mp3", b + ".tmp"]); renameSync(b + ".tmp", b); }
+      else copyFileSync(a, b);
+      copied++;
     }
   }
 }

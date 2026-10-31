@@ -9,7 +9,7 @@ import { mountResonance } from "./ac-sb-resonance.js";
 import { mountDose } from "./ac-sb-dose.js";
 import { forwardStudyQuery } from "../board-return.js?v=20261022a";
 import { halfUnder } from "../shared/layout/layout.js";
-import { createPopup, darkInk } from "./ac-popup.js";
+import { createPopup, darkInk, webglOk } from "./ac-popup.js";
 import { mountFx } from "./ac-fx.js";
 import { createNarrator } from "./ac-narrate.js";
 import { mountPowers, mountEclipse, mountWaves, mountDoppler, mountGravity } from "./ac-sb-v2.js";
@@ -222,14 +222,24 @@ function writeOn(start) {
     }
   };
   for (const tb of stage.querySelectorAll(".ac-tb")) walk(tb);
-  stage.style.setProperty("--wo0", start + "s");
+  // keep the whole write-on under about 1.2s however long the page text is, then pin every word visible
+  const step = Math.min(14, 1200 / Math.max(1, i));
+  stage.style.setProperty("--wo0", start + "s"); stage.style.setProperty("--wstep", step + "ms");
+  stage.classList.remove("wo-done"); clearTimeout(writeOn.t);
+  writeOn.t = setTimeout(() => stage.classList.add("wo-done"), (start * 1000) + i * step + 400);
+}
+// The curling sheet is opaque paper, so the next page never shows through the turning one.
+function paperColor() {
+  if (document.documentElement.dataset.theme === "dark") return "#1e2433";
+  for (let el = stage; el; el = el.parentElement) { const c = getComputedStyle(el).backgroundColor; if (c && !/rgba\([^)]*,\s*0\)$|transparent/.test(c)) return c; }
+  return "#fbf6ea";
 }
 function flipSheet(dir) {
   const old = $("stageWrap").querySelector(".flip-sheet"); if (old) old.remove();
   const sh = document.createElement("div");
   sh.className = "flip-sheet " + (dir > 0 ? "fwd" : "back");
   sh.setAttribute("aria-hidden", "true");
-  sh.style.cssText = `width:${stage.offsetWidth}px;height:${stage.offsetHeight}px;left:${stage.offsetLeft}px;top:${stage.offsetTop}px;background-image:${getComputedStyle(stage).backgroundImage};--u:${getComputedStyle(stage).getPropertyValue("--u")}`;
+  sh.style.cssText = `background-color:${paperColor()};width:${stage.offsetWidth}px;height:${stage.offsetHeight}px;left:${stage.offsetLeft}px;top:${stage.offsetTop}px;background-image:${getComputedStyle(stage).backgroundImage};--u:${getComputedStyle(stage).getPropertyValue("--u")}`;
   const inner = stage.cloneNode(true); inner.removeAttribute("id"); inner.classList.add("flip-face"); inner.classList.remove("pop-entering");
   for (const c of inner.querySelectorAll("canvas")) c.remove();
   const snap = document.createElement("canvas"); snap.width = stage.offsetWidth; snap.height = stage.offsetHeight; snap.className = "flip-snap";
@@ -237,14 +247,15 @@ function flipSheet(dir) {
   for (const c of stage.querySelectorAll("canvas.pop-fx")) snap.getContext("2d").drawImage(c, 0, 0, snap.width, snap.height);
   inner.appendChild(snap); sh.appendChild(inner);
   $("stageWrap").appendChild(sh);
-  sh.addEventListener("animationend", () => sh.remove());
+  // only the sheet's own curl ends it; the cloned page's write-on and sketch animations bubble up too
+  sh.addEventListener("animationend", (e) => { if (e.target === sh) sh.remove(); });
   setTimeout(() => sh.remove(), 900);
 }
 function popPage(s, sv) {
   if (fxh) { fxh.destroy(); fxh = null; }
   const special = sv.three && webglReady() ? sv.three : null;
   const layers = special ? sv.layers.filter((l) => !l.replaced3d) : sv.layers;
-  popup.show({ ...sv, layers }, { special, controls: specialControls(sv.three) });
+  popup.show({ ...sv, layers }, { special, hero: webglReady() ? sv.hero : null, controls: specialControls(sv.three) });
   const nPop = sv.layers.filter((l) => !l.flat).length;
   const labelsAt = reduceMotion() ? 0 : Math.min(2.4, 0.2 * (nPop + 1) + 0.6);
   writeOn(labelsAt);
@@ -260,7 +271,7 @@ function popPage(s, sv) {
     stage.appendChild(tab);
   }
 }
-const webglReady = () => { try { const c = document.createElement("canvas"); return !!(c.getContext("webgl2") || c.getContext("webgl")); } catch (e) { return false; } };
+const webglReady = () => webglOk();
 let ctlHtml = "";
 function specialControls(kind) {
   const box = () => $("tools").querySelector(".pop-ctl");
