@@ -40,7 +40,9 @@ const SANDBOXES = {
 // 3D set pieces that are the sandbox on their own page (no separate canvas).
 const ONPAGE = { rings: "Cosmic address rings (3D)", cannon: "Newton's cannon (3D)", seasons: "Seasons orbit (3D)",
   // D02 per-page scene modules (js/astro-scenes/d02): their sliders and buttons come from ctx.ui
-  diurnal: "Diurnal motion (3D)", latitude: "Polaris & latitude (3D)", phases: "Moon phases (3D)", eclipses: "Why eclipses are rare (3D)" };
+  diurnal: "Diurnal motion (3D)", latitude: "Polaris & latitude (3D)", phases: "Moon phases (3D)", eclipses: "Why eclipses are rare (3D)",
+  // D03 per-page scene modules (js/astro-scenes/d03)
+  retrograde: "Copernicus's way (3D)", kepler2: "Kepler's 2nd law (3D)", venus: "Venus's phases (3D)", cannonball: "Newton's cannonball (3D)" };
 let v2 = null, popup = null, fxh = null, arth = null;
 const narrator = createNarrator($("narr"), "astro-course/");
 const sandboxKinds = () => [...new Set(Object.values(extra.sandboxes || {}))].filter((k) => SANDBOXES[k]);

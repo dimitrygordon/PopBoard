@@ -114,3 +114,12 @@ Hand-drawn art is the default on every page. 3D is used only where it fits (scen
 - `decks/d02/v2/story.json` has `"immersive": true` and `three` / `sandbox` set to `diurnal`, `latitude`, `phases` and `eclipses` on those four pages, by hand (D02 has no `motion/d02.json`). Re-add them if `build.py` regenerates the file. Every other D02 page keeps its original drawing.
 - On scene-module pages the Try it tab sits bottom left (the top right holds Polaris and labels); on phones it is hidden and the controls sit under the stage in the sheet.
 - Science (Tesla): p8 turns 15.04° per sim hour counterclockwise about Polaris; p10 Polaris altitude equals latitude, starting at 39°; p20 counterclockwise from above, lit half toward the Sun, new on the left; p23 tilt 5.1° (drawn ×3), eclipse only at a node with new or full Moon (true tilt used for the test), nodes regress clockwise once per 18.6 years, sped up ×6.
+
+## D03 scenes (p11, p14, p18, p21)
+
+- Art: Leo's layers in `decks/d03/v2/art/`, trimmed the same way as D02. The p14 and p21 `fg-art` keep only the title rule and squiggle; the ellipse, wedges, trajectories, orbit and arrows are drawn live.
+- p11 Copernicus's way: Position slider 1 to 7, drag Earth, Play. Earth's angular speed is 1.881 times Mars's; the sight line from Earth through Mars sets Mars's spot on the star wall, which moves backward from 3 to 5. Drawn dots stay at 30 percent.
+- p14 Kepler's 2nd law: true Kepler timing (`trueAnomaly` solves M = E - e sin E), 8 s orbit, one wedge per sim month; Month and Eccentricity (0 to 0.8, drawn 0.68) sliders, drag the planet, Play. `sweptArea` checks equal areas in the tests.
+- p18 Venus's phases: one date drives both boards; drag Venus in either panel or the Venus slider. `litFraction` gives the Earth-view phase: Ptolemy's never passes about 20 percent lit, Galileo's runs new to full. No claim that Earth's motion is proven.
+- p21 Newton's cannonball: pull the ball back from the cannon (150 px = 7.9 km/s) or use Launch speed (1 to 7.9 km/s) and Launch. Velocity Verlet under an inverse-square pull; 7.9 km/s is the circle through the cannon. F_g always points at Earth's center. No 11 km/s label.
+- `decks/d03/v2/story.json` has `"immersive": true` and `three` / `sandbox` = `retrograde`, `kepler2`, `venus`, `cannonball` on those pages, by hand.
