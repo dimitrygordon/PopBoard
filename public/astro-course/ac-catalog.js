@@ -79,7 +79,7 @@ export const DECKS = [
    "ONE MORE QUESTION 1 Why do we always see the same side of the Moon? Use the word tides.",
    "INDIANA ESS STANDARDS ES.4.7 Create diagrams or models to demonstrate the effect of the gravitational pull of the sun and moon on Earth's oceans. Explain the difference between daily (high and low) tides and monthly (spring and neap) tides. Explain how monthly tides relate to the revolution of the moon, and therefore its phases. ES.4.6* Differentiate between weather and climate. Examine long term, natural climate change and periods of glaciation as influenced by Milankovitch Cycles due to the gravity of other solar system bodies (obliquity and precession of axis and eccentricity of orbit). Explain how these are different from any short term (less than thousands of years) changes to climate. ES.2.5* Explain how scientific theory changes over time with the introduction of new information and observational data. Use works from ancient Greeks such as Ptolemy, and other astronomers including Copernicus, Brahe, Kepler, and Galileo to demonstrate the effect of observational data and scientific discussion on our understanding of the mechanics and motion of our solar system. * previewed here: ES.4.6 (obliquity & precession) → Q2 climate deck; ES.2.5 → Deck 3, Ptolemy to Newton"
   ],
-  "built": false
+  "built": true
  },
  {
   "key": "D03",
@@ -119,7 +119,7 @@ export const DECKS = [
    "ONE MORE QUESTION 1 How did Newton's gravity find Neptune before anyone saw it?",
    "INDIANA ESS STANDARDS ES.2.5 Explain how scientific theory changes over time with the introduction of new information and observational data. Use works from ancient Greeks such as Ptolemy, and other astronomers including Copernicus, Brahe, Kepler, and Galileo to demonstrate the effect of observational data and scientific discussion on our understanding of the mechanics and motion of our solar system. ES.2.4 Use mathematical and/or computational representations to demonstrate the motions of the various kinds of objects in our solar system including planets, satellites, comets, and asteroids. Explain that Kepler's Laws determine the orbits of those objects and know that Kepler's Laws are a direct consequence of Newton's Law of Universal Gravitation together with his laws of motion. ES.4.7 Create diagrams or models to demonstrate the effect of the gravitational pull of the sun and moon on Earth's oceans. Explain the difference between daily (high and low) tides and monthly (spring and neap) tides. Explain how monthly tides relate to the revolution of the moon, and therefore its phases."
   ],
-  "built": false
+  "built": true
  },
  {
   "key": "D04",
@@ -162,7 +162,7 @@ export const DECKS = [
    "ONE MORE QUESTION 1 Draw how a melted protoplanet ends up with an iron core.",
    "INDIANA ESS STANDARDS ES.2.1 Construct a flowchart with diagrams and descriptions outlining the nebular theory of solar system formation. Include the formation of one or more stars, planetesimals, protoplanets, Jovian and terrestrial planets, and other objects including satellites and small bodies. ES.2.2 Describe the characteristics of the various kinds of objects in the solar system including planets, satellites, comets, asteroids, and protoplanets. Recognize that planets have been identified orbiting stars other than the sun, or exist outside of solar systems orbiting no sun at all. Describe the organization of our solar system including terrestrial and Jovian planets, asteroid belts, and the Oort Cloud. ES.1.3 Create a diagram, flowchart, or explanation that details the cooling of energy into protons and early elements, and early elements into superstars and galaxies. Explain the role of gravitational attraction in the formation of stars and galaxies from clouds of these early elements. ES.5.4 Differentiate between relative and absolute geological time. Detail how sedimentary rock can be dated based on relative-age dating and positioning, while igneous formations can be radiometrically dated. Differentiate between radiocarbon dating used for organic materials and other types of radiometric dating for inorganic rock formation."
   ],
-  "built": false
+  "built": true
  },
  {
   "key": "D05",
@@ -204,7 +204,7 @@ export const DECKS = [
    "ONE MORE QUESTION 1 Mercury is closest to the Sun. How can it still hold ice? Name the evidence.",
    "INDIANA ESS STANDARDS ES.2.2 Describe the characteristics of the various kinds of objects in the solar system including planets, satellites, comets, asteroids, and protoplanets. Recognize that planets have been identified orbiting stars other than the sun, or exist outside of solar systems orbiting no sun at all. Describe the organization of our solar system including terrestrial and Jovian planets, asteroid belts, and the Oort Cloud. ES.6.1 Construct a diagram or model that identifies and describes the physical and chemical properties of the crust, mantle, outer core, and inner core of Earth. ES.6.1 is a preview here; Deck 9 develops it fully."
   ],
-  "built": false
+  "built": true
  },
  {
   "key": "D06",
@@ -245,7 +245,7 @@ export const DECKS = [
    "ONE MORE QUESTION 1 A moon orbits backward on a tilted, stretched path. How did it probably form?",
    "INDIANA ESS STANDARDS ES.2.2 Describe the characteristics of the various kinds of objects in the solar system including planets, satellites, comets, asteroids, and protoplanets. Recognize that planets have been identified orbiting stars other than the sun, or exist outside of solar systems orbiting no sun at all. Describe the organization of our solar system including terrestrial and Jovian planets, asteroid belts, and the Oort Cloud. ES.2.4 Use mathematical and/or computational representations to demonstrate the motions of the various kinds of objects in our solar system including planets, satellites, comets, and asteroids. Explain that Kepler's Laws determine the orbits of those objects and know that Kepler's Laws are a direct consequence of Newton's Law of Universal Gravitation together with his laws of motion. ES.2.4 student task: slide 19"
   ],
-  "built": false
+  "built": true
  },
  {
   "key": "D07",
@@ -295,7 +295,7 @@ export const DECKS = [
    "ONE MORE QUESTION 1 Put the three crater steps in order. What happens in each?",
    "INDIANA ESS STANDARDS ES.2.2 Describe the characteristics of the various kinds of objects in the solar system including planets, satellites, comets, asteroids, and protoplanets. Recognize that planets have been identified orbiting stars other than the sun, or exist outside of solar systems orbiting no sun at all. Describe the organization of our solar system including terrestrial and Jovian planets, asteroid belts, and the Oort Cloud. ES.2.4 Use mathematical and/or computational representations to demonstrate the motions of the various kinds of objects in our solar system including planets, satellites, comets, and asteroids. Explain that Kepler's Laws determine the orbits of those objects and know that Kepler's Laws are a direct consequence of Newton's Law of Universal Gravitation together with his laws of motion. ES.2.4 student task: slide 13"
   ],
-  "built": false
+  "built": true
  },
  {
   "key": "D08",
@@ -336,7 +336,7 @@ export const DECKS = [
    "ONE MORE QUESTION 1 A small, warm planet: which escapes first, hydrogen or carbon dioxide? Why?",
    "INDIANA ESS STANDARDS ES.2.1 Construct a flowchart with diagrams and descriptions outlining the nebular theory of solar system formation. Include the formation of one or more stars, planetesimals, protoplanets, Jovian and terrestrial planets, and other objects including satellites and small bodies. ES.2.2 Describe the characteristics of the various kinds of objects in the solar system including planets, satellites, comets, asteroids, and protoplanets. Recognize that planets have been identified orbiting stars other than the sun, or exist outside of solar systems orbiting no sun at all. Describe the organization of our solar system including terrestrial and Jovian planets, asteroid belts, and the Oort Cloud. ES.6.2 Explain how Earth's fluid outer core creates the magnetosphere and how this helps protect both humans and technology (such as satellites) from solar winds. ES.6.2 is a preview here (full treatment in Deck 11). ES.2.1 student task: slide 7. Data activity: slides 22 and 23."
   ],
-  "built": false
+  "built": true
  },
  {
   "key": "D09",

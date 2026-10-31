@@ -7,6 +7,9 @@ import { fileURLToPath } from "node:url";
 import { DECKS } from "../public/astro-course/ac-catalog.js";
 import { renderSlide, readableHtml, boxText, searchDeck, slideText } from "../public/astro-course/ac-render.js";
 import { periodYears, position, speedKmS, eccentricAnomaly } from "../public/astro-course/ac-kepler.js";
+import { crater, transitionDiameter, G_MOON } from "../public/astro-course/ac-impact.js";
+import { missionDose, RATE } from "../public/astro-course/ac-dose.js";
+import { conjunctions, SYSTEMS } from "../public/astro-course/ac-sb-resonance.js";
 import { EXTRAS, MODULES } from "../public/astro-course/ac-extras.js";
 
 const PUB = join(dirname(fileURLToPath(import.meta.url)), "..", "public");
@@ -55,7 +58,8 @@ for (const d of built) {
   });
   test(`${d.key}: no CORE/OPTIONAL labels, no em-dashes, answers point at real options`, () => {
     const all = deck.slides.map((s) => slideText(s).join(" ") + " " + (s.reveal || "")).join("\n");
-    assert.ok(!/\b(CORE|OPTIONAL)\b/.test(all));
+    // labels only: a whole text box reading CORE or OPTIONAL (words like "Earth's core" are content)
+    for (const s of deck.slides) for (const it of s.items) if (it.t === "text") assert.ok(!/^\s*\(?(CORE|OPTIONAL)\)?\s*$/.test(boxText(it).join(" ")), `label on ${s.n}`);
     assert.ok(!all.includes("\u2014"));
     for (const s of deck.slides) if (s.answer) assert.match(renderSlide(s, { options: true }), new RegExp(`data-opt="${s.answer}"`));
     const ex = EXTRAS[d.slug] || {};
@@ -112,4 +116,24 @@ test("Astronomy Course files: no em-dashes, no mascot, no Firebase", () => {
   }
   const study = readFileSync(join(PUB, "study.html"), "utf8");
   assert.match(study, /study-astronomy-course\.html/);
+});
+
+test("Crater sandbox: Meteor Crater near 1.2 km, faster makes bigger, Moon goes complex later", () => {
+  const m = crater(40, 12800, 7800);
+  assert.ok(m.D > 900 && m.D < 1700, String(m.D));
+  assert.equal(m.shape, "bowl");
+  assert.ok(crater(40, 20000, 7800).D > m.D);
+  assert.ok(transitionDiameter(G_MOON) > transitionDiameter());
+  assert.notEqual(crater(2000, 20000, 3000).shape, "bowl");
+});
+test("Dose chart: transit rate, shelter lowers surface dose", () => {
+  assert.ok(Math.abs(RATE.transit * 180 - 330) < 1e-9);
+  const a = missionDose({ undergroundShare: 0 }), b = missionDose({ undergroundShare: 0.8 });
+  assert.ok(b.surface < a.surface && b.transit === a.transit);
+});
+test("Resonance: 1:2 line-ups repeat at one spot, Pluto system near 3:2", () => {
+  const c = conjunctions(1, 2, 4).map((x) => Math.round(x) % 360);
+  assert.equal(new Set(c).size, 1);
+  const [[, pn], [, pp]] = SYSTEMS.pluto.bodies;
+  assert.ok(Math.abs(pp / pn - 1.5) < 0.02);
 });
