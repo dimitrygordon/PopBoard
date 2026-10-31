@@ -175,6 +175,9 @@ body.sbmode #sbMenuBtn, body.sbmode #tiltBtn { display: none; }
 @media (max-width: 699px) {
   #sbMenuBtn .sb-long { display: none; }
   #sbMenuBtn .sb-short { display: inline; }
+  /* phones: the stage's own Try it tab is enough; the deck title takes the freed space */
+  #sbMenuBtn { display: none; }
+  .ac-bar .ac-bar-title { flex: 1 1 auto; }
   #tiltBtn { padding-inline: 8px; }
   .tryit-tab { font-size: 12px; padding: 4px 8px; min-height: 44px; }
   .sb-menu { top: 56px; right: 8px; left: 8px; max-width: none; }
