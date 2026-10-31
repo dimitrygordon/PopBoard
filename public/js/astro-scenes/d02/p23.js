@@ -34,14 +34,14 @@ export default function build(ctx) {
 
   // the Moon's orbit, upper half solid and lower half dashed; the node line in red
   const half = () => Array.from({ length: 181 }, () => V(0, 0, 0));
-  const upper = line(half(), VIOLET, { opacity: 0.95 }), lower = line(half(), VIOLET, { dash: 0.14, opacity: 0.6 }), nodes = line([V(0, 0, 0), V(1, 0, 0)], RED, { dash: 0.18 });
+  const upper = line(half(), VIOLET, { opacity: 0.95 }), lower = line(half(), VIOLET, { dash: 0.14, opacity: 0.6 }), nodes = [0, 1].map(() => line([V(0, 0, 0), V(1, 0, 0)], RED, { dash: 0.18 }));
   const knot = [0, 1].map(() => { const m = new T.Mesh(new T.CircleGeometry(0.09, 20), new T.MeshBasicMaterial({ color: RED })); sys.add(m); return m; });
   // shadows: Earth's points away from the Sun; the Moon's toward Earth when it is new
   const cone = (len, r0) => { const g = new T.ConeGeometry(r0, len, 32, 1, true); g.translate(0, len / 2, 0); g.rotateX(-Math.PI / 2); return new T.Mesh(g, new T.MeshBasicMaterial({ color: SHADOW, transparent: true, opacity: 0.3, depthWrite: false, side: T.DoubleSide })); };
   const earthShadow = cone(4.6, 0.55), moonShadow = cone(R_MOON, 0.24); sys.add(earthShadow, moonShadow);
-  const spot = new T.Mesh(new T.CircleGeometry(0.16, 24), new T.MeshBasicMaterial({ color: 0x2a2a2a, transparent: true, opacity: 0 })); sys.add(spot);
+  const spot = new T.Mesh(new T.CircleGeometry(0.16, 24), new T.MeshBasicMaterial({ color: 0x2a2a2a, transparent: true, opacity: 0, depthWrite: false })); spot.renderOrder = 4; sys.add(spot);
 
-  const moonTag = ctx.label("Moon's orbit (tilt exaggerated)", [0, 0, 0], { layer: "mid", h: 0.42, color: VIOLET }); sys.add(moonTag);
+  const moonTag = ctx.label("Moon's orbit (tilt exaggerated)", [0, 0, 0], { layer: "mid", h: 0.42, color: P.dark ? VIOLET : "#403D42" }); sys.add(moonTag);
   const planeTag = ctx.label("Earth's orbit plane", [0, 0, 0], { layer: "mid", h: 0.4, color: ink }); sys.add(planeTag);
   // the node label, word for word from deck.json, written along the bottom of the page
   const note = ctx.paint([440, 770, 1560, 890], { layer: "fg" });
@@ -75,7 +75,9 @@ export default function build(ctx) {
     for (let k = 0; k <= 180; k++) { up.push(orbitPoint(Om, k, SHOW_TILT)); lo.push(orbitPoint(Om, 180 + k, SHOW_TILT)); }
     upper.geometry.setFromPoints(up); lower.geometry.setFromPoints(lo); lower.computeLineDistances();
     const n1 = orbitPoint(Om, 0, SHOW_TILT, R_MOON * 1.25), n2 = orbitPoint(Om, 180, SHOW_TILT, R_MOON * 1.25);
-    nodes.geometry.setFromPoints([n1, n2]); nodes.computeLineDistances();
+    // the node line runs from Earth's rim out past each node, so nothing is drawn over Earth's face
+    const e1 = orbitPoint(Om, 0, SHOW_TILT, 0.62), e2 = orbitPoint(Om, 180, SHOW_TILT, 0.62);
+    nodes[0].geometry.setFromPoints([e1, n1]); nodes[1].geometry.setFromPoints([e2, n2]); nodes.forEach((l) => l.computeLineDistances());
     knot[0].position.copy(orbitPoint(Om, 0, SHOW_TILT)); knot[1].position.copy(orbitPoint(Om, 180, SHOW_TILT)); knot.forEach(face);
     const M = orbitPoint(Om, u, SHOW_TILT); moon.position.copy(M);
     // shadows point away from the Sun
@@ -87,7 +89,7 @@ export default function build(ctx) {
     const elong = wrap(lm - ls), solar = Math.abs(elong) < SYZYGY && Math.abs(beta) < SOLAR, lunar = Math.abs(wrap(elong - 180)) < SYZYGY && Math.abs(beta) < LUNAR;
     moon.material.color.set(lunar ? 0xc0623f : 0xffffff);
     earthShadow.material.opacity = lunar ? 0.5 : 0.22; moonShadow.material.opacity = solar ? 0.5 : 0;
-    spot.material.opacity = solar ? 0.75 : 0; spot.position.copy(S.clone().normalize().multiplyScalar(0.05)).add(V(0, M.y * 0.2, 0.7)); face(spot);
+    spot.material.opacity = solar ? 0.75 : 0; spot.visible = solar; spot.position.copy(S.clone().normalize().multiplyScalar(0.05)).add(V(0, M.y * 0.2, 0.7)); face(spot);
     // labels: Moon's orbit above its far side, the plane's name at its front-right rim
     moonTag.position.copy(orbitPoint(Om, 90, SHOW_TILT)).add(V(0, 0.55, 0));
     planeTag.position.set(R_SUN * 0.35, -0.25, R_SUN + 0.9);
