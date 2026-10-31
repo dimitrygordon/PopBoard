@@ -610,7 +610,7 @@ export const DECKS = [
    "EXIT TICKET 1 Trace sunlight from the core to your skin. Name 3 layers it crosses. 2 Why does the Sun lose about 4 million tonnes of mass each second? 3 How does Earth’s magnetosphere protect satellites from a CME?",
    "INDIANA ESS STANDARDS ES.2.3  Develop a model illustrating the layers and life span of the sun. Explain how nuclear fusion in the core produces elements and energy, which are both retained through convection and released to space, including Earth, through radiation. Additionally, elements heavier than iron cannot form in stars, and form only as a result of supernovae. ES.6.2  Explain how Earth's fluid outer core creates the magnetosphere and how this helps protect both humans and technology (such as satellites) from solar winds. ES.1.4 (introduced)  Differentiate between the life cycles of stars of different masses found on the Hertzsprung-Russell Diagram. Differentiate between low, medium (including our sun), and high mass stars by what elements can be produced, and therefore whether or not they can achieve red giant phase or go supernova."
   ],
-  "built": false
+  "built": true
  },
  {
   "key": "D15",
@@ -648,7 +648,7 @@ export const DECKS = [
    "EXIT TICKET 1 A star peaks in blue light & its lines are redshifted. Name 2 things you know. 2 Why do astronomers put X-ray & infrared telescopes in space? 3 Where is a hot but dim star on the H-R diagram? What kind of star is it?",
    "INDIANA ESS STANDARDS ES.1.1  Construct an explanation detailing how space can be studied by observing all frequencies of the electromagnetic radiation with differentiated telescopes and observational tools. ES.1.4  Differentiate between the life cycles of stars of different masses found on the Hertzsprung-Russell Diagram. Differentiate between low, medium (including our sun), and high mass stars by what elements can be produced, and therefore whether or not they can achieve red giant phase or go supernova. ES.1.2 (introduced)  Describe the expanding universe theory, also known as the \"Big Bang Theory,\" based on observed astronomical evidence including: The Doppler Effect, red shift, Hubble's Law, and the cosmic microwave background."
   ],
-  "built": false
+  "built": true
  },
  {
   "key": "D16",
@@ -685,7 +685,7 @@ export const DECKS = [
    "EXIT TICKET 1 List the steps from a cold molecular cloud to a main-sequence star. 2 Why does a collapsing cloud make a disk and two jets? 3 Why can a star not have 0.01 Suns or 1,000 Suns of mass?",
    "INDIANA ESS STANDARDS ES.1.3  Create a diagram, flowchart, or explanation that details the cooling of energy into protons and early elements, and early elements into superstars and galaxies. Explain the role of gravitational attraction in the formation of stars and galaxies from clouds of these early elements. ES.1.4  Differentiate between the life cycles of stars of different masses found on the Hertzsprung-Russell Diagram. Differentiate between low, medium (including our sun), and high mass stars by what elements can be produced, and therefore whether or not they can achieve red giant phase or go supernova. ES.2.1  Construct a flowchart with diagrams and descriptions outlining the nebular theory of solar system formation. Include the formation of one or more stars, planetesimals, protoplanets, Jovian and terrestrial planets, and other objects including satellites and small bodies. ES.1.5 (introduced)  Illustrate the hierarchical relationship and scales of stars, planetary systems including multiple-star systems, star clusters, galaxies and galactic groups in the universe. ES.1.1 (review)  Construct an explanation detailing how space can be studied by observing all frequencies of the electromagnetic radiation with differentiated telescopes and observational tools."
   ],
-  "built": false
+  "built": true
  },
  {
   "key": "D17",
@@ -723,7 +723,7 @@ export const DECKS = [
    "EXIT TICKET 1 A 1-Sun star & a 20-Sun star are born together. How does each one end, and what is the heaviest element each can fuse? 2 Why does fusion in a massive star stop at iron? 3 Name two places where elements heavier than iron are made.",
    "INDIANA ESS STANDARDS ES.1.4  Differentiate between the life cycles of stars of different masses found on the Hertzsprung-Russell Diagram. Differentiate between low, medium (including our sun), and high mass stars by what elements can be produced, and therefore whether or not they can achieve red giant phase or go supernova. ES.2.3  Develop a model illustrating the layers and life span of the sun. Explain how nuclear fusion in the core produces elements and energy, which are both retained through convection and released to space, including Earth, through radiation. Additionally, elements heavier than iron cannot form in stars, and form only as a result of supernovae. ES.1.2 (introduced)  Describe the expanding universe theory, also known as the \"Big Bang Theory,\" based on observed astronomical evidence including: The Doppler Effect, red shift, Hubble's Law, and the cosmic microwave background."
   ],
-  "built": false
+  "built": true
  },
  {
   "key": "D17.5",
@@ -757,7 +757,7 @@ export const DECKS = [
    "EXIT TICKET 1 About how many atoms are in a cubic centimeter of interstellar gas? 2 Why do stars behind dust look redder? 3 Name the layers of the heliosphere, from the Sun outward. 4 How did scientists know Voyager 1 had entered interstellar space? 5 Why do astronomers think 'Oumuamua came from another star?",
    "INDIANA ESS STANDARDS ES.1.1  Construct an explanation detailing how space can be studied by observing all frequencies of the electromagnetic radiation with differentiated telescopes and observational tools. ES.1.3  Create a diagram, flowchart, or explanation that details the cooling of energy into protons and early elements, and early elements into superstars and galaxies. Explain the role of gravitational attraction in the formation of stars and galaxies from clouds of these early elements. ES.1.5  Illustrate the hierarchical relationship and scales of stars, planetary systems including multiple-star systems, star clusters, galaxies and galactic groups in the universe. ES.2.2  Describe the characteristics of the various kinds of objects in the solar system including planets, satellites, comets, asteroids, and protoplanets. Recognize that planets have been identified orbiting stars other than the sun, or exist outside of solar systems orbiting no sun at all. Describe the organization of our solar system including terrestrial and Jovian planets, asteroid belts, and the Oort Cloud."
   ],
-  "built": false
+  "built": true
  },
  {
   "key": "D18",

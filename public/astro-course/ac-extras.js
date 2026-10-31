@@ -44,5 +44,10 @@ export const EXTRAS = {
   d11: { tryIt: { 12: "climate", 15: "climate" } },
   d12: { tryIt: { 10: "seasons-eclipses", 12: "seasons-eclipses", 19: "climate" } },
   d13: { tryIt: { 4: "climate", 6: "climate" } },
-  d13b: { tryIt: { 10: "climate", 12: "climate" } }
+  d13b: { tryIt: { 10: "climate", 12: "climate" } },
+  d14: { tryIt: { 7: "stars", 8: "atom-builder", 15: "em-spectrum" } },
+  d15: { tryIt: { 3: "em-spectrum", 5: "spectra", 7: "spectra", 10: "optics", 16: "luminosity", 20: "hrdiagram", 21: "hrdiagram" } },
+  d16: { tryIt: { 7: "stars", 13: "stars" } },
+  d17: { tryIt: { 3: "stars", 6: "stars", 19: "black-hole", 21: "black-hole" } },
+  "d17-5": { tryIt: { 17: "orbits", 18: "kepler" } }
 };
