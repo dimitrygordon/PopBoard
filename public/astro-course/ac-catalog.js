@@ -797,7 +797,7 @@ export const DECKS = [
    "EXIT TICKET 1 Sketch the Milky Way from the side. Label the disk, bulge & halo, and mark the Sun. 2 Why do astronomers think galaxies hold dark matter? 3 How do Cepheids & Type Ia supernovae tell us how far away a galaxy is? 4 Draw 3 boxes showing how gravity turns a cloud of hydrogen & helium into a galaxy of stars.",
    "INDIANA ESS STANDARDS ES.1.5  Illustrate the hierarchical relationship and scales of stars, planetary systems including multiple-star systems, star clusters, galaxies and galactic groups in the universe. ES.1.3  Create a diagram, flowchart, or explanation that details the cooling of energy into protons and early elements, and early elements into superstars and galaxies. Explain the role of gravitational attraction in the formation of stars and galaxies from clouds of these early elements. ES.1.2 (introduced)  Describe the expanding universe theory, also known as the \"Big Bang Theory,\" based on observed astronomical evidence including: The Doppler Effect, red shift, Hubble's Law, and the cosmic microwave background. ES.1.1 (review)  Construct an explanation detailing how space can be studied by observing all frequencies of the electromagnetic radiation with differentiated telescopes and observational tools."
   ],
-  "built": false
+  "built": true
  },
  {
   "key": "D19",
@@ -835,7 +835,7 @@ export const DECKS = [
    "EXIT TICKET 1 How do redshift & Hubble’s law show that the universe is expanding? 2 Name two other pieces of evidence for the Big Bang. 3 Why is the Big Bang not an explosion from a center? 4 Put these in order and say what let each one form: atoms, protons, helium nuclei, first stars.",
    "INDIANA ESS STANDARDS ES.1.2  Describe the expanding universe theory, also known as the \"Big Bang Theory,\" based on observed astronomical evidence including: The Doppler Effect, red shift, Hubble's Law, and the cosmic microwave background. ES.1.1 (review)  Construct an explanation detailing how space can be studied by observing all frequencies of the electromagnetic radiation with differentiated telescopes and observational tools. ES.1.3  Create a diagram, flowchart, or explanation that details the cooling of energy into protons and early elements, and early elements into superstars and galaxies. Explain the role of gravitational attraction in the formation of stars and galaxies from clouds of these early elements."
   ],
-  "built": false
+  "built": true
  },
  {
   "key": "D20",
@@ -876,7 +876,7 @@ export const DECKS = [
    "ONE MORE QUESTION 1 Name one kind of exoplanet unlike any in our solar system. Why is it easy to find?",
    "INDIANA ESS STANDARDS ES.2.2  Describe the characteristics of the various kinds of objects in the solar system including planets, satellites, comets, asteroids, and protoplanets. Recognize that planets have been identified orbiting stars other than the sun, or exist outside of solar systems orbiting no sun at all. Describe the organization of our solar system including terrestrial and Jovian planets, asteroid belts, and the Oort Cloud. ES.1.1  Construct an explanation detailing how space can be studied by observing all frequencies of the electromagnetic radiation with differentiated telescopes and observational tools. ES.2.1  Construct a flowchart with diagrams and descriptions outlining the nebular theory of solar system formation. Include the formation of one or more stars, planetesimals, protoplanets, Jovian and terrestrial planets, and other objects including satellites and small bodies. ES.4.1  Create a model that shows the composition, distribution, and circulation of gases in Earth's atmosphere. Show how carbon and oxygen cycles affect the composition through gas exchange with organisms, oceans, the solid earth, and industry."
   ],
-  "built": false
+  "built": true
  },
  {
   "key": "D21",
@@ -912,7 +912,7 @@ export const DECKS = [
    "EXIT TICKET 1 Give one piece of evidence for dark matter. Which label does it earn? 2 Why is a null result, like LZ's, still useful? 3 What did the 1998 supernova teams discover? 4 Label it & explain: 'You could travel through a wormhole.' 5 Did your hook ranking change? Which headline moved, & why?",
    "INDIANA ESS STANDARDS ES.1.2  Describe the expanding universe theory, also known as the \"Big Bang Theory,\" based on observed astronomical evidence including: The Doppler Effect, red shift, Hubble's Law, and the cosmic microwave background. ES.1.4  Differentiate between the life cycles of stars of different masses found on the Hertzsprung-Russell Diagram. Differentiate between low, medium (including our sun), and high mass stars by what elements can be produced, and therefore whether or not they can achieve red giant phase or go supernova. ES.1.5  Illustrate the hierarchical relationship and scales of stars, planetary systems including multiple-star systems, star clusters, galaxies and galactic groups in the universe. NGSS  Science Practice 7: Engaging in argument from evidence. Use evidence to defend or reject a claim, and judge how strong the evidence is."
   ],
-  "built": false
+  "built": true
  },
  {
   "key": "D22",
@@ -948,7 +948,7 @@ export const DECKS = [
    "EXIT TICKET 1 Why do physicists want a theory of quantum gravity? 2 What has the LHC found, or not found, that matters for string theory? 3 Give one piece of evidence for inflation. 4 How could scientists test for a bubble collision? 5 Label it & explain: 'We live in a simulation.'",
    "INDIANA ESS STANDARDS ES.1.2  Describe the expanding universe theory, also known as the \"Big Bang Theory,\" based on observed astronomical evidence including: The Doppler Effect, red shift, Hubble's Law, and the cosmic microwave background. ES.1.3  Create a diagram, flowchart, or explanation that details the cooling of energy into protons and early elements, and early elements into superstars and galaxies. Explain the role of gravitational attraction in the formation of stars and galaxies from clouds of these early elements. NGSS  Science Practice 7: Engaging in argument from evidence. Use evidence to defend or reject a claim, and judge how strong the evidence is."
   ],
-  "built": false
+  "built": true
  },
  {
   "key": "D23",
@@ -989,7 +989,7 @@ export const DECKS = [
    "EXIT TICKET 1 Put NASA's definition of life in your own words. 2 Name one place life may have started & one problem with it. 3 Why are Bennu's amino acids exciting but not proof of life? 4 Where did the carbon in your body come from? 5 Back to the hook: which of your 'proofs' were only hints, & why?",
    "INDIANA ESS STANDARDS ES.2.2  Describe the characteristics of the various kinds of objects in the solar system including planets, satellites, comets, asteroids, and protoplanets. Recognize that planets have been identified orbiting stars other than the sun, or exist outside of solar systems orbiting no sun at all. Describe the organization of our solar system including terrestrial and Jovian planets, asteroid belts, and the Oort Cloud. ES.2.3  Develop a model illustrating the layers and life span of the sun. Explain how nuclear fusion in the core produces elements and energy, which are both retained through convection and released to space, including Earth, through radiation. Additionally, elements heavier than iron cannot form in stars, and form only as a result of supernovae. ES.4.1  Create a model that shows the composition, distribution, and circulation of gases in Earth's atmosphere. Show how carbon and oxygen cycles affect the composition through gas exchange with organisms, oceans, the solid earth, and industry. NGSS  Science Practice 7: Engaging in argument from evidence. Use evidence to defend or reject a claim, and judge how strong the evidence is."
   ],
-  "built": false
+  "built": true
  },
  {
   "key": "D24",
@@ -1023,7 +1023,7 @@ export const DECKS = [
    "EXIT TICKET 1 Why can't a spaceship simply go faster than light? 2 What has Voyager 1 shown about how far the stars are? 3 What does a warp drive need that we don't have? 4 Why do scientists look for megastructures in infrared light? 5 Label it: 'A Type II civilization exists in our galaxy.'",
    "INDIANA ESS STANDARDS ES.1.1  Construct an explanation detailing how space can be studied by observing all frequencies of the electromagnetic radiation with differentiated telescopes and observational tools. ES.1.5  Illustrate the hierarchical relationship and scales of stars, planetary systems including multiple-star systems, star clusters, galaxies and galactic groups in the universe. ES.2.2  Describe the characteristics of the various kinds of objects in the solar system including planets, satellites, comets, asteroids, and protoplanets. Recognize that planets have been identified orbiting stars other than the sun, or exist outside of solar systems orbiting no sun at all. Describe the organization of our solar system including terrestrial and Jovian planets, asteroid belts, and the Oort Cloud. NGSS  Science Practice 6: Constructing explanations and designing solutions. Use evidence and models to design and test solutions to a problem."
   ],
-  "built": false
+  "built": true
  },
  {
   "key": "D24.5",
@@ -1058,6 +1058,6 @@ export const DECKS = [
    "EXIT TICKET 1 Name one hazard a Mars crew faces and one way to protect them. 2 Pick one mission from Part 4. What was the cause, and what changed afterward?",
    "INDIANA ESS STANDARDS ES.1.1  Construct an explanation detailing how space can be studied by observing all frequencies of the electromagnetic radiation with differentiated telescopes and observational tools. ES.2.2  Describe the characteristics of the various kinds of objects in the solar system including planets, satellites, comets, asteroids, and protoplanets. Recognize that planets have been identified orbiting stars other than the sun, or exist outside of solar systems orbiting no sun at all. Describe the organization of our solar system including terrestrial and Jovian planets, asteroid belts, and the Oort Cloud."
   ],
-  "built": false
+  "built": true
  }
 ];
