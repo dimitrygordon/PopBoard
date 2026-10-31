@@ -1,5 +1,6 @@
 // Pop-up 3D set pieces that need real depth (D01: cosmic address rings, Newton's cannon, seasons).
 // They join the page's shared scene and renderer; spheres use a pencil-hatch texture, never gloss.
+import { touchHints } from "./ac-touch.js";
 const INK = "#3d3d3d";
 export const HEROES = ["sem", "earth", "moon", "sun", "ringed", "galaxy", "mars", "probe"];
 
@@ -68,6 +69,7 @@ export function build(kind, T, scene, o) {
       trailGeo.setFromPoints(trail); trailLine.computeLineDistances();
     };
     api.pointer = (e, r, ph) => { if (ph === "down") { fire(); return true; } };
+    api.hintAt = { pos: new T.Vector3(0, 0, 0), r: 0.32, parent: ball };
   } else if (kind === "seasons") {
     // Tilted Earth on a paper orbit; the axis always points the same way (toward Polaris).
     g.position.set(1.4, -1.2, 0.2); g.rotation.x = 0.55;
@@ -83,6 +85,7 @@ export function build(kind, T, scene, o) {
     api.update = (t, dt) => { a += va * dt; const x = Math.cos(a) * 2.4, z = Math.sin(a) * 2.4; tilt.position.set(x, 0, z); earth.rotation.y += dt * 1.2; ctl.onAngle && ctl.onAngle(a); };
     let x0 = 0, a0 = 0;
     api.pointer = (e, r, ph) => { if (ph === "down") { x0 = e.clientX; a0 = a; va = 0; return true; } if (ph === "move") a = a0 + (e.clientX - x0) / r.width * 6; if (ph === "up") va = 0.25; };
+    api.hintAt = { pos: new T.Vector3(0, 0, 0), r: 0.34, parent: tilt };
   }
   if (HEROES.includes(kind)) Object.assign(api, hero(kind, T, g, o));
   if (kind === "starfield") {
@@ -99,15 +102,11 @@ export function build(kind, T, scene, o) {
   }
   // touch hint: a soft halo (createRadialGradient) breathes around the object until the first touch
   if (api.hintAt) {
-    const c = document.createElement("canvas"); c.width = c.height = 128;
-    const gg = c.getContext("2d"), rg = gg.createRadialGradient(64, 64, 18, 64, 64, 64);
-    rg.addColorStop(0, "rgba(226,182,84,0.55)"); rg.addColorStop(1, "rgba(226,182,84,0)"); gg.fillStyle = rg; gg.fillRect(0, 0, 128, 128);
-    const hm = new T.SpriteMaterial({ map: new T.CanvasTexture(c), transparent: true, depthWrite: false });
-    const sp = new T.Sprite(hm); sp.scale.setScalar(api.hintAt.r * 3.2); sp.position.copy(api.hintAt.pos); sp.renderOrder = -2; api.hintAt.parent.add(sp);
+    const th = touchHints(T, { still: o.still }); th.add(api.hintAt.parent, { r: api.hintAt.r, at: api.hintAt.pos });
     const before = api.update, pd = api.pointer;
-    let touchedHint = false;
-    api.update = (t, dt, cam) => { before(t, dt, cam); hm.opacity = touchedHint ? Math.max(0, hm.opacity - dt * 2) : 0.55 + 0.45 * Math.sin(t * 2.4); };
-    api.pointer = (e, r, ph) => { const res = pd(e, r, ph); if (res) touchedHint = true; return res; };
+    api.update = (t, dt, cam) => { before(t, dt, cam); th.update(t, dt); };
+    api.pointer = (e, r, ph) => { const res = pd(e, r, ph); if (res) th.interact(); return res; };
+    api.interact = () => th.interact();
   }
   // True 3D objects sketch in: wireframe edges draw on (0.6s), then the pencil hatch fills (0.4s).
   const solids = []; g.traverse((m) => { if (m.isMesh) { m.material.transparent = true; solids.push(m); } });
@@ -185,6 +184,7 @@ export function buildAll(kinds, T, scene, o) {
       if (ph === "down") { active = parts.find((p) => p.pointer && p.pointer(e, r, ph)) || null; return !!active; }
       if (active) active.pointer(e, r, ph); if (ph === "up") active = null;
     },
+    interact() { for (const p of parts) p.interact && p.interact(); },
     dispose() { for (const p of parts) p.dispose && p.dispose(); },
   };
 }

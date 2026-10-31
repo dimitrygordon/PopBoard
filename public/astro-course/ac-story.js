@@ -45,7 +45,8 @@ let sbKind = null;
 
 document.title = `${meta.title} // Astronomy Course`;
 $("deckTitle").textContent = meta.title;
-bindThemeButton($("themeBtn"));
+// re-render the open page so its 3D scene, labels and fog pick up the new paper colors
+bindThemeButton($("themeBtn"), () => { if (deck && mode === "story" && v2 && v2.slides[String(page)]) show(page, 0); });
 document.querySelector("#studyBackBtn .back-icon").outerHTML = BACK_ICON;
 $("studyBackBtn").addEventListener("click", () => {
   const qs = forwardStudyQuery(location.search).toString();

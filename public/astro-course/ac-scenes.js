@@ -2,6 +2,7 @@
 // orbits are rings, planets spheres, forces 3D shafts, labels camera-facing billboards in space.
 // Everything sketches in: pencil lines draw on, meshes go wireframe -> hatched, labels write on.
 import { pencilTexture } from "./ac-pop3d.js";
+import { touchHints } from "./ac-touch.js";
 
 const GOLD = 0xe2b654, BLUE = 0x7fa6d9, CREAM = 0xf3ead7, INK = 0x3d3d3d;
 
@@ -53,7 +54,7 @@ function lights(T, g) { g.add(new T.AmbientLight(0xffffff, 1.5)); const d = new 
 
 // Sketch-in for every element under root: lines draw on, solids wireframe then hatch, sprites write on.
 function sketcher(root, delayOf = () => 0) {
-  const els = []; root.traverse((o) => { if (o.isLine || o.isMesh || o.isPoints || o.isSprite) { o.material.transparent = true; els.push({ o, base: o.material.opacity ?? 1, n: o.isLine ? o.geometry.attributes.position.count : 0 }); } });
+  const els = []; root.traverse((o) => { if (o.userData.touchHint) return; if (o.isLine || o.isMesh || o.isPoints || o.isSprite) { o.material.transparent = true; els.push({ o, base: o.material.opacity ?? 1, n: o.isLine ? o.geometry.attributes.position.count : 0 }); } });
   return (t) => {
     for (const e of els) {
       const k = Math.max(0, Math.min(1, (t - delayOf(e.o)) / 0.6)), k2 = Math.max(0, Math.min(1, (t - delayOf(e.o) - 0.6) / 0.4));
@@ -67,9 +68,11 @@ function sketcher(root, delayOf = () => 0) {
 export function build(kind, T, scene, o) {
   const B = BUILDERS[kind]; if (!B) return null; PHONE = !!o.phone;
   const g = new T.Group(); scene.add(g); lights(T, g);
-  const api = B(T, g, o) || {};
+  const th = touchHints(T, { still: o.still });
+  const api = B(T, g, { ...o, touch: th }) || {};
   const sk = sketcher(g, api.delayOf || (() => 0)), inner = api.update || (() => {});
-  api.update = (t, dt, cam) => { sk(o.still ? 99 : t); inner(t, dt, cam); };
+  api.update = (t, dt, cam) => { sk(o.still ? 99 : t); inner(t, dt, cam); th.update(t, dt); };
+  api.interact = () => th.interact();
   api.dispose = () => g.traverse((m) => { if (m.material && m.material.map) m.material.map.dispose(); });
   return api;
 }
@@ -82,7 +85,7 @@ const BUILDERS = {
     const sun = ball(T, 2.2, "#f2c45a", "#c9862a", o.phone, true); sun.position.copy(SUN); g.add(sun);
     const halo = glow(T, 9); halo.position.copy(SUN); g.add(halo);
     const orbit = loopLine(T, R, o.dark ? GOLD : 0xc9862a, 256, 0.8); orbit.position.set(SUN.x, -0.9, SUN.z); g.add(orbit);
-    const earth = ball(T, 0.45, "#5b88b8", "#3f6b3a", o.phone); g.add(earth);
+    const earth = ball(T, 0.45, "#5b88b8", "#3f6b3a", o.phone); g.add(earth); o.touch.add(earth, { r: 0.45 });
     const moon = ball(T, 0.16, "#d8d4cc", "#7a7a7a", o.phone); g.add(moon);
     const path = new T.Line(new T.BufferGeometry().setFromPoints([SUN, V(T, 0, 0, 0)]), new T.LineDashedMaterial({ color: GOLD, dashSize: 0.35, gapSize: 0.22, transparent: true })); path.computeLineDistances(); g.add(path);
     // the label lies along the light path, stretched in perspective
@@ -118,7 +121,8 @@ const BUILDERS = {
     const R = [1.7, 3.2, 5.4, 9, 15];
     const rings = R.map((r, i) => { const m = tube(T, r, 0.03 + i * 0.018, i % 2 ? BLUE : GOLD); m.rotation.x = Math.PI / 2; g.add(m); const s = tag(T, names[i + 1], { h: 0.32 + i * 0.12, color: i % 2 ? "#7FA6D9" : "#E2B654" }); s.position.set(-r * 0.55, 0.25 + i * 0.12, -r * 0.83); g.add(s); return m; });
     const ctl = o.controls || {}; let level = 0, shown = 0, touched = false;
-    if (ctl.onLevel) ctl.onLevel(names, (v) => { level = v; touched = true; });
+    if (ctl.onLevel) ctl.onLevel(names, (v) => { level = v; touched = true; o.touch.interact(); });
+    rings.forEach((m, i) => { const h = new T.Object3D(); h.position.set(-R[i] * 0.55, 0, -R[i] * 0.83); g.add(h); o.touch.add(h, { r: 0.35 + i * 0.12 }); });
     return {
       delayOf: (m) => { const i = rings.indexOf(m); return i >= 0 ? 0.1 + i * 0.15 : 0; },
       cam(t, dt) {
@@ -168,6 +172,7 @@ const BUILDERS = {
     const a1 = arrow(T, GOLD), a2 = arrow(T, GOLD); a1.rotation.z = -Math.PI / 2; a2.rotation.z = Math.PI / 2; g.add(a1, a2);
     const dl = new T.Line(new T.BufferGeometry().setFromPoints([V(T, -1, -1, 0), V(T, 1, -1, 0)]), new T.LineDashedMaterial({ color: o.dark ? CREAM : INK, dashSize: 0.15, gapSize: 0.1, transparent: true })); g.add(dl);
     const t1 = tag(T, "m₁", { h: 0.42 }), t2 = tag(T, "m₂", { h: 0.42 }), tf1 = tag(T, "Fg", { h: 0.42, color: "#E2B654" }), tf2 = tag(T, "Fg", { h: 0.42, color: "#E2B654" }), td = tag(T, "d", { h: 0.42 });
+    o.touch.add(m1, { r: 0.55 }); o.touch.add(m2, { r: 0.55 });
     const eq = tag(T, "Fg = G m₁ m₂ / d²", { h: 0.5 }); eq.position.set(0, 1.75, 0); g.add(t1, t2, tf1, tf2, td, eq);
     let d = 2, dragD = null, cam0 = null; const ray = new T.Raycaster();
     return {
@@ -201,7 +206,7 @@ export function palette(dark) {
 export function runModule(mod, T, scene, o) {
   const root = new T.Group(); scene.add(root); lights(T, root);
   const layers = {}; for (const [k, z] of Object.entries(LAYER_Z)) { const g = new T.Group(); g.position.z = z; g.name = k; root.add(g); layers[k] = g; }
-  const sketches = [], drags = [], loaders = [];
+  const sketches = [], drags = [], loaders = [], th = touchHints(T, { still: o.still });
   let camSet = null;
   const ctx = {
     THREE: T, scene: root, camera: o.camera, layers, palette: palette(o.dark), reducedMotion: !!o.still, phone: !!o.phone, controls: o.controls || null,
@@ -215,12 +220,14 @@ export function runModule(mod, T, scene, o) {
     pencil(base, accent) { return pencilTexture(T, base, accent, o.phone); },
     setCamera(pos, look) { camSet = { pos: new T.Vector3(...pos), look: new T.Vector3(...look) }; },
     onDrag(fn) { drags.push(fn); },
+    touchable(obj, opts = {}) { return th.add(obj, opts); },
   };
   const user = mod.default(ctx) || {};
   return {
     cam: () => camSet || { pos: new T.Vector3(0, 0, o.DIST), look: new T.Vector3(0, 0, 0) },
-    update(t, dt) { for (const s of sketches) s(o.still ? 99 : t); user.update && user.update(t, dt); },
-    drag(d) { for (const f of drags) f(d); },
+    update(t, dt) { for (const s of sketches) s(o.still ? 99 : t); user.update && user.update(t, dt); th.update(t, dt); },
+    drag(d) { th.interact(); for (const f of drags) f(d); },
+    interact() { th.interact(); },
     dispose() {
       try { user.dispose && user.dispose(); } finally {
         root.traverse((m) => { if (m.geometry) m.geometry.dispose(); if (m.material) { (m.material.map && m.material.map.dispose()); m.material.dispose(); } });

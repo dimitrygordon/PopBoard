@@ -23,7 +23,8 @@ export default function build(ctx) {
   ctx.sketch(sunTag, { delay: 0.6 }); ctx.sketch(lightTag, { delay: 1.2 });
 
   const C = V(0, 0.35, 0); let a = Math.PI / 2, spin = 0;
-  ctx.onDrag(({ dx }) => { spin = dx * 4; }); // dragging also spins Earth
+  ctx.touchable(earth, { r: 0.45 }); // grab hint: dragging spins Earth
+  ctx.onDrag(({ dx }) => { spin = dx * 4; });
   function update(t, dt) {
     a = Math.PI / 2 + (reducedMotion ? 0 : Math.min(t, 600) * 0.006);
     C.set(SUN.x + Math.cos(a) * R, 0.35, SUN.z + Math.sin(a) * R); ctx.setCamera([C.x, C.y, C.z], [SUN.x, SUN.y, SUN.z]);

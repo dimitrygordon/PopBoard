@@ -41,7 +41,10 @@ export default function build(ctx) {
 | `reducedMotion` | `true` when the user asked for reduced motion: show the finished state and skip drift. |
 | `phone` | `true` on small screens: keep segment and particle counts low. |
 | `controls` | The page's slider hooks, if it has any (e.g. `onLevel`). Otherwise `null`. |
+| `touchable(obj, {r, at})` | Marks a grabbable object with the shared touch hint. A soft gold (#E2B654) radial-gradient halo, `r` world units in radius, breathes around `obj` (or at offset `at` inside it). It fades out after the first interaction on the page. Under reduced motion it is a static faint ring. **Call it on every object students can drag, spin or tap.** The module test fails if a scene uses `onDrag` without one. Returns the halo Sprite. |
 | `onDrag(fn)` | `fn({dx, dy, x, y})` runs on look-drags. Values are fractions of the stage, `dx` and `dy` are measured from the drag start. The camera still looks around. |
+
+The same helper is built into the engine's own pieces. In D01 those are the p5 address rings, the p17 masses, the p18 cannonball, the p21 seasons Earth and every drag-to-spin object.
 
 Rules (from Leo's review):
 - Diagram elements are real geometry: orbits are rings, planets are spheres, arrows are 3D shafts, charts are 3D bars and curves.
@@ -63,6 +66,8 @@ export default function build(ctx) {
   const earth = ctx.sketch(new T.Mesh(new T.SphereGeometry(0.45, 32, 16), new T.MeshLambertMaterial({ color: 0x5b88b8 })), { delay: 0.4 });
   layers.mid.add(earth);
   ctx.label("Sun", [0, 3.2, -16], { layer: "mid", h: 1.1 });
+  ctx.touchable(earth, { r: 0.45 });                 // dragging spins Earth
+  ctx.onDrag(({ dx }) => { earth.rotation.y += dx; });
   const C = new T.Vector3();
   return {
     update(t, dt) {

@@ -303,6 +303,8 @@ export function createPopup({ stage, base, onFrame }) {
     if (e.target.closest("button, a, input, .ac-opt")) return;
     const t = (performance.now() - t0) / 1000;
     if (scene && !skip && t < entryEnd()) { skip = true; if (special) special.skip = true; stage.classList.remove("pop-entering"); stage.classList.add("pop-skip"); return; }
+    // any touch on a 3D page counts as the first interaction: the grab hints fade out
+    if (scene) { special && special.interact && special.interact(); stageScene && stageScene.interact && stageScene.interact(); }
     if (special && special.pointer && special.pointer(e, stage.getBoundingClientRect(), "down")) { drag = { special: true }; stage.dataset.dragging = "1"; e.stopPropagation(); stage.setPointerCapture && stage.setPointerCapture(e.pointerId); return; }
     if (stageScene && stageScene.pointer && stageScene.pointer(e, stage.getBoundingClientRect(), "down", cam)) { drag = { scene: true }; stage.dataset.dragging = "1"; e.stopPropagation(); stage.setPointerCapture && stage.setPointerCapture(e.pointerId); return; }
     const it = pick(e);
