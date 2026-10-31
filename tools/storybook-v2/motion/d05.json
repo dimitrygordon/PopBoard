@@ -1,0 +1,4 @@
+{
+ "_doc": "D05 deck flags. Pop-up layers come from motion/d05-spec.md; per-page 3D scenes live in public/js/astro-scenes/d05/.",
+ "immersive": true
+}

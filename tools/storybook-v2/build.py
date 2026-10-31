@@ -5,7 +5,7 @@ Usage: python3 build.py d01"""
 import json, re, sys, os
 import numpy as np
 from PIL import Image
-ROOT = "/workspace/astro-course"; PUB = "/workspace/pb-astro/public/astro-course/decks"
+ROOT = "/workspace/astro-course"; PUB = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../public/astro-course/decks")
 slug = sys.argv[1]; key = slug.upper()
 deck = os.path.join(PUB, slug)
 layers = json.load(open(os.path.join(deck, "v2/layers.json")))
@@ -43,6 +43,9 @@ def spec_path():
 cfg_p = os.path.join(ROOT, "motion", f"{slug}.json")
 cfg_p_exists = os.path.exists(cfg_p)
 cfg = json.load(open(cfg_p)) if cfg_p_exists else {"layers": {}, "fx": {}, "sandboxes": {}, "three": {}}
+# The repo copy (tools/storybook-v2/motion/<slug>.json) can carry deck flags such as "immersive" on its own.
+repo_cfg = os.path.join(os.path.dirname(os.path.abspath(__file__)), "motion", f"{slug}.json")
+if os.path.exists(repo_cfg) and "immersive" in json.load(open(repo_cfg)): cfg["immersive"] = json.load(open(repo_cfg))["immersive"]
 sp = spec_path(); popup_v2 = bool(sp and open(sp).read().lstrip().startswith("## Pop-up v2"))
 texts = text_html()
 # Without an authored motion/dNN.json, read the spec line for each page and give its main (largest
