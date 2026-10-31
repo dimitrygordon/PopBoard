@@ -9,11 +9,15 @@ import { mountResonance } from "./ac-sb-resonance.js";
 import { mountDose } from "./ac-sb-dose.js";
 import { forwardStudyQuery } from "../board-return.js?v=20261022a";
 import { halfUnder } from "../shared/layout/layout.js";
+import { createPopup, darkInk } from "./ac-popup.js";
+import { mountFx } from "./ac-fx.js";
+import { createNarrator } from "./ac-narrate.js";
+import { mountPowers, mountEclipse, mountWaves, mountDoppler, mountGravity } from "./ac-sb-v2.js";
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
 const meta = DECKS.find((d) => d.slug === params.get("deck") && d.built) || DECKS.find((d) => d.built);
-const extra = EXTRAS[meta.slug] || { sandboxes: {}, tryIt: {}, choices: {} };
+let extra = EXTRAS[meta.slug] || { sandboxes: {}, tryIt: {}, choices: {} };
 const base = `astro-course/decks/${meta.slug}/`;
 const PAGE_KEY = "popboard.astronomy-course.page." + meta.slug;
 const story = $("story"), stage = $("stage"), panel = $("panel");
@@ -25,8 +29,17 @@ const SANDBOXES = {
   crater: { name: "Crater sandbox", mount: (h) => mountCrater(h) },
   resonance: { name: "Resonance sandbox", mount: (h) => mountResonance(h, { system: "galilean" }) },
   pluto: { name: "Resonance sandbox", mount: (h) => mountResonance(h, { system: "pluto" }) },
-  dose: { name: "Radiation dose sandbox", mount: (h) => mountDose(h) }
+  dose: { name: "Radiation dose sandbox", mount: (h) => mountDose(h) },
+  powers: { name: "Powers of Ten sandbox", mount: (h) => mountPowers(h) },
+  eclipse: { name: "Eclipse sandbox", mount: (h) => mountEclipse(h) },
+  waves: { name: "Light waves sandbox", mount: (h) => mountWaves(h) },
+  doppler: { name: "Doppler sandbox", mount: (h) => mountDoppler(h) },
+  gravity: { name: "Gravitation sandbox", mount: (h) => mountGravity(h) }
 };
+// 3D set pieces that are the sandbox on their own page (no separate canvas).
+const ONPAGE = { rings: "Cosmic address rings (3D)", cannon: "Newton's cannon (3D)", seasons: "Seasons orbit (3D)" };
+let v2 = null, popup = null, fxh = null;
+const narrator = createNarrator($("narr"), "astro-course/");
 const sandboxKinds = () => [...new Set(Object.values(extra.sandboxes || {}))].filter((k) => SANDBOXES[k]);
 let sbKind = null;
 
@@ -124,6 +137,8 @@ function renderTools(s) {
   }
   const sb = extra.sandboxes && extra.sandboxes[s.n];
   if (SANDBOXES[sb]) out.push(`<section class="tool"><h2 class="panel-h">${esc(SANDBOXES[sb].name)}</h2><div id="sbHost" data-kind="${sb}"></div></section>`);
+  const sv2 = v2 && v2.slides[String(s.n)];
+  if (sv2 && ONPAGE[sv2.three]) out.push(`<section class="tool"><h2 class="panel-h">${esc(ONPAGE[sv2.three] || "3D")}</h2><p class="note">Drag the 3D scene on the page.</p><div class="pop-ctl"></div></section>`);
   const ti = extra.tryIt && extra.tryIt[s.n];
   if (ti) out.push(`<section class="tool"><h2 class="panel-h">Try it</h2>${tryItCard(ti)}</section>`);
   return out.join("");
@@ -152,21 +167,30 @@ function show(n, dir = 0) {
   page = Math.max(1, Math.min(total, n));
   const s = deck.slides[page - 1];
   const choice = extra.choices && extra.choices[s.n];
+  const sv = v2 && v2.slides[String(s.n)];
+  if (sv && dir && !reduceMotion()) flipSheet(dir);
   stage.style.backgroundImage = s.bg ? `url("${base}${s.bg}")` : "";
-  stage.innerHTML = renderSlide(s, { base, options: !!s.answer, choices: choice ? choice.options : null });
+  if (sv) {
+    const textOnly = { ...s, items: s.items.filter((i) => i.t !== "img") };
+    stage.innerHTML = inkVars(renderSlide(textOnly, { base, options: !!s.answer, choices: choice ? choice.options : null }));
+    stage.classList.add("v2");
+  } else { stage.classList.remove("v2"); stage.innerHTML = renderSlide(s, { base, options: !!s.answer, choices: choice ? choice.options : null }); }
   stage.setAttribute("aria-label", `Page ${page} of ${total}: ${boxText(s.items.find((i) => i.t === "text") || { p: [] }).join(" ")}`);
   for (const b of stage.querySelectorAll(".ac-opt")) b.addEventListener("click", () => {
     const opt = b.dataset.opt, ok = choice ? opt === choice.answer : opt === s.answer;
     answered.set(s.n, { opt, ok }); markOptions(s);
+    if (fxh && fxh.guess) fxh.guess();
     $("tools").innerHTML = renderTools(s); wireTools(s);
   });
   markOptions(s);
-  stage.classList.remove("turn-next", "turn-prev");
-  if (dir && !reduceMotion()) { void stage.offsetWidth; stage.classList.add(dir > 0 ? "turn-next" : "turn-prev"); }
+  stage.classList.remove("turn-next", "turn-prev", "pop-skip");
+  if (sv) popPage(s, sv);
+  else if (dir && !reduceMotion()) { void stage.offsetWidth; stage.classList.add(dir > 0 ? "turn-next" : "turn-prev"); }
   $("pageLabel").textContent = `Page ${page} of ${total}`;
   $("prevBtn").disabled = page === 1; $("nextBtn").disabled = page === total;
   $("scrub").max = total; $("scrub").value = page;
-  $("readText").innerHTML = readableHtml(s);
+  $("readText").innerHTML = sv && sv.text ? `<div class="rich">${sv.text}</div>` : readableHtml(s);
+  narrator.load(meta.slug, s.n, $("readText"));
   $("tools").innerHTML = renderTools(s); wireTools(s);
   for (const b of document.querySelectorAll("#tocList button")) b.setAttribute("aria-current", String(+b.dataset.page === page));
   store.set(PAGE_KEY, String(page));
@@ -175,6 +199,102 @@ function show(n, dir = 0) {
   // warm the next page's art
   const nx = deck.slides[page];
   if (nx) for (const it of nx.items) if (it.t === "img") { const im = new Image(); im.src = base + it.src; }
+}
+
+// Dark paper recolors the words (cream ink, gold and blue accents); the art is never recolored.
+function inkVars(html) {
+  return html.replace(/color:(#[0-9a-fA-F]{6})/g, (m, c) => `--lc:${c};--dc:${darkInk(c) || c}`);
+}
+// Labels write on letter by letter after the art (0.2s stagger order: background, main object, labels).
+function writeOn(start) {
+  let i = 0;
+  const walk = (el) => {
+    for (const n of [...el.childNodes]) {
+      if (n.nodeType === 3 && n.nodeValue.trim()) {
+        const f = document.createDocumentFragment();
+        for (const w of n.nodeValue.split(/(\s+)/)) {
+          if (!w) continue;
+          if (/^\s+$/.test(w)) { f.appendChild(document.createTextNode(w)); continue; }
+          const sp = document.createElement("span"); sp.className = "wo"; sp.textContent = w; sp.style.setProperty("--wi", i); i += w.length; f.appendChild(sp);
+        }
+        n.replaceWith(f);
+      } else if (n.nodeType === 1) walk(n);
+    }
+  };
+  for (const tb of stage.querySelectorAll(".ac-tb")) walk(tb);
+  stage.style.setProperty("--wo0", start + "s");
+}
+function flipSheet(dir) {
+  const old = $("stageWrap").querySelector(".flip-sheet"); if (old) old.remove();
+  const sh = document.createElement("div");
+  sh.className = "flip-sheet " + (dir > 0 ? "fwd" : "back");
+  sh.setAttribute("aria-hidden", "true");
+  sh.style.cssText = `width:${stage.offsetWidth}px;height:${stage.offsetHeight}px;left:${stage.offsetLeft}px;top:${stage.offsetTop}px;background-image:${getComputedStyle(stage).backgroundImage};--u:${getComputedStyle(stage).getPropertyValue("--u")}`;
+  const inner = stage.cloneNode(true); inner.removeAttribute("id"); inner.classList.add("flip-face"); inner.classList.remove("pop-entering");
+  for (const c of inner.querySelectorAll("canvas")) c.remove();
+  const snap = document.createElement("canvas"); snap.width = stage.offsetWidth; snap.height = stage.offsetHeight; snap.className = "flip-snap";
+  if (popup) popup.snapshot(snap.getContext("2d"), snap.width, snap.height);
+  for (const c of stage.querySelectorAll("canvas.pop-fx")) snap.getContext("2d").drawImage(c, 0, 0, snap.width, snap.height);
+  inner.appendChild(snap); sh.appendChild(inner);
+  $("stageWrap").appendChild(sh);
+  sh.addEventListener("animationend", () => sh.remove());
+  setTimeout(() => sh.remove(), 900);
+}
+function popPage(s, sv) {
+  if (fxh) { fxh.destroy(); fxh = null; }
+  const special = sv.three && webglReady() ? sv.three : null;
+  const layers = special ? sv.layers.filter((l) => !l.replaced3d) : sv.layers;
+  popup.show({ ...sv, layers }, { special, controls: specialControls(sv.three) });
+  const nPop = sv.layers.filter((l) => !l.flat).length;
+  const labelsAt = reduceMotion() ? 0 : Math.min(2.4, 0.2 * (nPop + 1) + 0.6);
+  writeOn(labelsAt);
+  fxh = mountFx(stage, sv.fx, sv.layers, reduceMotion() ? 0 : labelsAt);
+  // a sketched Try it tab on pages with a sandbox
+  const kind = sv.sandbox;
+  if (kind && (SANDBOXES[kind] || ONPAGE[kind])) {
+    const tab = document.createElement("button");
+    tab.type = "button"; tab.className = "tryit-tab sketch";
+    tab.textContent = ONPAGE[kind] ? "Try it: touch the 3D" : "Try it";
+    tab.setAttribute("aria-label", ONPAGE[kind] ? `Try it: ${ONPAGE[kind]} on this page` : `Try it: open the ${SANDBOXES[kind].name}`);
+    tab.addEventListener("click", (e) => { e.stopPropagation(); if (ONPAGE[kind]) { popup.skipEntry(); $("tools").querySelector(".pop-ctl input, .pop-ctl button")?.focus(); } else { sbKind = kind; setMode("sandbox"); } });
+    stage.appendChild(tab);
+  }
+}
+const webglReady = () => { try { const c = document.createElement("canvas"); return !!(c.getContext("webgl2") || c.getContext("webgl")); } catch (e) { return false; } };
+let ctlHtml = "";
+function specialControls(kind) {
+  const box = () => $("tools").querySelector(".pop-ctl");
+  if (kind === "rings") return {
+    onLevel(names, set) { setTimeout(() => { const b = box(); if (!b) return; b.innerHTML = `<label>Pull back: <b data-o="lv">${names[0]}</b><input type="range" min="0" max="5" step="0.01" value="0" data-k="lv"></label>`; const i = b.querySelector("input"); i.addEventListener("input", () => { set(+i.value); b.querySelector("b").textContent = names[Math.round(+i.value)]; }); this.setLevel = (v) => { i.value = v; b.querySelector("b").textContent = names[Math.round(v)]; }; }, 0); }
+  };
+  if (kind === "cannon") return {
+    onCannon(setSpeed, fire) { setTimeout(() => { const b = box(); if (!b) return; b.innerHTML = `<label>Launch speed: <b>slow</b><input type="range" min="0.3" max="1" step="0.01" value="0.6"></label><div class="row"><button type="button">Launch</button></div>`; const i = b.querySelector("input"); i.addEventListener("input", () => { setSpeed(+i.value); b.querySelector("b").textContent = +i.value >= 0.99 ? "orbital" : +i.value > 0.7 ? "fast" : "slow"; }); b.querySelector("button").addEventListener("click", fire); }, 0); }
+  };
+  if (kind === "seasons") return { onAngle() {} };
+  return null;
+}
+function buildSbMenu() {
+  const btn = $("sbMenuBtn"), list = $("sbMenu");
+  if (!v2) { btn.hidden = true; return; }
+  const rows = [];
+  for (const [n, sv] of Object.entries(v2.slides)) {
+    if (sv.sandbox && (SANDBOXES[sv.sandbox] || ONPAGE[sv.sandbox])) rows.push(`<li><button type="button" data-go="${n}" data-sb="${SANDBOXES[sv.sandbox] && !ONPAGE[sv.sandbox] ? sv.sandbox : ""}"><span class="n">${n}</span>${esc(SANDBOXES[sv.sandbox] ? SANDBOXES[sv.sandbox].name : ONPAGE[sv.sandbox])}</button></li>`);
+  }
+  for (const [n, key] of Object.entries(extra.tryIt || {})) if (MODULES[key]) {
+    const p = forwardStudyQuery(location.search); p.set("story", `${meta.slug}-${n}`);
+    rows.push(`<li><a href="${esc(MODULES[key].file)}?${esc(p.toString())}"><span class="n">${n}</span>Try it: ${esc(MODULES[key].name)}</a></li>`);
+  }
+  list.innerHTML = `<h2 class="panel-h">Sandboxes and Try it</h2><ol>${rows.join("")}</ol>`;
+  btn.hidden = !rows.length;
+  btn.addEventListener("click", () => { const open = list.hidden; list.hidden = !open; btn.setAttribute("aria-expanded", String(open)); });
+  list.addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-go]"); if (!b) return;
+    list.hidden = true; btn.setAttribute("aria-expanded", "false");
+    if (mode === "sandbox") setMode("story");
+    const n = +b.dataset.go; show(n, Math.sign(n - page));
+    if (b.dataset.sb) { sbKind = b.dataset.sb; setMode("sandbox"); }
+  });
+  addEventListener("keydown", (e) => { if (e.key === "Escape" && !list.hidden) { list.hidden = true; btn.setAttribute("aria-expanded", "false"); btn.focus(); } });
 }
 
 function buildToc() {
@@ -191,7 +311,7 @@ function buildToc() {
 
 function setMode(m) {
   mode = m;
-  story.dataset.mode = m;
+  story.dataset.mode = m; document.body.classList.toggle("sbmode", m === "sandbox");
   $("sandboxBtn").setAttribute("aria-pressed", String(m === "sandbox"));
   const sb = $("sandboxBtn");
   if (m === "sandbox") {
@@ -201,6 +321,9 @@ function setMode(m) {
   const sbs = $("sandboxStage");
   if (m === "sandbox") {
     if (orbit) { orbit.destroy(); orbit = null; }
+    if (popup) popup.dispose();
+    narrator.stop();
+    if (fxh) { fxh.destroy(); fxh = null; }
     const kinds = sandboxKinds();
     if (!kinds.includes(sbKind)) sbKind = kinds[0];
     sbs.hidden = false;
@@ -236,14 +359,29 @@ addEventListener("keydown", (e) => {
 let sx = null, sy = 0;
 stage.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse") { sx = e.clientX; sy = e.clientY; } });
 stage.addEventListener("pointerup", (e) => {
-  if (sx == null) return; const dx = e.clientX - sx, dy = e.clientY - sy; sx = null;
-  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4) go(dx < 0 ? 1 : -1);
+  if (sx == null || stage.dataset.dragging) { sx = null; return; } const dx = e.clientX - sx, dy = e.clientY - sy; sx = null;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4 && mode === "story") go(dx < 0 ? 1 : -1);
 });
 addEventListener("resize", fit);
 
 (async function init() {
   const res = await fetch(base + "deck.json");
   deck = await res.json();
+  try { const r2 = await fetch(base + "v2/story.json"); if (r2.ok) v2 = await r2.json(); } catch (e) { v2 = null; }
+  if (v2) {
+    // v2 sandboxes come from the deck's spec (story.json); Try it link-outs stay from EXTRAS.
+    const sbs = {}; for (const [n, sv] of Object.entries(v2.slides)) if (sv.sandbox && SANDBOXES[sv.sandbox]) sbs[n] = sv.sandbox;
+    extra = { ...extra, sandboxes: sbs };
+    popup = createPopup({ stage, base });
+    story.dataset.v2 = "1"; document.body.classList.add("v2");
+    const tilt = $("tiltBtn");
+    if (matchMedia("(pointer: coarse)").matches && "DeviceOrientationEvent" in window && !reduceMotion()) {
+      tilt.hidden = false;
+      tilt.addEventListener("click", async () => { const ok = await popup.enableTilt(); tilt.setAttribute("aria-pressed", String(ok)); tilt.textContent = ok ? "Tilt on" : "Tilt off"; });
+    }
+    stage.addEventListener("pop-pulse", () => fxh && fxh.pulse());
+  }
+  buildSbMenu();
   $("sandboxBtn").hidden = !hasSandbox();
   if (!hasSandbox() && mode === "sandbox") mode = "story";
   buildToc();

@@ -26,11 +26,14 @@
 <header class="ac-bar">
   <button id="studyBackBtn" class="study-back-btn" type="button" aria-label="Back to the Astronomy Course library"><span class="back-icon"></span><span class="back-label">Library</span></button>
   <h1 class="ac-bar-title" id="deckTitle">Astronomy Course</h1>
+  <button id="sbMenuBtn" type="button" aria-expanded="false" aria-controls="sbMenu" aria-label="Sandboxes and Try it links" hidden><span class="sb-long">Sandboxes</span><span class="sb-short" aria-hidden="true">Try it</span></button>
+  <button id="tiltBtn" type="button" aria-pressed="false" hidden>Tilt off</button>
   <button id="sandboxBtn" type="button" aria-pressed="false" hidden>Sandbox</button>
   <button id="themeBtn" class="ac-theme-btn" type="button"></button>
 </header>
 
 <!-- Sandbox mode opens with ?mode=sandbox (the deck's sandboxes without the story). -->
+<div class="sb-menu sketch" id="sbMenu" hidden></div>
 <main class="story" id="story">
   <section class="book" aria-label="Storybook page">
     <div class="stage-wrap" id="stageWrap">
@@ -52,7 +55,7 @@
   <aside class="panel" id="panel" aria-label="Page tools">
     <button type="button" class="sheet-handle" id="sheetHandle" aria-label="Resize page tools"><span></span></button>
     <div class="panel-body" id="panelBody">
-      <section class="read" id="readBox" aria-label="This page in large print"><h2 class="panel-h">Read this page</h2><div id="readText"></div></section>
+      <section class="read" id="readBox" aria-label="This page in large print"><h2 class="panel-h">Read this page</h2><div id="narr"></div><div id="readText"></div></section>
       <section id="tools"></section>
       <nav class="toc" id="toc" aria-label="Contents"><h2 class="panel-h">Contents</h2><ol id="tocList"></ol></nav>
     </div>
