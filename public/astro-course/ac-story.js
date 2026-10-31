@@ -253,9 +253,18 @@ function flipSheet(dir) {
 }
 function popPage(s, sv) {
   if (fxh) { fxh.destroy(); fxh = null; }
-  const special = sv.three && webglReady() ? sv.three : null;
+  // Inside-the-slide pages: full-bleed 3D, the words live in the side panel (bottom sheet on phones).
+  const imm = !!(v2 && v2.immersive) && webglReady();
+  stage.classList.toggle("immersive", imm);
+  const pn = "p" + String(s.n).padStart(2, "0"), mod = imm && sceneMods.has(pn) ? `../js/astro-scenes/${meta.slug}/${pn}.js` : null;
+  const special = sv.three && webglReady() && !(imm && (sv.scene || mod)) ? sv.three : null;
   const layers = special ? sv.layers.filter((l) => !l.replaced3d) : sv.layers;
-  popup.show({ ...sv, layers }, { special, hero: webglReady() ? sv.hero : null, controls: specialControls(sv.three) });
+  const opts = { special, hero: webglReady() ? sv.hero : null, controls: specialControls(sv.scene === "powersFly" ? "powers" : sv.three) };
+  // a hand-built module (js/astro-scenes/<deck>/pNN.js) wins; then the built-in scene; else the generic depth planes
+  const own = !!(mod || sv.scene);
+  if (imm) Object.assign(opts, { immersive: true, sceneModule: mod, scene: sv.scene || null, drop: own ? sv.layers.map((l) => l.src) : [], labels: own ? [] : sceneLabels(s) });
+  popup.show({ ...sv, layers }, opts);
+  if (imm) { prewarm(); return; }
   const nPop = sv.layers.filter((l) => !l.flat).length;
   const labelsAt = reduceMotion() ? 0 : Math.min(2.4, 0.2 * (nPop + 1) + 0.6);
   writeOn(labelsAt);
@@ -271,7 +280,24 @@ function popPage(s, sv) {
     stage.appendChild(tab);
   }
 }
+let sceneMods = new Set();
 const webglReady = () => webglOk();
+// Short slide words become billboards floating in front of the art; long text stays in the panel only.
+function sceneLabels(s) {
+  const dark = document.documentElement.dataset.theme === "dark", out = [];
+  for (const it of s.items) {
+    if (it.t !== "text") continue;
+    const lines = boxText(it), txt = lines.join(" ").trim(), r = it.p[0] && it.p[0].r[0];
+    if (!txt || txt.length > 40 || lines.length > 2 || !r) continue;
+    const c = r.c || "#3D3D3D", h = Math.max(0.26, Math.min(0.7, (r.sz || 30) / 1080 * 9 * 1.3));
+    out.push({ text: txt, box: [it.box[0], it.box[1] + (h / 9 * 100) / 2, 0.01, 0.01], h, maxW: it.box[2] / 100 * 16, color: dark ? cssColor(darkInk(c)) || "#F3EAD7" : c });
+    if (out.length >= 6) break;
+  }
+  return out;
+}
+function cssColor(v) { const m = /^var\((--[\w-]+)\)$/.exec(v || ""); return m ? getComputedStyle(stage).getPropertyValue(m[1]).trim() || null : v; }
+// only the current page is mounted; the next page's art is fetched ahead
+function prewarm() { const nx = v2 && v2.slides[String(page + 1)]; if (nx) for (const l of nx.layers) { const im = new Image(); im.src = base + l.src; } }
 let ctlHtml = "";
 function specialControls(kind) {
   const box = () => $("tools").querySelector(".pop-ctl");
@@ -282,6 +308,9 @@ function specialControls(kind) {
     onCannon(setSpeed, fire) { setTimeout(() => { const b = box(); if (!b) return; b.innerHTML = `<label>Launch speed: <b>slow</b><input type="range" min="0.3" max="1" step="0.01" value="0.6"></label><div class="row"><button type="button">Launch</button></div>`; const i = b.querySelector("input"); i.addEventListener("input", () => { setSpeed(+i.value); b.querySelector("b").textContent = +i.value >= 0.99 ? "orbital" : +i.value > 0.7 ? "fast" : "slow"; }); b.querySelector("button").addEventListener("click", fire); }, 0); }
   };
   if (kind === "seasons") return { onAngle() {} };
+  if (kind === "powers") return {
+    onPower(names, set) { setTimeout(() => { const b = box(); if (!b) return; b.innerHTML = `<label>Fly out: <b>${names[0]}</b><input type="range" min="0" max="${names.length - 1}" step="0.01" value="0"></label>`; const i = b.querySelector("input"); i.addEventListener("input", () => { set(+i.value); b.querySelector("b").textContent = names[Math.round(+i.value)]; }); this.setPower = (v) => { i.value = v; b.querySelector("b").textContent = names[Math.round(v)]; }; }, 0); }
+  };
   return null;
 }
 function buildSbMenu() {
@@ -367,10 +396,11 @@ addEventListener("keydown", (e) => {
   else if (e.key === "End") show(deck.slides.length, 1);
 });
 // swipe to turn pages
-let sx = null, sy = 0;
-stage.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse") { sx = e.clientX; sy = e.clientY; } });
+// On 3D pages a slow drag looks around; a quick flick still turns the page.
+let sx = null, sy = 0, st = 0;
+stage.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse") { sx = e.clientX; sy = e.clientY; st = performance.now(); } });
 stage.addEventListener("pointerup", (e) => {
-  if (sx == null || stage.dataset.dragging) { sx = null; return; } const dx = e.clientX - sx, dy = e.clientY - sy; sx = null;
+  if (sx == null || stage.dataset.dragging || (stage.classList.contains("immersive") && performance.now() - st > 450)) { sx = null; return; } const dx = e.clientX - sx, dy = e.clientY - sy; sx = null;
   if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4 && mode === "story") go(dx < 0 ? 1 : -1);
 });
 addEventListener("resize", fit);
@@ -379,6 +409,7 @@ addEventListener("resize", fit);
   const res = await fetch(base + "deck.json");
   deck = await res.json();
   try { const r2 = await fetch(base + "v2/story.json"); if (r2.ok) v2 = await r2.json(); } catch (e) { v2 = null; }
+  try { const r3 = await fetch("js/astro-scenes/manifest.json"); if (r3.ok) sceneMods = new Set((await r3.json())[meta.slug] || []); } catch (e) { sceneMods = new Set(); }
   if (v2) {
     // v2 sandboxes come from the deck's spec (story.json); Try it link-outs stay from EXTRAS.
     const sbs = {}; for (const [n, sv] of Object.entries(v2.slides)) if (sv.sandbox && SANDBOXES[sv.sandbox]) sbs[n] = sv.sandbox;

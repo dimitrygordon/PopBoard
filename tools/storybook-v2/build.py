@@ -103,10 +103,11 @@ for n, ls in layers.items():
     if n in QUIET.get(slug, ()):
         for d in out: d["flat"] = True; d["motion"] = "none"; d.pop("interact", None)
         three = "starfield"
-    hero = None if three else (cfg.get("hero", {}).get(n) or hero_for(n, spec_lines.get(n, ""), texts.get(n, "")))
-    slides[n] = {"layers": out, "text": texts.get(n, ""), "fx": cfg["fx"].get(n, []),
+    scene = cfg.get("scene", {}).get(n)
+    hero = None if (three or scene) else (cfg.get("hero", {}).get(n) or hero_for(n, spec_lines.get(n, ""), texts.get(n, "")))
+    slides[n] = {"layers": out, "text": texts.get(n, ""), "fx": [] if scene else cfg["fx"].get(n, []), "scene": scene,
                  "sandbox": cfg["sandboxes"].get(n), "three": three, "hero": hero}
-json.dump({"slug": slug, "popupSpec": "v2" if popup_v2 else "v1", "slides": slides},
+json.dump({"slug": slug, "popupSpec": "v2" if popup_v2 else "v1", "immersive": bool(cfg.get("immersive")), "slides": slides},
           open(os.path.join(deck, "v2/story.json"), "w"), separators=(",", ":"))
 print(slug, "slides", len(slides), "text", len(texts), "spec", "v2" if popup_v2 else "v1",
       "popped", sum(1 for s in slides.values() for l in s["layers"] if not l["flat"]))

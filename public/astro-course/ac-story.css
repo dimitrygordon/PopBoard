@@ -198,3 +198,9 @@ body.v2 .read .rich p { font-size: 17px; line-height: 1.45; }
 /* labels finish writing on even if the entry is cut short */
 .stage.wo-done .wo { animation: none !important; opacity: 1 !important; }
 :root[data-theme="dark"] .sandbox-stage:has(canvas.sbv2), :root[data-theme="dark"] canvas.sbv2 { background: #1E2433; border-color: #E2B654; }
+/* Inside-the-slide 3D: full-bleed stage, camera in the scene; the words live in the side panel or bottom sheet. */
+.stage.v2.immersive { background-image: none !important; background-color: #f6efdf; touch-action: none; cursor: grab; }
+:root[data-theme="dark"] .stage.v2.immersive { background-color: #1e2433; }
+.stage.v2.immersive .ac-tb { visibility: hidden; }
+.stage.v2.immersive .ac-opt { visibility: visible; }
+.stage.v2.immersive > canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }

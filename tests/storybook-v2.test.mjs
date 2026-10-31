@@ -89,6 +89,7 @@ test("every slide of every deck mounts a draggable 3D scene", async () => {
   const src = readFileSync(AC + "ac-pop3d.js", "utf8");
   const heroes = JSON.parse(/HEROES = (\[[^\]]+\])/.exec(src)[1]);
   const pieces = ["rings", "cannon", "seasons", "starfield"];
+  const SCENES = [...readFileSync(AC + "ac-scenes.js", "utf8").matchAll(/^  (\w+)\(T, g, o\) \{/gm)].map((m) => m[1]);
   for (const k of pieces) assert.match(src, new RegExp(`kind === "${k}"`), k);
   let n = 0;
   for (const slug of readdirSync(AC + "decks")) {
@@ -96,6 +97,7 @@ test("every slide of every deck mounts a draggable 3D scene", async () => {
     const dk = JSON.parse(readFileSync(AC + `decks/${slug}/deck.json`, "utf8"));
     for (const s of dk.slides) {
       const v = st.slides[String(s.n)], k = v && (v.three || v.hero);
+      if (v && v.scene) { assert.ok(st.immersive && SCENES.includes(v.scene), `${slug} page ${s.n} scene ${v.scene}`); n++; continue; }
       assert.ok(k && (heroes.includes(k) || pieces.includes(k)), `${slug} page ${s.n} has no 3D scene`);
       n++;
     }

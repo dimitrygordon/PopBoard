@@ -32,7 +32,7 @@ async function three() {
 
 // The cutout shader: graphite outline wipes on, then the colored-pencil fill shimmers in behind it.
 const VERT = `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`;
-const FRAG = `uniform sampler2D map; uniform float uSketch, uColor, uTime, uShadow, uHalo; varying vec2 vUv;
+const FRAG = `uniform sampler2D map; uniform float uSketch, uColor, uTime, uShadow, uHalo, uFade; varying vec2 vUv;
 float h(vec2 p){ return fract(sin(dot(p, vec2(12.9898,78.233))) * 43758.5453); }
 void main(){
   vec4 t = texture2D(map, vUv);
@@ -49,7 +49,7 @@ void main(){
   vec3 col = mix(graphite, t.rgb, fill);
   float a = t.a * max(line * drawn, fill);
   if (a < 0.01) discard;
-  gl_FragColor = vec4(col, a);
+  gl_FragColor = vec4(col, a * uFade);
 }`;
 
 function haloTexture(T) {
@@ -66,11 +66,12 @@ const spring = (x) => x <= 0 ? 0 : x >= 1 ? 1 : 1 - Math.exp(-6 * x) * Math.cos(
 
 export function createPopup({ stage, base, onFrame }) {
   let scene = null, cam = null, items = [], t0 = 0, raf = 0, alive = true, skip = false, slide = null;
-  let special = null; let par = { x: 0, y: 0, tx: 0, ty: 0 }, drag = null, last = performance.now(), fpsAcc = [0, 0];
+  let labels = [], stageScene = null;
+  let special = null, imm = false, look = null, pointers = new Map(), idleAt = 0; let par = { x: 0, y: 0, tx: 0, ty: 0 }, drag = null, last = performance.now(), fpsAcc = [0, 0];
   const flat = () => reduceMotion() || !webglOk();
 
   function dispose() {
-    cancelAnimationFrame(raf); raf = 0;
+    cancelAnimationFrame(raf); raf = 0; labels = []; if (stageScene && stageScene.dispose) stageScene.dispose(); stageScene = null;
     if (scene) {
       scene.traverse((o) => { if (o.geometry) o.geometry.dispose(); if (o.material) { for (const k of ["map"]) if (o.material.uniforms && o.material.uniforms[k]) o.material.uniforms[k].value.dispose(); if (o.material.map) o.material.map.dispose(); o.material.dispose(); } });
       stats.scenesDisposed++;
@@ -95,13 +96,16 @@ export function createPopup({ stage, base, onFrame }) {
     // DOM layers: flat ones always; popped ones only when 3D is off.
     // Every page gets a live scene: pages with only cards and text get gentle 3D (cards sketch in and tilt).
     const gentle = !layers.some((l) => !l.flat) && opts.special !== "starfield";
-    const useGL = webglOk() && ((!reduceMotion() && layers.length > 0) || !!opts.special || !!opts.hero);
-    const phone = isPhone(), maxPop = phone ? 5 : 12;
-    const popped = useGL && !reduceMotion() && opts.special !== "starfield" ? layers.filter((l) => gentle ? l.box[3] >= 6 : !l.flat).sort((a, b) => b.box[2] * b.box[3] - a.box[2] * a.box[3]).slice(0, maxPop) : [];
+    const useGL = webglOk() && ((!reduceMotion() && layers.length > 0) || !!opts.special || !!opts.hero || !!opts.immersive);
+    imm = !!opts.immersive && useGL;
+    look = { yaw: 0, pitch: 0, dolly: 0, tyaw: 0, tpitch: 0, tdolly: 0, max: opts.maxDolly ?? DIST * 0.55 };
+    const phone = isPhone(), maxPop = imm ? (phone ? 8 : 16) : phone ? 5 : 12;
+    const popped = imm ? layers.filter((l) => !(opts.drop || []).includes(l.src)).sort((a, b) => b.box[2] * b.box[3] - a.box[2] * a.box[3]).slice(0, maxPop)
+      : useGL && !reduceMotion() && opts.special !== "starfield" ? layers.filter((l) => gentle ? l.box[3] >= 6 : !l.flat).sort((a, b) => b.box[2] * b.box[3] - a.box[2] * a.box[3]).slice(0, maxPop) : [];
     const order = entryOrder(layers, popped);
     const dom = document.createElement("div"); dom.className = "pop-flat"; dom.setAttribute("aria-hidden", "true");
     for (const l of layers) {
-      if (popped.includes(l)) continue;
+      if (popped.includes(l) || (imm && (opts.drop || []).includes(l.src))) continue;
       const im = document.createElement("img");
       im.src = base + l.src; im.alt = ""; im.draggable = false; im.decoding = "async";
       im.className = "pop-layer" + (l.interact ? " touch" : "") + (l.motion && l.motion !== "none" && !reduceMotion() ? " m-" + l.motion : "");
@@ -133,16 +137,20 @@ export function createPopup({ stage, base, onFrame }) {
     };
     const geo = new T.PlaneGeometry(1, 1); geo.translate(0, 0.5, 0); // hinge on the bottom edge
     const halo = haloTexture(T);
+    const mids = popped.filter((l) => !l.flat && l.box[2] * l.box[3] < 4000);
     popped.forEach((l, i) => {
       const rank = popped.length - i; // smaller pieces stand in front
-      const z = gentle ? 0.12 : 0.25 + 0.9 * (rank / popped.length);
+      // Inside the slide: background art far back, main drawings through the middle, thin labels and marks up front.
+      const z = imm ? (l.box[2] * l.box[3] >= 4000 ? -6 - (i % 2) * 1.5 : l.flat ? 2.6 : -2.6 + 3.6 * (mids.indexOf(l) + 1) / (mids.length + 1))
+        : gentle ? 0.12 : 0.25 + 0.9 * (rank / popped.length);
       const p = place(l.box, z);
       const tex = loadTex(base + l.src); tex.colorSpace = T.SRGBColorSpace; tex.anisotropy = 2;
-      const mat = new T.ShaderMaterial({ uniforms: { map: { value: tex }, uSketch: { value: 0 }, uColor: { value: 0 }, uTime: { value: 0 }, uShadow: { value: 0 }, uHalo: { value: 0 } }, vertexShader: VERT, fragmentShader: FRAG, transparent: true, depthWrite: false });
+      const mat = new T.ShaderMaterial({ uniforms: { map: { value: tex }, uSketch: { value: 0 }, uColor: { value: 0 }, uTime: { value: 0 }, uShadow: { value: 0 }, uHalo: { value: 0 }, uFade: { value: 1 } }, vertexShader: VERT, fragmentShader: FRAG, transparent: true, depthWrite: false });
+      if (imm && z < -4) mat.uniforms.uFade.value = 0.8;
       const hinge = new T.Group(); hinge.position.set(p.cx, p.cy - p.h / 2, z);
       const mesh = new T.Mesh(geo, mat); mesh.scale.set(p.w, p.h, 1); hinge.add(mesh);
       let shadow = null;
-      if (!phone) {
+      if (!phone && !imm) {
         const sm = mat.clone(); sm.uniforms.map.value = tex; sm.uniforms.uShadow.value = 1;
         shadow = new T.Mesh(geo, sm); const ps = place(l.box, 0);
         shadow.position.set(ps.cx + 0.08 * z, ps.cy - ps.h / 2 - 0.06 * z, 0); shadow.scale.set(ps.w, ps.h, 1); shadow.renderOrder = -1;
@@ -154,6 +162,21 @@ export function createPopup({ stage, base, onFrame }) {
       items.push({ gentle, l, hinge, mesh, mat, shadow, haloM, z, p, delay: order.get(l) * TIMING.stagger, ph: Math.random() * 6.28, user: { a: 0, va: 0, dx: 0, dy: 0, vx: 0, vy: 0, launch: -1 } });
     });
     special = null;
+    if (imm) {
+      // far layer: a deep star field (fog fades it), then the scene's billboard labels up front
+      const n = phone ? 260 : 800, pos = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) pos.set([(Math.random() - 0.5) * 90, (Math.random() - 0.5) * 50, -18 - Math.random() * 50], i * 3);
+      const sg = new T.BufferGeometry(); sg.setAttribute("position", new T.BufferAttribute(pos, 3));
+      const dark = document.documentElement.dataset.theme === "dark";
+      scene.add(new T.Points(sg, new T.PointsMaterial({ color: dark ? 0xf3ead7 : 0x6d6457, size: phone ? 0.16 : 0.12, transparent: true, opacity: dark ? 0.75 : 0.45 })));
+      scene.fog = new T.Fog(dark ? 0x1e2433 : 0xf6efdf, 22, 75);
+      const lab = await import("./ac-scenes.js");
+      if (slide !== s) return;
+      const labelsAt = items.reduce((a, it) => Math.max(a, it.delay), 0) + 0.4;
+      (opts.labels || []).forEach((L, i) => { const p = place(L.box, 2.2); const sp = lab.label(T, L.text, { color: L.color, h: L.h, maxW: L.maxW }); sp.position.set(p.cx - p.w / 2, p.cy, 2.2); scene.add(sp); labels.push({ sp, delay: labelsAt + i * TIMING.stagger }); });
+      if (opts.sceneModule) { try { const mod = await import(opts.sceneModule); if (slide !== s) return; stageScene = lab.runModule(mod, T, scene, { phone, dark, camera: cam, controls: opts.controls, still: reduceMotion(), DIST, W, H, place, base }); } catch (err) { console.info("scene module failed, using the generic scene", err); stageScene = null; } }
+      if (!stageScene && opts.scene) { const sc = lab.build(opts.scene, T, scene, { phone, dark, controls: opts.controls, still: reduceMotion(), DIST, W, H, place, label: lab.label }); if (sc) { stageScene = sc; } }
+    }
     const kinds = [opts.special, opts.hero].filter(Boolean);
     if (kinds.length) {
       const mod = await import("./ac-pop3d.js");
@@ -206,7 +229,11 @@ export function createPopup({ stage, base, onFrame }) {
     const t = (now - t0) / 1000;
     fpsAcc[0]++; stats.frames++;
     par.x += (par.tx - par.x) * 0.06; par.y += (par.ty - par.y) * 0.06;
-    const ce = skip ? 1 : ease(t / TIMING.sketch); cam.position.set(par.x * 1.2, par.y * 0.8, DIST * (1 + 0.12 * (1 - ce))); cam.lookAt(0, 0, 0);
+    const ce = skip ? 1 : ease(t / TIMING.sketch);
+    if (imm) immersiveCamera(t, dt, ce);
+    else { cam.position.set(par.x * 1.2, par.y * 0.8, DIST * (1 + 0.12 * (1 - ce))); cam.lookAt(0, 0, 0); }
+    for (const L of labels) { const k = skip ? 1 : ease((t - L.delay) / 0.5); L.sp.material.opacity = Math.min(1, k * 1.4); L.sp.material.map.repeat.x = Math.max(0.001, k); L.sp.scale.x = L.sp.userData.w * Math.max(0.001, k); }
+    if (stageScene) stageScene.update(skip ? 99 : t, reduceMotion() ? 0 : dt, cam);
     for (const it of items) {
       const lt = skip ? 99 : t - it.delay, u = it.mat.uniforms;
       u.uSketch.value = ease(lt / TIMING.sketch);
@@ -214,7 +241,7 @@ export function createPopup({ stage, base, onFrame }) {
       u.uTime.value = t;
       const pk = spring(lt / TIMING.sketch);
       // folded flat into the page (edge on, at paper height) -> standing in its layer
-      it.hinge.rotation.x = (1 - pk) * 1.25;
+      it.hinge.rotation.x = imm ? 0 : (1 - pk) * 1.25;
       const play = lt >= TIMING.sketch + TIMING.color ? lt - TIMING.sketch - TIMING.color : -1;
       motion(it, play, dt);
       if (it.gentle && play > 0) it.hinge.rotation.y = Math.sin(play * 0.4 + it.ph) * 0.06;
@@ -224,6 +251,22 @@ export function createPopup({ stage, base, onFrame }) {
     if (special) special.update(t, reduceMotion() ? 0 : dt, cam);
     renderer.render(scene, cam);
     onFrame && onFrame(t);
+  }
+  // Camera inside the slide: the scene may fly it; the viewer looks around (drag), flies closer
+  // (pinch or scroll, clamped) and gets a small head-tracking parallax from pointer or tilt.
+  const V = { a: null };
+  function immersiveCamera(t, dt, ce) {
+    const T = THREE; if (!V.a) V.a = { p: new T.Vector3(), l: new T.Vector3(), d: new T.Vector3(), up: new T.Vector3(0, 1, 0) };
+    const v = V.a;
+    if (stageScene && stageScene.cam) { const c = stageScene.cam(skip ? 99 : t, dt); v.p.copy(c.pos); v.l.copy(c.look); } else { v.p.set(0, 0, DIST); v.l.set(0, 0, 0); }
+    if (performance.now() - idleAt > 5000 && !pointers.size) { look.tyaw *= 0.985; look.tpitch *= 0.985; }
+    const k = Math.min(1, dt * 6);
+    look.yaw += (look.tyaw - look.yaw) * k; look.pitch += (look.tpitch - look.pitch) * k; look.dolly += (look.tdolly - look.dolly) * k;
+    v.d.subVectors(v.l, v.p); const dist = v.d.length(); v.d.normalize();
+    v.d.applyAxisAngle(v.up, look.yaw); const side = new T.Vector3().crossVectors(v.d, v.up).normalize(); v.d.applyAxisAngle(side, look.pitch);
+    const fly = look.dolly - (1 - ce) * 2.2; // entry: the camera eases in from behind
+    cam.position.copy(v.p).addScaledVector(v.d, Math.min(fly, dist * 0.85)).addScaledVector(side, par.x * 0.35).addScaledVector(v.up, par.y * 0.2);
+    cam.lookAt(cam.position.clone().addScaledVector(v.d, dist));
   }
   setInterval(() => { stats.fps = fpsAcc[0]; fpsAcc[0] = 0; if (renderer) { stats.textures = renderer.info.memory.textures; stats.geometries = renderer.info.memory.geometries; } }, 1000);
 
@@ -261,7 +304,14 @@ export function createPopup({ stage, base, onFrame }) {
     const t = (performance.now() - t0) / 1000;
     if (scene && !skip && t < entryEnd()) { skip = true; if (special) special.skip = true; stage.classList.remove("pop-entering"); stage.classList.add("pop-skip"); return; }
     if (special && special.pointer && special.pointer(e, stage.getBoundingClientRect(), "down")) { drag = { special: true }; stage.dataset.dragging = "1"; e.stopPropagation(); stage.setPointerCapture && stage.setPointerCapture(e.pointerId); return; }
+    if (stageScene && stageScene.pointer && stageScene.pointer(e, stage.getBoundingClientRect(), "down", cam)) { drag = { scene: true }; stage.dataset.dragging = "1"; e.stopPropagation(); stage.setPointerCapture && stage.setPointerCapture(e.pointerId); return; }
     const it = pick(e);
+    if (imm && !(it && it.l.interact)) {
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY }); idleAt = performance.now();
+      if (pointers.size === 2) { const [a, b] = [...pointers.values()]; drag = { pinch: Math.hypot(a.x - b.x, a.y - b.y), d0: look.tdolly }; }
+      else drag = { look: true, x: e.clientX, y: e.clientY, yaw0: look.tyaw, pitch0: look.tpitch };
+      return;
+    }
     if (it && it.l.interact) {
       e.stopPropagation();
       if (it.l.interact === "launch" || it.l.motion === "launch") { it.user.launch = 0; return; }
@@ -275,17 +325,27 @@ export function createPopup({ stage, base, onFrame }) {
     const r = stage.getBoundingClientRect();
     if (!drag) { if (e.pointerType === "mouse") { par.tx = ((e.clientX - r.left) / r.width - 0.5) * 2; par.ty = -((e.clientY - r.top) / r.height - 0.5) * 2; } return; }
     if (drag.special) { special && special.pointer && special.pointer(e, r, "move"); return; }
+    if (drag.scene) { stageScene && stageScene.pointer(e, r, "move", cam); return; }
+    if (drag.look || drag.pinch) {
+      if (pointers.has(e.pointerId)) pointers.set(e.pointerId, { x: e.clientX, y: e.clientY }); idleAt = performance.now();
+      if (drag.pinch && pointers.size === 2) { const [a, b] = [...pointers.values()]; look.tdolly = Math.max(0, Math.min(look.max, drag.d0 + (Math.hypot(a.x - b.x, a.y - b.y) - drag.pinch) / r.width * 8)); }
+      else if (drag.look) { stageScene && stageScene.drag && stageScene.drag({ dx: (e.clientX - drag.x) / r.width, dy: (e.clientY - drag.y) / r.height, x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height }); look.tyaw = Math.max(-0.5, Math.min(0.5, drag.yaw0 + (e.clientX - drag.x) / r.width * 1.1)); look.tpitch = Math.max(-0.3, Math.min(0.3, drag.pitch0 + (e.clientY - drag.y) / r.height * 0.7)); }
+      return;
+    }
     const it = drag.it, dx = (e.clientX - drag.lx) / r.width * W, dy = -(e.clientY - drag.ly) / r.height * H;
     drag.lx = e.clientX; drag.ly = e.clientY;
     if (it.l.interact === "spin") it.user.va = dx * 40;
     else if (it.l.interact === "orbit") it.user.va = dx * 30;
     else { it.user.dx += dx; it.user.dy += dy; it.user.vx = dx * 30; it.user.vy = dy * 30; }
   }
-  function onUp(e) { if (drag && drag.special && special && special.pointer) special.pointer(e, stage.getBoundingClientRect(), "up"); drag = null; delete stage.dataset.dragging; }
+  function onUp(e) { pointers.delete(e.pointerId); if (drag && drag.scene && stageScene) stageScene.pointer(e, stage.getBoundingClientRect(), "up", cam); if (drag && drag.special && special && special.pointer) special.pointer(e, stage.getBoundingClientRect(), "up"); drag = null; delete stage.dataset.dragging; }
   stage.addEventListener("pointerdown", onDown, true);
   stage.addEventListener("pointermove", onMove);
   addEventListener("pointerup", onUp);
   stage.addEventListener("pointerleave", () => { par.tx = par.ty = 0; });
+  addEventListener("pointercancel", (e) => { pointers.delete(e.pointerId); drag = null; });
+  // scroll flies the camera closer or back out (clamped); only while a 3D slide is open
+  stage.addEventListener("wheel", (e) => { if (!imm || !scene) return; e.preventDefault(); idleAt = performance.now(); look.tdolly = Math.max(0, Math.min(look.max, look.tdolly - e.deltaY * 0.01)); }, { passive: false });
 
   // Tilt: deviceorientation; iOS asks permission on a tap.
   let tiltOn = false;
