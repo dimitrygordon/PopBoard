@@ -1,0 +1,323 @@
+{
+ "_doc": "D01 pop-up config from motion/d01-spec.md. Layer keys are 'slide:order' from v2/layers.json. kinds: planet, sun, moon, comet, star, rocket, prop. motion: float spin orbit launch pulse drift twinkle path. fx are page overlays. Source: motion/d01-spec.md (## Pop-up v2).",
+ "layers": {
+  "1:0": {
+   "kind": "sun",
+   "motion": "pulse"
+  },
+  "1:1": {
+   "kind": "planet",
+   "motion": "orbit",
+   "interact": "orbit"
+  },
+  "2:1": {
+   "kind": "sun",
+   "motion": "spin",
+   "enter": "roll"
+  },
+  "3:1": {
+   "motion": "pulse"
+  },
+  "3:2": {
+   "motion": "pulse"
+  },
+  "3:3": {
+   "motion": "pulse"
+  },
+  "3:4": {
+   "motion": "pulse"
+  },
+  "3:5": {
+   "motion": "pulse"
+  },
+  "4:3": {
+   "kind": "planet",
+   "motion": "spin",
+   "interact": "spin"
+  },
+  "4:5": {
+   "kind": "planet",
+   "motion": "float"
+  },
+  "4:2": {
+   "motion": "drift"
+  },
+  "5:1": {
+   "kind": "planet",
+   "motion": "spin",
+   "interact": "spin"
+  },
+  "6:0": {
+   "kind": "sun",
+   "motion": "pulse",
+   "interact": "pulse"
+  },
+  "7:0": {
+   "motion": "drift"
+  },
+  "8:4": {
+   "motion": "float"
+  },
+  "8:3": {
+   "kind": "rocket",
+   "motion": "launch",
+   "interact": "launch"
+  },
+  "9:3": {
+   "motion": "float"
+  },
+  "9:4": {
+   "motion": "float"
+  },
+  "9:6": {
+   "motion": "float"
+  },
+  "11:2": {
+   "kind": "sun",
+   "motion": "pulse"
+  },
+  "11:3": {
+   "motion": "twinkle"
+  },
+  "12:1": {
+   "motion": "drift"
+  },
+  "12:2": {
+   "motion": "drift"
+  },
+  "12:3": {
+   "motion": "pulse"
+  },
+  "12:4": {
+   "motion": "pulse"
+  },
+  "12:5": {
+   "motion": "pulse"
+  },
+  "12:7": {
+   "motion": "pulse"
+  },
+  "13:6": {
+   "motion": "pulse"
+  },
+  "14:3": {
+   "kind": "star",
+   "motion": "pulse"
+  },
+  "14:2": {
+   "motion": "float"
+  },
+  "14:4": {
+   "motion": "float"
+  },
+  "16:2": {
+   "kind": "moon",
+   "motion": "orbit",
+   "interact": "orbit"
+  },
+  "16:3": {
+   "kind": "planet",
+   "motion": "float"
+  },
+  "17:2": {
+   "kind": "moon",
+   "motion": "float"
+  },
+  "17:4": {
+   "kind": "moon",
+   "motion": "float"
+  },
+  "17:6": {
+   "kind": "moon",
+   "motion": "float"
+  },
+  "17:9": {
+   "kind": "moon",
+   "motion": "float"
+  },
+  "18:3": {
+   "kind": "planet",
+   "motion": "spin",
+   "interact": "spin",
+   "replaced3d": true
+  },
+  "18:4": {
+   "motion": "float"
+  },
+  "19:3": {
+   "motion": "drift"
+  },
+  "19:4": {
+   "motion": "float"
+  },
+  "21:3": {
+   "motion": "drift",
+   "replaced3d": true
+  },
+  "21:4": {
+   "motion": "pulse"
+  },
+  "22:3": {
+   "motion": "twinkle"
+  },
+  "22:4": {
+   "motion": "float"
+  },
+  "22:5": {
+   "motion": "float"
+  },
+  "23:4": {
+   "motion": "float"
+  },
+  "23:5": {
+   "motion": "twinkle"
+  },
+  "23:6": {
+   "motion": "float"
+  },
+  "24:6": {
+   "motion": "none",
+   "flat": true
+  },
+  "5:6": {
+   "replaced3d": true
+  }
+ },
+ "fx": {
+  "1": [
+   {
+    "type": "travel",
+    "from": [
+     22,
+     40
+    ],
+    "to": [
+     80,
+     80
+    ],
+    "period": 8.3,
+    "label": "light: 8.3 min"
+   }
+  ],
+  "2": [
+   {
+    "type": "guessLine",
+    "from": [
+     20,
+     66
+    ]
+   }
+  ],
+  "3": [
+   {
+    "type": "ticks"
+   }
+  ],
+  "4": [
+   {
+    "type": "zoomout"
+   }
+  ],
+  "6": [
+   {
+    "type": "travel",
+    "from": [
+     14,
+     75
+    ],
+    "to": [
+     92,
+     75
+    ],
+    "period": 8.3,
+    "counter": [
+     0,
+     8.3,
+     " min"
+    ],
+    "once": true
+   }
+  ],
+  "7": [
+   {
+    "type": "travel",
+    "from": [
+     16,
+     73
+    ],
+    "to": [
+     86,
+     73
+    ],
+    "period": 12,
+    "counter": [
+     0,
+     2.5,
+     " million years"
+    ],
+    "once": true
+   }
+  ],
+  "10": [
+   {
+    "type": "cards"
+   }
+  ],
+  "15": [
+   {
+    "type": "cards"
+   }
+  ],
+  "20": [
+   {
+    "type": "cards"
+   }
+  ],
+  "11": [
+   {
+    "type": "rainbow"
+   }
+  ],
+  "16": [
+   {
+    "type": "tether"
+   }
+  ],
+  "22": [
+   {
+    "type": "footprints"
+   }
+  ],
+  "23": [
+   {
+    "type": "taps"
+   }
+  ]
+ },
+ "sandboxes": {
+  "5": "rings",
+  "8": "powers",
+  "9": "eclipse",
+  "12": "waves",
+  "14": "doppler",
+  "17": "gravity",
+  "18": "cannon",
+  "19": "kepler"
+ },
+ "three": {
+  "5": "rings",
+  "18": "cannon",
+  "21": "seasons"
+ },
+ "static": [
+  "24"
+ ],
+ "hero": {
+  "1": "sem"
+ },
+ "immersive": true,
+ "scene": {
+  "8": "powersFly",
+  "17": "gravityPair"
+ }
+}
