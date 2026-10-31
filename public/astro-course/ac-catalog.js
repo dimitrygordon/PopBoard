@@ -26,7 +26,7 @@ export const DECKS = [
    "DOPPLER SHIFT Redshift = source moving away → light stretched to longer λ star moving → redshift (moving away) blueshift (moving toward)",
    "CHECK FOR UNDERSTANDING A galaxy's hydrogen lines show up at longer wavelengths than in the lab. The galaxy is… A)  moving toward us B)  moving away from us C)  hotter than the Sun D)  made of different elements",
    "PART 3  ·  GRAVITY Gravity & Orbits Why doesn't the Moon fly away, or crash into us?",
-   "UNIVERSAL GRAVITATION Gravity = every mass attracts every other mass F = G m1m2 / d2 G = 6.67 × 10-11 N·m2/kg2 distance d → force F distance 2d → force ¼ F inverse-square law",
+   "UNIVERSAL GRAVITATION Gravity = every mass attracts every other mass Fg = G m1m2 / d2 G = 6.67 × 10-11 N·m2/kg2 distance d → force Fg distance 2d → force ¼ Fg inverse-square law",
    "WHY DO ASTRONAUTS FLOAT? Orbit = falling around Earth, and always missing it ≈ 90% of surface gravity still pulls on the ISS (~400 km up) sideways speed gravity (not to scale!)",
    "KEPLER'S LAWS Orbits = ellipses, with the Sun at one focus P2 = a3 P in years · a in AU 1) ellipses   2) equal areas in equal times 3) farther planets take longer fast (perihelion) slow (aphelion) equal areas, equal times",
    "CHECK FOR UNDERSTANDING A planet orbits at 4 AU. What is its period? A)  4 years B)  8 years C)  16 years D)  64 years",
