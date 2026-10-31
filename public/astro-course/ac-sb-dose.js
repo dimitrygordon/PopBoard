@@ -13,7 +13,7 @@ export function mountDose(host) {
     <label>Days in deep space (both legs): <b data-o="tr"></b><input type="range" data-k="tr" min="0" max="900" step="10" value="360"></label>
     <label>Days on Mars: <b data-o="su"></b><input type="range" data-k="su" min="0" max="900" step="10" value="500"></label>
     <label>Share of Mars time spent underground: <b data-o="ug"></b><input type="range" data-k="ug" min="0" max="1" step="0.05" value="0"></label>
-    <p class="note">Rates from the deck: about ${RATE.transit.toFixed(1)} mSv a day in deep space and ${RATE.surface.toFixed(2)} mSv a day on Mars. Simplified: a few meters of rock (a lava tube) is taken to block about 90% of it. The chart is logarithmic: each step right is 10 times more.</p>`;
+    <p class="note">Rates from the deck: about ${RATE.transit.toFixed(1)} mSv a day in deep space and ${RATE.surface.toFixed(2)} mSv a day on Mars. Simplified: a few meters of rock blocks most of it. The chart is logarithmic: each step right is 10 times more.</p>`;
   const q = (s) => host.querySelector(s);
   const cv = q("canvas"), ctx = cv.getContext("2d");
   const tr = q('[data-k="tr"]'), su = q('[data-k="su"]'), ug = q('[data-k="ug"]');
@@ -37,7 +37,10 @@ export function mountDose(host) {
     for (const v of [1, 10, 100, 1000, 10000]) {
       ctx.strokeStyle = "rgba(61,61,61,0.22)"; ctx.lineWidth = 1.2; ctx.setLineDash([5, 6]);
       ctx.beginPath(); ctx.moveTo(X(v), top - 10); ctx.lineTo(X(v), H - 50); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = DIM; ctx.textAlign = "center"; ctx.fillText(fmt(v), X(v), H - 22);
+      // axis ticks read 1 mSv, 10 mSv, 100 mSv, 1 Sv, 10 Sv; the last one is right-aligned so it never runs off a narrow canvas
+      const tick = v >= 1000 ? `${v / 1000} Sv` : `${v} mSv`;
+      const w = ctx.measureText(tick).width;
+      ctx.fillStyle = DIM; ctx.textAlign = "left"; ctx.fillText(tick, Math.max(2, Math.min(X(v) - w / 2, W - w - 4)), H - 22);
     }
     // 1 Sv: the deck's whole-mission number
     ctx.strokeStyle = GOLD; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(X(1000), top - 14); ctx.lineTo(X(1000), H - 50); ctx.stroke();

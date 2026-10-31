@@ -49,5 +49,13 @@ export const EXTRAS = {
   d15: { tryIt: { 3: "em-spectrum", 5: "spectra", 7: "spectra", 10: "optics", 16: "luminosity", 20: "hrdiagram", 21: "hrdiagram" } },
   d16: { tryIt: { 7: "stars", 13: "stars" } },
   d17: { tryIt: { 3: "stars", 6: "stars", 19: "black-hole", 21: "black-hole" } },
-  "d17-5": { tryIt: { 17: "orbits", 18: "kepler" } }
+  "d17-5": { tryIt: { 17: "orbits", 18: "kepler" } },
+  d18: { tryIt: { 9: "black-hole", 10: "black-hole" } },
+  d19: { tryIt: { 4: "spectra", 9: "powers-of-ten", 14: "em-spectrum" } },
+  d20: { tryIt: { 4: "exoplanets", 5: "exoplanets", 12: "exoplanets" } },
+  d21: { tryIt: { 8: "relativity", 19: "black-hole" } },
+  d22: { tryIt: { 4: "quantum", 7: "relativity" } },
+  d23: { tryIt: { 16: "stars", 18: "tides" } },
+  d24: { tryIt: { 4: "relativity", 6: "rocket-mission", 11: "relativity" } },
+  "d24-5": { sandboxes: { 5: "dose" }, tryIt: { 11: "orbits", 14: "rocket-mission" } }
 };
