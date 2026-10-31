@@ -13,7 +13,7 @@ export function mountDose(host) {
     <label>Days in deep space (both legs): <b data-o="tr"></b><input type="range" data-k="tr" min="0" max="900" step="10" value="360"></label>
     <label>Days on Mars: <b data-o="su"></b><input type="range" data-k="su" min="0" max="900" step="10" value="500"></label>
     <label>Share of Mars time spent underground: <b data-o="ug"></b><input type="range" data-k="ug" min="0" max="1" step="0.05" value="0"></label>
-    <p class="note">Rates from the deck: about ${RATE.transit.toFixed(1)} mSv a day in deep space and ${RATE.surface.toFixed(2)} mSv a day on Mars. Simplified: a few meters of rock (a lava tube) is taken to block about 90% of it. The chart is logarithmic: each step right is 10 times more.</p>`;
+    <p class="note">Rates from the deck: about ${RATE.transit.toFixed(1)} mSv a day in deep space and ${RATE.surface.toFixed(2)} mSv a day on Mars. Simplified: a few meters of rock blocks most of it. The chart is logarithmic: each step right is 10 times more.</p>`;
   const q = (s) => host.querySelector(s);
   const cv = q("canvas"), ctx = cv.getContext("2d");
   const tr = q('[data-k="tr"]'), su = q('[data-k="su"]'), ug = q('[data-k="ug"]');
