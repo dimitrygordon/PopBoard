@@ -15,7 +15,7 @@ export function crater(L, v, rho, g = G_EARTH) {
   const tc = transientDiameter(L, v, rho, g);
   const Dc = transitionDiameter(g);
   let D = 1.25 * tc, shape = "bowl";
-  if (D > Dc) { D = 1.17 * Math.pow(tc, 1.13) / Math.pow(Dc, 0.13); shape = D > 30 * Dc ? "rings" : "peak"; }
+  if (D > Dc) { D = 1.17 * Math.pow(tc, 1.13) / Math.pow(Dc, 0.13); shape = D > 15 * Dc ? "rings" : "peak"; } // simplified: rings above about 15 times the transition size
   // depth: simple bowls are about 1/5 as deep as wide; complex craters are much shallower,
   // about 0.4 * D^0.3 with both in km (Collins et al. 2005)
   const depth = shape === "bowl" ? D / 5 : 1000 * 0.4 * Math.pow(D / 1000, 0.3);
