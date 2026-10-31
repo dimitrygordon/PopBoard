@@ -127,6 +127,8 @@ a.tryit:hover { transform: rotate(0.4deg); border-color: var(--ac-blue); }
 .stage .pop-layer.touch { pointer-events: auto; cursor: grab; touch-action: none; }
 .stage .pop-gl { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; }
 .stage .pop-fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+/* scene-module pages keep the top right for their own drawing (Polaris, labels): the tab sits bottom left */
+.stage.immersive .tryit-tab.at-foot { top: auto; right: auto; left: 10px; bottom: 3%; }
 .tryit-tab { position: absolute; right: 10px; top: 10%; max-width: calc(100% - 20px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 6; min-height: 44px; min-width: 44px; padding: 8px 14px 8px 16px;
   font-family: var(--ac-head-font); font-size: 16px; color: #3d3d3d; background: #f6e7b8; border: 2px solid #3d3d3d; border-radius: 12px 9px 13px 10px;
   box-shadow: -2px 3px 0 rgba(0,0,0,.18); cursor: pointer; transform: rotate(-2deg); }
@@ -198,6 +200,8 @@ body.v2 .read .rich p { font-size: 17px; line-height: 1.45; }
 :root[data-theme="dark"] .kp canvas { background: #1E2433; border-color: #E2B654; }
 :root[data-theme="dark"] .kp input[type="range"] { accent-color: #E2B654; }
 @media (max-width: 480px) { .tryit-tab { font-size: 14px; padding: 6px 10px; } }
+/* on a phone the short stage has no free corner, and the controls sit right under it in the sheet */
+@media (max-width: 480px) { .stage.immersive .tryit-tab.at-foot { display: none; } }
 /* labels finish writing on even if the entry is cut short */
 .stage.wo-done .wo { animation: none !important; opacity: 1 !important; }
 :root[data-theme="dark"] .sandbox-stage:has(canvas.sbv2), :root[data-theme="dark"] canvas.sbv2 { background: #1E2433; border-color: #E2B654; }

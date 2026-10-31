@@ -14,11 +14,13 @@ const onDisk = fs.readdirSync(ROOT).filter((d) => fs.statSync(path.join(ROOT, d)
   .flatMap((d) => fs.readdirSync(path.join(ROOT, d)).filter((f) => /^p\d{2}\.js$/.test(f)).map((f) => `${d}/${f.slice(0, -3)}`));
 
 
+// a 2D context stand-in: every drawing call is a no-op, text measures 10 px per character
+function fakeG() { return new Proxy({}, { get: (o, k) => (k in o ? o[k] : k === "measureText" ? (t) => ({ width: String(t).length * 10 }) : () => {}), set: (o, k, v) => { o[k] = v; return true; } }); }
 function makeCtx() {
   const scene = new T.Scene(), layers = { fg: new T.Group(), mid: new T.Group(), bg: new T.Group() };
   layers.fg.position.z = 2.2; layers.bg.position.z = -6; scene.add(layers.fg, layers.mid, layers.bg);
   const camera = new T.PerspectiveCamera(30, 16 / 9, 0.1, 100); camera.position.set(0, 0, 16.8);
-  const drags = [], touch = touchHints(T, {});
+  const drags = [], pointers = [], ui = [], touch = touchHints(T, {});
   const ctx = {
     THREE: T, scene, camera, layers, reducedMotion: false, phone: false, controls: null,
     palette: { dark: true, paper: 0x1e2433, ink: 0xf3ead7, gold: 0xe2b654, blue: 0x7fa6d9, red: 0xd9826b, inkCss: "#F3EAD7", goldCss: "#E2B654", blueCss: "#7FA6D9" },
@@ -29,8 +31,13 @@ function makeCtx() {
     setCamera(pos, look) { camera.position.set(...pos); camera.lookAt(...look); camera.updateMatrixWorld(); },
     onDrag: (fn) => drags.push(fn),
     touchable: (obj, o) => touch.add(obj, o),
+    at: (px, py) => [px / 100 - 8, 4.5 - py / 100],
+    onPointer: (fn) => pointers.push(fn),
+    paint: (box, { layer = "mid" } = {}) => { const mesh = new T.Mesh(new T.PlaneGeometry(1, 1), new T.MeshBasicMaterial()); layers[layer].add(mesh); return { mesh, redraw: (fn) => fn(fakeG()) }; },
+    text: {},
+    ui: { slider: (o, fn) => { ui.push(fn); return { set() {} }; }, button: (label, fn) => { ui.push(fn); return { set() {} }; } },
   };
-  return { ctx, drags, touch };
+  return { ctx, drags, touch, pointers, ui };
 }
 
 test("scene manifest matches the files on disk and names real decks", () => {
@@ -42,12 +49,16 @@ test("scene manifest matches the files on disk and names real decks", () => {
 for (const id of onDisk) test(`scene ${id} loads, builds, runs and disposes`, async () => {
   const mod = await import(pathToFileURL(path.join(ROOT, id + ".js")));
   assert.equal(typeof mod.default, "function", "default export build(ctx)");
-  const { ctx, drags, touch } = makeCtx();
+  const { ctx, drags, touch, pointers, ui } = makeCtx();
   const api = mod.default(ctx) || {};
   assert.ok(ctx.scene.children.length >= 3);
   for (let i = 0; i < 30; i++) api.update && api.update(i / 10, 0.1);
   if (drags.length) assert.ok(touch.hints.length > 0, "draggable scenes mark their grabbable objects with ctx.touchable");
   for (const f of drags) f({ dx: 0.1, dy: 0, x: 0.5, y: 0.5 });
+  if (pointers.length) assert.ok(touch.hints.length > 0, "scenes that take pointer drags mark their grabbable objects with ctx.touchable");
+  for (const f of pointers) for (const [phase, x, y] of [["down", 800, 450], ["move", 900, 400], ["up", 900, 400]]) f({ phase, x, y });
+  for (const f of ui) f(0.5);
+  for (let i = 0; i < 5; i++) api.update && api.update(3 + i / 10, 0.1);
   ctx.camera.updateMatrixWorld();
   for (const v of [ctx.camera.position.x, ctx.camera.position.y, ctx.camera.position.z]) assert.ok(Number.isFinite(v), "camera stays finite");
   assert.doesNotThrow(() => api.dispose && api.dispose());

@@ -35,7 +35,7 @@ export default function build(ctx) {
 | `layers.fg / .mid / .bg` | Groups at z = 2.2, 0 and -6. Labels and small marks go in fg, the main object in mid, big backdrops in bg. Aim for those 3 depth layers. |
 | `sketch(obj, {delay})` | Pencil sketch-in for `obj` and its children: lines draw on, meshes go wireframe then hatched, and sprites fade or write on starting at `delay` seconds. Returns `obj`. |
 | `label(text, [x,y,z], {layer, color, h})` | A camera-facing billboard label (Patrick Hand font). `h` is its height in world units. Returns the Sprite. |
-| `art(src, {layer, z, box, opacity})` | A cut-out art plane. `src` is relative to the deck folder (e.g. `"v2/L05-2.webp"`) and `box` is `[x,y,w,h]` in page percent, the same as `story.json` layers. Split hand-drawn art into fg, mid and bg planes; never a single flat card. |
+| `art(src, {layer, z, box, opacity, ink})` | A cut-out art plane. `src` is relative to the deck folder (e.g. `"v2/L05-2.webp"`) and `box` is `[x,y,w,h]` in page percent, the same as `story.json` layers. Split hand-drawn art into fg, mid and bg planes; never a single flat card. In dark mode graphite and black ink are redrawn as light pencil; pass `ink: false` for full-color drawings (a globe, Moons, trees). |
 | `pencil(base, accent)` | The shared pencil-hatch texture (CSS colors) for spheres and solids, e.g. `new T.MeshLambertMaterial({ map: ctx.pencil("#5b88b8", "#3f6b3a") })`. |
 | `palette` | Theme-aware colors: `{dark, paper, ink, gold, blue, red}` as hex numbers plus `inkCss`, `goldCss` and `blueCss` strings for labels. |
 | `reducedMotion` | `true` when the user asked for reduced motion: show the finished state and skip drift. |
@@ -43,6 +43,11 @@ export default function build(ctx) {
 | `controls` | The page's slider hooks, if it has any (e.g. `onLevel`). Otherwise `null`. |
 | `touchable(obj, {r, at})` | Marks a grabbable object with the shared touch hint. A wobbly, hand-drawn gold (#E2B654) pencil outline, `r` world units in radius, breathes around `obj` (or at offset `at` inside it). It is never a soft glow. It fades out after the first interaction on the page. Under reduced motion it holds still at a faint opacity. **Call it on every object students can drag, spin or tap.** The module test fails if a scene uses `onDrag` without one. Returns the halo Sprite. |
 | `onDrag(fn)` | `fn({dx, dy, x, y})` runs on look-drags. Values are fractions of the stage, `dx` and `dy` are measured from the drag start. The camera still looks around. |
+| `at(px, py, layer)` | Page px (the slide's own 1600 x 900 coordinates) to local `[x, y]` on a layer, so meshes line up with the drawing at rest. |
+| `onPointer(fn)` | `fn({phase, x, y, ndc})` for direct drags: `phase` is `"down"`, `"move"` or `"up"`, `x, y` are page px on the z = 0 plane and `ndc` is the pointer in normalized device coordinates (for picking in a tilted 3D group with `camera`). Return `true` on `"down"` to take the drag: the camera then does not look around. Pair it with `touchable` (the module test checks). |
+| `paint(box, {layer, z})` | A live pencil drawing on a plane covering `box` = `[x0, y0, x1, y1]` page px. `redraw(fn)` clears it and calls `fn(g)` with a 2D context already in page px. Use it for anything that changes with the simulation (a wedge, an angle label, trails) instead of the static PNG. Load hand fonts with `document.fonts.load` and redraw. |
+| `text` | The slide's `sceneText` object from `deck.json`. Student-facing words a scene adds go there, word for word, never in the module. |
+| `ui` | Side-panel controls for module pages, or `null`. `ui.slider({label, min, max, step, value, fmt}, fn)` and `ui.button(label, fn)` each return `{ set }` so the control follows page drags. The page needs `three` and `sandbox` set to its kind in `story.json` and the kind listed in `ONPAGE` (ac-story.js). |
 
 The same helper is built into the engine's own pieces. In D01 those are the p5 address rings, the p17 masses, the p18 cannonball, the p21 seasons Earth and every drag-to-spin object.
 
@@ -101,3 +106,11 @@ Hand-drawn art is the default on every page. 3D is used only where it fits (scen
   - Lines are wobbly pencil strokes, built from the `pencil()` and `sheet()` helpers in ac-scenes.js and drawn in palette graphite.
   - Fills use the kit hatch tile (`v2/art/hatch-tile-512.webp`) with mipmaps and anisotropy ON.
   - No lit or glossy meshes.
+
+## D02 scenes (p8, p10, p20, p23)
+
+- Art: Leo's layers in `decks/d02/v2/art/` (`pNN-*.webp`, trimmed; boxes in the module are the trimmed bounds in page px). The paper `bg` and the merged `mid`/`fg` layers are not shipped: the stage is the paper and each piece is placed on its own.
+- The moving parts the drawings had baked in (p10 wedge, sightline, 39° and globe marks; p08 trails) are drawn live with `paint`, so they follow the simulation.
+- `decks/d02/v2/story.json` has `"immersive": true` and `three` / `sandbox` set to `diurnal`, `latitude`, `phases` and `eclipses` on those four pages, by hand (D02 has no `motion/d02.json`). Re-add them if `build.py` regenerates the file. Every other D02 page keeps its original drawing.
+- On scene-module pages the Try it tab sits bottom left (the top right holds Polaris and labels); on phones it is hidden and the controls sit under the stage in the sheet.
+- Science (Tesla): p8 turns 15.04° per sim hour counterclockwise about Polaris; p10 Polaris altitude equals latitude, starting at 39°; p20 counterclockwise from above, lit half toward the Sun, new on the left; p23 tilt 5.1° (drawn ×3), eclipse only at a node with new or full Moon (true tilt used for the test), nodes regress clockwise once per 18.6 years, sped up ×6.

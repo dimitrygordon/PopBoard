@@ -38,7 +38,9 @@ const SANDBOXES = {
   gravity: { name: "Gravitation sandbox", mount: (h) => mountGravity(h) }
 };
 // 3D set pieces that are the sandbox on their own page (no separate canvas).
-const ONPAGE = { rings: "Cosmic address rings (3D)", cannon: "Newton's cannon (3D)", seasons: "Seasons orbit (3D)" };
+const ONPAGE = { rings: "Cosmic address rings (3D)", cannon: "Newton's cannon (3D)", seasons: "Seasons orbit (3D)",
+  // D02 per-page scene modules (js/astro-scenes/d02): their sliders and buttons come from ctx.ui
+  diurnal: "Diurnal motion (3D)", latitude: "Polaris & latitude (3D)", phases: "Moon phases (3D)", eclipses: "Why eclipses are rare (3D)" };
 let v2 = null, popup = null, fxh = null, arth = null;
 const narrator = createNarrator($("narr"), "astro-course/");
 const sandboxKinds = () => [...new Set(Object.values(extra.sandboxes || {}))].filter((k) => SANDBOXES[k]);
@@ -270,7 +272,7 @@ function popPage(s, sv) {
   const opts = { special, hero: null, controls: specialControls(sv.scene === "powersFly" ? "powers" : sv.three) };
   // a hand-built module (js/astro-scenes/<deck>/pNN.js) wins over the built-in scene; both cut their
   // objects out of the original slide drawing (opts.art)
-  if (imm) Object.assign(opts, { immersive: true, sceneModule: mod, scene: sv.scene || null, drop: sv.layers.map((l) => l.src), labels: [], art: slideArt(s) });
+  if (imm) Object.assign(opts, { immersive: true, sceneModule: mod, sceneText: s.sceneText || {}, ui: mod ? moduleUi() : null, scene: sv.scene || null, drop: sv.layers.map((l) => l.src), labels: [], art: slideArt(s) });
   popup.show({ ...sv, layers: art ? [] : layers }, art ? { special: null, hero: null } : opts);
   if (imm) prewarm();
   else if (art) {
@@ -286,7 +288,7 @@ function popPage(s, sv) {
   const kind = sv.sandbox;
   if (kind && (SANDBOXES[kind] || (ONPAGE[kind] && !art))) {
     const tab = document.createElement("button");
-    tab.type = "button"; tab.className = "tryit-tab sketch";
+    tab.type = "button"; tab.className = "tryit-tab sketch" + (mod ? " at-foot" : "");
     tab.textContent = ONPAGE[kind] ? "Try it: touch the 3D" : "Try it";
     tab.setAttribute("aria-label", ONPAGE[kind] ? `Try it: ${ONPAGE[kind]} on this page` : `Try it: open the ${SANDBOXES[kind].name}`);
     tab.addEventListener("click", (e) => { e.stopPropagation(); if (ONPAGE[kind]) { popup.skipEntry(); $("tools").querySelector(".pop-ctl input, .pop-ctl button")?.focus(); } else { sbKind = kind; setMode("sandbox"); } });
@@ -300,6 +302,28 @@ function slideArt(s) { const im = (s.items || []).find((it) => it.t === "img" &&
 // only the current page is mounted; the next page's art is fetched ahead
 function prewarm() { const nx = v2 && v2.slides[String(page + 1)]; if (nx) for (const l of nx.layers) { const im = new Image(); im.src = base + l.src; } }
 let ctlHtml = "";
+// Controls a scene module builds in the side panel (ctx.ui). The panel renders after the scene starts,
+// so each control waits for its .pop-ctl box. slider(o, fn) and button(label, fn) return { set } so the
+// scene can keep the control in step when the student drags the page instead.
+function moduleUi() {
+  const box = () => $("tools").querySelector(".pop-ctl"), when = (fn, n = 0) => { const b = box(); if (b) fn(b); else if (n < 40) setTimeout(() => when(fn, n + 1), 50); };
+  return {
+    slider({ label, min = 0, max = 1, step = 0.01, value = 0, fmt = (v) => String(v) }, fn) {
+      let el = null, out = null, v0 = value;
+      when((b) => {
+        const w = document.createElement("label"); w.innerHTML = `${esc(label)}: <b></b><input type="range" min="${min}" max="${max}" step="${step}" value="${v0}">`;
+        el = w.querySelector("input"); out = w.querySelector("b"); out.textContent = fmt(v0); b.appendChild(w);
+        el.addEventListener("input", () => { out.textContent = fmt(+el.value); fn(+el.value); });
+      });
+      return { set(v) { v0 = v; if (el) { el.value = v; out.textContent = fmt(v); } } };
+    },
+    button(label, fn) {
+      let el = null, l0 = label;
+      when((b) => { let row = b.querySelector(".row"); if (!row) { row = document.createElement("div"); row.className = "row"; b.appendChild(row); } el = document.createElement("button"); el.type = "button"; el.textContent = l0; el.addEventListener("click", () => fn()); row.appendChild(el); });
+      return { set(t) { l0 = t; if (el) el.textContent = t; } };
+    },
+  };
+}
 function specialControls(kind) {
   const box = () => $("tools").querySelector(".pop-ctl");
   if (kind === "rings") return {
