@@ -16,6 +16,28 @@ const BASE_FILE = new URL("./responsive-baseline.json", import.meta.url);
 const baseline = existsSync(BASE_FILE) ? JSON.parse(readFileSync(BASE_FILE, "utf8")) : {};
 const keyOf = (pg, sz, i) => `${pg}|${sz}|${i.kind}|${(i.sel || "").replace(/\d+(\.\d+)?/g, "#")}|${(i.detail || "").replace(/"[^"]*"/g, "").replace(/\d+/g, "#")}`;
 
+// Measure only once the page has settled: load done, web fonts ready, two animation frames painted,
+// and two measurements in a row agree. Under CPU load (more pages in the run) a fixed sleep was not
+// enough, so labels were measured with fallback-font widths or mid-layout and reported as overlaps.
+const settle = () => new Promise((res) => {
+  const go = () => document.fonts.ready.then(() => requestAnimationFrame(() => requestAnimationFrame(() => res())));
+  if (document.readyState === "complete") go(); else addEventListener("load", go, { once: true });
+});
+async function settledChecks(page) {
+  const run = async () => {
+    await page.evaluate(settle).catch(() => {});
+    return page.evaluate(pageChecks, { minText: MIN_TEXT_PX, minTap: MIN_TAP_PX, touch: true }).catch((e) => [{ kind: "overlap", sel: "check", detail: String(e.message) }]);
+  };
+  let prev = JSON.stringify(await run());
+  for (let n = 0; n < 20; n++) {
+    await new Promise((r) => setTimeout(r, 250));
+    const cur = await run(); const j = JSON.stringify(cur);
+    if (j === prev) return cur;
+    prev = j;
+  }
+  return JSON.parse(prev);
+}
+
 let puppeteer = null;
 try { puppeteer = (await import("puppeteer-core")).default; } catch {}
 const exe = chromePath();
@@ -30,20 +52,23 @@ test("study pages fit phones and tablets: no overflow, nothing off screen, nothi
   const worker = async () => {
     while (next < jobs.length) {
       const pg = jobs[next++];
-      const page = await browser.newPage();
-      await page.evaluateOnNewDocument(themeInit("dark"));
       for (const sz of sizes) {
-        const S = SIZES[sz];
-        await page.setViewport({ width: S.width, height: S.height, isMobile: S.width < 1000, hasTouch: true });
-        await page.goto(base + pg.path, { waitUntil: "networkidle2", timeout: 30000 }).catch(() => {});
-        await new Promise((r) => setTimeout(r, 1000));
-        for (const state of ["start", "busy"]) {
-          if (state === "busy") await makeBusy(page);
-          const issues = await page.evaluate(pageChecks, { minText: MIN_TEXT_PX, minTap: MIN_TAP_PX, touch: true }).catch((e) => [{ kind: "overlap", sel: "check", detail: String(e.message) }]);
-          for (const i of issues) if (GATE.includes(i.kind)) { const k = keyOf(pg.name, sz, i); found[k] = found[k] || `${pg.path} @ ${sz} ${state}: ${i.kind} ${i.sel} ${i.detail}`; }
-        }
+        // Each page and size gets its own browser context (fresh storage, cache and service workers),
+        // so nothing one page or an earlier size saved can change what the next one shows.
+        const ctx = await browser.createBrowserContext();
+        const page = await ctx.newPage();
+        try {
+          await page.evaluateOnNewDocument(themeInit("dark"));
+          const S = SIZES[sz];
+          await page.setViewport({ width: S.width, height: S.height, isMobile: S.width < 1000, hasTouch: true });
+          await page.goto(base + pg.path, { waitUntil: "networkidle2", timeout: 30000 }).catch(() => {});
+          for (const state of ["start", "busy"]) {
+            if (state === "busy") await makeBusy(page);
+            const issues = await settledChecks(page);
+            for (const i of issues) if (GATE.includes(i.kind)) { const k = keyOf(pg.name, sz, i); found[k] = found[k] || `${pg.path} @ ${sz} ${state}: ${i.kind} ${i.sel} ${i.detail}`; }
+          }
+        } finally { await ctx.close(); }
       }
-      await page.close();
     }
   };
   try { await Promise.all(Array.from({ length: +(process.env.CONC || 4) }, worker)); }

@@ -11,7 +11,7 @@ import {
   TIERS, bottomSheet, springStep, encodeState, decodeState, sanitizeState, shareLink, celebrate, tick, buzz, sound
 } from "../shared/fun/fun-ui.js";
 
-const phone = matchMedia("(max-width: 600px)"), wide = matchMedia("(min-width: 900px)");
+const phone = matchMedia("(max-width: 600px)"), wide = matchMedia("(min-width: 900px), (min-width: 700px) and (max-height: 500px)");
 const $ = (id) => document.getElementById(id);
 const root = document.documentElement;
 const THEME_KEY = "popboard.atom-builder.theme", TABLE_KEY = "popboard.fun.atom-builder.table";
@@ -213,7 +213,7 @@ let fitQueued = false;
 function requestFit() { if (fitQueued) return; fitQueued = true; requestAnimationFrame(() => { fitQueued = false; fit(); }); }
 function fit() {
   const ctl = $("controls").getBoundingClientRect(), st = $("status").getBoundingClientRect();
-  if (wide.matches) { const x = Math.max(st.right + 16, 300), w = innerWidth - 404 - x; scene.setBox({ x, y: 64, w, h: innerHeight - 64 - 12 }); }
+  if (wide.matches) { const x = Math.max(st.right + 16, innerWidth >= 900 ? 300 : 0), w = ctl.left - 12 - x; scene.setBox({ x, y: 64, w, h: innerHeight - 64 - 12 }); }
   else { const top = st.bottom + 8, bottom = Math.min(innerHeight, ctl.top) - 8; scene.setBox({ x: 12, y: top, w: innerWidth - 24, h: Math.max(200, bottom - top) }); }
   retarget();
 }
