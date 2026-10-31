@@ -26,3 +26,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 ## three.js r170
 
 `public/vendor/three/three.module.min.js` is three.js 0.170.0 (https://github.com/mrdoob/three.js), vendored unmodified from the npm package `three@0.170.0` (`build/three.module.min.js`). MIT License; full text in `public/vendor/three/three.LICENSE`.
+
+## Astronomy Course storybook fonts
+
+These subsets (Latin, Greek, and arrows) in `public/fonts/` come from Google Fonts and are licensed under the SIL Open Font License 1.1 (https://openfontlicense.org):
+
+- `cabin-sketch.woff2`, `cabin-sketch-bold.woff2`: Cabin Sketch by Impallari Type.
+- `architects-daughter.woff2`: Architects Daughter by Kimberly Geswein.
+- `patrick-hand.woff2`: Patrick Hand by Patrick Wagesreiter.
+- `gochi-hand.woff2`: Gochi Hand by Huerta Tipografica.
+- `itim.woff2`: Itim by Cadson Demak.

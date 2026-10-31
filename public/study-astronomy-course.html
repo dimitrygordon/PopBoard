@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="shared/layout/layout.css">
+<script type="module" src="shared/layout/layout.js"></script>
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f4efe4">
+<title>Astronomy Course // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  // Light notebook paper is the default; dark paper is remembered for the whole course.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.astronomy-course.theme"); } catch (e) {}
+    document.documentElement.setAttribute("data-theme", t === "dark" ? "dark" : "light");
+  })();
+</script>
+<link rel="stylesheet" href="shared/paper/paper.css">
+<link rel="stylesheet" href="astro-course/ac-theme.css">
+<link rel="stylesheet" href="astro-course/ac-library.css">
+<link rel="preload" href="fonts/cabin-sketch-bold.woff2" as="font" type="font/woff2" crossorigin>
+</head>
+<body>
+<header class="ac-bar">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library"><span class="back-icon"></span><span class="back-label">Back</span></button>
+  <p class="ac-bar-title sr-only">Astronomy Course</p>
+  <span class="ac-spacer"></span>
+  <button id="themeBtn" class="ac-theme-btn" type="button"></button>
+</header>
+
+<main class="lib">
+  <section class="lib-cover">
+    <h1 class="lib-title">Astronomy Course</h1>
+    <p class="lib-lede">Earth &amp; Space Science, one storybook for every deck. Open a story and turn the pages.</p>
+    <label class="lib-search sketch" for="q">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.4l5.3 5.1"/></svg>
+      <span class="sr-only">Search titles and every page</span>
+      <input id="q" type="search" placeholder="Search titles and every page" autocomplete="off" enterkeyhint="search">
+    </label>
+    <div class="lib-filters" role="group" aria-label="Quarter">
+      <button type="button" data-q="0" aria-pressed="true">All</button>
+      <button type="button" data-q="1" aria-pressed="false">Q1</button>
+      <button type="button" data-q="2" aria-pressed="false">Q2</button>
+      <button type="button" data-q="3" aria-pressed="false">Q3</button>
+      <button type="button" data-q="4" aria-pressed="false">Q4</button>
+    </div>
+    <p class="lib-count" id="count" aria-live="polite"></p>
+  </section>
+  <ol class="lib-grid" id="grid"></ol>
+  <p class="lib-empty" id="empty" hidden>No page in the course matches that yet. Try a shorter word.</p>
+</main>
+
+<script type="module" src="astro-course/ac-library-ui.js"></script>
+</body>
+</html>
