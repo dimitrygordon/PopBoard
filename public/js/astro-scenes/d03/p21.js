@@ -29,13 +29,19 @@ export function flight(v, maxT = ORBIT_S * 1.02, h = 1 / 480) {
 export default function build(ctx) {
   const { reducedMotion } = ctx;
   const art = (n, b, o = {}) => ctx.art(ART + n, { box: box(b), ...o });
-  art("p21-labels.webp", [53, 35, 1494, 859], { layer: "fg" });
+  const dark = !!(ctx.palette && ctx.palette.dark);
+  art("p21-labels.webp", [84, 35, 1494, 859], { layer: "fg" });
+  // "≈ 8 km/s: orbit!" is dark blue on paper; in dark mode it switches to the label gold (#E2B654)
+  art(dark ? "p21-label-orbit-gold.webp" : "p21-label-orbit.webp", [53, 169, 306, 201], { layer: "fg", ink: false });
   art("p21-fg-art.webp", [78, 113, 1199, 221], { layer: "fg" });
   art("p21-earth.webp", [70, 410, 796, 900], { ink: false });
   art("p21-trajectories.webp", [441, 144, 1222, 840], { z: 0.01 }).material.opacity = 0.3;
   art("p21-mountain.webp", [341, 337, 520, 450], { z: 0.02, ink: false });
   const astro = art("p21-astronaut.webp", [1232, 542, 1445, 790], { ink: false });
+  // dark mode only: a thin cream pencil rim (#F7F6F2 at 60 percent, 2 px, no glow) on the astronaut and Earth
+  const rim = dark ? art("p21-astronaut-rim.webp", [1230, 541, 1446, 792], { ink: false }) : null;
   const ay = astro.position.y, bob = ctx.at(0, 4)[1] - ctx.at(0, 0)[1];
+  const rimY = rim ? rim.position.y : 0;
   const plane = ctx.paint([0, 0, 1600, 900], { z: 0.03 });
   const grab = new ctx.THREE.Object3D(); ctx.layers.mid.add(grab); ctx.touchable(grab, { r: 0.35 });
   { const p = ctx.at(START[0], START[1]); grab.position.set(p[0], p[1], 0.05); }
@@ -53,6 +59,7 @@ export default function build(ctx) {
   }
   function draw() {
     plane.redraw((g) => {
+      if (dark) { g.strokeStyle = "#F7F6F2"; g.globalAlpha = 0.6; g.lineWidth = 2; g.beginPath(); g.arc(C[0], C[1], R + 1, 0, 7); g.stroke(); g.globalAlpha = 1; }
       let bx = START[0], by = START[1], vx = 1, vy = 0, n = 0;
       if (pulling) { bx = pulling[0]; by = pulling[1]; }
       if (shot) {
@@ -88,7 +95,7 @@ export default function build(ctx) {
   return {
     update(t) {
       now = t;
-      if (!reducedMotion) astro.position.y = ay + bob * Math.sin(2 * Math.PI * t / 7), astro.rotation.z = 0.035 * Math.sin(2 * Math.PI * t / 7);
+      if (!reducedMotion) astro.position.y = ay + bob * Math.sin(2 * Math.PI * t / 7), astro.rotation.z = 0.035 * Math.sin(2 * Math.PI * t / 7), rim && (rim.position.y = astro.position.y - ay + rimY, rim.rotation.z = astro.rotation.z);
       if (shot && !reducedMotion) draw();
     },
     dispose() {},

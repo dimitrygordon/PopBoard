@@ -24,7 +24,9 @@ export function positions(s) {
 export default function build(ctx) {
   const { reducedMotion } = ctx;
   const art = (n, b, o = {}) => ctx.art(ART + n, { box: box(b), ...o });
-  art("p11-labels.webp", [84, 35, 1487, 827], { layer: "fg" });
+  art("p11-labels.webp", [84, 35, 1487, 806], { layer: "fg" });
+  // "Earth (inside, faster)" and its leader, lifted 40 px so the Try it tab no longer covers it
+  art("p11-label-earth.webp", [274, 714, 587, 787], { layer: "fg" });
   art("p11-fg-art.webp", [79, 113, 697, 777], { layer: "fg" });
   art("p11-starwall.webp", [136, 341, 1336, 490]);
   const faded = [art("p11-mars-sky.webp", [269, 371, 1117, 453], { z: 0.01 }), art("p11-earth.webp", [589, 764, 760, 870], { z: 0.01, ink: false }), art("p11-mars-orbit.webp", [583, 729, 800, 820], { z: 0.01, ink: false })];

@@ -30,7 +30,10 @@ export function sweptArea(a, b, e, n = 400) {
 export default function build(ctx) {
   const { reducedMotion } = ctx;
   const art = (n, b, o = {}) => ctx.art(ART + n, { box: box(b), ...o });
-  art("p14-labels.webp", [50, 35, 1475, 834], { layer: "fg" });
+  art("p14-labels.webp", [50, 35, 1475, 339], { layer: "fg" });
+  // the drawn "1 month" and "same area" sit on the drawn wedges; once the wedges move they hide and live
+  // labels in the same hand ride the centroid of each wedge instead
+  const wedgeTags = art("p14-labels-wedge.webp", [124, 479, 904, 834], { layer: "fg" });
   art("p14-fg-art.webp", [78, 113, 1258, 230], { layer: "fg" });
   art("p14-kepler.webp", [1185, 504, 1434, 820], { ink: false });
   const plane = ctx.paint([0, 120, 1200, 900], { z: 0.01 });
@@ -38,13 +41,23 @@ export default function build(ctx) {
   const planet = art("p14-planet-far.webp", [62, 550, 99, 590], { z: 0.04, ink: false });
   ctx.touchable(planet, { r: 0.5 });
 
+  const ink = ctx.palette && ctx.palette.dark ? "#F3EAD7" : "#3D3D3D";
+  let moved = false;
   let e = E_DRAWN, m = MONTHS / 2, playing = !reducedMotion, dragging = false, stepAt = -99;
   const mSlider = ctx.ui && ctx.ui.slider({ label: "Month", min: 0, max: MONTHS, step: 0.05, value: m, fmt: (v) => v.toFixed(1) }, (v) => { m = v; stop(); draw(); });
   ctx.ui && ctx.ui.slider({ label: "Eccentricity", min: 0, max: 0.8, step: 0.01, value: e, fmt: (v) => v.toFixed(2) }, (v) => { e = v; draw(); });
   const play = ctx.ui && ctx.ui.button(playing ? "Pause" : "Play", () => { playing = !playing; play.set(playing ? "Pause" : "Play"); });
   function stop() { playing = false; play && play.set("Play"); }
 
+  // area centroid of the fan from the Sun between months a0 and a1
+  function centroid(a0, a1) {
+    let A2 = 0, X = 0, Y = 0, p = where(a0, e);
+    for (let i = 1; i <= 40; i++) { const q = where(a0 + (a1 - a0) * i / 40, e); const c = (p[0] - SUN[0]) * (q[1] - SUN[1]) - (q[0] - SUN[0]) * (p[1] - SUN[1]); A2 += c; X += c * (SUN[0] + p[0] + q[0]) / 3; Y += c * (SUN[1] + p[1] + q[1]) / 3; p = q; }
+    return [X / A2, Y / A2];
+  }
   function draw() {
+    if (!moved && Math.abs(m - MONTHS / 2) > 1e-6) moved = true;
+    wedgeTags.visible = !moved;
     const cx = SUN[0] - A * e, b = A * Math.sqrt(1 - e * e);
     plane.redraw((g) => {
       // the wedges: the month in progress grows from its start, the last few whole months stay shaded
@@ -55,6 +68,10 @@ export default function build(ctx) {
         g.beginPath(); g.moveTo(SUN[0], SUN[1]);
         for (let i = 0; i <= 40; i++) { const p = where(a0 + (a1 - a0) * i / 40, e); g.lineTo(p[0], p[1]); }
         g.closePath(); g.fill(); g.globalAlpha = 0.7; g.strokeStyle = "#3D3D3D"; g.lineWidth = 1; g.stroke();
+      }
+      if (moved) {
+        g.globalAlpha = 1; g.fillStyle = ink; g.font = '37px "Gochi Hand"'; g.textAlign = "center"; g.textBaseline = "middle";
+        for (let k = now - KEEP; k < now; k++) { const c = centroid(k, k + 1); g.fillText("1 month", c[0], c[1]); if (k === now - 1) g.fillText("same area", c[0], c[1] + 38); }
       }
       g.globalAlpha = 1; g.strokeStyle = "#3D3D3D"; g.lineWidth = 3;
       g.beginPath(); g.ellipse(cx, SUN[1], A, b, 0, 0, 7); g.stroke();
@@ -76,6 +93,7 @@ export default function build(ctx) {
     m = best; draw(); return true;
   });
   draw();
+  if (globalThis.document && document.fonts) document.fonts.load('37px "Gochi Hand"').then(() => draw(), () => {});
   return {
     update(t, dt) {
       sun.scale.setScalar(reducedMotion ? 1 : 1 + 0.0075 * (1 - Math.cos(2 * Math.PI * t / 6)));
