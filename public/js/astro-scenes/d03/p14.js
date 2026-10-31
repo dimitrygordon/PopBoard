@@ -55,6 +55,12 @@ export default function build(ctx) {
     for (let i = 1; i <= 40; i++) { const q = where(a0 + (a1 - a0) * i / 40, e); const c = (p[0] - SUN[0]) * (q[1] - SUN[1]) - (q[0] - SUN[0]) * (p[1] - SUN[1]); A2 += c; X += c * (SUN[0] + p[0] + q[0]) / 3; Y += c * (SUN[1] + p[1] + q[1]) / 3; p = q; }
     return [X / A2, Y / A2];
   }
+  // unit vector along the wedge's bisector, pointing away from the Sun; "1 month" rides 24 px out along it
+  function bisector(a0, a1) {
+    const u = (a) => { const p = where(a, e), dx = p[0] - SUN[0], dy = p[1] - SUN[1], l = Math.hypot(dx, dy) || 1; return [dx / l, dy / l]; };
+    const p = u(a0), q = u(a1), x = p[0] + q[0], y = p[1] + q[1], l = Math.hypot(x, y) || 1;
+    return [x / l, y / l];
+  }
   function draw() {
     if (!moved && Math.abs(m - MONTHS / 2) > 1e-6) moved = true;
     wedgeTags.visible = !moved;
@@ -71,7 +77,7 @@ export default function build(ctx) {
       }
       if (moved) {
         g.globalAlpha = 1; g.fillStyle = ink; g.font = '37px "Gochi Hand"'; g.textAlign = "center"; g.textBaseline = "middle";
-        for (let k = now - KEEP; k < now; k++) { const c = centroid(k, k + 1); g.fillText("1 month", c[0], c[1]); if (k === now - 1) g.fillText("same area", c[0], c[1] + 38); }
+        for (let k = now - KEEP; k < now; k++) { const c = centroid(k, k + 1), o = bisector(k, k + 1); g.fillText("1 month", c[0] + o[0] * 24, c[1] + o[1] * 24); if (k === now - 1) g.fillText("same area", c[0], c[1] + 38); }
       }
       g.globalAlpha = 1; g.strokeStyle = "#3D3D3D"; g.lineWidth = 3;
       g.beginPath(); g.ellipse(cx, SUN[1], A, b, 0, 0, 7); g.stroke();
