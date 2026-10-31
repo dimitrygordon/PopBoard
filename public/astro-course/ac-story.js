@@ -4,6 +4,9 @@ import { renderSlide, readableHtml, noteHtml, boxText, esc } from "./ac-render.j
 import { bindThemeButton, store, BACK_ICON, reduceMotion } from "./ac-common.js";
 import { EXTRAS, MODULES } from "./ac-extras.js";
 import { mountOrbit } from "./ac-orbit.js";
+import { mountCrater } from "./ac-sb-crater.js";
+import { mountResonance } from "./ac-sb-resonance.js";
+import { mountDose } from "./ac-sb-dose.js";
 import { forwardStudyQuery } from "../board-return.js?v=20261022a";
 import { halfUnder } from "../shared/layout/layout.js";
 
@@ -16,6 +19,16 @@ const PAGE_KEY = "popboard.astronomy-course.page." + meta.slug;
 const story = $("story"), stage = $("stage"), panel = $("panel");
 let deck = null, page = 1, mode = params.get("mode") === "sandbox" ? "sandbox" : "story", orbit = null;
 const answered = new Map(); // page -> chosen option
+// Sandbox kinds a deck can place on its pages (EXTRAS[deck].sandboxes maps page -> kind).
+const SANDBOXES = {
+  kepler: { name: "Kepler orbit sandbox", mount: (h) => mountOrbit(h) },
+  crater: { name: "Crater sandbox", mount: (h) => mountCrater(h) },
+  resonance: { name: "Resonance sandbox", mount: (h) => mountResonance(h, { system: "galilean" }) },
+  pluto: { name: "Resonance sandbox", mount: (h) => mountResonance(h, { system: "pluto" }) },
+  dose: { name: "Radiation dose sandbox", mount: (h) => mountDose(h) }
+};
+const sandboxKinds = () => [...new Set(Object.values(extra.sandboxes || {}))].filter((k) => SANDBOXES[k]);
+let sbKind = null;
 
 document.title = `${meta.title} // Astronomy Course`;
 $("deckTitle").textContent = meta.title;
@@ -26,7 +39,7 @@ $("studyBackBtn").addEventListener("click", () => {
   location.href = "study-astronomy-course.html" + (qs ? "?" + qs : "");
 });
 
-function hasSandbox() { return Object.keys(extra.sandboxes || {}).length > 0; }
+function hasSandbox() { return sandboxKinds().length > 0; }
 
 function pageUrl() {
   const p = forwardStudyQuery(location.search);
@@ -110,7 +123,7 @@ function renderTools(s) {
       <div class="row"><button type="button" data-reveal aria-expanded="false">Show the answer</button></div><div class="reveal" hidden>${noteHtml(s.reveal)}</div></section>`);
   }
   const sb = extra.sandboxes && extra.sandboxes[s.n];
-  if (sb === "kepler") out.push(`<section class="tool"><h2 class="panel-h">${esc(extra.sandboxName || "Sandbox")}</h2><div id="orbitHost"></div></section>`);
+  if (SANDBOXES[sb]) out.push(`<section class="tool"><h2 class="panel-h">${esc(SANDBOXES[sb].name)}</h2><div id="sbHost" data-kind="${sb}"></div></section>`);
   const ti = extra.tryIt && extra.tryIt[s.n];
   if (ti) out.push(`<section class="tool"><h2 class="panel-h">Try it</h2>${tryItCard(ti)}</section>`);
   return out.join("");
@@ -118,7 +131,7 @@ function renderTools(s) {
 
 function wireTools(s) {
   if (orbit) { orbit.destroy(); orbit = null; }
-  const host = $("orbitHost"); if (host) orbit = mountOrbit(host);
+  const host = $("sbHost"); if (host) orbit = SANDBOXES[host.dataset.kind].mount(host);
   const rb = $("tools").querySelector("[data-reveal]");
   if (rb) rb.addEventListener("click", () => {
     const box = rb.parentElement.nextElementSibling; const open = box.hidden;
@@ -188,11 +201,15 @@ function setMode(m) {
   const sbs = $("sandboxStage");
   if (m === "sandbox") {
     if (orbit) { orbit.destroy(); orbit = null; }
+    const kinds = sandboxKinds();
+    if (!kinds.includes(sbKind)) sbKind = kinds[0];
     sbs.hidden = false;
     $("readBox").hidden = true;
-    $("tools").innerHTML = `<section class="tool"><h2 class="panel-h">${esc(extra.sandboxName || "Sandbox")}</h2><p class="note">Free play. Every sandbox from this storybook, without the pages.</p><div id="orbitHost"></div></section>`;
-    orbit = mountOrbit($("orbitHost"));
-    const cv = $("orbitHost").querySelector("canvas");
+    const pick = kinds.length > 1 ? `<div class="row" role="group" aria-label="Sandbox">${kinds.map((k) => `<button type="button" data-sb="${k}" aria-pressed="${k === sbKind}">${esc(SANDBOXES[k].name.replace(/ sandbox$/, ""))}</button>`).join("")}</div>` : "";
+    $("tools").innerHTML = `<section class="tool"><h2 class="panel-h">${esc(SANDBOXES[sbKind].name)}</h2><p class="note">Free play. The sandboxes from this storybook, without the pages.</p>${pick}<div id="sbHost"></div></section>`;
+    for (const b of $("tools").querySelectorAll("[data-sb]")) b.addEventListener("click", () => { sbKind = b.dataset.sb; setMode("sandbox"); });
+    orbit = SANDBOXES[sbKind].mount($("sbHost"));
+    const cv = $("sbHost").querySelector("canvas");
     sbs.innerHTML = ""; sbs.appendChild(cv);
     history.replaceState(null, "", pageUrl());
   } else {

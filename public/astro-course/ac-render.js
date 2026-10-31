@@ -56,6 +56,15 @@ export function renderSlide(slide, opts = {}) {
   const base = opts.base || "";
   const parts = [];
   let n = 0;
+  // A lone "A" to "D" badge box labels the text box right after it: both become that option.
+  const badge = new Map();
+  if (opts.options) {
+    const texts = slide.items.filter((i) => i.t === "text");
+    texts.forEach((it, i) => {
+      const t = boxText(it).join(" ").trim();
+      if (/^[A-D]$/.test(t)) { badge.set(it, t); if (texts[i + 1] && !/^[A-D]$/.test(boxText(texts[i + 1]).join(" ").trim())) badge.set(texts[i + 1], t); }
+    });
+  }
   for (const it of slide.items) {
     const [x, y, w, h] = it.box;
     const pos = `left:${x}%;top:${y}%;width:${w}%;height:${h}%`;
@@ -72,7 +81,7 @@ export function renderSlide(slide, opts = {}) {
       const fs = big ? `;font-size:calc(var(--u) * ${big})` : "";
       return `<p style="text-align:${ALIGN[p.al] || "left"};${lh}${fs}">${p.r.map(runHtml).join("") || "&nbsp;"}</p>`;
     }).join("");
-    const letter = opts.options ? optionLetter(it) : null;
+    const letter = opts.options ? (optionLetter(it) || badge.get(it) || null) : null;
     const choice = opts.choices && opts.choices.includes(boxText(it).join(" ").trim()) ? boxText(it).join(" ").trim() : null;
     const style = `${pos};justify-content:${ANCHOR[it.anchor] || "flex-start"}`;
     if (letter || choice) {
