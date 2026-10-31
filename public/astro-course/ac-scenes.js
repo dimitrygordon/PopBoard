@@ -13,6 +13,8 @@ export function label(T, text, o = {}) {
   g.font = font; const w = Math.ceil(g.measureText(text).width) + 24;
   c.width = w; c.height = Math.round(px * 1.35);
   g.font = font; g.textBaseline = "middle"; g.fillStyle = o.color || (dark ? "#F3EAD7" : "#3d3d3d");
+  // a paper-colored halo keeps labels readable over bright objects such as the Sun
+  g.lineJoin = "round"; g.lineWidth = 12; g.strokeStyle = dark ? "rgba(30,36,51,0.85)" : "rgba(246,239,223,0.9)"; g.strokeText(text, 12, c.height / 2);
   g.fillText(text, 12, c.height / 2);
   const tex = new T.CanvasTexture(c); tex.colorSpace = T.SRGBColorSpace;
   const m = new T.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false, fog: false });
@@ -22,7 +24,8 @@ export function label(T, text, o = {}) {
   return sp;
 }
 // centered billboard for scene labels
-function tag(T, text, o) { const sp = label(T, text, o); sp.center.set(0.5, 0.5); return sp; }
+let PHONE = false;
+function tag(T, text, o) { const sp = label(T, text, PHONE && !o.raw ? { ...o, h: (o.h || 0.4) * 1.45 } : o); sp.center.set(0.5, 0.5); return sp; }
 
 function ball(T, r, base, accent, phone, basic) {
   const seg = phone ? 18 : 36, map = pencilTexture(T, base, accent, phone);
@@ -62,7 +65,7 @@ function sketcher(root, delayOf = () => 0) {
 }
 
 export function build(kind, T, scene, o) {
-  const B = BUILDERS[kind]; if (!B) return null;
+  const B = BUILDERS[kind]; if (!B) return null; PHONE = !!o.phone;
   const g = new T.Group(); scene.add(g); lights(T, g);
   const api = B(T, g, o) || {};
   const sk = sketcher(g, api.delayOf || (() => 0)), inner = api.update || (() => {});
@@ -110,8 +113,8 @@ const BUILDERS = {
   // P5: Earth at the centre of its cosmic address; the rings surround the viewer and the slider pulls back through each.
   addressRings(T, g, o) {
     const names = ["Earth", "Solar System", "Milky Way", "Local Group", "Laniakea", "Observable Universe"];
-    const earth = ball(T, 0.35, "#5b88b8", "#3f6b3a", o.phone); g.add(earth);
-    const eTag = tag(T, "Earth", { h: 0.3 }); eTag.position.set(0, 0.6, 0); g.add(eTag);
+    const earth = ball(T, 0.25, "#5b88b8", "#3f6b3a", o.phone); g.add(earth);
+    const eTag = tag(T, "Earth", { h: 0.3 }); eTag.position.set(0, 0.48, 0); g.add(eTag);
     const R = [1.7, 3.2, 5.4, 9, 15];
     const rings = R.map((r, i) => { const m = tube(T, r, 0.03 + i * 0.018, i % 2 ? BLUE : GOLD); m.rotation.x = Math.PI / 2; g.add(m); const s = tag(T, names[i + 1], { h: 0.32 + i * 0.12, color: i % 2 ? "#7FA6D9" : "#E2B654" }); s.position.set(-r * 0.55, 0.25 + i * 0.12, -r * 0.83); g.add(s); return m; });
     const ctl = o.controls || {}; let level = 0, shown = 0, touched = false;
@@ -121,13 +124,14 @@ const BUILDERS = {
       cam(t, dt) {
         if (!touched && !o.still) { level = Math.min(5, Math.max(0, (t - 1.5) / 2.2)); ctl.setLevel && ctl.setLevel(level); }
         shown += (level - shown) * Math.min(1, (dt || 0.016) * 2.5);
-        return { pos: V(T, 0, 0.3 + shown * 1.9, 1.1 + shown * 3.4), look: V(T, 0, 0, -1.2) };
+        return { pos: V(T, 0, 0.45 + shown * 1.9, 1.5 + shown * 3.4), look: V(T, 0, 0, -1.2) };
       },
       update(t, dt) { earth.rotation.y += dt * 0.3; },
     };
   },
   // P8: Powers of Ten as one continuous fly-out; each power is a depth layer the camera passes through.
   powersFly(T, g, o) {
+    const INKC = o.dark ? CREAM : INK;
     const STEPS = [["10⁷ m", "Earth"], ["10⁹ m", "Earth and Moon"], ["10¹² m", "Inner Solar System"], ["10¹³ m", "Solar System"], ["10¹⁷ m", "Nearby stars"], ["10²¹ m", "Milky Way"], ["10²³ m", "Local Group"], ["10²⁷ m", "Observable universe"]];
     const GAP = 7, layers = [];
     const pts = (n, f, color, size) => { const p = new Float32Array(n * 3); for (let i = 0; i < n; i++) p.set(f(i), i * 3); const geo = new T.BufferGeometry(); geo.setAttribute("position", new T.BufferAttribute(p, 3)); return new T.Points(geo, new T.PointsMaterial({ color, size, transparent: true })); };
@@ -135,11 +139,11 @@ const BUILDERS = {
       const L = new T.Group(); L.position.z = -i * GAP; g.add(L); layers.push(L);
       const frame = tube(T, 2.6, 0.02, i % 2 ? BLUE : GOLD); L.add(frame);
       if (i === 0) L.add(ball(T, 0.7, "#5b88b8", "#3f6b3a", o.phone));
-      if (i === 1) { L.add(ball(T, 0.3, "#5b88b8", "#3f6b3a", o.phone)); const r = loopLine(T, 1.5, CREAM); r.rotation.x = 1.2; L.add(r); const m = ball(T, 0.1, "#d8d4cc", "#7a7a7a", o.phone); m.position.set(1.5, 0, 0); L.add(m); }
+      if (i === 1) { L.add(ball(T, 0.3, "#5b88b8", "#3f6b3a", o.phone)); const r = loopLine(T, 1.5, INKC); r.rotation.x = 1.2; L.add(r); const m = ball(T, 0.1, "#d8d4cc", "#7a7a7a", o.phone); m.position.set(1.5, 0, 0); L.add(m); }
       if (i === 2 || i === 3) { L.add(ball(T, 0.25, "#f2c45a", "#c9862a", o.phone, true)); [0.6, 0.9, 1.2, 1.6, ...(i === 3 ? [1.9, 2.1, 2.3, 2.5] : [])].forEach((r) => { const l = loopLine(T, r * (i === 3 ? 0.95 : 1.4), i === 3 ? BLUE : GOLD); l.rotation.x = 1.25; L.add(l); }); }
-      if (i === 4) L.add(pts(o.phone ? 60 : 140, () => [(Math.random() - 0.5) * 4, (Math.random() - 0.5) * 3, (Math.random() - 0.5) * 2], CREAM, 0.07));
+      if (i === 4) L.add(pts(o.phone ? 60 : 140, () => [(Math.random() - 0.5) * 4, (Math.random() - 0.5) * 3, (Math.random() - 0.5) * 2], INKC, 0.07));
       if (i === 5) L.add(pts(o.phone ? 500 : 1500, (k) => { const arm = k % 2, rr = Math.pow(Math.random(), 0.7) * 2.3, a = rr * 2.2 + arm * Math.PI + (Math.random() - 0.5) * 0.5; return [Math.cos(a) * rr, Math.sin(a) * rr * 0.55, (Math.random() - 0.5) * 0.15]; }, BLUE, 0.04));
-      if (i === 6) for (let k = 0; k < 7; k++) { const p = pts(o.phone ? 60 : 160, () => { const rr = Math.random() * 0.35, a = Math.random() * 6.28; return [Math.cos(a) * rr, Math.sin(a) * rr * 0.4, 0]; }, k % 2 ? CREAM : BLUE, 0.035); p.position.set((Math.random() - 0.5) * 4, (Math.random() - 0.5) * 2.6, (Math.random() - 0.5)); L.add(p); }
+      if (i === 6) for (let k = 0; k < 7; k++) { const p = pts(o.phone ? 60 : 160, () => { const rr = Math.random() * 0.35, a = Math.random() * 6.28; return [Math.cos(a) * rr, Math.sin(a) * rr * 0.4, 0]; }, k % 2 ? INKC : BLUE, 0.035); p.position.set((Math.random() - 0.5) * 4, (Math.random() - 0.5) * 2.6, (Math.random() - 0.5)); L.add(p); }
       if (i === 7) L.add(pts(o.phone ? 600 : 2000, () => { const f = Math.floor(Math.random() * 9), a = f / 9 * 6.28, r = Math.random() * 2.4; return [Math.cos(a) * r + (Math.random() - 0.5) * 0.15, Math.sin(a) * r + (Math.random() - 0.5) * 0.15, (Math.random() - 0.5) * 0.6]; }, GOLD, 0.03));
       const t1 = tag(T, pow, { h: 0.55, color: "#E2B654" }); t1.position.set(0, 1.95, 0.1); L.add(t1);
       const t2 = tag(T, name, { h: 0.36 }); t2.position.set(0, -1.95, 0.1); L.add(t2);
@@ -202,12 +206,13 @@ export function runModule(mod, T, scene, o) {
   const ctx = {
     THREE: T, scene: root, camera: o.camera, layers, palette: palette(o.dark), reducedMotion: !!o.still, phone: !!o.phone, controls: o.controls || null,
     sketch(obj, { delay = 0 } = {}) { sketches.push(sketcher(obj, () => delay)); return obj; },
-    label(text, pos = [0, 0, 0], { layer = "fg", color, h = 0.4 } = {}) { const s = tag(T, text, { color, h }); s.position.set(...pos); layers[layer].add(s); return s; },
+    label(text, pos = [0, 0, 0], { layer = "fg", color, h = 0.4 } = {}) { const s = tag(T, text, { color, raw: true, h: o.phone ? Math.min(h * 1.45, Math.max(h, 1.1)) : h }); s.position.set(...pos); layers[layer].add(s); return s; },
     art(src, { layer = "mid", z = 0, box = [0, 0, 100, 100], opacity = 1 } = {}) {
       const p = o.place(box, LAYER_Z[layer] + z), tex = new T.TextureLoader().load(o.base + src); tex.colorSpace = T.SRGBColorSpace; loaders.push(tex);
       const m = new T.Mesh(new T.PlaneGeometry(p.w, p.h), new T.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, opacity }));
       m.position.set(p.cx, p.cy, z); layers[layer].add(m); return m;
     },
+    pencil(base, accent) { return pencilTexture(T, base, accent, o.phone); },
     setCamera(pos, look) { camSet = { pos: new T.Vector3(...pos), look: new T.Vector3(...look) }; },
     onDrag(fn) { drags.push(fn); },
   };

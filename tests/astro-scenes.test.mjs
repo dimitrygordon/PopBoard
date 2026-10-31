@@ -22,6 +22,7 @@ function makeCtx() {
     THREE: T, scene, camera, layers, reducedMotion: false, phone: false, controls: null,
     palette: { dark: true, paper: 0x1e2433, ink: 0xf3ead7, gold: 0xe2b654, blue: 0x7fa6d9, red: 0xd9826b, inkCss: "#F3EAD7", goldCss: "#E2B654", blueCss: "#7FA6D9" },
     sketch: (o) => o,
+    pencil: () => new T.Texture(),
     label: (text, pos = [0, 0, 0], { layer = "fg" } = {}) => { const s = new T.Sprite(new T.SpriteMaterial()); s.position.set(...pos); layers[layer].add(s); return s; },
     art: (src, { layer = "mid" } = {}) => { const m = new T.Mesh(new T.PlaneGeometry(1, 1), new T.MeshBasicMaterial()); layers[layer].add(m); return m; },
     setCamera(pos, look) { camera.position.set(...pos); camera.lookAt(...look); camera.updateMatrixWorld(); },

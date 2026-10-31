@@ -36,6 +36,7 @@ export default function build(ctx) {
 | `sketch(obj, {delay})` | Pencil sketch-in for `obj` and its children: lines draw on, meshes go wireframe then hatched, and sprites fade or write on starting at `delay` seconds. Returns `obj`. |
 | `label(text, [x,y,z], {layer, color, h})` | A camera-facing billboard label (Patrick Hand font). `h` is its height in world units. Returns the Sprite. |
 | `art(src, {layer, z, box, opacity})` | A cut-out art plane. `src` is relative to the deck folder (e.g. `"v2/L05-2.webp"`) and `box` is `[x,y,w,h]` in page percent, the same as `story.json` layers. Split hand-drawn art into fg, mid and bg planes; never a single flat card. |
+| `pencil(base, accent)` | The shared pencil-hatch texture (CSS colors) for spheres and solids, e.g. `new T.MeshLambertMaterial({ map: ctx.pencil("#5b88b8", "#3f6b3a") })`. |
 | `palette` | Theme-aware colors: `{dark, paper, ink, gold, blue, red}` as hex numbers plus `inkCss`, `goldCss` and `blueCss` strings for labels. |
 | `reducedMotion` | `true` when the user asked for reduced motion: show the finished state and skip drift. |
 | `phone` | `true` on small screens: keep segment and particle counts low. |

@@ -264,11 +264,13 @@ function popPage(s, sv) {
   const own = !!(mod || sv.scene);
   if (imm) Object.assign(opts, { immersive: true, sceneModule: mod, scene: sv.scene || null, drop: own ? sv.layers.map((l) => l.src) : [], labels: own ? [] : sceneLabels(s) });
   popup.show({ ...sv, layers }, opts);
-  if (imm) { prewarm(); return; }
-  const nPop = sv.layers.filter((l) => !l.flat).length;
-  const labelsAt = reduceMotion() ? 0 : Math.min(2.4, 0.2 * (nPop + 1) + 0.6);
-  writeOn(labelsAt);
-  fxh = mountFx(stage, sv.fx, sv.layers, reduceMotion() ? 0 : labelsAt);
+  if (imm) prewarm();
+  else {
+    const nPop = sv.layers.filter((l) => !l.flat).length;
+    const labelsAt = reduceMotion() ? 0 : Math.min(2.4, 0.2 * (nPop + 1) + 0.6);
+    writeOn(labelsAt);
+    fxh = mountFx(stage, sv.fx, sv.layers, reduceMotion() ? 0 : labelsAt);
+  }
   // a sketched Try it tab on pages with a sandbox
   const kind = sv.sandbox;
   if (kind && (SANDBOXES[kind] || ONPAGE[kind])) {
