@@ -9,7 +9,7 @@ function fmtEnergy(mt) {
   if (mt < 1e4) return `${mt.toFixed(mt < 10 ? 1 : 0)} megatons of TNT`;
   return `${(mt / 1e6).toFixed(mt < 1e7 ? 1 : 0)} million megatons of TNT`;
 }
-const SHAPE = { bowl: "Simple bowl", peak: "Complex: central peak and terraces", rings: "Huge: peak ring or multi-ring basin" };
+const SHAPE = { bowl: "Simple bowl", peak: "Complex: central peak and terraces", rings: "Huge: peak ring or multi-ring basin (simplified cutoff)" };
 const PRESETS = {
   meteor: { L: 40, v: 12.8, mat: "iron", body: "earth", name: "Meteor Crater, Arizona" },
   chicx: { L: 10000, v: 20, mat: "stone", body: "earth", name: "Chicxulub" },
