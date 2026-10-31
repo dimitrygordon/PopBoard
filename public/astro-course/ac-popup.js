@@ -168,7 +168,7 @@ export function createPopup({ stage, base, onFrame }) {
       scene.fog = new T.Fog(dark ? 0x1e2433 : 0xf6efdf, 40, 120);
       const lab = await import("./ac-scenes.js");
       if (slide !== s) return;
-      if (opts.sceneModule) { try { const mod = await import(opts.sceneModule); if (slide !== s) return; stageScene = lab.runModule(mod, T, scene, { phone, dark, camera: cam, controls: opts.controls, still: reduceMotion(), DIST, W, H, place, base, art: opts.art || "" }); } catch (err) { console.info("scene module failed, using the generic scene", err); stageScene = null; } }
+      if (opts.sceneModule) { try { const mod = await import(opts.sceneModule); if (slide !== s) return; stageScene = lab.runModule(mod, T, scene, { phone, dark, camera: cam, controls: opts.controls, still: reduceMotion(), DIST, W, H, place, base, art: opts.art || "", sceneText: opts.sceneText, ui: opts.ui }); } catch (err) { console.info("scene module failed, using the generic scene", err); stageScene = null; } }
       if (!stageScene && opts.scene) { const sc = lab.build(opts.scene, T, scene, { phone, dark, camera: cam, controls: opts.controls, still: reduceMotion(), DIST, W, H, place, art: opts.art || "", kit: base + "v2/art/" }); if (sc) { stageScene = sc; } }
     }
     const kinds = [opts.special, opts.hero].filter(Boolean);

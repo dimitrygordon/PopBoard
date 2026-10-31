@@ -192,18 +192,34 @@ export function palette(dark) {
   return dark ? { dark: true, paper: 0x1e2433, ink: 0xf3ead7, gold: 0xe2b654, blue: 0x7fa6d9, red: 0xd9826b, inkCss: "#F3EAD7", goldCss: "#E2B654", blueCss: "#7FA6D9" }
     : { dark: false, paper: 0xf6efdf, ink: 0x3d3d3d, gold: 0xc9862a, blue: 0x3f6fa8, red: 0xb5523b, inkCss: "#3d3d3d", goldCss: "#8a5a12", blueCss: "#3f6fa8" };
 }
+// Dark mode: the slide's graphite and black ink turn into light pencil so line art reads on dark paper;
+// colored pencil (and white paper fills such as Moon disks) keep their colors.
+function inkTexture(T, url) {
+  const c = document.createElement("canvas"), tex = new T.CanvasTexture(c);
+  img(url).then((im) => {
+    if (!im) return; c.width = im.width; c.height = im.height; const g = c.getContext("2d"); g.drawImage(im, 0, 0);
+    const d = g.getImageData(0, 0, c.width, c.height), a = d.data;
+    for (let i = 0; i < a.length; i += 4) {
+      const mx = Math.max(a[i], a[i + 1], a[i + 2]), mn = Math.min(a[i], a[i + 1], a[i + 2]);
+      if (a[i + 3] && mx - mn < 46 && mx < 175) { const v = 1 - mx / 175; a[i] = 243 - 60 * (1 - v); a[i + 1] = 234 - 60 * (1 - v); a[i + 2] = 215 - 60 * (1 - v); }
+    }
+    // the canvas changed size since the first upload, so the GPU texture is rebuilt rather than patched
+    g.putImageData(d, 0, 0); tex.dispose(); tex.needsUpdate = true;
+  });
+  return tex;
+}
 // Builds the ctx a module sees, runs its build(), and returns the engine-side api.
 export function runModule(mod, T, scene, o) {
   const root = new T.Group(); scene.add(root); lights(T, root);
   const layers = {}; for (const [k, z] of Object.entries(LAYER_Z)) { const g = new T.Group(); g.position.z = z; g.name = k; root.add(g); layers[k] = g; }
   const sketches = [], drags = [], loaders = [], th = touchHints(T, { still: o.still });
-  let camSet = null;
+  let camSet = null; const ptrs = [], ray = new T.Raycaster(), hit = new T.Vector3(), plane = new T.Plane(new T.Vector3(0, 0, 1), 0);
   const ctx = {
     THREE: T, scene: root, camera: o.camera, layers, palette: palette(o.dark), reducedMotion: !!o.still, phone: !!o.phone, controls: o.controls || null,
     sketch(obj, { delay = 0 } = {}) { sketches.push(sketcher(obj, () => delay)); return obj; },
     label(text, pos = [0, 0, 0], { layer = "fg", color, h = 0.4 } = {}) { const s = tag(T, text, { color, raw: true, h: o.phone ? Math.min(h * 1.45, Math.max(h, 1.1)) : h }); s.position.set(...pos); layers[layer].add(s); return s; },
-    art(src, { layer = "mid", z = 0, box = [0, 0, 100, 100], opacity = 1 } = {}) {
-      const p = o.place(box, LAYER_Z[layer] + z), tex = new T.TextureLoader().load(o.base + src); tex.colorSpace = T.SRGBColorSpace; loaders.push(tex);
+    art(src, { layer = "mid", z = 0, box = [0, 0, 100, 100], opacity = 1, ink = true } = {}) {
+      const p = o.place(box, LAYER_Z[layer] + z), tex = o.dark && ink ? inkTexture(T, o.base + src) : new T.TextureLoader().load(o.base + src); tex.colorSpace = T.SRGBColorSpace; loaders.push(tex);
       const m = new T.Mesh(new T.PlaneGeometry(p.w, p.h), new T.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, opacity }));
       m.position.set(p.cx, p.cy, z); layers[layer].add(m); return m;
     },
@@ -211,12 +227,39 @@ export function runModule(mod, T, scene, o) {
     setCamera(pos, look) { camSet = { pos: new T.Vector3(...pos), look: new T.Vector3(...look) }; },
     onDrag(fn) { drags.push(fn); },
     touchable(obj, opts = {}) { return th.add(obj, opts); },
+    // page px (1600 x 900, the slide's own coordinates) to local x, y on a layer, so art and geometry line up at rest
+    at(px, py, layer = "mid") { const k = (o.DIST - LAYER_Z[layer]) / o.DIST; return [(px / 1600 * o.W - o.W / 2) * k, (o.H / 2 - py / 900 * o.H) * k]; },
+    onPointer(fn) { ptrs.push(fn); },
+    // A live pencil drawing on a plane: box is [x0, y0, x1, y1] in page px. redraw(fn) clears it and calls
+    // fn(g) with a 2D context already set up in page px, so strokes land exactly on the slide's coordinates.
+    paint(box, { layer = "mid", z = 0, density = o.phone ? 1 : 1.5 } = {}) {
+      const [x0, y0, x1, y1] = box, c = document.createElement("canvas"); c.width = Math.ceil((x1 - x0) * density); c.height = Math.ceil((y1 - y0) * density);
+      const tex = new T.CanvasTexture(c); tex.colorSpace = T.SRGBColorSpace; tex.anisotropy = 8; loaders.push(tex);
+      const p = o.place([x0 / 16, y0 / 9, (x1 - x0) / 16, (y1 - y0) / 9], LAYER_Z[layer] + z);
+      const mesh = new T.Mesh(new T.PlaneGeometry(p.w, p.h), new T.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }));
+      mesh.position.set(p.cx, p.cy, z); layers[layer].add(mesh);
+      const g = c.getContext("2d");
+      return { mesh, redraw(fn) { g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, c.width, c.height); g.setTransform(density, 0, 0, density, -x0 * density, -y0 * density); g.lineCap = "round"; g.lineJoin = "round"; fn(g); tex.needsUpdate = true; } };
+    },
+    text: o.sceneText || {},
+    ui: o.ui || null,
   };
   const user = mod.default(ctx) || {};
   return {
     cam: () => camSet || { pos: new T.Vector3(0, 0, o.DIST), look: new T.Vector3(0, 0, 0) },
     update(t, dt) { for (const s of sketches) s(o.still ? 99 : t); user.update && user.update(t, dt); th.update(t, dt); },
     drag(d) { th.interact(); for (const f of drags) f(d); },
+    // onPointer handlers get page px on the mid plane; a handler returning true on "down" takes the drag (no look-around)
+    pointer(e, r, ph, cam) {
+      if (!ptrs.length || !cam) return false;
+      ray.setFromCamera(new T.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), cam);
+      const ndc = [((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1];
+      if (!ray.ray.intersectPlane(plane, hit)) hit.set(NaN, NaN, 0);
+      const ev = { phase: ph, x: (hit.x + o.W / 2) / o.W * 1600, y: (o.H / 2 - hit.y) / o.H * 900, ndc };
+      let took = false; for (const f of ptrs) took = f(ev) === true || took;
+      if (ph === "down" && took) th.interact();
+      return took;
+    },
     interact() { th.interact(); },
     dispose() {
       try { user.dispose && user.dispose(); } finally {

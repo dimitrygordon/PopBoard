@@ -92,6 +92,7 @@ test("every slide of every deck has layered art, a 3D set piece or a scene", asy
   const pieces = ["rings", "cannon", "seasons", "starfield"];
   const SCENES = [...readFileSync(AC + "ac-scenes.js", "utf8").matchAll(/^  (\w+)\(T, g, o\) \{/gm)].map((m) => m[1]);
   for (const k of pieces) assert.match(src, new RegExp(`kind === "${k}"`), k);
+  const MODS = JSON.parse(readFileSync(AC + "../js/astro-scenes/manifest.json", "utf8"));
   let n = 0;
   for (const slug of readdirSync(AC + "decks")) {
     const st = JSON.parse(readFileSync(AC + `decks/${slug}/v2/story.json`, "utf8"));
@@ -99,6 +100,8 @@ test("every slide of every deck has layered art, a 3D set piece or a scene", asy
     for (const s of dk.slides) {
       const v = st.slides[String(s.n)], k = v && (v.three || v.hero);
       if (v && hasArt(slug, "p" + String(s.n).padStart(2, "0"))) { n++; continue; }
+      // a per-page scene module (js/astro-scenes/<deck>/pNN.js) on an immersive deck is its own 3D scene
+      if (v && st.immersive && (MODS[slug] || []).includes("p" + String(s.n).padStart(2, "0"))) { n++; continue; }
       if (v && v.scene) { assert.ok(st.immersive && SCENES.includes(v.scene), `${slug} page ${s.n} scene ${v.scene}`); n++; continue; }
       assert.ok(k && (heroes.includes(k) || pieces.includes(k)), `${slug} page ${s.n} has no 3D scene`);
       n++;
