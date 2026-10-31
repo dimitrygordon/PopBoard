@@ -3,8 +3,8 @@
 const INK = "#3d3d3d", DIM = "#8c8170", COLORS = ["#a34a3e", "#3f6fa8", "#3f6b3a"], GOLD = "rgba(201,150,46,";
 
 export const SYSTEMS = {
-  galilean: { name: "Io, Europa, Ganymede (1 : 2 : 4)", center: "Jupiter", centerColor: "#d9a066", bodies: [["Io", 1.769], ["Europa", 3.551], ["Ganymede", 7.155]], unit: "days", radii: [0.42, 0.62, 0.86] },
-  pluto: { name: "Neptune and Pluto (3 : 2)", center: "Sun", centerColor: "#f2c45a", bodies: [["Neptune", 164.8], ["Pluto", 247.9]], unit: "years", radii: [0.6, 0.86] }
+  galilean: { name: "Io, Europa, Ganymede (1 : 2 : 4)", center: "Jupiter", centerColor: "#d9a066", bodies: [["Io", 1.769], ["Europa", 3.551], ["Ganymede", 7.155]], unit: "days", radii: [0.42, 0.62, 0.86], effect: "keeps orbits stretched (and Io hot)" },
+  pluto: { name: "Neptune and Pluto (3 : 2)", center: "Sun", centerColor: "#f2c45a", bodies: [["Neptune", 164.8], ["Pluto", 247.9]], unit: "years", radii: [0.6, 0.86], effect: "keeps Pluto from ever getting close to Neptune, even though their orbits cross" }
 };
 // Angle of each line-up (conjunction) between bodies i and j, over n of the outer body's orbits.
 export function conjunctions(P1, P2, count) {
@@ -22,7 +22,7 @@ export function mountResonance(host, { system = "galilean" } = {}) {
     <div class="row"><button type="button" data-k="play" aria-pressed="true">Pause</button><button type="button" data-k="clear">Clear marks</button></div>
     <div class="row"><select data-k="sys" aria-label="System">${Object.entries(SYSTEMS).map(([k, s]) => `<option value="${k}">${s.name}</option>`).join("")}</select></div>
     <label>Outer period, times the real one: <b data-o="f"></b><input type="range" data-k="f" min="0.8" max="1.25" step="0.005" value="1"></label>
-    <p class="note">At 1.00 the line-ups land on the same few spots again and again, so each tug pushes the same way: that keeps orbits stretched (and Io hot). Nudge the slider and the marks spread all the way around.</p>`;
+    <p class="note" data-o="note"></p>`;
   const q = (s) => host.querySelector(s);
   const cv = q("canvas"), ctx = cv.getContext("2d");
   const sysIn = q('[data-k="sys"]'), fIn = q('[data-k="f"]'), playBtn = q('[data-k="play"]');
@@ -30,7 +30,9 @@ export function mountResonance(host, { system = "galilean" } = {}) {
   let playing = !matchMedia("(prefers-reduced-motion: reduce)").matches;
   sysIn.value = system;
   const periods = () => sys.bodies.map((b, i) => (i === sys.bodies.length - 1 ? b[1] * +fIn.value : b[1]));
-  const reset = () => { t = 0; marks = []; draw(); };
+  const caption = () => { q('[data-o="note"]').textContent = `At 1.00 the line-ups stay close to the same spots, so each tug pushes the same way: that ${sys.effect}. Nudge the slider and the marks spread all the way around.`; };
+  const reset = () => { t = 0; marks = []; caption(); draw(); };
+  caption();
   sysIn.addEventListener("change", () => { sys = SYSTEMS[sysIn.value]; fIn.value = 1; reset(); });
   fIn.addEventListener("input", reset);
   q('[data-k="clear"]').addEventListener("click", () => { marks = []; draw(); });
@@ -46,7 +48,7 @@ export function mountResonance(host, { system = "galilean" } = {}) {
       const d0 = Math.floor((before[i] - before[i + 1]) / (2 * Math.PI)), d1 = Math.floor((after[i] - after[i + 1]) / (2 * Math.PI));
       if (d1 !== d0) marks.push({ a: after[i + 1], r: sys.radii[i + 1], i });
     }
-    if (marks.length > 240) marks.splice(0, marks.length - 240);
+    if (marks.length > 36) marks.splice(0, marks.length - 36); // only recent line-ups, so slow drift does not smear
   }
   function draw() {
     const W = cv.width, H = cv.height, cx = W / 2, cy = H / 2, Rm = W * 0.46, P = periods();
