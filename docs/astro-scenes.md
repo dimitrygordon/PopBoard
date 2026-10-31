@@ -41,7 +41,7 @@ export default function build(ctx) {
 | `reducedMotion` | `true` when the user asked for reduced motion: show the finished state and skip drift. |
 | `phone` | `true` on small screens: keep segment and particle counts low. |
 | `controls` | The page's slider hooks, if it has any (e.g. `onLevel`). Otherwise `null`. |
-| `touchable(obj, {r, at})` | Marks a grabbable object with the shared touch hint. A soft gold (#E2B654) radial-gradient halo, `r` world units in radius, breathes around `obj` (or at offset `at` inside it). It fades out after the first interaction on the page. Under reduced motion it is a static faint ring. **Call it on every object students can drag, spin or tap.** The module test fails if a scene uses `onDrag` without one. Returns the halo Sprite. |
+| `touchable(obj, {r, at})` | Marks a grabbable object with the shared touch hint. A wobbly, hand-drawn gold (#E2B654) pencil outline, `r` world units in radius, breathes around `obj` (or at offset `at` inside it). It is never a soft glow. It fades out after the first interaction on the page. Under reduced motion it holds still at a faint opacity. **Call it on every object students can drag, spin or tap.** The module test fails if a scene uses `onDrag` without one. Returns the halo Sprite. |
 | `onDrag(fn)` | `fn({dx, dy, x, y})` runs on look-drags. Values are fractions of the stage, `dx` and `dy` are measured from the drag start. The camera still looks around. |
 
 The same helper is built into the engine's own pieces. In D01 those are the p5 address rings, the p17 masses, the p18 cannonball, the p21 seasons Earth and every drag-to-spin object.

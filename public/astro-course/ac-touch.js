@@ -1,13 +1,18 @@
-// Shared touch hint: a soft gold halo (#E2B654, createRadialGradient) breathes around every object
+// Shared touch hint: a wobbly hand-drawn gold pencil outline (#E2B654) breathes around every object
 // students can grab, then fades away after the first interaction on the page. Under reduced motion
-// it is a static faint ring instead of a breathing glow.
-function haloTex(T, ring) {
+// it holds still at a faint opacity.
+// A hand-drawn gold pencil circle (two wobbly passes, varied pressure), never a soft glow.
+function haloTex(T) {
   if (typeof document === "undefined") return new T.Texture(); // node tests
-  const c = document.createElement("canvas"); c.width = c.height = 128;
-  const g = c.getContext("2d"), r = g.createRadialGradient(64, 64, ring ? 40 : 18, 64, 64, 64);
-  if (ring) { r.addColorStop(0, "rgba(226,182,84,0)"); r.addColorStop(0.55, "rgba(226,182,84,0.7)"); r.addColorStop(1, "rgba(226,182,84,0)"); }
-  else { r.addColorStop(0, "rgba(226,182,84,0.55)"); r.addColorStop(1, "rgba(226,182,84,0)"); }
-  g.fillStyle = r; g.fillRect(0, 0, 128, 128);
+  const c = document.createElement("canvas"); c.width = c.height = 256;
+  const g = c.getContext("2d"); g.strokeStyle = "#E2B654"; g.lineCap = "round";
+  for (let pass = 0; pass < 2; pass++) {
+    const ph = Math.random() * 6.28, r0 = 104 - pass * 3, start = Math.random() * 6.28;
+    g.lineWidth = pass ? 3.5 : 6; g.globalAlpha = pass ? 0.7 : 0.95; g.beginPath();
+    // the stroke overshoots its start a little, like a circle drawn by hand
+    for (let k = 0; k <= 76; k++) { const a = start + k / 72 * Math.PI * 2, r = r0 + Math.sin(a * 3 + ph) * 3 + Math.sin(a * 7 + ph * 2) * 1.5; const x = 128 + Math.cos(a) * r, y = 128 + Math.sin(a) * r; k ? g.lineTo(x, y) : g.moveTo(x, y); }
+    g.stroke();
+  }
   const t = new T.CanvasTexture(c); t.colorSpace = T.SRGBColorSpace; return t;
 }
 export const STATIC_OPACITY = 0.35;
@@ -17,9 +22,9 @@ export function touchHints(T, { still = false } = {}) {
     hints,
     // obj: the grabbable Object3D. r: its radius in world units. at: offset inside obj (default centre).
     add(obj, { r = 0.6, at = null } = {}) {
-      tex = tex || haloTex(T, still);
+      tex = tex || haloTex(T);
       const m = new T.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, opacity: still ? STATIC_OPACITY : 0.55 });
-      const sp = new T.Sprite(m); sp.scale.setScalar(r * 3.2); sp.renderOrder = -2; sp.userData.touchHint = true;
+      const sp = new T.Sprite(m); sp.scale.setScalar(r * 2.5); sp.renderOrder = -2; sp.userData.touchHint = true;
       if (at) sp.position.set(...(Array.isArray(at) ? at : [at.x, at.y, at.z]));
       obj.add(sp); hints.push(sp); return sp;
     },

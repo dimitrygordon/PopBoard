@@ -6,16 +6,26 @@ import { touchHints } from "./ac-touch.js";
 
 
 // A billboard label: canvas text on a sprite anchored at its left edge so it can write on left to right.
+// "_{g}" and "^{2}" mark subscript and superscript runs (force vectors are F_{g}, never Fg).
 export function label(T, text, o = {}) {
   const dark = document.documentElement.dataset.theme === "dark";
   const px = 72, c = document.createElement("canvas"), g = c.getContext("2d");
-  const font = `${o.bold ? "700 " : ""}${px}px "Patrick Hand", "Comic Sans MS", sans-serif`;
-  g.font = font; const w = Math.ceil(g.measureText(text).width) + 24;
-  c.width = w; c.height = Math.round(px * 1.35);
-  g.font = font; g.textBaseline = "middle"; g.fillStyle = o.color || (dark ? "#F3EAD7" : "#3d3d3d");
+  const fontAt = (k) => `${o.bold ? "700 " : ""}${Math.round(px * k)}px "Patrick Hand", "Comic Sans MS", sans-serif`;
+  const runs = []; text.replace(/([_^])\{([^}]*)\}|([^_^]+|[_^])/g, (m, mk, inner, plain) => { runs.push(mk ? { t: inner, k: 0.62, dy: mk === "_" ? 0.28 : -0.32 } : { t: plain, k: 1, dy: 0 }); return m; });
+  const widthOf = (r) => { g.font = fontAt(r.k); return g.measureText(r.t).width; };
+  const w = Math.ceil(runs.reduce((a, r) => a + widthOf(r), 0)) + 24;
+  c.width = w; c.height = Math.round(px * 1.6);
+  g.textBaseline = "middle"; g.lineJoin = "round";
   // a paper-colored halo keeps labels readable over bright objects such as the Sun
-  g.lineJoin = "round"; g.lineWidth = 12; g.strokeStyle = dark ? "rgba(30,36,51,0.85)" : "rgba(246,239,223,0.9)"; g.strokeText(text, 12, c.height / 2);
-  g.fillText(text, 12, c.height / 2);
+  for (const pass of ["stroke", "fill"]) {
+    let x = 12;
+    for (const r of runs) {
+      g.font = fontAt(r.k); const y = c.height / 2 + r.dy * px;
+      if (pass === "stroke") { g.lineWidth = 12 * r.k; g.strokeStyle = dark ? "rgba(30,36,51,0.85)" : "rgba(246,239,223,0.9)"; g.strokeText(r.t, x, y); }
+      else { g.fillStyle = o.color || (dark ? "#F3EAD7" : "#3d3d3d"); g.fillText(r.t, x, y); }
+      x += g.measureText(r.t).width;
+    }
+  }
   const tex = new T.CanvasTexture(c); tex.colorSpace = T.SRGBColorSpace;
   const m = new T.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false, fog: false });
   const sp = new T.Sprite(m); sp.center.set(0, 0.5);
@@ -128,8 +138,9 @@ const BUILDERS = {
   // the masses come closer (inverse square); drag a mass to change d.
   gravityPair(T, g, o) {
     const ink = o.dark ? KIT.darkInk : KIT.graphite;
-    const grey = (r, gg, b) => (r > gg + 18 && r > b + 18 ? [196, 196, 196] : null); // strip the baked red arrows
-    const m1 = cutout(T, o.art, [89, 520, 103, 105], 1.15, { round: true, clean: grey }), m2 = cutout(T, o.art, [1300, 520, 103, 105], 1.15, { round: true, clean: grey });
+    // Leo's clean mass cutouts (the slide's left pair, with the baked arrows removed)
+    const mass = (src) => { const sp = new T.Sprite(new T.SpriteMaterial({ map: new T.TextureLoader().load(o.kit + src, (tx) => { tx.colorSpace = T.SRGBColorSpace; tx.anisotropy = 8; tx.needsUpdate = true; }), transparent: true, depthWrite: false })); sp.scale.set(1.15 * 104 / 102, 1.15, 1); return sp; };
+    const m1 = mass("p17-mass1.webp"), m2 = mass("p17-mass2.webp");
     g.add(m1, m2);
     // a pencil arrow: the shaft stretches with the force, the hand-drawn heads keep their shape
     const arrow = (color, both) => {
@@ -142,20 +153,25 @@ const BUILDERS = {
     };
     const a1 = arrow(KIT.red), a2 = arrow(KIT.red); a2.rotation.z = Math.PI; g.add(a1, a2);
     const dl = arrow(ink, true); g.add(dl);
-    o.touch.add(m1, { r: 0.5 }); o.touch.add(m2, { r: 0.5 });
-    const eq = tag(T, "F = G m₁m₂ / d²", { h: 0.5, color: o.dark ? KIT.darkInk : KIT.label }); eq.position.set(0, 1.6, 0); g.add(eq);
-    const law = tag(T, "inverse-square law", { h: 0.36, color: o.dark ? KIT.darkInk : KIT.label2 }); law.position.set(0, -1.5, 0); g.add(law);
+    o.touch.add(m1, { r: 0.6 }); o.touch.add(m2, { r: 0.6 });
+    const inkCss = o.dark ? KIT.darkInk : KIT.label;
+    const eq = tag(T, "F_{g} = G m₁m₂ / d²", { h: 0.62, color: inkCss }); eq.position.set(0, 1.6, 0); g.add(eq);
+    const tm1 = tag(T, "m₁", { h: 0.42, color: inkCss }), tm2 = tag(T, "m₂", { h: 0.42, color: inkCss }), td = tag(T, "d", { h: 0.42, color: inkCss });
+    const tf1 = tag(T, "F_{g}", { h: 0.46, color: KIT.red }), tf2 = tag(T, "F_{g}", { h: 0.46, color: KIT.red }); g.add(tm1, tm2, td, tf1, tf2);
+    const law = tag(T, "inverse-square law", { h: 0.36, color: o.dark ? KIT.darkInk : KIT.label2 }); law.position.set(0, -1.65, 0); g.add(law);
     let d = 2, dragD = null, cam0 = null; const ray = new T.Raycaster();
     return {
-      delayOf: (m) => m === m1 || m === m2 ? 0.2 : m === eq || m === law ? 1.2 : 0.8,
+      delayOf: (m) => m === m1 || m === m2 ? 0.2 : m.isSprite && m.material.depthTest === false ? 1.2 : 0.8,
       // a gentle sway in front of the diorama, never edge-on to the flat drawings
-      cam(t) { const a = o.still ? 0 : Math.sin(t * 0.25) * 0.35; return { pos: V(T, Math.sin(a) * 8, 0.5, Math.cos(a) * 8), look: V(T, 0, 0.1, 0) }; },
+      cam(t) { const a = o.still ? 0 : Math.sin(t * 0.25) * 0.35; const R = o.phone ? 12 : 8; return { pos: V(T, Math.sin(a) * R, 0.5, Math.cos(a) * R), look: V(T, 0, 0.1, 0) }; },
       update(t, dt, cam) {
         cam0 = cam; if (dragD == null && !o.still) d = 2.2 + Math.sin(t * 0.35) * 0.9;
         m1.position.set(-d, 0, 0); m2.position.set(d, 0, 0);
         const len = Math.max(0.3, Math.min(2.6, 1.6 * (1.3 * 1.3) / (d * d) * 1.4));
         a1.userData.set(len); a1.position.set(-d + 0.45 + len / 2, 0, 0.02); a2.userData.set(len); a2.position.set(d - 0.45 - len / 2, 0, 0.02);
         dl.userData.set(2 * d); dl.position.set(0, -0.85, 0);
+        tm1.position.set(-d, 0.85, 0.05); tm2.position.set(d, 0.85, 0.05); td.position.set(0, -1.15, 0.05);
+        tf1.position.set(-d + 0.45 + len + 0.32, 0.12, 0.05); tf2.position.set(d - 0.45 - len - 0.32, 0.12, 0.05);
       },
       pointer(e, r, ph, cam) {
         if (ph === "down") { ray.setFromCamera(new T.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), cam || cam0); if (!ray.intersectObjects([m1, m2]).length) return false; dragD = { x: e.clientX, d0: d }; return true; }
