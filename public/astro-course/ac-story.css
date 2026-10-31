@@ -126,7 +126,7 @@ a.tryit:hover { transform: rotate(0.4deg); border-color: var(--ac-blue); }
 .stage .pop-layer { position: absolute; display: block; max-inline-size: none; user-select: none; -webkit-user-drag: none; }
 .stage .pop-layer.touch { pointer-events: auto; cursor: grab; touch-action: none; }
 .stage .pop-gl { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; }
-.stage .pop-fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; }
+.stage .pop-fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
 .tryit-tab { position: absolute; right: -2px; top: 10%; z-index: 6; min-height: 44px; min-width: 44px; padding: 8px 14px 8px 16px;
   font-family: var(--ac-head-font); font-size: 16px; color: #3d3d3d; background: #f6e7b8; border: 2px solid #3d3d3d; border-radius: 12px 0 0 12px;
   box-shadow: -2px 3px 0 rgba(0,0,0,.18); cursor: pointer; transform: rotate(-2deg); }
@@ -170,7 +170,7 @@ a.tryit:hover { transform: rotate(0.4deg); border-color: var(--ac-blue); }
 @keyframes wobble { 25% { rotate: -1.5deg; } 75% { rotate: 1.5deg; } }
 @keyframes cardFlip { from { transform: perspective(600px) rotateY(90deg); } to { transform: none; } }
 body.v2:not(.sbmode) #sandboxBtn { display: none; }
-body.sbmode #sbMenuBtn { display: none; }
+body.sbmode #sbMenuBtn, body.sbmode #tiltBtn { display: none; }
 #sbMenuBtn .sb-short { display: none; }
 @media (max-width: 699px) {
   #sbMenuBtn .sb-long { display: none; }
