@@ -18,10 +18,28 @@ const LESSONS = {
   3: ["Accelerated Motion", ["Acceleration", "Motion with Constant Acceleration", "Free Fall"]],
   4: ["Forces in One Dimension", ["Force and Motion", "Weight and Drag Force", "Newton's Third Law"]],
   5: ["Displacement and Force in Two Dimensions", ["Vectors", "Friction", "Forces in Two Dimensions"]],
-  6: ["Motion in Two Dimensions", ["Projectile Motion", "Circular Motion", "Relative Velocity"]]
+  6: ["Motion in Two Dimensions", ["Projectile Motion", "Circular Motion", "Relative Velocity"]],
+  7: ["Gravitation",["Planetary Motion and Gravitation","Using the Law of Universal Gravitation"]],
+  8: ["Rotational Motion",["Describing Rotational Motion","Rotational Dynamics","Equilibrium"]],
+  9: ["Momentum and Its Conservation",["Impulse and Momentum","Conservation of Momentum"]],
+  10: ["Energy and Its Conservation",["Work and Energy","The Many Forms of Energy","Conservation of Energy","Machines"]],
+  11: ["Thermal Energy",["Temperature, Heat, and Thermal Energy","Changes of State and Thermodynamics"]],
+  12: ["States of Matter",["Properties of Fluids","Forces Within Liquids","Fluids at Rest and in Motion","Solids"]],
+  13: ["Vibrations and Waves",["Periodic Motion","Wave Properties","Wave Behavior"]],
+  14: ["Sound",["Properties and Detection of Sound","The Physics of Music"]],
+  15: ["Fundamentals of Light",["Illumination","The Wave Nature of Light"]],
+  16: ["Reflection and Refraction",["Reflection of Light","Curved Mirrors","Refraction of Light","Convex and Concave Lenses"]],
+  17: ["Interference and Diffraction",["Interference","Diffraction"]],
+  18: ["Electrostatics",["Electric Charge","Electrostatic Force","Measuring Electric Fields","Applications of Electric Fields"]],
+  19: ["Current Electricity",["Current and Circuits","Using Electrical Energy","Simple Circuits","Applications of Circuits"]],
+  20: ["Magnetism",["Understanding Magnetism","Applying Magnetic Forces"]],
+  21: ["Electromagnetism",["Inducing Currents","Applications of Induced Currents","Electric and Magnetic Forces on Particles","Electric and Magnetic Fields in Space"]],
+  22: ["Quantum Theory and the Atom",["A Particle Model of Waves","Matter Waves","Bohr's Model of the Atom","The Quantum Model of the Atom"]],
+  23: ["Solid-State Electronics",["Conduction in Solids","Electronic Components"]],
+  24: ["Nuclear and Particle Physics",["The Nucleus","Nuclear Decay and Reactions","The Building Blocks of Matter"]]
 };
 
-test("catalog lists every module 1-6 lesson once, in course order, grouped by module", () => {
+test("catalog lists every module 1-24 lesson once, in course order, grouped by module", () => {
   const want = Object.entries(LESSONS).flatMap(([m, [, ls]]) => ls.map((t, i) => [+m, i + 1, t]));
   assert.equal(DECKS.length, want.length);
   DECKS.forEach((d, i) => {
@@ -36,8 +54,8 @@ test("catalog lists every module 1-6 lesson once, in course order, grouped by mo
   assert.equal(new Set(DECKS.map((d) => d.slug)).size, DECKS.length);
 });
 
-const BUILT = ["m01-l01", "m01-l02", "m01-l03", "m01-l04", "m02-l01", "m02-l02", "m02-l03", "m02-l04", "m03-l01", "m03-l02", "m03-l03", "m04-l01", "m04-l02", "m04-l03", "m05-l01", "m05-l02", "m05-l03", "m06-l01", "m06-l02", "m06-l03"];
-test("every lesson after Module 6 is still a coming-soon placeholder with no lesson text", () => {
+const BUILT = ["m01-l01", "m01-l02", "m01-l03", "m01-l04", "m02-l01", "m02-l02", "m02-l03", "m02-l04", "m03-l01", "m03-l02", "m03-l03", "m04-l01", "m04-l02", "m04-l03", "m05-l01", "m05-l02", "m05-l03", "m06-l01", "m06-l02", "m06-l03", "m07-l01", "m07-l02", "m08-l01", "m08-l02", "m08-l03", "m09-l01", "m09-l02", "m10-l01", "m10-l02", "m10-l03", "m10-l04", "m11-l01", "m11-l02", "m12-l01", "m12-l02", "m12-l03", "m12-l04", "m13-l01", "m13-l02", "m13-l03", "m14-l01", "m14-l02", "m15-l01", "m15-l02", "m16-l01", "m16-l02", "m16-l03", "m16-l04", "m17-l01", "m17-l02", "m18-l01", "m18-l02", "m18-l03", "m18-l04", "m19-l01", "m19-l02", "m19-l03", "m19-l04", "m20-l01", "m20-l02", "m21-l01", "m21-l02", "m21-l03", "m21-l04", "m22-l01", "m22-l02", "m22-l03", "m22-l04", "m23-l01", "m23-l02", "m24-l01", "m24-l02", "m24-l03"];
+test("every lesson after Module 24 is still a coming-soon placeholder with no lesson text", () => {
   for (const d of DECKS.filter((x) => !BUILT.includes(x.slug))) {
     assert.equal(d.built, false, d.key);
     assert.equal(d.slides, 0, d.key);
@@ -129,8 +147,9 @@ test("library strips: short M# \u00b7 L# label, one color variable per module", 
 
 test("standards from the standards map: every lesson has codes or the Science & Engineering Practices tag", () => {
   const want = { "m03-l03": ["HS-PS2-1"], "m04-l01": ["HS-PS2-1"], "m04-l02": ["HS-PS2-1", "HS-PS2-3", "HS-PS2-4"], "m04-l03": ["HS-PS2-1"],
-    "m05-l02": ["HS-PS2-1"], "m05-l03": ["HS-PS2-1"], "m06-l02": ["HS-PS2-1"] };
-  assert.equal(DECKS.length, 20);
+    "m05-l02": ["HS-PS2-1"], "m05-l03": ["HS-PS2-1"], "m06-l02": ["HS-PS2-1"],
+    "m07-l01": ["HS-PS2-1","HS-PS2-4"], "m07-l02": ["HS-PS2-1","HS-PS2-4"], "m08-l02": ["HS-PS2-1"], "m08-l03": ["HS-PS2-1"], "m09-l01": ["HS-PS2-1","HS-PS2-2","HS-PS2-3"], "m09-l02": ["HS-PS2-2"], "m10-l01": ["HS-PS3-1"], "m10-l02": ["HS-PS3-1","HS-PS3-2"], "m10-l03": ["HS-PS2-2","HS-PS3-1","HS-PS3-2","HS-PS3-3"], "m11-l01": ["HS-PS3-1","HS-PS3-2"], "m11-l02": ["HS-PS3-1","HS-PS3-2"], "m13-l01": ["HS-PS3-1","HS-PS3-2"], "m13-l02": ["HS-PS4-1"], "m13-l03": ["HS-PS4-1"], "m14-l01": ["HS-PS4-1"], "m14-l02": ["HS-PS4-1"], "m15-l01": ["HS-PS4-1"], "m15-l02": ["HS-PS3-3","HS-PS4-1","HS-PS4-3"], "m16-l03": ["HS-PS4-1"], "m17-l01": ["HS-PS4-1","HS-PS4-3"], "m17-l02": ["HS-PS4-1","HS-PS4-3"], "m18-l01": ["HS-PS2-4"], "m18-l02": ["HS-PS2-4"], "m18-l03": ["HS-PS2-4","HS-PS3-5"], "m18-l04": ["HS-PS3-2","HS-PS3-5"], "m19-l01": ["HS-PS3-2","HS-PS3-3"], "m19-l02": ["HS-PS3-1","HS-PS3-3"], "m19-l03": ["HS-PS3-1"], "m20-l01": ["HS-PS3-5"], "m20-l02": ["HS-PS3-3","HS-PS3-5"], "m21-l01": ["HS-PS3-3","HS-PS3-5"], "m21-l02": ["HS-PS3-3","HS-PS3-5"], "m21-l04": ["HS-PS4-1","HS-PS4-4"], "m22-l01": ["HS-PS4-3"], "m22-l02": ["HS-PS4-3"], "m22-l03": ["HS-PS4-3"], "m22-l04": ["HS-PS4-3"], "m24-l03": ["HS-PS3-5"] };
+  assert.equal(DECKS.length, 73);
   for (const d of DECKS) assert.deepEqual(d.standards, want[d.slug] || ["Science & Engineering Practices"], d.slug);
   const m1 = DECKS.find((d) => d.slug === "m01-l01");
   assert.equal(standardsLine(m1), "Science & Engineering Practices");

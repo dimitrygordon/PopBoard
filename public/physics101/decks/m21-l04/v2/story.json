@@ -1,0 +1,202 @@
+{
+ "slug": "m21-l04",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "What Are Electromagnetic Waves?",
+   "text": "<h3>What Are Electromagnetic Waves?</h3><p class=\"p101-def\">A changing magnetic field produces an electric field, and a changing electric field produces a magnetic field.</p><p>Our big question for this lesson: what do electric and magnetic fields have to do with light? In 1820, Hans Christian Oersted found that moving charges produce magnetic fields. About ten years later, Michael Faraday and Joseph Henry independently discovered the flip side: a changing magnetic field can induce an electric field.</p><p>You don't even need a wire. As the left side of Figure 21 shows, a changing magnetic field alone produces an electric field. Its field lines are closed loops, with no charges for them to start or end on. And as the right side shows, a changing electric field produces a magnetic field.</p><p>In 1873, Scottish physicist James Clerk Maxwell summed up the work of Coulomb, Oersted, and Faraday in four equations. They predicted that electromagnetic waves could travel through space, and in 1887 the German physicist Heinrich Hertz confirmed it. The unit of frequency is named after him: one hertz is one cycle per second.</p>",
+   "testIt": {
+    "name": "Induced fields",
+    "how": "Tap to switch which field ramps."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson.</p><p>Online, the Applying Practices activity Catching Waves has you communicate technical information about how devices use wave behavior and wave interactions with matter to send and capture information and energy.</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Electromagnetic Wave Properties",
+   "text": "<h3>Electromagnetic Wave Properties</h3><p class=\"p101-def\">Electromagnetic waves are coupled, oscillating electric and magnetic fields that propagate through space and matter.</p><p>Today we know that electromagnetic waves are coupled, oscillating electric and magnetic fields that travel through space and matter. Accelerating electrons produce the wave's electric field, and the varying electric field produces the wave's magnetic field.</p><p>Look at Figure 22. As the wave moves, its electric field oscillates up and down, while its magnetic field oscillates at right angles to the electric field. Both fields are also at right angles to the direction the wave travels. So if a wave moves to the right with its electric field pointing in and out of the page, its magnetic field points up and down.</p>",
+   "testIt": {
+    "name": "3D wave",
+    "how": "Rotate the view."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Travel in a Vacuum",
+   "text": "<h3>Travel in a Vacuum</h3><p class=\"p101-def\">For an electromagnetic wave in a vacuum, wavelength equals the speed of light divided by frequency, lambda equals c over f.</p><p>Like waves on a rope, electromagnetic waves are transverse waves, and they can travel through a medium. But unlike other waves, they can also cross a vacuum. In a vacuum they move at 299,792,458 meters per second, about 3.00 times ten to the eighth meters per second. We call this c, the speed of light. In air they're only slightly slower.</p><p>Recall that wavelength equals speed divided by frequency: lambda equals v over f, with wavelength in meters, speed in meters per second, and frequency in hertz. For an electromagnetic wave in a vacuum, v is c, so lambda equals c over f.</p><p>That means frequency times wavelength always equals c. Raise the frequency and the wavelength shrinks, and the reverse. For example, the green light of an aurora has a wavelength of 525 nanometers. A wave with 1.5 times that frequency has a wavelength 1.5 times shorter: 350 nanometers.</p>",
+   "testIt": {
+    "name": "fλ = c",
+    "how": "Slide the frequency."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "The Electromagnetic Spectrum",
+   "text": "<h3>The Electromagnetic Spectrum</h3><p class=\"p101-def\">Electromagnetic radiation is energy carried, or radiated, by an electromagnetic wave.</p><p>Figure 23 shows the electromagnetic spectrum, the whole range of electromagnetic wave frequencies. Wavelengths run from radio waves longer than houses down to gamma rays smaller than atoms. Gamma rays are the ones about the size of a proton. Visible light, the only part your eyes can detect, is just a tiny slice.</p><p>Electromagnetic waves carry energy in their changing electric and magnetic fields. That energy is called electromagnetic radiation. You can think of it as energy stored in fields traveling across space. The energy a wave carries is proportional to the square of its electric field's amplitude and to the area the wave crosses.</p>",
+   "testIt": {
+    "name": "Spectrum",
+    "how": "Drag across the spectrum."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Radio Waves and Microwaves",
+   "text": "<h3>Radio Waves and Microwaves</h3><p class=\"p101-def\">Radio waves, the lowest-frequency electromagnetic waves, broadcast information, and microwaves are very-short-wavelength radio waves.</p><p>Figure 24 shows electromagnetic waves at work. The lowest-frequency waves, radio waves, mostly broadcast information. Long radio waves can travel long distances because they reflect off ions in the atmosphere. The shorter radio waves used for FM radio and television travel in straight lines, so they have to be relayed from station to station around Earth's curve.</p><p>Cell phones and the Global Positioning System send information with very-short-wavelength radio waves called microwaves. You also cook with them! The water and fat in food absorb microwaves, and the waves' energy becomes thermal energy that cooks your dinner.</p>",
+   "testIt": {
+    "name": "Radio",
+    "how": "Tap to switch wave lengths."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Infrared and Ultraviolet",
+   "text": "<h3>Infrared and Ultraviolet</h3><p class=\"p101-def\">Hot objects emit infrared waves, and higher-frequency ultraviolet radiation can ionize atoms and molecules.</p><p>Cameras with infrared sensors make images, and infrared night-vision goggles let people see in the dark. Hot objects give off far infrared waves, with long wavelengths, so infrared detectors can measure the temperature of buildings, like the house in the photo. Near infrared, with shorter wavelengths and higher frequencies, carries signals through optical fibers and through the air from remote controls.</p><p>Ultraviolet, or UV, radiation has higher frequencies than infrared. It can ionize atoms and molecules and trigger chemical reactions, which is why it causes sunburn. Industry uses UV to cure polymers, sterilize instruments, and etch patterns onto silicon wafers for integrated circuits. It can even reveal forensic evidence.</p>",
+   "testIt": {
+    "name": "IR camera",
+    "how": "Tap the next object."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "X-Rays and Gamma Rays",
+   "text": "<h3>X-Rays and Gamma Rays</h3><p class=\"p101-def\">Shorter-wavelength, higher-frequency electromagnetic radiation can ionize atoms and damage living cells.</p><p>X-rays are made when high-energy electrons knock tightly bound electrons out of atoms. When the atoms' remaining electrons rearrange themselves, they give off X-rays. German physicist Wilhelm Roentgen discovered X-rays in 1895 using a vacuum glass tube. You know them from pictures of bones and teeth, and they're also used to kill cancer cells.</p><p>High-frequency gamma rays come from radioactive atomic nuclei. They can detect dangerous substances in shipping containers, and in medicine they treat cancer by destroying cells.</p><p>There's a pattern here. When light or longer-wavelength radiation is absorbed by matter, it mostly becomes thermal energy. Shorter-wavelength, higher-frequency radiation can ionize atoms and damage living cells.</p>",
+   "testIt": {
+    "name": "Cell",
+    "how": "Change the radiation's frequency."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Propagation Through Space",
+   "text": "<h3>Propagation Through Space</h3><p class=\"p101-def\">A transmitter converts information into electronic signals, amplifies them, and sends them to an antenna that creates electromagnetic waves.</p><p>How do radio waves and microwaves get broadcast? Transmitters connected to antennas send them into space. A transmitter converts voice, music, pictures, or data into electronic signals, amplifies them, and sends them to an antenna.</p><p>The transmitter puts an oscillating potential difference across the metal antenna, which accelerates electrons in the metal. That acceleration makes an oscillating electric field that spreads away from the antenna, as you can see in Figure 25. The changing electric field makes a changing magnetic field, which makes a changing electric field, and so on, and the wave travels outward.</p><p>The magnetic field moves at the same speed as the electric field, at right angles to it and to the direction of travel. A wave made by an antenna is polarized, meaning its electric field is parallel to the antenna's conductor.</p>",
+   "testIt": {
+    "name": "Antenna",
+    "how": "Slide time as the AC antenna radiates."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Propagation Through Matter",
+   "text": "<h3>Propagation Through Matter</h3><p class=\"p101-def\">In a dielectric, an electromagnetic wave's velocity is v equals c divided by the square root of k.</p><p>Electromagnetic waves travel through other matter too. Sunlight shining through a glass of water passes through air, glass, and water. These are dielectrics: poor conductors whose charges partly line up with an electric field.</p><p>In a dielectric, an electromagnetic wave always moves slower than in a vacuum. Its velocity is v equals c divided by the square root of k, where v is in meters per second, c is 3.00 times ten to the eighth meters per second, and k is the relative dielectric constant, which has no units.</p><p>In a vacuum, k is exactly 1, so v equals c. In air, k is 1.00054, so waves move just a hair slower than c. And here's a neat link to optics: the dielectric constant is the square of the index of refraction, so the square root of k equals n.</p>",
+   "testIt": {
+    "name": "Medium",
+    "how": "Tap to switch media."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Carrier Waves and Transmitters",
+   "text": "<h3>Carrier Waves and Transmitters</h3><p class=\"p101-def\">A carrier wave is a station's assigned wave, which it modulates in frequency or amplitude to broadcast information.</p><p>How does your favorite radio station make its waves? In the United States, the Federal Communications Commission assigns every commercial station a specific frequency, and so a specific wavelength, in the radio part of the spectrum. That's the station's carrier wave. The station broadcasts by varying, or modulating, its carrier wave's frequency or amplitude.</p><p>The station's transmitter does this with three parts. The oscillator generates the carrier wave. The modulator uses music, pictures, words, or other data to change the carrier wave's amplitude or frequency. And the amplifier increases the potential difference of the resulting signal.</p>",
+   "testIt": {
+    "name": "Modulation",
+    "how": "Tap to switch AM and FM."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Setting the Oscillation Frequency",
+   "text": "<h3>Setting the Oscillation Frequency</h3><p class=\"p101-def\">In a coil-and-capacitor circuit, energy sloshes between the capacitor's electric field and the coil's magnetic field at a set frequency.</p><p>For carrier waves up to 400 megahertz, an oscillator uses a coil and a capacitor connected in parallel. A potential difference across the capacitor makes an electric field and stores charge. When that potential difference is removed, the capacitor discharges, and electrons flow through the coil.</p><p>That current makes a changing magnetic field, which induces an EMF in the circuit. The EMF recharges the capacitor in the opposite direction, and then the whole process runs in reverse. Figure 26 shows one full cycle. The magnetic field is strongest when the electric field is weakest, and the number of oscillations each second is the frequency of the waves produced. Change the coil or the capacitance, and the frequency changes too.</p>",
+   "testIt": {
+    "name": "LC",
+    "how": "Change the capacitance (L = 1.0 mH)."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "The Swinging Pendulum Analogy",
+   "text": "<h3>The Swinging Pendulum Analogy</h3><p class=\"p101-def\">A coil-and-capacitor circuit trades energy between magnetic and electric fields just as a pendulum trades kinetic and potential energy.</p><p>Think of a swinging pendulum, as in Figure 27. Its bob has kinetic energy from its motion and potential energy from its displacement, and their sum, the total energy, stays constant.</p><p>A coil-and-capacitor circuit works the same way. Energy sits in the coil's magnetic field and in the capacitor's electric field. When the current is largest, all the energy is in the magnetic field, like the bob zooming through the bottom of its swing. When the current is zero, all the energy is in the electric field, like the bob pausing at the top. So when the current is at its maximum, the capacitor's charge is zero. The total energy of the circuit stays constant.</p>",
+   "testIt": {
+    "name": "Pendulum analogy",
+    "how": "Slide through one cycle."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "Steady Oscillations",
+   "text": "<h3>Steady Oscillations</h3><p class=\"p101-def\">Applying potential differences at the circuit's own frequency keeps its oscillations going, just as well-timed pushes keep a pendulum swinging.</p><p>Leave a pendulum alone and friction stops it. Oscillations in a coil and capacitor die out too, because energy leaves in the electromagnetic wave and is lost to resistance in the circuit. Add energy, and both keep going.</p><p>Gentle pushes at the right moments keep a pendulum swinging. The biggest swings happen when the pushes match the swinging frequency and are in phase. That's resonance. In the same way, potential differences applied at the right frequency keep a coil-and-capacitor circuit oscillating steadily.</p><p>One way is to add a second coil, forming a transformer, as in Figure 28. The oscillating field induces a potential difference in the secondary coil, an amplifier boosts it, and the amplified current, at the same frequency as the circuit, is fed back to the coil and capacitor. That keeps the oscillations going.</p>",
+   "testIt": {
+    "name": "Pushes",
+    "how": "Set your pushing rhythm (pendulum period 2.0 s)."
+   }
+  },
+  "15": {
+   "layers": [],
+   "title": "Resonant Cavities",
+   "text": "<h3>Resonant Cavities</h3><p class=\"p101-def\">A resonant cavity is a metal box that acts as both coil and capacitor, with a size that sets its oscillation frequency.</p><p>You can raise a coil-and-capacitor circuit's frequency by shrinking the coil's ability to store magnetic energy and the capacitor's capacitance. But above about 400 megahertz, separate coils and capacitors stop being useful.</p><p>Microwaves, from 0.4 gigahertz to 100 gigahertz, are made with a resonant cavity, a rectangular metal box that acts as both a coil and a capacitor. The size of the box sets the frequency. In a microwave oven, the size of the oven itself doesn't matter, only the size of its internal resonant cavity.</p><p>For frequencies above 100 gigahertz, a resonant cavity would have to be the size of a molecule, which is why cavities can't make infrared waves. Instead, infrared waves come from vibrating atoms within molecules. Visible light, ultraviolet waves, and X-rays come from electrons within atoms. The highest-frequency waves, gamma rays, come from accelerated charges in atomic nuclei.</p>",
+   "testIt": {
+    "name": "Cavity",
+    "how": "Resize the cavity."
+   }
+  },
+  "16": {
+   "layers": [],
+   "title": "Piezoelectricity",
+   "text": "<h3>Piezoelectricity</h3><p class=\"p101-def\">Piezoelectricity is the property of crystals like quartz to deform under a potential difference and to produce an EMF when deformed.</p><p>There are other ways to make oscillating potential differences for transmitters. Quartz crystals bend when you put a potential difference across them, a property called piezoelectricity. Apply an AC potential difference to a cut piece of quartz, and it oscillates steadily. Just like a piece of metal that rings at a certain frequency when you bend and release it, a quartz crystal vibrates at its own frequency. The thinner the crystal, the higher the frequency.</p><p>It works the other way too. Squeeze the crystal and it makes an EMF, at its own vibration frequency. That EMF can be amplified and sent back to keep the crystal vibrating. Since quartz vibrates at such a steady frequency, it's used to generate waves in cell phones, televisions, wireless phones, WiFi routers, and computers.</p>",
+   "testIt": {
+    "name": "Quartz",
+    "how": "Change the crystal's thickness."
+   }
+  },
+  "17": {
+   "layers": [],
+   "title": "Receiving Electromagnetic Waves",
+   "text": "<h3>Receiving Electromagnetic Waves</h3><p class=\"p101-def\">Antennas capture electromagnetic waves, converting their oscillating electric fields back into potential differences.</p><p>Antennas don't just send waves; they catch them too, turning the waves' oscillating electric fields back into potential differences. As Figure 29 shows, a wave's electric field accelerates electrons in the antenna's metal. A potential difference across the antenna's terminals oscillates at the wave's frequency.</p><p>The acceleration is biggest when the antenna lines up with the wave's polarization, that is, parallel to the wave's electric field. That's why the direction an antenna points matters: tilt it away from the field, and the electrons get pushed less along the wire, so the signal gets weaker.</p>",
+   "testIt": {
+    "name": "Receiver",
+    "how": "Rotate the receiving antenna."
+   }
+  },
+  "18": {
+   "layers": [],
+   "title": "Wire Antennas",
+   "text": "<h3>Wire Antennas</h3><p class=\"p101-def\">An antenna is most efficient when it is one-half the length of the wave it is designed to detect.</p><p>An antenna works best when it's half as long as the wave it's built to detect. That's when the potential difference across its terminals is largest. So an antenna for radio waves is longer than one for microwaves. Quarter-wavelength antennas are also common, when the receiver connects at the end of the antenna instead of the middle. Antennas can be made shorter by winding them into a helical coil or adding a dielectric like ceramic.</p><p>Your cell phone may have as many as seven antennas! Phones typically talk at frequencies near 850, 1700, 1900, and 2100 megahertz, pick up GPS at 1.575 gigahertz, and handle wireless earpieces and WiFi at 2.4 gigahertz. Their antennas, printed on ceramic dielectric blocks, are often just a few millimeters long. Laptops have several antennas too.</p>",
+   "testIt": {
+    "name": "Wire antenna",
+    "how": "Adjust the antenna length for 100 MHz."
+   }
+  },
+  "19": {
+   "layers": [],
+   "title": "Dish Antennas",
+   "text": "<h3>Dish Antennas</h3><p class=\"p101-def\">A parabolic dish antenna reflects and focuses short-wavelength radio signals into a horn that contains the antenna.</p><p>All electromagnetic waves, not just light, reflect, refract, and diffract. Dish antennas, like the one in Figure 30, reflect short-wavelength radio signals just as parabolic mirrors reflect light. The dish focuses signals into a horn, held over the dish by a tripod, which contains a short dipole antenna.</p><p>Like a telescope that sees only a narrow patch of sky, a dish antenna picks up signals only from certain directions. And because its big surface collects much more wave energy than a wire antenna, it's great for catching weak radio signals.</p>",
+   "testIt": {
+    "name": "Dish",
+    "how": "Aim the dish."
+   }
+  },
+  "20": {
+   "layers": [],
+   "title": "Tuning In, AM and FM",
+   "text": "<h3>Tuning In, AM and FM</h3><p class=\"p101-def\">A tuner selects one frequency by matching its circuit's oscillation frequency to the desired wave, and AM or FM varies the carrier's amplitude or frequency.</p><p>The antenna sends its potential differences to a receiver, which turns them into sound, pictures, or data. But waves of many frequencies hit the antenna at once. To pick just one, the receiver uses a tuner, a coil-and-capacitor circuit or a resonant cavity. Turning a radio dial adjusts the capacitance until the circuit's oscillation frequency matches the station you want. Then only that frequency makes oscillations big enough to matter.</p><p>A wave carries information only when some property is changed, or modulated. AM, amplitude modulation, varies the carrier's amplitude. FM, frequency modulation, varies its frequency. Commercial AM stations broadcast from 530 to 1700 kilohertz, and FM stations from 88 to 108 megahertz. FM has less noise because most noise sources, like lightning, make waves of varying amplitude, which FM receivers ignore.</p>",
+   "testIt": {
+    "name": "Tuning",
+    "how": "Turn the dial (L = 1.0 µH)."
+   }
+  },
+  "21": {
+   "layers": [],
+   "title": "Digital Signals and Digital TV",
+   "text": "<h3>Digital Signals and Digital TV</h3><p class=\"p101-def\">Digital signals encode information as 1s and 0s, carrying more information and resisting noise better than AM or FM.</p><p>Information can be digitized. A picture, for example, can be stored as values for an array of pixels. In that form it can be stored reliably in computer memory and sent long distances. Digital signals are sent as series of pulses, encoded in a binary system of 1s and 0s. They can carry more information in the same time than AM or FM, and they're less affected by noise. Cell phones, TVs, and computers turn them back into sound, pictures, and data.</p><p>On June 12, 2009, all full-power U.S. TV stations stopped broadcasting analog signals. Now they broadcast only digital signals. Digital TV can squeeze four, five, or more channels into the carrier frequency that one analog channel used to fill. It also has higher-fidelity sound and carries about five times more picture information.</p>",
+   "testIt": {
+    "name": "Digital",
+    "how": "Turn up the channel noise."
+   }
+  },
+  "22": {
+   "layers": [],
+   "title": "Science and Society, Answering the Call",
+   "text": "<h3>Science and Society, Answering the Call</h3><p class=\"p101-def\">Balloons and tethered drones carrying antennas can restore cell service when storms destroy cell towers.</p><p>After a storm or disaster, cell service often goes down because towers are damaged or destroyed. People used to wait weeks or months for service to come back. New ideas are shrinking that wait.</p><p>In 2013, a technology company launched a project to bring internet service to people in remote areas using solar-powered balloons. The balloons float in the stratosphere carrying transceivers that receive wireless signals from ground stations, pass them from balloon to balloon, and beam them down to phones. After floods and mudslides in Peru in spring 2017, the company used its balloons to restore cell service quickly. When Hurricane Maria, a Category 4 storm, hit Puerto Rico in September 2017, more than 90 percent of the island lost cell service, and the balloons stood in for the destroyed towers.</p><p>Another company sent drones to San Juan, Puerto Rico's capital. Each drone is tethered to the ground for power and a secure data link, and its antennas pick up satellite signals to provide internet to a small area below.</p>"
+  },
+  "23": {
+   "layers": [],
+   "title": "Science and Society, More Than a Light Show",
+   "text": "<h3>Science and Society, More Than a Light Show</h3><p class=\"p101-def\">Geomagnetic storms can induce currents in power grids strong enough to cause blackouts.</p><p>On March 13, 1989, two strange things happened. The Northern Lights were seen as far south as the southern United States, and the whole Canadian province of Quebec lost power. Surprisingly, these two events were connected.</p><p>A huge burst of charged particles from the Sun slammed into Earth's magnetic field, causing a geomagnetic storm. The same storm that lit up the sky made Earth's magnetic field change rapidly. A changing magnetic field induces an EMF, just as you learned in this module, and it drove currents through Quebec's long power lines and transformers, knocking out the grid. Scientists keep studying the aurora, geomagnetic storms, and these geomagnetically induced currents to protect power systems.</p>"
+  }
+ }
+}

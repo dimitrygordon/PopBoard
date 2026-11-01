@@ -1,0 +1,156 @@
+{
+ "slug": "m19-l01",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Producing Electric Current",
+   "text": "<h3>Producing Electric Current</h3><p class=\"p101-def\">Electric current is a flow of charged particles.</p><p>Our big question for this lesson: what is an electric circuit? Hair dryers, music players, stoves, refrigerators: they all run on electricity. Remember that when two conducting spheres touch, charge flows from the one at higher potential to the one at lower potential, until there's no potential difference left. A flow of charged particles is an electric current.</p><p>In the left diagram of Figure 1, conductors A and B are connected by a third conductor, C. Positive charges flow from B, at higher potential, through C to A. Once there's no potential difference among A, B, and C, the current stops.</p><p>Conventional current is the direction a positive test charge would move. But in wires, it's usually the negative electrons that actually flow, so the electrons move opposite to the direction of conventional current.</p>",
+   "testIt": {
+    "name": "Two conductors",
+    "how": "Slide time after a wire joins two conductors (ΔV starts at 100 V)."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson.</p><p>Online, Applying Practices: Develop and Use Models for Energy asks you to build models showing that energy at large scales is a combination of energy of motion of particles and energy of their relative positions. And as you go, ask yourself: what information from this lesson can help you answer the Unit and Module questions?</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Charge Pumps and Electric Circuits",
+   "text": "<h3>Charge Pumps and Electric Circuits</h3><p class=\"p101-def\">An electric circuit is any closed loop or conducting path that allows electric charges to flow.</p><p>To keep the current going, you could pump charges from A back up to B, as in the right side of Figure 1. The pump raises the charges' electric potential energy, so it needs an outside energy source. A familiar one is the voltaic, or galvanic, cell, a common dry cell, which transforms chemical energy into electrical energy. Several cells connected together make a battery, which stores chemical energy and transforms it into electrical energy as needed.</p><p>Now the charges travel a closed loop: from the pump to B, through C, to A, and back to the pump. Any closed loop or conducting path that lets charges flow is an electric circuit. That's the answer to our big question! Every circuit has a charge pump that raises the charges' potential energy, and a device that lowers it.</p><p>So electrical energy in a circuit is a combination of energy of moving charges in the current and energy of the charges' relative positions. When charges pass through the device, their potential energy, q times delta V, becomes some other form of energy: kinetic energy in a motor, light in a lamp, and thermal energy in a heater.</p>",
+   "testIt": {
+    "name": "Loop",
+    "how": "Tap to close or break the loop."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Comparing Water Flow and Current",
+   "text": "<h3>Comparing Water Flow and Current</h3><p class=\"p101-def\">A generator acts as a charge pump, giving each charge energy q times delta V.</p><p>Think about a generator driven by a waterwheel, like in Figure 2. Falling water turns the wheel and the generator, so the water's energy is transformed into electrical energy. The generator acts like a charge pump. It raises the potential difference, delta V, between its two wire connections, giving energy q times delta V to every charge q that passes through.</p><p>But not all the water's energy becomes electrical energy. As the flowchart shows, the water's gravitational potential energy becomes kinetic energy, then electrical energy, and some becomes thermal energy along the way, from splashing water, friction, and electrical resistance. No energy transformation is 100 percent efficient.</p><p>Connect the generator to a motor, and charges flow through the motor and back around to the generator. The motor transforms the electrical energy into kinetic energy, like lifting a bucket.</p>",
+   "testIt": {
+    "name": "Waterwheel",
+    "how": "Change the water flow on the waterwheel generator."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Conservation of Charge and Energy",
+   "text": "<h3>Conservation of Charge and Energy</h3><p class=\"p101-def\">Charge and energy are conserved in a circuit: the potential rise across the source equals the potential drop across the devices.</p><p>Charges can't be created or destroyed, only separated. So the total charge in a circuit, all the electrons and positive ions, never changes. If 1 coulomb flows through the generator in 1 second, then 1 coulomb flows through the motor in that second too.</p><p>Energy is conserved too. The change in electrical energy, delta E, equals q times delta V. Since charge is conserved, the net change in the charges' potential energy for a full trip around the circuit must be zero. The rise in potential the generator produces equals the drop in potential across the motor.</p><p>So if the potential difference between the two wires is 120 volts, the waterwheel and generator must do 120 joules of work on every coulomb delivered, and every coulomb passing through the motor hands it 120 joules of energy. Draw a simple circuit, a source and a device in a loop, and you can trace it: energy given at the source equals energy delivered at the device.</p>",
+   "testIt": {
+    "name": "One coulomb",
+    "how": "Slide the coulomb around the 120 V circuit."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Current and Power",
+   "text": "<h3>Current and Power</h3><p class=\"p101-def\">Electric current I equals q divided by t, measured in amperes; power P equals I times delta V, measured in watts.</p><p>Power, measured in watts, is the rate at which energy is transferred or transformed. A generator transforming 1 joule of kinetic energy into electrical energy each second is working at 1 joule per second, or 1 watt. The hair dryer in Figure 3 is rated at 1875 watts, the rate at which it turns electrical energy into thermal energy and kinetic energy.</p><p>The energy carried by a current depends on the charge moved, q, and the potential difference it moves across, delta V: E equals q times delta V. The rate of charge flow is the electric current, I, measured in coulombs per second: I equals q over t. One coulomb per second is one ampere, A.</p><p>Power is energy per time, E over t. Substitute q times delta V for E, and I times t for q, and the t cancels. So power equals current times potential difference: P equals I times delta V. If the motor in Figure 2 draws 3.0 amperes at 120 volts, the power is 3.0 coulombs per second times 120 joules per coulomb, or 360 joules per second. That's 360 watts.</p>",
+   "testIt": {
+    "name": "Appliance",
+    "how": "Set the current and voltage."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Example Problem 1, Electric Power and Energy",
+   "text": "<h3>Example Problem 1, Electric Power and Energy</h3><p class=\"p101-def\">P equals I times delta V, and E equals P times t.</p><p>A 6.0-volt battery delivers a current of 0.50 amperes to a motor. What power goes to the motor? And if it runs for 5.0 minutes, how much electrical energy is delivered?</p><p>Step one: analyze and sketch. Draw the battery's positive terminal wired to the motor, and the return wire back to the negative terminal. Show the direction of conventional current. Known: delta V is 6.0 volts, I is 0.50 amperes, and t is 5.0 minutes. Unknown: P and E.</p><p>Step two: solve. P equals I times delta V, which is 0.50 amperes times 6.0 volts, or 3.0 watts. Since P equals E over t, the energy is E equals P times t. That's 3.0 joules per second times 5.0 minutes, times 60 seconds per minute, which is 9.0 times ten to the second joules, or 900 joules.</p><p>Step three: evaluate. Power is in watts and energy in joules, as they should be. And with a low voltage and a small current, a few watts of power is reasonable.</p>",
+   "testIt": {
+    "name": "Motor",
+    "how": "Run a 6.0 V, 0.50 A motor and slide the time."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Diagramming Circuits",
+   "text": "<h3>Diagramming Circuits</h3><p class=\"p101-def\">A circuit schematic is a diagram of a circuit drawn with simple standard symbols.</p><p>You can describe a circuit in words, photos, or artwork. But usually it's drawn with simple symbols, in a diagram called a circuit schematic. Figure 5 shows an artist's drawing and a schematic of the same circuit: a 12-volt battery, a 3-ohm lamp with a voltmeter across it, and an ammeter. The drawing shows what the parts look like; the schematic strips it down to clean symbols that show just how everything is connected. Both show charge flowing out of the battery's positive terminal.</p><p>Figure 6 shows the common symbols: a straight line for a conductor, a zigzag for a fixed resistor, a zigzag with an arrow for a potentiometer, two short parallel lines for a capacitor, alternating long and short lines for a battery, a coil in a circle for a lamp, and a V or an A in a circle for a voltmeter or an ammeter. There are symbols for switches, fuses, inductors, ground, and generators too.</p><p>To draw a schematic: put the battery on the left, positive terminal on top. Draw a wire from the positive terminal, adding each device's symbol as you reach it. Where the path splits in two, like at a voltmeter, draw a dot, follow one path until they rejoin, then draw the other. Keep going to the negative terminal, and check that every part is there with complete paths for current.</p>",
+   "testIt": {
+    "name": "Schematic",
+    "how": "Tap to add the next part."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Ammeters, Voltmeters, and a Real-World Bulb",
+   "text": "<h3>Ammeters, Voltmeters, and a Real-World Bulb</h3><p class=\"p101-def\">An ammeter measures current; a voltmeter measures potential difference.</p><p>An ammeter measures current, and a voltmeter measures potential difference. They're often combined in one device called a multimeter. Each has two terminals, usually marked plus and minus.</p><p>A voltmeter measures the potential difference between any two points. Connect its plus terminal to the side of the component closer to the battery's positive terminal, and its minus terminal to the other side. An ammeter goes in so the current flows right through it.</p><p>Real-world physics: an operating 100-watt lightbulb has a resistance of about 140 ohms. Switched off at room temperature, it's only about 10 ohms! The tungsten filament's resistance depends strongly on temperature, and the filament runs thousands of degrees hotter than the room.</p>",
+   "testIt": {
+    "name": "Meters",
+    "how": "Tap to switch which meter you read on a 12 V, 4.0 Ω lamp."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Resistance and Ohm's Law",
+   "text": "<h3>Resistance and Ohm's Law</h3><p class=\"p101-def\">Resistance R is the potential difference divided by the current, measured in ohms.</p><p>Georg Ohm, who lived from 1789 to 1854, studied how current depends on potential difference. Ohm's law says the current through a wire is directly proportional to the potential difference between its ends.</p><p>Connect a battery's terminals with a copper rod, and you get a big current. Use a glass rod, and almost no current flows. Resistance is the measure of how strongly an object or material impedes the current produced by a potential difference. We measure it by putting a potential difference across a conductor and dividing the voltage by the current. So resistance is defined as R equals delta V divided by I.</p><p>In science, resistance means how much something impedes electric current driven by a voltage; silver, for example, has lower resistance than copper. In everyday speech, it just means opposing something, like customers resisting a new menu.</p>",
+   "testIt": {
+    "name": "Rods",
+    "how": "Tap to put the next rod across a 1.5 V battery."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "What Changes Resistance",
+   "text": "<h3>What Changes Resistance</h3><p class=\"p101-def\">Resistance increases with length, decreases with cross-sectional area, usually increases with temperature, and depends on the material.</p><p>Table 1 lists the factors that change resistance. Length: a longer conductor has more resistance. Cross-sectional area: a thinner conductor has more resistance, and a thicker one has less.</p><p>Temperature: resistance usually goes up as temperature goes up. Material: keeping length, area, and temperature the same, resistance depends on what the conductor is made of. Going from lower to higher resistance, the table lists silver, copper, gold, aluminum, iron, and platinum.</p>",
+   "testIt": {
+    "name": "Wire",
+    "how": "Stretch and thicken a copper wire."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "The Ohm",
+   "text": "<h3>The Ohm</h3><p class=\"p101-def\">One ohm is the resistance that allows a current of 1 ampere when a potential difference of 1 volt is applied.</p><p>Resistance is measured in ohms. One ohm is the resistance that lets a current of 1 ampere flow when a potential difference of 1 volt is applied across it. Figure 7 shows a simple circuit with an ammeter: a 3-ohm lamp on a 12-volt battery carries a current of 4 amperes, just as 12 volts divided by 3 ohms predicts. The ammeter's own resistance is too small to matter.</p><p>The unit honors Georg Ohm, who found that the ratio of potential difference to current is constant for a given conductor. Most conductors' resistance doesn't change when you change the size or direction of the applied potential difference. A device whose resistance stays constant no matter the potential difference obeys Ohm's law.</p><p>Most metal conductors obey Ohm's law, at least over a limited range of voltages. But many important parts in phones and calculators, like transistors and diodes, don't obey it.</p>",
+   "testIt": {
+    "name": "I-V",
+    "how": "Tap to switch devices, then slide the voltage."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Wires and Resistors",
+   "text": "<h3>Wires and Resistors</h3><p class=\"p101-def\">A resistor is a device designed to have a specific resistance.</p><p>Connecting wires have very low resistance. A 1-meter lab wire has about 0.03 ohms, and home wiring can have as little as 0.004 ohms per meter.</p><p>With so little resistance, there's almost no potential drop across a wire. To get a bigger potential drop, you need a large resistance packed into a small space. A resistor is a device designed to have a specific resistance. Resistors can be made of carbon, semiconductors, or long, thin wires.</p>",
+   "testIt": {
+    "name": "Drops",
+    "how": "Tap to move the voltmeter (12 V, 0.020 Ω wire, 6.0 Ω resistor)."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "Controlling Current",
+   "text": "<h3>Controlling Current</h3><p class=\"p101-def\">Since I equals delta V divided by R, current can be changed by changing the voltage, the resistance, or both.</p><p>Since I equals delta V over R, there are two ways to change the current: change the voltage, change the resistance, or both. In the first circuit of Figure 8, delta V is 6 volts and R is 30 ohms, so the current is 0.2 amperes.</p><p>By Ohm's law, more voltage across a resistor means more current through it, and halving the voltage halves the current. In the middle circuit, dropping the voltage from 6 volts to 3 volts cuts the current to 0.1 amperes. In the bottom circuit, keeping 6 volts but swapping the 30-ohm resistor for a 60-ohm resistor also cuts the current to 0.1 amperes.</p><p>So the two ways to control current are: lower or raise the voltage, or raise or lower the resistance.</p>",
+   "testIt": {
+    "name": "Target",
+    "how": "Adjust the battery and resistor to hit 0.1 A."
+   }
+  },
+  "15": {
+   "layers": [],
+   "title": "Variable Resistors and Your Body",
+   "text": "<h3>Variable Resistors and Your Body</h3><p class=\"p101-def\">A potentiometer is a variable resistor used to smoothly change the current in a circuit.</p><p>Sometimes we want to change current smoothly, like the speed control on some electric motors, which changes the speed continuously instead of in steps. For that, we use a variable resistor called a potentiometer, as in Figure 9.</p><p>Some potentiometers are a coil of resistance wire with a sliding contact. Slide the contact to put more wire in the circuit, and the resistance goes up, so the current, delta V over R, goes down. With little wire in the circuit, the motor runs fast. With lots of wire, it runs slow. That's what the potentiometer in Figure 9 does: it sets the motor's speed.</p><p>Health connection: your body acts like a variable resistor too. Dry skin has high enough resistance to keep currents low at small and moderate voltages. Wet skin's resistance is much lower, so current can rise to dangerous levels. Just 1 milliampere feels like a mild shock, 15 milliamperes can cause loss of muscle control, and 100 milliamperes can cause death. So be careful with any electric current, even from a lantern battery.</p>",
+   "testIt": {
+    "name": "Potentiometer",
+    "how": "Slide the contact on a 0 to 100 Ω potentiometer with a 12 V supply and a 10 Ω motor."
+   }
+  },
+  "16": {
+   "layers": [],
+   "title": "Example Problem 2, Current Through a Resistor",
+   "text": "<h3>Example Problem 2, Current Through a Resistor</h3><p class=\"p101-def\">I equals delta V divided by R.</p><p>A 30.0-volt battery is connected to a 10.0-ohm resistor. What's the current in the circuit?</p><p>Step one: analyze and sketch. Draw a circuit with a battery, an ammeter, and a resistor, and show the direction of conventional current. Known: delta V is 30.0 volts, and R is 10.0 ohms. Unknown: I.</p><p>Step two: solve. I equals delta V over R, which is 30.0 volts divided by 10.0 ohms, or 3.00 amperes.</p><p>Step three: evaluate. Current is in amperes. And with a fairly large potential difference and a small resistance, 3.00 amperes is reasonable.</p>",
+   "testIt": {
+    "name": "Ammeter check",
+    "how": "Set the battery and resistor."
+   }
+  },
+  "17": {
+   "layers": [],
+   "title": "Parallel and Series Connections",
+   "text": "<h3>Parallel and Series Connections</h3><p class=\"p101-def\">A parallel connection gives current two or more paths; a series connection has only one current path.</p><p>A voltmeter connected across a component is in a parallel connection, because it sits side by side with the component, as in Figure 13. Any time current has two or more paths to follow, that's a parallel connection. The potential difference across the voltmeter equals the potential difference across the component. Remember: voltage across goes with parallel.</p><p>An ammeter measures the current through a component, so all the same current has to pass through the ammeter too. That means only one path. A connection with only one current path is a series connection. To add an ammeter, disconnect the wire from the component, attach it to the ammeter, and run another wire from the ammeter's other terminal to the component. Remember: current through goes with series.</p>",
+   "testIt": {
+    "name": "Swap meters",
+    "how": "Tap to swap the voltmeter and the ammeter."
+   }
+  }
+ }
+}

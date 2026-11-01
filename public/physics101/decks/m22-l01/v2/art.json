@@ -1,0 +1,1392 @@
+{
+ "p01": [
+  {
+   "id": "bg",
+   "src": "p01-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p01-mid.webp",
+   "box": [
+    795,
+    0,
+    1600,
+    897
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p01-fg.webp",
+   "box": [
+    174,
+    148,
+    766,
+    298
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p01-cut-try.webp",
+   "box": [
+    372,
+    799,
+    567,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p01-cut-try-hint.webp",
+   "hbox": [
+    368,
+    795,
+    571,
+    846
+   ]
+  }
+ ],
+ "p02": [
+  {
+   "id": "bg",
+   "src": "p02-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p02-mid.webp",
+   "box": [
+    50,
+    330,
+    1550,
+    838
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p02-fg.webp",
+   "box": [
+    134,
+    103,
+    1351,
+    224
+   ],
+   "f": 0.45,
+   "late": true
+  }
+ ],
+ "p03": [
+  {
+   "id": "bg",
+   "src": "p03-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p03-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p03-fg.webp",
+   "box": [
+    166,
+    110,
+    1519,
+    666
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p03-cut-try.webp",
+   "box": [
+    1143,
+    798,
+    1417,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p03-cut-try-hint.webp",
+   "hbox": [
+    1139,
+    794,
+    1421,
+    846
+   ]
+  }
+ ],
+ "p04": [
+  {
+   "id": "bg",
+   "src": "p04-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p04-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: Hotter Objects Radiate More Power. The power an object radiates is proportional to its kelvin temperature raised to the fourth power."
+  },
+  {
+   "id": "fg",
+   "src": "p04-fg.webp",
+   "box": [
+    182,
+    148,
+    1541,
+    730
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p04-cut-try.webp",
+   "box": [
+    1234,
+    798,
+    1326,
+    841
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p04-cut-try-hint.webp",
+   "hbox": [
+    1230,
+    794,
+    1330,
+    845
+   ]
+  }
+ ],
+ "p05": [
+  {
+   "id": "bg",
+   "src": "p05-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p05-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p05-fg.webp",
+   "box": [
+    267,
+    112,
+    1555,
+    807
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p05-cut-try.webp",
+   "box": [
+    1150,
+    798,
+    1410,
+    841
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p05-cut-try-hint.webp",
+   "hbox": [
+    1146,
+    794,
+    1414,
+    845
+   ]
+  }
+ ],
+ "p06": [
+  {
+   "id": "bg",
+   "src": "p06-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p06-mid.webp",
+   "box": [
+    150,
+    114,
+    804,
+    779
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: Energy Is Quantized. The energy of a vibrating atom is E equals n h f, where n is an integer and h is Planck's constant."
+  },
+  {
+   "id": "fg",
+   "src": "p06-fg.webp",
+   "box": [
+    193,
+    148,
+    1550,
+    743
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p06-cut-try.webp",
+   "box": [
+    1135,
+    798,
+    1425,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p06-cut-try-hint.webp",
+   "hbox": [
+    1131,
+    794,
+    1429,
+    846
+   ]
+  }
+ ],
+ "p07": [
+  {
+   "id": "bg",
+   "src": "p07-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p07-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: Changes in Vibrations. Planck proposed that atoms emit radiation only when their vibrational energy changes from one allowed level to another."
+  },
+  {
+   "id": "fg",
+   "src": "p07-fg.webp",
+   "box": [
+    298,
+    147,
+    1549,
+    745
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p07-cut-try.webp",
+   "box": [
+    1113,
+    798,
+    1448,
+    841
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p07-cut-try-hint.webp",
+   "hbox": [
+    1109,
+    794,
+    1452,
+    845
+   ]
+  }
+ ],
+ "p08": [
+  {
+   "id": "bg",
+   "src": "p08-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p08-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: The Photoelectric Effect. The photoelectric effect is the emission of electrons when electromagnetic radiation falls on an object."
+  },
+  {
+   "id": "fg",
+   "src": "p08-fg.webp",
+   "box": [
+    178,
+    148,
+    1546,
+    689
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p08-cut-try.webp",
+   "box": [
+    1167,
+    798,
+    1393,
+    841
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p08-cut-try-hint.webp",
+   "hbox": [
+    1163,
+    794,
+    1397,
+    845
+   ]
+  }
+ ],
+ "p09": [
+  {
+   "id": "bg",
+   "src": "p09-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p09-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p09-fg.webp",
+   "box": [
+    167,
+    147,
+    1537,
+    630
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p09-cut-try.webp",
+   "box": [
+    1149,
+    798,
+    1410,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p09-cut-try-hint.webp",
+   "hbox": [
+    1145,
+    794,
+    1414,
+    846
+   ]
+  }
+ ],
+ "p10": [
+  {
+   "id": "bg",
+   "src": "p10-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p10-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p10-fg.webp",
+   "box": [
+    166,
+    148,
+    1553,
+    643
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p10-cut-try.webp",
+   "box": [
+    1180,
+    799,
+    1380,
+    841
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p10-cut-try-hint.webp",
+   "hbox": [
+    1176,
+    795,
+    1384,
+    845
+   ]
+  }
+ ],
+ "p11": [
+  {
+   "id": "bg",
+   "src": "p11-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p11-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: Where Wave Theory Fails. Wave theory links light's energy to its intensity, so it cannot explain why dim, high-frequency light ejects electrons immediately."
+  },
+  {
+   "id": "fg",
+   "src": "p11-fg.webp",
+   "box": [
+    197,
+    148,
+    1528,
+    695
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p11-cut-try.webp",
+   "box": [
+    1126,
+    798,
+    1433,
+    841
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p11-cut-try-hint.webp",
+   "hbox": [
+    1122,
+    794,
+    1437,
+    845
+   ]
+  }
+ ],
+ "p12": [
+  {
+   "id": "bg",
+   "src": "p12-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p12-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p12-fg.webp",
+   "box": [
+    158,
+    103,
+    1553,
+    687
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p12-cut-try.webp",
+   "box": [
+    1151,
+    798,
+    1409,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p12-cut-try-hint.webp",
+   "hbox": [
+    1147,
+    794,
+    1413,
+    846
+   ]
+  }
+ ],
+ "p13": [
+  {
+   "id": "bg",
+   "src": "p13-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p13-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: Electron Volts. One electron volt is the energy of an electron accelerated across a potential difference of one volt, 1.602 times ten to the negative nineteenth joules."
+  },
+  {
+   "id": "fg",
+   "src": "p13-fg.webp",
+   "box": [
+    297,
+    148,
+    1553,
+    770
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p13-cut-try.webp",
+   "box": [
+    1117,
+    798,
+    1443,
+    841
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p13-cut-try-hint.webp",
+   "hbox": [
+    1113,
+    794,
+    1447,
+    845
+   ]
+  }
+ ],
+ "p14": [
+  {
+   "id": "bg",
+   "src": "p14-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p14-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p14-fg.webp",
+   "box": [
+    250,
+    110,
+    1544,
+    396
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p14-cut-try.webp",
+   "box": [
+    1113,
+    798,
+    1447,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p14-cut-try-hint.webp",
+   "hbox": [
+    1109,
+    794,
+    1451,
+    846
+   ]
+  }
+ ],
+ "p15": [
+  {
+   "id": "bg",
+   "src": "p15-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p15-mid.webp",
+   "box": [
+    147,
+    117,
+    989,
+    773
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: Planck and Einstein. The kinetic energy of an ejected electron is K E equals h f minus h f zero."
+  },
+  {
+   "id": "fg",
+   "src": "p15-fg.webp",
+   "box": [
+    182,
+    148,
+    1547,
+    737
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p15-cut-try.webp",
+   "box": [
+    1105,
+    798,
+    1454,
+    841
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p15-cut-try-hint.webp",
+   "hbox": [
+    1101,
+    794,
+    1458,
+    845
+   ]
+  }
+ ],
+ "p16": [
+  {
+   "id": "bg",
+   "src": "p16-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p16-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: Maximum Kinetic Energy. h f zero is the minimum energy needed to free the most loosely held electron, so K E equals h f minus h f zero is the maximum kinetic energy."
+  },
+  {
+   "id": "fg",
+   "src": "p16-fg.webp",
+   "box": [
+    248,
+    148,
+    1556,
+    746
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p16-cut-try.webp",
+   "box": [
+    1123,
+    798,
+    1437,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p16-cut-try-hint.webp",
+   "hbox": [
+    1119,
+    794,
+    1441,
+    846
+   ]
+  }
+ ],
+ "p17": [
+  {
+   "id": "bg",
+   "src": "p17-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p17-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p17-fg.webp",
+   "box": [
+    251,
+    111,
+    1545,
+    645
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p17-cut-try.webp",
+   "box": [
+    1124,
+    798,
+    1435,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p17-cut-try-hint.webp",
+   "hbox": [
+    1120,
+    794,
+    1439,
+    846
+   ]
+  }
+ ],
+ "p18": [
+  {
+   "id": "bg",
+   "src": "p18-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p18-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p18-fg.webp",
+   "box": [
+    339,
+    110,
+    1539,
+    827
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p18-cut-try.webp",
+   "box": [
+    1133,
+    798,
+    1427,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p18-cut-try-hint.webp",
+   "hbox": [
+    1129,
+    794,
+    1431,
+    846
+   ]
+  }
+ ],
+ "p19": [
+  {
+   "id": "bg",
+   "src": "p19-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p19-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p19-fg.webp",
+   "box": [
+    356,
+    113,
+    1538,
+    720
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p19-cut-try.webp",
+   "box": [
+    1114,
+    798,
+    1446,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p19-cut-try-hint.webp",
+   "hbox": [
+    1110,
+    794,
+    1450,
+    846
+   ]
+  }
+ ],
+ "p20": [
+  {
+   "id": "bg",
+   "src": "p20-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p20-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p20-fg.webp",
+   "box": [
+    251,
+    111,
+    1545,
+    681
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p20-cut-try.webp",
+   "box": [
+    1123,
+    798,
+    1437,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p20-cut-try-hint.webp",
+   "hbox": [
+    1119,
+    794,
+    1441,
+    846
+   ]
+  }
+ ],
+ "p21": [
+  {
+   "id": "bg",
+   "src": "p21-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p21-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: The Work Function. The work function of a metal is the energy needed to free its most weakly bound electron, equal in magnitude to h f zero."
+  },
+  {
+   "id": "fg",
+   "src": "p21-fg.webp",
+   "box": [
+    200,
+    148,
+    1546,
+    746
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p21-cut-try.webp",
+   "box": [
+    1131,
+    798,
+    1429,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p21-cut-try-hint.webp",
+   "hbox": [
+    1127,
+    794,
+    1433,
+    846
+   ]
+  }
+ ],
+ "p22": [
+  {
+   "id": "bg",
+   "src": "p22-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p22-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p22-fg.webp",
+   "box": [
+    234,
+    113,
+    1554,
+    720
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p22-cut-try.webp",
+   "box": [
+    1140,
+    799,
+    1420,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p22-cut-try-hint.webp",
+   "hbox": [
+    1136,
+    795,
+    1424,
+    846
+   ]
+  }
+ ],
+ "p23": [
+  {
+   "id": "bg",
+   "src": "p23-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p23-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p23-fg.webp",
+   "box": [
+    165,
+    110,
+    1546,
+    559
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p23-cut-try.webp",
+   "box": [
+    1115,
+    799,
+    1445,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p23-cut-try-hint.webp",
+   "hbox": [
+    1111,
+    795,
+    1449,
+    846
+   ]
+  }
+ ],
+ "p24": [
+  {
+   "id": "bg",
+   "src": "p24-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p24-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p24-fg.webp",
+   "box": [
+    165,
+    110,
+    1548,
+    559
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p24-cut-try.webp",
+   "box": [
+    1132,
+    798,
+    1428,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p24-cut-try-hint.webp",
+   "hbox": [
+    1128,
+    794,
+    1432,
+    846
+   ]
+  }
+ ],
+ "p25": [
+  {
+   "id": "bg",
+   "src": "p25-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p25-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p25-fg.webp",
+   "box": [
+    165,
+    110,
+    1557,
+    792
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p25-cut-try.webp",
+   "box": [
+    1113,
+    798,
+    1446,
+    841
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p25-cut-try-hint.webp",
+   "hbox": [
+    1109,
+    794,
+    1450,
+    845
+   ]
+  }
+ ]
+}

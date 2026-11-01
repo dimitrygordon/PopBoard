@@ -1,0 +1,131 @@
+{
+ "key": "M22-L01",
+ "ptw": 960.0,
+ "slides": [
+  {
+   "n": 1,
+   "title": "A Glowing Mystery",
+   "items": []
+  },
+  {
+   "n": 2,
+   "title": "Your Investigation Toolkit",
+   "items": []
+  },
+  {
+   "n": 3,
+   "title": "Emission Spectra",
+   "items": []
+  },
+  {
+   "n": 4,
+   "title": "Hotter Objects Radiate More Power",
+   "items": []
+  },
+  {
+   "n": 5,
+   "title": "Explaining Emission Spectra",
+   "items": []
+  },
+  {
+   "n": 6,
+   "title": "Energy Is Quantized",
+   "items": []
+  },
+  {
+   "n": 7,
+   "title": "Changes in Vibrations",
+   "items": []
+  },
+  {
+   "n": 8,
+   "title": "The Photoelectric Effect",
+   "items": []
+  },
+  {
+   "n": 9,
+   "title": "The Photocell",
+   "items": []
+  },
+  {
+   "n": 10,
+   "title": "Threshold Frequency",
+   "items": []
+  },
+  {
+   "n": 11,
+   "title": "Where Wave Theory Fails",
+   "items": []
+  },
+  {
+   "n": 12,
+   "title": "Photons",
+   "items": []
+  },
+  {
+   "n": 13,
+   "title": "Electron Volts",
+   "items": []
+  },
+  {
+   "n": 14,
+   "title": "A Handy Shortcut, h c Equals 1240 eV nm",
+   "items": []
+  },
+  {
+   "n": 15,
+   "title": "Planck and Einstein",
+   "items": []
+  },
+  {
+   "n": 16,
+   "title": "Maximum Kinetic Energy",
+   "items": []
+  },
+  {
+   "n": 17,
+   "title": "Testing the Photon Theory",
+   "items": []
+  },
+  {
+   "n": 18,
+   "title": "The Photoelectric Effect in Your Camera",
+   "items": []
+  },
+  {
+   "n": 19,
+   "title": "Example Problem 1, Photoelectron Kinetic Energy",
+   "items": []
+  },
+  {
+   "n": 20,
+   "title": "Measuring Planck's Constant",
+   "items": []
+  },
+  {
+   "n": 21,
+   "title": "The Work Function",
+   "items": []
+  },
+  {
+   "n": 22,
+   "title": "Example Problem 2, Work Function and Energy",
+   "items": []
+  },
+  {
+   "n": 23,
+   "title": "Photon Momentum",
+   "items": []
+  },
+  {
+   "n": 24,
+   "title": "The Compton Effect",
+   "items": []
+  },
+  {
+   "n": 25,
+   "title": "Photons Obey Conservation Laws",
+   "items": []
+  }
+ ]
+}

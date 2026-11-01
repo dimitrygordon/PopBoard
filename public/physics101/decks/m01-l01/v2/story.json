@@ -24,7 +24,7 @@
    "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate the world around you.</p><p>As you work through this lesson, keep your Science Journal handy. Use it to record the evidence you collect as you read and do the activities.</p><p>There are two activities to try. In the Quick Investigation called Measuring Change, you'll analyze data to find patterns, then use those patterns to extrapolate, which means predicting beyond the data you measured. In Review the News, you'll find a current news story about physics research, decide how trustworthy your source is, and share what you learned with your class. You can find both activities, and more, online.</p>",
    "testIt": {
     "name": "Measuring Change",
-    "how": "Watch the points appear, then drag the violet ruler to predict the next value."
+    "how": "Watch the five points appear, then predict the next value and press Reveal to check."
    }
   },
   "5": {

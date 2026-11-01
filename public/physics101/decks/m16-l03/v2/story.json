@@ -1,0 +1,120 @@
+{
+ "slug": "m16-l03",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Light and Boundaries",
+   "text": "<h3>Light and Boundaries</h3><p class=\"p101-def\">Refraction is the bending of light as it crosses the boundary between two mediums.</p><p>Our big question for this lesson: what happens to light when it enters a new medium? Have you ever looked down into a swimming pool and thought it looked shallower than it really was? That trick of the eye comes from light bending as it crosses from water into air. This bending at a boundary is called refraction.</p><p>In Figure 18, identical rays start in air and enter three different mediums: water, glass, and diamond. They all hit at the same angle, and they all bend. But look closely: the ray bends most going into diamond, and least going into water. So the amount of refraction depends on the properties of both mediums.</p><p>What about the angle the light arrives at? The bigger the angle of incidence, the bigger the angle of refraction, and a ray that hits straight on, along the normal, doesn't bend at all. Snell's law, coming up next, pins this relationship down exactly.</p>",
+   "testIt": {
+    "name": "Three blocks",
+    "how": "Set the angle and tap to switch blocks."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson.</p><p>Online, the Forensics Lab called A Whole Spectrum of Possibilities has you analyze data showing how an index of refraction that depends on wavelength causes the dispersion of light. And as you go, ask yourself: what information from this lesson can help you answer the Unit and Module questions?</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Snell's Law of Refraction",
+   "text": "<h3>Snell's Law of Refraction</h3><p class=\"p101-def\">n sub 1 times the sine of theta sub 1 equals n sub 2 times the sine of theta sub 2.</p><p>In the seventeenth century, René Descartes and Willebrord Snell studied refraction by shining a narrow beam of light into a transparent medium, like the glass in Figure 19. They measured two angles. The angle of incidence, theta sub 1, is the angle at which the ray strikes the surface. The angle of refraction, theta sub 2, is the angle at which the transmitted light leaves the surface. Both are measured from the normal.</p><p>Snell found that the sines of these angles are related through a number called the index of refraction, n, which depends on the properties of the medium. Table 2 lists values for yellow light: a vacuum is 1.00, air is 1.0003, water is 1.33, ethanol is 1.36, float glass is 1.52, quartz is 1.54, flint glass is 1.62, and diamond is 2.42. In problems, we use 1.00 for air.</p><p>Snell's law of refraction says the index of refraction of the first medium times the sine of the angle of incidence equals the index of refraction of the second medium times the sine of the angle of refraction: n sub 1 times the sine of theta sub 1 equals n sub 2 times the sine of theta sub 2.</p>",
+   "testIt": {
+    "name": "Snell",
+    "how": "Drag the incident angle and tap to change the second medium (from air)."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Through a Windowpane",
+   "text": "<h3>Through a Windowpane</h3><p class=\"p101-def\">Light bends toward the normal entering a higher-n medium and away from the normal entering a lower-n medium.</p><p>Let's follow light through a windowpane, a piece of glass with parallel sides, as in Figure 19. Going from air into glass, light moves from a lower n of 1.00 to a higher n of 1.52, so it bends toward the normal.</p><p>Coming back out from glass into air, it moves from a higher n of 1.52 to a lower n of 1.00, so it bends away from the normal. The relative values of n decide which way light bends.</p><p>Here's a neat result. The ray leaves the glass traveling in the same direction it had before it entered. The angle it leaves at, theta sub 2 prime, equals the angle it came in at, theta sub 1, because both boundaries are between the same two mediums. The ray is just shifted sideways a little.</p>",
+   "testIt": {
+    "name": "Windowpane",
+    "how": "Change the glass thickness (ray at 45°, n = 1.52)."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Example Problem 4, Angle of Refraction",
+   "text": "<h3>Example Problem 4, Angle of Refraction</h3><p class=\"p101-def\">Use Snell's law: theta sub 2 equals the inverse sine of n sub 1 over n sub 2 times the sine of theta sub 1.</p><p>A beam of light in air hits a sheet of float glass at an angle of 30.0 degrees. What is the angle of refraction?</p><p>Step one: analyze and sketch. Sketch the air and glass boundary, draw the ray, and label theta sub 1, theta sub 2, n sub 1, and n sub 2. Known: theta sub 1 is 30.0 degrees, n sub 1 is 1.00, and n sub 2 is 1.52. Unknown: theta sub 2.</p><p>Step two: solve. Start with Snell's law, n sub 1 times the sine of theta sub 1 equals n sub 2 times the sine of theta sub 2. Solve for the sine of theta sub 2: it's n sub 1 over n sub 2, times the sine of theta sub 1. So theta sub 2 is the inverse sine of that. Substituting, theta sub 2 equals the inverse sine of 1.00 over 1.52 times the sine of 30.0 degrees, which is 19.2 degrees.</p><p>Step three: evaluate. Does the answer make sense? The light enters a medium with a higher n, so theta sub 2 should be smaller than theta sub 1. And 19.2 degrees is indeed less than 30.0 degrees.</p>",
+   "testIt": {
+    "name": "Float glass",
+    "how": "Set the angle onto float glass (n = 1.52) and tap to try other mediums."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "The Meaning of the Index of Refraction",
+   "text": "<h3>The Meaning of the Index of Refraction</h3><p class=\"p101-def\">In any medium, lambda equals v divided by f, and the frequency does not change at a boundary.</p><p>Snell did his work before scientists had a wave model of light. Once that model came along, they understood that light interacts with atoms in a way that makes it travel more slowly through a medium than through a vacuum.</p><p>Remember that in a vacuum, the wavelength, lambda sub zero, equals c divided by f, where c is the speed of light in a vacuum and f is the frequency, the number of oscillations each second. More generally, lambda equals v divided by f, where v is the speed of light in the medium and lambda is the wavelength in that medium.</p><p>The frequency doesn't change when light crosses a boundary. So when light slows down, its wavelength gets shorter. And since light is slower in every medium than in a vacuum, its wavelength in any medium is shorter than in a vacuum.</p>",
+   "testIt": {
+    "name": "Crests",
+    "how": "Tap to send 600 nm light into the next medium."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Snell's Law from the Wave Model",
+   "text": "<h3>Snell's Law from the Wave Model</h3><p class=\"p101-def\">The sine of theta sub 2 over the sine of theta sub 1 equals lambda sub 2 over lambda sub 1, which equals v sub 2 over v sub 1.</p><p>Figure 20 shows a beam made of parallel, straight wavefronts, each one a wave crest perpendicular to the beam. The angle of incidence is theta sub 1. In triangle P Q R, angle P Q R is a right angle, and angle Q R P equals theta sub 1. So the sine of theta sub 1 equals P Q divided by P R. In the same way, in triangle P S R, the sine of theta sub 2 equals R S divided by P R.</p><p>Divide the two, and P R cancels: the sine of theta sub 2 over the sine of theta sub 1 equals R S over P Q. In the figure, P Q is three wavelengths in air, 3 lambda sub 1, and R S is three wavelengths in glass, 3 lambda sub 2. Cancel the 3, and the sine of theta sub 2 over the sine of theta sub 1 equals lambda sub 2 over lambda sub 1.</p><p>Now use lambda equals v over f, and cancel f, since the frequency stays constant. The ratio of sines equals v sub 2 over v sub 1. The wave slows down in the glass, so its wavelength shrinks and the ray bends. That tells you glass, the slower medium where the wavelength is shorter, has the higher index of refraction.</p>",
+   "testIt": {
+    "name": "Wave model",
+    "how": "Slow the wave in the second medium (incidence 40°)."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Index of Refraction and the Speed of Light",
+   "text": "<h3>Index of Refraction and the Speed of Light</h3><p class=\"p101-def\">n equals c divided by v, and the wavelength in a medium is lambda equals lambda sub zero divided by n.</p><p>Snell's law can also be written as a ratio: the sine of theta sub 2 over the sine of theta sub 1 equals n sub 1 over n sub 2. Put this together with the wave result, and n sub 1 over n sub 2 equals v sub 2 over v sub 1.</p><p>If one medium is a vacuum, where n is 1.00 and v is c, this simplifies beautifully. The index of refraction of a medium equals the speed of light in a vacuum divided by the speed of light in the medium: n equals c divided by v. So the higher a medium's index of refraction, the slower light travels in it. In water, with n equal to 1.33, light moves at about three-fourths of its vacuum speed.</p><p>We can also find the wavelength in a medium. The speed there is v equals c over n, and the frequency is f equals c over lambda sub zero. Substitute these into lambda equals v over f, and you get lambda equals lambda sub zero divided by n. The wavelength in a medium is always shorter than in a vacuum.</p>",
+   "testIt": {
+    "name": "Race",
+    "how": "Tap to race a pulse 1.0 m through the next medium."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Total Internal Reflection",
+   "text": "<h3>Total Internal Reflection</h3><p class=\"p101-def\">Total internal reflection happens when light in a higher-n medium hits a lower-n boundary beyond the critical angle: the sine of theta sub c equals n sub 2 over n sub 1.</p><p>When light hits a transparent boundary, some is transmitted and some is reflected. When light goes from a higher index of refraction to a lower one, like from water into air, the angle of refraction is larger than the angle of incidence, as in the first panel of Figure 21.</p><p>Now increase the angle of incidence. The angle of refraction grows too, until, at a special angle called the critical angle, theta sub c, the refracted ray runs right along the boundary. That's the second panel. Go past the critical angle, and no light escapes at all. All of it reflects back into the higher-index medium, following the law of reflection. That's total internal reflection, in the third panel.</p><p>To find the critical angle, set theta sub 1 equal to theta sub c and theta sub 2 equal to 90.0 degrees in Snell's law. Since the sine of 90.0 degrees is 1, the sine of theta sub c equals n sub 2 divided by n sub 1. Under water in a pool, look up at the surface, and you may see an upside-down reflection of a nearby underwater object, or of the pool bottom. The surface acts like a mirror.</p>",
+   "testIt": {
+    "name": "Flashlight",
+    "how": "Tilt the underwater flashlight (water n = 1.33 into air)."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Optical Fibers",
+   "text": "<h3>Optical Fibers</h3><p class=\"p101-def\">Optical fibers trap light by total internal reflection at the boundary with the cladding.</p><p>Total internal reflection powers modern communication. Light traveling through a transparent optical fiber always strikes the fiber's inner boundary at an angle greater than the critical angle, so all of it reflects and none escapes. The outer layer of each fiber is called cladding, and it has a lower index of refraction than the glass core.</p><p>Light pulses in fiber-optic cables carry more information over longer distances than other forms of communication. Compare that to a satellite link. Both carry data on electromagnetic waves, but a fiber guides light along a cable on the ground, while a satellite beams radio waves through the air and space, to places cables can't easily reach, with a longer delay from the trip up and back. And that's how light carries information through the network you met at the start of this module.</p>",
+   "testIt": {
+    "name": "Fiber",
+    "how": "Change the cladding index (core n = 1.50) and the ray's angle at the wall."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Mirages",
+   "text": "<h3>Mirages</h3><p class=\"p101-def\">A mirage forms when hot air near the ground, with a lower index of refraction, gradually bends light upward.</p><p>On a hot summer day, you might see what looks like a car reflected in a pool of water on the road ahead, as on the left of Figure 22. But the pool vanishes as you get closer. It's a mirage!</p><p>The Sun heats the road, and the road heats the air just above it. The speed of light in a gas, and so its index of refraction, changes slightly with temperature, so the air forms layers. Moving down toward the road, the air gets hotter and its index of refraction gets smaller, but gradually.</p><p>Recall that wavefronts are made of Huygens' wavelets. Near the ground, the wavelets travel faster than the ones higher up, so the wavefronts slowly turn upward. Light from the car curves up toward your eye, and it looks like it bounced off a pool on the road. So the light waves are traveling faster near the road's surface than near the top of the vehicle.</p>",
+   "testIt": {
+    "name": "Mirage",
+    "how": "Turn up the road temperature."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Dispersion of Light",
+   "text": "<h3>Dispersion of Light</h3><p class=\"p101-def\">Dispersion is the separation of white light into a spectrum because the index of refraction depends on wavelength.</p><p>Look at the spectrum from the prism in Figure 23. Violet light bends more than red light. Why? Violet light travels through glass more slowly than red light does. Violet has a higher frequency than red, so it interacts differently with the atoms in the glass. As a result, glass has a slightly higher index of refraction for violet light than for red.</p><p>This separation of white light into a spectrum of colors is called dispersion. In general, the speed of light in a medium comes from interactions between the light and the medium's atoms, so in a solid or liquid, the speed and the index of refraction vary with wavelength.</p>",
+   "testIt": {
+    "name": "Prism",
+    "how": "Rotate the prism (n_red 1.513, n_violet 1.532)."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Rainbows",
+   "text": "<h3>Rainbows</h3><p class=\"p101-def\">A rainbow is a spectrum formed when sunlight is dispersed by water droplets in the atmosphere.</p><p>A rainbow is a spectrum made when water droplets in the air disperse sunlight. Sunlight enters a droplet and refracts, and since each color has a different wavelength, each bends at a slightly different angle, as in Figure 24. At the back of the droplet, some light reflects internally. On the way out, it refracts and disperses again.</p><p>Each droplet sends out a full spectrum, but you, standing between the Sun and the rain, see just one color from each droplet. Which color depends on the positions of the Sun, the droplet, and you. With many droplets at different heights, you see the whole bow. Because the rainbow depends on your position, you can never walk up and touch one; as you move, a different set of droplets makes your rainbow.</p><p>Sometimes you'll spot a faint second rainbow outside the first, like in Figure 25. It's dimmer, and its colors are in reverse order. It comes from light that reflects twice inside the droplets.</p>",
+   "testIt": {
+    "name": "Rainbow",
+    "how": "Tap to move the observer around the shower (Sun behind you)."
+   }
+  }
+ }
+}

@@ -1,0 +1,202 @@
+{
+ "slug": "m24-l02",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Mysterious Rays",
+   "text": "<h3>Mysterious Rays</h3><p class=\"p101-def\">Nuclei that emit particles and energy are radioactive; a material that emits particles is said to decay.</p><p>Our big question for this lesson: how can nuclear reactions be useful? The story starts in 1896, when Henri Becquerel was working with uranium compounds. He found that photographic plates nearby, wrapped up tight to keep out light, had become fogged, or partly exposed. Some kind of ray from the uranium had passed right through the wrapping! Figure 7 shows one of his plates, and other materials turned out to give off these penetrating rays too.</p><p>In 1909, after years of experiments, Ernest Rutherford identified Becquerel's radiation as helium-4 nuclei. Large uranium nuclei were decaying and shooting out these helium nuclei. Nuclei that emit particles and energy are called radioactive, and a material that emits particles is said to decay. Nuclei decay to become more stable, and radioactive decay is a natural process.</p><p>Few areas of physics have turned discoveries into uses so fast. Doctors were using radium for medicine within 20 years of its discovery, and nuclear power plants followed the discovery of fission within about a dozen years.</p>"
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson.</p><p>Online, the Applying Practices activity Modeling Fission, Fusion, and Radioactive Decay has you build models showing how the nucleus changes and how much energy is released in each process. Collect evidence for the module's big question: how does the Sun produce energy, and how can we replicate it?</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Alpha, Beta, and Gamma",
+   "text": "<h3>Alpha, Beta, and Gamma</h3><p class=\"p101-def\">Rutherford classified radiation by how easy it is to stop: alpha, beta, and gamma.</p><p>Rutherford's team found that uranium compounds give off three kinds of radiation. He sorted them by how hard they are to stop and named them alpha, beta, and gamma, after the first three letters of the Greek alphabet.</p><p>A thick sheet of paper stops alpha radiation. It takes about 6 millimeters of aluminum to stop most beta radiation. Gamma rays need several centimeters of lead. We now know each type of radiation is a different kind of particle.</p>",
+   "testIt": {
+    "name": "Shields",
+    "how": "Tap for the next source."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Alpha Decay",
+   "text": "<h3>Alpha Decay</h3><p class=\"p101-def\">Alpha decay is the emission of an alpha particle, a helium-4 nucleus, which lowers the mass number by 4 and the atomic number by 2.</p><p>Alpha particles are helium nuclei, with a mass number of 4 and an atomic number of 2. When a nucleus shoots one out, that's alpha decay. It happens in nuclei with at least 106 nucleons.</p><p>Losing an alpha particle drops the nucleus's mass number, A, by 4 and its atomic number, Z, by 2. Since the number of protons changes, the element itself changes, or transmutes, into a different element. For example, uranium-238 transmutes into thorium-234 by alpha decay.</p>",
+   "testIt": {
+    "name": "Alpha",
+    "how": "Tap to pop out an alpha."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Beta Decay",
+   "text": "<h3>Beta Decay</h3><p class=\"p101-def\">In beta decay, a neutron changes to a proton (emitting an electron and an antineutrino) or a proton changes to a neutron (emitting a positron and a neutrino).</p><p>Beta particles are electrons or positrons, which are positively charged electrons, shot out of the nucleus. But wait, the nucleus has no electrons or positrons inside! So where do they come from? Beta decay happens when a neutron turns into a proton, or a proton turns into a neutron, inside the nucleus.</p><p>Charge is always conserved: the total charge before equals the total charge after. When a neutron, with charge zero, becomes a proton, with charge plus one e, an electron with charge negative one e appears too. A nucleus with N neutrons and Z protons ends up with N minus 1 neutrons and Z plus 1 protons. A neutral, nearly massless particle called an antineutrino is also emitted. Because an electron comes out, this is beta minus decay.</p><p>When a proton changes into a neutron, a positron and a neutrino are emitted. That's called positron emission, or beta plus decay.</p>",
+   "testIt": {
+    "name": "Beta",
+    "how": "Tap to flip a neutron."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Gamma Decay and Decay Series",
+   "text": "<h3>Gamma Decay and Decay Series</h3><p class=\"p101-def\">Gamma rays are high-energy photons emitted by a nucleus when its energy is redistributed; neither A nor Z changes.</p><p>Gamma rays are high-energy photons the nucleus gives off during gamma decay, when energy gets rearranged inside the nucleus. Neither the mass number nor the atomic number changes. Gamma rays often tag along with alpha and beta decay.</p><p>Table 1 sums it up. Alpha particles have charge plus 2, penetrate least, and change A to A minus 4, Z to Z minus 2, and N to N minus 2. Beta minus particles have charge negative 1, penetrate a medium amount, keep A the same, raise Z by 1, and lower N by 1. Gamma rays have no charge, penetrate most, and change only the energy.</p><p>Radioactive elements often decay again and again until they reach a stable nucleus. Uranium-238 goes through 14 separate decays before it finally becomes stable lead-206.</p>",
+   "testIt": {
+    "name": "Series",
+    "how": "Step through the chain."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Nuclear Reactions and Equations",
+   "text": "<h3>Nuclear Reactions and Equations</h3><p class=\"p101-def\">A nuclear reaction is any event in which the energy or the number of neutrons or protons in a nucleus changes.</p><p>Whenever the energy or the number of neutrons or protons in a nucleus changes, that's a nuclear reaction. Like chemical reactions, some release energy and some need energy added. Radioactive decay is one kind, releasing extra energy as the kinetic energy of the emitted particles. Figure 8 shows two.</p><p>Nuclear equations make the bookkeeping easy. The alpha decay in Figure 8 is written: uranium-238, with 92 below, yields thorium-234, with 90 below, plus helium-4, with 2 below. The total number of nucleons stays the same, so the top numbers balance: 238 equals 234 plus 4. Charge is conserved too, so the bottom numbers balance: 92 equals 90 plus 2.</p>",
+   "testIt": {
+    "name": "Balance",
+    "how": "Change the product's A."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Balancing Beta Decay and Collisions",
+   "text": "<h3>Balancing Beta Decay and Collisions</h3><p class=\"p101-def\">In every nuclear equation, the mass numbers and the atomic numbers on both sides must balance.</p><p>In beta decay, an electron and an antineutrino are produced. Figure 8 shows thorium-234 turning into protactinium-234 by giving off a beta particle. The equation is thorium-234, with 90 below, yields protactinium-234, with 91 below, plus an electron, written with 0 on top and negative 1 below, plus an antineutrino, with 0 on top and 0 below. Check the charge: 90 equals 91 plus negative 1 plus 0. It balances!</p><p>In alpha and beta decay, one nucleus turns into another plus one or more particles. A nucleus can also change when a particle smashes into it. For example, carbon-12 plus hydrogen-1 yields nitrogen-13. So a nucleus can change by giving off alpha particles, beta particles, or gamma rays, by being struck by another particle, and, as we'll see, by splitting apart or fusing together.</p>",
+   "testIt": {
+    "name": "Proton on carbon",
+    "how": "Change the product's Z."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Example Problem 2, Alpha and Beta Decay",
+   "text": "<h3>Example Problem 2, Alpha and Beta Decay</h3><p class=\"p101-def\">To write a nuclear equation, substitute helium-4 for an alpha particle and an electron with 0 on top and negative 1 below for a beta particle.</p><p>Write the nuclear equation for each process. Part a: radium-226, with 88 below, emits an alpha particle and becomes radon-222, with 86 below. Part b: lead-209, with 82 below, decays into bismuth-209, with 83 below, by emitting a beta particle and an antineutrino.</p><p>Step one: analyze the problem. For part a, the initial nucleus is radium-226, and the final products are an alpha particle, helium-4, and radon-222. For part b, the initial nucleus is lead-209, and the final products are bismuth-209, a beta particle, and an antineutrino. The unknown each time is the nuclear equation.</p><p>Step two: solve for the unknown. Part a: substitute helium-4 for the alpha particle. Radium-226 yields helium-4 plus radon-222. Part b: substitute an electron, with 0 on top and negative 1 below, for the beta particle, and the antineutrino, with 0 on top and 0 below. Lead-209 yields bismuth-209 plus an electron plus an antineutrino.</p><p>Step three: evaluate the answer. Nucleons: 226 equals 4 plus 222, and 209 equals 209 plus 0 plus 0, so mass number is conserved. Charge: 88 equals 2 plus 86, and 82 equals 83 minus 1 plus 0, so charge is conserved.</p>",
+   "testIt": {
+    "name": "Radium and lead",
+    "how": "Tap to switch decays."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Example Problem 3, Solve Nuclear Equations",
+   "text": "<h3>Example Problem 3, Solve Nuclear Equations</h3><p class=\"p101-def\">To find an unknown product, solve for Z and A so both sides of the nuclear equation balance.</p><p>When nitrogen gas is bombarded with alpha particles, high-energy protons come out. What new isotope is created? Use the periodic table.</p><p>Step one: analyze the problem. Knowns: nitrogen-14 with 7 below, an alpha particle, helium-4 with 2 below, and a proton, hydrogen-1 with 1 below. Unknown: the isotope on the right side of the equation.</p><p>Step two: solve for the unknown. Write the equation: helium-4 plus nitrogen-14 yields hydrogen-1 plus an unknown X with mass number A and atomic number Z. Solve: Z equals 2 plus 7 minus 1, which is 8, and A equals 4 plus 14 minus 1, which is 17. The element with Z equals 8 is oxygen, so the isotope is oxygen-17.</p><p>Step three: evaluate the answer. Does it balance? Nucleons: 4 plus 14 equals 1 plus 17. Charge: 2 plus 7 equals 1 plus 8. Yes!</p>",
+   "testIt": {
+    "name": "Nitrogen",
+    "how": "Change the leftover's Z."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Half-Life",
+   "text": "<h3>Half-Life</h3><p class=\"p101-def\">The half-life is the time required for half of the atoms in any given quantity of a radioactive isotope to decay.</p><p>Radioactive isotopes vary hugely in stability. Some last a fraction of a second, others billions of years. Scientists describe this with half-life, the time it takes for half the atoms in a sample to decay. After each half-life, about half the nuclei are left, as Figure 9 shows. Half-life is an average found by watching lots of decays, and every isotope has its own.</p><p>Radium-226 has a half-life of 1600 years. In 1600 years, half of a sample turns into radon. In another 1600 years, half of what's left decays. So after 3200 years, one-fourth of the original radium remains.</p>",
+   "testIt": {
+    "name": "Half-life",
+    "how": "Step half-lives."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Using Half-Lives",
+   "text": "<h3>Using Half-Lives</h3><p class=\"p101-def\">The amount remaining equals the original amount times the quantity one half raised to the power t, where t is the number of half-lives.</p><p>Table 2 lists half-lives of some isotopes. Hydrogen-3, or tritium, has a half-life of 12.3 years. Carbon-14's is 5730 years. Iodine-131's is about 8 days, polonium-210's is 138 days, and uranium-238's is 4.47 times ten to the ninth years, longer than four billion years!</p><p>If you know the starting amount and the half-life, you can find what's left. The amount remaining equals the original amount times one half raised to the power t, where t is the number of half-lives that have passed.</p><p>Half-lives let us date things. The age of organic material can be found by measuring how much carbon-14 is left. And Earth's age was worked out from the decay of uranium into lead.</p>",
+   "testIt": {
+    "name": "Remaining",
+    "how": "Set the time (carbon-14, 5730 y)."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Activity",
+   "text": "<h3>Activity</h3><p class=\"p101-def\">Activity is the number of decays per second of a radioactive substance, measured in becquerels.</p><p>The number of decays per second in a radioactive sample is its activity. Activity is proportional to the number of radioactive atoms present, so it also drops by half in each half-life. Take iodine-131, with a half-life of 8.02 days. If a sample's activity is 8 times ten to the fifth decays per second, then 8.02 days later it's 4 times ten to the fifth, and after another 8.02 days it's 2 times ten to the fifth.</p><p>Activity is also tied to half-life. For the same number of atoms, the shorter the half-life, the higher the activity. So if you know a substance's activity and how much of it you have, you can find its half-life. The SI unit for decays per second is the becquerel.</p><p>So how do they compare? Half-life is a fixed time for a given isotope, while activity is a rate that shrinks as the sample decays.</p>",
+   "testIt": {
+    "name": "Activity",
+    "how": "Set the days (iodine-131)."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "Artificial Radioactivity and PET Scans",
+   "text": "<h3>Artificial Radioactivity and PET Scans</h3><p class=\"p101-def\">Radioactive isotopes can be made from stable isotopes by bombarding them with protons, neutrons, electrons, photons, or other particles.</p><p>We can make radioactive isotopes on purpose by bombarding stable isotopes with protons, neutrons, electrons, photons, or other particles. The unstable nuclei then give off radiation, which can include alpha, beta, and gamma radiation, neutrinos, antineutrinos, and positrons, until they become stable. A positron is a positively charged particle with the mass of an electron.</p><p>These artificial isotopes are big in medicine. Patients can take isotopes of elements that collect in specific body parts, and a physician monitors the activity there with a radiation counter. In a positron emission tomography, or PET, scan, a radioactive isotope is attached to a molecule that collects in the target tissue. When the isotope decays, its positrons annihilate nearby electrons and make gamma rays. The scanner detects them and builds a three-dimensional map, like the brain scan in Figure 10.</p>",
+   "testIt": {
+    "name": "PET",
+    "how": "Tap to inject the tracer."
+   }
+  },
+  "15": {
+   "layers": [],
+   "title": "Radiation Against Cancer",
+   "text": "<h3>Radiation Against Cancer</h3><p class=\"p101-def\">Cancer cells are more sensitive to radiation because they divide more often than normal cells.</p><p>Radiation can also destroy cancer cells, which are extra sensitive to radiation damage because they divide more often than normal cells. There are three main methods.</p><p>First, gamma rays from cobalt-60 are aimed at the tumor. Second, iodine can be injected to target thyroid cancer, since the thyroid collects iodine. Third, a particle accelerator makes a beam of particles that is sent into the body so that the particles deposit their energy in the cancerous tissue and destroy the cells.</p>",
+   "testIt": {
+    "name": "Beams",
+    "how": "Add beam angles."
+   }
+  },
+  "16": {
+   "layers": [],
+   "title": "STEM Career Connection, Nuclear Engineer",
+   "text": "<h3>STEM Career Connection, Nuclear Engineer</h3><p class=\"p101-def\">Nuclear engineers research and develop processes, instruments, and systems that use nuclear energy and radiation.</p><p>Do nuclear processes interest you? Consider a career as a nuclear engineer.</p><p>Nuclear engineers research and develop processes, instruments, systems, and procedures that use nuclear energy and radiation. They work in industrial and medical facilities.</p>"
+  },
+  "17": {
+   "layers": [],
+   "title": "Nuclear Fission",
+   "text": "<h3>Nuclear Fission</h3><p class=\"p101-def\">Fission is the division of a nucleus into two or more fragments.</p><p>People started wondering about getting useful energy from nuclear reactions in the 1930s, and bombarding substances with neutrons looked most promising. In Italy in 1934, Enrico Fermi and Emilio Segre made many new radioactive isotopes by bombarding uranium with neutrons. In late 1938, German chemists Otto Hahn and Fritz Strassmann showed that some of the products acted chemically like barium. Within weeks, Lise Meitner and Otto Frisch proposed that the neutrons had split uranium into two smaller nuclei, releasing a lot of energy. Everyone immediately saw this could be an energy source, and the basis for weapons.</p><p>Splitting a nucleus into two or more fragments is called fission. Uranium-235 fissions when hit by neutrons: a neutron plus uranium-235 yields krypton-92 plus barium-141 plus 3 neutrons plus 173 mega electron volts. The products have 0.186 u less mass than the reactants. Multiply by 931.49 mega electron volts per u, and you get 173 mega electron volts, or 2.78 times ten to the negative eleventh joules, which shows up as the kinetic energy of the products, as in Figure 11.</p>",
+   "testIt": {
+    "name": "Fission",
+    "how": "Tap to fire the neutron."
+   }
+  },
+  "18": {
+   "layers": [],
+   "title": "Chain Reactions",
+   "text": "<h3>Chain Reactions</h3><p class=\"p101-def\">A chain reaction is a continual process of repeated fissions caused by neutrons released from previous fissions.</p><p>Notice that each fission releases three neutrons. Those neutrons can hit more uranium-235 nuclei and cause more fissions. This continual process of repeated fissions, each set off by neutrons from earlier ones, is a chain reaction, shown in Figure 12.</p><p>That's why fission releases such a huge amount of energy overall. Each fission gives 173 mega electron volts, and the number of fissions can multiply very quickly. Nuclear power plants need controlled chain reactions, which is why reactors use rods that absorb neutrons: soaking up extra neutrons keeps the reaction from growing out of control.</p>",
+   "testIt": {
+    "name": "Chain",
+    "how": "Insert the rods."
+   }
+  },
+  "19": {
+   "layers": [],
+   "title": "Controlling Chain Reactions",
+   "text": "<h3>Controlling Chain Reactions</h3><p class=\"p101-def\">A moderator is a material that slows down fast neutrons so they are more easily absorbed by uranium-235.</p><p>For a useful, controlled chain reaction, neutrons have to hit fissionable uranium at just the right rate. That depends on how fast the neutrons move and how much fissionable uranium there is. Most neutrons from uranium-235 fission are fast neutrons. Natural uranium is less than 1 percent uranium-235 and more than 99 percent uranium-238. When uranium-238 absorbs a fast neutron, it usually doesn't fission; it becomes uranium-239. Since uranium-238 soaks up most of the neutrons, most never cause another fission.</p><p>To fix this, the uranium is broken into small pieces and placed in a moderator, a material that slows down the fast neutrons. The neutrons collide with fairly light atoms, transferring momentum and energy, and slow down. Slow neutrons are absorbed more easily by uranium-235 than by uranium-238, which greatly raises the odds of another fission. To boost the odds even more, the uranium is enriched with extra uranium-235.</p>",
+   "testIt": {
+    "name": "Moderator",
+    "how": "Tap to toggle the moderator."
+   }
+  },
+  "20": {
+   "layers": [],
+   "title": "Nuclear Reactors",
+   "text": "<h3>Nuclear Reactors</h3><p class=\"p101-def\">Control rods absorb neutrons and are moved in and out of a reactor to control the rate of the chain reaction.</p><p>The type of reactor used in the United States is the pressurized water reactor. Its uranium is sealed in hundreds of metal rods immersed in water, as in Figure 13. The water is the moderator and also absorbs thermal energy from the fissions. That eerie blue glow comes from fast charged particles from the fuel moving through the water faster than light travels in water. It's called the Cerenkov effect.</p><p>Rods of cadmium metal sit between the uranium rods. Cadmium absorbs neutrons easily. These control rods are moved in and out to control the chain reaction. Pushed all the way in, they absorb enough neutrons to stop the chain reaction. Pulled out, they free up more neutrons, and the energy release speeds up.</p>",
+   "testIt": {
+    "name": "Reactor",
+    "how": "Raise the rods."
+   }
+  },
+  "21": {
+   "layers": [],
+   "title": "From Fission to Electricity",
+   "text": "<h3>From Fission to Electricity</h3><p class=\"p101-def\">In a nuclear power plant, fission heats water that makes steam to turn turbines connected to generators.</p><p>Energy from fission heats the water around the uranium rods. That water doesn't boil because it's under high pressure, which raises its boiling point. As Figure 14 shows, it's pumped to a heat exchanger, where it boils other water into steam. The steam turns turbines connected to generators that produce electrical energy. Then a condenser cools the steam back to liquid using water from a large reservoir. The water in each loop is kept separate.</p><p>Fission of uranium-235 leaves krypton, barium, and other atoms in the fuel rods, and most of them are radioactive. Every year or two, some fuel rods must be replaced. The old rods don't have enough uranium-235 left to use, but they're still extremely radioactive, so they must be stored somewhere secure. Better ways to permanently store this waste are being developed.</p>",
+   "testIt": {
+    "name": "Plant",
+    "how": "Tap for the next loop."
+   }
+  },
+  "22": {
+   "layers": [],
+   "title": "Nuclear Fusion in the Sun",
+   "text": "<h3>Nuclear Fusion in the Sun</h3><p class=\"p101-def\">In nuclear fusion, nuclei with small masses combine to form a nucleus with a larger mass, releasing energy.</p><p>In nuclear fusion, light nuclei join to form a heavier one, releasing energy. Remember the binding energy curve? The bigger nucleus is more tightly bound, so its mass is less than the masses of the smaller nuclei, and that lost mass is released as energy.</p><p>The Sun runs on fusion through the proton-proton chain in Figure 15. First, two pairs of protons each fuse: hydrogen-1 plus hydrogen-1 yields hydrogen-2 plus a positron plus a neutrino. Next, each hydrogen-2 fuses with another proton: hydrogen-1 plus hydrogen-2 yields helium-3 plus a gamma ray. Finally, two helium-3 nuclei fuse into helium-4 plus two protons. Check the charge in the first step: 1 plus 1 equals 1 plus 1 plus 0. It balances!</p><p>The net result is that four protons make one helium-4 nucleus, two positrons, and two neutrinos. The four protons have more mass than the helium nucleus, and the difference becomes the kinetic energy of the particles and the energy of the photons: 25 mega electron volts per helium-4. One dynamite molecule releases about 20 electron volts, about a million times less!</p>",
+   "testIt": {
+    "name": "Sun",
+    "how": "Step the fusion chain."
+   }
+  },
+  "23": {
+   "layers": [],
+   "title": "Hot Enough to Fuse",
+   "text": "<h3>Hot Enough to Fuse</h3><p class=\"p101-def\">Fusion requires nuclei with large amounts of thermal energy to overcome the repulsion between their charges.</p><p>Positive nuclei repel each other, so they need huge energies to get close enough to fuse. That means fusion happens only when nuclei have enormous thermal energy. The proton-proton chain needs temperatures of more than ten million kelvins, like those in the center of the Sun, which is about 15 million kelvins.</p><p>Stars that are hot enough can also fuse nuclei into bigger elements like carbon, nitrogen, and oxygen. The hottest stars can fuse nuclei as large as silicon all the way into iron.</p><p>Fusion also happens in a hydrogen bomb, or thermonuclear bomb, where the needed temperature comes from exploding a uranium fission bomb. Replicating the Sun's fusion for peaceful power is the big challenge behind this module's question.</p>",
+   "testIt": {
+    "name": "Temperature",
+    "how": "Heat the gas."
+   }
+  }
+ }
+}

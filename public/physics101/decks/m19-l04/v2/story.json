@@ -1,0 +1,107 @@
+{
+ "slug": "m19-l04",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Safety Devices and Circuit Breakers",
+   "text": "<h3>Safety Devices and Circuit Breakers</h3><p class=\"p101-def\">A circuit breaker is an automatic switch that stops the current when it exceeds a threshold value.</p><p>Our big question for this lesson: how are circuits used in your home and school? Let's start with keeping them safe. Circuit breakers and fuses prevent overloads, which happen when too many appliances run at once or when a short circuit occurs in one appliance. A short circuit is a path with very low resistance.</p><p>Appliances at home are connected in parallel, so each one you switch on lowers the equivalent resistance and raises the current in the wires. Enough extra current can produce enough thermal energy to melt the wiring's insulation, cause a short circuit, or even start a fire.</p><p>A circuit breaker, like the one in Figure 28, is an automatic switch that stops the current if it gets too large. Inside, too much current heats a bimetallic strip until it bends and releases a latch. The handle snaps to off, the switch opens, and the current stops.</p>",
+   "testIt": {
+    "name": "Breaker",
+    "how": "Turn on 1500 W appliances on a 120 V, 20 A breaker."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson.</p><p>Online, the Virtual Investigation: Electric Circuits lets you use a computer model to explore how voltage, resistance, and current are related. And as you go, revisit the Encounter the Phenomenon question: what information from this lesson can help you answer the Unit and Module questions?</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Fuses and Ground-Fault Interrupters",
+   "text": "<h3>Fuses and Ground-Fault Interrupters</h3><p class=\"p101-def\">A fuse is a short piece of metal that melts to stop the current when too much current passes through it.</p><p>A fuse is a short piece of metal that melts and stops the current when too large a current passes through it. Engineers design fuses to melt before anything else in the circuit gets damaged.</p><p>Normally, current follows a single path from the power source through an appliance and back. But if an appliance malfunctions, or gets dropped into water, extra current paths can form. A ground-fault interrupter, or GFI, has an electronic circuit that detects small differences in current between the two wires in an appliance's cord. An extra path, like one through water, causes exactly that kind of difference, and the GFI shuts off the current. This often protects people from electrocution.</p><p>So how do they compare? A fuse responds to too much total current by melting. A GFI responds to a tiny mismatch between the current going out and the current coming back, even when the total current isn't large.</p>",
+   "testIt": {
+    "name": "Sink",
+    "how": "Tap to switch the protection."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Household Circuits",
+   "text": "<h3>Household Circuits</h3><p class=\"p101-def\">Homes are wired in parallel, so each light or appliance can be switched on and off independently.</p><p>Fuses, circuit breakers, and GFIs are most common in household circuits. So are the lights and outlets in a house wired in series or in parallel? If everything were in series, you could only turn everything on and off at once. That's not what happens in real homes!</p><p>The left panel of Figure 29 shows a simplified household circuit. It's a parallel circuit with a 15-ampere fuse connected in series with the 120-volt power source. Each resistor stands for a light or an appliance. The current in any one branch doesn't depend on the others, which is why you can switch off the bathroom light without turning off the television. If the fuse wire melts, though, everything goes off.</p>",
+   "testIt": {
+    "name": "House",
+    "how": "Tap to flip the next switch."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Will the Fuse Blow?",
+   "text": "<h3>Will the Fuse Blow?</h3><p class=\"p101-def\">The current through the fuse equals the sum of the branch currents, each found with I equals P divided by delta V.</p><p>Let's try a real example. Suppose the three resistors in Figure 29 are a 240-watt television, a 720-watt straightening iron, and a 1440-watt hair dryer. Will the fuse blow if all three are on at once?</p><p>Use I equals P divided by delta V for each one. The television draws 240 watts over 120 volts, or 2.0 amperes. The straightening iron draws 720 watts over 120 volts, or 6.0 amperes. The hair dryer draws 1440 watts over 120 volts, or 12 amperes.</p><p>By Kirchhoff's junction rule, the current through the fuse is the sum: 2.0 plus 6.0 plus 12 amperes, which is 20 amperes. The fuse is rated at 15 amperes, so this 20-ampere current would blow it, and the current would stop throughout the whole circuit.</p>",
+   "testIt": {
+    "name": "Fuse",
+    "how": "Switch on the next appliance (120 V, 15 A fuse)."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Combined Series-Parallel Circuits",
+   "text": "<h3>Combined Series-Parallel Circuits</h3><p class=\"p101-def\">A combination series-parallel circuit is a circuit that includes both series and parallel branches.</p><p>Ever noticed a light dim when someone turns on a hair dryer? The light and the hair dryer are in parallel across 120 volts, so the light's current shouldn't change. But it dims, so its current must have changed!</p><p>The reason is that household wiring has a small resistance. All real wires do: moving electrons collide with the metal's atoms, and a long run of wire adds up. As Figure 30 shows, that wiring resistance is in series with the parallel appliances. When the hair dryer draws more current, more voltage drops across the wiring, leaving a little less for the light.</p><p>A circuit that includes both series and parallel branches is called a combination series-parallel circuit.</p>",
+   "testIt": {
+    "name": "Dimming lamp",
+    "how": "Tap to switch the hair dryer on or off."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Problem-Solving Strategy, Series-Parallel Circuits",
+   "text": "<h3>Problem-Solving Strategy, Series-Parallel Circuits</h3><p class=\"p101-def\">Reduce a series-parallel circuit step by step to a single equivalent resistor, then work backward.</p><p>Here's how to break down a combination series-parallel circuit. First, draw a schematic. Second, find any resistors in parallel. They have separate current paths and the same potential difference. Replace them with a single equivalent resistor and draw a new schematic.</p><p>Third, look for resistors, including that new equivalent one, that are now in series, with one and only one current path through them. Replace those with a single equivalent resistance and draw again. Fourth, repeat until the whole circuit is one resistor. Find the total current, then work backward to find the current through and potential difference across each resistor.</p><p>In the strategy diagram, a 60-volt source drives an 8.0-ohm resistor in series with a 25.0-ohm and a 15.0-ohm resistor in parallel. The parallel pair becomes 9.4 ohms, and then the whole circuit becomes 17.4 ohms.</p>",
+   "testIt": {
+    "name": "Collapse",
+    "how": "Tap to collapse the next group."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Ammeters",
+   "text": "<h3>Ammeters</h3><p class=\"p101-def\">An ammeter measures current, is connected in series, and is designed to have very low resistance.</p><p>An ammeter measures the current in any branch or part of a circuit. To measure the current through a resistor, you put the ammeter in series with it, which means opening the current path and inserting the meter.</p><p>Ideally, the ammeter shouldn't change the current it's measuring. If it added much resistance, the current would drop, so ammeters are designed with resistance as low as possible. In Figure 31, the ammeter is a sensitive meter in parallel with a 0.01-ohm resistor, which gives it a tiny total resistance. With two 10-ohm resistors on a 20-volt source, the total becomes 20.01 ohms instead of 20 ohms, so the change in current is negligible.</p>",
+   "testIt": {
+    "name": "Ammeter",
+    "how": "Change the ammeter's resistance in a 12 V, 10 Ω circuit."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Example Problem 7, Series-Parallel Circuit (Part 1)",
+   "text": "<h3>Example Problem 7, Series-Parallel Circuit (Part 1)</h3><p class=\"p101-def\">Combine parallel resistors with one over R p equals one over R one plus one over R two, then add the series resistor.</p><p>A hair dryer with a resistance of 12.0 ohms and a lamp with a resistance of 125 ohms are connected in parallel to a 125-volt source through a 1.50-ohm resistor in series. Find the current through the lamp when the hair dryer is on.</p><p>Step one: analyze and sketch. Draw the series-parallel circuit with the hair dryer and lamp, then replace R one and R two with a single equivalent resistance, R p. Known: R one is 125 ohms, R two is 12.0 ohms, R three is 1.50 ohms, and delta V source is 125 volts. Unknown: I one, I, R, and R p.</p><p>Step two: solve. Find the parallel equivalent resistance, then the total, then the current. One over R p equals one over 125 ohms plus one over 12.0 ohms, so R p is 10.9 ohms. Then R equals R three plus R p: 1.50 ohms plus 10.9 ohms, or 12.4 ohms.</p>",
+   "testIt": {
+    "name": "Combine",
+    "how": "Change the hair dryer's resistance (lamp 125 Ω, wiring 1.50 Ω)."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Example Problem 7, Series-Parallel Circuit (Part 2)",
+   "text": "<h3>Example Problem 7, Series-Parallel Circuit (Part 2)</h3><p class=\"p101-def\">Find the total current, subtract the series voltage drop, then find the branch current with I equals delta V over R.</p><p>Now the total current: I equals delta V source over R, which is 125 volts divided by 12.4 ohms, or 10.1 amperes. The drop across the series resistor is delta V three equals I times R three: 10.1 amperes times 1.50 ohms, or 15.2 volts.</p><p>The lamp gets what's left. Delta V one equals delta V source minus delta V three: 125 volts minus 15.2 volts, which is 1.10 times ten to the second volts, or 110 volts. So the lamp current is I one equals delta V one over R one: 110 volts divided by 125 ohms, or 0.880 amperes.</p><p>Step three: evaluate. Current is in amperes and potential difference in volts. Is the size realistic? The lamp's resistance in ohms is bigger than its potential difference in volts, so its current should be less than 1 ampere, and it is.</p>",
+   "testIt": {
+    "name": "Lamp current",
+    "how": "Tap to switch the 12.0 Ω dryer on or off (125 V source)."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Voltmeters",
+   "text": "<h3>Voltmeters</h3><p class=\"p101-def\">A voltmeter measures potential difference, is connected in parallel, and is designed to have very high resistance.</p><p>A voltmeter measures the potential difference across part of a circuit. To measure the potential difference across a resistor, connect the voltmeter in parallel with it. Voltmeters have very high resistance, so they change the circuit's currents and voltages as little as possible.</p><p>In Figure 34, the voltmeter is a meter in series with a 10-kilo-ohm resistor, connected across R two. The combination has a little less resistance than R two alone, so the total resistance drops and the current rises. More current through R one means a bigger voltage across R one. The battery keeps the total across R one and R two fixed, so the voltage across R two must go down a little. With two 10-ohm resistors on 20 volts, the total becomes 19.99 ohms instead of 20.</p><p>So connecting a voltmeter slightly lowers the potential difference it's measuring. The higher the voltmeter's resistance, the smaller that change. Practical meters have resistances of about 10 megohms.</p>",
+   "testIt": {
+    "name": "Voltmeter",
+    "how": "Change the voltmeter's resistance across the 10 kΩ lower half of a divider (two 10 kΩ on 12 V)."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Engineering and Technology, Leading the Charge",
+   "text": "<h3>Engineering and Technology, Leading the Charge</h3><p class=\"p101-def\">Engineers are developing flexible, wearable power sources so devices can charge on the go.</p><p>Ever had your phone or fitness monitor run low when you're nowhere near a charger? We carry lots of devices, like health monitors, smartwatches, and medical sensors, and they all need recharging. So far, it's hard to power them without plugging into a wall socket, a car, or a computer. A portable power source would need to be tough, flexible, quick to charge, and able to hold a charge for a long time.</p><p>Some engineers are experimenting with flexible graphene supercapacitors. Instead of using chemical reactions like batteries, they store energy electrostatically on their surfaces. They can be printed right onto clothes that you can wear and wash, they charge in seconds, and they keep almost all their capacity even after many thousands of recharges. But high-quality graphene is expensive and labor-intensive to make, and printed graphene doesn't conduct electricity as well as metals.</p><p>Other engineers are designing flexible batteries, with the stiff metal parts wound into a spiral so they bend, and a built-in solar cell to charge them. Still others are working on wireless chargers that charge nearby devices. The few on the market will need to get faster and cheaper before they catch on.</p>"
+  }
+ }
+}

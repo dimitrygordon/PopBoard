@@ -1,0 +1,81 @@
+{
+ "key": "M20-L02",
+ "ptw": 960.0,
+ "slides": [
+  {
+   "n": 1,
+   "title": "Forces on Current-Carrying Wires",
+   "items": []
+  },
+  {
+   "n": 2,
+   "title": "Your Investigation Toolkit",
+   "items": []
+  },
+  {
+   "n": 3,
+   "title": "Direction of Force and Arrows in Three Dimensions",
+   "items": []
+  },
+  {
+   "n": 4,
+   "title": "Magnitude of the Force on a Wire",
+   "items": []
+  },
+  {
+   "n": 5,
+   "title": "Earbuds and Loudspeakers",
+   "items": []
+  },
+  {
+   "n": 6,
+   "title": "Galvanometers",
+   "items": []
+  },
+  {
+   "n": 7,
+   "title": "Example Problem 1, Calculate the Strength of a Magnetic Field",
+   "items": []
+  },
+  {
+   "n": 8,
+   "title": "Turning a Galvanometer into an Ammeter",
+   "items": []
+  },
+  {
+   "n": 9,
+   "title": "Turning a Galvanometer into a Voltmeter",
+   "items": []
+  },
+  {
+   "n": 10,
+   "title": "Electric Motors",
+   "items": []
+  },
+  {
+   "n": 11,
+   "title": "Forces on Single Charged Particles",
+   "items": []
+  },
+  {
+   "n": 12,
+   "title": "Direction of Force on a Moving Charge",
+   "items": []
+  },
+  {
+   "n": 13,
+   "title": "Example Problem 2, Force on a Charged Particle in a Magnetic Field",
+   "items": []
+  },
+  {
+   "n": 14,
+   "title": "Synchrotrons",
+   "items": []
+  },
+  {
+   "n": 15,
+   "title": "Engineering and Technology, Accelerating a Solution",
+   "items": []
+  }
+ ]
+}

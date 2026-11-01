@@ -1,0 +1,135 @@
+{
+ "slug": "m11-l01",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "A Gas Full of Tiny Collisions",
+   "text": "<h3>A Gas Full of Tiny Collisions</h3><p class=\"p101-def\">Thermal energy is the sum of the energies of all the particles in an object.</p><p>Our big question for this lesson: how is thermal energy transferred when you cook something? Let's start tiny, with the particles inside everything.</p><p>Every material is made of microscopic particles. In a gas, the particles zoom around and spin, so they have translational and rotational kinetic energy. They may also have potential energy from their internal bonds and their interactions. As they collide with each other and the container walls, as in Figure 1, they trade energy. There are so many collisions that the particles' energies get randomly spread out.</p><p>So it's handy to talk about the total energy of all the particles, which is the object's thermal energy, and the average energy per particle. The average kinetic energy per particle is related to temperature. The idea that connects the particles' random motion to the bulk properties of a material is called kinetic theory. In Figure 1, the arrows show the particles' velocities, and they're longer in the warm balloon because its particles move faster on average.</p>",
+   "testIt": {
+    "name": "Gas particles",
+    "how": "Use the button to add particles at the same speed. Thermal energy grows with the number of particles."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you complete the readings and activities in this lesson.</p><p>Online, the Applying Practices activity called Coffee Cup Calorimetry has you plan and conduct an investigation showing that when two things at different temperatures are combined in a closed system, thermal energy spreads out until it's more evenly shared between them.</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Hot Balloons, Cold Balloons, and Solids",
+   "text": "<h3>Hot Balloons, Cold Balloons, and Solids</h3><p class=\"p101-def\">Warming a gas makes its particles move faster and hit the walls harder and more often.</p><p>What makes something hot? Think of a helium balloon. It stays inflated because a huge number of helium atoms keep pounding on its walls, bouncing back, and hitting again somewhere else. The balloon's size and temperature depend on the atoms' average kinetic energy.</p><p>Put the balloon in sunlight, and the absorbed energy makes the atoms move faster. They hit the rubber harder and more often, stretching it, so the balloon expands. Put it in the refrigerator, and it shrinks, because the atoms slow down. The fridge removed some of their thermal energy.</p><p>Solids are different. Their atoms can't roam around. Picture them held in place by atomic forces that act like springs. They jiggle back and forth, some more than others, so each has some kinetic energy and some potential energy. If a solid has N atoms, its thermal energy is the average kinetic plus potential energy per atom, times N.</p>",
+   "testIt": {
+    "name": "Balloon",
+    "how": "Warm or chill the balloon. At constant pressure its volume grows in proportion to kelvin temperature."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Temperature Is an Average",
+   "text": "<h3>Temperature Is an Average</h3><p class=\"p101-def\">Temperature depends only on the average kinetic energy of the particles in an object, not on how many particles there are.</p><p>A particle in a hot object has more kinetic energy on average than one in a cold object. But not every particle has the same energy. They have a wide range! It's like student heights in Figure 2. A 9th-grade class has an average height of about 165 centimeters, and a 12th-grade class has a greater average, even though some 9th graders are taller than some 12th graders.</p><p>Temperature depends only on that average, not on how many particles there are. Look at the two muffins in Figure 3. They're at the same temperature, but the big one has ten times as many particles, so it has ten times the thermal energy. Thermal energy depends on both temperature and the number of particles.</p><p>Want to work with this every day? HVAC mechanics and installers put heating, ventilation, and air conditioning systems into schools, homes, and businesses to keep people comfortable and healthy.</p>",
+   "testIt": {
+    "name": "Average energy",
+    "how": "Use the button to switch between a cup and a bathtub at the same temperature."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Thermal Equilibrium",
+   "text": "<h3>Thermal Equilibrium</h3><p class=\"p101-def\">Thermal equilibrium is the state in which the rates of thermal energy transfer between two objects are equal and the objects are at the same temperature.</p><p>When you take your temperature, your body is warmer than the thermometer, so your skin particles have more kinetic energy on average. When they collide with the thermometer's particles, they pass energy along. Thermal conduction is the transfer of thermal energy that happens when particles collide. The thermometer's thermal energy goes up, and your skin's goes down.</p><p>But energy flows back too! As the thermometer's particles gain energy, they give more back to your skin. Eventually, the transfer rates both ways are equal. That's thermal equilibrium: equal transfer rates and the same temperature. Figure 4 shows two blocks getting there. Systems left alone always move toward more evenly spread energy. A hot mug of cocoa on the table cools down until it matches the room.</p>",
+   "testIt": {
+    "name": "Two blocks",
+    "how": "Set the starting temperatures of two equal copper blocks, then tap them to touch."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Thermometers",
+   "text": "<h3>Thermometers</h3><p class=\"p101-def\">Every thermometer uses some property that changes with temperature.</p><p>Every thermometer has a useful property that changes with temperature. Many household thermometers hold colored alcohol that expands when heated. The hotter it gets, the more the alcohol expands and the higher it climbs up the tube.</p><p>The liquid crystal thermometer in Figure 5 uses long molecules that rearrange themselves and change color at certain temperatures. Press it on someone's forehead, and thermal energy flows from the skin into the strip until they reach equilibrium, and the color shows the temperature. Medical thermometers and car engine thermometers use tiny temperature-sensitive electronic circuits for fast readings.</p>"
+  },
+  "7": {
+   "layers": [],
+   "title": "How Hot? How Cold?",
+   "text": "<h3>How Hot? How Cold?</h3><p class=\"p101-def\">Absolute zero, negative 273.15 degrees Celsius, is the lowest possible temperature.</p><p>A fire is hot and a freezer is cold, but everyday temperatures are just a sliver of the universe's range, shown in Figure 6. Temperatures don't seem to have an upper limit. The center of the Sun is about 10 to the seventh kelvins, and supernova cores are even hotter, about 10 to the eleventh kelvins. At the other end, helium becomes a liquid at negative 269 degrees Celsius, and labs reach even colder temperatures using special properties of solids, helium isotopes, and atoms and lasers.</p><p>But there is a lower limit. Materials usually shrink as they cool. Imagine an ideal gas in a balloon cooled to negative 273.15 degrees Celsius. All the thermal energy that could be removed would be gone, and it couldn't get any colder. So nothing can be colder than negative 273.15 degrees Celsius, which we call absolute zero. It's absolute because it's the true bottom of the scale.</p>",
+   "testIt": {
+    "name": "Cold limit",
+    "how": "Use the button to cool a sample by 50 K steps toward absolute zero."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Temperature Scales",
+   "text": "<h3>Temperature Scales</h3><p class=\"p101-def\">The Kelvin scale starts at absolute zero, and T sub C plus 273 equals T sub K.</p><p>In the United States, weather reports use degrees Fahrenheit. Scientists use the Celsius and Kelvin scales. Swedish physicist Anders Celsius devised the Celsius scale in 1742, based on water. Pure water at sea level freezes at 0 degrees Celsius and boils at 100 degrees Celsius.</p><p>Celsius temperatures can be negative, which might suggest negative kinetic energy. That doesn't make sense, so scientists use a scale whose zero is the lowest possible temperature, where particles have the least energy they can have: the Kelvin scale, which starts at absolute zero. Water freezes at about 273 kelvins and boils at about 373 kelvins. Each kelvin is the same size as a Celsius degree, so T sub C plus 273 equals T sub K. Figure 7 compares all three scales.</p>",
+   "testIt": {
+    "name": "Scales",
+    "how": "Slide a Celsius temperature and read it on all three scales."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Heat",
+   "text": "<h3>Heat</h3><p class=\"p101-def\">Heat, Q, is the transfer of thermal energy, which happens on its own from a hotter object to a cooler one.</p><p>When two objects touch, they share out their thermal energy. Heat, Q, is the transfer of thermal energy, and it flows on its own from hotter to cooler. Thermal energy can't move from a colder object to a hotter one unless work is done. Heat is measured in joules, like work and energy.</p><p>With the thermometer, thermal energy moved from your warm skin to the cool thermometer through particle collisions. If an object absorbs thermal energy, Q is positive. If thermal energy leaves an object, Q is negative.</p>"
+  },
+  "10": {
+   "layers": [],
+   "title": "Conduction, Convection, and Radiation",
+   "text": "<h3>Conduction, Convection, and Radiation</h3><p class=\"p101-def\">Thermal energy is transferred by conduction, convection, and radiation.</p><p>Figure 8 shows the three ways thermal energy moves. Put one end of a metal rod in a flame. The hot gas conducts heat into the rod, and the rod's particles pass thermal energy along to their neighbors until the far end warms up. That's conduction.</p><p>Watch a pot of water about to boil. Water at the bottom is heated by conduction, expands, and rises, while cooler, denser water sinks. That motion carries heat quickly upward. Heating by the motion of a liquid or gas due to temperature differences is convection. It drives atmospheric turbulence, thunderstorms, hurricanes, and helps move ocean currents.</p><p>The third way doesn't need matter at all. The Sun warms Earth from about 150 million kilometers away by radiation, the transfer of energy by electromagnetic waves through empty space. In a kitchen, a pan heats food by conduction, a pot of soup circulates by convection, and a toaster's glowing coils warm bread by radiation.</p>",
+   "testIt": {
+    "name": "Three ways",
+    "how": "Use the button to step through the three ways thermal energy moves."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Specific Heat",
+   "text": "<h3>Specific Heat</h3><p class=\"p101-def\">Specific heat is the energy needed to raise the temperature of one kilogram of a material by one kelvin.</p><p>On a sunny beach, the sand gets scorching while the ocean stays cool. Why? How much an object warms up depends on its size and what it's made of. The specific heat of a material is the energy you must add to a unit mass to raise its temperature by one unit. It's measured in joules per kilogram kelvin.</p><p>Table 1 lists some values. For aluminum, it takes 897 joules to warm 1 kilogram by 1 kelvin, so its specific heat is 897 joules per kilogram kelvin. Copper is 385, iron 450, and lead just 130. But liquid water is a whopping 4180! Ice and water vapor are high too, which has big effects on our climate and our bodies.</p><p>The pans in Figure 9 are stainless steel with copper bottoms and plastic handles. Metals have low specific heats and conduct heat well, so a copper bottom heats up fast and spreads heat evenly to the food. Plastic is a poor conductor, so the handle stays cool enough to hold.</p>",
+   "testIt": {
+    "name": "Specific heat",
+    "how": "Use the button to pick a material and see the energy to warm 1.0 kg by 1 K."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Measuring Heat",
+   "text": "<h3>Measuring Heat</h3><p class=\"p101-def\">Heat equals mass times specific heat times change in temperature: Q equals m C delta T.</p><p>When a substance is heated, its temperature change depends on the heat, its mass, and its specific heat. So Q equals m C delta T, which is m C times the quantity T sub f minus T sub i.</p><p>For example, warming 10.0 kilograms of water from 80 degrees Celsius to 85 degrees Celsius takes Q equals 10.0 kilograms times 4180 joules per kilogram kelvin times 5 kelvins, or 2.1 times 10 to the fifth joules. A kelvin and a Celsius degree are the same size, so you can find delta T on either scale.</p>",
+   "testIt": {
+    "name": "Q = mCΔT",
+    "how": "Set the mass of water and its temperature change, then read Q."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Example Problem 1, Heating a Skillet",
+   "text": "<h3>Example Problem 1, Heating a Skillet</h3><p class=\"p101-def\">Q equals m C times the quantity T sub f minus T sub i; a positive Q means energy was absorbed.</p><p>A 5.10-kilogram cast-iron skillet is heated on the stove from 295 kelvins to 373 kelvins. How much thermal energy went into the iron?</p><p>Step one: analyze and sketch. Sketch thermal energy flowing from the stove into the skillet. Known: m equals 5.10 kilograms, C equals 450 joules per kilogram kelvin, T sub i equals 295 kelvins, and T sub f equals 373 kelvins. Unknown: Q.</p><p>Step two: solve. Q equals m C times the quantity T sub f minus T sub i: 5.10 kilograms times 450 joules per kilogram kelvin times the quantity 373 kelvins minus 295 kelvins. That's 1.8 times 10 to the fifth joules.</p><p>Step three: evaluate. Heat is in joules, and the temperature went up, so Q is positive. That's cooking with conduction!</p>",
+   "testIt": {
+    "name": "Skillet",
+    "how": "Change the final temperature of the 5.10 kg iron skillet (from 295 K)."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "The Calorimeter",
+   "text": "<h3>The Calorimeter</h3><p class=\"p101-def\">A calorimeter is an insulated device that measures changes in thermal energy.</p><p>A calorimeter, like the simple one in Figure 10, measures changes in thermal energy. It's well insulated, so very little thermal energy escapes. You place a measured mass of a hot substance, at temperature T sub A, into a known mass of cold water at T sub B. Energy flows from the hot substance to the water until both reach an equilibrium temperature, T sub f. From those three temperatures, you can find the substance's specific heat.</p><p>It works because of energy conservation in a closed, isolated system. Energy can't enter or leave, only move around inside. So delta E sub A plus delta E sub B equals 0, or delta E sub A equals negative delta E sub B. The cold water's energy change is positive, and the hot substance's is negative.</p><p>No work is done, so each energy change equals the heat: m C delta T. Combining gives m sub A C sub A times the quantity T sub f minus T sub A equals negative m sub B C sub B times the quantity T sub f minus T sub B. Solving for the unknown: C sub A equals negative m sub B C sub B delta T sub B, over m sub A delta T sub A.</p>",
+   "testIt": {
+    "name": "Calorimeter",
+    "how": "Drop a hot 0.10 kg iron sample into 0.50 kg of water at 20 °C."
+   }
+  },
+  "15": {
+   "layers": [],
+   "title": "Example Problem 2, Identifying a Mystery Metal",
+   "text": "<h3>Example Problem 2, Identifying a Mystery Metal</h3><p class=\"p101-def\">In a calorimeter, C sub A equals negative m sub B C sub B delta T sub B over m sub A delta T sub A.</p><p>A calorimeter holds 0.50 kilograms of water at 15 degrees Celsius. A 0.10-kilogram block of an unknown substance at 62 degrees Celsius goes in. The final temperature is 16 degrees Celsius. What's the substance?</p><p>Step one: analyze and sketch. Let the unknown be sample A and the water be sample B, and sketch thermal energy flowing from the hot sample to the cool water. Known: m sub A equals 0.10 kilograms, T sub A equals 62 degrees Celsius, m sub B equals 0.50 kilograms, C sub B equals 4180 joules per kilogram kelvin, T sub B equals 15 degrees Celsius, and T sub f equals 16 degrees Celsius. Unknown: C sub A.</p><p>Step two: solve for the specific heat, and watch the minus signs! C sub A equals negative 0.50 kilograms times 4180 joules per kilogram kelvin times the quantity 16 degrees Celsius minus 15 degrees Celsius, divided by 0.10 kilograms times the quantity 16 degrees Celsius minus 62 degrees Celsius. That's 450 joules per kilogram kelvin. According to Table 1, that matches iron.</p><p>Step three: evaluate. Specific heat is in joules per kilogram kelvin, and the value is the same size as most metals in Table 1.</p>",
+   "testIt": {
+    "name": "Mystery metal",
+    "how": "Try another metal in the book's setup (0.10 kg at 62 °C into 0.50 kg water at 15 °C) and predict T_f."
+   }
+  },
+  "16": {
+   "layers": [],
+   "title": "Warm-Blooded and Cold-Blooded",
+   "text": "<h3>Warm-Blooded and Cold-Blooded</h3><p class=\"p101-def\">Cold-blooded animals rely on their surroundings for body temperature; warm-blooded animals control it internally.</p><p>Animals fall into two groups by how they handle body temperature. Most, like the spider in Figure 11, are cold-blooded. Their body temperature depends on the environment, so they control heat transfer with behavior: hiding under a rock to cool off, or basking in the sun to warm up.</p><p>The rest are warm-blooded, keeping a steady body temperature no matter the surroundings. Humans stay close to 37 degrees Celsius. When the brain senses a change, it triggers responses like shivering or sweating. In Figure 11's thermal image, the spider matches the air temperature, but the person's hands are much warmer.</p><p>So how is thermal energy transferred when you cook? By conduction from the burner through the pan, by convection in bubbling water or soup, and by radiation from glowing coils or flames. Heat always flows from hot to cold until things reach equilibrium.</p>"
+  }
+ }
+}

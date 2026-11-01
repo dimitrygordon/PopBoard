@@ -1,0 +1,101 @@
+{
+ "key": "M19-L03",
+ "ptw": 960.0,
+ "slides": [
+  {
+   "n": 1,
+   "title": "A River Model",
+   "items": []
+  },
+  {
+   "n": 2,
+   "title": "Your Investigation Toolkit",
+   "items": []
+  },
+  {
+   "n": 3,
+   "title": "Series Circuits, Three Predictions",
+   "items": []
+  },
+  {
+   "n": 4,
+   "title": "Current in a Series Circuit",
+   "items": []
+  },
+  {
+   "n": 5,
+   "title": "Where Does the Energy Come From?",
+   "items": []
+  },
+  {
+   "n": 6,
+   "title": "Equivalent Resistance in Series",
+   "items": []
+  },
+  {
+   "n": 7,
+   "title": "Voltage Dividers",
+   "items": []
+  },
+  {
+   "n": 8,
+   "title": "Photoresistors and Light Meters",
+   "items": []
+  },
+  {
+   "n": 9,
+   "title": "Example Problem 4, Potential Difference in a Series Circuit (Part 1)",
+   "items": []
+  },
+  {
+   "n": 10,
+   "title": "Example Problem 4, Potential Difference in a Series Circuit (Part 2)",
+   "items": []
+  },
+  {
+   "n": 11,
+   "title": "Example Problem 5, Voltage Divider",
+   "items": []
+  },
+  {
+   "n": 12,
+   "title": "Parallel Circuits",
+   "items": []
+  },
+  {
+   "n": 13,
+   "title": "Current in a Parallel Circuit",
+   "items": []
+  },
+  {
+   "n": 14,
+   "title": "Changing a Parallel Circuit",
+   "items": []
+  },
+  {
+   "n": 15,
+   "title": "Equivalent Resistance in Parallel",
+   "items": []
+  },
+  {
+   "n": 16,
+   "title": "Example Problem 6, Equivalent Resistance and Current in a Parallel Circuit",
+   "items": []
+  },
+  {
+   "n": 17,
+   "title": "Kirchhoff's Loop Rule",
+   "items": []
+  },
+  {
+   "n": 18,
+   "title": "Using the Loop Rule",
+   "items": []
+  },
+  {
+   "n": 19,
+   "title": "Kirchhoff's Junction Rule",
+   "items": []
+  }
+ ]
+}

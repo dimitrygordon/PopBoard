@@ -1,0 +1,102 @@
+{
+ "slug": "m18-l03",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Defining the Electric Field",
+   "text": "<h3>Defining the Electric Field</h3><p class=\"p101-def\">An electric field is a property of the space around a charged object that exerts forces on other charged objects.</p><p>Our big question for this lesson: how can electric forces act across empty space? In science fiction, force fields block invading armies or hold prisoners. Real force fields exist too, though they're a little less dramatic. Coulomb's law tells us the force between two point charges changes inversely with the square of the distance between them. But how does one object push on another with nothing in between?</p><p>Michael Faraday's answer was the force field. An electric field is a property of the space around a charged object that exerts forces on other charged objects. Charges create electric fields, and electric fields push and pull on charges. The field fills space and exerts forces at a distance, carrying energy through space.</p><p>You can't see an electric field, but you can see what it does. In the plasma sphere of Figure 15, the central electrode is a charged object whose charge flips rapidly between positive and negative. That charged electrode causes the field, which accelerates ions in the globe and makes glowing streams that trace out the field.</p>",
+   "testIt": {
+    "name": "Plasma sphere",
+    "how": "Tap the plasma sphere."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson. Try making a table of the crosscutting concepts, and fill in examples as you read.</p><p>Online, Review the News asks you to find a current news story about electric charge, forces, or fields, evaluate your source, and share what you learn with your class. And as you go, ask yourself: what information from this lesson can help you answer the Unit and Module questions?</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "The Strength of an Electric Field",
+   "text": "<h3>The Strength of an Electric Field</h3><p class=\"p101-def\">Electric field strength E equals the force on a positive test charge divided by the test charge, in newtons per coulomb.</p><p>How do you detect something you can't see? Use a small charged object called a test charge, q prime. If there's an electrostatic force on it at some spot, there's an electric field there. Figure 16 shows an object with charge q. Put a positive test charge at point A and measure the force, F sub A.</p><p>By Coulomb's law, the force is proportional to the test charge. Double the test charge, and the force doubles too, so 2 F over 2 q prime equals F over q prime. The ratio of force to test charge stays constant. That ratio is a vector, and it's the electric field.</p><p>So the electric field strength, E, equals the force on a positive test charge divided by the test charge, q prime. The field's direction is the direction of the force on a positive test charge, and its magnitude is measured in newtons per coulomb. In other words, to find a field's strength, measure the force on a small positive test charge and divide by that charge.</p>",
+   "testIt": {
+    "name": "Test charge",
+    "how": "Set the test charge near q (force on a 1.0 µC test charge is 2.0 N)."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Field Vectors and Typical Field Strengths",
+   "text": "<h3>Field Vectors and Typical Field Strengths</h3><p class=\"p101-def\">Field vectors show strength by arrow length and direction by arrow direction; fields from several charges add as vectors.</p><p>We can model a field with arrows at different spots, like Figure 16. The arrow's length shows the field strength, and its direction shows the field direction. To find the field from two charges, add their individual fields as vectors.</p><p>How strong are real fields? Near a charged hard-rubber rod, about 1 times ten to the third newtons per coulomb. To make a spark in air, about 3 times ten to the sixth newtons per coulomb. And at an electron's orbit in a hydrogen atom, a whopping 5 times ten to the eleventh newtons per coulomb.</p><p>You can map the field from any collection of charges with a test charge, as long as it's small. Remember Newton's third law: the test charge pushes back on the charges making the field. It must be small enough that it doesn't shove those charges around and change the very field you're measuring.</p>",
+   "testIt": {
+    "name": "Probe",
+    "how": "Drag the probe along the line between +2.0 µC (at 0) and −2.0 µC (at 1.0 m)."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Example Problem 2, Electric Field Strength",
+   "text": "<h3>Example Problem 2, Electric Field Strength</h3><p class=\"p101-def\">E equals F divided by q prime, pointing in the direction of the force on a positive test charge.</p><p>You measure a field with a positive test charge of 3.0 times ten to the negative sixth coulombs. It feels a force of 0.12 newtons at 15 degrees north of east. What are the magnitude and direction of the field there?</p><p>Step one: analyze and sketch. Draw the test charge, set up a coordinate system centered on it, and draw the force vector 15 degrees north of east. Known: q prime is 3.0 times ten to the negative sixth coulombs, and F is 0.12 newtons at 15 degrees north of east. Unknown: E.</p><p>Step two: solve. E equals F over q prime, which is 0.12 newtons divided by 3.0 times ten to the negative sixth coulombs, or 4.0 times ten to the fourth newtons per coulomb. For a positive test charge, the field points the same way as the force. So E is 4.0 times ten to the fourth newtons per coulomb at 15 degrees north of east.</p><p>Step three: evaluate. Newtons per coulomb is the right unit. The direction matches the force because the test charge is positive. And the size is in the same range as the fields in our table.</p>",
+   "testIt": {
+    "name": "Field from F",
+    "how": "Enter the force on a 3.0 µC test charge (15° north of east)."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Coulomb's Law and Electric Fields",
+   "text": "<h3>Coulomb's Law and Electric Fields</h3><p class=\"p101-def\">For a point charge, E equals K times q divided by the square of r.</p><p>When two charges interacting through a field change position relative to each other, the energy stored in the field changes. And if, and only if, the charge q is a point charge or a uniformly charged sphere, Coulomb's law gives us its field directly.</p><p>The force on the test charge is K times q times q prime, divided by the square of r. Divide that by q prime, and the q prime cancels. So the field of a point charge is E equals K times q, divided by the square of r. The field doesn't depend on the test charge at all, only on the charge making the field and the distance from it.</p>",
+   "testIt": {
+    "name": "E vs. r",
+    "how": "Move the probe away from a 1.0 µC point charge."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Example Problem 3, Electric Field Strength and Coulomb's Law",
+   "text": "<h3>Example Problem 3, Electric Field Strength and Coulomb's Law</h3><p class=\"p101-def\">Use E equals K q over the square of r when the force and test charge are not given.</p><p>What's the magnitude of the electric field at a point 0.30 meters to the right of a small sphere with a net charge of negative 4.0 times ten to the negative sixth coulombs?</p><p>Step one: analyze and sketch. Draw the sphere with its charge q, and a test charge q prime 0.30 meters away. Label the distance, and draw the force on q prime. Remember, a test charge is usually positive. Known: q is negative 4.0 times ten to the negative sixth coulombs, and r is 0.30 meters. Unknown: E.</p><p>Step two: solve. We don't know a force or a test charge, so combine Coulomb's law with the field equation: E equals K q over the square of r. Substitute 9.0 times ten to the ninth newton square meters per square coulomb, times negative 4.0 times ten to the negative sixth coulombs, divided by the square of 0.30 meters. That's negative 4.0 times ten to the fifth newtons per coulomb. So E is 4.0 times ten to the fifth newtons per coulomb toward the sphere, to the left.</p><p>Step three: evaluate. Newton square meters per square coulomb, times coulombs, divided by square meters, gives newtons per coulomb. The negative sign means the negative sphere attracts the positive test charge, so the field points toward the sphere. And the size fits the range in our table.</p>",
+   "testIt": {
+    "name": "Sphere field",
+    "how": "Set the sphere's charge; the point is 0.30 m away."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Modeling the Electric Field",
+   "text": "<h3>Modeling the Electric Field</h3><p class=\"p101-def\">The force on any charge in a field is F equals E times q, in a direction set by the field and the sign of the charge.</p><p>An electric field is there even with no test charge to measure it. The test charge is just an imaginary model. Any real charge placed in the field feels a force from the field at that spot.</p><p>So far we've measured the field at one spot. Now imagine moving the test charge somewhere else, measuring the force, and calculating the field again. Repeat this everywhere, until every location in the region has its own field value. That's a map of the field.</p><p>The size of the force on a charge depends on the size of the field, E, and the size of the charge, q: F equals E times q. Its direction depends on the field's direction and the charge's sign. A positive charge is pushed along the field, and a negative charge is pushed the opposite way.</p>",
+   "testIt": {
+    "name": "Field map",
+    "how": "Sweep the test charge to the next spot around a positive charge."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Electric Field Lines",
+   "text": "<h3>Electric Field Lines</h3><p class=\"p101-def\">Electric field lines show the direction of the force on a positive test charge; closer lines mean a stronger field.</p><p>The streams in the plasma sphere are one picture of a field. Another is electric field lines, like in Figure 19. A field line shows the direction of the force on a positive test charge. The spacing shows strength: where lines crowd close, the field is strong, and where they spread apart, it's weak.</p><p>Since the lines follow the force on a positive charge, they point away from positive charges and toward negative charges. At any point, the field's direction is along the tangent to the field line there. And remember, these drawings are two-dimensional, but real fields fill three dimensions.</p>",
+   "testIt": {
+    "name": "Field lines",
+    "how": "Tap to drop the next arrangement of charges."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Field Lines and Grass Seed",
+   "text": "<h3>Field Lines and Grass Seed</h3><p class=\"p101-def\">Field lines and grass seed in oil are models of an electric field, not the field itself.</p><p>Figure 20 shows two models side by side: field lines and grass seed floating in oil. The field causes charge to separate in each long, thin seed, so the seeds turn and line up along the field. For a single charge, the lines radiate outward from a positive charge and inward toward a negative one.</p><p>For two equal and unlike charges, the lines run continuously from the positive charge to the negative charge. Where the lines are closest, between the charges, a charged particle would feel the most force. For two like charges, the lines never connect. Exactly midway between them, the two fields cancel, so a charge there would feel no electrostatic force.</p><p>So these models show force at a glance: crowded lines mean big force, and empty, spread-out regions mean little or none. They also help us picture the energy of two charges' positions as stored in the field. But field lines and grass seed are only ways of representing the field. The field acts on charges whether we draw it or not.</p>",
+   "testIt": {
+    "name": "Grass seed",
+    "how": "Tap to switch between one and two charges."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Van de Graaff Generators",
+   "text": "<h3>Van de Graaff Generators</h3><p class=\"p101-def\">A Van de Graaff generator uses a moving belt to carry charge up to a metal dome, building a large net charge.</p><p>A Van de Graaff generator, shown in Figure 21, builds up a huge net charge on its metal dome. A belt runs over two rollers. Switch it on, and the bottom roller turns and moves the belt. The roller builds up a strong negative charge, and the belt a weaker positive one.</p><p>The roller's strong negative field pushes electrons away from the tips of a brush near position A, leaving the tips positive. The field also strips electrons from nearby air molecules. Those electrons are repelled by the roller toward the positive brush tips, while the positive ions head toward the negative roller. But the belt is in the way, so the positive ions land on the belt and ride up to the dome.</p><p>Robert Van de Graaff built his first generator around 1930 to help study particle acceleration and the structure of the atom. Touch the positively charged dome, and it pulls electrons out of your body. Your hair becomes positively charged, each hair repels the others, and they line up with the electric field around your head!</p>",
+   "testIt": {
+    "name": "Van de Graaff",
+    "how": "Run the generator and tap to touch the dome."
+   }
+  }
+ }
+}

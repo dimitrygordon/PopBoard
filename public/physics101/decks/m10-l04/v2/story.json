@@ -1,0 +1,94 @@
+{
+ "slug": "m10-l04",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "What a Machine Does",
+   "text": "<h3>What a Machine Does</h3><p class=\"p101-def\">A machine is a device that makes tasks easier by changing either the size or the direction of the applied force.</p><p>Our big question for this lesson: how do machines make tasks easier? Let's pop open a bottle!</p><p>When you lift the handle of the bottle opener in Figure 28, you transfer energy to the opener by doing work on it. The opener then lifts the cap, doing work on the cap. The work you do is called the input work, W sub i. The work the machine does is called the output work, W sub o.</p><p>But the opener isn't a source of energy. The cap can't get more energy than you put in, so the output work can never be greater than the input work. A machine just helps move energy from you to the job.</p>"
+  },
+  "2": {
+   "layers": [],
+   "title": "Mechanical Advantage",
+   "text": "<h3>Mechanical Advantage</h3><p class=\"p101-def\">Mechanical advantage is the resistance force divided by the effort force: M A equals F sub r over F sub e.</p><p>The force you put on a machine is the effort force, F sub e. The force the machine puts out is the resistance force, F sub r. For the bottle opener, F sub e is your upward pull on the handle, and F sub r is the opener's upward push on the cap. The ratio of resistance force to effort force is the mechanical advantage: M A equals F sub r over F sub e.</p><p>For a fixed pulley, like the one on the left in Figure 29, the two forces are equal, so M A is 1. Then why use it? Because it changes the direction of your force: you pull down, and the load goes up. Many machines, like the bottle opener and the pulley system on the right in Figure 29, have an M A greater than 1. They make your force bigger. For example, if a machine's M A is 3 and you push with 2 newtons, it puts out 6 newtons.</p>",
+   "testIt": {
+    "name": "Pulleys",
+    "how": "Tap to add a pulley strand. Each supporting strand cuts the effort force."
+   }
+  },
+  "3": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you complete the readings and activities in this lesson.</p><p>Online, the PhysicsLAB called Lifting with Pulleys has you investigate how the arrangement of a pulley system changes the force needed to lift a weight. And the Quick Investigation called Wheel and Axle has you explore the effort and resistance forces on a wheel-and-axle system.</p>"
+  },
+  "4": {
+   "layers": [],
+   "title": "Ideal Mechanical Advantage",
+   "text": "<h3>Ideal Mechanical Advantage</h3><p class=\"p101-def\">Ideal mechanical advantage is the displacement of the effort force divided by the displacement of the resistance force: I M A equals d sub e over d sub r.</p><p>A machine can increase force, but it can't increase energy. An ideal machine transfers all the energy, so output work equals input work: W sub o equals W sub i.</p><p>Input work is the effort force times the distance it moves: F sub e d sub e. Output work is the resistance force times its distance: F sub r d sub r. Setting them equal, F sub r d sub r equals F sub e d sub e, which rearranges to F sub r over F sub e equals d sub e over d sub r. So for an ideal machine, the mechanical advantage equals the effort distance divided by the resistance distance. That's the ideal mechanical advantage: I M A equals d sub e over d sub r.</p><p>Here's the trade: to get more force out, you have to push through a longer distance. Notice that you measure distances to find the I M A, but you measure forces to find the actual M A.</p>",
+   "testIt": {
+    "name": "Ideal MA",
+    "how": "Use the buttons to change the effort and resistance distances."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Efficiency",
+   "text": "<h3>Efficiency</h3><p class=\"p101-def\">The efficiency of a machine is its output work divided by its input work, times 100: e equals W sub o over W sub i, times 100.</p><p>In a real machine, not all the input work comes out as output work. Some energy leaves the system as heat or sound, so the machine is less efficient. The efficiency, e, is the output work divided by the input work, times 100 to make it a percent.</p><p>An ideal machine has equal output and input work, so its efficiency is 100 percent. All real machines are below 100 percent. And since W sub o over W sub i equals F sub r d sub r over F sub e d sub e, efficiency can also be written as e equals M A over I M A, times 100.</p><p>A machine's design sets its I M A. An efficient machine has an M A almost equal to its I M A, while a less efficient one has a much smaller M A. So to get the same resistance force, you have to push harder on a less efficient machine. For example, a machine with 50 percent efficiency and an M A of 3 has an I M A of 6.</p><p>A quick word check: in everyday talk, efficiency means no waste, like a high-efficiency washing machine. In science, it's the ratio of output work to input work, like a pulley system that's 86 percent efficient.</p>",
+   "testIt": {
+    "name": "Efficiency",
+    "how": "Use the button to add friction to a machine with IMA 4.0."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "The Six Simple Machines",
+   "text": "<h3>The Six Simple Machines</h3><p class=\"p101-def\">The six simple machines are the lever, pulley, wheel and axle, inclined plane, wedge, and screw.</p><p>Most machines combine one or more of the six simple machines in Figure 30: the lever, pulley, wheel and axle, inclined plane, wedge, and screw. Each one changes the direction or size of a force.</p><p>Each one's I M A depends on its shape. For a lever, it's the effort arm length divided by the resistance arm length. For a pulley system, it's the number of supporting ropes. For a wheel and axle, it's the wheel radius divided by the axle radius. For an inclined plane, it's the length divided by the height. For a wedge, it's the length divided by the width. And for a screw, it's 2 pi r divided by the distance between threads.</p><p>You can find these all around you: a seesaw is a lever, a flagpole has a pulley, a doorknob is a wheel and axle, a ramp is an inclined plane, an axe is a wedge, and a jar lid is a screw.</p>",
+   "testIt": {
+    "name": "Six simple machines",
+    "how": "Use the button to step through the six simple machines."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Wheels, Axles, and Compound Machines",
+   "text": "<h3>Wheels, Axles, and Compound Machines</h3><p class=\"p101-def\">A compound machine is two or more simple machines linked so that the resistance force of one becomes the effort force of the next.</p><p>For levers and wheels and axles, the ratio of displacements can be replaced by the ratio of distances from where each force acts to the pivot. A steering wheel, like the one in Figure 31, is a wheel and axle. Its I M A is the radius where you push, r sub e, divided by the axle's radius, r sub r.</p><p>When two or more simple machines are linked so the resistance force of one becomes the effort force of the next, you have a compound machine. Scissors combine wedges and levers. A wheelbarrow combines a lever with a wheel and axle. So a simple machine does one job, and a compound machine chains simple machines together.</p>",
+   "testIt": {
+    "name": "Wheel and axle",
+    "how": "Use the buttons to change the wheel and axle radii."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "The Bicycle as a Compound Machine",
+   "text": "<h3>The Bicycle as a Compound Machine</h3><p class=\"p101-def\">The mechanical advantage of a compound machine is the product of the mechanical advantages of its simple machines.</p><p>A bicycle, like the one in Figure 32, is a compound machine made of two wheel-and-axle systems. The first is the pedal and front gear. The effort force is the rider's push on the pedal, which works best perpendicular to the pedal arm, where it makes the most torque. The resistance force is the front gear's pull on the chain.</p><p>The second is the rear gear and rear wheel. The chain pulls on the rear gear with the same force the front gear puts on the chain. The resistance force is the wheel's push on the road.</p><p>The total M A is the product: M A pedal gear times M A rear wheel. The chain forces cancel, so M A total is just the wheel's force on the road divided by the rider's force on the pedal. The I M A multiplies the same way. Each I M A is the radius where the effort acts divided by the radius where the resistance acts. For the pedal gear, it's pedal radius over front gear radius. For the rear wheel, it's rear gear radius over wheel radius. Multiply them, and the bicycle's I M A equals rear gear radius over front gear radius, times pedal radius over wheel radius.</p>",
+   "testIt": {
+    "name": "Bicycle chain",
+    "how": "Use the button to walk through the bike as a compound machine."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Example Problem 7, The Rear Wheel",
+   "text": "<h3>Example Problem 7, The Rear Wheel</h3><p class=\"p101-def\">For a wheel and axle, I M A equals r sub e over r sub r, and M A equals e over 100 times I M A.</p><p>Your bike's rear wheel has a radius of 35.6 centimeters, with a gear of radius 4.00 centimeters. When the chain pulls with 155 newtons, the wheel rim moves 14.0 centimeters. This part of the bike is 95.0 percent efficient. Find the I M A, the M A, the resistance force, and how far the chain was pulled.</p><p>Step one: analyze and sketch. Sketch the wheel and axle and the force vectors. Known: r sub e equals 4.00 centimeters, r sub r equals 35.6 centimeters, e equals 95.0 percent, F sub e equals 155 newtons, and d sub r equals 14.0 centimeters. Unknown: I M A, M A, F sub r, and d sub e.</p><p>Step two: solve. For a wheel and axle, I M A equals r sub e over r sub r: 4.00 centimeters over 35.6 centimeters, or 0.112. From e equals M A over I M A times 100, M A equals e over 100 times I M A: 0.950 times 0.1124, or 0.107. Then F sub r equals M A times F sub e: 0.107 times 155 newtons, which is 16.5 newtons. Finally, d sub e equals I M A times d sub r: 0.112 times 14.0 centimeters, or 1.57 centimeters.</p><p>Step three: evaluate. Force is in newtons and distance in centimeters. The I M A is low for a bicycle, because it trades a big effort force for a big resistance distance. M A is always smaller than I M A. Since M A is low, F sub r is low too. And a tiny movement at the gear makes the rim travel far, so d sub e should be very small. It is!</p>",
+   "testIt": {
+    "name": "Rear wheel",
+    "how": "Change the gear radius. The 35.6 cm wheel, 155 N chain force and 95.0% efficiency stay the same."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Shifting Gears",
+   "text": "<h3>Shifting Gears</h3><p class=\"p101-def\">Shifting gears changes the ratio of gear radii, which changes the bicycle's I M A.</p><p>On a multi-gear bike, you can change the I M A by picking the size of one or both gears. Figure 34 shows a rear gear set with five sizes. When you start off or climb a hill, you want a big I M A so the wheel pushes harder on the road. So you pick a rear gear that's large compared with the front gear. You get more force, but you turn the pedals more times for each turn of the wheel.</p><p>Cruising fast on flat ground takes less force. So you choose a small rear gear and a large front gear, for a smaller I M A. The wheel pushes less hard on the road, but you don't have to pedal as many turns for each wheel revolution.</p><p>A car's transmission works the same way. Starting from rest needs big forces, so it uses a high gear ratio and a large I M A. At highway speed, it shifts to a lower gear ratio because less force is needed. That's why the speedometer can read high while the tachometer shows the engine turning slowly. And that's why a car needs multiple gears!</p>",
+   "testIt": {
+    "name": "Shift gears",
+    "how": "Tap to shift gears. A bigger rear gear gives a bigger IMA and more pedal turns."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "The Human Walking Machine",
+   "text": "<h3>The Human Walking Machine</h3><p class=\"p101-def\">The body's lever systems are made of a rigid bar, a force source, a pivot, and a resistance.</p><p>You're a machine too! Levers, like the leg in Figure 35, let you walk, run, and play. Each lever system in your body has four parts: a rigid bar, which is a bone; a source of force, which is a contracting muscle; a fulcrum, or pivot, which is a movable joint; and a resistance, which is the weight of your body or something you're lifting.</p><p>The body's lever systems have low mechanical advantages and aren't very efficient, so walking and jogging use plenty of energy. When you walk, your hip acts as a pivot moving along an arc centered on your foot, and the leg bones form the lever.</p><p>So how do machines make tasks easier? They can't give you extra energy. Instead, they change the size or direction of your force, letting you trade a smaller force over a longer distance for a bigger force over a shorter one.</p>"
+  }
+ }
+}

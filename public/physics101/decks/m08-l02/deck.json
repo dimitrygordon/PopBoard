@@ -1,0 +1,81 @@
+{
+ "key": "M08-L02",
+ "ptw": 960.0,
+ "slides": [
+  {
+   "n": 1,
+   "title": "Force and Angular Velocity",
+   "items": []
+  },
+  {
+   "n": 2,
+   "title": "Opening a Door",
+   "items": []
+  },
+  {
+   "n": 3,
+   "title": "Your Investigation Toolkit",
+   "items": []
+  },
+  {
+   "n": 4,
+   "title": "The Lever Arm",
+   "items": []
+  },
+  {
+   "n": 5,
+   "title": "Torque",
+   "items": []
+  },
+  {
+   "n": 6,
+   "title": "Example Problem 1, Lever Arm",
+   "items": []
+  },
+  {
+   "n": 7,
+   "title": "Finding Net Torque",
+   "items": []
+  },
+  {
+   "n": 8,
+   "title": "Crosscutting Concepts, Systems and System Models",
+   "items": []
+  },
+  {
+   "n": 9,
+   "title": "Example Problem 2, Balancing Torques",
+   "items": []
+  },
+  {
+   "n": 10,
+   "title": "The Moment of Inertia",
+   "items": []
+  },
+  {
+   "n": 11,
+   "title": "Moment of Inertia and Mass Distribution",
+   "items": []
+  },
+  {
+   "n": 12,
+   "title": "Moment of Inertia and the Rotational Axis",
+   "items": []
+  },
+  {
+   "n": 13,
+   "title": "Example Problem 3, Moment of Inertia",
+   "items": []
+  },
+  {
+   "n": 14,
+   "title": "Newton's Second Law for Rotational Motion",
+   "items": []
+  },
+  {
+   "n": 15,
+   "title": "Example Problem 4, Torque",
+   "items": []
+  }
+ ]
+}

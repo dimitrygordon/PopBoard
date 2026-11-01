@@ -1,0 +1,66 @@
+{
+ "key": "M14-L01",
+ "ptw": 960.0,
+ "slides": [
+  {
+   "n": 1,
+   "title": "Ringing the Bell",
+   "items": []
+  },
+  {
+   "n": 2,
+   "title": "Your Investigation Toolkit",
+   "items": []
+  },
+  {
+   "n": 3,
+   "title": "What Is a Sound Wave?",
+   "items": []
+  },
+  {
+   "n": 4,
+   "title": "Sound in Different Media",
+   "items": []
+  },
+  {
+   "n": 5,
+   "title": "Detecting Sound and the Human Ear",
+   "items": []
+  },
+  {
+   "n": 6,
+   "title": "Pitch",
+   "items": []
+  },
+  {
+   "n": 7,
+   "title": "Loudness and Decibels",
+   "items": []
+  },
+  {
+   "n": 8,
+   "title": "Protecting Your Hearing",
+   "items": []
+  },
+  {
+   "n": 9,
+   "title": "The Doppler Effect",
+   "items": []
+  },
+  {
+   "n": 10,
+   "title": "The Doppler Equation",
+   "items": []
+  },
+  {
+   "n": 11,
+   "title": "Example Problem 1, Guitar in a Convertible",
+   "items": []
+  },
+  {
+   "n": 12,
+   "title": "Doppler at Work",
+   "items": []
+  }
+ ]
+}

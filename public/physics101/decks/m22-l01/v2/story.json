@@ -1,0 +1,228 @@
+{
+ "slug": "m22-l01",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "A Glowing Mystery",
+   "text": "<h3>A Glowing Mystery</h3><p class=\"p101-def\">As a lightbulb filament gets hotter, its glow shifts from deep red toward white.</p><p>Our big question for this lesson: can light behave like a particle? James Maxwell's wave theory, which models electromagnetic radiation as waves of changing electric and magnetic fields, explains a lot, like interference, diffraction, and polarization. But it couldn't explain two things: the spectrum of radiation that every object gives off, and why metals spit out electrons under ultraviolet light.</p><p>Look at the lightbulb in Figure 1. It's hooked to a dimmer that changes the potential difference across it. Turn the dimmer up, and the filament gets hotter. Its color shifts from deep red to orange to yellow and finally to white, as the hotter filament adds higher-frequency blue and violet light to the mix.</p>",
+   "testIt": {
+    "name": "Filament",
+    "how": "Turn the dimmer."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson.</p><p>Online, the Applying Practices activity Is light a wave or a particle? asks you to evaluate the claims, evidence, and reasoning behind describing electromagnetic radiation with a wave model or a particle model, and to decide when one model is more useful than the other.</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Emission Spectra",
+   "text": "<h3>Emission Spectra</h3><p class=\"p101-def\">An emission spectrum is a graph of the intensity of radiation emitted from an object over a range of frequencies.</p><p>Just as wave theory predicts, vibrating charged particles in the filament give off light and infrared radiation. Every object, from very cold to extremely hot, emits a range of electromagnetic waves, but the filament glows brightly in visible light because it's hot. That's called incandescence, which is where the incandescent lightbulb gets its name.</p><p>Look at the glowing filament through a diffraction grating, and you'd see every color of the rainbow, near frequencies around 6 times ten to the fourteenth hertz. A graph of the intensity of radiation an object emits across a range of frequencies is called its emission spectrum. Figure 2 shows the spectra for objects at 4000, 5800, and 8000 kelvins.</p><p>Each curve has a peak, a frequency where the most energy comes out. And as temperature rises, that peak frequency rises too. That explains the bulb: turn up the dimmer, the filament heats up, the peak slides toward higher frequencies, and the glow shifts from red toward white while getting much brighter.</p>",
+   "testIt": {
+    "name": "Spectra",
+    "how": "Drag the temperature."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Hotter Objects Radiate More Power",
+   "text": "<h3>Hotter Objects Radiate More Power</h3><p class=\"p101-def\">The power an object radiates is proportional to its kelvin temperature raised to the fourth power.</p><p>The total power an object emits also rises with temperature, and fast! It's proportional to the object's kelvin temperature raised to the fourth power. So if you double an object's kelvin temperature, it radiates two times two times two times two, or 16 times as much power.</p><p>The Sun is the champion hot object. Its surface is about 5800 kelvins, and it radiates about 4 times ten to the twenty-sixth watts. On a clear day with the Sun high overhead, each square meter of Earth's surface receives about 1000 joules of energy per second, or 1000 watts. That's enough to power ten 100-watt lightbulbs.</p>",
+   "testIt": {
+    "name": "Power",
+    "how": "Multiply the temperature."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Explaining Emission Spectra",
+   "text": "<h3>Explaining Emission Spectra</h3><p class=\"p101-def\">Wave theory predicted that hot objects would radiate infinite energy at high frequencies, which does not match observations.</p><p>Between 1887 and 1900, many physicists tried to predict emission spectra with electromagnetic wave theory, and they all failed. Figure 3 shows the problem. The red dashed line is wave theory's prediction for an object at 1500 kelvins. It shoots up and off the top of the graph, predicting that any object would radiate an infinite amount of energy. The observed spectrum, in blue, rises, peaks, and falls back down.</p><p>Wave theory only works at the low-frequency end, near the left of the graph, where the two curves start out together. At higher frequencies, it fails badly.</p><p>In 1900, German physicist Max Planck found he could calculate the correct spectrum if atoms could only emit or absorb particular amounts of energy. He proposed that an atom's energy changes were proportional to a frequency of vibration times a whole number.</p>",
+   "testIt": {
+    "name": "Theory vs. observed",
+    "how": "Slide the frequency."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Energy Is Quantized",
+   "text": "<h3>Energy Is Quantized</h3><p class=\"p101-def\">The energy of a vibrating atom is E equals n h f, where n is an integer and h is Planck's constant.</p><p>Planck's equation says the energy emitted or absorbed by a vibrating atom equals a whole number times Planck's constant times the frequency of vibration: E equals n h f. Here f is the frequency, n is an integer such as 0, 1, 2, or 3, and h is Planck's constant, 6.626 times ten to the negative thirty-fourth joules per hertz. For calculations, we usually round it to 6.63 times ten to the negative thirty-fourth.</p><p>So with n equals 0, E is 0. With n equals 1, E is h f. With n equals 2, E is 2 h f. Energy can be h f, 2 h f, 3 h f, and so on, but never fractions like two-thirds h f or three-fourths h f. Energy is quantized: it comes only in bundles of specific sizes.</p>",
+   "testIt": {
+    "name": "Quantized",
+    "how": "Try to set the atom's energy."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Changes in Vibrations",
+   "text": "<h3>Changes in Vibrations</h3><p class=\"p101-def\">Planck proposed that atoms emit radiation only when their vibrational energy changes from one allowed level to another.</p><p>Wave theory would let atoms radiate continuously, all the time. Planck said no: atoms emit radiation only at the moments their vibrational energy changes. If an atom's energy drops from 3 h f to 2 h f, it radiates only during that change, and the energy it gives off equals the change, h f. Likewise, if the atom absorbs h f, its energy can climb from 2 h f to 3 h f.</p><p>Because h is so tiny, these energy steps are tiny too. You'd never notice them in everyday motion. Still, quantized energy bothered physicists, even Planck himself, because it hinted that the classical physics of Newton and Maxwell might only work under certain conditions. That troubling idea was the first step toward solar cells, modern electronics, and computers.</p>",
+   "testIt": {
+    "name": "Drop",
+    "how": "Tap to drop the atom one step."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "The Photoelectric Effect",
+   "text": "<h3>The Photoelectric Effect</h3><p class=\"p101-def\">The photoelectric effect is the emission of electrons when electromagnetic radiation falls on an object.</p><p>Here's another puzzle wave theory couldn't solve. Shine ultraviolet light on a negatively charged zinc plate, and the plate discharges, with a stream of electrons jumping off it. Even dim ultraviolet light does it. But shine visible light on the same plate, even very bright visible light, and nothing happens.</p><p>Wave theory predicted that any frequency of radiation should eventually knock electrons loose. Ultraviolet and visible light are both electromagnetic radiation, so why does one work and not the other? This emission of electrons when electromagnetic radiation falls on an object is called the photoelectric effect.</p>",
+   "testIt": {
+    "name": "Zinc plate",
+    "how": "Tap to switch the light."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "The Photocell",
+   "text": "<h3>The Photocell</h3><p class=\"p101-def\">A photocell is an evacuated tube in which light striking a metal cathode can eject electrons that flow to an anode.</p><p>You can study the photoelectric effect with a photocell, like the one in Figure 4. Two metal electrodes are sealed in a tube with the air pumped out, so the metal doesn't oxidize and the emitted electrons aren't slowed by gas. The larger electrode, the cathode, is usually coated with cesium or another alkali metal. The smaller electrode, the anode, is a thin wire that blocks very little light. The tube lets ultraviolet light through, and a potential difference pulls electrons from the cathode to the anode.</p><p>With no light on the cathode, there's no current. With light of certain frequencies, electrons in the cathode absorb its energy, escape, and travel to the anode, and the ammeter shows a current. In Figure 4, ultraviolet light makes a current, but visible light doesn't. Ultraviolet light has a shorter wavelength than visible light, which is a clue that it carries more energy.</p>",
+   "testIt": {
+    "name": "Photocell",
+    "how": "Tap to switch the light."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Threshold Frequency",
+   "text": "<h3>Threshold Frequency</h3><p class=\"p101-def\">The threshold frequency, f zero, is the minimum frequency of incident radiation that will eject electrons from a metal.</p><p>Not all radiation makes a current. Electrons leave the cathode only if the light's frequency is above a certain minimum, the threshold frequency, f zero. The left graph in Figure 5 shows no current until the threshold is reached.</p><p>The threshold depends on the metal. All visible light except low-frequency red ejects electrons from cesium. No visible light ejects them from zinc, but higher-frequency ultraviolet does.</p><p>The middle graph shows that even very intense light below f zero ejects no electrons. The right graph shows that even very dim light at or above f zero ejects electrons right away. And above the threshold, brighter light means more current.</p>",
+   "testIt": {
+    "name": "Threshold",
+    "how": "Set the frequency and intensity (f₀ = 5.7 × 10¹⁴ Hz)."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Where Wave Theory Fails",
+   "text": "<h3>Where Wave Theory Fails</h3><p class=\"p101-def\">Wave theory links light's energy to its intensity, so it cannot explain why dim, high-frequency light ejects electrons immediately.</p><p>Wave theory says the electric field in a light wave accelerates electrons and throws them out of the metal. The field's strength and energy depend on the light's intensity, not its frequency.</p><p>So by wave theory, electrons should be able to soak up energy from dim, low-frequency light for a long time and eventually break free. But that's not what happens. Low-frequency light never ejects them, and dim light at or above the threshold ejects them immediately. Wave theory just can't explain it.</p>",
+   "testIt": {
+    "name": "Wave theory fails",
+    "how": "Tap to run both."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Photons",
+   "text": "<h3>Photons</h3><p class=\"p101-def\">A photon is a discrete, quantized bundle of electromagnetic energy, with energy E equals h f.</p><p>In 1905, Albert Einstein published a revolutionary idea. Visible light and other electromagnetic radiation are made of discrete, quantized bundles of energy, each later called a photon. A photon's energy depends on its frequency: E equals h f, Planck's constant times the frequency.</p><p>You can see photons at work in solar panels. A solar panel is a grid of solar cells made of semiconducting material. Photons from the Sun above a certain threshold frequency knock electrons free from atoms in the semiconductor, producing an electric current.</p>",
+   "testIt": {
+    "name": "Photons",
+    "how": "Fire photons at the solar cell (threshold 1.1 eV)."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Electron Volts",
+   "text": "<h3>Electron Volts</h3><p class=\"p101-def\">One electron volt is the energy of an electron accelerated across a potential difference of one volt, 1.602 times ten to the negative nineteenth joules.</p><p>In E equals h f, frequency is in hertz and Planck's constant is in joules per hertz. Since one hertz is one per second, joules per hertz is the same as joules times seconds: dividing by one over a second is the same as multiplying by a second.</p><p>The joule is way too big for atom-sized systems, so physicists use the electron volt, eV. One electron volt is the energy an electron gains crossing a potential difference of 1 volt. That's 1.602 times ten to the negative nineteenth coulombs times 1 volt, which is 1.602 times ten to the negative nineteenth joules.</p>",
+   "testIt": {
+    "name": "Electron volts",
+    "how": "Change the voltage."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "A Handy Shortcut, h c Equals 1240 eV nm",
+   "text": "<h3>A Handy Shortcut, h c Equals 1240 eV nm</h3><p class=\"p101-def\">The energy of a photon is E equals h c over lambda, which equals 1240 electron volt nanometers divided by the wavelength.</p><p>Here's a problem-solving shortcut. A photon's energy is E equals h f. Since f equals c over lambda, where c is the speed of light in a vacuum, we can write E equals h c over lambda.</p><p>Because h and c are both constants, so is h c. Convert it: 6.626 times ten to the negative thirty-fourth joules per hertz, times 2.998 times ten to the eighth meters per second, times 1 electron volt per 1.602 times ten to the negative nineteenth joules, times ten to the ninth nanometers per meter. That gives 1240 electron volt nanometers.</p><p>So E equals 1240 electron volt nanometers divided by lambda. Put the wavelength in nanometers, and you get the energy in electron volts. Across the visible spectrum in Figure 6, from 400 to 700 nanometers, violet photons carry the most energy and red photons the least.</p>",
+   "testIt": {
+    "name": "1240 eV·nm",
+    "how": "Drag across the visible spectrum."
+   }
+  },
+  "15": {
+   "layers": [],
+   "title": "Planck and Einstein",
+   "text": "<h3>Planck and Einstein</h3><p class=\"p101-def\">The kinetic energy of an ejected electron is K E equals h f minus h f zero.</p><p>Einstein's photon theory goes further than Planck's idea. Planck said vibrating atoms emit radiation with energy n h f, but he never said light itself acts like particles. Einstein reinterpreted and extended Planck's work.</p><p>Photons explain the photoelectric effect. A photon needs a minimum frequency and energy, h f zero, to free an electron. Below f zero, it just doesn't have enough. And since one photon interacts with one electron, an electron can't save up energy from several low-frequency photons. Above f zero, the photon has energy to spare, and the extra, h f minus h f zero, becomes the electron's kinetic energy.</p><p>So the kinetic energy of an ejected electron equals the incoming photon's energy, h f, minus the energy of a photon at the threshold frequency, h f zero.</p>",
+   "testIt": {
+    "name": "Extra energy",
+    "how": "Raise the frequency (f₀ = 5.0 × 10¹⁴ Hz)."
+   }
+  },
+  "16": {
+   "layers": [],
+   "title": "Maximum Kinetic Energy",
+   "text": "<h3>Maximum Kinetic Energy</h3><p class=\"p101-def\">h f zero is the minimum energy needed to free the most loosely held electron, so K E equals h f minus h f zero is the maximum kinetic energy.</p><p>Here's a subtle point. The energy h f zero is the minimum needed to free the most loosely held electron. Not every electron in a metal is held equally tightly. Some need more than the minimum to escape.</p><p>Those electrons spend more of the photon's energy breaking free, so they leave with less kinetic energy. That's why the \"kinetic energy of the ejected electrons\" really means the maximum kinetic energy an ejected electron can have. Many leave with less, anywhere down to almost zero.</p>",
+   "testIt": {
+    "name": "Depth",
+    "how": "Eject from deeper in the metal."
+   }
+  },
+  "17": {
+   "layers": [],
+   "title": "Testing the Photon Theory",
+   "text": "<h3>Testing the Photon Theory</h3><p class=\"p101-def\">The stopping potential is the potential difference at which no ejected electrons have enough kinetic energy to reach the anode, so K E equals negative e delta V zero.</p><p>To test the photon theory, measure the electrons' kinetic energy and compare it with the prediction. The device in Figure 7 does this indirectly. Its potential difference is adjustable. Make the anode negative, and the electric field pushes back on the electrons, so they slow down as they approach. Only those with enough kinetic energy make it.</p><p>Make the anode more and more negative, and the electrons need more and more starting kinetic energy to arrive. At one particular potential difference, called the stopping potential, the current stops, because no electron has enough energy to reach the anode. They all fall back to the cathode.</p><p>At the stopping potential, the electrons' kinetic energy equals the work the field does to stop them: K E equals negative e times delta V zero. Here delta V zero is the size of the stopping potential in volts, or joules per coulomb, and e is the electron's charge, negative 1.602 times ten to the negative nineteenth coulombs. The two negatives make K E positive. Experiments like this support Einstein's photon theory.</p>",
+   "testIt": {
+    "name": "Stopping potential",
+    "how": "Turn the potentiometer."
+   }
+  },
+  "18": {
+   "layers": [],
+   "title": "The Photoelectric Effect in Your Camera",
+   "text": "<h3>The Photoelectric Effect in Your Camera</h3><p class=\"p101-def\">A digital camera's image detector is a grid of millions of tiny photoelectric detectors that turn light into stored charge.</p><p>If you've used a digital camera, you've used the photoelectric effect. The camera in Figure 8 has a grid of tiny photoelectric detectors, several million of them packed into a few square centimeters.</p><p>Light comes through the lens and passes through a grid of filters over the detectors. Each filter lets only certain wavelengths, certain colors, reach its detector. Photons striking a detector free photoelectrons that are stored there, and the amount of stored charge shows how bright the light was. The camera compiles the whole grid to rebuild the image as an array of pixels. Because the photoelectrons create a voltage in the detectors, this variation is called the photovoltaic effect.</p>",
+   "testIt": {
+    "name": "Camera",
+    "how": "Tap to expose."
+   }
+  },
+  "19": {
+   "layers": [],
+   "title": "Example Problem 1, Photoelectron Kinetic Energy",
+   "text": "<h3>Example Problem 1, Photoelectron Kinetic Energy</h3><p class=\"p101-def\">At the stopping potential, K E initial equals negative W, which equals negative e delta V zero.</p><p>The stopping potential of a certain photocell is 4.0 volts. How much kinetic energy does the incident light give the electrons? Answer in joules and in electron volts.</p><p>Step one: analyze and sketch. Draw the cathode and anode, the incoming light, and the direction of the ejected electron. The stopping potential keeps electrons from flowing across the cell. Known: delta V zero is 4.0 volts, and e is negative 1.602 times ten to the negative nineteenth coulombs. Unknown: K E in joules and electron volts.</p><p>Step two: solve. The field does work on the electrons, so final kinetic energy equals initial kinetic energy plus that work. At the stopping potential, final kinetic energy is zero joules, so initial kinetic energy equals negative the work. Potential difference is work per charge, so the work on the electron is e times delta V, and K E initial is negative e delta V zero. That's negative, times negative 1.602 times ten to the negative nineteenth coulombs, times 4.0 volts, which is positive 6.4 times ten to the negative nineteenth joules. Convert by dividing by 1.602 times ten to the negative nineteenth joules per electron volt: 4.0 electron volts.</p><p>Step three: evaluate. Joules and electron volts are both energy units. Kinetic energy is always positive, good. And since one electron volt is the energy from crossing 1 volt, an electron stopped by 4 volts having 4 electron volts makes sense.</p>",
+   "testIt": {
+    "name": "Kinetic energy",
+    "how": "Set the stopping potential."
+   }
+  },
+  "20": {
+   "layers": [],
+   "title": "Measuring Planck's Constant",
+   "text": "<h3>Measuring Planck's Constant</h3><p class=\"p101-def\">On a graph of maximum kinetic energy versus frequency, every metal's line has a slope equal to Planck's constant.</p><p>Graph the maximum kinetic energy of ejected electrons against the photon frequency, and you get a straight line, as in Figure 9. Every metal's line has the same slope, and that slope, rise over run, equals Planck's constant.</p><p>Let's check. Cesium's line passes through 6.00 times ten to the fourteenth hertz at 0.534 electron volts, and 1.00 times ten to the fifteenth hertz at 2.19 electron volts. The slope is 2.19 minus 0.534 electron volts, divided by 1.00 times ten to the fifteenth minus 6.00 times ten to the fourteenth hertz: 4.14 times ten to the negative fifteenth electron volts per hertz. Magnesium's line passes through 1.00 times ten to the fifteenth hertz at 0.480 electron volts and 1.50 times ten to the fifteenth hertz at 2.55 electron volts. Its slope is also 4.14 times ten to the negative fifteenth electron volts per hertz. Parallel lines!</p><p>Convert: 4.14 times ten to the negative fifteenth electron volts per hertz, times 1.602 times ten to the negative nineteenth joules per electron volt, equals 6.63 times ten to the negative thirty-fourth joules per hertz. That's Planck's constant.</p>",
+   "testIt": {
+    "name": "Planck",
+    "how": "Pick the second point on the line (first at 6.0 × 10¹⁴ Hz, 0.20 eV)."
+   }
+  },
+  "21": {
+   "layers": [],
+   "title": "The Work Function",
+   "text": "<h3>The Work Function</h3><p class=\"p101-def\">The work function of a metal is the energy needed to free its most weakly bound electron, equal in magnitude to h f zero.</p><p>The metals' graphs differ only in their threshold frequency. On Figure 9, f zero is where the line crosses the x-axis, where K E is zero. For cesium, that's 4.70 times ten to the fourteenth hertz. A photon at that frequency has just enough energy to free an electron, with nothing left over for kinetic energy.</p><p>That minimum energy is called the metal's work function: the energy needed to free its most weakly bound electron. Its size equals h f zero. Table 1 lists some values. Cesium has a threshold frequency of 4.70 times ten to the fourteenth hertz, a threshold wavelength of 637 nanometers, and a work function of 1.95 electron volts. Sodium: 5.70 times ten to the fourteenth hertz, 526 nanometers, 2.36 electron volts. Magnesium: 8.84 times ten to the fourteenth hertz, 339 nanometers, 3.66 electron volts. Silver: 11.1 times ten to the fourteenth hertz, 270 nanometers, 4.6 electron volts.</p>",
+   "testIt": {
+    "name": "Work function",
+    "how": "Tap to pick the next metal."
+   }
+  },
+  "22": {
+   "layers": [],
+   "title": "Example Problem 2, Work Function and Energy",
+   "text": "<h3>Example Problem 2, Work Function and Energy</h3><p class=\"p101-def\">The work function is W equals h c over lambda zero, and K E equals E minus W.</p><p>A photocell has a sodium cathode, and sodium's threshold wavelength is 526 nanometers. First, find sodium's work function in electron volts. Second, if 348 nanometer ultraviolet light hits the sodium, will electrons come out? If so, what's their maximum energy in electron volts?</p><p>Step one: analyze and sketch. Draw the cathode and anode, the incoming radiation, and the ejected electron's direction. Known: lambda zero is 526 nanometers, lambda is 348 nanometers, and h c is 1240 electron volt nanometers. Unknown: W and K E.</p><p>Step two: solve. The work function is W equals h f zero, which is h c over lambda zero: 1240 electron volt nanometers divided by 526 nanometers, or 2.36 electron volts. The photon's energy is 1240 electron volt nanometers divided by 348 nanometers, or 3.56 electron volts. That's more than the work function, so yes, electrons come out. Their kinetic energy is E minus W: 3.56 electron volts minus 2.36 electron volts, which is 1.20 electron volts.</p><p>Step three: evaluate. Dimensional analysis confirms electron volts is the right unit. Kinetic energy is positive, as it should be. And the work functions in Table 1 are a few electron volts, so these values are realistic.</p>",
+   "testIt": {
+    "name": "Sodium",
+    "how": "Change the light's wavelength (λ₀ = 526 nm)."
+   }
+  },
+  "23": {
+   "layers": [],
+   "title": "Photon Momentum",
+   "text": "<h3>Photon Momentum</h3><p class=\"p101-def\">A photon's momentum equals Planck's constant divided by its wavelength, p equals h f over c, which equals h over lambda.</p><p>The photoelectric effect shows that a photon carries energy even though it has no mass. In 1916, Einstein predicted another particle property: momentum. He argued a photon's momentum should be E over c. Since E equals h f, and f over c equals one over lambda, a photon's momentum is p equals h f over c, which equals h over lambda.</p><p>In 1922, American physicist Arthur Holly Compton tested the idea. As shown on the left of Figure 10, he aimed X-rays of a known wavelength at a graphite target and measured the wavelengths of the X-rays that scattered off. Some scattered with no change in wavelength, but others came out with a longer wavelength than they went in with.</p>",
+   "testIt": {
+    "name": "Compton",
+    "how": "Tap to switch peaks."
+   }
+  },
+  "24": {
+   "layers": [],
+   "title": "The Compton Effect",
+   "text": "<h3>The Compton Effect</h3><p class=\"p101-def\">The Compton effect is the shift in the energy of scattered photons, shown by an increase in their wavelength.</p><p>Look at the graphs on the right of Figure 10. The unscattered X-rays peak at the original wavelength, lambda. The scattered X-rays have a second peak at a longer wavelength, lambda prime.</p><p>Why does a longer wavelength mean less energy? Remember that E equals h f can be written E equals h c over lambda. Energy is inversely proportional to wavelength, so as wavelength grows, energy shrinks. The longer wavelength Compton saw meant the X-ray photons had lost both energy and momentum.</p><p>This shift in the energy of scattered photons is called the Compton effect. The shift in wavelength is tiny, only about ten to the negative third nanometers, so it's noticeable only for very short wavelengths like those of X-rays and gamma rays.</p>",
+   "testIt": {
+    "name": "Angle",
+    "how": "Change the scattering angle."
+   }
+  },
+  "25": {
+   "layers": [],
+   "title": "Photons Obey Conservation Laws",
+   "text": "<h3>Photons Obey Conservation Laws</h3><p class=\"p101-def\">In photon-electron collisions, the energy and momentum gained by the electron equal the energy and momentum lost by the photon.</p><p>In later experiments, Compton noticed electrons flying out of the graphite. He suggested the X-ray photons were colliding with electrons and handing over some energy and momentum, much like the elastic collisions between billiard balls in Figure 11.</p><p>He tested this by measuring the ejected electrons' energies. Sure enough, the energy and momentum the electrons gained equaled the energy and momentum the photons lost. So photons obey the laws of conservation of energy and momentum when they collide with other particles, just like any other particle would. Light really can behave like a particle!</p>",
+   "testIt": {
+    "name": "Conservation",
+    "how": "Change the scattering angle."
+   }
+  }
+ }
+}

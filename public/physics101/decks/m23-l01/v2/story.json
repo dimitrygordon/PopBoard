@@ -1,0 +1,148 @@
+{
+ "slug": "m23-l01",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Three Kinds of Materials",
+   "text": "<h3>Three Kinds of Materials</h3><p class=\"p101-def\">A semiconductor is a material that acts as a conductor under certain conditions and as an insulator under others.</p><p>Our big question for this lesson: what is the difference between conductors, insulators, and semiconductors? Charges move easily in conductors, like copper wire, but not in insulators, like the plastic coating on that wire. A third type of material, a semiconductor, conducts in some conditions and insulates in others. To see why, we have to zoom all the way down to the atoms.</p><p>Crystalline solids are atoms bound together in regular, repeating arrangements. Each atom has a dense, positively charged nucleus surrounded by a cloud of negatively charged electrons. Because electrons can occupy only certain energy levels, energy changes are quantized. They happen in specific, or discrete, amounts. Normally an atom's electrons sit in the lowest levels they can, a condition called the ground state.</p>"
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson.</p><p>Online, the Explore and Explain activity on conductors and insulators lets you compare how different materials carry charge. Keep an eye out for evidence that helps answer the module's big question: what innovations let computers shrink from filling a room to fitting in your pocket?</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "From Energy Levels to Energy Bands",
+   "text": "<h3>From Energy Levels to Energy Bands</h3><p class=\"p101-def\">In a solid, neighboring atoms split each energy level into so many closely spaced levels that they form energy bands: valence bands and conduction bands.</p><p>Imagine building a solid one atom at a time. When atoms are far apart, more than about 0.8 nanometers, each one has its own two discrete energy levels. As you push atoms closer together, the electric fields of the neighbors start tugging on each atom's electrons and change their energy levels, as Figure 1 shows.</p><p>In the crystal, those neighboring fields split each level into many levels, so many and so close together that they blur into energy bands. The lower bands, called valence bands, hold the bonding electrons of the crystal. The higher bands, called conduction bands, are where electrons can move between atoms.</p><p>So the difference is all about job description. Valence band electrons are busy holding the crystal together. Conduction band electrons are free to travel and carry charge.</p>",
+   "testIt": {
+    "name": "Bands",
+    "how": "Slide the atoms closer."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Forbidden Gaps",
+   "text": "<h3>Forbidden Gaps</h3><p class=\"p101-def\">A forbidden energy region is an energy gap between the valence and conduction bands where no energy levels are available to electrons.</p><p>Look at the atomic spacings in Figure 1 for crystalline silicon and for crystalline carbon, which is diamond. At those spacings, the valence and conduction bands are separated by energy gaps. No energy levels exist in these gaps, so they're called forbidden energy regions. For diamond the gap is 5.5 electron volts, and for silicon it's 1.1 electron volts. This picture of bands separated by forbidden gaps is the band theory of solids.</p><p>Take silicon. At absolute zero, its valence band would be completely full and its conduction band completely empty. At room temperature, though, a few valence electrons have enough thermal energy to jump the 1.1 electron volt gap and carry charge. Heat it up, and more electrons make the jump, so silicon's conductivity rises.</p>",
+   "testIt": {
+    "name": "Gap",
+    "how": "Raise the temperature of silicon (gap 1.1 eV)."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Smaller Gap, Better Conductor",
+   "text": "<h3>Smaller Gap, Better Conductor</h3><p class=\"p101-def\">The smaller the energy gap, the less energy electrons need to reach the conduction band, so the better the material conducts.</p><p>Conductivity also depends on the size of the gap. A smaller gap means electrons need less energy to reach the conduction band, so the material conducts better. Figure 2 compares an insulator with a 5 electron volt gap, a semiconductor with a 1 electron volt gap, and a conductor with no gap at all. A small forbidden gap is what you want in a conductor, because it lets lots of electrons reach the conduction band easily.</p><p>Carbon as graphite conducts far better than diamond because graphite's gap is much smaller. Silicon's gap is also smaller than diamond's, so silicon conducts better. Germanium's gap is even smaller, 0.7 electron volts, so it conducts better than silicon at any temperature. But that also makes germanium too touchy for many electronics. Small temperature changes cause big swings in its conductivity, making it hard to keep stable.</p>",
+   "testIt": {
+    "name": "Gap size",
+    "how": "Change the band gap."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Electric Conduction",
+   "text": "<h3>Electric Conduction</h3><p class=\"p101-def\">Electric conduction is the movement of electrons from one atom to the next when a potential difference is applied; conductivity is the reciprocal of resistivity.</p><p>Put a potential difference across a material, and the electric field pushes on the electrons and does work on them. They speed up and gain energy. If the material has bands that are only partly filled, there are empty levels just a little above where the electrons sit, so electrons that gain energy can move from one atom to the next.</p><p>That movement of electrons from atom to atom is an electric current, and the whole process is called electric conduction. The more easily charges move, the more conductive the material. Since conductivity is the reciprocal of resistivity, lowering a material's conductivity raises its resistivity.</p>"
+  },
+  "7": {
+   "layers": [],
+   "title": "Conductors and the Electron-Gas Model",
+   "text": "<h3>Conductors and the Electron-Gas Model</h3><p class=\"p101-def\">In the electron-gas model, free electrons in a conductor zip around randomly while drifting slowly toward the positive end when a field is applied.</p><p>Materials with partially filled bands, such as copper, conduct easily. In metals like copper and lead, the conduction band overlaps the valence band. Materials with overlapping, partly filled bands are conductors, as Figure 3 shows.</p><p>Free electrons in a conductor race around randomly at about ten to the sixth meters per second, changing direction whenever they bump into the cores of atoms. Put an electric field across the wire, and there's a net force pushing them one way. Their wild random motion hardly changes, but on top of it they drift slowly toward the positive end, at about ten to the negative third meters per second or slower. This picture is called the electron-gas model.</p><p>Heat the conductor, and its atoms vibrate more. The electrons collide with the atomic cores more often, so the conductivity goes down.</p>",
+   "testIt": {
+    "name": "Electron gas",
+    "how": "Tap to switch the field."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Insulators",
+   "text": "<h3>Insulators</h3><p class=\"p101-def\">In an insulator, the valence band is full, the conduction band is empty, and the gap between them is 5 to 10 electron volts.</p><p>In an insulator, the valence band is filled and the conduction band is empty. As Figure 4 shows, an electron would need a lot of energy to reach the next available level. The bottom of the conduction band sits 5 to 10 electron volts above the top of the valence band, so there's at least a 5 electron volt gap no electron can occupy.</p><p>Electrons in an insulator do have some kinetic energy from thermal energy, but at room temperature it's nowhere near enough to jump the gap. Put a small electric field across an insulator, and almost no electrons reach the conduction band, so there's no current. That's why insulators don't conduct, and why we coat wires with them to keep circuits from shorting out.</p>",
+   "testIt": {
+    "name": "Insulator",
+    "how": "Raise the temperature (5 eV gap)."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Example Problem 1, Free Electrons in Copper",
+   "text": "<h3>Example Problem 1, Free Electrons in Copper</h3><p class=\"p101-def\">Free electrons per cubic centimeter equal free electrons per atom times N sub A times density divided by molar mass.</p><p>How many free electrons are in one cubic centimeter of copper? Each copper atom contributes one free electron.</p><p>Step one: analyze the problem. Using the Reference Tables, the knowns are 1 free electron per atom, a density rho of 8.92 grams per cubic centimeter, a molar mass M of 63.55 grams per mole, and Avogadro's number, N sub A, of 6.02 times ten to the twenty-third atoms per mole. The unknown is free electrons per cubic centimeter.</p><p>Step two: solve for the unknown. Free electrons per cubic centimeter equal free electrons per atom, times N sub A, times one over M, times rho. That's 1 free electron per atom, times 6.02 times ten to the twenty-third atoms per mole, times 1 mole per 63.55 grams, times 8.92 grams per cubic centimeter. The answer is 8.45 times ten to the twenty-second free electrons per cubic centimeter of copper.</p><p>Step three: evaluate the answer. Dimensional analysis confirms the units of free electrons per cubic centimeter. And we'd expect a huge number of electrons in a cubic centimeter, so the size makes sense.</p>",
+   "testIt": {
+    "name": "Copper",
+    "how": "Change the free electrons per atom (copper: 8.92 g/cm³, 63.55 g/mol)."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Semiconductors",
+   "text": "<h3>Semiconductors</h3><p class=\"p101-def\">A semiconductor has a filled valence band like an insulator, but its forbidden gap is only about 1 electron volt.</p><p>Some materials don't fit neatly into either group. In semiconductors, electrons move more freely than in insulators, but not as easily as in conductors. The gap between the valence and conduction bands is about 1 electron volt, as Figure 5 shows.</p><p>The most common semiconductors, silicon and germanium, have four valence electrons per atom. All four help bind the atoms into a solid crystal. Those valence electrons fill a band, just like in an insulator, but the forbidden gap is much smaller.</p>",
+   "testIt": {
+    "name": "Compare",
+    "how": "Tap for the next material."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Holes and Free Electrons",
+   "text": "<h3>Holes and Free Electrons</h3><p class=\"p101-def\">A hole is an empty energy level in the valence band; intrinsic semiconductors conduct using thermally freed electrons and holes.</p><p>It doesn't take much energy to pull an electron from a silicon atom into the conduction band. The gap is so small that random thermal motion alone gives some electrons enough kinetic energy to break free and wander through the crystal. Pure semiconductors that conduct this way are called intrinsic semiconductors. So few electrons are free that their conductivity is very low.</p><p>Here's a twist. In metals, heating lowers conductivity. In semiconductors, heating lets more electrons reach the conduction band, so conductivity goes up.</p><p>When an electron breaks free, its atom is left with a net positive charge and a hole, an empty energy level in the valence band, as in Figure 6. Another electron can drop into that hole, and when a hole and a free electron recombine, their charges cancel. But that electron leaves a new hole behind. So negative free electrons move one way, while positive holes move the opposite way.</p>",
+   "testIt": {
+    "name": "Holes",
+    "how": "Tap to apply the field."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Example Problem 2, Free Electrons in Intrinsic Silicon",
+   "text": "<h3>Example Problem 2, Free Electrons in Intrinsic Silicon</h3><p class=\"p101-def\">Free electrons per atom equal free electrons per cubic centimeter times M divided by N sub A times rho.</p><p>At room temperature, thermal energy frees 1.45 times ten to the tenth electrons in each cubic centimeter of solid silicon. How many free electrons is that per silicon atom?</p><p>Step one: analyze the problem. Knowns: rho is 2.33 grams per cubic centimeter, M is 28.09 grams per mole, N sub A is 6.02 times ten to the twenty-third atoms per mole, and there are 1.45 times ten to the tenth free electrons per cubic centimeter. Unknown: free electrons per atom of silicon.</p><p>Step two: solve for the unknown. Free electrons per atom equal free electrons per cubic centimeter, times M, times one over N sub A, times one over rho. That's 1.45 times ten to the tenth free electrons per cubic centimeter, times 28.09 grams per mole, divided by 6.02 times ten to the twenty-third atoms per mole times 2.33 grams per cubic centimeter. The result is 2.90 times ten to the negative thirteenth free electrons per atom of silicon.</p><p>Step three: evaluate the answer. Dimensional analysis confirms the units. And in an intrinsic semiconductor at room temperature, very few atoms have a free electron, so a tiny number is realistic. That's about one free electron for every three trillion atoms!</p>",
+   "testIt": {
+    "name": "Intrinsic silicon",
+    "how": "Change the temperature (simplified model, book value at 300 K)."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "n-Type Semiconductors",
+   "text": "<h3>n-Type Semiconductors</h3><p class=\"p101-def\">Dopants are electron donor or acceptor atoms added in low concentrations; an n-type semiconductor is doped with donors that supply extra electrons.</p><p>To build useful devices, we need far more free electrons and holes. So we add atoms of other elements. Electron donor or acceptor atoms added in low concentrations are called dopants, and the doped materials are called extrinsic semiconductors. There are two kinds, n-type and p-type.</p><p>In the left side of Figure 7, an arsenic atom, which has five valence electrons, has replaced a silicon atom. Four of its electrons bond with neighboring silicon atoms. The fifth, called the donor electron, has an energy close to the conduction band, so thermal energy easily kicks it in. These extra donor electrons boost conduction. Since the extra carriers are negative, this is an n-type semiconductor. Antimony also has five valence electrons, so it would make an n-type semiconductor too.</p>",
+   "testIt": {
+    "name": "Arsenic",
+    "how": "Tap to swap in arsenic."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "p-Type Semiconductors",
+   "text": "<h3>p-Type Semiconductors</h3><p class=\"p101-def\">A p-type semiconductor is doped with acceptor atoms, such as gallium, that create extra holes.</p><p>Silicon can also be doped with an electron acceptor that has three valence electrons, such as gallium. When gallium replaces a silicon atom, one bonding electron is missing, which makes a hole, shown on the right of Figure 7. Electrons can easily drop into these holes, creating new holes elsewhere. The extra holes boost conduction, and because holes act positive, this is a p-type semiconductor.</p><p>Both types are electrically neutral. Dopant atoms don't add any net charge, and both types use electrons and holes to conduct. Amazingly, just a few dopant atoms per million silicon atoms can raise the conductivity by a factor of 1000 or more!</p>",
+   "testIt": {
+    "name": "Gallium",
+    "how": "Add gallium atoms."
+   }
+  },
+  "15": {
+   "layers": [],
+   "title": "Example Problem 3, Conductivity of Doped Silicon",
+   "text": "<h3>Example Problem 3, Conductivity of Doped Silicon</h3><p class=\"p101-def\">Free electrons from a dopant equal free electrons per dopant atom times dopant atoms per silicon atom times silicon atoms per cubic centimeter.</p><p>A scientist dopes silicon with arsenic so that one in every million silicon atoms is replaced by arsenic. Each arsenic atom donates one electron to the conduction band. What is the density of free electrons? By what ratio is it greater than intrinsic silicon's 1.45 times ten to the tenth free electrons per cubic centimeter? And is conduction mainly by silicon's electrons or arsenic's?</p><p>Step one: analyze the problem. Knowns: 1 arsenic atom per ten to the sixth silicon atoms, 1 free electron per arsenic atom, 4.99 times ten to the twenty-second silicon atoms per cubic centimeter, and 1.45 times ten to the tenth free electrons per cubic centimeter in intrinsic silicon. Unknowns: free electrons per cubic centimeter donated by arsenic, and the ratio.</p><p>Step two, part a: free electrons per cubic centimeter from arsenic equal 1 free electron per arsenic atom, times 1 arsenic atom per 1 times ten to the sixth silicon atoms, times 4.99 times ten to the twenty-second silicon atoms per cubic centimeter. That gives 4.99 times ten to the sixteenth free electrons per cubic centimeter. Part b: the ratio is 4.99 times ten to the sixteenth divided by 1.45 times ten to the tenth, which is 3.44 times ten to the sixth arsenic-donated electrons per intrinsic silicon electron. Part c: with over 3 million arsenic electrons for every intrinsic one, conduction is mainly by the arsenic-donated electrons.</p><p>Step three: evaluate the answer. Dimensional analysis confirms the units. And the ratio is so large that intrinsic electrons barely contribute, which is realistic.</p>",
+   "testIt": {
+    "name": "Doping",
+    "how": "Set the doping level."
+   }
+  },
+  "16": {
+   "layers": [],
+   "title": "Making Semiconductors and Thermistors",
+   "text": "<h3>Making Semiconductors and Thermistors</h3><p class=\"p101-def\">A thermistor is a semiconductor device whose resistance depends very strongly on temperature.</p><p>To dope silicon, a pure silicon crystal goes into a vacuum with a sample of the dopant. The dopant is heated until it vaporizes, and its atoms condense on the cold silicon and diffuse in as it warms. Then a thin layer of aluminum or gold is evaporated onto the crystal, and a wire is welded on so a potential difference can be applied.</p><p>Semiconductors are sensitive to both temperature and light. In metals, rising temperature lowers conductivity. In a semiconductor, rising temperature sends more electrons into the conduction band, so conductivity goes up and resistance goes down. A thermistor is built so its resistance depends very strongly on temperature. As it warms, its conductivity climbs and its resistance drops. Thermistors make sensitive thermometers, balance out temperature changes in other circuit parts, and even detect radio waves and other radiation.</p>",
+   "testIt": {
+    "name": "Thermistor",
+    "how": "Change the temperature."
+   }
+  },
+  "17": {
+   "layers": [],
+   "title": "Light Meters",
+   "text": "<h3>Light Meters</h3><p class=\"p101-def\">In a light-dependent resistor, light excites electrons into the conduction band, so resistance decreases as light intensity increases.</p><p>Light falling on a semiconductor can kick electrons from the valence band to the conduction band, just like other energy sources. So the brighter the light, the lower the resistance. Extrinsic semiconductors can even be tailored to respond to specific wavelengths, including infrared and visible light.</p><p>Silicon and cadmium sulfide work as light-dependent resistors in light meters. Lighting engineers use them to design lighting for stores, offices, and homes, and photographers use them to check light levels and set their cameras for the best shot, as in Figure 8.</p>",
+   "testIt": {
+    "name": "LDR",
+    "how": "Change the light."
+   }
+  }
+ }
+}

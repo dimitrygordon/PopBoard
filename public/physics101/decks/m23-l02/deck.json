@@ -1,0 +1,86 @@
+{
+ "key": "M23-L02",
+ "ptw": 960.0,
+ "slides": [
+  {
+   "n": 1,
+   "title": "The Birth of Solid-State Electronics",
+   "items": []
+  },
+  {
+   "n": 2,
+   "title": "Your Investigation Toolkit",
+   "items": []
+  },
+  {
+   "n": 3,
+   "title": "Diodes and the Depletion Layer",
+   "items": []
+  },
+  {
+   "n": 4,
+   "title": "Forward and Reverse Bias",
+   "items": []
+  },
+  {
+   "n": 5,
+   "title": "Diode Current and Rectifiers",
+   "items": []
+  },
+  {
+   "n": 6,
+   "title": "Example Problem 4, A Diode in a Simple Circuit",
+   "items": []
+  },
+  {
+   "n": 7,
+   "title": "Light-Emitting Diodes",
+   "items": []
+  },
+  {
+   "n": 8,
+   "title": "Diode Lasers",
+   "items": []
+  },
+  {
+   "n": 9,
+   "title": "Transistors",
+   "items": []
+  },
+  {
+   "n": 10,
+   "title": "Amplification",
+   "items": []
+  },
+  {
+   "n": 11,
+   "title": "Transistors as Switches",
+   "items": []
+  },
+  {
+   "n": 12,
+   "title": "Integrated Circuits",
+   "items": []
+  },
+  {
+   "n": 13,
+   "title": "Building a Chip Layer by Layer",
+   "items": []
+  },
+  {
+   "n": 14,
+   "title": "STEM Career Connection, Materials Engineer",
+   "items": []
+  },
+  {
+   "n": 15,
+   "title": "Computing and Microchips",
+   "items": []
+  },
+  {
+   "n": 16,
+   "title": "Engineering and Technology, The Tiniest Transistors",
+   "items": []
+  }
+ ]
+}

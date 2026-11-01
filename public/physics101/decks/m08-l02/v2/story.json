@@ -1,0 +1,134 @@
+{
+ "slug": "m08-l02",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Force and Angular Velocity",
+   "text": "<h3>Force and Angular Velocity</h3><p class=\"p101-def\">An extended object is an object that has a definite shape and size.</p><p>Our big question for this lesson: how does force affect rotation? Think about a toy top. Wrap a string around it, pull hard, and it spins like crazy. The string pulls at the top's outer edge, at right angles to the line from the center to where the string leaves the surface.</p><p>You already know a force changes the velocity of a point object. Here, a force applied in a very particular way changes the angular velocity of an extended object, which is an object with a definite shape and size.</p>",
+   "testIt": {
+    "name": "Spin a top",
+    "how": "Set how hard you pull the string and tap the top. A bigger force gives a bigger torque and a faster spin."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Opening a Door",
+   "text": "<h3>Opening a Door</h3><p class=\"p101-def\">The size of a force, where it's applied, and its direction together determine the change in angular velocity.</p><p>What's the easiest way to open a door? To get the biggest effect from the smallest force, push as far from the axis of rotation as you can, as Figure 5 shows. The axis here is an imaginary vertical line through the hinges. The doorknob sits near the outer edge, and you push on it at right angles to the door.</p><p>Figure 5 compares six pushes. Push right at the hinges, or straight away from the hinges at the knob, and nothing happens. Push in the middle of the door, or at a slant, and you get some effect. Push at the knob, at right angles to the door, and you get the maximum effect. So the size of the force, the distance from the axis to where it acts, and its direction all matter.</p>",
+   "testIt": {
+    "name": "Door push",
+    "how": "Choose where you push and at what angle, all with the same 20 N. Tap the door to push."
+   }
+  },
+  "3": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you complete the readings and activities in this lesson.</p><p>Online, the Forensics Lab called Leverage has you investigate how a small force can produce a large torque. And the PhysicsLAB called Torques has you calculate the torque on a system when the forces and lever arms are known.</p>"
+  },
+  "4": {
+   "layers": [],
+   "title": "The Lever Arm",
+   "text": "<h3>The Lever Arm</h3><p class=\"p101-def\">The lever arm is the perpendicular distance from the axis of rotation to the point where the force is exerted: L equals r sine theta.</p><p>For a given force, the change in angular velocity depends on the lever arm, the perpendicular distance from the axis of rotation to the point where the force is exerted. If the force is perpendicular to the radius, like the string on the top, the lever arm is just r, the distance from the axis. For the door, it's the distance from the hinges to where you push, as on the left of Figure 6.</p><p>If the force isn't perpendicular to the radius, the lever arm gets shorter. To find it, extend the line of the force until it meets, at a right angle, a line from the center of rotation. The distance from that meeting point to the axis is the lever arm.</p><p>With trigonometry, the lever arm is L equals r sine theta. Here r is the distance from the axis to the point where the force acts, and theta is the angle between the force and that radius. Why sine? The lever arm is the side of a right triangle opposite the angle theta, and r is the hypotenuse, so the lever arm is r times sine theta.</p>",
+   "testIt": {
+    "name": "Lever arm",
+    "how": "Rotate the pull direction on the 0.25 m wrench. The dashed lever arm L = r sinθ shrinks as the pull lines up with the handle."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Torque",
+   "text": "<h3>Torque</h3><p class=\"p101-def\">Torque is the combination of force and lever arm that can cause an object to rotate: tau equals F r sine theta.</p><p>Torque describes the combination of force and lever arm that can make an object rotate. Its size is the force times the perpendicular lever arm. Force is in newtons and distance in meters, so torque is in newton-meters.</p><p>We use the Greek letter tau for torque: tau equals F times r sine theta. Here tau is the torque, F is the force, r is the distance from the axis to where the force acts, and theta is the angle between the force and that radius.</p>",
+   "testIt": {
+    "name": "Torque meter",
+    "how": "Set the force, distance and angle. The meter reads τ = Fr sinθ."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Example Problem 1, Lever Arm",
+   "text": "<h3>Example Problem 1, Lever Arm</h3><p class=\"p101-def\">Find the lever arm with L equals r sine theta, then the force with F equals tau over r sine theta.</p><p>A bolt on a car engine must be tightened with a torque of 35 newton-meters. You use a 25-centimeter wrench and pull on its end at an angle of 60.0 degrees to the handle. How long is the lever arm, and how hard must you pull?</p><p>Step one: analyze and sketch. Sketch the situation. Find the lever arm by extending the force vector backward until a line perpendicular to it meets the axis of rotation. Known: r equals 0.25 meters, theta equals 60.0 degrees, and tau equals 35 newton-meters. Unknown: L and F.</p><p>Step two: solve. The lever arm is L equals r sine theta. Substitute 0.25 meters and 60.0 degrees: L equals 0.25 meters times sine 60.0 degrees, which is 0.22 meters. For the force, start from tau equals F r sine theta and solve: F equals tau over r sine theta. Substitute 35 newton-meters, 0.25 meters, and 60.0 degrees, and F is 1.6 times 10 to the second newtons. Remember your significant digits!</p><p>Step three: evaluate. Force is in newtons, so the units are right. And the sign? We only calculated the size of the force needed to turn the wrench clockwise.</p>",
+   "testIt": {
+    "name": "Example 1 walkthrough",
+    "how": "Change the pull angle on the 0.25 m wrench. The steps find L and the force for 35 N·m."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Finding Net Torque",
+   "text": "<h3>Finding Net Torque</h3><p class=\"p101-def\">When the torques on an object are equal and opposite, the net torque is zero and it stays balanced.</p><p>The worker in Figure 8 uses a long wrench for a reason. A long lever arm means he can apply the force farther from the axis, the center of the nut, so he needs less force to tighten or loosen it. Figure 8 also shows two forces on a wrench: the one applied farther from the nut makes more torque.</p><p>Now try this with two pencils, two identical coins, and some tape. Tape a coin to each end of one pencil and balance it across the other pencil, as in Figure 9. Each coin makes a torque equal to its distance from the balance point, r, times its weight, F sub g. So tau equals r F sub g.</p><p>The two torques are equal in size but opposite in direction, so the net torque is zero: tau sub 1 minus tau sub 2 equals zero, or r sub 1 F sub g 1 minus r sub 2 F sub g 2 equals zero. How could you make the pencil rotate? Stack a second coin on one end to make the forces different, or slide the balance point toward one end to make the lever arms different.</p>",
+   "testIt": {
+    "name": "Balance the pencil",
+    "how": "Stack coins on each end and slide the pivot until the torques cancel."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Crosscutting Concepts, Systems and System Models",
+   "text": "<h3>Crosscutting Concepts, Systems and System Models</h3><p class=\"p101-def\">Models of a system let you predict how changing its parts will change its behavior.</p><p>Time to model a system! Sketch models of the different setups for the pencil-and-coins system in Figure 9: extra coins on one end, or the balance point moved. Use your models to predict how each arrangement will affect the system.</p><p>Then test the arrangements for real, and compare your predictions with your evidence. Did the pencil tip the way you expected?</p>"
+  },
+  "9": {
+   "layers": [],
+   "title": "Example Problem 2, Balancing Torques",
+   "text": "<h3>Example Problem 2, Balancing Torques</h3><p class=\"p101-def\">For balance, the torques on the two sides of the pivot are equal: F sub g K r sub K equals F sub g A r sub A.</p><p>Kariann, mass 56 kilograms, and Aysha, mass 43 kilograms, want to balance on a 1.75-meter seesaw. Where should they put the pivot? Assume the seesaw itself is massless.</p><p>Step one: analyze and sketch. Sketch the situation and draw and label the force vectors. Known: m sub K equals 56 kilograms, m sub A equals 43 kilograms, and r sub K plus r sub A equals 1.75 meters. Unknown: r sub K and r sub A.</p><p>Step two: solve. First the forces. Kariann's weight is F sub g K equals m sub K g, which is 56 kilograms times 9.8 newtons per kilogram, or 5.5 times 10 to the second newtons. Aysha's weight is 43 kilograms times 9.8 newtons per kilogram, or 4.2 times 10 to the second newtons. Next, write Kariann's distance in terms of Aysha's: r sub K equals 1.75 meters minus r sub A. With no rotation, the torques balance: F sub g K r sub K equals F sub g A r sub A. Substitute for r sub K, so F sub g K times the quantity 1.75 meters minus r sub A, minus F sub g A r sub A, equals zero. Expand and collect the r sub A terms: the quantity F sub g K plus F sub g A, times r sub A, equals F sub g K times 1.75 meters. So r sub A equals F sub g K times 1.75 meters, divided by F sub g K plus F sub g A. Substitute 5.5 times 10 to the second newtons and 4.2 times 10 to the second newtons, and r sub A is 0.99 meters.</p><p>Step three: evaluate. Distances are in meters, and they're positive. Is it realistic? Aysha sits about 1 meter from the pivot, so Kariann sits about 0.75 meters from it. Kariann is heavier, so her lever arm should be shorter, and Aysha farther from the pivot is just what we expect.</p>",
+   "testIt": {
+    "name": "Seesaw pivot",
+    "how": "Slide the pivot along the 1.75 m seesaw until the two torques balance."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "The Moment of Inertia",
+   "text": "<h3>The Moment of Inertia</h3><p class=\"p101-def\">The moment of inertia is an object's resistance to changes in its rotation; for a point mass, I equals m times the square of r.</p><p>Push on a point mass, and its acceleration is inversely proportional to its mass. What about a spinning extended object? Grab your pencil, coins, and tape again. Tape the coins to the ends of the pencil, hold the pencil between your thumb and finger, and wiggle it back and forth. Your thumb and finger are making torques that change the pencil's angular velocity.</p><p>Now move the coins so they're only 1 or 2 centimeters apart and wiggle again. Easier, right? It took much less torque. So mass alone doesn't decide how much torque you need to change the angular velocity. Where the mass is located matters too.</p><p>An object's resistance to changes in its rotation is called its moment of inertia, written I, with units of mass times the square of distance. For a point object a distance r from the axis, the moment of inertia is the mass times the square of that distance: I equals m times the square of r.</p>",
+   "testIt": {
+    "name": "Coins on a pencil",
+    "how": "Slide the two coins out from the middle and tap to wiggle the pencil with the same torque."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Moment of Inertia and Mass Distribution",
+   "text": "<h3>Moment of Inertia and Mass Distribution</h3><p class=\"p101-def\">The farther an object's mass is from the axis, the greater its moment of inertia.</p><p>For extended objects, the moment of inertia depends on how far the mass sits from the axis. A bicycle wheel has almost all its mass in the rim and tire, so its moment of inertia about the axle is almost exactly m times the square of r, where r is its radius. Most objects have mass closer to the axis, so their moment of inertia is less than m times the square of r.</p><p>Table 2 lists some shapes. A thin hoop of radius r spinning about its center, like a bicycle wheel on its axle: m times the square of r. A solid uniform cylinder about its center: one half m times the square of r. A uniform sphere about its center: two fifths m times the square of r. A long uniform rod of length l about its center: one twelfth m times the square of l, and about its end: one third m times the square of l. A thin rectangular plate of length l and width w about its center: one twelfth m times the quantity the square of l plus the square of w.</p>",
+   "testIt": {
+    "name": "Where the mass sits",
+    "how": "Tap to compare a hoop and a disk of the same mass and radius."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Moment of Inertia and the Rotational Axis",
+   "text": "<h3>Moment of Inertia and the Rotational Axis</h3><p class=\"p101-def\">The moment of inertia depends on the location and direction of the axis of rotation.</p><p>The moment of inertia also depends on where the axis is and which way it points, as Figure 12 shows. Try it: hold a book upright with your hands at its bottom edge and rock it toward you and away. Feel the torque you need. Now hold it in the middle and rock it again.</p><p>Much less torque, right? With your hands in the middle, the average distance of the book's mass from the axis is much smaller. So the book rocked about its bottom edge has the larger moment of inertia and needs more torque to rotate.</p>",
+   "testIt": {
+    "name": "Book axis",
+    "how": "Tap to move the rotation axis from the book's edge to its center."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Example Problem 3, Moment of Inertia",
+   "text": "<h3>Example Problem 3, Moment of Inertia</h3><p class=\"p101-def\">Add the moments of inertia of the separate masses: I equals the sum of m times the square of r.</p><p>Model a twirling baton as a thin rod 0.66 meters long with a 0.30-kilogram ball on each end. Find its moment of inertia about an axis through the middle, perpendicular to the rod. Then move the axis to one end. Which is bigger? Ignore the rod's mass.</p><p>Step one: analyze and sketch. Sketch the baton with both axes, and the distances from each axis to the masses. Known: m equals 0.30 kilograms and l equals 0.66 meters. Unknown: I.</p><p>Step two: solve. Find each mass's moment of inertia separately. About the center, r equals one half of l, which is one half of 0.66 meters, or 0.33 meters. One mass gives I equals m times the square of r: 0.30 kilograms times the square of 0.33 meters, or 0.033 kilogram meters squared. Two masses make 2 times that, which is 0.065 kilogram meters squared. About one end, the far mass is 0.66 meters away: 0.30 kilograms times the square of 0.66 meters gives 0.13 kilogram meters squared. The other mass sits right on the axis, at 0.0 meters, so it adds zero. The total is 0.13 kilogram meters squared. The moment of inertia is greater when the baton swings around one end.</p><p>Step three: evaluate. Moment of inertia is in kilogram meters squared, so the units are right. The masses and distances are small, and so are the answers. Doubling the distance makes the moment of inertia four times bigger, and that increase beats losing the contribution of one mass.</p>",
+   "testIt": {
+    "name": "Baton axis",
+    "how": "Tap to move the axis from the middle of the baton to one end."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "Newton's Second Law for Rotational Motion",
+   "text": "<h3>Newton's Second Law for Rotational Motion</h3><p class=\"p101-def\">Angular acceleration equals net torque divided by moment of inertia: alpha equals tau sub net over I.</p><p>Newton's second law for straight-line motion says a equals F sub net over m. To rewrite it for rotation, swap acceleration for angular acceleration, alpha, force for net torque, tau sub net, and mass for moment of inertia, I.</p><p>So Newton's second law for rotational motion says the angular acceleration of an object about an axis equals the net torque on it divided by its moment of inertia: alpha equals tau sub net over I. Angular acceleration is directly proportional to net torque and inversely proportional to moment of inertia.</p><p>If the torque points the same way as the angular velocity, the object spins faster. If they point opposite ways, it slows down.</p>",
+   "testIt": {
+    "name": "Spinning wheel",
+    "how": "Apply a torque with or against the spin and change the moment of inertia."
+   }
+  },
+  "15": {
+   "layers": [],
+   "title": "Example Problem 4, Torque",
+   "text": "<h3>Example Problem 4, Torque</h3><p class=\"p101-def\">Find alpha from the change in omega, I from the shape, then tau equals I alpha and F equals tau over r.</p><p>A solid steel wheel, free to spin on a fixed central axis, has a mass of 15 kilograms and a diameter of 0.44 meters, and starts at rest. You want it spinning at 8.0 revolutions per second in 15 seconds. What torque must you apply? And if you apply it by pulling a strap wrapped around the wheel's edge, how hard must you pull?</p><p>Step one: analyze and sketch. Sketch the situation. The torque must be counterclockwise, with the force on the strap as shown. Known: m equals 15 kilograms, r equals one half of 0.44 meters, or 0.22 meters, omega sub i equals 0.0 radians per second, omega sub f equals 2 pi times 8.0 revolutions per second, and t equals 15 seconds. Unknown: alpha, I, tau, and F.</p><p>Step two: solve. First the angular acceleration: alpha equals delta omega over delta t. Omega sub f is 16 pi radians per second, so alpha equals 16 pi radians per second minus 0.0 radians per second, all over 15 seconds, which is 3.4 radians per second squared. Next the moment of inertia of a solid cylinder: I equals one half m times the square of r. That's one half times 15 kilograms times the square of 0.22 meters, or 0.36 kilogram meters squared. Now the torque: tau equals I alpha, which is 0.36 kilogram meters squared times 3.4 radians per second squared, or 1.2 kilogram meters squared per second squared, which is 1.2 newton-meters. Finally the force: tau equals F r, so F equals tau over r, which is 1.2 newton-meters over 0.22 meters, or 5.5 newtons.</p><p>Step three: evaluate. Torque is in newton-meters and force in newtons. Is it realistic? The wheel's size makes it fairly easy to spin, even though it's heavy.</p><p>So, how does force affect rotation? A force makes a torque that depends on where and in what direction it acts, and that torque, divided by the moment of inertia, sets the angular acceleration.</p>",
+   "testIt": {
+    "name": "Strap pull",
+    "how": "Set the spin-up time and tap the strap. The wheel reaches 8.0 rev/s."
+   }
+  }
+ }
+}

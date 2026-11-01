@@ -1,0 +1,71 @@
+{
+ "slug": "m22-l02",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Can a Particle Be a Wave?",
+   "text": "<h3>Can a Particle Be a Wave?</h3><p class=\"p101-def\">De Broglie proposed that a moving material particle can be described by a wavelength.</p><p>Our big question for this lesson: how can particles be described as waves? You just saw that an electromagnetic wave can act like a stream of particles. So here's a bold flip: could a particle show interference and diffraction, like a wave?</p><p>In 1923, French physicist Louis de Broglie proposed exactly that: a material particle could be described by a wavelength. It was a brave extension of Einstein's photon theory, and Einstein himself was an early fan of de Broglie's waves.</p>",
+   "testIt": {
+    "name": "Electrons",
+    "how": "Fire more electrons through the double slit."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson.</p><p>Online, Review the News asks you to find a current news story about technology that uses quantum or atomic physics, evaluate your source, and share what you learn with your class.</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "The de Broglie Wavelength",
+   "text": "<h3>The de Broglie Wavelength</h3><p class=\"p101-def\">The de Broglie wavelength of a moving particle equals Planck's constant divided by its momentum, lambda equals h over p, which equals h over m v.</p><p>Remember that an object's momentum is its mass times its velocity, p equals m v. If a massive object is also a wave, its momentum should look like a photon's, p equals h over lambda. De Broglie set the two equal: p equals m v equals h over lambda.</p><p>The wavelength in that relationship belongs to the moving particle, and it's called the de Broglie wavelength. Solve for it directly: lambda equals h over p, which equals h over m v. In words, a moving particle's de Broglie wavelength equals Planck's constant divided by its momentum.</p><p>De Broglie predicted that any small particle, like an electron or a proton, should act like a wave. In 1927, independent experiments confirmed electron diffraction, real evidence that electrons have wavelike properties.</p>",
+   "testIt": {
+    "name": "de Broglie",
+    "how": "Change mass and speed."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Why Baseballs Don't Diffract",
+   "text": "<h3>Why Baseballs Don't Diffract</h3><p class=\"p101-def\">Everyday objects do not show wavelike properties because their de Broglie wavelengths are far too small to observe.</p><p>So why doesn't your baseball diffract around the bat? Everyday objects have wavelengths far too small to notice. Take a 0.145 kilogram baseball hit at 38 meters per second.</p><p>Its wavelength is h over m v: 6.63 times ten to the negative thirty-fourth joule seconds, divided by 0.145 kilograms times 38 meters per second. That's 1.2 times ten to the negative thirty-fourth meters. That's unimaginably smaller than even a proton, so there's no way to see the baseball act like a wave.</p>",
+   "testIt": {
+    "name": "Scale",
+    "how": "Tap for the next object."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Example Problem 3, De Broglie Wavelength",
+   "text": "<h3>Example Problem 3, De Broglie Wavelength</h3><p class=\"p101-def\">For an electron accelerated from rest, v equals the square root of negative two e delta V over m, and lambda equals h over m v.</p><p>An electron is accelerated by a potential difference of 75 volts. What's its de Broglie wavelength?</p><p>Step one: analyze and sketch. Draw the positive and negative plates, with the electron moving from the negative plate toward the positive one. Known: delta V is 75 volts, e is negative 1.602 times ten to the negative nineteenth coulombs, the electron's mass is 9.11 times ten to the negative thirty-first kilograms, and h is 6.63 times ten to the negative thirty-fourth joule seconds. Unknown: lambda.</p><p>Step two: solve. The kinetic energy from the potential difference is K E equals negative e delta V, and from motion, K E equals one half m times the square of v. Set them equal and solve: v equals the square root of negative two e delta V over m. Substitute: the square root of negative two, times negative 1.602 times ten to the negative nineteenth coulombs, times 75 volts, divided by 9.11 times ten to the negative thirty-first kilograms. That's 5.1 times ten to the sixth meters per second. Momentum is m v: 9.11 times ten to the negative thirty-first kilograms times 5.1 times ten to the sixth meters per second, which is 4.6 times ten to the negative twenty-fourth kilogram meters per second. Finally, lambda equals h over p: 6.63 times ten to the negative thirty-fourth joule seconds divided by 4.6 times ten to the negative twenty-fourth kilogram meters per second, or 1.4 times ten to the negative tenth meters. That's 0.14 nanometers.</p><p>Step three: evaluate. Dimensional analysis gives meters per second for v and nanometers for lambda. Both are positive, as expected. And a wavelength near 0.1 nanometers is about the same as X-ray wavelengths, small enough to diffract off the rows of atoms in a crystal.</p>",
+   "testIt": {
+    "name": "Electron",
+    "how": "Set the accelerating voltage."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "The Limits of Measurement",
+   "text": "<h3>The Limits of Measurement</h3><p class=\"p101-def\">Classical physics sets no limit on a measurement's precision, but matter waves forced physicists to redefine the limits of measurement.</p><p>De Broglie's idea changed how we understand atomic-sized objects. In everyday life, it seems you can measure anything as precisely as you want. Say you're tracking a ball in free fall. You could start with a meterstick and a stopwatch. Want more precision? Grab a video camera and a computer. You can imagine fancier and fancier equipment getting closer and closer to perfect.</p><p>Classical physics puts no limit on how precise a measurement can be. But de Broglie's revolutionary theory of matter waves forced physicists to rethink the limits of measurement.</p>",
+   "testIt": {
+    "name": "Precision",
+    "how": "Tap to switch tools."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "The Heisenberg Uncertainty Principle",
+   "text": "<h3>The Heisenberg Uncertainty Principle</h3><p class=\"p101-def\">The Heisenberg uncertainty principle states there is a limit to how precisely a particle's position and momentum can be measured at the same time.</p><p>To locate a tiny particle, you could shine light on it and collect the reflected light. But diffraction spreads that light out, so you can't pinpoint the particle exactly. For more precision, use shorter-wavelength light, which diffracts less.</p><p>Here's the catch. Thanks to the Compton effect, short-wavelength, high-energy light changes the particle's momentum when it hits, as Figure 12 shows. After the collision, the photon's wavelength is longer, meaning it lost energy, and the electron scatters with new momentum. So measuring a particle's position changes its momentum. The more precisely you pin down position, the less certain the momentum, and the more precisely you know the momentum, the less certain the position.</p><p>This is the Heisenberg uncertainty principle, named for German physicist Werner Heisenberg: there's a limit to how precisely you can measure a particle's position and momentum at the same time. It comes from the dual wavelike and particlelike nature of light and matter.</p>",
+   "testIt": {
+    "name": "Uncertainty",
+    "how": "Shrink the light's wavelength."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "A Quantum World",
+   "text": "<h3>A Quantum World</h3><p class=\"p101-def\">Classical physics models everyday objects well, but quantum theory is needed to describe objects on the atomic scale.</p><p>The uncertainty limit only shows up when you measure atomic-scale particles. But Heisenberg's work changed our whole understanding of the world.</p><p>The classical theories of Newton and Maxwell are great models for everyday objects like baseballs and bridges. To accurately describe objects on the atomic scale, though, you need quantum theory and its models of the dual nature of light and matter. Particles can act like waves, and waves can act like particles. It just depends on how you look.</p>"
+  }
+ }
+}

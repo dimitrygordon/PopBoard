@@ -1,0 +1,157 @@
+{
+ "slug": "m17-l01",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Incoherent Light",
+   "text": "<h3>Incoherent Light</h3><p class=\"p101-def\">Incoherent light is light whose waves are not in phase.</p><p>Our big question for this lesson: how do bubbles make that shimmering rainbow? To answer it, we'll need light's wave side. You've seen light diffract around edges, and you've explained reflection and refraction with waves. When scientists found that light can interfere, which happens when waves superpose, they were convinced that light has wave properties.</p><p>Look at a lamp-lit room and you're seeing incoherent light, light whose waves are not in phase. Picture heavy rain falling on still water, like the left of Figure 1. The surface is choppy, with no regular wave pattern.</p><p>Light waves have such a high frequency that incoherent light doesn't look choppy to us. Instead, all those out-of-step waves blend together, and we see smooth, even white light.</p>",
+   "testIt": {
+    "name": "Raindrops",
+    "how": "Tap to switch between random raindrops and one steady drop source."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Coherent Light",
+   "text": "<h3>Coherent Light</h3><p class=\"p101-def\">Coherent light is light of the same wavelength whose waves are in phase with each other.</p><p>Light made of waves of the same wavelength, all in phase with each other, is coherent light. A single point source can make a regular, coherent wavefront, like the neat circular ripples from one drop in the right of Figure 1.</p><p>Many point sources can make a coherent wavefront too, as long as they're all in phase. That's exactly what a laser does.</p>",
+   "testIt": {
+    "name": "Phases",
+    "how": "Tap to toggle the light sources between random and matched phases."
+   }
+  },
+  "3": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson.</p><p>Online, the Quick Investigation called Soap Film lets you discover the patterns that appear when light shines on a soap film. And in the PhysicsLAB called Double-Slit Interference, you'll calculate the wavelength of light from an interference pattern.</p>"
+  },
+  "4": {
+   "layers": [],
+   "title": "Young's Double-Slit Investigation",
+   "text": "<h3>Young's Double-Slit Investigation</h3><p class=\"p101-def\">Interference fringes are the bright and dark bands made when light from two slits overlaps.</p><p>Between 1801 and 1803, the English physician Thomas Young, in Figure 2, ran a series of investigations showing light's wave properties. Young was a true all-rounder. He also helped decipher Egyptian hieroglyphics!</p><p>In his most famous investigation, Young took light from a tiny region of a source and made it coherent by passing it through one narrow slit. Then the light passed through two closely spaced narrow slits in a barrier. The overlapping light from those two slits fell on a screen and made a pattern of bright and dark bands, called interference fringes. Young explained that the bands come from constructive and destructive interference of the light waves from the two slits.</p>",
+   "testIt": {
+    "name": "Two slits",
+    "how": "Tap to cover or uncover the second slit."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Monochromatic and White-Light Patterns",
+   "text": "<h3>Monochromatic and White-Light Patterns</h3><p class=\"p101-def\">Monochromatic light is light of only one wavelength.</p><p>Monochromatic light is light of only one wavelength. Shine it through a double slit, and constructive interference makes a bright central band of that color, with more bright bands of nearly equal spacing and width on either side, as in Figure 3. The bands get dimmer the farther they are from the center. Between them are dark areas where destructive interference happens. Where the bands land depends on the light's wavelength; notice that the green bands are packed closer together than the red ones.</p><p>Now use white light. Every color interferes constructively at the center, so the central band is white. But the other bright bands depend on wavelength, so each color lands in a slightly different spot, and you get little spectra of color on either side.</p>",
+   "testIt": {
+    "name": "Colors",
+    "how": "Tap to switch the light (d = 0.020 mm, L = 1.0 m)."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Making Coherent Light",
+   "text": "<h3>Making Coherent Light</h3><p class=\"p101-def\">A single narrow slit makes nearly cylindrical wavefronts that reach two slits in phase.</p><p>An ordinary monochromatic source gives off incoherent light. Put a barrier with a narrow slit in front of it, and only light from a tiny region of the source gets through. Diffraction at the slit spreads that light into nearly cylindrical wavefronts, as in Figure 4.</p><p>The second barrier has two very small slits. A cylinder is symmetrical, so the two parts of the wavefront reaching these slits are in phase. Each slit sends out its own nearly cylindrical wavefront, and the two can interfere. The slits are only tens to hundreds of wavelengths wide: narrow enough that light spreads out widely from each one, so the two waves overlap.</p><p>Depending on how the waves line up, they interfere constructively or destructively, as in Figure 5. Where crests meet crests on the screen, you see a bright band. Where crests meet troughs and cancel, you see a dark band.</p>",
+   "testIt": {
+    "name": "Two waves",
+    "how": "Slide one wave past the other."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Double-Slit Geometry",
+   "text": "<h3>Double-Slit Geometry</h3><p class=\"p101-def\">A bright band forms where the path difference from the two slits is a whole number of wavelengths.</p><p>The left of Figure 6 shows a top view: wavefronts from the two slits crisscross to make light and dark bands. On the right, light reaching the center of the screen, point P sub zero, travels the same distance from each slit. The waves arrive in phase and make the central bright band.</p><p>The first bright band, P sub one, is bright because the path from slit 2 is exactly one wavelength, lambda, longer than the path from slit 1. So the waves still arrive in phase.</p><p>Look at the two shaded triangles. The big one is a right triangle, so the tangent of theta equals x over L, where x is the distance from the central band to the first bright band and L is the distance from the slits to the screen. In the small triangle, R S sub one S sub two, side S sub two R is the path difference, one wavelength. Since L is much bigger than d, the slit separation, the paths are nearly parallel, so the small triangle is nearly a right triangle, and the sine of theta is about lambda over d. And because theta is small, the sine of theta is very nearly equal to the tangent of theta.</p>",
+   "testIt": {
+    "name": "Path difference",
+    "how": "Move a point along the screen (λ = 600 nm, d = 0.020 mm, L = 1.0 m)."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Wavelength from a Double Slit",
+   "text": "<h3>Wavelength from a Double Slit</h3><p class=\"p101-def\">lambda equals x times d divided by L.</p><p>Put the three facts together: the tangent of theta equals x over L, the sine of theta is about lambda over d, and the sine is about the tangent. That gives x over L equals lambda over d. Solve for lambda, and the wavelength equals x times d divided by L.</p><p>In words: the wavelength equals the distance on the screen from the central bright band to the first bright band, times the distance between the slits, divided by the distance from the slits to the screen.</p><p>More generally, bright bands sit at positions x sub m where m times lambda equals x sub m times d over L, with m equal to 0, 1, 2, and so on. The central band is m equals 0, the first-order band is m equals 1, the second-order band is m equals 2, and so on.</p>",
+   "testIt": {
+    "name": "x = λL/d",
+    "how": "Adjust d, L, and λ and watch the first-order band move."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Example Problem 1, Wavelength of Light",
+   "text": "<h3>Example Problem 1, Wavelength of Light</h3><p class=\"p101-def\">Measure x, d, and L, then lambda equals x d over L.</p><p>A double-slit investigation measures the wavelength of red light. The slits are 0.0190 millimeters apart. The screen is 0.600 meters away, and the first-order bright band is 21.1 millimeters from the central bright band. What is the wavelength?</p><p>Step one: analyze and sketch. Sketch the slits and the screen, and draw the bands. Known: d is 1.90 times ten to the negative fifth meters, x is 2.11 times ten to the negative second meters, and L is 0.600 meters. Unknown: lambda.</p><p>Step two: solve. Lambda equals x times d divided by L. That's 2.11 times ten to the negative second meters, times 1.90 times ten to the negative fifth meters, divided by 0.600 meters, which is 6.68 times ten to the negative seventh meters, or 668 nanometers.</p><p>Step three: evaluate. The answer is a length, the right unit for wavelength. Red light runs from about 600 to 700 nanometers, so 668 nanometers is reasonable.</p>",
+   "testIt": {
+    "name": "Red light",
+    "how": "Enter the measured x (d = 0.0190 mm, L = 0.600 m)."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Winning Over the Doubters",
+   "text": "<h3>Winning Over the Doubters</h3><p class=\"p101-def\">The bright spot in the center of a circular shadow convinced many scientists that light is a wave.</p><p>Most physicists of Young's day backed Newton's particle model of light, so his findings met with opposition. Then, in a competition, Augustin-Jean Fresnel offered a mathematical description of light as a wave. One judge, Siméon Denis Poisson, pointed out a strange prediction: if Fresnel was right, the shadow of a round object lit by coherent light should have a bright spot right in its center.</p><p>François Arago did the investigation, and there was the spot! That surprising result convinced many scientists that light really is a wave.</p><p>Remember the hummingbird from the start of this module? Its glittering colors are interference too. Thin, layered structures in its feathers reflect light from several surfaces, and the reflected waves interfere constructively for some colors and destructively for others, depending on the angle you look from.</p>",
+   "testIt": {
+    "name": "Disk",
+    "how": "Tap to zoom into the disk's shadow."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Career Connection, Optician",
+   "text": "<h3>Career Connection, Optician</h3><p class=\"p101-def\">Opticians use their knowledge of light, lenses, and thin films to fit eyeglasses and contacts.</p><p>Opticians know how thin films on eyeglasses cut down glare. Using what they understand about light and lenses, they check patients' needs and prescriptions. They work in optometrists' offices, eyewear and contact lens stores, and department stores, helping people get fitted with eyeglasses and contact lenses.</p>"
+  },
+  "12": {
+   "layers": [],
+   "title": "Thin-Film Interference",
+   "text": "<h3>Thin-Film Interference</h3><p class=\"p101-def\">Thin-film interference is constructive and destructive interference of light reflected from the two surfaces of a thin film.</p><p>Ever seen swirling colors in a soap bubble, or in an oily puddle in a parking lot, like Figure 7? Those colors aren't from a prism splitting light or from pigments. They come from constructive and destructive interference when light reflects from the two surfaces of a thin film. That's thin-film interference.</p><p>In a vertical soap film, like Figure 8, the film's weight makes it thicker at the bottom than at the top, getting gradually thicker as you go down. When light hits the front surface, part reflects, that's ray 1, and part goes in. The inside part reflects off the back surface, that's ray 2. This splitting keeps happening as light bounces back and forth. All these waves came from the same source and have the same frequency, so they're coherent and can interfere.</p>",
+   "testIt": {
+    "name": "Soap film",
+    "how": "Slide time as gravity thins the top of an upright film."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Color Reinforcement",
+   "text": "<h3>Color Reinforcement</h3><p class=\"p101-def\">In a soap film, a color is reflected most strongly when the thickness is d equals lambda sub vacuum divided by 4 n sub film.</p><p>How does one color get boosted? The two reflected waves must be in phase for that wavelength. Say the film is one-fourth of a wavelength thick, measured inside the film. Then ray 2's round trip is half a wavelength, so you might expect ray 2 to come back half a wavelength out of step with ray 1 and cancel it.</p><p>But there's a twist. When a wave reflects off a medium where it travels more slowly, it flips upside down. For light, that happens at a boundary with a larger index of refraction. Ray 1 reflects off the soap, which has a higher index than air, so it's inverted. Ray 2 reflects off the air behind the film, which has a lower index, so it isn't. That flip makes up the other half wavelength, and the two rays end up in phase!</p><p>So when the film thickness d equals lambda sub film over 4, that color reflects most strongly. Since light's wavelength is shorter in the film, we can also write d equals lambda sub vacuum divided by 4 times n sub film. Other wavelengths interfere destructively.</p>",
+   "testIt": {
+    "name": "Two rays",
+    "how": "Set the soap film thickness (n = 1.33)."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "Why Bubbles Shimmer",
+   "text": "<h3>Why Bubbles Shimmer</h3><p class=\"p101-def\">Constructive interference repeats at thicknesses of one-fourth, three-fourths, five-fourths of a wavelength, and so on.</p><p>Different colors have different wavelengths, so in a film of changing thickness, each color is reinforced at a different thickness. The result is a rainbow of bands! Where the film is too thin to reinforce any visible color, it looks black.</p><p>The pattern repeats, too, as Figure 8 shows. At a thickness of three-fourths of a wavelength, the round trip is three halves of a wavelength, and that color is reinforced again. Any thickness of one-fourth, three-fourths, five-fourths of a wavelength, and so on, works.</p><p>And that answers our focus question. In a bubble or an oil film, the thickness varies and so does the angle you see it from, so the reinforced color keeps changing across the surface. Under white light, that's the shifting rainbow you see.</p>",
+   "testIt": {
+    "name": "Bubble",
+    "how": "Drag the bubble's thickness."
+   }
+  },
+  "15": {
+   "layers": [],
+   "title": "Refractive Indices Decide Inversion",
+   "text": "<h3>Refractive Indices Decide Inversion</h3><p class=\"p101-def\">A reflected wave is inverted when it reflects from a medium with a higher index of refraction.</p><p>In a soap film in air, only one of the two reflected waves flips. In other cases, neither wave or both waves might flip, depending on the indices of refraction of the materials.</p><p>If both reflections go from a lower index to a higher one, both waves are inverted, and the flips cancel out. Then constructive interference happens at thicknesses of one-half wavelength, one wavelength, three-halves wavelength, two wavelengths, and so on.</p><p>Here's a real use. A thin film on eyeglass lenses can stop them from reflecting the wavelengths our eyes see best. That cuts glare and lets more light pass through.</p>",
+   "testIt": {
+    "name": "Inversions",
+    "how": "Tap to change the material below an oil film (n = 1.45) in air."
+   }
+  },
+  "16": {
+   "layers": [],
+   "title": "Problem-Solving Strategy, Thin-Film Interference",
+   "text": "<h3>Problem-Solving Strategy, Thin-Film Interference</h3><p class=\"p101-def\">Count inversions, then set 2 d equal to the needed whole or half-odd number of film wavelengths.</p><p>Step one: sketch the film and the two coherent waves, drawn as rays. Step two: decide whether the reflected light is brightened, meaning constructive interference, or dimmed, meaning destructive interference. Step three: check each reflection. Going from a lower to a higher index, the wave inverts. Going from higher to lower, it doesn't.</p><p>Step four: find the extra distance the second wave must travel. If you need constructive interference with one wave inverted, or destructive interference with both or neither inverted, the extra distance is an odd number of half wavelengths: the quantity m plus one-half, times lambda sub film, with m equal to 0, 1, 2, and so on. If you need constructive interference with both or neither inverted, or destructive interference with one inverted, the extra distance is a whole number of wavelengths: m times lambda sub film, with m equal to 1, 2, 3, and so on.</p><p>Step five: set that extra distance equal to twice the film thickness, 2 d. Step six: remember that lambda sub film equals lambda sub vacuum divided by n sub film.</p>"
+  },
+  "17": {
+   "layers": [],
+   "title": "Example Problem 2, Oil and Water",
+   "text": "<h3>Example Problem 2, Oil and Water</h3><p class=\"p101-def\">With one inversion, the thinnest bright film is d equals lambda divided by 4 n sub oil.</p><p>You see colored rings on a puddle and figure there's an oil slick on the water. Looking straight down, you see a yellow-green region, with a wavelength of 555 nanometers. Oil's index of refraction is 1.45, and water's is 1.33. What's the minimum oil thickness that could make this color?</p><p>Step one: analyze and sketch. Sketch the film with air above and water below, and draw rays reflecting off the top and bottom of the oil. Known: n sub water is 1.33, n sub oil is 1.45, and lambda is 555 nanometers. Unknown: d.</p><p>Step two: solve. Since n sub oil is greater than n sub air, the first reflection is inverted. Since n sub water is less than n sub oil, the second reflection isn't. So there's one inversion. The wavelength in oil is shorter than in air. For constructive interference with one inversion, the strategy gives 2 d equals the quantity m plus one-half, times lambda over n sub oil. For the minimum thickness, m equals 0, so d equals lambda divided by 4 n sub oil. That's 555 nanometers divided by 4 times 1.45, which is 95.7 nanometers.</p><p>Step three: evaluate. The answer is in nanometers, right for a thickness. And the minimum thickness is smaller than one wavelength, as it should be.</p>",
+   "testIt": {
+    "name": "Oil slick",
+    "how": "Thicken the oil film (n = 1.45) on water."
+   }
+  },
+  "18": {
+   "layers": [],
+   "title": "Interference in Nature",
+   "text": "<h3>Interference in Nature</h3><p class=\"p101-def\">Stacked layers of chitin in beetle shells reflect light that interferes constructively for green.</p><p>Nature uses interference too. The shimmering green of the tiger beetle in Figure 10 comes from thin, parallel layers of chitin, and sometimes other materials, with different indices of refraction in the outer layer of its shell.</p><p>These multilayer reflectors bounce light from many surfaces, and the reflections interfere constructively for green light. The result is a brilliant, shimmering green that seems to change as the beetle moves.</p>",
+   "testIt": {
+    "name": "Beetle",
+    "how": "Tune the spacing of the chitin layers (n = 1.56)."
+   }
+  }
+ }
+}
