@@ -1,0 +1,81 @@
+{
+ "slug": "m02-l03",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "From Motion Diagram to Data Table",
+   "text": "<h3>From Motion Diagram to Data Table</h3><p class=\"p101-def\">Motion diagrams, tables, and graphs can all show an object's positions at various times.</p><p>Here's our question for this lesson: what can you learn from position-time graphs? When motion gets complicated, it helps to show it in several different ways. A motion diagram holds information about an object's position at various times, and tables and graphs can show that same information.</p><p>Think back to the runner's motion diagrams. You can organize her times and positions into a table, like Table 1. At 0.0 seconds she's at 0.0 meters. At 1.0 second, 5.0 meters. At 2.0 seconds, 10.0 meters. At 3.0 seconds, 15.0 meters. At 4.0 seconds, 20.0 meters. And at 5.0 seconds, 25.0 meters.</p>"
+  },
+  "2": {
+   "layers": [],
+   "title": "Plotting a Position-Time Graph",
+   "text": "<h3>Plotting a Position-Time Graph</h3><p class=\"p101-def\">A position-time graph plots time on the horizontal axis and position on the vertical axis.</p><p>You can turn Table 1 into a position-time graph. Time goes on the horizontal axis, and position goes on the vertical axis.</p><p>Figure 11 shows the runner's graph. To draw it, first plot each of her positions. Then draw a line that best fits the points. With that best-fit line in place, you can estimate other times and positions too.</p>",
+   "testIt": {
+    "name": "Plot Table 1",
+    "how": "Tap the grid to plot each point from Table 1, then drag the line's ends for the best fit."
+   }
+  },
+  "3": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and look for crosscutting concepts.</p><p>Keep your Science Journal handy and record the evidence you collect during this lesson's readings and activities.</p><p>As you read, build a table of crosscutting concepts and fill in examples whenever you spot one. And keep the Encounter the Phenomenon question in mind: what from this lesson helps you answer the unit and module questions?</p>"
+  },
+  "4": {
+   "layers": [],
+   "title": "A Graph Is Not a Picture of the Path",
+   "text": "<h3>A Graph Is Not a Picture of the Path</h3><p class=\"p101-def\">The line on a position-time graph shows the most likely positions between recorded data points.</p><p>Here's a common mix-up. The graph is not a picture of the runner's path. The line on the graph slopes upward, but the runner's path was flat and horizontal!</p><p>Instead, the line shows the most likely positions of the runner at times between the data points you recorded. There's no data point for exactly when she was 12.0 meters past her start, or for where she was at 4.5 seconds. But you can use the graph to estimate both. Example Problem 1 shows how.</p>",
+   "testIt": {
+    "name": "Path vs. graph",
+    "how": "Drag the time slider or press Play. The runner's path stays flat while the graph line rises."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Instantaneous Position",
+   "text": "<h3>Instantaneous Position</h3><p class=\"p101-def\">Instantaneous position is the position at a particular instant, which lasts zero seconds.</p><p>How long did the runner spend at any one location? Each position is linked to a time, but how long did that time last? You might say \"an instant.\" But how long is an instant?</p><p>If an instant lasted any finite amount of time, the runner would have stayed in the same spot for that time, and she wouldn't have been moving. So an instant isn't a finite period at all. It lasts zero seconds. The symbol x stands for the runner's instantaneous position, her position at a particular instant. Usually we just call it position.</p>"
+  },
+  "6": {
+   "layers": [],
+   "title": "Equivalent Representations",
+   "text": "<h3>Equivalent Representations</h3><p class=\"p101-def\">Words, pictures, motion diagrams, data tables, and position-time graphs all contain the same information about motion.</p><p>You now have a whole toolbox for describing motion. You can use words, pictures, also called pictorial representations, motion diagrams, data tables, or position-time graphs. Figure 12 shows the runner's motion as a data table, a graph, and a motion diagram.</p><p>All of these representations hold the same information about the runner's motion. But depending on what you want to learn, some will be more useful than others. For example, a table gives you exact recorded values, while a graph lets you estimate positions between them at a glance.</p>",
+   "testIt": {
+    "name": "Linked views",
+    "how": "Drag the runner along the motion diagram. The matching table row and graph point light up."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Example Problem 1, Analyze a Position-Time Graph",
+   "text": "<h3>Example Problem 1, Analyze a Position-Time Graph</h3><p class=\"p101-def\">Read a position-time graph by drawing horizontal and vertical lines from the best-fit line to the axes.</p><p>Let's try it. Look at the runner's graph from Figure 11. When did she reach 12.0 meters beyond the starting point? And where was she after 4.5 seconds?</p><p>Step one: analyze the problem by restating the questions. Question one: at what time was the magnitude of the runner's position, x, equal to 12.0 meters? Question two: what was the runner's position at time t equals 4.5 seconds?</p><p>Step two: solve for the unknown. For question one, find where a horizontal line at the 12.0 meter mark meets the best-fit line. Then drop a vertical line from that point down to the time axis. It crosses at 2.4 seconds.</p><p>For question two, find where a vertical line at 4.5 seconds, halfway between 4.0 and 5.0 seconds, meets the graph. Then follow a horizontal line from that point over to the position axis. The position is approximately 22.5 meters.</p>",
+   "testIt": {
+    "name": "Read the graph",
+    "how": "Drag the gold guides to the line and read off the matching time or position."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Multiple Objects on One Graph",
+   "text": "<h3>Multiple Objects on One Graph</h3><p class=\"p101-def\">Where two lines on a position-time graph intersect, the objects have the same position at the same time.</p><p>Now let's put two runners on one graph. In the graph for Example Problem 2, runner A is ahead of runner B at time zero, but each runner moves differently. When and where does one pass the other?</p><p>First, restate that in physics terms: at what time are the two runners at the same position, and what is that position? You can answer by finding the point where the two runners' lines cross.</p><p>Does crossing lines mean a crash? Not necessarily. The intersection tells you when the objects have the same position. But if the runners are in different lanes, they won't collide, even though they're the same distance from the start.</p>",
+   "testIt": {
+    "name": "Two runners",
+    "how": "Set each runner's start and pace, then press Run and find where the lines cross."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "What Does the Slope Tell You?",
+   "text": "<h3>What Does the Slope Tell You?</h3><p class=\"p101-def\">Lines on a position-time graph can have different slopes.</p><p>What else can a position-time graph tell you? Notice that the two lines in Example Problem 2 have different slopes. What does the slope mean?</p><p>Hold that thought! In the next lesson, you'll use the slope of a line on a position-time graph to find an object's velocity. Later, when you study accelerated motion, you'll draw other motion graphs and learn to interpret the areas under the lines. You'll keep sharpening your graph skills all through your physics studies.</p>"
+  },
+  "10": {
+   "layers": [],
+   "title": "Example Problem 2, Interpreting a Graph",
+   "text": "<h3>Example Problem 2, Interpreting a Graph</h3><p class=\"p101-def\">The intersection of two lines gives the time and position at which one object passes another.</p><p>The graph shows two runners moving along a straight path. Their lines are labeled A and B. When and where does runner B pass runner A?</p><p>Step one: analyze the problem by restating the questions. Question one: at what time are runner A and runner B at the same position? Question two: what is the position of both runners at that time?</p><p>Step two: solve for the unknown. For question one, find where line A crosses line B. The lines intersect at 45 seconds. For question two, read the position where the lines cross. Both runners are about 190 meters from the origin.</p><p>So runner B passes runner A about 190 meters beyond the origin, 45 seconds after A has passed the origin.</p>",
+   "testIt": {
+    "name": "When does B pass A?",
+    "how": "Drag the point along line B until it meets line A."
+   }
+  }
+ }
+}
