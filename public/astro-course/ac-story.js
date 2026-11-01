@@ -323,8 +323,19 @@ async function mountPageScene(pn, art) {
   if (tok !== pageSceneTok || arth !== art) return;
   const layer = document.createElement("div"); layer.className = "p-scene"; stage.appendChild(layer);
   const say = (msg, ok) => { const f = $("tools").querySelector(".test-it .feedback"); if (f) { f.textContent = msg; if (ok == null) delete f.dataset.ok; else f.dataset.ok = ok ? 1 : 0; } };
-  pageScene = mod.default({ stage, layer, art, ui: moduleUi(), say, reduce: reduceMotion() }) || null;
+  const ctx = { stage, layer, art, ui: moduleUi(), say, reduce: reduceMotion() };
+  // Leo's drag spec for this page (v2/drag.json, built by tools/physics101/build-drag.py): the shared engine
+  // mounts it after the scene, so the scene can listen (ctx.drag.on) and keep its own sliders and buttons.
+  const dspec = dragSpecs[pn];
+  let startOver = false;
+  if (dspec) {
+    try { const dm = await import(`../${C.pageScenes}drag.js`); if (tok !== pageSceneTok) return; ctx.drag = dm.createDrag(ctx, dspec); } catch (e) { console.warn("drag engine", pn, e); }
+    if (ctx.drag) { const b = ctx.ui.button; ctx.ui.button = (label, fn) => { if (/^start over$/i.test(label)) { startOver = true; return b(label, () => { ctx.drag.reset(); fn(); }); } return b(label, fn); }; }
+  }
+  try { pageScene = mod.default(ctx) || null; } catch (e) { console.warn("page scene", pn, e); pageScene = null; }
+  if (ctx.drag) { ctx.drag.mount(); if (!startOver && ctx.drag.count) ctx.ui.button("Start over", () => ctx.drag.reset()); }
 }
+let dragSpecs = {};
 function dropPageScene() { pageSceneTok++; if (pageScene && pageScene.destroy) pageScene.destroy(); pageScene = null; for (const l of stage.querySelectorAll(".p-scene")) l.remove(); }
 const webglReady = () => webglOk();
 // Short slide words become billboards floating in front of the art; long text stays in the panel only.
@@ -480,6 +491,7 @@ function comingSoon() {
   try { const r2 = await fetch(base + "v2/story.json"); if (r2.ok) v2 = await r2.json(); } catch (e) { v2 = null; }
   // layered art shipped as data (Physics 101): decks/<slug>/v2/art.json
   if (C.pageScenes) try { const ra = await fetch(base + "v2/art.json"); if (ra.ok) registerArt(meta.slug, await ra.json()); } catch (e) { /* art stays off */ }
+  if (C.pageScenes) try { const rd = await fetch(base + "v2/drag.json"); if (rd.ok) dragSpecs = await rd.json(); } catch (e) { dragSpecs = {}; }
   try { const r3 = C.scenes ? await fetch(C.scenes) : null; if (r3 && r3.ok) sceneMods = new Set((await r3.json())[meta.slug] || []); } catch (e) { sceneMods = new Set(); }
   if (v2) {
     // v2 sandboxes come from the deck's spec (story.json); Try it link-outs stay from EXTRAS.

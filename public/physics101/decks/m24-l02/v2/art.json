@@ -128,6 +128,63 @@
     1345,
     845
    ]
+  },
+  {
+   "id": "cut-obj-alpha",
+   "src": "p03-cut-obj-alpha.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1425,
+    593,
+    1524,
+    670
+   ],
+   "hbox": [
+    1421,
+    589,
+    1528,
+    674
+   ],
+   "hint": "p03-cut-obj-alpha-hint.webp"
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p03-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1252,
+    586,
+    1396,
+    674
+   ],
+   "hbox": [
+    1248,
+    582,
+    1400,
+    678
+   ],
+   "hint": "p03-cut-obj-flashlight-hint.webp"
+  },
+  {
+   "id": "cut-obj-detector",
+   "src": "p03-cut-obj-detector.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1065,
+    584,
+    1178,
+    672
+   ],
+   "hbox": [
+    1061,
+    580,
+    1182,
+    676
+   ],
+   "hint": "p03-cut-obj-detector-hint.webp"
   }
  ],
  "p04": [
@@ -146,8 +203,8 @@
    "id": "mid",
    "src": "p04-mid.webp",
    "box": [
-    215,
-    296,
+    216,
+    295,
     819,
     664
    ],
@@ -159,9 +216,9 @@
    "id": "fg",
    "src": "p04-fg.webp",
    "box": [
-    258,
-    148,
-    1553,
+    259,
+    147,
+    1554,
     628
    ],
    "f": 0.45,
@@ -172,19 +229,76 @@
    "src": "p04-cut-try.webp",
    "box": [
     1148,
-    798,
+    698,
     1412,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p04-cut-try-hint.webp",
    "hbox": [
     1144,
-    794,
+    694,
     1416,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-alpha",
+   "src": "p04-cut-obj-alpha.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1425,
+    573,
+    1524,
+    650
+   ],
+   "hbox": [
+    1421,
+    569,
+    1528,
+    654
+   ],
+   "hint": "p04-cut-obj-alpha-hint.webp"
+  },
+  {
+   "id": "cut-obj-particle",
+   "src": "p04-cut-obj-particle.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1287,
+    578,
+    1344,
+    646
+   ],
+   "hbox": [
+    1283,
+    574,
+    1348,
+    650
+   ],
+   "hint": "p04-cut-obj-particle-hint.webp"
+  },
+  {
+   "id": "cut-obj-nucleus",
+   "src": "p04-cut-obj-nucleus.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1147,
+    558,
+    1202,
+    650
+   ],
+   "hbox": [
+    1143,
+    554,
+    1205,
+    654
+   ],
+   "hint": "p04-cut-obj-nucleus-hint.webp"
   }
  ],
  "p05": [
@@ -203,7 +317,7 @@
    "id": "mid",
    "src": "p05-mid.webp",
    "box": [
-    225,
+    224,
     264,
     875,
     663
@@ -216,9 +330,9 @@
    "id": "fg",
    "src": "p05-fg.webp",
    "box": [
-    268,
+    267,
     148,
-    1545,
+    1544,
     627
    ],
    "f": 0.45,
@@ -228,20 +342,77 @@
    "id": "cut-try",
    "src": "p05-cut-try.webp",
    "box": [
-    1136,
-    799,
+    1137,
+    698,
     1423,
-    841
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p05-cut-try-hint.webp",
    "hbox": [
-    1132,
-    795,
+    1133,
+    694,
     1427,
-    845
+    746
    ]
+  },
+  {
+   "id": "cut-obj-neutron",
+   "src": "p05-cut-obj-neutron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1448,
+    570,
+    1504,
+    646
+   ],
+   "hbox": [
+    1444,
+    566,
+    1507,
+    650
+   ],
+   "hint": "p05-cut-obj-neutron-hint.webp"
+  },
+  {
+   "id": "cut-obj-proton",
+   "src": "p05-cut-obj-proton.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1306,
+    566,
+    1364,
+    656
+   ],
+   "hbox": [
+    1302,
+    562,
+    1368,
+    660
+   ],
+   "hint": "p05-cut-obj-proton-hint.webp"
+  },
+  {
+   "id": "cut-obj-nucleus",
+   "src": "p05-cut-obj-nucleus.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1167,
+    558,
+    1222,
+    650
+   ],
+   "hbox": [
+    1163,
+    554,
+    1225,
+    654
+   ],
+   "hint": "p05-cut-obj-nucleus-hint.webp"
   }
  ],
  "p06": [
@@ -286,19 +457,57 @@
    "src": "p06-cut-try.webp",
    "box": [
     1124,
-    798,
+    699,
     1436,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p06-cut-try-hint.webp",
    "hbox": [
     1120,
-    794,
+    695,
     1440,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-nucleus",
+   "src": "p06-cut-obj-nucleus.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1446,
+    558,
+    1502,
+    650
+   ],
+   "hbox": [
+    1442,
+    554,
+    1506,
+    654
+   ],
+   "hint": "p06-cut-obj-nucleus-hint.webp"
+  },
+  {
+   "id": "cut-obj-alpha",
+   "src": "p06-cut-obj-alpha.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1285,
+    572,
+    1384,
+    650
+   ],
+   "hbox": [
+    1281,
+    568,
+    1388,
+    654
+   ],
+   "hint": "p06-cut-obj-alpha-hint.webp"
   }
  ],
  "p07": [
@@ -341,20 +550,39 @@
    "id": "cut-try",
    "src": "p07-cut-try.webp",
    "box": [
-    1152,
-    799,
+    1153,
+    698,
     1408,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p07-cut-try-hint.webp",
    "hbox": [
-    1148,
-    795,
+    1149,
+    694,
     1412,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-nucleus",
+   "src": "p07-cut-obj-nucleus.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1446,
+    559,
+    1502,
+    650
+   ],
+   "hbox": [
+    1442,
+    555,
+    1506,
+    654
+   ],
+   "hint": "p07-cut-obj-nucleus-hint.webp"
   }
  ],
  "p08": [
@@ -388,7 +616,7 @@
    "box": [
     329,
     148,
-    1557,
+    1556,
     513
    ],
    "f": 0.45,
@@ -399,19 +627,38 @@
    "src": "p08-cut-try.webp",
    "box": [
     1143,
-    798,
-    1418,
-    842
+    698,
+    1417,
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p08-cut-try-hint.webp",
    "hbox": [
     1139,
-    794,
-    1422,
-    846
+    694,
+    1421,
+    745
    ]
+  },
+  {
+   "id": "cut-obj-proton",
+   "src": "p08-cut-obj-proton.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1446,
+    566,
+    1503,
+    656
+   ],
+   "hbox": [
+    1442,
+    562,
+    1507,
+    660
+   ],
+   "hint": "p08-cut-obj-proton-hint.webp"
   }
  ],
  "p09": [
@@ -455,7 +702,7 @@
    "src": "p09-cut-try.webp",
    "box": [
     1212,
-    799,
+    798,
     1348,
     842
    ],
@@ -464,10 +711,48 @@
    "hint": "p09-cut-try-hint.webp",
    "hbox": [
     1208,
-    795,
+    794,
     1352,
     846
    ]
+  },
+  {
+   "id": "cut-obj-nucleus",
+   "src": "p09-cut-obj-nucleus.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1446,
+    578,
+    1502,
+    670
+   ],
+   "hbox": [
+    1442,
+    574,
+    1505,
+    674
+   ],
+   "hint": "p09-cut-obj-nucleus-hint.webp"
+  },
+  {
+   "id": "cut-obj-particle",
+   "src": "p09-cut-obj-particle.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1307,
+    598,
+    1364,
+    666
+   ],
+   "hbox": [
+    1303,
+    594,
+    1368,
+    670
+   ],
+   "hint": "p09-cut-obj-particle-hint.webp"
   }
  ],
  "p10": [
@@ -511,19 +796,76 @@
    "src": "p10-cut-try.webp",
    "box": [
     1102,
-    799,
-    1459,
-    842
+    698,
+    1458,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p10-cut-try-hint.webp",
    "hbox": [
     1098,
-    795,
-    1463,
-    846
+    694,
+    1462,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-alpha",
+   "src": "p10-cut-obj-alpha.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1425,
+    573,
+    1524,
+    650
+   ],
+   "hbox": [
+    1421,
+    569,
+    1528,
+    654
+   ],
+   "hint": "p10-cut-obj-alpha-hint.webp"
+  },
+  {
+   "id": "cut-obj-particle",
+   "src": "p10-cut-obj-particle.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1287,
+    579,
+    1344,
+    646
+   ],
+   "hbox": [
+    1283,
+    575,
+    1348,
+    650
+   ],
+   "hint": "p10-cut-obj-particle-hint.webp"
+  },
+  {
+   "id": "cut-obj-proton",
+   "src": "p10-cut-obj-proton.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1146,
+    566,
+    1204,
+    656
+   ],
+   "hbox": [
+    1142,
+    562,
+    1208,
+    660
+   ],
+   "hint": "p10-cut-obj-proton-hint.webp"
   }
  ],
  "p11": [
@@ -566,20 +908,39 @@
    "id": "cut-try",
    "src": "p11-cut-try.webp",
    "box": [
-    1130,
-    798,
-    1430,
-    841
+    1131,
+    698,
+    1429,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p11-cut-try-hint.webp",
    "hbox": [
-    1126,
-    794,
-    1434,
-    845
+    1127,
+    694,
+    1433,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-nucleus",
+   "src": "p11-cut-obj-nucleus.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1447,
+    558,
+    1502,
+    650
+   ],
+   "hbox": [
+    1443,
+    554,
+    1505,
+    654
+   ],
+   "hint": "p11-cut-obj-nucleus-hint.webp"
   }
  ],
  "p12": [
@@ -623,19 +984,38 @@
    "src": "p12-cut-try.webp",
    "box": [
     1130,
-    798,
+    698,
     1430,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p12-cut-try-hint.webp",
    "hbox": [
     1126,
-    794,
+    694,
     1434,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-nucleus",
+   "src": "p12-cut-obj-nucleus.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1447,
+    559,
+    1502,
+    650
+   ],
+   "hbox": [
+    1443,
+    555,
+    1506,
+    654
+   ],
+   "hint": "p12-cut-obj-nucleus-hint.webp"
   }
  ],
  "p13": [
@@ -669,7 +1049,7 @@
    "box": [
     181,
     148,
-    1554,
+    1555,
     741
    ],
    "f": 0.45,
@@ -680,19 +1060,57 @@
    "src": "p13-cut-try.webp",
    "box": [
     1120,
-    799,
-    1440,
-    842
+    699,
+    1439,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p13-cut-try-hint.webp",
    "hbox": [
     1116,
-    795,
-    1444,
-    846
+    695,
+    1443,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-detector",
+   "src": "p13-cut-obj-detector.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1405,
+    565,
+    1518,
+    652
+   ],
+   "hbox": [
+    1401,
+    561,
+    1522,
+    656
+   ],
+   "hint": "p13-cut-obj-detector-hint.webp"
+  },
+  {
+   "id": "cut-obj-nucleus",
+   "src": "p13-cut-obj-nucleus.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1266,
+    558,
+    1322,
+    650
+   ],
+   "hbox": [
+    1262,
+    554,
+    1326,
+    654
+   ],
+   "hint": "p13-cut-obj-nucleus-hint.webp"
   }
  ],
  "p14": [
@@ -725,7 +1143,7 @@
    "box": [
     291,
     103,
-    1543,
+    1544,
     807
    ],
    "f": 0.45,
@@ -735,20 +1153,58 @@
    "id": "cut-try",
    "src": "p14-cut-try.webp",
    "box": [
-    1112,
-    799,
+    1111,
+    698,
     1448,
-    841
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p14-cut-try-hint.webp",
    "hbox": [
-    1108,
-    795,
+    1107,
+    694,
     1452,
-    845
+    746
    ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p14-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    573,
+    1506,
+    646
+   ],
+   "hbox": [
+    1441,
+    569,
+    1509,
+    650
+   ],
+   "hint": "p14-cut-obj-electron-hint.webp"
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p14-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1272,
+    566,
+    1416,
+    654
+   ],
+   "hbox": [
+    1268,
+    562,
+    1420,
+    658
+   ],
+   "hint": "p14-cut-obj-flashlight-hint.webp"
   }
  ],
  "p15": [
@@ -779,7 +1235,7 @@
    "id": "fg",
    "src": "p15-fg.webp",
    "box": [
-    154,
+    155,
     148,
     785,
     366
@@ -792,7 +1248,7 @@
    "src": "p15-cut-try.webp",
    "box": [
     305,
-    799,
+    798,
     635,
     842
    ],
@@ -801,10 +1257,48 @@
    "hint": "p15-cut-try-hint.webp",
    "hbox": [
     301,
-    795,
+    794,
     639,
     846
    ]
+  },
+  {
+   "id": "cut-obj-particle",
+   "src": "p15-cut-obj-particle.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    687,
+    698,
+    744,
+    766
+   ],
+   "hbox": [
+    683,
+    694,
+    748,
+    770
+   ],
+   "hint": "p15-cut-obj-particle-hint.webp"
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p15-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    172,
+    687,
+    316,
+    774
+   ],
+   "hbox": [
+    168,
+    683,
+    320,
+    778
+   ],
+   "hint": "p15-cut-obj-flashlight-hint.webp"
   }
  ],
  "p16": [
@@ -885,19 +1379,57 @@
    "src": "p17-cut-try.webp",
    "box": [
     1124,
-    798,
-    1437,
-    842
+    698,
+    1436,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p17-cut-try-hint.webp",
    "hbox": [
     1120,
-    794,
-    1441,
-    846
+    694,
+    1440,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-neutron",
+   "src": "p17-cut-obj-neutron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1448,
+    570,
+    1504,
+    646
+   ],
+   "hbox": [
+    1444,
+    566,
+    1507,
+    650
+   ],
+   "hint": "p17-cut-obj-neutron-hint.webp"
+  },
+  {
+   "id": "cut-obj-nucleus",
+   "src": "p17-cut-obj-nucleus.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1306,
+    559,
+    1362,
+    650
+   ],
+   "hbox": [
+    1302,
+    555,
+    1366,
+    654
+   ],
+   "hint": "p17-cut-obj-nucleus-hint.webp"
   }
  ],
  "p18": [
@@ -930,7 +1462,7 @@
    "box": [
     165,
     110,
-    1549,
+    1548,
     625
    ],
    "f": 0.45,
@@ -940,20 +1472,58 @@
    "id": "cut-try",
    "src": "p18-cut-try.webp",
    "box": [
-    1162,
-    799,
+    1163,
+    699,
     1398,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p18-cut-try-hint.webp",
    "hbox": [
-    1158,
-    795,
+    1159,
+    695,
     1402,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-neutron",
+   "src": "p18-cut-obj-neutron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1448,
+    591,
+    1504,
+    666
+   ],
+   "hbox": [
+    1444,
+    587,
+    1507,
+    670
+   ],
+   "hint": "p18-cut-obj-neutron-hint.webp"
+  },
+  {
+   "id": "cut-obj-rod",
+   "src": "p18-cut-obj-rod.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1262,
+    580,
+    1408,
+    644
+   ],
+   "hbox": [
+    1258,
+    576,
+    1412,
+    648
+   ],
+   "hint": "p18-cut-obj-rod-hint.webp"
   }
  ],
  "p19": [
@@ -987,7 +1557,7 @@
    "box": [
     197,
     148,
-    1552,
+    1551,
     708
    ],
    "f": 0.45,
@@ -997,20 +1567,39 @@
    "id": "cut-try",
    "src": "p19-cut-try.webp",
    "box": [
-    1136,
-    798,
+    1135,
+    699,
     1424,
-    841
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p19-cut-try-hint.webp",
    "hbox": [
-    1132,
-    794,
+    1131,
+    695,
     1428,
-    845
+    746
    ]
+  },
+  {
+   "id": "cut-obj-neutron",
+   "src": "p19-cut-obj-neutron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1448,
+    571,
+    1504,
+    646
+   ],
+   "hbox": [
+    1444,
+    567,
+    1507,
+    650
+   ],
+   "hint": "p19-cut-obj-neutron-hint.webp"
   }
  ],
  "p20": [
@@ -1043,7 +1632,7 @@
    "box": [
     312,
     103,
-    1554,
+    1553,
     833
    ],
    "f": 0.45,
@@ -1067,6 +1656,25 @@
     1324,
     845
    ]
+  },
+  {
+   "id": "cut-obj-rod",
+   "src": "p20-cut-obj-rod.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1402,
+    600,
+    1547,
+    664
+   ],
+   "hbox": [
+    1398,
+    596,
+    1551,
+    668
+   ],
+   "hint": "p20-cut-obj-rod-hint.webp"
   }
  ],
  "p21": [
@@ -1099,7 +1707,7 @@
    "box": [
     165,
     110,
-    1535,
+    1536,
     539
    ],
    "f": 0.45,
@@ -1109,20 +1717,39 @@
    "id": "cut-try",
    "src": "p21-cut-try.webp",
    "box": [
-    1123,
-    799,
-    1436,
-    842
+    1124,
+    698,
+    1437,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p21-cut-try-hint.webp",
    "hbox": [
-    1119,
-    795,
-    1440,
-    846
+    1120,
+    694,
+    1441,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-thermo",
+   "src": "p21-cut-obj-thermo.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1427,
+    536,
+    1524,
+    674
+   ],
+   "hbox": [
+    1423,
+    532,
+    1528,
+    678
+   ],
+   "hint": "p21-cut-obj-thermo-hint.webp"
   }
  ],
  "p22": [
@@ -1155,7 +1782,7 @@
    "box": [
     348,
     110,
-    1555,
+    1554,
     833
    ],
    "f": 0.45,
@@ -1166,19 +1793,57 @@
    "src": "p22-cut-try.webp",
    "box": [
     1143,
-    798,
-    1416,
-    842
+    699,
+    1417,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p22-cut-try-hint.webp",
    "hbox": [
     1139,
-    794,
-    1420,
-    846
+    695,
+    1421,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-proton",
+   "src": "p22-cut-obj-proton.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1446,
+    566,
+    1504,
+    656
+   ],
+   "hbox": [
+    1442,
+    562,
+    1508,
+    660
+   ],
+   "hint": "p22-cut-obj-proton-hint.webp"
+  },
+  {
+   "id": "cut-obj-charge",
+   "src": "p22-cut-obj-charge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1308,
+    568,
+    1362,
+    654
+   ],
+   "hbox": [
+    1304,
+    564,
+    1366,
+    658
+   ],
+   "hint": "p22-cut-obj-charge-hint.webp"
   }
  ],
  "p23": [
@@ -1222,7 +1887,7 @@
    "src": "p23-cut-try.webp",
    "box": [
     354,
-    799,
+    798,
     586,
     842
    ],
@@ -1231,10 +1896,48 @@
    "hint": "p23-cut-try-hint.webp",
    "hbox": [
     350,
-    795,
+    794,
     590,
     846
    ]
+  },
+  {
+   "id": "cut-obj-thermo",
+   "src": "p23-cut-obj-thermo.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    687,
+    716,
+    784,
+    854
+   ],
+   "hbox": [
+    683,
+    712,
+    788,
+    858
+   ],
+   "hint": "p23-cut-obj-thermo-hint.webp"
+  },
+  {
+   "id": "cut-obj-proton",
+   "src": "p23-cut-obj-proton.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    226,
+    746,
+    284,
+    836
+   ],
+   "hbox": [
+    222,
+    742,
+    288,
+    840
+   ],
+   "hint": "p23-cut-obj-proton-hint.webp"
   }
  ]
 }

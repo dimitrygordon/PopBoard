@@ -53,6 +53,63 @@
     601,
     846
    ]
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p01-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    792,
+    747,
+    936,
+    834
+   ],
+   "hbox": [
+    788,
+    743,
+    940,
+    838
+   ],
+   "hint": "p01-cut-obj-flashlight-hint.webp"
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p01-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    225,
+    752,
+    286,
+    826
+   ],
+   "hbox": [
+    221,
+    748,
+    289,
+    830
+   ],
+   "hint": "p01-cut-obj-electron-hint.webp"
+  },
+  {
+   "id": "cut-obj-slit",
+   "src": "p01-cut-obj-slit.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    664,
+    650,
+    689,
+    808
+   ],
+   "hbox": [
+    660,
+    646,
+    692,
+    812
+   ],
+   "hint": "p01-cut-obj-slit-hint.webp"
   }
  ],
  "p02": [
@@ -83,7 +140,7 @@
    "id": "fg",
    "src": "p02-fg.webp",
    "box": [
-    134,
+    135,
     103,
     1351,
     224
@@ -108,9 +165,9 @@
    "id": "mid",
    "src": "p03-mid.webp",
    "box": [
-    193,
-    309,
-    986,
+    192,
+    310,
+    985,
     748
    ],
    "f": 0.45,
@@ -121,9 +178,9 @@
    "id": "fg",
    "src": "p03-fg.webp",
    "box": [
-    236,
+    235,
     148,
-    1557,
+    1556,
     712
    ],
    "f": 0.45,
@@ -134,19 +191,38 @@
    "src": "p03-cut-try.webp",
    "box": [
     1149,
-    798,
+    698,
     1411,
-    841
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p03-cut-try-hint.webp",
    "hbox": [
     1145,
-    794,
+    694,
     1415,
-    845
+    746
    ]
+  },
+  {
+   "id": "cut-obj-particle",
+   "src": "p03-cut-obj-particle.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1087,
+    598,
+    1144,
+    666
+   ],
+   "hbox": [
+    1083,
+    594,
+    1148,
+    670
+   ],
+   "hint": "p03-cut-obj-particle-hint.webp"
   }
  ],
  "p04": [
@@ -191,19 +267,38 @@
    "src": "p04-cut-try.webp",
    "box": [
     1155,
-    799,
-    1405,
-    842
+    699,
+    1404,
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p04-cut-try-hint.webp",
    "hbox": [
     1151,
-    795,
-    1409,
-    846
+    695,
+    1408,
+    745
    ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p04-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    593,
+    1506,
+    666
+   ],
+   "hbox": [
+    1441,
+    589,
+    1509,
+    670
+   ],
+   "hint": "p04-cut-obj-electron-hint.webp"
   }
  ],
  "p05": [
@@ -236,7 +331,7 @@
    "box": [
     279,
     111,
-    1549,
+    1550,
     722
    ],
    "f": 0.45,
@@ -246,20 +341,39 @@
    "id": "cut-try",
    "src": "p05-cut-try.webp",
    "box": [
-    1132,
-    798,
+    1133,
+    698,
     1428,
-    841
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p05-cut-try-hint.webp",
    "hbox": [
-    1128,
-    794,
+    1129,
+    694,
     1432,
-    845
+    745
    ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p05-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    573,
+    1506,
+    646
+   ],
+   "hbox": [
+    1441,
+    569,
+    1509,
+    650
+   ],
+   "hint": "p05-cut-obj-electron-hint.webp"
   }
  ],
  "p06": [
@@ -278,7 +392,7 @@
    "id": "mid",
    "src": "p06-mid.webp",
    "box": [
-    154,
+    156,
     260,
     942,
     691
@@ -291,8 +405,8 @@
    "id": "fg",
    "src": "p06-fg.webp",
    "box": [
-    197,
-    148,
+    199,
+    147,
     1541,
     655
    ],
@@ -304,19 +418,38 @@
    "src": "p06-cut-try.webp",
    "box": [
     1164,
-    798,
+    698,
     1396,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p06-cut-try-hint.webp",
    "hbox": [
     1160,
-    794,
+    694,
     1400,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-sphere",
+   "src": "p06-cut-obj-sphere.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1428,
+    578,
+    1523,
+    682
+   ],
+   "hbox": [
+    1424,
+    574,
+    1527,
+    686
+   ],
+   "hint": "p06-cut-obj-sphere-hint.webp"
   }
  ],
  "p07": [
@@ -349,7 +482,7 @@
    "box": [
     167,
     148,
-    1553,
+    1554,
     750
    ],
    "f": 0.45,
@@ -359,20 +492,58 @@
    "id": "cut-try",
    "src": "p07-cut-try.webp",
    "box": [
-    1122,
-    798,
+    1123,
+    698,
     1437,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p07-cut-try-hint.webp",
    "hbox": [
-    1118,
-    794,
+    1119,
+    694,
     1441,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p07-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    568,
+    1556,
+    654
+   ],
+   "hbox": [
+    1408,
+    564,
+    1560,
+    658
+   ],
+   "hint": "p07-cut-obj-flashlight-hint.webp"
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p07-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1265,
+    573,
+    1326,
+    646
+   ],
+   "hbox": [
+    1261,
+    569,
+    1329,
+    650
+   ],
+   "hint": "p07-cut-obj-electron-hint.webp"
   }
  ],
  "p08": [

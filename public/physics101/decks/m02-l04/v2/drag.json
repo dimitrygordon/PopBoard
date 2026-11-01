@@ -1,0 +1,178 @@
+{
+ "p01": {
+  "items": [
+   {
+    "id": "red",
+    "label": "red jogger in the far lane"
+   },
+   {
+    "id": "blue",
+    "label": "blue jogger in the near lane"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p03": {
+  "items": [
+   {
+    "id": "pick1",
+    "label": "point picker"
+   },
+   {
+    "id": "pick2",
+    "label": "point picker"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p05": {
+  "items": [
+   {
+    "id": "object",
+    "label": "object on the number line"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p07": {
+  "items": [
+   {
+    "id": "path1",
+    "label": "hidden path 1 between start and end"
+   },
+   {
+    "id": "path2",
+    "label": "hidden path 2 between start and end"
+   },
+   {
+    "id": "path3",
+    "label": "hidden path 3 between start and end"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p08": {
+  "items": [
+   {
+    "id": "slowcar",
+    "label": "slower car in the far lane moving left"
+   },
+   {
+    "id": "fastcar",
+    "label": "faster car in the near lane moving right"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p09": {
+  "items": [
+   {
+    "id": "stopwatch",
+    "label": "code-drawn pencil stopwatch draggable"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p10": {
+  "items": [
+   {
+    "id": "pick1",
+    "label": "point picker on the skateboarder graph"
+   },
+   {
+    "id": "pick2",
+    "label": "point picker on the skateboarder graph"
+   },
+   {
+    "id": "skater",
+    "label": "girl skateboarder"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p12": {
+  "items": [
+   {
+    "id": "vbar",
+    "label": "slider knob for v̄"
+   },
+   {
+    "id": "xi",
+    "label": "slider knob for x_i"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p13": {
+  "items": [
+   {
+    "id": "moto",
+    "label": "motorcyclist"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ }
+}

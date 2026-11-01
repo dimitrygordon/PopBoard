@@ -53,6 +53,25 @@
     605,
     846
    ]
+  },
+  {
+   "id": "cut-obj-droplet",
+   "src": "p01-cut-obj-droplet.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    829,
+    739,
+    882,
+    838
+   ],
+   "hbox": [
+    825,
+    735,
+    885,
+    842
+   ],
+   "hint": "p01-cut-obj-droplet-hint.webp"
   }
  ],
  "p02": [
@@ -84,8 +103,8 @@
    "src": "p02-fg.webp",
    "box": [
     133,
-    103,
-    1350,
+    102,
+    1351,
     224
    ],
    "f": 0.45,
@@ -122,7 +141,7 @@
    "box": [
     250,
     110,
-    1539,
+    1538,
     486
    ],
    "f": 0.45,
@@ -132,20 +151,58 @@
    "id": "cut-try",
    "src": "p03-cut-try.webp",
    "box": [
-    1120,
-    799,
-    1440,
-    842
+    1119,
+    698,
+    1441,
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p03-cut-try-hint.webp",
    "hbox": [
-    1116,
-    795,
-    1444,
-    846
+    1115,
+    694,
+    1445,
+    745
    ]
+  },
+  {
+   "id": "cut-obj-resistor",
+   "src": "p03-cut-obj-resistor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1406,
+    579,
+    1546,
+    636
+   ],
+   "hbox": [
+    1402,
+    575,
+    1550,
+    640
+   ],
+   "hint": "p03-cut-obj-resistor-hint.webp"
+  },
+  {
+   "id": "cut-obj-bulb",
+   "src": "p03-cut-obj-bulb.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1266,
+    556,
+    1324,
+    654
+   ],
+   "hbox": [
+    1262,
+    552,
+    1328,
+    658
+   ],
+   "hint": "p03-cut-obj-bulb-hint.webp"
   }
  ],
  "p04": [
@@ -178,7 +235,7 @@
    "box": [
     290,
     110,
-    1524,
+    1525,
     807
    ],
    "f": 0.45,
@@ -188,20 +245,39 @@
    "id": "cut-try",
    "src": "p04-cut-try.webp",
    "box": [
-    1108,
-    798,
+    1107,
+    698,
     1453,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p04-cut-try-hint.webp",
    "hbox": [
-    1104,
-    794,
+    1103,
+    694,
     1457,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-ammeter",
+   "src": "p04-cut-obj-ammeter.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1424,
+    563,
+    1527,
+    660
+   ],
+   "hbox": [
+    1420,
+    559,
+    1531,
+    664
+   ],
+   "hint": "p04-cut-obj-ammeter-hint.webp"
   }
  ],
  "p05": [
@@ -246,19 +322,57 @@
    "src": "p05-cut-try.webp",
    "box": [
     1101,
-    799,
-    1458,
-    842
+    699,
+    1459,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p05-cut-try-hint.webp",
    "hbox": [
     1097,
-    795,
-    1462,
-    846
+    695,
+    1463,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-voltmeter",
+   "src": "p05-cut-obj-voltmeter.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1424,
+    562,
+    1527,
+    660
+   ],
+   "hbox": [
+    1420,
+    558,
+    1531,
+    664
+   ],
+   "hint": "p05-cut-obj-voltmeter-hint.webp"
+  },
+  {
+   "id": "cut-obj-bulb",
+   "src": "p05-cut-obj-bulb.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1286,
+    556,
+    1343,
+    654
+   ],
+   "hbox": [
+    1282,
+    552,
+    1347,
+    658
+   ],
+   "hint": "p05-cut-obj-bulb-hint.webp"
   }
  ],
  "p06": [
@@ -290,9 +404,9 @@
    "id": "fg",
    "src": "p06-fg.webp",
    "box": [
-    179,
+    178,
     148,
-    1552,
+    1551,
     707
    ],
    "f": 0.45,
@@ -303,19 +417,38 @@
    "src": "p06-cut-try.webp",
    "box": [
     1127,
-    799,
+    699,
     1432,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p06-cut-try-hint.webp",
    "hbox": [
     1123,
-    795,
+    695,
     1436,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-resistor",
+   "src": "p06-cut-obj-resistor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1405,
+    578,
+    1546,
+    636
+   ],
+   "hbox": [
+    1401,
+    574,
+    1550,
+    640
+   ],
+   "hint": "p06-cut-obj-resistor-hint.webp"
   }
  ],
  "p07": [
@@ -348,7 +481,7 @@
    "box": [
     250,
     111,
-    1515,
+    1514,
     725
    ],
    "f": 0.45,
@@ -359,7 +492,7 @@
    "src": "p07-cut-try.webp",
    "box": [
     1204,
-    799,
+    798,
     1356,
     841
    ],
@@ -368,10 +501,48 @@
    "hint": "p07-cut-try-hint.webp",
    "hbox": [
     1200,
-    795,
+    794,
     1360,
     845
    ]
+  },
+  {
+   "id": "cut-obj-battery",
+   "src": "p07-cut-obj-battery.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1417,
+    590,
+    1540,
+    670
+   ],
+   "hbox": [
+    1413,
+    586,
+    1544,
+    674
+   ],
+   "hint": "p07-cut-obj-battery-hint.webp"
+  },
+  {
+   "id": "cut-obj-voltmeter",
+   "src": "p07-cut-obj-voltmeter.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1264,
+    582,
+    1367,
+    680
+   ],
+   "hbox": [
+    1260,
+    578,
+    1371,
+    684
+   ],
+   "hint": "p07-cut-obj-voltmeter-hint.webp"
   }
  ],
  "p08": [
@@ -404,7 +575,7 @@
    "box": [
     251,
     111,
-    1549,
+    1550,
     510
    ],
    "f": 0.45,
@@ -415,19 +586,38 @@
    "src": "p08-cut-try.webp",
    "box": [
     1137,
-    799,
+    698,
     1423,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p08-cut-try-hint.webp",
    "hbox": [
     1133,
-    795,
+    694,
     1427,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-bulb",
+   "src": "p08-cut-obj-bulb.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1446,
+    557,
+    1504,
+    654
+   ],
+   "hbox": [
+    1442,
+    553,
+    1508,
+    658
+   ],
+   "hint": "p08-cut-obj-bulb-hint.webp"
   }
  ],
  "p09": [
@@ -471,19 +661,57 @@
    "src": "p09-cut-try.webp",
    "box": [
     1184,
-    798,
+    699,
     1376,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p09-cut-try-hint.webp",
    "hbox": [
     1180,
-    794,
+    695,
     1380,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-resistor",
+   "src": "p09-cut-obj-resistor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1403,
+    599,
+    1546,
+    656
+   ],
+   "hbox": [
+    1399,
+    595,
+    1550,
+    660
+   ],
+   "hint": "p09-cut-obj-resistor-hint.webp"
+  },
+  {
+   "id": "cut-obj-voltmeter",
+   "src": "p09-cut-obj-voltmeter.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1244,
+    562,
+    1347,
+    660
+   ],
+   "hbox": [
+    1240,
+    558,
+    1351,
+    664
+   ],
+   "hint": "p09-cut-obj-voltmeter-hint.webp"
   }
  ],
  "p10": [
@@ -527,19 +755,38 @@
    "src": "p10-cut-try.webp",
    "box": [
     1112,
-    798,
+    699,
     1448,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p10-cut-try-hint.webp",
    "hbox": [
     1108,
-    794,
+    695,
     1452,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-resistor",
+   "src": "p10-cut-obj-resistor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1403,
+    580,
+    1546,
+    636
+   ],
+   "hbox": [
+    1399,
+    576,
+    1550,
+    640
+   ],
+   "hint": "p10-cut-obj-resistor-hint.webp"
   }
  ],
  "p11": [
@@ -583,7 +830,7 @@
    "src": "p11-cut-try.webp",
    "box": [
     1196,
-    799,
+    798,
     1364,
     842
    ],
@@ -592,10 +839,29 @@
    "hint": "p11-cut-try-hint.webp",
    "hbox": [
     1192,
-    795,
+    794,
     1368,
     846
    ]
+  },
+  {
+   "id": "cut-obj-resistor",
+   "src": "p11-cut-obj-resistor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1405,
+    599,
+    1546,
+    656
+   ],
+   "hbox": [
+    1401,
+    595,
+    1550,
+    660
+   ],
+   "hint": "p11-cut-obj-resistor-hint.webp"
   }
  ],
  "p12": [
@@ -639,19 +905,57 @@
    "src": "p12-cut-try.webp",
    "box": [
     1111,
-    798,
+    698,
     1449,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p12-cut-try-hint.webp",
    "hbox": [
     1107,
-    794,
+    694,
     1453,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-charge",
+   "src": "p12-cut-obj-charge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1449,
+    588,
+    1502,
+    674
+   ],
+   "hbox": [
+    1445,
+    584,
+    1506,
+    678
+   ],
+   "hint": "p12-cut-obj-charge-hint.webp"
+  },
+  {
+   "id": "cut-obj-resistor",
+   "src": "p12-cut-obj-resistor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1264,
+    579,
+    1406,
+    636
+   ],
+   "hbox": [
+    1260,
+    575,
+    1410,
+    640
+   ],
+   "hint": "p12-cut-obj-resistor-hint.webp"
   }
  ],
  "p13": [
@@ -684,7 +988,7 @@
    "box": [
     165,
     110,
-    1553,
+    1552,
     493
    ],
    "f": 0.45,
@@ -695,19 +999,57 @@
    "src": "p13-cut-try.webp",
    "box": [
     1139,
-    799,
-    1421,
-    842
+    699,
+    1422,
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p13-cut-try-hint.webp",
    "hbox": [
     1135,
-    795,
-    1425,
-    846
+    695,
+    1426,
+    745
    ]
+  },
+  {
+   "id": "cut-obj-resistor",
+   "src": "p13-cut-obj-resistor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1403,
+    580,
+    1546,
+    636
+   ],
+   "hbox": [
+    1399,
+    576,
+    1550,
+    640
+   ],
+   "hint": "p13-cut-obj-resistor-hint.webp"
+  },
+  {
+   "id": "cut-obj-ammeter",
+   "src": "p13-cut-obj-ammeter.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1244,
+    563,
+    1347,
+    660
+   ],
+   "hbox": [
+    1240,
+    559,
+    1351,
+    664
+   ],
+   "hint": "p13-cut-obj-ammeter-hint.webp"
   }
  ],
  "p14": [
@@ -751,19 +1093,38 @@
    "src": "p14-cut-try.webp",
    "box": [
     1143,
-    799,
+    698,
     1417,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p14-cut-try-hint.webp",
    "hbox": [
     1139,
-    795,
+    694,
     1421,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-resistor",
+   "src": "p14-cut-obj-resistor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1405,
+    579,
+    1546,
+    636
+   ],
+   "hbox": [
+    1401,
+    575,
+    1550,
+    640
+   ],
+   "hint": "p14-cut-obj-resistor-hint.webp"
   }
  ],
  "p15": [
@@ -795,7 +1156,7 @@
    "id": "fg",
    "src": "p15-fg.webp",
    "box": [
-    168,
+    169,
     147,
     1550,
     706
@@ -807,20 +1168,39 @@
    "id": "cut-try",
    "src": "p15-cut-try.webp",
    "box": [
-    1146,
-    798,
+    1145,
+    698,
     1414,
-    841
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p15-cut-try-hint.webp",
    "hbox": [
-    1142,
-    794,
+    1141,
+    694,
     1418,
-    845
+    745
    ]
+  },
+  {
+   "id": "cut-obj-resistor",
+   "src": "p15-cut-obj-resistor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1404,
+    579,
+    1546,
+    636
+   ],
+   "hbox": [
+    1400,
+    575,
+    1550,
+    640
+   ],
+   "hint": "p15-cut-obj-resistor-hint.webp"
   }
  ],
  "p16": [
@@ -863,20 +1243,39 @@
    "id": "cut-try",
    "src": "p16-cut-try.webp",
    "box": [
-    1125,
-    798,
-    1436,
-    842
+    1124,
+    698,
+    1435,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p16-cut-try-hint.webp",
    "hbox": [
-    1121,
-    794,
-    1440,
-    846
+    1120,
+    694,
+    1439,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-resistor",
+   "src": "p16-cut-obj-resistor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1405,
+    579,
+    1546,
+    636
+   ],
+   "hbox": [
+    1401,
+    575,
+    1550,
+    640
+   ],
+   "hint": "p16-cut-obj-resistor-hint.webp"
   }
  ],
  "p17": [
@@ -919,20 +1318,77 @@
    "id": "cut-try",
    "src": "p17-cut-try.webp",
    "box": [
-    1136,
-    798,
-    1425,
-    841
+    1135,
+    698,
+    1424,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p17-cut-try-hint.webp",
    "hbox": [
-    1132,
-    794,
-    1429,
-    845
+    1131,
+    694,
+    1428,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-charge",
+   "src": "p17-cut-obj-charge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1448,
+    568,
+    1502,
+    654
+   ],
+   "hbox": [
+    1444,
+    564,
+    1506,
+    658
+   ],
+   "hint": "p17-cut-obj-charge-hint.webp"
+  },
+  {
+   "id": "cut-obj-battery",
+   "src": "p17-cut-obj-battery.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1277,
+    570,
+    1400,
+    650
+   ],
+   "hbox": [
+    1273,
+    566,
+    1404,
+    654
+   ],
+   "hint": "p17-cut-obj-battery-hint.webp"
+  },
+  {
+   "id": "cut-obj-resistor",
+   "src": "p17-cut-obj-resistor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1104,
+    579,
+    1246,
+    636
+   ],
+   "hbox": [
+    1100,
+    575,
+    1250,
+    640
+   ],
+   "hint": "p17-cut-obj-resistor-hint.webp"
   }
  ],
  "p18": [
@@ -976,19 +1432,57 @@
    "src": "p18-cut-try.webp",
    "box": [
     1114,
-    798,
+    698,
     1446,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p18-cut-try-hint.webp",
    "hbox": [
     1110,
-    794,
+    694,
     1450,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-resistor",
+   "src": "p18-cut-obj-resistor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1403,
+    579,
+    1546,
+    636
+   ],
+   "hbox": [
+    1399,
+    575,
+    1550,
+    640
+   ],
+   "hint": "p18-cut-obj-resistor-hint.webp"
+  },
+  {
+   "id": "cut-obj-voltmeter",
+   "src": "p18-cut-obj-voltmeter.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1244,
+    563,
+    1347,
+    660
+   ],
+   "hbox": [
+    1240,
+    559,
+    1351,
+    664
+   ],
+   "hint": "p18-cut-obj-voltmeter-hint.webp"
   }
  ],
  "p19": [
@@ -1021,7 +1515,7 @@
    "box": [
     251,
     110,
-    1547,
+    1546,
     568
    ],
    "f": 0.45,
@@ -1032,19 +1526,38 @@
    "src": "p19-cut-try.webp",
    "box": [
     1111,
-    798,
+    698,
     1449,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p19-cut-try-hint.webp",
    "hbox": [
     1107,
-    794,
+    694,
     1453,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-resistor",
+   "src": "p19-cut-obj-resistor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1404,
+    579,
+    1546,
+    636
+   ],
+   "hbox": [
+    1400,
+    575,
+    1550,
+    640
+   ],
+   "hint": "p19-cut-obj-resistor-hint.webp"
   }
  ]
 }

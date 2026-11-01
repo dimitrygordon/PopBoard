@@ -1,0 +1,186 @@
+{
+ "p01": {
+  "items": [
+   {
+    "id": "obj-bulb",
+    "label": "bulb"
+   },
+   {
+    "id": "obj-diode",
+    "label": "diode"
+   },
+   {
+    "id": "obj-flashlight",
+    "label": "flashlight"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p02": {
+  "items": [
+   {
+    "id": "obj-resistor",
+    "label": "resistor"
+   },
+   {
+    "id": "obj-electron",
+    "label": "electron"
+   },
+   {
+    "id": "obj-atom",
+    "label": "atom"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p04": {
+  "items": [
+   {
+    "id": "obj-resistor",
+    "label": "resistor"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p05": {
+  "items": [
+   {
+    "id": "obj-thermo",
+    "label": "thermo"
+   },
+   {
+    "id": "obj-glass",
+    "label": "glass"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p06": {
+  "items": [
+   {
+    "id": "obj-wire",
+    "label": "wire"
+   },
+   {
+    "id": "obj-thermo",
+    "label": "thermo"
+   },
+   {
+    "id": "obj-resistor",
+    "label": "resistor"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p07": {
+  "items": [
+   {
+    "id": "obj-thermo",
+    "label": "thermo"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p08": {
+  "items": [
+   {
+    "id": "obj-wire",
+    "label": "wire"
+   },
+   {
+    "id": "obj-thermo",
+    "label": "thermo"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p09": {
+  "items": [
+   {
+    "id": "obj-knob",
+    "label": "knob"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p10": {
+  "items": [
+   {
+    "id": "obj-switch",
+    "label": "switch"
+   },
+   {
+    "id": "obj-bulb",
+    "label": "bulb"
+   },
+   {
+    "id": "obj-resistor",
+    "label": "resistor"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ }
+}

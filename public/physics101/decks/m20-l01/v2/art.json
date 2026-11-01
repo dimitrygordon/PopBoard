@@ -53,6 +53,25 @@
     638,
     846
    ]
+  },
+  {
+   "id": "cut-obj-magnet",
+   "src": "p01-cut-obj-magnet.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    763,
+    754,
+    908,
+    828
+   ],
+   "hbox": [
+    759,
+    750,
+    912,
+    832
+   ],
+   "hint": "p01-cut-obj-magnet-hint.webp"
   }
  ],
  "p02": [
@@ -83,9 +102,9 @@
    "id": "fg",
    "src": "p02-fg.webp",
    "box": [
-    135,
+    133,
     103,
-    1351,
+    1350,
     224
    ],
    "f": 0.45,
@@ -135,7 +154,7 @@
     333,
     798,
     607,
-    842
+    841
    ],
    "f": 0.45,
    "cut": true,
@@ -144,8 +163,27 @@
     329,
     794,
     611,
-    846
+    845
    ]
+  },
+  {
+   "id": "cut-obj-compass",
+   "src": "p03-cut-obj-compass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    200,
+    741,
+    270,
+    840
+   ],
+   "hbox": [
+    196,
+    737,
+    274,
+    844
+   ],
+   "hint": "p03-cut-obj-compass-hint.webp"
   }
  ],
  "p04": [
@@ -179,7 +217,7 @@
    "box": [
     217,
     148,
-    1548,
+    1549,
     786
    ],
    "f": 0.45,
@@ -190,19 +228,38 @@
    "src": "p04-cut-try.webp",
    "box": [
     1118,
-    799,
+    698,
     1442,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p04-cut-try-hint.webp",
    "hbox": [
     1114,
-    795,
+    694,
     1446,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-magnet",
+   "src": "p04-cut-obj-magnet.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1404,
+    574,
+    1547,
+    648
+   ],
+   "hbox": [
+    1400,
+    570,
+    1551,
+    652
+   ],
+   "hint": "p04-cut-obj-magnet-hint.webp"
   }
  ],
  "p05": [
@@ -245,20 +302,58 @@
    "id": "cut-try",
    "src": "p05-cut-try.webp",
    "box": [
-    1136,
-    799,
+    1135,
+    698,
     1424,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p05-cut-try-hint.webp",
    "hbox": [
-    1132,
-    795,
+    1131,
+    694,
     1428,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-magnet",
+   "src": "p05-cut-obj-magnet.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1404,
+    574,
+    1548,
+    648
+   ],
+   "hbox": [
+    1400,
+    570,
+    1552,
+    652
+   ],
+   "hint": "p05-cut-obj-magnet-hint.webp"
+  },
+  {
+   "id": "cut-obj-switch",
+   "src": "p05-cut-obj-switch.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1234,
+    568,
+    1356,
+    632
+   ],
+   "hbox": [
+    1230,
+    564,
+    1360,
+    636
+   ],
+   "hint": "p05-cut-obj-switch-hint.webp"
   }
  ],
  "p06": [
@@ -291,7 +386,7 @@
    "box": [
     158,
     103,
-    1556,
+    1557,
     705
    ],
    "f": 0.45,
@@ -302,19 +397,57 @@
    "src": "p06-cut-try.webp",
    "box": [
     1216,
-    799,
+    798,
     1344,
-    842
+    841
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p06-cut-try-hint.webp",
    "hbox": [
     1212,
-    795,
+    794,
     1348,
-    846
+    845
    ]
+  },
+  {
+   "id": "cut-obj-iron",
+   "src": "p06-cut-obj-iron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    600,
+    1537,
+    658
+   ],
+   "hbox": [
+    1408,
+    596,
+    1541,
+    662
+   ],
+   "hint": "p06-cut-obj-iron-hint.webp"
+  },
+  {
+   "id": "cut-obj-magnet",
+   "src": "p06-cut-obj-magnet.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1224,
+    594,
+    1368,
+    668
+   ],
+   "hbox": [
+    1220,
+    590,
+    1372,
+    672
+   ],
+   "hint": "p06-cut-obj-magnet-hint.webp"
   }
  ],
  "p07": [
@@ -358,19 +491,38 @@
    "src": "p07-cut-try.webp",
    "box": [
     1104,
-    798,
+    698,
     1456,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p07-cut-try-hint.webp",
    "hbox": [
     1100,
-    794,
+    694,
     1460,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-magnet",
+   "src": "p07-cut-obj-magnet.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1404,
+    574,
+    1547,
+    648
+   ],
+   "hbox": [
+    1400,
+    570,
+    1551,
+    652
+   ],
+   "hint": "p07-cut-obj-magnet-hint.webp"
   }
  ],
  "p08": [
@@ -404,7 +556,7 @@
    "box": [
     197,
     148,
-    1548,
+    1549,
     615
    ],
    "f": 0.45,
@@ -415,19 +567,57 @@
    "src": "p08-cut-try.webp",
    "box": [
     1146,
-    798,
-    1414,
-    842
+    698,
+    1415,
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p08-cut-try-hint.webp",
    "hbox": [
     1142,
-    794,
-    1418,
-    846
+    694,
+    1419,
+    745
    ]
+  },
+  {
+   "id": "cut-obj-thermo",
+   "src": "p08-cut-obj-thermo.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1427,
+    536,
+    1524,
+    674
+   ],
+   "hbox": [
+    1423,
+    532,
+    1528,
+    678
+   ],
+   "hint": "p08-cut-obj-thermo-hint.webp"
+  },
+  {
+   "id": "cut-obj-compass",
+   "src": "p08-cut-obj-compass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1280,
+    560,
+    1350,
+    660
+   ],
+   "hbox": [
+    1276,
+    556,
+    1354,
+    664
+   ],
+   "hint": "p08-cut-obj-compass-hint.webp"
   }
  ],
  "p09": [
@@ -484,6 +674,25 @@
     648,
     846
    ]
+  },
+  {
+   "id": "cut-obj-compass",
+   "src": "p09-cut-obj-compass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    641,
+    661,
+    710,
+    760
+   ],
+   "hbox": [
+    637,
+    657,
+    714,
+    764
+   ],
+   "hint": "p09-cut-obj-compass-hint.webp"
   }
  ],
  "p10": [
@@ -515,7 +724,7 @@
    "id": "fg",
    "src": "p10-fg.webp",
    "box": [
-    216,
+    217,
     148,
     1543,
     789
@@ -527,20 +736,77 @@
    "id": "cut-try",
    "src": "p10-cut-try.webp",
    "box": [
-    1099,
-    799,
+    1100,
+    698,
     1461,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p10-cut-try-hint.webp",
    "hbox": [
-    1095,
-    795,
+    1096,
+    694,
     1465,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-compass",
+   "src": "p10-cut-obj-compass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1441,
+    560,
+    1510,
+    660
+   ],
+   "hbox": [
+    1437,
+    556,
+    1514,
+    664
+   ],
+   "hint": "p10-cut-obj-compass-hint.webp"
+  },
+  {
+   "id": "cut-obj-magnet",
+   "src": "p10-cut-obj-magnet.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1264,
+    574,
+    1407,
+    648
+   ],
+   "hbox": [
+    1260,
+    570,
+    1411,
+    652
+   ],
+   "hint": "p10-cut-obj-magnet-hint.webp"
+  },
+  {
+   "id": "cut-obj-switch",
+   "src": "p10-cut-obj-switch.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1094,
+    568,
+    1216,
+    632
+   ],
+   "hbox": [
+    1090,
+    564,
+    1220,
+    636
+   ],
+   "hint": "p10-cut-obj-switch-hint.webp"
   }
  ],
  "p11": [
@@ -584,19 +850,76 @@
    "src": "p11-cut-try.webp",
    "box": [
     1137,
-    798,
+    698,
     1422,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p11-cut-try-hint.webp",
    "hbox": [
     1133,
-    794,
+    694,
     1426,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-iron",
+   "src": "p11-cut-obj-iron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    580,
+    1538,
+    638
+   ],
+   "hbox": [
+    1408,
+    576,
+    1542,
+    642
+   ],
+   "hint": "p11-cut-obj-iron-hint.webp"
+  },
+  {
+   "id": "cut-obj-magnet",
+   "src": "p11-cut-obj-magnet.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1223,
+    574,
+    1367,
+    648
+   ],
+   "hbox": [
+    1219,
+    570,
+    1371,
+    652
+   ],
+   "hint": "p11-cut-obj-magnet-hint.webp"
+  },
+  {
+   "id": "cut-obj-compass",
+   "src": "p11-cut-obj-compass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1080,
+    561,
+    1150,
+    660
+   ],
+   "hbox": [
+    1076,
+    557,
+    1154,
+    664
+   ],
+   "hint": "p11-cut-obj-compass-hint.webp"
   }
  ],
  "p12": [
@@ -629,7 +952,7 @@
    "box": [
     251,
     111,
-    1553,
+    1552,
     632
    ],
    "f": 0.45,
@@ -640,19 +963,38 @@
    "src": "p12-cut-try.webp",
    "box": [
     1107,
-    798,
+    698,
     1452,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p12-cut-try-hint.webp",
    "hbox": [
     1103,
-    794,
+    694,
     1456,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-magnet",
+   "src": "p12-cut-obj-magnet.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1404,
+    574,
+    1548,
+    648
+   ],
+   "hbox": [
+    1400,
+    570,
+    1552,
+    652
+   ],
+   "hint": "p12-cut-obj-magnet-hint.webp"
   }
  ],
  "p13": [
@@ -685,7 +1027,7 @@
    "box": [
     158,
     148,
-    1557,
+    1556,
     696
    ],
    "f": 0.45,
@@ -696,19 +1038,57 @@
    "src": "p13-cut-try.webp",
    "box": [
     1108,
-    798,
+    698,
     1452,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p13-cut-try-hint.webp",
    "hbox": [
     1104,
-    794,
+    694,
     1456,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-magnet",
+   "src": "p13-cut-obj-magnet.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1403,
+    574,
+    1548,
+    648
+   ],
+   "hbox": [
+    1399,
+    570,
+    1552,
+    652
+   ],
+   "hint": "p13-cut-obj-magnet-hint.webp"
+  },
+  {
+   "id": "cut-obj-compass",
+   "src": "p13-cut-obj-compass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1260,
+    561,
+    1330,
+    660
+   ],
+   "hbox": [
+    1256,
+    557,
+    1334,
+    664
+   ],
+   "hint": "p13-cut-obj-compass-hint.webp"
   }
  ],
  "p14": [
@@ -741,7 +1121,7 @@
    "src": "p14-fg.webp",
    "box": [
     197,
-    147,
+    148,
     1551,
     625
    ],
@@ -752,20 +1132,58 @@
    "id": "cut-try",
    "src": "p14-cut-try.webp",
    "box": [
-    1108,
-    798,
+    1107,
+    698,
     1453,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p14-cut-try-hint.webp",
    "hbox": [
-    1104,
-    794,
+    1103,
+    694,
     1457,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-iron",
+   "src": "p14-cut-obj-iron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    580,
+    1538,
+    638
+   ],
+   "hbox": [
+    1408,
+    576,
+    1542,
+    642
+   ],
+   "hint": "p14-cut-obj-iron-hint.webp"
+  },
+  {
+   "id": "cut-obj-magnet",
+   "src": "p14-cut-obj-magnet.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1224,
+    574,
+    1368,
+    648
+   ],
+   "hbox": [
+    1220,
+    570,
+    1372,
+    652
+   ],
+   "hint": "p14-cut-obj-magnet-hint.webp"
   }
  ],
  "p15": [
@@ -808,20 +1226,77 @@
    "id": "cut-try",
    "src": "p15-cut-try.webp",
    "box": [
-    1178,
-    798,
-    1382,
-    841
+    1177,
+    699,
+    1383,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p15-cut-try-hint.webp",
    "hbox": [
-    1174,
-    794,
-    1386,
-    845
+    1173,
+    695,
+    1387,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-switch",
+   "src": "p15-cut-obj-switch.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1414,
+    588,
+    1536,
+    652
+   ],
+   "hbox": [
+    1410,
+    584,
+    1540,
+    656
+   ],
+   "hint": "p15-cut-obj-switch-hint.webp"
+  },
+  {
+   "id": "cut-obj-wire",
+   "src": "p15-cut-obj-wire.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1237,
+    587,
+    1393,
+    632
+   ],
+   "hbox": [
+    1233,
+    583,
+    1397,
+    636
+   ],
+   "hint": "p15-cut-obj-wire-hint.webp"
+  },
+  {
+   "id": "cut-obj-compass",
+   "src": "p15-cut-obj-compass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1100,
+    560,
+    1170,
+    660
+   ],
+   "hbox": [
+    1096,
+    556,
+    1174,
+    664
+   ],
+   "hint": "p15-cut-obj-compass-hint.webp"
   }
  ],
  "p16": [
@@ -854,7 +1329,7 @@
    "box": [
     250,
     116,
-    1556,
+    1557,
     678
    ],
    "f": 0.45,
@@ -865,19 +1340,57 @@
    "src": "p16-cut-try.webp",
    "box": [
     1174,
-    798,
-    1386,
-    841
+    698,
+    1385,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p16-cut-try-hint.webp",
    "hbox": [
     1170,
-    794,
-    1390,
-    845
+    694,
+    1389,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-wire",
+   "src": "p16-cut-obj-wire.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1397,
+    607,
+    1553,
+    652
+   ],
+   "hbox": [
+    1393,
+    603,
+    1557,
+    656
+   ],
+   "hint": "p16-cut-obj-wire-hint.webp"
+  },
+  {
+   "id": "cut-obj-compass",
+   "src": "p16-cut-obj-compass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1260,
+    560,
+    1330,
+    660
+   ],
+   "hbox": [
+    1256,
+    556,
+    1334,
+    664
+   ],
+   "hint": "p16-cut-obj-compass-hint.webp"
   }
  ],
  "p17": [
@@ -920,20 +1433,58 @@
    "id": "cut-try",
    "src": "p17-cut-try.webp",
    "box": [
-    1126,
-    798,
+    1125,
+    698,
     1435,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p17-cut-try-hint.webp",
    "hbox": [
-    1122,
-    794,
+    1121,
+    694,
     1439,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-wire",
+   "src": "p17-cut-obj-wire.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1397,
+    587,
+    1553,
+    632
+   ],
+   "hbox": [
+    1393,
+    583,
+    1557,
+    636
+   ],
+   "hint": "p17-cut-obj-wire-hint.webp"
+  },
+  {
+   "id": "cut-obj-compass",
+   "src": "p17-cut-obj-compass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1261,
+    561,
+    1330,
+    660
+   ],
+   "hbox": [
+    1257,
+    557,
+    1334,
+    664
+   ],
+   "hint": "p17-cut-obj-compass-hint.webp"
   }
  ],
  "p18": [
@@ -966,7 +1517,7 @@
    "box": [
     165,
     110,
-    1528,
+    1527,
     748
    ],
    "f": 0.45,
@@ -977,19 +1528,76 @@
    "src": "p18-cut-try.webp",
    "box": [
     1180,
-    799,
-    1379,
-    842
+    698,
+    1380,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p18-cut-try-hint.webp",
    "hbox": [
     1176,
-    795,
-    1383,
-    846
+    694,
+    1384,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-coil",
+   "src": "p18-cut-obj-coil.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1406,
+    586,
+    1544,
+    670
+   ],
+   "hbox": [
+    1402,
+    582,
+    1548,
+    674
+   ],
+   "hint": "p18-cut-obj-coil-hint.webp"
+  },
+  {
+   "id": "cut-obj-magnet",
+   "src": "p18-cut-obj-magnet.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1084,
+    594,
+    1227,
+    668
+   ],
+   "hbox": [
+    1080,
+    590,
+    1231,
+    672
+   ],
+   "hint": "p18-cut-obj-magnet-hint.webp"
+  },
+  {
+   "id": "cut-obj-compass",
+   "src": "p18-cut-obj-compass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1260,
+    461,
+    1330,
+    560
+   ],
+   "hbox": [
+    1256,
+    457,
+    1334,
+    564
+   ],
+   "hint": "p18-cut-obj-compass-hint.webp"
   }
  ],
  "p19": [
@@ -1023,7 +1631,7 @@
    "box": [
     204,
     148,
-    1554,
+    1556,
     736
    ],
    "f": 0.45,
@@ -1034,8 +1642,8 @@
    "src": "p19-cut-try.webp",
    "box": [
     1197,
-    798,
-    1362,
+    799,
+    1363,
     842
    ],
    "f": 0.45,
@@ -1043,10 +1651,29 @@
    "hint": "p19-cut-try-hint.webp",
    "hbox": [
     1193,
-    794,
-    1366,
+    795,
+    1367,
     846
    ]
+  },
+  {
+   "id": "cut-obj-iron",
+   "src": "p19-cut-obj-iron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    600,
+    1538,
+    658
+   ],
+   "hbox": [
+    1408,
+    596,
+    1542,
+    662
+   ],
+   "hint": "p19-cut-obj-iron-hint.webp"
   }
  ],
  "p20": [
@@ -1089,20 +1716,77 @@
    "id": "cut-try",
    "src": "p20-cut-try.webp",
    "box": [
-    1134,
-    798,
+    1133,
+    698,
     1426,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p20-cut-try-hint.webp",
    "hbox": [
-    1130,
-    794,
+    1129,
+    694,
     1430,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-coil",
+   "src": "p20-cut-obj-coil.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1406,
+    566,
+    1544,
+    650
+   ],
+   "hbox": [
+    1402,
+    562,
+    1548,
+    654
+   ],
+   "hint": "p20-cut-obj-coil-hint.webp"
+  },
+  {
+   "id": "cut-obj-battery",
+   "src": "p20-cut-obj-battery.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1237,
+    570,
+    1360,
+    650
+   ],
+   "hbox": [
+    1233,
+    566,
+    1364,
+    654
+   ],
+   "hint": "p20-cut-obj-battery-hint.webp"
+  },
+  {
+   "id": "cut-obj-compass",
+   "src": "p20-cut-obj-compass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1100,
+    561,
+    1170,
+    660
+   ],
+   "hbox": [
+    1096,
+    557,
+    1174,
+    664
+   ],
+   "hint": "p20-cut-obj-compass-hint.webp"
   }
  ]
 }

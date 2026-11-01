@@ -127,6 +127,63 @@
    ],
    "f": 0.45,
    "late": true
+  },
+  {
+   "id": "cut-obj-ice",
+   "src": "p03-cut-obj-ice.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1446,
+    566,
+    1504,
+    650
+   ],
+   "hbox": [
+    1442,
+    562,
+    1508,
+    654
+   ],
+   "hint": "p03-cut-obj-ice-hint.webp"
+  },
+  {
+   "id": "cut-obj-flame",
+   "src": "p03-cut-obj-flame.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1314,
+    554,
+    1358,
+    644
+   ],
+   "hbox": [
+    1310,
+    550,
+    1362,
+    648
+   ],
+   "hint": "p03-cut-obj-flame-hint.webp"
+  },
+  {
+   "id": "cut-try",
+   "src": "p03-cut-try.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1129,
+    779,
+    1271,
+    822
+   ],
+   "hbox": [
+    1125,
+    775,
+    1275,
+    826
+   ],
+   "hint": "p03-cut-try-hint.webp"
   }
  ],
  "p04": [
@@ -164,6 +221,63 @@
    ],
    "f": 0.45,
    "late": true
+  },
+  {
+   "id": "cut-obj-ice",
+   "src": "p04-cut-obj-ice.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1446,
+    566,
+    1504,
+    650
+   ],
+   "hbox": [
+    1442,
+    562,
+    1508,
+    654
+   ],
+   "hint": "p04-cut-obj-ice-hint.webp"
+  },
+  {
+   "id": "cut-obj-thermo",
+   "src": "p04-cut-obj-thermo.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1287,
+    536,
+    1384,
+    674
+   ],
+   "hbox": [
+    1283,
+    532,
+    1388,
+    678
+   ],
+   "hint": "p04-cut-obj-thermo-hint.webp"
+  },
+  {
+   "id": "cut-try",
+   "src": "p04-cut-try.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1108,
+    778,
+    1252,
+    822
+   ],
+   "hbox": [
+    1104,
+    774,
+    1256,
+    826
+   ],
+   "hint": "p04-cut-try-hint.webp"
   }
  ],
  "p05": [
@@ -196,11 +310,68 @@
    "box": [
     303,
     178,
-    1430,
+    1429,
     426
    ],
    "f": 0.45,
    "late": true
+  },
+  {
+   "id": "cut-obj-droplet",
+   "src": "p05-cut-obj-droplet.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1449,
+    558,
+    1502,
+    658
+   ],
+   "hbox": [
+    1445,
+    554,
+    1505,
+    662
+   ],
+   "hint": "p05-cut-obj-droplet-hint.webp"
+  },
+  {
+   "id": "cut-obj-ice",
+   "src": "p05-cut-obj-ice.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1306,
+    566,
+    1364,
+    650
+   ],
+   "hbox": [
+    1302,
+    562,
+    1368,
+    654
+   ],
+   "hint": "p05-cut-obj-ice-hint.webp"
+  },
+  {
+   "id": "cut-try",
+   "src": "p05-cut-try.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1152,
+    778,
+    1367,
+    822
+   ],
+   "hbox": [
+    1148,
+    774,
+    1371,
+    826
+   ],
+   "hint": "p05-cut-try-hint.webp"
   }
  ],
  "p06": [
@@ -246,7 +417,7 @@
     1070,
     798,
     1270,
-    842
+    841
    ],
    "f": 0.45,
    "cut": true,
@@ -255,7 +426,7 @@
     1066,
     794,
     1274,
-    846
+    845
    ]
   }
  ],
@@ -289,11 +460,68 @@
    "box": [
     123,
     148,
-    1444,
+    1445,
     474
    ],
    "f": 0.45,
    "late": true
+  },
+  {
+   "id": "cut-obj-spoon",
+   "src": "p07-cut-obj-spoon.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1414,
+    582,
+    1526,
+    644
+   ],
+   "hbox": [
+    1410,
+    578,
+    1530,
+    648
+   ],
+   "hint": "p07-cut-obj-spoon-hint.webp"
+  },
+  {
+   "id": "cut-obj-flame",
+   "src": "p07-cut-obj-flame.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1294,
+    555,
+    1338,
+    644
+   ],
+   "hbox": [
+    1290,
+    551,
+    1342,
+    648
+   ],
+   "hint": "p07-cut-obj-flame-hint.webp"
+  },
+  {
+   "id": "cut-try",
+   "src": "p07-cut-try.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1149,
+    779,
+    1290,
+    821
+   ],
+   "hbox": [
+    1145,
+    775,
+    1294,
+    825
+   ],
+   "hint": "p07-cut-try-hint.webp"
   }
  ],
  "p08": [
@@ -331,6 +559,63 @@
    ],
    "f": 0.45,
    "late": true
+  },
+  {
+   "id": "cut-obj-piston",
+   "src": "p08-cut-obj-piston.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1438,
+    539,
+    1512,
+    672
+   ],
+   "hbox": [
+    1434,
+    535,
+    1516,
+    676
+   ],
+   "hint": "p08-cut-obj-piston-hint.webp"
+  },
+  {
+   "id": "cut-obj-flame",
+   "src": "p08-cut-obj-flame.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1314,
+    554,
+    1357,
+    644
+   ],
+   "hbox": [
+    1310,
+    550,
+    1361,
+    648
+   ],
+   "hint": "p08-cut-obj-flame-hint.webp"
+  },
+  {
+   "id": "cut-try",
+   "src": "p08-cut-try.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1175,
+    779,
+    1344,
+    821
+   ],
+   "hbox": [
+    1171,
+    775,
+    1348,
+    825
+   ],
+   "hint": "p08-cut-try-hint.webp"
   }
  ],
  "p09": [
@@ -368,6 +653,63 @@
    ],
    "f": 0.45,
    "late": true
+  },
+  {
+   "id": "cut-obj-bulb",
+   "src": "p09-cut-obj-bulb.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1441,
+    554,
+    1509,
+    662
+   ],
+   "hbox": [
+    1437,
+    550,
+    1513,
+    666
+   ],
+   "hint": "p09-cut-obj-bulb-hint.webp"
+  },
+  {
+   "id": "cut-obj-thermo",
+   "src": "p09-cut-obj-thermo.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1287,
+    536,
+    1384,
+    674
+   ],
+   "hbox": [
+    1283,
+    532,
+    1388,
+    678
+   ],
+   "hint": "p09-cut-obj-thermo-hint.webp"
+  },
+  {
+   "id": "cut-try",
+   "src": "p09-cut-try.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1164,
+    779,
+    1357,
+    822
+   ],
+   "hbox": [
+    1160,
+    775,
+    1361,
+    826
+   ],
+   "hint": "p09-cut-try-hint.webp"
   }
  ],
  "p10": [
@@ -405,6 +747,63 @@
    ],
    "f": 0.45,
    "late": true
+  },
+  {
+   "id": "cut-obj-fridge",
+   "src": "p10-cut-obj-fridge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1430,
+    542,
+    1520,
+    680
+   ],
+   "hbox": [
+    1427,
+    538,
+    1524,
+    684
+   ],
+   "hint": "p10-cut-obj-fridge-hint.webp"
+  },
+  {
+   "id": "cut-obj-thermo",
+   "src": "p10-cut-obj-thermo.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1267,
+    536,
+    1364,
+    674
+   ],
+   "hbox": [
+    1263,
+    532,
+    1368,
+    678
+   ],
+   "hint": "p10-cut-obj-thermo-hint.webp"
+  },
+  {
+   "id": "cut-try",
+   "src": "p10-cut-try.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1178,
+    779,
+    1343,
+    821
+   ],
+   "hbox": [
+    1174,
+    775,
+    1347,
+    825
+   ],
+   "hint": "p10-cut-try-hint.webp"
   }
  ],
  "p11": [
@@ -437,11 +836,68 @@
    "box": [
     163,
     138,
-    1502,
+    1503,
     682
    ],
    "f": 0.45,
    "late": true
+  },
+  {
+   "id": "cut-obj-spoon",
+   "src": "p11-cut-obj-spoon.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1415,
+    582,
+    1526,
+    644
+   ],
+   "hbox": [
+    1411,
+    578,
+    1530,
+    648
+   ],
+   "hint": "p11-cut-obj-spoon-hint.webp"
+  },
+  {
+   "id": "cut-obj-ice",
+   "src": "p11-cut-obj-ice.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1286,
+    566,
+    1344,
+    650
+   ],
+   "hbox": [
+    1282,
+    562,
+    1348,
+    654
+   ],
+   "hint": "p11-cut-obj-ice-hint.webp"
+  },
+  {
+   "id": "cut-try",
+   "src": "p11-cut-try.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1199,
+    779,
+    1321,
+    821
+   ],
+   "hbox": [
+    1195,
+    775,
+    1325,
+    825
+   ],
+   "hint": "p11-cut-try-hint.webp"
   }
  ],
  "p12": [
@@ -479,6 +935,63 @@
    ],
    "f": 0.45,
    "late": true
+  },
+  {
+   "id": "cut-obj-ice",
+   "src": "p12-cut-obj-ice.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1446,
+    566,
+    1504,
+    650
+   ],
+   "hbox": [
+    1442,
+    562,
+    1508,
+    654
+   ],
+   "hint": "p12-cut-obj-ice-hint.webp"
+  },
+  {
+   "id": "cut-obj-particle",
+   "src": "p12-cut-obj-particle.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1307,
+    578,
+    1364,
+    646
+   ],
+   "hbox": [
+    1303,
+    574,
+    1368,
+    650
+   ],
+   "hint": "p12-cut-obj-particle-hint.webp"
+  },
+  {
+   "id": "cut-try",
+   "src": "p12-cut-try.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1119,
+    778,
+    1321,
+    822
+   ],
+   "hbox": [
+    1115,
+    774,
+    1325,
+    826
+   ],
+   "hint": "p12-cut-try-hint.webp"
   }
  ],
  "p13": [

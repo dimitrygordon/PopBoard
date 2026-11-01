@@ -1,0 +1,162 @@
+{
+ "p01": {
+  "items": [
+   {
+    "id": "runner",
+    "label": "the runner"
+   },
+   {
+    "id": "tape-zero",
+    "label": "zero point of the measuring tape"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p03": {
+  "items": [
+   {
+    "id": "runner",
+    "label": "the runner"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p04": {
+  "items": [
+   {
+    "id": "dot",
+    "label": "dot placed 9 m left of the cactus"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p05": {
+  "items": [
+   {
+    "id": "card1",
+    "label": "quantity card \"1.6 km\""
+   },
+   {
+    "id": "card2",
+    "label": "quantity card \"1.6 km north\""
+   },
+   {
+    "id": "card3",
+    "label": "quantity card \"20 degrees\""
+   },
+   {
+    "id": "card4",
+    "label": "quantity card \"5 s\""
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p06": {
+  "items": [
+   {
+    "id": "vectors",
+    "label": "the two drawn vector arrows for the walk from the door to a desk"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p07": {
+  "items": [
+   {
+    "id": "watch0",
+    "label": "stopwatch reading 0.0 s when the runner is at 0 m"
+   },
+   {
+    "id": "watch5",
+    "label": "stopwatch reading 1.0 s when the runner is at 5 m"
+   },
+   {
+    "id": "watch25",
+    "label": "stopwatch reading 5.0 s when the runner is at 25 m"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p09": {
+  "items": [
+   {
+    "id": "start",
+    "label": "start marker"
+   },
+   {
+    "id": "end",
+    "label": "end marker"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p10": {
+  "items": [
+   {
+    "id": "A",
+    "label": "vector A, 5 km east"
+   },
+   {
+    "id": "B",
+    "label": "vector B, 2 km east"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ }
+}

@@ -106,3 +106,8 @@
 .lib-card .cover-soon { background: var(--ac-card); }
 :root[data-theme="dark"] .stage.artpage { background-color: #1F1D1A; }
 :root[data-theme="dark"] .stage.artpage .art-scene { background-color: #FBF6EA; border-radius: var(--slide-art-radius); overflow: hidden; }
+
+/* ---- Drag engine (scenes/drag.js): a lifted cutout casts a wider shadow; handles are at least 44 px ---- */
+.stage .p-scene .drag-hit { min-width: 44px; min-height: 44px; border-radius: 8px; }
+.art-scene .art-l.drag-lift { filter: var(--slide-art-filter, none) drop-shadow(0 10px 8px rgba(40, 30, 10, 0.35)); z-index: 5; }
+@media (prefers-reduced-motion: reduce) { .art-scene .art-l.drag-lift { filter: var(--slide-art-filter, none); } }

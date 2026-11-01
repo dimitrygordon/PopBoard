@@ -127,6 +127,44 @@
     1352,
     845
    ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p03-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    592,
+    1506,
+    666
+   ],
+   "hbox": [
+    1441,
+    588,
+    1509,
+    670
+   ],
+   "hint": "p03-cut-obj-electron-hint.webp"
+  },
+  {
+   "id": "cut-obj-glass",
+   "src": "p03-cut-obj-glass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1272,
+    578,
+    1398,
+    684
+   ],
+   "hbox": [
+    1268,
+    574,
+    1402,
+    688
+   ],
+   "hint": "p03-cut-obj-glass-hint.webp"
   }
  ],
  "p04": [
@@ -159,7 +197,7 @@
    "box": [
     165,
     110,
-    1552,
+    1551,
     375
    ],
    "f": 0.45,
@@ -170,19 +208,76 @@
    "src": "p04-cut-try.webp",
    "box": [
     1134,
-    798,
+    698,
     1426,
-    841
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p04-cut-try-hint.webp",
    "hbox": [
     1130,
-    794,
+    694,
     1430,
-    845
+    746
    ]
+  },
+  {
+   "id": "cut-obj-battery",
+   "src": "p04-cut-obj-battery.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1417,
+    570,
+    1539,
+    650
+   ],
+   "hbox": [
+    1413,
+    566,
+    1543,
+    654
+   ],
+   "hint": "p04-cut-obj-battery-hint.webp"
+  },
+  {
+   "id": "cut-obj-diode",
+   "src": "p04-cut-obj-diode.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1246,
+    572,
+    1386,
+    644
+   ],
+   "hbox": [
+    1242,
+    568,
+    1390,
+    648
+   ],
+   "hint": "p04-cut-obj-diode-hint.webp"
+  },
+  {
+   "id": "cut-obj-glass",
+   "src": "p04-cut-obj-glass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1072,
+    558,
+    1198,
+    664
+   ],
+   "hbox": [
+    1068,
+    554,
+    1202,
+    668
+   ],
+   "hint": "p04-cut-obj-glass-hint.webp"
   }
  ],
  "p05": [
@@ -226,19 +321,57 @@
    "src": "p05-cut-try.webp",
    "box": [
     1124,
-    798,
+    698,
     1436,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p05-cut-try-hint.webp",
    "hbox": [
     1120,
-    794,
+    694,
     1440,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-diode",
+   "src": "p05-cut-obj-diode.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1405,
+    572,
+    1546,
+    644
+   ],
+   "hbox": [
+    1401,
+    568,
+    1550,
+    648
+   ],
+   "hint": "p05-cut-obj-diode-hint.webp"
+  },
+  {
+   "id": "cut-obj-switch",
+   "src": "p05-cut-obj-switch.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1234,
+    568,
+    1356,
+    632
+   ],
+   "hbox": [
+    1230,
+    564,
+    1360,
+    636
+   ],
+   "hint": "p05-cut-obj-switch-hint.webp"
   }
  ],
  "p06": [
@@ -271,7 +404,7 @@
    "box": [
     329,
     110,
-    1553,
+    1552,
     721
    ],
    "f": 0.45,
@@ -282,19 +415,57 @@
    "src": "p06-cut-try.webp",
    "box": [
     1157,
-    798,
+    698,
     1403,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p06-cut-try-hint.webp",
    "hbox": [
     1153,
-    794,
+    694,
     1407,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p06-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    586,
+    1556,
+    674
+   ],
+   "hbox": [
+    1408,
+    582,
+    1560,
+    678
+   ],
+   "hint": "p06-cut-obj-flashlight-hint.webp"
+  },
+  {
+   "id": "cut-obj-diode",
+   "src": "p06-cut-obj-diode.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1223,
+    572,
+    1366,
+    644
+   ],
+   "hbox": [
+    1219,
+    568,
+    1370,
+    648
+   ],
+   "hint": "p06-cut-obj-diode-hint.webp"
   }
  ],
  "p07": [
@@ -325,7 +496,7 @@
    "id": "fg",
    "src": "p07-fg.webp",
    "box": [
-    148,
+    149,
     148,
     792,
     229
@@ -337,8 +508,8 @@
    "id": "cut-try",
    "src": "p07-cut-try.webp",
    "box": [
-    301,
-    798,
+    300,
+    799,
     640,
     842
    ],
@@ -346,11 +517,30 @@
    "cut": true,
    "hint": "p07-cut-try-hint.webp",
    "hbox": [
-    297,
-    794,
+    296,
+    795,
     644,
     846
    ]
+  },
+  {
+   "id": "cut-obj-diode",
+   "src": "p07-cut-obj-diode.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1064,
+    251,
+    1206,
+    324
+   ],
+   "hbox": [
+    1060,
+    247,
+    1210,
+    328
+   ],
+   "hint": "p07-cut-obj-diode-hint.webp"
   }
  ],
  "p08": [
@@ -394,19 +584,57 @@
    "src": "p08-cut-try.webp",
    "box": [
     1118,
-    798,
-    1442,
-    842
+    699,
+    1441,
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p08-cut-try-hint.webp",
    "hbox": [
     1114,
-    794,
-    1446,
-    846
+    695,
+    1445,
+    745
    ]
+  },
+  {
+   "id": "cut-obj-laser",
+   "src": "p08-cut-obj-laser.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    578,
+    1556,
+    642
+   ],
+   "hbox": [
+    1408,
+    574,
+    1560,
+    646
+   ],
+   "hint": "p08-cut-obj-laser-hint.webp"
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p08-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1232,
+    569,
+    1376,
+    654
+   ],
+   "hbox": [
+    1228,
+    565,
+    1380,
+    658
+   ],
+   "hint": "p08-cut-obj-flashlight-hint.webp"
   }
  ],
  "p09": [
@@ -449,7 +677,7 @@
    "id": "cut-try",
    "src": "p09-cut-try.webp",
    "box": [
-    1221,
+    1222,
     798,
     1339,
     841
@@ -458,11 +686,49 @@
    "cut": true,
    "hint": "p09-cut-try-hint.webp",
    "hbox": [
-    1217,
+    1218,
     794,
     1343,
     845
    ]
+  },
+  {
+   "id": "cut-obj-diode",
+   "src": "p09-cut-obj-diode.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1406,
+    591,
+    1546,
+    664
+   ],
+   "hbox": [
+    1402,
+    587,
+    1550,
+    668
+   ],
+   "hint": "p09-cut-obj-diode-hint.webp"
+  },
+  {
+   "id": "cut-obj-glass",
+   "src": "p09-cut-obj-glass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1232,
+    578,
+    1358,
+    684
+   ],
+   "hbox": [
+    1228,
+    574,
+    1362,
+    688
+   ],
+   "hint": "p09-cut-obj-glass-hint.webp"
   }
  ],
  "p10": [
@@ -506,19 +772,38 @@
    "src": "p10-cut-try.webp",
    "box": [
     1142,
-    798,
+    699,
     1418,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p10-cut-try-hint.webp",
    "hbox": [
     1138,
-    794,
+    695,
     1422,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-knob",
+   "src": "p10-cut-obj-knob.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1393,
+    576,
+    1556,
+    640
+   ],
+   "hbox": [
+    1389,
+    572,
+    1560,
+    644
+   ],
+   "hint": "p10-cut-obj-knob-hint.webp"
   }
  ],
  "p11": [
@@ -563,19 +848,76 @@
    "src": "p11-cut-try.webp",
    "box": [
     1132,
-    798,
-    1427,
-    842
+    699,
+    1428,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p11-cut-try-hint.webp",
    "hbox": [
     1128,
-    794,
-    1431,
-    846
+    695,
+    1432,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-wire",
+   "src": "p11-cut-obj-wire.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1397,
+    587,
+    1553,
+    632
+   ],
+   "hbox": [
+    1393,
+    583,
+    1557,
+    636
+   ],
+   "hint": "p11-cut-obj-wire-hint.webp"
+  },
+  {
+   "id": "cut-obj-diode",
+   "src": "p11-cut-obj-diode.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1226,
+    572,
+    1366,
+    644
+   ],
+   "hbox": [
+    1222,
+    568,
+    1370,
+    648
+   ],
+   "hint": "p11-cut-obj-diode-hint.webp"
+  },
+  {
+   "id": "cut-obj-switch",
+   "src": "p11-cut-obj-switch.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1055,
+    568,
+    1176,
+    632
+   ],
+   "hbox": [
+    1051,
+    564,
+    1180,
+    636
+   ],
+   "hint": "p11-cut-obj-switch-hint.webp"
   }
  ],
  "p12": [
@@ -658,7 +1000,7 @@
     1202,
     798,
     1358,
-    842
+    841
    ],
    "f": 0.45,
    "cut": true,
@@ -667,8 +1009,27 @@
     1198,
     794,
     1362,
-    846
+    845
    ]
+  },
+  {
+   "id": "cut-obj-diode",
+   "src": "p13-cut-obj-diode.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1403,
+    591,
+    1546,
+    664
+   ],
+   "hbox": [
+    1399,
+    587,
+    1550,
+    668
+   ],
+   "hint": "p13-cut-obj-diode-hint.webp"
   }
  ],
  "p14": [
@@ -701,7 +1062,7 @@
    "box": [
     152,
     148,
-    787,
+    788,
     229
    ],
    "f": 0.45,
@@ -738,7 +1099,7 @@
    "box": [
     158,
     103,
-    1534,
+    1535,
     780
    ],
    "f": 0.45,

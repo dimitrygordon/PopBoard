@@ -1,0 +1,130 @@
+{
+ "p02": {
+  "items": [
+   {
+    "id": "pt0",
+    "label": "data point"
+   },
+   {
+    "id": "pt1",
+    "label": "data point"
+   },
+   {
+    "id": "pt2",
+    "label": "data point"
+   },
+   {
+    "id": "pt3",
+    "label": "data point"
+   },
+   {
+    "id": "pt4",
+    "label": "data point"
+   },
+   {
+    "id": "pt5",
+    "label": "data point"
+   },
+   {
+    "id": "fitline",
+    "label": "best-fit line"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p04": {
+  "items": [
+   {
+    "id": "runner",
+    "label": "runner on the flat track"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p06": {
+  "items": [
+   {
+    "id": "runner",
+    "label": "runner on the motion diagram"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p07": {
+  "items": [
+   {
+    "id": "hguide",
+    "label": "horizontal crosshair guide"
+   },
+   {
+    "id": "vguide",
+    "label": "vertical crosshair guide"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p08": {
+  "items": [
+   {
+    "id": "runnerA",
+    "label": "runner A in the far lane"
+   },
+   {
+    "id": "runnerB",
+    "label": "runner B in the near lane"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p10": {
+  "items": [
+   {
+    "id": "pointB",
+    "label": "point on line B"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ }
+}

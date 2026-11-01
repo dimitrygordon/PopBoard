@@ -53,6 +53,25 @@
     621,
     846
    ]
+  },
+  {
+   "id": "cut-obj-wave",
+   "src": "p01-cut-obj-wave.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    642,
+    754,
+    787,
+    824
+   ],
+   "hbox": [
+    638,
+    750,
+    791,
+    828
+   ],
+   "hint": "p01-cut-obj-wave-hint.webp"
   }
  ],
  "p02": [
@@ -83,9 +102,9 @@
    "id": "fg",
    "src": "p02-fg.webp",
    "box": [
-    134,
+    133,
     103,
-    1439,
+    1438,
     224
    ],
    "f": 0.45,
@@ -133,19 +152,57 @@
    "src": "p03-cut-try.webp",
    "box": [
     1130,
-    798,
+    698,
     1430,
-    841
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p03-cut-try-hint.webp",
    "hbox": [
     1126,
-    794,
+    694,
     1434,
-    845
+    746
    ]
+  },
+  {
+   "id": "cut-obj-laser",
+   "src": "p03-cut-obj-laser.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    578,
+    1556,
+    642
+   ],
+   "hbox": [
+    1408,
+    574,
+    1560,
+    646
+   ],
+   "hint": "p03-cut-obj-laser-hint.webp"
+  },
+  {
+   "id": "cut-obj-mirror",
+   "src": "p03-cut-obj-mirror.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1270,
+    536,
+    1320,
+    682
+   ],
+   "hbox": [
+    1266,
+    532,
+    1324,
+    686
+   ],
+   "hint": "p03-cut-obj-mirror-hint.webp"
   }
  ],
  "p04": [
@@ -189,19 +246,76 @@
    "src": "p04-cut-try.webp",
    "box": [
     1107,
-    798,
-    1452,
-    842
+    698,
+    1453,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p04-cut-try-hint.webp",
    "hbox": [
     1103,
-    794,
-    1456,
-    846
+    694,
+    1457,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-wave",
+   "src": "p04-cut-obj-wave.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1402,
+    574,
+    1548,
+    644
+   ],
+   "hbox": [
+    1398,
+    570,
+    1552,
+    648
+   ],
+   "hint": "p04-cut-obj-wave-hint.webp"
+  },
+  {
+   "id": "cut-obj-mirror",
+   "src": "p04-cut-obj-mirror.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1270,
+    536,
+    1320,
+    682
+   ],
+   "hbox": [
+    1266,
+    532,
+    1324,
+    686
+   ],
+   "hint": "p04-cut-obj-mirror-hint.webp"
+  },
+  {
+   "id": "cut-obj-switch",
+   "src": "p04-cut-obj-switch.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1095,
+    568,
+    1216,
+    632
+   ],
+   "hbox": [
+    1091,
+    564,
+    1220,
+    636
+   ],
+   "hint": "p04-cut-obj-switch-hint.webp"
   }
  ],
  "p05": [
@@ -234,7 +348,7 @@
    "box": [
     165,
     148,
-    1555,
+    1556,
     591
    ],
    "f": 0.45,
@@ -244,20 +358,39 @@
    "id": "cut-try",
    "src": "p05-cut-try.webp",
    "box": [
-    1146,
-    798,
+    1145,
+    698,
     1414,
-    841
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p05-cut-try-hint.webp",
    "hbox": [
-    1142,
-    794,
+    1141,
+    694,
     1418,
-    845
+    746
    ]
+  },
+  {
+   "id": "cut-obj-laser",
+   "src": "p05-cut-obj-laser.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    578,
+    1556,
+    642
+   ],
+   "hbox": [
+    1408,
+    574,
+    1560,
+    646
+   ],
+   "hint": "p05-cut-obj-laser-hint.webp"
   }
  ],
  "p06": [
@@ -325,9 +458,9 @@
    "id": "fg",
    "src": "p07-fg.webp",
    "box": [
-    165,
-    110,
-    1550,
+    243,
+    123,
+    1549,
     525
    ],
    "f": 0.45,
@@ -338,19 +471,57 @@
    "src": "p07-cut-try.webp",
    "box": [
     1154,
-    798,
-    1405,
-    842
+    698,
+    1406,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p07-cut-try-hint.webp",
    "hbox": [
     1150,
-    794,
-    1409,
-    846
+    694,
+    1410,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-object",
+   "src": "p07-cut-obj-object.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1446,
+    566,
+    1506,
+    697
+   ],
+   "hbox": [
+    1442,
+    562,
+    1510,
+    701
+   ],
+   "hint": "p07-cut-obj-object-hint.webp"
+  },
+  {
+   "id": "cut-obj-mirror",
+   "src": "p07-cut-obj-mirror.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1310,
+    536,
+    1360,
+    682
+   ],
+   "hbox": [
+    1306,
+    532,
+    1364,
+    686
+   ],
+   "hint": "p07-cut-obj-mirror-hint.webp"
   }
  ],
  "p08": [
@@ -394,19 +565,76 @@
    "src": "p08-cut-try.webp",
    "box": [
     1161,
-    798,
-    1398,
-    841
+    699,
+    1399,
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p08-cut-try-hint.webp",
    "hbox": [
     1157,
-    794,
-    1402,
-    845
+    695,
+    1403,
+    745
    ]
+  },
+  {
+   "id": "cut-obj-mirror",
+   "src": "p08-cut-obj-mirror.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1450,
+    555,
+    1500,
+    702
+   ],
+   "hbox": [
+    1446,
+    551,
+    1504,
+    706
+   ],
+   "hint": "p08-cut-obj-mirror-hint.webp"
+  },
+  {
+   "id": "cut-obj-laser",
+   "src": "p08-cut-obj-laser.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1272,
+    579,
+    1416,
+    642
+   ],
+   "hbox": [
+    1268,
+    575,
+    1420,
+    646
+   ],
+   "hint": "p08-cut-obj-laser-hint.webp"
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p08-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1093,
+    567,
+    1236,
+    654
+   ],
+   "hbox": [
+    1089,
+    563,
+    1240,
+    658
+   ],
+   "hint": "p08-cut-obj-flashlight-hint.webp"
   }
  ],
  "p09": [
@@ -439,7 +667,7 @@
    "box": [
     165,
     110,
-    1549,
+    1548,
     513
    ],
    "f": 0.45,
@@ -449,20 +677,58 @@
    "id": "cut-try",
    "src": "p09-cut-try.webp",
    "box": [
-    1202,
-    798,
-    1359,
-    842
+    1201,
+    799,
+    1357,
+    841
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p09-cut-try-hint.webp",
    "hbox": [
-    1198,
-    794,
-    1363,
-    846
+    1197,
+    795,
+    1361,
+    845
    ]
+  },
+  {
+   "id": "cut-obj-object",
+   "src": "p09-cut-obj-object.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1443,
+    566,
+    1506,
+    697
+   ],
+   "hbox": [
+    1439,
+    562,
+    1510,
+    701
+   ],
+   "hint": "p09-cut-obj-object-hint.webp"
+  },
+  {
+   "id": "cut-obj-mirror",
+   "src": "p09-cut-obj-mirror.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1310,
+    553,
+    1360,
+    702
+   ],
+   "hbox": [
+    1306,
+    549,
+    1364,
+    706
+   ],
+   "hint": "p09-cut-obj-mirror-hint.webp"
   }
  ],
  "p10": [
@@ -505,20 +771,39 @@
    "id": "cut-try",
    "src": "p10-cut-try.webp",
    "box": [
-    1170,
-    798,
+    1169,
+    698,
     1391,
-    841
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p10-cut-try-hint.webp",
    "hbox": [
-    1166,
-    794,
+    1165,
+    694,
     1395,
-    845
+    746
    ]
+  },
+  {
+   "id": "cut-obj-mirror",
+   "src": "p10-cut-obj-mirror.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1450,
+    554,
+    1500,
+    702
+   ],
+   "hbox": [
+    1446,
+    550,
+    1504,
+    706
+   ],
+   "hint": "p10-cut-obj-mirror-hint.webp"
   }
  ],
  "p11": [
@@ -551,7 +836,7 @@
    "box": [
     145,
     148,
-    795,
+    796,
     229
    ],
    "f": 0.45,

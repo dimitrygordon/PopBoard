@@ -53,6 +53,44 @@
     638,
     846
    ]
+  },
+  {
+   "id": "cut-obj-droplet",
+   "src": "p01-cut-obj-droplet.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    889,
+    737,
+    942,
+    838
+   ],
+   "hbox": [
+    885,
+    733,
+    945,
+    842
+   ],
+   "hint": "p01-cut-obj-droplet-hint.webp"
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p01-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    712,
+    748,
+    856,
+    834
+   ],
+   "hbox": [
+    708,
+    744,
+    860,
+    838
+   ],
+   "hint": "p01-cut-obj-flashlight-hint.webp"
   }
  ],
  "p02": [
@@ -95,20 +133,58 @@
    "id": "cut-try",
    "src": "p02-cut-try.webp",
    "box": [
-    1119,
-    798,
+    1120,
+    698,
     1441,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p02-cut-try-hint.webp",
    "hbox": [
-    1115,
-    794,
+    1116,
+    694,
     1445,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p02-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    567,
+    1556,
+    654
+   ],
+   "hbox": [
+    1408,
+    563,
+    1560,
+    658
+   ],
+   "hint": "p02-cut-obj-flashlight-hint.webp"
+  },
+  {
+   "id": "cut-obj-wave",
+   "src": "p02-cut-obj-wave.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1224,
+    576,
+    1367,
+    644
+   ],
+   "hbox": [
+    1220,
+    572,
+    1371,
+    648
+   ],
+   "hint": "p02-cut-obj-wave-hint.webp"
   }
  ],
  "p03": [
@@ -141,7 +217,7 @@
    "box": [
     133,
     103,
-    1389,
+    1388,
     224
    ],
    "f": 0.45,
@@ -177,8 +253,8 @@
    "src": "p04-fg.webp",
    "box": [
     173,
-    148,
-    1541,
+    147,
+    1540,
     795
    ],
    "f": 0.45,
@@ -188,20 +264,39 @@
    "id": "cut-try",
    "src": "p04-cut-try.webp",
    "box": [
-    1200,
+    1199,
     799,
-    1361,
+    1360,
     842
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p04-cut-try-hint.webp",
    "hbox": [
-    1196,
+    1195,
     795,
-    1365,
+    1364,
     846
    ]
+  },
+  {
+   "id": "cut-obj-slit",
+   "src": "p04-cut-obj-slit.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1464,
+    550,
+    1489,
+    708
+   ],
+   "hbox": [
+    1460,
+    546,
+    1492,
+    712
+   ],
+   "hint": "p04-cut-obj-slit-hint.webp"
   }
  ],
  "p05": [
@@ -234,7 +329,7 @@
    "box": [
     158,
     148,
-    1555,
+    1554,
     701
    ],
    "f": 0.45,
@@ -245,19 +340,57 @@
    "src": "p05-cut-try.webp",
    "box": [
     1117,
-    798,
-    1442,
-    841
+    698,
+    1443,
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p05-cut-try-hint.webp",
    "hbox": [
     1113,
-    794,
-    1446,
-    845
+    694,
+    1447,
+    745
    ]
+  },
+  {
+   "id": "cut-obj-switch",
+   "src": "p05-cut-obj-switch.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1414,
+    568,
+    1536,
+    632
+   ],
+   "hbox": [
+    1410,
+    564,
+    1540,
+    636
+   ],
+   "hint": "p05-cut-obj-switch-hint.webp"
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p05-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1252,
+    569,
+    1396,
+    654
+   ],
+   "hbox": [
+    1248,
+    565,
+    1400,
+    658
+   ],
+   "hint": "p05-cut-obj-flashlight-hint.webp"
   }
  ],
  "p06": [
@@ -301,19 +434,38 @@
    "src": "p06-cut-try.webp",
    "box": [
     1118,
-    798,
+    698,
     1442,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p06-cut-try-hint.webp",
    "hbox": [
     1114,
-    794,
+    694,
     1446,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-wave",
+   "src": "p06-cut-obj-wave.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1405,
+    574,
+    1548,
+    644
+   ],
+   "hbox": [
+    1401,
+    570,
+    1552,
+    648
+   ],
+   "hint": "p06-cut-obj-wave-hint.webp"
   }
  ],
  "p07": [
@@ -357,19 +509,38 @@
    "src": "p07-cut-try.webp",
    "box": [
     1123,
-    798,
+    698,
     1437,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p07-cut-try-hint.webp",
    "hbox": [
     1119,
-    794,
+    694,
     1441,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-screen",
+   "src": "p07-cut-obj-screen.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1452,
+    528,
+    1499,
+    688
+   ],
+   "hbox": [
+    1448,
+    524,
+    1502,
+    692
+   ],
+   "hint": "p07-cut-obj-screen-hint.webp"
   }
  ],
  "p08": [
@@ -413,8 +584,8 @@
    "id": "cut-try",
    "src": "p08-cut-try.webp",
    "box": [
-    1227,
-    798,
+    1228,
+    799,
     1332,
     841
    ],
@@ -422,11 +593,30 @@
    "cut": true,
    "hint": "p08-cut-try-hint.webp",
    "hbox": [
-    1223,
-    794,
+    1224,
+    795,
     1336,
     845
    ]
+  },
+  {
+   "id": "cut-obj-knob",
+   "src": "p08-cut-obj-knob.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1394,
+    596,
+    1556,
+    660
+   ],
+   "hbox": [
+    1390,
+    592,
+    1560,
+    664
+   ],
+   "hint": "p08-cut-obj-knob-hint.webp"
   }
  ],
  "p09": [
@@ -459,7 +649,7 @@
    "box": [
     257,
     111,
-    1512,
+    1513,
     684
    ],
    "f": 0.45,
@@ -470,19 +660,38 @@
    "src": "p09-cut-try.webp",
    "box": [
     1163,
-    798,
-    1396,
-    842
+    698,
+    1397,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p09-cut-try-hint.webp",
    "hbox": [
     1159,
-    794,
-    1400,
-    846
+    694,
+    1401,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-wave",
+   "src": "p09-cut-obj-wave.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1403,
+    595,
+    1548,
+    664
+   ],
+   "hbox": [
+    1399,
+    591,
+    1552,
+    668
+   ],
+   "hint": "p09-cut-obj-wave-hint.webp"
   }
  ],
  "p10": [
@@ -516,7 +725,7 @@
    "box": [
     220,
     148,
-    1554,
+    1555,
     655
    ],
    "f": 0.45,
@@ -526,20 +735,58 @@
    "id": "cut-try",
    "src": "p10-cut-try.webp",
    "box": [
-    1126,
-    799,
+    1125,
+    699,
     1434,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p10-cut-try-hint.webp",
    "hbox": [
-    1122,
-    795,
+    1121,
+    695,
     1438,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p10-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    568,
+    1556,
+    654
+   ],
+   "hbox": [
+    1408,
+    564,
+    1560,
+    658
+   ],
+   "hint": "p10-cut-obj-flashlight-hint.webp"
+  },
+  {
+   "id": "cut-obj-disk",
+   "src": "p10-cut-obj-disk.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1258,
+    558,
+    1332,
+    662
+   ],
+   "hbox": [
+    1254,
+    554,
+    1336,
+    666
+   ],
+   "hint": "p10-cut-obj-disk-hint.webp"
   }
  ],
  "p11": [
@@ -570,7 +817,7 @@
    "id": "fg",
    "src": "p11-fg.webp",
    "box": [
-    171,
+    172,
     148,
     769,
     229
@@ -608,8 +855,8 @@
    "src": "p12-fg.webp",
    "box": [
     158,
-    148,
-    1546,
+    147,
+    1545,
     734
    ],
    "f": 0.45,
@@ -619,20 +866,39 @@
    "id": "cut-try",
    "src": "p12-cut-try.webp",
    "box": [
-    1159,
-    799,
+    1158,
+    698,
     1402,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p12-cut-try-hint.webp",
    "hbox": [
-    1155,
-    795,
+    1154,
+    694,
     1406,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-screen",
+   "src": "p12-cut-obj-screen.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1452,
+    548,
+    1499,
+    708
+   ],
+   "hbox": [
+    1448,
+    544,
+    1502,
+    712
+   ],
+   "hint": "p12-cut-obj-screen-hint.webp"
   }
  ],
  "p13": [
@@ -675,20 +941,58 @@
    "id": "cut-try",
    "src": "p13-cut-try.webp",
    "box": [
-    1173,
-    798,
+    1172,
+    698,
     1387,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p13-cut-try-hint.webp",
    "hbox": [
-    1169,
-    794,
+    1168,
+    694,
     1391,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-screen",
+   "src": "p13-cut-obj-screen.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1452,
+    548,
+    1499,
+    708
+   ],
+   "hbox": [
+    1448,
+    544,
+    1502,
+    712
+   ],
+   "hint": "p13-cut-obj-screen-hint.webp"
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p13-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1272,
+    567,
+    1416,
+    654
+   ],
+   "hbox": [
+    1268,
+    563,
+    1420,
+    658
+   ],
+   "hint": "p13-cut-obj-flashlight-hint.webp"
   }
  ],
  "p14": [
@@ -721,7 +1025,7 @@
    "box": [
     158,
     103,
-    1556,
+    1557,
     602
    ],
    "f": 0.45,
@@ -731,20 +1035,39 @@
    "id": "cut-try",
    "src": "p14-cut-try.webp",
    "box": [
-    1169,
-    798,
+    1168,
+    698,
     1392,
-    841
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p14-cut-try-hint.webp",
    "hbox": [
-    1165,
-    794,
+    1164,
+    694,
     1396,
-    845
+    746
    ]
+  },
+  {
+   "id": "cut-obj-glass",
+   "src": "p14-cut-obj-glass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1413,
+    578,
+    1538,
+    684
+   ],
+   "hbox": [
+    1409,
+    574,
+    1542,
+    688
+   ],
+   "hint": "p14-cut-obj-glass-hint.webp"
   }
  ],
  "p15": [
@@ -787,20 +1110,58 @@
    "id": "cut-try",
    "src": "p15-cut-try.webp",
    "box": [
-    1150,
-    798,
-    1410,
-    841
+    1149,
+    698,
+    1411,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p15-cut-try-hint.webp",
    "hbox": [
-    1146,
-    794,
-    1414,
-    845
+    1145,
+    694,
+    1415,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-glass",
+   "src": "p15-cut-obj-glass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    558,
+    1538,
+    664
+   ],
+   "hbox": [
+    1408,
+    554,
+    1542,
+    668
+   ],
+   "hint": "p15-cut-obj-glass-hint.webp"
+  },
+  {
+   "id": "cut-obj-screen",
+   "src": "p15-cut-obj-screen.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1272,
+    528,
+    1319,
+    688
+   ],
+   "hbox": [
+    1268,
+    524,
+    1322,
+    692
+   ],
+   "hint": "p15-cut-obj-screen-hint.webp"
   }
  ],
  "p16": [
@@ -870,7 +1231,7 @@
    "box": [
     311,
     110,
-    1530,
+    1531,
     720
    ],
    "f": 0.45,
@@ -881,19 +1242,76 @@
    "src": "p17-cut-try.webp",
    "box": [
     1137,
-    799,
-    1423,
-    841
+    699,
+    1422,
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p17-cut-try-hint.webp",
    "hbox": [
     1133,
-    795,
-    1427,
-    845
+    695,
+    1426,
+    745
    ]
+  },
+  {
+   "id": "cut-obj-screen",
+   "src": "p17-cut-obj-screen.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1452,
+    528,
+    1499,
+    688
+   ],
+   "hbox": [
+    1448,
+    524,
+    1502,
+    692
+   ],
+   "hint": "p17-cut-obj-screen-hint.webp"
+  },
+  {
+   "id": "cut-obj-glass",
+   "src": "p17-cut-obj-glass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1272,
+    558,
+    1398,
+    664
+   ],
+   "hbox": [
+    1268,
+    554,
+    1402,
+    668
+   ],
+   "hint": "p17-cut-obj-glass-hint.webp"
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p17-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1092,
+    567,
+    1236,
+    654
+   ],
+   "hbox": [
+    1088,
+    563,
+    1240,
+    658
+   ],
+   "hint": "p17-cut-obj-flashlight-hint.webp"
   }
  ],
  "p18": [
@@ -937,19 +1355,38 @@
    "src": "p18-cut-try.webp",
    "box": [
     1130,
-    798,
-    1429,
-    841
+    698,
+    1430,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p18-cut-try-hint.webp",
    "hbox": [
     1126,
-    794,
-    1433,
-    845
+    694,
+    1434,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-glass",
+   "src": "p18-cut-obj-glass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    558,
+    1538,
+    664
+   ],
+   "hbox": [
+    1408,
+    554,
+    1542,
+    668
+   ],
+   "hint": "p18-cut-obj-glass-hint.webp"
   }
  ]
 }

@@ -97,7 +97,7 @@ export function mountArt(stage, base, deck, pn, { still = false } = {}) {
   };
   // st: where a page scene has moved a cutout (page px), on top of the parallax
   function paint(x, y, k, extra, { el, hint, st }) {
-    const tr = `translate(${(x + st.dx) * k}px, ${(y + st.dy) * k}px)${st.rot ? ` rotate(${st.rot}deg)` : ""}${st.scale !== 1 ? ` scale(${st.scale})` : ""}${extra}`;
+    const tr = `translate(${(x + st.dx) * k}px, ${(y + st.dy) * k}px)${st.rot ? ` rotate(${st.rot}deg)` : ""}${st.scale !== 1 ? ` scale(${st.scale})` : ""}${st.sy ? ` scaleY(${st.sy})` : ""}${extra}`;
     el.style.transform = tr; if (hint) hint.style.transform = tr;
   }
   const repaint = () => { if (still) { const k = stage.clientWidth / PAGE_W; for (const e of els) paint(0, 0, k, "", e); } };

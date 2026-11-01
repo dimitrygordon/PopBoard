@@ -1,0 +1,314 @@
+{
+ "p04": {
+  "items": [
+   {
+    "id": "point-1",
+    "label": "measured point 1"
+   },
+   {
+    "id": "point-2",
+    "label": "measured point 2"
+   },
+   {
+    "id": "point-3",
+    "label": "measured point 3"
+   },
+   {
+    "id": "point-4",
+    "label": "measured point 4"
+   },
+   {
+    "id": "point-5",
+    "label": "measured point 5"
+   },
+   {
+    "id": "trend-line",
+    "label": "dashed violet trend line d = 4t through the five points, extended to t = 6.6 s"
+   },
+   {
+    "id": "predicted-point",
+    "label": "hidden next value at t = 6 s, d = 24 m"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p05": {
+  "items": [
+   {
+    "id": "step-1",
+    "label": "step 1 card \"State the problem.\", home slot [595, 28, 1035, 104]"
+   },
+   {
+    "id": "step-2",
+    "label": "step 2 card \"Gather information.\", home slot [595, 146, 1035, 222]"
+   },
+   {
+    "id": "step-3",
+    "label": "step 3 card \"Form a hypothesis.\", home slot [595, 264, 1035, 340]"
+   },
+   {
+    "id": "step-4",
+    "label": "step 4 card \"Test the hypothesis.\", home slot [595, 382, 1035, 458]"
+   },
+   {
+    "id": "step-5",
+    "label": "step 5 card \"Analyze data.\", home slot [595, 500, 1035, 576]"
+   },
+   {
+    "id": "step-6",
+    "label": "step 6 card \"Draw conclusions.\", home slot [595, 618, 1035, 694]"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p08": {
+  "items": [
+   {
+    "id": "ramp-test",
+    "label": "test ramp on its book stack"
+   },
+   {
+    "id": "ball-control",
+    "label": "ball at top of control ramp"
+   },
+   {
+    "id": "ball-test",
+    "label": "ball at top of test ramp"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p09": {
+  "items": [
+   {
+    "id": "point-1",
+    "label": "graph point x=1, y=2.0"
+   },
+   {
+    "id": "point-2",
+    "label": "graph point x=2, y=4.1"
+   },
+   {
+    "id": "point-3",
+    "label": "graph point x=3, y=5.9"
+   },
+   {
+    "id": "point-4",
+    "label": "graph point x=4, y=8.2"
+   },
+   {
+    "id": "point-5",
+    "label": "graph point x=5, y=3.0"
+   },
+   {
+    "id": "point-6",
+    "label": "graph point x=6, y=12.1"
+   },
+   {
+    "id": "card-1",
+    "label": "blank measurement card"
+   },
+   {
+    "id": "card-2",
+    "label": "blank measurement card"
+   },
+   {
+    "id": "card-3",
+    "label": "blank measurement card"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p13": {
+  "items": [
+   {
+    "id": "trial-01",
+    "label": "trial 1 result 5.11"
+   },
+   {
+    "id": "trial-02",
+    "label": "trial 2 result 6.50"
+   },
+   {
+    "id": "trial-03",
+    "label": "trial 3 result 3.88"
+   },
+   {
+    "id": "trial-04",
+    "label": "trial 4 result 6.19"
+   },
+   {
+    "id": "trial-05",
+    "label": "trial 5 result 4.69"
+   },
+   {
+    "id": "trial-06",
+    "label": "trial 6 result 4.69"
+   },
+   {
+    "id": "trial-07",
+    "label": "trial 7 result 7.28"
+   },
+   {
+    "id": "trial-08",
+    "label": "trial 8 result 5.19"
+   },
+   {
+    "id": "trial-09",
+    "label": "trial 9 result 4.95"
+   },
+   {
+    "id": "trial-10",
+    "label": "trial 10 result 5.88"
+   },
+   {
+    "id": "trial-11",
+    "label": "trial 11 result 6.35"
+   },
+   {
+    "id": "trial-12",
+    "label": "trial 12 result 4.96"
+   },
+   {
+    "id": "average-line",
+    "label": "average of all 12 trials 5.47"
+   },
+   {
+    "id": "cherry-pick-ring",
+    "label": "ring on the highest trial 7.28"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p15": {
+  "items": [
+   {
+    "id": "atom-thomson",
+    "label": "Thomson model"
+   },
+   {
+    "id": "atom-rutherford",
+    "label": "Rutherford model"
+   },
+   {
+    "id": "atom-cloud",
+    "label": "present-day model"
+   },
+   {
+    "id": "slider-knob",
+    "label": "timeline slider knob, stops at x 278, 794, 1309"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p16": {
+  "items": [
+   {
+    "id": "plane-dart",
+    "label": "paper airplane design 1"
+   },
+   {
+    "id": "plane-glider",
+    "label": "paper airplane design 2"
+   },
+   {
+    "id": "plane-stubby",
+    "label": "paper airplane design 3"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p17": {
+  "items": [
+   {
+    "id": "heavy-ball",
+    "label": "heavy ball, drop from top of the glass room"
+   },
+   {
+    "id": "light-object",
+    "label": "feather, the light object"
+   },
+   {
+    "id": "air-toggle",
+    "label": "air on/off switch under the glass room"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p20": {
+  "items": [
+   {
+    "id": "card-1",
+    "label": "question card \"Is pizza delicious?\""
+   },
+   {
+    "id": "card-2",
+    "label": "question card \"Does a heavier ball fall faster?\""
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ }
+}

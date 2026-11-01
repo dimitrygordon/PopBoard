@@ -73,23 +73,99 @@
    "late": true
   },
   {
-   "id": "cut-samples",
-   "src": "p02-cut-samples.webp",
-   "box": [
-    956,
-    559,
-    1556,
-    828
-   ],
+   "id": "cut-sample-cube",
+   "src": "p02-cut-sample-cube.webp",
    "f": 0.45,
    "cut": true,
-   "hint": "p02-cut-samples-hint.webp",
+   "box": [
+    1018,
+    557,
+    1152,
+    700
+   ],
    "hbox": [
-    952,
-    555,
-    1560,
-    832
-   ]
+    1015,
+    553,
+    1155,
+    704
+   ],
+   "hint": "p02-cut-sample-cube-hint.webp"
+  },
+  {
+   "id": "cut-sample-stone",
+   "src": "p02-cut-sample-stone.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1150,
+    599,
+    1279,
+    726
+   ],
+   "hbox": [
+    1147,
+    596,
+    1282,
+    729
+   ],
+   "hint": "p02-cut-sample-stone-hint.webp"
+  },
+  {
+   "id": "cut-sample-cylinder",
+   "src": "p02-cut-sample-cylinder.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1300,
+    583,
+    1384,
+    750
+   ],
+   "hbox": [
+    1296,
+    579,
+    1388,
+    754
+   ],
+   "hint": "p02-cut-sample-cylinder-hint.webp"
+  },
+  {
+   "id": "cut-sample-ball",
+   "src": "p02-cut-sample-ball.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1399,
+    646,
+    1504,
+    753
+   ],
+   "hbox": [
+    1395,
+    642,
+    1508,
+    757
+   ],
+   "hint": "p02-cut-sample-ball-hint.webp"
+  },
+  {
+   "id": "cut-tray",
+   "src": "p02-cut-tray.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    956,
+    581,
+    1556,
+    834
+   ],
+   "hbox": [
+    955,
+    589,
+    1556,
+    837
+   ],
+   "hint": "p02-cut-tray-hint.webp"
   }
  ],
  "p03": [
@@ -159,8 +235,8 @@
    "box": [
     129,
     581,
-    1505,
-    878
+    1281,
+    894
    ],
    "f": 0.45,
    "late": true
@@ -169,18 +245,18 @@
    "id": "cut-date-1",
    "src": "p04-cut-date-1.webp",
    "box": [
-    664,
+    580,
     615,
-    1416,
+    1207,
     665
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p04-cut-date-1-hint.webp",
    "hbox": [
-    660,
+    576,
     611,
-    1420,
+    1211,
     669
    ]
   },
@@ -188,18 +264,18 @@
    "id": "cut-date-2",
    "src": "p04-cut-date-2.webp",
    "box": [
-    579,
+    509,
     673,
-    1318,
+    1125,
     723
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p04-cut-date-2-hint.webp",
    "hbox": [
-    575,
+    505,
     669,
-    1322,
+    1129,
     727
    ]
   },
@@ -207,18 +283,18 @@
    "id": "cut-date-3",
    "src": "p04-cut-date-3.webp",
    "box": [
-    278,
+    258,
     732,
-    933,
+    804,
     782
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p04-cut-date-3-hint.webp",
    "hbox": [
-    274,
+    254,
     728,
-    937,
+    808,
     786
    ]
   }
@@ -254,7 +330,7 @@
     786,
     57,
     1567,
-    784
+    730
    ],
    "f": 0.45,
    "late": true
@@ -263,57 +339,57 @@
    "id": "cut-student-1",
    "src": "p05-cut-student-1.webp",
    "box": [
-    1023,
-    285,
+    1024,
+    269,
     1057,
-    470
+    441
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p05-cut-student-1-hint.webp",
    "hbox": [
-    1019,
-    281,
+    1020,
+    265,
     1061,
-    474
+    445
    ]
   },
   {
    "id": "cut-student-2",
    "src": "p05-cut-student-2.webp",
    "box": [
-    1215,
-    150,
+    1216,
+    146,
     1249,
-    426
+    399
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p05-cut-student-2-hint.webp",
    "hbox": [
-    1211,
-    146,
+    1212,
+    142,
     1253,
-    430
+    403
    ]
   },
   {
    "id": "cut-student-3",
    "src": "p05-cut-student-3.webp",
    "box": [
-    1407,
-    601,
+    1406,
+    557,
     1441,
-    697
+    647
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p05-cut-student-3-hint.webp",
    "hbox": [
-    1403,
-    597,
+    1402,
+    553,
     1445,
-    701
+    651
    ]
   }
  ],
@@ -345,9 +421,9 @@
    "id": "fg",
    "src": "p06-fg.webp",
    "box": [
-    134,
+    135,
     241,
-    1474,
+    1475,
     388
    ],
    "f": 0.45,
@@ -495,9 +571,9 @@
    "src": "p09-fg.webp",
    "box": [
     309,
-    44,
+    45,
     1424,
-    635
+    100
    ],
    "f": 0.45,
    "late": true
@@ -608,7 +684,7 @@
    "box": [
     1221,
     208,
-    1435,
+    1436,
     463
    ],
    "f": 0.45,
@@ -617,7 +693,7 @@
    "hbox": [
     1217,
     204,
-    1439,
+    1440,
     467
    ]
   },

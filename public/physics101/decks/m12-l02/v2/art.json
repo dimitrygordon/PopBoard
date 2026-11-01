@@ -295,6 +295,63 @@
    ],
    "f": 0.45,
    "late": true
+  },
+  {
+   "id": "cut-obj-droplet",
+   "src": "p06-cut-obj-droplet.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1449,
+    560,
+    1502,
+    658
+   ],
+   "hbox": [
+    1445,
+    556,
+    1505,
+    662
+   ],
+   "hint": "p06-cut-obj-droplet-hint.webp"
+  },
+  {
+   "id": "cut-obj-particle",
+   "src": "p06-cut-obj-particle.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1307,
+    578,
+    1364,
+    646
+   ],
+   "hbox": [
+    1303,
+    574,
+    1368,
+    650
+   ],
+   "hint": "p06-cut-obj-particle-hint.webp"
+  },
+  {
+   "id": "cut-try",
+   "src": "p06-cut-try.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1152,
+    778,
+    1367,
+    821
+   ],
+   "hbox": [
+    1148,
+    774,
+    1371,
+    825
+   ],
+   "hint": "p06-cut-try-hint.webp"
   }
  ],
  "p07": [
@@ -332,6 +389,63 @@
    ],
    "f": 0.45,
    "late": true
+  },
+  {
+   "id": "cut-obj-glass",
+   "src": "p07-cut-obj-glass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1439,
+    555,
+    1510,
+    666
+   ],
+   "hbox": [
+    1435,
+    551,
+    1513,
+    670
+   ],
+   "hint": "p07-cut-obj-glass-hint.webp"
+  },
+  {
+   "id": "cut-obj-droplet",
+   "src": "p07-cut-obj-droplet.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1309,
+    558,
+    1362,
+    658
+   ],
+   "hbox": [
+    1305,
+    554,
+    1365,
+    662
+   ],
+   "hint": "p07-cut-obj-droplet-hint.webp"
+  },
+  {
+   "id": "cut-try",
+   "src": "p07-cut-try.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1149,
+    778,
+    1311,
+    822
+   ],
+   "hbox": [
+    1145,
+    774,
+    1315,
+    826
+   ],
+   "hint": "p07-cut-try-hint.webp"
   }
  ]
 }

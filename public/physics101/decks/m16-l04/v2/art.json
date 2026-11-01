@@ -53,6 +53,44 @@
     558,
     846
    ]
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p01-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    717,
+    713,
+    754,
+    862
+   ],
+   "hbox": [
+    713,
+    709,
+    758,
+    866
+   ],
+   "hint": "p01-cut-obj-lens-hint.webp"
+  },
+  {
+   "id": "cut-obj-switch",
+   "src": "p01-cut-obj-switch.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    234,
+    748,
+    356,
+    812
+   ],
+   "hbox": [
+    230,
+    744,
+    360,
+    816
+   ],
+   "hint": "p01-cut-obj-switch-hint.webp"
   }
  ],
  "p02": [
@@ -85,7 +123,7 @@
    "box": [
     134,
     103,
-    1438,
+    1439,
     224
    ],
    "f": 0.45,
@@ -132,20 +170,39 @@
    "id": "cut-try",
    "src": "p03-cut-try.webp",
    "box": [
-    1127,
-    798,
+    1128,
+    698,
     1433,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p03-cut-try-hint.webp",
    "hbox": [
-    1123,
-    794,
+    1124,
+    694,
     1437,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-object",
+   "src": "p03-cut-obj-object.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1446,
+    546,
+    1506,
+    677
+   ],
+   "hbox": [
+    1442,
+    542,
+    1510,
+    681
+   ],
+   "hint": "p03-cut-obj-object-hint.webp"
   }
  ],
  "p04": [
@@ -188,20 +245,39 @@
    "id": "cut-try",
    "src": "p04-cut-try.webp",
    "box": [
-    1111,
-    798,
+    1110,
+    698,
     1450,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p04-cut-try-hint.webp",
    "hbox": [
-    1107,
-    794,
+    1106,
+    694,
     1454,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-object",
+   "src": "p04-cut-obj-object.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1444,
+    547,
+    1506,
+    677
+   ],
+   "hbox": [
+    1440,
+    543,
+    1510,
+    681
+   ],
+   "hint": "p04-cut-obj-object-hint.webp"
   }
  ],
  "p05": [
@@ -245,19 +321,38 @@
    "src": "p05-cut-try.webp",
    "box": [
     1122,
-    798,
+    698,
     1438,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p05-cut-try-hint.webp",
    "hbox": [
     1118,
-    794,
+    694,
     1442,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-glass",
+   "src": "p05-cut-obj-glass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    558,
+    1538,
+    664
+   ],
+   "hbox": [
+    1408,
+    554,
+    1542,
+    668
+   ],
+   "hint": "p05-cut-obj-glass-hint.webp"
   }
  ],
  "p06": [
@@ -301,19 +396,57 @@
    "src": "p06-cut-try.webp",
    "box": [
     1107,
-    798,
+    699,
     1453,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p06-cut-try-hint.webp",
    "hbox": [
     1103,
-    794,
+    695,
     1457,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-object",
+   "src": "p06-cut-obj-object.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    546,
+    1506,
+    677
+   ],
+   "hbox": [
+    1441,
+    542,
+    1510,
+    681
+   ],
+   "hint": "p06-cut-obj-object-hint.webp"
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p06-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1317,
+    532,
+    1354,
+    682
+   ],
+   "hbox": [
+    1313,
+    528,
+    1358,
+    686
+   ],
+   "hint": "p06-cut-obj-lens-hint.webp"
   }
  ],
  "p07": [
@@ -345,7 +478,7 @@
    "id": "fg",
    "src": "p07-fg.webp",
    "box": [
-    169,
+    168,
     148,
     1539,
     766
@@ -358,7 +491,7 @@
    "src": "p07-cut-try.webp",
    "box": [
     1230,
-    799,
+    798,
     1329,
     841
    ],
@@ -367,10 +500,29 @@
    "hint": "p07-cut-try-hint.webp",
    "hbox": [
     1226,
-    795,
+    794,
     1333,
     845
    ]
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p07-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1457,
+    553,
+    1493,
+    702
+   ],
+   "hbox": [
+    1453,
+    549,
+    1497,
+    706
+   ],
+   "hint": "p07-cut-obj-lens-hint.webp"
   }
  ],
  "p08": [
@@ -415,19 +567,57 @@
    "src": "p08-cut-try.webp",
    "box": [
     1128,
-    798,
-    1433,
-    842
+    698,
+    1432,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p08-cut-try-hint.webp",
    "hbox": [
     1124,
-    794,
-    1437,
-    846
+    694,
+    1436,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-object",
+   "src": "p08-cut-obj-object.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    546,
+    1506,
+    677
+   ],
+   "hbox": [
+    1441,
+    542,
+    1510,
+    681
+   ],
+   "hint": "p08-cut-obj-object-hint.webp"
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p08-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1317,
+    532,
+    1353,
+    682
+   ],
+   "hbox": [
+    1313,
+    528,
+    1357,
+    686
+   ],
+   "hint": "p08-cut-obj-lens-hint.webp"
   }
  ],
  "p09": [
@@ -460,7 +650,7 @@
    "box": [
     298,
     110,
-    1550,
+    1551,
     699
    ],
    "f": 0.45,
@@ -471,19 +661,57 @@
    "src": "p09-cut-try.webp",
    "box": [
     1140,
-    798,
+    698,
     1420,
-    841
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p09-cut-try-hint.webp",
    "hbox": [
     1136,
-    794,
+    694,
     1424,
-    845
+    745
    ]
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p09-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1457,
+    532,
+    1494,
+    682
+   ],
+   "hbox": [
+    1453,
+    528,
+    1498,
+    686
+   ],
+   "hint": "p09-cut-obj-lens-hint.webp"
+  },
+  {
+   "id": "cut-obj-object",
+   "src": "p09-cut-obj-object.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1325,
+    547,
+    1386,
+    677
+   ],
+   "hbox": [
+    1321,
+    543,
+    1390,
+    681
+   ],
+   "hint": "p09-cut-obj-object-hint.webp"
   }
  ],
  "p10": [
@@ -527,19 +755,57 @@
    "src": "p10-cut-try.webp",
    "box": [
     1109,
-    798,
+    698,
     1451,
-    841
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p10-cut-try-hint.webp",
    "hbox": [
     1105,
-    794,
+    694,
     1455,
-    845
+    746
    ]
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p10-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    567,
+    1556,
+    654
+   ],
+   "hbox": [
+    1408,
+    563,
+    1560,
+    658
+   ],
+   "hint": "p10-cut-obj-flashlight-hint.webp"
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p10-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1277,
+    532,
+    1314,
+    682
+   ],
+   "hbox": [
+    1273,
+    528,
+    1318,
+    686
+   ],
+   "hint": "p10-cut-obj-lens-hint.webp"
   }
  ],
  "p11": [
@@ -582,20 +848,58 @@
    "id": "cut-try",
    "src": "p11-cut-try.webp",
    "box": [
-    1112,
-    798,
+    1111,
+    698,
     1449,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p11-cut-try-hint.webp",
    "hbox": [
-    1108,
-    794,
+    1107,
+    694,
     1453,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p11-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    567,
+    1556,
+    654
+   ],
+   "hbox": [
+    1408,
+    563,
+    1560,
+    658
+   ],
+   "hint": "p11-cut-obj-flashlight-hint.webp"
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p11-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1277,
+    532,
+    1314,
+    682
+   ],
+   "hbox": [
+    1273,
+    528,
+    1318,
+    686
+   ],
+   "hint": "p11-cut-obj-lens-hint.webp"
   }
  ],
  "p12": [
@@ -639,19 +943,76 @@
    "src": "p12-cut-try.webp",
    "box": [
     1110,
-    798,
+    698,
     1450,
-    841
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p12-cut-try-hint.webp",
    "hbox": [
     1106,
-    794,
+    694,
     1454,
-    845
+    746
    ]
+  },
+  {
+   "id": "cut-obj-object",
+   "src": "p12-cut-obj-object.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1443,
+    547,
+    1506,
+    677
+   ],
+   "hbox": [
+    1439,
+    543,
+    1510,
+    681
+   ],
+   "hint": "p12-cut-obj-object-hint.webp"
+  },
+  {
+   "id": "cut-obj-eye",
+   "src": "p12-cut-obj-eye.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1289,
+    568,
+    1381,
+    646
+   ],
+   "hbox": [
+    1285,
+    564,
+    1385,
+    650
+   ],
+   "hint": "p12-cut-obj-eye-hint.webp"
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p12-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1157,
+    533,
+    1193,
+    682
+   ],
+   "hbox": [
+    1153,
+    529,
+    1197,
+    686
+   ],
+   "hint": "p12-cut-obj-lens-hint.webp"
   }
  ],
  "p13": [
@@ -695,19 +1056,57 @@
    "src": "p13-cut-try.webp",
    "box": [
     1167,
-    799,
-    1393,
-    842
+    698,
+    1394,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p13-cut-try-hint.webp",
    "hbox": [
     1163,
-    795,
-    1397,
-    846
+    694,
+    1398,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-eye",
+   "src": "p13-cut-obj-eye.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1429,
+    588,
+    1522,
+    666
+   ],
+   "hbox": [
+    1425,
+    584,
+    1526,
+    670
+   ],
+   "hint": "p13-cut-obj-eye-hint.webp"
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p13-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1297,
+    532,
+    1333,
+    682
+   ],
+   "hbox": [
+    1293,
+    528,
+    1337,
+    686
+   ],
+   "hint": "p13-cut-obj-lens-hint.webp"
   }
  ],
  "p14": [
@@ -740,7 +1139,7 @@
    "box": [
     158,
     103,
-    1535,
+    1536,
     688
    ],
    "f": 0.45,
@@ -777,7 +1176,7 @@
    "box": [
     253,
     110,
-    1555,
+    1554,
     739
    ],
    "f": 0.45,
@@ -788,19 +1187,57 @@
    "src": "p15-cut-try.webp",
    "box": [
     1152,
-    798,
+    698,
     1407,
-    841
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p15-cut-try-hint.webp",
    "hbox": [
     1148,
-    794,
+    694,
     1411,
-    845
+    746
    ]
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p15-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1456,
+    532,
+    1494,
+    682
+   ],
+   "hbox": [
+    1452,
+    528,
+    1498,
+    686
+   ],
+   "hint": "p15-cut-obj-lens-hint.webp"
+  },
+  {
+   "id": "cut-obj-scope",
+   "src": "p15-cut-obj-scope.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1293,
+    573,
+    1403,
+    678
+   ],
+   "hbox": [
+    1289,
+    569,
+    1407,
+    682
+   ],
+   "hint": "p15-cut-obj-scope-hint.webp"
   }
  ],
  "p16": [
@@ -833,7 +1270,7 @@
    "box": [
     338,
     110,
-    1543,
+    1542,
     833
    ],
    "f": 0.45,
@@ -844,19 +1281,38 @@
    "src": "p16-cut-try.webp",
    "box": [
     1131,
-    798,
+    698,
     1429,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p16-cut-try-hint.webp",
    "hbox": [
     1127,
-    794,
+    694,
     1433,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-knob",
+   "src": "p16-cut-obj-knob.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1394,
+    577,
+    1556,
+    640
+   ],
+   "hbox": [
+    1390,
+    573,
+    1560,
+    644
+   ],
+   "hint": "p16-cut-obj-knob-hint.webp"
   }
  ],
  "p17": [
@@ -889,7 +1345,7 @@
    "box": [
     158,
     103,
-    1529,
+    1528,
     676
    ],
    "f": 0.45,
@@ -900,19 +1356,76 @@
    "src": "p17-cut-try.webp",
    "box": [
     1154,
-    799,
-    1406,
-    842
+    698,
+    1407,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p17-cut-try-hint.webp",
    "hbox": [
     1150,
-    795,
-    1410,
-    846
+    694,
+    1411,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-mirror",
+   "src": "p17-cut-obj-mirror.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1450,
+    553,
+    1500,
+    702
+   ],
+   "hbox": [
+    1446,
+    549,
+    1504,
+    706
+   ],
+   "hint": "p17-cut-obj-mirror-hint.webp"
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p17-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1272,
+    566,
+    1416,
+    654
+   ],
+   "hbox": [
+    1268,
+    562,
+    1420,
+    658
+   ],
+   "hint": "p17-cut-obj-flashlight-hint.webp"
+  },
+  {
+   "id": "cut-obj-star",
+   "src": "p17-cut-obj-star.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1121,
+    559,
+    1189,
+    654
+   ],
+   "hbox": [
+    1117,
+    555,
+    1193,
+    658
+   ],
+   "hint": "p17-cut-obj-star-hint.webp"
   }
  ]
 }

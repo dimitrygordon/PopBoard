@@ -114,19 +114,38 @@
    "src": "p03-cut-try.webp",
    "box": [
     1135,
-    798,
+    698,
     1425,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p03-cut-try-hint.webp",
    "hbox": [
     1131,
-    794,
+    694,
     1429,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-atom",
+   "src": "p03-cut-obj-atom.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1421,
+    548,
+    1536,
+    666
+   ],
+   "hbox": [
+    1417,
+    544,
+    1540,
+    670
+   ],
+   "hint": "p03-cut-obj-atom-hint.webp"
   }
  ],
  "p04": [
@@ -171,19 +190,76 @@
    "src": "p04-cut-try.webp",
    "box": [
     1160,
-    798,
+    699,
     1400,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p04-cut-try-hint.webp",
    "hbox": [
     1156,
-    794,
+    695,
     1404,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-thermo",
+   "src": "p04-cut-obj-thermo.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1427,
+    556,
+    1524,
+    694
+   ],
+   "hbox": [
+    1423,
+    552,
+    1528,
+    698
+   ],
+   "hint": "p04-cut-obj-thermo-hint.webp"
+  },
+  {
+   "id": "cut-obj-diode",
+   "src": "p04-cut-obj-diode.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1246,
+    572,
+    1386,
+    644
+   ],
+   "hbox": [
+    1242,
+    568,
+    1390,
+    648
+   ],
+   "hint": "p04-cut-obj-diode-hint.webp"
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p04-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1105,
+    572,
+    1166,
+    646
+   ],
+   "hbox": [
+    1101,
+    568,
+    1169,
+    650
+   ],
+   "hint": "p04-cut-obj-electron-hint.webp"
   }
  ],
  "p05": [
@@ -216,7 +292,7 @@
    "box": [
     165,
     110,
-    1552,
+    1553,
     386
    ],
    "f": 0.45,
@@ -228,8 +304,8 @@
    "box": [
     1234,
     799,
-    1326,
-    842
+    1327,
+    841
    ],
    "f": 0.45,
    "cut": true,
@@ -237,9 +313,28 @@
    "hbox": [
     1230,
     795,
-    1330,
-    846
+    1331,
+    845
    ]
+  },
+  {
+   "id": "cut-obj-glass",
+   "src": "p05-cut-obj-glass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    578,
+    1538,
+    684
+   ],
+   "hbox": [
+    1408,
+    574,
+    1542,
+    688
+   ],
+   "hint": "p05-cut-obj-glass-hint.webp"
   }
  ],
  "p06": [
@@ -310,7 +405,7 @@
    "box": [
     171,
     148,
-    1555,
+    1556,
     630
    ],
    "f": 0.45,
@@ -321,19 +416,76 @@
    "src": "p07-cut-try.webp",
    "box": [
     1160,
-    799,
-    1400,
-    842
+    698,
+    1401,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p07-cut-try-hint.webp",
    "hbox": [
     1156,
-    795,
-    1404,
-    846
+    694,
+    1405,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-switch",
+   "src": "p07-cut-obj-switch.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1416,
+    588,
+    1536,
+    652
+   ],
+   "hbox": [
+    1412,
+    584,
+    1540,
+    656
+   ],
+   "hint": "p07-cut-obj-switch-hint.webp"
+  },
+  {
+   "id": "cut-obj-testcharge",
+   "src": "p07-cut-obj-testcharge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1274,
+    577,
+    1357,
+    648
+   ],
+   "hbox": [
+    1270,
+    573,
+    1361,
+    652
+   ],
+   "hint": "p07-cut-obj-testcharge-hint.webp"
+  },
+  {
+   "id": "cut-obj-wire",
+   "src": "p07-cut-obj-wire.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1097,
+    587,
+    1252,
+    632
+   ],
+   "hbox": [
+    1093,
+    583,
+    1256,
+    636
+   ],
+   "hint": "p07-cut-obj-wire-hint.webp"
   }
  ],
  "p08": [
@@ -376,20 +528,58 @@
    "id": "cut-try",
    "src": "p08-cut-try.webp",
    "box": [
-    1115,
-    798,
+    1114,
+    698,
     1446,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p08-cut-try-hint.webp",
    "hbox": [
-    1111,
-    794,
+    1110,
+    694,
     1450,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p08-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    573,
+    1506,
+    646
+   ],
+   "hbox": [
+    1441,
+    569,
+    1509,
+    650
+   ],
+   "hint": "p08-cut-obj-electron-hint.webp"
+  },
+  {
+   "id": "cut-obj-thermo",
+   "src": "p08-cut-obj-thermo.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1287,
+    536,
+    1384,
+    674
+   ],
+   "hbox": [
+    1283,
+    532,
+    1388,
+    678
+   ],
+   "hint": "p08-cut-obj-thermo-hint.webp"
   }
  ],
  "p09": [
@@ -422,7 +612,7 @@
    "box": [
     332,
     111,
-    1542,
+    1543,
     721
    ],
    "f": 0.45,
@@ -432,20 +622,58 @@
    "id": "cut-try",
    "src": "p09-cut-try.webp",
    "box": [
-    1207,
-    799,
+    1206,
+    798,
     1353,
-    841
+    842
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p09-cut-try-hint.webp",
    "hbox": [
-    1203,
-    795,
+    1202,
+    794,
     1357,
-    845
+    846
    ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p09-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    593,
+    1506,
+    666
+   ],
+   "hbox": [
+    1441,
+    589,
+    1509,
+    670
+   ],
+   "hint": "p09-cut-obj-electron-hint.webp"
+  },
+  {
+   "id": "cut-obj-atom",
+   "src": "p09-cut-obj-atom.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1281,
+    568,
+    1396,
+    686
+   ],
+   "hbox": [
+    1277,
+    564,
+    1400,
+    690
+   ],
+   "hint": "p09-cut-obj-atom-hint.webp"
   }
  ],
  "p10": [
@@ -478,7 +706,7 @@
    "box": [
     250,
     111,
-    1548,
+    1547,
     549
    ],
    "f": 0.45,
@@ -489,19 +717,57 @@
    "src": "p10-cut-try.webp",
    "box": [
     1178,
-    798,
+    699,
     1382,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p10-cut-try-hint.webp",
    "hbox": [
     1174,
-    794,
+    695,
     1386,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-wire",
+   "src": "p10-cut-obj-wire.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1397,
+    607,
+    1553,
+    652
+   ],
+   "hbox": [
+    1393,
+    603,
+    1557,
+    656
+   ],
+   "hint": "p10-cut-obj-wire-hint.webp"
+  },
+  {
+   "id": "cut-obj-thermo",
+   "src": "p10-cut-obj-thermo.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1247,
+    537,
+    1344,
+    674
+   ],
+   "hbox": [
+    1243,
+    533,
+    1348,
+    678
+   ],
+   "hint": "p10-cut-obj-thermo-hint.webp"
   }
  ],
  "p11": [
@@ -544,20 +810,39 @@
    "id": "cut-try",
    "src": "p11-cut-try.webp",
    "box": [
-    1116,
-    798,
-    1444,
-    842
+    1117,
+    698,
+    1443,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p11-cut-try-hint.webp",
    "hbox": [
-    1112,
-    794,
-    1448,
-    846
+    1113,
+    694,
+    1447,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p11-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    573,
+    1506,
+    646
+   ],
+   "hbox": [
+    1441,
+    569,
+    1509,
+    650
+   ],
+   "hint": "p11-cut-obj-electron-hint.webp"
   }
  ],
  "p12": [
@@ -600,20 +885,77 @@
    "id": "cut-try",
    "src": "p12-cut-try.webp",
    "box": [
-    1105,
-    798,
-    1456,
-    842
+    1104,
+    698,
+    1455,
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p12-cut-try-hint.webp",
    "hbox": [
-    1101,
-    794,
-    1460,
-    846
+    1100,
+    694,
+    1459,
+    745
    ]
+  },
+  {
+   "id": "cut-obj-thermo",
+   "src": "p12-cut-obj-thermo.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1427,
+    536,
+    1524,
+    674
+   ],
+   "hbox": [
+    1423,
+    532,
+    1528,
+    678
+   ],
+   "hint": "p12-cut-obj-thermo-hint.webp"
+  },
+  {
+   "id": "cut-obj-diode",
+   "src": "p12-cut-obj-diode.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1245,
+    572,
+    1386,
+    644
+   ],
+   "hbox": [
+    1241,
+    568,
+    1390,
+    648
+   ],
+   "hint": "p12-cut-obj-diode-hint.webp"
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p12-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1105,
+    572,
+    1166,
+    646
+   ],
+   "hbox": [
+    1101,
+    568,
+    1169,
+    650
+   ],
+   "hint": "p12-cut-obj-electron-hint.webp"
   }
  ],
  "p13": [
@@ -657,19 +999,76 @@
    "src": "p13-cut-try.webp",
    "box": [
     1118,
-    798,
-    1442,
-    842
+    698,
+    1441,
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p13-cut-try-hint.webp",
    "hbox": [
     1114,
-    794,
-    1446,
-    846
+    694,
+    1445,
+    745
    ]
+  },
+  {
+   "id": "cut-obj-diode",
+   "src": "p13-cut-obj-diode.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1406,
+    572,
+    1546,
+    644
+   ],
+   "hbox": [
+    1402,
+    568,
+    1550,
+    648
+   ],
+   "hint": "p13-cut-obj-diode-hint.webp"
+  },
+  {
+   "id": "cut-obj-atom",
+   "src": "p13-cut-obj-atom.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1241,
+    547,
+    1355,
+    666
+   ],
+   "hbox": [
+    1237,
+    543,
+    1359,
+    670
+   ],
+   "hint": "p13-cut-obj-atom-hint.webp"
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p13-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1105,
+    572,
+    1166,
+    646
+   ],
+   "hbox": [
+    1101,
+    568,
+    1169,
+    650
+   ],
+   "hint": "p13-cut-obj-electron-hint.webp"
   }
  ],
  "p14": [
@@ -713,19 +1112,57 @@
    "src": "p14-cut-try.webp",
    "box": [
     1134,
-    799,
+    698,
     1426,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p14-cut-try-hint.webp",
    "hbox": [
     1130,
-    795,
+    694,
     1430,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-atom",
+   "src": "p14-cut-obj-atom.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1420,
+    547,
+    1535,
+    666
+   ],
+   "hbox": [
+    1416,
+    543,
+    1539,
+    670
+   ],
+   "hint": "p14-cut-obj-atom-hint.webp"
+  },
+  {
+   "id": "cut-obj-diode",
+   "src": "p14-cut-obj-diode.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1246,
+    571,
+    1386,
+    644
+   ],
+   "hbox": [
+    1242,
+    567,
+    1390,
+    648
+   ],
+   "hint": "p14-cut-obj-diode-hint.webp"
   }
  ],
  "p15": [
@@ -769,19 +1206,38 @@
    "src": "p15-cut-try.webp",
    "box": [
     1172,
-    798,
+    698,
     1388,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p15-cut-try-hint.webp",
    "hbox": [
     1168,
-    794,
+    694,
     1392,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p15-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    592,
+    1506,
+    666
+   ],
+   "hbox": [
+    1441,
+    588,
+    1509,
+    670
+   ],
+   "hint": "p15-cut-obj-electron-hint.webp"
   }
  ],
  "p16": [
@@ -812,10 +1268,10 @@
    "id": "fg",
    "src": "p16-fg.webp",
    "box": [
-    151,
+    150,
     148,
     789,
-    297
+    298
    ],
    "f": 0.45,
    "late": true
@@ -824,7 +1280,7 @@
    "id": "cut-try",
    "src": "p16-cut-try.webp",
    "box": [
-    433,
+    434,
     799,
     507,
     841
@@ -833,11 +1289,49 @@
    "cut": true,
    "hint": "p16-cut-try-hint.webp",
    "hbox": [
-    429,
+    430,
     795,
     511,
     845
    ]
+  },
+  {
+   "id": "cut-obj-thermo",
+   "src": "p16-cut-obj-thermo.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1427,
+    257,
+    1524,
+    394
+   ],
+   "hbox": [
+    1423,
+    253,
+    1528,
+    398
+   ],
+   "hint": "p16-cut-obj-thermo-hint.webp"
+  },
+  {
+   "id": "cut-obj-resistor",
+   "src": "p16-cut-obj-resistor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    625,
+    759,
+    766,
+    816
+   ],
+   "hbox": [
+    621,
+    755,
+    770,
+    820
+   ],
+   "hint": "p16-cut-obj-resistor-hint.webp"
   }
  ],
  "p17": [
@@ -880,20 +1374,58 @@
    "id": "cut-try",
    "src": "p17-cut-try.webp",
    "box": [
-    413,
+    414,
     799,
     527,
-    841
+    842
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p17-cut-try-hint.webp",
    "hbox": [
-    409,
+    410,
     795,
     531,
-    845
+    846
    ]
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p17-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1073,
+    207,
+    1216,
+    294
+   ],
+   "hbox": [
+    1069,
+    203,
+    1220,
+    298
+   ],
+   "hint": "p17-cut-obj-flashlight-hint.webp"
+  },
+  {
+   "id": "cut-obj-resistor",
+   "src": "p17-cut-obj-resistor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    844,
+    759,
+    986,
+    816
+   ],
+   "hbox": [
+    840,
+    755,
+    990,
+    820
+   ],
+   "hint": "p17-cut-obj-resistor-hint.webp"
   }
  ]
 }

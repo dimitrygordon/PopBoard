@@ -53,6 +53,44 @@
     605,
     846
    ]
+  },
+  {
+   "id": "cut-obj-compass",
+   "src": "p01-cut-obj-compass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    680,
+    740,
+    750,
+    840
+   ],
+   "hbox": [
+    676,
+    736,
+    754,
+    844
+   ],
+   "hint": "p01-cut-obj-compass-hint.webp"
+  },
+  {
+   "id": "cut-obj-testcharge",
+   "src": "p01-cut-obj-testcharge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    194,
+    756,
+    277,
+    828
+   ],
+   "hbox": [
+    190,
+    752,
+    281,
+    832
+   ],
+   "hint": "p01-cut-obj-testcharge-hint.webp"
   }
  ],
  "p02": [
@@ -132,20 +170,39 @@
    "id": "cut-try",
    "src": "p03-cut-try.webp",
    "box": [
-    1107,
-    798,
-    1454,
-    842
+    1106,
+    698,
+    1453,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p03-cut-try-hint.webp",
    "hbox": [
-    1103,
-    794,
-    1458,
-    846
+    1102,
+    694,
+    1457,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-wave",
+   "src": "p03-cut-obj-wave.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1403,
+    574,
+    1547,
+    644
+   ],
+   "hbox": [
+    1399,
+    570,
+    1551,
+    648
+   ],
+   "hint": "p03-cut-obj-wave-hint.webp"
   }
  ],
  "p04": [
@@ -177,7 +234,7 @@
    "id": "fg",
    "src": "p04-fg.webp",
    "box": [
-    196,
+    197,
     148,
     1556,
     732
@@ -190,19 +247,38 @@
    "src": "p04-cut-try.webp",
    "box": [
     1127,
-    799,
-    1432,
-    841
+    698,
+    1433,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p04-cut-try-hint.webp",
    "hbox": [
     1123,
-    795,
-    1436,
-    845
+    694,
+    1437,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-wave",
+   "src": "p04-cut-obj-wave.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1404,
+    575,
+    1548,
+    644
+   ],
+   "hbox": [
+    1400,
+    571,
+    1552,
+    648
+   ],
+   "hint": "p04-cut-obj-wave-hint.webp"
   }
  ],
  "p05": [
@@ -246,19 +322,76 @@
    "src": "p05-cut-try.webp",
    "box": [
     1106,
-    799,
+    698,
     1454,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p05-cut-try-hint.webp",
    "hbox": [
     1102,
-    795,
+    694,
     1458,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-wave",
+   "src": "p05-cut-obj-wave.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1404,
+    574,
+    1548,
+    644
+   ],
+   "hbox": [
+    1400,
+    570,
+    1552,
+    648
+   ],
+   "hint": "p05-cut-obj-wave-hint.webp"
+  },
+  {
+   "id": "cut-obj-atom",
+   "src": "p05-cut-obj-atom.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1241,
+    547,
+    1355,
+    666
+   ],
+   "hbox": [
+    1237,
+    543,
+    1359,
+    670
+   ],
+   "hint": "p05-cut-obj-atom-hint.webp"
+  },
+  {
+   "id": "cut-obj-proton",
+   "src": "p05-cut-obj-proton.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1106,
+    566,
+    1164,
+    656
+   ],
+   "hbox": [
+    1102,
+    562,
+    1168,
+    660
+   ],
+   "hint": "p05-cut-obj-proton-hint.webp"
   }
  ],
  "p06": [
@@ -315,6 +448,44 @@
     1345,
     845
    ]
+  },
+  {
+   "id": "cut-obj-wave",
+   "src": "p06-cut-obj-wave.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1404,
+    595,
+    1548,
+    664
+   ],
+   "hbox": [
+    1400,
+    591,
+    1552,
+    668
+   ],
+   "hint": "p06-cut-obj-wave-hint.webp"
+  },
+  {
+   "id": "cut-obj-antenna",
+   "src": "p06-cut-obj-antenna.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1266,
+    554,
+    1325,
+    690
+   ],
+   "hbox": [
+    1262,
+    550,
+    1329,
+    694
+   ],
+   "hint": "p06-cut-obj-antenna-hint.webp"
   }
  ],
  "p07": [
@@ -347,7 +518,7 @@
    "box": [
     158,
     103,
-    1556,
+    1557,
     629
    ],
    "f": 0.45,
@@ -358,19 +529,38 @@
    "src": "p07-cut-try.webp",
    "box": [
     1146,
-    799,
-    1414,
-    842
+    699,
+    1413,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p07-cut-try-hint.webp",
    "hbox": [
     1142,
-    795,
-    1418,
-    846
+    695,
+    1417,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-thermo",
+   "src": "p07-cut-obj-thermo.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1427,
+    537,
+    1524,
+    674
+   ],
+   "hbox": [
+    1423,
+    533,
+    1528,
+    678
+   ],
+   "hint": "p07-cut-obj-thermo-hint.webp"
   }
  ],
  "p08": [
@@ -403,7 +593,7 @@
    "box": [
     158,
     103,
-    1537,
+    1538,
     631
    ],
    "f": 0.45,
@@ -414,19 +604,38 @@
    "src": "p08-cut-try.webp",
    "box": [
     1146,
-    798,
-    1415,
-    842
+    699,
+    1414,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p08-cut-try-hint.webp",
    "hbox": [
     1142,
-    794,
-    1419,
-    846
+    695,
+    1418,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-particle",
+   "src": "p08-cut-obj-particle.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1447,
+    578,
+    1504,
+    646
+   ],
+   "hbox": [
+    1443,
+    574,
+    1508,
+    650
+   ],
+   "hint": "p08-cut-obj-particle-hint.webp"
   }
  ],
  "p09": [
@@ -470,19 +679,57 @@
    "src": "p09-cut-try.webp",
    "box": [
     1147,
-    798,
-    1412,
-    842
+    698,
+    1413,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p09-cut-try-hint.webp",
    "hbox": [
     1143,
-    794,
-    1416,
-    846
+    694,
+    1417,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-antenna",
+   "src": "p09-cut-obj-antenna.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1444,
+    533,
+    1504,
+    670
+   ],
+   "hbox": [
+    1440,
+    529,
+    1508,
+    674
+   ],
+   "hint": "p09-cut-obj-antenna-hint.webp"
+  },
+  {
+   "id": "cut-obj-testcharge",
+   "src": "p09-cut-obj-testcharge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1294,
+    576,
+    1377,
+    648
+   ],
+   "hbox": [
+    1290,
+    572,
+    1381,
+    652
+   ],
+   "hint": "p09-cut-obj-testcharge-hint.webp"
   }
  ],
  "p10": [
@@ -514,7 +761,7 @@
    "id": "fg",
    "src": "p10-fg.webp",
    "box": [
-    175,
+    177,
     148,
     1549,
     743
@@ -527,19 +774,57 @@
    "src": "p10-cut-try.webp",
    "box": [
     1118,
-    798,
+    698,
     1442,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p10-cut-try-hint.webp",
    "hbox": [
     1114,
-    794,
+    694,
     1446,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-wave",
+   "src": "p10-cut-obj-wave.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1402,
+    574,
+    1547,
+    644
+   ],
+   "hbox": [
+    1398,
+    570,
+    1551,
+    648
+   ],
+   "hint": "p10-cut-obj-wave-hint.webp"
+  },
+  {
+   "id": "cut-obj-glass",
+   "src": "p10-cut-obj-glass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1232,
+    558,
+    1358,
+    664
+   ],
+   "hbox": [
+    1228,
+    554,
+    1362,
+    668
+   ],
+   "hint": "p10-cut-obj-glass-hint.webp"
   }
  ],
  "p11": [
@@ -582,7 +867,7 @@
    "id": "cut-try",
    "src": "p11-cut-try.webp",
    "box": [
-    315,
+    316,
     798,
     624,
     842
@@ -591,11 +876,30 @@
    "cut": true,
    "hint": "p11-cut-try-hint.webp",
    "hbox": [
-    311,
+    312,
     794,
     628,
     846
    ]
+  },
+  {
+   "id": "cut-obj-wave",
+   "src": "p11-cut-obj-wave.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    163,
+    694,
+    308,
+    764
+   ],
+   "hbox": [
+    159,
+    690,
+    312,
+    768
+   ],
+   "hint": "p11-cut-obj-wave-hint.webp"
   }
  ],
  "p12": [
@@ -638,20 +942,77 @@
    "id": "cut-try",
    "src": "p12-cut-try.webp",
    "box": [
-    1177,
-    799,
+    1178,
+    699,
     1383,
-    841
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p12-cut-try-hint.webp",
    "hbox": [
-    1173,
-    795,
+    1174,
+    695,
     1387,
-    845
+    746
    ]
+  },
+  {
+   "id": "cut-obj-charge",
+   "src": "p12-cut-obj-charge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1448,
+    588,
+    1501,
+    674
+   ],
+   "hbox": [
+    1444,
+    584,
+    1505,
+    678
+   ],
+   "hint": "p12-cut-obj-charge-hint.webp"
+  },
+  {
+   "id": "cut-obj-capacitor",
+   "src": "p12-cut-obj-capacitor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1046,
+    583,
+    1186,
+    680
+   ],
+   "hbox": [
+    1042,
+    579,
+    1190,
+    684
+   ],
+   "hint": "p12-cut-obj-capacitor-hint.webp"
+  },
+  {
+   "id": "cut-obj-coil",
+   "src": "p12-cut-obj-coil.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1266,
+    566,
+    1403,
+    650
+   ],
+   "hbox": [
+    1262,
+    562,
+    1407,
+    654
+   ],
+   "hint": "p12-cut-obj-coil-hint.webp"
   }
  ],
  "p13": [
@@ -696,7 +1057,7 @@
    "box": [
     1192,
     799,
-    1368,
+    1369,
     841
    ],
    "f": 0.45,
@@ -705,9 +1066,66 @@
    "hbox": [
     1188,
     795,
-    1372,
+    1373,
     845
    ]
+  },
+  {
+   "id": "cut-obj-pendulum",
+   "src": "p13-cut-obj-pendulum.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1434,
+    563,
+    1516,
+    694
+   ],
+   "hbox": [
+    1430,
+    559,
+    1520,
+    698
+   ],
+   "hint": "p13-cut-obj-pendulum-hint.webp"
+  },
+  {
+   "id": "cut-obj-coil",
+   "src": "p13-cut-obj-coil.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1266,
+    586,
+    1404,
+    670
+   ],
+   "hbox": [
+    1262,
+    582,
+    1408,
+    674
+   ],
+   "hint": "p13-cut-obj-coil-hint.webp"
+  },
+  {
+   "id": "cut-obj-capacitor",
+   "src": "p13-cut-obj-capacitor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1086,
+    583,
+    1226,
+    680
+   ],
+   "hbox": [
+    1082,
+    579,
+    1230,
+    684
+   ],
+   "hint": "p13-cut-obj-capacitor-hint.webp"
   }
  ],
  "p14": [
@@ -751,19 +1169,57 @@
    "src": "p14-cut-try.webp",
    "box": [
     1131,
-    799,
-    1430,
-    842
+    698,
+    1429,
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p14-cut-try-hint.webp",
    "hbox": [
     1127,
-    795,
-    1434,
-    846
+    694,
+    1433,
+    746
    ]
+  },
+  {
+   "id": "cut-obj-pendulum",
+   "src": "p14-cut-obj-pendulum.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1434,
+    542,
+    1516,
+    674
+   ],
+   "hbox": [
+    1430,
+    538,
+    1520,
+    678
+   ],
+   "hint": "p14-cut-obj-pendulum-hint.webp"
+  },
+  {
+   "id": "cut-obj-resistor",
+   "src": "p14-cut-obj-resistor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1264,
+    580,
+    1406,
+    636
+   ],
+   "hbox": [
+    1260,
+    576,
+    1410,
+    640
+   ],
+   "hint": "p14-cut-obj-resistor-hint.webp"
   }
  ],
  "p15": [
@@ -796,7 +1252,7 @@
    "box": [
     158,
     148,
-    783,
+    782,
     229
    ],
    "f": 0.45,
@@ -808,7 +1264,7 @@
    "box": [
     340,
     798,
-    599,
+    600,
     842
    ],
    "f": 0.45,
@@ -817,9 +1273,28 @@
    "hbox": [
     336,
     794,
-    603,
+    604,
     846
    ]
+  },
+  {
+   "id": "cut-obj-knob",
+   "src": "p15-cut-obj-knob.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    676,
+    756,
+    836,
+    826
+   ],
+   "hbox": [
+    672,
+    752,
+    840,
+    830
+   ],
+   "hint": "p15-cut-obj-knob-hint.webp"
   }
  ],
  "p16": [
@@ -851,8 +1326,8 @@
    "src": "p16-fg.webp",
    "box": [
     144,
-    147,
-    797,
+    148,
+    796,
     229
    ],
    "f": 0.45,
@@ -863,19 +1338,38 @@
    "src": "p16-cut-try.webp",
    "box": [
     335,
-    799,
-    606,
-    841
+    798,
+    605,
+    842
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p16-cut-try-hint.webp",
    "hbox": [
     331,
-    795,
-    610,
-    845
+    794,
+    609,
+    846
    ]
+  },
+  {
+   "id": "cut-obj-knob",
+   "src": "p16-cut-obj-knob.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1395,
+    377,
+    1556,
+    440
+   ],
+   "hbox": [
+    1391,
+    373,
+    1560,
+    444
+   ],
+   "hint": "p16-cut-obj-knob-hint.webp"
   }
  ],
  "p17": [
@@ -908,7 +1402,7 @@
    "box": [
     251,
     110,
-    1550,
+    1549,
     729
    ],
    "f": 0.45,
@@ -918,20 +1412,77 @@
    "id": "cut-try",
    "src": "p17-cut-try.webp",
    "box": [
-    1139,
-    798,
+    1140,
+    698,
     1421,
-    841
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p17-cut-try-hint.webp",
    "hbox": [
-    1135,
-    794,
+    1136,
+    694,
     1425,
-    845
+    745
    ]
+  },
+  {
+   "id": "cut-obj-antenna",
+   "src": "p17-cut-obj-antenna.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    533,
+    1505,
+    670
+   ],
+   "hbox": [
+    1441,
+    529,
+    1509,
+    674
+   ],
+   "hint": "p17-cut-obj-antenna-hint.webp"
+  },
+  {
+   "id": "cut-obj-wave",
+   "src": "p17-cut-obj-wave.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1262,
+    575,
+    1407,
+    644
+   ],
+   "hbox": [
+    1258,
+    571,
+    1411,
+    648
+   ],
+   "hint": "p17-cut-obj-wave-hint.webp"
+  },
+  {
+   "id": "cut-obj-testcharge",
+   "src": "p17-cut-obj-testcharge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1114,
+    576,
+    1197,
+    648
+   ],
+   "hbox": [
+    1110,
+    572,
+    1201,
+    652
+   ],
+   "hint": "p17-cut-obj-testcharge-hint.webp"
   }
  ],
  "p18": [
@@ -963,7 +1514,7 @@
    "id": "fg",
    "src": "p18-fg.webp",
    "box": [
-    327,
+    328,
     148,
     1548,
     756
@@ -976,19 +1527,38 @@
    "src": "p18-cut-try.webp",
    "box": [
     1141,
-    798,
+    698,
     1420,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p18-cut-try-hint.webp",
    "hbox": [
     1137,
-    794,
+    694,
     1424,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-antenna",
+   "src": "p18-cut-obj-antenna.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1446,
+    533,
+    1505,
+    670
+   ],
+   "hbox": [
+    1442,
+    529,
+    1509,
+    674
+   ],
+   "hint": "p18-cut-obj-antenna-hint.webp"
   }
  ],
  "p19": [
@@ -1031,20 +1601,58 @@
    "id": "cut-try",
    "src": "p19-cut-try.webp",
    "box": [
-    1172,
-    798,
+    1171,
+    698,
     1389,
-    842
+    742
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p19-cut-try-hint.webp",
    "hbox": [
-    1168,
-    794,
+    1167,
+    694,
     1393,
-    846
+    746
    ]
+  },
+  {
+   "id": "cut-obj-antenna",
+   "src": "p19-cut-obj-antenna.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1446,
+    554,
+    1505,
+    690
+   ],
+   "hbox": [
+    1442,
+    550,
+    1509,
+    694
+   ],
+   "hint": "p19-cut-obj-antenna-hint.webp"
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p19-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1272,
+    566,
+    1416,
+    654
+   ],
+   "hbox": [
+    1268,
+    562,
+    1420,
+    658
+   ],
+   "hint": "p19-cut-obj-flashlight-hint.webp"
   }
  ],
  "p20": [
@@ -1087,20 +1695,39 @@
    "id": "cut-try",
    "src": "p20-cut-try.webp",
    "box": [
-    310,
-    799,
+    309,
+    798,
     631,
-    841
+    842
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p20-cut-try-hint.webp",
    "hbox": [
-    306,
-    795,
+    305,
+    794,
     635,
-    845
+    846
    ]
+  },
+  {
+   "id": "cut-obj-antenna",
+   "src": "p20-cut-obj-antenna.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    206,
+    654,
+    264,
+    790
+   ],
+   "hbox": [
+    202,
+    650,
+    268,
+    794
+   ],
+   "hint": "p20-cut-obj-antenna-hint.webp"
   }
  ],
  "p21": [
@@ -1144,19 +1771,57 @@
    "src": "p21-cut-try.webp",
    "box": [
     1141,
-    798,
+    698,
     1419,
-    842
+    741
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p21-cut-try-hint.webp",
    "hbox": [
     1137,
-    794,
+    694,
     1423,
-    846
+    745
    ]
+  },
+  {
+   "id": "cut-obj-wave",
+   "src": "p21-cut-obj-wave.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1404,
+    575,
+    1547,
+    644
+   ],
+   "hbox": [
+    1400,
+    571,
+    1551,
+    648
+   ],
+   "hint": "p21-cut-obj-wave-hint.webp"
+  },
+  {
+   "id": "cut-obj-droplet",
+   "src": "p21-cut-obj-droplet.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1269,
+    557,
+    1322,
+    658
+   ],
+   "hbox": [
+    1265,
+    553,
+    1325,
+    662
+   ],
+   "hint": "p21-cut-obj-droplet-hint.webp"
   }
  ],
  "p22": [
@@ -1189,7 +1854,7 @@
    "box": [
     158,
     103,
-    1556,
+    1555,
     708
    ],
    "f": 0.45,
@@ -1226,7 +1891,7 @@
    "box": [
     203,
     110,
-    1536,
+    1537,
     807
    ],
    "f": 0.45,

@@ -15,7 +15,8 @@ export function add(layer, tag, cls, box, text) {
   if (text != null) el.textContent = text; layer.appendChild(el); return el;
 }
 export function toPage(stage, e) {
-  const r = stage.getBoundingClientRect();
+  // the art (and the scene layer) sit inside the stage's dark-mode frame, so measure the art box
+  const r = (stage.querySelector(".art-scene") || stage).getBoundingClientRect();
   return [((e.clientX - r.left) / r.width) * W, ((e.clientY - r.top) / r.height) * H];
 }
 // An invisible, focusable handle over a cutout. Drag with a pointer, or use the arrow keys (Enter drops).

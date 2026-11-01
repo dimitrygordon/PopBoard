@@ -164,6 +164,44 @@
    ],
    "f": 0.45,
    "late": true
+  },
+  {
+   "id": "cut-obj-pulley",
+   "src": "p04-cut-obj-pulley.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1444,
+    532,
+    1516,
+    688
+   ],
+   "hbox": [
+    1440,
+    528,
+    1520,
+    692
+   ],
+   "hint": "p04-cut-obj-pulley-hint.webp"
+  },
+  {
+   "id": "cut-try",
+   "src": "p04-cut-try.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1166,
+    779,
+    1315,
+    822
+   ],
+   "hbox": [
+    1162,
+    775,
+    1319,
+    826
+   ],
+   "hint": "p04-cut-try-hint.webp"
   }
  ],
  "p05": [
@@ -201,6 +239,44 @@
    ],
    "f": 0.45,
    "late": true
+  },
+  {
+   "id": "cut-obj-pulley",
+   "src": "p05-cut-obj-pulley.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1443,
+    553,
+    1515,
+    708
+   ],
+   "hbox": [
+    1439,
+    549,
+    1519,
+    712
+   ],
+   "hint": "p05-cut-obj-pulley-hint.webp"
+  },
+  {
+   "id": "cut-try",
+   "src": "p05-cut-try.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    889,
+    779,
+    1031,
+    821
+   ],
+   "hbox": [
+    885,
+    775,
+    1035,
+    825
+   ],
+   "hint": "p05-cut-try-hint.webp"
   }
  ],
  "p06": [
@@ -238,6 +314,63 @@
    ],
    "f": 0.45,
    "late": true
+  },
+  {
+   "id": "cut-obj-lever",
+   "src": "p06-cut-obj-lever.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1405,
+    585,
+    1546,
+    654
+   ],
+   "hbox": [
+    1401,
+    581,
+    1550,
+    658
+   ],
+   "hint": "p06-cut-obj-lever-hint.webp"
+  },
+  {
+   "id": "cut-obj-pulley",
+   "src": "p06-cut-obj-pulley.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1263,
+    532,
+    1336,
+    688
+   ],
+   "hbox": [
+    1259,
+    528,
+    1340,
+    692
+   ],
+   "hint": "p06-cut-obj-pulley-hint.webp"
+  },
+  {
+   "id": "cut-try",
+   "src": "p06-cut-try.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1205,
+    698,
+    1375,
+    741
+   ],
+   "hbox": [
+    1201,
+    694,
+    1379,
+    745
+   ],
+   "hint": "p06-cut-try-hint.webp"
   }
  ],
  "p07": [
@@ -268,13 +401,51 @@
    "id": "fg",
    "src": "p07-fg.webp",
    "box": [
-    245,
+    244,
     148,
     1454,
     735
    ],
    "f": 0.45,
    "late": true
+  },
+  {
+   "id": "cut-obj-wheelaxle",
+   "src": "p07-cut-obj-wheelaxle.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1424,
+    552,
+    1527,
+    664
+   ],
+   "hbox": [
+    1420,
+    548,
+    1531,
+    668
+   ],
+   "hint": "p07-cut-obj-wheelaxle-hint.webp"
+  },
+  {
+   "id": "cut-try",
+   "src": "p07-cut-try.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1148,
+    778,
+    1332,
+    821
+   ],
+   "hbox": [
+    1144,
+    774,
+    1336,
+    825
+   ],
+   "hint": "p07-cut-try-hint.webp"
   }
  ],
  "p08": [
@@ -307,11 +478,49 @@
    "box": [
     171,
     138,
-    1429,
+    1428,
     458
    ],
    "f": 0.45,
    "late": true
+  },
+  {
+   "id": "cut-obj-gear",
+   "src": "p08-cut-obj-gear.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1438,
+    558,
+    1512,
+    666
+   ],
+   "hbox": [
+    1434,
+    554,
+    1516,
+    670
+   ],
+   "hint": "p08-cut-obj-gear-hint.webp"
+  },
+  {
+   "id": "cut-try",
+   "src": "p08-cut-try.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1137,
+    779,
+    1322,
+    821
+   ],
+   "hbox": [
+    1133,
+    775,
+    1326,
+    825
+   ],
+   "hint": "p08-cut-try-hint.webp"
   }
  ],
  "p09": [
@@ -354,19 +563,19 @@
    "id": "cut-ex7",
    "src": "p09-cut-ex7.webp",
    "box": [
-    1079,
+    1078,
     799,
     1261,
-    842
+    841
    ],
    "f": 0.45,
    "cut": true,
    "hint": "p09-cut-ex7-hint.webp",
    "hbox": [
-    1075,
+    1074,
     795,
     1265,
-    846
+    845
    ]
   }
  ],
@@ -410,7 +619,7 @@
    "id": "cut-gear",
    "src": "p10-cut-gear.webp",
    "box": [
-    1151,
+    1152,
     778,
     1288,
     821
@@ -419,7 +628,7 @@
    "cut": true,
    "hint": "p10-cut-gear-hint.webp",
    "hbox": [
-    1147,
+    1148,
     774,
     1292,
     825

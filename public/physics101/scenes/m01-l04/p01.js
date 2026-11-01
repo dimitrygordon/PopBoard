@@ -1,44 +1,56 @@
-// Change one thing at a time: drag the mass set to the spring's hook (or tap it) to hang 0 to 35 g,
-// and Table 3 fills in as live text. "Swap spring" changes a second factor mid-run, and the new rows
-// stop fitting the pattern. Table 3 values are the page's labels from Leo's layers.json.
-import { add, handle, fontPx, tween, ease } from "../kit.js";
-const MASS = [0, 5, 10, 15, 20, 25, 30, 35];
-const L = [13.7, 14.1, 14.5, 14.9, 15.3, 15.7, 16.0, 16.4];
-const STIFF = [13.7, 13.9, 14.1, 14.3, 14.5, 14.7, 14.9, 15.1]; // a stiffer spring (sandbox values, not from the book)
-const HOOK = [370, 560], ROW = (i) => [162 + i * 72, 234 + i * 72];
+// Change one thing at a time (Leo's spring-lab drag spec). Each brass mass is its own cutout; the shared drag
+// engine (scenes/drag.js, ctx.drag) handles pointer, touch and keyboard drags and snaps a mass onto the hook,
+// one at a time. This scene adds the physics: the spring stretches to L = 13.7 + 0.08 m cm (Table 3; 50 g is
+// a predict-first check at 17.7 cm), the length shows beside the spring, and the student types it into Table 3.
+// "Swap spring" changes a second factor mid-run (a stiffer spring, sandbox values, not from the book).
+import { add, fontPx, tween } from "../kit.js";
+const ROWS = [0, 5, 10, 15, 20, 25, 30, 35], L0 = 13.7, SP = [327, 195, 408, 592];
+const ROW = (i) => [162 + i * 72, 234 + i * 72];
 export default function build(ctx) {
-  const { art, ui, say, layer, reduce } = ctx;
-  const cell = (x0, x1, i) => { const [y0, y1] = ROW(i); const c = fontPx(add(layer, "div", "p101-cell", [x0, y0 + 8, x1, y1 - 8], ""), 34); Object.assign(c.style, { position: "absolute", textAlign: "center", fontFamily: "\"Patrick Hand\", cursive", color: "#1F2F5C", lineHeight: "1.6" }); return c; };
-  const mc = MASS.map((_, i) => cell(900, 1120, i)), lc = L.map((_, i) => cell(1130, 1350, i));
-  const cap = fontPx(add(layer, "div", "cap", [60, 840, 760, 890], ""), 24); cap.hidden = true;
-  let n = 0, swapped = -1;
-  const len = (i) => (swapped >= 0 && i >= swapped ? STIFF[i] : L[i]);
-  const show = () => MASS.forEach((m, i) => {
-    mc[i].textContent = i < n ? String(m) : ""; lc[i].textContent = i < n ? len(i).toFixed(1) : "";
-    lc[i].style.color = swapped >= 0 && i >= swapped && i < n ? "#B03A2E" : "#1F2F5C";
+  const { art, ui, say, layer, reduce, drag } = ctx;
+  let k = 0.08, swapped = false, hung = 0, sy = 1, anim = 0;
+  const len = (m) => +(L0 + k * m).toFixed(1);
+  const style = (el) => Object.assign(el.style, { textAlign: "center", fontFamily: "\"Patrick Hand\", cursive", color: "#1F2F5C", background: "transparent", border: 0 });
+  ROWS.forEach((m, i) => { const [y0, y1] = ROW(i); const c = fontPx(add(layer, "div", "live", [900, y0 + 8, 1120, y1 - 8], String(m)), 34); style(c); c.style.lineHeight = "1.6"; });
+  const lc = ROWS.map((m, i) => {
+    const [y0, y1] = ROW(i), inp = fontPx(add(layer, "input", "p101-cell", [1140, y0 + 10, 1340, y1 - 10]), 32); style(inp);
+    Object.assign(inp, { type: "text", inputMode: "decimal", placeholder: "?" }); inp.dataset.pbFree = ""; inp.setAttribute("aria-label", `Table 3: spring length in cm for ${m} g`);
+    Object.assign(inp.style, { pointerEvents: "auto", borderBottom: "2px dashed #8a7f6a" });
+    inp.addEventListener("change", () => {
+      const v = parseFloat(inp.value), want = len(m); if (Number.isNaN(v)) return;
+      const ok = Math.abs(v - want) <= 0.05; inp.style.color = ok ? "#2E7D4F" : "#B03A2E";
+      say(ok ? `${m} g: ${want.toFixed(1)} cm is in the table.` : `Read the length again: hang ${m} g and check the number beside the spring.`, ok);
+    });
+    return inp;
   });
-  const hang = () => {
-    if (n >= L.length) return say("Table 3 is full: 0 to 35 g. Look at the pattern in the length column.", true);
-    n++; show(); cap.hidden = false; cap.textContent = `Hanging ${MASS[n - 1]} g: spring length ${len(n - 1).toFixed(1)} cm`;
-    say(swapped >= 0 ? "Two things changed: the mass and the spring. You can't tell which one caused this length." : "Only the mass changed, so any change in length comes from the mass.", swapped < 0);
+  const read = fontPx(add(layer, "div", "cap", [430, 400, 740, 460], ""), 30); read.hidden = true; read.setAttribute("aria-live", "polite");
+  const pred = fontPx(add(layer, "input", "p101-cell", [430, 470, 740, 520]), 24); style(pred);
+  Object.assign(pred, { type: "text", inputMode: "decimal", placeholder: "Predict 50 g (cm)" }); pred.dataset.pbFree = ""; pred.setAttribute("aria-label", "Your prediction: spring length in cm with 50 g");
+  Object.assign(pred.style, { pointerEvents: "auto", background: "rgba(251,246,234,.9)", borderRadius: "0.4em" });
+  // stretch the spring about its top (y 195): scaleY about the centre plus a shift of (sy - 1) * h / 2
+  const h = SP[3] - SP[1];
+  const stretch = (to) => {
+    const from = sy, id = ++anim;
+    return tween(300, (t) => {
+      if (id !== anim) return;
+      const b = reduce ? 0 : Math.sin(t * Math.PI) * (1 - t) * 0.6 * (to - from); // small bounce past the target
+      sy = from + (to - from) * t + b;
+      art.set("spring", { sy, dy: ((sy - 1) * h) / 2 }); drag.setTarget("spring", [368, SP[1] + h * sy]);
+    }, reduce);
   };
-  const B = art.box("mass-set"), c0 = [(B[0] + B[2]) / 2, B[1]];
-  const back = (o) => tween(400, (t) => { const k = 1 - ease(t); art.set("mass-set", { dx: o[0] * k, dy: o[1] * k }); }, reduce);
-  handle(ctx, B, "Mass set: drag it up to the spring's hook, or tap, to hang the next 5 g", {
-    start: () => art.touched("mass-set"),
-    move: (dx, dy) => art.set("mass-set", { dx, dy }),
-    end: async (dx, dy) => {
-      const tap = Math.hypot(dx, dy) < 12, near = Math.hypot(c0[0] + dx - HOOK[0], c0[1] + dy - HOOK[1]) < 220;
-      let o = [dx, dy];
-      if (tap) { o = [0, -40]; await tween(200, (t) => art.set("mass-set", { dy: -40 * ease(t) }), reduce); }
-      if (tap || near) hang(); else say("Bring the masses up to the hook on the spring.");
-      back(o);
-    },
+  const massOf = (id) => +id.match(/(\d+)g/)[1];
+  drag.on("drop", (id, target) => {
+    if (target !== "spring") return;
+    const m = massOf(id), L = len(m); hung = m; stretch(L / L0);
+    read.hidden = false; read.textContent = `${m} g: length ${L.toFixed(1)} cm`;
+    if (m === 50) {
+      const p = parseFloat(pred.value);
+      say(Number.isNaN(p) ? `50 g stretches it to ${L.toFixed(1)} cm. Next time, type a prediction first.` : `You predicted ${p} cm; it is ${L.toFixed(1)} cm. ${Math.abs(p - L) <= 0.2 ? "The pattern held beyond the table." : "Use the pattern: each 5 g adds the same stretch."}`, Number.isNaN(p) ? null : Math.abs(p - L) <= 0.2);
+    } else say(swapped ? "Two things changed: the mass and the spring. You can't tell which one caused this length." : `Only the mass changed. Type ${L.toFixed(1)} into Table 3 next to ${m} g.`, !swapped);
   });
-  ui.button("Hang the next mass", hang);
-  ui.button("Swap spring", () => { if (swapped >= 0) return; swapped = n; show(); say("Spring swapped mid-run. Keep adding mass and compare the red rows."); });
-  ui.button("Start over", () => { n = 0; swapped = -1; show(); cap.hidden = true; say(""); });
-  art.touchable(["mass-set"]);
-  show();
-  return { destroy() {} };
+  drag.on("home", (id, was) => { if (was === "spring" && !drag.items.some((i) => i.on === "spring")) { hung = 0; stretch(1); read.hidden = true; } });
+  ui.button("Swap spring", () => { if (swapped) return; swapped = true; k = 0.04; if (hung) { stretch(len(hung) / L0); read.textContent = `${hung} g: length ${len(hung).toFixed(1)} cm`; } say("Spring swapped mid-run. Keep adding mass and compare with the rows you already have."); });
+  ui.button("Start over", () => { swapped = false; k = 0.08; hung = 0; stretch(1); read.hidden = true; pred.value = ""; lc.forEach((c) => { c.value = ""; c.style.color = "#1F2F5C"; }); say(""); });
+  say("Drag a mass up to the spring's hook, or tap it. Hang one at a time and log each length in Table 3.");
+  return { destroy() { anim++; } };
 }
