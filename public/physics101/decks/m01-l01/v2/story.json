@@ -30,7 +30,7 @@
   "5": {
    "layers": [],
    "title": "Scientific Methods",
-   "text": "<h3>Scientific Methods</h3><p class=\"p101-def\">Scientific methods are common patterns that investigations often follow.</p><p>So how do physicists actually investigate? They don't always follow a strict list of steps. But their investigations often follow similar patterns, and we call those patterns scientific methods.</p><p>The flowchart here shows one way to use scientific methods to solve a problem. It's a flexible map, not a rulebook. Depending on the investigation, a scientist might add new steps, repeat some steps, or skip a few entirely. Notice the loops: sometimes you go back and modify your hypothesis, and sometimes you repeat the test several times.</p><p class=\"p101-problem\" data-problem=\"1\">Check Your Progress question 1 goes here.</p>",
+   "text": "<h3>Scientific Methods</h3><p class=\"p101-def\">Scientific methods are common patterns that investigations often follow.</p><p>So how do physicists actually investigate? They don't always follow a strict list of steps. But their investigations often follow similar patterns, and we call those patterns scientific methods.</p><p>The flowchart here shows one way to use scientific methods to solve a problem. It's a flexible map, not a rulebook. Depending on the investigation, a scientist might add new steps, repeat some steps, or skip a few entirely. Notice the loops: sometimes you go back and modify your hypothesis, and sometimes you repeat the test several times.</p>",
    "testIt": {
     "name": "Build the flowchart",
     "how": "Drag each step card into its slot, in order. Then pick a loop when the test comes back."
@@ -49,7 +49,7 @@
   "8": {
    "layers": [],
    "title": "Form and Test a Hypothesis",
-   "text": "<h3>Form and Test a Hypothesis</h3><p class=\"p101-def\">A hypothesis is a possible explanation for a problem, based on what you know and have observed.</p><p>A hypothesis is a possible explanation for a problem, built from what you know and what you've observed. And here's the key part: a scientific hypothesis can be tested through experiments and observations.</p><p>Sometimes scientists have to wait a long time for the right technology. The first ideas that atoms exist were proposed more than 2300 years ago, but the tools to test those ideas didn't exist for many centuries.</p><p>There are several ways to test a hypothesis. You can make observations. You can build a model and compare it to real-life situations. Or you can run an experiment, which tests the effect of one thing on another, using a control for comparison.</p><p>Some things can't be tested with experiments at all. Physicists can't run experiments on a distant star or galaxy, for example. In cases like that, the investigation becomes descriptive. Scientists still collect and analyze valuable data that help us learn about what's happening out there.</p><p class=\"p101-problem\" data-problem=\"2\">Check Your Progress question 2 goes here.</p>",
+   "text": "<h3>Form and Test a Hypothesis</h3><p class=\"p101-def\">A hypothesis is a possible explanation for a problem, based on what you know and have observed.</p><p>A hypothesis is a possible explanation for a problem, built from what you know and what you've observed. And here's the key part: a scientific hypothesis can be tested through experiments and observations.</p><p>Sometimes scientists have to wait a long time for the right technology. The first ideas that atoms exist were proposed more than 2300 years ago, but the tools to test those ideas didn't exist for many centuries.</p><p>There are several ways to test a hypothesis. You can make observations. You can build a model and compare it to real-life situations. Or you can run an experiment, which tests the effect of one thing on another, using a control for comparison.</p><p>Some things can't be tested with experiments at all. Physicists can't run experiments on a distant star or galaxy, for example. In cases like that, the investigation becomes descriptive. Scientists still collect and analyze valuable data that help us learn about what's happening out there.</p>",
    "testIt": {
     "name": "Control and test",
     "how": "Change only the test ramp's height, then press Go and compare it with the control."
@@ -72,7 +72,7 @@
   "11": {
    "layers": [],
    "title": "Draw Conclusions",
-   "text": "<h3>Draw Conclusions</h3><p class=\"p101-def\">Drawing a conclusion means deciding whether the data support the hypothesis.</p><p>Once the data are analyzed, it's decision time. Do the results support the hypothesis?</p><p>For a hypothesis to be considered valid and widely accepted, other scientists have to be able to repeat the experiment and get consistent results. The numbers won't match exactly every time, but they should agree within the experiment's uncertainty. If the experiment doesn't support the hypothesis, the hypothesis needs a second look. Maybe the hypothesis needs to be revised, or maybe the procedure needs some fine-tuning.</p><p class=\"p101-problem\" data-problem=\"6\">Check Your Progress question 6 goes here.</p>"
+   "text": "<h3>Draw Conclusions</h3><p class=\"p101-def\">Drawing a conclusion means deciding whether the data support the hypothesis.</p><p>Once the data are analyzed, it's decision time. Do the results support the hypothesis?</p><p>For a hypothesis to be considered valid and widely accepted, other scientists have to be able to repeat the experiment and get consistent results. The numbers won't match exactly every time, but they should agree within the experiment's uncertainty. If the experiment doesn't support the hypothesis, the hypothesis needs a second look. Maybe the hypothesis needs to be revised, or maybe the procedure needs some fine-tuning.</p>"
   },
   "12": {
    "layers": [],
@@ -82,7 +82,7 @@
   "13": {
    "layers": [],
    "title": "Being Objective",
-   "text": "<h3>Being Objective</h3><p class=\"p101-def\">Bias happens when a scientist's expectations affect how results are analyzed or conclusions are made.</p><p>Good scientists work hard to reduce bias. Bias happens when what a scientist expects to find affects how they analyze the results or what conclusions they draw.</p><p>Bias might lead a scientist to pick the result from one trial and ignore the others. It can also show up when a product is being tested and its advantages are used in an advertisement, but its drawbacks are left out.</p><p>So how do scientists fight bias? They run as many trials as possible, and they keep accurate notes of every observation they make.</p><p class=\"p101-problem\" data-problem=\"3\">Check Your Progress question 3 goes here.</p>",
+   "text": "<h3>Being Objective</h3><p class=\"p101-def\">Bias happens when a scientist's expectations affect how results are analyzed or conclusions are made.</p><p>Good scientists work hard to reduce bias. Bias happens when what a scientist expects to find affects how they analyze the results or what conclusions they draw.</p><p>Bias might lead a scientist to pick the result from one trial and ignore the others. It can also show up when a product is being tested and its advantages are used in an advertisement, but its drawbacks are left out.</p><p>So how do scientists fight bias? They run as many trials as possible, and they keep accurate notes of every observation they make.</p>",
    "testIt": {
     "name": "Pick or average?",
     "how": "Run trials one at a time. Compare picking the best trial with averaging them all."
@@ -91,7 +91,7 @@
   "14": {
    "layers": [],
    "title": "Models",
-   "text": "<h3>Models</h3><p class=\"p101-def\">A model is a representation of an idea, event, structure, or object that helps people understand it.</p><p>Sometimes scientists can't see everything they're studying. The object might be too big or too small. The process might take too long to watch from start to finish. Or the material might be hazardous.</p><p>That's when scientists turn to models. A model is a representation of an idea, event, structure, or object that helps people understand it better.</p><p class=\"p101-problem\" data-problem=\"4\">Check Your Progress question 4 goes here.</p>"
+   "text": "<h3>Models</h3><p class=\"p101-def\">A model is a representation of an idea, event, structure, or object that helps people understand it.</p><p>Sometimes scientists can't see everything they're studying. The object might be too big or too small. The process might take too long to watch from start to finish. Or the material might be hazardous.</p><p>That's when scientists turn to models. A model is a representation of an idea, event, structure, or object that helps people understand it better.</p>"
   },
   "15": {
    "layers": [],
@@ -133,7 +133,7 @@
   "20": {
    "layers": [],
    "title": "The Limitations of Science",
-   "text": "<h3>The Limitations of Science</h3><p class=\"p101-def\">Science can only answer questions that can be tested.</p><p>Science can explain a lot about the world, but it can't explain or solve everything. Scientists do make educated guesses, called hypotheses, but those have to be tested and verified.</p><p>Questions about opinions, values, and emotions aren't scientific, because they can't be tested. Some people find a certain piece of art beautiful, and others don't. Some people think pizza tastes delicious, and others don't.</p><p>You could take a survey to collect people's opinions on questions like these. But a survey wouldn't prove that those opinions are true for everyone.</p><p class=\"p101-problem\" data-problem=\"5\">Check Your Progress question 5 goes here.</p>",
+   "text": "<h3>The Limitations of Science</h3><p class=\"p101-def\">Science can only answer questions that can be tested.</p><p>Science can explain a lot about the world, but it can't explain or solve everything. Scientists do make educated guesses, called hypotheses, but those have to be tested and verified.</p><p>Questions about opinions, values, and emotions aren't scientific, because they can't be tested. Some people find a certain piece of art beautiful, and others don't. Some people think pizza tastes delicious, and others don't.</p><p>You could take a survey to collect people's opinions on questions like these. But a survey wouldn't prove that those opinions are true for everyone.</p>",
    "testIt": {
     "name": "Testable or not?",
     "how": "Drag each question card into the testable or not testable crate."

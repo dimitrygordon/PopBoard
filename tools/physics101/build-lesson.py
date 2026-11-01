@@ -50,8 +50,6 @@ TEST_IT = {
     17: ("Falling objects", "Drop the ball and the feather. Turn the air off and drop them again."),
     20: ("Testable or not?", "Drag each question card into the testable or not testable crate."),
 }
-# Check Your Progress questions (unsolved in the source): a marker where each one goes
-PROBLEMS = {5: [1], 8: [2], 13: [3], 14: [4], 20: [5], 11: [6]}
 
 def inline(t):
     t = html.escape(t, quote=False)
@@ -90,8 +88,6 @@ def main():
                           "p": [{"al": "l", "lh": 1.0, "r": [{"x": s["text"], "sz": 0, "c": "#3D3D3D", "f": "Patrick Hand"}]}]})
         deck["slides"].append({"n": n, "title": p["title"], "items": items})
         body = [f"<h3>{inline(p['title'])}</h3>", f"<p class=\"p101-def\">{inline(p['definition'])}</p>"] + [f"<p>{inline(x)}</p>" for x in p["paras"]]
-        for q in PROBLEMS.get(n, []):
-            body.append(f"<p class=\"p101-problem\" data-problem=\"{q}\">Check Your Progress question {q} goes here.</p>")
         if meta.get("text_slots"):  # the on-page boxes, repeated large for small screens (after the spoken text)
             body.append("<ol class=\"p101-slots\">" + "".join(f"<li>{inline(t['text'])}</li>" for t in meta["text_slots"]) + "</ol>")
         sv = {"layers": [], "title": p["title"], "text": "".join(body)}

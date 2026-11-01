@@ -37,7 +37,6 @@
 :root[data-theme="dark"] .stage .p-scene .cap { color: #f1e7cf; background: rgba(30, 36, 51, 0.9); }
 .stage .p-scene svg { overflow: visible; }
 .story .read .p101-def { font-family: var(--ac-head-font); font-size: 19px; border-left: 4px solid var(--p101-m1, #E2B654); padding-left: 10px; }
-.story .read .p101-problem { border: 2px dashed #E2B654; border-radius: 10px; padding: 6px 10px; font-family: var(--ac-note-font, "Gochi Hand", cursive); }
 .story .read .p101-slots { margin: 8px 0 0; padding-left: 22px; font-size: 16px; }
 .story .read .p101-slots li { margin-bottom: 4px; }
 /* Test it tab on hand-drawn pages: bottom right, clear of the art's titles */

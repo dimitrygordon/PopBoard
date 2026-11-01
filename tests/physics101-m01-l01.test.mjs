@@ -81,14 +81,12 @@ test("p17: four Figure 6 slots, verbatim, one font size that was measured to fit
   assert.match(story.slides["17"].text, /class="p101-slots"/, "phones get the slots in the read panel too");
 });
 
-test("read panel: title, definition, read-aloud; unsolved Check Your Progress questions are markers only", () => {
-  let marks = [];
+test("read panel: title, definition, read-aloud; no unsolved Check Your Progress problems in the storybook", () => {
   for (const [n, s] of Object.entries(story.slides)) {
     assert.match(s.text, /^<h3>.+<\/h3><p class="p101-def">/, n);
-    marks.push(...[...s.text.matchAll(/data-problem="(\d)"/g)].map((m) => +m[1]));
+    assert.doesNotMatch(s.text, /p101-problem|data-problem|Check Your Progress/, n);
     assert.doesNotMatch(s.text, /Summarize the steps|Define the term hypothesis/, "no question text yet");
   }
-  assert.deepEqual(marks.sort(), [1, 2, 3, 4, 5, 6]);
 });
 
 test("outline wording is used exactly (when the outline is on this machine)", { skip: !existsSync(OUTLINE) }, () => {
