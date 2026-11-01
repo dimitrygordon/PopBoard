@@ -1,5 +1,5 @@
 // Astronomy Course storybook reader: one deck slide per page, same words, same order, same art.
-import { DECKS } from "./ac-catalog.js";
+import { course, loadCatalog, pageKey, standardsLine } from "./ac-courses.js";
 import { renderSlide, readableHtml, noteHtml, boxText, esc } from "./ac-render.js";
 import { bindThemeButton, store, BACK_ICON, reduceMotion } from "./ac-common.js";
 import { EXTRAS, MODULES } from "./ac-extras.js";
@@ -17,10 +17,14 @@ import { mountPowers, mountEclipse, mountWaves, mountDoppler, mountGravity } fro
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
-const meta = DECKS.find((d) => d.slug === params.get("deck") && d.built) || DECKS.find((d) => d.built);
+const C = course();
+const DECKS = await loadCatalog(C);
+// A built storybook opens; a lesson still being written shows its "coming soon" page.
+const meta = DECKS.find((d) => d.slug === params.get(C.param) && d.built) || DECKS.find((d) => d.slug === params.get(C.param))
+  || DECKS.find((d) => d.built) || DECKS[0];
 let extra = EXTRAS[meta.slug] || { sandboxes: {}, tryIt: {}, choices: {} };
-const base = `astro-course/decks/${meta.slug}/`;
-const PAGE_KEY = "popboard.astronomy-course.page." + meta.slug;
+const base = `${C.root}decks/${meta.slug}/`;
+const PAGE_KEY = pageKey(C, meta.slug);
 const story = $("story"), stage = $("stage"), panel = $("panel");
 let deck = null, page = 1, mode = params.get("mode") === "sandbox" ? "sandbox" : "story", orbit = null;
 const answered = new Map(); // page -> chosen option
@@ -44,25 +48,25 @@ const ONPAGE = { rings: "Cosmic address rings (3D)", cannon: "Newton's cannon (3
   // D03 per-page scene modules (js/astro-scenes/d03)
   retrograde: "Copernicus's way (3D)", kepler2: "Kepler's 2nd law (3D)", venus: "Venus's phases (3D)", cannonball: "Newton's cannonball (3D)" };
 let v2 = null, popup = null, fxh = null, arth = null;
-const narrator = createNarrator($("narr"), "astro-course/");
+const narrator = createNarrator($("narr"), C.root);
 const sandboxKinds = () => [...new Set(Object.values(extra.sandboxes || {}))].filter((k) => SANDBOXES[k]);
 let sbKind = null;
 
-document.title = `${meta.title} // Astronomy Course`;
+document.title = `${meta.title} // ${C.name}`;
 $("deckTitle").textContent = meta.title;
 // re-render the open page so its 3D scene, labels and fog pick up the new paper colors
 bindThemeButton($("themeBtn"), () => { if (deck && mode === "story" && v2 && v2.slides[String(page)]) show(page, 0); });
 document.querySelector("#studyBackBtn .back-icon").outerHTML = BACK_ICON;
 $("studyBackBtn").addEventListener("click", () => {
   const qs = forwardStudyQuery(location.search).toString();
-  location.href = "study-astronomy-course.html" + (qs ? "?" + qs : "");
+  location.href = C.library + (qs ? "?" + qs : "");
 });
 
 function hasSandbox() { return sandboxKinds().length > 0; }
 
 function pageUrl() {
   const p = forwardStudyQuery(location.search);
-  p.set("deck", meta.slug);
+  p.set(C.param, meta.slug);
   if (mode === "sandbox") p.set("mode", "sandbox"); else p.set("page", page);
   return "?" + p.toString();
 }
@@ -432,11 +436,25 @@ stage.addEventListener("pointerup", (e) => {
 });
 addEventListener("resize", fit);
 
+// A lesson that is not drawn yet: its title, its module, and a note that the storybook is coming soon.
+function comingSoon() {
+  story.dataset.soon = "1";
+  for (const id of ["stageCap", "scrubRow", "toc", "sandboxBtn", "sbMenuBtn", "tiltBtn"]) $(id).hidden = true;
+  stage.innerHTML = `<div class="ac-soon"><p class="ac-soon-tag">${esc(C.group(meta))} \u00b7 ${esc(C.label(meta))}</p>
+    <h2>${esc(meta.title)}</h2>${standardsLine(meta) ? `<p class="ac-stds">${esc(standardsLine(meta))}</p>` : ""}<p class="ac-soon-sub">${esc(meta.sub)}</p><p class="ac-soon-badge">Coming soon</p></div>`;
+  stage.setAttribute("aria-label", `${meta.title}: this storybook is coming soon`);
+  $("readBox").hidden = true;
+  $("tools").innerHTML = `<section class="tool"><h2 class="panel-h">Coming soon</h2><p class="note">This storybook is being written. Check back soon.</p>
+    <p class="note"><a href="${esc(C.library)}">Back to the ${esc(C.name)} library</a></p></section>`;
+  fit();
+}
+
 (async function init() {
+  if (!meta.built) return comingSoon();
   const res = await fetch(base + "deck.json");
   deck = await res.json();
   try { const r2 = await fetch(base + "v2/story.json"); if (r2.ok) v2 = await r2.json(); } catch (e) { v2 = null; }
-  try { const r3 = await fetch("js/astro-scenes/manifest.json"); if (r3.ok) sceneMods = new Set((await r3.json())[meta.slug] || []); } catch (e) { sceneMods = new Set(); }
+  try { const r3 = C.scenes ? await fetch(C.scenes) : null; if (r3 && r3.ok) sceneMods = new Set((await r3.json())[meta.slug] || []); } catch (e) { sceneMods = new Set(); }
   if (v2) {
     // v2 sandboxes come from the deck's spec (story.json); Try it link-outs stay from EXTRAS.
     const sbs = {}; for (const [n, sv] of Object.entries(v2.slides)) if (sv.sandbox && SANDBOXES[sv.sandbox]) sbs[n] = sv.sandbox;

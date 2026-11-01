@@ -1,0 +1,12 @@
+/* Physics 101 on the shared storybook engine: module strip colors, cover placeholders, the "coming soon" page. */
+.lib-card[data-q="5"] .strip { background: #f0cdbf; }
+.lib-card[data-q="6"] .strip { background: #d6e6e0; }
+.lib-card .cover-soon { display: grid; place-items: center; font-family: var(--ac-title-font); font-size: clamp(28px, 6vw, 40px); color: #6d6457;
+  background: repeating-linear-gradient(0deg, transparent 0 27px, rgba(91, 136, 184, 0.22) 27px 28px), var(--ac-card); }
+.ac-soon { position: absolute; inset: 0; display: grid; place-content: center; gap: 6px; padding: 6%; text-align: center; color: var(--ac-card-ink, #2f2b26); }
+.ac-soon h2 { margin: 0; font-family: var(--ac-title-font); font-weight: 700; font-size: clamp(26px, 5vw, 56px); line-height: 1.05; }
+.ac-soon-tag, .ac-soon-sub { margin: 0; color: #4a443b; font-size: clamp(15px, 2vw, 20px); }
+.ac-soon-badge { justify-self: center; margin: 10px 0 0; padding: 4px 14px; border: 2px solid var(--ac-accent); border-radius: 14px 6px 12px 8px; font-family: var(--ac-note-font); font-size: 18px; color: #2f2b26; }
+/* Standards line under a cover title: small handwritten lettering. */
+.lib-card .stds, .ac-soon .ac-stds { margin: 0; font-family: var(--ac-note-font); font-size: 14px; letter-spacing: 0.02em; color: #5a5348; }
+.ac-soon .ac-stds { font-size: clamp(13px, 1.6vw, 17px); color: #5a5348; }

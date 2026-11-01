@@ -1,5 +1,6 @@
-// Astronomy Course shared bits: theme (one key for the library and every storybook), sketched icons.
-export const THEME_KEY = "popboard.astronomy-course.theme";
+// Storybook course shared bits: theme (one key per course for its library and every storybook), sketched icons.
+import { themeKey } from "./ac-courses.js";
+export const THEME_KEY = themeKey();
 const root = document.documentElement;
 export const store = {
   get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },

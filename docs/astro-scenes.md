@@ -123,3 +123,12 @@ Hand-drawn art is the default on every page. 3D is used only where it fits (scen
 - p18 Venus's phases: one date drives both boards; drag Venus in either panel or the Venus slider. `litFraction` gives the Earth-view phase: Ptolemy's never passes about 20 percent lit, Galileo's runs new to full. No claim that Earth's motion is proven.
 - p21 Newton's cannonball: pull the ball back from the cannon (150 px = 7.9 km/s) or use Launch speed (1 to 7.9 km/s) and Launch. Velocity Verlet under an inverse-square pull; 7.9 km/s is the circle through the cannon. F_g always points at Earth's center. No 11 km/s label.
 - `decks/d03/v2/story.json` has `"immersive": true` and `three` / `sandbox` = `retrograde`, `kepler2`, `venus`, `cannonball` on those pages, by hand.
+
+## Second course: Physics 101
+
+The same engine runs Physics 101. A page picks its course with `<html data-course="physics101">`; pages without it are the Astronomy Course. The registry is `public/astro-course/ac-courses.js` (catalog, library and story pages, query parameter, saved-page and theme keys).
+
+- Library: `study-physics101.html`, grouped by module (`q` is the module number). Storybook: `study-physics101-story.html?lesson=m01-l01`.
+- Catalog: `public/physics101/p101-catalog.js`. Every lesson is `"built": false` until `public/physics101/decks/<slug>/deck.json` exists; until then the storybook shows a "coming soon" cover.
+- `"standards"` lists a lesson's standard codes. They show under the cover title, joined with " · ", in small handwritten lettering.
+- Physics 101 has no per-page scene manifest yet (`scenes: null` in the registry).
