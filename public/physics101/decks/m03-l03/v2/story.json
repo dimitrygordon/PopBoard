@@ -1,0 +1,107 @@
+{
+ "slug": "m03-l03",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Galileo's Discovery",
+   "text": "<h3>Galileo's Discovery</h3><p class=\"p101-def\">Free fall is the motion of an object when gravity is the only significant force acting on it.</p><p>Our big question: how does an object's speed change as it falls? Start with a quick experiment. Do heavier objects speed up more as they fall? Drop a sheet of paper and a book, and the book lands first. But lay the paper flat on top of the book, and they fall together! Bumping into particles of air affects the paper much more.</p><p>To understand falling, let's first look at cases where air doesn't have a noticeable effect. Remember, gravity is an attraction between objects. Free fall is the motion of an object when gravity is the only significant force acting on it.</p><p>About 400 years ago, Galileo Galilei discovered that, if you ignore the air, all objects in free fall have the same acceleration. It doesn't matter what they're made of or how much they weigh. The acceleration of an object due only to gravity is called free-fall acceleration. In 1971, astronaut David Scott dropped a hammer and a feather at the same time from the same height on the Moon. The hammer had more mass, but both hit the ground together, because the Moon has gravity but no air. Galileo was right!</p>",
+   "testIt": {
+    "name": "Drop tower",
+    "how": "Tap the air switch, pick two objects, and drop them."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Keep your Science Journal handy and record the evidence you collect during this lesson.</p><p>Online, the PhysicsLAB called Free-Fall Acceleration has you calculate the acceleration due to gravity for a system in free fall. And keep the Encounter the Phenomenon question in mind: what from this lesson helps you answer the unit and module questions?</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Nine Point Eight Meters per Second Squared",
+   "text": "<h3>Nine Point Eight Meters per Second Squared</h3><p class=\"p101-def\">Near Earth's surface, free-fall acceleration is about 9.8 meters per second squared downward.</p><p>Near Earth's surface, free-fall acceleration is about 9.8 meters per second squared downward. That's about 22 miles per hour per second! Think about skydivers. Every second they fall, their downward velocity grows by 9.8 meters per second.</p><p>Is that acceleration positive or negative? It depends on your coordinate system. If you call upward positive, free-fall acceleration is negative. If you call downward positive, it's positive. That's why you always need to define your coordinate system clearly before you analyze something in free fall. The signs of every velocity and acceleration depend on it.</p>",
+   "testIt": {
+    "name": "Which way is positive?",
+    "how": "Tap the chip to flip the coordinate system."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "A Dropped Ball",
+   "text": "<h3>A Dropped Ball</h3><p class=\"p101-def\">Because of free-fall acceleration, a falling ball's speed increases 9.8 meters per second each second.</p><p>Galileo's discovery explains how skydivers can link up in a ring in midair. No matter their masses, they all fall with the same acceleration.</p><p>To see free-fall acceleration in action, look at the multiflash photo of a dropped ball in Figure 20. The flashes went off every 0.06 seconds, so the same amount of time passes between one image and the next. Now look at the distance the ball travels in each interval. The gaps get bigger as the ball falls, so its speed is increasing. If upward is positive, its velocity is getting more and more negative.</p>",
+   "testIt": {
+    "name": "Virtual strobe",
+    "how": "Set the flash interval and tap the ball to drop it."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "A Ball Thrown Upward",
+   "text": "<h3>A Ball Thrown Upward</h3><p class=\"p101-def\">A ball thrown upward slows by 9.8 meters per second each second, stops for an instant, then falls faster and faster.</p><p>Could that same photo show a ball thrown upward? Let's see. Throw a ball up at 20.0 meters per second, with upward as positive. The ball starts at the bottom of the photo with a positive velocity, and its acceleration is negative 9.8 meters per second squared. Since velocity and acceleration point in opposite directions, the ball slows down. Read the photo from the bottom up, and it matches!</p><p>Let's follow it second by second. After 1 second, the velocity has dropped by 9.8 meters per second, so it's going positive 10.2 meters per second. After 2 seconds, it's positive 0.4 meters per second, still rising. During the next second, it loses another 9.8 meters per second and reaches negative 9.4 meters per second. Now it's heading down. After 4 seconds, it's negative 19.2 meters per second, falling even faster.</p><p>So the ball stops and turns around during the third second, between 2 and 3 seconds, because that's when its velocity changes from positive to negative.</p>",
+   "testIt": {
+    "name": "Step through the toss",
+    "how": "Pick a launch speed, then tap the ball to step one second."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "The Velocity-Time Graph",
+   "text": "<h3>The Velocity-Time Graph</h3><p class=\"p101-def\">A ball's velocity changes smoothly from positive to negative at the top of its flight.</p><p>Figure 21 shows the velocity-time graph for the ball going up and coming down. The line slopes straight downward, but that doesn't mean the speed always decreases. The speed decreases as the ball rises, then increases as it falls.</p><p>At around 2 seconds, the velocity changes smoothly from positive to negative. As the ball falls, its speed grows in the negative direction. The close-up graph shows that at one instant, near 2.04 seconds, the velocity is exactly zero.</p><p>If you chose downward as positive instead, the graph would flip: the line would start at negative 20.0 meters per second and slope upward, crossing zero at the same instant.</p>",
+   "testIt": {
+    "name": "Time cursor",
+    "how": "Drag the cursor along the graph and watch the ball beside it."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "The Position-Time Graph",
+   "text": "<h3>The Position-Time Graph</h3><p class=\"p101-def\">For constant acceleration, the position-time graph is a parabola; a rising and falling ball gives an upside-down parabola.</p><p>Figure 22 shows how the ball's height changes as it rises and falls. When an object moves with constant acceleration, its position-time graph is a parabola. Because this ball rises and then falls, its graph is an upside-down parabola.</p><p>Careful: the shape shows how position changes over time. It does not mean the ball traveled along a curved path. The ball went straight up and straight down! The close-up graph shows the ball reaching its maximum height at about 2.04 seconds, at just over 20.4 meters.</p>",
+   "testIt": {
+    "name": "Ball in a tube",
+    "how": "Tap the ball to toss it while the graph draws."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Maximum Height and Acceleration at the Top",
+   "text": "<h3>Maximum Height and Acceleration at the Top</h3><p class=\"p101-def\">At maximum height, velocity is zero, but acceleration is still 9.8 meters per second squared downward.</p><p>Compare the close-up graphs in Figures 21 and 22. Just before the ball reaches its maximum height, its velocity is positive and shrinking toward zero. At the instant its height is greatest, its velocity is zero. Just after, its velocity grows in the negative direction.</p><p>The slope of the velocity-time graph is constant at negative 9.8 meters per second squared. So the ball's acceleration is 9.8 meters per second squared downward the entire time it's rising and falling.</p><p>You might think the acceleration should be zero at the top. Nope! At the top, the velocity is 0 meters per second. If the acceleration were also zero, the velocity wouldn't change. It would stay 0, and the ball would just hover in midair. Have you ever seen that happen? Objects tossed up on Earth always fall, so the acceleration at the top can't be zero. And since the ball falls down, the acceleration must point down.</p>",
+   "testIt": {
+    "name": "What if a = 0?",
+    "how": "Tap the switch at the top to turn gravity off and on."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Free Fall, Two Meanings",
+   "text": "<h3>Free Fall, Two Meanings</h3><p class=\"p101-def\">In science, free fall is motion when air resistance is negligible and acceleration is due to gravity alone.</p><p>Here's a word that means different things in different places. In science, free fall is the motion of a body when air resistance is negligible and the acceleration can be treated as due to gravity alone. For example, acceleration during free fall is 9.8 meters per second squared downward.</p><p>In everyday use, free fall means a rapid and continuing drop or decline. You might read that the stock market's free fall in 1929 marked the beginning of the Great Depression.</p>"
+  },
+  "10": {
+   "layers": [],
+   "title": "Free-Fall Rides",
+   "text": "<h3>Free-Fall Rides</h3><p class=\"p101-def\">On a free-fall ride, the most massive and least massive riders have the same acceleration.</p><p>Amusement parks use acceleration to design rides that give you the feeling of free fall. These rides usually have three parts: the ride to the top, a moment of suspension, and the fall. Motors provide the force to lift the cars to the top. During the free fall, the most massive rider and the least massive rider have the same acceleration.</p><p>Suppose the ride in Figure 23 starts from rest at the top and is in free fall for 1.5 seconds. What's its velocity at the end? Choose upward as positive, with the origin at the car's starting point. The car starts at rest, so v sub i equals 0.0 meters per second. Use the equation for velocity with constant acceleration: v sub f equals v sub i plus a t sub f. That's 0.0 meters per second plus negative 9.8 meters per second squared times 1.5 seconds, which equals negative 15 meters per second.</p><p>How far do the riders fall in that time? Use the displacement equation: x sub f equals x sub i plus v sub i t sub f plus one half a t sub f squared. That's 0.0 meters plus 0.0 meters per second times 1.5 seconds, plus one half times negative 9.8 meters per second squared times the square of 1.5 seconds. The result is negative 11 meters.</p>",
+   "testIt": {
+    "name": "Free-fall timer",
+    "how": "Set the fall time and tap the timer."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Variations in Free Fall",
+   "text": "<h3>Variations in Free Fall</h3><p class=\"p101-def\">Free-fall acceleration depends on the mass of the attracting object and the distance from it.</p><p>When David Scott dropped his hammer and feather on the Moon, they didn't fall at 9.8 meters per second squared. That value only applies near Earth's surface. On the Moon, free-fall acceleration is about 1.6 meters per second squared, roughly one sixth of Earth's.</p><p>When you study force and motion, you'll learn what affects free-fall acceleration. One factor is the mass of the object causing it, like Earth or the Moon. The Moon has much less mass than Earth, so its free-fall acceleration is smaller.</p><p>Another factor is distance. The rings around Earth in Figure 24 show free-fall acceleration shrinking as you move away: 9.8 meters per second squared at the surface, then 7.4, 4.9, 2.5, and 0.98 meters per second squared at greater distances. At a height above the surface equal to Earth's radius, it's about 2.5 meters per second squared. But on Earth's surface the changes are tiny, even with big changes in elevation. In New York City it's about 9.802 meters per second squared. Denver, Colorado, is about 1600 meters higher, so it's a little farther from Earth's center, and there it's about 9.796 meters per second squared. In this book, we'll use 9.8 meters per second squared.</p>",
+   "testIt": {
+    "name": "Probe",
+    "how": "Drag the probe away from Earth or the Moon."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "STEM at Work, Designing Fun",
+   "text": "<h3>STEM at Work, Designing Fun</h3><p class=\"p101-def\">Theme park designers use physics, engineering, and math to create exciting, safe attractions.</p><p>Think about the last ride that made your pulse race. A heart-pounding roller coaster? A chilling haunted house? Ever wonder how those rides are created? The people who design theme park attractions go by many titles: theme park designer, creative design engineer, industrial designer, building information modeling manager, and more. Whatever their title, they all focus on creating exciting attractions that draw visitors.</p><p>Most theme park designers have a background in physics, engineering, and mathematics, and some are also graphic designers or writers. They use computer-aided design, or CAD, software to make 2D and 3D blueprints. More and more, they also use building information modeling, or BIM, systems to build 3D models that can be viewed at different levels of detail. They use other 3D modeling programs too, plus graphics software for images and animations.</p><p>Designers work with acceleration and gravitational forces to create thrills. Roller coasters change speed, like slowly grinding up a hill and then barreling down, and change direction, like suddenly banking left or right. Rides that drop you from great heights and then slow you before the ground use free-fall acceleration.</p><p>Designers must think about how rides affect your inner ear, heart, and other body systems. They want riders thrilled but safe. So they make sure gravitational forces don't go beyond what an average person can handle without ill effects, and they design seatbelts and other restraints, headrests, padding, and improved braking systems. With a partner, you can brainstorm, design, and build your own model ride that uses acceleration and gravitational forces, using modeling software if you have it.</p>",
+   "testIt": {
+    "name": "Ride builder",
+    "how": "Pick a drop height and a braking distance, then tap the builder."
+   }
+  }
+ }
+}
