@@ -105,3 +105,18 @@ export function tangentTool(ctx, id, g, f, df, t0, range, label, onMove, half = 
   return onCurve(ctx, id, g, f, t0, range, label, (t, done) => { if (first) { first = false; ctx.art.show(id, false); } draw(t); onMove(t, df(t), done); }, snap);
 }
 export const BLUE = "#3B6FB6";
+// A readout page: sliders and tappable cutouts edit a state object; show(st) returns the caption text.
+// cuts: [{ id, label, tap(st) -> sentence to say or "" }]. The caption sits under the first cutout
+// (or above it near the page bottom) unless box is given. The scene itself calls art.touchable.
+export function calc(ctx, { box, px = 22, st = {}, sliders = [], cuts = [], show, say: s0 }) {
+  const { art, ui, say, layer } = ctx;
+  if (!box) { const b = art.box(cuts[0].id), w = 560, x0 = Math.max(20, Math.min(1580 - w, (b[0] + b[2]) / 2 - w / 2)); box = b[3] + 110 < 898 ? [x0, b[3] + 8, x0 + w, b[3] + 105] : [x0, b[1] - 105, x0 + w, b[1] - 8]; }
+  const cap = caption(layer, box, px); const ctl = {};
+  const draw = () => (cap.textContent = show(st));
+  sliders.forEach((o) => (st[o.key] = o.value));
+  sliders.forEach((o) => { ctl[o.key] = ui.slider({ label: o.label, min: o.min, max: o.max, step: o.step, value: o.value, fmt: o.fmt || ((v) => f2(v, o.d ?? 0) + (o.unit ? " " + o.unit : "")) }, (v) => { st[o.key] = v; draw(); }); });
+  cuts.forEach((c) => tapCut(ctx, c.id, c.label, () => { const line = c.tap(st, ctl); draw(); if (line) say(line, true); }));
+  draw(); if (s0) say(s0, true);
+  return { st, cap, draw, ctl };
+}
+export const deg = (d) => (d * Math.PI) / 180, rad2 = (r) => (r * 180) / Math.PI;

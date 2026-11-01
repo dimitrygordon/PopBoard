@@ -1,0 +1,109 @@
+{
+ "slug": "m05-l01",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Forces in Two Dimensions",
+   "text": "<h3>Forces in Two Dimensions</h3><p class=\"p101-def\">When forces act in more than one direction, you need vectors in two dimensions to find the net force.</p><p>Our big question for this lesson: how can you add forces in two dimensions? Start with a rock climber. How does a climber cling to a rock wall? Usually he has more than one support point. He grips crevices in the rock, so the rock pulls back on him. A rope secures him to the rock too. That's two contact forces. Add gravity, and three forces act on the climber.</p><p>Here's what's new. The rock face doesn't push or pull only horizontally or vertically. You already know you can choose your coordinate system and orient it however helps most. But how do you set up a coordinate system for a net force in more than one dimension? And what happens when the forces aren't at right angles to each other?</p>"
+  },
+  "2": {
+   "layers": [],
+   "title": "Vectors Revisited",
+   "text": "<h3>Vectors Revisited</h3><p class=\"p101-def\">The resultant vector points from the tail of the first vector to the tip of the final vector.</p><p>Let's review force vectors in one dimension. In Figure 1, you and a friend push a table together, each with 40 newtons to the right. The sum is 80 newtons to the right, just as you'd expect. But how do you actually add force vectors?</p><p>Earlier, when you added vectors along a straight line, the resultant always pointed from the tail of the first vector to the tip of the final vector. Does that rule still work when the vectors don't lie along a line? Let's find out.</p>",
+   "testIt": {
+    "name": "Vectors Revisited",
+    "how": "Drag two force arrows tip to tail along a line and watch the resultant arrow form from the first tail to the last tip."
+   }
+  },
+  "3": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson. While you read, build a table of crosscutting concepts and fill in examples as you find them.</p><p>Online, the Launch Lab called Adding Vectors has you carry out an investigation to find the net force on a system when forces act in two dimensions.</p>"
+  },
+  "4": {
+   "layers": [],
+   "title": "Adding Vectors in Two Dimensions",
+   "text": "<h3>Adding Vectors in Two Dimensions</h3><p class=\"p101-def\">To add vectors graphically, place them tip to tail, then draw the resultant from the first tail to the final tip.</p><p>Good news: even when vectors don't lie on a straight line, the resultant still points from the tail of the first vector to the tip of the final vector. You can use a protractor and a ruler to draw the vectors at the right angles and to measure the size and direction of the resultant.</p><p>Figure 2 shows how to add vectors graphically in two dimensions. Notice that when vector B is moved, its length and direction stay the same. That's always true. Moving a vector never changes its length or direction.</p>",
+   "testIt": {
+    "name": "Adding Vectors in Two Dimensions",
+    "how": "Slide vector B around the screen and snap its tail to A's tip; the resultant R appears, with ruler and protractor readouts."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Perpendicular Vectors and Other Angles",
+   "text": "<h3>Perpendicular Vectors and Other Angles</h3><p class=\"p101-def\">For vectors at right angles, R squared equals A squared plus B squared; for other angles, use the law of sines or the law of cosines.</p><p>If you add two vectors at right angles, like vector A pointing east and vector B pointing north in Figure 2, you can use the Pythagorean theorem to find the magnitude R of the resultant: R squared equals A squared plus B squared.</p><p>But what if the angle isn't 90 degrees, as in Figure 3? Then use trigonometry, like the law of sines or the law of cosines. The law of sines works best when you know two angles and only one vector magnitude. It says R over the sine of theta equals A over the sine of a, which equals B over the sine of b. The law of cosines is especially handy when you know two vectors and the angle between them: R squared equals A squared plus B squared minus 2 A B times the cosine of theta.</p><p>What happens if you use the law of cosines when theta is 90 degrees? The first three terms match the Pythagorean theorem. The last term, minus 2 A B cosine theta, becomes zero, because the cosine of 90 degrees is zero. So for a right triangle, the law of cosines shrinks right down to the Pythagorean theorem.</p>",
+   "testIt": {
+    "name": "Perpendicular Vectors and Other Angles",
+    "how": "Set two vector lengths and the angle between them; the sandbox computes R with the law of cosines and shows the Pythagorean case at 90 degrees."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Example Problem 1, The Sum of Two Displacements",
+   "text": "<h3>Example Problem 1, The Sum of Two Displacements</h3><p class=\"p101-def\">Use the Pythagorean theorem at 90 degrees and the law of cosines at other angles.</p><p>Find the magnitude of the sum of a 25 kilometer displacement and a 15 kilometer displacement when the angle between them is 90 degrees, and again when it's 135 degrees.</p><p>Step one: analyze and sketch. Sketch the two displacement vectors, A and B, and the angle between them. Known: A is 25 kilometers, B is 15 kilometers, and theta is 90 degrees or 135 degrees. Unknown: R.</p><p>Step two: solve. When theta is 90 degrees, use the Pythagorean theorem. R equals the square root of A squared plus B squared. Substitute 25 kilometers and 15 kilometers, and R equals 29 kilometers. When theta isn't 90 degrees, use the law of cosines. R equals the square root of A squared plus B squared minus 2 A B times the cosine of theta. Substitute 25 kilometers, 15 kilometers, and 135 degrees: the square root of 25 kilometers squared, plus 15 kilometers squared, minus 2 times 25 kilometers times 15 kilometers times the cosine of 135 degrees. That's 37 kilometers.</p><p>Step three: evaluate. Each answer is a length in kilometers, and both sums are positive. From the sketch, the resultant should be longer than either vector, and it is.</p>",
+   "testIt": {
+    "name": "Example Problem 1",
+    "how": "Set the angle between a 25 kilometer and a 15 kilometer displacement and watch the resultant length update from 29 to 37 kilometers and beyond."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Coordinate Systems and Vector Components",
+   "text": "<h3>Coordinate Systems and Vector Components</h3><p class=\"p101-def\">A vector's components are vectors parallel to the x-axis and the y-axis that add up to the original vector.</p><p>What's the exact direction of the vector on the left of Figure 4? To say, we need a coordinate system, like the one in the center of Figure 4. It's like laying a grid on clear plastic over the problem. You pick where the center, or origin, goes and which way the axes point. The x-axis runs through the origin with an arrow pointing in the positive direction. The positive y-axis sits 90 degrees from the positive x-axis and crosses it at the origin. You can place a vector on any coordinate system, as long as its direction and length stay the same.</p><p>How do you choose the x-axis direction? There's never one correct answer, but some choices make problems easier. For motion along Earth's surface, point the x-axis east and the y-axis north. For motion on an incline, point the positive x-axis in the direction of motion, parallel to the incline's surface.</p><p>Now you can describe a vector in a useful way. Vector A, on the right of Figure 4, goes 5 units in the positive x-direction, called A sub x, and 4 units in the positive y-direction, called A sub y. Add A sub x and A sub y, and you get back the original vector A. A vector whose y-component is zero simply lies along the x-axis.</p>",
+   "testIt": {
+    "name": "Coordinate Systems and Vector Components",
+    "how": "Drag the tip of a vector on a grid and watch its x and y components update, including the case where the y-component is zero."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Vector Resolution",
+   "text": "<h3>Vector Resolution</h3><p class=\"p101-def\">Vector resolution is the process of breaking a vector into its components.</p><p>A vector can be broken into its components, one parallel to the x-axis and one parallel to the y-axis: A equals A sub x plus A sub y. This process is sometimes called vector resolution.</p><p>The original vector is the hypotenuse of a right triangle. That means the original vector's magnitude is always greater than or equal to the magnitude of either component.</p>"
+  },
+  "9": {
+   "layers": [],
+   "title": "Components, Two Meanings",
+   "text": "<h3>Components, Two Meanings</h3><p class=\"p101-def\">In science, components are the projections of a vector parallel to the x- and y-axes.</p><p>In science, components are the projections of a vector parallel to the x-axis and the y-axis. A vector is the algebraic sum of its components.</p><p>In everyday speech, components are the constituent parts or ingredients of something, as in \"The computer's electronic components malfunctioned during the power surge.\"</p>"
+  },
+  "10": {
+   "layers": [],
+   "title": "STEM Career Connection, Civil Engineer",
+   "text": "<h3>STEM Career Connection, Civil Engineer</h3><p class=\"p101-def\">Civil engineers design roads that account for friction between tires and the road.</p><p>Have you ever been in a moving car on a wet road and noticed how different the grip feels? That's the friction between the tires and the wet road. One job of a civil engineer is to design roads and pavements that account for the friction between tires and the road in different driving conditions.</p>"
+  },
+  "11": {
+   "layers": [],
+   "title": "Direction in Coordinate Systems",
+   "text": "<h3>Direction in Coordinate Systems</h3><p class=\"p101-def\">A vector's direction is the angle it makes with the x-axis, measured counterclockwise from the positive x-axis.</p><p>In a two-dimensional force problem, choose your coordinate system carefully, because every vector's direction is given relative to it. We define a vector's direction as the angle it makes with the x-axis, measured counterclockwise from the positive x-axis. In Figure 5, the angle theta gives the direction of vector A. And all algebraic calculations use only the components of vectors, not the vectors themselves.</p><p>Besides measuring components with a ruler, you can find them with trigonometry. The cosine of theta equals the adjacent side over the hypotenuse, which is A sub x over A, so A sub x equals A times the cosine of theta. The sine of theta equals the opposite side over the hypotenuse, which is A sub y over A, so A sub y equals A times the sine of theta.</p><p>When a vector's angle with the x-axis is more than 90 degrees, one or more of its components is negative, as in the top coordinate system of Figure 5, where a vector at 130 degrees points up and to the left. The coordinate plane has four quadrants, and a vector's quadrant sets the signs of its components. For example, a vector at 280 degrees lies in the fourth quadrant, so its x-component is positive and its y-component is negative.</p>",
+   "testIt": {
+    "name": "Direction in Coordinate Systems",
+    "how": "Spin a vector around the origin and watch the angle, quadrant, and the signs of A sub x and A sub y change."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Algebraic Addition of Vectors",
+   "text": "<h3>Algebraic Addition of Vectors</h3><p class=\"p101-def\">Add the x-components and the y-components separately, then use the Pythagorean theorem and inverse tangent for the resultant.</p><p>Figure 6 shows how breaking vectors into components makes adding them easier. First, add the vectors graphically by placing them tip to tail. Next, resolve each vector into its x- and y-components. Add the x-components to get the resultant's x-component: R sub x equals A sub x plus B sub x plus C sub x. Then add the y-components: R sub y equals A sub y plus B sub y plus C sub y.</p><p>Because R sub x and R sub y are at a right angle, you can find the resultant's magnitude with the Pythagorean theorem: R squared equals R sub x squared plus R sub y squared. The sum of A, B, and C is the same as the sum of R sub x and R sub y.</p><p>The angle the resultant makes with the x-axis is theta equals the inverse tangent of R sub y over R sub x. Use the inverse tangent key on your calculator. When the tangent of theta is positive, most calculators give an angle between 0 and 90 degrees. When it's negative, they give an angle between 0 and negative 90 degrees.</p>",
+   "testIt": {
+    "name": "Algebraic Addition of Vectors",
+    "how": "Build three vectors, then press \"resolve\" to watch the components line up and combine into R with its magnitude and angle."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Problem-Solving Strategy, Vector Addition",
+   "text": "<h3>Problem-Solving Strategy, Vector Addition</h3><p class=\"p101-def\">Choose axes, resolve into components, add each direction, then find the magnitude and angle.</p><p>Here's a technique for any problem where you add or subtract vectors. First, choose a coordinate system. Second, resolve the vectors into x-components using A sub x equals A cosine theta, and y-components using A sub y equals A sine theta, where theta is measured counterclockwise from the positive x-axis.</p><p>Third, add or subtract the components in the x-direction. Fourth, add or subtract the components in the y-direction. Fifth, use the Pythagorean theorem, R equals the square root of R sub x squared plus R sub y squared, to find the resultant's magnitude. And sixth, use theta equals the inverse tangent of R sub y over R sub x to find its angle.</p><p>Remember to check your answer's direction too: you should always measure a vector's direction counterclockwise from the positive x-axis.</p>"
+  },
+  "14": {
+   "layers": [],
+   "title": "Example Problem 2, Finding Your Way Home",
+   "text": "<h3>Example Problem 2, Finding Your Way Home</h3><p class=\"p101-def\">Subtract known components from the resultant's components to find an unknown vector.</p><p>You're on a hike. Your camp is 15.0 kilometers away, in the direction 40.0 degrees north of west. The only path through the woods leads straight north. If you follow it 5.0 kilometers before it opens into a field, how far, and in what direction, must you walk to reach camp?</p><p>Step one: analyze and sketch. Draw the resultant vector R from where you started to your camp. Draw A, the known vector, and B, the unknown vector. Known: A is 5.0 kilometers due north, and R is 15.0 kilometers at 40.0 degrees north of west, which is theta equals 140.0 degrees. Unknown: B.</p><p>Step two: solve. Find R's components. R sub x equals R cosine theta: 15.0 kilometers times the cosine of 140.0 degrees, or negative 11.5 kilometers. R sub y equals R sine theta: 15.0 kilometers times the sine of 140.0 degrees, or 9.64 kilometers. Since A is due north, A sub x is 0.0 kilometers and A sub y is 5.0 kilometers. Now find B's components. B sub x equals R sub x minus A sub x: negative 11.5 kilometers minus 0.0 kilometers, or negative 11.5 kilometers. The negative sign means it points west. B sub y equals R sub y minus A sub y: 9.64 kilometers minus 5.0 kilometers, or 4.6 kilometers, pointing north.</p><p>Next, B equals the square root of B sub x squared plus B sub y squared: the square root of the square of negative 11.5 kilometers plus the square of 4.6 kilometers, which is 12.4 kilometers. Place B's tail at the origin and draw its components. B is in the second quadrant. Use the tangent to find its direction: theta equals the inverse tangent of 4.6 kilometers over negative 11.5 kilometers. The tangent is negative in quadrants two and four, so there are two possible answers, negative 22 degrees or 158 degrees. Since B is in the second quadrant, theta must be 158 degrees, which is also 22 degrees north of west. So B is 12.4 kilometers at 22 degrees north of west.</p><p>Step three: evaluate. Kilometers and degrees are the right units. The signs agree with the diagram. And the size makes sense: B is shorter than the 15.0 kilometer trip to camp, because the 5.0 kilometers you already walked north took you part of the way.</p>",
+   "testIt": {
+    "name": "Example Problem 2",
+    "how": "Set the camp's distance and direction and how far the path runs north, and the sandbox draws the remaining vector B with its length and heading."
+   }
+  }
+ }
+}

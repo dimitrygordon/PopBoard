@@ -209,10 +209,10 @@ export const DECKS = [
   "title": "Vectors",
   "tag": "PHYSICS 101  ·  MODULE 5  ·  LESSON 1",
   "sub": "Module 5: Displacement and Force in Two Dimensions",
-  "slides": 0,
+  "slides": 14,
   "pages": [],
   "standards": ["Science & Engineering Practices"],
-  "built": false
+  "built": true
  },
  {
   "key": "M05-L02",
@@ -223,10 +223,10 @@ export const DECKS = [
   "title": "Friction",
   "tag": "PHYSICS 101  ·  MODULE 5  ·  LESSON 2",
   "sub": "Module 5: Displacement and Force in Two Dimensions",
-  "slides": 0,
+  "slides": 11,
   "pages": [],
   "standards": ["HS-PS2-1"],
-  "built": false
+  "built": true
  },
  {
   "key": "M05-L03",
@@ -237,10 +237,10 @@ export const DECKS = [
   "title": "Forces in Two Dimensions",
   "tag": "PHYSICS 101  ·  MODULE 5  ·  LESSON 3",
   "sub": "Module 5: Displacement and Force in Two Dimensions",
-  "slides": 0,
+  "slides": 9,
   "pages": [],
   "standards": ["HS-PS2-1"],
-  "built": false
+  "built": true
  },
  {
   "key": "M06-L01",
@@ -251,10 +251,10 @@ export const DECKS = [
   "title": "Projectile Motion",
   "tag": "PHYSICS 101  ·  MODULE 6  ·  LESSON 1",
   "sub": "Module 6: Motion in Two Dimensions",
-  "slides": 0,
+  "slides": 13,
   "pages": [],
   "standards": ["Science & Engineering Practices"],
-  "built": false
+  "built": true
  },
  {
   "key": "M06-L02",
@@ -265,10 +265,10 @@ export const DECKS = [
   "title": "Circular Motion",
   "tag": "PHYSICS 101  ·  MODULE 6  ·  LESSON 2",
   "sub": "Module 6: Motion in Two Dimensions",
-  "slides": 0,
+  "slides": 10,
   "pages": [],
   "standards": ["HS-PS2-1"],
-  "built": false
+  "built": true
  },
  {
   "key": "M06-L03",
@@ -279,9 +279,9 @@ export const DECKS = [
   "title": "Relative Velocity",
   "tag": "PHYSICS 101  ·  MODULE 6  ·  LESSON 3",
   "sub": "Module 6: Motion in Two Dimensions",
-  "slides": 0,
+  "slides": 10,
   "pages": [],
   "standards": ["Science & Engineering Practices"],
-  "built": false
+  "built": true
  }
 ];
