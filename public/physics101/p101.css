@@ -22,7 +22,7 @@
 .stage .ac-stds.on-cover { position: absolute; left: 3%; top: 2%; z-index: 3; margin: 0; padding: 0.15em 0.5em;
   font-family: var(--ac-note-font, "Gochi Hand", cursive); font-size: calc(var(--u, 1px) * 13); color: #3d3d3d;
   background: rgba(251, 246, 234, 0.85); border-radius: 0.4em; pointer-events: none; }
-:root[data-theme="dark"] .stage .ac-stds.on-cover { color: #f1e7cf; background: rgba(30, 36, 51, 0.85); }
+:root[data-theme="dark"] .stage .ac-stds.on-cover { color: var(--slide-ink); background: color-mix(in srgb, var(--slide-paper) 85%, transparent); }
 
 /* Test it scenes on hand-drawn pages: an overlay in 1600x900 page coordinates above the art */
 .stage .p-scene { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
@@ -31,10 +31,10 @@
 .stage .p-scene .hit:focus-visible { outline: 3px solid #E2B654; outline-offset: 2px; border-radius: 6px; }
 .stage .p-scene .hit.dragging { cursor: grabbing; }
 .stage .p-scene .live { font-family: "Patrick Hand", cursive; color: #3d3d3d; line-height: 1.05; white-space: nowrap; }
-:root[data-theme="dark"] .stage .p-scene .live { color: #f1e7cf; }
+:root[data-theme="dark"] .stage .p-scene .live { color: var(--slide-ink); }
 .stage .p-scene .live.card { color: #3d3d3d; text-align: center; display: grid; place-items: center; }
 .stage .p-scene .cap { font-family: "Patrick Hand", cursive; color: #3d3d3d; background: rgba(251, 246, 234, 0.9); border-radius: 0.5em; padding: 0.2em 0.6em; white-space: normal; }
-:root[data-theme="dark"] .stage .p-scene .cap { color: #f1e7cf; background: rgba(30, 36, 51, 0.9); }
+:root[data-theme="dark"] .stage .p-scene .cap { color: var(--slide-ink); background: color-mix(in srgb, var(--slide-paper) 90%, transparent); }
 .stage .p-scene svg { overflow: visible; }
 .story .read .p101-def { font-family: var(--ac-head-font); font-size: 19px; border-left: 4px solid var(--p101-m1, #E2B654); padding-left: 10px; }
 .story .read .p101-slots { margin: 8px 0 0; padding-left: 22px; font-size: 16px; }
@@ -45,3 +45,21 @@
 :root[data-theme="dark"] .stage.artpage.v2 [style*="--dc"] { color: var(--lc); }
 :root[data-theme="dark"] .stage.artpage .p-scene .live { color: #3d3d3d; }
 :root[data-theme="dark"] .stage.artpage .p-scene .cap { color: #3d3d3d; background: rgba(251, 246, 234, 0.9); }
+
+/* ---- Physics 101 dark slides: Leo's palette. These variables are the whole dark theme for the course. ---- */
+:root[data-theme="dark"][data-course="physics101"] {
+  --slide-paper: #1F1D1A; --slide-ink: #EDE6D6; --slide-ink-2: #B8B0A0;
+  --slide-edge: #3A362F; --slide-chip: #2B2823; --slide-force: #6FA3E0;
+  --slide-art-filter: brightness(0.85); --slide-art-radius: 12px; --slide-art-border: #3A362F; --slide-art-inset: 0.018;
+  --slide-hl-bg: color-mix(in srgb, var(--mod-accent) 35%, transparent); --slide-hl-ink: var(--slide-ink);
+  /* page chrome and narration bar in the same charcoal and cream */
+  --ac-paper: #171614; --ac-panel: #1F1D1A; --ac-text: #EDE6D6; --ac-dim: #B8B0A0; --ac-line: #5C554A;
+  --ac-accent: #6FA3E0; --ac-chip: rgba(43, 40, 35, 0.94);
+}
+:root { --mod-accent: var(--p101-m1); }
+:root[data-module="2"] { --mod-accent: var(--p101-m2); }
+:root[data-module="3"] { --mod-accent: var(--p101-m3); }
+:root[data-module="4"] { --mod-accent: var(--p101-m4); }
+:root[data-module="5"] { --mod-accent: var(--p101-m5); }
+:root[data-module="6"] { --mod-accent: var(--p101-m6); }
+:root[data-theme="dark"][data-course="physics101"] button[aria-pressed="true"], :root[data-theme="dark"][data-course="physics101"] button[aria-selected="true"] { color: #1F1D1A; }
