@@ -1,0 +1,176 @@
+{
+ "slug": "m04-l01",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "What Is a Force?",
+   "text": "<h3>What Is a Force?</h3><p class=\"p101-def\">A force is a push or a pull; forces have magnitude and direction, so they are vectors.</p><p>Our big question for this lesson: what causes a change in motion? Picture a textbook resting on a table. To get it moving, you could push it or pull it. In physics, a push or a pull is called a force.</p><p>Push or pull harder, and you exert a greater force, meaning you increase the magnitude of the applied force. Direction matters too. Push the book to the right, and it starts moving right. Push it left, and it moves left. Because forces have both magnitude and direction, forces are vectors.</p><p>A boldface F stands for a force's size and direction, while a regular F stands for just its magnitude. The magnitude of a force is measured in units called newtons, written with a capital N.</p>",
+   "testIt": {
+    "name": "Push the book",
+    "how": "Drag the push arrow longer, shorter or backward and watch the book respond."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Unbalanced Forces Change Motion",
+   "text": "<h3>Unbalanced Forces Change Motion</h3><p class=\"p101-def\">All accelerations are the result of an unbalanced force acting on an object.</p><p>Remember, motion diagrams show an object's positions at equal time intervals. In Figure 1, the dots for the book get farther apart, so its speed is increasing. At time zero it's at rest, but after 2 seconds it's moving at 1.5 meters per second. That change in speed means it's accelerating.</p><p>What causes the acceleration? The book sat still until you pushed it, so the cause is the force from your hand. In fact, all accelerations are the result of an unbalanced force acting on an object. The book accelerates in the direction of that unbalanced force.</p>",
+   "testIt": {
+    "name": "Push and watch",
+    "how": "Tap push and watch the dots spread as the speed climbs."
+   }
+  },
+  "3": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Keep your Science Journal handy and record the evidence you collect during this lesson.</p><p>Online, the activity called Applying Practices: Newton's Second Law has you analyze data to support the claim that Newton's second law describes the mathematical relationship among the net force on an everyday-sized object, its mass, and its acceleration.</p>"
+  },
+  "4": {
+   "layers": [],
+   "title": "Systems and the External World",
+   "text": "<h3>Systems and the External World</h3><p class=\"p101-def\">The system is the object of interest; the external world is everything around it that can interact with it.</p><p>When you think about how a force affects motion, first pick the object or objects you care about. That's called the system. Everything around the system that can interact with it is called the external world.</p><p>In Figure 2, the book is the system. Your hand, Earth, a string, and the table are all parts of the external world that interact with the book by pushing or pulling on it.</p>",
+   "testIt": {
+    "name": "Pick the system",
+    "how": "Tap the ring to circle a different object as the system."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Contact Forces and Field Forces",
+   "text": "<h3>Contact Forces and Field Forces</h3><p class=\"p101-def\">A contact force exists when an object touches the system; a field force is exerted without contact.</p><p>Think about the ways you could move a textbook. You could push or pull it directly, or tie a string around it and pull the string. Those are contact forces. A contact force exists when something from the external world touches the system and exerts a force on it. If you're holding this book right now, your hands exert a contact force on it. Set it on a table, and you no longer do, but the table does, because the table and book are touching.</p><p>But there's another way to change the book's motion. Drop it! It accelerates toward the ground because of Earth's gravitational force, and that force acts whether or not Earth is touching the book. Gravitational force is a field force. Field forces are exerted without contact.</p><p>Can you think of other field forces? If you've played with magnets, you know they push and pull without touching. You'll explore magnetism and other field forces later. For now, the only field force you need is gravity. In the first panel of Figure 2, the hand and the table exert contact forces on the book, and Earth exerts a field force.</p>",
+   "testIt": {
+    "name": "Contact or field?",
+    "how": "Drag each force chip into the contact bin or the field bin."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Agents",
+   "text": "<h3>Agents</h3><p class=\"p101-def\">An agent is the specific, identifiable cause of a force.</p><p>Forces come from interactions. Every contact and field force has a specific, identifiable cause called the agent. You should always be able to name the agent exerting a force and the system it acts on.</p><p>When you push your textbook, your hand is the agent, and the textbook is the system. If there isn't both an agent and a system, there's no force. And gravity? The agent is the mass of Earth, exerting a field force on the book. The labels in Figure 2 are good examples of naming each force's agent and the system it acts on.</p><p>So what's the difference between contact forces and field forces? Contact forces need the agent to touch the system. Field forces act across a distance, with no touching required.</p>"
+  },
+  "7": {
+   "layers": [],
+   "title": "Force, Two Meanings",
+   "text": "<h3>Force, Two Meanings</h3><p class=\"p101-def\">In science, a force is a push or pull exerted on an object.</p><p>In science, force means a push or pull exerted on an object. For example, the force of gravity exerted by the Sun on Earth pulls Earth into orbit around the Sun.</p><p>In everyday speech, to force means to compel by physical, moral, or intellectual means, as in \"Emi forced her younger brother to wash the dishes.\"</p>"
+  },
+  "8": {
+   "layers": [],
+   "title": "STEM Career Connection, Astronaut",
+   "text": "<h3>STEM Career Connection, Astronaut</h3><p class=\"p101-def\">Astronauts train for the effects of forces in a weightless environment.</p><p>On Earth, we're used to accounting for the force of Earth's gravitational field. But to get ready for missions in space, astronauts have to become familiar with how forces affect objects when everything around them is weightless, floating in what's often called microgravity.</p>"
+  },
+  "9": {
+   "layers": [],
+   "title": "Free-Body Diagrams",
+   "text": "<h3>Free-Body Diagrams</h3><p class=\"p101-def\">A free-body diagram is a physical representation that shows the forces acting on a system.</p><p>Just like motion diagrams help with motion problems, special drawings help you analyze forces. First, sketch the situation, like Figure 3. Circle the system, and find every spot where the system touches the external world. That's where agents exert contact forces. Then identify any field forces. That gives you the pictorial representation.</p><p>A free-body diagram is a physical representation that shows the forces acting on a system. Here's how to draw one. Draw it separately from your sketch. Use the particle model and show the object as a dot. Draw each force as an arrow pointing in the direction the force is applied, always pointing away from the dot, even when the force is a push.</p><p>Make each arrow's length proportional to the size of the force. If you don't know the sizes yet, make your best estimate. Label each force with F and a subscript naming both the agent and the object the force acts on. Finally, choose a positive direction and mark it on the diagram. In this book, force vectors are drawn in blue.</p>",
+   "testIt": {
+    "name": "Free-body builder",
+    "how": "Pick the ball's situation, then tap the dot to add its force arrows."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Free-Body Diagrams Meet Motion Diagrams",
+   "text": "<h3>Free-Body Diagrams Meet Motion Diagrams</h3><p class=\"p101-def\">An accelerating object's free-body diagram shows an unbalanced force in the same direction as its acceleration.</p><p>Remember, all accelerations come from unbalanced forces. So if a motion diagram shows an object accelerating, its free-body diagram should show an unbalanced force in the same direction as the acceleration.</p><p>For the balls in Figure 3, held in a hand or hanging from a string, the upward and downward forces are equal, so there's no unbalanced force and no acceleration. But let go of the ball, and only Earth's downward pull remains. That unbalanced downward force matches the ball's downward acceleration. The direction of an object's acceleration is always the direction of the unbalanced force on it.</p>",
+   "testIt": {
+    "name": "Cut the string",
+    "how": "Tap cut the string and watch the free-body diagram and the motion change."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Cause and Effect",
+   "text": "<h3>Cause and Effect</h3><p class=\"p101-def\">Acceleration is caused directly by an imbalance of forces, not just correlated with it.</p><p>Here's a crosscutting challenge about cause and effect. Study Figure 3. With a partner, plan a demonstration showing the cause-and-effect link between an object's motion and two forces acting on it in opposite directions.</p><p>Vary the forces so you can show what happens when they're unbalanced. Gather evidence that the acceleration, or lack of acceleration, is directly caused by the imbalance, or balance, of the forces, and isn't just a coincidence that happens to show up alongside it.</p>",
+   "testIt": {
+    "name": "Tug-of-war cart",
+    "how": "Set the two pulls and tap the cart to run a trial."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Combining Forces and Net Force",
+   "text": "<h3>Combining Forces and Net Force</h3><p class=\"p101-def\">The net force is the vector sum of all the forces on an object.</p><p>What if you and a friend each push a table with 100 newtons? Push together in the same direction, and the table gets twice the acceleration it would get from just one of you. Push from opposite sides with the same force, as in Figure 4, and there's no unbalanced force, so the table stays at rest.</p><p>The bottom of Figure 4 shows free-body diagrams for these cases, plus a third where your friend pushes twice as hard as you in the opposite direction. Under each diagram is the resultant of the two forces. When forces point the same way, replace them with one vector as long as both combined. When they point opposite ways, the resultant's length is the difference between them. The vector sum of all the forces on an object is called the net force.</p><p>Let's do the math. Call the direction you push, with 100 newtons, positive. In the first case, your friend pushes with negative 100 newtons, so the total is 0 newtons and there's no acceleration. In the second, your friend pushes with positive 100 newtons, so the total is 200 newtons in the positive direction, and the table accelerates that way. In the third, your friend pushes with negative 200 newtons, so the total is negative 100 newtons, and the table accelerates in the negative direction.</p>",
+   "testIt": {
+    "name": "Net force",
+    "how": "Set each pusher's force and direction and read the net force."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Applying a Constant Force",
+   "text": "<h3>Applying a Constant Force</h3><p class=\"p101-def\">A constant unbalanced force produces a constant acceleration.</p><p>To explore how forces affect motion, imagine a series of investigations. Start simple, with one horizontal force on an object, as in the top photo of Figure 5. Horizontal is a good place to start because gravity doesn't act sideways. To cut down on rubbing against the surface, use a smooth surface like a well-polished table, and a cart with wheels that spin easily.</p><p>How do you apply a constant unbalanced force? Use a spring scale. Inside is a spring that stretches in proportion to the force applied, and the front is marked to read the force in newtons. Pull so the reading stays steady, and the force is constant.</p><p>Measure the cart's velocity over time, and you get a graph like the green line in the middle of Figure 5. The line's constant slope means the velocity increases at a constant rate, so the acceleration is constant. That constant acceleration comes from the constant unbalanced force of the spring scale.</p>",
+   "testIt": {
+    "name": "Spring scale",
+    "how": "Choose a force and tap the spring scale to plot the v-t line."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "Acceleration Is Proportional to Force",
+   "text": "<h3>Acceleration Is Proportional to Force</h3><p class=\"p101-def\">The relationship between net force and acceleration is linear.</p><p>How does acceleration depend on force? Repeat the investigation with a bigger constant force, then a bigger one still. Each gives a velocity-time line, like the red and blue lines in the middle of Figure 5. Each line's slope is the cart's acceleration. Find each slope and plot it against its force to make the acceleration-force graph at the bottom of Figure 5.</p><p>The graph shows a linear relationship. For a straight line, y equals k x plus b. Here the y-intercept is zero, so it simplifies to y equals k x. The y variable is acceleration and the x variable is force. So acceleration equals the slope of the line times the applied net force. In other words, acceleration is directly proportional to net force: double the force, double the acceleration.</p>",
+   "testIt": {
+    "name": "a-F graph",
+    "how": "Tap the slope chip three times to plot each run, then read the line's slope."
+   }
+  },
+  "15": {
+   "layers": [],
+   "title": "What the Slope Means",
+   "text": "<h3>What the Slope Means</h3><p class=\"p101-def\">The slope of the acceleration-force graph is the reciprocal of the mass, so a equals F net over m.</p><p>What does the slope of the acceleration-force graph mean? Does it tell us something about the object? Let's change the object and see. Stack a second identical cart on the first, then add a third, as in Figure 6. Now the spring scale pulls two carts, then three.</p><p>The graph shows that with the same force, two carts get one half the acceleration of one cart, and three carts get one third. So at 1 newton, two carts accelerate half as much as one cart. As the number of carts goes up, acceleration goes down, so you need more force for the same acceleration.</p><p>The slopes depend on the total mass of the carts. In fact, the slope is the reciprocal of the mass: slope equals one over mass. Put that into y equals k x, and you get the physics equation a equals F net over m.</p>",
+   "testIt": {
+    "name": "Stack the carts",
+    "how": "Tap stack carts to use one, two or three carts with the same pull."
+   }
+  },
+  "16": {
+   "layers": [],
+   "title": "Reading a Equals F Net over m",
+   "text": "<h3>Reading a Equals F Net over m</h3><p class=\"p101-def\">One newton equals one kilogram meter per second squared.</p><p>What does a equals F net over m tell you? First, a net force on an object changes its motion: the force makes it accelerate. Second, for the same object, double the force and you double the acceleration. So to cut an object's acceleration in half, cut the force in half. Third, apply the same force to objects of different masses, and the most massive one gets the smallest acceleration, while the least massive one gets the greatest.</p><p>Since F net equals m a, a newton has the units of mass times acceleration. So one newton equals one kilogram meter per second squared. Want a feel for 1 newton? Hold an apple in your hand. The downward force it exerts on your hand is about one newton.</p><p>Table 1 shows some other common forces. The force of gravity on a nickel is about 0.05 newtons. On a 0.45 kilogram bag of sugar, about 4.4 newtons. On a 70 kilogram person, 686 newtons. The force a road exerts on an accelerating car is about 3000 newtons. And the force of a rocket engine is about 5,000,000 newtons!</p>",
+   "testIt": {
+    "name": "Force scale",
+    "how": "Slide from a nickel to a rocket engine and compare forces."
+   }
+  },
+  "17": {
+   "layers": [],
+   "title": "Newton's Second Law",
+   "text": "<h3>Newton's Second Law</h3><p class=\"p101-def\">Newton's second law: the acceleration of an object equals the net force on it divided by its mass, a equals F net over m.</p><p>In Figure 7, two dogs pull a sled, each with 40 newtons. From the cart experiments, you know the sled accelerates because of the unbalanced force on it. Would the acceleration change if one bigger, stronger dog pulled with a single 80 newton force instead? No! What matters is the sum of all the forces on the system, the net force. Both cases give 80 newtons.</p><p>Newton's second law states that an object's acceleration is proportional to the net force and inversely proportional to the object's mass. It's based on observations of how forces affect masses, and it accurately predicts changes in the motion of everyday, macroscopic objects. In equation form: a equals F net over m. The acceleration equals the sum of the forces on the object divided by its mass.</p><p>To solve problems with Newton's second law, the key step is finding the net force. Often more than one force acts, so you must add the force vectors. Draw a free-body diagram showing each force's direction and relative strength. Add the vectors to get the net force. Then use Newton's second law to find the acceleration. And if you need to, use what you know about accelerated motion to find velocity or position.</p>",
+   "testIt": {
+    "name": "Sled team",
+    "how": "Set a dog's direction and strength, then tap add a dog."
+   }
+  },
+  "18": {
+   "layers": [],
+   "title": "Example Problem 1, Fighting over a Pillow",
+   "text": "<h3>Example Problem 1, Fighting over a Pillow</h3><p class=\"p101-def\">Find the net force from a free-body diagram, then use a equals F net over m.</p><p>Anudja is holding a pillow with a mass of 0.30 kilograms when Sarah decides she wants it and tries to pull it away. Sarah pulls horizontally with 10.0 newtons, and Anudja pulls horizontally with 11.0 newtons. What is the pillow's horizontal acceleration?</p><p>Step one: analyze and sketch the problem. Sketch the situation. Make the pillow the system, and call the direction Anudja pulls positive. Draw the free-body diagram and label the forces. Known: m equals 0.30 kilograms, the force of Anudja on the pillow is 11.0 newtons, and the force of Sarah on the pillow is 10.0 newtons. Unknown: a.</p><p>Step two: solve for the unknown. F net equals the force of Anudja on the pillow plus negative the force of Sarah on the pillow. Use Newton's second law: a equals F net over m. Substitute: 11.0 newtons minus 10.0 newtons, over 0.30 kilograms. That's 1.0 newton over 0.30 kilograms, or 3.3 meters per second squared toward Anudja.</p><p>Step three: evaluate the answer. Are the units correct? Meters per second squared is the right unit for acceleration. Does the sign make sense? Yes, the acceleration is toward Anudja because she pulls toward herself harder than Sarah pulls the other way. Is the size realistic? The net force is 1 newton and the mass is 0.3 kilograms, so this acceleration is realistic.</p>",
+   "testIt": {
+    "name": "Pillow tug-of-war",
+    "how": "Set each pull and the pillow's mass, then tap to pull."
+   }
+  },
+  "19": {
+   "layers": [],
+   "title": "Newton's First Law",
+   "text": "<h3>Newton's First Law</h3><p class=\"p101-def\">Newton's first law: an object at rest stays at rest, and a moving object keeps moving in a straight line at constant speed, if and only if the net force on it is zero.</p><p>What happens when the net force on an object is zero? Newton's second law says that if F net equals zero, acceleration equals zero. And zero acceleration means the velocity doesn't change. So a resting object with no net force stays at rest.</p><p>What about something moving, like a rolling ball? How long will it roll? That depends on the surface. On thick carpet, which exerts a force on the ball, it stops quickly. On a hard, smooth surface that exerts very little force, like a bowling alley, it rolls a long time with little change in velocity.</p><p>Galileo did many experiments and concluded that if he could remove every force opposing motion, horizontal motion would never stop. He was the first to see that general principles of motion could be found by extending experimental results to an ideal case. Newton generalized Galileo's results into a single statement: an object at rest will remain at rest, and an object that is moving will continue to move in a straight line with constant speed, if and only if the net force acting on it is zero. That's Newton's first law.</p>",
+   "testIt": {
+    "name": "Roll the ball",
+    "how": "Pick a surface and tap the ball to roll it."
+   }
+  },
+  "20": {
+   "layers": [],
+   "title": "Inertia",
+   "text": "<h3>Inertia</h3><p class=\"p101-def\">Inertia is the tendency of an object to resist changes in velocity.</p><p>Newton's first law is sometimes called the law of inertia, because inertia is the tendency of an object to resist changes in velocity. The car and the red block in Figure 8 show it. On the left, both are moving to the right at the same speed. On the right, a wooden box exerts a force on the car and stops it. But the red block doesn't feel that force, so it keeps moving right with the same velocity. Eventually, friction with the surface it lands on and air resistance will slow it to a stop.</p><p>Is inertia a force? No. Forces come from interactions between two objects. They aren't properties of a single object, so inertia can't be a force. And since velocity includes both speed and direction, it takes a net force to change either one. If the net force is zero, the object keeps the same speed and direction.</p>",
+   "testIt": {
+    "name": "Seatbelt",
+    "how": "Tap the seatbelt chip, then crash the car into the box."
+   }
+  },
+  "21": {
+   "layers": [],
+   "title": "Equilibrium",
+   "text": "<h3>Equilibrium</h3><p class=\"p101-def\">An object is in equilibrium if the net force on it is zero, so its velocity is constant.</p><p>By Newton's first law, a net force changes an object's velocity. If the net force on an object is zero, the object is in equilibrium. An object is in equilibrium if it moves at a constant velocity, and being at rest is just the special case of constant velocity equal to zero.</p><p>Newton's first law tells us that a net force is what disturbs equilibrium. With no net force, an object doesn't change speed or direction, so it stays in equilibrium. Figure 9 shows that, as far as net force goes, there's no difference between lying on a sofa and skydiving at a constant velocity. In both cases velocity isn't changing, so the net force is zero.</p><p>Keep in mind that the real world is full of forces that resist motion. Newton's ideal, friction-free world is hard to find. If your analysis gives a result that doesn't match your experience, ask yourself whether friction is the reason.</p>"
+  }
+ }
+}

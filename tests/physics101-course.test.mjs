@@ -36,8 +36,8 @@ test("catalog lists every module 1-6 lesson once, in course order, grouped by mo
   assert.equal(new Set(DECKS.map((d) => d.slug)).size, DECKS.length);
 });
 
-const BUILT = ["m01-l01", "m01-l02", "m01-l03", "m01-l04", "m02-l01", "m02-l02", "m02-l03", "m02-l04", "m03-l01", "m03-l02", "m03-l03"];
-test("every lesson after Module 3 is still a coming-soon placeholder with no lesson text", () => {
+const BUILT = ["m01-l01", "m01-l02", "m01-l03", "m01-l04", "m02-l01", "m02-l02", "m02-l03", "m02-l04", "m03-l01", "m03-l02", "m03-l03", "m04-l01"];
+test("every lesson after M4 L1 is still a coming-soon placeholder with no lesson text", () => {
   for (const d of DECKS.filter((x) => !BUILT.includes(x.slug))) {
     assert.equal(d.built, false, d.key);
     assert.equal(d.slides, 0, d.key);

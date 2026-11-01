@@ -104,3 +104,4 @@ export function tangentTool(ctx, id, g, f, df, t0, range, label, onMove, half = 
   let first = true;
   return onCurve(ctx, id, g, f, t0, range, label, (t, done) => { if (first) { first = false; ctx.art.show(id, false); } draw(t); onMove(t, df(t), done); }, snap);
 }
+export const BLUE = "#3B6FB6";

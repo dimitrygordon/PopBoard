@@ -167,10 +167,10 @@ export const DECKS = [
   "title": "Force and Motion",
   "tag": "PHYSICS 101  ·  MODULE 4  ·  LESSON 1",
   "sub": "Module 4: Forces in One Dimension",
-  "slides": 0,
+  "slides": 21,
   "pages": [],
   "standards": ["HS-PS2-1"],
-  "built": false
+  "built": true
  },
  {
   "key": "M04-L02",
