@@ -195,10 +195,10 @@ export const DECKS = [
   "title": "Newton's Third Law",
   "tag": "PHYSICS 101  ·  MODULE 4  ·  LESSON 3",
   "sub": "Module 4: Forces in One Dimension",
-  "slides": 0,
+  "slides": 12,
   "pages": [],
   "standards": ["HS-PS2-1"],
-  "built": false
+  "built": true
  },
  {
   "key": "M05-L01",
