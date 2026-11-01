@@ -101,7 +101,8 @@ test("pages name the course, reuse the engine, and have module filters", () => {
   }
   assert.match(lib, /src="astro-course\/ac-library-ui\.js"/);
   assert.match(story, /src="astro-course\/ac-story\.js"/);
-  for (let m = 1; m <= 6; m++) assert.match(lib, new RegExp(`data-q="${m}"`));
+  // module buttons are built from the catalog (ac-library-ui.js), so the page only carries "All"
+  assert.match(lib, /class="lib-filters"[^>]*data-auto="module"/);
   assert.match(lib, /id="q" type="search"/);
   // one engine: no forked reader or library under physics101/
   assert.deepEqual(readdirSync(join(PUB, "physics101")).filter((f) => f.endsWith(".js")), ["p101-catalog.js"]);
@@ -155,4 +156,21 @@ test("standards from the standards map: every lesson has codes or the Science & 
   assert.equal(standardsLine(m1), "Science & Engineering Practices");
   assert.equal(standardsLine(DECKS.find((d) => d.slug === "m04-l02")), "HS-PS2-1 \u00b7 HS-PS2-3 \u00b7 HS-PS2-4");
   assert.match(read("astro-course/ac-story.js"), /page === 1 && standardsLine\(meta\)/);
+});
+
+test("course index has exactly one module filter per module, each tinted with its accent", () => {
+  const lib = read("study-physics101.html"), ui = read("astro-course/ac-library-ui.js"), css = read("physics101/p101.css");
+  const mods = [...new Set(DECKS.map((d) => d.q))].sort((a, b) => a - b);
+  assert.deepEqual(mods, Array.from({ length: 24 }, (_, i) => i + 1));
+  // no hand-written module buttons left to drift; only "All"
+  assert.deepEqual([...lib.matchAll(/data-q="(\d+)"/g)].map((m) => m[1]), ["0"]);
+  // the generator emits one pill per distinct module in the catalog
+  assert.match(ui, /new Set\(DECKS\.map\(\(d\) => d\.q\)\)/);
+  assert.match(ui, /class="mod-pill" data-q="\$\{m\}"[^`]*--pill:var\(--p101-m\$\{m\}\)/);
+  const leo = { 16: "#AA5B5E", 17: "#4AC7E4", 18: "#677C3F", 19: "#9C7040", 20: "#72748E", 21: "#36A896", 22: "#3583AD", 23: "#8A669E", 24: "#36815A" };
+  for (const m of mods) {
+    const hex = css.match(new RegExp(`--p101-m${m}: (#[0-9A-Fa-f]{6})`));
+    assert.ok(hex, `accent for module ${m}`);
+    if (leo[m]) assert.equal(hex[1].toUpperCase(), leo[m]);
+  }
 });

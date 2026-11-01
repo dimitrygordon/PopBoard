@@ -53,6 +53,18 @@ function render() {
   $("count").textContent = query.trim() ? `${rows.length} of ${DECKS.length} ${C.unit} match` : `${rows.length} ${C.unit}`;
 }
 q.addEventListener("input", render);
+// Course libraries that mark their filter row data-auto get one button per module in the catalog, so the row never drifts from the lessons.
+const filterRow = document.querySelector('.lib-filters[data-auto="module"]');
+if (filterRow) filterRow.insertAdjacentHTML("beforeend", [...new Set(DECKS.map((d) => d.q))].sort((a, b) => a - b)
+  .map((m) => `<button type="button" class="mod-pill" data-q="${m}" aria-pressed="false" aria-label="Module ${m}" style="--pill:var(--p101-m${m})">M${m}</button>`).join(""));
+// Selected pill text: dark ink on light accents, white on deep ones, whichever reads better (WCAG contrast).
+for (const b of document.querySelectorAll(".mod-pill")) {
+  const hex = getComputedStyle(b).getPropertyValue("--pill").trim().replace("#", "");
+  if (!/^[0-9a-f]{6}$/i.test(hex)) continue;
+  const lin = (i) => { const c = parseInt(hex.slice(i, i + 2), 16) / 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+  const L = 0.2126 * lin(0) + 0.7152 * lin(2) + 0.0722 * lin(4);
+  b.style.setProperty("--pill-ink", (L + 0.05) / 0.0607 >= 1.05 / (L + 0.05) ? "#1f1c18" : "#ffffff");
+}
 for (const b of document.querySelectorAll(".lib-filters button")) b.addEventListener("click", () => {
   quarter = +b.dataset.q;
   for (const o of document.querySelectorAll(".lib-filters button")) o.setAttribute("aria-pressed", String(o === b));

@@ -111,3 +111,11 @@
 .stage .p-scene .drag-hit { min-width: 44px; min-height: 44px; border-radius: 8px; }
 .art-scene .art-l.drag-lift { filter: var(--slide-art-filter, none) drop-shadow(0 10px 8px rgba(40, 30, 10, 0.35)); z-index: 5; }
 @media (prefers-reduced-motion: reduce) { .art-scene .art-l.drag-lift { filter: var(--slide-art-filter, none); } }
+
+/* Module filter pills on the course index: one per module, tinted with the module accent; the row wraps on phones. */
+.lib-filters[data-auto] { max-width: 920px; margin-inline: auto; gap: 8px 6px; }
+.lib-filters .mod-pill { min-width: 52px; min-height: 44px; padding: 4px 12px; border-radius: 999px; border: 2px solid var(--pill); background: color-mix(in srgb, var(--pill) 22%, var(--ac-card)); color: var(--ac-card-ink); font-weight: 600; }
+.lib-filters .mod-pill[aria-pressed="true"] { background: var(--pill); border-color: var(--pill); color: var(--pill-ink, #1f1c18); box-shadow: 0 0 0 2px var(--ac-card-ink); }
+:root[data-theme="dark"] .lib-filters .mod-pill { background: color-mix(in srgb, var(--pill) 30%, var(--ac-card)); color: var(--ac-card-ink); }
+:root[data-theme="dark"] .lib-filters .mod-pill[aria-pressed="true"] { background: var(--pill); color: var(--pill-ink, #1f1c18); box-shadow: 0 0 0 2px var(--ac-text); }
+@media (max-width: 600px) { .lib-filters[data-auto] { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; } .lib-filters[data-auto] button { min-width: 44px; min-height: 44px; padding: 4px 2px; font-size: 15px; } }
