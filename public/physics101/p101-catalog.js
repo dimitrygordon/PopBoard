@@ -181,10 +181,10 @@ export const DECKS = [
   "title": "Weight and Drag Force",
   "tag": "PHYSICS 101  ·  MODULE 4  ·  LESSON 2",
   "sub": "Module 4: Forces in One Dimension",
-  "slides": 0,
+  "slides": 10,
   "pages": [],
   "standards": ["HS-PS2-1", "HS-PS2-3", "HS-PS2-4"],
-  "built": false
+  "built": true
  },
  {
   "key": "M04-L03",

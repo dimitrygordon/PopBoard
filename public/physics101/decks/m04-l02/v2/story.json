@@ -1,0 +1,89 @@
+{
+ "slug": "m04-l02",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "What Is Weight?",
+   "text": "<h3>What Is Weight?</h3><p class=\"p101-def\">An object's weight is the gravitational force it experiences: F sub g equals m g.</p><p>Our big question for this lesson: how does the drag force change after a skydiver opens their parachute? Let's start with something you feel every day, your weight.</p><p>The basketball in Figure 10 is accelerating downward, so by Newton's second law, an unbalanced force must be acting on it. The only force on the falling ball is the gravitational force from Earth's mass. An object's weight is the gravitational force that object experiences. It's a field force, and its size is directly proportional to the object's mass.</p><p>As an equation, the gravitational force, which equals weight, is F sub g equals m g. Here m is the object's mass, and g, called the gravitational field, is a vector quantity that relates an object's mass to the gravitational force it feels at a given location. Near Earth's surface, g is 9.8 newtons per kilogram, pointing toward Earth's center. So objects near Earth's surface feel 9.8 newtons of force for every kilogram of mass.</p>",
+   "testIt": {
+    "name": "Weight grows with mass",
+    "how": "Tap the mass picker to change the mass and watch the weight arrow."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Scales",
+   "text": "<h3>Scales</h3><p class=\"p101-def\">A scale reads your weight by pushing up with a force equal to the gravitational force on you.</p><p>When you stand on a scale, like in the right panel of Figure 10, the scale pushes up on you. You aren't accelerating, so the net force on you must be zero. That means the upward force of the scale on you must equal the downward gravitational force on you. So when you're in equilibrium on a scale, just two forces act on you: your weight pulling down and the scale pushing up.</p><p>Inside the scale, springs provide the upward force needed to make the net force zero. The scale is calibrated to turn the stretch of its springs into a weight. On a different planet with a different g, the scale would push with a different force to keep you in equilibrium, so its reading would be different. And because weight is a force, the proper unit for weight is the newton.</p>",
+   "testIt": {
+    "name": "Scale on other worlds",
+    "how": "Tap Earth, the Moon or Mars and read the scale."
+   }
+  },
+  "3": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson.</p><p>Online, the Probeware Lab called Terminal Velocity has you analyze and interpret data to find out which factors affect the size of the drag force on a falling object. And as you go, ask yourself: what information from this lesson can help you answer the Unit and Module questions?</p>"
+  },
+  "4": {
+   "layers": [],
+   "title": "Example Problem 2, Comparing Weights",
+   "text": "<h3>Example Problem 2, Comparing Weights</h3><p class=\"p101-def\">To hold an object at rest, the upward force must cancel its weight; once dropped, every object falls with acceleration g.</p><p>Kiran holds a brass cylinder in each hand. Cylinder A has a mass of 100.0 grams, and cylinder B has a mass of 300.0 grams. What upward forces must his hands exert to keep the cylinders at rest? And if he drops them, with what acceleration do they fall? Ignore air resistance.</p><p>Step one: analyze and sketch. Sketch the situation. Make each cylinder a system, and call upward positive. Draw the free-body diagrams and label the forces. Known: the mass of A is 0.1000 kilograms, the mass of B is 0.3000 kilograms, and g is negative 9.8 newtons per kilogram. Unknown: the force of each hand, and each cylinder's acceleration.</p><p>Step two: solve. For cylinder A, the net force equals the force of the hand plus the force of gravity, and at rest that sum is zero. So the force of the hand equals negative the force of gravity, which is negative the mass of A times g. That's negative 0.1000 kilograms times negative 9.8 newtons per kilogram, or 0.98 newtons up. For cylinder B, the same steps give negative 0.3000 kilograms times negative 9.8 newtons per kilogram, or 2.9 newtons up.</p><p>After the cylinders are dropped, gravity is the only force on each. Newton's second law says the acceleration of A is its net force over its mass, which is m sub A times g over m sub A. The masses cancel, leaving g. The same happens for B. Since g is negative 9.8 newtons per kilogram, which equals negative 9.8 meters per second squared, both cylinders accelerate at negative 9.8 meters per second squared.</p><p>Step three: evaluate. Newtons are the right unit for force, and meters per second squared are right for acceleration. The fall is downward, the negative direction, and the cylinders speed up, so a negative acceleration makes sense. Forces of 1 to 5 newtons are typical for objects of one kilogram or less, and both accelerations equal free-fall acceleration.</p>",
+   "testIt": {
+    "name": "Two hands, two masses",
+    "how": "Tap each mass to change it, then tap drop."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Apparent Weight and Elevators",
+   "text": "<h3>Apparent Weight and Elevators</h3><p class=\"p101-def\">Apparent weight is the support force exerted on an object.</p><p>Because weight is F sub g equals m g, weight changes when g changes. Near Earth's surface g is about constant, so your weight barely changes as you move around. If a bathroom scale gives the only upward force on you, it reads your weight. But stand with one foot on the floor, or have a friend push down on your shoulders or lift your elbows, and other contact forces join in. Then the scale doesn't read your weight.</p><p>What about a scale in an elevator? As long as you're not accelerating, it reads your weight. But if the elevator accelerates upward, look at Figure 11. You're the system, and up is positive. The acceleration is upward, so the net force must be upward too. The scale must push up harder than your weight pulls down, so the reading is greater than your weight.</p><p>That's why you feel heavier when an elevator speeds up going up: the floor presses harder on your feet. If the acceleration is downward, you feel lighter and the scale reads less than your weight. So on a ride up from rest, the scale reads more than your weight while speeding up, exactly your weight at constant speed, and less than your weight while slowing to a stop. The force the scale exerts is your apparent weight, the support force exerted on an object.</p>",
+   "testIt": {
+    "name": "Elevator scale",
+    "how": "Drag the acceleration slider up, to zero, or down and read the scale."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Weightlessness",
+   "text": "<h3>Weightlessness</h3><p class=\"p101-def\">Weightlessness means no contact forces support an object, so its apparent weight is zero.</p><p>Imagine the elevator cable breaks. What does the scale read? You and the scale would both accelerate at a equals g. The scale would read zero, and your apparent weight would be zero. You'd be weightless.</p><p>But weightlessness doesn't mean your weight is actually zero. Gravity still pulls on you. It means no contact forces are acting to support you, so your apparent weight is zero. Just like the falling elevator, astronauts are weightless in orbit because they and their spacecraft are in free fall.</p>",
+   "testIt": {
+    "name": "Cut the cable",
+    "how": "Tap the cable to cut it and watch the scale."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Problem-Solving Strategy, Force and Motion",
+   "text": "<h3>Problem-Solving Strategy, Force and Motion</h3><p class=\"p101-def\">Sketch, choose a system and coordinates, draw diagrams, apply Newton's laws, solve, and check.</p><p>Here's a reliable recipe for force and motion problems. First, read the problem carefully and sketch a pictorial model. Second, circle the system and choose a coordinate system. Third, sort out which quantities are known and which are unknown.</p><p>Fourth, make a physical model by drawing a motion diagram that shows the direction of the acceleration. Fifth, draw a free-body diagram showing all the forces on the object. Sixth, use Newton's laws to link acceleration and net force.</p><p>Seventh, rearrange the equation to solve for the unknown. Eighth, substitute the known quantities, with their units, and solve. And ninth, check whether your results are reasonable.</p>"
+  },
+  "8": {
+   "layers": [],
+   "title": "Example Problem 3, Real and Apparent Weight",
+   "text": "<h3>Example Problem 3, Real and Apparent Weight</h3><p class=\"p101-def\">In an upward-accelerating elevator, the scale force equals m a plus m g.</p><p>Your mass is 75.0 kilograms, and you're standing on a bathroom scale in an elevator. Starting from rest, the elevator accelerates upward at 2.00 meters per second squared for 2.00 seconds, then continues at a constant speed. Is the scale reading during the acceleration greater than, equal to, or less than the reading when the elevator is at rest?</p><p>Step one: analyze and sketch. Sketch the situation and choose upward as positive. Draw the motion diagram and label v and a. Draw the free-body diagram. The net force points the same way as the acceleration, so the upward force is greater than the downward force. Known: m is 75.0 kilograms, a is 2.00 meters per second squared, t is 2.00 seconds, and g is 9.8 newtons per kilogram. Unknown: the scale force.</p><p>Step two: solve. F net equals m a, and F net also equals the scale force plus negative F sub g. Gravity is negative because it points in the negative direction. Solving, the scale force equals F net plus F sub g. With the elevator at rest, there's no acceleration, so F net is 0.00 newtons, and the scale force is just m g: 75.0 kilograms times 9.8 newtons per kilogram, or 735 newtons.</p><p>With the elevator accelerating upward, the scale force equals m a plus m g. That's 75.0 kilograms times 2.00 meters per second squared, plus 75.0 kilograms times 9.8 newtons per kilogram, or 885 newtons. So the scale reading while accelerating, 885 newtons, is larger than at rest, 735 newtons.</p><p>Step three: evaluate. A kilogram meter per second squared is a newton, the force unit. The positive sign agrees with the coordinate system. And 885 newtons is 150 newtons more than the 735 newton rest reading, about 20 percent of the rest weight. The upward acceleration is about 20 percent of the acceleration due to gravity, so the size is reasonable.</p>",
+   "testIt": {
+    "name": "Elevator calculator",
+    "how": "Set a mass and an acceleration, then tap the inputs to compare."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Drag Force",
+   "text": "<h3>Drag Force</h3><p class=\"p101-def\">A drag force is the force exerted by a fluid on an object, opposing its motion through the fluid.</p><p>The particles in the air around you exert forces on you. In fact, air exerts huge forces, but usually they're balanced on all sides, so they have no net effect. Up to now, we've ignored the force of air on moving objects. But in reality, when an object moves through any fluid, like air or water, the fluid pushes on it in the direction opposite its motion.</p><p>That's the drag force: the force a fluid exerts on an object, opposing its motion through the fluid. Drag depends on the object's motion, the object's properties, and the fluid's properties. The faster the object goes, the bigger the drag. The object's size and shape matter too, and so do the fluid's density and viscosity.</p><p>Think of the skydivers in wingsuits at the start of this module. The fabric spread between their arms and legs makes them bigger, so it increases the drag force they feel.</p>",
+   "testIt": {
+    "name": "Wind tunnel",
+    "how": "Change the speed, size, shape and fluid and watch the drag arrow."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Terminal Velocity",
+   "text": "<h3>Terminal Velocity</h3><p class=\"p101-def\">Terminal velocity is the constant velocity reached when the drag force equals the force of gravity.</p><p>Drop a tennis ball, as in Figure 12. At first it's barely moving, so the drag force is tiny. Gravity's downward pull is much stronger than the upward drag, so the ball accelerates downward. As it speeds up, the drag grows. Soon the drag force equals the force of gravity. Then there's no net force and no acceleration. The constant velocity reached when drag equals gravity is called the terminal velocity.</p><p>Light objects with big surface areas feel a lot of drag and reach terminal velocity quickly. Heavier, more compact objects aren't affected as much. For example, a table-tennis ball's terminal velocity in air is 9 meters per second, while a baseball's is 42 meters per second.</p><p>Skydivers can raise or lower their terminal velocity by changing their body orientation and shape. A horizontal, spread-eagle shape gives the slowest terminal velocity, about 60 meters per second. Once the parachute opens, the skydiver becomes part of a large object with a large drag force, and the terminal velocity drops to about 5 meters per second. That answers our focus question: opening the parachute makes the drag force much bigger, until the skydiver slows to a new, much lower terminal velocity.</p>",
+   "testIt": {
+    "name": "Skydiver",
+    "how": "Tap a pose and watch the speed level off."
+   }
+  }
+ }
+}
