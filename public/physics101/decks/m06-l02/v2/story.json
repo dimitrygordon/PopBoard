@@ -1,0 +1,93 @@
+{
+ "slug": "m06-l02",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Describing Circular Motion",
+   "text": "<h3>Describing Circular Motion</h3><p class=\"p101-def\">Uniform circular motion is the movement of an object at a constant speed around a circle with a fixed radius.</p><p>Our big question for this lesson: what force makes an object move in a circle? Start with a horse fixed on a spinning carousel. It moves at a constant speed, so is it accelerating? You might say no, since its speed doesn't change. But acceleration is about change in velocity, not just speed. The horse's direction keeps changing, so it must be accelerating!</p><p>Uniform circular motion is movement at a constant speed around a circle with a fixed radius. An object's position relative to the circle's center is given by the position vector r. Remember, a position vector is a displacement vector with its tail at the origin. The left side of Figure 7 shows two position vectors, r sub 1 and r sub 2, at the beginning and end of a time interval.</p>",
+   "testIt": {
+    "name": "Describing Circular Motion",
+    "how": "A carousel: you spin it at a constant speed and watch the horse's velocity arrow keep changing direction even though its length stays the same."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect during this lesson's readings and activities.</p><p>Online, the PhysicsLAB called Centripetal Force has you analyze data about how centripetal force and centripetal acceleration are related. And in Review the News, you find a current news story about circular motion, evaluate your source, and share what you learn with your class.</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Velocity in a Circle",
+   "text": "<h3>Velocity in a Circle</h3><p class=\"p101-def\">For an object in uniform circular motion, the velocity is tangent to the circle, at a right angle to the position vector.</p><p>As the object moves around the circle, the position vector keeps the same length, but its direction changes. Figure 7 also shows two instantaneous velocity vectors. Each one is tangent to the circle, at a right angle to its position vector. Because the position vectors all have the same length, and the velocity vectors do too, you can tell from the diagram that the motion is uniform.</p><p>To find the object's velocity, first find its displacement over a time interval. Average velocity is the change in position over the change in time, so for circular motion, average velocity equals delta r over delta t. The right side of Figure 7 shows delta r, the displacement from r sub 1 to r sub 2. The velocity for that interval points the same way as the displacement, but its length is different, because it's divided by delta t.</p>",
+   "testIt": {
+    "name": "Velocity in a Circle",
+    "how": "Pick two points on a circle and see the displacement arrow delta r, then shrink the time interval until it lines up with the tangent velocity."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Centripetal Acceleration",
+   "text": "<h3>Centripetal Acceleration</h3><p class=\"p101-def\">Centripetal acceleration is the acceleration of an object in uniform circular motion; it always points toward the center of the circle.</p><p>The velocity of an object in uniform circular motion is tangent to the circle. So which way does the acceleration point? Figure 8 shows velocity vectors v sub 1 and v sub 2 at the start and end of a time interval. Subtract them, as shown at the bottom of the figure, to get delta v.</p><p>The average acceleration, delta v over delta t, points the same way as delta v. As the time interval gets very small, delta v points toward the center of the circle, so the acceleration points toward the center too. As the object moves around, the acceleration's direction changes, but it always points toward the center. That's why it's called center-seeking, or centripetal, acceleration.</p>",
+   "testIt": {
+    "name": "Centripetal Acceleration",
+    "how": "Watch an object circle and see the acceleration arrow, always aimed at the center, rotate along with it."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "How Big Is Centripetal Acceleration?",
+   "text": "<h3>How Big Is Centripetal Acceleration?</h3><p class=\"p101-def\">The centripetal acceleration equals the speed squared divided by the radius: a sub c equals v squared over r.</p><p>How big is centripetal acceleration? In the top of Figure 8, the position vectors at the start of each velocity vector form a triangle with the center of the circle. The velocity vectors at the bottom of Figure 8 form a matching triangle, because the angle between r sub 1 and r sub 2 is the same as the angle between v sub 1 and v sub 2. So the triangles are similar, and the ratios of matching sides are equal: delta r over r equals delta v over v.</p><p>Dividing both sides by delta t doesn't change the equation: one over r times delta r over delta t equals one over v times delta v over delta t. But delta r over delta t is v, and delta v over delta t is a. Substituting gives v over r equals a over v.</p><p>Solve for the acceleration, and call it a sub c for centripetal acceleration. Centripetal acceleration always points to the center of the circle, and its size equals the speed squared divided by the radius: a sub c equals v squared over r.</p>",
+   "testIt": {
+    "name": "How Big Is Centripetal Acceleration?",
+    "how": "Change the speed and radius of an object's circle and watch the centripetal acceleration readout follow v squared over r."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Period of Revolution",
+   "text": "<h3>Period of Revolution</h3><p class=\"p101-def\">The period T is the time an object takes to make one complete revolution.</p><p>Another way to describe how fast something moves in a circle is its period, T, the time it takes to make one complete revolution. In that time, the object travels once around the circumference, 2 pi r.</p><p>So the speed is v equals 2 pi r over T. Substitute that into the centripetal acceleration equation, and you get a sub c equals the quantity 2 pi r over T, squared, over r. That simplifies to a sub c equals 4 pi squared r over T squared.</p>",
+   "testIt": {
+    "name": "Period of Revolution",
+    "how": "Set a period with a stopwatch-style slider and see the speed and centripetal acceleration update for a chosen radius."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Centripetal Force",
+   "text": "<h3>Centripetal Force</h3><p class=\"p101-def\">The centripetal force is the net force toward the center of the circle on an object moving in a circle.</p><p>An object's acceleration always points in the direction of the net force on it. So for circular motion, there must be a net force pointing toward the center of the circle. Many different agents can supply it. For Earth circling the Sun, it's the Sun's gravitational force on Earth. For a hammer thrower swinging the hammer, as in Figure 9, it's the tension in the chain attached to the heavy ball.</p><p>The net force toward the center on an object moving in a circle is called the centripetal force. To analyze circular motion correctly, you must identify the agent of the force causing the acceleration. Then apply Newton's second law for the component in the direction of the acceleration.</p><p>Newton's second law for circular motion says the net centripetal force on an object equals its mass times its centripetal acceleration: F net equals m a sub c. So that answers our focus question: an object moves in a circle because a net force, supplied by a real agent, pulls it toward the center.</p>",
+   "testIt": {
+    "name": "Centripetal Force",
+    "how": "Swing a ball on a chain and adjust the mass, speed, and radius, watching the tension needed, m a sub c, change."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Direction of Acceleration and the Hammer Throw",
+   "text": "<h3>Direction of Acceleration and the Hammer Throw</h3><p class=\"p101-def\">In circular motion, use a centripetal axis, c, toward the center and a tangential axis, tang, along the velocity.</p><p>When solving problems, it helps to put one axis along the acceleration. In circular motion, that's always toward the center. Instead of x or y, call this axis c, for centripetal. The other axis points along the velocity, tangent to the circle, and is labeled tang, for tangential. Apply Newton's second law along these directions, just as in the other two-dimensional problems you've solved.</p><p>Remember, centripetal force is just another name for the net force in the centripetal direction. It's the sum of all the real forces, the ones whose agents you can name, that act along the centripetal axis.</p><p>So which way does the hammer fly when the thrower lets go? Once the chain's contact force is gone, nothing accelerates the hammer toward the center. Ignoring air resistance, its horizontal acceleration drops to zero and its horizontal velocity stays constant, so it flies off in the direction of its velocity, tangent to the circle. Remember, if you can't identify the agent of a force, the force doesn't exist.</p>",
+   "testIt": {
+    "name": "Direction of Acceleration and the Hammer",
+    "how": "Release a spinning hammer at any point in its swing and see it fly off along the tangent line from that point."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Example Problem 3, Uniform Circular Motion",
+   "text": "<h3>Example Problem 3, Uniform Circular Motion</h3><p class=\"p101-def\">Find a sub c from 4 pi squared r over T squared, then the tension from m a sub c.</p><p>A 13 gram rubber stopper is tied to a 0.93 meter string. It's swung in a horizontal circle, making one revolution in 1.18 seconds. How hard does the string pull on the stopper?</p><p>Step one: analyze and sketch. Draw a free-body diagram for the swinging stopper, including the radius and the direction of motion. Set up a coordinate system labeled tang and c. The directions of a sub c and the tension are both parallel to c. Known: m is 13 grams, r is 0.93 meters, and T is 1.18 seconds. Unknown: the tension.</p><p>Step two: solve. Find the size of the centripetal acceleration. A sub c equals 4 pi squared r over T squared: 4 pi squared times 0.93 meters, over the square of 1.18 seconds. That's 26 meters per second squared. Now use Newton's second law for the tension: it equals m a sub c, which is 0.013 kilograms times 26 meters per second squared, or 0.34 newtons.</p><p>Step three: evaluate. Dimensional analysis shows a sub c is in meters per second squared and the tension is in newtons. All the signs should be positive, and they are. And the force is almost three times the stopper's weight, because the acceleration is almost three times gravity's, which is reasonable for a stopper whirled quickly on a string.</p>",
+   "testIt": {
+    "name": "Example Problem 3",
+    "how": "Swing a virtual stopper, set its mass, string length, and period, and read the string tension."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Centrifugal \"Force\"",
+   "text": "<h3>Centrifugal \"Force\"</h3><p class=\"p101-def\">Centrifugal force is a fictitious force: there is no outward force, because no agent exerts one.</p><p>If the car you're riding in stops suddenly, you lurch forward into your seat belt. Is a forward force pushing you? No. By Newton's first law, you keep moving with the same velocity unless a net force acts on you. The seat belt supplies that force.</p><p>Figure 11 shows a car turning left, seen from above. A passenger would keep moving straight ahead if not for the car's door, and the seat, pushing in the direction of the acceleration. As the car goes around the curve, the car and passenger are in circular motion, and the passenger has a centripetal acceleration pointing toward the center of the circle.</p><p>There's no outward force on the passenger. You feel pushed only because you're accelerating relative to your surroundings. The so-called centrifugal, or outward, force is fictitious. It doesn't exist, because there's no agent exerting it.</p><p>Here's a crosscutting challenge on systems and system models. Many people believe in centrifugal \"force.\" Build a model that shows what really happens as a car makes a turn, and use it as evidence to help clear up the misconception.</p>",
+   "testIt": {
+    "name": "Centrifugal \"Force\"",
+    "how": "Drive a car around a curve with a loose passenger, then add a door and seat; with no inward force, the passenger keeps going straight."
+   }
+  }
+ }
+}
