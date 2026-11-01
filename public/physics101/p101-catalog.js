@@ -1,7 +1,8 @@
 // Physics 101 catalog: one storybook per lesson, grouped by module (q = module number), in course order.
 // Placeholders only: lesson text, art and narration arrive later. A lesson turns on with "built": true
 // once physics101/decks/<slug>/deck.json exists (same deck format as the Astronomy Course).
-// "standards" lists the lesson's standard codes; they show under the cover title as "A · B" once filled in.
+// "standards": the lesson's 2023 Indiana Physics I codes (physics101/outline/standards_map.md), shown under the
+// cover title as "A · B". Lessons with no code carry the tag "Science & Engineering Practices" instead.
 export const DECKS = [
  {
   "key": "M01-L01",
@@ -12,10 +13,10 @@ export const DECKS = [
   "title": "Methods of Science",
   "tag": "PHYSICS 101  ·  MODULE 1  ·  LESSON 1",
   "sub": "Module 1: A Physics Toolkit",
-  "slides": 0,
+  "slides": 20,
   "pages": [],
-  "standards": [],
-  "built": false
+  "standards": ["Science & Engineering Practices"],
+  "built": true
  },
  {
   "key": "M01-L02",
@@ -28,7 +29,7 @@ export const DECKS = [
   "sub": "Module 1: A Physics Toolkit",
   "slides": 0,
   "pages": [],
-  "standards": [],
+  "standards": ["Science & Engineering Practices"],
   "built": false
  },
  {
@@ -42,7 +43,7 @@ export const DECKS = [
   "sub": "Module 1: A Physics Toolkit",
   "slides": 0,
   "pages": [],
-  "standards": [],
+  "standards": ["Science & Engineering Practices"],
   "built": false
  },
  {
@@ -56,7 +57,7 @@ export const DECKS = [
   "sub": "Module 1: A Physics Toolkit",
   "slides": 0,
   "pages": [],
-  "standards": [],
+  "standards": ["Science & Engineering Practices"],
   "built": false
  },
  {
@@ -70,7 +71,7 @@ export const DECKS = [
   "sub": "Module 2: Representing Motion",
   "slides": 0,
   "pages": [],
-  "standards": [],
+  "standards": ["Science & Engineering Practices"],
   "built": false
  },
  {
@@ -84,7 +85,7 @@ export const DECKS = [
   "sub": "Module 2: Representing Motion",
   "slides": 0,
   "pages": [],
-  "standards": [],
+  "standards": ["Science & Engineering Practices"],
   "built": false
  },
  {
@@ -98,7 +99,7 @@ export const DECKS = [
   "sub": "Module 2: Representing Motion",
   "slides": 0,
   "pages": [],
-  "standards": [],
+  "standards": ["Science & Engineering Practices"],
   "built": false
  },
  {
@@ -112,7 +113,7 @@ export const DECKS = [
   "sub": "Module 2: Representing Motion",
   "slides": 0,
   "pages": [],
-  "standards": [],
+  "standards": ["Science & Engineering Practices"],
   "built": false
  },
  {
@@ -126,7 +127,7 @@ export const DECKS = [
   "sub": "Module 3: Accelerated Motion",
   "slides": 0,
   "pages": [],
-  "standards": [],
+  "standards": ["Science & Engineering Practices"],
   "built": false
  },
  {
@@ -140,7 +141,7 @@ export const DECKS = [
   "sub": "Module 3: Accelerated Motion",
   "slides": 0,
   "pages": [],
-  "standards": [],
+  "standards": ["Science & Engineering Practices"],
   "built": false
  },
  {
@@ -154,7 +155,7 @@ export const DECKS = [
   "sub": "Module 3: Accelerated Motion",
   "slides": 0,
   "pages": [],
-  "standards": [],
+  "standards": ["HS-PS2-1"],
   "built": false
  },
  {
@@ -168,7 +169,7 @@ export const DECKS = [
   "sub": "Module 4: Forces in One Dimension",
   "slides": 0,
   "pages": [],
-  "standards": [],
+  "standards": ["HS-PS2-1"],
   "built": false
  },
  {
@@ -182,7 +183,7 @@ export const DECKS = [
   "sub": "Module 4: Forces in One Dimension",
   "slides": 0,
   "pages": [],
-  "standards": [],
+  "standards": ["HS-PS2-1", "HS-PS2-3", "HS-PS2-4"],
   "built": false
  },
  {
@@ -196,7 +197,7 @@ export const DECKS = [
   "sub": "Module 4: Forces in One Dimension",
   "slides": 0,
   "pages": [],
-  "standards": [],
+  "standards": ["HS-PS2-1"],
   "built": false
  },
  {
@@ -210,7 +211,7 @@ export const DECKS = [
   "sub": "Module 5: Displacement and Force in Two Dimensions",
   "slides": 0,
   "pages": [],
-  "standards": [],
+  "standards": ["Science & Engineering Practices"],
   "built": false
  },
  {
@@ -224,7 +225,7 @@ export const DECKS = [
   "sub": "Module 5: Displacement and Force in Two Dimensions",
   "slides": 0,
   "pages": [],
-  "standards": [],
+  "standards": ["HS-PS2-1"],
   "built": false
  },
  {
@@ -238,7 +239,7 @@ export const DECKS = [
   "sub": "Module 5: Displacement and Force in Two Dimensions",
   "slides": 0,
   "pages": [],
-  "standards": [],
+  "standards": ["HS-PS2-1"],
   "built": false
  },
  {
@@ -252,7 +253,7 @@ export const DECKS = [
   "sub": "Module 6: Motion in Two Dimensions",
   "slides": 0,
   "pages": [],
-  "standards": [],
+  "standards": ["Science & Engineering Practices"],
   "built": false
  },
  {
@@ -266,7 +267,7 @@ export const DECKS = [
   "sub": "Module 6: Motion in Two Dimensions",
   "slides": 0,
   "pages": [],
-  "standards": [],
+  "standards": ["HS-PS2-1"],
   "built": false
  },
  {
@@ -280,7 +281,7 @@ export const DECKS = [
   "sub": "Module 6: Motion in Two Dimensions",
   "slides": 0,
   "pages": [],
-  "standards": [],
+  "standards": ["Science & Engineering Practices"],
   "built": false
  }
 ];

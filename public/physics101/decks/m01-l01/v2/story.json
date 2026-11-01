@@ -1,0 +1,143 @@
+{
+ "slug": "m01-l01",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "What Is Physics?",
+   "text": "<h3>What Is Physics?</h3><p class=\"p101-def\">Physics is the study of the physical world: energy, matter, and how they are related.</p><p>Welcome to physics! Here's the big question for this lesson: what do physicists actually do? Before we answer it, let's clear up one thing. Science isn't just a subject you take at school. It's a process built on inquiry, on asking questions, and it helps us come up with explanations for the events we see in nature.</p><p>Physics is one branch of science. It studies the physical world: energy, matter, and how the two are connected. Think of it as figuring out the rules that everything around you follows.</p>"
+  },
+  "2": {
+   "layers": [],
+   "title": "Picture a Physicist",
+   "text": "<h3>Picture a Physicist</h3><p class=\"p101-def\">Physicists study everything from electrons and rockets to the structure of the universe.</p><p>When you hear the word physics, what comes to mind? Maybe a chalkboard covered in formulas, like E equals m c squared. Maybe scientists in white lab coats, or famous names like Marie Curie and Albert Einstein. Or maybe the amazing technology that physics made possible, such as weather satellites, laptop computers, and lasers.</p><p>All of those are part of the picture. Physicists study the motion of electrons and of rockets. They look at the energy in sound waves and in electric circuits. They explore the structure of the proton, and of the whole universe. The goal of this course is to help you understand that physical world a little better.</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Where Physics Can Take You",
+   "text": "<h3>Where Physics Can Take You</h3><p class=\"p101-def\">Physics problem-solving skills lead to careers in science and far beyond.</p><p>People who study physics end up doing all kinds of things. Some become scientists at universities, colleges, companies, or research institutes. Others move into related fields like engineering, computer science, teaching, medicine, or astronomy.</p><p>Still others take the problem-solving skills they learned in physics into very different fields, like finance or construction. And physics research keeps changing our lives. In recent decades, it has led to new technologies like satellite communications and medical scanners, such as MRI and CT, that help doctors detect disease.</p><p>Here's a fun fact before we move on: the word science comes from the Latin word scientia, which means knowledge.</p>"
+  },
+  "4": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate the world around you.</p><p>As you work through this lesson, keep your Science Journal handy. Use it to record the evidence you collect as you read and do the activities.</p><p>There are two activities to try. In the Quick Investigation called Measuring Change, you'll analyze data to find patterns, then use those patterns to extrapolate, which means predicting beyond the data you measured. In Review the News, you'll find a current news story about physics research, decide how trustworthy your source is, and share what you learned with your class. You can find both activities, and more, online.</p>",
+   "testIt": {
+    "name": "Measuring Change",
+    "how": "Watch the points appear, then drag the violet ruler to predict the next value."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Scientific Methods",
+   "text": "<h3>Scientific Methods</h3><p class=\"p101-def\">Scientific methods are common patterns that investigations often follow.</p><p>So how do physicists actually investigate? They don't always follow a strict list of steps. But their investigations often follow similar patterns, and we call those patterns scientific methods.</p><p>The flowchart here shows one way to use scientific methods to solve a problem. It's a flexible map, not a rulebook. Depending on the investigation, a scientist might add new steps, repeat some steps, or skip a few entirely. Notice the loops: sometimes you go back and modify your hypothesis, and sometimes you repeat the test several times.</p><p class=\"p101-problem\" data-problem=\"1\">Check Your Progress question 1 goes here.</p>",
+   "testIt": {
+    "name": "Build the flowchart",
+    "how": "Drag each step card into its slot, in order. Then pick a loop when the test comes back."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "State the Problem",
+   "text": "<h3>State the Problem</h3><p class=\"p101-def\">The problem is the \"why\" or \"how\" question about something observed in nature.</p><p>Every investigation starts with curiosity. You notice something happening in nature and wonder why or how it happens. That why or how question is the problem you state.</p><p>Sometimes a brand-new question pops up in the middle of an investigation. In the 1940s, a researcher named Percy Spencer was working out how to mass-produce magnetron tubes, which were used in radar systems. A magnetron produces microwaves. As the story goes, one day he stood near a running magnetron, and the candy bar in his pocket melted!</p><p>Suddenly Spencer had a new problem to state: how was the magnetron cooking food? One surprise turned into a whole new question.</p>"
+  },
+  "7": {
+   "layers": [],
+   "title": "Research and Gather Information",
+   "text": "<h3>Research and Gather Information</h3><p class=\"p101-def\">Researching what is already known helps turn a question into a hypothesis.</p><p>Before jumping into an investigation, it pays to do some homework. What do people already know about this problem?</p><p>Making and examining observations, and reading interpretations from reliable sources, helps you sharpen your question. That sharper question is what you'll shape into a hypothesis.</p>"
+  },
+  "8": {
+   "layers": [],
+   "title": "Form and Test a Hypothesis",
+   "text": "<h3>Form and Test a Hypothesis</h3><p class=\"p101-def\">A hypothesis is a possible explanation for a problem, based on what you know and have observed.</p><p>A hypothesis is a possible explanation for a problem, built from what you know and what you've observed. And here's the key part: a scientific hypothesis can be tested through experiments and observations.</p><p>Sometimes scientists have to wait a long time for the right technology. The first ideas that atoms exist were proposed more than 2300 years ago, but the tools to test those ideas didn't exist for many centuries.</p><p>There are several ways to test a hypothesis. You can make observations. You can build a model and compare it to real-life situations. Or you can run an experiment, which tests the effect of one thing on another, using a control for comparison.</p><p>Some things can't be tested with experiments at all. Physicists can't run experiments on a distant star or galaxy, for example. In cases like that, the investigation becomes descriptive. Scientists still collect and analyze valuable data that help us learn about what's happening out there.</p><p class=\"p101-problem\" data-problem=\"2\">Check Your Progress question 2 goes here.</p>",
+   "testIt": {
+    "name": "Control and test",
+    "how": "Change only the test ramp's height, then press Go and compare it with the control."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Analyze the Data",
+   "text": "<h3>Analyze the Data</h3><p class=\"p101-def\">Analyzing data means recording observations and organizing them into clear tables and graphs.</p><p>Every investigation needs careful record keeping. You write down your observations and organize your data into tables and graphs that are easy to read. Later in this module, you'll learn more ways to display data.</p><p>Here's an important rule: record all of your results, even the weird, unexpected ones. Many important discoveries came from results nobody expected.</p><p>Scientific inferences are based on scientific observations, and every possible scientific explanation should be considered. If your data aren't organized logically, you can end up drawing the wrong conclusions.</p>",
+   "testIt": {
+    "name": "Sort the data",
+    "how": "Drag each measurement card onto the clipboard table. Every row plots a point."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Share Your Data",
+   "text": "<h3>Share Your Data</h3><p class=\"p101-def\">Scientists share data and analyses so other scientists can examine and compare them.</p><p>Science is a team sport. When a scientist shares data, other scientists look closely at those data, check how they were analyzed, and compare them to the work of others.</p><p>Scientists, like the planetary scientist in this photo, share their data and analyses through reports, journals, and conferences. This one is presenting predicted planetary orbit data to colleagues.</p>"
+  },
+  "11": {
+   "layers": [],
+   "title": "Draw Conclusions",
+   "text": "<h3>Draw Conclusions</h3><p class=\"p101-def\">Drawing a conclusion means deciding whether the data support the hypothesis.</p><p>Once the data are analyzed, it's decision time. Do the results support the hypothesis?</p><p>For a hypothesis to be considered valid and widely accepted, other scientists have to be able to repeat the experiment and get consistent results. The numbers won't match exactly every time, but they should agree within the experiment's uncertainty. If the experiment doesn't support the hypothesis, the hypothesis needs a second look. Maybe the hypothesis needs to be revised, or maybe the procedure needs some fine-tuning.</p><p class=\"p101-problem\" data-problem=\"6\">Check Your Progress question 6 goes here.</p>"
+  },
+  "12": {
+   "layers": [],
+   "title": "Peer Review",
+   "text": "<h3>Peer Review</h3><p class=\"p101-def\">Peer review is when scientists in the same field evaluate the procedures and results of an experiment.</p><p>Before scientific information goes public, it gets checked by the scientist's peers. Peers are other scientists who work in the same field.</p><p>In peer review, these scientists evaluate the procedures and results of the experiment done by the researchers. Reviewing other scientists' work is a responsibility that many scientists take on. It's one way science keeps itself honest.</p>"
+  },
+  "13": {
+   "layers": [],
+   "title": "Being Objective",
+   "text": "<h3>Being Objective</h3><p class=\"p101-def\">Bias happens when a scientist's expectations affect how results are analyzed or conclusions are made.</p><p>Good scientists work hard to reduce bias. Bias happens when what a scientist expects to find affects how they analyze the results or what conclusions they draw.</p><p>Bias might lead a scientist to pick the result from one trial and ignore the others. It can also show up when a product is being tested and its advantages are used in an advertisement, but its drawbacks are left out.</p><p>So how do scientists fight bias? They run as many trials as possible, and they keep accurate notes of every observation they make.</p><p class=\"p101-problem\" data-problem=\"3\">Check Your Progress question 3 goes here.</p>",
+   "testIt": {
+    "name": "Pick or average?",
+    "how": "Run trials one at a time. Compare picking the best trial with averaging them all."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "Models",
+   "text": "<h3>Models</h3><p class=\"p101-def\">A model is a representation of an idea, event, structure, or object that helps people understand it.</p><p>Sometimes scientists can't see everything they're studying. The object might be too big or too small. The process might take too long to watch from start to finish. Or the material might be hazardous.</p><p>That's when scientists turn to models. A model is a representation of an idea, event, structure, or object that helps people understand it better.</p><p class=\"p101-problem\" data-problem=\"4\">Check Your Progress question 4 goes here.</p>"
+  },
+  "15": {
+   "layers": [],
+   "title": "Models of the Atom Through History",
+   "text": "<h3>Models of the Atom Through History</h3><p class=\"p101-def\">Models of the atom changed as new research revealed more about its structure.</p><p>Models have been used throughout history, and the atom is a great example. Atoms are so tiny that scientists use models to show their current understanding of them.</p><p>In the early 1900s, British physicist J. J. Thomson created a model of the atom made of electrons embedded in a ball of positive charge. A few years later, physicist Ernest Rutherford created a new model based on new research. In his model, the atom has a tiny, dense, positive nucleus at its center, with electrons around it.</p><p>Later in the twentieth century, scientists discovered that the nucleus isn't a solid ball. It's made of protons and neutrons. Today's model shows a nucleus of protons and neutrons, surrounded by an electron cloud.</p>",
+   "testIt": {
+    "name": "Atom timeline",
+    "how": "Drag the knob along the timeline to see how the model of the atom changed."
+   }
+  },
+  "16": {
+   "layers": [],
+   "title": "High-Tech Models",
+   "text": "<h3>High-Tech Models</h3><p class=\"p101-def\">Computer simulations mimic real processes to test solutions and train people safely.</p><p>Both physical models and computers help in the engineering design process. Computers can run simulations to test different ways of solving a problem, and to find which one is most efficient or economical. They also help make a convincing presentation to a client about how a design will meet their needs. The software is designed to mimic the processes being studied.</p><p>Take flight simulators, like the one in this photo. They let pilots practice every part of flying without ever leaving the ground. The image mimics what the pilot would see flying a real plane. Simulators can even recreate harsh weather and other dangerous in-flight challenges.</p>",
+   "testIt": {
+    "name": "Flight simulator",
+    "how": "Pick a paper airplane, fly it, and compare distance and paper used."
+   }
+  },
+  "17": {
+   "layers": [],
+   "title": "Scientific Theories",
+   "text": "<h3>Scientific Theories</h3><p class=\"p101-def\">A scientific theory is an explanation of things or events based on many observations and investigations.</p><p>You might hear someone say, \"Oh, that's just a theory.\" In science, a theory is not a guess! A scientific theory explains things or events using knowledge gained from many observations and investigations.</p><p>A theory isn't just one hypothesis that passed a test. It's a broad explanation that ties together many hypotheses and many lines of evidence, all tested again and again. But having supporting data doesn't mean a theory can never change. As new information comes in, theories can be refined or modified.</p><p>The theory describing how objects fall is a good example. When experiments gave scientists new insight and evidence, the theory was modified to match.</p><ol class=\"p101-slots\"><li>Greek philosophers proposed that objects fall because they seek their natural places. The more massive the object, the faster it falls.</li><li>Galileo showed that the speed at which an object falls depends on the amount of time for which that object has fallen and not on the object's mass.</li><li>Newton provided an explanation for why objects fall. Newton proposed that objects fall because the object and Earth are attracted by a force. Newton also stated that there is a force of attraction between any two objects with mass.</li><li>Einstein suggested that the force of attraction between two objects is due to mass causing the space around it to curve.</li></ol>",
+   "testIt": {
+    "name": "Falling objects",
+    "how": "Drop the ball and the feather. Turn the air off and drop them again."
+   }
+  },
+  "18": {
+   "layers": [],
+   "title": "Scientific Laws",
+   "text": "<h3>Scientific Laws</h3><p class=\"p101-def\">A scientific law is a statement about what happens in nature that seems to be true all the time.</p><p>A scientific law is a statement about what happens in nature that seems to be true all the time. Laws tell you what will happen under certain conditions. But they don't explain why or how it happens.</p><p>Gravity is an example. Newton's law of gravity says that any mass attracts any other mass. It predicts the motion of falling objects, the Moon, and the planets extremely well.</p><p>Here's a common mix-up: theories don't grow up to become laws. Instead, a theory can be used to explain a law. For example, scientists have proposed theories to explain why gravity works the way it does. Today's best one is Einstein's general relativity, which also explains the rare cases where Newton's law is slightly off, like very strong gravity near the Sun.</p>"
+  },
+  "19": {
+   "layers": [],
+   "title": "Models as Systems",
+   "text": "<h3>Models as Systems</h3><p class=\"p101-def\">Models can be used to simulate systems.</p><p>Time to get creative. Models can be used to simulate systems, and a model doesn't have to be something you can build and touch, although it can be.</p><p>Choose a model that wasn't mentioned in this lesson. Then make a poster showing how your model can help test a process or a procedure. What type of model will you use? And what evidence supports your explanation?</p>"
+  },
+  "20": {
+   "layers": [],
+   "title": "The Limitations of Science",
+   "text": "<h3>The Limitations of Science</h3><p class=\"p101-def\">Science can only answer questions that can be tested.</p><p>Science can explain a lot about the world, but it can't explain or solve everything. Scientists do make educated guesses, called hypotheses, but those have to be tested and verified.</p><p>Questions about opinions, values, and emotions aren't scientific, because they can't be tested. Some people find a certain piece of art beautiful, and others don't. Some people think pizza tastes delicious, and others don't.</p><p>You could take a survey to collect people's opinions on questions like these. But a survey wouldn't prove that those opinions are true for everyone.</p><p class=\"p101-problem\" data-problem=\"5\">Check Your Progress question 5 goes here.</p>",
+   "testIt": {
+    "name": "Testable or not?",
+    "how": "Drag each question card into the testable or not testable crate."
+   }
+  }
+ }
+}

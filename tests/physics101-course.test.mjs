@@ -36,8 +36,8 @@ test("catalog lists every module 1-6 lesson once, in course order, grouped by mo
   assert.equal(new Set(DECKS.map((d) => d.slug)).size, DECKS.length);
 });
 
-test("every lesson is a coming-soon placeholder with no lesson text yet", () => {
-  for (const d of DECKS) {
+test("every lesson but M1 L1 is still a coming-soon placeholder with no lesson text", () => {
+  for (const d of DECKS.filter((x) => x.slug !== "m01-l01")) {
     assert.equal(d.built, false, d.key);
     assert.equal(d.slides, 0, d.key);
     assert.deepEqual(d.pages, [], d.key);
@@ -124,4 +124,15 @@ test("library strips: short M# \u00b7 L# label, one color variable per module", 
   const css = read("physics101/p101.css");
   assert.match(css, /--p101-m1:\s*#E2B654/i);
   for (let m = 1; m <= 6; m++) assert.match(css, new RegExp(`data-q="${m}"\\] \\.strip \\{ background: var\\(--p101-m${m}\\)`));
+});
+
+test("standards from the standards map: every lesson has codes or the Science & Engineering Practices tag", () => {
+  const want = { "m03-l03": ["HS-PS2-1"], "m04-l01": ["HS-PS2-1"], "m04-l02": ["HS-PS2-1", "HS-PS2-3", "HS-PS2-4"], "m04-l03": ["HS-PS2-1"],
+    "m05-l02": ["HS-PS2-1"], "m05-l03": ["HS-PS2-1"], "m06-l02": ["HS-PS2-1"] };
+  assert.equal(DECKS.length, 20);
+  for (const d of DECKS) assert.deepEqual(d.standards, want[d.slug] || ["Science & Engineering Practices"], d.slug);
+  const m1 = DECKS.find((d) => d.slug === "m01-l01");
+  assert.equal(standardsLine(m1), "Science & Engineering Practices");
+  assert.equal(standardsLine(DECKS.find((d) => d.slug === "m04-l02")), "HS-PS2-1 \u00b7 HS-PS2-3 \u00b7 HS-PS2-4");
+  assert.match(read("astro-course/ac-story.js"), /page === 1 && standardsLine\(meta\)/);
 });

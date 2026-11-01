@@ -28,6 +28,8 @@ export const COURSES = {
     param: "lesson",
     store: "popboard.physics101",
     scenes: null,
+    // 2D "Test it" scenes on hand-drawn pages: <pageScenes><slug>/pNN.js, listed by story.json testIt
+    pageScenes: "physics101/scenes/",
     covers: false,
     group: (d) => `Module ${d.q}`,
     label: (d) => `Lesson ${d.lesson}`,
