@@ -125,10 +125,10 @@ export const DECKS = [
   "title": "Acceleration",
   "tag": "PHYSICS 101  ·  MODULE 3  ·  LESSON 1",
   "sub": "Module 3: Accelerated Motion",
-  "slides": 0,
+  "slides": 15,
   "pages": [],
   "standards": ["Science & Engineering Practices"],
-  "built": false
+  "built": true
  },
  {
   "key": "M03-L02",
@@ -139,10 +139,10 @@ export const DECKS = [
   "title": "Motion with Constant Acceleration",
   "tag": "PHYSICS 101  ·  MODULE 3  ·  LESSON 2",
   "sub": "Module 3: Accelerated Motion",
-  "slides": 0,
+  "slides": 12,
   "pages": [],
   "standards": ["Science & Engineering Practices"],
-  "built": false
+  "built": true
  },
  {
   "key": "M03-L03",
@@ -153,10 +153,10 @@ export const DECKS = [
   "title": "Free Fall",
   "tag": "PHYSICS 101  ·  MODULE 3  ·  LESSON 3",
   "sub": "Module 3: Accelerated Motion",
-  "slides": 0,
+  "slides": 12,
   "pages": [],
   "standards": ["HS-PS2-1"],
-  "built": false
+  "built": true
  },
  {
   "key": "M04-L01",

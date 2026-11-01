@@ -119,6 +119,44 @@ TEST_IT = {
     12: ("The position equation", "Drag the v-bar and x-initial knobs and watch the line and the equation change."),
     13: ("Where is point C?", "Set the velocity and the time past B, then tap the motorcyclist to ride."),
  },
+"m03-l01": {
+    2: ("Jogger spacing", "Pick still, constant, speeding up or slowing down and watch the snapshots respace."),
+    4: ("Changing arrows", "Drag the speed slider while the dot runs. It drops dots and velocity arrows that grow or shrink."),
+    5: ("Build the acceleration", "Drag v_f and v_i, flip v_i, then put its tail on the tip of v_f to draw the change in velocity."),
+    6: ("Speeding up or slowing down", "Tap the two sign chips, make a prediction, then press Play."),
+    7: ("Slope of a v-t line", "Drag the two gold pickers along the line and read rise over run."),
+    8: ("Five runners", "Tap a graph line to watch its runner move on an east-west track."),
+    9: ("Average acceleration", "Drag the two gold pickers along the curve to change the interval."),
+    10: ("Tangent line", "Drag the tangent along the curve and read its slope."),
+    11: ("Wind sprint", "Set the running speed and the turnaround time, then tap the runner."),
+    13: ("Sprinter tangents", "Drag the gold point along the curve to draw a tangent and read its slope."),
+    14: ("Ball on a driveway", "Tap the ball to roll it up and back while its v-t line draws."),
+    15: ("Constant speed, changing velocity", "Tap the runner to bounce between the walls at one speed."),
+},
+"m03-l02": {
+    1: ("Tangent to a parabola", "Drag the gold point along the parabola and read the slope of the tangent."),
+    3: ("Slope is acceleration", "Drag the two gold pickers along the line and read rise over run."),
+    4: ("Area is displacement", "Drag the time marker to shade the triangle under the line."),
+    5: ("Final velocity", "Set v_i, a and the time, then tap the car."),
+    6: ("Drag racing calculator", "Set the course length and time, then tap the calculator."),
+    7: ("Change only v_i", "Set v_i and tap the autofill row to add it to the table."),
+    8: ("Rectangle area", "Drag the time marker along the flat line."),
+    9: ("Rectangle plus triangle", "Set v_i and a, then drag the time marker."),
+    11: ("Green light", "Set the acceleration, tap the car, and press Stop when it reaches 25 m/s."),
+    12: ("Reaction test", "Tap the car, then press BRAKE as soon as the child appears."),
+},
+"m03-l03": {
+    1: ("Drop tower", "Tap the air switch, pick two objects, and drop them."),
+    3: ("Which way is positive?", "Tap the chip to flip the coordinate system."),
+    4: ("Virtual strobe", "Set the flash interval and tap the ball to drop it."),
+    5: ("Step through the toss", "Pick a launch speed, then tap the ball to step one second."),
+    6: ("Time cursor", "Drag the cursor along the graph and watch the ball beside it."),
+    7: ("Ball in a tube", "Tap the ball to toss it while the graph draws."),
+    8: ("What if a = 0?", "Tap the switch at the top to turn gravity off and on."),
+    10: ("Free-fall timer", "Set the fall time and tap the timer."),
+    11: ("Probe", "Drag the probe away from Earth or the Moon."),
+    12: ("Ride builder", "Pick a drop height and a braking distance, then tap the builder."),
+},
 
 }
 
@@ -142,6 +180,8 @@ def main():
         for L in meta["layers"]:
             lid = L["id"] if "id" in L else os.path.basename(L["file"]).split("-")[-1].split(".")[0]
             box = webp(os.path.join(d, L["file"]), os.path.join(artdir, f"{pn}-{lid}.webp"), 80 if lid == "bg" else 86)
+            if not box and lid == "mid":  # Leo left this page's mid empty (all art on bg and fg): keep a 1 px placeholder so fg and cutouts still ride the mid plane
+                Image.new("RGBA", (1, 1), (0, 0, 0, 0)).save(os.path.join(artdir, f"{pn}-{lid}.webp"), "WEBP", lossless=True); box = [0, 0, 1, 1]
             if not box: continue
             f = {"bg": 0.15, "mid": 0.45, "fg": FG_F}[lid]
             spec.append({"id": lid, "src": f"{pn}-{lid}.webp", "box": box, "f": f, **({} if lid == "bg" else {"draw": True} if lid == "mid" else {"late": True})})

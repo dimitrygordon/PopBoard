@@ -64,3 +64,43 @@ export function tapArea(ctx, box, label, fn) {
   return b;
 }
 export const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+// Leo's grid_graph mapping: plot area (x0, y0) to (x1, y1) in page px, t from 0 to xmax, v from ymin to ymax.
+export function graphMap(x0, y0, x1, y1, xmax, ymax, ymin = 0) {
+  const fx = (t) => x0 + (t * (x1 - x0)) / xmax, fy = (v) => y1 - ((v - ymin) * (y1 - y0)) / (ymax - ymin);
+  return { fx, fy, tx: (X) => ((X - x0) * xmax) / (x1 - x0), vy: (Y) => ymin + ((y1 - Y) * (ymax - ymin)) / (y1 - y0) };
+}
+// A cutout that slides along v = f(t) on a graph. It starts at t0 (where Leo drew it) and calls onMove(t, done).
+export function onCurve(ctx, id, g, f, t0, [ta, tb], label, onMove, snap = 0.01) {
+  const { art } = ctx, home = art.box(id); let t = t0, c0;
+  const put = () => { const dx = g.fx(t) - g.fx(t0), dy = g.fy(f(t)) - g.fy(f(t0)); art.set(id, { dx, dy }); return [dx, dy]; };
+  const h = handle(ctx, home, label, {
+    start: () => { art.touched(id); c0 = g.fx(t); },
+    move: (dx) => { t = clamp(Math.round(g.tx(c0 + dx) / snap) * snap, ta, tb); put(); onMove(t, false); },
+    end: () => { const [dx, dy] = put(); follow(h, home, dx, dy); onMove(t, true); },
+  });
+  return { get t() { return t; }, set(v) { t = clamp(v, ta, tb); const [dx, dy] = put(); follow(h, home, dx, dy); onMove(t, false); } };
+}
+// A cutout you tap (or press Enter on) to run fn.
+export function tapCut(ctx, id, label, fn) {
+  const b = handle(ctx, ctx.art.box(id), label, {}); b.addEventListener("click", () => { ctx.art.touched(id); fn(); }); return b;
+}
+export const f2 = (x, d = 2) => (Math.abs(x) < 0.5 * 10 ** -d ? 0 : x).toFixed(d).replace("-", "\u2212");
+// SVG path data for an arrow from (x1, y1) to (x2, y2) with an open head of size hd.
+export function arrowD(x1, y1, x2, y2, hd = 16) {
+  const L = Math.hypot(x2 - x1, y2 - y1); if (L < 1) return "";
+  const ux = (x2 - x1) / L, uy = (y2 - y1) / L, h = Math.min(hd, L * 0.6);
+  return `M ${x1} ${y1} L ${x2} ${y2} M ${x2 - h * ux - h * 0.6 * uy} ${y2 - h * uy + h * 0.6 * ux} L ${x2} ${y2} L ${x2 - h * ux + h * 0.6 * uy} ${y2 - h * uy - h * 0.6 * ux}`;
+}
+export function caption(layer, box, px = 26, text = "") { const c = fontPx(add(layer, "div", "cap", box, text), px); c.style.whiteSpace = "pre-line"; return c; }
+export const RED = "#B5473A", VIOLET = "#7A5FA8", NAVY = "#1F2F5C", GOLD = "#E2B654", SKY = "#5E8CC2";
+// A tangent tool on v = f(t): drag the cutout along the curve; once touched, the cutout is replaced by a
+// drawn tangent (slope df(t)) through a gold point. onMove(t, slope, done).
+export function tangentTool(ctx, id, g, f, df, t0, range, label, onMove, half = 1.2, snap = 0.05) {
+  const s = svg(ctx.layer), ln = path(s, "", { stroke: VIOLET, "stroke-width": 5 }), pt = path(s, "", { stroke: GOLD, "stroke-width": 26 });
+  const draw = (t) => {
+    const m = df(t), a = Math.max(range[0] - 0.5, t - half), b = t + half;
+    ln.setAttribute("d", `M ${g.fx(a)} ${g.fy(f(t) + m * (a - t))} L ${g.fx(b)} ${g.fy(f(t) + m * (b - t))}`); pt.setAttribute("d", `M ${g.fx(t)} ${g.fy(f(t))} h 0.1`);
+  };
+  let first = true;
+  return onCurve(ctx, id, g, f, t0, range, label, (t, done) => { if (first) { first = false; ctx.art.show(id, false); } draw(t); onMove(t, df(t), done); }, snap);
+}

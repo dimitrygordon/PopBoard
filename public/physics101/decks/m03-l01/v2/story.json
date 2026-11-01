@@ -1,0 +1,130 @@
+{
+ "slug": "m03-l01",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Nonuniform Motion",
+   "text": "<h3>Nonuniform Motion</h3><p class=\"p101-def\">In nonuniform motion, velocity is changing.</p><p>Here's our question for this lesson: what are two ways velocity can change? An object in uniform motion moves in a straight line with an unchanging velocity. But few things move that way all the time. Much more common is nonuniform motion, where velocity is changing.</p><p>In this module, you'll study nonuniform motion along a straight line, like balls rolling down hills, cars braking to a stop, and falling objects. Later you'll tackle nonuniform motion that isn't stuck on a straight line, like moving in a circle or the flight of a thrown baseball.</p><p>Uniform motion feels smooth. Close your eyes and it feels like you're not moving at all. But when you go around a curve, or up and down a roller coaster hill, you feel pushed or pulled. That's nonuniform motion.</p>"
+  },
+  "2": {
+   "layers": [],
+   "title": "Reading a Jogger's Motion Diagram",
+   "text": "<h3>Reading a Jogger's Motion Diagram</h3><p class=\"p101-def\">The distance an object moves in each time interval shows the type of motion.</p><p>Look at the four diagrams in Figure 1. In the first, there's a single image, so the person is motionless, like a runner waiting for the starting signal.</p><p>In the other three, the distances between positions change in different ways. In the second, the distances are all the same, so the jogger is in uniform motion at a constant velocity. In the third, the distances grow, because the jogger is speeding up. In the fourth, the distances shrink, because the jogger is slowing down.</p>",
+   "testIt": {
+    "name": "Jogger spacing",
+    "how": "Pick still, constant, speeding up or slowing down and watch the snapshots respace."
+   }
+  },
+  "3": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Keep your Science Journal handy and record the evidence you collect throughout this lesson.</p><p>Two activities are online. In the Virtual Investigation called Accelerated Motion, you'll use a computer model to relate acceleration, change in velocity, and time. In the Probeware Lab called Tossed Ball Motion, you'll investigate how the position, velocity, and acceleration of a tossed ball change over time.</p>"
+  },
+  "4": {
+   "layers": [],
+   "title": "Particle Models for Changing Velocity",
+   "text": "<h3>Particle Models for Changing Velocity</h3><p class=\"p101-def\">Changing dot spacing and changing velocity vector lengths show a change in velocity.</p><p>What does a particle model motion diagram look like when velocity changes? Figure 2 shows particle models under the jogger's motion diagrams as she speeds up and as she slows down.</p><p>Two clues reveal the change: the spacing of the dots, and the lengths of the velocity vectors. If an object speeds up, each velocity vector is longer than the last, and the dots spread farther apart. If it slows down, each vector is shorter than the one before, and the dots bunch closer together. Both kinds of motion diagrams show how an object's velocity is changing.</p>",
+   "testIt": {
+    "name": "Changing arrows",
+    "how": "Drag the speed slider while the dot runs. It drops dots and velocity arrows that grow or shrink."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Acceleration on a Motion Diagram",
+   "text": "<h3>Acceleration on a Motion Diagram</h3><p class=\"p101-def\">Acceleration is the rate at which an object's velocity changes.</p><p>To give a full picture of motion, a motion diagram should also show how fast the velocity is changing. The rate at which an object's velocity changes is called its acceleration. Adding acceleration vectors to a motion diagram shows that rate of change.</p><p>Figure 3 shows a particle motion diagram for an object that's speeding up. The red velocity vectors get longer from left to right. The acceleration vector, drawn in violet, describes that increasing velocity.</p><p>Here's how to find it when acceleration is constant. First find the change in velocity: delta v equals v sub f minus v sub i, which is the same as v sub f plus negative v sub i. Draw v sub f, then draw negative v sub i with its tail at the tip of v sub f. Delta v is the arrow from the tail of v sub f to the tip of negative v sub i. Then divide by the time interval, delta t. The acceleration vector always points in the same direction as delta v, the change in velocity. In Figure 3, the time between dots is 1 second. So acceleration equals delta v over delta t.</p><p>What if two velocity vectors in a row are the same length and direction? Then delta v is zero, and there's no acceleration vector to draw.</p>",
+   "testIt": {
+    "name": "Build the acceleration",
+    "how": "Drag v_f and v_i, flip v_i, then put its tail on the tip of v_f to draw the change in velocity."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Direction of Acceleration",
+   "text": "<h3>Direction of Acceleration</h3><p class=\"p101-def\">When acceleration and velocity point the same way, speed increases; when they point opposite ways, speed decreases.</p><p>Figure 4 shows four ways a car can accelerate by changing speed. First, moving in the positive direction and speeding up. Second, moving in the positive direction and slowing down. Third, speeding up in the negative direction. Fourth, slowing down while moving in the negative direction. Each shows the velocity vectors for the second time interval and the matching acceleration vector, with delta t equal to 1 second.</p><p>In the first and third cases, the car speeds up, and its velocity and acceleration vectors point the same way. In the other two, the acceleration points opposite to the velocity, and the car slows down.</p><p>So you need both directions to know whether something is speeding up or slowing down. An object has positive acceleration when the acceleration vector points in the positive direction, and negative acceleration when it points in the negative direction. But here's the key: the sign of acceleration alone does not tell you whether the object is speeding up or slowing down. If velocity and acceleration have opposite signs, the object is slowing down.</p>",
+   "testIt": {
+    "name": "Speeding up or slowing down",
+    "how": "Tap the two sign chips, make a prediction, then press Play."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Velocity-Time Graphs and Slope",
+   "text": "<h3>Velocity-Time Graphs and Slope</h3><p class=\"p101-def\">The slope of a velocity-time graph is the acceleration.</p><p>Just like position versus time, it's useful to plot velocity versus time. On a velocity-time graph, or v-t graph, velocity goes on the vertical axis and time on the horizontal axis.</p><p>Figure 5 shows a car that starts at rest and speeds up along a straight road, with the positive direction chosen as the car's direction of motion. The graph is a straight line, which means the car sped up at a constant rate. A straight line on a velocity-time graph means constant acceleration.</p><p>You find that rate from the slope. Rise over run, from 2.00 seconds to 4.00 seconds, is 10.0 meters per second over 2.00 seconds, which is 5.00 meters per second per second, usually written 5.00 meters per second squared. Check it another way: at 4.00 seconds the car was going 20.0 meters per second in the positive direction, and at 5.00 seconds, 25.0 meters per second. In 1.00 second, its velocity grew by 5.0 meters per second. When velocity changes at a constant rate, the object has constant acceleration.</p>",
+   "testIt": {
+    "name": "Slope of a v-t line",
+    "how": "Drag the two gold pickers along the line and read rise over run."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Reading Velocity-Time Graphs",
+   "text": "<h3>Reading Velocity-Time Graphs</h3><p class=\"p101-def\">Above the axis, velocity is positive; an upward slant means positive acceleration; a horizontal line means zero acceleration.</p><p>Figure 6 shows the motion of five runners, with east as positive. Above the horizontal axis, velocity is positive. Below it, velocity is negative. A line slanting upward means positive acceleration, a line slanting downward means negative acceleration, and a horizontal line means constant velocity and zero acceleration.</p><p>Graphs A and E have zero slope, so their accelerations are zero. Both show constant velocity, A to the east and E to the west. Graph B shows a positive, eastward velocity with a constant positive acceleration. Since velocity and acceleration are both positive, the speed increases.</p><p>Graph C has a negative slope. It starts with a positive velocity, slows down, and stops, so acceleration and velocity point in opposite directions. Where Graphs C and B cross, those runners have equal velocities at that moment. But that crossing doesn't tell you anything about their positions!</p><p>Graph D starts out moving west, slows down, has zero velocity for an instant, then moves east faster and faster. Its slope is positive. At first, velocity and acceleration are opposite, so speed drops to zero right where the graph crosses the time axis. After that, they point the same way, and speed increases. So a line crossing the axis marks the instant an object stops and reverses direction.</p>",
+   "testIt": {
+    "name": "Five runners",
+    "how": "Tap a graph line to watch its runner move on an east-west track."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Average Acceleration",
+   "text": "<h3>Average Acceleration</h3><p class=\"p101-def\">Average acceleration is the change in velocity during a measurable time interval divided by that time interval.</p><p>Does a ride feel different when the car accelerates a little versus a lot? You bet! Like velocity, the acceleration of most moving objects keeps changing. A car might speed up quickly at some moments and slowly at others. So it's often handier to describe the overall change in velocity during a time interval.</p><p>The average acceleration of an object is its change in velocity during some measurable time interval, divided by that time interval. It's measured in meters per second per second, or simply meters per second squared. Just as average velocity depends only on the starting and ending positions, average acceleration depends only on the starting and ending velocities during the interval.</p><p>Figure 7 shows motion where the acceleration is changing. You find the average acceleration the same way as in Figure 5. But since the line is curved, the average acceleration depends on which interval you pick. For example, between 0.00 and 2.00 seconds, velocity goes from 0.0 to 4.0 meters per second, so the average acceleration is 4.0 meters per second divided by 2.00 seconds, or 2.0 meters per second squared.</p>",
+   "testIt": {
+    "name": "Average acceleration",
+    "how": "Drag the two gold pickers along the curve to change the interval."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Instantaneous Acceleration",
+   "text": "<h3>Instantaneous Acceleration</h3><p class=\"p101-def\">Instantaneous acceleration is the rate of change of velocity at an instant, found from the slope of a tangent line.</p><p>The rate at which an object's velocity is changing at one instant of time is called instantaneous acceleration. To find it, draw a tangent line on the velocity-time graph at the time you care about. A tangent line just touches the curve at that point and has the same steepness as the curve there. The slope of that tangent line equals the instantaneous acceleration.</p><p>Most situations in this book assume the ideal case of constant acceleration. When acceleration is the same at every point in a time interval, the average acceleration and the instantaneous acceleration are equal. When it's changing, average acceleration describes a whole interval, while instantaneous acceleration describes a single moment.</p>",
+   "testIt": {
+    "name": "Tangent line",
+    "how": "Drag the tangent along the curve and read its slope."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Calculating Acceleration, Wind Sprints",
+   "text": "<h3>Calculating Acceleration, Wind Sprints</h3><p class=\"p101-def\">Average acceleration: a bar equals delta v over delta t, which equals v sub f minus v sub i, over t sub f minus t sub i.</p><p>How do you describe acceleration with math? Acceleration is the slope of a velocity-time graph, and on that graph, slope equals delta v over delta t. So average acceleration, a bar, is defined as delta v over delta t, which equals v sub f minus v sub i, over t sub f minus t sub i. That's the change in velocity divided by the time it takes to make that change.</p><p>Try it. You're running wind sprints across the gym. You run toward one wall at 4.0 meters per second, turn, and 10.0 seconds later you're running away from the wall at 4.0 meters per second. If toward the wall is positive, what's your average acceleration?</p><p>Since you're running away from the wall at the end, your final velocity is negative 4.0 meters per second. So a bar equals negative 4.0 meters per second minus 4.0 meters per second, all over 10.0 seconds. That's negative 8.0 meters per second over 10.0 seconds, or negative 0.80 meters per second squared.</p>",
+   "testIt": {
+    "name": "Wind sprint",
+    "how": "Set the running speed and the turnaround time, then tap the runner."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "STEM Career Connection, Delivery Truck Driver",
+   "text": "<h3>STEM Career Connection, Delivery Truck Driver</h3><p class=\"p101-def\">Delivery truck drivers move products from distribution centers to homes and businesses.</p><p>With more and more online shopping, companies need a way to get products to your door. Delivery truck drivers pick up products at a distribution center and drive them to businesses and homes.</p><p>Acceleration, velocity, and time all matter for delivery drivers as they work to make their deliveries on a tight schedule.</p>"
+  },
+  "13": {
+   "layers": [],
+   "title": "Example Problem 1, Velocity and Acceleration",
+   "text": "<h3>Example Problem 1, Velocity and Acceleration</h3><p class=\"p101-def\">The slope of a tangent line on a velocity-time graph gives the instantaneous acceleration.</p><p>How would you describe the sprinter's velocity and acceleration on this graph?</p><p>Step one: analyze and sketch the problem. From the graph, the sprinter's speed starts at zero, rises quickly for the first few seconds, and then, after reaching about 10.0 meters per second, stays almost constant. Known: velocity varies. Unknown: acceleration.</p><p>Step two: solve for the unknown. Draw tangents to the curve at two points, t equals 1.00 second and t equals 5.00 seconds. The slope of each tangent equals the acceleration at that time. At 1.00 second, a equals rise over run: 10.0 meters per second minus 6.00 meters per second, over 2.4 seconds minus 1.00 second. That's 4.0 meters per second over 1.4 seconds, or 2.9 meters per second squared. At 5.00 seconds, a equals 10.3 meters per second minus 10.0 meters per second, over 10.0 seconds minus 0.00 seconds. That's 0.3 meters per second over 10.0 seconds, or 0.030 meters per second squared.</p><p>So the acceleration isn't constant. It drops from 2.9 meters per second squared at 1.00 second to 0.030 meters per second squared at 5.00 seconds. Both values are positive, so the acceleration is in the direction chosen as positive.</p><p>Step three: evaluate the answer. Are the units correct? Yes, acceleration is measured in meters per second squared.</p>",
+   "testIt": {
+    "name": "Sprinter tangents",
+    "how": "Drag the gold point along the curve to draw a tangent and read its slope."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "Example Problem 2, Acceleration",
+   "text": "<h3>Example Problem 2, Acceleration</h3><p class=\"p101-def\">When an object slows down, its acceleration points opposite to its velocity.</p><p>A ball rolls up a slanted driveway. It starts at 2.50 meters per second, slows down for 5.00 seconds, stops for an instant, and then rolls back down. Up the driveway is positive, and the origin is where the motion begins. What are the sign and size of the ball's acceleration as it rolls up?</p><p>Step one: analyze and sketch the problem. Sketch the situation and draw a coordinate system based on the motion diagram. Known: v sub i equals positive 2.50 meters per second, and v sub f equals 0.00 meters per second at t equals 5.00 seconds. Unknown: a.</p><p>Step two: solve for the unknown. Find the acceleration from the slope of the graph. First, the change in velocity: delta v equals v sub f minus v sub i, which is 0.00 meters per second minus 2.50 meters per second, or negative 2.50 meters per second. Next, the time taken: delta t equals t sub f minus t sub i, which is 5.00 seconds minus 0.00 seconds, or 5.00 seconds. Now the acceleration: a equals delta v over delta t, which is negative 2.50 meters per second divided by 5.00 seconds. That gives negative 0.500 meters per second squared, or 0.500 meters per second squared down the driveway.</p><p>Step three: evaluate the answer. Are the units correct? Acceleration is in meters per second squared. Do the directions make sense? Yes. As the ball slows down, its acceleration points opposite to its velocity.</p>",
+   "testIt": {
+    "name": "Ball on a driveway",
+    "how": "Tap the ball to roll it up and back while its v-t line draws."
+   }
+  },
+  "15": {
+   "layers": [],
+   "title": "Acceleration with Constant Speed",
+   "text": "<h3>Acceleration with Constant Speed</h3><p class=\"p101-def\">Acceleration can occur even when speed is constant, because a change in direction is a change in velocity.</p><p>Back to those wind sprints. You run toward the wall at 4.0 meters per second, and 10.0 seconds later you're running away at 4.0 meters per second. Your speed is the same both ways. So how can you be accelerating?</p><p>Here's the twist: acceleration can happen even when speed is constant. Your average acceleration for the trip to the wall and back is negative 0.80 meters per second squared. The negative sign means it points away from the wall, since we chose toward the wall as positive.</p><p>Your velocity changed from positive to negative when you changed direction. A change in velocity means acceleration. So acceleration can also come from a change in the direction of motion. That answers our big question: velocity can change in speed, in direction, or both.</p>",
+   "testIt": {
+    "name": "Constant speed, changing velocity",
+    "how": "Tap the runner to bounce between the walls at one speed."
+   }
+  }
+ }
+}
