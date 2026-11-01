@@ -85,6 +85,12 @@ export function lessonTests({ slug, pages, testIt, buttonOnly = [], audio = fals
     }
   });
 
+  test(`${L}: the outline's Flags for Tesla section is never in the story or the narration`, () => {
+    for (const s of Object.values(story.slides)) assert.doesNotMatch(s.text, /Flags? for Tesla/i);
+    assert.doesNotMatch(narr, /Flags? for Tesla/i);
+    for (const s of Object.values(story.slides)) assert.doesNotMatch(s.text, /\bNote: the original example/);
+  });
+
   test(`${L}: no em-dashes and no secrets`, () => {
     const files = [join(D, "deck.json"), join(D, "v2/story.json"), join(D, "v2/art.json"), join(ROOT, "tools/physics101/narration", slug + ".md"),
       ...readdirSync(SC).map((f) => join(SC, f))];
