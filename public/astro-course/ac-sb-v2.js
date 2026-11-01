@@ -5,7 +5,11 @@ import { reduceMotion } from "./ac-common.js";
 let INK = "#3d3d3d", BLUE = "#3f6fa8", RED = "#a34a3e", GOLD = "#c9862a", MASS = "#9a9a9a";
 function palette() {
   const dark = document.documentElement.dataset.theme === "dark";
-  [INK, BLUE, RED, GOLD, MASS] = dark ? ["#F3EAD7", "#7FA6D9", "#E2B654", "#E2B654", "#7FA6D9"] : ["#3d3d3d", "#3f6fa8", "#a34a3e", "#c9862a", "#9a9a9a"];
+  if (!dark) { [INK, BLUE, RED, GOLD, MASS] = ["#3d3d3d", "#3f6fa8", "#a34a3e", "#c9862a", "#9a9a9a"]; return; }
+  // dark ink comes from the slide theme variables (ac-story.css), so a course palette drops in without code changes
+  const cs = getComputedStyle(document.documentElement), v = (k, d) => cs.getPropertyValue(k).trim() || d;
+  const blue = v("--slide-force", "#7FA6D9");
+  [INK, BLUE, RED, GOLD, MASS] = [v("--slide-ink", "#F3EAD7"), blue, "#E2B654", "#E2B654", blue];
 }
 
 function shell(host, label, controls, note) {

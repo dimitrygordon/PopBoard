@@ -22,6 +22,8 @@ const DECKS = await loadCatalog(C);
 // A built storybook opens; a lesson still being written shows its "coming soon" page.
 const meta = DECKS.find((d) => d.slug === params.get(C.param) && d.built) || DECKS.find((d) => d.slug === params.get(C.param))
   || DECKS.find((d) => d.built) || DECKS[0];
+// module number (m03-l01 -> "3") so a course can key its slide accent (narration highlight) to the module
+{ const mm = /^m0?(\d+)-/.exec(meta.slug); if (mm) document.documentElement.dataset.module = mm[1]; }
 let extra = EXTRAS[meta.slug] || { sandboxes: {}, tryIt: {}, choices: {} };
 const base = `${C.root}decks/${meta.slug}/`;
 const PAGE_KEY = pageKey(C, meta.slug);

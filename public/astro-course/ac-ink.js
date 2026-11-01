@@ -2,6 +2,7 @@
 export function darkInk(color) {
   const m = /^#?([0-9a-f]{6})$/i.exec(String(color || "").trim());
   if (!m) return null;
+  if (m[1].toUpperCase() === "2A66B0") return "var(--slide-force)"; // force arrow blue
   const n = parseInt(m[1], 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
   const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
   if (mx - mn < 40) return mx < 170 ? "var(--pop-ink)" : "var(--pop-mute)";
