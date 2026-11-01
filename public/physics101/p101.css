@@ -1,6 +1,6 @@
 /* Physics 101 on the shared storybook engine: module strip colors, cover placeholders, the "coming soon" page. */
 /* One header strip color per module. M1 gold and M2 sage; M3 to M6 are quiet pencil tones until the final colors land. */
-:root { --p101-m1: #E2B654; --p101-m2: #B5C7A3; --p101-m3: #CFCAC0; --p101-m4: #C3C8CF; --p101-m5: #D3C6BC; --p101-m6: #C2CBC6; }
+:root { --p101-m1: #E2B654; --p101-m2: #B5C7A3; --p101-m3: #D98B6A; --p101-m4: #8FB3D9; --p101-m5: #B9A7D1; --p101-m6: #8CC5BE; }
 .lib-card[data-q="1"] .strip { background: var(--p101-m1); }
 .lib-card[data-q="2"] .strip { background: var(--p101-m2); }
 .lib-card[data-q="3"] .strip { background: var(--p101-m3); }
