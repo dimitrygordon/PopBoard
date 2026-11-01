@@ -1,5 +1,5 @@
 // Physics 101, M1 L1 "Methods of Science": the first built lesson. Deck, art layers, Test it scenes,
-// narration, and Leo's checks (p02 formulas, p10 listeners, p15/p18 labels, p17 text slots).
+// narration, and Leo's checks (p02 formulas, p10 single presenter, p15/p18 labels, p17 text slots).
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync, readdirSync } from "node:fs";
@@ -43,9 +43,10 @@ test("labels line up: the fg labels and cutouts move with the mid art (one paral
   assert.ok(art.p18.find((l) => l.id === "fg")); assert.equal(art.p15.filter((l) => /^cut-atom-/.test(l.id)).length, 3);
 });
 
-test("Leo's p02 and p10: chalkboard formulas stay as drawn, the three listeners stay in the art", () => {
+test("Leo's p02 and p10: chalkboard formulas stay as drawn, Jasper presents p10 alone (no listeners)", () => {
   assert.ok(art.p02.find((l) => l.id === "fg"), "p02 formulas are the drawn fg layer, not retyped");
-  assert.ok(!art.p02.some((l) => l.cut)); assert.ok(!art.p10.some((l) => l.cut), "p10 art is untouched");
+  assert.ok(!art.p02.some((l) => l.cut)); assert.ok(!art.p10.some((l) => l.cut), "p10 has no cutouts");
+  assert.deepEqual(art.p10.map((l) => l.id), ["bg", "mid"], "p10: one presenter in the mid art, no listener layers");
   assert.match(narr, /like E equals m c squared\./); assert.doesNotMatch(narr, /I equals V over R/);
 });
 
