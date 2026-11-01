@@ -224,4 +224,8 @@ body.v2 .read .rich p { font-size: 17px; line-height: 1.45; }
 @keyframes artFade { from { opacity: 0; } }
 @keyframes artWipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
 @keyframes artHatch { from { filter: grayscale(1) contrast(1.15); } to { filter: none; } }
+/* touchable cutouts: a gold pencil outline (#E2B654 in the art) pulses until first touch */
+.art-scene .art-hint.art-pulse { animation: artHint 1.6s ease-in-out infinite; }
+@keyframes artHint { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .art-scene .art-hint.art-pulse { animation: none; opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .art-scene .art-l { animation: none !important; } }

@@ -1,0 +1,107 @@
+{
+ "slug": "m03-l02",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Position with Constant Acceleration",
+   "text": "<h3>Position with Constant Acceleration</h3><p class=\"p101-def\">For an object with constant acceleration, the position-time graph is a parabola.</p><p>Our question for this lesson: how are position, velocity, acceleration, and time related? If an object has constant acceleration, its velocity changes at a constant rate. So what happens to its position?</p><p>Figure 11 graphs the positions of a car with constant acceleration at different times. The car's motion isn't uniform: its displacements in equal time intervals keep getting bigger. That's why the line gets steeper and steeper as time goes on. For an object with constant acceleration, the position-time graph is a curve called a parabola.</p><p>You can measure that changing steepness with tangent lines. At 2.00 seconds, the tangent's slope is 20.0 meters minus 0.00 meters, over 3.00 seconds minus 1.00 second, which is 10.0 meters per second. At 4.00 seconds, it's 60.0 meters minus 20.0 meters, over 5.00 seconds minus 3.00 seconds, which is 20.0 meters per second.</p>",
+   "testIt": {
+    "name": "Tangent to a parabola",
+    "how": "Drag the gold point along the parabola and read the slope of the tangent."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and look for crosscutting concepts.</p><p>Keep your Science Journal handy and record the evidence you collect during this lesson.</p><p>Online, try the Probeware Lab called Measuring Acceleration, where you'll analyze data to see how an object's displacement, velocity, and acceleration change over time. And as you read, build a table of crosscutting concepts and fill in examples as you spot them.</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "From Slopes to a Velocity-Time Graph",
+   "text": "<h3>From Slopes to a Velocity-Time Graph</h3><p class=\"p101-def\">For an object with constant acceleration, the velocity-time graph is a straight line.</p><p>Take the slopes from the position-time graph in Figure 11 and plot them, and you get the velocity-time graph on the left of Figure 12. For an object with constant acceleration, the velocity-time graph is a straight line.</p><p>Rise over run on that line gives the acceleration. From 3.00 seconds to 4.00 seconds, it's 20.0 meters per second minus 15.0 meters per second, over 4.00 seconds minus 3.00 seconds, which is 5.00 meters per second squared. Since the line is straight, you get the same slope anywhere, for example from 2.00 seconds to 5.00 seconds: 15.0 meters per second over 3.00 seconds, again 5.00 meters per second squared.</p>",
+   "testIt": {
+    "name": "Slope is acceleration",
+    "how": "Drag the two gold pickers along the line and read rise over run."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Area Under the Graph Is Displacement",
+   "text": "<h3>Area Under the Graph Is Displacement</h3><p class=\"p101-def\">The area under a velocity-time graph equals the displacement.</p><p>Can you build a unique position-time graph from a velocity-time graph? No, because a velocity-time graph has no information about position. But it does have information about displacement!</p><p>Remember, for an object moving at constant velocity, velocity is displacement divided by the time interval. So displacement is velocity times the time interval. When an object starts from rest and speeds up steadily, its average velocity is one half of v sub f. On the right graph in Figure 12, v sub f is the height of the line at the end, and delta t is the width of the shaded triangle. The triangle's area is one half times v sub f times delta t, and that's delta x. So the area under a v-t graph equals the displacement.</p>",
+   "testIt": {
+    "name": "Area is displacement",
+    "how": "Drag the time marker to shade the triangle under the line."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Final Velocity with Average Acceleration",
+   "text": "<h3>Final Velocity with Average Acceleration</h3><p class=\"p101-def\">Final velocity equals initial velocity plus average acceleration times the time interval: v sub f equals v sub i plus a bar delta t.</p><p>You rearranged the average velocity equation to find a new position from the initial position and the average velocity. You can do the same trick with average acceleration to find a new velocity.</p><p>If you know an object's average acceleration during a time interval, you can find how much its velocity changed. Start with the definition: a bar is defined as delta v over delta t. Multiply both sides by delta t, and delta v equals a bar delta t. That means v sub f minus v sub i equals a bar delta t. So v sub f equals v sub i plus a bar delta t. The final velocity equals the initial velocity plus the product of the average acceleration and the time interval.</p><p>When acceleration is constant, the average acceleration, a bar, is the same as the instantaneous acceleration, a, at any point in the interval. You can rearrange this equation to find the time when an object reaches a given velocity, or to find the initial velocity when you know a later velocity and when it happened.</p>",
+   "testIt": {
+    "name": "Final velocity",
+    "how": "Set v_i, a and the time, then tap the car."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Real-World Physics, Drag Racing",
+   "text": "<h3>Real-World Physics, Drag Racing</h3><p class=\"p101-def\">A dragster driver tries to get maximum acceleration over a course.</p><p>Want to see acceleration pushed to the limit? A dragster driver tries to get the greatest possible acceleration over a course.</p><p>Top Fuel dragsters in the United States National Hot Rod Association race on a 1,000 foot course, about 305 meters long. The record time for that course is 3.623 seconds. And the record final speed, set in 2026, is 346.95 miles per hour, which is about 155.1 meters per second.</p>",
+   "testIt": {
+    "name": "Drag racing calculator",
+    "how": "Set the course length and time, then tap the calculator."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Scale, Proportion, and Quantity",
+   "text": "<h3>Scale, Proportion, and Quantity</h3><p class=\"p101-def\">Algebraic thinking can show how a change in initial velocity affects final position.</p><p>Here's a crosscutting challenge about scale, proportion, and quantity. Use algebraic thinking to draw a conclusion about how changing an object's initial velocity affects where it ends up.</p><p>Make a table that gives evidence for your conclusion. For example, keep the acceleration and time the same, try several initial velocities, and compare the final positions.</p>",
+   "testIt": {
+    "name": "Change only v_i",
+    "how": "Set v_i and tap the autofill row to add it to the table."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Example Problem 3, Displacement from a Velocity-Time Graph",
+   "text": "<h3>Example Problem 3, Displacement from a Velocity-Time Graph</h3><p class=\"p101-def\">Displacement is the area under the v-t graph: delta x equals v delta t for constant velocity.</p><p>The velocity-time graph shows an airplane's motion. Find its displacement for delta t equals 1.0 second and for delta t equals 2.0 seconds. Forward is positive.</p><p>Step one: analyze and sketch the problem. The displacement is the area under the v-t graph, and the time intervals begin at t equals 0.0 seconds. Known: v equals positive 75 meters per second, delta t equals 1.0 second, and delta t equals 2.0 seconds. Unknown: delta x.</p><p>Step two: solve for the unknown. Use the relationship among displacement, velocity, and time interval. For 1.0 second, delta x equals v delta t, which is positive 75 meters per second times 1.0 second, or positive 75 meters. For 2.0 seconds, delta x equals positive 75 meters per second times 2.0 seconds, or positive 150 meters.</p><p>Step three: evaluate the answer. Are the units correct? Displacement is in meters. Do the signs make sense? The positive sign agrees with the graph. Is the size realistic? Covering about one football field per second is reasonable for an airplane.</p>",
+   "testIt": {
+    "name": "Rectangle area",
+    "how": "Drag the time marker along the flat line."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Motion with a Nonzero Initial Velocity",
+   "text": "<h3>Motion with a Nonzero Initial Velocity</h3><p class=\"p101-def\">With a nonzero initial velocity, the area under the v-t graph is a rectangle plus a triangle.</p><p>Figure 15 shows constant acceleration that starts at an initial velocity, v sub i. To find the displacement, split the area under the graph into a rectangle and a triangle.</p><p>The rectangle's area is v sub i times delta t. The triangle's area is one half times delta v times delta t. So delta x equals v sub i delta t plus one half delta v delta t. Now swap in a delta t for the change in velocity, and you get delta x equals v sub i delta t plus one half a delta t squared.</p><p>If you know the initial or final position, write it as x sub f minus x sub i equals v sub i delta t plus one half a delta t squared, or x sub f equals x sub i plus v sub i delta t plus one half a delta t squared. And if the initial time is zero, it becomes x sub f equals x sub i plus v sub i t sub f plus one half a t sub f squared. An object's final position equals its initial position, plus its initial velocity times the final time, plus half the acceleration times the final time squared.</p>",
+   "testIt": {
+    "name": "Rectangle plus triangle",
+    "how": "Set v_i and a, then drag the time marker."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "An Alternative Equation",
+   "text": "<h3>An Alternative Equation</h3><p class=\"p101-def\">v sub f squared equals v sub i squared plus two a times the quantity x sub f minus x sub i.</p><p>Often it's handy to connect position, velocity, and constant acceleration without time. Start with v sub f equals v sub i plus a t sub f, and solve for time: t sub f equals v sub f minus v sub i, all over a.</p><p>Substitute that time into the position equation: x sub f equals x sub i, plus v sub i times the quantity v sub f minus v sub i over a, plus one half a times the square of the quantity v sub f minus v sub i over a. Then solve for the final velocity at any position.</p><p>The result: v sub f squared equals v sub i squared plus two a times the quantity x sub f minus x sub i. In words, the square of the final velocity equals the square of the initial velocity plus twice the product of the acceleration and the displacement.</p>"
+  },
+  "11": {
+   "layers": [],
+   "title": "Example Problem 4, Displacement",
+   "text": "<h3>Example Problem 4, Displacement</h3><p class=\"p101-def\">Use v sub f squared equals v sub i squared plus two a delta x when time is not given.</p><p>A car starts at rest and accelerates at 3.5 meters per second squared after a traffic light turns green. How far will it have gone when it's traveling at 25 meters per second?</p><p>Step one: analyze and sketch the problem. Sketch the situation, set up coordinate axes with positive to the right, and draw a motion diagram. Known: x sub i equals 0.00 meters, v sub i equals 0.00 meters per second, v sub f equals positive 25 meters per second, and a equals positive 3.5 meters per second squared. Unknown: x sub f.</p><p>Step two: solve for the unknown. Use the relationship among velocity, acceleration, and displacement: v sub f squared equals v sub i squared plus two a times the quantity x sub f minus x sub i. Solve for x sub f: x sub f equals x sub i plus the quantity v sub f squared minus v sub i squared, over two a. Substitute: 0.00 meters plus the square of 25 meters per second, minus the square of 0.00 meters per second, all over two times 3.5 meters per second squared. That's 625 over 7.0, which gives positive 89 meters.</p><p>Step three: evaluate the answer. Are the units correct? Position is in meters. Do the signs make sense? The positive sign agrees with both the pictorial and physical models. Is the size realistic? The displacement is almost the length of a football field, which is reasonable because 25 meters per second, about 56 miles per hour, is fast.</p>",
+   "testIt": {
+    "name": "Green light",
+    "how": "Set the acceleration, tap the car, and press Stop when it reaches 25 m/s."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Example Problem 5, Two-Part Motion",
+   "text": "<h3>Example Problem 5, Two-Part Motion</h3><p class=\"p101-def\">Split two-part motion into separate pieces and add the displacements.</p><p>You're driving at a constant 25 meters per second along a straight road when a child suddenly runs into the road. It takes you 0.45 seconds to react and hit the brakes. Then the car slows with a steady acceleration of 8.5 meters per second squared, opposite your motion, until it stops. What's the car's total displacement before it stops?</p><p>Step one: analyze and sketch the problem. Sketch the situation, choose the car's motion as the positive direction, and draw the motion diagram with v and a labeled. Known: v reacting equals positive 25 meters per second, t reacting equals 0.45 seconds, a braking equals negative 8.5 meters per second squared, v initial braking equals positive 25 meters per second, and v final braking equals 0.00 meters per second. Unknown: x reacting, x braking, and x total.</p><p>Step two: solve for the unknown. Reacting: the car moves at constant speed, so x reacting equals v reacting times t reacting, which is 25 meters per second times 0.45 seconds, or positive 11 meters. Braking: use v final braking squared equals v reacting squared plus two a braking times x braking. Solve for x braking: v final braking squared minus v reacting squared, over two a braking. That's 0.00 minus 625, over two times negative 8.5, or negative 625 over negative 17, which is positive 37 meters. Total: x total equals x reacting plus x braking, which is 11 meters plus 37 meters, or positive 48 meters.</p><p>Step three: evaluate the answer. Are the units correct? Displacement is in meters. Do the signs make sense? Both displacements are positive, as they should be. Is the size realistic? The braking displacement is small because the braking acceleration is large.</p>",
+   "testIt": {
+    "name": "Reaction test",
+    "how": "Tap the car, then press BRAKE as soon as the child appears."
+   }
+  }
+ }
+}

@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 // Render storybook narration with xAI TTS: one mp3 plus a word-timestamp JSON per page.
 //   XAI_API_KEY=... node tools/render-narration.mjs [d01 d02 ...] [--voice name] [--force]
+//   XAI_API_KEY=... node tools/render-narration.mjs --course physics101 [m01-l01 ...]
+//     (Physics 101 text: tools/physics101/narration/<slug>.md, written by tools/physics101/build-lesson.py)
 // Offline only: the browser never calls TTS; the output is committed as static files.
 //   node tools/render-narration.mjs --voices        (lists voices from GET /v1/tts/voices)
 // Output: public/astro-course/audio/<deck>/s<N>.mp3 and s<N>.json ({ voice, textHash, words:[{w,start,end}] }).
@@ -13,12 +15,19 @@ import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const TEXT_DIR = process.env.NARRATION_TEXT_DIR || "/workspace/astro-course/text";
-const OUT = join(ROOT, "public/astro-course/audio");
 const API = "https://api.x.ai/v1";
 const args = process.argv.slice(2);
 const flag = (k) => args.includes(k);
 const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
+// one course per run: where its page text lives, where audio goes, and what its deck slugs look like
+export const COURSES = {
+  astronomy: { text: process.env.NARRATION_TEXT_DIR || "/workspace/astro-course/text", root: "public/astro-course", slug: /^d\d/ },
+  physics101: { text: join(ROOT, "tools/physics101/narration"), root: "public/physics101", slug: /^m\d\d-l\d\d$/ },
+};
+const COURSE = COURSES[opt("--course", "astronomy")];
+if (!COURSE) { console.error("unknown --course"); process.exit(1); }
+const TEXT_DIR = COURSE.text;
+const OUT = join(ROOT, COURSE.root, "audio");
 // The one voice setting lives in tools/narration.config.json; --voice overrides it for a single run.
 const VOICE = opt("--voice", JSON.parse(readFileSync(join(ROOT, "tools/narration.config.json"), "utf8")).voice);
 const KEY = process.env.XAI_API_KEY;
@@ -78,8 +87,8 @@ async function tts(text) {
 
 if (MAIN) await main();
 async function main() {
-const decks = args.filter((a) => /^d\d/.test(a));
-const all = decks.length ? decks : readdirSync(join(ROOT, "public/astro-course/decks")).filter((d) => /^d\d/.test(d));
+const decks = args.filter((a) => COURSE.slug.test(a));
+const all = decks.length ? decks : readdirSync(join(ROOT, COURSE.root, "decks")).filter((d) => COURSE.slug.test(d));
 let made = 0, skipped = 0;
 for (const slug of all) {
   const f = textFile(slug);

@@ -1,0 +1,118 @@
+{
+ "slug": "m02-l04",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Two Joggers",
+   "text": "<h3>Two Joggers</h3><p class=\"p101-def\">A faster object has a larger displacement in a fixed time interval and a shorter time interval for a fixed distance.</p><p>Our big question: how do you describe how fast something is moving? Picture two joggers recorded on one graph, like Figure 19. The jogger in red changes position more than the jogger in blue.</p><p>In any fixed time interval, the size of the red jogger's displacement, delta x, is bigger, because she's moving faster. Flip it around: if each jogger runs 100 meters, the time interval, delta t, for those 100 meters is shorter for the jogger in red. In the 3 seconds shown on the graph, the red jogger covers 6.0 meters while the blue jogger covers 3.0 meters, so red goes 3.0 meters farther.</p>",
+   "testIt": {
+    "name": "Two joggers",
+    "how": "Set each jogger's pace and press Race. Compare the distance in 3 s and the time for 100 m."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Keep your Science Journal handy and record the evidence you collect as you go through this lesson.</p><p>Two activities wait online. In the PhysicsLAB called Constant Speed, you'll plan and carry out an investigation relating distance, speed, and time interval. In Review the News, you'll find a current news story about speed or velocity, evaluate your source, and share what you learn with your class.</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Slope on a Position-Time Graph",
+   "text": "<h3>Slope on a Position-Time Graph</h3><p class=\"p101-def\">Slope is the rise divided by the run.</p><p>Compare the two joggers' lines in Figure 19. The red line is steeper, which means a bigger change in position during each time interval.</p><p>Remember how to find a slope. Pick two points on the line. Subtract the vertical coordinate of the first point, here x, from the vertical coordinate of the second point. That's the rise. Then subtract the horizontal coordinate of the first point, here t, from the horizontal coordinate of the second point. That's the run. The rise divided by the run is the slope.</p><p>For the red jogger, the slope is 6.0 meters minus 2.0 meters, over 3.0 seconds minus 1.0 second, which is 2.0 meters per second. For the blue jogger, it's 3.0 meters minus 2.0 meters, over 3.0 seconds minus 2.0 seconds, which is 1.0 meter per second. And both graphs start at the point zero, zero, which means both joggers were at the origin at time zero.</p>",
+   "testIt": {
+    "name": "Slope finder",
+    "how": "Drag the two gold pickers onto a line to see the rise, the run, and the slope."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Average Velocity",
+   "text": "<h3>Average Velocity</h3><p class=\"p101-def\">Average velocity is the change in position divided by the time interval during which the change occurred.</p><p>Notice that the faster runner's slope is the bigger number. A greater slope means a faster speed. And look at the slope's units: meters per second.</p><p>Slope is the change in position divided by the time interval in which that change happened: x sub f minus x sub i, over t sub f minus t sub i, or delta x over delta t. When delta x gets larger, the slope gets larger. When delta t gets larger, the slope gets smaller. That matches what we saw with the red and blue joggers.</p><p>This ratio has a name. Average velocity is the ratio of an object's change in position to the time interval during which the change occurred. We write it as v bar, and v bar is defined as delta x over delta t, which equals x sub f minus x sub i, over t sub f minus t sub i. The three-line symbol in that equation means \"is defined as.\" If an object is in uniform motion, so its speed doesn't change, its average velocity is the slope of its position-time graph.</p>"
+  },
+  "5": {
+   "layers": [],
+   "title": "Interpreting Slope",
+   "text": "<h3>Interpreting Slope</h3><p class=\"p101-def\">The slope of a position-time graph shows both the magnitude and the direction of the velocity.</p><p>The slope of the graph in Figure 20 is negative 5.0 meters per second. Notice that the slope shows both magnitude and direction. Calculate the rise over the run between two points, and you find that the object has an average velocity of negative 5.0 meters per second.</p><p>Here's the story the graph tells. The object starts at a positive position, 20 meters, and moves toward the origin. After 4 seconds, it passes the origin and keeps moving in the negative direction at 5.0 meters per second.</p><p>If the object moved at the same speed in the positive direction instead, the line would slope upward just as steeply. An upward slope means motion in the positive direction, and a downward slope means motion in the negative direction, whether the line is above or below the time axis.</p>",
+   "testIt": {
+    "name": "Sign of the slope",
+    "how": "Pick +5.0 or -5.0 m/s and a start position, then press Go and watch the line tilt."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Average Speed",
+   "text": "<h3>Average Speed</h3><p class=\"p101-def\">Average speed is the absolute value of the slope: the distance traveled divided by the time taken.</p><p>The absolute value of the slope is the object's average speed. For Figure 20, that's 5.0 meters per second. Average speed is the distance traveled divided by the time it took to travel that distance. For uniform motion, average speed is the absolute value of the slope of the position-time graph.</p><p>Put average speed together with the direction of motion, and you get average velocity. If an object moves in the negative direction, its change in position is negative. That means an object's displacement and its average velocity always point in the same direction.</p>"
+  },
+  "7": {
+   "layers": [],
+   "title": "Instantaneous Velocity",
+   "text": "<h3>Instantaneous Velocity</h3><p class=\"p101-def\">Instantaneous velocity is the speed and direction of an object at a particular instant.</p><p>Why do we call delta x over delta t the average velocity instead of just velocity? A motion diagram shows where an object is at the start and end of a time interval. It doesn't show what happened in between.</p><p>During that interval, the object's speed could have stayed the same, increased, or decreased. It might have stopped, or even turned around! You can find the average velocity for each interval, but not the speed and direction at any specific instant.</p><p>The speed and direction of an object at a particular instant is called the instantaneous velocity. In this book, the word velocity means instantaneous velocity, written with the symbol v.</p>",
+   "testIt": {
+    "name": "Same average, different paths",
+    "how": "Tap Reveal to show each hidden path. They all share the same start, end and time."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Velocity Vectors on Motion Diagrams",
+   "text": "<h3>Velocity Vectors on Motion Diagrams</h3><p class=\"p101-def\">The length of each velocity vector is proportional to the magnitude of the velocity it represents.</p><p>When an object moves between two points, its average velocity points the same way as its displacement. The two are also proportional: a bigger displacement in a given time interval means a bigger average velocity. So a motion diagram can show both the direction and the size of the average velocity.</p><p>Imagine two cars driving down the road at different speeds, filmed at one frame per second. Each car has a paintbrush that drops down and paints a red line on the ground for half a second every second. The faster car paints a longer line.</p><p>The velocity vectors you draw on a motion diagram are like those painted lines. In this book, velocity vectors are red. Figure 21 shows two cars' motion diagrams with velocity vectors, one car moving right and the other moving left. The faster car has longer arrows and dots that are farther apart.</p>",
+   "testIt": {
+    "name": "Paintbrush cars",
+    "how": "Set both car speeds and press Paint. The stripes become each car's velocity arrows."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Real-World Physics, Speed Records",
+   "text": "<h3>Real-World Physics, Speed Records</h3><p class=\"p101-def\">World records for the 100-meter dash.</p><p>Want to see velocity at its most impressive? The world record for the men's 100-meter dash is 9.58 seconds, set in Berlin in 2009 by Usain Bolt.</p><p>The world record for the women's 100-meter dash is 10.49 seconds, set in 1988 by Florence Griffith-Joyner.</p>",
+   "testIt": {
+    "name": "Speed records",
+    "how": "Work out each record holder's average speed, pick the right answer, then race them."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Example Problem 3, Average Velocity",
+   "text": "<h3>Example Problem 3, Average Velocity</h3><p class=\"p101-def\">Average velocity equals delta x over delta t; average speed is its absolute value.</p><p>The graph shows the straight-line motion of a student riding her skateboard along a smooth sidewalk with no pedestrians. What is her average velocity? What is her average speed?</p><p>Step one: analyze and sketch the problem. Identify the graph's coordinate system: position in meters on the vertical axis, time in seconds on the horizontal axis. The unknowns are average velocity and average speed.</p><p>Step two: solve for the unknown. Find the average velocity using two points on the line. V bar equals delta x over delta t, which equals x sub f minus x sub i, over t sub f minus t sub i. Substitute x sub f equals 12.0 meters, x sub i equals 0.0 meters, t sub f equals 7.0 seconds, and t sub i equals 0.0 seconds. That's 12.0 meters over 7.0 seconds, so v bar equals 1.7 meters per second in the positive direction. The average speed is the absolute value of the average velocity, or 1.7 meters per second.</p><p>Step three: evaluate the answer. Are the units correct? Velocity and speed are both measured in meters per second. Do the signs make sense? The positive sign for velocity agrees with the coordinate system, and speed has no direction.</p>",
+   "testIt": {
+    "name": "Skateboarder",
+    "how": "Tap the skater to roll, then drag the two pickers onto the line to find her average velocity."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "An Equation for the Line",
+   "text": "<h3>An Equation for the Line</h3><p class=\"p101-def\">Any straight line can be written as y equals m x plus b.</p><p>Often an equation is faster than a graph for solving problems. And any time you graph a straight line, you can write an equation for it. Let's revisit Figure 20, the object moving at a constant velocity of negative 5.0 meters per second.</p><p>Any straight line can be written as y equals m x plus b. Here y is the quantity on the vertical axis, m is the slope, x is the quantity on the horizontal axis, and b is the y-intercept.</p><p>In Figure 20, the vertical axis is position, x. The slope is negative 5.0 meters per second, which is the average velocity, v bar. The horizontal axis is time, t. And the y-intercept is 20.0 meters. What does that 20.0 meters mean? The object was at 20.0 meters when t equals 0.0 seconds. That's called the initial position, written x sub i.</p>"
+  },
+  "12": {
+   "layers": [],
+   "title": "The Position Equation",
+   "text": "<h3>The Position Equation</h3><p class=\"p101-def\">Position equals average velocity times time plus initial position: x equals v bar t plus x sub i.</p><p>So the equation of the line in Figure 20 is y equals negative 5.0 meters per second times x, plus 20.0 meters. Rewrite it using x for position and t for time: x equals negative 5.0 meters per second times t, plus 20.0 meters.</p><p>Switching from y and x in math to x and t in physics can feel strange. We do it because physics has many kinds of graphs: position versus time, velocity versus time, force versus position, and more. For a position-time graph, y equals m x plus b becomes x equals v bar t plus x sub i. An object's position equals its average velocity times time, plus its initial position.</p><p>Here's how the symbols match up, connecting math to physics. The slope-intercept equation's y becomes position, x. The slope m becomes average velocity, v bar, which is negative 5.0 meters per second in Figure 20. The horizontal x becomes time, t. And the intercept b becomes initial position, x sub i, which is 20.0 meters in Figure 20. This equation is one more way to represent motion, and a graph of x versus t is a straight line.</p>",
+   "testIt": {
+    "name": "The position equation",
+    "how": "Drag the v-bar and x-initial knobs and watch the line and the equation change."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Example Problem 4, Position",
+   "text": "<h3>Example Problem 4, Position</h3><p class=\"p101-def\">Use x equals v bar t plus x sub i to find a position from velocity, time, and initial position.</p><p>A motorcyclist travels east along a straight road. After passing point B, the cyclist keeps going at an average velocity of 12 meters per second east and reaches point C 3.0 seconds later. What is the position of point C?</p><p>Step one: analyze the problem. Choose a coordinate system with the origin at point A. Known: v bar equals 12 meters per second east, x sub i equals 46 meters east, and t equals 3.0 seconds. Unknown: x.</p><p>Step two: solve for the unknown. Use x equals v bar t plus x sub i, with magnitudes for the calculation. Substitute 12 meters per second for v bar, 3.0 seconds for t, and 46 meters for x sub i. That's 12 meters per second times 3.0 seconds, which is 36 meters, plus 46 meters, giving 82 meters. So x equals 82 meters east.</p><p>Step three: evaluate the answer. Are the units correct? Position is measured in meters. Does the direction make sense? Yes, the motorcyclist travels east the whole time.</p>",
+   "testIt": {
+    "name": "Where is point C?",
+    "how": "Set the velocity and the time past B, then tap the motorcyclist to ride."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "Math Models Motion",
+   "text": "<h3>Math Models Motion</h3><p class=\"p101-def\">Algebraic thinking lets you predict how a change in one variable affects another.</p><p>By now you've probably noticed how tightly physics and math are linked. Algebraic thinking is used to examine scientific data and to predict how a change in one variable affects another.</p><p>For example, you can predict the change in an object's average velocity by looking at its change in position over time. Using math to model motion is a powerful tool for physicists and physics students alike.</p>"
+  },
+  "15": {
+   "layers": [],
+   "title": "Scientific Breakthroughs, In the Nick of Time",
+   "text": "<h3>Scientific Breakthroughs, In the Nick of Time</h3><p class=\"p101-def\">Chip-scale atomic clocks provide accurate, precise timekeeping in a very small package.</p><p>The Global Positioning System, or GPS, and other navigation systems rely on satellites carrying extremely accurate atomic clocks. But some navigation systems must work where satellite radio signals can't reach, like inside buildings, deep in canyons, or far underwater. Satellite systems can also be disrupted on purpose by hacking or jamming. To solve this, scientists developed atomic clocks tiny enough for a person to carry.</p><p>Old-fashioned clocks count seconds by the swings of a pendulum. Mechanical clocks, and even digital clocks that keep time with electrical oscillations in power lines or with vibrating quartz crystals, aren't completely accurate and precise. So in 1949, scientists at the National Bureau of Standards, the agency now called the National Institute of Standards and Technology, or NIST, built the first atomic clock. Atomic clocks count seconds using oscillations between atomic energy states of elements such as cesium, rubidium, and strontium. The latest models are so good they would neither gain nor lose a single second in 15 billion years.</p><p>In the early 2000s, NIST teamed up with the Defense Advanced Research Projects Agency, or DARPA, part of the United States Department of Defense, to shrink atomic clocks for portable navigation. In 2004, NIST demonstrated the first chip-scale atomic clock, or CSAC, which is the size of a computer chip. Today CSACs are used in portable navigation, telecommunications, and other civilian and military applications.</p><p>Even CSACs have weak spots, like temperature changes that shift atomic frequencies. So in 2016, DARPA launched the Atomic Clocks with Enhanced Stability project, called ACES, aiming for a clock that performs 1,000 times better than the original CSAC.</p>"
+  }
+ }
+}

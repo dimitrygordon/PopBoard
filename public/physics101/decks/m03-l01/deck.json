@@ -1,0 +1,81 @@
+{
+ "key": "M03-L01",
+ "ptw": 960.0,
+ "slides": [
+  {
+   "n": 1,
+   "title": "Nonuniform Motion",
+   "items": []
+  },
+  {
+   "n": 2,
+   "title": "Reading a Jogger's Motion Diagram",
+   "items": []
+  },
+  {
+   "n": 3,
+   "title": "Your Investigation Toolkit",
+   "items": []
+  },
+  {
+   "n": 4,
+   "title": "Particle Models for Changing Velocity",
+   "items": []
+  },
+  {
+   "n": 5,
+   "title": "Acceleration on a Motion Diagram",
+   "items": []
+  },
+  {
+   "n": 6,
+   "title": "Direction of Acceleration",
+   "items": []
+  },
+  {
+   "n": 7,
+   "title": "Velocity-Time Graphs and Slope",
+   "items": []
+  },
+  {
+   "n": 8,
+   "title": "Reading Velocity-Time Graphs",
+   "items": []
+  },
+  {
+   "n": 9,
+   "title": "Average Acceleration",
+   "items": []
+  },
+  {
+   "n": 10,
+   "title": "Instantaneous Acceleration",
+   "items": []
+  },
+  {
+   "n": 11,
+   "title": "Calculating Acceleration, Wind Sprints",
+   "items": []
+  },
+  {
+   "n": 12,
+   "title": "STEM Career Connection, Delivery Truck Driver",
+   "items": []
+  },
+  {
+   "n": 13,
+   "title": "Example Problem 1, Velocity and Acceleration",
+   "items": []
+  },
+  {
+   "n": 14,
+   "title": "Example Problem 2, Acceleration",
+   "items": []
+  },
+  {
+   "n": 15,
+   "title": "Acceleration with Constant Speed",
+   "items": []
+  }
+ ]
+}

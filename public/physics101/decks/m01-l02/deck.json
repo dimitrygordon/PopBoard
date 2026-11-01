@@ -1,0 +1,61 @@
+{
+ "key": "M01-L02",
+ "ptw": 960.0,
+ "slides": [
+  {
+   "n": 1,
+   "title": "The Language of Physics",
+   "items": []
+  },
+  {
+   "n": 2,
+   "title": "SI Units, a Shared Language",
+   "items": []
+  },
+  {
+   "n": 3,
+   "title": "Derived Units",
+   "items": []
+  },
+  {
+   "n": 4,
+   "title": "Keeping the Standards",
+   "items": []
+  },
+  {
+   "n": 5,
+   "title": "Prefixes and Powers of Ten",
+   "items": []
+  },
+  {
+   "n": 6,
+   "title": "Dimensional Analysis",
+   "items": []
+  },
+  {
+   "n": 7,
+   "title": "Conversion Factors",
+   "items": []
+  },
+  {
+   "n": 8,
+   "title": "Significant Figures",
+   "items": []
+  },
+  {
+   "n": 9,
+   "title": "Are All Zeros Significant?",
+   "items": []
+  },
+  {
+   "n": 10,
+   "title": "Doing Math with Significant Figures",
+   "items": []
+  },
+  {
+   "n": 11,
+   "title": "Example Problem 1, Using Distance and Time to Find Speed",
+   "items": []
+  }
+ ]
+}

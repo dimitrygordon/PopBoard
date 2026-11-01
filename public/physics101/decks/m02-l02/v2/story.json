@@ -1,0 +1,94 @@
+{
+ "slug": "m02-l02",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Where Do You Put the Zero?",
+   "text": "<h3>Where Do You Put the Zero?</h3><p class=\"p101-def\">A coordinate system gives the location of the zero point of a variable and the direction in which its values increase.</p><p>Our big question for this lesson: what are some different ways of describing and representing motion? Let's start with a puzzle. Can you measure distance and time on a motion diagram?</p><p>Before photographing a runner, you could lay a long measuring tape on the ground to show where she is in each image, and put a stopwatch in the camera's view to show the time. But where should the end of the tape go? And when should you start the stopwatch?</p><p>You get to choose! A coordinate system gives the location of the zero point of the variable you're studying, and the direction in which the values of that variable increase. Figure 6 shows a simplified motion diagram that uses dots for the moving runner and arrows to show her positions.</p>",
+   "testIt": {
+    "name": "Where is zero?",
+    "how": "Drag the zero marker along the road, and tap it to flip which way is positive. Watch the runner's position."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Keep your Science Journal handy and record the evidence you collect as you work through this lesson's readings and activities.</p><p>Online, try the Quick Investigation called Vector Models. You'll build and use a model to see what happens when you add vector quantities in one dimension. And keep thinking about the Encounter the Phenomenon question: what from this lesson helps you answer the unit and module questions?</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Origin, Axis, and Position",
+   "text": "<h3>Origin, Axis, and Position</h3><p class=\"p101-def\">Position is the distance and direction from the origin to an object.</p><p>The origin is the point where all the variables in a coordinate system have the value zero. For the runner in Figure 6, the origin, the zero point of the measuring tape, could be placed 6 meters to the left of the cactus. Because she moves in a straight line, the tape lies along that line. That straight line is an axis of the coordinate system.</p><p>To show how far the runner is from the origin at a certain time, draw an arrow from the origin to the dot that represents her. That arrow is her position: the distance and direction from the origin to the object.</p><p>Distance is a little different. In general, distance is the entire length of an object's path, even if the object moves in many directions. Since the runner in Figure 6 moves in only one direction, the arrow lengths also represent distance.</p>",
+   "testIt": {
+    "name": "Position and distance",
+    "how": "Tap the runner to move her and draw her position arrow. Try Turn around and compare distance with position."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Negative Position",
+   "text": "<h3>Negative Position</h3><p class=\"p101-def\">A position on the opposite side of the origin from the positive direction is negative.</p><p>Can a position be negative? Sure! Use the same setup, but this time put the origin 4 meters left of the cactus, with the x-axis pointing positive to the right.</p><p>Now think about a spot 9 meters left of the cactus. That's 5 meters left of the origin, so it's a negative position. In Figure 7, the green arrow shows a position of negative 5 meters, because we chose right of the origin as positive. If you had chosen left as positive instead, the very same arrow would show positive 5 meters. Whether a position is positive or negative depends on which direction you call positive.</p>",
+   "testIt": {
+    "name": "Which way is positive?",
+    "how": "Tap the button to switch the positive direction and watch the sign of the dot's position."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Vectors and Scalars",
+   "text": "<h3>Vectors and Scalars</h3><p class=\"p101-def\">A vector has both magnitude and direction; a scalar is just a number with no direction.</p><p>There are lots of ways to describe motion with numbers. If you're telling someone how far you ran, you might say 1.6 kilometers. But if you need to run to a specific place, you'd say 1.6 kilometers north.</p><p>Many quantities in physics have both a size, called magnitude, and a direction. A quantity with both magnitude and direction is called a vector. You can draw a vector as an arrow: the arrow's length shows its magnitude, and the way it points shows its direction. A quantity that's just a number with no direction, like distance, time, or temperature, is called a scalar. In this book, boldface letters stand for vectors and regular letters stand for scalars.</p><p>A quick word check. In science, magnitude means a measure of size, and when you draw vectors, a vector's magnitude is proportional to its length. In everyday talk, magnitude means great size or extent, as in \"the magnitude of the Grand Canyon is hard to capture in photographs.\"</p>",
+   "testIt": {
+    "name": "Vector or scalar?",
+    "how": "Drag each quantity card into the vector bin or the scalar bin."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Vectors as Models",
+   "text": "<h3>Vectors as Models</h3><p class=\"p101-def\">Vectors are a form of modeling.</p><p>Here's a crosscutting idea: systems and system models. Vectors are a way of modeling. Each arrow is a simple stand-in for a real movement from one place to another.</p><p>Try it with a partner. Make a vector drawing of a motion from one location to another, like your walk from the classroom door to your desk. Then add notes to your drawing explaining how you modeled that motion.</p>",
+   "testIt": {
+    "name": "Arrows as models",
+    "how": "Tap a room spot to draw an arrow from where you are, then tap Label to explain each arrow."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Time Intervals Are Scalars",
+   "text": "<h3>Time Intervals Are Scalars</h3><p class=\"p101-def\">A time interval is the difference between two times: delta t equals t final minus t initial.</p><p>How long did it take the runner in Figure 8 to get from the cactus to the lamppost? Just subtract the stopwatch reading at the cactus from the reading at the lamppost. The difference between two times is called a time interval.</p><p>We write a time interval as delta t. The Greek letter delta means \"change in.\" Let t sub i be the initial, or starting, time, when the runner was at the cactus, and t sub f be the final, or ending, time, when she was at the lamppost. Then delta t equals t sub f minus t sub i.</p><p>For the runner, going from the cactus to the lamppost takes 5.0 seconds minus 1.0 second, which is 4.0 seconds. But \"initial\" and \"final\" can be any times you pick. From the origin to the lamppost, the interval is 5.0 seconds minus 0.0 seconds, or 5.0 seconds.</p><p>A time interval has no direction, so it's a scalar. What about the runner's position? Is that a scalar too?</p>",
+   "testIt": {
+    "name": "Time interval",
+    "how": "Tap any two stopwatches. The first is t initial, the second is t final."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Positions Are Vectors",
+   "text": "<h3>Positions Are Vectors</h3><p class=\"p101-def\">A position is a vector with its tail at the origin and its tip at the object's location.</p><p>You've seen that a position can be positive or negative, to show whether it's right or left of the origin. That means position has direction, so position is a vector.</p><p>Look at Figure 9. It shows the runner at the cactus and at the lamppost, with an arrow from the origin to each spot. In everyday speech, a position is just a place. In physics it's more precise: a position is a vector with the arrow's tail at the origin of a coordinate system and its tip at the place.</p>"
+  },
+  "9": {
+   "layers": [],
+   "title": "Displacement",
+   "text": "<h3>Displacement</h3><p class=\"p101-def\">Displacement is the change in position: delta x equals x final minus x initial.</p><p>We use the symbol x for position vectors. In Figure 9, x sub i is the position at the cactus, and x sub f is the position at the lamppost. Delta x is the change in position from the cactus to the lamppost. Change in position comes up so often in physics that it gets its own name: displacement. Since displacement has both magnitude and direction, it's a vector.</p><p>So what was the runner's displacement from the cactus to the lamppost? Figure 9 shows it's 20 meters to the right. And notice: that displacement equals the position at the lamppost minus the position at the cactus. That's true in general. Displacement equals final position minus initial position, or delta x equals x sub f minus x sub i.</p><p>What about going the other way, from the lamppost back to the cactus? The displacement would be 20 meters to the left. Remember, the initial and final positions are just the start and end of whatever interval you choose. And although position is a vector, sometimes we write just its magnitude without boldface, using a plus or minus sign to show direction.</p>",
+   "testIt": {
+    "name": "Displacement",
+    "how": "Drag the start and end markers along the road and read the displacement and its direction."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Adding and Subtracting Vectors",
+   "text": "<h3>Adding and Subtracting Vectors</h3><p class=\"p101-def\">A resultant is a vector that represents the sum of two other vectors.</p><p>You'll meet lots of vectors in physics, including velocity, acceleration, and momentum. Often you'll need to add two vectors or find the difference between them. A vector that represents the sum of two other vectors is called a resultant.</p><p>Figure 10 shows how to combine vectors in one dimension, with a diagram or an equation. Vector A points 5 kilometers east. Vector B starts at the tip of A and points another 2 kilometers east. The resultant, R, runs from the start of A to the tip of B. In equation form, R equals A plus B, which is 5 kilometers plus 2 kilometers, or 7 kilometers east.</p><p>Same idea for any two vectors pointing the same way: 12 meters north plus 8 meters north gives 20 meters north. To subtract a vector, you add a vector of the same length pointing the opposite way. In a later module, you'll learn to add and subtract vectors in two dimensions.</p>",
+   "testIt": {
+    "name": "Tip to tail",
+    "how": "Drag B so its tail meets A's tip, or flip B to subtract, and read the resultant."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "STEM Career Connection, GIS Manager",
+   "text": "<h3>STEM Career Connection, GIS Manager</h3><p class=\"p101-def\">GIS managers lead teams that build geographic information systems.</p><p>Do you like computers, maps, and logistics? Then a career as a geographic information systems manager, or GIS manager, might be for you.</p><p>GIS managers work with teams that produce geographic information systems. These systems are used for road traffic management, health care delivery, defense planning, market research, and community services such as garbage collection and utilities delivery.</p>"
+  }
+ }
+}

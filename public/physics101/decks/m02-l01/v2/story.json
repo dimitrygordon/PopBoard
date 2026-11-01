@@ -1,0 +1,62 @@
+{
+ "slug": "m02-l01",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "All Kinds of Motion",
+   "text": "<h3>All Kinds of Motion</h3><p class=\"p101-def\">When an object is in motion, its position changes.</p><p>Here's our big question: how do you know that something is moving? You've already learned scientific processes that are useful in physics. Now it's time to use those tools to analyze motion, with words, sketches, diagrams, graphs, and equations.</p><p>What comes to mind when you hear the word motion? A spinning ride at an amusement park? A baseball soaring over the fence for a home run? Motion is everywhere, from fast trains and speedy skiers to slow breezes and lazy clouds. Things move in all sorts of ways: the straight path of a bowling ball in the gutter, the curved path of a car rounding a turn, the spiral of a falling kite, and the swirl of water circling a drain.</p><p>When an object is in motion, its position changes. Look at the train in Figure 1. It looks blurry because its position changed while the camera shutter was open.</p>",
+   "testIt": {
+    "name": "Shutter speed",
+    "how": "Drag the gold shutter knob from short to long, then take a photo. Only the moving train blurs."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Start Simple",
+   "text": "<h3>Start Simple</h3><p class=\"p101-def\">Begin with the least complicated situation, then add complexity to the model.</p><p>Some kinds of motion are more complicated than others. When you start a new area of study, it's smart to begin with the simplest situation, learn as much as you can about it, and then gradually add complexity to that simple model.</p><p>For motion, that simplest case is movement along a straight line. That's where we'll begin.</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Keep your Science Journal handy and record the evidence you collect as you work through the readings and activities in this lesson.</p><p>There are two activities to try online. In the PhysicsLAB called Motion Diagrams, you'll use a model to find patterns in motion. In Review the News, you'll find a current news story about motion capture technology, evaluate your source, and share what you learn with your class.</p>"
+  },
+  "4": {
+   "layers": [],
+   "title": "Movement Along a Straight Line",
+   "text": "<h3>Movement Along a Straight Line</h3><p class=\"p101-def\">Straight-line motion follows a path directly between two points without turning left or right.</p><p>An object can follow many kinds of paths, but straight-line motion goes directly between two points without turning left or right. You might describe it as forward and backward, up and down, or north and south. In each case, the object moves along a straight line.</p><p>Picture this. You're reading at home, and you glance at your pet hamster sitting in one corner of its cage. Later you look again, and now it's sitting next to the food dish in the opposite corner. You can infer that your hamster moved during the time between your two looks.</p><p>What helped you figure that out? Two things: where the hamster was, and when it was there. Describing motion means describing place and time. You have to answer where an object is located and when it is at that position.</p>",
+   "testIt": {
+    "name": "Two glances",
+    "how": "Tap Glance to look at the cage, wait, and glance again. Compare where and when."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Consecutive Images",
+   "text": "<h3>Consecutive Images</h3><p class=\"p101-def\">A series of images taken at equal time intervals shows an object's position over time.</p><p>Let's look at a runner jogging along a straight path. One way to represent her motion is with a series of images showing her position at equal time intervals. Each photograph shows the runner a little farther along the path.</p><p>Imagine pointing a camera in one direction, without moving it, as the runner crosses its view. You snap photos at equal time intervals. In Figure 2, the runner is in a different spot in each image, but the tree and everything else in the background stay put. That tells you that, relative to the camera and the ground, only the runner is moving.</p>",
+   "testIt": {
+    "name": "Snapshots",
+    "how": "Pick a time interval and tap Snap. Then flip through the frames to see what moved."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Motion Diagrams",
+   "text": "<h3>Motion Diagrams</h3><p class=\"p101-def\">A motion diagram is a series of images showing the positions of a moving object at equal time intervals.</p><p>Now stack those four runner photos on top of one another, as in Figure 3. You get a single picture showing the runner at every snapshot. A series of images showing the positions of a moving object at equal time intervals is called a motion diagram.</p>",
+   "testIt": {
+    "name": "Stack the frames",
+    "how": "Drag each snapshot frame up onto the park scene. Stacked together they make a motion diagram."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Particle Models",
+   "text": "<h3>Particle Models</h3><p class=\"p101-def\">In a particle model, you replace an object with a single point.</p><p>Tracking the runner gets much easier if you ignore her swinging arms and legs and focus on one point at the center of her body. In a particle model, you replace an object with a single point.</p><p>There's one condition: the object's size must be much less than the distance it moves. In the runner's motion diagram, you could pick a point at her waistline and draw a dot for her position at each time. The row of dots at the bottom of Figure 3 is the particle model of her motion. Because the dots are evenly spaced, you can see that her speed is not changing.</p>",
+   "testIt": {
+    "name": "Particle model",
+    "how": "Drag the dot onto the runner's waist in each frame. Then switch runners and compare the spacing."
+   }
+  }
+ }
+}

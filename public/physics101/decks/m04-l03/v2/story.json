@@ -1,0 +1,107 @@
+{
+ "slug": "m04-l03",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Interaction Pairs",
+   "text": "<h3>Interaction Pairs</h3><p class=\"p101-def\">An interaction pair is two forces that are opposite in direction, equal in magnitude, and act on different objects.</p><p>Our big question for this lesson: if you push on a wall, what force does the wall push back on you with? Let's find out with a tug-of-war. In Figure 14, a woman and a dog are both pulling on a toy. The woman pulls on the toy, and the toy pulls on the woman. Forces always come in pairs like this.</p><p>Treat the woman, A, as one system and the toy, B, as another. Each one exerts a force on the other: the force of A on B and the force of B on A. Together they form an interaction pair, a set of two forces that point in opposite directions, have equal magnitudes, and act on different objects.</p><p>You'll sometimes hear an interaction pair called an action-reaction pair. That name suggests one force causes the other, but that isn't true. The woman pulling on the toy doesn't cause the toy to pull on her. The two forces either exist together or not at all.</p>",
+   "testIt": {
+    "name": "Rope toy",
+    "how": "Drag the toy chip to pull harder and watch both arrows grow together."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Newton's Third Law",
+   "text": "<h3>Newton's Third Law</h3><p class=\"p101-def\">Newton's third law: the force of A on B is equal in magnitude and opposite in direction to the force of B on A.</p><p>In Figure 14, the force of the woman on the toy is equal in size and opposite in direction to the force of the toy on the woman. That's an example of Newton's third law, which states that all forces come in pairs. The two forces in a pair act on different objects, are equal in strength, and point in opposite directions.</p><p>As an equation: F sub A on B equals negative F sub B on A. The minus sign tells you the directions are opposite.</p><p>So, our focus question! When you push on a wall, the wall pushes back on you with a force of exactly the same size, in the opposite direction.</p>",
+   "testIt": {
+    "name": "Push the wall",
+    "how": "Set how hard to push; the wall always pushes back just as hard."
+   }
+  },
+  "3": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect during this lesson's readings and activities.</p><p>Online, the PhysicsLAB called Newton's Third Law has you plan and carry out an investigation that applies Newton's laws of motion to different systems. And in Review the News, you find a current news story about forces and motion, evaluate your source, and share what you learn with your class.</p>"
+  },
+  "4": {
+   "layers": [],
+   "title": "Finding Interaction Pairs",
+   "text": "<h3>Finding Interaction Pairs</h3><p class=\"p101-def\">Interaction pairs always appear in two different free-body diagrams, with swapped subscripts.</p><p>Picture holding a book in your hand. You can draw one free-body diagram for you and one for the book. Are there any interaction pairs? Here's the trick: interaction pairs always show up in two different free-body diagrams, and their subscripts are swapped, A on B and B on A. So here the pair is the force of the book on your hand and the force of your hand on the book.</p><p>Now look at the ball in Figure 15, which interacts with the table and with Earth. On the ball, the table pushes up and Earth's mass pulls down. Those forces point in opposite directions, but they're not an interaction pair, because they act on the same object.</p><p>Now consider the ball and table together. The table pushes up on the ball, and the ball pushes down on the table. That's an interaction pair. And the ball has weight. If Earth's mass pulls on the ball, then the ball must pull on Earth's mass. Those two forces are an interaction pair too: the force of Earth's mass on the ball equals negative the force of the ball on Earth's mass.</p>",
+   "testIt": {
+    "name": "Match the pairs",
+    "how": "Tap the chip to connect each force with its interaction partner."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Why Earth Barely Moves",
+   "text": "<h3>Why Earth Barely Moves</h3><p class=\"p101-def\">Earth's acceleration from everyday forces is tiny because its mass is huge.</p><p>If the ball pulls on Earth, why doesn't Earth move? An unbalanced force on Earth would make it accelerate. But acceleration is inversely proportional to mass. Earth's mass is enormous compared with the objects we usually study, so the same size force gives Earth an acceleration so small it can be ignored.</p><p>That's why we can often treat Earth as part of the external world instead of as a second system.</p>",
+   "testIt": {
+    "name": "Same force, tiny acceleration",
+    "how": "Tap the ball to change its mass and watch Earth's bar move on the log scale."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Problem-Solving Strategy, Interaction Pairs",
+   "text": "<h3>Problem-Solving Strategy, Interaction Pairs</h3><p class=\"p101-def\">Draw a free-body diagram for each system, connect interaction pairs, and apply Newton's second and third laws.</p><p>When objects in two different systems interact, try these steps. First, separate the system or systems from the external world. Second, draw a pictorial model with a coordinate system for each system. Third, draw a physical model with a free-body diagram for each system. Fourth, connect interaction pairs with dashed lines.</p><p>Fifth, to calculate your answer, use Newton's second law to relate net force and acceleration for each system. Sixth, use Newton's third law to set the magnitudes of interaction pairs equal and give each force's relative direction. Seventh, solve, and check that your answer's units, signs, and size are reasonable.</p>"
+  },
+  "7": {
+   "layers": [],
+   "title": "Example Problem 4, Earth's Acceleration",
+   "text": "<h3>Example Problem 4, Earth's Acceleration</h3><p class=\"p101-def\">The ball pulls on Earth as hard as Earth pulls on the ball, but Earth's acceleration is tiny.</p><p>A softball has a mass of 0.18 kilograms. What gravitational force does the ball exert on Earth, and what is Earth's resulting acceleration? Earth's mass is 6.0 times ten to the twenty-fourth kilograms.</p><p>Step one: analyze and sketch. Draw free-body diagrams for the two systems, the ball and Earth, and connect the interaction pair with a dashed line. Known: the ball's mass is 0.18 kilograms, g is 9.8 newtons per kilogram, and Earth's mass is 6.0 times ten to the twenty-fourth kilograms. Unknown: the force of Earth on the ball and Earth's acceleration.</p><p>Step two: solve. Use Newton's second law to find the ball's weight. The force of Earth on the ball equals the ball's mass times g: 0.18 kilograms times negative 9.8 newtons per kilogram, which is negative 1.8 newtons. Now use Newton's third law. The force of the ball on Earth equals negative the force of Earth on the ball, so it's positive 1.8 newtons. Finally, Newton's second law gives Earth's acceleration: net force over Earth's mass. Using the unrounded force, 1.76 newtons, over 6.0 times ten to the twenty-fourth kilograms, that's 2.9 times ten to the negative twenty-fifth meters per second squared, toward the softball.</p><p>Step three: evaluate. Force is in newtons and acceleration is in meters per second squared. The force and acceleration on Earth should both be positive, and they are. And it makes sense that Earth's acceleration is tiny, because Earth's mass is huge.</p>",
+   "testIt": {
+    "name": "Earth's acceleration",
+    "how": "Tap the ball mass chip and compare the force and Earth's acceleration."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Tension",
+   "text": "<h3>Tension</h3><p class=\"p101-def\">Tension is the specific name for the force that a string or rope exerts.</p><p>Tension is just a special name for the force a string or rope exerts. To keep things simple, this book assumes all strings and ropes are massless. In Figure 17, a rope holding a bucket is about to break in the middle. If it breaks, the bucket falls. Before then, forces must hold the rope together.</p><p>The top part of the rope pulls on the bottom part with a force we call F sub top on bottom. Newton's third law says this force has a partner: the bottom part pulls on the top part with F sub bottom on top. They're equal in size and opposite in direction.</p><p>Here's another way to see it. Before the rope breaks, the bucket is in equilibrium, so its weight pulling down equals the rope's tension pulling up. The point in the rope just above the bucket is in equilibrium too, so the rope below pulls down on it exactly as hard as the rope above pulls up. Move up the rope point by point, and at every spot the tension pulls equally both ways. So the tension in the rope equals the weight of all the objects hanging below it.</p>",
+   "testIt": {
+    "name": "Hang a mass",
+    "how": "Tap a mass to hang it and read the rope tension."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Tension in a Tug-of-War",
+   "text": "<h3>Tension in a Tug-of-War</h3><p class=\"p101-def\">When a rope isn't accelerating, its tension equals the force with which each end is pulled.</p><p>Look at Figure 18. If team A pulls with 500 newtons and the rope doesn't accelerate, team B must be pulling with 500 newtons too. So what's the tension in the rope? Is it 1000 newtons?</p><p>To decide, imagine the rope split into two halves. The left half isn't accelerating, so the net force on it is zero. That means the force of team A on the left side equals the force of the right side on the left side: 500 newtons. In the same way, the force of team B on the right side equals the force of the left side on the right side: 500 newtons.</p><p>But the force of the right side on the left side and the force of the left side on the right side are an interaction pair, so they're equal and opposite. That means the tension in the rope equals the force each team pulls with, 500 newtons, not 1000. To check, you could cut the rope, tie both ends to a spring scale, and the scale would read 500 newtons.</p>",
+   "testIt": {
+    "name": "Tug-of-war tension",
+    "how": "Set each team's pull and read the rope's tension."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Example Problem 5, Lifting a Bucket",
+   "text": "<h3>Example Problem 5, Lifting a Bucket</h3><p class=\"p101-def\">The tension in a rope lifting an accelerating load is m a plus m g.</p><p>A 50.0 kilogram bucket is being lifted by a rope. The rope won't break as long as the tension is 525 newtons or less. The bucket starts at rest, and after being lifted 3.0 meters, it's moving at 3.0 meters per second. If the acceleration is constant, is the rope in danger of breaking?</p><p>Step one: analyze and sketch. Draw the situation and identify the forces on the system. Set up a coordinate system with up as positive. Draw a motion diagram that includes v and a, and draw the free-body diagram with the forces labeled. Known: m is 50.0 kilograms, the initial velocity is 0.0 meters per second, the final velocity is 3.0 meters per second, and d is 3.0 meters. Unknown: the tension.</p><p>Step two: solve. The net force is the rope's upward tension plus the negative weight pulling down. So the tension equals F net plus F sub g, which is m a plus m g. We know the initial velocity, final velocity, and distance, so use final velocity squared equals initial velocity squared plus 2 a d. Since the bucket starts at rest, a equals final velocity squared over 2 d. Substituting, the tension equals m times final velocity squared over 2 d, plus m g. That's 50.0 kilograms times the square of 3.0 meters per second, over 2 times 3.0 meters, plus 50.0 kilograms times 9.8 newtons per kilogram. That works out to 75 newtons plus 490 newtons, or 565 newtons. Because the tension is more than 525 newtons, the rope is in danger of breaking!</p><p>Step three: evaluate. Dimensional analysis gives kilogram meters per second squared, which is a newton. The upward force should be positive, and it is. And the answer is a little more than 490 newtons, the bucket's weight, since F sub g equals 50.0 kilograms times 9.8 newtons per kilogram, or 490 newtons. That's realistic.</p>",
+   "testIt": {
+    "name": "Hoist the bucket",
+    "how": "Set the bucket's mass and final speed and watch the tension against the 525 N limit."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "The Normal Force",
+   "text": "<h3>The Normal Force</h3><p class=\"p101-def\">The normal force is the perpendicular contact force that a surface exerts on another surface.</p><p>Whenever two objects touch, they push on each other. Think of a box sitting on a table. Gravity pulls the box down, and the table pushes up on the box. That upward force has to exist, because the box is in equilibrium. It's called the normal force: the perpendicular contact force a surface exerts on another surface.</p><p>The normal force is always perpendicular to the surface of contact. But does it always equal the object's weight? Figure 19 shows three cases with boxes of the same weight. In the middle panel, a string pulls up on the box a little, not enough to lift it. Newton's second law gives F sub N plus F sub string on box minus F sub g equals m a, which equals 0 newtons. Rearranged, F sub N equals F sub g minus F sub string on box.</p><p>So in this case the table's normal force is less than the box's weight. And if you push down on the box, as in the last panel, the normal force is more than the box's weight. Finding the normal force will matter a lot when you study friction in detail.</p>",
+   "testIt": {
+    "name": "Normal force",
+    "how": "Tap to pull up or push down on the box and read the normal force."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Nature of Science, The Wandering Stones",
+   "text": "<h3>Nature of Science, The Wandering Stones</h3><p class=\"p101-def\">Scientists test hypotheses against data to find the source of a force.</p><p>Racetrack Playa in Death Valley, California, is a flat surface dotted with rocks and boulders of all sizes. Every so often the rocks move, leaving trails in the mud that show their paths. They've been called wandering stones, sliding rocks, slithering stones, and sailing stones. Some of the largest have a mass of more than 300 kilograms. Yet for a long time, no one had seen them move, and no one knew what force moved them.</p><p>Scientists proposed hypotheses. Some thought gravity pulled the rocks slowly down a slight slope. Others thought high winds occasionally shoved them. But the evidence didn't support either idea. Gravity was ruled out because data showed the rocks were moving up a slight slope, not downhill. High winds were ruled out because more massive rocks often moved farther than smaller ones.</p><p>To crack the case, researchers put GPS in fifteen rocks, set up a weather station to track wind speed and direction, and set up a camera to record video. The data showed that the rocks moved when a shallow pond formed and froze on the playa. As the ice started to melt, very thin floating sheets of ice were blown by light breezes. The ice sheets pushed against the rocks and made them slide, a bit like a sail moving a boat. Thin ice and gentle breezes were an unexpected answer to this mystery.</p><p>Now it's your turn. With a team, draw a free-body diagram of the forces on a sliding rock at Racetrack Playa. Show the directions of the acceleration and the net force, and next to your diagram, draw an illustration with a circle marking the system.</p>",
+   "testIt": {
+    "name": "Sliding rocks",
+    "how": "Tap wind only or wind plus ice and see whether the rock moves."
+   }
+  }
+ }
+}

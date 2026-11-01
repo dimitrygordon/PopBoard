@@ -1,5 +1,5 @@
 // Astronomy Course storybook reader: one deck slide per page, same words, same order, same art.
-import { DECKS } from "./ac-catalog.js";
+import { course, loadCatalog, pageKey, standardsLine } from "./ac-courses.js";
 import { renderSlide, readableHtml, noteHtml, boxText, esc } from "./ac-render.js";
 import { bindThemeButton, store, BACK_ICON, reduceMotion } from "./ac-common.js";
 import { EXTRAS, MODULES } from "./ac-extras.js";
@@ -10,17 +10,21 @@ import { mountDose } from "./ac-sb-dose.js";
 import { forwardStudyQuery } from "../board-return.js?v=20261022a";
 import { halfUnder } from "../shared/layout/layout.js";
 import { createPopup, darkInk, webglOk } from "./ac-popup.js";
-import { hasArt, mountArt, REVEAL } from "./ac-artscene.js";
+import { hasArt, mountArt, registerArt, REVEAL } from "./ac-artscene.js";
 import { mountFx } from "./ac-fx.js";
 import { createNarrator } from "./ac-narrate.js";
 import { mountPowers, mountEclipse, mountWaves, mountDoppler, mountGravity } from "./ac-sb-v2.js";
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
-const meta = DECKS.find((d) => d.slug === params.get("deck") && d.built) || DECKS.find((d) => d.built);
+const C = course();
+const DECKS = await loadCatalog(C);
+// A built storybook opens; a lesson still being written shows its "coming soon" page.
+const meta = DECKS.find((d) => d.slug === params.get(C.param) && d.built) || DECKS.find((d) => d.slug === params.get(C.param))
+  || DECKS.find((d) => d.built) || DECKS[0];
 let extra = EXTRAS[meta.slug] || { sandboxes: {}, tryIt: {}, choices: {} };
-const base = `astro-course/decks/${meta.slug}/`;
-const PAGE_KEY = "popboard.astronomy-course.page." + meta.slug;
+const base = `${C.root}decks/${meta.slug}/`;
+const PAGE_KEY = pageKey(C, meta.slug);
 const story = $("story"), stage = $("stage"), panel = $("panel");
 let deck = null, page = 1, mode = params.get("mode") === "sandbox" ? "sandbox" : "story", orbit = null;
 const answered = new Map(); // page -> chosen option
@@ -44,25 +48,25 @@ const ONPAGE = { rings: "Cosmic address rings (3D)", cannon: "Newton's cannon (3
   // D03 per-page scene modules (js/astro-scenes/d03)
   retrograde: "Copernicus's way (3D)", kepler2: "Kepler's 2nd law (3D)", venus: "Venus's phases (3D)", cannonball: "Newton's cannonball (3D)" };
 let v2 = null, popup = null, fxh = null, arth = null;
-const narrator = createNarrator($("narr"), "astro-course/");
+const narrator = createNarrator($("narr"), C.root);
 const sandboxKinds = () => [...new Set(Object.values(extra.sandboxes || {}))].filter((k) => SANDBOXES[k]);
 let sbKind = null;
 
-document.title = `${meta.title} // Astronomy Course`;
+document.title = `${meta.title} // ${C.name}`;
 $("deckTitle").textContent = meta.title;
 // re-render the open page so its 3D scene, labels and fog pick up the new paper colors
 bindThemeButton($("themeBtn"), () => { if (deck && mode === "story" && v2 && v2.slides[String(page)]) show(page, 0); });
 document.querySelector("#studyBackBtn .back-icon").outerHTML = BACK_ICON;
 $("studyBackBtn").addEventListener("click", () => {
   const qs = forwardStudyQuery(location.search).toString();
-  location.href = "study-astronomy-course.html" + (qs ? "?" + qs : "");
+  location.href = C.library + (qs ? "?" + qs : "");
 });
 
 function hasSandbox() { return sandboxKinds().length > 0; }
 
 function pageUrl() {
   const p = forwardStudyQuery(location.search);
-  p.set("deck", meta.slug);
+  p.set(C.param, meta.slug);
   if (mode === "sandbox") p.set("mode", "sandbox"); else p.set("page", page);
   return "?" + p.toString();
 }
@@ -145,6 +149,7 @@ function renderTools(s) {
   if (SANDBOXES[sb]) out.push(`<section class="tool"><h2 class="panel-h">${esc(SANDBOXES[sb].name)}</h2><div id="sbHost" data-kind="${sb}"></div></section>`);
   const sv2 = v2 && v2.slides[String(s.n)];
   if (sv2 && ONPAGE[sv2.three]) out.push(`<section class="tool"><h2 class="panel-h">${esc(ONPAGE[sv2.three] || "3D")}</h2><p class="note">Drag the 3D scene on the page.</p><div class="pop-ctl"></div></section>`);
+  if (sv2 && sv2.testIt) out.push(`<section class="tool test-it"><h2 class="panel-h">Test it: ${esc(sv2.testIt.name)}</h2><p class="note">${esc(sv2.testIt.how)}</p><div class="pop-ctl"></div><p class="feedback" aria-live="polite"></p></section>`);
   const ti = extra.tryIt && extra.tryIt[s.n];
   if (ti) out.push(`<section class="tool"><h2 class="panel-h">Try it</h2>${tryItCard(ti)}</section>`);
   return out.join("");
@@ -181,7 +186,9 @@ function show(n, dir = 0) {
     stage.innerHTML = inkVars(renderSlide(textOnly, { base, options: !!s.answer, choices: choice ? choice.options : null }));
     stage.classList.add("v2");
   } else { stage.classList.remove("v2"); stage.innerHTML = renderSlide(s, { base, options: !!s.answer, choices: choice ? choice.options : null }); }
-  stage.setAttribute("aria-label", `Page ${page} of ${total}: ${boxText(s.items.find((i) => i.t === "text") || { p: [] }).join(" ")}`);
+  // the lesson's standards line sits under the title on the first page, as on the library cover
+  if (page === 1 && standardsLine(meta)) stage.insertAdjacentHTML("beforeend", `<p class="ac-stds on-cover">${esc(standardsLine(meta))}</p>`);
+  stage.setAttribute("aria-label", `Page ${page} of ${total}: ${(sv && sv.title) || boxText(s.items.find((i) => i.t === "text") || { p: [] }).join(" ")}`);
   for (const b of stage.querySelectorAll(".ac-opt")) b.addEventListener("click", () => {
     const opt = b.dataset.opt, ok = choice ? opt === choice.answer : opt === s.answer;
     answered.set(s.n, { opt, ok }); markOptions(s);
@@ -259,6 +266,7 @@ function flipSheet(dir) {
 }
 function popPage(s, sv) {
   if (fxh) { fxh.destroy(); fxh = null; }
+  dropPageScene();
   if (arth) { arth.destroy(); arth = null; }
   // Inside-the-slide pages: full-bleed 3D, the words live in the side panel (bottom sheet on phones).
   // Hand-drawn art is the default: only pages with their own scene (a module or a built-in) go 3D.
@@ -280,11 +288,19 @@ function popPage(s, sv) {
   else if (art) {
     arth = mountArt(stage, base, meta.slug, pn, { still: reduceMotion() });
     writeOn(reduceMotion() ? 0 : REVEAL.labels);
+    if (sv.testIt && C.pageScenes) mountPageScene(pn, arth);
   } else {
     const nPop = sv.layers.filter((l) => !l.flat).length;
     const labelsAt = reduceMotion() ? 0 : Math.min(2.4, 0.2 * (nPop + 1) + 0.6);
     writeOn(labelsAt);
     fxh = mountFx(stage, sv.fx, sv.layers, reduceMotion() ? 0 : labelsAt);
+  }
+  if (sv.testIt && art) {
+    const tab = document.createElement("button");
+    tab.type = "button"; tab.className = "tryit-tab sketch"; tab.textContent = "Test it";
+    tab.setAttribute("aria-label", `Test it: ${sv.testIt.name}, controls are in the page tools`);
+    tab.addEventListener("click", (e) => { e.stopPropagation(); $("tools").querySelector(".pop-ctl input, .pop-ctl button")?.focus(); $("tools").querySelector(".test-it")?.scrollIntoView({ block: "nearest" }); });
+    stage.appendChild(tab);
   }
   // a sketched Try it tab on pages with a sandbox
   const kind = sv.sandbox;
@@ -297,7 +313,17 @@ function popPage(s, sv) {
     stage.appendChild(tab);
   }
 }
-let sceneMods = new Set();
+let sceneMods = new Set(), pageScene = null, pageSceneTok = 0;
+// A 2D Test it scene (Physics 101): moves the page's own cutouts, live text in an overlay, controls in the panel.
+async function mountPageScene(pn, art) {
+  const tok = ++pageSceneTok;
+  let mod; try { mod = await import(`../${C.pageScenes}${meta.slug}/${pn}.js`); } catch (e) { console.warn("page scene", pn, e); return; }
+  if (tok !== pageSceneTok || arth !== art) return;
+  const layer = document.createElement("div"); layer.className = "p-scene"; stage.appendChild(layer);
+  const say = (msg, ok) => { const f = $("tools").querySelector(".test-it .feedback"); if (f) { f.textContent = msg; if (ok == null) delete f.dataset.ok; else f.dataset.ok = ok ? 1 : 0; } };
+  pageScene = mod.default({ stage, layer, art, ui: moduleUi(), say, reduce: reduceMotion() }) || null;
+}
+function dropPageScene() { pageSceneTok++; if (pageScene && pageScene.destroy) pageScene.destroy(); pageScene = null; for (const l of stage.querySelectorAll(".p-scene")) l.remove(); }
 const webglReady = () => webglOk();
 // Short slide words become billboards floating in front of the art; long text stays in the panel only.
 function slideArt(s) { const im = (s.items || []).find((it) => it.t === "img" && /^s\d/.test(it.src)); return im ? base + im.src : ""; }
@@ -367,7 +393,7 @@ function buildSbMenu() {
 function buildToc() {
   const rows = [];
   deck.slides.forEach((s, i) => {
-    const words = boxText(s.items.find((it) => it.t === "text") || { p: [] }).join(" ").trim();
+    const words = s.title || boxText(s.items.find((it) => it.t === "text") || { p: [] }).join(" ").trim();
     const second = s.items.filter((it) => it.t === "text")[1];
     const head = /^(PART|HOOK|CHECK|EXIT|LEARNING|EARTH)/.test(words) && second ? `${words}: ${boxText(second).join(" ")}` : words;
     rows.push(`<li><button type="button" data-page="${i + 1}"><span class="n">${i + 1}</span>${esc(head.slice(0, 70))}</button></li>`);
@@ -432,11 +458,27 @@ stage.addEventListener("pointerup", (e) => {
 });
 addEventListener("resize", fit);
 
+// A lesson that is not drawn yet: its title, its module, and a note that the storybook is coming soon.
+function comingSoon() {
+  story.dataset.soon = "1";
+  for (const id of ["stageCap", "scrubRow", "toc", "sandboxBtn", "sbMenuBtn", "tiltBtn"]) $(id).hidden = true;
+  stage.innerHTML = `<div class="ac-soon"><p class="ac-soon-tag">${esc(C.group(meta))} \u00b7 ${esc(C.label(meta))}</p>
+    <h2>${esc(meta.title)}</h2>${standardsLine(meta) ? `<p class="ac-stds">${esc(standardsLine(meta))}</p>` : ""}<p class="ac-soon-sub">${esc(meta.sub)}</p><p class="ac-soon-badge">Coming soon</p></div>`;
+  stage.setAttribute("aria-label", `${meta.title}: this storybook is coming soon`);
+  $("readBox").hidden = true;
+  $("tools").innerHTML = `<section class="tool"><h2 class="panel-h">Coming soon</h2><p class="note">This storybook is being written. Check back soon.</p>
+    <p class="note"><a href="${esc(C.library)}">Back to the ${esc(C.name)} library</a></p></section>`;
+  fit();
+}
+
 (async function init() {
+  if (!meta.built) return comingSoon();
   const res = await fetch(base + "deck.json");
   deck = await res.json();
   try { const r2 = await fetch(base + "v2/story.json"); if (r2.ok) v2 = await r2.json(); } catch (e) { v2 = null; }
-  try { const r3 = await fetch("js/astro-scenes/manifest.json"); if (r3.ok) sceneMods = new Set((await r3.json())[meta.slug] || []); } catch (e) { sceneMods = new Set(); }
+  // layered art shipped as data (Physics 101): decks/<slug>/v2/art.json
+  if (C.pageScenes) try { const ra = await fetch(base + "v2/art.json"); if (ra.ok) registerArt(meta.slug, await ra.json()); } catch (e) { /* art stays off */ }
+  try { const r3 = C.scenes ? await fetch(C.scenes) : null; if (r3 && r3.ok) sceneMods = new Set((await r3.json())[meta.slug] || []); } catch (e) { sceneMods = new Set(); }
   if (v2) {
     // v2 sandboxes come from the deck's spec (story.json); Try it link-outs stay from EXTRAS.
     const sbs = {}; for (const [n, sv] of Object.entries(v2.slides)) if (sv.sandbox && SANDBOXES[sv.sandbox]) sbs[n] = sv.sandbox;

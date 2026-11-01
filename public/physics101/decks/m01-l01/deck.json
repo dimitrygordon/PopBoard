@@ -1,0 +1,207 @@
+{
+ "key": "M01-L01",
+ "ptw": 960.0,
+ "slides": [
+  {
+   "n": 1,
+   "title": "What Is Physics?",
+   "items": []
+  },
+  {
+   "n": 2,
+   "title": "Picture a Physicist",
+   "items": []
+  },
+  {
+   "n": 3,
+   "title": "Where Physics Can Take You",
+   "items": []
+  },
+  {
+   "n": 4,
+   "title": "Your Investigation Toolkit",
+   "items": []
+  },
+  {
+   "n": 5,
+   "title": "Scientific Methods",
+   "items": []
+  },
+  {
+   "n": 6,
+   "title": "State the Problem",
+   "items": []
+  },
+  {
+   "n": 7,
+   "title": "Research and Gather Information",
+   "items": []
+  },
+  {
+   "n": 8,
+   "title": "Form and Test a Hypothesis",
+   "items": []
+  },
+  {
+   "n": 9,
+   "title": "Analyze the Data",
+   "items": []
+  },
+  {
+   "n": 10,
+   "title": "Share Your Data",
+   "items": []
+  },
+  {
+   "n": 11,
+   "title": "Draw Conclusions",
+   "items": []
+  },
+  {
+   "n": 12,
+   "title": "Peer Review",
+   "items": []
+  },
+  {
+   "n": 13,
+   "title": "Being Objective",
+   "items": []
+  },
+  {
+   "n": 14,
+   "title": "Models",
+   "items": []
+  },
+  {
+   "n": 15,
+   "title": "Models of the Atom Through History",
+   "items": []
+  },
+  {
+   "n": 16,
+   "title": "High-Tech Models",
+   "items": []
+  },
+  {
+   "n": 17,
+   "title": "Scientific Theories",
+   "items": [
+    {
+     "t": "text",
+     "box": [
+      36.438,
+      6.889,
+      43.812,
+      12.333
+     ],
+     "anchor": "m",
+     "slot": 1,
+     "p": [
+      {
+       "al": "l",
+       "lh": 1.0,
+       "r": [
+        {
+         "x": "Greek philosophers proposed that objects fall because they seek their natural places. The more massive the object, the faster it falls.",
+         "sz": 15.0,
+         "c": "#3D3D3D",
+         "f": "Patrick Hand"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "text",
+     "box": [
+      36.438,
+      31.111,
+      43.812,
+      11.667
+     ],
+     "anchor": "m",
+     "slot": 2,
+     "p": [
+      {
+       "al": "l",
+       "lh": 1.0,
+       "r": [
+        {
+         "x": "Galileo showed that the speed at which an object falls depends on the amount of time for which that object has fallen and not on the object's mass.",
+         "sz": 15.0,
+         "c": "#3D3D3D",
+         "f": "Patrick Hand"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "text",
+     "box": [
+      36.438,
+      54.556,
+      43.812,
+      11.667
+     ],
+     "anchor": "m",
+     "slot": 3,
+     "p": [
+      {
+       "al": "l",
+       "lh": 1.0,
+       "r": [
+        {
+         "x": "Newton provided an explanation for why objects fall. Newton proposed that objects fall because the object and Earth are attracted by a force. Newton also stated that there is a force of attraction between any two objects with mass.",
+         "sz": 15.0,
+         "c": "#3D3D3D",
+         "f": "Patrick Hand"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "text",
+     "box": [
+      36.438,
+      78.0,
+      43.812,
+      12.0
+     ],
+     "anchor": "m",
+     "slot": 4,
+     "p": [
+      {
+       "al": "l",
+       "lh": 1.0,
+       "r": [
+        {
+         "x": "Einstein suggested that the force of attraction between two objects is due to mass causing the space around it to curve.",
+         "sz": 15.0,
+         "c": "#3D3D3D",
+         "f": "Patrick Hand"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "n": 18,
+   "title": "Scientific Laws",
+   "items": []
+  },
+  {
+   "n": 19,
+   "title": "Models as Systems",
+   "items": []
+  },
+  {
+   "n": 20,
+   "title": "The Limitations of Science",
+   "items": []
+  }
+ ]
+}

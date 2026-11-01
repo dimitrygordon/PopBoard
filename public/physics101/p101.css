@@ -1,0 +1,47 @@
+/* Physics 101 on the shared storybook engine: module strip colors, cover placeholders, the "coming soon" page. */
+/* One header strip color per module. M1 gold and M2 sage; M3 to M6 are quiet pencil tones until the final colors land. */
+:root { --p101-m1: #E2B654; --p101-m2: #B5C7A3; --p101-m3: #D98B6A; --p101-m4: #8FB3D9; --p101-m5: #B9A7D1; --p101-m6: #8CC5BE; }
+.lib-card[data-q="1"] .strip { background: var(--p101-m1); }
+.lib-card[data-q="2"] .strip { background: var(--p101-m2); }
+.lib-card[data-q="3"] .strip { background: var(--p101-m3); }
+.lib-card[data-q="4"] .strip { background: var(--p101-m4); }
+.lib-card[data-q="5"] .strip { background: var(--p101-m5); }
+.lib-card[data-q="6"] .strip { background: var(--p101-m6); }
+.lib-card .strip > span:first-child { white-space: nowrap; }
+.lib-card .cover-soon { display: grid; place-items: center; font-family: var(--ac-title-font); font-size: clamp(28px, 6vw, 40px); color: #6d6457;
+  background: repeating-linear-gradient(0deg, transparent 0 27px, rgba(91, 136, 184, 0.22) 27px 28px), var(--ac-card); }
+.ac-soon { position: absolute; inset: 0; display: grid; place-content: center; gap: 6px; padding: 6%; text-align: center; color: var(--ac-card-ink, #2f2b26); }
+.ac-soon h2 { margin: 0; font-family: var(--ac-title-font); font-weight: 700; font-size: clamp(26px, 5vw, 56px); line-height: 1.05; }
+.ac-soon-tag, .ac-soon-sub { margin: 0; color: #4a443b; font-size: clamp(15px, 2vw, 20px); }
+.ac-soon-badge { justify-self: center; margin: 10px 0 0; padding: 4px 14px; border: 2px solid var(--ac-accent); border-radius: 14px 6px 12px 8px; font-family: var(--ac-note-font); font-size: 18px; color: #2f2b26; }
+/* Standards line under a cover title: small handwritten lettering. */
+.lib-card .stds, .ac-soon .ac-stds { margin: 0; font-family: var(--ac-note-font); font-size: 14px; letter-spacing: 0.02em; color: #5a5348; }
+.ac-soon .ac-stds { font-size: clamp(13px, 1.6vw, 17px); color: #5a5348; }
+
+/* standards line under the title on a built lesson's first page (same lettering as the library cover) */
+.stage .ac-stds.on-cover { position: absolute; left: 3%; top: 2%; z-index: 3; margin: 0; padding: 0.15em 0.5em;
+  font-family: var(--ac-note-font, "Gochi Hand", cursive); font-size: calc(var(--u, 1px) * 13); color: #3d3d3d;
+  background: rgba(251, 246, 234, 0.85); border-radius: 0.4em; pointer-events: none; }
+:root[data-theme="dark"] .stage .ac-stds.on-cover { color: #f1e7cf; background: rgba(30, 36, 51, 0.85); }
+
+/* Test it scenes on hand-drawn pages: an overlay in 1600x900 page coordinates above the art */
+.stage .p-scene { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.stage .p-scene > * { position: absolute; }
+.stage .p-scene .hit { pointer-events: auto; cursor: grab; touch-action: none; background: transparent; border: 0; padding: 0; }
+.stage .p-scene .hit:focus-visible { outline: 3px solid #E2B654; outline-offset: 2px; border-radius: 6px; }
+.stage .p-scene .hit.dragging { cursor: grabbing; }
+.stage .p-scene .live { font-family: "Patrick Hand", cursive; color: #3d3d3d; line-height: 1.05; white-space: nowrap; }
+:root[data-theme="dark"] .stage .p-scene .live { color: #f1e7cf; }
+.stage .p-scene .live.card { color: #3d3d3d; text-align: center; display: grid; place-items: center; }
+.stage .p-scene .cap { font-family: "Patrick Hand", cursive; color: #3d3d3d; background: rgba(251, 246, 234, 0.9); border-radius: 0.5em; padding: 0.2em 0.6em; white-space: normal; }
+:root[data-theme="dark"] .stage .p-scene .cap { color: #f1e7cf; background: rgba(30, 36, 51, 0.9); }
+.stage .p-scene svg { overflow: visible; }
+.story .read .p101-def { font-family: var(--ac-head-font); font-size: 19px; border-left: 4px solid var(--p101-m1, #E2B654); padding-left: 10px; }
+.story .read .p101-slots { margin: 8px 0 0; padding-left: 22px; font-size: 16px; }
+.story .read .p101-slots li { margin-bottom: 4px; }
+/* Test it tab on hand-drawn pages: bottom right, clear of the art's titles */
+.stage.artpage .tryit-tab { top: auto; bottom: 3%; right: 2%; }
+/* Hand-drawn pages keep Leo's paper in dark mode (labels are baked in dark pencil), so words on the page stay dark ink */
+:root[data-theme="dark"] .stage.artpage.v2 [style*="--dc"] { color: var(--lc); }
+:root[data-theme="dark"] .stage.artpage .p-scene .live { color: #3d3d3d; }
+:root[data-theme="dark"] .stage.artpage .p-scene .cap { color: #3d3d3d; background: rgba(251, 246, 234, 0.9); }

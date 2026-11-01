@@ -25,6 +25,8 @@ export const ART = {
   },
 };
 export const hasArt = (deck, pn) => !!(ART[deck] && ART[deck][pn]);
+// A course can ship its layer list as data (decks/<slug>/v2/art.json) instead of code here.
+export function registerArt(deck, spec) { if (spec && typeof spec === "object") ART[deck] = { ...(ART[deck] || {}), ...spec }; }
 // reveal order from layers.json: pencil lines draw on, then the hatching colors in, then labels
 export const REVEAL = { lines: [0.2, 0.6], hatch: [0.8, 0.4], labels: 1.2 };
 
@@ -45,7 +47,16 @@ export function mountArt(stage, base, deck, pn, { still = false } = {}) {
     const o = (L.pulse || L.drift || {}).origin; if (o) el.style.transformOrigin = `${(o[0] - L.box[0]) / (L.box[2] - L.box[0]) * 100}% ${(o[1] - L.box[1]) / (L.box[3] - L.box[1]) * 100}%`;
     el.classList.add("art-l", "art-" + L.id); if (L.light) el.classList.add("art-light");
     if (!still) el.classList.add(L.draw ? "art-draw" : L.late ? "art-late" : "art-fade");
-    wrap.appendChild(el); return { L, el };
+    // cutouts (L.cut): objects a page scene can move; their gold pencil outline (L.hint) pulses until first touch
+    let hint = null;
+    if (L.cut && L.hint) {
+      const hb = L.hbox || L.box;
+      hint = Object.assign(document.createElement("img"), { src: base + "v2/art/" + L.hint, alt: "", draggable: false });
+      Object.assign(hint.style, { left: pct(hb[0], PAGE_W), top: pct(hb[1], PAGE_H), width: pct(hb[2] - hb[0], PAGE_W), height: pct(hb[3] - hb[1], PAGE_H) });
+      hint.className = "art-l art-hint"; hint.hidden = true; wrap.appendChild(hint);
+    }
+    if (L.cut) { el.classList.add("art-cut"); el.dataset.cut = L.id.replace(/^cut-/, ""); }
+    wrap.appendChild(el); return { L, el, hint, st: { dx: 0, dy: 0, rot: 0, scale: 1 } };
   });
   stage.prepend(wrap);
   let px = 0, py = 0, tx = 0, ty = 0, raf = 0, t0 = performance.now(), last = t0;
@@ -55,7 +66,8 @@ export function mountArt(stage, base, deck, pn, { still = false } = {}) {
     const t = (now - t0) / 1000, k = stage.clientWidth / PAGE_W;
     if (now - last > 5000) { tx = 0; ty = 0; } // idle: drift home
     px += (tx - px) * 0.08; py += (ty - py) * 0.08;
-    for (const { L, el } of els) {
+    for (const e of els) {
+      const { L, el } = e;
       // offset_px = clamp(pointer_norm * cap * factor, -cap, cap), in page px scaled to the stage
       let x = Math.max(-CAP, Math.min(CAP, px * CAP * L.f)), y = Math.max(-CAP, Math.min(CAP, py * CAP * L.f));
       if (L.orbit) {
@@ -76,10 +88,30 @@ export function mountArt(stage, base, deck, pn, { still = false } = {}) {
       if (L.pulse) extra = ` scale(${1 + L.pulse.scale * (0.5 + 0.5 * wave(L.pulse.period))})`;
       if (L.drift) { x += wave(L.drift.period) * L.drift.dx; y += wave(L.drift.period + 0.9) * L.drift.dy; extra = ` rotate(${wave(L.drift.period) * L.drift.rot}deg)`; }
       if (L.shimmer && t > 1.2) el.style.opacity = L.shimmer.min + (1 - L.shimmer.min) * (0.5 + 0.5 * wave(L.shimmer.period));
-      el.style.transform = `translate(${x * k}px, ${y * k}px)${extra}`;
+      paint(x, y, k, extra, e);
     }
     raf = requestAnimationFrame(frame);
   };
+  // st: where a page scene has moved a cutout (page px), on top of the parallax
+  function paint(x, y, k, extra, { el, hint, st }) {
+    const tr = `translate(${(x + st.dx) * k}px, ${(y + st.dy) * k}px)${st.rot ? ` rotate(${st.rot}deg)` : ""}${st.scale !== 1 ? ` scale(${st.scale})` : ""}${extra}`;
+    el.style.transform = tr; if (hint) hint.style.transform = tr;
+  }
+  const repaint = () => { if (still) { const k = stage.clientWidth / PAGE_W; for (const e of els) paint(0, 0, k, "", e); } };
   if (!still) raf = requestAnimationFrame(frame);
-  return { destroy() { cancelAnimationFrame(raf); stage.removeEventListener("pointermove", move); wrap.remove(); } };
+  const find = (id) => els.find((e) => e.L.id === id || e.L.id === "cut-" + id);
+  if (still) addEventListener("resize", repaint);
+  return {
+    wrap,
+    el: (id) => (find(id) || {}).el || null,
+    box: (id) => (find(id) || {}).L?.box || null,
+    // move a cutout by (dx, dy) page px; rot in degrees
+    set(id, o) { const e = find(id); if (!e) return; Object.assign(e.st, o); repaint(); },
+    get(id) { const e = find(id); return e ? { ...e.st } : null; },
+    show(id, on = true) { const e = find(id); if (e) { e.el.style.opacity = on ? "" : "0"; e.el.style.visibility = on ? "" : "hidden"; } },
+    // gold outline pulse on touchable cutouts, until the student first touches each one
+    touchable(ids) { for (const id of ids) { const e = find(id); if (e && e.hint && !e.touched) { e.hint.hidden = false; e.hint.classList.add("art-pulse"); } } },
+    touched(id) { const e = find(id); if (e) { e.touched = true; if (e.hint) { e.hint.classList.remove("art-pulse"); e.hint.hidden = true; } } },
+    destroy() { cancelAnimationFrame(raf); stage.removeEventListener("pointermove", move); removeEventListener("resize", repaint); wrap.remove(); },
+  };
 }
