@@ -69,10 +69,10 @@ export const DECKS = [
   "title": "Picturing Motion",
   "tag": "PHYSICS 101  ·  MODULE 2  ·  LESSON 1",
   "sub": "Module 2: Representing Motion",
-  "slides": 0,
+  "slides": 7,
   "pages": [],
   "standards": ["Science & Engineering Practices"],
-  "built": false
+  "built": true
  },
  {
   "key": "M02-L02",
@@ -83,10 +83,10 @@ export const DECKS = [
   "title": "Where and When?",
   "tag": "PHYSICS 101  ·  MODULE 2  ·  LESSON 2",
   "sub": "Module 2: Representing Motion",
-  "slides": 0,
+  "slides": 11,
   "pages": [],
   "standards": ["Science & Engineering Practices"],
-  "built": false
+  "built": true
  },
  {
   "key": "M02-L03",
@@ -97,10 +97,10 @@ export const DECKS = [
   "title": "Position-Time Graphs",
   "tag": "PHYSICS 101  ·  MODULE 2  ·  LESSON 3",
   "sub": "Module 2: Representing Motion",
-  "slides": 0,
+  "slides": 10,
   "pages": [],
   "standards": ["Science & Engineering Practices"],
-  "built": false
+  "built": true
  },
  {
   "key": "M02-L04",
@@ -111,10 +111,10 @@ export const DECKS = [
   "title": "How Fast?",
   "tag": "PHYSICS 101  ·  MODULE 2  ·  LESSON 4",
   "sub": "Module 2: Representing Motion",
-  "slides": 0,
+  "slides": 15,
   "pages": [],
   "standards": ["Science & Engineering Practices"],
-  "built": false
+  "built": true
  },
  {
   "key": "M03-L01",

@@ -55,3 +55,12 @@ export function tween(ms, step, reduce) {
 }
 export const ease = (t) => t * t * (3 - 2 * t);
 export const shift = (b, dx, dy) => [b[0] + dx, b[1] + dy, b[2] + dx, b[3] + dy];
+// Keep a handle over its cutout after a move: home box shifted by (dx, dy) page px.
+export function follow(h, home, dx = 0, dy = 0) { h.style.left = pct(home[0] + dx, W); h.style.top = pct(home[1] + dy, H); return h; }
+// A tappable area that reports the page px of each tap (for plotting on a grid or drawing on a plan).
+export function tapArea(ctx, box, label, fn) {
+  const b = add(ctx.layer, "button", "hit", box); b.type = "button"; b.setAttribute("aria-label", label);
+  b.addEventListener("click", (e) => { e.stopPropagation(); fn(e.detail === 0 ? [(box[0] + box[2]) / 2, (box[1] + box[3]) / 2] : toPage(ctx.stage, e)); });
+  return b;
+}
+export const clamp = (v, a, b) => Math.max(a, Math.min(b, v));

@@ -83,6 +83,43 @@ TEST_IT = {
     13: ("Predict the length", "Pick a mass and see the predicted length. Go past the data and watch out. Tap the 49 g mass for the book's example."),
     14: ("Pendulum clock", "Change the pendulum length and compare the clock with a reference clock. Tap the clock to reset."),
  },
+ "m02-l01": {
+    1: ("Shutter speed", "Drag the gold shutter knob from short to long, then take a photo. Only the moving train blurs."),
+    4: ("Two glances", "Tap Glance to look at the cage, wait, and glance again. Compare where and when."),
+    5: ("Snapshots", "Pick a time interval and tap Snap. Then flip through the frames to see what moved."),
+    6: ("Stack the frames", "Drag each snapshot frame up onto the park scene. Stacked together they make a motion diagram."),
+    7: ("Particle model", "Drag the dot onto the runner's waist in each frame. Then switch runners and compare the spacing."),
+ },
+ "m02-l02": {
+    1: ("Where is zero?", "Drag the zero marker along the road, and tap it to flip which way is positive. Watch the runner's position."),
+    3: ("Position and distance", "Tap the runner to move her and draw her position arrow. Try Turn around and compare distance with position."),
+    4: ("Which way is positive?", "Tap the button to switch the positive direction and watch the sign of the dot's position."),
+    5: ("Vector or scalar?", "Drag each quantity card into the vector bin or the scalar bin."),
+    6: ("Arrows as models", "Tap a room spot to draw an arrow from where you are, then tap Label to explain each arrow."),
+    7: ("Time interval", "Tap any two stopwatches. The first is t initial, the second is t final."),
+    9: ("Displacement", "Drag the start and end markers along the road and read the displacement and its direction."),
+    10: ("Tip to tail", "Drag B so its tail meets A's tip, or flip B to subtract, and read the resultant."),
+ },
+ "m02-l03": {
+    2: ("Plot Table 1", "Tap the grid to plot each point from Table 1, then drag the line's ends for the best fit."),
+    4: ("Path vs. graph", "Drag the time slider or press Play. The runner's path stays flat while the graph line rises."),
+    6: ("Linked views", "Drag the runner along the motion diagram. The matching table row and graph point light up."),
+    7: ("Read the graph", "Drag the gold guides to the line and read off the matching time or position."),
+    8: ("Two runners", "Set each runner's start and pace, then press Run and find where the lines cross."),
+    10: ("When does B pass A?", "Drag the point along line B until it meets line A."),
+ },
+ "m02-l04": {
+    1: ("Two joggers", "Set each jogger's pace and press Race. Compare the distance in 3 s and the time for 100 m."),
+    3: ("Slope finder", "Drag the two gold pickers onto a line to see the rise, the run, and the slope."),
+    5: ("Sign of the slope", "Pick +5.0 or -5.0 m/s and a start position, then press Go and watch the line tilt."),
+    7: ("Same average, different paths", "Tap Reveal to show each hidden path. They all share the same start, end and time."),
+    8: ("Paintbrush cars", "Set both car speeds and press Paint. The stripes become each car's velocity arrows."),
+    9: ("Speed records", "Work out each record holder's average speed, pick the right answer, then race them."),
+    10: ("Skateboarder", "Tap the skater to roll, then drag the two pickers onto the line to find her average velocity."),
+    12: ("The position equation", "Drag the v-bar and x-initial knobs and watch the line and the equation change."),
+    13: ("Where is point C?", "Set the velocity and the time past B, then tap the motorcyclist to ride."),
+ },
+
 }
 
 def inline(t):
