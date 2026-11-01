@@ -3,7 +3,7 @@
 import { add, handle, fontPx } from "../kit.js";
 export default function build(ctx) {
   const { art, ui, say, layer } = ctx;
-  const lcd = fontPx(add(layer, "div", "cap", [680, 585, 955, 650], ""), 34);
+  const lcd = fontPx(add(layer, "div", "cap", [639, 574, 989, 650], ""), 34);
   Object.assign(lcd.style, { background: "#C9D6A3", color: "#1F2F5C", textAlign: "center", fontFamily: "ui-monospace, monospace" });
   let zero = 2.3, span = 1.015, on = false, p1 = false, p2 = false;
   const read = () => (on ? 200 * span : 0) + zero;

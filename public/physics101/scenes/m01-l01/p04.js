@@ -1,13 +1,10 @@
 // Measuring Change: measured points appear one at a time, then the student predicts the next value and
 // reveals it. The animated violet trend-line overlay is off while Leo redraws this graph.
-import { add, fontPx } from "../kit.js";
 const PTS = [1, 2, 3, 4, 5].map((i) => "point-" + i);
 export default function build(ctx) {
-  const { art, ui, say, layer, reduce } = ctx, timers = [];
+  const { art, ui, say, reduce } = ctx, timers = [];
   for (const id of [...PTS, "predicted-point", "trend-line"]) art.show(id, false);
-  // axis titles are live text (Leo's note); the graph's axes are drawn in the mid art
-  fontPx(add(layer, "div", "live", [92, 120, 260, 150], "distance (m)"), 26);
-  fontPx(add(layer, "div", "live", [520, 400, 700, 432], "time (s)"), 26);
+  // axis labels are drawn into the graph art
   let shown = 0;
   const next = () => {
     if (shown >= 5) return;

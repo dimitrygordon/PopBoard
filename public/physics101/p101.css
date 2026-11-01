@@ -100,9 +100,9 @@
 :root[data-module="24"] { --mod-accent: var(--p101-m24); }
 :root[data-theme="dark"][data-course="physics101"] button[aria-pressed="true"], :root[data-theme="dark"][data-course="physics101"] button[aria-selected="true"] { color: #1F1D1A; }
 
-/* ---- No lined paper behind Physics 101 pages: Leo's bg layer (ruled lines, punch dots) is hidden; the page is plain cream, or charcoal in dark mode.
+/* ---- Physics 101 pages: Leo's bg layer is plain cream with ground shading. In dark mode the art sits as a cream card (bg at --slide-art-filter, radius and border from --slide-art-*) on the charcoal page.
    p101.css loads only on the Physics 101 pages, so Astronomy keeps its notebook paper. ---- */
-.stage.artpage .art-scene .art-bg { display: none; }
 .stage.artpage, .stage.artpage .art-scene { background-color: #FBF6EA; background-image: none !important; }
 .lib-card .cover-soon { background: var(--ac-card); }
-:root[data-theme="dark"] .stage.artpage, :root[data-theme="dark"] .stage.artpage .art-scene { background-color: #1F1D1A; }
+:root[data-theme="dark"] .stage.artpage { background-color: #1F1D1A; }
+:root[data-theme="dark"] .stage.artpage .art-scene { background-color: #FBF6EA; border-radius: var(--slide-art-radius); overflow: hidden; }
