@@ -9,7 +9,7 @@
    "text": "<h3>Change One Thing at a Time</h3><p class=\"p101-def\">In an experiment, change only one factor at a time.</p><p>Our question for this lesson: how do graphs help scientists analyze data? Before we graph anything, we need good data, and that starts with one golden rule. When you run an experiment, change only one factor at a time.</p><p>Table 3 shows the length of a spring with different masses hanging from it. With 0 grams, the spring is 13.7 centimeters long. Then, going up by 5 grams each time: 14.1, 14.5, 14.9, 15.3, 15.7, 16.0, and finally 16.4 centimeters at 35 grams.</p><p>Only the mass changes. If you hung different masses from different kinds of springs, you'd have no way of knowing how much of each difference came from the mass and how much came from the spring.</p>",
    "testIt": {
     "name": "Hang the masses",
-    "how": "Tap the mass set to hang 5 g at a time and fill the table. Then try swapping the spring too."
+    "how": "Drag the mass set up to the hook (or tap it) to hang 5 g at a time and fill the table. Then try swapping the spring too."
    }
   },
   "2": {
@@ -78,7 +78,7 @@
    "text": "<h3>Nonlinear and Quadratic Relationships</h3><p class=\"p101-def\">A quadratic relationship exists when one variable depends on the square of another.</p><p>Not every graph is a straight line. This one shows how far a brass ball falls over time, and it curves. That means the relationship is nonlinear. Science is full of nonlinear relationships, and two of the most common are quadratic and inverse.</p><p>The falling ball graph is quadratic, also called parabolic. A quadratic relationship exists when one variable depends on the square of another. The general equation is y equals a x squared plus b x plus c.</p><p>A computer program or graphing calculator can easily find the constants a, b, and c. For the falling ball, the equation is d equals 5 t squared, where d is the distance in meters and t is the time in seconds. For more on making and using line graphs, check the Math Skill Handbook in the back of the book or online.</p>",
    "testIt": {
     "name": "Ball drop timer",
-    "how": "Tap the clamp to drop the ball. Points plot every quarter second, then overlay the curve d = 5t²."
+    "how": "Tap the ball to drop it. Points plot every quarter second, then overlay the curve d = 5t²."
    }
   },
   "11": {

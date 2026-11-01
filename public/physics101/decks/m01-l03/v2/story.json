@@ -14,7 +14,7 @@
    "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate mass, volume, and density.</p><p>Keep your Science Journal open as you go, and record the evidence you collect from the readings and activities in this lesson.</p><p>In the PhysicsLAB called Mass and Volume, you'll carry out an investigation to figure out the relationship between mass, volume, and density. You can find it, and more resources, online.</p>",
    "testIt": {
     "name": "Mass and volume",
-    "how": "Tap a sample on the tray, weigh it, measure its volume, and look for the pattern."
+    "how": "Tap a sample, then drag the tray onto the balance and onto the cylinder. Record each sample and look for the pattern."
    }
   },
   "3": {
@@ -46,7 +46,7 @@
    "text": "<h3>Precision</h3><p class=\"p101-def\">Precision is the degree of exactness of a measurement.</p><p>Precision and accuracy both describe measured values, but they're not the same thing. Let's start with precision, the degree of exactness of a measurement.</p><p>Of our three students, student 3's measurements are the most precise, within plus or minus 0.1 centimeters. Students 1 and 2 are less precise because their uncertainties are bigger: plus or minus 0.2 centimeters for student 1, and plus or minus 0.3 centimeters for student 2.</p><p>Precision depends on the instrument and the technique you use. Generally, the device with the finest divisions on its scale gives the most precise measurement. The precision of a measurement is one half the smallest division on the instrument. So a graduated cylinder with one-milliliter divisions lets you measure to within 0.5 milliliters.</p>",
    "testIt": {
     "name": "Cylinder or beaker?",
-    "how": "Tap the dropper to add liquid, then tap the cylinder or the beaker and compare how precise each reading is."
+    "how": "Drag the dropper over the cylinder or the beaker to add liquid, and compare how precise each reading is."
    }
   },
   "7": {
@@ -69,7 +69,7 @@
    "text": "<h3>Two-Point Calibration</h3><p class=\"p101-def\">Two-point calibration checks that an instrument reads zero correctly and reads an accepted standard correctly.</p><p>So how can you check the accuracy of your measurements? A common method for checking an instrument is called the two-point calibration.</p><p>Point one: does the instrument read zero when it should? Point two: does it give the correct reading when it measures an accepted standard? Regular accuracy checks like these are done on critical instruments, such as the machines that deliver radiation to treat cancer.</p>",
    "testIt": {
     "name": "Calibrate the scale",
-    "how": "Zero the empty scale, tap the standard mass onto the pan, and adjust until both checks pass."
+    "how": "Zero the empty scale, drag the standard mass onto the pan, and adjust until both checks pass."
    }
   },
   "10": {

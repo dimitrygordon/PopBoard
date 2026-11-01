@@ -8,10 +8,17 @@ export default function build(ctx) {
   let zero = 2.3, span = 1.015, on = false, p1 = false, p2 = false;
   const read = () => (on ? 200 * span : 0) + zero;
   const show = () => { lcd.textContent = read().toFixed(1) + " g"; p2 = on && p1 && Math.abs(read() - 200) < 0.05; };
-  const place = (v) => { on = v; art.set("standard-mass", on ? { dx: -584, dy: -230 } : { dx: 0, dy: 0 }); show(); };
-  handle(ctx, art.box("standard-mass"), "Standard mass, 200.0 g: tap to put it on or take it off", {}).addEventListener("click", () => {
-    art.touched("standard-mass"); place(!on);
-    say(on ? (p1 ? `With the 200.0 g standard on, it reads ${read().toFixed(1)} g. Adjust the span until it matches.` : `It reads ${read().toFixed(1)} g, but the zero has not been checked yet. Take it off and zero the scale first.`) : `Empty pan reads ${read().toFixed(1)} g.`, p2);
+  const M = art.box("standard-mass"), PAN = [-570, -230]; // offset that sets the standard on the pan
+  const msg = () => say(on ? (p1 ? `With the 200.0 g standard on, it reads ${read().toFixed(1)} g. Adjust the span until it matches.` : `It reads ${read().toFixed(1)} g, but the zero has not been checked yet. Take it off and zero the scale first.`) : `Empty pan reads ${read().toFixed(1)} g.`, p2);
+  const place = (v) => { on = v; art.set("standard-mass", on ? { dx: PAN[0], dy: PAN[1] } : { dx: 0, dy: 0 }); h.style.left = ((M[0] + (on ? PAN[0] : 0)) / 16) + "%"; h.style.top = ((M[1] + (on ? PAN[1] : 0)) / 9) + "%"; show(); };
+  let from = [0, 0];
+  const h = handle(ctx, M, "Standard mass, 200.0 g: drag it onto the pan or off again", {
+    start: () => { art.touched("standard-mass"); from = on ? PAN : [0, 0]; },
+    move: (dx, dy) => art.set("standard-mass", { dx: from[0] + dx, dy: from[1] + dy }),
+    end: (dx, dy) => {
+      const x = (M[0] + M[2]) / 2 + from[0] + dx, tap = Math.hypot(dx, dy) < 12;
+      place(tap ? !on : x < 1150); msg();
+    },
   });
   ui.button("Zero the scale (point one)", () => {
     if (on) return say("Take the standard off first: point one checks the empty pan.");
