@@ -115,3 +115,13 @@ test("standards line: codes joined with a middle dot, empty when none, shown und
   assert.match(story, /<h2>\$\{esc\(meta\.title\)\}<\/h2>\$\{standardsLine\(meta\)/);
   assert.match(css, /\.stds[^{]*\{[^}]*--ac-note-font/);
 });
+
+test("library strips: short M# \u00b7 L# label, one color variable per module", () => {
+  const p = COURSES.physics101;
+  assert.equal(p.strip(DECKS[5]), "M2 \u00b7 L2");
+  assert.equal(p.group(DECKS[5]) + " \u00b7 " + p.label(DECKS[5]), "Module 2 \u00b7 Lesson 2");
+  assert.equal(COURSES.astronomy.strip, null);
+  const css = read("physics101/p101.css");
+  assert.match(css, /--p101-m1:\s*#E2B654/i);
+  for (let m = 1; m <= 6; m++) assert.match(css, new RegExp(`data-q="${m}"\\] \\.strip \\{ background: var\\(--p101-m${m}\\)`));
+});

@@ -33,7 +33,7 @@ function card(d, hit) {
     ? (hit && hit.page ? `Opens on page ${hit.page}` : last > 1 ? `Pick up on page ${last} of ${d.slides}` : `${d.slides} pages`)
     : d.slides ? `${d.slides} pages \u00b7 being drawn` : "Coming soon";
   return `<li><${tag} class="lib-card" data-q="${d.q}" ${attrs}>
-    <span class="strip"><span>${esc(C.group(d))} \u00b7 ${esc(C.label(d))}</span><span class="badge">${d.built ? "Storybook" : "Coming soon"}</span></span>
+    <span class="strip"><span>${esc(C.strip ? C.strip(d) : `${C.group(d)} \u00b7 ${C.label(d)}`)}</span><span class="badge">${d.built ? "Storybook" : "Coming soon"}</span></span>
     ${C.covers ? `<img class="cover" src="${C.root}covers/${d.slug}.webp" alt="" loading="lazy" decoding="async" width="960" height="540">` : `<span class="cover cover-soon" aria-hidden="true"><span>${esc(d.key)}</span></span>`}
     <div class="body"><h2>${esc(d.title)}</h2>${standardsLine(d) ? `<span class="stds">${esc(standardsLine(d))}</span>` : ""}<span class="sub">${esc(d.sub)}</span>
     ${hit && hit.snippet ? `<span class="hit">Page ${hit.page}: ${esc(hit.snippet)}</span>` : ""}

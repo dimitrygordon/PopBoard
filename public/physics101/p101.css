@@ -1,6 +1,13 @@
 /* Physics 101 on the shared storybook engine: module strip colors, cover placeholders, the "coming soon" page. */
-.lib-card[data-q="5"] .strip { background: #f0cdbf; }
-.lib-card[data-q="6"] .strip { background: #d6e6e0; }
+/* One header strip color per module. M1 gold and M2 sage; M3 to M6 are quiet pencil tones until the final colors land. */
+:root { --p101-m1: #E2B654; --p101-m2: #B5C7A3; --p101-m3: #CFCAC0; --p101-m4: #C3C8CF; --p101-m5: #D3C6BC; --p101-m6: #C2CBC6; }
+.lib-card[data-q="1"] .strip { background: var(--p101-m1); }
+.lib-card[data-q="2"] .strip { background: var(--p101-m2); }
+.lib-card[data-q="3"] .strip { background: var(--p101-m3); }
+.lib-card[data-q="4"] .strip { background: var(--p101-m4); }
+.lib-card[data-q="5"] .strip { background: var(--p101-m5); }
+.lib-card[data-q="6"] .strip { background: var(--p101-m6); }
+.lib-card .strip > span:first-child { white-space: nowrap; }
 .lib-card .cover-soon { display: grid; place-items: center; font-family: var(--ac-title-font); font-size: clamp(28px, 6vw, 40px); color: #6d6457;
   background: repeating-linear-gradient(0deg, transparent 0 27px, rgba(91, 136, 184, 0.22) 27px 28px), var(--ac-card); }
 .ac-soon { position: absolute; inset: 0; display: grid; place-content: center; gap: 6px; padding: 6%; text-align: center; color: var(--ac-card-ink, #2f2b26); }

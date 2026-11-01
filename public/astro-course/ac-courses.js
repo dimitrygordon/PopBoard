@@ -15,6 +15,7 @@ export const COURSES = {
     covers: true,
     group: (d) => `Q${d.q}`,
     label: (d) => d.key.replace(/^D0?/, "Deck "),
+    strip: null,
     unit: "storybooks"
   },
   physics101: {
@@ -30,6 +31,8 @@ export const COURSES = {
     covers: false,
     group: (d) => `Module ${d.q}`,
     label: (d) => `Lesson ${d.lesson}`,
+    // short header strip on library cards ("M2 \u00b7 L2") so it never wraps; covers keep the long label
+    strip: (d) => `M${d.q} \u00b7 L${d.lesson}`,
     unit: "lesson storybooks"
   }
 };
