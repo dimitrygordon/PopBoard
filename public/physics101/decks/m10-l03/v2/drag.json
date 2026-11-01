@@ -1,0 +1,134 @@
+{
+ "p03": {
+  "items": [
+   {
+    "id": "obj-ball",
+    "label": "ball"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p04": {
+  "items": [
+   {
+    "id": "ramp",
+    "label": "final speed"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p05": {
+  "items": [
+   {
+    "id": "obj-ball",
+    "label": "ball"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p06": {
+  "items": [
+   {
+    "id": "hill",
+    "label": "energy bars"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p07": {
+  "items": [
+   {
+    "id": "ex5",
+    "label": "speed readout"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p09": {
+  "items": [
+   {
+    "id": "obj-cart",
+    "label": "cart"
+   },
+   {
+    "id": "obj-cart2",
+    "label": "second cart"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p10": {
+  "items": [
+   {
+    "id": "carts",
+    "label": "KE before and after"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p11": {
+  "items": [
+   {
+    "id": "ex6",
+    "label": "KE lost"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ }
+}

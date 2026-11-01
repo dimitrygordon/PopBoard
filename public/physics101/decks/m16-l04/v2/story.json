@@ -1,0 +1,152 @@
+{
+ "slug": "m16-l04",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Types of Lenses",
+   "text": "<h3>Types of Lenses</h3><p class=\"p101-def\">A lens is a piece of transparent material that focuses light and forms an image.</p><p>Our big question for this lesson: how are systems of lenses used to make optical devices? Refraction has been helping people for a long time. In 1303, the French physician Bernard of Gordon wrote about using lenses to correct eyesight. Around 1610, Galileo used a two-lens telescope to discover the four major moons of Jupiter. Since then, lenses have gone into microscopes, cameras, and much more.</p><p>A lens is a piece of transparent material that focuses light and forms an image. Each of its two faces can be curved or flat. A lens that's thicker in the middle than at the edges is a convex lens, like the left of Figure 27. Surrounded by something with a lower index of refraction, such as air, it bends parallel rays so they all pass through one point, the focal point. That's why a convex lens is also called a converging lens.</p><p>A lens that's thinner in the middle than at the edges is a concave lens, like the right of Figure 27. In air, it spreads rays apart, so it's called a diverging lens. We could trace every ray using Snell's law at both surfaces, but to keep things simple we use the thin lens model: we pretend all the bending happens at the principal plane, through the lens's center.</p>",
+   "testIt": {
+    "name": "Reshape",
+    "how": "Tap to reshape the lens."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson.</p><p>Online, the Virtual Investigation called Ray Tracing for Lenses lets you use a computer model to see how a lens's properties change the way light passes through it. And for Review the News, find a current news story about a technology that uses light, evaluate your source, and share what you learn with your class.</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Convex Lenses, Object Beyond 2F",
+   "text": "<h3>Convex Lenses, Object Beyond 2F</h3><p class=\"p101-def\">An object more than twice the focal length from a convex lens forms a real, inverted, reduced image.</p><p>Just like with mirrors, we find images with ray diagrams, and any two rays will do. Here x sub o is the object's distance from the lens and x sub i is the image's distance. In the thin lens model, light bends at the center of the lens, not at its surfaces.</p><p>In Figure 28, the object is far away, beyond 2F. Ray 1 travels parallel to the principal axis, refracts, and passes through the focal point, F, on the other side. Ray 2 passes through F on the object's side, refracts, and leaves parallel to the axis. The two rays cross beyond F, and that's where the image is. Rays from other points on the object build the rest of the image. It's real, inverted, and smaller than the object.</p><p>What if the object sits exactly at 2F, twice the focal length away? Then the image is real and forms at 2F on the other side, and by symmetry it's the same size as the object. So any object farther than 2F gives an image smaller than the object.</p>",
+   "testIt": {
+    "name": "Beyond 2F",
+    "how": "Slide the object from far away to 2F (f = 10 cm)."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Convex Lenses, Object Between F and 2F, and at F",
+   "text": "<h3>Convex Lenses, Object Between F and 2F, and at F</h3><p class=\"p101-def\">An object between F and 2F forms a real, inverted, enlarged image; an object at F forms no image.</p><p>Figure 29 shows an object between F and 2F. It's like the last diagram with the object and image swapped and the rays running backward. The image is still real and inverted, but now it's enlarged.</p><p>Move the object to exactly the focal point, and something odd happens. The refracted rays leave the lens as a parallel beam. They never meet, so no image forms, and we can't draw one.</p>",
+   "testIt": {
+    "name": "F to 2F",
+    "how": "Push the object from 2F toward F (f = 10 cm)."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Convex Lenses, Object Inside F",
+   "text": "<h3>Convex Lenses, Object Inside F</h3><p class=\"p101-def\">An object between a convex lens and its focal point forms a virtual, upright, enlarged image.</p><p>In Figure 30, the object is between F and the lens. Ray 1, as usual, comes in parallel to the axis and refracts through F. Ray 2 leaves the tip of the object along the line it would have if it had started at F on the object side; the dashed line shows you how to draw it. Ray 2 leaves the lens parallel to the axis.</p><p>Now the two rays spread apart as they leave the lens, so no real image is possible. To an observer, the refracted light seems to come from a spot on the same side of the lens as the object. Trace the sight lines back, and they meet at a virtual image that's upright and larger than the object. That's a magnifying glass!</p><p>Here's a handy rule: for a single lens, a real image forms on the opposite side of the lens from the object, and a virtual image appears on the same side as the object. And even though the real light does pass through the lens, you can locate the image with rays drawn anywhere, as long as they follow the rules.</p>",
+   "testIt": {
+    "name": "Magnifier",
+    "how": "Move the magnifier (f = 10 cm) over small text."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Concave Lenses",
+   "text": "<h3>Concave Lenses</h3><p class=\"p101-def\">A concave lens always forms a virtual, upright, reduced image and has a negative focal length.</p><p>A concave lens makes every ray spread out. In Figure 31, ray 1 comes in parallel to the axis and leaves along a line that traces back through the focal point on the object side. For a concave lens, the focal point is on the same side as the incoming light. Ray 2 heads toward the focal point on the far side, but leaves parallel to the axis.</p><p>The refracted rays diverge, but their sight lines meet on the object's side of the lens. That's the image: virtual, upright, and smaller than the object, no matter where the object is. Why always virtual? Because the lens spreads every ray apart, refracted rays can never actually meet; only their sight lines can. The focal length of a diverging lens is negative.</p>",
+   "testIt": {
+    "name": "Concave lens",
+    "how": "Move an object in front of a concave lens (f = −10 cm)."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "The Thin Lens Equation",
+   "text": "<h3>The Thin Lens Equation</h3><p class=\"p101-def\">One over f equals one over x sub i plus one over x sub o.</p><p>For thin lenses with spherical faces, the math looks exactly like the mirror equation. The thin lens equation says the inverse of the focal length equals the sum of the inverses of the image position and the object position: one over f equals one over x sub i plus one over x sub o.</p><p>Watch the signs. For lenses, virtual images are on the same side as the object, so their image position is negative. A concave lens has a negative focal length: if its focal point is 24 centimeters from the lens, use f equals negative 24 centimeters. Every image from a concave lens is virtual, so an image 20 centimeters from the lens means x sub i equals negative 20 centimeters. The object position is always positive.</p>",
+   "testIt": {
+    "name": "Thin lens",
+    "how": "Enter f (negative for concave) and x_o."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Magnification and Lens Summary",
+   "text": "<h3>Magnification and Lens Summary</h3><p class=\"p101-def\">m equals h sub i over h sub o, which equals negative x sub i over x sub o.</p><p>Magnification tells how much bigger or smaller the image is than the object, and the mirror equation works for lenses too: m equals h sub i over h sub o, which equals negative x sub i over x sub o. If the absolute value of m is between zero and one, the image is smaller. If it's greater than one, the image is larger. A negative m means the image is inverted.</p><p>Table 3 sums up single lenses. A convex lens has a positive focal length. With the object beyond 2f, the image is between f and 2f, reduced, inverted, and real. With the object between 2f and f, the image is beyond 2f, enlarged, inverted, and real. With the object between f and the lens, the image position is negative, and the image is enlarged and virtual. A concave lens has a negative focal length. For any object, the image is between the focal point and the lens, with a negative position, reduced and virtual.</p><p>This looks a lot like Table 1, the mirror table from Lesson 2. As with mirrors, the focal length is the distance from the principal plane to the focal point. For a lens, it depends on the lens's shape and the index of refraction of its material.</p>",
+   "testIt": {
+    "name": "Summary",
+    "how": "Slide the object and tap to switch lens types (|f| = 10 cm)."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Example Problem 5, An Image Formed by a Convex Lens",
+   "text": "<h3>Example Problem 5, An Image Formed by a Convex Lens</h3><p class=\"p101-def\">An object beyond 2F of a convex lens gives a real, inverted, smaller image on the far side.</p><p>An object sits 32.0 centimeters from a convex lens with a focal length of 8.0 centimeters. Where is the image? If the object is 3.0 centimeters tall, how tall is the image? And what is its orientation?</p><p>Step one: analyze and sketch. Sketch the object and the lens, and draw the two principal rays. Known: x sub o is 32.0 centimeters, h sub o is 3.0 centimeters, and f is 8.0 centimeters. Unknown: x sub i and h sub i.</p><p>Step two: solve. From the thin lens equation, x sub i equals f times x sub o, divided by the quantity x sub o minus f. That's 8.0 centimeters times 32.0 centimeters, divided by 32.0 centimeters minus 8.0 centimeters, which is about 11 centimeters, on the side of the lens opposite the object. For the height, the magnification equation gives h sub i equals negative x sub i times h sub o, divided by x sub o: negative 11 centimeters times 3.0 centimeters, divided by 32.0 centimeters, or negative 1.0 centimeter. So the image is 1.0 centimeter tall, and the negative sign means it's inverted.</p><p>Step three: evaluate. All the units are centimeters. A positive image position means a real image, and a negative height means inverted. Both make sense for a convex lens with a faraway object.</p>",
+   "testIt": {
+    "name": "Convex example",
+    "how": "Set the object distance for an 8.0 cm lens (3.0 cm object)."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Spherical Aberration in Lenses",
+   "text": "<h3>Spherical Aberration in Lenses</h3><p class=\"p101-def\">Spherical aberration is a spherical lens's inability to focus all parallel rays to a single point.</p><p>So far our lenses have made perfect images. Real spherical lenses have built-in defects that affect focus and color. They share one defect with spherical mirrors, and they have a second one that mirrors don't.</p><p>Our ray model says all parallel rays focus at one spot, but that's only an approximation. Rays passing through the edges of a spherical lens focus at different places than rays through the center. This inability to focus all parallel rays to a single point is spherical aberration, and it blurs the edges of the photo in Figure 32.</p><p>Most real lenses have a slightly different shape to reduce this, but the spherical model works well enough for us. High-precision instruments use many lenses, often five or more, to form sharp, well-defined images.</p>",
+   "testIt": {
+    "name": "Lens aberration",
+    "how": "Widen the beam through a spherical lens."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Chromatic Aberration",
+   "text": "<h3>Chromatic Aberration</h3><p class=\"p101-def\">Chromatic aberration is a ring of color caused when a lens disperses different wavelengths to different focal points.</p><p>Here's the defect mirrors don't have. A medium's index of refraction depends on wavelength, so different colors bend at slightly different angles, as on the right of Figure 33. Light passing through a lens, especially near its edges, spreads out a little into colors. That's chromatic aberration, and you see it as a fringe of color around objects, like on the left of Figure 33.</p><p>Any single lens has chromatic aberration. But an achromatic lens, a system of two or more lenses, such as a convex lens paired with a concave lens, made of materials with different indices of refraction, cuts it way down. The indices matter because the second lens must undo the first lens's color spreading while still letting the light come together at the right spot.</p>",
+   "testIt": {
+    "name": "Achromat",
+    "how": "Tune the second lens's index until red and blue meet."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Lenses in Eyes",
+   "text": "<h3>Lenses in Eyes</h3><p class=\"p101-def\">The cornea does most of the eye's focusing; the lens fine-tunes focus by accommodation.</p><p>Lenses are in almost every optical device, including the ones in your head. As Figure 34 shows, the eye is a fluid-filled, nearly spherical vessel. Light from an object enters through the cornea and the pupil, passes through the lens, and focuses onto the retina at the back of the eye. Cells in the retina absorb the light and send information along the optic nerve to the brain.</p><p>You might guess the lens does the focusing, but the cornea does most of it! That's because the air to cornea boundary has the biggest difference in indices of refraction, so light bends the most there. The lens handles the fine focus that lets you see both far and near objects clearly.</p><p>That fine focus is called accommodation. Muscles around the lens contract or relax, changing its shape and so the eye's focal length. In a healthy eye, relaxed muscles focus distant objects on the retina. When the muscles contract, the focal length gets shorter, bringing nearby objects into focus.</p>",
+   "testIt": {
+    "name": "Eye",
+    "how": "Move the object closer and adjust the lens to keep the image on the retina (2.0 cm away)."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Nearsightedness and Farsightedness",
+   "text": "<h3>Nearsightedness and Farsightedness</h3><p class=\"p101-def\">Concave lenses correct nearsightedness; convex lenses correct farsightedness.</p><p>Many people's eyes focus images in front of or behind the retina. Eyeglasses and contact lenses adjust the focal length to move the images onto the retina. In nearsightedness, or myopia, shown in Figure 35, the eye's focal length is too short, so images form in front of the retina and distant objects look blurry. A concave lens fixes this by spreading the light a little first, pushing the images back onto the retina.</p><p>In farsightedness, or hyperopia, the eye's focal length is too long, so images of nearby objects would form behind the retina, and close-up objects look blurry. Something similar happens to most people after about age 45, as the eye's lens gets stiffer and the muscles can't shorten the focal length enough for close work. For either case, a convex lens makes a virtual image farther from the eye than the object, and that image becomes the object for the eye's own lens, which can then focus it on the retina.</p><p>What about bifocals? They combine two lenses in one: the upper part has the prescription for seeing far away, and a lower section has a more converging lens for reading up close.</p>",
+   "testIt": {
+    "name": "Glasses",
+    "how": "Tap to switch eyes and lenses."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "Contact Lenses",
+   "text": "<h3>Contact Lenses</h3><p class=\"p101-def\">Contact lenses sit on the cornea and do the same job as eyeglasses.</p><p>Contact lenses do the same job as eyeglasses. These small, thin lenses rest directly on the cornea, held in place by a thin layer of tears. Most of the refraction happens at the air to lens boundary, where the difference in indices of refraction is greatest.</p>"
+  },
+  "15": {
+   "layers": [],
+   "title": "Refracting Telescopes",
+   "text": "<h3>Refracting Telescopes</h3><p class=\"p101-def\">A refracting telescope uses an objective lens to form a real image and an eyepiece lens to magnify it.</p><p>An astronomical refracting telescope uses lenses to magnify faraway objects. Figure 36 shows a Keplerian telescope. Starlight comes from so far away that its rays are essentially parallel. They enter the objective lens, a convex lens, which focuses them into a real, inverted image at its focal point.</p><p>That image becomes the object for the eyepiece, another convex lens. The eyepiece is placed so the first image sits between the eyepiece and the eyepiece's own focal point. So the eyepiece makes a virtual image that's upright compared to the first image and larger. But since the first image was already flipped, the final image is still inverted. For stars and planets, that's fine, since there's no real up or down in space and flipping a star field doesn't change what you learn from it.</p><p>The eyepiece is almost always an achromatic lens, a combination of lenses that works as one, to cut down the colored fringes from chromatic aberration.</p>",
+   "testIt": {
+    "name": "Telescope",
+    "how": "Slide the eyepiece (f = 5 cm) behind the first image."
+   }
+  },
+  "16": {
+   "layers": [],
+   "title": "Cameras",
+   "text": "<h3>Cameras</h3><p class=\"p101-def\">A single-lens reflex camera uses a lens system, a flip-up mirror, and a prism to send an image to the viewfinder or the sensor.</p><p>Figure 37 shows a single-lens reflex camera. Light enters through the aperture and passes through an achromatic lens system that works like one convex lens, forming an inverted image on the reflex mirror. That mirror sends the image up to a prism, which flips and redirects it to the viewfinder.</p><p>Press the shutter-release button, and the mirror briefly flips up. Now the light travels straight to the image sensor. The sensor, often a charge-coupled device, or CCD, records a two-dimensional image as electric charge proportional to the light's intensity, then processes that charge and sends the information to storage.</p><p>In dim light, you'd leave the shutter open longer, so the sensor can collect enough light to build a bright, clear image.</p>",
+   "testIt": {
+    "name": "Camera",
+    "how": "Change the shutter time, then tap to switch scenes."
+   }
+  },
+  "17": {
+   "layers": [],
+   "title": "Engineering and Technology, The James Webb Space Telescope",
+   "text": "<h3>Engineering and Technology, The James Webb Space Telescope</h3><p class=\"p101-def\">A bigger primary mirror collects more light, letting a telescope see fainter, more distant objects.</p><p>The James Webb Space Telescope, or JWST, launched in December 2021 to image deep-space objects, and its secret is its mirror. A backyard reflecting telescope works simply: a concave primary mirror catches light, and another mirror reflects it to form an image at a focal point. The bigger the primary mirror, the more light it gathers. Many amateur telescopes have primary mirrors about 25 centimeters across.</p><p>The JWST's primary mirror is 6.5 meters across. That dwarfs a backyard telescope and beats two earlier space telescopes: Hubble's mirror, in use since 1990, is 2.4 meters, and the Herschel Space Observatory, launched in 2009, had a 3.5 meter mirror. Some of the oldest galaxies are over 13 billion light-years away, so their light is faint, and a big mirror catches more of it. The JWST also observes in the infrared, revealing objects and processes hidden in visible light.</p><p>Unlike Hubble, which orbits Earth, the JWST works about 1.5 million kilometers from Earth. Its mirror was too big to launch in one piece, so it's made of 18 smaller six-sided mirrors of lightweight, gold-plated beryllium. They folded up for launch and unfolded in space, and each segment can be adjusted so they act as one large mirror and give an undistorted image. The JWST was designed to add to, not replace, other telescopes: Hubble still takes sharp visible-light pictures of things like nearby galaxies, while the JWST peers in infrared at the first galaxies and at stars forming inside dusty clouds.</p>",
+   "testIt": {
+    "name": "Mirror size",
+    "how": "Tap to compare telescope mirrors."
+   }
+  }
+ }
+}

@@ -40,7 +40,10 @@ const pct = (v, of) => (v / of * 100) + "%";
 
 export function mountArt(stage, base, deck, pn, { still = false } = {}) {
   const spec = ART[deck][pn], wrap = document.createElement("div");
-  wrap.className = "art-scene" + (still ? " still" : ""); wrap.setAttribute("aria-hidden", "true");
+  wrap.className = "art-scene" + (still ? " still" : "");
+  // code-drawn diagrams carry alt text (art.json "alt"); decorative art stays hidden from screen readers
+  const alt = (spec.find((L) => L.alt) || {}).alt;
+  if (alt) { wrap.setAttribute("role", "img"); wrap.setAttribute("aria-label", alt); } else wrap.setAttribute("aria-hidden", "true");
   const els = spec.map((L) => {
     const el = L.travel ? dot() : Object.assign(document.createElement("img"), { src: base + "v2/art/" + L.src, alt: "", draggable: false });
     if (!L.travel) Object.assign(el.style, { left: pct(L.box[0], PAGE_W), top: pct(L.box[1], PAGE_H), width: pct(L.box[2] - L.box[0], PAGE_W), height: pct(L.box[3] - L.box[1], PAGE_H) });
@@ -94,7 +97,7 @@ export function mountArt(stage, base, deck, pn, { still = false } = {}) {
   };
   // st: where a page scene has moved a cutout (page px), on top of the parallax
   function paint(x, y, k, extra, { el, hint, st }) {
-    const tr = `translate(${(x + st.dx) * k}px, ${(y + st.dy) * k}px)${st.rot ? ` rotate(${st.rot}deg)` : ""}${st.scale !== 1 ? ` scale(${st.scale})` : ""}${extra}`;
+    const tr = `translate(${(x + st.dx) * k}px, ${(y + st.dy) * k}px)${st.rot ? ` rotate(${st.rot}deg)` : ""}${st.scale !== 1 ? ` scale(${st.scale})` : ""}${st.sy ? ` scaleY(${st.sy})` : ""}${extra}`;
     el.style.transform = tr; if (hint) hint.style.transform = tr;
   }
   const repaint = () => { if (still) { const k = stage.clientWidth / PAGE_W; for (const e of els) paint(0, 0, k, "", e); } };

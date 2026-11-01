@@ -1,0 +1,338 @@
+{
+ "p01": {
+  "items": [
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   },
+   {
+    "id": "obj-negcharge",
+    "label": "negative charge"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p03": {
+  "items": [
+   {
+    "id": "obj-testcharge",
+    "label": "test charge"
+   },
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p04": {
+  "items": [
+   {
+    "id": "obj-testcharge",
+    "label": "test charge"
+   },
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p05": {
+  "items": [
+   {
+    "id": "obj-testcharge",
+    "label": "test charge"
+   },
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p06": {
+  "items": [
+   {
+    "id": "obj-voltmeter",
+    "label": "voltmeter"
+   },
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p07": {
+  "items": [
+   {
+    "id": "obj-plate",
+    "label": "plate"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p08": {
+  "items": [
+   {
+    "id": "obj-proton",
+    "label": "proton"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p09": {
+  "items": [
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p10": {
+  "items": [
+   {
+    "id": "obj-droplet",
+    "label": "droplet"
+   },
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p11": {
+  "items": [
+   {
+    "id": "obj-plate",
+    "label": "plate"
+   },
+   {
+    "id": "obj-electron",
+    "label": "electron"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p12": {
+  "items": [
+   {
+    "id": "obj-electron",
+    "label": "electron"
+   },
+   {
+    "id": "obj-sphere",
+    "label": "sphere"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p13": {
+  "items": [
+   {
+    "id": "obj-testcharge",
+    "label": "test charge"
+   },
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   },
+   {
+    "id": "obj-voltmeter",
+    "label": "voltmeter"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p14": {
+  "items": [
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   },
+   {
+    "id": "obj-wire",
+    "label": "wire"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p15": {
+  "items": [
+   {
+    "id": "obj-battery",
+    "label": "battery"
+   },
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p16": {
+  "items": [
+   {
+    "id": "obj-capacitor",
+    "label": "capacitor"
+   },
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p17": {
+  "items": [
+   {
+    "id": "obj-capacitor",
+    "label": "capacitor"
+   },
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p18": {
+  "items": [
+   {
+    "id": "obj-sphere",
+    "label": "sphere"
+   },
+   {
+    "id": "obj-battery",
+    "label": "battery"
+   },
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ }
+}

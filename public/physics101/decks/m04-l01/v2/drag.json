@@ -1,0 +1,294 @@
+{
+ "p01": {
+  "items": [
+   {
+    "id": "book",
+    "label": "textbook on the table"
+   },
+   {
+    "id": "push",
+    "label": "blue push arrow"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p02": {
+  "items": [
+   {
+    "id": "push",
+    "label": "push button"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p04": {
+  "items": [
+   {
+    "id": "ring",
+    "label": "selection ring"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p05": {
+  "items": [
+   {
+    "id": "chip0",
+    "label": "sortable force chip"
+   },
+   {
+    "id": "chip1",
+    "label": "sortable force chip"
+   },
+   {
+    "id": "chip2",
+    "label": "sortable force chip"
+   },
+   {
+    "id": "chip3",
+    "label": "sortable force chip"
+   },
+   {
+    "id": "chip4",
+    "label": "sortable force chip"
+   },
+   {
+    "id": "bin0",
+    "label": "drop bin"
+   },
+   {
+    "id": "bin1",
+    "label": "drop bin"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p09": {
+  "items": [
+   {
+    "id": "fbdot",
+    "label": "FBD builder"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p10": {
+  "items": [
+   {
+    "id": "cut",
+    "label": "cut button"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p11": {
+  "items": [
+   {
+    "id": "cart",
+    "label": "cart"
+   },
+   {
+    "id": "Fr",
+    "label": "right pull"
+   },
+   {
+    "id": "Fl",
+    "label": "left pull"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p12": {
+  "items": [
+   {
+    "id": "pushers",
+    "label": "set each pusher's force and direction"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p13": {
+  "items": [
+   {
+    "id": "scale",
+    "label": "choose a force"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p14": {
+  "items": [
+   {
+    "id": "slopes",
+    "label": "drag each measured slope onto the a-F graph"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p15": {
+  "items": [
+   {
+    "id": "stack",
+    "label": "stack one, two or three carts"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p16": {
+  "items": [
+   {
+    "id": "slider",
+    "label": "slide items onto a virtual scale"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p17": {
+  "items": [
+   {
+    "id": "dog",
+    "label": "add dogs pulling at various directions and strengths"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p18": {
+  "items": [
+   {
+    "id": "pillow",
+    "label": "pillow tug-of-war controls"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p19": {
+  "items": [
+   {
+    "id": "ball",
+    "label": "ball to roll on each surface"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p20": {
+  "items": [
+   {
+    "id": "belt",
+    "label": "toggle a seatbelt on the block"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ }
+}

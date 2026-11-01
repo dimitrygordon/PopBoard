@@ -1,0 +1,183 @@
+{
+ "slug": "m20-l01",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Properties of Magnets",
+   "text": "<h3>Properties of Magnets</h3><p class=\"p101-def\">Magnets are polarized: they have two opposite ends, called poles.</p><p>Our big question for this lesson: why are some materials magnetic and others are not? People have known about magnets for more than 2000 years. Ancient sailors used naturally magnetic rocks called lodestones as compasses, and ancient physicians even thought lodestones could cure disease.</p><p>Today, magnets are everywhere. Electric motors, earbuds, loudspeakers, and computer hard drives all depend on how magnetic fields and electric currents interact.</p><p>You've probably played with magnets like the ones in Figure 1, and noticed that the two ends act differently. That's because magnets are polarized: they have two opposite ends, called poles. Every magnet, no matter its size or shape, has two poles.</p>",
+   "testIt": {
+    "name": "Paper clips",
+    "how": "Slide the paper clips along the bar magnet."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson.</p><p>Online, Applying Practices: Modeling Magnetic Fields has you develop and use a model of two objects interacting through electric or magnetic fields, showing the forces between them and how their energy changes because of that interaction.</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Compasses and Earth as a Magnet",
+   "text": "<h3>Compasses and Earth as a Magnet</h3><p class=\"p101-def\">A compass is a small magnet mounted so it can rotate freely, and it points north-south because Earth itself is a giant magnet.</p><p>Hang a bar magnet from a string. Which way will it point when it settles down? A magnet that's free to rotate always comes to rest pointing north-south. The end pointing north is the north-seeking pole, or just the north pole. The other end is the south pole. A compass is simply a small magnet mounted so it can spin freely.</p><p>Why does a compass point north? Because Earth itself is a giant magnet! A compass's north pole points toward Earth's geographic North Pole. But a magnet's north pole is always attracted to a magnetic south pole. So the place we call the North Pole is actually near Earth's magnetic south pole, and the South Pole is near Earth's magnetic north pole.</p><p>People have used Earth's magnetic poles for centuries: sailors steered by lodestones and compasses, and today hikers, pilots, and ships still use compasses to find their way.</p>",
+   "testIt": {
+    "name": "Compass",
+    "how": "Tap to spin the compass to a new spot on the globe."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Opposite Poles and Monopoles",
+   "text": "<h3>Opposite Poles and Monopoles</h3><p class=\"p101-def\">No matter how you cut a magnet, it always has two poles; a magnet with only one pole, a monopole, has never been found.</p><p>What's inside a magnet that makes it polarized? You know that an electric charge brought near a metal rod polarizes it, making one end negative and the other positive. You might guess a magnet works the same way, with a positive half and a negative half. But it doesn't!</p><p>No matter how you cut or break a magnet, each piece always has two poles. Scientists have searched hard for monopoles, objects with only a north pole or only a south pole, but no one has ever found one.</p><p>Here's a word to watch. In science, polarized means having two opposite ends, so all magnets are polarized. In everyday speech, polarized means split into opposing groups, like a Congress divided over an issue.</p>",
+   "testIt": {
+    "name": "Slice",
+    "how": "Slice the bar magnet into more pieces."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Like Poles Repel, Unlike Poles Attract",
+   "text": "<h3>Like Poles Repel, Unlike Poles Attract</h3><p class=\"p101-def\">Like poles repel; unlike poles attract.</p><p>The force between two magnets depends on how you turn them. Put the north pole of one magnet next to the north pole of another, and they push apart, as in the top of Figure 2. Two south poles do the same.</p><p>But bring a north pole next to a south pole, and they pull together, as in the bottom of Figure 2. The rule is simple: like poles repel, and unlike poles attract.</p>",
+   "testIt": {
+    "name": "Flip",
+    "how": "Tap to flip the second magnet."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Temporary Magnets",
+   "text": "<h3>Temporary Magnets</h3><p class=\"p101-def\">Magnetization by induction is the process by which a magnet polarizes an object, making it a temporary magnet.</p><p>Magnets also attract nails, paper clips, tacks, and other metal objects. Those objects have no poles of their own, and both ends of a magnet attract them. When a magnet touches one, like the nail in Figure 3, it polarizes the object and turns it into a temporary magnet. This is called magnetization by induction. The end of the nail touching the magnet becomes the opposite pole to the magnet's pole it touches, and the far end becomes the same kind of pole, so it can pick up paper clips of its own.</p><p>Magnets attract only some metals. Brass, copper, and aluminum aren't attracted. Iron, nickel, and cobalt are strongly attracted. Materials containing these elements are called ferromagnetic materials, and they can become temporary magnets. A steel nail works because it's iron with tiny amounts of carbon and other materials. Pull the nail off the magnet, and it gradually loses most of its magnetism.</p>",
+   "testIt": {
+    "name": "Materials",
+    "how": "Tap to touch the next object to the magnet."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Magnetic Domains",
+   "text": "<h3>Magnetic Domains</h3><p class=\"p101-def\">A domain is a group of neighboring atoms whose magnetic poles are aligned.</p><p>What gives a magnet its magnetic properties? Each atom in a ferromagnetic material acts like a tiny magnet with two poles. And each atom is part of a domain, a group of neighboring atoms whose poles are lined up. In Figure 4, each arrow stands for one domain.</p><p>A domain can hold as many as ten to the twentieth atoms, but domains are still tiny, usually from 10 to 1000 microns across. So even a small sample contains a huge number of them.</p><p>In a ferromagnetic material that isn't magnetized, the domains point in random directions, as in the top of Figure 4. Put it next to a strong magnet, and most domains line up with the external magnet's poles, as in the bottom panel. Now it's a temporary magnet. Take the magnet away, and the domains drift back to random, so the material loses its magnetization. How quickly that happens depends on how the atoms interact, which depends on the material's microscopic structure.</p>",
+   "testIt": {
+    "name": "Domains",
+    "how": "Bring the strong magnet closer."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Creating Permanent Magnets",
+   "text": "<h3>Creating Permanent Magnets</h3><p class=\"p101-def\">A permanent magnet is made by heating a ferromagnetic object in a strong magnetic field, then cooling it so its domains stay aligned.</p><p>The best-known naturally occurring magnet is the mineral magnetite. The lodestones ancient sailors used were simply pieces of magnetite. So how are commercial permanent magnets made?</p><p>Heat an object containing certain ferromagnetic materials while it sits in a strong magnetic field. The thermal energy frees the atoms in each domain, so the domains can rotate and line up with the magnet's poles. Then cool the object while it's still in the field. Once it's cool, the atoms are less free to rotate, so when the strong magnet is removed, the object stays magnetized. You've made a permanent magnet!</p><p>But if you reheat it or drop it, the atoms can jostle out of line, scrambling the domains and wiping out its magnetism. Now think about the magnet pictured at the start of this module: its domains must be lined up, mostly pointing the same way.</p>",
+   "testIt": {
+    "name": "Make a magnet",
+    "how": "Tap for the next step."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "History of Earth's Magnetism",
+   "text": "<h3>History of Earth's Magnetism</h3><p class=\"p101-def\">Iron-bearing seafloor rocks record that Earth's magnetic poles have swapped places many times.</p><p>Magnetic domains in iron-bearing rocks record the history of Earth's magnetism. New seafloor rock forms when molten rock, called magma, pours out of cracks in the ocean floor. As the magma cools, the domains in its iron-containing minerals line up with Earth's magnetic field, and the rock becomes a weak permanent magnet.</p><p>As more magma pours out, older rock gets pushed away from the cracks. So the farther a rock is from a crack, the older it is.</p><p>Scientists studying seafloor rocks got a surprise: the domain alignment changed in rocks of different ages. They concluded that Earth's magnetic north and south poles have swapped places many times during Earth's history.</p>",
+   "testIt": {
+    "name": "Seafloor",
+    "how": "Run the spreading timeline."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Magnetic Fields",
+   "text": "<h3>Magnetic Fields</h3><p class=\"p101-def\">Magnetic fields are vector fields that exist in space where magnets would experience a force.</p><p>Magnets push and pull on each other not only when they touch, but also when they're held apart. Just like long-range electric and gravitational forces, long-range magnetic forces can be explained by fields, magnetic fields. These fields transfer energy through space.</p><p>Magnetic fields exist in the space where magnets would feel a force. They're vector quantities, with both a size and a direction. A compass needle in Earth's magnetic field lines up with Earth's field. Put it in a stronger magnetic field, and it realigns with the stronger field.</p>",
+   "testIt": {
+    "name": "Compass and magnet",
+    "how": "Move the compass toward the bar magnet."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Visualizing Magnetic Fields",
+   "text": "<h3>Visualizing Magnetic Fields</h3><p class=\"p101-def\">Iron filings become tiny temporary magnets that line up parallel to a magnetic field, revealing its shape.</p><p>What do magnetic fields look like? Like electric and gravitational fields, they're invisible. But we can still see them in a few ways. One way is to sprinkle iron filings around a magnet. Each long, thin filing becomes a temporary magnet by induction. Like thousands of tiny compass needles, each one turns until it's parallel to the magnetic field.</p><p>Figure 6 shows the results both ways: flat on paper around a bar magnet, in two dimensions, and bristling around an upright magnet, in three dimensions.</p>",
+   "testIt": {
+    "name": "Filings",
+    "how": "Tap to sprinkle more iron filings."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Magnetic Field Lines and Flux",
+   "text": "<h3>Magnetic Field Lines and Flux</h3><p class=\"p101-def\">Magnetic flux is the number of magnetic field lines passing through a surface perpendicular to the lines.</p><p>Scientists picture magnetic fields with magnetic field lines, like those in Figure 7. Like electric field lines, they aren't real objects, but they show both the direction and the strength of the field. Magnetic fields are traditionally written with the letter B.</p><p>The number of field lines passing through a surface perpendicular to them is the magnetic flux. The flux per unit area is proportional to the field's strength. Flux is most concentrated at the poles, where the magnetic field is strongest.</p><p>The direction of a field line is the direction a compass's north pole points. So field lines come out of a magnet's north pole and go into its south pole. They form closed loops, continuing through the inside of the magnet from its south pole back to its north pole.</p>",
+   "testIt": {
+    "name": "Flux loop",
+    "how": "Drag the counting loop along the magnet."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Forces on Permanent Magnets",
+   "text": "<h3>Forces on Permanent Magnets</h3><p class=\"p101-def\">A magnetic field pushes a north pole along the field lines and pulls a south pole opposite the field lines.</p><p>Magnetic fields exert forces on magnets. When two like poles are close together, the field from one magnet's north pole pushes the other magnet's north pole away, in the direction of the field lines. You can see this in the iron filings in the top of Figure 8.</p><p>Now look at the bottom of Figure 8. The field from one magnet's north pole acts on the second magnet's south pole, pulling it in the direction opposite the field lines. The field is continuous, arcing from one magnet to the other.</p>",
+   "testIt": {
+    "name": "Two magnets",
+    "how": "Tap to flip one magnet end to end."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "Forces on Temporary Magnets",
+   "text": "<h3>Forces on Temporary Magnets</h3><p class=\"p101-def\">A magnet's field aligns a ferromagnetic object's domains so its nearest end becomes an opposite pole and is attracted.</p><p>Remember how a magnet can polarize ferromagnetic materials? Fields explain that too. Place a ferromagnetic object in the field of a permanent magnet. Field lines leave the magnet's north end, enter the nearest end of the object, pass through it, and loop back to the magnet's south pole.</p><p>The object's domains line up along those field lines. That makes the end closest to the magnet's north pole a south pole. The object's new south pole is attracted to the magnet's north pole, and its new north pole is repelled. Since the attracting pole is closer, the pull wins, and the object is drawn toward the magnet.</p>",
+   "testIt": {
+    "name": "Iron bar",
+    "how": "Slide the iron bar toward the magnet's north pole."
+   }
+  },
+  "15": {
+   "layers": [],
+   "title": "Oersted's Discovery",
+   "text": "<h3>Oersted's Discovery</h3><p class=\"p101-def\">An electric current produces a magnetic field.</p><p>In 1820, during a lecture demonstration, the Danish physicist Hans Christian Oersted laid a wire across a compass and connected its ends to a battery to complete a circuit. The compass needle started out parallel to the wire, as in the left side of Figure 9.</p><p>When Oersted switched the current on, he was amazed: the needle swung to point perpendicular to the wire, as in the right side of Figure 9. With the compass on top of the wire instead, the needle again turned perpendicular, but pointed the other way. Reversing the current reversed the needle, too. And when he turned the current off, the needle swung back.</p><p>That evidence, a needle that moved only when current flowed and flipped when the current flipped, led Oersted to conclude that an electric current produces a magnetic field. It was the first hint of a link between magnetism and electric current, a link behind many modern devices.</p>",
+   "testIt": {
+    "name": "Oersted",
+    "how": "Tap to switch the current in the wire over the compass."
+   }
+  },
+  "16": {
+   "layers": [],
+   "title": "Magnetic Fields Around Wires",
+   "text": "<h3>Magnetic Fields Around Wires</h3><p class=\"p101-def\">A current-carrying wire is surrounded by circular magnetic field loops whose strength is proportional to the current and inversely proportional to distance.</p><p>The magnetic field around a current-carrying wire is always perpendicular to the wire. Just like field lines around permanent magnets, the field lines around a wire form closed loops. You can see these loops in the circular pattern of iron filings in the top of Figure 10.</p><p>The strength of the field around a long, straight wire is proportional to the current in the wire. It also varies inversely with distance from the wire, so twice as far away means half as strong. And if the current changes direction, the field's loops reverse direction too.</p>",
+   "testIt": {
+    "name": "Wire field",
+    "how": "Change the current and the distance."
+   }
+  },
+  "17": {
+   "layers": [],
+   "title": "Right-Hand Rule for a Straight Wire",
+   "text": "<h3>Right-Hand Rule for a Straight Wire</h3><p class=\"p101-def\">Point your right thumb along the conventional current, and your curled fingers show the direction of the magnetic field.</p><p>How do you find which way the field circles a wire? Scientists use right-hand rules to describe how the directions of electric and magnetic quantities relate.</p><p>Imagine holding the wire in your right hand, as in the bottom of Figure 10. If your thumb points in the direction of the conventional, or positive, current, then your fingers curling around the wire point in the direction of the magnetic field.</p>",
+   "testIt": {
+    "name": "Right hand",
+    "how": "Tap to reverse the current."
+   }
+  },
+  "18": {
+   "layers": [],
+   "title": "Electromagnets and Solenoids",
+   "text": "<h3>Electromagnets and Solenoids</h3><p class=\"p101-def\">An electromagnet is a magnet whose magnetic field is produced by electric current.</p><p>What happens if you bend a current-carrying wire into a loop? Current in a single loop makes a magnetic field all around it, as in the left panel of Figure 11. Apply the right-hand rule to any part of the loop, and you'll find the field inside the loop always points the same way.</p><p>Now coil a wire into many spiral loops and connect it to a circuit. That's a solenoid. When current flows, each loop makes its own field, and they all point the same way, as in the right panel of Figure 11, so they add up. The field is strongest and most uniform inside the solenoid, and weaker outside.</p><p>A solenoid carrying current has a field just like a permanent magnet's. It's an electromagnet: a magnet whose magnetic field is produced by electric current.</p>",
+   "testIt": {
+    "name": "Coil",
+    "how": "Add loops to the coil."
+   }
+  },
+  "19": {
+   "layers": [],
+   "title": "Loops and Field Strength",
+   "text": "<h3>Loops and Field Strength</h3><p class=\"p101-def\">A solenoid's field grows with its current, with more and more closely spaced loops, and with an iron core.</p><p>Solenoids can be incredibly strong electromagnets, making fields much stronger than those around permanent magnets. A solenoid's field strength is proportional to the current in its loops. It also depends on how many loops there are and how close together they are: more loops, packed more tightly, make a stronger field.</p><p>You can boost it even more by sliding an iron-containing rod inside. The solenoid's field magnetizes the iron, just as a permanent magnet turns a ferromagnetic object into a temporary magnet, and the iron's field adds to the solenoid's.</p>",
+   "testIt": {
+    "name": "Strongest",
+    "how": "Adjust current, loops, and the core."
+   }
+  },
+  "20": {
+   "layers": [],
+   "title": "Right-Hand Rule for a Solenoid",
+   "text": "<h3>Right-Hand Rule for a Solenoid</h3><p class=\"p101-def\">Curl your right fingers in the direction of the conventional current around a solenoid, and your thumb points to its north pole.</p><p>There's a right-hand rule for solenoids, too. Imagine holding a solenoid in your right hand, as in Figure 12. Curl your fingers around it in the direction of the conventional, or positive, current. Your thumb points toward the solenoid's north pole.</p><p>Try it with a compass: the compass's north pole will be pushed away from the end your thumb points to.</p>",
+   "testIt": {
+    "name": "Solenoid",
+    "how": "Tap to reverse the battery."
+   }
+  }
+ }
+}

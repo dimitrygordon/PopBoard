@@ -1,0 +1,1431 @@
+{
+ "p01": [
+  {
+   "id": "bg",
+   "src": "p01-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p01-mid.webp",
+   "box": [
+    817,
+    0,
+    1579,
+    890
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p01-fg.webp",
+   "box": [
+    151,
+    148,
+    788,
+    298
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p01-cut-try.webp",
+   "box": [
+    386,
+    799,
+    554,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p01-cut-try-hint.webp",
+   "hbox": [
+    382,
+    795,
+    558,
+    846
+   ]
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p01-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    717,
+    713,
+    754,
+    862
+   ],
+   "hbox": [
+    713,
+    709,
+    758,
+    866
+   ],
+   "hint": "p01-cut-obj-lens-hint.webp"
+  },
+  {
+   "id": "cut-obj-switch",
+   "src": "p01-cut-obj-switch.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    234,
+    748,
+    356,
+    812
+   ],
+   "hbox": [
+    230,
+    744,
+    360,
+    816
+   ],
+   "hint": "p01-cut-obj-switch-hint.webp"
+  }
+ ],
+ "p02": [
+  {
+   "id": "bg",
+   "src": "p02-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p02-mid.webp",
+   "box": [
+    50,
+    330,
+    1550,
+    838
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p02-fg.webp",
+   "box": [
+    134,
+    103,
+    1439,
+    224
+   ],
+   "f": 0.45,
+   "late": true
+  }
+ ],
+ "p03": [
+  {
+   "id": "bg",
+   "src": "p03-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p03-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p03-fg.webp",
+   "box": [
+    166,
+    148,
+    1545,
+    597
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p03-cut-try.webp",
+   "box": [
+    1128,
+    698,
+    1433,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p03-cut-try-hint.webp",
+   "hbox": [
+    1124,
+    694,
+    1437,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-object",
+   "src": "p03-cut-obj-object.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1446,
+    546,
+    1506,
+    677
+   ],
+   "hbox": [
+    1442,
+    542,
+    1510,
+    681
+   ],
+   "hint": "p03-cut-obj-object-hint.webp"
+  }
+ ],
+ "p04": [
+  {
+   "id": "bg",
+   "src": "p04-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p04-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p04-fg.webp",
+   "box": [
+    251,
+    113,
+    1552,
+    521
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p04-cut-try.webp",
+   "box": [
+    1110,
+    698,
+    1450,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p04-cut-try-hint.webp",
+   "hbox": [
+    1106,
+    694,
+    1454,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-object",
+   "src": "p04-cut-obj-object.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1444,
+    547,
+    1506,
+    677
+   ],
+   "hbox": [
+    1440,
+    543,
+    1510,
+    681
+   ],
+   "hint": "p04-cut-obj-object-hint.webp"
+  }
+ ],
+ "p05": [
+  {
+   "id": "bg",
+   "src": "p05-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p05-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p05-fg.webp",
+   "box": [
+    250,
+    110,
+    1552,
+    480
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p05-cut-try.webp",
+   "box": [
+    1122,
+    698,
+    1438,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p05-cut-try-hint.webp",
+   "hbox": [
+    1118,
+    694,
+    1442,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-glass",
+   "src": "p05-cut-obj-glass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    558,
+    1538,
+    664
+   ],
+   "hbox": [
+    1408,
+    554,
+    1542,
+    668
+   ],
+   "hint": "p05-cut-obj-glass-hint.webp"
+  }
+ ],
+ "p06": [
+  {
+   "id": "bg",
+   "src": "p06-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p06-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p06-fg.webp",
+   "box": [
+    250,
+    113,
+    1534,
+    477
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p06-cut-try.webp",
+   "box": [
+    1107,
+    699,
+    1453,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p06-cut-try-hint.webp",
+   "hbox": [
+    1103,
+    695,
+    1457,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-object",
+   "src": "p06-cut-obj-object.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    546,
+    1506,
+    677
+   ],
+   "hbox": [
+    1441,
+    542,
+    1510,
+    681
+   ],
+   "hint": "p06-cut-obj-object-hint.webp"
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p06-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1317,
+    532,
+    1354,
+    682
+   ],
+   "hbox": [
+    1313,
+    528,
+    1358,
+    686
+   ],
+   "hint": "p06-cut-obj-lens-hint.webp"
+  }
+ ],
+ "p07": [
+  {
+   "id": "bg",
+   "src": "p07-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p07-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: The Thin Lens Equation. One over f equals one over x sub i plus one over x sub o."
+  },
+  {
+   "id": "fg",
+   "src": "p07-fg.webp",
+   "box": [
+    168,
+    148,
+    1539,
+    766
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p07-cut-try.webp",
+   "box": [
+    1230,
+    798,
+    1329,
+    841
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p07-cut-try-hint.webp",
+   "hbox": [
+    1226,
+    794,
+    1333,
+    845
+   ]
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p07-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1457,
+    553,
+    1493,
+    702
+   ],
+   "hbox": [
+    1453,
+    549,
+    1497,
+    706
+   ],
+   "hint": "p07-cut-obj-lens-hint.webp"
+  }
+ ],
+ "p08": [
+  {
+   "id": "bg",
+   "src": "p08-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p08-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: Magnification and Lens Summary. m equals h sub i over h sub o, which equals negative x sub i over x sub o."
+  },
+  {
+   "id": "fg",
+   "src": "p08-fg.webp",
+   "box": [
+    157,
+    148,
+    1549,
+    706
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p08-cut-try.webp",
+   "box": [
+    1128,
+    698,
+    1432,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p08-cut-try-hint.webp",
+   "hbox": [
+    1124,
+    694,
+    1436,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-object",
+   "src": "p08-cut-obj-object.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    546,
+    1506,
+    677
+   ],
+   "hbox": [
+    1441,
+    542,
+    1510,
+    681
+   ],
+   "hint": "p08-cut-obj-object-hint.webp"
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p08-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1317,
+    532,
+    1353,
+    682
+   ],
+   "hbox": [
+    1313,
+    528,
+    1357,
+    686
+   ],
+   "hint": "p08-cut-obj-lens-hint.webp"
+  }
+ ],
+ "p09": [
+  {
+   "id": "bg",
+   "src": "p09-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p09-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p09-fg.webp",
+   "box": [
+    298,
+    110,
+    1551,
+    699
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p09-cut-try.webp",
+   "box": [
+    1140,
+    698,
+    1420,
+    741
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p09-cut-try-hint.webp",
+   "hbox": [
+    1136,
+    694,
+    1424,
+    745
+   ]
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p09-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1457,
+    532,
+    1494,
+    682
+   ],
+   "hbox": [
+    1453,
+    528,
+    1498,
+    686
+   ],
+   "hint": "p09-cut-obj-lens-hint.webp"
+  },
+  {
+   "id": "cut-obj-object",
+   "src": "p09-cut-obj-object.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1325,
+    547,
+    1386,
+    677
+   ],
+   "hbox": [
+    1321,
+    543,
+    1390,
+    681
+   ],
+   "hint": "p09-cut-obj-object-hint.webp"
+  }
+ ],
+ "p10": [
+  {
+   "id": "bg",
+   "src": "p10-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p10-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p10-fg.webp",
+   "box": [
+    343,
+    103,
+    1549,
+    833
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p10-cut-try.webp",
+   "box": [
+    1109,
+    698,
+    1451,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p10-cut-try-hint.webp",
+   "hbox": [
+    1105,
+    694,
+    1455,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p10-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    567,
+    1556,
+    654
+   ],
+   "hbox": [
+    1408,
+    563,
+    1560,
+    658
+   ],
+   "hint": "p10-cut-obj-flashlight-hint.webp"
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p10-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1277,
+    532,
+    1314,
+    682
+   ],
+   "hbox": [
+    1273,
+    528,
+    1318,
+    686
+   ],
+   "hint": "p10-cut-obj-lens-hint.webp"
+  }
+ ],
+ "p11": [
+  {
+   "id": "bg",
+   "src": "p11-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p11-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p11-fg.webp",
+   "box": [
+    158,
+    148,
+    1548,
+    611
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p11-cut-try.webp",
+   "box": [
+    1111,
+    698,
+    1449,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p11-cut-try-hint.webp",
+   "hbox": [
+    1107,
+    694,
+    1453,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p11-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    567,
+    1556,
+    654
+   ],
+   "hbox": [
+    1408,
+    563,
+    1560,
+    658
+   ],
+   "hint": "p11-cut-obj-flashlight-hint.webp"
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p11-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1277,
+    532,
+    1314,
+    682
+   ],
+   "hbox": [
+    1273,
+    528,
+    1318,
+    686
+   ],
+   "hint": "p11-cut-obj-lens-hint.webp"
+  }
+ ],
+ "p12": [
+  {
+   "id": "bg",
+   "src": "p12-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p12-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p12-fg.webp",
+   "box": [
+    251,
+    113,
+    1522,
+    555
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p12-cut-try.webp",
+   "box": [
+    1110,
+    698,
+    1450,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p12-cut-try-hint.webp",
+   "hbox": [
+    1106,
+    694,
+    1454,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-object",
+   "src": "p12-cut-obj-object.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1443,
+    547,
+    1506,
+    677
+   ],
+   "hbox": [
+    1439,
+    543,
+    1510,
+    681
+   ],
+   "hint": "p12-cut-obj-object-hint.webp"
+  },
+  {
+   "id": "cut-obj-eye",
+   "src": "p12-cut-obj-eye.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1289,
+    568,
+    1381,
+    646
+   ],
+   "hbox": [
+    1285,
+    564,
+    1385,
+    650
+   ],
+   "hint": "p12-cut-obj-eye-hint.webp"
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p12-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1157,
+    533,
+    1193,
+    682
+   ],
+   "hbox": [
+    1153,
+    529,
+    1197,
+    686
+   ],
+   "hint": "p12-cut-obj-lens-hint.webp"
+  }
+ ],
+ "p13": [
+  {
+   "id": "bg",
+   "src": "p13-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p13-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p13-fg.webp",
+   "box": [
+    165,
+    111,
+    1536,
+    615
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p13-cut-try.webp",
+   "box": [
+    1167,
+    698,
+    1394,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p13-cut-try-hint.webp",
+   "hbox": [
+    1163,
+    694,
+    1398,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-eye",
+   "src": "p13-cut-obj-eye.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1429,
+    588,
+    1522,
+    666
+   ],
+   "hbox": [
+    1425,
+    584,
+    1526,
+    670
+   ],
+   "hint": "p13-cut-obj-eye-hint.webp"
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p13-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1297,
+    532,
+    1333,
+    682
+   ],
+   "hbox": [
+    1293,
+    528,
+    1337,
+    686
+   ],
+   "hint": "p13-cut-obj-lens-hint.webp"
+  }
+ ],
+ "p14": [
+  {
+   "id": "bg",
+   "src": "p14-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p14-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p14-fg.webp",
+   "box": [
+    158,
+    103,
+    1536,
+    688
+   ],
+   "f": 0.45,
+   "late": true
+  }
+ ],
+ "p15": [
+  {
+   "id": "bg",
+   "src": "p15-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p15-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p15-fg.webp",
+   "box": [
+    253,
+    110,
+    1554,
+    739
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p15-cut-try.webp",
+   "box": [
+    1152,
+    698,
+    1407,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p15-cut-try-hint.webp",
+   "hbox": [
+    1148,
+    694,
+    1411,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-lens",
+   "src": "p15-cut-obj-lens.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1456,
+    532,
+    1494,
+    682
+   ],
+   "hbox": [
+    1452,
+    528,
+    1498,
+    686
+   ],
+   "hint": "p15-cut-obj-lens-hint.webp"
+  },
+  {
+   "id": "cut-obj-scope",
+   "src": "p15-cut-obj-scope.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1293,
+    573,
+    1403,
+    678
+   ],
+   "hbox": [
+    1289,
+    569,
+    1407,
+    682
+   ],
+   "hint": "p15-cut-obj-scope-hint.webp"
+  }
+ ],
+ "p16": [
+  {
+   "id": "bg",
+   "src": "p16-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p16-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p16-fg.webp",
+   "box": [
+    338,
+    110,
+    1542,
+    833
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p16-cut-try.webp",
+   "box": [
+    1131,
+    698,
+    1429,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p16-cut-try-hint.webp",
+   "hbox": [
+    1127,
+    694,
+    1433,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-knob",
+   "src": "p16-cut-obj-knob.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1394,
+    577,
+    1556,
+    640
+   ],
+   "hbox": [
+    1390,
+    573,
+    1560,
+    644
+   ],
+   "hint": "p16-cut-obj-knob-hint.webp"
+  }
+ ],
+ "p17": [
+  {
+   "id": "bg",
+   "src": "p17-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p17-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p17-fg.webp",
+   "box": [
+    158,
+    103,
+    1528,
+    676
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p17-cut-try.webp",
+   "box": [
+    1154,
+    698,
+    1407,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p17-cut-try-hint.webp",
+   "hbox": [
+    1150,
+    694,
+    1411,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-mirror",
+   "src": "p17-cut-obj-mirror.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1450,
+    553,
+    1500,
+    702
+   ],
+   "hbox": [
+    1446,
+    549,
+    1504,
+    706
+   ],
+   "hint": "p17-cut-obj-mirror-hint.webp"
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p17-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1272,
+    566,
+    1416,
+    654
+   ],
+   "hbox": [
+    1268,
+    562,
+    1420,
+    658
+   ],
+   "hint": "p17-cut-obj-flashlight-hint.webp"
+  },
+  {
+   "id": "cut-obj-star",
+   "src": "p17-cut-obj-star.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1121,
+    559,
+    1189,
+    654
+   ],
+   "hbox": [
+    1117,
+    555,
+    1193,
+    658
+   ],
+   "hint": "p17-cut-obj-star-hint.webp"
+  }
+ ]
+}

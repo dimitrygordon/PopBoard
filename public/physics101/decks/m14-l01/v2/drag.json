@@ -1,0 +1,146 @@
+{
+ "p01": {
+  "items": [
+   {
+    "id": "bell",
+    "label": "air particles"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p03": {
+  "items": [
+   {
+    "id": "temp",
+    "label": "speed"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p04": {
+  "items": [
+   {
+    "id": "race",
+    "label": "air, water, iron"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p06": {
+  "items": [
+   {
+    "id": "dial",
+    "label": "pitch"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p07": {
+  "items": [
+   {
+    "id": "db",
+    "label": "dB meter"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p09": {
+  "items": [
+   {
+    "id": "siren",
+    "label": "two listeners"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p10": {
+  "items": [
+   {
+    "id": "arr",
+    "label": "f detected"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p11": {
+  "items": [
+   {
+    "id": "car",
+    "label": "pitch"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p12": {
+  "items": [
+   {
+    "id": "bat",
+    "label": "echo frequency"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ }
+}

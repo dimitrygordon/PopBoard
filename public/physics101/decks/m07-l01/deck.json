@@ -1,0 +1,86 @@
+{
+ "key": "M07-L01",
+ "ptw": 960.0,
+ "slides": [
+  {
+   "n": 1,
+   "title": "Early Observations",
+   "items": []
+  },
+  {
+   "n": 2,
+   "title": "Tycho Brahe's Measurements",
+   "items": []
+  },
+  {
+   "n": 3,
+   "title": "Your Investigation Toolkit",
+   "items": []
+  },
+  {
+   "n": 4,
+   "title": "Kepler's First Law",
+   "items": []
+  },
+  {
+   "n": 5,
+   "title": "Kepler's Second Law",
+   "items": []
+  },
+  {
+   "n": 6,
+   "title": "Kepler's Third Law",
+   "items": []
+  },
+  {
+   "n": 7,
+   "title": "Comet Periods",
+   "items": []
+  },
+  {
+   "n": 8,
+   "title": "Example Problem 1, Callisto's Distance from Jupiter",
+   "items": []
+  },
+  {
+   "n": 9,
+   "title": "Newton's Inverse Square Insight",
+   "items": []
+  },
+  {
+   "n": 10,
+   "title": "The Law of Universal Gravitation",
+   "items": []
+  },
+  {
+   "n": 11,
+   "title": "Connecting Math to Physics, Direct and Inverse Relationships",
+   "items": []
+  },
+  {
+   "n": 12,
+   "title": "Universal Gravitation and Kepler's Third Law",
+   "items": []
+  },
+  {
+   "n": 13,
+   "title": "The Period of a Planet",
+   "items": []
+  },
+  {
+   "n": 14,
+   "title": "Measuring the Universal Gravitational Constant",
+   "items": []
+  },
+  {
+   "n": 15,
+   "title": "Crosscutting Concepts, Patterns",
+   "items": []
+  },
+  {
+   "n": 16,
+   "title": "The Importance of G",
+   "items": []
+  }
+ ]
+}

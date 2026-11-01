@@ -1,0 +1,76 @@
+{
+ "key": "M18-L02",
+ "ptw": 960.0,
+ "slides": [
+  {
+   "n": 1,
+   "title": "Forces on Charged Objects",
+   "items": []
+  },
+  {
+   "n": 2,
+   "title": "Your Investigation Toolkit",
+   "items": []
+  },
+  {
+   "n": 3,
+   "title": "The Electroscope and Charging by Conduction",
+   "items": []
+  },
+  {
+   "n": 4,
+   "title": "Separation of Charge on Neutral Objects",
+   "items": []
+  },
+  {
+   "n": 5,
+   "title": "Lightning",
+   "items": []
+  },
+  {
+   "n": 6,
+   "title": "Charging by Induction",
+   "items": []
+  },
+  {
+   "n": 7,
+   "title": "Grounding",
+   "items": []
+  },
+  {
+   "n": 8,
+   "title": "Coulomb's Experiments",
+   "items": []
+  },
+  {
+   "n": 9,
+   "title": "Coulomb's Law and the Coulomb",
+   "items": []
+  },
+  {
+   "n": 10,
+   "title": "Electrostatic Force Is a Vector",
+   "items": []
+  },
+  {
+   "n": 11,
+   "title": "Example Problem 1, Coulomb's Law in Two Dimensions, Part 1",
+   "items": []
+  },
+  {
+   "n": 12,
+   "title": "Example Problem 1, Part 2, the Net Force",
+   "items": []
+  },
+  {
+   "n": 13,
+   "title": "Using Coulomb's Law Wisely",
+   "items": []
+  },
+  {
+   "n": 14,
+   "title": "Applications of Electrostatic Forces",
+   "items": []
+  }
+ ]
+}

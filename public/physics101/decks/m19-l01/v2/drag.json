@@ -1,0 +1,354 @@
+{
+ "p01": {
+  "items": [
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   },
+   {
+    "id": "obj-wire",
+    "label": "wire"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p03": {
+  "items": [
+   {
+    "id": "obj-battery",
+    "label": "battery"
+   },
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   },
+   {
+    "id": "obj-bulb",
+    "label": "bulb"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p04": {
+  "items": [
+   {
+    "id": "obj-glass",
+    "label": "glass"
+   },
+   {
+    "id": "obj-crank",
+    "label": "crank"
+   },
+   {
+    "id": "obj-motor",
+    "label": "motor"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p05": {
+  "items": [
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   },
+   {
+    "id": "obj-resistor",
+    "label": "resistor"
+   },
+   {
+    "id": "obj-crank",
+    "label": "crank"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p06": {
+  "items": [
+   {
+    "id": "obj-bulb",
+    "label": "bulb"
+   },
+   {
+    "id": "obj-resistor",
+    "label": "resistor"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p07": {
+  "items": [
+   {
+    "id": "obj-motor",
+    "label": "motor"
+   },
+   {
+    "id": "obj-battery",
+    "label": "battery"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p08": {
+  "items": [
+   {
+    "id": "obj-resistor",
+    "label": "resistor"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p09": {
+  "items": [
+   {
+    "id": "obj-voltmeter",
+    "label": "voltmeter"
+   },
+   {
+    "id": "obj-bulb",
+    "label": "bulb"
+   },
+   {
+    "id": "obj-ammeter",
+    "label": "ammeter"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p10": {
+  "items": [
+   {
+    "id": "obj-battery",
+    "label": "battery"
+   },
+   {
+    "id": "obj-glass",
+    "label": "glass"
+   },
+   {
+    "id": "obj-rod",
+    "label": "rod"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p11": {
+  "items": [
+   {
+    "id": "obj-thermo",
+    "label": "thermo"
+   },
+   {
+    "id": "obj-glass",
+    "label": "glass"
+   },
+   {
+    "id": "obj-wire",
+    "label": "wire"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p12": {
+  "items": [
+   {
+    "id": "obj-resistor",
+    "label": "resistor"
+   },
+   {
+    "id": "obj-diode",
+    "label": "diode"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p13": {
+  "items": [
+   {
+    "id": "obj-wire",
+    "label": "wire"
+   },
+   {
+    "id": "obj-resistor",
+    "label": "resistor"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p14": {
+  "items": [
+   {
+    "id": "obj-battery",
+    "label": "battery"
+   },
+   {
+    "id": "obj-resistor",
+    "label": "resistor"
+   },
+   {
+    "id": "obj-detector",
+    "label": "detector"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p15": {
+  "items": [
+   {
+    "id": "obj-resistor",
+    "label": "resistor"
+   },
+   {
+    "id": "obj-motor",
+    "label": "motor"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p16": {
+  "items": [
+   {
+    "id": "obj-battery",
+    "label": "battery"
+   },
+   {
+    "id": "obj-resistor",
+    "label": "resistor"
+   },
+   {
+    "id": "obj-ammeter",
+    "label": "ammeter"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p17": {
+  "items": [
+   {
+    "id": "obj-wire",
+    "label": "wire"
+   },
+   {
+    "id": "obj-voltmeter",
+    "label": "voltmeter"
+   },
+   {
+    "id": "obj-ammeter",
+    "label": "ammeter"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ }
+}

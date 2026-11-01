@@ -1,0 +1,81 @@
+{
+ "key": "M15-L02",
+ "ptw": 960.0,
+ "slides": [
+  {
+   "n": 1,
+   "title": "Diffraction",
+   "items": []
+  },
+  {
+   "n": 2,
+   "title": "Your Investigation Toolkit",
+   "items": []
+  },
+  {
+   "n": 3,
+   "title": "Huygens' Principle",
+   "items": []
+  },
+  {
+   "n": 4,
+   "title": "Newton's Prism and Color",
+   "items": []
+  },
+  {
+   "n": 5,
+   "title": "Color and Wavelength",
+   "items": []
+  },
+  {
+   "n": 6,
+   "title": "Color by Addition",
+   "items": []
+  },
+  {
+   "n": 7,
+   "title": "Color by Subtraction and Dyes",
+   "items": []
+  },
+  {
+   "n": 8,
+   "title": "Pigments",
+   "items": []
+  },
+  {
+   "n": 9,
+   "title": "Why Plants Are Green",
+   "items": []
+  },
+  {
+   "n": 10,
+   "title": "Polarization by Filtering",
+   "items": []
+  },
+  {
+   "n": 11,
+   "title": "Polarization by Reflection and Malus's Law",
+   "items": []
+  },
+  {
+   "n": 12,
+   "title": "Speed, Wavelength, and Frequency of Light",
+   "items": []
+  },
+  {
+   "n": 13,
+   "title": "The Doppler Effect for Light",
+   "items": []
+  },
+  {
+   "n": 14,
+   "title": "Reading Galaxies with Light",
+   "items": []
+  },
+  {
+   "n": 15,
+   "title": "Super-Efficient Solar Cells",
+   "items": []
+  }
+ ]
+}

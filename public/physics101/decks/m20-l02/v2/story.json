@@ -1,0 +1,134 @@
+{
+ "slug": "m20-l02",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Forces on Current-Carrying Wires",
+   "text": "<h3>Forces on Current-Carrying Wires</h3><p class=\"p101-def\">A magnetic field exerts a force on a current-carrying wire, at right angles to both the field and the current.</p><p>Our big question for this lesson: what role do magnetic forces play in everyday life? Put a magnet in a magnetic field, and it can move. So what happens to a current-carrying wire in a magnetic field?</p><p>Michael Faraday, who ran many electricity and magnetism experiments in the nineteenth century, found that a magnetic field exerts a force on a current-carrying wire. That force is always at right angles to both the magnetic field and the current, as in the left part of Figure 14. And if the current reverses direction, the force reverses too.</p>",
+   "testIt": {
+    "name": "Wire between poles",
+    "how": "Tap to flip the current."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson.</p><p>Online, the Virtual Investigation: Charge in a Magnetic Field lets you find out what a magnetic field does to a moving, electrically charged particle. And as you go, revisit the Encounter the Phenomenon question: what information from this lesson can help you answer the Unit and Module questions?</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Direction of Force and Arrows in Three Dimensions",
+   "text": "<h3>Direction of Force and Arrows in Three Dimensions</h3><p class=\"p101-def\">Fingers along the field, thumb along the current, and your right palm faces the direction of the force.</p><p>Use a right-hand rule to find the direction of the force on a wire. Point the fingers of your right hand along the magnetic field. Point your thumb along the wire's conventional, or positive, current. Your palm faces the direction of the force on the wire, as in the right part of Figure 14.</p><p>This relationship is three-dimensional, so how do we draw it on flat paper? Imagine an archer shooting an arrow straight at you: you'd see the point, a dot. Now imagine the arrow flying away: you'd see the feathers, a cross. So dots stand for a magnetic field coming out of the page, toward you, and crosses stand for a field going into the page, away from you, as in Figure 15. In both cases, the force on the wire is perpendicular to both the field and the current.</p>",
+   "testIt": {
+    "name": "3D view",
+    "how": "Tap to switch the current direction (field into the page ×)."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Magnitude of the Force on a Wire",
+   "text": "<h3>Magnitude of the Force on a Wire</h3><p class=\"p101-def\">The force on a current-carrying wire in a magnetic field is F equals I L B times the sine of theta.</p><p>How big is the force? Experiments show it's proportional to the wire's current I, the wire's length L in the field, the magnetic field strength B, and the sine of the angle theta between the current and the field. So F equals I times L times B times the sine of theta.</p><p>Force is measured in newtons and current in amperes. Magnetic field strength is measured in teslas, and one tesla equals one newton per ampere-meter.</p><p>The sine of zero degrees is zero, and the sine of ninety degrees is one. So when the current runs parallel to the field, there's no force at all. The force is greatest when the current and the field are perpendicular.</p>",
+   "testIt": {
+    "name": "Angle",
+    "how": "Turn the 0.10 m wire carrying 5.0 A in a 0.40 T field."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Earbuds and Loudspeakers",
+   "text": "<h3>Earbuds and Loudspeakers</h3><p class=\"p101-def\">In an earbud, a magnetic force on a coil carrying changing current makes a membrane vibrate and produce sound.</p><p>Where do we use this force every day? Right in your ears! Inside an earbud, like the one in Figure 16, there's a tiny coil of wire attached to a thin plastic membrane, with a permanent magnet underneath. The magnet's field points outward from the center, so it's perpendicular to both the wire of the coil and the direction the coil moves.</p><p>A music player sends current through the earbud's wires. The current reverses direction between 40 and 40,000 times each second, depending on the pitch of the sound. The magnetic force pushes the coil in and out as the current reverses, which makes the membrane vibrate and produce sound waves. Every two reversals of the current make one complete back-and-forth vibration.</p><p>Most loudspeakers and headphones work the same way. A magnetic field exerts a force on a coil of wire mounted on a paper or plastic cone. The force pushes the coil in and out, and the cone vibrates to make sound.</p>",
+   "testIt": {
+    "name": "Speaker",
+    "how": "Change the frequency of the current in the coil."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Galvanometers",
+   "text": "<h3>Galvanometers</h3><p class=\"p101-def\">A galvanometer is a device used to measure very small currents.</p><p>We can use the force on a current loop to measure current. In the left of Figure 17, current goes in one end of a wire loop and out the other. The force pushes one side of the loop down and the other side up, creating a torque that twists the loop. The bigger the current, the bigger the torque.</p><p>That's how a galvanometer works. A galvanometer measures very small currents. A small coil spring pushes back against the torque from the current, so the loop turns by an amount proportional to the current. To calibrate it, you send in a known current and see how far the coil turns, as in the right of Figure 17. Then you can measure unknown currents.</p><p>Interested in big magnets helping people? MRI technologists use an MRI machine, basically a giant tube-shaped magnet, plus radio waves, to make detailed cross-sectional images of organs and tissues that doctors use to diagnose and treat disease.</p>",
+   "testIt": {
+    "name": "Galvanometer",
+    "how": "Send a known current."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Example Problem 1, Calculate the Strength of a Magnetic Field",
+   "text": "<h3>Example Problem 1, Calculate the Strength of a Magnetic Field</h3><p class=\"p101-def\">When the current and the field are perpendicular, F equals I L B, so B equals F divided by I L.</p><p>A straight wire carries a 5.0-ampere current in a uniform magnetic field at right angles to the wire. With 0.10 meters of the wire in the field, the force on it is 0.20 newtons. What's the magnetic field strength B?</p><p>Step one: analyze and sketch. Draw the wire with an arrow for the current, mark the field B, and show the force F. Use the right-hand rule to find the force's direction: the field, the wire, and the force are all at right angles. Known: I is 5.0 amperes, L is 0.10 meters, and F is 0.20 newtons. Unknown: B.</p><p>Step two: solve. B is uniform and perpendicular to I, so F equals I L B. Solve for B: B equals F divided by I L. That's 0.20 newtons divided by 5.0 amperes times 0.10 meters, which is 0.40 newtons per ampere-meter, or 0.40 teslas. In the sketch, the field points into the page, perpendicular to both the current and the force.</p><p>Step three: evaluate. The answer is in teslas, the right unit for a magnetic field. And a field under 1 tesla is realistic.</p>",
+   "testIt": {
+    "name": "Find B",
+    "how": "Adjust B for 5.0 A in 0.10 m of wire."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Turning a Galvanometer into an Ammeter",
+   "text": "<h3>Turning a Galvanometer into an Ammeter</h3><p class=\"p101-def\">A shunt is a small resistor placed in parallel with a galvanometer so most of the current bypasses the meter.</p><p>A galvanometer can swing full scale with currents as small as 50 microamperes, that's 50 times ten to the negative sixth amperes. The wire loop in a sensitive galvanometer has a resistance of about 1000 ohms.</p><p>To measure bigger currents, convert it to an ammeter. Put a resistor with a small resistance in parallel with the meter, as in the top of Figure 18. Current divides inversely with resistance, so most of it goes through this resistor, called the shunt because it shunts, or bypasses, current around the galvanometer. Only a few microamperes go through the meter. Choosing the shunt's resistance sets the meter's sensitivity.</p>",
+   "testIt": {
+    "name": "Shunt",
+    "how": "Pick a shunt for a 100 µA, 500 Ω galvanometer."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Turning a Galvanometer into a Voltmeter",
+   "text": "<h3>Turning a Galvanometer into a Voltmeter</h3><p class=\"p101-def\">A multiplier is a resistor placed in series with a galvanometer to turn it into a voltmeter.</p><p>You can also make a galvanometer into a voltmeter. Put a resistor, called the multiplier, in series with the meter, as in the bottom of Figure 18. The galvanometer measures the current through the multiplier. That current is I equals V over R, where V is the potential difference across the voltmeter and R is the combined resistance of the galvanometer and multiplier.</p><p>Want the needle to swing all the way across the scale at 10 volts? Choose the resistor so that 10 volts drives exactly 50 microamperes through the meter and resistor together. That works out to a total resistance of 200,000 ohms.</p><p>So to compare: for an ammeter, add a small resistor in parallel; for a voltmeter, add a large resistor in series.</p>",
+   "testIt": {
+    "name": "Multiplier",
+    "how": "Choose a multiplier so the 100 µA, 500 Ω galvanometer reads 10 V full scale."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Electric Motors",
+   "text": "<h3>Electric Motors</h3><p class=\"p101-def\">An electric motor is an apparatus that converts electrical energy into mechanical energy.</p><p>A galvanometer's single loop can't turn more than 180 degrees. The magnetic force pushes one side up and the other down until the loop is vertical. Then it stops, because the forces still point up and down, in line with the loop. Make the loop spin continuously, and you'd have an electric motor!</p><p>An electric motor converts electrical energy into mechanical energy. It uses a multi-loop coil called an armature, mounted on an axle that spins in a magnetic field. Current enters through a split-ring commutator, which reverses the current every half turn, so the armature keeps rotating, like the motor powering the drone in Figure 19.</p><p>Most armatures have many loops. The total force is proportional to n times I times L times B, where n is the number of turns, I is the current, L is the length of each turn moving perpendicular to the field, and B is the field strength. The field comes from a permanent magnet or an electromagnet called a field coil. Varying the current controls the torque: more torque spins the armature up faster and lets it turn a bigger load. You use motors at home all the time, in fans, blenders, and washing machines.</p>",
+   "testIt": {
+    "name": "Commutator",
+    "how": "Tap to add or remove the split-ring commutator."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Forces on Single Charged Particles",
+   "text": "<h3>Forces on Single Charged Particles</h3><p class=\"p101-def\">The magnetic force on a moving charged particle is F equals q v B times the sine of theta.</p><p>A current is just a stream of charged particles. So what's the force on one charged particle? It depends on the particle's speed, the field strength, and the angle between its velocity and the field.</p><p>Picture one electron moving through a wire of length L perpendicular to a field B. Current is I equals q over t, where q is the electron's charge and t is the time it takes to travel L. From x equals v t, that time is L over v. So the current becomes I equals q v over L. Substitute that into F equals I L B, and the L's cancel.</p><p>The result: F equals q times v times B times the sine of theta. Charge is in coulombs, velocity in meters per second, and field in teslas. At right angles, the sine of theta is one, so F equals q v B. And if a particle moves parallel to the field, theta is zero, the sine is zero, and there's no force at all.</p>",
+   "testIt": {
+    "name": "Angle",
+    "how": "Fire a proton at 1.0 × 10⁶ m/s through a 0.50 T field."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Direction of Force on a Moving Charge",
+   "text": "<h3>Direction of Force on a Moving Charge</h3><p class=\"p101-def\">The force on a moving charge is perpendicular to both its velocity and the field, and it reverses for a negative charge.</p><p>The force on a charged particle is perpendicular to both its velocity and the magnetic field. Find its direction with the same right-hand rule you use for a wire, treating the moving charge as the current. If the particle is an electron, with its negative charge, the force points the opposite way.</p><p>When would you want to calculate this force? Think of the giant magnets steering particles in an accelerator, the magnets that shape the beam in medical imaging and radiation therapy machines, or Earth's magnetic field steering charged particles from the Sun toward the poles to make auroras.</p>",
+   "testIt": {
+    "name": "Proton vs. electron",
+    "how": "Tap to switch particles."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Example Problem 2, Force on a Charged Particle in a Magnetic Field",
+   "text": "<h3>Example Problem 2, Force on a Charged Particle in a Magnetic Field</h3><p class=\"p101-def\">For a particle moving at right angles to a field, F equals q v B.</p><p>A beam of electrons travels at 3.0 times ten to the sixth meters per second through a uniform magnetic field of 4.0 times ten to the negative second teslas, at right angles to the field. How strong is the force on each electron?</p><p>Step one: analyze and sketch. Draw the beam and its direction of motion v, the field B, and the force F. Because the electron is negative, the force points opposite to what the right-hand rule gives. Known: v is 3.0 times ten to the sixth meters per second, B is 4.0 times ten to the negative second teslas, and q is negative 1.602 times ten to the negative nineteenth coulombs. Unknown: F.</p><p>Step two: solve. F equals q v B: negative 1.602 times ten to the negative nineteenth coulombs, times 3.0 times ten to the sixth meters per second, times 4.0 times ten to the negative second teslas, which is negative 1.9 times ten to the negative fourteenth newtons. The minus sign reminds us the force points opposite the right-hand-rule direction.</p><p>Step three: evaluate. A tesla is a newton per ampere-meter, and an ampere is a coulomb per second, so a tesla times a coulomb times a meter per second is a newton, the unit of force. Check the direction with the right-hand rule, then reverse it for the electron. And the size is realistic: forces on electrons and protons are always tiny fractions of a newton.</p>",
+   "testIt": {
+    "name": "Electron beam",
+    "how": "Change the beam speed (B = 4.0 × 10⁻² T)."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "Synchrotrons",
+   "text": "<h3>Synchrotrons</h3><p class=\"p101-def\">A synchrotron uses magnetic fields to bend charged particles into a circle while other segments speed them up.</p><p>Since the magnetic force on a charged particle is always perpendicular to its velocity, magnets can steer particles. In a synchrotron, like the Large Hadron Collider, or LHC, particles travel in a circle as they move at right angles to a uniform magnetic field. Figure 21 shows a stretch of the 27-kilometer-long LHC tunnel.</p><p>As the particles speed up, the magnetic field is increased to keep the circle's radius the same. Extra magnets push sideways and up and down to focus the beam, and other segments along the tunnel add fixed amounts of energy to accelerate the particles.</p>",
+   "testIt": {
+    "name": "Synchrotron",
+    "how": "Speed up protons; raise B to keep the 100 m radius."
+   }
+  },
+  "15": {
+   "layers": [],
+   "title": "Engineering and Technology, Accelerating a Solution",
+   "text": "<h3>Engineering and Technology, Accelerating a Solution</h3><p class=\"p101-def\">X-ray fluorescence from a synchrotron maps the elements in paint layers to reveal hidden pictures.</p><p>For nearly a century, sharp-eyed viewers spotted hints of another painting beneath French Impressionist Edgar Degas's Portrait of a Woman, painted in the late 1870s. The model is tentatively identified as Emma Dobigny. As some of the oil paint wore away, the faint outline of another face appeared. Australian scientists used a synchrotron, a type of particle accelerator, to reveal it: an earlier picture of the same woman, painted about seven years before.</p><p>How do you look under paint without damaging it? The scientists used high-resolution scanning X-ray fluorescence, or XRF. A beam of radiation excites atoms in the paint, and they emit X-ray photons. Each element's photons have their own characteristic wavelengths, so scientists can map where each element is.</p><p>The scans produced maps of eleven elements, including calcium, chromium, manganese, iron, cobalt, nickel, copper, zinc, arsenic, barium, and mercury. From these, scientists inferred the pigments and colors Degas used, especially where two or more elements overlapped. Each map has millions of pixels, and giving each element a visible false color and layering the maps revealed the hidden portrait.</p>"
+  }
+ }
+}

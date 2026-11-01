@@ -1,0 +1,2150 @@
+{
+ "p01": [
+  {
+   "id": "bg",
+   "src": "p01-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p01-mid.webp",
+   "box": [
+    825,
+    21,
+    1574,
+    899
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p01-fg.webp",
+   "box": [
+    167,
+    148,
+    773,
+    298
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p01-cut-try.webp",
+   "box": [
+    332,
+    798,
+    608,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p01-cut-try-hint.webp",
+   "hbox": [
+    328,
+    794,
+    612,
+    846
+   ]
+  },
+  {
+   "id": "cut-obj-atom",
+   "src": "p01-cut-obj-atom.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    682,
+    727,
+    796,
+    846
+   ],
+   "hbox": [
+    678,
+    723,
+    800,
+    850
+   ],
+   "hint": "p01-cut-obj-atom-hint.webp"
+  },
+  {
+   "id": "cut-obj-particle",
+   "src": "p01-cut-obj-particle.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    207,
+    758,
+    264,
+    826
+   ],
+   "hbox": [
+    203,
+    754,
+    268,
+    830
+   ],
+   "hint": "p01-cut-obj-particle-hint.webp"
+  }
+ ],
+ "p02": [
+  {
+   "id": "bg",
+   "src": "p02-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p02-mid.webp",
+   "box": [
+    50,
+    330,
+    1550,
+    838
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p02-fg.webp",
+   "box": [
+    133,
+    103,
+    1351,
+    224
+   ],
+   "f": 0.45,
+   "late": true
+  }
+ ],
+ "p03": [
+  {
+   "id": "bg",
+   "src": "p03-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p03-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p03-fg.webp",
+   "box": [
+    166,
+    110,
+    1552,
+    569
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p03-cut-try.webp",
+   "box": [
+    1122,
+    698,
+    1439,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p03-cut-try-hint.webp",
+   "hbox": [
+    1118,
+    694,
+    1443,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-alpha",
+   "src": "p03-cut-obj-alpha.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1425,
+    573,
+    1524,
+    650
+   ],
+   "hbox": [
+    1421,
+    569,
+    1528,
+    654
+   ],
+   "hint": "p03-cut-obj-alpha-hint.webp"
+  },
+  {
+   "id": "cut-obj-particle",
+   "src": "p03-cut-obj-particle.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1287,
+    579,
+    1344,
+    646
+   ],
+   "hbox": [
+    1283,
+    575,
+    1348,
+    650
+   ],
+   "hint": "p03-cut-obj-particle-hint.webp"
+  },
+  {
+   "id": "cut-obj-detector",
+   "src": "p03-cut-obj-detector.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1105,
+    564,
+    1218,
+    652
+   ],
+   "hbox": [
+    1101,
+    560,
+    1222,
+    656
+   ],
+   "hint": "p03-cut-obj-detector-hint.webp"
+  }
+ ],
+ "p04": [
+  {
+   "id": "bg",
+   "src": "p04-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p04-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p04-fg.webp",
+   "box": [
+    165,
+    110,
+    1548,
+    476
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p04-cut-try.webp",
+   "box": [
+    1113,
+    698,
+    1447,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p04-cut-try-hint.webp",
+   "hbox": [
+    1109,
+    694,
+    1451,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-alpha",
+   "src": "p04-cut-obj-alpha.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1425,
+    573,
+    1524,
+    650
+   ],
+   "hbox": [
+    1421,
+    569,
+    1528,
+    654
+   ],
+   "hint": "p04-cut-obj-alpha-hint.webp"
+  },
+  {
+   "id": "cut-obj-particle",
+   "src": "p04-cut-obj-particle.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1287,
+    579,
+    1344,
+    646
+   ],
+   "hbox": [
+    1283,
+    575,
+    1348,
+    650
+   ],
+   "hint": "p04-cut-obj-particle-hint.webp"
+  },
+  {
+   "id": "cut-obj-detector",
+   "src": "p04-cut-obj-detector.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1105,
+    564,
+    1218,
+    652
+   ],
+   "hbox": [
+    1101,
+    560,
+    1222,
+    656
+   ],
+   "hint": "p04-cut-obj-detector-hint.webp"
+  }
+ ],
+ "p05": [
+  {
+   "id": "bg",
+   "src": "p05-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p05-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: The Nuclear Model. The nucleus is the tiny, massive core of an atom that holds all of its positive charge and more than 99.9 percent of its mass."
+  },
+  {
+   "id": "fg",
+   "src": "p05-fg.webp",
+   "box": [
+    198,
+    148,
+    1551,
+    765
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p05-cut-try.webp",
+   "box": [
+    1128,
+    698,
+    1432,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p05-cut-try-hint.webp",
+   "hbox": [
+    1124,
+    694,
+    1436,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-nucleus",
+   "src": "p05-cut-obj-nucleus.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1447,
+    559,
+    1502,
+    650
+   ],
+   "hbox": [
+    1443,
+    555,
+    1505,
+    654
+   ],
+   "hint": "p05-cut-obj-nucleus-hint.webp"
+  },
+  {
+   "id": "cut-obj-atom",
+   "src": "p05-cut-obj-atom.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1281,
+    548,
+    1396,
+    666
+   ],
+   "hbox": [
+    1277,
+    544,
+    1400,
+    670
+   ],
+   "hint": "p05-cut-obj-atom-hint.webp"
+  }
+ ],
+ "p06": [
+  {
+   "id": "bg",
+   "src": "p06-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p06-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p06-fg.webp",
+   "box": [
+    167,
+    111,
+    1540,
+    772
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p06-cut-try.webp",
+   "box": [
+    1174,
+    699,
+    1386,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p06-cut-try-hint.webp",
+   "hbox": [
+    1170,
+    695,
+    1390,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-switch",
+   "src": "p06-cut-obj-switch.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1416,
+    588,
+    1536,
+    652
+   ],
+   "hbox": [
+    1412,
+    584,
+    1540,
+    656
+   ],
+   "hint": "p06-cut-obj-switch-hint.webp"
+  }
+ ],
+ "p07": [
+  {
+   "id": "bg",
+   "src": "p07-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p07-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p07-fg.webp",
+   "box": [
+    167,
+    111,
+    1555,
+    772
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p07-cut-try.webp",
+   "box": [
+    1191,
+    799,
+    1368,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p07-cut-try-hint.webp",
+   "hbox": [
+    1187,
+    795,
+    1372,
+    846
+   ]
+  },
+  {
+   "id": "cut-obj-scope",
+   "src": "p07-cut-obj-scope.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1413,
+    594,
+    1523,
+    698
+   ],
+   "hbox": [
+    1409,
+    590,
+    1527,
+    702
+   ],
+   "hint": "p07-cut-obj-scope-hint.webp"
+  },
+  {
+   "id": "cut-obj-wave",
+   "src": "p07-cut-obj-wave.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1225,
+    595,
+    1368,
+    664
+   ],
+   "hbox": [
+    1221,
+    591,
+    1372,
+    668
+   ],
+   "hint": "p07-cut-obj-wave-hint.webp"
+  }
+ ],
+ "p08": [
+  {
+   "id": "bg",
+   "src": "p08-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p08-mid.webp",
+   "box": [
+    756,
+    98,
+    1600,
+    900
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p08-fg.webp",
+   "box": [
+    179,
+    148,
+    761,
+    229
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p08-cut-try.webp",
+   "box": [
+    300,
+    798,
+    640,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p08-cut-try-hint.webp",
+   "hbox": [
+    296,
+    794,
+    644,
+    846
+   ]
+  },
+  {
+   "id": "cut-obj-glass",
+   "src": "p08-cut-obj-glass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    612,
+    658,
+    738,
+    764
+   ],
+   "hbox": [
+    608,
+    654,
+    742,
+    768
+   ],
+   "hint": "p08-cut-obj-glass-hint.webp"
+  },
+  {
+   "id": "cut-obj-wave",
+   "src": "p08-cut-obj-wave.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    424,
+    674,
+    567,
+    744
+   ],
+   "hbox": [
+    420,
+    670,
+    571,
+    748
+   ],
+   "hint": "p08-cut-obj-wave-hint.webp"
+  }
+ ],
+ "p09": [
+  {
+   "id": "bg",
+   "src": "p09-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p09-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p09-fg.webp",
+   "box": [
+    165,
+    148,
+    1551,
+    555
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p09-cut-try.webp",
+   "box": [
+    1115,
+    698,
+    1444,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p09-cut-try-hint.webp",
+   "hbox": [
+    1111,
+    694,
+    1448,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p09-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    568,
+    1556,
+    654
+   ],
+   "hbox": [
+    1408,
+    564,
+    1560,
+    658
+   ],
+   "hint": "p09-cut-obj-flashlight-hint.webp"
+  }
+ ],
+ "p10": [
+  {
+   "id": "bg",
+   "src": "p10-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p10-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p10-fg.webp",
+   "box": [
+    158,
+    103,
+    1551,
+    536
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p10-cut-try.webp",
+   "box": [
+    1118,
+    698,
+    1442,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p10-cut-try-hint.webp",
+   "hbox": [
+    1114,
+    694,
+    1446,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-star",
+   "src": "p10-cut-obj-star.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1442,
+    559,
+    1508,
+    654
+   ],
+   "hbox": [
+    1438,
+    555,
+    1512,
+    658
+   ],
+   "hint": "p10-cut-obj-star-hint.webp"
+  },
+  {
+   "id": "cut-obj-wave",
+   "src": "p10-cut-obj-wave.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1264,
+    575,
+    1407,
+    644
+   ],
+   "hbox": [
+    1260,
+    571,
+    1411,
+    648
+   ],
+   "hint": "p10-cut-obj-wave-hint.webp"
+  }
+ ],
+ "p11": [
+  {
+   "id": "bg",
+   "src": "p11-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p11-mid.webp",
+   "box": [
+    775,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p11-fg.webp",
+   "box": [
+    165,
+    148,
+    775,
+    229
+   ],
+   "f": 0.45,
+   "late": true
+  }
+ ],
+ "p12": [
+  {
+   "id": "bg",
+   "src": "p12-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p12-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p12-fg.webp",
+   "box": [
+    367,
+    112,
+    1554,
+    833
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p12-cut-try.webp",
+   "box": [
+    1141,
+    698,
+    1419,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p12-cut-try-hint.webp",
+   "hbox": [
+    1137,
+    694,
+    1423,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-knob",
+   "src": "p12-cut-obj-knob.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1393,
+    576,
+    1556,
+    640
+   ],
+   "hbox": [
+    1389,
+    572,
+    1560,
+    644
+   ],
+   "hint": "p12-cut-obj-knob-hint.webp"
+  }
+ ],
+ "p13": [
+  {
+   "id": "bg",
+   "src": "p13-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p13-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: Problems with the Planetary Model. An orbiting electron accelerates, so classical electromagnetism predicts it should radiate energy and spiral into the nucleus."
+  },
+  {
+   "id": "fg",
+   "src": "p13-fg.webp",
+   "box": [
+    358,
+    148,
+    1537,
+    745
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p13-cut-try.webp",
+   "box": [
+    1113,
+    698,
+    1447,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p13-cut-try-hint.webp",
+   "hbox": [
+    1109,
+    694,
+    1451,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p13-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    572,
+    1506,
+    646
+   ],
+   "hbox": [
+    1441,
+    568,
+    1509,
+    650
+   ],
+   "hint": "p13-cut-obj-electron-hint.webp"
+  },
+  {
+   "id": "cut-obj-nucleus",
+   "src": "p13-cut-obj-nucleus.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1306,
+    559,
+    1362,
+    650
+   ],
+   "hbox": [
+    1302,
+    555,
+    1365,
+    654
+   ],
+   "hint": "p13-cut-obj-nucleus-hint.webp"
+  }
+ ],
+ "p14": [
+  {
+   "id": "bg",
+   "src": "p14-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p14-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p14-fg.webp",
+   "box": [
+    253,
+    111,
+    1557,
+    787
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p14-cut-try.webp",
+   "box": [
+    1122,
+    698,
+    1438,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p14-cut-try-hint.webp",
+   "hbox": [
+    1118,
+    694,
+    1442,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p14-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    573,
+    1506,
+    646
+   ],
+   "hbox": [
+    1441,
+    569,
+    1509,
+    650
+   ],
+   "hint": "p14-cut-obj-electron-hint.webp"
+  },
+  {
+   "id": "cut-obj-atom",
+   "src": "p14-cut-obj-atom.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1281,
+    548,
+    1396,
+    666
+   ],
+   "hbox": [
+    1277,
+    544,
+    1400,
+    670
+   ],
+   "hint": "p14-cut-obj-atom-hint.webp"
+  }
+ ],
+ "p15": [
+  {
+   "id": "bg",
+   "src": "p15-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p15-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p15-fg.webp",
+   "box": [
+    165,
+    110,
+    1541,
+    396
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p15-cut-try.webp",
+   "box": [
+    1169,
+    699,
+    1391,
+    741
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p15-cut-try-hint.webp",
+   "hbox": [
+    1165,
+    695,
+    1395,
+    745
+   ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p15-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    593,
+    1506,
+    666
+   ],
+   "hbox": [
+    1441,
+    589,
+    1509,
+    670
+   ],
+   "hint": "p15-cut-obj-electron-hint.webp"
+  }
+ ],
+ "p16": [
+  {
+   "id": "bg",
+   "src": "p16-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p16-mid.webp",
+   "box": [
+    265,
+    115,
+    854,
+    791
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: The Bohr Model. The Bohr model of the atom is a central nucleus with orbiting electrons that have specific quantized energy levels."
+  },
+  {
+   "id": "fg",
+   "src": "p16-fg.webp",
+   "box": [
+    308,
+    148,
+    1529,
+    755
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p16-cut-try.webp",
+   "box": [
+    1111,
+    698,
+    1448,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p16-cut-try-hint.webp",
+   "hbox": [
+    1107,
+    694,
+    1452,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p16-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    573,
+    1506,
+    646
+   ],
+   "hbox": [
+    1441,
+    569,
+    1509,
+    650
+   ],
+   "hint": "p16-cut-obj-electron-hint.webp"
+  },
+  {
+   "id": "cut-obj-atom",
+   "src": "p16-cut-obj-atom.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1281,
+    547,
+    1395,
+    666
+   ],
+   "hbox": [
+    1277,
+    543,
+    1399,
+    670
+   ],
+   "hint": "p16-cut-obj-atom-hint.webp"
+  }
+ ],
+ "p17": [
+  {
+   "id": "bg",
+   "src": "p17-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p17-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p17-fg.webp",
+   "box": [
+    165,
+    110,
+    1543,
+    678
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p17-cut-try.webp",
+   "box": [
+    1146,
+    698,
+    1414,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p17-cut-try-hint.webp",
+   "hbox": [
+    1142,
+    694,
+    1418,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p17-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    573,
+    1506,
+    646
+   ],
+   "hbox": [
+    1441,
+    569,
+    1509,
+    650
+   ],
+   "hint": "p17-cut-obj-electron-hint.webp"
+  },
+  {
+   "id": "cut-obj-photon",
+   "src": "p17-cut-obj-photon.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1274,
+    583,
+    1410,
+    640
+   ],
+   "hbox": [
+    1270,
+    579,
+    1414,
+    644
+   ],
+   "hint": "p17-cut-obj-photon-hint.webp"
+  }
+ ],
+ "p18": [
+  {
+   "id": "bg",
+   "src": "p18-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p18-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: Predictions of the Bohr Model. Bohr's model correctly predicted the wavelengths of light emitted by hydrogen but failed for other elements."
+  },
+  {
+   "id": "fg",
+   "src": "p18-fg.webp",
+   "box": [
+    197,
+    148,
+    1545,
+    620
+   ],
+   "f": 0.45,
+   "late": true
+  }
+ ],
+ "p19": [
+  {
+   "id": "bg",
+   "src": "p19-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p19-mid.webp",
+   "box": [
+    165,
+    172,
+    905,
+    628
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: Building the Model, Forces in the Atom. Equating Coulomb's force to the electron's mass times centripetal acceleration gives r equals K times the square of e, divided by m times the square of v."
+  },
+  {
+   "id": "fg",
+   "src": "p19-fg.webp",
+   "box": [
+    208,
+    148,
+    1548,
+    592
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p19-cut-try.webp",
+   "box": [
+    1104,
+    699,
+    1456,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p19-cut-try-hint.webp",
+   "hbox": [
+    1100,
+    695,
+    1460,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p19-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    573,
+    1506,
+    646
+   ],
+   "hbox": [
+    1441,
+    569,
+    1509,
+    650
+   ],
+   "hint": "p19-cut-obj-electron-hint.webp"
+  }
+ ],
+ "p20": [
+  {
+   "id": "bg",
+   "src": "p20-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p20-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: Quantized Angular Momentum. Bohr postulated that an electron's angular momentum is quantized: m v r equals n h over two pi."
+  },
+  {
+   "id": "fg",
+   "src": "p20-fg.webp",
+   "box": [
+    312,
+    138,
+    1541,
+    743
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p20-cut-try.webp",
+   "box": [
+    1179,
+    698,
+    1381,
+    741
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p20-cut-try-hint.webp",
+   "hbox": [
+    1175,
+    694,
+    1385,
+    745
+   ]
+  },
+  {
+   "id": "cut-obj-atom",
+   "src": "p20-cut-obj-atom.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1421,
+    567,
+    1535,
+    686
+   ],
+   "hbox": [
+    1417,
+    563,
+    1539,
+    690
+   ],
+   "hint": "p20-cut-obj-atom-hint.webp"
+  }
+ ],
+ "p21": [
+  {
+   "id": "bg",
+   "src": "p21-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p21-mid.webp",
+   "box": [
+    264,
+    130,
+    856,
+    762
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: The Bohr Radius. The radius of hydrogen's innermost orbit, the Bohr radius, is 5.3 times ten to the negative eleventh meters, or 0.053 nanometers."
+  },
+  {
+   "id": "fg",
+   "src": "p21-fg.webp",
+   "box": [
+    307,
+    148,
+    1547,
+    726
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p21-cut-try.webp",
+   "box": [
+    1123,
+    698,
+    1437,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p21-cut-try-hint.webp",
+   "hbox": [
+    1119,
+    694,
+    1441,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-knob",
+   "src": "p21-cut-obj-knob.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1393,
+    576,
+    1556,
+    640
+   ],
+   "hbox": [
+    1389,
+    572,
+    1560,
+    644
+   ],
+   "hint": "p21-cut-obj-knob-hint.webp"
+  }
+ ],
+ "p22": [
+  {
+   "id": "bg",
+   "src": "p22-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p22-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p22-fg.webp",
+   "box": [
+    167,
+    148,
+    1544,
+    655
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p22-cut-try.webp",
+   "box": [
+    1232,
+    799,
+    1329,
+    841
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p22-cut-try-hint.webp",
+   "hbox": [
+    1228,
+    795,
+    1333,
+    845
+   ]
+  },
+  {
+   "id": "cut-obj-atom",
+   "src": "p22-cut-obj-atom.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1421,
+    568,
+    1535,
+    686
+   ],
+   "hbox": [
+    1417,
+    564,
+    1539,
+    690
+   ],
+   "hint": "p22-cut-obj-atom-hint.webp"
+  }
+ ],
+ "p23": [
+  {
+   "id": "bg",
+   "src": "p23-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p23-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p23-fg.webp",
+   "box": [
+    165,
+    110,
+    1555,
+    771
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p23-cut-try.webp",
+   "box": [
+    1217,
+    799,
+    1343,
+    841
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p23-cut-try-hint.webp",
+   "hbox": [
+    1213,
+    795,
+    1347,
+    845
+   ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p23-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    592,
+    1506,
+    666
+   ],
+   "hbox": [
+    1441,
+    588,
+    1509,
+    670
+   ],
+   "hint": "p23-cut-obj-electron-hint.webp"
+  },
+  {
+   "id": "cut-obj-photon",
+   "src": "p23-cut-obj-photon.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1272,
+    603,
+    1411,
+    660
+   ],
+   "hbox": [
+    1268,
+    599,
+    1415,
+    664
+   ],
+   "hint": "p23-cut-obj-photon-hint.webp"
+  }
+ ],
+ "p24": [
+  {
+   "id": "bg",
+   "src": "p24-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p24-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p24-fg.webp",
+   "box": [
+    380,
+    112,
+    1551,
+    725
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p24-cut-try.webp",
+   "box": [
+    1106,
+    698,
+    1454,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p24-cut-try-hint.webp",
+   "hbox": [
+    1102,
+    694,
+    1458,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p24-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    572,
+    1506,
+    646
+   ],
+   "hbox": [
+    1441,
+    568,
+    1509,
+    650
+   ],
+   "hint": "p24-cut-obj-electron-hint.webp"
+  }
+ ],
+ "p25": [
+  {
+   "id": "bg",
+   "src": "p25-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p25-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p25-fg.webp",
+   "box": [
+    292,
+    111,
+    1552,
+    723
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p25-cut-try.webp",
+   "box": [
+    1109,
+    698,
+    1451,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p25-cut-try-hint.webp",
+   "hbox": [
+    1105,
+    694,
+    1455,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p25-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    572,
+    1506,
+    646
+   ],
+   "hbox": [
+    1441,
+    568,
+    1509,
+    650
+   ],
+   "hint": "p25-cut-obj-electron-hint.webp"
+  },
+  {
+   "id": "cut-obj-photon",
+   "src": "p25-cut-obj-photon.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1272,
+    582,
+    1411,
+    640
+   ],
+   "hbox": [
+    1268,
+    578,
+    1415,
+    644
+   ],
+   "hint": "p25-cut-obj-photon-hint.webp"
+  },
+  {
+   "id": "cut-obj-wave",
+   "src": "p25-cut-obj-wave.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1083,
+    575,
+    1228,
+    644
+   ],
+   "hbox": [
+    1079,
+    571,
+    1232,
+    648
+   ],
+   "hint": "p25-cut-obj-wave-hint.webp"
+  }
+ ],
+ "p26": [
+  {
+   "id": "bg",
+   "src": "p26-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p26-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: Bohr's Legacy. The ionization energy of an atom is the energy needed to completely free an electron from the atom."
+  },
+  {
+   "id": "fg",
+   "src": "p26-fg.webp",
+   "box": [
+    188,
+    130,
+    1543,
+    768
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p26-cut-try.webp",
+   "box": [
+    1116,
+    699,
+    1445,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p26-cut-try-hint.webp",
+   "hbox": [
+    1112,
+    695,
+    1449,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p26-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    572,
+    1506,
+    646
+   ],
+   "hbox": [
+    1441,
+    568,
+    1509,
+    650
+   ],
+   "hint": "p26-cut-obj-electron-hint.webp"
+  }
+ ]
+}

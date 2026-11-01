@@ -1,0 +1,162 @@
+{
+ "p02": {
+  "items": [
+   {
+    "id": "sample-cube",
+    "label": "wooden cube sample"
+   },
+   {
+    "id": "sample-stone",
+    "label": "gray stone sample"
+   },
+   {
+    "id": "sample-cylinder",
+    "label": "metal cylinder sample"
+   },
+   {
+    "id": "sample-ball",
+    "label": "brass ball sample"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p04": {
+  "items": [
+   {
+    "id": "date-1",
+    "label": "error bar 30,940 ± 610 years"
+   },
+   {
+    "id": "date-2",
+    "label": "error bar 30,790 ± 600 years"
+   },
+   {
+    "id": "date-3",
+    "label": "error bar 30,230 ± 530 years"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p05": {
+  "items": [
+   {
+    "id": "student-1",
+    "label": "student 1"
+   },
+   {
+    "id": "student-2",
+    "label": "student 2"
+   },
+   {
+    "id": "student-3",
+    "label": "student 3"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p06": {
+  "items": [
+   {
+    "id": "dropper",
+    "label": "dropper"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p08": {
+  "items": [
+   {
+    "id": "arrow",
+    "label": "arrow to shoot at a target"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p09": {
+  "items": [
+   {
+    "id": "standard-mass",
+    "label": "accepted standard mass to place on the pan"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p10": {
+  "items": [
+   {
+    "id": "eye",
+    "label": "eye position"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p11": {
+  "items": [
+   {
+    "id": "car-dot",
+    "label": "car receiver position dot, a few meters wide"
+   },
+   {
+    "id": "geo-dot",
+    "label": "geologist receiver position dot, millimeters wide"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ }
+}

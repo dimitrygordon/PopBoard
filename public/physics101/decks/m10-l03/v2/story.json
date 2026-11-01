@@ -1,0 +1,94 @@
+{
+ "slug": "m10-l03",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Energy Never Disappears",
+   "text": "<h3>Energy Never Disappears</h3><p class=\"p101-def\">The law of conservation of energy states that in a closed, isolated system, energy can neither be created nor destroyed.</p><p>Our big question for this lesson: can energy be lost? Let's find out!</p><p>The law of conservation of energy says that in a closed, isolated system, energy can't be created or destroyed. So the total change in energy of any system always equals the energy transferred into or out of it. Energy can travel from place to place, move between systems, and change forms, like the thermal energy a running car gives off to the air around it. But the total, counting every form, stays the same.</p><p>Inside a system, energy keeps shifting from object to object and from form to form. That's why we treat energy as one single quantity. It also means a battery-powered lamp can never give out more light energy than the energy stored in its battery.</p>"
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you complete the readings and activities in this lesson.</p><p>Online, the Applying Practices activity called Earth Power asks you to design, build, and refine a device that works within given constraints to convert one form of energy into another. And Modeling Changes in Energy has you build a computational model to calculate how the energy of one part of a system changes when you know the changes in the other parts and the energy flowing in and out.</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Mechanical Energy and a Falling Bowling Ball",
+   "text": "<h3>Mechanical Energy and a Falling Bowling Ball</h3><p class=\"p101-def\">Mechanical energy is the sum of the kinetic energy and potential energy of the objects in a system: M E equals K E plus P E.</p><p>We often focus on energy from objects' motions and interactions. The sum of a system's kinetic energy and potential energy is its mechanical energy, M E. Kinetic energy includes both translational and rotational kinetic energy, and potential energy includes gravitational and elastic potential energy.</p><p>Picture a 10.0-newton bowling ball held 2.00 meters up, as in Figure 22. The ball-Earth system's mechanical energy is 20.0 joules. Let go! As it falls, G P E turns into kinetic energy. At 1.00 meter up, G P E equals m g h, which is 10.0 newtons times 1.00 meter, or 10.0 joules. No outside forces do work on the system, so it's closed and isolated, and M E stays at 20.0 joules. So K E equals M E minus P E: 20.0 joules minus 10.0 joules, or 10.0 joules. At the ground, P E is zero and K E is the full 20.0 joules.</p><p>The energy available limits what can happen. At 1.00 meter, this ball's G P E can't be more than 10.0 joules. And if the ball started out moving upward, it would begin with some kinetic energy too, so its total M E bar would be taller from the start.</p>",
+   "testIt": {
+    "name": "Falling bowling ball",
+    "how": "Use the button to drop the 7.30 kg ball 0.5 m at a time from 2.0 m. ME stays fixed."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Conservation of Mechanical Energy",
+   "text": "<h3>Conservation of Mechanical Energy</h3><p class=\"p101-def\">When mechanical energy is conserved, K E sub i plus P E sub i equals K E sub f plus P E sub f.</p><p>When mechanical energy is conserved, the system's kinetic energy plus potential energy before an event equals its kinetic energy plus potential energy after: K E sub i plus P E sub i equals K E sub f plus P E sub f.</p><p>What if the ball rolls down a ramp instead, as in Figure 23? Without friction, the ball-Earth system is still closed and isolated. The ball still drops 2.00 meters, so G P E drops by 20.0 joules, and kinetic energy rises by 20.0 joules. The path doesn't matter! On the ramp, though, the kinetic energy is split between translational kinetic energy, since it moves forward, and rotational kinetic energy, since it rolls. If friction turned some energy into thermal energy, the ball would reach the bottom with less than 20.0 joules of kinetic energy.</p><p>Models like this are useful, but they have limits. Real balls meet air resistance and friction, so their predictions are never perfectly precise.</p>",
+   "testIt": {
+    "name": "Pick a path",
+    "how": "Set the drop height and tap to switch paths. Without friction every path gives the same speed."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Where Does the Energy Go?",
+   "text": "<h3>Where Does the Energy Go?</h3><p class=\"p101-def\">Friction and air resistance transform mechanical energy into other forms, such as thermal energy and sound.</p><p>A swinging pendulum eventually stops. A bouncing ball comes to rest. Roller-coaster hills get lower and lower along the ride. Where does the mechanical energy go? Objects moving through air feel air resistance, and roller coasters feel friction between the wheels and track. Each of those forces turns mechanical energy into other forms.</p><p>When a ball bounces, it squishes. Most of its kinetic energy becomes elastic potential energy, and some of that turns back into kinetic energy as it bounces up. The rest becomes thermal energy and sound inside the system, or leaves the system, as with air resistance. Math expressions for kinetic energy let us use conservation of energy to predict how systems behave, even collisions.</p><p>Try it yourself: roll a ball down a ramp made from a book or a board. Watch how far it rolls and where its energy goes. And here's a career that's all about changing energy forms: solar photovoltaic installers put in and maintain the solar panels that turn sunlight into electrical energy.</p>",
+   "testIt": {
+    "name": "Where the energy goes",
+    "how": "Use the button to add friction to a 2.0 kg block sliding down a 1.0 m drop."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Roller Coasters, Ski Slopes, and Pendulums",
+   "text": "<h3>Roller Coasters, Ski Slopes, and Pendulums</h3><p class=\"p101-def\">Designers of roller coasters, ski slopes, and pendulum clocks use conservation of mechanical energy.</p><p>Look at Figure 24. A roller-coaster car is nearly at rest at the top of the first hill, so the system's mechanical energy is all G P E there. If a later hill were taller than the first, the car couldn't make it over, because that would take more energy than the system has.</p><p>Skiing works the same way. You start from rest at the top, so all the mechanical energy is G P E. As you ski down, G P E turns into kinetic energy, and you speed up.</p><p>A pendulum is a classic too. The system is the bob and Earth, with the reference level at the bob's lowest point. Pulling the bob to one side does work and adds mechanical energy. At the moment you let go, it's all potential energy. As it swings down, potential energy becomes kinetic energy. At the bottom, G P E is zero and kinetic energy equals the total mechanical energy. Then it swings back up and trades the other way.</p>",
+   "testIt": {
+    "name": "Coaster hills",
+    "how": "Set the second hill's height. The car (starting at rest on a 30 m hill) clears hills lower than its start."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Example Problem 5, The Falling Tree Limb",
+   "text": "<h3>Example Problem 5, The Falling Tree Limb</h3><p class=\"p101-def\">With no outside work, K E sub f plus G P E sub f equals K E sub i plus G P E sub i.</p><p>A 22.0-kilogram tree limb is 13.3 meters above the ground. In a tropical storm, it falls on a roof 6.0 meters above the ground. Assuming the air does no work on it, what's the limb's kinetic energy when it hits the roof? And how fast is it going?</p><p>Step one: analyze and sketch. Sketch the start and end, choose a reference level, and draw an energy bar diagram. Known: m equals 22.0 kilograms, g equals 9.8 newtons per kilogram, the limb's height is 13.3 meters, the roof's height is 6.0 meters, and the limb starts at rest, so v sub i is 0.0 meters per second and K E sub i is 0.0 joules. Unknown: G P E sub i, G P E sub f, K E sub f, and v sub f.</p><p>Step two: solve. Set the reference level at the roof. The limb's starting height above the roof is 13.3 meters minus 6.0 meters, or 7.3 meters. So G P E sub i equals m g h: 22.0 kilograms times 9.8 newtons per kilogram times 7.3 meters, which is 1.6 times 10 to the third joules. At the roof, h is zero, so G P E sub f is 0.0 joules. By conservation of energy, K E sub f equals K E sub i plus G P E sub i minus G P E sub f: 0.0 plus 1.6 times 10 to the third minus 0.0, or 1.6 times 10 to the third joules. For the speed, K E sub f equals one half m times the square of v sub f, so v sub f equals the square root of 2 K E sub f over m: the square root of 2 times 1.6 times 10 to the third joules divided by 22.0 kilograms, which is 12 meters per second.</p><p>Step three: evaluate. Speed is in meters per second, and energy is in kilogram meters squared per second squared, which is joules. Kinetic energy and speed are both positive, as they should be.</p>",
+   "testIt": {
+    "name": "Tree limb",
+    "how": "Change the drop height above the roof for the 22.0 kg limb."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "A Strategy for Conservation of Energy Problems",
+   "text": "<h3>A Strategy for Conservation of Energy Problems</h3><p class=\"p101-def\">For an isolated system, E initial equals E final; with outside forces, E final equals E initial plus W.</p><p>Here's a strategy for conservation of energy problems. First, identify the system and decide if it's closed, meaning no objects enter or leave. Second, identify the forms of energy in the system and which ones count as mechanical energy. Third, identify the initial and final states.</p><p>Fourth, ask: is the system isolated? If no outside forces act on it, its total energy is constant, so E initial equals E final. If outside forces act, then E final equals E initial plus the work done on the system, and remember, that work can be negative. Fifth, for an isolated system with only kinetic and potential energy, mechanical energy is conserved: K E initial plus P E initial equals K E final plus P E final. Choose a reference level for G P E and draw before and after energy bar diagrams like the one shown here.</p>"
+  },
+  "9": {
+   "layers": [],
+   "title": "Analyzing Collisions",
+   "text": "<h3>Analyzing Collisions</h3><p class=\"p101-def\">In a closed, isolated collision, momentum and total energy are conserved, but kinetic energy may not be.</p><p>Collisions, between cars like those in Figure 25, hockey players, or even subatomic particles, are among the most common things physicists study. What happens during the crash can be complicated, so we look at the motion just before and just after. If the system is closed and isolated, momentum and energy are both conserved. But some of the energy might become potential or thermal energy, or come from it. So you can't predict whether kinetic energy is conserved.</p><p>Figure 26 shows four collisions between 1.00-kilogram carts. In case 1, cart A moves at 1.00 meter per second and hits cart B at rest. Before, the momentum is 1.00 kilogram times 1.00 meter per second plus 1.00 kilogram times 0.00 meters per second, or 1.00 kilogram meter per second. After, A stops and B moves at 1.00 meter per second, so it's still 1.00 kilogram meter per second. Momentum is conserved, and you can check that it's conserved in the other three cases too.</p><p>In a car crash, kinetic energy goes down. Where does it go? Into bending metal, thermal energy, and sound.</p>",
+   "testIt": {
+    "name": "Collision types",
+    "how": "Use the button to compare kinds of collision for two 1.0 kg carts, one at 2.0 m/s."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Elastic and Inelastic Collisions",
+   "text": "<h3>Elastic and Inelastic Collisions</h3><p class=\"p101-def\">In an elastic collision, kinetic energy does not change; in an inelastic collision, kinetic energy decreases.</p><p>Now look at kinetic energy in Figure 26. In case 1, it's the same before and after: one half times 1.00 kilogram times the square of 1.00 meter per second, or 0.50 joules, both times. A collision in which kinetic energy doesn't change is called an elastic collision. Collisions between hard objects, like steel or hard plastic, are often called nearly elastic.</p><p>In cases 2 and 3, kinetic energy went down, maybe turning into thermal energy. That's an inelastic collision, typical of soft, sticky things like clay. In case 2, the carts stuck together. A collision where the objects stick together is called a perfectly inelastic collision.</p><p>In case 4, kinetic energy went up! If energy is conserved, some other form must have gone down, like a compressed spring releasing its potential energy during the collision. That's a superelastic, or explosive, collision. We can always calculate kinetic energy before and after, but we don't always know the details of the other forms. In car crashes, the thermal energy and sound are hard to measure, so we infer them from how much kinetic energy disappeared.</p>",
+   "testIt": {
+    "name": "Bumpers",
+    "how": "Tap to switch bumpers on two 1.0 kg carts, one moving at 2.0 m/s."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Example Problem 6, An Inelastic Collision",
+   "text": "<h3>Example Problem 6, An Inelastic Collision</h3><p class=\"p101-def\">In a perfectly inelastic collision, v sub f equals the total momentum divided by the total mass, and the change in K E is negative.</p><p>On a slippery road, a 1150-kilogram compact car moving at 15.0 meters per second smashes into the back of a 1575-kilogram car moving at 5.0 meters per second in the same direction. If the wrecked cars lock together, what's their final velocity? And how much kinetic energy is lost?</p><p>Step one: analyze and sketch. Sketch before and after, and draw the momentum diagram. Known: m sub A equals 1150 kilograms, m sub B equals 1575 kilograms, v sub A i equals 15.0 meters per second, v sub B i equals 5.0 meters per second, and both cars share one final velocity. Unknown: v sub f and delta K E.</p><p>Step two: solve. Use conservation of momentum: m sub A v sub A i plus m sub B v sub B i equals the quantity m sub A plus m sub B, times v sub f. So v sub f equals 1150 kilograms times 15.0 meters per second plus 1575 kilograms times 5.0 meters per second, all over 1150 kilograms plus 1575 kilograms. That's 9.2 meters per second, in the direction of motion. Next, the final kinetic energy: one half times 2725 kilograms times the square of 9.2 meters per second, about 1.2 times 10 to the fifth joules. The initial kinetic energy is one half times 1150 kilograms times the square of 15.0 meters per second, plus one half times 1575 kilograms times the square of 5.0 meters per second, about 1.5 times 10 to the fifth joules. So delta K E equals K E sub f minus K E sub i, about negative 3.3 times 10 to the fourth joules.</p><p>Step three: evaluate. Velocity is in meters per second and energy in joules. The change in kinetic energy is negative, just as expected for an inelastic collision.</p><p>So, can energy be lost? Never! It can only change form or move somewhere else. Kinetic energy can disappear in a crash, but it shows up as thermal energy, sound, and crumpled metal.</p>",
+   "testIt": {
+    "name": "Locked cars",
+    "how": "Change the speeds. The wreck shares one velocity and kinetic energy is lost."
+   }
+  }
+ }
+}

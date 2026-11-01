@@ -1,0 +1,129 @@
+{
+ "slug": "m18-l02",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Forces on Charged Objects",
+   "text": "<h3>Forces on Charged Objects</h3><p class=\"p101-def\">Like charges repel, unlike charges attract, and charges exert forces on each other at a distance.</p><p>Our big question for this lesson: how can objects become electrically charged? People have noticed electrostatic forces for thousands of years. In the 1750s, Daniel Bernoulli, famous for his work on fluids, made some rough measurements. In the 1770s, Henry Cavendish worked out a mathematical relationship for the forces between charges, but he never published it. So the credit went to the French physicist Charles Coulomb.</p><p>Here's a simple demonstration. Hang a negatively charged hard rubber rod so it can turn freely, like in Figure 5. Bring another negatively charged rod near it, and the hanging rod swings away, even though the rods never touch. Bring a positively charged rod near it instead, and the two attract.</p><p>So here's what charged rods teach us. There are two kinds of charge, positive and negative. Like charges repel, and unlike charges attract. Charges push and pull on each other at a distance. And the force gets stronger as the charges get closer.</p>",
+   "testIt": {
+    "name": "Hanging rod",
+    "how": "Tap to bring the next rod near a hanging negative rod."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson.</p><p>Online, Applying Practices: Gravitational and Electrostatic Forces has you use Newton's law of gravitation and Coulomb's law to describe and predict forces between objects. The PhysicsLAB called Charge It Up lets you investigate different ways of charging objects. And as you go, ask yourself: what information from this lesson can help you answer the Unit and Module questions?</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "The Electroscope and Charging by Conduction",
+   "text": "<h3>The Electroscope and Charging by Conduction</h3><p class=\"p101-def\">Charging by conduction is charging a neutral object by touching it with a charged object.</p><p>Tape strips and hanging rods aren't very sensitive charge detectors. A better tool is the electroscope: a metal knob connected by a metal stem to two thin, light metal foil leaves, sealed inside a case to block air currents. In a neutral electroscope, like Figure 6, the leaves hang loosely together.</p><p>Touch a negatively charged rod to the knob, and electrons flow onto it and spread over all the metal. Both leaves become negative, repel each other, and spread apart, as in the left image of Figure 7. A positive charge spreads them too. Either way, you've given the electroscope a net charge. Charging a neutral object by touching it with a charged object is called charging by conduction.</p><p>So how do you tell positive from negative? Bring a rod of known charge close to the knob, without touching. If the leaves spread farther, the electroscope has the same charge as the rod. If they drop a bit, it has the opposite charge, as in the right image of Figure 7. And if that positive rod actually touched the knob? Charge would flow between them and cancel some or all of the electroscope's negative charge, so the leaves would collapse, and could spread again if the rod's positive charge won out.</p>",
+   "testIt": {
+    "name": "Electroscope",
+    "how": "Tap for the next action with a negative rod."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Separation of Charge on Neutral Objects",
+   "text": "<h3>Separation of Charge on Neutral Objects</h3><p class=\"p101-def\">A charged object attracts a neutral object by separating the charges inside it.</p><p>Remember how your charged tape stuck to your fingers, whether the tape was positive or negative? Your fingers were neutral, with equal positive and negative charge. So why the attraction? The charges in your fingers separated.</p><p>Place a neutral metal rod near a positively charged object. The object pulls on the rod's electrons, which move easily in a conductor, so some of them gather at the near end. That end becomes negative, and the far end positive. The rod is still neutral overall, but its charges have separated.</p><p>Since the electrostatic force is stronger when charges are closer, the attraction to the nearby negative end beats the repulsion from the faraway positive end. The result: a net attraction between the charged object and the neutral rod.</p>",
+   "testIt": {
+    "name": "Neutral rod",
+    "how": "Move a negative object closer to a neutral rod."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Lightning",
+   "text": "<h3>Lightning</h3><p class=\"p101-def\">Lightning is a discharge along a conducting path of charged air particles between a cloud and the ground.</p><p>The negative charges at the bottom of a thundercloud can separate charges on Earth. Negative charges in the ground below the cloud are pushed away from the surface, leaving it positive.</p><p>The forces between charges in the cloud and on the ground can be strong enough to break air molecules into positively and negatively charged particles. Those particles form a conducting path between the ground and the cloud. A bolt of lightning happens when electrons rush along that path and discharge the cloud and Earth, as in Figure 8.</p>",
+   "testIt": {
+    "name": "Cloud and ground",
+    "how": "Build up negative charge in the cloud."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Charging by Induction",
+   "text": "<h3>Charging by Induction</h3><p class=\"p101-def\">Charging by induction is charging a neutral object by bringing a charged object near it, without touching.</p><p>Picture two identical metal spheres on insulating stands, touching each other, like in Figure 9. Bring a negatively charged rod close to one sphere. Electrons are pushed away, from the near sphere onto the far sphere. Now the far sphere is negative and the near sphere is positive.</p><p>Separate the spheres while the rod is still nearby, and each sphere keeps a charge, equal in size but opposite in sign. Not a single charge came from the rod! Charging a neutral object by bringing a charged object near it is called charging by induction.</p>",
+   "testIt": {
+    "name": "Two spheres",
+    "how": "Tap for the next induction step with two touching spheres."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Grounding",
+   "text": "<h3>Grounding</h3><p class=\"p101-def\">Grounding is the process of removing excess charge by connecting an object to Earth.</p><p>Figure 10 shows how to charge an electroscope by induction using grounding, which is removing excess charge by connecting an object to Earth. Earth is so huge it can soak up enormous amounts of charge without noticeably charging itself.</p><p>Bring a negative rod near the knob, and it pushes electrons down onto the leaves. Now touch the knob on the side away from the rod. Electrons are pushed out through your hand into the ground until the leaves are neutral. Lift your hand, keep the rod in place, and then take the rod away. The electroscope is left short of electrons, so it's positively charged.</p><p>Earth can also supply electrons. Bring a positive rod near a grounded electroscope, and electrons are pulled up from the ground, giving the electroscope a negative charge. With induction, the electroscope always ends up with the opposite charge from the rod. And since the rod never touches, it loses no charge and can be used again and again.</p>",
+   "testIt": {
+    "name": "Grounding",
+    "how": "Tap to run the steps; then tap again to try the wrong order."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Coulomb's Experiments",
+   "text": "<h3>Coulomb's Experiments</h3><p class=\"p101-def\">Coulomb found that electrostatic force varies inversely with the square of the distance and directly with the product of the charges.</p><p>Your tape experiments showed that the force between charges depends on distance and grows when the charges get bigger. But how do you change charge in a controlled way? In the 1780s, Charles Coulomb built an apparatus to measure the force between charged objects, like the one in Figure 11. A rod with a small conducting sphere, A, hung from a thin wire that could twist. An equal-sized sphere, B, on another rod touched A. When Coulomb charged B, the charge spread evenly over both spheres. Same size spheres, same charge: q sub A equals q sub B.</p><p>First, Coulomb measured how much force it took to twist the wire through a given angle. Then he varied the distance r between the spheres and measured how far A was pushed. He found that the force F varies inversely with the square of the distance between the sphere centers: F is proportional to 1 over the square of r.</p><p>To change charge, he touched an identical uncharged sphere, C, to B. They shared B's charge, so B kept only half. At the same distance, the force dropped to half. So the force varies directly with the charges: F is proportional to q sub A times q sub B.</p>",
+   "testIt": {
+    "name": "Torsion balance",
+    "how": "Halve the charge by sharing and change the distance."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Coulomb's Law and the Coulomb",
+   "text": "<h3>Coulomb's Law and the Coulomb</h3><p class=\"p101-def\">Coulomb's law: F equals K times q sub A times q sub B, divided by the square of r, with K equal to 9.0 times ten to the ninth newton square meters per square coulomb.</p><p>Coulomb summed up his findings in what we now call Coulomb's law: the force between point charges q sub A and q sub B, a distance r apart, is proportional to the product of the charges and inversely proportional to the square of the distance between them. It's a mathematical model that lets us describe and predict electrostatic forces.</p><p>Since charge is hard to measure directly, it's defined through the force it produces. The SI unit of charge is the coulomb, C. One coulomb is the charge of 6.24 times ten to the eighteenth electrons or protons. A proton is the positively charged particle in an atom's nucleus. The size of the charge on a single electron or proton is the elementary charge, 1.602 times ten to the negative nineteenth coulombs.</p><p>All objects contain charge. In a neutral book, the negative charge might be negative 1 times ten to the sixth coulombs and the positive charge 1 times ten to the sixth coulombs, so the net charge is zero. To find the force, add a constant: F equals K times q sub A times q sub B, divided by the square of r. With charge in coulombs, distance in meters, and force in newtons, K is 9.0 times ten to the ninth newton square meters per square coulomb.</p>",
+   "testIt": {
+    "name": "Coulomb",
+    "how": "Set two charges and the distance."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Electrostatic Force Is a Vector",
+   "text": "<h3>Electrostatic Force Is a Vector</h3><p class=\"p101-def\">Coulomb's law gives the magnitude of the force; direction comes from the charges, like repel and unlike attract.</p><p>Coulomb's law gives the size of the force A exerts on B, and also of the force B exerts on A. They're equal. That's Newton's third law! Bring two like-charged tape strips together, and each pushes the other. Bring a charged comb near a strip, and the light strip zips over, while the heavy comb barely accelerates, because its mass is so much greater.</p><p>Like every force, the electrostatic force is a vector, with both magnitude and direction. The equation gives only the magnitude. For direction, draw force vectors, as in Figure 12. Like charges push apart, and unlike charges pull together.</p><p>To solve electrostatic force problems: sketch the system with distances and angles to scale. Diagram the force vectors. Use Coulomb's law for each magnitude. Use your diagram and trigonometry for direction. Carry units through every step. And check that the net force is reasonably close in size to the individual forces.</p>",
+   "testIt": {
+    "name": "Arrows",
+    "how": "Tap to switch the sign of charge B."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Example Problem 1, Coulomb's Law in Two Dimensions, Part 1",
+   "text": "<h3>Example Problem 1, Coulomb's Law in Two Dimensions, Part 1</h3><p class=\"p101-def\">The force of B on A is K times q sub A times q sub B, divided by the square of r sub AB.</p><p>Sphere A has a charge of positive 6.0 microcoulombs. Sphere B has a charge of negative 3.0 microcoulombs and sits 4.0 centimeters to the right of A. First, what's the force of B on A? Then a third sphere, C, with positive 1.5 microcoulombs, is placed 3.0 centimeters directly below A. What's the new net force on A?</p><p>Step one: analyze and sketch. Set up axes, sketch the spheres, label the distances, and draw the force vectors. Known: q sub A is positive 6.0 microcoulombs, q sub B is negative 3.0 microcoulombs, q sub C is positive 1.5 microcoulombs, r sub AB is 4.0 centimeters, r sub AC is 3.0 centimeters, and K is 9.0 times ten to the ninth newton square meters per square coulomb. Unknown: the force of B on A, the force of C on A, and the net force.</p><p>Step two: solve. The force of B on A is K times q sub A times q sub B, divided by the square of r sub AB. Substitute 9.0 times ten to the ninth, times 6.0 times ten to the negative sixth coulombs, times 3.0 times ten to the negative sixth coulombs, divided by the square of 4.0 times ten to the negative second meters. That's 1.0 times ten to the second newtons, about 100 newtons. A and B have unlike charges, so B pulls A to the right.</p>",
+   "testIt": {
+    "name": "Force of B on A",
+    "how": "Move B (−3.0 µC) away from A (+6.0 µC)."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Example Problem 1, Part 2, the Net Force",
+   "text": "<h3>Example Problem 1, Part 2, the Net Force</h3><p class=\"p101-def\">The net force is the vector sum: the square root of the sum of the squares of the two perpendicular forces.</p><p>Now the force of C on A. It's K times q sub A times q sub C, divided by the square of r sub AC. Substitute 9.0 times ten to the ninth, times 6.0 times ten to the negative sixth coulombs, times 1.5 times ten to the negative sixth coulombs, divided by the square of 3.0 times ten to the negative second meters. That's 9.0 times ten to the first newtons, or 90 newtons. A and C have like charges, so they repel, and C pushes A upward.</p><p>These two forces are at right angles, so add them like vectors. The net force is the square root of the square of 1.0 times ten to the second newtons plus the square of 9.0 times ten to the first newtons, which is 130 newtons. For direction, the tangent of theta is the force of C on A divided by the force of B on A. Theta is the inverse tangent of 90 newtons over 100 newtons, which is 42 degrees. So the net force is 1.3 times ten to the second newtons, 42 degrees above the x-axis.</p><p>Step three: evaluate. Newton square meters per square coulomb, times coulombs times coulombs, divided by square meters, leaves newtons. The directions make sense: like charges repel, unlike attract. And 130 newtons is reasonably close to the 90 and 100 newton pieces.</p>",
+   "testIt": {
+    "name": "Add C",
+    "how": "Move C (+1.5 µC) below A; B stays 4.0 cm right (100 N)."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Using Coulomb's Law Wisely",
+   "text": "<h3>Using Coulomb's Law Wisely</h3><p class=\"p101-def\">Coulomb's law applies to point charges or to charge spread uniformly over a sphere.</p><p>Coulomb's law works for point charges, or for charge spread evenly over a sphere. If the charge is spread evenly across a sphere's surface or through its volume, you can treat it as if it's all at the center.</p><p>But watch out with conductors! Bring another charge near a conducting sphere, and the charges on the sphere move, attracted or repelled. Now the sphere isn't uniformly charged, and its charge no longer acts as if it's at the center. So think about how big and how far apart two charged spheres are before using Coulomb's law.</p><p>In this book, assume charged spheres are small and far enough apart to count as point charges, unless told otherwise. For shapes like long wires or flat plates, you model the charge as a collection of point charges and add up their effects.</p>",
+   "testIt": {
+    "name": "Conducting sphere",
+    "how": "Bring a positive charge closer to a conducting sphere."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "Applications of Electrostatic Forces",
+   "text": "<h3>Applications of Electrostatic Forces</h3><p class=\"p101-def\">Painting, photocopying, laser printing, and pollution control all use electrostatic forces.</p><p>Industry puts electrostatic forces to work all the time. Tiny paint droplets can be charged by induction. Sprayed on a car, the droplets repel each other, so the paint spreads in an even coat. Photocopiers use static electricity to place black toner on a page, making a precise copy. Laser printers do something similar: toner particles are attracted to charged characters on a drum.</p><p>Smokestacks use it too. Emissions from burning fuel come out charged, and they're attracted to collectors given the opposite charge. A liquid spray then washes the collected material away safely. These electrostatic precipitators make a huge difference in how much pollution, like fly ash from burning coal, reaches the air, as Figure 13 shows.</p>",
+   "testIt": {
+    "name": "Precipitator",
+    "how": "Tap to switch the precipitator."
+   }
+  }
+ }
+}

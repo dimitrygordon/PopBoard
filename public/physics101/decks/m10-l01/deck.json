@@ -1,0 +1,81 @@
+{
+ "key": "M10-L01",
+ "ptw": 960.0,
+ "slides": [
+  {
+   "n": 1,
+   "title": "Pushing a Book Bag",
+   "items": []
+  },
+  {
+   "n": 2,
+   "title": "The Joule",
+   "items": []
+  },
+  {
+   "n": 3,
+   "title": "Your Investigation Toolkit",
+   "items": []
+  },
+  {
+   "n": 4,
+   "title": "Work Done by a Constant Force",
+   "items": []
+  },
+  {
+   "n": 5,
+   "title": "Force at an Angle",
+   "items": []
+  },
+  {
+   "n": 6,
+   "title": "Work Done by Many Forces",
+   "items": []
+  },
+  {
+   "n": 7,
+   "title": "Work from a Force-Displacement Graph",
+   "items": []
+  },
+  {
+   "n": 8,
+   "title": "A Strategy for Work Problems",
+   "items": []
+  },
+  {
+   "n": 9,
+   "title": "Example Problem 1, Work on a Hockey Puck",
+   "items": []
+  },
+  {
+   "n": 10,
+   "title": "Example Problem 2, Pulling a Boat at an Angle",
+   "items": []
+  },
+  {
+   "n": 11,
+   "title": "Energy and the Work-Energy Theorem",
+   "items": []
+  },
+  {
+   "n": 12,
+   "title": "Kinetic Energy and the Energy Bank",
+   "items": []
+  },
+  {
+   "n": 13,
+   "title": "Power",
+   "items": []
+  },
+  {
+   "n": 14,
+   "title": "Example Problem 3, Elevator Power",
+   "items": []
+  },
+  {
+   "n": 15,
+   "title": "Power and Speed",
+   "items": []
+  }
+ ]
+}

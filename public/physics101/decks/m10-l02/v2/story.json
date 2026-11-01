@@ -1,0 +1,108 @@
+{
+ "slug": "m10-l02",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Energy Comes in Flavors",
+   "text": "<h3>Energy Comes in Flavors</h3><p class=\"p101-def\">Energy can change from one form to another, and a system can hold energy in many forms at once.</p><p>Our big question for this lesson: what are some forms of energy? Remember the work-energy theorem: doing work on a system changes its energy. When something does work on the system, the system's energy goes up. When the system does work on its surroundings, its energy goes down.</p><p>Energy is a bit like ice cream. It comes in different flavors, like vanilla, chocolate, and peach, but it's all ice cream. Unlike ice cream, though, energy can change from one flavor into another!</p><p>At everyday scales, energy shows up as motion, sound, light, and thermal energy. At a fireworks show, like the one in Figure 12, the chemical reactions in the fireworks release energy that you see as moving, colorful light, hear as loud pops, and maybe even feel as warmth if you're close (but not too close). A campfire is another event with several forms at once: light, warmth, and crackling sound.</p>"
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you complete the readings and activities in this lesson.</p><p>Online, the Review the News activity asks you to find a current news story about energy or energy resources, evaluate your source, and share what you learn with your class. And as you go, think about what this lesson tells you about the big questions for the unit and module.</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Translational Kinetic Energy",
+   "text": "<h3>Translational Kinetic Energy</h3><p class=\"p101-def\">Translational kinetic energy is the energy of an object moving from place to place: K E trans equals one half m times the square of v.</p><p>So far, our moving objects have had kinetic energy, one half m times the square of v, because they move from place to place. That's called translational kinetic energy. A system's translational kinetic energy equals one half its mass times the square of its speed.</p><p>It's proportional to mass. A 7.26-kilogram bowling ball flying through the air has more translational kinetic energy than a 0.148-kilogram baseball, like the one in Figure 13, at the same speed.</p><p>And it's proportional to the square of the speed. A car at 20 meters per second has four times the kinetic energy of the same car at 10 meters per second. Why? Doubling v makes the square of v go up by 2 times 2, which is 4.</p><p>A quick word check: in everyday talk, energy means being lively, like students at recess. In science, it's the ability of a system to produce a change in itself or the world around it, like a soccer ball's kinetic energy dropping as it slows down.</p>",
+   "testIt": {
+    "name": "Ball KE",
+    "how": "Set the ball's mass and speed and read its kinetic energy."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Rotational Kinetic Energy",
+   "text": "<h3>Rotational Kinetic Energy</h3><p class=\"p101-def\">Rotational kinetic energy is energy due to rotational motion: K E rot equals one half I times the square of omega.</p><p>Spin a top in one spot. Does it have kinetic energy? It isn't going anywhere! But you had to do work to set it spinning. The top has rotational kinetic energy, energy due to rotation. It's one half I times the square of omega, where I is the moment of inertia and omega is the angular velocity.</p><p>In Figure 14, the diving board does work on the diver and gives her both kinds of kinetic energy. Her center of mass moves as she leaps, so she has translational kinetic energy. She spins about her center of mass, so she has rotational kinetic energy too. When she slices into the water, her energy is mostly translational.</p>",
+   "testIt": {
+    "name": "Spinning energy",
+    "how": "Use the button to spin a 2.0 kg, 0.30 m wheel faster."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Potential Energy",
+   "text": "<h3>Potential Energy</h3><p class=\"p101-def\">Potential energy is energy stored due to interactions between objects in a system.</p><p>Think back to the money model. Five dollars can be one bill, 500 pennies, or 20 quarters, and it's still five dollars. Energy works the same way. It can be kinetic energy, stored energy, or another form.</p><p>Picture boulders high on a mountain. Geological processes pushed them up, away from Earth's center, against gravity. So the Earth-boulders system has stored energy. Energy stored because of interactions between objects in a system is called potential energy.</p><p>Not all potential energy comes from gravity. A spring-loaded toy stores potential energy in its squeezed spring. Here's something to think about: math models like these let us predict how a system behaves, but every model has limits, like ignoring friction on an ice rink. Can you spot when a model stops matching reality?</p>",
+   "testIt": {
+    "name": "Stored energy",
+    "how": "Use the buttons to raise a 1.0 kg book or squeeze a spring and see the stored energy."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "The Juggler and the Work Done by Gravity",
+   "text": "<h3>The Juggler and the Work Done by Gravity</h3><p class=\"p101-def\">Gravity does negative work, negative m g h, as a ball rises and positive work, m g h, as it falls.</p><p>Look at the juggled balls in Figure 15. If the system is just one ball, the juggler's hand does work, giving it kinetic energy. After it leaves the hand, only gravity acts on it, if we ignore air resistance. How much work does gravity do?</p><p>Let h be the ball's height above the juggler's hand. On the way up, the ball moves up but gravity pulls down, so gravity does negative work: W sub g equals negative m g h. That slows the ball to a stop. On the way down, force and displacement point the same way, so gravity does positive work: W sub g equals m g h. The ball speeds up, and when it gets back to the juggler's hand, it has all its original kinetic energy again. The energy bar diagrams in Figure 15 show this trade.</p>",
+   "testIt": {
+    "name": "Juggler",
+    "how": "Use the button to move the 0.20 kg ball up and down. Gravity does negative work going up and positive work coming down."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Gravitational Potential Energy",
+   "text": "<h3>Gravitational Potential Energy</h3><p class=\"p101-def\">Gravitational potential energy is the energy stored in an object-Earth system due to gravity: G P E equals m g h.</p><p>Newton's law of universal gravitation says any two objects attract each other. That force does work when one of them moves. Usually we care about an object and Earth, so we treat them together as one system. When the object moves away from Earth, the system stores energy. That stored energy is called gravitational potential energy, or G P E.</p><p>Height is measured from a reference level, the place where G P E is defined to be zero. For the juggler, it's the hand. For an object of mass m at a height h above the reference level, G P E equals m g h, where g is the gravitational field strength. Like kinetic energy, G P E is measured in joules.</p><p>Now consider the Earth and juggled-ball system. At the start, all its energy is kinetic. As the ball rises and slows, kinetic energy changes into G P E. At the top, the velocity is zero and it's all G P E. On the way down, G P E turns back into kinetic energy. Since no outside forces do work on the system, the sum of kinetic energy and G P E stays constant the whole time. A hydroelectric dam uses the same trade: water's G P E turns into kinetic energy as it falls, then into electrical energy in the turbines.</p>",
+   "testIt": {
+    "name": "KE and GPE",
+    "how": "Slide the 0.50 kg ball's height during a toss at 6.0 m/s. KE and GPE trade; the total stays 9.0 J."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Choosing a Reference Level",
+   "text": "<h3>Choosing a Reference Level</h3><p class=\"p101-def\">The reference level sets where G P E equals zero; it changes the value of G P E but not how G P E changes.</p><p>So far, the reference level was the juggler's hand, where h equals 0 meters and G P E equals 0 joules. But you can put the reference level wherever is handy.</p><p>Put it at the top of the ball's flight, as on the right side of Figure 16. Now the G P E is negative at the start, zero at the top, and negative again at the end. The total energy has a different value than with the hand as the reference, because the reference levels differ. But in either case, the total stays constant through the whole flight. You could also put the reference level at the floor, or at the ground outside, and the changes would come out exactly the same.</p>",
+   "testIt": {
+    "name": "Reference level",
+    "how": "Drag the reference level. GPE values shift, but the change between two heights stays the same."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Example Problem 4, Lifting a Bowling Ball",
+   "text": "<h3>Example Problem 4, Lifting a Bowling Ball</h3><p class=\"p101-def\">G P E relative to a reference level is m g h, where h is measured from that level.</p><p>You lift a 7.30-kilogram bowling ball from a rack 0.610 meters above the floor to your shoulder, 1.12 meters above the floor. With the ball at your shoulder, what's the ball-Earth system's G P E relative to the floor? Relative to the rack? And how much work did gravity do as you lifted it?</p><p>Step one: analyze and sketch. Sketch it, choose a reference level, and draw an energy bar diagram with the floor as the reference. Known: m equals 7.30 kilograms, g equals 9.8 newtons per kilogram, h sub r equals 0.610 meters for the rack, and h sub s equals 1.12 meters for your shoulder. Unknown: the two G P E values and the work done by gravity.</p><p>Step two: solve. With the floor as reference, G P E equals m g h sub s: 7.30 kilograms times 9.8 newtons per kilogram times 1.12 meters, or 8.0 times 10 to the first joules, which is 80 joules. With the rack as reference, the shoulder's height is h equals h sub s minus h sub r. So G P E equals 7.30 kilograms times 9.8 newtons per kilogram times the quantity 1.12 meters minus 0.610 meters, or 36 joules. That's also the work you did lifting the ball. Gravity's work is the ball's weight times the distance lifted, but the weight opposes the lift, so it's negative: negative m g times the quantity h sub s minus h sub r, which is negative 36 joules.</p><p>Step three: evaluate. G P E and work are both in joules. And the G P E relative to the floor is bigger than relative to the rack, because the ball is farther above the floor than above the rack.</p>",
+   "testIt": {
+    "name": "Bowling ball GPE",
+    "how": "Tap to switch the reference level between the floor and the rack."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Elastic Potential Energy",
+   "text": "<h3>Elastic Potential Energy</h3><p class=\"p101-def\">Elastic potential energy is stored energy due to an object's change in shape.</p><p>When an archer pulls back a bow string, as in Figure 17, work is done on the string, and energy goes into the bow. If the system is the bow, the arrow, and Earth, the system's energy goes up. When the string and arrow are released, that stored energy turns into kinetic energy.</p><p>The energy stored in the pulled string and bent bow is elastic potential energy, stored energy due to an object's change in shape. Springs, rubber bands, and trampolines all store elastic potential energy.</p><p>Pole-vaulting shows it beautifully. Old stiff metal or bamboo poles barely bent, so little work went into them and they stored little energy. Flexible fiberglass poles changed everything, and record heights soared. In Figure 18, the vaulter plants the pole and bends it, turning some kinetic energy into elastic potential energy. As the pole straightens, that energy becomes gravitational potential energy and kinetic energy, lifting the vaulter about 6 meters high!</p>",
+   "testIt": {
+    "name": "Spring energy",
+    "how": "Use the buttons to change the spring constant and the stretch."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Chemical and Nuclear Energy",
+   "text": "<h3>Chemical and Nuclear Energy</h3><p class=\"p101-def\">Chemical energy is stored in the bonds between atoms; nuclear energy is stored inside the nucleus of an atom.</p><p>Think of all the energy you meet each day. Gasoline runs cars. Food runs you. Power plants harness wind, water, fossil fuels, as in Figure 19, and atoms, turning that energy into electrical energy.</p><p>Some forms are easiest to understand if we think of energy as a property of a system that depends on the motion and interactions of matter and radiation inside it. Radiation, including light, carries energy by electromagnetic waves, which you'll meet in a later module. When you eat, your body uses energy from the chemical bonds in your food. The nucleus of an atom stores energy too, called nuclear energy, which is released when the nucleus changes structure. Without understanding the structure of atoms and the processes inside them, we couldn't build math models to predict how much energy they release.</p>"
+  },
+  "12": {
+   "layers": [],
+   "title": "Thermal, Electrical, and Radiant Energy",
+   "text": "<h3>Thermal, Electrical, and Radiant Energy</h3><p class=\"p101-def\">Thermal energy is the sum of the kinetic and potential energy of the particles in a system; electrical energy is energy associated with charged particles.</p><p>Thermal energy goes with temperature. It's the sum of the kinetic energy and potential energy of all the particles in a system. Rub your hands together, and you turn kinetic energy into thermal energy. Thermal energy can also be transferred, like a stove heating a pan in Figure 20.</p><p>Power plants turn other forms of energy into electrical energy, the energy associated with charged particles. It travels through wires, like those in Figure 21, to your home. There, appliances turn it into other forms, like the radiant energy of light from a lightbulb.</p>",
+   "testIt": {
+    "name": "Other forms",
+    "how": "Use the button to step through thermal, electrical and radiant energy."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Mass Is Energy Too",
+   "text": "<h3>Mass Is Energy Too</h3><p class=\"p101-def\">Rest energy is the energy represented by an object's mass: E sub zero equals m times the square of c.</p><p>Albert Einstein showed that mass itself is a form of energy, called rest energy. E sub zero equals m times the square of c, where c is the speed of light. Mass can be transformed into other forms of energy. But you only notice this mass-energy equivalence when huge amounts of energy are involved, as in nuclear explosions and particle physics experiments.</p><p>So, what are some forms of energy? Translational and rotational kinetic energy, gravitational and elastic potential energy, chemical, nuclear, thermal, electrical, and radiant energy, and even mass itself. And energy keeps changing from one form to another!</p>"
+  }
+ }
+}

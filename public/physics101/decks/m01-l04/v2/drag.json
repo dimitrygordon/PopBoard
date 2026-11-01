@@ -1,0 +1,218 @@
+{
+ "p01": {
+  "items": [
+   {
+    "id": "mass-5g",
+    "label": "brass mass 5 g"
+   },
+   {
+    "id": "mass-10g",
+    "label": "brass mass 10 g"
+   },
+   {
+    "id": "mass-15g",
+    "label": "brass mass 15 g"
+   },
+   {
+    "id": "mass-20g",
+    "label": "brass mass 20 g"
+   },
+   {
+    "id": "mass-25g",
+    "label": "brass mass 25 g"
+   },
+   {
+    "id": "mass-30g",
+    "label": "brass mass 30 g"
+   },
+   {
+    "id": "mass-35g",
+    "label": "brass mass 35 g"
+   },
+   {
+    "id": "mass-50g",
+    "label": "brass mass 50 g"
+   }
+  ],
+  "targets": [
+   {
+    "id": "spring",
+    "label": "coil spring with hook",
+    "box": [
+     327,
+     195,
+     408,
+     592
+    ],
+    "at": [
+     368,
+     592
+    ],
+    "anchor": "top"
+   }
+  ],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": true,
+  "stayWhereDropped": false
+ },
+ "p04": {
+  "items": [
+   {
+    "id": "best-fit-line",
+    "label": "blue line of best fit"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p05": {
+  "items": [
+   {
+    "id": "axis-label-1",
+    "label": "axis label tile \"Mass"
+   },
+   {
+    "id": "axis-label-2",
+    "label": "axis label tile \"Length"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p06": {
+  "items": [
+   {
+    "id": "least-squares",
+    "label": "calculator least-squares line, revealed to compare with the eyeballed line"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p07": {
+  "items": [
+   {
+    "id": "slider-m",
+    "label": "slider knob for m"
+   },
+   {
+    "id": "slider-b",
+    "label": "slider knob for b"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p08": {
+  "items": [
+   {
+    "id": "point-P",
+    "label": "draggable point P"
+   },
+   {
+    "id": "point-Q",
+    "label": "draggable point Q"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p10": {
+  "items": [
+   {
+    "id": "ball",
+    "label": "brass ball to release"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p11": {
+  "items": [
+   {
+    "id": "car",
+    "label": "car"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p13": {
+  "items": [
+   {
+    "id": "mass-49g",
+    "label": "49 g mass to hang"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p14": {
+  "items": [
+   {
+    "id": "clock",
+    "label": "grandfather clock"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ }
+}

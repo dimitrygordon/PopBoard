@@ -1,0 +1,81 @@
+{
+ "key": "M21-L01",
+ "ptw": 960.0,
+ "slides": [
+  {
+   "n": 1,
+   "title": "Changing Magnetic Fields",
+   "items": []
+  },
+  {
+   "n": 2,
+   "title": "Your Investigation Toolkit",
+   "items": []
+  },
+  {
+   "n": 3,
+   "title": "Relative Motion",
+   "items": []
+  },
+  {
+   "n": 4,
+   "title": "Electromotive Force",
+   "items": []
+  },
+  {
+   "n": 5,
+   "title": "Calculating Induced EMF",
+   "items": []
+  },
+  {
+   "n": 6,
+   "title": "Direction of the Induced Current",
+   "items": []
+  },
+  {
+   "n": 7,
+   "title": "Example Problem 1, Induced EMF",
+   "items": []
+  },
+  {
+   "n": 8,
+   "title": "Induced EMF in Microphones",
+   "items": []
+  },
+  {
+   "n": 9,
+   "title": "Electric Generators",
+   "items": []
+  },
+  {
+   "n": 10,
+   "title": "Orientation of the Loop",
+   "items": []
+  },
+  {
+   "n": 11,
+   "title": "Current Reversals and Where Current Is Induced",
+   "items": []
+  },
+  {
+   "n": 12,
+   "title": "Sources of Mechanical Energy",
+   "items": []
+  },
+  {
+   "n": 13,
+   "title": "AC and DC Generators",
+   "items": []
+  },
+  {
+   "n": 14,
+   "title": "Average Power and Effective Current",
+   "items": []
+  },
+  {
+   "n": 15,
+   "title": "Effective Potential Difference and the War of Currents",
+   "items": []
+  }
+ ]
+}

@@ -1,0 +1,71 @@
+{
+ "key": "M15-L01",
+ "ptw": 960.0,
+ "slides": [
+  {
+   "n": 1,
+   "title": "What Is Light?",
+   "items": []
+  },
+  {
+   "n": 2,
+   "title": "Your Investigation Toolkit",
+   "items": []
+  },
+  {
+   "n": 3,
+   "title": "The Ray Model of Light",
+   "items": []
+  },
+  {
+   "n": 4,
+   "title": "Luminous and Illuminated Sources",
+   "items": []
+  },
+  {
+   "n": 5,
+   "title": "Light and Matter",
+   "items": []
+  },
+  {
+   "n": 6,
+   "title": "Luminous Flux",
+   "items": []
+  },
+  {
+   "n": 7,
+   "title": "Illuminance",
+   "items": []
+  },
+  {
+   "n": 8,
+   "title": "The Inverse-Square Relationship",
+   "items": []
+  },
+  {
+   "n": 9,
+   "title": "Luminous Intensity",
+   "items": []
+  },
+  {
+   "n": 10,
+   "title": "Point-Source Illuminance",
+   "items": []
+  },
+  {
+   "n": 11,
+   "title": "Example Problem 1, Illumination of a Surface",
+   "items": []
+  },
+  {
+   "n": 12,
+   "title": "The Speed of Light and Clues from Io",
+   "items": []
+  },
+  {
+   "n": 13,
+   "title": "Measuring the Speed of Light",
+   "items": []
+  }
+ ]
+}

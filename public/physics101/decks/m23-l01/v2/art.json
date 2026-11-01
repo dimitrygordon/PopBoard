@@ -1,0 +1,1431 @@
+{
+ "p01": [
+  {
+   "id": "bg",
+   "src": "p01-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p01-mid.webp",
+   "box": [
+    910,
+    90,
+    1549,
+    900
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p01-fg.webp",
+   "box": [
+    157,
+    148,
+    783,
+    298
+   ],
+   "f": 0.45,
+   "late": true
+  }
+ ],
+ "p02": [
+  {
+   "id": "bg",
+   "src": "p02-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p02-mid.webp",
+   "box": [
+    50,
+    330,
+    1550,
+    838
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p02-fg.webp",
+   "box": [
+    134,
+    103,
+    1350,
+    225
+   ],
+   "f": 0.45,
+   "late": true
+  }
+ ],
+ "p03": [
+  {
+   "id": "bg",
+   "src": "p03-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p03-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p03-fg.webp",
+   "box": [
+    166,
+    110,
+    1554,
+    632
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p03-cut-try.webp",
+   "box": [
+    1135,
+    698,
+    1425,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p03-cut-try-hint.webp",
+   "hbox": [
+    1131,
+    694,
+    1429,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-atom",
+   "src": "p03-cut-obj-atom.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1421,
+    548,
+    1536,
+    666
+   ],
+   "hbox": [
+    1417,
+    544,
+    1540,
+    670
+   ],
+   "hint": "p03-cut-obj-atom-hint.webp"
+  }
+ ],
+ "p04": [
+  {
+   "id": "bg",
+   "src": "p04-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p04-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: Forbidden Gaps. A forbidden energy region is an energy gap between the valence and conduction bands where no energy levels are available to electrons."
+  },
+  {
+   "id": "fg",
+   "src": "p04-fg.webp",
+   "box": [
+    197,
+    148,
+    1541,
+    748
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p04-cut-try.webp",
+   "box": [
+    1160,
+    699,
+    1400,
+    741
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p04-cut-try-hint.webp",
+   "hbox": [
+    1156,
+    695,
+    1404,
+    745
+   ]
+  },
+  {
+   "id": "cut-obj-thermo",
+   "src": "p04-cut-obj-thermo.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1427,
+    556,
+    1524,
+    694
+   ],
+   "hbox": [
+    1423,
+    552,
+    1528,
+    698
+   ],
+   "hint": "p04-cut-obj-thermo-hint.webp"
+  },
+  {
+   "id": "cut-obj-diode",
+   "src": "p04-cut-obj-diode.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1246,
+    572,
+    1386,
+    644
+   ],
+   "hbox": [
+    1242,
+    568,
+    1390,
+    648
+   ],
+   "hint": "p04-cut-obj-diode-hint.webp"
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p04-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1105,
+    572,
+    1166,
+    646
+   ],
+   "hbox": [
+    1101,
+    568,
+    1169,
+    650
+   ],
+   "hint": "p04-cut-obj-electron-hint.webp"
+  }
+ ],
+ "p05": [
+  {
+   "id": "bg",
+   "src": "p05-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p05-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p05-fg.webp",
+   "box": [
+    165,
+    110,
+    1553,
+    386
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p05-cut-try.webp",
+   "box": [
+    1234,
+    799,
+    1327,
+    841
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p05-cut-try-hint.webp",
+   "hbox": [
+    1230,
+    795,
+    1331,
+    845
+   ]
+  },
+  {
+   "id": "cut-obj-glass",
+   "src": "p05-cut-obj-glass.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1412,
+    578,
+    1538,
+    684
+   ],
+   "hbox": [
+    1408,
+    574,
+    1542,
+    688
+   ],
+   "hint": "p05-cut-obj-glass-hint.webp"
+  }
+ ],
+ "p06": [
+  {
+   "id": "bg",
+   "src": "p06-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p06-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: Electric Conduction. Electric conduction is the movement of electrons from one atom to the next when a potential difference is applied; conductivity is the reciprocal of resistivity."
+  },
+  {
+   "id": "fg",
+   "src": "p06-fg.webp",
+   "box": [
+    185,
+    148,
+    1552,
+    755
+   ],
+   "f": 0.45,
+   "late": true
+  }
+ ],
+ "p07": [
+  {
+   "id": "bg",
+   "src": "p07-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p07-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p07-fg.webp",
+   "box": [
+    171,
+    148,
+    1556,
+    630
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p07-cut-try.webp",
+   "box": [
+    1160,
+    698,
+    1401,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p07-cut-try-hint.webp",
+   "hbox": [
+    1156,
+    694,
+    1405,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-switch",
+   "src": "p07-cut-obj-switch.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1416,
+    588,
+    1536,
+    652
+   ],
+   "hbox": [
+    1412,
+    584,
+    1540,
+    656
+   ],
+   "hint": "p07-cut-obj-switch-hint.webp"
+  },
+  {
+   "id": "cut-obj-testcharge",
+   "src": "p07-cut-obj-testcharge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1274,
+    577,
+    1357,
+    648
+   ],
+   "hbox": [
+    1270,
+    573,
+    1361,
+    652
+   ],
+   "hint": "p07-cut-obj-testcharge-hint.webp"
+  },
+  {
+   "id": "cut-obj-wire",
+   "src": "p07-cut-obj-wire.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1097,
+    587,
+    1252,
+    632
+   ],
+   "hbox": [
+    1093,
+    583,
+    1256,
+    636
+   ],
+   "hint": "p07-cut-obj-wire-hint.webp"
+  }
+ ],
+ "p08": [
+  {
+   "id": "bg",
+   "src": "p08-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p08-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p08-fg.webp",
+   "box": [
+    250,
+    111,
+    1554,
+    705
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p08-cut-try.webp",
+   "box": [
+    1114,
+    698,
+    1446,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p08-cut-try-hint.webp",
+   "hbox": [
+    1110,
+    694,
+    1450,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p08-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    573,
+    1506,
+    646
+   ],
+   "hbox": [
+    1441,
+    569,
+    1509,
+    650
+   ],
+   "hint": "p08-cut-obj-electron-hint.webp"
+  },
+  {
+   "id": "cut-obj-thermo",
+   "src": "p08-cut-obj-thermo.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1287,
+    536,
+    1384,
+    674
+   ],
+   "hbox": [
+    1283,
+    532,
+    1388,
+    678
+   ],
+   "hint": "p08-cut-obj-thermo-hint.webp"
+  }
+ ],
+ "p09": [
+  {
+   "id": "bg",
+   "src": "p09-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p09-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p09-fg.webp",
+   "box": [
+    332,
+    111,
+    1543,
+    721
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p09-cut-try.webp",
+   "box": [
+    1206,
+    798,
+    1353,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p09-cut-try-hint.webp",
+   "hbox": [
+    1202,
+    794,
+    1357,
+    846
+   ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p09-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    593,
+    1506,
+    666
+   ],
+   "hbox": [
+    1441,
+    589,
+    1509,
+    670
+   ],
+   "hint": "p09-cut-obj-electron-hint.webp"
+  },
+  {
+   "id": "cut-obj-atom",
+   "src": "p09-cut-obj-atom.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1281,
+    568,
+    1396,
+    686
+   ],
+   "hbox": [
+    1277,
+    564,
+    1400,
+    690
+   ],
+   "hint": "p09-cut-obj-atom-hint.webp"
+  }
+ ],
+ "p10": [
+  {
+   "id": "bg",
+   "src": "p10-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p10-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p10-fg.webp",
+   "box": [
+    250,
+    111,
+    1547,
+    549
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p10-cut-try.webp",
+   "box": [
+    1178,
+    699,
+    1382,
+    741
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p10-cut-try-hint.webp",
+   "hbox": [
+    1174,
+    695,
+    1386,
+    745
+   ]
+  },
+  {
+   "id": "cut-obj-wire",
+   "src": "p10-cut-obj-wire.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1397,
+    607,
+    1553,
+    652
+   ],
+   "hbox": [
+    1393,
+    603,
+    1557,
+    656
+   ],
+   "hint": "p10-cut-obj-wire-hint.webp"
+  },
+  {
+   "id": "cut-obj-thermo",
+   "src": "p10-cut-obj-thermo.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1247,
+    537,
+    1344,
+    674
+   ],
+   "hbox": [
+    1243,
+    533,
+    1348,
+    678
+   ],
+   "hint": "p10-cut-obj-thermo-hint.webp"
+  }
+ ],
+ "p11": [
+  {
+   "id": "bg",
+   "src": "p11-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p11-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p11-fg.webp",
+   "box": [
+    165,
+    110,
+    1536,
+    503
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p11-cut-try.webp",
+   "box": [
+    1117,
+    698,
+    1443,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p11-cut-try-hint.webp",
+   "hbox": [
+    1113,
+    694,
+    1447,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p11-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    573,
+    1506,
+    646
+   ],
+   "hbox": [
+    1441,
+    569,
+    1509,
+    650
+   ],
+   "hint": "p11-cut-obj-electron-hint.webp"
+  }
+ ],
+ "p12": [
+  {
+   "id": "bg",
+   "src": "p12-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p12-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p12-fg.webp",
+   "box": [
+    301,
+    110,
+    1533,
+    729
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p12-cut-try.webp",
+   "box": [
+    1104,
+    698,
+    1455,
+    741
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p12-cut-try-hint.webp",
+   "hbox": [
+    1100,
+    694,
+    1459,
+    745
+   ]
+  },
+  {
+   "id": "cut-obj-thermo",
+   "src": "p12-cut-obj-thermo.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1427,
+    536,
+    1524,
+    674
+   ],
+   "hbox": [
+    1423,
+    532,
+    1528,
+    678
+   ],
+   "hint": "p12-cut-obj-thermo-hint.webp"
+  },
+  {
+   "id": "cut-obj-diode",
+   "src": "p12-cut-obj-diode.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1245,
+    572,
+    1386,
+    644
+   ],
+   "hbox": [
+    1241,
+    568,
+    1390,
+    648
+   ],
+   "hint": "p12-cut-obj-diode-hint.webp"
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p12-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1105,
+    572,
+    1166,
+    646
+   ],
+   "hbox": [
+    1101,
+    568,
+    1169,
+    650
+   ],
+   "hint": "p12-cut-obj-electron-hint.webp"
+  }
+ ],
+ "p13": [
+  {
+   "id": "bg",
+   "src": "p13-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p13-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p13-fg.webp",
+   "box": [
+    165,
+    110,
+    1550,
+    575
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p13-cut-try.webp",
+   "box": [
+    1118,
+    698,
+    1441,
+    741
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p13-cut-try-hint.webp",
+   "hbox": [
+    1114,
+    694,
+    1445,
+    745
+   ]
+  },
+  {
+   "id": "cut-obj-diode",
+   "src": "p13-cut-obj-diode.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1406,
+    572,
+    1546,
+    644
+   ],
+   "hbox": [
+    1402,
+    568,
+    1550,
+    648
+   ],
+   "hint": "p13-cut-obj-diode-hint.webp"
+  },
+  {
+   "id": "cut-obj-atom",
+   "src": "p13-cut-obj-atom.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1241,
+    547,
+    1355,
+    666
+   ],
+   "hbox": [
+    1237,
+    543,
+    1359,
+    670
+   ],
+   "hint": "p13-cut-obj-atom-hint.webp"
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p13-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1105,
+    572,
+    1166,
+    646
+   ],
+   "hbox": [
+    1101,
+    568,
+    1169,
+    650
+   ],
+   "hint": "p13-cut-obj-electron-hint.webp"
+  }
+ ],
+ "p14": [
+  {
+   "id": "bg",
+   "src": "p14-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p14-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p14-fg.webp",
+   "box": [
+    165,
+    110,
+    1551,
+    618
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p14-cut-try.webp",
+   "box": [
+    1134,
+    698,
+    1426,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p14-cut-try-hint.webp",
+   "hbox": [
+    1130,
+    694,
+    1430,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-atom",
+   "src": "p14-cut-obj-atom.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1420,
+    547,
+    1535,
+    666
+   ],
+   "hbox": [
+    1416,
+    543,
+    1539,
+    670
+   ],
+   "hint": "p14-cut-obj-atom-hint.webp"
+  },
+  {
+   "id": "cut-obj-diode",
+   "src": "p14-cut-obj-diode.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1246,
+    571,
+    1386,
+    644
+   ],
+   "hbox": [
+    1242,
+    567,
+    1390,
+    648
+   ],
+   "hint": "p14-cut-obj-diode-hint.webp"
+  }
+ ],
+ "p15": [
+  {
+   "id": "bg",
+   "src": "p15-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p15-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p15-fg.webp",
+   "box": [
+    308,
+    112,
+    1538,
+    729
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p15-cut-try.webp",
+   "box": [
+    1172,
+    698,
+    1388,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p15-cut-try-hint.webp",
+   "hbox": [
+    1168,
+    694,
+    1392,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-electron",
+   "src": "p15-cut-obj-electron.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1445,
+    592,
+    1506,
+    666
+   ],
+   "hbox": [
+    1441,
+    588,
+    1509,
+    670
+   ],
+   "hint": "p15-cut-obj-electron-hint.webp"
+  }
+ ],
+ "p16": [
+  {
+   "id": "bg",
+   "src": "p16-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p16-mid.webp",
+   "box": [
+    770,
+    118,
+    1577,
+    863
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p16-fg.webp",
+   "box": [
+    150,
+    148,
+    789,
+    298
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p16-cut-try.webp",
+   "box": [
+    434,
+    799,
+    507,
+    841
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p16-cut-try-hint.webp",
+   "hbox": [
+    430,
+    795,
+    511,
+    845
+   ]
+  },
+  {
+   "id": "cut-obj-thermo",
+   "src": "p16-cut-obj-thermo.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1427,
+    257,
+    1524,
+    394
+   ],
+   "hbox": [
+    1423,
+    253,
+    1528,
+    398
+   ],
+   "hint": "p16-cut-obj-thermo-hint.webp"
+  },
+  {
+   "id": "cut-obj-resistor",
+   "src": "p16-cut-obj-resistor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    625,
+    759,
+    766,
+    816
+   ],
+   "hbox": [
+    621,
+    755,
+    770,
+    820
+   ],
+   "hint": "p16-cut-obj-resistor-hint.webp"
+  }
+ ],
+ "p17": [
+  {
+   "id": "bg",
+   "src": "p17-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p17-mid.webp",
+   "box": [
+    1000,
+    27,
+    1593,
+    900
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p17-fg.webp",
+   "box": [
+    154,
+    148,
+    786,
+    229
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p17-cut-try.webp",
+   "box": [
+    414,
+    799,
+    527,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p17-cut-try-hint.webp",
+   "hbox": [
+    410,
+    795,
+    531,
+    846
+   ]
+  },
+  {
+   "id": "cut-obj-flashlight",
+   "src": "p17-cut-obj-flashlight.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1073,
+    207,
+    1216,
+    294
+   ],
+   "hbox": [
+    1069,
+    203,
+    1220,
+    298
+   ],
+   "hint": "p17-cut-obj-flashlight-hint.webp"
+  },
+  {
+   "id": "cut-obj-resistor",
+   "src": "p17-cut-obj-resistor.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    844,
+    759,
+    986,
+    816
+   ],
+   "hbox": [
+    840,
+    755,
+    990,
+    820
+   ],
+   "hint": "p17-cut-obj-resistor-hint.webp"
+  }
+ ]
+}

@@ -1,12 +1,30 @@
 /* Physics 101 on the shared storybook engine: module strip colors, cover placeholders, the "coming soon" page. */
-/* One header strip color per module. M1 gold and M2 sage; M3 to M6 are quiet pencil tones until the final colors land. */
-:root { --p101-m1: #E2B654; --p101-m2: #B5C7A3; --p101-m3: #D98B6A; --p101-m4: #8FB3D9; --p101-m5: #B9A7D1; --p101-m6: #8CC5BE; }
+/* One header strip color per module. M1 gold and M2 sage; M3 to M24 are Leo's module accents (style-kit palette.json). */
+:root { --p101-m1: #E2B654; --p101-m2: #B5C7A3; --p101-m3: #D98B6A; --p101-m4: #8FB3D9; --p101-m5: #B9A7D1; --p101-m6: #8CC5BE; --p101-m7: #7F8FC9; --p101-m8: #B0A060; --p101-m9: #E0A0A0; --p101-m10: #A8B86E; --p101-m11: #EBC9A0; --p101-m12: #9C8C78; --p101-m13: #6E9CA8; --p101-m14: #B07F9C; --p101-m15: #7A9E7E; --p101-m16: #AA5B5E; --p101-m17: #4AC7E4; --p101-m18: #677C3F; --p101-m19: #9C7040; --p101-m20: #72748E; --p101-m21: #36A896; --p101-m22: #3583AD; --p101-m23: #8A669E; --p101-m24: #36815A; }
 .lib-card[data-q="1"] .strip { background: var(--p101-m1); }
 .lib-card[data-q="2"] .strip { background: var(--p101-m2); }
 .lib-card[data-q="3"] .strip { background: var(--p101-m3); }
 .lib-card[data-q="4"] .strip { background: var(--p101-m4); }
 .lib-card[data-q="5"] .strip { background: var(--p101-m5); }
 .lib-card[data-q="6"] .strip { background: var(--p101-m6); }
+.lib-card[data-q="7"] .strip { background: var(--p101-m7); }
+.lib-card[data-q="8"] .strip { background: var(--p101-m8); }
+.lib-card[data-q="9"] .strip { background: var(--p101-m9); }
+.lib-card[data-q="10"] .strip { background: var(--p101-m10); }
+.lib-card[data-q="11"] .strip { background: var(--p101-m11); }
+.lib-card[data-q="12"] .strip { background: var(--p101-m12); }
+.lib-card[data-q="13"] .strip { background: var(--p101-m13); }
+.lib-card[data-q="14"] .strip { background: var(--p101-m14); }
+.lib-card[data-q="15"] .strip { background: var(--p101-m15); }
+.lib-card[data-q="16"] .strip { background: var(--p101-m16); }
+.lib-card[data-q="17"] .strip { background: var(--p101-m17); }
+.lib-card[data-q="18"] .strip { background: var(--p101-m18); }
+.lib-card[data-q="19"] .strip { background: var(--p101-m19); }
+.lib-card[data-q="20"] .strip { background: var(--p101-m20); }
+.lib-card[data-q="21"] .strip { background: var(--p101-m21); }
+.lib-card[data-q="22"] .strip { background: var(--p101-m22); }
+.lib-card[data-q="23"] .strip { background: var(--p101-m23); }
+.lib-card[data-q="24"] .strip { background: var(--p101-m24); }
 .lib-card .strip > span:first-child { white-space: nowrap; }
 .lib-card .cover-soon { display: grid; place-items: center; font-family: var(--ac-title-font); font-size: clamp(28px, 6vw, 40px); color: #6d6457;
   background: repeating-linear-gradient(0deg, transparent 0 27px, rgba(91, 136, 184, 0.22) 27px 28px), var(--ac-card); }
@@ -62,4 +80,34 @@
 :root[data-module="4"] { --mod-accent: var(--p101-m4); }
 :root[data-module="5"] { --mod-accent: var(--p101-m5); }
 :root[data-module="6"] { --mod-accent: var(--p101-m6); }
+:root[data-module="7"] { --mod-accent: var(--p101-m7); }
+:root[data-module="8"] { --mod-accent: var(--p101-m8); }
+:root[data-module="9"] { --mod-accent: var(--p101-m9); }
+:root[data-module="10"] { --mod-accent: var(--p101-m10); }
+:root[data-module="11"] { --mod-accent: var(--p101-m11); }
+:root[data-module="12"] { --mod-accent: var(--p101-m12); }
+:root[data-module="13"] { --mod-accent: var(--p101-m13); }
+:root[data-module="14"] { --mod-accent: var(--p101-m14); }
+:root[data-module="15"] { --mod-accent: var(--p101-m15); }
+:root[data-module="16"] { --mod-accent: var(--p101-m16); }
+:root[data-module="17"] { --mod-accent: var(--p101-m17); }
+:root[data-module="18"] { --mod-accent: var(--p101-m18); }
+:root[data-module="19"] { --mod-accent: var(--p101-m19); }
+:root[data-module="20"] { --mod-accent: var(--p101-m20); }
+:root[data-module="21"] { --mod-accent: var(--p101-m21); }
+:root[data-module="22"] { --mod-accent: var(--p101-m22); }
+:root[data-module="23"] { --mod-accent: var(--p101-m23); }
+:root[data-module="24"] { --mod-accent: var(--p101-m24); }
 :root[data-theme="dark"][data-course="physics101"] button[aria-pressed="true"], :root[data-theme="dark"][data-course="physics101"] button[aria-selected="true"] { color: #1F1D1A; }
+
+/* ---- Physics 101 pages: Leo's bg layer is plain cream with ground shading. In dark mode the art sits as a cream card (bg at --slide-art-filter, radius and border from --slide-art-*) on the charcoal page.
+   p101.css loads only on the Physics 101 pages, so Astronomy keeps its notebook paper. ---- */
+.stage.artpage, .stage.artpage .art-scene { background-color: #FBF6EA; background-image: none !important; }
+.lib-card .cover-soon { background: var(--ac-card); }
+:root[data-theme="dark"] .stage.artpage { background-color: #1F1D1A; }
+:root[data-theme="dark"] .stage.artpage .art-scene { background-color: #FBF6EA; border-radius: var(--slide-art-radius); overflow: hidden; }
+
+/* ---- Drag engine (scenes/drag.js): a lifted cutout casts a wider shadow; handles are at least 44 px ---- */
+.stage .p-scene .drag-hit { min-width: 44px; min-height: 44px; border-radius: 8px; }
+.art-scene .art-l.drag-lift { filter: var(--slide-art-filter, none) drop-shadow(0 10px 8px rgba(40, 30, 10, 0.35)); z-index: 5; }
+@media (prefers-reduced-motion: reduce) { .art-scene .art-l.drag-lift { filter: var(--slide-art-filter, none); } }

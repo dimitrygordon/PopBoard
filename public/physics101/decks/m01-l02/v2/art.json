@@ -239,7 +239,7 @@
    "src": "p06-mid.webp",
    "box": [
     45,
-    37,
+    65,
     1583,
     875
    ],
@@ -351,6 +351,44 @@
    ],
    "f": 0.45,
    "late": true
+  },
+  {
+   "id": "cut-flour-bag",
+   "src": "p07-cut-flour-bag.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    133,
+    130,
+    350,
+    387
+   ],
+   "hbox": [
+    129,
+    126,
+    354,
+    391
+   ],
+   "hint": "p07-cut-flour-bag-hint.webp"
+  },
+  {
+   "id": "cut-car",
+   "src": "p07-cut-car.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1102,
+    649,
+    1460,
+    801
+   ],
+   "hbox": [
+    1099,
+    645,
+    1464,
+    805
+   ],
+   "hint": "p07-cut-car-hint.webp"
   }
  ],
  "p08": [
@@ -519,8 +557,8 @@
    "id": "mid",
    "src": "p10-mid.webp",
    "box": [
-    812,
-    153,
+    631,
+    143,
     1600,
     834
    ],
@@ -531,13 +569,89 @@
    "id": "fg",
    "src": "p10-fg.webp",
    "box": [
-    174,
+    220,
     158,
-    786,
-    525
+    627,
+    405
    ],
    "f": 0.45,
    "late": true
+  },
+  {
+   "id": "cut-answer-1",
+   "src": "p10-cut-answer-1.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    62,
+    701,
+    258,
+    775
+   ],
+   "hbox": [
+    58,
+    697,
+    262,
+    779
+   ],
+   "hint": "p10-cut-answer-1-hint.webp"
+  },
+  {
+   "id": "cut-answer-2",
+   "src": "p10-cut-answer-2.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    270,
+    701,
+    465,
+    775
+   ],
+   "hbox": [
+    266,
+    697,
+    469,
+    779
+   ],
+   "hint": "p10-cut-answer-2-hint.webp"
+  },
+  {
+   "id": "cut-answer-3",
+   "src": "p10-cut-answer-3.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    478,
+    702,
+    674,
+    775
+   ],
+   "hbox": [
+    474,
+    698,
+    678,
+    779
+   ],
+   "hint": "p10-cut-answer-3-hint.webp"
+  },
+  {
+   "id": "cut-answer-4",
+   "src": "p10-cut-answer-4.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    686,
+    701,
+    881,
+    775
+   ],
+   "hbox": [
+    682,
+    697,
+    885,
+    779
+   ],
+   "hint": "p10-cut-answer-4-hint.webp"
   }
  ],
  "p11": [

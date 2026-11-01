@@ -1,0 +1,1001 @@
+{
+ "p01": [
+  {
+   "id": "bg",
+   "src": "p01-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p01-mid.webp",
+   "box": [
+    835,
+    138,
+    1576,
+    794
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p01-fg.webp",
+   "box": [
+    146,
+    148,
+    794,
+    298
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p01-cut-try.webp",
+   "box": [
+    315,
+    799,
+    624,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p01-cut-try-hint.webp",
+   "hbox": [
+    311,
+    795,
+    628,
+    846
+   ]
+  },
+  {
+   "id": "cut-obj-sphere",
+   "src": "p01-cut-obj-sphere.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    728,
+    738,
+    823,
+    842
+   ],
+   "hbox": [
+    724,
+    734,
+    827,
+    846
+   ],
+   "hint": "p01-cut-obj-sphere-hint.webp"
+  }
+ ],
+ "p02": [
+  {
+   "id": "bg",
+   "src": "p02-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p02-mid.webp",
+   "box": [
+    50,
+    330,
+    1550,
+    838
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p02-fg.webp",
+   "box": [
+    133,
+    103,
+    1351,
+    224
+   ],
+   "f": 0.45,
+   "late": true
+  }
+ ],
+ "p03": [
+  {
+   "id": "bg",
+   "src": "p03-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p03-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p03-fg.webp",
+   "box": [
+    167,
+    148,
+    1550,
+    770
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p03-cut-try.webp",
+   "box": [
+    1135,
+    698,
+    1425,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p03-cut-try-hint.webp",
+   "hbox": [
+    1131,
+    694,
+    1429,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-testcharge",
+   "src": "p03-cut-obj-testcharge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1434,
+    576,
+    1517,
+    648
+   ],
+   "hbox": [
+    1430,
+    572,
+    1521,
+    652
+   ],
+   "hint": "p03-cut-obj-testcharge-hint.webp"
+  },
+  {
+   "id": "cut-obj-charge",
+   "src": "p03-cut-obj-charge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1308,
+    569,
+    1362,
+    654
+   ],
+   "hbox": [
+    1304,
+    565,
+    1366,
+    658
+   ],
+   "hint": "p03-cut-obj-charge-hint.webp"
+  }
+ ],
+ "p04": [
+  {
+   "id": "bg",
+   "src": "p04-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p04-mid.webp",
+   "box": [
+    264,
+    160,
+    855,
+    818
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: Field Vectors and Typical Field Strengths. Field vectors show strength by arrow length and direction by arrow direction; fields from several charges add as vectors."
+  },
+  {
+   "id": "fg",
+   "src": "p04-fg.webp",
+   "box": [
+    307,
+    148,
+    1545,
+    796
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p04-cut-try.webp",
+   "box": [
+    1181,
+    698,
+    1379,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p04-cut-try-hint.webp",
+   "hbox": [
+    1177,
+    694,
+    1383,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-charge",
+   "src": "p04-cut-obj-charge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1449,
+    588,
+    1502,
+    674
+   ],
+   "hbox": [
+    1445,
+    584,
+    1506,
+    678
+   ],
+   "hint": "p04-cut-obj-charge-hint.webp"
+  },
+  {
+   "id": "cut-obj-testcharge",
+   "src": "p04-cut-obj-testcharge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1074,
+    596,
+    1157,
+    668
+   ],
+   "hbox": [
+    1070,
+    592,
+    1161,
+    672
+   ],
+   "hint": "p04-cut-obj-testcharge-hint.webp"
+  }
+ ],
+ "p05": [
+  {
+   "id": "bg",
+   "src": "p05-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p05-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p05-fg.webp",
+   "box": [
+    388,
+    117,
+    1549,
+    661
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p05-cut-try.webp",
+   "box": [
+    1201,
+    798,
+    1359,
+    842
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p05-cut-try-hint.webp",
+   "hbox": [
+    1197,
+    794,
+    1363,
+    846
+   ]
+  },
+  {
+   "id": "cut-obj-testcharge",
+   "src": "p05-cut-obj-testcharge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1434,
+    597,
+    1517,
+    668
+   ],
+   "hbox": [
+    1430,
+    593,
+    1521,
+    672
+   ],
+   "hint": "p05-cut-obj-testcharge-hint.webp"
+  },
+  {
+   "id": "cut-obj-charge",
+   "src": "p05-cut-obj-charge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1308,
+    589,
+    1362,
+    674
+   ],
+   "hbox": [
+    1304,
+    585,
+    1366,
+    678
+   ],
+   "hint": "p05-cut-obj-charge-hint.webp"
+  }
+ ],
+ "p06": [
+  {
+   "id": "bg",
+   "src": "p06-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p06-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: Coulomb's Law and Electric Fields. For a point charge, E equals K times q divided by the square of r."
+  },
+  {
+   "id": "fg",
+   "src": "p06-fg.webp",
+   "box": [
+    182,
+    148,
+    1553,
+    742
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p06-cut-try.webp",
+   "box": [
+    1115,
+    699,
+    1445,
+    741
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p06-cut-try-hint.webp",
+   "hbox": [
+    1111,
+    695,
+    1449,
+    745
+   ]
+  },
+  {
+   "id": "cut-obj-testcharge",
+   "src": "p06-cut-obj-testcharge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1434,
+    576,
+    1517,
+    648
+   ],
+   "hbox": [
+    1430,
+    572,
+    1521,
+    652
+   ],
+   "hint": "p06-cut-obj-testcharge-hint.webp"
+  },
+  {
+   "id": "cut-obj-charge",
+   "src": "p06-cut-obj-charge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1308,
+    568,
+    1362,
+    654
+   ],
+   "hbox": [
+    1304,
+    564,
+    1366,
+    658
+   ],
+   "hint": "p06-cut-obj-charge-hint.webp"
+  }
+ ],
+ "p07": [
+  {
+   "id": "bg",
+   "src": "p07-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p07-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p07-fg.webp",
+   "box": [
+    256,
+    121,
+    1542,
+    693
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p07-cut-try.webp",
+   "box": [
+    1155,
+    698,
+    1405,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p07-cut-try-hint.webp",
+   "hbox": [
+    1151,
+    694,
+    1409,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-sphere",
+   "src": "p07-cut-obj-sphere.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1428,
+    559,
+    1523,
+    662
+   ],
+   "hbox": [
+    1424,
+    555,
+    1527,
+    666
+   ],
+   "hint": "p07-cut-obj-sphere-hint.webp"
+  },
+  {
+   "id": "cut-obj-charge",
+   "src": "p07-cut-obj-charge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1288,
+    569,
+    1342,
+    654
+   ],
+   "hbox": [
+    1284,
+    565,
+    1346,
+    658
+   ],
+   "hint": "p07-cut-obj-charge-hint.webp"
+  },
+  {
+   "id": "cut-obj-object",
+   "src": "p07-cut-obj-object.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1144,
+    548,
+    1206,
+    677
+   ],
+   "hbox": [
+    1140,
+    544,
+    1210,
+    681
+   ],
+   "hint": "p07-cut-obj-object-hint.webp"
+  }
+ ],
+ "p08": [
+  {
+   "id": "bg",
+   "src": "p08-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p08-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true,
+   "alt": "Diagram: Modeling the Electric Field. The force on any charge in a field is F equals E times q, in a direction set by the field and the sign of the charge."
+  },
+  {
+   "id": "fg",
+   "src": "p08-fg.webp",
+   "box": [
+    197,
+    148,
+    1552,
+    781
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p08-cut-try.webp",
+   "box": [
+    1138,
+    698,
+    1422,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p08-cut-try-hint.webp",
+   "hbox": [
+    1134,
+    694,
+    1426,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-testcharge",
+   "src": "p08-cut-obj-testcharge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1434,
+    597,
+    1517,
+    668
+   ],
+   "hbox": [
+    1430,
+    593,
+    1521,
+    672
+   ],
+   "hint": "p08-cut-obj-testcharge-hint.webp"
+  },
+  {
+   "id": "cut-obj-charge",
+   "src": "p08-cut-obj-charge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1308,
+    568,
+    1362,
+    654
+   ],
+   "hbox": [
+    1304,
+    564,
+    1366,
+    658
+   ],
+   "hint": "p08-cut-obj-charge-hint.webp"
+  },
+  {
+   "id": "cut-obj-object",
+   "src": "p08-cut-obj-object.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1166,
+    548,
+    1226,
+    677
+   ],
+   "hbox": [
+    1162,
+    544,
+    1230,
+    681
+   ],
+   "hint": "p08-cut-obj-object-hint.webp"
+  }
+ ],
+ "p09": [
+  {
+   "id": "bg",
+   "src": "p09-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p09-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p09-fg.webp",
+   "box": [
+    166,
+    110,
+    1550,
+    453
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p09-cut-try.webp",
+   "box": [
+    1204,
+    799,
+    1356,
+    841
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p09-cut-try-hint.webp",
+   "hbox": [
+    1200,
+    795,
+    1360,
+    845
+   ]
+  },
+  {
+   "id": "cut-obj-negcharge",
+   "src": "p09-cut-obj-negcharge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1419,
+    586,
+    1532,
+    676
+   ],
+   "hbox": [
+    1415,
+    582,
+    1536,
+    680
+   ],
+   "hint": "p09-cut-obj-negcharge-hint.webp"
+  },
+  {
+   "id": "cut-obj-charge",
+   "src": "p09-cut-obj-charge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1288,
+    588,
+    1342,
+    674
+   ],
+   "hbox": [
+    1284,
+    584,
+    1346,
+    678
+   ],
+   "hint": "p09-cut-obj-charge-hint.webp"
+  }
+ ],
+ "p10": [
+  {
+   "id": "bg",
+   "src": "p10-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p10-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p10-fg.webp",
+   "box": [
+    165,
+    148,
+    1541,
+    559
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p10-cut-try.webp",
+   "box": [
+    1139,
+    698,
+    1422,
+    741
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p10-cut-try-hint.webp",
+   "hbox": [
+    1135,
+    694,
+    1426,
+    745
+   ]
+  },
+  {
+   "id": "cut-obj-charge",
+   "src": "p10-cut-obj-charge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1448,
+    568,
+    1502,
+    654
+   ],
+   "hbox": [
+    1444,
+    564,
+    1506,
+    658
+   ],
+   "hint": "p10-cut-obj-charge-hint.webp"
+  }
+ ],
+ "p11": [
+  {
+   "id": "bg",
+   "src": "p11-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p11-mid.webp",
+   "box": [
+    0,
+    0,
+    1,
+    1
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p11-fg.webp",
+   "box": [
+    304,
+    116,
+    1534,
+    807
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-try",
+   "src": "p11-cut-try.webp",
+   "box": [
+    1124,
+    699,
+    1437,
+    742
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p11-cut-try-hint.webp",
+   "hbox": [
+    1120,
+    695,
+    1441,
+    746
+   ]
+  },
+  {
+   "id": "cut-obj-crank",
+   "src": "p11-cut-obj-crank.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1442,
+    551,
+    1529,
+    654
+   ],
+   "hbox": [
+    1438,
+    547,
+    1533,
+    658
+   ],
+   "hint": "p11-cut-obj-crank-hint.webp"
+  },
+  {
+   "id": "cut-obj-charge",
+   "src": "p11-cut-obj-charge.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1308,
+    568,
+    1362,
+    654
+   ],
+   "hbox": [
+    1304,
+    564,
+    1366,
+    658
+   ],
+   "hint": "p11-cut-obj-charge-hint.webp"
+  },
+  {
+   "id": "cut-obj-sphere",
+   "src": "p11-cut-obj-sphere.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    1148,
+    558,
+    1243,
+    662
+   ],
+   "hbox": [
+    1144,
+    554,
+    1247,
+    666
+   ],
+   "hint": "p11-cut-obj-sphere-hint.webp"
+  }
+ ]
+}

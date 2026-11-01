@@ -36,23 +36,175 @@
    "late": true
   },
   {
-   "id": "cut-mass-set",
-   "src": "p01-cut-mass-set.webp",
-   "box": [
-    234,
-    613,
-    759,
-    827
-   ],
+   "id": "cut-mass-5g",
+   "src": "p01-cut-mass-5g.webp",
    "f": 0.45,
    "cut": true,
-   "hint": "p01-cut-mass-set-hint.webp",
+   "box": [
+    234,
+    686,
+    268,
+    757
+   ],
    "hbox": [
     230,
+    682,
+    272,
+    761
+   ],
+   "hint": "p01-cut-mass-5g-hint.webp"
+  },
+  {
+   "id": "cut-mass-10g",
+   "src": "p01-cut-mass-10g.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    268,
+    677,
+    314,
+    757
+   ],
+   "hbox": [
+    264,
+    673,
+    318,
+    761
+   ],
+   "hint": "p01-cut-mass-10g-hint.webp"
+  },
+  {
+   "id": "cut-mass-15g",
+   "src": "p01-cut-mass-15g.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    314,
+    668,
+    368,
+    757
+   ],
+   "hbox": [
+    310,
+    664,
+    372,
+    761
+   ],
+   "hint": "p01-cut-mass-15g-hint.webp"
+  },
+  {
+   "id": "cut-mass-20g",
+   "src": "p01-cut-mass-20g.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    368,
+    660,
+    425,
+    757
+   ],
+   "hbox": [
+    364,
+    656,
+    429,
+    761
+   ],
+   "hint": "p01-cut-mass-20g-hint.webp"
+  },
+  {
+   "id": "cut-mass-25g",
+   "src": "p01-cut-mass-25g.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    425,
+    650,
+    487,
+    757
+   ],
+   "hbox": [
+    421,
+    646,
+    491,
+    761
+   ],
+   "hint": "p01-cut-mass-25g-hint.webp"
+  },
+  {
+   "id": "cut-mass-30g",
+   "src": "p01-cut-mass-30g.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    487,
+    640,
+    552,
+    757
+   ],
+   "hbox": [
+    483,
+    636,
+    556,
+    761
+   ],
+   "hint": "p01-cut-mass-30g-hint.webp"
+  },
+  {
+   "id": "cut-mass-35g",
+   "src": "p01-cut-mass-35g.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    552,
+    628,
+    625,
+    757
+   ],
+   "hbox": [
+    548,
+    624,
+    629,
+    761
+   ],
+   "hint": "p01-cut-mass-35g-hint.webp"
+  },
+  {
+   "id": "cut-mass-50g",
+   "src": "p01-cut-mass-50g.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    625,
+    613,
+    716,
+    757
+   ],
+   "hbox": [
+    621,
     609,
-    763,
-    831
-   ]
+    720,
+    761
+   ],
+   "hint": "p01-cut-mass-50g-hint.webp"
+  },
+  {
+   "id": "cut-spring",
+   "src": "p01-cut-spring.webp",
+   "f": 0.45,
+   "cut": true,
+   "box": [
+    327,
+    195,
+    408,
+    592
+   ],
+   "hbox": [
+    324,
+    191,
+    411,
+    596
+   ],
+   "hint": "p01-cut-spring-hint.webp"
   }
  ],
  "p02": [

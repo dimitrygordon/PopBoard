@@ -1,0 +1,134 @@
+{
+ "slug": "m10-l01",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Pushing a Book Bag",
+   "text": "<h3>Pushing a Book Bag</h3><p class=\"p101-def\">Work is done on a system when a force is applied through a displacement.</p><p>Our big question for this lesson: what is energy? To find out, let's push a book bag, like the one in Figure 1.</p><p>A net force on the bag makes it accelerate, with a equal to F over m, so its velocity changes. From your study of motion, the square of the final velocity equals the square of the initial velocity plus 2 a d. Rearranged, 2 a d equals the square of v sub f minus the square of v sub i. Swap in F over m for a, and multiply both sides by m over 2. You get F d equals one half m times the square of v sub f, minus one half m times the square of v sub i.</p><p>The left side, F d, is something the outside world does to the system: a force pushes while its point of contact moves. When a force is applied through a displacement, we say work, W, is done on the system. Kicking a ball, pulling a wagon, and lifting a backpack are all examples of a force doing work.</p>",
+   "testIt": {
+    "name": "Book bag",
+    "how": "Set the push and distance. The work Fd equals the change in ½mv² for the 2.0 kg bag."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "The Joule",
+   "text": "<h3>The Joule</h3><p class=\"p101-def\">One joule is the work done when a force of one newton acts over a displacement of one meter: 1 J equals 1 N·m.</p><p>The SI unit of work is the joule, written J. One joule equals one newton-meter. That's the work done when a force of 1 newton acts on a system over a displacement of 1 meter.</p><p>Here's a tasty way to remember it. An apple weighs about 1 newton, so it takes about 1 newton of force to lift it at a constant velocity. Lift that apple 1 meter, and you've done about 1 joule of work on it.</p><p>A quick word check: in everyday talk, work means any physical or mental effort, like studying physics. In science, work only happens when a force acts through a displacement, like a student pushing a car out of the mud.</p>",
+   "testIt": {
+    "name": "Lift an apple",
+    "how": "Tap to lift the 0.10 kg apple 1 m at a time. Each meter costs about one joule."
+   }
+  },
+  "3": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you complete the readings and activities in this lesson.</p><p>Online, the PhysicsLAB called Stair Climbing and Power has you analyze and interpret data to find the relationships among force, power, and time. And the Quick Investigation called Force Applied at an Angle has you carry out an investigation of how the angle at which you apply a force affects the work done.</p>"
+  },
+  "4": {
+   "layers": [],
+   "title": "Work Done by a Constant Force",
+   "text": "<h3>Work Done by a Constant Force</h3><p class=\"p101-def\">When a constant force acts in the direction of motion, work equals force times displacement: W equals F d.</p><p>In the book bag example, the force is constant and points the same way the bag moves. Then work is simply the force times the displacement: W equals F d.</p><p>But what if the force is perpendicular to the motion? Think of a planet in a circular orbit, also in Figure 1. The Sun's pull always points sideways to the planet's motion. A perpendicular force only changes direction, not speed. So the planet's speed stays the same, the right side of our equation is zero, and the work done is zero too.</p>",
+   "testIt": {
+    "name": "Tilt the force",
+    "how": "Tilt the force on the moving cart. Only the part along the motion changes its speed."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Force at an Angle",
+   "text": "<h3>Force at an Angle</h3><p class=\"p101-def\">Work equals the force times the displacement times the cosine of the angle between them: W equals F d cos theta.</p><p>What about a force at an angle, like the man pushing the car in Figure 2? His 125-newton push points along his arms, 25.0 degrees below horizontal. Break it into components. The horizontal part is F sub x equals F cos 25.0 degrees, which is 125 newtons times cos 25.0 degrees, or 113 newtons. The vertical part is F sub y equals negative F sin 25.0 degrees, or negative 52.8 newtons. The negative sign means it points down.</p><p>The car moves horizontally, so only the horizontal component does work. The vertical component does none. In general, the component along the displacement is F cos theta, where theta is the angle between the force and the displacement. So work is W equals F d cos theta.</p><p>This matches what we found before. For the book bag, theta is 0 degrees and cos 0 degrees is 1, so W equals F d. For the orbiting planet, theta is 90 degrees and cos 90 degrees is 0, so W is 0. Try it: a 3-newton force at 45 degrees to the motion, over 1 meter, does about 2.1 joules of work.</p>",
+   "testIt": {
+    "name": "Push at an angle",
+    "how": "Change the angle of a 50 N push over 5.0 m."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Work Done by Many Forces",
+   "text": "<h3>Work Done by Many Forces</h3><p class=\"p101-def\">The total work done on a system is the sum of the work done by each force acting on it.</p><p>Suppose you push a box right across a frictionless floor while your friend pushes left, as in Figure 3. Gravity pulls down and the floor pushes up. How much total work is done? Find the work done by each force and add them up.</p><p>Gravity and the normal force are perpendicular to the motion, theta equals 90 degrees, so they do zero work. Your push points along the displacement, so you do positive work: W equals F on box by you times d. Your friend's push points opposite the motion, theta equals 180 degrees, and cos 180 degrees is negative 1, so your friend does negative work: negative F on box by friend times d. The total is your work minus your friend's. If your friend pushed harder, the box would move left instead, and then your friend would do positive work and you'd do negative work.</p><p>Also, take each stretch of motion separately. Push a box 1 meter with 3 newtons, then pull it back 1 meter with 3 newtons. Is the work zero because it ended where it started? No! Both times, your force pointed the same way the box moved. So you did 3 joules, then another 3 joules, for 6 joules total.</p>",
+   "testIt": {
+    "name": "Two pushes",
+    "how": "Set both pushes on a box that moves 3.0 m to the right."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Work from a Force-Displacement Graph",
+   "text": "<h3>Work from a Force-Displacement Graph</h3><p class=\"p101-def\">The area under a force-displacement graph equals the work done by that force.</p><p>What if a force changes in a complicated way? Graph it! The left graph in Figure 4 shows a constant 20.0-newton force lifting an object 1.50 meters. The work is W equals F d: 20.0 newtons times 1.50 meters, or 30.0 joules. That's also the area of the shaded rectangle under the graph.</p><p>This works even when the force changes. The right graph shows a spring force growing steadily from 0.0 to 20.0 newtons as the spring is squeezed 1.50 meters. The work is the area of the triangle, one half times the base times the height: one half times 20.0 newtons times 1.50 meters, or 15.0 joules.</p>",
+   "testIt": {
+    "name": "Area under F-d",
+    "how": "Drag the displacement for a spring-like force F = 20d. The work is the shaded triangle."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "A Strategy for Work Problems",
+   "text": "<h3>A Strategy for Work Problems</h3><p class=\"p101-def\">To find net work, find the angle and the work for each force using W equals F d cos theta, then add.</p><p>Here's a five-step strategy for work problems. One: identify and sketch the system, and show every force doing work on it. Two: set up a coordinate system, and draw the displacement and each force vector. Three: find the angle theta between each force and the displacement. Four: calculate the work done by each force with W equals F d cos theta. Five: add them up to get the net work.</p>"
+  },
+  "9": {
+   "layers": [],
+   "title": "Example Problem 1, Work on a Hockey Puck",
+   "text": "<h3>Example Problem 1, Work on a Hockey Puck</h3><p class=\"p101-def\">When force and displacement point the same way, W equals F d.</p><p>A hockey player's stick pushes a 105-gram puck forward with a constant 4.50-newton force over 0.150 meters on ice. How much work does the stick do on the puck? Ignore friction.</p><p>Step one: analyze and sketch. The system is the puck, and the stick's force does work on it. Sketch the setup, put positive x to the right, and draw a vector diagram. Known: m equals 105 grams, F equals 4.50 newtons, d equals 0.150 meters, and theta equals 0 degrees. Unknown: W.</p><p>Step two: solve. W equals F d cos theta: 4.50 newtons times 0.150 meters times cos 0 degrees, which is 1. That's 0.675 newton-meters, or 0.675 joules.</p><p>Step three: evaluate. Work is in joules. The stick, part of the outside world, does work on the puck, so the work is positive. Notice the mass didn't matter for the work!</p>",
+   "testIt": {
+    "name": "Hockey puck",
+    "how": "Set the push and distance on the 105 g puck."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Example Problem 2, Pulling a Boat at an Angle",
+   "text": "<h3>Example Problem 2, Pulling a Boat at an Angle</h3><p class=\"p101-def\">For a force at an angle, only F cos theta does work along the displacement.</p><p>A sailor pulls a boat 30.0 meters along a dock with a rope at 25.0 degrees above the horizontal. The rope's tension is 255 newtons. How much work does the rope do on the boat?</p><p>Step one: analyze and sketch. The system is the boat, and the rope's force does work on it. Set up axes, sketch the boat, and draw the displacement, the force, and its component along the displacement. Known: F equals 255 newtons, theta equals 25.0 degrees, and d equals 30.0 meters. Unknown: W.</p><p>Step two: solve. W equals F d cos theta: 255 newtons times 30.0 meters times cos 25.0 degrees, which is 6.93 times 10 to the third joules.</p><p>Step three: evaluate. Work is in joules, and the rope does work on the boat, so the positive sign makes sense.</p>",
+   "testIt": {
+    "name": "Boat rope",
+    "how": "Change the rope angle on the 255 N pull over 30.0 m."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Energy and the Work-Energy Theorem",
+   "text": "<h3>Energy and the Work-Energy Theorem</h3><p class=\"p101-def\">Energy is the ability of a system to produce a change in itself or the world around it; the work-energy theorem says W equals delta E.</p><p>Look again at W equals one half m times the square of v sub f, minus one half m times the square of v sub i. What does one half m times the square of v describe? A heavy, fast truck can do damage, and a fast baseball can soar high. A system with this property can produce a change in itself or the world around it. That ability is called energy, with the symbol E. And that's the answer to our big question!</p><p>The right side of the equation is a change in one kind of energy. So work causes a change in energy. The work-energy theorem says that when work is done on a system, its energy changes: W equals delta E. Energy is measured in joules, named for the nineteenth-century physicist James Prescott Joule, who connected work and energy. One joule is one kilogram times the square of a meter per the square of a second, the same units as one half m times the square of v.</p><p>Energy can flow either way. If the outside world does work on the system, W is positive and the system's energy goes up. If the system does work on the outside world, W is negative and its energy goes down. So work is the transfer of energy that happens when a force acts through a displacement.</p>",
+   "testIt": {
+    "name": "Work-energy theorem",
+    "how": "Use the buttons to do positive or negative work on a 2.0 kg cart moving at 3.0 m/s."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Kinetic Energy and the Energy Bank",
+   "text": "<h3>Kinetic Energy and the Energy Bank</h3><p class=\"p101-def\">Kinetic energy is the energy associated with motion.</p><p>The bobsledders in Figure 6 push their sled to start a race. They do work on it, and that changes the sled's energy of motion, called kinetic energy, K E. There are many other forms of energy too, like potential energy and thermal energy, and work can change those as well. You'll meet them later.</p><p>Tracking energy is like tracking a savings account, as in Figure 7. A paycheck adds money, and buying a phone takes some away. In the same way, energy can be stored or used, and bar diagrams can track either one.</p><p>Look at Figure 8. When you throw a ball from rest, you do positive work, so its kinetic energy after equals its kinetic energy before plus the work. When you catch it, you push against its motion, doing negative work, and it stops with zero kinetic energy. Kinetic energy is never negative, so the work had to be negative. In both cases, K E after equals K E before plus W.</p>",
+   "testIt": {
+    "name": "Energy bank",
+    "how": "Use the buttons to deposit or withdraw work in the energy bank."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Power",
+   "text": "<h3>Power</h3><p class=\"p101-def\">Power is the rate at which energy is transformed: P equals delta E over t, or P equals W over t.</p><p>Moving a stack of books to a shelf all at once, or one at a time, takes the same total force through the same displacement, so the work is the same. But the time is different. The rate at which energy is transformed is called power: P equals delta E over t. When work causes the change, P equals W over t.</p><p>In Figure 9, both forklifts lift the same load, but the left one does it in 5 seconds and the right one takes 10 seconds. Same work, less time, so the left forklift develops more power.</p><p>Power is measured in watts, W. One watt is 1 joule transformed in 1 second. A watt is small. A glass of water weighs about 2 newtons, so lifting it 0.5 meters to your mouth takes 1 joule. Do that in 1 second, and you're working at 1 watt. That's why we often use kilowatts, and one kilowatt is 1000 watts.</p>",
+   "testIt": {
+    "name": "Lift time",
+    "how": "Set how long it takes to lift a 500 N load 2.0 m. Same work, different power."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "Example Problem 3, Elevator Power",
+   "text": "<h3>Example Problem 3, Elevator Power</h3><p class=\"p101-def\">For a force along the displacement, P equals F d over t.</p><p>An electric motor lifts an elevator 9.00 meters in 15.0 seconds with an upward force of 1.20 times 10 to the fourth newtons. What power does the motor produce, in kilowatts?</p><p>Step one: analyze and sketch. The system is the elevator. Put up as positive and draw the force and displacement vectors. Known: d equals 9.00 meters, t equals 15.0 seconds, and F equals 1.20 times 10 to the fourth newtons. Unknown: P.</p><p>Step two: solve. P equals W over t. The force and displacement point the same way, so W equals F d cos 0 degrees, which is F d. So P equals F d over t: 1.20 times 10 to the fourth newtons times 9.00 meters, divided by 15.0 seconds, which is 7.20 kilowatts.</p><p>Step three: evaluate. Power is in joules per second, which is watts. And the positive sign matches the upward force.</p>",
+   "testIt": {
+    "name": "Elevator motor",
+    "how": "Change the lift time for the 1.20 × 10⁴ N force over 9.00 m."
+   }
+  },
+  "15": {
+   "layers": [],
+   "title": "Power and Speed",
+   "text": "<h3>Power and Speed</h3><p class=\"p101-def\">When the force is along the motion, power equals force times speed: P equals F v.</p><p>When a force has a component F sub x along the displacement, P equals F sub x d over t. And d over t is the speed v, so P equals F v. That means zero force or zero speed gives zero power.</p><p>Our muscles can't push really hard and also move really fast. So a mix of moderate force and moderate speed gives the most power, like on a bicycle. Figure 11 shows that one cyclist's top power output, over 1000 watts, happens at a force of about 400 newtons and a speed of about 2.6 meters per second.</p><p>A Tour de France rider averages about 11 meters per second, around 40 kilometers per hour, for about 4 hours a day, and the rider's body converts food energy at a rate of about 1 kilowatt. Only about one-fourth of that pushes the bike against air, gears, and tires. The other three-fourths becomes thermal energy that the rider's body has to get rid of to stay cool. So, what is energy? It's the ability to make a change, and work is how we move it around!</p>",
+   "testIt": {
+    "name": "Power curve",
+    "how": "Slide the speed. The force falls as speed rises, so power peaks in the middle."
+   }
+  }
+ }
+}

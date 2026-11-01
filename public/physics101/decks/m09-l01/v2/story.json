@@ -1,0 +1,120 @@
+{
+ "slug": "m09-l01",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "A Home Run in Slow Motion",
+   "text": "<h3>A Home Run in Slow Motion</h3><p class=\"p101-def\">During a collision, the force on an object rises to a maximum and falls back to zero in a very short time.</p><p>Our big question for this lesson: how do air bags work to save lives? Let's warm up with a home run.</p><p>When a bat smacks a baseball, Newton's second law says the bat's force changes the ball's velocity. But that force isn't steady. Look at Figure 1. Just after contact, the ball gets squeezed, and the force climbs to a peak more than 10,000 times the ball's weight. Then the ball springs back into shape and rebounds off the bat, and the force drops right back to zero. The whole thing is over in about 3.0 milliseconds! So how can we figure out the ball's change in velocity?</p>",
+   "testIt": {
+    "name": "Slow-motion swing",
+    "how": "Tap the bat to step through the contact in slow motion and watch the force rise and fall."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Impulse",
+   "text": "<h3>Impulse</h3><p class=\"p101-def\">Impulse is the product of the average force on an object and the time interval over which it acts: F delta t.</p><p>Newton's second law, F equals m a, can be written using the change in velocity divided by the time for that change: F equals m a equals m times delta v over delta t. Multiply both sides by the time interval delta t, and you get F delta t equals m delta v, which equals m times the quantity v sub f minus v sub i.</p><p>The left side, F delta t, is called the impulse. The impulse on an object is the average force on it times the time interval over which the force acts. Impulse is measured in newton-seconds. If the force changes with time, the size of the impulse is the area under the force-time graph, like the one in Figure 1.</p>",
+   "testIt": {
+    "name": "Area under the curve",
+    "how": "Drag the end time to shade the area under the force-time graph. The area is the impulse."
+   }
+  },
+  "3": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you complete the readings and activities in this lesson.</p><p>Online, the Applying Practices activity called Egg Heads asks you to apply science and engineering ideas to design, evaluate, and refine a device that minimizes the force on an object during a collision. And the PhysicsLAB called Sticky Collisions has you analyze data from a collision to see how momentum moves within a system.</p>"
+  },
+  "4": {
+   "layers": [],
+   "title": "Momentum",
+   "text": "<h3>Momentum</h3><p class=\"p101-def\">Momentum is the product of an object's mass and its velocity: p equals m v.</p><p>Now the right side of the equation, m delta v, which equals m v sub f minus m v sub i. The product of an object's mass and its velocity is called its momentum, measured in kilogram meters per second.</p><p>Momentum always depends on the frame of reference. From the roadside, a moving car has momentum. But to the driver, the car has zero velocity in its own frame, so it has zero momentum. Unless told otherwise, assume a stationary frame of reference. In symbols, momentum is p equals m v.</p><p>Here's a fun word check. In everyday talk, an impulse is a sudden urge, like the urge to grab a candy bar after a commercial. In science, it's average net force times time, like the impulse from a rocket's exhaust that lifts astronauts into orbit. In everyday talk, momentum means a team building strength through the season. In science, it's mass times velocity, and a moving truck usually has far more of it than a moving bicycle.</p>",
+   "testIt": {
+    "name": "Two frames",
+    "how": "Tap to switch between the roadside frame and the driver's frame for a 1200 kg car at 25 m/s."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "The Impulse-Momentum Theorem",
+   "text": "<h3>The Impulse-Momentum Theorem</h3><p class=\"p101-def\">The impulse on an object equals its final momentum minus its initial momentum: F delta t equals p sub f minus p sub i.</p><p>Now we can rewrite impulse as F delta t equals m delta v, which equals m v sub f minus m v sub i, which equals p sub f minus p sub i. So the impulse on an object equals its change in momentum. This is called the impulse-momentum theorem.</p><p>If the force is constant, the impulse is just the force times the time it acts. If the force changes, use the average force times the time interval, or find the area under the force-time graph. And because force and velocity are vectors, impulse and momentum are vectors too.</p>",
+   "testIt": {
+    "name": "Impulse-momentum",
+    "how": "Use the buttons to change the force and the time. FΔt equals the change in momentum."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Using the Theorem on a Fastball",
+   "text": "<h3>Using the Theorem on a Fastball</h3><p class=\"p101-def\">Final momentum equals initial momentum plus impulse: p sub f equals p sub i plus F delta t.</p><p>The bat's impulse changes the baseball's momentum. In Figure 1, the area under the curve is about 15 newton-seconds, in the direction of the force. So the ball's momentum changes by 15 newton-seconds, which is 15 kilogram meters per second, in that direction.</p><p>Let's say a batter hits a fastball, and call the direction toward the pitcher positive. Before the hit, the 0.145-kilogram ball moves at negative 47 meters per second. Its momentum is p sub i equals 0.145 kilograms times negative 47 meters per second, or negative 6.8 kilogram meters per second.</p><p>After the hit, p sub f equals p sub i plus F delta t: negative 6.8 kilogram meters per second plus 15 kilogram meters per second, which is positive 8.2 kilogram meters per second. Since p sub f equals m v sub f, the final velocity is v sub f equals p sub f over m: positive 8.2 kilogram meters per second divided by 0.145 kilograms, or positive 57 meters per second. That's fast enough to clear most outfields, if it's hit in the right direction!</p>",
+   "testIt": {
+    "name": "Fastball",
+    "how": "Set the pitch speed and the impulse from the bat. Read the exit velocity."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Example Problem 1, Average Force",
+   "text": "<h3>Example Problem 1, Average Force</h3><p class=\"p101-def\">The same impulse spread over a shorter time means a larger average force: F equals the change in p over delta t.</p><p>A 2200-kilogram vehicle moving at 94 kilometers per hour, which is 26 meters per second, can stop in 21 seconds with gentle braking, in 3.8 seconds if the driver slams the brakes, or in 0.22 seconds if it hits a concrete wall. What impulse acts on the vehicle, and what average force acts in each stop?</p><p>Step one: analyze the problem. Sketch the system with a coordinate axis, and choose the car's direction as positive. Draw a vector diagram for momentum and impulse. Known: m equals 2200 kilograms, v sub i equals positive 26 meters per second, v sub f equals 0.0 meters per second, and the three stopping times, 21 seconds, 3.8 seconds, and 0.22 seconds. Unknown: the impulse and the three average forces.</p><p>Step two: solve. The initial momentum is p sub i equals m v sub i: 2200 kilograms times positive 26 meters per second, or positive 5.7 times 10 to the fourth kilogram meters per second. The final momentum is 2200 kilograms times 0.0 meters per second, which is 0.0. By the impulse-momentum theorem, F delta t equals p sub f minus p sub i, which is 0.0 minus 5.7 times 10 to the fourth, or negative 5.7 times 10 to the fourth kilogram meters per second. So F equals negative 5.7 times 10 to the fourth kilogram meters per second divided by delta t. For gentle braking, divide by 21 seconds: negative 2.7 times 10 to the third newtons. For hard braking, divide by 3.8 seconds: negative 1.5 times 10 to the fourth newtons. For the wall, divide by 0.22 seconds: negative 2.6 times 10 to the fifth newtons.</p><p>Step three: evaluate. Impulse is in kilogram meters per second and force in newtons. The forces point opposite the car's velocity, so they're negative. And it's reasonable for stopping a car to take thousands to hundreds of thousands of newtons. The impulse is the same in every stop, so whenever the stopping time gets shorter by some factor, the force gets bigger by that same factor.</p>",
+   "testIt": {
+    "name": "Stopping time",
+    "how": "Tap to pick the stopping time for the 2200 kg vehicle at 26 m/s."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "How Air Bags Save Lives",
+   "text": "<h3>How Air Bags Save Lives</h3><p class=\"p101-def\">An air bag makes the stopping time longer, so the same impulse needs a smaller force, and spreads that force over a larger area.</p><p>The impulse-momentum theorem says a big impulse means a big change in momentum. That big impulse can come from a large force over a short time, or a smaller force over a longer time. In a crash, a passenger might get a large impulse, but it's the force that causes injuries.</p><p>When a crash suddenly stops a car, something has to bring the driver's momentum to zero: either the dashboard or an air bag. By F delta t equals p sub f minus p sub i, the final momentum is zero, and the initial momentum is the same with or without an air bag. So the impulse is the same either way.</p><p>Here's the trick. An air bag, like the one in Figure 3, makes the time interval longer. Same impulse, longer time, so the force is smaller. The air bag also spreads the force over a bigger area of the body. That's how air bags save lives: less force, spread out wider.</p>",
+   "testIt": {
+    "name": "Air bag",
+    "how": "Tap to switch the air bag on and off. Both curves have the same area."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Angular Momentum",
+   "text": "<h3>Angular Momentum</h3><p class=\"p101-def\">Angular momentum is the product of an object's moment of inertia and its angular velocity: L equals I omega.</p><p>The impulse-momentum theorem works for straight-line motion. But what about the spinning bowling ball in Figure 4? Remember Newton's law for rotation, tau equals I delta omega over delta t. Rearrange it to get tau delta t equals I delta omega. The left side, tau delta t, is the angular impulse. The right side is I omega sub f minus I omega sub i.</p><p>The product of a rotating object's moment of inertia and its angular velocity is its angular momentum, written L. So L equals I omega, measured in kilogram meters squared per second. The rolling bowling ball has both: linear momentum, its mass times its velocity, and angular momentum, its moment of inertia times its angular velocity.</p>",
+   "testIt": {
+    "name": "Rolling ball",
+    "how": "Set the speed of a 0.50 kg, 0.10 m radius ball rolling without slipping."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "The Angular Impulse-Angular Momentum Theorem",
+   "text": "<h3>The Angular Impulse-Angular Momentum Theorem</h3><p class=\"p101-def\">The angular impulse on an object equals its final angular momentum minus its initial angular momentum: tau delta t equals L sub f minus L sub i.</p><p>Just as an impulse changes linear momentum, an angular impulse changes angular momentum. The angular impulse-angular momentum theorem says tau delta t equals L sub f minus L sub i.</p><p>Table tennis players use this all the time. Hitting the ball at an angle, the paddle gives it both an impulse, which changes its momentum, and an angular impulse, which makes it spin. Thanks to its interaction with the air, a ball with forward spin drops fast, making it harder for the opponent to return.</p>",
+   "testIt": {
+    "name": "Paddle angle",
+    "how": "Angle the paddle. A glancing hit gives more angular impulse and more spin."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Constant Angular Momentum",
+   "text": "<h3>Constant Angular Momentum</h3><p class=\"p101-def\">With zero net torque, angular momentum stays constant, but angular velocity can still change if the moment of inertia changes.</p><p>If the net force on an object is zero, its linear momentum stays constant. If the net torque is zero, its angular momentum stays constant. But there's a twist! An object's mass can't change, so constant momentum means constant velocity. Angular momentum is different: the moment of inertia depends on how the mass is arranged around the axis, so if an object changes shape, its angular velocity can change even with no torque acting.</p><p>Astronomers see this in binary star systems, pairs of stars orbiting each other. The gravitational forces act directly between the two stars, so there's no outside torque, and the system's angular momentum stays constant. But sometimes the stars are so close that gravity rips material off one and dumps it on the other. That changes the system's moment of inertia, so its angular velocity changes, even though its angular momentum doesn't.</p>",
+   "testIt": {
+    "name": "Arms in, arms out",
+    "how": "Use the button to pull the skater's arms in. L = Iω stays the same."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Diving and Ice-Skating",
+   "text": "<h3>Diving and Ice-Skating</h3><p class=\"p101-def\">Divers and skaters change their angular velocity by changing their moment of inertia.</p><p>How does the diver in Figure 5 start spinning? She uses the diving board to push on her body. She moves her center of mass in front of her feet, and the board gives her feet a final upward push. That makes a torque over time, which gives her angular momentum. In the air, she tucks, grabbing her knees and pulling her mass closer to the axis. That lowers her moment of inertia and speeds up her spin. Near the water, she stretches out straight. Extending her body raises her moment of inertia and slows her rotation, so she slips straight into the water.</p><p>An ice-skater does something similar. To start spinning on one foot, she pushes part of one skate into the ice, and the ice pushes back on her the opposite way, as in Figure 6. That force makes a torque if it acts some distance from the pivot and not toward it, and the most torque comes from pushing perpendicular to the lever arm. Then she controls her spin by changing her moment of inertia: arms and one leg out to slow down, pulled in close to speed up. To stop, she uses her free skate so the ice can exert another torque.</p><p>Think about cause and effect: summarize what causes a skater's spin to speed up or slow down, and describe how you could gather evidence to test each way the skater in Figure 6 controls her angular velocity.</p>",
+   "testIt": {
+    "name": "Tuck and stretch",
+    "how": "Use the button to tuck or stretch the diver."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Example Problem 2, Angular Impulse and Change in Angular Momentum",
+   "text": "<h3>Example Problem 2, Angular Impulse and Change in Angular Momentum</h3><p class=\"p101-def\">Average torque equals the change in angular momentum divided by the time: tau sub avg equals L sub f minus L sub i over delta t.</p><p>To finish his routine, an ice-skater spins in place at 2.5 rotations per second, with a moment of inertia of 0.50 kilogram meters squared. What's his angular momentum? Then he slowly and dramatically stops over 3.0 seconds by dragging one toe. What's the angular impulse, with its sign? And what average torque did the ice exert?</p><p>Step one: analyze and sketch. Sketch the system with the axis of rotation and the direction of the angular impulse. Known: omega sub i equals 2.5 rotations per second, omega sub f equals 0 radians per second, I equals 0.50 kilogram meters squared, delta t equals 3.0 seconds, and L sub f equals 0.0 kilogram meters squared per second. Unknown: L sub i, the angular impulse, and tau sub avg.</p><p>Step two: solve. The initial angular momentum is L sub i equals I omega sub i. Convert rotations to radians: 0.50 kilogram meters squared times 2.5 rotations per second times 2 pi radians per rotation. Radians are dimensionless, so they drop out, and L sub i is 7.9 kilogram meters squared per second. The angular impulse equals the change in angular momentum: L sub f minus L sub i, which is 0.0 minus 7.9, or negative 7.9 kilogram meters squared per second. Rearranging, the average torque is L sub f minus L sub i over delta t: negative 7.9 kilogram meters squared per second divided by 3.0 seconds, which is negative 2.6 newton-meters, since a kilogram meter squared per second squared is a newton-meter.</p><p>Step three: evaluate. The units work out. The angular impulse and torque are both negative, which means the angular momentum is decreasing. And the torque is small, but multiplied by the time, it equals the angular momentum the skater started with.</p><p>So, back to air bags: they work because the same change in momentum spread over a longer time and a bigger area means a gentler force on your body.</p>",
+   "testIt": {
+    "name": "Toe drag",
+    "how": "Slide the time. The ice's torque takes the skater's angular momentum to zero over 3.0 s."
+   }
+  }
+ }
+}

@@ -1,0 +1,91 @@
+{
+ "key": "M23-L01",
+ "ptw": 960.0,
+ "slides": [
+  {
+   "n": 1,
+   "title": "Three Kinds of Materials",
+   "items": []
+  },
+  {
+   "n": 2,
+   "title": "Your Investigation Toolkit",
+   "items": []
+  },
+  {
+   "n": 3,
+   "title": "From Energy Levels to Energy Bands",
+   "items": []
+  },
+  {
+   "n": 4,
+   "title": "Forbidden Gaps",
+   "items": []
+  },
+  {
+   "n": 5,
+   "title": "Smaller Gap, Better Conductor",
+   "items": []
+  },
+  {
+   "n": 6,
+   "title": "Electric Conduction",
+   "items": []
+  },
+  {
+   "n": 7,
+   "title": "Conductors and the Electron-Gas Model",
+   "items": []
+  },
+  {
+   "n": 8,
+   "title": "Insulators",
+   "items": []
+  },
+  {
+   "n": 9,
+   "title": "Example Problem 1, Free Electrons in Copper",
+   "items": []
+  },
+  {
+   "n": 10,
+   "title": "Semiconductors",
+   "items": []
+  },
+  {
+   "n": 11,
+   "title": "Holes and Free Electrons",
+   "items": []
+  },
+  {
+   "n": 12,
+   "title": "Example Problem 2, Free Electrons in Intrinsic Silicon",
+   "items": []
+  },
+  {
+   "n": 13,
+   "title": "n-Type Semiconductors",
+   "items": []
+  },
+  {
+   "n": 14,
+   "title": "p-Type Semiconductors",
+   "items": []
+  },
+  {
+   "n": 15,
+   "title": "Example Problem 3, Conductivity of Doped Silicon",
+   "items": []
+  },
+  {
+   "n": 16,
+   "title": "Making Semiconductors and Thermistors",
+   "items": []
+  },
+  {
+   "n": 17,
+   "title": "Light Meters",
+   "items": []
+  }
+ ]
+}

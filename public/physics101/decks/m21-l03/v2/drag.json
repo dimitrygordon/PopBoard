@@ -1,0 +1,298 @@
+{
+ "p01": {
+  "items": [
+   {
+    "id": "obj-flashlight",
+    "label": "flashlight"
+   },
+   {
+    "id": "obj-screen",
+    "label": "screen"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p03": {
+  "items": [
+   {
+    "id": "obj-compass",
+    "label": "compass"
+   },
+   {
+    "id": "obj-flashlight",
+    "label": "flashlight"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p04": {
+  "items": [
+   {
+    "id": "obj-flashlight",
+    "label": "flashlight"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p05": {
+  "items": [
+   {
+    "id": "obj-testcharge",
+    "label": "test charge"
+   },
+   {
+    "id": "obj-flashlight",
+    "label": "flashlight"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p06": {
+  "items": [
+   {
+    "id": "obj-flashlight",
+    "label": "flashlight"
+   },
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   },
+   {
+    "id": "obj-electron",
+    "label": "electron"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p07": {
+  "items": [
+   {
+    "id": "obj-particle",
+    "label": "particle"
+   },
+   {
+    "id": "obj-compass",
+    "label": "compass"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p08": {
+  "items": [
+   {
+    "id": "obj-switch",
+    "label": "switch"
+   },
+   {
+    "id": "obj-flashlight",
+    "label": "flashlight"
+   },
+   {
+    "id": "obj-electron",
+    "label": "electron"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p09": {
+  "items": [
+   {
+    "id": "obj-compass",
+    "label": "compass"
+   },
+   {
+    "id": "obj-electron",
+    "label": "electron"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p10": {
+  "items": [
+   {
+    "id": "obj-flashlight",
+    "label": "flashlight"
+   },
+   {
+    "id": "obj-nucleus",
+    "label": "nucleus"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p11": {
+  "items": [
+   {
+    "id": "obj-ion",
+    "label": "ion"
+   },
+   {
+    "id": "obj-flashlight",
+    "label": "flashlight"
+   },
+   {
+    "id": "obj-detector",
+    "label": "detector"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p12": {
+  "items": [
+   {
+    "id": "obj-ion",
+    "label": "ion"
+   },
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   },
+   {
+    "id": "obj-compass",
+    "label": "compass"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p13": {
+  "items": [
+   {
+    "id": "obj-electron",
+    "label": "electron"
+   },
+   {
+    "id": "obj-ion",
+    "label": "ion"
+   },
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p14": {
+  "items": [
+   {
+    "id": "obj-charge",
+    "label": "charge"
+   },
+   {
+    "id": "obj-ion",
+    "label": "ion"
+   },
+   {
+    "id": "obj-proton",
+    "label": "proton"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p15": {
+  "items": [
+   {
+    "id": "obj-nucleus",
+    "label": "nucleus"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ }
+}

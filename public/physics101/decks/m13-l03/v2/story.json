@@ -1,0 +1,84 @@
+{
+ "slug": "m13-l03",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Waves at Boundaries",
+   "text": "<h3>Waves at Boundaries</h3><p class=\"p101-def\">At a boundary between media, an incident wave splits into a transmitted wave and a reflected wave.</p><p>Our big question for this lesson: what happens when two waves meet? First, let's see what happens when a wave meets something new.</p><p>A mechanical wave's speed depends only on its medium. On a spring, that means the spring's tension and its mass per unit length. In Figure 12, a pulse travels from a larger spring into a smaller one. The pulse hitting the boundary is the incident wave. Part of it continues into the smaller spring at a different speed. This transmitted pulse stays upright.</p><p>Some of the energy bounces back into the larger spring as the reflected wave. Because the energy is shared with the transmitted pulse, the reflected wave carries less energy than the incident wave. Whether the reflection is upright or upside down depends on the two springs. If waves travel more slowly in the second spring, the reflection is inverted. If they travel faster, it stays upright.</p>",
+   "testIt": {
+    "name": "Two springs",
+    "how": "Tap to join a light spring to a heavier one or the reverse."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you complete the readings and activities in this lesson.</p><p>Online, the PhysicsLAB called Reflection and Refraction has you analyze wave patterns in a ripple tank to predict how water waves behave. In Review the News, you'll find a current news story about mechanical waves, like seismic or water waves, evaluate the source, and share what you learn with your class.</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Rigid Boundaries",
+   "text": "<h3>Rigid Boundaries</h3><p class=\"p101-def\">When a wave pulse hits a rigid boundary, it reflects inverted with almost the same amplitude.</p><p>What if the pulse hits a wall? In Figure 13, the wall is the edge of a new medium the wave tries to enter. Instead of passing through, the pulse bounces back with almost exactly the same amplitude. So almost all the energy is reflected, and very little goes into the wall.</p><p>Look closely, though. The reflected pulse is upside down! At a rigid boundary, the reflected wave is inverted.</p>",
+   "testIt": {
+    "name": "Wall or ring",
+    "how": "Tap to switch the end of the rope."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Superposition and Interference",
+   "text": "<h3>Superposition and Interference</h3><p class=\"p101-def\">The principle of superposition states that the displacement of a medium caused by two or more waves is the algebraic sum of the displacements caused by the individual waves.</p><p>Now suppose a pulse on a spring meets a reflected pulse coming back, as in Figure 14. Two waves are in the same place at the same time! Each affects the medium on its own. The principle of superposition says the total displacement is the algebraic sum of each wave's displacement. Together, they form a new wave with a smaller or bigger amplitude. Then they move on, unaffected by each other.</p><p>The result of superposition is called interference. In everyday talk, interference means getting in the way, like an interference foul in a game. In science, it just means the result of waves overlapping.</p><p>Boat designers use these ideas! Whether they're designing ocean liners, freighters, yachts, or wakeboard boats, they need to understand how a boat will handle in all kinds of wave conditions.</p>",
+   "testIt": {
+    "name": "Two pulses",
+    "how": "Slide time as two 2 cm pulses meet."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Constructive and Destructive Interference",
+   "text": "<h3>Constructive and Destructive Interference</h3><p class=\"p101-def\">A node is a point that does not move during interference; an antinode is the point with the largest displacement.</p><p>Interference can be destructive or constructive. In the first panel of Figure 15, two pulses with equal but opposite displacements meet. At the moment they overlap, the displacement is zero. Point N doesn't move at all. It's a node. Then the pulses travel on, unchanged.</p><p>When displacements point the same way, you get constructive interference: a bigger pulse than either one. Point A, with the largest displacement, is the antinode. Even if the pulses have different amplitudes, the overlap is still their algebraic sum, as the last panel shows.</p><p>So during superposition, waves add up. After superposition, they pass through each other with their original shapes and sizes. At a node, the medium stays still. At an antinode, it moves the most.</p>",
+   "testIt": {
+    "name": "Flip",
+    "how": "Tap to flip one pulse."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Standing Waves",
+   "text": "<h3>Standing Waves</h3><p class=\"p101-def\">A standing wave is the interference of waves traveling in opposite directions, producing nodes and antinodes that appear to stand still.</p><p>Tie one end of a rope to a doorknob a distance L away and shake the free end. The wave travels to the doorknob, reflects inverted, and comes back. At your hand it reflects and inverts again. So when it heads out the second time, it's pointing the same way as when it first left your hand.</p><p>Now time your shakes so one period equals the wave's round trip. Each shake adds to the returning wave, and the rope swings much farther than your hand moves. That's mechanical resonance! The ends are nodes and the middle is an antinode, as in the top photo of Figure 16. The wave seems to stand still, so it's called a standing wave. But it's really two waves traveling in opposite directions and interfering.</p><p>At the lowest frequency, f sub 0, the wavelength is 2 L. Double the frequency and you get one more node and antinode, two segments, with a wavelength of L. Triple it for three segments and a wavelength of two-thirds L. At four times f sub 0, you'd get four segments and a wavelength of one-half L.</p>",
+   "testIt": {
+    "name": "Standing waves",
+    "how": "Tune the shaking frequency for a 2.0 m rope with wave speed 8.0 m/s."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Waves in Two Dimensions",
+   "text": "<h3>Waves in Two Dimensions</h3><p class=\"p101-def\">A wavefront is a line that represents the crest of a wave in two dimensions; a ray is a line drawn at a right angle to the wavefront.</p><p>Waves on ropes and springs travel in one dimension. Water surface waves travel in two, and sound and light travel in three. How do we draw two-dimensional waves?</p><p>Toss a pebble into a calm pool, and circular crests and troughs spread out. Draw the crests as circles. Dip your finger in again and again at a steady rate, and you get concentric circles centered on your finger. These are wavefronts, lines showing the crest of a wave in two dimensions. Figure 17 shows circular water waves with wavefronts drawn on top.</p><p>Two-dimensional waves always travel perpendicular to their wavefronts. That direction is shown by a ray, a line at a right angle to the wavefront, like the red arrows in Figure 17. Rays show direction. Wavefronts drawn to scale also show wavelength: the distance from one circle to the next.</p>",
+   "testIt": {
+    "name": "Pool",
+    "how": "Tap to toggle wavefront and ray views."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "The Ripple Tank and the Law of Reflection",
+   "text": "<h3>The Ripple Tank and the Law of Reflection</h3><p class=\"p101-def\">The law of reflection states that the angle of incidence is equal to the angle of reflection.</p><p>A ripple tank, shown in Figure 18, is a shallow tank of water for studying two-dimensional waves. A board attached to a mechanical oscillator makes waves with long, straight wavefronts. A lamp above casts shadows below that show where the crests are, and a ray diagram shows the direction of travel.</p><p>The bottom pictures show an incident ray hitting a rigid barrier set at an angle. A line drawn perpendicular to the barrier is called the normal. In everyday talk, normal means ordinary. In science, it's a line perpendicular to a surface. The angle between the incident ray and the normal is the angle of incidence, theta sub i. The angle between the normal and the reflected ray is the angle of reflection, theta sub r.</p><p>The law of reflection says the two angles are equal. It works for many kinds of waves, not just ripples. To test it, you could set the barrier at several angles, measure theta sub i and theta sub r each time, and see whether changing the barrier's angle causes matching changes in the reflection.</p>",
+   "testIt": {
+    "name": "Barrier",
+    "how": "Rotate the barrier and measure the angles."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Refraction",
+   "text": "<h3>Refraction</h3><p class=\"p101-def\">Refraction is the change in the direction of waves at the boundary between two different mediums.</p><p>A ripple tank can show waves moving into a new medium too. In Figure 19, a glass plate under the water makes a shallow region. As the waves move from deep to shallow water, they slow down and change direction.</p><p>The waves in the shallow water are connected to the waves in the deep water, so their frequency stays the same. Since lambda equals v over f, slower waves mean a shorter wavelength in the shallow water. The change in direction at a boundary is called refraction. Some of the wave refracts through the boundary, and some reflects.</p><p>Reflection and refraction happen for many kinds of waves. Echoes in a big gym are sound reflecting off hard walls. Rainbows come from sunlight refracting as it enters and leaves raindrops, with a reflection inside. Each color bends by a slightly different amount, so the light spreads into its colors.</p><p>So, what happens when two waves meet? They pass right through each other, and while they overlap, their displacements add. That can build bigger waves, cancel them out, or create standing waves with nodes and antinodes.</p>",
+   "testIt": {
+    "name": "Shallow plate",
+    "how": "Tap to slide the plate in or out (deep 0.30 m/s, shallow 0.15 m/s, 5.0 Hz)."
+   }
+  }
+ }
+}

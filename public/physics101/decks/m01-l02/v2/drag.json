@@ -1,0 +1,162 @@
+{
+ "p01": {
+  "items": [
+   {
+    "id": "penny",
+    "label": "the dropped penny"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p05": {
+  "items": [
+   {
+    "id": "knob",
+    "label": "gold slider knob on the prefix rail"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p06": {
+  "items": [
+   {
+    "id": "tile-m",
+    "label": "unit tile \"m\""
+   },
+   {
+    "id": "tile-s",
+    "label": "unit tile \"s\""
+   },
+   {
+    "id": "check",
+    "label": "green check"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p07": {
+  "items": [
+   {
+    "id": "flour-bag",
+    "label": "bag of flour, 1.34 kg"
+   },
+   {
+    "id": "car",
+    "label": "red car on the road"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p08": {
+  "items": [
+   {
+    "id": "pen",
+    "label": "pen whose tip ends just past 138 mm"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p09": {
+  "items": [
+   {
+    "id": "number-1",
+    "label": "tappable number"
+   },
+   {
+    "id": "number-2",
+    "label": "tappable number"
+   },
+   {
+    "id": "number-3",
+    "label": "tappable number"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p10": {
+  "items": [
+   {
+    "id": "answer-1",
+    "label": "answer card \"6.26 m\""
+   },
+   {
+    "id": "answer-2",
+    "label": "answer card \"6.3 m\""
+   },
+   {
+    "id": "answer-3",
+    "label": "answer card \"35.894 km/L\""
+   },
+   {
+    "id": "answer-4",
+    "label": "answer card \"35.9 km/L\""
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ },
+ "p11": {
+  "items": [
+   {
+    "id": "car",
+    "label": "car that drives the 434 km route"
+   }
+  ],
+  "targets": [],
+  "snap": 40,
+  "lift": 6,
+  "step": 10,
+  "bigStep": 40,
+  "ease": 300,
+  "oneAtATime": false,
+  "stayWhereDropped": true
+ }
+}

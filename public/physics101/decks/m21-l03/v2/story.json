@@ -1,0 +1,143 @@
+{
+ "slug": "m21-l03",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Discovery of the Electron",
+   "text": "<h3>Discovery of the Electron</h3><p class=\"p101-def\">In 1897, J.J. Thomson used a cathode-ray tube to pull negatively charged particles, later named electrons, out of atoms.</p><p>Our big question for this lesson: how does a mass spectrometer work? Before we can understand how electric and magnetic fields team up to make the electromagnetic waves that carry your phone messages and music, we need to meet the electron.</p><p>In the 1800s, evidence was piling up that atoms held negatively charged particles. In 1897, J.J. Thomson pulled those particles out of atoms. He pumped nearly all the air out of a cathode-ray tube like the one in Figure 17. A battery made a large potential difference between the cathode and the anodes.</p><p>At the far end of the tube, Thomson saw a glowing spot, made by an invisible beam called the cathode ray. The potential difference accelerated the ray from the cathode toward the anodes, and it zipped through slits in the anodes. Thomson realized the ray was made of negatively charged particles that came from atoms.</p>",
+   "testIt": {
+    "name": "Cathode rays",
+    "how": "Raise the potential difference across the tube."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson.</p><p>Online, the PhysicsLAB: Mass of an Electron has you investigate how a magnetic field affects a moving electron and calculate the electron's mass. You can also revisit the Encounter the Phenomenon question and look for information in this lesson that helps answer the unit and module questions.</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Balancing the Forces",
+   "text": "<h3>Balancing the Forces</h3><p class=\"p101-def\">Thomson used an electric force, q E, and a magnetic force, B q v, pushing in opposite directions to steer the electron beam.</p><p>Thomson knew neither the charge q nor the mass m of his particles, but he could find their charge-to-mass ratio. It was very high, likely because the particles had tiny mass. And it was the same no matter which gas he put in the tube. So he concluded these particles were parts of all atoms: electrons.</p><p>Here's how. Inside the tube, oppositely charged plates made an electric field, and electromagnets outside made a magnetic field. The electric field, of strength E, was perpendicular to the beam, and it pushed the beam upward toward the positive plate with a force q times E. The magnetic field was at right angles to both the beam and the electric field, and it pushed the beam downward with a force B times q times v, where v is the electron's velocity.</p><p>Want the magnetic force to bend the electrons upward instead? Just reverse the direction of the magnetic field.</p>",
+   "testIt": {
+    "name": "Two fields",
+    "how": "Tap for the next field setting."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "The Straight-Path Velocity",
+   "text": "<h3>The Straight-Path Velocity</h3><p class=\"p101-def\">When the electric and magnetic forces balance, B q v equals E q, so v equals E over B.</p><p>Thomson tuned the two fields until the beam went perfectly straight. Then the two forces were equal in size and opposite in direction: B times q times v equals E times q.</p><p>Solve for v, and the charges cancel: v equals E over B. That means the forces balance only for electrons moving at one particular speed. Measure E and B, and you know how fast the electrons are going.</p>",
+   "testIt": {
+    "name": "Straight path",
+    "how": "Adjust E and B until the beam runs straight (beam speed 2.0 × 10⁷ m/s)."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Bending in a Circle",
+   "text": "<h3>Bending in a Circle</h3><p class=\"p101-def\">In a magnetic field, an electron's charge-to-mass ratio is q over m equals v over B r.</p><p>Now switch off the electric field, so only the magnetic force acts. That force is always perpendicular to the electron's motion, so the electron undergoes centripetal acceleration and travels in a circle of radius r.</p><p>Newton's second law for circular motion gives B times q times v equals m times the square of v, divided by r. Solve for the charge-to-mass ratio: q over m equals v divided by the product of B and r. In words, the ratio of an electron's charge to its mass equals its velocity divided by the magnetic field strength times the radius of its circular path.</p>",
+   "testIt": {
+    "name": "Circle",
+    "how": "Change B with the electric field off (v = 2.0 × 10⁷ m/s)."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "The Mass of an Electron",
+   "text": "<h3>The Mass of an Electron</h3><p class=\"p101-def\">Dividing the electron's charge by its charge-to-mass ratio gives its mass, 9.11 times ten to the negative thirty-first kilograms.</p><p>First, Thomson found the straight-path velocity from his measured E and B. Then he switched off the electric field and measured how far the spot moved when the magnetic field acted alone. From that distance, he calculated the radius r and got q over m equals negative 1.759 times ten to the eleventh coulombs per kilogram.</p><p>That ratio was the first step to the electron's mass. Electrolysis experiments involving many electrons had already given the average charge as negative 1.602 times ten to the negative nineteenth coulombs, and Thomson assumed each electron carried it. In 1909, Robert Millikan confirmed that every electron has this same charge, e.</p><p>So the mass is the charge divided by the charge-to-mass ratio: negative 1.602 times ten to the negative nineteenth coulombs, divided by negative 1.759 times ten to the eleventh coulombs per kilogram, equals 9.107 times ten to the negative thirty-first kilograms. To three significant figures, that's 9.11 times ten to the negative thirty-first kilograms. Tiny!</p>",
+   "testIt": {
+    "name": "Electron mass",
+    "how": "Measure the radius (v = 2.0 × 10⁷ m/s, B = 3.5 mT)."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Experiments with Positive Ions",
+   "text": "<h3>Experiments with Positive Ions</h3><p class=\"p101-def\">An ion is a charged atom or molecule, and positive ions deflect opposite to electrons.</p><p>Thomson also used his tube to study positive ions. An ion is a charged atom or molecule. In an electric or magnetic field, positively charged particles bend the opposite way from electrons.</p><p>You can see this in Figure 18, a computer simulation of two protons colliding at the Large Hadron Collider. The yellow lines show possible paths of the particles that fly out, curving one way or the other depending on their charge. The blue rectangles show the energy those particles deposit.</p>",
+   "testIt": {
+    "name": "Opposite charges",
+    "how": "Tap to switch particles."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "The Mass of a Proton",
+   "text": "<h3>The Mass of a Proton</h3><p class=\"p101-def\">Using the same method on hydrogen ions, Thomson found the mass of a proton, 1.67 times ten to the negative twenty-seventh kilograms.</p><p>To make positive ions, Thomson added a little hydrogen gas to his tube and reversed the electric field between the cathode and anodes. The strong field pulled electrons off the hydrogen atoms, turning them into positive ions, then accelerated them through a tiny slit into the region with electric and magnetic fields, and on to the screen.</p><p>He found the charge-to-mass ratio of this hydrogen ion, later shown to be a proton, just as he had for the electron. From it, a single proton's mass came out to 1.67 times ten to the negative twenty-seventh kilograms, nearly two thousand times the electron's mass. Thomson went on to measure the masses of ions of heavier gases too, like helium, neon, and argon, with one or more electrons stripped off.</p>",
+   "testIt": {
+    "name": "Hydrogen ions",
+    "how": "Tap to switch beams at the same speed and field."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Example Problem 3, Path Radius",
+   "text": "<h3>Example Problem 3, Path Radius</h3><p class=\"p101-def\">For a charge moving perpendicular to a magnetic field, r equals m v over B q.</p><p>An electron, with mass 9.11 times ten to the negative thirty-first kilograms, moves through a cathode-ray tube at 2.0 times ten to the seventh meters per second, perpendicular to a magnetic field of 3.5 times ten to the negative third teslas. The electric field is off. What's the radius of its circular path?</p><p>Step one: analyze and sketch. Draw the electron's path and label its velocity v, sketch the magnetic field perpendicular to it, and show the force on the electron, pointing inward along the radius r. Known: v is 2.0 times ten to the seventh meters per second, B is 3.5 times ten to the negative third teslas, m is 9.11 times ten to the negative thirty-first kilograms, and q is negative 1.602 times ten to the negative nineteenth coulombs. Unknown: r.</p><p>Step two: solve. Newton's second law gives B q v equals m times the square of v over r, so r equals m v divided by B q. Substitute: 9.11 times ten to the negative thirty-first kilograms times 2.0 times ten to the seventh meters per second, divided by 3.5 times ten to the negative third teslas times negative 1.602 times ten to the negative nineteenth coulombs. That's negative 3.2 times ten to the negative second meters.</p><p>Step three: evaluate. A radius is a length, in meters, good. A few centimeters is typical for this kind of apparatus and easy to measure. The negative sign just means the circle curves opposite to the way a positive ion's would.</p>",
+   "testIt": {
+    "name": "Path radius",
+    "how": "Enter the speed (B = 3.5 × 10⁻³ T)."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Isotopes and the Mass Spectrometer",
+   "text": "<h3>Isotopes and the Mass Spectrometer</h3><p class=\"p101-def\">An isotope is a form of the same atom with the same chemical properties but a different mass, and a mass spectrometer measures the charge-to-mass ratio of positive ions.</p><p>Something surprising happened when Thomson put neon in his tube. He saw two glowing dots instead of one! Working out a separate q over m for each dot, he concluded that two atoms of neon could have identical chemical properties but different masses. Each form of the same atom that has the same chemical properties but a different mass is called an isotope.</p><p>Thomson's separation of neon's isotopes was the first example of mass spectrometry. A mass spectrometer is an instrument that measures the charge-to-mass ratio of positive ions in a material. From that ratio, scientists can find the masses of the isotopes that make up the material.</p>",
+   "testIt": {
+    "name": "Neon",
+    "how": "Tap to send the neon beam through."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Inside a Mass Spectrometer",
+   "text": "<h3>Inside a Mass Spectrometer</h3><p class=\"p101-def\">In a mass spectrometer, positive ions are made, accelerated by an electric field, and bent by a magnetic field onto a detector.</p><p>Look at Figure 19. Anything going into a mass spectrometer must be a gas, or be heated until it is one. The gas enters the ion source at the bottom. There, an energetic beam of electrons slams into the gas atoms and rips off one or more electrons, making positive ions.</p><p>An electric field, from a potential difference between two electrodes in the ion source, accelerates the ions into the vacuum chamber between the poles of a C-shaped magnet. The uniform magnetic field there bends the ions into a circular path until they hit an electronic detector.</p>",
+   "testIt": {
+    "name": "Inside",
+    "how": "Tap to follow the ion to the next stage."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Finding the Path Radius",
+   "text": "<h3>Finding the Path Radius</h3><p class=\"p101-def\">An ion's path radius is r equals one over B times the square root of two V accel m over q.</p><p>Once in the magnetic field, the ions travel in circles, and the radius depends on mass. For ions with the same charge, the lighter the ion, the more it bends and the smaller its circle. From Newton's second law, B q v equals m times the square of v over r, so r equals m v over q B.</p><p>We get the speed from energy. An ion accelerated from rest through a potential difference V accel gains kinetic energy one half m times the square of v, equal to q times V accel. So v equals the square root of two q V accel over m.</p><p>Put that into r equals m v over q B, and it simplifies to r equals one over B, times the square root of two V accel m over q. Multiply both sides by B, and B r equals the square root of two m V accel over q. Heavier ions make bigger circles, and that's how the machine sorts them.</p>",
+   "testIt": {
+    "name": "Mass and charge",
+    "how": "Change the ion's mass and charge (V = 34 V, B = 0.050 T)."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "The Charge-to-Mass Ratio of an Ion",
+   "text": "<h3>The Charge-to-Mass Ratio of an Ion</h3><p class=\"p101-def\">For an ion in a mass spectrometer, q over m equals two V accel divided by the square of B times the square of r.</p><p>Rearrange the last equation and you get the charge-to-mass ratio of an ion: q over m equals two times V accel, divided by the product of the square of the magnetic field strength and the square of the radius.</p><p>To get an ion's mass, divide its charge by the measured ratio. A proton's charge equals the electron's, but positive: 1.602 times ten to the negative nineteenth coulombs. If more than one electron is removed from an atom, multiply that charge by the number removed, which the operator can control. So an ion with three electrons removed carries three times 1.602 times ten to the negative nineteenth, or 4.806 times ten to the negative nineteenth coulombs.</p>",
+   "testIt": {
+    "name": "Strip electrons",
+    "how": "Set how many electrons are stripped from neon-20."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "Example Problem 4, Mass of a Neon Atom",
+   "text": "<h3>Example Problem 4, Mass of a Neon Atom</h3><p class=\"p101-def\">m equals q times the square of B times the square of r, divided by two V accel.</p><p>A mass spectrometer operator makes a beam of doubly ionized neon, with two electrons removed. The ions are accelerated through 34 volts, then pass through a 0.050 tesla magnetic field, where their path radius is 53 millimeters. What's the mass of the neon atom, to the closest whole number of proton masses?</p><p>Step one: analyze and sketch. Draw the ions' circular path and label the radius, and label the potential difference between the electrodes. Known: the proton's mass is 1.67 times ten to the negative twenty-seventh kilograms, V accel is 34 volts, B is 0.050 teslas, r is 0.053 meters, and q is two times 1.602 times ten to the negative nineteenth, or 3.204 times ten to the negative nineteenth coulombs. Unknown: the neon mass and the number of proton masses.</p><p>Step two: solve. Start with q over m equals two V accel over the square of B times the square of r, and solve for mass: m equals q times the square of B times the square of r, divided by two V accel. Substitute 3.204 times ten to the negative nineteenth coulombs, times the square of 0.050 teslas, times the square of 0.053 meters, divided by two times 34 volts. That's 3.3 times ten to the negative twenty-sixth kilograms. Divide by the proton's mass, 1.67 times ten to the negative twenty-seventh kilograms, and you get about 20 proton masses.</p><p>Step three: evaluate. Mass is in kilograms, and the number of proton masses has no unit. Is it realistic? Yes: neon's most common isotopes have masses of about 20 and 22 proton masses.</p>",
+   "testIt": {
+    "name": "Neon mass",
+    "how": "Enter the radius (34 V, 0.050 T, 2+ ion)."
+   }
+  },
+  "15": {
+   "layers": [],
+   "title": "Isotopic Analysis",
+   "text": "<h3>Isotopic Analysis</h3><p class=\"p101-def\">In a mass spectrometer, each isotope lands at a different spot on the detector, and the width of its mark shows how abundant it is.</p><p>Back in Figure 19, ions hit the detector in different places depending on mass. The more massive the ion, the wider its curved path. That diameter is easy to measure, because it's the distance from the slit to where the ion lands, and the radius is half of it.</p><p>Figure 20 shows the marks from an ionized chromium sample. Four distinct marks mean natural chromium is made of four isotopes, with masses near 50, 52, 53, and 54 proton masses. The width of each mark shows its abundance: about 4.3 percent, 83.8 percent, 9.5 percent, and 2.4 percent. Weight each mass by its share and add them up, and the average comes to about 52, which matches the mass of chromium on the periodic table.</p><p>All these chromium ions are singly charged, because only one electron was removed. Removing a second electron takes more energy, so the operator can make doubly ionized atoms by increasing the electric field, giving the electron beam more kinetic energy.</p>",
+   "testIt": {
+    "name": "Chromium",
+    "how": "Drag the abundance of chromium-52 (the rest split as in nature)."
+   }
+  },
+  "16": {
+   "layers": [],
+   "title": "Mass Spectrometry Applications",
+   "text": "<h3>Mass Spectrometry Applications</h3><p class=\"p101-def\">Mass spectrometers can separate ions whose masses differ by as little as one ten-thousandth of one percent.</p><p>Mass spectrometers are amazingly sensitive. They can separate ions whose masses differ by as little as one ten-thousandth of one percent. That precision lets scientists spot a single molecule in a sample of ten billion molecules.</p><p>They're used all over. Mass spectrometers analyze the atmospheres and soils of Mars and other objects in the solar system. Geologists, drug makers, biologists, and even forensic scientists use them. Airports use them to sniff out traces of explosive molecules in luggage or on passengers' hands and shoes.</p>"
+  }
+ }
+}

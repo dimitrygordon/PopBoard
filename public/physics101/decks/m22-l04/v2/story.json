@@ -1,0 +1,153 @@
+{
+ "slug": "m22-l04",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Orbits Made of Waves",
+   "text": "<h3>Orbits Made of Waves</h3><p class=\"p101-def\">In the Bohr model, a stable orbit's circumference must equal a whole number of de Broglie wavelengths, two pi r equals n lambda.</p><p>Our big question for this lesson: how do lasers work? To get there, we need a better model of the atom. Bohr's quantized orbits couldn't predict energies for atoms with more than one electron. But remember de Broglie's idea that particles have wave properties.</p><p>A particle's de Broglie wavelength is lambda equals h over m v, so its angular momentum, m v r, equals h r over lambda. Bohr's rule was m v r equals n h over two pi. Put them together: h r over lambda equals n h over two pi, which simplifies to two pi r equals n lambda.</p><p>Figure 25 shows what that means. The circumference of a stable orbit must fit a whole number of electron wavelengths. With 3 or 5 full waves, the wave joins up with itself and the orbit is stable. With 2.9 waves, it doesn't match up, and there's no stable orbit.</p>",
+   "testIt": {
+    "name": "Wave orbit",
+    "how": "Change the wave count around the orbit."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson.</p><p>Online, the Applying Practices activity Communicate Information About Multiple Technologies has you explain how devices use wave behavior and wave interactions with matter to send and capture information and energy.</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Waves of Probability",
+   "text": "<h3>Waves of Probability</h3><p class=\"p101-def\">In Schrodinger's quantum theory, a wave describes the probability of finding an electron at a location or with a particular momentum or energy.</p><p>In 1926, Austrian physicist Erwin Schrodinger extended de Broglie's idea into a full quantum theory of particles, like electrons, based on waves. But careful: the electron itself isn't a wave. The wave describes the probability of finding the electron in a particular place, or with a particular momentum or energy.</p><p>Heisenberg had shown you can't measure both the exact position and the exact momentum of a particle at the same time. Building on that, the modern quantum model of the atom predicts only the probability that an electron is in a given region. And here's a neat match: for hydrogen, the most probable distance between the electron and the nucleus equals the radius Bohr predicted.</p>",
+   "testIt": {
+    "name": "Probability",
+    "how": "Take more measurements."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "The Electron Cloud",
+   "text": "<h3>The Electron Cloud</h3><p class=\"p101-def\">The electron cloud is the region in which there is a high probability of finding the electron.</p><p>You can calculate the probability of finding the electron at any radius and draw a three-dimensional plot showing regions of equal probability. The region where you're most likely to find the electron is called the electron cloud.</p><p>Figure 26 shows a slice through the cloud for hydrogen's two lowest energy levels. The denser the dots, the more likely the electron is there. At n equals 1, the dots cluster around the nucleus. At n equals 2, there's a small inner cluster and a big ring farther out.</p><p>So the electron cloud isn't a fuzzy electron smeared out. It's a map of where the electron probably is when you look.</p>",
+   "testIt": {
+    "name": "Cloud",
+    "how": "Tap to switch levels."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Quantum Mechanics at Work",
+   "text": "<h3>Quantum Mechanics at Work</h3><p class=\"p101-def\">Quantum mechanics is the study of the wave properties of matter.</p><p>The quantum model is hard to picture, but it was an early win for quantum mechanics, the study of the wave properties of matter. Physicists, chemists, biologists, and engineers all use it.</p><p>Quantum mechanics has helped create new chemicals, computer chips, solar cells, and medicines. It also helped scientists analyze exactly how atoms emit and absorb light, and that led to a brand-new kind of light source: the laser.</p>"
+  },
+  "6": {
+   "layers": [],
+   "title": "Coherent and Incoherent Light",
+   "text": "<h3>Coherent and Incoherent Light</h3><p class=\"p101-def\">Coherent light is made of waves that are in phase; out-of-step light waves are incoherent light.</p><p>Most light around you is a jumble of uncoordinated waves with many wavelengths, like a choir where everyone sings a different song. A filament bulb gives off a continuous range of wavelengths, and an atomic gas gives just a few, but both send light in all directions, and the waves aren't at the same point in their cycles at the same time.</p><p>Out-of-step light waves are called incoherent light. Waves that are in phase are coherent, and light made of them is coherent light. Figure 27 shows both. In coherent light, every crest lines up, even if the waves have different heights.</p>",
+   "testIt": {
+    "name": "Coherent",
+    "how": "Line up the waves."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Exciting Atoms",
+   "text": "<h3>Exciting Atoms</h3><p class=\"p101-def\">Atoms can be excited by thermal excitation, by electron collisions, or by absorbing a photon with exactly the right energy.</p><p>Atoms give off light when they drop from a higher energy state to a lower one. You've already met two ways to excite atoms: heating them, called thermal excitation, and hitting them with electrons, called electron collision.</p><p>There's a third way. A photon with exactly the right energy can hit an atom and excite it. In a laser, this process can produce intense, coherent light.</p>",
+   "testIt": {
+    "name": "Excite",
+    "how": "Tap for the next method."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Spontaneous and Stimulated Emission",
+   "text": "<h3>Spontaneous and Stimulated Emission</h3><p class=\"p101-def\">In stimulated emission, a photon with energy E two minus E one strikes an excited atom, which drops to a lower state and emits a second, identical photon.</p><p>An excited atom normally drops back to the ground state after a very short time, giving off a photon with the energy it absorbed. That's spontaneous emission, shown on the left of Figure 28.</p><p>In 1917, Einstein asked what happens if an atom that's already excited gets hit by a photon whose energy equals the gap between its excited state and the ground state. He showed the atom drops to the ground state and emits a photon with that same energy. This is stimulated emission. The incoming photon isn't affected, so two photons leave: the original and the new one.</p><p>Those two photons have the same energy, the same frequency and wavelength, and they're in step, or coherent, as shown on the right of Figure 28. Either one can hit another excited atom and make yet another matching photon. The result can be an avalanche of photons, all the same wavelength and all in phase.</p>",
+   "testIt": {
+    "name": "Stimulated",
+    "how": "Slide time."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "The Laser",
+   "text": "<h3>The Laser</h3><p class=\"p101-def\">Laser is an acronym for light amplification by stimulated emission of radiation.</p><p>For that avalanche to happen, three things are needed. First, there must be other atoms in the excited state. Second, they must stay excited long enough to be hit by a photon. Third, the photons must be kept inside so they can hit more excited atoms.</p><p>In 1960, a device was invented that met all three conditions: the laser. The word laser stands for light amplification by stimulated emission of radiation. An atom that emits light when stimulated in a laser is said to lase.</p>",
+   "testIt": {
+    "name": "Conditions",
+    "how": "Tap to toggle the next condition."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Pumping the Atoms",
+   "text": "<h3>Pumping the Atoms</h3><p class=\"p101-def\">Pumping a laser means exciting its lasing atoms, with a flash of shorter-wavelength light or by collisions with other atoms.</p><p>The atoms in a laser can be excited, or pumped. One way is an intense flash of light with a shorter wavelength than the laser's. Those higher-energy photons excite the lasing atoms. When one excited atom drops and emits a photon, the avalanche begins, and out comes a brief pulse of laser light.</p><p>Another way is collisions with other atoms. In the helium-neon lasers you might see in science class, an electric discharge excites helium atoms. The excited helium atoms bump into neon atoms, pumping them to an excited state so they lase. That gives a continuous beam instead of pulses. And since pumping light must carry more energy per photon than the laser light, green light could pump a red laser, but red light couldn't pump a green one.</p>",
+   "testIt": {
+    "name": "Pump",
+    "how": "Choose the pump wavelength (laser emits at 694 nm)."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Lasing",
+   "text": "<h3>Lasing</h3><p class=\"p101-def\">Laser light is coherent, can be monochromatic, and forms a highly directional, intense, narrow beam.</p><p>The lasing atoms and their photons sit in a chamber with parallel mirrors at each end. One mirror lets only about 1 percent of the light through. Photons heading toward the mirrors bounce back into the gas, hit more atoms, and release more photons.</p><p>Because every stimulated photon is in step with the one that triggered it, laser light is coherent. It can also be just one wavelength, called monochromatic. The parallel mirrors make a highly directional, intense beam with a small diameter that spreads very little and can be focused to a fine point. And stimulated emission can be switched on and off to make brief, high-power pulses. Those features make lasers useful for all sorts of jobs.</p>",
+   "testIt": {
+    "name": "Mirrors",
+    "how": "Adjust the alignment."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Lasers in Disc Players",
+   "text": "<h3>Lasers in Disc Players</h3><p class=\"p101-def\">Shorter-wavelength laser beams focus on smaller spots, so discs read by them can store more data.</p><p>Ever used a CD, DVD, or Blu-ray player? Then you've used a laser. These lasers, like the ones in laser pointers, are made of semiconducting solids. A CD player's laser is made of layers of gallium arsenide and gallium aluminum arsenide. The lasing layer is only 200 nanometers thick, and each side of the crystal is just 1 to 2 millimeters long. An electric current pumps the atoms, and the photons are amplified as they bounce between the crystal's polished ends.</p><p>Shorter-wavelength beams, like the roughly 650 nanometer laser in the DVD player in Figure 29, focus on smaller spots, so DVDs store more data than CDs. Blu-ray players use even shorter wavelengths, so Blu-ray discs hold about five times more data than DVDs.</p>",
+   "testIt": {
+    "name": "Disc",
+    "how": "Shorten the wavelength."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Measuring with Lasers",
+   "text": "<h3>Measuring with Lasers</h3><p class=\"p101-def\">Laser beams are narrow, highly directional, and spread very little, so they are ideal for surveying and measuring large distances.</p><p>Laser beams are narrow and highly directional and barely spread out, which makes them perfect for measuring. Surveyors use them to check that long tunnels and pipes are straight. Lasers bounced off mirrors left on the Moon measure the distance from Earth to the Moon, and laser ranging to reflectors on satellites helps track the slow movement of Earth's tectonic plates.</p><p>Lasers can also fire bursts as short as ten to the negative fifteenth seconds, so scientists use them to study super-fast changes in the structure of atoms and molecules. Other scientists are trying to produce energy from very hot plasmas using enormous lasers that fire pulses of a petawatt, ten to the fifteenth watts.</p>",
+   "testIt": {
+    "name": "Moon",
+    "how": "Set the round-trip time."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "Fiber-Optic Communications",
+   "text": "<h3>Fiber-Optic Communications</h3><p class=\"p101-def\">A fiber-optic cable uses total internal reflection to carry laser light over long distances with little loss of signal energy.</p><p>Table 2 shows more laser applications. Laser light is common in fiber-optic communications, a technology built on understanding waves and how they interact with matter.</p><p>A fiber-optic cable uses total internal reflection to carry light long distances with little loss of signal energy. The laser switches on and off very quickly, sending information as a series of pulses through the fiber. Around the world, optical fibers have replaced copper wires for carrying phone calls, computer data, and TV signals.</p>",
+   "testIt": {
+    "name": "Fiber",
+    "how": "Bend the fiber."
+   }
+  },
+  "15": {
+   "layers": [],
+   "title": "Lunar Research",
+   "text": "<h3>Lunar Research</h3><p class=\"p101-def\">The Lunar Reconnaissance Orbiter timed laser pulses bounced off the Moon to make topographic maps accurate to within 10 centimeters.</p><p>The Lunar Reconnaissance Orbiter pointed a laser at the Moon's surface and recorded how long the light took to bounce back to the satellite. The data produced topographic maps accurate to within 10 centimeters.</p><p>Besides giving clues about the Moon's history, these maps can help pick safe landing sites for future robotic and crewed missions to the Moon.</p>",
+   "testIt": {
+    "name": "Altimeter",
+    "how": "Change the return time."
+   }
+  },
+  "16": {
+   "layers": [],
+   "title": "Laser Printers",
+   "text": "<h3>Laser Printers</h3><p class=\"p101-def\">A laser printer uses a laser to change the electrostatic charge on a drum, forming an image that attracts toner.</p><p>Laser printers use lasers too, as shown in Table 2. First, lenses and mirrors steer the laser beam to scan across a drum, a large cylinder. A typical printer laser has a wavelength of about 760 nanometers. The laser's light changes the electrostatic charge on the photosensitive drum, drawing an image of the printed page.</p><p>As the drum rolls past the toner supply, toner droplets stick to the spots the laser hit. The drum transfers the charged toner to oppositely charged paper, then rolls past a rubber strip that cleans it for the next image. Finally, the fuser heats the paper and toner, up to 200 degrees Celsius, so the toner melts and sticks for good.</p>",
+   "testIt": {
+    "name": "Printer",
+    "how": "Tap for the next step."
+   }
+  },
+  "17": {
+   "layers": [],
+   "title": "STEM Career Connection, Registered Nurse",
+   "text": "<h3>STEM Career Connection, Registered Nurse</h3><p class=\"p101-def\">Under a physician's supervision, registered nurses use lasers to improve patients' health and well-being.</p><p>Do you like helping people? Would you like to work with lasers? The link between lasers and nursing might not be obvious, but lasers have many uses in caring for patients.</p><p>Under a physician's supervision, registered nurses can use lasers to remove spider veins, unwanted hair, or even an unwanted tattoo!</p>"
+  },
+  "18": {
+   "layers": [],
+   "title": "Science and Society, Using Lasers to Detect Tooth Decay",
+   "text": "<h3>Science and Society, Using Lasers to Detect Tooth Decay</h3><p class=\"p101-def\">A laser-and-sensor tool sends infrared light to a tooth and measures the reflected heat and light to find hidden cavities.</p><p>Most American adults have had cavities, also called dental caries, and they're common in kids too. Fillings can be painful, pricey, and scary, so some people avoid the dentist, but untreated cavities hurt more and more over time.</p><p>Dentists usually find cavities with X-rays and by looking. But those methods mostly catch bigger cavities on easy-to-see surfaces. They often miss cavities on other surfaces and decay hidden under the enamel, the hard outer layer of the tooth. A newer tool uses a laser and a sensor. It sends infrared light to the tooth, and an infrared sensor measures the heat and light that come back, pinpointing cavities.</p><p>Scientists are even studying lasers that might reverse decay. In experiments with rats, lasers stimulated the growth of new dentin, the decay-prone material in the core of teeth. Studies with cultured cells show lasers can trigger a reaction that activates a protein, which in turn activates stem cells to form dentin.</p>"
+  }
+ }
+}

@@ -1,0 +1,51 @@
+{
+ "key": "M13-L01",
+ "ptw": 960.0,
+ "slides": [
+  {
+   "n": 1,
+   "title": "Bobbing and Swinging",
+   "items": []
+  },
+  {
+   "n": 2,
+   "title": "Your Investigation Toolkit",
+   "items": []
+  },
+  {
+   "n": 3,
+   "title": "Simple Harmonic Motion",
+   "items": []
+  },
+  {
+   "n": 4,
+   "title": "Hooke's Law",
+   "items": []
+  },
+  {
+   "n": 5,
+   "title": "Energy in a Spring",
+   "items": []
+  },
+  {
+   "n": 6,
+   "title": "Example Problem 1, A Bag of Potatoes",
+   "items": []
+  },
+  {
+   "n": 7,
+   "title": "Pendulums",
+   "items": []
+  },
+  {
+   "n": 8,
+   "title": "Example Problem 2, Finding g with a Pendulum",
+   "items": []
+  },
+  {
+   "n": 9,
+   "title": "Resonance",
+   "items": []
+  }
+ ]
+}

@@ -1,0 +1,116 @@
+{
+ "slug": "m11-l02",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Ice to Water to Steam",
+   "text": "<h3>Ice to Water to Steam</h3><p class=\"p101-def\">Adding thermal energy to a substance can raise its temperature or change its state.</p><p>Our big question for this lesson: why doesn't a bowl of hot soup spontaneously freeze? Let's start by heating some ice.</p><p>The three most common states of matter on Earth are solid, liquid, and gas. Heat a solid and it usually melts into a liquid. Heat it more and it becomes a gas. Cool it and it goes back the other way. Why? Changing a material's thermal energy changes how its particles move, and its temperature.</p><p>Figure 12 tracks 1.0 kilogram of water as thermal energy is added, starting as ice at 243 kelvins and ending as water vapor at 473 kelvins. From point A to point B, the ice warms to 273 kelvins. There, the added energy lets the water molecules partly overcome the forces holding them together. They still touch, but they can move more freely, and eventually they slide past each other.</p>",
+   "testIt": {
+    "name": "Heating curve",
+    "how": "Add heat to 1.0 kg of ice starting at −20 °C and move along the curve from A to E."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you complete the readings and activities in this lesson.</p><p>Online, the Applying Practices activity called Modeling Energy at Different Scales has you build models showing that the energy you see at everyday scales is really a combination of energy from the motion of particles and energy from their positions relative to each other.</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Melting Point and Boiling Point",
+   "text": "<h3>Melting Point and Boiling Point</h3><p class=\"p101-def\">The melting point and boiling point are the temperatures at which a substance changes state; the temperature stays constant during the change.</p><p>At 273 kelvins, water changes from solid to liquid, like the snowman in Figure 13 melting as warmer air transfers thermal energy to it. That temperature is the melting point. As it melts, the added thermal energy lets the particles move, rotate, and vibrate in new ways, adding new kinds of kinetic and potential energy. But the temperature doesn't change! Between points B and C in Figure 12, all the ice melts at a steady 273 kelvins.</p><p>Once it's all melted, more thermal energy speeds up the molecules again, and the temperature climbs from C to D. Some molecules gain enough energy to break free. At the boiling point, all the added energy goes into turning liquid into gas, and again, the temperature holds steady, from D to E. Once it's all vapor, the temperature rises again, above 373 kelvins.</p>",
+   "testIt": {
+    "name": "Flat steps",
+    "how": "Use the button to add heat to melting ice. The temperature stays at 0 °C until all of it melts."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Heat of Fusion and Heat of Vaporization",
+   "text": "<h3>Heat of Fusion and Heat of Vaporization</h3><p class=\"p101-def\">The heat of fusion is the energy needed to melt 1 kilogram of a substance; the heat of vaporization is the energy needed to vaporize 1 kilogram of a liquid.</p><p>The energy needed to melt 1 kilogram of a substance is its heat of fusion, H sub f. For ice, it's 3.34 times 10 to the fifth joules per kilogram. So if 1 kilogram of ice at 273 kelvins absorbs that much energy, it becomes 1 kilogram of water at the same temperature. The state changes, but the temperature doesn't. In Figure 12, it's the horizontal distance from B to C.</p><p>The energy needed to vaporize 1 kilogram of a liquid is its heat of vaporization, H sub v. For water, it's 2.26 times 10 to the sixth joules per kilogram, the long stretch from D to E. Every material has its own values, like copper, mercury, gold, and iron in Table 2.</p><p>Look at the sloped parts of Figure 12 and the heating curve in Figure 14. With heat added at a constant rate, the slope is proportional to the reciprocal of the specific heat. Liquid water has a bigger specific heat than ice or steam, so its slope is the gentlest. That's also why the heat must be added at a constant rate: otherwise the slope would reflect the heater, not the water.</p>",
+   "testIt": {
+    "name": "Latent heats",
+    "how": "Use the button to pick a substance and read its heats of fusion and vaporization."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Melting, Vaporizing, and Sweating",
+   "text": "<h3>Melting, Vaporizing, and Sweating</h3><p class=\"p101-def\">The heat to melt a solid is Q equals m H sub f; the heat to vaporize a liquid is Q equals m H sub v.</p><p>To melt a solid of mass m, you need Q equals m H sub f. To vaporize a liquid, you need Q equals m H sub v. Going the other way, freezing a liquid means removing Q equals negative m H sub f, and condensing a vapor means removing Q equals negative m H sub v. The negative sign means thermal energy leaves the sample.</p><p>You use water's big heats of fusion and vaporization every day! Each gram of sweat that evaporates from your skin carries away about 2.3 kilojoules of thermal energy. Many warm-blooded animals cool themselves this way. And melting a 24-gram ice cube in your drink soaks up about 8 kilojoules from it.</p>",
+   "testIt": {
+    "name": "Q = mH",
+    "how": "Use the button to evaporate more sweat. Each gram carries away 2.26 kJ."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Example Problem 3, Snow for Hot Cocoa",
+   "text": "<h3>Example Problem 3, Snow for Hot Cocoa</h3><p class=\"p101-def\">Total heat equals the heat to melt plus the heat to warm: Q total equals m H sub f plus m C delta T.</p><p>You're camping in the mountains and need to melt 1.50 kilograms of snow at 0.0 degrees Celsius and heat it to 70.0 degrees Celsius for hot cocoa. How much heat do you need?</p><p>Step one: analyze and sketch. Sketch heat melting the snow, then warming the water. Known: m equals 1.50 kilograms, H sub f equals 3.34 times 10 to the fifth joules per kilogram, T sub i equals 0.0 degrees Celsius, T sub f equals 70.0 degrees Celsius, and C equals 4180 joules per kilogram kelvin. Unknown: the heat to melt the ice, the heat to warm the liquid, and the total.</p><p>Step two: solve. To melt the ice, Q equals m H sub f: 1.50 kilograms times 3.34 times 10 to the fifth joules per kilogram, which is 5.01 times 10 to the fifth joules, or 5.01 times 10 to the second kilojoules. The temperature change is 70.0 degrees Celsius minus 0.0 degrees Celsius, which is 70.0 degrees Celsius, or 70.0 kelvins. To warm the water, Q equals m C delta T: 1.50 kilograms times 4180 joules per kilogram kelvin times 70.0 kelvins, which is 4.39 times 10 to the fifth joules, or 4.39 times 10 to the second kilojoules. The total is 5.01 times 10 to the second kilojoules plus 4.39 times 10 to the second kilojoules, which is 9.40 times 10 to the second kilojoules.</p><p>Step three: evaluate. The units are energy units. Q is positive because thermal energy is absorbed. And a quick estimate, 1.5 kilograms times 300,000 joules per kilogram plus 1.5 kilograms times 4000 joules per kilogram kelvin times 70 kelvins, gives about 9 times 10 to the second kilojoules. It checks out!</p>",
+   "testIt": {
+    "name": "Cocoa",
+    "how": "Change the target temperature for 1.50 kg of snow at 0.0 °C and read the total heat."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "The First Law of Thermodynamics",
+   "text": "<h3>The First Law of Thermodynamics</h3><p class=\"p101-def\">The change in thermal energy of an object equals the heat added to it minus the work done by it: delta U equals Q minus W.</p><p>Steam engines, first built in the eighteenth century, powered trains and factories by turning thermal energy into mechanical energy. They helped drive the Industrial Revolution and the study of how heat relates to work. The study of how thermal energy turns into other forms is called thermodynamics. At first, scientists treated it separately from mechanics. In the late 1800s, James Clerk Maxwell and Ludwig Boltzmann connected it to the motion of particles. Today, engineers use it to design better refrigerators, car engines, and aircraft engines.</p><p>You can warm a glass of cold water by setting it on a hot plate or by stirring it. Either heating or doing work raises its thermal energy. The first law of thermodynamics says the change in an object's thermal energy, delta U, equals the heat Q added to it minus the work W done by it: delta U equals Q minus W, all in joules.</p><p>The first law is really just conservation of energy. When you pump up a bike tire, the pump and the air get warm, because the piston's mechanical energy becomes thermal energy in the gas. Light, sound, and electrical energy can turn into thermal energy too, like a toaster's glowing coils turning electrical energy into radiant energy that toasts your bread.</p>",
+   "testIt": {
+    "name": "First law",
+    "how": "Use the button to change the heat added. The gas does 200 J of work."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Heat Engines",
+   "text": "<h3>Heat Engines</h3><p class=\"p101-def\">A heat engine is a device that continuously converts thermal energy into mechanical energy.</p><p>A heat engine continuously turns thermal energy into mechanical energy. It needs a high-temperature source, a low-temperature place to dump energy called a sink, and a way to turn thermal energy into work, as in Figure 16.</p><p>A car's internal combustion engine, in Figure 17, is one. A fuel-air mixture enters the cylinder and is squeezed by a piston. A spark ignites it, transferring input heat, Q sub H, to the gas. The hot gas expands and pushes the piston down, turning thermal energy into mechanical energy. Then the exhaust is pushed out, and the cycle repeats over and over, propelling the car.</p><p>Not all that energy becomes motion. The exhaust heats the outside air, and the engine sends thermal energy to the radiator, which warms the air passing through it. All the energy Q sub C that leaves this way is waste heat. When the engine runs steadily, delta U is 0, so the work done is W equals Q sub H minus Q sub C. Every heat engine makes waste heat. No engine can turn all its energy into useful work.</p>",
+   "testIt": {
+    "name": "Engine cycle",
+    "how": "Use the button to step through a heat engine cycle."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Engine Efficiency",
+   "text": "<h3>Engine Efficiency</h3><p class=\"p101-def\">A heat engine's efficiency is the useful work divided by the input heat: W over Q sub H.</p><p>When people talk about a car's fuel efficiency, they mean how much of the input heat, Q sub H, becomes useful work, W. Efficiency is W over Q sub H. Turning all of it into work would be 100 percent. But there's always waste heat, so even the best engines fall short.</p><p>In fact, most fall far short. The most efficient car gasoline engines reach about 40 percent, and a typical one in everyday driving is closer to 20 to 30 percent. The energy isn't destroyed. A lot of it just flows out of the hot engine into the surroundings as thermal energy, a less useful form. A lightbulb that gets warm, or brakes that heat up as a car stops, are other examples of energy turning into a less useful form.</p>",
+   "testIt": {
+    "name": "Efficiency",
+    "how": "Use the button to change the work an engine gets from 1000 J of input heat."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Refrigerators and Heat Pumps",
+   "text": "<h3>Refrigerators and Heat Pumps</h3><p class=\"p101-def\">A refrigerator uses work to move thermal energy from a colder place to a warmer place.</p><p>Thermal energy flows from warm to cold on its own. But with work, you can move it from cold to warm. That's what a refrigerator, like the one in Figure 18, does.</p><p>Liquid coolant passes through an expansion valve into coils inside the fridge. There, it evaporates and absorbs thermal energy from the food. The gas flows to a compressor, where an electric motor does work on it, squeezing it and making it hot. It then passes through condenser coils outside the fridge, gives thermal energy to the room, and cools back into a liquid. Then the cycle repeats. Over a full cycle, the coolant's thermal energy doesn't change, so by the first law, the thermal energy removed from the food plus the motor's work equals the thermal energy dumped into the room, as Figure 19 shows.</p><p>A heat pump is a refrigerator that can run both ways. In summer, it pulls thermal energy out of a house. In winter, it pulls thermal energy from the cold outside air into the warmer house. Either way, it takes mechanical energy to move thermal energy from cold to warm.</p>",
+   "testIt": {
+    "name": "Refrigerator",
+    "how": "Use the button to change the work input. Heat dumped outside = heat removed + work."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "The Second Law of Thermodynamics",
+   "text": "<h3>The Second Law of Thermodynamics</h3><p class=\"p101-def\">The second law of thermodynamics states that in an uncontrolled system, energy always spreads out toward a more uniform distribution.</p><p>Heat one end of a metal spoon, and soon the whole spoon is evenly warm. No surprise. But imagine a spoon on the table suddenly getting red hot at one end and icy cold at the other, all on its own. That wouldn't break the first law, since the total thermal energy would be the same. Yet it never happens. Conserving energy isn't the whole story.</p><p>Look at the melting ice pop and cooling pizza in Figure 20. The first law doesn't forbid energy flowing from the cold ice pop to the air, or from the air into the hot pizza. The second law of thermodynamics does. When a hot object touches cooler surroundings, its energy has a chance to spread out, and it does. The second law says that in an uncontrolled system, whenever energy can spread out, it spreads toward a more even distribution and a more stable state.</p><p>The pizza's particles start with more average kinetic energy than the air's. Some of the pizza's thermal energy disperses into the air, so the pizza cools and the air warms a tiny bit, until their particles have the same average kinetic energy. The ice pop does the reverse: energy from the air spreads into it, and it melts.</p>",
+   "testIt": {
+    "name": "Spreading out",
+    "how": "Use the button to let a hot spot spread through a cool block."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Entropy",
+   "text": "<h3>Entropy</h3><p class=\"p101-def\">Entropy is a measure of the dispersal of energy; for a reversible process, delta S equals Q over T.</p><p>The measure of how spread out energy is, is called entropy, S. Energy bunched up in one place means low entropy. Energy spread throughout means high entropy. So another way to state the second law: natural processes keep the total entropy of the universe the same or increase it. Energy spreads out unless something acts to gather it up. Once it's spread out, it's extremely unlikely to bunch back up on its own. Melting ice pops and cooling pizzas increase entropy. Decreasing a system's entropy takes work from outside.</p><p>In the nineteenth century, French engineer Sadi Carnot proved that even an ideal engine must produce some waste heat. His work was one of the first steps toward the idea of entropy.</p><p>Entropy is a property of a system, measured in joules per kelvin. Add thermal energy, and entropy rises. Remove it, and entropy falls. For a reversible process at a constant temperature in kelvins, delta S equals Q over T.</p>",
+   "testIt": {
+    "name": "ΔS = Q/T",
+    "how": "Use the button to melt more ice at 273 K and read the entropy change."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Entropy and the Energy Crisis",
+   "text": "<h3>Entropy and the Energy Crisis</h3><p class=\"p101-def\">Entropy is often used as a measure of the unavailability of useful energy.</p><p>The energy crisis is about our continued use of limited resources like petroleum. But using gasoline doesn't use up energy! When you drive, like the cars in Figure 21, the gas burns and its chemical energy becomes kinetic energy that moves the car and thermal energy that heats the engine. That energy gets spread among many more objects over a much larger volume.</p><p>It's mathematically possible for all that spread-out energy to gather back into one place, but the chance is nearly zero. So entropy is often used to measure how unavailable energy is for useful work. The energy in a home's warm air can't do work as easily as the energy in the original gas molecules could. A lack of usable energy is really a surplus of entropy.</p><p>So why doesn't a bowl of hot soup spontaneously freeze? Because that would mean energy gathering itself out of the soup into the warmer room, lowering entropy. The second law says energy spreads out from hot to cold, so the soup can only cool toward room temperature.</p>"
+  }
+ }
+}

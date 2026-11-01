@@ -13,6 +13,8 @@ const json = (f) => JSON.parse(readFileSync(f, "utf8"));
 export function lessonTests({ slug, pages, testIt, buttonOnly = [], audio = false }) {
   const D = join(PUB, "physics101/decks", slug), SC = join(PUB, "physics101/scenes", slug);
   const deck = json(join(D, "deck.json")), story = json(join(D, "v2/story.json")), art = json(join(D, "v2/art.json"));
+  // pages with Leo's drag spec: scenes/drag.js moves those cutouts (tools/physics101/build-drag.py)
+  const drag = existsSync(join(D, "v2/drag.json")) ? json(join(D, "v2/drag.json")) : {};
   const narr = readFileSync(join(ROOT, "tools/physics101/narration", slug + ".md"), "utf8");
   const OUTLINE = `/workspace/physics101/outline/${slug}_outline.md`;
   const L = slug.toUpperCase();
@@ -47,8 +49,9 @@ export function lessonTests({ slug, pages, testIt, buttonOnly = [], audio = fals
       const src = readFileSync(f, "utf8");
       assert.match(src, /export default function build\(ctx\)/, pn);
       for (const m of src.matchAll(/^import .* from "(.+)";$/gm)) assert.equal(m[1], "../kit.js", pn);
-      if (!buttonOnly.includes(n)) assert.match(src, /art\.touchable\(/, pn);
-      for (const c of art[pn].filter((l) => l.cut)) assert.ok(src.includes(`"${c.id.replace(/^cut-/, "")}"`) || /art\.box\(/.test(src), `${pn} uses ${c.id}`);
+      const dg = drag[pn], byDrag = (id) => !!dg && [...dg.items, ...dg.targets].some((x) => x.id === id);
+      if (!buttonOnly.includes(n) && !dg) assert.match(src, /art\.touchable\(/, pn);
+      for (const c of art[pn].filter((l) => l.cut)) { const id = c.id.replace(/^cut-/, ""); assert.ok(src.includes(`"${id}"`) || /art\.box\(/.test(src) || byDrag(id) || (dg && id === "try"), `${pn} uses ${c.id}`); }
     }
     assert.deepEqual(readdirSync(SC).map((f) => +f.slice(1, 3)).sort((a, b) => a - b), testIt, "no stray scene files");
   });

@@ -1,0 +1,135 @@
+{
+ "slug": "m14-l02",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Sources of Sound",
+   "text": "<h3>Sources of Sound</h3><p class=\"p101-def\">Sound is produced by a vibrating object that causes pressure oscillations in the air.</p><p>Our big question for this lesson: how is pitch controlled in a musical instrument? Let's warm up the band!</p><p>In the mid-1800s, German physicist Hermann Helmholtz studied how instruments and voices make sound. In the 1900s, scientists and engineers built electronic equipment to study sound in detail, create electronic instruments, and record music so we can listen anywhere.</p><p>Every sound starts with a vibrating object. In brass instruments, like the trumpet, tuba, and bugle, the player's lips vibrate. In reed instruments, like the clarinet and saxophone, air blown across a thin wooden reed makes it vibrate. Figure 9 shows both mouthpieces. In flutes and organ pipes, air blown across an opening sets the column of air inside vibrating.</p>",
+   "testIt": {
+    "name": "Sources",
+    "how": "Tap to choose the next sound source."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you complete the readings and activities in this lesson.</p><p>Online, the PhysicsLAB called Speed of Sound has you calculate the speed of sound from frequency and wavelength. In Review the News, you'll find a current news story about sound waves and their uses, evaluate the source, and share what you learn with your class.</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Strings, Speakers, and Voices",
+   "text": "<h3>Strings, Speakers, and Voices</h3><p class=\"p101-def\">The pitch of the human voice is controlled by the muscular tension on the vocal cords.</p><p>Stringed instruments, like the piano, guitar, and violin, set strings vibrating. Piano strings are struck, guitar strings are plucked, and violin strings are rubbed by a bow. The strings connect to a sounding board that vibrates along with them, and the board pushes on the air to make the sound we hear. Electric guitars use electronics to detect and amplify the string vibrations.</p><p>A loudspeaker has a cone that electric currents make vibrate, and the cone's surface sends sound waves to your ears. Gongs, cymbals, and drums are vibrating surfaces too.</p><p>Your voice comes from your vocal cords, two membranes in your throat. Air from your lungs starts them vibrating, and muscles control their tension. More tension makes them vibrate faster, for a higher pitch. Relax them, and they vibrate slower, for a lower pitch. So to sing a higher note, a singer tightens the vocal cords.</p>",
+   "testIt": {
+    "name": "Vocal cord",
+    "how": "Tighten or loosen the model vocal cord."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Resonance in an Air Column",
+   "text": "<h3>Resonance in an Air Column</h3><p class=\"p101-def\">The length of an air column determines which frequencies will resonate.</p><p>Ever buzzed into just the mouthpiece of a trumpet? It makes a sound, but it's hard to control the pitch. You need the long tube! When the instrument is played, the air in the tube vibrates in resonance with a particular vibration of the lips or reed. Remember, resonance builds up a vibration by repeatedly giving it small pushes at its natural frequency.</p><p>The length of the air column decides which frequencies resonate. In flutes, trumpets, and trombones, changing the length of the vibrating air column changes the pitch. The mouthpiece makes a mix of frequencies, and the air column amplifies a particular set of them, turning noise into music.</p><p>You can see this with a tuning fork above a hollow tube, as in Figure 10. The tube sits in water, so its bottom is closed. That's a closed-pipe resonator. Raise and lower the tube, and the sound gets louder and softer. It's loudest when the air column resonates with the fork.</p>",
+   "testIt": {
+    "name": "Air column",
+    "how": "Slide the tube up out of the water under a 392 Hz fork (v = 343 m/s)."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Closed and Open Pipes",
+   "text": "<h3>Closed and Open Pipes</h3><p class=\"p101-def\">A closed-pipe resonator has one end closed; an open-pipe resonator has both ends open.</p><p>How does the resonance happen? The tuning fork sends a wave of high and low pressure down the air column. It reflects off the water surface and comes back up, as in Figure 11. If the reflected high-pressure part reaches the fork just as the fork makes another high-pressure push, the waves reinforce each other. That builds a standing wave, and resonance occurs.</p><p>An open-pipe resonator has both ends open. There, the wave reflects off an open end instead of a closed one. In a closed pipe, high pressure reflects as high pressure. In an open pipe, high pressure reflects as low pressure.</p>",
+   "testIt": {
+    "name": "Pipe ends",
+    "how": "Tap to send a pulse down a closed or an open pipe."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Nodes, Antinodes, and Resonance Lengths",
+   "text": "<h3>Nodes, Antinodes, and Resonance Lengths</h3><p class=\"p101-def\">In a standing wave, adjacent nodes or adjacent antinodes are separated by one-half wavelength.</p><p>Figure 12 shows standing sound waves in pipes as sine waves. They can show air pressure or the displacement of air particles. In the pressure graphs, the nodes are where the pressure stays at mean atmospheric pressure, and at the antinodes, the pressure swings between its maximum and minimum. In the displacement graphs, antinodes are where the air moves the most and nodes are where it barely moves. Either way, neighboring antinodes, or neighboring nodes, are half a wavelength apart.</p><p>In terms of air displacement, a closed end must be a node and an open end must be an antinode. So the shortest air column that resonates in a closed pipe is one-fourth of a wavelength, as in Figure 13. More resonances come every half wavelength: one-fourth, three-fourths, five-fourths, seven-fourths of a wavelength, and so on.</p><p>In practice, the first resonance is a little longer than a quarter wavelength, because the pressure node sits slightly beyond the open end. But the spacing between resonances is exactly half a wavelength, and that spacing can be used to find the speed of sound.</p>",
+   "testIt": {
+    "name": "Views",
+    "how": "Tap to switch between pressure and displacement views of a closed pipe."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Open Pipes and Comparing Pipes",
+   "text": "<h3>Open Pipes and Comparing Pipes</h3><p class=\"p101-def\">An open pipe resonates when its length is a whole number of half wavelengths.</p><p>In an open pipe, the shortest air column that can have pressure nodes at both ends is half a wavelength long, as in Figure 14. More resonances come every half wavelength: one-half, one, three-halves, two wavelengths, and so on. So a closed pipe resonates at odd numbers of quarter wavelengths, and an open pipe at even numbers of quarter wavelengths.</p><p>For open and closed pipes of the same length, the open pipe's resonant wavelength is half as long, so its frequency is twice as high. For both, resonance lengths are a half wavelength apart.</p><p>Try this one: a tuning fork's sound has a wavelength of 0.78 meters, and a pipe 0.39 meters long resonates with it. That's exactly half a wavelength, so the pipe must be open. A closed pipe would need 0.195 or 0.585 meters.</p>",
+   "testIt": {
+    "name": "Cap",
+    "how": "Tap to cap or uncap a 0.50 m pipe."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Resonators All Around",
+   "text": "<h3>Resonators All Around</h3><p class=\"p101-def\">Musical instruments use resonance to increase the loudness of particular notes.</p><p>Your own ear canal is a closed-pipe resonator! It boosts your sensitivity between 2000 and 5000 hertz, though people hear from about 20 to 20,000 hertz. A dog can hear up to about 45,000 hertz, and a cat even higher.</p><p>Instruments use resonance to make certain notes louder. Flutes are open-pipe resonators. Clarinets and the hanging pipes under marimbas and xylophones are closed-pipe resonators. Shout into a long tunnel, and the boom you hear is the tunnel resonating. And that seashell in Figure 15? It's a closed-pipe resonator too.</p>"
+  },
+  "9": {
+   "layers": [],
+   "title": "Resonance on Strings",
+   "text": "<h3>Resonance on Strings</h3><p class=\"p101-def\">A string resonates with standing waves when its length is a whole number of half wavelengths.</p><p>Strings on instruments are clamped at both ends, so each end must be a node. In Figure 16, the first mode has an antinode in the middle and is half a wavelength long, so lambda sub 1 equals 2 L and f sub 1 equals v over 2 L. The next fits one full wavelength, at twice f sub 1. Then three-halves of a wavelength, at three times f sub 1, and so on. Like an open pipe, the resonant frequencies are whole-number multiples of the lowest one.</p><p>A wave's speed on a string depends on the string's tension and its mass per unit length. Tighter string, faster wave, higher frequency. That's how you tune a guitar: by tightening or loosening its strings.</p><p>Strings are so thin they barely move any air, so they're attached to a sounding board that passes their vibrations to the air. The board shouldn't resonate at just one frequency. It needs to vibrate well at every frequency the instrument plays. With strings, board, and air all interacting, building a stringed instrument is as much an art as a science.</p>",
+   "testIt": {
+    "name": "Guitar string",
+    "how": "Tighten the 0.65 m string."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Example Problem 2, Speed of Sound by Resonance",
+   "text": "<h3>Example Problem 2, Speed of Sound by Resonance</h3><p class=\"p101-def\">In a closed pipe, the spacing between resonance lengths is one-half wavelength.</p><p>A 392-hertz tuning fork is used with a closed-pipe resonator. The loudest sounds happen when the column is 21.0 centimeters and 65.3 centimeters long. What's the speed of sound? Is it warmer or cooler than room temperature, 20 degrees Celsius?</p><p>Step one: analyze and sketch. Sketch the pipe and mark both resonance lengths. Known: f equals 392 hertz, L sub A equals 21.0 centimeters, and L sub B equals 65.3 centimeters. Unknown: v.</p><p>Step two: solve. The resonances are half a wavelength apart, so L sub B minus L sub A equals one-half lambda. Rearranged, lambda equals 2 times the quantity L sub B minus L sub A: 2 times the quantity 0.653 meters minus 0.210 meters, which is 0.886 meters. Then v equals f lambda: 392 hertz times 0.886 meters, which is 347 meters per second. That's a bit faster than the 343 meters per second at 20 degrees Celsius, so it's a little warmer than room temperature.</p><p>Step three: evaluate. Hertz times meters is meters per second, so the units are right. And 347 meters per second is just above 343, as expected. It checks out!</p>",
+   "testIt": {
+    "name": "Resonance lengths",
+    "how": "Change the room temperature for a 392 Hz fork over a closed pipe."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Sound Quality and Timbre",
+   "text": "<h3>Sound Quality and Timbre</h3><p class=\"p101-def\">Timbre, also called tone quality or color, is the difference between sounds of the same pitch from different sources.</p><p>A tuning fork makes a soft, pure sound. Its tines vibrate like simple harmonic oscillators, giving the simple sine wave at the top of Figure 17. Voices and instruments make much more complex waves, like the clarinet wave at the bottom. Both have the same frequency, or pitch, but they sound totally different.</p><p>A complex wave is really a blend of several frequencies, and its shape depends on how strong each one is. Different sources mix different frequencies. In music, that difference is called timbre, also known as tone quality or color.</p>",
+   "testIt": {
+    "name": "Timbre",
+    "how": "Tap to add another frequency to a 220 Hz sine wave."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "The Fundamental and Harmonics",
+   "text": "<h3>The Fundamental and Harmonics</h3><p class=\"p101-def\">The fundamental is the lowest frequency that resonates in an instrument; harmonics are whole-number multiples of the fundamental.</p><p>A clarinet's air column acts as a closed pipe. For a clarinet of length L, the lowest resonant frequency is f sub 1 equals v over 4 L. For an instrument, that lowest frequency is called the fundamental. A closed pipe also resonates at 3 f sub 1, 5 f sub 1, and so on. These higher frequencies, whole-number multiples of the fundamental, are called harmonics. Adding them together gives the clarinet its own timbre.</p><p>A flute acts as an open pipe. Its fundamental, which is also the first harmonic, is f sub 1 equals v over 2 L, with harmonics at 2 f sub 1, 3 f sub 1, 4 f sub 1, and so on. Each harmonic can have a different amplitude. A graph of amplitude versus frequency is a sound spectrum, and Figure 18 shows the spectra of a guitar, a steel drum, and a violin. Each is unique, just like each instrument's timbre.</p>",
+   "testIt": {
+    "name": "Harmonics",
+    "how": "Slide the second harmonic's amplitude on a 220 Hz fundamental."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Consonance, Dissonance, and Intervals",
+   "text": "<h3>Consonance, Dissonance, and Intervals</h3><p class=\"p101-def\">Two notes with frequencies in the ratio 1 to 2 differ by an octave.</p><p>Play two pitches together, and the result can sound pleasant or jarring. Several pitches together make a chord. A jarring set is dissonance, and a pleasant set is consonance. Taste varies across cultures, but most Western music builds on observations by Pythagoras of ancient Greece. He found that strings with lengths in small, whole-number ratios, like 1 to 2, 2 to 3, or 3 to 4, sound pleasing together. So their frequencies have small, whole-number ratios too.</p><p>Two notes in a 1 to 2 ratio are an octave apart. One octave above 440 hertz is 880 hertz. So the second harmonic is one octave above the fundamental, and the fourth harmonic is two octaves above. It's the ratio of the frequencies, not the difference between them, that sets the musical interval.</p><p>A major third, like C and E, has a ratio of 4 to 5. C is 262 hertz, so E is five-fourths of 262 hertz, about 327 hertz. A fourth, C and F, is 3 to 4, and a fifth, C and G, is 2 to 3. Do, mi, and sol together make a major chord, with a ratio of 4 to 5 to 6, long considered the sweetest of the three-note chords in Western music.</p>",
+   "testIt": {
+    "name": "Intervals",
+    "how": "Slide the ratio of two tones starting from 262 Hz."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "Beats",
+   "text": "<h3>Beats</h3><p class=\"p101-def\">A beat is the oscillation of wave amplitude that results from the superposition of two sound waves with almost identical frequencies.</p><p>As the ratio of two frequencies gets close to 1 to 1, the frequencies get very close. Two nearly identical frequencies interfere and make the sound swell and fade, louder and softer. That's a beat, shown in Figure 19. The beat frequency is the size of the difference between the two: f sub beat equals the absolute value of f sub A minus f sub B. When the difference is less than about 7 hertz, you hear it as a pulsing loudness.</p><p>In everyday talk, to beat means to strike over and over, like beating a drum. In science, it's that rising and falling loudness. Musicians tune instruments by playing one against another and adjusting until the beats disappear. When a piano tuner no longer hears beats, the piano is in tune!</p>",
+   "testIt": {
+    "name": "Beats",
+    "how": "Tune one tone toward a 440 Hz tone."
+   }
+  },
+  "15": {
+   "layers": [],
+   "title": "Sound Reproduction and Noise",
+   "text": "<h3>Sound Reproduction and Noise</h3><p class=\"p101-def\">A noise wave consists of many different frequencies, all with about the same amplitude.</p><p>Live music comes straight from voices and instruments, but most of the time we listen to recordings on electronic systems. To sound true to life, a system must handle all frequencies equally. A good stereo keeps every frequency between 20 and 20,000 hertz within 3 decibels.</p><p>A telephone only needs to carry speech, so about 300 to 3400 hertz is enough. Fewer frequencies means less noise. A noise wave, in Figure 20, has many frequencies at about the same amplitude. Noise doesn't help phone calls, but some people find white noise calming, so some dentists play it to help patients relax.</p>"
+  },
+  "16": {
+   "layers": [],
+   "title": "Seeing with Sound",
+   "text": "<h3>Seeing with Sound</h3><p class=\"p101-def\">Echolocation, also called bio-sonar, is detecting objects by emitting sounds and interpreting their echoes.</p><p>Bats, whales, dolphins, and some birds use echolocation, or bio-sonar, to find things when it's hard to see, like at night or in murky water. They make high-frequency clicks, and the echoes bouncing off nearby objects tell them what's around, including where their prey is.</p><p>Some people who are blind echolocate too! They click their tongues and listen to the echoes. The information is processed in the same part of the brain sighted people use for vision, so in a way, they see by sound. Daniel Kish of California lost his sight to retinal cancer as an infant and taught himself to click and navigate as a young child. Known as the real-life Batman, he can mountain bike and sketch his surroundings using echolocation. He earned a master's degree in developmental psychology, developed the first step-by-step methods for teaching echolocation, and now trains visually impaired people to use it. Even people who aren't blind can learn it. New devices based on echolocation include vibrating clothing and a wristband that senses echoes from objects up to 14 feet away, and the research may help self-driving cars too.</p><p>So, how is pitch controlled in a musical instrument? By the length of the vibrating air column in pipes and horns, and by the length, tension, and mass of the strings in stringed instruments. These set the resonant frequencies, and resonance picks out the note you hear.</p>"
+  }
+ }
+}

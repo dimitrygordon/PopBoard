@@ -1,0 +1,175 @@
+{
+ "slug": "m18-l04",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Energy and Electric Potential",
+   "text": "<h3>Energy and Electric Potential</h3><p class=\"p101-def\">Doing work to separate unlike charges increases the electric potential energy of the two-charge system.</p><p>Our big question for this lesson: what is a capacitor, and how does it work? To get there, we need energy. In mechanics, conservation of energy lets you predict motion without knowing every force. Lift a ball, like in Figure 22. Both the gravitational force and the gravitational field, g equals F sub g over m, point toward Earth. Lifting the ball against gravity means you do work on it, and the gravitational potential energy of the ball-Earth system goes up.</p><p>Electric charges work the same way. Two unlike charges attract, so you have to do work to pull them apart. That work increases the electric potential energy of the two-charge system. The bigger the charge or the farther you move it, the bigger the increase in potential energy, delta P E. In general, work done moving a charge in an electric field can give it electric potential energy, kinetic energy, or both. In this module, we stick to charges at rest and changes in electric potential energy.</p><p>And with two like charges? They repel, so you'd increase the system's potential energy by pushing them closer together.</p>",
+   "testIt": {
+    "name": "Pull apart",
+    "how": "Drag the positive charge away from a negative one, then tap to switch the partner."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson.</p><p>Online, the Quick Investigation called Electric Fields lets you explore how a field affects a charged object, and the PhysicsLAB called Storing Charge shows that energy can be stored in electric fields. And as you go, ask yourself: what information from this lesson can help you answer the Unit and Module questions?</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Electric Potential Difference",
+   "text": "<h3>Electric Potential Difference</h3><p class=\"p101-def\">Electric potential difference, delta V, is the work needed to move a positive test charge between two points divided by the test charge, measured in volts.</p><p>From mechanics, work is force times distance, W equals F d, and that's true for moving a charge too. But for charges, we talk about work per unit charge. That's the electric potential difference, delta V, often just called potential difference. It's the work done on a positive test charge to move it from one point to another, divided by the size of the test charge. You can also think of it as the change in electric potential energy per unit charge.</p><p>So delta V is defined as the work on q prime divided by q prime. It's measured in joules per coulomb, and one joule per coulomb is called a volt, V.</p>",
+   "testIt": {
+    "name": "Work per charge",
+    "how": "Change the test charge moved between the same two points (ΔV = 12 V)."
+   }
+  },
+  "4": {
+   "layers": [],
+   "title": "Positive and Negative Potential Difference",
+   "text": "<h3>Positive and Negative Potential Difference</h3><p class=\"p101-def\">Potential difference depends only on the starting and ending positions, not on the path or the test charge.</p><p>In the left panel of Figure 23, a negative charge makes a field pointing toward itself. Put a small positive test charge at point A, and the field pulls it inward. To move it away to point B, you have to push outward. Your force points the same way as the motion, so you do positive work, and the potential energy goes up, as the bar diagram shows. So the potential difference from A to B is positive. It doesn't depend on the test charge's size, only on the field and the displacement.</p><p>Now move the test charge back from B to A, as in the right panel. Your work and the change in potential energy are negative, so the potential difference is negative, exactly equal and opposite to the trip from A to B. In other words, the work you do on the test charge, divided by its charge, is the potential difference: positive work means a rise in potential, negative work means a drop.</p><p>And here's a neat fact: the potential difference doesn't depend on the path you take, only on where you start and where you end.</p>",
+   "testIt": {
+    "name": "Paths",
+    "how": "Tap to try another path from A to B."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Equipotential, Like Charges, and Reference Points",
+   "text": "<h3>Equipotential, Like Charges, and Reference Points</h3><p class=\"p101-def\">Points with zero potential difference between them are at equipotential.</p><p>Is there always a potential difference between two spots? Move the test charge in a circle around the negative charge. The field's force always points straight at the center, perpendicular to your motion, so you do no work. The potential difference is zero. Positions with zero potential difference between them are at equipotential.</p><p>What about like charges? Move a positive test charge away from another positive charge. They repel, so the potential energy drops as they separate. The electric potential around a positive charge decreases as you move away from it, as Figure 24 shows.</p><p>Just like gravitational potential energy, the zero point for electric potential can be anywhere you like. Whatever reference point you pick, the potential difference from A to B always comes out the same.</p>",
+   "testIt": {
+    "name": "Circle",
+    "how": "Tap to move the test charge around or away from a positive charge."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Voltage Versus Volts",
+   "text": "<h3>Voltage Versus Volts</h3><p class=\"p101-def\">Delta V equals V sub B minus V sub A; only differences in potential can be measured, using a voltmeter.</p><p>Only differences in gravitational potential energy can be measured, and the same goes for electric potential. So what matters is the difference. The electric potential difference from point A to point B is delta V equals V sub B minus V sub A. We measure it with a voltmeter, and sometimes we just call it the voltage. Careful: don't mix up delta V, the potential difference, with V, the abbreviation for the unit volt.</p><p>Career connection: power plant workers control, run, and maintain the equipment that generates electricity. They need a solid understanding of potential difference to stay safe around high voltages.</p>",
+   "testIt": {
+    "name": "Voltmeter",
+    "how": "Move the far probe around a +1.0 nC charge (near probe at 0.10 m)."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Electric Potential in a Uniform Field",
+   "text": "<h3>Electric Potential in a Uniform Field</h3><p class=\"p101-def\">In a uniform field, delta V equals E times d, where d is the distance parallel to the field.</p><p>Place two large, flat conducting plates parallel to each other, one positive and one negative. Between them, except near the edges, the field is uniform: the same size and direction everywhere, pointing from the positive plate to the negative plate. The grass seed in Figure 25 shows this neat, even pattern.</p><p>Move a positive test charge a distance d against the field. Since the field is uniform, the force is constant, so the work is F times d. The potential difference, the work per charge, is F d over q prime, which is F over q prime, times d. And F over q prime is just the field, E.</p><p>So in a uniform field, the potential difference between two points equals the field strength times the distance between them measured along the field: delta V equals E d. The potential is higher near the positive plate and lower near the negative plate.</p>",
+   "testIt": {
+    "name": "Plates",
+    "how": "Change the field and the plate spacing."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Example Problem 4, Moving a Proton Between Charged Plates",
+   "text": "<h3>Example Problem 4, Moving a Proton Between Charged Plates</h3><p class=\"p101-def\">Delta V equals E d, and the work to move a charge is W equals q times delta V.</p><p>Two charged parallel plates are 1.5 centimeters apart, with a field of 1800 newtons per coulomb between them. What's the potential difference between the plates? And how much work does it take to move a proton from the negative plate to the positive plate?</p><p>Step one: analyze and sketch. Draw the plates 1.5 centimeters apart, one positive and one negative, with evenly spaced field lines from positive to negative. Label the field strength, and place a proton between them. Known: E is 1800 newtons per coulomb, d is 1.5 centimeters, and q is 1.602 times ten to the negative nineteenth coulombs. Unknown: delta V and W.</p><p>Step two: solve. Delta V equals E d, which is 1800 newtons per coulomb times 0.015 meters, or 27 volts. Since delta V equals W over q, the work is W equals q times delta V. That's 1.602 times ten to the negative nineteenth coulombs times 27 volts, or 4.3 times ten to the negative eighteenth joules.</p><p>Step three: evaluate. Newtons per coulomb times meters is newton meters per coulomb, which is joules per coulomb, or volts. Coulombs times volts is joules, the unit of work. The sign makes sense: you must do positive work to push a positive charge toward a positive plate. And moving such a tiny charge through less than 100 volts takes only a tiny bit of work.</p>",
+   "testIt": {
+    "name": "Proton",
+    "how": "Drag the proton across plates 1.5 cm apart."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Millikan's Oil-Drop Experiment",
+   "text": "<h3>Millikan's Oil-Drop Experiment</h3><p class=\"p101-def\">Millikan showed that charge comes in whole-number multiples of the elementary charge, e.</p><p>The elementary charge is e equals 1.602 times ten to the negative nineteenth coulombs. Any object's net charge must be a whole-number multiple of it: 2 e, negative 5 e, 7 e, even negative 3157 e. Never a fraction like 0.5 e or 6.2 e. That's also why net charges like 0.66 e, 1.554 e, or 3.504 e are impossible: an object can't gain or lose part of an electron. But how do we know?</p><p>In 1909, Robert Millikan tested whether charge comes in discrete amounts, and measured the elementary charge along the way. His apparatus, in Figure 27, used two parallel plates to make a uniform electric field.</p><p>He sprayed fine oil drops from an atomizer; the spraying charged them by friction. Gravity pulled them down, and a few fell through a hole in the top plate. Millikan adjusted the field until a negatively charged drop hung perfectly still. At that point, the downward gravitational force and the upward electric force were equal in size.</p>",
+   "testIt": {
+    "name": "Float a drop",
+    "how": "Adjust the voltage on plates 1.2 cm apart for a 2.4 × 10⁻¹⁴ N drop."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Calculating the Charge on a Drop",
+   "text": "<h3>Calculating the Charge on a Drop</h3><p class=\"p101-def\">For a suspended drop, q E equals m g, with E equal to delta V divided by d.</p><p>Millikan found the field from the potential difference between the plates: E equals delta V over d. He also needed the drop's weight, m g. So after suspending a drop, he switched off the field and timed its fall.</p><p>Air friction made the drop reach terminal velocity almost right away, and that speed is related to the drop's weight by a complex equation. With the weight and the field, he could calculate the charge on the drop.</p><p>The result? The net charge on an oil drop was always a whole-number multiple of a number close to 1.6 times ten to the negative nineteenth coulombs. Later experiments refined that value, and since 2019 the elementary charge has been fixed by definition at exactly 1.602176634 times ten to the negative nineteenth coulombs.</p>",
+   "testIt": {
+    "name": "Drops",
+    "how": "Tap to measure the next drop."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Example Problem 5, Finding the Charge on an Oil Drop",
+   "text": "<h3>Example Problem 5, Finding the Charge on an Oil Drop</h3><p class=\"p101-def\">q equals F sub g times d divided by delta V, and the number of electrons is n equals q divided by e.</p><p>In a Millikan experiment, an oil drop weighs 2.4 times ten to the negative fourteenth newtons. The plates are 1.2 centimeters apart. At a potential difference of 450 volts, the drop hangs still. What's its net charge? And if the upper plate is positive, how many extra electrons does it carry?</p><p>Step one: analyze and sketch. Draw the plates with the drop between them, force vectors on the drop, and label the potential difference and spacing. Known: delta V is 450 volts, F sub g is 2.4 times ten to the negative fourteenth newtons, and d is 1.2 centimeters. Unknown: the charge q and the number of electrons n.</p><p>Step two: solve. To hang still, the electric and gravitational forces must balance: F sub e equals F sub g. Substitute q E for the electric force, and delta V over d for E: q times delta V over d equals F sub g. Solve for q: q equals F sub g times d, divided by delta V. That's 2.4 times ten to the negative fourteenth newtons times 0.012 meters, divided by 450 volts, which is 6.4 times ten to the negative nineteenth coulombs. Then n equals q over e: 6.4 times ten to the negative nineteenth coulombs divided by 1.602 times ten to the negative nineteenth coulombs, which is 4.0. Four extra electrons.</p><p>Step three: evaluate. Newton meters per volt is joules divided by joules per coulomb, which is coulombs, the unit of charge. And a tiny drop carrying just a few extra electrons makes sense.</p>",
+   "testIt": {
+    "name": "Count electrons",
+    "how": "Enter the balancing voltage (weight 2.4 × 10⁻¹⁴ N, d = 1.2 cm)."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Electric Fields Near Conductors",
+   "text": "<h3>Electric Fields Near Conductors</h3><p class=\"p101-def\">Excess charge on a conductor moves to its outer surface, whether the conductor is solid or hollow.</p><p>Many electrons in a conductor are free to move. On the conducting sphere in Figure 28, the excess electrons all have the same charge, so they repel each other. They spread out as far apart as they can, minimizing their potential energy, and come to rest on the surface.</p><p>It doesn't matter whether the sphere is solid or hollow. The excess charge always ends up on the outer surface.</p>",
+   "testIt": {
+    "name": "Spheres",
+    "how": "Tap to switch between a solid and a hollow sphere."
+   }
+  },
+  "13": {
+   "layers": [],
+   "title": "Closed Metal Containers",
+   "text": "<h3>Closed Metal Containers</h3><p class=\"p101-def\">The electric field is zero everywhere inside a closed, charged metal container.</p><p>What if you charge a closed metal box? Use a voltmeter to measure the potential difference between any two points inside. It's zero, every time, no matter which two points you pick.</p><p>Remember, delta V equals E d. If the potential difference between any two points inside is zero, then the field inside must be zero everywhere.</p><p>Cars are a great example. A car is a closed metal box, so it protects the people inside from the electric fields of lightning. Outside a conductor, the field often isn't zero, but it's always perpendicular to the surface. That makes the surface an equipotential: the potential difference between any two spots on it is zero.</p>",
+   "testIt": {
+    "name": "Metal box",
+    "how": "Tap to switch the probe inside or outside the charged box."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "Irregular Surfaces and Lightning Rods",
+   "text": "<h3>Irregular Surfaces and Lightning Rods</h3><p class=\"p101-def\">Charge crowds at the sharp points of a conductor, making the field strongest there.</p><p>The field at a conductor's surface depends on the conductor's shape and on its potential difference with other objects. Free charges bunch closer together at sharp points, as Figure 28 shows. Closer charges mean closer field lines, and a stronger field.</p><p>That field can get so strong that it knocks electrons off atoms. The electrons and ions speed up in the field and slam into other atoms, knocking off more electrons, a chain reaction. That's the pink glow you see inside a gas discharge sphere. If the field is strong enough, the stream of ions and electrons forms a conducting plasma, and you get a spark, or in extreme cases, lightning.</p><p>Lightning rods put this to work. The field is strongest at the rod's pointed tip, so charge from the clouds sparks to the rod instead of to some other part of the building. A conductor then carries the charge safely into the ground. In short, a lightning rod gives lightning an easy path to the ground that bypasses the building.</p>",
+   "testIt": {
+    "name": "Sharp tip",
+    "how": "Sharpen the conductor's tip."
+   }
+  },
+  "15": {
+   "layers": [],
+   "title": "Capacitors",
+   "text": "<h3>Capacitors</h3><p class=\"p101-def\">A capacitor is a device that stores electrical energy in an electric field, made of two conducting plates separated by a thin insulator.</p><p>When you lift a book, you increase the gravitational potential energy of the book-Earth system. You can think of that energy as stored in the gravitational field. In the same way, you can store energy in an electric field.</p><p>In 1746, Dutch physician and physicist Pieter van Musschenbroek invented a device to store electrical energy. He named it the Leyden jar, after the city where he worked. Its modern, much smaller cousin is the capacitor. Manufacturers make capacitors from two conducting plates separated by a thin insulator, often rolled up into a cylinder.</p><p>That's the answer to our big question: a capacitor stores separated charge, positive on one plate and negative on the other, and the energy lives in the electric field between them. Capacitors are key parts of computers and other electronics. On the circuit board in Figure 29, the gray cylinders, the disks, and the tiny colored teardrops are all capacitors.</p>",
+   "testIt": {
+    "name": "Charge up",
+    "how": "Connect a 12 V battery and slide time."
+   }
+  },
+  "16": {
+   "layers": [],
+   "title": "Capacitance",
+   "text": "<h3>Capacitance</h3><p class=\"p101-def\">Capacitance C equals the charge on one plate divided by the potential difference across the plates, measured in farads.</p><p>Connect the positive terminal of a 1-volt power source to one plate of a capacitor and the negative terminal to the other. The source puts a potential difference of 1 volt across the plates, and one plate gets a net charge of positive q while the other gets an equal negative q.</p><p>Turn up the voltage, and the charge on each plate grows. Figure 30 shows an experiment raising the potential difference from 0 to 12 volts. At 2 volts, the charge on a plate is 5.2 microcoulombs; at 6 volts, 15.0 microcoulombs; and at 12 volts, 30.1 microcoulombs. The graph of q against delta V is a straight line.</p><p>The slope of that line is constant, and it's called the capacitance, C, of the capacitor. Capacitance is the ratio of the charge on one plate to the potential difference across the plates: C equals q over delta V. It's measured in farads, F, where 1 farad is 1 coulomb per volt.</p>",
+   "testIt": {
+    "name": "q vs. ΔV",
+    "how": "Step the voltage on a 2.0 µF capacitor."
+   }
+  },
+  "17": {
+   "layers": [],
+   "title": "The Farad",
+   "text": "<h3>The Farad</h3><p class=\"p101-def\">One farad is one coulomb per volt, a large capacitance; most electronic capacitors range from picofarads to hundreds of microfarads.</p><p>The farad is named after Michael Faraday. Just as 1 coulomb is a lot of charge, 1 farad is a pretty big capacitance. Most capacitors in modern electronics fall between 10 picofarads, which is 10 times ten to the negative twelfth farads, and 500 microfarads, which is 500 times ten to the negative sixth farads.</p><p>Some memory-backup capacitors that keep computers from losing data have capacitances from 0.5 to 1.0 farads. And remember: for a given capacitor, if the potential difference between the plates goes up, so does the charge on each plate.</p>",
+   "testIt": {
+    "name": "Farads",
+    "how": "Tap to compare capacitors charged to 10 V."
+   }
+  },
+  "18": {
+   "layers": [],
+   "title": "Example Problem 6, Finding Capacitance",
+   "text": "<h3>Example Problem 6, Finding Capacitance</h3><p class=\"p101-def\">C equals q divided by delta V.</p><p>A sphere is connected to the positive pole of a 40-volt battery, and the negative pole is connected to Earth. After a while, the sphere has a charge of 2.4 times ten to the negative sixth coulombs. What's the capacitance of the sphere-Earth system?</p><p>Step one: analyze and sketch. Draw a sphere above Earth, and label its net charge and the potential difference. Known: delta V is 40.0 volts, and q is 2.4 times ten to the negative sixth coulombs. Unknown: C.</p><p>Step two: solve. C equals q over delta V, which is 2.4 times ten to the negative sixth coulombs divided by 40.0 volts. That's 6.0 times ten to the negative eighth farads, or 0.060 microfarads.</p><p>Step three: evaluate. Coulombs per volt are farads, so the units check out. And as a check, the capacitance times 40.0 volts gives back the charge stored on the sphere.</p>",
+   "testIt": {
+    "name": "Sphere-Earth",
+    "how": "Switch batteries; the sphere's C is 6.0 × 10⁻⁸ F."
+   }
+  },
+  "19": {
+   "layers": [],
+   "title": "Varieties of Capacitors",
+   "text": "<h3>Varieties of Capacitors</h3><p class=\"p101-def\">Capacitors range from room-sized energy stores to tiny parts in electronics, and they can hold charge after power is off.</p><p>Capacitors come in every shape and size. Some fill entire rooms and store enough energy to make artificial lightning, or to power giant lasers that release thousands of joules of energy in a few billionths of a second.</p><p>The capacitors in computers, televisions, and digital cameras store much less energy, but they can still be dangerous. They can hold their charge for hours after a device is turned off. That's why many electronics carry warnings not to open the case.</p>"
+  },
+  "20": {
+   "layers": [],
+   "title": "Scientific Breakthroughs, Cloud on the Horizon",
+   "text": "<h3>Scientific Breakthroughs, Cloud on the Horizon</h3><p class=\"p101-def\">The Local Interstellar Cloud just outside the heliosphere holds together with a surprisingly strong magnetic field.</p><p>For all of human history, people have gazed at the night sky and wondered what lies beyond. We've learned a lot about our solar system, but space beyond the Sun's reach stayed mysterious. Now, older and newer spacecraft are sending back news, and the surprise is that the region right outside our solar system is magnetic.</p><p>The solar wind blowing out from the Sun stretches the Sun's magnetic field into a bubble called the heliosphere, and our solar system sits inside it. NASA's two Voyager probes, launched in 1977, have traveled to the edge of that bubble and beyond: Voyager 1 crossed into interstellar space in 2012, and Voyager 2 in 2018. Their data show that just outside the heliosphere is a thin cloud of hydrogen and helium atoms called the Local Interstellar Cloud, or the Local Fluff, at a temperature of several thousand degrees. Our solar system is moving through it.</p><p>Here's the puzzle: the Local Fluff sits inside a much hotter, high-pressure bubble of gas blown out by a cluster of exploding supernovas, which should have crushed it. Voyager data suggest it resists because its magnetic field is stronger than expected. In 2008, NASA launched IBEX, the Interstellar Boundary Explorer, an Earth-orbiting satellite that studies particles streaming in from space. IBEX has mapped the direction and strength of the Local Fluff's magnetic field, which pushes on and shapes the heliosphere, and it found particles entering from a different direction than in decades past. Try building a 2D or 3D model of the Local Interstellar Cloud with our solar system inside the heliosphere!</p>"
+  }
+ }
+}
