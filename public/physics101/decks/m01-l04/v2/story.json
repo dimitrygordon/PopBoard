@@ -1,0 +1,137 @@
+{
+ "slug": "m01-l04",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "Change One Thing at a Time",
+   "text": "<h3>Change One Thing at a Time</h3><p class=\"p101-def\">In an experiment, change only one factor at a time.</p><p>Our question for this lesson: how do graphs help scientists analyze data? Before we graph anything, we need good data, and that starts with one golden rule. When you run an experiment, change only one factor at a time.</p><p>Table 3 shows the length of a spring with different masses hanging from it. With 0 grams, the spring is 13.7 centimeters long. Then, going up by 5 grams each time: 14.1, 14.5, 14.9, 15.3, 15.7, 16.0, and finally 16.4 centimeters at 35 grams.</p><p>Only the mass changes. If you hung different masses from different kinds of springs, you'd have no way of knowing how much of each difference came from the mass and how much came from the spring.</p>",
+   "testIt": {
+    "name": "Hang the masses",
+    "how": "Tap the mass set to hang 5 g at a time and fill the table. Then try swapping the spring too."
+   }
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with data.</p><p>Keep your Science Journal handy and record the evidence you collect from the readings and activities in this lesson.</p><p>There are two activities to try. In the Forensics Lab called It's in the Blood, you'll analyze and interpret data to figure out cause and effect at a crime scene. In Review the News, you'll find a current news story that uses graphs to present data, evaluate your source, and share what you found with your class. Both are online, along with more resources.</p>"
+  },
+  "3": {
+   "layers": [],
+   "title": "Independent and Dependent Variables",
+   "text": "<h3>Independent and Dependent Variables</h3><p class=\"p101-def\">The independent variable is the factor you change; the dependent variable is the factor that responds.</p><p>A variable is any factor that might affect how an experimental setup behaves. The factor you manipulate, or change on purpose, is the independent variable. In the spring experiment, that was the mass.</p><p>The factor that depends on the independent variable is the dependent variable. Here, the spring's length, which shows how much it stretched, depended on the mass, so the length was the dependent variable. A handy way to remember it: the dependent variable depends on what you did.</p>"
+  },
+  "4": {
+   "layers": [],
+   "title": "The Line of Best Fit",
+   "text": "<h3>The Line of Best Fit</h3><p class=\"p101-def\">A line of best fit is drawn as close to all the data points as possible.</p><p>A line graph shows how the dependent variable changes with the independent variable. When we graph the spring data, the blue line is drawn as close to all the data points as possible. That's called a line of best fit, and it's a better model for making predictions than any single point along the line.</p><p>This is the magic of graphs. A well-designed graph lets you see patterns quickly and simply, patterns that are hard to spot in a list of numbers. One look at this graph shows that the spring gets longer as the hanging mass increases.</p>",
+   "testIt": {
+    "name": "Fit the line",
+    "how": "Drag the line and tilt it with the slider to pass as close to all the points as you can."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "How to Build a Graph, Part 1",
+   "text": "<h3>How to Build a Graph, Part 1</h3><p class=\"p101-def\">Plot the independent variable on the x-axis and the dependent variable on the y-axis.</p><p>Let's build a graph step by step. Step 1: identify the independent and dependent variables. Here, the independent variable is mass in grams, and the dependent variable is length in centimeters. The independent variable goes on the horizontal axis, the x-axis. The dependent variable goes on the vertical axis, the y-axis.</p><p>Step 2: find the range of the independent variable you'll plot. In this case, that's 0 to 35. Step 3: decide whether the origin, the point zero comma zero, is a valid data point.</p><p>Step 4: spread your data out as much as possible. Let each division on the graph paper stand for a convenient unit, usually a multiple of 2, 5, or 10. Step 5: number and label the horizontal axis. The label should include the variable's name and its units, for example, Mass in grams.</p>",
+   "testIt": {
+    "name": "Build the axes",
+    "how": "Tap an axis label to swap the axes, then pick a scale for the divisions."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "How to Build a Graph, Part 2",
+   "text": "<h3>How to Build a Graph, Part 2</h3><p class=\"p101-def\">Draw a smooth best-fit line or curve, never connect-the-dots segments.</p><p>Step 6: repeat steps 2 through 5 for the dependent variable. Step 7: plot your data points.</p><p>Step 8: draw the best-fit straight line or smooth curve that passes through as many points as possible. This is sometimes called eyeballing. Don't connect the dots with a bunch of straight segments! Your best-fit line might look a little different from a classmate's, and that's okay. There's a formal method many graphing calculators use, called the least-squares technique, that produces one unique best-fit line, but it's beyond the scope of this textbook.</p><p>Step 9: give your graph a title that clearly tells what it represents. And you're done!</p>",
+   "testIt": {
+    "name": "Eyeball vs. calculator",
+    "how": "Drag across the graph to sketch your own line, then reveal the least-squares line."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Linear Relationships",
+   "text": "<h3>Linear Relationships</h3><p class=\"p101-def\">In a linear relationship, y equals m x plus b.</p><p>Scatter plots can take many shapes, and each shape hints at a different relationship. Three of the most common are linear, quadratic, and inverse relationships. You've probably met them in math class.</p><p>When the line of best fit is a straight line, like our spring graph, the relationship is linear. The dependent variable varies linearly with the independent variable, and we write it as y equals m x plus b.</p><p>Here, m is the slope, the ratio of the vertical change to the horizontal change. And b is the y-intercept, the point where the line crosses the vertical axis.</p>",
+   "testIt": {
+    "name": "Slope and intercept",
+    "how": "Drag the m and b knobs. Slope tilts the line; b slides it up and down."
+   }
+  },
+  "8": {
+   "layers": [],
+   "title": "Finding the Slope",
+   "text": "<h3>Finding the Slope</h3><p class=\"p101-def\">Slope equals rise over run, or change in y divided by change in x.</p><p>To find the slope, pick two points far apart on the line. Call them P and Q. They may or may not be actual data points. The vertical change, called the rise or delta y, is the difference between the vertical values of P and Q. The horizontal change, called the run or delta x, is the difference between their horizontal values. The slope m equals rise over run, which is delta y over delta x.</p><p>Let's work it out for the spring. Point P is at 5 grams and 14.1 centimeters. Point Q is at 30 grams and 16.0 centimeters. The rise is 16.0 centimeters minus 14.1 centimeters. The run is 30 grams minus 5 grams. That's 1.9 centimeters divided by 25 grams, which is 0.076 centimeters per gram. The book rounds this to about 0.08 centimeters per gram, and we'll use 0.08 to keep the math simple. Note: 0.076 and 0.08 are the same slope, just rounded to different numbers of digits; 0.076 is the more precise value.</p><p>One more thing: if y gets smaller as x gets bigger, then delta y over delta x is negative, and the line slopes downward from left to right.</p>",
+   "testIt": {
+    "name": "Rise over run",
+    "how": "Drag P and Q along the spring line and watch the rise, run, and slope update."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "The Y-Intercept and Direct Variation",
+   "text": "<h3>The Y-Intercept and Direct Variation</h3><p class=\"p101-def\">The y-intercept is the value of y when x is zero.</p><p>The y-intercept is the y-value when x is zero. For our spring, b equals 13.7 centimeters. In plain words: with no mass hanging from it, the spring is 13.7 centimeters long.</p><p>When b equals zero, the equation becomes y equals m x, and we say y varies directly with x.</p><p>Here's the big idea. In physics, the slope and the y-intercept always carry information about the physical system the graph describes. They're not just numbers on a chart. They tell a story about the real thing.</p>"
+  },
+  "10": {
+   "layers": [],
+   "title": "Nonlinear and Quadratic Relationships",
+   "text": "<h3>Nonlinear and Quadratic Relationships</h3><p class=\"p101-def\">A quadratic relationship exists when one variable depends on the square of another.</p><p>Not every graph is a straight line. This one shows how far a brass ball falls over time, and it curves. That means the relationship is nonlinear. Science is full of nonlinear relationships, and two of the most common are quadratic and inverse.</p><p>The falling ball graph is quadratic, also called parabolic. A quadratic relationship exists when one variable depends on the square of another. The general equation is y equals a x squared plus b x plus c.</p><p>A computer program or graphing calculator can easily find the constants a, b, and c. For the falling ball, the equation is d equals 5 t squared, where d is the distance in meters and t is the time in seconds. For more on making and using line graphs, check the Math Skill Handbook in the back of the book or online.</p>",
+   "testIt": {
+    "name": "Ball drop timer",
+    "how": "Tap the clamp to drop the ball. Points plot every quarter second, then overlay the curve d = 5t²."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "Inverse Relationships",
+   "text": "<h3>Inverse Relationships</h3><p class=\"p101-def\">In an inverse relationship, y equals a divided by x.</p><p>Now picture a road trip of 300 kilometers. The faster the car goes, the less time the trip takes. The graph of travel time versus speed shows an inverse relationship.</p><p>An inverse relationship is a hyperbolic relationship, where one variable depends on the inverse of the other. The equation is y equals a divided by x.</p>",
+   "testIt": {
+    "name": "Speed and time",
+    "how": "Use the speed slider for a 300 km trip and watch the points trace the curve."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "Even More Models",
+   "text": "<h3>Even More Models</h3><p class=\"p101-def\">Physicists also use sinusoids, exponentials, and combinations of models.</p><p>Linear, quadratic, and inverse are just a sample of the relationships you'll investigate in this course. Physicists use many other mathematical models too.</p><p>Two important ones are sinusoids, which model things that repeat in cycles, and exponential growth and decay, which are used to study radioactivity. And by combining different models, scientists can describe even more complex phenomena.</p>"
+  },
+  "13": {
+   "layers": [],
+   "title": "Predicting Values",
+   "text": "<h3>Predicting Values</h3><p class=\"p101-def\">Relationships from formulas or graphs can predict values you haven't measured.</p><p>Once scientists discover a relationship, they use it to make predictions. The equation for our spring graph is y equals 0.08 centimeters per gram times x, plus 13.7 centimeters.</p><p>So how long would the spring from Table 3 be with 49 grams hanging on it? We never measured that! Plug it in: y equals 0.08 centimeters per gram times 49 grams, plus 13.7 centimeters. That comes out to 17.6 centimeters, or about 18 centimeters long. Since the spring started at 13.7 centimeters, it stretched about 3.9 centimeters. Note: the original example asked how far the spring would stretch but gave 18 centimeters; 18 centimeters is the spring's total length, and the stretch is about 3.9 centimeters.</p><p>But be careful about how far you extrapolate beyond your data. Ninety grams is far outside the values in Table 3. With that much mass, the spring might break instead of stretching!</p>",
+   "testIt": {
+    "name": "Predict the length",
+    "how": "Pick a mass and see the predicted length. Go past the data and watch out. Tap the 49 g mass for the book's example."
+   }
+  },
+  "14": {
+   "layers": [],
+   "title": "Models Everywhere",
+   "text": "<h3>Models Everywhere</h3><p class=\"p101-def\">Physicists use models to accurately predict how systems will behave.</p><p>Physicists use models to predict how systems will behave. What conditions might lead to a solar flare, an immense outburst of material from the Sun's surface into space? How would changing a grandfather clock's pendulum change how well it keeps time? Models help answer questions like these.</p><p>People in all walks of life use models. For example, computer animators use mathematical models of the real world to help visualize global atmospheric conditions in realistic ways. With the tools from this module, you're ready to answer questions and build models for the physics coming up in the rest of the book.</p>",
+   "testIt": {
+    "name": "Pendulum clock",
+    "how": "Change the pendulum length and compare the clock with a reference clock. Tap the clock to reset."
+   }
+  },
+  "15": {
+   "layers": [],
+   "title": "Engineering and Technology, A Step in the Right Direction",
+   "text": "<h3>Engineering and Technology, A Step in the Right Direction</h3><p class=\"p101-def\">Prosthetics are artificial body parts.</p><p>Prosthetics, or artificial body parts, have been around since ancient Greek times. But most older prostheses were more decorative than useful. They were made mostly of metal and wood and strapped on with leather straps or harnesses.</p><p>Prosthetics have come a long way in the last few decades, and today's prosthetic limbs can transform people's lives. They look and work more like biological limbs than ever. The inner structure, called the pylon, is now commonly made of carbon-fiber composites and new kinds of plastics. These materials make a prosthesis stronger, and also lighter, than one made of metal or wood.</p>"
+  },
+  "16": {
+   "layers": [],
+   "title": "Smarter Control, Better Fit",
+   "text": "<h3>Smarter Control, Better Fit</h3><p class=\"p101-def\">Myoelectric prostheses use the electric signals of muscles to control the prosthesis.</p><p>Electronics give users better control. Myoelectric prostheses use the electric signals produced by muscles. A person with a myoelectric prosthetic hand can move muscles in their arm to signal the hand to move or grip in different ways, with different amounts of force.</p><p>Targeted muscle reinnervation, or T M R, is another new way to give people more control over cutting-edge prostheses, specifically arms. The nerves in the residual limb, which once controlled the amputated limb, are surgically \"reassigned\" to healthy muscles nearby, often in the chest or upper arm. When the person thinks about moving the missing arm, those muscles contract, and sensors on the skin pick up their electrical signals to control the prosthesis.</p><p>Another game-changer is the socket, the part that connects the prosthesis to the residual limb. Sockets held on by slings or harnesses can be uncomfortable, causing sores, blisters, and pain, and even damaging tissue under the skin. So some new prostheses are anchored directly into the bone of the residual limb, which improves both comfort and control. Some of these advances are still moving from prototypes to patient care, but scientists are determined to get them into patients' everyday lives quickly.</p>"
+  },
+  "17": {
+   "layers": [],
+   "title": "STEM at Work, What Do Physicists Study?",
+   "text": "<h3>STEM at Work, What Do Physicists Study?</h3><p class=\"p101-def\">Physicists study everything from the tiniest particles to the universe itself.</p><p>Physicists study a huge range of topics, from the tiniest particles to stars, galaxies, and the universe itself. Let's tour some of the branches.</p><p>Mechanics is the branch of physics that studies motion and forces. Physicists also team up with other sciences. Geophysics is the study of Earth's physical properties and processes. Biomechanics is the study of the motion of living things, like the researcher in this photo collecting data on an athlete's motion.</p><p>Thermodynamics is the study of the energy of a system's particles. It includes temperature, heat, and how the characteristics of a system's particles relate to the large-scale, or macroscopic, characteristics of the system. Because systems contain huge numbers of particles, physicists often use computer models here, like the NASA model that lets scientists predict how heat shields will perform in the atmosphere.</p>"
+  },
+  "18": {
+   "layers": [],
+   "title": "STEM at Work, More Branches of Physics",
+   "text": "<h3>STEM at Work, More Branches of Physics</h3><p class=\"p101-def\">Electromagnetism, nuclear and particle physics, optics, astrophysics, and cosmology are major fields of physics.</p><p>Electromagnetism is the study of electricity, magnetism, and the relationship between them. By understanding how currents produce magnetic fields, physicists and engineers can design and build electromagnets.</p><p>Nuclear physicists study the atomic nucleus. Particle physicists go even smaller. They use superconducting electromagnets, like the one in this photo, in particle accelerators to study the elementary particles that make up the universe.</p><p>Optics is the study of how visible, infrared, ultraviolet, and microwave radiation are generated, transmitted, and detected. And finally, astrophysics studies the physical properties of celestial bodies, like an active galactic nucleus, where a disk of gas is surrounded by a doughnut of cooler gas and dust, with jets of particles shooting away from the center. Cosmology studies how the universe developed and its overall structure.</p>"
+  }
+ }
+}

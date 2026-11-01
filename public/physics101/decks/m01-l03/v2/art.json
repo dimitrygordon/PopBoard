@@ -1,0 +1,669 @@
+{
+ "p01": [
+  {
+   "id": "bg",
+   "src": "p01-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p01-mid.webp",
+   "box": [
+    76,
+    64,
+    1544,
+    795
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p01-fg.webp",
+   "box": [
+    162,
+    136,
+    1416,
+    183
+   ],
+   "f": 0.45,
+   "late": true
+  }
+ ],
+ "p02": [
+  {
+   "id": "bg",
+   "src": "p02-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p02-mid.webp",
+   "box": [
+    8,
+    27,
+    1600,
+    895
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p02-fg.webp",
+   "box": [
+    388,
+    25,
+    1008,
+    497
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-samples",
+   "src": "p02-cut-samples.webp",
+   "box": [
+    960,
+    540,
+    1568,
+    810
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p02-cut-samples-hint.webp",
+   "hbox": [
+    956,
+    536,
+    1572,
+    814
+   ]
+  }
+ ],
+ "p03": [
+  {
+   "id": "bg",
+   "src": "p03-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p03-mid.webp",
+   "box": [
+    21,
+    469,
+    1600,
+    900
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p03-fg.webp",
+   "box": [
+    356,
+    158,
+    1320,
+    436
+   ],
+   "f": 0.45,
+   "late": true
+  }
+ ],
+ "p04": [
+  {
+   "id": "bg",
+   "src": "p04-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p04-mid.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p04-fg.webp",
+   "box": [
+    129,
+    581,
+    1505,
+    878
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-date-1",
+   "src": "p04-cut-date-1.webp",
+   "box": [
+    664,
+    615,
+    1416,
+    665
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p04-cut-date-1-hint.webp",
+   "hbox": [
+    660,
+    611,
+    1420,
+    669
+   ]
+  },
+  {
+   "id": "cut-date-2",
+   "src": "p04-cut-date-2.webp",
+   "box": [
+    579,
+    673,
+    1318,
+    723
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p04-cut-date-2-hint.webp",
+   "hbox": [
+    575,
+    669,
+    1322,
+    727
+   ]
+  },
+  {
+   "id": "cut-date-3",
+   "src": "p04-cut-date-3.webp",
+   "box": [
+    278,
+    732,
+    933,
+    782
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p04-cut-date-3-hint.webp",
+   "hbox": [
+    274,
+    728,
+    937,
+    786
+   ]
+  }
+ ],
+ "p05": [
+  {
+   "id": "bg",
+   "src": "p05-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p05-mid.webp",
+   "box": [
+    25,
+    38,
+    1323,
+    875
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p05-fg.webp",
+   "box": [
+    786,
+    57,
+    1567,
+    784
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-student-1",
+   "src": "p05-cut-student-1.webp",
+   "box": [
+    1023,
+    285,
+    1057,
+    470
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p05-cut-student-1-hint.webp",
+   "hbox": [
+    1019,
+    281,
+    1061,
+    474
+   ]
+  },
+  {
+   "id": "cut-student-2",
+   "src": "p05-cut-student-2.webp",
+   "box": [
+    1215,
+    150,
+    1249,
+    426
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p05-cut-student-2-hint.webp",
+   "hbox": [
+    1211,
+    146,
+    1253,
+    430
+   ]
+  },
+  {
+   "id": "cut-student-3",
+   "src": "p05-cut-student-3.webp",
+   "box": [
+    1407,
+    601,
+    1441,
+    697
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p05-cut-student-3-hint.webp",
+   "hbox": [
+    1403,
+    597,
+    1445,
+    701
+   ]
+  }
+ ],
+ "p06": [
+  {
+   "id": "bg",
+   "src": "p06-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p06-mid.webp",
+   "box": [
+    465,
+    30,
+    1197,
+    864
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p06-fg.webp",
+   "box": [
+    134,
+    241,
+    1474,
+    388
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-dropper",
+   "src": "p06-cut-dropper.webp",
+   "box": [
+    467,
+    711,
+    848,
+    855
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p06-cut-dropper-hint.webp",
+   "hbox": [
+    464,
+    707,
+    852,
+    859
+   ]
+  }
+ ],
+ "p07": [
+  {
+   "id": "bg",
+   "src": "p07-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p07-mid.webp",
+   "box": [
+    992,
+    27,
+    1600,
+    886
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p07-fg.webp",
+   "box": [
+    147,
+    120,
+    814,
+    689
+   ],
+   "f": 0.45,
+   "late": true
+  }
+ ],
+ "p08": [
+  {
+   "id": "bg",
+   "src": "p08-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p08-mid.webp",
+   "box": [
+    115,
+    20,
+    1233,
+    866
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p08-fg.webp",
+   "box": [
+    376,
+    79,
+    1562,
+    677
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-arrow",
+   "src": "p08-cut-arrow.webp",
+   "box": [
+    208,
+    234,
+    428,
+    321
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p08-cut-arrow-hint.webp",
+   "hbox": [
+    205,
+    232,
+    431,
+    325
+   ]
+  }
+ ],
+ "p09": [
+  {
+   "id": "bg",
+   "src": "p09-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p09-mid.webp",
+   "box": [
+    31,
+    51,
+    1571,
+    852
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p09-fg.webp",
+   "box": [
+    309,
+    44,
+    1424,
+    635
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-standard-mass",
+   "src": "p09-cut-standard-mass.webp",
+   "box": [
+    1281,
+    243,
+    1520,
+    640
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p09-cut-standard-mass-hint.webp",
+   "hbox": [
+    1277,
+    239,
+    1524,
+    644
+   ]
+  }
+ ],
+ "p10": [
+  {
+   "id": "bg",
+   "src": "p10-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p10-mid.webp",
+   "box": [
+    577,
+    5,
+    1027,
+    888
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "fg",
+   "src": "p10-fg.webp",
+   "box": [
+    246,
+    346,
+    1377,
+    410
+   ],
+   "f": 0.45,
+   "late": true
+  },
+  {
+   "id": "cut-eye",
+   "src": "p10-cut-eye.webp",
+   "box": [
+    235,
+    178,
+    405,
+    272
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p10-cut-eye-hint.webp",
+   "hbox": [
+    231,
+    174,
+    409,
+    276
+   ]
+  }
+ ],
+ "p11": [
+  {
+   "id": "bg",
+   "src": "p11-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p11-mid.webp",
+   "box": [
+    198,
+    24,
+    1541,
+    900
+   ],
+   "f": 0.45,
+   "draw": true
+  },
+  {
+   "id": "cut-car-dot",
+   "src": "p11-cut-car-dot.webp",
+   "box": [
+    1221,
+    208,
+    1435,
+    463
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p11-cut-car-dot-hint.webp",
+   "hbox": [
+    1217,
+    204,
+    1439,
+    467
+   ]
+  },
+  {
+   "id": "cut-geo-dot",
+   "src": "p11-cut-geo-dot.webp",
+   "box": [
+    1194,
+    577,
+    1462,
+    669
+   ],
+   "f": 0.45,
+   "cut": true,
+   "hint": "p11-cut-geo-dot-hint.webp",
+   "hbox": [
+    1190,
+    573,
+    1465,
+    673
+   ]
+  }
+ ],
+ "p12": [
+  {
+   "id": "bg",
+   "src": "p12-bg.webp",
+   "box": [
+    0,
+    0,
+    1600,
+    900
+   ],
+   "f": 0.15
+  },
+  {
+   "id": "mid",
+   "src": "p12-mid.webp",
+   "box": [
+    11,
+    8,
+    1600,
+    900
+   ],
+   "f": 0.45,
+   "draw": true
+  }
+ ]
+}

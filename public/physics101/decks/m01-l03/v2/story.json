@@ -1,0 +1,99 @@
+{
+ "slug": "m01-l03",
+ "popupSpec": "v2",
+ "immersive": false,
+ "slides": {
+  "1": {
+   "layers": [],
+   "title": "What Is Measurement?",
+   "text": "<h3>What Is Measurement?</h3><p class=\"p101-def\">A measurement is a comparison between an unknown quantity and a standard.</p><p>Here's our question for this lesson: why is it so important to make careful measurements? Let's start with what a measurement actually is. A measurement is a comparison between an unknown quantity and a standard.</p><p>Say you measure the mass of a rolling cart for an experiment. The unknown quantity is the cart's mass, and the standard is the gram, as defined by the balance or spring scale you're using. If you're working with a spring of unknown length, the centimeter might be your standard.</p><p>Measurements turn observations into numbers. A person's blood pressure isn't just \"pretty good.\" It's 110 over 60, measured in millimeters of mercury, which is in the normal range.</p>"
+  },
+  "2": {
+   "layers": [],
+   "title": "Your Investigation Toolkit",
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate mass, volume, and density.</p><p>Keep your Science Journal open as you go, and record the evidence you collect from the readings and activities in this lesson.</p><p>In the PhysicsLAB called Mass and Volume, you'll carry out an investigation to figure out the relationship between mass, volume, and density. You can find it, and more resources, online.</p>",
+   "testIt": {
+    "name": "Mass and volume",
+    "how": "Tap a sample on the tray, weigh it, measure its volume, and look for the pattern."
+   }
+  },
+  "3": {
+   "layers": [],
+   "title": "Comparing Results",
+   "text": "<h3>Comparing Results</h3><p class=\"p101-def\">A new measurement within the margin of uncertainty agrees with the old measurement.</p><p>Remember from Lesson 1 that scientists share their results. Before new data are fully accepted, other scientists examine the experiment, hunt for possible sources of error, and try to reproduce the results.</p><p>Results are often reported with an uncertainty, a plus-or-minus range. If a new measurement falls within that margin of uncertainty, it agrees with the old one. Measurements don't have to match exactly to agree. Their ranges just have to overlap.</p>"
+  },
+  "4": {
+   "layers": [],
+   "title": "Dating Cave Paintings",
+   "text": "<h3>Dating Cave Paintings</h3><p class=\"p101-def\">Each radiocarbon date is reported with an uncertainty.</p><p>Archaeologists use radiocarbon dating to find the age of cave paintings, like those in the Niaux cave in France. Scientists estimate the Niaux drawings were made about 17,000 years ago.</p><p>Another French cave, Chauvet, gives a great example of uncertainty at work. Three radiocarbon ages from one panel there are 30,940 plus or minus 610 years, 30,790 plus or minus 600 years, and 30,230 plus or minus 530 years.</p><p>None of those numbers match exactly. But the uncertainty ranges of all three overlap, so the measurements agree with each other. Pretty amazing for paintings that old!</p>",
+   "testIt": {
+    "name": "Do the dates agree?",
+    "how": "Drag the three error bars along the timeline. The gold box shows where all three overlap."
+   }
+  },
+  "5": {
+   "layers": [],
+   "title": "Three Students, One Spring",
+   "text": "<h3>Three Students, One Spring</h3><p class=\"p101-def\">Measurements agree only when their uncertainty ranges overlap.</p><p>Imagine three students run the same experiment several times, each starting with springs of the same length and hanging two washers on them. Student 1's repeated measurements ranged from 14.4 centimeters to 14.8 centimeters. The average was 14.6 centimeters, so student 1 reported 14.6 plus or minus 0.2 centimeters.</p><p>Student 2 reported 14.8 plus or minus 0.3 centimeters. Student 3 reported 14.0 plus or minus 0.1 centimeters.</p><p>Do all three agree? Look at the red uncertainty bars. The ranges for students 1 and 2 overlap between 14.5 and 14.8 centimeters, so those two agree. But there's no overlap between their results and student 3's, so student 3 does not agree with them.</p>",
+   "testIt": {
+    "name": "Overlap checker",
+    "how": "Tap a student to plot five readings. Then tap a second student to check for agreement."
+   }
+  },
+  "6": {
+   "layers": [],
+   "title": "Precision",
+   "text": "<h3>Precision</h3><p class=\"p101-def\">Precision is the degree of exactness of a measurement.</p><p>Precision and accuracy both describe measured values, but they're not the same thing. Let's start with precision, the degree of exactness of a measurement.</p><p>Of our three students, student 3's measurements are the most precise, within plus or minus 0.1 centimeters. Students 1 and 2 are less precise because their uncertainties are bigger: plus or minus 0.2 centimeters for student 1, and plus or minus 0.3 centimeters for student 2.</p><p>Precision depends on the instrument and the technique you use. Generally, the device with the finest divisions on its scale gives the most precise measurement. The precision of a measurement is one half the smallest division on the instrument. So a graduated cylinder with one-milliliter divisions lets you measure to within 0.5 milliliters.</p>",
+   "testIt": {
+    "name": "Cylinder or beaker?",
+    "how": "Tap the dropper to add liquid, then tap the cylinder or the beaker and compare how precise each reading is."
+   }
+  },
+  "7": {
+   "layers": [],
+   "title": "Significant Figures Show Precision",
+   "text": "<h3>Significant Figures Show Precision</h3><p class=\"p101-def\">The significant figures in an answer show its precision.</p><p>The significant figures in an answer tell you how precise it is. A measurement of 67.100 grams is precise to the nearest thousandth of a gram.</p><p>Here's where it matters. Say you add 1.2 milliliters of acid to a beaker holding 2.4 times ten to the second milliliters of water. Can you say you now have 2.412 times ten to the second milliliters of fluid? No! The water wasn't measured to the nearest tenth of a milliliter. It was measured to the nearest ten milliliters, so your total can't be more precise than that.</p>"
+  },
+  "8": {
+   "layers": [],
+   "title": "Accuracy",
+   "text": "<h3>Accuracy</h3><p class=\"p101-def\">Accuracy describes how well a measurement agrees with the accepted value.</p><p>Now for accuracy. Accuracy describes how well the results of a measurement agree with the \"real\" value, meaning the accepted value measured by competent experimenters.</p><p>Picture a target. The yellow center is the accepted value, and each arrow is one measurement. Arrows clustered tightly together are precise. Arrows landing on the yellow center are accurate. You can be one without the other!</p><p>Back to our spring. If its true length had been 14.8 centimeters, student 2 would have been the most accurate and student 3 the least accurate, even though student 3 was the most precise.</p>",
+   "testIt": {
+    "name": "Archery targets",
+    "how": "Tap the arrow to shoot a cluster, then label it accurate, precise, both, or neither."
+   }
+  },
+  "9": {
+   "layers": [],
+   "title": "Two-Point Calibration",
+   "text": "<h3>Two-Point Calibration</h3><p class=\"p101-def\">Two-point calibration checks that an instrument reads zero correctly and reads an accepted standard correctly.</p><p>So how can you check the accuracy of your measurements? A common method for checking an instrument is called the two-point calibration.</p><p>Point one: does the instrument read zero when it should? Point two: does it give the correct reading when it measures an accepted standard? Regular accuracy checks like these are done on critical instruments, such as the machines that deliver radiation to treat cancer.</p>",
+   "testIt": {
+    "name": "Calibrate the scale",
+    "how": "Zero the empty scale, tap the standard mass onto the pan, and adjust until both checks pass."
+   }
+  },
+  "10": {
+   "layers": [],
+   "title": "Parallax",
+   "text": "<h3>Parallax</h3><p class=\"p101-def\">Parallax is the apparent shift in an object's position when it is viewed from different angles.</p><p>Even a great instrument gives poor results if you use it carelessly. To be as precise as the instrument allows, measurements have to be made carefully.</p><p>One common source of error is the angle you read from. Always read a scale with your eye directly in front of the mark. Read it from an angle, and you'll get a different, less accurate value. That difference is caused by parallax, the apparent shift in an object's position when you view it from different angles.</p><p>Try it! Put your pen on a ruler and read the scale with your eye right over the tip. Then shift your head far to one side and read it again. See the jump?</p>",
+   "testIt": {
+    "name": "Parallax",
+    "how": "Drag the eye sideways above the scale and watch the reading shift."
+   }
+  },
+  "11": {
+   "layers": [],
+   "title": "GPS, Precision from Space",
+   "text": "<h3>GPS, Precision from Space</h3><p class=\"p101-def\">The Global Positioning System uses satellites with atomic clocks to find positions on Earth.</p><p>The Global Positioning System, or GPS, is a great real-world example of accuracy and precision. GPS needs at least 24 working satellites in orbit, and today there are usually more than 30, plus control stations and millions of receivers on Earth. The satellites send signals carrying the time, measured by highly accurate atomic clocks.</p><p>A receiver uses information from at least four satellites to work out latitude, longitude, and elevation. The clocks in receivers aren't as accurate as the ones on the satellites.</p><p>Receivers have different levels of precision. The one in a car might place you within a few meters. The devices geophysicists and geologists use can measure movements of millimeters in Earth's crust! In this photo, a geologist working in a desert uses a highly accurate GPS receiver to record and analyze the movements of continental plates, and his findings will help in the search for oil deposits.</p>",
+   "testIt": {
+    "name": "Car or geologist?",
+    "how": "Tap a receiver to see how precisely it can pin down a position."
+   }
+  },
+  "12": {
+   "layers": [],
+   "title": "From the Military to Everyone",
+   "text": "<h3>From the Military to Everyone</h3><p class=\"p101-def\">GPS was developed by the U.S. Department of Defense and later made available for civilian use.</p><p>GPS was developed by the United States Department of Defense. It relies on atomic clocks, which were first built to keep very precise time. Scientists later used them to test Einstein's theories of relativity and gravity. Eventually, GPS was opened up for civilian use.</p><p>Today, GPS signals are provided worldwide, free of charge. They're used for navigation on land, at sea, and in the air. They're used for mapping and surveying, by telecommunications and satellite networks, and in scientific research on earthquakes and plate tectonics. All of that rides on very careful measurement of time.</p>"
+  }
+ }
+}

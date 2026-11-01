@@ -27,10 +27,10 @@ export const DECKS = [
   "title": "Mathematics and Physics",
   "tag": "PHYSICS 101  ·  MODULE 1  ·  LESSON 2",
   "sub": "Module 1: A Physics Toolkit",
-  "slides": 0,
+  "slides": 11,
   "pages": [],
   "standards": ["Science & Engineering Practices"],
-  "built": false
+  "built": true
  },
  {
   "key": "M01-L03",
@@ -41,10 +41,10 @@ export const DECKS = [
   "title": "Measurement",
   "tag": "PHYSICS 101  ·  MODULE 1  ·  LESSON 3",
   "sub": "Module 1: A Physics Toolkit",
-  "slides": 0,
+  "slides": 12,
   "pages": [],
   "standards": ["Science & Engineering Practices"],
-  "built": false
+  "built": true
  },
  {
   "key": "M01-L04",
@@ -55,10 +55,10 @@ export const DECKS = [
   "title": "Graphing Data",
   "tag": "PHYSICS 101  ·  MODULE 1  ·  LESSON 4",
   "sub": "Module 1: A Physics Toolkit",
-  "slides": 0,
+  "slides": 18,
   "pages": [],
   "standards": ["Science & Engineering Practices"],
-  "built": false
+  "built": true
  },
  {
   "key": "M02-L01",

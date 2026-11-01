@@ -38,17 +38,51 @@ def webp(src, dst, q=84, recolor=None):
     im.crop(bb).save(dst, "WEBP", quality=q, method=4)
     return list(bb)
 
-# Test it panels: a short name and what to do, per page (the scene module is decks' scenes/<slug>/pNN.js)
+# Test it panels per lesson: a short name and what to do, per page (the scene module is decks' scenes/<slug>/pNN.js)
 TEST_IT = {
-    4: ("Measuring Change", "Watch the points appear, then drag the violet ruler to predict the next value."),
-    5: ("Build the flowchart", "Drag each step card into its slot, in order. Then pick a loop when the test comes back."),
-    8: ("Control and test", "Change only the test ramp's height, then press Go and compare it with the control."),
-    9: ("Sort the data", "Drag each measurement card onto the clipboard table. Every row plots a point."),
-    13: ("Pick or average?", "Run trials one at a time. Compare picking the best trial with averaging them all."),
-    15: ("Atom timeline", "Drag the knob along the timeline to see how the model of the atom changed."),
-    16: ("Flight simulator", "Pick a paper airplane, fly it, and compare distance and paper used."),
-    17: ("Falling objects", "Drop the ball and the feather. Turn the air off and drop them again."),
-    20: ("Testable or not?", "Drag each question card into the testable or not testable crate."),
+ "m01-l01": {
+     4: ("Measuring Change", "Watch the points appear, then drag the violet ruler to predict the next value."),
+     5: ("Build the flowchart", "Drag each step card into its slot, in order. Then pick a loop when the test comes back."),
+     8: ("Control and test", "Change only the test ramp's height, then press Go and compare it with the control."),
+     9: ("Sort the data", "Drag each measurement card onto the clipboard table. Every row plots a point."),
+     13: ("Pick or average?", "Run trials one at a time. Compare picking the best trial with averaging them all."),
+     15: ("Atom timeline", "Drag the knob along the timeline to see how the model of the atom changed."),
+     16: ("Flight simulator", "Pick a paper airplane, fly it, and compare distance and paper used."),
+     17: ("Falling objects", "Drop the ball and the feather. Turn the air off and drop them again."),
+     20: ("Testable or not?", "Drag each question card into the testable or not testable crate."),
+ },
+ "m01-l02": {
+    1: ("Pick the best model", "Tap or drag the penny to drop it. Then tap the model card whose prediction matches the measured speed."),
+    5: ("Prefix slider", "Drag the gold knob from femto to tera and watch the number and the unit change together."),
+    6: ("Cancel the units", "Drag the m and s tiles into the fraction. A speed has to come out in meters per second."),
+    7: ("Conversion chain", "Flip each conversion factor until every unwanted unit cancels, then check the result."),
+    8: ("Read the ruler", "Drag the pen along the ruler, read the certain digits, then pick your estimate for the last digit."),
+    9: ("Which zeros count?", "Tap each number to step through its digits and see which ones are significant."),
+    10: ("Calculator with a conscience", "The calculator shows the raw answer. Pick the correctly rounded answer before it is accepted."),
+    11: ("Road trip check", "Set the distance and time, tap the car to drive, and run the step 3 check."),
+ },
+ "m01-l03": {
+    2: ("Mass and volume", "Tap a sample on the tray, weigh it, measure its volume, and look for the pattern."),
+    4: ("Do the dates agree?", "Drag the three error bars along the timeline. The gold box shows where all three overlap."),
+    5: ("Overlap checker", "Tap a student to plot five readings. Then tap a second student to check for agreement."),
+    6: ("Cylinder or beaker?", "Tap the dropper to add liquid, then tap the cylinder or the beaker and compare how precise each reading is."),
+    8: ("Archery targets", "Tap the arrow to shoot a cluster, then label it accurate, precise, both, or neither."),
+    9: ("Calibrate the scale", "Zero the empty scale, tap the standard mass onto the pan, and adjust until both checks pass."),
+    10: ("Parallax", "Drag the eye sideways above the scale and watch the reading shift."),
+    11: ("Car or geologist?", "Tap a receiver to see how precisely it can pin down a position."),
+ },
+ "m01-l04": {
+    1: ("Hang the masses", "Tap the mass set to hang 5 g at a time and fill the table. Then try swapping the spring too."),
+    4: ("Fit the line", "Drag the line and tilt it with the slider to pass as close to all the points as you can."),
+    5: ("Build the axes", "Tap an axis label to swap the axes, then pick a scale for the divisions."),
+    6: ("Eyeball vs. calculator", "Drag across the graph to sketch your own line, then reveal the least-squares line."),
+    7: ("Slope and intercept", "Drag the m and b knobs. Slope tilts the line; b slides it up and down."),
+    8: ("Rise over run", "Drag P and Q along the spring line and watch the rise, run, and slope update."),
+    10: ("Ball drop timer", "Tap the clamp to drop the ball. Points plot every quarter second, then overlay the curve d = 5t\u00b2."),
+    11: ("Speed and time", "Use the speed slider for a 300 km trip and watch the points trace the curve."),
+    13: ("Predict the length", "Pick a mass and see the predicted length. Go past the data and watch out. Tap the 49 g mass for the book's example."),
+    14: ("Pendulum clock", "Change the pendulum length and compare the clock with a reference clock. Tap the clock to reset."),
+ },
 }
 
 def inline(t):
@@ -59,6 +93,7 @@ def inline(t):
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("slug"); ap.add_argument("--outline", required=True); ap.add_argument("--mockups", required=True)
     a = ap.parse_args()
+    TI = TEST_IT.get(a.slug, {})
     pages = parse_outline(open(a.outline, encoding="utf-8").read())
     out = os.path.join(ROOT, "public/physics101/decks", a.slug); artdir = os.path.join(out, "v2/art")
     os.makedirs(artdir, exist_ok=True)
@@ -92,8 +127,8 @@ def main():
             body.append("<ol class=\"p101-slots\">" + "".join(f"<li>{inline(t['text'])}</li>" for t in meta["text_slots"]) + "</ol>")
         sv = {"layers": [], "title": p["title"], "text": "".join(body)}
         if p["sandbox"]:
-            assert n in TEST_IT, f"page {n} has a sandbox note but no Test it entry"
-            sv["testIt"] = {"name": TEST_IT[n][0], "how": TEST_IT[n][1]}
+            assert n in TI, f"page {n} has a sandbox note but no Test it entry"
+            sv["testIt"] = {"name": TI[n][0], "how": TI[n][1]}
         story["slides"][str(n)] = sv
         narr.append(f"## Slide {n}\n\n{p['title']}{'' if p['title'][-1] in '.?!' else '.'}\n\n{p['definition']}\n\n" + "\n\n".join(p["paras"]) + "\n")
     # text slots share one size per page: the largest that fits every slot at every stage size (fit.json,
@@ -106,6 +141,6 @@ def main():
     dump(os.path.join(out, "deck.json"), deck); dump(os.path.join(out, "v2/story.json"), story); dump(os.path.join(out, "v2/art.json"), art)
     nd = os.path.join(ROOT, "tools/physics101/narration"); os.makedirs(nd, exist_ok=True)
     open(os.path.join(nd, f"{a.slug}.md"), "w", encoding="utf-8").write(f"# {a.slug} narration (generated from the outline; do not edit)\n\n" + "\n".join(narr))
-    print(f"{a.slug}: {len(pages)} pages, {sum(len(v) for v in art.values())} art layers, Test it on {sorted(TEST_IT)}")
+    print(f"{a.slug}: {len(pages)} pages, {sum(len(v) for v in art.values())} art layers, Test it on {sorted(TI)}")
 
 if __name__ == "__main__": main()
