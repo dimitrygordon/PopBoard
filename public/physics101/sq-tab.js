@@ -4,6 +4,7 @@
 import { DECKS } from "./p101-catalog.js";
 import { renderLesson, bindSoundButton, SETS, MATH } from "./sq-core.js";
 import { renderTryIt } from "./tryit.js";
+import { watchReadText } from "./worked.js";
 
 const $ = (id) => document.getElementById(id);
 const P = new URLSearchParams(location.search);
@@ -12,6 +13,7 @@ let sqSlug = DECKS.some((d) => d.slug === P.get("sq")) || P.get("sq") === MATH.s
 const panel = $("panel"), story = $("story"), tools = $("tools");
 const tabs = { read: $("tabRead"), sq: $("tabSq"), test: $("tabTest") };
 bindSoundButton($("soundBtn"));
+watchReadText($("readText"));
 
 // lesson picker, grouped by module
 $("sqPick").innerHTML = `<optgroup label="Course"><option value="${MATH.slug}">${MATH.title}</option></optgroup>` + [...new Set(DECKS.map((d) => d.q))].map((q) => {

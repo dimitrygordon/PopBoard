@@ -57,16 +57,34 @@ const drawObs = new IntersectionObserver((es) => {
   for (const e of es) if (e.isIntersecting) { drawObs.unobserve(e.target); drawSvg(e.target); }
 }, { threshold: 0.4 });
 
-// ---------- steps unfold: a step appears only when the reader scrolls to it, after the one above ----------
-const stepObs = new IntersectionObserver((es) => {
-  for (const e of es) {
-    if (!e.isIntersecting) continue;
-    const el = e.target, prev = el.previousElementSibling;
-    if (prev && prev.classList.contains("sq-step") && !prev.classList.contains("in")) continue;
-    stepObs.unobserve(el); el.classList.add("in"); scratch(300);
-    const nx = el.nextElementSibling; if (nx && nx.classList.contains("sq-step")) { stepObs.unobserve(nx); stepObs.observe(nx); }
-  }
-}, { threshold: 0.25, rootMargin: "0px 0px -12% 0px" });
+// ---------- worked solution: tap the question to expand it; steps unfold one by one, pencil strokes draw ----------
+// Shared by Study Questions cards and the worked examples on Read this page (worked.js).
+// head: the pinned question block (clickable, big tap target); box: holds the .sq-step list, hidden until opened.
+let wid = 0;
+export function bindWorked(head, box, { label = "worked solution" } = {}) {
+  const btn = document.createElement("button");
+  btn.type = "button"; btn.className = "sq-expand"; box.id ||= `sqw${++wid}`;
+  btn.setAttribute("aria-controls", box.id); btn.setAttribute("aria-expanded", "false");
+  btn.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg><span></span>`;
+  const say = (open) => { btn.querySelector("span").textContent = `${open ? "Hide" : "Show"} the ${label}`; };
+  say(false); box.hidden = true; head.classList.add("sq-head"); head.appendChild(btn);
+  let timers = [];
+  const toggle = (open = box.hidden) => {
+    timers.forEach(clearTimeout); timers = [];
+    box.hidden = !open; btn.setAttribute("aria-expanded", String(open)); head.classList.toggle("open", open); say(open);
+    const steps = [...box.querySelectorAll(".sq-step")];
+    if (!open) { for (const st of steps) st.classList.remove("in"); return; }
+    const reveal = (st) => { st.classList.add("in"); for (const svg of st.querySelectorAll("svg[data-draw]:not(.sq-tick)")) drawSvg(svg); };
+    if (reduceMotion()) { steps.forEach(reveal); return; }
+    steps.forEach((st, i) => timers.push(setTimeout(() => { reveal(st); scratch(300); }, 120 + i * 520)));
+  };
+  btn.addEventListener("click", (e) => { e.stopPropagation(); toggle(); });
+  // the whole pinned question is a tap target; skip clicks on its own links, buttons, inputs and draggable art
+  head.addEventListener("click", (e) => { if (e.target.closest("a, button, input, select, textarea, label, .sq-drag, [data-object]")) return; if (getSelection().toString()) return; toggle(); });
+  return { toggle, button: btn };
+}
+// Socrates walkthrough text is not written yet: a clearly marked placeholder step stands in.
+export const PLACEHOLDER_STEP = { label: "Worked solution", body: [{ html: "<span class=\"sq-placeholder\">PLACEHOLDER: step-by-step walkthrough to come.</span>" }] };
 
 // a hand-drawn frame around each kept book figure (the figure itself is never redrawn)
 const FRAME = `<svg class="sq-frame" data-draw viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path vector-effect="non-scaling-stroke" d="M2 3 C30 1.5 70 2.5 98 2 L98.5 50 C98 70 98.6 85 97.5 98 C70 98.5 30 97.5 2.5 98.4 C1.6 70 2.4 30 2 3"/></svg>`;
@@ -148,6 +166,7 @@ async function sandbox(item, host) {
   } catch (e) { console.warn("study question sandbox", item.id, e); }
 }
 
+export { erase as eraseCover };
 function erase(cover, done) {
   if (reduceMotion()) { cover.remove(); done(); return; }
   const path = cover.querySelector("path"), len = path.getTotalLength();
@@ -177,20 +196,20 @@ async function richCard(item, el) {
 function card(item, n) {
   const base = ROOT + "physics101/sq/";
   const el = document.createElement("article"); el.className = "sq-card sketch"; el.id = item.id;
-  el.innerHTML = `<h3 class="sq-q-title"><span class="sq-num">${n}</span><span></span></h3><div class="sq-q"></div><div class="sq-art-slot"></div><div class="sq-live"></div>`;
+  el.innerHTML = `<div class="sq-pin"><h3 class="sq-q-title"><span class="sq-num">${n}</span><span></span></h3><div class="sq-q"></div></div><div class="sq-art-slot"></div><div class="sq-live"></div>`;
   el.querySelector(".sq-q-title span:last-child").textContent = item.title;
   // opener items park in a module's first lesson, wrap-up items in its last (Dimitry); tag them
   const where = { opener: "Module opener", wrap: "Module wrap-up" }[item.where];
   if (where) { const t = document.createElement("span"); t.className = "sq-where"; t.textContent = where; el.querySelector(".sq-q-title").after(t); }
   fill(el.querySelector(".sq-q"), item.question, base);
-  if (item.steps.length) {
+  {
     const ol = document.createElement("ol"); ol.className = "sq-steps"; ol.setAttribute("aria-label", "Worked steps");
-    for (const s of item.steps) {
+    for (const s of item.steps.length ? item.steps : [PLACEHOLDER_STEP]) {
       const li = document.createElement("li"); li.className = "sq-step";
       li.innerHTML = `<svg class="sq-tick" data-draw viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13c2 2 3.5 3.6 5 5.5C12 12 15.5 7.5 20 4"/></svg><h4></h4>`;
       li.querySelector("h4").textContent = s.label; fill(li, s.body, base); ol.appendChild(li);
     }
-    el.appendChild(ol);
+    el.appendChild(ol); bindWorked(el.querySelector(".sq-pin"), ol);
   }
   const ans = document.createElement("section"); ans.className = "sq-answer"; ans.setAttribute("aria-label", "Answer");
   ans.innerHTML = `<div class="sq-ans-body" hidden><h4>Answer</h4></div><div class="sq-cover"><svg viewBox="0 0 104 64" preserveAspectRatio="none" aria-hidden="true"><path d="${SCRIBBLE}"/></svg><button type="button" class="sq-show">Show answer</button></div>`;
@@ -225,8 +244,6 @@ export async function renderLesson(host, slug, { filter = "all" } = {}) {
       if (rich[it.id]) { const h = document.createElement("article"); if (await richCard(it, h)) { c.replaceWith(h); h.id = it.id; } }
     }
   }
-  for (const s of host.querySelectorAll(".sq-steps")) { const first = s.firstElementChild; if (first) stepObs.observe(first); }
   for (const svg of host.querySelectorAll(".sq-card svg[data-draw]:not(.sq-tick)")) drawObs.observe(svg);
-  if (reduceMotion()) for (const s of host.querySelectorAll(".sq-step")) s.classList.add("in");
   return counts;
 }
