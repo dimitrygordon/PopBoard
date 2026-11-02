@@ -125,3 +125,10 @@ test("M1-M6 titles and prompts show squares, not flattened exponents; μs displa
   const t = Object.fromEntries(Object.values(ix).flatMap((v) => v.t));
   for (const id of ["mq01-49", "mq05-27", "mq19-96"]) assert.equal(t[id], c[id].title, id);
 });
+
+test("titles set Greek and sub/superscript runs in a math font (the heading font draws them blank)", () => {
+  const js = readFileSync(join(ROOT, "public", "physics101", "sq-core.js"), "utf8"), css = readFileSync(join(ROOT, "public", "physics101", "sq-page.css"), "utf8");
+  assert.match(js, /mathText\(el\.querySelector\("\.sq-q-title span:last-child"\), item\.title\)/);
+  assert.doesNotMatch(js, /sq-q-title span:last-child"\)\.innerHTML/);
+  assert.match(css, /\.sq-math\{font-family:"Cambria Math"/);
+});

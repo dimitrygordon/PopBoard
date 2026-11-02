@@ -7,6 +7,16 @@
 import { reduceMotion } from "../astro-course/ac-common.js";
 
 // course-level set (Math Skill Handbook), not tied to one lesson
+// The handwriting heading font draws Greek letters and sub/superscript digits as blanks (μₛ vanished in mq05-27's title),
+// so those runs get a plain math font. Text only: no html is parsed from the title.
+const MATH_RUN = /[\u0370-\u03FF\u2070-\u209F\u00B2\u00B3\u00B9\u{1D400}-\u{1D7FF}]+/gu;
+function mathText(node, text) {
+  let at = 0;
+  for (const m of text.matchAll(MATH_RUN)) {
+    node.append(text.slice(at, m.index)); const s = document.createElement("span"); s.className = "sq-math"; s.textContent = m[0]; node.append(s); at = m.index + m[0].length;
+  }
+  node.append(text.slice(at));
+}
 export const MATH = { slug: "math-skills", title: "Math Skills", blurb: "Significant figures, rounding, scientific notation and the other math the course leans on." };
 export const SETS = [["mq", "Practice", "Practice problems", "New problems like the ones in this lesson, with different numbers."],
                      ["sol", "Book", "Book questions", "The book's own questions for this lesson, worked out."]];
@@ -199,7 +209,7 @@ function card(item, n) {
   const base = ROOT + "physics101/sq/";
   const el = document.createElement("article"); el.className = "sq-card sketch"; el.id = item.id;
   el.innerHTML = `<div class="sq-pin"><h3 class="sq-q-title"><span class="sq-num">${n}</span><span></span></h3><div class="sq-q"></div></div><div class="sq-art-slot"></div><div class="sq-live"></div>`;
-  el.querySelector(".sq-q-title span:last-child").textContent = item.title;
+  mathText(el.querySelector(".sq-q-title span:last-child"), item.title);
   // opener items park in a module's first lesson, wrap-up items in its last (Dimitry); tag them
   const where = { opener: "Module opener", wrap: "Module wrap-up" }[item.where];
   if (where) { const t = document.createElement("span"); t.className = "sq-where"; t.textContent = where; el.querySelector(".sq-q-title").after(t); }
