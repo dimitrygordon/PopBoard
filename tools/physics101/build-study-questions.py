@@ -94,3 +94,6 @@ _st = os.path.join(os.path.dirname(os.path.abspath(sys.argv[1])), "items.stems.j
 if os.path.exists(_st): _sp.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "fix-sq-stems.py"), _st, pub], check=True)
 # keep worked solutions out of the question area (step labels written "Work." etc.); see fix-sq-leaks.py
 _sp.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "fix-sq-leaks.py"), pub], check=True)
+# Socrates' step-by-step solutions (Leo's step cards); cards without them keep the solution display. See wire-step-cards.py
+_steps = os.environ.get("P101_STEPS", os.path.join(os.path.dirname(os.path.abspath(__file__)), "m01-m06-steps.json"))  # copy of Socrates' file; refresh it when Tesla's corrections land
+if os.path.exists(_steps): _sp.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "wire-step-cards.py"), _steps, pub], check=True)

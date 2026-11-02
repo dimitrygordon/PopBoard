@@ -44,6 +44,18 @@ ALT_TAIL = {
     "mq06-57": "; 𝜃 = tan⁻¹(1.4 / 7.2) = 11° east of north", "sol06-57": "; 𝜃 = tan⁻¹(0.62 / 3.8) = 9.3° north of east",
     "mq06-58": "; 𝜃 = tan⁻¹(80 / 140) = 30° south of west", "sol06-58": "; 𝜃 = tan⁻¹(85 / 175) = 26° east of south",
 }
+# solution prose shown in the prompt, moved behind Show answer (sq-table-decisions.md, Dimitry Nov 2026):
+# id -> (new title or None, new question html list or None to empty it). The old title's tail past the new title and the
+# question blocks become the first "Work" step, so nothing is dropped.
+HIDE = {
+    "sol11-19": (None, ["Use 𝑇<sub>𝐾</sub> = 𝑇<sub>𝐶</sub> + 273."]),
+    "mq02-30": (None, ["Graph each person's position vs. time."]), "sol02-28": (None, ["Graph each person's position vs. time."]),
+    "mq19-96": ("Challenge 1. A classmate says the bridge balances only when all four resistors are equal.", None),
+    "sol19-96": ("Challenge 1.", None), "mq19-97": ("Challenge 2.", None), "sol19-97": ("Challenge 2.", None),
+    "sol19-102": (None, None),  # the prompt is the title's own Figure 32 reference
+    "mq16-8": (None, None),     # mq-16.pdf p.3: "Examples:" and the angle table are the sample answer (sample values, not given data)
+}
+FIXES = {k: v for k, v in json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "sq-answer-fixes.json"), encoding="utf-8")).items() if not k.startswith("_")}
 SHOW = {"What we know / need to find": "What we know", "Unknown": "What we know"}
 PART = re.compile(r"^<b>\(([a-z])\) </b>")
 def text(h): return re.sub(r"<[^>]+>", "", h)
@@ -72,6 +84,24 @@ def fix(it):
     n = TABLES.get(it["id"])
     if isinstance(n, int) and len(it["question"]) > n:
         it["steps"] = [{"label": "Work", "body": it["question"][n:]}] + it["steps"]; it["question"] = it["question"][:n]; ch = True
+    h = HIDE.get(it["id"])
+    if h:
+        nt, nq = h; nq = [{"html": x} for x in nq] if nq else []
+        tail = it["title"][len(nt):].strip() if nt and it["title"].startswith(nt) and it["title"] != nt else ""
+        moved = [b for b in it["question"] if b not in nq]
+        if tail or moved:
+            if tail and moved and "html" in moved[0]: moved[0] = {**moved[0], "html": tail + " " + moved[0]["html"]}
+            elif tail: moved.insert(0, {"html": tail})
+            it["steps"] = [{"label": "Work", "body": moved}] + it["steps"]; it["question"] = nq; ch = True
+        if nt and it["title"] != nt: it["title"] = nt; ch = True
+    fx = FIXES.get(it["id"])
+    if fx:
+        if "steps_before_question" in fx and it["question"]:
+            it["steps"] = [{"label": l, "body": [{"html": x}]} for l, x in fx["steps_before_question"]] + [{"label": fx["question_to"], "body": it["question"]}] + it["steps"]
+            it["question"] = []; ch = True
+        for k in ("question", "answer", "check"):
+            if k in fx and k in it and it[k] != [{"html": x} for x in fx[k]] and not (k == "question" and "steps_before_question" in fx):
+                it[k] = [{"html": x} for x in fx[k]]; ch = True
     ch = leaks(it) or ch
     lone = [b for b in it["question"] if "html" in b and re.fullmatch(r"\s*(?:" + LAB + r")(?: \([^()]{0,80}\))?[.:]\s*", text(b["html"]))]
     if lone: it["question"] = [b for b in it["question"] if b not in lone]; ch = True  # a bare label heading whose content is already under Show answer

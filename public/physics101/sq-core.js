@@ -204,6 +204,7 @@ function card(item, n) {
   const where = { opener: "Module opener", wrap: "Module wrap-up" }[item.where];
   if (where) { const t = document.createElement("span"); t.className = "sq-where"; t.textContent = where; el.querySelector(".sq-q-title").after(t); }
   fill(el.querySelector(".sq-q"), item.question, base);
+  if (item.stepCards && item.stepCards.length) return stepCardsInto(el, item, base);
   {
     const ol = document.createElement("ol"); ol.className = "sq-steps"; ol.setAttribute("aria-label", "Worked steps");
     for (const s of item.steps.length ? item.steps : [PLACEHOLDER_STEP]) {
@@ -225,6 +226,43 @@ function card(item, n) {
   return el;
 }
 
+
+// Step cards (Leo, step-cards.css): numbered cards, Givens / Equation / Substitute, unfolded one tap at a time;
+// the Answer card sits in a red-pencil box under the Show answer scribble. Data: item.stepCards = [{label, kind, html}]
+// from wire-step-cards.py; cards without it keep the solution display above.
+function stepCardsInto(el, item, base) {
+  const steps = item.stepCards.filter((s) => s.kind !== "answer"), answers = item.stepCards.filter((s) => s.kind === "answer");
+  const mk = (s, n) => {
+    const li = document.createElement("li"); li.className = "pb-step"; li.dataset.n = n; li.dataset.kind = s.kind;
+    li.innerHTML = `<div class="pb-step-label"></div><div class="pb-step-text"></div>`;
+    li.firstChild.textContent = s.label;
+    const t = li.lastChild; t.innerHTML = s.html; if (s.kind === "answer") t.className = "pb-step-text pb-answer";
+    return li;
+  };
+  const ol = document.createElement("ol"); ol.className = "pb-steps"; ol.setAttribute("aria-label", "Worked steps");
+  steps.forEach((s, i) => { const li = mk(s, i + 1); if (i) li.hidden = true; ol.appendChild(li); });
+  el.appendChild(ol);
+  if (steps.length > 1) {
+    const next = document.createElement("button"); next.type = "button"; next.className = "pb-step-reveal"; next.textContent = "Show next step";
+    next.addEventListener("click", () => {
+      const li = ol.querySelector(".pb-step[hidden]"); if (!li) return;
+      li.hidden = false; scratch(250); li.tabIndex = -1; li.focus({ preventScroll: true }); li.scrollIntoView({ block: "nearest", behavior: reduceMotion() ? "auto" : "smooth" });
+      if (!ol.querySelector(".pb-step[hidden]")) next.remove();
+    });
+    ol.appendChild(next);
+  }
+  const ans = document.createElement("section"); ans.className = "sq-answer pb-answer-wrap"; ans.setAttribute("aria-label", "Answer");
+  ans.innerHTML = `<div class="sq-ans-body" hidden><ol class="pb-steps"></ol></div><div class="sq-cover"><svg viewBox="0 0 104 64" preserveAspectRatio="none" aria-hidden="true"><path d="${SCRIBBLE}"/></svg><button type="button" class="sq-show">Show answer</button></div>`;
+  const body = ans.querySelector(".sq-ans-body"), aol = body.firstChild;
+  if (answers.length) answers.forEach((s, i) => aol.appendChild(mk(s, steps.length + i + 1)));
+  else fill(body, item.answer, base);
+  ans.querySelector(".sq-show").addEventListener("click", () => {
+    body.hidden = false; erase(ans.querySelector(".sq-cover"), () => { const f = body.querySelector(".pb-step") || body; f.tabIndex = -1; f.focus({ preventScroll: true }); });
+  });
+  el.appendChild(ans);
+  art(item, el.querySelector(".sq-art-slot")); sandbox(item, el.querySelector(".sq-live"));
+  return el;
+}
 
 // Render one lesson's problems into host. filter: "all" | "mq" | "sol". Returns {mq, sol} counts.
 export async function renderLesson(host, slug, { filter = "all" } = {}) {

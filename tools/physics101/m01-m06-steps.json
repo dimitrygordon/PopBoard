@@ -1,0 +1,4268 @@
+{
+ "mq01-13": [
+  {
+   "label": "Givens",
+   "text": "A unit is used by labs worldwide."
+  },
+  {
+   "label": "Equation",
+   "text": "Comparable result = same unit definition everywhere."
+  },
+  {
+   "label": "Substitute",
+   "text": "1 s in lab A = 1 s in lab B only if both use the same standard."
+  },
+  {
+   "label": "Answer",
+   "text": "A common definition means that a time measured in one laboratory means exactly the same thing in every other laboratory. Results can then be compared, repeated, and trusted. If each country used its own \"second,\" experiments that depend on timing (such as GPS satellite signals) could not be shared or checked."
+  }
+ ],
+ "mq01-15": [
+  {
+   "label": "Givens",
+   "text": "Marks every 1 mL; reading 24.3 mL."
+  },
+  {
+   "label": "Equation",
+   "text": "Last recorded digit = estimate between the finest marks."
+  },
+  {
+   "label": "Substitute",
+   "text": "24 mL read from marks; 0.3 mL estimated between 24 mL and 25 mL."
+  },
+  {
+   "label": "Answer",
+   "text": "The first two digits (24) come from marks you can read directly. The last digit (0.1 mL) is an estimate of where the liquid surface falls between two marks, so different people might estimate 24.2, 24.3, or 24.4 mL. That estimated digit is the uncertain one."
+  }
+ ],
+ "mq01-16": [
+  {
+   "label": "Givens",
+   "text": "A beam bends under a load."
+  },
+  {
+   "label": "Equation",
+   "text": "Formula: bending = f(load, length, material)."
+  },
+  {
+   "label": "Substitute",
+   "text": "Plug in a load in N and length in m to predict the bend in m."
+  },
+  {
+   "label": "Answer",
+   "text": "A formula states an exact relationship between measurable quantities, such as load, length, and bending. It lets engineers make numerical predictions, test them against measurements, and communicate the idea without any ambiguity, which a verbal description cannot do."
+  }
+ ],
+ "sol01-13": [
+  {
+   "label": "Givens",
+   "text": "Measurements are made by many people in many places."
+  },
+  {
+   "label": "Equation",
+   "text": "Comparable result = same unit standard everywhere."
+  },
+  {
+   "label": "Substitute",
+   "text": "1 m measured anywhere means the same length only with a shared standard."
+  },
+  {
+   "label": "Answer",
+   "text": "Standards give everyone the same reference for each unit, so measurements made by different people in different places can be compared, repeated, and trusted. Without a common standard (for example, everyone's own \"step\" as a meter), results could not be shared or checked."
+  }
+ ],
+ "sol01-15": [
+  {
+   "label": "Givens",
+   "text": "Ruler reading 138.x mm; finest mark 1 mm."
+  },
+  {
+   "label": "Equation",
+   "text": "Last recorded digit = estimate between the finest marks."
+  },
+  {
+   "label": "Substitute",
+   "text": "138 mm read from marks; tenths of a mm estimated."
+  },
+  {
+   "label": "Answer",
+   "text": "The first three digits (138) come from marks you can read on the ruler. The last digit (0.1 mm) is an estimate of how far the pen's end falls between two marks, so different people might estimate 138.0, 138.1, or 138.2 mm. That estimated digit is the uncertain one."
+  }
+ ],
+ "sol01-16": [
+  {
+   "label": "Givens",
+   "text": "Physics relates measurable quantities."
+  },
+  {
+   "label": "Equation",
+   "text": "Formula = exact relationship, such as v = d/t."
+  },
+  {
+   "label": "Substitute",
+   "text": "Put in d in m and t in s to predict v in m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "Formulas express exact relationships between measurable quantities. They let us make quantitative predictions, test them against measurements, and communicate the same idea unambiguously to everyone."
+  }
+ ],
+ "mq01-28": [
+  {
+   "label": "Givens",
+   "text": "Empty balance reads 0.3 g."
+  },
+  {
+   "label": "Equation",
+   "text": "Reading = true mass + 0.3 g (fixed offset)."
+  },
+  {
+   "label": "Substitute",
+   "text": "A 10.0 g mass reads 10.3 g; finest division unchanged."
+  },
+  {
+   "label": "Answer",
+   "text": "It affects accuracy. Every reading is 0.3 g too high, so the readings are wrong by a fixed amount. The balance can still show the same finest division as before, so its precision (the smallest division it can show) is unchanged. Pressing the tare button to reset the zero fixes the problem."
+  }
+ ],
+ "sol01-24": [
+  {
+   "label": "Givens",
+   "text": "Two words for measurement quality."
+  },
+  {
+   "label": "Equation",
+   "text": "Precision = smallest division; accuracy = closeness to accepted value."
+  },
+  {
+   "label": "Substitute",
+   "text": "Bent micrometer: 0.01 mm precise but off; zeroed beaker: close but coarse."
+  },
+  {
+   "label": "Answer",
+   "text": "Both describe the quality of measurements. Precision is the exactness (fine detail or small uncertainty) of a measurement, set by the instrument and technique. Accuracy is how close a measurement is to the accepted true value. A measurement can be precise but not accurate (a bent micrometer), or accurate but not precise (a coarse beaker that is correctly zeroed)."
+  }
+ ],
+ "sol01-28": [
+  {
+   "label": "Givens",
+   "text": "Parallax: reading a scale from an angle."
+  },
+  {
+   "label": "Equation",
+   "text": "Parallax shifts the reading; precision is set by the instrument."
+  },
+  {
+   "label": "Substitute",
+   "text": "Same finest division (for example 1 mm) at any viewing angle; only the value shifts."
+  },
+  {
+   "label": "Answer",
+   "text": "No. Parallax shifts the reading to the wrong value, so it affects accuracy. Precision (the finest division the instrument can show) is set by the instrument and technique, and is the same however you view it."
+  }
+ ],
+ "mq01-32": [
+  {
+   "label": "Givens",
+   "text": "Mass 0 to 50 g; length 9.4 to 15.4 cm."
+  },
+  {
+   "label": "Equation",
+   "text": "slope = (change in length)/(change in mass)."
+  },
+  {
+   "label": "Substitute",
+   "text": "slope = (15.4 cm - 9.4 cm)/(50 g - 0 g) = 0.12 cm/g."
+  },
+  {
+   "label": "Answer",
+   "text": "The length decreases in a straight line, by 0.12 cm for every 1 g removed, down to 9.4 cm when there is no mass."
+  }
+ ],
+ "mq01-33": [
+  {
+   "label": "Givens",
+   "text": "KE = (1/2)mv^2, m fixed."
+  },
+  {
+   "label": "Equation",
+   "text": "y = ax^2, so y scales as x^2."
+  },
+  {
+   "label": "Substitute",
+   "text": "Speed x3: KE x 3^2 = x9."
+  },
+  {
+   "label": "Answer",
+   "text": "One variable depends on the square of the other ( = ax^2 + bx + c ) . 𝐹𝑜𝑟𝑡ℎ𝑒𝑐𝑎𝑟𝑡, 𝐾𝐸𝑑𝑒𝑝𝑒𝑛𝑑𝑠𝑜𝑛2: if the speed 𝑡𝑟𝑖𝑝𝑙𝑒𝑠, 𝐾𝐸𝑖𝑛𝑐𝑟𝑒𝑎𝑠𝑒𝑠𝑏𝑦𝑎𝑓𝑎𝑐𝑡𝑜𝑟𝑜𝑓2 = 9 (when 𝑎𝑛𝑑 are 0), and the graph of KE versus $ is a parabola."
+  }
+ ],
+ "mq01-35": [
+  {
+   "label": "Givens",
+   "text": "Trip 240 km; speeds 30 to 120 km/h."
+  },
+  {
+   "label": "Equation",
+   "text": "t = d/v."
+  },
+  {
+   "label": "Substitute",
+   "text": "t = 240 km / 30 km/h = 8.0 h; 240 km / 120 km/h = 2.0 h."
+  },
+  {
+   "label": "Answer",
+   "text": "Travel time decreases as speed increases. The values drop steeply at low speeds (from 8.0 h at 30 km/h to 4.0 h at 60 km/h) and flatten at high speeds (3.0 h at 80 km/h to 2.0 h at 120 km/h); that is an inverse relationship."
+  }
+ ],
+ "mq01-36": [
+  {
+   "label": "Givens",
+   "text": "Tank holds 600 L; pump rate r."
+  },
+  {
+   "label": "Equation",
+   "text": "t = 600 L / r."
+  },
+  {
+   "label": "Substitute",
+   "text": "r = 20 L/min gives 30 min; r = 40 L/min gives 15 min."
+  },
+  {
+   "label": "Answer",
+   "text": "One variable depends on the inverse of the other (𝑦= 𝑎/ 𝑥). For the tank, 𝑡= 600 L / 𝑟: when the pumping rate 𝑟 doubles, the fill time is cut in half, so the product 𝑟𝑡 stays constant (600 L), and the graph is a hyperbola."
+  }
+ ],
+ "mq01-49": [
+  {
+   "label": "Givens",
+   "text": "t^2 vs h is a straight line through the origin."
+  },
+  {
+   "label": "Equation",
+   "text": "t^2 = k h (direct variation)."
+  },
+  {
+   "label": "Substitute",
+   "text": "k = 0.203 s^2/m, so t^2 = (0.203 s^2/m)h."
+  },
+  {
+   "label": "Answer",
+   "text": "The square of the fall time is directly proportional to the drop height: 𝑡2 ∝ℎ (so the fall time increases with the square root of the height)."
+  }
+ ],
+ "sol01-32": [
+  {
+   "label": "Givens",
+   "text": "Spring length vs mass graph (Figure 16)."
+  },
+  {
+   "label": "Equation",
+   "text": "slope = (change in length)/(change in mass)."
+  },
+  {
+   "label": "Substitute",
+   "text": "Read slope from graph: about 0.08 cm/g; intercept 13.7 cm at 0 g."
+  },
+  {
+   "label": "Answer",
+   "text": "The length decreases in a straight line, by about 0.08 cm for every 1 g removed, down to 13.7 cm when there is no mass."
+  }
+ ],
+ "sol01-33": [
+  {
+   "label": "Givens",
+   "text": "Quadratic relation; falling ball d = 5t^2."
+  },
+  {
+   "label": "Equation",
+   "text": "y = ax^2 + bx + c."
+  },
+  {
+   "label": "Substitute",
+   "text": "t doubles from 1 s to 2 s: d goes from 5 m to 20 m, x4."
+  },
+  {
+   "label": "Answer",
+   "text": "One variable depends on the square of the other (𝑦= 𝑎𝑥2 + 𝑏𝑥+ 𝑐). If 𝑥 doubles, 𝑦 increases by a factor of about 4 (when 𝑏 and 𝑐 are 0), and the graph is a parabola, such as 𝑑= 5𝑡2 for the falling ball."
+  }
+ ],
+ "sol01-35": [
+  {
+   "label": "Givens",
+   "text": "Travel time vs speed graph (Figure 18)."
+  },
+  {
+   "label": "Equation",
+   "text": "t = d/v (inverse)."
+  },
+  {
+   "label": "Substitute",
+   "text": "Read graph: about 8.5 h at 35 km/h, about 3 h at 100 km/h."
+  },
+  {
+   "label": "Answer",
+   "text": "Travel time decreases as speed increases. The curve drops steeply at low speeds (about 8.5 h at 35 km/h) and flattens at high speeds (about 3 h at 100 km/h); that is an inverse relationship."
+  }
+ ],
+ "sol01-36": [
+  {
+   "label": "Givens",
+   "text": "Inverse relationship."
+  },
+  {
+   "label": "Equation",
+   "text": "y = a/x, so xy = a."
+  },
+  {
+   "label": "Substitute",
+   "text": "x doubles: y = a/(2x), half as large."
+  },
+  {
+   "label": "Answer",
+   "text": "One variable depends on the inverse of the other (𝑦= 𝑎/ 𝑥). When 𝑥 doubles, 𝑦 is cut in half, so the product 𝑥𝑦 stays constant, and the graph is a hyperbola."
+  }
+ ],
+ "sol01-49": [
+  {
+   "label": "Givens",
+   "text": "T^2 vs L is a straight line through the origin."
+  },
+  {
+   "label": "Equation",
+   "text": "T^2 = k L (direct variation)."
+  },
+  {
+   "label": "Substitute",
+   "text": "k = 4.0 s^2/m, so T^2 = (4.0 s^2/m)L."
+  },
+  {
+   "label": "Answer",
+   "text": "The square of the period of a pendulum is directly proportional to the length of the string: 𝑇2 ∝𝐿 (so the period increases with the square root of the length)."
+  }
+ ],
+ "mq02-4": [
+  {
+   "label": "Givens",
+   "text": "Skater moves along a straight line."
+  },
+  {
+   "label": "Equation",
+   "text": "Motion = position at each time."
+  },
+  {
+   "label": "Substitute",
+   "text": "Each observation records x (m) and t (s)."
+  },
+  {
+   "label": "Answer",
+   "text": "The skater's position (where she is on the line) and the time of the observation (when she is there)."
+  }
+ ],
+ "mq02-7": [
+  {
+   "label": "Givens",
+   "text": "Dots at equal time intervals."
+  },
+  {
+   "label": "Equation",
+   "text": "Spacing = distance per interval, which shows speed."
+  },
+  {
+   "label": "Substitute",
+   "text": "Wide spacing per equal time = fast; close spacing = slow."
+  },
+  {
+   "label": "Answer",
+   "text": "A motion diagram is a set of dots showing an object's position at successive, equal time intervals, not a continuous video. The dots show where the object was at each time, and the spacing tells how fast it moved: closely spaced dots mean slow motion and widely spaced dots mean fast motion."
+  }
+ ],
+ "mq02-14": [
+  {
+   "label": "Givens",
+   "text": "Motion capture records positions at equal times."
+  },
+  {
+   "label": "Equation",
+   "text": "Spacing rule: equal times, so spacing shows speed."
+  },
+  {
+   "label": "Substitute",
+   "text": "Shrinking spacing = slowing; growing = speeding up; equal = constant."
+  },
+  {
+   "label": "Answer",
+   "text": "Dots that get closer together mean the car is slowing; dots that get farther apart mean it is speeding up; evenly spaced dots mean constant speed. The news summary should name the technology, what is measured (positions at equal times), and one use."
+  }
+ ],
+ "sol02-4": [
+  {
+   "label": "Givens",
+   "text": "Straight-line motion."
+  },
+  {
+   "label": "Equation",
+   "text": "Motion = position at each time."
+  },
+  {
+   "label": "Substitute",
+   "text": "Record x (m) and t (s) for each observation."
+  },
+  {
+   "label": "Answer",
+   "text": "Where the object is (its position) and when it is there (the time)."
+  }
+ ],
+ "sol02-7": [
+  {
+   "label": "Givens",
+   "text": "Dots at equal time intervals."
+  },
+  {
+   "label": "Equation",
+   "text": "Spacing = distance per interval, which shows speed."
+  },
+  {
+   "label": "Substitute",
+   "text": "Close dots = slow; far-apart dots = fast."
+  },
+  {
+   "label": "Answer",
+   "text": "A motion diagram shows an object's position at successive, equal time intervals. The dots show where the object was at each time, and the spacing between dots shows how fast it moved (close dots mean slow, far-apart dots mean fast)."
+  }
+ ],
+ "mq02-15": [
+  {
+   "label": "Givens",
+   "text": "Train leaving a station."
+  },
+  {
+   "label": "Equation",
+   "text": "All representations use one coordinate system (origin, + direction)."
+  },
+  {
+   "label": "Substitute",
+   "text": "Words, picture, motion diagram, table, x-t graph, equation."
+  },
+  {
+   "label": "Answer",
+   "text": "The motion can be described with words, pictures, a motion diagram (with position and displacement vectors), a data table of position and time, a position-time graph, and an equation, all using a coordinate system with an origin and a positive direction."
+  }
+ ],
+ "mq02-17": [
+  {
+   "label": "Givens",
+   "text": "Origin at the back door."
+  },
+  {
+   "label": "Equation",
+   "text": "Sign of x = side of origin relative to chosen + direction."
+  },
+  {
+   "label": "Substitute",
+   "text": "Toward yard = +; behind house = -."
+  },
+  {
+   "label": "Answer",
+   "text": "First choose a positive direction (for example, away from the house into the yard). A feeder located in the positive direction from the door has a positive position; one located in the opposite direction (for example, behind the house) has a negative position."
+  }
+ ],
+ "mq02-18": [
+  {
+   "label": "Givens",
+   "text": "35 km/h, 35 km/h east, 12 s, 3.0 m down."
+  },
+  {
+   "label": "Equation",
+   "text": "Vector = magnitude + direction; scalar = magnitude only."
+  },
+  {
+   "label": "Substitute",
+   "text": "Direction given: 35 km/h east and 3.0 m down are vectors."
+  },
+  {
+   "label": "Answer",
+   "text": "35 km/h is a scalar (magnitude only, a speed). 35 km/h east is a vector (magnitude and direction, a velocity). 12 s is a scalar (time). 3.0 m down is a vector (a displacement)."
+  }
+ ],
+ "mq02-22": [
+  {
+   "label": "Givens",
+   "text": "Straight sidewalk past a front door."
+  },
+  {
+   "label": "Equation",
+   "text": "Coordinate system = origin + positive direction."
+  },
+  {
+   "label": "Substitute",
+   "text": "Origin at door, + along his motion, t = 0 s at the door."
+  },
+  {
+   "label": "Answer",
+   "text": "One choice: put the origin at the spot on the sidewalk in front of the door, with the 𝑥-axis along the sidewalk and positive pointing in the direction he is rolling. Time starts at 𝑡= 0 when he passes the door. (Any origin on the line of his path with a stated positive direction works.)"
+  }
+ ],
+ "sol02-13": [
+  {
+   "label": "Givens",
+   "text": "Describing motion."
+  },
+  {
+   "label": "Equation",
+   "text": "All representations use one coordinate system."
+  },
+  {
+   "label": "Substitute",
+   "text": "Words, pictures, motion diagrams, tables, x-t graphs, equations."
+  },
+  {
+   "label": "Answer",
+   "text": "Motion can be described with words, pictures, motion diagrams (with position and displacement vectors), data tables, position-time graphs, and equations, all using a coordinate system with an origin and a positive direction."
+  }
+ ],
+ "sol02-15": [
+  {
+   "label": "Givens",
+   "text": "A number line with an origin."
+  },
+  {
+   "label": "Equation",
+   "text": "Sign of x = side of origin relative to + direction."
+  },
+  {
+   "label": "Substitute",
+   "text": "Same side as + = positive; opposite side = negative."
+  },
+  {
+   "label": "Answer",
+   "text": "First choose an origin and a positive direction. A position in the positive direction from the origin is positive; a position in the opposite direction is negative."
+  }
+ ],
+ "sol02-16": [
+  {
+   "label": "Givens",
+   "text": "Two kinds of quantities."
+  },
+  {
+   "label": "Equation",
+   "text": "Vector = magnitude + direction; scalar = magnitude only."
+  },
+  {
+   "label": "Substitute",
+   "text": "1.6 km north = vector; 1.6 km = scalar."
+  },
+  {
+   "label": "Answer",
+   "text": "A vector has both magnitude and direction (such as position or displacement); a scalar has only magnitude (such as distance, time, or temperature)."
+  }
+ ],
+ "sol02-20": [
+  {
+   "label": "Givens",
+   "text": "Girl swims across a pool."
+  },
+  {
+   "label": "Equation",
+   "text": "Coordinate system = origin + positive direction."
+  },
+  {
+   "label": "Substitute",
+   "text": "Origin at start edge, + toward far side, t = 0 s at push off."
+  },
+  {
+   "label": "Answer",
+   "text": "One choice: put the origin at the corner/edge where she starts, with the 𝑥-axis along the line she swims (across the pool), positive pointing toward the far side. Time starts at 𝑡= 0 when she pushes off. (Any origin on the line of her path with a stated positive direction works.)"
+  }
+ ],
+ "mq02-26": [
+  {
+   "label": "Givens",
+   "text": "Two cyclists, x-t graph."
+  },
+  {
+   "label": "Equation",
+   "text": "Slope = velocity; crossing = same x at same t."
+  },
+  {
+   "label": "Substitute",
+   "text": "Read x at each t, crossing point, gap, and slopes in m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "Where each cyclist is at every time, when they are at the same place (where their lines cross), which cyclist is ahead, how far apart they are, and (from the slope) how fast and in which direction each one moves."
+  }
+ ],
+ "mq02-27": [
+  {
+   "label": "Givens",
+   "text": "Same cart data as table and graph."
+  },
+  {
+   "label": "Equation",
+   "text": "Straight line on x-t graph = constant velocity."
+  },
+  {
+   "label": "Substitute",
+   "text": "Graph shows trend and in-between values; table only lists points."
+  },
+  {
+   "label": "Answer",
+   "text": "A graph shows the whole pattern at a glance: a straight line shows constant velocity, its steepness shows the speed, and values between the measured points (and the crossing point of two objects) can be read off easily. A table only lists the individual measurements."
+  }
+ ],
+ "mq02-28": [
+  {
+   "label": "Givens",
+   "text": "Lines meet at (30 s, 90 m)."
+  },
+  {
+   "label": "Equation",
+   "text": "Intersection: xA = xB at the same t."
+  },
+  {
+   "label": "Substitute",
+   "text": "At t = 30 s, both at x = 90 m."
+  },
+  {
+   "label": "Answer",
+   "text": "At the intersection the two joggers have the same position at the same time, so they are at the same place together (90 m from the origin at 30 s), and one is passing the other. It does not necessarily mean they collide, since they may be in different lanes."
+  }
+ ],
+ "mq02-30": [
+  {
+   "label": "Givens",
+   "text": "xA = 21.5t; xB = 27.0 - 12.0t; xC = 28.9 - 4.5t (km, h)."
+  },
+  {
+   "label": "Equation",
+   "text": "x = vt + xi, a straight line."
+  },
+  {
+   "label": "Substitute",
+   "text": "Ana: slope +21.5 km/h from 0; Ben: -12.0 km/h; Cal: -4.5 km/h, both from 30.0 km at -0.25 h."
+  },
+  {
+   "label": "Answer",
+   "text": "Three straight lines as plotted: Ana's rises from the origin at noon; Ben's falls steeply from 30.0 km at 11:45; Cal's falls gently from 30.0 km at 11:45."
+  }
+ ],
+ "mq02-31": [
+  {
+   "label": "Givens",
+   "text": "xA = 21.5t, xB = 27.0 - 12.0t (km, h)."
+  },
+  {
+   "label": "Equation",
+   "text": "Smallest spread when xA = xB."
+  },
+  {
+   "label": "Substitute",
+   "text": "21.5t = 27.0 - 12.0t, t = 27.0 km / 33.5 km/h = 0.806 h = 48.4 min."
+  },
+  {
+   "label": "Answer",
+   "text": "About 48.4 min after noon, at about 12:48 P.M."
+  }
+ ],
+ "mq02-32": [
+  {
+   "label": "Givens",
+   "text": "t = 0.806 h; xC = 28.9 - 4.5t."
+  },
+  {
+   "label": "Equation",
+   "text": "Interval = xC - xA."
+  },
+  {
+   "label": "Substitute",
+   "text": "xA = 21.5(0.806) = 17.3 km; xC = 25.2 km; 25.2 km - 17.3 km = 7.9 km."
+  },
+  {
+   "label": "Answer",
+   "text": "About 7.9 km (between 17.3 km and 25.2 km north of the trailhead)."
+  }
+ ],
+ "sol02-24": [
+  {
+   "label": "Givens",
+   "text": "Position-time graphs."
+  },
+  {
+   "label": "Equation",
+   "text": "Slope = velocity; crossing = same x at same t."
+  },
+  {
+   "label": "Substitute",
+   "text": "Read x at any t, crossing points, gaps, slopes in m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "Where an object is at every time, when two objects are at the same place (where their lines cross), which object is ahead, how far apart they are, and (from the slope) how fast and in which direction each moves."
+  }
+ ],
+ "sol02-25": [
+  {
+   "label": "Givens",
+   "text": "Same data as table and graph."
+  },
+  {
+   "label": "Equation",
+   "text": "Table lists exact (t, x) pairs."
+  },
+  {
+   "label": "Substitute",
+   "text": "Table: x read directly; graph: values must be estimated."
+  },
+  {
+   "label": "Answer",
+   "text": "A table gives exact recorded values of time and position that can be read directly without estimating from a graph (and it is quick to record data in)."
+  }
+ ],
+ "sol02-26": [
+  {
+   "label": "Givens",
+   "text": "Two lines on an x-t graph cross."
+  },
+  {
+   "label": "Equation",
+   "text": "Intersection: xA = xB at the same t."
+  },
+  {
+   "label": "Substitute",
+   "text": "Example 2: lines cross at about 45 s."
+  },
+  {
+   "label": "Answer",
+   "text": "At the intersection the two objects have the same position at the same time, so they are at the same place together (one passes the other). It does not necessarily mean they collide, since they may be in different lanes."
+  }
+ ],
+ "sol02-28": [
+  {
+   "label": "Givens",
+   "text": "xN = 40.25t; xO = 12.0 - 16.0t; xP = 16.75 - 6.5t (km, h)."
+  },
+  {
+   "label": "Equation",
+   "text": "x = vt + xi, a straight line."
+  },
+  {
+   "label": "Substitute",
+   "text": "Natana slope +40.25 km/h from 0; Olivia -16.0 km/h; Phil -6.5 km/h, from 20.0 km at -0.50 h."
+  },
+  {
+   "label": "Answer",
+   "text": "Three straight lines as plotted: Natana's rises steeply from the origin at noon; Olivia's falls steeply from 20.0 km at 11:30; Phil's falls gently from 20.0 km at 11:30."
+  }
+ ],
+ "sol02-29": [
+  {
+   "label": "Givens",
+   "text": "xN = 40.25t, xO = 12.0 - 16.0t (km, h)."
+  },
+  {
+   "label": "Equation",
+   "text": "Smallest spread when xN = xO."
+  },
+  {
+   "label": "Substitute",
+   "text": "40.25t = 12.0 - 16.0t, t = 12.0 km / 56.25 km/h = 0.2133 h = 12.8 min."
+  },
+  {
+   "label": "Answer",
+   "text": "About 12.8 min after noon, at about 12:13 P.M."
+  }
+ ],
+ "sol02-30": [
+  {
+   "label": "Givens",
+   "text": "t = 0.2133 h; xP = 16.75 - 6.5t."
+  },
+  {
+   "label": "Equation",
+   "text": "Interval = xP - xN."
+  },
+  {
+   "label": "Substitute",
+   "text": "xN = 40.25(0.2133) = 8.59 km; xP = 15.36 km; 15.36 km - 8.59 km = 6.78 km."
+  },
+  {
+   "label": "Answer",
+   "text": "About 6.8 km (between 8.6 km and 15.4 km north of the falls)."
+  }
+ ],
+ "mq02-49": [
+  {
+   "label": "Givens",
+   "text": "Two runners' x-t lines."
+  },
+  {
+   "label": "Equation",
+   "text": "v = change in x / change in t = slope."
+  },
+  {
+   "label": "Substitute",
+   "text": "Steeper slope (larger m/s) = faster runner."
+  },
+  {
+   "label": "Answer",
+   "text": "Compare the slopes. The average velocity is the change in position divided by the time interval, ¯𝑣= 𝛥𝑥/ 𝛥𝑡, which is the slope of the position-time graph. The steeper line (larger magnitude of slope) belongs to the faster runner, and speed is the magnitude of the velocity."
+  }
+ ],
+ "mq02-52": [
+  {
+   "label": "Givens",
+   "text": "Swimmer starts at (0 s, 0 m); runner at (0 s, 15 m)."
+  },
+  {
+   "label": "Equation",
+   "text": "Starting point = xi at t = 0."
+  },
+  {
+   "label": "Substitute",
+   "text": "Swimmer xi = 0 m; runner xi = +15 m."
+  },
+  {
+   "label": "Answer",
+   "text": "The swimmer is at the origin (position zero) at 𝑡= 0. The runner is 15 m from the origin in the positive direction at 𝑡= 0, so the two start at different places at the same time."
+  }
+ ],
+ "mq02-56": [
+  {
+   "label": "Givens",
+   "text": "Same scale: skater arrows 2.0 cm, walker 1.0 cm."
+  },
+  {
+   "label": "Equation",
+   "text": "Arrow length is proportional to speed."
+  },
+  {
+   "label": "Substitute",
+   "text": "2.0 cm / 1.0 cm = 2, so skater speed = 2 x walker speed."
+  },
+  {
+   "label": "Answer",
+   "text": "The length of a velocity vector is proportional to the magnitude of the velocity (the speed). The skater's arrows are twice as long, so the skater is moving twice as fast as the walker."
+  }
+ ],
+ "mq02-58": [
+  {
+   "label": "Givens",
+   "text": "(0 s, 0 m) to (9.0 s, -4.5 m); north positive."
+  },
+  {
+   "label": "Equation",
+   "text": "v = change in x / change in t."
+  },
+  {
+   "label": "Substitute",
+   "text": "v = (-4.5 m - 0 m)/(9.0 s) = -0.50 m/s (south)."
+  },
+  {
+   "label": "Answer",
+   "text": "The robot starts at the origin and moves south (the negative direction) at a slow, constant speed of 0.50 m/s, covering 4.5 m in 9.0 s."
+  }
+ ],
+ "mq02-62": [
+  {
+   "label": "Givens",
+   "text": "(0 min, 0 km) to (45 min, 18 km)."
+  },
+  {
+   "label": "Equation",
+   "text": "v = change in x / change in t."
+  },
+  {
+   "label": "Substitute",
+   "text": "v = 18 km / 0.75 h = 24 km/h = 6.7 m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "The scooter starts at the origin and travels in the positive direction at a constant 24 km/h (about 6.7 m/s), reaching 18 km after 45 minutes."
+  }
+ ],
+ "mq02-68": [
+  {
+   "label": "Givens",
+   "text": "Position x and velocity v."
+  },
+  {
+   "label": "Equation",
+   "text": "v = change in x / change in t; x = vt + xi."
+  },
+  {
+   "label": "Substitute",
+   "text": "x in m; v in m/s, the slope of x vs t."
+  },
+  {
+   "label": "Answer",
+   "text": "They are different quantities. Velocity is the rate at which position changes: ¯𝑣= 𝛥𝑥/ 𝛥𝑡. On a position-time graph velocity is the slope, and for constant velocity the position at time 𝑡 is 𝑥= ¯𝑣𝑡+ 𝑥i. Position tells where the object is; velocity tells how fast and which way it is changing position."
+  }
+ ],
+ "mq02-71": [
+  {
+   "label": "Givens",
+   "text": "vA = +2.25 m/s, vB = -0.80 m/s, vC = -3.0 m/s, vD = +0.80 m/s."
+  },
+  {
+   "label": "Equation",
+   "text": "Speed = |v|; sign = direction."
+  },
+  {
+   "label": "Substitute",
+   "text": "|vC| = 3.0 m/s > |vA| = 2.25 m/s; |vB| = |vD| = 0.80 m/s, opposite signs."
+  },
+  {
+   "label": "Answer",
+   "text": "A and C: A has a positive velocity (about +2.3 m/s, moving in the positive direction) while C has a negative velocity (−3.0 m/s), and C is faster (greater speed). B and D: they have equal speeds (0.80 m/s) but opposite directions: B's velocity is negative (−0.80 m/s) and D's is positive (+0.80 m/s)."
+  }
+ ],
+ "mq02-74": [
+  {
+   "label": "Givens",
+   "text": "v = -6.0 m/s, constant."
+  },
+  {
+   "label": "Equation",
+   "text": "Speed = |v| for uniform motion."
+  },
+  {
+   "label": "Substitute",
+   "text": "Speed = |-6.0 m/s| = 6.0 m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "In uniform motion the average speed equals the magnitude of the average velocity, |¯𝑣| = 6.0 m/s. The velocity is −6.0 m/s (6.0 m/s west), which also tells the direction (its sign), but the speed, 6.0 m/s, does not."
+  }
+ ],
+ "mq02-77": [
+  {
+   "label": "Givens",
+   "text": "Tugboat heading west; x = vt + xi."
+  },
+  {
+   "label": "Equation",
+   "text": "Sketch fixes origin, + direction, and signs."
+  },
+  {
+   "label": "Substitute",
+   "text": "West with east positive: v < 0, so use v = -(speed)."
+  },
+  {
+   "label": "Answer",
+   "text": "Sketches and motion diagrams make you choose a coordinate system (origin and positive direction), show which quantities are known and unknown, and show the direction and sign of each quantity (for example, a tug that heads west should use a negative velocity). Without them it is easy to use the wrong sign, the wrong initial position, or the wrong equation. A diagram also gives a way to check whether the final answer makes sense."
+  }
+ ],
+ "mq02-78": [
+  {
+   "label": "Givens",
+   "text": "Quartz frequency 32 768 Hz."
+  },
+  {
+   "label": "Equation",
+   "text": "Halve the count n times: f / 2^n."
+  },
+  {
+   "label": "Substitute",
+   "text": "32 768 Hz / 2^15 = 1 pulse per second."
+  },
+  {
+   "label": "Answer",
+   "text": "A quartz watch uses a tiny crystal of quartz cut in the shape of a small tuning fork. When a battery's voltage is applied, the crystal vibrates at a very steady frequency of 32 768 cycles per second. An electronic circuit counts these vibrations and halves the count fifteen times ( 215 = 32 768), producing exactly one electrical pulse per second. Each pulse moves the watch's hands one step or advances the digital display by one second. Because every crystal cut to the same shape vibrates at nearly the same frequency, the watch is accurate to a few seconds per month."
+  }
+ ],
+ "mq02-80": [
+  {
+   "label": "Givens",
+   "text": "Four x-t lines with positive slopes, same end point."
+  },
+  {
+   "label": "Equation",
+   "text": "Slope = velocity."
+  },
+  {
+   "label": "Substitute",
+   "text": "Steepest to flattest: Pepper, Clover, Biscuit, Daisy."
+  },
+  {
+   "label": "Answer",
+   "text": "Same direction and same final position for all four, but different velocities: Pepper > Clover > Biscuit > Daisy."
+  }
+ ],
+ "mq02-81": [
+  {
+   "label": "Givens",
+   "text": "Four x-t lines from the lab graph."
+  },
+  {
+   "label": "Equation",
+   "text": "v = change in x / change in t."
+  },
+  {
+   "label": "Substitute",
+   "text": "Pepper 2.5 m/s, Clover 2.0 m/s, Biscuit 1.8 m/s, Daisy 0.71 m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "Ranking from the greatest to the least average velocity: Pepper (2.5 m/s), Clover ( 2.0 m/s), Biscuit (1.8 m/s), Daisy (0.71 m/s)."
+  }
+ ],
+ "mq02-82": [
+  {
+   "label": "Givens",
+   "text": "Same end point; different starts and times."
+  },
+  {
+   "label": "Equation",
+   "text": "v = change in x / change in t."
+  },
+  {
+   "label": "Substitute",
+   "text": "Same change in x, longer time (Biscuit, 340 s) gives smaller v."
+  },
+  {
+   "label": "Answer",
+   "text": "Evidence: Pepper's line is the steepest, followed by Clover's, then Biscuit's, and Daisy's is the flattest. Reasoning: the slope of a position-time graph is the average velocity 𝛥𝑥/ 𝛥𝑡. Pepper and Clover have the same 𝛥𝑥 but Pepper needs less 𝛥𝑡. Biscuit covers the same 𝛥𝑥 as Clover in a longer 𝛥𝑡 (340 s), so she is slower. Daisy has the smallest 𝛥𝑥 and the largest 𝛥𝑡, so she has the smallest slope."
+  }
+ ],
+ "mq02-83": [
+  {
+   "label": "Givens",
+   "text": "Bottle-rocket project plan."
+  },
+  {
+   "label": "Equation",
+   "text": "Plan = goal + measurements + model + data + one change."
+  },
+  {
+   "label": "Substitute",
+   "text": "Measure height (m) or flight time (s); record trials in a table."
+  },
+  {
+   "label": "Answer",
+   "text": "A project plan lists the goal, the measurements to take, a sketch or motion diagram, a data table, and one change to test between trials."
+  }
+ ],
+ "sol02-47": [
+  {
+   "label": "Givens",
+   "text": "Describing how fast."
+  },
+  {
+   "label": "Equation",
+   "text": "v = change in x / change in t; speed = |v|."
+  },
+  {
+   "label": "Substitute",
+   "text": "Units: m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "With velocity (speed and direction): the average velocity is the change in position divided by the time interval, ¯𝑣= 𝛥𝑥/ 𝛥𝑡, which is the slope of the position-time graph. Speed is the magnitude of the velocity."
+  }
+ ],
+ "sol02-49": [
+  {
+   "label": "Givens",
+   "text": "Both lines start at (0, 0)."
+  },
+  {
+   "label": "Equation",
+   "text": "Starting point = xi at t = 0."
+  },
+  {
+   "label": "Substitute",
+   "text": "xi = 0 m for both at t = 0 s."
+  },
+  {
+   "label": "Answer",
+   "text": "At 𝑡= 0 both joggers are at the origin (position zero), so they start at the same place at the same time."
+  }
+ ],
+ "sol02-52": [
+  {
+   "label": "Givens",
+   "text": "Average vs instantaneous velocity."
+  },
+  {
+   "label": "Equation",
+   "text": "v_avg = change in x / change in t over an interval."
+  },
+  {
+   "label": "Substitute",
+   "text": "Instantaneous v = slope at one instant, in m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "Average velocity is the displacement divided by a whole time interval and does not tell what happened inside the interval. Velocity (instantaneous velocity) is the speed and direction at one particular instant."
+  }
+ ],
+ "sol02-53": [
+  {
+   "label": "Givens",
+   "text": "Velocity vectors on a motion diagram."
+  },
+  {
+   "label": "Equation",
+   "text": "Arrow length is proportional to speed."
+  },
+  {
+   "label": "Substitute",
+   "text": "Longer arrow = more m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "The length of a velocity vector is proportional to the magnitude of the velocity (the speed): longer arrows mean faster motion."
+  }
+ ],
+ "sol02-55": [
+  {
+   "label": "Givens",
+   "text": "Ship graph: about -1.6 m in 4.7 s."
+  },
+  {
+   "label": "Equation",
+   "text": "v = change in x / change in t."
+  },
+  {
+   "label": "Substitute",
+   "text": "v = (-1.6 m)/(4.7 s) = -0.34 m/s, about 0.3 m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "The ship starts at the origin and drifts north (the negative direction) at a slow, constant speed of about 0.3 m/s, covering about 1.6 m in 4.7 s."
+  }
+ ],
+ "sol02-58": [
+  {
+   "label": "Givens",
+   "text": "Graph: 20 km in 30 min."
+  },
+  {
+   "label": "Equation",
+   "text": "v = change in x / change in t."
+  },
+  {
+   "label": "Substitute",
+   "text": "v = 20 km / 0.50 h = 40 km/h = 11 m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "The bicycle starts at the origin and travels in the positive direction at a constant 40 km/h (about 11 m/s), reaching 20 km after 30 minutes."
+  }
+ ],
+ "sol02-64": [
+  {
+   "label": "Givens",
+   "text": "Position x and velocity v."
+  },
+  {
+   "label": "Equation",
+   "text": "v = change in x / change in t; x = vt + xi."
+  },
+  {
+   "label": "Substitute",
+   "text": "v is the slope of x vs t, in m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "Velocity is the rate at which position changes: ¯𝑣= 𝛥𝑥/ 𝛥𝑡. On a position-time graph it is the slope, and for constant velocity the position at time 𝑡 is 𝑥= ¯𝑣𝑡+ 𝑥i."
+  }
+ ],
+ "sol02-66": [
+  {
+   "label": "Givens",
+   "text": "vA about -2.0 m/s, vB about +1.5 m/s, vC = -1.0 m/s, vD = +1.0 m/s."
+  },
+  {
+   "label": "Equation",
+   "text": "Speed = |v|; sign = direction."
+  },
+  {
+   "label": "Substitute",
+   "text": "|vA| = 2.0 m/s > |vB| = 1.5 m/s; |vC| = |vD| = 1.0 m/s, opposite signs."
+  },
+  {
+   "label": "Answer",
+   "text": "A and B: A has a negative velocity (about −2.0 m/s, moving in the negative direction) while B has a positive velocity (about +1.5 m/s), and A is faster (greater speed). C and D: they have equal speeds (1.0 m/s) but opposite directions: C's velocity is negative (−1.0 m/s) and D's is positive (+1.0 m/s)."
+  }
+ ],
+ "sol02-68": [
+  {
+   "label": "Givens",
+   "text": "Uniform motion."
+  },
+  {
+   "label": "Equation",
+   "text": "Speed = |v| = |slope|."
+  },
+  {
+   "label": "Substitute",
+   "text": "v = +1.7 m/s gives speed 1.7 m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "In uniform motion the average speed equals the magnitude of the average velocity, ¯𝑣speed = | ¯𝑣| = | slope|. The velocity also tells the direction (its sign), but the speed does not."
+  }
+ ],
+ "sol02-71": [
+  {
+   "label": "Givens",
+   "text": "Ship problem, x = vt + xi."
+  },
+  {
+   "label": "Equation",
+   "text": "Sketch fixes origin, + direction, and signs."
+  },
+  {
+   "label": "Substitute",
+   "text": "Westward motion with east positive: v < 0."
+  },
+  {
+   "label": "Answer",
+   "text": "Sketches and motion diagrams make you choose a coordinate system (origin and positive direction), show which quantities are known and unknown, and show the direction and sign of each quantity (for example, whether a ship that goes west should use a negative velocity). Without them it is easy to use the wrong sign, the wrong initial position, or the wrong equation. A diagram also gives a way to check whether the final answer makes sense."
+  }
+ ],
+ "sol02-72": [
+  {
+   "label": "Givens",
+   "text": "Cesium transition frequency 9 192 631 770 Hz."
+  },
+  {
+   "label": "Equation",
+   "text": "1 s = 9 192 631 770 cycles."
+  },
+  {
+   "label": "Substitute",
+   "text": "Count 9 192 631 770 cycles = 1 s."
+  },
+  {
+   "label": "Answer",
+   "text": "An atomic clock uses the fixed energy difference between two states of an atom such as cesium. A microwave oscillator is tuned until its frequency matches the frequency that makes the atoms change state (for cesium this is 9,192,631,770 cycles per second). A detector measures how many atoms respond, and feedback electronics keep the oscillator exactly on that frequency. The clock then counts oscillation cycles; one second is defined as that many cycles. A chip-scale atomic clock does the same thing in a tiny sealed cell of vapor, using a small laser and a photodetector in place of the large equipment, so a portable GPS unit can keep very accurate time."
+  }
+ ],
+ "sol02-74": [
+  {
+   "label": "Givens",
+   "text": "Four x-t lines with positive slopes, same end point."
+  },
+  {
+   "label": "Equation",
+   "text": "Slope = velocity."
+  },
+  {
+   "label": "Substitute",
+   "text": "Steepest to flattest: Elsie, Bessie, Dolly, Moolinda."
+  },
+  {
+   "label": "Answer",
+   "text": "Same direction and same final position for all four, but different velocities: Elsie > Bessie > Dolly > Moolinda."
+  }
+ ],
+ "sol02-75": [
+  {
+   "label": "Givens",
+   "text": "Four x-t lines from the lab graph."
+  },
+  {
+   "label": "Equation",
+   "text": "v = change in x / change in t."
+  },
+  {
+   "label": "Substitute",
+   "text": "Compare slopes: Elsie > Bessie > Dolly > Moolinda."
+  },
+  {
+   "label": "Answer",
+   "text": "Ranking from the greatest to the least average velocity: Elsie, Bessie, Dolly, Moolinda."
+  }
+ ],
+ "sol02-76": [
+  {
+   "label": "Givens",
+   "text": "Same end point; different starts and times."
+  },
+  {
+   "label": "Equation",
+   "text": "v = change in x / change in t."
+  },
+  {
+   "label": "Substitute",
+   "text": "Same change in x, longer time gives smaller v."
+  },
+  {
+   "label": "Answer",
+   "text": "Evidence: Elsie's line is the steepest, followed by Bessie's, then Dolly's, and Moolinda's is the flattest. Reasoning: the slope of a position-time graph is the average velocity 𝛥𝑥/ 𝛥𝑡. Elsie and Bessie have the same 𝛥𝑥 but Elsie needs less 𝛥𝑡. Dolly covers the same 𝛥𝑥 as Bessie in a longer 𝛥𝑡, so she is slower. Moolinda has the smallest 𝛥𝑥 and the largest 𝛥𝑡, so she has the smallest slope."
+  }
+ ],
+ "mq03-1": [
+  {
+   "label": "Givens",
+   "text": "Roller coaster loop and drop photos."
+  },
+  {
+   "label": "Equation",
+   "text": "Open-ended; link questions to a = change in v / change in t."
+  },
+  {
+   "label": "Substitute",
+   "text": "Sample: compare a in a tight turn with g = 9.8 m/s^2."
+  },
+  {
+   "label": "Answer",
+   "text": "Open-ended; sample questions above (no calculation required)."
+  }
+ ],
+ "sol03-1": [
+  {
+   "label": "Givens",
+   "text": "Jet in tight turns."
+  },
+  {
+   "label": "Equation",
+   "text": "Open-ended; link questions to a = change in v / change in t."
+  },
+  {
+   "label": "Substitute",
+   "text": "Sample: compare jet a with g = 9.8 m/s^2."
+  },
+  {
+   "label": "Answer",
+   "text": "Open-ended; sample questions above (no calculation required)."
+  }
+ ],
+ "mq03-36": [
+  {
+   "label": "Givens",
+   "text": "v starts positive; a constant and negative."
+  },
+  {
+   "label": "Equation",
+   "text": "x = xi + vi t + (1/2)a t^2, with a < 0."
+  },
+  {
+   "label": "Substitute",
+   "text": "Slope v falls from vi (m/s) to 0 m/s: concave down."
+  },
+  {
+   "label": "Answer",
+   "text": "A parabola that curves downward (concave down): the slope (velocity) starts positive and decreases steadily to zero as the car slows."
+  }
+ ],
+ "mq03-37": [
+  {
+   "label": "Givens",
+   "text": "Constant negative a."
+  },
+  {
+   "label": "Equation",
+   "text": "v = vi + a t (straight line)."
+  },
+  {
+   "label": "Substitute",
+   "text": "Slope of v-t line = a < 0 (m/s^2)."
+  },
+  {
+   "label": "Answer",
+   "text": "A straight line sloping downward (the slope equals the constant negative acceleration)."
+  }
+ ],
+ "sol03-27": [
+  {
+   "label": "Givens",
+   "text": "Constant a."
+  },
+  {
+   "label": "Equation",
+   "text": "x = xi + vi t + (1/2)a t^2."
+  },
+  {
+   "label": "Substitute",
+   "text": "t^2 term makes the graph a parabola."
+  },
+  {
+   "label": "Answer",
+   "text": "A parabola (curving upward for positive acceleration with positive velocity), because the slope (velocity) changes steadily."
+  }
+ ],
+ "sol03-28": [
+  {
+   "label": "Givens",
+   "text": "Constant a."
+  },
+  {
+   "label": "Equation",
+   "text": "v = vi + a t."
+  },
+  {
+   "label": "Substitute",
+   "text": "Linear in t; slope = a in m/s^2."
+  },
+  {
+   "label": "Answer",
+   "text": "A straight line (the slope equals the constant acceleration)."
+  }
+ ],
+ "mq03-73": [
+  {
+   "label": "Givens",
+   "text": "Dropped from rest; down positive; a = 9.8 m/s^2."
+  },
+  {
+   "label": "Equation",
+   "text": "x = (1/2)a t^2."
+  },
+  {
+   "label": "Substitute",
+   "text": "x = (4.9 m/s^2)t^2: slope 0 at t = 0 s, then steeper."
+  },
+  {
+   "label": "Answer",
+   "text": "An upward-opening parabola that starts with zero slope at the release point and becomes steeper and steeper, because the velocity (the slope) increases steadily from zero. The shape shows how position changes with time, not the ball's path (which is a straight vertical line)."
+  }
+ ],
+ "mq03-89": [
+  {
+   "label": "Givens",
+   "text": "Drop tower: 3.1 s of free fall; g = 9.8 m/s^2."
+  },
+  {
+   "label": "Equation",
+   "text": "change in v = a t."
+  },
+  {
+   "label": "Substitute",
+   "text": "v = (9.8 m/s^2)(3.1 s) = 30 m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "Free-fall acceleration (9.8 m/s2 downward) shows that velocity changes steadily whenever a force such as gravity acts, and that the sign and size of 𝑎 depend on direction; combined with 𝛥𝑣= 𝑎𝛥𝑡 it shows that quick velocity changes mean large accelerations, which is what a rider feels in a sudden drop or turn. (A drop-tower rider in free fall for 3.1 s reaches 30 m/s, an acceleration of 1𝑔; a coaster that does the same in less time would have a larger one.)"
+  }
+ ],
+ "mq03-95": [
+  {
+   "label": "Givens",
+   "text": "Fall from rest for 2.0 s; brake over d = 15 m."
+  },
+  {
+   "label": "Equation",
+   "text": "d = (1/2)g t^2; v = g t; a = v^2/(2d)."
+  },
+  {
+   "label": "Substitute",
+   "text": "d = (1/2)(9.8 m/s^2)(2.0 s)^2 = 20 m; v = 20 m/s; a = (19.6 m/s)^2/(30 m) = 13 m/s^2."
+  },
+  {
+   "label": "Answer",
+   "text": "Open-ended design; sample numbers above."
+  }
+ ],
+ "sol03-57": [
+  {
+   "label": "Givens",
+   "text": "Ball thrown up; a = -9.8 m/s^2."
+  },
+  {
+   "label": "Equation",
+   "text": "y = vi t + (1/2)a t^2, with a < 0."
+  },
+  {
+   "label": "Substitute",
+   "text": "Slope v goes from +vi through 0 m/s to negative: an arch."
+  },
+  {
+   "label": "Answer",
+   "text": "An inverted parabola (an arch): height rises with decreasing slope to a maximum and then falls with increasing steepness. The shape shows how height changes with time, not the ball's path."
+  }
+ ],
+ "sol03-72": [
+  {
+   "label": "Givens",
+   "text": "Free fall a = 9.8 m/s^2 down."
+  },
+  {
+   "label": "Equation",
+   "text": "change in v = a t, so a = change in v / t."
+  },
+  {
+   "label": "Substitute",
+   "text": "Same change in v in less time means larger a (m/s^2)."
+  },
+  {
+   "label": "Answer",
+   "text": "Free-fall acceleration (9.8 m/s2 downward) shows that velocity changes steadily whenever a force such as gravity acts, and that the sign and size of 𝑎 depend on direction; combined with 𝛥𝑣= 𝑎𝛥𝑡 it shows that quick velocity changes mean large accelerations, which is what a pilot in a sudden speed or direction change feels. (Same reasoning as the CER claim above.)"
+  }
+ ],
+ "sol03-74": [
+  {
+   "label": "Givens",
+   "text": "Project details are not in this module."
+  },
+  {
+   "label": "Equation",
+   "text": "a = change in v / change in t; constant-a equations."
+  },
+  {
+   "label": "Substitute",
+   "text": "No numbers given; nothing to substitute."
+  },
+  {
+   "label": "Answer",
+   "text": "Not solvable from the information in this module (project details are in the Unit materials). Method: summarize your evidence (definition of acceleration, constant-acceleration equations, free- fall) and apply it to your project's design numbers."
+  }
+ ],
+ "sol03-78": [
+  {
+   "label": "Givens",
+   "text": "Fall from rest for 1.5 s; brake over d = 10 m."
+  },
+  {
+   "label": "Equation",
+   "text": "d = (1/2)g t^2; v = g t; a = v^2/(2d)."
+  },
+  {
+   "label": "Substitute",
+   "text": "d = (1/2)(9.8 m/s^2)(1.5 s)^2 = 11 m; v = 15 m/s; a = (15 m/s)^2/(20 m) = 11 m/s^2."
+  },
+  {
+   "label": "Answer",
+   "text": "Open-ended design; sample numbers above."
+  }
+ ],
+ "sol04-10": [
+  {
+   "label": "Givens",
+   "text": "Fixed mass m."
+  },
+  {
+   "label": "Equation",
+   "text": "a = Fnet / m."
+  },
+  {
+   "label": "Substitute",
+   "text": "Fnet x2 gives a x2; slope of a vs F = 1/m (1/kg)."
+  },
+  {
+   "label": "Answer",
+   "text": "They are directly proportional (a straight line through the origin on an acceleration-force graph): doubling the net force doubles the acceleration, and the acceleration is in the direction of the net force. The slope of the line is 1 / 𝑚."
+  }
+ ],
+ "mq04-33": [
+  {
+   "label": "Givens",
+   "text": "Fall d = 450 m; g = 9.8 m/s^2; no air."
+  },
+  {
+   "label": "Equation",
+   "text": "v = sqrt(2 g d)."
+  },
+  {
+   "label": "Substitute",
+   "text": "v = sqrt(2(9.8 m/s^2)(450 m)) = 94 m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "𝑣= 94 m/s (about 210 mph)."
+  }
+ ],
+ "mq04-35": [
+  {
+   "label": "Givens",
+   "text": "Weight Fg = mg down; drag up, grows with speed and area."
+  },
+  {
+   "label": "Equation",
+   "text": "Terminal velocity: Fdrag = mg, Fnet = 0 N."
+  },
+  {
+   "label": "Substitute",
+   "text": "Larger area: Fdrag reaches mg at a lower speed (m/s)."
+  },
+  {
+   "label": "Answer",
+   "text": "Weight (𝐹𝑔= 𝑚𝑔) pulls the squirrel downward, while the drag force exerted by the air opposes the motion and grows with speed. The squirrel speeds up until drag equals weight (terminal velocity, zero net force, constant velocity). Spreading the skin increases surface area, so the drag is larger at any speed and the balance is reached at a lower speed; by changing body shape and angle, the squirrel changes the drag force and so controls its speed."
+  }
+ ],
+ "mq04-37": [
+  {
+   "label": "Givens",
+   "text": "4-liner stack: m = 4.0 g; steady 2.0 m/s."
+  },
+  {
+   "label": "Equation",
+   "text": "At terminal velocity Fdrag = mg."
+  },
+  {
+   "label": "Substitute",
+   "text": "Fdrag = (4.0 x 10^-3 kg)(9.8 N/kg) = 0.039 N."
+  },
+  {
+   "label": "Answer",
+   "text": "With real data, read each terminal speed from the flat part of the graph and set 𝐹drag = 𝑚𝑔 (about 0.039 N for the 4.0 g stack in the sample above). Expected trend: heavier stacks have higher terminal speeds; drag increases with speed and with the area and shape of the object."
+  }
+ ],
+ "sol04-33": [
+  {
+   "label": "Givens",
+   "text": "Fall d = 300 m; g = 9.8 m/s^2; no air."
+  },
+  {
+   "label": "Equation",
+   "text": "v = sqrt(2 g d)."
+  },
+  {
+   "label": "Substitute",
+   "text": "v = sqrt(2(9.8 m/s^2)(300 m)) = 77 m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "𝑣= 77 m/s (about 170 mph)."
+  }
+ ],
+ "sol04-35": [
+  {
+   "label": "Givens",
+   "text": "Weight Fg = mg down; drag up, grows with speed and area."
+  },
+  {
+   "label": "Equation",
+   "text": "Terminal velocity: Fdrag = mg, Fnet = 0 N."
+  },
+  {
+   "label": "Substitute",
+   "text": "Wingsuit: larger area, so Fdrag = mg at a lower speed."
+  },
+  {
+   "label": "Answer",
+   "text": "Weight (𝐹𝑔= 𝑚𝑔) pulls a BASE jumper downward, while the drag force exerted by the air opposes the motion and grows with speed. The jumper speeds up until drag equals weight (terminal velocity, zero net force, constant velocity). A wingsuit increases surface area, so it increases drag, and the balance is reached at a lower speed; by changing body shape and orientation the jumper changes the drag force and so controls velocity."
+  }
+ ],
+ "sol04-36": [
+  {
+   "label": "Givens",
+   "text": "No lab data in the book."
+  },
+  {
+   "label": "Equation",
+   "text": "Terminal velocity: Fdrag = mg."
+  },
+  {
+   "label": "Substitute",
+   "text": "No measured values; expected trend only."
+  },
+  {
+   "label": "Answer",
+   "text": "Without the lab data, only the expected conclusion above can be given: larger frontal area and speed give a larger drag force, and a heavier object needs a higher speed to reach 𝐹drag = 𝑚𝑔."
+  }
+ ],
+ "mq04-51": [
+  {
+   "label": "Givens",
+   "text": "Mug at rest on a desk."
+  },
+  {
+   "label": "Equation",
+   "text": "Newton's third law: FA on B = -FB on A."
+  },
+  {
+   "label": "Substitute",
+   "text": "Fdesk on mug (up) pairs with Fmug on desk (down); FEarth on mug pairs with Fmug on Earth."
+  },
+  {
+   "label": "Answer",
+   "text": "The mug feels 𝐹desk on mug (up) with partner 𝐹mug on desk (down, on the desk), and 𝐹Earth on mug (down) with partner 𝐹mug on Earth (up, on Earth). The two forces on the mug are equal in size (mug at rest) but are not an interaction pair, since they act on the same object."
+  }
+ ],
+ "mq04-56": [
+  {
+   "label": "Givens",
+   "text": "Each team pulls 640 N; bucket m = 25 kg at rest."
+  },
+  {
+   "label": "Equation",
+   "text": "Equilibrium: FT = pull on one end; FT = mg."
+  },
+  {
+   "label": "Substitute",
+   "text": "FT = 640 N; FT = (25 kg)(9.8 N/kg) = 245 N = 2.5 x 10^2 N."
+  },
+  {
+   "label": "Answer",
+   "text": "Tug of war: tension = 640 N (not 1280 N). Hanging bucket: tension = 2.5 × 102 N (245 N), equal to the bucket's weight."
+  }
+ ],
+ "mq04-59": [
+  {
+   "label": "Givens",
+   "text": "Stages: (a) a = +15 m/s^2, (b) engine off, (c) constant v."
+  },
+  {
+   "label": "Equation",
+   "text": "Fnet = ma."
+  },
+  {
+   "label": "Substitute",
+   "text": "(a) Fthrust > mg; (b) Fnet = -mg; (c) Fdrag = mg, Fnet = 0 N."
+  },
+  {
+   "label": "Answer",
+   "text": "(a) thrust up (long) and weight down (shorter); (b) weight only, down; (c) drag up and weight down, equal in length."
+  }
+ ],
+ "mq04-61": [
+  {
+   "label": "Givens",
+   "text": "Payload m = 0.200 kg; a = +15 m/s^2, then -g, then 0."
+  },
+  {
+   "label": "Equation",
+   "text": "Fscale - mg = ma, so Fscale = m(g + a)."
+  },
+  {
+   "label": "Substitute",
+   "text": "(a) (0.200 kg)(9.8 + 15 m/s^2) = 4.96 N; (b) m(9.8 - 9.8) = 0 N; (c) (0.200 kg)(9.8 m/s^2) = 1.96 N."
+  },
+  {
+   "label": "Answer",
+   "text": "Newton's second law ties the net force to the acceleration: 𝐹scale −𝑚𝑔= 𝑚𝑎. While the engine fires, the net force on the payload is upward, so the scale must push up harder than the weight, and the reading is larger (4.96 N). Once the engine shuts off, the weight is the only force on the rocket and the scale, so everything accelerates together at 𝑔; the scale has nothing to push back against and reads zero (the real weight 𝑚𝑔 has not changed, but the apparent weight is zero). With the parachute open and the velocity constant, the net force is zero (𝑎= 0), so the scale reads the same as at rest."
+  }
+ ],
+ "sol04-50": [
+  {
+   "label": "Givens",
+   "text": "Ball at rest in a hand."
+  },
+  {
+   "label": "Equation",
+   "text": "Newton's third law: FA on B = -FB on A."
+  },
+  {
+   "label": "Substitute",
+   "text": "Fhand on ball (up) pairs with Fball on hand (down); FEarth on ball pairs with Fball on Earth."
+  },
+  {
+   "label": "Answer",
+   "text": "The ball feels 𝐹hand on ball (up) with partner 𝐹ball on hand (down, on the hand), and 𝐹Earth on ball (down) with partner 𝐹ball on Earth (up, on Earth). The two forces on the ball are equal in size (ball at rest) but are not an interaction pair, since they act on the same object."
+  }
+ ],
+ "sol04-59": [
+  {
+   "label": "Givens",
+   "text": "Stages: (a) engine firing, (b) engine off, (c) parachute opens at the top."
+  },
+  {
+   "label": "Equation",
+   "text": "Fnet = ma; drag depends on v."
+  },
+  {
+   "label": "Substitute",
+   "text": "(a) Fthrust > mg; (b) Fnet = -mg; (c) v = 0 m/s so Fdrag = 0 N at that instant."
+  },
+  {
+   "label": "Answer",
+   "text": "(a) thrust up (long) and weight down (shorter); (b) weight only, down; (c) weight down, and drag upward that is zero at the very top and grows as the rocket speeds up while falling."
+  }
+ ],
+ "sol04-61": [
+  {
+   "label": "Givens",
+   "text": "Rocket stages as in Problem 1."
+  },
+  {
+   "label": "Equation",
+   "text": "Fscale - mg = ma, so Fscale = m(g + a)."
+  },
+  {
+   "label": "Substitute",
+   "text": "(a) a > 0: Fscale > mg; (b) a = -g: Fscale = 0 N; (c) v = 0 m/s, drag 0 N, still a = -g."
+  },
+  {
+   "label": "Answer",
+   "text": "Newton's second law ties the net force to the acceleration: 𝐹scale −𝑚𝑔= 𝑚𝑎. While the engine fires, the net force on the person is upward, so the scale must push up harder than the weight, and the reading is larger. Once the engine shuts off, the weight is the only force on the rocket and the scale, so everything falls together with 𝑎= 𝑔; the scale has nothing to push back against and reads zero (the person's real weight 𝑚𝑔 has not changed, but the apparent weight is zero). At the instant of deployment the speed is zero, so the drag is zero and the situation is the same as in (b). Only after the rocket speeds up in its descent does drag grow and the reading rise again."
+  }
+ ],
+ "mq05-1": [
+  {
+   "label": "Givens",
+   "text": "Ice: mu_s = 0.12; sand on ice: mu_s = 0.45."
+  },
+  {
+   "label": "Equation",
+   "text": "Ff,max = mu_s FN."
+  },
+  {
+   "label": "Substitute",
+   "text": "For FN = 10 000 N: ice 1200 N; sand 4500 N."
+  },
+  {
+   "label": "Answer",
+   "text": "Sand increases the coefficient of friction between tires and ice, so the tires can supply enough friction to accelerate, stop, and steer safely."
+  }
+ ],
+ "sol05-8": [
+  {
+   "label": "Givens",
+   "text": "Vector in a coordinate system."
+  },
+  {
+   "label": "Equation",
+   "text": "Angle measured counterclockwise from the +x-axis."
+  },
+  {
+   "label": "Substitute",
+   "text": "Tail at origin; 90 degrees points along +y."
+  },
+  {
+   "label": "Answer",
+   "text": "Measure the angle counterclockwise from the positive 𝑥-axis of the chosen coordinate system, to the vector's line, with the tail at the origin."
+  }
+ ],
+ "mq05-21": [
+  {
+   "label": "Givens",
+   "text": "Speed and contact area changed."
+  },
+  {
+   "label": "Equation",
+   "text": "Ff = mu FN."
+  },
+  {
+   "label": "Substitute",
+   "text": "Neither speed (m/s) nor area (m^2) appears in Ff = mu FN."
+  },
+  {
+   "label": "Answer",
+   "text": "The materials in contact (the coefficient of friction 𝜇) and the normal force pressing the surfaces together: 𝐹𝑓= 𝜇𝐹𝑁. Speed and contact area do not matter, so the student's claim is wrong."
+  }
+ ],
+ "mq05-27": [
+  {
+   "label": "Givens",
+   "text": "Weight FN = 188 N; mu_s = 0.46."
+  },
+  {
+   "label": "Equation",
+   "text": "Fpush = mu_s FN."
+  },
+  {
+   "label": "Substitute",
+   "text": "Fpush = (0.46)(188 N) = 86 N."
+  },
+  {
+   "label": "Answer",
+   "text": "About 86 N (slightly more than this starts the crate moving) Check. A bit under half the weight, as 𝜇𝑠≈0.46 suggests."
+  }
+ ],
+ "mq05-37": [
+  {
+   "label": "Givens",
+   "text": "m = 62.0 kg; mu_s = 0.36; g = 9.80 m/s^2."
+  },
+  {
+   "label": "Equation",
+   "text": "Fmax = mu_s m g."
+  },
+  {
+   "label": "Substitute",
+   "text": "Fmax = (0.36)(62.0 kg)(9.80 m/s^2) = 219 N = 2.2 x 10^2 N."
+  },
+  {
+   "label": "Answer",
+   "text": "About 2.2 × 102 N (219 N)"
+  }
+ ],
+ "sol05-19": [
+  {
+   "label": "Givens",
+   "text": "Couch is sliding."
+  },
+  {
+   "label": "Equation",
+   "text": "Sliding surfaces: Ff = mu_k FN."
+  },
+  {
+   "label": "Substitute",
+   "text": "Relative motion present, so use mu_k, not mu_s."
+  },
+  {
+   "label": "Answer",
+   "text": "Kinetic friction. Once the couch slides, the surfaces are moving relative to each other, so kinetic friction (not static) acts."
+  }
+ ],
+ "sol05-20": [
+  {
+   "label": "Givens",
+   "text": "Friction forces."
+  },
+  {
+   "label": "Equation",
+   "text": "Ff = mu FN."
+  },
+  {
+   "label": "Substitute",
+   "text": "Depends on mu (materials) and FN (N) only."
+  },
+  {
+   "label": "Answer",
+   "text": "The materials (surface types, expressed by the coefficient of friction 𝜇) and the normal force pressing the surfaces together. Contact area and speed do not matter."
+  }
+ ],
+ "mq05-45": [
+  {
+   "label": "Givens",
+   "text": "Object slides on an incline at angle phi."
+  },
+  {
+   "label": "Equation",
+   "text": "Sum Fy = 0 perpendicular to the surface."
+  },
+  {
+   "label": "Substitute",
+   "text": "FN - mg cos(phi) = 0, so FN = mg cos(phi)."
+  },
+  {
+   "label": "Answer",
+   "text": "The object does not accelerate perpendicular to the surface, so ∑𝐹𝑦= 0 there, which gives 𝐹𝑁= 𝑚𝑔cos𝜑 directly. The normal force already lies along that axis, and only the weight has to be resolved."
+  }
+ ],
+ "mq05-59": [
+  {
+   "label": "Givens",
+   "text": "Tree-frog tread; lotus-leaf coating."
+  },
+  {
+   "label": "Equation",
+   "text": "Ff = mu FN; surface structure changes effective mu."
+  },
+  {
+   "label": "Substitute",
+   "text": "Tread raises mu on wet roads; coating lowers adhesion."
+  },
+  {
+   "label": "Answer",
+   "text": "A two-panel labeled sketch: (1) hexagonal pads with drainage channels giving more contact on a wet surface, so more friction; (2) a bumpy water-repellent surface where drops roll away, so less friction."
+  }
+ ],
+ "sol05-39": [
+  {
+   "label": "Givens",
+   "text": "Resultant R of several forces."
+  },
+  {
+   "label": "Equation",
+   "text": "E = -R, so R + E = 0."
+  },
+  {
+   "label": "Substitute",
+   "text": "If R = 50 N east, E = 50 N west."
+  },
+  {
+   "label": "Answer",
+   "text": "The equilibrant has the same magnitude as the resultant but points in the opposite direction, so the resultant plus the equilibrant equals zero."
+  }
+ ],
+ "sol05-42": [
+  {
+   "label": "Givens",
+   "text": "Object accelerating along a slope."
+  },
+  {
+   "label": "Equation",
+   "text": "Sum Fx = ma along the slope; Sum Fy = 0."
+  },
+  {
+   "label": "Substitute",
+   "text": "Only mg splits: mg sin(phi) along x, mg cos(phi) along y."
+  },
+  {
+   "label": "Answer",
+   "text": "The acceleration is along the slope, and the normal and friction forces already lie along the axes (perpendicular and parallel to the surface). Only the weight must be resolved, which makes the algebra simplest."
+  }
+ ],
+ "sol05-56": [
+  {
+   "label": "Givens",
+   "text": "Clingfish disc; shark-skin denticles."
+  },
+  {
+   "label": "Equation",
+   "text": "Ff = mu FN; surface structure changes effective mu."
+  },
+  {
+   "label": "Substitute",
+   "text": "Hairs raise contact and mu; denticles lower drag."
+  },
+  {
+   "label": "Answer",
+   "text": "A two-panel labeled sketch: (1) clingfish disc with microscopic hairs giving more contact points, so more friction; (2) shark-skin denticles guiding water flow, so less friction."
+  }
+ ],
+ "mq06-1": [
+  {
+   "label": "Givens",
+   "text": "Ball in flight after the kick."
+  },
+  {
+   "label": "Equation",
+   "text": "Fg = mg (down); air drag ignored."
+  },
+  {
+   "label": "Substitute",
+   "text": "Only Fg acts, a = 9.8 m/s^2 down."
+  },
+  {
+   "label": "Answer",
+   "text": "Once the ball leaves the foot, only gravity (a downward force, 𝐹𝑔= 𝑚𝑔) acts if air resistance is ignored. Air drag (a force from the air that opposes the motion) also acts in real life but is small enough to ignore here. The foot's force acts only during the kick."
+  }
+ ],
+ "mq06-2": [
+  {
+   "label": "Givens",
+   "text": "Projectile: constant vx, vy changes by g."
+  },
+  {
+   "label": "Equation",
+   "text": "x = vx t; y = vyi t - (1/2)g t^2."
+  },
+  {
+   "label": "Substitute",
+   "text": "Behind: only y shows; above: only x; side: both, a parabola."
+  },
+  {
+   "label": "Answer",
+   "text": "Behind: vertical up-and-down line. Above: straight line, evenly spaced dots. Side: parabola."
+  }
+ ],
+ "mq06-5": [
+  {
+   "label": "Givens",
+   "text": "Moon: g = 1.62 m/s^2; up positive."
+  },
+  {
+   "label": "Equation",
+   "text": "ay = -g at all points."
+  },
+  {
+   "label": "Substitute",
+   "text": "ay = -1.62 m/s^2 at the top, even with vy = 0 m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "𝑎𝑦= −1.62 m/s2 (1.62 m/s² downward, with up taken as positive). The acceleration is the same everywhere along the path, including the top, even though 𝑣𝑦= 0 there."
+  }
+ ],
+ "mq06-6": [
+  {
+   "label": "Givens",
+   "text": "No horizontal force after impact."
+  },
+  {
+   "label": "Equation",
+   "text": "ax = Fx / m."
+  },
+  {
+   "label": "Substitute",
+   "text": "ax = 0 N / m = 0 m/s^2, so vx is constant."
+  },
+  {
+   "label": "Answer",
+   "text": "After the club loses contact there is no horizontal force (air resistance is ignored; gravity is vertical), so by Newton's first and second laws the horizontal acceleration is zero and the horizontal velocity does not change."
+  }
+ ],
+ "mq06-7": [
+  {
+   "label": "Givens",
+   "text": "Gravity vertical; no horizontal force."
+  },
+  {
+   "label": "Equation",
+   "text": "vy changes by g each second; vx constant."
+  },
+  {
+   "label": "Substitute",
+   "text": "vy changes 9.8 m/s per s; vx changes 0 m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "Gravity pulls down, so the vertical velocity changes by 9.8 m/s every second (arrows shrink on the way up and grow on the way down). There is no horizontal force, so the horizontal arrows all stay the same length."
+  }
+ ],
+ "mq06-8": [
+  {
+   "label": "Givens",
+   "text": "Fixed launch speed, various angles."
+  },
+  {
+   "label": "Equation",
+   "text": "R = v^2 sin(2 theta)/g."
+  },
+  {
+   "label": "Substitute",
+   "text": "sin(2 x 20 degrees) = sin(2 x 70 degrees) = 0.643; max at sin(90 degrees) = 1."
+  },
+  {
+   "label": "Answer",
+   "text": "All launches trace parabolas; complementary angles give equal ranges; 45° gives the maximum range."
+  }
+ ],
+ "mq06-13": [
+  {
+   "label": "Givens",
+   "text": "At the top vy = 0 m/s; vx constant."
+  },
+  {
+   "label": "Equation",
+   "text": "speed = sqrt(vx^2 + vy^2)."
+  },
+  {
+   "label": "Substitute",
+   "text": "speed = sqrt(vx^2 + 0^2) = vx."
+  },
+  {
+   "label": "Answer",
+   "text": "At the top of its path (maximum height), where its vertical velocity is zero for an instant. There it moves only horizontally, so its speed equals its (constant) horizontal speed."
+  }
+ ],
+ "sol06-1": [
+  {
+   "label": "Givens",
+   "text": "Ball in flight after release."
+  },
+  {
+   "label": "Equation",
+   "text": "Fg = mg (down); air drag ignored."
+  },
+  {
+   "label": "Substitute",
+   "text": "Only Fg acts, a = 9.8 m/s^2 down."
+  },
+  {
+   "label": "Answer",
+   "text": "Once the ball is released, only gravity (a downward force, 𝐹𝑔= 𝑚𝑔) acts if air resistance is ignored. Air drag (a force from the air opposing the motion) also acts in real life but is small enough to ignore here."
+  }
+ ],
+ "sol06-2": [
+  {
+   "label": "Givens",
+   "text": "Projectile: constant vx, vy changes by g."
+  },
+  {
+   "label": "Equation",
+   "text": "x = vx t; y = vyi t - (1/2)g t^2."
+  },
+  {
+   "label": "Substitute",
+   "text": "Behind: only y shows; above: only x; sideline: both, a parabola."
+  },
+  {
+   "label": "Answer",
+   "text": "Behind: vertical up-and-down line. Above: straight line, evenly spaced dots. Sideline: parabola."
+  }
+ ],
+ "sol06-5": [
+  {
+   "label": "Givens",
+   "text": "Earth: g = 9.8 m/s^2; up positive."
+  },
+  {
+   "label": "Equation",
+   "text": "ay = -g."
+  },
+  {
+   "label": "Substitute",
+   "text": "ay = -9.8 m/s^2."
+  },
+  {
+   "label": "Answer",
+   "text": "𝑎𝑦= −9.8 m/s2 (9.8 m/s² downward, with up taken as positive)"
+  }
+ ],
+ "sol06-6": [
+  {
+   "label": "Givens",
+   "text": "No horizontal force after launch."
+  },
+  {
+   "label": "Equation",
+   "text": "ax = Fx / m."
+  },
+  {
+   "label": "Substitute",
+   "text": "ax = 0 N / m = 0 m/s^2, so vx is constant."
+  },
+  {
+   "label": "Answer",
+   "text": "After launch there is no horizontal force (air resistance is ignored; gravity is vertical), so by Newton's first and second laws the horizontal acceleration is zero and the horizontal velocity does not change."
+  }
+ ],
+ "sol06-7": [
+  {
+   "label": "Givens",
+   "text": "Gravity vertical; no horizontal force."
+  },
+  {
+   "label": "Equation",
+   "text": "vy changes by g each second; vx constant."
+  },
+  {
+   "label": "Substitute",
+   "text": "vy changes 9.8 m/s per s; vx changes 0 m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "Gravity pulls down, so the vertical velocity changes every second by 9.8 m/s (the vectors get longer as the object speeds up downward). There is no horizontal force, so the horizontal velocity vectors stay the same length."
+  }
+ ],
+ "sol06-8": [
+  {
+   "label": "Givens",
+   "text": "Fixed launch speed, various angles."
+  },
+  {
+   "label": "Equation",
+   "text": "R = v^2 sin(2 theta)/g."
+  },
+  {
+   "label": "Substitute",
+   "text": "sin(60 degrees) = sin(120 degrees) = 0.866; max at sin(90 degrees) = 1."
+  },
+  {
+   "label": "Answer",
+   "text": "All launches trace parabolas; complementary angles give equal ranges; 45° gives the maximum range."
+  }
+ ],
+ "sol06-13": [
+  {
+   "label": "Givens",
+   "text": "Projectile: vy decreases at 9.8 m/s per s."
+  },
+  {
+   "label": "Equation",
+   "text": "vy = vyi - g t; vy = 0 m/s at the top."
+  },
+  {
+   "label": "Substitute",
+   "text": "t_top = vyi / g; then only vx remains."
+  },
+  {
+   "label": "Answer",
+   "text": "At the top of its path (maximum height), where it moves only horizontally for an instant."
+  }
+ ],
+ "mq06-22": [
+  {
+   "label": "Givens",
+   "text": "Car on a curve."
+  },
+  {
+   "label": "Equation",
+   "text": "Fc = m v^2 / r toward the center."
+  },
+  {
+   "label": "Substitute",
+   "text": "Flat road: static friction supplies Fc (N)."
+  },
+  {
+   "label": "Answer",
+   "text": "A net force directed toward the center of the curve (the centripetal force). On a flat road it is supplied by the static friction of the road on the tires."
+  }
+ ],
+ "mq06-23": [
+  {
+   "label": "Givens",
+   "text": "Radius constant; velocity arrows get longer."
+  },
+  {
+   "label": "Equation",
+   "text": "Uniform circular motion: r and |v| both constant."
+  },
+  {
+   "label": "Substitute",
+   "text": "r same, |v| grows (m/s), so not uniform."
+  },
+  {
+   "label": "Answer",
+   "text": "The position vectors all have the same length (fixed radius), but the velocity vectors have different lengths, so the speed is changing. Uniform circular motion needs both a fixed radius and a constant speed (equal-length velocity vectors, with only their direction changing)."
+  }
+ ],
+ "mq06-25": [
+  {
+   "label": "Givens",
+   "text": "Bus turns right; passenger feels pushed left."
+  },
+  {
+   "label": "Equation",
+   "text": "Newton's first law; Fnet = m v^2 / r toward the center."
+  },
+  {
+   "label": "Substitute",
+   "text": "Window pushes inward (N); no outward agent exists."
+  },
+  {
+   "label": "Answer",
+   "text": "The only horizontal force on the passenger is the window/seat force toward the center of the turn. The \"outward push\" is the passenger's tendency to keep moving straight (Newton's first law), not a real force, since no agent exerts it."
+  }
+ ],
+ "mq06-31": [
+  {
+   "label": "Givens",
+   "text": "Plane in a horizontal circle on a line."
+  },
+  {
+   "label": "Equation",
+   "text": "ac = v^2 / r toward the center; Fnet = m ac."
+  },
+  {
+   "label": "Substitute",
+   "text": "Tension (N) in the line points inward."
+  },
+  {
+   "label": "Answer",
+   "text": "It accelerates toward the center of the circle (centripetal acceleration), and the force that causes this is the tension in the control line."
+  }
+ ],
+ "mq06-33": [
+  {
+   "label": "Givens",
+   "text": "Car rounding a bend."
+  },
+  {
+   "label": "Equation",
+   "text": "Fc = m v^2 / r; max friction = mu_s m g."
+  },
+  {
+   "label": "Substitute",
+   "text": "Slides when m v^2 / r > mu_s m g."
+  },
+  {
+   "label": "Answer",
+   "text": "Dear Editor: Your driving guide says that when a car rounds a bend, centrifugal force throws it toward the outside of the curve. This is wrong. There is no outward force acting on the car, because no object exerts one. The only horizontal force on the car is friction from the road, directed toward the center of the curve, and this net inward force (the centripetal force) causes the car's centripetal acceleration 𝑎𝑐= 𝑣2 / 𝑟. The car slides toward the outside only when the required centripetal force 𝑚𝑣2 / 𝑟 is larger than the maximum static friction 𝜇𝑠𝑚𝑔, which happens at high speed or on wet or icy pavement. The outward sensation is inertia: your body tends to continue in a straight line. Sincerely, A physics student."
+  }
+ ],
+ "sol06-22": [
+  {
+   "label": "Givens",
+   "text": "Object moving in a circle."
+  },
+  {
+   "label": "Equation",
+   "text": "Fc = m v^2 / r toward the center."
+  },
+  {
+   "label": "Substitute",
+   "text": "Supplied by tension, friction, gravity, or a normal force (N)."
+  },
+  {
+   "label": "Answer",
+   "text": "A net force directed toward the center of the circle (the centripetal force), supplied by some real agent such as a string's tension, friction, gravity, or a normal force."
+  }
+ ],
+ "sol06-23": [
+  {
+   "label": "Givens",
+   "text": "Figure 7 vectors r1, r2, v1, v2."
+  },
+  {
+   "label": "Equation",
+   "text": "Uniform circular motion: |r| and |v| constant."
+  },
+  {
+   "label": "Substitute",
+   "text": "|r1| = |r2| and |v1| = |v2|; only directions change."
+  },
+  {
+   "label": "Answer",
+   "text": "The position vectors 𝑟1 and 𝑟2 have the same length (fixed radius) and the velocity vectors 𝑣1 and 𝑣2 have the same length (constant speed); only their directions change."
+  }
+ ],
+ "sol06-25": [
+  {
+   "label": "Givens",
+   "text": "Car turns left; passenger feels pushed right."
+  },
+  {
+   "label": "Equation",
+   "text": "Newton's first law; Fnet = m v^2 / r toward the center."
+  },
+  {
+   "label": "Substitute",
+   "text": "Door pushes inward (N); no outward agent exists."
+  },
+  {
+   "label": "Answer",
+   "text": "The only horizontal force on the passenger is the door/seat force toward the center. The \"outward push\" is the passenger's tendency to keep moving straight (Newton's first law), not a real force, since no agent exerts it."
+  }
+ ],
+ "sol06-31": [
+  {
+   "label": "Givens",
+   "text": "Ball on a rope in a horizontal circle."
+  },
+  {
+   "label": "Equation",
+   "text": "ac = v^2 / r toward the center; Fnet = m ac."
+  },
+  {
+   "label": "Substitute",
+   "text": "Tension (N) in the rope points inward."
+  },
+  {
+   "label": "Answer",
+   "text": "It accelerates toward the center of the circle (centripetal acceleration), and the force that causes this is the tension in the rope."
+  }
+ ],
+ "sol06-33": [
+  {
+   "label": "Givens",
+   "text": "Car in a turn."
+  },
+  {
+   "label": "Equation",
+   "text": "Fc = m v^2 / r; max friction = mu_s m g."
+  },
+  {
+   "label": "Substitute",
+   "text": "Skids when m v^2 / r > mu_s m g."
+  },
+  {
+   "label": "Answer",
+   "text": "Dear Editor: Your article says a driver must balance the centripetal and centrifugal forces to avoid skidding. This is wrong. There is no outward \"centrifugal force\" acting on the car, because no object exerts it. In a turn, the only horizontal force on the car is friction from the road (toward the center of the curve), and that net inward force is the centripetal force; it causes the car's centripetal acceleration 𝑎𝑐= 𝑣2 / 𝑟. The car skids when the required centripetal force 𝑚𝑣2 / 𝑟 exceeds the maximum static friction 𝜇𝑠𝑚𝑔, which happens if the driver goes too fast or the road is wet or icy. The outward feeling is inertia: your body tends to continue in a straight line. Sincerely, A physics student."
+  }
+ ],
+ "mq06-39": [
+  {
+   "label": "Givens",
+   "text": "Walker 1 m/s relative to plane; plane about 250 m/s."
+  },
+  {
+   "label": "Equation",
+   "text": "v(walker/ground) = v(walker/plane) + v(plane/ground)."
+  },
+  {
+   "label": "Substitute",
+   "text": "1 m/s + 250 m/s = about 250 m/s relative to the ground."
+  },
+  {
+   "label": "Answer",
+   "text": "Yes. Positions and velocities depend on the reference frame: for example, a passenger walking at 1 m/s relative to the plane is moving at about 1 m/s relative to the cabin but at roughly 250 m/s relative to the ground. Different observers get different velocities, but the same physical laws apply."
+  }
+ ],
+ "mq06-40": [
+  {
+   "label": "Givens",
+   "text": "Two velocity arrows drawn to scale."
+  },
+  {
+   "label": "Equation",
+   "text": "Arrow length is proportional to speed."
+  },
+  {
+   "label": "Substitute",
+   "text": "Longer arrow = more m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "The lengths show the magnitudes (speeds) of the velocities: a longer arrow means a faster speed."
+  }
+ ],
+ "mq06-41": [
+  {
+   "label": "Givens",
+   "text": "Swimmer speed relative to water; stream speed."
+  },
+  {
+   "label": "Equation",
+   "text": "v(swimmer/shore) = v(swimmer/water) + v(water/shore)."
+  },
+  {
+   "label": "Substitute",
+   "text": "Opposite directions: one term negative, so magnitudes subtract."
+  },
+  {
+   "label": "Answer",
+   "text": "When the two velocities are along the same line but in opposite directions (for example, swimming upstream against the current), so one is negative and the magnitudes are subtracted. When they point the same way (swimming downstream), the magnitudes are added."
+  }
+ ],
+ "mq06-44": [
+  {
+   "label": "Givens",
+   "text": "Passenger velocity relative to train."
+  },
+  {
+   "label": "Equation",
+   "text": "vA/B = -vB/A."
+  },
+  {
+   "label": "Substitute",
+   "text": "Same magnitude (m/s), opposite direction."
+  },
+  {
+   "label": "Answer",
+   "text": "It would point in the opposite direction with the same magnitude: swapping the roles of the two frames reverses the relative velocity (𝑣A/B = −𝑣B/A)."
+  }
+ ],
+ "mq06-45": [
+  {
+   "label": "Givens",
+   "text": "Train moving at constant velocity."
+  },
+  {
+   "label": "Equation",
+   "text": "Any coordinate system can be a frame."
+  },
+  {
+   "label": "Substitute",
+   "text": "Positions in m and velocities in m/s measured from the train."
+  },
+  {
+   "label": "Answer",
+   "text": "Yes. Any coordinate system, including one fixed to a train moving at constant velocity, can be a reference frame, and you can state positions and velocities relative to the train."
+  }
+ ],
+ "mq06-46": [
+  {
+   "label": "Givens",
+   "text": "Steady wind speed w."
+  },
+  {
+   "label": "Equation",
+   "text": "v(plane/ground) = v(plane/air) + v(air/ground)."
+  },
+  {
+   "label": "Substitute",
+   "text": "Head into wind at airspeed w: (-w) + (+w) = 0 m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "The airplane must head directly into the wind with an airspeed (speed relative to the air) equal to the wind speed, so its velocity relative to the ground is zero."
+  }
+ ],
+ "mq06-47": [
+  {
+   "label": "Givens",
+   "text": "Velocities in two dimensions."
+  },
+  {
+   "label": "Equation",
+   "text": "v(a/c) = v(a/b) + v(b/c), added tip to tail."
+  },
+  {
+   "label": "Substitute",
+   "text": "Add x parts and y parts separately, in m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "Each velocity is a vector drawn tip to tail (or split into 𝑥 and 𝑦 components); adding the object's velocity relative to the moving frame to the frame's velocity relative to the ground gives the object's velocity relative to the ground."
+  }
+ ],
+ "mq06-62": [
+  {
+   "label": "Givens",
+   "text": "Water from a hose; only gravity after the nozzle."
+  },
+  {
+   "label": "Equation",
+   "text": "x = vx t; y = vyi t - (1/2)g t^2."
+  },
+  {
+   "label": "Substitute",
+   "text": "ay = -9.8 m/s^2, ax = 0 m/s^2: a parabola."
+  },
+  {
+   "label": "Answer",
+   "text": "Because gravity is the only force on the water after it leaves the nozzle, it gives each drop a constant downward acceleration of 9.8 m/s², while the horizontal velocity stays constant. Combining the two independent motions gives a parabola. Evidence: the dropped and horizontally launched objects fall together (Figure 2), the calculations for projectiles in Lesson 1 (Problems 1–11), and the softball path below. This supports the claim, so no revision is needed. (The STEM Unit Project is a separate project activity with no data given here.)"
+  }
+ ],
+ "mq06-65": [
+  {
+   "label": "Givens",
+   "text": "y = 1.0 + 0.445x - 0.00508x^2 (m); fence at x = 78.0 m."
+  },
+  {
+   "label": "Equation",
+   "text": "Substitute x into the path equation."
+  },
+  {
+   "label": "Substitute",
+   "text": "y = 1.0 + 0.445(78.0 m) - 0.00508(78.0 m)^2 = 4.8 m."
+  },
+  {
+   "label": "Answer",
+   "text": "about 4.8 m above the ground at the fence (4.83 m)"
+  }
+ ],
+ "mq06-66": [
+  {
+   "label": "Givens",
+   "text": "Height at the fence 4.83 m; fence top 6.0 m."
+  },
+  {
+   "label": "Equation",
+   "text": "Clears if y > fence height."
+  },
+  {
+   "label": "Substitute",
+   "text": "4.83 m < 6.0 m, so it does not clear."
+  },
+  {
+   "label": "Answer",
+   "text": "No, the ball does not clear the fence; it hits the fence below the top."
+  }
+ ],
+ "mq06-67": [
+  {
+   "label": "Givens",
+   "text": "y at fence = 4.83 m; fence top 6.0 m; x = 78.0 m."
+  },
+  {
+   "label": "Equation",
+   "text": "Gap = fence height - y."
+  },
+  {
+   "label": "Substitute",
+   "text": "6.0 m - 4.83 m = 1.2 m below the top."
+  },
+  {
+   "label": "Answer",
+   "text": "At the fence the ball's height is about 4.83 m, which is about 1.2 m below the 6.0-m top of the fence. Since the ball is already descending when it reaches the fence's distance (78.0 m), it strikes the fence below the top rather than going over. This ignores air resistance, which would reduce the height and range even more in a real game, so the conclusion would not change."
+  }
+ ],
+ "sol06-39": [
+  {
+   "label": "Givens",
+   "text": "At rest in a bus moving 8 m/s."
+  },
+  {
+   "label": "Equation",
+   "text": "v(you/road) = v(you/bus) + v(bus/road)."
+  },
+  {
+   "label": "Substitute",
+   "text": "0 m/s + 8 m/s = 8 m/s relative to the road."
+  },
+  {
+   "label": "Answer",
+   "text": "Yes. Positions and velocities depend on the reference frame: for example, you are at rest relative to the bus but moving at 8 m/s relative to the road. Different observers get different velocities, but the same physical laws apply."
+  }
+ ],
+ "sol06-40": [
+  {
+   "label": "Givens",
+   "text": "Velocity vectors drawn to scale."
+  },
+  {
+   "label": "Equation",
+   "text": "Arrow length is proportional to speed."
+  },
+  {
+   "label": "Substitute",
+   "text": "Longer arrow = more m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "The lengths show the magnitudes (speeds) of the velocities: a longer vector means a faster speed."
+  }
+ ],
+ "sol06-41": [
+  {
+   "label": "Givens",
+   "text": "Walking toward the rear of a forward-moving bus."
+  },
+  {
+   "label": "Equation",
+   "text": "v(you/road) = v(you/bus) + v(bus/road)."
+  },
+  {
+   "label": "Substitute",
+   "text": "v(you/bus) negative, so magnitudes subtract."
+  },
+  {
+   "label": "Answer",
+   "text": "When the two velocities are along the same line but in opposite directions (for example, walking toward the rear of a bus that moves forward), so one is negative and the magnitudes are subtracted."
+  }
+ ],
+ "sol06-44": [
+  {
+   "label": "Givens",
+   "text": "Resultant relative velocity."
+  },
+  {
+   "label": "Equation",
+   "text": "vA/B = -vB/A."
+  },
+  {
+   "label": "Substitute",
+   "text": "Same magnitude (m/s), opposite direction."
+  },
+  {
+   "label": "Answer",
+   "text": "It would point in the opposite direction with the same magnitude: swapping the roles of the two frames reverses the relative velocity (𝑣A/B = −𝑣B/A)."
+  }
+ ],
+ "sol06-45": [
+  {
+   "label": "Givens",
+   "text": "Moving car."
+  },
+  {
+   "label": "Equation",
+   "text": "Any coordinate system can be a frame."
+  },
+  {
+   "label": "Substitute",
+   "text": "Positions in m and velocities in m/s measured from the car."
+  },
+  {
+   "label": "Answer",
+   "text": "Yes. Any coordinate system, including one fixed to a moving car, can be a reference frame, and you can state positions and velocities relative to the car."
+  }
+ ],
+ "sol06-46": [
+  {
+   "label": "Givens",
+   "text": "River speed w."
+  },
+  {
+   "label": "Equation",
+   "text": "v(boat/shore) = v(boat/water) + v(water/shore)."
+  },
+  {
+   "label": "Substitute",
+   "text": "Head upstream at w: (-w) + (+w) = 0 m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "The boat must head directly upstream with a speed relative to the water equal to the river's speed, so its velocity relative to the shore is zero."
+  }
+ ],
+ "sol06-47": [
+  {
+   "label": "Givens",
+   "text": "Velocities in two dimensions."
+  },
+  {
+   "label": "Equation",
+   "text": "v(a/c) = v(a/b) + v(b/c), added tip to tail."
+  },
+  {
+   "label": "Substitute",
+   "text": "Add x parts and y parts separately, in m/s."
+  },
+  {
+   "label": "Answer",
+   "text": "Each velocity is a vector drawn tip to tail (or split into 𝑥 and 𝑦 components); adding the object's velocity relative to the moving frame to the frame's velocity relative to the ground gives the object's velocity relative to the ground."
+  }
+ ],
+ "sol06-62": [
+  {
+   "label": "Givens",
+   "text": "Basketball after release; only gravity."
+  },
+  {
+   "label": "Equation",
+   "text": "x = vx t; y = vyi t - (1/2)g t^2."
+  },
+  {
+   "label": "Substitute",
+   "text": "ay = -9.8 m/s^2, ax = 0 m/s^2: a parabola."
+  },
+  {
+   "label": "Answer",
+   "text": "Because gravity is the only force on the ball after release, it gives a constant downward acceleration of 9.8 m/s², while the horizontal velocity stays constant. Combining the two independent motions gives a parabola. Evidence: Figure 2 (dropped and thrown balls fall together), the calculations for projectiles in Lesson 1 (Problems 1–11), and the baseball path below. This supports the claim, so no revision is needed. (The STEM Unit Project is a separate project activity with no data given here.)"
+  }
+ ],
+ "sol06-65": [
+  {
+   "label": "Givens",
+   "text": "y = 1.0 + 0.488x - 0.00344x^2 (m); wall at x = 96.0 m."
+  },
+  {
+   "label": "Equation",
+   "text": "Substitute x into the path equation."
+  },
+  {
+   "label": "Substitute",
+   "text": "y = 1.0 + 0.488(96.0 m) - 0.00344(96.0 m)^2 = 16 m."
+  },
+  {
+   "label": "Answer",
+   "text": "about 16 m above the ground at the wall (16.1 m)"
+  }
+ ],
+ "sol06-66": [
+  {
+   "label": "Givens",
+   "text": "Height at the wall 16.1 m; wall top 14 m."
+  },
+  {
+   "label": "Equation",
+   "text": "Clears if y > wall height."
+  },
+  {
+   "label": "Substitute",
+   "text": "16.1 m > 14 m, so it clears."
+  },
+  {
+   "label": "Answer",
+   "text": "Yes, the hit is a home run (the ball clears the wall)."
+  }
+ ],
+ "sol06-67": [
+  {
+   "label": "Givens",
+   "text": "y at wall = 16.1 m; wall top 14 m; x = 96.0 m."
+  },
+  {
+   "label": "Equation",
+   "text": "Margin = y - wall height."
+  },
+  {
+   "label": "Substitute",
+   "text": "16.1 m - 14 m = 2.1 m above the top."
+  },
+  {
+   "label": "Answer",
+   "text": "At the wall the ball's height is about 16.1 m, which is about 2.1 m above the 14-m top of the wall. Since the ball passes the wall's distance (96.0 m) while still in the air and above 14 m, it clears the wall. This ignores air resistance, which would reduce the height and range in a real game; a margin of about 2 m is large enough that the conclusion is likely to hold for a modest air-drag effect."
+  }
+ ],
+ "mq01-4": [
+  {
+   "label": "Givens",
+   "text": "Models in a science museum."
+  },
+  {
+   "label": "Equation",
+   "text": "Model = simpler representation of something real."
+  },
+  {
+   "label": "Substitute",
+   "text": "Dinosaur replica, planetarium, DNA model, tornado simulation."
+  },
+  {
+   "label": "Answer",
+   "text": "A dinosaur skeleton replica, a planetarium projection, a DNA model, and a tornado simulation are all models."
+  }
+ ],
+ "mq01-8": [
+  {
+   "label": "Givens",
+   "text": "Hypothesis: heavier toy cars roll farther."
+  },
+  {
+   "label": "Equation",
+   "text": "Test: change only mass; measure distance."
+  },
+  {
+   "label": "Substitute",
+   "text": "Same ramp, same start; masses 50 g, 100 g, 150 g; distance in m."
+  },
+  {
+   "label": "Answer",
+   "text": "A hypothesis is a testable possible explanation for an observed problem. This one could be tested by observation, by building a model, or by a controlled experiment that changes only the car's mass."
+  }
+ ],
+ "mq01-9": [
+  {
+   "label": "Givens",
+   "text": "One of five trials discarded."
+  },
+  {
+   "label": "Equation",
+   "text": "Conclusion must use all valid data."
+  },
+  {
+   "label": "Substitute",
+   "text": "Keep 5 of 5 trials; explain any outlier."
+  },
+  {
+   "label": "Answer",
+   "text": "Bias can lead scientists to select or interpret results to match what they expected, which gives misleading conclusions. Avoiding it (keeping every trial, taking accurate notes, running enough trials, and having others review) keeps results honest and reproducible."
+  }
+ ],
+ "mq01-10": [
+  {
+   "label": "Givens",
+   "text": "Things too large, small, slow, or dangerous."
+  },
+  {
+   "label": "Equation",
+   "text": "Model = simpler stand-in for the real thing."
+  },
+  {
+   "label": "Substitute",
+   "text": "Virus (about 100 nm) modeled on a computer."
+  },
+  {
+   "label": "Answer",
+   "text": "Models represent things that are too large, too small, too slow, or too dangerous to study directly. Example: a computer model of a virus attaching to a cell lets researchers study something too small to see."
+  }
+ ],
+ "sol01-4": [
+  {
+   "label": "Givens",
+   "text": "Classroom objects."
+  },
+  {
+   "label": "Equation",
+   "text": "Model = simpler representation of something real."
+  },
+  {
+   "label": "Substitute",
+   "text": "Globe, molecule kit, wall map, graph, simulation."
+  },
+  {
+   "label": "Answer",
+   "text": "A globe, a ball-and-stick molecule kit, a wall map, a graph on the board, and a computer simulation are all models."
+  }
+ ],
+ "sol01-8": [
+  {
+   "label": "Givens",
+   "text": "A testable explanation."
+  },
+  {
+   "label": "Equation",
+   "text": "Test by observation, model, or controlled experiment."
+  },
+  {
+   "label": "Substitute",
+   "text": "Change one variable; keep a control."
+  },
+  {
+   "label": "Answer",
+   "text": "A hypothesis is a testable possible explanation for an observed problem. It can be tested by observation, by building a model, or by performing a controlled experiment."
+  }
+ ],
+ "sol01-9": [
+  {
+   "label": "Givens",
+   "text": "Expectations can affect data choice."
+  },
+  {
+   "label": "Equation",
+   "text": "Conclusion must use all valid data."
+  },
+  {
+   "label": "Substitute",
+   "text": "More trials, accurate notes, peer review."
+  },
+  {
+   "label": "Answer",
+   "text": "Bias can lead scientists to select or interpret results to fit what they expected, which gives misleading conclusions. Avoiding it (more trials, accurate notes, peer review) keeps results honest and reproducible."
+  }
+ ],
+ "sol01-10": [
+  {
+   "label": "Givens",
+   "text": "Things too large, small, slow, or dangerous."
+  },
+  {
+   "label": "Equation",
+   "text": "Model = simpler stand-in for the real thing."
+  },
+  {
+   "label": "Substitute",
+   "text": "Scale airplane in a wind tunnel."
+  },
+  {
+   "label": "Answer",
+   "text": "Models represent things that are too large, too small, too slow, or too dangerous to study directly. Example: a scale model of an airplane in a wind tunnel shows how air flows over the design before the full-size plane is built."
+  }
+ ],
+ "mq01-27": [
+  {
+   "label": "Givens",
+   "text": "Hook slides by its own thickness."
+  },
+  {
+   "label": "Equation",
+   "text": "Reading = scale value from true zero."
+  },
+  {
+   "label": "Substitute",
+   "text": "Outside: hook out by thickness; inside: hook in by thickness; zero stays true."
+  },
+  {
+   "label": "Answer",
+   "text": "The sliding hook adjusts by exactly its own thickness, so the tape reads correctly whether you pull it against an edge or push it against a wall. This keeps the zero point accurate."
+  }
+ ],
+ "sol01-27": [
+  {
+   "label": "Givens",
+   "text": "Ruler with 0 set in from the edge."
+  },
+  {
+   "label": "Equation",
+   "text": "Reading = end mark - start mark."
+  },
+  {
+   "label": "Substitute",
+   "text": "Worn edge does not shift a set-in 0 mm mark."
+  },
+  {
+   "label": "Answer",
+   "text": "Wear or damage on the edge would shift every reading, but a zero mark set in from the edge stays correct and lets you line up the start of the object clearly, so measurements are more accurate."
+  }
+ ],
+ "mq01-43": [
+  {
+   "label": "Givens",
+   "text": "Solar cell research task."
+  },
+  {
+   "label": "Equation",
+   "text": "Efficiency = electrical power out / light power in."
+  },
+  {
+   "label": "Substitute",
+   "text": "Tandem cell: two absorbers capture more of the spectrum."
+  },
+  {
+   "label": "Answer",
+   "text": "Example advance: tandem solar cells that stack two light-absorbing materials to raise efficiency. Sources and presentation are to be provided by the student."
+  }
+ ],
+ "mq01-44": [
+  {
+   "label": "Givens",
+   "text": "Physics-related career task."
+  },
+  {
+   "label": "Equation",
+   "text": "Career = field + duties + education."
+  },
+  {
+   "label": "Substitute",
+   "text": "Medical physics; radiation therapy physicist; B.S. then graduate degree."
+  },
+  {
+   "label": "Answer",
+   "text": "Field: medical physics. Career: radiation therapy physicist. Education: B.S. in physics, then a graduate degree in medical physics; skills in mathematics, measurement and calibration, and computing. The recruiting presentation is a student project."
+  }
+ ],
+ "mq01-45": [
+  {
+   "label": "Givens",
+   "text": "Claim: physics is only formulas."
+  },
+  {
+   "label": "Equation",
+   "text": "Compare claim with evidence from Lessons 1 to 4."
+  },
+  {
+   "label": "Substitute",
+   "text": "Drop-time data: t^2 = (0.203 s^2/m)h found by graphing."
+  },
+  {
+   "label": "Answer",
+   "text": "The evidence does not support the claim. Formulas are one tool, but physicists also use scientific methods and models to test ideas, careful measurements with uncertainty, and graphs of data to discover relationships. For example, graphing drop-time data showed that 𝑡2 is proportional to ℎ, a relationship found from measurements and graphs, not from memorizing a formula."
+  }
+ ],
+ "mq01-47": [
+  {
+   "label": "Givens",
+   "text": "t = 0.32, 0.45, 0.55, 0.64, 0.71, 0.78 s."
+  },
+  {
+   "label": "Equation",
+   "text": "Square each time: t^2."
+  },
+  {
+   "label": "Substitute",
+   "text": "(0.32 s)^2 = 0.102 s^2; (0.78 s)^2 = 0.608 s^2."
+  },
+  {
+   "label": "Answer",
+   "text": "𝑡2 = 0.10, 0.20, 0.30, 0.41, 0.50, 0.61 s2 (shown in the table to 3 significant figures)"
+  }
+ ],
+ "mq01-50": [
+  {
+   "label": "Givens",
+   "text": "t^2 vs h: straight line through origin."
+  },
+  {
+   "label": "Equation",
+   "text": "t^2 = k h; k = t^2 / h."
+  },
+  {
+   "label": "Substitute",
+   "text": "k = 0.608 s^2 / 3.0 m = 0.203 s^2/m."
+  },
+  {
+   "label": "Answer",
+   "text": "The straight-line graph through the origin shows 𝑡2 = (0.203 s2 / m)ℎ, so 𝑡2 is directly proportional to ℎ. The constant ratio 𝑡2 / ℎ≈0.20 s2 / m across all trials supports this."
+  }
+ ],
+ "sol01-43": [
+  {
+   "label": "Givens",
+   "text": "Prosthetics research task."
+  },
+  {
+   "label": "Equation",
+   "text": "Advance = new design + what it improves."
+  },
+  {
+   "label": "Substitute",
+   "text": "Bone-anchored limb with touch feedback."
+  },
+  {
+   "label": "Answer",
+   "text": "Example advance: a bone-anchored prosthesis with sensory feedback. Sources and presentation are to be provided by the student."
+  }
+ ],
+ "sol01-44": [
+  {
+   "label": "Givens",
+   "text": "Physics-related career task."
+  },
+  {
+   "label": "Equation",
+   "text": "Career = field + duties + education."
+  },
+  {
+   "label": "Substitute",
+   "text": "Astrophysics; observational astronomer; B.S. then Ph.D."
+  },
+  {
+   "label": "Answer",
+   "text": "Field: astrophysics. Career: observational astronomer. Education: B.S. in physics or astronomy, then a Ph.D.; skills in mathematics, computing, and data analysis. The recruiting presentation is a student project."
+  }
+ ],
+ "sol01-45": [
+  {
+   "label": "Givens",
+   "text": "Claim about tools physicists use."
+  },
+  {
+   "label": "Equation",
+   "text": "Compare claim with evidence from Lessons 1 to 4."
+  },
+  {
+   "label": "Substitute",
+   "text": "Pendulum data: T^2 = (4.0 s^2/m)L found by graphing."
+  },
+  {
+   "label": "Answer",
+   "text": "My evidence supports the claim: physicists use scientific methods and models, mathematics and SI units, careful measurements with uncertainty, and graphs of data to find relationships and make predictions. For example, graphing pendulum data showed that 𝑇2 is proportional to 𝐿, a relationship we can use to predict the period of any length."
+  }
+ ],
+ "sol01-47": [
+  {
+   "label": "Givens",
+   "text": "T = 0.53, 0.63, 0.90, 1.27, 1.49, 1.68, 1.90 s."
+  },
+  {
+   "label": "Equation",
+   "text": "Square each period: T^2."
+  },
+  {
+   "label": "Substitute",
+   "text": "(0.53 s)^2 = 0.281 s^2; (1.90 s)^2 = 3.61 s^2."
+  },
+  {
+   "label": "Answer",
+   "text": "𝑇2 = 0.28, 0.40, 0.81, 1.6, 2.2, 2.8, 3.6 s2 (shown in the table to 3 significant figures)"
+  }
+ ],
+ "sol01-50": [
+  {
+   "label": "Givens",
+   "text": "T^2 vs L: straight line through origin."
+  },
+  {
+   "label": "Equation",
+   "text": "T^2 = k L; k = T^2 / L."
+  },
+  {
+   "label": "Substitute",
+   "text": "k = 3.61 s^2 / 0.90 m = 4.0 s^2/m."
+  },
+  {
+   "label": "Answer",
+   "text": "The straight-line graph through the origin shows 𝑇2 = (4.0 s2 / m)𝐿, so 𝑇2 is directly proportional to 𝐿. The constant ratio 𝑇2 / 𝐿≈4.0 s2 / m across all trials supports this."
+  }
+ ],
+ "mq02-2": [
+  {
+   "label": "Givens",
+   "text": "Boat on a lake; dock and buoy fixed."
+  },
+  {
+   "label": "Equation",
+   "text": "Motion = change in position relative to a reference."
+  },
+  {
+   "label": "Substitute",
+   "text": "Distance to buoy changes over time (m per s)."
+  },
+  {
+   "label": "Answer",
+   "text": "You know the boat is moving when its position changes relative to a reference such as the dock, a buoy, or the shoreline, which stay in place."
+  }
+ ],
+ "mq02-3": [
+  {
+   "label": "Givens",
+   "text": "Long exposure; cyclist blurred."
+  },
+  {
+   "label": "Equation",
+   "text": "Blur = position change during the exposure."
+  },
+  {
+   "label": "Substitute",
+   "text": "Stopped cyclist: change in x = 0 m, no blur."
+  },
+  {
+   "label": "Answer",
+   "text": "The cyclist would be sharp (not blurry), just like the parked bicycles."
+  }
+ ],
+ "mq02-6": [
+  {
+   "label": "Givens",
+   "text": "Skier small compared with the slope."
+  },
+  {
+   "label": "Equation",
+   "text": "Particle model: one dot per equal time interval."
+  },
+  {
+   "label": "Substitute",
+   "text": "Dots at the hips each 1 s; compare spacing in m."
+  },
+  {
+   "label": "Answer",
+   "text": "Replace the skier with a single dot at a central point of the body (such as the hips) and plot a dot at the skier's position at equal time intervals. If the dots spread farther apart down the slope, the skier is speeding up; if they stay evenly spaced, the speed is constant."
+  }
+ ],
+ "sol02-2": [
+  {
+   "label": "Givens",
+   "text": "Runner and tree."
+  },
+  {
+   "label": "Equation",
+   "text": "Motion = change in position relative to a reference."
+  },
+  {
+   "label": "Substitute",
+   "text": "Position relative to the tree changes over time."
+  },
+  {
+   "label": "Answer",
+   "text": "You know an object is moving when its position changes relative to a reference such as the ground, tree, or camera, while the background stays put."
+  }
+ ],
+ "sol02-3": [
+  {
+   "label": "Givens",
+   "text": "Long exposure; train blurred."
+  },
+  {
+   "label": "Equation",
+   "text": "Blur = position change during the exposure."
+  },
+  {
+   "label": "Substitute",
+   "text": "Stopped train: change in x = 0 m, no blur."
+  },
+  {
+   "label": "Answer",
+   "text": "The train would be sharp (not blurry), just like the hay bales."
+  }
+ ],
+ "sol02-5": [
+  {
+   "label": "Givens",
+   "text": "Figure 3 dots at equal time intervals."
+  },
+  {
+   "label": "Equation",
+   "text": "Speed = spacing / time interval."
+  },
+  {
+   "label": "Substitute",
+   "text": "Equal spacing per equal time: constant speed."
+  },
+  {
+   "label": "Answer",
+   "text": "The dots are evenly spaced. The runner moves the same distance in each equal time interval, so her speed is constant."
+  }
+ ],
+ "sol02-6": [
+  {
+   "label": "Givens",
+   "text": "Hiker small compared with the trail."
+  },
+  {
+   "label": "Equation",
+   "text": "Particle model: one dot per equal time interval."
+  },
+  {
+   "label": "Substitute",
+   "text": "Dot at the waist each interval; compare spacing in m."
+  },
+  {
+   "label": "Answer",
+   "text": "Replace the hiker with a single dot at a central point of the body (such as the waist) and plot a dot at the hiker's position at equal time intervals. Evenly spaced dots mean constant speed."
+  }
+ ],
+ "mq02-16": [
+  {
+   "label": "Givens",
+   "text": "Flag 8 m right of origin; left is positive."
+  },
+  {
+   "label": "Equation",
+   "text": "Sign of x set by the + direction."
+  },
+  {
+   "label": "Substitute",
+   "text": "Right is negative: x = -8 m."
+  },
+  {
+   "label": "Answer",
+   "text": "−8 m (negative, since left is now the positive direction and the flag is to the right)."
+  }
+ ],
+ "mq02-24": [
+  {
+   "label": "Givens",
+   "text": "Same robot at t = 3 s; vectors point opposite ways."
+  },
+  {
+   "label": "Equation",
+   "text": "Position vector: from origin to object."
+  },
+  {
+   "label": "Substitute",
+   "text": "Origins on opposite sides of the robot give opposite arrows."
+  },
+  {
+   "label": "Answer",
+   "text": "The students chose different origins (and/or positive directions). For example, if one origin is to the left of the robot and the other is to the right, the position vectors point opposite ways, even though the robot is in the same place."
+  }
+ ],
+ "sol02-14": [
+  {
+   "label": "Givens",
+   "text": "Point 5 m left of origin; left is positive."
+  },
+  {
+   "label": "Equation",
+   "text": "Sign of x set by the + direction."
+  },
+  {
+   "label": "Substitute",
+   "text": "Left is positive: x = +5 m."
+  },
+  {
+   "label": "Answer",
+   "text": "+5 m (positive, since left is now the positive direction)."
+  }
+ ],
+ "sol02-22": [
+  {
+   "label": "Givens",
+   "text": "Same object at t = 2 s; vectors differ."
+  },
+  {
+   "label": "Equation",
+   "text": "Position vector: from origin to object."
+  },
+  {
+   "label": "Substitute",
+   "text": "Different origins or + directions give different arrows."
+  },
+  {
+   "label": "Answer",
+   "text": "The students chose different coordinate systems (different origins and/or positive directions). For example, if one origin is to the left of the object and the other to the right, the position vectors point opposite ways, even though the object is at the same place."
+  }
+ ],
+ "mq02-40": [
+  {
+   "label": "Givens",
+   "text": "xN = -40 + 4.6t; M at 0.0 m when t = 0 s."
+  },
+  {
+   "label": "Equation",
+   "text": "Substitute t = 0 s into xN."
+  },
+  {
+   "label": "Substitute",
+   "text": "xN = -40 m + (4.6 m/s)(0 s) = -40 m."
+  },
+  {
+   "label": "Answer",
+   "text": "N was at −40 m (40 m behind the origin)."
+  }
+ ],
+ "mq02-46": [
+  {
+   "label": "Givens",
+   "text": "x = (18 m/s)t; t from 0.0 s to 6.0 s."
+  },
+  {
+   "label": "Equation",
+   "text": "change in x = x(6.0) - x(0)."
+  },
+  {
+   "label": "Substitute",
+   "text": "(18 m/s)(6.0 s) - 0 m = 108 m."
+  },
+  {
+   "label": "Answer",
+   "text": "1.1 × 102 m (108 m in the positive direction)"
+  }
+ ],
+ "sol02-36": [
+  {
+   "label": "Givens",
+   "text": "Line A starts at the origin."
+  },
+  {
+   "label": "Equation",
+   "text": "Read x at t = 0 s."
+  },
+  {
+   "label": "Substitute",
+   "text": "x = 0 m."
+  },
+  {
+   "label": "Answer",
+   "text": "At the origin, 𝑥= 0 m."
+  }
+ ],
+ "sol02-37": [
+  {
+   "label": "Givens",
+   "text": "Lines cross at about 45 s; B steeper."
+  },
+  {
+   "label": "Equation",
+   "text": "Ahead = larger x at that t."
+  },
+  {
+   "label": "Substitute",
+   "text": "At 48.0 s > 45 s, xB > xA."
+  },
+  {
+   "label": "Answer",
+   "text": "Runner B"
+  }
+ ],
+ "sol02-38": [
+  {
+   "label": "Givens",
+   "text": "A at 0.0 m when t = 0 s; B's line at t = 0 s."
+  },
+  {
+   "label": "Equation",
+   "text": "Read xB at t = 0 s."
+  },
+  {
+   "label": "Substitute",
+   "text": "xB = -50 m."
+  },
+  {
+   "label": "Answer",
+   "text": "B was at about −50 m (50 m behind the origin)."
+  }
+ ],
+ "sol02-44": [
+  {
+   "label": "Givens",
+   "text": "x = (20 m/s)t; t from 0.0 s to 5.0 s."
+  },
+  {
+   "label": "Equation",
+   "text": "change in x = x(5.0) - x(0)."
+  },
+  {
+   "label": "Substitute",
+   "text": "(20 m/s)(5.0 s) - 0 m = 100 m."
+  },
+  {
+   "label": "Answer",
+   "text": "1.0 × 102 m (100 m in the positive direction)"
+  }
+ ],
+ "mq02-51": [
+  {
+   "label": "Givens",
+   "text": "Slopes 6.5 m/s and 3.5 m/s; t = 4.0 s; both from origin."
+  },
+  {
+   "label": "Equation",
+   "text": "change in x = v t."
+  },
+  {
+   "label": "Substitute",
+   "text": "(6.5 m/s)(4.0 s) - (3.5 m/s)(4.0 s) = 26 m - 14 m = 12 m."
+  },
+  {
+   "label": "Answer",
+   "text": "12 m farther"
+  }
+ ],
+ "mq02-53": [
+  {
+   "label": "Givens",
+   "text": "Line starts at 60 m; slope -8.0 m/s."
+  },
+  {
+   "label": "Equation",
+   "text": "x = xi + v t; reverse sign of v."
+  },
+  {
+   "label": "Substitute",
+   "text": "x = 60 m + (8.0 m/s)t."
+  },
+  {
+   "label": "Answer",
+   "text": "A straight line with the same steepness but sloping upward, with slope +8.0 m/s (for example 𝑥= 60 + 8.0𝑡, or starting from the origin, 𝑥= 8.0𝑡). It would be a mirror image of the original line reflected top to bottom."
+  }
+ ],
+ "mq02-65": [
+  {
+   "label": "Givens",
+   "text": "v = 47 km/h east; t = 1.8 h; starts 18 km east of A."
+  },
+  {
+   "label": "Equation",
+   "text": "x = v t + xi."
+  },
+  {
+   "label": "Substitute",
+   "text": "x = (47 km/h)(1.8 h) + 18 km = 103 km."
+  },
+  {
+   "label": "Answer",
+   "text": "1.0 × 102 km east of A (about 103 km)"
+  }
+ ],
+ "mq02-73": [
+  {
+   "label": "Givens",
+   "text": "A = -3 m, B = +5 m, C = +4 m, D = -2 m."
+  },
+  {
+   "label": "Equation",
+   "text": "Distance from origin = |x|."
+  },
+  {
+   "label": "Substitute",
+   "text": "|A| = 3 m, |D| = 2 m, so A ranks above D by distance."
+  },
+  {
+   "label": "Answer",
+   "text": "By initial position: B > C > D > A (no ties). By initial distance from the origin (the magnitude): B (5 m) > C (4 m) > A (3 m) > D (2 m). Yes, the ranking changes: A and D swap places, because A's negative position is a larger distance from the origin than D's."
+  }
+ ],
+ "sol02-51": [
+  {
+   "label": "Givens",
+   "text": "Line slope sign and line position."
+  },
+  {
+   "label": "Equation",
+   "text": "v = slope; sign of x = side of axis."
+  },
+  {
+   "label": "Substitute",
+   "text": "Slope > 0: v > 0; slope < 0: v < 0; above axis: x > 0."
+  },
+  {
+   "label": "Answer",
+   "text": "An upward slope means the position is increasing, so the object moves in the positive direction (velocity positive). A downward slope means the object moves in the negative direction (velocity negative). This holds both above and below the axis; the part of the line above the axis means a positive position and below the axis a negative position. (Example: a line below the axis that slopes up is moving toward the origin; a line above the axis that slopes down is also moving toward the origin.)"
+  }
+ ],
+ "sol02-61": [
+  {
+   "label": "Givens",
+   "text": "v = 58 km/h east; t = 1.5 h; starts 25 km east of A."
+  },
+  {
+   "label": "Equation",
+   "text": "x = v t + xi."
+  },
+  {
+   "label": "Substitute",
+   "text": "x = (58 km/h)(1.5 h) + 25 km = 112 km."
+  },
+  {
+   "label": "Answer",
+   "text": "1.1 × 102 km east of A (112 km)"
+  }
+ ],
+ "sol02-67": [
+  {
+   "label": "Givens",
+   "text": "A = +3 m, C = +2 m, B = 0 m, D = -1 m."
+  },
+  {
+   "label": "Equation",
+   "text": "Distance from origin = |x|."
+  },
+  {
+   "label": "Substitute",
+   "text": "|D| = 1 m > |B| = 0 m, so D ranks above B by distance."
+  },
+  {
+   "label": "Answer",
+   "text": "By initial position: A > C > B > D (no ties). By initial distance from the origin (the magnitude): A (3 m) > C (2 m) > D (1 m) > B (0 m). Yes, the ranking changes: D and B swap places, because D's negative position is a distance of 1 m from the origin while B is at the origin."
+  }
+ ],
+ "mq03-74": [
+  {
+   "label": "Givens",
+   "text": "Moon: g = 1.62 m/s^2; rock at its top."
+  },
+  {
+   "label": "Equation",
+   "text": "v = 0 m/s at the top; a = g throughout."
+  },
+  {
+   "label": "Substitute",
+   "text": "v = 0 m/s; a = 1.62 m/s^2 down."
+  },
+  {
+   "label": "Answer",
+   "text": "𝑣= 0 and 𝑎= 1.62 m/s2 downward."
+  }
+ ],
+ "mq03-90": [
+  {
+   "label": "Givens",
+   "text": "Coaster: sudden speed or direction changes."
+  },
+  {
+   "label": "Equation",
+   "text": "a = change in v / change in t."
+  },
+  {
+   "label": "Substitute",
+   "text": "(20 m/s - (-20 m/s))/2.5 s = 16 m/s^2, about 1.6g."
+  },
+  {
+   "label": "Answer",
+   "text": "My claim holds: sudden changes in speed or direction produce large accelerations because 𝛥𝑣 happens in a short 𝛥𝑡. The riders' bodies must change velocity along with the car, and large accelerations (more than 𝑔) strongly affect the body. The evidence from the module supports the claim; no revision is needed. (How these accelerations affect the body involves forces, covered in later modules.)"
+  }
+ ],
+ "sol03-58": [
+  {
+   "label": "Givens",
+   "text": "Ball thrown up, at its top."
+  },
+  {
+   "label": "Equation",
+   "text": "v = 0 m/s at the top; a = g throughout."
+  },
+  {
+   "label": "Substitute",
+   "text": "v = 0 m/s; a = 9.8 m/s^2 down."
+  },
+  {
+   "label": "Answer",
+   "text": "𝑣= 0 and 𝑎= 9.8 m/s2 downward."
+  }
+ ],
+ "sol03-73": [
+  {
+   "label": "Givens",
+   "text": "Jet: sudden speed or direction changes."
+  },
+  {
+   "label": "Equation",
+   "text": "a = change in v / change in t."
+  },
+  {
+   "label": "Substitute",
+   "text": "(250 m/s - (-250 m/s))/10 s = 50 m/s^2, about 5g."
+  },
+  {
+   "label": "Answer",
+   "text": "My claim holds: sudden changes in speed or direction produce large accelerations because 𝛥𝑣 happens in a short 𝛥𝑡. The pilot's body must change velocity along with the plane, and large accelerations (several times 𝑔) strongly affect the body. The evidence from the module supports the claim; no revision is needed. (How these accelerations affect the body involves forces, covered in later modules.)"
+  }
+ ],
+ "mq04-1": [
+  {
+   "label": "Givens",
+   "text": "Magnet on a nail; string on an object."
+  },
+  {
+   "label": "Equation",
+   "text": "Contact force needs touching; field force does not."
+  },
+  {
+   "label": "Substitute",
+   "text": "Magnet across a gap: field. String touching: contact."
+  },
+  {
+   "label": "Answer",
+   "text": "A magnet attracts a nail across a gap, so its pull is a field force. A string's tension is exerted by a string that touches the object, so it is a contact force. What decides it is whether the agent touches the system."
+  }
+ ],
+ "mq04-11": [
+  {
+   "label": "Givens",
+   "text": "Fixed mass; want 4a."
+  },
+  {
+   "label": "Equation",
+   "text": "a = Fnet / m."
+  },
+  {
+   "label": "Substitute",
+   "text": "4a = (4Fnet)/m."
+  },
+  {
+   "label": "Answer",
+   "text": "Increase the net force to four times its original value (mass unchanged)."
+  }
+ ],
+ "sol04-1": [
+  {
+   "label": "Givens",
+   "text": "Two kinds of forces."
+  },
+  {
+   "label": "Equation",
+   "text": "Contact force needs touching; field force does not."
+  },
+  {
+   "label": "Substitute",
+   "text": "Push, string, table: contact. Gravity: field."
+  },
+  {
+   "label": "Answer",
+   "text": "A contact force is exerted by an agent that is touching the system (a push, a pull from a string, the table's support). A field force, such as gravity, is exerted with no contact between the agent and the system."
+  }
+ ],
+ "sol04-2": [
+  {
+   "label": "Givens",
+   "text": "Net force and acceleration."
+  },
+  {
+   "label": "Equation",
+   "text": "a = Fnet / m, with m > 0."
+  },
+  {
+   "label": "Substitute",
+   "text": "Fnet down (negative) gives a down (negative)."
+  },
+  {
+   "label": "Answer",
+   "text": "The acceleration always points in the same direction as the unbalanced (net) force."
+  }
+ ],
+ "sol04-3": [
+  {
+   "label": "Givens",
+   "text": "Cart of fixed mass; pulls on both sides."
+  },
+  {
+   "label": "Equation",
+   "text": "a = Fnet / m."
+  },
+  {
+   "label": "Substitute",
+   "text": "Pulls 1.0 N vs 1.5, 2.0, 3.0 N: Fnet = 0.5, 1.0, 2.0 N; a doubles as Fnet doubles."
+  },
+  {
+   "label": "Answer",
+   "text": "𝑎= 0 when the forces are balanced; when unbalanced, 𝑎 is directly proportional to the net force and points in the direction of the larger force, no matter how large the individual forces are. Because the acceleration disappears when the imbalance is removed and returns when it is restored, the imbalance is the cause."
+  }
+ ],
+ "sol04-11": [
+  {
+   "label": "Givens",
+   "text": "Fixed mass; want a/2."
+  },
+  {
+   "label": "Equation",
+   "text": "a = Fnet / m."
+  },
+  {
+   "label": "Substitute",
+   "text": "a/2 = (Fnet/2)/m."
+  },
+  {
+   "label": "Answer",
+   "text": "Reduce the net force to one-half of its original value (mass unchanged)."
+  }
+ ],
+ "mq04-23": [
+  {
+   "label": "Givens",
+   "text": "Elevator going down; up positive."
+  },
+  {
+   "label": "Equation",
+   "text": "Fscale = m(g + a)."
+  },
+  {
+   "label": "Substitute",
+   "text": "Start: a < 0, Fscale < mg; steady: a = 0 m/s^2; stop: a > 0, Fscale > mg."
+  },
+  {
+   "label": "Answer",
+   "text": "Less than your weight while starting downward, equal to your weight at steady speed, and greater than your weight while stopping."
+  }
+ ],
+ "sol04-23": [
+  {
+   "label": "Givens",
+   "text": "Elevator going up; up positive."
+  },
+  {
+   "label": "Equation",
+   "text": "Fscale = m(g + a)."
+  },
+  {
+   "label": "Substitute",
+   "text": "Start: a > 0, Fscale > mg; steady: a = 0 m/s^2; stop: a < 0, Fscale < mg."
+  },
+  {
+   "label": "Answer",
+   "text": "Greater than your weight while starting upward, equal to your weight at constant speed, and less than your weight while stopping."
+  }
+ ],
+ "sol04-45": [
+  {
+   "label": "Givens",
+   "text": "Falling brick; no air resistance."
+  },
+  {
+   "label": "Equation",
+   "text": "Newton's third law: FEarth on brick = -Fbrick on Earth."
+  },
+  {
+   "label": "Substitute",
+   "text": "Fg on brick down; equal Fg on Earth up; Earth's a = F / (6 x 10^24 kg), negligible."
+  },
+  {
+   "label": "Answer",
+   "text": "Force on the brick: 𝐹Earth on brick (gravity), directed down. Force the brick exerts: 𝐹brick on Earth, an upward gravitational pull of equal size acting on Earth. Earth's resulting acceleration is negligible."
+  }
+ ],
+ "sol04-46": [
+  {
+   "label": "Givens",
+   "text": "Stationary suitcase on a cart; a = 0 m/s^2."
+  },
+  {
+   "label": "Equation",
+   "text": "Sum F = 0 for each system; third-law pair."
+  },
+  {
+   "label": "Substitute",
+   "text": "Ffloor on cart = FEarth on cart + Fsuitcase on cart; Fcart on suitcase = -Fsuitcase on cart."
+  },
+  {
+   "label": "Answer",
+   "text": "Two diagrams as above, with the interaction pair 𝐹cart on suitcase = −𝐹suitcase on cart connected by a dashed line. (Other pairs: 𝐹Earth on suitcase with 𝐹suitcase on Earth, and 𝐹floor on cart with 𝐹cart on floor, which act on Earth and the floor, not on these two systems.)"
+  }
+ ],
+ "sol04-60": [
+  {
+   "label": "Givens",
+   "text": "Up positive; a > 0, then a = -g, then a = -g at deployment."
+  },
+  {
+   "label": "Equation",
+   "text": "Fscale = m(g + a)."
+  },
+  {
+   "label": "Substitute",
+   "text": "(a) m(g + a) > mg; (b) m(g - g) = 0 N; (c) m(g - g) = 0 N."
+  },
+  {
+   "label": "Answer",
+   "text": "(a) greater than at rest; (b) less than at rest (about zero, apparent weightlessness); (c) less than at rest (about zero at that instant)."
+  }
+ ],
+ "mq05-0": [
+  {
+   "label": "Givens",
+   "text": "Two tugs push and pull a ship at angles."
+  },
+  {
+   "label": "Equation",
+   "text": "Fnet = vector sum of forces."
+  },
+  {
+   "label": "Substitute",
+   "text": "Sample questions about how F1 + F2 combine in direction."
+  },
+  {
+   "label": "Answer",
+   "text": "Sample questions are listed above; every question should be about forces, direction, or how the ship's motion changes."
+  }
+ ],
+ "sol05-0": [
+  {
+   "label": "Givens",
+   "text": "Space station orbiting Earth."
+  },
+  {
+   "label": "Equation",
+   "text": "Fnet = vector sum of forces."
+  },
+  {
+   "label": "Substitute",
+   "text": "Sample questions about force size and direction."
+  },
+  {
+   "label": "Answer",
+   "text": "Sample questions are listed above; every question should be about forces, direction, or how an object's motion changes."
+  }
+ ],
+ "mq05-34": [
+  {
+   "label": "Givens",
+   "text": "Puck slides on ice; tire rolls without slipping."
+  },
+  {
+   "label": "Equation",
+   "text": "Ff,static <= mu_s FN; Ff,kinetic = mu_k FN."
+  },
+  {
+   "label": "Substitute",
+   "text": "Puck: kinetic; tire contact patch at rest: static."
+  },
+  {
+   "label": "Answer",
+   "text": "The puck has kinetic friction; the rolling tire has static friction. Both are proportional to 𝐹𝑁; static friction varies up to a maximum 𝜇𝑠𝐹𝑁, kinetic friction is constant, 𝜇𝑘𝐹𝑁, and usually 𝜇𝑘< 𝜇𝑠 ."
+  }
+ ],
+ "sol05-32": [
+  {
+   "label": "Givens",
+   "text": "Static and kinetic friction."
+  },
+  {
+   "label": "Equation",
+   "text": "Ff,static <= mu_s FN; Ff,kinetic = mu_k FN."
+  },
+  {
+   "label": "Substitute",
+   "text": "Static varies 0 N up to mu_s FN; kinetic fixed at mu_k FN."
+  },
+  {
+   "label": "Answer",
+   "text": "Both are parallel to the surfaces and proportional to 𝐹𝑁 with a material-dependent coefficient. Static friction varies up to a maximum 𝜇𝑠𝐹𝑁 and acts without sliding; kinetic friction is constant, 𝜇𝑘𝐹𝑁, and acts during sliding (with 𝜇𝑘< 𝜇𝑠)."
+  }
+ ],
+ "mq05-62": [
+  {
+   "label": "Givens",
+   "text": "Incline 22 degrees, 55 m; riders 95 kg and 30 kg."
+  },
+  {
+   "label": "Equation",
+   "text": "Forces: mg down, FN perpendicular, Ff up the slope."
+  },
+  {
+   "label": "Substitute",
+   "text": "x-axis down the 22 degree slope; FN = mg cos(22 degrees)."
+  },
+  {
+   "label": "Answer",
+   "text": "Sketch as described: a 22° incline, 55 m long, with the weight, normal, and friction forces on each rider."
+  }
+ ],
+ "mq05-64": [
+  {
+   "label": "Givens",
+   "text": "d = 55 m; angle 22 degrees; mu_k = 0 or 0.15."
+  },
+  {
+   "label": "Equation",
+   "text": "a = g(sin(phi) - mu_k cos(phi)); t = sqrt(2d/a)."
+  },
+  {
+   "label": "Substitute",
+   "text": "a = 3.67 m/s^2, t = sqrt(2(55 m)/3.67 m/s^2) = 5.5 s; a = 2.31 m/s^2, t = 6.9 s."
+  },
+  {
+   "label": "Answer",
+   "text": "Because 𝑎= 𝑔(sin𝜑−𝜇𝑘cos𝜑) contains no mass, the time 𝑡= √2𝑑/ 𝑎 is the same for the adult and the child (for example, 5.5 s with no friction or 6.9 s if 𝜇𝑘= 0.15). In practice a heavier rider may differ slightly because air resistance and mat friction are not exactly proportional to mass."
+  }
+ ],
+ "sol05-60": [
+  {
+   "label": "Givens",
+   "text": "Incline 27 degrees, 70 m; riders 135 kg and 20 kg."
+  },
+  {
+   "label": "Equation",
+   "text": "Forces: mg down, FN perpendicular, Ff up the slope."
+  },
+  {
+   "label": "Substitute",
+   "text": "x-axis down the 27 degree slope; FN = mg cos(27 degrees)."
+  },
+  {
+   "label": "Answer",
+   "text": "Sketch as described: a 27° incline, 70 m long, with the weight, normal, and friction forces on each rider."
+  }
+ ],
+ "sol05-62": [
+  {
+   "label": "Givens",
+   "text": "d = 70 m; angle 27 degrees; mu_k = 0 or 0.23."
+  },
+  {
+   "label": "Equation",
+   "text": "a = g(sin(phi) - mu_k cos(phi)); t = sqrt(2d/a)."
+  },
+  {
+   "label": "Substitute",
+   "text": "a = 4.45 m/s^2, t = sqrt(2(70 m)/4.45 m/s^2) = 5.6 s; a = 2.44 m/s^2, t = 7.6 s."
+  },
+  {
+   "label": "Answer",
+   "text": "Because 𝑎= 𝑔(sin𝜑−𝜇𝑘cos𝜑) contains no mass, the time 𝑡= √2𝑑/ 𝑎 is the same for the man and the boy (for example, 5.6 s with no friction or 7.6 s if 𝜇𝑘= 0.23). In practice a heavier rider may differ slightly because air resistance and sack friction are not exactly proportional to mass."
+  }
+ ],
+ "mq06-4": [
+  {
+   "label": "Givens",
+   "text": "Both start with vy = 0 m/s; same height h."
+  },
+  {
+   "label": "Equation",
+   "text": "h = (1/2)g t^2, so t = sqrt(2h/g)."
+  },
+  {
+   "label": "Substitute",
+   "text": "Same h and g = 9.8 m/s^2 give the same t."
+  },
+  {
+   "label": "Answer",
+   "text": "Both paintballs start with zero vertical velocity, feel the same downward acceleration, and fall the same height, so they take the same time to reach the ground. Only the horizontal distance differs."
+  }
+ ],
+ "mq06-12": [
+  {
+   "label": "Givens",
+   "text": "vyi = +2.7 m/s; returns to launch height."
+  },
+  {
+   "label": "Equation",
+   "text": "vf^2 = vi^2 + 2a(change in y), change in y = 0 m."
+  },
+  {
+   "label": "Substitute",
+   "text": "vf^2 = (2.7 m/s)^2, vf = -2.7 m/s (moving down)."
+  },
+  {
+   "label": "Answer",
+   "text": "−2.7 m/s, that is, 2.7 m/s downward, when it returns to ground level."
+  }
+ ],
+ "sol06-4": [
+  {
+   "label": "Givens",
+   "text": "Both start with vy = 0 m/s."
+  },
+  {
+   "label": "Equation",
+   "text": "vy = -g t."
+  },
+  {
+   "label": "Substitute",
+   "text": "Same g = 9.8 m/s^2 and t give the same vy."
+  },
+  {
+   "label": "Answer",
+   "text": "Both objects start with zero vertical velocity and feel the same downward acceleration from gravity, so their vertical velocities are equal at every moment."
+  }
+ ],
+ "sol06-12": [
+  {
+   "label": "Givens",
+   "text": "vyi = +1.2 m/s; returns to launch height."
+  },
+  {
+   "label": "Equation",
+   "text": "vf^2 = vi^2 + 2a(change in y), change in y = 0 m."
+  },
+  {
+   "label": "Substitute",
+   "text": "vf^2 = (1.2 m/s)^2, vf = -1.2 m/s (moving down)."
+  },
+  {
+   "label": "Answer",
+   "text": "−1.2 m/s, that is, 1.2 m/s downward, when it returns to ground level."
+  }
+ ],
+ "mq06-24": [
+  {
+   "label": "Givens",
+   "text": "Sling released; tension gone."
+  },
+  {
+   "label": "Equation",
+   "text": "ax = Fx / m."
+  },
+  {
+   "label": "Substitute",
+   "text": "ax = 0 N / m = 0 m/s^2; v stays at release speed, along the tangent."
+  },
+  {
+   "label": "Answer",
+   "text": "The horizontal acceleration becomes zero, and the stone flies off in a straight line along the tangent with constant horizontal velocity equal to its speed at release (it then falls as a projectile)."
+  }
+ ],
+ "mq06-32": [
+  {
+   "label": "Givens",
+   "text": "Riders against a spinning wall."
+  },
+  {
+   "label": "Equation",
+   "text": "Fnet = m v^2 / r toward the axis."
+  },
+  {
+   "label": "Substitute",
+   "text": "Wall's normal force (N) points inward; friction balances mg."
+  },
+  {
+   "label": "Answer",
+   "text": "The force is directed inward, toward the axis of the cylinder, and is exerted by the wall pushing on the rider (normal force). Friction between the wall and the rider (upward) balances the rider's weight."
+  }
+ ],
+ "mq06-34": [
+  {
+   "label": "Givens",
+   "text": "Car curves left."
+  },
+  {
+   "label": "Equation",
+   "text": "a = v^2 / r toward the center; Fnet = m a."
+  },
+  {
+   "label": "Substitute",
+   "text": "a and Fnet point left; seat and door supply the force."
+  },
+  {
+   "label": "Answer",
+   "text": "(a) to the left (toward the center of the curve) (b) to the left (toward the center) (c) the seat (friction) and the door of the car push on you; if you are leaning against the left-hand door, the door exerts the force."
+  }
+ ],
+ "sol06-24": [
+  {
+   "label": "Givens",
+   "text": "Chain released; tension gone."
+  },
+  {
+   "label": "Equation",
+   "text": "ax = Fx / m."
+  },
+  {
+   "label": "Substitute",
+   "text": "ax = 0 N / m = 0 m/s^2; v stays at release speed, along the tangent."
+  },
+  {
+   "label": "Answer",
+   "text": "The horizontal acceleration becomes zero, and the hammer flies off in a straight line along the tangent with constant horizontal velocity equal to its speed at release (it then falls as a projectile)."
+  }
+ ],
+ "sol06-32": [
+  {
+   "label": "Givens",
+   "text": "Clothes in a spinning drum."
+  },
+  {
+   "label": "Equation",
+   "text": "Fnet = m v^2 / r toward the axis."
+  },
+  {
+   "label": "Substitute",
+   "text": "Drum wall's normal force (N) points inward; water escapes through holes."
+  },
+  {
+   "label": "Answer",
+   "text": "The force is directed inward, toward the center of the drum, and is exerted by the wall of the drum pushing on the clothes (normal force). The water goes through the holes because the wall cannot push on it."
+  }
+ ],
+ "sol06-34": [
+  {
+   "label": "Givens",
+   "text": "Car curves right."
+  },
+  {
+   "label": "Equation",
+   "text": "a = v^2 / r toward the center; Fnet = m a."
+  },
+  {
+   "label": "Substitute",
+   "text": "a and Fnet point right; seat and door supply the force."
+  },
+  {
+   "label": "Answer",
+   "text": "(a) to the right (toward the center of the curve) (b) to the right (toward the center) (c) the seat (friction) and door of the car push on you; for you leaning against the door, the door exerts the force."
+  }
+ ],
+ "sol06-38": [
+  {
+   "label": "Givens",
+   "text": "R = 6.38 x 10^6 m; T = 86 164 s; g = 9.8 m/s^2."
+  },
+  {
+   "label": "Equation",
+   "text": "ac = 4 pi^2 R / T^2; FN = mg - m ac."
+  },
+  {
+   "label": "Substitute",
+   "text": "ac = 4 pi^2 (6.38 x 10^6 m)/(86 164 s)^2 = 0.034 m/s^2, 0.34% of g."
+  },
+  {
+   "label": "Answer",
+   "text": "The agent is Earth's gravitational force (the net of gravity and the normal force from the ground or scale points toward Earth's axis). The motion slightly lowers the scale reading (your apparent weight), by about 0.3% at the equator and less at higher latitudes (none at the poles)."
+  }
+ ],
+ "mq06-43": [
+  {
+   "label": "Givens",
+   "text": "a = tick, b = cow, c = field."
+  },
+  {
+   "label": "Equation",
+   "text": "v(a/c) = v(a/b) + v(b/c)."
+  },
+  {
+   "label": "Substitute",
+   "text": "v(tick/field) = v(tick/cow) + v(cow/field)."
+  },
+  {
+   "label": "Answer",
+   "text": "𝑣tick/field = 𝑣tick/cow + 𝑣cow/field (vector sum)"
+  }
+ ],
+ "sol06-43": [
+  {
+   "label": "Givens",
+   "text": "a = flea, b = dog, c = road."
+  },
+  {
+   "label": "Equation",
+   "text": "v(a/c) = v(a/b) + v(b/c)."
+  },
+  {
+   "label": "Substitute",
+   "text": "v(flea/road) = v(flea/dog) + v(dog/road)."
+  },
+  {
+   "label": "Answer",
+   "text": "𝑣flea/road = 𝑣flea/dog + 𝑣dog/road (vector sum)"
+  }
+ ]
+}

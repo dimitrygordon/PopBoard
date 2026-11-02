@@ -1,0 +1,14 @@
+{
+  "mq06-57": [
+    {"label": "Givens", "text": "Ship: 7.2 m/s north. Ana relative to the ship: 1.4 m/s east. Find her velocity relative to the water."},
+    {"label": "Equation", "text": "𝑣 = √(𝑣<sub>ship</sub><sup>2</sup> + 𝑣<sub>Ana</sub><sup>2</sup>), 𝜃 = tan⁻¹(𝑣<sub>Ana</sub> / 𝑣<sub>ship</sub>)"},
+    {"label": "Substitute", "text": "𝑣 = √((7.2 m/s)<sup>2</sup> + (1.4 m/s)<sup>2</sup>) = 7.3 m/s\n𝜃 = tan⁻¹(1.4 / 7.2) = 11° east of north"},
+    {"label": "Answer", "text": "7.3 m/s at 11° east of north (relative to the water)"}
+  ],
+  "sol06-57": [
+    {"label": "Givens", "text": "Ferry: 3.8 m/s east. Martin relative to the ferry: 0.62 m/s north."},
+    {"label": "Equation", "text": "𝑣 = √(𝑣<sub>ferry</sub><sup>2</sup> + 𝑣<sub>Martin</sub><sup>2</sup>), 𝜃 = tan⁻¹(𝑣<sub>Martin</sub> / 𝑣<sub>ferry</sub>)"},
+    {"label": "Substitute", "text": "𝑣 = √((3.8 m/s)<sup>2</sup> + (0.62 m/s)<sup>2</sup>) = 3.9 m/s\n𝜃 = tan⁻¹(0.62 / 3.8) = 9.3° north of east"},
+    {"label": "Answer", "text": "3.9 m/s at 9.3° north of east (relative to the water)"}
+  ]
+}
