@@ -71,7 +71,7 @@ body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 au
 .ptabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 2px solid var(--ac-line); margin: 0 -4px; position: sticky; top: 0; z-index: 3; background: var(--ac-panel); padding-top: 4px; }
 .ptabs [role="tab"] { min-height: 44px; padding: 6px 12px; font: inherit; font-family: var(--ac-head-font); font-size: 17px; color: var(--ac-dim); background: transparent;
   border: 0; border-bottom: 4px solid transparent; margin-bottom: -2px; cursor: pointer; white-space: nowrap; }
-.ptabs [role="tab"][aria-selected="true"] { color: var(--ac-text); border-bottom-color: var(--mod-accent); }
+.ptabs [role="tab"][aria-selected="true"], #panel .ptabs [role="tab"][aria-selected="true"] { color: var(--ac-text); border-bottom-color: var(--mod-accent); }
 .ptabs [role="tab"]:focus-visible { outline: 2px solid var(--mod-accent); outline-offset: 2px; }
 .panel[data-tab] #readBox .panel-h:first-child { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .panel[data-tab="sq"] #readBox, .panel[data-tab="sq"] #toc, .panel[data-tab="sq"] #tools,

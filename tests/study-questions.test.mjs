@@ -67,13 +67,13 @@ test("Practice Questions pill sits just left of the module filters and opens the
   assert.equal(Object.keys(idx).length, 73);
 });
 
-test("Leo's M2 to M6 art is wired for problems that exist, and M7 to M24 art is held", () => {
+test("Leo's M2 to M9 art is wired for problems that exist, and M10 to M24 art is held", () => {
   const art = JSON.parse(read("physics101/sq/art/index.json"));
   const ids = Object.keys(art);
-  assert.equal(ids.length, 622);
+  assert.equal(ids.length, 927);
   const all = new Set(DECKS.flatMap((d) => JSON.parse(read(`physics101/sq/${d.slug}.json`)).items.map((i) => i.id)));
   for (const id of ids) {
-    assert.match(id, /^(mq|sol)0[2-6]-/);
+    assert.match(id, /^(mq|sol)0[2-9]-/);
     assert.ok(all.has(id), id);
     const svg = read(`physics101/sq/art/${id}.svg`);
     assert.match(svg, /^<svg/);
