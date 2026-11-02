@@ -30,7 +30,10 @@ export const COURSES = {
     scenes: null,
     // 2D "Test it" scenes on hand-drawn pages: <pageScenes><slug>/pNN.js, listed by story.json testIt
     pageScenes: "physics101/scenes/",
-    covers: false,
+    covers: true,
+    // Leo's cover packs: physics101/covers/covers-mNN.json, {slug: {file, title, module, data: base64 webp 960x540}}
+    // (packed so public/ stays under Cloudflare Pages' 20,000-file cap; no loose cover files)
+    coverPack: (d) => `covers/covers-m${String(d.q).padStart(2, "0")}.json`,
     group: (d) => `Module ${d.q}`,
     label: (d) => `Lesson ${d.lesson}`,
     // short header strip on library cards ("M2 \u00b7 L2") so it never wraps; covers keep the long label
