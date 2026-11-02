@@ -10,8 +10,8 @@ const lessons = readdirSync(SQ).filter((f) => f.endsWith(".json") && f !== "inde
 const items = lessons.flatMap((l) => l.items);
 const text = (h) => h.replace(/<[^>]+>/g, "").trim();
 // Source headings that are only a label (e.g. "2. Claim.", "Logarithms, #1") with no stem anywhere in the source PDFs.
-const NO_STEM_IN_SOURCE = new Set("mq01-47 sol01-47 mq02-81 sol02-75 mq06-66 sol06-66 sol09-23 sol09-30 sol10-26 sol11-49 mq13-44 sol15-1 sol17-49 sol17-50 sol21-2 sol21-40 sol23-55 sol23-56 mq23-38 sol23-37 mq23-64 sol23-62 solms-41 solms-42 solms-43 sol19-96 mq19-97 sol19-97".split(" "));
-// sol19-96, mq19-97, sol19-97: the source prints only "Challenge N." and then the solution; that prose sits behind Show answer (Dimitry, Nov 2026)
+const NO_STEM_IN_SOURCE = new Set("mq01-47 sol01-47 mq02-81 sol02-75 mq06-66 sol06-66 sol09-23 sol09-30 sol10-26 sol11-49 mq13-44 sol15-1 sol17-49 sol17-50 sol21-2 sol21-40 sol23-55 sol23-56 mq23-38 sol23-37 mq23-64 sol23-62 solms-41 solms-42 solms-43 sol19-96 mq19-97 sol19-97 mq02-31 sol02-29 mq02-32 sol02-30 mq06-65".split(" "));
+// sol19-96, mq19-97, sol19-97: the source prints only "Challenge N." and then the solution; that prose sits behind Show answer (Dimitry, Nov 2026); mq02-31, sol02-29, mq02-32, sol02-30, mq06-65: part headings whose rest is the worked solution
 const LABEL_ONLY = /^[A-Za-z &,.()\-]*\d+[a-z]?(, #\d+)?\)?[.:]?$/;
 
 test("no item has an empty prompt", () => {

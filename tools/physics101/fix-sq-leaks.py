@@ -53,7 +53,11 @@ HIDE = {
     "mq19-96": ("Challenge 1. A classmate says the bridge balances only when all four resistors are equal.", None),
     "sol19-96": ("Challenge 1.", None), "mq19-97": ("Challenge 2.", None), "sol19-97": ("Challenge 2.", None),
     "sol19-102": (None, None),  # the prompt is the title's own Figure 32 reference
-    "mq16-8": (None, None),     # mq-16.pdf p.3: "Examples:" and the angle table are the sample answer (sample values, not given data)
+    "mq16-8": (None, None),
+    # multi-part answers whose part heading runs into the worked solution (same pattern as "(1) Graphs."; found applying Tesla's mq02-32/mq06-65 rulings)
+    "mq02-31": ("(2) Time of smallest spread.", None), "sol02-29": ("(2) Time of smallest spread.", None),
+    "mq02-32": ("(3) Length of the interval.", None), "sol02-30": ("(3) Length of the interval.", None),
+    "mq06-65": (None, None),     # mq-16.pdf p.3: "Examples:" and the angle table are the sample answer (sample values, not given data)
 }
 FIXES = {k: v for k, v in json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "sq-answer-fixes.json"), encoding="utf-8")).items() if not k.startswith("_")}
 SHOW = {"What we know / need to find": "What we know", "Unknown": "What we know"}
@@ -99,6 +103,11 @@ def fix(it):
         if "steps_before_question" in fx and it["question"]:
             it["steps"] = [{"label": l, "body": [{"html": x}]} for l, x in fx["steps_before_question"]] + [{"label": fx["question_to"], "body": it["question"]}] + it["steps"]
             it["question"] = []; ch = True
+        for a, b in fx.get("replace", []):
+            for blk in it["answer"] + it.get("check", []):
+                if a in blk.get("html", ""): blk["html"] = blk["html"].replace(a, b); ch = True
+        for x in fx.get("check_add", []):
+            if {"html": x} not in it.setdefault("check", []): it["check"].append({"html": x}); ch = True
         for k in ("question", "answer", "check"):
             if k in fx and k in it and it[k] != [{"html": x} for x in fx[k]] and not (k == "question" and "steps_before_question" in fx):
                 it[k] = [{"html": x} for x in fx[k]]; ch = True

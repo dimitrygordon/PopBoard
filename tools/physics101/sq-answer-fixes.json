@@ -1,15 +1,93 @@
 {
   "_about": "Answers the extractor garbled, restored from the source PDFs' own words (only lost math symbols and spaces put back). Read by fix-sq-leaks.py (item answer/check) and wire-step-cards.py (the step card's Answer step).",
-  "mq01-33": {"src": "mq-01.pdf p.14; the PDF text layer dropped the inline math (y, v, b, c) and the spaces in the KE sentence",
-              "answer": ["One variable depends on the square of the other (𝑦 = 𝑎𝑥<sup>2</sup> + 𝑏𝑥 + 𝑐). For the cart, KE depends on 𝑣<sup>2</sup>: if the speed triples, KE increases by a factor of 3<sup>2</sup> = 9 (when 𝑏 and 𝑐 are 0), and the graph of KE versus 𝑣 is a parabola."]},
-  "mq02-14": {"src": "mq-02.pdf p.5; the source's Answer line merges the Motion Diagrams lab (rolling car) with Review the News; only the Review the News part is kept",
-              "question": [],
-              "answer": ["A sample summary: cameras track reflective dots on an athlete's joints at equal time intervals, and software turns the dot positions into a particle-style model used to compare techniques.", "The news summary should name the technology, what is measured (positions at equal times), and one use."],
-              "check": []},
-  "mq05-27": {"src": "mq-05.pdf p.12; the labels were lost, the Work equation sat in the question and the Check ran into the answer",
-              "answer": ["About 86 N (slightly more than this starts the crate moving)"],
-              "check": ["A bit under half the weight, as 𝜇<sub>𝑠</sub> ≈ 0.46 suggests."],
-              "steps_before_question": [["What we know", "𝐹<sub>𝑁</sub> = 188 N, 𝜇<sub>𝑠</sub> = 0.46. Unknown: the push needed."],
-                                        ["Physics idea", "The crate starts moving when the push just exceeds the maximum static friction, 𝜇<sub>𝑠</sub>𝐹<sub>𝑁</sub>."]],
-              "question_to": "Work"}
+  "mq01-33": {
+    "src": "mq-01.pdf p.14; the PDF text layer dropped the inline math (y, v, b, c) and the spaces in the KE sentence; wording per Tesla's ruling",
+    "answer": [
+      "One variable depends on the square of the other (𝑦 = 𝑎𝑥<sup>2</sup> + 𝑏𝑥 + 𝑐). For the cart, KE depends on the square of the speed 𝑣: if the speed triples, KE increases by a factor of 3<sup>2</sup> = 9 (when 𝑏 and 𝑐 are 0), and the graph of KE versus 𝑣 is a parabola."
+    ]
+  },
+  "mq02-14": {
+    "src": "sq-src/mq-02.txt lines 240-246 (Review the News part of Lesson 1 Investigate); question and answer per Tesla's ruling, kept as one card",
+    "question": [
+      "Search for a news story about how sports teams use motion capture and write a short summary."
+    ],
+    "answer": [
+      "Sample summary: sports teams use motion capture. Cameras track reflective dots on an athlete's joints at equal time intervals, and software turns the dot positions into a particle-style model used to compare techniques. A good summary names the technology, what is measured (positions at equal times), and one use."
+    ],
+    "check": []
+  },
+  "mq05-27": {
+    "src": "mq-05.pdf p.12; the labels were lost, the Work equation sat in the question and the Check ran into the answer",
+    "answer": [
+      "About 86 N (slightly more than this starts the crate moving)."
+    ],
+    "check": [
+      "A bit under half the weight, as 𝜇<sub>𝑠</sub> of about 0.46 suggests."
+    ],
+    "steps_before_question": [
+      [
+        "What we know",
+        "𝐹<sub>𝑁</sub> = 188 N, 𝜇<sub>𝑠</sub> = 0.46. Unknown: the push needed."
+      ],
+      [
+        "Physics idea",
+        "The crate starts moving when the push just exceeds the maximum static friction, 𝜇<sub>𝑠</sub>𝐹<sub>𝑁</sub>."
+      ]
+    ],
+    "question_to": "Work"
+  },
+  "mq05-64": {
+    "src": "Tesla notation ruling: t = the square root of (2d/a)",
+    "replace": [
+      [
+        "𝑡= √2𝑑/ 𝑎",
+        "𝑡 = √(2𝑑/𝑎)"
+      ]
+    ]
+  },
+  "sol05-62": {
+    "src": "Tesla notation ruling: t = the square root of (2d/a)",
+    "replace": [
+      [
+        "𝑡= √2𝑑/ 𝑎",
+        "𝑡 = √(2𝑑/𝑎)"
+      ]
+    ]
+  },
+  "mq01-49": {
+    "src": "Tesla notation ruling: drop the ∝ symbol",
+    "replace": [
+      [
+        "𝑡<sup>2</sup> ∝ℎ",
+        "𝑡<sup>2</sup> = 𝑘ℎ"
+      ]
+    ]
+  },
+  "sol01-49": {
+    "src": "Tesla notation ruling: drop the ∝ symbol",
+    "replace": [
+      [
+        "𝑇<sup>2</sup> ∝𝐿",
+        "𝑇<sup>2</sup> = 𝑘𝐿"
+      ]
+    ]
+  },
+  "mq01-50": {
+    "src": "Tesla notation ruling: group the square root",
+    "replace": [
+      [
+        "√0.203 × 3.0",
+        "√(0.203 × 3.0)"
+      ]
+    ]
+  },
+  "sol01-50": {
+    "src": "Tesla notation ruling: group the square root",
+    "replace": [
+      [
+        "√4.0 × 0.90",
+        "√(4.0 × 0.90)"
+      ]
+    ]
+  }
 }

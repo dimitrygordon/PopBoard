@@ -1,0 +1,8 @@
+{
+  "_about": "Tesla's science corrections to Socrates' steps (tesla-steps-check.md, 2 Nov 2026), applied by wire-step-cards.py on top of m01-m06-steps.json so they survive rebuilds. {card: {step label: replacement text}}. Answer fixes live in sq-answer-fixes.json.",
+  "mq02-32": {"Givens": "t = 0.806 h; xC = 28.875 - 4.5t (carry 28.875 km; round only at the end)."},
+  "mq06-65": {"Givens": "y = 1.0 + 0.44523x - 0.0050790x^2 (m), unrounded; fence at x = 78.0 m.",
+              "Substitute": "y = 1.0 m + (tan 24.0 degrees)(78.0 m) - (9.80 m/s^2)(78.0 m)^2 / [2(34.0 m/s)^2 (cos 24.0 degrees)^2] = 1.0 m + 34.73 m - 30.90 m = 4.83 m"},
+  "sol02-66": {"Givens": "Reading each grid square as 1 m and 1 s (Figure 25 has no scale): vA about -2.0 m/s, vB about +1.5 m/s, vC about -1.0 m/s, vD about +1.0 m/s."},
+  "sol02-67": {"Givens": "Reading each grid square as 1 m (Figure 25 has no scale): A = +3, C = +2, B = 0, D = -1 grid squares."}
+}

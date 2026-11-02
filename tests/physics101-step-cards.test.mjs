@@ -73,12 +73,13 @@ test("open-ended, CER, career and project cards keep their old display", () => {
 
 test("garbled answers use the source wording, in the card and in its Answer step", () => {
   const c = shipped();
-  assert.match(plain(c["mq01-33"].answer), /^One variable depends on the square of the other \(𝑦 = 𝑎𝑥2 \+ 𝑏𝑥 \+ 𝑐\)\. For the cart, KE depends on 𝑣2: if the speed triples, KE increases by a factor of 32 = 9/);
+  assert.match(plain(c["mq01-33"].answer), /^One variable depends on the square of the other \(𝑦 = 𝑎𝑥2 \+ 𝑏𝑥 \+ 𝑐\)\. For the cart, KE depends on the square of the speed 𝑣: if the speed triples, KE increases by a factor of 32 = 9/);
   assert.doesNotMatch(plain(c["mq01-33"].answer), /\$/);
   assert.equal(c["mq01-33"].stepCards.at(-1).html, c["mq01-33"].answer[0].html);
   assert.doesNotMatch(plain(c["mq02-14"].answer), /car/);
-  assert.deepEqual(c["mq02-14"].question, []);
-  assert.equal(plain(c["mq05-27"].answer), "About 86 N (slightly more than this starts the crate moving)");
+  assert.equal(plain(c["mq02-14"].question), "Search for a news story about how sports teams use motion capture and write a short summary.");
+  assert.match(plain(c["mq02-14"].answer), /^Sample summary: sports teams use motion capture\./);
+  assert.equal(plain(c["mq05-27"].answer), "About 86 N (slightly more than this starts the crate moving).");
   assert.match(plain(c["mq05-27"].check), /^A bit under half the weight/);
   assert.deepEqual(c["mq05-27"].steps.map((s) => s.label), ["What we know", "Physics idea", "Work"]);
 });
@@ -92,4 +93,20 @@ test("sample and solution prose sits behind Show answer", () => {
   for (const id of ["sol19-96", "mq19-97", "sol19-97", "sol19-102", "mq16-8"]) assert.deepEqual(c[id].question, [], id);
   assert.equal(c["sol11-19"].question.length, 1);
   assert.doesNotMatch(plain(c["sol11-19"].question), /278/);
+});
+
+test("Tesla's corrections ride on top of Socrates' steps", () => {
+  const c = shipped(), st = (id, l) => c[id].stepCards.find((s) => s.label === l).html;
+  assert.match(st("mq06-65", "Substitute"), /= 4\.83 m$/);
+  assert.match(st("mq06-65", "Givens"), /0\.44523x - 0\.0050790x<sup>2<\/sup>/);
+  assert.match(st("mq02-32", "Givens"), /28\.875/);
+  assert.match(st("sol02-66", "Givens"), /^Reading each grid square as 1 m and 1 s/);
+  assert.match(st("sol02-67", "Givens"), /grid squares\.$/);
+  assert.match(c["mq02-78"].stepCards.at(-1).html, /2<sup>15<\/sup> = 32 768/);
+  for (const id of ["mq06-5", "sol06-5", "mq03-74", "sol03-58", "mq01-47", "sol01-47", "mq06-33", "sol06-33", "sol01-33"]) {
+    const a = c[id].stepCards.at(-1).html; assert.match(a, /<sup>2<\/sup>/, id); assert.doesNotMatch(a, /(m\/s|𝑣|𝑡|𝑇|𝑥)2\b/, id);
+  }
+  for (const id of ["mq05-64", "sol05-62"]) assert.match(plain(c[id].answer), /𝑡 = √\(2𝑑\/𝑎\)/);
+  for (const id of ["mq01-49", "sol01-49"]) assert.doesNotMatch(plain(c[id].answer), /∝/);
+  for (const id of Object.keys(c)) for (const s of c[id].stepCards || []) assert.doesNotMatch(s.html, /\^|sqrt\(/, id);
 });
