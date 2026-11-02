@@ -1,13 +1,21 @@
 // Storybook narration player: pre-rendered audio per page (audio/<deck>/s<N>.mp3 + s<N>.json word times).
 // Hides itself when a page has no audio, so decks can ship before narration is rendered.
+// One player icon set: 24-unit box, 22px, stroke 2.6, currentColor. Play and pause are filled; skips are looping arrows (no text).
+const SVG = (body, cls) => `<svg class="narr-ico ${cls}" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+const ICON = {
+  play: SVG('<path d="M7 4.5v15l12.5-7.5z" fill="currentColor"/>', "play-ico"),
+  pause: SVG('<rect x="5.5" y="4.5" width="4.5" height="15" rx="1" fill="currentColor"/><rect x="14" y="4.5" width="4.5" height="15" rx="1" fill="currentColor"/>', "pause-ico"),
+  back: SVG('<path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 3.5v4.5H9"/>', "skip-ico"),
+  fwd: SVG('<path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 3.5v4.5H15"/>', "skip-ico"),
+};
 const fold = (s) => String(s).toLowerCase().normalize("NFD").replace(/[^a-z0-9]/g, "");
 
 const SKIP = 5; // seconds per skip back/forward
 export function createNarrator(host, base) {
   host.innerHTML = `<div class="narr sketch" role="group" aria-label="Listen to this page">
-    <button type="button" data-k="back" aria-label="Back 5 seconds">&#8634;5</button>
-    <button type="button" data-k="play" aria-label="Play narration">&#9654;</button>
-    <button type="button" data-k="fwd" aria-label="Forward 5 seconds">5&#8635;</button>
+    <button type="button" data-k="back" aria-label="Back 5 seconds">${ICON.back}</button>
+    <button type="button" data-k="play" aria-label="Play narration">${ICON.play}</button>
+    <button type="button" data-k="fwd" aria-label="Forward 5 seconds">${ICON.fwd}</button>
     <label class="narr-bar"><span class="sr-only">Narration progress</span><input type="range" data-k="seek" min="0" max="1000" value="0"></label>
     <label class="narr-rate"><span class="sr-only">Speed</span><select data-k="rate">${[0.75, 1, 1.25, 1.5, 1.75, 2].map((r) => `<option value="${r}" ${r === 1 ? "selected" : ""}>${r}x</option>`).join("")}</select></label>
   </div>`;
@@ -19,7 +27,7 @@ export function createNarrator(host, base) {
   const pagesWithAudio = async (deck) => { if (!manifest) { try { const r = await fetch(`${base}audio/manifest.json`); manifest = r.ok ? await r.json() : {}; } catch (e) { manifest = {}; } } return manifest[deck] || []; };
   let words = [], spans = [], map = [], cur = -1, token = 0, rate = 1;
   const playBtn = q("play"), seek = q("seek");
-  const setPlay = (on) => { playBtn.innerHTML = on ? "&#10074;&#10074;" : "&#9654;"; playBtn.setAttribute("aria-label", on ? "Pause narration" : "Play narration"); };
+  const setPlay = (on) => { playBtn.innerHTML = on ? ICON.pause : ICON.play; playBtn.setAttribute("aria-label", on ? "Pause narration" : "Play narration"); };
   playBtn.addEventListener("click", () => { if (audio.paused) audio.play().catch(() => {}); else audio.pause(); });
   // keyboard: with focus in the player, Left/Right skip 5s (J and L too), K or Space toggles play
   host.addEventListener("keydown", (e) => {
