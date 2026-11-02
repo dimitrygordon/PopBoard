@@ -9,18 +9,20 @@ export const catKey = (c) => (CATS.find((x) => x[0] === c) || [0, "unknown"])[1]
 export const PRESETS = [["Absolute Zero", 0], ["Water Freezes", 273], ["Room Temp", 293], ["Water Boils", 373], ["Iron Melts", 1811], ["Sun Surface", 5778]];
 export const T_MAX = 6000;
 // [key, label, unit, field, general trend caption]
-export const TRENDS = [
-  ["radius", "Atomic Radius", "pm", "radius", "General trend: decreases left to right across a period, increases down a group."],
-  ["ie1", "Ionization Energy", "kJ/mol", "ie1kj", "General trend: increases left to right across a period, decreases down a group."],
-  ["en", "Electronegativity", "", "en", "General trend: increases toward the top right (fluorine is highest); noble gases usually left out."],
-  ["ea", "Electron Affinity", "eV", "ea", "General trend: tends to increase toward the top right (halogens have very high electron affinity)."],
-  ["density", "Density", "g/cm\u00b3", "density", "General trend: highest in the middle of the transition metals of period 6 (osmium, iridium)."],
-  ["mp", "Melting Point", "K", "mp", "General trend: peaks in the middle of each period (carbon, tungsten); lowest for noble gases."],
-  ["bp", "Boiling Point", "K", "bp", "General trend: like melting point, high in the middle of the transition metals, low for gases."],
-  ["mass", "Atomic Mass", "u", "mass", "General trend: increases with atomic number."],
-  ["cov", "Covalent Radius", "pm", "cov", "General trend: decreases across a period, increases down a group."],
-  ["vdw", "Van der Waals Radius", "pm", "vdw", "General trend: decreases across a period, increases down a group."],
-  ["ip", "Ionization Potential", "eV", "ie", "General trend: same as ionization energy, shown in electronvolts per atom."]
+export const TRENDS = [ // Leo's list after Tesla rulings (A5, A9); the conductivity chip with no data stays hidden.
+  ["cov", "Covalent Radius (Cordero 2008)", "pm", "cov", "General trend: increases down a group and right to left across a period."],
+  ["radius", "Atomic Radius (empirical, Slater 1964)", "pm", "radius", "General trend: increases down a group and right to left across a period."],
+  ["ie1", "Ionization Energy", "kJ/mol", "ie1kj", "General trend: increases left to right and bottom to top, with small dips (B after Be, O after N); noble gases highest."],
+  ["en", "Electronegativity", "Pauling", "en", "General trend: increases toward fluorine at the upper right."],
+  ["ea", "Electron Affinity", "kJ/mol", "eakj", "General trend: largest for the halogens (chlorine highest); noble gases, and several metals like Be, Mg and Zn, form no stable anion."],
+  ["density", "Density", "g/cm\u00b3", "density", "General trend: peaks in the middle of period 6 (osmium, iridium)."],
+  ["mp", "Melting Point", "K", "mp", "General trend: highest for carbon and tungsten, with rhenium close behind."],
+  ["bp", "Boiling Point", "K", "bp", "General trend: peaks in the heavy transition metals."],
+  ["mass", "Atomic Mass", "u", "mass", "General trend: rises with atomic number, with a few inversions (Ar and K, Co and Ni, Te and I)."],
+  ["vdw", "Van der Waals Radius (Alvarez 2013)", "pm", "vdw", "General trend: grows down a group."],
+  ["ip", "Ionization Potential", "eV", "ie", "General trend: same pattern as ionization energy."],
+  ["sh", "Specific Heat", "J/(g\u00b7K)", "sh", "General trend: highest for the lightest elements."],
+  ["tc", "Thermal Conductivity", "W/(m\u00b7K)", "tc", "General trend: highest for silver and copper (Ag 429, Cu 401 W/(m\u00b7K))."]
 ];
 export const DECAY = [["stable", "Stable (no radioactive isotopes)"], ["alpha", "\u03b1 Alpha decay"], ["beta-", "\u03b2\u207b Beta decay"], ["ec", "EC / \u03b2\u207a Electron capture"], ["sf", "SF Spontaneous fission"], ["unknown", "Unknown"]];
 export const YEAR_MIN = 1400, YEAR_MAX = 2010;
@@ -29,17 +31,21 @@ export async function loadElements(url = new URL("./pt-elements.json", import.me
   const r = await fetch(url); if (!r.ok) throw new Error("elements " + r.status);
   return (await r.json()).elements;
 }
-// Phase at temperature T (kelvin, 1 atm). Unknown when the data has no melting point.
-// Sublimers (boiling point listed below melting point, e.g. arsenic) go straight from solid to gas.
+// Phase at temperature T (kelvin, 1 atm), per Tesla rulings: Z 100+ unknown (never made in bulk),
+// He never solidifies at 1 atm, C and As sublime (no liquid at 1 atm).
 export function stateAt(e, T) {
   const { mp, bp } = e;
+  if (e.expected) return "unknown";
+  if (e.stateRule === "no_solid_at_1atm") return T >= bp ? "gas" : "liquid";
+  if (e.sublimes != null) return T >= e.sublimes ? "gas" : "solid";
   if (mp == null && bp == null) return "unknown";
-  if (bp != null && mp != null && bp < mp) return T >= bp ? "gas" : "solid";
   if (bp != null && T >= bp) return "gas";
   if (mp == null) return "unknown";
   if (T >= mp) return bp == null ? "unknown" : "liquid";
   return "solid";
 }
+// Electron affinity with no value: two classes, never 0 (Tesla A2).
+export const eaMissing = (e) => (e.eaStatus === "no stable anion" ? "no stable anion" : "not well measured");
 export const knownBy = (e, y) => e.ancient || (e.year != null && e.year <= y);
 export function trendRange(els, field) {
   const v = els.map((e) => e[field]).filter((x) => x != null);

@@ -5,7 +5,7 @@ import { isStable, MAX_Z, MAX_N, ELEMENTS } from "./ab-model.js";
 
 export const SYMBOLS = ["n", "H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne", "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar", "K", "Ca", "Sc", "Ti"];
 // What each IAEA mode code throws out, for the label and the particle animation.
-const BETA = { "2B-": ["two beta-minus decays", 2, "beta"], "B-": ["beta-minus decay", 1, "beta"], "EC+B+": ["electron capture / beta-plus", -1, "positron"], "EC": ["electron capture", -1, "gamma"], "B+": ["beta-plus decay", -1, "positron"] };
+const BETA = { "2B-": ["two beta-minus decays", 2, "beta"], "B-": ["beta-minus decay", 1, "beta"], "EC+B+": ["electron capture / beta-plus", -1, "positron"], "EC": ["electron capture", -1, "ec"], "B+": ["beta-plus decay", -1, "positron"] };
 export function parseMode(code) {
   const m = /^(2B-|B-|EC\+B\+|EC|B\+)?(\d?)(N|P|A)?$/.exec(code || "");
   if (!m || (!m[1] && !m[3])) return null;
@@ -36,22 +36,27 @@ export function createDecay(data) {
     const d = !b ? 5 : n < b[0] ? b[0] - n : Math.max(0, n - b[1]);
     return Math.min(1, Math.max(0, 0.5 + 0.1 * d));
   }
-  // Main decay route: the biggest branch; ties go to a daughter we have data for.
-  function decayOf(p, n) {
+  // Branch choice (Tesla Q9): random, weighted by branch %. A `pick` index (Sandbox only) overrides.
+  // Modes with no measured split are listed as "branch not measured"; if none has a %, the first is used.
+  function decayOf(p, n, { pick = null, rand = Math.random } = {}) {
     if (p < 1 || isStableAny(p, n)) return null;
-    const iso = data.iso[key(p, n)];
+    const k = key(p, n), iso = data.iso[k];
     if (!iso) return { p, n, unbound: true, score: instability(p, n) };
     const ok = iso[3].filter((m) => m[2] != null && parseMode(m[0]));
     if (!ok.length) return { p, n, unbound: true, score: instability(p, n), hl: iso[2] };
-    const best = ok.slice().sort((a, b) => (b[1] || 0) - (a[1] || 0) || known(b[2], b[3] - b[2]) - known(a[2], a[3] - a[2]))[0];
-    const mode = parseMode(best[0]), dp = best[2], dn = best[3] - best[2];
-    return { p, n, mode, branch: best[1], hl: iso[2], hlRaw: iso[1], hs: iso[0], score: instability(p, n),
-      daughter: { p: dp, n: dn, symbol: SYMBOLS[dp] || "?", A: best[3], inBuilder: dp >= 1 && dp <= MAX_Z && dn >= 0 && dn <= MAX_N },
-      others: iso[3].filter((m) => m !== best).map((m) => m[0]) };
+    const branches = ok.map((m, i) => { const mo = parseMode(m[0]); if (data.labels?.[k]) mo.label = data.labels[k]; return { i, mode: mo, pct: m[1], p: m[2], n: m[3] - m[2], A: m[3] }; });
+    const weighted = branches.filter((b) => b.pct != null && b.pct > 0);
+    let best;
+    if (pick != null && branches[pick]) best = branches[pick];
+    else if (weighted.length) { const tot = weighted.reduce((t, b) => t + b.pct, 0); let r = rand() * tot; best = weighted.find((b) => (r -= b.pct) < 0) || weighted.at(-1); }
+    else best = branches[0];
+    return { p, n, mode: best.mode, branch: best.pct, branches, hl: iso[2], hlRaw: iso[1], hs: iso[0], score: instability(p, n), note: data.notes?.[k] || "",
+      daughter: { p: best.p, n: best.n, symbol: SYMBOLS[best.p] || "?", A: best.A, inBuilder: best.p >= 1 && best.p <= MAX_Z && best.n >= 0 && best.n <= MAX_N },
+      others: branches.filter((b) => b !== best).map((b) => b.mode.code) };
   }
   function chain(p, n, max = 12) {
     const out = [{ p, n }];
-    for (let i = 0; i < max; i++) { const d = decayOf(p, n); if (!d || !d.daughter) break; ({ p, n } = d.daughter); out.push({ p, n, via: d.mode.symbol }); if (p < 1) break; }
+    for (let i = 0; i < max; i++) { const d = decayOf(p, n, { rand: () => 0 }); if (!d || !d.daughter) break; ({ p, n } = d.daughter); out.push({ p, n, via: d.mode.symbol }); if (p < 1) break; }
     return out;
   }
   return { instability, decayOf, chain, isStableAny };
@@ -69,4 +74,4 @@ export function chargeBadge(p, e) {
   return { q, text: `Charge: ${q > 0 ? "+" + q : q < 0 ? "\u2212" + -q : "0"}`, kind: q === 0 ? "neutral" : q > 0 ? "ion-pos" : "ion-neg",
     ion: p >= 1 && p <= MAX_Z ? ionLabel(ELEMENTS[p][0], q) : "" };
 }
-export const meterLevel = (s) => (s === 0 ? "calm" : s < 0.5 ? "mid" : "shaky");
+export const meterLevel = (s) => (s < 0.35 ? "calm" : s < 0.7 ? "mid" : "shaky"); // Leo: calm < .35 <= mid < .7 <= shaky

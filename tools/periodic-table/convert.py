@@ -3,6 +3,12 @@ import json,sys
 src=json.load(open('/workspace/physics101/periodic-table/data/elements.json'))
 CAT={'alkali_metal':'Alkali metal','alkaline_earth_metal':'Alkaline earth metal','transition_metal':'Transition metal','post_transition_metal':'Post-transition metal','metalloid':'Metalloid','nonmetal':'Nonmetal','halogen':'Halogen','noble_gas':'Noble gas','lanthanide':'Lanthanide','actinide':'Actinide'}
 DEC={'stable':'stable','alpha':'alpha','beta_minus':'beta-','ec_beta_plus':'ec','sf':'sf'}
+# Tesla re-stamp 2026-11-02: superheavy masses from IAEA LiveChart raw/iaea_gs.csv (AME2020 systematics), Ce EA status.
+FIX_MASS={'Hs':278.15375,'Bh':278.15499,'Mt':282.16689,'Rg':286.17876}
+for e in src:
+  if e['symbol'] in FIX_MASS:
+    e['atomic_mass']=FIX_MASS[e['symbol']]; e.setdefault('labels',{})['atomic_mass']=f"mass of isotope {e['most_stable_isotope']}, estimated (AME2020 systematics)"
+  if e['symbol']=='Ce': e['electron_affinity_status']='approximate'
 out=[]
 for e in src:
   z=e['z']
@@ -16,6 +22,9 @@ for e in src:
     year=None if dy in (None,'ancient') else int(dy),ancient=dy=='ancient',summary=e['description'],decay=DEC.get(e['primary_decay_bucket'],'unknown'),nStable=e['stable_isotope_count'],
     neutrons=e['neutrons_most_stable'],mostStable=e['most_stable_isotope'],
     orbs=[dict(label=o['label'],n=o['n'],l='spdf'[o['l']],e=o['electrons'],cap=o['capacity'],status=o['status'],shapes=o['shapes']) for o in e['orbitals']],
-    iso=[dict(A=i['mass_number'],ab=i['abundance_pct'],hl='Stable' if i['is_stable'] else i['half_life'],hh=i.get('half_life_human'),dm=i['decay_mode']) for i in e['isotopes']]))
+    iso=[dict(A=i['mass_number'],ab=i['abundance_pct'],hl='Stable' if i['is_stable'] else i['half_life'],hh=i.get('half_life_human'),dm=i['decay_mode'],st=i.get('stability'),lab=i.get('label')) for i in e['isotopes']],
+    eakj=e['electron_affinity_kJmol'],eaStatus=e.get('electron_affinity_status'),sh=e['specific_heat_J_gK'],tc=e['thermal_conductivity_W_mK'],
+    sublimes=e.get('sublimes_K'),stateRule=e.get('state_rule'),phaseDisplay=e.get('phase_display'),catLabel=e.get('category_label'),configPredicted=bool(e.get('configuration_predicted')),
+    notes=e.get('notes') or {},labels=e.get('labels') or {}))
 assert len(out)==118 and len({(o['x'],o['y']) for o in out})==118
-json.dump(dict(sources={"properties":"PubChem Periodic Table (NIH/NCBI), https://pubchem.ncbi.nlm.nih.gov/rest/pug/periodictable/JSON","radii_descriptions":"mendeleev Python package (MIT), https://github.com/lmmentel/mendeleev","isotopes":"IAEA Nuclear Data Section LiveChart ground states, https://www-nds.iaea.org/relnsd/v1/data?fields=ground_states&nuclides=all","built_by":"Leo, data/elements.json (Nov 2, 2026), converted by tools/periodic-table/convert.py"},elements=out),open(sys.argv[1],'w'),separators=(',',':'))
+json.dump(dict(sources={"properties":"PubChem Periodic Table (NIH/NCBI), https://pubchem.ncbi.nlm.nih.gov/rest/pug/periodictable/JSON","radii_descriptions":"mendeleev Python package (MIT), https://github.com/lmmentel/mendeleev","isotopes":"IAEA Nuclear Data Section LiveChart ground states, https://www-nds.iaea.org/relnsd/v1/data?fields=ground_states&nuclides=all","rulings":"Tesla rulings applied by Leo (tesla-rulings-applied.md, Nov 2, 2026)","built_by":"Leo, data/elements.json (Nov 2, 2026), converted by tools/periodic-table/convert.py"},elements=out),open(sys.argv[1],'w'),separators=(',',':'))

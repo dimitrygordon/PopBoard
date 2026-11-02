@@ -29,3 +29,8 @@ Study library module: `public/study-periodic-table-studio.html`. Atom Builder li
 ## Atom Builder living atom
 - ab-decay.json: Leo's atom-builder/data/decay.json (IAEA LiveChart ground states, ENSDF/NUBASE2020) for Z 1 to 22 plus the U-238, Th-232 and U-235 chains, built by tools/periodic-table/convert_ab_decay.py.
 - Stability is still ab-model.js isStable (Tesla-cleared lists). Decay runs only when the student presses Allow decay; electrons are kept, so the charge badge shows the ion left behind.
+
+## Tesla re-stamp (2026-11-02)
+- Studio: Hs/Bh/Mt/Rg AME2020 systematics masses (estimated label), Ce EA approximate (~). Bk-248 stays radioactive.
+- Atom Builder: Be-6 single 2p breakup to He-4; Ca-48 2B- to Ti-48, no branch %, 6.4e19 y NEMO-3 default; U-238 chain via Pa-234m; branches under 0.01% hidden in display; "branch not measured"; unbound label; charge carries forward with caption; Be-8 label; K-40 random by % with both routes listed. Sandbox branch choice built but off (BRANCH_CHOICE) until Dimitry decides.
+- Leo pack: full reskin (colored pencil, both themes), ion stubs Z<=20, SVG particles, dashed empty electron slots, meter .35/.7, Step back.

@@ -28,12 +28,17 @@ const canvas = $("scene");
 const imgs = await loadArt();
 const DECAY_DATA = await fetch(new URL("./ab-decay.json", import.meta.url)).then((r) => r.json());
 const decay = createDecay(DECAY_DATA);
+const SKIN = await fetch(new URL("./ab-skin-assets.json", import.meta.url)).then((r) => r.json()).catch(() => ({ svg: { light: {}, dark: {} } }));
+const skinSvg = (id) => SKIN.svg[root.getAttribute("data-theme") === "light" ? "light" : "dark"][id] || "";
+// Ion presets inside the builder's range (Z <= 20), most abundant stable isotope. Leo's stubs.
+const IONS = [["na-p1", 11, 10], ["k-p1", 19, 18], ["mg-p2", 12, 10], ["ca-p2", 20, 18], ["al-p3", 13, 10], ["f-m1", 9, 10], ["cl-m1", 17, 18], ["o-m2", 8, 10], ["s-m2", 16, 18]];
 const locCells = [];
-let shudder = 0, decayChain = [], decayBusy = false, chainStart = null;
+const BRANCH_CHOICE = false; // Sandbox "I pick" option (Tesla Q9 allows it, labeled). Off until Dimitry decides.
+let branchPick = null, shudder = 0, decayChain = [], decayBusy = false, chainStart = null;
 const scene = createScene(canvas, imgs);
 function palette() {
   const light = root.getAttribute("data-theme") === "light";
-  return light ? { charge: "#1a2028", dim: "#4c5864", border: "#9aa4ab", cloud: 1 } : { charge: "#121820", dim: "#a7b4be", border: "#3a4a58", cloud: 0.9 };
+  return light ? { charge: "#1F2F5C", dim: "#4A5577", border: "#1F2F5C", slot: "#4A5577", cloud: 1 } : { charge: "#1F1D1A", dim: "#B9B1A0", border: "#4A453C", slot: "#B9B1A0", cloud: 0.9 };
 }
 function syncTheme() {
   const light = root.getAttribute("data-theme") === "light";
@@ -176,7 +181,7 @@ function renderMode(soft) {
       el("div", { className: "row" }, btn("Previous", () => { targetIdx = Math.max(0, targetIdx - 1); renderMode(); }), btn("Clear atom", clearAll), btn(ok ? "Next target" : "Skip", () => { targetIdx = (targetIdx + 1) % TARGETS.length; renderMode(); }, ok ? "primary" : "")));
   } else if (mode === "sandbox") {
     const sh = btn("Share my atom", async () => { const r = await shareLink(encodeState(sanitizeState(counts(), SHARE_SCHEMA))); sh.textContent = r.copied ? "Link copied" : "Link in address bar"; setTimeout(() => { sh.textContent = "Share my atom"; }, 1600); });
-    body.append(el("p", { className: "dim", textContent: "Drag particles on and off the atom, or use the buttons." }), ...steppers(), predictRow(), decayBox(), el("div", { className: "row" }, btn("Clear atom", clearAll), sh), chainsBox());
+    body.append(el("p", { className: "dim", textContent: "Drag particles on and off the atom, or use the buttons." }), ...steppers(), ionsRow(), predictRow(), decayBox(), el("div", { className: "row" }, btn("Clear atom", clearAll), sh), chainsBox());
   } else {
     const n = Object.keys(table).length, iso = Object.values(table).reduce((s, l) => s + l.length, 0);
     body.append(el("p", { textContent: `${n} of ${MAX_Z} elements collected, ${iso} stable isotopes.` }), periodicTable(),
@@ -247,7 +252,7 @@ function frame(now) {
     if (e.fade) { const k = (now - e.fade) / 300; if (k < 0.5) e.alpha = 1 - 2 * k; else { if (!e.moved) { const j = Math.random() * SHELLS[e.shell]; e.spot = electronSpot(e.shell, j, SHELLS[e.shell]); e.x = e.spot.x; e.y = e.spot.y; e.moved = true; } e.alpha = Math.min(1, 2 * k - 1); if (k >= 1) { e.fade = 0; e.moved = false; e.alpha = 1; } } }
     else if (reduced()) { e.x = e.spot.x; e.y = e.spot.y; } else { const sx = springStep({ x: e.x, v: e.vx }, e.spot.x, real, opt), sy = springStep({ x: e.y, v: e.vy }, e.spot.y, real, opt); e.x = sx.x; e.vx = sx.v; e.y = sy.x; e.vy = sy.v; }
   }
-  const geo = scene.draw({ nucleons: nuc, nS: nS(), electrons: els, shells: shellCounts(els.length), held }, now);
+  const geo = scene.draw({ nucleons: nuc, nS: nS(), electrons: els, shells: shellCounts(els.length), slots: shellCounts(Math.max(nuc.filter((t) => t.kind === "proton").length, els.length)).map((k, i) => k - shellCounts(els.length)[i]), held }, now);
   // Live captions, each 12px below its art.
   place($("scaleCap"), geo.cx, geo.artBottom + CAPTION_GAP);
   for (const t of geo.trays) place($("cap-" + t.kind), t.x + t.w / 2, t.y + t.h + CAPTION_GAP);
@@ -258,7 +263,7 @@ const share = sanitizeState(decodeState(location.hash), SHARE_SCHEMA);
 renderMode();
 if (Object.keys(share).length) { setMode("sandbox"); setAtom(share); } else changed(false);
 requestAnimationFrame(frame);
-window.__ab = { allowDecay, decay, get chain() { return decayChain.map((x) => SYMBOLS[x.p] + "-" + (x.p + x.n)); }, counts, setAtom, setTarget(i) { targetIdx = i; renderMode(); }, get target() { return TARGETS[targetIdx].id; }, add, remove, setMode, get geo() { return scene.geo; }, get table() { return table; }, CAPTION_GAP, get mode() { return mode; } };
+window.__ab = { allowDecay, stepBack, decay, get chain() { return decayChain.map((x) => SYMBOLS[x.p] + "-" + (x.p + x.n)); }, counts, setAtom, setTarget(i) { targetIdx = i; renderMode(); }, get target() { return TARGETS[targetIdx].id; }, add, remove, setMode, get geo() { return scene.geo; }, get table() { return table; }, CAPTION_GAP, get mode() { return mode; } };
 // Re-fit the stage whenever the readout or the sheet changes height.
 if (typeof ResizeObserver === "function") { const ro = new ResizeObserver(() => requestFit()); ro.observe($("status")); ro.observe($("controls")); }
 $("ptLink").href = "study-periodic-table-studio.html" + location.search; // keep the study query (board return)
@@ -270,56 +275,76 @@ function buildLocator() { const loc = $("abLocator");
   loc.append(el("span", { className: "shrug", hidden: true, textContent: "\u00af\\_(\u30c4)_/\u00af not on this table yet" })); }
 function living(a) {
   if (!locCells.length) buildLocator();
-  if (!decayBusy) { decayChain = []; chainStart = null; }
+  if (!decayBusy) { decayChain = []; chainStart = null; branchPick = null; }
   const b = chargeBadge(a.p, a.e);
   $("abCharge").textContent = b.ion ? `${b.text} (${b.ion})` : b.text; $("abCharge").dataset.kind = b.kind; $("abCharge").hidden = !a.p && !a.e;
   $("abMass").textContent = `A = ${a.p + a.n}`; $("abMass").hidden = !a.p && !a.n;
   const sc = a.p ? decay.instability(a.p, a.n) : 0, m = $("abMeter");
   root.style.setProperty("--ab-instability", sc.toFixed(2)); m.hidden = !a.p; m.dataset.level = meterLevel(sc); m.setAttribute("aria-valuenow", String(Math.round(sc * 100)));
-  $("abMeterLabel").textContent = !a.p ? "" : sc === 0 ? "Stable: calm" : sc < 0.5 ? "Unstable (slow)" : "Very unstable";
+  $("abMeterLabel").textContent = !a.p ? "" : sc === 0 ? "Stable: calm" : { calm: "Unstable, but very slow", mid: "Unstable", shaky: "Very unstable" }[meterLevel(sc)];
   for (let z = 1; z <= MAX_Z; z++) locCells[z].classList.toggle("on", z === a.p);
   $("abLocator").querySelector(".shrug").hidden = a.p >= 1;
 }
 function hlFmt(d) { if (!/e[+-]/.test(d.hl || "")) return d.hl; const U = { Y: "years", D: "days", H: "hours", M: "minutes", S: "s", MS: "ms" }; const m = /^([\d.E+-]+) (\w+)$/.exec(d.hlRaw || ""); return m ? `${Number(m[1]).toLocaleString("en-US", { maximumSignificantDigits: 4 })} ${U[m[2]] || m[2]}` : d.hl; }
-function hlText(d) { return d.hl ? `Half-life ${hlFmt(d)}: in a large sample, half the nuclei decay in that time. One atom could go any moment.` : "Half-life not measured: it falls apart almost at once."; }
+function hlText(d) { return d.hl ? `Half-life ${hlFmt(d)}: in a large sample, half the nuclei decay in that time. One atom could go any moment.` : "Half-life not measured: not a bound nucleus, falls apart almost instantly."; }
 function decayBox() {
   const a = counts(), box = el("div", { className: "decay-box" });
   if (chainStart) {
     const strip = el("div", { className: "decay-chain", ariaLabel: "Decay chain" });
     decayChain.forEach((x, i) => { if (i) strip.append(el("i", { textContent: `\u2192 ${x.via} \u2192` })); strip.append(el("b", { className: i === decayChain.length - 1 ? "now" : "", textContent: `${SYMBOLS[x.p] || "?"}-${x.p + x.n}` })); });
-    box.append(strip, el("div", { className: "row" }, btn("Replay", () => { const s = chainStart; decayBusy = false; setAtom(s); allowDecay(); }, "", "Replay the first decay")));
+    box.append(strip, el("div", { className: "row" }, btn("Step back", stepBack, "", "Undo the last decay"), btn("Replay", () => { const s = chainStart; decayBusy = false; setAtom(s); allowDecay(); }, "", "Replay the first decay")));
     if (decayChain.at(-1).note) box.append(el("p", { className: "dim", textContent: decayChain.at(-1).note }));
   }
   if (a.p < 1 || isStable(a)) return box;
-  const d = decay.decayOf(a.p, a.n);
-  if (!d || d.unbound || !d.daughter) { box.append(el("p", { className: "dim", textContent: "No measured decay for this nucleus: it is unbound and falls apart almost at once." })); return box; }
+  const d = decay.decayOf(a.p, a.n, { rand: () => 0 });
+  if (!d || d.unbound || !d.daughter) { box.append(el("p", { className: "dim", textContent: "Not a bound nucleus: falls apart almost instantly." })); return box; }
   box.prepend(el("p", { className: "dim", textContent: "Predict what it decays into before you press play." }),
-    btn(`Allow decay (${d.mode.symbol})`, allowDecay, "decay-go", `Allow decay: ${d.mode.label}`),
-    el("p", { className: "dim", textContent: hlText(d) }));
+    btn(d.branches.length > 1 ? "Allow decay" : `Allow decay (${d.mode.symbol})`, allowDecay, "decay-go", d.branches.length > 1 ? "Allow decay: nature picks the route at random" : `Allow decay: ${d.mode.label}`),
+    el("p", { className: "dim", textContent: hlText(d) }), ...(d.note ? [el("p", { className: "dim", textContent: d.note })] : []));
+  // Every route shown before the press (Tesla Q9). Nature picks at random by %; Sandbox may pick one.
+  const fmtB = (b) => `${b.mode.label} to ${SYMBOLS[b.p] || "?"}-${b.A}${b.pct != null ? ` (${b.pct}%)` : branchesNote(d)}`;
+  if (d.branches.length > 1) {
+    const list = el("ul", { className: "ab-branches" }, ...d.branches.map((b) => el("li", { textContent: fmtB(b) })));
+    box.append(el("p", { className: "dim", textContent: "Possible decays. Which one a single nucleus takes is random, weighted by these chances." }), list);
+    if (BRANCH_CHOICE && mode === "sandbox") { const sel = el("select", { className: "ab-pick", ariaLabel: "Which decay" }, el("option", { value: "", textContent: "Let nature pick (random)" }), ...d.branches.map((b, i) => el("option", { value: String(i), textContent: "I pick: " + fmtB(b) })));
+      sel.value = branchPick == null ? "" : String(branchPick); sel.onchange = () => { branchPick = sel.value === "" ? null : +sel.value; renderMode(true); };
+      box.append(sel); if (branchPick != null) box.append(el("p", { className: "dim", textContent: "You picked it; nature picks randomly." })); }
+  } else if (d.branch == null) box.append(el("p", { className: "dim", textContent: `${fmtB(d.branches[0])}` }));
   return box;
 }
+function ionsRow() {
+  return el("div", { className: "ab-ions", ariaLabel: "Common ions" }, ...IONS.map(([id, p, e]) => { const b = btn("", () => setAtom({ p, n: ELEMENTS[p][2][0], e }), "", `${ELEMENTS[p][1]} ion, ${chargeBadge(p, e).text}`); b.innerHTML = skinSvg("ab-stub-" + id); b.dataset.ion = id; return b; }));
+}
+function branchesNote() { return " (branch not measured)"; }
 function chainsBox() {
   const det = el("details", { className: "chains" }, el("summary", { textContent: "Natural decay chains (U-238, Th-232, U-235)" }));
   for (const [k, list] of Object.entries(DECAY_DATA.chains)) {
     const nA = list.filter((x) => x[3] === "A").length, nB = list.filter((x) => x[3] === "B-").length;
     const strip = el("div", { className: "decay-chain" });
-    list.forEach((x, i) => { if (i) strip.append(el("i", { textContent: list[i - 1][3] === "A" ? "\u03b1" : "\u03b2\u207b" })); const b = el("b", { textContent: x[2] }); b.title = x[4] ? `half-life ${x[4]}${x[6].length ? "; branches " + x[6].map((y) => `${y[0]} ${y[1]}%`).join(", ") : ""}` : "stable"; strip.append(b); });
+    list.forEach((x, i) => { if (i) strip.append(el("i", { textContent: list[i - 1][3] === "A" ? "\u03b1" : "\u03b2\u207b" })); const b = el("b", { textContent: x[2] }); b.title = x[4] ? `half-life ${x[4]}${x[6].filter((y) => y[1] >= 0.01).length > 1 ? "; branches " + x[6].filter((y) => y[1] >= 0.01).map((y) => `${y[0]} ${y[1]}%`).join(", ") : ""}` : "stable"; strip.append(b); });
     det.append(el("p", { textContent: `${k} to ${list.at(-1)[2]}: ${nA} alpha, ${nB} beta-minus.` }), strip);
   }
   det.append(el("p", { className: "dim", textContent: `Main branch shown; hover a step for its half-life and side branches. Data: ${DECAY_DATA.source}, accessed ${DECAY_DATA.accessed}.` }));
   return det;
 }
+function stepBack() {
+  if (decayChain.length < 2 || decayBusy) return false;
+  decayChain.pop(); const prev = decayChain.at(-1);
+  decayBusy = true; setAtom({ p: prev.p, n: prev.n, e: prev.e ?? counts().e }); decayBusy = false;
+  if (decayChain.length < 2) { decayChain = []; chainStart = null; }
+  renderMode(true); return true;
+}
 function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
 async function allowDecay() {
-  const a = counts(), d = a.p >= 1 && decay.decayOf(a.p, a.n);
+  const a = counts(), d = a.p >= 1 && decay.decayOf(a.p, a.n, { pick: BRANCH_CHOICE && mode === "sandbox" ? branchPick : null });
   if (decayBusy || !d || !d.daughter) return false;
   decayBusy = true;
-  if (!chainStart) { chainStart = { ...a }; decayChain = [{ p: a.p, n: a.n }]; }
+  if (!chainStart) { chainStart = { ...a }; decayChain = [{ p: a.p, n: a.n, e: a.e }]; }
   if (!reduced()) {
     shudder = performance.now() + 700; await sleep(700);
     const r = canvas.getBoundingClientRect(), g = scene.geo;
     d.mode.particles.forEach((k, i) => { const ang = -Math.PI / 3 + i * 0.9 + Math.random() * 0.4, dist = Math.max(r.width, r.height) * 0.45;
-      const p = el("span", { className: "ab-particle " + k }); p.style.left = r.left + g.cx + "px"; p.style.top = r.top + g.cy + "px";
+      const p = el("span", { className: "ab-particle " + k }); const svg = skinSvg("ab-particle-" + k); if (svg) { p.innerHTML = svg; p.classList.add("has-svg"); } p.style.left = r.left + g.cx + "px"; p.style.top = r.top + g.cy + "px";
       p.style.setProperty("--dx", Math.cos(ang) * dist + "px"); p.style.setProperty("--dy", Math.sin(ang) * dist + "px"); p.style.setProperty("--rot", ang + "rad");
       document.body.append(p); setTimeout(() => p.remove(), 1000); });
     await sleep(350);
@@ -328,7 +353,8 @@ async function allowDecay() {
   const note = d.mode.particles.includes("alpha") ? `The alpha particle took 2 protons but no electrons, so the atom is left with charge ${q > 0 ? "+" + q : q} until its electrons rearrange.`
     : d.mode.code.startsWith("B-") || d.mode.code === "2B-" ? `A neutron turned into a proton (plus an electron and an antineutrino that fly off), so the atom now has charge ${q > 0 ? "+" + q : q}.`
     : `A proton turned into a neutron, so the atom now has charge ${q > 0 ? "+" + q : q}.`;
-  decayChain.push({ p: t.p, n: t.n, via: d.mode.symbol, note: t.inBuilder ? note : `${t.symbol}-${t.A} is beyond this builder (it stops at calcium). Open it in Periodic Table Studio.` });
+  branchPick = null;
+  decayChain.push({ p: t.p, n: t.n, e: a.e, via: d.mode.symbol, note: t.inBuilder ? note + " Real atoms quickly gain or lose electrons; here the electrons carry forward from step to step, so the charge adds up." : `${t.symbol}-${t.A} is beyond this builder (it stops at calcium). Open it in Periodic Table Studio.` });
   if (t.inBuilder) setAtom({ p: t.p, n: t.n, e: a.e }); else renderMode(true);
   toast(`${SYMBOLS[a.p]}-${a.p + a.n} \u2192 ${t.symbol}-${t.A} by ${d.mode.label}`);
   if (!reduced()) { canvas.classList.add("ab-flash"); setTimeout(() => canvas.classList.remove("ab-flash"), 1900); }

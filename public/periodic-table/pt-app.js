@@ -1,9 +1,14 @@
 // Periodic Table app. mountPeriodicTable(root, {embedded}) renders the whole tool into root, so
 // it works as its own page (study-periodic-table.html) or inside another module (Atom Builder).
 import { bohr3d as bohr3dGL, qmView as qmGL } from "./pt-three.js";
-import { CATS, catKey, PRESETS, T_MAX, TRENDS, DECAY, YEAR_MIN, YEAR_MAX, loadElements, stateAt, knownBy, trendRange, trendLevel, kToC, kToF, ORBITALS, orbitalCloud, defaultOrbital } from "./pt-core.js";
+import { CATS, catKey, PRESETS, T_MAX, TRENDS, DECAY, YEAR_MIN, YEAR_MAX, loadElements, stateAt, eaMissing, knownBy, trendRange, trendLevel, kToC, kToF, ORBITALS, orbitalCloud, defaultOrbital } from "./pt-core.js";
 
 const h = (tag, { dataset, ...props } = {}, ...kids) => { const n = Object.assign(document.createElement(tag), props); if (dataset) Object.assign(n.dataset, dataset); n.append(...kids.flat(Infinity).filter((k) => k != null && k !== false)); return n; };
+const cfgText = (e) => e.configPredicted && !/predicted/.test(e.config) ? e.config + " (predicted)" : e.config;
+const mpText = (e) => e.sublimes != null ? `sublimes ${fmt(e.sublimes)} K` : e.stateRule === "no_solid_at_1atm" ? "does not solidify at 1 atm" : fmt(e.mp) + " K";
+const phaseText = (e) => e.phaseDisplay || e.phase || "-";
+const trendVal = (e, tr) => e[tr[3]] == null ? (tr[0] === "ea" ? eaMissing(e) : "-") : `${tr[0] === "ea" && e.eaStatus === "approximate" ? "~" : ""}${fmt(e[tr[3]])} ${tr[2]}`;
+const isoHl = (i) => i.st === "observationally_stable" ? `obs. stable (${i.hh})` : i.hl === "Stable" ? "Stable" : (i.hl || "-") + (i.st === "effectively_stable" ? " (effectively stable)" : "");
 const fmt = (v, d = 2) => v == null ? "-" : (Math.abs(v) >= 100 ? Math.round(v * 10) / 10 : +v.toFixed(d)).toString();
 const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 const DM = { A: "\u03b1", "B-": "\u03b2\u207b", EC: "EC", "EC+B+": "EC/\u03b2\u207a", "B+": "\u03b2\u207a", SF: "SF", IT: "IT", P: "p", N: "n" };
@@ -45,11 +50,11 @@ export async function mountPeriodicTable(root, opts = {}) {
   let mini = null;
   function hover(e, tile) {
     S.sel = e; tiles.forEach((t) => t.classList.toggle("is-sel", t === tile));
-    const lines = [`Mass: ${fmt(e.mass, 3)}`, e.cat, sup(e.config)];
+    const lines = [`Mass: ${fmt(e.mass, 3)}`, e.catLabel || e.cat, sup(cfgText(e))];
     if (S.mode === "temperature") lines.push(`${cap(stateAt(e, S.T))} at ${S.T} K`);
-    if (S.mode === "trends") { const tr = TRENDS.find((x) => x[0] === S.trend); lines.push(`${tr[1]}: ${fmt(e[tr[3]])} ${tr[2]}`); }
+    if (S.mode === "trends") { const tr = TRENDS.find((x) => x[0] === S.trend); lines.push(`${tr[1]}: ${trendVal(e, tr)}`); }
     if (S.mode === "year") lines.push(e.ancient ? "Known since ancient times" : `Discovered: ${e.year ?? "-"}`);
-    lines.push(`MP: ${fmt(e.mp)} K`, `BP: ${fmt(e.bp)} K`, `Phase: ${e.phase || "-"}`);
+    lines.push(`MP: ${mpText(e)}`, `BP: ${fmt(e.bp)} K`, `Phase: ${phaseText(e)}`);
     const cv = h("canvas", { className: "pt-mini", width: 160, height: 160, ariaHidden: "true" });
     insp.replaceChildren(h("div", { className: "pt-big cat-" + catKey(e.cat) }, h("p", { className: "pt-bigsym", textContent: e.sym }), h("p", { className: "pt-bigname", textContent: e.name }), h("p", { className: "pt-bignum", textContent: "#" + e.z })),
       h("ul", { className: "pt-facts" }, lines.map((l, i) => h("li", { textContent: l, className: i === 3 && S.mode !== "category" ? "hl" : "" }))), cv);
@@ -59,7 +64,7 @@ export async function mountPeriodicTable(root, opts = {}) {
   function showFlyout(e, tile) {
     const r = tile.getBoundingClientRect(), rr = root.getBoundingClientRect();
     flyout.replaceChildren(h("p", { className: "pt-fly-h", textContent: `${e.name} isotopes` }),
-      e.iso.length ? h("ul", {}, e.iso.slice(0, 8).map((i) => h("li", { className: i.hl === "Stable" ? "st" : "rad" }, h("b", { textContent: `${e.sym}-${i.A}` }), ` ${i.ab != null ? i.ab + "%" : ""} ${i.hl === "Stable" ? "stable" : (i.hl || "") + " " + (DM[i.dm] || i.dm || "")}`))) : h("p", { textContent: "No measured isotopes listed" }),
+      e.iso.length ? h("ul", {}, e.iso.slice(0, 8).map((i) => h("li", { className: i.hl === "Stable" ? "st" : "rad" }, h("b", { textContent: `${e.sym}-${i.A}` }), ` ${i.ab != null ? i.ab + "%" : ""} ${i.hl === "Stable" || i.st === "observationally_stable" ? isoHl(i).toLowerCase() : isoHl(i) + " " + (DM[i.dm] || i.dm || "")}`))) : h("p", { textContent: "No measured isotopes listed" }),
       h("p", { className: "pt-fly-f", textContent: "Click for full detail" }));
     flyout.hidden = false;
     flyout.style.left = Math.min(r.left - rr.left, rr.width - 220) + "px"; flyout.style.top = (r.bottom - rr.top + 6) + "px";
@@ -126,7 +131,7 @@ export async function mountPeriodicTable(root, opts = {}) {
   let anim = null;
   function openDrawer(e) {
     S.drawer = e; anim && anim.stop();
-    const st = e.iso.filter((i) => i.hl === "Stable").length;
+    const st = e.iso.filter((i) => i.hl === "Stable" || i.st === "observationally_stable").length;
     const nN = e.neutrons;
     const views = [["bohr2d", "2D Bohr"], ["bohr3d", "3D Bohr"], ["qm", "Orbitals"]];
     const stage = h("div", { className: "pt-stage" });
@@ -143,7 +148,7 @@ export async function mountPeriodicTable(root, opts = {}) {
         const cur = subs.find((o) => o.n === S.orb.n && o.l === S.orb.l);
         const pick = h("div", { className: "pt-row pt-wrap pt-orbs", role: "group", ariaLabel: "Orbital picker" }, subs.map((o) => h("button", { type: "button", className: "orb-" + o.status, ariaPressed: String(o === cur), ariaLabel: `${o.label}, ${o.e} of ${o.cap} electrons${o.status === "empty" ? ", empty (next)" : ""}`, onclick: () => { S.orb = { z: e.z, n: o.n, l: o.l, m: 0 }; drawModel(); } }, h("b", { textContent: o.label }), h("small", { textContent: `${o.e}/${o.cap}` }))));
         const ms = h("div", { className: "pt-row pt-wrap pt-orbs" }, ORBITALS[S.orb.l].map(([n], i) => h("button", { type: "button", textContent: n, ariaPressed: String(i === S.orb.m), onclick: () => { S.orb.m = i; drawModel(); } })));
-        stage.prepend(pick); stage.append(ms, h("p", { className: "pt-caption", id: "ptOrbCap", textContent: `${e.name}: ${cur.label} (${cur.e} of ${cur.cap} electrons${cur.status === "empty" ? ", empty: the next subshell to fill" : ""}). Blue and rust are the two phases of the wave.` }),
+        stage.prepend(pick); stage.append(ms, h("p", { className: "pt-caption", id: "ptOrbCap", textContent: `${e.name}: ${cur.label} (${cur.e} of ${cur.cap} electrons${cur.status === "empty" ? ", empty: the next subshell to fill" : ""}). Blue and rust are the two phases of the wave. Simplified pictures of hydrogen-like orbitals; real many-electron orbitals have the same shapes approximately.${e.sym === "Cu" ? " Cu 3d is full (10/10), so 3d11 is impossible. Excited state: [Ar]3d9 4s2, 1.39 eV higher (NIST)." : ""}` }),
           h("p", { className: "pt-note", textContent: "Mr. Dimitry's notes: orbitals are probability clouds for where an electron is likely to be, not little planets orbiting. Drag to turn it." }));
         anim = gl(() => qmGL(cv, S.orb), (c) => qmView(c, S.orb));
       }
@@ -151,14 +156,14 @@ export async function mountPeriodicTable(root, opts = {}) {
     const nav = (d) => { const n = els[e.z - 1 + d]; return n ? h("button", { type: "button", className: "pt-nav", textContent: d < 0 ? `\u2039 ${n.z} \u00b7 ${n.name}` : `${n.z} \u00b7 ${n.name} \u203a`, onclick: () => openDrawer(n) }) : h("span"); };
     drawer.replaceChildren(
       h("header", { className: "pt-dh" }, h("div", { className: "pt-dsym cat-" + catKey(e.cat) }, h("b", { textContent: e.sym }), h("small", { textContent: e.z })),
-        h("div", {}, h("h2", { textContent: e.name }), h("p", { className: "pt-dim", textContent: `${fmt(e.mass, 4)} g/mol \u00b7 ${e.cat}` })),
+        h("div", {}, h("h2", { textContent: e.name }), h("p", { className: "pt-dim", textContent: `${fmt(e.mass, 4)} g/mol${e.labels.atomic_mass ? " (" + e.labels.atomic_mass + ")" : ""} \u00b7 ${e.catLabel || e.cat}` })),
         h("button", { type: "button", className: "pt-close", ariaLabel: "Close", textContent: "\u00d7", onclick: () => closeDrawer() })),
       h("nav", { className: "pt-navrow" }, nav(-1), nav(1)),
       h("p", { className: "pt-desc", textContent: e.summary || "No description in the source data yet." }),
-      h("dl", { className: "pt-props" }, [["Configuration", sup(e.config)], ["Shells", e.shells.join(", ")], ["Melting point", fmt(e.mp) + " K"], ["Boiling point", fmt(e.bp) + " K"], ["Density", fmt(e.density, 3) + " g/cm\u00b3"], ["Electronegativity", fmt(e.en)], ["Phase (room temp)", e.phase || "-"], ["Discovered", e.ancient ? "Ancient" : e.year ?? "-"]].map(([k, v]) => [h("dt", { textContent: k }), h("dd", { textContent: v })])),
+      h("dl", { className: "pt-props" }, [["Configuration", sup(cfgText(e))], ["Shells", e.shells.join(", ")], ["Melting point", mpText(e)], ["Boiling point", fmt(e.bp) + " K"], ["Density", fmt(e.density, 3) + " " + (e.labels.density_g_cm3 || "g/cm\u00b3")], ["Electronegativity", fmt(e.en)], ["Electron affinity", e.eakj == null ? eaMissing(e) : `${e.eaStatus === "approximate" ? "~" : ""}${fmt(e.eakj)} kJ/mol (${fmt(e.ea, 3)} eV)`], ["Phase (room temp)", phaseText(e)], ["Discovered", e.ancient ? "Ancient" : e.year ?? "-"], ...Object.entries(e.notes).map(([k, v]) => ["Note (" + ({ melting_point_K: "melting", discovery_year: "discovery" }[k] || k.replace(/_/g, " ")) + ")", v])].map(([k, v]) => [h("dt", { textContent: k }), h("dd", { textContent: v })])),
       h("h3", { textContent: "Isotopes" }), h("p", { className: "pt-dim", textContent: `${st} stable \u00b7 ${e.iso.length - st} radioactive listed` }),
       h("table", { className: "pt-iso" }, h("thead", {}, h("tr", {}, ["Isotope", "Abundance", "Half-life", "Decay"].map((c) => h("th", { textContent: c })))),
-        h("tbody", {}, e.iso.map((i) => h("tr", { className: i.hl === "Stable" ? "st" : "" }, h("td", { textContent: `${e.sym}-${i.A}` }), h("td", { textContent: i.ab != null ? i.ab + "%" : "-" }), h("td", { textContent: i.hl || "-", title: i.hh || "" }), h("td", { textContent: DM[i.dm] || i.dm || "-" }))))),
+        h("tbody", {}, e.iso.map((i) => h("tr", { className: i.hl === "Stable" ? "st" : "" }, h("td", { textContent: `${e.sym}-${i.A}` }), h("td", { textContent: i.ab != null ? i.ab + "%" : "-" }), h("td", { textContent: isoHl(i), title: i.lab || i.hh || "" }), h("td", { textContent: DM[i.dm] || i.dm || "-" }))))),
       h("h3", { textContent: "Atom model" }), viewBar, stage,
       h("div", { className: "pt-counts" }, [["Electrons", e.z, "e"], ["Protons", e.z, "p"], ["Neutrons", nN, "n"]].map(([k, v, c]) => h("div", { className: "pt-count c-" + c }, h("span", { textContent: k }), h("b", { textContent: v })))),
       h("p", { className: "pt-dim pt-caption", textContent: `Neutrons shown for ${e.mostStable || "the most stable isotope"}. Bohr rings are a simple picture; the orbital view shows the quantum shapes.` }));
