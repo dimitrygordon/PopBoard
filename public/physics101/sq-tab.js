@@ -3,6 +3,7 @@
 // The header pencil button is a quiet doorway into the tab. Deep link: ?lesson=m01-l04&tab=sq (&sq=<slug> for another lesson).
 import { DECKS } from "./p101-catalog.js";
 import { renderLesson, bindSoundButton, SETS } from "./sq-core.js";
+import { renderTryIt } from "./tryit.js";
 
 const $ = (id) => document.getElementById(id);
 const P = new URLSearchParams(location.search);
@@ -24,6 +25,7 @@ async function load() {
   if (loaded === sqSlug + filter) return;
   loaded = sqSlug + filter;
   const counts = await renderLesson($("sqList"), sqSlug, { filter });
+  renderTryIt($("sqTry"), sqSlug);
   const all = counts.mq + counts.sol, chips = [["all", `All (${all})`], ...SETS.map(([k, s]) => [k, `${s} (${counts[k]})`])];
   $("sqChips").innerHTML = chips.map(([k, t]) => `<button type="button" class="sq-chip" data-set="${k}" aria-pressed="${k === filter}">${t}</button>`).join("");
   for (const b of $("sqChips").querySelectorAll("button")) b.onclick = () => { filter = b.dataset.set; load(); };
@@ -50,7 +52,9 @@ function show(t) {
   if (t === "sq") load();
   syncUrl();
 }
-new MutationObserver(() => { tabs.test.hidden = !hasTest(); if (tab === "test" && !hasTest()) show("read"); else show(tab); }).observe(tools, { childList: true });
+// Try it cards close out a Test it sandbox (same map as the Study Questions tab)
+const testTry = () => { const t = tools.querySelector(".test-it"); if (t && !t.querySelector(".tryit-row")) { const r = document.createElement("div"); r.className = "tryit-row"; r.hidden = true; t.appendChild(r); renderTryIt(r, home); } };
+new MutationObserver(() => { testTry(); tabs.test.hidden = !hasTest(); if (tab === "test" && !hasTest()) show("read"); else show(tab); }).observe(tools, { childList: true });
 tabs.test.hidden = !hasTest();
 tabs.read.onclick = () => show("read"); tabs.sq.onclick = () => show("sq"); tabs.test.onclick = () => show("test");
 // arrow keys move between tabs

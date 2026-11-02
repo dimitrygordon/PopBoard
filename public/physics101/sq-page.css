@@ -109,3 +109,14 @@ body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 au
 .sq-art .sq-drag { cursor: grab; touch-action: none; outline: none; }
 .sq-art .sq-drag:focus-visible { filter: drop-shadow(0 0 3px var(--mod-accent)); }
 .sq-drag-note { margin: 2px 0 0; font-family: var(--ac-note-font); color: var(--ac-dim); text-align: center; }
+
+/* Try it cards (pencil style): tiny thumbnail slot, one-line caption, link to the original */
+.tryit-row { display: grid; gap: 10px; margin: 14px 0 4px; }
+.tryit-card { display: flex; align-items: center; gap: 12px; padding: 8px 12px; color: inherit; text-decoration: none;
+  border: 1.5px solid var(--ac-line); border-radius: 12px 9px 13px 8px; background: var(--ac-paper, transparent); }
+.tryit-card:hover, .tryit-card:focus-visible { border-color: var(--mod-accent, #E07A5F); outline: none; }
+.tryit-thumb { flex: 0 0 56px; height: 42px; border: 1.5px dashed var(--ac-line); border-radius: 8px 6px 9px 5px; overflow: hidden; }
+.tryit-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tryit-text { display: grid; min-width: 0; }
+.tryit-name { font-weight: 700; }
+.tryit-cap { color: var(--ac-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

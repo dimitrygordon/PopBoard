@@ -105,7 +105,7 @@ test("pages name the course, reuse the engine, and have module filters", () => {
   assert.match(lib, /class="lib-filters"[^>]*data-auto="module"/);
   assert.match(lib, /id="q" type="search"/);
   // one engine: no forked reader or library under physics101/ (sq-*.js are Study Questions, not a reader)
-  assert.deepEqual(readdirSync(join(PUB, "physics101")).filter((f) => f.endsWith(".js")), ["p101-catalog.js", "sq-core.js", "sq-page.js", "sq-tab.js"]);
+  assert.deepEqual(readdirSync(join(PUB, "physics101")).filter((f) => f.endsWith(".js")), ["p101-catalog.js", "sq-core.js", "sq-page.js", "sq-tab.js", "tryit.js"]);
 });
 
 test("Study library links to Physics 101 next to the Astronomy Course", () => {
