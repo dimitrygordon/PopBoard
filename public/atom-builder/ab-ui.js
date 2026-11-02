@@ -255,3 +255,4 @@ requestAnimationFrame(frame);
 window.__ab = { counts, setAtom, setTarget(i) { targetIdx = i; renderMode(); }, get target() { return TARGETS[targetIdx].id; }, add, remove, setMode, get geo() { return scene.geo; }, get table() { return table; }, CAPTION_GAP, get mode() { return mode; } };
 // Re-fit the stage whenever the readout or the sheet changes height.
 if (typeof ResizeObserver === "function") { const ro = new ResizeObserver(() => requestFit()); ro.observe($("status")); ro.observe($("controls")); }
+$("ptLink").href = "study-periodic-table-studio.html" + location.search; // keep the study query (board return)

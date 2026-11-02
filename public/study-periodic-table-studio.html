@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>Periodic Table Studio // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.periodic-table.theme"); } catch (e) {}
+    document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");
+  })();
+</script>
+<link rel="stylesheet" href="periodic-table/pt.css">
+</head>
+<body>
+<h1 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Periodic Table Studio</h1>
+<header class="pt-hud">
+  <button id="studyBackBtn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title">Periodic Table Studio</p>
+  <a id="atomLink" href="study-atom-builder.html" aria-label="Open Atom Builder"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="9" ry="3.5"/><ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(-60 12 12)"/></svg><span class="door-label">Atom Builder</span></a>
+  <button id="themeBtn" type="button"><span id="themeLabel">Paper</span></button>
+</header>
+<div id="ptApp"></div>
+<section class="pt-notes" id="ptNotes">
+  <p><b>Mr. Dimitry's notes:</b> The Bohr model draws electrons on neat rings, which is a handy way to count shells. Real electrons are better described by quantum mechanics: each orbital (s, p, d, f) is a probability cloud showing where an electron is likely to be found, not a path it travels. Open any element and switch to QM orbitals to compare.</p>
+  <p>Data: PubChem Periodic Table (NIH), Periodic-Table-JSON (Wikipedia), IAEA Nuclear Data Services. Phases at 1 atm.</p>
+</section>
+<script type="module" src="periodic-table/pt-ui.js"></script>
+</body>
+</html>
