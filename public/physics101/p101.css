@@ -119,3 +119,5 @@
 :root[data-theme="dark"] .lib-filters .mod-pill { background: color-mix(in srgb, var(--pill) 30%, var(--ac-card)); color: var(--ac-card-ink); }
 :root[data-theme="dark"] .lib-filters .mod-pill[aria-pressed="true"] { background: var(--pill); color: var(--pill-ink, #1f1c18); box-shadow: 0 0 0 2px var(--ac-text); }
 @media (max-width: 600px) { .lib-filters[data-auto] { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; } .lib-filters[data-auto] button { min-width: 44px; min-height: 44px; padding: 4px 2px; font-size: 15px; } }
+/* Study Questions link in the storybook bar */
+.ac-bar > .sq-link { height: var(--ac-hit); white-space: nowrap; flex: none; }

@@ -30,6 +30,7 @@
   <button id="sbMenuBtn" type="button" aria-expanded="false" aria-controls="sbMenu" aria-label="Sandboxes and Try it links" hidden><span class="sb-long">Sandboxes</span><span class="sb-short" aria-hidden="true">Try it</span></button>
   <button id="tiltBtn" type="button" aria-pressed="false" hidden>Tilt off</button>
   <button id="sandboxBtn" type="button" aria-pressed="false" hidden>Sandbox</button>
+  <a id="sqLink" class="btn sq-link" href="study-physics101-questions.html">Study Questions</a>
   <button id="themeBtn" class="ac-theme-btn" type="button"></button>
 </header>
 
@@ -64,5 +65,10 @@
 </main>
 
 <script type="module" src="astro-course/ac-story.js"></script>
+<script type="module">
+  // Study Questions: extra practice for this lesson, on its own page (keeps the query so Back works)
+  const q = new URLSearchParams(location.search); q.delete("page");
+  document.getElementById("sqLink").href = "study-physics101-questions.html?" + q.toString();
+</script>
 </body>
 </html>
