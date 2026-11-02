@@ -1,0 +1,41 @@
+/* PopBoard Custom Quiz studio tokens. Light = cream paper, dark = Physics 101 charcoal. */
+:root, [data-theme="light"] {
+  --cq-paper: #EDE6D6;          /* page cream */
+  --cq-ticket: #F6F0E2;         /* ticket / card cream */
+  --cq-ink: #1F2F5C;            /* navy pencil ink */
+  --cq-ink-soft: #5B6680;
+  --cq-rule: #C9BFA8;           /* rails, dashed slots, perforation */
+  --cq-border: #B9AE96;
+  --cq-red: #B5473A;            /* marks, current bubble, flags, weak */
+  --cq-ochre: #C99A2E;          /* slider fill, star */
+  --cq-green: #3F6B3A;          /* toggle on, answered */
+  --cq-sky: #6FA8D6;
+  --cq-violet: #7A64A8;         /* self-grade, balance */
+  --cq-highlight: #F1D98A;      /* Start bar fill */
+  --cq-accent: #8FB3D9;         /* per-row module accent (set inline from palette.json modules.Mn) */
+  --cq-heat-1: rgba(181,71,58,.12); --cq-heat-2: rgba(181,71,58,.24);
+  --cq-heat-3: rgba(181,71,58,.38); --cq-heat-4: rgba(181,71,58,.55);
+  --cq-radius: 12px; --cq-radius-stub: 10px; --cq-radius-chip: 8px;
+  --cq-card-border: 1.5px solid var(--cq-border);
+  --cq-shadow: 0 2px 0 rgba(31,47,92,.08);
+  --cq-slider-rail: 6px; --cq-slider-knob: 28px;
+  --cq-bubble: 22px; --cq-bubble-current: 26px; --cq-bubble-gap: 12px;
+  --cq-icon: 28px; --cq-tap: 44px;
+  --cq-font-title: 'Cabin Sketch', 'Architects Daughter', cursive;
+  --cq-font-label: 'Architects Daughter', 'Patrick Hand', cursive;
+  --cq-font-body: 'Patrick Hand', 'Architects Daughter', cursive;
+  --cq-font-aside: 'Gochi Hand', 'Patrick Hand', cursive;
+}
+[data-theme="dark"] {
+  --cq-paper: #1F1D1A; --cq-ticket: #1F1D1A; --cq-ink: #EDE6D6; --cq-ink-soft: #B8AF9E;
+  --cq-rule: #3A362F; --cq-border: #3A362F;
+  --cq-red: #E07A6A; --cq-ochre: #E0B850; --cq-green: #8DBF7E; --cq-sky: #8EC1E8; --cq-violet: #B3A2DA;
+  --cq-highlight: #3A362F;
+  --cq-heat-1: rgba(224,122,106,.14); --cq-heat-2: rgba(224,122,106,.26);
+  --cq-heat-3: rgba(224,122,106,.40); --cq-heat-4: rgba(224,122,106,.58);
+  --cq-card-border: 1px solid #3A362F; --cq-shadow: none;
+}
+.cq-card { background: var(--cq-ticket); color: var(--cq-ink); border: var(--cq-card-border); border-radius: var(--cq-radius); box-shadow: var(--cq-shadow); }
+.cq-icon { width: var(--cq-icon); height: var(--cq-icon); color: var(--cq-ink); }
+.cq-tap { min-width: var(--cq-tap); min-height: var(--cq-tap); }
+@media (prefers-reduced-motion: reduce) { .cq-reveal, .cq-knob { transition: none !important; animation: none !important; } }

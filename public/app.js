@@ -1,4 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { teacherSummary, heatRows as quizHeatRows } from "./physics101/cq-core.js";
 import {
   getFirestore, connectFirestoreEmulator, collection, addDoc, onSnapshot, getDocs,
   serverTimestamp, query, orderBy, doc, updateDoc, deleteDoc,
@@ -2737,6 +2738,19 @@ function openStudentEditPopup(studentId, studentData) {
 
   studentEditNameInput.value = oldUsername;
   studentEditNicknameInput.value = oldNickname;
+
+  // Physics 101 Custom Quiz rollup (studyQuiz on the student record), v1 of the teacher's student file
+  var quizLine = document.getElementById("studentEditQuiz");
+  if (!quizLine) { quizLine = document.createElement("p"); quizLine.id = "studentEditQuiz"; quizLine.className = "student-edit-quiz"; quizLine.style.cssText = "margin:8px 0;font-size:.9rem;opacity:.85;"; studentEditSaveBtn.parentNode.parentNode.insertBefore(quizLine, studentEditSaveBtn.parentNode); }
+  quizLine.textContent = "Physics 101 Custom Quiz: " + teacherSummary(studentData.studyQuiz);
+  // heat-tinted notebook rows (Leo's teacher page as HTML rows): lessons worst first
+  var heatTint = ["transparent", "rgba(181,71,58,.12)", "rgba(181,71,58,.24)", "rgba(181,71,58,.38)", "rgba(181,71,58,.55)"];
+  quizHeatRows(studentData.studyQuiz, 8).forEach(function(r) {
+    var row = document.createElement("span");
+    row.style.cssText = "display:flex;justify-content:space-between;gap:8px;padding:3px 8px;margin-top:2px;border-radius:6px;background:" + heatTint[r.heat];
+    row.textContent = r.slug.toUpperCase() + "  " + r.seen + " seen, " + r.missed + " missed" + (r.flagged ? ", " + r.flagged + " flagged" : "");
+    quizLine.appendChild(row);
+  });
 
   function renderEditEmojiDisplay() {
     studentEditEmojiDisplay.innerHTML = "";
