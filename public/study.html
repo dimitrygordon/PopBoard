@@ -986,7 +986,7 @@ function setupCoursesBand() {
     dot.style.background = color;
     dots.appendChild(dot);
   });
-  [["astronomy", "./astro-course/ac-catalog.js", "storybooks"], ["physics101", "./physics101/p101-catalog.js", "lessons"]].forEach(function(c) {
+  [["astronomy", "./astro-course/ac-catalog.js", "lessons"], ["physics101", "./physics101/p101-catalog.js", "lessons"]].forEach(function(c) {
     import(c[1]).then(function(mod) {
       document.querySelector('[data-count="' + c[0] + '"]').textContent = mod.DECKS.length + " " + c[2];
     }).catch(function() {});
