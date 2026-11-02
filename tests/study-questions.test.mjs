@@ -100,24 +100,28 @@ test("Practice Questions pill sits just left of the module filters and opens the
 });
 
 const PACK = new Map();
-const packs = (id) => { const m = id.slice(id.startsWith("mq") ? 2 : 3, id.indexOf("-")); if (!PACK.has(m)) PACK.set(m, JSON.parse(read(`physics101/sq/art/m${m}.json`))); return PACK.get(m); };
+const packs = (id) => { const m = id.slice(id.startsWith("mq") ? 2 : 3, id.indexOf("-")); if (!PACK.has(m)) PACK.set(m, JSON.parse(read(`physics101/sq/art/${m === "ms" ? "ms" : "m" + m}.json`))); return PACK.get(m); };
 
 test("Study Questions assets stay packed: public/ under Cloudflare Pages' 20,000-file cap", () => {
   const walk = (d) => readdirSync(d, { withFileTypes: true }).reduce((n, e) => n + (e.isDirectory() ? walk(join(d, e.name)) : 1), 0);
   const n = walk(PUB); assert.ok(n < 19000, `${n} files under public/`);
-  assert.deepEqual(readdirSync(join(PUB, "physics101/sq/art")).filter((f) => !/^(index|m\d\d)\.json$/.test(f)), []);
+  assert.deepEqual(readdirSync(join(PUB, "physics101/sq/art")).filter((f) => !/^(index|m\d\d|ms)\.json$/.test(f)), []);
   // only images a rich page links to directly stay loose
   assert.deepEqual(readdirSync(join(PUB, "physics101/sq/img")), ["mq-01-e14.webp"]);
   for (const f of readdirSync(join(PUB, "physics101/sq/art"))) assert.ok(statSync(join(PUB, "physics101/sq/art", f)).size < 20e6, f);
 });
 
-test("Leo's M2 to M24 art is wired for problems that exist", () => {
+test("Leo's M2 to M24 art plus Math Skills, opener and wrap-up packs are wired for problems that exist", () => {
   const art = JSON.parse(read("physics101/sq/art/index.json"));
   const ids = Object.keys(art);
-  assert.equal(ids.length, 3044);
-  const all = new Set(DECKS.flatMap((d) => JSON.parse(read(`physics101/sq/${d.slug}.json`)).items.map((i) => i.id)));
+  assert.equal(ids.length, 3356);
+  const where = new Map([...DECKS.map((d) => d.slug), "math-skills"].flatMap((s) => JSON.parse(read(`physics101/sq/${s}.json`)).items.map((i) => [i.id, i.where])));
+  const all = new Set(where.keys());
+  const n = { opener: 0, wrap: 0, math: 0, lesson: 0 };
+  for (const id of ids) n[where.get(id)]++;
+  assert.deepEqual(n, { opener: 104, wrap: 120, math: 88, lesson: 3044 });
   for (const id of ids) {
-    assert.match(id, /^(mq|sol)(0[2-9]|1\d|2[0-4])-/);
+    assert.match(id, /^(mq|sol)(0[1-9]|1\d|2[0-4]|ms)-/);
     assert.ok(all.has(id), id);
     const svg = packs(id)[id];
     assert.match(svg, /^<svg/);

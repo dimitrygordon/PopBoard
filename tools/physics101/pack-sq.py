@@ -3,7 +3,7 @@
 
 Idempotent. Run after build-study-questions.py or wire-sq-art.py (both call it at the end).
 - art: loose sq/art/<id>.svg files merge into one pack per module, sq/art/mNN.json ({id: svg text}),
-  then the loose files are removed. sq/art/index.json (id -> 1 or {drag}) is untouched.
+  then the loose files are removed. Course-level Math Skills art (mqms-N, solms-N) packs into sq/art/ms.json. sq/art/index.json (id -> 1 or {drag}) is untouched.
 - img: every "eq"/"fig" path "img/x.webp" in sq/<slug>.json becomes an inline data:image/webp URI,
   then sq/img/*.webp is removed except files a sq/rich/ page links to directly.
 """
@@ -15,12 +15,13 @@ ART, IMG = SQ / "art", SQ / "img"
 
 def pack_art():
     packs = {}
-    for p in ART.glob("m[0-9][0-9].json"): packs[p.stem] = json.loads(p.read_text())
+    for p in [*ART.glob("m[0-9][0-9].json"), *ART.glob("ms.json")]: packs[p.stem] = json.loads(p.read_text())
     loose = sorted(ART.glob("*.svg"))
     for f in loose:
-        m = re.match(r"(mq|sol)(\d\d)-", f.stem)
+        m = re.match(r"(mq|sol)(\d\d|ms)-", f.stem)
         if not m: sys.exit(f"pack-sq: cannot place {f.name}")
-        packs.setdefault(f"m{m.group(2)}", {})[f.stem] = f.read_text()
+        key = "ms" if m.group(2) == "ms" else f"m{m.group(2)}"
+        packs.setdefault(key, {})[f.stem] = f.read_text()
     for k, v in packs.items():
         (ART / f"{k}.json").write_text(json.dumps(dict(sorted(v.items())), ensure_ascii=False, separators=(",", ":")))
     for f in loose: f.unlink()
