@@ -144,7 +144,7 @@ body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 au
 
 /* ---- Step cards: Leo's step-cards.css (physics101/step-cards). Light is the default; dark follows PopBoard's toggle
    (:root[data-theme="dark"]), not the browser setting. */
-.pb-steps{display:flex;flex-direction:column;gap:14px;margin:18px 0;font-family:"Comic Relief",system-ui,sans-serif}
+.pb-steps{display:flex;flex-direction:column;gap:14px;margin:18px 0;font-family:"Comic Relief",var(--sq-glyph-fallback)}
 .pb-step{position:relative;background:#FBF6EA;border:1.5px solid #8A7A5C;border-radius:12px;padding:14px 16px 14px 52px;box-shadow:2px 3px 0 rgba(90,70,40,.18);color:#2B2620;line-height:1.5}
 .pb-step::before{content:attr(data-n);position:absolute;left:12px;top:12px;width:28px;height:28px;border-radius:50%;background:#E8B44A;color:#2B2620;font-weight:700;display:grid;place-items:center;border:1.5px solid #8A6A20}
 .pb-step-label{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:#7A5C2E;margin-bottom:4px}
@@ -172,3 +172,14 @@ body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 au
 .pb-step:focus{outline:none}.pb-step-text p{margin:0}.pb-answer-wrap .pb-steps{margin:6px 0}
 .pb-steps{list-style:none;padding-left:0}
 .sq-math{font-family:"Cambria Math","STIX Two Math","Noto Sans Math","Times New Roman",serif;font-style:normal}
+
+/* Leo: glyph fallback. The handwriting fonts have no Greek (μ, Δ, θ), math italic (𝜇, 𝑥) or symbols (√, ≤, ∝), so those
+   characters went blank (mq05-27 Check showed "_s of about 0.46"). Every font stack used for question and step-card text
+   falls back per glyph to installed fonts that have them; no font file is shipped. */
+.sq-card, .sq-q, .pb-steps { --sq-glyph-fallback: "DejaVu Sans", "Segoe UI Symbol", "Cambria Math", "STIX Two Math", "Noto Sans Math", "Noto Sans", "Arial Unicode MS", system-ui, sans-serif; }
+.sq-card, .sq-q {
+  --ac-title-font: "Cabin Sketch", "Patrick Hand", "Itim", var(--sq-glyph-fallback);
+  --ac-head-font: "Architects Daughter", "Patrick Hand", "Itim", var(--sq-glyph-fallback);
+  --ac-body-font: "Patrick Hand", "Itim", var(--sq-glyph-fallback);
+  --ac-note-font: "Gochi Hand", "Patrick Hand", "Itim", var(--sq-glyph-fallback);
+  font-family: var(--ac-body-font); }

@@ -151,3 +151,33 @@ test("mq04-33/sol04-33: working hidden behind Show answer, v = √(2gd)", () => 
     assert.ok(!JSON.stringify(c[id]).includes("√2𝑔𝑑"));
   }
 });
+
+test("Leo: variable subscripts render as real subscripts in step cards, answers, Checks and hidden working", () => {
+  const c = shipped(), all = (id) => JSON.stringify([c[id].stepCards, c[id].steps, c[id].answer, c[id].check]);
+  assert.ok(all("mq02-32").includes("x<sub>C</sub> = 28.875") && all("mq02-32").includes("𝑥<sub>A</sub> = 𝑥<sub>B</sub>"));
+  assert.ok(all("mq05-27").includes("F<sub>push</sub> = μ<sub>s</sub> F<sub>N</sub>"));
+  assert.ok(all("mq04-51").includes("F<sub>A on B</sub> = -F<sub>B on A</sub>"));
+  const leftover = /(?<![\w&#;])(Fnet|Fscale|Fpush|Fmax|FN|Ff|Fg|FT|Fc|Fx|Fy|ax|ay|ac|vx|vy|vi|vf|vA|vB|vC|vD|xi|xA|xB|xC|xN|xO|xP|mu_s|mu_k|mu)(?![\w(])/;
+  const words = /(?<![\w&#;])(vs|kg|mg|KE|mL|xy)(?![\w(])/;
+  let kept = 0;
+  for (const it of Object.values(c).filter((x) => x.stepCards)) {
+    const texts = [...it.stepCards.map((s) => s.html), ...[...it.answer, ...(it.check || []), ...it.steps.flatMap((s) => s.body)].map((b) => b.html || "")];
+    for (const t of texts) { const txt = t.replace(/<[^>]+>/g, " "); assert.doesNotMatch(t.replace(/<sub>[^<]*<\/sub>/g, "").replace(/<[^>]+>/g, " "), leftover, it.id); if (words.test(txt)) kept++; }
+  }
+  assert.ok(kept > 0, "plain words such as vs, kg, mg stay as typed");
+  assert.ok(!JSON.stringify(c).includes("v<sub>s</sub>") && !JSON.stringify(c).includes("m<sub>g</sub>"));
+});
+
+test("Leo: step-card and question text falls back to a font with Greek and math glyphs", () => {
+  const css = readFileSync(join(ROOT, "public", "physics101", "sq-page.css"), "utf8");
+  assert.match(css, /\.sq-card, \.sq-q, \.pb-steps \{ --sq-glyph-fallback: "DejaVu Sans"/);
+  for (const v of ["title", "head", "body", "note"]) assert.match(css, new RegExp(`--ac-${v}-font: [^;]*var\\(--sq-glyph-fallback\\);`));
+  assert.match(css, /\.pb-steps\{[^}]*font-family:"Comic Relief",var\(--sq-glyph-fallback\)/);
+  assert.doesNotMatch(css, /@font-face/);
+});
+
+test("Tesla: mq02 diagram titles carry 28.875", () => {
+  const a = JSON.parse(readFileSync(join(SQ, "art", "m02.json"), "utf8"));
+  assert.ok(a["mq02-32"].includes("x C = 28.875 -4.5(0.806) = 25.2 km") && a["mq02-30"].includes("= 28.875 -4.5t"));
+  assert.ok(!/28\.9 -4\.5/.test(a["mq02-32"] + a["mq02-30"]));
+});

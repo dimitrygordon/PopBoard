@@ -21,6 +21,25 @@ OVR = {k: v for k, v in json.load(open(os.path.join(os.path.dirname(os.path.absp
 SKIP = re.compile(r"museum|STEM at Work|career|Recruit|\bCER\b|\bClaim\b|Evidence and reasoning|Revisit the Phenomenon|\bProject\b|Ask Questions|"
                   r"Encounter the Phenomenon|driving question|Science & Society|Review the News|Research|Wrap-Up", re.I)
 FIXES = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "sq-answer-fixes.json"), encoding="utf-8"))
+# Leo: flattened variable subscripts render as real subscripts (book notation). Conservative: only these exact
+# symbol + subscript pairs, as whole tokens in text (never inside tags or entities). Words like vs, as, kg, mg, KE, mL, xy, x4 are untouched.
+SUBS = {"F": "net scale push max c g N T f x y A B".split(), "a": "x y c".split(), "v": "x y i f 0 1 2 A B C D".split(),
+        "x": "i f 0 A B C N O P".split(), "r": "1 2".split()}
+SUB_RE = re.compile(r"(?<![\w&#;\U0001D400-\U0001D7FF])(F|a|v|x|r|𝐹|𝑎|𝑣|𝑥|𝑟)(" + "|".join(sorted({x for v in SUBS.values() for x in v}, key=len, reverse=True)) + r")( on [AB])?(?![\w(\U0001D400-\U0001D7FF])")
+MATH = {"𝐹": "F", "𝑎": "a", "𝑣": "v", "𝑥": "x", "𝑟": "r"}
+def _sub(m):
+    b, k, on = m.group(1), m.group(2), m.group(3) or ""
+    if k not in SUBS[MATH.get(b, b)] or (on and MATH.get(b, b) != "F") or (k in "AB" and MATH.get(b, b) == "F" and not on): return m.group(0)
+    return f"{b}<sub>{k}{on}</sub>"
+def sub_fix(h):
+    out = []
+    for part in re.split(r"(<[^>]+>)", h):
+        if part.startswith("<"): out.append(part); continue
+        part = re.sub(r"(?<![\w])mu_([sk])(?![\w])", r"μ<sub>\1</sub>", part)
+        part = re.sub(r"(?<![\w])mu(?![\w])", "μ", part)
+        out.append(SUB_RE.sub(_sub, part))
+    return "".join(out)
+
 def plain(h): return re.sub(r"\s+", "", html.unescape(re.sub(r"<[^>]+>", "", h)))
 def answer_html(it, s):
     """The Answer step shows the card's own answer html (run after fix-sq-leaks.py, so source fixes and the book's superscripts
@@ -45,7 +64,9 @@ for f in sorted(glob.glob(os.path.join(pub, "physics101/sq/*.json"))):
         want = None
         if it["id"] in data: seen.add(it["id"])
         if it["id"] in data and not SKIP.search(it["title"]):
-            want = [{"label": s["label"].strip(), "kind": KINDS.get(s["label"].strip().lower(), "step"), "html": answer_html(it, s)} for s in data[it["id"]]]
+            for b in it["answer"] + it.get("check", []) + [x for st in it["steps"] for x in st["body"]]:  # hidden working, answer, Check
+                if "html" in b and sub_fix(b["html"]) != b["html"]: b["html"] = sub_fix(b["html"]); ch = True
+            want = [{"label": s["label"].strip(), "kind": KINDS.get(s["label"].strip().lower(), "step"), "html": sub_fix(answer_html(it, s))} for s in data[it["id"]]]
         if it.get("stepCards") != want:
             if want is None: it.pop("stepCards", None)
             else: it["stepCards"] = want; n += 1
