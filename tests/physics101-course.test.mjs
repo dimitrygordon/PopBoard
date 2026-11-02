@@ -174,3 +174,21 @@ test("course index has exactly one module filter per module, each tinted with it
     if (leo[m]) assert.equal(hex[1].toUpperCase(), leo[m]);
   }
 });
+
+test("Leo's lesson covers: one pack per module, a 960x540 webp for every lesson, no loose cover files", async () => {
+  const { COURSES } = await import("../public/astro-course/ac-courses.js");
+  const C = COURSES.physics101;
+  assert.equal(C.covers, true);
+  const dir = join(PUB, "physics101", "covers");
+  assert.deepEqual(readdirSync(dir).filter((f) => !/^covers-m\d\d\.json$/.test(f)), []);
+  let n = 0;
+  for (const d of DECKS) {
+    const pack = JSON.parse(readFileSync(join(PUB, "physics101", C.coverPack(d)), "utf8"));
+    const e = pack[d.slug]; assert.ok(e && e.data, d.slug);
+    const b = Buffer.from(e.data, "base64");
+    assert.equal(b.toString("ascii", 0, 4), "RIFF", d.slug); assert.equal(b.toString("ascii", 8, 12), "WEBP", d.slug);
+    n++;
+  }
+  assert.equal(n, 73);
+  assert.match(readFileSync(join(PUB, "astro-course", "ac-library-ui.js"), "utf8"), /function fillCovers\(\)/);
+});

@@ -34,10 +34,20 @@ function card(d, hit) {
     : d.slides ? `${d.slides} pages \u00b7 being drawn` : "Coming soon";
   return `<li><${tag} class="lib-card" data-q="${d.q}" ${attrs}>
     <span class="strip"><span>${esc(C.strip ? C.strip(d) : `${C.group(d)} \u00b7 ${C.label(d)}`)}</span><span class="badge">${d.built ? "Storybook" : "Coming soon"}</span></span>
-    ${C.covers ? `<img class="cover" src="${C.root}covers/${d.slug}.webp" alt="" loading="lazy" decoding="async" width="960" height="540">` : `<span class="cover cover-soon" aria-hidden="true"><span>${esc(d.key)}</span></span>`}
+    ${C.covers ? `<img class="cover" ${C.coverPack ? `data-cover="${esc(d.slug)}" data-pack="${esc(C.root + C.coverPack(d))}"` : `src="${C.root}covers/${d.slug}.webp"`} alt="" loading="lazy" decoding="async" width="960" height="540">` : `<span class="cover cover-soon" aria-hidden="true"><span>${esc(d.key)}</span></span>`}
     <div class="body"><h2>${esc(d.title)}</h2>${standardsLine(d) ? `<span class="stds">${esc(standardsLine(d))}</span>` : ""}<span class="sub">${esc(d.sub)}</span>
     ${hit && hit.snippet ? `<span class="hit">Page ${hit.page}: ${esc(hit.snippet)}</span>` : ""}
     <span class="meta">${esc(meta)}</span></div></${tag}></li>`;
+}
+
+// packed covers: fetch each module's pack once, then set each card's image as a data: URI
+const coverPacks = new Map();
+function fillCovers() {
+  for (const img of $("grid").querySelectorAll("img[data-cover]")) {
+    const url = img.dataset.pack;
+    if (!coverPacks.has(url)) coverPacks.set(url, fetch(url).then((r) => (r.ok ? r.json() : {})).catch(() => ({})));
+    coverPacks.get(url).then((p) => { const e = p[img.dataset.cover]; if (e && e.data) img.src = "data:image/webp;base64," + e.data; });
+  }
 }
 
 function render() {
@@ -49,6 +59,7 @@ function render() {
     if (hit) rows.push(card(d, hit));
   }
   $("grid").innerHTML = rows.join("");
+  if (C.coverPack) fillCovers();
   $("empty").hidden = rows.length > 0;
   $("count").textContent = query.trim() ? `${rows.length} of ${DECKS.length} ${C.unit} match` : `${rows.length} ${C.unit}`;
 }
