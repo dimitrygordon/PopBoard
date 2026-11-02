@@ -98,7 +98,7 @@ body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 au
 .lib-filter-row { display: flex; align-items: flex-start; justify-content: center; gap: 10px; }
 .lib-filter-row .lib-filters { flex: 0 1 auto; min-width: 0; }
 .lib-filter-row .lib-filters { margin: 0; }
-.pq-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 16px; text-decoration: none; white-space: nowrap;
+.pq-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 16px 6px 8px; text-decoration: none; white-space: nowrap;
   font-family: var(--ac-head-font); font-size: 18px; color: #7a2e22; background: #FBF1DF; border: 2px solid #E07A5F; border-radius: 16px 11px 18px 10px / 11px 18px 10px 16px; box-shadow: 2px 3px 0 #E07A5F55; }
 .pq-btn svg { flex: none; }
 .pq-btn:hover, .pq-btn:focus-visible { background: #F9E3C8; }
@@ -132,3 +132,9 @@ body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 au
 .wk-answer { position: relative; min-height: 96px; }
 .wk-answer .sq-cover { inset: 0; }
 @media (prefers-reduced-motion: reduce) { .sq-expand svg { transition: none; } }
+
+/* Practice Questions + Custom Quiz: one centered row under the module filters and count (Leo: 20px icons in 40px slots) */
+.lib-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 14px 0 4px; }
+.pq-icon-slot { display: inline-grid; place-items: center; flex: none; width: 40px; height: 40px; margin: -4px 0; }
+.pq-icon-slot svg, .pq-icon-slot .cq-art { width: 20px; height: 20px; }
+@media (max-width: 600px) { .lib-actions { gap: 8px; } .lib-actions .pq-btn { flex: 1 1 0; justify-content: center; min-width: 0; gap: 2px; padding: 4px 8px 4px 2px; font-size: 16px; } .lib-actions .pq-icon-slot { width: 30px; } }
