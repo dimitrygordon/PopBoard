@@ -20,3 +20,12 @@ Study library module: `public/study-periodic-table-studio.html`. Atom Builder li
 - Neutron count in the drawer uses the rounded standard atomic mass.
 - QM view draws the angular shape of each real orbital (s, p, d, f) as a probability cloud colored by sign; radial nodes are not drawn.
 - Electrical conductivity is not in the sources, so that trend is not offered yet.
+
+## Data and views (Leo pack, 2026-11-02)
+- pt-elements.json is converted from Leo's physics101/periodic-table/data/elements.json (PubChem, mendeleev, IAEA LiveChart; see Leo's SOURCES.md) by tools/periodic-table/convert.py. Tesla rulings (tesla-rulings.md) are applied in Leo's data, then re-converted.
+- Atom views: 2D Bohr (canvas), 3D Bohr and Orbitals (Three.js, pt-three.js, vendored three.module.min.js). Orbitals are simplified hydrogen-like pictures.
+- Deep link: study-periodic-table-studio.html?z=N opens element N.
+
+## Atom Builder living atom
+- ab-decay.json: Leo's atom-builder/data/decay.json (IAEA LiveChart ground states, ENSDF/NUBASE2020) for Z 1 to 22 plus the U-238, Th-232 and U-235 chains, built by tools/periodic-table/convert_ab_decay.py.
+- Stability is still ab-model.js isStable (Tesla-cleared lists). Decay runs only when the student presses Allow decay; electrons are kept, so the charge badge shows the ion left behind.

@@ -47,6 +47,8 @@ export function trendRange(els, field) {
 }
 export function trendLevel(e, field, [lo, hi]) { const v = e[field]; if (v == null || hi === lo) return null; return Math.min(4, Math.floor(((v - lo) / (hi - lo)) * 5)); }
 export const kToC = (k) => k - 273.15, kToF = (k) => (k - 273.15) * 9 / 5 + 32;
+// Default orbital: the last partly filled subshell, else the last filled one (Cu -> 4s, As -> 4p, Ne -> 2p).
+export function defaultOrbital(orbs) { const occ = orbs.filter((o) => o.e > 0); return [...occ].reverse().find((o) => o.status === "partial") || occ[occ.length - 1] || orbs[0]; }
 // Subshells from the full configuration, e.g. "1s2 2s2 2p6" -> [{n:1,l:"s",e:2},...]
 export function subshells(cfg) { return (cfg || "").split(/\s+/).map((t) => t.match(/^(\d)([spdf])(\d+)$/)).filter(Boolean).map((m) => ({ n: +m[1], l: m[2], e: +m[3] })); }
 export const ORBITALS = {

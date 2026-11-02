@@ -8,3 +8,5 @@ sync();
 $("atomLink").href = "study-atom-builder.html" + location.search;
 $("studyBackBtn").addEventListener("click", (e) => { e.preventDefault(); const qs = forwardStudyQuery(location.search).toString(); history.replaceState(null, "", qs ? "?" + qs : location.pathname); location.href = "study.html" + location.search; });
 window.ptApp = await mountPeriodicTable($("ptApp"));
+// Deep link from Atom Builder: ?z=26 opens that element's drawer.
+{ const z = Number(new URLSearchParams(location.search).get("z")), e = window.ptApp.els.find?.((x) => x.z === z); if (e) window.ptApp.openDrawer(e); }

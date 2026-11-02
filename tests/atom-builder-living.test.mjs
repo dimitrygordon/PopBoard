@@ -1,0 +1,37 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+const pub = new URL("../public/", import.meta.url);
+const D = await import(new URL("atom-builder/ab-decay.js", pub));
+const data = JSON.parse(readFileSync(new URL("atom-builder/ab-decay.json", pub)));
+const dk = D.createDecay(data);
+
+test("decay routes and daughters come from the IAEA data", () => {
+  const c14 = dk.decayOf(6, 8); assert.equal(c14.mode.code, "B-"); assert.deepEqual([c14.daughter.p, c14.daughter.A], [7, 14]);
+  const k40 = dk.decayOf(19, 21); assert.equal(k40.mode.code, "B-"); assert.equal(k40.branch, 89.28); assert.equal(k40.daughter.symbol, "Ca");
+  const be8 = dk.decayOf(4, 4); assert.equal(be8.mode.code, "A"); assert.deepEqual([be8.daughter.p, be8.daughter.n], [2, 2]);
+  assert.equal(dk.decayOf(11, 11).daughter.symbol, "Ne");
+  assert.equal(dk.decayOf(6, 6), null); assert.equal(dk.decayOf(20, 28), null); // Ca-48 observationally stable (Tesla)
+  assert.deepEqual(dk.chain(6, 8).map((x) => x.p), [6, 7]);
+});
+test("instability score: 0 stable, rises as half-life shrinks", () => {
+  assert.equal(dk.instability(6, 6), 0);
+  assert.ok(dk.instability(19, 21) < dk.instability(6, 8) && dk.instability(6, 8) < dk.instability(4, 4));
+  assert.equal(D.meterLevel(0), "calm"); assert.equal(D.meterLevel(0.9), "shaky");
+});
+test("charge badge and ion shorthand", () => {
+  assert.equal(D.chargeBadge(20, 18).ion, "Ca\u00b2\u207a"); assert.equal(D.chargeBadge(17, 18).ion, "Cl\u207b");
+  assert.equal(D.chargeBadge(6, 6).kind, "neutral"); assert.equal(D.chargeBadge(20, 18).text, "Charge: +2");
+});
+test("natural chains match Tesla's counts (from ENSDF-based data, not hand typed)", () => {
+  const n = (k, m) => data.chains[k].filter((x) => x[3] === m).length;
+  assert.deepEqual([n("U-238", "A"), n("U-238", "B-")], [8, 6]); assert.equal(data.chains["U-238"].at(-1)[2], "Pb-206");
+  assert.deepEqual([n("Th-232", "A"), n("Th-232", "B-")], [6, 4]); assert.equal(data.chains["Th-232"].at(-1)[2], "Pb-208");
+  assert.deepEqual([n("U-235", "A"), n("U-235", "B-")], [7, 4]); assert.equal(data.chains["U-235"].at(-1)[2], "Pb-207");
+});
+test("decay is student-initiated only and wired in the page", () => {
+  const ui = readFileSync(new URL("atom-builder/ab-ui.js", pub), "utf8");
+  assert.match(ui, /btn\(`Allow decay/); assert.equal((ui.match(/allowDecay\(\)/g) || []).length, 2); // the definition and Replay; nothing calls it on a timer
+  assert.match(readFileSync(new URL("study-atom-builder.html", pub), "utf8"), /ab-living\.css[^]*abCharge[^]*abMeter[^]*abLocator/);
+  for (const f of ["atom-builder/ab-ui.js", "atom-builder/ab-decay.js", "atom-builder/ab-living.css"]) assert.doesNotMatch(readFileSync(new URL(f, pub), "utf8"), /\u2014/);
+});

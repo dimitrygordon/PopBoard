@@ -10,9 +10,11 @@
   (function () {
     var t = null;
     try { t = localStorage.getItem("popboard.periodic-table.theme"); } catch (e) {}
-    document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");
+    if (t !== "light" && t !== "dark") t = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", t);
   })();
 </script>
+<link rel="stylesheet" href="periodic-table/pts-skin.css">
 <link rel="stylesheet" href="periodic-table/pt.css">
 </head>
 <body>
@@ -29,7 +31,7 @@
 <div id="ptApp"></div>
 <section class="pt-notes" id="ptNotes">
   <p><b>Mr. Dimitry's notes:</b> The Bohr model draws electrons on neat rings, which is a handy way to count shells. Real electrons are better described by quantum mechanics: each orbital (s, p, d, f) is a probability cloud showing where an electron is likely to be found, not a path it travels. Open any element and switch to QM orbitals to compare.</p>
-  <p>Data: PubChem Periodic Table (NIH), Periodic-Table-JSON (Wikipedia), IAEA Nuclear Data Services. Phases at 1 atm.</p>
+  <p class="src">Data: PubChem Periodic Table (NIH), mendeleev, IAEA Nuclear Data Services. Phases at 1 atm. Missing values are left blank, never estimated.</p>
 </section>
 <script type="module" src="periodic-table/pt-ui.js"></script>
 </body>

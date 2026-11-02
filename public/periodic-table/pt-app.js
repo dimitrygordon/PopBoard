@@ -1,6 +1,7 @@
 // Periodic Table app. mountPeriodicTable(root, {embedded}) renders the whole tool into root, so
 // it works as its own page (study-periodic-table.html) or inside another module (Atom Builder).
-import { CATS, catKey, PRESETS, T_MAX, TRENDS, DECAY, YEAR_MIN, YEAR_MAX, loadElements, stateAt, knownBy, trendRange, trendLevel, kToC, kToF, subshells, ORBITALS, orbitalCloud } from "./pt-core.js";
+import { bohr3d as bohr3dGL, qmView as qmGL } from "./pt-three.js";
+import { CATS, catKey, PRESETS, T_MAX, TRENDS, DECAY, YEAR_MIN, YEAR_MAX, loadElements, stateAt, knownBy, trendRange, trendLevel, kToC, kToF, ORBITALS, orbitalCloud, defaultOrbital } from "./pt-core.js";
 
 const h = (tag, { dataset, ...props } = {}, ...kids) => { const n = Object.assign(document.createElement(tag), props); if (dataset) Object.assign(n.dataset, dataset); n.append(...kids.flat(Infinity).filter((k) => k != null && k !== false)); return n; };
 const fmt = (v, d = 2) => v == null ? "-" : (Math.abs(v) >= 100 ? Math.round(v * 10) / 10 : +v.toFixed(d)).toString();
@@ -126,8 +127,8 @@ export async function mountPeriodicTable(root, opts = {}) {
   function openDrawer(e) {
     S.drawer = e; anim && anim.stop();
     const st = e.iso.filter((i) => i.hl === "Stable").length;
-    const nN = Math.round(e.mass || 0) - e.z;
-    const views = [["bohr2d", "Bohr 2D"], ["bohr3d", "Bohr 3D"], ["qm", "QM orbitals"]];
+    const nN = e.neutrons;
+    const views = [["bohr2d", "2D Bohr"], ["bohr3d", "3D Bohr"], ["qm", "Orbitals"]];
     const stage = h("div", { className: "pt-stage" });
     const viewBar = h("div", { className: "pt-seg", role: "tablist", ariaLabel: "Atom model" }, views.map(([k, n]) => h("button", { type: "button", role: "tab", textContent: n, dataset: { view: k }, ariaSelected: String(S.view === k), onclick: () => { S.view = k; viewBar.querySelectorAll("button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.view === k))); drawModel(); } })));
     function drawModel() {
@@ -135,14 +136,16 @@ export async function mountPeriodicTable(root, opts = {}) {
       const cv = h("canvas", { className: "pt-model", width: 320, height: 300, tabIndex: 0, ariaLabel: `${e.name} ${S.view === "qm" ? "orbital" : "Bohr"} model` });
       stage.append(cv);
       if (S.view === "bohr2d") anim = bohr2d(cv, e, { size: 300 });
-      else if (S.view === "bohr3d") anim = bohr3d(cv, e);
+      else if (S.view === "bohr3d") anim = gl(() => bohr3dGL(cv, e), (c) => bohr3d(c, e));
       else {
-        const subs = subshells(e.configFull), last = subs[subs.length - 1] || { n: 1, l: "s", e: 0 };
-        if (!S.orb || !subs.some((s) => s.n === S.orb.n && s.l === S.orb.l)) S.orb = { n: last.n, l: last.l, m: 0 };
-        const pick = h("div", { className: "pt-row pt-wrap pt-orbs" }, subs.map((s) => h("button", { type: "button", textContent: `${s.n}${s.l}${s.e}`.replace(/(\d+)$/, (d) => sup("s" + d).slice(1)), ariaPressed: String(s.n === S.orb.n && s.l === S.orb.l), onclick: () => { S.orb = { n: s.n, l: s.l, m: 0 }; drawModel(); } })));
+        const subs = e.orbs;
+        if (!S.orb || S.orb.z !== e.z) { const d = defaultOrbital(subs); S.orb = { z: e.z, n: d.n, l: d.l, m: 0 }; }
+        const cur = subs.find((o) => o.n === S.orb.n && o.l === S.orb.l);
+        const pick = h("div", { className: "pt-row pt-wrap pt-orbs", role: "group", ariaLabel: "Orbital picker" }, subs.map((o) => h("button", { type: "button", className: "orb-" + o.status, ariaPressed: String(o === cur), ariaLabel: `${o.label}, ${o.e} of ${o.cap} electrons${o.status === "empty" ? ", empty (next)" : ""}`, onclick: () => { S.orb = { z: e.z, n: o.n, l: o.l, m: 0 }; drawModel(); } }, h("b", { textContent: o.label }), h("small", { textContent: `${o.e}/${o.cap}` }))));
         const ms = h("div", { className: "pt-row pt-wrap pt-orbs" }, ORBITALS[S.orb.l].map(([n], i) => h("button", { type: "button", textContent: n, ariaPressed: String(i === S.orb.m), onclick: () => { S.orb.m = i; drawModel(); } })));
-        stage.append(pick, ms, h("p", { className: "pt-dim pt-caption", textContent: `${S.orb.n}${S.orb.l} orbital shape: where an electron is likely to be found. Two colors show the two signs of the wave. Drag to rotate.` }));
-        anim = qmView(cv, S.orb);
+        stage.prepend(pick); stage.append(ms, h("p", { className: "pt-caption", id: "ptOrbCap", textContent: `${e.name}: ${cur.label} (${cur.e} of ${cur.cap} electrons${cur.status === "empty" ? ", empty: the next subshell to fill" : ""}). Blue and rust are the two phases of the wave.` }),
+          h("p", { className: "pt-note", textContent: "Mr. Dimitry's notes: orbitals are probability clouds for where an electron is likely to be, not little planets orbiting. Drag to turn it." }));
+        anim = gl(() => qmGL(cv, S.orb), (c) => qmView(c, S.orb));
       }
     }
     const nav = (d) => { const n = els[e.z - 1 + d]; return n ? h("button", { type: "button", className: "pt-nav", textContent: d < 0 ? `\u2039 ${n.z} \u00b7 ${n.name}` : `${n.z} \u00b7 ${n.name} \u203a`, onclick: () => openDrawer(n) }) : h("span"); };
@@ -151,16 +154,18 @@ export async function mountPeriodicTable(root, opts = {}) {
         h("div", {}, h("h2", { textContent: e.name }), h("p", { className: "pt-dim", textContent: `${fmt(e.mass, 4)} g/mol \u00b7 ${e.cat}` })),
         h("button", { type: "button", className: "pt-close", ariaLabel: "Close", textContent: "\u00d7", onclick: () => closeDrawer() })),
       h("nav", { className: "pt-navrow" }, nav(-1), nav(1)),
-      h("p", { className: "pt-desc", textContent: e.summary }),
+      h("p", { className: "pt-desc", textContent: e.summary || "No description in the source data yet." }),
       h("dl", { className: "pt-props" }, [["Configuration", sup(e.config)], ["Shells", e.shells.join(", ")], ["Melting point", fmt(e.mp) + " K"], ["Boiling point", fmt(e.bp) + " K"], ["Density", fmt(e.density, 3) + " g/cm\u00b3"], ["Electronegativity", fmt(e.en)], ["Phase (room temp)", e.phase || "-"], ["Discovered", e.ancient ? "Ancient" : e.year ?? "-"]].map(([k, v]) => [h("dt", { textContent: k }), h("dd", { textContent: v })])),
       h("h3", { textContent: "Isotopes" }), h("p", { className: "pt-dim", textContent: `${st} stable \u00b7 ${e.iso.length - st} radioactive listed` }),
       h("table", { className: "pt-iso" }, h("thead", {}, h("tr", {}, ["Isotope", "Abundance", "Half-life", "Decay"].map((c) => h("th", { textContent: c })))),
-        h("tbody", {}, e.iso.map((i) => h("tr", { className: i.hl === "Stable" ? "st" : "" }, h("td", { textContent: `${e.sym}-${i.A}` }), h("td", { textContent: i.ab != null ? i.ab + "%" : "-" }), h("td", { textContent: i.hl || "-" }), h("td", { textContent: DM[i.dm] || i.dm || "-" }))))),
+        h("tbody", {}, e.iso.map((i) => h("tr", { className: i.hl === "Stable" ? "st" : "" }, h("td", { textContent: `${e.sym}-${i.A}` }), h("td", { textContent: i.ab != null ? i.ab + "%" : "-" }), h("td", { textContent: i.hl || "-", title: i.hh || "" }), h("td", { textContent: DM[i.dm] || i.dm || "-" }))))),
       h("h3", { textContent: "Atom model" }), viewBar, stage,
       h("div", { className: "pt-counts" }, [["Electrons", e.z, "e"], ["Protons", e.z, "p"], ["Neutrons", nN, "n"]].map(([k, v, c]) => h("div", { className: "pt-count c-" + c }, h("span", { textContent: k }), h("b", { textContent: v })))),
-      h("p", { className: "pt-dim pt-caption", textContent: "Neutrons shown for the most common isotope (mass rounded). Bohr rings are a simple picture; the QM view shows orbital shapes." }));
+      h("p", { className: "pt-dim pt-caption", textContent: `Neutrons shown for ${e.mostStable || "the most stable isotope"}. Bohr rings are a simple picture; the orbital view shows the quantum shapes.` }));
     drawer.hidden = scrim.hidden = false; drawModel(); drawer.querySelector(".pt-close").focus();
   }
+  // WebGL first; the 2D canvas fallback keeps the drawer working where WebGL is off.
+  function gl(make, fallback) { try { return make(); } catch (err) { const c = stage.querySelector("canvas.pt-model"); const fresh = c.cloneNode(); c.replaceWith(fresh); fresh.width = 320; fresh.height = 300; return fallback.call(null, fresh); } }
   function closeDrawer() { anim && anim.stop(); drawer.hidden = scrim.hidden = true; if (S.drawer) tiles[S.drawer.z - 1].focus(); S.drawer = null; }
   root.addEventListener("keydown", (ev) => {
     if (ev.key === "Escape" && !drawer.hidden) closeDrawer();

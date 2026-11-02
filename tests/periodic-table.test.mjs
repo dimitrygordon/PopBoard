@@ -37,6 +37,8 @@ test("trends, years and orbitals", () => {
   const r = P.trendRange(els, "en"); assert.equal(r[1], 3.98); assert.equal(P.trendLevel(Z(9), "en", r), 4); assert.equal(P.trendLevel(Z(2), "en", r), null);
   assert.ok(P.TRENDS.length >= 11 && P.TRENDS.every((t) => /^General trend/.test(t[4])));
   assert.ok(P.knownBy(Z(79), 1400)); assert.ok(!P.knownBy(Z(8), 1770)); assert.ok(P.knownBy(Z(8), 1774)); assert.equal(els.filter((e) => P.knownBy(e, 2010)).length, 118);
+  assert.equal(P.defaultOrbital(Z(29).orbs).label, "4s"); assert.equal(P.defaultOrbital(Z(33).orbs).label, "4p"); assert.equal(P.defaultOrbital(Z(10).orbs).label, "2p");
+  assert.ok(Z(33).orbs.at(-1).status === "empty");
   assert.deepEqual(P.subshells("1s2 2s2 2p3"), [{ n: 1, l: "s", e: 2 }, { n: 2, l: "s", e: 2 }, { n: 2, l: "p", e: 3 }]);
   assert.deepEqual(Object.values(P.ORBITALS).map((o) => o.length), [1, 3, 5, 7]);
   const pz = P.orbitalCloud("p", 2, 500); assert.equal(pz.length, 500);
@@ -47,8 +49,10 @@ test("page: own library module, linked both ways with Atom Builder, light and da
   assert.match(lib, /id: "periodic-table-studio"[^]*?file: "study-periodic-table-studio\.html"/);
   assert.match(read("study-atom-builder.html"), /id="ptLink"[^>]*href="study-periodic-table-studio\.html"/);
   assert.match(html, /id="atomLink"/); assert.match(html, /popboard\.periodic-table\.theme/);
-  assert.match(css, /:root\[data-theme="light"\]/);
+  assert.match(read("periodic-table/pts-skin.css"), /\[data-theme="dark"\]\{[^}]*--pts-paper:#1F1D1A/); assert.match(html, /pts-skin\.css[^]*pt\.css/);
+  assert.doesNotMatch(app + read("periodic-table/pt-core.js"), /conductivity/i); // Turing: hidden until sourced
   for (const m of ["temperature", "trends", "year", "isotopes", "filters"]) assert.match(app, new RegExp(`\\["${m}",`));
   for (const v of ["bohr2d", "bohr3d", "qm"]) assert.match(app, new RegExp(`\\["${v}",`));
+  assert.match(read("periodic-table/pt-three.js"), /vendor\/three\/three\.module\.min\.js/);
   assert.match(app, /prefers-reduced-motion/); assert.doesNotMatch(app + html + css + read("periodic-table/pt-core.js"), /\u2014|—/);
 });
