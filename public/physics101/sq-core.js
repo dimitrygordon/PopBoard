@@ -102,22 +102,28 @@ function liveDrag(svg, axis, host) {
   obj.setAttribute("tabindex", "0"); obj.setAttribute("role", "slider"); obj.setAttribute("aria-label", `Move the ${name}`);
   obj.classList.add("sq-drag");
   const note = document.createElement("p"); note.className = "sq-drag-note"; host.appendChild(note);
-  let d = 0, start = null;
+  let d = 0, start = null, room = null;
   const set = (v) => {
-    d = Math.max(-lim, Math.min(lim, v));
+    // keep the object inside the drawing: room measured on screen at rest, converted to svg units
+    let lo = -lim, hi = lim;
+    if (room) { lo = Math.max(lo, Math.min(0, room[0])); hi = Math.min(hi, Math.max(0, room[1])); }
+    d = Math.max(lo, Math.min(hi, v));
     obj.setAttribute("transform", `translate(${axis === "x" ? d : 0} ${axis === "y" ? d : 0}) ${base}`);
     obj.setAttribute("aria-valuenow", Math.round(d));
     note.textContent = d ? `Moved the ${name} ${Math.round(Math.abs(d))} units ${axis === "x" ? (d > 0 ? "right" : "left") : (d > 0 ? "down" : "up")}.` : `Drag the ${name} ${axis === "x" ? "left or right" : "up or down"}.`;
   };
+  const measure = () => { const r = obj.getBoundingClientRect(), sr = svg.getBoundingClientRect(); if (!r.width || !sr.width) return;
+    const k = axis === "x" ? vb.width / sr.width : vb.height / sr.height;
+    room = axis === "x" ? [(sr.left - r.left) * k + d, (sr.right - r.right) * k + d] : [(sr.top - r.top) * k + d, (sr.bottom - r.bottom) * k + d]; };
   const toSvg = (e) => { const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; return pt.matrixTransform(svg.getScreenCTM().inverse()); };
   // Leo's art can layer shapes over the object, so hit-test its box at the svg level.
   const hit = (e) => { const r = obj.getBoundingClientRect(); return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom; };
-  svg.addEventListener("pointerdown", (e) => { if (!hit(e)) return; const p = toSvg(e); start = { p: axis === "x" ? p.x : p.y, d }; svg.setPointerCapture(e.pointerId); e.preventDefault(); });
+  svg.addEventListener("pointerdown", (e) => { if (!hit(e)) return; measure(); const p = toSvg(e); start = { p: axis === "x" ? p.x : p.y, d }; svg.setPointerCapture(e.pointerId); e.preventDefault(); });
   svg.addEventListener("pointermove", (e) => { if (!start) return; const p = toSvg(e); set(start.d + (axis === "x" ? p.x : p.y) - start.p); });
   svg.addEventListener("pointerup", () => { start = null; });
   svg.addEventListener("pointercancel", () => { start = null; });
   obj.addEventListener("keydown", (e) => {
-    const k = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.key]; if (!k) return;
+    const k = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[e.key]; if (!k) return; measure();
     set(d + k * 8); e.preventDefault();
   });
   set(0);

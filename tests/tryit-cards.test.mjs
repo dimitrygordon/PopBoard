@@ -34,8 +34,9 @@ test("every mapped card points at an existing original page", () => {
   const map = JSON.parse(read("physics101/tryit/map.json"));
   const src = read("physics101/tryit.js");
   for (const rows of Object.values(map)) for (const r of rows) {
-    const m = src.match(new RegExp(`"?${r.id}"?:\\s*\\[.+?,\\s*"([^"]+)"\\]`));
+    const m = src.match(new RegExp(`"${r.id}": \\[".+?", "([^"]+)", "([^"]+)"\\]`));
     assert.ok(m, `target ${r.id} missing`);
     assert.ok(existsSync(join(PUB, m[1].split(/[?#]/)[0])), m[1]);
+    assert.ok(existsSync(join(PUB, m[2])), m[2]);
   }
 });
