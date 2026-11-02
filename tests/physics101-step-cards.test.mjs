@@ -117,7 +117,7 @@ test("M1-M6 titles and prompts show squares, not flattened exponents; μs displa
   const c = shipped(), ix = JSON.parse(readFileSync(join(SQ, "index.json"), "utf8"));
   const flat = /(m\/s|(?<![A-Za-z])s|[𝑡𝑇𝑥𝑣ℎ])2\b(?![.,]\d)/;
   for (const [id, x] of Object.entries(c)) if (/^(mq|sol)0[1-6]-/.test(id)) {
-    assert.doesNotMatch(x.title, flat, id); assert.doesNotMatch(plain(x.question.filter((b) => b.html).map((b) => ({ html: b.html.replace(/<sup>2<\/sup>/g, "^") }))), flat, id);
+    assert.doesNotMatch(x.title, flat, id); assert.doesNotMatch(plain(x.question.filter((b) => b.html).map((b) => ({ html: b.html.replace(/<su[pb]>[^<]*<\/su[pb]>/g, "^") }))), flat, id);
   }
   assert.equal(c["mq01-49"].title, "3: Claim: the relationship between 𝑡² and ℎ");
   assert.equal(c["sol01-49"].title, "3: Claim: the relationship between 𝑇² and 𝐿");
