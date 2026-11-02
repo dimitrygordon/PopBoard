@@ -31,7 +31,7 @@ test("natural chains match Tesla's counts (from ENSDF-based data, not hand typed
 });
 test("decay is student-initiated only and wired in the page", () => {
   const ui = readFileSync(new URL("atom-builder/ab-ui.js", pub), "utf8");
-  assert.match(ui, /btn\(`Allow decay/); assert.equal((ui.match(/allowDecay\(\)/g) || []).length, 2); // the definition and Replay; nothing calls it on a timer
+  assert.match(ui, /btn\(d\.branches\.length > 1 \? "Allow decay" : `Allow decay/); assert.equal((ui.match(/allowDecay\(\)/g) || []).length, 2); // the definition and Replay; nothing calls it on a timer
   assert.match(readFileSync(new URL("study-atom-builder.html", pub), "utf8"), /ab-living\.css[^]*abCharge[^]*abMeter[^]*abLocator/);
   for (const f of ["atom-builder/ab-ui.js", "atom-builder/ab-decay.js", "atom-builder/ab-living.css"]) assert.doesNotMatch(readFileSync(new URL(f, pub), "utf8"), /\u2014/);
 });
