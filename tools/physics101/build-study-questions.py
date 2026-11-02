@@ -68,5 +68,11 @@ for slug, its in lessons.items():
     its.sort(key=lambda x: (x["src"] != "mq", x["page"]))
     txt = json.dumps({"slug": slug, "items": its}, ensure_ascii=False, separators=(",", ":"))
     txt = txt.replace(" \u2014 ", ", ").replace("\u2014", ", ")  # house style: no em-dashes
+    txt = txt.replace("\\u0002 ", "$").replace("\\u0002", "$")  # the PDFs' dollar sign extracts as U+0002
+    txt = txt.replace(", = \\\\frac{1} {2}mv^2$", ", \u00bdmv\u00b2")  # one stray LaTeX fragment in the source text
     open(os.path.join(out, slug + ".json"), "w").write(txt)
+# search index for the Practice Questions library: counts and titles per lesson
+idx = json.dumps({slug: {"mq": sum(i["src"] == "mq" for i in its), "sol": sum(i["src"] == "sol" for i in its), "t": [[i["id"], i["title"]] for i in its]}
+                  for slug, its in sorted(lessons.items())}, ensure_ascii=False, separators=(",", ":"))
+open(os.path.join(out, "index.json"), "w").write(idx.replace(" \u2014 ", ", ").replace("\u2014", ", ").replace("\\u0002 ", "$").replace("\\u0002", "$").replace(", = \\\\frac{1} {2}mv^2$", ", \u00bdmv\u00b2"))
 print(len(lessons), "lessons", sum(len(v) for v in lessons.values()), "problems", len(used), "images")
