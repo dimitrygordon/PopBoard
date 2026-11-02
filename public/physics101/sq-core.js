@@ -247,3 +247,18 @@ export async function renderLesson(host, slug, { filter = "all" } = {}) {
   for (const svg of host.querySelectorAll(".sq-card svg[data-draw]:not(.sq-tick)")) drawObs.observe(svg);
   return counts;
 }
+
+// One problem by stable id, for Custom Quiz: the same card (art, draggables, worked-solution expander,
+// Show answer scribble) as the lesson list. Lesson JSON is fetched once per slug.
+const LESSONS = new Map();
+export function lessonItems(slug) {
+  if (!LESSONS.has(slug)) LESSONS.set(slug, fetch(`${ROOT}physics101/sq/${slug}.json`).then((r) => (r.ok ? r.json() : { items: [] })).then((d) => d.items).catch(() => []));
+  return LESSONS.get(slug);
+}
+export async function renderItem(slug, id, n, { rich = true } = {}) {
+  const it = (await lessonItems(slug)).find((x) => x.id === id); if (!it) return null;
+  let el = card(it, n);
+  if (rich && (await RICH)[it.id]) { const h = document.createElement("article"); if (await richCard(it, h)) { el = h; h.id = it.id; } }
+  for (const svg of el.querySelectorAll("svg[data-draw]:not(.sq-tick)")) drawObs.observe(svg);
+  return { el, item: it };
+}
