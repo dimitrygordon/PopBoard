@@ -90,7 +90,9 @@ test("storybook tab row is Read this page | Study Questions | Test it, with a le
 
 test("Practice Questions pill sits just left of the module filters and opens the library", () => {
   const h = read("study-physics101.html");
-  assert.match(h, /<div class="lib-filter-row">\s*<a class="pq-btn" id="pqBtn" href="study-physics101-questions\.html">Practice Questions <svg[^]*?<\/a>\s*(?:<button type="button" class="pq-btn cq-open" id="cqBtn"[^]*?<\/button>\s*)?<div class="lib-filters"/);
+  // Practice Questions + Custom Quiz: one row under the module filters and the count, no arrow glyph
+  assert.match(h, /<div class="lib-filter-row">\s*<div class="lib-filters"[^]*?<p class="lib-count" id="count"[^]*?<\/p>\s*<div class="lib-actions">\s*<a class="pq-btn" id="pqBtn" href="study-physics101-questions\.html"><span class="pq-icon-slot"[^]*?<\/span>Practice Questions<\/a>\s*<button type="button" class="pq-btn cq-open" id="cqBtn"/);
+  assert.doesNotMatch(h, /Practice Questions\s*(\u2192|&rarr;)/);
   const css = read("physics101/sq-page.css");
   assert.match(css, /@media \(max-width: 600px\) \{ \.lib-filter-row \{ flex-direction: column/);
   const lib = read("study-physics101-questions.html");
