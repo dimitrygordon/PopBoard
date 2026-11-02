@@ -68,8 +68,13 @@ test("Tesla final stamp: tiny branches hidden, Ca-48 caption, proton/neutron emi
   assert.equal(c("2P", 0, -2), "2 protons flew off, so the atom now has charge -2.");
   assert.equal(c("N", 0, 0), "A neutron flew off; the charge stays 0.");
   assert.match(c("B-A", 0, -1), /^A neutron turned into a proton .*, then an alpha particle .* flew off, so the atom now has charge -1\.$/);
-  assert.match(c("ECA", 0, -3, true), /^A proton turned into a neutron \(electron capture\), then an alpha particle .* charge -3\. \(a rare route, under 0\.01 %\)$/);
-  assert.match(c("ECP", 0, -2), /electron capture\), then a proton flew off, so the atom now has charge -2\./);
+  const EC = "A proton captured one of the atom's own electrons and turned into a neutron (electron capture), so the atom lost one proton and one electron together";
+  assert.equal(c("EC", 0, 0), EC + "; the charge stays 0.");
+  assert.equal(c("ECP", 0, -1), EC + ", then a proton flew off, so the atom now has charge -1.");
+  assert.match(c("ECA", 0, -2, true), /electron together, then an alpha particle .* charge -2\. \(a rare route, under 0\.01 %\)$/);
+  assert.equal(c("B+", 0, -1), "A proton turned into a neutron (a positron and a neutrino fly off), so the atom now has charge -1.");
+  assert.match(c("EC+B+", 0, -1), /charge -1\. \(If this was electron capture instead, the atom used up one of its own electrons and stays at charge 0\.\)$/);
+  assert.match(ui, /e2 = \/\^EC\(\\d\?\[PA\]\)\?\$\/\.test\(d\.mode\.code\) \? Math\.max\(0, a\.e - 1\) : a\.e/);
   assert.match(c("B-P", 0, 0), /antineutrino fly off\), then a proton flew off; the charge stays 0\./);
   assert.match(ui, /chargeNote\(d\.mode\.code, a\.p - a\.e, q, d\.branch != null && d\.branch < 0\.01\)/);
 });

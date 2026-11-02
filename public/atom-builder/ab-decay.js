@@ -82,13 +82,14 @@ export function chargeNote(code, q0, q, rare = false) {
   const [, b, k0, em] = m, k = k0 ? +k0 : 1, parts = [];
   if (b === "2B-") parts.push("two neutrons turned into protons (two electrons and two antineutrinos fly off)");
   if (b === "B-") parts.push("a neutron turned into a proton (an electron and an antineutrino fly off)");
-  if (b === "EC") parts.push("a proton turned into a neutron (electron capture)");
-  if (b === "EC+B+" || b === "B+") parts.push("a proton turned into a neutron");
+  if (b === "EC") parts.push("a proton captured one of the atom's own electrons and turned into a neutron (electron capture), so the atom lost one proton and one electron together");
+  if (b === "EC+B+" || b === "B+") parts.push("a proton turned into a neutron (a positron and a neutrino fly off)");
   if (em === "A") parts.push("an alpha particle (2 protons and 2 neutrons, no electrons) flew off");
   if (em === "P") parts.push(k > 1 ? `${k} protons flew off` : "a proton flew off");
   if (em === "N") parts.push(k > 1 ? `${k} neutrons flew off` : "a neutron flew off");
   const s = (x) => (x > 0 ? "+" + x : String(x));
   let t = parts.join(", then ");
   t = t[0].toUpperCase() + t.slice(1) + (q === q0 ? `; the charge stays ${s(q)}.` : `, so the atom now has charge ${s(q)}${em === "A" && !b ? " until its electrons rearrange" : ""}.`);
+  if (b === "EC+B+") t += ` (If this was electron capture instead, the atom used up one of its own electrons and stays at charge ${s(q + 1)}.)`;
   return rare ? t + " (a rare route, under 0.01 %)" : t;
 }

@@ -351,11 +351,12 @@ async function allowDecay() {
       document.body.append(p); setTimeout(() => p.remove(), 1000); });
     await sleep(350);
   }
-  const t = d.daughter, q = (t.p) - a.e;
+  // Electron capture uses up one of the atom's own electrons (Tesla stamp #4): Z and e both drop by 1.
+  const t = d.daughter, e2 = /^EC(\d?[PA])?$/.test(d.mode.code) ? Math.max(0, a.e - 1) : a.e, q = t.p - e2;
   const note = chargeNote(d.mode.code, a.p - a.e, q, d.branch != null && d.branch < 0.01);
   branchPick = null;
-  decayChain.push({ p: t.p, n: t.n, e: a.e, via: d.mode.symbol, note: t.inBuilder ? note + " Real atoms quickly gain or lose electrons; here the electrons carry forward from step to step, so the charge adds up." : `${t.symbol}-${t.A} is beyond this builder (it stops at calcium). Open it in Periodic Table Studio.` });
-  if (t.inBuilder) setAtom({ p: t.p, n: t.n, e: a.e }); else renderMode(true);
+  decayChain.push({ p: t.p, n: t.n, e: e2, via: d.mode.symbol, note: t.inBuilder ? note + " Real atoms quickly gain or lose electrons; here the electrons carry forward from step to step, so the charge adds up." : `${t.symbol}-${t.A} is beyond this builder (it stops at calcium). Open it in Periodic Table Studio.` });
+  if (t.inBuilder) setAtom({ p: t.p, n: t.n, e: e2 }); else renderMode(true);
   toast(`${SYMBOLS[a.p]}-${a.p + a.n} \u2192 ${t.symbol}-${t.A} by ${d.mode.label}`);
   if (!reduced()) { canvas.classList.add("ab-flash"); setTimeout(() => canvas.classList.remove("ab-flash"), 1900); }
   const cell = locCells[t.p]; if (cell) { cell.classList.add("flash"); setTimeout(() => cell.classList.remove("flash"), 1900); }
