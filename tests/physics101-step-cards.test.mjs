@@ -181,5 +181,6 @@ test("Leo: step-card and question text falls back to a font with Greek and math 
 test("Tesla: mq02 diagram titles carry 28.875", () => {
   const a = JSON.parse(readFileSync(join(SQ, "art", "m02.json"), "utf8"));
   assert.ok(a["mq02-32"].includes("x C = 28.875 -4.5(0.806) = 25.2 km") && a["mq02-30"].includes("= 28.875 -4.5t"));
+  const c = shipped(); assert.equal(c["mq02-30"].stepCards[0].html, "x<sub>A</sub> = 21.5t; x<sub>B</sub> = 27.0 - 12.0t; x<sub>C</sub> = 28.875 - 4.5t (km, h).");
   assert.ok(!/28\.9 -4\.5/.test(a["mq02-32"] + a["mq02-30"]));
 });

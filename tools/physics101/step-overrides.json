@@ -16,5 +16,8 @@
   "sol06-38": {
     "Substitute": "ac = 4 pi^2 (6.38 x 10^6 m)/(86 164 s)^2 = 0.034 m/s^2, 0.35% of g."
   },
-  "_sol06-38": "0.0339 / 9.80 = 0.35% (Tesla's teaching note); the Answer keeps the book's 'about 0.3%'. Flagged for Tesla to confirm."
+  "_sol06-38": "0.0339 / 9.80 = 0.35% (Tesla's teaching note); the Answer keeps the book's 'about 0.3%'. Flagged for Tesla to confirm.",
+  "mq02-30": {
+    "Givens": "xA = 21.5t; xB = 27.0 - 12.0t; xC = 28.875 - 4.5t (km, h)."
+  }
 }
