@@ -1,7 +1,7 @@
 // Step cards: wire-step-cards.py puts Socrates' steps on the listed cards only; Leo's CSS follows PopBoard's toggle.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readdirSync, readFileSync, mkdtempSync, mkdirSync, copyFileSync, writeFileSync } from "node:fs";
+import { readdirSync, readFileSync, mkdtempSync, mkdirSync, copyFileSync, writeFileSync, statSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { execFileSync } from "node:child_process";
@@ -173,7 +173,9 @@ test("Leo: step-card and question text falls back to a font with Greek and math 
   assert.match(css, /\.sq-card, \.sq-q, \.pb-steps \{ --sq-glyph-fallback: "DejaVu Sans"/);
   for (const v of ["title", "head", "body", "note"]) assert.match(css, new RegExp(`--ac-${v}-font: [^;]*var\\(--sq-glyph-fallback\\);`));
   assert.match(css, /\.pb-steps\{[^}]*font-family:"Comic Relief",var\(--sq-glyph-fallback\)/);
-  assert.doesNotMatch(css, /@font-face/);
+  assert.match(css, /@font-face \{ font-family: "SQ Math Fallback"; src: url\("\/fonts\/sq-math-fallback\.woff2"\)[^}]*unicode-range: [^;]*U\+1D707/);
+  assert.match(css, /--sq-glyph-fallback: "DejaVu Sans", "SQ Math Fallback"/);
+  assert.ok(statSync(join(ROOT, "public", "fonts", "sq-math-fallback.woff2")).size < 40000);
 });
 
 test("Tesla: mq02 diagram titles carry 28.875", () => {
