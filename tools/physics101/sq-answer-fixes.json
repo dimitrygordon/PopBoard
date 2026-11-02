@@ -1,0 +1,179 @@
+{
+  "_about": "Answers the extractor garbled, restored from the source PDFs' own words (only lost math symbols and spaces put back). Read by fix-sq-leaks.py (item answer/check) and wire-step-cards.py (the step card's Answer step).",
+  "mq01-33": {
+    "src": "mq-01.pdf p.14; the PDF text layer dropped the inline math (y, v, b, c) and the spaces in the KE sentence; wording per Tesla's ruling",
+    "answer": [
+      "One variable depends on the square of the other (𝑦 = 𝑎𝑥<sup>2</sup> + 𝑏𝑥 + 𝑐). For the cart, KE depends on the square of the speed 𝑣: if the speed triples, KE increases by a factor of 3<sup>2</sup> = 9 (when 𝑏 and 𝑐 are 0), and the graph of KE versus 𝑣 is a parabola."
+    ]
+  },
+  "mq02-14": {
+    "src": "sq-src/mq-02.txt lines 240-246 (Review the News part of Lesson 1 Investigate); question and answer per Tesla's ruling, kept as one card",
+    "question": [
+      "Search for a news story about how sports teams use motion capture and write a short summary."
+    ],
+    "answer": [
+      "Sample summary: sports teams use motion capture. Cameras track reflective dots on an athlete's joints at equal time intervals, and software turns the dot positions into a particle-style model used to compare techniques. A good summary names the technology, what is measured (positions at equal times), and one use."
+    ],
+    "check": []
+  },
+  "mq05-27": {
+    "src": "mq-05.pdf p.12; the labels were lost, the Work equation sat in the question and the Check ran into the answer",
+    "answer": [
+      "About 86 N (slightly more than this starts the crate moving)."
+    ],
+    "check": [
+      "A bit under half the weight, as 𝜇<sub>𝑠</sub> of about 0.46 suggests."
+    ],
+    "steps_before_question": [
+      [
+        "What we know",
+        "𝐹<sub>𝑁</sub> = 188 N, 𝜇<sub>𝑠</sub> = 0.46. Unknown: the push needed."
+      ],
+      [
+        "Physics idea",
+        "The crate starts moving when the push just exceeds the maximum static friction, 𝜇<sub>𝑠</sub>𝐹<sub>𝑁</sub>."
+      ]
+    ],
+    "question_to": "Work"
+  },
+  "mq05-64": {
+    "src": "Tesla notation ruling: t = the square root of (2d/a)",
+    "replace": [
+      [
+        "𝑡= √2𝑑/ 𝑎",
+        "𝑡 = √(2𝑑/𝑎)"
+      ]
+    ]
+  },
+  "sol05-62": {
+    "src": "Tesla notation ruling: t = the square root of (2d/a)",
+    "replace": [
+      [
+        "𝑡= √2𝑑/ 𝑎",
+        "𝑡 = √(2𝑑/𝑎)"
+      ]
+    ]
+  },
+  "mq01-49": {
+    "src": "Tesla notation ruling: drop the ∝ symbol",
+    "replace": [
+      [
+        "𝑡<sup>2</sup> ∝ℎ",
+        "𝑡<sup>2</sup> = 𝑘ℎ"
+      ]
+    ]
+  },
+  "sol01-49": {
+    "src": "Tesla notation ruling: drop the ∝ symbol",
+    "replace": [
+      [
+        "𝑇<sup>2</sup> ∝𝐿",
+        "𝑇<sup>2</sup> = 𝑘𝐿"
+      ]
+    ]
+  },
+  "mq01-50": {
+    "src": "Tesla notation ruling: group the square root",
+    "replace": [
+      [
+        "√0.203 × 3.0",
+        "√(0.203 × 3.0)"
+      ]
+    ]
+  },
+  "sol01-50": {
+    "src": "Tesla notation ruling: group the square root",
+    "replace": [
+      [
+        "√4.0 × 0.90",
+        "√(4.0 × 0.90)"
+      ]
+    ]
+  },
+  "mq01-47": {
+    "src": "Socrates' teaching-note wording (2 Nov 2026) with Tesla's t² / s² notation fix",
+    "answer": [
+      "𝑡<sup>2</sup> = 0.10, 0.20, 0.30, 0.41, 0.50, 0.61 s<sup>2</sup> (rounded to 2 significant figures; the table shows 3)"
+    ]
+  },
+  "sol01-47": {
+    "src": "Socrates' teaching-note wording (2 Nov 2026) with Tesla's T² / s² notation fix",
+    "answer": [
+      "𝑇<sup>2</sup> = 0.28, 0.40, 0.81, 1.6, 2.2, 2.8, 3.6 s<sup>2</sup> (rounded to 2 significant figures; the table shows 3)"
+    ]
+  },
+  "mq02-32": {
+    "src": "Tesla re-stamp 2 Nov 2026: carry the unrounded intercept in the hidden working",
+    "replace": [
+      [
+        "𝑥<sub>C</sub> = 28.9 −4.5(0.806)",
+        "𝑥<sub>C</sub> = 28.875 −4.5(0.806)"
+      ]
+    ]
+  },
+  "sol06-38": {
+    "src": "Tesla re-stamp 2 Nov 2026: 0.0339/9.80 = 0.35%; the book rounds to 0.3%",
+    "replace": [
+      [
+        "by about 0.3% at the equator and less at higher latitudes (none at the poles).",
+        "by about 0.35% at the equator (the book rounds this to about 0.3%) and less at higher latitudes (none at the poles)."
+      ],
+      [
+        "which is 0.34% of g",
+        "which is about 0.35% of g"
+      ]
+    ]
+  },
+  "mq06-65": {
+    "src": "Tesla re-stamp 2 Nov 2026: alt text exponent",
+    "replace": [
+      [
+        "(78.0)2",
+        "(78.0)^2"
+      ]
+    ]
+  },
+  "mq04-33": {
+    "src": "Dimitry 2 Nov 2026: working moved out of the title; bracket the square root",
+    "replace": [
+      [
+        "√2𝑔𝑑",
+        "√(2𝑔𝑑)"
+      ],
+      [
+        "√2(9.8 m/s²)(450 m)",
+        "√(2(9.8 m/s²)(450 m))"
+      ],
+      [
+        "√2(9.8 m/s2)(450 m)",
+        "√(2(9.8 m/s^2)(450 m))"
+      ]
+    ]
+  },
+  "sol04-33": {
+    "src": "Dimitry 2 Nov 2026: working moved out of the title; bracket the square root",
+    "replace": [
+      [
+        "√2𝑔𝑑",
+        "√(2𝑔𝑑)"
+      ],
+      [
+        "√2(9.8 m/s²)(300 m)",
+        "√(2(9.8 m/s²)(300 m))"
+      ],
+      [
+        "√2(9.8 m/s2)(300 m)",
+        "√(2(9.8 m/s^2)(300 m))"
+      ]
+    ]
+  },
+  "mq02-30": {
+    "src": "Tesla 2 Nov 2026: 30.0 - 4.5(0.25) = 28.875, matching the diagram and mq02-32",
+    "replace": [
+      [
+        "= 28.9 −4.5𝑡",
+        "= 28.875 −4.5𝑡"
+      ]
+    ]
+  }
+}

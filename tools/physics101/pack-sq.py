@@ -13,6 +13,9 @@ from pathlib import Path
 SQ = Path(__file__).resolve().parents[2] / "public/physics101/sq"
 ART, IMG = SQ / "art", SQ / "img"
 
+# Tesla re-stamp 2 Nov 2026: carry the unrounded intercept 28.875 km (30.0 - 4.5 x 0.25) in the diagram titles
+ART_FIXES = {"mq02-32": [["x C = 28.9 -4.5(0.806)", "x C = 28.875 -4.5(0.806)"]], "mq02-30": [["= 28.9 -4.5t", "= 28.875 -4.5t"]]}
+
 def pack_art():
     packs = {}
     for p in [*ART.glob("m[0-9][0-9].json"), *ART.glob("ms.json")]: packs[p.stem] = json.loads(p.read_text())
@@ -22,6 +25,14 @@ def pack_art():
         if not m: sys.exit(f"pack-sq: cannot place {f.name}")
         key = "ms" if m.group(2) == "ms" else f"m{m.group(2)}"
         packs.setdefault(key, {})[f.stem] = f.read_text()
+    for pid, pairs in ART_FIXES.items():  # Tesla rulings on diagram <title> text; idempotent
+        v = next((pk[pid] for pk in packs.values() if pid in pk), None)
+        if v is None: sys.exit(f"pack-sq: ART_FIXES id {pid} not found")
+        for a, b in pairs:
+            t0, t1 = v.find("<title>"), v.find("</title>")
+            v = v[:t0] + v[t0:t1].replace(a, b) + v[t1:]
+        for pk in packs.values():
+            if pid in pk: pk[pid] = v
     for k, v in packs.items():
         (ART / f"{k}.json").write_text(json.dumps(dict(sorted(v.items())), ensure_ascii=False, separators=(",", ":")))
     for f in loose: f.unlink()

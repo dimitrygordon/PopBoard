@@ -16,6 +16,9 @@ body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 au
 .sq-eq { display: block; margin: 6px auto; height: auto; }
 .sq-fig { position: relative; margin: 10px auto; padding: 10px; width: fit-content; max-width: 100%; }
 .sq-fig-img { display: block; height: auto; border-radius: 6px; background: #fff; }
+.sq-fig-dark, :root[data-theme="dark"] .sq-fig-light { display: none; }
+:root[data-theme="dark"] .sq-fig-dark { display: block; background: none; }
+.sq-fig-light { background: none; }
 .sq-frame { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: var(--ac-line); stroke-width: 2.2; stroke-linecap: round; pointer-events: none; }
 /* equations are black ink crops of the book page: in dark mode they turn to cream ink */
 :root[data-theme="dark"] .sq-eq { filter: invert(0.93) sepia(0.12); mix-blend-mode: screen; }
@@ -138,3 +141,49 @@ body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 au
 .pq-icon-slot { display: inline-grid; place-items: center; flex: none; width: 40px; height: 40px; margin: -4px 0; }
 .pq-icon-slot svg, .pq-icon-slot .cq-art { width: 20px; height: 20px; }
 @media (max-width: 600px) { .lib-actions { gap: 8px; } .lib-actions .pq-btn { flex: 1 1 0; justify-content: center; min-width: 0; gap: 2px; padding: 4px 8px 4px 2px; font-size: 16px; } .lib-actions .pq-icon-slot { width: 30px; } }
+
+/* ---- Step cards: Leo's step-cards.css (physics101/step-cards). Light is the default; dark follows PopBoard's toggle
+   (:root[data-theme="dark"]), not the browser setting. */
+.pb-steps{display:flex;flex-direction:column;gap:14px;margin:18px 0;font-family:"Comic Relief",var(--sq-glyph-fallback)}
+.pb-step{position:relative;background:#FBF6EA;border:1.5px solid #8A7A5C;border-radius:12px;padding:14px 16px 14px 52px;box-shadow:2px 3px 0 rgba(90,70,40,.18);color:#2B2620;line-height:1.5}
+.pb-step::before{content:attr(data-n);position:absolute;left:12px;top:12px;width:28px;height:28px;border-radius:50%;background:#E8B44A;color:#2B2620;font-weight:700;display:grid;place-items:center;border:1.5px solid #8A6A20}
+.pb-step-label{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:#7A5C2E;margin-bottom:4px}
+.pb-step[data-kind="givens"] .pb-step-label{color:#3E7A4A}
+.pb-step[data-kind="equation"] .pb-step-label{color:#2F5FA0}
+.pb-step[data-kind="substitute"] .pb-step-label{color:#A0522D}
+.pb-step .pb-math{font-size:1.08rem;padding:4px 0}
+.pb-step .pb-unit{color:#6B5A3E}
+.pb-step-sketch{display:block;max-width:100%;margin:10px auto 0;border-radius:12px}
+.pb-answer{border:2.5px solid #C0392B;border-radius:10px;padding:10px 14px;background:#FFF3E6;font-weight:700;display:inline-block}
+.pb-step[hidden]{display:none}
+.pb-step-reveal{align-self:flex-start;background:#2F5FA0;color:#FBF6EA;border:0;border-radius:999px;padding:8px 16px;font:inherit;cursor:pointer}
+.pb-step-reveal:focus-visible{outline:3px solid #E8B44A;outline-offset:2px}
+:root[data-theme="dark"] .pb-step{background:#26231F;border-color:#3A362F;color:#EDE6D6;box-shadow:none}
+:root[data-theme="dark"] .pb-step::before{background:#C99A3A;color:#1F1D1A;border-color:#3A362F}
+:root[data-theme="dark"] .pb-step-label{color:#D8B878}
+:root[data-theme="dark"] .pb-step[data-kind="givens"] .pb-step-label{color:#8CC79A}
+:root[data-theme="dark"] .pb-step[data-kind="equation"] .pb-step-label{color:#6FA3E0}
+:root[data-theme="dark"] .pb-step[data-kind="substitute"] .pb-step-label{color:#E0A070}
+:root[data-theme="dark"] .pb-step .pb-unit{color:#B8AD98}
+:root[data-theme="dark"] .pb-step-sketch{filter:brightness(.85);border:1px solid #3A362F}
+:root[data-theme="dark"] .pb-answer{background:#2E2620;border-color:#E07060;color:#EDE6D6}
+:root[data-theme="dark"] .pb-step-reveal{background:#6FA3E0;color:#1F1D1A}
+@media (max-width:600px){.pb-step{padding:12px 12px 12px 46px}.pb-step::before{left:9px;width:26px;height:26px}}
+.pb-step:focus{outline:none}.pb-step-text p{margin:0}.pb-answer-wrap .pb-steps{margin:6px 0}
+.pb-steps{list-style:none;padding-left:0}
+.sq-math{font-family:"Cambria Math","STIX Two Math","Noto Sans Math","SQ Math Fallback","Times New Roman",serif;font-style:normal}
+
+/* Leo: glyph fallback. The handwriting fonts have no Greek (μ, Δ, θ), math italic (𝜇, 𝑥) or symbols (√, ≤, ∝), so those
+   characters went blank (mq05-27 Check showed "_s of about 0.46"). Every font stack used for question and step-card text
+   falls back per glyph. Installed fonts first (DejaVu Sans, Cambria Math, STIX Two Math, Noto Sans Math); devices with none of them
+   (Chromebooks, the test box) get /fonts/sq-math-fallback.woff2, a 19 KB subset of Noto Sans Math (SIL OFL 1.1) holding only the
+   characters the Study Questions use, limited by unicode-range so it never replaces Latin text. Rebuild: tools/physics101/sq-math-font.py */
+@font-face { font-family: "SQ Math Fallback"; src: url("/fonts/sq-math-fallback.woff2") format("woff2"); font-display: swap;
+  unicode-range: U+0394,U+03B1,U+03B8,U+03C4,U+03C9,U+2032,U+210E,U+2113,U+2192,U+21D2,U+2211,U+221D,U+2225,U+223C,U+226A,U+226B,U+22A5,U+22EF,U+1D434,U+1D435,U+1D436,U+1D437,U+1D438,U+1D439,U+1D43A,U+1D43B,U+1D43C,U+1D43D,U+1D43E,U+1D43F,U+1D440,U+1D441,U+1D442,U+1D443,U+1D444,U+1D445,U+1D446,U+1D447,U+1D448,U+1D449,U+1D44A,U+1D44B,U+1D44C,U+1D44D,U+1D44E,U+1D44F,U+1D450,U+1D451,U+1D452,U+1D453,U+1D454,U+1D456,U+1D458,U+1D459,U+1D45A,U+1D45B,U+1D45C,U+1D45D,U+1D45E,U+1D45F,U+1D460,U+1D461,U+1D462,U+1D463,U+1D464,U+1D465,U+1D466,U+1D467,U+1D6E5,U+1D6FA,U+1D6FC,U+1D6FD,U+1D6FE,U+1D703,U+1D706,U+1D707,U+1D708,U+1D70B,U+1D70C,U+1D70F,U+1D711,U+1D714; }
+.sq-card, .sq-q, .pb-steps { --sq-glyph-fallback: "DejaVu Sans", "SQ Math Fallback", "Segoe UI Symbol", "Cambria Math", "STIX Two Math", "Noto Sans Math", "Noto Sans", "Arial Unicode MS", system-ui, sans-serif; }
+.sq-card, .sq-q {
+  --ac-title-font: "Cabin Sketch", "Patrick Hand", "Itim", var(--sq-glyph-fallback);
+  --ac-head-font: "Architects Daughter", "Patrick Hand", "Itim", var(--sq-glyph-fallback);
+  --ac-body-font: "Patrick Hand", "Itim", var(--sq-glyph-fallback);
+  --ac-note-font: "Gochi Hand", "Patrick Hand", "Itim", var(--sq-glyph-fallback);
+  font-family: var(--ac-body-font); }

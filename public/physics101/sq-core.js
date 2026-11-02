@@ -7,6 +7,16 @@
 import { reduceMotion } from "../astro-course/ac-common.js";
 
 // course-level set (Math Skill Handbook), not tied to one lesson
+// The handwriting heading font draws Greek letters and sub/superscript digits as blanks (μₛ vanished in mq05-27's title),
+// so those runs get a plain math font. Text only: no html is parsed from the title.
+const MATH_RUN = /[\u0370-\u03FF\u2070-\u209F\u00B2\u00B3\u00B9\u{1D400}-\u{1D7FF}]+/gu;
+function mathText(node, text) {
+  let at = 0;
+  for (const m of text.matchAll(MATH_RUN)) {
+    node.append(text.slice(at, m.index)); const s = document.createElement("span"); s.className = "sq-math"; s.textContent = m[0]; node.append(s); at = m.index + m[0].length;
+  }
+  node.append(text.slice(at));
+}
 export const MATH = { slug: "math-skills", title: "Math Skills", blurb: "Significant figures, rounding, scientific notation and the other math the course leans on." };
 export const SETS = [["mq", "Practice", "Practice problems", "New problems like the ones in this lesson, with different numbers."],
                      ["sol", "Book", "Book questions", "The book's own questions for this lesson, worked out."]];
@@ -97,9 +107,11 @@ function block(b, base) {
   const at = (u) => (u.startsWith("data:") ? u : base + u);
   const im = new Image(); im.loading = "lazy"; im.decoding = "async";
   if (b.eq) { im.src = at(b.eq); im.className = "sq-eq"; im.alt = b.alt || "equation"; im.style.width = `min(100%, ${Math.round(b.w * 1.35)}px)`; return im; }
-  im.src = at(b.fig); im.className = "sq-fig-img"; im.alt = "Figure from the book";
+  im.src = at(b.fig); im.className = "sq-fig-img"; im.alt = b.alt || "Figure from the book";
   const f = document.createElement("figure"); f.className = "sq-fig"; f.innerHTML = FRAME; f.appendChild(im);
   im.style.width = `min(100%, ${Math.round(b.w * 1.4)}px)`;
+  // Leo's art can ship a dark-paper twin; CSS picks one from :root[data-theme]
+  if (b.dark) { const d = im.cloneNode(); d.loading = "eager"; im.loading = "eager"; d.src = at(b.dark); d.className = "sq-fig-img sq-fig-dark"; im.classList.add("sq-fig-light"); f.appendChild(d); }
   return f;
 }
 function fill(host, list, base) { for (const b of list) host.appendChild(block(b, base)); }
@@ -197,11 +209,12 @@ function card(item, n) {
   const base = ROOT + "physics101/sq/";
   const el = document.createElement("article"); el.className = "sq-card sketch"; el.id = item.id;
   el.innerHTML = `<div class="sq-pin"><h3 class="sq-q-title"><span class="sq-num">${n}</span><span></span></h3><div class="sq-q"></div></div><div class="sq-art-slot"></div><div class="sq-live"></div>`;
-  el.querySelector(".sq-q-title span:last-child").textContent = item.title;
+  mathText(el.querySelector(".sq-q-title span:last-child"), item.title);
   // opener items park in a module's first lesson, wrap-up items in its last (Dimitry); tag them
   const where = { opener: "Module opener", wrap: "Module wrap-up" }[item.where];
   if (where) { const t = document.createElement("span"); t.className = "sq-where"; t.textContent = where; el.querySelector(".sq-q-title").after(t); }
   fill(el.querySelector(".sq-q"), item.question, base);
+  if (item.stepCards && item.stepCards.length) return stepCardsInto(el, item, base);
   {
     const ol = document.createElement("ol"); ol.className = "sq-steps"; ol.setAttribute("aria-label", "Worked steps");
     for (const s of item.steps.length ? item.steps : [PLACEHOLDER_STEP]) {
@@ -223,6 +236,44 @@ function card(item, n) {
   return el;
 }
 
+
+// Step cards (Leo, step-cards.css): numbered cards, Givens / Equation / Substitute, unfolded one tap at a time;
+// the Answer card sits in a red-pencil box under the Show answer scribble. Data: item.stepCards = [{label, kind, html}]
+// from wire-step-cards.py; cards without it keep the solution display above.
+function stepCardsInto(el, item, base) {
+  const steps = item.stepCards.filter((s) => s.kind !== "answer"), answers = item.stepCards.filter((s) => s.kind === "answer");
+  const mk = (s, n) => {
+    const li = document.createElement("li"); li.className = "pb-step"; li.dataset.n = n; li.dataset.kind = s.kind;
+    li.innerHTML = `<div class="pb-step-label"></div><div class="pb-step-text"></div>`;
+    li.firstChild.textContent = s.label;
+    const t = li.lastChild; t.innerHTML = s.html; if (s.kind === "answer") t.className = "pb-step-text pb-answer";
+    return li;
+  };
+  const ol = document.createElement("ol"); ol.className = "pb-steps"; ol.setAttribute("aria-label", "Worked steps");
+  steps.forEach((s, i) => { const li = mk(s, i + 1); if (i) li.hidden = true; ol.appendChild(li); });
+  el.appendChild(ol);
+  if (steps.length > 1) {
+    const next = document.createElement("button"); next.type = "button"; next.className = "pb-step-reveal"; next.textContent = "Show next step";
+    next.addEventListener("click", () => {
+      const li = ol.querySelector(".pb-step[hidden]"); if (!li) return;
+      li.hidden = false; scratch(250); li.tabIndex = -1; li.focus({ preventScroll: true }); li.scrollIntoView({ block: "nearest", behavior: reduceMotion() ? "auto" : "smooth" });
+      if (!ol.querySelector(".pb-step[hidden]")) next.remove();
+    });
+    ol.appendChild(next);
+  }
+  const ans = document.createElement("section"); ans.className = "sq-answer pb-answer-wrap"; ans.setAttribute("aria-label", "Answer");
+  ans.innerHTML = `<div class="sq-ans-body" hidden><ol class="pb-steps"></ol></div><div class="sq-cover"><svg viewBox="0 0 104 64" preserveAspectRatio="none" aria-hidden="true"><path d="${SCRIBBLE}"/></svg><button type="button" class="sq-show">Show answer</button></div>`;
+  const body = ans.querySelector(".sq-ans-body"), aol = body.firstChild;
+  if (answers.length) answers.forEach((s, i) => aol.appendChild(mk(s, steps.length + i + 1)));
+  else fill(body, item.answer, base);
+  if (item.check && item.check.length) { const h = document.createElement("h4"); h.textContent = "Check"; body.appendChild(h); fill(body, item.check, base); }
+  ans.querySelector(".sq-show").addEventListener("click", () => {
+    body.hidden = false; erase(ans.querySelector(".sq-cover"), () => { const f = body.querySelector(".pb-step") || body; f.tabIndex = -1; f.focus({ preventScroll: true }); });
+  });
+  el.appendChild(ans);
+  art(item, el.querySelector(".sq-art-slot")); sandbox(item, el.querySelector(".sq-live"));
+  return el;
+}
 
 // Render one lesson's problems into host. filter: "all" | "mq" | "sol". Returns {mq, sol} counts.
 export async function renderLesson(host, slug, { filter = "all" } = {}) {
