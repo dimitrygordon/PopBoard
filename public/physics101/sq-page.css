@@ -170,3 +170,4 @@ body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 au
 :root[data-theme="dark"] .pb-step-reveal{background:#6FA3E0;color:#1F1D1A}
 @media (max-width:600px){.pb-step{padding:12px 12px 12px 46px}.pb-step::before{left:9px;width:26px;height:26px}}
 .pb-step:focus{outline:none}.pb-step-text p{margin:0}.pb-answer-wrap .pb-steps{margin:6px 0}
+.pb-steps{list-style:none;padding-left:0}

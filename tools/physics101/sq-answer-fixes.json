@@ -89,5 +89,17 @@
         "√(4.0 × 0.90)"
       ]
     ]
+  },
+  "mq01-47": {
+    "src": "Socrates' teaching-note wording (2 Nov 2026) with Tesla's t² / s² notation fix",
+    "answer": [
+      "𝑡<sup>2</sup> = 0.10, 0.20, 0.30, 0.41, 0.50, 0.61 s<sup>2</sup> (rounded to 2 significant figures; the table shows 3)"
+    ]
+  },
+  "sol01-47": {
+    "src": "Socrates' teaching-note wording (2 Nov 2026) with Tesla's T² / s² notation fix",
+    "answer": [
+      "𝑇<sup>2</sup> = 0.28, 0.40, 0.81, 1.6, 2.2, 2.8, 3.6 s<sup>2</sup> (rounded to 2 significant figures; the table shows 3)"
+    ]
   }
 }

@@ -10,7 +10,7 @@
   },
   {
    "label": "Substitute",
-   "text": "1 s in lab A = 1 s in lab B only if both use the same standard."
+   "text": "If labs used different seconds, the same event would get different times, so results could not be compared."
   },
   {
    "label": "Answer",
@@ -28,7 +28,7 @@
   },
   {
    "label": "Substitute",
-   "text": "24 mL read from marks; 0.3 mL estimated between 24 mL and 25 mL."
+   "text": "Marks only go to whole mL, so the tenths digit must be judged by eye and can vary between readers."
   },
   {
    "label": "Answer",
@@ -64,7 +64,7 @@
   },
   {
    "label": "Substitute",
-   "text": "1 m measured anywhere means the same length only with a shared standard."
+   "text": "A shared standard means one person's 1 m equals everyone's 1 m, so data from different places agree."
   },
   {
    "label": "Answer",
@@ -82,7 +82,7 @@
   },
   {
    "label": "Substitute",
-   "text": "138 mm read from marks; tenths of a mm estimated."
+   "text": "Marks only go to whole mm, so the tenths digit must be judged by eye and can vary between readers."
   },
   {
    "label": "Answer",
@@ -100,7 +100,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Put in d in m and t in s to predict v in m/s."
+   "text": "For example, put d in m and t in s to predict v in m/s."
   },
   {
    "label": "Answer",
@@ -118,7 +118,7 @@
   },
   {
    "label": "Substitute",
-   "text": "A 10.0 g mass reads 10.3 g; finest division unchanged."
+   "text": "For example, a 10.0 g mass reads 10.3 g; the finest division is unchanged."
   },
   {
    "label": "Answer",
@@ -136,7 +136,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Bent micrometer: 0.01 mm precise but off; zeroed beaker: close but coarse."
+   "text": "Precision depends on the instrument's finest division; accuracy depends on how close the value is to the true one, so each can be good while the other is poor."
   },
   {
    "label": "Answer",
@@ -154,7 +154,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Same finest division (for example 1 mm) at any viewing angle; only the value shifts."
+   "text": "Viewing from an angle moves the value read, not the size of the finest division, so only accuracy changes."
   },
   {
    "label": "Answer",
@@ -226,7 +226,7 @@
   },
   {
    "label": "Substitute",
-   "text": "r = 20 L/min gives 30 min; r = 40 L/min gives 15 min."
+   "text": "For example, r = 20 L/min gives 30 min; r = 40 L/min gives 15 min."
   },
   {
    "label": "Answer",
@@ -280,7 +280,7 @@
   },
   {
    "label": "Substitute",
-   "text": "t doubles from 1 s to 2 s: d goes from 5 m to 20 m, x4."
+   "text": "For example, t doubles from 1 s to 2 s: d goes from 5 m to 20 m, x4."
   },
   {
    "label": "Answer",
@@ -352,7 +352,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Each observation records x (m) and t (s)."
+   "text": "A position alone does not say when; a time alone does not say where, so both are needed."
   },
   {
    "label": "Answer",
@@ -370,7 +370,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Wide spacing per equal time = fast; close spacing = slow."
+   "text": "Since every gap takes the same time, a longer gap means more distance per time, so faster motion."
   },
   {
    "label": "Answer",
@@ -388,7 +388,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Shrinking spacing = slowing; growing = speeding up; equal = constant."
+   "text": "Equal time intervals let the dot spacing stand for speed, so changing spacing shows changing speed."
   },
   {
    "label": "Answer",
@@ -406,7 +406,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Record x (m) and t (s) for each observation."
+   "text": "A position alone does not say when; a time alone does not say where, so both are needed."
   },
   {
    "label": "Answer",
@@ -424,7 +424,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Close dots = slow; far-apart dots = fast."
+   "text": "Since every gap takes the same time, a longer gap means more distance per time, so faster motion."
   },
   {
    "label": "Answer",
@@ -442,7 +442,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Words, picture, motion diagram, table, x-t graph, equation."
+   "text": "Each form shows the same positions and times in a different way, so all of them describe one motion."
   },
   {
    "label": "Answer",
@@ -460,7 +460,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Toward yard = +; behind house = -."
+   "text": "Pick the + direction first; then compare which side of the door the feeder is on."
   },
   {
    "label": "Answer",
@@ -478,7 +478,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Direction given: 35 km/h east and 3.0 m down are vectors."
+   "text": "Check each quantity for a direction word: only east and down give direction."
   },
   {
    "label": "Answer",
@@ -496,7 +496,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Origin at door, + along his motion, t = 0 s at the door."
+   "text": "The sidewalk is a straight line, so one axis along it with a zero point and a + direction is enough."
   },
   {
    "label": "Answer",
@@ -514,7 +514,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Words, pictures, motion diagrams, tables, x-t graphs, equations."
+   "text": "Each form shows the same positions and times in a different way, so all of them describe one motion."
   },
   {
    "label": "Answer",
@@ -532,7 +532,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Same side as + = positive; opposite side = negative."
+   "text": "Pick the origin and + direction first; then check which side the object is on."
   },
   {
    "label": "Answer",
@@ -550,7 +550,7 @@
   },
   {
    "label": "Substitute",
-   "text": "1.6 km north = vector; 1.6 km = scalar."
+   "text": "Ask whether the quantity needs a direction to be complete; if yes, it is a vector."
   },
   {
    "label": "Answer",
@@ -568,7 +568,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Origin at start edge, + toward far side, t = 0 s at push off."
+   "text": "Her path is a straight line, so one axis along it with a zero point and a + direction is enough."
   },
   {
    "label": "Answer",
@@ -586,7 +586,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Read x at each t, crossing point, gap, and slopes in m/s."
+   "text": "Each point on a line pairs a position with a time, and the slope gives velocity, so the graph holds all of these."
   },
   {
    "label": "Answer",
@@ -604,7 +604,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Graph shows trend and in-between values; table only lists points."
+   "text": "A line connects the points, so trends and values between points are visible at a glance."
   },
   {
    "label": "Answer",
@@ -622,7 +622,7 @@
   },
   {
    "label": "Substitute",
-   "text": "At t = 30 s, both at x = 90 m."
+   "text": "Both lines pass through the same point, so both joggers have the same x at the same t."
   },
   {
    "label": "Answer",
@@ -694,7 +694,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Read x at any t, crossing points, gaps, slopes in m/s."
+   "text": "Each point on a line pairs a position with a time, and the slope gives velocity, so the graph holds all of these."
   },
   {
    "label": "Answer",
@@ -712,7 +712,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Table: x read directly; graph: values must be estimated."
+   "text": "A table stores the measured numbers themselves, so nothing has to be estimated."
   },
   {
    "label": "Answer",
@@ -730,7 +730,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Example 2: lines cross at about 45 s."
+   "text": "Both lines pass through the same point, so both objects have the same x at the same t."
   },
   {
    "label": "Answer",
@@ -802,7 +802,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Steeper slope (larger m/s) = faster runner."
+   "text": "Velocity is the slope, so the line that rises or falls more per second belongs to the faster runner."
   },
   {
    "label": "Answer",
@@ -820,7 +820,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Swimmer xi = 0 m; runner xi = +15 m."
+   "text": "Read each line where t = 0 s; that value is the starting position."
   },
   {
    "label": "Answer",
@@ -838,7 +838,7 @@
   },
   {
    "label": "Substitute",
-   "text": "2.0 cm / 1.0 cm = 2, so skater speed = 2 x walker speed."
+   "text": "Arrows drawn to one scale compare directly, so twice the length means twice the speed."
   },
   {
    "label": "Answer",
@@ -892,7 +892,7 @@
   },
   {
    "label": "Substitute",
-   "text": "x in m; v in m/s, the slope of x vs t."
+   "text": "Position is a location; velocity is how that location changes each second, so they are different quantities."
   },
   {
    "label": "Answer",
@@ -946,7 +946,7 @@
   },
   {
    "label": "Substitute",
-   "text": "West with east positive: v < 0, so use v = -(speed)."
+   "text": "Drawing first makes you pick an origin and signs, so a westward velocity gets a minus sign before any numbers go in."
   },
   {
    "label": "Answer",
@@ -1036,7 +1036,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Measure height (m) or flight time (s); record trials in a table."
+   "text": "A plan needs something to measure, a way to model it, and a record of trials, so each part is listed."
   },
   {
    "label": "Answer",
@@ -1054,7 +1054,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Units: m/s."
+   "text": "Speed alone does not give direction, so velocity, the slope of x vs t, describes how fast and which way."
   },
   {
    "label": "Answer",
@@ -1072,7 +1072,7 @@
   },
   {
    "label": "Substitute",
-   "text": "xi = 0 m for both at t = 0 s."
+   "text": "Both lines start at x = 0 m when t = 0 s, so both start at the origin together."
   },
   {
    "label": "Answer",
@@ -1090,7 +1090,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Instantaneous v = slope at one instant, in m/s."
+   "text": "An average covers a whole interval and hides changes inside it; instantaneous velocity is the value at one moment."
   },
   {
    "label": "Answer",
@@ -1108,7 +1108,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Longer arrow = more m/s."
+   "text": "Arrows drawn to one scale compare directly, so a longer arrow means a greater speed."
   },
   {
    "label": "Answer",
@@ -1162,7 +1162,7 @@
   },
   {
    "label": "Substitute",
-   "text": "v is the slope of x vs t, in m/s."
+   "text": "Velocity is how position changes each second, so it is the slope of the x-t graph."
   },
   {
    "label": "Answer",
@@ -1198,7 +1198,7 @@
   },
   {
    "label": "Substitute",
-   "text": "v = +1.7 m/s gives speed 1.7 m/s."
+   "text": "Speed drops the sign of velocity, so for uniform motion it equals the size of the velocity."
   },
   {
    "label": "Answer",
@@ -1216,7 +1216,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Westward motion with east positive: v < 0."
+   "text": "Drawing first makes you pick an origin and signs, so a westward velocity gets a minus sign before any numbers go in."
   },
   {
    "label": "Answer",
@@ -1306,7 +1306,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Sample: compare a in a tight turn with g = 9.8 m/s^2."
+   "text": "Good questions connect what riders feel to how fast velocity changes."
   },
   {
    "label": "Answer",
@@ -1324,7 +1324,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Sample: compare jet a with g = 9.8 m/s^2."
+   "text": "Good questions connect what pilots feel to how fast velocity changes."
   },
   {
    "label": "Answer",
@@ -1342,7 +1342,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Slope v falls from vi (m/s) to 0 m/s: concave down."
+   "text": "The velocity (slope) shrinks steadily to zero, so the curve bends downward and flattens."
   },
   {
    "label": "Answer",
@@ -1360,7 +1360,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Slope of v-t line = a < 0 (m/s^2)."
+   "text": "Velocity changes by the same amount each second, so its graph is straight with a negative slope."
   },
   {
    "label": "Answer",
@@ -1378,7 +1378,7 @@
   },
   {
    "label": "Substitute",
-   "text": "t^2 term makes the graph a parabola."
+   "text": "The velocity (slope) changes steadily, so the x-t graph curves into a parabola."
   },
   {
    "label": "Answer",
@@ -1396,7 +1396,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Linear in t; slope = a in m/s^2."
+   "text": "Velocity changes by the same amount each second, so its graph is a straight line."
   },
   {
    "label": "Answer",
@@ -1414,7 +1414,7 @@
   },
   {
    "label": "Substitute",
-   "text": "x = (4.9 m/s^2)t^2: slope 0 at t = 0 s, then steeper."
+   "text": "The ball starts at rest and speeds up, so the slope starts at zero and keeps growing."
   },
   {
    "label": "Answer",
@@ -1468,7 +1468,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Slope v goes from +vi through 0 m/s to negative: an arch."
+   "text": "Velocity drops through zero at the top and then grows downward, so height rises, peaks, and falls."
   },
   {
    "label": "Answer",
@@ -1486,7 +1486,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Same change in v in less time means larger a (m/s^2)."
+   "text": "A large velocity change in a short time means a large acceleration, which is what a pilot feels."
   },
   {
    "label": "Answer",
@@ -1504,7 +1504,7 @@
   },
   {
    "label": "Substitute",
-   "text": "No numbers given; nothing to substitute."
+   "text": "No project numbers are given, so the method can be stated but not calculated."
   },
   {
    "label": "Answer",
@@ -1540,7 +1540,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Fnet x2 gives a x2; slope of a vs F = 1/m (1/kg)."
+   "text": "With mass fixed, a = Fnet/m grows in step with Fnet, so the graph is a straight line through the origin."
   },
   {
    "label": "Answer",
@@ -1576,7 +1576,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Larger area: Fdrag reaches mg at a lower speed (m/s)."
+   "text": "Drag grows with speed until it equals weight, and a larger area makes that happen at a lower speed."
   },
   {
    "label": "Answer",
@@ -1630,7 +1630,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Wingsuit: larger area, so Fdrag = mg at a lower speed."
+   "text": "Drag grows with speed until it equals weight, and a larger area makes that happen at a lower speed."
   },
   {
    "label": "Answer",
@@ -1648,7 +1648,7 @@
   },
   {
    "label": "Substitute",
-   "text": "No measured values; expected trend only."
+   "text": "Without measured data, only the trend predicted by Fdrag = mg can be stated."
   },
   {
    "label": "Answer",
@@ -1666,7 +1666,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Fdesk on mug (up) pairs with Fmug on desk (down); FEarth on mug pairs with Fmug on Earth."
+   "text": "Each force on the mug has a partner on the other object, and partners never act on the same object."
   },
   {
    "label": "Answer",
@@ -1702,7 +1702,7 @@
   },
   {
    "label": "Substitute",
-   "text": "(a) Fthrust > mg; (b) Fnet = -mg; (c) Fdrag = mg, Fnet = 0 N."
+   "text": "Compare the up and down forces in each stage: net up, net down, then zero."
   },
   {
    "label": "Answer",
@@ -1738,7 +1738,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Fhand on ball (up) pairs with Fball on hand (down); FEarth on ball pairs with Fball on Earth."
+   "text": "Each force on the ball has a partner on the other object, and partners never act on the same object."
   },
   {
    "label": "Answer",
@@ -1756,7 +1756,7 @@
   },
   {
    "label": "Substitute",
-   "text": "(a) Fthrust > mg; (b) Fnet = -mg; (c) v = 0 m/s so Fdrag = 0 N at that instant."
+   "text": "Compare forces in each stage; at the top v = 0 m/s, so drag starts at 0 N."
   },
   {
    "label": "Answer",
@@ -1792,7 +1792,7 @@
   },
   {
    "label": "Substitute",
-   "text": "For FN = 10 000 N: ice 1200 N; sand 4500 N."
+   "text": "For example, for FN = 10 000 N: ice 1200 N; sand 4500 N."
   },
   {
    "label": "Answer",
@@ -1810,7 +1810,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Tail at origin; 90 degrees points along +y."
+   "text": "Angles need one agreed starting line and turning direction so everyone draws the same vector."
   },
   {
    "label": "Answer",
@@ -1828,7 +1828,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Neither speed (m/s) nor area (m^2) appears in Ff = mu FN."
+   "text": "Speed and area do not appear in Ff = mu FN, so changing them does not change friction."
   },
   {
    "label": "Answer",
@@ -1882,7 +1882,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Relative motion present, so use mu_k, not mu_s."
+   "text": "The couch is sliding, so the surfaces move relative to each other and kinetic friction applies."
   },
   {
    "label": "Answer",
@@ -1900,7 +1900,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Depends on mu (materials) and FN (N) only."
+   "text": "Only mu and FN appear in Ff = mu FN, so only materials and normal force matter."
   },
   {
    "label": "Answer",
@@ -1918,7 +1918,7 @@
   },
   {
    "label": "Substitute",
-   "text": "FN - mg cos(phi) = 0, so FN = mg cos(phi)."
+   "text": "There is no acceleration perpendicular to the slope, so forces on that axis cancel and FN follows directly."
   },
   {
    "label": "Answer",
@@ -1936,7 +1936,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Tread raises mu on wet roads; coating lowers adhesion."
+   "text": "Changing the surface texture changes the effective mu, which raises or lowers Ff = mu FN."
   },
   {
    "label": "Answer",
@@ -1954,7 +1954,7 @@
   },
   {
    "label": "Substitute",
-   "text": "If R = 50 N east, E = 50 N west."
+   "text": "For example, if R = 50 N east, E = 50 N west."
   },
   {
    "label": "Answer",
@@ -1972,7 +1972,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Only mg splits: mg sin(phi) along x, mg cos(phi) along y."
+   "text": "The acceleration lies along the slope, so with x along it only the weight needs to be split."
   },
   {
    "label": "Answer",
@@ -1990,7 +1990,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Hairs raise contact and mu; denticles lower drag."
+   "text": "Changing the surface texture changes the effective mu, which raises or lowers Ff = mu FN."
   },
   {
    "label": "Answer",
@@ -2008,7 +2008,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Only Fg acts, a = 9.8 m/s^2 down."
+   "text": "After the kick nothing touches the ball, so only gravity (and small air drag) acts."
   },
   {
    "label": "Answer",
@@ -2026,7 +2026,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Behind: only y shows; above: only x; side: both, a parabola."
+   "text": "Each view shows only the motion along the directions it can see."
   },
   {
    "label": "Answer",
@@ -2062,7 +2062,7 @@
   },
   {
    "label": "Substitute",
-   "text": "ax = 0 N / m = 0 m/s^2, so vx is constant."
+   "text": "Gravity is vertical and nothing pushes sideways, so the horizontal velocity cannot change."
   },
   {
    "label": "Answer",
@@ -2080,7 +2080,7 @@
   },
   {
    "label": "Substitute",
-   "text": "vy changes 9.8 m/s per s; vx changes 0 m/s."
+   "text": "Only the vertical direction has a force, so only the vertical arrows change length."
   },
   {
    "label": "Answer",
@@ -2116,7 +2116,7 @@
   },
   {
    "label": "Substitute",
-   "text": "speed = sqrt(vx^2 + 0^2) = vx."
+   "text": "At the top the vertical part is zero, so the speed is just the horizontal part."
   },
   {
    "label": "Answer",
@@ -2134,7 +2134,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Only Fg acts, a = 9.8 m/s^2 down."
+   "text": "After release nothing touches the ball, so only gravity (and small air drag) acts."
   },
   {
    "label": "Answer",
@@ -2152,7 +2152,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Behind: only y shows; above: only x; sideline: both, a parabola."
+   "text": "Each view shows only the motion along the directions it can see."
   },
   {
    "label": "Answer",
@@ -2188,7 +2188,7 @@
   },
   {
    "label": "Substitute",
-   "text": "ax = 0 N / m = 0 m/s^2, so vx is constant."
+   "text": "Gravity is vertical and nothing pushes sideways, so the horizontal velocity cannot change."
   },
   {
    "label": "Answer",
@@ -2206,7 +2206,7 @@
   },
   {
    "label": "Substitute",
-   "text": "vy changes 9.8 m/s per s; vx changes 0 m/s."
+   "text": "Only the vertical direction has a force, so only the vertical arrows change length."
   },
   {
    "label": "Answer",
@@ -2242,7 +2242,7 @@
   },
   {
    "label": "Substitute",
-   "text": "t_top = vyi / g; then only vx remains."
+   "text": "The upward velocity shrinks by 9.8 m/s each second until it reaches zero at the peak."
   },
   {
    "label": "Answer",
@@ -2260,7 +2260,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Flat road: static friction supplies Fc (N)."
+   "text": "Turning needs an inward net force, and on a flat road only friction can push the tires sideways."
   },
   {
    "label": "Answer",
@@ -2278,7 +2278,7 @@
   },
   {
    "label": "Substitute",
-   "text": "r same, |v| grows (m/s), so not uniform."
+   "text": "Uniform motion needs equal-length velocity arrows; these grow, so the speed changes."
   },
   {
    "label": "Answer",
@@ -2296,7 +2296,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Window pushes inward (N); no outward agent exists."
+   "text": "No object pushes the passenger outward; the window pushes inward while the body tends to go straight."
   },
   {
    "label": "Answer",
@@ -2314,7 +2314,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Tension (N) in the line points inward."
+   "text": "The line can only pull toward the pilot, so tension supplies the inward force."
   },
   {
    "label": "Answer",
@@ -2332,7 +2332,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Slides when m v^2 / r > mu_s m g."
+   "text": "No object pushes the car outward, so the only sideways force is friction pointing inward."
   },
   {
    "label": "Answer",
@@ -2350,7 +2350,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Supplied by tension, friction, gravity, or a normal force (N)."
+   "text": "Circular motion needs an inward net force, so some real object must supply it."
   },
   {
    "label": "Answer",
@@ -2368,7 +2368,7 @@
   },
   {
    "label": "Substitute",
-   "text": "|r1| = |r2| and |v1| = |v2|; only directions change."
+   "text": "Equal-length radius and velocity arrows mean a fixed radius and constant speed."
   },
   {
    "label": "Answer",
@@ -2386,7 +2386,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Door pushes inward (N); no outward agent exists."
+   "text": "No object pushes the passenger outward; the door pushes inward while the body tends to go straight."
   },
   {
    "label": "Answer",
@@ -2404,7 +2404,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Tension (N) in the rope points inward."
+   "text": "The rope can only pull toward the hand, so tension supplies the inward force."
   },
   {
    "label": "Answer",
@@ -2422,7 +2422,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Skids when m v^2 / r > mu_s m g."
+   "text": "No object pushes the car outward, so the only sideways force is friction pointing inward."
   },
   {
    "label": "Answer",
@@ -2440,7 +2440,7 @@
   },
   {
    "label": "Substitute",
-   "text": "1 m/s + 250 m/s = about 250 m/s relative to the ground."
+   "text": "For example, 1 m/s + 250 m/s = about 250 m/s relative to the ground."
   },
   {
    "label": "Answer",
@@ -2458,7 +2458,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Longer arrow = more m/s."
+   "text": "Arrows drawn to one scale compare directly, so a longer arrow means a greater speed."
   },
   {
    "label": "Answer",
@@ -2476,7 +2476,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Opposite directions: one term negative, so magnitudes subtract."
+   "text": "Opposite directions give opposite signs, so adding them subtracts the sizes."
   },
   {
    "label": "Answer",
@@ -2494,7 +2494,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Same magnitude (m/s), opposite direction."
+   "text": "Swapping which frame is moving swaps the sign of the relative velocity."
   },
   {
    "label": "Answer",
@@ -2512,7 +2512,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Positions in m and velocities in m/s measured from the train."
+   "text": "A reference frame only needs an origin and axes, which can be attached to a moving train."
   },
   {
    "label": "Answer",
@@ -2548,7 +2548,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Add x parts and y parts separately, in m/s."
+   "text": "Velocities add as vectors, so place them tip to tail or add components."
   },
   {
    "label": "Answer",
@@ -2566,7 +2566,7 @@
   },
   {
    "label": "Substitute",
-   "text": "ay = -9.8 m/s^2, ax = 0 m/s^2: a parabola."
+   "text": "Gravity changes only the vertical velocity while the horizontal stays fixed, which traces a parabola."
   },
   {
    "label": "Answer",
@@ -2638,7 +2638,7 @@
   },
   {
    "label": "Substitute",
-   "text": "0 m/s + 8 m/s = 8 m/s relative to the road."
+   "text": "For example, 0 m/s + 8 m/s = 8 m/s relative to the road."
   },
   {
    "label": "Answer",
@@ -2656,7 +2656,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Longer arrow = more m/s."
+   "text": "Arrows drawn to one scale compare directly, so a longer arrow means a greater speed."
   },
   {
    "label": "Answer",
@@ -2674,7 +2674,7 @@
   },
   {
    "label": "Substitute",
-   "text": "v(you/bus) negative, so magnitudes subtract."
+   "text": "Opposite directions give opposite signs, so adding them subtracts the sizes."
   },
   {
    "label": "Answer",
@@ -2692,7 +2692,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Same magnitude (m/s), opposite direction."
+   "text": "Swapping which frame is moving swaps the sign of the relative velocity."
   },
   {
    "label": "Answer",
@@ -2710,7 +2710,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Positions in m and velocities in m/s measured from the car."
+   "text": "A reference frame only needs an origin and axes, which can be attached to a moving car."
   },
   {
    "label": "Answer",
@@ -2746,7 +2746,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Add x parts and y parts separately, in m/s."
+   "text": "Velocities add as vectors, so place them tip to tail or add components."
   },
   {
    "label": "Answer",
@@ -2764,7 +2764,7 @@
   },
   {
    "label": "Substitute",
-   "text": "ay = -9.8 m/s^2, ax = 0 m/s^2: a parabola."
+   "text": "Gravity changes only the vertical velocity while the horizontal stays fixed, which traces a parabola."
   },
   {
    "label": "Answer",
@@ -2836,7 +2836,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Dinosaur replica, planetarium, DNA model, tornado simulation."
+   "text": "Each item stands in for something real that is too big, small, or complex to show directly."
   },
   {
    "label": "Answer",
@@ -2854,7 +2854,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Same ramp, same start; masses 50 g, 100 g, 150 g; distance in m."
+   "text": "For example, same ramp, same start; masses 50 g, 100 g, 150 g; distance in m."
   },
   {
    "label": "Answer",
@@ -2872,7 +2872,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Keep 5 of 5 trials; explain any outlier."
+   "text": "Dropping a trial only because it disagrees makes the result look better than the evidence."
   },
   {
    "label": "Answer",
@@ -2890,7 +2890,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Virus (about 100 nm) modeled on a computer."
+   "text": "For example, a virus (about 100 nm) modeled on a computer."
   },
   {
    "label": "Answer",
@@ -2908,7 +2908,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Globe, molecule kit, wall map, graph, simulation."
+   "text": "Each item stands in for something real that is too big, small, or complex to show directly."
   },
   {
    "label": "Answer",
@@ -2926,7 +2926,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Change one variable; keep a control."
+   "text": "Each method produces data that can agree or disagree with the hypothesis."
   },
   {
    "label": "Answer",
@@ -2944,7 +2944,7 @@
   },
   {
    "label": "Substitute",
-   "text": "More trials, accurate notes, peer review."
+   "text": "Choosing data to fit expectations makes conclusions others cannot reproduce."
   },
   {
    "label": "Answer",
@@ -2962,7 +2962,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Scale airplane in a wind tunnel."
+   "text": "A small physical model is cheaper and safer than a full-size plane but shows the same airflow."
   },
   {
    "label": "Answer",
@@ -3074,7 +3074,7 @@
   },
   {
    "label": "Answer",
-   "text": "𝑡2 = 0.10, 0.20, 0.30, 0.41, 0.50, 0.61 s2 (shown in the table to 3 significant figures)"
+   "text": "𝑡2 = 0.10, 0.20, 0.30, 0.41, 0.50, 0.61 s2 (rounded to 2 significant figures; the table shows 3)"
   }
  ],
  "mq01-50": [
@@ -3164,7 +3164,7 @@
   },
   {
    "label": "Answer",
-   "text": "𝑇2 = 0.28, 0.40, 0.81, 1.6, 2.2, 2.8, 3.6 s2 (shown in the table to 3 significant figures)"
+   "text": "𝑇2 = 0.28, 0.40, 0.81, 1.6, 2.2, 2.8, 3.6 s2 (rounded to 2 significant figures; the table shows 3)"
   }
  ],
  "sol01-50": [
@@ -3196,7 +3196,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Distance to buoy changes over time (m per s)."
+   "text": "If the distance to a fixed object changes over time, the boat is moving."
   },
   {
    "label": "Answer",
@@ -3214,7 +3214,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Stopped cyclist: change in x = 0 m, no blur."
+   "text": "No position change during the exposure means no blur."
   },
   {
    "label": "Answer",
@@ -3232,7 +3232,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Dots at the hips each 1 s; compare spacing in m."
+   "text": "The skier is small compared with the slope, so one dot per time interval captures the motion."
   },
   {
    "label": "Answer",
@@ -3250,7 +3250,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Position relative to the tree changes over time."
+   "text": "If the distance to a fixed object changes over time, the object is moving."
   },
   {
    "label": "Answer",
@@ -3268,7 +3268,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Stopped train: change in x = 0 m, no blur."
+   "text": "No position change during the exposure means no blur."
   },
   {
    "label": "Answer",
@@ -3286,7 +3286,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Equal spacing per equal time: constant speed."
+   "text": "Equal spacing means equal distance in each equal time, so the speed is constant."
   },
   {
    "label": "Answer",
@@ -3304,7 +3304,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Dot at the waist each interval; compare spacing in m."
+   "text": "The hiker is small compared with the trail, so one dot per time interval captures the motion."
   },
   {
    "label": "Answer",
@@ -3340,7 +3340,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Origins on opposite sides of the robot give opposite arrows."
+   "text": "Each vector starts at its own origin, so origins on opposite sides make arrows point opposite ways."
   },
   {
    "label": "Answer",
@@ -3376,7 +3376,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Different origins or + directions give different arrows."
+   "text": "Each vector starts at its own origin, so different coordinate systems give different arrows."
   },
   {
    "label": "Answer",
@@ -3574,7 +3574,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Slope > 0: v > 0; slope < 0: v < 0; above axis: x > 0."
+   "text": "The slope sign gives the direction of motion, and the side of the axis gives the sign of position."
   },
   {
    "label": "Answer",
@@ -3646,7 +3646,7 @@
   },
   {
    "label": "Substitute",
-   "text": "(20 m/s - (-20 m/s))/2.5 s = 16 m/s^2, about 1.6g."
+   "text": "For example, (20 m/s - (-20 m/s))/2.5 s = 16 m/s^2, about 1.6g."
   },
   {
    "label": "Answer",
@@ -3682,7 +3682,7 @@
   },
   {
    "label": "Substitute",
-   "text": "(250 m/s - (-250 m/s))/10 s = 50 m/s^2, about 5g."
+   "text": "For example, (250 m/s - (-250 m/s))/10 s = 50 m/s^2, about 5g."
   },
   {
    "label": "Answer",
@@ -3700,7 +3700,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Magnet across a gap: field. String touching: contact."
+   "text": "Ask whether the agent touches the object: a magnet does not, a string does."
   },
   {
    "label": "Answer",
@@ -3736,7 +3736,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Push, string, table: contact. Gravity: field."
+   "text": "Ask whether the agent touches the object: contact forces do, field forces do not."
   },
   {
    "label": "Answer",
@@ -3754,7 +3754,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Fnet down (negative) gives a down (negative)."
+   "text": "Mass is positive, so a and Fnet always have the same sign and direction."
   },
   {
    "label": "Answer",
@@ -3772,7 +3772,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Pulls 1.0 N vs 1.5, 2.0, 3.0 N: Fnet = 0.5, 1.0, 2.0 N; a doubles as Fnet doubles."
+   "text": "For example, pulls of 1.0 N vs 1.5, 2.0, 3.0 N give Fnet = 0.5, 1.0, 2.0 N; a doubles as Fnet doubles."
   },
   {
    "label": "Answer",
@@ -3844,7 +3844,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Fg on brick down; equal Fg on Earth up; Earth's a = F / (6 x 10^24 kg), negligible."
+   "text": "Fg on brick down; equal Fg on Earth up; for example, with Earth's mass about 6 x 10^24 kg, Earth's a = F / (6 x 10^24 kg), negligible."
   },
   {
    "label": "Answer",
@@ -3898,7 +3898,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Sample questions about how F1 + F2 combine in direction."
+   "text": "Good questions ask how forces in different directions combine."
   },
   {
    "label": "Answer",
@@ -3916,7 +3916,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Sample questions about force size and direction."
+   "text": "Good questions ask how forces in different directions combine."
   },
   {
    "label": "Answer",
@@ -3934,7 +3934,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Puck: kinetic; tire contact patch at rest: static."
+   "text": "Check whether the surfaces slide: the puck slides, the tire's contact patch does not."
   },
   {
    "label": "Answer",
@@ -3952,7 +3952,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Static varies 0 N up to mu_s FN; kinetic fixed at mu_k FN."
+   "text": "Static friction adjusts until sliding starts; kinetic friction has one fixed value while sliding."
   },
   {
    "label": "Answer",
@@ -4114,7 +4114,7 @@
   },
   {
    "label": "Substitute",
-   "text": "ax = 0 N / m = 0 m/s^2; v stays at release speed, along the tangent."
+   "text": "With no tension, nothing pulls inward, so the stone keeps its velocity at release."
   },
   {
    "label": "Answer",
@@ -4132,7 +4132,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Wall's normal force (N) points inward; friction balances mg."
+   "text": "The riders circle the axis, so the wall must push them inward."
   },
   {
    "label": "Answer",
@@ -4150,7 +4150,7 @@
   },
   {
    "label": "Substitute",
-   "text": "a and Fnet point left; seat and door supply the force."
+   "text": "The car turns left, so the center is to the left and the seat and door push you that way."
   },
   {
    "label": "Answer",
@@ -4168,7 +4168,7 @@
   },
   {
    "label": "Substitute",
-   "text": "ax = 0 N / m = 0 m/s^2; v stays at release speed, along the tangent."
+   "text": "With no tension, nothing pulls inward, so the hammer keeps its velocity at release."
   },
   {
    "label": "Answer",
@@ -4186,7 +4186,7 @@
   },
   {
    "label": "Substitute",
-   "text": "Drum wall's normal force (N) points inward; water escapes through holes."
+   "text": "The clothes circle the axis, so the wall must push them inward."
   },
   {
    "label": "Answer",
@@ -4204,7 +4204,7 @@
   },
   {
    "label": "Substitute",
-   "text": "a and Fnet point right; seat and door supply the force."
+   "text": "The car turns right, so the center is to the right and the seat and door push you that way."
   },
   {
    "label": "Answer",
@@ -4240,7 +4240,7 @@
   },
   {
    "label": "Substitute",
-   "text": "v(tick/field) = v(tick/cow) + v(cow/field)."
+   "text": "Chain the frames: tick relative to cow, then cow relative to field."
   },
   {
    "label": "Answer",
@@ -4258,7 +4258,7 @@
   },
   {
    "label": "Substitute",
-   "text": "v(flea/road) = v(flea/dog) + v(dog/road)."
+   "text": "Chain the frames: flea relative to dog, then dog relative to road."
   },
   {
    "label": "Answer",

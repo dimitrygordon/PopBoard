@@ -97,6 +97,8 @@ test("sample and solution prose sits behind Show answer", () => {
 
 test("Tesla's corrections ride on top of Socrates' steps", () => {
   const c = shipped(), st = (id, l) => c[id].stepCards.find((s) => s.label === l).html;
+  assert.match(st("sol06-38", "Substitute"), /0\.35% of g\.$/);
+  assert.match(c["mq01-47"].stepCards.at(-1).html, /^𝑡<sup>2<\/sup> = .* s<sup>2<\/sup> \(rounded to 2 significant figures; the table shows 3\)$/);
   assert.match(st("mq06-65", "Substitute"), /= 4\.83 m$/);
   assert.match(st("mq06-65", "Givens"), /0\.44523x - 0\.0050790x<sup>2<\/sup>/);
   assert.match(st("mq02-32", "Givens"), /28\.875/);
