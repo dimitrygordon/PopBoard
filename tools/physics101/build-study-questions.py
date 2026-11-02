@@ -89,3 +89,6 @@ open(os.path.join(out, "index.json"), "w").write(idx.replace(" \u2014 ", ", ").r
 print(len(lessons), "lessons", sum(len(v) for v in lessons.values()), "problems", len(used), "images")
 # pack loose art and images (Cloudflare Pages 20,000-file cap); see pack-sq.py
 import subprocess as _sp; _sp.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "pack-sq.py")], check=True)
+# restore full question stems from the re-extracted source (sq/extract.py -> items.stems.json); see fix-sq-stems.py
+_st = os.path.join(os.path.dirname(os.path.abspath(sys.argv[1])), "items.stems.json")
+if os.path.exists(_st): _sp.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "fix-sq-stems.py"), _st, pub], check=True)
