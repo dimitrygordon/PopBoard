@@ -89,11 +89,11 @@ function fill(host, list, base) { for (const b of list) host.appendChild(block(b
 // Leo's art manifest: physics101/sq/art/index.json maps problem id -> 1, or {drag: "x" | "y"} for art whose
 // <g class="sq-obj" data-object data-home> can be slid along one axis.
 const ART = fetch(ROOT + "physics101/sq/art/index.json").then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
-// pack-sq.py bundles the SVGs one JSON per module (sq/art/mNN.json, id -> svg text), fetched once per module
+// pack-sq.py bundles the SVGs one JSON per module (sq/art/mNN.json, Math Skills in ms.json; id -> svg text), fetched once per module
 const PACKS = new Map();
 function artPack(id) {
-  const m = /^(?:mq|sol)(\d\d)-/.exec(id); if (!m) return Promise.resolve({});
-  if (!PACKS.has(m[1])) PACKS.set(m[1], fetch(`${ROOT}physics101/sq/art/m${m[1]}.json`).then((r) => (r.ok ? r.json() : {})).catch(() => ({})));
+  const m = /^(?:mq|sol)(\d\d|ms)-/.exec(id); if (!m) return Promise.resolve({});
+  if (!PACKS.has(m[1])) PACKS.set(m[1], fetch(`${ROOT}physics101/sq/art/${m[1] === "ms" ? "ms" : "m" + m[1]}.json`).then((r) => (r.ok ? r.json() : {})).catch(() => ({})));
   return PACKS.get(m[1]);
 }
 async function art(item, host) {
