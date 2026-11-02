@@ -8,21 +8,47 @@ order, into the solution steps. Wording is never changed, only where it sits. Id
 usage: fix-sq-leaks.py <public dir>
 """
 import json, re, sys, glob, os
-LAB = r"What we know / need to find|What we know|Physics idea|Work|Check|Known|Unknown|Strategy|Solve|Claim|Evidence|Reasoning"
-MARK = re.compile(r"(?:(?<=^)|(?<=[\s.>]))(" + LAB + r")[.:](?=\s|<|$)")
+LAB = r"What we know / need to find|What we know|What we read|Physics idea|Work|Check|Known|Unknown|Strategy|Solve|Claim|Evidence|Reasoning"
+MARK = re.compile(r"(?:(?<=^)|(?<=[\s.>]))(" + LAB + r")(?: \([^()]{0,80}\))?[.:](?=\s|<|$)")
+# some modules write the labels bare ("What we know / need to find q = ... Physics idea F = ..."): only trusted when a block opens with one
+BARE_START = re.compile(r"^(What we know / need to find|Physics idea) ")
+BARE = re.compile(r"(?:(?<=^)|(?<=[\s.>]))(What we know / need to find|Physics idea|Work|Check)(?= )")
+# Leo's wording calls (source punctuation only, no new words)
+TITLE_OVERRIDES = {
+    "mq02-42": "Lesson 3, Problem 19 (Challenge): Rosa and Tess hike the same trail: Rosa's graph runs from (0, 0) to (1.60 h, 8.0 km); Tess's graph runs from (0.25 h, 0) to (2.75 h, 8.0 km).",
+}
+# tables in the question area, decided card by card (see /workspace/physics101/sq-table-decisions.md):
+# "keep" = data the question gives students to work from; int n = worked/computed content from question block n on, moved behind Show answer
+TABLES = {
+    "mq01-21": "keep", "mq01-32": "keep", "mq01-35": "keep", "mq02-33": "keep", "mq02-48": "keep", "mq03-8": "keep",
+    "mq10-124": "keep", "mq11-64": "keep", "mq22-79": "keep", "sol11-58": "keep", "mq13-20": "keep",
+    "mq04-41": 0, "sol19-84": 0,
+}
 SHOW = {"What we know / need to find": "What we know", "Unknown": "What we know"}
 PART = re.compile(r"^<b>\(([a-z])\) </b>")
 def text(h): return re.sub(r"<[^>]+>", "", h)
 def split_marked(h):
     """html -> (question html before the first label, [(label, html), ...])"""
-    ms = list(MARK.finditer(h))
+    ms = list((BARE if BARE_START.match(text(h)) and not MARK.match(text(h)) else MARK).finditer(h))
     if not ms: return h, []
     segs = [(SHOW.get(m.group(1), m.group(1)), h[m.end():ms[i + 1].start() if i + 1 < len(ms) else len(h)].strip()) for i, m in enumerate(ms)]
     return h[:ms[0].start()].strip(), segs
 def fix(it):
+    ch = False
+    if it["id"] in TITLE_OVERRIDES and it["title"] != TITLE_OVERRIDES[it["id"]]: it["title"] = TITLE_OVERRIDES[it["id"]]; ch = True
+    n = TABLES.get(it["id"])
+    if isinstance(n, int) and len(it["question"]) > n:
+        it["steps"] = [{"label": "Work", "body": it["question"][n:]}] + it["steps"]; it["question"] = it["question"][:n]; ch = True
+    ch = leaks(it) or ch
+    lone = [b for b in it["question"] if "html" in b and re.fullmatch(r"\s*(?:" + LAB + r")(?: \([^()]{0,80}\))?[.:]\s*", text(b["html"]))]
+    if lone: it["question"] = [b for b in it["question"] if b not in lone]; ch = True  # a bare label heading whose content is already under Show answer
+    return ch
+def leaks(it):
     q, moved, after, tail = [], [], [], False  # moved: stem solution (comes before the steps); after: per-part reasoning (after them)   # tail: everything after a label in the question is solution
     for b in it["question"]:
         h = b.get("html")
+        if h is not None and PART.match(h) and tail:  # a lettered line after the solution has begun is part of that solution
+            moved.append(("Work", b)); continue
         if h is not None and PART.match(h):
             tag = PART.match(h).group(0); body = h[len(tag):]
             head, segs = split_marked(body)
@@ -77,3 +103,8 @@ for f in sorted(glob.glob(os.path.join(pub, "physics101/sq/*.json"))):
     d = json.load(open(f)); ch = [fix(it) for it in d["items"]]
     if any(ch): open(f, "w").write(json.dumps(d, ensure_ascii=False, separators=(",", ":"))); n += sum(ch)
 print("moved solution text out of the question:", n)
+ip = os.path.join(pub, "physics101/sq/index.json"); ix = json.load(open(ip)); ic = False
+for v in ix.values():
+    for t in v["t"]:
+        if t[0] in TITLE_OVERRIDES and t[1] != TITLE_OVERRIDES[t[0]]: t[1] = TITLE_OVERRIDES[t[0]]; ic = True
+if ic: open(ip, "w").write(json.dumps(ix, ensure_ascii=False, separators=(",", ":")))

@@ -10,7 +10,7 @@ const lessons = readdirSync(SQ).filter((f) => f.endsWith(".json") && f !== "inde
 const items = lessons.flatMap((l) => l.items);
 const text = (h) => h.replace(/<[^>]+>/g, "").trim();
 // Source headings that are only a label (e.g. "2. Claim.", "Logarithms, #1") with no stem anywhere in the source PDFs.
-const NO_STEM_IN_SOURCE = new Set("mq01-47 sol01-47 mq02-81 sol02-75 mq06-66 sol06-66 sol09-23 sol09-30 sol10-26 sol11-49 mq13-44 sol15-1 sol17-49 sol17-50 sol21-2 sol21-40 sol23-55 sol23-56 solms-41 solms-42 solms-43".split(" "));
+const NO_STEM_IN_SOURCE = new Set("mq01-47 sol01-47 mq02-81 sol02-75 mq06-66 sol06-66 sol09-23 sol09-30 sol10-26 sol11-49 mq13-44 sol15-1 sol17-49 sol17-50 sol21-2 sol21-40 sol23-55 sol23-56 mq23-38 sol23-37 mq23-64 sol23-62 solms-41 solms-42 solms-43".split(" "));
 const LABEL_ONLY = /^[A-Za-z &,.()\-]*\d+[a-z]?(, #\d+)?\)?[.:]?$/;
 
 test("no item has an empty prompt", () => {
@@ -39,7 +39,7 @@ test("shipped Study Questions text has no em-dashes", () => {
 });
 
 test("question text carries no worked-solution markers (solutions stay behind Show answer)", () => {
-  const MARK = /(?:^|[\s.])(What we know|Physics idea|Work|Check|Known|Unknown|Strategy|Solve|Claim|Evidence|Reasoning|Answer( \([a-z]\))?)[.:](\s|$)/;
+  const MARK = /(?:^|[\s.])(What we know|Physics idea|Work|Check|Known|Unknown|Strategy|Solve|Claim|Evidence|Reasoning|What we read|Answer)( \([^()]{0,80}\))?[.:](\s|$)/;
   const bad = items.filter((it) => it.question.some((b) => b.html && MARK.test(text(b.html)))).map((it) => it.id);
   assert.deepEqual(bad, []);
 });
@@ -53,4 +53,21 @@ test("mq02-42 part (b) keeps its full source wording", () => {
   const it = items.find((x) => x.id === "mq02-42");
   assert.ok(it.question.some((b) => b.html === "<b>(b) </b>Does Tess ever catch up with Rosa on the trail?"));
   assert.ok(it.steps.flatMap((s) => s.body).some((b) => b.html && text(b.html).endsWith("smaller than Rosa's (5.0 km/h) and she starts later, so the gap keeps growing.")));
+});
+
+test("mq02-42 heading uses Leo's colon form", () => {
+  const want = "Lesson 3, Problem 19 (Challenge): Rosa and Tess hike the same trail: Rosa's graph runs from (0, 0) to (1.60 h, 8.0 km); Tess's graph runs from (0.25 h, 0) to (2.75 h, 8.0 km).";
+  assert.equal(items.find((x) => x.id === "mq02-42").title, want);
+  const ix = JSON.parse(readFileSync(join(SQ, "index.json"), "utf8"));
+  assert.equal(Object.values(ix).flatMap((v) => v.t).find((t) => t[0] === "mq02-42")[1], want);
+});
+
+test("worked tables sit behind Show answer; given tables stay in the question", () => {
+  // these tables are rows of html blocks; worked ones open the card's Work section, given ones stay in the question
+  for (const id of ["mq04-41", "sol19-84"]) {
+    const it = items.find((x) => x.id === id);
+    assert.equal(it.question.length, 0, id);
+    assert.equal(it.steps[0].label, "Work", id);
+  }
+  for (const id of ["mq01-21", "mq01-32", "mq02-33", "mq11-64", "sol11-58", "mq13-20"]) assert.ok(items.find((x) => x.id === id).question.length > 0, id);
 });
