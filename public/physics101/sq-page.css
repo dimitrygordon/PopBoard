@@ -120,3 +120,4 @@ body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 au
 .tryit-text { display: grid; min-width: 0; }
 .tryit-name { font-weight: 700; }
 .tryit-cap { color: var(--ac-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sq-where { display: inline-block; margin: -4px 0 6px 44px; padding: 1px 10px; font-family: var(--ac-note-font); font-size: 14px; color: var(--ac-dim); border: 1.2px dashed var(--ac-line); border-radius: 10px 7px 11px 6px; }

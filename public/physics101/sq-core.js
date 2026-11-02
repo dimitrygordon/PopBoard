@@ -6,6 +6,8 @@
 // scribble that "Show answer" erases. Reduced motion shows every drawing finished.
 import { reduceMotion } from "../astro-course/ac-common.js";
 
+// course-level set (Math Skill Handbook), not tied to one lesson
+export const MATH = { slug: "math-skills", title: "Math Skills", blurb: "Significant figures, rounding, scientific notation and the other math the course leans on." };
 export const SETS = [["mq", "Practice", "Practice problems", "New problems like the ones in this lesson, with different numbers."],
                      ["sol", "Book", "Book questions", "The book's own questions for this lesson, worked out."]];
 const ROOT = new URL("../", import.meta.url).href; // site root, so the tab and the library share paths
@@ -169,6 +171,9 @@ function card(item, n) {
   const el = document.createElement("article"); el.className = "sq-card sketch"; el.id = item.id;
   el.innerHTML = `<h3 class="sq-q-title"><span class="sq-num">${n}</span><span></span></h3><div class="sq-q"></div><div class="sq-art-slot"></div><div class="sq-live"></div>`;
   el.querySelector(".sq-q-title span:last-child").textContent = item.title;
+  // opener items park in a module's first lesson, wrap-up items in its last (Dimitry); tag them
+  const where = { opener: "Module opener", wrap: "Module wrap-up" }[item.where];
+  if (where) { const t = document.createElement("span"); t.className = "sq-where"; t.textContent = where; el.querySelector(".sq-q-title").after(t); }
   fill(el.querySelector(".sq-q"), item.question, base);
   if (item.steps.length) {
     const ol = document.createElement("ol"); ol.className = "sq-steps"; ol.setAttribute("aria-label", "Worked steps");

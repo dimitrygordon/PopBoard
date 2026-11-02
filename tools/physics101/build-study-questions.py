@@ -6,8 +6,9 @@ Input:  items.json from the PDF extractor (both Drive folders: "Inspire Physics 
         book figures / equation images.
 Output: public/physics101/sq/<slug>.json (one per lesson) and public/physics101/sq/img/*.webp.
 
-Rules: lesson sections only (module opener, wrap-up and Math Skill Handbook stay out until
-Dimitry decides), and a problem is kept only if the PDF gives an answer.
+Rules (Dimitry): module opener items park in the module's first lesson, wrap-up items in its
+last lesson, and the Math Skill Handbook (the PDFs' back matter) is a course-level "math-skills" set.
+A problem is kept only if the PDF gives an answer.
 usage: build-study-questions.py <items.json> <img dir> <public dir>
 """
 import json, os, re, sys
@@ -41,11 +42,18 @@ def merge_subparts(its):
         else: out.append({**it, "parts": list(it["parts"])})
     return out
 lessons = {}
+# lesson numbers per module, from the Physics 101 catalog (p101-catalog.js)
+cat = open(os.path.join(pub, "physics101", "p101-catalog.js")).read()
+mod_lessons = {}
+for m, l in re.findall(r'"?slug"?:\s*"m(\d\d)-l(\d\d)"', cat): mod_lessons.setdefault(int(m), []).append(int(l))
 for key, its in items.items():
     src, mod = key.split("-", 1)
-    if not mod.isdigit(): continue
+    handbook = mod == "backmatter"
+    if not mod.isdigit() and not handbook: continue
     for n, it in enumerate(merge_subparts(its)):
-        if not isinstance(it["section"], int): continue
+        sec = it["section"]
+        if not handbook and isinstance(sec, int) and re.match(r"\s*Module Wrap-Up", it["title"], re.I): sec = "wrap"
+        if not handbook and sec not in ("opener", "wrap") and not isinstance(sec, int): continue
         parts = it["parts"]
         if not any(p["f"] == "answer" for p in parts): continue
         blocks = {"question": [], "steps": [], "answer": [], "check": []}
@@ -60,12 +68,15 @@ for key, its in items.items():
                 lab = STEP.get(f, f.capitalize())
                 if "label" in p or not blocks["steps"] or blocks["steps"][-1]["label"] != lab: blocks["steps"].append({"label": lab, "body": [b]})
                 else: blocks["steps"][-1]["body"].append(b)
-        if re.match(r"\s*(Module Opener|Module Wrap-Up|Math Skill Handbook)", it["title"], re.I): continue  # held until Dimitry confirms placement
-        slug = f"m{int(mod):02d}-l{it['section']:02d}"
-        lessons.setdefault(slug, []).append({"id": f"{src}{int(mod):02d}-{n}", "src": src, "page": it["page"],
+        if handbook: slug, iid, where = "math-skills", f"{src}ms-{n}", "math"
+        else:
+            ls = mod_lessons[int(mod)]
+            lesson = min(ls) if sec == "opener" else max(ls) if sec == "wrap" else sec
+            slug, iid, where = f"m{int(mod):02d}-l{lesson:02d}", f"{src}{int(mod):02d}-{n}", sec if sec in ("opener", "wrap") else "lesson"
+        lessons.setdefault(slug, []).append({"id": iid, "src": src, "page": it["page"], "where": where,
             "title": re.sub(r"\s+", " ", it["title"]).strip(), **blocks})
 for slug, its in lessons.items():
-    its.sort(key=lambda x: (x["src"] != "mq", x["page"]))
+    its.sort(key=lambda x: (x["src"] != "mq", {"opener": 0, "lesson": 1, "math": 1, "wrap": 2}[x["where"]], x["page"]))
     txt = json.dumps({"slug": slug, "items": its}, ensure_ascii=False, separators=(",", ":"))
     txt = txt.replace(" \u2014 ", ", ").replace("\u2014", ", ")  # house style: no em-dashes
     txt = txt.replace("\\u0002 ", "$").replace("\\u0002", "$")  # the PDFs' dollar sign extracts as U+0002

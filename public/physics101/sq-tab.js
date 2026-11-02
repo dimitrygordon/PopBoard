@@ -2,19 +2,19 @@
 // Read this page keeps only the lesson reading; problem cards live only in the Study Questions tab.
 // The header pencil button is a quiet doorway into the tab. Deep link: ?lesson=m01-l04&tab=sq (&sq=<slug> for another lesson).
 import { DECKS } from "./p101-catalog.js";
-import { renderLesson, bindSoundButton, SETS } from "./sq-core.js";
+import { renderLesson, bindSoundButton, SETS, MATH } from "./sq-core.js";
 import { renderTryIt } from "./tryit.js";
 
 const $ = (id) => document.getElementById(id);
 const P = new URLSearchParams(location.search);
 const home = P.get("lesson") || DECKS[0].slug;
-let sqSlug = DECKS.some((d) => d.slug === P.get("sq")) ? P.get("sq") : home, filter = "all", loaded = null;
+let sqSlug = DECKS.some((d) => d.slug === P.get("sq")) || P.get("sq") === MATH.slug ? P.get("sq") : home, filter = "all", loaded = null;
 const panel = $("panel"), story = $("story"), tools = $("tools");
 const tabs = { read: $("tabRead"), sq: $("tabSq"), test: $("tabTest") };
 bindSoundButton($("soundBtn"));
 
 // lesson picker, grouped by module
-$("sqPick").innerHTML = [...new Set(DECKS.map((d) => d.q))].map((q) => {
+$("sqPick").innerHTML = `<optgroup label="Course"><option value="${MATH.slug}">${MATH.title}</option></optgroup>` + [...new Set(DECKS.map((d) => d.q))].map((q) => {
   const ls = DECKS.filter((d) => d.q === q);
   return `<optgroup label="Module ${q}: ${ls[0].module}">${ls.map((d) => `<option value="${d.slug}">L${d.lesson}. ${d.title}</option>`).join("")}</optgroup>`;
 }).join("");
