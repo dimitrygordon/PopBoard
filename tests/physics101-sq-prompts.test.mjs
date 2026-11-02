@@ -76,3 +76,11 @@ test("mq02-42 shows Leo's pencil graph with a dark-mode twin", () => {
   const f = items.find((x) => x.id === "mq02-42").question[0];
   assert.ok(f.fig.startsWith("data:image/webp") && f.dark.startsWith("data:image/webp") && f.fig !== f.dark);
 });
+
+test("solution steps lost in extraction are restored from the source", () => {
+  const get = (id) => items.find((x) => x.id === id);
+  for (const id of ["sol04-40", "sol06-18", "mq06-18"]) assert.equal(get(id).steps[0].label, "Work", id);
+  assert.equal(get("mq06-18").question.length, 1);
+  for (const id of ["mq03-88", "sol03-71"]) assert.deepEqual(get(id).steps.map((s) => s.label), ["Physics idea", "Work"], id);
+  for (const id of ["mq06-57", "sol06-57", "mq06-58", "sol06-58"]) assert.match(get(id).steps[0].body[0].alt, /𝜃 = tan⁻¹/, id);
+});

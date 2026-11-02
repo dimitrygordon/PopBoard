@@ -30,6 +30,19 @@ TABLES = {
     "mq01-21": "keep", "mq01-32": "keep", "mq01-35": "keep", "mq02-33": "keep", "mq02-48": "keep", "mq03-8": "keep",
     "mq10-124": "keep", "mq11-64": "keep", "mq22-79": "keep", "sol11-58": "keep", "mq13-20": "keep",
     "mq04-41": 0, "sol19-84": 0,
+    # unlabeled worked text (and the answer's own diagrams) that the source prints before "Answer:"
+    "sol04-40": 0, "sol06-18": 0, "mq06-18": 1,
+}
+# solution sections the extractor dropped (the heading "Work (experiment):" is not a plain label); wording copied from the source PDFs
+_EXP = "Toss a ball straight up above a motion sensor (or film it with a scale and a high frame rate). Plot velocity against time. If {c} at the top, the graph would show a flat piece at 𝑣 = 0. The data show a smooth straight line crossing zero with a slope of about −9.8 m/s<sup>2</sup> and no flat piece. Equivalently, measure the velocity just before and just after the peak: 𝛥𝑣 / 𝛥𝑡 ≈ −9.8 m/s<sup>2</sup>."
+RESTORE = {  # id -> (insert after this label, label, html)
+    "mq03-88": ("Physics idea", "Work", _EXP.format(c="gravity stopped acting")),   # mq-03.pdf p.31
+    "sol03-71": ("Physics idea", "Work", _EXP.format(c="the acceleration is zero")),  # sol-03.pdf p.28
+}
+# equation images that hold two source lines but whose alt text kept only the first (mq-06.pdf p.21-22, sol-06.pdf p.19)
+ALT_TAIL = {
+    "mq06-57": "; 𝜃 = tan⁻¹(1.4 / 7.2) = 11° east of north", "sol06-57": "; 𝜃 = tan⁻¹(0.62 / 3.8) = 9.3° north of east",
+    "mq06-58": "; 𝜃 = tan⁻¹(80 / 140) = 30° south of west", "sol06-58": "; 𝜃 = tan⁻¹(85 / 175) = 26° east of south",
 }
 SHOW = {"What we know / need to find": "What we know", "Unknown": "What we know"}
 PART = re.compile(r"^<b>\(([a-z])\) </b>")
@@ -47,6 +60,15 @@ def fix(it):
         lf, df, alt = FIG_OVERRIDES[it["id"]]; nb = {"fig": uri(lf), "dark": uri(df), "alt": alt, "w": 350}
         figs = [i for i, b in enumerate(it["question"]) if "fig" in b]
         if figs and it["question"][figs[0]] != nb: it["question"][figs[0]] = nb; ch = True
+    r = RESTORE.get(it["id"])
+    if r and not any(b.get("html") == r[2] for st in it["steps"] for b in st["body"]):
+        i = next((k + 1 for k, st in enumerate(it["steps"]) if st["label"] == r[0]), 0)
+        it["steps"].insert(i, {"label": r[1], "body": [{"html": r[2]}]}); ch = True
+    t = ALT_TAIL.get(it["id"])
+    if t:
+        for st in it["steps"]:
+            for b in st["body"]:
+                if "eq" in b and "=" in b.get("alt", "") and not b["alt"].endswith(t) and "𝜃" not in b["alt"]: b["alt"] += t; ch = True
     n = TABLES.get(it["id"])
     if isinstance(n, int) and len(it["question"]) > n:
         it["steps"] = [{"label": "Work", "body": it["question"][n:]}] + it["steps"]; it["question"] = it["question"][:n]; ch = True
