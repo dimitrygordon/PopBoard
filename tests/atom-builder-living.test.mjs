@@ -60,3 +60,9 @@ test("Tesla re-stamp: Be-6, Ca-48, Pa-234m, Bi-214 hidden, K-40 random by %, unm
   const ui = readFileSync(new URL("atom-builder/ab-ui.js", pub), "utf8");
   assert.match(ui, /y\[1\] >= 0\.01/); assert.match(ui, /branch not measured/); assert.match(ui, /not a bound nucleus, falls apart almost instantly/i); assert.match(ui, /You picked it; nature picks randomly/);
 });
+
+test("Tesla final stamp: tiny branches hidden, Ca-48 caption, proton/neutron emission charge notes", () => {
+  const ui = readFileSync(new URL("atom-builder/ab-ui.js", pub), "utf8");
+  assert.match(ui, /b\.pct >= 0\.01/); assert.match(ui, /Observationally stable here: it decays by double beta decay with t1\/2 about 6\.4e19 y \(NEMO-3\)/);
+  assert.match(ui, /protons"\} flew off, so the atom now has charge/); assert.match(ui, /A neutron flew off; charge unchanged\./);
+});

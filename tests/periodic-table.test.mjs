@@ -23,7 +23,7 @@ test("spot values match the sources (PubChem, IAEA)", () => {
   assert.equal(Z(43).decay, "ec"); assert.equal(Z(92).decay, "alpha"); assert.equal(Z(26).decay, "stable");
   assert.equal(els.filter((e) => e.decay === "stable").length, 80);
 });
-test("Sn has 10 stable isotopes (CIAAW)", () => { assert.equal(Z(50).nStable, 10); assert.ok([114, 115].every((A) => Z(50).iso.some((i) => i.A === A))); assert.match(Z(57).notes.electron_affinity, /Lu et al\. 2019/); assert.match(Z(57).notes.electron_affinity, /Blondel 2020/); });
+test("Sn has 10 stable isotopes (CIAAW)", () => { assert.equal(Z(50).nStable, 10); assert.ok([114, 115].every((A) => Z(50).iso.some((i) => i.A === A))); assert.match(Z(57).notes.electron_affinity, /Lu et al\. 2019/); assert.match(Z(57).notes.electron_affinity, /0\.557553\(25\) eV \(Lu et al\. 2019.*0\.557546\(20\) eV \(Blondel 2020/); });
 test("Tesla rulings: phases, sublimation, EA classes, observationally stable", () => {
   assert.equal(P.stateAt(Z(2), 0), "liquid"); assert.equal(P.stateAt(Z(6), 4000), "solid"); assert.equal(P.stateAt(Z(6), 4100), "gas");
   for (let z = 100; z <= 118; z++) assert.equal(P.stateAt(Z(z), 293), "unknown", Z(z).sym);
@@ -37,6 +37,7 @@ test("Tesla rulings: phases, sublimation, EA classes, observationally stable", (
   assert.match(P.TRENDS.find((t) => t[0] === "ea")[4], /chlorine highest/); assert.equal(P.TRENDS[0][0], "cov");
   const n = (k) => els.filter((e) => e.decay === k).length; assert.deepEqual([n("stable"), n("alpha"), n("sf"), n("ec"), n("beta-")], [80, 27, 5, 4, 2]);
   assert.deepEqual(els.filter((e) => e.decay === "ec").map((e) => e.sym), ["Tc", "Pm", "At", "Fl"]);
+  assert.equal(els.reduce((t, e) => t + e.nStable, 0), 253); assert.equal(els.filter((e) => e.nStable).length, 80);
   assert.equal(Z(108).mass, 278.15375); assert.equal(Z(107).mass, 278.15499); assert.equal(Z(109).mass, 282.16689); assert.equal(Z(111).mass, 286.17876);
   assert.match(Z(108).labels.atomic_mass, /Hs-278.*estimated \(AME2020 systematics\)/); assert.equal(Z(58).eaStatus, "approximate");
   assert.equal(Z(97).iso.find((i) => i.A === 248)?.st ?? "radioactive", "radioactive");

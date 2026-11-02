@@ -121,7 +121,7 @@ export async function mountPeriodicTable(root, opts = {}) {
     });
     const c = root.querySelector("#ptCounts"); if (c) c.replaceChildren(...["solid", "liquid", "gas", "unknown"].map((s) => h("span", { className: "pt-key st-" + s, textContent: `${cap(s)} (${counts[s]})` })));
     const mm = root.querySelector("#ptMatch"); if (mm) mm.textContent = `${match} elements match`;
-    legend.replaceChildren(...(m === "isotopes" ? [...DECAY.map(([k, n]) => h("span", { className: "pt-key dc-" + k, textContent: n })), h("span", { className: "pt-dim", textContent: "Number = count of stable isotopes" })]
+    legend.replaceChildren(...(m === "isotopes" ? [...DECAY.map(([k, n]) => h("span", { className: "pt-key dc-" + k, textContent: n })), h("span", { className: "pt-dim", textContent: `Number = count of stable isotopes. ${els.reduce((t, e) => t + (e.nStable || 0), 0)} stable isotopes across ${els.filter((e) => e.nStable).length} elements.` })]
       : m === "trends" ? [h("span", { className: "pt-key tr-0", textContent: "Low" }), h("span", { className: "pt-key tr-2" , textContent: "Mid"}), h("span", { className: "pt-key tr-4", textContent: "High" }), h("span", { className: "pt-key tr-none", textContent: "No data" })]
       : m === "year" ? [h("span", { className: "pt-key", textContent: `Known by ${S.year} CE` }), h("span", { className: "pt-key is-dim", textContent: "Not yet discovered" })]
       : m === "temperature" ? [] : CATS.map(([n, k]) => h("span", { className: "pt-key cat-" + k, textContent: n }))));

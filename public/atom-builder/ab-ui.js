@@ -295,6 +295,7 @@ function decayBox() {
     box.append(strip, el("div", { className: "row" }, btn("Step back", stepBack, "", "Undo the last decay"), btn("Replay", () => { const s = chainStart; decayBusy = false; setAtom(s); allowDecay(); }, "", "Replay the first decay")));
     if (decayChain.at(-1).note) box.append(el("p", { className: "dim", textContent: decayChain.at(-1).note }));
   }
+  if (a.p === 20 && a.n === 28) box.append(el("p", { className: "dim", textContent: "Observationally stable here: it decays by double beta decay with t1/2 about 6.4e19 y (NEMO-3), far longer than the age of the universe." }));
   if (a.p < 1 || isStable(a)) return box;
   const d = decay.decayOf(a.p, a.n, { rand: () => 0 });
   if (!d || d.unbound || !d.daughter) { box.append(el("p", { className: "dim", textContent: "Not a bound nucleus: falls apart almost instantly." })); return box; }
@@ -303,8 +304,9 @@ function decayBox() {
     el("p", { className: "dim", textContent: hlText(d) }), ...(d.note ? [el("p", { className: "dim", textContent: d.note })] : []));
   // Every route shown before the press (Tesla Q9). Nature picks at random by %; Sandbox may pick one.
   const fmtB = (b) => `${b.mode.label} to ${SYMBOLS[b.p] || "?"}-${b.A}${b.pct != null ? ` (${b.pct}%)` : branchesNote(d)}`;
-  if (d.branches.length > 1) {
-    const list = el("ul", { className: "ab-branches" }, ...d.branches.map((b) => el("li", { textContent: fmtB(b) })));
+  const shown = d.branches.filter((b) => b.pct == null || b.pct >= 0.01); // Tesla: under 0.01 % stays in the data, off screen
+  if (shown.length > 1) {
+    const list = el("ul", { className: "ab-branches" }, ...shown.map((b) => el("li", { textContent: fmtB(b) })));
     box.append(el("p", { className: "dim", textContent: "Possible decays. Which one a single nucleus takes is random, weighted by these chances." }), list);
     if (BRANCH_CHOICE && mode === "sandbox") { const sel = el("select", { className: "ab-pick", ariaLabel: "Which decay" }, el("option", { value: "", textContent: "Let nature pick (random)" }), ...d.branches.map((b, i) => el("option", { value: String(i), textContent: "I pick: " + fmtB(b) })));
       sel.value = branchPick == null ? "" : String(branchPick); sel.onchange = () => { branchPick = sel.value === "" ? null : +sel.value; renderMode(true); };
@@ -352,6 +354,8 @@ async function allowDecay() {
   const t = d.daughter, q = (t.p) - a.e;
   const note = d.mode.particles.includes("alpha") ? `The alpha particle took 2 protons but no electrons, so the atom is left with charge ${q > 0 ? "+" + q : q} until its electrons rearrange.`
     : d.mode.code.startsWith("B-") || d.mode.code === "2B-" ? `A neutron turned into a proton (plus an electron and an antineutrino that fly off), so the atom now has charge ${q > 0 ? "+" + q : q}.`
+    : d.mode.particles.includes("proton") ? `${d.mode.particles.filter((x) => x === "proton").length === 1 ? "A proton" : d.mode.particles.filter((x) => x === "proton").length + " protons"} flew off, so the atom now has charge ${q > 0 ? "+" + q : q}.`
+    : d.mode.particles.includes("neutron") && !d.mode.code.match(/B|EC/) ? "A neutron flew off; charge unchanged."
     : `A proton turned into a neutron, so the atom now has charge ${q > 0 ? "+" + q : q}.`;
   branchPick = null;
   decayChain.push({ p: t.p, n: t.n, e: a.e, via: d.mode.symbol, note: t.inBuilder ? note + " Real atoms quickly gain or lose electrons; here the electrons carry forward from step to step, so the charge adds up." : `${t.symbol}-${t.A} is beyond this builder (it stops at calcium). Open it in Periodic Table Studio.` });
