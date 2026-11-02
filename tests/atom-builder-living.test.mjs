@@ -64,5 +64,12 @@ test("Tesla re-stamp: Be-6, Ca-48, Pa-234m, Bi-214 hidden, K-40 random by %, unm
 test("Tesla final stamp: tiny branches hidden, Ca-48 caption, proton/neutron emission charge notes", () => {
   const ui = readFileSync(new URL("atom-builder/ab-ui.js", pub), "utf8");
   assert.match(ui, /b\.pct >= 0\.01/); assert.match(ui, /Observationally stable here: it decays by double beta decay with t1\/2 about 6\.4e19 y \(NEMO-3\)/);
-  assert.match(ui, /protons"\} flew off, so the atom now has charge/); assert.match(ui, /A neutron flew off; charge unchanged\./);
+  const c = D.chargeNote;
+  assert.equal(c("2P", 0, -2), "2 protons flew off, so the atom now has charge -2.");
+  assert.equal(c("N", 0, 0), "A neutron flew off; the charge stays 0.");
+  assert.match(c("B-A", 0, -1), /^A neutron turned into a proton .*, then an alpha particle .* flew off, so the atom now has charge -1\.$/);
+  assert.match(c("ECA", 0, -3, true), /^A proton turned into a neutron \(electron capture\), then an alpha particle .* charge -3\. \(a rare route, under 0\.01 %\)$/);
+  assert.match(c("ECP", 0, -2), /electron capture\), then a proton flew off, so the atom now has charge -2\./);
+  assert.match(c("B-P", 0, 0), /antineutrino fly off\), then a proton flew off; the charge stays 0\./);
+  assert.match(ui, /chargeNote\(d\.mode\.code, a\.p - a\.e, q, d\.branch != null && d\.branch < 0\.01\)/);
 });

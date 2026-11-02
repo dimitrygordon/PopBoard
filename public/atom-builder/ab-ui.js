@@ -6,7 +6,7 @@ import {
   sanitizeAtom, describe, shellCounts, isStable, judgePrediction, collect, sanitizeTable, nucleonSize, nucleusRadius, electronBand
 } from "./ab-model.js";
 import { createScene, loadArt, KINDS } from "./ab-scene.js";
-import { createDecay, chargeBadge, meterLevel, SYMBOLS } from "./ab-decay.js";
+import { createDecay, chargeBadge, chargeNote, meterLevel, SYMBOLS } from "./ab-decay.js";
 import {
   initFun, pressFeedback, smoothTheme, prefers, challengeCard, disclosure, createChallenges, createStreak, createPrediction,
   TIERS, bottomSheet, springStep, encodeState, decodeState, sanitizeState, shareLink, celebrate, tick, buzz, sound
@@ -352,11 +352,7 @@ async function allowDecay() {
     await sleep(350);
   }
   const t = d.daughter, q = (t.p) - a.e;
-  const note = d.mode.particles.includes("alpha") ? `The alpha particle took 2 protons but no electrons, so the atom is left with charge ${q > 0 ? "+" + q : q} until its electrons rearrange.`
-    : d.mode.code.startsWith("B-") || d.mode.code === "2B-" ? `A neutron turned into a proton (plus an electron and an antineutrino that fly off), so the atom now has charge ${q > 0 ? "+" + q : q}.`
-    : d.mode.particles.includes("proton") ? `${d.mode.particles.filter((x) => x === "proton").length === 1 ? "A proton" : d.mode.particles.filter((x) => x === "proton").length + " protons"} flew off, so the atom now has charge ${q > 0 ? "+" + q : q}.`
-    : d.mode.particles.includes("neutron") && !d.mode.code.match(/B|EC/) ? "A neutron flew off; charge unchanged."
-    : `A proton turned into a neutron, so the atom now has charge ${q > 0 ? "+" + q : q}.`;
+  const note = chargeNote(d.mode.code, a.p - a.e, q, d.branch != null && d.branch < 0.01);
   branchPick = null;
   decayChain.push({ p: t.p, n: t.n, e: a.e, via: d.mode.symbol, note: t.inBuilder ? note + " Real atoms quickly gain or lose electrons; here the electrons carry forward from step to step, so the charge adds up." : `${t.symbol}-${t.A} is beyond this builder (it stops at calcium). Open it in Periodic Table Studio.` });
   if (t.inBuilder) setAtom({ p: t.p, n: t.n, e: a.e }); else renderMode(true);

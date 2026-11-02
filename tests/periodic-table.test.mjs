@@ -37,7 +37,7 @@ test("Tesla rulings: phases, sublimation, EA classes, observationally stable", (
   assert.match(P.TRENDS.find((t) => t[0] === "ea")[4], /chlorine highest/); assert.equal(P.TRENDS[0][0], "cov");
   const n = (k) => els.filter((e) => e.decay === k).length; assert.deepEqual([n("stable"), n("alpha"), n("sf"), n("ec"), n("beta-")], [80, 27, 5, 4, 2]);
   assert.deepEqual(els.filter((e) => e.decay === "ec").map((e) => e.sym), ["Tc", "Pm", "At", "Fl"]);
-  assert.equal(els.reduce((t, e) => t + e.nStable, 0), 253); assert.equal(els.filter((e) => e.nStable).length, 80);
+  assert.equal(els.reduce((t, e) => t + e.nStable, 0), 251); assert.equal(Z(52).iso.find((i) => i.A === 130).st, "effectively_stable"); assert.equal(Z(63).iso.find((i) => i.A === 151).st, "effectively_stable"); assert.equal(els.filter((e) => e.nStable).length, 80);
   assert.equal(Z(108).mass, 278.15375); assert.equal(Z(107).mass, 278.15499); assert.equal(Z(109).mass, 282.16689); assert.equal(Z(111).mass, 286.17876);
   assert.match(Z(108).labels.atomic_mass, /Hs-278.*estimated \(AME2020 systematics\)/); assert.equal(Z(58).eaStatus, "approximate");
   assert.equal(Z(97).iso.find((i) => i.A === 248)?.st ?? "radioactive", "radioactive");
