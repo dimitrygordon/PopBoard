@@ -114,12 +114,12 @@ test("Study Questions assets stay packed: public/ under Cloudflare Pages' 20,000
 test("Leo's M2 to M24 art plus Math Skills, opener and wrap-up packs are wired for problems that exist", () => {
   const art = JSON.parse(read("physics101/sq/art/index.json"));
   const ids = Object.keys(art);
-  assert.equal(ids.length, 3356);
+  assert.equal(ids.length, 3418);
   const where = new Map([...DECKS.map((d) => d.slug), "math-skills"].flatMap((s) => JSON.parse(read(`physics101/sq/${s}.json`)).items.map((i) => [i.id, i.where])));
   const all = new Set(where.keys());
   const n = { opener: 0, wrap: 0, math: 0, lesson: 0 };
   for (const id of ids) n[where.get(id)]++;
-  assert.deepEqual(n, { opener: 104, wrap: 120, math: 88, lesson: 3044 });
+  assert.deepEqual(n, { opener: 104, wrap: 182, math: 88, lesson: 3044 });
   for (const id of ids) {
     assert.match(id, /^(mq|sol)(0[1-9]|1\d|2[0-4]|ms)-/);
     assert.ok(all.has(id), id);
@@ -140,4 +140,22 @@ test("Leo's Module 1 Lesson 4 page is wired for its problem", () => {
   assert.match(body, /id="reveal"/);
   assert.match(body, /id="play"/);
   assert.doesNotMatch(body, /\u2014/);
+});
+
+test("tapping a question expands its worked solution, on Study Questions cards and Read this page examples", () => {
+  const core = read("physics101/sq-core.js");
+  assert.match(core, /export function bindWorked\(head, box/);
+  assert.match(core, /setAttribute\("aria-expanded"/);
+  assert.match(core, /box\.hidden = true/);
+  assert.match(core, /bindWorked\(el\.querySelector\("\.sq-pin"\), ol\)/);
+  assert.match(core, /if \(reduceMotion\(\)\) \{ steps\.forEach\(reveal\)/);
+  // Socrates walkthroughs are not written: an empty step list shows a marked placeholder, never invented prose
+  assert.match(core, /PLACEHOLDER: step-by-step walkthrough to come\./);
+  const w = read("physics101/worked.js");
+  assert.match(w, /Example Problem/);
+  assert.match(w, /\^Step \[a-z\]\+/);
+  assert.match(w, /bindWorked\(pin, ol\)/);
+  assert.match(w, /Show answer/);
+  assert.match(read("physics101/sq-tab.js"), /watchReadText\(\$\("readText"\)\)/);
+  assert.match(read("physics101/sq-page.css"), /\.sq-expand \{[^}]*min-height: 44px/);
 });
