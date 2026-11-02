@@ -101,3 +101,7 @@ button:focus-visible, canvas:focus-visible { outline: 3px solid var(--ab-accent)
   .controls.fun-sheet-on .fun-handle { display: flex; }
 }
 @media (min-width: 900px) { .status { max-width: 260px; } }
+/* Door to Periodic Table Studio (its own library module). */
+.pt-door { display: inline-flex; align-items: center; gap: 6px; min-height: var(--ab-hit); padding: 0 12px; border-radius: 12px; border: 1px solid var(--ab-border); background: var(--ab-btn); color: var(--ab-ink); text-decoration: none; font-size: .9rem; white-space: nowrap; }
+.pt-door:focus-visible { outline: 3px solid var(--ab-accent); outline-offset: 2px; }
+@media (max-width: 600px) { .pt-door .door-label { display: none; } .pt-door { padding: 0; width: var(--ab-hit); justify-content: center; } }

@@ -50,6 +50,13 @@ export function createScene(canvas, imgs) {
     if (!st.nucleons.length && !st.electrons.length) {
       ctx.setLineDash([6, 6]); ctx.strokeStyle = pal.dim; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(g.cx, g.cy, g.S * 1.4, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
     }
+    // Dashed empty slots: places a cation's missing electrons would go (Leo's ion pack).
+    if (st.slots?.some((k) => k > 0)) {
+      ctx.setLineDash([3, 3]); ctx.strokeStyle = pal.slot || pal.dim; ctx.lineWidth = 1.5;
+      st.slots.forEach((k, s) => { const tot = [2, 8, 8, 4][s], r = (s ? (g.radii[s - 1] + g.radii[s]) / 2 : g.radii[0] * 0.72);
+        for (let i = 0; i < k; i++) { const ang = -Math.PI / 2 + (Math.PI * 2 * (tot - 1 - i)) / tot; ctx.beginPath(); ctx.arc(g.cx + Math.cos(ang) * r, g.cy + Math.sin(ang) * r, g.S * 0.22, 0, Math.PI * 2); ctx.stroke(); } });
+      ctx.setLineDash([]);
+    }
     for (const t of st.nucleons) token(t.kind, g.cx + t.x + (t.wx || 0), g.cy + t.y + (t.wy || 0), st.nS || g.S, t.pressed);
     for (const e of st.electrons) token("electron", g.cx + e.x, g.cy + e.y, g.S, e.pressed, e.alpha ?? 1);
     // Trays.
