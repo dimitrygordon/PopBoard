@@ -70,7 +70,7 @@ test("Leo's studio pack: 27 assets, one JSON + one CSS, every id the app uses ex
   const dir = new URL("../public/physics101/custom-quiz/", import.meta.url);
   assert.deepEqual(readdirSync(dir).sort(), ["custom-quiz-ui.css", "custom-quiz-ui.json"]);
   const pack = JSON.parse(readFileSync(new URL("custom-quiz-ui.json", dir)));
-  assert.equal(Object.keys(pack).length, 27);
+  assert.equal(Object.keys(pack).length, 28);
   for (const v of Object.values(pack)) assert.match(v.light, /^<svg/);
   const app = readFileSync(new URL("../public/physics101/cq-app.js", import.meta.url), "utf8");
   for (const [, id] of app.matchAll(/art\("(cq-[a-z-]+)"/g)) assert.ok(pack[id], id);

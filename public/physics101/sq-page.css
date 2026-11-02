@@ -133,7 +133,7 @@ body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 au
 .wk-answer .sq-cover { inset: 0; }
 @media (prefers-reduced-motion: reduce) { .sq-expand svg { transition: none; } }
 
-/* Practice Questions + Custom Quiz: one centered row under the module filters and count (Leo: 20px icons in 40px slots) */
+/* Practice Questions + Custom Quiz: one centered row under the module filters and count (Leo: 20px icons in 40px slots; Practice Questions icon is Leo's cq-icon-practice) */
 .lib-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 14px 0 4px; }
 .pq-icon-slot { display: inline-grid; place-items: center; flex: none; width: 40px; height: 40px; margin: -4px 0; }
 .pq-icon-slot svg, .pq-icon-slot .cq-art { width: 20px; height: 20px; }
