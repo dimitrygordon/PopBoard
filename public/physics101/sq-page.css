@@ -1,7 +1,8 @@
 /* Physics 101 Study Questions: cream notebook page (light) and charcoal with cream ink (dark, from p101.css). */
-.ac-bar { position: sticky; top: 0; z-index: 5; background: var(--ac-paper); }
-.ac-bar .study-back-btn { height: var(--ac-hit); white-space: nowrap; }
-.sq { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 12px 16px 80px; }
+body.sq-lib .ac-bar { position: sticky; top: 0; z-index: 5; background: var(--ac-paper); }
+body.sq-lib .ac-bar .study-back-btn { height: var(--ac-hit); white-space: nowrap; }
+body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 12px 16px 80px; }
+.sq-empty { color: var(--ac-dim); }
 .sq-intro { display: grid; gap: 4px; margin: 10px 0 14px; }
 .sq-intro .sq-crumb { font-family: var(--ac-note-font); color: var(--ac-dim); }
 .sq-intro b { font-family: var(--ac-title-font); font-size: 30px; line-height: 1.1; }
@@ -43,3 +44,68 @@
 /* Leo's hand-built problem pages sit in the list like a sheet of paper */
 .sq-rich { margin: 0 0 18px; }
 .sq-rich .card:first-child { margin-top: 0; }
+
+/* ---------- Practice Questions library: laid out like the Courses band ---------- */
+.sq-crumbs { font-family: var(--ac-note-font); color: var(--ac-dim); margin: 6px 0 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+.sq-crumbs a { color: inherit; }
+.sq-hero { font-family: var(--ac-title-font); font-size: clamp(36px, 7vw, 60px); text-align: center; margin: 8px 0 0; }
+.sq-lede { text-align: center; color: var(--ac-dim); margin: 4px 0 16px; }
+.sq-mods, .sq-lessons, .sq-results { list-style: none; padding: 0; margin: 18px 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.sq-results { grid-template-columns: 1fr; gap: 8px; }
+.sq-mod, .sq-les, .sq-hit { display: grid; gap: 4px; padding: 14px 16px; min-height: 44px; color: var(--ac-text); text-decoration: none;
+  background: color-mix(in srgb, var(--acc, var(--mod-accent)) 16%, var(--ac-panel)); border-left: 8px solid var(--acc, var(--mod-accent)); }
+.sq-mod:hover, .sq-les:hover, .sq-hit:hover, .sq-mod:focus-visible, .sq-les:focus-visible { background: color-mix(in srgb, var(--acc, var(--mod-accent)) 30%, var(--ac-panel)); }
+.sq-mod-num { font-family: var(--ac-note-font); color: var(--ac-dim); }
+.sq-mod-name { font-family: var(--ac-head-font); font-size: 22px; line-height: 1.15; }
+.sq-mod-meta { font-family: var(--ac-note-font); color: var(--ac-dim); }
+.sq-les b { font-family: var(--ac-head-font); font-size: 20px; font-weight: 400; }
+.sq-more { color: var(--ac-dim); padding: 6px; }
+.sq-lesson-head { display: grid; gap: 4px; justify-items: start; margin: 4px 0 12px; }
+.sq-lesson-title { font-family: var(--ac-title-font); font-size: clamp(26px, 5vw, 38px); margin: 0 0 6px; line-height: 1.1; }
+.sq-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 4px; }
+.sq-chip { min-height: 40px; padding: 4px 14px; font: inherit; font-family: var(--ac-head-font); color: var(--ac-text); background: var(--ac-panel);
+  border: 1.5px solid var(--ac-line); border-radius: 12px 9px 13px 8px; cursor: pointer; }
+.sq-chip[aria-pressed="true"] { background: var(--mod-accent); border-color: var(--mod-accent); color: #1f1c18; }
+
+/* ---------- storybook tab row: Read this page | Study Questions | Test it ---------- */
+.ptabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 2px solid var(--ac-line); margin: 0 -4px; position: sticky; top: 0; z-index: 3; background: var(--ac-panel); padding-top: 4px; }
+.ptabs [role="tab"] { min-height: 44px; padding: 6px 12px; font: inherit; font-family: var(--ac-head-font); font-size: 17px; color: var(--ac-dim); background: transparent;
+  border: 0; border-bottom: 4px solid transparent; margin-bottom: -2px; cursor: pointer; white-space: nowrap; }
+.ptabs [role="tab"][aria-selected="true"] { color: var(--ac-text); border-bottom-color: var(--mod-accent); }
+.ptabs [role="tab"]:focus-visible { outline: 2px solid var(--mod-accent); outline-offset: 2px; }
+.panel[data-tab] #readBox .panel-h:first-child { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.panel[data-tab="sq"] #readBox, .panel[data-tab="sq"] #toc, .panel[data-tab="sq"] #tools,
+.panel[data-tab="test"] #readBox, .panel[data-tab="test"] #toc,
+.panel[data-tab="read"].has-test #tools { display: none !important; }
+.story.sq-on { grid-template-columns: minmax(0, 1fr) min(620px, 50vw); }
+.sq-pane { display: grid; gap: 8px; }
+.sq-pane-top { display: flex; gap: 8px; align-items: end; flex-wrap: wrap; }
+.sq-pick { flex: 1 1 200px; display: grid; gap: 2px; font-family: var(--ac-note-font); color: var(--ac-dim); }
+.sq-pick select { min-height: 44px; width: 100%; font: inherit; font-family: var(--ac-body-font); font-size: 17px; color: var(--ac-text); background: var(--ac-paper);
+  border: 1.5px solid var(--ac-line); border-radius: 12px 9px 13px 8px; padding: 4px 8px; }
+.sq-pane #soundBtn { min-height: 44px; }
+.sq-pane .sq-set-h { font-size: 22px; }
+.sq-pane .sq-card { padding: 12px; }
+.sq-pane .leo { font-size: 18px; }
+.sq-pane .leo .card { padding: 16px; }
+.sq-pane .leo h1 { font-size: 28px; }
+.sq-lib-link { margin: 6px 0 0; }
+/* header pencil doorway */
+.sq-door { flex: none; display: inline-grid; place-items: center; }
+@media (max-width: 699px) { .story.sq-on { grid-template-columns: 1fr; } }
+
+/* Practice Questions pill, just left of the module filters (library page) */
+.lib-filter-row { display: flex; align-items: flex-start; justify-content: center; gap: 10px; }
+.lib-filter-row .lib-filters { flex: 0 1 auto; min-width: 0; }
+.lib-filter-row .lib-filters { margin: 0; }
+.pq-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 16px; text-decoration: none; white-space: nowrap;
+  font-family: var(--ac-head-font); font-size: 18px; color: #7a2e22; background: #FBF1DF; border: 2px solid #E07A5F; border-radius: 16px 11px 18px 10px / 11px 18px 10px 16px; box-shadow: 2px 3px 0 #E07A5F55; }
+.pq-btn svg { flex: none; }
+.pq-btn:hover, .pq-btn:focus-visible { background: #F9E3C8; }
+:root[data-theme="dark"] .pq-btn { color: #F6C3B3; background: #2A2622; border-color: #E8907A; box-shadow: 2px 3px 0 #0006; }
+@media (max-width: 600px) { .lib-filter-row { flex-direction: column; align-items: stretch; } .pq-btn { justify-content: center; width: 100%; box-sizing: border-box; } }
+/* Leo's pencil art: cream card in both themes; movable objects slide */
+.sq-art { border-radius: 14px; }
+.sq-art .sq-drag { cursor: grab; touch-action: none; outline: none; }
+.sq-art .sq-drag:focus-visible { filter: drop-shadow(0 0 3px var(--mod-accent)); }
+.sq-drag-note { margin: 2px 0 0; font-family: var(--ac-note-font); color: var(--ac-dim); text-align: center; }

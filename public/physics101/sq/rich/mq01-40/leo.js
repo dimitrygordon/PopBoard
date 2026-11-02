@@ -23,7 +23,7 @@ function onScroll(){const vh=innerHeight;
   groups.forEach(g=>{const r=g.sec.getBoundingClientRect();
     let p=(vh*0.9-r.top)/(r.height*0.75+vh*0.25); p=Math.max(0,Math.min(1,p));
     if(reduce) p=1; if(!g.els.length&&p>.25) p=1; paint(g,p);});}
-addEventListener('scroll',onScroll,{passive:true});addEventListener('resize',onScroll);
+addEventListener('scroll',onScroll,{passive:true});if(opts.scroller)opts.scroller.addEventListener('scroll',onScroll,{passive:true});addEventListener('resize',onScroll);
 document.fonts.ready.then(onScroll);onScroll();
 if(qs.get('scroll')) setTimeout(()=>{scrollTo(0,+qs.get('scroll'));onScroll();},50);
 
