@@ -21,6 +21,7 @@
 <link rel="stylesheet" href="astro-course/ac-theme.css">
 <link rel="stylesheet" href="astro-course/ac-library.css">
 <link rel="stylesheet" href="physics101/p101.css">
+<link rel="stylesheet" href="physics101/sq-page.css">
 <link rel="preload" href="fonts/cabin-sketch-bold.woff2" as="font" type="font/woff2" crossorigin>
 </head>
 <body>
@@ -40,8 +41,11 @@
       <span class="sr-only">Search titles and every page</span>
       <input id="q" type="search" placeholder="Search titles and every page" autocomplete="off" enterkeyhint="search">
     </label>
-    <div class="lib-filters" role="group" aria-label="Module" data-auto="module">
-      <button type="button" data-q="0" aria-pressed="true">All</button>
+    <div class="lib-filter-row">
+      <a class="pq-btn" id="pqBtn" href="study-physics101-questions.html">Practice Questions <svg viewBox="0 0 34 16" width="30" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8.6c6-.8 13-.2 19-.6s7.5-.3 10-.1"/><path d="M24.5 2.8c2.4 1.9 4.6 3.3 6.8 5.1-2.3 1.6-4.4 3.3-6.4 5.4"/></svg></a>
+      <div class="lib-filters" role="group" aria-label="Module" data-auto="module">
+        <button type="button" data-q="0" aria-pressed="true">All</button>
+      </div>
     </div>
     <p class="lib-count" id="count" aria-live="polite"></p>
   </section>

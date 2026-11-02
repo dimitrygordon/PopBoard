@@ -132,8 +132,13 @@ test("page curl survives child animations and is opaque paper", () => {
 test("narration skips 5 seconds back and forward, by button and keyboard", () => {
   const js = readFileSync(AC + "ac-narrate.js", "utf8");
   assert.match(js, /const SKIP = 5;/);
-  assert.match(js, /aria-label="Back 5 seconds">&#8634;5</);
-  assert.match(js, /aria-label="Forward 5 seconds">5&#8635;</);
+  // one icon set (same box, size, stroke): skips are looping arrows with no "5s" lettering, play is a solid triangle, no emoji
+  assert.match(js, /aria-label="Back 5 seconds">\$\{ICON\.back\}<\/button>/);
+  assert.match(js, /aria-label="Forward 5 seconds">\$\{ICON\.fwd\}<\/button>/);
+  assert.match(js, /aria-label="Play narration">\$\{ICON\.play\}<\/button>/);
+  assert.match(js, /on \? ICON\.pause : ICON\.play/);
+  assert.equal((js.match(/SVG\('/g) || []).length, 4);
+  assert.doesNotMatch(js, /&#8634;|&#8635;|&#9654;|&#10074;|>5s?<|[\u25B6\u23F8\u23EF]/);
   assert.match(js, /currentTime - SKIP/); assert.match(js, /currentTime \+ SKIP/);
   assert.match(js, /k === "arrowleft" \|\| k === "j"/); assert.match(js, /k === "arrowright" \|\| k === "l"/);
   assert.doesNotMatch(js, /10 seconds|currentTime [-+] 10\b/);

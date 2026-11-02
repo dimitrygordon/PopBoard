@@ -1,0 +1,420 @@
+{
+ "m01-l01": [
+  {
+   "id": "checkride",
+   "caption": "PRAXIS exam drills span the whole course; best as a Study Questions extra, not tied to one lesson"
+  }
+ ],
+ "m01-l02": [
+  {
+   "id": "powers-of-ten",
+   "caption": "Scientific notation and metric prefixes"
+  },
+  {
+   "id": "sb-powers",
+   "caption": "Scientific notation and scale"
+  }
+ ],
+ "m02-l01": [
+  {
+   "id": "checkride",
+   "caption": "PRAXIS exam drills span the whole course; best as a Study Questions extra, not tied to one lesson"
+  }
+ ],
+ "m03-l01": [
+  {
+   "id": "checkride",
+   "caption": "PRAXIS exam drills span the whole course; best as a Study Questions extra, not tied to one lesson"
+  }
+ ],
+ "m04-l01": [
+  {
+   "id": "checkride",
+   "caption": "PRAXIS exam drills span the whole course; best as a Study Questions extra, not tied to one lesson"
+  },
+  {
+   "id": "mechanics",
+   "caption": "Pulleys, inclines, springs and pendulums with force arrows"
+  }
+ ],
+ "m05-l01": [
+  {
+   "id": "vectors",
+   "caption": "Vector addition, components, equilibrant, gravity split on an incline"
+  }
+ ],
+ "m05-l02": [
+  {
+   "id": "checkride",
+   "caption": "PRAXIS exam drills span the whole course; best as a Study Questions extra, not tied to one lesson"
+  },
+  {
+   "id": "friction",
+   "caption": "Static vs kinetic friction, coefficients, and an incline"
+  }
+ ],
+ "m05-l03": [
+  {
+   "id": "friction",
+   "caption": "Static vs kinetic friction, coefficients, and an incline"
+  },
+  {
+   "id": "vectors",
+   "caption": "Vector addition, components, equilibrant, gravity split on an incline"
+  },
+  {
+   "id": "mechanics",
+   "caption": "Pulleys, inclines, springs and pendulums with force arrows"
+  }
+ ],
+ "m06-l01": [
+  {
+   "id": "checkride",
+   "caption": "PRAXIS exam drills span the whole course; best as a Study Questions extra, not tied to one lesson"
+  },
+  {
+   "id": "projectile",
+   "caption": "Launch angle, speed and height; range and time of flight"
+  },
+  {
+   "id": "3d-cannon",
+   "caption": "Newton's cannon links projectiles to orbits"
+  },
+  {
+   "id": "3d-cannonball",
+   "caption": "Projectile becomes orbit"
+  }
+ ],
+ "m07-l01": [
+  {
+   "id": "space-sandbox",
+   "caption": "Gravity simulator with orbits and collisions of planets and stars"
+  },
+  {
+   "id": "kepler",
+   "caption": "All three of Kepler's laws"
+  },
+  {
+   "id": "orbits",
+   "caption": "N-body orbits and gravity"
+  },
+  {
+   "id": "sb-kepler",
+   "caption": "Kepler's laws orbit sandbox"
+  },
+  {
+   "id": "3d-retrograde",
+   "caption": "Heliocentric model before Kepler"
+  },
+  {
+   "id": "3d-kepler2",
+   "caption": "Kepler's second law, equal areas"
+  }
+ ],
+ "m07-l02": [
+  {
+   "id": "checkride",
+   "caption": "PRAXIS exam drills span the whole course; best as a Study Questions extra, not tied to one lesson"
+  },
+  {
+   "id": "space-sandbox",
+   "caption": "Gravity simulator with orbits and collisions of planets and stars"
+  },
+  {
+   "id": "tides",
+   "caption": "Tides are a gravitation application (differential pull of the Moon)"
+  },
+  {
+   "id": "orbits",
+   "caption": "N-body orbits and gravity"
+  },
+  {
+   "id": "gravity-well-golf",
+   "caption": "Inverse-square gravitational pull as a game"
+  },
+  {
+   "id": "sb-gravity",
+   "caption": "Universal gravitation"
+  },
+  {
+   "id": "3d-cannon",
+   "caption": "Newton's cannon links projectiles to orbits"
+  },
+  {
+   "id": "3d-cannonball",
+   "caption": "Projectile becomes orbit"
+  }
+ ],
+ "m08-l02": [
+  {
+   "id": "checkride",
+   "caption": "PRAXIS exam drills span the whole course; best as a Study Questions extra, not tied to one lesson"
+  }
+ ],
+ "m09-l01": [
+  {
+   "id": "momentum-collisions",
+   "caption": "Cart collisions, elastic vs inelastic, momentum bars"
+  }
+ ],
+ "m09-l02": [
+  {
+   "id": "checkride",
+   "caption": "PRAXIS exam drills span the whole course; best as a Study Questions extra, not tied to one lesson"
+  },
+  {
+   "id": "momentum-collisions",
+   "caption": "Cart collisions, elastic vs inelastic, momentum bars"
+  },
+  {
+   "id": "rocket-mission",
+   "caption": "Rocket thrust as momentum conservation"
+  }
+ ],
+ "m10-l02": [
+  {
+   "id": "springs",
+   "caption": "Hooke's law, SHM on a spring, elastic potential energy"
+  }
+ ],
+ "m10-l03": [
+  {
+   "id": "checkride",
+   "caption": "PRAXIS exam drills span the whole course; best as a Study Questions extra, not tied to one lesson"
+  }
+ ],
+ "m10-l04": [
+  {
+   "id": "machines",
+   "caption": "Six simple machines, mechanical advantage, efficiency"
+  },
+  {
+   "id": "mechanics",
+   "caption": "Pulleys, inclines, springs and pendulums with force arrows"
+  }
+ ],
+ "m11-l02": [
+  {
+   "id": "gas-thermo",
+   "caption": "Gas laws PV = nRT and thermodynamics"
+  }
+ ],
+ "m12-l01": [
+  {
+   "id": "gas-thermo",
+   "caption": "Gas laws PV = nRT and thermodynamics"
+  }
+ ],
+ "m13-l01": [
+  {
+   "id": "springs",
+   "caption": "Hooke's law, SHM on a spring, elastic potential energy"
+  },
+  {
+   "id": "pendulum",
+   "caption": "Pendulum period vs length and g"
+  },
+  {
+   "id": "mechanics",
+   "caption": "Pulleys, inclines, springs and pendulums with force arrows"
+  },
+  {
+   "id": "double-pendulum",
+   "caption": "Extension of pendulum periodic motion into chaos"
+  }
+ ],
+ "m13-l02": [
+  {
+   "id": "waves",
+   "caption": "Transverse vs longitudinal, v = fλ, reflection, superposition, standing waves"
+  }
+ ],
+ "m13-l03": [
+  {
+   "id": "harmonics",
+   "caption": "Resonance in strings and air columns, standing waves, beats"
+  },
+  {
+   "id": "waves",
+   "caption": "Transverse vs longitudinal, v = fλ, reflection, superposition, standing waves"
+  },
+  {
+   "id": "ripple-tank",
+   "caption": "2D wave behavior, wavelength vs frequency, nodal lines"
+  }
+ ],
+ "m14-l01": [
+  {
+   "id": "sb-doppler",
+   "caption": "Doppler shift for sound and light"
+  }
+ ],
+ "m14-l02": [
+  {
+   "id": "harmonics",
+   "caption": "Resonance in strings and air columns, standing waves, beats"
+  }
+ ],
+ "m15-l01": [
+  {
+   "id": "luminosity",
+   "caption": "Light spreading over spheres is the inverse-square illuminance idea"
+  }
+ ],
+ "m15-l02": [
+  {
+   "id": "em-spectrum",
+   "caption": "EM waves in space, wavelength and frequency, photon energy"
+  },
+  {
+   "id": "sb-waves",
+   "caption": "Light as a wave, wavelength and color"
+  },
+  {
+   "id": "sb-doppler",
+   "caption": "Doppler shift for sound and light"
+  }
+ ],
+ "m16-l01": [
+  {
+   "id": "optics",
+   "caption": "Law of reflection, Snell's law, total internal reflection, ray diagrams"
+  }
+ ],
+ "m16-l02": [
+  {
+   "id": "optics",
+   "caption": "Law of reflection, Snell's law, total internal reflection, ray diagrams"
+  }
+ ],
+ "m16-l03": [
+  {
+   "id": "optics",
+   "caption": "Law of reflection, Snell's law, total internal reflection, ray diagrams"
+  }
+ ],
+ "m16-l04": [
+  {
+   "id": "optics",
+   "caption": "Law of reflection, Snell's law, total internal reflection, ray diagrams"
+  }
+ ],
+ "m17-l01": [
+  {
+   "id": "ripple-tank",
+   "caption": "2D wave behavior, wavelength vs frequency, nodal lines"
+  }
+ ],
+ "m18-l02": [
+  {
+   "id": "em-fields",
+   "caption": "Field lines from charges and wires, force on a test charge, particles in fields"
+  }
+ ],
+ "m18-l03": [
+  {
+   "id": "em-fields",
+   "caption": "Field lines from charges and wires, force on a test charge, particles in fields"
+  }
+ ],
+ "m19-l01": [
+  {
+   "id": "circuit-builder",
+   "caption": "Series and parallel circuits with meters"
+  }
+ ],
+ "m19-l03": [
+  {
+   "id": "circuit-builder",
+   "caption": "Series and parallel circuits with meters"
+  }
+ ],
+ "m19-l04": [
+  {
+   "id": "circuit-builder",
+   "caption": "Series and parallel circuits with meters"
+  }
+ ],
+ "m20-l01": [
+  {
+   "id": "em-fields",
+   "caption": "Field lines from charges and wires, force on a test charge, particles in fields"
+  }
+ ],
+ "m20-l02": [
+  {
+   "id": "induction-motors",
+   "caption": "Flux, Faraday and Lenz, generators and motors"
+  }
+ ],
+ "m21-l01": [
+  {
+   "id": "induction-motors",
+   "caption": "Flux, Faraday and Lenz, generators and motors"
+  }
+ ],
+ "m21-l02": [
+  {
+   "id": "induction-motors",
+   "caption": "Flux, Faraday and Lenz, generators and motors"
+  }
+ ],
+ "m21-l03": [
+  {
+   "id": "em-fields",
+   "caption": "Field lines from charges and wires, force on a test charge, particles in fields"
+  }
+ ],
+ "m21-l04": [
+  {
+   "id": "em-spectrum",
+   "caption": "EM waves in space, wavelength and frequency, photon energy"
+  },
+  {
+   "id": "sb-waves",
+   "caption": "Light as a wave, wavelength and color"
+  }
+ ],
+ "m22-l01": [
+  {
+   "id": "spectra",
+   "caption": "Emission and absorption lines (Bohr) and blackbody curves"
+  },
+  {
+   "id": "quantum",
+   "caption": "Photon energy and the photoelectric effect"
+  }
+ ],
+ "m22-l02": [
+  {
+   "id": "quantum",
+   "caption": "Photon energy and the photoelectric effect"
+  }
+ ],
+ "m22-l03": [
+  {
+   "id": "spectra",
+   "caption": "Emission and absorption lines (Bohr) and blackbody curves"
+  }
+ ],
+ "m24-l01": [
+  {
+   "id": "atom-builder",
+   "caption": "Protons, neutrons, isotopes, mass number"
+  }
+ ],
+ "m24-l02": [
+  {
+   "id": "rbmk",
+   "caption": "Fission chain reaction and reactor control"
+  },
+  {
+   "id": "stars",
+   "caption": "Fusion in stellar cores (pp chain, CNO)"
+  },
+  {
+   "id": "sb-dose",
+   "caption": "Radiation dose from decay"
+  }
+ ]
+}

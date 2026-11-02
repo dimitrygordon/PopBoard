@@ -22,6 +22,7 @@
 <link rel="stylesheet" href="astro-course/ac-theme.css">
 <link rel="stylesheet" href="astro-course/ac-story.css">
 <link rel="stylesheet" href="physics101/p101.css">
+<link rel="stylesheet" href="physics101/sq-page.css">
 </head>
 <body>
 <header class="ac-bar">
@@ -30,6 +31,7 @@
   <button id="sbMenuBtn" type="button" aria-expanded="false" aria-controls="sbMenu" aria-label="Sandboxes and Try it links" hidden><span class="sb-long">Sandboxes</span><span class="sb-short" aria-hidden="true">Try it</span></button>
   <button id="tiltBtn" type="button" aria-pressed="false" hidden>Tilt off</button>
   <button id="sandboxBtn" type="button" aria-pressed="false" hidden>Sandbox</button>
+  <button id="sqDoor" class="sq-door" type="button" aria-label="Study Questions for this lesson" title="Study Questions"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.2-4.6L16.6 4a2 2 0 0 1 2.8 0l.6.6a2 2 0 0 1 0 2.8L8.6 18.8z"/><path d="M14.5 6.1l3.4 3.4"/><path d="M4 20l4.6-1.2"/></svg></button>
   <button id="themeBtn" class="ac-theme-btn" type="button"></button>
 </header>
 
@@ -56,6 +58,21 @@
   <aside class="panel" id="panel" aria-label="Page tools">
     <button type="button" class="sheet-handle" id="sheetHandle" aria-label="Resize page tools"><span></span></button>
     <div class="panel-body" id="panelBody">
+      <div class="ptabs" role="tablist" aria-label="Page tools">
+        <button type="button" role="tab" id="tabRead" aria-controls="readBox" aria-selected="true">Read this page</button>
+        <button type="button" role="tab" id="tabSq" aria-controls="sqPane" aria-selected="false">Study Questions</button>
+        <button type="button" role="tab" id="tabTest" aria-controls="tools" aria-selected="false" hidden>Test it</button>
+      </div>
+      <section class="sq-pane" id="sqPane" role="tabpanel" aria-labelledby="tabSq" hidden>
+        <div class="sq-pane-top">
+          <label class="sq-pick"><span>Lesson</span><select id="sqPick"></select></label>
+          <button id="soundBtn" type="button" aria-pressed="false" title="Pencil sound">Sound off</button>
+        </div>
+        <div class="sq-chips" id="sqChips" role="group" aria-label="Show"></div>
+        <div class="sq" id="sqList"></div>
+        <div class="tryit-row" id="sqTry" hidden></div>
+        <p class="sq-lib-link"><a href="study-physics101-questions.html">All Practice Questions</a></p>
+      </section>
       <section class="read" id="readBox" aria-label="This page in large print"><h2 class="panel-h">Read this page</h2><div id="narr"></div><div id="readText"></div></section>
       <section id="tools"></section>
       <nav class="toc" id="toc" aria-label="Contents"><h2 class="panel-h">Contents</h2><ol id="tocList"></ol></nav>
@@ -64,5 +81,6 @@
 </main>
 
 <script type="module" src="astro-course/ac-story.js"></script>
+<script type="module" src="physics101/sq-tab.js"></script>
 </body>
 </html>

@@ -190,6 +190,7 @@ body.sbmode #sbMenuBtn, body.sbmode #tiltBtn { display: none; }
 .narr button, .narr select { min-width: 44px; min-height: 44px; font: inherit; font-family: var(--ac-head-font); color: var(--pop-ink); background: transparent; border: 1.5px solid var(--pop-ink); border-radius: 12px 9px 13px 8px; cursor: pointer; }
 .narr .narr-bar { flex: 1 1 120px; display: flex; min-height: 44px; align-items: center; }
 .narr .narr-bar input { width: 100%; accent-color: var(--pop-gold); }
+.narr .narr-ico { display: block; margin: auto; }
 .panel .nw.hl { background: rgba(201, 134, 42, 0.28); border-radius: 4px; }
 :root[data-theme="dark"] .panel .nw.hl { background: var(--slide-hl-bg); color: var(--slide-hl-ink); }
 body.v2 .read { display: block; }
