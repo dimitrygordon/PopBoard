@@ -101,5 +101,36 @@
     "answer": [
       "𝑇<sup>2</sup> = 0.28, 0.40, 0.81, 1.6, 2.2, 2.8, 3.6 s<sup>2</sup> (rounded to 2 significant figures; the table shows 3)"
     ]
+  },
+  "mq02-32": {
+    "src": "Tesla re-stamp 2 Nov 2026: carry the unrounded intercept in the hidden working",
+    "replace": [
+      [
+        "𝑥<sub>C</sub> = 28.9 −4.5(0.806)",
+        "𝑥<sub>C</sub> = 28.875 −4.5(0.806)"
+      ]
+    ]
+  },
+  "sol06-38": {
+    "src": "Tesla re-stamp 2 Nov 2026: 0.0339/9.80 = 0.35%; the book rounds to 0.3%",
+    "replace": [
+      [
+        "by about 0.3% at the equator and less at higher latitudes (none at the poles).",
+        "by about 0.35% at the equator (the book rounds this to about 0.3%) and less at higher latitudes (none at the poles)."
+      ],
+      [
+        "which is 0.34% of g",
+        "which is about 0.35% of g"
+      ]
+    ]
+  },
+  "mq06-65": {
+    "src": "Tesla re-stamp 2 Nov 2026: alt text exponent",
+    "replace": [
+      [
+        "(78.0)2",
+        "(78.0)^2"
+      ]
+    ]
   }
 }

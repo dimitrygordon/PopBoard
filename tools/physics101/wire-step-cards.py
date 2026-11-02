@@ -28,7 +28,7 @@ def answer_html(it, s):
     lab = s["label"].strip()
     if lab.lower() == "answer":
         own = "<br>".join(b["html"] for b in it["answer"] if "html" in b)
-        if it["id"] in FIXES and "answer" in FIXES[it["id"]] or own and plain(own) == plain(to_html(s["text"])): return own
+        if it["id"] in FIXES and ("answer" in FIXES[it["id"]] or "replace" in FIXES[it["id"]]) or own and plain(own) == plain(to_html(s["text"])): return own
         return to_html(s["text"].strip())
     return to_html(OVR.get(it["id"], {}).get(lab, s["text"]).strip())
 errs = []

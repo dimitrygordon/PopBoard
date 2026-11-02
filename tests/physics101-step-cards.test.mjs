@@ -132,3 +132,12 @@ test("titles set Greek and sub/superscript runs in a math font (the heading font
   assert.doesNotMatch(js, /sq-q-title span:last-child"\)\.innerHTML/);
   assert.match(css, /\.sq-math\{font-family:"Cambria Math"/);
 });
+
+test("Tesla re-stamp: mq02-32 working, sol06-38 0.35%, mq06-65 alt text", () => {
+  const c = shipped(), body = (id) => c[id].steps.flatMap((s) => s.body);
+  assert.ok(body("mq02-32").some((b) => (b.html || "").includes("𝑥<sub>C</sub> = 28.875 −4.5(0.806) = 25.2 km")));
+  const want = "by about 0.35% at the equator (the book rounds this to about 0.3%) and less at higher latitudes (none at the poles).";
+  assert.ok(c["sol06-38"].answer[0].html.endsWith(want)); assert.ok(c["sol06-38"].stepCards.at(-1).html.endsWith(want));
+  assert.ok(body("sol06-38").some((b) => (b.html || "").includes("which is about 0.35% of g")));
+  assert.ok(body("mq06-65").some((b) => (b.alt || "").includes("(78.0)^2")));
+});
