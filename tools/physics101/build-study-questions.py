@@ -92,3 +92,5 @@ import subprocess as _sp; _sp.run([sys.executable, os.path.join(os.path.dirname(
 # restore full question stems from the re-extracted source (sq/extract.py -> items.stems.json); see fix-sq-stems.py
 _st = os.path.join(os.path.dirname(os.path.abspath(sys.argv[1])), "items.stems.json")
 if os.path.exists(_st): _sp.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "fix-sq-stems.py"), _st, pub], check=True)
+# keep worked solutions out of the question area (step labels written "Work." etc.); see fix-sq-leaks.py
+_sp.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "fix-sq-leaks.py"), pub], check=True)

@@ -37,3 +37,20 @@ test("known wrapped stems are whole", () => {
 test("shipped Study Questions text has no em-dashes", () => {
   for (const f of readdirSync(SQ).filter((f) => f.endsWith(".json"))) assert.ok(!readFileSync(join(SQ, f), "utf8").includes("\u2014"), f);
 });
+
+test("question text carries no worked-solution markers (solutions stay behind Show answer)", () => {
+  const MARK = /(?:^|[\s.])(What we know|Physics idea|Work|Check|Known|Unknown|Strategy|Solve|Claim|Evidence|Reasoning|Answer( \([a-z]\))?)[.:](\s|$)/;
+  const bad = items.filter((it) => it.question.some((b) => b.html && MARK.test(text(b.html)))).map((it) => it.id);
+  assert.deepEqual(bad, []);
+});
+
+test("a lettered part in the question is only its question, not its reasoning", () => {
+  const bad = items.filter((it) => it.question.some((b) => b.html && /^<b>\([a-z]\) <\/b>/.test(b.html) && /\?\s+\S/.test(text(b.html)))).map((it) => it.id);
+  assert.deepEqual(bad, []);
+});
+
+test("mq02-42 part (b) keeps its full source wording", () => {
+  const it = items.find((x) => x.id === "mq02-42");
+  assert.ok(it.question.some((b) => b.html === "<b>(b) </b>Does Tess ever catch up with Rosa on the trail?"));
+  assert.ok(it.steps.flatMap((s) => s.body).some((b) => b.html && text(b.html).endsWith("smaller than Rosa's (5.0 km/h) and she starts later, so the gap keeps growing.")));
+});
