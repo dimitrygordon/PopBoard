@@ -60,6 +60,22 @@ HIDE = {
     "mq06-65": (None, None),     # mq-16.pdf p.3: "Examples:" and the angle table are the sample answer (sample values, not given data)
 }
 FIXES = {k: v for k, v in json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "sq-answer-fixes.json"), encoding="utf-8")).items() if not k.startswith("_")}
+# Modules 1-6: exponents the PDF text layer flattened ("m/s2", "𝑡2") shown as squares; titles are plain text (Unicode ²),
+# prompts are html (<sup>2</sup>). Math-italic μ has no glyph in the handwriting font, so titles use plain μ with a subscript letter.
+FLAT2 = re.compile(r"(m/s|(?<![A-Za-z])s|[𝑡𝑇𝑥𝑣ℎ])2\b(?![.,]\d)")
+TITLE_SUBS = {"mq05-43": [("𝐹2 =", "𝐹₂ =")]}  # force label F₂, a subscript, not a square
+def sup_fix(it):
+    if not re.match(r"(mq|sol)0[1-6]-", it["id"]): return False
+    ch = False
+    t = FLAT2.sub(r"\1²", it["title"]).replace("𝜇𝑠", "μₛ").replace("𝜇𝑘", "μₖ")
+    for a, b in TITLE_SUBS.get(it["id"], []): t = t.replace(a, b)
+    t = re.sub(r"μ([ₛₖ])=", r"μ\1 =", t)
+    if t != it["title"]: it["title"] = t; ch = True
+    for b in it["question"]:
+        if "html" in b:
+            h = FLAT2.sub(r"\1<sup>2</sup>", b["html"])
+            if h != b["html"]: b["html"] = h; ch = True
+    return ch
 SHOW = {"What we know / need to find": "What we know", "Unknown": "What we know"}
 PART = re.compile(r"^<b>\(([a-z])\) </b>")
 def text(h): return re.sub(r"<[^>]+>", "", h)
@@ -112,6 +128,7 @@ def fix(it):
             if k in fx and k in it and it[k] != [{"html": x} for x in fx[k]] and not (k == "question" and "steps_before_question" in fx):
                 it[k] = [{"html": x} for x in fx[k]]; ch = True
     ch = leaks(it) or ch
+    ch = sup_fix(it) or ch
     lone = [b for b in it["question"] if "html" in b and re.fullmatch(r"\s*(?:" + LAB + r")(?: \([^()]{0,80}\))?[.:]\s*", text(b["html"]))]
     if lone: it["question"] = [b for b in it["question"] if b not in lone]; ch = True  # a bare label heading whose content is already under Show answer
     return ch
@@ -169,14 +186,15 @@ def leaks(it):
         else: st.append(x)
     it["question"], it["steps"] = q, st
     return True
-pub = sys.argv[1]; n = 0
+pub = sys.argv[1]; n = 0; titles = {}
 for f in sorted(glob.glob(os.path.join(pub, "physics101/sq/*.json"))):
     if f.endswith("index.json"): continue
     d = json.load(open(f)); ch = [fix(it) for it in d["items"]]
+    titles.update({it["id"]: it["title"] for it in d["items"]})
     if any(ch): open(f, "w").write(json.dumps(d, ensure_ascii=False, separators=(",", ":"))); n += sum(ch)
 print("moved solution text out of the question:", n)
 ip = os.path.join(pub, "physics101/sq/index.json"); ix = json.load(open(ip)); ic = False
 for v in ix.values():
     for t in v["t"]:
-        if t[0] in TITLE_OVERRIDES and t[1] != TITLE_OVERRIDES[t[0]]: t[1] = TITLE_OVERRIDES[t[0]]; ic = True
+        if t[0] in titles and t[1] != titles[t[0]]: t[1] = titles[t[0]]; ic = True  # search index follows every title fix
 if ic: open(ip, "w").write(json.dumps(ix, ensure_ascii=False, separators=(",", ":")))

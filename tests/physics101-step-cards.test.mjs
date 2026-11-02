@@ -112,3 +112,16 @@ test("Tesla's corrections ride on top of Socrates' steps", () => {
   for (const id of ["mq01-49", "sol01-49"]) assert.doesNotMatch(plain(c[id].answer), /∝/);
   for (const id of Object.keys(c)) for (const s of c[id].stepCards || []) assert.doesNotMatch(s.html, /\^|sqrt\(/, id);
 });
+
+test("M1-M6 titles and prompts show squares, not flattened exponents; μs displays", () => {
+  const c = shipped(), ix = JSON.parse(readFileSync(join(SQ, "index.json"), "utf8"));
+  const flat = /(m\/s|(?<![A-Za-z])s|[𝑡𝑇𝑥𝑣ℎ])2\b(?![.,]\d)/;
+  for (const [id, x] of Object.entries(c)) if (/^(mq|sol)0[1-6]-/.test(id)) {
+    assert.doesNotMatch(x.title, flat, id); assert.doesNotMatch(plain(x.question.filter((b) => b.html).map((b) => ({ html: b.html.replace(/<sup>2<\/sup>/g, "^") }))), flat, id);
+  }
+  assert.equal(c["mq01-49"].title, "3: Claim: the relationship between 𝑡² and ℎ");
+  assert.equal(c["sol01-49"].title, "3: Claim: the relationship between 𝑇² and 𝐿");
+  assert.match(c["mq05-27"].title, /where μₛ = 0\.46\./);
+  const t = Object.fromEntries(Object.values(ix).flatMap((v) => v.t));
+  for (const id of ["mq01-49", "mq05-27", "mq19-96"]) assert.equal(t[id], c[id].title, id);
+});
