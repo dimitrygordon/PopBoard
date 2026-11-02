@@ -10,11 +10,14 @@
 <title>Physics 101 storybook // PopBoard</title>
 <link rel="icon" type="image/png" href="popboard-logo.png">
 <script>
-  // Light notebook paper is the default; dark paper is remembered for the whole course.
+  // Light or dark paper follows the browser until the toggle picks one; that choice is remembered for the whole course.
   (function () {
     var t = null;
     try { t = localStorage.getItem("popboard.physics101.theme"); } catch (e) {}
-    document.documentElement.setAttribute("data-theme", t === "dark" ? "dark" : "light");
+    // no saved choice: follow the browser's dark setting, live
+    var mq = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)");
+    var set = function () { document.documentElement.setAttribute("data-theme", t ? (t === "dark" ? "dark" : "light") : (mq && mq.matches ? "dark" : "light")); };
+    set(); if (!t && mq && mq.addEventListener) mq.addEventListener("change", function () { try { t = localStorage.getItem("popboard.physics101.theme"); } catch (e) {} set(); });
   })();
 </script>
 <link rel="stylesheet" href="shared/paper/paper.css">

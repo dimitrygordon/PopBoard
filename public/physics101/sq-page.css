@@ -16,6 +16,9 @@ body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 au
 .sq-eq { display: block; margin: 6px auto; height: auto; }
 .sq-fig { position: relative; margin: 10px auto; padding: 10px; width: fit-content; max-width: 100%; }
 .sq-fig-img { display: block; height: auto; border-radius: 6px; background: #fff; }
+.sq-fig-dark, :root[data-theme="dark"] .sq-fig-light { display: none; }
+:root[data-theme="dark"] .sq-fig-dark { display: block; background: none; }
+.sq-fig-light { background: none; }
 .sq-frame { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: var(--ac-line); stroke-width: 2.2; stroke-linecap: round; pointer-events: none; }
 /* equations are black ink crops of the book page: in dark mode they turn to cream ink */
 :root[data-theme="dark"] .sq-eq { filter: invert(0.93) sepia(0.12); mix-blend-mode: screen; }

@@ -97,9 +97,11 @@ function block(b, base) {
   const at = (u) => (u.startsWith("data:") ? u : base + u);
   const im = new Image(); im.loading = "lazy"; im.decoding = "async";
   if (b.eq) { im.src = at(b.eq); im.className = "sq-eq"; im.alt = b.alt || "equation"; im.style.width = `min(100%, ${Math.round(b.w * 1.35)}px)`; return im; }
-  im.src = at(b.fig); im.className = "sq-fig-img"; im.alt = "Figure from the book";
+  im.src = at(b.fig); im.className = "sq-fig-img"; im.alt = b.alt || "Figure from the book";
   const f = document.createElement("figure"); f.className = "sq-fig"; f.innerHTML = FRAME; f.appendChild(im);
   im.style.width = `min(100%, ${Math.round(b.w * 1.4)}px)`;
+  // Leo's art can ship a dark-paper twin; CSS picks one from :root[data-theme]
+  if (b.dark) { const d = im.cloneNode(); d.loading = "eager"; im.loading = "eager"; d.src = at(b.dark); d.className = "sq-fig-img sq-fig-dark"; im.classList.add("sq-fig-light"); f.appendChild(d); }
   return f;
 }
 function fill(host, list, base) { for (const b of list) host.appendChild(block(b, base)); }

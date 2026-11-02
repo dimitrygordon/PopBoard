@@ -17,6 +17,13 @@ BARE = re.compile(r"(?:(?<=^)|(?<=[\s.>]))(What we know / need to find|Physics i
 TITLE_OVERRIDES = {
     "mq02-42": "Lesson 3, Problem 19 (Challenge): Rosa and Tess hike the same trail: Rosa's graph runs from (0, 0) to (1.60 h, 8.0 km); Tess's graph runs from (0.25 h, 0) to (2.75 h, 8.0 km).",
 }
+# Leo's pencil art standing in for a card's book figure: id -> (light, dark) webp in tools/physics101/sq-art/, inlined as data URIs.
+# The renderer shows the dark one under PopBoard's dark theme (which follows the browser until toggled).
+FIG_OVERRIDES = {"mq02-42": ("mq02-42-rosa-tess-light.webp", "mq02-42-rosa-tess-dark.webp", "Pencil position-time graph: Rosa from (0, 0) to (1.60 h, 8.0 km), Tess from (0.25 h, 0) to (2.75 h, 8.0 km)")}
+ARTDIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sq-art")
+def uri(f):
+    import base64
+    return "data:image/webp;base64," + base64.b64encode(open(os.path.join(ARTDIR, f), "rb").read()).decode()
 # tables in the question area, decided card by card (see /workspace/physics101/sq-table-decisions.md):
 # "keep" = data the question gives students to work from; int n = worked/computed content from question block n on, moved behind Show answer
 TABLES = {
@@ -36,6 +43,10 @@ def split_marked(h):
 def fix(it):
     ch = False
     if it["id"] in TITLE_OVERRIDES and it["title"] != TITLE_OVERRIDES[it["id"]]: it["title"] = TITLE_OVERRIDES[it["id"]]; ch = True
+    if it["id"] in FIG_OVERRIDES:
+        lf, df, alt = FIG_OVERRIDES[it["id"]]; nb = {"fig": uri(lf), "dark": uri(df), "alt": alt, "w": 350}
+        figs = [i for i, b in enumerate(it["question"]) if "fig" in b]
+        if figs and it["question"][figs[0]] != nb: it["question"][figs[0]] = nb; ch = True
     n = TABLES.get(it["id"])
     if isinstance(n, int) and len(it["question"]) > n:
         it["steps"] = [{"label": "Work", "body": it["question"][n:]}] + it["steps"]; it["question"] = it["question"][:n]; ch = True

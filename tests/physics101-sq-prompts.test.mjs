@@ -71,3 +71,8 @@ test("worked tables sit behind Show answer; given tables stay in the question", 
   }
   for (const id of ["mq01-21", "mq01-32", "mq02-33", "mq11-64", "sol11-58", "mq13-20"]) assert.ok(items.find((x) => x.id === id).question.length > 0, id);
 });
+
+test("mq02-42 shows Leo's pencil graph with a dark-mode twin", () => {
+  const f = items.find((x) => x.id === "mq02-42").question[0];
+  assert.ok(f.fig.startsWith("data:image/webp") && f.dark.startsWith("data:image/webp") && f.fig !== f.dark);
+});

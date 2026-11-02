@@ -11,7 +11,10 @@
   (function () {
     var t = null;
     try { t = localStorage.getItem("popboard.physics101.theme"); } catch (e) {}
-    document.documentElement.setAttribute("data-theme", t === "dark" ? "dark" : "light");
+    // no saved choice: follow the browser's dark setting, live
+    var mq = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)");
+    var set = function () { document.documentElement.setAttribute("data-theme", t ? (t === "dark" ? "dark" : "light") : (mq && mq.matches ? "dark" : "light")); };
+    set(); if (!t && mq && mq.addEventListener) mq.addEventListener("change", function () { try { t = localStorage.getItem("popboard.physics101.theme"); } catch (e) {} set(); });
   })();
 </script>
 <link rel="stylesheet" href="astro-course/ac-theme.css">
