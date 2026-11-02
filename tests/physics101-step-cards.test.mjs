@@ -141,3 +141,13 @@ test("Tesla re-stamp: mq02-32 working, sol06-38 0.35%, mq06-65 alt text", () => 
   assert.ok(body("sol06-38").some((b) => (b.html || "").includes("which is about 0.35% of g")));
   assert.ok(body("mq06-65").some((b) => (b.alt || "").includes("(78.0)^2")));
 });
+
+test("mq04-33/sol04-33: working hidden behind Show answer, v = √(2gd)", () => {
+  const c = shipped();
+  for (const id of ["mq04-33", "sol04-33"]) {
+    assert.equal(c[id].title, "(2) Speed just before impact (no air resistance)");
+    const w = c[id].steps[0]; assert.equal(w.label, "Work");
+    assert.ok(w.body.some((b) => (b.html || "").includes("√(2𝑔𝑑)")));
+    assert.ok(!JSON.stringify(c[id]).includes("√2𝑔𝑑"));
+  }
+});

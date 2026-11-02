@@ -132,5 +132,39 @@
         "(78.0)^2"
       ]
     ]
+  },
+  "mq04-33": {
+    "src": "Dimitry 2 Nov 2026: working moved out of the title; bracket the square root",
+    "replace": [
+      [
+        "√2𝑔𝑑",
+        "√(2𝑔𝑑)"
+      ],
+      [
+        "√2(9.8 m/s²)(450 m)",
+        "√(2(9.8 m/s²)(450 m))"
+      ],
+      [
+        "√2(9.8 m/s2)(450 m)",
+        "√(2(9.8 m/s^2)(450 m))"
+      ]
+    ]
+  },
+  "sol04-33": {
+    "src": "Dimitry 2 Nov 2026: working moved out of the title; bracket the square root",
+    "replace": [
+      [
+        "√2𝑔𝑑",
+        "√(2𝑔𝑑)"
+      ],
+      [
+        "√2(9.8 m/s²)(300 m)",
+        "√(2(9.8 m/s²)(300 m))"
+      ],
+      [
+        "√2(9.8 m/s2)(300 m)",
+        "√(2(9.8 m/s^2)(300 m))"
+      ]
+    ]
   }
 }

@@ -58,6 +58,7 @@ HIDE = {
     "mq02-31": ("(2) Time of smallest spread.", None), "sol02-29": ("(2) Time of smallest spread.", None),
     "mq02-32": ("(3) Length of the interval.", None), "sol02-30": ("(3) Length of the interval.", None),
     "mq06-65": (None, None),
+    "mq04-33": ("(2) Speed just before impact (no air resistance)", None), "sol04-33": ("(2) Speed just before impact (no air resistance)", None),
 }
 FIXES = {k: v for k, v in json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "sq-answer-fixes.json"), encoding="utf-8")).items() if not k.startswith("_")}
 # Modules 1-6: exponents the PDF text layer flattened ("m/s2", "𝑡2") shown as squares; titles are plain text (Unicode ²),
