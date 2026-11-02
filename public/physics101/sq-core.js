@@ -75,9 +75,11 @@ const SCRIBBLE = (() => { let d = "M2 12"; for (let i = 0; i < 26; i++) d += ` L
 
 function block(b, base) {
   if (b.html != null) { const p = document.createElement("p"); p.innerHTML = b.html; return p; }
-  const im = new Image(); im.loading = "lazy"; im.decoding = "async"; im.src = base + b.eq || base + b.fig;
-  if (b.eq) { im.src = base + b.eq; im.className = "sq-eq"; im.alt = b.alt || "equation"; im.style.width = `min(100%, ${Math.round(b.w * 1.35)}px)`; return im; }
-  im.src = base + b.fig; im.className = "sq-fig-img"; im.alt = "Figure from the book";
+  // pack-sq.py inlines images as data: URIs; plain paths still resolve against sq/
+  const at = (u) => (u.startsWith("data:") ? u : base + u);
+  const im = new Image(); im.loading = "lazy"; im.decoding = "async";
+  if (b.eq) { im.src = at(b.eq); im.className = "sq-eq"; im.alt = b.alt || "equation"; im.style.width = `min(100%, ${Math.round(b.w * 1.35)}px)`; return im; }
+  im.src = at(b.fig); im.className = "sq-fig-img"; im.alt = "Figure from the book";
   const f = document.createElement("figure"); f.className = "sq-fig"; f.innerHTML = FRAME; f.appendChild(im);
   im.style.width = `min(100%, ${Math.round(b.w * 1.4)}px)`;
   return f;
@@ -87,11 +89,17 @@ function fill(host, list, base) { for (const b of list) host.appendChild(block(b
 // Leo's art manifest: physics101/sq/art/index.json maps problem id -> 1, or {drag: "x" | "y"} for art whose
 // <g class="sq-obj" data-object data-home> can be slid along one axis.
 const ART = fetch(ROOT + "physics101/sq/art/index.json").then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
+// pack-sq.py bundles the SVGs one JSON per module (sq/art/mNN.json, id -> svg text), fetched once per module
+const PACKS = new Map();
+function artPack(id) {
+  const m = /^(?:mq|sol)(\d\d)-/.exec(id); if (!m) return Promise.resolve({});
+  if (!PACKS.has(m[1])) PACKS.set(m[1], fetch(`${ROOT}physics101/sq/art/m${m[1]}.json`).then((r) => (r.ok ? r.json() : {})).catch(() => ({})));
+  return PACKS.get(m[1]);
+}
 async function art(item, host) {
   try {
     const a = (await ART)[item.id]; if (!a) return;
-    const r = await fetch(`${ROOT}physics101/sq/art/${item.id}.svg`); if (!r.ok) return;
-    const t = await r.text(); if (!/^\s*<svg/.test(t)) return;
+    const t = (await artPack(item.id))[item.id]; if (!t || !/^\s*<svg/.test(t)) return;
     host.innerHTML = t; const svg = host.querySelector("svg"); svg.setAttribute("data-draw", ""); svg.classList.add("sq-art"); drawObs.observe(svg);
     if (a.drag) liveDrag(svg, a.drag, host);
   } catch (e) { /* no art yet */ }

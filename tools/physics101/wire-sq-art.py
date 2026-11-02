@@ -28,3 +28,5 @@ if bad:
     sys.exit(f"not wired, mismatches: {bad[:10]} ({len(bad)} total)")
 idx_path.write_text(json.dumps(art, separators=(",", ":"), sort_keys=True))
 print(f"wired {added}; index now {len(art)}")
+# pack loose art and images (Cloudflare Pages 20,000-file cap); see pack-sq.py
+import subprocess as _sp; _sp.run([sys.executable, str(Path(__file__).resolve().parent / "pack-sq.py")], check=True)

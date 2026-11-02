@@ -87,3 +87,5 @@ idx = json.dumps({slug: {"mq": sum(i["src"] == "mq" for i in its), "sol": sum(i[
                   for slug, its in sorted(lessons.items())}, ensure_ascii=False, separators=(",", ":"))
 open(os.path.join(out, "index.json"), "w").write(idx.replace(" \u2014 ", ", ").replace("\u2014", ", ").replace("\\u0002 ", "$").replace("\\u0002", "$").replace(", = \\\\frac{1} {2}mv^2$", ", \u00bdmv\u00b2"))
 print(len(lessons), "lessons", sum(len(v) for v in lessons.values()), "problems", len(used), "images")
+# pack loose art and images (Cloudflare Pages 20,000-file cap); see pack-sq.py
+import subprocess as _sp; _sp.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "pack-sq.py")], check=True)

@@ -1,7 +1,7 @@
 // Physics 101 Study Questions: every lesson has extra practice with answers, linked from its storybook.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DECKS } from "../public/physics101/p101-catalog.js";
@@ -22,7 +22,7 @@ test("every Physics 101 lesson has Study Questions, and every problem has an ans
       assert.ok(it.answer.length > 0, it.id);
       assert.match(it.src, /^(mq|sol)$/);
       for (const b of [...it.question, ...it.answer, ...it.check, ...it.steps.flatMap((s) => s.body)]) {
-        const img = b.eq || b.fig; if (img) assert.ok(existsSync(join(PUB, "physics101/sq", img)), img);
+        const img = b.eq || b.fig; if (img) assert.match(img, /^data:image\/webp;base64,[A-Za-z0-9+/]{40}/, it.id);
       }
     }
   }
@@ -99,6 +99,18 @@ test("Practice Questions pill sits just left of the module filters and opens the
   assert.equal(Object.keys(idx).length, 74); // 73 lessons + math-skills
 });
 
+const PACK = new Map();
+const packs = (id) => { const m = id.slice(id.startsWith("mq") ? 2 : 3, id.indexOf("-")); if (!PACK.has(m)) PACK.set(m, JSON.parse(read(`physics101/sq/art/m${m}.json`))); return PACK.get(m); };
+
+test("Study Questions assets stay packed: public/ under Cloudflare Pages' 20,000-file cap", () => {
+  const walk = (d) => readdirSync(d, { withFileTypes: true }).reduce((n, e) => n + (e.isDirectory() ? walk(join(d, e.name)) : 1), 0);
+  const n = walk(PUB); assert.ok(n < 19000, `${n} files under public/`);
+  assert.deepEqual(readdirSync(join(PUB, "physics101/sq/art")).filter((f) => !/^(index|m\d\d)\.json$/.test(f)), []);
+  // only images a rich page links to directly stay loose
+  assert.deepEqual(readdirSync(join(PUB, "physics101/sq/img")), ["mq-01-e14.webp"]);
+  for (const f of readdirSync(join(PUB, "physics101/sq/art"))) assert.ok(statSync(join(PUB, "physics101/sq/art", f)).size < 20e6, f);
+});
+
 test("Leo's M2 to M24 art is wired for problems that exist", () => {
   const art = JSON.parse(read("physics101/sq/art/index.json"));
   const ids = Object.keys(art);
@@ -107,7 +119,7 @@ test("Leo's M2 to M24 art is wired for problems that exist", () => {
   for (const id of ids) {
     assert.match(id, /^(mq|sol)(0[2-9]|1\d|2[0-4])-/);
     assert.ok(all.has(id), id);
-    const svg = read(`physics101/sq/art/${id}.svg`);
+    const svg = packs(id)[id];
     assert.match(svg, /^<svg/);
     assert.doesNotMatch(svg, /\u2014|\[NEEDS SOURCE\]|Flags for Tesla/);
     if (art[id].drag) assert.match(svg, /class="sq-obj"/, id);
