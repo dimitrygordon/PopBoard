@@ -256,6 +256,7 @@ function stepCardsInto(el, item, base) {
   const body = ans.querySelector(".sq-ans-body"), aol = body.firstChild;
   if (answers.length) answers.forEach((s, i) => aol.appendChild(mk(s, steps.length + i + 1)));
   else fill(body, item.answer, base);
+  if (item.check && item.check.length) { const h = document.createElement("h4"); h.textContent = "Check"; body.appendChild(h); fill(body, item.check, base); }
   ans.querySelector(".sq-show").addEventListener("click", () => {
     body.hidden = false; erase(ans.querySelector(".sq-cover"), () => { const f = body.querySelector(".pb-step") || body; f.tabIndex = -1; f.focus({ preventScroll: true }); });
   });
