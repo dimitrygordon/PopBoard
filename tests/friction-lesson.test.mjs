@@ -51,9 +51,10 @@ test("kinetic sample data: best fit slope is mu k and runs near the origin", () 
 
 test("video graph uses the scale readings held for review, with static, threshold, kinetic zones", () => {
   assert.equal(readingAt(0), VIDEO_READINGS[0][1]);
-  assert.equal(readingAt(2.8), 18.4);
-  assert.equal(readingAt(5), 12.0);
-  const mid = readingAt(2.25); assert.ok(mid > 17.8 && mid < 18.1);
+  assert.equal(readingAt(2.8), 18.0); // peak (static max) ruled at 18 N
+  assert.equal(Math.max(...VIDEO_READINGS.map((r) => r[1])), 18.0);
+  assert.equal(readingAt(5), 12.0); // steady pull (kinetic) ruled at 12 N
+  const mid = readingAt(2.25); assert.ok(mid > 17.5 && mid < 17.8);
   assert.deepEqual(Object.keys(VIDEO_ZONES), ["static", "threshold", "kinetic"]);
   assert.equal(VIDEO_ZONES.static[1], VIDEO_ZONES.threshold[0]);
   assert.equal(VIDEO_ZONES.threshold[1], VIDEO_ZONES.kinetic[0]);

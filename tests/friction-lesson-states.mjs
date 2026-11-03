@@ -1,6 +1,6 @@
 // Cold-read state screenshots: every page with narration off, start + end of the entry animation,
 // then every button, toggle, drag, zoom and Next step. Files: pNN-stepK.png
-//   MOBILE=1 for phone (pNN-mob-stepK.png)
+//   MOBILE=1 for phone (pNN-mob-stepK.png), DARK=1 for dark theme (pNN-dark-stepK.png, pNN-mob-dark-stepK.png)
 //   FL_URL=http://localhost:8799 SHOTS=/path/states node friction-lesson-states.mjs [pages...]
 import puppeteer from "puppeteer-core";
 const BASE = process.env.FL_URL || "http://localhost:8799", OUT = process.env.SHOTS || "/tmp/fl-states";
@@ -8,9 +8,9 @@ const only = process.argv.slice(2).map(Number).filter(Boolean);
 const browser = await puppeteer.launch({ executablePath: "/usr/bin/google-chrome", args: ["--no-sandbox", "--autoplay-policy=no-user-gesture-required"] });
 const page = await browser.newPage(); const errors = [];
 page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
-const MOB = process.env.MOBILE === "1", PRE = MOB ? "mob-" : "";
+const MOB = process.env.MOBILE === "1", DARK = process.env.DARK === "1", PRE = (MOB ? "mob-" : "") + (DARK ? "dark-" : "");
 await page.setViewport(MOB ? { width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true } : { width: 1600, height: 900 });
-await page.evaluateOnNewDocument(() => { localStorage.setItem("theme", "light"); localStorage.setItem("popboard.friction.narration", "0"); });
+await page.evaluateOnNewDocument((DARK) => { localStorage.setItem("theme", DARK ? "dark" : "light"); localStorage.setItem("popboard.friction.narration", "0"); }, DARK);
 await page.goto(`${BASE}/study-friction-lesson.html`, { waitUntil: "networkidle0" });
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 let n = 0, k = 0; const shot = async () => page.screenshot({ path: `${OUT}/p${String(n).padStart(2, "0")}-${PRE}step${k++}.png` });

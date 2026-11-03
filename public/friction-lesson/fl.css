@@ -419,7 +419,7 @@ body[data-page="6"] .lens-h, .zoomv .lens-h { display: block; left: 75%; top: 1.
   body[data-page="19"] .ans-graph .lbl { font-size: 16px !important; }
   :where(body:is([data-page="3"], [data-page="6"], [data-page="7"], [data-page="8"], [data-page="17"], [data-page="26"]) #flScene) :is(.lbl, .chip, .say:not(.big), .wt-l, .farrow .fl, .zread, .zread span, .zload, .zpct, .drag-cue, .sbtn, .roles, .roles span, .grp-n, .ok-l, .reading, .s-unit, .test-info, .photo-credit) { font-size: 13px !important; }
   .strip text { font-size: 37px; }
-  .zoomv .zt { font-size: 66px; }
+  .zoomv .zt { font-size: 54px; }
   .p26-t { font-size: 52px; }
 }
 @media (max-width: 600px) {
@@ -434,14 +434,47 @@ body[data-page="6"] .lens-h, .zoomv .lens-h { display: block; left: 75%; top: 1.
   body[data-page="8"] .test-info { top: 74% !important; }
   /* p6 */
   body[data-page="6"] .p6-rig .wt-l { display: none; }
-  body[data-page="6"] .zoomv { left: 2% !important; top: 14% !important; width: 20% !important; }
-  body[data-page="6"] .zoomv .zread { position: absolute; left: 228%; top: -27px; margin: 0; white-space: nowrap; }
+  body[data-page="6"] .zoomv { left: max(8px, 2%) !important; top: max(8px, 14%) !important; width: 26% !important; }
+  body[data-page="6"] .zoomv .zread { position: absolute; left: 196%; top: -27px; margin: 0; white-space: nowrap; }
   body[data-page="6"] .zoomv .zread i { width: 40px; }
-  body[data-page="6"] .zoomv .zload { position: absolute; left: 228%; top: 0; margin: 0; white-space: nowrap; }
-  body[data-page="6"] .zoomv .zv-cue { left: 110%; top: -29px; }
+  body[data-page="6"] .zoomv .zload { position: absolute; left: 196%; top: 0; margin: 0; white-space: nowrap; }
+  body[data-page="6"] .zoomv .zv-cue { left: 104%; top: -29px; }
   body[data-page="6"] .tray { left: 70% !important; width: 28% !important; }
   body[data-page="6"] #flScene > .sbtn { left: 3% !important; top: 86% !important; translate: none !important; }
   body[data-page="26"] .p26-cap { margin-top: 16px !important; }
 }
 @media (max-width: 600px) { body[data-page="9"] .graph text { font-size: 22px; } }
 @media (max-width: 600px) { body[data-page="9"] .graph .gt[text-anchor="end"] { transform: translate(-6px, -8px); } body[data-page="9"] .btnrow { margin-top: 6px; } }
+/* Leo round 6: label clearance from the art (6px) */
+body:is([data-page="7"], [data-page="8"]) .rig .wt-l { top: 50% !important; bottom: auto !important; left: auto !important; right: calc(100% + 6px) !important; translate: 0 -50%; width: max-content; }
+@media (min-width: 601px) {
+  .farrow .fl.fl-pull { margin-top: -22px; }
+  .farrow .fl.fl-n { margin-left: 8px; }
+}
+@media (max-width: 600px) {
+  /* p6 phone lens: pull the two labels toward the middle of the circle so they show in full */
+  body[data-page="6"] .zoomv .zt[y="118"] { transform: translateY(40px); }
+  body[data-page="6"] .zoomv .zt[y="318"] { transform: translateY(-34px); }
+}
+/* spring-scale strip: labels at 0, 10, 20 N (5 and 15 are long ticks) so 13 to 16px labels never touch; unit beside the 0 */
+.strip text.t5 { display: none; }
+.strip .s-unit { top: -30%; bottom: auto; right: -17%; }
+@media (max-width: 600px) {
+  .strip text.t10 { display: none; }
+  .strip .s-unit { right: -45%; }
+  body[data-page="7"] #flScene > .chip { top: 3% !important; }
+}
+@media (max-width: 600px) {
+  body[data-page="12"] .rig .wt-l { line-height: 1; top: 50%; bottom: auto; left: calc(100% + 6px); right: auto; translate: 0 -50%; width: max-content; }
+}
+@media (max-width: 600px) {
+  /* p5: seven names at 13px do not fit one row on a phone, so every other name drops a line */
+  body[data-page="5"] #flScene .lbl:last-child { white-space: nowrap; position: relative; left: 50%; translate: -50% 0; width: max-content; line-height: 1.1; }
+  body[data-page="5"] #flScene div:nth-child(even) > .lbl:last-child { translate: -50% 1.1em; }
+  body[data-page="16"] .strip-note { top: 4% !important; left: 60% !important; width: 36% !important; font-size: 18px !important; line-height: 1.1; }
+}
+@media (max-width: 600px) {
+  body[data-page="5"] #flScene > .chip.red { left: 2% !important; }
+  body[data-page="5"] #flScene > .sticky { left: 64% !important; width: 34% !important; }
+  body[data-page="5"] #flScene > .chip:last-of-type { left: 2% !important; top: 85% !important; right: 2%; white-space: normal; text-align: center; }
+}

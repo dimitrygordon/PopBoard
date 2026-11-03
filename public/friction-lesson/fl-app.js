@@ -64,6 +64,28 @@ function stopPage() {
   scene.replaceChildren(); scene.classList.remove("staged"); side.replaceChildren();
 }
 
+/* Label floor: no text in the scene renders under 13px on phones (<=600px wide) or 16px on wider screens.
+   HTML text gets an inline font-size; SVG text is sized in user units, so its floor is divided by the
+   text's own scale (getCTM includes the viewBox fit). Re-run after every page build, step and resize. */
+const floorQ = matchMedia("(max-width: 600px)");
+function labelFloor(reset) {
+  const min = floorQ.matches ? 13 : 16;
+  if (reset) scene.querySelectorAll("[data-fl-floor]").forEach((e) => { e.style.removeProperty("font-size"); delete e.dataset.flFloor; });
+  const fix = [];
+  for (const e of scene.querySelectorAll("*")) {
+    const own = e instanceof SVGTextElement || [...e.childNodes].some((c) => c.nodeType === 3 && c.textContent.trim());
+    if (!own || e.dataset.flFloor !== undefined || (e instanceof SVGElement && !(e instanceof SVGTextElement))) continue;
+    const fs = parseFloat(getComputedStyle(e).fontSize); if (!fs) continue;
+    let k = 1; if (e instanceof SVGTextElement) { const m = e.getCTM(); k = m ? Math.hypot(m.c, m.d) : 1; if (!k) continue; }
+    if (fs * k < min - 0.05) fix.push([e, min / k]);
+  }
+  for (const [e, v] of fix) { e.style.setProperty("font-size", v.toFixed(2) + "px", "important"); e.dataset.flFloor = ""; }
+}
+let floorRaf = 0, floorReset = false;
+const floorSoon = (reset) => { floorReset ||= reset === true; cancelAnimationFrame(floorRaf); floorRaf = requestAnimationFrame(() => { labelFloor(floorReset); floorReset = false; }); };
+new MutationObserver(() => floorSoon()).observe(scene, { childList: true, subtree: true });
+addEventListener("resize", () => floorSoon(true));
+
 function render(i) {
   stopPage();
   state.i = Math.max(0, Math.min(PAGES.length - 1, i));

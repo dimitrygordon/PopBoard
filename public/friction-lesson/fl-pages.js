@@ -10,7 +10,7 @@ export const TEST_LABELS = ["Test A", "Test B", "Test C"];
 // null keeps the pencil art.
 export const PHOTOS = { carpet: null, scale: null, masses: null, cart: null }; // e.g. "friction-lesson/photos/carpet.webp"
 // Spring scale readings read off friction-drop.mp4 (felt cart, all weights), seconds -> newtons, about +/- 0.5 N.
-export const VIDEO_READINGS = [[0, 12.4], [0.5, 14.0], [1.0, 15.4], [1.5, 15.6], [1.75, 16.5], [2.0, 17.8], [2.5, 18.1], [2.8, 18.4], [3.0, 17.0], [3.1, 16.2], [3.2, 14.3], [3.3, 12.6], [3.4, 12.0], [4.0, 12.0], [5.0, 12.0]];
+export const VIDEO_READINGS = [[0, 12.4], [0.5, 14.0], [1.0, 15.4], [1.5, 15.6], [1.75, 16.5], [2.0, 17.5], [2.5, 17.8], [2.8, 18.0], [3.0, 17.0], [3.1, 16.2], [3.2, 14.3], [3.3, 12.6], [3.4, 12.0], [4.0, 12.0], [5.0, 12.0]];
 export const VIDEO_ZONES = { static: [0, 2.8], threshold: [2.8, 3.1], kinetic: [3.1, 5] };
 export function readingAt(t, R = VIDEO_READINGS) {
   if (t <= R[0][0]) return R[0][1];
@@ -101,7 +101,7 @@ function stack(parent, list, cx = 16, base = 10.6) {
 // Code-drawn tick strip that sits over the blank tube of hand_pull_with_scale (0 N near the hand, 20 N near the hook).
 function strip() {
   const s = h("div", "strip");
-  const ticks = Array.from({ length: 21 }, (_, n) => { const x = needleX(n); return `<line x1="${x}" x2="${x}" y1="${n % 4 ? 62 : 48}" y2="100" />` + (n % 4 ? "" : `<text x="${x}" y="40">${n}</text>`); }).join("");
+  const ticks = Array.from({ length: 21 }, (_, n) => { const x = needleX(n); return `<line x1="${x}" x2="${x}" y1="${n % 5 ? 62 : 48}" y2="100" />` + (n % 5 ? "" : `<text x="${x}" y="40"${n % 10 ? ' class="t5"' : n === 10 ? ' class="t10"' : ""}>${n}</text>`); }).join("");
   s.innerHTML = `<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${ticks}</svg><span class="s-unit">N</span>`;
   const needle = h("div", "needle"); s.appendChild(needle);
   return { s, needle };
@@ -524,7 +524,12 @@ export const PAGES = [
       const X0 = 60, X1 = 585, Y0 = 360, Y1 = 20, sx = (t) => X0 + t / 5 * (X1 - X0), sy = (f) => Y0 - f / 20 * (Y0 - Y1);
       const Z = VIDEO_ZONES, band = (z, col, label, ly = Y1 + 26) => `<rect x="${sx(z[0])}" y="${Y1}" width="${sx(z[1]) - sx(z[0])}" height="${Y0 - Y1}" fill="${col}" fill-opacity=".16"/><text x="${(sx(z[0]) + sx(z[1])) / 2}" y="${ly}" text-anchor="middle" class="zl" fill="${col}">${label}</text>`;
       let grid = ""; for (let f = 0; f <= 20; f += 4) grid += `<line x1="${X0}" x2="${X1}" y1="${sy(f)}" y2="${sy(f)}" class="gl"/>`;
-      g.innerHTML = `<svg viewBox="0 0 600 410" role="img" aria-label="Force against time graph drawn in step with the video">${PENCIL}${band(Z.static, "#2F6DB5", "static")}${band(Z.threshold, "#C98A1E", "threshold", Y0 - 14)}${band(Z.kinetic, "#B8322A", "kinetic")}<g filter="url(#pencilF)">${grid}<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" class="ax"/><line x1="${X0}" y1="${Y0}" x2="${X0}" y2="${Y1}" class="ax"/><polyline class="trace" points=""/></g><circle class="now" r="8"/><text x="${(X0 + X1) / 2}" y="404" class="axl">time in the video (s)</text><text x="16" y="190" class="axl" transform="rotate(-90 16 190)">scale reading (N)</text></svg>`;
+      // Readings ruled for the video: peak (static max) 18 N at the threshold, steady pull (kinetic) 12 N.
+      const PEAK_N = 18, STEADY_N = 12;
+      let nums = ""; for (let f = 0; f <= 20; f += 4) nums += `<text x="${X0 - 8}" y="${sy(f) + 6}" class="gt" text-anchor="end">${f}</text>`;
+      for (let t = 1; t <= 5; t++) nums += `<text x="${sx(t)}" y="${Y0 + 22}" class="gt">${t}</text>`;
+      nums += `<text x="${sx(Z.threshold[0]) - 10}" y="${sy(PEAK_N) - 12}" class="pkl" text-anchor="end">peak ${PEAK_N} N</text><text x="${sx(4.2)}" y="${sy(STEADY_N) - 12}" class="kl" text-anchor="middle">steady ${STEADY_N} N</text>`;
+      g.innerHTML = `<svg viewBox="0 0 600 432" role="img" aria-label="Force against time graph drawn in step with the video: peak 18 N, steady 12 N">${PENCIL}${band(Z.static, "#2F6DB5", "static")}${band(Z.threshold, "#C98A1E", "threshold", Y0 - 14)}${band(Z.kinetic, "#B8322A", "kinetic")}<g filter="url(#pencilF)">${grid}<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" class="ax"/><line x1="${X0}" y1="${Y0}" x2="${X0}" y2="${Y1}" class="ax"/><polyline class="trace" points=""/></g>${nums}<circle class="now" r="8"/><text x="${(X0 + X1) / 2}" y="426" class="axl">time in the video (s)</text><text x="16" y="190" class="axl" transform="rotate(-90 16 190)">scale reading (N)</text></svg>`;
       const trace = g.querySelector(".trace"), dot = g.querySelector(".now");
       const drawTo = (t) => { const pts = []; for (let s = 0; s <= t; s += 0.05) pts.push(`${sx(s).toFixed(1)},${sy(readingAt(s)).toFixed(1)}`); pts.push(`${sx(t).toFixed(1)},${sy(readingAt(t)).toFixed(1)}`); trace.setAttribute("points", pts.join(" ")); dot.setAttribute("cx", sx(t)); dot.setAttribute("cy", sy(readingAt(t))); };
       v.addEventListener("loadedmetadata", () => { v.playbackRate = 0.5; });
