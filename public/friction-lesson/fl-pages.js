@@ -47,7 +47,7 @@ function stage(scene) { scene.classList.add("staged"); const c = h("div", "card 
 function fbd(sledG) {
   const pt = (l, b) => { const p = h("div", "p", null, { position: "absolute", left: l + "cqw", bottom: b + "cqw" }); sledG.appendChild(p); return p; };
   const A = [farrow(pt(33, 9.5), 0, 0, 7, 0, "#2F6DB5", sub("F_pull"), { top: "-5.3cqw", left: "0" }), farrow(pt(0.3, 0.8), 0, 0, 8, 180, "#B8322A", sub("F_friction"), { top: "1.4cqw", left: "0" }), farrow(pt(12, -0.5), 0, 0, 7, 90, "#6B6B6B", "mg", { top: "1.5cqw", left: "2cqw" }), farrow(pt(25, 10.6), 0, 0, 8, -90, "#2F7A40", sub("F_N"), { top: "1.5cqw", left: "2cqw" })];
-  A[2].querySelector(".fl").classList.add("mg-l"); return A;
+  A[2].querySelector(".fl").classList.add("mg-l"); ["fl-pull", "fl-fric", "fl-mg", "fl-n"].forEach((c, i) => A[i].querySelector(".fl").classList.add(c)); return A;
 }
 function carpet(scene, x, y, w) { const c = at(scene, img("carpet_strip", "cut carpet"), x, y, w); return c; }
 
@@ -255,7 +255,7 @@ export const PAGES = [
       R.r.classList.add("p6-rig");
       T.fade(R.r, 0, 0.4);
       const zone = at(R.sledG, h("div", "dropzone"), 0, null); zone.style.cssText += "left:2cqw;bottom:10cqw;width:30cqw;height:26cqw;";
-      const tray = at(scene, h("div", "tray"), 74, 46, 20); tray.innerHTML = `<div class="lbl">weights</div>`;
+      const tray = at(scene, h("div", "tray"), 75.5, 46, 19); tray.innerHTML = `<div class="lbl">weights</div>`;
       const tr = h("div", "tray-row"); tray.appendChild(tr);
       ["100", "200", "500", "1000"].forEach((g) => { const w = weightEl(g); w.style.width = WEIGHTS[g][1] * 0.42 + "cqw"; w.classList.add("drag"); w.tabIndex = 0; w.setAttribute("role", "button"); w.setAttribute("aria-label", "Add " + WEIGHTS[g][3]); tr.appendChild(w); });
       T.fade(tray, 0.6);
@@ -263,7 +263,7 @@ export const PAGES = [
       T.pop(mag, 0.8); T.A(mag, [{ transform: "translate(0,0)" }, { transform: "translate(-1cqw,1cqw)" }, { transform: "translate(0,0)" }], 1.4, 1.2, EASE.inout, { iterations: 2 });
       const hint = h("div", "chip drag-cue", "drag me ↙"); mag.appendChild(hint); T.pop(hint, 1.2); T.loop(hint, [{ transform: "translate(0,0) rotate(0)" }, { transform: "translate(-.6cqw,.4cqw) rotate(-4deg)" }, { transform: "translate(0,0) rotate(0)" }], 1.8, 1.2);
       // zoom view
-      const zv = at(scene, h("div", "zoomv"), 50, 1, 27); zv.style.opacity = 0; zv.style.pointerEvents = "none";
+      const zv = at(scene, h("div", "zoomv"), 50, 12, 24); zv.style.opacity = 0; zv.style.pointerEvents = "none";
       const path = (pts, close) => "M" + pts.map((p) => p.join(" ")).join(" L") + close;
       const topD = path(P.top, " L1000 0 L0 0Z"), botD = path(P.bot, " L1012 400 L12 400Z");
       zv.innerHTML = `<div class="lens"><svg viewBox="300 20 400 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Magnified view: block asperities above, carpet asperities below">
@@ -276,6 +276,10 @@ export const PAGES = [
         <g clip-path="url(#blkClip)"><path d="${botD}" fill="#B8322A" fill-opacity=".8"/></g></g>
         <text x="500" y="118" text-anchor="middle" class="zt">wood block</text><text x="500" y="318" text-anchor="middle" class="zt">carpet</text></svg></div><div class="lens-h"></div>
         <div class="zread"><span>real contact</span><i><b></b></i><span class="zpct"></span></div><div class="zload chip">load: block only</div>`;
+      { const zh = zv.querySelector(".lens-h"), zt = h("div", "chip drag-cue zv-cue", "drag me ↗"); zv.appendChild(zt);
+        [zh, zt].forEach((el) => el.addEventListener("pointerdown", (e) => { e.preventDefault(); const r0 = scene.getBoundingClientRect(), sx = e.clientX, sy = e.clientY, l0 = parseFloat(zv.style.left), t0 = parseFloat(zv.style.top);
+          const mv = (ev) => { zv.style.left = l0 + (ev.clientX - sx) / r0.width * 100 + "%"; zv.style.top = t0 + (ev.clientY - sy) / r0.height * 100 + "%"; };
+          const up = () => { window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); }; window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up); })); }
       const movers = [...zv.querySelectorAll(".blkmove")], bar = zv.querySelector(".zread b"), pct = zv.querySelector(".zpct"), loadC = zv.querySelector(".zload");
       let grams = 0, d = squeeze(0, P) - 6, zoomed = false, stackTop = 10.6;
       const setD = (nd, dur) => { movers.forEach((m) => T.A(m, [{ transform: `translateY(${d}px)` }, { transform: `translateY(${nd}px)` }], 0, dur, EASE.inout, { fill: "forwards" })); d = nd; const f = contactFraction(nd, P); T.A(bar, [{ width: bar.style.width || "0%" }, { width: (f * 100).toFixed(0) + "%" }], 0, dur, EASE.inout, { fill: "forwards" }); bar.style.width = (f * 100).toFixed(0) + "%"; pct.textContent = Math.round(f * 100) + "%"; };
@@ -734,7 +738,7 @@ export const PAGES = [
       const hook = (hx, hy) => `<path d="M${hx} ${hy}h14" stroke="#555" stroke-width="5"/><circle cx="${hx + 25}" cy="${hy}" r="11" fill="none" stroke="#555" stroke-width="5"/><path d="M${hx + 28} ${hy} C${hx + 40} ${hy - 16}, ${hx + 100} ${hy - 13}, ${hx + 112} ${hy} C${hx + 100} ${hy + 13}, ${hx + 40} ${hy + 16}, ${hx + 28} ${hy}Z" fill="none" stroke="#B8322A" stroke-width="5" class="band-loop"/>`;
       const svg = h("div", "p26-art"); svg.innerHTML = `<svg viewBox="0 0 1000 360" style="width:100%;display:block" role="img" aria-label="Two identical wood blocks on a plank: one on its wide face, one on its narrow side, each pulled by a rubber band looped through its eye hook"><polygon points="10,300 60,250 990,250 940,300" fill="#E3BE8A" stroke="#6B4320" stroke-width="3"/><rect x="10" y="300" width="930" height="24" fill="#C9965C" stroke="#6B4320" stroke-width="3"/>${blk(40, 330, 60, 45)}${hook(392, 242)}${blk(540, 330, 110, 20)}${hook(880, 230)}<text x="205" y="352" text-anchor="middle" class="p26-t">wide face down</text><text x="715" y="352" text-anchor="middle" class="p26-t">narrow side down</text></svg>`;
       box.appendChild(svg); T.fade(svg, 0.4, 0.8);
-      const lb = h("div", "lbl t-aside", "his sketch idea"); lb.style.fontSize = "2.2cqw"; c.appendChild(lb); T.fade(lb, 2.0);
+      const lb = h("div", "lbl t-aside p26-cap", "his sketch idea"); lb.style.fontSize = "2.2cqw"; lb.style.marginTop = "3cqw"; c.appendChild(lb); T.fade(lb, 2.0);
       const btn = at(scene, h("a", "pencil-btn big-btn", "Try the Online Friction Lab ↗"), 22, 84);
       btn.href = LAB_URL; btn.target = "_blank"; btn.rel = "noopener"; btn.id = "labBtn";
       T.pop(btn, 2.8);

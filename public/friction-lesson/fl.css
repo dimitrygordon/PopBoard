@@ -384,7 +384,7 @@ body[data-page="19"] .ans-card p { margin-bottom: 6px; }
 body[data-page="19"] .ans-graph .lbl { font-size: 22px; line-height: 1.2; }
 .farrow .fl sub { font-size: max(16px, .72em); }
 .farrow .fl.mg-l { background: var(--card-keep); color: #6B6B6B; padding: 0 6px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,.15); }
-.p6-rig .wt-l { left: 100%; right: auto; top: 20%; margin-left: 6px; width: max-content; background: var(--card-keep); border: 1.5px solid #24339E; border-radius: 6px; padding: 0 6px; text-shadow: none; font-size: 16px; }
+.p6-rig .wt-l { left: 100%; right: auto; top: -15%; margin-left: 6px; width: max-content; background: var(--card-keep); border: 1.5px solid #24339E; border-radius: 6px; padding: 0 6px; text-shadow: none; font-size: 16px; }
 .p26-t { font-family: var(--f-head); font-size: 34px; fill: #24339E; }
 @media (max-width: 760px) {
   body[data-page="19"] .ans-graph .lbl { font-size: 16px; }
@@ -398,3 +398,50 @@ body[data-page="19"] .ans-graph .lbl { font-size: 22px; line-height: 1.2; }
   body[data-page="14"] .big-play { align-self: center; translate: none !important; transform: none !important; margin: 0 auto; }
 }
 .p6-rig ~ * .lens-h, body[data-page="6"] .lens-h { display: none; }
+
+/* Leo round 5 */
+body[data-page="6"] .lens-h, .zoomv .lens-h { display: block; left: 75%; top: 1.6cqw; width: 9cqw; height: 14px; rotate: -60deg; transform-origin: 0 50%; border: 2px solid #24339E; border-radius: 7px; background: repeating-linear-gradient(90deg, #8B5A2B 0 6px, #7A4C22 6px 8px); z-index: -1; pointer-events: auto; cursor: grab; touch-action: none; }
+.zoomv .zv-cue { right: auto; left: 92%; top: -6.3cqw; pointer-events: auto; cursor: grab; touch-action: none; white-space: nowrap; }
+@media (min-width: 761px) {
+  body[data-page="6"] :is(.zread, .zread span, .zpct, .zload, .drag-cue, .sbtn, .tray .lbl, .wt-l, .p6-rig .wt-l) { font-size: max(22px, 1.6cqw); }
+  body[data-page="17"] .chip, body[data-page="17"] .farrow .fl, body[data-page="17"] .lbl { font-size: max(22px, 1.6cqw); }
+  body[data-page="26"] .lbl { font-size: max(22px, 2.2cqw) !important; }
+  body:is([data-page="7"], [data-page="8"]) .farrow .fl sub, body:is([data-page="7"], [data-page="8"]) .strip .s-unit { font-size: max(16px, 1.1cqw); }
+}
+@media (max-width: 760px) {
+  body[data-page="9"] .fl-frame { height: calc(100dvh - 165px); overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; }
+  body[data-page="9"] .fl-frame > .fl-art, body[data-page="9"] .fl-frame > .fl-art > #flScene { display: contents; }
+  body[data-page="9"] .fl-frame > *, body[data-page="9"] #flScene > * { flex: none; }
+  body[data-page="9"] .p9-graph { position: sticky !important; top: 0 !important; z-index: 5; background: var(--paper); }
+}
+@media (max-width: 600px) {
+  #flScene sub { font-size: max(13px, .62em); }
+  body[data-page="19"] .ans-graph .lbl { font-size: 16px !important; }
+  :where(body:is([data-page="3"], [data-page="6"], [data-page="7"], [data-page="8"], [data-page="17"], [data-page="26"]) #flScene) :is(.lbl, .chip, .say:not(.big), .wt-l, .farrow .fl, .zread, .zread span, .zload, .zpct, .drag-cue, .sbtn, .roles, .roles span, .grp-n, .ok-l, .reading, .s-unit, .test-info, .photo-credit) { font-size: 13px !important; }
+  .strip text { font-size: 37px; }
+  .zoomv .zt { font-size: 66px; }
+  .p26-t { font-size: 52px; }
+}
+@media (max-width: 600px) {
+  /* p7 / p8 free-body labels re-spaced for the small phone rig */
+  .farrow .fl.fl-pull { top: -33px !important; left: 4px !important; }
+  .farrow .fl.fl-fric { top: -22px !important; left: -20px !important; }
+  .farrow .fl.fl-mg { top: -27px !important; left: 1px !important; }
+  .farrow .fl.fl-n { top: -6px !important; left: 20px !important; }
+  .rig .wt-l { top: auto; bottom: 100%; }
+  body[data-page="7"] #flScene > .say { display: none; }
+  body[data-page="7"] #flScene > .chip { left: 47% !important; }
+  body[data-page="8"] .test-info { top: 74% !important; }
+  /* p6 */
+  body[data-page="6"] .p6-rig .wt-l { display: none; }
+  body[data-page="6"] .zoomv { left: 2% !important; top: 14% !important; width: 20% !important; }
+  body[data-page="6"] .zoomv .zread { position: absolute; left: 228%; top: -27px; margin: 0; white-space: nowrap; }
+  body[data-page="6"] .zoomv .zread i { width: 40px; }
+  body[data-page="6"] .zoomv .zload { position: absolute; left: 228%; top: 0; margin: 0; white-space: nowrap; }
+  body[data-page="6"] .zoomv .zv-cue { left: 110%; top: -29px; }
+  body[data-page="6"] .tray { left: 70% !important; width: 28% !important; }
+  body[data-page="6"] #flScene > .sbtn { left: 3% !important; top: 86% !important; translate: none !important; }
+  body[data-page="26"] .p26-cap { margin-top: 16px !important; }
+}
+@media (max-width: 600px) { body[data-page="9"] .graph text { font-size: 22px; } }
+@media (max-width: 600px) { body[data-page="9"] .graph .gt[text-anchor="end"] { transform: translate(-6px, -8px); } body[data-page="9"] .btnrow { margin-top: 6px; } }
