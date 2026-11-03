@@ -11,7 +11,8 @@ for (const mode of modes) {
   const page = await browser.newPage();
   page.on("console", (m) => { if (m.type() === "error") errors.push(`${mode}: ${m.text()}`); });
   page.on("pageerror", (e) => errors.push(`${mode}: ${e.message}`));
-  page.on("requestfailed", (r) => errors.push(`${mode}: failed ${r.url()}`));
+  // media requests are cancelled on purpose when a page turn pauses its audio or video (net::ERR_ABORTED)
+  page.on("requestfailed", (r) => { if (/\.(mp3|mp4)$/.test(r.url()) && /ABORTED/.test(r.failure()?.errorText || "")) return; errors.push(`${mode}: failed ${r.url()} ${r.failure()?.errorText}`); });
   page.on("response", (r) => { if (r.status() >= 400) errors.push(`${mode}: ${r.status()} ${r.url()}`); });
   const mobile = mode.startsWith("mobile");
   await page.setViewport(mobile ? { width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true } : { width: 1600, height: 900 });

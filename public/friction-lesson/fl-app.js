@@ -22,12 +22,19 @@ function narrationSlot(n) {
     const a = new Audio(); a.preload = "metadata";
     const btn = h("button", "pencil-btn", "▶ Narration"); btn.type = "button";
     btn.onclick = () => { if (a.paused) { a.play().catch(() => {}); } else a.pause(); };
-    a.onplay = () => { btn.textContent = "❚❚ Narration"; }; a.onpause = a.onended = () => { btn.textContent = "▶ Narration"; };
-    a.onerror = () => { box.hidden = true; };
-    a.onloadedmetadata = () => { if (state.i === n - 1) box.hidden = false; };
+    // While narration is speaking, auto-advance waits for it to end (see maybeAdvance).
+    a.onplay = () => { btn.textContent = "❚❚ Narration"; state.speaking = true; clearTimeout(state.autoTimer); };
+    a.onpause = () => { btn.textContent = "▶ Narration"; };
+    a.onended = () => { btn.textContent = "▶ Narration"; state.speaking = false; maybeAdvance(); };
+    a.onerror = () => { box.hidden = true; state.speaking = false; maybeAdvance(); };
+    a.onloadedmetadata = () => { if (state.narration === a) box.hidden = false; };
+    if (state.i !== n - 1) return;
     a.src = "friction-lesson/narration/" + entry.audio;
     box.appendChild(btn);
     state.narration = a;
+    // Presentation mode: narration starts with the page. If the browser blocks autoplay before the
+    // first click, the button stays ready and auto-advance does not wait on silent audio.
+    if (state.playing && !reducedQ.matches) a.play().catch(() => { state.speaking = false; });
   });
   return box;
 }
@@ -37,6 +44,7 @@ function stopPage() {
   if (state.T) state.T.anims.forEach((a) => a.cancel());
   if (state.prog) state.prog.cancel();
   if (state.narration) { state.narration.pause(); state.narration = null; }
+  state.speaking = false; state.animDone = false;
   scene.querySelectorAll("video").forEach((v) => v.pause());
   scene.replaceChildren(); side.replaceChildren();
 }
@@ -63,13 +71,17 @@ function render(i) {
 function startClock(T) {
   const end = Math.max(0.5, T.end());
   state.prog = $("flProg").animate([{ width: "0%" }, { width: "100%" }], { duration: end * 1000, fill: "forwards" });
-  state.prog.onfinish = () => {
-    if (state.auto && !state.steps.length && state.i < PAGES.length - 1) {
-      state.autoTimer = setTimeout(() => { if (state.playing) go(1); }, 4000);
-    }
-  };
+  state.animDone = false;
+  state.prog.onfinish = () => { state.animDone = true; maybeAdvance(); };
   if (T.reduced) { T.finishAll(); state.prog.finish(); }
   else if (!state.playing) setPlaying(false);
+}
+
+// Auto-advance: 4 s after the page's animation is done and its narration (if speaking) has ended.
+function maybeAdvance() {
+  clearTimeout(state.autoTimer);
+  if (!state.auto || !state.animDone || state.speaking || state.steps.length || state.i >= PAGES.length - 1) return;
+  state.autoTimer = setTimeout(() => { if (state.playing && !state.speaking) go(1); }, 4000);
 }
 
 function runStep() {
@@ -92,7 +104,11 @@ function setPlaying(on) {
   const all = [...(state.T ? state.T.anims : []), state.prog].filter(Boolean);
   all.forEach((a) => { if (a.playState === "finished" || a.playState === "idle") return; on ? a.play() : a.pause(); });
   scene.querySelectorAll("video").forEach((v) => { if (on) v.play().catch(() => {}); else v.pause(); });
-  if (!on) clearTimeout(state.autoTimer);
+  const a = state.narration;
+  if (a && !on && !a.paused) { a.pause(); state.resumeNarration = true; }
+  if (a && on && state.resumeNarration) { a.play().catch(() => {}); }
+  if (on) state.resumeNarration = false;
+  if (!on) clearTimeout(state.autoTimer); else maybeAdvance();
   const b = $("playBtn"); b.setAttribute("aria-pressed", String(on));
   b.textContent = on ? "❚❚ Pause" : "▶ Play"; b.setAttribute("aria-label", on ? "Pause" : "Play");
 }
@@ -135,7 +151,7 @@ $("textBtn").onclick = () => setCollapsed(!document.body.classList.contains("fl-
 $("fsBtn").onclick = toggleFullscreen;
 const autoBtn = $("autoBtn");
 const syncAuto = () => autoBtn.setAttribute("aria-pressed", String(state.auto));
-autoBtn.onclick = () => { state.auto = !state.auto; try { localStorage.setItem("popboard.friction.auto", state.auto ? "1" : "0"); } catch (e) {} syncAuto(); if (state.auto && state.prog && state.prog.playState === "finished") state.prog.onfinish(); };
+autoBtn.onclick = () => { state.auto = !state.auto; try { localStorage.setItem("popboard.friction.auto", state.auto ? "1" : "0"); } catch (e) {} syncAuto(); if (state.prog && state.prog.playState === "finished") state.animDone = true; maybeAdvance(); };
 syncAuto();
 addEventListener("keydown", (e) => {
   if (e.target.closest && e.target.closest("input, textarea")) return;

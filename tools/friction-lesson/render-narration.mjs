@@ -23,7 +23,15 @@ async function tts(text) {
     const r = await fetch("https://api.x.ai/v1/tts", { method: "POST",
       headers: { Authorization: `Bearer ${KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({ text, voice_id: VOICE, language: "en" }) });
-    if (r.ok) return r.json();
+    if (r.ok) {
+      // xAI answers with raw audio bytes, or JSON carrying base64 audio when timestamps are requested.
+      if ((r.headers.get("content-type") || "").includes("json")) {
+        const j = await r.json(); const b64 = j.audio || j.audio_base64 || j.data;
+        if (!b64) throw new Error("TTS: no audio in JSON response");
+        return Buffer.from(b64, "base64");
+      }
+      return Buffer.from(await r.arrayBuffer());
+    }
     if (attempt >= 4 || (r.status < 500 && r.status !== 429)) throw new Error(`TTS ${r.status}: ${await r.text()}`);
     await new Promise((res) => setTimeout(res, 2000 * attempt));
   }
@@ -37,10 +45,7 @@ for (const [n, entry] of Object.entries(man.pages)) {
   if (!text) continue;
   const name = `p${n}.mp3`, ap = join(DIR, name);
   if (!force && existsSync(ap)) { entry.audio = name; continue; }
-  const res = await tts(text);
-  const b64 = res.audio || res.audio_base64 || res.data;
-  if (!b64) throw new Error(`page ${n}: no audio in response`);
-  writeFileSync(ap + ".raw", Buffer.from(b64, "base64"));
+  writeFileSync(ap + ".raw", await tts(text));
   const enc = spawnSync("ffmpeg", ["-loglevel", "error", "-y", "-i", ap + ".raw", "-ac", "1", "-b:a", "48k", "-f", "mp3", ap + ".tmp"]);
   renameSync(enc.status === 0 ? ap + ".tmp" : ap + ".raw", ap);
   rmSync(ap + ".raw", { force: true });

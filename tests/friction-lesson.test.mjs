@@ -56,7 +56,7 @@ test("graph wipes stay inside the shared canvas and run left to right", () => {
   assert.ok(eng.riseWipeRight(0.5) > x0 && eng.riseWipeRight(0.5) < x1);
 });
 
-test("narration manifest covers all 33 pages with the zagan voice and no audio yet hides the player", () => {
+test("narration manifest covers all 33 pages with the zagan voice; a page without audio hides the player", () => {
   const m = JSON.parse(readFileSync(join(DIR, "narration", "manifest.json"), "utf8"));
   assert.equal(m.voice, "zagan");
   assert.equal(Object.keys(m.pages).length, 33);
@@ -84,4 +84,21 @@ test("player has full screen, hide text, auto-advance, and reduced motion", () =
   assert.match(all, /prefers-reduced-motion/);
   assert.match(all, /popboard\.friction\.auto/);
   assert.match(all, /fl-full/);
+});
+
+test("every page has narration text and a rendered mp3, with no em-dashes", () => {
+  const m = JSON.parse(readFileSync(join(DIR, "narration", "manifest.json"), "utf8"));
+  for (let n = 1; n <= 33; n++) {
+    const e = m.pages[String(n)];
+    assert.ok(e.text.length > 20, `page ${n} text`);
+    assert.ok(!e.text.includes("\u2014"), `page ${n} em-dash`);
+    assert.equal(e.audio, `p${n}.mp3`);
+    assert.ok(existsSync(join(DIR, "narration", e.audio)), e.audio);
+  }
+});
+
+test("auto-advance waits for narration to end", () => {
+  const app = readFileSync(join(DIR, "fl-app.js"), "utf8");
+  assert.match(app, /if \(!state\.auto \|\| !state\.animDone \|\| state\.speaking/);
+  assert.match(app, /a\.onended = \(\) => \{[^}]*state\.speaking = false; maybeAdvance\(\);/);
 });
