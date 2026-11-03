@@ -19,13 +19,14 @@ test("Courses band comes before the search box and the module grid", () => {
 test("Courses band links both course libraries with existing cover art", () => {
   assert.match(html, /href="study-astronomy-course\.html"/);
   assert.match(html, /href="study-physics101\.html"/);
+  assert.match(html, /href="study-friction-lesson\.html"/);
   for (const src of html.matchAll(/class="course-card[^]*?<img src="([^"]+)"/g)) {
     assert.ok(existsSync(join(PUB, src[1])), src[1]);
   }
 });
 
 test("module grid skips the two courses; other modules stay", () => {
-  assert.match(html, /var COURSE_IDS = \["astronomy-course", "physics101"\];/);
+  assert.match(html, /var COURSE_IDS = \["astronomy-course", "physics101", "friction-lesson"\];/);
   assert.match(html, /BUILTIN_MODULES\.filter\(function\(m\) \{ return COURSE_IDS\.indexOf\(m\.id\) === -1; \}\)/);
 });
 
