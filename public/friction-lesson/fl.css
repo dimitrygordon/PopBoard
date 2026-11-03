@@ -478,3 +478,8 @@ body:is([data-page="7"], [data-page="8"]) .rig .wt-l { top: 50% !important; bott
   body[data-page="5"] #flScene > .sticky { left: 64% !important; width: 34% !important; }
   body[data-page="5"] #flScene > .chip:last-of-type { left: 2% !important; top: 85% !important; right: 2%; white-space: normal; text-align: center; }
 }
+/* Tesla: sample data on p9 and p13 is labeled as not from the video cart */
+.ex-note { font-family: var(--f-head); font-size: max(16px, 1.3cqw); color: #24339E; margin-top: 6px; line-height: 1.2; }
+@media (max-width: 600px) { .ex-note { font-size: 13px; } }
+.ex-note-9 { margin-top: 18px; }
+.ex-note-13 { margin-top: 20px; }

@@ -18,6 +18,7 @@ export function readingAt(t, R = VIDEO_READINGS) {
   return R[R.length - 1][1];
 }
 // Sample kinetic data (page 8 and 9): grams on the 90 g cart, normal force, sample scale reading.
+const EXAMPLE_NOTE = "Example data (a different surface pair, not the video cart).";
 export const KDATA = [{ g: ["1000"], mass: 1090, FN: 10.7, Ff: 4.3 }, { g: ["1000", "500"], mass: 1590, FN: 15.6, Ff: 6.2 }, { g: ["1000", "500", "200"], mass: 1790, FN: 17.5, Ff: 7.0 }];
 export const PEAKS = [7.8, 7.6, 8.0];
 const sub = (s) => s.replace(/F_(\w+)/g, "F<sub>$1</sub>").replace(/μ_(\w)/g, "μ<sub>$1</sub>");
@@ -385,10 +386,10 @@ export const PAGES = [
     title: "GRAPH IT & FIND THE EQUATION", kicker: "EXPLAIN · F_f VS F_N",
     side: `<p>x-axis F_N (N), y-axis F_f (N).</p><p>Use the buttons: <b>Plot points</b>, <b>Plot best fit</b>, then <b>Zoom out</b> to see where the line goes.</p><p>Then press <b>Next →</b> to build the equation step by step.</p><p class="q" id="p9q" style="opacity:0">What does the slope tell you about your material?</p>`,
     cap: "Plot points · Plot best fit · Zoom out · Next → builds the equation",
-    guide: "Graph: friction force against normal force for the three tests. The best-fit line passes through (0, 0), so friction is directly proportional to F_N. Next steps turn that into F_f = μk F_N.",
+    guide: "Graph: friction force against normal force for the three tests. The best-fit line passes through (0, 0), so friction is directly proportional to F_N. Next steps turn that into F_f = μk F_N. Example data (a different surface pair, not the video cart).",
     build(scene, T) {
       const c = card(scene, 2, 3, 42, { keep: true }); c.style.rotate = "-.8deg"; c.classList.add("p9-graph");
-      const svg = h("div", "graph"); c.appendChild(svg); T.fade(c, 0, 0.4);
+      const svg = h("div", "graph"); c.appendChild(svg); T.fade(c, 0, 0.4); c.appendChild(h("div", "ex-note ex-note-9", EXAMPLE_NOTE));
       const pts = KDATA.map((k) => [k.FN, k.Ff]), fit = fitLine(pts);
       const st = { v: [9, 19, 3, 8], pts: false, line: 0, origin: false };
       const X0 = 70, X1 = 585, Y0 = 380, Y1 = 18;
@@ -497,7 +498,7 @@ export const PAGES = [
     title: "Calculate μs", kicker: "EXPLAIN · STATIC FRICTION",
     side: `<p>Static friction grows to match your pull, up to a maximum:</p><p id="p13a"><span class="t-head">Ff,static ≤ μs FN</span></p><p>At the peak, Ff,static (max) = μs FN, so</p><p id="p13b"><span class="boxed">μs = peak reading / FN</span></p><p class="guide-x">Graph: rise, peak, drop, flat.</p><p class="q" id="p13c">Compare: is your μs bigger or smaller than your μk?</p>`,
     cap: "μs = peak reading / FN",
-    guide: "Rise while still, peak at max static friction, drop, then flat at kinetic. μs = peak / F_N.",
+    guide: "Rise while still, peak at max static friction, drop, then flat at kinetic. μs = peak / F_N. Example data (a different surface pair, not the video cart).",
     build(scene, T) {
       const c = card(scene, 8, 3, 62, { keep: true });
       const L = staticGraph(c, ["static_axes", "static_seg1_rise", "static_seg2_drop", "static_seg3_kinetic", "static_peak_dot", "static_label_max", "static_label_kinetic_eq"]);
@@ -510,14 +511,14 @@ export const PAGES = [
       T.fade(L.static_label_kinetic_eq, 3.6, 0.5);
       T.fade(document.getElementById("p13a"), 4.4); T.pop(document.getElementById("p13b"), 5.0); T.fade(document.getElementById("p13c"), 5.8);
       const fs = at(scene, h("div", "fs-only chip", fx("Ff,static ≤ μs FN")), 74, 30); fs.style.fontSize = "2.4cqw"; T.fade(fs, 4.4);
-      const ex = at(c, h("div", "chip ex-chip", fx("Example: μs = 7.8 N / 17.5 N ≈ 0.45 (sample)")), 4, 100); ex.style.position = "relative"; ex.style.fontSize = "2cqw"; T.fade(ex, 5.4);
+      const ex = at(c, h("div", "chip ex-chip", fx("Example: μs = 7.8 N / 17.5 N ≈ 0.45 (sample)")), 4, 100); ex.style.position = "relative"; ex.style.fontSize = "2cqw"; T.fade(ex, 5.4); const exn = h("div", "ex-note ex-note-13", EXAMPLE_NOTE); c.appendChild(exn);
     },
   },
   { // 14 video + synced force vs time graph
     title: "WATCH THE SCALE, WATCH THE GRAPH", kicker: "EXPLAIN · STATIC, THRESHOLD, KINETIC",
     side: `<p>The graph is drawn from the real scale readings in the video (slowed to half speed).</p><p><b style="color:#2F6DB5">Static:</b> the cart holds still and friction matches the growing pull.</p><p><b style="color:#C98A1E">Threshold:</b> the peak, the most static friction can give (Ff,s(max) = μs FN).</p><p><b style="color:#B8322A">Kinetic:</b> it slides, friction drops and stays about the same (Ff,k = μk FN).</p><p class="q">Why is starting harder than sliding?</p>`,
     cap: "Static · Threshold · Kinetic",
-    guide: "The video and the graph play together. The force climbs while the cart is stuck (static), peaks (threshold), then drops and stays flat while it slides (kinetic).",
+    guide: "The video and the graph play together. The force climbs while the cart is stuck (static), peaks (threshold), then, once it slides (kinetic), drops for a moment and settles at a steady, lower value.",
     build(scene, T) {
       const vc = card(scene, 1, 6, 46, { keep: true, tilt: "tilt-l" }); vc.classList.add("vid-card"); const v = video(); v.loop = true; vc.appendChild(v); T.fade(vc, 0, 0.5);
       const gc = card(scene, 50, 4, 48, { keep: true }); gc.style.rotate = ".8deg"; const g = h("div", "graph"); gc.appendChild(g);

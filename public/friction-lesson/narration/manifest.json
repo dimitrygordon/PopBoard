@@ -54,7 +54,7 @@
       "audio": "p13.mp3"
     },
     "14": {
-      "text": "Here's the video and its force graph together. In the static zone, the cart isn't moving, and friction grows to match the pull. At the threshold, friction reaches its maximum and the cart breaks free. In the kinetic zone, the cart slides and the reading drops to a steady, lower value.",
+      "text": "Here's the video and its force graph together. In the static zone, the cart isn't moving, and friction grows to match the pull. At the threshold, friction reaches its maximum and the cart breaks free. In the kinetic zone, the cart slides. The reading drops for a moment, then settles at a steady, lower value.",
       "audio": "p14.mp3"
     },
     "15": {
