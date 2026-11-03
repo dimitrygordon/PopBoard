@@ -41,6 +41,13 @@ function layers(parent, names) {
 const STATIC_ORDER = ["static_band_static", "static_band_threshold", "static_band_kinetic", "static_axes", "static_seg1_rise", "static_seg2_drop", "static_seg3_kinetic", "static_peak_dot", "static_label_max", "static_label_kinetic_eq", "region_label_static", "region_label_threshold", "region_label_kinetic", "region_tag_1", "region_tag_2", "region_tag_3"];
 function staticGraph(parent, want) { return layers(parent, STATIC_ORDER.filter((n) => want.includes(n))); }
 
+// Cream taped-in card behind a page's art (dark mode reads like v1).
+function stage(scene) { scene.classList.add("staged"); const c = h("div", "card keep stage"); scene.prepend(c); return c; }
+// Free-body arrows spread around the cart: pull off the hook side, friction off the back, mg below, F_N up beside the weights.
+function fbd(sledG) {
+  const pt = (l, b) => { const p = h("div", "p", null, { position: "absolute", left: l + "cqw", bottom: b + "cqw" }); sledG.appendChild(p); return p; };
+  return [farrow(pt(33, 9.5), 0, 0, 7, 0, "#2F6DB5", sub("F_pull"), { top: "-3.4cqw", left: "1cqw" }), farrow(pt(-1, 3), 0, 0, 8, 180, "#B8322A", sub("F_friction"), { top: "1.4cqw", left: "0" }), farrow(pt(12, -0.5), 0, 0, 7, 90, "#6B6B6B", "mg", { top: "1.5cqw", left: "2cqw" }), farrow(pt(25, 10.6), 0, 0, 8, -90, "#2F7A40", sub("F_N"), { top: "1.5cqw", left: "2cqw" })];
+}
 function carpet(scene, x, y, w) { const c = at(scene, img("carpet_strip", "cut carpet"), x, y, w); return c; }
 
 // Force arrow growing from a point (x,y in % of parent), length in cqw, angle in deg.
@@ -108,7 +115,7 @@ function rig(scene, x, y, w, { weights = ["1000"], reading = false, hand = true 
   const pull = h("div", "r", null, { inset: "0" });
   let needle = null, scale = null, readEl = null;
   if (hand) {
-    pull.append(h("div", "r pshadow", null, { left: "41cqw", bottom: "-1.6cqw", width: "46cqw" }), h("div", "r string"));
+    pull.append(h("div", "r pshadow", null, { left: "41cqw", bottom: "-1.6cqw", width: "40cqw" }), h("div", "r string"));
     scale = h("div", "r scale2"); scale.appendChild(img("hand_pull_with_scale", "cut", "Hand pulling a spring scale"));
     const st = strip(); scale.appendChild(st.s); needle = st.needle; needle.style.left = needleX(0) + "%";
     pull.appendChild(scale);
@@ -156,7 +163,7 @@ export const PAGES = [
   { // 1 cover
     title: "Friction Lab:", kicker: "PHYSICS I", noKicker: true, centered: true,
     cap: "WHICH SURFACE GRABS HARDEST?",
-    guide: "Cover: Jasper pushes a heavy crate. His push points one way, and friction pushes back the other way. Today: which surface grabs hardest?",
+    guide: "Jasper pushes a heavy crate. His push points one way, and friction pushes back the other way. Today: which surface grabs hardest?",
     build(scene, T) {
       const c = card(scene, 17, 21, 66); c.classList.add("cover-card"); const pic = img("cover_jasper_push", "cut", "Jasper the wildcat pushing a wooden crate; push arrow forward, friction arrow back");
       c.appendChild(pic);
@@ -189,14 +196,14 @@ export const PAGES = [
       const hd = say(scene, "Split into lab groups of 2 to 4", 6, 4, 88, "big"); hd.style.textAlign = "center"; T.wipe(hd, 0, 0.8, 0, 1, EASE.out);
       const groups = [[2, 6], [3, 37], [4, 70]];
       groups.forEach(([n, x], gi) => {
-        const tbl = at(scene, h("div", "grp" + (n === 3 ? " ideal" : "")), x, 24, 26);
+        const tbl = at(scene, h("div", "grp" + (n === 3 ? " ideal" : "")), x, 18, 26);
         tbl.innerHTML = `<svg viewBox="0 0 260 200" aria-label="${n} students around a lab bench">${PENCIL}<g filter="url(#pencilF)"><ellipse cx="130" cy="150" rx="110" ry="30" fill="#E9D9B8" stroke="#24339E" stroke-width="3"/>${Array.from({ length: n }, (_, i) => { const cx = 130 + (i - (n - 1) / 2) * 56, col = ["#2F6DB5", "#B8322A", "#2F7A40", "#D9822B"][i]; return `<g class="kid"><circle cx="${cx}" cy="60" r="20" fill="#F4D7B5" stroke="#3D3D3D" stroke-width="3"/><path d="M${cx - 26} 128 Q${cx} 70 ${cx + 26} 128Z" fill="${col}" fill-opacity=".75" stroke="#3D3D3D" stroke-width="3"/></g>`; }).join("")}</g></svg><div class="lbl grp-n">${n} students</div>`;
         T.fade(tbl, 0.6 + gi * 0.5, 0.4);
         tbl.querySelectorAll(".kid").forEach((k, i) => { k.style.transformBox = "fill-box"; k.style.transformOrigin = "50% 100%"; T.pop(k, 0.8 + gi * 0.5 + i * 0.15); });
       });
-      const star = at(scene, h("div", "chip ideal-chip", "★ 3 is ideal"), 41, 70); T.pop(star, 2.6); T.wiggle(star, 3.0, 4, 0.8);
-      const roles = at(scene, h("div", "roles", "<span>puller</span><span>scale reader</span><span>recorder</span>"), 30, 82, 40); T.fadeUp(roles, 3.4);
-      [2, 4].forEach((n, i) => { const t = at(scene, h("div", "lbl t-aside", "OK"), [14, 79][i], 70); T.fade(t, 2.2); });
+      const star = at(scene, h("div", "chip ideal-chip", "★ 3 is ideal"), 41, 62); T.pop(star, 2.6); T.wiggle(star, 3.0, 4, 0.8);
+      const roles = at(scene, h("div", "roles", "<span>puller</span><span>scale reader</span><span>recorder</span>"), 30, 74, 40); T.fadeUp(roles, 3.4);
+      [2, 4].forEach((n, i) => { const t = at(scene, h("div", "lbl t-aside", "OK"), [14, 79][i], 62); T.fade(t, 2.2); });
     },
   },
   { // 4 materials per group
@@ -207,7 +214,7 @@ export const PAGES = [
     build(scene, T) {
       const items = [["carpet", "Carpet", "Use the floor", "carpet_strip"], ["scale", "Spring Scale", "0 to 20 N", "spring_scale"], ["masses", "Mass Set", "1000 g · 500 g · 200 g", null], ["cart", "Your Cart", "Choose a station cart", "sled"]];
       items.forEach(([key, name, note, art], i) => {
-        const c = card(scene, 3 + (i % 2) * 49, 4 + Math.floor(i / 2) * 48, 45, { keep: true }); c.classList.add("mat-card"); c.style.rotate = (i % 2 ? 1.2 : -1.2) + "deg";
+        const c = card(scene, 3 + (i % 2) * 49, 14 + Math.floor(i / 2) * 43, 45, { keep: true }); c.classList.add("mat-card"); c.style.rotate = (i % 2 ? 1.2 : -1.2) + "deg";
         const ph = h("div", "mat-pic"); ph.dataset.slot = "photos/" + key;
         if (PHOTOS[key]) { const im = new Image(); im.src = PHOTOS[key]; im.alt = name; im.className = "cut photo"; ph.appendChild(im); }
         else if (art) ph.appendChild(img(art, "cut", name));
@@ -215,7 +222,7 @@ export const PAGES = [
         c.append(ph, h("div", "mat-name", name), h("div", "mat-note", note));
         T.drop(c, 0.3 + i * 0.45, 6, 0.5);
       });
-      const per = at(scene, h("div", "stamp", "× 1 PER GROUP"), 40, 46); per.style.rotate = "-4deg"; T.pop(per, 2.4);
+      const pc = card(scene, 36, 1, 28, { keep: true }); pc.classList.add("stamp-card"); const per = h("div", "stamp", "× 1 PER GROUP"); pc.appendChild(per); T.pop(pc, 2.4);
     },
   },
   { // 5 surface materials + predict (v1 pages 3 and 6)
@@ -241,24 +248,24 @@ export const PAGES = [
     cap: "Drag the magnifier over the block, then load it with weights.",
     guide: "Asperities: drag the magnifier over the block to zoom in. Only the tips touch. Add weights and the tips squash together, so there is more real contact and more friction.",
     build(scene, T) {
-      const P = profiles();
+      stage(scene); const P = profiles();
       carpet(scene, 4, 76, 92);
       const R = rig(scene, 20, 15, 88, { weights: [], hand: false });
       R.r.classList.add("p6-rig");
       T.fade(R.r, 0, 0.4);
       const zone = at(R.sledG, h("div", "dropzone"), 0, null); zone.style.cssText += "left:2cqw;bottom:10cqw;width:30cqw;height:26cqw;";
-      const tray = at(scene, h("div", "tray"), 76, 52, 22); tray.innerHTML = `<div class="lbl">weights</div>`;
+      const tray = at(scene, h("div", "tray"), 79, 56, 19); tray.innerHTML = `<div class="lbl">weights</div>`;
       const tr = h("div", "tray-row"); tray.appendChild(tr);
       ["100", "200", "500", "1000"].forEach((g) => { const w = weightEl(g); w.style.width = WEIGHTS[g][1] * 0.42 + "cqw"; w.classList.add("drag"); w.tabIndex = 0; w.setAttribute("role", "button"); w.setAttribute("aria-label", "Add " + WEIGHTS[g][3]); tr.appendChild(w); });
       T.fade(tray, 0.6);
       const mag = at(scene, h("div", "mag"), 62, 8, 14); mag.appendChild(img("magnifying_glass", "cut", "Magnifying glass: drag it over the block")); mag.tabIndex = 0; mag.setAttribute("role", "button"); mag.setAttribute("aria-label", "Zoom in on the block");
       T.pop(mag, 0.8); T.A(mag, [{ transform: "translate(0,0)" }, { transform: "translate(-1cqw,1cqw)" }, { transform: "translate(0,0)" }], 1.4, 1.2, EASE.inout, { iterations: 2 });
-      const hint = at(scene, h("div", "chip", "drag me over the block"), 60, 3); T.pop(hint, 1.2);
+      const hint = h("div", "chip drag-cue", "drag me ↙"); mag.appendChild(hint); T.pop(hint, 1.2); T.loop(hint, [{ transform: "translate(0,0) rotate(0)" }, { transform: "translate(-.6cqw,.4cqw) rotate(-4deg)" }, { transform: "translate(0,0) rotate(0)" }], 1.8, 1.2);
       // zoom view
-      const zv = at(scene, h("div", "zoomv"), 3, 2, 70); zv.style.opacity = 0; zv.style.pointerEvents = "none";
+      const zv = at(scene, h("div", "zoomv"), 50, 1, 27); zv.style.opacity = 0; zv.style.pointerEvents = "none";
       const path = (pts, close) => "M" + pts.map((p) => p.join(" ")).join(" L") + close;
       const topD = path(P.top, " L1000 0 L0 0Z"), botD = path(P.bot, " L1012 400 L12 400Z");
-      zv.innerHTML = `<svg viewBox="0 0 1000 400" role="img" aria-label="Magnified view: block asperities above, carpet asperities below">
+      zv.innerHTML = `<div class="lens"><svg viewBox="300 20 400 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Magnified view: block asperities above, carpet asperities below">
         <defs>${PENCIL}<pattern id="woodH" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(-25)"><line x1="0" y1="0" x2="0" y2="10" stroke="#8B5A2B" stroke-width="2" opacity=".5"/></pattern>
         <pattern id="carpH" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><line x1="0" y1="0" x2="0" y2="8" stroke="#4C5D78" stroke-width="2" opacity=".45"/></pattern>
         <clipPath id="blkClip"><path class="blkmove" d="${topD}"/></clipPath></defs>
@@ -266,7 +273,7 @@ export const PAGES = [
         <g filter="url(#pencilF)"><path d="${botD}" fill="#B9C2CF"/><path d="${botD}" fill="url(#carpH)" stroke="#3D4A60" stroke-width="3"/>
         <g class="blkmove"><path d="${topD}" fill="#D9AE78"/><path d="${topD}" fill="url(#woodH)" stroke="#6B4320" stroke-width="3"/></g>
         <g clip-path="url(#blkClip)"><path d="${botD}" fill="#B8322A" fill-opacity=".8"/></g></g>
-        <text x="20" y="40" class="zt">wood block</text><text x="20" y="385" class="zt">carpet</text></svg>
+        <text x="500" y="70" text-anchor="middle" class="zt">wood block</text><text x="500" y="365" text-anchor="middle" class="zt">carpet</text></svg></div><div class="lens-h"></div>
         <div class="zread"><span>real contact</span><i><b></b></i><span class="zpct"></span></div><div class="zload chip">load: block only</div>`;
       const movers = [...zv.querySelectorAll(".blkmove")], bar = zv.querySelector(".zread b"), pct = zv.querySelector(".zpct"), loadC = zv.querySelector(".zload");
       let grams = 0, d = squeeze(0, P) - 6, zoomed = false, stackTop = 10.6;
@@ -275,13 +282,14 @@ export const PAGES = [
       function zoom() {
         if (zoomed) return; zoomed = true; zv.style.pointerEvents = "";
         const ZD = 1.75; // slowed zoom, seconds
-        zv.style.transformOrigin = "40% 120%";
+        zv.style.transformOrigin = "70% 20%";
         T.A(zv, [{ opacity: 0 }, { opacity: 1 }], 0, 0.5);
         T.A(zv, [{ transform: "scale(.12)" }, { transform: "scale(1)" }], 0, ZD, EASE.inout);
-        T.A(mag, [{ opacity: 1 }, { opacity: 0 }], 0, 0.6); hint.remove();
+        T.A(mag, [{ opacity: 1 }, { opacity: 0 }], 0, 0.6);
+        if (T.reduced) { zv.style.opacity = 1; mag.style.opacity = 0; const b6 = document.getElementById("p6b"); if (b6) b6.style.opacity = 1; zv.getAnimations().concat(mag.getAnimations()).forEach((a) => { try { a.finish(); } catch {} }); }
         setTimeout(() => setD(squeeze(grams, P), 0.9), T.reduced ? 0 : ZD * 1000);
         if (T.reduced) setD(squeeze(grams, P), 0.01);
-        T.fade(document.getElementById("p6b"), ZD);
+        if (!T.reduced) T.fade(document.getElementById("p6b"), 1.0);
       }
       function add(g) {
         if (grams + +g > 2400) return;
@@ -314,7 +322,7 @@ export const PAGES = [
       tr.querySelectorAll(".wt").forEach((w) => draggable(w, { onDrop: (ev) => { if (over(zone, ev.clientX, ev.clientY, 40) || over(R.sled, ev.clientX, ev.clientY, 40)) add(w.dataset.g); }, onTap: () => add(w.dataset.g) }));
       sbtn(scene, "↺ Reset", 87, 92, () => window.__fl.render(window.__fl.state.i));
       T.fade(document.getElementById("p6a"), 0.8);
-      return { demo() { zoom(); ["1000", "500", "200"].forEach(add); } };
+      return { demo() { zoom(); ["1000", "500", "200"].forEach(add); if (T.reduced) scene.getAnimations({ subtree: true }).forEach((an) => { try { if (an.effect.getTiming().iterations !== Infinity) an.finish(); } catch {} }); } };
     },
   },
   { // 7 constant-velocity pull loop (v1 pages 5 and 7)
@@ -323,15 +331,14 @@ export const PAGES = [
     cap: "Constant velocity: F_friction = F_pull",
     guide: "The cart slides at a constant speed. The scale reading stays the same, so the pull balances friction. On a level surface F_N = mg.",
     build(scene, T) {
-      carpet(scene, 0, 55, 100);
+      stage(scene); carpet(scene, 0, 55, 100);
       const R = rig(scene, 1, 12, 60, { weights: ["1000"] });
       T.fade(R.r, 0, 0.4);
       T.needle(R.needle, 0.3, 0.6, 0, 4.3, EASE.out);
       T.A(R.needle, [{ translate: "-50% 0" }, { translate: "-40% 0" }, { translate: "-58% 0" }, { translate: "-50% 0" }], 1, 0.9, EASE.inout, { iterations: Infinity });
       T.A(R.r, [{ transform: "translateX(0)" }, { transform: "translateX(36cqw)" }], 1, 5, EASE.linear, { iterations: Infinity });
       T.A(R.r, [{ opacity: 0, offset: 0 }, { opacity: 1, offset: 0.06 }, { opacity: 1, offset: 0.92 }, { opacity: 0, offset: 1 }], 1, 5, EASE.linear, { iterations: Infinity });
-      const fb = h("div", "p", null, { left: "17%", top: "84%" }); R.sledG.appendChild(fb);
-      const arrows = [farrow(fb, 0, 0, 10, 0, "#2F6DB5", sub("F_pull"), { top: "-3.4cqw", left: "2cqw" }), farrow(fb, 0, 0, 10, 180, "#B8322A", sub("F_friction"), { top: "1.4cqw", left: "1cqw" }), farrow(fb, 0, 0, 8, 90, "#6B6B6B", "mg", { top: "1.5cqw", left: "3cqw" }), farrow(fb, 0, 0, 8, -90, "#2F7A40", sub("F_N"), { top: "1.5cqw", left: "3cqw" })];
+      const arrows = fbd(R.sledG);
       arrows.forEach((a, i) => T.grow(a, 0.4 + i * 0.3, 0.4));
       const lines = ["Level surface: F_N = mg", "Constant velocity: F_friction = F_pull", "Pull at constant speed, i.e. a constant force reading on the spring scale."];
       lines.forEach((l, i) => { const n = at(scene, h("div", "say eqline" + (i === 2 ? " small" : ""), sub(l)), 4, 2 + i * 7, 60); T.fadeUp(n, 2 + i * 0.9); });
@@ -345,8 +352,9 @@ export const PAGES = [
     cap: "Pull at a steady speed and record the reading for each test.",
     guide: "Three tests: tap a test to load the cart. Pull at a steady speed and read the scale. Heavier load, bigger normal force, bigger reading. Numbers shown are a sample.",
     build(scene, T) {
-      carpet(scene, 0, 59, 100);
+      stage(scene); carpet(scene, 0, 59, 100);
       const R = rig(scene, 1, 18, 60, { weights: [] }); T.fade(R.r, 0, 0.4);
+      fbd(R.sledG).forEach((a, i) => T.grow(a, 0.4 + i * 0.2, 0.4));
       const info = at(scene, h("div", "chip test-info"), 4, 88); info.style.opacity = 0;
       let W = {}, mine = [], cur = -1, prev = 0;
       const btns = TEST_LABELS.map((l, i) => { const b = sbtn(scene, l, 4 + i * 15, 4, () => select(i), "toggle"); b.setAttribute("aria-pressed", "false"); return b; });
@@ -386,7 +394,7 @@ export const PAGES = [
         for (let y = Math.ceil(c2 / stepY) * stepY; y <= d2 + 1e-9; y += stepY) g += `<line x1="${X0}" x2="${X1}" y1="${sy(y)}" y2="${sy(y)}" class="gl"/><text x="${X0 - 8}" y="${sy(y) + 5}" class="gt" text-anchor="end">${+y.toFixed(1)}</text>`;
         const L = st.line ? (() => { const xa = Math.max(a, 0), xb = xa + (b - xa) * st.line; return `<line x1="${sx(xa)}" y1="${sy(fit.m * xa + fit.b)}" x2="${sx(xb)}" y2="${sy(fit.m * xb + fit.b)}" class="fit"/>`; })() : "";
         const P = st.pts ? pts.map(([x, y], i) => `<circle cx="${sx(x)}" cy="${sy(y)}" r="9" class="dot"/><text x="${sx(x) + 12}" y="${sy(y) - 12}" class="dl">${"ABC"[i]}</text>`).join("") : "";
-        const O = st.origin ? `<circle cx="${sx(0)}" cy="${sy(0)}" r="16" class="oring"/><text x="${sx(0) + 22}" y="${sy(0) - 18}" class="dl">(0, 0)</text>` : "";
+        const O = st.origin ? `<circle cx="${sx(0)}" cy="${sy(0)}" r="16" class="oring"/><text x="${sx(0) + 30}" y="${sy(0) - 40}" class="dl">(0, 0)</text>` : "";
         svg.innerHTML = `<svg viewBox="0 0 600 440" role="img" aria-label="Graph of friction force against normal force">${PENCIL}<rect x="${X0}" y="${Y1}" width="${X1 - X0}" height="${Y0 - Y1}" fill="#FFFDF6"/><g filter="url(#pencilF)">${g}<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" class="ax"/><line x1="${X0}" y1="${Y0}" x2="${X0}" y2="${Y1}" class="ax"/>${L}${P}${O}</g><text x="${(X0 + X1) / 2}" y="434" class="axl">F<tspan baseline-shift="sub" font-size="70%">N</tspan> (N)</text><text x="18" y="${(Y0 + Y1) / 2}" class="axl" transform="rotate(-90 18 ${(Y0 + Y1) / 2})">F<tspan baseline-shift="sub" font-size="70%">f</tspan> (N)</text></svg>`;
       }
       draw();
@@ -394,7 +402,7 @@ export const PAGES = [
       const plot = () => { st.pts = true; draw(); svg.querySelectorAll(".dot").forEach((d, i) => { d.style.transformBox = "fill-box"; d.style.transformOrigin = "center"; T.A(d, [{ transform: "scale(0)" }, { transform: "scale(1)" }], i * 0.35, 0.35, EASE.back); }); };
       const best = () => { if (!st.pts) plot(); tween(1.2, (p) => { st.line = p; draw(); }); };
       const zoomOut = () => { if (!st.line) { st.pts = true; st.line = 1; } const v0 = st.v.slice(), v1 = [0, 20, 0, 10]; tween(2.2, (p) => { st.v = v0.map((x, i) => x + (v1[i] - x) * p); st.line = 1; draw(); }, () => { st.origin = true; draw(); const o = svg.querySelector(".oring"); if (o) { o.style.transformBox = "fill-box"; o.style.transformOrigin = "center"; T.pulse(o, 0, 1.4, 0.6, 2); } }); };
-      sbtn(scene, "● Plot points", 4, 89, plot); sbtn(scene, "╱ Plot best fit", 20, 89, best); sbtn(scene, "⤢ Zoom out", 38, 89, zoomOut);
+      const brow = at(scene, h("div", "btnrow"), 2, 89, 96); [["● Plot points", plot], ["╱ Plot best fit", best], ["⤢ Zoom out", zoomOut]].forEach(([l, fn]) => { const b = h("button", "pencil-btn sbtn", l); b.type = "button"; b.onclick = fn; brow.appendChild(b); });
       const panel = at(scene, h("div", "proof"), 57, 2, 41);
       const L = [
         "The points line up on a straight line through (0, 0): a <b>directly proportional</b> linear relationship.",
@@ -405,15 +413,15 @@ export const PAGES = [
         `<b>Another method:</b> y = m x + b. With y = F<sub>f</sub>, m = μ<sub>k</sub> (the slope), x = F<sub>N</sub>, and b = 0 (the line passes through zero): <span class="big-eq">F<sub>f</sub> = μ<sub>k</sub> F<sub>N</sub></span> again.`,
         `<span class="q">What does the slope tell you about your material?</span>`,
       ].map((t, i) => { const p = h("p", "pf" + (i === 5 ? " alt" : ""), t); p.style.opacity = 0; panel.appendChild(p); return p; });
-      const nb = sbtn(scene, "Next →", 88, 89, () => window.__fl.go(1), "next");
-      const steps = L.map((p, i) => (T2) => { if (i === 0 && !st.origin) zoomOut(); T2.fadeUp(p, 0, 0.5); if (i === 2 || i === 5) T2.pulse(p.querySelector(".big-eq"), 0.5, 1.12, 0.5); if (i === L.length - 1) { T2.fade(document.getElementById("p9q"), 0); nb.remove(); } });
+      const nb = h("button", "pencil-btn sbtn next", `Next → (1/${L.length})`); nb.type = "button"; nb.onclick = () => window.__fl.go(1); brow.appendChild(nb);
+      const steps = L.map((p, i) => (T2) => { if (i === 0 && !st.origin) zoomOut(); T2.fadeUp(p, 0, 0.5); nb.textContent = `Next → (${Math.min(i + 2, L.length)}/${L.length})`; panel.scrollTop = panel.scrollHeight; if (i === 2 || i === 5) T2.pulse(p.querySelector(".big-eq"), 0.5, 1.12, 0.5); if (i === L.length - 1) { T2.fade(document.getElementById("p9q"), 0); nb.remove(); } });
       return { steps, demo() { st.pts = true; st.line = 1; st.v = [0, 20, 0, 10]; st.origin = true; draw(); L.forEach((p) => { p.style.opacity = 1; }); } };
     },
   },
   { // 10 name it (v1 page 12)
     title: "NAME IT", kicker: "EXPLAIN · THE COEFFICIENT",
-    side: `<p id="p10a">That slope is the coefficient of kinetic friction, μk.</p><p>It has no units, and it belongs to a pair of specific surface materials! Add yours to the board!</p><p id="p10b">You just discovered the equation.</p>`,
-    cap: "μk belongs to a pair of specific surface materials! Add yours to the board!",
+    side: `<p id="p10a">That slope is the coefficient of kinetic friction, μk.</p><p>It has no units.</p><p id="p10b">You just discovered the equation.</p>`,
+    cap: "μk is the slope. It has no units.",
     guide: "μk is the slope. It has no units and belongs to a pair of surfaces, like felt on carpet. Add your group's μk to the board.",
     build(scene, T) {
       T.fade(document.getElementById("p10a"), 0, 0.5);
@@ -427,7 +435,7 @@ export const PAGES = [
       const sb = at(scene, h("div", "starburst"), 40, 6, 54); sb.style.aspectRatio = "1.35";
       sb.innerHTML = `<svg viewBox="-110 -80 220 160" aria-hidden="true"><path d="${star(110, 80, 70, 52, 18)}" fill="#F0B23A" fill-opacity=".55" stroke="#C98A1E" stroke-width="2.5" stroke-linejoin="round"/></svg><span>So<br><b>${fx("Ff,kinetic = μk FN")}</b></span>`;
       T.pop(sb, 2.6, 0.5);
-      const st = say(scene, "belongs to a pair of specific surface materials! Add yours to the board!", 40, 80, 58); st.style.color = "var(--orange)";
+      const st = say(scene, "μk belongs to a pair of specific surface materials! Add yours to the board!", 36, 74, 62); st.classList.add("callout");
       T.fade(st, 3.4, 0.3); T.wiggle(st, 3.4, 2, 0.8); T.fade(document.getElementById("p10b"), 3.8);
     },
   },
@@ -452,26 +460,26 @@ export const PAGES = [
     cap: "Press Test 1, Test 2, Test 3. Watch for the PEAK.",
     guide: "Three slow trials: the reading climbs while the cart holds still, peaks, then drops when it slides. Each peak is recorded, then averaged. Values are a sample.",
     build(scene, T) {
-      carpet(scene, 0, 65, 100);
+      stage(scene); carpet(scene, 0, 65, 100);
       const R = rig(scene, 1, 26, 58, { weights: ["1000", "500", "200"], reading: true }); T.fade(R.r, 0, 0.4);
       const peak = tag(R.pull, "PEAK", 52, 4, "red"); peak.style.opacity = 0;
       const got = [];
-      const chart = card(scene, 66, 30, 31, { keep: true }); chart.style.opacity = 0; chart.innerHTML = `<div class="lbl">peaks (N)</div><svg viewBox="0 0 300 200" class="bars" aria-label="Bar chart of three peak readings"></svg>`;
+      const chart = card(scene, 66, 30, 31, { keep: true }); chart.style.opacity = 0; chart.style.visibility = "hidden"; chart.innerHTML = `<div class="lbl">peaks (N)</div><svg viewBox="0 0 300 200" class="bars" aria-label="Bar chart of three peak readings"></svg>`;
       let busy = false;
       const play = (i, b, slot) => {
-        if (busy || got[i] != null) return; busy = true; b.setAttribute("aria-pressed", "true");
+        if (busy || got[i] != null || (i > 0 && got[i - 1] == null)) return; busy = true; b.setAttribute("aria-pressed", "true");
         const pk = PEAKS[i], up = 4.0;
         T.needle(R.needle, 0, up, 0, pk, EASE.inQuad); T.text(R.readEl, 0, up, 0, pk);
         T.A(peak, [{ opacity: 0 }, { opacity: 1 }, { opacity: 1 }, { opacity: 0 }], up, 1.2);
         T.needle(R.needle, up + 0.5, 0.5, pk, 7.0); T.text(R.readEl, up + 0.5, 0.5, pk, 7.0);
         T.A(R.r, [{ transform: "translateX(0)" }, { transform: "translateX(6cqw)" }], up + 0.5, 1.4, EASE.linear);
-        setTimeout(() => { if (!slot.isConnected) return; got[i] = pk; slot.textContent = pk.toFixed(1) + " N"; T.pop(slot, 0); busy = false; R.needle.getAnimations().forEach((a) => a.cancel()); R.r.getAnimations().forEach((a) => a.cancel()); R.needle.style.left = needleX(0) + "%"; R.readEl.textContent = "0.0 N"; if (got.filter((x) => x != null).length === 3) showChart(); }, T.reduced ? 0 : (up + 2) * 1000);
+        setTimeout(() => { if (!slot.isConnected) return; got[i] = pk; slot.textContent = pk.toFixed(1) + " N"; T.pop(slot, 0); busy = false; R.needle.getAnimations().forEach((a) => a.cancel()); R.r.getAnimations().forEach((a) => a.cancel()); R.needle.style.left = needleX(0) + "%"; R.readEl.textContent = "0.0 N"; if (btns[i + 1]) { btns[i + 1][0].disabled = false; btns[i + 1][1].textContent = "..."; } if (got[2] != null) showChart(); }, T.reduced ? 0 : (up + 2) * 1000);
       };
-      const btns = [0, 1, 2].map((i) => { const col = at(scene, h("div", "trial"), 4 + i * 20, 3, 17); const b = h("button", "pencil-btn sbtn", `▶ Test ${i + 1}`); b.type = "button"; const slot = h("div", "trial-v", "..."); col.append(b, slot); b.onclick = () => play(i, b, slot); T.pop(col, 0.4 + i * 0.2); return [b, slot]; });
+      const btns = [0, 1, 2].map((i) => { const col = at(scene, h("div", "trial"), 4 + i * 20, 3, 17); const b = h("button", "pencil-btn sbtn", `▶ Test ${i + 1}`); b.type = "button"; const slot = h("div", "trial-v", i ? "after Test " + i : "..."); b.disabled = i > 0; col.append(b, slot); b.onclick = () => play(i, b, slot); T.pop(col, 0.4 + i * 0.2); return [b, slot]; });
       function showChart() {
         const avg = PEAKS.reduce((a, b) => a + b, 0) / 3, sy = (v) => 180 - v / 10 * 160;
         chart.querySelector("svg").innerHTML = PEAKS.map((v, i) => `<rect x="${30 + i * 85}" y="${sy(v)}" width="55" height="${180 - sy(v)}" fill="#2F6DB5" fill-opacity=".55" stroke="#24339E" stroke-width="3"/><text x="${57 + i * 85}" y="${sy(v) - 8}" text-anchor="middle" class="gt">${v.toFixed(1)}</text><text x="${57 + i * 85}" y="198" text-anchor="middle" class="gt">Test ${i + 1}</text>`).join("") + `<line x1="15" x2="290" y1="${sy(avg)}" y2="${sy(avg)}" stroke="#B8322A" stroke-width="3" stroke-dasharray="8 6"/><text x="290" y="${sy(avg) - 30}" text-anchor="end" class="gt red">average ${avg.toFixed(1)} N</text>`;
-        T.fade(chart, 0, 0.5); T.wipeUp(chart.querySelector("svg"), 0.2, 0.8);
+        chart.style.visibility = ""; T.fade(chart, 0, 0.5); T.wipeUp(chart.querySelector("svg"), 0.2, 0.8);
       }
       return { demo() { btns.forEach(([b, slot], i) => { got[i] = PEAKS[i]; slot.textContent = PEAKS[i].toFixed(1) + " N"; }); showChart(); } };
     },
@@ -480,7 +488,7 @@ export const PAGES = [
     title: "Calculate μs", kicker: "EXPLAIN · STATIC FRICTION",
     side: `<p>Static friction grows to match your pull, up to a maximum:</p><p id="p13a"><span class="t-head">Ff,static ≤ μs FN</span></p><p>At the peak, Ff,static (max) = μs FN, so</p><p id="p13b"><span class="boxed">μs = peak reading / FN</span></p><p class="guide-x">Reading the graph: the line rises while the cart stays still, tops out at the peak (the maximum static friction), drops when the cart breaks free, then runs flat at the kinetic friction value.</p><p class="guide-x">Example with the sample peaks: average peak 7.8 N, F_N = 17.5 N, so μs = 7.8 / 17.5 ≈ 0.45.</p><p class="q" id="p13c">Compare: is your μs bigger or smaller than your μk?</p>`,
     cap: "μs = peak reading / FN",
-    guide: "The force graph rises while the cart is still, peaks at the maximum static friction, drops when it slides, then stays flat at kinetic friction. Divide the peak by F_N to get μs.",
+    guide: "Rise while still, peak at max static friction, drop, then flat at kinetic. μs = peak / F_N.",
     build(scene, T) {
       const c = card(scene, 8, 3, 62, { keep: true });
       const L = staticGraph(c, ["static_axes", "static_seg1_rise", "static_seg2_drop", "static_seg3_kinetic", "static_peak_dot", "static_label_max", "static_label_kinetic_eq"]);
@@ -505,29 +513,27 @@ export const PAGES = [
       const vc = card(scene, 1, 6, 46, { tilt: "tilt-l" }); const v = video(); v.loop = true; vc.appendChild(v); T.fade(vc, 0, 0.5);
       const gc = card(scene, 50, 4, 48, { keep: true }); gc.style.rotate = ".8deg"; const g = h("div", "graph"); gc.appendChild(g); T.fade(gc, 0.2, 0.5);
       const X0 = 60, X1 = 585, Y0 = 360, Y1 = 20, sx = (t) => X0 + t / 5 * (X1 - X0), sy = (f) => Y0 - f / 20 * (Y0 - Y1);
-      const Z = VIDEO_ZONES, band = (z, col, label) => `<rect x="${sx(z[0])}" y="${Y1}" width="${sx(z[1]) - sx(z[0])}" height="${Y0 - Y1}" fill="${col}" fill-opacity=".16"/><text x="${(sx(z[0]) + sx(z[1])) / 2}" y="${Y1 + 26}" text-anchor="middle" class="zl" fill="${col}">${label}</text>`;
-      let grid = ""; for (let f = 0; f <= 20; f += 4) grid += `<line x1="${X0}" x2="${X1}" y1="${sy(f)}" y2="${sy(f)}" class="gl"/><text x="${X0 - 8}" y="${sy(f) + 5}" text-anchor="end" class="gt">${f}</text>`;
-      for (let t = 0; t <= 5; t++) grid += `<text x="${sx(t)}" y="${Y0 + 22}" text-anchor="middle" class="gt">${t}</text>`;
-      const pk = VIDEO_READINGS.reduce((m, r) => (r[1] > m[1] ? r : m));
-      g.innerHTML = `<svg viewBox="0 0 600 410" role="img" aria-label="Force against time graph drawn in step with the video">${PENCIL}${band(Z.static, "#2F6DB5", "static")}${band(Z.threshold, "#C98A1E", "threshold")}${band(Z.kinetic, "#B8322A", "kinetic")}<g filter="url(#pencilF)">${grid}<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" class="ax"/><line x1="${X0}" y1="${Y0}" x2="${X0}" y2="${Y1}" class="ax"/><polyline class="trace" points=""/></g><circle class="now" r="8"/><text class="pkl" x="${sx(pk[0])}" y="${sy(pk[1]) - 16}" text-anchor="middle" opacity="0">peak ≈ ${pk[1].toFixed(1)} N</text><text class="kl" x="${sx(4.3)}" y="${sy(12) - 14}" text-anchor="middle" opacity="0">sliding ≈ 12.0 N</text><text x="${(X0 + X1) / 2}" y="404" class="axl">time in the video (s)</text><text x="16" y="190" class="axl" transform="rotate(-90 16 190)">scale reading (N)</text></svg><div class="live chip">0.0 N</div>`;
-      const trace = g.querySelector(".trace"), dot = g.querySelector(".now"), live = g.querySelector(".live"), pkl = g.querySelector(".pkl"), kl = g.querySelector(".kl");
-      const drawTo = (t) => { const pts = []; for (let s = 0; s <= t; s += 0.05) pts.push(`${sx(s).toFixed(1)},${sy(readingAt(s)).toFixed(1)}`); pts.push(`${sx(t).toFixed(1)},${sy(readingAt(t)).toFixed(1)}`); trace.setAttribute("points", pts.join(" ")); dot.setAttribute("cx", sx(t)); dot.setAttribute("cy", sy(readingAt(t))); live.textContent = readingAt(t).toFixed(1) + " N"; pkl.setAttribute("opacity", t >= pk[0] ? 1 : 0); kl.setAttribute("opacity", t >= 3.6 ? 1 : 0); };
+      const Z = VIDEO_ZONES, band = (z, col, label, ly = Y1 + 26) => `<rect x="${sx(z[0])}" y="${Y1}" width="${sx(z[1]) - sx(z[0])}" height="${Y0 - Y1}" fill="${col}" fill-opacity=".16"/><text x="${(sx(z[0]) + sx(z[1])) / 2}" y="${ly}" text-anchor="middle" class="zl" fill="${col}">${label}</text>`;
+      let grid = ""; for (let f = 0; f <= 20; f += 4) grid += `<line x1="${X0}" x2="${X1}" y1="${sy(f)}" y2="${sy(f)}" class="gl"/>`;
+      g.innerHTML = `<svg viewBox="0 0 600 410" role="img" aria-label="Force against time graph drawn in step with the video">${PENCIL}${band(Z.static, "#2F6DB5", "static")}${band(Z.threshold, "#C98A1E", "threshold", Y0 - 14)}${band(Z.kinetic, "#B8322A", "kinetic")}<g filter="url(#pencilF)">${grid}<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" class="ax"/><line x1="${X0}" y1="${Y0}" x2="${X0}" y2="${Y1}" class="ax"/><polyline class="trace" points=""/></g><circle class="now" r="8"/><text x="${(X0 + X1) / 2}" y="404" class="axl">time in the video (s)</text><text x="16" y="190" class="axl" transform="rotate(-90 16 190)">scale reading (N)</text></svg>`;
+      const trace = g.querySelector(".trace"), dot = g.querySelector(".now");
+      const drawTo = (t) => { const pts = []; for (let s = 0; s <= t; s += 0.05) pts.push(`${sx(s).toFixed(1)},${sy(readingAt(s)).toFixed(1)}`); pts.push(`${sx(t).toFixed(1)},${sy(readingAt(t)).toFixed(1)}`); trace.setAttribute("points", pts.join(" ")); dot.setAttribute("cx", sx(t)); dot.setAttribute("cy", sy(readingAt(t))); };
       v.addEventListener("loadedmetadata", () => { v.playbackRate = 0.5; });
       v.playbackRate = 0.5;
       const loop = () => { if (!v.isConnected) return; drawTo(Math.min(5, v.currentTime || 0)); requestAnimationFrame(loop); };
       if (T.reduced) drawTo(5); else requestAnimationFrame(loop);
-      const pb = sbtn(scene, "❚❚ Pause video + graph", 14, 88, () => { if (v.paused) { v.play().catch(() => {}); } else v.pause(); });
-      v.addEventListener("play", () => { pb.textContent = "❚❚ Pause video + graph"; }); v.addEventListener("pause", () => { pb.textContent = "▶ Play video + graph"; });
+      const pb = sbtn(scene, "❚❚ Pause video + graph", 50, 64, () => { if (v.paused) { v.play().catch(() => {}); } else v.pause(); });
+      pb.classList.add("big-play"); v.addEventListener("play", () => { pb.textContent = "❚❚ Pause video + graph"; }); v.addEventListener("pause", () => { pb.textContent = "▶ Play video + graph"; });
       return { video: v, demo() { v.pause(); v.currentTime = 4.9; drawTo(5); } };
     },
   },
   { // 15 leaderboard
     title: "LEADERBOARD", kicker: "EVALUATE · ALL 7 MATERIALS",
-    side: `<p class="q">Leaderboard: Which material required the most force of friction? Least?</p><p class="q">Do you notice any patterns in how μk compares to μs for the same material type?</p><p class="aside">Use the board to fill in EVIDENCE.</p>`,
+    side: `<p class="aside">Use the board to fill in EVIDENCE.</p>`,
     cap: "Which material required the most force of friction? Least? How does μk compare to μs?",
     guide: "Leaderboard: each group adds its μk and μs. Find the material with the most and the least friction, and compare μk with μs for each material.",
     build(scene, T) {
-      const hd = say(scene, "Leaderboard: Which material required the most force of friction? Least? Do you notice any patterns in how μk compares to μs for the same material type?", 4, 1, 92); hd.classList.add("lb-q"); T.fade(hd, 0, 0.5);
+      stage(scene); const hd = say(scene, "Leaderboard: Which material required the most force of friction? Least? Do you notice any patterns in how μk compares to μs for the same material type?", 4, 1, 92); hd.classList.add("lb-q"); T.fade(hd, 0, 0.5);
       const c = card(scene, 8, 26, 76, { keep: true });
       const tb = h("table", "lb-table", `<thead><tr><th>Material</th><th>kinetic friction ${fx("μk")}</th><th>static friction ${fx("μs")}</th></tr></thead><tbody>${SWATCHES.map(() => `<tr><td></td><td></td><td></td></tr>`).join("")}</tbody>`);
       c.appendChild(tb); T.wipe(tb, 0.3, 0.6, 0, 1, EASE.out); T.fade(c, 0.3, 0.3);
@@ -539,15 +545,15 @@ export const PAGES = [
   },
   { // 16 exit ticket
     title: "EXIT TICKET", kicker: "EVALUATE · ON YOUR OWN",
-    side: `<p>Exit Ticket.</p><p>Tear off the Exit Ticket strip. Individual.</p>`,
+    side: `<p>Tear off the Exit Ticket strip. Individual.</p>`,
     cap: "Tear off the Exit Ticket strip. Individual.",
     guide: "Exit Ticket: tear off the strip and answer on your own. Turn it in at the door.",
     build(scene, T) {
-      const t = say(scene, "EXIT TICKET", 8, 6, 50, "big"); t.style.fontSize = "6cqw"; T.wipe(t, 0, 0.8, 0, 1, EASE.out);
+      stage(scene); const t = say(scene, "EXIT TICKET", 8, 6, 50, "big"); t.style.fontSize = "6cqw"; T.wipe(t, 0, 0.8, 0, 1, EASE.out);
       const note = at(scene, h("div", "sticky", `<div class="p23-formula">${fx("Ff,kinetic = μk FN")}<br>${fx("Ff,static ≤ μs FN")}</div>`), 20, 32, 46);
       T.slideIn(note, 1.4, 0.6, 0, 12);
-      const fc = at(note, h("div", "stamp p23-fc", "INDIVIDUAL"), 30, 78); T.pop(fc, 1.9);
-      const door = tag(scene, "COLLECT AT THE DOOR", 66, 74, "red"); T.pop(door, 2.4);
+      const fc = at(note, h("div", "stamp p23-fc", "INDIVIDUAL"), 74, -12); fc.style.rotate = "8deg"; T.pop(fc, 1.9);
+      const door = tag(note, "COLLECT AT THE DOOR", 52, 96, "red"); door.classList.add("door-tag"); T.pop(door, 2.4);
     },
   },
   { // 17 (v1 page 24)
@@ -568,13 +574,11 @@ export const PAGES = [
       lines.forEach((l, i) => i === 0 ? T.fade(l, 0) : T.wipe(l, times[i], 0.8, 0, 1, EASE.out));
       if (cap) times.forEach((t, i) => setTimeout(() => { if (cap.isConnected && document.body.dataset.page === "17") cap.innerHTML = lines[i].innerHTML; }, T.reduced ? 0 : t * 1000));
       T.pulse(L.static_peak_dot, 2.2, 1.6, 0.6, 2);
-      const a6 = at(scene, img("pull_arrow"), 38, 60, 6); const l6 = at(scene, h("div", "chip", "6 N"), 38, 50);
+      const a6 = at(box, img("pull_arrow"), 99, 62, 20); a6.style.translate = "0 -50%"; const l6 = at(box, h("div", "chip", "6 N"), 100, 10);
       T.wipe(a6, 3.4, 0.3); T.pop(l6, 3.4); T.fadeOut(a6, 4.8); T.fadeOut(l6, 4.8);
-      const a12 = at(scene, img("pull_arrow"), 38, 58, 13); const l12 = at(scene, h("div", "chip red", "12 N"), 42, 48);
+      const a12 = at(box, img("pull_arrow"), 99, 62, 43); a12.style.translate = "0 -50%"; const l12 = at(box, h("div", "chip red", "12 N"), 112, 10);
       T.wipe(a12, 5.0, 0.3); T.pop(l12, 5.0);
       T.A(box, [{ transform: "translateX(0)" }, { transform: "translateX(14cqw)" }], 5.2, 1.6, EASE.inQuad);
-      T.A(a12, [{ transform: "translateX(0)" }, { transform: "translateX(14cqw)" }], 5.2, 1.6, EASE.inQuad);
-      T.A(l12, [{ transform: "translateX(0)" }, { transform: "translateX(14cqw)" }], 5.2, 1.6, EASE.inQuad);
       T.wipe(L.static_seg1_rise, 0.4, 1.4, ...SB.seg1_rise); T.fade(L.static_peak_dot, 1.8, 0.2);
       T.wipe(L.static_seg2_drop, 5.0, 0.3, ...SB.seg2_drop); T.wipe(L.static_seg3_kinetic, 5.3, 1.2, ...SB.seg3_kinetic);
     },
@@ -612,7 +616,7 @@ export const PAGES = [
       const c = card(scene, 14, 12, 60, { keep: true }); T.fade(c, 0, 0.5);
       const box = h("div", "", null, { position: "relative", height: "22cqw" }); c.appendChild(box);
       [0, 1, 2].forEach((i) => {
-        const bar = at(box, h("div", "", null, { height: "4.5cqw", background: "#EDE6D6", border: ".25cqw solid #3D3D3D", borderRadius: ".6cqw" }), 8, 10 + i * 28, 80);
+        const bar = at(box, h("div", "", null, { height: "4.5cqw", background: "repeating-linear-gradient(-28deg, rgba(40,40,48,.55) 0 .18cqw, transparent .18cqw .55cqw), repeating-linear-gradient(32deg, rgba(40,40,48,.25) 0 .12cqw, transparent .12cqw .7cqw), #A7A9AE", border: ".25cqw solid #3D3D3D", borderRadius: ".6cqw" }), 8, 10 + i * 28, 80);
         T.loop(bar, [{ transform: "translateX(0)" }, { transform: `translateX(${i % 2 ? -2 : 2}cqw)` }, { transform: "translateX(0)" }], 0.5 + i * 0.2, 1.5);
       });
       const lb = at(c, h("div", "lbl", "graphite sheets"), 0, null, 100); lb.style.position = "relative"; lb.style.fontSize = "2.2cqw";
@@ -687,7 +691,8 @@ export const PAGES = [
         m.style.transformBox = "fill-box"; m.style.transformOrigin = "center";
         T.loop(m, [{ transform: "translate(0,0)" }, { transform: `translate(${i % 2 ? 2 : -2}px,${i % 3 ? -1.5 : 1.5}px)` }, { transform: "translate(0,0)" }], 1.0 + (i % 4) * 0.1, 0.9 + (i % 3) * 0.25);
       });
-      const lb = at(scene, h("div", "tag", "loosely bound, mobile molecules"), 26, 88); lb.style.background = "#2F6DB5"; T.pop(lb, 1.4);
+      const lead = at(scene, h("div", "", null, { height: ".3cqw", background: "#2F6DB5", transformOrigin: "0 50%", rotate: "-4deg" }), 62, 51, 15); T.grow(lead, 1.2, 0.4);
+      const lb = at(scene, h("div", "tag", "loosely bound, mobile molecules"), 76, 46); lb.style.background = "#2F6DB5"; lb.style.whiteSpace = "normal"; lb.style.width = "20%"; T.pop(lb, 1.4);
     }),
   hookPage(6, "TRIBOELECTRIC EFFECT",
     "When two different materials touch and separate, charge moves between them; for metals it’s electrons, and for insulators scientists still debate whether it’s electrons, ions, or tiny bits of material. Charge is moved, not created.",
@@ -695,12 +700,15 @@ export const PAGES = [
     "How could you test that charge was moved and not created?",
     (scene, T) => {
       const sw = at(scene, img("swatch_cloth"), 10, 40, 18); T.fade(sw, 0, 0.4);
+      [[13, 46], [20, 54], [13, 60], [21, 64]].forEach(([x, y], i) => { const p = at(scene, h("div", "charge plus", "+"), x, y); T.pop(p, 2.4 + i * 0.1); });
+      const ar = at(scene, img("pull_arrow"), 31, 46, 22); ar.style.rotate = "-22deg"; ar.style.transformOrigin = "0 50%"; T.wipe(ar, 1.0, 0.5);
       const bl = at(scene, h("div"), 56, 6, 26);
       bl.innerHTML = `<svg viewBox="0 0 100 150" style="width:100%;display:block" role="img" aria-label="Balloon"><path d="M50 6 C78 6 92 30 92 56 C92 88 70 110 50 112 C30 110 8 88 8 56 C8 30 22 6 50 6Z" fill="#E5776C" fill-opacity=".75" stroke="#B8322A" stroke-width="3"/><path d="M46 112 l4 8 l4 -8z" fill="#B8322A"/><path d="M50 120 C44 132 58 138 50 148" fill="none" stroke="#3D3D3D" stroke-width="2"/><path d="M28 30 C34 22 42 20 48 20" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7"/></svg>`;
       T.fade(bl, 0.2, 0.4);
       const start = [[16, 48], [20, 56], [14, 62]], end = [[62, 26], [70, 34], [64, 42]];
+      [[60, 18], [72, 22], [68, 44]].forEach(([x, y], i) => { const m = at(scene, h("div", "charge minus", "−"), x, y); T.pop(m, 2.6 + i * 0.1); });
       start.forEach(([x, y], i) => {
-        const c = at(scene, h("div", "chip", "−"), x, y); c.style.fontSize = "3cqw"; c.style.color = "#2F6DB5"; c.style.borderColor = "#2F6DB5";
+        const c = at(scene, h("div", "charge minus", "−"), x, y);
         T.fade(c, 0.6, 0.2);
         const dx = (end[i][0] - x), dy = (end[i][1] - y);
         // three 0.3 s hops along an arc
@@ -715,10 +723,11 @@ export const PAGES = [
     (scene, T) => {
       const c = card(scene, 4, 6, 70, { keep: true }); T.fade(c, 0, 0.5);
       const box = h("div", "", null, { position: "relative", height: "28cqw" }); c.appendChild(box);
-      const wide = at(box, img("sled"), 2, 14, 46);
-      const end = at(box, img("sled"), 64, 2, 30); end.style.rotate = "-90deg"; end.style.width = "26%";
-      const band1 = at(box, h("div", "", null, { height: ".4cqw", background: "#B8322A" }), 48, 36, 10);
-      const band2 = at(box, h("div", "", null, { height: ".4cqw", background: "#B8322A" }), 82, 36, 10);
+      at(box, h("div", "surface"), 0, 80, 100);
+      const wide = at(box, img("sled"), 2, 38, 44);
+      const end = at(box, img("sled"), 60, 45, 26); end.style.rotate = "-90deg";
+      const band1 = at(box, h("div", "band"), 45, 56, 12);
+      const band2 = at(box, h("div", "band"), 80, 56, 12);
       T.fade(wide, 0.4); T.fade(end, 0.8);
       T.grow(band1, 1.2, 0.6); T.grow(band2, 1.6, 0.6);
       const lb = h("div", "lbl t-aside", "his sketch idea"); lb.style.fontSize = "2.2cqw"; c.appendChild(lb); T.fade(lb, 2.0);
@@ -726,7 +735,7 @@ export const PAGES = [
       btn.href = LAB_URL; btn.target = "_blank"; btn.rel = "noopener"; btn.id = "labBtn";
       T.pop(btn, 2.8);
     },
-    { side: `<p><a class="pencil-btn" href="${LAB_URL}" target="_blank" rel="noopener">Try the Online Friction Lab ↗</a></p>` }),
+    { side: `<p class="aside">Try the Online Friction Lab with the button on the page.</p>` }),
 ];
 
 // Guide text for pages 17 to 26 (shown when narration is off).

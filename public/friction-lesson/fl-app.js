@@ -61,7 +61,7 @@ function stopPage() {
   if (state.narration) { state.narration.pause(); state.narration.removeAttribute("src"); state.narration = null; }
   state.speaking = false; state.animDone = false;
   scene.querySelectorAll("video").forEach((v) => v.pause());
-  scene.replaceChildren(); side.replaceChildren();
+  scene.replaceChildren(); scene.classList.remove("staged"); side.replaceChildren();
 }
 
 function render(i) {
