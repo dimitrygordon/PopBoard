@@ -46,7 +46,7 @@ function stage(scene) { scene.classList.add("staged"); const c = h("div", "card 
 // Free-body arrows spread around the cart: pull off the hook side, friction off the back, mg below, F_N up beside the weights.
 function fbd(sledG) {
   const pt = (l, b) => { const p = h("div", "p", null, { position: "absolute", left: l + "cqw", bottom: b + "cqw" }); sledG.appendChild(p); return p; };
-  return [farrow(pt(33, 9.5), 0, 0, 7, 0, "#2F6DB5", sub("F_pull"), { top: "-3.4cqw", left: "1cqw" }), farrow(pt(-1, 3), 0, 0, 8, 180, "#B8322A", sub("F_friction"), { top: "1.4cqw", left: "0" }), farrow(pt(12, -0.5), 0, 0, 7, 90, "#6B6B6B", "mg", { top: "1.5cqw", left: "2cqw" }), farrow(pt(25, 10.6), 0, 0, 8, -90, "#2F7A40", sub("F_N"), { top: "1.5cqw", left: "2cqw" })];
+  return [farrow(pt(33, 9.5), 0, 0, 7, 0, "#2F6DB5", sub("F_pull"), { top: "-3.4cqw", left: "1cqw" }), farrow(pt(0.3, 0.8), 0, 0, 8, 180, "#B8322A", sub("F_friction"), { top: "1.4cqw", left: "0" }), farrow(pt(12, -0.5), 0, 0, 7, 90, "#6B6B6B", "mg", { top: "1.5cqw", left: "2cqw" }), farrow(pt(25, 10.6), 0, 0, 8, -90, "#2F7A40", sub("F_N"), { top: "1.5cqw", left: "2cqw" })];
 }
 function carpet(scene, x, y, w) { const c = at(scene, img("carpet_strip", "cut carpet"), x, y, w); return c; }
 
@@ -72,7 +72,7 @@ function swatchRow(scene, x, y, w, { labels = true, size = 0.11 } = {}) {
 function hookPage(n, title, hook, tryIt, wonder, art, extra = {}) {
   return {
     title, kicker: `ENRICHMENT (OPTIONAL) · FRICTION MYSTERY ${n} OF 7`,
-    side: `<p class="wonder-row"><b>! HOOK</b> ${hook}</p><p class="wonder-row side-only"><b>+ TRY IT</b> ${tryIt}</p><p class="wonder-row"><b class="q">? WONDER</b> <span class="q">${wonder}</span></p>${extra.side || ""}`,
+    side: `<p class="wonder-row"><b><span class="ic">!</span> HOOK</b> ${hook}</p><p class="wonder-row side-only"><b><span class="ic">+</span> TRY IT</b> ${tryIt}</p><p class="wonder-row"><b class="q"><span class="ic">?</span> WONDER</b> <span class="q">${wonder}</span></p>${extra.side || ""}`,
     cap: wonder,
     build(scene, T) {
       const rows = [...document.querySelectorAll("#flSide .wonder-row")];
@@ -203,7 +203,7 @@ export const PAGES = [
       });
       const star = at(scene, h("div", "chip ideal-chip", "★ 3 is ideal"), 41, 62); T.pop(star, 2.6); T.wiggle(star, 3.0, 4, 0.8);
       const roles = at(scene, h("div", "roles", "<span>puller</span><span>scale reader</span><span>recorder</span>"), 30, 74, 40); T.fadeUp(roles, 3.4);
-      [2, 4].forEach((n, i) => { const t = at(scene, h("div", "lbl t-aside", "OK"), [14, 79][i], 62); T.fade(t, 2.2); });
+      [2, 4].forEach((n, i) => { const t = at(scene, h("div", "lbl t-aside ok-l", "OK"), [14, 79][i], 62); T.fade(t, 2.2); });
     },
   },
   { // 4 materials per group
@@ -254,7 +254,7 @@ export const PAGES = [
       R.r.classList.add("p6-rig");
       T.fade(R.r, 0, 0.4);
       const zone = at(R.sledG, h("div", "dropzone"), 0, null); zone.style.cssText += "left:2cqw;bottom:10cqw;width:30cqw;height:26cqw;";
-      const tray = at(scene, h("div", "tray"), 79, 56, 19); tray.innerHTML = `<div class="lbl">weights</div>`;
+      const tray = at(scene, h("div", "tray"), 78, 46, 21); tray.innerHTML = `<div class="lbl">weights</div>`;
       const tr = h("div", "tray-row"); tray.appendChild(tr);
       ["100", "200", "500", "1000"].forEach((g) => { const w = weightEl(g); w.style.width = WEIGHTS[g][1] * 0.42 + "cqw"; w.classList.add("drag"); w.tabIndex = 0; w.setAttribute("role", "button"); w.setAttribute("aria-label", "Add " + WEIGHTS[g][3]); tr.appendChild(w); });
       T.fade(tray, 0.6);
@@ -273,7 +273,7 @@ export const PAGES = [
         <g filter="url(#pencilF)"><path d="${botD}" fill="#B9C2CF"/><path d="${botD}" fill="url(#carpH)" stroke="#3D4A60" stroke-width="3"/>
         <g class="blkmove"><path d="${topD}" fill="#D9AE78"/><path d="${topD}" fill="url(#woodH)" stroke="#6B4320" stroke-width="3"/></g>
         <g clip-path="url(#blkClip)"><path d="${botD}" fill="#B8322A" fill-opacity=".8"/></g></g>
-        <text x="500" y="70" text-anchor="middle" class="zt">wood block</text><text x="500" y="365" text-anchor="middle" class="zt">carpet</text></svg></div><div class="lens-h"></div>
+        <text x="500" y="118" text-anchor="middle" class="zt">wood block</text><text x="500" y="318" text-anchor="middle" class="zt">carpet</text></svg></div><div class="lens-h"></div>
         <div class="zread"><span>real contact</span><i><b></b></i><span class="zpct"></span></div><div class="zload chip">load: block only</div>`;
       const movers = [...zv.querySelectorAll(".blkmove")], bar = zv.querySelector(".zread b"), pct = zv.querySelector(".zpct"), loadC = zv.querySelector(".zload");
       let grams = 0, d = squeeze(0, P) - 6, zoomed = false, stackTop = 10.6;
@@ -332,7 +332,7 @@ export const PAGES = [
     guide: "The cart slides at a constant speed. The scale reading stays the same, so the pull balances friction. On a level surface F_N = mg.",
     build(scene, T) {
       stage(scene); carpet(scene, 0, 55, 100);
-      const R = rig(scene, 1, 12, 60, { weights: ["1000"] });
+      const R = rig(scene, 9, 12, 60, { weights: ["1000"] });
       T.fade(R.r, 0, 0.4);
       T.needle(R.needle, 0.3, 0.6, 0, 4.3, EASE.out);
       T.A(R.needle, [{ translate: "-50% 0" }, { translate: "-40% 0" }, { translate: "-58% 0" }, { translate: "-50% 0" }], 1, 0.9, EASE.inout, { iterations: Infinity });
@@ -353,7 +353,7 @@ export const PAGES = [
     guide: "Three tests: tap a test to load the cart. Pull at a steady speed and read the scale. Heavier load, bigger normal force, bigger reading. Numbers shown are a sample.",
     build(scene, T) {
       stage(scene); carpet(scene, 0, 59, 100);
-      const R = rig(scene, 1, 18, 60, { weights: [] }); T.fade(R.r, 0, 0.4);
+      const R = rig(scene, 9, 18, 60, { weights: [] }); T.fade(R.r, 0, 0.4);
       fbd(R.sledG).forEach((a, i) => T.grow(a, 0.4 + i * 0.2, 0.4));
       const info = at(scene, h("div", "chip test-info"), 4, 88); info.style.opacity = 0;
       let W = {}, mine = [], cur = -1, prev = 0;
@@ -382,7 +382,7 @@ export const PAGES = [
     cap: "Plot points · Plot best fit · Zoom out · Next → builds the equation",
     guide: "Graph: friction force against normal force for the three tests. The best-fit line passes through (0, 0), so friction is directly proportional to F_N. Next steps turn that into F_f = μk F_N.",
     build(scene, T) {
-      const c = card(scene, 2, 3, 52, { keep: true }); c.style.rotate = "-.8deg";
+      const c = card(scene, 2, 3, 42, { keep: true }); c.style.rotate = "-.8deg"; c.classList.add("p9-graph");
       const svg = h("div", "graph"); c.appendChild(svg); T.fade(c, 0, 0.4);
       const pts = KDATA.map((k) => [k.FN, k.Ff]), fit = fitLine(pts);
       const st = { v: [9, 19, 3, 8], pts: false, line: 0, origin: false };
@@ -403,7 +403,7 @@ export const PAGES = [
       const best = () => { if (!st.pts) plot(); tween(1.2, (p) => { st.line = p; draw(); }); };
       const zoomOut = () => { if (!st.line) { st.pts = true; st.line = 1; } const v0 = st.v.slice(), v1 = [0, 20, 0, 10]; tween(2.2, (p) => { st.v = v0.map((x, i) => x + (v1[i] - x) * p); st.line = 1; draw(); }, () => { st.origin = true; draw(); const o = svg.querySelector(".oring"); if (o) { o.style.transformBox = "fill-box"; o.style.transformOrigin = "center"; T.pulse(o, 0, 1.4, 0.6, 2); } }); };
       const brow = at(scene, h("div", "btnrow"), 2, 89, 96); [["● Plot points", plot], ["╱ Plot best fit", best], ["⤢ Zoom out", zoomOut]].forEach(([l, fn]) => { const b = h("button", "pencil-btn sbtn", l); b.type = "button"; b.onclick = fn; brow.appendChild(b); });
-      const panel = at(scene, h("div", "proof"), 57, 2, 41);
+      const panel = at(scene, h("div", "proof"), 46, 2, 52); const trail = h("div", "trail"); const summary = h("div", "summary card keep"); panel.append(trail);
       const L = [
         "The points line up on a straight line through (0, 0): a <b>directly proportional</b> linear relationship.",
         `<span class="big-eq">F<sub>f</sub> ∝ F<sub>N</sub></span>`,
@@ -413,9 +413,13 @@ export const PAGES = [
         `<b>Another method:</b> y = m x + b. With y = F<sub>f</sub>, m = μ<sub>k</sub> (the slope), x = F<sub>N</sub>, and b = 0 (the line passes through zero): <span class="big-eq">F<sub>f</sub> = μ<sub>k</sub> F<sub>N</sub></span> again.`,
         `<span class="q">What does the slope tell you about your material?</span>`,
       ].map((t, i) => { const p = h("p", "pf" + (i === 5 ? " alt" : ""), t); p.style.opacity = 0; panel.appendChild(p); return p; });
+      panel.appendChild(summary);
+      const SHORT = ["linear through (0, 0)", "F<sub>f</sub> ∝ F<sub>N</sub>", "F<sub>f</sub> = μ<sub>k</sub> F<sub>N</sub>", "μ<sub>k</sub> = coefficient of kinetic friction", "μ<sub>k</sub> = 0.40", "y = mx + b, m = μ<sub>k</sub>", "slope = your material"];
+      const CHAIN = [1, 2, 4];
+      const mark = (i) => { L.forEach((p, k) => { p.classList.toggle("done", k < i); p.classList.toggle("cur", k === i); }); trail.innerHTML = CHAIN.filter((k) => k < i).map((k) => SHORT[k]).join(" → "); if (i === L.length - 1) { panel.classList.add("final"); summary.innerHTML = `<div class="lbl">The whole chain</div><p>${SHORT.slice(0, 6).join(" → ")}</p><p class="q">What does the slope tell you about your material?</p>`; } };
       const nb = h("button", "pencil-btn sbtn next", `Next → (1/${L.length})`); nb.type = "button"; nb.onclick = () => window.__fl.go(1); brow.appendChild(nb);
-      const steps = L.map((p, i) => (T2) => { if (i === 0 && !st.origin) zoomOut(); T2.fadeUp(p, 0, 0.5); nb.textContent = `Next → (${Math.min(i + 2, L.length)}/${L.length})`; panel.scrollTop = panel.scrollHeight; if (i === 2 || i === 5) T2.pulse(p.querySelector(".big-eq"), 0.5, 1.12, 0.5); if (i === L.length - 1) { T2.fade(document.getElementById("p9q"), 0); nb.remove(); } });
-      return { steps, demo() { st.pts = true; st.line = 1; st.v = [0, 20, 0, 10]; st.origin = true; draw(); L.forEach((p) => { p.style.opacity = 1; }); } };
+      const steps = L.map((p, i) => (T2) => { if (i === 0 && !st.origin) zoomOut(); mark(i); T2.fadeUp(p, 0, 0.5); nb.textContent = `Next → (${Math.min(i + 2, L.length)}/${L.length})`; panel.scrollTop = panel.scrollHeight; if (i === 2 || i === 5) T2.pulse(p.querySelector(".big-eq"), 0.5, 1.12, 0.5); if (i === L.length - 1) { T2.fade(document.getElementById("p9q"), 0); nb.remove(); } });
+      return { steps, demo() { st.pts = true; st.line = 1; st.v = [0, 20, 0, 10]; st.origin = true; draw(); L.forEach((p) => { p.style.opacity = 1; }); mark(L.length - 1); } };
     },
   },
   { // 10 name it (v1 page 12)
@@ -486,7 +490,7 @@ export const PAGES = [
   },
   { // 13 calculate μs (v1 page 15) with more guide text
     title: "Calculate μs", kicker: "EXPLAIN · STATIC FRICTION",
-    side: `<p>Static friction grows to match your pull, up to a maximum:</p><p id="p13a"><span class="t-head">Ff,static ≤ μs FN</span></p><p>At the peak, Ff,static (max) = μs FN, so</p><p id="p13b"><span class="boxed">μs = peak reading / FN</span></p><p class="guide-x">Reading the graph: the line rises while the cart stays still, tops out at the peak (the maximum static friction), drops when the cart breaks free, then runs flat at the kinetic friction value.</p><p class="guide-x">Example with the sample peaks: average peak 7.8 N, F_N = 17.5 N, so μs = 7.8 / 17.5 ≈ 0.45.</p><p class="q" id="p13c">Compare: is your μs bigger or smaller than your μk?</p>`,
+    side: `<p>Static friction grows to match your pull, up to a maximum:</p><p id="p13a"><span class="t-head">Ff,static ≤ μs FN</span></p><p>At the peak, Ff,static (max) = μs FN, so</p><p id="p13b"><span class="boxed">μs = peak reading / FN</span></p><p class="guide-x">Graph: rise, peak, drop, flat.</p><p class="q" id="p13c">Compare: is your μs bigger or smaller than your μk?</p>`,
     cap: "μs = peak reading / FN",
     guide: "Rise while still, peak at max static friction, drop, then flat at kinetic. μs = peak / F_N.",
     build(scene, T) {
@@ -501,7 +505,7 @@ export const PAGES = [
       T.fade(L.static_label_kinetic_eq, 3.6, 0.5);
       T.fade(document.getElementById("p13a"), 4.4); T.pop(document.getElementById("p13b"), 5.0); T.fade(document.getElementById("p13c"), 5.8);
       const fs = at(scene, h("div", "fs-only chip", fx("Ff,static ≤ μs FN")), 74, 30); fs.style.fontSize = "2.4cqw"; T.fade(fs, 4.4);
-      const ex = at(scene, h("div", "fs-only chip", fx("μs = 7.8 N / 17.5 N ≈ 0.45 (sample)")), 30, 88); ex.style.fontSize = "2cqw"; T.fade(ex, 5.4);
+      const ex = at(c, h("div", "chip ex-chip", fx("Example: μs = 7.8 N / 17.5 N ≈ 0.45 (sample)")), 4, 100); ex.style.position = "relative"; ex.style.fontSize = "2cqw"; T.fade(ex, 5.4);
     },
   },
   { // 14 video + synced force vs time graph
@@ -511,7 +515,7 @@ export const PAGES = [
     guide: "The video and the graph play together. The force climbs while the cart is stuck (static), peaks (threshold), then drops and stays flat while it slides (kinetic).",
     build(scene, T) {
       const vc = card(scene, 1, 6, 46, { tilt: "tilt-l" }); const v = video(); v.loop = true; vc.appendChild(v); T.fade(vc, 0, 0.5);
-      const gc = card(scene, 50, 4, 48, { keep: true }); gc.style.rotate = ".8deg"; const g = h("div", "graph"); gc.appendChild(g); T.fade(gc, 0.2, 0.5);
+      const gc = card(scene, 50, 4, 48, { keep: true }); gc.style.rotate = ".8deg"; const g = h("div", "graph"); gc.appendChild(g);
       const X0 = 60, X1 = 585, Y0 = 360, Y1 = 20, sx = (t) => X0 + t / 5 * (X1 - X0), sy = (f) => Y0 - f / 20 * (Y0 - Y1);
       const Z = VIDEO_ZONES, band = (z, col, label, ly = Y1 + 26) => `<rect x="${sx(z[0])}" y="${Y1}" width="${sx(z[1]) - sx(z[0])}" height="${Y0 - Y1}" fill="${col}" fill-opacity=".16"/><text x="${(sx(z[0]) + sx(z[1])) / 2}" y="${ly}" text-anchor="middle" class="zl" fill="${col}">${label}</text>`;
       let grid = ""; for (let f = 0; f <= 20; f += 4) grid += `<line x1="${X0}" x2="${X1}" y1="${sy(f)}" y2="${sy(f)}" class="gl"/>`;
@@ -553,6 +557,7 @@ export const PAGES = [
       const note = at(scene, h("div", "sticky", `<div class="p23-formula">${fx("Ff,kinetic = μk FN")}<br>${fx("Ff,static ≤ μs FN")}</div>`), 20, 32, 46);
       T.slideIn(note, 1.4, 0.6, 0, 12);
       const fc = at(note, h("div", "stamp p23-fc", "INDIVIDUAL"), 74, -12); fc.style.rotate = "8deg"; T.pop(fc, 1.9);
+      const ans = say(scene, "Answer on your strip", 70, 40, 26); ans.classList.add("strip-note"); T.fade(ans, 2.0);
       const door = tag(note, "COLLECT AT THE DOOR", 52, 96, "red"); door.classList.add("door-tag"); T.pop(door, 2.4);
     },
   },
@@ -562,7 +567,7 @@ export const PAGES = [
     cap: "", capSteps: true,
     build(scene, T) {
       carpet(scene, 0, 82, 56);
-      const box = at(scene, h("div"), 8, 56, 30); box.appendChild(img("sled"));
+      const box = at(scene, h("div"), 8, 61, 30); box.appendChild(img("sled"));
       const kg = at(box, h("div", "chip", "3.0 kg"), 30, -30);
       const c = card(scene, 60, 4, 38, { keep: true });
       const L = staticGraph(c, ["static_axes", "static_seg1_rise", "static_seg2_drop", "static_seg3_kinetic", "static_peak_dot"]);
@@ -574,9 +579,9 @@ export const PAGES = [
       lines.forEach((l, i) => i === 0 ? T.fade(l, 0) : T.wipe(l, times[i], 0.8, 0, 1, EASE.out));
       if (cap) times.forEach((t, i) => setTimeout(() => { if (cap.isConnected && document.body.dataset.page === "17") cap.innerHTML = lines[i].innerHTML; }, T.reduced ? 0 : t * 1000));
       T.pulse(L.static_peak_dot, 2.2, 1.6, 0.6, 2);
-      const a6 = at(box, img("pull_arrow"), 99, 62, 20); a6.style.translate = "0 -50%"; const l6 = at(box, h("div", "chip", "6 N"), 100, 10);
+      const a6 = at(box, img("pull_arrow"), 91, 52, 20); a6.style.translate = "0 -50%"; const l6 = at(box, h("div", "chip", "6 N"), 100, 10);
       T.wipe(a6, 3.4, 0.3); T.pop(l6, 3.4); T.fadeOut(a6, 4.8); T.fadeOut(l6, 4.8);
-      const a12 = at(box, img("pull_arrow"), 99, 62, 43); a12.style.translate = "0 -50%"; const l12 = at(box, h("div", "chip red", "12 N"), 112, 10);
+      const a12 = at(box, img("pull_arrow"), 91, 52, 43); a12.style.translate = "0 -50%"; const l12 = at(box, h("div", "chip red", "12 N"), 112, 10);
       T.wipe(a12, 5.0, 0.3); T.pop(l12, 5.0);
       T.A(box, [{ transform: "translateX(0)" }, { transform: "translateX(14cqw)" }], 5.2, 1.6, EASE.inQuad);
       T.wipe(L.static_seg1_rise, 0.4, 1.4, ...SB.seg1_rise); T.fade(L.static_peak_dot, 1.8, 0.2);
@@ -588,10 +593,10 @@ export const PAGES = [
     side: `<p>Pass every Exit Ticket to the front before we look at the answers.</p>`,
     cap: "Pass every Exit Ticket to the front before we look at the answers.",
     build(scene, T) {
-      const t = say(scene, "Collect tickets first!", 10, 24, 80, "big"); t.style.fontSize = "7cqw"; t.style.textAlign = "center"; T.wipe(t, 0, 0.8, 0, 1, EASE.out);
-      const s = say(scene, "Pass every Exit Ticket to the front before we look at the answers.", 14, 50, 72); s.style.textAlign = "center"; s.style.fontSize = "2.8cqw"; T.fade(s, 1.0);
-      const a = at(scene, img("pull_arrow"), 44, 70, 12); a.style.rotate = "180deg"; T.fade(a, 1.4, 0.3);
-      T.A(a, [{ transform: "translateX(0)" }, { transform: "translateX(-2cqw)" }, { transform: "translateX(0)" }], 1.6, 0.5, EASE.inout, { iterations: 2 });
+      const t = say(scene, "Collect tickets first!", 10, 14, 80, "big"); t.style.fontSize = "7cqw"; t.style.textAlign = "center"; T.wipe(t, 0, 0.8, 0, 1, EASE.out);
+      const s = say(scene, "Pass every Exit Ticket to the front before we look at the answers.", 14, 38, 72); s.style.textAlign = "center"; s.style.fontSize = "2.8cqw"; T.fade(s, 1.0);
+      const pf = at(scene, h("div", "pass-fwd", `<svg viewBox="0 0 120 120" class="tix" aria-hidden="true">${PENCIL}<g filter="url(#pencilF)"><path d="M20 40 h80 v12 a8 8 0 0 0 0 16 v12 h-80 v-12 a8 8 0 0 0 0 -16z" fill="#FBE7A1" stroke="#24339E" stroke-width="4"/><line x1="44" y1="44" x2="44" y2="76" stroke="#24339E" stroke-width="3" stroke-dasharray="5 4"/><text x="72" y="66" text-anchor="middle" font-family="Architects Daughter" font-size="14" fill="#B8322A">EXIT</text></g></svg><svg viewBox="0 0 60 120" class="uparrow" aria-hidden="true">${PENCIL}<g filter="url(#pencilF)"><path d="M30 8 L52 40 L38 40 L38 112 L22 112 L22 40 L8 40Z" fill="#2F6DB5" fill-opacity=".35" stroke="#24339E" stroke-width="4" stroke-linejoin="round"/><path d="M26 50 l8 -6 M26 64 l8 -6 M26 78 l8 -6 M26 92 l8 -6" stroke="#24339E" stroke-width="2"/></g></svg><span class="pf-l">Pass forward</span>`), 26, 64, 48); T.fadeUp(pf, 1.4, 0.5);
+      T.loop(pf.querySelector(".uparrow"), [{ transform: "translateY(0)" }, { transform: "translateY(-1.2cqw)" }, { transform: "translateY(0)" }], 1.9, 1.0);
     },
   },
   { // 19 (v1 page 26)
@@ -599,13 +604,14 @@ export const PAGES = [
     side: `<p>Front of the ticket (Name, favorite part, still confusing): those are your own answers. Any honest answer counts.</p>`,
     cap: "",
     build(scene, T) {
-      const c = card(scene, 3, 3, 94, { keep: true }); c.style.rotate = "0.6deg"; c.classList.add("p26-card");
-      c.innerHTML = `<div class="ans">
-        <p>1. A 2 kg box is pulled horizontally on a level floor. A group's graph of friction force against ${fx("FN")} has a slope of 0.3. What is the sliding friction force on the box?<br><b style="color:#2F6DB5">${fx("Ff,k")} = 5.9 N</b> &nbsp; <span class="t-aside" style="color:#2F6DB5">${fx("FN")} = 2 × 9.8 = 19.6 N, so ${fx("Ff,k")} = 0.3 × 19.6 = 5.88, about 5.9 N</span></p>
-        <p>2. For the same box, ${fx("μs")} = 0.4. What is the most static friction can be?<br><b style="color:#2F6DB5">${fx("Ff,s")} max = 7.8 N</b> &nbsp; <span class="t-aside" style="color:#2F6DB5">${fx("Ff,s")} max = 0.4 × 19.6 = 7.84, about 7.8 N</span></p>
-        <div style="display:flex;gap:2cqw;align-items:center"><p style="flex:1">3. Is it harder to start the box moving or to keep it sliding? Why?<br><span class="t-aside" style="color:#2F6DB5">It's harder to start it moving. The maximum static friction (7.8 N) is bigger than kinetic friction (5.9 N) because ${fx("μs")} is bigger than ${fx("μk")}. At rest, the tiny touching points between the surfaces have time to stick together. Once the block slides, they keep breaking apart before they can stick as strongly.</span></p><img src="friction-lesson/art/static_e.webp" alt="Static graph: the peak sits higher than the kinetic plateau" style="width:30%"></div></div>`;
-      T.fade(c, 0, 0.5);
-      [...c.querySelectorAll(".ans > p, .ans > div")].forEach((p, i) => T.fadeUp(p, 0.6 + i, 0.5));
+      const A = [
+        [`1. A 2 kg box is pulled horizontally on a level floor. A group's graph of friction force against ${fx("FN")} has a slope of 0.3. What is the sliding friction force on the box?`, `${fx("Ff,k")} = 5.9 N`, `${fx("FN")} = 2 × 9.8 = 19.6 N, so ${fx("Ff,k")} = 0.3 × 19.6 = 5.88, about 5.9 N`],
+        [`2. For the same box, ${fx("μs")} = 0.4. What is the most static friction can be?`, `${fx("Ff,s")} max = 7.8 N`, `${fx("Ff,s")} max = 0.4 × 19.6 = 7.84, about 7.8 N`],
+        [`3. Is it harder to start the box moving or to keep it sliding? Why?`, `Harder to start it moving.`, `The maximum static friction (7.8 N) is bigger than kinetic friction (5.9 N) because ${fx("μs")} is bigger than ${fx("μk")}. At rest, the tiny touching points have time to stick together; once the block slides, they keep breaking apart before they can stick as strongly.`],
+      ];
+      const col = h("div", "ans-col"); scene.appendChild(col);
+      A.forEach(([q, a, w], i) => { const c = h("div", "card keep ans-card", `<p class="ans-q">${q}</p><p class="ans-a">${a}</p><p class="ans-w">${w}</p>`); c.style.rotate = (i % 2 ? .5 : -.5) + "deg"; col.appendChild(c); T.fadeUp(c, 0.3 + i * 0.8, 0.5); });
+      const g = h("div", "card keep ans-graph", `<img src="friction-lesson/art/static_e.webp" alt="Static graph: the peak sits higher than the kinetic plateau"><div class="lbl">the static peak sits above the kinetic plateau</div>`); scene.appendChild(g); T.fade(g, 0, 0.5);
     },
   },
   hookPage(1, "GRAPHITE AS A LUBRICANT",
@@ -724,10 +730,10 @@ export const PAGES = [
       const c = card(scene, 4, 6, 70, { keep: true }); T.fade(c, 0, 0.5);
       const box = h("div", "", null, { position: "relative", height: "28cqw" }); c.appendChild(box);
       at(box, h("div", "surface"), 0, 80, 100);
-      const wide = at(box, img("sled"), 2, 38, 44);
-      const end = at(box, img("sled"), 60, 45, 26); end.style.rotate = "-90deg";
-      const band1 = at(box, h("div", "band"), 45, 56, 12);
-      const band2 = at(box, h("div", "band"), 80, 56, 12);
+      const wide = at(box, img("sled"), 1, 44, 38);
+      const end = at(box, img("sled"), 52, 44, 38);
+      const band1 = at(box, h("div", "band"), 37.5, 64, 9);
+      const band2 = at(box, h("div", "band"), 88.5, 64, 9);
       T.fade(wide, 0.4); T.fade(end, 0.8);
       T.grow(band1, 1.2, 0.6); T.grow(band2, 1.6, 0.6);
       const lb = h("div", "lbl t-aside", "his sketch idea"); lb.style.fontSize = "2.2cqw"; c.appendChild(lb); T.fade(lb, 2.0);
