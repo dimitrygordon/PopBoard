@@ -375,3 +375,26 @@ body[data-page="19"] .ans-graph img { width: 100%; display: block; }
   body[data-page="9"] .proof.final .summary { display: block; position: relative; font-size: 16px; padding: 8px; }
   body[data-page="9"] .proof.final { height: auto; }
 }
+
+/* Leo round 4 */
+body[data-page="19"] .fl-scene { padding: 12px 12px 0; gap: 12px; }
+body[data-page="19"] .ans-col { gap: 12px; }
+body[data-page="19"] .ans-card, body[data-page="19"] .ans-graph { padding: 12px; }
+body[data-page="19"] .ans-card p { margin-bottom: 6px; }
+body[data-page="19"] .ans-graph .lbl { font-size: 22px; line-height: 1.2; }
+.farrow .fl sub { font-size: max(16px, .72em); }
+.farrow .fl.mg-l { background: var(--card-keep); color: #6B6B6B; padding: 0 6px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+.p6-rig .wt-l { left: 100%; right: auto; top: 20%; margin-left: 6px; width: max-content; background: var(--card-keep); border: 1.5px solid #24339E; border-radius: 6px; padding: 0 6px; text-shadow: none; font-size: 16px; }
+.p26-t { font-family: var(--f-head); font-size: 34px; fill: #24339E; }
+@media (max-width: 760px) {
+  body[data-page="19"] .ans-graph .lbl { font-size: 16px; }
+  body[data-page="9"] .proof .trail, body[data-page="9"] .proof .summary, body[data-page="9"] .proof .summary p, body[data-page="9"] .proof .summary .lbl { font-size: 18px !important; }
+  body[data-page="9"] .proof .trail sub, body[data-page="9"] .proof .summary sub, body[data-page="9"] .proof .pf sub { font-size: 16px; }
+  body[data-page="9"] .proof .pf { font-size: 18px; }
+  body[data-page="9"] .proof .summary .lbl { font-weight: 700; color: #24339E; margin-bottom: 4px; }
+  body[data-page="14"] .fl-scene { aspect-ratio: auto; height: auto; max-height: none; display: flex; flex-direction: column; gap: 10px; padding: 10px 6px; }
+  body[data-page="14"] .fl-scene > * { position: relative !important; left: auto !important; top: auto !important; width: auto !important; }
+  body[data-page="14"] .graph .zl, body[data-page="14"] .graph .axl { font-size: 22px; }
+  body[data-page="14"] .big-play { align-self: center; translate: none !important; transform: none !important; margin: 0 auto; }
+}
+.p6-rig ~ * .lens-h, body[data-page="6"] .lens-h { display: none; }

@@ -46,7 +46,8 @@ function stage(scene) { scene.classList.add("staged"); const c = h("div", "card 
 // Free-body arrows spread around the cart: pull off the hook side, friction off the back, mg below, F_N up beside the weights.
 function fbd(sledG) {
   const pt = (l, b) => { const p = h("div", "p", null, { position: "absolute", left: l + "cqw", bottom: b + "cqw" }); sledG.appendChild(p); return p; };
-  return [farrow(pt(33, 9.5), 0, 0, 7, 0, "#2F6DB5", sub("F_pull"), { top: "-3.4cqw", left: "1cqw" }), farrow(pt(0.3, 0.8), 0, 0, 8, 180, "#B8322A", sub("F_friction"), { top: "1.4cqw", left: "0" }), farrow(pt(12, -0.5), 0, 0, 7, 90, "#6B6B6B", "mg", { top: "1.5cqw", left: "2cqw" }), farrow(pt(25, 10.6), 0, 0, 8, -90, "#2F7A40", sub("F_N"), { top: "1.5cqw", left: "2cqw" })];
+  const A = [farrow(pt(33, 9.5), 0, 0, 7, 0, "#2F6DB5", sub("F_pull"), { top: "-5.3cqw", left: "0" }), farrow(pt(0.3, 0.8), 0, 0, 8, 180, "#B8322A", sub("F_friction"), { top: "1.4cqw", left: "0" }), farrow(pt(12, -0.5), 0, 0, 7, 90, "#6B6B6B", "mg", { top: "1.5cqw", left: "2cqw" }), farrow(pt(25, 10.6), 0, 0, 8, -90, "#2F7A40", sub("F_N"), { top: "1.5cqw", left: "2cqw" })];
+  A[2].querySelector(".fl").classList.add("mg-l"); return A;
 }
 function carpet(scene, x, y, w) { const c = at(scene, img("carpet_strip", "cut carpet"), x, y, w); return c; }
 
@@ -249,16 +250,16 @@ export const PAGES = [
     guide: "Asperities: drag the magnifier over the block to zoom in. Only the tips touch. Add weights and the tips squash together, so there is more real contact and more friction.",
     build(scene, T) {
       stage(scene); const P = profiles();
-      carpet(scene, 4, 76, 92);
-      const R = rig(scene, 20, 15, 88, { weights: [], hand: false });
+      carpet(scene, 6, 70.8, 88);
+      const R = rig(scene, 20, 12.6, 88, { weights: [], hand: false });
       R.r.classList.add("p6-rig");
       T.fade(R.r, 0, 0.4);
       const zone = at(R.sledG, h("div", "dropzone"), 0, null); zone.style.cssText += "left:2cqw;bottom:10cqw;width:30cqw;height:26cqw;";
-      const tray = at(scene, h("div", "tray"), 78, 46, 21); tray.innerHTML = `<div class="lbl">weights</div>`;
+      const tray = at(scene, h("div", "tray"), 74, 46, 20); tray.innerHTML = `<div class="lbl">weights</div>`;
       const tr = h("div", "tray-row"); tray.appendChild(tr);
       ["100", "200", "500", "1000"].forEach((g) => { const w = weightEl(g); w.style.width = WEIGHTS[g][1] * 0.42 + "cqw"; w.classList.add("drag"); w.tabIndex = 0; w.setAttribute("role", "button"); w.setAttribute("aria-label", "Add " + WEIGHTS[g][3]); tr.appendChild(w); });
       T.fade(tray, 0.6);
-      const mag = at(scene, h("div", "mag"), 62, 8, 14); mag.appendChild(img("magnifying_glass", "cut", "Magnifying glass: drag it over the block")); mag.tabIndex = 0; mag.setAttribute("role", "button"); mag.setAttribute("aria-label", "Zoom in on the block");
+      const mag = at(scene, h("div", "mag"), 56, 3, 13); mag.appendChild(img("magnifying_glass", "cut", "Magnifying glass: drag it over the block")); mag.tabIndex = 0; mag.setAttribute("role", "button"); mag.setAttribute("aria-label", "Zoom in on the block");
       T.pop(mag, 0.8); T.A(mag, [{ transform: "translate(0,0)" }, { transform: "translate(-1cqw,1cqw)" }, { transform: "translate(0,0)" }], 1.4, 1.2, EASE.inout, { iterations: 2 });
       const hint = h("div", "chip drag-cue", "drag me ↙"); mag.appendChild(hint); T.pop(hint, 1.2); T.loop(hint, [{ transform: "translate(0,0) rotate(0)" }, { transform: "translate(-.6cqw,.4cqw) rotate(-4deg)" }, { transform: "translate(0,0) rotate(0)" }], 1.8, 1.2);
       // zoom view
@@ -416,7 +417,7 @@ export const PAGES = [
       panel.appendChild(summary);
       const SHORT = ["linear through (0, 0)", "F<sub>f</sub> ∝ F<sub>N</sub>", "F<sub>f</sub> = μ<sub>k</sub> F<sub>N</sub>", "μ<sub>k</sub> = coefficient of kinetic friction", "μ<sub>k</sub> = 0.40", "y = mx + b, m = μ<sub>k</sub>", "slope = your material"];
       const CHAIN = [1, 2, 4];
-      const mark = (i) => { L.forEach((p, k) => { p.classList.toggle("done", k < i); p.classList.toggle("cur", k === i); }); trail.innerHTML = CHAIN.filter((k) => k < i).map((k) => SHORT[k]).join(" → "); if (i === L.length - 1) { panel.classList.add("final"); summary.innerHTML = `<div class="lbl">The whole chain</div><p>${SHORT.slice(0, 6).join(" → ")}</p><p class="q">What does the slope tell you about your material?</p>`; } };
+      const mark = (i) => { L.forEach((p, k) => { p.classList.toggle("done", k < i); p.classList.toggle("cur", k === i); }); trail.innerHTML = CHAIN.filter((k) => k < i).map((k) => SHORT[k]).join(" → "); if (i === L.length - 1) { panel.classList.add("final"); summary.innerHTML = `<div class="lbl">The whole chain</div><p>${SHORT.slice(0, 6).join(" → ")}</p>`; } };
       const nb = h("button", "pencil-btn sbtn next", `Next → (1/${L.length})`); nb.type = "button"; nb.onclick = () => window.__fl.go(1); brow.appendChild(nb);
       const steps = L.map((p, i) => (T2) => { if (i === 0 && !st.origin) zoomOut(); mark(i); T2.fadeUp(p, 0, 0.5); nb.textContent = `Next → (${Math.min(i + 2, L.length)}/${L.length})`; panel.scrollTop = panel.scrollHeight; if (i === 2 || i === 5) T2.pulse(p.querySelector(".big-eq"), 0.5, 1.12, 0.5); if (i === L.length - 1) { T2.fade(document.getElementById("p9q"), 0); nb.remove(); } });
       return { steps, demo() { st.pts = true; st.line = 1; st.v = [0, 20, 0, 10]; st.origin = true; draw(); L.forEach((p) => { p.style.opacity = 1; }); mark(L.length - 1); } };
@@ -514,7 +515,7 @@ export const PAGES = [
     cap: "Static · Threshold · Kinetic",
     guide: "The video and the graph play together. The force climbs while the cart is stuck (static), peaks (threshold), then drops and stays flat while it slides (kinetic).",
     build(scene, T) {
-      const vc = card(scene, 1, 6, 46, { tilt: "tilt-l" }); const v = video(); v.loop = true; vc.appendChild(v); T.fade(vc, 0, 0.5);
+      const vc = card(scene, 1, 6, 46, { keep: true, tilt: "tilt-l" }); vc.classList.add("vid-card"); const v = video(); v.loop = true; vc.appendChild(v); T.fade(vc, 0, 0.5);
       const gc = card(scene, 50, 4, 48, { keep: true }); gc.style.rotate = ".8deg"; const g = h("div", "graph"); gc.appendChild(g);
       const X0 = 60, X1 = 585, Y0 = 360, Y1 = 20, sx = (t) => X0 + t / 5 * (X1 - X0), sy = (f) => Y0 - f / 20 * (Y0 - Y1);
       const Z = VIDEO_ZONES, band = (z, col, label, ly = Y1 + 26) => `<rect x="${sx(z[0])}" y="${Y1}" width="${sx(z[1]) - sx(z[0])}" height="${Y0 - Y1}" fill="${col}" fill-opacity=".16"/><text x="${(sx(z[0]) + sx(z[1])) / 2}" y="${ly}" text-anchor="middle" class="zl" fill="${col}">${label}</text>`;
@@ -566,7 +567,7 @@ export const PAGES = [
     side: `<p id="w0">A 3.0 kg box, μs = 0.35, μk = 0.25, pushed horizontally on a level surface.</p><p id="w1">FN = 3.0 × 9.8 = 29.4 N.</p><p id="w2">Max static = 0.35 × 29.4 = 10.3 N.</p><p id="w3">Push 6 N: does not move; Ff,static = 6 N, not 10.3 N.</p><p id="w4">Push 12 N: it slides; Ff,kinetic = 0.25 × 29.4 = 7.35 N; net force = 12 - 7.35 = 4.65 N; a = 4.65 / 3.0 = 1.55, about 1.6 m/s².</p><p class="aside"><b>YOU TRY:</b> a 5.0 kg box, μs = 0.45, pushed horizontally on level ground. What push just starts it moving?</p>`,
     cap: "", capSteps: true,
     build(scene, T) {
-      carpet(scene, 0, 82, 56);
+      carpet(scene, 9, 78.3, 56);
       const box = at(scene, h("div"), 8, 61, 30); box.appendChild(img("sled"));
       const kg = at(box, h("div", "chip", "3.0 kg"), 30, -30);
       const c = card(scene, 60, 4, 38, { keep: true });
@@ -728,14 +729,11 @@ export const PAGES = [
     "If friction is one quarter of the weight, what is μ? Does your book agree?",
     (scene, T) => {
       const c = card(scene, 4, 6, 70, { keep: true }); T.fade(c, 0, 0.5);
-      const box = h("div", "", null, { position: "relative", height: "28cqw" }); c.appendChild(box);
-      at(box, h("div", "surface"), 0, 80, 100);
-      const wide = at(box, img("sled"), 1, 44, 38);
-      const end = at(box, img("sled"), 52, 44, 38);
-      const band1 = at(box, h("div", "band"), 37.5, 64, 9);
-      const band2 = at(box, h("div", "band"), 88.5, 64, 9);
-      T.fade(wide, 0.4); T.fade(end, 0.8);
-      T.grow(band1, 1.2, 0.6); T.grow(band2, 1.6, 0.6);
+      const box = h("div", "", null, { position: "relative" }); c.appendChild(box);
+      const blk = (x, L, H, dx, top) => { const y = 295 - H; return `<polygon points="${x},${y} ${x + dx},${y - dx} ${x + L + dx},${y - dx} ${x + L},${y}" fill="#E8C594"/><polygon points="${x + L},${y} ${x + L + dx},${y - dx} ${x + L + dx},${295 - dx} ${x + L},295" fill="#B98A52"/><rect x="${x}" y="${y}" width="${L}" height="${H}" fill="#D9AE78"/><path d="M${x + 20} ${y + H * .35} q${L * .3} -8 ${L - 40} 4 M${x + 30} ${y + H * .7} q${L * .4} 8 ${L - 60} -3" stroke="#8C5A2B" stroke-width="2" fill="none" opacity=".6"/><g fill="none" stroke="#6B4320" stroke-width="3.5" stroke-linejoin="round"><polygon points="${x},${y} ${x + dx},${y - dx} ${x + L + dx},${y - dx} ${x + L + dx},${295 - dx} ${x + L},295 ${x},295"/><path d="M${x} ${y}H${x + L}V295M${x + L} ${y}l${dx} ${-dx}"/></g>`; };
+      const hook = (hx, hy) => `<path d="M${hx} ${hy}h14" stroke="#555" stroke-width="5"/><circle cx="${hx + 25}" cy="${hy}" r="11" fill="none" stroke="#555" stroke-width="5"/><path d="M${hx + 28} ${hy} C${hx + 40} ${hy - 16}, ${hx + 100} ${hy - 13}, ${hx + 112} ${hy} C${hx + 100} ${hy + 13}, ${hx + 40} ${hy + 16}, ${hx + 28} ${hy}Z" fill="none" stroke="#B8322A" stroke-width="5" class="band-loop"/>`;
+      const svg = h("div", "p26-art"); svg.innerHTML = `<svg viewBox="0 0 1000 360" style="width:100%;display:block" role="img" aria-label="Two identical wood blocks on a plank: one on its wide face, one on its narrow side, each pulled by a rubber band looped through its eye hook"><polygon points="10,300 60,250 990,250 940,300" fill="#E3BE8A" stroke="#6B4320" stroke-width="3"/><rect x="10" y="300" width="930" height="24" fill="#C9965C" stroke="#6B4320" stroke-width="3"/>${blk(40, 330, 60, 45)}${hook(392, 242)}${blk(540, 330, 110, 20)}${hook(880, 230)}<text x="205" y="352" text-anchor="middle" class="p26-t">wide face down</text><text x="715" y="352" text-anchor="middle" class="p26-t">narrow side down</text></svg>`;
+      box.appendChild(svg); T.fade(svg, 0.4, 0.8);
       const lb = h("div", "lbl t-aside", "his sketch idea"); lb.style.fontSize = "2.2cqw"; c.appendChild(lb); T.fade(lb, 2.0);
       const btn = at(scene, h("a", "pencil-btn big-btn", "Try the Online Friction Lab ↗"), 22, 84);
       btn.href = LAB_URL; btn.target = "_blank"; btn.rel = "noopener"; btn.id = "labBtn";

@@ -1,5 +1,6 @@
 // Cold-read state screenshots: every page with narration off, start + end of the entry animation,
 // then every button, toggle, drag, zoom and Next step. Files: pNN-stepK.png
+//   MOBILE=1 for phone (pNN-mob-stepK.png)
 //   FL_URL=http://localhost:8799 SHOTS=/path/states node friction-lesson-states.mjs [pages...]
 import puppeteer from "puppeteer-core";
 const BASE = process.env.FL_URL || "http://localhost:8799", OUT = process.env.SHOTS || "/tmp/fl-states";
@@ -7,11 +8,12 @@ const only = process.argv.slice(2).map(Number).filter(Boolean);
 const browser = await puppeteer.launch({ executablePath: "/usr/bin/google-chrome", args: ["--no-sandbox", "--autoplay-policy=no-user-gesture-required"] });
 const page = await browser.newPage(); const errors = [];
 page.on("pageerror", (e) => errors.push(e.message)); page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
-await page.setViewport({ width: 1600, height: 900 });
+const MOB = process.env.MOBILE === "1", PRE = MOB ? "mob-" : "";
+await page.setViewport(MOB ? { width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true } : { width: 1600, height: 900 });
 await page.evaluateOnNewDocument(() => { localStorage.setItem("theme", "light"); localStorage.setItem("popboard.friction.narration", "0"); });
 await page.goto(`${BASE}/study-friction-lesson.html`, { waitUntil: "networkidle0" });
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-let n = 0, k = 0; const shot = async () => page.screenshot({ path: `${OUT}/p${String(n).padStart(2, "0")}-step${k++}.png` });
+let n = 0, k = 0; const shot = async () => page.screenshot({ path: `${OUT}/p${String(n).padStart(2, "0")}-${PRE}step${k++}.png` });
 const click = async (sel, i = 0) => page.evaluate((s, i) => document.querySelectorAll("#flScene " + s)[i].click(), sel, i);
 const center = async (sel, i = 0) => page.evaluate((s, i) => { const b = document.querySelectorAll("#flScene " + s)[i].getBoundingClientRect(); return [b.x + b.width / 2, b.y + b.height / 2]; }, sel, i);
 async function drag(from, to, mid) { await page.mouse.move(...from); await page.mouse.down(); for (let s = 1; s <= 10; s++) { await page.mouse.move(from[0] + (to[0] - from[0]) * s / 10, from[1] + (to[1] - from[1]) * s / 10); if (s === 5 && mid) await mid(); } await page.mouse.up(); }
