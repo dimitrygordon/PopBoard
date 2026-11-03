@@ -176,5 +176,6 @@ body[data-centered] .fl-side { display: none; }
 }
 /* Page 20 on narrow screens: "Slip!" sits centered above the rig (rig spans 61% to 99%) at 85% size. */
 @media (max-width: 599px) {
+  body[data-page="20"] .fl-side .fine { font-size: max(13px, 1.12cqw) !important; line-height: 1.35; margin-top: 10px; }
   .p20-slip { left: 70% !important; top: 0 !important; width: 20% !important; text-align: center; font-size: 4.25cqw !important; }
 }

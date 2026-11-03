@@ -662,13 +662,13 @@ function staticDeepDive(n) {
   // Pages 18 to 21 share one graph card and one mini rig, so each page starts from the previous final frame.
   const conf = {
     18: { title: "Static friction matches you", kicker: "EXPLAIN · STATIC GRAPH 1 OF 3: HOLDING STILL",
-      side: `<p>Pulled horizontally on a level surface.</p><p>The cart is not moving, so the forces balance.</p><p>Pull 2 N, friction is 2 N.</p><p>Pull 5 N, friction is 5 N.</p><p id="sA"><span class="t-head">Ff,s ≤ μs FN</span></p><p class="q" id="sB">If you pull 4 N and it doesn’t move, what is friction?</p><p class="aside" id="sC" style="font-size:1.12cqw">The graph on your sheet shows the shape, not exact values. Your drop may be smaller.</p>`,
+      side: `<p>Pulled horizontally on a level surface.</p><p>The cart is not moving, so the forces balance.</p><p>Pull 2 N, friction is 2 N.</p><p>Pull 5 N, friction is 5 N.</p><p id="sA"><span class="t-head">Ff,s ≤ μs FN</span></p><p class="q" id="sB">If you pull 4 N and it doesn’t move, what is friction?</p><p class="aside fine" id="sC" style="font-size:1.12cqw">The graph on your sheet shows the shape, not exact values. Your drop may be smaller.</p>`,
       cap: "If you pull 4 N and it doesn’t move, what is friction?" },
     19: { title: "The breaking point", kicker: "EXPLAIN · STATIC GRAPH 2 OF 3: THE THRESHOLD",
-      side: `<p>Static friction has a limit.</p><p id="sA">At the peak, Ff,s(max) = μs FN.</p><p class="q" id="sB">What happens if you pull even a tiny bit more?</p><p class="aside" style="font-size:1.12cqw">The graph on your sheet shows the shape, not exact values. Your drop may be smaller.</p>`,
+      side: `<p>Static friction has a limit.</p><p id="sA">At the peak, Ff,s(max) = μs FN.</p><p class="q" id="sB">What happens if you pull even a tiny bit more?</p><p class="aside fine" style="font-size:1.12cqw">The graph on your sheet shows the shape, not exact values. Your drop may be smaller.</p>`,
       cap: "What happens if you pull even a tiny bit more?" },
     20: { title: "Slip!", kicker: "EXPLAIN · STATIC GRAPH 3 OF 3: THE DROP",
-      side: `<p>Once it slides, friction drops to Ff,k = μk FN and stays about the same.</p><p id="sA"><b class="t-head">Why it drops</b><br>When the surfaces sit still, the tiny touching points slowly squish together and stick harder. Once it slides, those points keep breaking and re-forming before they can stick as strongly, so kinetic friction is smaller.</p><p class="q" id="sB">Why is starting harder than sliding?</p><p class="aside" style="font-size:1.12cqw">The graph on your sheet shows the shape, not exact values. Your drop may be smaller.</p>`,
+      side: `<p>Once it slides, friction drops to Ff,k = μk FN and stays about the same.</p><p id="sA"><b class="t-head">Why it drops</b><br>When the surfaces sit still, the tiny touching points slowly squish together and stick harder. Once it slides, those points keep breaking and re-forming before they can stick as strongly, so kinetic friction is smaller.</p><p class="q" id="sB">Why is starting harder than sliding?</p><p class="aside fine" style="font-size:1.12cqw">The graph on your sheet shows the shape, not exact values. Your drop may be smaller.</p>`,
       cap: "Why is starting harder than sliding?" },
   }[n];
   return {
