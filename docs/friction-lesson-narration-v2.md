@@ -56,7 +56,7 @@ Static friction is a little different. It grows to match your pull, up to a maxi
 
 ## Page 14 (**NEW**)
 
-Here's the video and its force graph together. In the static zone, the cart isn't moving, and friction grows to match the pull. At the threshold, friction reaches its maximum and the cart breaks free. In the kinetic zone, the cart slides and the reading drops to a steady, lower value.
+Here's the video and its force graph together. In the static zone, the cart isn't moving, and friction grows to match the pull. At the threshold, friction reaches its maximum and the cart breaks free. In the kinetic zone, the cart slides. The reading drops for a moment, then settles at a steady, lower value.
 
 ## Page 15 (**NEW**)
 
