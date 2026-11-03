@@ -1,0 +1,138 @@
+{
+ "voice": "zagan",
+ "status": "pending: narration text comes from Socrates and Tesla; audio is pre-rendered offline with xAI TTS (tools/friction-lesson/render-narration.mjs)",
+ "pages": {
+  "1": {
+   "text": "",
+   "audio": ""
+  },
+  "2": {
+   "text": "",
+   "audio": ""
+  },
+  "3": {
+   "text": "",
+   "audio": ""
+  },
+  "4": {
+   "text": "",
+   "audio": ""
+  },
+  "5": {
+   "text": "",
+   "audio": ""
+  },
+  "6": {
+   "text": "",
+   "audio": ""
+  },
+  "7": {
+   "text": "",
+   "audio": ""
+  },
+  "8": {
+   "text": "",
+   "audio": ""
+  },
+  "9": {
+   "text": "",
+   "audio": ""
+  },
+  "10": {
+   "text": "",
+   "audio": ""
+  },
+  "11": {
+   "text": "",
+   "audio": ""
+  },
+  "12": {
+   "text": "",
+   "audio": ""
+  },
+  "13": {
+   "text": "",
+   "audio": ""
+  },
+  "14": {
+   "text": "",
+   "audio": ""
+  },
+  "15": {
+   "text": "",
+   "audio": ""
+  },
+  "16": {
+   "text": "",
+   "audio": ""
+  },
+  "17": {
+   "text": "",
+   "audio": ""
+  },
+  "18": {
+   "text": "",
+   "audio": ""
+  },
+  "19": {
+   "text": "",
+   "audio": ""
+  },
+  "20": {
+   "text": "",
+   "audio": ""
+  },
+  "21": {
+   "text": "",
+   "audio": ""
+  },
+  "22": {
+   "text": "",
+   "audio": ""
+  },
+  "23": {
+   "text": "",
+   "audio": ""
+  },
+  "24": {
+   "text": "",
+   "audio": ""
+  },
+  "25": {
+   "text": "",
+   "audio": ""
+  },
+  "26": {
+   "text": "",
+   "audio": ""
+  },
+  "27": {
+   "text": "",
+   "audio": ""
+  },
+  "28": {
+   "text": "",
+   "audio": ""
+  },
+  "29": {
+   "text": "",
+   "audio": ""
+  },
+  "30": {
+   "text": "",
+   "audio": ""
+  },
+  "31": {
+   "text": "",
+   "audio": ""
+  },
+  "32": {
+   "text": "",
+   "audio": ""
+  },
+  "33": {
+   "text": "",
+   "audio": ""
+  }
+ }
+}
