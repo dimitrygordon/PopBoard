@@ -21,9 +21,11 @@
   <a id="studyBackBtn" class="pencil-btn" data-study-back href="study.html" aria-label="Back to Study library">‹ Library</a>
   <h1 id="flTitle">Dimitry's Friction Lesson</h1>
   <button class="pencil-btn" id="prevBtn" type="button" aria-label="Previous page">‹</button>
-  <span class="fl-count" id="flCount" aria-live="polite">Page 1 of 33</span>
+  <span class="fl-count" id="flCount" aria-live="polite">Page 1 of 26</span>
   <button class="pencil-btn" id="nextBtn" type="button" aria-label="Next page">›</button>
   <button class="pencil-btn" id="playBtn" type="button" aria-pressed="true" aria-label="Pause">❚❚ Pause</button>
+  <button class="pencil-btn" id="narrBtn" type="button" aria-pressed="true" title="Narration on: pages speak. Off: short guide text appears on every page">🔊 Narration on</button>
+  <button class="pencil-btn" id="sayBtn" type="button" aria-label="Play this page's narration" disabled>▶ Narrate</button>
   <button class="pencil-btn" id="replayBtn" type="button" aria-label="Replay page">↺ Replay</button>
   <button class="pencil-btn" id="autoBtn" type="button" aria-pressed="false" title="Advance 4 s after each page finishes">Auto-advance</button>
   <button class="pencil-btn" id="textBtn" type="button" aria-pressed="false" title="Hide the side text so the storyboard fills the screen">Hide text</button>
@@ -35,6 +37,7 @@
   <div class="fl-frame" id="flFrame">
     <section class="fl-art" aria-label="Storyboard"><div class="fl-scene" id="flScene" aria-live="polite"></div></section>
     <aside class="fl-side" id="flSide" aria-label="Page text"></aside>
+    <div class="fl-guide" id="flGuide" aria-live="polite"></div>
     <div class="fl-cap" id="flCap"><span class="cap-q"><b id="flCapT"></b><span id="flCapQ"></span></span></div>
   </div>
 </main>

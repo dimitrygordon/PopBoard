@@ -3,8 +3,9 @@
 export const EASE = { out: "cubic-bezier(.33,1,.68,1)", inout: "ease-in-out", linear: "linear", back: "cubic-bezier(.34,1.56,.64,1)", inQuad: "cubic-bezier(.11,0,.5,0)" };
 export const ART = "friction-lesson/art/";
 
-// Spring scale: reading 0 N sits at 23.9% of scale_body width, 20 N at 75.2%.
-export const NEEDLE_0 = 23.9, NEEDLE_20 = 75.2;
+// Spring scale (Leo's hand_pull_with_scale): the needle lives on a code-drawn strip over the blank tube.
+// The hook (load) is on the left, so the reading grows leftward: 0 N at 94% of the strip, 20 N at 6%.
+export const NEEDLE_0 = 94, NEEDLE_20 = 6;
 export function needleX(reading) {
   const r = Math.max(0, Math.min(20, reading));
   return NEEDLE_0 + (NEEDLE_20 - NEEDLE_0) * (r / 20);
@@ -28,6 +29,8 @@ export function riseWipeRight(frac) { return risePoint(frac)[0]; }
 // Typeset physics symbols with real subscripts: Ff,k  FN  μk  μs  Ff,s(max) ...
 export function fx(s) {
   return String(s)
+    .replace(/\bF_(\w+)/g, "F<sub>$1</sub>")
+    .replace(/μ_([ks])/g, "μ<sub>$1</sub>")
     .replace(/\bFf,(kinetic|static|k|s)\b/g, "F<sub>f,$1</sub>")
     .replace(/\bFN\b/g, "F<sub>N</sub>")
     .replace(/μ([ks])\b/g, "μ<sub>$1</sub>");

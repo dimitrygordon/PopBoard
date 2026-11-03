@@ -12,38 +12,53 @@ try { state.auto = localStorage.getItem("popboard.friction.auto") === "1"; } cat
 // Back to the Study library, keeping the board query (same pattern as the other study pages).
 $("studyBackBtn").href = "study.html" + location.search;
 
-/* narration: friction-lesson/narration/manifest.json maps page -> { text, audio }. No audio, no player. */
+/* narration: friction-lesson/narration/manifest.json maps page -> { text, audio }. No audio, no player.
+   The global toggle (#narrBtn, saved in localStorage) turns page-start narration on or off. When off, every page
+   shows its short guide text instead. The #sayBtn in the bar always plays the current page's narration by hand. */
 const manifest = fetch("friction-lesson/narration/manifest.json").then((r) => (r.ok ? r.json() : null)).catch(() => null);
-function narrationSlot(n) {
-  const box = h("div", "narr"); box.hidden = true;
+try { state.narrOn = localStorage.getItem("popboard.friction.narration") !== "0"; } catch (e) { state.narrOn = true; }
+const sayBtn = $("sayBtn");
+function narrationFor(n) {
+  sayBtn.disabled = true; sayBtn.textContent = "▶ Narrate";
   manifest.then((m) => {
     const entry = m && m.pages && m.pages[String(n)];
     if (!entry || !entry.audio) return;
-    const a = new Audio(); a.preload = "metadata";
-    const btn = h("button", "pencil-btn", "▶ Narration"); btn.type = "button";
-    btn.onclick = () => { if (a.paused) { a.play().catch(() => {}); } else a.pause(); };
-    // While narration is speaking, auto-advance waits for it to end (see maybeAdvance).
-    a.onplay = () => { btn.textContent = "❚❚ Narration"; state.speaking = true; clearTimeout(state.autoTimer); };
-    a.onpause = () => { btn.textContent = "▶ Narration"; };
-    a.onended = () => { btn.textContent = "▶ Narration"; state.speaking = false; maybeAdvance(); };
-    a.onerror = () => { box.hidden = true; state.speaking = false; maybeAdvance(); };
-    a.onloadedmetadata = () => { if (state.narration === a) box.hidden = false; };
     if (state.i !== n - 1) return;
+    const a = new Audio(); a.preload = "metadata";
+    // While narration is speaking, auto-advance waits for it to end (see maybeAdvance).
+    a.onplay = () => { sayBtn.textContent = "❚❚ Narrate"; state.speaking = true; clearTimeout(state.autoTimer); };
+    a.onpause = () => { sayBtn.textContent = "▶ Narrate"; };
+    a.onended = () => { sayBtn.textContent = "▶ Narrate"; state.speaking = false; maybeAdvance(); };
+    a.onerror = () => { sayBtn.disabled = true; state.speaking = false; maybeAdvance(); };
+    a.onloadedmetadata = () => { if (state.narration === a) sayBtn.disabled = false; };
     a.src = "friction-lesson/narration/" + entry.audio;
-    box.appendChild(btn);
     state.narration = a;
-    // Presentation mode: narration starts with the page. If the browser blocks autoplay before the
-    // first click, the button stays ready and auto-advance does not wait on silent audio.
-    if (state.playing && !reducedQ.matches) a.play().catch(() => { state.speaking = false; });
+    // Presentation mode: narration starts with the page when the toggle is on. If the browser blocks autoplay
+    // before the first click, the button stays ready and auto-advance does not wait on silent audio.
+    if (state.narrOn && state.playing && !reducedQ.matches) a.play().catch(() => { state.speaking = false; });
   });
-  return box;
 }
+sayBtn.onclick = () => { const a = state.narration; if (!a) return; if (a.paused) a.play().catch(() => {}); else a.pause(); };
+function syncNarr() {
+  document.body.classList.toggle("narr-off", !state.narrOn);
+  const b = $("narrBtn"); b.setAttribute("aria-pressed", String(state.narrOn));
+  b.textContent = state.narrOn ? "🔊 Narration on" : "🔇 Narration off";
+}
+$("narrBtn").onclick = () => {
+  state.narrOn = !state.narrOn;
+  try { localStorage.setItem("popboard.friction.narration", state.narrOn ? "1" : "0"); } catch (e) {}
+  syncNarr();
+  const a = state.narration;
+  if (a && !state.narrOn && !a.paused) a.pause();
+  if (a && state.narrOn && a.paused && a.currentTime === 0) a.play().catch(() => {});
+};
+syncNarr();
 
 function stopPage() {
   clearTimeout(state.autoTimer);
   if (state.T) state.T.anims.forEach((a) => a.cancel());
   if (state.prog) state.prog.cancel();
-  if (state.narration) { state.narration.pause(); state.narration = null; }
+  if (state.narration) { state.narration.pause(); state.narration.removeAttribute("src"); state.narration = null; }
   state.speaking = false; state.animDone = false;
   scene.querySelectorAll("video").forEach((v) => v.pause());
   scene.replaceChildren(); side.replaceChildren();
@@ -56,9 +71,12 @@ function render(i) {
   document.body.dataset.page = String(n);
   if (p.centered) document.body.dataset.centered = ""; else delete document.body.dataset.centered;
   side.innerHTML = (p.noKicker ? "" : `<p class="kicker">${fx(p.kicker)}</p><h2>${fx(p.title)}</h2>`) + fx(p.side || "");
-  side.appendChild(narrationSlot(n));
+  if (p.guide) side.insertAdjacentHTML(p.noKicker ? "afterbegin" : "beforeend", `<p class="guide">${fx(p.guide)}</p>`);
+  narrationFor(n);
+  if (p.black) document.body.dataset.black = ""; else delete document.body.dataset.black;
   $("flCapT").innerHTML = fx(p.title);
   $("flCapQ").innerHTML = fx(p.cap || "");
+  $("flGuide").innerHTML = fx(p.guide || "");
   $("flCount").textContent = `Page ${n} of ${PAGES.length}`;
   history.replaceState(null, "", "?" + new URLSearchParams({ ...Object.fromEntries(new URLSearchParams(location.search)), page: n }));
   const T = timeline(scene, { reduced: reducedQ.matches });
@@ -160,6 +178,7 @@ addEventListener("keydown", (e) => {
   else if (e.key === " " && !(e.target.closest && e.target.closest("button, a"))) { e.preventDefault(); setPlaying(!state.playing); }
   else if (e.key === "f" || e.key === "F") toggleFullscreen();
   else if (e.key === "r" || e.key === "R") render(state.i);
+  else if (e.key === "n" || e.key === "N") $("narrBtn").click();
   else if (e.key === "t" || e.key === "T") setCollapsed(!document.body.classList.contains("fl-full"));
 });
 // replay the current page when the layout mode changes, so the art re-flows cleanly
@@ -168,4 +187,4 @@ document.body.addEventListener("transitionend", () => {}, { passive: true });
 const startPage = parseInt(new URLSearchParams(location.search).get("page"), 10);
 if (new URLSearchParams(location.search).get("full") === "1") setCollapsed(true);
 render(Number.isFinite(startPage) ? startPage - 1 : 0);
-window.__fl = { go, render, state, PAGES, setCollapsed, setPlaying };
+window.__fl = { go, render, state, PAGES, setCollapsed, setPlaying, setNarration(on) { if (on !== state.narrOn) $("narrBtn").click(); } };
