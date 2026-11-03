@@ -473,9 +473,9 @@ export const PAGES = [
     build(scene, T) {
       const t = say(scene, "EXIT TICKET", 8, 6, 50, "big"); t.style.fontSize = "6cqw"; T.wipe(t, 0, 0.8, 0, 1, EASE.out);
       const st = at(scene, h("div", "stamp", "INDIVIDUAL"), 60, 8); T.pop(st, 0.8);
-      const note = at(scene, h("div", "sticky", `<div style="font-family:var(--f-body);font-size:3cqw;line-height:1.5">${fx("Ff,kinetic = μk FN")}<br>${fx("Ff,static ≤ μs FN")}</div>`), 20, 32, 46);
+      const note = at(scene, h("div", "sticky", `<div class="p23-formula">${fx("Ff,kinetic = μk FN")}<br>${fx("Ff,static ≤ μs FN")}</div>`), 20, 32, 46);
       T.slideIn(note, 1.4, 0.6, 0, 12);
-      const fc = at(note, h("div", "stamp", "FORMULA CARD ALLOWED"), 30, 78); fc.style.fontSize = "1.6cqw"; T.pop(fc, 1.9);
+      const fc = at(note, h("div", "stamp p23-fc", "FORMULA CARD ALLOWED"), 30, 78); T.pop(fc, 1.9);
       const door = tag(scene, "COLLECT AT THE DOOR", 66, 74, "red"); T.pop(door, 2.4);
     },
   },
@@ -524,8 +524,8 @@ export const PAGES = [
     side: `<p>Front of the ticket (Name, favorite part, still confusing): those are your own answers. Any honest answer counts.</p>`,
     cap: "",
     build(scene, T) {
-      const c = card(scene, 3, 3, 94, { keep: true }); c.style.rotate = "0.6deg";
-      c.innerHTML = `<div class="ans" style="font-size:1.9cqw;line-height:1.35">
+      const c = card(scene, 3, 3, 94, { keep: true }); c.style.rotate = "0.6deg"; c.classList.add("p26-card");
+      c.innerHTML = `<div class="ans">
         <p>1. A 2 kg box is pulled horizontally on a level floor. A group's graph of friction force against ${fx("FN")} has a slope of 0.3. What is the sliding friction force on the box?<br><b style="color:#2F6DB5">${fx("Ff,k")} = 5.9 N</b> &nbsp; <span class="t-aside" style="color:#2F6DB5">${fx("FN")} = 2 × 9.8 = 19.6 N, so ${fx("Ff,k")} = 0.3 × 19.6 = 5.88, about 5.9 N</span></p>
         <p>2. For the same box, ${fx("μs")} = 0.4. What is the most static friction can be?<br><b style="color:#2F6DB5">${fx("Ff,s")} max = 7.8 N</b> &nbsp; <span class="t-aside" style="color:#2F6DB5">${fx("Ff,s")} max = 0.4 × 19.6 = 7.84, about 7.8 N</span></p>
         <div style="display:flex;gap:2cqw;align-items:center"><p style="flex:1">3. Is it harder to start the box moving or to keep it sliding? Why?<br><span class="t-aside" style="color:#2F6DB5">It's harder to start it moving. The maximum static friction (7.8 N) is bigger than kinetic friction (5.9 N) because ${fx("μs")} is bigger than ${fx("μk")}. At rest, the tiny touching points between the surfaces have time to stick together. Once the block slides, they keep breaking apart before they can stick as strongly.</span></p><img src="friction-lesson/art/static_e.webp" alt="Static graph: the peak sits higher than the kinetic plateau" style="width:30%"></div></div>`;
@@ -713,7 +713,7 @@ function staticDeepDive(n) {
       }
       // page 20: the drop
       T.needle(R.needle, 0, 0.001, 7.8, 7.8);
-      const slip = say(scene, "Slip!", 40, 2, 20, "big"); slip.style.color = "var(--red)"; slip.style.fontSize = "5cqw"; T.pop(slip, 0.4);
+      const slip = say(scene, "Slip!", 40, 2, 20, "big"); slip.classList.add("p20-slip"); slip.style.color = "var(--red)"; slip.style.fontSize = "5cqw"; T.pop(slip, 0.4);
       T.wipe(L.static_seg2_drop, 0.5, 0.3, ...SB.seg2_drop, EASE.inQuad);
       T.needle(R.needle, 0.5, 0.3, 7.8, 7.0, EASE.inQuad);
       T.A(R.r, [{ transform: "translateX(0)" }, { transform: "translateX(2.2cqw)" }], 0.5, 0.3, EASE.inQuad);

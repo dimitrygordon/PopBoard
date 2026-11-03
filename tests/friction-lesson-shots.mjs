@@ -6,7 +6,7 @@ const OUT = process.env.SHOTS || "/tmp/fl-shots";
 const only = process.argv.slice(2).map(Number).filter(Boolean);
 const browser = await puppeteer.launch({ executablePath: process.env.CHROME_PATH || "/usr/bin/google-chrome", args: ["--no-sandbox", "--autoplay-policy=no-user-gesture-required"] });
 const errors = [];
-const modes = (process.env.MODES || "desktop-light,desktop-dark,desktop-full,mobile-light,mobile-dark").split(",");
+const modes = (process.env.MODES || "desktop-light,desktop-dark,desktop-full,desktop-full-dark,mobile-light,mobile-dark").split(",");
 for (const mode of modes) {
   const page = await browser.newPage();
   page.on("console", (m) => { if (m.type() === "error") errors.push(`${mode}: ${m.text()}`); });
@@ -17,7 +17,7 @@ for (const mode of modes) {
   await page.setViewport(mobile ? { width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true } : { width: 1600, height: 900 });
   await page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "reduce" }]);
   await page.evaluateOnNewDocument((d) => { localStorage.setItem("theme", d ? "dark" : "light"); }, mode.endsWith("dark"));
-  await page.goto(`${BASE}/study-friction-lesson.html${mode.endsWith("full") ? "?full=1" : ""}`, { waitUntil: "networkidle0" });
+  await page.goto(`${BASE}/study-friction-lesson.html${mode.includes("full") ? "?full=1" : ""}`, { waitUntil: "networkidle0" });
   const pages = only.length ? only : Array.from({ length: 33 }, (_, i) => i + 1);
   for (const n of pages) {
     await page.evaluate((n) => window.__fl.render(n - 1), n);
