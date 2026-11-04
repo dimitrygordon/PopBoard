@@ -104,6 +104,20 @@ test("all 44 interactives mount, draw and respond to a drag", { skip: !existsSyn
       const after = await page.evaluate(() => document.querySelector(".gx-board-host svg g").innerHTML);
       assert.ok(!/NaN|undefined/.test(after), `${d.gx} has NaN or undefined in its drawing`);
       assert.ok(showAll || h || pressed, `${d.gx} is interactive`);
+      if (d.gx === "u03.golf") {
+        // every hole can be finished in exactly its par
+        const seqs = [["Reflect over y-axis", "Up 1"], ["Rotate 90\u00b0 about origin", "Left 1"], ["Reflect over x-axis", "Rotate 90\u00b0 about origin", "Down 1"]];
+        for (const [i, seq] of seqs.entries()) {
+          const t = await page.evaluate(async (i, seq) => {
+            const bs = () => [...document.querySelectorAll(".gx-tool button")];
+            bs().find((b) => b.textContent === `Hole ${i + 1}`).click();
+            for (const s of seq) bs().find((b) => b.textContent === s).click();
+            await new Promise((r) => setTimeout(r, 150));
+            return document.querySelector(".gx-read").textContent;
+          }, i, seq);
+          assert.match(t, new RegExp(`In the hole in ${seq.length} moves`), `golf hole ${i + 1}`);
+        }
+      }
       assert.deepEqual(errs, [], `${d.gx}: ${errs.join("; ")}`);
     }
   } finally { await b.close(); srv.close(); }

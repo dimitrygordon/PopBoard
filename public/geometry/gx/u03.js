@@ -100,9 +100,10 @@ export const GX = {
     mount(B, U) {
       const C = P(800, 450), u = 75;
       const holes = [
-        { start: [P(-4, 0), 0, 1], goal: [P(3, 1), 0, 1], par: 2 },
-        { start: [P(-3, -1), 0, 1], goal: [P(2, 2), 90, 1], par: 2 },
-        { start: [P(-2, 1), 0, 1], goal: [P(3, -2), 180, -1], par: 3 }
+        // each goal is reachable in exactly par moves: ry then Up; R90 then Left; rx, R90, then Down
+        { start: [P(-3, 1), 0, 1], goal: [P(3, 2), 0, -1], par: 2 },
+        { start: [P(2, 1), 0, 1], goal: [P(-2, 2), 90, 1], par: 2 },
+        { start: [P(-2, 1), 0, 1], goal: [P(1, -3), 270, -1], par: 3 }
       ];
       let h = 0, pos, rot, flip, moves, log;
       const reset = () => { [pos, rot, flip] = holes[h].start; pos = P(pos.x, pos.y); moves = 0; log = []; B.update(); };

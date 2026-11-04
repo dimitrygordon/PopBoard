@@ -13,9 +13,9 @@ The course follows `docs/geometry/progression.md` exactly for its order, titles,
 ## Interactive design choices
 The plan names each of the 44 interactives with a single line. The mechanics are mine:
 - **Constructions (15)** are step-by-step compass-and-straightedge animations with Next, Back, Show all and Reset. Each step draws its arcs with a sweep and explains itself in one sentence.
-- **Mini golf (u03.golf):** three holes, each with a wall. You aim with reflection buttons, and the ball path is the straight line to the mirror image of the hole. The hole layouts are invented.
+- **Transformation golf (u03.golf):** three holes on a coordinate grid. You move a flag with one-unit translations, a 90 degree rotation about the origin, and reflections over the axes, and try to land it on the dashed target. The hole layouts and their pars (2, 2, 3) are invented, and a test confirms each par can be reached.
 - **Pentagon (u06.pentagon)** uses Ptolemy's construction (the midpoint of a radius, then an arc to find the side length). The plan does not say which construction to use.
-- **Fractals and the Pythagoras tree** cap their depth (about 6 to 8 levels) so phones stay fast.
+- **Fractals and the Pythagoras tree** cap their depth (6 stages for the fractals, 10 levels for the tree) so phones stay fast.
 - **Napoleon's theorem** builds its equilateral triangles outward. **Cross sections** use the regular hexagon slice of a cube. **Cavalieri** compares a stack of slices that can be sheared.
 - **Reduce motion:** sweeps and animations jump straight to their end state.
 
