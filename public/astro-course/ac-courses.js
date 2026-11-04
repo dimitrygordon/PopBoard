@@ -39,6 +39,30 @@ export const COURSES = {
     // short header strip on library cards ("M2 \u00b7 L2") so it never wraps; covers keep the long label
     strip: (d) => `M${d.q} \u00b7 L${d.lesson}`,
     unit: "lesson storybooks"
+  },
+  geometry: {
+    id: "geometry",
+    name: "Geometry",
+    catalog: "../geometry/geo-catalog.js",
+    root: "geometry/",
+    library: "study-geometry.html",
+    story: "study-geometry-story.html",
+    param: "lesson",
+    store: "popboard.geometry",
+    scenes: null,
+    covers: true,
+    // each catalog entry names its cover (d.cover, a path under geometry/); art can be swapped per unit or lesson
+    coverSrc: (d) => `geometry/${d.cover}`,
+    group: (d) => `Unit ${d.q}`,
+    label: (d) => `Lesson ${d.q}.${d.lesson}`,
+    strip: (d) => `U${d.q} \u00b7 ${d.q}.${d.lesson}`,
+    unit: "lesson storybooks",
+    // text only for now: no narration player
+    narration: false,
+    // figures and interactives drawn in code on each page (geometry/geo-page.js)
+    pageMount: "../geometry/geo-page.js",
+    filterLabel: "Unit",
+    pill: (m) => `U${m}`
   }
 };
 export function courseId(doc = globalThis.document) {
