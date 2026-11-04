@@ -4,13 +4,14 @@
 // 1, 2 and 3 screen pixels at any size, and labels never drop under 13px on a phone or 22px on desktop.
 import * as M from "./geo-math.js";
 import * as S from "./geo-svg.js";
+import { makeCtx } from "./geo-ctx.js";
 
 export const VW = 1600, VH = 900;
 const phone = () => matchMedia("(max-width: 699px)").matches;
 
-export function createBoard(layer, { reduce = false } = {}) {
+export function createBoard(layer, { reduce = false, w: BW = VW, h: BH = VH } = {}) {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("viewBox", `0 0 ${VW} ${VH}`);
+  svg.setAttribute("viewBox", `0 0 ${BW} ${BH}`);
   svg.setAttribute("class", "gx-board");
   svg.setAttribute("role", "application");
   svg.setAttribute("aria-label", "Interactive figure. Drag the hollow points, or focus one and use the arrow keys.");
@@ -22,7 +23,7 @@ export function createBoard(layer, { reduce = false } = {}) {
   const listeners = [];
   const B = {
     svg, reduce, pts,
-    get k() { return k; }, get fs() { return fs; },
+    W: BW, H: BH, get k() { return k; }, get fs() { return fs; },
     // a draggable point: opts.label, opts.constrain(p) -> p, opts.free (false = shown but fixed)
     point(x, y, opts = {}) {
       const p = { x, y, x0: x, y0: y, label: opts.label || "", constrain: opts.constrain || null, drag: opts.drag !== false, hidden: !!opts.hidden };
@@ -35,52 +36,10 @@ export function createBoard(layer, { reduce = false } = {}) {
     reset() { for (const p of pts) { p.x = p.x0; p.y = p.y0; } B.update(); listeners.forEach((f) => f()); },
     destroy() { cancelAnimationFrame(raf); ro.disconnect(); svg.remove(); }
   };
-  // drawing context handed to drawFn; every helper returns nothing and appends to the frame
-  function ctx() {
-    let out = "";
-    const g = {
-      k, fs,
-      seg: (a, b, o = {}) => { out += S.seg(a, b, o, k); },
-      line: (a, b, o = {}) => { out += S.fullLine(a, b, 4000, o, k); },
-      ray: (a, b, o = {}) => { const u = M.unit(M.sub(b, a)); out += S.seg(a, M.add(a, M.mul(u, 4000)), o, k); },
-      circle: (c, r, o = {}) => { out += S.circle(c, r, o, k); },
-      arc: (c, r, a0, a1, o = {}) => { out += S.arc(c, r, a0, a1, o, k); },
-      poly: (p, o = {}) => { out += S.poly(p, o, k); },
-      path: (d, o = {}) => { out += S.path(d, o, k); },
-      dot: (p, r = 5) => { out += S.dot(p, k, r); },
-      arrow: (a, b) => { out += S.arrow(a, b, 16, k); },
-      angle: (a, b, c, n = 1, r = 34) => { out += S.angleMark(a, b, c, r, n, k); },
-      right: (a, b, c) => { out += S.rightMark(a, b, c, 18, k); },
-      ticks: (a, b, n = 1) => { out += S.ticks(a, b, n, 9, k); },
-      // label near p, pushed `off` screen pixels along direction (dx, dy)
-      label: (p, s, o = {}) => {
-        const off = (o.off == null ? 22 : o.off) * k, d = o.dir ? M.unit(o.dir) : M.P(0, -1);
-        const size = o.small ? Math.max(13 * k, fs * 0.75) : fs;
-        out += S.text(M.add(p, M.mul(d, off + (o.anchor ? 0 : size * 0.3))), s, size, { anchor: o.anchor, italic: o.italic, bold: o.bold });
-      },
-      // pencil compass mid-swing: needle at c, pencil tip at angle deg
-      compass: (c, r, deg) => {
-        const tip = M.polar(c, r, deg), m = M.mid(c, tip), hinge = M.add(m, M.mul(M.perp(M.unit(M.sub(tip, c))), -Math.min(r * 0.5, 160)));
-        out += S.seg(c, hinge, { w: "main" }, k) + S.seg(hinge, tip, { w: "main" }, k) + S.circle(hinge, 7 * k, { w: "main", fill: "paper" }, k);
-      },
-      // compass arc that sweeps in with t (0..1), with the compass drawn while it is moving
-      sweep: (c, r, a0, a1, t = 1, o = { w: "thin" }) => {
-        let s = a1 - a0; while (s < 0) s += 360;
-        const e = a0 + s * M.clamp(t, 0, 1);
-        if (t > 0.001) out += S.arc(c, r, a0, e, o, k);
-        if (t < 1 && t > 0) g.compass(c, r, e);
-      },
-      // straightedge stroke from a toward b, drawn in with t
-      edge: (a, b, t = 1, o = {}) => { if (t > 0.001) out += S.seg(a, M.lerp(a, b, M.clamp(t, 0, 1)), o, k); },
-      raw: (s) => { out += s; },
-      get out() { return out; }
-    };
-    return g;
-  }
   function render() {
     const w = svg.getBoundingClientRect().width || 800;
-    k = VW / w; fs = (phone() ? 14 : 22) * k;
-    const g = ctx();
+    k = BW / w; fs = (phone() ? 14 : 22) * k;
+    const g = makeCtx(k, fs, BW, BH);
     try { drawFn(g); } catch (e) { console.warn("gx draw", e); }
     art.innerHTML = g.out;
     for (const p of pts) placeHandle(p);
@@ -108,7 +67,7 @@ export function createBoard(layer, { reduce = false } = {}) {
     });
   }
   function move(p, x, y) {
-    let q = M.P(M.clamp(x, 30, VW - 30), M.clamp(y, 30, VH - 30));
+    let q = M.P(M.clamp(x, 30, BW - 30), M.clamp(y, 30, BH - 30));
     if (p.constrain) q = p.constrain(q) || q;
     p.x = q.x; p.y = q.y; B.update(); listeners.forEach((f) => f("move"));
   }
