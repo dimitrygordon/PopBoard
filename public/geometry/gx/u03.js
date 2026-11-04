@@ -147,7 +147,7 @@ export const GX = {
           tile = [TL, bt, TR, M.add(bl, sh), BR, M.add(bt, sv), BL, bl];
           for (let i = -4; i <= 7; i++) for (let j = -2; j <= 4; j++) g.poly(tile.map((p) => M.add(p, P(i * s, j * s))), { w: i === 0 && j === 0 ? "bold" : "thin" });
         } else {
-          const rb = M.rotate(bt, TR, -90);
+          const rb = M.rotate(bt, TR, 90);
           tile = [TL, bt, TR, rb, BR, BL];
           for (let i = -2; i <= 3; i++) for (let j = -1; j <= 2; j++) for (let r = 0; r < 4; r++) {
             const off = P(i * 2 * s, j * 2 * s);

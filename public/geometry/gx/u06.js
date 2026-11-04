@@ -30,7 +30,7 @@ export const GX = {
         g.poly(Mi, { w: "main" }); Mi.forEach((p) => g.dot(p, 4));
         g.seg(V[0], V[2], { dash: true, w: "thin" }); g.seg(V[1], V[3], { dash: true, w: "thin" });
         const big = Math.abs(M.area(V)), small = Math.abs(M.area(Mi));
-        U.read(`<p>The midpoint shape is always a parallelogram: each pair of opposite sides is parallel to a diagonal and half as long. Its area is ${num(small / 1e4, 2)}, half of ${num(big / 1e4, 2)}${M.cross(M.sub(V[1], V[0]), M.sub(V[2], V[1])) * M.cross(M.sub(V[3], V[2]), M.sub(V[0], V[3])) < 0 ? " (for a dart, compare with the shape's true area)" : ""}.</p>`);
+        U.read(`<p>The midpoint shape is always a parallelogram: each pair of opposite sides is parallel to a diagonal and half as long. Its area is ${num(small / 1e4, 2)}, half of ${num(big / 1e4, 2)}.</p>`);
       });
     }
   },

@@ -27,7 +27,7 @@ export const GX = {
     mount(B, U) {
       const O = B.point(500, 500, { label: "O" }), Pp = B.point(700, 300, { label: "P" }), Q = B.point(820, 560, { label: "Q" }), L1 = B.point(300, 760, { label: "" });
       let k = 1.75;
-      U.slider({ label: "k", min: -2, max: 3, step: 0.25, value: k }, (v) => { k = v; B.update(); });
+      U.slider({ label: "k", min: 0.25, max: 3, step: 0.25, value: k }, (v) => { k = v; B.update(); });
       B.draw((g) => {
         const P2 = M.dilate(Pp, O, k), Q2 = M.dilate(Q, O, k), L2 = M.dilate(L1, O, k);
         g.line(O, L1, { w: "thin" }); lab(g, L1, "line through O", O);
@@ -35,7 +35,7 @@ export const GX = {
         g.seg(O, P2, { dash: true, w: "thin" }); g.seg(O, Q2, { dash: true, w: "thin" });
         lab(g, O, "O", P(O.x - 100, O.y)); lab(g, Pp, "P", Q); lab(g, Q, "Q", Pp); lab(g, P2, "P'", Q2); lab(g, Q2, "Q'", P2);
         const r = M.dist(P2, Q2) / (M.dist(Pp, Q) || 1), par = Math.abs(M.cross(M.unit(M.sub(Q, Pp)), M.unit(M.sub(Q2, P2)))) < 0.01;
-        U.read(`<p>P'Q' \u00f7 PQ = ${num(r, 2)} = |k|. P'Q' is ${par ? "parallel to PQ" : "on the same line"}. Points on a line through O land on that same line.</p>`);
+        U.read(`<p>P'Q' \u00f7 PQ = ${num(r, 2)} = |k|. P'Q' is ${Math.abs(k - 1) < 1e-9 ? "the same segment as PQ" : par ? "parallel to PQ" : "on the same line"}. Points on a line through O land on that same line.</p>`);
       });
     }
   },

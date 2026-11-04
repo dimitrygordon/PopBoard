@@ -47,7 +47,7 @@ export const GX = {
         if (arc <= 180) g.angle(A, O, Bb, 2, 60);
         lab(g, A, "A", O); lab(g, Bb, "B", O); lab(g, Pp, "P", O);
         txt(g, P(1300, 360), `arc AB = ${deg(arc)}`); txt(g, P(1300, 430), `\u2220APB = ${deg(ins)}`, { bold: true });
-        U.read(`<p>The inscribed angle is half its intercepted arc: ${deg(ins)} = \u00bd \u00d7 ${deg(arc)}. Slide P along the circle and the angle stays put.${Math.abs(arc - 180) < 1.5 ? " AB is a diameter, so the angle is 90\u00b0." : ""}</p>`);
+        U.read(`<p>The inscribed angle is half its intercepted arc: ${deg(ins)} = \u00bd \u00d7 ${deg(arc)}. Slide P along the same arc and the angle stays put. Cross A or B onto the other arc and P intercepts the other arc, so the angle becomes the supplement.${Math.abs(arc - 180) < 1.5 ? " AB is a diameter, so the angle is 90\u00b0." : ""}</p>`);
       });
     }
   },
