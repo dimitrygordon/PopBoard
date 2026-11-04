@@ -22,7 +22,7 @@ export function mount({ stage, tools, slide, meta, reduce }) {
   stage.appendChild(layer);
   stage.classList.add("gx-host");
   let board = null, panel = null, inner = null, dead = false;
-  const key = `${meta.key || ""}/${slide.n}`;
+  const key = `${meta.q}.${meta.lesson}/${slide.n}`;
 
   const figInto = async (host, id) => {
     const m = await loadManifest();

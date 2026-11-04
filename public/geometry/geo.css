@@ -1,0 +1,77 @@
+/* Geometry course: black line art on white paper (inverted in dark mode), text only.
+   Shared by study-geometry.html (library) and study-geometry-story.html (storybook). */
+:root { --gx-paper: #ffffff; --gx-ink: #111111; --gx-dim: #444444; --gx-font: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+:root[data-theme="dark"] { --gx-paper: #121212; --gx-ink: #f2f2f2; --gx-dim: #c8c8c8; }
+/* unit pills and strips in the library: plain ink, no color coding */
+:root { --p101-m1: var(--gx-ink); --p101-m2: var(--gx-ink); --p101-m3: var(--gx-ink); --p101-m4: var(--gx-ink); --p101-m5: var(--gx-ink); --p101-m6: var(--gx-ink); --p101-m7: var(--gx-ink); --p101-m8: var(--gx-ink); --p101-m9: var(--gx-ink); --p101-m10: var(--gx-ink); --p101-m11: var(--gx-ink); --p101-m12: var(--gx-ink); }
+html[data-course="geometry"] .lib-card .strip { background: var(--gx-paper); color: var(--gx-ink); border-bottom: 2px solid var(--gx-ink); font-family: var(--gx-font); }
+html[data-course="geometry"] .lib-card img.cover { background: #fff; }
+:root[data-theme="dark"] .lib-card img.cover, :root[data-theme="dark"] .gx-cover-art img, :root[data-theme="dark"] img.gx-art { filter: invert(1); }
+
+/* ---- storybook stage ---- */
+html[data-course="geometry"] .stage { container-type: inline-size; background: var(--gx-paper); color: var(--gx-ink); }
+html[data-course="geometry"] .ac-stds.on-cover { display: none; }
+.gx-layer { position: absolute; inset: 0; color: var(--gx-ink); background: var(--gx-paper); font-family: var(--gx-font); overflow: hidden; }
+.gx-layer svg { display: block; width: 100%; height: 100%; color: var(--gx-ink); }
+.gx-tag { margin: 0 0 0.4em; font-size: max(13px, 1.25cqw); letter-spacing: 0.08em; color: var(--gx-dim); }
+.gx-head { margin: 0 0 0.5em; font-size: max(18px, 3cqw); line-height: 1.15; font-weight: 700; }
+.gx-text-only { display: none; }
+
+/* cover: title block left, unit rosette right */
+.gx-cover { display: grid; grid-template-columns: 44% 56%; align-items: center; }
+.gx-cover-text { padding: 0 3cqw 0 5cqw; }
+.gx-title { margin: 0 0 0.45em; font-size: max(22px, 4.6cqw); line-height: 1.05; font-weight: 700; }
+.gx-target { margin: 0 0 0.6em; font-size: max(14px, 1.9cqw); line-height: 1.3; }
+.gx-stds { margin: 0; font-size: max(13px, 1.3cqw); color: var(--gx-dim); }
+.gx-cover-art { height: 100%; display: flex; align-items: center; justify-content: center; }
+.gx-cover-art img { width: 100%; height: 100%; object-fit: cover; object-position: 30% 50%; }
+
+/* text pages: words left, figure right */
+.gx-text, .gx-nofig .gx-text { position: absolute; top: 0; bottom: 0; left: 0; width: 44%; padding: 4cqw 2.5cqw 3cqw 4.5cqw; overflow-y: auto; font-size: max(16px, 1.75cqw); line-height: 1.4; }
+.gx-nofig .gx-text { width: 100%; padding-right: 8cqw; columns: 2 26ch; column-gap: 4cqw; }
+.gx-nofig .gx-text .gx-tag, .gx-nofig .gx-text .gx-head { column-span: all; }
+.gx-body p, .gx-body li { margin: 0 0 0.6em; }
+.gx-body ul { margin: 0; padding-left: 1.2em; }
+.gx-lead { font-size: 1.08em; }
+.gx-hint { color: var(--gx-dim); font-size: 0.92em; }
+.gx-fig { position: absolute; top: 3%; bottom: 3%; right: 2%; width: 53%; display: flex; align-items: center; }
+.gx-fig .gx-board { height: auto; max-height: 100%; }
+.gx-fig img.gx-art { width: 100%; height: 100%; object-fit: contain; }
+
+/* interactive pages: the full board */
+.gx-gx .gx-head { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.gx-board-host { position: absolute; inset: 0; }
+.gx-board { touch-action: none; user-select: none; -webkit-user-select: none; }
+.gx-pt.gx-drag { cursor: grab; }
+.gx-pt.gx-drag.on { cursor: grabbing; }
+.gx-pt.gx-drag:focus { outline: none; }
+.gx-pt.gx-drag:focus-visible .ring { stroke-width: 4px; }
+
+/* phone-sized stage: title and figure only; the full text is in "Read this page" */
+@container (max-width: 699px) {
+  .gx-text { width: 40%; padding: 4cqw 2cqw 2cqw 4cqw; }
+  .gx-text .gx-body { display: none; }
+  .gx-text .gx-head { font-size: max(16px, 4.4cqw); }
+  .gx-text::after { content: "Full text below, in Read this page."; display: block; font-size: 13px; color: var(--gx-dim); }
+  .gx-fig { width: 60%; right: 0; }
+  .gx-nofig .gx-text { width: 100%; columns: auto; }
+  .gx-nofig .gx-text .gx-body { display: block; font-size: 13px; }
+  .gx-nofig .gx-text::after { content: none; }
+  .gx-cover { grid-template-columns: 50% 50%; }
+  .gx-title { font-size: max(20px, 5.4cqw); }
+  .gx-target { font-size: 13px; }
+}
+
+/* ---- tools panel controls ---- */
+.gx-tool .gx-ctl { display: grid; gap: 10px; margin: 8px 0; }
+.gx-tool .gx-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.gx-tool button[aria-pressed="true"] { box-shadow: inset 0 0 0 2px currentColor; font-weight: 700; }
+.gx-slider { display: grid; gap: 4px; font-size: 16px; }
+.gx-slider input { width: 100%; min-height: 32px; }
+.gx-read { font-size: 16px; line-height: 1.4; }
+.gx-read p { margin: 0.4em 0; }
+.gx-table { border-collapse: collapse; width: 100%; font-size: 16px; }
+.gx-table th, .gx-table td { text-align: left; padding: 4px 6px; border-bottom: 1px solid currentColor; vertical-align: top; }
+.gx-table th { font-weight: 600; }
+@media (max-width: 699px) { .gx-slider, .gx-read, .gx-table { font-size: 15px; } }
+@media (prefers-reduced-motion: reduce) { .gx-layer * { transition: none !important; animation: none !important; } }
