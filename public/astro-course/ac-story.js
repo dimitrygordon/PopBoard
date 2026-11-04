@@ -50,7 +50,19 @@ const ONPAGE = { rings: "Cosmic address rings (3D)", cannon: "Newton's cannon (3
   // D03 per-page scene modules (js/astro-scenes/d03)
   retrograde: "Copernicus's way (3D)", kepler2: "Kepler's 2nd law (3D)", venus: "Venus's phases (3D)", cannonball: "Newton's cannonball (3D)" };
 let v2 = null, popup = null, fxh = null, arth = null;
-const narrator = createNarrator($("narr"), C.root);
+// a course can ship text only (C.narration === false): no player, no audio fetches
+const narrator = C.narration === false ? { load() {}, stop() {} } : createNarrator($("narr"), C.root);
+// a course can draw each page in code (C.pageMount module: mount(stage, tools, slide, meta) -> { destroy })
+let pageMod = null, pageMounted = null, pageMountTok = 0;
+async function mountCoursePage(s) {
+  const tok = ++pageMountTok;
+  if (pageMounted && pageMounted.destroy) pageMounted.destroy();
+  pageMounted = null;
+  if (!C.pageMount) return;
+  try { pageMod = pageMod || await import(C.pageMount); } catch (e) { console.warn("page mount", e); return; }
+  if (tok !== pageMountTok) return;
+  try { pageMounted = pageMod.mount({ stage, tools: $("tools"), slide: s, meta, reduce: reduceMotion() }) || null; } catch (e) { console.warn("page mount", e); }
+}
 const sandboxKinds = () => [...new Set(Object.values(extra.sandboxes || {}))].filter((k) => SANDBOXES[k]);
 let sbKind = null;
 
@@ -204,9 +216,10 @@ function show(n, dir = 0) {
   $("pageLabel").textContent = `Page ${page} of ${total}`;
   $("prevBtn").disabled = page === 1; $("nextBtn").disabled = page === total;
   $("scrub").max = total; $("scrub").value = page;
-  $("readText").innerHTML = sv && sv.text ? `<div class="rich">${sv.text}</div>` : readableHtml(s);
+  $("readText").innerHTML = sv && sv.text ? `<div class="rich">${sv.text}</div>` : s.html ? `<div class="rich">${s.html}</div>` : readableHtml(s);
   narrator.load(meta.slug, s.n, $("readText"));
   $("tools").innerHTML = renderTools(s); wireTools(s);
+  mountCoursePage(s);
   for (const b of document.querySelectorAll("#tocList button")) b.setAttribute("aria-current", String(+b.dataset.page === page));
   store.set(PAGE_KEY, String(page));
   history.replaceState(null, "", pageUrl());
@@ -488,7 +501,7 @@ function comingSoon() {
   if (!meta.built) return comingSoon();
   const res = await fetch(base + "deck.json");
   deck = await res.json();
-  try { const r2 = await fetch(base + "v2/story.json"); if (r2.ok) v2 = await r2.json(); } catch (e) { v2 = null; }
+  if (C.v2 !== false) try { const r2 = await fetch(base + "v2/story.json"); if (r2.ok) v2 = await r2.json(); } catch (e) { v2 = null; }
   // layered art shipped as data (Physics 101): decks/<slug>/v2/art.json
   if (C.pageScenes) try { const ra = await fetch(base + "v2/art.json"); if (ra.ok) registerArt(meta.slug, await ra.json()); } catch (e) { /* art stays off */ }
   if (C.pageScenes) try { const rd = await fetch(base + "v2/drag.json"); if (rd.ok) dragSpecs = await rd.json(); } catch (e) { dragSpecs = {}; }

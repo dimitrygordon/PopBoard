@@ -1,0 +1,6 @@
+{
+  "_readme": "Swap in finished art without touching code. Paths are under public/geometry/. 'units' replaces a unit's cover (all its lessons), 'lessons' replaces one lesson's cover, 'course' replaces the course card. Page figures are swapped in public/geometry/art/manifest.json. Run node tools/geometry/build.mjs after editing.",
+  "course": "",
+  "units": {},
+  "lessons": {}
+}
