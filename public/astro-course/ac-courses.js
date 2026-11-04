@@ -59,6 +59,8 @@ export const COURSES = {
     unit: "lesson storybooks",
     // text only for now: no narration player
     narration: false,
+    // no v2 story overlays: skip the fetch
+    v2: false,
     // figures and interactives drawn in code on each page (geometry/geo-page.js)
     pageMount: "../geometry/geo-page.js",
     filterLabel: "Unit",

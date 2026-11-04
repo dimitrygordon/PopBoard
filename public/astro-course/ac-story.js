@@ -501,7 +501,7 @@ function comingSoon() {
   if (!meta.built) return comingSoon();
   const res = await fetch(base + "deck.json");
   deck = await res.json();
-  try { const r2 = await fetch(base + "v2/story.json"); if (r2.ok) v2 = await r2.json(); } catch (e) { v2 = null; }
+  if (C.v2 !== false) try { const r2 = await fetch(base + "v2/story.json"); if (r2.ok) v2 = await r2.json(); } catch (e) { v2 = null; }
   // layered art shipped as data (Physics 101): decks/<slug>/v2/art.json
   if (C.pageScenes) try { const ra = await fetch(base + "v2/art.json"); if (ra.ok) registerArt(meta.slug, await ra.json()); } catch (e) { /* art stays off */ }
   if (C.pageScenes) try { const rd = await fetch(base + "v2/drag.json"); if (rd.ok) dragSpecs = await rd.json(); } catch (e) { dragSpecs = {}; }

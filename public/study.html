@@ -211,6 +211,9 @@ input.icon-cell::placeholder{ color:var(--text-dimmer); font-size:17px; }
 .course-card.course-geometry img{filter:invert(1);}
 :root[data-theme="light"] .course-card.course-geometry{background:#ffffff; color:#111111; border-color:#d9cfbc;}
 :root[data-theme="light"] .course-card.course-geometry img{filter:none;}
+.course-card.course-geometry p{font-size:13px;}
+.course-card.course-geometry .course-count{font-size:13px;}
+@media (min-width:700px){ .course-card.course-geometry p, .course-card.course-geometry .course-count{font-size:16px;} }
 @media (max-width:700px){ .courses-grid{grid-template-columns:1fr;} .courses-band{padding:14px 12px 16px;} }
 </style>
 <link rel="stylesheet" href="astro-study.css?v=20261021k">

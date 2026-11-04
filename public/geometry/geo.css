@@ -77,3 +77,6 @@ html[data-course="geometry"] .ac-stds.on-cover { display: none; }
 .gx-table th { font-weight: 600; }
 @media (max-width: 699px) { .gx-slider, .gx-read, .gx-table { font-size: 15px; } }
 @media (prefers-reduced-motion: reduce) { .gx-layer * { transition: none !important; animation: none !important; } }
+
+/* ---- library page: text at least 16px on desktop ---- */
+@media (min-width:700px){ html[data-course="geometry"] .lib-card .strip { font-size: 16px; } }
