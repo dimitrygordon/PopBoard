@@ -18,7 +18,7 @@ export function mount({ stage, tools, slide, meta, reduce }) {
   const G = slide.geo;
   if (!G) return null;
   const layer = document.createElement("div");
-  layer.className = `gx-layer gx-${G.kind}`;
+  layer.className = `gx-layer gx-k-${G.kind}`;
   stage.appendChild(layer);
   stage.classList.add("gx-host");
   let board = null, panel = null, inner = null, dead = false;

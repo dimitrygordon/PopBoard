@@ -4,22 +4,22 @@
 import { P, polar, regular, mid, lerp, rotate, add, sub, mul, perp, dist } from "./geo-math.js";
 import { seg, poly, circle, arc, svgOpen } from "./geo-svg.js";
 
-const C = P(800, 450), K = 1.7; // centre; stroke scale so lines read 1, 2, 3 px on a 960-wide card
+const C = P(800, 450), K = 1.7; // center; stroke scale so lines read 1, 2, 3 px on a 960-wide card
 const S = { thin: { w: "thin" }, main: { w: "main" }, bold: { w: "bold" } };
 const ln = (a, b, o = S.main) => seg(a, b, o, K);
 const pg = (pts, o = S.main) => poly(pts, o, K);
 const ci = (c, r, o = S.main) => circle(c, r, o, K);
 
-// Unit 1: Seed and Flower of Life (circles of equal radius centred on the previous circles' crossings)
+// Unit 1: Seed and Flower of Life (circles of equal radius centered on the previous circles' crossings)
 function u1() {
   const r = 110; let out = ci(C, r * 3, S.bold);
-  const centres = [C];
+  const centers = [C];
   for (let ring = 1; ring <= 2; ring++) for (let i = 0; i < 6 * ring; i++) {
     const side = Math.floor(i / ring), step = i % ring;
     const a = polar(C, r * ring, 90 + side * 60), b = polar(C, r * ring, 90 + (side + 1) * 60);
-    centres.push(lerp(a, b, step / ring));
+    centers.push(lerp(a, b, step / ring));
   }
-  for (const c of centres) out += ci(c, r, dist(c, C) > r * 1.5 ? S.thin : S.main);
+  for (const c of centers) out += ci(c, r, dist(c, C) > r * 1.5 ? S.thin : S.main);
   return out;
 }
 // Unit 2: twelve points on a circle joined as the star {12/5}, with the construction circle and its hexagon
@@ -87,7 +87,7 @@ function u9() {
   }
   return out + ln(c, p, S.thin) + ci(c, u * Math.sqrt(18), S.thin);
 }
-// Unit 10: 12 circles of radius R/2 through the centre, centres on a circle (a classic rosette)
+// Unit 10: 12 circles of radius R/2 through the center, centers on a circle (a classic rosette)
 function u10() {
   const R = 360; let out = ci(C, R, S.bold);
   for (let i = 0; i < 12; i++) out += ci(polar(C, R / 2, i * 30), R / 2, i % 2 ? S.thin : S.main);
@@ -99,7 +99,7 @@ function u11() {
   for (let n = 3; n <= 12; n++) out += pg(regular(C, R, n, 90), n % 3 ? S.thin : S.main);
   return out;
 }
-// Unit 12: Metatron's cube: 13 circles of the fruit of life joined centre to centre
+// Unit 12: Metatron's cube: 13 circles of the fruit of life joined center to center
 function u12() {
   const r = 66; const cs = [C, ...regular(C, 2 * r, 6, 90), ...regular(C, 4 * r, 6, 90)];
   let out = "";
