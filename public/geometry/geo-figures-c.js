@@ -96,7 +96,7 @@ export const FIGS = {
     g.seg(P(40, base), P(960, base), { w: "bold" }); g.seg(P(160, base), eye); g.circle(P(160, 482), 18);
     g.seg(P(820, base), top, { w: "bold" }); g.circle(P(820, 200), 60);
     g.seg(eye, P(820, 500), { dash: true, w: "thin" }); g.seg(eye, top); g.angle(P(820, 500), eye, top, 1, 150);
-    txt(g, P(490, 535), "30 m", { small: true }); txt(g, P(330, 470), "40\u00b0", { small: true }); txt(g, P(130, 545), "1.5 m", { small: true, anchor: "end" });
+    txt(g, P(490, 535), "30 m", { small: true }); txt(g, P(330, 470), "40\u00b0", { small: true }); txt(g, P(130, 545), "1.5 m", { small: true, anchor: "end" }); txt(g, P(500, 680), "not to scale", { small: true });
   },
   mixed(g) {
     const A = P(150, 600), C = P(150 + 12 * 55, 600), B = P(150 + 12 * 55, 600 - 5 * 55);
@@ -105,7 +105,7 @@ export const FIGS = {
   lawsines(g) {
     const A = P(120, 580), B = P(880, 580), C = P(330, 160), F = P(330, 580);
     shape(g, [A, B, C], ["A", "B", "C"], { w: "bold" }); g.seg(C, F, { dash: true }); g.right(B, F, C);
-    txt(g, P(500, 620), "c", { italic: true }); txt(g, P(200, 360), "b", { italic: true }); txt(g, P(640, 360), "a", { italic: true }); txt(g, P(355, 400), "h", { italic: true });
+    txt(g, P(500, 620), "c", { italic: true }); txt(g, P(200, 360), "b", { italic: true }); txt(g, P(640, 360), "a", { italic: true }); txt(g, P(355, 400), "h = b sin A", { italic: true, anchor: "start" });
   },
   circlevocab(g) {
     const O = P(440, 350), r = 270; g.circle(O, r, { w: "bold" }); g.dot(O); lab(g, O, "O", P(O.x + 30, O.y - 40));

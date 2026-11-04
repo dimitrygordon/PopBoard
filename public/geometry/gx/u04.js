@@ -34,8 +34,8 @@ export const GX = {
           SSA: out.length === 2 ? "SSA gives <b>two different triangles</b> here, so it does not fix the triangle." : `SSA gives ${out.length} triangle${out.length === 1 ? "" : "s"} for these lengths. Drag C to make BC shorter than AB and see a second one.`,
           AAA: "AAA gives the same shape at any size, so it does not fix the triangle (only its shape)."
         }[mode];
-        txt(g, P(380, 820), `AB ${num(c / 100, 2)}  AC ${num(b / 100, 2)}  BC ${num(a / 100, 2)}  \u2220A ${deg(angA)}`, { small: true });
-        U.read(`<p>${verdict}</p>`);
+        // measurements go in the panel, not on the board, so they never cover point A on a phone
+        U.read(`<p>AB ${num(c / 100, 2)}, AC ${num(b / 100, 2)}, BC ${num(a / 100, 2)}, \u2220A ${deg(angA)}</p><p>${verdict}</p>`);
       });
     }
   },

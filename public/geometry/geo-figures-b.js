@@ -248,7 +248,7 @@ export const FIGS = {
   simarea(g) {
     const u = 80;
     g.poly(box(120, 300, 120 + u, 300 + u), { w: "bold" }); txt(g, P(160, 420), "1", { small: true });
-    boxGrid(g, 420, 140, 3, 3, 2 * u - 20); g.poly(box(420, 140, 420 + 3 * (2 * u - 20), 140 + 3 * (2 * u - 20)), { w: "bold" });
+    boxGrid(g, 420, 140, 3, 3, u); g.poly(box(420, 140, 420 + 3 * (u), 140 + 3 * (u)), { w: "bold" });
     txt(g, P(630, 610), "k = 3: area 9", { small: true });
   },
   kochstage(g) {
@@ -259,7 +259,7 @@ export const FIGS = {
     g.seg(P(40, ground), P(960, ground), { w: "bold" });
     g.seg(P(150, ground), P(150, 470), { w: "bold" }); g.circle(P(150, 450), 20); const s1 = P(250, ground);
     const bx = 560, bh = 450; g.poly(box(bx, ground - bh, bx + 120, ground), { w: "bold" });
-    const s2 = P(bx + 120 + (bh * 100) / 150, ground);
+    const s2 = P(bx + 120 + (bh * 100) / 170, ground);
     g.seg(P(150, 430), s1, { dash: true, w: "thin" }); g.seg(P(bx + 120, ground - bh), s2, { dash: true, w: "thin" });
     g.angle(P(150, 430), s1, P(40, ground), 1, 40); g.angle(P(bx + 120, ground - bh), s2, P(bx, ground), 1, 40);
     txt(g, P(200, 640), "shadow", { small: true }); txt(g, P((bx + 120 + s2.x) / 2, 640), "shadow", { small: true });

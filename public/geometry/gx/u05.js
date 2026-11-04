@@ -15,7 +15,7 @@ export const GX = {
         const a = M.angle(Bb, A, C), b = M.angle(A, Bb, C), e = M.angle(Bb, C, D);
         g.angle(C, A, Bb, 1, 60); g.angle(A, Bb, C, 2, 60); g.angle(D, C, Bb, 3, 60);
         txt(g, P(1300, 300), `\u2220A = ${deg(a)}`); txt(g, P(1300, 370), `\u2220B = ${deg(b)}`); txt(g, P(1300, 440), `exterior = ${deg(e)}`, { bold: true });
-        U.read(`<p>Exterior angle ${deg(e)} = ${deg(a)} + ${deg(b)}, so it is bigger than each remote interior angle on its own.</p>`);
+        U.read(`<p>Exterior angle ${deg(e)} is greater than \u2220A (${deg(a)}) and greater than \u2220B (${deg(b)}).</p>`);
       });
     }
   },
