@@ -109,3 +109,12 @@ test("spring: Tesla QA references, ideal-spring card", async () => {
   await mounts("spring", "mountSpring", "m13-l01", "p02");
   assert.match(story("m13-l01")["2"].sceneText.model, /^The simulation uses an ideal spring with k = 100 N\/m/);
 });
+test("lamps: Tesla C10 lumen values; no LED energy split number", async () => {
+  near(ph.ledWattsFor(), 800 / 115); assert.equal(ph.ledWattsFor().toFixed(2), "6.96");
+  assert.equal((ph.powerSaving() * 100).toFixed(1), "88.4");
+  assert.ok(ph.matched(776) && ph.matched(824) && !ph.matched(775));
+  await mounts("lamps", "mountLamps", "m19-l02", "p03");
+  const t = JSON.stringify(story("m19-l02")["3"].sceneText);
+  assert.doesNotMatch(t, /lm\/W[^"]*percent|percent[^"]*(light|heat)\b/i);
+  assert.doesNotMatch(readFileSync(new URL(P + "scenes/energy3d/lamps.js", import.meta.url), "utf8"), /efficien\w*\s*[:=]\s*0?\.\d|%/);
+});

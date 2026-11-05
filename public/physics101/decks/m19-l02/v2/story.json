@@ -24,7 +24,29 @@
   "3": {
    "layers": [],
    "title": "Your Investigation Toolkit",
-   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson.</p><p>Online, Applying Practices: Modeling Changes in Energy has you build a computational model to calculate the change in energy of one part of a system when you know the energy changes of the other parts and the energy flowing in and out. And as you go, ask yourself: what information from this lesson can help you answer the Unit and Module questions?</p>"
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you work through the readings and activities in this lesson.</p><p>Online, Applying Practices: Modeling Changes in Energy has you build a computational model to calculate the change in energy of one part of a system when you know the energy changes of the other parts and the energy flowing in and out. And as you go, ask yourself: what information from this lesson can help you answer the Unit and Module questions?</p>",
+   "testIt": {
+    "name": "Same light, less power",
+    "how": "Predict the LED wattage for 800 lm, then slide the LED power until the lumen meter matches."
+   },
+   "sceneText": {
+    "filament": "Filament: 60 W, 800 lm, 13.3 lm/W",
+    "ledRated": "LED: rated 115 lm/W",
+    "predict": "To make 800 lm, the LED will need...",
+    "choices": [
+     "Less than 60 W",
+     "60 W",
+     "More than 60 W"
+    ],
+    "wattLabel": "Your LED wattage prediction (W)",
+    "sliderLabel": "LED power",
+    "meter": "LED {W} W gives {lm} lm; filament gives {f} lm. Match band 776 to 824 lm.",
+    "matched": "Matched. 800 lm needs about {need} W: {less} percent less input power. You predicted {guess} W.",
+    "explainBtn": "Explain",
+    "explain": "Both lamps give about the same useful visible light, but the LED needs far less electrical input power to do it.",
+    "card": "Matched lumens compare useful visible output as weighted for human vision. They do not determine radiometric energy efficiency.",
+    "noWebgl": "This 3D lamp comparison needs WebGL, which this browser does not have."
+   }
   },
   "4": {
    "layers": [],

@@ -137,3 +137,11 @@ export const launchKE = (x, s = SPRING) => elasticPE(x, s.k) - s.m * g * x * Mat
 export const apexKE = (x, s = SPRING) => launchKE(x, s) * Math.cos(rad(s.angle)) ** 2; // no-air model
 export const apexHeight = (x, s = SPRING) => LAUNCH_H + (launchKE(x, s) * Math.sin(rad(s.angle)) ** 2) / (s.m * g);
 export function bellExtension(s = SPRING) { let lo = 0, hi = s.xMax; for (let i = 0; i < 60; i++) { const mid = (lo + hi) / 2; if (apexHeight(mid, s) < s.bell) lo = mid; else hi = mid; } return lo; }
+
+// ---------- Lamps (Sim 7), Tesla C10: lumens only; no radiometric energy split ----------
+export const LAMPS = Object.freeze({ filament: Object.freeze({ W: 60, lm: 800 }), led: Object.freeze({ efficacy: 115 }) }); // lm/W, never a percent
+export const MATCH_BAND = Object.freeze([776, 824]);
+export const lumens = (lamp, W) => (lamp === "filament" ? (LAMPS.filament.lm / LAMPS.filament.W) * W : LAMPS.led.efficacy * W);
+export const ledWattsFor = (lm = 800) => lm / LAMPS.led.efficacy;
+export const powerSaving = (lm = 800) => 1 - ledWattsFor(lm) / LAMPS.filament.W;
+export const matched = (lm) => lm >= MATCH_BAND[0] && lm <= MATCH_BAND[1];
