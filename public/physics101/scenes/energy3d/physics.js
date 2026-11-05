@@ -44,3 +44,34 @@ export function ballState(h0, e, t) {
     start += dur;
   }
 }
+
+// ---------- Grid chain (Every Joule Sim 8), Tesla W1 correction applied ----------
+// Only Tesla-cleared values (tesla-energy-check.md W1, C11, O3). The transformer has NO separate factor:
+// its heating is inside the aggregate grid loss, so the old 0.99 multiplier is gone and nothing is counted twice.
+export const GRID_RETAINED = 1 - 28456.6 / 323031.1; // 0.911907553, DUKES losses / supply
+export const LAMP_W = 7;
+// plant: station efficiencies already include the generator (C11), so no second generator factor.
+export const SOURCES = Object.freeze({
+  gas: Object.freeze({ stages: [["plant", 0.4799]], badge: null }),
+  coal: Object.freeze({ stages: [["plant", 0.3464]], badge: "historical" }),
+  nuclear: Object.freeze({ stages: [["plant", 0.3919]], badge: null }),
+  hydro: Object.freeze({ stages: [["plant", 0.9]], badge: null }),
+  wind: Object.freeze({ stages: [["rotor", 0.5], ["generator", 0.985]], badge: null }),
+  solar: Object.freeze({ stages: [["module", 0.227]], badge: "incomplete" }), // no inverter: Tesla O3
+});
+
+// Every stage once: plant (or rotor, generator, module), then the single aggregate grid stage.
+export function gridChain(source, input = 1) {
+  const s = SOURCES[source];
+  const stages = [...s.stages, ["grid", GRID_RETAINED]];
+  let e = input; const out = [];
+  for (const [name, eff] of stages) { const kept = e * eff; out.push({ name, eff, in: e, out: kept, loss: e - kept }); e = kept; }
+  const overall = e / input;
+  return { stages: out, delivered: e, losses: out.reduce((a, x) => a + x.loss, 0), overall, input, badge: s.badge };
+}
+export const overallEfficiency = (src) => gridChain(src).overall;
+export const sourceInputFor = (src, pLamp = LAMP_W) => pLamp / overallEfficiency(src);
+
+// Relative line heating at transmission voltage V for fixed power: P_loss = I^2 R with I = P/V, so P_loss is proportional to 1/V^2.
+// Returned relative to refV only; no absolute value is shown (Tesla cleared no line-loss numbers for this sim).
+export const relativeI2R = (V, refV) => (refV / V) ** 2;

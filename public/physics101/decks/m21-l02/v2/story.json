@@ -92,7 +92,34 @@
   "11": {
    "layers": [],
    "title": "Transformers",
-   "text": "<h3>Transformers</h3><p class=\"p101-def\">Transformers are devices that increase or decrease potential differences with relatively little waste of energy.</p><p>You've probably seen metal cylinders mounted on utility poles, like those in Figure 14. Inside each one is a transformer. Transformers raise or lower potential differences with relatively little wasted energy. These ones lower high voltages to usable levels before electrical energy enters your home.</p><p>Only alternating current can be sent through a transformer. Direct current can't pass through one, and you're about to see why.</p>"
+   "text": "<h3>Transformers</h3><p class=\"p101-def\">Transformers are devices that increase or decrease potential differences with relatively little waste of energy.</p><p>You've probably seen metal cylinders mounted on utility poles, like those in Figure 14. Inside each one is a transformer. Transformers raise or lower potential differences with relatively little wasted energy. These ones lower high voltages to usable levels before electrical energy enters your home.</p><p>Only alternating current can be sent through a transformer. Direct current can't pass through one, and you're about to see why.</p>",
+   "testIt": {
+    "name": "Power station to lamp",
+    "how": "Rank the six sources, pick one, then run the chain and watch losses peel off."
+   },
+   "sceneText": {
+    "sourceLabel": "Source",
+    "src_gas": "Gas",
+    "src_coal": "Coal",
+    "src_nuclear": "Nuclear",
+    "src_hydro": "Hydro",
+    "src_wind": "Wind",
+    "src_solar": "Solar",
+    "badge_incomplete": "INCOMPLETE CHAIN",
+    "badge_historical": "historical (2023)",
+    "readout": "Overall {overall}; source input for a 7 W lamp: {input} W. Grid retained 0.912 (from 28456.6/323031.1 GWh). Transformer heating is included in the grid loss. No separate factor.",
+    "voltLabel": "Transmission voltage (kV)",
+    "voltOut": "{kv} kV: line heating is {rel} times the 400 kV case (I^2R, same power).",
+    "predict": "Before running: which source gets the largest fraction of its input to the lamp?",
+    "run": "Run",
+    "stop": "Stop",
+    "explainBtn": "Explain",
+    "right": "Good prediction. Watch how few packets peel off.",
+    "wrong": "Run each source and compare the overall fractions.",
+    "explain": "Series efficiencies multiply, and each loss is counted once. Hydro (0.90 x 0.912 = 0.8207) wastes the smallest fraction of its defined input in this scenario. THIS MODEL, THESE INPUTS: not a claim about the best source or its emissions.",
+    "scenario": "This mixed-year illustrative scenario compares the displayed stages. Solar excludes an unspecified inverter and is therefore not a complete chain. Coal is a historical comparison.",
+    "noWebgl": "This 3D power-grid model needs WebGL, which this browser does not have."
+   }
   },
   "12": {
    "layers": [],

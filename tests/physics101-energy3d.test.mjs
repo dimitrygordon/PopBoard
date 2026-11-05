@@ -29,3 +29,28 @@ test("bounce.js and p08 wrapper import; sceneText is present", async () => {
   assert.ok(s.testIt && s.sceneText.explain.includes("mechanical-energy decrease = thermal-energy increase + sound energy carried away"));
   assert.doesNotMatch(JSON.stringify(s.sceneText), /\d+(\.\d+)?\s*%/);
 });
+
+test("grid: stage outputs plus losses sum to input, each stage once, no 0.99", () => {
+  for (const k of Object.keys(ph.SOURCES)) {
+    const c = ph.gridChain(k, 100);
+    near(c.delivered + c.losses, 100, 1e-9);
+    near(c.stages.reduce((a, s) => a * s.eff, 1), c.overall, 1e-12);
+    for (let i = 1; i < c.stages.length; i++) near(c.stages[i].in, c.stages[i - 1].out);
+    assert.equal(c.stages.filter((s) => s.name === "grid").length, 1, k);
+    assert.ok(!c.stages.some((s) => s.eff === 0.99 || /transformer/.test(s.name)), k);
+  }
+});
+test("grid: Tesla W1 corrected overall and 7 W inputs", () => {
+  const want = { gas: [0.437624, 16.0], coal: [0.315885, 22.16], nuclear: [0.357377, 19.59], hydro: [0.820717, 8.53], wind: [0.449114, 15.59], solar: [0.207003, 33.82] };
+  for (const [k, [o, w]] of Object.entries(want)) { near(ph.overallEfficiency(k), o, 1e-6); near(ph.sourceInputFor(k), w, 0.005); }
+  near(ph.GRID_RETAINED, 0.911907553, 1e-9);
+  assert.equal(ph.SOURCES.solar.badge, "incomplete");
+  near(ph.relativeI2R(200, 400), 4);
+});
+test("grid.js and m21-l02 p11 wrapper import; badge and O3 text present", async () => {
+  assert.equal(typeof (await import(P + "scenes/energy3d/grid.js")).mountGrid, "function");
+  assert.equal(typeof (await import(P + "scenes/m21-l02/p11.js")).default, "function");
+  const s = JSON.parse(readFileSync(new URL(P + "decks/m21-l02/v2/story.json", import.meta.url))).slides["11"];
+  assert.equal(s.sceneText.badge_incomplete, "INCOMPLETE CHAIN");
+  assert.ok(s.sceneText.scenario.startsWith("This mixed-year illustrative scenario"));
+});
