@@ -187,6 +187,34 @@ input.icon-cell::placeholder{ color:var(--text-dimmer); font-size:17px; }
   view-transition-name: study-moon;
 }
 .study-portal-moon svg { width: 22px; height: 22px; display: block; }
+/* ---------- Courses band: the storybook courses, above the module search ---------- */
+.courses-band{max-width:1100px; margin:0 auto 34px; padding:18px 20px 22px; border-radius:18px; background:#1F1D1A; border:1.5px solid #2E2A25;}
+.courses-band h2{margin:0 0 14px; font-family:'Oswald',sans-serif; font-weight:600; font-size:18px; letter-spacing:0.12em; text-transform:uppercase; color:#F2EAD8;}
+.courses-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:18px;}
+.course-card.course-friction{background:#2a2620; border-color:#3A352E;}
+.course-card{display:flex; flex-direction:column; border-radius:16px; overflow:hidden; text-decoration:none; background:#1F1D1A; color:#F2EAD8; border:1.5px solid #3A352E; transition:transform .15s, box-shadow .15s;}
+.course-card:hover{transform:translateY(-3px); box-shadow:0 10px 24px rgba(0,0,0,0.35);}
+.course-card img{display:block; width:100%; aspect-ratio:16/9; object-fit:cover;}
+.course-card .course-body{padding:16px 18px 18px; display:flex; flex-direction:column; gap:6px; flex:1;}
+.course-card h3{margin:0; font-family:'Oswald',sans-serif; font-weight:600; font-size:22px; letter-spacing:0.04em;}
+.course-card p{margin:0; font-size:14px; line-height:1.45; opacity:0.85;}
+.course-card .course-count{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.06em; opacity:0.75;}
+.course-card.course-astronomy{border-color:#1f2a6b; box-shadow:inset 0 -4px 0 #3a4fb8;}
+.course-dots{display:flex; flex-wrap:wrap; gap:5px; margin-top:auto; padding-top:8px;}
+.course-dots i{width:9px; height:9px; border-radius:50%; display:block;}
+:root[data-theme="light"] .courses-band{background:transparent; border-color:#d9cfbc;}
+:root[data-theme="light"] .courses-band h2{color:#1f1a14;}
+:root[data-theme="light"] .course-card.course-astronomy{background:#1f2a6b; color:#F2EAD8;}
+:root[data-theme="light"] .course-card.course-physics101{background:#F4EDDC; color:#2f2b26; border-color:#d9cfbc;}
+:root[data-theme="light"] .course-card.course-friction{background:#FBF6EA; color:#2f2b26; border-color:#d9cfbc;}
+.course-card.course-geometry{background:#121212; border-color:#3A352E;}
+.course-card.course-geometry img{filter:invert(1);}
+:root[data-theme="light"] .course-card.course-geometry{background:#ffffff; color:#111111; border-color:#d9cfbc;}
+:root[data-theme="light"] .course-card.course-geometry img{filter:none;}
+.course-card.course-geometry p{font-size:13px;}
+.course-card.course-geometry .course-count{font-size:13px;}
+@media (min-width:700px){ .course-card.course-geometry p, .course-card.course-geometry .course-count{font-size:16px;} }
+@media (max-width:700px){ .courses-grid{grid-template-columns:1fr;} .courses-band{padding:14px 12px 16px;} }
 </style>
 <link rel="stylesheet" href="astro-study.css?v=20261021k">
 <link rel="stylesheet" href="portal-moon.css?v=dv2">
@@ -199,6 +227,27 @@ input.icon-cell::placeholder{ color:var(--text-dimmer); font-size:17px; }
   <a id="studyBackBtn" class="study-back-btn" href="./"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>Back</a>
   <div class="brand"><span class="study-portal-moon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></svg></span><h1>Study</h1></div>
   <div class="subtitle">POPBOARD MODULE LIBRARY</div>
+  <section id="coursesBand" class="courses-band" aria-labelledby="coursesHeading">
+    <h2 id="coursesHeading">Courses</h2>
+    <div class="courses-grid">
+      <a class="course-card course-astronomy" data-course="astronomy-course" data-paper="keep" href="study-astronomy-course.html">
+        <img src="astro-course/covers/d01.webp" alt="" loading="lazy" width="960" height="540">
+        <div class="course-body"><h3>Astronomy Course</h3><p>Earth and Space Science as hand-drawn storybooks, deck by deck.</p><span class="course-count" data-count="astronomy"></span></div>
+      </a>
+      <a class="course-card course-physics101" data-course="physics101" href="study-physics101.html">
+        <img src="physics101/cover.webp" alt="" loading="lazy" width="960" height="477">
+        <div class="course-body"><h3>Physics 101</h3><p>Every Physics 101 lesson as a hand-drawn storybook, module by module.</p><span class="course-count" data-count="physics101"></span><div class="course-dots" aria-hidden="true"></div></div>
+      </a>
+      <a class="course-card course-geometry" data-course="geometry" href="study-geometry.html">
+        <img src="geometry/covers/course.svg" alt="" loading="lazy" width="1600" height="900">
+        <div class="course-body"><h3>Geometry</h3><p>A full year of geometry: 180 lessons in 12 units, with constructions and 44 interactives.</p><span class="course-count" data-count="geometry"></span></div>
+      </a>
+      <a class="course-card course-friction" data-course="friction-lesson" href="study-friction-lesson.html">
+        <img src="friction-lesson/art/cover_jasper_push.webp" alt="" loading="lazy" width="900" height="506">
+        <div class="course-body"><h3>Dimitry's Friction Lesson</h3><p>The friction lab lesson as a self-playing colored-pencil presentation, 26 pages.</p><span class="course-count">26 PAGES</span></div>
+      </a>
+    </div>
+  </section>
   <div class="search-wrap">
     <span class="search-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
     <input id="searchInput" type="text" placeholder="Search modules..." autocomplete="off">
@@ -752,6 +801,14 @@ var BUILTIN_MODULES = [
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" stroke-dasharray="2 3"/><circle cx="11" cy="12" r="1.6"/><circle cx="13.2" cy="11" r="1.6"/><circle cx="12.4" cy="13.4" r="1.6"/><circle cx="18" cy="7" r="0.8"/></svg>'
   },
   {
+    id: "periodic-table-studio",
+    kind: "builtin",
+    name: "Periodic Table Studio",
+    description: "An interactive periodic table of all 118 elements. Hover any element to see its mass, configuration and an animated Bohr atom, then switch modes: slide the temperature from absolute zero to the surface of the Sun and watch elements melt and boil, color the table by trends like electronegativity and atomic radius, scrub through history to see when each element was discovered, and color by radioactive decay. Open an element for its isotopes, a Bohr model in 2D or 3D, and rotatable quantum orbital clouds for every s, p, d and f subshell.",
+    file: "study-periodic-table-studio.html",
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="5" height="5" rx="1"/><rect x="16.5" y="4" width="5" height="5" rx="1"/><rect x="2.5" y="10.5" width="5" height="5" rx="1"/><rect x="9.5" y="10.5" width="5" height="5" rx="1"/><rect x="16.5" y="10.5" width="5" height="5" rx="1"/><path d="M5 19.5h14"/></svg>'
+  },
+  {
     id: "circuit-builder",
     kind: "builtin",
     name: "Circuit Builder",
@@ -771,9 +828,25 @@ var BUILTIN_MODULES = [
     id: "physics101",
     kind: "builtin",
     name: "Physics 101",
-    description: "The Physics 101 course as hand-drawn storybooks, one for every lesson, grouped by module from A Physics Toolkit to Motion in Two Dimensions. Search lessons by title and open each one as a storybook. The lessons are being written now, so each one is marked coming soon until its pages are ready.",
+    description: "The Physics 101 course as colored-pencil storybooks: 24 modules and every lesson, from A Physics Toolkit through motion, forces, energy, momentum, gravity, waves, light, electricity, magnetism, and nuclear physics. Open any lesson as an interactive storybook with narrated pages, Test it sandboxes you can drag and play with, Study Questions with worked solutions, and Try it links to hands-on simulations. Use Practice Questions to find problems by module, and brush up with the Math Skills set. Search lessons by title, or filter by module.",
     file: "study-physics101.html",
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5.5C5.5 4 8.5 4 12 6c3.5-2 6.5-2 9-0.5V19c-2.5-1.5-5.5-1.5-9 0.5-3.5-2-6.5-2-9-0.5Z"/><path d="M12 6v13.5"/><path d="M5.5 14.5c1-3 2.5-4.5 4-4.5"/><path d="M14.5 15l4-4M18.5 11h-2.5M18.5 11v2.5"/></svg>'
+  },
+  {
+    id: "geometry",
+    kind: "builtin",
+    name: "Geometry",
+    description: "A full-year high school Geometry course as black line-art storybooks: 12 units and 180 lessons, from Seeing and Reasoning through constructions, rigid motions, congruence, parallel lines, quadrilaterals, area and Pythagoras, similarity, trigonometry, circles, regular polygons, and solids. Every lesson has a key idea with an exact figure and a Check yourself question, and 44 lessons add an interactive: compass and straightedge constructions you step through, and sandboxes with points you can drag. Search lessons by title, or filter by unit.",
+    file: "study-geometry.html",
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l-6 17M12 3l6 17"/><circle cx="12" cy="3.5" r="1.2"/><path d="M7.5 15.5a8 8 0 0 0 9 0"/></svg>'
+  },
+  {
+    id: "friction-lesson",
+    kind: "builtin",
+    name: "Dimitry's Friction Lesson",
+    description: "The friction lab lesson as a self-playing colored-pencil presentation: 26 animated pages from lab groups and materials through hands-on asperities, graphing kinetic friction and deriving the equation, static friction synced to a real video, the Exit Ticket, and seven friction mysteries. Pages play on their own, with narration on or off, auto-advance, hide text, and full screen for the projector.",
+    file: "study-friction-lesson.html",
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="9" height="6" rx="1"/><path d="M2 18h20"/><path d="M13 12h7M17.5 9.5 20 12l-2.5 2.5"/></svg>'
   }
 ];
 
@@ -935,8 +1008,34 @@ function resolveIconHtml(iconType, iconValue) {
   return g.svg;
 }
 
+/* ============================================================
+   Courses band: the storybook courses sit above the module search
+   in their own section, so the module grid below skips them.
+   ============================================================ */
+var COURSE_IDS = ["astronomy-course", "physics101", "geometry", "friction-lesson"];
+// Physics 101 module accents M1 to M24, matching --p101-m1..24 in physics101/p101.css.
+var P101_ACCENTS = ["#E2B654","#B5C7A3","#D98B6A","#8FB3D9","#B9A7D1","#8CC5BE","#7F8FC9","#B0A060","#E0A0A0","#A8B86E","#EBC9A0","#9C8C78","#6E9CA8","#B07F9C","#7A9E7E","#AA5B5E","#4AC7E4","#677C3F","#9C7040","#72748E","#36A896","#3583AD","#8A669E","#36815A"];
+
+function setupCoursesBand() {
+  document.querySelectorAll("#coursesBand .course-card").forEach(function(a) {
+    var m = BUILTIN_MODULES.find(function(b) { return b.id === a.dataset.course; });
+    if (m) { a.href = moduleOpenHref(m.file, location.search); a.target = "_blank"; a.rel = "noopener"; }
+  });
+  var dots = document.querySelector("#coursesBand .course-dots");
+  P101_ACCENTS.forEach(function(color) {
+    var dot = document.createElement("i");
+    dot.style.background = color;
+    dots.appendChild(dot);
+  });
+  [["astronomy", "./astro-course/ac-catalog.js", "lessons"], ["physics101", "./physics101/p101-catalog.js", "lessons"], ["geometry", "./geometry/geo-catalog.js", "lessons"]].forEach(function(c) {
+    import(c[1]).then(function(mod) {
+      document.querySelector('[data-count="' + c[0] + '"]').textContent = mod.DECKS.length + " " + c[2];
+    }).catch(function() {});
+  });
+}
+
 function buildCombinedList() {
-  var builtins = BUILTIN_MODULES.map(function(m) {
+  var builtins = BUILTIN_MODULES.filter(function(m) { return COURSE_IDS.indexOf(m.id) === -1; }).map(function(m) {
     return { kind: "builtin", id: m.id, name: m.name, description: m.description, file: m.file, iconHtml: m.icon };
   });
   var custom = customLinks.map(function(link) {
@@ -1162,6 +1261,7 @@ linkFormSaveBtn.onclick = async function() {
    ============================================================ */
 document.getElementById("searchInput").addEventListener("input", function(e) { render(e.target.value); });
 
+setupCoursesBand();
 render(""); // built-ins (and the add-tile, in teacher mode) show immediately, not blocked on network
 
 (async function boot() {

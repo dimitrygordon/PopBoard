@@ -104,8 +104,8 @@ test("pages name the course, reuse the engine, and have module filters", () => {
   // module buttons are built from the catalog (ac-library-ui.js), so the page only carries "All"
   assert.match(lib, /class="lib-filters"[^>]*data-auto="module"/);
   assert.match(lib, /id="q" type="search"/);
-  // one engine: no forked reader or library under physics101/
-  assert.deepEqual(readdirSync(join(PUB, "physics101")).filter((f) => f.endsWith(".js")), ["p101-catalog.js"]);
+  // one engine: no forked reader or library under physics101/ (sq-*.js are Study Questions, not a reader)
+  assert.deepEqual(readdirSync(join(PUB, "physics101")).filter((f) => f.endsWith(".js")), ["cq-account.js", "cq-app.js", "cq-core.js", "p101-catalog.js", "sq-core.js", "sq-page.js", "sq-tab.js", "tryit.js", "worked.js"]);
 });
 
 test("Study library links to Physics 101 next to the Astronomy Course", () => {
@@ -173,4 +173,22 @@ test("course index has exactly one module filter per module, each tinted with it
     assert.ok(hex, `accent for module ${m}`);
     if (leo[m]) assert.equal(hex[1].toUpperCase(), leo[m]);
   }
+});
+
+test("Leo's lesson covers: one pack per module, a 960x540 webp for every lesson, no loose cover files", async () => {
+  const { COURSES } = await import("../public/astro-course/ac-courses.js");
+  const C = COURSES.physics101;
+  assert.equal(C.covers, true);
+  const dir = join(PUB, "physics101", "covers");
+  assert.deepEqual(readdirSync(dir).filter((f) => !/^covers-m\d\d\.json$/.test(f)), []);
+  let n = 0;
+  for (const d of DECKS) {
+    const pack = JSON.parse(readFileSync(join(PUB, "physics101", C.coverPack(d)), "utf8"));
+    const e = pack[d.slug]; assert.ok(e && e.data, d.slug);
+    const b = Buffer.from(e.data, "base64");
+    assert.equal(b.toString("ascii", 0, 4), "RIFF", d.slug); assert.equal(b.toString("ascii", 8, 12), "WEBP", d.slug);
+    n++;
+  }
+  assert.equal(n, 73);
+  assert.match(readFileSync(join(PUB, "astro-course", "ac-library-ui.js"), "utf8"), /function fillCovers\(\)/);
 });

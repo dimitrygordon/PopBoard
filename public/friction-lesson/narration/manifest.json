@@ -1,0 +1,109 @@
+{
+  "voice": "zagan",
+  "pages": {
+    "1": {
+      "text": "Welcome to the friction lab. Today you are the scientists. You'll pull carts across the floor, measure the force it takes, and find a number that describes how two surfaces grip each other.",
+      "audio": "p1.mp3"
+    },
+    "2": {
+      "text": "Here's what you'll be able to do by the end of class. First, measure friction force and normal force. Second, find the coefficient of kinetic friction, mu k, from a graph. Third, measure the coefficient of static friction, mu s, and compare it with mu k.",
+      "audio": "p2.mp3"
+    },
+    "3": {
+      "text": "First, get into groups of two to four. Three is ideal: one person pulls, one reads the spring scale, and one records the data.",
+      "audio": "p3.mp3"
+    },
+    "4": {
+      "text": "Here are your materials. Carpet, so use the floor. A spring scale that reads from zero to twenty newtons. A mass set with one thousand, five hundred, and two hundred grams. And your cart, so choose a station cart.",
+      "audio": "p4.mp3"
+    },
+    "5": {
+      "text": "Each station has a different surface material on the bottom of its cart. Before you test anything, predict. Which material will need the most force to pull? Which will need the least? Write down your predictions and why.",
+      "audio": "p5.mp3"
+    },
+    "6": {
+      "text": "Why is there friction at all? Drag the magnifier over the block. Up close, even smooth surfaces are covered in tiny bumps called asperities. Now drop weights on the block. The heavier the load, the more the bumps squish together, and the more they touch. More contact means more friction.",
+      "audio": "p6.mp3"
+    },
+    "7": {
+      "text": "Here's how we measure friction. On a level surface, the normal force equals m g, the weight. Pull at constant speed, so the spring scale holds a constant force reading. At constant velocity, the forces balance, so the friction force equals your pull.",
+      "audio": "p7.mp3"
+    },
+    "8": {
+      "text": "You'll run three tests. Test A uses the cart plus one thousand grams. Test B adds five hundred grams. Test C adds two hundred more. For each test, find the normal force and read the friction force on the spring scale while you pull at constant speed.",
+      "audio": "p8.mp3"
+    },
+    "9": {
+      "text": "Now graph your data, with normal force on the x axis and friction force on the y axis. Plot your points, then draw a best fit line. Zoom out, and the line goes through zero. That's a directly proportional relationship: friction force is proportional to the normal force. To turn that into an equation, add a constant: friction force equals mu k times the normal force. Mu k is the coefficient of kinetic friction. Solve for mu k: it's the friction force divided by the normal force. You can also use y equals m x plus b. Here y is friction force, x is normal force, and b is zero. So what does the slope of your graph tell you?",
+      "audio": "p9.mp3"
+    },
+    "10": {
+      "text": "Your mu k belongs to a pair of specific surface materials, your cart's bottom and the carpet. Add yours to the board!",
+      "audio": "p10.mp3"
+    },
+    "11": {
+      "text": "Did you notice something? Watch the spring scale right before the cart starts to move. The reading climbs higher, then drops once the cart is sliding.",
+      "audio": "p11.mp3"
+    },
+    "12": {
+      "text": "Let's measure that peak. Run three trials. For each one, pull slowly and watch for the highest reading right before the cart breaks free. Record it under the trial button. Then compare your three peaks on the chart.",
+      "audio": "p12.mp3"
+    },
+    "13": {
+      "text": "Static friction is a little different. It grows to match your pull, up to a maximum. So static friction is less than or equal to mu s times F N. At the peak, static friction reaches that maximum, so mu s equals your peak reading divided by the normal force. Now compare: is your mu s bigger or smaller than your mu k?",
+      "audio": "p13.mp3"
+    },
+    "14": {
+      "text": "Here's the video and its force graph together. In the static zone, the cart isn't moving, and friction grows to match the pull. At the threshold, friction reaches its maximum and the cart breaks free. In the kinetic zone, the cart slides. The reading drops for a moment, then settles at a steady, lower value.",
+      "audio": "p14.mp3"
+    },
+    "15": {
+      "text": "Here's our leaderboard. Which material required the most force of friction? The least? Do you notice any patterns in how mu k compares to mu s for the same material type?",
+      "audio": "p15.mp3"
+    },
+    "16": {
+      "text": "Time for the exit ticket. This one is individual. Tear off the exit ticket strip and work on your own.",
+      "audio": "p16.mp3"
+    },
+    "17": {
+      "text": "If we have time, let's try one with numbers. A 3.0 kilogram box, with mu s of 0.35 and mu k of 0.25, is pushed horizontally on a level surface. First, the normal force: 3.0 times 9.8 is 29.4 newtons. The maximum static friction is 0.35 times 29.4, about 10.3 newtons. Push with 6 newtons, and the box doesn't move. Static friction is 6 newtons, not 10.3, because it only matches your push. Now push with 12 newtons. That's more than the maximum, so the box slides. Kinetic friction is 0.25 times 29.4, which is 7.35 newtons, and the net force is 12 minus 7.35, or 4.65 newtons.",
+      "audio": "p17.mp3"
+    },
+    "18": {
+      "text": "Before we look at any answers, collect tickets first! Pass every exit ticket to the front.",
+      "audio": "p18.mp3"
+    },
+    "19": {
+      "text": "Let's check. Question 1: the normal force is 2 times 9.8, or 19.6 newtons. The slope is mu k, so sliding friction is 0.3 times 19.6, about 5.9 newtons. Question 2: the most static friction can be is 0.4 times 19.6, about 7.8 newtons. Question 3: it's harder to start the box moving. Static friction can grow higher than kinetic friction, because resting contacts have time to bond more strongly. You can see it on the graph: the peak sits above the flat sliding level. And on the front of the ticket, any honest answer counts.",
+      "audio": "p19.mp3"
+    },
+    "20": {
+      "text": "Here's a friction mystery. Pencil lead is graphite: stacked sheets of carbon that slide over each other easily, so graphite works as a dry lubricant. Try it: shade a patch of paper with a soft pencil, then slide a coin across bare paper and across the graphite. Which is easier? And wonder this: why might atoms that line up like egg-carton bumps grip more than atoms that don't line up?",
+      "audio": "p20.mp3"
+    },
+    "21": {
+      "text": "A gecko can run straight up glass. Each foot carries about half a million tiny hairs called setae, and each one splits into hundreds of even tinier tips. Weak attractions at all those contact points add up. Try it: stick a sticky note to a window. Pull it straight off, then peel it from one corner. Geckos peel their toes to let go. So why does more real contact area mean more grip?",
+      "audio": "p21.mp3"
+    },
+    "22": {
+      "text": "A violin bow, squeaky sneakers on a gym floor, and a creaking door all make sound for the same reason. The surfaces stick, then slip, then stick again, many times a second. Try pulling an eraser slowly across a desk with a rubber band, and watch it jerk forward in steps. Here's the wonder: stick-slip happens when friction drops as sliding starts. Why does that make the motion jerky?",
+      "audio": "p22.mp3"
+    },
+    "23": {
+      "text": "Shuffle the pages of two phone books together, and they become nearly impossible to pull apart. On MythBusters, it took two military vehicles and about 8,000 pounds of force. Try it with two old notebooks, 50 pages or more, then with only 10. Now wonder: pulling on the spines squeezes the pages together. Why does that make friction grow?",
+      "audio": "p23.mp3"
+    },
+    "24": {
+      "text": "You may have heard that skate blades melt ice by pressure. That effect is far too small to explain it. What matters is a thin layer of loosely bound, mobile water molecules at the surface, plus heat from the sliding itself, and scientists still debate exactly why it forms. Try sliding an ice cube straight from the freezer, then one that has sat out for a minute. And wonder: very cold ice feels less slippery than ice near zero degrees Celsius. Why might that be?",
+      "audio": "p24.mp3"
+    },
+    "25": {
+      "text": "When two different materials touch and then separate, charge moves from one to the other. Charge is moved, not created. Try it: rub a balloon on your hair or a wool sweater, then hold it near tiny bits of paper or a thin stream of water. How could you test that charge was moved and not created?",
+      "audio": "p25.mp3"
+    },
+    "26": {
+      "text": "Around 1493, Leonardo da Vinci wrote that friction grows with the load and does not depend on the area touching. Guillaume Amontons published the same laws in 1699. Try it: hook a rubber band to a book and drag it on its wide side, then on its spine. Does the stretch change? Da Vinci used a rule that friction is one quarter of the load. If that's true, what is mu? Does your book agree?",
+      "audio": "p26.mp3"
+    }
+  }
+}

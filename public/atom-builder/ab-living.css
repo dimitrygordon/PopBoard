@@ -1,0 +1,70 @@
+/* Full reskin from Leo's pack: colored pencil on paper. Leo's token names collide with the app's
+   (--ab-border is a width there, a color here), so his values are copied onto the app's own names. */
+@font-face { font-family: "Cabin Sketch"; src: url("../fonts/cabin-sketch.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Cabin Sketch"; src: url("../fonts/cabin-sketch-bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Architects Daughter"; src: url("../fonts/architects-daughter.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Patrick Hand"; src: url("../fonts/patrick-hand.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Gochi Hand"; src: url("../fonts/gochi-hand.woff2") format("woff2"); font-display: swap; }
+:root { --ab-bg: #1F1D1A; --ab-ink: #EDE6D6; --ab-dim: #B9B1A0; --ab-accent: #A9792A; --ab-chip: rgba(38, 36, 32, 0.92); --ab-border: #4A453C; --ab-btn: #262420;
+  --pj-paper: #262420; --ab-card: #262420; --ab-ion-pos: #D9705F; --ab-slot: #B9B1A0;
+  --f-title: "Cabin Sketch", cursive; --f-label: "Architects Daughter", cursive; --f-body: "Patrick Hand", cursive; --f-note: "Gochi Hand", cursive; }
+:root[data-theme="light"] { --ab-bg: #EDE6D6; --ab-ink: #1F2F5C; --ab-dim: #4A5577; --ab-accent: #1F2F5C; --ab-chip: rgba(246, 241, 230, 0.94); --ab-border: #1F2F5C; --ab-btn: #F6F1E6;
+  --pj-paper: #F6F1E6; --ab-card: #F6F1E6; --ab-ion-pos: #B5473A; --ab-slot: #4A5577; }
+html, body { font-family: var(--f-body); font-size: 17px; }
+.hud .title, .status .name, .status .symbol, .caveat-title { font-family: var(--f-title); letter-spacing: 0; }
+button, .tabs button, .ab-meter, .ab-charge { font-family: var(--f-label); }
+.ab-toast, .model-label, .cap, .ab-note { font-family: var(--f-note); }
+:root[data-theme="light"] button { border-width: 1.6px; box-shadow: 2px 3px 0 rgba(31, 47, 92, 0.18); }
+.ab-ions { display: flex; flex-wrap: wrap; gap: 6px; }
+.ab-ions button { padding: 0 2px; min-height: 52px; background: transparent; border: 0; box-shadow: none; color: var(--ab-ink); }
+.ab-ions button svg { width: 88px; height: auto; display: block; }
+.ab-particle svg { width: 100%; height: 100%; display: block; }
+.ab-particle.has-svg { background: none !important; border: 0 !important; box-shadow: none !important; }
+/* Atom Builder living atom: Leo's pack tokens (physics101/atom-builder/packs/atom-builder-skin.css),
+   namespaced --abl-* so they do not override the existing Atom Builder palette. */
+:root { --abl-calm: #3F6B3A; --abl-mid: #C99A2E; --abl-shaky: #B5473A; --abl-ion-pos: #B5473A; --abl-ion-neg: #3E6FB0; --abl-neutral: #3F6B3A;
+  --abl-alpha: #B5473A; --abl-beta: #3E6FB0; --abl-gamma: #7A64A8; --abl-ec: #C99A2E; --abl-red: #B5473A; --ab-instability: 0; }
+:root:not([data-theme="light"]) { --abl-calm: #6FAF66; --abl-ion-neg: #7FA9E0; --abl-neutral: #6FAF66; --abl-beta: #7FA9E0; }
+.ab-badges { display: flex; gap: 6px; margin-top: 4px !important; }
+.ab-charge, .ab-massno { font-size: .78rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; border: 1.5px solid currentColor; }
+.ab-charge[data-kind="neutral"] { color: var(--abl-neutral); }
+.ab-charge[data-kind="ion-pos"] { color: var(--abl-ion-pos); border-style: solid; }
+.ab-charge[data-kind="ion-neg"] { color: var(--abl-ion-neg); border-style: dashed; }
+.ab-massno { color: var(--ab-dim); }
+.ab-meter { display: grid; grid-template-columns: 90px auto; align-items: center; gap: 6px; margin-top: 4px; font-size: .72rem; color: var(--ab-dim); }
+.ab-meter::before { content: ""; grid-area: 1 / 1; height: 8px; border-radius: 4px; border: 1px solid var(--ab-border); }
+.ab-meter-fill { grid-area: 1 / 1; height: 8px; border-radius: 4px; width: calc(4px + 86px * var(--ab-instability)); background: var(--abl-calm); }
+.ab-meter[data-level="mid"] .ab-meter-fill { background: var(--abl-mid); }
+.ab-meter[data-level="shaky"] .ab-meter-fill { background: var(--abl-shaky); }
+.ab-meter[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { .ab-meter[data-level="shaky"] .ab-meter-fill, .ab-meter[data-level="mid"] .ab-meter-fill { animation: abl-pulse calc(2.4s - 1.2s * var(--ab-instability)) ease-in-out infinite; } }
+@keyframes abl-pulse { 50% { opacity: .35; } }
+/* Mini periodic table spotlight (H to Ca). Tap opens Periodic Table Studio on that element. */
+.ab-locator { pointer-events: auto; position: relative; display: grid; grid-template-columns: repeat(18, 10px); grid-template-rows: repeat(4, 10px); gap: 1px; margin-top: 6px; width: max-content; }
+.ab-locator a { display: block; border-radius: 2px; background: color-mix(in srgb, var(--ab-dim) 30%, transparent); }
+.ab-locator a.on { background: var(--abl-red); outline: 2px solid var(--abl-red); outline-offset: 1px; position: relative; z-index: 1; transition: outline-color .3s; }
+.ab-locator a.flash { animation: abl-flash .9s ease-out 2; }
+.ab-locator .shrug { position: absolute; left: 34px; top: 0; font-size: .7rem; color: var(--ab-dim); white-space: nowrap; }
+.ab-locator .open { grid-column: 3 / 13; grid-row: 1 / 3; font-size: .68rem; color: var(--ab-dim); background: none; text-decoration: underline; line-height: 1.1; }
+@keyframes abl-flash { 0%, 100% { filter: none; } 40% { filter: brightness(1.6) drop-shadow(0 0 4px var(--abl-mid)); } }
+/* Allow Decay */
+.decay-box { display: grid; gap: 6px; border-top: 1px dashed var(--ab-border); padding-top: 6px; }
+.decay-box button.decay-go { background: var(--abl-red); border-color: var(--abl-red); color: #fff; font-weight: 800; font-size: 1rem; min-height: 52px; display: inline-flex; gap: 8px; align-items: center; justify-content: center; }
+.decay-box button.decay-go::before { content: ""; border-left: 14px solid #fff; border-top: 9px solid transparent; border-bottom: 9px solid transparent; }
+.decay-chain { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-size: .8rem; }
+.decay-chain b { padding: 1px 6px; border-radius: 6px; border: 1px solid var(--ab-border); }
+.decay-chain i { color: var(--ab-dim); font-style: normal; }
+.decay-chain .now { border-color: var(--abl-mid); background: color-mix(in srgb, var(--abl-mid) 25%, transparent); }
+.chains summary { cursor: pointer; color: var(--ab-dim); }
+.ab-particle { position: fixed; z-index: 6; pointer-events: none; left: 0; top: 0; transform: translate(-50%, -50%); animation: abl-fly .95s cubic-bezier(.2,.7,.3,1) forwards; }
+.ab-particle.alpha { width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff8, transparent 50%), var(--abl-alpha); box-shadow: 0 0 0 2px #fff6; }
+.ab-particle.beta, .ab-particle.positron { width: 36px; height: 4px; border-radius: 2px; background: linear-gradient(90deg, transparent, var(--abl-beta)); }
+.ab-particle.positron { background: linear-gradient(90deg, transparent, var(--abl-ec)); }
+.ab-particle.gamma { width: 44px; height: 10px; background: repeating-linear-gradient(90deg, var(--abl-gamma) 0 3px, transparent 3px 7px); border-radius: 5px; }
+.ab-particle.neutron, .ab-particle.proton { width: 12px; height: 12px; border-radius: 50%; background: #6FA8D6; }
+.ab-particle.proton { background: var(--abl-red); }
+@keyframes abl-fly { 0% { opacity: 1; transform: translate(-50%, -50%) rotate(var(--rot)); } 100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--rot)); } }
+#scene.ab-flash { animation: abl-flash .9s ease-out 2; }
+@media (prefers-reduced-motion: reduce) { .ab-particle, #scene.ab-flash, .ab-locator a.flash { animation: none !important; } .ab-particle { display: none; } }
+.ab-branches { margin: 0; padding-left: 1.2em; font-size: 0.9rem; }
+.ab-pick { font: inherit; min-height: var(--ab-hit); border-radius: 12px; border: 1px solid var(--ab-border); background: var(--ab-btn); color: var(--ab-ink); padding: 0 8px; max-width: 100%; }

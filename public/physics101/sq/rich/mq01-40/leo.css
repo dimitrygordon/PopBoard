@@ -1,0 +1,34 @@
+/* Leo's Module 1 Lesson 4 Study Question (mq01-40), scoped under .leo. Paper cards stay cream in both themes, like a sheet on the desk. */
+.leo{--card:#F8F2E4;--ink:#1F2F5C;--red:#B5473A;--ochre:#C99A2E;color:var(--ink);font:20px/1.45 var(--ac-body-font)}
+@media (max-width:600px){.leo .card{padding:18px 16px}.leo h1{font-size:30px}.leo{font-size:18px}}
+@media (prefers-reduced-motion:reduce){.leo .step-text,.leo .pt,.leo .sketch text{transition:none}}
+
+.leo .card{background:var(--card) url(bg.webp) center/cover;border-radius:18px;padding:28px 34px;margin:26px 0;box-shadow:0 2px 0 #0001,0 8px 28px #0002}
+:root[data-theme="dark"] .leo .card{box-shadow:0 10px 40px #000a}
+.leo h1{font:400 40px "Cabin Sketch",var(--ac-head-font);margin:.1em 0}
+.leo h2{font:400 27px "Cabin Sketch",var(--ac-head-font);margin:.2em 0 .4em}
+.leo .kicker{font:18px "Architects Daughter";color:var(--red)}
+.leo .lbl{font-family:"Architects Daughter",cursive}
+.leo text:not([fill]){fill:var(--ink)}
+.leo .row{display:flex;gap:26px;align-items:center;flex-wrap:wrap}
+.leo .row>*{flex:1 1 360px}
+.leo svg.sketch{width:100%;height:auto;display:block}
+.leo .sketch .draw{fill:none}
+.leo .sketch text{opacity:0;transition:opacity .5s}
+.leo .sketch.labels text{opacity:1}
+.leo .pt{transform-box:fill-box;transform-origin:center;transform:scale(0);transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
+.leo .pt.on{transform:scale(1)}
+.leo .step-text{opacity:0;transform:translateY(14px);transition:opacity .6s,transform .6s}
+.leo .step.done .step-text{opacity:1;transform:none}
+.leo .ph{background:#C99A2E33;border:2px dashed var(--ochre);border-radius:8px;padding:8px 12px;margin:8px 0}
+.leo .ph b{color:var(--red);font-family:"Architects Daughter"}
+.leo .eq{mix-blend-mode:multiply;max-width:100%;height:auto;margin:10px 0}
+.leo .read{font:22px "Architects Daughter"}
+.leo .read span{color:var(--red)}
+.leo #mass{cursor:grab;touch-action:none;outline:none}
+.leo #mass:focus-visible rect{stroke:var(--red);stroke-width:4}
+.leo .ans{position:relative;margin-top:14px;min-height:120px}
+.leo .ans .inner{padding:12px 16px}
+.leo .scrib{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.leo button{font:22px "Cabin Sketch";color:var(--ink);background:#F3E6C4;border:2.5px solid var(--ink);border-radius:12px 9px 13px 8px;padding:6px 18px;cursor:pointer}
+.leo footer{text-align:center;font:18px "Gochi Hand";color:#8a7f6a}

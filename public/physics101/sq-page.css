@@ -1,0 +1,189 @@
+/* Physics 101 Study Questions: cream notebook page (light) and charcoal with cream ink (dark, from p101.css). */
+body.sq-lib .ac-bar { position: sticky; top: 0; z-index: 5; background: var(--ac-paper); }
+body.sq-lib .ac-bar .study-back-btn { height: var(--ac-hit); white-space: nowrap; }
+body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 12px 16px 80px; }
+.sq-empty { color: var(--ac-dim); }
+.sq-intro { display: grid; gap: 4px; margin: 10px 0 14px; }
+.sq-intro .sq-crumb { font-family: var(--ac-note-font); color: var(--ac-dim); }
+.sq-intro b { font-family: var(--ac-title-font); font-size: 30px; line-height: 1.1; }
+.sq-jump { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.sq-set-h { font-family: var(--ac-title-font); font-size: 26px; margin: 26px 0 2px; border-bottom: 3px solid var(--mod-accent); display: inline-block; }
+.sq-set-blurb { margin: 4px 0 14px; color: var(--ac-dim); }
+.sq-card { background: var(--ac-panel); padding: 16px 18px; margin: 0 0 18px; }
+.sq-q-title { display: flex; gap: 10px; align-items: baseline; margin: 0 0 8px; font-family: var(--ac-head-font); font-size: 19px; }
+.sq-num { flex: none; min-width: 30px; height: 30px; display: inline-grid; place-items: center; border-radius: 50%; background: var(--mod-accent); color: #2f2b26; font-size: 15px; }
+.sq-card p { margin: 6px 0; }
+.sq-eq { display: block; margin: 6px auto; height: auto; }
+.sq-fig { position: relative; margin: 10px auto; padding: 10px; width: fit-content; max-width: 100%; }
+.sq-fig-img { display: block; height: auto; border-radius: 6px; background: #fff; }
+.sq-fig-dark, :root[data-theme="dark"] .sq-fig-light { display: none; }
+:root[data-theme="dark"] .sq-fig-dark { display: block; background: none; }
+.sq-fig-light { background: none; }
+.sq-frame { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: var(--ac-line); stroke-width: 2.2; stroke-linecap: round; pointer-events: none; }
+/* equations are black ink crops of the book page: in dark mode they turn to cream ink */
+:root[data-theme="dark"] .sq-eq { filter: invert(0.93) sepia(0.12); mix-blend-mode: screen; }
+/* book figures are never filtered; they sit on a white card like the slide art */
+.sq-steps { list-style: none; padding: 0; margin: 10px 0; display: grid; gap: 10px; }
+.sq-step { position: relative; padding: 8px 10px 8px 40px; border-left: 3px solid var(--mod-accent); opacity: 0; transform: translateY(14px); transition: opacity .5s ease, transform .5s ease; }
+.sq-step.in { opacity: 1; transform: none; }
+.sq-step h4 { margin: 0; font-family: var(--ac-note-font); font-size: 18px; color: var(--ac-dim); }
+.sq-tick { position: absolute; left: 8px; top: 8px; width: 24px; height: 24px; fill: none; stroke: var(--ac-green); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 30; stroke-dashoffset: 30; transition: stroke-dashoffset .6s ease .25s; }
+:root[data-theme="dark"] .sq-tick { stroke: #9ccf8f; }
+.sq-step.in .sq-tick { stroke-dashoffset: 0; }
+.sq-answer { position: relative; margin-top: 12px; min-height: 96px; border-top: 2px dashed var(--ac-line); padding-top: 8px; }
+.sq-ans-body h4 { margin: 4px 0; font-family: var(--ac-head-font); }
+.sq-cover { position: absolute; inset: 8px 0 0; display: grid; place-items: center; background: var(--ac-panel); }
+.sq-cover svg { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: var(--ac-dim); stroke-width: 2.2; stroke-linejoin: round; opacity: .55; }
+.sq-cover.erasing { background: transparent; transition: background .4s; }
+.sq-cover.erasing .sq-show { opacity: 0; transition: opacity .2s; }
+.sq-show { position: relative; font-size: 18px; }
+.sq-art-slot svg { display: block; width: 100%; max-width: 640px; margin: 8px auto; height: auto; }
+.sq-art path, .sq-art line, .sq-art polyline { vector-effect: non-scaling-stroke; }
+@media (max-width: 600px) { .sq { padding: 8px 10px 60px; } .sq-card { padding: 12px; } .sq-intro b { font-size: 24px; } .sq-step { padding-left: 34px; } }
+@media (prefers-reduced-motion: reduce) {
+  .sq-step { opacity: 1; transform: none; transition: none; }
+  .sq-tick { stroke-dashoffset: 0; transition: none; }
+}
+/* Leo's hand-built problem pages sit in the list like a sheet of paper */
+.sq-rich { margin: 0 0 18px; }
+.sq-rich .card:first-child { margin-top: 0; }
+
+/* ---------- Practice Questions library: laid out like the Courses band ---------- */
+.sq-crumbs { font-family: var(--ac-note-font); color: var(--ac-dim); margin: 6px 0 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+.sq-crumbs a { color: inherit; }
+.sq-hero { font-family: var(--ac-title-font); font-size: clamp(36px, 7vw, 60px); text-align: center; margin: 8px 0 0; }
+.sq-lede { text-align: center; color: var(--ac-dim); margin: 4px 0 16px; }
+.sq-mods, .sq-lessons, .sq-results { list-style: none; padding: 0; margin: 18px 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.sq-results { grid-template-columns: 1fr; gap: 8px; }
+.sq-mod, .sq-les, .sq-hit { display: grid; gap: 4px; padding: 14px 16px; min-height: 44px; color: var(--ac-text); text-decoration: none;
+  background: color-mix(in srgb, var(--acc, var(--mod-accent)) 16%, var(--ac-panel)); border-left: 8px solid var(--acc, var(--mod-accent)); }
+.sq-mod:hover, .sq-les:hover, .sq-hit:hover, .sq-mod:focus-visible, .sq-les:focus-visible { background: color-mix(in srgb, var(--acc, var(--mod-accent)) 30%, var(--ac-panel)); }
+.sq-mod-num { font-family: var(--ac-note-font); color: var(--ac-dim); }
+.sq-mod-name { font-family: var(--ac-head-font); font-size: 22px; line-height: 1.15; }
+.sq-mod-meta { font-family: var(--ac-note-font); color: var(--ac-dim); }
+.sq-les b { font-family: var(--ac-head-font); font-size: 20px; font-weight: 400; }
+.sq-more { color: var(--ac-dim); padding: 6px; }
+.sq-lesson-head { display: grid; gap: 4px; justify-items: start; margin: 4px 0 12px; }
+.sq-lesson-title { font-family: var(--ac-title-font); font-size: clamp(26px, 5vw, 38px); margin: 0 0 6px; line-height: 1.1; }
+.sq-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 4px; }
+.sq-chip { min-height: 40px; padding: 4px 14px; font: inherit; font-family: var(--ac-head-font); color: var(--ac-text); background: var(--ac-panel);
+  border: 1.5px solid var(--ac-line); border-radius: 12px 9px 13px 8px; cursor: pointer; }
+.sq-chip[aria-pressed="true"] { background: var(--mod-accent); border-color: var(--mod-accent); color: #1f1c18; }
+
+/* ---------- storybook tab row: Read this page | Study Questions | Test it ---------- */
+.ptabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 2px solid var(--ac-line); margin: 0 -4px; position: sticky; top: 0; z-index: 3; background: var(--ac-panel); padding-top: 4px; }
+.ptabs [role="tab"] { min-height: 44px; padding: 6px 12px; font: inherit; font-family: var(--ac-head-font); font-size: 17px; color: var(--ac-dim); background: transparent;
+  border: 0; border-bottom: 4px solid transparent; margin-bottom: -2px; cursor: pointer; white-space: nowrap; }
+.ptabs [role="tab"][aria-selected="true"], #panel .ptabs [role="tab"][aria-selected="true"] { color: var(--ac-text); border-bottom-color: var(--mod-accent); }
+.ptabs [role="tab"]:focus-visible { outline: 2px solid var(--mod-accent); outline-offset: 2px; }
+.panel[data-tab] #readBox .panel-h:first-child { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.panel[data-tab="sq"] #readBox, .panel[data-tab="sq"] #toc, .panel[data-tab="sq"] #tools,
+.panel[data-tab="test"] #readBox, .panel[data-tab="test"] #toc,
+.panel[data-tab="read"].has-test #tools { display: none !important; }
+.story.sq-on { grid-template-columns: minmax(0, 1fr) min(620px, 50vw); }
+.sq-pane { display: grid; gap: 8px; }
+.sq-pane-top { display: flex; gap: 8px; align-items: end; flex-wrap: wrap; }
+.sq-pick { flex: 1 1 200px; display: grid; gap: 2px; font-family: var(--ac-note-font); color: var(--ac-dim); }
+.sq-pick select { min-height: 44px; width: 100%; font: inherit; font-family: var(--ac-body-font); font-size: 17px; color: var(--ac-text); background: var(--ac-paper);
+  border: 1.5px solid var(--ac-line); border-radius: 12px 9px 13px 8px; padding: 4px 8px; }
+.sq-pane #soundBtn { min-height: 44px; }
+.sq-pane .sq-set-h { font-size: 22px; }
+.sq-pane .sq-card { padding: 12px; }
+.sq-pane .leo { font-size: 18px; }
+.sq-pane .leo .card { padding: 16px; }
+.sq-pane .leo h1 { font-size: 28px; }
+.sq-lib-link { margin: 6px 0 0; }
+/* header pencil doorway */
+.sq-door { flex: none; display: inline-grid; place-items: center; }
+@media (max-width: 699px) { .story.sq-on { grid-template-columns: 1fr; } }
+
+/* Practice Questions pill, just left of the module filters (library page) */
+.lib-filter-row { display: flex; align-items: flex-start; justify-content: center; gap: 10px; }
+.lib-filter-row .lib-filters { flex: 0 1 auto; min-width: 0; }
+.lib-filter-row .lib-filters { margin: 0; }
+.pq-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 16px 6px 8px; text-decoration: none; white-space: nowrap;
+  font-family: var(--ac-head-font); font-size: 18px; color: #7a2e22; background: #FBF1DF; border: 2px solid #E07A5F; border-radius: 16px 11px 18px 10px / 11px 18px 10px 16px; box-shadow: 2px 3px 0 #E07A5F55; }
+.pq-btn svg { flex: none; }
+.pq-btn:hover, .pq-btn:focus-visible { background: #F9E3C8; }
+:root[data-theme="dark"] .pq-btn { color: #F6C3B3; background: #2A2622; border-color: #E8907A; box-shadow: 2px 3px 0 #0006; }
+@media (max-width: 600px) { .lib-filter-row { flex-direction: column; align-items: stretch; } .pq-btn { justify-content: center; width: 100%; box-sizing: border-box; } }
+/* Leo's pencil art: cream card in both themes; movable objects slide */
+.sq-art { border-radius: 14px; }
+.sq-art .sq-drag { cursor: grab; touch-action: none; outline: none; }
+.sq-art .sq-drag:focus-visible { filter: drop-shadow(0 0 3px var(--mod-accent)); }
+.sq-drag-note { margin: 2px 0 0; font-family: var(--ac-note-font); color: var(--ac-dim); text-align: center; }
+
+/* Try it cards (pencil style): tiny thumbnail slot, one-line caption, link to the original */
+.tryit-row { display: grid; gap: 10px; margin: 14px 0 4px; }
+.tryit-card { display: flex; align-items: center; gap: 12px; padding: 8px 12px; color: inherit; text-decoration: none;
+  border: 1.5px solid var(--ac-line); border-radius: 12px 9px 13px 8px; background: var(--ac-paper, transparent); }
+.tryit-card:hover, .tryit-card:focus-visible { border-color: var(--mod-accent, #E07A5F); outline: none; }
+.tryit-thumb { flex: 0 0 56px; height: 42px; border: 1.5px dashed var(--ac-line); border-radius: 8px 6px 9px 5px; overflow: hidden; }
+.tryit-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tryit-text { display: grid; min-width: 0; }
+.tryit-name { font-weight: 700; }
+.tryit-cap { color: var(--ac-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sq-where { display: inline-block; margin: -4px 0 6px 44px; padding: 1px 10px; font-family: var(--ac-note-font); font-size: 14px; color: var(--ac-dim); border: 1.2px dashed var(--ac-line); border-radius: 10px 7px 11px 6px; }
+/* worked solution expands from the pinned question (Study Questions cards and Read this page examples) */
+.sq-pin.sq-head { cursor: pointer; border-radius: 10px; }
+.sq-expand { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin: 6px 0 2px; padding: 6px 14px; font-size: 16px; }
+.sq-expand svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; transition: transform .2s; }
+.sq-head.open .sq-expand svg { transform: rotate(180deg); }
+.sq-expand:focus-visible { outline: 3px solid var(--mod-accent, var(--ac-ink)); outline-offset: 2px; }
+.sq-placeholder { font-family: var(--ac-note-font); color: var(--ac-dim); border: 1.5px dashed var(--ac-line); padding: 2px 8px; border-radius: 8px; }
+.wk-steps .sq-step p { margin: 4px 0; }
+.wk-answer { position: relative; min-height: 96px; }
+.wk-answer .sq-cover { inset: 0; }
+@media (prefers-reduced-motion: reduce) { .sq-expand svg { transition: none; } }
+
+/* Practice Questions + Custom Quiz: one centered row under the module filters and count (Leo: 20px icons in 40px slots; Practice Questions icon is Leo's cq-icon-practice) */
+.lib-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 14px 0 4px; }
+.pq-icon-slot { display: inline-grid; place-items: center; flex: none; width: 40px; height: 40px; margin: -4px 0; }
+.pq-icon-slot svg, .pq-icon-slot .cq-art { width: 20px; height: 20px; }
+@media (max-width: 600px) { .lib-actions { gap: 8px; } .lib-actions .pq-btn { flex: 1 1 0; justify-content: center; min-width: 0; gap: 2px; padding: 4px 8px 4px 2px; font-size: 16px; } .lib-actions .pq-icon-slot { width: 30px; } }
+
+/* ---- Step cards: Leo's step-cards.css (physics101/step-cards). Light is the default; dark follows PopBoard's toggle
+   (:root[data-theme="dark"]), not the browser setting. */
+.pb-steps{display:flex;flex-direction:column;gap:14px;margin:18px 0;font-family:"Comic Relief",var(--sq-glyph-fallback)}
+.pb-step{position:relative;background:#FBF6EA;border:1.5px solid #8A7A5C;border-radius:12px;padding:14px 16px 14px 52px;box-shadow:2px 3px 0 rgba(90,70,40,.18);color:#2B2620;line-height:1.5}
+.pb-step::before{content:attr(data-n);position:absolute;left:12px;top:12px;width:28px;height:28px;border-radius:50%;background:#E8B44A;color:#2B2620;font-weight:700;display:grid;place-items:center;border:1.5px solid #8A6A20}
+.pb-step-label{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:#7A5C2E;margin-bottom:4px}
+.pb-step[data-kind="givens"] .pb-step-label{color:#3E7A4A}
+.pb-step[data-kind="equation"] .pb-step-label{color:#2F5FA0}
+.pb-step[data-kind="substitute"] .pb-step-label{color:#A0522D}
+.pb-step .pb-math{font-size:1.08rem;padding:4px 0}
+.pb-step .pb-unit{color:#6B5A3E}
+.pb-step-sketch{display:block;max-width:100%;margin:10px auto 0;border-radius:12px}
+.pb-answer{border:2.5px solid #C0392B;border-radius:10px;padding:10px 14px;background:#FFF3E6;font-weight:700;display:inline-block}
+.pb-step[hidden]{display:none}
+.pb-step-reveal{align-self:flex-start;background:#2F5FA0;color:#FBF6EA;border:0;border-radius:999px;padding:8px 16px;font:inherit;cursor:pointer}
+.pb-step-reveal:focus-visible{outline:3px solid #E8B44A;outline-offset:2px}
+:root[data-theme="dark"] .pb-step{background:#26231F;border-color:#3A362F;color:#EDE6D6;box-shadow:none}
+:root[data-theme="dark"] .pb-step::before{background:#C99A3A;color:#1F1D1A;border-color:#3A362F}
+:root[data-theme="dark"] .pb-step-label{color:#D8B878}
+:root[data-theme="dark"] .pb-step[data-kind="givens"] .pb-step-label{color:#8CC79A}
+:root[data-theme="dark"] .pb-step[data-kind="equation"] .pb-step-label{color:#6FA3E0}
+:root[data-theme="dark"] .pb-step[data-kind="substitute"] .pb-step-label{color:#E0A070}
+:root[data-theme="dark"] .pb-step .pb-unit{color:#B8AD98}
+:root[data-theme="dark"] .pb-step-sketch{filter:brightness(.85);border:1px solid #3A362F}
+:root[data-theme="dark"] .pb-answer{background:#2E2620;border-color:#E07060;color:#EDE6D6}
+:root[data-theme="dark"] .pb-step-reveal{background:#6FA3E0;color:#1F1D1A}
+@media (max-width:600px){.pb-step{padding:12px 12px 12px 46px}.pb-step::before{left:9px;width:26px;height:26px}}
+.pb-step:focus{outline:none}.pb-step-text p{margin:0}.pb-answer-wrap .pb-steps{margin:6px 0}
+.pb-steps{list-style:none;padding-left:0}
+.sq-math{font-family:"Cambria Math","STIX Two Math","Noto Sans Math","SQ Math Fallback","Times New Roman",serif;font-style:normal}
+
+/* Leo: glyph fallback. The handwriting fonts have no Greek (μ, Δ, θ), math italic (𝜇, 𝑥) or symbols (√, ≤, ∝), so those
+   characters went blank (mq05-27 Check showed "_s of about 0.46"). Every font stack used for question and step-card text
+   falls back per glyph. Installed fonts first (DejaVu Sans, Cambria Math, STIX Two Math, Noto Sans Math); devices with none of them
+   (Chromebooks, the test box) get /fonts/sq-math-fallback.woff2, a 19 KB subset of Noto Sans Math (SIL OFL 1.1) holding only the
+   characters the Study Questions use, limited by unicode-range so it never replaces Latin text. Rebuild: tools/physics101/sq-math-font.py */
+@font-face { font-family: "SQ Math Fallback"; src: url("/fonts/sq-math-fallback.woff2") format("woff2"); font-display: swap;
+  unicode-range: U+0394,U+03B1,U+03B8,U+03C4,U+03C9,U+2032,U+210E,U+2113,U+2192,U+21D2,U+2211,U+221D,U+2225,U+223C,U+226A,U+226B,U+22A5,U+22EF,U+1D434,U+1D435,U+1D436,U+1D437,U+1D438,U+1D439,U+1D43A,U+1D43B,U+1D43C,U+1D43D,U+1D43E,U+1D43F,U+1D440,U+1D441,U+1D442,U+1D443,U+1D444,U+1D445,U+1D446,U+1D447,U+1D448,U+1D449,U+1D44A,U+1D44B,U+1D44C,U+1D44D,U+1D44E,U+1D44F,U+1D450,U+1D451,U+1D452,U+1D453,U+1D454,U+1D456,U+1D458,U+1D459,U+1D45A,U+1D45B,U+1D45C,U+1D45D,U+1D45E,U+1D45F,U+1D460,U+1D461,U+1D462,U+1D463,U+1D464,U+1D465,U+1D466,U+1D467,U+1D6E5,U+1D6FA,U+1D6FC,U+1D6FD,U+1D6FE,U+1D703,U+1D706,U+1D707,U+1D708,U+1D70B,U+1D70C,U+1D70F,U+1D711,U+1D714; }
+.sq-card, .sq-q, .pb-steps { --sq-glyph-fallback: "DejaVu Sans", "SQ Math Fallback", "Segoe UI Symbol", "Cambria Math", "STIX Two Math", "Noto Sans Math", "Noto Sans", "Arial Unicode MS", system-ui, sans-serif; }
+.sq-card, .sq-q {
+  --ac-title-font: "Cabin Sketch", "Patrick Hand", "Itim", var(--sq-glyph-fallback);
+  --ac-head-font: "Architects Daughter", "Patrick Hand", "Itim", var(--sq-glyph-fallback);
+  --ac-body-font: "Patrick Hand", "Itim", var(--sq-glyph-fallback);
+  --ac-note-font: "Gochi Hand", "Patrick Hand", "Itim", var(--sq-glyph-fallback);
+  font-family: var(--ac-body-font); }

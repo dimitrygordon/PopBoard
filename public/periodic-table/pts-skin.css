@@ -1,0 +1,38 @@
+/* Periodic Table Studio skin. PopBoard colored-pencil style. Light default, [data-theme="dark"] override. */
+:root{
+  --pts-paper:#EDE6D6; --pts-ink:#1F2F5C; --pts-ink-soft:#4A5577; --pts-line:#1F2F5C; --pts-card:#F6F1E6;
+  --pts-border:1.6px; --pts-radius:12px; --pts-shadow:2px 3px 0 rgba(31,47,92,.18);
+  --pts-red:#B5473A; --pts-ochre:#C99A2E; --pts-green:#3F6B3A; --pts-sky:#6FA8D6; --pts-violet:#7A64A8; --pts-navy:#1F2F5C;
+  --pts-phase-a:#3E6FB0; --pts-phase-b:#B5582F; --pts-nucleus:#E0A04A;
+  --cat-alkali_metal:#E39A6B; --cat-alkaline_earth_metal:#E8C26A; --cat-transition_metal:#8FB3D9; --cat-post_transition_metal:#8CC2B4;
+  --cat-metalloid:#C9A27A; --cat-nonmetal:#9CC98A; --cat-halogen:#D9D46A; --cat-noble_gas:#B9A6DA; --cat-lanthanide:#E3A3B9; --cat-actinide:#D190A0;
+  --state-solid:#8FB3D9; --state-liquid:#6FA8D6; --state-gas:#E8C26A; --state-unknown:#CFC6B4;
+  --dec-stable:#9CC98A; --dec-beta_minus:#8FB3D9; --dec-alpha:#E39A6B; --dec-ec_beta_plus:#E8C26A; --dec-sf:#B9A6DA; --dec-other:#CFC6B4;
+  --heat-0:#F3E7B8; --heat-1:#E8C26A; --heat-2:#E39A6B; --heat-3:#C8644A; --heat-4:#8E3A3A;
+  --wash-opacity:.55; --hatch-opacity:.35;
+  --f-title:"Cabin Sketch",cursive; --f-label:"Architects Daughter",cursive; --f-body:"Patrick Hand",cursive; --f-note:"Gochi Hand",cursive;
+}
+[data-theme="dark"]{
+  --pts-paper:#1F1D1A; --pts-ink:#EDE6D6; --pts-ink-soft:#B9B1A0; --pts-line:#3A362F; --pts-card:#262420;
+  --pts-border:1px; --pts-shadow:0 2px 0 rgba(0,0,0,.4);
+  --pts-phase-a:#7FA9E0; --pts-phase-b:#E08A5C; --pts-nucleus:#E8B266;
+  --wash-opacity:.32; --hatch-opacity:.22;
+}
+.pts{background:var(--pts-paper);color:var(--pts-ink);font-family:var(--f-body)}
+.pts-card{background:var(--pts-card);border:var(--pts-border) solid var(--pts-line);border-radius:var(--pts-radius);box-shadow:var(--pts-shadow)}
+.pts-tile{position:relative;border-radius:8px;color:var(--pts-ink);transition:transform .15s,box-shadow .15s}
+.pts-tile .wash{position:absolute;inset:2px;border-radius:7px;opacity:var(--wash-opacity);
+  background-image:repeating-linear-gradient(-38deg,var(--c) 0 2px,transparent 2px 4px),linear-gradient(var(--c),var(--c));background-blend-mode:multiply}
+.pts-tile .frame{position:absolute;inset:0;width:100%;height:100%;overflow:visible;stroke:currentColor;fill:none}
+.pts-tile:hover,.pts-tile.is-hover{transform:translate(-1px,-3px) rotate(-1deg);box-shadow:3px 5px 0 rgba(31,47,92,.25);z-index:3}
+.pts-tile.is-dim{opacity:.28}
+.pts-tab{font-family:var(--f-label);border:var(--pts-border) solid var(--pts-line);border-radius:10px;padding:4px 12px;background:transparent;color:var(--pts-ink)}
+.pts-tab.is-on{background:var(--pts-ink);color:var(--pts-paper)}
+.pts-chip{font-family:var(--f-label);font-size:13px;border:1px dashed currentColor;border-radius:999px;padding:2px 10px}
+.pts-chip.is-on{border-style:solid;background:color-mix(in srgb,var(--pts-ochre) 35%,transparent)}
+.pts-note{font-family:var(--f-note);color:var(--pts-ink)}
+.pts-bohr .ring{animation:pts-spin var(--dur,12s) linear infinite;transform-origin:center;transform-box:view-box}
+@keyframes pts-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.pts-bohr .ring,.pts-orb .drift{animation:none!important}}
+.pts-orb .drift{animation:pts-breathe 6s ease-in-out infinite;transform-origin:center;transform-box:view-box}
+@keyframes pts-breathe{50%{transform:scale(1.03)}}

@@ -21,6 +21,9 @@
 <link rel="stylesheet" href="astro-course/ac-theme.css">
 <link rel="stylesheet" href="astro-course/ac-library.css">
 <link rel="stylesheet" href="physics101/p101.css">
+<link rel="stylesheet" href="physics101/sq-page.css">
+<link rel="stylesheet" href="physics101/custom-quiz/custom-quiz-ui.css">
+<link rel="stylesheet" href="physics101/cq.css">
 <link rel="preload" href="fonts/cabin-sketch-bold.woff2" as="font" type="font/woff2" crossorigin>
 </head>
 <body>
@@ -34,21 +37,31 @@
 <main class="lib">
   <section class="lib-cover">
     <h1 class="lib-title">Physics 101</h1>
-    <p class="lib-lede">One storybook for every lesson, grouped by module. The lessons are being written now.</p>
+    <p class="lib-lede">One storybook for every lesson, grouped by module, with Study Questions, Practice Questions and Math Skills.</p>
     <label class="lib-search sketch" for="q">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.4l5.3 5.1"/></svg>
       <span class="sr-only">Search titles and every page</span>
       <input id="q" type="search" placeholder="Search titles and every page" autocomplete="off" enterkeyhint="search">
     </label>
-    <div class="lib-filters" role="group" aria-label="Module" data-auto="module">
-      <button type="button" data-q="0" aria-pressed="true">All</button>
+    <div class="lib-filter-row">
+      <div class="lib-filters" role="group" aria-label="Module" data-auto="module">
+        <button type="button" data-q="0" aria-pressed="true">All</button>
+      </div>
     </div>
     <p class="lib-count" id="count" aria-live="polite"></p>
+    <div class="lib-actions">
+      <a class="pq-btn" id="pqBtn" href="study-physics101-questions.html"><span class="pq-icon-slot" data-icon="pq-practice"><svg class="pq-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h8M3 12h6M3 17h4"/><path d="M10.5 21l.9-3.4 7.1-7.1a1.8 1.8 0 0 1 2.5 2.5l-7.1 7.1z"/><path d="M16.8 12.2l2.5 2.5"/><path d="M14.2 6.3l1.6 1.7 3.1-3.8"/></svg></span>Practice Questions</a>
+      <button type="button" class="pq-btn cq-open" id="cqBtn" aria-haspopup="dialog"><span class="pq-icon-slot"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M4 12h7M4 18h10"/><path d="M15.5 13.5l2.2 2.4 4.3-6"/></svg></span>Custom Quiz</button>
+    </div>
   </section>
   <ol class="lib-grid" id="grid"></ol>
   <p class="lib-empty" id="empty" hidden>No page in the course matches that yet. Try a shorter word.</p>
 </main>
 
 <script type="module" src="astro-course/ac-library-ui.js"></script>
+<script type="module">
+// Custom Quiz opens over the library (no navigation); its code loads on first tap.
+document.getElementById("cqBtn").addEventListener("click", async (e) => { (await import("./physics101/cq-app.js")).open(e.currentTarget); });
+</script>
 </body>
 </html>
