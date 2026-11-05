@@ -29,7 +29,8 @@
     "explain": "Nothing crosses the declared room boundary, so E_in = E_out = 0 and E_final = E_initial. While walking, 270 J left the food: 67.5 J kinetic and 202.5 J thermal. When the person stops, the 67.5 J also becomes thermal, so the room gains all 270 J and the total bar stays the same.",
     "closed": "In this declared closed model only, after motion stops. Animation timings are presentation only.",
     "footer": "Energy is transferred, not destroyed.",
-    "noWebgl": "This 3D journey model needs WebGL, which this browser does not have."
+    "noWebgl": "This 3D journey model needs WebGL, which this browser does not have.",
+    "toggle": "Show or hide the 3D model"
    }
   },
   "2": {

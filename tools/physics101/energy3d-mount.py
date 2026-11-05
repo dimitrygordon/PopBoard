@@ -16,18 +16,19 @@ src = f'''// Every Joule energy3d scene ({module}.js {fn}). Words come from stor
   (async () => {{
     const story = await fetch(new URL("../../decks/{slug}/v2/story.json", import.meta.url)).then((r) => r.json()).catch(() => null);
     const text = story?.slides?.["{page}"]?.sceneText || {{}};
-    const mod = await import("../energy3d/{module}.js").catch(() => null);
+{{lab}}    const mod = await import("../energy3d/{module}.js").catch(() => null);
     if (gone) return;
     live = mod && mod.{fn}(host, text, {{ reduce: ctx.reduce }});
     if (!live) {{ const p = document.createElement("p"); p.className = "e3d-fallback"; p.textContent = text.noWebgl || ""; host.appendChild(p); ctx.say(text.noWebgl || ""); }}
   }})();
 {{tap}}  return {{ destroy() {{ gone = true; live?.dispose(); host.remove(); }} }};
 }}
-'''.replace('{imp}', 'import { tapCut } from "../kit.js";\n' if cut else '').replace('{tap}', f'  tapCut(ctx, "{cut}", \"3D\", () => {{ host.hidden = !host.hidden; }});\n' if cut else '')
+'''.replace('{imp}', 'import { tapCut } from "../kit.js";\n' if cut else '').replace('{lab}', '    tog.setAttribute("aria-label", text.toggle || "");\n' if cut else '').replace('{tap}', f'  const tog = tapCut(ctx, "{cut}", "", () => {{ host.hidden = !host.hidden; }});\n' if cut else '')
 (R / f"public/physics101/scenes/{slug}/{pn}.js").write_text(src)
 sp = R / f"public/physics101/decks/{slug}/v2/story.json"
 s = json.loads(sp.read_text()); d = s["slides"][str(page)]
 d["testIt"] = spec["testIt"]; d["sceneText"] = spec["sceneText"]
+if cut: d["sceneText"].setdefault("toggle", "Show or hide the 3D model")
 sp.write_text(json.dumps(s, ensure_ascii=False, indent=1) + "\n")
 tp = R / f"tests/physics101-{slug}.test.mjs"; t = tp.read_text()
 def add(key, src):

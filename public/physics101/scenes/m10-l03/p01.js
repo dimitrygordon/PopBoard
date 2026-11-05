@@ -8,11 +8,12 @@ export default function build(ctx) {
   (async () => {
     const story = await fetch(new URL("../../decks/m10-l03/v2/story.json", import.meta.url)).then((r) => r.json()).catch(() => null);
     const text = story?.slides?.["1"]?.sceneText || {};
+    tog.setAttribute("aria-label", text.toggle || "");
     const mod = await import("../energy3d/journey.js").catch(() => null);
     if (gone) return;
     live = mod && mod.mountJourney(host, text, { reduce: ctx.reduce });
     if (!live) { const p = document.createElement("p"); p.className = "e3d-fallback"; p.textContent = text.noWebgl || ""; host.appendChild(p); ctx.say(text.noWebgl || ""); }
   })();
-  tapCut(ctx, "q", "3D", () => { host.hidden = !host.hidden; });
+  const tog = tapCut(ctx, "q", "", () => { host.hidden = !host.hidden; });
   return { destroy() { gone = true; live?.dispose(); host.remove(); } };
 }

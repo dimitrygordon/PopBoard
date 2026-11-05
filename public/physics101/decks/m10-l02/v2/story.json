@@ -45,7 +45,8 @@
     "explainBtn": "Explain",
     "explain": "After the book stops, the thermal store of the book, floor and air plus the sound carried away add up to the starting gravitational energy. The energy moved between stores and out as sound; none was destroyed. STORE OR TRANSFER?",
     "footer": "Energy is transferred, not destroyed.",
-    "noWebgl": "This 3D energy-stores board needs WebGL, which this browser does not have."
+    "noWebgl": "This 3D energy-stores board needs WebGL, which this browser does not have.",
+    "toggle": "Show or hide the 3D model"
    }
   },
   "2": {
