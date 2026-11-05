@@ -124,3 +124,16 @@ export const speedAt = (h0, h) => Math.sqrt(2 * g * Math.max(0, h0 - h));
 export const mechanical = (m, h, v) => energyAt(m, h, v).total;
 // Friction on: no coefficient is cleared, so the drawing uses a unitless shape factor and the scene shows no number for it.
 export const FRICTION_DRAW = 0.8;
+
+// ---------- Spring launcher (Sim 3), Tesla O1: ideal spring only ----------
+// Declared ideal spring k = 100 N/m, linear through 0.080 m; never a claim about a real spring.
+export const SPRING = Object.freeze({ k: 100, m: 0.05, xMax: 0.08, angle: 55, bell: 0.9, bellTol: 0.03 });
+// LAUNCH_H is not a Tesla value: inferred (0.600 m) so the bell solution matches Tesla's QA reference x = 0.0703 m.
+export const LAUNCH_H = 0.6;
+const rad = (d) => (d * Math.PI) / 180;
+export const elasticPE = (x, k = SPRING.k) => 0.5 * k * x * x;
+// KE leaving the rail: the spring's store minus the GPE gained along the 55 degree rail while it extends.
+export const launchKE = (x, s = SPRING) => elasticPE(x, s.k) - s.m * g * x * Math.sin(rad(s.angle));
+export const apexKE = (x, s = SPRING) => launchKE(x, s) * Math.cos(rad(s.angle)) ** 2; // no-air model
+export const apexHeight = (x, s = SPRING) => LAUNCH_H + (launchKE(x, s) * Math.sin(rad(s.angle)) ** 2) / (s.m * g);
+export function bellExtension(s = SPRING) { let lo = 0, hi = s.xMax; for (let i = 0; i < 60; i++) { const mid = (lo + hi) / 2; if (apexHeight(mid, s) < s.bell) lo = mid; else hi = mid; } return lo; }

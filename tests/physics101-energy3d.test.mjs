@@ -102,3 +102,10 @@ test("track: frictionless ME constant; no friction coefficient shown", async () 
   await mounts("track", "mountTrack", "m10-l03", "p02");
   assert.doesNotMatch(JSON.stringify(story("m10-l03")["2"].sceneText), /mu\b|coefficient of friction|\u03bc/);
 });
+test("spring: Tesla QA references, ideal-spring card", async () => {
+  near(ph.elasticPE(0.08), 0.32, 1e-12);
+  near(ph.bellExtension(), 0.0703, 5e-4);
+  near(ph.apexKE(0.0703), 0.0721, 1e-4);
+  await mounts("spring", "mountSpring", "m13-l01", "p02");
+  assert.match(story("m13-l01")["2"].sceneText.model, /^The simulation uses an ideal spring with k = 100 N\/m/);
+});

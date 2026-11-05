@@ -15,7 +15,31 @@
   "2": {
    "layers": [],
    "title": "Your Investigation Toolkit",
-   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you complete the readings and activities in this lesson.</p><p>Online, the PhysicsLAB called Pendulum Vibrations has you plan and carry out an investigation of what affects a pendulum's period, then use your data to calculate the strength of the gravitational field. And keep thinking back to the Encounter the Phenomenon question: what from this lesson helps you answer the unit and module questions?</p>"
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you complete the readings and activities in this lesson.</p><p>Online, the PhysicsLAB called Pendulum Vibrations has you plan and carry out an investigation of what affects a pendulum's period, then use your data to calculate the strength of the gravitational field. And keep thinking back to the Encounter the Phenomenon question: what from this lesson helps you answer the unit and module questions?</p>",
+   "testIt": {
+    "name": "Spring launcher",
+    "how": "Drag the pull tab to set the extension (up to 0.080 m), predict, then release toward the bell."
+   },
+   "sceneText": {
+    "labels": "Elastic PE = 1/2 k x^2, k = 100 N/m, m = 0.050 kg, x max = 0.080 m, 55 degrees, bell 0.90 m +/- 0.03 m",
+    "model": "The simulation uses an ideal spring with k = 100 N/m and a declared linear range through 0.080 m. A physical demonstration would require a tested spring and its own measured force-extension curve.",
+    "readout": "x = {x} m, elastic PE = {pe} J, KE at apex = {apex} J, apex height {h} m",
+    "predict": "At the top of the arc, the ball's kinetic energy is...",
+    "choices": [
+     "Zero",
+     "Equal to its launch value",
+     "Nonzero but smaller than its launch value"
+    ],
+    "correct": 2,
+    "release": "Release",
+    "right": "Good prediction.",
+    "wrong": "Look at the kinetic jar at the top of the arc.",
+    "ring": "Ding: apex {h} m is within the bell band.",
+    "miss": "Apex {h} m: outside the bell band.",
+    "explainBtn": "Explain",
+    "explain": "At apex the vertical velocity component is zero; horizontal motion and kinetic energy remain in the no-air model. SIDEWAYS SPEED?",
+    "noWebgl": "This 3D spring launcher needs WebGL, which this browser does not have."
+   }
   },
   "3": {
    "layers": [],
