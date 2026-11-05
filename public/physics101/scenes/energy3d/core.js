@@ -1,25 +1,160 @@
 import * as THREE from "../../../vendor/three/three.module.min.js";
-import { clamp } from "../kit.js";
-export { THREE, clamp };
-export const PALETTE={kinetic:["#1FB5C9","#4FD8EA"],gravitational:["#2F5FD0","#6C93F2"],elastic:["#8A4FD6","#B184F0"],thermal:["#F07A1E","#FF9D4D"],chemical:["#3BA55C","#6BD48A"],electrical:["#8EC9F2","#B5DEFA"],magnetic:["#6B2FA3","#9E66D1"],electrostatic:["#E8C21A","#F5D84F"],nuclear:["#C9971C","#E6B84A"],radiant:["#FFD66B","#FFE29A"],sound:["#E86AA6","#F59AC4"]};
-export const color=(n,d=false)=>PALETTE[n][d?1:0];
-class OrbitControls{
- constructor(camera,dom){this.camera=camera;this.dom=dom;this.enablePan=false;this.enableDamping=true;this.minPolarAngle=.6;this.maxPolarAngle=1.4;this.minAzimuthAngle=-.6;this.maxAzimuthAngle=.6;this.minDistance=6;this.maxDistance=12;this.target=new THREE.Vector3(0,1,0);this.enabled=true;this.s=new THREE.Spherical().setFromVector3(camera.position.clone().sub(this.target));let p=null;
- dom.addEventListener("pointerdown",e=>{if(!this.enabled||e.button!==0)return;p=[e.clientX,e.clientY];dom.setPointerCapture(e.pointerId)});
- dom.addEventListener("pointermove",e=>{if(!p||!this.enabled)return;this.s.theta=clamp(this.s.theta-(e.clientX-p[0])*.004,this.minAzimuthAngle,this.maxAzimuthAngle);this.s.phi=clamp(this.s.phi-(e.clientY-p[1])*.004,this.minPolarAngle,this.maxPolarAngle);p=[e.clientX,e.clientY];this.update()});
- const up=()=>p=null;dom.addEventListener("pointerup",up);dom.addEventListener("pointercancel",up);dom.addEventListener("wheel",e=>{if(!this.enabled)return;e.preventDefault();this.s.radius=clamp(this.s.radius+e.deltaY*.008,this.minDistance,this.maxDistance);this.update()},{passive:false});this.update()}
- update(){this.camera.position.copy(new THREE.Vector3().setFromSpherical(this.s).add(this.target));this.camera.lookAt(this.target)}
+import { palette } from "./palette.js";
+export { THREE, palette };
+
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const hasDoc = () => typeof document !== "undefined";
+export function isDark() {
+  if (!hasDoc()) return false;
+  const t = document.documentElement.dataset.theme;
+  if (t) return t === "dark";
+  return typeof matchMedia === "function" && matchMedia("(prefers-color-scheme: dark)").matches;
 }
-let grad;
-function gradient(){if(grad)return grad;grad=new THREE.DataTexture(new Uint8Array([60,145,230]),3,1,THREE.RedFormat);grad.needsUpdate=true;grad.minFilter=grad.magFilter=THREE.NearestFilter;return grad}
-function grain(dark){const c=document.createElement("canvas");c.width=c.height=128;const x=c.getContext("2d");x.fillStyle=dark?"#1F1D1A":"#FBF6EA";x.fillRect(0,0,128,128);for(let i=0;i<900;i++){x.fillStyle=dark?`rgba(237,230,214,${Math.random()*.035})`:`rgba(70,50,30,${Math.random()*.045})`;x.fillRect(Math.random()*128,Math.random()*128,1,1)}const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(6,4);return t}
-export class EnergyScene{
- constructor(ctx,opt={}){this.ctx=ctx;this.opt=opt;this.dark=document.documentElement.dataset.theme==="dark";this.objects={};this.drags=[];this.running=true;this.time=0;this.predicted=false;ctx.layer.classList.add("energy3d-layer");ctx.layer.replaceChildren();this.canvas=document.createElement("canvas");this.canvas.className="energy3d-canvas";this.canvas.setAttribute("aria-label",opt.title||"Interactive energy model");this.canvas.tabIndex=0;ctx.layer.appendChild(this.canvas);this.renderer=new THREE.WebGLRenderer({canvas:this.canvas,antialias:true});this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=THREE.PCFSoftShadowMap;this.renderer.outputColorSpace=THREE.SRGBColorSpace;this.scene=new THREE.Scene();this.scene.background=new THREE.Color(this.dark?"#1F1D1A":"#FBF6EA");this.camera=new THREE.PerspectiveCamera(opt.fov||40,16/9,.1,100);this.camera.position.fromArray(opt.camera||[0,5,9]);this.controls=new OrbitControls(this.camera,this.canvas);this.controls.target.fromArray(opt.target||[0,1,0]);this.controls.s.setFromVector3(this.camera.position.clone().sub(this.controls.target));this.controls.minPolarAngle=THREE.MathUtils.degToRad(opt.polar?.[0]||40);this.controls.maxPolarAngle=Math.min(1.396,THREE.MathUtils.degToRad(opt.polar?.[1]||75));this.controls.minAzimuthAngle=THREE.MathUtils.degToRad(opt.azimuth?.[0]||-35);this.controls.maxAzimuthAngle=THREE.MathUtils.degToRad(opt.azimuth?.[1]||35);this.controls.minDistance=opt.distance?.[0]||6;this.controls.maxDistance=opt.distance?.[1]||12;this.controls.update();
- const ground=new THREE.Mesh(new THREE.PlaneGeometry(opt.ground?.[0]||12,opt.ground?.[1]||8),new THREE.MeshToonMaterial({color:this.dark?"#1F1D1A":"#FBF6EA",map:grain(this.dark),gradientMap:gradient()}));ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;this.scene.add(ground);this.key=new THREE.DirectionalLight(this.dark?0xFFE9C7:0xFFF4E0,this.dark?1.8:2.2);this.key.position.set(-6,10,6);this.key.castShadow=true;this.key.shadow.mapSize.set(2048,2048);this.key.shadow.radius=4;this.key.shadow.bias=-.0005;this.key.shadow.normalBias=.02;Object.assign(this.key.shadow.camera,{left:-7,right:7,top:7,bottom:-7,near:.5,far:30});this.scene.add(this.key);this.scene.add(new THREE.HemisphereLight(this.dark?0x3A362F:0xFFF8EC,this.dark?0x1F1D1A:0xD9CBB0,this.dark?.45:.6));this.ray=new THREE.Raycaster();this.pointer=new THREE.Vector2();this.resizeObserver=new ResizeObserver(()=>this.resize());this.resizeObserver.observe(ctx.layer);this.resize();this.bind();this.raf=requestAnimationFrame(t=>this.frame(t))}
- resize(){const w=this.ctx.layer.clientWidth||800,h=this.ctx.layer.clientHeight||450;this.renderer.setSize(w,h,false);this.renderer.setPixelRatio(Math.min(devicePixelRatio,2));this.camera.aspect=w/h;this.camera.updateProjectionMatrix()}
- mat(c){return new THREE.MeshToonMaterial({color:c,gradientMap:gradient()})}
- mesh(id,geo,c,pos=[0,0,0],shadow=true){const g=new THREE.Group(),m=new THREE.Mesh(geo,this.mat(c));m.castShadow=shadow;m.receiveShadow=shadow;g.add(m);const o=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:this.dark?0xEDE6D6:0x2B2622,side:THREE.BackSide}));o.scale.setScalar(1.025);g.add(o);g.position.fromArray(pos);this.scene.add(g);this.objects[id]=g;return g}
- box(id,size,c,pos,shadow=true){return this.mesh(id,new THREE.BoxGeometry(...size),c,pos,shadow)}
- sphere(id,r,c,pos){return this.mesh(id,new THREE.SphereGeometry(r,24,16),c,pos)}
- cylinder(id,r,h,c,pos){return this.mesh(id,new THREE.CylinderGeometry(r,r,h,20),c,pos)}
- line(id,points,c,width=.035){const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)));const m=new THREE.Mesh(new THREE.TubeGeometry(curve,Math.max(4,points.length*4),width,6,false),new THREE.MeshBasicMaterial({color:c}));m.castShadow=m.receiveShadow=false;this.scene.add(m);this.objects[id]=m;return m}
+function reduced() {
+  return typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+function webgl() {
+  try {
+    const c = document.createElement("canvas");
+    return !!(window.WebGL2RenderingContext && c.getContext("webgl2")) || !!c.getContext("webgl");
+  } catch { return false; }
+}
+
+export function toon(mesh, color) {
+  mesh.material = new THREE.MeshToonMaterial({ color });
+  mesh.castShadow = true;
+  const ink = new THREE.Mesh(mesh.geometry, new THREE.MeshBasicMaterial({ color: isDark() ? 0xEDE6D6 : 0x2B2622, side: THREE.BackSide }));
+  ink.scale.setScalar(1.025);
+  ink.castShadow = false;
+  ink.raycast = () => {};
+  ink.userData.ink = true;
+  mesh.add(ink);
+  return mesh;
+}
+
+export function createEnergyScene(host, opts = {}) {
+  if (!hasDoc() || !webgl()) return null;
+  opts.reduce = opts.reduce ?? reduced();
+  const dark = isDark();
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({ antialias: true }); } catch { return null; }
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.domElement.style.touchAction = "none";
+  host.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(dark ? "#1F1D1A" : "#FBF6EA");
+  const camera = new THREE.PerspectiveCamera(opts.fov || 40, 16 / 9, 0.1, 100);
+  camera.position.fromArray(opts.camera || [0, 5, 9]);
+  camera.lookAt(new THREE.Vector3().fromArray(opts.target || [0, 1, 0]));
+
+  const sun = new THREE.DirectionalLight(0xFFF1DC, dark ? 1.8 : 2.2);
+  sun.position.set(-4, 8, 5);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.bias = -0.0005;
+  sun.shadow.normalBias = 0.02;
+  Object.assign(sun.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6, near: 0.5, far: 25 });
+  scene.add(sun, new THREE.HemisphereLight(dark ? 0x3A362F : 0xFFF8EC, dark ? 0x1F1D1A : 0xD9CBB0, dark ? 0.45 : 0.6));
+
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshToonMaterial({ color: dark ? "#1F1D1A" : "#F4ECDC" }));
+  ground.rotation.x = -Math.PI / 2;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  const frames = new Set(), drags = [], cleanups = [];
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), hit = new THREE.Vector3();
+  const el = renderer.domElement;
+  let active = null;
+  const toNdc = (e) => {
+    const r = el.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+  };
+  const AX = { x: new THREE.Vector3(1, 0, 0), y: new THREE.Vector3(0, 1, 0), z: new THREE.Vector3(0, 0, 1) };
+  function down(e) {
+    toNdc(e);
+    const hits = ray.intersectObjects(drags.map((d) => d.mesh), true);
+    if (!hits.length) return;
+    const d = drags.find((d) => { let o = hits[0].object; while (o) { if (o === d.mesh) return true; o = o.parent; } return false; });
+    if (!d) return;
+    const axis = AX[d.axis] || AX.x;
+    // plane containing the axis, facing the camera as much as possible
+    const view = camera.getWorldDirection(new THREE.Vector3());
+    const n = view.clone().sub(axis.clone().multiplyScalar(view.dot(axis)));
+    if (n.lengthSq() < 1e-6) n.copy(axis.x ? AX.z : AX.x);
+    const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(n.normalize(), hits[0].point);
+    if (!ray.ray.intersectPlane(plane, hit)) return;
+    active = { d, plane, start: d.mesh.position[d.axis] - hit.dot(axis), axis };
+    el.setPointerCapture?.(e.pointerId);
+    e.preventDefault();
+  }
+  function move(e) {
+    if (!active) return;
+    toNdc(e);
+    if (!ray.ray.intersectPlane(active.plane, hit)) return;
+    const { d } = active;
+    const v = clamp(active.start + hit.dot(active.axis), d.min, d.max);
+    d.mesh.position[d.axis] = v;
+    d.onMove?.(v, d.mesh);
+  }
+  const up = () => { active = null; };
+  el.addEventListener("pointerdown", down);
+  el.addEventListener("pointermove", move);
+  el.addEventListener("pointerup", up);
+  el.addEventListener("pointercancel", up);
+
+  function addDrag(mesh, { axis = "x", min = -Infinity, max = Infinity, onMove } = {}) {
+    const d = { mesh, axis, min, max, onMove };
+    drags.push(d);
+    return () => drags.splice(drags.indexOf(d), 1);
+  }
+  function onFrame(fn) { frames.add(fn); return () => frames.delete(fn); }
+  function resize() {
+    const w = host.clientWidth || 800, h = host.clientHeight || 450;
+    renderer.setSize(w, h, false);
+    el.style.width = "100%"; el.style.height = "100%";
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(resize) : null;
+  ro?.observe(host);
+
+  let raf = 0, last = 0, disposed = false;
+  function tick(t) {
+    raf = 0;
+    if (disposed || document.hidden) return;
+    const dt = last ? Math.min((t - last) / 1000, 0.05) : 0;
+    last = t;
+    for (const fn of frames) fn(dt, t / 1000);
+    renderer.render(scene, camera);
+    raf = requestAnimationFrame(tick);
+  }
+  const vis = () => { if (!document.hidden && !raf && !disposed) { last = 0; raf = requestAnimationFrame(tick); } };
+  document.addEventListener("visibilitychange", vis);
+  raf = requestAnimationFrame(tick);
+
+  function dispose() {
+    disposed = true;
+    if (raf) cancelAnimationFrame(raf);
+    ro?.disconnect();
+    document.removeEventListener("visibilitychange", vis);
+    el.removeEventListener("pointerdown", down);
+    el.removeEventListener("pointermove", move);
+    el.removeEventListener("pointerup", up);
+    el.removeEventListener("pointercancel", up);
+    cleanups.forEach((f) => f());
+    scene.traverse((o) => {
+      o.geometry?.dispose();
+      [].concat(o.material || []).forEach((m) => m.dispose());
+    });
+    renderer.dispose();
+    el.remove();
+    frames.clear();
+    drags.length = 0;
+  }
+  return { THREE, scene, camera, renderer, palette, addDrag, onFrame, resize, dispose };
+}
