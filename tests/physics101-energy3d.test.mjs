@@ -53,3 +53,21 @@ test("grid.js and m21-l02 p11 wrapper import; badge and O3 text present", async 
   assert.equal(s.sceneText.badge_incomplete, "INCOMPLETE CHAIN");
   assert.ok(s.sceneText.scenario.startsWith("This mixed-year illustrative scenario"));
 });
+
+test("kettle: Tesla C6 values", () => {
+  near(ph.heatQ(0.23, 4180, 80), 76912, 1e-6);
+  near(ph.kettleTime(), 25.637333, 1e-5);
+  const [lo, hi] = ph.band5(ph.kettleTime()); near(lo, 24.3555, 1e-4); near(hi, 26.9192, 1e-4);
+  near(ph.kettleTime(0.115), ph.kettleTime() / 2, 1e-12);
+});
+test("insulation: qualitative only, Tesla O2 holds numbers", async () => {
+  assert.ok(ph.relativeLossShape(1) < ph.relativeLossShape(0.5) && ph.relativeLossShape(0.5) < ph.relativeLossShape(0));
+  const s = JSON.parse(readFileSync(new URL(P + "decks/m11-l01/v2/story.json", import.meta.url))).slides;
+  const { correct, noWebgl, ...shown } = s["16"].sceneText; const ins = JSON.stringify(shown);
+  assert.equal(s["16"].sceneText.pending, "values pending approval");
+  assert.doesNotMatch(ins, /\d/, "no numbers in the insulation text");
+  assert.doesNotMatch(readFileSync(new URL(P + "scenes/energy3d/heat.js", import.meta.url), "utf8"), /W\/\(m|U-value\s*=|fillText\([^)]*\d+\s*\)/);
+  const h = await import(P + "scenes/energy3d/heat.js");
+  assert.equal(typeof h.mountKettle, "function"); assert.equal(typeof h.mountInsulation, "function");
+  for (const pn of ["p09", "p16"]) assert.equal(typeof (await import(P + "scenes/m11-l01/" + pn + ".js")).default, "function");
+});

@@ -70,7 +70,22 @@
   "9": {
    "layers": [],
    "title": "Heat",
-   "text": "<h3>Heat</h3><p class=\"p101-def\">Heat, Q, is the transfer of thermal energy, which happens on its own from a hotter object to a cooler one.</p><p>When two objects touch, they share out their thermal energy. Heat, Q, is the transfer of thermal energy, and it flows on its own from hotter to cooler. Thermal energy can't move from a colder object to a hotter one unless work is done. Heat is measured in joules, like work and energy.</p><p>With the thermometer, thermal energy moved from your warm skin to the cool thermometer through particle collisions. If an object absorbs thermal energy, Q is positive. If thermal energy leaves an object, Q is negative.</p>"
+   "text": "<h3>Heat</h3><p class=\"p101-def\">Heat, Q, is the transfer of thermal energy, which happens on its own from a hotter object to a cooler one.</p><p>When two objects touch, they share out their thermal energy. Heat, Q, is the transfer of thermal energy, and it flows on its own from hotter to cooler. Thermal energy can't move from a colder object to a hotter one unless work is done. Heat is measured in joules, like work and energy.</p><p>With the thermometer, thermal energy moved from your warm skin to the cool thermometer through particle collisions. If an object absorbs thermal energy, Q is positive. If thermal energy leaves an object, Q is negative.</p>",
+   "testIt": {
+    "name": "Full or half kettle",
+    "how": "Predict the heating time for 0.230 kg of water, then switch on a full and a half kettle."
+   },
+   "sceneText": {
+    "formula": "Q = m C delta T, with C = specific heat capacity, J/(kg K)",
+    "defaults": "C_water = {C} J/(kg K); full kettle {m} kg, {P} W, 20 to 100 degrees C, delta T = 80 K, eta = 1",
+    "predictLabel": "Your predicted time for the full kettle (s)",
+    "switch": "Switch on",
+    "explainBtn": "Explain",
+    "right": "Within 5 percent ({lo} to {hi} s). Q = {Q} J, so the ideal minimum heating time in this model is {t} s. Half the water needs half the energy: {half} s.",
+    "wrong": "Outside the 5 percent band ({lo} to {hi} s). Q = {Q} J, so the ideal minimum heating time in this model is {t} s. Half the water needs half the energy: {half} s.",
+    "explain": "Q = m C delta T sets the energy needed to change temperature. Halve the mass and the energy halves; at the same power the time halves too. ENERGY OR RATE? Energy here; rate is the kettle power.",
+    "noWebgl": "This 3D kettle model needs WebGL, which this browser does not have."
+   }
   },
   "10": {
    "layers": [],
@@ -129,7 +144,31 @@
   "16": {
    "layers": [],
    "title": "Warm-Blooded and Cold-Blooded",
-   "text": "<h3>Warm-Blooded and Cold-Blooded</h3><p class=\"p101-def\">Cold-blooded animals rely on their surroundings for body temperature; warm-blooded animals control it internally.</p><p>Animals fall into two groups by how they handle body temperature. Most, like the spider in Figure 11, are cold-blooded. Their body temperature depends on the environment, so they control heat transfer with behavior: hiding under a rock to cool off, or basking in the sun to warm up.</p><p>The rest are warm-blooded, keeping a steady body temperature no matter the surroundings. Humans stay close to 37 degrees Celsius. When the brain senses a change, it triggers responses like shivering or sweating. In Figure 11's thermal image, the spider matches the air temperature, but the person's hands are much warmer.</p><p>So how is thermal energy transferred when you cook? By conduction from the burner through the pan, by convection in bubbling water or soup, and by radiation from glowing coils or flames. Heat always flows from hot to cold until things reach equilibrium.</p>"
+   "text": "<h3>Warm-Blooded and Cold-Blooded</h3><p class=\"p101-def\">Cold-blooded animals rely on their surroundings for body temperature; warm-blooded animals control it internally.</p><p>Animals fall into two groups by how they handle body temperature. Most, like the spider in Figure 11, are cold-blooded. Their body temperature depends on the environment, so they control heat transfer with behavior: hiding under a rock to cool off, or basking in the sun to warm up.</p><p>The rest are warm-blooded, keeping a steady body temperature no matter the surroundings. Humans stay close to 37 degrees Celsius. When the brain senses a change, it triggers responses like shivering or sweating. In Figure 11's thermal image, the spider matches the air temperature, but the person's hands are much warmer.</p><p>So how is thermal energy transferred when you cook? By conduction from the burner through the pan, by convection in bubbling water or soup, and by radiation from glowing coils or flames. Heat always flows from hot to cold until things reach equilibrium.</p>",
+   "testIt": {
+    "name": "Jacket or no jacket",
+    "how": "Drag the jacket tab to thicken the insulation, predict, then heat both with the same heater."
+   },
+   "sceneText": {
+    "pending": "values pending approval",
+    "card": "Steady loss meters use declared jacket U-values and areas. Cooling-time behavior, if shown, uses a separate declared lumped-capacity model.",
+    "graphLabel": "Temperature against time for the bare and insulated calorimeters, qualitative, no values",
+    "axisT": "temperature",
+    "axisX": "time",
+    "predict": "Same heater in both. Which one ends up warmer?",
+    "choices": [
+     "The insulated one",
+     "The bare one",
+     "They end up the same"
+    ],
+    "correct": 0,
+    "run": "Heat both",
+    "explainBtn": "Explain",
+    "right": "Yes. The jacket narrows the loss arrows, so the same heater keeps it warmer.",
+    "wrong": "Watch the loss arrows: the jacket narrows them, so the insulated one ends up warmer.",
+    "explain": "Insulation changes the rate of transfer across the boundary for a given temperature difference. It does not change the water's specific heat or stop the loss. ENERGY OR RATE? Rate.",
+    "noWebgl": "This 3D insulation model needs WebGL, which this browser does not have."
+   }
   }
  }
 }

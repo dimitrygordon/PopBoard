@@ -72,3 +72,16 @@ export function gridChain(source, input = 1) {
 export const overallEfficiency = (src) => gridChain(src).overall;
 export const sourceInputFor = (src, pLamp = LAMP_W) => pLamp / overallEfficiency(src);
 
+
+// ---------- Kettle (Every Joule Sim 5, Page 12), Tesla C6 cleared ----------
+export const C_WATER = 4180; // J/(kg K), rounded course value
+export const KETTLE = Object.freeze({ m: 0.23, P: 3000, T0: 20, T1: 100, eta: 1 });
+export const heatQ = (m, C, dT) => m * C * dT;
+// Ideal minimum heating time in this model: t = m C dT / (eta P).
+export const kettleTime = (m = KETTLE.m, P = KETTLE.P, dT = KETTLE.T1 - KETTLE.T0, eta = KETTLE.eta, C = C_WATER) => heatQ(m, C, dT) / (eta * P);
+export const band5 = (t) => [t * 0.95, t * 1.05];
+
+// ---------- Insulation (Page 14): Tesla O2 holds every number ----------
+// Qualitative only: relative loss shape for drawing. No U-values, areas, watts or times may be shown.
+// thickness in 0..1; returns a unitless 0..1 drawing scale that only says "less with more insulation".
+export const relativeLossShape = (thickness) => 1 / (1 + 3 * Math.max(0, Math.min(1, thickness)));
