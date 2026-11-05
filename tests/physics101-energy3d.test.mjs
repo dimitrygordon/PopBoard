@@ -91,3 +91,9 @@ test("food: Tesla C8 corrected arithmetic, toast is least sufficient", async () 
   near(ph.flightsFrom(832e3, 60, 1.75, 0.25), 832e3 / 4116);
   await mounts("food", "mountFood", "m10-l02", "p11");
 });
+test("journey: Tesla C9 values, total fixed in the closed model", async () => {
+  for (const p of [0, 0.4, 1, 1.5, 2]) { const s = ph.journey(p); near(s.food + s.kinetic + s.thermal, 270, 1e-9); }
+  near(ph.journey(1).kinetic, 67.5); near(ph.journey(1).thermal, 202.5); near(ph.journey(2).thermal, 270);
+  assert.equal(ph.ledger(270, 0, 0), 270);
+  await mounts("journey", "mountJourney", "m10-l03", "p01");
+});

@@ -106,3 +106,14 @@ export function leastSufficient(n = CLIMB.flights, m, h, eff) {
   const need = n * flightFood(m, h, eff);
   return Object.entries(FOODS).filter(([, J]) => J >= need).sort((a, b) => a[1] - b[1])[0]?.[0] ?? null;
 }
+
+// ---------- Nothing is lost (Sim 10), Tesla C9 + C1, declared closed model ----------
+export const JOURNEY = Object.freeze({ m: 60, v: 1.5, food: 270 }); // kg, m/s, J removed from the food store
+export const ledger = (E_initial, E_in, E_out) => E_initial + E_in - E_out; // E_final
+// Phase 0..1 walking (KE held), 1..2 stopping. Returns the closed-model stores in J; total is always food.
+export function journey(phase) {
+  const { m, v, food } = JOURNEY, ke = 0.5 * m * v * v; // 67.5 J
+  const p = Math.max(0, Math.min(2, phase));
+  if (p <= 1) return { food: food * (1 - p), kinetic: ke * p, thermal: (food - ke) * p };
+  const s = p - 1; return { food: 0, kinetic: ke * (1 - s), thermal: food - ke * (1 - s) };
+}

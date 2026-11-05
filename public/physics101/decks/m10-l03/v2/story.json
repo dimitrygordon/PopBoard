@@ -6,7 +6,31 @@
   "1": {
    "layers": [],
    "title": "Energy Never Disappears",
-   "text": "<h3>Energy Never Disappears</h3><p class=\"p101-def\">The law of conservation of energy states that in a closed, isolated system, energy can neither be created nor destroyed.</p><p>Our big question for this lesson: can energy be lost? Let's find out!</p><p>The law of conservation of energy says that in a closed, isolated system, energy can't be created or destroyed. So the total change in energy of any system always equals the energy transferred into or out of it. Energy can travel from place to place, move between systems, and change forms, like the thermal energy a running car gives off to the air around it. But the total, counting every form, stays the same.</p><p>Inside a system, energy keeps shifting from object to object and from form to form. That's why we treat energy as one single quantity. It also means a battery-powered lamp can never give out more light energy than the energy stored in its battery.</p>"
+   "text": "<h3>Energy Never Disappears</h3><p class=\"p101-def\">The law of conservation of energy states that in a closed, isolated system, energy can neither be created nor destroyed.</p><p>Our big question for this lesson: can energy be lost? Let's find out!</p><p>The law of conservation of energy says that in a closed, isolated system, energy can't be created or destroyed. So the total change in energy of any system always equals the energy transferred into or out of it. Energy can travel from place to place, move between systems, and change forms, like the thermal energy a running car gives off to the air around it. But the total, counting every form, stays the same.</p><p>Inside a system, energy keeps shifting from object to object and from form to form. That's why we treat energy as one single quantity. It also means a battery-powered lamp can never give out more light energy than the energy stored in its battery.</p>",
+   "testIt": {
+    "name": "Where did breakfast go?",
+    "how": "Predict, then play the journey or drag the timeline. Watch the total bar."
+   },
+   "sceneText": {
+    "equation": "E_final = E_initial + E_in - E_out",
+    "values": "v = 1.5 m/s, KE = 67.5 J, food removed 270 J, thermal 202.5 J (tolerance 0.1 percent)",
+    "readout": "food {food} J, kinetic {ke} J, thermal {th} J, total {total} J",
+    "predict": "After the person stops, where is the tracked breakfast energy, and what does the total bar do?",
+    "choices": [
+     "Gone; the total falls",
+     "All in the room's thermal store; the total stays fixed",
+     "Still kinetic; the total rises"
+    ],
+    "correct": 1,
+    "play": "Play",
+    "right": "Yes. Watch the total bar stay put.",
+    "wrong": "Watch the total bar: it never moves.",
+    "explainBtn": "Explain",
+    "explain": "Nothing crosses the declared room boundary, so E_in = E_out = 0 and E_final = E_initial. While walking, 270 J left the food: 67.5 J kinetic and 202.5 J thermal. When the person stops, the 67.5 J also becomes thermal, so the room gains all 270 J and the total bar stays the same.",
+    "closed": "In this declared closed model only, after motion stops. Animation timings are presentation only.",
+    "footer": "Energy is transferred, not destroyed.",
+    "noWebgl": "This 3D journey model needs WebGL, which this browser does not have."
+   }
   },
   "2": {
    "layers": [],
