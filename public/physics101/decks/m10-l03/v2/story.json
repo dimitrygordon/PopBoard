@@ -61,7 +61,33 @@
   "8": {
    "layers": [],
    "title": "A Strategy for Conservation of Energy Problems",
-   "text": "<h3>A Strategy for Conservation of Energy Problems</h3><p class=\"p101-def\">For an isolated system, E initial equals E final; with outside forces, E final equals E initial plus W.</p><p>Here's a strategy for conservation of energy problems. First, identify the system and decide if it's closed, meaning no objects enter or leave. Second, identify the forms of energy in the system and which ones count as mechanical energy. Third, identify the initial and final states.</p><p>Fourth, ask: is the system isolated? If no outside forces act on it, its total energy is constant, so E initial equals E final. If outside forces act, then E final equals E initial plus the work done on the system, and remember, that work can be negative. Fifth, for an isolated system with only kinetic and potential energy, mechanical energy is conserved: K E initial plus P E initial equals K E final plus P E final. Choose a reference level for G P E and draw before and after energy bar diagrams like the one shown here.</p>"
+   "text": "<h3>A Strategy for Conservation of Energy Problems</h3><p class=\"p101-def\">For an isolated system, E initial equals E final; with outside forces, E final equals E initial plus W.</p><p>Here's a strategy for conservation of energy problems. First, identify the system and decide if it's closed, meaning no objects enter or leave. Second, identify the forms of energy in the system and which ones count as mechanical energy. Third, identify the initial and final states.</p><p>Fourth, ask: is the system isolated? If no outside forces act on it, its total energy is constant, so E initial equals E final. If outside forces act, then E final equals E initial plus the work done on the system, and remember, that work can be negative. Fifth, for an isolated system with only kinetic and potential energy, mechanical energy is conserved: K E initial plus P E initial equals K E final plus P E final. Choose a reference level for G P E and draw before and after energy bar diagrams like the one shown here.</p>",
+   "testIt": {
+    "name": "Why a bouncing ball stops",
+    "how": "Pick a ball, drag it up to set the drop height, predict, then press Drop."
+   },
+   "sceneText": {
+    "pickLabel": "Ball",
+    "ball_tennis": "Tennis ball",
+    "ball_basketball": "Basketball",
+    "ball_tableTennis": "Table tennis ball",
+    "readout": "{m} kg, drop {h} m, e = {e}",
+    "preset": "(reference-test preset)",
+    "predict": "Before you drop it: what will the rebound heights do?",
+    "choices": [
+     "Increase",
+     "Stay the same",
+     "Decrease"
+    ],
+    "correct": 2,
+    "drop": "Drop",
+    "explainBtn": "Explain",
+    "right": "Good prediction. Watch each rebound.",
+    "wrong": "Watch closely. Each rebound is lower.",
+    "impact": "Impact: about {loss} mJ of mechanical energy became thermal energy and sound (sound is an estimate).",
+    "explain": "mechanical-energy decrease = thermal-energy increase + sound energy carried away. Energy is not destroyed; each impact moves some of it out of the mechanical stores, so h_rebound/h_drop = e^2 and the rebounds get lower. Assumptions: no spin, no air resistance, same surface, heights from ball underside.",
+    "noWebgl": "This 3D bouncing-ball model needs WebGL, which this browser does not have."
+   }
   },
   "9": {
    "layers": [],
