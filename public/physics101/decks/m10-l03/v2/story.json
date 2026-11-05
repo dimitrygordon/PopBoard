@@ -35,7 +35,32 @@
   "2": {
    "layers": [],
    "title": "Your Investigation Toolkit",
-   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you complete the readings and activities in this lesson.</p><p>Online, the Applying Practices activity called Earth Power asks you to design, build, and refine a device that works within given constraints to convert one form of energy into another. And Modeling Changes in Energy has you build a computational model to calculate how the energy of one part of a system changes when you know the changes in the other parts and the energy flowing in and out.</p>"
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you complete the readings and activities in this lesson.</p><p>Online, the Applying Practices activity called Earth Power asks you to design, build, and refine a device that works within given constraints to convert one form of energy into another. And Modeling Changes in Energy has you build a computational model to calculate how the energy of one part of a system changes when you know the changes in the other parts and the energy flowing in and out.</p>",
+   "testIt": {
+    "name": "Release and return",
+    "how": "Drag the ball up the track, predict with friction off and on, then release."
+   },
+   "sceneText": {
+    "formulas": "KE_trans = 1/2 m v^2, GPE = mgh, g = 9.8 N/kg, ME = KE + PE, heights from the zero height line",
+    "rolling": "Rolling balls: kinetic includes rotational KE.",
+    "frictionOff": "Friction: off",
+    "frictionOn": "Friction: on",
+    "readOff": "ME = {me} percent of the release value, at display precision",
+    "readFriction": "Friction on: mechanical energy falls as the thermal account grows.",
+    "predictOff": "Friction off: the first return maximum will be...",
+    "predictOn": "Friction on: the first return maximum will be...",
+    "choices": [
+     "Below the release height",
+     "Equal to the release height",
+     "Above the release height"
+    ],
+    "release": "Release",
+    "right": "Good prediction. Watch the flag and the jars.",
+    "wrong": "Compare the return height with the flag.",
+    "explainBtn": "Explain",
+    "explain": "With friction off, KE + GPE stays the same, so the ball returns to the release height. With friction on, the ball returns lower and the thermal account grows by the mechanical energy that left, so the total is still accounted for.",
+    "noWebgl": "This 3D track model needs WebGL, which this browser does not have."
+   }
   },
   "3": {
    "layers": [],

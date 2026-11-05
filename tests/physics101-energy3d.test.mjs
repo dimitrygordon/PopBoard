@@ -97,3 +97,8 @@ test("journey: Tesla C9 values, total fixed in the closed model", async () => {
   assert.equal(ph.ledger(270, 0, 0), 270);
   await mounts("journey", "mountJourney", "m10-l03", "p01");
 });
+test("track: frictionless ME constant; no friction coefficient shown", async () => {
+  for (const h of [0, 0.5, 1.2]) near(ph.mechanical(2, h, ph.speedAt(1.2, h)), ph.mechanical(2, 1.2, 0), 1e-9);
+  await mounts("track", "mountTrack", "m10-l03", "p02");
+  assert.doesNotMatch(JSON.stringify(story("m10-l03")["2"].sceneText), /mu\b|coefficient of friction|\u03bc/);
+});

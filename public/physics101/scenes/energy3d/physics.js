@@ -117,3 +117,10 @@ export function journey(phase) {
   if (p <= 1) return { food: food * (1 - p), kinetic: ke * p, thermal: (food - ke) * p };
   const s = p - 1; return { food: 0, kinetic: ke * (1 - s), thermal: food - ke * (1 - s) };
 }
+
+// ---------- Kinetic and gravitational (Sim 2), Tesla C1, C2 ----------
+// Frictionless: ME = KE + GPE fixed, so the return maximum equals the release height.
+export const speedAt = (h0, h) => Math.sqrt(2 * g * Math.max(0, h0 - h));
+export const mechanical = (m, h, v) => energyAt(m, h, v).total;
+// Friction on: no coefficient is cleared, so the drawing uses a unitless shape factor and the scene shows no number for it.
+export const FRICTION_DRAW = 0.8;
