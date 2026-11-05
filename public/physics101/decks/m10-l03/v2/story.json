@@ -6,12 +6,62 @@
   "1": {
    "layers": [],
    "title": "Energy Never Disappears",
-   "text": "<h3>Energy Never Disappears</h3><p class=\"p101-def\">The law of conservation of energy states that in a closed, isolated system, energy can neither be created nor destroyed.</p><p>Our big question for this lesson: can energy be lost? Let's find out!</p><p>The law of conservation of energy says that in a closed, isolated system, energy can't be created or destroyed. So the total change in energy of any system always equals the energy transferred into or out of it. Energy can travel from place to place, move between systems, and change forms, like the thermal energy a running car gives off to the air around it. But the total, counting every form, stays the same.</p><p>Inside a system, energy keeps shifting from object to object and from form to form. That's why we treat energy as one single quantity. It also means a battery-powered lamp can never give out more light energy than the energy stored in its battery.</p>"
+   "text": "<h3>Energy Never Disappears</h3><p class=\"p101-def\">The law of conservation of energy states that in a closed, isolated system, energy can neither be created nor destroyed.</p><p>Our big question for this lesson: can energy be lost? Let's find out!</p><p>The law of conservation of energy says that in a closed, isolated system, energy can't be created or destroyed. So the total change in energy of any system always equals the energy transferred into or out of it. Energy can travel from place to place, move between systems, and change forms, like the thermal energy a running car gives off to the air around it. But the total, counting every form, stays the same.</p><p>Inside a system, energy keeps shifting from object to object and from form to form. That's why we treat energy as one single quantity. It also means a battery-powered lamp can never give out more light energy than the energy stored in its battery.</p>",
+   "testIt": {
+    "name": "Where did breakfast go?",
+    "how": "Predict, then play the journey or drag the timeline. Watch the total bar."
+   },
+   "sceneText": {
+    "equation": "E_final = E_initial + E_in - E_out",
+    "values": "v = 1.5 m/s, KE = 67.5 J, food removed 270 J, thermal 202.5 J (tolerance 0.1 percent)",
+    "readout": "food {food} J, kinetic {ke} J, thermal {th} J, total {total} J",
+    "predict": "After the person stops, where is the tracked breakfast energy, and what does the total bar do?",
+    "choices": [
+     "Gone; the total falls",
+     "All in the room's thermal store; the total stays fixed",
+     "Still kinetic; the total rises"
+    ],
+    "correct": 1,
+    "play": "Play",
+    "right": "Yes. Watch the total bar stay put.",
+    "wrong": "Watch the total bar: it never moves.",
+    "explainBtn": "Explain",
+    "explain": "Nothing crosses the declared room boundary, so E_in = E_out = 0 and E_final = E_initial. While walking, 270 J left the food: 67.5 J kinetic and 202.5 J thermal. When the person stops, the 67.5 J also becomes thermal, so the room gains all 270 J and the total bar stays the same.",
+    "closed": "In this declared closed model only, after motion stops. Animation timings are presentation only.",
+    "footer": "Energy is transferred, not destroyed.",
+    "noWebgl": "This 3D journey model needs WebGL, which this browser does not have.",
+    "toggle": "Show or hide the 3D model"
+   }
   },
   "2": {
    "layers": [],
    "title": "Your Investigation Toolkit",
-   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you complete the readings and activities in this lesson.</p><p>Online, the Applying Practices activity called Earth Power asks you to design, build, and refine a device that works within given constraints to convert one form of energy into another. And Modeling Changes in Energy has you build a computational model to calculate how the energy of one part of a system changes when you know the changes in the other parts and the energy flowing in and out.</p>"
+   "text": "<h3>Your Investigation Toolkit</h3><p class=\"p101-def\">Collect evidence in your Science Journal and investigate with activities.</p><p>Use your Science Journal to record the evidence you collect as you complete the readings and activities in this lesson.</p><p>Online, the Applying Practices activity called Earth Power asks you to design, build, and refine a device that works within given constraints to convert one form of energy into another. And Modeling Changes in Energy has you build a computational model to calculate how the energy of one part of a system changes when you know the changes in the other parts and the energy flowing in and out.</p>",
+   "testIt": {
+    "name": "Release and return",
+    "how": "Drag the ball up the track, predict with friction off and on, then release."
+   },
+   "sceneText": {
+    "formulas": "KE_trans = 1/2 m v^2, GPE = mgh, g = 9.8 N/kg, ME = KE + PE, heights from the zero height line",
+    "rolling": "Rolling balls: kinetic includes rotational KE.",
+    "frictionOff": "Friction: off",
+    "frictionOn": "Friction: on",
+    "readOff": "ME = {me} percent of the release value, at display precision",
+    "readFriction": "Friction on: mechanical energy falls as the thermal account grows.",
+    "predictOff": "Friction off: the first return maximum will be...",
+    "predictOn": "Friction on: the first return maximum will be...",
+    "choices": [
+     "Below the release height",
+     "Equal to the release height",
+     "Above the release height"
+    ],
+    "release": "Release",
+    "right": "Good prediction. Watch the flag and the jars.",
+    "wrong": "Compare the return height with the flag.",
+    "explainBtn": "Explain",
+    "explain": "With friction off, KE + GPE stays the same, so the ball returns to the release height. With friction on, the ball returns lower and the thermal account grows by the mechanical energy that left, so the total is still accounted for.",
+    "noWebgl": "This 3D track model needs WebGL, which this browser does not have."
+   }
   },
   "3": {
    "layers": [],
@@ -61,7 +111,33 @@
   "8": {
    "layers": [],
    "title": "A Strategy for Conservation of Energy Problems",
-   "text": "<h3>A Strategy for Conservation of Energy Problems</h3><p class=\"p101-def\">For an isolated system, E initial equals E final; with outside forces, E final equals E initial plus W.</p><p>Here's a strategy for conservation of energy problems. First, identify the system and decide if it's closed, meaning no objects enter or leave. Second, identify the forms of energy in the system and which ones count as mechanical energy. Third, identify the initial and final states.</p><p>Fourth, ask: is the system isolated? If no outside forces act on it, its total energy is constant, so E initial equals E final. If outside forces act, then E final equals E initial plus the work done on the system, and remember, that work can be negative. Fifth, for an isolated system with only kinetic and potential energy, mechanical energy is conserved: K E initial plus P E initial equals K E final plus P E final. Choose a reference level for G P E and draw before and after energy bar diagrams like the one shown here.</p>"
+   "text": "<h3>A Strategy for Conservation of Energy Problems</h3><p class=\"p101-def\">For an isolated system, E initial equals E final; with outside forces, E final equals E initial plus W.</p><p>Here's a strategy for conservation of energy problems. First, identify the system and decide if it's closed, meaning no objects enter or leave. Second, identify the forms of energy in the system and which ones count as mechanical energy. Third, identify the initial and final states.</p><p>Fourth, ask: is the system isolated? If no outside forces act on it, its total energy is constant, so E initial equals E final. If outside forces act, then E final equals E initial plus the work done on the system, and remember, that work can be negative. Fifth, for an isolated system with only kinetic and potential energy, mechanical energy is conserved: K E initial plus P E initial equals K E final plus P E final. Choose a reference level for G P E and draw before and after energy bar diagrams like the one shown here.</p>",
+   "testIt": {
+    "name": "Why a bouncing ball stops",
+    "how": "Pick a ball, drag it up to set the drop height, predict, then press Drop."
+   },
+   "sceneText": {
+    "pickLabel": "Ball",
+    "ball_tennis": "Tennis ball",
+    "ball_basketball": "Basketball",
+    "ball_tableTennis": "Table tennis ball",
+    "readout": "{m} kg, drop {h} m, e = {e}",
+    "preset": "(reference-test preset)",
+    "predict": "Before you drop it: what will the rebound heights do?",
+    "choices": [
+     "Increase",
+     "Stay the same",
+     "Decrease"
+    ],
+    "correct": 2,
+    "drop": "Drop",
+    "explainBtn": "Explain",
+    "right": "Good prediction. Watch each rebound.",
+    "wrong": "Watch closely. Each rebound is lower.",
+    "impact": "Impact: about {loss} mJ of mechanical energy became thermal energy and sound (sound is an estimate).",
+    "explain": "mechanical-energy decrease = thermal-energy increase + sound energy carried away. Energy is not destroyed; each impact moves some of it out of the mechanical stores, so h_rebound/h_drop = e^2 and the rebounds get lower. Assumptions: no spin, no air resistance, same surface, heights from ball underside.",
+    "noWebgl": "This 3D bouncing-ball model needs WebGL, which this browser does not have."
+   }
   },
   "9": {
    "layers": [],

@@ -6,7 +6,48 @@
   "1": {
    "layers": [],
    "title": "Energy Comes in Flavors",
-   "text": "<h3>Energy Comes in Flavors</h3><p class=\"p101-def\">Energy can change from one form to another, and a system can hold energy in many forms at once.</p><p>Our big question for this lesson: what are some forms of energy? Remember the work-energy theorem: doing work on a system changes its energy. When something does work on the system, the system's energy goes up. When the system does work on its surroundings, its energy goes down.</p><p>Energy is a bit like ice cream. It comes in different flavors, like vanilla, chocolate, and peach, but it's all ice cream. Unlike ice cream, though, energy can change from one flavor into another!</p><p>At everyday scales, energy shows up as motion, sound, light, and thermal energy. At a fireworks show, like the one in Figure 12, the chemical reactions in the fireworks release energy that you see as moving, colorful light, hear as loud pops, and maybe even feel as warmth if you're close (but not too close). A campfire is another event with several forms at once: light, warmth, and crackling sound.</p>"
+   "text": "<h3>Energy Comes in Flavors</h3><p class=\"p101-def\">Energy can change from one form to another, and a system can hold energy in many forms at once.</p><p>Our big question for this lesson: what are some forms of energy? Remember the work-energy theorem: doing work on a system changes its energy. When something does work on the system, the system's energy goes up. When the system does work on its surroundings, its energy goes down.</p><p>Energy is a bit like ice cream. It comes in different flavors, like vanilla, chocolate, and peach, but it's all ice cream. Unlike ice cream, though, energy can change from one flavor into another!</p><p>At everyday scales, energy shows up as motion, sound, light, and thermal energy. At a fireworks show, like the one in Figure 12, the chemical reactions in the fireworks release energy that you see as moving, colorful light, hear as loud pops, and maybe even feel as warmth if you're close (but not too close). A campfire is another event with several forms at once: light, warmth, and crackling sound.</p>",
+   "testIt": {
+    "name": "Energy stores",
+    "how": "Drag each example onto its store, then predict and release the book."
+   },
+   "sceneText": {
+    "store_kinetic": "kinetic",
+    "store_gravitational": "gravitational",
+    "store_elastic": "elastic",
+    "store_thermal": "thermal",
+    "store_chemical": "chemical",
+    "store_magnetic": "magnetic",
+    "store_electrostatic": "electrostatic",
+    "store_nuclear": "nuclear",
+    "ex_bicycle": "moving bicycle",
+    "ex_book": "raised book",
+    "ex_spring": "stretched spring",
+    "ex_drink": "hot drink",
+    "ex_battery": "battery",
+    "ex_magnets": "two magnets",
+    "ex_balloon": "charged balloon",
+    "ex_sun": "the Sun",
+    "match": "Yes: the {ex} goes in the {store} store.",
+    "boundary": "book-Earth system",
+    "jarsNote": "Stores are accounting categories, not substances.",
+    "predict": "Before release: where is the book's gravitational energy just before impact, and after it comes to rest?",
+    "choices": [
+     "Still gravitational",
+     "All destroyed",
+     "Kinetic, then thermal with some sound",
+     "Chemical"
+    ],
+    "correct": 2,
+    "release": "Release the book",
+    "right": "Good prediction. Watch the jars.",
+    "wrong": "Watch the jars: gravitational becomes kinetic, then thermal with some sound.",
+    "explainBtn": "Explain",
+    "explain": "After the book stops, the thermal store of the book, floor and air plus the sound carried away add up to the starting gravitational energy. The energy moved between stores and out as sound; none was destroyed. STORE OR TRANSFER?",
+    "footer": "Energy is transferred, not destroyed.",
+    "noWebgl": "This 3D energy-stores board needs WebGL, which this browser does not have.",
+    "toggle": "Show or hide the 3D model"
+   }
   },
   "2": {
    "layers": [],
@@ -88,7 +129,31 @@
   "11": {
    "layers": [],
    "title": "Chemical and Nuclear Energy",
-   "text": "<h3>Chemical and Nuclear Energy</h3><p class=\"p101-def\">Chemical energy is stored in the bonds between atoms; nuclear energy is stored inside the nucleus of an atom.</p><p>Think of all the energy you meet each day. Gasoline runs cars. Food runs you. Power plants harness wind, water, fossil fuels, as in Figure 19, and atoms, turning that energy into electrical energy.</p><p>Some forms are easiest to understand if we think of energy as a property of a system that depends on the motion and interactions of matter and radiation inside it. Radiation, including light, carries energy by electromagnetic waves, which you'll meet in a later module. When you eat, your body uses energy from the chemical bonds in your food. The nucleus of an atom stores energy too, called nuclear energy, which is released when the nucleus changes structure. Without understanding the structure of atoms and the processes inside them, we couldn't build math models to predict how much energy they release.</p>"
+   "text": "<h3>Chemical and Nuclear Energy</h3><p class=\"p101-def\">Chemical energy is stored in the bonds between atoms; nuclear energy is stored inside the nucleus of an atom.</p><p>Think of all the energy you meet each day. Gasoline runs cars. Food runs you. Power plants harness wind, water, fossil fuels, as in Figure 19, and atoms, turning that energy into electrical energy.</p><p>Some forms are easiest to understand if we think of energy as a property of a system that depends on the motion and interactions of matter and radiation inside it. Radiation, including light, carries energy by electromagnetic waves, which you'll meet in a later module. When you eat, your body uses energy from the chemical bonds in your food. The nucleus of an atom stores energy too, called nuclear energy, which is released when the nucleus changes structure. Without understanding the structure of atoms and the processes inside them, we couldn't build math models to predict how much energy they release.</p>",
+   "testIt": {
+    "name": "Breakfast to the top",
+    "how": "Pick the least-energy breakfast that pays for 200 flights, then climb."
+   },
+   "sceneText": {
+    "defaults": "Model climber 60 kg, 1.75 m per flight, efficiency 0.25, g = 9.8 N/kg. 1 food Calorie = 1 kcal = 4184 J.",
+    "perFlight": "Per flight: GPE {gpe} J, food used {food} J. 200 flights: {total} kJ.",
+    "foodLabel": "Breakfast",
+    "food_porridge": "Porridge, {kj} kJ",
+    "food_cornflakes": "Cornflakes with milk, {kj} kJ",
+    "food_toast": "Toast with butter, {kj} kJ",
+    "food_banana": "Banana, {kj} kJ",
+    "effLabel": "Muscle efficiency (sensitivity view only)",
+    "effOut": "efficiency {e}",
+    "effTag294": "efficiency {e}: from uphill running, not a stair-climbing limit",
+    "predict": "Which listed breakfast has the lowest energy that still pays for 200 flights?",
+    "climb": "Climb",
+    "right": "Yes. This breakfast pays for about {n} flights in this model.",
+    "wrong": "This breakfast pays for about {n} flights in this model. Compare each food with 823.2 kJ.",
+    "explainBtn": "Explain",
+    "explain": "Each flight needs mgh/efficiency of food energy: 1029 J / 0.25 = 4116 J, so 200 flights need 823.2 kJ. Toast (832 kJ) is the smallest listed label above that; the banana (438 kJ) is not enough. MODEL BODY, MODEL STAIRS.",
+    "result": "For these exact portions and the declared 25 percent model, buttered toast is the least-energy listed breakfast that reaches 200 flights. This is not a promise about a person's actual climbing capacity.",
+    "noWebgl": "This 3D food-and-stairs model needs WebGL, which this browser does not have."
+   }
   },
   "12": {
    "layers": [],
