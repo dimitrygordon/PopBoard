@@ -85,3 +85,11 @@ export const band5 = (t) => [t * 0.95, t * 1.05];
 // Qualitative only: relative loss shape for drawing. No U-values, areas, watts or times may be shown.
 // thickness in 0..1; returns a unitless 0..1 drawing scale that only says "less with more insulation".
 export const relativeLossShape = (thickness) => 1 / (1 + 3 * Math.max(0, Math.min(1, thickness)));
+
+// ---------- Energy stores (Sim 1), Tesla C1: transferred, not destroyed ----------
+export const STORES = Object.freeze(["kinetic", "gravitational", "elastic", "thermal", "chemical", "magnetic", "electrostatic", "nuclear"]);
+// Book-Earth system from height h (page scale, declared zero height). Shares at fraction s of the fall, then after rest.
+export function bookFall(s) {
+  s = Math.max(0, Math.min(1, s));
+  return s < 1 ? { gravitational: 1 - s, kinetic: s, dissipated: 0 } : { gravitational: 0, kinetic: 0, dissipated: 1 };
+}

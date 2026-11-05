@@ -6,7 +6,47 @@
   "1": {
    "layers": [],
    "title": "Energy Comes in Flavors",
-   "text": "<h3>Energy Comes in Flavors</h3><p class=\"p101-def\">Energy can change from one form to another, and a system can hold energy in many forms at once.</p><p>Our big question for this lesson: what are some forms of energy? Remember the work-energy theorem: doing work on a system changes its energy. When something does work on the system, the system's energy goes up. When the system does work on its surroundings, its energy goes down.</p><p>Energy is a bit like ice cream. It comes in different flavors, like vanilla, chocolate, and peach, but it's all ice cream. Unlike ice cream, though, energy can change from one flavor into another!</p><p>At everyday scales, energy shows up as motion, sound, light, and thermal energy. At a fireworks show, like the one in Figure 12, the chemical reactions in the fireworks release energy that you see as moving, colorful light, hear as loud pops, and maybe even feel as warmth if you're close (but not too close). A campfire is another event with several forms at once: light, warmth, and crackling sound.</p>"
+   "text": "<h3>Energy Comes in Flavors</h3><p class=\"p101-def\">Energy can change from one form to another, and a system can hold energy in many forms at once.</p><p>Our big question for this lesson: what are some forms of energy? Remember the work-energy theorem: doing work on a system changes its energy. When something does work on the system, the system's energy goes up. When the system does work on its surroundings, its energy goes down.</p><p>Energy is a bit like ice cream. It comes in different flavors, like vanilla, chocolate, and peach, but it's all ice cream. Unlike ice cream, though, energy can change from one flavor into another!</p><p>At everyday scales, energy shows up as motion, sound, light, and thermal energy. At a fireworks show, like the one in Figure 12, the chemical reactions in the fireworks release energy that you see as moving, colorful light, hear as loud pops, and maybe even feel as warmth if you're close (but not too close). A campfire is another event with several forms at once: light, warmth, and crackling sound.</p>",
+   "testIt": {
+    "name": "Energy stores",
+    "how": "Drag each example onto its store, then predict and release the book."
+   },
+   "sceneText": {
+    "store_kinetic": "kinetic",
+    "store_gravitational": "gravitational",
+    "store_elastic": "elastic",
+    "store_thermal": "thermal",
+    "store_chemical": "chemical",
+    "store_magnetic": "magnetic",
+    "store_electrostatic": "electrostatic",
+    "store_nuclear": "nuclear",
+    "ex_bicycle": "moving bicycle",
+    "ex_book": "raised book",
+    "ex_spring": "stretched spring",
+    "ex_drink": "hot drink",
+    "ex_battery": "battery",
+    "ex_magnets": "two magnets",
+    "ex_balloon": "charged balloon",
+    "ex_sun": "the Sun",
+    "match": "Yes: the {ex} goes in the {store} store.",
+    "boundary": "book-Earth system",
+    "jarsNote": "Stores are accounting categories, not substances.",
+    "predict": "Before release: where is the book's gravitational energy just before impact, and after it comes to rest?",
+    "choices": [
+     "Still gravitational",
+     "All destroyed",
+     "Kinetic, then thermal with some sound",
+     "Chemical"
+    ],
+    "correct": 2,
+    "release": "Release the book",
+    "right": "Good prediction. Watch the jars.",
+    "wrong": "Watch the jars: gravitational becomes kinetic, then thermal with some sound.",
+    "explainBtn": "Explain",
+    "explain": "After the book stops, the thermal store of the book, floor and air plus the sound carried away add up to the starting gravitational energy. The energy moved between stores and out as sound; none was destroyed. STORE OR TRANSFER?",
+    "footer": "Energy is transferred, not destroyed.",
+    "noWebgl": "This 3D energy-stores board needs WebGL, which this browser does not have."
+   }
   },
   "2": {
    "layers": [],

@@ -71,3 +71,16 @@ test("insulation: qualitative only, Tesla O2 holds numbers", async () => {
   assert.equal(typeof h.mountKettle, "function"); assert.equal(typeof h.mountInsulation, "function");
   for (const pn of ["p09", "p16"]) assert.equal(typeof (await import(P + "scenes/m11-l01/" + pn + ".js")).default, "function");
 });
+
+const story = (slug) => JSON.parse(readFileSync(new URL(P + `decks/${slug}/v2/story.json`, import.meta.url))).slides;
+const mounts = async (mod, fn, slug, pn) => {
+  assert.equal(typeof (await import(P + `scenes/energy3d/${mod}.js`))[fn], "function");
+  assert.equal(typeof (await import(P + `scenes/${slug}/${pn}.js`)).default, "function");
+  const n = String(+pn.slice(1)); assert.ok(story(slug)[n].testIt && story(slug)[n].sceneText.noWebgl, `${slug} ${pn}`);
+};
+test("stores: eight stores, book chain conserves", async () => {
+  assert.equal(ph.STORES.length, 8);
+  for (const s of [0, 0.3, 0.9, 1]) { const b = ph.bookFall(s); near(b.gravitational + b.kinetic + b.dissipated, 1); }
+  await mounts("stores", "mountStores", "m10-l02", "p01");
+  assert.equal(story("m10-l02")["1"].sceneText.footer, "Energy is transferred, not destroyed.");
+});
