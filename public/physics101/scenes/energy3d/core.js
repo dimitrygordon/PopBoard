@@ -42,6 +42,7 @@ export function createEnergyScene(host, opts = {}) {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.domElement.style.touchAction = "none";
+  if (!document.getElementById("e3d-css")) { const st = document.createElement("style"); st.id = "e3d-css"; st.textContent = ".e3d-ui select,.e3d-ui button,.e3d-ui input,.e3d-ui option{font:inherit}"; document.head.appendChild(st); }
   host.appendChild(renderer.domElement);
 
   const scene = new THREE.Scene();
@@ -134,6 +135,18 @@ export function createEnergyScene(host, opts = {}) {
     const d = (sph.radius * 1.05) / Math.sin(Math.min(v, hz) / 2);
     camera.position.copy(sph.center).addScaledVector(dir0, d);
     camera.lookAt(sph.center);
+    // tighten: scale the distance so the projected box fills about 88% of the tighter screen axis
+    const pts = [];
+    for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) pts.push(new THREE.Vector3(x, y, z));
+    const at = (dist) => {
+      camera.position.copy(sph.center).addScaledVector(dir0, dist);
+      camera.updateMatrixWorld(); camera.matrixWorldInverse.copy(camera.matrixWorld).invert();
+      let m = 0; for (const p of pts) { const q = p.clone().project(camera); m = Math.max(m, Math.abs(q.x), Math.abs(q.y), q.z >= 1 ? 9 : 0); }
+      return m <= 0.88;
+    };
+    let lo = d * 0.2, hi = d;
+    for (let i = 0; i < 14; i++) { const mid = (lo + hi) / 2; if (at(mid)) hi = mid; else lo = mid; }
+    at(hi);
   }
   resize();
   const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(resize) : null;
