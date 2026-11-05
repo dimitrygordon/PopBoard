@@ -45,7 +45,6 @@ test("grid: Tesla W1 corrected overall and 7 W inputs", () => {
   for (const [k, [o, w]] of Object.entries(want)) { near(ph.overallEfficiency(k), o, 1e-6); near(ph.sourceInputFor(k), w, 0.005); }
   near(ph.GRID_RETAINED, 0.911907553, 1e-9);
   assert.equal(ph.SOURCES.solar.badge, "incomplete");
-  near(ph.relativeI2R(200, 400), 4);
 });
 test("grid.js and m21-l02 p11 wrapper import; badge and O3 text present", async () => {
   assert.equal(typeof (await import(P + "scenes/energy3d/grid.js")).mountGrid, "function");

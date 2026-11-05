@@ -72,6 +72,3 @@ export function gridChain(source, input = 1) {
 export const overallEfficiency = (src) => gridChain(src).overall;
 export const sourceInputFor = (src, pLamp = LAMP_W) => pLamp / overallEfficiency(src);
 
-// Relative line heating at transmission voltage V for fixed power: P_loss = I^2 R with I = P/V, so P_loss is proportional to 1/V^2.
-// Returned relative to refV only; no absolute value is shown (Tesla cleared no line-loss numbers for this sim).
-export const relativeI2R = (V, refV) => (refV / V) ** 2;

@@ -108,8 +108,6 @@
     "badge_incomplete": "INCOMPLETE CHAIN",
     "badge_historical": "historical (2023)",
     "readout": "Overall {overall}; source input for a 7 W lamp: {input} W. Grid retained 0.912 (from 28456.6/323031.1 GWh). Transformer heating is included in the grid loss. No separate factor.",
-    "voltLabel": "Transmission voltage (kV)",
-    "voltOut": "{kv} kV: line heating is {rel} times the 400 kV case (I^2R, same power).",
     "predict": "Before running: which source gets the largest fraction of its input to the lamp?",
     "run": "Run",
     "stop": "Stop",

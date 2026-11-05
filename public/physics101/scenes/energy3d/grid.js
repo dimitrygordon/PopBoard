@@ -1,6 +1,6 @@
 // Power station to lamp (Every Joule Sim 8). 3D toon chain on core.js; words from opts.text.
 import { createEnergyScene, toon, palette, isDark } from "./core.js";
-import { SOURCES, gridChain, sourceInputFor, relativeI2R } from "./physics.js";
+import { SOURCES, gridChain, sourceInputFor } from "./physics.js";
 
 const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
 const SRC_COLOR = { gas: "chemical", coal: "chemical", nuclear: "nuclear", hydro: "kinetic", wind: "kinetic", solar: "light" };
@@ -45,15 +45,12 @@ export function mountGrid(host, text = {}, opts = {}) {
   if (getComputedStyle(host).position === "static") host.style.position = "relative";
   const ui = el("div", "e3d-ui"); ui.style.cssText = "position:absolute;left:12px;top:12px;max-width:320px;font:14px/1.35 system-ui;padding:10px;border-radius:10px;background:" + (dark ? "rgba(31,29,26,.85)" : "rgba(251,246,234,.9)") + ";color:" + (dark ? "#EDE6D6" : "#2B2622");
   host.appendChild(ui);
-  let src = "gas", running = false, V = 400, phase = "predict";
+  let src = "gas", running = false, phase = "predict";
   const sel = el("select"); sel.setAttribute("aria-label", T("sourceLabel", "Source"));
   for (const k of Object.keys(SOURCES)) { const o = el("option", null, T("src_" + k, k)); o.value = k; sel.appendChild(o); }
   ui.append(el("label", null, T("sourceLabel", "Source") + " "), sel);
   const badge = el("strong", "e3d-badge"); badge.style.cssText = "display:block;color:" + col("thermal"); ui.appendChild(badge);
   const info = el("div"); ui.appendChild(info);
-  const dial = el("input"); dial.type = "range"; dial.min = 11; dial.max = 400; dial.value = V; dial.setAttribute("aria-label", T("voltLabel"));
-  const dialOut = el("div");
-  ui.append(el("label", null, T("voltLabel")), dial, dialOut);
   const q = el("fieldset"); q.append(el("legend", null, T("predict")));
   for (const k of Object.keys(SOURCES)) { const l = el("label"); const r = el("input"); r.type = "radio"; r.name = "e3d-grid"; r.value = k; l.append(r, " " + T("src_" + k, k)); q.append(l, " "); }
   ui.appendChild(q);
@@ -68,12 +65,8 @@ export function mountGrid(host, text = {}, opts = {}) {
     badge.textContent = ch.badge ? T("badge_" + ch.badge) : "";
     info.textContent = T("readout").replace("{overall}", ch.overall.toFixed(4)).replace("{input}", sourceInputFor(src).toFixed(2));
     srcMesh.material.color.set(col(SRC_COLOR[src]));
-    const rel = relativeI2R(V, 400);
-    dialOut.textContent = T("voltOut").replace("{kv}", V).replace("{rel}", rel < 10 ? rel.toFixed(1) : Math.round(rel));
-    wire.material.color.set(rel > 1.5 ? col("thermal") : dark ? "#EDE6D6" : "#2B2622");
   }
   sel.addEventListener("change", () => { src = sel.value; readout(); });
-  dial.addEventListener("input", () => { V = +dial.value; readout(); });
   q.addEventListener("change", () => { run.disabled = false; phase = "test"; });
   run.addEventListener("click", () => {
     if (phase === "predict") return;
