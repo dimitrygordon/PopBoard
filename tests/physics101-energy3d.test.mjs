@@ -84,3 +84,10 @@ test("stores: eight stores, book chain conserves", async () => {
   await mounts("stores", "mountStores", "m10-l02", "p01");
   assert.equal(story("m10-l02")["1"].sceneText.footer, "Energy is transferred, not destroyed.");
 });
+test("food: Tesla C8 corrected arithmetic, toast is least sufficient", async () => {
+  near(ph.flightGPE(), 1029, 1e-9); near(ph.flightFood(), 4116, 1e-9); near(200 * ph.flightFood(), 823200, 1e-6);
+  assert.deepEqual(ph.FOODS, { porridge: 1047e3, cornflakes: 1044e3, toast: 832e3, banana: 438e3 });
+  assert.equal(ph.leastSufficient(), "toast");
+  near(ph.flightsFrom(832e3, 60, 1.75, 0.25), 832e3 / 4116);
+  await mounts("food", "mountFood", "m10-l02", "p11");
+});

@@ -93,3 +93,16 @@ export function bookFall(s) {
   s = Math.max(0, Math.min(1, s));
   return s < 1 ? { gravitational: 1 - s, kinetic: s, dissipated: 0 } : { gravitational: 0, kinetic: 0, dissipated: 1 };
 }
+
+// ---------- Energy in food (Sim 9), Tesla C8 with W2, W3, O4 applied ----------
+export const KCAL = 4184; // J
+export const FOODS = Object.freeze({ porridge: 1047e3, cornflakes: 1044e3, toast: 832e3, banana: 438e3 }); // J, corrected labels
+export const CLIMB = Object.freeze({ m: 60, h: 1.75, eff: 0.25, flights: 200 });
+export const flightGPE = (m = CLIMB.m, h = CLIMB.h) => m * g * h;
+export const flightFood = (m = CLIMB.m, h = CLIMB.h, eff = CLIMB.eff) => flightGPE(m, h) / eff;
+export const flightsFrom = (foodJ, m, h, eff) => foodJ / flightFood(m, h, eff);
+// Least-energy listed food that still pays for n flights.
+export function leastSufficient(n = CLIMB.flights, m, h, eff) {
+  const need = n * flightFood(m, h, eff);
+  return Object.entries(FOODS).filter(([, J]) => J >= need).sort((a, b) => a[1] - b[1])[0]?.[0] ?? null;
+}

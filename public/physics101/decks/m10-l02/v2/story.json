@@ -128,7 +128,31 @@
   "11": {
    "layers": [],
    "title": "Chemical and Nuclear Energy",
-   "text": "<h3>Chemical and Nuclear Energy</h3><p class=\"p101-def\">Chemical energy is stored in the bonds between atoms; nuclear energy is stored inside the nucleus of an atom.</p><p>Think of all the energy you meet each day. Gasoline runs cars. Food runs you. Power plants harness wind, water, fossil fuels, as in Figure 19, and atoms, turning that energy into electrical energy.</p><p>Some forms are easiest to understand if we think of energy as a property of a system that depends on the motion and interactions of matter and radiation inside it. Radiation, including light, carries energy by electromagnetic waves, which you'll meet in a later module. When you eat, your body uses energy from the chemical bonds in your food. The nucleus of an atom stores energy too, called nuclear energy, which is released when the nucleus changes structure. Without understanding the structure of atoms and the processes inside them, we couldn't build math models to predict how much energy they release.</p>"
+   "text": "<h3>Chemical and Nuclear Energy</h3><p class=\"p101-def\">Chemical energy is stored in the bonds between atoms; nuclear energy is stored inside the nucleus of an atom.</p><p>Think of all the energy you meet each day. Gasoline runs cars. Food runs you. Power plants harness wind, water, fossil fuels, as in Figure 19, and atoms, turning that energy into electrical energy.</p><p>Some forms are easiest to understand if we think of energy as a property of a system that depends on the motion and interactions of matter and radiation inside it. Radiation, including light, carries energy by electromagnetic waves, which you'll meet in a later module. When you eat, your body uses energy from the chemical bonds in your food. The nucleus of an atom stores energy too, called nuclear energy, which is released when the nucleus changes structure. Without understanding the structure of atoms and the processes inside them, we couldn't build math models to predict how much energy they release.</p>",
+   "testIt": {
+    "name": "Breakfast to the top",
+    "how": "Pick the least-energy breakfast that pays for 200 flights, then climb."
+   },
+   "sceneText": {
+    "defaults": "Model climber 60 kg, 1.75 m per flight, efficiency 0.25, g = 9.8 N/kg. 1 food Calorie = 1 kcal = 4184 J.",
+    "perFlight": "Per flight: GPE {gpe} J, food used {food} J. 200 flights: {total} kJ.",
+    "foodLabel": "Breakfast",
+    "food_porridge": "Porridge, {kj} kJ",
+    "food_cornflakes": "Cornflakes with milk, {kj} kJ",
+    "food_toast": "Toast with butter, {kj} kJ",
+    "food_banana": "Banana, {kj} kJ",
+    "effLabel": "Muscle efficiency (sensitivity view only)",
+    "effOut": "efficiency {e}",
+    "effTag294": "efficiency {e}: from uphill running, not a stair-climbing limit",
+    "predict": "Which listed breakfast has the lowest energy that still pays for 200 flights?",
+    "climb": "Climb",
+    "right": "Yes. This breakfast pays for about {n} flights in this model.",
+    "wrong": "This breakfast pays for about {n} flights in this model. Compare each food with 823.2 kJ.",
+    "explainBtn": "Explain",
+    "explain": "Each flight needs mgh/efficiency of food energy: 1029 J / 0.25 = 4116 J, so 200 flights need 823.2 kJ. Toast (832 kJ) is the smallest listed label above that; the banana (438 kJ) is not enough. MODEL BODY, MODEL STAIRS.",
+    "result": "For these exact portions and the declared 25 percent model, buttered toast is the least-energy listed breakfast that reaches 200 flights. This is not a promise about a person's actual climbing capacity.",
+    "noWebgl": "This 3D food-and-stairs model needs WebGL, which this browser does not have."
+   }
   },
   "12": {
    "layers": [],
