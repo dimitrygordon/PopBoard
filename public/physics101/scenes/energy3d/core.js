@@ -42,6 +42,7 @@ export function createEnergyScene(host, opts = {}) {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.domElement.style.touchAction = "none";
+  renderer.domElement.style.pointerEvents = "auto"; // .p-scene is pointer-events:none, so the canvas opts back in for drags
   if (!document.getElementById("e3d-css")) { const st = document.createElement("style"); st.id = "e3d-css"; st.textContent = ".e3d-ui select,.e3d-ui button,.e3d-ui input,.e3d-ui option{font:inherit}"; document.head.appendChild(st); }
   host.appendChild(renderer.domElement);
 
