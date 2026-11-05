@@ -62,6 +62,7 @@ export function createEnergyScene(host, opts = {}) {
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshToonMaterial({ color: dark ? "#1F1D1A" : "#F4ECDC" }));
   ground.rotation.x = -Math.PI / 2;
   ground.receiveShadow = true;
+  ground.userData.noFit = true;
   scene.add(ground);
 
   const frames = new Set(), drags = [], cleanups = [];
@@ -118,6 +119,21 @@ export function createEnergyScene(host, opts = {}) {
     el.style.width = "100%"; el.style.height = "100%";
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    if (fitted) fit();
+  }
+  // Frame everything the scene built (not the ground) for the current aspect, keeping the view direction.
+  let fitted = false;
+  const dir0 = new THREE.Vector3().fromArray(opts.camera || [0, 5, 9]).sub(new THREE.Vector3().fromArray(opts.target || [0, 1, 0])).normalize();
+  function fit() {
+    fitted = true;
+    const box = new THREE.Box3();
+    scene.traverse((o) => { if (o.isMesh && !o.userData.noFit && o.visible && o.parent?.visible !== false) box.expandByObject(o); });
+    if (box.isEmpty()) return;
+    const sph = box.getBoundingSphere(new THREE.Sphere());
+    const v = THREE.MathUtils.degToRad(camera.fov), hz = 2 * Math.atan(Math.tan(v / 2) * camera.aspect);
+    const d = (sph.radius * 1.05) / Math.sin(Math.min(v, hz) / 2);
+    camera.position.copy(sph.center).addScaledVector(dir0, d);
+    camera.lookAt(sph.center);
   }
   resize();
   const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(resize) : null;
@@ -130,6 +146,7 @@ export function createEnergyScene(host, opts = {}) {
     const dt = last ? Math.min((t - last) / 1000, 0.05) : 0;
     last = t;
     for (const fn of frames) fn(dt, t / 1000);
+    if (!fitted) fit();
     renderer.render(scene, camera);
     raf = requestAnimationFrame(tick);
   }
@@ -156,5 +173,5 @@ export function createEnergyScene(host, opts = {}) {
     frames.clear();
     drags.length = 0;
   }
-  return { THREE, scene, camera, renderer, palette, addDrag, onFrame, resize, dispose };
+  return { THREE, scene, camera, renderer, palette, addDrag, onFrame, resize, fit, dispose };
 }

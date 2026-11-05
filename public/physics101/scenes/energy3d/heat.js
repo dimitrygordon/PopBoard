@@ -2,13 +2,8 @@
 import { createEnergyScene, toon, palette, isDark } from "./core.js";
 import { C_WATER, KETTLE, kettleTime, band5, heatQ, relativeLossShape } from "./physics.js";
 
+import { panel } from "./ui.js";
 const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
-function panel(host, dark) {
-  if (getComputedStyle(host).position === "static") host.style.position = "relative";
-  const ui = el("div", "e3d-ui");
-  ui.style.cssText = "position:absolute;left:12px;top:12px;max-width:320px;font:14px/1.35 system-ui;padding:10px;border-radius:10px;background:" + (dark ? "rgba(31,29,26,.85)" : "rgba(251,246,234,.9)") + ";color:" + (dark ? "#EDE6D6" : "#2B2622");
-  host.appendChild(ui); return ui;
-}
 const fill = (s, o) => s.replace(/\{(\w+)\}/g, (_, k) => o[k] ?? "");
 
 export function mountKettle(host, text = {}, opts = {}) {

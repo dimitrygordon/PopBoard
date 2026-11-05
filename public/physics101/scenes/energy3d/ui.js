@@ -2,16 +2,20 @@
 export const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
 export const fill = (s, o) => String(s ?? "").replace(/\{(\w+)\}/g, (_, k) => o[k] ?? "");
 
+// Controls go in the page's Test it box (host.e3dPanel, set by the wrapper) so they never cover the 3D stage.
+// Without one they float over the stage. Text is at least 16px.
 export function panel(host, dark) {
-  if (getComputedStyle(host).position === "static") host.style.position = "relative";
   const ui = el("div", "e3d-ui");
-  ui.style.cssText = "position:absolute;left:12px;top:12px;max-width:330px;max-height:calc(100% - 24px);overflow:auto;font:14px/1.35 system-ui;padding:10px;border-radius:10px;background:" + (dark ? "rgba(31,29,26,.88)" : "rgba(251,246,234,.92)") + ";color:" + (dark ? "#EDE6D6" : "#2B2622");
+  ui.style.cssText = "font-size:16px;line-height:1.4;display:flex;flex-direction:column;gap:6px;align-items:flex-start";
+  if (host.e3dPanel) { host.e3dPanel.appendChild(ui); return ui; }
+  if (getComputedStyle(host).position === "static") host.style.position = "relative";
+  ui.style.cssText += ";position:absolute;left:12px;top:12px;max-width:330px;max-height:calc(100% - 24px);overflow:auto;padding:10px;border-radius:10px;background:" + (dark ? "rgba(31,29,26,.88)" : "rgba(251,246,234,.92)") + ";color:" + (dark ? "#EDE6D6" : "#2B2622");
   host.appendChild(ui); return ui;
 }
 
 // Predict radios; returns { box, picked(), onPick(fn) }. name must be unique per scene.
 export function predict(ui, name, legend, choices) {
-  const q = el("fieldset"); q.append(el("legend", null, legend));
+  const q = el("fieldset"); q.style.cssText = "border:1px solid currentColor;border-radius:8px;padding:4px 8px;margin:0;font:inherit"; q.append(el("legend", null, legend));
   (choices || []).forEach((c, i) => { const l = el("label"); const r = el("input"); r.type = "radio"; r.name = name; r.value = i; l.append(r, " " + c); q.append(l, el("br")); });
   ui.appendChild(q);
   return { box: q, picked: () => { const v = q.querySelector("input:checked"); return v ? +v.value : null; }, onPick: (fn) => q.addEventListener("change", fn) };

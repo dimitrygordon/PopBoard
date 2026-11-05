@@ -1,4 +1,5 @@
 // Power station to lamp (Every Joule Sim 8). 3D toon chain on core.js; words from opts.text.
+import { panel } from "./ui.js";
 import { createEnergyScene, toon, palette, isDark } from "./core.js";
 import { SOURCES, gridChain, sourceInputFor } from "./physics.js";
 
@@ -42,9 +43,7 @@ export function mountGrid(host, text = {}, opts = {}) {
   }
 
   // UI
-  if (getComputedStyle(host).position === "static") host.style.position = "relative";
-  const ui = el("div", "e3d-ui"); ui.style.cssText = "position:absolute;left:12px;top:12px;max-width:320px;font:14px/1.35 system-ui;padding:10px;border-radius:10px;background:" + (dark ? "rgba(31,29,26,.85)" : "rgba(251,246,234,.9)") + ";color:" + (dark ? "#EDE6D6" : "#2B2622");
-  host.appendChild(ui);
+  const ui = panel(host, dark);
   let src = "gas", running = false, phase = "predict";
   const sel = el("select"); sel.setAttribute("aria-label", T("sourceLabel", "Source"));
   for (const k of Object.keys(SOURCES)) { const o = el("option", null, T("src_" + k, k)); o.value = k; sel.appendChild(o); }

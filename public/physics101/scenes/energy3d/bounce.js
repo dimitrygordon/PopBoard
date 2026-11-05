@@ -1,4 +1,5 @@
 // Why a bouncing ball stops (Every Joule Sim 4). 3D scene on core.js; all student words come from opts.text.
+import { panel } from "./ui.js";
 import { createEnergyScene, toon, palette, isDark } from "./core.js";
 import { BALLS, g, ballState, energyAt, lossPerBounce } from "./physics.js";
 
@@ -60,9 +61,7 @@ export function mountBounce(host, text = {}, opts = {}) {
   }
 
   // DOM overlay: picker, predict, Drop, explain
-  const ui = el("div", "e3d-ui"); ui.style.cssText = "position:absolute;left:12px;top:12px;max-width:300px;font:14px/1.35 system-ui;padding:10px;border-radius:10px;background:" + (dark ? "rgba(31,29,26,.85)" : "rgba(251,246,234,.9)") + ";color:" + ink;
-  if (getComputedStyle(host).position === "static") host.style.position = "relative";
-  host.appendChild(ui);
+  const ui = panel(host, dark);
   const pick = el("select"); pick.setAttribute("aria-label", T("pickLabel", "Ball"));
   for (const k of Object.keys(BALLS)) { const o = el("option", null, T("ball_" + k, k)); o.value = k; pick.appendChild(o); }
   ui.append(el("label", null, T("pickLabel", "Ball") + " "), pick);
