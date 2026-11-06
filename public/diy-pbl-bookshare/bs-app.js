@@ -25,23 +25,27 @@ function render(i) {
   state.i = Math.max(0, Math.min(PAGES.length - 1, i));
   const p = PAGES[state.i], n = state.i + 1;
   document.body.dataset.page = String(n);
+  if (p.idea) document.body.dataset.idea = String(p.idea); else delete document.body.dataset.idea;
+  if (p.kind) document.body.dataset.kind = p.kind; else delete document.body.dataset.kind;
+  // Side: kicker + title + bullets/script. Do NOT inject .guide here (A3: no duplicate caption).
   side.innerHTML = `<p class="kicker">${fx(p.kicker)}</p><h2>${fx(p.title)}</h2>` + (p.side || "");
-  if (p.guide) side.insertAdjacentHTML("beforeend", `<p class="guide">${fx(p.guide)}</p>`);
+  // Full-screen caption bar only (single yellow-style line via fl-cap)
   $("flCapT").innerHTML = fx(p.title);
   $("flCapQ").innerHTML = fx(p.cap || "");
-  $("flGuide").innerHTML = fx(p.guide || "");
+  $("flGuide").innerHTML = "";
   $("flCount").textContent = `Page ${n} of ${PAGES.length}`;
   const params = new URLSearchParams(location.search);
   params.set("page", String(n));
   history.replaceState(null, "", "?" + params.toString());
   const T = timeline(scene, { reduced: reducedQ.matches });
   state.T = T;
-  p.build(scene, T);
+  const extra = p.build(scene, T) || {};
+  state.holdAfter = extra.hold_after || p.hold_after || 0;
   startClock(T);
 }
 
 function startClock(T) {
-  const end = Math.max(0.5, T.end());
+  const end = Math.max(0.5, T.end() + (state.holdAfter || 0));
   state.prog = $("flProg").animate([{ width: "0%" }, { width: "100%" }], { duration: end * 1000, fill: "forwards" });
   state.animDone = false;
   state.prog.onfinish = () => { state.animDone = true; maybeAdvance(); };
@@ -73,6 +77,8 @@ function setCollapsed(on) {
   document.body.classList.toggle("fl-full", on);
   $("textBtn").setAttribute("aria-pressed", String(on));
   $("textBtn").textContent = on ? "Show text" : "Hide text";
+  const fs = $("fsBtn");
+  if (!document.fullscreenElement) fs.textContent = on ? "⛶ Exit full view" : "⛶ Full screen (hide text)";
 }
 
 async function toggleFullscreen() {

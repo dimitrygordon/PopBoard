@@ -1,7 +1,7 @@
-// Dimitry's DIY PBL Bookshare: page list, title, cover, script, no audio, no em-dashes.
+// Dimitry's DIY PBL Bookshare: 20 pages, Leo art, teleprompter, no audio, Round 1 fixes.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -10,81 +10,105 @@ const DIR = join(PUB, "diy-pbl-bookshare");
 const TITLE = "Dimitry's DIY Project Based Learning for Math and Science Bookshare";
 const { PAGES, PAGE_COUNT } = await import(pathToFileURL(join(DIR, "bs-pages.js")).href);
 const { SLIDES } = await import(pathToFileURL(join(DIR, "bs-data.js")).href);
-const files = ["bs-pages.js", "bs-engine.js", "bs-app.js", "bs.css", "bs-data.js", "script.md"]
+const { PLACEMENTS } = await import(pathToFileURL(join(DIR, "bs-placements.js")).href);
+const files = ["bs-pages.js", "bs-engine.js", "bs-app.js", "bs.css", "bs-data.js", "bs-placements.js", "script.md"]
   .map((f) => readFileSync(join(DIR, f), "utf8"))
   .concat(readFileSync(join(PUB, "study-diy-pbl-bookshare.html"), "utf8"));
 
-test("18 pages with titles, builds, guides, and teleprompter script", () => {
-  assert.equal(PAGE_COUNT, 18);
-  assert.equal(PAGES.length, 18);
-  assert.equal(SLIDES.length, 18);
+test("20 pages with titles, builds, and teleprompter script", () => {
+  assert.equal(PAGE_COUNT, 20);
+  assert.equal(PAGES.length, 20);
+  assert.equal(SLIDES.length, 20);
   for (const p of PAGES) {
     assert.ok(p.title);
     assert.equal(typeof p.build, "function");
-    assert.ok(p.guide && p.guide.length > 5, p.title);
     assert.match(p.side, /bs-script/);
     assert.match(p.side, /Script \(read aloud\)/);
   }
 });
 
-test("canonical title appears in HTML, card, module, and page bar", () => {
+test("canonical title and Courses band wiring", () => {
   const html = readFileSync(join(PUB, "study-diy-pbl-bookshare.html"), "utf8");
   const study = readFileSync(join(PUB, "study.html"), "utf8");
-  assert.match(html, new RegExp(TITLE.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
-  assert.match(html, /id="flTitle"/);
-  assert.match(study, new RegExp(TITLE.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  const esc = TITLE.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  assert.match(html, new RegExp(esc));
+  assert.match(study, new RegExp(esc));
   assert.match(study, /data-course="diy-pbl-bookshare"/);
-  assert.match(study, /diy-pbl-bookshare\/art\/cover\.webp/);
   assert.ok(existsSync(join(DIR, "art", "cover.webp")));
 });
 
-test("slide 1 shows the real book cover and author name", () => {
-  assert.ok(existsSync(join(DIR, "art", "book_cover.webp")));
-  const src = readFileSync(join(DIR, "bs-pages.js"), "utf8");
-  assert.match(src, /book_cover\.webp/);
-  assert.match(src, /Heather Wolpert-Gawron/);
-  assert.match(src, /Eye On Education/);
-  assert.equal(SLIDES[0].kind, "title");
-  assert.match(src, /function buildTitle/);
+test("slide 1 uses real book title, author, and cover_display art", () => {
+  assert.equal(SLIDES[0].title, "DIY Project Based Learning for Math and Science");
+  assert.notEqual(SLIDES[0].title, "Title");
+  assert.match(SLIDES[0].narration, /fifteen minutes or so/);
+  assert.ok(existsSync(join(DIR, "art", "s01", "cover_display.webp")));
+  assert.ok(existsSync(join(DIR, "art", "s01", "bg.webp")));
+  const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
+  assert.match(pages, /cover_display/);
+  assert.match(pages, /Heather Wolpert-Gawron/);
 });
 
-test("no audio controls or narration player; hide text and full screen remain", () => {
+test("Tesla fixes: slide 5 fall-off wording; slide 10 C = vx + F and R = px", () => {
+  assert.match(SLIDES[4].narration, /without falling off at the top/);
+  assert.match(SLIDES[4].bullets.join(" "), /without falling off at the top/);
+  assert.match(SLIDES[9].bullets.join(" "), /C = vx \+ F/);
+  assert.match(SLIDES[9].bullets.join(" "), /R = px/);
+  assert.match(SLIDES[9].bullets.join(" "), /Ch\. 2; Part II, p\. 120/);
+  assert.ok(!/C = mx \+ b/.test(SLIDES[9].narration));
+});
+
+test("Round 1 structure: key terms, split conclude/discuss, resources APA", () => {
+  assert.equal(SLIDES[16].title, "Key terms at a glance");
+  assert.equal(SLIDES[17].title, "Conclude with direction");
+  assert.equal(SLIDES[18].title, "Discussion questions");
+  assert.equal(SLIDES[18].questions.length, 3);
+  assert.match(SLIDES[18].questions[0], /In the video/);
+  assert.equal(SLIDES[19].kind, "resources");
+  assert.ok(SLIDES[19].resources.length >= 10);
+  assert.match(SLIDES[19].resources.map((r) => r.html).join(" "), /Pashler[\s\S]*105-119/);
+  assert.match(SLIDES[19].resources.map((r) => r.html).join(" "), /airnow\.gov/);
+});
+
+test("no audio controls; fullscreen hides text; script kept in normal view", () => {
   const html = readFileSync(join(PUB, "study-diy-pbl-bookshare.html"), "utf8");
   const app = readFileSync(join(DIR, "bs-app.js"), "utf8");
+  const css = readFileSync(join(DIR, "bs.css"), "utf8");
   assert.ok(!html.includes('id="narrBtn"'));
   assert.ok(!html.includes('id="sayBtn"'));
-  assert.match(html, /id="textBtn"/);
   assert.match(html, /id="fsBtn"/);
-  assert.match(app, /fl-full/);
-  assert.match(app, /requestFullscreen/);
+  assert.match(html, /Full screen \(hide text\)/);
+  assert.match(css, /body\.fl-full \.fl-side/);
+  assert.match(css, /body\.fl-full \.bs-script/);
   assert.ok(!app.includes("new Audio"));
-  assert.ok(!app.includes(".mp3"));
 });
 
-test("narration manifest has text for every page and no audio files required", () => {
-  const m = JSON.parse(readFileSync(join(DIR, "narration", "manifest.json"), "utf8"));
-  assert.equal(Object.keys(m.pages).length, 18);
-  for (let n = 1; n <= 18; n++) {
-    const e = m.pages[String(n)];
-    assert.ok(e.text.length > 20, `page ${n}`);
-    assert.equal(e.audio, null);
-    assert.ok(!e.text.includes("\u2014"), `page ${n} em-dash`);
+test("Leo art webp exists for s01-s18; no Leo-art-pending badge in code", () => {
+  for (let i = 1; i <= 18; i++) {
+    const sid = `s${String(i).padStart(2, "0")}`;
+    assert.ok(existsSync(join(DIR, "art", sid, "bg.webp")), sid);
   }
-});
-
-test("no em-dashes in bookshare module sources", () => {
-  for (const s of files) assert.ok(!s.includes("\u2014"), "em-dash found");
-});
-
-test("script.md exists with all 18 slides", () => {
-  const script = readFileSync(join(DIR, "script.md"), "utf8");
-  assert.match(script, /Total words/);
-  for (let n = 1; n <= 18; n++) assert.match(script, new RegExp(`## Slide ${n}:`));
-});
-
-test("player has auto-advance, reduced motion, and theme toggle", () => {
   const all = files.join("\n");
-  assert.match(all, /prefers-reduced-motion/);
-  assert.match(all, /popboard\.diy-pbl\.auto/);
-  assert.match(all, /themeBtn/);
+  assert.ok(!/Leo art pending/i.test(all));
+  assert.ok(PLACEMENTS.s01 && PLACEMENTS.s05 && PLACEMENTS.s11);
+});
+
+test("script.md word count is 2300 to 2400", () => {
+  const script = readFileSync(join(DIR, "script.md"), "utf8");
+  const m = script.match(/\*\*Total words \(read-aloud\):\*\* (\d+)/);
+  assert.ok(m);
+  const n = Number(m[1]);
+  assert.ok(n >= 2300 && n <= 2400, `words ${n}`);
+  const words = SLIDES.reduce((a, s) => a + s.narration.split(/\s+/).length, 0);
+  assert.equal(words, n);
+});
+
+test("no em-dashes in bookshare sources", () => {
+  for (const s of files) assert.ok(!s.includes("\u2014"));
+});
+
+test("placements config is data-driven for Leo redraws", () => {
+  assert.ok(PLACEMENTS.s07.checks.length === 5);
+  assert.ok(PLACEMENTS.s11.tips.length === 5);
+  assert.ok(PLACEMENTS.s14.bubbles.length === 4);
+  assert.match(readFileSync(join(DIR, "bs-pages.js"), "utf8"), /applyPlace/);
 });

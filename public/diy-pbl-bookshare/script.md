@@ -1,20 +1,20 @@
 # Dimitry's DIY Project Based Learning for Math and Science Bookshare
 
-Narrator: Dimitry Gordon (live; no TTS audio in the deck)
-Source: Socrates' Book Share Content Package
-Pace: ~150 words per minute
+Narrator: Dimitry Gordon (live; no TTS audio)
+Source: Socrates package + Round 1
+Pace: ~150 wpm
 
-**Total words:** 2246
-**Total @ 150 wpm:** 14:58
-**With ~6s breathing room/slide:** ~16:46
+**Total words (read-aloud):** 2385
+**Total @ 150 wpm:** 15:54
+**With ~6s breathing/slide:** ~17:54
 
 ---
 
-## Slide 1: Title
+## Slide 1: DIY Project Based Learning for Math and Science
 
-**Words:** 90  |  **Est. @ 150 wpm:** 0:36
+**Words:** 87  |  **Est. @ 150 wpm:** 0:35
 
-Hi everyone, I'm Dimitry. My Book Share is DIY Project Based Learning for Math and Science by Heather Wolpert-Gawron, an award-winning middle school teacher and Edutopia blogger. I'm a physics and Earth and space science teacher in training, so I picked this book because I want my students doing science, not just reading about it. Over the next twenty minutes or so, I'll teach you four big ideas from the book, show you what each one looks like in real classrooms, and leave you with three questions to chew on.
+Hi everyone, I'm Dimitry. My Book Share is DIY Project Based Learning for Math and Science by Heather Wolpert-Gawron, an award-winning middle school teacher and Edutopia blogger. I'm a physics and Earth and space science teacher in training, so I picked this book because I want my students doing science, not just reading about it. Over the next fifteen minutes or so, I'll teach you four big ideas, the key terms behind them, what each idea looks like in real classrooms, and three questions to chew on.
 
 ---
 
@@ -44,9 +44,9 @@ So how does she build that story? Every unit in the book uses the same moves. It
 
 ## Slide 5: Idea 1: Put Into Practice
 
-**Words:** 144  |  **Est. @ 150 wpm:** 0:58
+**Words:** 148  |  **Est. @ 150 wpm:** 0:59
 
-Here's what idea one looks like across classrooms. In an elementary roller coaster unit the author borrows from teachers Emily Cruz and Melanie Valencia, kids build coasters out of foam tubing, marbles, and tape, tackling a hill, then a curve, then a loop, and recording why each trial worked or failed. In a middle school Invention Unit, kids find an everyday problem at home and pitch a solution. In my own high school physics class, I'd turn that coaster idea into an energy unit. The driving question might be: can your coaster carry a marble through a loop without stalling? Students predict, build, film their trials in slow motion on a phone, and revise. The final pitch goes to a "park safety board" made up of other teachers. Same skills as a worksheet on energy, but now the worksheet has a reason to exist.
+Here's what idea one looks like across classrooms. In an elementary roller coaster unit the author borrows from teachers Emily Cruz and Melanie Valencia, kids build coasters out of foam tubing, marbles, and tape, tackling a hill, then a curve, then a loop, and recording why each trial worked or failed. In a middle school Invention Unit, kids find an everyday problem at home and pitch a solution. In my own high school physics class, I'd turn that coaster idea into an energy unit. The driving question might be: can your coaster carry a marble through a loop without falling off at the top? Students predict, build, film their trials in slow motion on a phone, and revise. The final pitch goes to a "park safety board" made up of other teachers. Same skills as a worksheet on energy, but now the worksheet has a reason to exist.
 
 ---
 
@@ -84,9 +84,9 @@ Idea three: communication is the content. This idea runs through every chapter. 
 
 ## Slide 10: Idea 3: Writing with numbers
 
-**Words:** 144  |  **Est. @ 150 wpm:** 0:58
+**Words:** 150  |  **Est. @ 150 wpm:** 1:00
 
-Two tools from this idea are worth stealing. The first is writing with numeracy, which means teaching students how to put numbers into their writing correctly, as evidence. She builds a reference sheet of rules, like spelling out a number that starts a sentence. The second is BIRAC, an engineering-style outline she uses for the Theme Park executive summary. B is background, posing the question. I is issues, what might get in the way. R is recommendations. A is analysis, the evidence that the plan works. And C is consequences, what happens if the board says yes or no. The Invention Unit also has real math in it: a break-even analysis, where cost equals the cost per unit times the number of units, plus the startup cost, and revenue equals price times units. Students graph both lines in Desmos and find where they cross.
+Two tools from this idea are worth stealing. The first is writing with numeracy, which means teaching students how to put numbers into their writing correctly, as evidence. She builds a reference sheet of rules, like spelling out a number that starts a sentence. The second is BIRAC, an engineering-style outline she uses for the Theme Park executive summary. B is background, posing the question. I is issues, what might get in the way. R is recommendations. A is analysis, the evidence that the plan works. And C is consequences, what happens if the board says yes or no. The Invention Unit also has real math in it: a break-even analysis, where cost equals variable cost times units plus fixed cost, written C equals v x plus F, and revenue equals price times units, written R equals p x. Students graph both lines in Desmos and find where they cross.
 
 ---
 
@@ -132,26 +132,42 @@ Here's how idea four travels. In an ELA or history class, students can teach a s
 
 ## Slide 16: A critical lens
 
-**Words:** 132  |  **Est. @ 150 wpm:** 0:53
+**Words:** 131  |  **Est. @ 150 wpm:** 0:52
 
-Before I wrap up, an honest critique. This book came out in 2016, and some of its tools are gone. TodaysMeet, the backchannel site she uses, shut down years ago. So treat the tools as examples and swap in what your school uses, like a shared Google Doc or Canvas discussion. Second, the Teach the Teacher unit uses a multiple intelligences quiz and mentions learning styles. Research by Pashler and colleagues found little evidence that matching instruction to learning styles improves learning, so I'd keep the activity variety and drop the labels. Third, look at the Genius Unit's student lab reports. They're creative and well written, but some of their brain science claims are shaky. Authentic work still needs a content check. In PBL, the teacher's job shifts, but it doesn't disappear.
+Now, an honest critique. This book came out in 2016, and some of its tools are gone. TodaysMeet, the backchannel site she uses, shut down years ago. So treat the tools as examples and swap in what your school uses, like a shared Google Doc or Canvas discussion. Second, the Teach Them to Be Teachers unit uses a multiple intelligences quiz and mentions learning styles. Research by Pashler and colleagues found little evidence that matching instruction to learning styles improves learning, so I'd keep the activity variety and drop the labels. Third, look at the Genius Unit's student lab reports. They're creative and well written, but some of their brain science claims are shaky. Authentic work still needs a content check. In PBL, the teacher's job shifts, but it doesn't disappear.
 
 ---
 
-## Slide 17: Conclude with direction
+## Slide 17: Key terms at a glance
 
-**Words:** 119  |  **Est. @ 150 wpm:** 0:48
+**Words:** 107  |  **Est. @ 150 wpm:** 0:43
 
-So here's what I hope you take away. One: PBL is a unit, not a project, so build the whole story around a real problem. Two: design toward what you and your students love, then backplan to the standards and fill the gaps, with a checklist that makes the journey visible. Three: in STEM, communication is the content, so give students real genres and real audiences, and use quick feedback tools so you're not buried. Four: teach students to be teachers, by having them write the questions, the rubrics, and the lessons. Take a look at the three discussion questions on screen. Each one asks you to apply one of these ideas to your own classroom. Thanks for watching.
+Here are the book's key terms in one place. A driving question is the real-world problem that anchors the whole unit. An entry event hooks students into it. An authentic audience is someone outside the teacher who needs the answer. Backplanning means setting the final date first and working backward on the pacing checklist. A problem statement is a short, researched case that a problem is real. BIRAC is the five-part outline for an executive summary. Costa's Levels of Questioning sort questions into input, process, and output. And 'Able to Teach This Topic' is the top rubric score: a student understands it well enough to teach it.
 
-**Discussion questions (full text for handout):**
+---
+
+## Slide 18: Conclude with direction
+
+**Words:** 92  |  **Est. @ 150 wpm:** 0:37
+
+So here's what I hope you take away. One: PBL is a unit, not a project, so build the whole story around a real problem. Two: design toward what you and your students love, then backplan to the standards and fill the gaps, with a checklist that makes the journey visible. Three: in STEM, communication is the content, so give students real genres and real audiences, and use quick feedback tools so you're not buried. Four: teach students to be teachers, by having them write the questions, the rubrics, and the lessons.
+
+---
+
+## Slide 19: Discussion questions
+
+**Words:** 53  |  **Est. @ 150 wpm:** 0:21
+
+Here are my three discussion questions. Each one asks you to take an idea from this video into your own classroom. First, planning order and the empty rows of the checklist. Second, a real-world genre paired with a feedback tip. Third, other ways students can prove they're able to teach. Thanks for watching.
+
+**Discussion questions (full text):**
 1. In the video, Wolpert-Gawron's planning order (design toward what you love, then look back at the standards, then fill the gaps) was compared with backward design. Choose a unit you will teach. Which order would you plan it in, and what would you put in the empty rows of your pacing checklist to keep it flexible? Explain how your choice connects to an idea from the presentation.
 2. The presentation shared five ways to assess writing quickly and argued that in STEM, communication is the content. Pick one real-world genre from the video (problem statement, executive summary with BIRAC, business letter, or lab report) and describe how you would use it in your subject. Which feedback tip would you pair it with, and how does that tip shift who does the work?
 3. The book insists that the top level of a rubric be called "Able to Teach This Topic." In addition to the approaches in the presentation (student-created quizzes, student-translated rubrics, backchanneling), what other way could students in your classroom prove they can teach a concept? What evidence would convince you, and what is one risk of the approach?
 
 ---
 
-## Slide 18: Resources
+## Slide 20: Resources
 
 **Words:** 23  |  **Est. @ 150 wpm:** 0:09
 
