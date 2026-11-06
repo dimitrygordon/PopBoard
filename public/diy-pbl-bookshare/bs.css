@@ -1145,7 +1145,7 @@ body[data-kind="conclude"] .bs-paper-group {
 .bs-surface--genre {
   transform: translate(-50%, -50%);
   text-align: center;
-  max-width: 12cqw;
+  max-width: none;
   white-space: normal !important;
   line-height: 1.15;
   color: #26376e !important;
@@ -1538,4 +1538,144 @@ body.fl-full .bs-paper-group .bs-apa li {
     font-size: 16px !important;
     line-height: 1.18 !important;
   }
+}
+
+/* --- portrait rotate note + landscape phone chrome --- */
+.bs-rotate-note {
+  display: none;
+  position: relative;
+  width: min(220px, 58vw);
+  margin: 6px auto 4px;
+  aspect-ratio: 1 / 1;
+  z-index: 5;
+  pointer-events: none;
+}
+.bs-rotate-note .bs-rotate-paper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  mix-blend-mode: multiply;
+}
+.bs-rotate-note .bs-rotate-tape {
+  position: absolute;
+  left: 18%;
+  top: -6%;
+  width: 64%;
+  height: 22%;
+  object-fit: fill;
+  z-index: 2;
+  mix-blend-mode: multiply;
+}
+.bs-rotate-note .bs-rotate-text {
+  position: absolute;
+  inset: 18% 12% 14%;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: "Patrick Hand", "Architects Daughter", cursive;
+  font-size: clamp(15px, 4.2vw, 20px);
+  line-height: 1.15;
+  color: #3b3530;
+  mix-blend-mode: multiply;
+}
+.bs-bar-toggle {
+  display: none;
+  position: fixed;
+  top: 6px;
+  right: 8px;
+  z-index: 40;
+  font-size: 13px !important;
+  padding: 4px 10px !important;
+}
+
+/* Portrait phone: show rotate note above the stage */
+@media (max-width: 599px) and (orientation: portrait) {
+  .bs-rotate-note {
+    display: block;
+  }
+  .bs-rotate-note[hidden] {
+    display: block; /* CSS media wins over hidden attr for this cue */
+  }
+}
+
+/* Landscape phone: tuck toolbar, let 16:9 stage fill width */
+@media (max-width: 950px) and (orientation: landscape) {
+  .bs-bar-toggle {
+    display: inline-flex;
+  }
+  body:not(.bs-bar-open) .fl-bar {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+    padding: 0;
+    margin: -1px;
+  }
+  body:not(.bs-bar-open) .fl-progress {
+    display: none;
+  }
+  body.bs-bar-open .fl-bar {
+    position: relative;
+    z-index: 35;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    max-height: 44px;
+    background: var(--paper, #F7F1E3);
+  }
+  body.bs-bar-open .fl-bar h1 {
+    display: none;
+  }
+  .fl-viewport {
+    padding: 0 !important;
+    align-items: stretch !important;
+  }
+  .fl-frame {
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    aspect-ratio: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  body.fl-full .fl-art,
+  .fl-art {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    flex: 0 0 auto !important;
+    right: 0 !important;
+    bottom: auto !important;
+  }
+  body.fl-full .fl-scene,
+  .fl-scene {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 9 !important;
+    max-height: none !important;
+  }
+  body.fl-full .fl-side,
+  .fl-side {
+    position: relative !important;
+    width: 100% !important;
+    transform: none !important;
+  }
+  body.fl-full .fl-side { display: none !important; }
+}
+
+/* s09 genre labels: ink blue, larger design type */
+.bs-design-layer .s09-genre,
+.bs-design-layer .bs-surface--genre,
+.bs-scene .s09-genre {
+  color: #26376e !important;
+  font-family: "Cabin Sketch", "Patrick Hand", cursive !important;
+  font-weight: 700;
+  mix-blend-mode: multiply;
 }

@@ -299,3 +299,203 @@ test("full view desktop: stage containers fit at 1280/1920", async (t) => {
     await browser.close();
   }
 });
+
+
+test("s09 labels sit inside card body quad with 10% inset; readable size", async (t) => {
+  let puppeteer;
+  try {
+    puppeteer = (await import(pathToFileURL(PUPPETEER).href)).default;
+  } catch (e) {
+    t.skip("puppeteer-core not available: " + e.message);
+    return;
+  }
+  let browser;
+  try {
+    browser = await puppeteer.launch(launchOpts());
+  } catch (e) {
+    t.skip("Chrome launch failed: " + e.message);
+    return;
+  }
+  try {
+    const failures = [];
+    for (const vp of [
+      { name: "390x844", width: 390, height: 844, mobile: true },
+      { name: "1280x720", width: 1280, height: 720, mobile: false },
+    ]) {
+      const page = await browser.newPage();
+      await page.setViewport({
+        width: vp.width, height: vp.height, deviceScaleFactor: 1,
+        isMobile: !!vp.mobile, hasTouch: !!vp.mobile,
+      });
+      await page.setCacheEnabled(false);
+      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=9&full=1`, {
+        waitUntil: "networkidle0", timeout: 60000,
+      });
+      await settle(page);
+      const rows = await page.evaluate(() => {
+        function rotate(px, py, cx, cy, deg) {
+          const r = (deg * Math.PI) / 180;
+          const dx = px - cx, dy = py - cy;
+          return {
+            x: cx + dx * Math.cos(r) - dy * Math.sin(r),
+            y: cy + dx * Math.sin(r) + dy * Math.cos(r),
+          };
+        }
+        function pointInPoly(pt, poly) {
+          // ray cast
+          let inside = false;
+          for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+            const xi = poly[i].x, yi = poly[i].y;
+            const xj = poly[j].x, yj = poly[j].y;
+            const inter = ((yi > pt.y) !== (yj > pt.y))
+              && (pt.x < ((xj - xi) * (pt.y - yi)) / (yj - yi + 1e-9) + xi);
+            if (inter) inside = !inside;
+          }
+          return inside;
+        }
+        const scene = document.querySelector(".bs-scene");
+        const sw = scene.clientWidth, sh = scene.clientHeight;
+        const scale = Math.min(sw / 1920, sh / 1080);
+        // design layer may use cover sync; map art -> CSS via label rects themselves
+        const out = [];
+        for (const el of document.querySelectorAll(".s09-genre")) {
+          const label = el.dataset.label || el.textContent.trim();
+          let bodyArt;
+          if (el.dataset.bodyQuad) {
+            bodyArt = JSON.parse(el.dataset.bodyQuad).map(([x, y]) => ({ x, y }));
+          } else {
+            const cx = Number(el.dataset.cardCx);
+            const cy = Number(el.dataset.cardCy);
+            const w = Number(el.dataset.cardW);
+            const h = Number(el.dataset.cardH);
+            const rot = Number(el.dataset.rot);
+            const headerFrac = Number(el.dataset.headerFrac || 0.3);
+            const pad = Number(el.dataset.bodyInset || 0.1);
+            const local = [
+              { x: (-0.5 + pad) * w, y: (-0.5 + headerFrac) * h },
+              { x: (0.5 - pad) * w, y: (-0.5 + headerFrac) * h },
+              { x: (0.5 - pad) * w, y: (0.5 - pad) * h },
+              { x: (-0.5 + pad) * w, y: (0.5 - pad) * h },
+            ];
+            bodyArt = local.map((p) => rotate(cx + p.x, cy + p.y, cx, cy, rot));
+          }
+          const br = el.getBoundingClientRect();
+          const sr = scene.getBoundingClientRect();
+          const layer = document.querySelector(".bs-design-layer");
+          const inv = new DOMMatrix(getComputedStyle(layer).transform).inverse();
+          // Label center must sit in the 10%-inset body parallelogram.
+          const art = inv.transformPoint({
+            x: (br.left + br.right) / 2 - sr.left,
+            y: (br.top + br.bottom) / 2 - sr.top,
+          });
+          const inside = pointInPoly(art, bodyArt);
+          const fs = parseFloat(getComputedStyle(el).fontSize);
+          const clip = el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1;
+          out.push({
+            label,
+            inside,
+            clip,
+            fs,
+            artFs: el.dataset.artFs,
+            overflowX: el.scrollWidth > el.clientWidth + 0.5,
+            overflowY: el.scrollHeight > el.clientHeight + 0.5,
+          });
+        }
+        return out;
+      });
+      if (rows.length !== 4) failures.push(`${vp.name}: expected 4 s09 labels, got ${rows.length}`);
+      for (const r of rows) {
+        if (!r.inside) failures.push(`${vp.name}: label outside 10% inset body ("${r.label}")`);
+        if (r.clip || r.overflowX || r.overflowY) failures.push(`${vp.name}: label clips ("${r.label}")`);
+        // ~2x prior 16px design size; allow fit down to 18px
+        const art = parseFloat(r.artFs || "0");
+        if (art && art < 18) failures.push(`${vp.name}: label too small artFs=${art} ("${r.label}")`);
+      }
+      await page.close();
+    }
+    assert.equal(failures.length, 0, failures.join("\n"));
+  } finally {
+    await browser.close();
+  }
+});
+
+test("portrait rotate note and landscape toolbar tuck", async (t) => {
+  let puppeteer;
+  try {
+    puppeteer = (await import(pathToFileURL(PUPPETEER).href)).default;
+  } catch (e) {
+    t.skip("puppeteer-core not available: " + e.message);
+    return;
+  }
+  let browser;
+  try {
+    browser = await puppeteer.launch(launchOpts());
+  } catch (e) {
+    t.skip("Chrome launch failed: " + e.message);
+    return;
+  }
+  try {
+    // Portrait phone
+    const portrait = await browser.newPage();
+    await portrait.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+    await portrait.goto(`${BASE}/study-diy-pbl-bookshare.html?page=17&full=1`, {
+      waitUntil: "networkidle0", timeout: 60000,
+    });
+    const pInfo = await portrait.evaluate(() => {
+      const note = document.getElementById("bsRotateNote");
+      const cs = note ? getComputedStyle(note) : null;
+      const text = note ? (note.querySelector(".bs-rotate-text") || {}).textContent : "";
+      return {
+        display: cs && cs.display,
+        text: (text || "").trim(),
+        color: cs && getComputedStyle(note.querySelector(".bs-rotate-text")).color,
+        hasPaper: !!(note && note.querySelector(".bs-rotate-paper")),
+        hasTape: !!(note && note.querySelector(".bs-rotate-tape")),
+      };
+    });
+    assert.equal(pInfo.text, "Turn your phone sideways");
+    assert.ok(pInfo.display !== "none", "rotate note visible in portrait");
+    assert.ok(pInfo.hasPaper && pInfo.hasTape, "sticky_note + tape_a sprites present");
+    await portrait.close();
+
+    // Landscape phone
+    const land = await browser.newPage();
+    await land.setViewport({ width: 844, height: 390, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+    await land.goto(`${BASE}/study-diy-pbl-bookshare.html?page=17&full=1`, {
+      waitUntil: "networkidle0", timeout: 60000,
+    });
+    await land.evaluate(() => {
+      document.body.classList.add("fl-full");
+      document.querySelectorAll(".bs-scene").forEach((s) => {
+        s.classList.remove("is-drawing");
+        s.classList.add("is-drawn", "is-settled");
+      });
+    });
+    await new Promise((r) => setTimeout(r, 300));
+    const lInfo = await land.evaluate(() => {
+      const bar = document.getElementById("flBar");
+      const toggle = document.getElementById("bsBarToggle");
+      const scene = document.querySelector(".bs-scene");
+      const note = document.getElementById("bsRotateNote");
+      const bcs = getComputedStyle(bar);
+      return {
+        toggleHidden: toggle ? toggle.hidden : true,
+        barClipped: bcs.clipPath.includes("inset") || bcs.height === "1px" || bcs.position === "absolute",
+        noteDisplay: note ? getComputedStyle(note).display : "none",
+        sceneW: scene.clientWidth,
+        sceneH: scene.clientHeight,
+        open: document.body.classList.contains("bs-bar-open"),
+      };
+    });
+    assert.equal(lInfo.toggleHidden, false, "Controls toggle shown in landscape");
+    assert.ok(lInfo.barClipped || !lInfo.open, "toolbar tucked when closed");
+    assert.equal(lInfo.noteDisplay, "none", "rotate note hidden in landscape");
+    assert.ok(lInfo.sceneW >= 800, `stage fills width, got ${lInfo.sceneW}`);
+    // 16:9-ish
+    const ar = lInfo.sceneW / lInfo.sceneH;
+    assert.ok(ar > 1.6 && ar < 1.9, `16:9 stage, got aspect ${ar}`);
+    await land.close();
+  } finally {
+    await browser.close();
+  }
+});

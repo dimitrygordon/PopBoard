@@ -244,3 +244,23 @@ if (wantFull) {
 })();
 
 window.__bs = { go, render, state, PAGES, setCollapsed, setPlaying, clearFlipClones, THEME_BAND, startDrawIn, runDrawIn, loadLayouts };
+
+/* Landscape phone: Controls toggle for tucked toolbar */
+(function wireBarToggle() {
+  const btn = document.getElementById("bsBarToggle");
+  if (!btn) return;
+  const sync = () => {
+    const landscapePhone = window.matchMedia("(max-width: 950px) and (orientation: landscape)").matches;
+    btn.hidden = !landscapePhone;
+    if (!landscapePhone) document.body.classList.remove("bs-bar-open");
+    btn.setAttribute("aria-expanded", document.body.classList.contains("bs-bar-open") ? "true" : "false");
+  };
+  btn.addEventListener("click", () => {
+    document.body.classList.toggle("bs-bar-open");
+    sync();
+  });
+  window.addEventListener("resize", sync);
+  window.addEventListener("orientationchange", sync);
+  sync();
+})();
+

@@ -116,6 +116,58 @@ function syncDesignLayer(root, layer) {
   layer.style.transform = `translate(${ox}px, ${oy}px) scale(${scale})`;
 }
 
+
+/** Fit an s09 label so every glyph center stays inside its body parallelogram. */
+function fitS09Label(el, maxDesignPx, bodyQuad) {
+  if (!el || !bodyQuad || bodyQuad.length < 4) return fitArtText(el, maxDesignPx);
+  const layer = el.closest(".bs-design-layer");
+  if (!layer) return fitArtText(el, maxDesignPx);
+  const inv = new DOMMatrix(getComputedStyle(layer).transform).inverse();
+  const scene = el.closest(".bs-scene");
+  const sr = scene.getBoundingClientRect();
+  const poly = bodyQuad.map(([x, y]) => ({ x, y }));
+  const pointIn = (pt) => {
+    let inside = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const xi = poly[i].x, yi = poly[i].y, xj = poly[j].x, yj = poly[j].y;
+      const inter = ((yi > pt.y) !== (yj > pt.y))
+        && (pt.x < ((xj - xi) * (pt.y - yi)) / ((yj - yi) || 1e-9) + xi);
+      if (inter) inside = !inside;
+    }
+    return inside;
+  };
+  const glyphsInside = () => {
+    const text = el.firstChild;
+    if (!text || text.nodeType !== 3) {
+      return el.scrollWidth <= el.clientWidth + 0.5 && el.scrollHeight <= el.clientHeight + 0.5;
+    }
+    for (let i = 0; i < text.length; i++) {
+      if (/\s/.test(text.data[i])) continue;
+      const r = document.createRange();
+      r.setStart(text, i);
+      r.setEnd(text, i + 1);
+      const gr = r.getBoundingClientRect();
+      if (gr.width < 0.5 && gr.height < 0.5) continue;
+      const lx = (gr.left + gr.right) / 2 - sr.left;
+      const ly = (gr.top + gr.bottom) / 2 - sr.top;
+      const art = inv.transformPoint({ x: lx, y: ly });
+      if (!pointIn(art)) return false;
+    }
+    return true;
+  };
+  let lo = 10, hi = Math.max(10, maxDesignPx || 36), best = 10;
+  for (let i = 0; i < 14; i++) {
+    const mid = (lo + hi) / 2;
+    el.style.setProperty("font-size", mid + "px", "important");
+    const boxOk = el.scrollWidth <= el.clientWidth + 0.5 && el.scrollHeight <= el.clientHeight + 0.5;
+    if (boxOk && glyphsInside()) { best = mid; lo = mid; } else { hi = mid; }
+  }
+  el.style.setProperty("font-size", best + "px", "important");
+  el.dataset.artFs = String(best);
+  return best;
+}
+
+
 function ensureDesignLayer(root) {
   let layer = root.querySelector(":scope > .bs-design-layer");
   if (!layer) {
@@ -292,48 +344,76 @@ function buildS08(root, T) {
 }
 
 function buildS09(root, T) {
-  // Leo art/s09/cards.json: quad_xy TL,TR,BR,BL + rotation_deg + center_xy.
+  // Leo art/s09/cards.json: label white body below colored band.
+  // Top-right lightbulb+gear card stays unlabeled (absent from cards.json).
   const layer = ensureDesignLayer(root);
   const cards = s09Cards();
   cards.forEach((c, i) => {
     const q = c.quad_xy || c.quad;
     if (!q || q.length < 4) return;
-    const cx = (c.center_xy && c.center_xy[0] != null)
-      ? c.center_xy[0]
-      : (q[0][0] + q[1][0] + q[2][0] + q[3][0]) / 4;
-    const cy = (c.center_xy && c.center_xy[1] != null)
-      ? c.center_xy[1]
-      : (q[0][1] + q[1][1] + q[2][1] + q[3][1]) / 4;
-    const topW = (c.size_wh && c.size_wh[0]) || Math.hypot(q[1][0] - q[0][0], q[1][1] - q[0][1]);
-    const sideH = (c.size_wh && c.size_wh[1]) || Math.hypot(q[3][0] - q[0][0], q[3][1] - q[0][1]);
+    const label = c.label || c.text || "";
+    if (!label) return;
     const rot = (c.rotation_deg != null) ? c.rotation_deg
       : (c.rot != null ? c.rot : Math.atan2(q[1][1] - q[0][1], q[1][0] - q[0][0]) * 180 / Math.PI);
+
+    // Quad TL,TR,BR,BL. Inset 10% toward centroid, then drop top edge past colored band.
+    const pad = 0.10;
+    const headerFrac = /lab report/i.test(label) ? 0.36 : 0;
+    const cx = (q[0][0] + q[1][0] + q[2][0] + q[3][0]) / 4;
+    const cy = (q[0][1] + q[1][1] + q[2][1] + q[3][1]) / 4;
+    const inset = q.map(([x, y]) => [cx + (x - cx) * (1 - 2 * pad), cy + (y - cy) * (1 - 2 * pad)]);
+    // Push TL/TR down toward BL/BR by headerFrac of the inset side length
+    const body = [
+      [inset[0][0] + (inset[3][0] - inset[0][0]) * headerFrac, inset[0][1] + (inset[3][1] - inset[0][1]) * headerFrac],
+      [inset[1][0] + (inset[2][0] - inset[1][0]) * headerFrac, inset[1][1] + (inset[2][1] - inset[1][1]) * headerFrac],
+      inset[2],
+      inset[3],
+    ];
+    const bx = (body[0][0] + body[1][0] + body[2][0] + body[3][0]) / 4;
+    const by = (body[0][1] + body[1][1] + body[2][1] + body[3][1]) / 4;
+    const topW = Math.hypot(body[1][0] - body[0][0], body[1][1] - body[0][1]);
+    const sideH = Math.hypot(body[3][0] - body[0][0], body[3][1] - body[0][1]);
+    // Use Leo's card rotation so labels track the drawn card, not just the top edge.
+    const bodyRot = rot;
+
     const el = surface("genre", `s09-genre s09-g${i} on-art`);
-    el.dataset.cardId = c.id || c.label || `g${i}`;
-    const label = c.label || c.text || "";
+    el.dataset.cardId = c.id || label || `g${i}`;
+    el.dataset.label = label;
+    el.dataset.quad = JSON.stringify(q);
+    el.dataset.bodyQuad = JSON.stringify(body);
+    el.dataset.bodyInset = String(pad);
+    el.dataset.headerFrac = String(headerFrac);
+    el.dataset.cardCx = String(cx);
+    el.dataset.cardCy = String(cy);
+    el.dataset.cardW = String(Math.hypot(q[1][0] - q[0][0], q[1][1] - q[0][1]));
+    el.dataset.cardH = String(Math.hypot(q[3][0] - q[0][0], q[3][1] - q[0][1]));
+    el.dataset.rot = String(rot);
     el.textContent = label.includes(" ") ? label.replace(" ", "\n") : label;
-    el.style.left = (cx / 1920) * 100 + "%";
-    el.style.top = (cy / 1080) * 100 + "%";
-    el.style.width = (topW / 1920) * 100 + "%";
-    el.style.height = (sideH / 1080) * 100 + "%";
-    el.style.transform = `translate(-50%, -50%) rotate(${rot}deg)`;
+    el.style.left = (bx / 1920) * 100 + "%";
+    el.style.top = (by / 1080) * 100 + "%";
+    // Slightly smaller than body edges so a rotated CSS rect stays inside the parallelogram.
+    el.style.width = ((topW * 0.92) / 1920) * 100 + "%";
+    el.style.height = ((sideH * 0.92) / 1080) * 100 + "%";
+    el.style.transform = `translate(-50%, -50%) rotate(${bodyRot}deg)`;
     el.style.transformOrigin = "50% 50%";
     el.style.textAlign = "center";
     el.style.display = "flex";
     el.style.alignItems = "center";
     el.style.justifyContent = "center";
-    el.style.lineHeight = "1.12";
+    el.style.lineHeight = "1.08";
     el.style.whiteSpace = "pre-line";
-    el.style.padding = "6%";
+    el.style.padding = "0";
     el.style.boxSizing = "border-box";
-    el.style.fontSize = "16px";
+    el.style.color = "#26376e";
+    el.style.fontSize = "32px";
     el.style.overflow = "hidden";
     el.style.pointerEvents = "none";
     layer.appendChild(el);
-    requestAnimationFrame(() => requestAnimationFrame(() => fitArtText(el, 16)));
+    requestAnimationFrame(() => requestAnimationFrame(() => fitArtText(el, 36)));
   });
   void T;
 }
+
 
 function buildS10(root, T) {
   const p = P("s10");
