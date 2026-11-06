@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="shared/layout/layout.css">
+<script type="module" src="shared/layout/layout.js"></script>
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#1F1D1A">
+<title>Energy Lab // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.energy-lab.theme"); } catch (e) {}
+    document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");
+  })();
+</script>
+<link rel="stylesheet" href="shared/fun/fun.css">
+<link rel="stylesheet" href="energy-lab/energy-lab.css">
+</head>
+<body class="energy-lab">
+<h1 class="sr-only">Energy Lab</h1>
+<p class="sr-only">Ten Physics 101 energy 3D sims. Each card opens the existing lesson scene; a second link returns to that Physics 101 lesson page.</p>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title">Energy Lab</p>
+  <button id="themeBtn" type="button"><span id="themeLabel">Paper</span></button>
+</header>
+
+<main class="el-shell">
+  <section class="el-hero" aria-label="Energy Lab cover">
+    <img class="el-cover" id="elCover" src="energy-lab/cover.webp" width="960" height="540" alt="">
+    <p class="el-lede" id="elLede"></p>
+  </section>
+  <ul class="el-grid" id="elGrid" aria-label="Energy sims"></ul>
+</main>
+
+<script type="module">
+import { ENERGY_LAB, simHref, lessonLabel, thumbSrc } from "./energy-lab/catalog.js";
+
+document.getElementById("studyBackBtn").addEventListener("click", () => { location.href = "study.html" + location.search; });
+const themeBtn = document.getElementById("themeBtn");
+const themeLabel = document.getElementById("themeLabel");
+const syncTheme = () => {
+  const light = document.documentElement.getAttribute("data-theme") === "light";
+  themeLabel.textContent = light ? "Ink" : "Paper";
+};
+themeBtn.addEventListener("click", () => {
+  const next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", next);
+  try { localStorage.setItem("popboard.energy-lab.theme", next); } catch (e) {}
+  syncTheme();
+});
+syncTheme();
+
+document.getElementById("elLede").textContent = ENERGY_LAB.sims.map((s) => s.title).join(" · ");
+const grid = document.getElementById("elGrid");
+for (const sim of ENERGY_LAB.sims) {
+  const li = document.createElement("li");
+  li.className = "el-card";
+  const img = document.createElement("img");
+  img.className = "el-thumb";
+  img.src = thumbSrc(sim);
+  img.width = ENERGY_LAB.thumbSize.width;
+  img.height = ENERGY_LAB.thumbSize.height;
+  img.alt = "";
+  img.loading = "lazy";
+  const body = document.createElement("div");
+  body.className = "el-body";
+  const h2 = document.createElement("h2");
+  h2.textContent = sim.title;
+  const actions = document.createElement("div");
+  actions.className = "el-actions";
+  const open = document.createElement("a");
+  open.className = "primary";
+  open.href = simHref(sim);
+  open.textContent = "Open sim";
+  const lesson = document.createElement("a");
+  lesson.href = simHref(sim);
+  lesson.textContent = lessonLabel(sim);
+  actions.append(open, lesson);
+  body.append(h2, actions);
+  li.append(img, body);
+  grid.append(li);
+}
+</script>
+</body>
+</html>
