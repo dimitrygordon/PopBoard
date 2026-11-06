@@ -26,8 +26,9 @@ function sceneRoot(scene, artId) {
   return root;
 }
 
-function sprite(root, artId, name, cls, place) {
+function sprite(root, artId, name, cls, place, magicId) {
   const el = img(`${ART}${artId}/${name}.webp`, `bs-sp ${cls || ""}`);
+  el.dataset.magicId = magicId || name;
   if (place) applyPlace(el, place);
   root.appendChild(el);
   return el;
@@ -369,15 +370,16 @@ function buildS17Lanterns(root, T) {
 
 function buildKeyTermsOverlay(root, T, terms) {
   const wall = h("div", "bs-term-wall");
-  terms.forEach((t, i) => {
-    const card = h("div", `bs-term-card t${i}`);
-    card.textContent = t.replace(/^"|"$/g, "");
+  terms.forEach((term, i) => {
+    const card = h("div", `bs-term-card t${i} bs-reveal`);
+    card.textContent = String(term).replace(/^"|"$/g, "");
+    if (i === 0) card.dataset.magicId = "flip_card";
     wall.appendChild(card);
     if (!reduced()) {
       T.A(card, [
-        { transform: "rotateY(90deg)", opacity: 0 },
-        { transform: "rotateY(0deg)", opacity: 1 },
-      ], 0.2 + i * 0.25, 0.45);
+        { transform: "scale(0.92)" },
+        { transform: "scale(1)" },
+      ], 0.1 + i * 0.12, 0.35);
     }
   });
   root.appendChild(wall);
@@ -442,14 +444,14 @@ export const PAGES = SLIDES.map((slide) => ({
     } else if (slide.kind === "discuss") {
       const panel = h("div", "bs-discuss");
       (slide.questions || []).forEach((q, i) => {
-        const card = h("div", `bs-dq-card dq${i}`);
+        const card = h("div", `bs-dq-card dq${i} bs-reveal`);
         card.innerHTML = `<b>Q${i + 1}.</b> ${fx(q)}`;
+        if (i === 0) card.dataset.magicId = "note_card";
         panel.appendChild(card);
-        T.fadeUp(card, 0.15 + i * 0.2, 0.5, 10);
       });
       root.appendChild(panel);
     } else if (slide.kind === "resources") {
-      const panel = h("div", "bs-resources-panel");
+      const panel = h("div", "bs-resources-panel bs-reveal");
       const ul = h("ul", "bs-apa");
       (slide.resources || []).forEach((r) => {
         const li = document.createElement("li");
@@ -458,10 +460,14 @@ export const PAGES = SLIDES.map((slide) => ({
       });
       panel.appendChild(ul);
       root.appendChild(panel);
-      if (BUILDERS.s18) BUILDERS.s18(root, T);
-      T.fade(panel, 0.1, 0.5);
+      // Do not mount blank page.webp sprite over the bookshelf
     } else if (slide.kind === "conclude") {
       if (BUILDERS.s17) BUILDERS.s17(root, T);
+      const box = h("div", "bs-takeaways");
+      const items = (slide.bullets || []).map((b) => fx(String(b).replace(/^\d+\.\s*/, "")));
+      box.classList.add("bs-reveal");
+      box.innerHTML = `<h3>Takeaways</h3><ol>${items.map((b) => `<li>${b}</li>`).join("")}</ol>`;
+      root.appendChild(box);
     } else if (BUILDERS[artId]) {
       BUILDERS[artId](root, T);
     }

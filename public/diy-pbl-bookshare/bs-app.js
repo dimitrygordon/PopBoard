@@ -3,11 +3,15 @@
 // collapses the side so only the looping storyboard art remains.
 import { timeline, fx } from "./bs-engine.js";
 import { PAGES } from "./bs-pages.js";
+import {
+  THEME_BAND, HANDOFFS, handoffKey, captureMagic, runFlip, clearFlipClones,
+  fadeScript, restoreScript, resolvePrimary
+} from "./bs-transitions.js";
 
 const $ = (id) => document.getElementById(id);
 const scene = $("flScene"), side = $("flSide");
 const reducedQ = matchMedia("(prefers-reduced-motion: reduce)");
-const state = { i: 0, T: null, playing: true, auto: false, prog: null, autoTimer: 0 };
+const state = { i: 0, T: null, playing: true, auto: false, prog: null, autoTimer: 0, navBusy: false, flipToken: 0 };
 try { state.auto = localStorage.getItem("popboard.diy-pbl.auto") === "1"; } catch (e) {}
 
 $("studyBackBtn").href = "study.html" + location.search;
@@ -17,7 +21,11 @@ function stopPage() {
   if (state.T) state.T.anims.forEach((a) => a.cancel());
   if (state.prog) state.prog.cancel();
   state.animDone = false;
+  clearFlipClones();
+  scene.querySelectorAll(".bs-scene").forEach((n) => n.classList.remove("is-settled", "is-leaving"));
   scene.replaceChildren(); scene.classList.remove("staged"); side.replaceChildren();
+  scene.style.opacity = "";
+  scene.style.transition = "";
 }
 
 function render(i) {
@@ -27,11 +35,14 @@ function render(i) {
   document.body.dataset.page = String(n);
   if (p.idea) document.body.dataset.idea = String(p.idea); else delete document.body.dataset.idea;
   if (p.kind) document.body.dataset.kind = p.kind; else delete document.body.dataset.kind;
+  const band = THEME_BAND[n] || "cream";
+  document.body.dataset.themeBand = band;
+
   // Side: kicker + title + bullets/script. Do NOT inject .guide here (A3: no duplicate caption).
   side.innerHTML = `<p class="kicker">${fx(p.kicker)}</p><h2>${fx(p.title)}</h2>` + (p.side || "");
-  // Full-screen caption bar only (single yellow-style line via fl-cap)
-  $("flCapT").innerHTML = fx(p.title);
-  $("flCapQ").innerHTML = fx(p.cap || "");
+  // Full-screen caption: guide only (no title duplicate with on-art headings)
+  $("flCapT").innerHTML = "";
+  $("flCapQ").innerHTML = fx(p.cap || p.guide || "");
   $("flGuide").innerHTML = "";
   $("flCount").textContent = `Page ${n} of ${PAGES.length}`;
   const params = new URLSearchParams(location.search);
@@ -41,6 +52,8 @@ function render(i) {
   state.T = T;
   const extra = p.build(scene, T) || {};
   state.holdAfter = extra.hold_after || p.hold_after || 0;
+  const root = scene.querySelector(".bs-scene");
+  if (root) requestAnimationFrame(() => root.classList.add("is-settled"));
   startClock(T);
 }
 
@@ -59,9 +72,82 @@ function maybeAdvance() {
   state.autoTimer = setTimeout(() => { if (state.playing) go(1); }, 4000);
 }
 
-function go(d) {
-  if (state.i + d < 0 || state.i + d >= PAGES.length) return;
-  render(state.i + d);
+async function go(d) {
+  const next = state.i + d;
+  if (next < 0 || next >= PAGES.length) return;
+  if (state.navBusy) {
+    // Rapid click: cancel clones and jump cleanly (no stacked sprites)
+    state.flipToken++;
+    clearFlipClones();
+    state.navBusy = false;
+    render(next);
+    return;
+  }
+  const reduced = reducedQ.matches;
+  const from1 = state.i + 1;
+  const to1 = next + 1;
+  const key = handoffKey(from1, to1);
+  const plan = HANDOFFS[key] || HANDOFFS[handoffKey(to1, from1)];
+  const token = ++state.flipToken;
+  state.navBusy = true;
+
+  const fromRoot = scene.querySelector(".bs-scene");
+  if (fromRoot) fromRoot.classList.add("is-leaving");
+  const fromCapture = captureMagic(scene);
+  const fromBgRoot = fromRoot; // keep ref for bg src before destroy
+
+  // Quiet script fade (never FLIP script between slides)
+  if (!document.body.classList.contains("fl-full")) await fadeScript(side, reduced ? 120 : 180);
+  if (token !== state.flipToken) { state.navBusy = false; return; }
+
+  if (reduced) {
+    scene.style.transition = "opacity 0.22s ease";
+    scene.style.opacity = "0";
+    await new Promise((r) => setTimeout(r, 220));
+    if (token !== state.flipToken) { state.navBusy = false; return; }
+    render(next);
+    scene.style.opacity = "0";
+    requestAnimationFrame(() => {
+      scene.style.transition = "opacity 0.22s ease";
+      scene.style.opacity = "1";
+    });
+    await new Promise((r) => setTimeout(r, 220));
+    await restoreScript(side, 120);
+    state.navBusy = false;
+    return;
+  }
+
+  // Snapshot FROM bg src before render destroys it
+  const fromBg = fromBgRoot && fromBgRoot.querySelector(".bs-bg");
+  const fromBgSrc = fromBg ? (fromBg.currentSrc || fromBg.src) : null;
+
+  render(next);
+  if (token !== state.flipToken) { state.navBusy = false; return; }
+
+  const toRoot = scene.querySelector(".bs-scene");
+  if (fromBgSrc && toRoot) {
+    const ghost = document.createElement("img");
+    ghost.className = "bs-bg-xfade show";
+    ghost.src = fromBgSrc;
+    ghost.alt = "";
+    toRoot.insertBefore(ghost, toRoot.firstChild);
+    requestAnimationFrame(() => ghost.classList.remove("show"));
+    setTimeout(() => ghost.remove(), 340);
+  }
+
+  const primary = resolvePrimary(plan, fromCapture);
+  try {
+    await runFlip(fromCapture, scene, primary, { duration: 560, reduced: false });
+  } catch (e) {
+    clearFlipClones();
+  }
+  if (token !== state.flipToken) { state.navBusy = false; return; }
+  if (toRoot) {
+    // Staggered caption reveals after the motif lands
+    requestAnimationFrame(() => toRoot.classList.add("is-settled"));
+  }
+  await restoreScript(side, 180);
+  state.navBusy = false;
 }
 
 function setPlaying(on) {
@@ -135,6 +221,10 @@ addEventListener("keydown", (e) => {
 });
 
 const startPage = parseInt(new URLSearchParams(location.search).get("page"), 10);
-if (new URLSearchParams(location.search).get("full") === "1") setCollapsed(true);
+const wantFull = new URLSearchParams(location.search).get("full") === "1";
+if (wantFull) {
+  document.body.classList.add("fl-full");
+  setCollapsed(true);
+}
 render(Number.isFinite(startPage) ? startPage - 1 : 0);
-window.__bs = { go, render, state, PAGES, setCollapsed, setPlaying };
+window.__bs = { go, render, state, PAGES, setCollapsed, setPlaying, HANDOFFS, clearFlipClones, captureMagic, resolvePrimary, THEME_BAND };

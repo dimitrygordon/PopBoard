@@ -11,7 +11,7 @@ const TITLE = "Dimitry's DIY Project Based Learning for Math and Science Booksha
 const { PAGES, PAGE_COUNT } = await import(pathToFileURL(join(DIR, "bs-pages.js")).href);
 const { SLIDES } = await import(pathToFileURL(join(DIR, "bs-data.js")).href);
 const { PLACEMENTS } = await import(pathToFileURL(join(DIR, "bs-placements.js")).href);
-const files = ["bs-pages.js", "bs-engine.js", "bs-app.js", "bs.css", "bs-data.js", "bs-placements.js", "script.md"]
+const files = ["bs-pages.js", "bs-engine.js", "bs-app.js", "bs.css", "bs-data.js", "bs-placements.js", "bs-transitions.js", "script.md"]
   .map((f) => readFileSync(join(DIR, f), "utf8"))
   .concat(readFileSync(join(PUB, "study-diy-pbl-bookshare.html"), "utf8"));
 
@@ -79,6 +79,9 @@ test("no audio controls; fullscreen hides text; script kept in normal view", () 
   assert.match(html, /Full screen \(hide text\)/);
   assert.match(css, /body\.fl-full \.fl-side/);
   assert.match(css, /body\.fl-full \.bs-script/);
+  // On-art panels must remain in full view (resources, terms, discuss, takeaways)
+  assert.ok(!/body\.fl-full[^{]*\.bs-resources-panel\s*\{\s*display:\s*none/.test(css));
+  assert.match(css, /\.bs-takeaways/);
   assert.ok(!app.includes("new Audio"));
 });
 
@@ -111,4 +114,52 @@ test("placements config is data-driven for Leo redraws", () => {
   assert.ok(PLACEMENTS.s11.tips.length === 5);
   assert.ok(PLACEMENTS.s14.bubbles.length === 4);
   assert.match(readFileSync(join(DIR, "bs-pages.js"), "utf8"), /applyPlace/);
+});
+
+
+test("transitions: all 19 handoffs, theme bands, reduced-motion path", async () => {
+  const { HANDOFFS, THEME_BAND, resolvePrimary, handoffKey } = await import(
+    pathToFileURL(join(DIR, "bs-transitions.js")).href
+  );
+  for (let i = 1; i <= 19; i++) {
+    const k = handoffKey(i, i + 1);
+    assert.ok(HANDOFFS[k], `missing handoff ${k}`);
+    assert.ok(HANDOFFS[k].primary, `missing primary for ${k}`);
+  }
+  assert.equal(Object.keys(HANDOFFS).length, 19);
+  for (let n = 1; n <= 20; n++) assert.ok(THEME_BAND[n], `theme band ${n}`);
+  assert.equal(THEME_BAND[3], "teal");
+  assert.equal(THEME_BAND[7], "amber");
+  assert.equal(THEME_BAND[10], "coral");
+  assert.equal(THEME_BAND[14], "violet");
+  assert.equal(THEME_BAND[20], "cream");
+  // resolvePrimary falls back when plan motif missing on FROM
+  assert.equal(resolvePrimary({ primary: "marble" }, { cloud: {} }), "cloud");
+  assert.equal(resolvePrimary({ primary: "marble" }, { marble: {} }), "marble");
+  const app = readFileSync(join(DIR, "bs-app.js"), "utf8");
+  const css = readFileSync(join(DIR, "bs.css"), "utf8");
+  assert.match(app, /navBusy/);
+  assert.match(app, /clearFlipClones/);
+  assert.match(app, /runFlip/);
+  assert.match(app, /prefers-reduced-motion/);
+  assert.match(app, /fadeScript/);
+  assert.match(app, /Rapid click/);
+  assert.match(app, /simple fade|opacity 0\.22s/);
+  assert.match(app, /ArrowRight/);
+  assert.match(app, /maybeAdvance/);
+  assert.match(css, /bs-flip-clone/);
+  assert.match(css, /prefers-reduced-motion:\s*reduce/);
+  assert.match(css, /data-theme-band/);
+  assert.match(css, /bs-reveal/);
+});
+
+test("transitions: sprites carry data-magic-id; script never FLIPs", () => {
+  const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
+  const app = readFileSync(join(DIR, "bs-app.js"), "utf8");
+  assert.match(pages, /dataset\.magicId/);
+  assert.match(pages, /flip_card/);
+  assert.match(pages, /note_card/);
+  assert.match(app, /Quiet script fade|never FLIP script/i);
+  // Script panel is not tagged magic
+  assert.ok(!/bs-script[^\n]*magicId/.test(pages));
 });

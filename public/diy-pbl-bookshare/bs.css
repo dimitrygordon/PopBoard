@@ -46,13 +46,17 @@ body:not(.fl-full) .fl-cap { display: none !important; }
 body.fl-full .fl-cap {
   display: block;
   bottom: 0; left: 0; right: 0;
-  padding: 1.2cqh 3cqw 1.8cqh;
-  background: linear-gradient(to top, var(--paper) 65%, transparent);
+  padding: 1cqh 3cqw 1.4cqh;
+  background: linear-gradient(to top, var(--paper) 70%, transparent);
   z-index: 6;
+  font-size: clamp(14px, 1.8cqw, 24px);
 }
+body.fl-full .fl-cap b { display: none; } /* avoid title+guide duplication; show guide only */
+
 body.fl-full .fl-guide { display: none !important; }
 
-/* Dimitry: keep script in normal view; hide ALL text panels in full-screen */
+/* Teleprompter + side bullets: normal view only. On-art content (terms, takeaways,
+   discussion Qs, resources APA) STAYS visible in full view for recorded viewers. */
 .bs-script {
   margin-top: 1cqh; padding-top: 0.9cqh;
   border-top: 2px dashed rgba(36,51,158,.28);
@@ -63,16 +67,20 @@ body.fl-full .fl-guide { display: none !important; }
   line-height: 1.35 !important;
   white-space: pre-wrap;
 }
+/* Instant hide: no transform fade that leaves ghost pixels in screenshots */
+.fl-side { transition: none !important; }
+.fl-art { transition: none !important; }
 body.fl-full .fl-side {
-  transform: translateX(110%);
-  opacity: 0;
-  pointer-events: none;
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
-body.fl-full .fl-art { right: 0; bottom: 12%; }
+body.fl-full .fl-art { right: 0; bottom: 10%; }
+/* Only teleprompter + side bullet lists hide; never hide on-art panels */
 body.fl-full .bs-script,
 body.fl-full .bs-side-bullets,
-body.fl-full .bs-side-q,
-body.fl-full .bs-resources-panel { display: none !important; }
+body.fl-full .bs-side-q { display: none !important; }
 
 /* Obvious full-screen control */
 #fsBtn {
@@ -147,9 +155,9 @@ body.fl-full .bs-resources-panel { display: none !important; }
 
 /* Key terms wall (code-side flip cards) */
 .bs-term-wall {
-  position: absolute; left: 4%; top: 10%; right: 8%; bottom: 10%;
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2cqw;
-  z-index: 3; align-content: center;
+  position: absolute; left: 3%; top: 8%; right: 6%; bottom: 14%;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1cqw;
+  z-index: 5; align-content: center;
 }
 .bs-term-card {
   background: var(--card-keep); color: #24339E;
@@ -166,9 +174,9 @@ body.fl-full .bs-resources-panel { display: none !important; }
 
 /* Discussion questions large panels */
 .bs-discuss {
-  position: absolute; left: 4%; right: 4%; top: 8%; bottom: 8%;
-  display: flex; flex-direction: column; gap: 1.2cqh;
-  z-index: 3; overflow: auto;
+  position: absolute; left: 3%; right: 3%; top: 6%; bottom: 14%;
+  display: flex; flex-direction: column; gap: 1cqh;
+  z-index: 5; overflow: auto;
 }
 .bs-dq-card {
   background: rgba(255,253,246,.94);
@@ -185,19 +193,20 @@ body.fl-full .bs-resources-panel { display: none !important; }
 
 /* Resources APA panel on art (legibility >= ~28px at 1080p in full view) */
 .bs-resources-panel {
-  position: absolute; left: 3%; right: 22%; top: 6%; bottom: 6%;
-  z-index: 3; overflow: auto;
-  background: rgba(247,241,227,.92);
+  position: absolute; left: 2%; right: 36%; top: 4%; bottom: 12%;
+  z-index: 5; overflow: auto;
+  background: rgba(247,241,227,.96);
   border-radius: 0.8cqw;
-  padding: 1.6cqh 1.6cqw;
+  padding: 1.4cqh 1.4cqw;
   box-shadow: var(--shadow);
 }
+body.fl-full .bs-resources-panel { right: 34%; bottom: 14%; }
 .bs-apa { list-style: none; margin: 0; padding: 0; }
 .bs-apa li {
   font-family: var(--f-body);
-  font-size: clamp(15px, 1.65cqw, 28px);
-  line-height: 1.3;
-  margin: 0 0 0.9cqh;
+  font-size: clamp(16px, 1.7cqw, 28px);
+  line-height: 1.28;
+  margin: 0 0 0.7cqh;
   padding-left: 0.9em;
   position: relative;
 }
@@ -243,4 +252,122 @@ body.fl-full .bs-resources-panel { display: none !important; }
 
 @media (prefers-reduced-motion: reduce) {
   .bs-sp { animation: none !important; }
+}
+
+/* Conclude takeaways on-art (visible in full view) */
+.bs-takeaways {
+  position: absolute; left: 3%; top: 8%; width: 42%;
+  z-index: 5;
+  background: rgba(255,253,246,.95);
+  border-radius: 0.8cqw;
+  padding: 1.4cqh 1.4cqw;
+  box-shadow: var(--shadow);
+}
+.bs-takeaways h3 {
+  font-family: var(--f-title); font-size: clamp(18px, 2.2cqw, 32px);
+  margin: 0 0 1cqh; color: var(--ink);
+}
+.bs-takeaways ol { margin: 0; padding-left: 1.2em; }
+.bs-takeaways li {
+  font-family: var(--f-body);
+  font-size: clamp(16px, 1.85cqw, 28px);
+  line-height: 1.3; margin: 0 0 0.8cqh;
+}
+/* Hide blank/placeholder page sprite on resources bookshelf */
+.s18-page, img.s18-page, .bs-sp.s18-page { display: none !important; visibility: hidden !important; }
+
+/* kill friction lesson slide-out ghost (fl.css uses transform+opacity) */
+body.fl-full .fl-side,
+html body.fl-full .fl-side {
+  display: none !important;
+  transform: none !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Force storyboard stage size: absolute children must not collapse .fl-scene */
+.fl-scene {
+  display: block !important;
+  position: relative !important;
+  width: 100% !important;
+  aspect-ratio: 16 / 9 !important;
+  height: auto !important;
+  max-height: 100% !important;
+}
+body.fl-full .fl-art {
+  right: 0 !important;
+  bottom: 10% !important;
+  left: 0 !important;
+  top: 0 !important;
+  display: block !important; /* not grid+center which collapses absolute-only scene */
+}
+body.fl-full .fl-scene {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+  aspect-ratio: auto !important;
+}
+.bs-scene {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Idea color band along the art edge */
+.bs-scene::before {
+  content: "";
+  position: absolute; left: 0; top: 0; bottom: 0; width: 0.55cqw;
+  z-index: 8; pointer-events: none;
+  background: transparent;
+}
+.bs-scene[data-idea="1"]::before { background: #2A8F8A; }
+.bs-scene[data-idea="2"]::before { background: #C48A3A; }
+.bs-scene[data-idea="3"]::before { background: #D96B5A; }
+.bs-scene[data-idea="4"]::before { background: #7A6BB5; }
+body[data-theme-band="teal"] .bs-scene::before { background: #2A8F8A; }
+body[data-theme-band="amber"] .bs-scene::before { background: #C48A3A; }
+body[data-theme-band="coral"] .bs-scene::before { background: #D96B5A; }
+body[data-theme-band="violet"] .bs-scene::before { background: #7A6BB5; }
+body[data-theme-band="cream"] .bs-scene::before { background: #D9CBB2; }
+
+/* Transition layer */
+.bs-flip-layer {
+  position: absolute; inset: 0; z-index: 40; pointer-events: none; overflow: visible;
+}
+.bs-flip-clone {
+  position: fixed; margin: 0; object-fit: contain; pointer-events: none;
+  z-index: 50; will-change: transform, opacity;
+}
+.bs-flip-clone-box { background: rgba(245, 236, 220, 0.92); }
+.bs-scene.is-leaving .bs-sp[data-magic-id],
+.bs-scene.is-leaving img[data-magic-id] { visibility: hidden !important; }
+.bs-bg-xfade {
+  position: absolute; inset: 0; z-index: 1; opacity: 0;
+  transition: opacity 0.32s ease;
+  object-fit: cover; width: 100%; height: 100%; pointer-events: none;
+}
+.bs-bg-xfade.show { opacity: 1; }
+.bs-reveal {
+  opacity: 0; transform: translateY(12px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.bs-scene.is-settled .bs-reveal,
+.fl-scene.is-settled .bs-reveal {
+  opacity: 1; transform: none;
+}
+/* On first paint without a transition, show reveals after a tick via JS is-settled */
+body:not(.fl-transiting) .bs-scene.is-settled .bs-reveal { opacity: 1; transform: none; }
+.bs-reveal:nth-child(1) { transition-delay: 0.05s; }
+.bs-reveal:nth-child(2) { transition-delay: 0.12s; }
+.bs-reveal:nth-child(3) { transition-delay: 0.19s; }
+.bs-reveal:nth-child(4) { transition-delay: 0.26s; }
+.bs-reveal:nth-child(5) { transition-delay: 0.33s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bs-flip-clone { display: none !important; }
+  .bs-bg-xfade { transition-duration: 0.22s !important; }
+  .bs-reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
 }
