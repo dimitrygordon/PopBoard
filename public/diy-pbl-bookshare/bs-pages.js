@@ -558,9 +558,9 @@ export const PAGES = SLIDES.map((slide) => ({
       buildKeyTermsOverlay(root, T, slide.bullets || []);
       buildKeytermsArt(root, T);
     } else if (slide.kind === "discuss") {
-      // Leo sheet_flat (972x1300): upright ruled page, no counter-rotation
+      // Leo TEXT-ON-ART: paper 60,50,840,980; kids stay x>950. Ruled pitch ~5.31% of sheet.
       const group = h("div", "bs-paper-group");
-      applyRect(group, 520, 20, 780, 1040, 0);
+      applyRect(group, 60, 50, 840, 980, -1);
       group.style.transformOrigin = "50% 50%";
       const paper = img(`${PAPER}/sheet_flat.webp`, "bs-paper");
       paper.setAttribute("aria-hidden", "true");
@@ -575,8 +575,8 @@ export const PAGES = SLIDES.map((slide) => ({
       tape2.style.cssText = "position:absolute;right:8%;top:1.5%;width:22%;height:5%;object-fit:fill;transform:rotate(3deg);z-index:8;";
       group.appendChild(tape2);
       const panel = surface("discuss", "bs-discuss on-art");
-      // Text inside the red ruled margins of sheet_flat
-      panel.style.cssText = "position:absolute;left:14%;top:12%;width:72%;height:76%;overflow:hidden;box-sizing:border-box;padding:0;font-size:clamp(11px,1.15cqw,19px);";
+      // Text 150,140,680,820 on art -> ~10.7%/9.2%/81%/83.7% of sheet; lh = ruled pitch
+      panel.style.cssText = "position:absolute;left:11%;top:9%;width:78%;height:82%;overflow-y:auto;overflow-x:hidden;box-sizing:border-box;padding:0;font-size:clamp(13px,1.35cqw,22px);line-height:1.55;";
       (slide.questions || []).forEach((q, i) => {
         const card = h("div", `bs-dq-card dq${i} bs-reveal`);
         card.innerHTML = `<b>Q${i + 1}.</b> ${fx(q)}`;
@@ -589,19 +589,19 @@ export const PAGES = SLIDES.map((slide) => ({
       const nRes = (slide.resources || []).length;
       const isTools = /tools/i.test(slide.title || "") || nRes <= 4;
       if (isTools) {
-        // Leo sheet_flat_wide (1320x1020): upright landscape ruled page
+        // Compact sheet_flat (~40% width) on left cream; body-size text on ruled lines
         const group = h("div", "bs-paper-group");
-        applyRect(group, 180, 90, 1400, 900, 0);
-        const paper = img(`${PAPER}/sheet_flat_wide.webp`, "bs-paper");
+        applyRect(group, 50, 40, 760, 1000, 0);
+        const paper = img(`${PAPER}/sheet_flat.webp`, "bs-paper");
         paper.setAttribute("aria-hidden", "true");
         paper.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:fill;";
         group.appendChild(paper);
         const tape = img(`${PAPER}/tape_a.webp`, "bs-paper-tape");
         tape.setAttribute("aria-hidden", "true");
-        tape.style.cssText = "position:absolute;left:38%;top:-1%;width:18%;height:7%;object-fit:fill;transform:rotate(-3deg);z-index:8;";
+        tape.style.cssText = "position:absolute;left:38%;top:-1%;width:22%;height:5%;object-fit:fill;transform:rotate(-3deg);z-index:8;";
         group.appendChild(tape);
         const panel = surface("resources", "bs-resources-panel bs-resources-panel--compact bs-reveal on-art");
-        panel.style.cssText = "position:absolute;left:14%;top:12%;width:72%;height:76%;overflow:hidden;box-sizing:border-box;";
+        panel.style.cssText = "position:absolute;left:12%;top:10%;width:76%;height:80%;overflow-y:auto;overflow-x:hidden;box-sizing:border-box;font-size:clamp(16px,1.7cqw,26px);line-height:1.55;";
         const heading = h("div", "bs-res-h on-art-t");
         heading.textContent = slide.resHeading || slide.title || "Tools";
         panel.appendChild(heading);
@@ -615,9 +615,9 @@ export const PAGES = SLIDES.map((slide) => ({
         group.appendChild(panel);
         root.appendChild(group);
       } else {
-        // Leo sheet_flat (972x1300): upright tall ruled page for APA references
+        // Leo TEXT-ON-ART s20: paper 50,40,900,1000; shelf reads on the right
         const group = h("div", "bs-paper-group");
-        applyRect(group, 500, 20, 800, 1040, 0);
+        applyRect(group, 50, 40, 860, 1000, -0.8);
         const paper = img(`${PAPER}/sheet_flat.webp`, "bs-paper");
         paper.setAttribute("aria-hidden", "true");
         paper.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:fill;";
@@ -631,7 +631,8 @@ export const PAGES = SLIDES.map((slide) => ({
         tape2.style.cssText = "position:absolute;right:8%;top:1.5%;width:22%;height:5%;object-fit:fill;transform:rotate(3deg);z-index:8;";
         group.appendChild(tape2);
         const panel = surface("resources", "bs-resources-panel bs-reveal on-art");
-        panel.style.cssText = "position:absolute;left:14%;top:12%;width:72%;height:76%;overflow:hidden;box-sizing:border-box;";
+        // Leo: 22-24px at 1080p; scroll if 8 APA refs clip
+        panel.style.cssText = "position:absolute;left:10%;top:8%;width:80%;height:84%;overflow-y:auto;overflow-x:hidden;box-sizing:border-box;font-size:clamp(12px,1.2cqw,18px);line-height:1.5;";
         const heading = h("div", "bs-res-h on-art-t");
         heading.textContent = slide.resHeading || slide.title || "References";
         panel.appendChild(heading);

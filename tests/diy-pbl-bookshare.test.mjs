@@ -206,7 +206,8 @@ test("TEXT-ON-ART: no CSS box chrome on stage text; ink/graphite; multiply", () 
   assert.match(pages, /IDEA_MAP/);
   assert.match(pages, /index_card/);
   assert.match(pages, /sheet_flat/);
-  assert.match(pages, /sheet_flat_wide/);
+  // tools slide uses compact sheet_flat (~40% left), not the wide sheet
+  assert.match(pages, /bs-resources-panel--compact/);
   assert.match(pages, /torn_page/);
   // Stage surfaces must not keep UI card shadows/backgrounds as the primary look
   assert.match(css, /\.bs-surface--idea[^{]*\{[\s\S]*?background:\s*none !important/);

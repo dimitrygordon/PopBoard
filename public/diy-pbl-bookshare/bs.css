@@ -1150,3 +1150,107 @@ body[data-kind="conclude"] .bs-paper-group {
   padding: 0 !important;
 }
 
+/* ===== Kill left-column rounded/dashed frames on paper slides 18-21 ===== */
+body[data-kind="conclude"] .fl-art,
+body[data-kind="discuss"] .fl-art,
+body[data-kind="resources"] .fl-art,
+body[data-kind="conclude"] .fl-scene,
+body[data-kind="discuss"] .fl-scene,
+body[data-kind="resources"] .fl-scene,
+body[data-kind="conclude"] .fl-frame,
+body[data-kind="discuss"] .fl-frame,
+body[data-kind="resources"] .fl-frame,
+body[data-kind="conclude"] .bs-scene,
+body[data-kind="discuss"] .bs-scene,
+body[data-kind="resources"] .bs-scene,
+body[data-kind="conclude"] .bs-paper-group,
+body[data-kind="discuss"] .bs-paper-group,
+body[data-kind="resources"] .bs-paper-group {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+}
+body[data-kind="conclude"] .fl-art::before,
+body[data-kind="discuss"] .fl-art::before,
+body[data-kind="resources"] .fl-art::before,
+body[data-kind="conclude"] .fl-art::after,
+body[data-kind="discuss"] .fl-art::after,
+body[data-kind="resources"] .fl-art::after,
+body[data-kind="conclude"] .fl-scene::before,
+body[data-kind="discuss"] .fl-scene::before,
+body[data-kind="resources"] .fl-scene::before,
+body[data-kind="conclude"] .fl-scene::after,
+body[data-kind="discuss"] .fl-scene::after,
+body[data-kind="resources"] .fl-scene::after,
+body[data-kind="conclude"] .fl-frame::before,
+body[data-kind="discuss"] .fl-frame::before,
+body[data-kind="resources"] .fl-frame::before,
+body[data-kind="conclude"] .fl-frame::after,
+body[data-kind="discuss"] .fl-frame::after,
+body[data-kind="resources"] .fl-frame::after,
+body[data-kind="conclude"] .bs-scene::after,
+body[data-kind="discuss"] .bs-scene::after,
+body[data-kind="resources"] .bs-scene::after,
+body[data-kind="conclude"] .bs-paper-group::before,
+body[data-kind="discuss"] .bs-paper-group::before,
+body[data-kind="resources"] .bs-paper-group::before,
+body[data-kind="conclude"] .bs-paper-group::after,
+body[data-kind="discuss"] .bs-paper-group::after,
+body[data-kind="resources"] .bs-paper-group::after {
+  content: none !important;
+  display: none !important;
+  border: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+/* Theme band stays; keep ::before width 0 on cream paper slides */
+body[data-kind="conclude"] .bs-scene::before,
+body[data-kind="discuss"] .bs-scene::before,
+body[data-kind="resources"] .bs-scene::before {
+  width: 0 !important;
+  background: transparent !important;
+}
+/* Paper group is the CQ root so ruled line-height tracks sheet height */
+.bs-paper-group {
+  container-type: size;
+  container-name: paper;
+}
+.bs-paper-group .bs-discuss,
+.bs-paper-group .bs-discuss .bs-dq-card,
+.bs-paper-group .bs-resources-panel,
+.bs-paper-group .bs-resources-panel .bs-apa li {
+  /* sheet_flat ruled pitch ≈ 5.31% of sheet height */
+  line-height: 5.31cqh !important;
+}
+.bs-paper-group .bs-discuss {
+  font-size: 3.35cqh !important; /* ~Patrick Hand 30px at 1080 on a 980-tall sheet */
+}
+.bs-paper-group .bs-resources-panel {
+  font-size: 2.55cqh !important; /* ~22-24px at 1080 on a 1000-tall sheet */
+}
+.bs-paper-group .bs-resources-panel--compact {
+  font-size: 3.1cqh !important; /* body size on the smaller tools sheet */
+}
+.bs-paper-group .bs-discuss .bs-dq-card {
+  margin: 0 0 0.35em !important;
+}
+.bs-paper-group .bs-resources-panel .bs-apa {
+  margin: 0.2em 0 0;
+  padding: 0;
+  list-style: none;
+}
+.bs-paper-group .bs-resources-panel .bs-apa li {
+  margin: 0 0 0.55em !important;
+  padding-left: 1.5em;
+  text-indent: -1.5em; /* APA hanging indent */
+}
+
+
+.bs-paper-group .bs-discuss,
+.bs-paper-group .bs-resources-panel {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(60,50,40,.35) transparent;
+}
