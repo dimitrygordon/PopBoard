@@ -1,0 +1,120 @@
+/* Energy Lab hub: cream/charcoal to match energy3d pages; 16 px floor. */
+:root {
+  --el-paper: #FBF6EA;
+  --el-ink: #2B2622;
+  --el-card: #FFFDF5;
+  --el-line: #2B2622;
+}
+:root[data-theme="dark"] {
+  --el-paper: #1F1D1A;
+  --el-ink: #EDE6D6;
+  --el-card: #2A2621;
+  --el-line: #EDE6D6;
+}
+body.energy-lab {
+  margin: 0;
+  min-height: 100%;
+  background: var(--el-paper);
+  color: var(--el-ink);
+  font: 16px/1.4 "Patrick Hand", "Gochi Hand", cursive;
+}
+.el-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px 16px 48px;
+  box-sizing: border-box;
+}
+.el-hero {
+  display: grid;
+  gap: 14px;
+  margin: 12px 0 22px;
+}
+.el-cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 960 / 540;
+  object-fit: cover;
+  border: 1.5px solid var(--el-line);
+  border-radius: 14px;
+  background: var(--el-card);
+}
+.el-lede {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.45;
+}
+.el-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.el-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--el-card);
+  border: 1.5px solid var(--el-line);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 1px 2px 0 rgba(43, 38, 34, 0.14);
+}
+.el-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 640 / 360;
+  object-fit: cover;
+  background: var(--el-paper);
+  border-bottom: 1.5px solid var(--el-line);
+}
+.el-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px 14px;
+  flex: 1;
+}
+.el-body h2 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.25;
+  font-weight: 700;
+}
+.el-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+}
+.el-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 6px 12px;
+  box-sizing: border-box;
+  border: 1.5px solid var(--el-line);
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  font: inherit;
+  font-size: 16px;
+  background: transparent;
+}
+.el-actions a.primary {
+  background: rgba(232, 194, 26, 0.28);
+  font-weight: 700;
+}
+.el-actions a:focus-visible {
+  outline: 2px solid #4C6FA8;
+  outline-offset: 2px;
+}
+@media (max-width: 700px) {
+  .el-grid { grid-template-columns: 1fr; }
+  .el-shell { padding: 12px 12px 40px; }
+}
+
+.energy-lab .hud, .energy-lab .hud .title, .energy-lab .hud .back-label, .energy-lab .hud button { font-size: 16px; }

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-label="Energy Lab cover placeholder">
+  <rect width="960" height="540" fill="#FBF6EA"/>
+  <rect x="24" y="24" width="912" height="492" fill="none" stroke="#2B2622" stroke-width="3" stroke-dasharray="10 8"/>
+  <text x="480" y="250" text-anchor="middle" font-family="Patrick Hand, Gochi Hand, cursive" font-size="42" fill="#2B2622">Energy Lab cover</text>
+  <text x="480" y="300" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="18" fill="#2B2622">960 x 540 webp for Leo</text>
+</svg>
