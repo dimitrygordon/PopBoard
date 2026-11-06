@@ -79,12 +79,16 @@ body.fl-full .fl-cap .cap-q {
   max-width: 100%;
 }
 
-/* s09 landscape: caption clears fanned cards on the right — shift left. */
+/* Landscape phone: captions clear right-side art — park in empty bottom-left. */
 @media (max-height: 500px) and (orientation: landscape) {
-  body.fl-full[data-page="9"] .fl-cap {
+  body.fl-full .fl-cap {
     left: 2% !important;
     right: 50% !important;
     text-align: left !important;
+  }
+  /* s06 desk/lanterns reach further left than other slides */
+  body.fl-full[data-page="6"] .fl-cap {
+    right: 58% !important;
   }
 }
 

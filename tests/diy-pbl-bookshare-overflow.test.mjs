@@ -849,13 +849,11 @@ test("full-view captions clear on-art cards at 1280 and 844x390", async (t) => {
           const text = (cq.textContent || "").trim();
           if (!text) return null;
           const cr = cq.getBoundingClientRect();
-          // Sample glyph boxes via Range for each word — fall back to cap rect.
           const scene = document.querySelector(".bs-scene");
           const sr = scene.getBoundingClientRect();
-          // Art cards / on-art chips captions must clear (not full-bleed content panels).
           const cardSels = [
             ".s09-genre", ".bs-term-card", ".s01-book", ".s10-birac-letter",
-            ".bs-surface--titleblock",
+            ".bs-surface--titleblock", ".bs-takeaways",
           ];
           const cards = [];
           for (const sel of cardSels) {
@@ -869,8 +867,6 @@ test("full-view captions clear on-art cards at 1280 and 844x390", async (t) => {
               });
             });
           }
-          // Also detect opaque ink card outlines near the bottom via pixel walk on
-          // caption AABB against Leo quads when present (s09).
           const quads = [];
           document.querySelectorAll(".s09-genre").forEach((el) => {
             try {
@@ -898,7 +894,6 @@ test("full-view captions clear on-art cards at 1280 and 844x390", async (t) => {
             }
             return inside;
           }
-          // Caption text rect in scene coords (use the visible text box).
           const capBox = {
             x0: cr.left - sr.left,
             y0: cr.top - sr.top,
@@ -906,26 +901,21 @@ test("full-view captions clear on-art cards at 1280 and 844x390", async (t) => {
             y1: cr.bottom - sr.top,
           };
           const overlaps = [];
-          // Sample a grid across the caption text box; flag if inside any s09 quad.
           for (let iy = 0; iy < 4; iy++) {
             for (let ix = 0; ix < 8; ix++) {
               const px = capBox.x0 + (capBox.x1 - capBox.x0) * (ix + 0.5) / 8;
               const py = capBox.y0 + (capBox.y1 - capBox.y0) * (iy + 0.5) / 4;
               for (let qi = 0; qi < quads.length; qi++) {
-                if (pointInQuad(px, py, quads[qi])) {
-                  overlaps.push(`s09-quad[${qi}]`);
-                }
+                if (pointInQuad(px, py, quads[qi])) overlaps.push(`s09-quad[${qi}]`);
               }
             }
           }
-          // Generic: caption bottom strip vs DOM card AABBs (only when cards sit low).
           for (const c of cards) {
             const ox0 = Math.max(capBox.x0, c.x0);
             const oy0 = Math.max(capBox.y0, c.y0);
             const ox1 = Math.min(capBox.x1, c.x1);
             const oy1 = Math.min(capBox.y1, c.y1);
             if (ox1 > ox0 + 4 && oy1 > oy0 + 4) {
-              // Ignore tiny edge grazes; require meaningful overlap area.
               const area = (ox1 - ox0) * (oy1 - oy0);
               if (area > 80) overlaps.push(c.sel);
             }
@@ -937,8 +927,63 @@ test("full-view captions clear on-art cards at 1280 and 844x390", async (t) => {
             capBox,
           };
         });
+
+        // Pixel check: hide caption, sample art under its box (catches baked lanterns etc.).
+        let artHit = null;
+        if (hit && hit.capBox) {
+          await page.evaluate(() => {
+            document.querySelectorAll(".fl-cap").forEach((el) => { el.style.visibility = "hidden"; });
+          });
+          await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+          await new Promise((r) => setTimeout(r, 40));
+          const sceneHandle = await page.$(".bs-scene");
+          const shot = Buffer.from(await sceneHandle.screenshot({ encoding: "binary" }));
+          await sceneHandle.dispose();
+          artHit = await page.evaluate(async (b64, capBox) => {
+            const img = new Image();
+            await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = "data:image/png;base64," + b64; });
+            const canvas = document.createElement("canvas");
+            canvas.width = img.width; canvas.height = img.height;
+            const ctx = canvas.getContext("2d", { willReadFrequently: true });
+            ctx.drawImage(img, 0, 0);
+            const { data, width, height } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const scene = document.querySelector(".bs-scene");
+            const sx = width / scene.clientWidth, sy = height / scene.clientHeight;
+            function sample(cssX, cssY) {
+              const px = Math.min(width - 1, Math.max(0, Math.round(cssX * sx)));
+              const py = Math.min(height - 1, Math.max(0, Math.round(cssY * sy)));
+              const i = (py * width + px) * 4;
+              return { r: data[i], g: data[i + 1], b: data[i + 2] };
+            }
+            // Saturated colored art (lanterns, book spines, clothing) — not cream paper.
+            function isSaturatedArt(p) {
+              const lum = (p.r + p.g + p.b) / 3;
+              const chroma = Math.max(Math.abs(p.r - p.g), Math.abs(p.g - p.b), Math.abs(p.r - p.b));
+              return chroma > 50 && lum > 55 && lum < 210;
+            }
+            let art = 0, total = 0;
+            for (let iy = 0; iy < 5; iy++) {
+              for (let ix = 0; ix < 12; ix++) {
+                const px = capBox.x0 + (capBox.x1 - capBox.x0) * (ix + 0.5) / 12;
+                const py = capBox.y0 + (capBox.y1 - capBox.y0) * (iy + 0.5) / 5;
+                const p = sample(px, py);
+                total++;
+                if (isSaturatedArt(p)) art++;
+              }
+            }
+            return { art, total, artFrac: art / total };
+          }, shot.toString("base64"), hit.capBox);
+        }
+
         if (hit && hit.overlaps.length) {
           failures.push(`${vp.name} p${n}: caption overlaps ${hit.overlaps.join(",")} — "${hit.text}"`);
+        }
+        // Landscape is the tight case; require mostly empty paper under the caption.
+        if (vp.name === "844x390" && artHit && artHit.artFrac > 0.12) {
+          failures.push(
+            `${vp.name} p${n}: caption sits on drawn art ` +
+            `(${(artHit.artFrac * 100).toFixed(0)}% art samples) — "${hit?.text || ""}"`
+          );
         }
         await page.close();
       }
