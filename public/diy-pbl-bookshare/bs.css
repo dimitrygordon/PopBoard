@@ -1120,7 +1120,7 @@ body[data-kind="conclude"] .bs-paper-group {
   font-family: "Cabin Sketch", "Architects Daughter", cursive !important;
   color: #26376e !important;
   font-weight: 700 !important;
-  font-size: clamp(36px, 4.2cqw, 64px) !important;
+  font-size: clamp(22px, 2.6cqw, 39px) !important; /* ~1.4x original */
   line-height: 1 !important;
   background: none !important;
   box-shadow: none !important;
@@ -1128,9 +1128,13 @@ body[data-kind="conclude"] .bs-paper-group {
   border: none !important;
   padding: 0 !important;
   mix-blend-mode: normal !important; /* no multiply washout on coral blocks */
-  -webkit-text-stroke: 1.2px #26376e;
+  -webkit-text-stroke: 0.55px #26376e;
   opacity: 1 !important;
   z-index: 8 !important;
+}
+.s10-birac-letter--small {
+  font-size: clamp(16px, 1.9cqw, 28px) !important;
+  -webkit-text-stroke: 0.35px #26376e;
 }
 
 .bs-surface--genre {

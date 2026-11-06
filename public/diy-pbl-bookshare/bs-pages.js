@@ -289,24 +289,30 @@ function buildS10(root, T) {
     root.appendChild(el);
   });
 
-  // B/I/R/A on the 4 drawn block faces (bottom->top), C on the top face (Leo may add a 5th block later)
-  // Block stack sits ~x1540-1680, y ~430-720 (bottom block near overlay 1540,640)
-  const biracLetters = [
-    // Front faces of the 4-block stack (right of graph); C on the top face
-    { ch: "B", x: 1755, y: 655 },  // bottom block front face
-    { ch: "I", x: 1755, y: 595 },
-    { ch: "R", x: 1755, y: 510 },
-    { ch: "A", x: 1755, y: 425 },
-    { ch: "C", x: 1775, y: 355 },  // top face of the stack
+  // BIRAC letters top->bottom (reader scan). Data-driven for Leo's 5th block.
+  // Flip BIRAC_HAS_FIFTH_BLOCK to true when the 5th-block art lands; C moves onto that face.
+  const BIRAC_HAS_FIFTH_BLOCK = false;
+  const biracFaces = [
+    { ch: "B", x: 1780, y: 338 }, // top block front face
+    { ch: "I", x: 1780, y: 410 },
+    { ch: "R", x: 1780, y: 500 },
+    { ch: "A", x: 1777, y: 575 }, // bottom of the current 4-stack
+    // C: on 5th block when ready; until then, small on the table under the stack
+    BIRAC_HAS_FIFTH_BLOCK
+      ? { ch: "C", x: 1780, y: 670 }   // TODO: set to the 5th-block face center from overlays
+      : { ch: "C", x: 1777, y: 655, small: true },
   ];
-  biracLetters.forEach((L) => {
+  biracFaces.forEach((L) => {
     // No on-art / multiply: solid bold ink so letters stay readable on coral blocks
-    const el = surface("label", "s10-birac-letter");
+    const el = surface("label", "s10-birac-letter" + (L.small ? " s10-birac-letter--small" : ""));
     el.textContent = L.ch;
     el.style.left = (L.x / 1920) * 100 + "%";
     el.style.top = (L.y / 1080) * 100 + "%";
     el.style.transform = "translate(-50%, -50%) rotate(-2deg)";
-    el.style.fontSize = "clamp(36px, 4.2cqw, 64px)";
+    // ~1.4x original clamp(16px, 1.85cqw, 28px); small C a bit tighter on the table
+    el.style.fontSize = L.small
+      ? "clamp(16px, 1.9cqw, 28px)"
+      : "clamp(22px, 2.6cqw, 39px)";
     el.style.fontWeight = "700";
     el.style.color = "#26376e";
     el.style.mixBlendMode = "normal";
