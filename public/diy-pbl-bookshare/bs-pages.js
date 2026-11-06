@@ -243,17 +243,26 @@ function buildS08(root, T) {
 
 function buildS09(root, T) {
   // No doc_card sprite (looked like a stray sticky). Genre labels stay on the drawn fan.
+  // Centered on each drawn card, below the header icon (TEXT-ON-ART / Round 3)
   const genres = [
-    { text: "Lab report", left: 54, top: 34 },
-    { text: "Problem statement", left: 78, top: 48 },
-    { text: "Business letter", left: 68, top: 30 },
-    { text: "Executive summary", left: 64, top: 58 },
+    // Scene-% centers of each drawn card body (verified against full-view shots)
+    { text: "Lab report", left: 66, top: 31 },            // beaker (rear-left) white body
+    { text: "Business letter", left: 61, top: 60 },       // envelope card body
+    { text: "Executive summary", left: 69.5, top: 58 },   // wax-seal card body
+    { text: "Problem statement", left: 86.5, top: 58 },   // clipboard card body
   ];
   genres.forEach((g, i) => {
     const el = surface("genre", `s09-genre s09-g${i} on-art`);
-    el.textContent = g.text;
+    // Two-line wrap so long labels fit inside narrow card bodies
+    el.textContent = g.text.replace(" ", "\n");
     el.style.left = g.left + "%";
     el.style.top = g.top + "%";
+    el.style.transform = "translate(-50%, -50%) rotate(-2deg)";
+    el.style.textAlign = "center";
+    el.style.maxWidth = "7.5%";
+    el.style.lineHeight = "1.12";
+    el.style.whiteSpace = "pre-line";
+    el.style.fontSize = "clamp(11px, 1.15cqw, 18px)";
     root.appendChild(el);
   });
   void T;
@@ -266,7 +275,7 @@ function buildS10(root, T) {
 
   // Graph labels: sit ON the drawn lines near their tips / glow (art coords).
   const labels = [
-    { cls: "s10-lab-rev", text: "Revenue", x: 1435, y: 375 },
+    { cls: "s10-lab-rev", text: "Revenue", x: 1510, y: 300 },
     { cls: "s10-lab-cost", text: "Cost", x: 1365, y: 595 },
     { cls: "s10-lab-be", text: "Break-even", x: 1240, y: 455 },
   ];
@@ -279,15 +288,25 @@ function buildS10(root, T) {
     root.appendChild(el);
   });
 
-  // BIRAC as one ink label under/beside the 4-block stack
-  const birac = surface("label", "s10-birac-line on-art on-art-t");
-  birac.textContent = "BIRAC";
-  birac.style.left = (1580 / 1920) * 100 + "%";
-  birac.style.top = (820 / 1080) * 100 + "%";
-  birac.style.transform = "rotate(-2deg)";
-  birac.style.fontSize = "clamp(16px, 1.8cqw, 28px)";
-  birac.style.letterSpacing = "0.14em";
-  root.appendChild(birac);
+  // B/I/R/A on the 4 drawn block faces (bottom->top), C on the top face (Leo may add a 5th block later)
+  // Block stack sits ~x1540-1680, y ~430-720 (bottom block near overlay 1540,640)
+  const biracLetters = [
+    // Front faces of the 4-block stack (right of graph); C on the top face
+    { ch: "B", x: 1755, y: 640 },  // bottom block front face
+    { ch: "I", x: 1755, y: 575 },
+    { ch: "R", x: 1755, y: 495 },
+    { ch: "A", x: 1755, y: 415 },
+    { ch: "C", x: 1770, y: 350 },  // top face of the stack
+  ];
+  biracLetters.forEach((L) => {
+    const el = surface("label", "s10-birac-letter on-art on-art-t");
+    el.textContent = L.ch;
+    el.style.left = (L.x / 1920) * 100 + "%";
+    el.style.top = (L.y / 1080) * 100 + "%";
+    el.style.transform = "translate(-50%, -50%) rotate(-2deg)";
+    el.style.fontSize = "clamp(16px, 1.85cqw, 28px)";
+    root.appendChild(el);
+  });
 
   // Formula lines: append into the cream idea panel so they sit with the bullets
   const panel = root.querySelector(".bs-idea-panel");
@@ -470,7 +489,7 @@ function buildOnArtIdeaPanel(root, slide) {
   const title = h("div", "bs-idea-title on-art-t");
   title.textContent = slide.title || "";
   panel.appendChild(title);
-  const bullets = (slide.bullets || []).slice(0, 4);
+  const bullets = (slide.bullets || []).slice(0, 5);
   if (bullets.length) {
     const ul = h("ul", "bs-idea-bullets on-art-b");
     bullets.forEach((b) => {

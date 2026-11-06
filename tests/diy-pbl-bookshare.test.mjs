@@ -55,9 +55,12 @@ test("slide 1 uses real book title, author, and bg_cover (no floating cover_disp
 test("Tesla fixes: slide 5 fall-off wording; slide 10 C = vx + F and R = px", () => {
   assert.match(SLIDES[4].narration, /without falling off at the top/);
   assert.match(SLIDES[4].bullets.join(" "), /without falling off at the top/);
-  assert.match(SLIDES[9].bullets.join(" "), /C = vx \+ F/);
-  assert.match(SLIDES[9].bullets.join(" "), /R = px/);
+  // Round 3: equations live on chips; bullet 3 is the short break-even line
+  assert.match(SLIDES[9].bullets.join(" "), /where cost meets revenue/);
   assert.match(SLIDES[9].bullets.join(" "), /Ch\. 2; Part II, p\. 120/);
+  const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
+  assert.match(pages, /C = vx \+ F/);
+  assert.match(pages, /R = px/);
   assert.ok(!/C = mx \+ b/.test(SLIDES[9].narration));
 });
 
@@ -240,9 +243,36 @@ test("QA: no stray curled-paper sprites; keyterms grid; draw-in 40% line", () =>
   assert.ok(!/sprite\(root,\s*"s09",\s*"doc_card"/.test(pages));
   assert.ok(!/sprite\(root,\s*"s11",\s*"tip_card"/.test(pages));
   assert.match(pages, /bs-paper-group/);
-  assert.match(pages, /s10-birac-line/);
+  assert.match(pages, /s10-birac-letter/);
   assert.match(pages, /boardW/);
   assert.match(css, /bs-paper-group/);
   assert.match(css, /-webkit-line-clamp:\s*2/);
   assert.match(drawin, /u \/ 0\.40/);
+});
+
+test("Round 3: tip 5, APA alpha order, no cite-only bullets, break-even wording", () => {
+  assert.ok(SLIDES[10].bullets.some((b) => /Peers give first feedback/.test(b)));
+  assert.equal(SLIDES[10].bullets.length, 5);
+  assert.match(SLIDES[9].bullets[2], /where cost meets revenue/);
+  assert.ok(!SLIDES[1].bullets.some((b) => /^\(Introduction/.test(String(b).trim())));
+  assert.ok(!SLIDES[5].bullets.some((b) => /^\(Introduction/.test(String(b).trim())));
+  const refs = SLIDES[19].resources.map((r) => r.html);
+  assert.match(refs[0], /^Juliani/);
+  assert.match(refs[1], /^Larmer/);
+  assert.match(refs[2], /^Pashler/);
+  assert.match(refs[3], /^PBLWorks/);
+  assert.match(refs[4], /^Routledge/);
+  assert.match(refs[5], /^Wiggins/);
+  assert.match(refs[6], /^Wolpert-Gawron, H\. \(2011\)/);
+  assert.match(refs[7], /^Wolpert-Gawron, H\. \(2016\)/);
+  const tools = SLIDES[20].resources.map((r) => r.html);
+  assert.match(tools[0], /^Desmos/);
+  assert.match(tools[1], /^PhET/);
+  assert.match(tools[2], /^U\.S\. Environmental/);
+  const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
+  assert.match(pages, /slice\(0, 5\)/);
+  assert.match(pages, /s10-birac-letter/);
+  const css = readFileSync(join(DIR, "bs.css"), "utf8");
+  assert.match(css, /text-indent:\s*-1\.\d+em/);
+  assert.match(css, /bs-idea-cite[\s\S]*clamp\(15px/);
 });

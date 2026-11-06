@@ -29,8 +29,7 @@ export const SLIDES = [
     "guide": "Is your current unit a line, or a story?",
     "bullets": [
       "A themed queue vs. a metal maze",
-      "A unit should be a story, not a line.",
-      "(Introduction, p. 3)"
+      "A unit should be a story, not a line."
     ],
     "narration": "Wolpert-Gawron opens with a comparison I can't get out of my head. At Disneyland, the story of a ride starts the moment you step into line. The walls, the ceiling, even the ground you walk on all build toward the ride. At a lot of other parks, you just wait in a metal maze and then you ride. She says most of our teaching is the metal maze: disconnected daily lessons that each teach a skill but never add up to a story. Project Based Learning, or PBL, is the Disneyland version. Every lesson lives inside one story about a problem that has to be solved. So here's a question to hold onto: is your current unit a line, or is it a story?",
     "chapter": "Introduction, p. 3"
@@ -98,8 +97,7 @@ export const SLIDES = [
     "bullets": [
       "1. Design toward what you love",
       "2. Look back at the standards",
-      "3. Fill in the gaps",
-      "(Introduction, pp. 7-8)"
+      "3. Fill in the gaps"
     ],
     "narration": "Idea two: design toward what you love, then backplan to the standards. This one surprised me. The author admits she doesn't start with the standards. She calls standards-first planning, in her words, \"a stinky model.\" Instead, she uses three steps. One: design toward what you love, meaning your interests and the interests of the age group you teach. Two: look back at the standards. Three: fill in the gaps. Her reasoning is that enthusiasm is \"trickle down.\" If the teacher is bored, the kids will be too. She calls this a teacher's maker movement: just like students make products, teachers should get to make curriculum. And when one teacher can't hit every standard, she says to find a cross-curricular partner. The Galapagos unit itself came from her collaborating with a seventh grade science teacher.",
     "chapter": "Introduction, pp. 7-8"
@@ -167,7 +165,7 @@ export const SLIDES = [
     "bullets": [
       "Writing with numeracy (Ch. 2; Part II, p. 120)",
       "BIRAC: Background, Issues, Recommendations, Analysis, Consequences (p. 82)",
-      "Break-even: C = vx + F and R = px (Ch. 2)"
+      "Break-even: where cost meets revenue (Ch. 2)"
     ],
     "narration": "Two tools from this idea are worth stealing. The first is writing with numeracy, which means teaching students how to put numbers into their writing correctly, as evidence. She builds a reference sheet of rules, like spelling out a number that starts a sentence. The second is BIRAC, an engineering-style outline she uses for the Theme Park executive summary. B is background, posing the question. I is issues, what might get in the way. R is recommendations. A is analysis, the evidence that the plan works. And C is consequences, what happens if the board says yes or no. The Invention Unit also has real math in it: a break-even analysis, where cost equals variable cost times units plus fixed cost, written C equals v x plus F, and revenue equals price times units, written R equals p x. Students graph both lines in Desmos and find where they cross.",
     "chapter": "Ch. 2, Ch. 4; Part II p. 120"
@@ -347,28 +345,28 @@ export const SLIDES = [
     "resHeading": "References",
     "resources": [
       {
-        "html": "Wolpert-Gawron, H. (2016). <i>DIY project based learning for math and science</i>. Routledge. https://doi.org/10.4324/9781315709598"
-      },
-      {
-        "html": "Routledge. (n.d.). <i>DIY project based learning for math and science: Free eResources</i>. https://www.routledge.com/9781138891609"
-      },
-      {
         "html": "Juliani, A. J. (2014). <i>Inquiry and innovation in the classroom: Using 20% time, genius hour, and PBL to drive student success</i>. Routledge."
-      },
-      {
-        "html": "Wolpert-Gawron, H. (2011). <i>'Tween crayons and curfews: Tips for middle school teachers</i>. Eye on Education."
       },
       {
         "html": "Larmer, J., Mergendoller, J., & Boss, S. (2015). <i>Setting the standard for project based learning</i>. ASCD."
       },
       {
+        "html": "Pashler, H., McDaniel, M., Rohrer, D., & Bjork, R. (2008). Learning styles: Concepts and evidence. <i>Psychological Science in the Public Interest, 9</i>(3), 105-119. https://doi.org/10.1111/j.1539-6053.2009.01038.x"
+      },
+      {
         "html": "PBLWorks. (n.d.). <i>Gold standard PBL: Essential project design elements</i>. https://www.pblworks.org/what-is-pbl/gold-standard-project-design"
+      },
+      {
+        "html": "Routledge. (n.d.). <i>DIY project based learning for math and science: Free eResources</i>. https://www.routledge.com/9781138891609"
       },
       {
         "html": "Wiggins, G., & McTighe, J. (2005). <i>Understanding by design</i> (Expanded 2nd ed.). ASCD."
       },
       {
-        "html": "Pashler, H., McDaniel, M., Rohrer, D., & Bjork, R. (2008). Learning styles: Concepts and evidence. <i>Psychological Science in the Public Interest, 9</i>(3), 105-119. https://doi.org/10.1111/j.1539-6053.2009.01038.x"
+        "html": "Wolpert-Gawron, H. (2011). <i>'Tween crayons and curfews: Tips for middle school teachers</i>. Eye on Education."
+      },
+      {
+        "html": "Wolpert-Gawron, H. (2016). <i>DIY project based learning for math and science</i>. Routledge. https://doi.org/10.4324/9781315709598"
       }
     ],
     "narration": "The book, its free printable resources, and everything else I referenced are listed here and in the materials I've shared with this video."
@@ -386,13 +384,13 @@ export const SLIDES = [
     "resHeading": "Tools",
     "resources": [
       {
+        "html": "Desmos. (n.d.). <i>Graphing calculator</i>. https://www.desmos.com/calculator"
+      },
+      {
         "html": "PhET Interactive Simulations. (n.d.). <i>Energy skate park</i>. University of Colorado Boulder. https://phet.colorado.edu/en/simulations/energy-skate-park"
       },
       {
         "html": "U.S. Environmental Protection Agency. (n.d.). <i>AirNow</i>. https://www.airnow.gov/"
-      },
-      {
-        "html": "Desmos. (n.d.). <i>Graphing calculator</i>. https://www.desmos.com/calculator"
       }
     ],
     "narration": "And the free tools I named along the way: PhET Energy Skate Park, AirNow, and the Desmos graphing calculator."

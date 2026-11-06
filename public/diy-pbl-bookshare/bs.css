@@ -680,8 +680,8 @@ body.fl-full .bs-resources-panel--compact {
   margin-top: 0.9cqh;
   font-family: "Architects Daughter", cursive !important;
   color: var(--graphite) !important;
-  font-size: clamp(12px, 1.35cqw, 20px);
-  opacity: 0.9;
+  font-size: clamp(15px, 1.7cqw, 26px);
+  opacity: 0.95;
 }
 .bs-surface--idea[data-idea] .bs-idea-bullets { color: var(--graphite) !important; }
 .bs-surface--idea[data-idea] .bs-idea-title { color: var(--ink) !important; }
@@ -1077,5 +1077,69 @@ body.fl-full .bs-resources-panel--compact {
   outline: none !important;
 }
 .bs-paper-group {
-  overflow: hidden; /* clip counter-rotated paper corners */
+  overflow: visible !important; /* no clip-rect frame around left half */
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
+
+/* no left-half clip frame on paper slides */
+.bs-paper-group,
+body[data-kind="discuss"] .bs-paper-group,
+body[data-kind="resources"] .bs-paper-group,
+body[data-kind="conclude"] .bs-paper-group {
+  overflow: visible !important;
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+}
+
+/* APA references / tools: alphabetical list, no bullets, hanging indent */
+.bs-apa {
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.bs-apa li {
+  list-style: none !important;
+  padding-left: 1.5em !important;
+  text-indent: -1.5em !important;
+  margin: 0 0 0.7cqh !important;
+}
+.bs-apa li::before {
+  content: none !important;
+  display: none !important;
+}
+.bs-paper-group .bs-apa li {
+  padding-left: 1.4em !important;
+  text-indent: -1.4em !important;
+}
+.s10-birac-letter {
+  font-family: "Cabin Sketch", cursive !important;
+  color: #26376e !important;
+  background: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+  mix-blend-mode: multiply;
+}
+.bs-surface--genre {
+  transform: translate(-50%, -50%);
+  text-align: center;
+  max-width: 12cqw;
+  white-space: normal !important;
+  line-height: 1.15;
+  color: #26376e !important;
+  background: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
