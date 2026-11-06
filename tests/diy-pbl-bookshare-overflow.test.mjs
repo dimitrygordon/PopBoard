@@ -923,12 +923,15 @@ test("full-view captions clear on-art cards at 1280 and 844x390", async (t) => {
             text: text.slice(0, 80),
             overlaps: [...new Set(overlaps)],
             capBox,
+            sceneH: scene.clientHeight,
           };
         });
 
         // Pixel check: hide caption, sample art under its box (catches baked lanterns etc.).
+        // Skip when caption is fully below the stage (landscape letterbox): coords clamp
+        // to the bottom art row and false-positive as "on drawn art".
         let artHit = null;
-        if (hit && hit.capBox) {
+        if (hit && hit.capBox && hit.capBox.y0 < (hit.sceneH ?? 1e9) - 2) {
           await page.evaluate(() => {
             document.querySelectorAll(".fl-cap").forEach((el) => { el.style.visibility = "hidden"; });
           });
