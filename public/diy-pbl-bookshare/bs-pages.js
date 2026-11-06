@@ -33,6 +33,13 @@ function sceneRoot(scene, artId) {
   const root = h("div", "bs-scene");
   root.dataset.art = artId;
   const bg = img(artBgUrl(artId), "bs-bg");
+  // If probe picked a soft-404 URL, fall back to the committed bg.webp once.
+  bg.addEventListener("error", () => {
+    const fallback = `${ART}${artId}/bg.webp`;
+    if (bg.dataset.fallbackTried === "1" || bg.src.endsWith("/bg.webp") || bg.getAttribute("src") === fallback) return;
+    bg.dataset.fallbackTried = "1";
+    bg.src = fallback;
+  }, { once: true });
   root.appendChild(bg);
   scene.appendChild(root);
   return root;
