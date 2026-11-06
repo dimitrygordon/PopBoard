@@ -38,7 +38,11 @@
     "miss": "Apex {h} m: outside the bell band.",
     "explainBtn": "Explain",
     "explain": "At apex the vertical velocity component is zero; horizontal motion and kinetic energy remain in the no-air model. SIDEWAYS SPEED?",
-    "noWebgl": "This 3D spring launcher needs WebGL, which this browser does not have."
+    "noWebgl": "This 3D spring launcher needs WebGL, which this browser does not have.",
+    "apexCard": "At apex the vertical velocity component is zero; horizontal motion and kinetic energy remain in the no-air model.",
+    "limitLabel": "x max = 0.080 m",
+    "bellLabel": "bell 0.90 m +/- 0.03 m",
+    "takeaway": "The stretched spring's elastic energy launches the ball, and at the top it still has sideways speed, so not all of it becomes height."
    }
   },
   "3": {

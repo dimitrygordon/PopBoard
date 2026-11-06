@@ -60,13 +60,43 @@ test("kettle: Tesla C6 values", () => {
   const [lo, hi] = ph.band5(ph.kettleTime()); near(lo, 24.3555, 1e-4); near(hi, 26.9192, 1e-4);
   near(ph.kettleTime(0.115), ph.kettleTime() / 2, 1e-12);
 });
-test("insulation: qualitative only, Tesla O2 holds numbers", async () => {
-  assert.ok(ph.relativeLossShape(1) < ph.relativeLossShape(0.5) && ph.relativeLossShape(0.5) < ph.relativeLossShape(0));
-  const s = JSON.parse(readFileSync(new URL(P + "decks/m11-l01/v2/story.json", import.meta.url))).slides;
-  const { correct, noWebgl, ...shown } = s["16"].sceneText; const ins = JSON.stringify(shown);
-  assert.equal(s["16"].sceneText.pending, "values pending approval");
-  assert.doesNotMatch(ins, /\d/, "no numbers in the insulation text");
-  assert.doesNotMatch(readFileSync(new URL(P + "scenes/energy3d/heat.js", import.meta.url), "utf8"), /W\/\(m|U-value\s*=|fillText\([^)]*\d+\s*\)/);
+test("insulation: Tesla approved jacket model numbers", async () => {
+  const J = ph.JACKET;
+  assert.equal(J.waterMassKg, 0.230);
+  assert.equal(J.waterSpecificHeatJPerKgK, 4180);
+  assert.equal(J.vesselHeatCapacityJPerK, 38.6);
+  assert.equal(J.effectiveHeatCapacityJPerK, 1000);
+  near(J.waterMassKg * J.waterSpecificHeatJPerKgK + J.vesselHeatCapacityJPerK, J.effectiveHeatCapacityJPerK, 1e-9);
+  assert.equal(J.areaM2, 0.060);
+  assert.equal(J.bareU_WPerM2K, 8);
+  assert.equal(J.insulatedU_WPerM2K, 2);
+  near(ph.lossW(J.bareU_WPerM2K), 19.20, 1e-12);
+  near(ph.lossW(J.insulatedU_WPerM2K), 4.80, 1e-12);
+  near(ph.tauS(J.bareU_WPerM2K), 1000 / 0.480, 1e-9);
+  near(ph.tauS(J.insulatedU_WPerM2K), 1000 / 0.120, 1e-9);
+  near(ph.coolingTimeS(J.bareU_WPerM2K) / 60, 24.067610, 1e-6);
+  near(ph.coolingTimeS(J.insulatedU_WPerM2K) / 60, 96.270442, 1e-6);
+  near(ph.temperatureC(J.bareU_WPerM2K, ph.coolingTimeS(J.bareU_WPerM2K)), 40, 1e-9);
+  // meters must follow current T(t), not freeze at the initial watts
+  const later = ph.coolingTimeS(J.bareU_WPerM2K) / 2;
+  const Tmid = ph.temperatureC(J.bareU_WPerM2K, later);
+  assert.ok(Tmid < J.startTempC && Tmid > J.targetTempC);
+  near(ph.lossW(J.bareU_WPerM2K, Tmid), J.bareU_WPerM2K * J.areaM2 * (Tmid - J.roomTempC), 1e-12);
+  assert.ok(ph.lossW(J.bareU_WPerM2K, Tmid) < 19.20);
+  // default solid/newer element table sums to the primary comparison
+  const none = { lid: false, wrap: false, base: false, win: false };
+  const all = { lid: true, wrap: true, base: true, win: true };
+  near(ph.jacketTotalLossW(none), 19.20, 1e-12);
+  near(ph.jacketTotalLossW(all), 4.80, 1e-12);
+  assert.ok(ph.jacketTotalLossW(all) < 0.5 * ph.jacketTotalLossW(none));
+  const story = JSON.parse(readFileSync(new URL(P + "decks/m11-l01/v2/story.json", import.meta.url))).slides["16"].sceneText;
+  assert.equal(story.pending, undefined);
+  assert.equal(story.shortLabel, "Declared lumped cooling model; not lab measurements.");
+  assert.match(story.card, /Declared educational calorimeter-jacket model, not measured lab data/);
+  assert.doesNotMatch(JSON.stringify(story), /values pending approval/);
+  const heatSrc = readFileSync(new URL(P + "scenes/energy3d/heat.js", import.meta.url), "utf8");
+  assert.doesNotMatch(heatSrc, /values pending approval/);
+  assert.match(heatSrc, /Declared lumped cooling model; not lab measurements/);
   const h = await import(P + "scenes/energy3d/heat.js");
   assert.equal(typeof h.mountKettle, "function"); assert.equal(typeof h.mountInsulation, "function");
   for (const pn of ["p09", "p16"]) assert.equal(typeof (await import(P + "scenes/m11-l01/" + pn + ".js")).default, "function");
