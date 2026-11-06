@@ -1920,3 +1920,56 @@ body.fl-full .bs-design-layer .bs-paper-group .bs-apa li {
   filter: drop-shadow(1px 2px 3px rgba(40, 35, 30, 0.10));
   z-index: 4;
 }
+
+
+/* --- Leo decor layer (Round 7 moving pieces) ---
+   Inside .bs-design-layer so x/y/w/h are 1920x1080 design px.
+   z: sprites 2, text/cards 10, foreground leaves 20.
+   Hidden until .bs-scene.is-drawn (after pencil draw-in). */
+.bs-decor-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  pointer-events: none;
+  z-index: 2;
+  overflow: visible;
+}
+.bs-scene:not(.is-drawn) .bs-decor-layer {
+  opacity: 0;
+  visibility: hidden;
+}
+.bs-scene.is-drawn .bs-decor-layer {
+  opacity: 1;
+  visibility: visible;
+}
+.bs-decor {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.bs-design-layer .bs-idea-panel,
+.bs-design-layer .bs-r6-figure,
+.bs-design-layer .bs-surface,
+.bs-design-layer .bs-paper-group,
+.bs-design-layer .bs-term-wall {
+  z-index: 10;
+}
+/* CSS preset hooks (WAAPI drives most motions; these cover simple cases / reduced-motion rest) */
+.bs-decor--drift-across { }
+.bs-decor--sway { }
+.bs-decor--rotate { }
+.bs-decor--roll-path { }
+.bs-decor--bob { }
+.bs-decor--path { }
+@media (prefers-reduced-motion: reduce) {
+  .bs-decor--drift-across,
+  .bs-decor--sway,
+  .bs-decor--rotate,
+  .bs-decor--roll-path,
+  .bs-decor--bob,
+  .bs-decor--path {
+    animation: none !important;
+  }
+}

@@ -310,3 +310,49 @@ test("paper stage panels never use overflow auto/scroll", () => {
   assert.match(css, /\.bs-paper-group \.bs-discuss[^{]*\{[\s\S]*?overflow:\s*hidden !important/);
   assert.match(css, /\.bs-paper-group \.bs-resources-panel[^{]*\{[\s\S]*?overflow:\s*hidden !important/);
 });
+
+
+const R6_IDS = ["r6a", "r6b", "r6c", "r6d", "r6e", "r6f", "r6h", "r6i", "r6j"];
+
+test("Round 7: r6 keeps pencil draw-in with Leo line/bg; hatch from s06; sprites are 2x WebP", async () => {
+  const { R6_DECOR } = await import(pathToFileURL(join(DIR, "bs-r6-decor-data.js")).href);
+  for (const id of R6_IDS) {
+    assert.ok(existsSync(join(DIR, "art", id, "bg.webp")), id + " bg");
+    assert.ok(existsSync(join(DIR, "art", id, "line.webp")), id + " line");
+    assert.ok(existsSync(join(DIR, "art", id, "hatch_mask.webp")), id + " hatch");
+    assert.ok(existsSync(join(DIR, "art", id, "line_order.webp")), id + " order");
+    // hatch/order match repo s06 (not hallway leftovers)
+    const hatch = readFileSync(join(DIR, "art", id, "hatch_mask.webp"));
+    const order = readFileSync(join(DIR, "art", id, "line_order.webp"));
+    assert.deepEqual(hatch, readFileSync(join(DIR, "art", "s06", "hatch_mask.webp")));
+    assert.deepEqual(order, readFileSync(join(DIR, "art", "s06", "line_order.webp")));
+    const line = readFileSync(join(DIR, "art", id, "line.webp"));
+    assert.equal(line.toString("ascii", 0, 4), "RIFF");
+    assert.equal(line.toString("ascii", 8, 12), "WEBP");
+    assert.ok(R6_DECOR[id]?.length, id + " decor entries");
+  }
+  // Original slides still have draw-in assets untouched
+  for (const sid of ["s01", "s05", "s11"]) {
+    assert.ok(existsSync(join(DIR, "art", sid, "line.webp")), sid);
+  }
+  assert.equal(SLIDES.some((s) => s.drawIn === false), false);
+});
+
+test("decor hook: 1920x1080 coords, pivot, presets, reduced-motion static", async () => {
+  const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
+  const css = readFileSync(join(DIR, "bs.css"), "utf8");
+  const decor = readFileSync(join(DIR, "bs-decor.js"), "utf8");
+  assert.match(pages, /placeDecor/);
+  assert.match(pages, /startDecorMotions/);
+  assert.match(decor, /function placeDecor|export function placeDecor/);
+  assert.match(decor, /decorOrigin/);
+  assert.match(decor, /startDecorMotions/);
+  for (const p of ["drift-across", "sway", "rotate", "roll-path", "bob", "path"]) {
+    assert.ok(decor.includes(`"${p}"`) || decor.includes(`'${p}'`) || decor.includes(p), p);
+  }
+  assert.match(css, /\.bs-decor-layer/);
+  assert.match(css, /z-index:\s*10/); // text/cards
+  assert.match(css, /prefers-reduced-motion:\s*reduce/);
+  assert.match(decor, /transformOrigin|decorOrigin/);
+  assert.match(decor, /keyframes/);
+});

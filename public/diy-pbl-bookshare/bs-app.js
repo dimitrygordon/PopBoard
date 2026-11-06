@@ -7,6 +7,7 @@ import {
   THEME_BAND, clearFlipClones, fadeScript, restoreScript
 } from "./bs-transitions.js";
 import { startDrawIn } from "./bs-drawin.js";
+import { startDecorMotions, cancelDecorMotions } from "./bs-decor.js";
 import { loadLayouts } from "./bs-layouts.js";
 import { ART } from "./bs-engine.js";
 
@@ -59,6 +60,7 @@ $("studyBackBtn").href = "study.html" + location.search;
 
 function stopPage() {
   clearTimeout(state.autoTimer);
+  cancelDecorMotions(scene);
   if (state.drawIn) { try { state.drawIn.cancel(); } catch (e) {} state.drawIn = null; }
   if (state.T) state.T.anims.forEach((a) => a.cancel());
   if (state.prog) state.prog.cancel();
@@ -79,12 +81,19 @@ function afterRenderDrawIn() {
 async function runDrawIn(root) {
   if (!root) return;
   const artId = root.dataset.art;
-  if (!artId) { root.classList.add("is-drawn", "is-settled"); return; }
+  if (!artId) {
+    root.classList.add("is-drawn", "is-settled");
+    startDecorMotions(root);
+    return;
+  }
+  cancelDecorMotions(root);
   const handle = startDrawIn(root, artId, { reduced: reducedQ.matches });
   state.drawIn = handle;
   try { await handle.promise; } catch (e) {}
   if (state.drawIn === handle) state.drawIn = null;
   root.classList.add("is-settled");
+  // Leo loop.md: show moving sprites only after static draw-in completes.
+  startDecorMotions(root);
 }
 
 
@@ -116,6 +125,7 @@ function render(i) {
   // Hide sprites/text until draw-in settles (go/boot call runDrawIn next)
   const root = scene.querySelector(".bs-scene");
   if (root) {
+    cancelDecorMotions(root);
     root.classList.add("is-drawing");
     root.classList.remove("is-drawn", "is-settled");
     const bg = root.querySelector(".bs-bg");
