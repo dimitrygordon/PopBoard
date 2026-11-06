@@ -296,7 +296,7 @@ function buildS10(root, T) {
     { ch: "B", x: 1780, y: 338 }, // top block front face
     { ch: "I", x: 1780, y: 410 },
     { ch: "R", x: 1780, y: 500 },
-    { ch: "A", x: 1777, y: 575 }, // bottom of the current 4-stack
+    { ch: "A", x: 1777, y: 562 }, // bottom of the current 4-stack
     // C: on 5th block when ready; until then, small on the table under the stack
     BIRAC_HAS_FIFTH_BLOCK
       ? { ch: "C", x: 1780, y: 670 }   // TODO: set to the 5th-block face center from overlays
