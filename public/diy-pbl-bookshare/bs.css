@@ -1911,9 +1911,12 @@ body.fl-full .bs-design-layer .bs-paper-group .bs-apa li {
 }
 
 
-/* Round 6 book-figure cards (baked tape/border/cite) */
+/* Round 6 book-figure cards (baked tape/border/cite/tilt).
+   Card aspect matches the crop; never cover-crop the figure. */
 .bs-design-layer .bs-r6-figure,
 .bs-scene .bs-r6-figure {
+  object-fit: contain !important;
+  object-position: center center !important;
   filter: drop-shadow(2px 3px 4px rgba(40, 35, 30, 0.18));
   z-index: 4;
 }

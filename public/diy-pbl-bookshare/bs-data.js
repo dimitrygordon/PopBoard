@@ -104,11 +104,11 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 900,
-      "y": 60,
-      "w": 980,
-      "h": 980,
-      "rot": -2
+      "x": 884,
+      "y": 225,
+      "w": 1000,
+      "h": 610,
+      "rot": 0
     }
   },
   {
@@ -130,11 +130,11 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 920,
+      "x": 1147,
       "y": 40,
-      "w": 960,
-      "h": 1000,
-      "rot": 2
+      "w": 737,
+      "h": 980,
+      "rot": 0
     }
   },
   {
@@ -191,11 +191,11 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 900,
-      "y": 100,
-      "w": 980,
-      "h": 860,
-      "rot": -1.5
+      "x": 884,
+      "y": 341,
+      "w": 1000,
+      "h": 377,
+      "rot": 0
     }
   },
   {
@@ -251,11 +251,11 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 920,
-      "y": 50,
-      "w": 960,
-      "h": 990,
-      "rot": -2.5
+      "x": 884,
+      "y": 291,
+      "w": 1000,
+      "h": 477,
+      "rot": 0
     }
   },
   {
@@ -331,11 +331,11 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 910,
-      "y": 60,
-      "w": 970,
+      "x": 926,
+      "y": 40,
+      "w": 958,
       "h": 980,
-      "rot": 2
+      "rot": 0
     }
   },
   {
@@ -412,11 +412,11 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 920,
-      "y": 60,
-      "w": 960,
+      "x": 1289,
+      "y": 40,
+      "w": 595,
       "h": 980,
-      "rot": -2
+      "rot": 0
     }
   },
   {
@@ -438,11 +438,11 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 900,
-      "y": 120,
-      "w": 980,
-      "h": 820,
-      "rot": 1.5
+      "x": 884,
+      "y": 298,
+      "w": 1000,
+      "h": 464,
+      "rot": 0
     }
   },
   {
@@ -499,11 +499,11 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 900,
-      "y": 80,
-      "w": 980,
-      "h": 900,
-      "rot": -1.5
+      "x": 884,
+      "y": 301,
+      "w": 1000,
+      "h": 457,
+      "rot": 0
     }
   },
   {
