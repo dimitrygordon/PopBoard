@@ -390,11 +390,19 @@ body.fl-full .fl-art {
   top: 0 !important;
   display: block !important; /* not grid+center which collapses absolute-only scene */
 }
+/* Keep 16:9 in full view so text-on-art matches the uncropped artwork.
+   Tall phones letterbox rather than cover-cropping left/right content. */
 body.fl-full .fl-scene {
   width: 100% !important;
-  height: 100% !important;
-  max-height: none !important;
-  aspect-ratio: auto !important;
+  height: auto !important;
+  max-height: 100% !important;
+  aspect-ratio: 16 / 9 !important;
+  margin: 0 auto !important;
+}
+body.fl-full .fl-art {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 .bs-scene {
   position: absolute !important;
@@ -923,7 +931,6 @@ body.fl-full .bs-resources-panel--compact {
 .bs-term-text {
   font-family: "Cabin Sketch", cursive !important;
   color: #26376e !important;
-  font-size: clamp(11px, 1.2cqw, 19px) !important;
   font-weight: 700;
 }
 .bs-resources-panel .bs-apa li {
@@ -1428,27 +1435,73 @@ body.fl-full .bs-paper-group .bs-apa li {
 }
 
 
-/* --- polish: s17 term fit + s09 genre quads --- */
-/* Do not use container-type:size on cards: it collapses %-height to 0 in Chrome. */
-.bs-term-card .bs-term-text {
-  overflow: hidden !important;
-  max-height: 100%;
-  display: -webkit-box !important;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+/* Absolute pin+text children: no flex padding on the card shell */
+.bs-term-card {
+  display: block !important;
+  padding: 0 !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  overflow: visible !important;
 }
 .bs-term-card .bs-paper-pin {
   z-index: 8;
   pointer-events: none;
 }
-.bs-surface--genre {
-  overflow: hidden;
-  word-break: break-word;
-}
 .bs-scene .s09-genre {
   mix-blend-mode: multiply;
 }
+
+/* --- design layer: layout at 1920x1080, scale with stage --- */
+.bs-design-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: 0 0;
+  /* transform set by syncDesignLayer to match object-fit:cover */
+  pointer-events: none;
+  z-index: 6;
+}
+.bs-design-layer .bs-idea-title { font-size: 32px; }
+.bs-design-layer .bs-idea-bullets { font-size: 22px; }
+.bs-design-layer .bs-idea-cite { font-size: 18px; }
+.bs-design-layer .bs-term-text {
+  font-size: 20px;
+  font-weight: 700;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+  -webkit-line-clamp: unset !important;
+  line-clamp: unset !important;
+  display: flex !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  hyphens: manual;
+}
+.bs-design-layer .s09-genre,
+.bs-design-layer .bs-surface--genre {
+  font-size: 16px;
+  overflow: hidden !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  text-overflow: clip !important;
+  -webkit-line-clamp: unset !important;
+  line-clamp: unset !important;
+}
+.bs-design-layer .s01-book { font-size: 42px !important; }
+.bs-design-layer .s01-author { font-size: 28px !important; }
+.bs-design-layer .s01-pub { font-size: 18px !important; }
+.bs-design-layer .s01-byline { font-size: 24px !important; }
+.bs-design-layer .bs-takeaways h3 { font-size: 32px !important; }
+.bs-design-layer .bs-takeaways li { font-size: 22px !important; }
+.bs-design-layer .bs-dq-card { font-size: 22px !important; }
+.bs-design-layer .bs-resources-panel .bs-res-h { font-size: 26px !important; }
+.bs-design-layer .bs-resources-panel .bs-apa li { font-size: 16px !important; }
+.bs-design-layer .bs-idea-eqs { font-size: 18px !important; }
+.bs-design-layer .s10-lab-rev,
+.bs-design-layer .s10-lab-cost,
+.bs-design-layer .s10-lab-be { font-size: 22px !important; }
+.bs-design-layer .s10-birac-letter { font-size: 28px !important; }
 
 /* Absolute pin+text children: no flex padding on the card shell */
 .bs-term-card {
@@ -1456,5 +1509,33 @@ body.fl-full .bs-paper-group .bs-apa li {
   padding: 0 !important;
   align-items: stretch !important;
   justify-content: flex-start !important;
-  overflow: visible !important; /* allow pin above top edge */
+  overflow: visible !important;
+}
+.bs-term-card .bs-paper-pin {
+  z-index: 8;
+  pointer-events: none;
+}
+.bs-scene .s09-genre {
+  mix-blend-mode: multiply;
+}
+
+/* Design-layer wins over phone vw clamps: type is design-px, then scaled. */
+@media (max-width: 700px) {
+  .bs-design-layer .bs-dq-card { font-size: 22px !important; }
+  .bs-design-layer .bs-apa li { font-size: 16px !important; }
+  .bs-design-layer .bs-resources-panel .bs-res-h { font-size: 26px !important; }
+  .bs-design-layer .bs-paper-group .bs-discuss { font-size: 22px !important; line-height: 1.22 !important; }
+  .bs-design-layer .bs-paper-group .bs-resources-panel { font-size: 16px !important; line-height: 1.18 !important; }
+}
+@media (max-width: 500px) {
+  body.fl-full .bs-design-layer .bs-paper-group .bs-discuss {
+    font-size: 22px !important;
+    line-height: 1.22 !important;
+  }
+  body.fl-full .bs-design-layer .bs-paper-group .bs-resources-panel,
+  body.fl-full .bs-design-layer .bs-paper-group .bs-resources-panel--wide,
+  body.fl-full .bs-design-layer .bs-paper-group .bs-resources-panel--compact {
+    font-size: 16px !important;
+    line-height: 1.18 !important;
+  }
 }

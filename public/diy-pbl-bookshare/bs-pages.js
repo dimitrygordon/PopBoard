@@ -86,24 +86,102 @@ function pctRect(x, y, w, h) {
   };
 }
 
-/** Shrink text font until it fits in the box (max 2 lines), floor at minPx. */
-function fitCardText(el, minPx, maxPx) {
-  if (!el) return;
-  const box = el.getBoundingClientRect();
-  if (box.height < 4 || box.width < 4) return;
+/**
+ * 1920x1080 design layer scaled with the stage (same transform as the art).
+ * Children layout in design pixels; CSS transform scales them with the scene.
+ */
+/**
+ * Sync design layer to the same transform as object-fit:cover for 1920x1080 art.
+ * When the scene is taller/wider than 16:9 (mobile full view), cover crops; we
+ * match that crop so labels stay glued to the artwork.
+ */
+function syncDesignLayer(root, layer) {
+  const sw = root.clientWidth || 1;
+  const sh = root.clientHeight || 1;
+  const artW = 1920, artH = 1080;
+  const sceneAspect = sw / sh;
+  const artAspect = artW / artH;
+  let scale, ox, oy;
+  if (sceneAspect > artAspect) {
+    // wider than art: scale by width, letterbox/crop top-bottom (cover crops)
+    scale = sw / artW;
+    ox = 0;
+    oy = (sh - artH * scale) / 2;
+  } else {
+    // taller than art: scale by height, crop left-right
+    scale = sh / artH;
+    ox = (sw - artW * scale) / 2;
+    oy = 0;
+  }
+  layer.style.transform = `translate(${ox}px, ${oy}px) scale(${scale})`;
+}
+
+function ensureDesignLayer(root) {
+  let layer = root.querySelector(":scope > .bs-design-layer");
+  if (!layer) {
+    layer = h("div", "bs-design-layer");
+    root.appendChild(layer);
+    const sync = () => syncDesignLayer(root, layer);
+    sync();
+    if (typeof ResizeObserver !== "undefined") {
+      const ro = new ResizeObserver(sync);
+      ro.observe(root);
+      layer._bsRo = ro;
+    } else {
+      window.addEventListener("resize", sync);
+    }
+  } else {
+    syncDesignLayer(root, layer);
+  }
+  return layer;
+}
+
+/**
+ * Fit text in design px inside its box. No floor, no ellipsis/line-clamp.
+ * Measures layout px (pre-transform), so works inside .bs-design-layer.
+ */
+function fitArtText(el, maxDesignPx) {
+  if (!el) return 0;
+  if (el.clientHeight < 2 || el.clientWidth < 2) return 0;
   const prevDisplay = el.style.display;
-  // Measure as a normal block so flex centering does not inflate scrollHeight.
   el.style.display = "block";
   el.style.whiteSpace = "normal";
-  let lo = minPx, hi = maxPx, best = minPx;
-  for (let i = 0; i < 12; i++) {
+  el.style.wordBreak = "normal";
+  el.style.overflowWrap = "normal";
+  el.style.textOverflow = "clip";
+  el.style.webkitLineClamp = "unset";
+  let lo = 1, hi = Math.max(1, maxDesignPx || 24), best = 1;
+  for (let i = 0; i < 14; i++) {
     const mid = (lo + hi) / 2;
-    el.style.fontSize = mid + "px";
-    const ok = el.scrollHeight <= box.height + 1 && el.scrollWidth <= box.width + 1;
+    el.style.setProperty("font-size", mid + "px", "important");
+    const ok = el.scrollHeight <= el.clientHeight + 0.5
+      && el.scrollWidth <= el.clientWidth + 0.5;
     if (ok) { best = mid; lo = mid; } else { hi = mid; }
   }
-  el.style.fontSize = best + "px";
+  el.style.setProperty("font-size", best + "px", "important");
   el.style.display = prevDisplay || "flex";
+  el.dataset.artFs = String(best);
+  return best;
+}
+
+/** Shrink idea panel title/bullets in design px until contents fit. */
+function fitIdeaPanel(panel) {
+  if (!panel) return;
+  const title = panel.querySelector(".bs-idea-title");
+  const bullets = panel.querySelector(".bs-idea-bullets");
+  const cite = panel.querySelector(".bs-idea-cite");
+  let titleD = 32, bulletD = 22, citeD = 18;
+  for (let step = 0; step < 28; step++) {
+    if (title) title.style.setProperty("font-size", titleD + "px", "important");
+    if (bullets) bullets.style.setProperty("font-size", bulletD + "px", "important");
+    if (cite) cite.style.setProperty("font-size", citeD + "px", "important");
+    const ok = panel.scrollHeight <= panel.clientHeight + 1
+      && panel.scrollWidth <= panel.clientWidth + 1;
+    if (ok) break;
+    titleD = Math.max(8, titleD * 0.92);
+    bulletD = Math.max(7, bulletD * 0.92);
+    citeD = Math.max(6, citeD * 0.92);
+  }
 }
 
 function applyRect(el, x, y, w, h, rot) {
@@ -150,7 +228,27 @@ function buildS01(root, T) {
     <div class="s01-author on-art-b">Heather Wolpert-Gawron</div>
     <div class="s01-pub on-art-h">Routledge · Eye On Education · 2016</div>
     <div class="s01-byline on-art-b">Book Share by Dimitry Gordon</div>`;
-  root.appendChild(title);
+  title.style.overflow = "hidden";
+  ensureDesignLayer(root).appendChild(title);
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const book = title.querySelector(".s01-book");
+    const author = title.querySelector(".s01-author");
+    const pub = title.querySelector(".s01-pub");
+    const byline = title.querySelector(".s01-byline");
+    let bookD = 42, authorD = 28, pubD = 18, byD = 24;
+    for (let step = 0; step < 24; step++) {
+      if (book) book.style.setProperty("font-size", bookD + "px", "important");
+      if (author) author.style.setProperty("font-size", authorD + "px", "important");
+      if (pub) pub.style.setProperty("font-size", pubD + "px", "important");
+      if (byline) byline.style.setProperty("font-size", byD + "px", "important");
+      if (title.scrollHeight <= title.clientHeight + 1) break;
+      bookD = Math.max(10, bookD * 0.92);
+      authorD = Math.max(9, authorD * 0.92);
+      pubD = Math.max(8, pubD * 0.92);
+      byD = Math.max(8, byD * 0.92);
+    }
+    if (book) fitArtText(book, bookD);
+  }));
   void T;
 }
 
@@ -195,6 +293,7 @@ function buildS08(root, T) {
 
 function buildS09(root, T) {
   // Leo art/s09/cards.json: quad_xy TL,TR,BR,BL + rotation_deg + center_xy.
+  const layer = ensureDesignLayer(root);
   const cards = s09Cards();
   cards.forEach((c, i) => {
     const q = c.quad_xy || c.quad;
@@ -227,10 +326,11 @@ function buildS09(root, T) {
     el.style.whiteSpace = "pre-line";
     el.style.padding = "6%";
     el.style.boxSizing = "border-box";
-    el.style.fontSize = "clamp(10px, 1.05cqw, 17px)";
+    el.style.fontSize = "16px";
     el.style.overflow = "hidden";
     el.style.pointerEvents = "none";
-    root.appendChild(el);
+    layer.appendChild(el);
+    requestAnimationFrame(() => requestAnimationFrame(() => fitArtText(el, 16)));
   });
   void T;
 }
@@ -246,13 +346,14 @@ function buildS10(root, T) {
     { cls: "s10-lab-cost", text: "Cost", x: 1500, y: 531 },         // ~15px below coral, right of cross
     { cls: "s10-lab-be", text: "Break-even", x: 1177, y: 477 },     // right edge ~15px left of glow; above it
   ];
+  const layer = ensureDesignLayer(root);
   labels.forEach((L) => {
     const el = surface("label", `${L.cls} on-art`);
     el.textContent = L.text;
     el.style.left = (L.x / 1920) * 100 + "%";
     el.style.top = (L.y / 1080) * 100 + "%";
     el.style.transform = "rotate(-6deg)";
-    root.appendChild(el);
+    layer.appendChild(el);
   });
 
   // Letter rects from art/s10/faces.json (v5). Center each letter in its face.
@@ -276,15 +377,22 @@ function buildS10(root, T) {
     const cy = L.y + L.h / 2;
     el.style.left = (cx / 1920) * 100 + "%";
     el.style.top = (cy / 1080) * 100 + "%";
+    el.style.width = (L.w / 1920) * 100 + "%";
+    el.style.height = (L.h / 1080) * 100 + "%";
     el.style.transform = "translate(-50%, -50%)";
-    // Fit fully inside ~48x52 face with a little padding
-    el.style.fontSize = "clamp(15px, 1.7cqw, 26px)";
+    el.style.display = "flex";
+    el.style.alignItems = "center";
+    el.style.justifyContent = "center";
+    el.style.fontSize = "28px";
     el.style.fontWeight = "700";
     el.style.lineHeight = "1";
     el.style.color = "#26376e";
     el.style.mixBlendMode = "normal";
+    el.style.overflow = "hidden";
+    el.style.textAlign = "center";
     el.dataset.face = `${L.x},${L.y},${L.w},${L.h}`;
-    root.appendChild(el);
+    layer.appendChild(el);
+    requestAnimationFrame(() => requestAnimationFrame(() => fitArtText(el, 28)));
   });
 
   // Formula lines: append into the cream idea panel so they sit with the bullets
@@ -341,7 +449,10 @@ function buildS17Lanterns(root, T) {
 
 function buildKeyTermsOverlay(root, T, terms) {
   // Leo art/keyterms/cards.json: rect_xywh, pin_xy, text_rect_xywh, max_font_px_*.
+  // Cards live in the 1920 design layer so type is design-px then stage-scaled.
+  const layer = ensureDesignLayer(root);
   const wall = h("div", "bs-term-wall");
+  wall.style.cssText = "position:absolute;inset:0;width:100%;height:100%;";
   const layout = keytermsCards();
   const termList = (terms || []).map((x) => String(x).replace(/^"|"$/g, ""));
   layout.forEach((C, i) => {
@@ -394,7 +505,6 @@ function buildKeyTermsOverlay(root, T, terms) {
       tH = (th / rh) * 100;
     }
     const maxDesk = C.max_font_px_desktop || 20;
-    const maxPhone = C.max_font_px_phone390 || 10;
     text.style.cssText = [
       "position:absolute",
       `left:${tLeft}%`,
@@ -409,16 +519,18 @@ function buildKeyTermsOverlay(root, T, terms) {
       "line-height:1.12",
       "overflow:hidden",
       "box-sizing:border-box",
-      "hyphens:auto",
-      `font-size:clamp(${maxPhone}px, 2.6cqw, ${maxDesk}px)`,
+      "word-break:normal",
+      "overflow-wrap:normal",
+      "text-overflow:clip",
+      `font-size:${maxDesk}px`,
     ].join(";");
     wrap.appendChild(text);
     wall.appendChild(wrap);
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => fitCardText(text, maxPhone, maxDesk));
+      requestAnimationFrame(() => fitArtText(text, maxDesk));
     });
   });
-  root.appendChild(wall);
+  layer.appendChild(wall);
   void T;
 }
 
@@ -450,10 +562,13 @@ const BUILDERS = {
 function buildOnArtIdeaPanel(root, slide) {
   // Title + bullets written on cream left column (TEXT-ON-ART.md). No CSS card.
   if (!slide || slide.n < 2 || slide.n > 16) return;
+  const layer = ensureDesignLayer(root);
   const m = IDEA_MAP[slide.n] || IDEA_MAP[2];
   const panel = surface("idea", "bs-idea-panel on-art");
   if (slide.idea) panel.dataset.idea = String(slide.idea);
   applyRect(panel, m.x, m.y, m.w, m.h, m.rot);
+  panel.style.overflow = "hidden";
+  panel.style.boxSizing = "border-box";
   const title = h("div", "bs-idea-title on-art-t");
   title.textContent = slide.title || "";
   panel.appendChild(title);
@@ -472,7 +587,8 @@ function buildOnArtIdeaPanel(root, slide) {
     cite.textContent = slide.chapter;
     panel.appendChild(cite);
   }
-  root.appendChild(panel);
+  layer.appendChild(panel);
+  requestAnimationFrame(() => requestAnimationFrame(() => fitIdeaPanel(panel)));
 }
 
 
@@ -540,7 +656,7 @@ export const PAGES = SLIDES.map((slide) => ({
         panel.appendChild(card);
       });
       group.appendChild(panel);
-      root.appendChild(group);
+      ensureDesignLayer(root).appendChild(group);
       buildDiscussionArt(root, T);
     } else if (slide.kind === "resources") {
       const nRes = (slide.resources || []).length;
@@ -570,7 +686,7 @@ export const PAGES = SLIDES.map((slide) => ({
         });
         panel.appendChild(ul);
         group.appendChild(panel);
-        root.appendChild(group);
+        ensureDesignLayer(root).appendChild(group);
       } else {
         // sheet_flat_wide ~55% left; two-column APA; teal book stays clear (x>~1260)
         const group = h("div", "bs-paper-group");
@@ -600,7 +716,7 @@ export const PAGES = SLIDES.map((slide) => ({
         });
         panel.appendChild(ul);
         group.appendChild(panel);
-        root.appendChild(group);
+        ensureDesignLayer(root).appendChild(group);
       }
     } else if (slide.kind === "conclude") {
       if (BUILDERS.s17) BUILDERS.s17(root, T);
@@ -619,7 +735,7 @@ export const PAGES = SLIDES.map((slide) => ({
       const items = (slide.bullets || []).map((b) => fx(String(b).replace(/^\d+\.\s*/, "")));
       box.innerHTML = `<h3 class="on-art-t">Takeaways</h3><ol class="on-art-b">${items.map((b) => `<li>${b}</li>`).join("")}</ol>`;
       group.appendChild(box);
-      root.appendChild(group);
+      ensureDesignLayer(root).appendChild(group);
     } else if (BUILDERS[artId]) {
       BUILDERS[artId](root, T);
     }

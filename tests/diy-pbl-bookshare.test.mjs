@@ -251,9 +251,10 @@ test("QA: no stray curled-paper sprites; keyterms cards.json; draw-in 40% line",
   assert.match(pages, /s10-birac-letter/);
   assert.match(pages, /BIRAC_HAS_FIFTH_BLOCK/);
   assert.match(pages, /keytermsCards/);
-  assert.match(pages, /fitCardText/);
+  assert.match(pages, /fitArtText/);
   assert.match(css, /bs-paper-group/);
-  assert.match(css, /-webkit-line-clamp:\s*2/);
+  assert.match(pages, /ensureDesignLayer/);
+  assert.match(css, /bs-design-layer/);
   assert.match(drawin, /u \/ 0\.40/);
 });
 
