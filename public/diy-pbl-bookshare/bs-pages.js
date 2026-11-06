@@ -2,7 +2,7 @@
 import { ART, h, fx } from "./bs-engine.js";
 import { SLIDES } from "./bs-data.js";
 import { PLACEMENTS, applyPlace } from "./bs-placements.js";
-import { s09Cards, keytermsCards } from "./bs-layouts.js";
+import { s09Cards, keytermsCards, S09_LABEL_SLOTS } from "./bs-layouts.js";
 
 export { SLIDES };
 
@@ -255,6 +255,25 @@ function fitArtText(el, maxDesignPx) {
 }
 
 /** Shrink idea panel title/bullets in design px until contents fit. */
+
+/** Strip only a fully-wrapping pair of quotes; keep quotation marks inside the line. */
+function stripOuterQuotes(text) {
+  const s = String(text);
+  if (s.length >= 2 && s.startsWith('"') && s.endsWith('"')) return s.slice(1, -1);
+  return s;
+}
+
+/** Keep "(p. N)" / "(pp. N)" attached to the preceding word (no widow lines). */
+function bindPageCites(text) {
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\(p\.\s+(\d+)\)/gi, "(p.&nbsp;$1)")
+    .replace(/\(pp\.\s+(\d+)/gi, "(pp.&nbsp;$1")
+    .replace(/(\S)\s+(\(p{1,2}\.&nbsp;)/g, "$1&nbsp;$2");
+}
+
 function fitIdeaPanel(panel) {
   if (!panel) return;
   const title = panel.querySelector(".bs-idea-title");
@@ -394,230 +413,37 @@ function buildS08(root, T) {
 }
 
 function buildS09(root, T) {
-  // Leo cards.json: label white bodies. Front cards occlude back cards - place
-  // each label only in the VISIBLE remainder of its body (10% inset).
-  // Top-right lightbulb+gear stays unlabeled (not in cards.json).
   const layer = ensureDesignLayer(root);
   const cards = s09Cards().filter((c) => (c.label || c.text));
-  // Paint order back→front (higher z occludes). Matches the fanned stack.
-  const Z = {
-    "Lab report": 0,
-    "Executive summary": 1,
-    "Business letter": 2,
-    "Problem statement": 3,
-  };
-  function centroid(poly) {
-    let x = 0, y = 0;
-    poly.forEach(([px, py]) => { x += px; y += py; });
-    return [x / poly.length, y / poly.length];
-  }
-  function insetPoly(q, pad) {
-    const [cx, cy] = centroid(q);
-    return q.map(([x, y]) => [cx + (x - cx) * (1 - 2 * pad), cy + (y - cy) * (1 - 2 * pad)]);
-  }
-  function pointInPoly(pt, poly) {
-    let inside = false;
-    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-      const xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1];
-      const inter = ((yi > pt[1]) !== (yj > pt[1]))
-        && (pt[0] < ((xj - xi) * (pt[1] - yi)) / ((yj - yi) || 1e-9) + xi);
-      if (inter) inside = !inside;
-    }
-    return inside;
-  }
-  function bodyOf(c) {
-    const q = c.quad_xy || c.quad;
-    const pad = 0.14;
+  // Target similar sizes across cards (~14px rendered at 1280 => ~24 design).
+  const TARGET_FS = 24;
+  cards.forEach((c, i) => {
     const label = c.label || c.text || "";
-    const headerFrac = /lab report/i.test(label) ? 0.36 : 0;
-    const inset = insetPoly(q, pad);
-    return [
-      [inset[0][0] + (inset[3][0] - inset[0][0]) * headerFrac, inset[0][1] + (inset[3][1] - inset[0][1]) * headerFrac],
-      [inset[1][0] + (inset[2][0] - inset[1][0]) * headerFrac, inset[1][1] + (inset[2][1] - inset[1][1]) * headerFrac],
-      inset[2],
-      inset[3],
-    ];
-  }
-  /** Largest axis-aligned rectangle of visible (unoccluded) body samples in local card frame. */
-  function visibleBounds(body, frontBodies, rot, cx, cy) {
-    const rad = rot * Math.PI / 180;
-    const cos = Math.cos(rad), sin = Math.sin(rad);
-    const locals = body.map(([x, y]) => {
-      const dx = x - cx, dy = y - cy;
-      return [dx * cos + dy * sin, -dx * sin + dy * cos];
-    });
-    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-    locals.forEach(([lx, ly]) => {
-      minX = Math.min(minX, lx); maxX = Math.max(maxX, lx);
-      minY = Math.min(minY, ly); maxY = Math.max(maxY, ly);
-    });
-    const NX = 36, NY = 36;
-    const grid = Array.from({ length: NY + 1 }, () => Array(NX + 1).fill(0));
-    for (let iy = 0; iy <= NY; iy++) {
-      for (let ix = 0; ix <= NX; ix++) {
-        const lx = minX + (maxX - minX) * (ix / NX);
-        const ly = minY + (maxY - minY) * (iy / NY);
-        const ax = cx + lx * cos - ly * sin;
-        const ay = cy + lx * sin + ly * cos;
-        if (!pointInPoly([ax, ay], body)) continue;
-        let occluded = false;
-        for (const fb of frontBodies) {
-          if (pointInPoly([ax, ay], fb)) { occluded = true; break; }
-        }
-        if (!occluded) grid[iy][ix] = 1;
-      }
-    }
-    // Largest rectangle of 1s (histogram method)
-    let best = null, bestArea = 0;
-    const heights = Array(NX + 1).fill(0);
-    for (let iy = 0; iy <= NY; iy++) {
-      for (let ix = 0; ix <= NX; ix++) {
-        heights[ix] = grid[iy][ix] ? heights[ix] + 1 : 0;
-      }
-      const stack = [];
-      for (let ix = 0; ix <= NX + 1; ix++) {
-        const h = ix <= NX ? heights[ix] : 0;
-        let start = ix;
-        while (stack.length && stack[stack.length - 1].h > h) {
-          const { h: hh, i: si } = stack.pop();
-          start = si;
-          const width = ix - si;
-          const area = hh * width;
-          if (area > bestArea) {
-            bestArea = area;
-            const x0 = si, x1 = ix - 1, y1 = iy, y0 = iy - hh + 1;
-            best = { x0, x1, y0, y1 };
-          }
-        }
-        if (!stack.length || stack[stack.length - 1].h < h) stack.push({ h, i: start });
-        else if (stack[stack.length - 1].h === h) { /* keep */ }
-        else stack.push({ h, i: start });
-      }
-    }
-    if (!best) return null;
-    const lx0 = minX + (maxX - minX) * (best.x0 / NX);
-    const lx1 = minX + (maxX - minX) * (best.x1 / NX);
-    const ly0 = minY + (maxY - minY) * (best.y0 / NY);
-    const ly1 = minY + (maxY - minY) * (best.y1 / NY);
-    const padX = (lx1 - lx0) * 0.14, padY = (ly1 - ly0) * 0.14;
-    const w = (lx1 - lx0) - 2 * padX, h = (ly1 - ly0) - 2 * padY;
-    if (w < 28 || h < 28) return null;
-    return { lx: (lx0 + lx1) / 2, ly: (ly0 + ly1) / 2, w, h };
-  }
-
-  const prepared = cards.map((c) => {
+    const slot = S09_LABEL_SLOTS[label];
+    if (!slot) return;
     const q = c.quad_xy || c.quad;
-    const label = c.label || c.text || "";
-    const rot = (c.rotation_deg != null) ? c.rotation_deg
-      : Math.atan2(q[1][1] - q[0][1], q[1][0] - q[0][0]) * 180 / Math.PI;
-    const body = bodyOf(c);
-    // Occluder = white body + colored header band above it (Leo quads are body-only).
-    const [tl, tr, br, bl] = q;
-    const headerFrac = 0.55;
-    const upL = [tl[0] - (bl[0] - tl[0]) * headerFrac, tl[1] - (bl[1] - tl[1]) * headerFrac];
-    const upR = [tr[0] - (br[0] - tr[0]) * headerFrac, tr[1] - (br[1] - tr[1]) * headerFrac];
-    const face = insetPoly([upL, upR, br, bl], -0.03);
-    const [cx, cy] = centroid(q);
-    return { c, q, label, rot, body, face, cx, cy, z: Z[label] != null ? Z[label] : 0 };
-  });
-
-  prepared.forEach((P, i) => {
-    const frontBodies = prepared.filter((O) => O.z > P.z).map((O) => O.face);
-    let vis = visibleBounds(P.body, frontBodies, P.rot, P.cx, P.cy);
-    // If nothing actually occludes this body, use the full inset body (avoids
-    // undersized inscribed-rects inside parallelograms).
-    const rad0 = P.rot * Math.PI / 180;
-    const cos0 = Math.cos(rad0), sin0 = Math.sin(rad0);
-    let anyOcc = false;
-    if (frontBodies.length) {
-      const [bx0, by0, bx1, by1] = [
-        Math.min(...P.body.map((p) => p[0])), Math.min(...P.body.map((p) => p[1])),
-        Math.max(...P.body.map((p) => p[0])), Math.max(...P.body.map((p) => p[1])),
-      ];
-      outer: for (let i = 0; i <= 12; i++) {
-        for (let j = 0; j <= 12; j++) {
-          const ax = bx0 + (bx1 - bx0) * (i / 12);
-          const ay = by0 + (by1 - by0) * (j / 12);
-          if (!pointInPoly([ax, ay], P.body)) continue;
-          for (const fb of frontBodies) {
-            if (pointInPoly([ax, ay], fb)) { anyOcc = true; break outer; }
-          }
-        }
-      }
-    }
-    if (!anyOcc) {
-      const topW = Math.hypot(P.body[1][0] - P.body[0][0], P.body[1][1] - P.body[0][1]);
-      const sideH = Math.hypot(P.body[3][0] - P.body[0][0], P.body[3][1] - P.body[0][1]);
-      const [bcx, bcy] = centroid(P.body);
-      const dx = bcx - P.cx, dy = bcy - P.cy;
-      vis = {
-        lx: dx * cos0 + dy * sin0,
-        ly: -dx * sin0 + dy * cos0,
-        w: topW * 0.92,
-        h: sideH * 0.92,
-      };
-    }
-    if (P.label === "Lab report") {
-      // Lab sits behind Business+Executive; keep a thin strip under the header only.
-      const topW = Math.hypot(P.body[1][0] - P.body[0][0], P.body[1][1] - P.body[0][1]);
-      const sideH = Math.hypot(P.body[3][0] - P.body[0][0], P.body[3][1] - P.body[0][1]);
-      const topMid = [(P.body[0][0] + P.body[1][0]) / 2, (P.body[0][1] + P.body[1][1]) / 2];
-      const [bcx, bcy] = centroid(P.body);
-      const ux = topMid[0] * 0.82 + bcx * 0.18;
-      const uy = topMid[1] * 0.82 + bcy * 0.18;
-      const dx = ux - P.cx, dy = uy - P.cy;
-      vis = {
-        lx: dx * cos0 + dy * sin0,
-        ly: -dx * sin0 + dy * cos0,
-        w: topW * 0.72,
-        h: sideH * 0.28,
-      };
-    }
-    if (!vis) {
-      // Heavily occluded: keep the upper 50% of the body as a last resort.
-      const topW = Math.hypot(P.body[1][0] - P.body[0][0], P.body[1][1] - P.body[0][1]);
-      const sideH = Math.hypot(P.body[3][0] - P.body[0][0], P.body[3][1] - P.body[0][1]);
-      const [bcx, bcy] = centroid(P.body);
-      // shift toward top edge (negative local Y after rotation into local)
-      const topMid = [(P.body[0][0] + P.body[1][0]) / 2, (P.body[0][1] + P.body[1][1]) / 2];
-      const ux = (topMid[0] + bcx) / 2, uy = (topMid[1] + bcy) / 2;
-      const dx = ux - P.cx, dy = uy - P.cy;
-      vis = {
-        lx: dx * cos0 + dy * sin0,
-        ly: -dx * sin0 + dy * cos0,
-        w: topW * 0.85,
-        h: sideH * 0.45,
-      };
-    }
-    const rad = P.rot * Math.PI / 180;
-    const bx = P.cx + vis.lx * Math.cos(rad) - vis.ly * Math.sin(rad);
-    const by = P.cy + vis.lx * Math.sin(rad) + vis.ly * Math.cos(rad);
-    // 10% inset inside the visible region for the label box.
-    const topW = vis.w * 0.90;
-    const sideH = vis.h * 0.90;
-
     const el = surface("genre", `s09-genre s09-g${i} on-art`);
-    el.dataset.cardId = P.c.id || P.label || `g${i}`;
-    el.dataset.label = P.label;
-    el.dataset.quad = JSON.stringify(P.q);
-    el.dataset.bodyQuad = JSON.stringify(P.body);
-    el.dataset.visCx = String(bx);
-    el.dataset.visCy = String(by);
-    el.dataset.visW = String(vis.w);
-    el.dataset.visH = String(vis.h);
+    el.dataset.cardId = c.id || label || `g${i}`;
+    el.dataset.label = label;
+    el.dataset.quad = JSON.stringify(q);
+    el.dataset.bodyQuad = JSON.stringify(q);
+    el.dataset.visCx = String(slot.cx);
+    el.dataset.visCy = String(slot.cy);
+    el.dataset.visW = String(slot.w);
+    el.dataset.visH = String(slot.h);
     el.dataset.bodyInset = "0.10";
-    el.dataset.rot = String(P.rot);
-    el.dataset.cardCx = String(P.cx);
-    el.dataset.cardCy = String(P.cy);
-    el.dataset.z = String(P.z);
-    el.textContent = (P.label === "Lab report")
-      ? P.label
-      : (P.label.includes(" ") ? P.label.replace(" ", "\n") : P.label);
-    el.style.left = (bx / 1920) * 100 + "%";
-    el.style.top = (by / 1080) * 100 + "%";
-    el.style.width = (topW / 1920) * 100 + "%";
-    el.style.height = (sideH / 1080) * 100 + "%";
-    el.style.transform = `translate(-50%, -50%) rotate(${P.rot}deg)`;
+    el.dataset.rot = String(slot.rot);
+    el.dataset.cardCx = String((c.center_xy || [slot.cx, slot.cy])[0]);
+    el.dataset.cardCy = String((c.center_xy || [slot.cx, slot.cy])[1]);
+    el.dataset.z = String(slot.z);
+    el.textContent = slot.wrap && label.includes(" ")
+      ? label.replace(" ", "\n")
+      : label;
+    el.style.left = (slot.cx / 1920) * 100 + "%";
+    el.style.top = (slot.cy / 1080) * 100 + "%";
+    el.style.width = (slot.w / 1920) * 100 + "%";
+    el.style.height = (slot.h / 1080) * 100 + "%";
+    el.style.transform = `translate(-50%, -50%) rotate(${slot.rot}deg)`;
     el.style.transformOrigin = "50% 50%";
     el.style.textAlign = "center";
     el.style.display = "flex";
@@ -628,15 +454,14 @@ function buildS09(root, T) {
     el.style.padding = "0";
     el.style.boxSizing = "border-box";
     el.style.color = "#26376e";
-    el.style.fontSize = "36px";
+    el.style.fontSize = TARGET_FS + "px";
     el.style.overflow = "hidden";
     el.style.pointerEvents = "none";
-    el.style.zIndex = String(10 + P.z);
+    el.style.zIndex = String(10 + slot.z);
     layer.appendChild(el);
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      // Biggest size that fits the inset visible box (no subpixel overflow).
-      let lo = 10, hi = Math.min(40, Math.max(14, Math.min(topW, sideH) * 0.55)), best = lo;
-      for (let step = 0; step < 16; step++) {
+      let lo = 14, hi = TARGET_FS, best = 14;
+      for (let step = 0; step < 14; step++) {
         const mid = (lo + hi) / 2;
         el.style.setProperty("font-size", mid + "px", "important");
         if (el.scrollWidth <= el.clientWidth && el.scrollHeight <= el.clientHeight) {
@@ -894,7 +719,8 @@ function buildOnArtIdeaPanel(root, slide) {
     const ul = h("ul", "bs-idea-bullets on-art-b");
     bullets.forEach((b) => {
       const li = document.createElement("li");
-      li.textContent = String(b).replace(/^"|"$/g, "");
+      // Bind "(p. N)" to the preceding word so page cites do not widow/orphan.
+      li.innerHTML = bindPageCites(stripOuterQuotes(b));
       ul.appendChild(li);
     });
     panel.appendChild(ul);
@@ -1023,7 +849,7 @@ export const PAGES = SLIDES.map((slide) => ({
         tape2.style.cssText = "position:absolute;right:6%;top:1.5%;width:16%;height:5%;object-fit:fill;transform:rotate(3deg);z-index:8;";
         group.appendChild(tape2);
         const panel = surface("resources", "bs-resources-panel bs-resources-panel--wide bs-reveal on-art");
-        panel.style.cssText = "position:absolute;left:5%;top:7%;width:90%;height:86%;overflow:hidden;box-sizing:border-box;";
+        panel.style.cssText = "position:absolute;left:5%;top:7%;width:90%;height:86%;overflow:hidden;box-sizing:border-box;padding-top:4%;padding-bottom:4%;";
         const heading = h("div", "bs-res-h on-art-t");
         heading.textContent = slide.resHeading || slide.title || "References";
         panel.appendChild(heading);

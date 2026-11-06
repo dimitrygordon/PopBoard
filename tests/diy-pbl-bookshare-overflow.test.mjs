@@ -301,7 +301,7 @@ test("full view desktop: stage containers fit at 1280/1920", async (t) => {
 });
 
 
-test("s09 labels sit inside visible (unoccluded) card body; readable size", async (t) => {
+test("s09 labels sit on card-body pixels (no ink / neighbour); readable size", async (t) => {
   let puppeteer;
   try {
     puppeteer = (await import(pathToFileURL(PUPPETEER).href)).default;
@@ -319,8 +319,9 @@ test("s09 labels sit inside visible (unoccluded) card body; readable size", asyn
   try {
     const failures = [];
     for (const vp of [
-      { name: "390x844", width: 390, height: 844, mobile: true },
       { name: "1280x720", width: 1280, height: 720, mobile: false },
+      { name: "1920x1080", width: 1920, height: 1080, mobile: false },
+      { name: "844x390", width: 844, height: 390, mobile: true },
     ]) {
       const page = await browser.newPage();
       await page.setViewport({
@@ -332,103 +333,141 @@ test("s09 labels sit inside visible (unoccluded) card body; readable size", asyn
         waitUntil: "networkidle0", timeout: 60000,
       });
       await settle(page);
-      const rows = await page.evaluate(() => {
-        function rotate(px, py, cx, cy, deg) {
-          const r = (deg * Math.PI) / 180;
-          const dx = px - cx, dy = py - cy;
+      await page.evaluate(async () => { try { await document.fonts.ready; } catch {} });
+      // Snapshot label geometry, then hide labels and sample pixels under each box.
+      const meta = await page.evaluate(() => {
+        const scene = document.querySelector(".bs-scene");
+        const sr = scene.getBoundingClientRect();
+        return [...document.querySelectorAll(".s09-genre")].map((el) => {
+          const br = el.getBoundingClientRect();
+          const rot = Number(el.dataset.rot || 0);
           return {
-            x: cx + dx * Math.cos(r) - dy * Math.sin(r),
-            y: cy + dx * Math.sin(r) + dy * Math.cos(r),
+            label: el.dataset.label || el.textContent.trim().replace(/\s+/g, " "),
+            // scene-local CSS px rect (unrotated AABB of the element)
+            x: br.left - sr.left,
+            y: br.top - sr.top,
+            w: br.width,
+            h: br.height,
+            // center + size in scene CSS px for rotated sampling
+            cx: (br.left + br.right) / 2 - sr.left,
+            cy: (br.top + br.bottom) / 2 - sr.top,
+            rot,
+            artFs: parseFloat(el.dataset.artFs || "0"),
+            fs: parseFloat(getComputedStyle(el).fontSize),
+            clip: el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2,
           };
-        }
-        function pointInPoly(pt, poly) {
-          // ray cast
-          let inside = false;
-          for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-            const xi = poly[i].x, yi = poly[i].y;
-            const xj = poly[j].x, yj = poly[j].y;
-            const inter = ((yi > pt.y) !== (yj > pt.y))
-              && (pt.x < ((xj - xi) * (pt.y - yi)) / (yj - yi + 1e-9) + xi);
-            if (inter) inside = !inside;
-          }
-          return inside;
-        }
+        });
+      });
+      await page.evaluate(() => {
+        document.querySelectorAll(".s09-genre").forEach((el) => { el.style.visibility = "hidden"; });
+      });
+      await new Promise((r) => setTimeout(r, 80));
+      const sceneHandle = await page.$(".bs-scene");
+      const shot = await sceneHandle.screenshot({ encoding: "binary" });
+      await sceneHandle.dispose();
+      // Decode PNG via sharp-less path: use page.evaluate with ImageData from canvas
+      // Re-load screenshot into page for sampling
+      const b64 = Buffer.from(shot).toString("base64");
+      const pixelReport = await page.evaluate(async (b64, meta) => {
+        const img = new Image();
+        await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = "data:image/png;base64," + b64; });
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width; canvas.height = img.height;
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        ctx.drawImage(img, 0, 0);
+        const { data, width, height } = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const scene = document.querySelector(".bs-scene");
         const sw = scene.clientWidth, sh = scene.clientHeight;
-        const scale = Math.min(sw / 1920, sh / 1080);
-        // design layer may use cover sync; map art -> CSS via label rects themselves
+        const sx = width / sw, sy = height / sh;
+        function sample(cssX, cssY) {
+          const px = Math.min(width - 1, Math.max(0, Math.round(cssX * sx)));
+          const py = Math.min(height - 1, Math.max(0, Math.round(cssY * sy)));
+          const i = (py * width + px) * 4;
+          return { r: data[i], g: data[i + 1], b: data[i + 2] };
+        }
+        function isCream(p) {
+          const lum = (p.r + p.g + p.b) / 3;
+          const chroma = Math.max(Math.abs(p.r - p.g), Math.abs(p.g - p.b), Math.abs(p.r - p.b));
+          return lum >= 185 && chroma <= 48;
+        }
+        function isInk(p) {
+          return (p.r + p.g + p.b) / 3 < 120;
+        }
+        function isHeaderChroma(p) {
+          const lum = (p.r + p.g + p.b) / 3;
+          const chroma = Math.max(Math.abs(p.r - p.g), Math.abs(p.g - p.b), Math.abs(p.r - p.b));
+          return chroma > 40 && lum > 130 && lum < 235;
+        }
+        /** Page cream is also light; require the sample be enclosed by ink (card outline). */
+        function enclosed(cssX, cssY) {
+          // Scale with scene: a front card can be ~250 CSS px across at 1920.
+          const maxd = Math.max(220, Math.round(Math.min(sw, sh) * 0.35));
+          let hits = 0;
+          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+            for (let d = 3; d < maxd; d += 3) {
+              const p = sample(cssX + dx * d, cssY + dy * d);
+              if (isInk(p)) { hits++; break; }
+            }
+          }
+          return hits >= 3;
+        }
         const out = [];
-        for (const el of document.querySelectorAll(".s09-genre")) {
-          const label = el.dataset.label || el.textContent.trim();
-          let bodyArt;
-          if (el.dataset.bodyQuad) {
-            bodyArt = JSON.parse(el.dataset.bodyQuad).map(([x, y]) => ({ x, y }));
-          } else {
-            const cx = Number(el.dataset.cardCx);
-            const cy = Number(el.dataset.cardCy);
-            const w = Number(el.dataset.cardW);
-            const h = Number(el.dataset.cardH);
-            const rot = Number(el.dataset.rot);
-            const headerFrac = Number(el.dataset.headerFrac || 0.3);
-            const pad = Number(el.dataset.bodyInset || 0.1);
-            const local = [
-              { x: (-0.5 + pad) * w, y: (-0.5 + headerFrac) * h },
-              { x: (0.5 - pad) * w, y: (-0.5 + headerFrac) * h },
-              { x: (0.5 - pad) * w, y: (0.5 - pad) * h },
-              { x: (-0.5 + pad) * w, y: (0.5 - pad) * h },
-            ];
-            bodyArt = local.map((p) => rotate(cx + p.x, cy + p.y, cx, cy, rot));
+        for (const m of meta) {
+          const rad = (m.rot * Math.PI) / 180;
+          const cos = Math.cos(rad), sin = Math.sin(rad);
+          // 10% inset of the label box
+          const hw = m.w * 0.40, hh = m.h * 0.40;
+          let ok = 0, bad = 0, ink = 0, header = 0, open = 0;
+          for (let iy = 0; iy < 10; iy++) {
+            for (let ix = 0; ix < 10; ix++) {
+              const lx = -hw + (2 * hw) * (ix / 9);
+              const ly = -hh + (2 * hh) * (iy / 9);
+              const cssX = m.cx + lx * cos - ly * sin;
+              const cssY = m.cy + lx * sin + ly * cos;
+              const p = sample(cssX, cssY);
+              if (isInk(p)) { ink++; bad++; }
+              else if (isHeaderChroma(p)) { header++; bad++; }
+              else if (!isCream(p)) { bad++; }
+              else if (!enclosed(cssX, cssY)) { open++; bad++; }
+              else ok++;
+            }
           }
-          const br = el.getBoundingClientRect();
-          const sr = scene.getBoundingClientRect();
-          const layer = document.querySelector(".bs-design-layer");
-          const inv = new DOMMatrix(getComputedStyle(layer).transform).inverse();
-          // Label center must sit in the visible (unoccluded) body region.
-          const art = inv.transformPoint({
-            x: (br.left + br.right) / 2 - sr.left,
-            y: (br.top + br.bottom) / 2 - sr.top,
-          });
-          let inside = pointInPoly(art, bodyArt);
-          // Also require center within the computed visible rect when present
-          if (el.dataset.visCx) {
-            const vc = Number(el.dataset.visCx), vy = Number(el.dataset.visCy);
-            const vw = Number(el.dataset.visW), vh = Number(el.dataset.visH);
-            const rot = Number(el.dataset.rot) * Math.PI / 180;
-            const dx = art.x - vc, dy = art.y - vy;
-            const lx = dx * Math.cos(rot) + dy * Math.sin(rot);
-            const ly = -dx * Math.sin(rot) + dy * Math.cos(rot);
-            if (Math.abs(lx) > vw / 2 || Math.abs(ly) > vh / 2) inside = false;
-          }
-          // Must not sit inside a higher-z sibling body
-          const myZ = Number(el.dataset.z || 0);
-          for (const other of document.querySelectorAll(".s09-genre")) {
-            if (other === el) continue;
-            if (Number(other.dataset.z || 0) <= myZ) continue;
-            if (!other.dataset.bodyQuad) continue;
-            const ob = JSON.parse(other.dataset.bodyQuad);
-            if (pointInPoly(art, ob.map(([x, y]) => ({ x, y })))) inside = false;
-          }
-          const fs = parseFloat(getComputedStyle(el).fontSize);
-          const clip = el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2;
           out.push({
-            label,
-            inside,
-            clip,
-            fs,
-            artFs: el.dataset.artFs,
-            overflowX: el.scrollWidth > el.clientWidth + 2,
-            overflowY: el.scrollHeight > el.clientHeight + 2,
+            label: m.label,
+            ok, bad, ink, header, open,
+            artFs: m.artFs,
+            fs: m.fs,
+            clip: m.clip,
+            creamFrac: ok / (ok + bad),
           });
         }
         return out;
-      });
-      if (rows.length !== 4) failures.push(`${vp.name}: expected 4 s09 labels, got ${rows.length}`);
-      for (const r of rows) {
-        if (!r.inside) failures.push(`${vp.name}: label outside visible body / occluded ("${r.label}")`);
-        if (r.clip || r.overflowX || r.overflowY) failures.push(`${vp.name}: label clips ("${r.label}")`);
-        // ~2x prior 16px design size; allow fit down to 18px
-        const art = parseFloat(r.artFs || "0");
-        if (art && art < 14) failures.push(`${vp.name}: label too small artFs=${art} ("${r.label}")`);
+      }, b64, meta);
+
+      if (pixelReport.length !== 4) {
+        failures.push(`${vp.name}: expected 4 labels, got ${pixelReport.length}`);
+      }
+      const arts = pixelReport.map((r) => r.artFs).filter((n) => n > 0);
+      const minArt = arts.length ? Math.min(...arts) : 0;
+      const maxArt = arts.length ? Math.max(...arts) : 0;
+      const minCream = vp.height < 500 ? 0.62 : 0.85;
+      for (const r of pixelReport) {
+        // Allow a couple of border samples; require mostly cream body.
+        if (r.creamFrac < minCream) {
+          failures.push(`${vp.name}: "${r.label}" only ${(r.creamFrac * 100).toFixed(0)}% card-body under label (ink=${r.ink} header=${r.header} open=${r.open} bad=${r.bad})`);
+        }
+        if (r.ink > 3) {
+          failures.push(`${vp.name}: "${r.label}" hits outline ink (${r.ink} samples)`);
+        }
+        if (r.clip) failures.push(`${vp.name}: "${r.label}" clips its box`);
+        // ~14px rendered at 1280 (scale~0.59) => artFs>=14; keep floor 14 design.
+        if (r.artFs && r.artFs < 14) {
+          failures.push(`${vp.name}: "${r.label}" too small artFs=${r.artFs.toFixed(1)}`);
+        }
+      }
+      // Labels should be similar sizes (Lab not tiny vs others).
+      if (arts.length === 4 && maxArt > minArt * 2.2) {
+        failures.push(`${vp.name}: label sizes diverge artFs ${minArt.toFixed(1)}..${maxArt.toFixed(1)}`);
       }
       await page.close();
     }

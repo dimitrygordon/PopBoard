@@ -365,6 +365,17 @@ export function loadLayouts() {
   return ready;
 }
 
+/** Pixel-verified label slots (design px on 1920x1080 bg.webp).
+ *  Derived from cream body ∩ Leo quad, minus front-card faces; 10% inset baked in.
+ */
+export const S09_LABEL_SLOTS = {
+  /* Pixel-derived from bg.webp; inside white body, clear of dark outlines. */
+  "Lab report":        { cx: 1210, cy: 278, w: 118, h: 34, rot: -8, z: 0, wrap: false },
+  "Business letter":   { cx: 1160, cy: 605, w: 72, h: 120, rot: -16, z: 2, wrap: true },
+  "Executive summary": { cx: 1310, cy: 585, w: 95, h: 135, rot: -2, z: 1, wrap: true },
+  "Problem statement": { cx: 1602, cy: 680, w: 140, h: 150, rot: 11, z: 3, wrap: true },
+};
+
 export function s09Cards() {
   return (s09 || S09_FALLBACK).cards;
 }
