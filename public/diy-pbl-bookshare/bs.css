@@ -79,16 +79,86 @@ body.fl-full .fl-cap .cap-q {
   max-width: 100%;
 }
 
-/* Landscape phone: captions clear right-side art — park in empty bottom-left. */
+/* Landscape phone (short): stage fits HEIGHT (letterbox); caption under stage.
+   fl.css sets container-type:size on .fl-frame; that collapses width to 0 when
+   height is percentage-based, so drop size containment here and center explicitly. */
 @media (max-height: 500px) and (orientation: landscape) {
-  body.fl-full .fl-cap {
-    left: 2% !important;
-    right: 50% !important;
-    text-align: left !important;
+  body.fl-full {
+    --bs-land-cap: 2.6rem;
+    --bs-land-h: calc(100dvh - var(--bs-land-cap));
+    --bs-land-w: calc(var(--bs-land-h) * 16 / 9);
   }
-  /* s06 desk/lanterns reach further left than other slides */
-  body.fl-full[data-page="6"] .fl-cap {
-    right: 58% !important;
+  body.fl-full .fl-viewport {
+    padding: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  body.fl-full .fl-frame {
+    position: relative !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    aspect-ratio: auto !important;
+    container-type: normal !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+  }
+  body.fl-full .fl-art {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    inset: auto !important;
+    flex: 0 0 auto !important;
+    width: min(100vw, var(--bs-land-w)) !important;
+    height: var(--bs-land-h) !important;
+    max-width: 100vw !important;
+    max-height: var(--bs-land-h) !important;
+    display: block !important;
+    margin: 0 auto !important;
+  }
+  body.fl-full .fl-scene {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    aspect-ratio: 16 / 9 !important;
+    margin: 0 !important;
+    height: auto !important;
+    max-height: var(--bs-land-h) !important;
+  }
+  body.fl-full .bs-scene {
+    position: absolute !important;
+    inset: 0 !important;
+  }
+  body.fl-full .fl-cap {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: min(96vw, var(--bs-land-w)) !important;
+    max-width: 96vw !important;
+    margin: 0.15rem auto 0 !important;
+    padding: 0.15rem 0.6rem 0.25rem !important;
+    text-align: center !important;
+    font-size: clamp(11px, 2.4vh, 16px) !important;
+    line-height: 1.15 !important;
+    z-index: 6;
+    flex: 0 0 auto !important;
+  }
+  /* Full-text slides: hide caption in landscape (paper fills the stage). */
+  body.fl-full[data-kind="discuss"] .fl-cap,
+  body.fl-full[data-kind="resources"] .fl-cap {
+    display: none !important;
   }
 }
 
@@ -397,26 +467,31 @@ html body.fl-full .fl-side {
   height: auto !important;
   max-height: 100% !important;
 }
-body.fl-full .fl-art {
-  right: 0 !important;
-  bottom: 10% !important;
-  left: 0 !important;
-  top: 0 !important;
-  display: block !important; /* not grid+center which collapses absolute-only scene */
+@media (min-height: 501px) {
+  body.fl-full .fl-art {
+    right: 0 !important;
+    bottom: 10% !important;
+    left: 0 !important;
+    top: 0 !important;
+    display: block !important; /* not grid+center which collapses absolute-only scene */
+  }
 }
 /* Keep 16:9 in full view so text-on-art matches the uncropped artwork.
-   Tall phones letterbox rather than cover-cropping left/right content. */
-body.fl-full .fl-scene {
-  width: 100% !important;
-  height: auto !important;
-  max-height: 100% !important;
-  aspect-ratio: 16 / 9 !important;
-  margin: 0 auto !important;
-}
-body.fl-full .fl-art {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+   Tall phones letterbox rather than cover-cropping left/right content.
+   Short landscape uses the height-fit block above (relative art, no flex center). */
+@media (min-height: 501px) {
+  body.fl-full .fl-scene {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 100% !important;
+    aspect-ratio: 16 / 9 !important;
+    margin: 0 auto !important;
+  }
+  body.fl-full .fl-art {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
 }
 .bs-scene {
   position: absolute !important;
@@ -1088,7 +1163,7 @@ body.fl-full .bs-resources-panel--compact {
   bottom: auto !important;
   overflow: visible !important;
 }
-/* Numerals as real ::before text (inside the box) — outside markers get clipped by overflow. */
+/* Numerals as real ::before text (inside the box)  -  outside markers get clipped by overflow. */
 .bs-paper-group .bs-takeaways ol,
 .bs-paper-group .bs-takeaways-ol {
   list-style: none !important;
@@ -1766,7 +1841,8 @@ body.fl-full .bs-design-layer .bs-paper-group .bs-apa li {
     display: flex !important;
     flex-direction: column !important;
   }
-  body.fl-full .fl-art,
+  /* Non-full: keep width-fill. Full-view short landscape is handled above (height-fit). */
+  body:not(.fl-full) .fl-art,
   .fl-art {
     position: relative !important;
     inset: auto !important;
@@ -1775,12 +1851,40 @@ body.fl-full .bs-design-layer .bs-paper-group .bs-apa li {
     right: 0 !important;
     bottom: auto !important;
   }
-  body.fl-full .fl-scene,
+  body:not(.fl-full) .fl-scene,
   .fl-scene {
     width: 100% !important;
     height: auto !important;
     aspect-ratio: 16 / 9 !important;
     max-height: none !important;
+  }
+  /* When both max-width:950 landscape AND max-height:500 apply, height-fit rules above win for fl-full via equal/higher specificity + order. */
+  body.fl-full .fl-frame {
+    container-type: normal !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+  }
+  body.fl-full .fl-art {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    inset: auto !important;
+    width: min(100vw, var(--bs-land-w, calc((100dvh - 2.6rem) * 16 / 9))) !important;
+    height: var(--bs-land-h, calc(100dvh - 2.6rem)) !important;
+    max-width: 100vw !important;
+    max-height: var(--bs-land-h, calc(100dvh - 2.6rem)) !important;
+    flex: 0 0 auto !important;
+    margin: 0 auto !important;
+    display: block !important;
+  }
+  body.fl-full .fl-scene {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100% !important;
+    max-height: var(--bs-land-h, calc(100dvh - 2.6rem)) !important;
+    aspect-ratio: 16 / 9 !important;
   }
   body.fl-full .fl-side,
   .fl-side {
@@ -1804,4 +1908,12 @@ body.fl-full .bs-design-layer .bs-paper-group .bs-apa li {
 }
 .bs-design-layer .s09-genre {
   overflow: visible !important;
+}
+
+
+/* Round 6 book-figure cards (baked tape/border/cite) */
+.bs-design-layer .bs-r6-figure,
+.bs-scene .bs-r6-figure {
+  filter: drop-shadow(2px 3px 4px rgba(40, 35, 30, 0.18));
+  z-index: 4;
 }

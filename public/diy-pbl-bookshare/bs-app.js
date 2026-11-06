@@ -19,10 +19,10 @@ try { state.auto = localStorage.getItem("popboard.diy-pbl.auto") === "1"; } catc
 async function probeArtBgs() {
   // Prefer Leo redraw filenames when they exist (s08 / s16 hooks and any slide).
   // Cloudflare Pages SPA catch-all returns 200 text/html for missing paths, so
-  // res.ok alone is not enough — require a real image Content-Type (or decode).
+  // res.ok alone is not enough  -  require a real image Content-Type (or decode).
   const ids = [];
-  for (let n = 1; n <= 21; n++) ids.push(`s${String(n).padStart(2, "0")}`);
-  ids.push("keyterms", "discussion", "resources", "conclude");
+  for (let n = 1; n <= 40; n++) ids.push(`s${String(n).padStart(2, "0")}`);
+  ids.push("keyterms", "discussion", "resources", "conclude", "r6a", "r6b", "r6c", "r6d", "r6e", "r6f", "r6h", "r6i", "r6j");
   const prefer = ["bg_v6.webp", "bg_next.webp"];
   const map = {};
   async function isRealImage(url) {

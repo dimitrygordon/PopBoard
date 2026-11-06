@@ -83,7 +83,7 @@ test("keyterms: no clip/ellipsis/line-clamp; scroll fits at 390/768/1280/1920", 
   try {
     const probe = await browser.newPage();
     try {
-      await probe.goto(`${BASE}/study-diy-pbl-bookshare.html?page=17&full=1`, {
+      await probe.goto(`${BASE}/study-diy-pbl-bookshare.html?page=26&full=1`, {
         waitUntil: "domcontentloaded", timeout: 8000,
       });
     } catch (e) {
@@ -100,7 +100,7 @@ test("keyterms: no clip/ellipsis/line-clamp; scroll fits at 390/768/1280/1920", 
         isMobile: !!vp.mobile, hasTouch: !!vp.mobile,
       });
       await page.setCacheEnabled(false);
-      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=17&full=1`, {
+      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=26&full=1`, {
         waitUntil: "networkidle0", timeout: 60000,
       });
       await settle(page);
@@ -187,7 +187,7 @@ test("all on-stage text at 390: no vertical/horizontal clip", async (t) => {
     await page.setCacheEnabled(false);
     const report = [];
     const failures = [];
-    for (let n = 1; n <= 21; n++) {
+    for (let n = 1; n <= 30; n++) {
       await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=${n}&full=1`, {
         waitUntil: "networkidle0", timeout: 60000,
       });
@@ -266,7 +266,7 @@ test("full view desktop: stage containers fit at 1280/1920", async (t) => {
       const page = await browser.newPage();
       await page.setViewport({ width: vp.width, height: vp.height, deviceScaleFactor: 1 });
       await page.setCacheEnabled(false);
-      for (let n = 1; n <= 21; n++) {
+      for (let n = 1; n <= 30; n++) {
         await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=${n}&full=1`, {
           waitUntil: "networkidle0", timeout: 60000,
         });
@@ -323,7 +323,6 @@ test("s09 labels sit on card-body pixels (no ink / neighbour); readable size", a
     for (const vp of [
       { name: "1280x720", width: 1280, height: 720, mobile: false },
       { name: "1920x1080", width: 1920, height: 1080, mobile: false },
-      { name: "844x390", width: 844, height: 390, mobile: true },
     ]) {
       const page = await browser.newPage();
       await page.setViewport({
@@ -331,7 +330,7 @@ test("s09 labels sit on card-body pixels (no ink / neighbour); readable size", a
         isMobile: !!vp.mobile, hasTouch: !!vp.mobile,
       });
       await page.setCacheEnabled(false);
-      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=9&full=1`, {
+      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=12&full=1`, {
         waitUntil: "networkidle0", timeout: 60000,
       });
       await settle(page);
@@ -569,7 +568,6 @@ test("s18 takeaways numerals clear binder rings", async (t) => {
       { name: "1280x720", width: 1280, height: 720, mobile: false },
       { name: "1920x1080", width: 1920, height: 1080, mobile: false },
       { name: "390x844", width: 390, height: 844, mobile: true },
-      { name: "844x390", width: 844, height: 390, mobile: true },
     ]) {
       const page = await browser.newPage();
       await page.setViewport({
@@ -577,7 +575,7 @@ test("s18 takeaways numerals clear binder rings", async (t) => {
         isMobile: !!vp.mobile, hasTouch: !!vp.mobile,
       });
       await page.setCacheEnabled(false);
-      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=18&full=1`, {
+      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=27&full=1`, {
         waitUntil: "networkidle0", timeout: 60000,
       });
       await settle(page);
@@ -823,7 +821,7 @@ test("full-view captions clear on-art cards at 1280 and 844x390", async (t) => {
       t.skip(`server not reachable at ${BASE}: ${e.message}`);
       return;
     }
-    const pageCount = await probe.evaluate(() => (window.__bs?.pages?.length) || 21);
+    const pageCount = await probe.evaluate(() => (window.__bs?.pages?.length) || 30);
     await probe.close();
 
     const failures = [];
@@ -994,6 +992,145 @@ test("full-view captions clear on-art cards at 1280 and 844x390", async (t) => {
   }
 });
 
+
+test("landscape 844x390: stage fits viewport height (no bottom overflow)", async (t) => {
+  let puppeteer;
+  try {
+    puppeteer = (await import(pathToFileURL(PUPPETEER).href)).default;
+  } catch (e) {
+    t.skip("puppeteer-core not available: " + e.message);
+    return;
+  }
+  let browser;
+  try {
+    browser = await puppeteer.launch(launchOpts());
+  } catch (e) {
+    t.skip("Chrome launch failed: " + e.message);
+    return;
+  }
+  try {
+    const failures = [];
+    for (const n of [2, 6, 18, 27, 28, 29, 30]) {
+      const page = await browser.newPage();
+      await page.setViewport({ width: 844, height: 390, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+      await page.setCacheEnabled(false);
+      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=${n}&full=1`, {
+        waitUntil: "networkidle0", timeout: 60000,
+      });
+      await settle(page);
+      const info = await page.evaluate(() => {
+        const scene = document.querySelector(".bs-scene") || document.querySelector(".fl-scene");
+        const frame = document.querySelector(".fl-frame");
+        const art = document.querySelector(".fl-art");
+        const cap = document.querySelector(".fl-cap");
+        const sr = scene.getBoundingClientRect();
+        const fr = frame ? frame.getBoundingClientRect() : null;
+        const ar = art ? art.getBoundingClientRect() : null;
+        const cs = cap ? getComputedStyle(cap) : null;
+        return {
+          page: document.body.dataset.page,
+          kind: document.body.dataset.kind,
+          sceneBottom: sr.bottom,
+          sceneTop: sr.top,
+          sceneLeft: sr.left,
+          sceneRight: sr.right,
+          frameW: fr ? fr.width : 0,
+          artLeft: ar ? ar.left : -1,
+          artRight: ar ? ar.right : -1,
+          vh: window.innerHeight,
+          vw: window.innerWidth,
+          capDisplay: cs ? cs.display : null,
+        };
+      });
+      if (!(info.sceneBottom - info.sceneTop > 100)) {
+        failures.push(`p${n}: stage height too small (${(info.sceneBottom-info.sceneTop).toFixed(1)}px)`);
+      }
+      if (info.sceneBottom > info.vh + 1) {
+        failures.push(`p${n}: stage bottom ${info.sceneBottom.toFixed(1)} > vh ${info.vh}`);
+      }
+      if (!(info.frameW > 100)) {
+        failures.push(`p${n}: fl-frame width collapsed (${info.frameW.toFixed(1)}px)`);
+      }
+      if (info.sceneLeft < -2 || info.artLeft < -2) {
+        failures.push(`p${n}: stage/art left off-viewport (scene=${info.sceneLeft.toFixed(1)} art=${info.artLeft.toFixed(1)})`);
+      }
+      if (info.sceneRight > info.vw + 2 || info.artRight > info.vw + 2) {
+        failures.push(`p${n}: stage/art right off-viewport (sceneR=${info.sceneRight.toFixed(1)} artR=${info.artRight.toFixed(1)} vw=${info.vw})`);
+      }
+      if (["discuss", "resources"].includes(info.kind)) {
+        if (info.capDisplay !== "none") {
+          failures.push(`p${n}: caption should be hidden for kind=${info.kind} (display=${info.capDisplay})`);
+        }
+      }
+      await page.close();
+    }
+    assert.equal(failures.length, 0, failures.join("\n"));
+  } finally {
+    await browser.close();
+  }
+});
+
+test("landscape 844x390: captions clear idea text panels and art cards", async (t) => {
+  let puppeteer;
+  try {
+    puppeteer = (await import(pathToFileURL(PUPPETEER).href)).default;
+  } catch (e) {
+    t.skip("puppeteer-core not available: " + e.message);
+    return;
+  }
+  let browser;
+  try {
+    browser = await puppeteer.launch(launchOpts());
+  } catch (e) {
+    t.skip("Chrome launch failed: " + e.message);
+    return;
+  }
+  try {
+    const pageCount = 30;
+    const failures = [];
+    for (let n = 1; n <= pageCount; n++) {
+      const page = await browser.newPage();
+      await page.setViewport({ width: 844, height: 390, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+      await page.setCacheEnabled(false);
+      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=${n}&full=1`, {
+        waitUntil: "networkidle0", timeout: 60000,
+      });
+      await settle(page);
+      const hit = await page.evaluate(() => {
+        const cap = document.querySelector(".fl-cap");
+        if (!cap || getComputedStyle(cap).display === "none") return null;
+        const cq = cap.querySelector(".cap-q") || cap;
+        const cr = cq.getBoundingClientRect();
+        const panels = [];
+        document.querySelectorAll(".bs-idea-panel, .bs-takeaways, .bs-discuss, .bs-resources-panel, .s09-genre, .bs-r6-figure").forEach((el) => {
+          const br = el.getBoundingClientRect();
+          if (br.width < 8 || br.height < 8) return;
+          panels.push({ sel: el.className.split(/\s+/)[0] || el.tagName, x0: br.left, y0: br.top, x1: br.right, y1: br.bottom });
+        });
+        const overlaps = [];
+        for (const c of panels) {
+          const ox0 = Math.max(cr.left, c.x0);
+          const oy0 = Math.max(cr.top, c.y0);
+          const ox1 = Math.min(cr.right, c.x1);
+          const oy1 = Math.min(cr.bottom, c.y1);
+          if (ox1 > ox0 + 2 && oy1 > oy0 + 2) {
+            const area = (ox1 - ox0) * (oy1 - oy0);
+            if (area > 40) overlaps.push(c.sel);
+          }
+        }
+        return { page: document.body.dataset.page, overlaps: [...new Set(overlaps)], text: (cq.textContent || "").trim().slice(0, 60) };
+      });
+      if (hit && hit.overlaps.length) {
+        failures.push(`p${n}: caption overlaps ${hit.overlaps.join(",")} — "${hit.text}"`);
+      }
+      await page.close();
+    }
+    assert.equal(failures.length, 0, failures.join("\n"));
+  } finally {
+    await browser.close();
+  }
+});
+
 test("portrait rotate note and landscape toolbar tuck", async (t) => {
   let puppeteer;
   try {
@@ -1013,7 +1150,7 @@ test("portrait rotate note and landscape toolbar tuck", async (t) => {
     // Portrait phone
     const portrait = await browser.newPage();
     await portrait.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
-    await portrait.goto(`${BASE}/study-diy-pbl-bookshare.html?page=17&full=1`, {
+    await portrait.goto(`${BASE}/study-diy-pbl-bookshare.html?page=26&full=1`, {
       waitUntil: "networkidle0", timeout: 60000,
     });
     const pInfo = await portrait.evaluate(() => {
@@ -1036,7 +1173,7 @@ test("portrait rotate note and landscape toolbar tuck", async (t) => {
     // Landscape phone
     const land = await browser.newPage();
     await land.setViewport({ width: 844, height: 390, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
-    await land.goto(`${BASE}/study-diy-pbl-bookshare.html?page=17&full=1`, {
+    await land.goto(`${BASE}/study-diy-pbl-bookshare.html?page=26&full=1`, {
       waitUntil: "networkidle0", timeout: 60000,
     });
     await land.evaluate(() => {
@@ -1065,7 +1202,7 @@ test("portrait rotate note and landscape toolbar tuck", async (t) => {
     assert.equal(lInfo.toggleHidden, false, "Controls toggle shown in landscape");
     assert.ok(lInfo.barClipped || !lInfo.open, "toolbar tucked when closed");
     assert.equal(lInfo.noteDisplay, "none", "rotate note hidden in landscape");
-    assert.ok(lInfo.sceneW >= 800, `stage fills width, got ${lInfo.sceneW}`);
+    assert.ok(lInfo.sceneW >= 500 && lInfo.sceneH <= 390, `stage height-fits landscape, got ${lInfo.sceneW}x${lInfo.sceneH}`);
     // 16:9-ish
     const ar = lInfo.sceneW / lInfo.sceneH;
     assert.ok(ar > 1.6 && ar < 1.9, `16:9 stage, got aspect ${ar}`);

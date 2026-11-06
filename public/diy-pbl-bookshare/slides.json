@@ -14,13 +14,13 @@
       "Foreword by Suzie Boss",
       "Book Share by Dimitry Gordon"
     ],
-    "narration": "Hi everyone, I'm Dimitry. My Book Share is DIY Project Based Learning for Math and Science by Heather Wolpert-Gawron, an award-winning middle school teacher and Edutopia blogger. I'm a physics and Earth and space science teacher in training, so I picked this book because I want my students doing science, not just reading about it. Over the next fifteen minutes or so, I'll teach you four big ideas, the key terms behind them, what each idea looks like in real classrooms, and three questions to chew on."
+    "narration": "Hi everyone, I'm Dimitry. My Book Share is DIY Project Based Learning for Math and Science, by Heather Wolpert-Gawron. She's an award-winning middle school teacher and Edutopia blogger. I'm training to teach physics and Earth and space science, and I picked this book because I want my students doing science, and not just reading about it. Over the next twenty-two minutes or so, I'll teach you four big ideas, the key terms behind them, what each one looks like in a real classroom, and three questions to chew on."
   },
   {
     "n": 2,
     "id": "s02",
     "art": "s02",
-    "title": "Engage: Is your unit a line or a story?",
+    "title": "A line or a story?",
     "kicker": "Engage",
     "idea": null,
     "kind": "engage",
@@ -36,23 +36,23 @@
     "n": 3,
     "id": "s03",
     "art": "s03",
-    "title": "Idea 1: PBL is a unit, not a project",
+    "title": "Idea 1: A unit, not a project",
     "kicker": "Idea 1",
     "idea": 1,
     "kind": "idea",
-    "guide": "PBL is the whole unit, not a project tacked on at the end.",
+    "guide": "PBL runs the whole unit, start to finish.",
     "bullets": [
       "\"PBL is the act of learning through identifying a real world problem and developing its solution.\" (p. 2)",
       "Assigning a project ≠ Project Based Learning (p. 7)"
     ],
-    "narration": "Idea one: PBL is a unit, not a project. The author gives us an elevator speech for it. PBL is learning through identifying a real world problem and developing its solution, and kids show what they learn as they journey through the unit, not just at the end. That last part is the key. She draws a sharp line between assigning a project and doing Project Based Learning. Assigning a project is just an assessment you tack on at the end. PBL is the whole unit: every lesson, exploration, piece of research, and presentation, all driven by one driving question. In her words, it's about the process, not the end project.",
+    "narration": "Idea one: PBL is a unit, not a project. The author gives us an elevator speech for it. PBL is learning through identifying a real world problem and developing its solution, and kids show what they learn as they journey through the unit, not just at the end. That last bit is the one to watch. She draws a hard line between assigning a project and doing Project Based Learning. Assigning a project is an assessment you tack on at the end. PBL is the whole unit. Every lesson, exploration, piece of research, and presentation, all driven by one driving question. In her words, it's about the process, not the end project.",
     "chapter": "Introduction pp. 2 to 7; Ch. 1 to 4"
   },
   {
     "n": 4,
     "id": "s04",
     "art": "s04",
-    "title": "Idea 1: How the story gets built",
+    "title": "How the story gets built",
     "kicker": "Idea 1",
     "idea": 1,
     "kind": "idea",
@@ -63,18 +63,18 @@
       "Authentic audience",
       "Heuristic, not algorithmic tasks (Juliani, pp. 4-5)"
     ],
-    "narration": "So how does she build that story? Every unit in the book uses the same moves. It starts with an entry event, something that hooks students into the problem. In the Galapagos unit, an eighth grader films a video playing the head of the Smithsonian, inviting seventh grade \"explorers\" to research an island and decide which species to save. Then comes role play. Students aren't students anymore; they're doctors, inventors, field scientists, or theme park engineers. And the work goes to an authentic audience, meaning real people outside the teacher who care about the answer: a board, a principal, local STEM professionals, or other classes. She also leans on the author A. J. Juliani's distinction between algorithmic tasks, which follow one set path to one answer, and heuristic tasks, which require trial and error. PBL lives in the heuristic world.",
+    "narration": "So how does she build that story? Every unit in the book uses the same moves. It starts with an entry event, something that hooks students into the problem. In the Galapagos unit, an eighth grader films a video playing the head of the Smithsonian, inviting the seventh grade \"explorers\" to research an island and decide which species to save. Then comes role play. Students aren't students anymore. They're doctors, inventors, field scientists, or theme park engineers. And the work goes to an authentic audience. Real people, outside the teacher, who care about the answer. A board, a principal, local STEM professionals, or other classes. She also borrows a distinction from the author A. J. Juliani. Algorithmic tasks follow one set path to one answer. Heuristic tasks take trial and error. PBL lives in the heuristic world.",
     "chapter": "Ch. 1 to 4; Juliani pp. 4-5"
   },
   {
     "n": 5,
     "id": "s05",
     "art": "s05",
-    "title": "Idea 1: Put Into Practice",
+    "title": "Idea 1 in practice",
     "kicker": "Put Into Practice",
     "idea": 1,
     "kind": "practice",
-    "guide": "Same skills as a worksheet, but now the worksheet has a reason to exist.",
+    "guide": "Same skills as a worksheet, with somebody waiting on the answer.",
     "bullets": [
       "Elementary: foam-tube marble coasters (Ch. 4)",
       "Middle school: Invention Unit (Ch. 2)",
@@ -85,6 +85,56 @@
   },
   {
     "n": 6,
+    "id": "r6a",
+    "art": "r6a",
+    "title": "An invention starts with a problem",
+    "kicker": "Idea 1",
+    "idea": 1,
+    "kind": "practice",
+    "guide": "Needs analysis before the pitch.",
+    "bullets": [
+      "Needs analysis: 3 to 5 problems in each major space",
+      "Jacob's Smart Drawer: a floor sensor opens the drawer",
+      "Rube Goldberg analysis: identify each step"
+    ],
+    "narration": "This is a real student idea from the Invention Unit. Jacob calls it the Smart Drawer. If your hands are full, or a drawer is hard to open, you step on a floor pad and a sensor opens it for you. Before anybody pitches anything, students walk through their homes and list three to five problems in each major space. That gives them somewhere to start. She also has them break a Rube Goldberg machine down into its steps. The point is to study the sequence. Nobody has to build another machine. I'd run that same routine before I ask my physics students to design a solution.",
+    "chapter": "Wolpert-Gawron, 2016, pp. 36-39; also p. 79",
+    "onArt": true,
+    "figure": {
+      "src": "figure.webp",
+      "x": 980,
+      "y": 120,
+      "w": 860,
+      "h": 780
+    }
+  },
+  {
+    "n": 7,
+    "id": "r6b",
+    "art": "r6b",
+    "title": "What students actually produced",
+    "kicker": "Idea 1",
+    "idea": 1,
+    "kind": "practice",
+    "guide": "Assess the failed trial, not just the loop.",
+    "bullets": [
+      "Real classroom coaster photographs",
+      "Measurements and energy labels",
+      "Trial notes explain what worked and why"
+    ],
+    "narration": "This is the student work behind that coaster example, and these photos are right there in the book. Students marked the track dimensions and labeled potential and kinetic energy. The teaching directions say to document each trial and explain why it worked or didn't. That's the part I'd want to assess. A loop that works is fun to watch. I'd still want the student to explain the run that failed, point to the change they made, and show me what happened on the next trial. My high school version is just a proposal. These elementary classroom examples are already in the book.",
+    "chapter": "Wolpert-Gawron, 2016, p. 80 (directions), p. 87 (photos)",
+    "onArt": true,
+    "figure": {
+      "src": "figure.webp",
+      "x": 1000,
+      "y": 80,
+      "w": 820,
+      "h": 920
+    }
+  },
+  {
+    "n": 8,
     "id": "s06",
     "art": "s06",
     "title": "Idea 2: Design toward what you love",
@@ -101,10 +151,10 @@
     "chapter": "Introduction, pp. 6-8"
   },
   {
-    "n": 7,
+    "n": 9,
     "id": "s07",
     "art": "s07",
-    "title": "Idea 2: The checklist is a contract",
+    "title": "The checklist is a contract",
     "kicker": "Idea 2",
     "idea": 2,
     "kind": "idea",
@@ -114,18 +164,44 @@
       "Leave empty rows",
       "\"The mystery defeats achievement.\" (p. 9)"
     ],
-    "narration": "The tool that keeps this from turning into chaos is the checklist. Every unit starts with a pacing checklist that lays out the assignments and deadlines, and it goes to students, parents, and administrators on day one. She backplans it by entering the final presentation date first and working backward. She also leaves a few empty rows on purpose, because a good guide has to stay flexible when the learning reveals a gap. She treats the checklist like a contract: the teacher promises not to wing it, and the students promise to plan ahead. One line from the book stuck with me: \"The mystery defeats achievement.\" If we want students to own their learning, we have to show them where the unit is going.",
+    "narration": "The checklist keeps all this from turning into chaos. Every unit starts with a pacing checklist that lays out the assignments and deadlines, and it goes to students, parents, and administrators on day one. She backplans it by putting in the final presentation date first and working backward. She also leaves a few empty rows on purpose, because a good guide has to stay flexible when the learning turns up a gap. She treats the checklist like a contract. The teacher promises not to wing it, and the students promise to plan ahead. One line from the book stuck with me: \"The mystery defeats achievement.\" If we want students to own their learning, we have to show them where the unit's headed. In my physics class, an empty row might turn into a reteach day, after a quick check shows students still think heavier objects fall faster. Or it might be a second build day, if every coaster fails the loop. Those empty rows aren't wasted time. The schedule bends to whatever the kids still need.",
     "chapter": "Introduction, p. 9"
   },
   {
-    "n": 8,
-    "id": "s08",
-    "art": "s08",
-    "title": "Idea 2: A tension worth naming",
+    "n": 10,
+    "id": "r6c",
+    "art": "r6c",
+    "title": "The actual pacing checklist",
     "kicker": "Idea 2",
     "idea": 2,
     "kind": "idea",
-    "guide": "Start with the hook, then audit against the standards before day one.",
+    "guide": "Students can see how the work fits together.",
+    "bullets": [
+      "Date assigned, assignment, deadline",
+      "Needs analysis, then problem statement",
+      "Design, cost analysis, then business letter",
+      "Empty boxes leave room for adjustments"
+    ],
+    "narration": "This is the actual Invention Unit checklist. It has a date assigned, an assignment, and a deadline. Look at the order. The needs analysis comes before the problem statement, and the design and cost analysis come before the final business letter and presentation. Students can see how the pieces fit together. The author also tells us to leave some empty boxes for our own assignments or for students' individual goals. In my class, I'd fill those when a quick check tells me we need another lesson or another trial.",
+    "chapter": "Wolpert-Gawron, 2016, p. 34",
+    "onArt": true,
+    "figure": {
+      "src": "figure.webp",
+      "x": 980,
+      "y": 140,
+      "w": 860,
+      "h": 760
+    }
+  },
+  {
+    "n": 11,
+    "id": "s08",
+    "art": "s08",
+    "title": "Passion first vs. backward design",
+    "kicker": "Idea 2",
+    "idea": 2,
+    "kind": "idea",
+    "guide": "Hook first. Check the standards before day one.",
     "bullets": [
       "“Call me bass-ackward…” (p. 7)",
       "Steps 2 and 3 are the backward design",
@@ -136,7 +212,7 @@
     "chapter": "Introduction; E&SS application"
   },
   {
-    "n": 9,
+    "n": 12,
     "id": "s09",
     "art": "s09",
     "title": "Idea 3: Communication is the content",
@@ -148,14 +224,39 @@
       "\"If it doesn't exist outside of school, then it isn't worthy enough to be taught within school.\" (p. 10)",
       "Lab report, problem statement, business letter, executive summary"
     ],
-    "narration": "Idea three: communication is the content. This idea runs through every chapter. The author quotes her earlier book: \"If it doesn't exist outside of school, then it isn't worthy enough to be taught within school.\" So her students don't write generic essays. They write the genres real STEM professionals write. In the Genius Unit, students play doctors writing a scientific lab report to a patient's family. In the Invention Unit, they write a problem statement, which is a short, researched case that a problem is real, plus three to five questions to guide more research. They also write a business letter asking a company to fund their invention. In the Galapagos and Theme Park units, they write an executive summary, a short pitch to a busy decision maker. Her point is that writing isn't a break from math and science. It's how math and science get shared.",
+    "narration": "Idea three: communication is the content. The author quotes her earlier book: \"If it doesn't exist outside of school, then it isn't worthy enough to be taught within school.\" So her students don't write generic essays. They write the genres real STEM professionals write. In the Genius Unit, students play doctors writing a scientific lab report to a patient's family. In the Invention Unit, they write a problem statement. That's a short, researched case that a problem is real, plus three to five questions to guide more research. They also write a business letter asking a company to fund their invention. In the Galapagos and Theme Park units, they write an executive summary, which is a short pitch to a busy decision maker. Her point is that writing is how math and science get shared, so it belongs in our classes.",
     "chapter": "Introduction p. 10; Ch. 1 to 4"
   },
   {
-    "n": 10,
+    "n": 13,
+    "id": "r6h",
+    "art": "r6h",
+    "title": "A student writes to a real reader",
+    "kicker": "Idea 3",
+    "idea": 3,
+    "kind": "idea",
+    "guide": "Specific reader, specific request, evidence required.",
+    "bullets": [
+      "Kevin's Dust Mite funding letter",
+      "Specific reader, invention, and request",
+      "Performance claims need evidence"
+    ],
+    "narration": "Here's another student artifact. Kevin wrote a business letter about an invention he calls the Dust Mite, a flying vacuum, and he asks a company to fund it. I like that students write to a specific reader with a specific request. I wouldn't take his performance claims on faith, though. In physics, we'd ask whether that design could actually lift its own weight and still power the vacuum. That gives the next investigation a reason to exist, and it gives Kevin something concrete to revise.",
+    "chapter": "Wolpert-Gawron, 2016, pp. 53-54",
+    "onArt": true,
+    "figure": {
+      "src": "figure.webp",
+      "x": 1020,
+      "y": 80,
+      "w": 800,
+      "h": 940
+    }
+  },
+  {
+    "n": 14,
     "id": "s10",
     "art": "s10",
-    "title": "Idea 3: Writing with numbers",
+    "title": "Writing with numbers",
     "kicker": "Idea 3",
     "idea": 3,
     "kind": "idea",
@@ -163,16 +264,16 @@
     "bullets": [
       "Writing with numeracy (Ch. 2; Part II, p. 120)",
       "BIRAC: Background, Issues, Recommendations, Analysis, Consequences (p. 82)",
-      "Break-even: C = vx + F and R = px (Ch. 2)"
+      "Break-even: where cost meets revenue (Ch. 2)"
     ],
-    "narration": "Two tools from this idea are worth stealing. The first is writing with numeracy, which means teaching students how to put numbers into their writing correctly, as evidence. She builds a reference sheet of rules, like spelling out a number that starts a sentence. The second is BIRAC, an engineering-style outline she uses for the Theme Park executive summary. B is background, posing the question. I is issues, what might get in the way. R is recommendations. A is analysis, the evidence that the plan works. And C is consequences, what happens if the board says yes or no. The Invention Unit also has real math in it: a break-even analysis, where cost equals variable cost times units plus fixed cost, written C equals v x plus F, and revenue equals price times units, written R equals p x. Students graph both lines in Desmos and find where they cross.",
+    "narration": "Two tools from this idea are worth stealing. The first is writing with numeracy. That means teaching students to put numbers into their writing correctly, as evidence. She builds a reference sheet of rules, like spelling out a number when it starts a sentence. The second is BIRAC. It's an engineering-style outline she uses for the Theme Park executive summary. B is background, where you pose the question. I is issues, what might get in the way. R is recommendations. A is analysis, the evidence that the plan works. And C is consequences, what happens if the board says yes, or says no. The Invention Unit has real math in it too, a break-even analysis. Cost equals variable cost times units, plus fixed cost. You write that as C equals v x plus F. Revenue equals price times units, so R equals p x. Students graph both lines in Desmos and find where they cross.",
     "chapter": "Ch. 2, Ch. 4; Part II p. 120"
   },
   {
-    "n": 11,
+    "n": 15,
     "id": "s11",
     "art": "s11",
-    "title": "Idea 3: Assess writing quickly",
+    "title": "Assess writing quickly",
     "kicker": "Idea 3",
     "idea": 3,
     "kind": "idea",
@@ -188,44 +289,89 @@
     "chapter": "Ch. 1 to 5 tips"
   },
   {
-    "n": 12,
+    "n": 16,
     "id": "s12",
     "art": "s12",
-    "title": "Idea 3: Put Into Practice",
+    "title": "Idea 3 in practice",
     "kicker": "Put Into Practice",
     "idea": 3,
     "kind": "practice",
-    "guide": "Same content, but students explain it to someone who needs it.",
+    "guide": "Same content, explained to somebody who needs it.",
     "bullets": [
       "Math: break-even in Desmos",
       "Biology: Galapagos executive summary (Ch. 3)",
       "E&SS: AirNow data + BIRAC pitch",
       "Physics: lab report as an engineer's memo"
     ],
-    "narration": "Here's idea three in practice. In a middle school math class, the break-even analysis gives students a real reason to write and graph linear equations. In a biology class, the Galapagos executive summary turns natural selection and biodiversity into a funding argument. In my Earth and space air quality unit, students could pull real readings from the EPA's AirNow site, write them up using the numeracy rules, and present a BIRAC summary to a local audience, maybe the school board, on how to protect students on poor air days. And in my physics class, a lab report written as an engineer's memo to a client is still a lab report. It just has an audience now. That's the shift: the same content, but students have to explain it to someone who needs it.",
+    "narration": "Here's idea three in practice. In a middle school math class, the break-even analysis gives students an actual reason to write and graph linear equations. In a biology class, the Galapagos executive summary turns natural selection and biodiversity into a funding argument. In my Earth and space air quality unit, students could pull real readings from the EPA's AirNow site and write them up using the numeracy rules. Then they'd present a BIRAC summary to a local audience, maybe the school board, on how to protect students on poor air days. And in my physics class, a lab report written as an engineer's memo to a client is still a lab report. It just has an audience now. The content doesn't change. Students just have to explain it to somebody who needs it.",
     "chapter": "Ch. 2, Ch. 3; AirNow"
   },
   {
-    "n": 13,
+    "n": 17,
+    "id": "r6i",
+    "art": "r6i",
+    "title": "Invented creature, evidence-based explanation",
+    "kicker": "Idea 3",
+    "idea": 3,
+    "kind": "practice",
+    "guide": "Defend the design with habitat evidence.",
+    "bullets": [
+      "Student-created marine torguana",
+      "Explain adaptations using habitat evidence",
+      "Pitch a protection plan"
+    ],
+    "narration": "This is a student-created marine torguana from the Galapagos Unit. The creature is made up, but students have to tie their design to the island's real habitat. Their explorers' journal covers the habitat, animal facts, and theories about why the species is disappearing. Then they pitch a protection plan. I'd ask students to defend one feature of their creature with evidence about its environment. The drawing is a fun way in. The explanation is where I find out whether the science holds up.",
+    "chapter": "Wolpert-Gawron, 2016, pp. 64-66",
+    "onArt": true,
+    "figure": {
+      "src": "figure.webp",
+      "x": 980,
+      "y": 120,
+      "w": 860,
+      "h": 860
+    }
+  },
+  {
+    "n": 18,
     "id": "s13",
     "art": "s13",
     "title": "Idea 4: Teach them to be teachers",
     "kicker": "Idea 4",
     "idea": 4,
     "kind": "idea",
-    "guide": "Students write assessments, not just take them.",
+    "guide": "Students write the tests too.",
     "bullets": [
       "\"Teaching is the highest form of understanding.\" (Ch. 5, p. 89)",
       "Costa's Levels: Input, Process, Output"
     ],
-    "narration": "Idea four: teach them to be teachers. The final unit in the book is called Teach Them to Be Teachers, and it's built on a line she credits to Aristotle: teaching is the highest form of understanding. Students pick a topic they know and love, teach it to the class with a lesson plan and an activity, and then write a persuasive letter to an administrator pitching it as a new elective. But the deeper move happens all through the book: students learn to write assessments, not just take them. She teaches them Costa's Levels of Questioning. Level one is input: recall, define, list. Level two is process: compare, infer, sequence. Level three is output: predict, hypothesize, evaluate, create. She makes it physical with a two-pound weight, a twenty-five-pound weight, and a hundred-pound barbell she can't actually lift. Each level is a harder workout for the brain.",
+    "narration": "Idea four: teach them to be teachers. The last unit in the book is called Teach Them to Be Teachers. It's built on a line she credits to Aristotle: teaching is the highest form of understanding. Students pick a topic they know and love, teach it to the class with a lesson plan and an activity, and then write a persuasive letter to an administrator, pitching it as a new elective. There's a bigger thread running through the whole book, though. Students learn to write assessments, and not only take them. She teaches them Costa's Levels of Questioning. Level one is input: recall, define, list. Level two is process: compare, infer, sequence. Level three is output: predict, hypothesize, evaluate, create. Costa's levels also give me a quick check on my own tests. If every question on my unit test is level one, I'm only testing whether students memorized, not whether they understand. She makes it physical with a two-pound weight, a twenty-five-pound weight, and a hundred-pound barbell she can't actually lift. Each level is a harder workout for the brain.",
     "chapter": "Ch. 5, pp. 89 to 97"
   },
   {
-    "n": 14,
+    "n": 19,
+    "id": "r6d",
+    "art": "r6d",
+    "title": "What would those questions sound like?",
+    "kicker": "Idea 4",
+    "idea": 4,
+    "kind": "idea",
+    "guide": "Costa's levels, made concrete.",
+    "bullets": [
+      "Book example: Shakespeare's seven ages. Agree or disagree? Why? (p. 97)",
+      "My physics adaptation:",
+      "Level 1: Define coefficient of friction.",
+      "Level 2: Compare friction-force versus normal-force graphs.",
+      "Level 3: Design a fair test of contact area."
+    ],
+    "narration": "Let me show what those question levels actually sound like. The book asks whether you agree with Shakespeare that people have seven ages in their lifetime, and why. That's one of her level three examples. Here's how I'd turn the framework into friction questions. Level one asks what the coefficient of friction means. Level two has students compare two force graphs and explain what the slopes tell us. Level three asks them to design a fair test of whether contact area changes sliding friction. Those physics questions are mine, by the way. I'd check the questions students write before they hand them to classmates.",
+    "chapter": "Wolpert-Gawron, 2016, p. 97. Physics questions: my adaptation.",
+    "onArt": true
+  },
+  {
+    "n": 20,
     "id": "s14",
     "art": "s14",
-    "title": "Idea 4: Students write the tests",
+    "title": "Students write the tests",
     "kicker": "Idea 4",
     "idea": 4,
     "kind": "idea",
@@ -240,10 +386,61 @@
     "chapter": "Ch. 1, Ch. 4, Ch. 5"
   },
   {
-    "n": 15,
+    "n": 21,
+    "id": "r6e",
+    "art": "r6e",
+    "title": "Students put the rubric into their own words",
+    "kicker": "Idea 4",
+    "idea": 4,
+    "kind": "idea",
+    "guide": "Able to Teach is the top score.",
+    "bullets": [
+      "Actual student-created rubric",
+      "Highest level: \"Able to Teach\"",
+      "\"Great evidence, quotes\"",
+      "\"Every piece of the prompt is included clearly\""
+    ],
+    "narration": "This is a student-created rubric from the book. At the top, the students wrote, \"Able to Teach.\" One descriptor says, \"Great evidence, quotes.\" Another says, \"Every piece of the prompt is included clearly.\" They know what those words mean because they helped write them. For a physics explanation, I'd ask the class what convincing evidence looks like. We'd still need accurate physics and clear criteria. Students could help put those expectations into words they'd actually use when they're reviewing a partner's work.",
+    "chapter": "Wolpert-Gawron, 2016, pp. 98-101",
+    "onArt": true,
+    "figure": {
+      "src": "figure.webp",
+      "x": 960,
+      "y": 160,
+      "w": 880,
+      "h": 780
+    }
+  },
+  {
+    "n": 22,
+    "id": "r6f",
+    "art": "r6f",
+    "title": "A real collaboration constitution",
+    "kicker": "Idea 4",
+    "idea": 4,
+    "kind": "idea",
+    "guide": "Agree on language before you need it.",
+    "bullets": [
+      "Agree on communication and responsibilities",
+      "Write a way to address nonparticipation",
+      "Set realistic expectations for this class"
+    ],
+    "narration": "The collaboration constitution makes a lot more sense once you see what students actually wrote. This team agreed to answer messages within three hours and to talk through problems before asking the teacher to step in. I wouldn't copy that three-hour deadline into my class. My students have different responsibilities and different access at home, so I'd have them agree on something realistic. The assignment also asks them to write a sentence they can use when somebody isn't participating. That way they have the words for an awkward conversation before they need them.",
+    "chapter": "Wolpert-Gawron, 2016, p. 85, p. 123",
+    "onArt": true,
+    "figure": {
+      "src": "figure.webp",
+      "x": 1000,
+      "y": 60,
+      "w": 820,
+      "h": 960
+    }
+  },
+  {
+    "n": 23,
     "id": "s15",
     "art": "s15",
-    "title": "Idea 4: Put Into Practice",
+    "title": "Idea 4 in practice",
     "kicker": "Put Into Practice",
     "idea": 4,
     "kind": "practice",
@@ -253,18 +450,18 @@
       "Math: explain it so a peer can solve the next one",
       "Physics: each lab group teaches one concept"
     ],
-    "narration": "Here's how idea four travels. In an ELA or history class, students can teach a short lesson on a skill and score their own classmates' quizzes, which is real data analysis. In a math class, the \"Able to Teach\" rubric level could mean a student explains a solution well enough that a peer can solve the next problem. In my physics class, I'd have each lab group teach one concept, say friction, momentum, or energy transfer, to the rest of the class, and write a three-question quiz with one question at each Costa level. I'd also borrow the backchannel. My quieter students often have the best questions, and a shared doc gives them a voice without having to raise a hand.",
+    "narration": "Here's idea four in other classrooms. In an ELA or history class, students can teach a short lesson on a skill and score their own classmates' quizzes, which is real data analysis. In a math class, the \"Able to Teach\" level could mean a student explains a solution well enough that a classmate can solve the next problem. In my physics class, I'd have each lab group teach one concept to the rest of the class. Say friction, momentum, or energy transfer. They'd write a three-question quiz, with one question at each Costa level. I'd also borrow the backchannel. My quieter students often have the best questions, and a shared doc gives them a voice without having to raise a hand.",
     "chapter": "Ch. 1, Ch. 5"
   },
   {
-    "n": 16,
+    "n": 24,
     "id": "s16",
     "art": "s16",
-    "title": "A critical lens",
+    "title": "Where I'd push back",
     "kicker": "Critique",
     "idea": null,
     "kind": "critique",
-    "guide": "In PBL, the teacher's job shifts, but it does not disappear.",
+    "guide": "PBL changes the teacher's job. The teacher still teaches.",
     "bullets": [
       "Some 2016 tools are gone (e.g., TodaysMeet)",
       "Keep variety, drop learning-style labels",
@@ -275,10 +472,35 @@
     "chapter": "Ch. 1, Ch. 5; Pashler et al. 2008"
   },
   {
-    "n": 17,
+    "n": 25,
+    "id": "r6j",
+    "art": "r6j",
+    "title": "A student sample can still need revision",
+    "kicker": "Critique",
+    "idea": null,
+    "kind": "critique",
+    "guide": "Credit the audience choice; still verify the science.",
+    "bullets": [
+      "Fictional patient report",
+      "Thoughtful audience choice: recommend a second opinion",
+      "Verify the scientific claims"
+    ],
+    "narration": "This is a good example of why that content check matters. In the fictional patient report, the student recommends a second opinion. That's a smart choice for the audience. Elsewhere, though, the report makes claims about brain structure I'd want students to go verify. I'd use it as a revision example. We can give the student credit for those communication choices and still ask whether the evidence supports the science.",
+    "chapter": "Wolpert-Gawron, 2016, pp. 28-30",
+    "onArt": true,
+    "figure": {
+      "src": "figure.webp",
+      "x": 1000,
+      "y": 70,
+      "w": 820,
+      "h": 940
+    }
+  },
+  {
+    "n": 26,
     "id": "s17",
-    "art": "s17",
-    "title": "Key terms at a glance",
+    "art": "keyterms",
+    "title": "Key terms",
     "kicker": "Key terms",
     "idea": null,
     "kind": "terms",
@@ -296,7 +518,7 @@
     "narration": "Here are the book's key terms in one place. A driving question is the real-world problem that anchors the whole unit. An entry event hooks students into it. An authentic audience is someone outside the teacher who needs the answer. Backplanning means setting the final date first and working backward on the pacing checklist. A problem statement is a short, researched case that a problem is real. BIRAC is the five-part outline for an executive summary. Costa's Levels of Questioning sort questions into input, process, and output. And 'Able to Teach This Topic' is the top rubric score: a student understands it well enough to teach it."
   },
   {
-    "n": 18,
+    "n": 27,
     "id": "s18",
     "art": "s17",
     "title": "Conclude with direction",
@@ -310,12 +532,12 @@
       "3. Communication is the content",
       "4. Teach them to be teachers"
     ],
-    "narration": "So here's what I hope you take away. One: PBL is a unit, not a project, so build the whole story around a real problem. Two: design toward what you and your students love, then backplan to the standards and fill the gaps, with a checklist that makes the journey visible. Three: in STEM, communication is the content, so give students real genres and real audiences, and use quick feedback tools so you're not buried. Four: teach students to be teachers, by having them write the questions, the rubrics, and the lessons."
+    "narration": "So, four things to take with you. One, PBL is a unit, not a project, so build the whole story around a real problem. Two, design toward what you and your students love, then backplan to the standards and fill the gaps, with a checklist that shows everyone where the unit's headed. Three, in STEM, communication is the content. Give students real genres and real audiences, and use quick feedback tools so you don't get buried. Four, teach students to be teachers, by having them write the questions, the rubrics, and the lessons."
   },
   {
-    "n": 19,
+    "n": 28,
     "id": "s19",
-    "art": "s17",
+    "art": "discussion",
     "title": "Discussion questions",
     "kicker": "Discuss",
     "idea": null,
@@ -323,58 +545,74 @@
     "guide": "Apply an idea from the video to your classroom.",
     "bullets": [],
     "questions": [
-      "In the video, Wolpert-Gawron's planning order (design toward what you love, then look back at the standards, then fill the gaps) was compared with backward design. Choose a unit you will teach. Which order would you plan it in, and what would you put in the empty rows of your pacing checklist to keep it flexible? Explain how your choice connects to an idea from the presentation.",
+      "In the video, Wolpert-Gawron's planning order (design toward what you love, then look back at the standards, then fill the gaps) was compared with backward design. Choose a unit you will teach. Which order would you plan it in, and what would you put in the empty rows of your pacing checklist to keep it flexible? Explain how your choice connects to an idea from the presentation. Refer to one assignment shown in the actual Invention Unit checklist.",
       "The presentation shared five ways to assess writing quickly and argued that in STEM, communication is the content. Pick one real-world genre from the video (problem statement, executive summary with BIRAC, business letter, or lab report) and describe how you would use it in your subject. Which feedback tip would you pair it with, and how does that tip shift who does the work?",
-      "The book insists that the top level of a rubric be called \"Able to Teach This Topic.\" In addition to the approaches in the presentation (student-created quizzes, student-translated rubrics, backchanneling), what other way could students in your classroom prove they can teach a concept? What evidence would convince you, and what is one risk of the approach?"
+      "The book insists that the top level of a rubric be called \"Able to Teach This Topic.\" In addition to the approaches in the presentation (student-created quizzes, student-translated rubrics, backchanneling), what other way could students in your classroom prove they can teach a concept? What evidence would convince you, and what is one risk of the approach? Compare your proposal with one descriptor in the student-created rubric shown in the video."
     ],
-    "narration": "Here are my three discussion questions. Each one asks you to take an idea from this video into your own classroom. First, planning order and the empty rows of the checklist. Second, a real-world genre paired with a feedback tip. Third, other ways students can prove they're able to teach. Thanks for watching.",
+    "narration": "Here are my three discussion questions. Each one asks you to take an idea from this video into your own classroom. First, planning order, and the empty rows of the checklist. Second, a real-world genre paired with a feedback tip. Third, other ways students can prove they're able to teach. Thanks for watching.",
     "hold_after": 20
   },
   {
-    "n": 20,
+    "n": 29,
     "id": "s20",
     "art": "s18",
-    "title": "Resources",
+    "title": "References",
     "kicker": "Resources",
     "idea": null,
     "kind": "resources",
-    "guide": "Full APA list and tools.",
+    "guide": "APA references from the talk.",
     "bullets": [],
+    "resHeading": "References",
     "resources": [
       {
-        "html": "Wolpert-Gawron, H. (2016). <i>DIY project based learning for math and science</i>. Routledge. https://doi.org/10.4324/9781315709598"
-      },
-      {
-        "html": "Routledge. (n.d.). <i>DIY project based learning for math and science: Free eResources</i>. https://www.routledge.com/9781138891609"
-      },
-      {
         "html": "Juliani, A. J. (2014). <i>Inquiry and innovation in the classroom: Using 20% time, genius hour, and PBL to drive student success</i>. Routledge."
-      },
-      {
-        "html": "Wolpert-Gawron, H. (2011). <i>'Tween crayons and curfews: Tips for middle school teachers</i>. Eye on Education."
       },
       {
         "html": "Larmer, J., Mergendoller, J., & Boss, S. (2015). <i>Setting the standard for project based learning</i>. ASCD."
       },
       {
+        "html": "Pashler, H., McDaniel, M., Rohrer, D., & Bjork, R. (2008). Learning styles: Concepts and evidence. <i>Psychological Science in the Public Interest, 9</i>(3), 105-119. https://doi.org/10.1111/j.1539-6053.2009.01038.x"
+      },
+      {
         "html": "PBLWorks. (n.d.). <i>Gold standard PBL: Essential project design elements</i>. https://www.pblworks.org/what-is-pbl/gold-standard-project-design"
+      },
+      {
+        "html": "Routledge. (n.d.). <i>DIY project based learning for math and science: Free eResources</i>. https://www.routledge.com/9781138891609"
       },
       {
         "html": "Wiggins, G., & McTighe, J. (2005). <i>Understanding by design</i> (Expanded 2nd ed.). ASCD."
       },
       {
-        "html": "Pashler, H., McDaniel, M., Rohrer, D., & Bjork, R. (2008). Learning styles: Concepts and evidence. <i>Psychological Science in the Public Interest, 9</i>(3), 105-119. https://doi.org/10.1111/j.1539-6053.2009.01038.x"
+        "html": "Wolpert-Gawron, H. (2011). <i>'Tween crayons and curfews: Tips for middle school teachers</i>. Eye on Education."
+      },
+      {
+        "html": "Wolpert-Gawron, H. (2016). <i>DIY project based learning for math and science</i>. Routledge. https://doi.org/10.4324/9781315709598"
+      }
+    ],
+    "narration": "The book, its free printable resources, and everything else I mentioned are listed here, and in the materials I've shared with this video."
+  },
+  {
+    "n": 30,
+    "id": "s21",
+    "art": "s18",
+    "title": "Tools",
+    "kicker": "Resources",
+    "idea": null,
+    "kind": "resources",
+    "guide": "Free tools named in the talk.",
+    "bullets": [],
+    "resHeading": "Tools",
+    "resources": [
+      {
+        "html": "Desmos. (n.d.). <i>Graphing calculator</i>. https://www.desmos.com/calculator"
       },
       {
         "html": "PhET Interactive Simulations. (n.d.). <i>Energy skate park</i>. University of Colorado Boulder. https://phet.colorado.edu/en/simulations/energy-skate-park"
       },
       {
         "html": "U.S. Environmental Protection Agency. (n.d.). <i>AirNow</i>. https://www.airnow.gov/"
-      },
-      {
-        "html": "Desmos. (n.d.). <i>Graphing calculator</i>. https://www.desmos.com/calculator"
       }
     ],
-    "narration": "The book, its free printable resources, and everything else I referenced are listed here and in the materials I've shared with this video."
+    "narration": "And the free tools I named along the way: PhET Energy Skate Park, AirNow, and the Desmos graphing calculator."
   }
 ]

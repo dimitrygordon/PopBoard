@@ -9,7 +9,7 @@
       "hold_after": null
     },
     "2": {
-      "text": "Wolpert-Gawron opens with a comparison I can't shake. At Disneyland, the story of a ride starts the second you step into line. The walls, the ceiling, even the ground all build toward the ride. At Six Flags, she jokes, the décor needs some serious work. She admits she used to teach with disconnected daily lessons, each one teaching a skill, but never adding up to a story. Project Based Learning, or PBL, is the Disneyland version. Every lesson lives inside one story about a problem that has to get solved. So hang onto this. Is your current unit a line, or is it a story?",
+      "text": "Wolpert-Gawron opens with a comparison I can't shake. At Disneyland, the story of a ride starts the second you step into line. The walls, the ceiling, even the ground all build toward the ride. At Six Flags, she jokes, the d\u00e9cor needs some serious work. She admits she used to teach with disconnected daily lessons, each one teaching a skill, but never adding up to a story. Project Based Learning, or PBL, is the Disneyland version. Every lesson lives inside one story about a problem that has to get solved. So hang onto this. Is your current unit a line, or is it a story?",
       "audio": null,
       "words": 124,
       "hold_after": null
@@ -122,5 +122,7 @@
       "words": 23,
       "hold_after": null
     }
-  }
+  },
+  "pageCount": 30,
+  "totalWords": 3398
 }

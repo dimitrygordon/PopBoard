@@ -141,3 +141,15 @@ test("probeArtBgs rejects soft-404 HTML even when status is 200", async (t) => {
   assert.equal(map.s02, undefined, "soft-404 HTML must not select bg_v6 for s02");
   server.close();
 });
+
+
+test("round 6 figure cards and cream bgs are real webps in repo", () => {
+  for (const id of ["r6a","r6b","r6c","r6e","r6f","r6h","r6i","r6j"]) {
+    assert.ok(existsSync(join(ART, id, "bg.webp")), `missing ${id}/bg.webp`);
+    assert.ok(existsSync(join(ART, id, "figure.webp")), `missing ${id}/figure.webp`);
+    const buf = readFileSync(join(ART, id, "figure.webp"));
+    assert.equal(buf.toString("ascii", 0, 4), "RIFF");
+    assert.equal(buf.toString("ascii", 8, 12), "WEBP");
+  }
+  assert.ok(existsSync(join(ART, "r6d", "bg.webp")));
+});
