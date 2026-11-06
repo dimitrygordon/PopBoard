@@ -28,10 +28,10 @@ export const SLIDES = [
     "kind": "engage",
     "guide": "Is your current unit a line, or a story?",
     "bullets": [
-      "A themed queue vs. a metal maze",
+      "Disneyland vs. Six Flags: the story starts in line",
       "Build the unit like a story."
     ],
-    "narration": "Wolpert-Gawron opens with a comparison I can't shake. At Disneyland, the story of a ride starts the second you step into line. The walls, the ceiling, even the ground all build toward the ride. At a lot of other parks, you wait in a metal maze, and then you ride. She says most of our teaching is the metal maze. Disconnected daily lessons that each teach a skill, but never add up to a story. Project Based Learning, or PBL, is the Disneyland version. Every lesson lives inside one story about a problem that has to get solved. So hang onto this. Is your current unit a line, or is it a story?",
+    "narration": "Wolpert-Gawron opens with a comparison I can't shake. At Disneyland, the story of a ride starts the second you step into line. The walls, the ceiling, even the ground all build toward the ride. At Six Flags, she jokes, the décor needs some serious work. She admits she used to teach with disconnected daily lessons, each one teaching a skill, but never adding up to a story. Project Based Learning, or PBL, is the Disneyland version. Every lesson lives inside one story about a problem that has to get solved. So hang onto this. Is your current unit a line, or is it a story?",
     "chapter": "Introduction, p. 3"
   },
   {
@@ -82,7 +82,7 @@ export const SLIDES = [
       "Middle school: Invention Unit (Ch. 2)",
       "HS Physics: Can your coaster carry a marble through a loop without falling off at the top?"
     ],
-    "narration": "Here's what idea one looks like across classrooms. The author borrows an elementary roller coaster unit from teachers Emily Cruz and Melanie Valencia. Kids build coasters out of foam tubing, marbles, and tape. A hill, then a curve, then a loop, recording why each trial worked or failed. In a middle school Invention Unit, kids find an everyday problem at home and pitch a fix. In my own high school physics class, I'd turn that coaster into an energy unit. The driving question might be: can your coaster carry a marble through a loop without falling off at the top? Students predict, build, film their trials in slow motion on a phone, and revise. The final pitch goes to a \"park safety board\" made up of other teachers. It's the same skills an energy worksheet covers. The difference is that somebody's waiting on the answer.",
+    "narration": "Here's what idea one looks like across classrooms. The author borrows an elementary roller coaster unit from teachers Emily Cruz and Melanie Valencia. Kids build coasters out of foam tubing, marbles, and tape. A curve, a hill, then a loop, recording why each trial worked or failed. In a middle school Invention Unit, kids find an everyday problem at home and pitch a fix. In my own high school physics class, I'd turn that coaster into an energy unit. The driving question might be: can your coaster carry a marble through a loop without falling off at the top? Students predict in PhET's Energy Skate Park, then build, film their trials in slow motion on a phone, and revise. The final pitch goes to a \"park safety board\" made up of other teachers. It's the same skills an energy worksheet covers. The difference is that somebody's waiting on the answer.",
     "chapter": "Ch. 2, Ch. 4"
   },
   {
@@ -100,7 +100,7 @@ export const SLIDES = [
       "3. Fill in the gaps"
     ],
     "narration": "Idea two: design toward what you love, then backplan to the standards. The author admits she doesn't start with the standards. She calls standards-first planning, in her words, \"a stinky model.\" Instead, she uses three steps. One, design toward what you love, meaning your interests and the interests of the age group you teach. Two, look back at the standards. Three, fill in the gaps. Her reasoning is that enthusiasm is \"trickle down.\" If the teacher's bored, the kids will be too. She calls this a teacher's maker movement. Students make products, so teachers should get to make curriculum. And when one teacher can't hit every standard, she says find a cross-curricular partner. The Galapagos unit came out of her working with a seventh grade science teacher.",
-    "chapter": "Introduction, pp. 7-8"
+    "chapter": "Introduction, pp. 6-8"
   },
   {
     "n": 7,
@@ -129,12 +129,12 @@ export const SLIDES = [
     "kind": "idea",
     "guide": "Hook first. Check the standards before day one.",
     "bullets": [
-      "Passion first vs. backward design",
+      "“Call me bass-ackward…” (p. 7)",
       "Steps 2 and 3 are the backward design",
       "E&SS example: an air quality unit",
       "Backward design: Wiggins & McTighe (2005)"
     ],
-    "narration": "Let me push on this a little. In our coursework we've been studying backward design. You start with the learning goals and the evidence of learning, before any activities. At first, Wolpert-Gawron's approach sounds like the exact opposite. Look closer, though. Her steps two and three are backward design. She just puts the hook first. So there's a real tension here. Starting from passion can get kids hooked on a unit. But if you never get to step three, you end up with a fun project that misses the standards. For my Earth and space class, I'm drafting an air quality unit. I'd start with what hooks my students, the air in their own town. Then I'd check it against the standards and fill the holes before day one.",
+    "narration": "Let me push on this a little. In our coursework we've been studying backward design. You start with the learning goals and the evidence of learning, before any activities. She even owns it: 'Call me bass-ackward, but I don't design projects around the Common Core Standards.' So at first, her approach sounds like the exact opposite. Look closer, though. Her steps two and three are backward design. She just puts the hook first. So there's a real tension here. Starting from passion can get kids hooked on a unit. But if you never get to step three, you end up with a fun project that misses the standards. For my Earth and space class, I'm drafting an air quality unit. I'd start with what hooks my students, the air in their own town. Then I'd check it against the standards and fill the holes before day one.",
     "chapter": "Introduction; E&SS application"
   },
   {
@@ -186,7 +186,7 @@ export const SLIDES = [
       "4. Comment rather than correct",
       "5. Peers give first feedback"
     ],
-    "narration": "If every STEM teacher assigns writing, somebody has to grade it. So each unit ends with a tip on assessing writing quickly. Tip one: focus your feedback on one skill at a time, instead of what she calls a \"bloody explosion of red pen.\" Tip two: use an oral feedback sheet. You conference with the student, and the student takes the notes, because, as she asks, isn't the one doing the work the one doing the learning? Tip three: use a key of feedback symbols instead of writing out full sentences. Tip four: comment rather than correct. Instead of fixing errors, tell the student, \"I see three equations in your lab that don't add up,\" and let them hunt. Tip five: train students to give each other the first round of feedback, before the work ever gets to you. Here's how I'd use tip four in physics. Instead of circling a wrong sign on an acceleration, I'd write, \"One of your forces points the wrong way,\" and let the student find it. They do the thinking, and I spend less time grading.",
+    "narration": "If every STEM teacher assigns writing, somebody has to grade it. So each unit ends with a tip on assessing writing quickly. Tip one: focus your feedback on one skill at a time, instead of what she calls a \"bloody explosion of red pen.\" Tip two: use an oral feedback sheet. You conference with the student, and the student takes the notes, because, as she asks, isn't the one doing the work the one doing the learning? Tip three: use a key of feedback symbols instead of writing out full sentences. Tip four: comment rather than correct. Instead of fixing errors, tell the student, \"In your math assignment, I see three equations that do not add up,\" and let them hunt. Tip five: train students to give each other the first round of feedback, before the work ever gets to you. Here's how I'd use tip four in physics. Instead of circling a wrong sign on an acceleration, I'd write, \"One of your forces points the wrong way,\" and let the student find it. They do the thinking, and I spend less time grading.",
     "chapter": "Ch. 1 to 5 tips"
   },
   {
@@ -238,7 +238,7 @@ export const SLIDES = [
       "Backchannel: grade the questions (p. 103)",
       "Collaboration constitution: peers grade only on rules they wrote (Ch. 4)"
     ],
-    "narration": "She uses three tools for this. First, the student-created assessment. In the Genius Unit, each student reads one article and builds a ten-question quiz in Google Forms for their classmates, mixing up question levels and formats. Second, the student-created rubric. Students translate the district rubric into their own words, and the author insists on one thing. The top score is called \"Able to Teach This Topic.\" Third, the backchannel. While a classmate presents, the audience types questions into a shared Google Doc in real time. Here's the twist. The author grades the audience on their questions, counting how many are level two or level three. She also has student teams write a collaboration constitution, a group contract, at the start of a unit. At the end, they can only grade each other on rules they wrote into it.",
+    "narration": "She uses four tools for this. First, the student-created assessment. In the Genius Unit, each student reads one article and builds a ten-question quiz in Google Forms for their classmates, mixing up question levels and formats. Second, the student-created rubric. Students translate the district rubric into their own words, and the author insists on one thing. The top score is called \"Able to Teach This Topic.\" Third, the backchannel. While a classmate presents, the audience types questions into a shared Google Doc in real time. Here's the twist. The author grades the audience on their questions, counting how many are level two or level three. She also has student teams write a collaboration constitution, a group contract, at the start of a unit. At the end, they can only grade each other on rules they wrote into it.",
     "chapter": "Ch. 1, Ch. 4, Ch. 5"
   },
   {
@@ -271,7 +271,7 @@ export const SLIDES = [
       "Some 2016 tools are gone (e.g., TodaysMeet)",
       "Keep variety, drop learning-style labels",
       "Authentic work still needs a content check",
-      "Pair classroom stories with a framework (PBLWorks Gold Standard)"
+      "Pair classroom stories with a framework (PBLWorks Gold Standard; Larmer et al., 2015)"
     ],
     "narration": "Now for where I'd push back. This book came out in 2016, and some of its tools are gone. TodaysMeet, the backchannel site she uses, shut down years ago. So treat the tools as examples, and swap in whatever your school uses, like a shared Google Doc or a Canvas discussion. Second, the Teach Them to Be Teachers unit uses a multiple intelligences quiz and mentions learning styles. Research by Pashler and colleagues found little evidence that matching instruction to learning styles improves learning. So I'd keep the variety of activities and drop the labels. Third, look at the Genius Unit's student lab reports. They're creative and well written, but some of their brain science claims are shaky. Authentic work still needs a content check. Fourth, most of the book's evidence is teacher stories and student samples, not controlled studies. That doesn't make it wrong. I'd just pair it with a more systematic framework, like the PBLWorks Gold Standard design elements, and watch my own data. If quiz scores drop during a unit, the project needs more direct instruction built in. PBL changes what the teacher does. The teacher still has to teach.",
     "chapter": "Ch. 1, Ch. 5; Pashler et al. 2008"

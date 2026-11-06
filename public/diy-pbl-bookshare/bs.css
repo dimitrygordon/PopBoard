@@ -1075,12 +1075,16 @@ body.fl-full .bs-resources-panel--compact {
   bottom: auto !important;
 }
 .bs-paper-group .bs-takeaways {
-  left: 10% !important;
+  /* Clear spiral binder rings baked into torn_page.webp (~left 12%). */
+  left: 20% !important;
   top: 12% !important;
-  width: 80% !important;
+  width: 70% !important;
   height: 78% !important;
   right: auto !important;
   bottom: auto !important;
+}
+.bs-paper-group .bs-takeaways ol {
+  padding-left: 1.55em !important;
 }
 /* Label chips: no text-shadow glow (looks pasted) */
 .bs-surface--label,

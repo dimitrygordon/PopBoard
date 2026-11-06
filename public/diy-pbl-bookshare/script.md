@@ -21,9 +21,9 @@ Hi everyone, I'm Dimitry. My Book Share is DIY Project Based Learning for Math a
 
 ## Slide 2: A line or a story?
 
-**Words:** 113  |  **Est. @ 150 wpm:** 0:45
+**Words:** 105  |  **Est. @ 150 wpm:** 0:42
 
-Wolpert-Gawron opens with a comparison I can't shake. At Disneyland, the story of a ride starts the second you step into line. The walls, the ceiling, even the ground all build toward the ride. At a lot of other parks, you wait in a metal maze, and then you ride. She says most of our teaching is the metal maze. Disconnected daily lessons that each teach a skill, but never add up to a story. Project Based Learning, or PBL, is the Disneyland version. Every lesson lives inside one story about a problem that has to get solved. So hang onto this. Is your current unit a line, or is it a story?
+Wolpert-Gawron opens with a comparison I can't shake. At Disneyland, the story of a ride starts the second you step into line. The walls, the ceiling, even the ground all build toward the ride. At Six Flags, she jokes, the décor needs some serious work. She admits she used to teach with disconnected daily lessons, each one teaching a skill, but never adding up to a story. Project Based Learning, or PBL, is the Disneyland version. Every lesson lives inside one story about a problem that has to get solved. So hang onto this. Is your current unit a line, or is it a story?
 
 ---
 
@@ -45,9 +45,9 @@ So how does she build that story? Every unit in the book uses the same moves. It
 
 ## Slide 5: Idea 1 in practice
 
-**Words:** 145  |  **Est. @ 150 wpm:** 0:58
+**Words:** 150  |  **Est. @ 150 wpm:** 1:00
 
-Here's what idea one looks like across classrooms. The author borrows an elementary roller coaster unit from teachers Emily Cruz and Melanie Valencia. Kids build coasters out of foam tubing, marbles, and tape. A hill, then a curve, then a loop, recording why each trial worked or failed. In a middle school Invention Unit, kids find an everyday problem at home and pitch a fix. In my own high school physics class, I'd turn that coaster into an energy unit. The driving question might be: can your coaster carry a marble through a loop without falling off at the top? Students predict, build, film their trials in slow motion on a phone, and revise. The final pitch goes to a "park safety board" made up of other teachers. It's the same skills an energy worksheet covers. The difference is that somebody's waiting on the answer.
+Here's what idea one looks like across classrooms. The author borrows an elementary roller coaster unit from teachers Emily Cruz and Melanie Valencia. Kids build coasters out of foam tubing, marbles, and tape. A curve, a hill, then a loop, recording why each trial worked or failed. In a middle school Invention Unit, kids find an everyday problem at home and pitch a fix. In my own high school physics class, I'd turn that coaster into an energy unit. The driving question might be: can your coaster carry a marble through a loop without falling off at the top? Students predict in PhET's Energy Skate Park, then build, film their trials in slow motion on a phone, and revise. The final pitch goes to a "park safety board" made up of other teachers. It's the same skills an energy worksheet covers. The difference is that somebody's waiting on the answer.
 
 ---
 
@@ -69,9 +69,9 @@ The checklist keeps all this from turning into chaos. Every unit starts with a p
 
 ## Slide 8: Passion first vs. backward design
 
-**Words:** 129  |  **Est. @ 150 wpm:** 0:52
+**Words:** 147  |  **Est. @ 150 wpm:** 0:59
 
-Let me push on this a little. In our coursework we've been studying backward design. You start with the learning goals and the evidence of learning, before any activities. At first, Wolpert-Gawron's approach sounds like the exact opposite. Look closer, though. Her steps two and three are backward design. She just puts the hook first. So there's a real tension here. Starting from passion can get kids hooked on a unit. But if you never get to step three, you end up with a fun project that misses the standards. For my Earth and space class, I'm drafting an air quality unit. I'd start with what hooks my students, the air in their own town. Then I'd check it against the standards and fill the holes before day one.
+Let me push on this a little. In our coursework we've been studying backward design. You start with the learning goals and the evidence of learning, before any activities. She even owns it: 'Call me bass-ackward, but I don't design projects around the Common Core Standards.' So at first, her approach sounds like the exact opposite. Look closer, though. Her steps two and three are backward design. She just puts the hook first. So there's a real tension here. Starting from passion can get kids hooked on a unit. But if you never get to step three, you end up with a fun project that misses the standards. For my Earth and space class, I'm drafting an air quality unit. I'd start with what hooks my students, the air in their own town. Then I'd check it against the standards and fill the holes before day one.
 
 ---
 
@@ -93,9 +93,9 @@ Two tools from this idea are worth stealing. The first is writing with numeracy.
 
 ## Slide 11: Assess writing quickly
 
-**Words:** 182  |  **Est. @ 150 wpm:** 1:13
+**Words:** 184  |  **Est. @ 150 wpm:** 1:14
 
-If every STEM teacher assigns writing, somebody has to grade it. So each unit ends with a tip on assessing writing quickly. Tip one: focus your feedback on one skill at a time, instead of what she calls a "bloody explosion of red pen." Tip two: use an oral feedback sheet. You conference with the student, and the student takes the notes, because, as she asks, isn't the one doing the work the one doing the learning? Tip three: use a key of feedback symbols instead of writing out full sentences. Tip four: comment rather than correct. Instead of fixing errors, tell the student, "I see three equations in your lab that don't add up," and let them hunt. Tip five: train students to give each other the first round of feedback, before the work ever gets to you. Here's how I'd use tip four in physics. Instead of circling a wrong sign on an acceleration, I'd write, "One of your forces points the wrong way," and let the student find it. They do the thinking, and I spend less time grading.
+If every STEM teacher assigns writing, somebody has to grade it. So each unit ends with a tip on assessing writing quickly. Tip one: focus your feedback on one skill at a time, instead of what she calls a "bloody explosion of red pen." Tip two: use an oral feedback sheet. You conference with the student, and the student takes the notes, because, as she asks, isn't the one doing the work the one doing the learning? Tip three: use a key of feedback symbols instead of writing out full sentences. Tip four: comment rather than correct. Instead of fixing errors, tell the student, "In your math assignment, I see three equations that do not add up," and let them hunt. Tip five: train students to give each other the first round of feedback, before the work ever gets to you. Here's how I'd use tip four in physics. Instead of circling a wrong sign on an acceleration, I'd write, "One of your forces points the wrong way," and let the student find it. They do the thinking, and I spend less time grading.
 
 ---
 
@@ -119,7 +119,7 @@ Idea four: teach them to be teachers. The last unit in the book is called Teach 
 
 **Words:** 138  |  **Est. @ 150 wpm:** 0:55
 
-She uses three tools for this. First, the student-created assessment. In the Genius Unit, each student reads one article and builds a ten-question quiz in Google Forms for their classmates, mixing up question levels and formats. Second, the student-created rubric. Students translate the district rubric into their own words, and the author insists on one thing. The top score is called "Able to Teach This Topic." Third, the backchannel. While a classmate presents, the audience types questions into a shared Google Doc in real time. Here's the twist. The author grades the audience on their questions, counting how many are level two or level three. She also has student teams write a collaboration constitution, a group contract, at the start of a unit. At the end, they can only grade each other on rules they wrote into it.
+She uses four tools for this. First, the student-created assessment. In the Genius Unit, each student reads one article and builds a ten-question quiz in Google Forms for their classmates, mixing up question levels and formats. Second, the student-created rubric. Students translate the district rubric into their own words, and the author insists on one thing. The top score is called "Able to Teach This Topic." Third, the backchannel. While a classmate presents, the audience types questions into a shared Google Doc in real time. Here's the twist. The author grades the audience on their questions, counting how many are level two or level three. She also has student teams write a collaboration constitution, a group contract, at the start of a unit. At the end, they can only grade each other on rules they wrote into it.
 
 ---
 

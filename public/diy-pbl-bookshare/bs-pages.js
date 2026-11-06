@@ -906,7 +906,7 @@ export const PAGES = SLIDES.map((slide) => ({
       tape.style.cssText = "position:absolute;left:40%;top:-2%;width:26%;height:12%;object-fit:fill;transform:rotate(-5deg);z-index:8;";
       group.appendChild(tape);
       const box = surface("takeaways", "bs-takeaways bs-reveal on-art");
-      box.style.cssText = "position:absolute;left:16%;top:14%;width:74%;height:72%;overflow:hidden;box-sizing:border-box;";
+      box.style.cssText = "position:absolute;left:20%;top:14%;width:70%;height:72%;overflow:hidden;box-sizing:border-box;";
       const items = (slide.bullets || []).map((b) => fx(String(b).replace(/^\d+\.\s*/, "")));
       box.innerHTML = `<h3 class="on-art-t">Takeaways</h3><ol class="on-art-b">${items.map((b) => `<li>${b}</li>`).join("")}</ol>`;
       group.appendChild(box);

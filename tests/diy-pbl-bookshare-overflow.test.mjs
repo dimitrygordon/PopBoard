@@ -546,6 +546,205 @@ test("s09 labels sit on card-body pixels (no ink / neighbour); readable size", a
   }
 });
 
+test("s18 takeaways numerals clear binder rings", async (t) => {
+  let puppeteer;
+  try {
+    puppeteer = (await import(pathToFileURL(PUPPETEER).href)).default;
+  } catch (e) {
+    t.skip("puppeteer-core not available: " + e.message);
+    return;
+  }
+  let browser;
+  try {
+    browser = await puppeteer.launch(launchOpts());
+  } catch (e) {
+    t.skip("Chrome launch failed: " + e.message);
+    return;
+  }
+  // Binder rings occupy ~left 12% of torn_page.webp; keep a margin.
+  const RING_FRAC = 0.14;
+  try {
+    const failures = [];
+    for (const vp of [
+      { name: "1280x720", width: 1280, height: 720, mobile: false },
+      { name: "1920x1080", width: 1920, height: 1080, mobile: false },
+      { name: "390x844", width: 390, height: 844, mobile: true },
+      { name: "844x390", width: 844, height: 390, mobile: true },
+    ]) {
+      const page = await browser.newPage();
+      await page.setViewport({
+        width: vp.width, height: vp.height, deviceScaleFactor: 1,
+        isMobile: !!vp.mobile, hasTouch: !!vp.mobile,
+      });
+      await page.setCacheEnabled(false);
+      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=18&full=1`, {
+        waitUntil: "networkidle0", timeout: 60000,
+      });
+      await settle(page);
+      await page.evaluate(async () => {
+        try { await document.fonts.ready; } catch {}
+        await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+      });
+      await new Promise((r) => setTimeout(r, 120));
+
+      const meta = await page.evaluate((RING_FRAC) => {
+        const scene = document.querySelector(".bs-scene");
+        const sr = scene.getBoundingClientRect();
+        const paper = document.querySelector(".bs-paper-group");
+        if (!paper) return { error: "no paper group" };
+        const pr = paper.getBoundingClientRect();
+        const ring = {
+          x0: pr.left - sr.left,
+          y0: pr.top - sr.top,
+          x1: pr.left - sr.left + pr.width * RING_FRAC,
+          y1: pr.bottom - sr.top,
+        };
+        const items = [...document.querySelectorAll(".bs-takeaways li")].map((li, i) => {
+          const liBr = li.getBoundingClientRect();
+          const range = document.createRange();
+          range.selectNodeContents(li);
+          const textBr = range.getBoundingClientRect();
+          // Marker / numeral sits left of the text content box.
+          return {
+            n: i + 1,
+            text: (li.textContent || "").trim().slice(0, 48),
+            marker: {
+              x0: Math.min(liBr.left, textBr.left) - sr.left - 2,
+              y0: liBr.top - sr.top,
+              x1: textBr.left - sr.left + 2,
+              y1: liBr.bottom - sr.top,
+            },
+            textX0: textBr.left - sr.left,
+          };
+        });
+        return { ring, items, sceneW: sr.width, sceneH: sr.height };
+      }, RING_FRAC);
+
+      if (meta.error) {
+        failures.push(`${vp.name}: ${meta.error}`);
+        await page.close();
+        continue;
+      }
+      if (meta.items.length !== 4) {
+        failures.push(`${vp.name}: expected 4 takeaways, got ${meta.items.length}`);
+      }
+
+      const sceneHandle = await page.$(".bs-scene");
+      const withBuf = Buffer.from(await sceneHandle.screenshot({ encoding: "binary" }));
+      await page.evaluate(() => {
+        document.querySelectorAll(".bs-takeaways").forEach((el) => { el.style.visibility = "hidden"; });
+      });
+      await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+      await new Promise((r) => setTimeout(r, 60));
+      const withoutBuf = Buffer.from(await sceneHandle.screenshot({ encoding: "binary" }));
+      await sceneHandle.dispose();
+
+      const report = await page.evaluate(async (withB64, withoutB64, meta) => {
+        function load(b64) {
+          return new Promise((res, rej) => {
+            const img = new Image();
+            img.onload = () => res(img);
+            img.onerror = rej;
+            img.src = "data:image/png;base64," + b64;
+          });
+        }
+        const withImg = await load(withB64);
+        const withoutImg = await load(withoutB64);
+        const canvas = document.createElement("canvas");
+        canvas.width = withImg.width; canvas.height = withImg.height;
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        ctx.drawImage(withImg, 0, 0);
+        const withData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        ctx.drawImage(withoutImg, 0, 0);
+        const withoutData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        const scene = document.querySelector(".bs-scene");
+        const sw = scene.clientWidth, sh = scene.clientHeight;
+        const sx = canvas.width / sw, sy = canvas.height / sh;
+        function idx(px, py) { return (py * canvas.width + px) * 4; }
+        function isGlyphDiff(i) {
+          const wLum = (withData[i] + withData[i + 1] + withData[i + 2]) / 3;
+          const oLum = (withoutData[i] + withoutData[i + 1] + withoutData[i + 2]) / 3;
+          return wLum < 150 && (oLum - wLum) > 30;
+        }
+        function isRingDark(i) {
+          // Spiral hole/ring metal in without-label art (dark grey/blue).
+          const r = withoutData[i], g = withoutData[i + 1], b = withoutData[i + 2];
+          const lum = (r + g + b) / 3;
+          return lum < 130;
+        }
+        const PAD = 3;
+        const out = [];
+        const ringPx = {
+          x0: Math.floor(meta.ring.x0 * sx),
+          y0: Math.floor(meta.ring.y0 * sy),
+          x1: Math.ceil(meta.ring.x1 * sx),
+          y1: Math.ceil(meta.ring.y1 * sy),
+        };
+        for (const it of meta.items) {
+          const rx0 = Math.max(0, Math.floor(it.marker.x0 * sx) - 1);
+          const ry0 = Math.max(0, Math.floor(it.marker.y0 * sy) - 1);
+          const rx1 = Math.min(canvas.width - 1, Math.ceil(it.marker.x1 * sx) + 1);
+          const ry1 = Math.min(canvas.height - 1, Math.ceil(it.marker.y1 * sy) + 1);
+          let gx0 = Infinity, gy0 = Infinity, gx1 = -1, gy1 = -1, inkN = 0;
+          for (let py = ry0; py <= ry1; py++) {
+            for (let px = rx0; px <= rx1; px++) {
+              if (isGlyphDiff(idx(px, py))) {
+                inkN++;
+                if (px < gx0) gx0 = px;
+                if (py < gy0) gy0 = py;
+                if (px > gx1) gx1 = px;
+                if (py > gy1) gy1 = py;
+              }
+            }
+          }
+          if (inkN < 4 || gx1 < gx0) {
+            out.push({ n: it.n, inkN, overlap: false, reason: "no-numeral-ink" });
+            continue;
+          }
+          const bx0 = Math.max(0, gx0 - PAD);
+          const by0 = Math.max(0, gy0 - PAD);
+          const bx1 = Math.min(canvas.width - 1, gx1 + PAD);
+          const by1 = Math.min(canvas.height - 1, gy1 + PAD);
+          // AABB overlap with ring strip
+          const aabbHit = !(bx1 < ringPx.x0 || bx0 > ringPx.x1 || by1 < ringPx.y0 || by0 > ringPx.y1);
+          let ringHits = 0;
+          if (aabbHit) {
+            const ox0 = Math.max(bx0, ringPx.x0);
+            const oy0 = Math.max(by0, ringPx.y0);
+            const ox1 = Math.min(bx1, ringPx.x1);
+            const oy1 = Math.min(by1, ringPx.y1);
+            for (let py = oy0; py <= oy1; py++) {
+              for (let px = ox0; px <= ox1; px++) {
+                if (isRingDark(idx(px, py))) ringHits++;
+              }
+            }
+          }
+          out.push({
+            n: it.n, inkN, aabbHit, ringHits,
+            glyph: { x0: gx0, y0: gy0, x1: gx1, y1: gy1 },
+            markerCss: it.marker,
+          });
+        }
+        return { out, ringPx };
+      }, withBuf.toString("base64"), withoutBuf.toString("base64"), meta);
+
+      for (const r of report.out) {
+        if (r.reason === "no-numeral-ink") {
+          failures.push(`${vp.name}: takeaway ${r.n}. no numeral glyph ink`);
+          continue;
+        }
+        if (r.aabbHit && r.ringHits > 0) {
+          failures.push(`${vp.name}: takeaway ${r.n}. numeral overlaps binder ring area (${r.ringHits} dark px)`);
+        }
+      }
+      await page.close();
+    }
+    assert.equal(failures.length, 0, failures.join("\n"));
+  } finally {
+    await browser.close();
+  }
+});
+
 test("full-view captions clear on-art cards at 1280 and 844x390", async (t) => {
   let puppeteer;
   try {
