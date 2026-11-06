@@ -7,46 +7,338 @@ let keyterms = null;
 let ready = null;
 
 const S09_FALLBACK = {
-  version: 1,
-  source: "inline-fallback",
-  size: [1920, 1080],
-  cards: [
-    { id: "lab_report", text: "Lab report", rot: -10,
-      quad: [[1135, 255], [1395, 220], [1425, 395], [1165, 430]] },
-    { id: "business_letter", text: "Business letter", rot: -16,
-      quad: [[1110, 530], [1295, 495], [1340, 755], [1155, 790]] },
-    { id: "executive_summary", text: "Executive summary", rot: -4,
-      quad: [[1395, 545], [1605, 535], [1620, 770], [1410, 780]] },
-    { id: "problem_statement", text: "Problem statement", rot: 16,
-      quad: [[1575, 560], [1790, 610], [1730, 845], [1515, 795]] },
+  "canvas": [
+    1920,
+    1080
   ],
+  "cards": [
+    {
+      "label": "Lab report",
+      "quad_xy": [
+        [
+          1095,
+          165
+        ],
+        [
+          1295,
+          145
+        ],
+        [
+          1325,
+          395
+        ],
+        [
+          1120,
+          415
+        ]
+      ],
+      "center_xy": [
+        1209,
+        280
+      ],
+      "size_wh": [
+        220,
+        250
+      ],
+      "rotation_deg": -8.0,
+      "note": "white body under orange flask header"
+    },
+    {
+      "label": "Business letter",
+      "quad_xy": [
+        [
+          1005,
+          470
+        ],
+        [
+          1210,
+          505
+        ],
+        [
+          1165,
+          790
+        ],
+        [
+          960,
+          755
+        ]
+      ],
+      "center_xy": [
+        1085,
+        630
+      ],
+      "size_wh": [
+        220,
+        285
+      ],
+      "rotation_deg": -16.0,
+      "note": "white body under blue envelope header"
+    },
+    {
+      "label": "Executive summary",
+      "quad_xy": [
+        [
+          1225,
+          485
+        ],
+        [
+          1460,
+          475
+        ],
+        [
+          1480,
+          790
+        ],
+        [
+          1245,
+          800
+        ]
+      ],
+      "center_xy": [
+        1353,
+        638
+      ],
+      "size_wh": [
+        245,
+        315
+      ],
+      "rotation_deg": -2.0,
+      "note": "white body under orange wax-seal header"
+    },
+    {
+      "label": "Problem statement",
+      "quad_xy": [
+        [
+          1515,
+          490
+        ],
+        [
+          1755,
+          535
+        ],
+        [
+          1705,
+          840
+        ],
+        [
+          1465,
+          795
+        ]
+      ],
+      "center_xy": [
+        1610,
+        665
+      ],
+      "size_wh": [
+        250,
+        310
+      ],
+      "rotation_deg": 11.0,
+      "note": "white body under orange clipboard header"
+    }
+  ],
+  "source": "inline-fallback"
 };
 
 const KT_FALLBACK = {
-  version: 1,
-  source: "inline-fallback",
-  size: [1920, 1080],
-  cards: (() => {
-    const terms = [
-      "Driving question", "Entry event", "Authentic audience", "Backplanning",
-      "Problem statement", "BIRAC", "Costa's Levels", '"Able to Teach This Topic"',
-    ];
-    const rots = [-2, 1.5, -1, 2, 1, -2.5, 2, -1];
-    const boardX = 155, boardY = 210, boardW = 930, boardH = 450;
-    const gapX = 18, gapY = 28, cols = 4;
-    const cardW = Math.floor((boardW - gapX * 3) / 4);
-    const cardH = Math.floor((boardH - gapY) / 2);
-    return terms.map((term, i) => {
-      const col = i % cols, row = Math.floor(i / cols);
-      const x = boardX + col * (cardW + gapX);
-      const y = boardY + row * (cardH + gapY);
-      return {
-        id: `term_${i}`, term, x, y, w: cardW, h: cardH, rot: rots[i],
-        pin: { cx: x + cardW / 2, cy: y + 2, w: 36, h: 36 },
-        pad_top_frac: 0.08,
-      };
-    });
-  })(),
+  "canvas": [
+    1920,
+    1080
+  ],
+  "cork_board_xywh": [
+    180,
+    205,
+    900,
+    470
+  ],
+  "phone_note": "8 cards on cork interior. On 390px phone each card ~40.8px wide. Pin at top edge; text below pin. Prefer max_font_px_phone390.",
+  "cards": [
+    {
+      "index": 0,
+      "rect_xywh": [
+        200,
+        245,
+        201,
+        190
+      ],
+      "rotation_deg": -3.5,
+      "pin_xy": [
+        300,
+        241
+      ],
+      "pin_size_px": 26,
+      "text_rect_xywh": [
+        212,
+        279,
+        177,
+        142
+      ],
+      "max_font_px_desktop": 20,
+      "max_font_px_phone390": 10
+    },
+    {
+      "index": 1,
+      "rect_xywh": [
+        419,
+        245,
+        201,
+        190
+      ],
+      "rotation_deg": 2.0,
+      "pin_xy": [
+        519,
+        241
+      ],
+      "pin_size_px": 26,
+      "text_rect_xywh": [
+        431,
+        279,
+        177,
+        142
+      ],
+      "max_font_px_desktop": 20,
+      "max_font_px_phone390": 10
+    },
+    {
+      "index": 2,
+      "rect_xywh": [
+        638,
+        245,
+        201,
+        190
+      ],
+      "rotation_deg": -1.5,
+      "pin_xy": [
+        738,
+        241
+      ],
+      "pin_size_px": 26,
+      "text_rect_xywh": [
+        650,
+        279,
+        177,
+        142
+      ],
+      "max_font_px_desktop": 20,
+      "max_font_px_phone390": 10
+    },
+    {
+      "index": 3,
+      "rect_xywh": [
+        857,
+        245,
+        201,
+        190
+      ],
+      "rotation_deg": 3.0,
+      "pin_xy": [
+        957,
+        241
+      ],
+      "pin_size_px": 26,
+      "text_rect_xywh": [
+        869,
+        279,
+        177,
+        142
+      ],
+      "max_font_px_desktop": 20,
+      "max_font_px_phone390": 10
+    },
+    {
+      "index": 4,
+      "rect_xywh": [
+        200,
+        465,
+        201,
+        190
+      ],
+      "rotation_deg": 2.5,
+      "pin_xy": [
+        300,
+        461
+      ],
+      "pin_size_px": 26,
+      "text_rect_xywh": [
+        212,
+        499,
+        177,
+        142
+      ],
+      "max_font_px_desktop": 20,
+      "max_font_px_phone390": 10
+    },
+    {
+      "index": 5,
+      "rect_xywh": [
+        419,
+        465,
+        201,
+        190
+      ],
+      "rotation_deg": -2.8,
+      "pin_xy": [
+        519,
+        461
+      ],
+      "pin_size_px": 26,
+      "text_rect_xywh": [
+        431,
+        499,
+        177,
+        142
+      ],
+      "max_font_px_desktop": 20,
+      "max_font_px_phone390": 10
+    },
+    {
+      "index": 6,
+      "rect_xywh": [
+        638,
+        465,
+        201,
+        190
+      ],
+      "rotation_deg": 1.8,
+      "pin_xy": [
+        738,
+        461
+      ],
+      "pin_size_px": 26,
+      "text_rect_xywh": [
+        650,
+        499,
+        177,
+        142
+      ],
+      "max_font_px_desktop": 20,
+      "max_font_px_phone390": 10
+    },
+    {
+      "index": 7,
+      "rect_xywh": [
+        857,
+        465,
+        201,
+        190
+      ],
+      "rotation_deg": -3.2,
+      "pin_xy": [
+        957,
+        461
+      ],
+      "pin_size_px": 26,
+      "text_rect_xywh": [
+        869,
+        499,
+        177,
+        142
+      ],
+      "max_font_px_desktop": 20,
+      "max_font_px_phone390": 10
+    }
+  ],
+  "source": "inline-fallback"
 };
 
 async function fetchJson(url) {
@@ -83,7 +375,7 @@ export function keytermsCards() {
 
 export function layoutsSource() {
   return {
-    s09: (s09 || S09_FALLBACK).source || "unknown",
-    keyterms: (keyterms || KT_FALLBACK).source || "unknown",
+    s09: (s09 || S09_FALLBACK).source || "leo-json",
+    keyterms: (keyterms || KT_FALLBACK).source || "leo-json",
   };
 }

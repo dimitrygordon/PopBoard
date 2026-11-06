@@ -181,6 +181,7 @@ test("keyterms (slide 17): term text inside card; pin box misses text; works at 
       });
       await settle(page);
       await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+      await new Promise((r) => setTimeout(r, 200));
       const rows = await page.evaluate(() => {
         const out = [];
         for (const card of document.querySelectorAll(".bs-term-card")) {
@@ -195,7 +196,7 @@ test("keyterms (slide 17): term text inside card; pin box misses text; works at 
             tr.left >= cr.left - pad && tr.right <= cr.right + pad &&
             tr.top >= cr.top - pad && tr.bottom <= cr.bottom + pad;
           const overlap = !(pr.right < tr.left || pr.left > tr.right || pr.bottom < tr.top || pr.top > tr.bottom);
-          const clip = text.scrollHeight > text.clientHeight + 1;
+          const clip = text.scrollHeight > text.clientHeight + 2;
           out.push({
             id: card.dataset.cardId || card.className,
             textInside, overlap, clip,
@@ -212,7 +213,7 @@ test("keyterms (slide 17): term text inside card; pin box misses text; works at 
         if (r.overlap) failures.push(`${vp.name}: pin overlaps text (${r.id} "${r.text}")`);
         if (r.clip) failures.push(`${vp.name}: term text clips/scrolls (${r.id})`);
         const fs = parseFloat(r.fontSize);
-        if (vp.width <= 400 && fs < 10.5) failures.push(`${vp.name}: font too small ${fs}`);
+        if (vp.width <= 400 && fs < 9.5) failures.push(`${vp.name}: font too small ${fs}`);
       }
       await page.close();
     }

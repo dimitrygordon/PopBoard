@@ -1429,20 +1429,10 @@ body.fl-full .bs-paper-group .bs-apa li {
 
 
 /* --- polish: s17 term fit + s09 genre quads --- */
-.bs-term-card {
-  container-type: size;
-}
+/* Do not use container-type:size on cards: it collapses %-height to 0 in Chrome. */
 .bs-term-card .bs-term-text {
-  display: -webkit-box !important;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
   overflow: hidden !important;
-  text-overflow: ellipsis;
   max-height: 100%;
-  /* flex override from inline; keep clamp */
-  align-content: center;
-  justify-content: center;
 }
 .bs-term-card .bs-paper-pin {
   z-index: 8;
@@ -1454,4 +1444,13 @@ body.fl-full .bs-paper-group .bs-apa li {
 }
 .bs-scene .s09-genre {
   mix-blend-mode: multiply;
+}
+
+/* Absolute pin+text children: no flex padding on the card shell */
+.bs-term-card {
+  display: block !important;
+  padding: 0 !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  overflow: visible !important; /* allow pin above top edge */
 }

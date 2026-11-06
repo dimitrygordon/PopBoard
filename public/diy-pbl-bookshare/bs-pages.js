@@ -91,16 +91,19 @@ function fitCardText(el, minPx, maxPx) {
   if (!el) return;
   const box = el.getBoundingClientRect();
   if (box.height < 4 || box.width < 4) return;
-  let lo = minPx, hi = maxPx, best = minPx;
+  const prevDisplay = el.style.display;
+  // Measure as a normal block so flex centering does not inflate scrollHeight.
+  el.style.display = "block";
   el.style.whiteSpace = "normal";
-  for (let i = 0; i < 10; i++) {
+  let lo = minPx, hi = maxPx, best = minPx;
+  for (let i = 0; i < 12; i++) {
     const mid = (lo + hi) / 2;
     el.style.fontSize = mid + "px";
-    // allow wrap; treat overflow as too big
     const ok = el.scrollHeight <= box.height + 1 && el.scrollWidth <= box.width + 1;
     if (ok) { best = mid; lo = mid; } else { hi = mid; }
   }
   el.style.fontSize = best + "px";
+  el.style.display = prevDisplay || "flex";
 }
 
 function applyRect(el, x, y, w, h, rot) {
@@ -191,20 +194,24 @@ function buildS08(root, T) {
 }
 
 function buildS09(root, T) {
-  // Labels from art/s09/cards.json quads (TL,TR,BR,BL). Centered + rotated with each card.
+  // Leo art/s09/cards.json: quad_xy TL,TR,BR,BL + rotation_deg + center_xy.
   const cards = s09Cards();
   cards.forEach((c, i) => {
-    const q = c.quad;
+    const q = c.quad_xy || c.quad;
     if (!q || q.length < 4) return;
-    const cx = (q[0][0] + q[1][0] + q[2][0] + q[3][0]) / 4;
-    const cy = (q[0][1] + q[1][1] + q[2][1] + q[3][1]) / 4;
-    // Width along top edge; height along left edge (for font sizing)
-    const topW = Math.hypot(q[1][0] - q[0][0], q[1][1] - q[0][1]);
-    const sideH = Math.hypot(q[3][0] - q[0][0], q[3][1] - q[0][1]);
-    const rot = c.rot != null ? c.rot : Math.atan2(q[1][1] - q[0][1], q[1][0] - q[0][0]) * 180 / Math.PI;
+    const cx = (c.center_xy && c.center_xy[0] != null)
+      ? c.center_xy[0]
+      : (q[0][0] + q[1][0] + q[2][0] + q[3][0]) / 4;
+    const cy = (c.center_xy && c.center_xy[1] != null)
+      ? c.center_xy[1]
+      : (q[0][1] + q[1][1] + q[2][1] + q[3][1]) / 4;
+    const topW = (c.size_wh && c.size_wh[0]) || Math.hypot(q[1][0] - q[0][0], q[1][1] - q[0][1]);
+    const sideH = (c.size_wh && c.size_wh[1]) || Math.hypot(q[3][0] - q[0][0], q[3][1] - q[0][1]);
+    const rot = (c.rotation_deg != null) ? c.rotation_deg
+      : (c.rot != null ? c.rot : Math.atan2(q[1][1] - q[0][1], q[1][0] - q[0][0]) * 180 / Math.PI);
     const el = surface("genre", `s09-genre s09-g${i} on-art`);
-    el.dataset.cardId = c.id || `g${i}`;
-    const label = c.text || "";
+    el.dataset.cardId = c.id || c.label || `g${i}`;
+    const label = c.label || c.text || "";
     el.textContent = label.includes(" ") ? label.replace(" ", "\n") : label;
     el.style.left = (cx / 1920) * 100 + "%";
     el.style.top = (cy / 1080) * 100 + "%";
@@ -218,7 +225,7 @@ function buildS09(root, T) {
     el.style.justifyContent = "center";
     el.style.lineHeight = "1.12";
     el.style.whiteSpace = "pre-line";
-    el.style.padding = "4%";
+    el.style.padding = "6%";
     el.style.boxSizing = "border-box";
     el.style.fontSize = "clamp(10px, 1.05cqw, 17px)";
     el.style.overflow = "hidden";
@@ -333,59 +340,83 @@ function buildS17Lanterns(root, T) {
 }
 
 function buildKeyTermsOverlay(root, T, terms) {
-  // Cards + pins from art/keyterms/cards.json. Text fits inside card below pin.
+  // Leo art/keyterms/cards.json: rect_xywh, pin_xy, text_rect_xywh, max_font_px_*.
   const wall = h("div", "bs-term-wall");
   const layout = keytermsCards();
-  const termList = (terms || []).map((t) => String(t).replace(/^"|"$/g, ""));
+  const termList = (terms || []).map((x) => String(x).replace(/^"|"$/g, ""));
   layout.forEach((C, i) => {
     const term = C.term != null ? String(C.term).replace(/^"|"$/g, "") : (termList[i] || "");
-    const rot = C.rot || 0;
+    const rot = C.rotation_deg != null ? C.rotation_deg : (C.rot || 0);
+    const rect = C.rect_xywh || [C.x, C.y, C.w, C.h];
+    const [rx, ry, rw, rh] = rect;
     const wrap = h("div", `bs-term-card t${i} on-art`);
-    applyRect(wrap, C.x, C.y, C.w, C.h, rot);
-    wrap.style.overflow = "hidden";
+    applyRect(wrap, rx, ry, rw, rh, rot);
+    wrap.style.overflow = "visible";
     wrap.style.boxSizing = "border-box";
-    wrap.dataset.cardId = C.id || `t${i}`;
+    wrap.dataset.cardId = C.id || `term_${C.index != null ? C.index : i}`;
 
     const card = img(`${PAPER}/index_card.webp`, "bs-paper bs-term-paper");
     card.setAttribute("aria-hidden", "true");
     card.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:0;pointer-events:none;";
     wrap.appendChild(card);
 
-    // Pin at top edge of the card (above text). Size from JSON, positioned in card-local %.
+    // Pin: art-space pin_xy is absolute; convert to card-local %.
     const pin = img(`${PAPER}/pushpin.webp`, "bs-paper-pin");
     pin.setAttribute("aria-hidden", "true");
-    const pinW = C.pin && C.pin.w ? C.pin.w : 36;
-    const pinH = C.pin && C.pin.h ? C.pin.h : 36;
-    const pinLeftPct = 50;
-    const pinTopPx = -Math.round(pinH * 0.35);
-    pin.style.cssText = `position:absolute;left:${pinLeftPct}%;top:${pinTopPx}px;width:${(pinW / C.w) * 100}%;height:auto;aspect-ratio:1;transform:translateX(-50%);z-index:8;pointer-events:none;`;
+    const pinSize = C.pin_size_px || (C.pin && C.pin.w) || 26;
+    let pinLeftPct = 50, pinTopPct = -8;
+    if (C.pin_xy) {
+      pinLeftPct = ((C.pin_xy[0] - rx) / rw) * 100;
+      pinTopPct = ((C.pin_xy[1] - ry) / rh) * 100;
+    }
+    pin.style.cssText = [
+      "position:absolute",
+      `left:${pinLeftPct}%`,
+      `top:${pinTopPct}%`,
+      `width:${(pinSize / rw) * 100}%`,
+      "height:auto",
+      "aspect-ratio:1",
+      "transform:translate(-50%, -50%)",
+      "z-index:8",
+      "pointer-events:none",
+    ].join(";");
     wrap.appendChild(pin);
 
-    const padTop = (C.pad_top_frac != null ? C.pad_top_frac : 0.08);
-    // Extra top pad so text clears the pin head (~pin sits on top edge)
-    const pinClear = Math.max(padTop, (pinH * 0.55) / C.h);
+    // Text into Leo text_rect (absolute art) mapped to card-local %.
     const text = h("div", "bs-term-text on-art-t");
     text.textContent = term;
+    let tLeft = 8, tTop = 22, tW = 84, tH = 70;
+    if (C.text_rect_xywh) {
+      const [tx, ty, tw, th] = C.text_rect_xywh;
+      tLeft = ((tx - rx) / rw) * 100;
+      tTop = ((ty - ry) / rh) * 100;
+      tW = (tw / rw) * 100;
+      tH = (th / rh) * 100;
+    }
+    const maxDesk = C.max_font_px_desktop || 20;
+    const maxPhone = C.max_font_px_phone390 || 10;
     text.style.cssText = [
       "position:absolute",
-      `left:${padTop * 100}%`,
-      `right:${padTop * 100}%`,
-      `top:${(pinClear + padTop) * 100}%`,
-      `bottom:${padTop * 100}%`,
+      `left:${tLeft}%`,
+      `top:${tTop}%`,
+      `width:${tW}%`,
+      `height:${tH}%`,
       "z-index:1",
       "display:flex",
       "align-items:center",
       "justify-content:center",
       "text-align:center",
-      "line-height:1.15",
+      "line-height:1.12",
       "overflow:hidden",
       "box-sizing:border-box",
       "hyphens:auto",
-      "font-size:clamp(11px, 2.8cqh, 22px)",
+      `font-size:clamp(${maxPhone}px, 2.6cqw, ${maxDesk}px)`,
     ].join(";");
     wrap.appendChild(text);
     wall.appendChild(wrap);
-    requestAnimationFrame(() => fitCardText(text, 11, 22));
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => fitCardText(text, maxPhone, maxDesk));
+    });
   });
   root.appendChild(wall);
   void T;
