@@ -206,8 +206,9 @@ test("TEXT-ON-ART: no CSS box chrome on stage text; ink/graphite; multiply", () 
   assert.match(pages, /IDEA_MAP/);
   assert.match(pages, /index_card/);
   assert.match(pages, /sheet_flat/);
-  // tools slide uses compact sheet_flat (~40% left), not the wide sheet
+  assert.match(pages, /sheet_flat_wide/);
   assert.match(pages, /bs-resources-panel--compact/);
+  assert.match(pages, /bs-resources-panel--wide/);
   assert.match(pages, /torn_page/);
   // Stage surfaces must not keep UI card shadows/backgrounds as the primary look
   assert.match(css, /\.bs-surface--idea[^{]*\{[\s\S]*?background:\s*none !important/);
@@ -280,4 +281,20 @@ test("Round 3: tip 5, APA alpha order, no cite-only bullets, break-even wording"
   const css = readFileSync(join(DIR, "bs.css"), "utf8");
   assert.match(css, /text-indent:\s*-1\.\d+em/);
   assert.match(css, /bs-idea-cite[\s\S]*clamp\(15px/);
+});
+
+
+test("paper stage panels never use overflow auto/scroll", () => {
+  const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
+  // Discuss / resources / takeaways inline styles must not enable scroll boxes
+  const paperBlocks = pages.split("slide.kind ===").slice(1).filter((b) =>
+    /discuss|resources|conclude/.test(b.slice(0, 40))
+  );
+  for (const block of paperBlocks) {
+    const head = block.slice(0, 2500);
+    assert.doesNotMatch(head, /overflow(?:-y|-x)?:\s*(auto|scroll)/i);
+  }
+  const css = readFileSync(join(DIR, "bs.css"), "utf8");
+  assert.match(css, /\.bs-paper-group \.bs-discuss[^{]*\{[\s\S]*?overflow:\s*hidden !important/);
+  assert.match(css, /\.bs-paper-group \.bs-resources-panel[^{]*\{[\s\S]*?overflow:\s*hidden !important/);
 });

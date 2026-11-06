@@ -569,21 +569,18 @@ body:not(.fl-transiting) .bs-scene.is-settled .bs-reveal { opacity: 1; transform
   overflow: hidden !important;
 }
 
-/* Tools compact: shrink empty panel to content */
-.bs-resources-panel--compact {
-  top: 8% !important;
+/* Tools compact: paper-group JS sets the rect; keep single-column APA */
+.bs-paper-group .bs-resources-panel--compact {
+  top: auto !important;
+  right: auto !important;
   bottom: auto !important;
-  max-height: 55%;
-  right: 38% !important;
-  width: auto;
-  min-width: 36%;
-  padding-bottom: 1.6cqh !important;
+  left: auto !important;
+  width: auto !important;
+  max-height: none !important;
+  min-width: 0 !important;
 }
 .bs-resources-panel--compact .bs-apa {
   grid-template-columns: 1fr;
-}
-body.fl-full .bs-resources-panel--compact {
-  /* paper-group sets rect */
 }
 
 /* Titleblock is also a surface */
@@ -1213,44 +1210,193 @@ body[data-kind="resources"] .bs-scene::before {
   width: 0 !important;
   background: transparent !important;
 }
-/* Paper group is the CQ root so ruled line-height tracks sheet height */
+/* Paper-group text: fit all content in full view (no scroll). Tight lh, not locked to rules. */
 .bs-paper-group {
   container-type: size;
   container-name: paper;
 }
 .bs-paper-group .bs-discuss,
-.bs-paper-group .bs-discuss .bs-dq-card,
-.bs-paper-group .bs-resources-panel,
-.bs-paper-group .bs-resources-panel .bs-apa li {
-  /* sheet_flat ruled pitch ≈ 5.31% of sheet height */
-  line-height: 5.31cqh !important;
+.bs-paper-group .bs-resources-panel {
+  overflow: hidden !important;
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-content: flex-start;
+  gap: 0.35cqh;
+  pointer-events: none;
 }
 .bs-paper-group .bs-discuss {
-  font-size: 3.35cqh !important; /* ~Patrick Hand 30px at 1080 on a 980-tall sheet */
-}
-.bs-paper-group .bs-resources-panel {
-  font-size: 2.55cqh !important; /* ~22-24px at 1080 on a 1000-tall sheet */
-}
-.bs-paper-group .bs-resources-panel--compact {
-  font-size: 3.1cqh !important; /* body size on the smaller tools sheet */
+  font-family: "Patrick Hand", "Architects Daughter", cursive;
+  font-size: clamp(14px, 2.55cqh, 22px);
+  line-height: 1.22;
+  color: var(--graphite, #3b3530);
 }
 .bs-paper-group .bs-discuss .bs-dq-card {
-  margin: 0 0 0.35em !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  margin: 0 0 0.55cqh !important;
+  padding: 0 !important;
+  flex: 0 0 auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+  background: none !important;
+}
+.bs-paper-group .bs-resources-panel {
+  font-family: "Patrick Hand", "Architects Daughter", cursive;
+  font-size: clamp(14px, 2.4cqh, 20px);
+  line-height: 1.2;
+  color: var(--graphite, #3b3530);
+  gap: 0.25cqh;
+}
+.bs-paper-group .bs-resources-panel--compact {
+  font-size: clamp(15px, 2.7cqh, 22px);
+  line-height: 1.25;
+}
+.bs-paper-group .bs-resources-panel--wide {
+  font-size: clamp(13px, 2.2cqh, 18px);
+  line-height: 1.18;
+}
+.bs-paper-group .bs-resources-panel .bs-res-h {
+  font-size: 1.35em !important;
+  line-height: 1.1 !important;
+  margin: 0 0 0.35cqh !important;
+  flex: 0 0 auto;
 }
 .bs-paper-group .bs-resources-panel .bs-apa {
-  margin: 0.2em 0 0;
-  padding: 0;
-  list-style: none;
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+  display: grid !important;
+  flex: 1 1 auto;
+  min-height: 0;
+  align-content: start;
+  row-gap: 0.35cqh !important;
+  column-gap: 1.6cqw !important;
+}
+.bs-paper-group .bs-resources-panel .bs-apa.bs-apa-single {
+  grid-template-columns: 1fr !important;
+}
+.bs-paper-group .bs-resources-panel .bs-apa.bs-apa-two {
+  grid-template-columns: 1fr 1fr !important;
 }
 .bs-paper-group .bs-resources-panel .bs-apa li {
-  margin: 0 0 0.55em !important;
-  padding-left: 1.5em;
-  text-indent: -1.5em; /* APA hanging indent */
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  margin: 0 !important;
+  padding-left: 1.35em !important;
+  text-indent: -1.35em !important;
+  position: relative;
+}
+.bs-paper-group .bs-resources-panel .bs-apa li::before {
+  content: none !important; /* hanging indent replaces bullet */
+}
+/* Kill the global fl-full 26px APA floor inside paper sheets (it forces overflow) */
+
+body.fl-full .bs-paper-group .bs-apa li {
+  font-size: inherit !important;
+}
+
+/* Narrow paper (mobile full / small stage): shrink type and drop 2-col so all text fits */
+@container paper (max-width: 260px) {
+  .bs-surface.bs-discuss,
+  .bs-discuss {
+    font-size: clamp(9.5px, 4.6cqw, 12px) !important;
+    line-height: 1.1 !important;
+    gap: 0.15cqh !important;
+  }
+  .bs-discuss .bs-dq-card,
+  .bs-surface.bs-discuss .bs-dq-card {
+    margin: 0 0 0.25cqh !important;
+    padding: 0 !important;
+    flex: 0 0 auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+  }
+  .bs-surface.bs-resources-panel,
+  .bs-resources-panel,
+  .bs-resources-panel--wide,
+  .bs-resources-panel--compact {
+    font-size: clamp(9.5px, 4.4cqw, 12px) !important;
+    line-height: 1.1 !important;
+    gap: 0.12cqh !important;
+  }
+  .bs-resources-panel .bs-res-h {
+    font-size: 1.15em !important;
+    margin: 0 0 0.15cqh !important;
+  }
+  .bs-resources-panel .bs-apa {
+    row-gap: 0.2cqh !important;
+    column-gap: 0.8cqw !important;
+  }
+  .bs-resources-panel .bs-apa.bs-apa-two {
+    grid-template-columns: 1fr !important;
+  }
+  .bs-resources-panel .bs-apa li {
+    padding-left: 1.05em !important;
+    text-indent: -1.05em !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+  }
+}
+@container paper (max-width: 210px) {
+  .bs-surface.bs-discuss,
+  .bs-discuss {
+    font-size: clamp(8.5px, 4.2cqw, 10.5px) !important;
+    line-height: 1.08 !important;
+  }
+  .bs-surface.bs-resources-panel,
+  .bs-resources-panel,
+  .bs-resources-panel--wide,
+  .bs-resources-panel--compact {
+    font-size: clamp(8.5px, 4cqw, 10.5px) !important;
+    line-height: 1.08 !important;
+  }
+}
+@container paper (max-width: 180px) {
+  .bs-surface.bs-discuss,
+  .bs-discuss {
+    font-size: clamp(7.5px, 3.8cqw, 9.5px) !important;
+    line-height: 1.06 !important;
+  }
+  .bs-surface.bs-resources-panel,
+  .bs-resources-panel,
+  .bs-resources-panel--wide,
+  .bs-resources-panel--compact {
+    font-size: clamp(7.5px, 3.6cqw, 9.5px) !important;
+    line-height: 1.06 !important;
+  }
 }
 
 
-.bs-paper-group .bs-discuss,
-.bs-paper-group .bs-resources-panel {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(60,50,40,.35) transparent;
+
+/* Phone full-view backup if container queries miss on stretched art */
+@media (max-width: 500px) {
+  body.fl-full .bs-paper-group .bs-discuss {
+    font-size: clamp(7px, 2.35vw, 9.5px) !important;
+    line-height: 1.05 !important;
+  }
+  body.fl-full .bs-paper-group .bs-discuss .bs-dq-card {
+    margin: 0 0 0.12em !important;
+    flex: 0 0 auto !important;
+  }
+  body.fl-full .bs-paper-group .bs-resources-panel,
+  body.fl-full .bs-paper-group .bs-resources-panel--wide,
+  body.fl-full .bs-paper-group .bs-resources-panel--compact {
+    font-size: clamp(8px, 2.7vw, 11px) !important;
+    line-height: 1.08 !important;
+  }
+  body.fl-full .bs-paper-group .bs-apa.bs-apa-two {
+    grid-template-columns: 1fr !important;
+  }
+  body.fl-full .bs-paper-group .bs-resources-panel .bs-apa {
+    row-gap: 0.15em !important;
+  }
 }
