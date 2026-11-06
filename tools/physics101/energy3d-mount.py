@@ -11,7 +11,7 @@ src = f'''// Every Joule energy3d scene ({module}.js {fn}). Words come from stor
 {{imp}}export default function build(ctx) {{
   let live = null, gone = false;
   const host = document.createElement("div");
-  host.style.cssText = "position:absolute;inset:0";
+  host.className = "e3d-host"; host.style.cssText = "position:absolute;inset:0 0 var(--e3d-foot, 0) 0";
   ctx.layer.appendChild(host);
   (async () => {{
     const story = await fetch(new URL("../../decks/{slug}/v2/story.json", import.meta.url)).then((r) => r.json()).catch(() => null);

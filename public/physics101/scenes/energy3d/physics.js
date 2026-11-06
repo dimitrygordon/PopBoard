@@ -81,9 +81,52 @@ export const heatQ = (m, C, dT) => m * C * dT;
 export const kettleTime = (m = KETTLE.m, P = KETTLE.P, dT = KETTLE.T1 - KETTLE.T0, eta = KETTLE.eta, C = C_WATER) => heatQ(m, C, dT) / (eta * P);
 export const band5 = (t) => [t * 0.95, t * 1.05];
 
-// ---------- Insulation (Page 14): Tesla O2 holds every number ----------
-// Qualitative only: relative loss shape for drawing. No U-values, areas, watts or times may be shown.
-// thickness in 0..1; returns a unitless 0..1 drawing scale that only says "less with more insulation".
+// ---------- Insulation (Scene 5b / m11-l01 p16): Tesla approved declared jacket model ----------
+// Paste-ready from tesla-insulation-approval.md "Wire this first". Educational inputs, not lab data.
+export const JACKET = {
+  model: "Declared educational calorimeter-jacket model; not measured lab data",
+  waterMassKg: 0.230,
+  waterSpecificHeatJPerKgK: 4180,
+  vesselHeatCapacityJPerK: 38.6,
+  effectiveHeatCapacityJPerK: 1000,
+  startTempC: 60,
+  roomTempC: 20,
+  targetTempC: 40,
+  areaM2: 0.060,
+  bareU_WPerM2K: 8,
+  insulatedU_WPerM2K: 2,
+  roomTempSlider: { min: 5, max: 30, step: 1, default: 20 },
+  defaultWall: "solid",
+  defaultWindow: "newer"
+};
+// U is an overall effective coefficient, not the material conductivity k.
+export const conductance = (U) => U * JACKET.areaM2; // W/K
+export const lossW = (U, insideC = JACKET.startTempC, roomC = JACKET.roomTempC) =>
+  conductance(U) * (insideC - roomC);
+export const tauS = (U) => JACKET.effectiveHeatCapacityJPerK / conductance(U);
+export const temperatureC = (U, seconds, roomC = JACKET.roomTempC) =>
+  roomC + (JACKET.startTempC - roomC) * Math.exp(-seconds / tauS(U));
+export const coolingTimeS = (U, targetC = JACKET.targetTempC, roomC = JACKET.roomTempC) =>
+  tauS(U) * Math.log((JACKET.startTempC - roomC) / (targetC - roomC));
+// Cooling-time function requires roomC < targetC < startTempC.
+
+// Existing four loss meters use the approved element table (default solid wall, newer window).
+export const JACKET_ELEMENTS = Object.freeze({
+  lid: { A: 0.010, Ubare: 8, Uins: 1.5 },
+  wrap: { A: 0.035, Ubare: 8, Uins: 2 },
+  base: { A: 0.010, Ubare: 8, Uins: 2 },
+  win: { A: 0.005, Ubare: 8, Uins: 3 }
+});
+export const elementU = (key, insulated) => {
+  const e = JACKET_ELEMENTS[key];
+  return insulated ? e.Uins : e.Ubare;
+};
+export const elementLossW = (key, insulated, insideC = JACKET.startTempC, roomC = JACKET.roomTempC) =>
+  elementU(key, insulated) * JACKET_ELEMENTS[key].A * (insideC - roomC);
+export const jacketTotalLossW = (placed, insideC = JACKET.startTempC, roomC = JACKET.roomTempC) =>
+  Object.keys(JACKET_ELEMENTS).reduce((s, k) => s + elementLossW(k, !!placed?.[k], insideC, roomC), 0);
+export const jacketEffectiveU = (placed) => jacketTotalLossW(placed, JACKET.startTempC, JACKET.roomTempC) / (JACKET.areaM2 * (JACKET.startTempC - JACKET.roomTempC));
+// Kept for any drawing that still needs a unitless narrowing shape.
 export const relativeLossShape = (thickness) => 1 / (1 + 3 * Math.max(0, Math.min(1, thickness)));
 
 // ---------- Energy stores (Sim 1), Tesla C1: transferred, not destroyed ----------

@@ -116,7 +116,10 @@
     "wrong": "Run each source and compare the overall fractions.",
     "explain": "Series efficiencies multiply, and each loss is counted once. Hydro (0.90 x 0.912 = 0.8207) wastes the smallest fraction of its defined input in this scenario. THIS MODEL, THESE INPUTS: not a claim about the best source or its emissions.",
     "scenario": "This mixed-year illustrative scenario compares the displayed stages. Solar excludes an unspecified inverter and is therefore not a complete chain. Coal is a historical comparison.",
-    "noWebgl": "This 3D power-grid model needs WebGL, which this browser does not have."
+    "noWebgl": "This 3D power-grid model needs WebGL, which this browser does not have.",
+    "modelCard": "THIS MODEL, THESE INPUTS: the fractions compare only the displayed stages with these declared inputs. They are not a claim about the best source or its emissions.",
+    "hiddenUntilRun": "Fractions and watts appear after you run the model.",
+    "takeaway": "Every stage from power station to lamp loses some energy, so only a fraction of the source's input reaches the home."
    }
   },
   "12": {

@@ -84,7 +84,10 @@
     "right": "Within 5 percent ({lo} to {hi} s). Q = {Q} J, so the ideal minimum heating time in this model is {t} s. Half the water needs half the energy: {half} s.",
     "wrong": "Outside the 5 percent band ({lo} to {hi} s). Q = {Q} J, so the ideal minimum heating time in this model is {t} s. Half the water needs half the energy: {half} s.",
     "explain": "Q = m C delta T sets the energy needed to change temperature. Halve the mass and the energy halves; at the same power the time halves too. ENERGY OR RATE? Energy here; rate is the kettle power.",
-    "noWebgl": "This 3D kettle model needs WebGL, which this browser does not have."
+    "noWebgl": "This 3D kettle model needs WebGL, which this browser does not have.",
+    "labelFull": "full: 0.230 kg",
+    "labelHalf": "half: 0.115 kg",
+    "takeaway": "Half the water needs half the energy, so the same kettle boils it in half the time."
    }
   },
   "10": {
@@ -147,12 +150,11 @@
    "text": "<h3>Warm-Blooded and Cold-Blooded</h3><p class=\"p101-def\">Cold-blooded animals rely on their surroundings for body temperature; warm-blooded animals control it internally.</p><p>Animals fall into two groups by how they handle body temperature. Most, like the spider in Figure 11, are cold-blooded. Their body temperature depends on the environment, so they control heat transfer with behavior: hiding under a rock to cool off, or basking in the sun to warm up.</p><p>The rest are warm-blooded, keeping a steady body temperature no matter the surroundings. Humans stay close to 37 degrees Celsius. When the brain senses a change, it triggers responses like shivering or sweating. In Figure 11's thermal image, the spider matches the air temperature, but the person's hands are much warmer.</p><p>So how is thermal energy transferred when you cook? By conduction from the burner through the pan, by convection in bubbling water or soup, and by radiation from glowing coils or flames. Heat always flows from hot to cold until things reach equilibrium.</p>",
    "testIt": {
     "name": "Jacket or no jacket",
-    "how": "Drag the jacket tab to thicken the insulation, predict, then heat both with the same heater."
+    "how": "Rank the four jacket pieces, place them, set room temperature, then cool both. Watts use current T(t)."
    },
    "sceneText": {
-    "pending": "values pending approval",
-    "card": "Steady loss meters use declared jacket U-values and areas. Cooling-time behavior, if shown, uses a separate declared lumped-capacity model.",
-    "graphLabel": "Temperature against time for the bare and insulated calorimeters, qualitative, no values",
+    "card": "Declared educational calorimeter-jacket model, not measured lab data. Steady loss meters use declared jacket U-values and areas. Cooling uses a declared lumped-capacity model: water and container share one temperature, room temperature stays fixed, and effective U and heat capacity stay constant. Evaporation, leaks, separate jacket heat storage, and changing radiation or convection are not resolved.",
+    "graphLabel": "Temperature against time for the bare and insulated calorimeters from the declared lumped cooling model",
     "axisT": "temperature",
     "axisX": "time",
     "predict": "Same heater in both. Which one ends up warmer?",
@@ -162,12 +164,24 @@
      "They end up the same"
     ],
     "correct": 0,
-    "run": "Heat both",
+    "run": "Cool both",
     "explainBtn": "Explain",
     "right": "Yes. The jacket narrows the loss arrows, so the same heater keeps it warmer.",
     "wrong": "Watch the loss arrows: the jacket narrows them, so the insulated one ends up warmer.",
     "explain": "Insulation changes the rate of transfer across the boundary for a given temperature difference. It does not change the water's specific heat or stop the loss. ENERGY OR RATE? Rate.",
-    "noWebgl": "This 3D insulation model needs WebGL, which this browser does not have."
+    "noWebgl": "This 3D insulation model needs WebGL, which this browser does not have.",
+    "takeaway": "Insulation slows the rate of heat loss, so the wrapped object stays warm for longer.",
+    "shortLabel": "Declared lumped cooling model; not lab measurements.",
+    "how": "Rank the four jacket pieces, place them, set room temperature, then cool both. Watts use current T(t).",
+    "initLoss": "Initial loss at {dT} K: bare {b} W, insulated {i} W",
+    "tauLine": "tau: bare {tb} min, insulated {ti} min",
+    "coolLine": "Time 60 to 40 C: bare {tb} min, insulated {ti} min",
+    "nowLine": "Current model time {t} s: bare {b} W at {Tb} C, jacket {i} W at {Ti} C",
+    "stop": "Stop",
+    "rankDone": "Ranking locked in. Place the pieces and watch each watt meter.",
+    "stampOk": "Declared model stamp: jacket {i} W is below half of bare {b} W.",
+    "stampWait": "Jacket {i} W is still at least half of bare {b} W. Place more pieces.",
+    "lblLoss": "heat loss: declared lumped cooling model"
    }
   }
  }

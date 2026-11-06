@@ -119,3 +119,33 @@
 :root[data-theme="dark"] .lib-filters .mod-pill { background: color-mix(in srgb, var(--pill) 30%, var(--ac-card)); color: var(--ac-card-ink); }
 :root[data-theme="dark"] .lib-filters .mod-pill[aria-pressed="true"] { background: var(--pill); color: var(--pill-ink, #1f1c18); box-shadow: 0 0 0 2px var(--ac-text); }
 @media (max-width: 600px) { .lib-filters[data-auto] { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; } .lib-filters[data-auto] button { min-width: 44px; min-height: 44px; padding: 4px 2px; font-size: 15px; } }
+/* energy3d: on phones keep a 56px band under the 3D scene for the Test it button so it never covers scene objects */
+@media (max-width: 600px) { .stage .p-scene .e3d-host { --e3d-foot: 56px; top: 22px !important; } }
+/* NGSS tag stays readable on phones */
+@media (max-width: 600px) { .stage .ac-stds.on-cover { font-size: max(11px, calc(var(--u, 1px) * 13)); } }
+/* pager number: fixed width, tabular digits, so the arrows do not shift */
+.page-label { min-width: 9em; width: 9em; font-variant-numeric: tabular-nums; }
+/* phones: energy3d scenes get a tall stage (about 60 percent of the viewport) and the Test it panel flows below it, page scrolls */
+@media (max-width: 699px) {
+  body:has(.stage .e3d-host) { overflow-y: auto; height: auto; min-height: 100%; }
+  body:has(.stage .e3d-host) .story { overflow: visible; }
+  .stage:has(.e3d-host) { aspect-ratio: auto !important; width: 100% !important; height: clamp(460px, 68svh, 580px) !important; /* round 2: room for the in-stage HUD */ }
+  body:has(.stage .e3d-host) .panel { position: static; height: auto !important; max-height: none; border-radius: 0; box-shadow: none; padding-bottom: 24px; }
+  body:has(.stage .e3d-host) .panel .sheet-handle { display: none; }
+}
+/* energy3d covers: the takeaway caption owns the top edge, so the standards tag drops into the footer strip */
+.stage:has(.e3d-host) .ac-stds.on-cover { top: auto; left: 3%; bottom: 4px; }
+/* round 1: one light ground on energy3d pages, #FBF6EA everywhere (stage, panel, page); dark stays #1F1D1A */
+:root:not([data-theme="dark"]) body:has(.e3d-host) { --ac-paper: #FBF6EA; --ac-panel: #FBF6EA; background: #FBF6EA; }
+.stage:has(.e3d-host > .e3d-meters) .ac-stds.on-cover { left: auto; right: 3%; top: 2%; bottom: auto; }
+.stage:has(.e3d-fixedbar) .ac-stds.on-cover { bottom: calc(var(--e3d-foot, 0px) + 84px); }
+@media (max-width: 600px) { .stage:has(.e3d-fixedbar) .ac-stds.on-cover { bottom: auto; top: 6px; } }
+/* energy3d prediction targets (Leo general): 44 x 44 px minimum, ring fills when picked */
+.e3d-predict { display: flex; flex-wrap: wrap; gap: 6px; }
+.e3d-predict legend { flex-basis: 100%; }
+.e3d-target { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; min-width: 44px; padding: 4px 12px 4px 6px; border: 1.5px solid currentColor; border-radius: 22px; cursor: pointer; box-sizing: border-box; }
+.e3d-target input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.e3d-ring { flex: 0 0 26px; height: 26px; border-radius: 50%; border: 2px solid currentColor; box-sizing: border-box; background: radial-gradient(circle, transparent 0 40%, transparent 41%); }
+.e3d-target:has(input:checked) { background: rgba(232, 194, 26, .22); }
+.e3d-target:has(input:checked) .e3d-ring { background: radial-gradient(circle, currentColor 0 38%, transparent 40%); }
+.e3d-target:has(input:focus-visible) { outline: 2px solid #4C6FA8; outline-offset: 2px; }

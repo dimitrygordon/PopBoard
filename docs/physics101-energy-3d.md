@@ -49,7 +49,7 @@ Status: **cleared** = Tesla checked it; **held** = Tesla blocked it, so the scen
 | 4 | Sound share | held: pink arrow tagged "estimate", no percentage (C5) |
 | 5a | 0.230 kg, 3000 W, 20 to 100 degrees C, C = 4180 J/(kg K), Q = 76912 J, 25.6 s, band 24.36 to 26.92 s | cleared (C6) |
 | 5a | Half kettle 12.8 s | inference: same cleared model with half the mass |
-| 5b | Jacket U-values, areas, temperatures, C_eff, loss watts, cooling times | held (O2): arrows say "values pending approval", curves have no axis numbers |
+| 5b | Jacket U-values, areas, temperatures, C_eff, loss watts, cooling times | cleared: declared jacket model, initial 19.20 W / 4.80 W, 24.07 min / 96.27 min to 40 C |
 | 7 | 60 W, 800 lm, 13.3 lm/W; LED 115 lm/W; 6.96 W; 88.4 percent less input power; band 776 to 824 lm | cleared (C10) |
 | 7 | LED or filament energy split (light vs heat) | held: ribbons drawn, no numbers |
 | 8 | Grid retained 0.912 (28456.6/323031.1 GWh); transformer inside grid loss, no 0.99 | cleared (W1 correction) |

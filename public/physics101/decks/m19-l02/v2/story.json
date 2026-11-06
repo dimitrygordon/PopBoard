@@ -45,7 +45,8 @@
     "explainBtn": "Explain",
     "explain": "Both lamps give about the same useful visible light, but the LED needs far less electrical input power to do it.",
     "card": "Matched lumens compare useful visible output as weighted for human vision. They do not determine radiometric energy efficiency.",
-    "noWebgl": "This 3D lamp comparison needs WebGL, which this browser does not have."
+    "noWebgl": "This 3D lamp comparison needs WebGL, which this browser does not have.",
+    "takeaway": "An LED gives the same light as a filament bulb for much less power, because far less energy is wasted as heat."
    }
   },
   "4": {

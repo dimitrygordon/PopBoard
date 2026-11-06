@@ -8,5 +8,8 @@ export const palette = Object.freeze({
   sound: { light: "#E86AA6", dark: "#F59AC4" },
   light: { light: "#FFD66B", dark: "#FFE29A" },
   electrical: { light: "#8EC9F2", dark: "#B5DEFA" },
+  magnetic: { light: "#6B2FA3", dark: "#9E66D1" },
+  electrostatic: { light: "#E8C21A", dark: "#F5D84F" },
+  nuclear: { light: "#C9971C", dark: "#E6B84A" },
 });
 export const ENERGY_KINDS = Object.freeze(Object.keys(palette));
