@@ -65,7 +65,7 @@ test("Tesla fixes: slide 5 fall-off wording; slide 10 C = vx + F and R = px", ()
 });
 
 test("Round 1 structure: key terms, split conclude/discuss, resources APA", () => {
-  assert.equal(SLIDES[16].title, "Key terms at a glance");
+  assert.equal(SLIDES[16].title, "Key terms");
   assert.equal(SLIDES[17].title, "Conclude with direction");
   assert.equal(SLIDES[18].title, "Discussion questions");
   assert.equal(SLIDES[18].questions.length, 3);
@@ -135,14 +135,14 @@ test("placements config matches Leo overlays.json FINAL", () => {
 });
 
 
-test("transitions: all 19 handoffs, theme bands, reduced-motion path", async () => {
-  const { HANDOFFS, THEME_BAND, resolvePrimary, handoffKey } = await import(
+test("transitions: crossfade handoffs, theme bands, reduced-motion path", async () => {
+  const { HANDOFFS, THEME_BAND, handoffKey } = await import(
     pathToFileURL(join(DIR, "bs-transitions.js")).href
   );
   for (let i = 1; i <= 20; i++) {
     const k = handoffKey(i, i + 1);
     assert.ok(HANDOFFS[k], `missing handoff ${k}`);
-    assert.ok(HANDOFFS[k].primary, `missing primary for ${k}`);
+    assert.equal(HANDOFFS[k].mode, "crossfade");
   }
   assert.equal(Object.keys(HANDOFFS).length, 20);
   for (let n = 1; n <= 21; n++) assert.ok(THEME_BAND[n], `theme band ${n}`);
@@ -151,34 +151,34 @@ test("transitions: all 19 handoffs, theme bands, reduced-motion path", async () 
   assert.equal(THEME_BAND[10], "coral");
   assert.equal(THEME_BAND[14], "violet");
   assert.equal(THEME_BAND[20], "cream");
-  // resolvePrimary falls back when plan motif missing on FROM
-  assert.equal(resolvePrimary({ primary: "marble" }, { cloud: {} }), "cloud");
-  assert.equal(resolvePrimary({ primary: "marble" }, { marble: {} }), "marble");
   const app = readFileSync(join(DIR, "bs-app.js"), "utf8");
   const css = readFileSync(join(DIR, "bs.css"), "utf8");
   assert.match(app, /navBusy/);
   assert.match(app, /clearFlipClones/);
-  assert.match(app, /runFlip/);
   assert.match(app, /prefers-reduced-motion/);
   assert.match(app, /fadeScript/);
-  assert.match(app, /Rapid click/);
-  assert.match(app, /simple fade|opacity 0\.22s/);
+  assert.match(app, /loadLayouts/);
   assert.match(app, /ArrowRight/);
   assert.match(app, /maybeAdvance/);
-  assert.match(css, /bs-flip-clone/);
+  assert.match(app, /opacity .*ease/);
+  assert.ok(!/runFlip\(/.test(app));
   assert.match(css, /prefers-reduced-motion:\s*reduce/);
   assert.match(css, /data-theme-band/);
-  assert.match(css, /bs-reveal/);
 });
 
-test("transitions: sprites carry data-magic-id; script never FLIPs", () => {
+test("transitions: no motif FLIP; script quiet-fades; layouts JSON wired", () => {
   const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
   const app = readFileSync(join(DIR, "bs-app.js"), "utf8");
-  assert.match(pages, /dataset\.magicId/);
-  // TEXT-ON-ART: flip_card/note_card stray sprites removed from stage (assets remain)
+  const layouts = readFileSync(join(DIR, "bs-layouts.js"), "utf8");
+  assert.ok(!/dataset\.magicId/.test(pages));
   assert.match(pages, /no flip_card/);
   assert.match(pages, /no note_card/);
-  assert.match(app, /Quiet script fade|never FLIP script/i);
+  assert.match(pages, /s09Cards|keytermsCards/);
+  assert.match(layouts, /s09\/cards\.json/);
+  assert.match(layouts, /keyterms\/cards\.json/);
+  assert.ok(existsSync(join(DIR, "art", "s09", "cards.json")));
+  assert.ok(existsSync(join(DIR, "art", "keyterms", "cards.json")));
+  assert.match(app, /fadeScript/);
   assert.ok(!/bs-script[^\n]*magicId/.test(pages));
 });
 
@@ -220,7 +220,7 @@ test("TEXT-ON-ART: no CSS box chrome on stage text; ink/graphite; multiply", () 
   assert.ok(existsSync(join(DIR, "art", "s01", "bg.webp")));
 });
 
-test("draw-in wired after FLIP; masks exist; reduced-motion path", () => {
+test("draw-in kept after crossfade; masks exist; reduced-motion path", () => {
   const app = readFileSync(join(DIR, "bs-app.js"), "utf8");
   assert.ok(existsSync(join(DIR, "bs-drawin.js")));
   assert.match(app, /startDrawIn/);
@@ -236,7 +236,7 @@ test("draw-in wired after FLIP; masks exist; reduced-motion path", () => {
   }
 });
 
-test("QA: no stray curled-paper sprites; keyterms grid; draw-in 40% line", () => {
+test("QA: no stray curled-paper sprites; keyterms cards.json; draw-in 40% line", () => {
   const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
   const css = readFileSync(join(DIR, "bs.css"), "utf8");
   const drawin = readFileSync(join(DIR, "bs-drawin.js"), "utf8");
@@ -250,9 +250,11 @@ test("QA: no stray curled-paper sprites; keyterms grid; draw-in 40% line", () =>
   assert.match(pages, /bs-paper-group/);
   assert.match(pages, /s10-birac-letter/);
   assert.match(pages, /BIRAC_HAS_FIFTH_BLOCK/);
-  assert.match(pages, /boardW/);
+  assert.match(pages, /keytermsCards/);
+  assert.match(pages, /fitArtText/);
   assert.match(css, /bs-paper-group/);
-  assert.match(css, /-webkit-line-clamp:\s*2/);
+  assert.match(pages, /ensureDesignLayer/);
+  assert.match(css, /bs-design-layer/);
   assert.match(drawin, /u \/ 0\.40/);
 });
 

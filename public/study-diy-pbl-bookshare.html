@@ -17,6 +17,7 @@
 <link rel="stylesheet" href="diy-pbl-bookshare/bs.css">
 </head>
 <body>
+<button class="bs-bar-toggle pencil-btn" id="bsBarToggle" type="button" aria-expanded="false" aria-controls="flBar" hidden>Controls</button>
 <header class="fl-bar" id="flBar">
   <a id="studyBackBtn" class="pencil-btn" data-study-back href="study.html" aria-label="Back to Study library">‹ Library</a>
   <h1 id="flTitle">Dimitry's DIY Project Based Learning for Math and Science Bookshare</h1>
@@ -30,6 +31,11 @@
   <button class="pencil-btn" id="fsBtn" type="button" aria-pressed="false">⛶ Full screen (hide text)</button>
   <button class="pencil-btn" id="themeBtn" type="button" aria-label="Switch light or dark">☾ Dark</button>
 </header>
+<div class="bs-rotate-note" id="bsRotateNote" aria-live="polite">
+  <img class="bs-rotate-paper" src="diy-pbl-bookshare/art/paper/sticky_note.webp" alt="" aria-hidden="true">
+  <img class="bs-rotate-tape" src="diy-pbl-bookshare/art/paper/tape_a.webp" alt="" aria-hidden="true">
+  <span class="bs-rotate-text">Turn your phone sideways</span>
+</div>
 <div class="fl-progress" aria-hidden="true"><i id="flProg"></i></div>
 <main class="fl-viewport">
   <div class="fl-frame" id="flFrame">

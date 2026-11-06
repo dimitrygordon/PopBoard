@@ -1,0 +1,132 @@
+{
+  "canvas": [
+    1920,
+    1080
+  ],
+  "cards": [
+    {
+      "label": "Lab report",
+      "quad_xy": [
+        [
+          1095,
+          165
+        ],
+        [
+          1295,
+          145
+        ],
+        [
+          1325,
+          395
+        ],
+        [
+          1120,
+          415
+        ]
+      ],
+      "center_xy": [
+        1209,
+        280
+      ],
+      "size_wh": [
+        220,
+        250
+      ],
+      "rotation_deg": -8.0,
+      "note": "white body under orange flask header"
+    },
+    {
+      "label": "Business letter",
+      "quad_xy": [
+        [
+          1005,
+          470
+        ],
+        [
+          1210,
+          505
+        ],
+        [
+          1165,
+          790
+        ],
+        [
+          960,
+          755
+        ]
+      ],
+      "center_xy": [
+        1085,
+        630
+      ],
+      "size_wh": [
+        220,
+        285
+      ],
+      "rotation_deg": -16.0,
+      "note": "white body under blue envelope header"
+    },
+    {
+      "label": "Executive summary",
+      "quad_xy": [
+        [
+          1225,
+          485
+        ],
+        [
+          1460,
+          475
+        ],
+        [
+          1480,
+          790
+        ],
+        [
+          1245,
+          800
+        ]
+      ],
+      "center_xy": [
+        1353,
+        638
+      ],
+      "size_wh": [
+        245,
+        315
+      ],
+      "rotation_deg": -2.0,
+      "note": "white body under orange wax-seal header"
+    },
+    {
+      "label": "Problem statement",
+      "quad_xy": [
+        [
+          1515,
+          490
+        ],
+        [
+          1755,
+          535
+        ],
+        [
+          1705,
+          840
+        ],
+        [
+          1465,
+          795
+        ]
+      ],
+      "center_xy": [
+        1610,
+        665
+      ],
+      "size_wh": [
+        250,
+        310
+      ],
+      "rotation_deg": 11.0,
+      "note": "white body under orange clipboard header"
+    }
+  ]
+}

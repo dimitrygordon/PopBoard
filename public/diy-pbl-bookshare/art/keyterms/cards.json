@@ -1,0 +1,199 @@
+{
+  "canvas": [
+    1920,
+    1080
+  ],
+  "cork_board_xywh": [
+    180,
+    205,
+    900,
+    470
+  ],
+  "phone_note": "8 cards on cork interior. On 390px phone each card ~40.8px wide. Pin at top edge; text below pin. Prefer max_font_px_phone390.",
+  "cards": [
+    {
+      "index": 0,
+      "rect_xywh": [
+        200,
+        245,
+        201,
+        190
+      ],
+      "rotation_deg": -3.5,
+      "pin_xy": [
+        300,
+        241
+      ],
+      "pin_size_px": 26,
+      "text_rect_xywh": [
+        212,
+        279,
+        177,
+        142
+      ],
+      "max_font_px_desktop": 20,
+      "max_font_px_phone390": 10
+    },
+    {
+      "index": 1,
+      "rect_xywh": [
+        419,
+        245,
+        201,
+        190
+      ],
+      "rotation_deg": 2.0,
+      "pin_xy": [
+        519,
+        241
+      ],
+      "pin_size_px": 26,
+      "text_rect_xywh": [
+        431,
+        279,
+        177,
+        142
+      ],
+      "max_font_px_desktop": 20,
+      "max_font_px_phone390": 10
+    },
+    {
+      "index": 2,
+      "rect_xywh": [
+        638,
+        245,
+        201,
+        190
+      ],
+      "rotation_deg": -1.5,
+      "pin_xy": [
+        738,
+        241
+      ],
+      "pin_size_px": 26,
+      "text_rect_xywh": [
+        650,
+        279,
+        177,
+        142
+      ],
+      "max_font_px_desktop": 20,
+      "max_font_px_phone390": 10
+    },
+    {
+      "index": 3,
+      "rect_xywh": [
+        857,
+        245,
+        201,
+        190
+      ],
+      "rotation_deg": 3.0,
+      "pin_xy": [
+        957,
+        241
+      ],
+      "pin_size_px": 26,
+      "text_rect_xywh": [
+        869,
+        279,
+        177,
+        142
+      ],
+      "max_font_px_desktop": 20,
+      "max_font_px_phone390": 10
+    },
+    {
+      "index": 4,
+      "rect_xywh": [
+        200,
+        465,
+        201,
+        190
+      ],
+      "rotation_deg": 2.5,
+      "pin_xy": [
+        300,
+        461
+      ],
+      "pin_size_px": 26,
+      "text_rect_xywh": [
+        212,
+        499,
+        177,
+        142
+      ],
+      "max_font_px_desktop": 20,
+      "max_font_px_phone390": 10
+    },
+    {
+      "index": 5,
+      "rect_xywh": [
+        419,
+        465,
+        201,
+        190
+      ],
+      "rotation_deg": -2.8,
+      "pin_xy": [
+        519,
+        461
+      ],
+      "pin_size_px": 26,
+      "text_rect_xywh": [
+        431,
+        499,
+        177,
+        142
+      ],
+      "max_font_px_desktop": 20,
+      "max_font_px_phone390": 10
+    },
+    {
+      "index": 6,
+      "rect_xywh": [
+        638,
+        465,
+        201,
+        190
+      ],
+      "rotation_deg": 1.8,
+      "pin_xy": [
+        738,
+        461
+      ],
+      "pin_size_px": 26,
+      "text_rect_xywh": [
+        650,
+        499,
+        177,
+        142
+      ],
+      "max_font_px_desktop": 20,
+      "max_font_px_phone390": 10
+    },
+    {
+      "index": 7,
+      "rect_xywh": [
+        857,
+        465,
+        201,
+        190
+      ],
+      "rotation_deg": -3.2,
+      "pin_xy": [
+        957,
+        461
+      ],
+      "pin_size_px": 26,
+      "text_rect_xywh": [
+        869,
+        499,
+        177,
+        142
+      ],
+      "max_font_px_desktop": 20,
+      "max_font_px_phone390": 10
+    }
+  ]
+}
