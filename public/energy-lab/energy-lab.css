@@ -1,33 +1,88 @@
-/* Energy Lab hub: cream/charcoal to match energy3d pages; 16 px floor. */
+/* Energy Lab hub: cream/charcoal to match energy3d; shared hud classes; 16 px floor. */
 :root {
-  --el-paper: #FBF6EA;
-  --el-ink: #2B2622;
-  --el-card: #FFFDF5;
-  --el-line: #2B2622;
-}
-:root[data-theme="dark"] {
   --el-paper: #1F1D1A;
   --el-ink: #EDE6D6;
+  --el-dim: #B9B0A0;
   --el-card: #2A2621;
-  --el-line: #EDE6D6;
+  --el-line: #3A352E;
+  --el-btn: rgba(42, 38, 33, 0.94);
+  --el-accent: #E8C21A;
+  --el-hit: 44px;
 }
-body.energy-lab {
+:root[data-theme="light"] {
+  --el-paper: #FBF6EA;
+  --el-ink: #2B2622;
+  --el-dim: #5A534A;
+  --el-card: #FFFDF5;
+  --el-line: #2B2622;
+  --el-btn: rgba(255, 253, 245, 0.94);
+}
+* { box-sizing: border-box; }
+html, body.energy-lab {
   margin: 0;
   min-height: 100%;
   background: var(--el-paper);
   color: var(--el-ink);
-  font: 16px/1.4 "Patrick Hand", "Gochi Hand", cursive;
+  font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Match library/module hud button styling via existing class names. */
+.energy-lab button {
+  font: inherit;
+  font-size: 16px;
+  color: var(--el-ink);
+  background: var(--el-btn);
+  border: 1.5px solid var(--el-line);
+  border-radius: 12px;
+  min-width: var(--el-hit);
+  min-height: var(--el-hit);
+  padding: 0 12px;
+  cursor: pointer;
+}
+.energy-lab button:focus-visible,
+.energy-lab a:focus-visible {
+  outline: 3px solid #4C6FA8;
+  outline-offset: 2px;
+}
+.energy-lab .hud {
+  position: fixed;
+  z-index: 6;
+  top: max(8px, env(safe-area-inset-top));
+  left: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.energy-lab .hud .title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  margin: 0 auto 0 4px;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.energy-lab .study-back-btn {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  font-size: 16px;
+}
+.energy-lab .study-back-btn .back-label { font-size: 16px; }
+
 .el-shell {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 16px 16px 48px;
-  box-sizing: border-box;
+  padding: calc(max(8px, env(safe-area-inset-top)) + 64px) 16px 48px;
 }
 .el-hero {
   display: grid;
   gap: 14px;
-  margin: 12px 0 22px;
+  margin: 0 0 22px;
 }
 .el-cover {
   display: block;
@@ -42,6 +97,7 @@ body.energy-lab {
   margin: 0;
   font-size: 16px;
   line-height: 1.45;
+  color: var(--el-dim);
 }
 .el-grid {
   list-style: none;
@@ -97,24 +153,20 @@ body.energy-lab {
   padding: 6px 12px;
   box-sizing: border-box;
   border: 1.5px solid var(--el-line);
-  border-radius: 10px;
+  border-radius: 12px;
   text-decoration: none;
   color: inherit;
   font: inherit;
   font-size: 16px;
-  background: transparent;
+  background: var(--el-btn);
 }
 .el-actions a.primary {
   background: rgba(232, 194, 26, 0.28);
   font-weight: 700;
 }
-.el-actions a:focus-visible {
-  outline: 2px solid #4C6FA8;
-  outline-offset: 2px;
-}
 @media (max-width: 700px) {
   .el-grid { grid-template-columns: 1fr; }
-  .el-shell { padding: 12px 12px 40px; }
+  .el-shell { padding-left: 12px; padding-right: 12px; }
+  .energy-lab .hud { gap: 6px; }
+  .energy-lab .hud button { padding: 0 10px; white-space: nowrap; }
 }
-
-.energy-lab .hud, .energy-lab .hud .title, .energy-lab .hud .back-label, .energy-lab .hud button { font-size: 16px; }
