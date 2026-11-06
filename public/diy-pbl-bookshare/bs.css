@@ -1433,6 +1433,10 @@ body.fl-full .bs-paper-group .bs-apa li {
 .bs-term-card .bs-term-text {
   overflow: hidden !important;
   max-height: 100%;
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 .bs-term-card .bs-paper-pin {
   z-index: 8;

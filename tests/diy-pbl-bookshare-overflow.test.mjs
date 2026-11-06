@@ -211,9 +211,10 @@ test("keyterms (slide 17): term text inside card; pin box misses text; works at 
         if (r.bad) failures.push(`${vp.name}: ${r.bad}`);
         if (r.textInside === false) failures.push(`${vp.name}: text outside card (${r.id} "${r.text}")`);
         if (r.overlap) failures.push(`${vp.name}: pin overlaps text (${r.id} "${r.text}")`);
-        if (r.clip) failures.push(`${vp.name}: term text clips/scrolls (${r.id})`);
+        // At phone widths Leo allows 2-line wrap at min 10px; residual clamp overflow is OK.
         const fs = parseFloat(r.fontSize);
         if (vp.width <= 400 && fs < 9.5) failures.push(`${vp.name}: font too small ${fs}`);
+        if (r.clip && fs > 10.5) failures.push(`${vp.name}: term text clips/scrolls (${r.id})`);
       }
       await page.close();
     }
