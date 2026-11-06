@@ -98,14 +98,15 @@
       "Rube Goldberg analysis: identify each step"
     ],
     "narration": "This is a real student idea from the Invention Unit. Jacob calls it the Smart Drawer. If your hands are full, or a drawer is hard to open, you step on a floor pad and a sensor opens it for you. Before anybody pitches anything, students walk through their homes and list three to five problems in each major space. That gives them somewhere to start. She also has them break a Rube Goldberg machine down into its steps. The point is to study the sequence. Nobody has to build another machine. I'd run that same routine before I ask my physics students to design a solution.",
-    "chapter": "Wolpert-Gawron, 2016, pp. 36-39; also p. 79",
+    "chapter": "Excerpt: Wolpert-Gawron, 2016, pp. 36-39",
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 980,
-      "y": 120,
-      "w": 860,
-      "h": 780
+      "x": 900,
+      "y": 60,
+      "w": 980,
+      "h": 980,
+      "rot": -2
     }
   },
   {
@@ -127,10 +128,11 @@
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 1000,
-      "y": 80,
-      "w": 820,
-      "h": 920
+      "x": 920,
+      "y": 40,
+      "w": 960,
+      "h": 1000,
+      "rot": 2
     }
   },
   {
@@ -183,14 +185,15 @@
       "Empty boxes leave room for adjustments"
     ],
     "narration": "This is the actual Invention Unit checklist. It has a date assigned, an assignment, and a deadline. Look at the order. The needs analysis comes before the problem statement, and the design and cost analysis come before the final business letter and presentation. Students can see how the pieces fit together. The author also tells us to leave some empty boxes for our own assignments or for students' individual goals. In my class, I'd fill those when a quick check tells me we need another lesson or another trial.",
-    "chapter": "Wolpert-Gawron, 2016, p. 34",
+    "chapter": "Excerpt: Invention Unit checklist, p. 34",
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 980,
-      "y": 140,
-      "w": 860,
-      "h": 760
+      "x": 900,
+      "y": 100,
+      "w": 980,
+      "h": 860,
+      "rot": -1.5
     }
   },
   {
@@ -242,14 +245,15 @@
       "Performance claims need evidence"
     ],
     "narration": "Here's another student artifact. Kevin wrote a business letter about an invention he calls the Dust Mite, a flying vacuum, and he asks a company to fund it. I like that students write to a specific reader with a specific request. I wouldn't take his performance claims on faith, though. In physics, we'd ask whether that design could actually lift its own weight and still power the vacuum. That gives the next investigation a reason to exist, and it gives Kevin something concrete to revise.",
-    "chapter": "Wolpert-Gawron, 2016, pp. 53-54",
+    "chapter": "Excerpt: Kevin Y. letter, Wolpert-Gawron, 2016, pp. 53-54",
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 1020,
-      "y": 80,
-      "w": 800,
-      "h": 940
+      "x": 920,
+      "y": 50,
+      "w": 960,
+      "h": 990,
+      "rot": -2.5
     }
   },
   {
@@ -325,10 +329,11 @@
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 980,
-      "y": 120,
-      "w": 860,
-      "h": 860
+      "x": 910,
+      "y": 60,
+      "w": 970,
+      "h": 980,
+      "rot": 2
     }
   },
   {
@@ -401,14 +406,15 @@
       "\"Every piece of the prompt is included clearly\""
     ],
     "narration": "This is a student-created rubric from the book. At the top, the students wrote, \"Able to Teach.\" One descriptor says, \"Great evidence, quotes.\" Another says, \"Every piece of the prompt is included clearly.\" They know what those words mean because they helped write them. For a physics explanation, I'd ask the class what convincing evidence looks like. We'd still need accurate physics and clear criteria. Students could help put those expectations into words they'd actually use when they're reviewing a partner's work.",
-    "chapter": "Wolpert-Gawron, 2016, pp. 98-101",
+    "chapter": "Excerpt: Fig. 5.3, Wolpert-Gawron, 2016, p. 101",
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 960,
-      "y": 160,
-      "w": 880,
-      "h": 780
+      "x": 920,
+      "y": 60,
+      "w": 960,
+      "h": 980,
+      "rot": -2
     }
   },
   {
@@ -426,14 +432,15 @@
       "Set realistic expectations for this class"
     ],
     "narration": "The collaboration constitution makes a lot more sense once you see what students actually wrote. This team agreed to answer messages within three hours and to talk through problems before asking the teacher to step in. I wouldn't copy that three-hour deadline into my class. My students have different responsibilities and different access at home, so I'd have them agree on something realistic. The assignment also asks them to write a sentence they can use when somebody isn't participating. That way they have the words for an awkward conversation before they need them.",
-    "chapter": "Wolpert-Gawron, 2016, p. 85, p. 123",
+    "chapter": "Excerpt: Collaboration contract, p. 85",
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 1000,
-      "y": 60,
-      "w": 820,
-      "h": 960
+      "x": 900,
+      "y": 120,
+      "w": 980,
+      "h": 820,
+      "rot": 1.5
     }
   },
   {
@@ -486,14 +493,15 @@
       "Verify the scientific claims"
     ],
     "narration": "This is a good example of why that content check matters. In the fictional patient report, the student recommends a second opinion. That's a smart choice for the audience. Elsewhere, though, the report makes claims about brain structure I'd want students to go verify. I'd use it as a revision example. We can give the student credit for those communication choices and still ask whether the evidence supports the science.",
-    "chapter": "Wolpert-Gawron, 2016, pp. 28-30",
+    "chapter": "Excerpt (fictional): Wolpert-Gawron, 2016, pp. 28-30",
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 1000,
-      "y": 70,
-      "w": 820,
-      "h": 940
+      "x": 900,
+      "y": 80,
+      "w": 980,
+      "h": 900,
+      "rot": -1.5
     }
   },
   {

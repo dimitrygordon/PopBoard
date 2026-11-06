@@ -1214,3 +1214,133 @@ test("portrait rotate note and landscape toolbar tuck", async (t) => {
     await browser.close();
   }
 });
+
+test("round6 book crop body text meets min glyph size at 1280 and 844x390", async (t) => {
+  let puppeteer;
+  try {
+    puppeteer = (await import(pathToFileURL(PUPPETEER).href)).default;
+  } catch (e) {
+    t.skip("puppeteer-core not available: " + e.message);
+    return;
+  }
+  let browser;
+  try {
+    browser = await puppeteer.launch(launchOpts());
+  } catch (e) {
+    t.skip("Chrome launch failed: " + e.message);
+    return;
+  }
+  const TEXT_PAGES = [
+    { n: 6, id: "r6a" },
+    { n: 10, id: "r6c" },
+    { n: 13, id: "r6h" },
+    { n: 21, id: "r6e" },
+    { n: 22, id: "r6f" },
+    { n: 25, id: "r6j" },
+  ];
+  const VPS = [
+    { name: "1280", width: 1280, height: 720, mobile: false, minPx: 14 },
+    { name: "844x390", width: 844, height: 390, mobile: true, minPx: 9 },
+  ];
+  try {
+    const report = [];
+    const failures = [];
+    for (const vp of VPS) {
+      for (const { n, id } of TEXT_PAGES) {
+        const page = await browser.newPage();
+        await page.setViewport({
+          width: vp.width, height: vp.height, deviceScaleFactor: 1,
+          isMobile: !!vp.mobile, hasTouch: !!vp.mobile,
+        });
+        await page.setCacheEnabled(false);
+        await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=${n}&full=1`, {
+          waitUntil: "networkidle0", timeout: 60000,
+        });
+        await settle(page);
+        const fig = await page.$(".bs-r6-figure");
+        if (!fig) {
+          failures.push(`${vp.name} p${n} (${id}): missing .bs-r6-figure`);
+          await page.close();
+          continue;
+        }
+        const measured = await page.evaluate(async (el) => {
+          const r = el.getBoundingClientRect();
+          // Decode the figure image and measure body-line band height in source pixels,
+          // then scale by rendered content size (object-fit:contain).
+          const src = el.currentSrc || el.src;
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = src; });
+          const nw = img.naturalWidth, nh = img.naturalHeight;
+          const canvas = document.createElement("canvas");
+          canvas.width = nw; canvas.height = nh;
+          const ctx = canvas.getContext("2d", { willReadFrequently: true });
+          ctx.drawImage(img, 0, 0);
+          const { data } = ctx.getImageData(0, 0, nw, nh);
+          const lum = (x, y) => {
+            const i = (y * nw + x) * 4;
+            return (data[i] + data[i + 1] + data[i + 2]) / 3;
+          };
+          let minX = nw, minY = nh, maxX = 0, maxY = 0;
+          for (let y = 2; y < nh - 2; y += 2) {
+            for (let x = 2; x < nw - 2; x += 2) {
+              const L = lum(x, y);
+              if (L > 248 || L < 140) {
+                if (x < minX) minX = x;
+                if (y < minY) minY = y;
+                if (x > maxX) maxX = x;
+                if (y > maxY) maxY = y;
+              }
+            }
+          }
+          if (maxX <= minX) return { bodyCss: 0, capSrc: 0, scale: 0, boxW: r.width, boxH: r.height, nw, nh };
+          const x0 = minX + Math.floor((maxX - minX) * 0.08);
+          const x1 = maxX - Math.floor((maxX - minX) * 0.08);
+          const y0 = minY + Math.floor((maxY - minY) * 0.10);
+          const y1 = maxY - Math.floor((maxY - minY) * 0.14);
+          const rowDark = [];
+          for (let y = y0; y < y1; y++) {
+            let d = 0;
+            for (let x = x0; x < x1; x += 2) if (lum(x, y) < 150) d++;
+            rowDark.push(d);
+          }
+          const thresh = Math.max(4, Math.floor((x1 - x0) / 2 / 20));
+          const heights = [];
+          let run = 0;
+          for (const v of rowDark) {
+            if (v >= thresh) run++;
+            else { if (run >= 6 && run <= 90) heights.push(run); run = 0; }
+          }
+          if (run >= 6 && run <= 90) heights.push(run);
+          heights.sort((a, b) => a - b);
+          const lo = Math.floor(heights.length * 0.15);
+          const hi = Math.max(lo + 1, Math.ceil(heights.length * 0.85));
+          const mid = heights.slice(lo, hi);
+          const capSrc = mid.length ? mid[Math.floor(mid.length / 2)] : 0;
+          // object-fit:contain scale
+          const scale = Math.min(r.width / nw, r.height / nh);
+          const capCss = capSrc * scale;
+          // Line-band height ≈ rendered cap height of body text (Leo min).
+          const bodyCss = capCss;
+          return {
+            bodyCss, capCss, capSrc, scale, boxW: r.width, boxH: r.height, nw, nh,
+            samples: heights.length, heights: heights.slice(0, 12),
+          };
+        }, fig);
+        await fig.dispose();
+        report.push({ vp: vp.name, page: n, id, ...measured });
+        if (!(measured.bodyCss >= vp.minPx - 0.25)) {
+          failures.push(
+            `${vp.name} p${n} (${id}): body glyph ~${measured.bodyCss.toFixed(1)}px ` +
+            `(capSrc=${measured.capSrc}, scale=${measured.scale.toFixed(3)}) < min ${vp.minPx}px`
+          );
+        }
+        await page.close();
+      }
+    }
+    console.log("r6 glyph sizes:", JSON.stringify(report, null, 2));
+    assert.equal(failures.length, 0, failures.join("\n") + "\n" + JSON.stringify(report, null, 2));
+  } finally {
+    await browser.close();
+  }
+});
