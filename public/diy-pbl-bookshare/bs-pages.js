@@ -246,8 +246,8 @@ function buildS09(root, T) {
   // Centered on each drawn card, below the header icon (TEXT-ON-ART / Round 3)
   const genres = [
     // Scene-% centers of each drawn card body (verified against full-view shots)
-    { text: "Lab report", left: 66, top: 31 },            // beaker (rear-left) white body
-    { text: "Business letter", left: 61, top: 60 },       // envelope card body
+    { text: "Lab report", left: 65.5, top: 33 },          // beaker white body below header
+    { text: "Business letter", left: 59.5, top: 60 },     // envelope card body
     { text: "Executive summary", left: 69.5, top: 58 },   // wax-seal card body
     { text: "Problem statement", left: 86.5, top: 58 },   // clipboard card body
   ];
