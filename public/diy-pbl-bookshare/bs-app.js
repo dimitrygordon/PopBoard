@@ -18,17 +18,36 @@ try { state.auto = localStorage.getItem("popboard.diy-pbl.auto") === "1"; } catc
 
 async function probeArtBgs() {
   // Prefer Leo redraw filenames when they exist (s08 / s16 hooks and any slide).
+  // Cloudflare Pages SPA catch-all returns 200 text/html for missing paths, so
+  // res.ok alone is not enough — require a real image Content-Type (or decode).
   const ids = [];
   for (let n = 1; n <= 21; n++) ids.push(`s${String(n).padStart(2, "0")}`);
   ids.push("keyterms", "discussion", "resources", "conclude");
   const prefer = ["bg_v6.webp", "bg_next.webp"];
   const map = {};
+  async function isRealImage(url) {
+    try {
+      // Prefer HEAD: SPA soft-404s advertise text/html even when status is 200.
+      const head = await fetch(url, { method: "HEAD", cache: "no-cache" });
+      if (!head.ok) return false;
+      const headCt = (head.headers.get("content-type") || "").toLowerCase();
+      if (headCt.startsWith("image/")) return true;
+      if (headCt.includes("text/html") || headCt.includes("application/json")) return false;
+      // Ambiguous type: GET and sniff RIFF/WEBP magic.
+      const res = await fetch(url, { method: "GET", cache: "no-cache" });
+      if (!res.ok) return false;
+      const ct = (res.headers.get("content-type") || "").toLowerCase();
+      if (ct.startsWith("image/")) return true;
+      const buf = new Uint8Array(await res.arrayBuffer());
+      return buf.length >= 12 && buf[0] === 0x52 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x46
+        && buf[8] === 0x57 && buf[9] === 0x45 && buf[10] === 0x42 && buf[11] === 0x50;
+    } catch (e) {
+      return false;
+    }
+  }
   await Promise.all(ids.map(async (id) => {
     for (const name of prefer) {
-      try {
-        const res = await fetch(`${ART}${id}/${name}`, { method: "HEAD", cache: "no-cache" });
-        if (res.ok) { map[id] = name; return; }
-      } catch (e) {}
+      if (await isRealImage(`${ART}${id}/${name}`)) { map[id] = name; return; }
     }
   }));
   window.__bsArtBg = map;

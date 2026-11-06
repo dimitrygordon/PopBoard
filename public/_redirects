@@ -1,0 +1,8 @@
+# Missing static files under art must real-404 (not SPA index.html 200).
+# Existing files still win over these rules on Cloudflare Pages.
+/diy-pbl-bookshare/art/*   /404.html  404
+/friction-lesson/media/*   /404.html  404
+/friction-lesson/art/*     /404.html  404
+
+# SPA shell only when no static file matches.
+/*    /index.html   200
