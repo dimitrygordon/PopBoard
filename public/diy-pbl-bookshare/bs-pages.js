@@ -246,7 +246,7 @@ function buildS09(root, T) {
   // Centered on each drawn card, below the header icon (TEXT-ON-ART / Round 3)
   const genres = [
     // Scene-% centers of each drawn card body (verified against full-view shots)
-    { text: "Lab report", left: 65.5, top: 33 },          // beaker white body below header
+    { text: "Lab report", left: 61.2, top: 24.5 },        // flask card white body under red header
     { text: "Business letter", left: 59.5, top: 60 },     // envelope card body
     { text: "Executive summary", left: 69.5, top: 58 },   // wax-seal card body
     { text: "Problem statement", left: 86.5, top: 58 },   // clipboard card body
@@ -270,8 +270,9 @@ function buildS09(root, T) {
 
 function buildS10(root, T) {
   const p = P("s10");
-  const glow = sprite(root, "s10", "breakeven_glow", "s10-glow", p.breakeven_glow);
-  // No birac_block sprite: bg already draws a 4-block stack; extra sprite looked like a stray red B.
+  // No breakeven_glow sprite: it sat above the intersection as a stray orange dot;
+  // the break-even glow is already baked into bg.webp. (DOM, not Leo.)
+  // No birac_block sprite: bg already draws a 4-block stack.
 
   // Graph labels: sit ON the drawn lines near their tips / glow (art coords).
   const labels = [
@@ -292,19 +293,23 @@ function buildS10(root, T) {
   // Block stack sits ~x1540-1680, y ~430-720 (bottom block near overlay 1540,640)
   const biracLetters = [
     // Front faces of the 4-block stack (right of graph); C on the top face
-    { ch: "B", x: 1755, y: 640 },  // bottom block front face
-    { ch: "I", x: 1755, y: 575 },
-    { ch: "R", x: 1755, y: 495 },
-    { ch: "A", x: 1755, y: 415 },
-    { ch: "C", x: 1770, y: 350 },  // top face of the stack
+    { ch: "B", x: 1755, y: 655 },  // bottom block front face
+    { ch: "I", x: 1755, y: 595 },
+    { ch: "R", x: 1755, y: 510 },
+    { ch: "A", x: 1755, y: 425 },
+    { ch: "C", x: 1775, y: 355 },  // top face of the stack
   ];
   biracLetters.forEach((L) => {
-    const el = surface("label", "s10-birac-letter on-art on-art-t");
+    // No on-art / multiply: solid bold ink so letters stay readable on coral blocks
+    const el = surface("label", "s10-birac-letter");
     el.textContent = L.ch;
     el.style.left = (L.x / 1920) * 100 + "%";
     el.style.top = (L.y / 1080) * 100 + "%";
     el.style.transform = "translate(-50%, -50%) rotate(-2deg)";
-    el.style.fontSize = "clamp(16px, 1.85cqw, 28px)";
+    el.style.fontSize = "clamp(36px, 4.2cqw, 64px)";
+    el.style.fontWeight = "700";
+    el.style.color = "#26376e";
+    el.style.mixBlendMode = "normal";
     root.appendChild(el);
   });
 
@@ -316,8 +321,8 @@ function buildS10(root, T) {
     panel.appendChild(eqs);
   }
 
-  if (reduced()) return;
-  loopOrOnce(T, glow, [{ opacity: 0.35 }, { opacity: 1 }, { opacity: 0.35 }], 0, 1.4);
+  void T;
+  void p;
 }
 
 
