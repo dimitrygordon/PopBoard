@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "source": "placeholder-agent-measure",
+  "note": "Leo will replace with measured card and pin rects.",
+  "art": "keyterms/bg.webp",
+  "size": [
+    1920,
+    1080
+  ],
+  "cards": [
+    {
+      "id": "term_0",
+      "term": "Driving question",
+      "x": 155,
+      "y": 210,
+      "w": 219,
+      "h": 211,
+      "rot": -2,
+      "pin": {
+        "cx": 264.5,
+        "cy": 212,
+        "w": 36,
+        "h": 36
+      },
+      "pad_top_frac": 0.08
+    },
+    {
+      "id": "term_1",
+      "term": "Entry event",
+      "x": 392,
+      "y": 210,
+      "w": 219,
+      "h": 211,
+      "rot": 1.5,
+      "pin": {
+        "cx": 501.5,
+        "cy": 212,
+        "w": 36,
+        "h": 36
+      },
+      "pad_top_frac": 0.08
+    },
+    {
+      "id": "term_2",
+      "term": "Authentic audience",
+      "x": 629,
+      "y": 210,
+      "w": 219,
+      "h": 211,
+      "rot": -1,
+      "pin": {
+        "cx": 738.5,
+        "cy": 212,
+        "w": 36,
+        "h": 36
+      },
+      "pad_top_frac": 0.08
+    },
+    {
+      "id": "term_3",
+      "term": "Backplanning",
+      "x": 866,
+      "y": 210,
+      "w": 219,
+      "h": 211,
+      "rot": 2,
+      "pin": {
+        "cx": 975.5,
+        "cy": 212,
+        "w": 36,
+        "h": 36
+      },
+      "pad_top_frac": 0.08
+    },
+    {
+      "id": "term_4",
+      "term": "Problem statement",
+      "x": 155,
+      "y": 449,
+      "w": 219,
+      "h": 211,
+      "rot": 1,
+      "pin": {
+        "cx": 264.5,
+        "cy": 451,
+        "w": 36,
+        "h": 36
+      },
+      "pad_top_frac": 0.08
+    },
+    {
+      "id": "term_5",
+      "term": "BIRAC",
+      "x": 392,
+      "y": 449,
+      "w": 219,
+      "h": 211,
+      "rot": -2.5,
+      "pin": {
+        "cx": 501.5,
+        "cy": 451,
+        "w": 36,
+        "h": 36
+      },
+      "pad_top_frac": 0.08
+    },
+    {
+      "id": "term_6",
+      "term": "Costa's Levels",
+      "x": 629,
+      "y": 449,
+      "w": 219,
+      "h": 211,
+      "rot": 2,
+      "pin": {
+        "cx": 738.5,
+        "cy": 451,
+        "w": 36,
+        "h": 36
+      },
+      "pad_top_frac": 0.08
+    },
+    {
+      "id": "term_7",
+      "term": "\"Able to Teach This Topic\"",
+      "x": 866,
+      "y": 449,
+      "w": 219,
+      "h": 211,
+      "rot": -1,
+      "pin": {
+        "cx": 975.5,
+        "cy": 451,
+        "w": 36,
+        "h": 36
+      },
+      "pad_top_frac": 0.08
+    }
+  ]
+}

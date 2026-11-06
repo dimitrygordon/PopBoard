@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "source": "placeholder-agent-measure",
+  "note": "Leo will replace with measured quads. TL,TR,BR,BL in art pixels on 1920x1080.",
+  "art": "s09/bg.webp",
+  "size": [
+    1920,
+    1080
+  ],
+  "cards": [
+    {
+      "id": "lab_report",
+      "text": "Lab report",
+      "rot": -10,
+      "quad": [
+        [
+          1135,
+          255
+        ],
+        [
+          1395,
+          220
+        ],
+        [
+          1425,
+          395
+        ],
+        [
+          1165,
+          430
+        ]
+      ]
+    },
+    {
+      "id": "business_letter",
+      "text": "Business letter",
+      "rot": -16,
+      "quad": [
+        [
+          1110,
+          530
+        ],
+        [
+          1295,
+          495
+        ],
+        [
+          1340,
+          755
+        ],
+        [
+          1155,
+          790
+        ]
+      ]
+    },
+    {
+      "id": "executive_summary",
+      "text": "Executive summary",
+      "rot": -4,
+      "quad": [
+        [
+          1395,
+          545
+        ],
+        [
+          1605,
+          535
+        ],
+        [
+          1620,
+          770
+        ],
+        [
+          1410,
+          780
+        ]
+      ]
+    },
+    {
+      "id": "problem_statement",
+      "text": "Problem statement",
+      "rot": 16,
+      "quad": [
+        [
+          1575,
+          560
+        ],
+        [
+          1790,
+          610
+        ],
+        [
+          1730,
+          845
+        ],
+        [
+          1515,
+          795
+        ]
+      ]
+    }
+  ]
+}

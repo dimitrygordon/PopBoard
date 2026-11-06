@@ -22,6 +22,8 @@ const TEXT_SELS = [
   ".bs-idea-panel",
   ".bs-surface--titleblock",
   ".bs-kt-grid",
+  ".bs-term-text",
+  ".s09-genre",
 ];
 
 async function settle(page) {
@@ -138,6 +140,83 @@ test("full view: every stage text container fits with no scroll at 1280/1920/136
       [],
       "clipped or scrollable stage text:\n" + failures.map((f) => JSON.stringify(f)).join("\n")
     );
+  } finally {
+    await browser.close();
+  }
+});
+
+test("keyterms (slide 17): term text inside card; pin box misses text; works at 390", async (t) => {
+  let puppeteer;
+  try {
+    puppeteer = (await import(pathToFileURL(PUPPETEER).href)).default;
+  } catch (e) {
+    t.skip("puppeteer-core not available: " + e.message);
+    return;
+  }
+  let browser;
+  try {
+    browser = await puppeteer.launch({
+      executablePath: CHROME,
+      args: ["--no-sandbox", "--disk-cache-size=1"],
+      headless: "new",
+    });
+  } catch (e) {
+    t.skip("Chrome launch failed: " + e.message);
+    return;
+  }
+  try {
+    const failures = [];
+    for (const vp of [
+      { name: "390x844", width: 390, height: 844, mobile: true },
+      { name: "1280x720", width: 1280, height: 720, mobile: false },
+    ]) {
+      const page = await browser.newPage();
+      await page.setViewport({
+        width: vp.width, height: vp.height, deviceScaleFactor: 1,
+        isMobile: !!vp.mobile, hasTouch: !!vp.mobile,
+      });
+      await page.setCacheEnabled(false);
+      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=17&full=1`, {
+        waitUntil: "networkidle0", timeout: 60000,
+      });
+      await settle(page);
+      await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+      const rows = await page.evaluate(() => {
+        const out = [];
+        for (const card of document.querySelectorAll(".bs-term-card")) {
+          const text = card.querySelector(".bs-term-text");
+          const pin = card.querySelector(".bs-paper-pin");
+          if (!text || !pin) { out.push({ bad: "missing text/pin" }); continue; }
+          const cr = card.getBoundingClientRect();
+          const tr = text.getBoundingClientRect();
+          const pr = pin.getBoundingClientRect();
+          const pad = 0.5;
+          const textInside =
+            tr.left >= cr.left - pad && tr.right <= cr.right + pad &&
+            tr.top >= cr.top - pad && tr.bottom <= cr.bottom + pad;
+          const overlap = !(pr.right < tr.left || pr.left > tr.right || pr.bottom < tr.top || pr.top > tr.bottom);
+          const clip = text.scrollHeight > text.clientHeight + 1;
+          out.push({
+            id: card.dataset.cardId || card.className,
+            textInside, overlap, clip,
+            fontSize: getComputedStyle(text).fontSize,
+            text: (text.textContent || "").slice(0, 40),
+          });
+        }
+        return out;
+      });
+      if (!rows.length) failures.push(`${vp.name}: no term cards`);
+      for (const r of rows) {
+        if (r.bad) failures.push(`${vp.name}: ${r.bad}`);
+        if (r.textInside === false) failures.push(`${vp.name}: text outside card (${r.id} "${r.text}")`);
+        if (r.overlap) failures.push(`${vp.name}: pin overlaps text (${r.id} "${r.text}")`);
+        if (r.clip) failures.push(`${vp.name}: term text clips/scrolls (${r.id})`);
+        const fs = parseFloat(r.fontSize);
+        if (vp.width <= 400 && fs < 10.5) failures.push(`${vp.name}: font too small ${fs}`);
+      }
+      await page.close();
+    }
+    assert.equal(failures.length, 0, failures.join("\n"));
   } finally {
     await browser.close();
   }

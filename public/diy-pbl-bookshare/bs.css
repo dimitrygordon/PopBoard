@@ -1426,3 +1426,32 @@ body.fl-full .bs-paper-group .bs-apa li {
   color: #26376e !important;
   mix-blend-mode: normal !important;
 }
+
+
+/* --- polish: s17 term fit + s09 genre quads --- */
+.bs-term-card {
+  container-type: size;
+}
+.bs-term-card .bs-term-text {
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+  max-height: 100%;
+  /* flex override from inline; keep clamp */
+  align-content: center;
+  justify-content: center;
+}
+.bs-term-card .bs-paper-pin {
+  z-index: 8;
+  pointer-events: none;
+}
+.bs-surface--genre {
+  overflow: hidden;
+  word-break: break-word;
+}
+.bs-scene .s09-genre {
+  mix-blend-mode: multiply;
+}
