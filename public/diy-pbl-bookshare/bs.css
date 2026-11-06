@@ -1045,6 +1045,30 @@ body.fl-full .bs-resources-panel--compact {
   right: auto !important;
   bottom: auto !important;
 }
+.bs-paper-group .bs-resources-panel--wide {
+  left: 4% !important;
+  top: 5% !important;
+  width: 92% !important;
+  height: 90% !important;
+  right: auto !important;
+  bottom: auto !important;
+}
+.bs-paper-group .bs-discuss {
+  left: 9% !important;
+  top: 5.5% !important;
+  width: 82% !important;
+  height: 90% !important;
+  right: auto !important;
+  bottom: auto !important;
+}
+.bs-paper-group .bs-takeaways {
+  left: 10% !important;
+  top: 12% !important;
+  width: 80% !important;
+  height: 78% !important;
+  right: auto !important;
+  bottom: auto !important;
+}
 /* Label chips: no text-shadow glow (looks pasted) */
 .bs-surface--label,
 .s10-lab-cost, .s10-lab-rev, .s10-lab-be {
@@ -1297,8 +1321,8 @@ body[data-kind="resources"] .bs-scene::before {
   font-size: inherit !important;
   line-height: inherit !important;
   margin: 0 !important;
-  padding-left: 1.35em !important;
-  text-indent: -1.35em !important;
+  padding-left: 1.05em !important;
+  text-indent: -1.05em !important;
   position: relative;
 }
 .bs-paper-group .bs-resources-panel .bs-apa li::before {
@@ -1463,9 +1487,9 @@ body.fl-full .bs-paper-group .bs-apa li {
   pointer-events: none;
   z-index: 6;
 }
-.bs-design-layer .bs-idea-title { font-size: 32px; }
-.bs-design-layer .bs-idea-bullets { font-size: 22px; }
-.bs-design-layer .bs-idea-cite { font-size: 18px; }
+.bs-design-layer .bs-idea-title { font-size: 54px !important; }
+.bs-design-layer .bs-idea-bullets { font-size: 40px !important; }
+.bs-design-layer .bs-idea-cite { font-size: 36px !important; }
 .bs-design-layer .bs-term-text {
   font-size: 20px;
   font-weight: 700;
@@ -1488,20 +1512,48 @@ body.fl-full .bs-paper-group .bs-apa li {
   -webkit-line-clamp: unset !important;
   line-clamp: unset !important;
 }
-.bs-design-layer .s01-book { font-size: 42px !important; }
-.bs-design-layer .s01-author { font-size: 28px !important; }
-.bs-design-layer .s01-pub { font-size: 18px !important; }
-.bs-design-layer .s01-byline { font-size: 24px !important; }
-.bs-design-layer .bs-takeaways h3 { font-size: 32px !important; }
-.bs-design-layer .bs-takeaways li { font-size: 22px !important; }
-.bs-design-layer .bs-dq-card { font-size: 22px !important; }
-.bs-design-layer .bs-resources-panel .bs-res-h { font-size: 26px !important; }
-.bs-design-layer .bs-resources-panel .bs-apa li { font-size: 16px !important; }
-.bs-design-layer .bs-idea-eqs { font-size: 18px !important; }
+.bs-design-layer .s01-book { font-size: 78px !important; }
+.bs-design-layer .s01-author { font-size: 58px !important; }
+.bs-design-layer .s01-pub { font-size: 40px !important; }
+.bs-design-layer .s01-byline { font-size: 52px !important; }
+.bs-design-layer .bs-takeaways h3 { font-size: 48px !important; }
+.bs-design-layer .bs-takeaways li { font-size: 34px !important; }
+.bs-design-layer .bs-dq-card { font-size: 34px !important; }
+.bs-design-layer .bs-resources-panel .bs-res-h { font-size: 52px !important; }
+.bs-design-layer .bs-resources-panel .bs-apa li { font-size: 44px !important; }
+.bs-design-layer .bs-paper-group .bs-resources-panel,
+.bs-design-layer .bs-paper-group .bs-resources-panel--wide,
+.bs-design-layer .bs-paper-group .bs-resources-panel--compact {
+  font-size: 44px !important;
+  line-height: 1.18 !important;
+}
+.bs-design-layer .bs-paper-group .bs-resources-panel .bs-apa li,
+.bs-design-layer .bs-paper-group .bs-apa li,
+body.fl-full .bs-design-layer .bs-paper-group .bs-apa li {
+  font-size: 44px !important;
+  line-height: 1.18 !important;
+}
+.bs-design-layer .bs-paper-group .bs-resources-panel .bs-res-h {
+  font-size: 52px !important;
+}
+.bs-design-layer .bs-paper-group .bs-resources-panel .bs-apa.bs-apa-two {
+  column-gap: 0.9em !important;
+  row-gap: 0.15em !important;
+}
+.bs-design-layer .bs-paper-group .bs-discuss {
+  font-size: 34px !important;
+  line-height: 1.22 !important;
+}
+.bs-design-layer .bs-paper-group .bs-discuss .bs-dq-card {
+  font-size: 34px !important;
+}
+.bs-design-layer .bs-paper-group .bs-takeaways h3 { font-size: 48px !important; }
+.bs-design-layer .bs-paper-group .bs-takeaways li { font-size: 34px !important; }
+.bs-design-layer .bs-idea-eqs { font-size: 30px !important; }
 .bs-design-layer .s10-lab-rev,
 .bs-design-layer .s10-lab-cost,
-.bs-design-layer .s10-lab-be { font-size: 22px !important; }
-.bs-design-layer .s10-birac-letter { font-size: 28px !important; }
+.bs-design-layer .s10-lab-be { font-size: 34px !important; }
+.bs-design-layer .s10-birac-letter { font-size: 42px !important; }
 
 /* Absolute pin+text children: no flex padding on the card shell */
 .bs-term-card {
@@ -1524,18 +1576,18 @@ body.fl-full .bs-paper-group .bs-apa li {
   .bs-design-layer .bs-dq-card { font-size: 22px !important; }
   .bs-design-layer .bs-apa li { font-size: 16px !important; }
   .bs-design-layer .bs-resources-panel .bs-res-h { font-size: 26px !important; }
-  .bs-design-layer .bs-paper-group .bs-discuss { font-size: 22px !important; line-height: 1.22 !important; }
-  .bs-design-layer .bs-paper-group .bs-resources-panel { font-size: 16px !important; line-height: 1.18 !important; }
+  .bs-design-layer .bs-paper-group .bs-discuss { font-size: 34px !important; line-height: 1.22 !important; }
+  .bs-design-layer .bs-paper-group .bs-resources-panel { font-size: 44px !important; line-height: 1.18 !important; }
 }
 @media (max-width: 500px) {
   body.fl-full .bs-design-layer .bs-paper-group .bs-discuss {
-    font-size: 22px !important;
+    font-size: 34px !important;
     line-height: 1.22 !important;
   }
   body.fl-full .bs-design-layer .bs-paper-group .bs-resources-panel,
   body.fl-full .bs-design-layer .bs-paper-group .bs-resources-panel--wide,
   body.fl-full .bs-design-layer .bs-paper-group .bs-resources-panel--compact {
-    font-size: 16px !important;
+    font-size: 44px !important;
     line-height: 1.18 !important;
   }
 }

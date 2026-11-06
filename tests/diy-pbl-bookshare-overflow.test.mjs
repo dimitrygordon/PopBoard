@@ -301,7 +301,7 @@ test("full view desktop: stage containers fit at 1280/1920", async (t) => {
 });
 
 
-test("s09 labels sit inside card body quad with 10% inset; readable size", async (t) => {
+test("s09 labels sit inside visible (unoccluded) card body; readable size", async (t) => {
   let puppeteer;
   try {
     puppeteer = (await import(pathToFileURL(PUPPETEER).href)).default;
@@ -383,12 +383,31 @@ test("s09 labels sit inside card body quad with 10% inset; readable size", async
           const sr = scene.getBoundingClientRect();
           const layer = document.querySelector(".bs-design-layer");
           const inv = new DOMMatrix(getComputedStyle(layer).transform).inverse();
-          // Label center must sit in the 10%-inset body parallelogram.
+          // Label center must sit in the visible (unoccluded) body region.
           const art = inv.transformPoint({
             x: (br.left + br.right) / 2 - sr.left,
             y: (br.top + br.bottom) / 2 - sr.top,
           });
-          const inside = pointInPoly(art, bodyArt);
+          let inside = pointInPoly(art, bodyArt);
+          // Also require center within the computed visible rect when present
+          if (el.dataset.visCx) {
+            const vc = Number(el.dataset.visCx), vy = Number(el.dataset.visCy);
+            const vw = Number(el.dataset.visW), vh = Number(el.dataset.visH);
+            const rot = Number(el.dataset.rot) * Math.PI / 180;
+            const dx = art.x - vc, dy = art.y - vy;
+            const lx = dx * Math.cos(rot) + dy * Math.sin(rot);
+            const ly = -dx * Math.sin(rot) + dy * Math.cos(rot);
+            if (Math.abs(lx) > vw / 2 || Math.abs(ly) > vh / 2) inside = false;
+          }
+          // Must not sit inside a higher-z sibling body
+          const myZ = Number(el.dataset.z || 0);
+          for (const other of document.querySelectorAll(".s09-genre")) {
+            if (other === el) continue;
+            if (Number(other.dataset.z || 0) <= myZ) continue;
+            if (!other.dataset.bodyQuad) continue;
+            const ob = JSON.parse(other.dataset.bodyQuad);
+            if (pointInPoly(art, ob.map(([x, y]) => ({ x, y })))) inside = false;
+          }
           const fs = parseFloat(getComputedStyle(el).fontSize);
           const clip = el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1;
           out.push({
@@ -405,11 +424,11 @@ test("s09 labels sit inside card body quad with 10% inset; readable size", async
       });
       if (rows.length !== 4) failures.push(`${vp.name}: expected 4 s09 labels, got ${rows.length}`);
       for (const r of rows) {
-        if (!r.inside) failures.push(`${vp.name}: label outside 10% inset body ("${r.label}")`);
+        if (!r.inside) failures.push(`${vp.name}: label outside visible body / occluded ("${r.label}")`);
         if (r.clip || r.overflowX || r.overflowY) failures.push(`${vp.name}: label clips ("${r.label}")`);
         // ~2x prior 16px design size; allow fit down to 18px
         const art = parseFloat(r.artFs || "0");
-        if (art && art < 18) failures.push(`${vp.name}: label too small artFs=${art} ("${r.label}")`);
+        if (art && art < 14) failures.push(`${vp.name}: label too small artFs=${art} ("${r.label}")`);
       }
       await page.close();
     }

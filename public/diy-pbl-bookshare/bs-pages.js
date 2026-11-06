@@ -58,7 +58,7 @@ const PAPER = `${ART}paper`;
 
 /** Leo TEXT-ON-ART.md per-slide cream-column rects (1920x1080 -> %). */
 const IDEA_MAP = {
-  1:  { x: 110, y: 250, w: 890, h: 390, rot: 1 },
+  1:  { x: 90, y: 200, w: 920, h: 520, rot: 1 },
   2:  { x: 110, y: 200, w: 760, h: 560, rot: -1 },
   3:  { x: 110, y: 200, w: 760, h: 560, rot: 1 },
   4:  { x: 110, y: 220, w: 730, h: 540, rot: -1 },
@@ -168,6 +168,44 @@ function fitS09Label(el, maxDesignPx, bodyQuad) {
 }
 
 
+
+/** Shrink paper-panel text (discuss/resources/takeaways) until it fits. */
+function fitPaperPanel(panel, startPx) {
+  if (!panel) return;
+  const kids = panel.querySelectorAll(".bs-dq-card, .bs-apa li, .bs-res-h, .bs-takeaways h3, .bs-takeaways li");
+  const apply = (sz) => {
+    const isRes = panel.classList.contains("bs-resources-panel");
+    const lh = isRes ? "1.08" : "";
+    kids.forEach((el) => {
+      if (el.classList.contains("bs-res-h") || el.tagName === "H3") {
+        el.style.setProperty("font-size", Math.max(sz * 1.12, sz) + "px", "important");
+      } else {
+        el.style.setProperty("font-size", sz + "px", "important");
+      }
+      if (lh) el.style.setProperty("line-height", lh, "important");
+    });
+    if (isRes) {
+      const apa = panel.querySelector(".bs-apa");
+      if (apa) apa.style.setProperty("row-gap", "0.18em", "important");
+      panel.style.setProperty("line-height", lh, "important");
+    }
+  };
+  const fits = () =>
+    panel.scrollHeight <= panel.clientHeight + 1 && panel.scrollWidth <= panel.clientWidth + 1;
+  let lo = 16;
+  let hi = startPx || 34;
+  apply(hi);
+  if (fits()) return;
+  // Binary search largest size that fits (design px).
+  for (let i = 0; i < 14; i++) {
+    const mid = (lo + hi) / 2;
+    apply(mid);
+    if (fits()) lo = mid;
+    else hi = mid;
+  }
+  apply(lo);
+}
+
 function ensureDesignLayer(root) {
   let layer = root.querySelector(":scope > .bs-design-layer");
   if (!layer) {
@@ -206,8 +244,8 @@ function fitArtText(el, maxDesignPx) {
   for (let i = 0; i < 14; i++) {
     const mid = (lo + hi) / 2;
     el.style.setProperty("font-size", mid + "px", "important");
-    const ok = el.scrollHeight <= el.clientHeight + 0.5
-      && el.scrollWidth <= el.clientWidth + 0.5;
+    const ok = el.scrollHeight <= el.clientHeight + 2
+      && el.scrollWidth <= el.clientWidth + 2;
     if (ok) { best = mid; lo = mid; } else { hi = mid; }
   }
   el.style.setProperty("font-size", best + "px", "important");
@@ -222,17 +260,24 @@ function fitIdeaPanel(panel) {
   const title = panel.querySelector(".bs-idea-title");
   const bullets = panel.querySelector(".bs-idea-bullets");
   const cite = panel.querySelector(".bs-idea-cite");
-  let titleD = 32, bulletD = 22, citeD = 18;
-  for (let step = 0; step < 28; step++) {
+  const apply = (titleD, bulletD, citeD) => {
     if (title) title.style.setProperty("font-size", titleD + "px", "important");
     if (bullets) bullets.style.setProperty("font-size", bulletD + "px", "important");
     if (cite) cite.style.setProperty("font-size", citeD + "px", "important");
-    const ok = panel.scrollHeight <= panel.clientHeight + 1
-      && panel.scrollWidth <= panel.clientWidth + 1;
-    if (ok) break;
-    titleD = Math.max(8, titleD * 0.92);
-    bulletD = Math.max(7, bulletD * 0.92);
-    citeD = Math.max(6, citeD * 0.92);
+  };
+  const fits = () =>
+    panel.scrollHeight <= panel.clientHeight + 1
+    && panel.scrollWidth <= panel.clientWidth + 1;
+  apply(54, 40, 36);
+  if (!fits()) {
+    let lo = 0.5, hi = 1;
+    for (let i = 0; i < 14; i++) {
+      const mid = (lo + hi) / 2;
+      apply(54 * mid, 40 * mid, 36 * mid);
+      if (fits()) lo = mid;
+      else hi = mid;
+    }
+    apply(54 * lo, 40 * lo, 36 * lo);
   }
 }
 
@@ -287,19 +332,24 @@ function buildS01(root, T) {
     const author = title.querySelector(".s01-author");
     const pub = title.querySelector(".s01-pub");
     const byline = title.querySelector(".s01-byline");
-    let bookD = 42, authorD = 28, pubD = 18, byD = 24;
-    for (let step = 0; step < 24; step++) {
+    const apply = (bookD, authorD, pubD, byD) => {
       if (book) book.style.setProperty("font-size", bookD + "px", "important");
       if (author) author.style.setProperty("font-size", authorD + "px", "important");
       if (pub) pub.style.setProperty("font-size", pubD + "px", "important");
       if (byline) byline.style.setProperty("font-size", byD + "px", "important");
-      if (title.scrollHeight <= title.clientHeight + 1) break;
-      bookD = Math.max(10, bookD * 0.92);
-      authorD = Math.max(9, authorD * 0.92);
-      pubD = Math.max(8, pubD * 0.92);
-      byD = Math.max(8, byD * 0.92);
+    };
+    // Panel-level binary fit only (per-glyph fitArtText was collapsing the title).
+    let lo = 0.55, hi = 1;
+    apply(78, 58, 40, 52);
+    if (title.scrollHeight > title.clientHeight + 2) {
+      for (let i = 0; i < 14; i++) {
+        const mid = (lo + hi) / 2;
+        apply(78 * mid, 58 * mid, 40 * mid, 52 * mid);
+        if (title.scrollHeight <= title.clientHeight + 2) lo = mid;
+        else hi = mid;
+      }
+      apply(78 * lo, 58 * lo, 40 * lo, 52 * lo);
     }
-    if (book) fitArtText(book, bookD);
   }));
   void T;
 }
@@ -344,57 +394,229 @@ function buildS08(root, T) {
 }
 
 function buildS09(root, T) {
-  // Leo art/s09/cards.json: label white body below colored band.
-  // Top-right lightbulb+gear card stays unlabeled (absent from cards.json).
+  // Leo cards.json: label white bodies. Front cards occlude back cards - place
+  // each label only in the VISIBLE remainder of its body (10% inset).
+  // Top-right lightbulb+gear stays unlabeled (not in cards.json).
   const layer = ensureDesignLayer(root);
-  const cards = s09Cards();
-  cards.forEach((c, i) => {
+  const cards = s09Cards().filter((c) => (c.label || c.text));
+  // Paint order back→front (higher z occludes). Matches the fanned stack.
+  const Z = {
+    "Lab report": 0,
+    "Executive summary": 1,
+    "Business letter": 2,
+    "Problem statement": 3,
+  };
+  function centroid(poly) {
+    let x = 0, y = 0;
+    poly.forEach(([px, py]) => { x += px; y += py; });
+    return [x / poly.length, y / poly.length];
+  }
+  function insetPoly(q, pad) {
+    const [cx, cy] = centroid(q);
+    return q.map(([x, y]) => [cx + (x - cx) * (1 - 2 * pad), cy + (y - cy) * (1 - 2 * pad)]);
+  }
+  function pointInPoly(pt, poly) {
+    let inside = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1];
+      const inter = ((yi > pt[1]) !== (yj > pt[1]))
+        && (pt[0] < ((xj - xi) * (pt[1] - yi)) / ((yj - yi) || 1e-9) + xi);
+      if (inter) inside = !inside;
+    }
+    return inside;
+  }
+  function bodyOf(c) {
     const q = c.quad_xy || c.quad;
-    if (!q || q.length < 4) return;
+    const pad = 0.14;
     const label = c.label || c.text || "";
-    if (!label) return;
-    const rot = (c.rotation_deg != null) ? c.rotation_deg
-      : (c.rot != null ? c.rot : Math.atan2(q[1][1] - q[0][1], q[1][0] - q[0][0]) * 180 / Math.PI);
-
-    // Quad TL,TR,BR,BL. Inset 10% toward centroid, then drop top edge past colored band.
-    const pad = 0.10;
     const headerFrac = /lab report/i.test(label) ? 0.36 : 0;
-    const cx = (q[0][0] + q[1][0] + q[2][0] + q[3][0]) / 4;
-    const cy = (q[0][1] + q[1][1] + q[2][1] + q[3][1]) / 4;
-    const inset = q.map(([x, y]) => [cx + (x - cx) * (1 - 2 * pad), cy + (y - cy) * (1 - 2 * pad)]);
-    // Push TL/TR down toward BL/BR by headerFrac of the inset side length
-    const body = [
+    const inset = insetPoly(q, pad);
+    return [
       [inset[0][0] + (inset[3][0] - inset[0][0]) * headerFrac, inset[0][1] + (inset[3][1] - inset[0][1]) * headerFrac],
       [inset[1][0] + (inset[2][0] - inset[1][0]) * headerFrac, inset[1][1] + (inset[2][1] - inset[1][1]) * headerFrac],
       inset[2],
       inset[3],
     ];
-    const bx = (body[0][0] + body[1][0] + body[2][0] + body[3][0]) / 4;
-    const by = (body[0][1] + body[1][1] + body[2][1] + body[3][1]) / 4;
-    const topW = Math.hypot(body[1][0] - body[0][0], body[1][1] - body[0][1]);
-    const sideH = Math.hypot(body[3][0] - body[0][0], body[3][1] - body[0][1]);
-    // Use Leo's card rotation so labels track the drawn card, not just the top edge.
-    const bodyRot = rot;
+  }
+  /** Largest axis-aligned rectangle of visible (unoccluded) body samples in local card frame. */
+  function visibleBounds(body, frontBodies, rot, cx, cy) {
+    const rad = rot * Math.PI / 180;
+    const cos = Math.cos(rad), sin = Math.sin(rad);
+    const locals = body.map(([x, y]) => {
+      const dx = x - cx, dy = y - cy;
+      return [dx * cos + dy * sin, -dx * sin + dy * cos];
+    });
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    locals.forEach(([lx, ly]) => {
+      minX = Math.min(minX, lx); maxX = Math.max(maxX, lx);
+      minY = Math.min(minY, ly); maxY = Math.max(maxY, ly);
+    });
+    const NX = 36, NY = 36;
+    const grid = Array.from({ length: NY + 1 }, () => Array(NX + 1).fill(0));
+    for (let iy = 0; iy <= NY; iy++) {
+      for (let ix = 0; ix <= NX; ix++) {
+        const lx = minX + (maxX - minX) * (ix / NX);
+        const ly = minY + (maxY - minY) * (iy / NY);
+        const ax = cx + lx * cos - ly * sin;
+        const ay = cy + lx * sin + ly * cos;
+        if (!pointInPoly([ax, ay], body)) continue;
+        let occluded = false;
+        for (const fb of frontBodies) {
+          if (pointInPoly([ax, ay], fb)) { occluded = true; break; }
+        }
+        if (!occluded) grid[iy][ix] = 1;
+      }
+    }
+    // Largest rectangle of 1s (histogram method)
+    let best = null, bestArea = 0;
+    const heights = Array(NX + 1).fill(0);
+    for (let iy = 0; iy <= NY; iy++) {
+      for (let ix = 0; ix <= NX; ix++) {
+        heights[ix] = grid[iy][ix] ? heights[ix] + 1 : 0;
+      }
+      const stack = [];
+      for (let ix = 0; ix <= NX + 1; ix++) {
+        const h = ix <= NX ? heights[ix] : 0;
+        let start = ix;
+        while (stack.length && stack[stack.length - 1].h > h) {
+          const { h: hh, i: si } = stack.pop();
+          start = si;
+          const width = ix - si;
+          const area = hh * width;
+          if (area > bestArea) {
+            bestArea = area;
+            const x0 = si, x1 = ix - 1, y1 = iy, y0 = iy - hh + 1;
+            best = { x0, x1, y0, y1 };
+          }
+        }
+        if (!stack.length || stack[stack.length - 1].h < h) stack.push({ h, i: start });
+        else if (stack[stack.length - 1].h === h) { /* keep */ }
+        else stack.push({ h, i: start });
+      }
+    }
+    if (!best) return null;
+    const lx0 = minX + (maxX - minX) * (best.x0 / NX);
+    const lx1 = minX + (maxX - minX) * (best.x1 / NX);
+    const ly0 = minY + (maxY - minY) * (best.y0 / NY);
+    const ly1 = minY + (maxY - minY) * (best.y1 / NY);
+    const padX = (lx1 - lx0) * 0.14, padY = (ly1 - ly0) * 0.14;
+    const w = (lx1 - lx0) - 2 * padX, h = (ly1 - ly0) - 2 * padY;
+    if (w < 28 || h < 28) return null;
+    return { lx: (lx0 + lx1) / 2, ly: (ly0 + ly1) / 2, w, h };
+  }
+
+  const prepared = cards.map((c) => {
+    const q = c.quad_xy || c.quad;
+    const label = c.label || c.text || "";
+    const rot = (c.rotation_deg != null) ? c.rotation_deg
+      : Math.atan2(q[1][1] - q[0][1], q[1][0] - q[0][0]) * 180 / Math.PI;
+    const body = bodyOf(c);
+    // Occluder = white body + colored header band above it (Leo quads are body-only).
+    const [tl, tr, br, bl] = q;
+    const headerFrac = 0.55;
+    const upL = [tl[0] - (bl[0] - tl[0]) * headerFrac, tl[1] - (bl[1] - tl[1]) * headerFrac];
+    const upR = [tr[0] - (br[0] - tr[0]) * headerFrac, tr[1] - (br[1] - tr[1]) * headerFrac];
+    const face = insetPoly([upL, upR, br, bl], -0.03);
+    const [cx, cy] = centroid(q);
+    return { c, q, label, rot, body, face, cx, cy, z: Z[label] != null ? Z[label] : 0 };
+  });
+
+  prepared.forEach((P, i) => {
+    const frontBodies = prepared.filter((O) => O.z > P.z).map((O) => O.face);
+    let vis = visibleBounds(P.body, frontBodies, P.rot, P.cx, P.cy);
+    // If nothing actually occludes this body, use the full inset body (avoids
+    // undersized inscribed-rects inside parallelograms).
+    const rad0 = P.rot * Math.PI / 180;
+    const cos0 = Math.cos(rad0), sin0 = Math.sin(rad0);
+    let anyOcc = false;
+    if (frontBodies.length) {
+      const [bx0, by0, bx1, by1] = [
+        Math.min(...P.body.map((p) => p[0])), Math.min(...P.body.map((p) => p[1])),
+        Math.max(...P.body.map((p) => p[0])), Math.max(...P.body.map((p) => p[1])),
+      ];
+      outer: for (let i = 0; i <= 12; i++) {
+        for (let j = 0; j <= 12; j++) {
+          const ax = bx0 + (bx1 - bx0) * (i / 12);
+          const ay = by0 + (by1 - by0) * (j / 12);
+          if (!pointInPoly([ax, ay], P.body)) continue;
+          for (const fb of frontBodies) {
+            if (pointInPoly([ax, ay], fb)) { anyOcc = true; break outer; }
+          }
+        }
+      }
+    }
+    if (!anyOcc) {
+      const topW = Math.hypot(P.body[1][0] - P.body[0][0], P.body[1][1] - P.body[0][1]);
+      const sideH = Math.hypot(P.body[3][0] - P.body[0][0], P.body[3][1] - P.body[0][1]);
+      const [bcx, bcy] = centroid(P.body);
+      const dx = bcx - P.cx, dy = bcy - P.cy;
+      vis = {
+        lx: dx * cos0 + dy * sin0,
+        ly: -dx * sin0 + dy * cos0,
+        w: topW * 0.92,
+        h: sideH * 0.92,
+      };
+    }
+    if (P.label === "Lab report") {
+      // Lab sits behind Business+Executive; keep a thin strip under the header only.
+      const topW = Math.hypot(P.body[1][0] - P.body[0][0], P.body[1][1] - P.body[0][1]);
+      const sideH = Math.hypot(P.body[3][0] - P.body[0][0], P.body[3][1] - P.body[0][1]);
+      const topMid = [(P.body[0][0] + P.body[1][0]) / 2, (P.body[0][1] + P.body[1][1]) / 2];
+      const [bcx, bcy] = centroid(P.body);
+      const ux = topMid[0] * 0.82 + bcx * 0.18;
+      const uy = topMid[1] * 0.82 + bcy * 0.18;
+      const dx = ux - P.cx, dy = uy - P.cy;
+      vis = {
+        lx: dx * cos0 + dy * sin0,
+        ly: -dx * sin0 + dy * cos0,
+        w: topW * 0.72,
+        h: sideH * 0.28,
+      };
+    }
+    if (!vis) {
+      // Heavily occluded: keep the upper 50% of the body as a last resort.
+      const topW = Math.hypot(P.body[1][0] - P.body[0][0], P.body[1][1] - P.body[0][1]);
+      const sideH = Math.hypot(P.body[3][0] - P.body[0][0], P.body[3][1] - P.body[0][1]);
+      const [bcx, bcy] = centroid(P.body);
+      // shift toward top edge (negative local Y after rotation into local)
+      const topMid = [(P.body[0][0] + P.body[1][0]) / 2, (P.body[0][1] + P.body[1][1]) / 2];
+      const ux = (topMid[0] + bcx) / 2, uy = (topMid[1] + bcy) / 2;
+      const dx = ux - P.cx, dy = uy - P.cy;
+      vis = {
+        lx: dx * cos0 + dy * sin0,
+        ly: -dx * sin0 + dy * cos0,
+        w: topW * 0.85,
+        h: sideH * 0.45,
+      };
+    }
+    const rad = P.rot * Math.PI / 180;
+    const bx = P.cx + vis.lx * Math.cos(rad) - vis.ly * Math.sin(rad);
+    const by = P.cy + vis.lx * Math.sin(rad) + vis.ly * Math.cos(rad);
+    const topW = vis.w;
+    const sideH = vis.h;
 
     const el = surface("genre", `s09-genre s09-g${i} on-art`);
-    el.dataset.cardId = c.id || label || `g${i}`;
-    el.dataset.label = label;
-    el.dataset.quad = JSON.stringify(q);
-    el.dataset.bodyQuad = JSON.stringify(body);
-    el.dataset.bodyInset = String(pad);
-    el.dataset.headerFrac = String(headerFrac);
-    el.dataset.cardCx = String(cx);
-    el.dataset.cardCy = String(cy);
-    el.dataset.cardW = String(Math.hypot(q[1][0] - q[0][0], q[1][1] - q[0][1]));
-    el.dataset.cardH = String(Math.hypot(q[3][0] - q[0][0], q[3][1] - q[0][1]));
-    el.dataset.rot = String(rot);
-    el.textContent = label.includes(" ") ? label.replace(" ", "\n") : label;
+    el.dataset.cardId = P.c.id || P.label || `g${i}`;
+    el.dataset.label = P.label;
+    el.dataset.quad = JSON.stringify(P.q);
+    el.dataset.bodyQuad = JSON.stringify(P.body);
+    el.dataset.visCx = String(bx);
+    el.dataset.visCy = String(by);
+    el.dataset.visW = String(topW);
+    el.dataset.visH = String(sideH);
+    el.dataset.bodyInset = "0.10";
+    el.dataset.rot = String(P.rot);
+    el.dataset.cardCx = String(P.cx);
+    el.dataset.cardCy = String(P.cy);
+    el.dataset.z = String(P.z);
+    el.textContent = (P.label === "Lab report")
+      ? P.label
+      : (P.label.includes(" ") ? P.label.replace(" ", "\n") : P.label);
     el.style.left = (bx / 1920) * 100 + "%";
     el.style.top = (by / 1080) * 100 + "%";
-    // Slightly smaller than body edges so a rotated CSS rect stays inside the parallelogram.
-    el.style.width = ((topW * 0.92) / 1920) * 100 + "%";
-    el.style.height = ((sideH * 0.92) / 1080) * 100 + "%";
-    el.style.transform = `translate(-50%, -50%) rotate(${bodyRot}deg)`;
+    el.style.width = (topW / 1920) * 100 + "%";
+    el.style.height = (sideH / 1080) * 100 + "%";
+    el.style.transform = `translate(-50%, -50%) rotate(${P.rot}deg)`;
     el.style.transformOrigin = "50% 50%";
     el.style.textAlign = "center";
     el.style.display = "flex";
@@ -405,15 +627,15 @@ function buildS09(root, T) {
     el.style.padding = "0";
     el.style.boxSizing = "border-box";
     el.style.color = "#26376e";
-    el.style.fontSize = "32px";
+    el.style.fontSize = "36px";
     el.style.overflow = "hidden";
     el.style.pointerEvents = "none";
+    el.style.zIndex = String(10 + P.z);
     layer.appendChild(el);
-    requestAnimationFrame(() => requestAnimationFrame(() => fitArtText(el, 36)));
+    requestAnimationFrame(() => requestAnimationFrame(() => fitArtText(el, 40)));
   });
   void T;
 }
-
 
 function buildS10(root, T) {
   const p = P("s10");
@@ -463,7 +685,7 @@ function buildS10(root, T) {
     el.style.display = "flex";
     el.style.alignItems = "center";
     el.style.justifyContent = "center";
-    el.style.fontSize = "28px";
+    el.style.fontSize = "42px";
     el.style.fontWeight = "700";
     el.style.lineHeight = "1";
     el.style.color = "#26376e";
@@ -472,7 +694,7 @@ function buildS10(root, T) {
     el.style.textAlign = "center";
     el.dataset.face = `${L.x},${L.y},${L.w},${L.h}`;
     layer.appendChild(el);
-    requestAnimationFrame(() => requestAnimationFrame(() => fitArtText(el, 28)));
+    requestAnimationFrame(() => requestAnimationFrame(() => fitArtText(el, 42)));
   });
 
   // Formula lines: append into the cream idea panel so they sit with the bullets
@@ -737,6 +959,7 @@ export const PAGES = SLIDES.map((slide) => ({
       });
       group.appendChild(panel);
       ensureDesignLayer(root).appendChild(group);
+      requestAnimationFrame(() => requestAnimationFrame(() => fitPaperPanel(panel, 34)));
       buildDiscussionArt(root, T);
     } else if (slide.kind === "resources") {
       const nRes = (slide.resources || []).length;
@@ -767,10 +990,11 @@ export const PAGES = SLIDES.map((slide) => ({
         panel.appendChild(ul);
         group.appendChild(panel);
         ensureDesignLayer(root).appendChild(group);
+        requestAnimationFrame(() => requestAnimationFrame(() => fitPaperPanel(panel, 44)));
       } else {
-        // sheet_flat_wide ~55% left; two-column APA; teal book stays clear (x>~1260)
+        // sheet_flat_wide ~62% left; two-column APA; keep book spine clear (x>~1260)
         const group = h("div", "bs-paper-group");
-        applyRect(group, 30, 15, 1050, 1050, 0);
+        applyRect(group, 12, 8, 1240, 1064, 0);
         const paper = img(`${PAPER}/sheet_flat_wide.webp`, "bs-paper");
         paper.setAttribute("aria-hidden", "true");
         paper.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:fill;";
@@ -797,6 +1021,7 @@ export const PAGES = SLIDES.map((slide) => ({
         panel.appendChild(ul);
         group.appendChild(panel);
         ensureDesignLayer(root).appendChild(group);
+        requestAnimationFrame(() => requestAnimationFrame(() => fitPaperPanel(panel, 44)));
       }
     } else if (slide.kind === "conclude") {
       if (BUILDERS.s17) BUILDERS.s17(root, T);
@@ -816,6 +1041,7 @@ export const PAGES = SLIDES.map((slide) => ({
       box.innerHTML = `<h3 class="on-art-t">Takeaways</h3><ol class="on-art-b">${items.map((b) => `<li>${b}</li>`).join("")}</ol>`;
       group.appendChild(box);
       ensureDesignLayer(root).appendChild(group);
+      requestAnimationFrame(() => requestAnimationFrame(() => fitPaperPanel(box, 34)));
     } else if (BUILDERS[artId]) {
       BUILDERS[artId](root, T);
     }
