@@ -43,6 +43,69 @@ function surface(kind, extraClass = "") {
 }
 
 
+const PAPER = `${ART}paper`;
+
+/** Leo TEXT-ON-ART.md per-slide cream-column rects (1920x1080 -> %). */
+const IDEA_MAP = {
+  1:  { x: 110, y: 250, w: 890, h: 390, rot: 1 },
+  2:  { x: 110, y: 200, w: 760, h: 560, rot: -1 },
+  3:  { x: 110, y: 200, w: 760, h: 560, rot: 1 },
+  4:  { x: 110, y: 220, w: 730, h: 540, rot: -1 },
+  5:  { x: 110, y: 200, w: 800, h: 560, rot: -1 },
+  6:  { x: 110, y: 200, w: 700, h: 560, rot: 1 },
+  7:  { x: 110, y: 200, w: 700, h: 560, rot: -1 },
+  8:  { x: 110, y: 200, w: 760, h: 560, rot: 1 },
+  9:  { x: 110, y: 200, w: 860, h: 560, rot: -1 },
+  10: { x: 110, y: 200, w: 700, h: 520, rot: 1 },
+  11: { x: 110, y: 200, w: 780, h: 560, rot: -1 },
+  12: { x: 110, y: 200, w: 860, h: 560, rot: 1 },
+  13: { x: 110, y: 200, w: 880, h: 560, rot: -1 },
+  14: { x: 110, y: 200, w: 760, h: 560, rot: 1 },
+  15: { x: 110, y: 200, w: 720, h: 560, rot: -1 },
+  16: { x: 110, y: 200, w: 860, h: 560, rot: 1 },
+};
+const KT_ROTS = [-2, 1.5, -1, 2, 1, -2.5, 2, -1];
+
+function pctRect(x, y, w, h) {
+  return {
+    left: (x / 1920) * 100,
+    top: (y / 1080) * 100,
+    width: (w / 1920) * 100,
+    height: (h / 1080) * 100,
+  };
+}
+function applyRect(el, x, y, w, h, rot) {
+  const r = pctRect(x, y, w, h);
+  el.style.left = r.left + "%";
+  el.style.top = r.top + "%";
+  el.style.width = r.width + "%";
+  el.style.height = r.height + "%";
+  if (rot != null) el.style.transform = `rotate(${rot}deg)`;
+}
+function paperSprite(root, name, x, y, w, h, rot, cls) {
+  const el = img(`${PAPER}/${name}.webp`, `bs-paper ${cls || ""}`);
+  el.setAttribute("aria-hidden", "true");
+  applyRect(el, x, y, w, h, rot);
+  root.appendChild(el);
+  return el;
+}
+function paperTape(root, name, x, y, w, h, rot) {
+  const el = img(`${PAPER}/${name}.webp`, "bs-paper-tape");
+  el.setAttribute("aria-hidden", "true");
+  applyRect(el, x, y, w, h, rot);
+  root.appendChild(el);
+  return el;
+}
+function paperPin(root, x, y, size) {
+  const el = img(`${PAPER}/pushpin.webp`, "bs-paper-pin");
+  el.setAttribute("aria-hidden", "true");
+  applyRect(el, x, y, size, size, 0);
+  root.appendChild(el);
+  return el;
+}
+
+
+
 function loopOrOnce(T, node, keyframes, t, d) {
   if (reduced()) {
     T.A(node, [keyframes[keyframes.length - 1]], 0, 0.01);
@@ -54,32 +117,24 @@ function loopOrOnce(T, node, keyframes, t, d) {
 /* ---- per-slide builds from loop.md ---- */
 function buildS01(root, T) {
   const p = P("s01");
-  const cover = sprite(root, "s01", "cover_display", "s01-cover", p.cover);
+  // TEXT-ON-ART: book baked into bg_cover; no cover_display sprite
   const marble = sprite(root, "s01", "marble", "s01-marble", p.marble);
   const gear = sprite(root, "s01", "gear", "s01-gear", p.gear);
-  // Left-half title + author (cover is hero on the right per Leo FINAL)
-  const title = h("div", "s01-titleblock");
-  title.className = "bs-surface bs-surface--titleblock s01-titleblock";
-  title.innerHTML = `<div class="s01-book">DIY Project Based Learning for Math and Science</div>
-    <div class="s01-author">Heather Wolpert-Gawron</div>
-    <div class="s01-pub">Routledge · Eye On Education · 2016</div>
-    <div class="s01-byline">Book Share by Dimitry Gordon</div>`;
+  const title = h("div", "bs-surface bs-surface--titleblock s01-titleblock on-art");
+  const m = IDEA_MAP[1];
+  applyRect(title, m.x, m.y, m.w, m.h, m.rot);
+  title.innerHTML = `<div class="s01-book on-art-t">DIY Project Based Learning for Math and Science</div>
+    <div class="s01-author on-art-b">Heather Wolpert-Gawron</div>
+    <div class="s01-pub on-art-h">Routledge · Eye On Education · 2016</div>
+    <div class="s01-byline on-art-b">Book Share by Dimitry Gordon</div>`;
   root.appendChild(title);
-  cover.style.opacity = "1";
   if (reduced()) return;
-  T.A(cover, [
-    { transform: "translate(40px, 50px)" },
-    { transform: "translate(0, 0)" },
-  ], 0.05, 2.5, "cubic-bezier(.22,1,.36,1)");
-  loopOrOnce(T, cover, [
-    { transform: "translateY(0)" },
-    { transform: "translateY(-6px)" },
-    { transform: "translateY(0)" },
-  ], 2.6, 4);
+  // Marble stays near drawn gear; do not roll across the book
   loopOrOnce(T, marble, [
-    { transform: "translateX(0)" },
-    { transform: "translateX(420px)" },
-  ], 0.2, 3.5);
+    { transform: "translate(0,0)" },
+    { transform: "translate(4px,-3px)" },
+    { transform: "translate(0,0)" },
+  ], 0.2, 2.8);
   loopOrOnce(T, gear, [
     { transform: "rotate(0deg)" },
     { transform: "rotate(360deg)" },
@@ -367,21 +422,48 @@ function buildS17Lanterns(root, T) {
 }
 
 function buildKeyTermsOverlay(root, T, terms) {
+  // 8 index cards pinned on cork board (TEXT-ON-ART keyterms/bg_v2)
   const wall = surface("terms", "bs-term-wall");
-  terms.forEach((term, i) => {
-    const card = h("div", `bs-term-card t${i} bs-reveal`);
-    card.textContent = String(term).replace(/^"|"$/g, "");
-    if (i === 0) card.dataset.magicId = "term_lead";
-    wall.appendChild(card);
+  (terms || []).slice(0, 8).forEach((term, i) => {
+    const x = 170 + 235 * (i % 4);
+    const y = 225 + 225 * Math.floor(i / 4);
+    const rot = KT_ROTS[i] || 0;
+    const wrap = h("div", `bs-term-card t${i} bs-reveal on-art`);
+    applyRect(wrap, x, y, 225, 175, rot);
+    const card = img(`${PAPER}/index_card.webp`, "bs-paper bs-term-paper");
+    card.setAttribute("aria-hidden", "true");
+    card.style.position = "absolute";
+    card.style.inset = "0";
+    card.style.width = "100%";
+    card.style.height = "100%";
+    card.style.objectFit = "fill";
+    wrap.appendChild(card);
+    const text = h("div", "bs-term-text on-art-t");
+    text.textContent = String(term).replace(/^"|"$/g, "");
+    wrap.appendChild(text);
+    // pin overlaps top center ~14px
+    const pin = img(`${PAPER}/pushpin.webp`, "bs-paper-pin");
+    pin.setAttribute("aria-hidden", "true");
+    pin.style.position = "absolute";
+    pin.style.left = "50%";
+    pin.style.top = "-14px";
+    pin.style.width = "48px";
+    pin.style.height = "48px";
+    pin.style.transform = "translateX(-50%)";
+    pin.style.zIndex = "8";
+    wrap.appendChild(pin);
+    if (i === 0) wrap.dataset.magicId = "term_lead";
+    wall.appendChild(wrap);
     if (!reduced()) {
-      T.A(card, [
-        { transform: "scale(0.92)" },
-        { transform: "scale(1)" },
+      T.A(wrap, [
+        { transform: `rotate(${rot}deg) scale(0.92)` },
+        { transform: `rotate(${rot}deg) scale(1)` },
       ], 0.1 + i * 0.12, 0.35);
     }
   });
   root.appendChild(wall);
 }
+
 
 function buildKeytermsArt(root, T) {
   const p = P("keyterms");
@@ -440,16 +522,18 @@ const BUILDERS = {
 
 
 function buildOnArtIdeaPanel(root, slide) {
-  // Title + 2-4 bullets + chapter cite in empty left area. Accent via data-idea / theme band.
+  // Title + bullets written on cream left column (TEXT-ON-ART.md). No CSS card.
   if (!slide || slide.n < 2 || slide.n > 16) return;
-  const panel = surface("idea", "bs-idea-panel");
+  const m = IDEA_MAP[slide.n] || IDEA_MAP[2];
+  const panel = surface("idea", "bs-idea-panel on-art");
   if (slide.idea) panel.dataset.idea = String(slide.idea);
-  const title = h("div", "bs-idea-title");
+  applyRect(panel, m.x, m.y, m.w, m.h, m.rot);
+  const title = h("div", "bs-idea-title on-art-t");
   title.textContent = slide.title || "";
   panel.appendChild(title);
   const bullets = (slide.bullets || []).slice(0, 4);
   if (bullets.length) {
-    const ul = h("ul", "bs-idea-bullets");
+    const ul = h("ul", "bs-idea-bullets on-art-b");
     bullets.forEach((b) => {
       const li = document.createElement("li");
       li.textContent = String(b).replace(/^"|"$/g, "");
@@ -458,12 +542,13 @@ function buildOnArtIdeaPanel(root, slide) {
     panel.appendChild(ul);
   }
   if (slide.chapter) {
-    const cite = h("div", "bs-idea-cite");
+    const cite = h("div", "bs-idea-cite on-art-h");
     cite.textContent = slide.chapter;
     panel.appendChild(cite);
   }
   root.appendChild(panel);
 }
+
 
 function sideHTML(slide) {
   const parts = [];
@@ -504,7 +589,12 @@ export const PAGES = SLIDES.map((slide) => ({
       buildKeyTermsOverlay(root, T, slide.bullets || []);
       buildKeytermsArt(root, T);
     } else if (slide.kind === "discuss") {
-      const panel = surface("discuss", "bs-discuss");
+      // sheet_large taped left; kids stay x>950
+      paperSprite(root, "sheet_large", 60, 50, 840, 980, -1);
+      paperTape(root, "tape_a", 90, 40, 220, 60, -8);
+      paperTape(root, "tape_b", 680, 55, 220, 60, 6);
+      const panel = surface("discuss", "bs-discuss on-art");
+      applyRect(panel, 150, 140, 680, 820, -1);
       (slide.questions || []).forEach((q, i) => {
         const card = surface("discuss-card", `bs-dq-card dq${i} bs-reveal`);
         card.innerHTML = `<b>Q${i + 1}.</b> ${fx(q)}`;
@@ -514,26 +604,53 @@ export const PAGES = SLIDES.map((slide) => ({
       buildDiscussionArt(root, T);
     } else if (slide.kind === "resources") {
       const nRes = (slide.resources || []).length;
-      const panel = surface("resources", `bs-resources-panel bs-reveal${nRes <= 4 ? " bs-resources-panel--compact" : ""}`);
-      const heading = h("div", "bs-res-h");
-      heading.textContent = slide.resHeading || "References and tools";
-      panel.appendChild(heading);
-      const ul = h("ul", "bs-apa");
-      (slide.resources || []).forEach((r) => {
-        const li = document.createElement("li");
-        li.innerHTML = r.html; // trusted APA strings we authored (italic titles)
-        ul.appendChild(li);
-      });
-      panel.appendChild(ul);
-      root.appendChild(panel);
-      // Leo FINAL redrawn page sprite (overlays.json)
+      const isTools = /tools/i.test(slide.title || "") || nRes <= 4;
+      if (isTools) {
+        // torn_page for Tools (slide 21)
+        paperSprite(root, "torn_page", 70, 150, 880, 560, 1.5);
+        paperTape(root, "tape_a", 400, 140, 220, 60, -4);
+        const panel = surface("resources", "bs-resources-panel bs-resources-panel--compact bs-reveal on-art");
+        applyRect(panel, 220, 230, 660, 420, 1.5);
+        const heading = h("div", "bs-res-h on-art-t");
+        heading.textContent = slide.resHeading || slide.title || "Tools";
+        panel.appendChild(heading);
+        const ul = h("ul", "bs-apa on-art-b");
+        (slide.resources || []).forEach((r) => {
+          const li = document.createElement("li");
+          li.innerHTML = r.html;
+          ul.appendChild(li);
+        });
+        panel.appendChild(ul);
+        root.appendChild(panel);
+      } else {
+        // sheet_large for References (slide 20)
+        paperSprite(root, "sheet_large", 50, 40, 900, 1000, -0.8);
+        paperTape(root, "tape_a", 80, 30, 220, 60, -6);
+        paperTape(root, "tape_b", 700, 45, 220, 60, 5);
+        const panel = surface("resources", "bs-resources-panel bs-reveal on-art");
+        applyRect(panel, 130, 110, 760, 880, -0.8);
+        const heading = h("div", "bs-res-h on-art-t");
+        heading.textContent = slide.resHeading || slide.title || "References";
+        panel.appendChild(heading);
+        const ul = h("ul", "bs-apa on-art-b");
+        (slide.resources || []).forEach((r) => {
+          const li = document.createElement("li");
+          li.innerHTML = r.html;
+          ul.appendChild(li);
+        });
+        panel.appendChild(ul);
+        root.appendChild(panel);
+      }
       if (BUILDERS.s18) BUILDERS.s18(root, T);
     } else if (slide.kind === "conclude") {
       if (BUILDERS.s17) BUILDERS.s17(root, T);
-      const box = surface("takeaways", "bs-takeaways");
+      // torn_page taped top center
+      paperSprite(root, "torn_page", 90, 120, 850, 540, 2);
+      paperTape(root, "tape_a", 420, 118, 220, 60, -5);
+      const box = surface("takeaways", "bs-takeaways bs-reveal on-art");
+      applyRect(box, 230, 200, 670, 420, 2);
       const items = (slide.bullets || []).map((b) => fx(String(b).replace(/^\d+\.\s*/, "")));
-      box.classList.add("bs-reveal");
-      box.innerHTML = `<h3>Takeaways</h3><ol>${items.map((b) => `<li>${b}</li>`).join("")}</ol>`;
+      box.innerHTML = `<h3 class="on-art-t">Takeaways</h3><ol class="on-art-b">${items.map((b) => `<li>${b}</li>`).join("")}</ol>`;
       root.appendChild(box);
     } else if (BUILDERS[artId]) {
       BUILDERS[artId](root, T);

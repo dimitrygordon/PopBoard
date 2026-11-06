@@ -7,26 +7,46 @@ import {
   THEME_BAND, HANDOFFS, handoffKey, captureMagic, runFlip, clearFlipClones,
   fadeScript, restoreScript, resolvePrimary
 } from "./bs-transitions.js";
+import { startDrawIn } from "./bs-drawin.js";
 
 const $ = (id) => document.getElementById(id);
 const scene = $("flScene"), side = $("flSide");
 const reducedQ = matchMedia("(prefers-reduced-motion: reduce)");
-const state = { i: 0, T: null, playing: true, auto: false, prog: null, autoTimer: 0, navBusy: false, flipToken: 0 };
+const state = { i: 0, T: null, playing: true, auto: false, prog: null, autoTimer: 0, navBusy: false, flipToken: 0, drawIn: null };
 try { state.auto = localStorage.getItem("popboard.diy-pbl.auto") === "1"; } catch (e) {}
 
 $("studyBackBtn").href = "study.html" + location.search;
 
 function stopPage() {
   clearTimeout(state.autoTimer);
+  if (state.drawIn) { try { state.drawIn.cancel(); } catch (e) {} state.drawIn = null; }
   if (state.T) state.T.anims.forEach((a) => a.cancel());
   if (state.prog) state.prog.cancel();
   state.animDone = false;
   clearFlipClones();
-  scene.querySelectorAll(".bs-scene").forEach((n) => n.classList.remove("is-settled", "is-leaving"));
+  scene.querySelectorAll(".bs-scene").forEach((n) => n.classList.remove("is-settled", "is-leaving", "is-drawing", "is-drawn"));
   scene.replaceChildren(); scene.classList.remove("staged"); side.replaceChildren();
   scene.style.opacity = "";
   scene.style.transition = "";
 }
+
+
+function afterRenderDrawIn() {
+  const root = scene.querySelector(".bs-scene");
+  return runDrawIn(root);
+}
+
+async function runDrawIn(root) {
+  if (!root) return;
+  const artId = root.dataset.art;
+  if (!artId) { root.classList.add("is-drawn", "is-settled"); return; }
+  const handle = startDrawIn(root, artId, { reduced: reducedQ.matches });
+  state.drawIn = handle;
+  try { await handle.promise; } catch (e) {}
+  if (state.drawIn === handle) state.drawIn = null;
+  root.classList.add("is-settled");
+}
+
 
 function render(i) {
   stopPage();
@@ -52,9 +72,15 @@ function render(i) {
   state.T = T;
   const extra = p.build(scene, T) || {};
   state.holdAfter = extra.hold_after || p.hold_after || 0;
-  const root = scene.querySelector(".bs-scene");
-  if (root) requestAnimationFrame(() => root.classList.add("is-settled"));
   startClock(T);
+  // Hide sprites/text until draw-in settles (go/boot call runDrawIn next)
+  const root = scene.querySelector(".bs-scene");
+  if (root) {
+    root.classList.add("is-drawing");
+    root.classList.remove("is-drawn", "is-settled");
+    const bg = root.querySelector(".bs-bg");
+    if (bg) bg.style.visibility = "hidden";
+  }
 }
 
 function startClock(T) {
@@ -76,11 +102,13 @@ async function go(d) {
   const next = state.i + d;
   if (next < 0 || next >= PAGES.length) return;
   if (state.navBusy) {
-    // Rapid click: cancel clones and jump cleanly (no stacked sprites)
+    // Rapid click: cancel clones/draw-in and jump cleanly (no stacked sprites)
     state.flipToken++;
     clearFlipClones();
+    if (state.drawIn) { try { state.drawIn.cancel(); } catch (e) {} state.drawIn = null; }
     state.navBusy = false;
     render(next);
+    afterRenderDrawIn();
     return;
   }
   const reduced = reducedQ.matches;
@@ -112,6 +140,9 @@ async function go(d) {
       scene.style.opacity = "1";
     });
     await new Promise((r) => setTimeout(r, 220));
+    if (token !== state.flipToken) { state.navBusy = false; return; }
+    const toR = scene.querySelector(".bs-scene");
+    if (toR) await runDrawIn(toR);
     await restoreScript(side, 120);
     state.navBusy = false;
     return;
@@ -142,10 +173,9 @@ async function go(d) {
     clearFlipClones();
   }
   if (token !== state.flipToken) { state.navBusy = false; return; }
-  if (toRoot) {
-    // Staggered caption reveals after the motif lands
-    requestAnimationFrame(() => toRoot.classList.add("is-settled"));
-  }
+  // Draw-in after motif glide settles (Leo DRAW-IN.md)
+  if (toRoot) await runDrawIn(toRoot);
+  if (token !== state.flipToken) { state.navBusy = false; return; }
   await restoreScript(side, 180);
   state.navBusy = false;
 }
@@ -196,7 +226,7 @@ applyTheme(document.documentElement.getAttribute("data-theme"));
 $("prevBtn").onclick = () => go(-1);
 $("nextBtn").onclick = () => go(1);
 $("playBtn").onclick = () => setPlaying(!state.playing);
-$("replayBtn").onclick = () => render(state.i);
+$("replayBtn").onclick = () => { render(state.i); afterRenderDrawIn(); };
 $("textBtn").onclick = () => setCollapsed(!document.body.classList.contains("fl-full"));
 $("fsBtn").onclick = toggleFullscreen;
 const autoBtn = $("autoBtn");
@@ -216,7 +246,7 @@ addEventListener("keydown", (e) => {
   else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); go(-1); }
   else if (e.key === " " && !(e.target.closest && e.target.closest("button, a"))) { e.preventDefault(); setPlaying(!state.playing); }
   else if (e.key === "f" || e.key === "F") toggleFullscreen();
-  else if (e.key === "r" || e.key === "R") render(state.i);
+  else if (e.key === "r" || e.key === "R") { render(state.i); afterRenderDrawIn(); }
   else if (e.key === "t" || e.key === "T") setCollapsed(!document.body.classList.contains("fl-full"));
 });
 
@@ -227,4 +257,5 @@ if (wantFull) {
   setCollapsed(true);
 }
 render(Number.isFinite(startPage) ? startPage - 1 : 0);
-window.__bs = { go, render, state, PAGES, setCollapsed, setPlaying, HANDOFFS, clearFlipClones, captureMagic, resolvePrimary, THEME_BAND };
+afterRenderDrawIn();
+window.__bs = { go, render, state, PAGES, setCollapsed, setPlaying, HANDOFFS, clearFlipClones, captureMagic, resolvePrimary, THEME_BAND, startDrawIn, runDrawIn };

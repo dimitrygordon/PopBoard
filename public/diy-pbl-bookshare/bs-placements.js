@@ -4,10 +4,10 @@
 
 export const PLACEMENTS = {
   s01: {
-    cover: { left: 61.458, top: 22.222, w: 18.75 },
-    marble: { left: 79.167, top: 88.889, w: 2.5 },
-    gear: { left: 87.5, top: 81.481, w: 6.25 },
-    notes: "# Slide 1 - Cover reveal (1920×1080)",
+    // TEXT-ON-ART: book baked into bg_cover; no cover sprite
+    marble: { left: 95.312, top: 86.111, w: 2.083 },  // (1830,930) 40px
+    gear: { left: 92.448, top: 71.296, w: 5.0 },       // (1775,770) 96px
+    notes: "# Slide 1 - bg_cover table book; gear+marble accents",
   },
   s02: {
     walkers: [

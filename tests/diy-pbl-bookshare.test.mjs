@@ -39,15 +39,17 @@ test("canonical title and Courses band wiring", () => {
   assert.ok(existsSync(join(DIR, "art", "discussion", "note_card.webp")));
 });
 
-test("slide 1 uses real book title, author, and cover_display art", () => {
+test("slide 1 uses real book title, author, and bg_cover (no floating cover_display)", () => {
   assert.equal(SLIDES[0].title, "DIY Project Based Learning for Math and Science");
   assert.notEqual(SLIDES[0].title, "Title");
   assert.match(SLIDES[0].narration, /fifteen minutes or so/);
-  assert.ok(existsSync(join(DIR, "art", "s01", "cover_display.webp")));
+  assert.ok(existsSync(join(DIR, "art", "s01", "bg_cover.webp")));
   assert.ok(existsSync(join(DIR, "art", "s01", "bg.webp")));
   const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
-  assert.match(pages, /cover_display/);
+  assert.ok(!/sprite\(root,\s*"s01",\s*"cover_display"/.test(pages));
+  assert.match(pages, /bg_cover|no cover_display/);
   assert.match(pages, /Heather Wolpert-Gawron/);
+  assert.match(pages, /Book Share by Dimitry Gordon/);
 });
 
 test("Tesla fixes: slide 5 fall-off wording; slide 10 C = vx + F and R = px", () => {
@@ -188,4 +190,40 @@ test("Round 2 depth passages and Gold Standard bullet", () => {
   assert.match(pages, /Book Share by Dimitry Gordon/);
   assert.match(pages, /Cost: C = vx \+ F/);
   assert.match(pages, /Revenue: R = px/);
+});
+
+test("TEXT-ON-ART: no CSS box chrome on stage text; ink/graphite; multiply", () => {
+  const css = readFileSync(join(DIR, "bs.css"), "utf8");
+  const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
+  assert.match(css, /mix-blend-mode:\s*multiply/);
+  assert.match(css, /--ink:\s*#26376e/);
+  assert.match(css, /--graphite:\s*#3b3530/);
+  assert.match(css, /tick_ink\.webp/);
+  assert.match(pages, /paperSprite/);
+  assert.match(pages, /IDEA_MAP/);
+  assert.match(pages, /index_card/);
+  assert.match(pages, /sheet_large/);
+  assert.match(pages, /torn_page/);
+  // Stage surfaces must not keep UI card shadows/backgrounds as the primary look
+  assert.match(css, /\.bs-surface--idea[^{]*\{[\s\S]*?background:\s*none !important/);
+  assert.match(css, /\.on-art[^{]*\{[\s\S]*?box-shadow:\s*none !important/);
+  assert.ok(existsSync(join(DIR, "art", "paper", "tick_ink.webp")));
+  assert.ok(existsSync(join(DIR, "art", "paper", "sheet_large.webp")));
+  assert.ok(existsSync(join(DIR, "art", "keyterms", "bg_v2.webp")));
+});
+
+test("draw-in wired after FLIP; masks exist; reduced-motion path", () => {
+  const app = readFileSync(join(DIR, "bs-app.js"), "utf8");
+  assert.ok(existsSync(join(DIR, "bs-drawin.js")));
+  assert.match(app, /startDrawIn/);
+  assert.match(app, /runDrawIn/);
+  assert.match(app, /await runDrawIn/);
+  const drawin = readFileSync(join(DIR, "bs-drawin.js"), "utf8");
+  assert.match(drawin, /hatch_mask/);
+  assert.match(drawin, /line_order/);
+  assert.match(drawin, /prefers-reduced-motion|reduced/);
+  for (const sid of ["s01", "s05", "s11", "keyterms", "discussion"]) {
+    assert.ok(existsSync(join(DIR, "art", sid, "line.webp")), sid + " line");
+    assert.ok(existsSync(join(DIR, "art", sid, "hatch_mask.webp")), sid + " hatch");
+  }
 });
