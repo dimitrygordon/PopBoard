@@ -205,14 +205,17 @@ test("TEXT-ON-ART: no CSS box chrome on stage text; ink/graphite; multiply", () 
   assert.match(pages, /paperSprite/);
   assert.match(pages, /IDEA_MAP/);
   assert.match(pages, /index_card/);
-  assert.match(pages, /sheet_large/);
+  assert.match(pages, /sheet_flat/);
+  assert.match(pages, /sheet_flat_wide/);
   assert.match(pages, /torn_page/);
   // Stage surfaces must not keep UI card shadows/backgrounds as the primary look
   assert.match(css, /\.bs-surface--idea[^{]*\{[\s\S]*?background:\s*none !important/);
   assert.match(css, /\.on-art[^{]*\{[\s\S]*?box-shadow:\s*none !important/);
   assert.ok(existsSync(join(DIR, "art", "paper", "tick_ink.webp")));
-  assert.ok(existsSync(join(DIR, "art", "paper", "sheet_large.webp")));
+  assert.ok(existsSync(join(DIR, "art", "paper", "sheet_flat.webp")));
+  assert.ok(existsSync(join(DIR, "art", "paper", "sheet_flat_wide.webp")));
   assert.ok(existsSync(join(DIR, "art", "keyterms", "bg_v2.webp")));
+  assert.ok(existsSync(join(DIR, "art", "s01", "bg.webp")));
 });
 
 test("draw-in wired after FLIP; masks exist; reduced-motion path", () => {
@@ -244,6 +247,7 @@ test("QA: no stray curled-paper sprites; keyterms grid; draw-in 40% line", () =>
   assert.ok(!/sprite\(root,\s*"s11",\s*"tip_card"/.test(pages));
   assert.match(pages, /bs-paper-group/);
   assert.match(pages, /s10-birac-letter/);
+  assert.match(pages, /BIRAC_HAS_FIFTH_BLOCK/);
   assert.match(pages, /boardW/);
   assert.match(css, /bs-paper-group/);
   assert.match(css, /-webkit-line-clamp:\s*2/);

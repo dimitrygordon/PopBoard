@@ -117,7 +117,7 @@ function loopOrOnce(T, node, keyframes, t, d) {
 /* ---- per-slide builds from loop.md ---- */
 function buildS01(root, T) {
   const p = P("s01");
-  // TEXT-ON-ART: book baked into bg_cover; no cover_display sprite
+  // TEXT-ON-ART: book baked into Leo redrawn cover bg; no cover_display sprite
   const marble = sprite(root, "s01", "marble", "s01-marble", p.marble);
   const gear = sprite(root, "s01", "gear", "s01-gear", p.gear);
   const title = h("div", "bs-surface bs-surface--titleblock s01-titleblock on-art");
@@ -177,7 +177,7 @@ function buildS03(root, T) {
 }
 
 function buildS04(root, T) {
-  // TEXT-ON-ART: no journal_page sprite (stray curled note on the open book).
+  // Leo: curled note was the journal_page sprite (not bg). Keep it unmounted.
   void root; void T;
 }
 
@@ -558,25 +558,25 @@ export const PAGES = SLIDES.map((slide) => ({
       buildKeyTermsOverlay(root, T, slide.bullets || []);
       buildKeytermsArt(root, T);
     } else if (slide.kind === "discuss") {
-      // One rotated group: paper + text share -1deg so ink sits on the sheet
+      // Leo sheet_flat (972x1300): upright ruled page, no counter-rotation
       const group = h("div", "bs-paper-group");
-      applyRect(group, 50, 30, 920, 1020, 0);
+      applyRect(group, 520, 20, 780, 1040, 0);
       group.style.transformOrigin = "50% 50%";
-      const paper = img(`${PAPER}/sheet_large.webp`, "bs-paper");
+      const paper = img(`${PAPER}/sheet_flat.webp`, "bs-paper");
       paper.setAttribute("aria-hidden", "true");
-      // sheet_large has ~13deg baked clockwise tilt; counter-rotate so ruled lines are horizontal
-      paper.style.cssText = "position:absolute;left:-6%;top:-4%;width:112%;height:112%;object-fit:fill;transform:rotate(-12deg);transform-origin:50% 50%;";
+      paper.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:fill;";
       group.appendChild(paper);
       const tape1 = img(`${PAPER}/tape_a.webp`, "bs-paper-tape");
       tape1.setAttribute("aria-hidden", "true");
-      tape1.style.cssText = "position:absolute;left:8%;top:2%;width:22%;height:6%;object-fit:fill;transform:rotate(-4deg);z-index:8;";
+      tape1.style.cssText = "position:absolute;left:8%;top:1%;width:22%;height:5%;object-fit:fill;transform:rotate(-3deg);z-index:8;";
       group.appendChild(tape1);
       const tape2 = img(`${PAPER}/tape_b.webp`, "bs-paper-tape");
       tape2.setAttribute("aria-hidden", "true");
-      tape2.style.cssText = "position:absolute;right:10%;top:3%;width:22%;height:6%;object-fit:fill;transform:rotate(4deg);z-index:8;";
+      tape2.style.cssText = "position:absolute;right:8%;top:1.5%;width:22%;height:5%;object-fit:fill;transform:rotate(3deg);z-index:8;";
       group.appendChild(tape2);
       const panel = surface("discuss", "bs-discuss on-art");
-      panel.style.cssText = "position:absolute;left:18%;top:16%;width:64%;height:70%;overflow:hidden;box-sizing:border-box;padding:0;font-size:clamp(11px,1.15cqw,19px);";
+      // Text inside the red ruled margins of sheet_flat
+      panel.style.cssText = "position:absolute;left:14%;top:12%;width:72%;height:76%;overflow:hidden;box-sizing:border-box;padding:0;font-size:clamp(11px,1.15cqw,19px);";
       (slide.questions || []).forEach((q, i) => {
         const card = h("div", `bs-dq-card dq${i} bs-reveal`);
         card.innerHTML = `<b>Q${i + 1}.</b> ${fx(q)}`;
@@ -589,19 +589,19 @@ export const PAGES = SLIDES.map((slide) => ({
       const nRes = (slide.resources || []).length;
       const isTools = /tools/i.test(slide.title || "") || nRes <= 4;
       if (isTools) {
+        // Leo sheet_flat_wide (1320x1020): upright landscape ruled page
         const group = h("div", "bs-paper-group");
-        applyRect(group, 60, 140, 900, 580, 0);
-        const paper = img(`${PAPER}/torn_page.webp`, "bs-paper");
+        applyRect(group, 180, 90, 1400, 900, 0);
+        const paper = img(`${PAPER}/sheet_flat_wide.webp`, "bs-paper");
         paper.setAttribute("aria-hidden", "true");
         paper.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:fill;";
         group.appendChild(paper);
         const tape = img(`${PAPER}/tape_a.webp`, "bs-paper-tape");
         tape.setAttribute("aria-hidden", "true");
-        tape.style.cssText = "position:absolute;left:38%;top:-2%;width:26%;height:12%;object-fit:fill;transform:rotate(-4deg);z-index:8;";
+        tape.style.cssText = "position:absolute;left:38%;top:-1%;width:18%;height:7%;object-fit:fill;transform:rotate(-3deg);z-index:8;";
         group.appendChild(tape);
         const panel = surface("resources", "bs-resources-panel bs-resources-panel--compact bs-reveal on-art");
-        // torn_page: keep text >=130px from left punched holes (~15% of 880)
-        panel.style.cssText = "position:absolute;left:16%;top:14%;width:72%;height:72%;overflow:hidden;box-sizing:border-box;";
+        panel.style.cssText = "position:absolute;left:14%;top:12%;width:72%;height:76%;overflow:hidden;box-sizing:border-box;";
         const heading = h("div", "bs-res-h on-art-t");
         heading.textContent = slide.resHeading || slide.title || "Tools";
         panel.appendChild(heading);
@@ -615,22 +615,23 @@ export const PAGES = SLIDES.map((slide) => ({
         group.appendChild(panel);
         root.appendChild(group);
       } else {
+        // Leo sheet_flat (972x1300): upright tall ruled page for APA references
         const group = h("div", "bs-paper-group");
-        applyRect(group, 40, 20, 940, 1040, 0);
-        const paper = img(`${PAPER}/sheet_large.webp`, "bs-paper");
+        applyRect(group, 500, 20, 800, 1040, 0);
+        const paper = img(`${PAPER}/sheet_flat.webp`, "bs-paper");
         paper.setAttribute("aria-hidden", "true");
-        paper.style.cssText = "position:absolute;left:-6%;top:-4%;width:112%;height:112%;object-fit:fill;transform:rotate(-12deg);transform-origin:50% 50%;";
+        paper.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:fill;";
         group.appendChild(paper);
         const tape1 = img(`${PAPER}/tape_a.webp`, "bs-paper-tape");
         tape1.setAttribute("aria-hidden", "true");
-        tape1.style.cssText = "position:absolute;left:8%;top:2%;width:22%;height:6%;object-fit:fill;transform:rotate(-4deg);z-index:8;";
+        tape1.style.cssText = "position:absolute;left:8%;top:1%;width:22%;height:5%;object-fit:fill;transform:rotate(-3deg);z-index:8;";
         group.appendChild(tape1);
         const tape2 = img(`${PAPER}/tape_b.webp`, "bs-paper-tape");
         tape2.setAttribute("aria-hidden", "true");
-        tape2.style.cssText = "position:absolute;right:10%;top:3%;width:22%;height:6%;object-fit:fill;transform:rotate(4deg);z-index:8;";
+        tape2.style.cssText = "position:absolute;right:8%;top:1.5%;width:22%;height:5%;object-fit:fill;transform:rotate(3deg);z-index:8;";
         group.appendChild(tape2);
         const panel = surface("resources", "bs-resources-panel bs-reveal on-art");
-        panel.style.cssText = "position:absolute;left:14%;top:12%;width:72%;height:78%;overflow:hidden;box-sizing:border-box;";
+        panel.style.cssText = "position:absolute;left:14%;top:12%;width:72%;height:76%;overflow:hidden;box-sizing:border-box;";
         const heading = h("div", "bs-res-h on-art-t");
         heading.textContent = slide.resHeading || slide.title || "References";
         panel.appendChild(heading);
