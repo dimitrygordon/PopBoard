@@ -275,9 +275,9 @@ function buildS10(root, T) {
 
   // Sampled from bg_v5: teal tip ~(1557,369), glow ~(1287,599), coral below-right.
   const labels = [
-    { cls: "s10-lab-rev", text: "Revenue", x: 1580, y: 348 },      // beside teal tip
-    { cls: "s10-lab-cost", text: "Cost", x: 1470, y: 575 },         // below coral, right of cross
-    { cls: "s10-lab-be", text: "Break-even", x: 1235, y: 555 },     // above-left of glow
+    { cls: "s10-lab-rev", text: "Revenue", x: 1481, y: 313 },      // above-left of teal tip (~1557,369)
+    { cls: "s10-lab-cost", text: "Cost", x: 1500, y: 531 },         // ~15px below coral, right of cross
+    { cls: "s10-lab-be", text: "Break-even", x: 1177, y: 477 },     // right edge ~15px left of glow; above it
   ];
   labels.forEach((L) => {
     const el = surface("label", `${L.cls} on-art`);
