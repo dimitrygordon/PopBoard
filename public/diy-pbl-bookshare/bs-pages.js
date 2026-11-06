@@ -415,8 +415,9 @@ function buildS08(root, T) {
 function buildS09(root, T) {
   const layer = ensureDesignLayer(root);
   const cards = s09Cards().filter((c) => (c.label || c.text));
-  // Target similar sizes across cards (~14px rendered at 1280 => ~24 design).
-  const TARGET_FS = 24;
+  // Width-fit stacked words; ≥18px rendered at 1280 => ≥27 design (cover scale 2/3).
+  const TARGET_FS = 48;
+  const MIN_FS = 27;
   cards.forEach((c, i) => {
     const label = c.label || c.text || "";
     const slot = S09_LABEL_SLOTS[label];
@@ -431,13 +432,15 @@ function buildS09(root, T) {
     el.dataset.visCy = String(slot.cy);
     el.dataset.visW = String(slot.w);
     el.dataset.visH = String(slot.h);
-    el.dataset.bodyInset = "0.10";
+    el.dataset.bodyInset = "0.08";
     el.dataset.rot = String(slot.rot);
     el.dataset.cardCx = String((c.center_xy || [slot.cx, slot.cy])[0]);
     el.dataset.cardCy = String((c.center_xy || [slot.cx, slot.cy])[1]);
     el.dataset.z = String(slot.z);
-    el.textContent = slot.wrap && label.includes(" ")
-      ? label.replace(" ", "\n")
+    if (slot.band) el.dataset.band = "1";
+    // One word per line (Business / letter, Executive / summary, …).
+    el.textContent = label.includes(" ")
+      ? label.split(/\s+/).join("\n")
       : label;
     el.style.left = (slot.cx / 1920) * 100 + "%";
     el.style.top = (slot.cy / 1080) * 100 + "%";
@@ -460,11 +463,13 @@ function buildS09(root, T) {
     el.style.zIndex = String(10 + slot.z);
     layer.appendChild(el);
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      let lo = 14, hi = TARGET_FS, best = 14;
-      for (let step = 0; step < 14; step++) {
+      let lo = MIN_FS, hi = TARGET_FS, best = MIN_FS;
+      // Lab band is short: allow slightly under MIN if height-bound, still try MAX fit.
+      if (slot.band) lo = 18;
+      for (let step = 0; step < 16; step++) {
         const mid = (lo + hi) / 2;
         el.style.setProperty("font-size", mid + "px", "important");
-        if (el.scrollWidth <= el.clientWidth && el.scrollHeight <= el.clientHeight) {
+        if (el.scrollWidth <= el.clientWidth + 0.5 && el.scrollHeight <= el.clientHeight + 0.5) {
           best = mid; lo = mid;
         } else {
           hi = mid;

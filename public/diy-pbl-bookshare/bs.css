@@ -79,6 +79,16 @@ body.fl-full .fl-cap .cap-q {
   max-width: 100%;
 }
 
+/* s09 landscape: caption clears fanned cards on the right — shift left. */
+@media (max-height: 500px) and (orientation: landscape) {
+  body.fl-full[data-page="9"] .fl-cap {
+    left: 2% !important;
+    right: 50% !important;
+    text-align: left !important;
+  }
+}
+
+
 
 body.fl-full .fl-guide { display: none !important; }
 

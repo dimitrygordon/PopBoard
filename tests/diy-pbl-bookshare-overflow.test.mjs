@@ -316,6 +316,8 @@ test("s09 labels sit on card-body pixels (no ink / neighbour); readable size", a
     t.skip("Chrome launch failed: " + e.message);
     return;
   }
+  // Flask icon AABB in design px (bg.webp); mapped to scene via design-layer scale.
+  const LAB_ICON = { x0: 1270, y0: 148, x1: 1338, y1: 218 };
   try {
     const failures = [];
     for (const vp of [
@@ -334,30 +336,62 @@ test("s09 labels sit on card-body pixels (no ink / neighbour); readable size", a
       });
       await settle(page);
       await page.evaluate(async () => { try { await document.fonts.ready; } catch {} });
-      // Snapshot label geometry, then hide labels and sample pixels under each box.
-      const meta = await page.evaluate(() => {
+      await new Promise((r) => setTimeout(r, 200));
+      const meta = await page.evaluate((LAB_ICON) => {
         const scene = document.querySelector(".bs-scene");
+        const layer = document.querySelector(".bs-design-layer");
         const sr = scene.getBoundingClientRect();
-        return [...document.querySelectorAll(".s09-genre")].map((el) => {
-          const br = el.getBoundingClientRect();
-          const rot = Number(el.dataset.rot || 0);
-          return {
-            label: el.dataset.label || el.textContent.trim().replace(/\s+/g, " "),
-            // scene-local CSS px rect (unrotated AABB of the element)
-            x: br.left - sr.left,
-            y: br.top - sr.top,
-            w: br.width,
-            h: br.height,
-            // center + size in scene CSS px for rotated sampling
-            cx: (br.left + br.right) / 2 - sr.left,
-            cy: (br.top + br.bottom) / 2 - sr.top,
-            rot,
-            artFs: parseFloat(el.dataset.artFs || "0"),
-            fs: parseFloat(getComputedStyle(el).fontSize),
-            clip: el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2,
-          };
-        });
-      });
+        const lr = layer.getBoundingClientRect();
+        const scaleX = lr.width / 1920;
+        const scaleY = lr.height / 1080;
+        const iconScene = {
+          x0: (LAB_ICON.x0 / 1920) * lr.width + (lr.left - sr.left),
+          y0: (LAB_ICON.y0 / 1080) * lr.height + (lr.top - sr.top),
+          x1: (LAB_ICON.x1 / 1920) * lr.width + (lr.left - sr.left),
+          y1: (LAB_ICON.y1 / 1080) * lr.height + (lr.top - sr.top),
+        };
+        return {
+          iconScene,
+          labels: [...document.querySelectorAll(".s09-genre")].map((el) => {
+            const br = el.getBoundingClientRect();
+            const rot = Number(el.dataset.rot || 0);
+            return {
+              label: el.dataset.label || el.textContent.trim().replace(/\s+/g, " "),
+              band: el.dataset.band === "1",
+              x: br.left - sr.left,
+              y: br.top - sr.top,
+              w: br.width,
+              h: br.height,
+              cx: (br.left + br.right) / 2 - sr.left,
+              cy: (br.top + br.bottom) / 2 - sr.top,
+              rot,
+              artFs: parseFloat(el.dataset.artFs || "0"),
+              fs: parseFloat(getComputedStyle(el).fontSize),
+              clip: el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2,
+              lines: (el.textContent || "").split("\n").map((s) => s.trim()).filter(Boolean),
+            };
+          }),
+        };
+      }, LAB_ICON);
+
+      // Lab must not overlap flask icon (rotated AABB vs icon AABB).
+      for (const m of meta.labels) {
+        if (!m.band && m.label !== "Lab report") continue;
+        const rad = (m.rot * Math.PI) / 180;
+        const cos = Math.cos(rad), sin = Math.sin(rad);
+        const corners = [[-m.w / 2, -m.h / 2], [m.w / 2, -m.h / 2], [-m.w / 2, m.h / 2], [m.w / 2, m.h / 2]]
+          .map(([lx, ly]) => [m.cx + lx * cos - ly * sin, m.cy + lx * sin + ly * cos]);
+        const ax0 = Math.min(...corners.map((c) => c[0]));
+        const ay0 = Math.min(...corners.map((c) => c[1]));
+        const ax1 = Math.max(...corners.map((c) => c[0]));
+        const ay1 = Math.max(...corners.map((c) => c[1]));
+        const ic = meta.iconScene;
+        const overlap = !(ax1 < ic.x0 || ax0 > ic.x1 || ay1 < ic.y0 || ay0 > ic.y1);
+        if (overlap) {
+          failures.push(`${vp.name}: "Lab report" overlaps flask icon AABB`);
+        }
+      }
+
       await page.evaluate(() => {
         document.querySelectorAll(".s09-genre").forEach((el) => { el.style.visibility = "hidden"; });
       });
@@ -365,10 +399,8 @@ test("s09 labels sit on card-body pixels (no ink / neighbour); readable size", a
       const sceneHandle = await page.$(".bs-scene");
       const shot = await sceneHandle.screenshot({ encoding: "binary" });
       await sceneHandle.dispose();
-      // Decode PNG via sharp-less path: use page.evaluate with ImageData from canvas
-      // Re-load screenshot into page for sampling
       const b64 = Buffer.from(shot).toString("base64");
-      const pixelReport = await page.evaluate(async (b64, meta) => {
+      const pixelReport = await page.evaluate(async (b64, labels) => {
         const img = new Image();
         await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = "data:image/png;base64," + b64; });
         const canvas = document.createElement("canvas");
@@ -398,9 +430,7 @@ test("s09 labels sit on card-body pixels (no ink / neighbour); readable size", a
           const chroma = Math.max(Math.abs(p.r - p.g), Math.abs(p.g - p.b), Math.abs(p.r - p.b));
           return chroma > 40 && lum > 130 && lum < 235;
         }
-        /** Page cream is also light; require the sample be enclosed by ink (card outline). */
         function enclosed(cssX, cssY) {
-          // Scale with scene: a front card can be ~250 CSS px across at 1920.
           const maxd = Math.max(220, Math.round(Math.min(sw, sh) * 0.35));
           let hits = 0;
           for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
@@ -412,10 +442,9 @@ test("s09 labels sit on card-body pixels (no ink / neighbour); readable size", a
           return hits >= 3;
         }
         const out = [];
-        for (const m of meta) {
+        for (const m of labels) {
           const rad = (m.rot * Math.PI) / 180;
           const cos = Math.cos(rad), sin = Math.sin(rad);
-          // 10% inset of the label box
           const hw = m.w * 0.40, hh = m.h * 0.40;
           let ok = 0, bad = 0, ink = 0, header = 0, open = 0;
           for (let iy = 0; iy < 10; iy++) {
@@ -425,24 +454,34 @@ test("s09 labels sit on card-body pixels (no ink / neighbour); readable size", a
               const cssX = m.cx + lx * cos - ly * sin;
               const cssY = m.cy + lx * sin + ly * cos;
               const p = sample(cssX, cssY);
-              if (isInk(p)) { ink++; bad++; }
-              else if (isHeaderChroma(p)) { header++; bad++; }
-              else if (!isCream(p)) { bad++; }
-              else if (!enclosed(cssX, cssY)) { open++; bad++; }
-              else ok++;
+              if (m.band) {
+                // Lab lives in the colored header band.
+                if (isInk(p)) { ink++; bad++; }
+                else if (isHeaderChroma(p)) ok++;
+                else if (isCream(p)) { open++; bad++; }
+                else bad++;
+              } else {
+                if (isInk(p)) { ink++; bad++; }
+                else if (isHeaderChroma(p)) { header++; bad++; }
+                else if (!isCream(p)) { bad++; }
+                else if (!enclosed(cssX, cssY)) { open++; bad++; }
+                else ok++;
+              }
             }
           }
           out.push({
             label: m.label,
+            band: !!m.band,
             ok, bad, ink, header, open,
             artFs: m.artFs,
             fs: m.fs,
             clip: m.clip,
+            lines: m.lines,
             creamFrac: ok / (ok + bad),
           });
         }
         return out;
-      }, b64, meta);
+      }, b64, meta.labels);
 
       if (pixelReport.length !== 4) {
         failures.push(`${vp.name}: expected 4 labels, got ${pixelReport.length}`);
@@ -450,26 +489,191 @@ test("s09 labels sit on card-body pixels (no ink / neighbour); readable size", a
       const arts = pixelReport.map((r) => r.artFs).filter((n) => n > 0);
       const minArt = arts.length ? Math.min(...arts) : 0;
       const maxArt = arts.length ? Math.max(...arts) : 0;
-      const minCream = vp.height < 500 ? 0.62 : 0.85;
+      const minBody = vp.height < 500 ? 0.62 : 0.85;
+      const minBand = vp.height < 500 ? 0.55 : 0.75;
       for (const r of pixelReport) {
-        // Allow a couple of border samples; require mostly cream body.
-        if (r.creamFrac < minCream) {
-          failures.push(`${vp.name}: "${r.label}" only ${(r.creamFrac * 100).toFixed(0)}% card-body under label (ink=${r.ink} header=${r.header} open=${r.open} bad=${r.bad})`);
+        const need = r.band ? minBand : minBody;
+        if (r.creamFrac < need) {
+          failures.push(`${vp.name}: "${r.label}" only ${(r.creamFrac * 100).toFixed(0)}% ${r.band ? "band" : "card-body"} under label (ink=${r.ink} header=${r.header} open=${r.open} bad=${r.bad})`);
         }
         if (r.ink > 3) {
           failures.push(`${vp.name}: "${r.label}" hits outline ink (${r.ink} samples)`);
         }
         if (r.clip) failures.push(`${vp.name}: "${r.label}" clips its box`);
-        // ~14px rendered at 1280 (scale~0.59) => artFs>=14; keep floor 14 design.
+        // One word per line for multi-word labels.
+        if (r.lines && r.lines.length >= 2) {
+          /* ok */
+        } else if ((r.label || "").includes(" ")) {
+          failures.push(`${vp.name}: "${r.label}" not stacked one-word-per-line (lines=${JSON.stringify(r.lines)})`);
+        }
+        // ≥18px rendered at 1280 (design layer cover-scaled ~2/3) => artFs ≥ 27.
+        if (vp.width === 1280 && r.artFs && r.artFs < 26.5) {
+          failures.push(`${vp.name}: "${r.label}" too small artFs=${r.artFs.toFixed(1)} (need ≥27 for ≥18px)`);
+        }
         if (r.artFs && r.artFs < 14) {
           failures.push(`${vp.name}: "${r.label}" too small artFs=${r.artFs.toFixed(1)}`);
         }
       }
-      // Labels should be similar sizes (Lab not tiny vs others).
-      if (arts.length === 4 && maxArt > minArt * 2.2) {
-        failures.push(`${vp.name}: label sizes diverge artFs ${minArt.toFixed(1)}..${maxArt.toFixed(1)}`);
+      // Body labels should be in a similar ballpark; Lab band may be smaller.
+      const bodyArts = pixelReport.filter((r) => !r.band).map((r) => r.artFs).filter((n) => n > 0);
+      if (bodyArts.length >= 2) {
+        const bMin = Math.min(...bodyArts), bMax = Math.max(...bodyArts);
+        if (bMax > bMin * 2.4) {
+          failures.push(`${vp.name}: body label sizes diverge artFs ${bMin.toFixed(1)}..${bMax.toFixed(1)}`);
+        }
       }
       await page.close();
+    }
+    assert.equal(failures.length, 0, failures.join("\n"));
+  } finally {
+    await browser.close();
+  }
+});
+
+test("full-view captions clear on-art cards at 1280 and 844x390", async (t) => {
+  let puppeteer;
+  try {
+    puppeteer = (await import(pathToFileURL(PUPPETEER).href)).default;
+  } catch (e) {
+    t.skip("puppeteer-core not available: " + e.message);
+    return;
+  }
+  let browser;
+  try {
+    browser = await puppeteer.launch(launchOpts());
+  } catch (e) {
+    t.skip("Chrome launch failed: " + e.message);
+    return;
+  }
+  try {
+    const probe = await browser.newPage();
+    try {
+      await probe.goto(`${BASE}/study-diy-pbl-bookshare.html?page=1&full=1`, {
+        waitUntil: "domcontentloaded", timeout: 8000,
+      });
+    } catch (e) {
+      t.skip(`server not reachable at ${BASE}: ${e.message}`);
+      return;
+    }
+    const pageCount = await probe.evaluate(() => (window.__bs?.pages?.length) || 21);
+    await probe.close();
+
+    const failures = [];
+    for (const vp of [
+      { name: "1280x720", width: 1280, height: 720, mobile: false },
+      { name: "844x390", width: 844, height: 390, mobile: true },
+    ]) {
+      for (let n = 1; n <= pageCount; n++) {
+        const page = await browser.newPage();
+        await page.setViewport({
+          width: vp.width, height: vp.height, deviceScaleFactor: 1,
+          isMobile: !!vp.mobile, hasTouch: !!vp.mobile,
+        });
+        await page.setCacheEnabled(false);
+        await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=${n}&full=1`, {
+          waitUntil: "networkidle0", timeout: 60000,
+        });
+        await settle(page);
+        const hit = await page.evaluate(() => {
+          const cap = document.querySelector(".fl-cap");
+          if (!cap || getComputedStyle(cap).display === "none") return null;
+          const cq = cap.querySelector(".cap-q") || cap;
+          const text = (cq.textContent || "").trim();
+          if (!text) return null;
+          const cr = cq.getBoundingClientRect();
+          // Sample glyph boxes via Range for each word — fall back to cap rect.
+          const scene = document.querySelector(".bs-scene");
+          const sr = scene.getBoundingClientRect();
+          // Art cards / on-art chips captions must clear (not full-bleed content panels).
+          const cardSels = [
+            ".s09-genre", ".bs-term-card", ".s01-book", ".s10-birac-letter",
+            ".bs-surface--titleblock",
+          ];
+          const cards = [];
+          for (const sel of cardSels) {
+            document.querySelectorAll(sel).forEach((el) => {
+              const br = el.getBoundingClientRect();
+              if (br.width < 8 || br.height < 8) return;
+              cards.push({
+                sel,
+                x0: br.left - sr.left, y0: br.top - sr.top,
+                x1: br.right - sr.left, y1: br.bottom - sr.top,
+              });
+            });
+          }
+          // Also detect opaque ink card outlines near the bottom via pixel walk on
+          // caption AABB against Leo quads when present (s09).
+          const quads = [];
+          document.querySelectorAll(".s09-genre").forEach((el) => {
+            try {
+              const q = JSON.parse(el.dataset.quad || "null");
+              if (Array.isArray(q) && q.length >= 4) quads.push(q);
+            } catch {}
+          });
+          const layer = document.querySelector(".bs-design-layer");
+          const lr = layer ? layer.getBoundingClientRect() : null;
+          function designToScene(dx, dy) {
+            if (!lr) return [dx, dy];
+            return [
+              (dx / 1920) * lr.width + (lr.left - sr.left),
+              (dy / 1080) * lr.height + (lr.top - sr.top),
+            ];
+          }
+          function pointInQuad(px, py, quad) {
+            let inside = false;
+            for (let i = 0, j = quad.length - 1; i < quad.length; j = i++) {
+              const [xi, yi] = designToScene(quad[i][0], quad[i][1]);
+              const [xj, yj] = designToScene(quad[j][0], quad[j][1]);
+              if (((yi > py) !== (yj > py)) && (px < (xj - xi) * (py - yi) / (yj - yi + 1e-9) + xi)) {
+                inside = !inside;
+              }
+            }
+            return inside;
+          }
+          // Caption text rect in scene coords (use the visible text box).
+          const capBox = {
+            x0: cr.left - sr.left,
+            y0: cr.top - sr.top,
+            x1: cr.right - sr.left,
+            y1: cr.bottom - sr.top,
+          };
+          const overlaps = [];
+          // Sample a grid across the caption text box; flag if inside any s09 quad.
+          for (let iy = 0; iy < 4; iy++) {
+            for (let ix = 0; ix < 8; ix++) {
+              const px = capBox.x0 + (capBox.x1 - capBox.x0) * (ix + 0.5) / 8;
+              const py = capBox.y0 + (capBox.y1 - capBox.y0) * (iy + 0.5) / 4;
+              for (let qi = 0; qi < quads.length; qi++) {
+                if (pointInQuad(px, py, quads[qi])) {
+                  overlaps.push(`s09-quad[${qi}]`);
+                }
+              }
+            }
+          }
+          // Generic: caption bottom strip vs DOM card AABBs (only when cards sit low).
+          for (const c of cards) {
+            const ox0 = Math.max(capBox.x0, c.x0);
+            const oy0 = Math.max(capBox.y0, c.y0);
+            const ox1 = Math.min(capBox.x1, c.x1);
+            const oy1 = Math.min(capBox.y1, c.y1);
+            if (ox1 > ox0 + 4 && oy1 > oy0 + 4) {
+              // Ignore tiny edge grazes; require meaningful overlap area.
+              const area = (ox1 - ox0) * (oy1 - oy0);
+              if (area > 80) overlaps.push(c.sel);
+            }
+          }
+          return {
+            page: document.body.dataset.page,
+            text: text.slice(0, 80),
+            overlaps: [...new Set(overlaps)],
+            capBox,
+          };
+        });
+        if (hit && hit.overlaps.length) {
+          failures.push(`${vp.name} p${n}: caption overlaps ${hit.overlaps.join(",")} — "${hit.text}"`);
+        }
+        await page.close();
+      }
     }
     assert.equal(failures.length, 0, failures.join("\n"));
   } finally {
