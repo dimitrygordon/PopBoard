@@ -35,6 +35,14 @@ function sprite(root, artId, name, cls, place, magicId) {
 }
 function P(artId) { return PLACEMENTS[artId] || {}; }
 
+/** Reusable on-art text surface. Leo will reskin `.bs-surface` variants later.
+ *  kind: idea | chip | label | titleblock | genre | discuss | tools
+ */
+function surface(kind, extraClass = "") {
+  return h("div", `bs-surface bs-surface--${kind}${extraClass ? " " + extraClass : ""}`);
+}
+
+
 function loopOrOnce(T, node, keyframes, t, d) {
   if (reduced()) {
     T.A(node, [keyframes[keyframes.length - 1]], 0, 0.01);
@@ -51,9 +59,11 @@ function buildS01(root, T) {
   const gear = sprite(root, "s01", "gear", "s01-gear", p.gear);
   // Left-half title + author (cover is hero on the right per Leo FINAL)
   const title = h("div", "s01-titleblock");
+  title.className = "bs-surface bs-surface--titleblock s01-titleblock";
   title.innerHTML = `<div class="s01-book">DIY Project Based Learning for Math and Science</div>
     <div class="s01-author">Heather Wolpert-Gawron</div>
-    <div class="s01-pub">Routledge · Eye On Education · 2016</div>`;
+    <div class="s01-pub">Routledge · Eye On Education · 2016</div>
+    <div class="s01-byline">Book Share by Dimitry Gordon</div>`;
   root.appendChild(title);
   cover.style.opacity = "1";
   if (reduced()) return;
@@ -184,6 +194,21 @@ function buildS08(root, T) {
 function buildS09(root, T) {
   const p = P("s09");
   const card = sprite(root, "s09", "doc_card", "s09-card", (p.cards || [])[0]);
+  // Labels for genre cards painted in the bg fan (Leo FINAL). Positions in % of 1920x1080.
+  // Positions tuned to Leo FINAL fan (1920x1080 %): beaker, clipboard, envelope, seal cards.
+  const genres = [
+    { text: "Lab report", left: 54, top: 34 },
+    { text: "Problem statement", left: 78, top: 48 },
+    { text: "Business letter", left: 68, top: 30 },
+    { text: "Executive summary", left: 64, top: 58 },
+  ];
+  genres.forEach((g, i) => {
+    const el = surface("genre", `s09-genre s09-g${i}`);
+    el.textContent = g.text;
+    el.style.left = g.left + "%";
+    el.style.top = g.top + "%";
+    root.appendChild(el);
+  });
   if (reduced()) return;
   loopOrOnce(T, card, [
     { transform: "rotate(-4deg)" },
@@ -196,10 +221,46 @@ function buildS10(root, T) {
   const p = P("s10");
   const glow = sprite(root, "s10", "breakeven_glow", "s10-glow", p.breakeven_glow);
   const block = sprite(root, "s10", "birac_block", "s10-block", (p.blocks || [])[0]);
-  // BIRAC letters stay code-side on the blank blocks painted in bg
-  const eq = h("div", "s10-eq");
-  eq.textContent = "C = vx + F    R = px";
-  root.appendChild(eq);
+
+  // Two equation chips (was one run-together string)
+  const chipCost = surface("chip", "s10-chip s10-chip-cost");
+  chipCost.textContent = "Cost: C = vx + F";
+  chipCost.style.left = "8%";
+  chipCost.style.bottom = "14%";
+  root.appendChild(chipCost);
+  const chipRev = surface("chip", "s10-chip s10-chip-rev");
+  chipRev.textContent = "Revenue: R = px";
+  chipRev.style.left = "8%";
+  chipRev.style.bottom = "8%";
+  root.appendChild(chipRev);
+
+  // Graph line / point labels checked against Leo art: cost shallower above 0,
+  // revenue steeper from origin, glow at break-even (1120,430 ≈ 58.3%, 39.8%).
+  const labels = [
+    { cls: "s10-lab-cost", text: "Cost", left: 42, top: 48 },
+    { cls: "s10-lab-rev", text: "Revenue", left: 52, top: 28 },
+    { cls: "s10-lab-be", text: "Break-even", left: 56, top: 36 },
+  ];
+  labels.forEach((L) => {
+    const el = surface("label", L.cls);
+    el.textContent = L.text;
+    el.style.left = L.left + "%";
+    el.style.top = L.top + "%";
+    root.appendChild(el);
+  });
+
+  // BIRAC letters on the stacked blocks (right of graph). Bottom→top: B I R A C
+  // Block sprite sits near (80.2%, 59.3%); stack rises above it in the bg.
+  const birac = ["B", "I", "R", "A", "C"];
+  birac.forEach((letter, i) => {
+    const el = surface("label", `s10-birac-letter s10-birac-${letter}`);
+    el.textContent = letter;
+    el.style.left = "82.5%";
+    // five blocks stacked; ~5.5% vertical spacing upward from near block top
+    el.style.top = (62 - i * 5.5) + "%";
+    root.appendChild(el);
+  });
+
   if (reduced()) return;
   loopOrOnce(T, glow, [{ opacity: 0.35 }, { opacity: 1 }, { opacity: 0.35 }], 0, 1.4);
   loopOrOnce(T, block, [
@@ -306,7 +367,7 @@ function buildS17Lanterns(root, T) {
 }
 
 function buildKeyTermsOverlay(root, T, terms) {
-  const wall = h("div", "bs-term-wall");
+  const wall = surface("terms", "bs-term-wall");
   terms.forEach((term, i) => {
     const card = h("div", `bs-term-card t${i} bs-reveal`);
     card.textContent = String(term).replace(/^"|"$/g, "");
@@ -377,22 +438,46 @@ const BUILDERS = {
   s16: buildS16, s17: buildS17Lanterns, s18: buildS18Page,
 };
 
+
+function buildOnArtIdeaPanel(root, slide) {
+  // Title + 2-4 bullets + chapter cite in empty left area. Accent via data-idea / theme band.
+  if (!slide || slide.n < 2 || slide.n > 16) return;
+  const panel = surface("idea", "bs-idea-panel");
+  if (slide.idea) panel.dataset.idea = String(slide.idea);
+  const title = h("div", "bs-idea-title");
+  title.textContent = slide.title || "";
+  panel.appendChild(title);
+  const bullets = (slide.bullets || []).slice(0, 4);
+  if (bullets.length) {
+    const ul = h("ul", "bs-idea-bullets");
+    bullets.forEach((b) => {
+      const li = document.createElement("li");
+      li.textContent = String(b).replace(/^"|"$/g, "");
+      ul.appendChild(li);
+    });
+    panel.appendChild(ul);
+  }
+  if (slide.chapter) {
+    const cite = h("div", "bs-idea-cite");
+    cite.textContent = slide.chapter;
+    panel.appendChild(cite);
+  }
+  root.appendChild(panel);
+}
+
 function sideHTML(slide) {
   const parts = [];
-  if (slide.bullets && slide.bullets.length) {
-    parts.push(`<ul class="bs-side-bullets">${slide.bullets.map((b) => `<li>${fx(b)}</li>`).join("")}</ul>`);
-  }
+  // Round 2: bullets live on-art (bs-surface--idea). Side panel is teleprompter only,
+  // so normal view does not show the same bullets twice.
   if (slide.questions && slide.questions.length) {
     parts.push(`<ol class="bs-side-q">${slide.questions.map((q) => `<li>${fx(q)}</li>`).join("")}</ol>`);
   }
   if (slide.resources && slide.resources.length) {
-    // Resources also rendered large in the scene; side gets a short note
-    parts.push(`<p class="aside">Full APA list is on the storyboard. Scroll the art panel if needed.</p>`);
+    parts.push(`<p class="aside">Full APA list is on the storyboard.</p>`);
   }
   if (slide.chapter) {
     parts.push(`<p class="aside">${fx(slide.chapter)}</p>`);
   }
-  // Teleprompter: KEEP in normal view (Dimitry). Hidden in fl-full via CSS.
   parts.push(`<div class="bs-script"><p class="aside">Script (read aloud)</p><p class="bs-script-text">${fx(slide.narration)}</p></div>`);
   return parts.join("");
 }
@@ -412,20 +497,24 @@ export const PAGES = SLIDES.map((slide) => ({
     root.dataset.kind = slide.kind || "";
     if (slide.idea) root.dataset.idea = String(slide.idea);
 
+    // Round 2 B1: on-art title + bullets for teaching slides 2-16
+    if (slide.n >= 2 && slide.n <= 16) buildOnArtIdeaPanel(root, slide);
+
     if (slide.kind === "terms") {
       buildKeyTermsOverlay(root, T, slide.bullets || []);
       buildKeytermsArt(root, T);
     } else if (slide.kind === "discuss") {
-      const panel = h("div", "bs-discuss");
+      const panel = surface("discuss", "bs-discuss");
       (slide.questions || []).forEach((q, i) => {
-        const card = h("div", `bs-dq-card dq${i} bs-reveal`);
+        const card = surface("discuss-card", `bs-dq-card dq${i} bs-reveal`);
         card.innerHTML = `<b>Q${i + 1}.</b> ${fx(q)}`;
         panel.appendChild(card);
       });
       root.appendChild(panel);
       buildDiscussionArt(root, T);
     } else if (slide.kind === "resources") {
-      const panel = h("div", "bs-resources-panel bs-reveal");
+      const nRes = (slide.resources || []).length;
+      const panel = surface("resources", `bs-resources-panel bs-reveal${nRes <= 4 ? " bs-resources-panel--compact" : ""}`);
       const heading = h("div", "bs-res-h");
       heading.textContent = slide.resHeading || "References and tools";
       panel.appendChild(heading);
@@ -441,7 +530,7 @@ export const PAGES = SLIDES.map((slide) => ({
       if (BUILDERS.s18) BUILDERS.s18(root, T);
     } else if (slide.kind === "conclude") {
       if (BUILDERS.s17) BUILDERS.s17(root, T);
-      const box = h("div", "bs-takeaways");
+      const box = surface("takeaways", "bs-takeaways");
       const items = (slide.bullets || []).map((b) => fx(String(b).replace(/^\d+\.\s*/, "")));
       box.classList.add("bs-reveal");
       box.innerHTML = `<h3>Takeaways</h3><ol>${items.map((b) => `<li>${b}</li>`).join("")}</ol>`;

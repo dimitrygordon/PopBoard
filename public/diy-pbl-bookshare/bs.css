@@ -53,6 +53,14 @@ body.fl-full .fl-cap {
 }
 body.fl-full .fl-cap b { display: none; } /* avoid title+guide duplication; show guide only */
 
+/* Round 2 B3: captions ~1.5x larger for recording readability */
+body.fl-full .fl-cap {
+  font-size: max(22px, 3.9cqw) !important;
+  line-height: 1.2;
+  padding: 1.4cqh 3cqw 2cqh !important;
+}
+
+
 body.fl-full .fl-guide { display: none !important; }
 
 /* Teleprompter + side bullets: normal view only. On-art content (terms, takeaways,
@@ -135,6 +143,10 @@ body.fl-full .bs-side-q { display: none !important; }
   font-weight: 700; color: var(--blue); margin-bottom: 0.5cqh;
 }
 .s01-pub { font-size: clamp(13px, 1.5cqw, 20px); opacity: 0.85; }
+.s01-byline {
+  margin-top: 1.4cqh; font-family: var(--f-head);
+  font-size: clamp(16px, 2cqw, 28px); font-weight: 700; color: var(--blue);
+}
 
 /* s10 equations + BIRAC letters (code) */
 .s10-birac {
@@ -143,7 +155,8 @@ body.fl-full .bs-side-q { display: none !important; }
   font-family: var(--f-title); font-weight: 700;
   font-size: clamp(14px, 1.8cqw, 24px); color: #D96B5A;
 }
-.s10-eq {
+.s10-eq { display: none; /* replaced by bs-surface--chip */
+
   position: absolute; z-index: 4;
   left: 8%; bottom: 10%;
   display: flex; gap: 1.5cqw;
@@ -420,4 +433,160 @@ body:not(.fl-transiting) .bs-scene.is-settled .bs-reveal { opacity: 1; transform
   .bs-flip-clone { display: none !important; }
   .bs-bg-xfade { transition-duration: 0.22s !important; }
   .bs-reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+}
+
+
+/* ========== On-art text surfaces (Round 2) ==========
+   Reusable wrappers so Leo can reskin all on-art text in one place.
+   Do not treat current look as final; keep structure stable. */
+.bs-surface {
+  position: absolute;
+  z-index: 6;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+/* Nested surface pieces flow inside their parent container */
+.bs-surface--discuss-card,
+.bs-surface--idea .bs-idea-title,
+.bs-surface .bs-idea-bullets,
+.bs-surface .bs-idea-cite,
+.bs-surface .bs-res-h,
+.bs-term-wall .bs-surface,
+.bs-surface--discuss > .bs-surface {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+}
+
+.bs-surface--idea {
+  left: 2.5%; top: 6%; width: 42%;
+  max-height: 78%;
+  padding: 1.2cqh 1.3cqw;
+  /* provisional - Leo reskin */
+  background: rgba(255, 253, 246, 0.88);
+  border-radius: 0.7cqw;
+}
+.bs-idea-title {
+  font-family: var(--f-title);
+  font-weight: 700;
+  font-size: clamp(16px, 2.1cqw, 32px);
+  line-height: 1.15;
+  margin: 0 0 1cqh;
+  color: var(--ink);
+}
+.bs-idea-bullets {
+  margin: 0; padding-left: 1.1em;
+  font-family: var(--f-body);
+  font-size: clamp(13px, 1.55cqw, 24px);
+  line-height: 1.28;
+  color: var(--ink);
+}
+.bs-idea-bullets li { margin: 0 0 0.55cqh; }
+.bs-idea-cite {
+  margin-top: 0.8cqh;
+  font-family: var(--f-head);
+  font-size: clamp(11px, 1.25cqw, 18px);
+  opacity: 0.8;
+  color: var(--ink);
+}
+/* Idea accent colors on title */
+.bs-surface--idea[data-idea="1"] .bs-idea-title,
+.bs-surface--idea[data-idea="1"] .bs-idea-bullets { color: #1F6F6A; }
+.bs-surface--idea[data-idea="2"] .bs-idea-title,
+.bs-surface--idea[data-idea="2"] .bs-idea-bullets { color: #8A5A18; }
+.bs-surface--idea[data-idea="3"] .bs-idea-title,
+.bs-surface--idea[data-idea="3"] .bs-idea-bullets { color: #B04A3A; }
+.bs-surface--idea[data-idea="4"] .bs-idea-title,
+.bs-surface--idea[data-idea="4"] .bs-idea-bullets { color: #5A4A9A; }
+body[data-page="2"] .bs-surface--idea .bs-idea-title,
+body[data-page="2"] .bs-surface--idea .bs-idea-bullets,
+body[data-page="16"] .bs-surface--idea .bs-idea-title,
+body[data-page="16"] .bs-surface--idea .bs-idea-bullets { color: #3A3428; }
+
+.bs-surface--chip {
+  padding: 0.5cqh 0.9cqw;
+  font-family: var(--f-head);
+  font-size: clamp(13px, 1.55cqw, 24px);
+  background: rgba(255, 253, 246, 0.92);
+  border-radius: 0.5cqw;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.bs-surface--label {
+  font-family: var(--f-head);
+  font-size: clamp(12px, 1.4cqw, 22px);
+  font-weight: 700;
+  color: #24339E;
+  text-shadow: 0 0 4px rgba(255,253,246,0.9), 0 0 8px rgba(255,253,246,0.7);
+  white-space: nowrap;
+}
+.bs-surface--genre {
+  font-family: var(--f-head);
+  font-size: clamp(11px, 1.25cqw, 18px);
+  font-weight: 700;
+  color: #24339E;
+  background: rgba(255,253,246,0.85);
+  padding: 0.25cqh 0.5cqw;
+  border-radius: 0.35cqw;
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+}
+.s10-birac-letter {
+  font-size: clamp(14px, 1.7cqw, 26px) !important;
+  color: #D96B5A !important;
+  transform: translate(-50%, -50%);
+}
+.s10-lab-cost { color: #D96B5A !important; }
+.s10-lab-rev { color: #2A8F8A !important; }
+.s10-lab-be { color: #B8322A !important; }
+
+/* Discuss: compact left column, opaque, clear of faces (kids center-right) */
+.bs-surface--discuss.bs-discuss,
+.bs-discuss {
+  left: 1.5% !important;
+  right: auto !important;
+  width: 40% !important;
+  top: 3% !important;
+  bottom: 11% !important;
+  gap: 0.45cqh !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+.bs-surface--discuss-card.bs-dq-card,
+.bs-dq-card {
+  background: rgba(255, 253, 246, 0.97) !important;
+  font-size: clamp(11px, 1.15cqw, 17px) !important;
+  line-height: 1.22 !important;
+  padding: 0.55cqh 0.8cqw !important;
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Tools compact: shrink empty panel to content */
+.bs-resources-panel--compact {
+  top: 8% !important;
+  bottom: auto !important;
+  max-height: 55%;
+  right: 38% !important;
+  width: auto;
+  min-width: 36%;
+  padding-bottom: 1.6cqh !important;
+}
+.bs-resources-panel--compact .bs-apa {
+  grid-template-columns: 1fr;
+}
+body.fl-full .bs-resources-panel--compact {
+  right: 38% !important;
+}
+
+/* Titleblock is also a surface */
+.bs-surface--titleblock.s01-titleblock {
+  position: absolute;
+  left: 3.5%; top: 18%; width: 48%;
+  background: transparent; /* provisional: Leo may add paper treatment */
 }

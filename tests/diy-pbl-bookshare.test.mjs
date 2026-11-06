@@ -101,12 +101,12 @@ test("Leo art webp exists for s01-s18; no Leo-art-pending badge in code", () => 
   assert.ok(PLACEMENTS.s01 && PLACEMENTS.s05 && PLACEMENTS.s11);
 });
 
-test("script.md word count is 2300 to 2400", () => {
+test("script.md word count is 2550 to 2700", () => {
   const script = readFileSync(join(DIR, "script.md"), "utf8");
   const m = script.match(/\*\*Total words \(read-aloud\):\*\* (\d+)/);
   assert.ok(m);
   const n = Number(m[1]);
-  assert.ok(n >= 2300 && n <= 2450, `words ${n}`);
+  assert.ok(n >= 2550 && n <= 2700, `words ${n}`);
   const words = SLIDES.reduce((a, s) => a + s.narration.split(/\s+/).length, 0);
   assert.equal(words, n);
 });
@@ -175,4 +175,17 @@ test("transitions: sprites carry data-magic-id; script never FLIPs", () => {
   assert.match(app, /Quiet script fade|never FLIP script/i);
   // Script panel is not tagged magic
   assert.ok(!/bs-script[^\n]*magicId/.test(pages));
+});
+
+test("Round 2 depth passages and Gold Standard bullet", () => {
+  assert.match(SLIDES[6].narration, /empty row might hold a reteach day/);
+  assert.match(SLIDES[10].narration, /One of your forces points the wrong way/);
+  assert.match(SLIDES[12].narration, /Costa's levels also give me a quick check/);
+  assert.match(SLIDES[15].narration, /PBLWorks Gold Standard/);
+  assert.ok(SLIDES[15].bullets.some((b) => /PBLWorks Gold Standard/.test(b)));
+  const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
+  assert.match(pages, /bs-surface--idea/);
+  assert.match(pages, /Book Share by Dimitry Gordon/);
+  assert.match(pages, /Cost: C = vx \+ F/);
+  assert.match(pages, /Revenue: R = px/);
 });

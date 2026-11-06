@@ -4,7 +4,7 @@ Narrator: Dimitry Gordon (live; no TTS audio)
 Source: Socrates package + Round 1
 Pace: ~150 wpm
 
-**Total words (read-aloud):** 2404
+**Total words (read-aloud):** 2593
 **Total @ 150 wpm:** 15:54
 **With ~6s breathing/slide:** ~17:54
 
@@ -60,11 +60,8 @@ Idea two: design toward what you love, then backplan to the standards. This one 
 
 ## Slide 7: Idea 2: The checklist is a contract
 
-**Words:** 124  |  **Est. @ 150 wpm:** 0:50
+The tool that keeps this from turning into chaos is the checklist. Every unit starts with a pacing checklist that lays out the assignments and deadlines, and it goes to students, parents, and administrators on day one. She backplans it by entering the final presentation date first and working backward. She also leaves a few empty rows on purpose, because a good guide has to stay flexible when the learning reveals a gap. She treats the checklist like a contract: the teacher promises not to wing it, and the students promise to plan ahead. One line from the book stuck with me: "The mystery defeats achievement." If we want students to own their learning, we have to show them where the unit is going. In my physics class, an empty row might hold a reteach day after a quick check shows students still think heavier objects fall faster, or a second build day if every coaster fails the loop. The empty row isn't wasted time. It's a promise that the schedule bends to the learning, not the other way around.
 
-The tool that keeps this from turning into chaos is the checklist. Every unit starts with a pacing checklist that lays out the assignments and deadlines, and it goes to students, parents, and administrators on day one. She backplans it by entering the final presentation date first and working backward. She also leaves a few empty rows on purpose, because a good guide has to stay flexible when the learning reveals a gap. She treats the checklist like a contract: the teacher promises not to wing it, and the students promise to plan ahead. One line from the book stuck with me: "The mystery defeats achievement." If we want students to own their learning, we have to show them where the unit is going.
-
----
 
 ## Slide 8: Idea 2: A tension worth naming
 
@@ -92,11 +89,8 @@ Two tools from this idea are worth stealing. The first is writing with numeracy,
 
 ## Slide 11: Idea 3: Assess writing quickly
 
-**Words:** 141  |  **Est. @ 150 wpm:** 0:56
+Of course, if every STEM teacher assigns writing, someone has to grade it. So each unit ends with a tip on how to assess writing quickly. Tip one: focus feedback on one skill at a time, instead of what she calls a "bloody explosion of red pen." Tip two: use an oral feedback sheet. You conference with the student, and the student takes the notes, because, as she asks, isn't the one doing the work the one doing the learning? Tip three: use a key of feedback symbols instead of writing full sentences. Tip four: comment rather than correct. Instead of fixing errors, tell the student, "I see three equations in your lab that don't add up," and let them hunt. Tip five: train students to give the first round of feedback to each other before the work ever reaches you. Here's how I'd use tip four in physics. Instead of circling a wrong sign on an acceleration, I'd write, "One of your forces points the wrong way," and let the student find it. That turns my grading into their thinking, and it saves me time.
 
-Of course, if every STEM teacher assigns writing, someone has to grade it. So each unit ends with a tip on how to assess writing quickly. Tip one: focus feedback on one skill at a time, instead of what she calls a "bloody explosion of red pen." Tip two: use an oral feedback sheet. You conference with the student, and the student takes the notes, because, as she asks, isn't the one doing the work the one doing the learning? Tip three: use a key of feedback symbols instead of writing full sentences. Tip four: comment rather than correct. Instead of fixing errors, tell the student, "I see three equations in your lab that don't add up," and let them hunt. Tip five: train students to give the first round of feedback to each other before the work ever reaches you.
-
----
 
 ## Slide 12: Idea 3: Put Into Practice
 
@@ -108,11 +102,8 @@ Here's idea three in practice. In a middle school math class, the break-even ana
 
 ## Slide 13: Idea 4: Teach them to be teachers
 
-**Words:** 147  |  **Est. @ 150 wpm:** 0:59
+Idea four: teach them to be teachers. The final unit in the book is called Teach Them to Be Teachers, and it's built on a line she credits to Aristotle: teaching is the highest form of understanding. Students pick a topic they know and love, teach it to the class with a lesson plan and an activity, and then write a persuasive letter to an administrator pitching it as a new elective. But the deeper move happens all through the book: students learn to write assessments, not just take them. She teaches them Costa's Levels of Questioning. Level one is input: recall, define, list. Level two is process: compare, infer, sequence. Level three is output: predict, hypothesize, evaluate, create. Costa's levels also give me a quick check on my own tests. If every question on my unit test is level one, I'm only testing whether students memorized, not whether they understand. She makes it physical with a two-pound weight, a twenty-five-pound weight, and a hundred-pound barbell she can't actually lift. Each level is a harder workout for the brain.
 
-Idea four: teach them to be teachers. The final unit in the book is called Teach Them to Be Teachers, and it's built on a line she credits to Aristotle: teaching is the highest form of understanding. Students pick a topic they know and love, teach it to the class with a lesson plan and an activity, and then write a persuasive letter to an administrator pitching it as a new elective. But the deeper move happens all through the book: students learn to write assessments, not just take them. She teaches them Costa's Levels of Questioning. Level one is input: recall, define, list. Level two is process: compare, infer, sequence. Level three is output: predict, hypothesize, evaluate, create. She makes it physical with a two-pound weight, a twenty-five-pound weight, and a hundred-pound barbell she can't actually lift. Each level is a harder workout for the brain.
-
----
 
 ## Slide 14: Idea 4: Students write the tests
 
@@ -132,11 +123,8 @@ Here's how idea four travels. In an ELA or history class, students can teach a s
 
 ## Slide 16: A critical lens
 
-**Words:** 131  |  **Est. @ 150 wpm:** 0:52
+Now, an honest critique. This book came out in 2016, and some of its tools are gone. TodaysMeet, the backchannel site she uses, shut down years ago. So treat the tools as examples and swap in what your school uses, like a shared Google Doc or Canvas discussion. Second, the Teach Them to Be Teachers unit uses a multiple intelligences quiz and mentions learning styles. Research by Pashler and colleagues found little evidence that matching instruction to learning styles improves learning, so I'd keep the activity variety and drop the labels. Third, look at the Genius Unit's student lab reports. They're creative and well written, but some of their brain science claims are shaky. Authentic work still needs a content check. Fourth, most of the book's evidence is teacher stories and student samples, not controlled studies. That doesn't make it wrong, but I'd pair it with a more systematic framework, like the PBLWorks Gold Standard design elements, and watch my own data. If quiz scores drop during a unit, the project needs more direct instruction built in. In PBL, the teacher's job shifts, but it doesn't disappear.
 
-Now, an honest critique. This book came out in 2016, and some of its tools are gone. TodaysMeet, the backchannel site she uses, shut down years ago. So treat the tools as examples and swap in what your school uses, like a shared Google Doc or Canvas discussion. Second, the Teach Them to Be Teachers unit uses a multiple intelligences quiz and mentions learning styles. Research by Pashler and colleagues found little evidence that matching instruction to learning styles improves learning, so I'd keep the activity variety and drop the labels. Third, look at the Genius Unit's student lab reports. They're creative and well written, but some of their brain science claims are shaky. Authentic work still needs a content check. In PBL, the teacher's job shifts, but it doesn't disappear.
-
----
 
 ## Slide 17: Key terms at a glance
 
@@ -175,6 +163,6 @@ The book, its free printable resources, and everything else I referenced are lis
 
 ---
 
-## Slide 21 - Tools
+## Slide 21: Tools
 
 And the free tools I named along the way: PhET Energy Skate Park, AirNow, and the Desmos graphing calculator.
