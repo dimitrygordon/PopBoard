@@ -270,48 +270,53 @@ function buildS09(root, T) {
 
 function buildS10(root, T) {
   const p = P("s10");
-  // No breakeven_glow sprite: it sat above the intersection as a stray orange dot;
-  // the break-even glow is already baked into bg.webp. (DOM, not Leo.)
-  // No birac_block sprite: current Leo bg draws a 4-block stack (5th not in art yet).
+  // No breakeven_glow / birac_block sprites: glow + 5-block stack are baked into bg_v5.
+  // Graph labels are NOT in the art (faces.json graph_labels: []) - DOM only, once.
 
-  // Graph labels: sit ON the drawn lines near their tips / glow (art coords).
+  // Sampled from bg_v5: teal tip ~(1557,369), glow ~(1287,599), coral below-right.
   const labels = [
-    { cls: "s10-lab-rev", text: "Revenue", x: 1510, y: 300 },
-    { cls: "s10-lab-cost", text: "Cost", x: 1365, y: 595 },
-    { cls: "s10-lab-be", text: "Break-even", x: 1240, y: 455 },
+    { cls: "s10-lab-rev", text: "Revenue", x: 1580, y: 348 },      // beside teal tip
+    { cls: "s10-lab-cost", text: "Cost", x: 1470, y: 575 },         // below coral, right of cross
+    { cls: "s10-lab-be", text: "Break-even", x: 1235, y: 555 },     // above-left of glow
   ];
   labels.forEach((L) => {
     const el = surface("label", `${L.cls} on-art`);
     el.textContent = L.text;
     el.style.left = (L.x / 1920) * 100 + "%";
     el.style.top = (L.y / 1080) * 100 + "%";
-    el.style.transform = "rotate(-8deg)";
+    el.style.transform = "rotate(-6deg)";
     root.appendChild(el);
   });
 
-  // Leo s10 bg is still a 4-block stack (faces.json lists 5, but art has 4).
-  // Hide stray C under the stack; B/I/R/A on the four front faces.
-  const BIRAC_HAS_FIFTH_BLOCK = false;
+  // Letter rects from art/s10/faces.json (v5). Center each letter in its face.
+  const BIRAC_HAS_FIFTH_BLOCK = true;
   const biracFaces = [
-    { ch: "B", x: 1764, y: 327 },
-    { ch: "I", x: 1761, y: 396 },
-    { ch: "R", x: 1726, y: 504 },
-    { ch: "A", x: 1756, y: 593 },
+    { ch: "B", x: 1726, y: 206, w: 48, h: 52 },
+    { ch: "I", x: 1724, y: 294, w: 48, h: 54 },
+    { ch: "R", x: 1727, y: 384, w: 48, h: 52 },
+    { ch: "A", x: 1722, y: 472, w: 48, h: 52 },
+    { ch: "C", x: 1721, y: 560, w: 48, h: 53 },
   ];
-  if (BIRAC_HAS_FIFTH_BLOCK) {
-    biracFaces.push({ ch: "C", x: 1744, y: 702 });
+  if (!BIRAC_HAS_FIFTH_BLOCK) {
+    // 4-block fallback: drop C
+    biracFaces.pop();
   }
-  // When 4-block: do not render a visible C (hides the stray letter under the stack).
   biracFaces.forEach((L) => {
     const el = surface("label", "s10-birac-letter");
     el.textContent = L.ch;
-    el.style.left = (L.x / 1920) * 100 + "%";
-    el.style.top = (L.y / 1080) * 100 + "%";
-    el.style.transform = "translate(-50%, -50%) rotate(-2deg)";
-    el.style.fontSize = "clamp(22px, 2.6cqw, 39px)";
+    // Center of face rect (xywh art coords)
+    const cx = L.x + L.w / 2;
+    const cy = L.y + L.h / 2;
+    el.style.left = (cx / 1920) * 100 + "%";
+    el.style.top = (cy / 1080) * 100 + "%";
+    el.style.transform = "translate(-50%, -50%)";
+    // Fit fully inside ~48x52 face with a little padding
+    el.style.fontSize = "clamp(15px, 1.7cqw, 26px)";
     el.style.fontWeight = "700";
+    el.style.lineHeight = "1";
     el.style.color = "#26376e";
     el.style.mixBlendMode = "normal";
+    el.dataset.face = `${L.x},${L.y},${L.w},${L.h}`;
     root.appendChild(el);
   });
 
