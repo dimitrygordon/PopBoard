@@ -192,6 +192,7 @@ input.icon-cell::placeholder{ color:var(--text-dimmer); font-size:17px; }
 .courses-band h2{margin:0 0 14px; font-family:'Oswald',sans-serif; font-weight:600; font-size:18px; letter-spacing:0.12em; text-transform:uppercase; color:#F2EAD8;}
 .courses-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:18px;}
 .course-card.course-friction{background:#2a2620; border-color:#3A352E;}
+.course-card.course-bookshare{background:#2a2620; border-color:#3A352E;}
 .course-card{display:flex; flex-direction:column; border-radius:16px; overflow:hidden; text-decoration:none; background:#1F1D1A; color:#F2EAD8; border:1.5px solid #3A352E; transition:transform .15s, box-shadow .15s;}
 .course-card:hover{transform:translateY(-3px); box-shadow:0 10px 24px rgba(0,0,0,0.35);}
 .course-card img{display:block; width:100%; aspect-ratio:16/9; object-fit:cover;}
@@ -207,6 +208,7 @@ input.icon-cell::placeholder{ color:var(--text-dimmer); font-size:17px; }
 :root[data-theme="light"] .course-card.course-astronomy{background:#1f2a6b; color:#F2EAD8;}
 :root[data-theme="light"] .course-card.course-physics101{background:#F4EDDC; color:#2f2b26; border-color:#d9cfbc;}
 :root[data-theme="light"] .course-card.course-friction{background:#FBF6EA; color:#2f2b26; border-color:#d9cfbc;}
+:root[data-theme="light"] .course-card.course-bookshare{background:#FBF6EA; color:#2f2b26; border-color:#d9cfbc;}
 .course-card.course-geometry{background:#121212; border-color:#3A352E;}
 .course-card.course-geometry img{filter:invert(1);}
 :root[data-theme="light"] .course-card.course-geometry{background:#ffffff; color:#111111; border-color:#d9cfbc;}
@@ -245,6 +247,10 @@ input.icon-cell::placeholder{ color:var(--text-dimmer); font-size:17px; }
       <a class="course-card course-friction" data-course="friction-lesson" href="study-friction-lesson.html">
         <img src="friction-lesson/art/cover_jasper_push.webp" alt="" loading="lazy" width="900" height="506">
         <div class="course-body"><h3>Dimitry's Friction Lesson</h3><p>The friction lab lesson as a self-playing colored-pencil presentation, 26 pages.</p><span class="course-count">26 PAGES</span></div>
+      </a>
+      <a class="course-card course-bookshare" data-course="diy-pbl-bookshare" href="study-diy-pbl-bookshare.html">
+        <img src="diy-pbl-bookshare/art/cover.webp" alt="" loading="lazy" width="1600" height="900">
+        <div class="course-body"><h3>Dimitry's DIY Project Based Learning for Math and Science Bookshare</h3><p>Wolpert-Gawron's DIY PBL as a self-playing storyboard: 18 slides, four central ideas, Put Into Practice, and discussion questions. Script on screen for live narration.</p><span class="course-count">18 PAGES</span></div>
       </a>
     </div>
   </section>
@@ -847,6 +853,14 @@ var BUILTIN_MODULES = [
     description: "The friction lab lesson as a self-playing colored-pencil presentation: 26 animated pages from lab groups and materials through hands-on asperities, graphing kinetic friction and deriving the equation, static friction synced to a real video, the Exit Ticket, and seven friction mysteries. Pages play on their own, with narration on or off, auto-advance, hide text, and full screen for the projector.",
     file: "study-friction-lesson.html",
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="9" height="6" rx="1"/><path d="M2 18h20"/><path d="M13 12h7M17.5 9.5 20 12l-2.5 2.5"/></svg>'
+  },
+  {
+    id: "diy-pbl-bookshare",
+    kind: "builtin",
+    name: "Dimitry's DIY Project Based Learning for Math and Science Bookshare",
+    description: "Heather Wolpert-Gawron's DIY Project Based Learning for Math and Science as a self-playing colored-pencil storybook: 18 animated pages covering four central ideas (PBL as a unit, design toward what you love then backplan, communication as content, teach them to be teachers), Put Into Practice across grade levels, a critical lens, resources, and three discussion questions. The script sits on each page for live narration. No audio. Hide text and full screen for the projector.",
+    file: "study-diy-pbl-bookshare.html",
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h10a2 2 0 0 1 2 2v12H6a2 2 0 0 0-2 2V5Z"/><path d="M16 5h2a2 2 0 0 1 2 2v12h-4"/><path d="M8 9h5M8 13h5"/></svg>'
   }
 ];
 
@@ -1012,7 +1026,7 @@ function resolveIconHtml(iconType, iconValue) {
    Courses band: the storybook courses sit above the module search
    in their own section, so the module grid below skips them.
    ============================================================ */
-var COURSE_IDS = ["astronomy-course", "physics101", "geometry", "friction-lesson"];
+var COURSE_IDS = ["astronomy-course", "physics101", "geometry", "friction-lesson", "diy-pbl-bookshare"];
 // Physics 101 module accents M1 to M24, matching --p101-m1..24 in physics101/p101.css.
 var P101_ACCENTS = ["#E2B654","#B5C7A3","#D98B6A","#8FB3D9","#B9A7D1","#8CC5BE","#7F8FC9","#B0A060","#E0A0A0","#A8B86E","#EBC9A0","#9C8C78","#6E9CA8","#B07F9C","#7A9E7E","#AA5B5E","#4AC7E4","#677C3F","#9C7040","#72748E","#36A896","#3583AD","#8A669E","#36815A"];
 

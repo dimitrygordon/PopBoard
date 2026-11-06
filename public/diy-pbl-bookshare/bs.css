@@ -1,0 +1,95 @@
+/* DIY PBL Bookshare scene styles on top of friction-lesson/fl.css */
+.fl-bar h1 { font-size: 16px; max-width: 42vw; }
+
+.bs-title-stage {
+  position: absolute; inset: 0;
+  display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 2cqw;
+  align-items: center; padding: 4cqw 5cqw;
+}
+.bs-book-cover {
+  width: 100%; max-height: 78cqh; object-fit: contain;
+  border-radius: 0.6cqw;
+  box-shadow: 0 1.2cqw 2.4cqw rgba(60,40,10,.22);
+  background: #fff;
+}
+.bs-title-meta { font-family: var(--f-head); }
+.bs-book-title {
+  font-family: var(--f-title); font-weight: 700;
+  font-size: 3.4cqw; line-height: 1.1; margin-bottom: 1.4cqh;
+}
+.bs-book-author {
+  font-size: 2.4cqw; font-weight: 700; color: var(--blue); margin-bottom: 0.6cqh;
+}
+.bs-book-pub { font-size: 1.7cqw; opacity: 0.9; margin-bottom: 0.4cqh; }
+.bs-book-fore { font-size: 1.5cqw; opacity: 0.75; margin-bottom: 1.6cqh; }
+.bs-by { font-size: 1.8cqw; color: var(--orange); }
+
+.bs-board {
+  position: absolute; left: 4cqw; right: 4cqw; top: 6cqh; bottom: 8cqh;
+  background: var(--card); border-radius: 1cqw; box-shadow: var(--shadow);
+  padding: 2.2cqw 2.4cqw; overflow: auto; z-index: 2;
+}
+.bs-board-title {
+  font-family: var(--f-title); font-weight: 700; font-size: 3cqw; line-height: 1.1; margin-bottom: 1cqh;
+}
+.bs-chapter { font-family: var(--f-head); font-size: 1.5cqw; color: var(--blue); margin-bottom: 1.4cqh; }
+.bs-chips { display: flex; flex-direction: column; gap: 1cqh; }
+.bs-chip {
+  font-family: var(--f-body); font-size: 2cqw; line-height: 1.25;
+  background: rgba(240,178,58,.18); border-left: 0.45cqw solid var(--orange);
+  padding: 0.8cqh 1.2cqw; border-radius: 0.5cqw;
+}
+.bs-board[data-kind="practice"] .bs-chip { border-left-color: var(--green); background: rgba(47,122,64,.12); }
+.bs-board[data-kind="critique"] .bs-chip { border-left-color: var(--red); background: rgba(184,50,42,.1); }
+.bs-board[data-kind="engage"] .bs-chip { border-left-color: var(--blue); background: rgba(47,109,181,.1); }
+
+.bs-conclude-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 2cqw; }
+.bs-conclude-grid h3 { font-family: var(--f-head); font-size: 1.8cqw; margin: 0 0 1cqh; color: var(--orange); }
+.bs-conclude-grid ol { margin: 0; padding-left: 1.2em; }
+.bs-conclude-grid li { font-size: 1.55cqw; line-height: 1.3; margin-bottom: 0.8cqh; }
+.bs-dq li { font-size: 1.45cqw; }
+
+.bs-resources ul { margin: 0; padding-left: 1.1em; }
+.bs-resources li { font-size: 1.55cqw; line-height: 1.3; margin-bottom: 0.7cqh; }
+
+.bs-ph {
+  position: absolute; right: 5cqw; bottom: 6cqh; z-index: 1;
+  opacity: 0.35; pointer-events: none; text-align: right;
+}
+.bs-ph-label { font-family: var(--f-title); font-size: 1.6cqw; }
+.bs-ph-note { font-family: var(--f-aside); font-size: 1.3cqw; color: var(--red); }
+
+.bs-layers { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.45; }
+.bs-layer { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.bs-mid { animation: bs-drift 12s ease-in-out infinite; }
+.bs-fg { animation: bs-bob 6s ease-in-out infinite; }
+@keyframes bs-drift { 0%,100%{transform:translateX(0)} 50%{transform:translateX(10px)} }
+@keyframes bs-bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+
+.bs-side-bullets { padding-left: 1.1em; margin: 0 0 1.2cqh; }
+.bs-side-bullets li { margin-bottom: 0.7cqh; }
+.bs-side-q { padding-left: 1.1em; margin: 0 0 1.2cqh; }
+.bs-side-q li { font-size: 1.45cqw; margin-bottom: 0.6cqh; }
+
+.bs-script {
+  margin-top: 1.4cqh; padding-top: 1.2cqh;
+  border-top: 2px dashed rgba(36,51,158,.25);
+}
+.bs-script-text {
+  font-family: var(--f-body) !important;
+  font-size: 1.65cqw !important;
+  line-height: 1.35 !important;
+  white-space: pre-wrap;
+}
+
+.fl-guide { display: none; }
+body.fl-full .fl-guide {
+  display: block; position: absolute; left: 3cqw; right: 3cqw; bottom: 2.5cqh;
+  font-family: var(--f-head); font-size: 1.8cqw; text-align: center; opacity: 0.85; z-index: 5;
+}
+
+@media (max-width: 700px) {
+  .bs-title-stage { grid-template-columns: 1fr; padding: 3cqw; }
+  .bs-book-cover { max-height: 42cqh; }
+  .bs-conclude-grid { grid-template-columns: 1fr; }
+}

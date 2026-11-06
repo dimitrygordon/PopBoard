@@ -21,13 +21,14 @@ test("Courses band links both course libraries with existing cover art", () => {
   assert.match(html, /href="study-physics101\.html"/);
   assert.match(html, /href="study-geometry\.html"/);
   assert.match(html, /href="study-friction-lesson\.html"/);
+  assert.match(html, /href="study-diy-pbl-bookshare\.html"/);
   for (const src of html.matchAll(/class="course-card[^]*?<img src="([^"]+)"/g)) {
     assert.ok(existsSync(join(PUB, src[1])), src[1]);
   }
 });
 
 test("module grid skips the two courses; other modules stay", () => {
-  assert.match(html, /var COURSE_IDS = \["astronomy-course", "physics101", "geometry", "friction-lesson"\];/);
+  assert.match(html, /var COURSE_IDS = \["astronomy-course", "physics101", "geometry", "friction-lesson", "diy-pbl-bookshare"\];/);
   assert.match(html, /BUILTIN_MODULES\.filter\(function\(m\) \{ return COURSE_IDS\.indexOf\(m\.id\) === -1; \}\)/);
 });
 
