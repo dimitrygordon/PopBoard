@@ -1,2 +1,2 @@
-# Slide 4 loop
-- journal_page.png: slow page-flip over the open field journal (rotateY-like scaleX 1→0→1 or crossfade alternate page), 3.5s ease-in-out loop.
+# Slide 4 (1920×1080)
+- journal_page.png display 70×~82 at (1320, 540) sitting on the open journal in his hands (not covering face). Page-flip 3.5s.

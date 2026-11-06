@@ -280,7 +280,7 @@ export const SLIDES = [
   {
     "n": 17,
     "id": "s17",
-    "art": "s17",
+    "art": "keyterms",
     "title": "Key terms at a glance",
     "kicker": "Key terms",
     "idea": null,
@@ -318,7 +318,7 @@ export const SLIDES = [
   {
     "n": 19,
     "id": "s19",
-    "art": "s17",
+    "art": "discussion",
     "title": "Discussion questions",
     "kicker": "Discuss",
     "idea": null,
@@ -337,12 +337,13 @@ export const SLIDES = [
     "n": 20,
     "id": "s20",
     "art": "s18",
-    "title": "Resources",
+    "title": "References",
     "kicker": "Resources",
     "idea": null,
     "kind": "resources",
-    "guide": "Full APA list and tools.",
+    "guide": "APA references from the talk.",
     "bullets": [],
+    "resHeading": "References",
     "resources": [
       {
         "html": "Wolpert-Gawron, H. (2016). <i>DIY project based learning for math and science</i>. Routledge. https://doi.org/10.4324/9781315709598"
@@ -367,7 +368,22 @@ export const SLIDES = [
       },
       {
         "html": "Pashler, H., McDaniel, M., Rohrer, D., & Bjork, R. (2008). Learning styles: Concepts and evidence. <i>Psychological Science in the Public Interest, 9</i>(3), 105-119. https://doi.org/10.1111/j.1539-6053.2009.01038.x"
-      },
+      }
+    ],
+    "narration": "The book, its free printable resources, and everything else I referenced are listed here and in the materials I've shared with this video."
+  },
+  {
+    "n": 21,
+    "id": "s21",
+    "art": "s18",
+    "title": "Tools",
+    "kicker": "Resources",
+    "idea": null,
+    "kind": "resources",
+    "guide": "Free tools named in the talk.",
+    "bullets": [],
+    "resHeading": "Tools",
+    "resources": [
       {
         "html": "PhET Interactive Simulations. (n.d.). <i>Energy skate park</i>. University of Colorado Boulder. https://phet.colorado.edu/en/simulations/energy-skate-park"
       },
@@ -378,6 +394,6 @@ export const SLIDES = [
         "html": "Desmos. (n.d.). <i>Graphing calculator</i>. https://www.desmos.com/calculator"
       }
     ],
-    "narration": "The book, its free printable resources, and everything else I referenced are listed here and in the materials I've shared with this video."
+    "narration": "And the free tools I named along the way: PhET Energy Skate Park, AirNow, and the Desmos graphing calculator."
   }
 ];

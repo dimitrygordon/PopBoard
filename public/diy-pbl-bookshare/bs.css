@@ -121,6 +121,7 @@ body.fl-full .bs-side-q { display: none !important; }
 /* s01 title block (code text, left half) */
 .s01-titleblock {
   position: absolute; z-index: 3;
+  left: 3.5%; top: 18%; width: 48%;
   font-family: var(--f-head);
   color: var(--ink);
 }
@@ -144,6 +145,7 @@ body.fl-full .bs-side-q { display: none !important; }
 }
 .s10-eq {
   position: absolute; z-index: 4;
+  left: 8%; bottom: 10%;
   display: flex; gap: 1.5cqw;
   font-family: var(--f-head);
   font-size: clamp(14px, 1.8cqw, 26px);
@@ -155,7 +157,7 @@ body.fl-full .bs-side-q { display: none !important; }
 
 /* Key terms wall (code-side flip cards) */
 .bs-term-wall {
-  position: absolute; left: 3%; top: 8%; right: 6%; bottom: 14%;
+  position: absolute; left: 3%; top: 8%; right: 26%; bottom: 14%;
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 1cqw;
   z-index: 5; align-content: center;
 }
@@ -174,7 +176,7 @@ body.fl-full .bs-side-q { display: none !important; }
 
 /* Discussion questions large panels */
 .bs-discuss {
-  position: absolute; left: 3%; right: 3%; top: 6%; bottom: 14%;
+  position: absolute; left: 3%; right: 26%; top: 6%; bottom: 14%;
   display: flex; flex-direction: column; gap: 1cqh;
   z-index: 5; overflow: auto;
 }
@@ -191,33 +193,77 @@ body.fl-full .bs-side-q { display: none !important; }
 }
 .bs-dq-card b { font-family: var(--f-head); color: #2F6DB5; margin-right: 0.4em; }
 
-/* Resources APA panel on art (legibility >= ~28px at 1080p in full view) */
+/* Resources APA: full-width two-column so every line fits at 1080p (>=26px) */
 .bs-resources-panel {
-  position: absolute; left: 2%; right: 36%; top: 4%; bottom: 12%;
-  z-index: 5; overflow: auto;
+  position: absolute; left: 1.5%; right: 30%; top: 2.5%; bottom: 9%;
+  z-index: 7; overflow: hidden;
   background: rgba(247,241,227,.96);
   border-radius: 0.8cqw;
-  padding: 1.4cqh 1.4cqw;
+  padding: 1.2cqh 1.3cqw 1cqh;
   box-shadow: var(--shadow);
+  display: flex; flex-direction: column; gap: 0.6cqh;
 }
-body.fl-full .bs-resources-panel { right: 34%; bottom: 14%; }
-.bs-apa { list-style: none; margin: 0; padding: 0; }
+body.fl-full .bs-resources-panel { left: 1.5%; right: 30%; bottom: 10%; }
+.bs-sp.s18-page { z-index: 4; }
+.bs-resources-panel .bs-res-h {
+  font-family: var(--f-title);
+  font-size: clamp(18px, 2cqw, 30px);
+  margin: 0 0 0.4cqh; color: var(--ink); line-height: 1.15;
+}
+.bs-apa {
+  list-style: none; margin: 0; padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 2cqw;
+  row-gap: 0.45cqh;
+  flex: 1; min-height: 0;
+  align-content: start;
+}
+.bs-apa.bs-apa-single { grid-template-columns: 1fr; }
 .bs-apa li {
   font-family: var(--f-body);
-  font-size: clamp(16px, 1.7cqw, 28px);
-  line-height: 1.28;
-  margin: 0 0 0.7cqh;
-  padding-left: 0.9em;
+  font-size: clamp(13px, 1.4cqw, 26px);
+  line-height: 1.22;
+  margin: 0;
+  padding-left: 0.85em;
   position: relative;
 }
+/* At 1080p full view, keep >=26px. Normal 1280 uses cqw fluid type. */
+body.fl-full .bs-apa li { font-size: max(26px, 1.35cqw); }
+@media (min-width: 1800px) {
+  .bs-apa li { font-size: max(26px, 1.35cqw); }
+}
 .bs-apa li::before {
-  content: ""; position: absolute; left: 0; top: 0.55em;
-  width: 0.4em; height: 0.4em; border-radius: 50%; background: #2F7A40;
+  content: ""; position: absolute; left: 0; top: 0.45em;
+  width: 0.35em; height: 0.35em; border-radius: 50%; background: #2F7A40;
 }
 .bs-apa i { font-style: italic; }
+.bs-apa a { color: inherit; word-break: break-word; }
+
+/* Narrow stage (normal 1280 art pane, mobile): single column so nothing clips */
+@container (max-width: 1100px) {
+  .bs-resources-panel { left: 1%; right: 2%; top: 1.5%; bottom: 4%; }
+  .bs-apa { grid-template-columns: 1fr; row-gap: 0.35cqh; }
+  .bs-apa li { font-size: clamp(11px, 1.9cqw, 20px); line-height: 1.15; }
+  .bs-resources-panel .bs-res-h { font-size: clamp(13px, 2cqw, 22px); }
+}
+@container (max-width: 700px) {
+  .bs-apa li { font-size: clamp(11px, 3.2cqw, 16px); }
+}
+
 
 /* Mobile: stack art then side so nothing clips */
 @media (max-width: 700px) {
+  /* Resources need a taller art stage so APA lines are not clipped in normal mobile */
+  body[data-kind="resources"] .fl-art { min-height: calc(100dvh - 150px); flex: 1 1 auto; }
+  body[data-kind="resources"]:not(.fl-full) .fl-side { max-height: 22vh; overflow: auto; }
+  body[data-kind="resources"]:not(.fl-full) .bs-resources-panel { top: 1%; bottom: 2%; }
+  body[data-kind="resources"]:not(.fl-full) .bs-apa li { font-size: max(9px, 2.2vw); line-height: 1.1; }
+  body[data-kind="resources"]:not(.fl-full) .bs-res-h { font-size: max(11px, 2.8vw); }
+  body[data-kind="resources"] .bs-resources-panel {
+    left: 1%; right: 1%; top: 1%; bottom: 5%; padding: 0.6cqh 0.7cqw;
+  }
+
   .fl-viewport { padding: 4px; align-items: stretch; }
   .fl-frame {
     aspect-ratio: auto;
@@ -246,8 +292,12 @@ body.fl-full .bs-resources-panel { right: 34%; bottom: 14%; }
   .bs-script-text { font-size: 15px !important; }
   .bs-term-wall { grid-template-columns: repeat(2, 1fr); }
   .bs-dq-card { font-size: 15px; }
-  .bs-resources-panel { left: 2%; right: 2%; }
-  .bs-apa li { font-size: 15px; }
+  .bs-resources-panel { left: 1%; right: 1%; top: 2%; bottom: 8%; padding: 1cqh 1cqw; }
+  .bs-resources-panel { left: 1%; right: 1%; top: 1.5%; bottom: 6%; padding: 0.8cqh 0.8cqw; }
+  .bs-apa { grid-template-columns: 1fr !important; row-gap: 0.25cqh; }
+  .bs-apa li { font-size: max(10px, 2.4vw); line-height: 1.12; }
+  .bs-resources-panel .bs-res-h { font-size: max(12px, 3vw); margin-bottom: 0.15cqh; }
+  body.fl-full .bs-apa li { font-size: max(12px, 2.9vw); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -274,7 +324,7 @@ body.fl-full .bs-resources-panel { right: 34%; bottom: 14%; }
   line-height: 1.3; margin: 0 0 0.8cqh;
 }
 /* Hide blank/placeholder page sprite on resources bookshelf */
-.s18-page, img.s18-page, .bs-sp.s18-page { display: none !important; visibility: hidden !important; }
+/* s18 page sprite is FINAL redraw - keep visible (was hidden when blank) */
 
 /* kill friction lesson slide-out ghost (fl.css uses transform+opacity) */
 body.fl-full .fl-side,
@@ -331,7 +381,7 @@ body[data-theme-band="teal"] .bs-scene::before { background: #2A8F8A; }
 body[data-theme-band="amber"] .bs-scene::before { background: #C48A3A; }
 body[data-theme-band="coral"] .bs-scene::before { background: #D96B5A; }
 body[data-theme-band="violet"] .bs-scene::before { background: #7A6BB5; }
-body[data-theme-band="cream"] .bs-scene::before { background: #D9CBB2; }
+body[data-theme-band="cream"] .bs-scene::before { background: transparent; width: 0; }
 
 /* Transition layer */
 .bs-flip-layer {

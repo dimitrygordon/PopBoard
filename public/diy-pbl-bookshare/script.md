@@ -4,7 +4,7 @@ Narrator: Dimitry Gordon (live; no TTS audio)
 Source: Socrates package + Round 1
 Pace: ~150 wpm
 
-**Total words (read-aloud):** 2385
+**Total words (read-aloud):** 2404
 **Total @ 150 wpm:** 15:54
 **With ~6s breathing/slide:** ~17:54
 
@@ -174,3 +174,7 @@ Here are my three discussion questions. Each one asks you to take an idea from t
 The book, its free printable resources, and everything else I referenced are listed here and in the materials I've shared with this video.
 
 ---
+
+## Slide 21 - Tools
+
+And the free tools I named along the way: PhET Energy Skate Park, AirNow, and the Desmos graphing calculator.

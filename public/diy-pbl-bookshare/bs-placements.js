@@ -1,130 +1,119 @@
-// Per-slide sprite placement + motion config. Easy to retune when Leo updates loop.md.
-// Positions are % of the 16:9 scene (left/top of sprite). Sizes in cqw of the scene.
-// Source notes: current loop.md in art/sNN/ as of Round-2 wiring. Leo may redraw helpers
-// (s07 check/blank, s09 doc_card, s11 tip_card, s14 q_bubble); same filenames, edit here.
+// Per-slide sprite placement from Leo overlays.json (1920x1080 display coords).
+// left/top = % of scene; w = cqw (% of width); h = cqh (% of height) when set.
+// FINAL art: do not invent positions. Arrays preserve overlay order.
 
 export const PLACEMENTS = {
   s01: {
-    cover: { left: 58, top: 18, w: 22 },
-    marble: { left: 52, top: 86, w: 3.2 },
-    gear: { left: 88, top: 78, w: 5 },
-    titleblock: { left: 4, top: 22, w: 48 },
-    notes: "loop.md: cover drift+bob, marble LTR desk edge, gear spin. Left half clear.",
+    cover: { left: 61.458, top: 22.222, w: 18.75 },
+    marble: { left: 79.167, top: 88.889, w: 2.5 },
+    gear: { left: 87.5, top: 81.481, w: 6.25 },
+    notes: "# Slide 1 - Cover reveal (1920×1080)",
   },
   s02: {
-    w1: { left: 38, top: 62, w: 3.2 },
-    w2: { left: 62, top: 58, w: 3.2 },
-    glow: { left: 78, top: 28, w: 4 },
-    notes: "loop.md: walkers on each queue, lantern glow flicker themed side only.",
+    walkers: [
+      { left: 33.333, top: 59.259, h: 15.0 },
+      { left: 68.75, top: 57.407, h: 15.0 },
+    ],
+    lantern_glow: { left: 77.083, top: 21.296, w: 1.875 },
+    notes: "# Slide 2 (1920×1080)",
   },
   s03: {
-    footprints: { left: 48, top: 70, w: 5 },
-    notes: "loop.md: footprints step along path toward lightbulb.",
+    footprints: { left: 57.292, top: 57.407, w: 3.646 },
+    notes: "# Slide 3 (1920×1080)",
   },
   s04: {
-    journal_page: { left: 62, top: 38, w: 10 },
-    notes: "loop.md: page-flip over open journal.",
+    journal_page: { left: 68.75, top: 50.0, w: 3.646 },
+    notes: "# Slide 4 (1920×1080)",
   },
   s05: {
-    marble: { left: 52, top: 22, w: 3.5 },
-    notes: "loop.md FINAL: fall off near top of loop (not stall). Path is keyframe translate.",
+    marble: { left: 51.042, top: 29.63, w: 2.083 },
+    notes: "# Slide 5 (1920×1080)",
   },
   s06: {
-    heart: { left: 48, top: 42, w: 7 },
-    standards: { left: 62, top: 40, w: 6 },
-    puzzle: { left: 76, top: 42, w: 6 },
-    notes: "loop.md: light heart→standards→puzzle on pedestals.",
+    heart: { left: 51.042, top: 85.185, w: 2.5 },
+    standards: { left: 66.667, top: 83.333, w: 2.396 },
+    puzzle: { left: 80.208, top: 82.407, w: 2.5 },
+    notes: "# Slide 6 (1920×1080)",
   },
   s07: {
-    // checks fill bottom-up; blank rows shimmer mid-list. Leo may retune table coords.
-    checks: [
-      { left: 70, top: 68, w: 3.2 },
-      { left: 70, top: 60, w: 3.2 },
-      { left: 70, top: 52, w: 3.2 },
-      { left: 70, top: 44, w: 3.2 },
-      { left: 70, top: 36, w: 3.2 },
-    ],
     blanks: [
-      { left: 52, top: 48, w: 16 },
-      { left: 52, top: 56, w: 16 },
+      { left: 55.208, top: 40.556, w: 10.417, h: 0.926 },
+      { left: 56.25, top: 49.259, w: 10.417, h: 0.926 },
     ],
-    notes: "loop.md: checks bottom→up; two blank rows shimmer. Placement provisional for table list.",
+    checks: [
+      { left: 52.344, top: 39.352, w: 1.146 },
+    ],
+    notes: "# Slide 7 (1920×1080)",
   },
   s08: {
-    cloud: { left: 42, top: 18, w: 12 },
-    notes: "loop.md: cloud drifts LTR across amber sky.",
+    cloud: { left: 67.708, top: 8.333, w: 8.333 },
+    notes: "# Slide 8 (1920×1080)",
   },
   s09: {
     cards: [
-      { left: 55, top: 40, w: 7 },
-      { left: 64, top: 38, w: 7 },
-      { left: 73, top: 40, w: 7 },
+      { left: 40.625, top: 35.185, w: 7.292 },
     ],
-    notes: "loop.md: fan ±8°. Leo may redraw doc_card resting on table  -  edit cards[].",
+    notes: "# Slide 9 (1920×1080)",
   },
   s10: {
-    glow: { left: 62, top: 48, w: 5 },
+    breakeven_glow: { left: 58.333, top: 39.815, w: 2.5 },
     blocks: [
-      { left: 82, top: 70, w: 5 },
-      { left: 82, top: 62, w: 5 },
-      { left: 82, top: 54, w: 5 },
-      { left: 82, top: 46, w: 5 },
-      { left: 82, top: 38, w: 5 },
+      { left: 80.208, top: 59.259, w: 3.125 },
     ],
-    birac: { left: 82, top: 34, w: 6 },
-    eq: { left: 48, top: 78, w: 28 },
-    notes: "loop.md FINAL: glow at cross; BIRAC letters in code; C=vx+F R=px.",
+    notes: "# Slide 10 (1920×1080)",
   },
   s11: {
-    // tip cards currently stacked; Leo redraw may put them on the table  -  edit tips[].
     tips: [
-      { left: 52, top: 70, w: 8 },
-      { left: 60, top: 66, w: 8 },
-      { left: 68, top: 62, w: 8 },
-      { left: 76, top: 58, w: 8 },
-      { left: 84, top: 54, w: 8 },
+      { left: 68.75, top: 72.222, w: 5.208 },
     ],
-    pen: { left: 48, top: 78, w: 12 },
-    notes: "loop.md: tip flip sequence; pen capped wobble. Placement provisional (table redo pending).",
+    red_pen: { left: 52.083, top: 77.778, w: 9.375, h: 3.333 },
+    notes: "# Slide 11 (1920×1080)",
   },
   s12: {
-    needle: { left: 72, top: 42, w: 7, origin: "50% 80%" },
-    notes: "loop.md: needle sway ±20° on gauge.",
+    needle: { left: 55.99, top: 47.222, w: 2.188, origin: "50% 80%" },
+    notes: "# Slide 12 (1920×1080)",
   },
   s13: {
-    barbell: { left: 60, top: 48, w: 16 },
-    notes: "loop.md: huge barbell wobble, never lifts.",
+    notes: "# Slide 13 (1920×1080)",
   },
   s14: {
     bubbles: [
-      { left: 55, top: 70, w: 6 },
-      { left: 62, top: 72, w: 6 },
-      { left: 70, top: 68, w: 6 },
-      { left: 78, top: 74, w: 6 },
+      { left: 73.958, top: 27.778, w: 3.646 },
+      { left: 78.646, top: 22.222, w: 3.125 },
     ],
-    notes: "loop.md: bubbles float into shared doc. Leo may redraw q_bubble  -  edit bubbles[].",
+    notes: "# Slide 14 (1920×1080)",
   },
   s15: {
-    block: { left: 58, top: 32, w: 10 },
-    notes: "loop.md FINAL: friction block slides down ramp, resets.",
+    block: { left: 76.302, top: 56.019, w: 2.865 },
+    notes: "# Slide 15 (1920×1080)",
   },
   s16: {
-    magnifier: { left: 52, top: 40, w: 8 },
-    stylus: { left: 78, top: 50, w: 2.5 },
-    notes: "loop.md: magnifier ping-pong; stylus swaps in.",
+    magnifier: { left: 65.104, top: 46.296, w: 5.208 },
+    stylus: { left: 81.25, top: 35.185, w: 1.875, h: 11.111 },
+    notes: "# Slide 16 (1920×1080)",
   },
   s17: {
     glows: [
-      { left: 48, top: 55, w: 5 },
-      { left: 58, top: 48, w: 5 },
-      { left: 68, top: 42, w: 5 },
-      { left: 80, top: 38, w: 5 },
+      { left: 48.438, top: 67.593, w: 1.875 },
+      { left: 57.812, top: 54.63, w: 1.875 },
+      { left: 67.188, top: 41.667, w: 1.875 },
+      { left: 76.562, top: 30.556, w: 1.875 },
     ],
-    notes: "loop.md: four lanterns light in teal/amber/coral/violet sequence.",
+    notes: "# Slide 17 (1920×1080)",
   },
   s18: {
-    page: { left: 60, top: 28, w: 11 },
-    notes: "loop.md: slow page turn in front of center book.",
+    page: { left: 69.792, top: 22.222, w: 8.854 },
+    notes: "# Slide 18 (1920×1080)",
+  },
+  keyterms: {
+    flip_card: { left: 78.125, top: 44.444, w: 4.688 },
+    pushpin: { left: 80.469, top: 42.13, w: 1.875, h: 3.333 },
+    notes: "# Key terms (1920×1080)",
+  },
+  discussion: {
+    note_card: { left: 77.083, top: 19.444, w: 4.167 },
+    pushpin: { left: 79.427, top: 17.593, w: 1.875, h: 3.333 },
+    notes: "# Discussion (1920×1080)",
   },
 };
 
@@ -133,5 +122,6 @@ export function applyPlace(el, place) {
   el.style.left = place.left + "%";
   el.style.top = place.top + "%";
   if (place.w != null) el.style.width = place.w + "cqw";
+  if (place.h != null) el.style.height = place.h + "cqh";
   if (place.origin) el.style.transformOrigin = place.origin;
 }

@@ -1,3 +1,5 @@
-# Slide 6 loop
-- heart.png, standards.png, puzzle.png sit on the three stepping-stone pedestals.
-- Light up in order (opacity/glow 0.3→1): heart, then standards, then puzzle, 1.2s each, hold all lit 1s, fade, repeat. Total ~5.5s.
+# Slide 6 (1920×1080)
+- heart.png display 48×48 at (980, 920) on left stone
+- standards.png display 46×46 at (1280, 900) on middle stone
+- puzzle.png display 48×48 at (1540, 890) on right stone
+Icons stay small, centered on stones.

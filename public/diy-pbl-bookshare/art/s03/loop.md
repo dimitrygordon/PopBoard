@@ -1,3 +1,2 @@
-# Slide 3 loop
-- footprints.png walks stone-by-stone along the winding path toward the lightbulb, 4s stepped ease, then resets to start.
-- Period 4s. Soft teal accent.
+# Slide 3 (1920×1080)
+- footprints.png display 70×~55 at (1100, 620) along path.

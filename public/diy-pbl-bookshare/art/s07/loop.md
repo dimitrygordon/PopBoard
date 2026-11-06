@@ -1,4 +1,3 @@
-# Slide 7 loop
-- checkmark.png appears on checklist rows filling from the BOTTOM upward (final presentation first), 0.6s per row, 5 filled rows.
-- blank_row.png: two middle rows stay blank and shimmer (opacity pulse 0.3↔0.8, 1.5s sine) for the whole loop.
-- Period ~6s then reset checks.
+# Slide 7 (1920×1080)
+- blank_row.png display 200×10 thin amber pencil line ON checklist text lines at (1060, 438) and (1080, 532)
+- checkmark.png display 22×~18 at (1005, 425) inside checkbox, then climb rows ~45px apart

@@ -1,3 +1,2 @@
-# Slide 8 loop
-- cloud.png drifts slowly left-to-right across the amber sky over the town, 8s linear, then wrap.
-- Soft breeze feel only; arrows stay static.
+# Slide 8 (1920×1080)
+- cloud.png display 160×~100 at (1300, 90) soft drift above scene.

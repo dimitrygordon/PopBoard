@@ -1,3 +1,2 @@
-# Slide 12 loop
-- needle.png on the air-quality gauge: sway gently ±20° around center, 2.5s sine loop.
-- Map pin is static in bg (Jasper Indiana town, not a mascot).
+# Slide 12 (1920×1080)
+- needle.png display 42×~30 at (1075, 510) pivot on gauge face center.

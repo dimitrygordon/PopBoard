@@ -1,3 +1,3 @@
-# Slide 2 loop
-- walker.png: two instances shuffle forward along each queue (metal side and themed side), 5s loop, slight bob.
-- lantern_glow.png: flicker opacity 0.4↔1.0 on themed-side lanterns only, 1.2s sine. Metal side stays static.
+# Slide 2 (1920×1080)
+- walker.png display height 162 (~15% of frame) at (640, 640) and (1320, 620) inside each tunnel.
+- lantern_glow.png display 36×36 at (1480, 230).

@@ -7,31 +7,32 @@ export const THEME_BAND = {
   6: "amber", 7: "amber", 8: "amber",
   9: "coral", 10: "coral", 11: "coral", 12: "coral",
   13: "violet", 14: "violet", 15: "violet",
-  16: "cream", 17: "cream", 18: "cream", 19: "cream", 20: "cream",
+  16: "cream", 17: "cream", 18: "cream", 19: "cream", 20: "cream", 21: "cream",
 };
 
 // Primary shared motif per adjacent pair (1-based). Ids match sprite file stems / magic ids.
 // When TO lacks the same bitmap, runFlip aims the FROM clone at a stage anchor (soft motif wipe).
 export const HANDOFFS = {
-  "1-2": { primary: "marble" },
-  "2-3": { primary: "lantern_glow" },
+  "1-2": { primary: "marble" }, // soft wipe (marble not on s02)
+  "2-3": { primary: "lantern_glow" }, // soft wipe into path
   "3-4": { primary: "footprints" },
-  "4-5": { primary: "journal_page" }, // soft wipe into marble coaster (no shared bitmap)
-  "5-6": { primary: "marble" }, // soft wipe into pedestal / heart
+  "4-5": { primary: "journal_page" },
+  "5-6": { primary: "marble" },
   "6-7": { primary: "standards" },
   "7-8": { primary: "checkmark" },
   "8-9": { primary: "cloud" },
   "9-10": { primary: "doc_card" },
   "10-11": { primary: "breakeven_glow" },
   "11-12": { primary: "tip_card" },
-  "12-13": { primary: "needle" },
-  "13-14": { primary: "barbell" },
+  "12-13": { primary: "needle" }, // s13 is bg-only (barbell baked in)
+  "13-14": { primary: "q_bubble" }, // reverse-friendly; forward falls back via resolvePrimary
   "14-15": { primary: "q_bubble" },
   "15-16": { primary: "block" },
-  "16-17": { primary: "magnifier" }, // soft wipe into flip_card / glow wall
-  "17-18": { primary: "glow" },
-  "18-19": { primary: "glow" }, // soft wipe into note_card (discuss has no lanterns)
-  "19-20": { primary: "note_card" }, // soft wipe into bookshelf center (page sprite hidden)
+  "16-17": { primary: "magnifier" }, // soft wipe into flip_card
+  "17-18": { primary: "flip_card" }, // soft wipe into lantern glow path
+  "18-19": { primary: "glow" }, // soft wipe into note_card
+  "19-20": { primary: "note_card" }, // soft wipe into page / shelf
+  "20-21": { primary: "page" }, // same-id page glide bookshelf to tools
 };
 
 export function handoffKey(from1, to1) {

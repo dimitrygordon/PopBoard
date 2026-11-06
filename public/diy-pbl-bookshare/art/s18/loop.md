@@ -1,3 +1,2 @@
-# Slide 18 loop
-- page.png: slow page turn in front of the featured center book (scaleX flip or peel), 3s ease-in-out, hold, reverse. Soft fade overall optional.
-- Mostly quiet resources slide.
+# Slide 18 (1920×1080)
+- page.png display 170×~210 turning out of featured teal book at (1340, 240). Book-page sized.

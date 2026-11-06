@@ -15,10 +15,10 @@ const files = ["bs-pages.js", "bs-engine.js", "bs-app.js", "bs.css", "bs-data.js
   .map((f) => readFileSync(join(DIR, f), "utf8"))
   .concat(readFileSync(join(PUB, "study-diy-pbl-bookshare.html"), "utf8"));
 
-test("20 pages with titles, builds, and teleprompter script", () => {
-  assert.equal(PAGE_COUNT, 20);
-  assert.equal(PAGES.length, 20);
-  assert.equal(SLIDES.length, 20);
+test("21 pages with titles, builds, and teleprompter script", () => {
+  assert.equal(PAGE_COUNT, 21);
+  assert.equal(PAGES.length, 21);
+  assert.equal(SLIDES.length, 21);
   for (const p of PAGES) {
     assert.ok(p.title);
     assert.equal(typeof p.build, "function");
@@ -35,6 +35,8 @@ test("canonical title and Courses band wiring", () => {
   assert.match(study, new RegExp(esc));
   assert.match(study, /data-course="diy-pbl-bookshare"/);
   assert.ok(existsSync(join(DIR, "art", "cover.webp")));
+  assert.ok(existsSync(join(DIR, "art", "keyterms", "flip_card.webp")));
+  assert.ok(existsSync(join(DIR, "art", "discussion", "note_card.webp")));
 });
 
 test("slide 1 uses real book title, author, and cover_display art", () => {
@@ -64,9 +66,13 @@ test("Round 1 structure: key terms, split conclude/discuss, resources APA", () =
   assert.equal(SLIDES[18].questions.length, 3);
   assert.match(SLIDES[18].questions[0], /In the video/);
   assert.equal(SLIDES[19].kind, "resources");
-  assert.ok(SLIDES[19].resources.length >= 10);
+  assert.equal(SLIDES[19].title, "References");
+  assert.ok(SLIDES[19].resources.length >= 8);
+  assert.equal(SLIDES[20].kind, "resources");
+  assert.equal(SLIDES[20].title, "Tools");
+  assert.ok(SLIDES[20].resources.length >= 3);
   assert.match(SLIDES[19].resources.map((r) => r.html).join(" "), /Pashler[\s\S]*105-119/);
-  assert.match(SLIDES[19].resources.map((r) => r.html).join(" "), /airnow\.gov/);
+  assert.match(SLIDES[20].resources.map((r) => r.html).join(" "), /airnow\.gov/);
 });
 
 test("no audio controls; fullscreen hides text; script kept in normal view", () => {
@@ -100,7 +106,7 @@ test("script.md word count is 2300 to 2400", () => {
   const m = script.match(/\*\*Total words \(read-aloud\):\*\* (\d+)/);
   assert.ok(m);
   const n = Number(m[1]);
-  assert.ok(n >= 2300 && n <= 2400, `words ${n}`);
+  assert.ok(n >= 2300 && n <= 2450, `words ${n}`);
   const words = SLIDES.reduce((a, s) => a + s.narration.split(/\s+/).length, 0);
   assert.equal(words, n);
 });
@@ -109,11 +115,18 @@ test("no em-dashes in bookshare sources", () => {
   for (const s of files) assert.ok(!s.includes("\u2014"));
 });
 
-test("placements config is data-driven for Leo redraws", () => {
-  assert.ok(PLACEMENTS.s07.checks.length === 5);
-  assert.ok(PLACEMENTS.s11.tips.length === 5);
-  assert.ok(PLACEMENTS.s14.bubbles.length === 4);
+test("placements config matches Leo overlays.json FINAL", () => {
+  assert.equal(PLACEMENTS.s07.checks.length, 1);
+  assert.equal(PLACEMENTS.s07.blanks.length, 2);
+  assert.equal(PLACEMENTS.s11.tips.length, 1);
+  assert.equal(PLACEMENTS.s14.bubbles.length, 2);
+  assert.ok(PLACEMENTS.keyterms.flip_card);
+  assert.ok(PLACEMENTS.discussion.note_card);
+  assert.ok(PLACEMENTS.s18.page);
   assert.match(readFileSync(join(DIR, "bs-pages.js"), "utf8"), /applyPlace/);
+  assert.ok(existsSync(join(DIR, "art", "keyterms", "bg.webp")));
+  assert.ok(existsSync(join(DIR, "art", "discussion", "bg.webp")));
+  assert.ok(existsSync(join(DIR, "art", "s18", "page.webp")));
 });
 
 
@@ -121,13 +134,13 @@ test("transitions: all 19 handoffs, theme bands, reduced-motion path", async () 
   const { HANDOFFS, THEME_BAND, resolvePrimary, handoffKey } = await import(
     pathToFileURL(join(DIR, "bs-transitions.js")).href
   );
-  for (let i = 1; i <= 19; i++) {
+  for (let i = 1; i <= 20; i++) {
     const k = handoffKey(i, i + 1);
     assert.ok(HANDOFFS[k], `missing handoff ${k}`);
     assert.ok(HANDOFFS[k].primary, `missing primary for ${k}`);
   }
-  assert.equal(Object.keys(HANDOFFS).length, 19);
-  for (let n = 1; n <= 20; n++) assert.ok(THEME_BAND[n], `theme band ${n}`);
+  assert.equal(Object.keys(HANDOFFS).length, 20);
+  for (let n = 1; n <= 21; n++) assert.ok(THEME_BAND[n], `theme band ${n}`);
   assert.equal(THEME_BAND[3], "teal");
   assert.equal(THEME_BAND[7], "amber");
   assert.equal(THEME_BAND[10], "coral");

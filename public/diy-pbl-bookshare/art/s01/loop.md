@@ -1,5 +1,4 @@
-# Slide 1 loop
-- cover.png is the REAL front cover extracted from diy-pbl.pdf page 1 (not drawn). Drift it in from slightly below/right onto the desk center-right over 2.5s ease-out, then gentle float bob ±6px vertical, 4s sine loop.
-- marble.png rolls left-to-right along the bottom desk track edge, then resets (3.5s linear).
-- gear.png (near desk front) rotates slowly 360° every 6s.
-- Leave LEFT half clear for Turing title + author 'Heather Wolpert-Gawron' in large type.
+# Slide 1 — Cover reveal (1920×1080)
+- cover.png / cover_display.png: real Routledge cover, display ~360×450 at (1180, 240). Hero on right. Drift-in.
+- marble.png display 48×48 at (1520, 960) small accent.
+- gear.png display 120×120 at (1680, 880) small pencil gear. Never cover the real cover.

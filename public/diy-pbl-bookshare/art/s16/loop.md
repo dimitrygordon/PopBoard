@@ -1,3 +1,3 @@
-# Slide 16 loop
-- magnifier.png drifts slowly left-to-right across the lab report page, 4s ease-in-out ping-pong.
-- stylus.png (new tool) swaps in while rusty tools lift out slightly (y ±10px) then return, 3s loop.
+# Slide 16 (1920×1080)
+- magnifier.png display 100×100 at (1250, 500)
+- stylus.png display 36×120 at (1560, 380)

@@ -49,8 +49,8 @@ function buildS01(root, T) {
   const cover = sprite(root, "s01", "cover_display", "s01-cover", p.cover);
   const marble = sprite(root, "s01", "marble", "s01-marble", p.marble);
   const gear = sprite(root, "s01", "gear", "s01-gear", p.gear);
+  // Left-half title + author (cover is hero on the right per Leo FINAL)
   const title = h("div", "s01-titleblock");
-  applyPlace(title, p.titleblock);
   title.innerHTML = `<div class="s01-book">DIY Project Based Learning for Math and Science</div>
     <div class="s01-author">Heather Wolpert-Gawron</div>
     <div class="s01-pub">Routledge · Eye On Education · 2016</div>`;
@@ -79,16 +79,18 @@ function buildS01(root, T) {
 
 function buildS02(root, T) {
   const p = P("s02");
-  const w1 = sprite(root, "s02", "walker", "s02-walker s02-w1", p.w1);
-  const w2 = sprite(root, "s02", "walker", "s02-walker s02-w2", p.w2);
-  const glow = sprite(root, "s02", "lantern_glow", "s02-glow", p.glow);
+  const walkers = (p.walkers || []).map((place, i) =>
+    sprite(root, "s02", "walker", `s02-walker s02-w${i}`, place));
+  const glow = sprite(root, "s02", "lantern_glow", "s02-glow", p.lantern_glow);
   if (reduced()) return;
-  loopOrOnce(T, w1, [
-    { transform: "translate(0,0)" }, { transform: "translate(180px,-6px)" }, { transform: "translate(360px,0)" },
-  ], 0, 5);
-  loopOrOnce(T, w2, [
-    { transform: "translate(0,0)" }, { transform: "translate(160px,-4px)" }, { transform: "translate(320px,0)" },
-  ], 0.4, 5);
+  walkers.forEach((w, i) => {
+    const dx = i === 0 ? 180 : 160;
+    loopOrOnce(T, w, [
+      { transform: "translate(0,0)" },
+      { transform: `translate(${dx}px,-6px)` },
+      { transform: `translate(${dx * 2}px,0)` },
+    ], i * 0.4, 5);
+  });
   loopOrOnce(T, glow, [
     { opacity: 0.4 }, { opacity: 1 }, { opacity: 0.4 },
   ], 0, 1.2);
@@ -151,31 +153,23 @@ function buildS06(root, T) {
 
 function buildS07(root, T) {
   const p = P("s07");
-  const checks = [];
-  for (let i = 0; i < 5; i++) {
-    const c = sprite(root, "s07", "checkmark", `s07-check s07-c${i}`, (p.checks || [])[i]);
-    c.style.opacity = "0";
-    checks.push(c);
-  }
+  // Leo FINAL: one checkmark climbs rows (~45px); two blank shimmer lines
+  const check = sprite(root, "s07", "checkmark", "s07-check", (p.checks || [])[0]);
   const b1 = sprite(root, "s07", "blank_row", "s07-blank s07-b0", (p.blanks || [])[0]);
   const b2 = sprite(root, "s07", "blank_row", "s07-blank s07-b1", (p.blanks || [])[1]);
-  if (reduced()) {
-    checks.forEach((c) => { c.style.opacity = "1"; });
-    return;
-  }
-  checks.forEach((c, i) => {
-    // fill from bottom: c0 is bottom
-    const delay = i * 0.6;
-    T.loop(c, [
-      { offset: 0, opacity: 0 },
-      { offset: Math.min(0.95, (delay + 0.05) / 6), opacity: 0 },
-      { offset: Math.min(0.98, (delay + 0.6) / 6), opacity: 1 },
-      { offset: 0.85, opacity: 1 },
-      { offset: 1, opacity: 0 },
-    ], 0, 6);
-  });
-  loopOrOnce(T, b1, [{ opacity: 0.3 }, { opacity: 0.8 }, { opacity: 0.3 }], 0, 1.5);
-  loopOrOnce(T, b2, [{ opacity: 0.3 }, { opacity: 0.8 }, { opacity: 0.3 }], 0.3, 1.5);
+  if (reduced()) return;
+  // climb several checklist rows then reset (45px display ≈ 4.17% of 1080)
+  loopOrOnce(T, check, [
+    { transform: "translateY(0px)", opacity: 1 },
+    { transform: "translateY(45px)", opacity: 1 },
+    { transform: "translateY(90px)", opacity: 1 },
+    { transform: "translateY(135px)", opacity: 1 },
+    { transform: "translateY(180px)", opacity: 1 },
+    { transform: "translateY(180px)", opacity: 0 },
+    { transform: "translateY(0px)", opacity: 0 },
+  ], 0, 5.5);
+  loopOrOnce(T, b1, [{ opacity: 0.3 }, { opacity: 0.85 }, { opacity: 0.3 }], 0, 1.5);
+  loopOrOnce(T, b2, [{ opacity: 0.3 }, { opacity: 0.85 }, { opacity: 0.3 }], 0.3, 1.5);
 }
 
 function buildS08(root, T) {
@@ -189,96 +183,47 @@ function buildS08(root, T) {
 
 function buildS09(root, T) {
   const p = P("s09");
-  const cards = [];
-  for (let i = 0; i < 3; i++) {
-    cards.push(sprite(root, "s09", "doc_card", `s09-card s09-c${i}`, (p.cards || [])[i]));
-  }
+  const card = sprite(root, "s09", "doc_card", "s09-card", (p.cards || [])[0]);
   if (reduced()) return;
-  cards.forEach((c, i) => {
-    const ang = (i - 1) * 8;
-    T.loop(c, [
-      { transform: `rotate(0deg)` },
-      { transform: `rotate(${ang}deg)` },
-      { transform: `rotate(0deg)` },
-    ], 0, 4);
-  });
+  loopOrOnce(T, card, [
+    { transform: "rotate(-4deg)" },
+    { transform: "rotate(4deg)" },
+    { transform: "rotate(-4deg)" },
+  ], 0, 3.2);
 }
 
 function buildS10(root, T) {
   const p = P("s10");
-  const glow = sprite(root, "s10", "breakeven_glow", "s10-glow", p.glow);
-  const blocks = [];
-  for (let i = 0; i < 5; i++) {
-    const b = sprite(root, "s10", "birac_block", `s10-block s10-b${i}`, (p.blocks || [])[i]);
-    b.style.opacity = "0";
-    blocks.push(b);
-  }
-  const letters = h("div", "s10-birac");
-  applyPlace(letters, p.birac);
-  letters.innerHTML = ["B", "I", "R", "A", "C"].map((L, i) => `<span class="s10-L s10-L${i}">${L}</span>`).join("");
-  root.appendChild(letters);
+  const glow = sprite(root, "s10", "breakeven_glow", "s10-glow", p.breakeven_glow);
+  const block = sprite(root, "s10", "birac_block", "s10-block", (p.blocks || [])[0]);
+  // BIRAC letters stay code-side on the blank blocks painted in bg
   const eq = h("div", "s10-eq");
-  applyPlace(eq, p.eq);
-  eq.innerHTML = `<span>C = vx + F</span><span>R = px</span>`;
+  eq.textContent = "C = vx + F    R = px";
   root.appendChild(eq);
-  T.fade(eq, 0.2, 0.5);
-  if (reduced()) {
-    glow.style.opacity = "1";
-    blocks.forEach((b) => { b.style.opacity = "1"; });
-    return;
-  }
-  loopOrOnce(T, glow, [
-    { transform: "scale(0.8)", opacity: 0.5 },
-    { transform: "scale(1.2)", opacity: 1 },
-    { transform: "scale(0.8)", opacity: 0.5 },
-  ], 1.5, 1.5);
-  blocks.forEach((b, i) => {
-    T.loop(b, [
-      { offset: 0, opacity: 0 },
-      { offset: (0.4 * i) / 5, opacity: 0 },
-      { offset: (0.4 * (i + 1)) / 5, opacity: 1 },
-      { offset: 0.85, opacity: 1 },
-      { offset: 1, opacity: 0 },
-    ], 0, 5);
-  });
-  [...letters.children].forEach((L, i) => {
-    T.loop(L, [
-      { offset: 0, opacity: 0 },
-      { offset: (0.4 * i) / 5, opacity: 0 },
-      { offset: (0.4 * (i + 1)) / 5, opacity: 1 },
-      { offset: 0.85, opacity: 1 },
-      { offset: 1, opacity: 0 },
-    ], 0, 5);
-  });
+  if (reduced()) return;
+  loopOrOnce(T, glow, [{ opacity: 0.35 }, { opacity: 1 }, { opacity: 0.35 }], 0, 1.4);
+  loopOrOnce(T, block, [
+    { transform: "translateY(0)" },
+    { transform: "translateY(-6px)" },
+    { transform: "translateY(0)" },
+  ], 0, 2.8);
 }
 
 function buildS11(root, T) {
   const p = P("s11");
-  const tips = [];
-  for (let i = 0; i < 5; i++) {
-    const t = sprite(root, "s11", "tip_card", `s11-tip s11-t${i}`, (p.tips || [])[i]);
-    t.style.opacity = "0";
-    tips.push(t);
-  }
-  const pen = sprite(root, "s11", "red_pen", "s11-pen", p.pen);
-  if (reduced()) {
-    tips.forEach((t) => { t.style.opacity = "1"; });
-    return;
-  }
-  tips.forEach((t, i) => {
-    T.loop(t, [
-      { offset: 0, opacity: 0, transform: "scaleY(0.2)" },
-      { offset: (0.8 * i) / 5.5, opacity: 0, transform: "scaleY(0.2)" },
-      { offset: (0.8 * (i + 1)) / 5.5, opacity: 1, transform: "scaleY(1)" },
-      { offset: 0.85, opacity: 1 },
-      { offset: 1, opacity: 0 },
-    ], 0, 5.5);
-  });
+  const tip = sprite(root, "s11", "tip_card", "s11-tip", (p.tips || [])[0]);
+  const pen = sprite(root, "s11", "red_pen", "s11-pen", p.red_pen);
+  if (reduced()) return;
+  loopOrOnce(T, tip, [
+    { transform: "rotate(-3deg) translateY(0)" },
+    { transform: "rotate(2deg) translateY(-4px)" },
+    { transform: "rotate(-3deg) translateY(0)" },
+  ], 0, 2.6);
   loopOrOnce(T, pen, [
     { transform: "rotate(-2deg)" },
     { transform: "rotate(2deg)" },
     { transform: "rotate(-2deg)" },
-  ], 0, 2.5);
+  ], 0.2, 2.2);
 }
 
 function buildS12(root, T) {
@@ -292,30 +237,22 @@ function buildS12(root, T) {
 }
 
 function buildS13(root, T) {
-  const barbell = sprite(root, "s13", "barbell", "s13-barbell", P("s13").barbell);
-  if (reduced()) return;
-  loopOrOnce(T, barbell, [
-    { transform: "rotate(-6deg) translateY(0)" },
-    { transform: "rotate(6deg) translateY(-2px)" },
-    { transform: "rotate(-6deg) translateY(0)" },
-  ], 0, 1.2);
+  // Leo FINAL: bg only (barbell baked into scene). No overlay sprites.
+  void root; void T;
 }
 
 function buildS14(root, T) {
   const p = P("s14");
-  const bubbles = [];
-  for (let i = 0; i < 4; i++) {
-    bubbles.push(sprite(root, "s14", "q_bubble", `s14-q s14-q${i}`, (p.bubbles || [])[i]));
-  }
+  const bubbles = (p.bubbles || []).map((place, i) =>
+    sprite(root, "s14", "q_bubble", `s14-q s14-q${i}`, place));
   if (reduced()) return;
   bubbles.forEach((b, i) => {
-    T.loop(b, [
-      { offset: 0, transform: "translateY(40px) scale(0.4)", opacity: 0 },
-      { offset: 0.15, opacity: 1, transform: "translateY(20px) scale(1)" },
-      { offset: 0.7, transform: "translateY(-120px) scale(1)", opacity: 1 },
-      { offset: 0.9, transform: "translateY(-140px) scale(0.2)", opacity: 0 },
-      { offset: 1, opacity: 0 },
-    ], i * 0.6, 4);
+    loopOrOnce(T, b, [
+      { transform: "translateY(0) scale(1)", opacity: 0.85 },
+      { transform: "translateY(-28px) scale(1.05)", opacity: 1 },
+      { transform: "translateY(-50px) scale(1)", opacity: 0.2 },
+      { transform: "translateY(0) scale(1)", opacity: 0 },
+    ], i * 0.45, 3.2);
   });
 }
 
@@ -373,7 +310,7 @@ function buildKeyTermsOverlay(root, T, terms) {
   terms.forEach((term, i) => {
     const card = h("div", `bs-term-card t${i} bs-reveal`);
     card.textContent = String(term).replace(/^"|"$/g, "");
-    if (i === 0) card.dataset.magicId = "flip_card";
+    if (i === 0) card.dataset.magicId = "term_lead";
     wall.appendChild(card);
     if (!reduced()) {
       T.A(card, [
@@ -383,6 +320,44 @@ function buildKeyTermsOverlay(root, T, terms) {
     }
   });
   root.appendChild(wall);
+}
+
+function buildKeytermsArt(root, T) {
+  const p = P("keyterms");
+  sprite(root, "keyterms", "flip_card", "kt-flip", p.flip_card, "flip_card");
+  sprite(root, "keyterms", "pushpin", "kt-pin", p.pushpin, "pushpin");
+  if (reduced()) return;
+  const flip = root.querySelector(".kt-flip");
+  const pin = root.querySelector(".kt-pin");
+  if (flip) loopOrOnce(T, flip, [
+    { transform: "rotateY(0deg)" },
+    { transform: "rotateY(180deg)" },
+    { transform: "rotateY(0deg)" },
+  ], 0.4, 3.5);
+  if (pin) loopOrOnce(T, pin, [
+    { transform: "translateY(0)" },
+    { transform: "translateY(3px)" },
+    { transform: "translateY(0)" },
+  ], 0, 2.2);
+}
+
+function buildDiscussionArt(root, T) {
+  const p = P("discussion");
+  sprite(root, "discussion", "note_card", "dq-note", p.note_card, "note_card");
+  sprite(root, "discussion", "pushpin", "dq-pin", p.pushpin, "pushpin");
+  if (reduced()) return;
+  const note = root.querySelector(".dq-note");
+  const pin = root.querySelector(".dq-pin");
+  if (note) loopOrOnce(T, note, [
+    { transform: "rotate(-2deg)" },
+    { transform: "rotate(2deg)" },
+    { transform: "rotate(-2deg)" },
+  ], 0, 3);
+  if (pin) loopOrOnce(T, pin, [
+    { transform: "translateY(0)" },
+    { transform: "translateY(3px)" },
+    { transform: "translateY(0)" },
+  ], 0, 2.2);
 }
 
 function buildS18Page(root, T) {
@@ -438,20 +413,22 @@ export const PAGES = SLIDES.map((slide) => ({
     if (slide.idea) root.dataset.idea = String(slide.idea);
 
     if (slide.kind === "terms") {
-      // key terms: use s17 bg soft + code-side flipping cards (Leo note E / B2)
       buildKeyTermsOverlay(root, T, slide.bullets || []);
-      if (BUILDERS.s17) BUILDERS.s17(root, T);
+      buildKeytermsArt(root, T);
     } else if (slide.kind === "discuss") {
       const panel = h("div", "bs-discuss");
       (slide.questions || []).forEach((q, i) => {
         const card = h("div", `bs-dq-card dq${i} bs-reveal`);
         card.innerHTML = `<b>Q${i + 1}.</b> ${fx(q)}`;
-        if (i === 0) card.dataset.magicId = "note_card";
         panel.appendChild(card);
       });
       root.appendChild(panel);
+      buildDiscussionArt(root, T);
     } else if (slide.kind === "resources") {
       const panel = h("div", "bs-resources-panel bs-reveal");
+      const heading = h("div", "bs-res-h");
+      heading.textContent = slide.resHeading || "References and tools";
+      panel.appendChild(heading);
       const ul = h("ul", "bs-apa");
       (slide.resources || []).forEach((r) => {
         const li = document.createElement("li");
@@ -460,7 +437,8 @@ export const PAGES = SLIDES.map((slide) => ({
       });
       panel.appendChild(ul);
       root.appendChild(panel);
-      // Do not mount blank page.webp sprite over the bookshelf
+      // Leo FINAL redrawn page sprite (overlays.json)
+      if (BUILDERS.s18) BUILDERS.s18(root, T);
     } else if (slide.kind === "conclude") {
       if (BUILDERS.s17) BUILDERS.s17(root, T);
       const box = h("div", "bs-takeaways");

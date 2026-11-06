@@ -1,3 +1,4 @@
-# Slide 11 loop
-- tip_card.png: five tip cards flip over one at a time in order (scaleY flip or opacity crossfade), 0.8s each, then pause 1s and reset. Period ~5.5s.
-- red_pen.png stays capped on the table (tiny idle wobble optional, ±2°).
+# Slide 11 (1920×1080)
+On table only, pen-sized:
+- tip_card.png display 100×68 at (1320, 780)
+- red_pen.png display 180×36 at (1000, 840)

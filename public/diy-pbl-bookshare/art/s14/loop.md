@@ -1,2 +1,2 @@
-# Slide 14 loop
-- q_bubble.png: 3 to 4 bubbles float up from audience laptops into the shared document window, fade in, drift up, pop (scale down) into the doc. Stagger 0.6s. Period ~4s.
+# Slide 14 (1920×1080)
+- q_bubble.png display 60–70px rising into shared doc only: (1420, 300) and (1510, 240). Keep off faces.
