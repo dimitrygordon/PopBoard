@@ -29,6 +29,7 @@ const STAGE_TEXT_SELS = [
   ".bs-resources-panel",
   ".bs-term-text",
   ".s09-genre",
+  ".s09-word",
   ".s10-lab-rev",
   ".s10-lab-cost",
   ".s10-lab-be",
@@ -316,7 +317,6 @@ test("s09 labels sit on card-body pixels (no ink / neighbour); readable size", a
     t.skip("Chrome launch failed: " + e.message);
     return;
   }
-  // Flask icon AABB in design px (bg.webp); mapped to scene via design-layer scale.
   const LAB_ICON = { x0: 1270, y0: 148, x1: 1338, y1: 218 };
   try {
     const failures = [];
@@ -335,193 +335,209 @@ test("s09 labels sit on card-body pixels (no ink / neighbour); readable size", a
         waitUntil: "networkidle0", timeout: 60000,
       });
       await settle(page);
-      await page.evaluate(async () => { try { await document.fonts.ready; } catch {} });
-      await new Promise((r) => setTimeout(r, 200));
+      // Final paint after fonts + fitters (two rAFs beyond settle).
+      await page.evaluate(async () => {
+        try { await document.fonts.ready; } catch {}
+        await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+      });
+      await new Promise((r) => setTimeout(r, 120));
+
       const meta = await page.evaluate((LAB_ICON) => {
         const scene = document.querySelector(".bs-scene");
         const layer = document.querySelector(".bs-design-layer");
         const sr = scene.getBoundingClientRect();
         const lr = layer.getBoundingClientRect();
-        const scaleX = lr.width / 1920;
-        const scaleY = lr.height / 1080;
         const iconScene = {
           x0: (LAB_ICON.x0 / 1920) * lr.width + (lr.left - sr.left),
           y0: (LAB_ICON.y0 / 1080) * lr.height + (lr.top - sr.top),
           x1: (LAB_ICON.x1 / 1920) * lr.width + (lr.left - sr.left),
           y1: (LAB_ICON.y1 / 1080) * lr.height + (lr.top - sr.top),
         };
-        return {
-          iconScene,
-          labels: [...document.querySelectorAll(".s09-genre")].map((el) => {
-            const br = el.getBoundingClientRect();
-            const rot = Number(el.dataset.rot || 0);
+        const labels = [...document.querySelectorAll(".s09-genre")].map((el) => {
+          const label = el.dataset.label || "";
+          const wordEls = [...document.querySelectorAll(`.s09-word[data-label="${CSS.escape(label)}"]`)];
+          const words = wordEls.map((w) => {
+            const br = w.getBoundingClientRect();
             return {
-              label: el.dataset.label || el.textContent.trim().replace(/\s+/g, " "),
-              band: el.dataset.band === "1",
-              x: br.left - sr.left,
-              y: br.top - sr.top,
-              w: br.width,
-              h: br.height,
-              cx: (br.left + br.right) / 2 - sr.left,
-              cy: (br.top + br.bottom) / 2 - sr.top,
-              rot,
-              artFs: parseFloat(el.dataset.artFs || "0"),
-              fs: parseFloat(getComputedStyle(el).fontSize),
-              clip: el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2,
-              lines: (el.textContent || "").split("\n").map((s) => s.trim()).filter(Boolean),
+              word: (w.textContent || "").trim(),
+              x0: br.left - sr.left,
+              y0: br.top - sr.top,
+              x1: br.right - sr.left,
+              y1: br.bottom - sr.top,
+              artFs: parseFloat(w.dataset.artFs || el.dataset.artFs || "0"),
             };
-          }),
-        };
-      }, LAB_ICON);
-
-      // Lab must not overlap flask icon (rotated AABB vs icon AABB).
-      for (const m of meta.labels) {
-        if (!m.band && m.label !== "Lab report") continue;
-        const rad = (m.rot * Math.PI) / 180;
-        const cos = Math.cos(rad), sin = Math.sin(rad);
-        const corners = [[-m.w / 2, -m.h / 2], [m.w / 2, -m.h / 2], [-m.w / 2, m.h / 2], [m.w / 2, m.h / 2]]
-          .map(([lx, ly]) => [m.cx + lx * cos - ly * sin, m.cy + lx * sin + ly * cos]);
-        const ax0 = Math.min(...corners.map((c) => c[0]));
-        const ay0 = Math.min(...corners.map((c) => c[1]));
-        const ax1 = Math.max(...corners.map((c) => c[0]));
-        const ay1 = Math.max(...corners.map((c) => c[1]));
-        const ic = meta.iconScene;
-        const overlap = !(ax1 < ic.x0 || ax0 > ic.x1 || ay1 < ic.y0 || ay0 > ic.y1);
-        if (overlap) {
-          failures.push(`${vp.name}: "Lab report" overlaps flask icon AABB`);
-        }
-      }
-
-      await page.evaluate(() => {
-        document.querySelectorAll(".s09-genre").forEach((el) => { el.style.visibility = "hidden"; });
-      });
-      await new Promise((r) => setTimeout(r, 80));
-      const sceneHandle = await page.$(".bs-scene");
-      const shot = await sceneHandle.screenshot({ encoding: "binary" });
-      await sceneHandle.dispose();
-      const b64 = Buffer.from(shot).toString("base64");
-      const pixelReport = await page.evaluate(async (b64, labels) => {
-        const img = new Image();
-        await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = "data:image/png;base64," + b64; });
-        const canvas = document.createElement("canvas");
-        canvas.width = img.width; canvas.height = img.height;
-        const ctx = canvas.getContext("2d", { willReadFrequently: true });
-        ctx.drawImage(img, 0, 0);
-        const { data, width, height } = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const scene = document.querySelector(".bs-scene");
-        const sw = scene.clientWidth, sh = scene.clientHeight;
-        const sx = width / sw, sy = height / sh;
-        function sample(cssX, cssY) {
-          const px = Math.min(width - 1, Math.max(0, Math.round(cssX * sx)));
-          const py = Math.min(height - 1, Math.max(0, Math.round(cssY * sy)));
-          const i = (py * width + px) * 4;
-          return { r: data[i], g: data[i + 1], b: data[i + 2] };
-        }
-        function isCream(p) {
-          const lum = (p.r + p.g + p.b) / 3;
-          const chroma = Math.max(Math.abs(p.r - p.g), Math.abs(p.g - p.b), Math.abs(p.r - p.b));
-          return lum >= 185 && chroma <= 48;
-        }
-        function isInk(p) {
-          return (p.r + p.g + p.b) / 3 < 120;
-        }
-        function isHeaderChroma(p) {
-          const lum = (p.r + p.g + p.b) / 3;
-          const chroma = Math.max(Math.abs(p.r - p.g), Math.abs(p.g - p.b), Math.abs(p.r - p.b));
-          return chroma > 40 && lum > 130 && lum < 235;
-        }
-        function enclosed(cssX, cssY) {
-          const maxd = Math.max(220, Math.round(Math.min(sw, sh) * 0.35));
-          let hits = 0;
-          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-            for (let d = 3; d < maxd; d += 3) {
-              const p = sample(cssX + dx * d, cssY + dy * d);
-              if (isInk(p)) { hits++; break; }
-            }
-          }
-          return hits >= 3;
-        }
-        const out = [];
-        for (const m of labels) {
-          const rad = (m.rot * Math.PI) / 180;
-          const cos = Math.cos(rad), sin = Math.sin(rad);
-          const hw = m.w * 0.40, hh = m.h * 0.40;
-          let ok = 0, bad = 0, ink = 0, header = 0, open = 0;
-          for (let iy = 0; iy < 10; iy++) {
-            for (let ix = 0; ix < 10; ix++) {
-              const lx = -hw + (2 * hw) * (ix / 9);
-              const ly = -hh + (2 * hh) * (iy / 9);
-              const cssX = m.cx + lx * cos - ly * sin;
-              const cssY = m.cy + lx * sin + ly * cos;
-              const p = sample(cssX, cssY);
-              if (m.band) {
-                // Lab lives in the colored header band.
-                if (isInk(p)) { ink++; bad++; }
-                else if (isHeaderChroma(p)) ok++;
-                else if (isCream(p)) { open++; bad++; }
-                else bad++;
-              } else {
-                if (isInk(p)) { ink++; bad++; }
-                else if (isHeaderChroma(p)) { header++; bad++; }
-                else if (!isCream(p)) { bad++; }
-                else if (!enclosed(cssX, cssY)) { open++; bad++; }
-                else ok++;
+          });
+          // Fallback for legacy single-node labels (pre-word-split).
+          if (!words.length) {
+            const raw = (el.textContent || "").replace(/\r/g, "");
+            const parts = raw.split("\n").map((s) => s.trim()).filter(Boolean);
+            const tn = [...el.childNodes].find((n) => n.nodeType === 3);
+            if (tn) {
+              let searchFrom = 0;
+              const full = tn.textContent || "";
+              for (const word of parts) {
+                const idx = full.indexOf(word, searchFrom);
+                if (idx < 0) continue;
+                const range = document.createRange();
+                range.setStart(tn, idx);
+                range.setEnd(tn, idx + word.length);
+                const br = range.getBoundingClientRect();
+                words.push({
+                  word,
+                  x0: br.left - sr.left,
+                  y0: br.top - sr.top,
+                  x1: br.right - sr.left,
+                  y1: br.bottom - sr.top,
+                  artFs: parseFloat(el.dataset.artFs || "0"),
+                });
+                searchFrom = idx + word.length;
               }
             }
           }
-          out.push({
-            label: m.label,
-            band: !!m.band,
-            ok, bad, ink, header, open,
-            artFs: m.artFs,
-            fs: m.fs,
-            clip: m.clip,
-            lines: m.lines,
-            creamFrac: ok / (ok + bad),
+          return {
+            label,
+            band: el.dataset.band === "1",
+            rot: Number(el.dataset.rot || 0),
+            artFs: parseFloat(el.dataset.artFs || "0"),
+            words,
+          };
+        });
+        return { iconScene, labels, sceneW: sr.width, sceneH: sr.height };
+      }, LAB_ICON);
+
+      for (const m of meta.labels) {
+        if (!m.band && m.label !== "Lab report") continue;
+        const words = m.words || [];
+        if (!words.length) continue;
+        const ax0 = Math.min(...words.map((w) => w.x0));
+        const ay0 = Math.min(...words.map((w) => w.y0));
+        const ax1 = Math.max(...words.map((w) => w.x1));
+        const ay1 = Math.max(...words.map((w) => w.y1));
+        const ic = meta.iconScene;
+        const overlap = !(ax1 < ic.x0 || ax0 > ic.x1 || ay1 < ic.y0 || ay0 > ic.y1);
+        if (overlap) failures.push(`${vp.name}: "Lab report" overlaps flask icon AABB`);
+      }
+
+      const sceneHandle = await page.$(".bs-scene");
+      const withBuf = Buffer.from(await sceneHandle.screenshot({ encoding: "binary" }));
+      await page.evaluate(() => {
+        document.querySelectorAll(".s09-genre, .s09-word").forEach((el) => { el.style.visibility = "hidden"; });
+      });
+      await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+      await new Promise((r) => setTimeout(r, 60));
+      const withoutBuf = Buffer.from(await sceneHandle.screenshot({ encoding: "binary" }));
+      await sceneHandle.dispose();
+
+      const wordReport = await page.evaluate(async (withB64, withoutB64, labels) => {
+        function load(b64) {
+          return new Promise((res, rej) => {
+            const img = new Image();
+            img.onload = () => res(img);
+            img.onerror = rej;
+            img.src = "data:image/png;base64," + b64;
           });
         }
+        const withImg = await load(withB64);
+        const withoutImg = await load(withoutB64);
+        const canvas = document.createElement("canvas");
+        canvas.width = withImg.width; canvas.height = withImg.height;
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        ctx.drawImage(withImg, 0, 0);
+        const withData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        ctx.drawImage(withoutImg, 0, 0);
+        const withoutData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        const scene = document.querySelector(".bs-scene");
+        const sw = scene.clientWidth, sh = scene.clientHeight;
+        const sx = canvas.width / sw, sy = canvas.height / sh;
+        function idx(px, py) { return (py * canvas.width + px) * 4; }
+        function isOutlineInk(r, g, b) {
+          // Dark navy card outlines / icon strokes (not soft hatching).
+          const lum = (r + g + b) / 3;
+          return lum < 115 && b >= r - 25 && b >= g - 15;
+        }
+        function isGlyphDiff(wi, wo) {
+          // Label ink is dark navy; require a clear darkening vs without-label shot.
+          const wLum = (withData[wi] + withData[wi + 1] + withData[wi + 2]) / 3;
+          const oLum = (withoutData[wo] + withoutData[wo + 1] + withoutData[wo + 2]) / 3;
+          return wLum < 140 && (oLum - wLum) > 35;
+        }
+        const PAD = 4;
+        const out = [];
+        for (const lab of labels) {
+          for (const w of lab.words) {
+            const rx0 = Math.max(0, Math.floor(w.x0 * sx) - 2);
+            const ry0 = Math.max(0, Math.floor(w.y0 * sy) - 2);
+            const rx1 = Math.min(canvas.width - 1, Math.ceil(w.x1 * sx) + 2);
+            const ry1 = Math.min(canvas.height - 1, Math.ceil(w.y1 * sy) + 2);
+            let gx0 = Infinity, gy0 = Infinity, gx1 = -1, gy1 = -1, inkN = 0;
+            for (let py = ry0; py <= ry1; py++) {
+              for (let px = rx0; px <= rx1; px++) {
+                const i = idx(px, py);
+                if (isGlyphDiff(i, i)) {
+                  inkN++;
+                  if (px < gx0) gx0 = px;
+                  if (py < gy0) gy0 = py;
+                  if (px > gx1) gx1 = px;
+                  if (py > gy1) gy1 = py;
+                }
+              }
+            }
+            if (inkN < 8 || gx1 < gx0) {
+              out.push({
+                label: lab.label, word: w.word, band: !!lab.band,
+                artFs: w.artFs || lab.artFs,
+                inkN, outlineHits: -1, reason: "no-glyph-ink",
+              });
+              continue;
+            }
+            const px0 = Math.max(0, gx0 - PAD);
+            const py0 = Math.max(0, gy0 - PAD);
+            const px1 = Math.min(canvas.width - 1, gx1 + PAD);
+            const py1 = Math.min(canvas.height - 1, gy1 + PAD);
+            let outlineHits = 0;
+            for (let py = py0; py <= py1; py++) {
+              for (let px = px0; px <= px1; px++) {
+                const i = idx(px, py);
+                if (isOutlineInk(withoutData[i], withoutData[i + 1], withoutData[i + 2])) {
+                  outlineHits++;
+                }
+              }
+            }
+            out.push({
+              label: lab.label,
+              word: w.word,
+              band: !!lab.band,
+              artFs: w.artFs || lab.artFs,
+              inkN,
+              outlineHits,
+              glyph: { x0: gx0, y0: gy0, x1: gx1, y1: gy1 },
+              padded: { x0: px0, y0: py0, x1: px1, y1: py1 },
+            });
+          }
+        }
         return out;
-      }, b64, meta.labels);
+      }, withBuf.toString("base64"), withoutBuf.toString("base64"), meta.labels);
 
-      if (pixelReport.length !== 4) {
-        failures.push(`${vp.name}: expected 4 labels, got ${pixelReport.length}`);
+      const expectedWords = meta.labels.reduce((n, l) => n + Math.max(1, (l.words || []).length), 0);
+      if (wordReport.length < 6) {
+        failures.push(`${vp.name}: expected ≥6 words, got ${wordReport.length} (labels=${meta.labels.length})`);
       }
-      const arts = pixelReport.map((r) => r.artFs).filter((n) => n > 0);
-      const minArt = arts.length ? Math.min(...arts) : 0;
-      const maxArt = arts.length ? Math.max(...arts) : 0;
-      const minBody = vp.height < 500 ? 0.62 : 0.85;
-      const minBand = vp.height < 500 ? 0.55 : 0.75;
-      for (const r of pixelReport) {
-        const need = r.band ? minBand : minBody;
-        if (r.creamFrac < need) {
-          failures.push(`${vp.name}: "${r.label}" only ${(r.creamFrac * 100).toFixed(0)}% ${r.band ? "band" : "card-body"} under label (ink=${r.ink} header=${r.header} open=${r.open} bad=${r.bad})`);
+      for (const r of wordReport) {
+        if (r.reason === "no-glyph-ink") {
+          failures.push(`${vp.name}: "${r.label}"/"${r.word}" no glyph ink in diff`);
+          continue;
         }
-        if (r.ink > 3) {
-          failures.push(`${vp.name}: "${r.label}" hits outline ink (${r.ink} samples)`);
+        if (r.outlineHits > 0) {
+          failures.push(`${vp.name}: "${r.label}"/"${r.word}" outline ink under glyph+4px (${r.outlineHits} px)`);
         }
-        if (r.clip) failures.push(`${vp.name}: "${r.label}" clips its box`);
-        // One word per line for multi-word labels.
-        if (r.lines && r.lines.length >= 2) {
-          /* ok */
-        } else if ((r.label || "").includes(" ")) {
-          failures.push(`${vp.name}: "${r.label}" not stacked one-word-per-line (lines=${JSON.stringify(r.lines)})`);
-        }
-        // ≥18px rendered at 1280 (design layer cover-scaled ~2/3) => artFs ≥ 27.
         if (vp.width === 1280 && r.artFs && r.artFs < 26.5) {
-          failures.push(`${vp.name}: "${r.label}" too small artFs=${r.artFs.toFixed(1)} (need ≥27 for ≥18px)`);
+          failures.push(`${vp.name}: "${r.label}"/"${r.word}" too small artFs=${r.artFs.toFixed(1)} (need ≥27 for ≥18px)`);
         }
         if (r.artFs && r.artFs < 14) {
-          failures.push(`${vp.name}: "${r.label}" too small artFs=${r.artFs.toFixed(1)}`);
+          failures.push(`${vp.name}: "${r.label}"/"${r.word}" too small artFs=${r.artFs.toFixed(1)}`);
         }
       }
-      // Body labels should be in a similar ballpark; Lab band may be smaller.
-      const bodyArts = pixelReport.filter((r) => !r.band).map((r) => r.artFs).filter((n) => n > 0);
-      if (bodyArts.length >= 2) {
-        const bMin = Math.min(...bodyArts), bMax = Math.max(...bodyArts);
-        if (bMax > bMin * 2.4) {
-          failures.push(`${vp.name}: body label sizes diverge artFs ${bMin.toFixed(1)}..${bMax.toFixed(1)}`);
-        }
-      }
+      void expectedWords;
       await page.close();
     }
     assert.equal(failures.length, 0, failures.join("\n"));

@@ -415,69 +415,93 @@ function buildS08(root, T) {
 function buildS09(root, T) {
   const layer = ensureDesignLayer(root);
   const cards = s09Cards().filter((c) => (c.label || c.text));
-  // Width-fit stacked words; ≥18px rendered at 1280 => ≥27 design (cover scale 2/3).
+  // ≥18px rendered at 1280 => ≥27 design. Each word is a layer child centered on
+  // the visible cream midline at that word's own Y (slanted card edges).
   const TARGET_FS = 48;
   const MIN_FS = 27;
   cards.forEach((c, i) => {
     const label = c.label || c.text || "";
     const slot = S09_LABEL_SLOTS[label];
-    if (!slot) return;
+    if (!slot || !slot.words || !slot.words.length) return;
     const q = c.quad_xy || c.quad;
-    const el = surface("genre", `s09-genre s09-g${i} on-art`);
-    el.dataset.cardId = c.id || label || `g${i}`;
-    el.dataset.label = label;
-    el.dataset.quad = JSON.stringify(q);
-    el.dataset.bodyQuad = JSON.stringify(q);
-    el.dataset.visCx = String(slot.cx);
-    el.dataset.visCy = String(slot.cy);
-    el.dataset.visW = String(slot.w);
-    el.dataset.visH = String(slot.h);
-    el.dataset.bodyInset = "0.08";
-    el.dataset.rot = String(slot.rot);
-    el.dataset.cardCx = String((c.center_xy || [slot.cx, slot.cy])[0]);
-    el.dataset.cardCy = String((c.center_xy || [slot.cx, slot.cy])[1]);
-    el.dataset.z = String(slot.z);
-    if (slot.band) el.dataset.band = "1";
-    // One word per line (Business / letter, Executive / summary, …).
-    el.textContent = label.includes(" ")
-      ? label.split(/\s+/).join("\n")
-      : label;
-    el.style.left = (slot.cx / 1920) * 100 + "%";
-    el.style.top = (slot.cy / 1080) * 100 + "%";
-    el.style.width = (slot.w / 1920) * 100 + "%";
-    el.style.height = (slot.h / 1080) * 100 + "%";
-    el.style.transform = `translate(-50%, -50%) rotate(${slot.rot}deg)`;
-    el.style.transformOrigin = "50% 50%";
-    el.style.textAlign = "center";
-    el.style.display = "flex";
-    el.style.alignItems = "center";
-    el.style.justifyContent = "center";
-    el.style.lineHeight = "1.05";
-    el.style.whiteSpace = "pre-line";
-    el.style.padding = "0";
-    el.style.boxSizing = "border-box";
-    el.style.color = "#26376e";
-    el.style.fontSize = TARGET_FS + "px";
-    el.style.overflow = "hidden";
-    el.style.pointerEvents = "none";
-    el.style.zIndex = String(10 + slot.z);
-    layer.appendChild(el);
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      let lo = MIN_FS, hi = TARGET_FS, best = MIN_FS;
-      // Lab band is short: allow slightly under MIN if height-bound, still try MAX fit.
-      if (slot.band) lo = 18;
-      for (let step = 0; step < 16; step++) {
-        const mid = (lo + hi) / 2;
-        el.style.setProperty("font-size", mid + "px", "important");
-        if (el.scrollWidth <= el.clientWidth + 0.5 && el.scrollHeight <= el.clientHeight + 0.5) {
-          best = mid; lo = mid;
-        } else {
-          hi = mid;
+    const wrap = surface("genre", `s09-genre s09-g${i} on-art`);
+    wrap.dataset.cardId = c.id || label || `g${i}`;
+    wrap.dataset.label = label;
+    wrap.dataset.quad = JSON.stringify(q);
+    wrap.dataset.bodyQuad = JSON.stringify(q);
+    wrap.dataset.rot = String(slot.rot);
+    wrap.dataset.z = String(slot.z);
+    if (slot.band) wrap.dataset.band = "1";
+    wrap.style.position = "absolute";
+    wrap.style.left = "0";
+    wrap.style.top = "0";
+    wrap.style.width = "0";
+    wrap.style.height = "0";
+    wrap.style.overflow = "visible";
+    wrap.style.pointerEvents = "none";
+    wrap.style.zIndex = String(10 + slot.z);
+    wrap.textContent = "";
+    const wordFs = [];
+    slot.words.forEach((W, wi) => {
+      const el = document.createElement("div");
+      el.className = "s09-word on-art";
+      el.dataset.label = label;
+      el.dataset.word = W.word;
+      el.dataset.rot = String(slot.rot);
+      el.dataset.group = `s09-g${i}`;
+      if (slot.band) el.dataset.band = "1";
+      el.textContent = W.word;
+      el.style.position = "absolute";
+      el.style.left = (W.cx / 1920) * 100 + "%";
+      el.style.top = (W.cy / 1080) * 100 + "%";
+      el.style.width = (W.w / 1920) * 100 + "%";
+      el.style.height = (W.h / 1080) * 100 + "%";
+      el.style.transform = `translate(-50%, -50%) rotate(${slot.rot}deg)`;
+      el.style.transformOrigin = "50% 50%";
+      el.style.textAlign = "center";
+      el.style.display = "flex";
+      el.style.alignItems = "center";
+      el.style.justifyContent = "center";
+      el.style.lineHeight = "1";
+      el.style.whiteSpace = "nowrap";
+      el.style.padding = "0";
+      el.style.boxSizing = "border-box";
+      el.style.color = "#26376e";
+      el.style.fontSize = TARGET_FS + "px";
+      el.style.overflow = "hidden";
+      el.style.pointerEvents = "none";
+      el.style.zIndex = String(10 + slot.z);
+      layer.appendChild(el);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        let lo = slot.band ? 18 : MIN_FS;
+        let hi = TARGET_FS;
+        let best = lo;
+        for (let step = 0; step < 16; step++) {
+          const mid = (lo + hi) / 2;
+          el.style.setProperty("font-size", mid + "px", "important");
+          if (el.scrollWidth <= el.clientWidth + 0.5 && el.scrollHeight <= el.clientHeight + 0.5) {
+            best = mid; lo = mid;
+          } else {
+            hi = mid;
+          }
         }
-      }
-      el.style.setProperty("font-size", best + "px", "important");
-      el.dataset.artFs = String(best);
-    }));
+        el.style.setProperty("font-size", best + "px", "important");
+        el.dataset.artFs = String(best);
+        wordFs[wi] = best;
+        if (wordFs.filter((n) => n != null).length === slot.words.length) {
+          wrap.dataset.artFs = String(Math.min(...wordFs));
+        }
+      }));
+    });
+    const cx = slot.words.reduce((s, W) => s + W.cx, 0) / slot.words.length;
+    const cy = slot.words.reduce((s, W) => s + W.cy, 0) / slot.words.length;
+    wrap.dataset.visCx = String(cx);
+    wrap.dataset.visCy = String(cy);
+    wrap.dataset.visW = String(Math.max(...slot.words.map((W) => W.w)));
+    const y0 = Math.min(...slot.words.map((W) => W.cy - W.h / 2));
+    const y1 = Math.max(...slot.words.map((W) => W.cy + W.h / 2));
+    wrap.dataset.visH = String(y1 - y0);
+    layer.appendChild(wrap);
   });
   void T;
 }

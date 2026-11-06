@@ -372,11 +372,35 @@ export function loadLayouts() {
 export const S09_LAB_ICON_BOUNDS = { x0: 1270, y0: 148, x1: 1338, y1: 218 };
 
 export const S09_LABEL_SLOTS = {
-  /* One word/line; sized to visible body WIDTH (Lab: pink band left of flask). */
-  "Lab report":        { cx: 1185, cy: 190, w: 138, h: 60, rot: -8, z: 0, wrap: true, band: true },
-  "Business letter":   { cx: 1110, cy: 635, w: 125, h: 150, rot: -16, z: 2, wrap: true },
-  "Executive summary": { cx: 1354, cy: 655, w: 165, h: 165, rot: -2, z: 1, wrap: true },
-  "Problem statement": { cx: 1605, cy: 700, w: 185, h: 175, rot: 11, z: 3, wrap: true },
+  /* Per-word slots: each line centered on visible cream mid at that Y (slanted edges). */
+  "Lab report": {
+    rot: -8, z: 0, band: true,
+    words: [
+      { word: "Lab",    cx: 1180, cy: 170, w: 100, h: 32 },
+      { word: "report", cx: 1180, cy: 200, w: 126, h: 32 },
+    ],
+  },
+  "Business letter": {
+    rot: -16, z: 2,
+    words: [
+      { word: "Business", cx: 1140, cy: 635, w: 108, h: 42 },
+      { word: "letter",   cx: 1132, cy: 678, w: 82,  h: 42 },
+    ],
+  },
+  "Executive summary": {
+    rot: -2, z: 1,
+    words: [
+      { word: "Executive", cx: 1330, cy: 598, w: 140, h: 42 },
+      { word: "summary",   cx: 1328, cy: 646, w: 132, h: 42 },
+    ],
+  },
+  "Problem statement": {
+    rot: 11, z: 3,
+    words: [
+      { word: "Problem",   cx: 1616, cy: 627, w: 150, h: 52 },
+      { word: "statement", cx: 1607, cy: 681, w: 175, h: 52 },
+    ],
+  },
 };
 
 export function s09Cards() {

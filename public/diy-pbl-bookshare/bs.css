@@ -1738,9 +1738,14 @@ body.fl-full .bs-design-layer .bs-paper-group .bs-apa li {
 /* s09 genre labels: ink blue, larger design type */
 .bs-design-layer .s09-genre,
 .bs-design-layer .bs-surface--genre,
-.bs-scene .s09-genre {
+.bs-scene .s09-genre,
+.bs-design-layer .s09-word,
+.bs-scene .s09-word {
   color: #26376e !important;
   font-family: "Cabin Sketch", "Patrick Hand", cursive !important;
   font-weight: 700;
   mix-blend-mode: multiply;
+}
+.bs-design-layer .s09-genre {
+  overflow: visible !important;
 }
