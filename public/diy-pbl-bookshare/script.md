@@ -1,13 +1,11 @@
 # Dimitry's DIY Project Based Learning for Math and Science Bookshare
 
 Narrator: Dimitry Gordon (live; no TTS audio)
-Source: Socrates package + Round 1, voice pass + de-AI pass by Wendell
+Source: Socrates package + Round 1-6, voice pass + de-AI pass by Wendell
 Pace: ~150 wpm
 
-**Total words (read-aloud):** 2566
-**Total @ 150 wpm:** 17:06
-
----
+**Total words (read-aloud):** 3398
+**Total @ 150 wpm:** 22:39
 
 ---
 
@@ -15,7 +13,7 @@ Pace: ~150 wpm
 
 **Words:** 89  |  **Est. @ 150 wpm:** 0:36
 
-Hi everyone, I'm Dimitry. My Book Share is DIY Project Based Learning for Math and Science, by Heather Wolpert-Gawron. She's an award-winning middle school teacher and Edutopia blogger. I'm training to teach physics and Earth and space science, and I picked this book because I want my students doing science, and not just reading about it. Over the next seventeen minutes or so, I'll teach you four big ideas, the key terms behind them, what each one looks like in a real classroom, and three questions to chew on.
+Hi everyone, I'm Dimitry. My Book Share is DIY Project Based Learning for Math and Science, by Heather Wolpert-Gawron. She's an award-winning middle school teacher and Edutopia blogger. I'm training to teach physics and Earth and space science, and I picked this book because I want my students doing science, and not just reading about it. Over the next twenty-two minutes or so, I'll teach you four big ideas, the key terms behind them, what each one looks like in a real classroom, and three questions to chew on.
 
 ---
 
@@ -51,7 +49,23 @@ Here's what idea one looks like across classrooms. The author borrows an element
 
 ---
 
-## Slide 6: Idea 2: Design toward what you love
+## Slide 6: An invention starts with a problem
+
+**Words:** 107  |  **Est. @ 150 wpm:** 0:43
+
+This is a real student idea from the Invention Unit. Jacob calls it the Smart Drawer. If your hands are full, or a drawer is hard to open, you step on a floor pad and a sensor opens it for you. Before anybody pitches anything, students walk through their homes and list three to five problems in each major space. That gives them somewhere to start. She also has them break a Rube Goldberg machine down into its steps. The point is to study the sequence. Nobody has to build another machine. I'd run that same routine before I ask my physics students to design a solution.
+
+---
+
+## Slide 7: What students actually produced
+
+**Words:** 102  |  **Est. @ 150 wpm:** 0:41
+
+This is the student work behind that coaster example, and these photos are right there in the book. Students marked the track dimensions and labeled potential and kinetic energy. The teaching directions say to document each trial and explain why it worked or didn't. That's the part I'd want to assess. A loop that works is fun to watch. I'd still want the student to explain the run that failed, point to the change they made, and show me what happened on the next trial. My high school version is just a proposal. These elementary classroom examples are already in the book.
+
+---
+
+## Slide 8: Idea 2: Design toward what you love
 
 **Words:** 127  |  **Est. @ 150 wpm:** 0:51
 
@@ -59,7 +73,7 @@ Idea two: design toward what you love, then backplan to the standards. The autho
 
 ---
 
-## Slide 7: The checklist is a contract
+## Slide 9: The checklist is a contract
 
 **Words:** 176  |  **Est. @ 150 wpm:** 1:10
 
@@ -67,7 +81,15 @@ The checklist keeps all this from turning into chaos. Every unit starts with a p
 
 ---
 
-## Slide 8: Passion first vs. backward design
+## Slide 10: The actual pacing checklist
+
+**Words:** 89  |  **Est. @ 150 wpm:** 0:36
+
+This is the actual Invention Unit checklist. It has a date assigned, an assignment, and a deadline. Look at the order. The needs analysis comes before the problem statement, and the design and cost analysis come before the final business letter and presentation. Students can see how the pieces fit together. The author also tells us to leave some empty boxes for our own assignments or for students' individual goals. In my class, I'd fill those when a quick check tells me we need another lesson or another trial.
+
+---
+
+## Slide 11: Passion first vs. backward design
 
 **Words:** 147  |  **Est. @ 150 wpm:** 0:59
 
@@ -75,7 +97,7 @@ Let me push on this a little. In our coursework we've been studying backward des
 
 ---
 
-## Slide 9: Idea 3: Communication is the content
+## Slide 12: Idea 3: Communication is the content
 
 **Words:** 141  |  **Est. @ 150 wpm:** 0:56
 
@@ -83,7 +105,15 @@ Idea three: communication is the content. The author quotes her earlier book: "I
 
 ---
 
-## Slide 10: Writing with numbers
+## Slide 13: A student writes to a real reader
+
+**Words:** 85  |  **Est. @ 150 wpm:** 0:34
+
+Here's another student artifact. Kevin wrote a business letter about an invention he calls the Dust Mite, a flying vacuum, and he asks a company to fund it. I like that students write to a specific reader with a specific request. I wouldn't take his performance claims on faith, though. In physics, we'd ask whether that design could actually lift its own weight and still power the vacuum. That gives the next investigation a reason to exist, and it gives Kevin something concrete to revise.
+
+---
+
+## Slide 14: Writing with numbers
 
 **Words:** 155  |  **Est. @ 150 wpm:** 1:02
 
@@ -91,7 +121,7 @@ Two tools from this idea are worth stealing. The first is writing with numeracy.
 
 ---
 
-## Slide 11: Assess writing quickly
+## Slide 15: Assess writing quickly
 
 **Words:** 184  |  **Est. @ 150 wpm:** 1:14
 
@@ -99,7 +129,7 @@ If every STEM teacher assigns writing, somebody has to grade it. So each unit en
 
 ---
 
-## Slide 12: Idea 3 in practice
+## Slide 16: Idea 3 in practice
 
 **Words:** 133  |  **Est. @ 150 wpm:** 0:53
 
@@ -107,7 +137,15 @@ Here's idea three in practice. In a middle school math class, the break-even ana
 
 ---
 
-## Slide 13: Idea 4: Teach them to be teachers
+## Slide 17: Invented creature, evidence-based explanation
+
+**Words:** 83  |  **Est. @ 150 wpm:** 0:33
+
+This is a student-created marine torguana from the Galapagos Unit. The creature is made up, but students have to tie their design to the island's real habitat. Their explorers' journal covers the habitat, animal facts, and theories about why the species is disappearing. Then they pitch a protection plan. I'd ask students to defend one feature of their creature with evidence about its environment. The drawing is a fun way in. The explanation is where I find out whether the science holds up.
+
+---
+
+## Slide 18: Idea 4: Teach them to be teachers
 
 **Words:** 180  |  **Est. @ 150 wpm:** 1:12
 
@@ -115,7 +153,15 @@ Idea four: teach them to be teachers. The last unit in the book is called Teach 
 
 ---
 
-## Slide 14: Students write the tests
+## Slide 19: What would those questions sound like?
+
+**Words:** 104  |  **Est. @ 150 wpm:** 0:42
+
+Let me show what those question levels actually sound like. The book asks whether you agree with Shakespeare that people have seven ages in their lifetime, and why. That's one of her level three examples. Here's how I'd turn the framework into friction questions. Level one asks what the coefficient of friction means. Level two has students compare two force graphs and explain what the slopes tell us. Level three asks them to design a fair test of whether contact area changes sliding friction. Those physics questions are mine, by the way. I'd check the questions students write before they hand them to classmates.
+
+---
+
+## Slide 20: Students write the tests
 
 **Words:** 138  |  **Est. @ 150 wpm:** 0:55
 
@@ -123,7 +169,23 @@ She uses four tools for this. First, the student-created assessment. In the Geni
 
 ---
 
-## Slide 15: Idea 4 in practice
+## Slide 21: Students put the rubric into their own words
+
+**Words:** 82  |  **Est. @ 150 wpm:** 0:33
+
+This is a student-created rubric from the book. At the top, the students wrote, "Able to Teach." One descriptor says, "Great evidence, quotes." Another says, "Every piece of the prompt is included clearly." They know what those words mean because they helped write them. For a physics explanation, I'd ask the class what convincing evidence looks like. We'd still need accurate physics and clear criteria. Students could help put those expectations into words they'd actually use when they're reviewing a partner's work.
+
+---
+
+## Slide 22: A real collaboration constitution
+
+**Words:** 93  |  **Est. @ 150 wpm:** 0:37
+
+The collaboration constitution makes a lot more sense once you see what students actually wrote. This team agreed to answer messages within three hours and to talk through problems before asking the teacher to step in. I wouldn't copy that three-hour deadline into my class. My students have different responsibilities and different access at home, so I'd have them agree on something realistic. The assignment also asks them to write a sentence they can use when somebody isn't participating. That way they have the words for an awkward conversation before they need them.
+
+---
+
+## Slide 23: Idea 4 in practice
 
 **Words:** 121  |  **Est. @ 150 wpm:** 0:48
 
@@ -131,7 +193,7 @@ Here's idea four in other classrooms. In an ELA or history class, students can t
 
 ---
 
-## Slide 16: Where I'd push back
+## Slide 24: Where I'd push back
 
 **Words:** 193  |  **Est. @ 150 wpm:** 1:17
 
@@ -139,7 +201,15 @@ Now for where I'd push back. This book came out in 2016, and some of its tools a
 
 ---
 
-## Slide 17: Key terms
+## Slide 25: A student sample can still need revision
+
+**Words:** 70  |  **Est. @ 150 wpm:** 0:28
+
+This is a good example of why that content check matters. In the fictional patient report, the student recommends a second opinion. That's a smart choice for the audience. Elsewhere, though, the report makes claims about brain structure I'd want students to go verify. I'd use it as a revision example. We can give the student credit for those communication choices and still ask whether the evidence supports the science.
+
+---
+
+## Slide 26: Key terms
 
 **Words:** 107  |  **Est. @ 150 wpm:** 0:43
 
@@ -147,7 +217,7 @@ Here are the book's key terms in one place. A driving question is the real-world
 
 ---
 
-## Slide 18: Conclude with direction
+## Slide 27: Conclude with direction
 
 **Words:** 93  |  **Est. @ 150 wpm:** 0:37
 
@@ -155,20 +225,15 @@ So, four things to take with you. One, PBL is a unit, not a project, so build th
 
 ---
 
-## Slide 19: Discussion questions
+## Slide 28: Discussion questions
 
 **Words:** 53  |  **Est. @ 150 wpm:** 0:21
 
 Here are my three discussion questions. Each one asks you to take an idea from this video into your own classroom. First, planning order, and the empty rows of the checklist. Second, a real-world genre paired with a feedback tip. Third, other ways students can prove they're able to teach. Thanks for watching.
 
-**Discussion questions (full text):**
-1. In the video, Wolpert-Gawron's planning order (design toward what you love, then look back at the standards, then fill the gaps) was compared with backward design. Choose a unit you will teach. Which order would you plan it in, and what would you put in the empty rows of your pacing checklist to keep it flexible? Explain how your choice connects to an idea from the presentation.
-2. The presentation shared five ways to assess writing quickly and argued that in STEM, communication is the content. Pick one real-world genre from the video (problem statement, executive summary with BIRAC, business letter, or lab report) and describe how you would use it in your subject. Which feedback tip would you pair it with, and how does that tip shift who does the work?
-3. The book insists that the top level of a rubric be called "Able to Teach This Topic." In addition to the approaches in the presentation (student-created quizzes, student-translated rubrics, backchanneling), what other way could students in your classroom prove they can teach a concept? What evidence would convince you, and what is one risk of the approach?
-
 ---
 
-## Slide 20: Resources
+## Slide 29: References
 
 **Words:** 23  |  **Est. @ 150 wpm:** 0:09
 
@@ -176,7 +241,7 @@ The book, its free printable resources, and everything else I mentioned are list
 
 ---
 
-## Slide 21: Tools
+## Slide 30: Tools
 
 **Words:** 19  |  **Est. @ 150 wpm:** 0:08
 

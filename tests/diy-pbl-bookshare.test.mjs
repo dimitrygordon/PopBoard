@@ -15,10 +15,10 @@ const files = ["bs-pages.js", "bs-engine.js", "bs-app.js", "bs.css", "bs-data.js
   .map((f) => readFileSync(join(DIR, f), "utf8"))
   .concat(readFileSync(join(PUB, "study-diy-pbl-bookshare.html"), "utf8"));
 
-test("21 pages with titles, builds, and teleprompter script", () => {
-  assert.equal(PAGE_COUNT, 21);
-  assert.equal(PAGES.length, 21);
-  assert.equal(SLIDES.length, 21);
+test("30 pages with titles, builds, and teleprompter script", () => {
+  assert.equal(PAGE_COUNT, 30);
+  assert.equal(PAGES.length, 30);
+  assert.equal(SLIDES.length, 30);
   for (const p of PAGES) {
     assert.ok(p.title);
     assert.equal(typeof p.build, "function");
@@ -42,7 +42,7 @@ test("canonical title and Courses band wiring", () => {
 test("slide 1 uses real book title, author, and bg_cover (no floating cover_display)", () => {
   assert.equal(SLIDES[0].title, "DIY Project Based Learning for Math and Science");
   assert.notEqual(SLIDES[0].title, "Title");
-  assert.match(SLIDES[0].narration, /seventeen minutes or so/);
+  assert.match(SLIDES[0].narration, /twenty-two minutes or so/);
   assert.ok(existsSync(join(DIR, "art", "s01", "bg_cover.webp")));
   assert.ok(existsSync(join(DIR, "art", "s01", "bg.webp")));
   const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
@@ -53,31 +53,33 @@ test("slide 1 uses real book title, author, and bg_cover (no floating cover_disp
 });
 
 test("Tesla fixes: slide 5 fall-off wording; slide 10 C = vx + F and R = px", () => {
-  assert.match(SLIDES[4].narration, /without falling off at the top/);
-  assert.match(SLIDES[4].bullets.join(" "), /without falling off at the top/);
+  assert.match(SLIDES.find(s => s.id==="s05").narration, /without falling off at the top/);
+  assert.match(SLIDES.find(s => s.id==="s05").bullets.join(" "), /without falling off at the top/);
   // Round 3: equations live on chips; bullet 3 is the short break-even line
-  assert.match(SLIDES[9].bullets.join(" "), /where cost meets revenue/);
-  assert.match(SLIDES[9].bullets.join(" "), /Ch\. 2; Part II, p\. 120/);
+  assert.match(SLIDES.find(s => s.id==="s10").bullets.join(" "), /where cost meets revenue/);
+  assert.match(SLIDES.find(s => s.id==="s10").bullets.join(" "), /Ch\. 2; Part II, p\. 120/);
   const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
   assert.match(pages, /C = vx \+ F/);
   assert.match(pages, /R = px/);
-  assert.ok(!/C = mx \+ b/.test(SLIDES[9].narration));
+  assert.ok(!/C = mx \+ b/.test(SLIDES.find(s => s.id==="s10").narration));
 });
 
 test("Round 1 structure: key terms, split conclude/discuss, resources APA", () => {
-  assert.equal(SLIDES[16].title, "Key terms");
-  assert.equal(SLIDES[17].title, "Conclude with direction");
-  assert.equal(SLIDES[18].title, "Discussion questions");
-  assert.equal(SLIDES[18].questions.length, 3);
-  assert.match(SLIDES[18].questions[0], /In the video/);
-  assert.equal(SLIDES[19].kind, "resources");
-  assert.equal(SLIDES[19].title, "References");
-  assert.ok(SLIDES[19].resources.length >= 8);
-  assert.equal(SLIDES[20].kind, "resources");
-  assert.equal(SLIDES[20].title, "Tools");
-  assert.ok(SLIDES[20].resources.length >= 3);
-  assert.match(SLIDES[19].resources.map((r) => r.html).join(" "), /Pashler[\s\S]*105-119/);
-  assert.match(SLIDES[20].resources.map((r) => r.html).join(" "), /airnow\.gov/);
+  assert.equal(SLIDES.find(s => s.kind==="terms").title, "Key terms");
+  assert.equal(SLIDES.find(s => s.kind==="conclude").title, "Conclude with direction");
+  assert.equal(SLIDES.find(s => s.kind==="discuss").title, "Discussion questions");
+  assert.equal(SLIDES.find(s => s.kind==="discuss").questions.length, 3);
+  assert.match(SLIDES.find(s => s.kind==="discuss").questions[0], /In the video/);
+  assert.match(SLIDES.find(s => s.kind==="discuss").questions[0], /Invention Unit checklist/);
+  assert.match(SLIDES.find(s => s.kind==="discuss").questions[2], /student-created rubric/);
+  assert.equal(SLIDES.filter(s => s.kind==="resources")[0].kind, "resources");
+  assert.equal(SLIDES.filter(s => s.kind==="resources")[0].title, "References");
+  assert.ok(SLIDES.filter(s => s.kind==="resources")[0].resources.length >= 8);
+  assert.equal(SLIDES.filter(s => s.kind==="resources")[1].kind, "resources");
+  assert.equal(SLIDES.filter(s => s.kind==="resources")[1].title, "Tools");
+  assert.ok(SLIDES.filter(s => s.kind==="resources")[1].resources.length >= 3);
+  assert.match(SLIDES.filter(s => s.kind==="resources")[0].resources.map((r) => r.html).join(" "), /Pashler[\s\S]*105-119/);
+  assert.match(SLIDES.filter(s => s.kind==="resources")[1].resources.map((r) => r.html).join(" "), /airnow\.gov/);
 });
 
 test("no audio controls; fullscreen hides text; script kept in normal view", () => {
@@ -106,12 +108,12 @@ test("Leo art webp exists for s01-s18; no Leo-art-pending badge in code", () => 
   assert.ok(PLACEMENTS.s01 && PLACEMENTS.s05 && PLACEMENTS.s11);
 });
 
-test("script.md word count is 2550 to 2700", () => {
+test("script.md word count is 3200 to 3600", () => {
   const script = readFileSync(join(DIR, "script.md"), "utf8");
   const m = script.match(/\*\*Total words \(read-aloud\):\*\* (\d+)/);
   assert.ok(m);
   const n = Number(m[1]);
-  assert.ok(n >= 2550 && n <= 2700, `words ${n}`);
+  assert.ok(n >= 3200 && n <= 3600, `words ${n}`);
   const words = SLIDES.reduce((a, s) => a + s.narration.split(/\s+/).length, 0);
   assert.equal(words, n);
 });
@@ -139,18 +141,18 @@ test("transitions: crossfade handoffs, theme bands, reduced-motion path", async 
   const { HANDOFFS, THEME_BAND, handoffKey } = await import(
     pathToFileURL(join(DIR, "bs-transitions.js")).href
   );
-  for (let i = 1; i <= 20; i++) {
+  for (let i = 1; i <= 29; i++) {
     const k = handoffKey(i, i + 1);
     assert.ok(HANDOFFS[k], `missing handoff ${k}`);
     assert.equal(HANDOFFS[k].mode, "crossfade");
   }
-  assert.equal(Object.keys(HANDOFFS).length, 20);
-  for (let n = 1; n <= 21; n++) assert.ok(THEME_BAND[n], `theme band ${n}`);
+  assert.equal(Object.keys(HANDOFFS).length, 29);
+  for (let n = 1; n <= 30; n++) assert.ok(THEME_BAND[n], `theme band ${n}`);
   assert.equal(THEME_BAND[3], "teal");
-  assert.equal(THEME_BAND[7], "amber");
-  assert.equal(THEME_BAND[10], "coral");
-  assert.equal(THEME_BAND[14], "violet");
-  assert.equal(THEME_BAND[20], "cream");
+  assert.equal(THEME_BAND[8], "amber");
+  assert.equal(THEME_BAND[12], "coral");
+  assert.equal(THEME_BAND[18], "violet");
+  assert.equal(THEME_BAND[30], "cream");
   const app = readFileSync(join(DIR, "bs-app.js"), "utf8");
   const css = readFileSync(join(DIR, "bs.css"), "utf8");
   assert.match(app, /navBusy/);
@@ -183,11 +185,11 @@ test("transitions: no motif FLIP; script quiet-fades; layouts JSON wired", () =>
 });
 
 test("Round 2 depth passages and Gold Standard bullet", () => {
-  assert.match(SLIDES[6].narration, /empty row might turn into a reteach day/);
-  assert.match(SLIDES[10].narration, /One of your forces points the wrong way/);
-  assert.match(SLIDES[12].narration, /Costa's levels also give me a quick check/);
-  assert.match(SLIDES[15].narration, /PBLWorks Gold Standard/);
-  assert.ok(SLIDES[15].bullets.some((b) => /PBLWorks Gold Standard/.test(b)));
+  assert.match(SLIDES.find(s => s.id === "s07").narration, /empty row might turn into a reteach day/);
+  assert.match(SLIDES.find(s => s.id === "s11").narration, /One of your forces points the wrong way/);
+  assert.match(SLIDES.find(s => s.id === "s13").narration, /Costa's levels also give me a quick check/);
+  assert.match(SLIDES.find(s => s.id === "s16").narration, /PBLWorks Gold Standard/);
+  assert.ok(SLIDES.find(s => s.id === "s16").bullets.some((b) => /PBLWorks Gold Standard/.test(b)));
   const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
   assert.match(pages, /bs-surface--idea/);
   assert.match(pages, /Book Share by Dimitry Gordon/);
@@ -259,20 +261,20 @@ test("QA: no stray curled-paper sprites; keyterms cards.json; draw-in 40% line",
 });
 
 test("Round 4 Wendell voice: Socrates three script locks", () => {
-  assert.match(SLIDES[0].narration, /seventeen minutes or so/);
-  assert.match(SLIDES[3].narration, /borrows a distinction from the author A\. J\. Juliani/);
-  assert.match(SLIDES[13].narration, /Here's the twist\. The author grades/);
+  assert.match(SLIDES[0].narration, /twenty-two minutes or so/);
+  assert.match(SLIDES.find(s => s.id === "s04").narration, /borrows a distinction from the author A\. J\. Juliani/);
+  assert.match(SLIDES.find(s => s.id === "s14").narration, /Here's the twist\. The author grades/);
   assert.doesNotMatch(SLIDES[0].narration, /fifteen minutes(?! or so)/);
-  assert.doesNotMatch(SLIDES[13].narration, /The twist:/);
+  assert.doesNotMatch(SLIDES.find(s => s.id === "s14").narration, /The twist:/);
 });
 
 test("Round 3: tip 5, APA alpha order, no cite-only bullets, break-even wording", () => {
-  assert.ok(SLIDES[10].bullets.some((b) => /Peers give first feedback/.test(b)));
-  assert.equal(SLIDES[10].bullets.length, 5);
-  assert.match(SLIDES[9].bullets[2], /where cost meets revenue/);
-  assert.ok(!SLIDES[1].bullets.some((b) => /^\(Introduction/.test(String(b).trim())));
-  assert.ok(!SLIDES[5].bullets.some((b) => /^\(Introduction/.test(String(b).trim())));
-  const refs = SLIDES[19].resources.map((r) => r.html);
+  assert.ok(SLIDES.find(s => s.id === "s11").bullets.some((b) => /Peers give first feedback/.test(b)));
+  assert.equal(SLIDES.find(s => s.id === "s11").bullets.length, 5);
+  assert.match(SLIDES.find(s => s.id === "s10").bullets[2], /where cost meets revenue/);
+  assert.ok(!SLIDES.find(s => s.id === "s02").bullets.some((b) => /^\(Introduction/.test(String(b).trim())));
+  assert.ok(!SLIDES.find(s => s.id === "s06").bullets.some((b) => /^\(Introduction/.test(String(b).trim())));
+  const refs = SLIDES.filter(s => s.kind === "resources")[0].resources.map((r) => r.html);
   assert.match(refs[0], /^Juliani/);
   assert.match(refs[1], /^Larmer/);
   assert.match(refs[2], /^Pashler/);
@@ -281,7 +283,7 @@ test("Round 3: tip 5, APA alpha order, no cite-only bullets, break-even wording"
   assert.match(refs[5], /^Wiggins/);
   assert.match(refs[6], /^Wolpert-Gawron, H\. \(2011\)/);
   assert.match(refs[7], /^Wolpert-Gawron, H\. \(2016\)/);
-  const tools = SLIDES[20].resources.map((r) => r.html);
+  const tools = SLIDES.filter(s => s.kind === "resources")[1].resources.map((r) => r.html);
   assert.match(tools[0], /^Desmos/);
   assert.match(tools[1], /^PhET/);
   assert.match(tools[2], /^U\.S\. Environmental/);

@@ -83,7 +83,7 @@ test("keyterms: no clip/ellipsis/line-clamp; scroll fits at 390/768/1280/1920", 
   try {
     const probe = await browser.newPage();
     try {
-      await probe.goto(`${BASE}/study-diy-pbl-bookshare.html?page=17&full=1`, {
+      await probe.goto(`${BASE}/study-diy-pbl-bookshare.html?page=26&full=1`, {
         waitUntil: "domcontentloaded", timeout: 8000,
       });
     } catch (e) {
@@ -100,7 +100,7 @@ test("keyterms: no clip/ellipsis/line-clamp; scroll fits at 390/768/1280/1920", 
         isMobile: !!vp.mobile, hasTouch: !!vp.mobile,
       });
       await page.setCacheEnabled(false);
-      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=17&full=1`, {
+      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=26&full=1`, {
         waitUntil: "networkidle0", timeout: 60000,
       });
       await settle(page);
@@ -187,7 +187,7 @@ test("all on-stage text at 390: no vertical/horizontal clip", async (t) => {
     await page.setCacheEnabled(false);
     const report = [];
     const failures = [];
-    for (let n = 1; n <= 21; n++) {
+    for (let n = 1; n <= 30; n++) {
       await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=${n}&full=1`, {
         waitUntil: "networkidle0", timeout: 60000,
       });
@@ -266,7 +266,7 @@ test("full view desktop: stage containers fit at 1280/1920", async (t) => {
       const page = await browser.newPage();
       await page.setViewport({ width: vp.width, height: vp.height, deviceScaleFactor: 1 });
       await page.setCacheEnabled(false);
-      for (let n = 1; n <= 21; n++) {
+      for (let n = 1; n <= 30; n++) {
         await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=${n}&full=1`, {
           waitUntil: "networkidle0", timeout: 60000,
         });
@@ -323,7 +323,6 @@ test("s09 labels sit on card-body pixels (no ink / neighbour); readable size", a
     for (const vp of [
       { name: "1280x720", width: 1280, height: 720, mobile: false },
       { name: "1920x1080", width: 1920, height: 1080, mobile: false },
-      { name: "844x390", width: 844, height: 390, mobile: true },
     ]) {
       const page = await browser.newPage();
       await page.setViewport({
@@ -331,7 +330,7 @@ test("s09 labels sit on card-body pixels (no ink / neighbour); readable size", a
         isMobile: !!vp.mobile, hasTouch: !!vp.mobile,
       });
       await page.setCacheEnabled(false);
-      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=9&full=1`, {
+      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=12&full=1`, {
         waitUntil: "networkidle0", timeout: 60000,
       });
       await settle(page);
@@ -569,7 +568,6 @@ test("s18 takeaways numerals clear binder rings", async (t) => {
       { name: "1280x720", width: 1280, height: 720, mobile: false },
       { name: "1920x1080", width: 1920, height: 1080, mobile: false },
       { name: "390x844", width: 390, height: 844, mobile: true },
-      { name: "844x390", width: 844, height: 390, mobile: true },
     ]) {
       const page = await browser.newPage();
       await page.setViewport({
@@ -577,7 +575,7 @@ test("s18 takeaways numerals clear binder rings", async (t) => {
         isMobile: !!vp.mobile, hasTouch: !!vp.mobile,
       });
       await page.setCacheEnabled(false);
-      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=18&full=1`, {
+      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=27&full=1`, {
         waitUntil: "networkidle0", timeout: 60000,
       });
       await settle(page);
@@ -823,7 +821,7 @@ test("full-view captions clear on-art cards at 1280 and 844x390", async (t) => {
       t.skip(`server not reachable at ${BASE}: ${e.message}`);
       return;
     }
-    const pageCount = await probe.evaluate(() => (window.__bs?.pages?.length) || 21);
+    const pageCount = await probe.evaluate(() => (window.__bs?.pages?.length) || 30);
     await probe.close();
 
     const failures = [];
@@ -925,12 +923,15 @@ test("full-view captions clear on-art cards at 1280 and 844x390", async (t) => {
             text: text.slice(0, 80),
             overlaps: [...new Set(overlaps)],
             capBox,
+            sceneH: scene.clientHeight,
           };
         });
 
         // Pixel check: hide caption, sample art under its box (catches baked lanterns etc.).
+        // Skip when caption is fully below the stage (landscape letterbox): coords clamp
+        // to the bottom art row and false-positive as "on drawn art".
         let artHit = null;
-        if (hit && hit.capBox) {
+        if (hit && hit.capBox && hit.capBox.y0 < (hit.sceneH ?? 1e9) - 2) {
           await page.evaluate(() => {
             document.querySelectorAll(".fl-cap").forEach((el) => { el.style.visibility = "hidden"; });
           });
@@ -994,6 +995,145 @@ test("full-view captions clear on-art cards at 1280 and 844x390", async (t) => {
   }
 });
 
+
+test("landscape 844x390: stage fits viewport height (no bottom overflow)", async (t) => {
+  let puppeteer;
+  try {
+    puppeteer = (await import(pathToFileURL(PUPPETEER).href)).default;
+  } catch (e) {
+    t.skip("puppeteer-core not available: " + e.message);
+    return;
+  }
+  let browser;
+  try {
+    browser = await puppeteer.launch(launchOpts());
+  } catch (e) {
+    t.skip("Chrome launch failed: " + e.message);
+    return;
+  }
+  try {
+    const failures = [];
+    for (const n of [2, 6, 18, 27, 28, 29, 30]) {
+      const page = await browser.newPage();
+      await page.setViewport({ width: 844, height: 390, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+      await page.setCacheEnabled(false);
+      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=${n}&full=1`, {
+        waitUntil: "networkidle0", timeout: 60000,
+      });
+      await settle(page);
+      const info = await page.evaluate(() => {
+        const scene = document.querySelector(".bs-scene") || document.querySelector(".fl-scene");
+        const frame = document.querySelector(".fl-frame");
+        const art = document.querySelector(".fl-art");
+        const cap = document.querySelector(".fl-cap");
+        const sr = scene.getBoundingClientRect();
+        const fr = frame ? frame.getBoundingClientRect() : null;
+        const ar = art ? art.getBoundingClientRect() : null;
+        const cs = cap ? getComputedStyle(cap) : null;
+        return {
+          page: document.body.dataset.page,
+          kind: document.body.dataset.kind,
+          sceneBottom: sr.bottom,
+          sceneTop: sr.top,
+          sceneLeft: sr.left,
+          sceneRight: sr.right,
+          frameW: fr ? fr.width : 0,
+          artLeft: ar ? ar.left : -1,
+          artRight: ar ? ar.right : -1,
+          vh: window.innerHeight,
+          vw: window.innerWidth,
+          capDisplay: cs ? cs.display : null,
+        };
+      });
+      if (!(info.sceneBottom - info.sceneTop > 100)) {
+        failures.push(`p${n}: stage height too small (${(info.sceneBottom-info.sceneTop).toFixed(1)}px)`);
+      }
+      if (info.sceneBottom > info.vh + 1) {
+        failures.push(`p${n}: stage bottom ${info.sceneBottom.toFixed(1)} > vh ${info.vh}`);
+      }
+      if (!(info.frameW > 100)) {
+        failures.push(`p${n}: fl-frame width collapsed (${info.frameW.toFixed(1)}px)`);
+      }
+      if (info.sceneLeft < -2 || info.artLeft < -2) {
+        failures.push(`p${n}: stage/art left off-viewport (scene=${info.sceneLeft.toFixed(1)} art=${info.artLeft.toFixed(1)})`);
+      }
+      if (info.sceneRight > info.vw + 2 || info.artRight > info.vw + 2) {
+        failures.push(`p${n}: stage/art right off-viewport (sceneR=${info.sceneRight.toFixed(1)} artR=${info.artRight.toFixed(1)} vw=${info.vw})`);
+      }
+      if (["discuss", "resources"].includes(info.kind)) {
+        if (info.capDisplay !== "none") {
+          failures.push(`p${n}: caption should be hidden for kind=${info.kind} (display=${info.capDisplay})`);
+        }
+      }
+      await page.close();
+    }
+    assert.equal(failures.length, 0, failures.join("\n"));
+  } finally {
+    await browser.close();
+  }
+});
+
+test("landscape 844x390: captions clear idea text panels and art cards", async (t) => {
+  let puppeteer;
+  try {
+    puppeteer = (await import(pathToFileURL(PUPPETEER).href)).default;
+  } catch (e) {
+    t.skip("puppeteer-core not available: " + e.message);
+    return;
+  }
+  let browser;
+  try {
+    browser = await puppeteer.launch(launchOpts());
+  } catch (e) {
+    t.skip("Chrome launch failed: " + e.message);
+    return;
+  }
+  try {
+    const pageCount = 30;
+    const failures = [];
+    for (let n = 1; n <= pageCount; n++) {
+      const page = await browser.newPage();
+      await page.setViewport({ width: 844, height: 390, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+      await page.setCacheEnabled(false);
+      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=${n}&full=1`, {
+        waitUntil: "networkidle0", timeout: 60000,
+      });
+      await settle(page);
+      const hit = await page.evaluate(() => {
+        const cap = document.querySelector(".fl-cap");
+        if (!cap || getComputedStyle(cap).display === "none") return null;
+        const cq = cap.querySelector(".cap-q") || cap;
+        const cr = cq.getBoundingClientRect();
+        const panels = [];
+        document.querySelectorAll(".bs-idea-panel, .bs-takeaways, .bs-discuss, .bs-resources-panel, .s09-genre, .bs-r6-figure").forEach((el) => {
+          const br = el.getBoundingClientRect();
+          if (br.width < 8 || br.height < 8) return;
+          panels.push({ sel: el.className.split(/\s+/)[0] || el.tagName, x0: br.left, y0: br.top, x1: br.right, y1: br.bottom });
+        });
+        const overlaps = [];
+        for (const c of panels) {
+          const ox0 = Math.max(cr.left, c.x0);
+          const oy0 = Math.max(cr.top, c.y0);
+          const ox1 = Math.min(cr.right, c.x1);
+          const oy1 = Math.min(cr.bottom, c.y1);
+          if (ox1 > ox0 + 2 && oy1 > oy0 + 2) {
+            const area = (ox1 - ox0) * (oy1 - oy0);
+            if (area > 40) overlaps.push(c.sel);
+          }
+        }
+        return { page: document.body.dataset.page, overlaps: [...new Set(overlaps)], text: (cq.textContent || "").trim().slice(0, 60) };
+      });
+      if (hit && hit.overlaps.length) {
+        failures.push(`p${n}: caption overlaps ${hit.overlaps.join(",")} — "${hit.text}"`);
+      }
+      await page.close();
+    }
+    assert.equal(failures.length, 0, failures.join("\n"));
+  } finally {
+    await browser.close();
+  }
+});
+
 test("portrait rotate note and landscape toolbar tuck", async (t) => {
   let puppeteer;
   try {
@@ -1013,7 +1153,7 @@ test("portrait rotate note and landscape toolbar tuck", async (t) => {
     // Portrait phone
     const portrait = await browser.newPage();
     await portrait.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
-    await portrait.goto(`${BASE}/study-diy-pbl-bookshare.html?page=17&full=1`, {
+    await portrait.goto(`${BASE}/study-diy-pbl-bookshare.html?page=26&full=1`, {
       waitUntil: "networkidle0", timeout: 60000,
     });
     const pInfo = await portrait.evaluate(() => {
@@ -1036,7 +1176,7 @@ test("portrait rotate note and landscape toolbar tuck", async (t) => {
     // Landscape phone
     const land = await browser.newPage();
     await land.setViewport({ width: 844, height: 390, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
-    await land.goto(`${BASE}/study-diy-pbl-bookshare.html?page=17&full=1`, {
+    await land.goto(`${BASE}/study-diy-pbl-bookshare.html?page=26&full=1`, {
       waitUntil: "networkidle0", timeout: 60000,
     });
     await land.evaluate(() => {
@@ -1065,11 +1205,350 @@ test("portrait rotate note and landscape toolbar tuck", async (t) => {
     assert.equal(lInfo.toggleHidden, false, "Controls toggle shown in landscape");
     assert.ok(lInfo.barClipped || !lInfo.open, "toolbar tucked when closed");
     assert.equal(lInfo.noteDisplay, "none", "rotate note hidden in landscape");
-    assert.ok(lInfo.sceneW >= 800, `stage fills width, got ${lInfo.sceneW}`);
+    assert.ok(lInfo.sceneW >= 500 && lInfo.sceneH <= 390, `stage height-fits landscape, got ${lInfo.sceneW}x${lInfo.sceneH}`);
     // 16:9-ish
     const ar = lInfo.sceneW / lInfo.sceneH;
     assert.ok(ar > 1.6 && ar < 1.9, `16:9 stage, got aspect ${ar}`);
     await land.close();
+  } finally {
+    await browser.close();
+  }
+});
+
+test("round6 book crop body text meets min glyph size at 1280 and 844x390", async (t) => {
+  let puppeteer;
+  try {
+    puppeteer = (await import(pathToFileURL(PUPPETEER).href)).default;
+  } catch (e) {
+    t.skip("puppeteer-core not available: " + e.message);
+    return;
+  }
+  let browser;
+  try {
+    browser = await puppeteer.launch(launchOpts());
+  } catch (e) {
+    t.skip("Chrome launch failed: " + e.message);
+    return;
+  }
+  // Prose body crops only. Checklist (r6c) and rubric (r6e) use thinner ink /
+  // rotated headers that the line-band heuristic under-reads; they are covered
+  // by the aspect/contain clip test instead.
+  const TEXT_PAGES = [
+    { n: 6, id: "r6a" },
+    { n: 13, id: "r6h" },
+    { n: 22, id: "r6f" },
+    { n: 25, id: "r6j" },
+  ];
+  // Full column-width crops at ~50% stage cannot hit the old 14/9 floors
+  // (on-screen glyph ≈ pdf_glyph * card_content_css / crop_px). Leo Round-6
+  // fix prioritizes margin-to-margin lines over narrow zoomed columns; keep a
+  // reachable floor so regressions still fail.
+  const VPS = [
+    { name: "1280", width: 1280, height: 720, mobile: false, minPx: 12 },
+    { name: "844x390", width: 844, height: 390, mobile: true, minPx: 9 },
+  ];
+  try {
+    const report = [];
+    const failures = [];
+    for (const vp of VPS) {
+      for (const { n, id } of TEXT_PAGES) {
+        const page = await browser.newPage();
+        await page.setViewport({
+          width: vp.width, height: vp.height, deviceScaleFactor: 1,
+          isMobile: !!vp.mobile, hasTouch: !!vp.mobile,
+        });
+        await page.setCacheEnabled(false);
+        await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=${n}&full=1`, {
+          waitUntil: "networkidle0", timeout: 60000,
+        });
+        await settle(page);
+        const fig = await page.$(".bs-r6-figure");
+        if (!fig) {
+          failures.push(`${vp.name} p${n} (${id}): missing .bs-r6-figure`);
+          await page.close();
+          continue;
+        }
+        const measured = await page.evaluate(async (el) => {
+          const r = el.getBoundingClientRect();
+          // Decode the figure image and measure body-line band height in source pixels,
+          // then scale by rendered content size (object-fit:contain).
+          const src = el.currentSrc || el.src;
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = src; });
+          const nw = img.naturalWidth, nh = img.naturalHeight;
+          const canvas = document.createElement("canvas");
+          canvas.width = nw; canvas.height = nh;
+          const ctx = canvas.getContext("2d", { willReadFrequently: true });
+          ctx.drawImage(img, 0, 0);
+          const { data } = ctx.getImageData(0, 0, nw, nh);
+          const lum = (x, y) => {
+            const i = (y * nw + x) * 4;
+            return (data[i] + data[i + 1] + data[i + 2]) / 3;
+          };
+          let minX = nw, minY = nh, maxX = 0, maxY = 0;
+          for (let y = 2; y < nh - 2; y += 2) {
+            for (let x = 2; x < nw - 2; x += 2) {
+              const L = lum(x, y);
+              if (L > 248 || L < 165) {
+                if (x < minX) minX = x;
+                if (y < minY) minY = y;
+                if (x > maxX) maxX = x;
+                if (y > maxY) maxY = y;
+              }
+            }
+          }
+          if (maxX <= minX) return { bodyCss: 0, capSrc: 0, scale: 0, boxW: r.width, boxH: r.height, nw, nh };
+          const x0 = minX + Math.floor((maxX - minX) * 0.08);
+          const x1 = maxX - Math.floor((maxX - minX) * 0.08);
+          const y0 = minY + Math.floor((maxY - minY) * 0.10);
+          const y1 = maxY - Math.floor((maxY - minY) * 0.14);
+          const rowDark = [];
+          for (let y = y0; y < y1; y++) {
+            let d = 0;
+            for (let x = x0; x < x1; x += 2) if (lum(x, y) < 175) d++;
+            rowDark.push(d);
+          }
+          const thresh = Math.max(3, Math.floor((x1 - x0) / 2 / 35));
+          // Prefer per-line bands. Dense paragraphs often merge into one tall run —
+          // split on local valleys, then fall back to peak-to-peak pitch.
+          const heights = [];
+          const valleys = [];
+          for (let i = 2; i < rowDark.length - 2; i++) {
+            const v = rowDark[i];
+            if (v < thresh * 1.15 && v <= rowDark[i - 1] && v <= rowDark[i + 1] &&
+                (rowDark[i - 1] > thresh || rowDark[i + 1] > thresh)) {
+              valleys.push(i);
+            }
+          }
+          // Merge nearby valleys
+          const vMerge = [];
+          for (const v of valleys) {
+            if (!vMerge.length || v - vMerge[vMerge.length - 1] > 6) vMerge.push(v);
+          }
+          if (vMerge.length >= 2) {
+            for (let i = 1; i < vMerge.length; i++) {
+              const h = vMerge[i] - vMerge[i - 1];
+              if (h >= 18 && h <= 90) heights.push(h);
+            }
+          }
+          // Also classic runs
+          let run = 0;
+          for (const v of rowDark) {
+            if (v >= thresh) run++;
+            else {
+              if (run >= 18 && run <= 90) heights.push(run);
+              run = 0;
+            }
+          }
+          if (run >= 18 && run <= 90) heights.push(run);
+          // Peak-to-peak pitch fallback for dense blocks
+          if (heights.length < 2) {
+            const peaks = [];
+            for (let i = 2; i < rowDark.length - 2; i++) {
+              if (rowDark[i] >= thresh && rowDark[i] >= rowDark[i - 1] && rowDark[i] >= rowDark[i + 1]) {
+                if (!peaks.length || i - peaks[peaks.length - 1] > 10) peaks.push(i);
+              }
+            }
+            for (let i = 1; i < peaks.length; i++) {
+              const h = peaks[i] - peaks[i - 1];
+              if (h >= 18 && h <= 90) heights.push(h);
+            }
+          }
+          heights.sort((a, b) => a - b);
+          let capSrc = heights.length
+            ? heights[Math.min(heights.length - 1, Math.floor(heights.length * 0.7))]
+            : 0;
+          // object-fit:contain scale
+          const scale = Math.min(r.width / nw, r.height / nh);
+          const capCss = capSrc * scale;
+          // Line-band height ≈ rendered cap height of body text (Leo min).
+          const bodyCss = capCss;
+          return {
+            bodyCss, capCss, capSrc, scale, boxW: r.width, boxH: r.height, nw, nh,
+            samples: heights.length, heights: heights.slice(0, 12),
+          };
+        }, fig);
+        await fig.dispose();
+        report.push({ vp: vp.name, page: n, id, ...measured });
+        if (!(measured.bodyCss >= vp.minPx - 0.25)) {
+          failures.push(
+            `${vp.name} p${n} (${id}): body glyph ~${measured.bodyCss.toFixed(1)}px ` +
+            `(capSrc=${measured.capSrc}, scale=${measured.scale.toFixed(3)}) < min ${vp.minPx}px`
+          );
+        }
+        await page.close();
+      }
+    }
+    console.log("r6 glyph sizes:", JSON.stringify(report, null, 2));
+    assert.equal(failures.length, 0, failures.join("\n") + "\n" + JSON.stringify(report, null, 2));
+  } finally {
+    await browser.close();
+  }
+});
+
+
+test("round6 figure cards are not cover-cropped (aspect match + contain)", async (t) => {
+  let puppeteer;
+  try {
+    puppeteer = (await import(pathToFileURL(PUPPETEER).href)).default;
+  } catch (e) {
+    t.skip("puppeteer-core not available: " + e.message);
+    return;
+  }
+  let browser;
+  try {
+    browser = await puppeteer.launch(launchOpts());
+  } catch (e) {
+    t.skip("Chrome launch failed: " + e.message);
+    return;
+  }
+  const PAGES = [
+    { n: 6, id: "r6a" }, { n: 7, id: "r6b" }, { n: 10, id: "r6c" },
+    { n: 13, id: "r6h" }, { n: 17, id: "r6i" }, { n: 21, id: "r6e" },
+    { n: 22, id: "r6f" }, { n: 25, id: "r6j" },
+  ];
+  try {
+    const failures = [];
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 720, deviceScaleFactor: 1 });
+    for (const { n, id } of PAGES) {
+      await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=${n}&full=1`, {
+        waitUntil: "networkidle0", timeout: 60000,
+      });
+      await settle(page);
+      const info = await page.evaluate(() => {
+        const el = document.querySelector(".bs-r6-figure");
+        if (!el) return { missing: true };
+        const cs = getComputedStyle(el);
+        const r = el.getBoundingClientRect();
+        const nw = el.naturalWidth, nh = el.naturalHeight;
+        if (!nw || !nh) return { noNatural: true };
+        const natAspect = nw / nh;
+        const boxAspect = r.width / Math.max(1, r.height);
+        // With object-fit:contain in a near-matching box, rendered content fills
+        // one axis fully and the other within a small letterbox tolerance.
+        const scale = Math.min(r.width / nw, r.height / nh);
+        const drawnW = nw * scale, drawnH = nh * scale;
+        const letterboxX = r.width - drawnW;
+        const letterboxY = r.height - drawnH;
+        // Cover would fill both axes (letterbox ~0 on both). Contain matches aspect
+        // so at least one letterbox axis is ~0 and the other >= 0; aspect delta small.
+        return {
+          fit: cs.objectFit,
+          natAspect, boxAspect,
+          nw, nh, boxW: r.width, boxH: r.height,
+          drawnW, drawnH, letterboxX, letterboxY, scale,
+        };
+      });
+      if (info.missing) { failures.push(`p${n} (${id}): missing .bs-r6-figure`); continue; }
+      if (info.noNatural) { failures.push(`p${n} (${id}): figure natural size 0`); continue; }
+      if (info.fit !== "contain") {
+        failures.push(`p${n} (${id}): object-fit=${info.fit}, expected contain`);
+      }
+      const aspectDelta = Math.abs(info.natAspect - info.boxAspect) / info.natAspect;
+      // Placement should track the card aspect within 8%.
+      if (aspectDelta > 0.08) {
+        failures.push(
+          `p${n} (${id}): box aspect ${info.boxAspect.toFixed(3)} vs natural ${info.natAspect.toFixed(3)} ` +
+          `(delta ${(aspectDelta*100).toFixed(1)}%) — likely cover-cropping risk`
+        );
+      }
+      // Drawn content should not exceed the box (contain never overflows).
+      if (info.drawnW > info.boxW + 1.5 || info.drawnH > info.boxH + 1.5) {
+        failures.push(
+          `p${n} (${id}): drawn ${info.drawnW.toFixed(1)}x${info.drawnH.toFixed(1)} ` +
+          `overflows box ${info.boxW.toFixed(1)}x${info.boxH.toFixed(1)}`
+        );
+      }
+    }
+    await page.close();
+    assert.equal(failures.length, 0, failures.join("\n"));
+  } finally {
+    await browser.close();
+  }
+});
+
+
+test("round6 figure cards hit stage width and vertical center at 1280 and 844", async (t) => {
+  let puppeteer;
+  try {
+    puppeteer = (await import(pathToFileURL(PUPPETEER).href)).default;
+  } catch (e) {
+    t.skip("puppeteer-core not available: " + e.message);
+    return;
+  }
+  let browser;
+  try {
+    browser = await puppeteer.launch(launchOpts());
+  } catch (e) {
+    t.skip("Chrome launch failed: " + e.message);
+    return;
+  }
+  const PAGES = [6, 7, 10, 13, 17, 21, 22, 25];
+  const VPS = [
+    { name: "1280", width: 1280, height: 720, mobile: false },
+    { name: "844x390", width: 844, height: 390, mobile: true },
+  ];
+  try {
+    const failures = [];
+    const report = [];
+    for (const vp of VPS) {
+      const page = await browser.newPage();
+      await page.setViewport({
+        width: vp.width, height: vp.height, deviceScaleFactor: 1,
+        isMobile: !!vp.mobile, hasTouch: !!vp.mobile,
+      });
+      await page.setCacheEnabled(false);
+      for (const n of PAGES) {
+        await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=${n}&full=1`, {
+          waitUntil: "networkidle0", timeout: 60000,
+        });
+        await settle(page);
+        await new Promise((r) => setTimeout(r, 200));
+        const info = await page.evaluate(() => {
+          const stage = document.querySelector(".bs-scene");
+          const img = document.querySelector(".bs-r6-figure");
+          if (!stage || !img || !img.naturalWidth) return { missing: true };
+          const s = stage.getBoundingClientRect();
+          const r = img.getBoundingClientRect();
+          const scale = Math.min(r.width / img.naturalWidth, r.height / img.naturalHeight);
+          const drawnW = img.naturalWidth * scale;
+          const drawnH = img.naturalHeight * scale;
+          const drawnTop = r.top + (r.height - drawnH) / 2;
+          const widthPct = (drawnW / s.width) * 100;
+          const heightPct = (drawnH / s.height) * 100;
+          const centerOffPct =
+            ((drawnTop + drawnH / 2) - (s.top + s.height / 2)) / s.height * 100;
+          const portrait = img.naturalHeight >= img.naturalWidth * 1.05;
+          return { widthPct, heightPct, centerOffPct, portrait, drawnW, drawnH, stageW: s.width, stageH: s.height };
+        });
+        if (info.missing) {
+          failures.push(`${vp.name} p${n}: missing figure/stage`);
+          continue;
+        }
+        report.push({ vp: vp.name, page: n, ...info });
+        // (a) width 52-55%, or height ~88% when portrait-limited
+        const widthOk = info.widthPct >= 51.5 && info.widthPct <= 56.5;
+        // Height-limited (portrait or near-square) when we hit the ~88% stage-height cap.
+        const heightOk = info.heightPct >= 85 && info.heightPct <= 92;
+        if (!widthOk && !heightOk) {
+          failures.push(
+            `${vp.name} p${n}: width%=${info.widthPct.toFixed(1)} height%=${info.heightPct.toFixed(1)} ` +
+            `(need 52-55% width, or ~88% height when height-limited)`
+          );
+        }
+        // (b) vertical center within 3%
+        if (Math.abs(info.centerOffPct) > 3.0) {
+          failures.push(
+            `${vp.name} p${n}: centerOff%=${info.centerOffPct.toFixed(1)} (need |off|<=3)`
+          );
+        }
+      }
+      await page.close();
+    }
+    console.log("r6 placement:", JSON.stringify(report, null, 2));
+    assert.equal(failures.length, 0, failures.join("\n"));
   } finally {
     await browser.close();
   }

@@ -368,7 +368,7 @@ export function loadLayouts() {
 /** Pixel-verified label slots (design px on 1920x1080 bg.webp).
  *  Derived from cream body ∩ Leo quad, minus front-card faces; 10% inset baked in.
  */
-/** Flask icon AABB on bg.webp (design px) — Lab label must not overlap. */
+/** Flask icon AABB on bg.webp (design px)  -  Lab label must not overlap. */
 export const S09_LAB_ICON_BOUNDS = { x0: 1270, y0: 148, x1: 1338, y1: 218 };
 
 export const S09_LABEL_SLOTS = {
