@@ -3,10 +3,10 @@
 export const ENERGY_LAB = Object.freeze({
   id: "energy-lab",
   name: "Energy Lab",
-  // Leo: replace cover.svg with cover.webp at 960 x 540.
-  cover: "energy-lab/cover.svg",
+  // Leo cover: cover.webp at 960 x 540.
+  cover: "energy-lab/cover.webp",
   coverSize: { width: 960, height: 540 },
-  // Leo: replace each thumbs/<id>.svg with thumbs/<id>.webp at 640 x 360.
+  // Leo thumbs: thumbs/<id>.webp at 640 x 360.
   thumbSize: { width: 640, height: 360 },
   sims: Object.freeze([
     { id: "stores", title: "Energy stores", lesson: "m10-l02", page: 1, module: 10, lessonNum: 2 },
@@ -31,5 +31,5 @@ export function lessonLabel(sim) {
 }
 
 export function thumbSrc(sim) {
-  return `energy-lab/thumbs/${sim.id}.svg`;
+  return `energy-lab/thumbs/${sim.id}.webp`;
 }
