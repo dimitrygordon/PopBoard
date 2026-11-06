@@ -592,8 +592,9 @@ function buildS09(root, T) {
     const rad = P.rot * Math.PI / 180;
     const bx = P.cx + vis.lx * Math.cos(rad) - vis.ly * Math.sin(rad);
     const by = P.cy + vis.lx * Math.sin(rad) + vis.ly * Math.cos(rad);
-    const topW = vis.w;
-    const sideH = vis.h;
+    // 10% inset inside the visible region for the label box.
+    const topW = vis.w * 0.90;
+    const sideH = vis.h * 0.90;
 
     const el = surface("genre", `s09-genre s09-g${i} on-art`);
     el.dataset.cardId = P.c.id || P.label || `g${i}`;
@@ -602,8 +603,8 @@ function buildS09(root, T) {
     el.dataset.bodyQuad = JSON.stringify(P.body);
     el.dataset.visCx = String(bx);
     el.dataset.visCy = String(by);
-    el.dataset.visW = String(topW);
-    el.dataset.visH = String(sideH);
+    el.dataset.visW = String(vis.w);
+    el.dataset.visH = String(vis.h);
     el.dataset.bodyInset = "0.10";
     el.dataset.rot = String(P.rot);
     el.dataset.cardCx = String(P.cx);
@@ -622,7 +623,7 @@ function buildS09(root, T) {
     el.style.display = "flex";
     el.style.alignItems = "center";
     el.style.justifyContent = "center";
-    el.style.lineHeight = "1.08";
+    el.style.lineHeight = "1.05";
     el.style.whiteSpace = "pre-line";
     el.style.padding = "0";
     el.style.boxSizing = "border-box";
@@ -632,7 +633,21 @@ function buildS09(root, T) {
     el.style.pointerEvents = "none";
     el.style.zIndex = String(10 + P.z);
     layer.appendChild(el);
-    requestAnimationFrame(() => requestAnimationFrame(() => fitArtText(el, 40)));
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      // Biggest size that fits the inset visible box (no subpixel overflow).
+      let lo = 10, hi = Math.min(40, Math.max(14, Math.min(topW, sideH) * 0.55)), best = lo;
+      for (let step = 0; step < 16; step++) {
+        const mid = (lo + hi) / 2;
+        el.style.setProperty("font-size", mid + "px", "important");
+        if (el.scrollWidth <= el.clientWidth && el.scrollHeight <= el.clientHeight) {
+          best = mid; lo = mid;
+        } else {
+          hi = mid;
+        }
+      }
+      el.style.setProperty("font-size", best + "px", "important");
+      el.dataset.artFs = String(best);
+    }));
   });
   void T;
 }

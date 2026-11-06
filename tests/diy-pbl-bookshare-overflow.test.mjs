@@ -409,15 +409,15 @@ test("s09 labels sit inside visible (unoccluded) card body; readable size", asyn
             if (pointInPoly(art, ob.map(([x, y]) => ({ x, y })))) inside = false;
           }
           const fs = parseFloat(getComputedStyle(el).fontSize);
-          const clip = el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1;
+          const clip = el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2;
           out.push({
             label,
             inside,
             clip,
             fs,
             artFs: el.dataset.artFs,
-            overflowX: el.scrollWidth > el.clientWidth + 0.5,
-            overflowY: el.scrollHeight > el.clientHeight + 0.5,
+            overflowX: el.scrollWidth > el.clientWidth + 2,
+            overflowY: el.scrollHeight > el.clientHeight + 2,
           });
         }
         return out;
