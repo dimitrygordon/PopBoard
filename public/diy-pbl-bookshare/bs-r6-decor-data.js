@@ -601,12 +601,12 @@ export const R6_DECOR = {
       "src": "leaves_left.webp",
       "preset": "sway",
       "x": 0,
-      "y": 761,
-      "w": 116,
-      "h": 319,
+      "y": 615,
+      "w": 186,
+      "h": 510,
       "pivot": [
-        16,
-        319
+        26,
+        510
       ],
       "rot": 0,
       "z": 20,
@@ -621,13 +621,13 @@ export const R6_DECOR = {
     {
       "src": "leaves_right.webp",
       "preset": "sway",
-      "x": 1884,
-      "y": 848,
-      "w": 85,
-      "h": 232,
+      "x": 1800,
+      "y": 708,
+      "w": 136,
+      "h": 372,
       "pivot": [
-        72,
-        232
+        115,
+        372
       ],
       "rot": 0,
       "z": 20,
