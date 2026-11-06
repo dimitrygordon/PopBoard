@@ -139,7 +139,7 @@ function loopOrOnce() { /* decorative motion removed (Leo polish) */ }
 
 /* ---- per-slide builds from loop.md ---- */
 function buildS01(root, T) {
-  // Title block only. Marble/gear sprites were animation-only; dropped.
+  // Title block only (bg_cover / no cover_display). Marble/gear sprites were animation-only; dropped.
   const title = h("div", "bs-surface bs-surface--titleblock s01-titleblock on-art");
   const m = IDEA_MAP[1];
   applyRect(title, m.x, m.y, m.w, m.h, m.rot);

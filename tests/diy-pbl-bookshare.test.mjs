@@ -65,7 +65,7 @@ test("Tesla fixes: slide 5 fall-off wording; slide 10 C = vx + F and R = px", ()
 });
 
 test("Round 1 structure: key terms, split conclude/discuss, resources APA", () => {
-  assert.equal(SLIDES[16].title, "Key terms at a glance");
+  assert.equal(SLIDES[16].title, "Key terms");
   assert.equal(SLIDES[17].title, "Conclude with direction");
   assert.equal(SLIDES[18].title, "Discussion questions");
   assert.equal(SLIDES[18].questions.length, 3);
