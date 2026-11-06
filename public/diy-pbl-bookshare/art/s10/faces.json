@@ -1,0 +1,51 @@
+{
+  "faces_top_to_bottom_xywh": [
+    [
+      1726,
+      206,
+      48,
+      52
+    ],
+    [
+      1724,
+      294,
+      48,
+      54
+    ],
+    [
+      1727,
+      384,
+      48,
+      52
+    ],
+    [
+      1722,
+      472,
+      48,
+      52
+    ],
+    [
+      1721,
+      560,
+      48,
+      53
+    ]
+  ],
+  "letters_top_to_bottom": [
+    "B",
+    "I",
+    "R",
+    "A",
+    "C"
+  ],
+  "stack_bbox_xywh": [
+    1715,
+    190,
+    140,
+    440
+  ],
+  "graph_labels": [],
+  "note": "Front-left face rects on bg_v5 1920x1080. Top-to-bottom B,I,R,A,C. Blank blocks. No graph labels in generated art.",
+  "source_candidate": "c6",
+  "candidates_note": "c1=4blocks, c2=4, c3=6, c4=4, c5=5, c6=5(picked)"
+}
