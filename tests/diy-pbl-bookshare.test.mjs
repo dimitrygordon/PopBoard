@@ -172,10 +172,10 @@ test("transitions: sprites carry data-magic-id; script never FLIPs", () => {
   const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
   const app = readFileSync(join(DIR, "bs-app.js"), "utf8");
   assert.match(pages, /dataset\.magicId/);
-  assert.match(pages, /flip_card/);
-  assert.match(pages, /note_card/);
+  // TEXT-ON-ART: flip_card/note_card stray sprites removed from stage (assets remain)
+  assert.match(pages, /no flip_card/);
+  assert.match(pages, /no note_card/);
   assert.match(app, /Quiet script fade|never FLIP script/i);
-  // Script panel is not tagged magic
   assert.ok(!/bs-script[^\n]*magicId/.test(pages));
 });
 
@@ -226,4 +226,23 @@ test("draw-in wired after FLIP; masks exist; reduced-motion path", () => {
     assert.ok(existsSync(join(DIR, "art", sid, "line.webp")), sid + " line");
     assert.ok(existsSync(join(DIR, "art", sid, "hatch_mask.webp")), sid + " hatch");
   }
+});
+
+test("QA: no stray curled-paper sprites; keyterms grid; draw-in 40% line", () => {
+  const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
+  const css = readFileSync(join(DIR, "bs.css"), "utf8");
+  const drawin = readFileSync(join(DIR, "bs-drawin.js"), "utf8");
+  assert.ok(!/sprite\(root,\s*"s04",\s*"journal_page"/.test(pages));
+  assert.ok(!/sprite\(root,\s*"keyterms",\s*"flip_card"/.test(pages));
+  assert.ok(!/sprite\(root,\s*"discussion",\s*"note_card"/.test(pages));
+  assert.ok(!/sprite\(root,\s*"s18",\s*"page"/.test(pages));
+  assert.ok(!/sprite\(root,\s*"s10",\s*"birac_block"/.test(pages));
+  assert.ok(!/sprite\(root,\s*"s09",\s*"doc_card"/.test(pages));
+  assert.ok(!/sprite\(root,\s*"s11",\s*"tip_card"/.test(pages));
+  assert.match(pages, /bs-paper-group/);
+  assert.match(pages, /s10-birac-line/);
+  assert.match(pages, /boardW/);
+  assert.match(css, /bs-paper-group/);
+  assert.match(css, /-webkit-line-clamp:\s*2/);
+  assert.match(drawin, /u \/ 0\.40/);
 });

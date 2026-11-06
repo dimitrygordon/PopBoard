@@ -177,13 +177,8 @@ function buildS03(root, T) {
 }
 
 function buildS04(root, T) {
-  const page = sprite(root, "s04", "journal_page", "s04-page", P("s04").journal_page);
-  if (reduced()) return;
-  loopOrOnce(T, page, [
-    { transform: "perspective(600px) rotateY(0deg)", opacity: 1 },
-    { transform: "perspective(600px) rotateY(-90deg)", opacity: 0.3 },
-    { transform: "perspective(600px) rotateY(0deg)", opacity: 1 },
-  ], 0, 3.5);
+  // TEXT-ON-ART: no journal_page sprite (stray curled note on the open book).
+  void root; void T;
 }
 
 function buildS05(root, T) {
@@ -247,10 +242,7 @@ function buildS08(root, T) {
 }
 
 function buildS09(root, T) {
-  const p = P("s09");
-  const card = sprite(root, "s09", "doc_card", "s09-card", (p.cards || [])[0]);
-  // Labels for genre cards painted in the bg fan (Leo FINAL). Positions in % of 1920x1080.
-  // Positions tuned to Leo FINAL fan (1920x1080 %): beaker, clipboard, envelope, seal cards.
+  // No doc_card sprite (looked like a stray sticky). Genre labels stay on the drawn fan.
   const genres = [
     { text: "Lab report", left: 54, top: 34 },
     { text: "Problem statement", left: 78, top: 48 },
@@ -258,83 +250,63 @@ function buildS09(root, T) {
     { text: "Executive summary", left: 64, top: 58 },
   ];
   genres.forEach((g, i) => {
-    const el = surface("genre", `s09-genre s09-g${i}`);
+    const el = surface("genre", `s09-genre s09-g${i} on-art`);
     el.textContent = g.text;
     el.style.left = g.left + "%";
     el.style.top = g.top + "%";
     root.appendChild(el);
   });
-  if (reduced()) return;
-  loopOrOnce(T, card, [
-    { transform: "rotate(-4deg)" },
-    { transform: "rotate(4deg)" },
-    { transform: "rotate(-4deg)" },
-  ], 0, 3.2);
+  void T;
 }
 
 function buildS10(root, T) {
   const p = P("s10");
   const glow = sprite(root, "s10", "breakeven_glow", "s10-glow", p.breakeven_glow);
-  const block = sprite(root, "s10", "birac_block", "s10-block", (p.blocks || [])[0]);
+  // No birac_block sprite: bg already draws a 4-block stack; extra sprite looked like a stray red B.
 
-  // Two equation chips (was one run-together string)
-  const chipCost = surface("chip", "s10-chip s10-chip-cost");
-  chipCost.textContent = "Cost: C = vx + F";
-  chipCost.style.left = "8%";
-  chipCost.style.bottom = "14%";
-  root.appendChild(chipCost);
-  const chipRev = surface("chip", "s10-chip s10-chip-rev");
-  chipRev.textContent = "Revenue: R = px";
-  chipRev.style.left = "8%";
-  chipRev.style.bottom = "8%";
-  root.appendChild(chipRev);
-
-  // Graph line / point labels checked against Leo art: cost shallower above 0,
-  // revenue steeper from origin, glow at break-even (1120,430 ≈ 58.3%, 39.8%).
+  // Graph labels: sit ON the drawn lines near their tips / glow (art coords).
   const labels = [
-    { cls: "s10-lab-cost", text: "Cost", left: 42, top: 48 },
-    { cls: "s10-lab-rev", text: "Revenue", left: 52, top: 28 },
-    { cls: "s10-lab-be", text: "Break-even", left: 56, top: 36 },
+    { cls: "s10-lab-rev", text: "Revenue", x: 1435, y: 375 },
+    { cls: "s10-lab-cost", text: "Cost", x: 1365, y: 595 },
+    { cls: "s10-lab-be", text: "Break-even", x: 1240, y: 455 },
   ];
   labels.forEach((L) => {
-    const el = surface("label", L.cls);
+    const el = surface("label", `${L.cls} on-art`);
     el.textContent = L.text;
-    el.style.left = L.left + "%";
-    el.style.top = L.top + "%";
+    el.style.left = (L.x / 1920) * 100 + "%";
+    el.style.top = (L.y / 1080) * 100 + "%";
+    el.style.transform = "rotate(-8deg)";
     root.appendChild(el);
   });
 
-  // BIRAC letters on the stacked blocks (right of graph). Bottom→top: B I R A C
-  // Block sprite sits near (80.2%, 59.3%); stack rises above it in the bg.
-  const birac = ["B", "I", "R", "A", "C"];
-  birac.forEach((letter, i) => {
-    const el = surface("label", `s10-birac-letter s10-birac-${letter}`);
-    el.textContent = letter;
-    el.style.left = "82.5%";
-    // five blocks stacked; ~5.5% vertical spacing upward from near block top
-    el.style.top = (62 - i * 5.5) + "%";
-    root.appendChild(el);
-  });
+  // BIRAC as one ink label under/beside the 4-block stack
+  const birac = surface("label", "s10-birac-line on-art on-art-t");
+  birac.textContent = "BIRAC";
+  birac.style.left = (1580 / 1920) * 100 + "%";
+  birac.style.top = (820 / 1080) * 100 + "%";
+  birac.style.transform = "rotate(-2deg)";
+  birac.style.fontSize = "clamp(16px, 1.8cqw, 28px)";
+  birac.style.letterSpacing = "0.14em";
+  root.appendChild(birac);
+
+  // Formula lines: append into the cream idea panel so they sit with the bullets
+  const panel = root.querySelector(".bs-idea-panel");
+  if (panel) {
+    const eqs = h("div", "bs-idea-eqs on-art-b");
+    eqs.innerHTML = `<div class="s10-chip-cost">Cost: C = vx + F</div><div class="s10-chip-rev">Revenue: R = px</div>`;
+    panel.appendChild(eqs);
+  }
 
   if (reduced()) return;
   loopOrOnce(T, glow, [{ opacity: 0.35 }, { opacity: 1 }, { opacity: 0.35 }], 0, 1.4);
-  loopOrOnce(T, block, [
-    { transform: "translateY(0)" },
-    { transform: "translateY(-6px)" },
-    { transform: "translateY(0)" },
-  ], 0, 2.8);
 }
+
 
 function buildS11(root, T) {
   const p = P("s11");
-  const tip = sprite(root, "s11", "tip_card", "s11-tip", (p.tips || [])[0]);
+  // No tip_card sprite (stray sticky on the notebook). Keep red_pen loop.
   const pen = sprite(root, "s11", "red_pen", "s11-pen", p.red_pen);
   if (reduced()) return;
-  loopOrOnce(T, tip, [
-    { transform: "rotate(-3deg) translateY(0)" },
-    { transform: "rotate(2deg) translateY(-4px)" },
-    { transform: "rotate(-3deg) translateY(0)" },
-  ], 0, 2.6);
   loopOrOnce(T, pen, [
     { transform: "rotate(-2deg)" },
     { transform: "rotate(2deg)" },
@@ -422,95 +394,62 @@ function buildS17Lanterns(root, T) {
 }
 
 function buildKeyTermsOverlay(root, T, terms) {
-  // 8 index cards pinned on cork board (TEXT-ON-ART keyterms/bg_v2)
-  const wall = surface("terms", "bs-term-wall");
-  (terms || []).slice(0, 8).forEach((term, i) => {
-    const x = 170 + 235 * (i % 4);
-    const y = 225 + 225 * Math.floor(i / 4);
+  // 8 index cards on cork board (board ~140,197 to 1102,675). 2x4, no overlap.
+  const wall = h("div", "bs-term-wall");
+  const terms8 = (terms || []).slice(0, 8);
+  const gapX = 18, gapY = 28;
+  const boardX = 155, boardY = 210, boardW = 930, boardH = 450;
+  const cols = 4, rows = 2;
+  const cardW = Math.floor((boardW - gapX * (cols - 1)) / cols); // ~219
+  const cardH = Math.floor((boardH - gapY * (rows - 1)) / rows); // ~211
+  terms8.forEach((term, i) => {
+    const col = i % cols, row = Math.floor(i / cols);
+    const x = boardX + col * (cardW + gapX);
+    const y = boardY + row * (cardH + gapY);
     const rot = KT_ROTS[i] || 0;
     const wrap = h("div", `bs-term-card t${i} bs-reveal on-art`);
-    applyRect(wrap, x, y, 225, 175, rot);
+    applyRect(wrap, x, y, cardW, cardH, rot);
+    wrap.style.overflow = "hidden";
+    wrap.style.boxSizing = "border-box";
     const card = img(`${PAPER}/index_card.webp`, "bs-paper bs-term-paper");
     card.setAttribute("aria-hidden", "true");
-    card.style.position = "absolute";
-    card.style.inset = "0";
-    card.style.width = "100%";
-    card.style.height = "100%";
-    card.style.objectFit = "fill";
+    card.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:0;pointer-events:none;";
     wrap.appendChild(card);
     const text = h("div", "bs-term-text on-art-t");
     text.textContent = String(term).replace(/^"|"$/g, "");
+    text.style.cssText = "position:relative;z-index:1;padding:22% 10% 10%;width:100%;height:100%;box-sizing:border-box;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.15;hyphens:auto;";
     wrap.appendChild(text);
-    // pin overlaps top center ~14px
     const pin = img(`${PAPER}/pushpin.webp`, "bs-paper-pin");
     pin.setAttribute("aria-hidden", "true");
-    pin.style.position = "absolute";
-    pin.style.left = "50%";
-    pin.style.top = "-14px";
-    pin.style.width = "48px";
-    pin.style.height = "48px";
-    pin.style.transform = "translateX(-50%)";
-    pin.style.zIndex = "8";
+    pin.style.cssText = "position:absolute;left:50%;top:-12px;width:40px;height:40px;transform:translateX(-50%);z-index:8;pointer-events:none;";
     wrap.appendChild(pin);
     if (i === 0) wrap.dataset.magicId = "term_lead";
     wall.appendChild(wrap);
     if (!reduced()) {
       T.A(wrap, [
-        { transform: `rotate(${rot}deg) scale(0.92)` },
+        { transform: `rotate(${rot}deg) scale(0.94)` },
         { transform: `rotate(${rot}deg) scale(1)` },
-      ], 0.1 + i * 0.12, 0.35);
+      ], 0.1 + i * 0.1, 0.3);
     }
   });
   root.appendChild(wall);
 }
 
 
+
 function buildKeytermsArt(root, T) {
-  const p = P("keyterms");
-  sprite(root, "keyterms", "flip_card", "kt-flip", p.flip_card, "flip_card");
-  sprite(root, "keyterms", "pushpin", "kt-pin", p.pushpin, "pushpin");
-  if (reduced()) return;
-  const flip = root.querySelector(".kt-flip");
-  const pin = root.querySelector(".kt-pin");
-  if (flip) loopOrOnce(T, flip, [
-    { transform: "rotateY(0deg)" },
-    { transform: "rotateY(180deg)" },
-    { transform: "rotateY(0deg)" },
-  ], 0.4, 3.5);
-  if (pin) loopOrOnce(T, pin, [
-    { transform: "translateY(0)" },
-    { transform: "translateY(3px)" },
-    { transform: "translateY(0)" },
-  ], 0, 2.2);
+  // TEXT-ON-ART: easel stays as drawn; no flip_card/pushpin stray note.
+  void root; void T;
 }
 
 function buildDiscussionArt(root, T) {
-  const p = P("discussion");
-  sprite(root, "discussion", "note_card", "dq-note", p.note_card, "note_card");
-  sprite(root, "discussion", "pushpin", "dq-pin", p.pushpin, "pushpin");
-  if (reduced()) return;
-  const note = root.querySelector(".dq-note");
-  const pin = root.querySelector(".dq-pin");
-  if (note) loopOrOnce(T, note, [
-    { transform: "rotate(-2deg)" },
-    { transform: "rotate(2deg)" },
-    { transform: "rotate(-2deg)" },
-  ], 0, 3);
-  if (pin) loopOrOnce(T, pin, [
-    { transform: "translateY(0)" },
-    { transform: "translateY(3px)" },
-    { transform: "translateY(0)" },
-  ], 0, 2.2);
+  // TEXT-ON-ART: kids + cork stay as drawn; no note_card stray sprite.
+  void root; void T;
 }
 
 function buildS18Page(root, T) {
-  const page = sprite(root, "s18", "page", "s18-page", P("s18").page);
-  if (reduced()) return;
-  loopOrOnce(T, page, [
-    { transform: "perspective(700px) rotateY(0deg)" },
-    { transform: "perspective(700px) rotateY(-75deg)" },
-    { transform: "perspective(700px) rotateY(0deg)" },
-  ], 0, 3);
+  // TEXT-ON-ART: no page.webp curled note on the teal spine.
+  void root; void T;
 }
 
 const BUILDERS = {
@@ -589,28 +528,50 @@ export const PAGES = SLIDES.map((slide) => ({
       buildKeyTermsOverlay(root, T, slide.bullets || []);
       buildKeytermsArt(root, T);
     } else if (slide.kind === "discuss") {
-      // sheet_large taped left; kids stay x>950
-      paperSprite(root, "sheet_large", 60, 50, 840, 980, -1);
-      paperTape(root, "tape_a", 90, 40, 220, 60, -8);
-      paperTape(root, "tape_b", 680, 55, 220, 60, 6);
+      // One rotated group: paper + text share -1deg so ink sits on the sheet
+      const group = h("div", "bs-paper-group");
+      applyRect(group, 50, 30, 920, 1020, 0);
+      group.style.transformOrigin = "50% 50%";
+      const paper = img(`${PAPER}/sheet_large.webp`, "bs-paper");
+      paper.setAttribute("aria-hidden", "true");
+      // sheet_large has ~13deg baked clockwise tilt; counter-rotate so ruled lines are horizontal
+      paper.style.cssText = "position:absolute;left:-6%;top:-4%;width:112%;height:112%;object-fit:fill;transform:rotate(-12deg);transform-origin:50% 50%;";
+      group.appendChild(paper);
+      const tape1 = img(`${PAPER}/tape_a.webp`, "bs-paper-tape");
+      tape1.setAttribute("aria-hidden", "true");
+      tape1.style.cssText = "position:absolute;left:8%;top:2%;width:22%;height:6%;object-fit:fill;transform:rotate(-4deg);z-index:8;";
+      group.appendChild(tape1);
+      const tape2 = img(`${PAPER}/tape_b.webp`, "bs-paper-tape");
+      tape2.setAttribute("aria-hidden", "true");
+      tape2.style.cssText = "position:absolute;right:10%;top:3%;width:22%;height:6%;object-fit:fill;transform:rotate(4deg);z-index:8;";
+      group.appendChild(tape2);
       const panel = surface("discuss", "bs-discuss on-art");
-      applyRect(panel, 150, 140, 680, 820, -1);
+      panel.style.cssText = "position:absolute;left:18%;top:16%;width:64%;height:70%;overflow:hidden;box-sizing:border-box;padding:0;font-size:clamp(11px,1.15cqw,19px);";
       (slide.questions || []).forEach((q, i) => {
-        const card = surface("discuss-card", `bs-dq-card dq${i} bs-reveal`);
+        const card = h("div", `bs-dq-card dq${i} bs-reveal`);
         card.innerHTML = `<b>Q${i + 1}.</b> ${fx(q)}`;
         panel.appendChild(card);
       });
-      root.appendChild(panel);
+      group.appendChild(panel);
+      root.appendChild(group);
       buildDiscussionArt(root, T);
     } else if (slide.kind === "resources") {
       const nRes = (slide.resources || []).length;
       const isTools = /tools/i.test(slide.title || "") || nRes <= 4;
       if (isTools) {
-        // torn_page for Tools (slide 21)
-        paperSprite(root, "torn_page", 70, 150, 880, 560, 1.5);
-        paperTape(root, "tape_a", 400, 140, 220, 60, -4);
+        const group = h("div", "bs-paper-group");
+        applyRect(group, 60, 140, 900, 580, 0);
+        const paper = img(`${PAPER}/torn_page.webp`, "bs-paper");
+        paper.setAttribute("aria-hidden", "true");
+        paper.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:fill;";
+        group.appendChild(paper);
+        const tape = img(`${PAPER}/tape_a.webp`, "bs-paper-tape");
+        tape.setAttribute("aria-hidden", "true");
+        tape.style.cssText = "position:absolute;left:38%;top:-2%;width:26%;height:12%;object-fit:fill;transform:rotate(-4deg);z-index:8;";
+        group.appendChild(tape);
         const panel = surface("resources", "bs-resources-panel bs-resources-panel--compact bs-reveal on-art");
-        applyRect(panel, 220, 230, 660, 420, 1.5);
+        // torn_page: keep text >=130px from left punched holes (~15% of 880)
+        panel.style.cssText = "position:absolute;left:16%;top:14%;width:72%;height:72%;overflow:hidden;box-sizing:border-box;";
         const heading = h("div", "bs-res-h on-art-t");
         heading.textContent = slide.resHeading || slide.title || "Tools";
         panel.appendChild(heading);
@@ -621,14 +582,25 @@ export const PAGES = SLIDES.map((slide) => ({
           ul.appendChild(li);
         });
         panel.appendChild(ul);
-        root.appendChild(panel);
+        group.appendChild(panel);
+        root.appendChild(group);
       } else {
-        // sheet_large for References (slide 20)
-        paperSprite(root, "sheet_large", 50, 40, 900, 1000, -0.8);
-        paperTape(root, "tape_a", 80, 30, 220, 60, -6);
-        paperTape(root, "tape_b", 700, 45, 220, 60, 5);
+        const group = h("div", "bs-paper-group");
+        applyRect(group, 40, 20, 940, 1040, 0);
+        const paper = img(`${PAPER}/sheet_large.webp`, "bs-paper");
+        paper.setAttribute("aria-hidden", "true");
+        paper.style.cssText = "position:absolute;left:-6%;top:-4%;width:112%;height:112%;object-fit:fill;transform:rotate(-12deg);transform-origin:50% 50%;";
+        group.appendChild(paper);
+        const tape1 = img(`${PAPER}/tape_a.webp`, "bs-paper-tape");
+        tape1.setAttribute("aria-hidden", "true");
+        tape1.style.cssText = "position:absolute;left:8%;top:2%;width:22%;height:6%;object-fit:fill;transform:rotate(-4deg);z-index:8;";
+        group.appendChild(tape1);
+        const tape2 = img(`${PAPER}/tape_b.webp`, "bs-paper-tape");
+        tape2.setAttribute("aria-hidden", "true");
+        tape2.style.cssText = "position:absolute;right:10%;top:3%;width:22%;height:6%;object-fit:fill;transform:rotate(4deg);z-index:8;";
+        group.appendChild(tape2);
         const panel = surface("resources", "bs-resources-panel bs-reveal on-art");
-        applyRect(panel, 130, 110, 760, 880, -0.8);
+        panel.style.cssText = "position:absolute;left:14%;top:12%;width:72%;height:78%;overflow:hidden;box-sizing:border-box;";
         const heading = h("div", "bs-res-h on-art-t");
         heading.textContent = slide.resHeading || slide.title || "References";
         panel.appendChild(heading);
@@ -639,19 +611,27 @@ export const PAGES = SLIDES.map((slide) => ({
           ul.appendChild(li);
         });
         panel.appendChild(ul);
-        root.appendChild(panel);
+        group.appendChild(panel);
+        root.appendChild(group);
       }
-      if (BUILDERS.s18) BUILDERS.s18(root, T);
     } else if (slide.kind === "conclude") {
       if (BUILDERS.s17) BUILDERS.s17(root, T);
-      // torn_page taped top center
-      paperSprite(root, "torn_page", 90, 120, 850, 540, 2);
-      paperTape(root, "tape_a", 420, 118, 220, 60, -5);
+      const group = h("div", "bs-paper-group");
+      applyRect(group, 80, 110, 870, 560, 0);
+      const paper = img(`${PAPER}/torn_page.webp`, "bs-paper");
+      paper.setAttribute("aria-hidden", "true");
+      paper.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:fill;";
+      group.appendChild(paper);
+      const tape = img(`${PAPER}/tape_a.webp`, "bs-paper-tape");
+      tape.setAttribute("aria-hidden", "true");
+      tape.style.cssText = "position:absolute;left:40%;top:-2%;width:26%;height:12%;object-fit:fill;transform:rotate(-5deg);z-index:8;";
+      group.appendChild(tape);
       const box = surface("takeaways", "bs-takeaways bs-reveal on-art");
-      applyRect(box, 230, 200, 670, 420, 2);
+      box.style.cssText = "position:absolute;left:16%;top:14%;width:74%;height:72%;overflow:hidden;box-sizing:border-box;";
       const items = (slide.bullets || []).map((b) => fx(String(b).replace(/^\d+\.\s*/, "")));
       box.innerHTML = `<h3 class="on-art-t">Takeaways</h3><ol class="on-art-b">${items.map((b) => `<li>${b}</li>`).join("")}</ol>`;
-      root.appendChild(box);
+      group.appendChild(box);
+      root.appendChild(group);
     } else if (BUILDERS[artId]) {
       BUILDERS[artId](root, T);
     }

@@ -191,14 +191,14 @@ export function startDrawIn(root, artId, { reduced = false, duration = DURATION 
     const tick = (now) => {
       if (token.cancelled) return;
       const u = Math.min(1, (now - t0) / duration);
-      // Outline 0-0.8s of timeline (~0.32 of duration), hatch overlaps last of outline
-      const linePhase = Math.min(1, u / 0.32);
-      const hatchPhase = Math.min(1, Math.max(0, (u - 0.22) / 0.64));
+      // First ~40% outline only; hatch/color fills the rest (~2.5s total)
+      const linePhase = Math.min(1, u / 0.40);
+      const hatchPhase = Math.min(1, Math.max(0, (u - 0.38) / 0.55));
       const lineT = easeOut(linePhase);
-      const hatchT = hatchPhase; // near-linear
-      // Outline settle to ~30% in last 0.3s
+      const hatchT = hatchPhase;
+      // Outline settle to ~30% in the last stretch of the hatch
       let lineAlpha = 1;
-      if (u > 0.78) lineAlpha = 1 - (u - 0.78) / 0.22 * 0.7;
+      if (u > 0.82) lineAlpha = 1 - (u - 0.82) / 0.18 * 0.7;
       if (u >= 1) lineAlpha = 0.3;
       glapi.draw(lineT, hatchT, lineAlpha);
       if (u < 1) raf = requestAnimationFrame(tick);
