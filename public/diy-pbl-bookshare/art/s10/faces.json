@@ -1,0 +1,48 @@
+{
+  "faces_top_to_bottom_xywh": [
+    [
+      1693,
+      232,
+      102,
+      60
+    ],
+    [
+      1693,
+      342,
+      102,
+      60
+    ],
+    [
+      1693,
+      452,
+      102,
+      60
+    ],
+    [
+      1693,
+      562,
+      102,
+      60
+    ],
+    [
+      1693,
+      672,
+      102,
+      60
+    ]
+  ],
+  "letters_top_to_bottom": [
+    "B",
+    "I",
+    "R",
+    "A",
+    "C"
+  ],
+  "stack_bbox_xywh": [
+    1672,
+    210,
+    214,
+    550
+  ],
+  "note": "Front-left face rects 1920x1080. Top-to-bottom B,I,R,A,C. Blank blocks."
+}

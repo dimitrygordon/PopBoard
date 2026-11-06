@@ -42,7 +42,7 @@ test("canonical title and Courses band wiring", () => {
 test("slide 1 uses real book title, author, and bg_cover (no floating cover_display)", () => {
   assert.equal(SLIDES[0].title, "DIY Project Based Learning for Math and Science");
   assert.notEqual(SLIDES[0].title, "Title");
-  assert.match(SLIDES[0].narration, /fifteen minutes or so/);
+  assert.match(SLIDES[0].narration, /seventeen minutes or so/);
   assert.ok(existsSync(join(DIR, "art", "s01", "bg_cover.webp")));
   assert.ok(existsSync(join(DIR, "art", "s01", "bg.webp")));
   const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
@@ -183,7 +183,7 @@ test("transitions: sprites carry data-magic-id; script never FLIPs", () => {
 });
 
 test("Round 2 depth passages and Gold Standard bullet", () => {
-  assert.match(SLIDES[6].narration, /empty row might hold a reteach day/);
+  assert.match(SLIDES[6].narration, /empty row might turn into a reteach day/);
   assert.match(SLIDES[10].narration, /One of your forces points the wrong way/);
   assert.match(SLIDES[12].narration, /Costa's levels also give me a quick check/);
   assert.match(SLIDES[15].narration, /PBLWorks Gold Standard/);
@@ -254,6 +254,14 @@ test("QA: no stray curled-paper sprites; keyterms grid; draw-in 40% line", () =>
   assert.match(css, /bs-paper-group/);
   assert.match(css, /-webkit-line-clamp:\s*2/);
   assert.match(drawin, /u \/ 0\.40/);
+});
+
+test("Round 4 Wendell voice: Socrates three script locks", () => {
+  assert.match(SLIDES[0].narration, /seventeen minutes or so/);
+  assert.match(SLIDES[3].narration, /borrows a distinction from the author A\. J\. Juliani/);
+  assert.match(SLIDES[13].narration, /Here's the twist\. The author grades/);
+  assert.doesNotMatch(SLIDES[0].narration, /fifteen minutes(?! or so)/);
+  assert.doesNotMatch(SLIDES[13].narration, /The twist:/);
 });
 
 test("Round 3: tip 5, APA alpha order, no cite-only bullets, break-even wording", () => {
