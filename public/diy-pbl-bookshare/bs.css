@@ -1917,6 +1917,6 @@ body.fl-full .bs-design-layer .bs-paper-group .bs-apa li {
 .bs-scene .bs-r6-figure {
   object-fit: contain !important;
   object-position: center center !important;
-  filter: drop-shadow(2px 3px 4px rgba(40, 35, 30, 0.18));
+  filter: drop-shadow(1px 2px 3px rgba(40, 35, 30, 0.10));
   z-index: 4;
 }

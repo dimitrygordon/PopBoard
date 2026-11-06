@@ -104,10 +104,10 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 884,
-      "y": 225,
-      "w": 1000,
-      "h": 610,
+      "x": 857,
+      "y": 230,
+      "w": 1027,
+      "h": 620,
       "rot": 0
     }
   },
@@ -130,9 +130,9 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 1147,
-      "y": 40,
-      "w": 737,
+      "x": 1158,
+      "y": 50,
+      "w": 726,
       "h": 980,
       "rot": 0
     }
@@ -191,10 +191,10 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 884,
-      "y": 341,
-      "w": 1000,
-      "h": 377,
+      "x": 857,
+      "y": 226,
+      "w": 1027,
+      "h": 627,
       "rot": 0
     }
   },
@@ -251,10 +251,10 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 884,
-      "y": 291,
-      "w": 1000,
-      "h": 477,
+      "x": 857,
+      "y": 290,
+      "w": 1027,
+      "h": 500,
       "rot": 0
     }
   },
@@ -331,9 +331,9 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 926,
-      "y": 40,
-      "w": 958,
+      "x": 935,
+      "y": 50,
+      "w": 949,
       "h": 980,
       "rot": 0
     }
@@ -412,9 +412,9 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 1289,
-      "y": 40,
-      "w": 595,
+      "x": 1312,
+      "y": 50,
+      "w": 572,
       "h": 980,
       "rot": 0
     }
@@ -438,10 +438,10 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 884,
-      "y": 298,
-      "w": 1000,
-      "h": 464,
+      "x": 857,
+      "y": 331,
+      "w": 1027,
+      "h": 418,
       "rot": 0
     }
   },
@@ -499,10 +499,10 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 884,
-      "y": 301,
-      "w": 1000,
-      "h": 457,
+      "x": 857,
+      "y": 300,
+      "w": 1027,
+      "h": 479,
       "rot": 0
     }
   },
