@@ -591,33 +591,61 @@ test("s18 takeaways numerals clear binder rings", async (t) => {
         const scene = document.querySelector(".bs-scene");
         const sr = scene.getBoundingClientRect();
         const paper = document.querySelector(".bs-paper-group");
-        if (!paper) return { error: "no paper group" };
+        const box = document.querySelector(".bs-takeaways");
+        if (!paper || !box) return { error: "no paper/takeaways" };
         const pr = paper.getBoundingClientRect();
+        const br = box.getBoundingClientRect();
         const ring = {
           x0: pr.left - sr.left,
           y0: pr.top - sr.top,
           x1: pr.left - sr.left + pr.width * RING_FRAC,
           y1: pr.bottom - sr.top,
         };
+        // Visible text box (clipping container).
+        const textBox = {
+          x0: br.left - sr.left,
+          y0: br.top - sr.top,
+          x1: br.right - sr.left,
+          y1: br.bottom - sr.top,
+          overflow: getComputedStyle(box).overflow,
+        };
+        const RING_PITCH = [0.29, 0.44, 0.58, 0.73];
         const items = [...document.querySelectorAll(".bs-takeaways li")].map((li, i) => {
           const liBr = li.getBoundingClientRect();
           const range = document.createRange();
           range.selectNodeContents(li);
           const textBr = range.getBoundingClientRect();
-          // Marker / numeral sits left of the text content box.
+          const before = getComputedStyle(li, "::before");
+          const beforeContent = before && before.content;
+          const hasBefore = beforeContent && beforeContent !== "none" && beforeContent !== '""' && beforeContent !== "normal";
+          const cy = ((liBr.top + liBr.bottom) / 2) - sr.top;
+          const ringCy = (pr.top - sr.top) + pr.height * (RING_PITCH[i] ?? 0.5);
           return {
             n: i + 1,
             text: (li.textContent || "").trim().slice(0, 48),
+            hasBefore,
+            listStylePos: getComputedStyle(li).listStylePosition,
             marker: {
-              x0: Math.min(liBr.left, textBr.left) - sr.left - 2,
+              // Include ::before numeral inside the li padding box.
+              x0: liBr.left - sr.left - 2,
+              y0: liBr.top - sr.top - 2,
+              x1: Math.max(textBr.left - sr.left, liBr.left - sr.left + 28) + 2,
+              y1: liBr.bottom - sr.top + 2,
+            },
+            liBox: {
+              x0: liBr.left - sr.left,
               y0: liBr.top - sr.top,
-              x1: textBr.left - sr.left + 2,
+              x1: liBr.right - sr.left,
               y1: liBr.bottom - sr.top,
             },
+            rowCy: cy,
+            ringCy,
+            pitchFrac: RING_PITCH[i],
+            pitchErrFrac: Math.abs(cy - ringCy) / pr.height,
             textX0: textBr.left - sr.left,
           };
         });
-        return { ring, items, sceneW: sr.width, sceneH: sr.height };
+        return { ring, textBox, items, paperH: pr.height };
       }, RING_FRAC);
 
       if (meta.error) {
@@ -667,18 +695,22 @@ test("s18 takeaways numerals clear binder rings", async (t) => {
           return wLum < 150 && (oLum - wLum) > 30;
         }
         function isRingDark(i) {
-          // Spiral hole/ring metal in without-label art (dark grey/blue).
           const r = withoutData[i], g = withoutData[i + 1], b = withoutData[i + 2];
-          const lum = (r + g + b) / 3;
-          return lum < 130;
+          return (r + g + b) / 3 < 130;
         }
-        const PAD = 3;
+        const PAD = 2;
         const out = [];
         const ringPx = {
           x0: Math.floor(meta.ring.x0 * sx),
           y0: Math.floor(meta.ring.y0 * sy),
           x1: Math.ceil(meta.ring.x1 * sx),
           y1: Math.ceil(meta.ring.y1 * sy),
+        };
+        const boxPx = {
+          x0: Math.floor(meta.textBox.x0 * sx),
+          y0: Math.floor(meta.textBox.y0 * sy),
+          x1: Math.ceil(meta.textBox.x1 * sx),
+          y1: Math.ceil(meta.textBox.y1 * sy),
         };
         for (const it of meta.items) {
           const rx0 = Math.max(0, Math.floor(it.marker.x0 * sx) - 1);
@@ -698,43 +730,64 @@ test("s18 takeaways numerals clear binder rings", async (t) => {
             }
           }
           if (inkN < 4 || gx1 < gx0) {
-            out.push({ n: it.n, inkN, overlap: false, reason: "no-numeral-ink" });
+            out.push({ n: it.n, inkN, reason: "no-numeral-ink", listStylePos: it.listStylePos, hasBefore: it.hasBefore });
             continue;
           }
-          const bx0 = Math.max(0, gx0 - PAD);
-          const by0 = Math.max(0, gy0 - PAD);
-          const bx1 = Math.min(canvas.width - 1, gx1 + PAD);
-          const by1 = Math.min(canvas.height - 1, gy1 + PAD);
-          // AABB overlap with ring strip
-          const aabbHit = !(bx1 < ringPx.x0 || bx0 > ringPx.x1 || by1 < ringPx.y0 || by0 > ringPx.y1);
+          const bx0 = gx0 - PAD, by0 = gy0 - PAD, bx1 = gx1 + PAD, by1 = gy1 + PAD;
+          const aabbRing = !(bx1 < ringPx.x0 || bx0 > ringPx.x1 || by1 < ringPx.y0 || by0 > ringPx.y1);
           let ringHits = 0;
-          if (aabbHit) {
-            const ox0 = Math.max(bx0, ringPx.x0);
-            const oy0 = Math.max(by0, ringPx.y0);
-            const ox1 = Math.min(bx1, ringPx.x1);
-            const oy1 = Math.min(by1, ringPx.y1);
+          if (aabbRing) {
+            const ox0 = Math.max(bx0, ringPx.x0), oy0 = Math.max(by0, ringPx.y0);
+            const ox1 = Math.min(bx1, ringPx.x1), oy1 = Math.min(by1, ringPx.y1);
             for (let py = oy0; py <= oy1; py++) {
               for (let px = ox0; px <= ox1; px++) {
-                if (isRingDark(idx(px, py))) ringHits++;
+                if (px >= 0 && py >= 0 && px < canvas.width && py < canvas.height && isRingDark(idx(px, py))) ringHits++;
               }
             }
           }
+          // Full numeral ink must sit inside the visible takeaways box (not clipped).
+          const insideBox =
+            gx0 >= boxPx.x0 + 1 &&
+            gy0 >= boxPx.y0 + 1 &&
+            gx1 <= boxPx.x1 - 1 &&
+            gy1 <= boxPx.y1 - 1;
+          // Left edge of numeral must not sit on the clip edge (outside markers get sliced).
+          const clippedLeft = gx0 <= boxPx.x0 + 1;
           out.push({
-            n: it.n, inkN, aabbHit, ringHits,
+            n: it.n, inkN, ringHits, aabbRing, insideBox, clippedLeft,
+            listStylePos: it.listStylePos, hasBefore: it.hasBefore,
             glyph: { x0: gx0, y0: gy0, x1: gx1, y1: gy1 },
-            markerCss: it.marker,
+            boxPx, textBoxOverflow: meta.textBox.overflow,
           });
         }
-        return { out, ringPx };
+        return out;
       }, withBuf.toString("base64"), withoutBuf.toString("base64"), meta);
 
-      for (const r of report.out) {
+      for (const r of report) {
         if (r.reason === "no-numeral-ink") {
           failures.push(`${vp.name}: takeaway ${r.n}. no numeral glyph ink`);
           continue;
         }
-        if (r.aabbHit && r.ringHits > 0) {
+        if (r.aabbRing && r.ringHits > 0) {
           failures.push(`${vp.name}: takeaway ${r.n}. numeral overlaps binder ring area (${r.ringHits} dark px)`);
+        }
+        if (!r.insideBox || r.clippedLeft) {
+          failures.push(
+            `${vp.name}: takeaway ${r.n}. numeral ink clipped by text box ` +
+            `(inside=${r.insideBox} clippedLeft=${r.clippedLeft} overflow=${r.textBoxOverflow} ` +
+            `glyph=${JSON.stringify(r.glyph)} box=${JSON.stringify(r.boxPx)} listStylePos=${r.listStylePos})`
+          );
+        }
+      }
+      for (const it of meta.items) {
+        if (it.pitchErrFrac > 0.04) {
+          failures.push(
+            `${vp.name}: takeaway ${it.n}. row center off ring pitch ` +
+            `(err=${(it.pitchErrFrac * 100).toFixed(1)}% target=${it.pitchFrac} rowCy=${it.rowCy.toFixed(1)} ringCy=${it.ringCy.toFixed(1)})`
+          );
+        }
+        if (!it.hasBefore) {
+          failures.push(`${vp.name}: takeaway ${it.n}. expected ::before counter numeral`);
         }
       }
       await page.close();

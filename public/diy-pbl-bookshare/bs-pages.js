@@ -895,8 +895,12 @@ export const PAGES = SLIDES.map((slide) => ({
       }
     } else if (slide.kind === "conclude") {
       if (BUILDERS.s17) BUILDERS.s17(root, T);
-      const group = h("div", "bs-paper-group");
-      applyRect(group, 80, 110, 870, 560, 0);
+      const group = h("div", "bs-paper-group bs-paper-group--takeaways");
+      // torn_page.webp is 924x572 (4-ring pad); height follows aspect at width 870.
+      const padW = 870;
+      const padH = Math.round(padW * (572 / 924)); // 539
+      applyRect(group, 80, 110, padW, padH, 0);
+      group.dataset.ringPitch = "0.29,0.44,0.58,0.73";
       const paper = img(`${PAPER}/torn_page.webp`, "bs-paper");
       paper.setAttribute("aria-hidden", "true");
       paper.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:fill;";
@@ -906,9 +910,10 @@ export const PAGES = SLIDES.map((slide) => ({
       tape.style.cssText = "position:absolute;left:40%;top:-2%;width:26%;height:12%;object-fit:fill;transform:rotate(-5deg);z-index:8;";
       group.appendChild(tape);
       const box = surface("takeaways", "bs-takeaways bs-reveal on-art");
-      box.style.cssText = "position:absolute;left:20%;top:14%;width:70%;height:72%;overflow:hidden;box-sizing:border-box;";
+      // Full pad height so row tops can sit on ring pitch percents.
+      box.style.cssText = "position:absolute;left:18%;top:0;width:74%;height:100%;overflow:visible;box-sizing:border-box;";
       const items = (slide.bullets || []).map((b) => fx(String(b).replace(/^\d+\.\s*/, "")));
-      box.innerHTML = `<h3 class="on-art-t">Takeaways</h3><ol class="on-art-b">${items.map((b) => `<li>${b}</li>`).join("")}</ol>`;
+      box.innerHTML = `<h3 class="on-art-t">Takeaways</h3><ol class="on-art-b bs-takeaways-ol">${items.map((b) => `<li>${b}</li>`).join("")}</ol>`;
       group.appendChild(box);
       ensureDesignLayer(root).appendChild(group);
       requestAnimationFrame(() => requestAnimationFrame(() => fitPaperPanel(box, 34)));

@@ -1075,16 +1075,64 @@ body.fl-full .bs-resources-panel--compact {
   bottom: auto !important;
 }
 .bs-paper-group .bs-takeaways {
-  /* Clear spiral binder rings baked into torn_page.webp (~left 12%). */
-  left: 20% !important;
-  top: 12% !important;
-  width: 70% !important;
-  height: 78% !important;
+  /* Clear spiral binder rings (~left 12% of torn_page). Full pad height for ring pitch. */
+  left: 18% !important;
+  top: 0 !important;
+  width: 74% !important;
+  height: 100% !important;
   right: auto !important;
   bottom: auto !important;
+  overflow: visible !important;
 }
-.bs-paper-group .bs-takeaways ol {
-  padding-left: 1.55em !important;
+/* Numerals as real ::before text (inside the box) — outside markers get clipped by overflow. */
+.bs-paper-group .bs-takeaways ol,
+.bs-paper-group .bs-takeaways-ol {
+  list-style: none !important;
+  padding-left: 0 !important;
+  margin: 0 !important;
+  counter-reset: takeaway !important;
+  position: absolute !important;
+  inset: 0 !important;
+}
+.bs-paper-group .bs-takeaways li {
+  list-style: none !important;
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 0 0 1.55em !important;
+  box-sizing: border-box !important;
+  transform: translateY(-50%) !important;
+  overflow: visible !important;
+}
+/* Leo 4-ring pad: ring centers at 29 / 44 / 58 / 73% of pad height. */
+.bs-paper-group .bs-takeaways li:nth-child(1) { top: 29% !important; }
+.bs-paper-group .bs-takeaways li:nth-child(2) { top: 44% !important; }
+.bs-paper-group .bs-takeaways li:nth-child(3) { top: 58% !important; }
+.bs-paper-group .bs-takeaways li:nth-child(4) { top: 73% !important; }
+.bs-paper-group .bs-takeaways li::before {
+  counter-increment: takeaway;
+  content: counter(takeaway) ".";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1.4em;
+  text-align: right;
+  box-sizing: border-box;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+}
+/* Title sits above ring 1. */
+.bs-paper-group .bs-takeaways h3 {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: 12% !important;
+  margin: 0 !important;
+  transform: none !important;
 }
 /* Label chips: no text-shadow glow (looks pasted) */
 .bs-surface--label,
