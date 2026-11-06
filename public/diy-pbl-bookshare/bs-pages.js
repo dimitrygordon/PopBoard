@@ -100,15 +100,15 @@ const IDEA_BY_ART = {
   s14: { x: 110, y: 200, w: 760, h: 560, rot: 1 },
   s15: { x: 110, y: 200, w: 720, h: 560, rot: -1 },
   s16: { x: 110, y: 200, w: 860, h: 560, rot: 1 },
-  r6a: { x: 72, y: 150, w: 700, h: 720, rot: -1 },
-  r6b: { x: 72, y: 150, w: 700, h: 720, rot: 1 },
-  r6c: { x: 72, y: 150, w: 700, h: 720, rot: -1 },
-  r6d: { x: 72, y: 150, w: 700, h: 720, rot: 1 },
-  r6e: { x: 72, y: 150, w: 700, h: 720, rot: -1 },
-  r6f: { x: 72, y: 150, w: 700, h: 720, rot: 1 },
-  r6h: { x: 72, y: 150, w: 700, h: 720, rot: -1 },
-  r6i: { x: 72, y: 150, w: 700, h: 720, rot: 1 },
-  r6j: { x: 72, y: 150, w: 700, h: 720, rot: -1 },
+  r6a: { x: 64, y: 140, w: 640, h: 760, rot: -1 },
+  r6b: { x: 64, y: 140, w: 640, h: 760, rot: 1 },
+  r6c: { x: 64, y: 140, w: 640, h: 760, rot: -1 },
+  r6d: { x: 64, y: 140, w: 640, h: 760, rot: 1 },
+  r6e: { x: 64, y: 140, w: 640, h: 760, rot: -1 },
+  r6f: { x: 64, y: 140, w: 640, h: 760, rot: 1 },
+  r6h: { x: 64, y: 140, w: 640, h: 760, rot: -1 },
+  r6i: { x: 64, y: 140, w: 640, h: 760, rot: 1 },
+  r6j: { x: 64, y: 140, w: 640, h: 760, rot: -1 },
 };
 
 const KT_ROTS = [-2, 1.5, -1, 2, 1, -2.5, 2, -1];
@@ -774,11 +774,56 @@ function placeFigureCard(root, slide) {
   const artId = slide.art || `s${String(slide.n).padStart(2, "0")}`;
   const el = img(`${ART}${artId}/${fig.src}`, "bs-sp bs-r6-figure");
   el.alt = fig.alt || "";
+  // Initial placement from data (design px); refined after decode against live stage.
   const x = fig.x ?? 1000, y = fig.y ?? 100, w = fig.w ?? 800, h = fig.h ?? 900;
   applyRect(el, x, y, w, h, fig.rot || 0);
   el.style.objectFit = "contain";
+  el.style.objectPosition = "center center";
   el.style.pointerEvents = "none";
   layer.appendChild(el);
+  const refine = () => {
+    if (!el.naturalWidth || !el.naturalHeight) return;
+    syncDesignLayer(root, layer);
+    const stage = root.getBoundingClientRect();
+    if (stage.width < 40 || stage.height < 40) return;
+    const idea = root.querySelector(".bs-idea-panel");
+    const ideaR = idea ? idea.getBoundingClientRect() : null;
+    const natA = el.naturalWidth / el.naturalHeight;
+    // Target: 52-55% stage width, or ~88% stage height if portrait-limited.
+    let cssW = stage.width * 0.55;
+    let cssH = cssW / natA;
+    if (cssH > stage.height * 0.88) {
+      cssH = stage.height * 0.88;
+      cssW = cssH * natA;
+    }
+    // ≥3% gap from text column
+    const minLeft = ideaR ? (ideaR.right + stage.width * 0.03) : (stage.left + stage.width * 0.40);
+    let cssLeft = stage.left + stage.width - cssW - stage.width * 0.02;
+    if (cssLeft < minLeft) {
+      cssLeft = minLeft;
+      cssW = Math.max(40, stage.left + stage.width - stage.width * 0.02 - cssLeft);
+      cssH = cssW / natA;
+      if (cssH > stage.height * 0.88) {
+        cssH = stage.height * 0.88;
+        cssW = cssH * natA;
+        cssLeft = stage.left + stage.width - cssW - stage.width * 0.02;
+      }
+    }
+    const cssTop = stage.top + (stage.height - cssH) / 2;
+    // Map viewport CSS box back into design-layer pixels
+    const inv = new DOMMatrix(getComputedStyle(layer).transform).inverse();
+    const p0 = inv.transformPoint({ x: cssLeft - stage.left, y: cssTop - stage.top });
+    const p1 = inv.transformPoint({ x: cssLeft - stage.left + cssW, y: cssTop - stage.top + cssH });
+    const dx = Math.min(p0.x, p1.x), dy = Math.min(p0.y, p1.y);
+    const dw = Math.abs(p1.x - p0.x), dh = Math.abs(p1.y - p0.y);
+    applyRect(el, dx, dy, dw, dh, 0);
+    el.style.objectFit = "contain";
+  };
+  if (el.complete && el.naturalWidth) {
+    requestAnimationFrame(() => requestAnimationFrame(refine));
+  } else {
+    el.addEventListener("load", () => requestAnimationFrame(() => requestAnimationFrame(refine)), { once: true });
+  }
 }
 
 function buildOnArtIdeaPanel(root, slide) {

@@ -104,10 +104,10 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 857,
-      "y": 230,
-      "w": 1027,
-      "h": 620,
+      "x": 832,
+      "y": 221,
+      "w": 1056,
+      "h": 638,
       "rot": 0
     }
   },
@@ -130,10 +130,10 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 1158,
-      "y": 50,
-      "w": 726,
-      "h": 980,
+      "x": 1198,
+      "y": 65,
+      "w": 690,
+      "h": 950,
       "rot": 0
     }
   },
@@ -191,10 +191,10 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 857,
-      "y": 226,
-      "w": 1027,
-      "h": 627,
+      "x": 832,
+      "y": 217,
+      "w": 1056,
+      "h": 645,
       "rot": 0
     }
   },
@@ -251,10 +251,10 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 857,
-      "y": 290,
-      "w": 1027,
-      "h": 500,
+      "x": 832,
+      "y": 349,
+      "w": 1056,
+      "h": 382,
       "rot": 0
     }
   },
@@ -331,10 +331,10 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 935,
-      "y": 50,
-      "w": 949,
-      "h": 980,
+      "x": 978,
+      "y": 65,
+      "w": 910,
+      "h": 950,
       "rot": 0
     }
   },
@@ -412,10 +412,10 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 1312,
-      "y": 50,
-      "w": 572,
-      "h": 980,
+      "x": 1351,
+      "y": 65,
+      "w": 537,
+      "h": 950,
       "rot": 0
     }
   },
@@ -438,10 +438,10 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 857,
-      "y": 331,
-      "w": 1027,
-      "h": 418,
+      "x": 832,
+      "y": 356,
+      "w": 1056,
+      "h": 367,
       "rot": 0
     }
   },
@@ -499,10 +499,10 @@ export const SLIDES = [
     "onArt": true,
     "figure": {
       "src": "figure.webp",
-      "x": 857,
-      "y": 300,
-      "w": 1027,
-      "h": 479,
+      "x": 832,
+      "y": 370,
+      "w": 1056,
+      "h": 339,
       "rot": 0
     }
   },

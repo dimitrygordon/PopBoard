@@ -1237,14 +1237,15 @@ test("round6 book crop body text meets min glyph size at 1280 and 844x390", asyn
     { n: 6, id: "r6a" },
     { n: 13, id: "r6h" },
     { n: 22, id: "r6f" },
+    { n: 25, id: "r6j" },
   ];
   // Full column-width crops at ~50% stage cannot hit the old 14/9 floors
   // (on-screen glyph ≈ pdf_glyph * card_content_css / crop_px). Leo Round-6
   // fix prioritizes margin-to-margin lines over narrow zoomed columns; keep a
   // reachable floor so regressions still fail.
   const VPS = [
-    { name: "1280", width: 1280, height: 720, mobile: false, minPx: 7 },
-    { name: "844x390", width: 844, height: 390, mobile: true, minPx: 4 },
+    { name: "1280", width: 1280, height: 720, mobile: false, minPx: 12 },
+    { name: "844x390", width: 844, height: 390, mobile: true, minPx: 9 },
   ];
   try {
     const report = [];
@@ -1309,42 +1310,49 @@ test("round6 book crop body text meets min glyph size at 1280 and 844x390", asyn
             rowDark.push(d);
           }
           const thresh = Math.max(3, Math.floor((x1 - x0) / 2 / 35));
-          // Split dense paragraphs on local minima so connected line-bands still yield a body height.
+          // Prefer per-line bands. Dense paragraphs often merge into one tall run —
+          // split on local valleys, then fall back to peak-to-peak pitch.
           const heights = [];
-          let i = 0;
-          while (i < rowDark.length) {
-            while (i < rowDark.length && rowDark[i] < thresh) i++;
-            if (i >= rowDark.length) break;
-            const runStart = i;
-            let peak = 0;
-            while (i < rowDark.length && rowDark[i] >= thresh) {
-              peak = Math.max(peak, rowDark[i]);
-              i++;
-              // Soft split: local valley inside a long run (inter-line gap)
-              if (i - runStart > 10 && i + 2 < rowDark.length) {
-                const a = rowDark[i - 1], b = rowDark[i], c = rowDark[i + 1];
-                if (b < thresh * 1.6 && b <= a && b <= c && b < peak * 0.55) {
-                  const h = i - runStart;
-                  if (h >= 8 && h <= 80) heights.push(h);
-                  break; // continue outer from i (valley); do not skip
-                }
+          const valleys = [];
+          for (let i = 2; i < rowDark.length - 2; i++) {
+            const v = rowDark[i];
+            if (v < thresh * 1.15 && v <= rowDark[i - 1] && v <= rowDark[i + 1] &&
+                (rowDark[i - 1] > thresh || rowDark[i + 1] > thresh)) {
+              valleys.push(i);
+            }
+          }
+          // Merge nearby valleys
+          const vMerge = [];
+          for (const v of valleys) {
+            if (!vMerge.length || v - vMerge[vMerge.length - 1] > 6) vMerge.push(v);
+          }
+          if (vMerge.length >= 2) {
+            for (let i = 1; i < vMerge.length; i++) {
+              const h = vMerge[i] - vMerge[i - 1];
+              if (h >= 18 && h <= 90) heights.push(h);
+            }
+          }
+          // Also classic runs
+          let run = 0;
+          for (const v of rowDark) {
+            if (v >= thresh) run++;
+            else {
+              if (run >= 18 && run <= 90) heights.push(run);
+              run = 0;
+            }
+          }
+          if (run >= 18 && run <= 90) heights.push(run);
+          // Peak-to-peak pitch fallback for dense blocks
+          if (heights.length < 2) {
+            const peaks = [];
+            for (let i = 2; i < rowDark.length - 2; i++) {
+              if (rowDark[i] >= thresh && rowDark[i] >= rowDark[i - 1] && rowDark[i] >= rowDark[i + 1]) {
+                if (!peaks.length || i - peaks[peaks.length - 1] > 10) peaks.push(i);
               }
             }
-            const h = i - runStart;
-            if (h >= 8 && h <= 80) heights.push(h);
-            else if (h > 80) {
-              // Very dense block: approximate line pitch from dark fraction peaks
-              const slice = rowDark.slice(runStart, i);
-              const mid = slice.slice().sort((a, b) => a - b)[Math.floor(slice.length * 0.5)] || 1;
-              let sub = 0;
-              for (const v of slice) {
-                if (v >= mid * 0.7) sub++;
-                else {
-                  if (sub >= 8 && sub <= 60) heights.push(sub);
-                  sub = 0;
-                }
-              }
-              if (sub >= 8 && sub <= 60) heights.push(sub);
+            for (let i = 1; i < peaks.length; i++) {
+              const h = peaks[i] - peaks[i - 1];
+              if (h >= 18 && h <= 90) heights.push(h);
             }
           }
           heights.sort((a, b) => a - b);
@@ -1455,6 +1463,91 @@ test("round6 figure cards are not cover-cropped (aspect match + contain)", async
       }
     }
     await page.close();
+    assert.equal(failures.length, 0, failures.join("\n"));
+  } finally {
+    await browser.close();
+  }
+});
+
+
+test("round6 figure cards hit stage width and vertical center at 1280 and 844", async (t) => {
+  let puppeteer;
+  try {
+    puppeteer = (await import(pathToFileURL(PUPPETEER).href)).default;
+  } catch (e) {
+    t.skip("puppeteer-core not available: " + e.message);
+    return;
+  }
+  let browser;
+  try {
+    browser = await puppeteer.launch(launchOpts());
+  } catch (e) {
+    t.skip("Chrome launch failed: " + e.message);
+    return;
+  }
+  const PAGES = [6, 7, 10, 13, 17, 21, 22, 25];
+  const VPS = [
+    { name: "1280", width: 1280, height: 720, mobile: false },
+    { name: "844x390", width: 844, height: 390, mobile: true },
+  ];
+  try {
+    const failures = [];
+    const report = [];
+    for (const vp of VPS) {
+      const page = await browser.newPage();
+      await page.setViewport({
+        width: vp.width, height: vp.height, deviceScaleFactor: 1,
+        isMobile: !!vp.mobile, hasTouch: !!vp.mobile,
+      });
+      await page.setCacheEnabled(false);
+      for (const n of PAGES) {
+        await page.goto(`${BASE}/study-diy-pbl-bookshare.html?page=${n}&full=1`, {
+          waitUntil: "networkidle0", timeout: 60000,
+        });
+        await settle(page);
+        await new Promise((r) => setTimeout(r, 200));
+        const info = await page.evaluate(() => {
+          const stage = document.querySelector(".bs-scene");
+          const img = document.querySelector(".bs-r6-figure");
+          if (!stage || !img || !img.naturalWidth) return { missing: true };
+          const s = stage.getBoundingClientRect();
+          const r = img.getBoundingClientRect();
+          const scale = Math.min(r.width / img.naturalWidth, r.height / img.naturalHeight);
+          const drawnW = img.naturalWidth * scale;
+          const drawnH = img.naturalHeight * scale;
+          const drawnTop = r.top + (r.height - drawnH) / 2;
+          const widthPct = (drawnW / s.width) * 100;
+          const heightPct = (drawnH / s.height) * 100;
+          const centerOffPct =
+            ((drawnTop + drawnH / 2) - (s.top + s.height / 2)) / s.height * 100;
+          const portrait = img.naturalHeight >= img.naturalWidth * 1.05;
+          return { widthPct, heightPct, centerOffPct, portrait, drawnW, drawnH, stageW: s.width, stageH: s.height };
+        });
+        if (info.missing) {
+          failures.push(`${vp.name} p${n}: missing figure/stage`);
+          continue;
+        }
+        report.push({ vp: vp.name, page: n, ...info });
+        // (a) width 52-55%, or height ~88% when portrait-limited
+        const widthOk = info.widthPct >= 51.5 && info.widthPct <= 56.5;
+        // Height-limited (portrait or near-square) when we hit the ~88% stage-height cap.
+        const heightOk = info.heightPct >= 85 && info.heightPct <= 92;
+        if (!widthOk && !heightOk) {
+          failures.push(
+            `${vp.name} p${n}: width%=${info.widthPct.toFixed(1)} height%=${info.heightPct.toFixed(1)} ` +
+            `(need 52-55% width, or ~88% height when height-limited)`
+          );
+        }
+        // (b) vertical center within 3%
+        if (Math.abs(info.centerOffPct) > 3.0) {
+          failures.push(
+            `${vp.name} p${n}: centerOff%=${info.centerOffPct.toFixed(1)} (need |off|<=3)`
+          );
+        }
+      }
+      await page.close();
+    }
+    console.log("r6 placement:", JSON.stringify(report, null, 2));
     assert.equal(failures.length, 0, failures.join("\n"));
   } finally {
     await browser.close();
