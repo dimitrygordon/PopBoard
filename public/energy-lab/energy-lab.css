@@ -1,0 +1,172 @@
+/* Energy Lab hub: cream/charcoal to match energy3d; shared hud classes; 16 px floor. */
+:root {
+  --el-paper: #1F1D1A;
+  --el-ink: #EDE6D6;
+  --el-dim: #B9B0A0;
+  --el-card: #2A2621;
+  --el-line: #3A352E;
+  --el-btn: rgba(42, 38, 33, 0.94);
+  --el-accent: #E8C21A;
+  --el-hit: 44px;
+}
+:root[data-theme="light"] {
+  --el-paper: #FBF6EA;
+  --el-ink: #2B2622;
+  --el-dim: #5A534A;
+  --el-card: #FFFDF5;
+  --el-line: #2B2622;
+  --el-btn: rgba(255, 253, 245, 0.94);
+}
+* { box-sizing: border-box; }
+html, body.energy-lab {
+  margin: 0;
+  min-height: 100%;
+  background: var(--el-paper);
+  color: var(--el-ink);
+  font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Match library/module hud button styling via existing class names. */
+.energy-lab button {
+  font: inherit;
+  font-size: 16px;
+  color: var(--el-ink);
+  background: var(--el-btn);
+  border: 1.5px solid var(--el-line);
+  border-radius: 12px;
+  min-width: var(--el-hit);
+  min-height: var(--el-hit);
+  padding: 0 12px;
+  cursor: pointer;
+}
+.energy-lab button:focus-visible,
+.energy-lab a:focus-visible {
+  outline: 3px solid #4C6FA8;
+  outline-offset: 2px;
+}
+.energy-lab .hud {
+  position: fixed;
+  z-index: 6;
+  top: max(8px, env(safe-area-inset-top));
+  left: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.energy-lab .hud .title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  margin: 0 auto 0 4px;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.energy-lab .study-back-btn {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  font-size: 16px;
+}
+.energy-lab .study-back-btn .back-label { font-size: 16px; }
+
+.el-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: calc(max(8px, env(safe-area-inset-top)) + 64px) 16px 48px;
+}
+.el-hero {
+  display: grid;
+  gap: 14px;
+  margin: 0 0 22px;
+}
+.el-cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 960 / 540;
+  object-fit: cover;
+  border: 1.5px solid var(--el-line);
+  border-radius: 14px;
+  background: var(--el-card);
+}
+.el-lede {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--el-dim);
+}
+.el-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.el-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--el-card);
+  border: 1.5px solid var(--el-line);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 1px 2px 0 rgba(43, 38, 34, 0.14);
+}
+.el-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 640 / 360;
+  object-fit: cover;
+  background: var(--el-paper);
+  border-bottom: 1.5px solid var(--el-line);
+}
+.el-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px 14px;
+  flex: 1;
+}
+.el-body h2 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.25;
+  font-weight: 700;
+}
+.el-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+}
+.el-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 6px 12px;
+  box-sizing: border-box;
+  border: 1.5px solid var(--el-line);
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  font: inherit;
+  font-size: 16px;
+  background: var(--el-btn);
+}
+.el-actions a.primary {
+  background: rgba(232, 194, 26, 0.28);
+  font-weight: 700;
+}
+@media (max-width: 700px) {
+  .el-grid { grid-template-columns: 1fr; }
+  .el-shell { padding-left: 12px; padding-right: 12px; }
+  .energy-lab .hud { gap: 6px; }
+  .energy-lab .hud button { padding: 0 10px; white-space: nowrap; }
+}

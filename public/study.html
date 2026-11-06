@@ -87,6 +87,12 @@ button,input,textarea{font-family:inherit;}
   background:var(--panel-3); border:1px solid var(--border-lit); color:var(--cyan); margin-bottom:14px;
 }
 .module-icon svg{width:24px; height:24px;}
+.module-card.has-cover{padding:0; overflow:hidden;}
+.module-card.has-cover .module-cover{display:block; width:100%; aspect-ratio:16/9; object-fit:cover;}
+.module-card.has-cover .module-body{padding:16px 18px 18px;}
+.module-card.has-cover .module-icon{display:none;}
+.module-card.has-cover h3{font-size:16px;}
+.module-card.has-cover p{font-size:16px;}
 .module-icon .emoji-icon{font-size:22px; line-height:1;}
 .module-card h3{font-size:16px; margin:0 0 6px 0; color:var(--text);}
 .module-card.has-controls h3{padding-right:54px;}
@@ -193,6 +199,7 @@ input.icon-cell::placeholder{ color:var(--text-dimmer); font-size:17px; }
 .courses-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:18px;}
 .course-card.course-friction{background:#2a2620; border-color:#3A352E;}
 .course-card.course-bookshare{background:#2a2620; border-color:#3A352E;}
+.course-card.course-energy-lab{background:#2a2620; border-color:#3A352E;}
 .course-card{display:flex; flex-direction:column; border-radius:16px; overflow:hidden; text-decoration:none; background:#1F1D1A; color:#F2EAD8; border:1.5px solid #3A352E; transition:transform .15s, box-shadow .15s;}
 .course-card:hover{transform:translateY(-3px); box-shadow:0 10px 24px rgba(0,0,0,0.35);}
 .course-card img{display:block; width:100%; aspect-ratio:16/9; object-fit:cover;}
@@ -209,6 +216,7 @@ input.icon-cell::placeholder{ color:var(--text-dimmer); font-size:17px; }
 :root[data-theme="light"] .course-card.course-physics101{background:#F4EDDC; color:#2f2b26; border-color:#d9cfbc;}
 :root[data-theme="light"] .course-card.course-friction{background:#FBF6EA; color:#2f2b26; border-color:#d9cfbc;}
 :root[data-theme="light"] .course-card.course-bookshare{background:#FBF6EA; color:#2f2b26; border-color:#d9cfbc;}
+:root[data-theme="light"] .course-card.course-energy-lab{background:#FBF6EA; color:#2f2b26; border-color:#d9cfbc;}
 .course-card.course-geometry{background:#121212; border-color:#3A352E;}
 .course-card.course-geometry img{filter:invert(1);}
 :root[data-theme="light"] .course-card.course-geometry{background:#ffffff; color:#111111; border-color:#d9cfbc;}
@@ -250,7 +258,11 @@ input.icon-cell::placeholder{ color:var(--text-dimmer); font-size:17px; }
       </a>
       <a class="course-card course-bookshare" data-course="diy-pbl-bookshare" href="study-diy-pbl-bookshare.html">
         <img src="diy-pbl-bookshare/art/cover.webp" alt="" loading="lazy" width="1600" height="900">
-        <div class="course-body"><h3>Dimitry's DIY Project Based Learning for Math and Science Bookshare</h3><p>Wolpert-Gawron's DIY PBL as a self-playing storyboard: 18 slides, four central ideas, Put Into Practice, and discussion questions. Script on screen for live narration.</p><span class="course-count">18 PAGES</span></div>
+        <div class="course-body"><h3>Dimitry's DIY Project Based Learning for Math and Science Bookshare</h3><p>Wolpert-Gawron's DIY PBL as a self-playing storyboard: 21 slides, four central ideas, Put Into Practice, and discussion questions. Script on screen for live narration.</p><span class="course-count">21 PAGES</span></div>
+      </a>
+      <a class="course-card course-energy-lab" data-course="energy-lab" href="study-energy-lab.html">
+        <img src="energy-lab/cover.webp" alt="" loading="lazy" width="960" height="540">
+        <div class="course-body"><h3>Energy Lab</h3><p>Energy stores · Release and return · Spring launcher · Why a bouncing ball stops · Full or half kettle · Jacket or no jacket · Same light, less power · Power station to lamp · Breakfast to the top · Where did breakfast go?</p><span class="course-count">10 SIMS</span></div>
       </a>
     </div>
   </section>
@@ -799,6 +811,15 @@ var BUILTIN_MODULES = [
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="9" stroke-dasharray="3 2.5"/></svg>'
   },
   {
+    id: "energy-lab",
+    kind: "builtin",
+    name: "Energy Lab",
+    description: "Energy stores · Release and return · Spring launcher · Why a bouncing ball stops · Full or half kettle · Jacket or no jacket · Same light, less power · Power station to lamp · Breakfast to the top · Where did breakfast go?",
+    file: "study-energy-lab.html",
+    cover: "energy-lab/cover.webp",
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 6 13h5l-1 9 8-12h-5z"/></svg>'
+  },
+  {
     id: "atom-builder",
     kind: "builtin",
     name: "Atom Builder",
@@ -1026,7 +1047,7 @@ function resolveIconHtml(iconType, iconValue) {
    Courses band: the storybook courses sit above the module search
    in their own section, so the module grid below skips them.
    ============================================================ */
-var COURSE_IDS = ["astronomy-course", "physics101", "geometry", "friction-lesson", "diy-pbl-bookshare"];
+var COURSE_IDS = ["astronomy-course", "physics101", "geometry", "friction-lesson", "diy-pbl-bookshare", "energy-lab"];
 // Physics 101 module accents M1 to M24, matching --p101-m1..24 in physics101/p101.css.
 var P101_ACCENTS = ["#E2B654","#B5C7A3","#D98B6A","#8FB3D9","#B9A7D1","#8CC5BE","#7F8FC9","#B0A060","#E0A0A0","#A8B86E","#EBC9A0","#9C8C78","#6E9CA8","#B07F9C","#7A9E7E","#AA5B5E","#4AC7E4","#677C3F","#9C7040","#72748E","#36A896","#3583AD","#8A669E","#36815A"];
 
@@ -1050,7 +1071,7 @@ function setupCoursesBand() {
 
 function buildCombinedList() {
   var builtins = BUILTIN_MODULES.filter(function(m) { return COURSE_IDS.indexOf(m.id) === -1; }).map(function(m) {
-    return { kind: "builtin", id: m.id, name: m.name, description: m.description, file: m.file, iconHtml: m.icon };
+    return { kind: "builtin", id: m.id, name: m.name, description: m.description, file: m.file, iconHtml: m.icon, cover: m.cover || null };
   });
   var custom = customLinks.map(function(link) {
     return {
@@ -1085,16 +1106,32 @@ function openModule(m) {
 function makeModuleCard(m) {
   var card = document.createElement("div");
   card.className = "module-card";
-  var iconWrap = document.createElement("div");
-  iconWrap.className = "module-icon";
-  iconWrap.innerHTML = m.iconHtml;
-  card.appendChild(iconWrap);
+  var body = card;
+  if (m.cover) {
+    card.classList.add("has-cover");
+    var cover = document.createElement("img");
+    cover.className = "module-cover";
+    cover.src = m.cover;
+    cover.alt = "";
+    cover.loading = "lazy";
+    cover.width = 960;
+    cover.height = 540;
+    card.appendChild(cover);
+    body = document.createElement("div");
+    body.className = "module-body";
+    card.appendChild(body);
+  } else {
+    var iconWrap = document.createElement("div");
+    iconWrap.className = "module-icon";
+    iconWrap.innerHTML = m.iconHtml;
+    card.appendChild(iconWrap);
+  }
   var h3 = document.createElement("h3");
   h3.textContent = m.name;
-  card.appendChild(h3);
+  body.appendChild(h3);
   var p = document.createElement("p");
   p.textContent = m.description;
-  card.appendChild(p);
+  body.appendChild(p);
   card.onclick = function() { openModule(m); };
   if (m.kind === "builtin" && window.PopBoardFun) { var fb = window.PopBoardFun.badge(m.id); if (fb) card.appendChild(fb); }
 
