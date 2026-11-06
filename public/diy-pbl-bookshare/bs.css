@@ -1052,6 +1052,9 @@ body.fl-full .bs-resources-panel--compact {
   height: 90% !important;
   right: auto !important;
   bottom: auto !important;
+  padding-top: 4% !important;
+  padding-bottom: 4% !important;
+  box-sizing: border-box !important;
 }
 .bs-paper-group .bs-discuss {
   left: 9% !important;
