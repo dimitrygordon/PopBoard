@@ -94,7 +94,7 @@ test('every signed-off R2 student paraphrase is exported verbatim without its st
 test('missing art is inventoried and cannot generate student placeholder markup',()=>{
  execFileSync('node',['tools/geometry/figure-inventory.mjs','--check']);
  const inventory=read('docs/geometry/v2/PLACEHOLDER-SLIDES.md');
- assert.match(inventory,/\| 4.13 \| 4: Worked example/);
+ assert.match(inventory,/Unit 4: 0\./);
  const renderer=read('public/geometry/geo-page.js');assert.ok(!renderer.includes('Figure coming'));
  assert.match(renderer,/includes\(G.kind\) && \(G.figure\?\.svg \|\| G.figure\?\.src\)/);
  for(let n=1;n<=16;n++)assert.ok(!JSON.stringify(deck(n)).includes('Figure coming'));
@@ -141,9 +141,33 @@ test('triangle copy rejects flat and coincident inputs but admits nearby valid t
 });
 
 
-test('round 4: corrected art coordinates are synced but the three figures remain unwired',()=>{
+test('round 5: corrected art coordinates are synced and their final figures are wired',()=>{
  const commission=read('docs/geometry/v2/LEO-DIAGRAMS-unit04.md');
  for(const marker of ['A=(0,0), B=(18.3051,0)','A=(0,2.3439)','kite A=(0,8.8)'])assert.ok(commission.includes(marker));
  assert.ok(!commission.includes('Pending corrected coordinates'));
- for(const [lesson,page] of [[4,10],[7,5],[14,12]])assert.ok(!deck(lesson).slides[page-1].geo.figure?.svg);
+ for(const [lesson,page] of [[4,10],[7,5],[14,12]])assert.ok(deck(lesson).slides[page-1].geo.figure?.svg);
+});
+
+
+test('round 5: every Unit 4 figure slot is filled and every art mapping is consumed exactly',()=>{
+ const wiring=JSON.parse(read('tools/geometry/u04-art-wiring.json'));assert.equal(wiring.length,94);
+ const seen=new Set();let total=0;
+ for(let n=1;n<=16;n++)for(const slide of deck(n).slides)if(['worked-example','practice','common-mistake'].includes(slide.geo.kind)){assert.match(slide.geo.figure.svg,/^<svg/);assert.ok(slide.geo.figure.alt);total++;}
+ assert.equal(total,143);
+ for(const row of wiring){const key=row.deck+'-'+row.slide;assert.ok(!seen.has(key));seen.add(key);const slide=deck(Number(row.deck.slice(-2))).slides[row.slide-1];assert.equal(slide.geo.figure.svg,read('public/geometry/figures/u04/'+row.file));assert.equal(slide.geo.figure.alt,row.alt);assert.deepEqual(Object.keys(row).sort(),['alt','deck','file','slide']);}
+});
+test('round 5: corrected canonical art keeps the assigned live labels',()=>{
+ for(const [file,labels] of [['u04-l04-s10',['2x+3','11']],['u04-l07-s05',['(3x+5)°','(5x-17)°']],['u04-l14-s12',['2x+1','11']]]){
+  const svg=read('public/geometry/figures/u04/'+file+'.svg');for(const label of labels)assert.ok(svg.includes('>'+label+'</text>'),file+': '+label);
+  const models={'u04-l04-s10':[[0,0],[18.3051,0],[6.1017,9.1526],[12.2034,-9.1526]],'u04-l07-s05':[[0,2.3439],[-3,0],[3,0]],'u04-l14-s12':[[0,8.8],[-6.6,0],[0,-4.4],[6.6,0]]};
+  const model=models[file],dots=[...svg.matchAll(/<circle cx="([^"]+)" cy="([^"]+)" r="3"/g)].map(m=>m.slice(1).map(Number)),distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+  assert.equal(dots.length,model.length);const scale=distance(dots[0],dots[1])/distance(model[0],model[1]);
+  for(let i=0;i<model.length;i++)for(let j=0;j<i;j++)assert.ok(Math.abs(distance(dots[i],dots[j])/scale-distance(model[i],model[j]))<1e-6,file+' must preserve Euclid geometry');
+ }
+});
+
+test('round 5: mapped art replaces any fallback while unmapped programmer art survives',async()=>{
+ const {unit04Figure}=await import('../tools/geometry/u04-art.mjs');const ours={svg:'programmer SVG',alt:'original'};
+ assert.equal(unit04Figure(16,4,ours),ours);assert.notEqual(unit04Figure(4,10,ours),ours);
+ assert.equal(unit04Figure(4,10,ours).svg,read('public/geometry/figures/u04/u04-l04-s10.svg'));
 });

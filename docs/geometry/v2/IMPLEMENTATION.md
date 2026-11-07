@@ -77,3 +77,12 @@ Socrates' final reason ruling supersedes the round-3 prefix rule: proof reasons 
 Figure roots lose fixed width/height attributes at mount; a specific full-width, auto-height rule overrides legacy content SVG sizing. The existing 300px desktop minimum remains. Uniformly enlarged SSA layouts leave room for side labels beside OP/LM and point labels beside Q1/N1 without colliding with the circle, angle mark or other strokes. Side-label width hints conservatively reflect measured browser glyph widths, avoiding the old oversized text box that displaced them far from the segment. Exact construction coordinates and givens are unchanged.
 
 The art commission is synced byte-for-byte with the shared LEO-DIAGRAMS-unit04.md and its three approved Euclid coordinate corrections. The exporter reproduces those corrections rather than restoring stale holds. None of those three SVGs was drawn or wired; Leo owns the full redraw. A regression test keeps the slots unpopulated.
+
+
+## Review round 5A: final Unit 4 art
+
+All 143 Unit 4 proof, practice, check and mistake figure slots now have inline SVGs: 94 newly mapped Leo files plus 49 retained programmer diagrams. No mapped slot already contained an SVG, so zero existing figures were replaced. Mapped art takes precedence over any fallback; assessment output consumes the same deck figure source so a later mapped assessment cannot silently retain stale print art. The complete retained-slot list is UNIT04-ART-WIRING.md. The 94 root files are copied byte-for-byte; the build snapshots only deck, slide, filename and alt text, never the manifest's builder checks or coordinate certificates.
+
+Conclusion groups are hidden on mount. Practice solution/check and misconception correction reveal only the current figure's conclusions; proofs show them only when all rows are shown. Back re-hides proof conclusions. Print CSS keeps conclusions hidden even after an on-screen reveal. SVG viewBoxes and uncapped full-width/auto-height layout are unchanged. Missing-art inventory: 127 course figures, zero in Unit 4.
+
+Canonical spot checks compare every pairwise point distance after uniform scaling to Euclid's approved models for 4.4 Practice 3, 4.7 Worked example 2 and 4.14 Practice 4, to within 0.000001 model unit. The live labels are 2x+3 and 11; (3x+5) degrees and (5x-17) degrees; 2x+1 and 11, respectively. Source rounding tolerances are documented by Leo; no coordinates were invented or redrawn.

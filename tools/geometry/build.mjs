@@ -6,7 +6,7 @@
 // Usage: node tools/geometry/build.mjs [--check]   (--check verifies the outputs are current, writes nothing)
 import fs from "node:fs";
 import { unit04 } from "./u04-template.mjs";
-import { bankFigure } from "../../public/geometry/geo-u04-figures.js";
+import { unit04Figure } from "./u04-art.mjs";
 import { worked, practice, mistake, exitBody } from "./template-v2.mjs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -108,7 +108,11 @@ for (const u of units) {
     const kind = kindOf(l), c = content[l.key], source = citations[l.key], jacobs = source && { section: source.section, pages: source.pages, references: source.references, relationship: source.relationship }, stds = stdsFor(l), pages = [];
     if (kind === "other") missing.push(l.key);
     if (!jacobs) throw new Error(`Missing Jacobs citation for ${l.key}`);
-    const page = (title, geo, extra = {}) => pages.push({ n: pages.length + 1, title, items: [], ...extra, geo: { tag: tagFor(l), title, ...geo } });
+    const page = (title, geo, extra = {}) => {
+      const n=pages.length+1;
+      if(l.q===4 && ["worked-example","practice","common-mistake"].includes(geo.kind))geo={...geo,figure:unit04Figure(l.lesson,n,geo.figure)};
+      pages.push({ n, title, items: [], ...extra, geo: { tag: tagFor(l), title, ...geo } });
+    };
     page(l.title, { kind: "cover", jacobs, title: l.title, target: md(l.target) + (l.key === "4.10" ? "<br>Two-day lesson: Day 1 interior case; Day 2 exterior and endpoint cases." : ""), stds: stds.join(" \u00b7 "), cover: `geometry/${coverFor(l)}` }, { html: `<h2>${esc(l.title)}</h2><p>${md(l.target)}</p>` });
     if (l.q === 4) {
       unit04(page, l, c, unit04Data[l.key], GXMAP[l.key]);
@@ -157,7 +161,8 @@ outputs.set(path.join(PUB, "covers", "course.svg"), coverSvg("course"));
 // Printable learners receive only prompts and given figures, never a hidden key.
 for (const form of ["A", "B"]) {
   const items=unit04Data["4.16"].forms[form];
-  const body=items.map((item,i)=>`<section class="item"><h2>${i+1}.</h2><p>${esc(item.prompt)}</p><figure>${bankFigure(item.id)}</figure><div class="work" aria-label="Space for working"></div></section>`).join("");
+  const figures=decks["u04-l16"].slides.filter(s=>s.geo.kind==="practice").slice(form==="A"?0:12,form==="A"?12:24);
+  const body=items.map((item,i)=>`<section class="item"><h2>${i+1}.</h2><p>${esc(item.prompt)}</p><figure>${figures[i].geo.figure.svg}</figure><div class="work" aria-label="Space for working"></div></section>`).join("");
   outputs.set(path.join(PUB,"forms",`unit04-${form.toLowerCase()}.html`),`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Unit 4, Form ${form}</title><style>body{max-width:850px;margin:24px auto;padding:16px;font:18px/1.4 Georgia,serif;color:#111;background:white}h1{font-size:30px}.item{break-inside:avoid;border-top:1px dashed #777;padding:12px 0}h2{display:inline;font-size:20px}figure{margin:0;width:100%;max-width:500px}svg{width:100%;height:auto}.work{min-height:130px}@media screen{.item:last-child{min-height:calc(100svh - 32px)}}@media print{body{margin:0;padding:0}.item{break-after:page}.item:last-child{break-after:auto}button,a{display:none}}</style></head><body><h1>Geometry Unit 4: Form ${form}</h1><p>Name: ____________________ Date: ______________</p><p>Show equations, proof reasons and ordered correspondence. All figures are supplied inline. Do not use trig or the distance formula for SSA explanations.</p><p>Original aligned items. Related scope: Jacobs 4.2 to 4.7, pp. 139 to 175; Chapter 4 review, pp. 176 to 180.</p>${body}</body></html>\n`);
 }
 let stale = 0;

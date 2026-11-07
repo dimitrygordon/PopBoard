@@ -206,3 +206,5 @@ html[data-course="geometry"] .stage.gx-exit-host { mask: radial-gradient(circle 
 @media (max-width: 599px) and (orientation: portrait) { .gx-k-common-mistake .gx-head { font-size: 28px; } }
 
 .gx-content .gx-figure-slot > svg { display: block; width: 100%; height: auto; max-width: none; }
+
+@media print { .gx-figure-slot .conclusion { display: none !important; } }
