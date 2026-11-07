@@ -1,0 +1,566 @@
+[
+  {
+    "deck": "u04-l01",
+    "slide": 5,
+    "file": "u04-l01-s05.svg",
+    "alt": "Use a match to find x (original problem)."
+  },
+  {
+    "deck": "u04-l01",
+    "slide": 8,
+    "file": "u04-l01-s08.svg",
+    "alt": "Triangle ABC ≅ triangle XYZ and BC = 12. Find YZ."
+  },
+  {
+    "deck": "u04-l01",
+    "slide": 9,
+    "file": "u04-l01-s09.svg",
+    "alt": "Triangle PQR ≅ triangle LMN and angle Q = 37 degrees. Find angle M."
+  },
+  {
+    "deck": "u04-l01",
+    "slide": 10,
+    "file": "u04-l01-s10.svg",
+    "alt": "Triangle ABC ≅ triangle DEF, AC = 3x - 2 and DF = 13. Find x."
+  },
+  {
+    "deck": "u04-l01",
+    "slide": 11,
+    "file": "u04-l01-s11.svg",
+    "alt": "Triangle PQR is congruent to triangle XYZ. Which side matches QR? Which angle matches angle P?"
+  },
+  {
+    "deck": "u04-l02",
+    "slide": 4,
+    "file": "u04-l02-s04.svg",
+    "alt": "Flashlight beams (informal, adapted from the airplane example on Jacobs p. 146)."
+  },
+  {
+    "deck": "u04-l02",
+    "slide": 5,
+    "file": "u04-l02-s05.svg",
+    "alt": "Same angles, different size (original counterexample)."
+  },
+  {
+    "deck": "u04-l02",
+    "slide": 7,
+    "file": "u04-l02-s07.svg",
+    "alt": "Jordan says any three matching parts guarantee congruence."
+  },
+  {
+    "deck": "u04-l02",
+    "slide": 8,
+    "file": "u04-l02-s08.svg",
+    "alt": "Which angle is included between sides AB and AC?"
+  },
+  {
+    "deck": "u04-l02",
+    "slide": 9,
+    "file": "u04-l02-s09.svg",
+    "alt": "Which side is included between angles A and B?"
+  },
+  {
+    "deck": "u04-l02",
+    "slide": 10,
+    "file": "u04-l02-s10.svg",
+    "alt": "Does matching all three angles (AAA) fix the size?"
+  },
+  {
+    "deck": "u04-l02",
+    "slide": 11,
+    "file": "u04-l02-s11.svg",
+    "alt": "Which three-part combinations failed to pin down one triangle?"
+  },
+  {
+    "deck": "u04-l03",
+    "slide": 4,
+    "file": "u04-l03-s04.svg",
+    "alt": "Why SAS works (based on the SAS picture, Jacobs p. 147)."
+  },
+  {
+    "deck": "u04-l03",
+    "slide": 5,
+    "file": "u04-l03-s05.svg",
+    "alt": "A midpoint proof (original problem)."
+  },
+  {
+    "deck": "u04-l03",
+    "slide": 7,
+    "file": "u04-l03-s07.svg",
+    "alt": "Jordan calls angle B the included angle between AB and AC."
+  },
+  {
+    "deck": "u04-l03",
+    "slide": 8,
+    "file": "u04-l03-s08.svg",
+    "alt": "AB = DE = 6, AC = DF = 9, and angle A = angle D = 40 degrees. Are the triangles congruent?"
+  },
+  {
+    "deck": "u04-l03",
+    "slide": 9,
+    "file": "u04-l03-s09.svg",
+    "alt": "Same sides, but now angle B = angle E. Can you use SAS?"
+  },
+  {
+    "deck": "u04-l03",
+    "slide": 10,
+    "file": "u04-l03-s10.svg",
+    "alt": "In the midpoint example, AM = 3x + 1 and DM = 10. Find x."
+  },
+  {
+    "deck": "u04-l03",
+    "slide": 11,
+    "file": "u04-l03-s11.svg",
+    "alt": "In SAS, why must the angle be the one between the two sides?"
+  },
+  {
+    "deck": "u04-l04",
+    "slide": 4,
+    "file": "u04-l04-s04.svg",
+    "alt": "Why ASA works (based on the ASA picture, Jacobs p. 147)."
+  },
+  {
+    "deck": "u04-l04",
+    "slide": 5,
+    "file": "u04-l04-s05.svg",
+    "alt": "Two triangles sharing a side (original problem)."
+  },
+  {
+    "deck": "u04-l04",
+    "slide": 7,
+    "file": "u04-l04-s07.svg",
+    "alt": "Jordan calls a non-included side ASA."
+  },
+  {
+    "deck": "u04-l04",
+    "slide": 8,
+    "file": "u04-l04-s08.svg",
+    "alt": "Angles A = 30 and B = 70 with side AB = 8 match angles D = 30, E = 70 and DE = 8. Which test?"
+  },
+  {
+    "deck": "u04-l04",
+    "slide": 9,
+    "file": "u04-l04-s09.svg",
+    "alt": "Angles A and B match angles D and E, but the matching side is AC and DF. Is that ASA?"
+  },
+  {
+    "deck": "u04-l04",
+    "slide": 10,
+    "file": "u04-l04-s10.svg",
+    "alt": "In Worked example 2, CA = 2x + 3 and DB = 11. Find x."
+  },
+  {
+    "deck": "u04-l04",
+    "slide": 11,
+    "file": "u04-l04-s11.svg",
+    "alt": "In the ASA argument, why does C have to land exactly on F?"
+  },
+  {
+    "deck": "u04-l05",
+    "slide": 4,
+    "file": "u04-l05-s04.svg",
+    "alt": "SAS proof with a shared midpoint (original, in the style of Jacobs 4.4)."
+  },
+  {
+    "deck": "u04-l05",
+    "slide": 5,
+    "file": "u04-l05-s05.svg",
+    "alt": "ASA proof with angle bisectors (original)."
+  },
+  {
+    "deck": "u04-l05",
+    "slide": 7,
+    "file": "u04-l05-s07.svg",
+    "alt": "Jordan uses AC = AD to prove AC = AD."
+  },
+  {
+    "deck": "u04-l05",
+    "slide": 8,
+    "file": "u04-l05-s08.svg",
+    "alt": "In Worked example 1, AM = 7 and CM = 4. Find BM and DM."
+  },
+  {
+    "deck": "u04-l05",
+    "slide": 9,
+    "file": "u04-l05-s09.svg",
+    "alt": "In Worked example 1, AC = 3x - 1 and BD = 14. Find x."
+  },
+  {
+    "deck": "u04-l05",
+    "slide": 10,
+    "file": "u04-l05-s10.svg",
+    "alt": "In Worked example 2, can AC = AD be your first reason?"
+  },
+  {
+    "deck": "u04-l05",
+    "slide": 11,
+    "file": "u04-l05-s11.svg",
+    "alt": "Two triangles share side XY. What property gives you XY = XY in a proof?"
+  },
+  {
+    "deck": "u04-l06",
+    "slide": 4,
+    "file": "u04-l06-s04.svg",
+    "alt": "SAS, then CPCTC (original)."
+  },
+  {
+    "deck": "u04-l06",
+    "slide": 5,
+    "file": "u04-l06-s05.svg",
+    "alt": "Two equations from one congruence (original)."
+  },
+  {
+    "deck": "u04-l06",
+    "slide": 7,
+    "file": "u04-l06-s07.svg",
+    "alt": "Jordan uses CPCTC before proving congruence."
+  },
+  {
+    "deck": "u04-l06",
+    "slide": 8,
+    "file": "u04-l06-s08.svg",
+    "alt": "In Worked example 1, which side matches AD?"
+  },
+  {
+    "deck": "u04-l06",
+    "slide": 9,
+    "file": "u04-l06-s09.svg",
+    "alt": "Triangle ABC ≅ triangle RST and AC = 8. Find RT."
+  },
+  {
+    "deck": "u04-l06",
+    "slide": 10,
+    "file": "u04-l06-s10.svg",
+    "alt": "Triangle ABC ≅ triangle DEF, AB = 5x + 2 and DE = 22. Find x."
+  },
+  {
+    "deck": "u04-l06",
+    "slide": 11,
+    "file": "u04-l06-s11.svg",
+    "alt": "Can you use CPCTC to prove the two triangles are congruent?"
+  },
+  {
+    "deck": "u04-l07",
+    "slide": 4,
+    "file": "u04-l07-s04.svg",
+    "alt": "Proof of Theorem 9 (adapted from Jacobs p. 158)."
+  },
+  {
+    "deck": "u04-l07",
+    "slide": 5,
+    "file": "u04-l07-s05.svg",
+    "alt": "Find the base angles (original problem)."
+  },
+  {
+    "deck": "u04-l07",
+    "slide": 7,
+    "file": "u04-l07-s07.svg",
+    "alt": "Jordan says the base angles are always the bottom ones."
+  },
+  {
+    "deck": "u04-l07",
+    "slide": 8,
+    "file": "u04-l07-s08.svg",
+    "alt": "PQ = PR. Which angles are equal?"
+  },
+  {
+    "deck": "u04-l07",
+    "slide": 9,
+    "file": "u04-l07-s09.svg",
+    "alt": "Base angles are 2x + 7 and 4x - 9. Find x."
+  },
+  {
+    "deck": "u04-l07",
+    "slide": 10,
+    "file": "u04-l07-s10.svg",
+    "alt": "AB = AC and angle A = 40 degrees. What do we know right now?"
+  },
+  {
+    "deck": "u04-l07",
+    "slide": 11,
+    "file": "u04-l07-s11.svg",
+    "alt": "An isosceles triangle has a vertex angle of 40 degrees. What do you know about its base angles now? (Angle sum waits for Unit 5.)"
+  },
+  {
+    "deck": "u04-l08",
+    "slide": 4,
+    "file": "u04-l08-s04.svg",
+    "alt": "Proof of Theorem 10 (adapted from Jacobs p. 159)."
+  },
+  {
+    "deck": "u04-l08",
+    "slide": 5,
+    "file": "u04-l08-s05.svg",
+    "alt": "Equal angles give equal sides (original)."
+  },
+  {
+    "deck": "u04-l08",
+    "slide": 7,
+    "file": "u04-l08-s07.svg",
+    "alt": "Jordan says reversing a true theorem proves its converse."
+  },
+  {
+    "deck": "u04-l08",
+    "slide": 8,
+    "file": "u04-l08-s08.svg",
+    "alt": "In triangle PQR, angle P = angle Q. Which sides are equal?"
+  },
+  {
+    "deck": "u04-l08",
+    "slide": 9,
+    "file": "u04-l08-s09.svg",
+    "alt": "Angle B = angle C, AB = 5x - 4, AC = 2x + 11. Find x."
+  },
+  {
+    "deck": "u04-l08",
+    "slide": 10,
+    "file": "u04-l08-s10.svg",
+    "alt": "Why does equilateral mean equiangular?"
+  },
+  {
+    "deck": "u04-l08",
+    "slide": 11,
+    "file": "u04-l08-s11.svg",
+    "alt": "Why is every equilateral triangle equiangular?"
+  },
+  {
+    "deck": "u04-l10",
+    "slide": 10,
+    "file": "u04-l10-s10.svg",
+    "alt": "Jordan says SSS is a postulate in this course."
+  },
+  {
+    "deck": "u04-l10",
+    "slide": 11,
+    "file": "u04-l10-s11.svg",
+    "alt": "Two triangles both have sides 3, 4 and 5. Are they congruent?"
+  },
+  {
+    "deck": "u04-l10",
+    "slide": 12,
+    "file": "u04-l10-s12.svg",
+    "alt": "Can the SSS proof use SSS for its helper triangles?"
+  },
+  {
+    "deck": "u04-l10",
+    "slide": 13,
+    "file": "u04-l10-s13.svg",
+    "alt": "Why is a triangle frame rigid but a square frame wobbly?"
+  },
+  {
+    "deck": "u04-l11",
+    "slide": 11,
+    "file": "u04-l11-s11.svg",
+    "alt": "What condition gives one right triangle in the swinging-door picture?"
+  },
+  {
+    "deck": "u04-l12",
+    "slide": 4,
+    "file": "u04-l12-s04.svg",
+    "alt": "Copy a triangle by SSS (adapted from Construction 5, Jacobs p. 171)."
+  },
+  {
+    "deck": "u04-l12",
+    "slide": 5,
+    "file": "u04-l12-s05.svg",
+    "alt": "Copy a triangle by SAS (adapted from Constructions 3 and 4, Jacobs p. 170)."
+  },
+  {
+    "deck": "u04-l12",
+    "slide": 7,
+    "file": "u04-l12-s07.svg",
+    "alt": "Jordan measures a copy and calls it exact."
+  },
+  {
+    "deck": "u04-l12",
+    "slide": 8,
+    "file": "u04-l12-s08.svg",
+    "alt": "AB = 5, AC = 4, BC = 3. After DE = 5, what radii do you use?"
+  },
+  {
+    "deck": "u04-l12",
+    "slide": 9,
+    "file": "u04-l12-s09.svg",
+    "alt": "Do the top and bottom crossing points give noncongruent copies?"
+  },
+  {
+    "deck": "u04-l12",
+    "slide": 10,
+    "file": "u04-l12-s10.svg",
+    "alt": "Can you mark a ruler reading instead of using the compass and still call it an exact construction?"
+  },
+  {
+    "deck": "u04-l12",
+    "slide": 11,
+    "file": "u04-l12-s11.svg",
+    "alt": "After copying AB, how many arcs do you need to locate the third vertex by SSS?"
+  },
+  {
+    "deck": "u04-l13",
+    "slide": 4,
+    "file": "u04-l13-s04.svg",
+    "alt": "In class: the angle bisector construction (adapted from Jacobs p. 171)."
+  },
+  {
+    "deck": "u04-l13",
+    "slide": 5,
+    "file": "u04-l13-s05.svg",
+    "alt": "Optional extension: the perpendicular bisector construction, proved in three stages."
+  },
+  {
+    "deck": "u04-l13",
+    "slide": 7,
+    "file": "u04-l13-s07.svg",
+    "alt": "Jordan uses M without defining it."
+  },
+  {
+    "deck": "u04-l13",
+    "slide": 8,
+    "file": "u04-l13-s08.svg",
+    "alt": "AB = 10 and the radius is 4. Do the circles cross twice?"
+  },
+  {
+    "deck": "u04-l13",
+    "slide": 9,
+    "file": "u04-l13-s09.svg",
+    "alt": "Why isn't radius 5 enough?"
+  },
+  {
+    "deck": "u04-l13",
+    "slide": 10,
+    "file": "u04-l13-s10.svg",
+    "alt": "In the angle bisector proof, what is the third SSS fact?"
+  },
+  {
+    "deck": "u04-l13",
+    "slide": 11,
+    "file": "u04-l13-s11.svg",
+    "alt": "Which congruence test proves that the angle bisector construction works?"
+  },
+  {
+    "deck": "u04-l14",
+    "slide": 4,
+    "file": "u04-l14-s04.svg",
+    "alt": "Diagonal of a quadrilateral, by SSS (original)."
+  },
+  {
+    "deck": "u04-l14",
+    "slide": 5,
+    "file": "u04-l14-s05.svg",
+    "alt": "Vertical angles only (original)."
+  },
+  {
+    "deck": "u04-l14",
+    "slide": 6,
+    "file": "u04-l14-s06.svg",
+    "alt": "Worked example 3, moved from 4.10: the kite (original)."
+  },
+  {
+    "deck": "u04-l14",
+    "slide": 8,
+    "file": "u04-l14-s08.svg",
+    "alt": "Jordan proves two triangles congruent just to find an angle that vertical angles already give."
+  },
+  {
+    "deck": "u04-l14",
+    "slide": 9,
+    "file": "u04-l14-s09.svg",
+    "alt": "In Worked example 1, which shared side gives the third equal pair?"
+  },
+  {
+    "deck": "u04-l14",
+    "slide": 10,
+    "file": "u04-l14-s10.svg",
+    "alt": "In Worked example 2, what is the angle next to the 40 degree angle?"
+  },
+  {
+    "deck": "u04-l14",
+    "slide": 11,
+    "file": "u04-l14-s11.svg",
+    "alt": "Two sides and a non-included angle match. Can you use SSS?"
+  },
+  {
+    "deck": "u04-l14",
+    "slide": 12,
+    "file": "u04-l14-s12.svg",
+    "alt": "Practice 4, moved from 4.10: in the convex kite, AB = 2x + 1 and AD = 11. Find x."
+  },
+  {
+    "deck": "u04-l14",
+    "slide": 13,
+    "file": "u04-l14-s13.svg",
+    "alt": "Given AB = CD and BC = DA in quadrilateral ABCD. Which two triangles and which test show angle B = angle D?"
+  },
+  {
+    "deck": "u04-l15",
+    "slide": 3,
+    "file": "u04-l15-s03.svg",
+    "alt": "Optional review repeat of 4.10 Day 2: the other two SSS cases."
+  },
+  {
+    "deck": "u04-l15",
+    "slide": 4,
+    "file": "u04-l15-s04.svg",
+    "alt": "Triangle ABC ≅ triangle PQR. Which side matches CA?"
+  },
+  {
+    "deck": "u04-l15",
+    "slide": 5,
+    "file": "u04-l15-s05.svg",
+    "alt": "Triangle ABC ≅ triangle DEF, BC = 2x + 3 and EF = 15. Find x."
+  },
+  {
+    "deck": "u04-l15",
+    "slide": 6,
+    "file": "u04-l15-s06.svg",
+    "alt": "AB = DE, AC = DF and angle A = angle D. Which test?"
+  },
+  {
+    "deck": "u04-l15",
+    "slide": 7,
+    "file": "u04-l15-s07.svg",
+    "alt": "Angle A = angle D, angle B = angle E and AB = DE. Which test?"
+  },
+  {
+    "deck": "u04-l15",
+    "slide": 8,
+    "file": "u04-l15-s08.svg",
+    "alt": "Two segments AD and BC cross at M, and M is the midpoint of both. Prove triangle AMB ≅ triangle DMC."
+  },
+  {
+    "deck": "u04-l15",
+    "slide": 9,
+    "file": "u04-l15-s09.svg",
+    "alt": "Once triangle AMB ≅ triangle DMC, which side matches AB?"
+  },
+  {
+    "deck": "u04-l15",
+    "slide": 10,
+    "file": "u04-l15-s10.svg",
+    "alt": "AB = AC, angle B = (3x + 2) degrees and angle C = (5x - 16) degrees. Find x and the base angles."
+  },
+  {
+    "deck": "u04-l15",
+    "slide": 11,
+    "file": "u04-l15-s11.svg",
+    "alt": "In triangle ABC, angle B = angle C. Prove AB = AC."
+  },
+  {
+    "deck": "u04-l15",
+    "slide": 12,
+    "file": "u04-l15-s12.svg",
+    "alt": "Does matching all three angles (AAA) prove two triangles congruent?"
+  },
+  {
+    "deck": "u04-l15",
+    "slide": 13,
+    "file": "u04-l15-s13.svg",
+    "alt": "A proof uses CPCTC before it proves the triangles congruent. Fix the order."
+  },
+  {
+    "deck": "u04-l15",
+    "slide": 15,
+    "file": "u04-l15-s15.svg",
+    "alt": "Three pairs of equal sides are given, and no angles. Can you use SAS right away?"
+  }
+]

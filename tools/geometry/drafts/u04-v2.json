@@ -1,0 +1,1308 @@
+{
+  "4.1": {
+    "goals": [
+      "Given a congruence statement such as triangle ABC ≅ triangle EFD, I can list all six pairs of corresponding parts by reading letter positions.",
+      "I can explain why triangle ABC ≅ triangle FED and triangle ABC ≅ triangle DEF say different things, and use = only for lengths and angle measures."
+    ],
+    "hook": "Two paper cutouts of the same scalene triangle, one flipped and turned. Students tape them together edge to edge and write which corner landed on which, then compare their letter lists with a partner.",
+    "idea": "a congruence statement is an ordered matching. Position 1 matches position 1, and so on. Show ≅ for figures and = for lengths and measures, side by side.",
+    "examples": [
+      {
+        "title": "List the six matching parts (adapted from Jacobs p. 140).",
+        "steps": [
+          {
+            "step": "We are told triangle ABC ≅ triangle EFD.",
+            "reason": "This is the given."
+          },
+          {
+            "step": "Match letters by position: A goes with E, B with F, C with D.",
+            "reason": "1st with 1st, 2nd with 2nd, 3rd with 3rd."
+          },
+          {
+            "step": "Sides: AB = EF, BC = FD, AC = ED.",
+            "reason": "Each side uses the matching pair of letters."
+          },
+          {
+            "step": "Angles: angle A ≅ angle E, angle B ≅ angle F, angle C ≅ angle D.",
+            "reason": "Each angle uses its matching letter."
+          },
+          {
+            "step": "All six come from the statement itself, not from how the picture looks.",
+            "reason": "The order of letters is part of what congruent means."
+          }
+        ],
+        "optional": false
+      },
+      {
+        "title": "Use a match to find x (original problem).",
+        "steps": [
+          {
+            "step": "Triangle ABC ≅ triangle PQR, with AB = 2x + 1 and PQ = 9.",
+            "reason": "Given."
+          },
+          {
+            "step": "AB matches PQ, so 2x + 1 = 9.",
+            "reason": "1st and 2nd letters match 1st and 2nd letters."
+          },
+          {
+            "step": "2x = 8, so x = 4.",
+            "reason": "Subtract 1, then divide by 2."
+          },
+          {
+            "step": "BC = 7 matches QR, so QR = 7. PR = 10 matches AC, so AC = 10.",
+            "reason": "Same position rule."
+          },
+          {
+            "step": "Nothing says BC equals PR.",
+            "reason": "BC and PR are not in matching positions."
+          }
+        ],
+        "optional": false
+      }
+    ],
+    "practice": [
+      {
+        "prompt": "Triangle ABC ≅ triangle XYZ and BC = 12. Find YZ.",
+        "solution": "B goes with Y and C goes with Z, so YZ = BC = 12.",
+        "check": "Read it backward: YZ matches BC."
+      },
+      {
+        "prompt": "Triangle PQR ≅ triangle LMN and angle Q = 37 degrees. Find angle M.",
+        "solution": "Q is in the middle, and so is M. So angle M = 37 degrees.",
+        "check": "The middle letters match in both lists."
+      },
+      {
+        "prompt": "Triangle ABC ≅ triangle DEF, AC = 3x - 2 and DF = 13. Find x.",
+        "solution": "AC matches DF, so 3x - 2 = 13. Then 3x = 15 and x = 5.",
+        "check": "Plug in: 3(5) - 2 = 13."
+      }
+    ],
+    "mistake": "Jordan wrote triangle ABC ≅ triangle FED. That is not just a new order. It says A matches F, which is false here. Write triangle ABC ≅ triangle DEF only when those letters really match. Use = for lengths and angle measures, and ≅ for figures.",
+    "mistakePrompt": "Given A matches D, B matches E and C matches F, Jordan writes triangle ABC ≅ triangle FED. Find the mismatch.",
+    "exit": [
+      "Triangle KLM ≅ triangle RST. Which angle matches angle M, and which side matches LM?",
+      "In one sentence: why can't you swap the letters in a congruence statement?"
+    ],
+    "answerSource": "Euclid UNIT04-FILL.md 4.1, learner wording by Socrates"
+  },
+  "4.2": {
+    "goals": [
+      "I can build triangles from three given parts and record whether every build comes out the same.",
+      "I can name the included angle of two sides and the included side of two angles, and explain why SSA and AAA are not tests."
+    ],
+    "hook": "Straw-and-pipe-cleaner stations: SSS, SAS, ASA, SSA, AAA. Each pair builds from the card and tries to make a triangle that does not match a neighbor's.",
+    "idea": "some three-part recipes pin down a triangle and some don't. SSS, SAS and ASA are conjectures today. They are proved in 4.3, 4.4 and 4.10.",
+    "examples": [
+      {
+        "title": "Flashlight beams (informal, adapted from the airplane example on Jacobs p. 146).",
+        "steps": [
+          {
+            "step": "Tape a segment NT on the floor. Two students stand at N and T and aim flashlights inward at fixed angles.",
+            "reason": "This fixes one side and the two angles at its ends."
+          },
+          {
+            "step": "The beams cross at one point. Call it W.",
+            "reason": "Two straight beams that are not the same line cross at most once."
+          },
+          {
+            "step": "A second team copies the same segment length and the same two angles, then lays their tape on top of the first.",
+            "reason": "Same recipe, same starting segment."
+          },
+          {
+            "step": "Their beams follow the same paths, so they cross at the same W.",
+            "reason": "The angles point the beams the same way."
+          },
+          {
+            "step": "So this recipe (two angles and the side between them) seems to give only one triangle. We will prove it in 4.4.",
+            "reason": "Today it is a conjecture, not a theorem."
+          }
+        ],
+        "optional": false
+      },
+      {
+        "title": "Same angles, different size (original counterexample).",
+        "steps": [
+          {
+            "step": "Draw an equilateral triangle with sides 2 and another with sides 5.",
+            "reason": "Two triangles to compare."
+          },
+          {
+            "step": "In each one, all three angles are equal. So the angles match.",
+            "reason": "The isosceles theorem (coming in 4.7 and 4.8) will show this."
+          },
+          {
+            "step": "But the sides are 2 and 5, so the triangles are not congruent.",
+            "reason": "Congruent shapes have equal lengths."
+          },
+          {
+            "step": "So matching all three angles (AAA) is not enough.",
+            "reason": "One counterexample breaks the rule."
+          }
+        ],
+        "optional": false
+      }
+    ],
+    "practice": [
+      {
+        "prompt": "Which angle is included between sides AB and AC?",
+        "solution": "Angle BAC.",
+        "check": "Both sides start at A, and A is the middle letter."
+      },
+      {
+        "prompt": "Which side is included between angles A and B?",
+        "solution": "Side AB.",
+        "check": "Its ends are the two angle corners. AC would sit between angles A and C instead."
+      },
+      {
+        "prompt": "Does matching all three angles (AAA) fix the size?",
+        "solution": "No. The side 2 and side 5 equilateral triangles have matching angles but different lengths.",
+        "check": "A slide, turn or flip keeps a side of length 2 at length 2. It can never become 5."
+      }
+    ],
+    "mistake": "'Any three matching parts are enough' is false. Where the parts sit matters, and AAA has no length at all.",
+    "mistakePrompt": "Jordan says: any three matching parts, even AAA, guarantee congruence. Find a counterexample.",
+    "exit": [
+      "Sides AB and BC: name their included angle.",
+      "Give one recipe that does not always make the same triangle, and sketch why."
+    ],
+    "answerSource": "Euclid UNIT04-FILL.md 4.2, learner wording by Socrates"
+  },
+  "4.3": {
+    "goals": [
+      "I can describe the three or four motions (translate, rotate, maybe reflect) that carry one triangle onto another when SAS holds.",
+      "I can decide whether a marked angle is included before I cite SAS."
+    ],
+    "hook": "Two patty-paper triangles with two sides and the included angle marked equal. Students slide, turn and flip one onto the other and narrate each move.",
+    "idea": "SAS follows from the rigid-motion postulates (Unit 3), ruler and protractor uniqueness, and the definition of congruence.",
+    "examples": [
+      {
+        "title": "Why SAS works (based on the SAS picture, Jacobs p. 147).",
+        "steps": [
+          {
+            "step": "Slide triangle ABC so A lands on D.",
+            "reason": "A translation. Rigid motions keep lengths and angles (Unit 3 postulates)."
+          },
+          {
+            "step": "Turn it so ray AB lies along ray DE.",
+            "reason": "A rotation about D."
+          },
+          {
+            "step": "Because AB = DE, point B lands exactly on E.",
+            "reason": "Equal lengths along the same ray end at the same point."
+          },
+          {
+            "step": "If C and F are on different sides of line DE, flip across DE.",
+            "reason": "A reflection puts C on the same side as F."
+          },
+          {
+            "step": "The angles at A and D are equal, so ray AC lies along ray DF. Because AC = DF, C lands on F.",
+            "reason": "Equal angle, then equal length."
+          },
+          {
+            "step": "All three corners land on D, E, F, so triangle ABC ≅ triangle DEF.",
+            "reason": "Definition of congruence by rigid motions. We did not use SSS or the triangle angle sum."
+          }
+        ],
+        "optional": false
+      },
+      {
+        "title": "A midpoint proof (original problem).",
+        "steps": [
+          {
+            "step": "M is the midpoint of AD and of BC.",
+            "reason": "Given."
+          },
+          {
+            "step": "AM = DM and BM = CM.",
+            "reason": "Definition of midpoint."
+          },
+          {
+            "step": "Angle AMB ≅ angle DMC.",
+            "reason": "Vertical angles are equal (Unit 2)."
+          },
+          {
+            "step": "Triangle AMB ≅ triangle DMC.",
+            "reason": "SAS."
+          },
+          {
+            "step": "AB = DC.",
+            "reason": "Matching sides of congruent triangles. No parallel-line facts needed."
+          }
+        ],
+        "optional": false
+      }
+    ],
+    "practice": [
+      {
+        "prompt": "AB = DE = 6, AC = DF = 9, and angle A = angle D = 40 degrees. Are the triangles congruent?",
+        "solution": "Yes, by SAS, because the 40 degree angle is between the two sides.",
+        "check": "The slide, turn, flip steps from Worked example 1 place every corner."
+      },
+      {
+        "prompt": "Same sides, but now angle B = angle E. Can you use SAS?",
+        "solution": "No. Angle B is not between AB and AC.",
+        "check": "Those two sides meet at A, not at B."
+      },
+      {
+        "prompt": "In the midpoint example, AM = 3x + 1 and DM = 10. Find x.",
+        "solution": "3x + 1 = 10, so x = 3.",
+        "check": "Plug in: 3(3) + 1 = 10."
+      }
+    ],
+    "mistake": "A student calls angle B the included angle for sides AB and AC. The included angle is where the two sides meet: angle BAC.",
+    "mistakePrompt": "Jordan says angle B is included between sides AB and AC. Find the error.",
+    "exit": [
+      "AB = DE, BC = EF, angle B = angle E. Is this SAS? Why?",
+      "Which Unit 3 postulate did step 2 of the proof use?"
+    ],
+    "answerSource": "Euclid UNIT04-FILL.md 4.3, learner wording by Socrates"
+  },
+  "4.4": {
+    "goals": [
+      "I can explain how two matching endpoint angles force the third vertex to the same spot once the included side is matched.",
+      "I can tell ASA from AAS by locating the given side, and say why AAS can't be used yet."
+    ],
+    "hook": "Flashlight beams: two students hold flashlights at the ends of a taped segment at fixed angles. Where can the beams cross? Try to make them cross somewhere else.",
+    "idea": "match the side, match the two rays, and two lines meet in at most one point.",
+    "examples": [
+      {
+        "title": "Why ASA works (based on the ASA picture, Jacobs p. 147).",
+        "steps": [
+          {
+            "step": "Slide and turn triangle ABC so side AB lies on side DE.",
+            "reason": "AB = DE, and rigid motions keep lengths."
+          },
+          {
+            "step": "If C and F are on different sides of DE, flip across DE.",
+            "reason": "Now C and F are on the same side."
+          },
+          {
+            "step": "The angle at A matches the angle at D, so C is somewhere on ray DF.",
+            "reason": "Equal angles point the same way."
+          },
+          {
+            "step": "The angle at B matches the angle at E, so C is also on ray EF.",
+            "reason": "Same reason at the other end."
+          },
+          {
+            "step": "Rays DF and EF cross at only one point, F. So C lands on F.",
+            "reason": "Two different lines cross at most once."
+          },
+          {
+            "step": "So triangle ABC ≅ triangle DEF, without SSS or the angle sum.",
+            "reason": "Definition of congruence."
+          }
+        ],
+        "optional": false
+      },
+      {
+        "title": "Two triangles sharing a side (original problem).",
+        "steps": [
+          {
+            "step": "C and D are on opposite sides of AB. Angle CAB ≅ angle DBA and angle CBA ≅ angle DAB.",
+            "reason": "Given."
+          },
+          {
+            "step": "AB = BA.",
+            "reason": "A segment equals itself."
+          },
+          {
+            "step": "AB is the side between the two marked angles in each triangle.",
+            "reason": "So the side is included."
+          },
+          {
+            "step": "Triangle CAB ≅ triangle DBA.",
+            "reason": "ASA."
+          },
+          {
+            "step": "CA = DB and CB = DA.",
+            "reason": "Matching parts of congruent triangles (CPCTC)."
+          }
+        ],
+        "optional": false
+      }
+    ],
+    "practice": [
+      {
+        "prompt": "Angles A = 30 and B = 70 with side AB = 8 match angles D = 30, E = 70 and DE = 8. Which test?",
+        "solution": "ASA.",
+        "check": "AB and DE each join the two marked corners."
+      },
+      {
+        "prompt": "Angles A and B match angles D and E, but the matching side is AC and DF. Is that ASA?",
+        "solution": "No. The side is not between the angles. That is AAS, which we prove later.",
+        "check": "The side between angles A and B is AB."
+      },
+      {
+        "prompt": "In Worked example 2, CA = 2x + 3 and DB = 11. Find x.",
+        "solution": "ASA gives CA = DB, so 2x + 3 = 11 and x = 4.",
+        "check": "Plug in: 2(4) + 3 = 11."
+      }
+    ],
+    "mistake": "ASA and AAS put the given side in different places. Both will be valid tests, but AAS is not proved until 5.12, so you can't use it yet.",
+    "mistakePrompt": "Jordan marks angles A and B and side AC, then writes ASA. Find the error.",
+    "exit": [
+      "Angles P and Q and side PR match. ASA or not? Explain.",
+      "Draw a quick sketch of ASA with the included side marked."
+    ],
+    "answerSource": "Euclid UNIT04-FILL.md 4.4, learner wording by Socrates"
+  },
+  "4.5": {
+    "goals": [
+      "I can plan a congruence proof in four moves: mark the givens, find the hidden equal parts (vertical angles, shared side), choose SAS or ASA, then conclude.",
+      "I can spot a circular step, one that uses the goal as a reason, and replace it."
+    ],
+    "hook": "Proof-strip puzzle: each pair gets a cut-up proof (statements and reasons on separate strips) and rebuilds it. One strip is circular and must be thrown out.",
+    "idea": "the four-move plan, shown as a reusable checklist with text labels only (no color coding).",
+    "examples": [
+      {
+        "title": "SAS proof with a shared midpoint (original, in the style of Jacobs 4.4).",
+        "steps": [
+          {
+            "step": "AB and CD cross at M. M is the midpoint of AB and of CD.",
+            "reason": "Given."
+          },
+          {
+            "step": "AM = BM and CM = DM.",
+            "reason": "Definition of midpoint."
+          },
+          {
+            "step": "Angle AMC ≅ angle BMD.",
+            "reason": "Vertical angles."
+          },
+          {
+            "step": "Triangle AMC ≅ triangle BMD.",
+            "reason": "SAS. A matches B, M matches M, C matches D."
+          },
+          {
+            "step": "AC = BD and angle ACM ≅ angle BDM.",
+            "reason": "CPCTC."
+          }
+        ],
+        "optional": false
+      },
+      {
+        "title": "ASA proof with angle bisectors (original).",
+        "steps": [
+          {
+            "step": "AB bisects angle CAD and angle CBD. C and D are on opposite sides of AB.",
+            "reason": "Given."
+          },
+          {
+            "step": "Angle CAB ≅ angle DAB and angle CBA ≅ angle DBA.",
+            "reason": "Definition of angle bisector."
+          },
+          {
+            "step": "AB = AB.",
+            "reason": "A segment equals itself."
+          },
+          {
+            "step": "Triangle CAB ≅ triangle DAB.",
+            "reason": "ASA."
+          },
+          {
+            "step": "AC = AD and BC = BD.",
+            "reason": "CPCTC. We did not assume any kite facts."
+          }
+        ],
+        "optional": false
+      }
+    ],
+    "practice": [
+      {
+        "prompt": "In Worked example 1, AM = 7 and CM = 4. Find BM and DM.",
+        "solution": "BM = 7 and DM = 4, because M is the midpoint.",
+        "check": "So AB = 14 and CD = 8, each split in half."
+      },
+      {
+        "prompt": "In Worked example 1, AC = 3x - 1 and BD = 14. Find x.",
+        "solution": "The triangles are congruent, so 3x - 1 = 14 and x = 5.",
+        "check": "Plug in: 15 - 1 = 14."
+      },
+      {
+        "prompt": "In Worked example 2, can AC = AD be your first reason?",
+        "solution": "No. That is what you are trying to prove. Start with the two bisected angle pairs and AB = AB.",
+        "check": "Without that line, the ASA facts are still all there."
+      }
+    ],
+    "mistake": "A proof uses AC = AD to prove AC = AD. That is going in a circle. Delete the line and start from the givens.",
+    "mistakePrompt": "Jordan starts the proof of AC = AD with the reason AC = AD. Find the circular step.",
+    "exit": [
+      "Name two 'hidden' equal parts you can use without being told.",
+      "Why can't the conclusion appear as a reason?"
+    ],
+    "answerSource": "Euclid UNIT04-FILL.md 4.5, learner wording by Socrates"
+  },
+  "4.6": {
+    "goals": [
+      "I can use CPCTC to get a side or angle only after the triangles are proved congruent.",
+      "I can solve for a variable from a corresponding-part equation and check it."
+    ],
+    "hook": "'Twin detectives': once two triangles are proven twins, what else must match? Pairs list every consequence from one marked diagram.",
+    "idea": "CPCTC is a consequence, never a test. It always sits below the congruence line.",
+    "examples": [
+      {
+        "title": "SAS, then CPCTC (original).",
+        "steps": [
+          {
+            "step": "AB = CB and angle ABD ≅ angle CBD.",
+            "reason": "Given."
+          },
+          {
+            "step": "BD = BD.",
+            "reason": "A segment equals itself."
+          },
+          {
+            "step": "Triangle ABD ≅ triangle CBD.",
+            "reason": "SAS. The marked angle is at B, between AB and BD."
+          },
+          {
+            "step": "A matches C, B matches B, D matches D.",
+            "reason": "Read the letters in order."
+          },
+          {
+            "step": "AD = CD.",
+            "reason": "CPCTC."
+          }
+        ],
+        "optional": false
+      },
+      {
+        "title": "Two equations from one congruence (original).",
+        "steps": [
+          {
+            "step": "Triangle ABC ≅ triangle DEF, BC = 4x - 3, EF = 13, angle A = (2y + 5) degrees, angle D = 35 degrees.",
+            "reason": "Given."
+          },
+          {
+            "step": "BC = EF, so 4x - 3 = 13 and x = 4.",
+            "reason": "CPCTC, then solve."
+          },
+          {
+            "step": "Angle A = angle D, so 2y + 5 = 35 and y = 15.",
+            "reason": "CPCTC, then solve."
+          },
+          {
+            "step": "So BC = 13 and angle A = 35 degrees.",
+            "reason": "Substitute back."
+          }
+        ],
+        "optional": false
+      }
+    ],
+    "practice": [
+      {
+        "prompt": "In Worked example 1, which side matches AD?",
+        "solution": "CD, because A matches C and D matches D.",
+        "check": "Read ABD and CBD letter by letter."
+      },
+      {
+        "prompt": "Triangle ABC ≅ triangle RST and AC = 8. Find RT.",
+        "solution": "RT = 8 by CPCTC.",
+        "check": "1st and 3rd letters match 1st and 3rd letters."
+      },
+      {
+        "prompt": "Triangle ABC ≅ triangle DEF, AB = 5x + 2 and DE = 22. Find x.",
+        "solution": "5x + 2 = 22, so 5x = 20 and x = 4.",
+        "check": "Plug in: 5(4) + 2 = 22."
+      }
+    ],
+    "mistake": "CPCTC can't come before the line that proves the triangles congruent. Move it below.",
+    "mistakePrompt": "Jordan writes CPCTC before the line proving the triangles congruent. Fix the order.",
+    "exit": [
+      "Triangle ABC ≅ triangle RST and AB = 7. What else do you know?",
+      "Where in a proof can CPCTC first appear?"
+    ],
+    "answerSource": "Euclid UNIT04-FILL.md 4.6, learner wording by Socrates"
+  },
+  "4.7": {
+    "goals": [
+      "I can find the base angles of an isosceles triangle in any orientation by looking opposite the equal legs.",
+      "I can follow the bisector-and-SAS proof of Theorem 9 and solve base-angle equations without using the 180 degree sum."
+    ],
+    "hook": "Paper folding: cut out an isosceles triangle, fold so the equal legs match, and see which angles land on each other. Then turn the triangle upside down and ask again.",
+    "idea": "the base angles are the angles opposite the equal sides, wherever the triangle points.",
+    "examples": [
+      {
+        "title": "Proof of Theorem 9 (adapted from Jacobs p. 158).",
+        "steps": [
+          {
+            "step": "In triangle ABC, AB = AC.",
+            "reason": "Given."
+          },
+          {
+            "step": "Draw AD, the bisector of angle A, meeting BC at D.",
+            "reason": "Every angle has a bisector (Protractor Postulate)."
+          },
+          {
+            "step": "Angle BAD ≅ angle CAD.",
+            "reason": "Definition of bisector."
+          },
+          {
+            "step": "AD = AD.",
+            "reason": "A segment equals itself."
+          },
+          {
+            "step": "Triangle ABD ≅ triangle ACD.",
+            "reason": "SAS."
+          },
+          {
+            "step": "Angle B ≅ angle C.",
+            "reason": "CPCTC."
+          }
+        ],
+        "optional": false
+      },
+      {
+        "title": "Find the base angles (original problem).",
+        "steps": [
+          {
+            "step": "AB = AC, angle B = (3x + 5) degrees, angle C = (5x - 17) degrees.",
+            "reason": "Given. The figure is turned sideways."
+          },
+          {
+            "step": "3x + 5 = 5x - 17.",
+            "reason": "Theorem 9: base angles are equal."
+          },
+          {
+            "step": "2x = 22, so x = 11.",
+            "reason": "Solve."
+          },
+          {
+            "step": "Both base angles are 38 degrees.",
+            "reason": "Substitute: 3(11) + 5 = 38."
+          },
+          {
+            "step": "We stop here. We don't find the top angle yet.",
+            "reason": "The 180 degree angle sum comes in Unit 5."
+          }
+        ],
+        "optional": false
+      }
+    ],
+    "practice": [
+      {
+        "prompt": "PQ = PR. Which angles are equal?",
+        "solution": "Angles Q and R, by Theorem 9.",
+        "check": "Each is across from one of the equal sides."
+      },
+      {
+        "prompt": "Base angles are 2x + 7 and 4x - 9. Find x.",
+        "solution": "2x + 7 = 4x - 9, so 2x = 16 and x = 8. Each angle is 23.",
+        "check": "2(8) + 7 = 23 and 4(8) - 9 = 23."
+      },
+      {
+        "prompt": "AB = AC and angle A = 40 degrees. What do we know right now?",
+        "solution": "Angle B = angle C. We can't find their size yet.",
+        "check": "Theorem 9 says the angles are equal. It says nothing about a sum."
+      }
+    ],
+    "mistake": "The base angles are not 'the bottom ones'. They are the angles across from the equal sides, wherever the triangle points. And no 180 degree math until Unit 5.",
+    "mistakePrompt": "Jordan calls whichever angles are at the bottom of the drawing the base angles. Test that claim on a turned triangle.",
+    "exit": [
+      "XY = XZ. Name the equal angles.",
+      "Base angles are 4x + 2 and 6x - 10. Find x."
+    ],
+    "answerSource": "Euclid UNIT04-FILL.md 4.7, learner wording by Socrates"
+  },
+  "4.8": {
+    "goals": [
+      "I can prove the converse of Theorem 9 (Theorem 10) by comparing the triangle with itself using ASA.",
+      "I can explain why equilateral and equiangular mean the same thing for triangles, with no 60 degree value yet."
+    ],
+    "hook": "Converse check: students write the converse of Theorem 9 and vote on whether it is true just because Theorem 9 is. Then they flip a paper triangle over onto itself.",
+    "idea": "the converse needs its own proof. The self-comparison trick: triangle ABC and triangle ACB.",
+    "examples": [
+      {
+        "title": "Proof of Theorem 10 (adapted from Jacobs p. 159).",
+        "steps": [
+          {
+            "step": "In triangle ABC, angle B ≅ angle C.",
+            "reason": "Given."
+          },
+          {
+            "step": "Compare triangle ABC with triangle ACB, the same triangle read in a different order.",
+            "reason": "The self-comparison trick."
+          },
+          {
+            "step": "Angle ABC ≅ angle ACB and angle ACB ≅ angle ABC.",
+            "reason": "Given, read both ways."
+          },
+          {
+            "step": "BC = CB.",
+            "reason": "A segment equals itself."
+          },
+          {
+            "step": "Triangle ABC ≅ triangle ACB.",
+            "reason": "ASA."
+          },
+          {
+            "step": "AB = AC.",
+            "reason": "CPCTC. No AAS and no angle sum needed."
+          }
+        ],
+        "optional": false
+      },
+      {
+        "title": "Equal angles give equal sides (original).",
+        "steps": [
+          {
+            "step": "Angle A = angle B = angle C.",
+            "reason": "Given."
+          },
+          {
+            "step": "AB = AC = BC.",
+            "reason": "Theorem 10, used on two pairs of angles."
+          },
+          {
+            "step": "AB = 2x + 1 and BC = 9, so 2x + 1 = 9 and x = 4.",
+            "reason": "Solve."
+          },
+          {
+            "step": "Every side is 9.",
+            "reason": "Substitute."
+          },
+          {
+            "step": "Going the other way, equal sides give equal angles.",
+            "reason": "Theorem 9. We still don't name a number of degrees."
+          }
+        ],
+        "optional": false
+      }
+    ],
+    "practice": [
+      {
+        "prompt": "In triangle PQR, angle P = angle Q. Which sides are equal?",
+        "solution": "QR = PR, the sides across from those angles.",
+        "check": "The side across from P doesn't use the letter P, and the same for Q."
+      },
+      {
+        "prompt": "Angle B = angle C, AB = 5x - 4, AC = 2x + 11. Find x.",
+        "solution": "5x - 4 = 2x + 11, so 3x = 15 and x = 5. Both sides are 21.",
+        "check": "25 - 4 = 21 and 10 + 11 = 21."
+      },
+      {
+        "prompt": "Why does equilateral mean equiangular?",
+        "solution": "Use Theorem 9 on two different pairs of equal sides.",
+        "check": "That gives A = B and B = C, so all three are equal."
+      }
+    ],
+    "mistake": "Flipping the if and then does not prove the converse. Theorem 10 needs its own proof (the ASA self-comparison).",
+    "mistakePrompt": "Jordan says Theorem 9 is true, so reversing its if and then proves Theorem 10. Find the logic error.",
+    "exit": [
+      "Angle P = angle Q. Which sides are equal?",
+      "Why is 'flip the if and then' not a proof?"
+    ],
+    "answerSource": "Euclid UNIT04-FILL.md 4.8, learner wording by Socrates"
+  },
+  "4.10": {
+    "goals": [
+      "I can explain the plan of the SSS proof: build a SAS copy on the other side, then use two isosceles triangles.",
+      "I can say why SSS is a theorem in this course, and why its proof may not use SSS."
+    ],
+    "hook": "Rigid frames: a triangle of straws stays rigid but a square frame wobbles. Why? Students push on both.",
+    "idea": "SSS is proved from SAS and the isosceles theorems. In this course it is a theorem, not a postulate.",
+    "examples": [
+      {
+        "title": "Proof of SSS, main case (adapted from Theorem 11, Jacobs p. 164). (part 1 of 3)",
+        "steps": [
+          {
+            "step": "Goal: triangle ABC ≅ triangle DEF, where AB = DE, BC = EF and CA = FD.",
+            "reason": "Given."
+          },
+          {
+            "step": "On the other side of AB from C, build triangle ABG ≅ triangle DEF, so AC = AG and BC = BG.",
+            "reason": "Copy angle D at A and mark AG = DF, then use SAS."
+          },
+          {
+            "step": "Draw CG. In this case, CG crosses AB between A and B.",
+            "reason": "The main case, taught today."
+          }
+        ],
+        "optional": false
+      },
+      {
+        "title": "Proof of SSS, main case (adapted from Theorem 11, Jacobs p. 164). (part 2 of 3)",
+        "steps": [
+          {
+            "step": "Triangles ACG and BCG are isosceles.",
+            "reason": "AC = AG and BC = BG."
+          },
+          {
+            "step": "Their base angles at C and G are equal. Add the two pairs: angle ACB = angle AGB.",
+            "reason": "Theorem 9, then angle addition."
+          }
+        ],
+        "optional": false
+      },
+      {
+        "title": "Proof of SSS, main case (adapted from Theorem 11, Jacobs p. 164). (part 3 of 3)",
+        "steps": [
+          {
+            "step": "Triangle ABC ≅ triangle ABG.",
+            "reason": "SAS: AC = AG, angle C = angle G, BC = BG."
+          },
+          {
+            "step": "Triangle ABG ≅ triangle DEF, so triangle ABC ≅ triangle DEF.",
+            "reason": "Two triangles congruent to the same triangle are congruent to each other."
+          }
+        ],
+        "optional": false
+      }
+    ],
+    "practice": [
+      {
+        "prompt": "Two triangles both have sides 3, 4 and 5. Are they congruent?",
+        "solution": "Yes, by SSS.",
+        "check": "A flip may change which way it faces, but not the lengths."
+      },
+      {
+        "prompt": "Can the SSS proof use SSS for its helper triangles?",
+        "solution": "No. It uses the isosceles base-angle theorem, which came from SAS.",
+        "check": "Nothing in the proof leans on SSS itself."
+      }
+    ],
+    "mistake": "SSS is a theorem in this course, not an assumption. A complete proof also covers the other two cases (see 4.15).",
+    "mistakePrompt": "Jordan proves SSS only when CG crosses inside AB, then claims all cases are finished. What is missing?",
+    "exit": [
+      "Which earlier theorems does the SSS proof use?",
+      "Why does a triangle frame not wobble?"
+    ],
+    "answerSource": "Euclid UNIT04-FILL.md 4.10, learner wording by Socrates"
+  },
+  "4.11": {
+    "goals": [
+      "I can build two different triangles from the same SSA data with compass and ruler.",
+      "I can explain why SSA is not a congruence test even when the sides are long."
+    ],
+    "hook": "Swinging door: fix side AB and the angle at A, then swing a fixed-length 'door' BC from B. It hits the ray in two places.",
+    "idea": "SSA can give two, one or no triangles, so it is not a test.",
+    "examples": [
+      {
+        "title": "Swinging door: one SSA recipe, two triangles (student version of Euclid's example).",
+        "steps": [
+          {
+            "step": "Draw a ray from A. Mark B above it so that AB = 5 and the angle at A is fixed.",
+            "reason": "These are the given side and angle."
+          },
+          {
+            "step": "Open the compass to the given length BC. Put the point on B and swing an arc.",
+            "reason": "Every point on the arc is that distance from B."
+          },
+          {
+            "step": "The arc hits the ray twice. Call the points C1 and C2.",
+            "reason": "A circle can cross a line in two places."
+          },
+          {
+            "step": "Triangles ABC1 and ABC2 have the same angle A, the same AB, and the same BC.",
+            "reason": "Same ray, same side, same compass setting."
+          },
+          {
+            "step": "But AC1 = 3 and AC2 = 5, so the triangles are not congruent.",
+            "reason": "Their third sides are different."
+          },
+          {
+            "step": "So SSA is not a congruence test.",
+            "reason": "One counterexample is enough."
+          }
+        ],
+        "optional": false
+      },
+      {
+        "title": "Bigger doesn't fix it (student version).",
+        "steps": [
+          {
+            "step": "Draw the same picture twice as big. AB is now 10, and the angle at A doesn't change.",
+            "reason": "The rays from A point the same way, so angle A is the same."
+          },
+          {
+            "step": "The compass arc from B still hits the ray twice.",
+            "reason": "Same picture, just larger."
+          },
+          {
+            "step": "The two third sides are still different.",
+            "reason": "So long sides don't rescue SSA."
+          }
+        ],
+        "optional": false
+      }
+    ],
+    "practice": [
+      {
+        "prompt": "In Worked example 1, which angle is included between AB and BC?",
+        "solution": "Angle ABC, not angle BAC.",
+        "check": "The two sides share the point B."
+      },
+      {
+        "prompt": "Do the two triangles in Worked example 1 have the same angle A?",
+        "solution": "Yes. Both use ray AB and the same ray from A.",
+        "check": "The two rays are exactly the same in both triangles."
+      },
+      {
+        "prompt": "Why does AC1 = 3 and AC2 = 5 prove the triangles are not congruent?",
+        "solution": "The other two sides match, but the third sides differ.",
+        "check": "One triangle has sides 3, BC and 5 (all different). The other has sides 5, BC and 5, so it is isosceles."
+      }
+    ],
+    "mistake": "SSA sometimes gives one triangle, but not always, so it is never a test. If the arc just touches the ray, you get one right triangle (we prove lengths for that later).",
+    "mistakePrompt": "Jordan says SSA becomes a valid test if every length is doubled. Use the doubled example to check.",
+    "exit": [
+      "Sketch SSA data that makes two triangles.",
+      "Does making every length bigger fix SSA? Why?"
+    ],
+    "answerSource": "Euclid UNIT04-FILL.md 4.11, learner wording by Socrates"
+  },
+  "4.12": {
+    "goals": [
+      "I can copy a triangle with compass and straightedge by SSS and by SAS.",
+      "I can justify each copy by naming the three equalities and the test."
+    ],
+    "hook": "Blueprint copy: each student gets a triangle and must make an exact copy for a partner across the room using only compass and straightedge. No rulers.",
+    "idea": "a compass carries lengths, so congruence tests become recipes.",
+    "examples": [
+      {
+        "title": "Copy a triangle by SSS (adapted from Construction 5, Jacobs p. 171).",
+        "steps": [
+          {
+            "step": "Draw a ray and mark DE equal to AB.",
+            "reason": "Compass copy of a segment."
+          },
+          {
+            "step": "Draw a circle centered at D with radius AC.",
+            "reason": "DF will equal AC."
+          },
+          {
+            "step": "Draw a circle centered at E with radius BC.",
+            "reason": "EF will equal BC."
+          },
+          {
+            "step": "Pick one crossing point and call it F.",
+            "reason": "Either one works."
+          },
+          {
+            "step": "DE = AB, DF = AC, EF = BC, so triangle DEF ≅ triangle ABC.",
+            "reason": "SSS. The other crossing gives a flipped copy that is also congruent."
+          }
+        ],
+        "optional": false
+      },
+      {
+        "title": "Copy a triangle by SAS (adapted from Constructions 3 and 4, Jacobs p. 170).",
+        "steps": [
+          {
+            "step": "Copy AB onto DE.",
+            "reason": "Compass copy of a segment."
+          },
+          {
+            "step": "Copy angle BAC at D, on one side of DE.",
+            "reason": "Angle-copy construction."
+          },
+          {
+            "step": "Mark DF = AC along the new ray.",
+            "reason": "Compass copy."
+          },
+          {
+            "step": "DE = AB, DF = AC, angle EDF = angle BAC, so triangle DEF ≅ triangle ABC.",
+            "reason": "SAS. The angle copy itself works because of SSS."
+          }
+        ],
+        "optional": false
+      }
+    ],
+    "practice": [
+      {
+        "prompt": "AB = 5, AC = 4, BC = 3. After DE = 5, what radii do you use?",
+        "solution": "Radius 4 at D and radius 3 at E.",
+        "check": "Each radius is the side that touches that corner."
+      },
+      {
+        "prompt": "Do the top and bottom crossing points give different triangles?",
+        "solution": "No. Flipping across DE swaps them and keeps every length.",
+        "check": "SSS works for both."
+      },
+      {
+        "prompt": "Can you mark a ruler reading instead of using the compass and still call it an exact construction?",
+        "solution": "No. Measuring adds error and uses a different tool.",
+        "check": "Constructions copy lengths with the compass, not with numbers."
+      }
+    ],
+    "mistake": "'It looks equal' is not a reason. Name the three equal parts, then cite SSS or SAS.",
+    "mistakePrompt": "Jordan measures a copy with a ruler and calls it an exact compass-and-straightedge construction. What is wrong?",
+    "exit": [
+      "After copying AB, which two radii locate the third vertex?",
+      "Name the test that proves your copy is congruent."
+    ],
+    "answerSource": "Euclid UNIT04-FILL.md 4.12, learner wording by Socrates"
+  },
+  "4.13": {
+    "goals": [
+      "I can prove the perpendicular-bisector construction works by SSS and then SAS.",
+      "I can state when the construction circles fail to cross twice and why that breaks the proof."
+    ],
+    "hook": "'Why did that work?' Students redo the 2.5 bisector construction, then try a small radius on purpose and watch it fail.",
+    "idea": "constructions are proved, not eyeballed. Name every point (define M) before using it.",
+    "examples": [
+      {
+        "title": "In class: the angle bisector construction (adapted from Jacobs p. 171).",
+        "steps": [
+          {
+            "step": "Mark U and V on the two rays of the angle so that OU = OV.",
+            "reason": "First compass step."
+          },
+          {
+            "step": "Draw equal arcs from U and V that meet at X inside the angle.",
+            "reason": "Second compass step."
+          },
+          {
+            "step": "OU = OV, UX = VX, OX = OX.",
+            "reason": "Compass settings and a shared side."
+          },
+          {
+            "step": "Triangle OUX ≅ triangle OVX.",
+            "reason": "SSS."
+          },
+          {
+            "step": "Angle UOX = angle VOX, so OX bisects the angle.",
+            "reason": "CPCTC. X must be inside the angle and not at O."
+          }
+        ],
+        "optional": false
+      },
+      {
+        "title": "Optional extension: the perpendicular bisector construction, proved in three stages.",
+        "steps": [
+          {
+            "step": "Circles of the same radius at A and B cross at P and Q, on opposite sides of AB. Let M be the point where PQ meets AB.",
+            "reason": "Define M before using it. Equal-radius crossings P and Q on opposite sides make PQ meet AB between A and B."
+          },
+          {
+            "step": "AP = BP, AQ = BQ, PQ = PQ, so triangle APQ ≅ triangle BPQ.",
+            "reason": "SSS."
+          },
+          {
+            "step": "So angle APM = angle BPM.",
+            "reason": "CPCTC, and PM lies along PQ."
+          },
+          {
+            "step": "AP = BP and PM = PM, so triangle APM ≅ triangle BPM.",
+            "reason": "SAS."
+          },
+          {
+            "step": "AM = BM, and angles AMP and BMP are equal.",
+            "reason": "CPCTC."
+          },
+          {
+            "step": "Those two angles add to 180, so each is 90. PQ is the perpendicular bisector of AB.",
+            "reason": "Linear pair."
+          }
+        ],
+        "optional": true
+      }
+    ],
+    "practice": [
+      {
+        "prompt": "AB = 10 and the radius is 4. Do the circles cross twice?",
+        "solution": "No. 4 + 4 = 8, which is less than 10.",
+        "check": "The two circles can't reach each other."
+      },
+      {
+        "prompt": "Why isn't radius 5 enough?",
+        "solution": "The circles only touch once, at the midpoint, so there aren't two points to draw a line through.",
+        "check": "The radius has to be more than half of AB."
+      },
+      {
+        "prompt": "In the angle bisector proof, what is the third SSS fact?",
+        "solution": "OX = OX.",
+        "check": "The shared side is in both triangles."
+      }
+    ],
+    "mistake": "A proof that uses M without saying what M is, is not finished. Define M as the point where PQ meets AB. The radius must be more than half of AB, not equal to it.",
+    "mistakePrompt": "Jordan writes angle APM = angle BPM without ever defining M. Repair the proof.",
+    "exit": [
+      "Segment length 12. Give a radius that works and one that fails.",
+      "Which test proves the angle-bisector construction?"
+    ],
+    "answerSource": "Euclid UNIT04-FILL.md 4.13, learner wording by Socrates"
+  },
+  "4.14": {
+    "goals": [
+      "I can choose the shortest valid route: a direct angle theorem when it is enough, and SSS, SAS or ASA only when it is needed.",
+      "I can reject a proof whose premises are SSA."
+    ],
+    "hook": "Proof menu: four diagrams, four routes (vertical angles, SAS, ASA, SSS). Teams match each diagram to its fastest route before proving anything.",
+    "idea": "not every proof needs congruent triangles.",
+    "examples": [
+      {
+        "title": "Diagonal of a quadrilateral, by SSS (original).",
+        "steps": [
+          {
+            "step": "In quadrilateral ABCD, AB = CD and BC = DA. Draw diagonal AC.",
+            "reason": "Given, plus a helper segment."
+          },
+          {
+            "step": "AC = CA.",
+            "reason": "A segment equals itself."
+          },
+          {
+            "step": "Triangle ABC ≅ triangle CDA.",
+            "reason": "SSS. A matches C, B matches D, C matches A."
+          },
+          {
+            "step": "Angle ABC = angle CDA.",
+            "reason": "CPCTC. No parallel lines assumed."
+          }
+        ],
+        "optional": false
+      },
+      {
+        "title": "Vertical angles only (original).",
+        "steps": [
+          {
+            "step": "Lines AB and CD cross at O. Angle AOC = (3x + 4) degrees and angle BOD = (5x - 20) degrees.",
+            "reason": "Given."
+          },
+          {
+            "step": "3x + 4 = 5x - 20.",
+            "reason": "Vertical angles are equal."
+          },
+          {
+            "step": "x = 12, so both angles are 40 degrees.",
+            "reason": "Solve and substitute."
+          },
+          {
+            "step": "No triangles needed.",
+            "reason": "Pick the shortest route."
+          }
+        ],
+        "optional": false
+      },
+      {
+        "title": "Worked example 3, moved from 4.10: the kite (original).",
+        "steps": [
+          {
+            "step": "Quadrilateral ABCD has AB = AD and CB = CD.",
+            "reason": "Given."
+          },
+          {
+            "step": "AC = AC.",
+            "reason": "A segment equals itself."
+          },
+          {
+            "step": "Triangle ABC ≅ triangle ADC.",
+            "reason": "SSS."
+          },
+          {
+            "step": "Angle BAC = angle DAC and angle BCA = angle DCA.",
+            "reason": "CPCTC. So AC bisects both angles. Saying the diagonals are perpendicular would need more proof."
+          }
+        ],
+        "optional": false
+      }
+    ],
+    "practice": [
+      {
+        "prompt": "In Worked example 1, which shared side gives the third equal pair?",
+        "solution": "AC = CA.",
+        "check": "The same segment, named in the other order."
+      },
+      {
+        "prompt": "In Worked example 2, what is the angle next to the 40 degree angle?",
+        "solution": "140 degrees, because a linear pair adds to 180.",
+        "check": "40 + 140 = 180."
+      },
+      {
+        "prompt": "Two sides and a non-included angle match. Can you use SSS?",
+        "solution": "No. The third side is not known.",
+        "check": "That is SSA, and 4.11 showed SSA can fail."
+      },
+      {
+        "prompt": "Practice 4, moved from 4.10: in the kite, AB = 2x + 1 and AD = 11. Find x.",
+        "solution": "The equal sides give 2x + 1 = 11, so x = 5.",
+        "check": "Plug in: 2(5) + 1 = 11."
+      }
+    ],
+    "mistake": "Not every proof needs congruent triangles. Vertical angles alone solve Worked example 2.",
+    "mistakePrompt": "Jordan uses SSS with only two sides and a non-included angle known. Which fact is missing?",
+    "exit": [
+      "Name the fastest route for one diagram from today and why.",
+      "What is missing when you only have SSA?"
+    ],
+    "answerSource": "Euclid UNIT04-FILL.md 4.14, learner wording by Socrates"
+  },
+  "4.15": {
+    "practice": [
+      {
+        "prompt": "Triangle ABC ≅ triangle PQR. Which side matches CA?",
+        "solution": "RP, by C↔R,A↔P.",
+        "check": "third-first positions match."
+      },
+      {
+        "prompt": "Triangle ABC ≅ triangle DEF, BC = 2x + 3 and EF = 15. Find x.",
+        "solution": "2x+3=15,2x=12,x=6.",
+        "check": "2(6)+3=15."
+      },
+      {
+        "prompt": "AB = DE, AC = DF and angle A = angle D. Which test?",
+        "solution": "SAS, since A,D are between the given sides.",
+        "check": "ray-alignment motion fixes both endpoints."
+      },
+      {
+        "prompt": "Angle A = angle D, angle B = angle E and AB = DE. Which test?",
+        "solution": "ASA, since AB,DE join the given-angle vertices.",
+        "check": "two endpoint rays have one intersection."
+      },
+      {
+        "prompt": "Two segments AD and BC cross at M, and M is the midpoint of both. Prove triangle AMB ≅ triangle DMC.",
+        "solution": "AM=DM,BM=CM by midpoint; AMB=DMC by vertical angles; SAS.",
+        "check": "A↔D,M↔M,B↔C makes all three facts corresponding."
+      },
+      {
+        "prompt": "Once triangle AMB ≅ triangle DMC, which side matches AB?",
+        "solution": "DC, so AB=DC by CPCTC.",
+        "check": "first-third positions agree."
+      },
+      {
+        "prompt": "AB = AC, angle B = (3x + 2) degrees and angle C = (5x - 16) degrees. Find x and the base angles.",
+        "solution": "3x+2=5x-16 gives x=9 and both angles 29.",
+        "check": "27+2=45-16=29."
+      },
+      {
+        "prompt": "In triangle ABC, angle B = angle C. Prove AB = AC.",
+        "solution": "Compare ABC with ACB; B=C,C=B,BC=CB imply ASA,then AB=AC by CPCTC.",
+        "check": "all used results precede SSS."
+      },
+      {
+        "prompt": "Does matching all three angles (AAA) prove two triangles congruent?",
+        "solution": "No. Side-2 and side-5 equilateral triangles have matching angles but unequal sides.",
+        "check": "isometries cannot map length 2 to 5."
+      },
+      {
+        "prompt": "A proof uses CPCTC before it proves the triangles congruent. Fix the order.",
+        "solution": "First give SAS/ASA facts, then conclude congruence, then use CPCTC.",
+        "check": "CPCTC hypothesis is now established."
+      },
+      {
+        "prompt": "In ABCD, AB = AD and BC = DC. Prove AC bisects angle BAD.",
+        "solution": "AB=AD,BC=DC,AC=AC imply ABC≅ADC by SSS; BAC=DAC by CPCTC.",
+        "check": "A↔A,B↔D,C↔C is the ordered match."
+      },
+      {
+        "prompt": "Three pairs of equal sides are given, and no angles. Can you use SAS right away?",
+        "solution": "No. Use SSS.",
+        "check": "SAS requires an included-angle equality not among the givens."
+      },
+      {
+        "prompt": "Circles centered at D and E are 5 apart, with radii 4 and 3. Why do both crossing points copy the same triangle?",
+        "solution": "Both give DF=4,EF=3,DE=5; SSS proves congruence.",
+        "check": "reflection in DE exchanges intersections."
+      },
+      {
+        "prompt": "Circles of the same radius at A and B cross at P and Q. What must you define before you talk about M?",
+        "solution": "M=PQ∩AB. With P,Q opposite sides and common radius>AB/2,M lies between A,B.",
+        "check": "M is the point on both PQ and AB; P and Q must be on opposite sides of AB."
+      },
+      {
+        "prompt": "AB = 10 and the radius is 5. Can the crossing points give a perpendicular bisector?",
+        "solution": "No. Tangency yields one point.",
+        "check": "radius must strictly exceed half of 10."
+      },
+      {
+        "prompt": "Use the swinging-door picture from 4.11 (AB = 5, the same angle at A, AC1 = 3 and AC2 = 5). Explain why SSA fails, without trig.",
+        "solution": "Same rays give equal angle A,AB common,and circle centered B through both C vertices gives BC1=BC2. But AC1=3≠5=AC2.",
+        "check": "side multisets differ."
+      }
+    ],
+    "clinic": {
+      "title": "Proof clinic, moved from 4.10: the other two SSS cases.",
+      "steps": [
+        {
+          "step": "Case 2: CG meets line AB outside segment AB.",
+          "reason": "Same setup as the 4.10 proof."
+        },
+        {
+          "step": "Subtract the equal base angles instead of adding them. You still get angle ACB = angle AGB.",
+          "reason": "Theorem 9, then angle subtraction."
+        },
+        {
+          "step": "Case 3: CG passes through A or B, so A, C, G (or B, C, G) are on one line.",
+          "reason": "Only one isosceles triangle remains."
+        },
+        {
+          "step": "That one isosceles triangle gives angle ACB = angle AGB directly.",
+          "reason": "Theorem 9."
+        },
+        {
+          "step": "In every case, SAS finishes the proof.",
+          "reason": "So SSS holds for all triangles."
+        }
+      ]
+    }
+  },
+  "4.16": {
+    "practice": [
+      {
+        "prompt": "Triangle ABC ≅ triangle PQR. Which side matches CA?",
+        "solution": "RP, by C↔R,A↔P.",
+        "check": "third-first positions match."
+      },
+      {
+        "prompt": "Triangle ABC ≅ triangle DEF, BC = 2x + 3 and EF = 15. Find x.",
+        "solution": "2x+3=15,2x=12,x=6.",
+        "check": "2(6)+3=15."
+      },
+      {
+        "prompt": "AB = DE, AC = DF and angle A = angle D. Which test?",
+        "solution": "SAS, since A,D are between the given sides.",
+        "check": "ray-alignment motion fixes both endpoints."
+      },
+      {
+        "prompt": "Angle A = angle D, angle B = angle E and AB = DE. Which test?",
+        "solution": "ASA, since AB,DE join the given-angle vertices.",
+        "check": "two endpoint rays have one intersection."
+      },
+      {
+        "prompt": "Two segments AD and BC cross at M, and M is the midpoint of both. Prove triangle AMB ≅ triangle DMC.",
+        "solution": "AM=DM,BM=CM by midpoint; AMB=DMC by vertical angles; SAS.",
+        "check": "A↔D,M↔M,B↔C makes all three facts corresponding."
+      },
+      {
+        "prompt": "Once triangle AMB ≅ triangle DMC, which side matches AB?",
+        "solution": "DC, so AB=DC by CPCTC.",
+        "check": "first-third positions agree."
+      },
+      {
+        "prompt": "AB = AC, angle B = (3x + 2) degrees and angle C = (5x - 16) degrees. Find x and the base angles.",
+        "solution": "3x+2=5x-16 gives x=9 and both angles 29.",
+        "check": "27+2=45-16=29."
+      },
+      {
+        "prompt": "In triangle ABC, angle B = angle C. Prove AB = AC.",
+        "solution": "Compare ABC with ACB; B=C,C=B,BC=CB imply ASA,then AB=AC by CPCTC.",
+        "check": "all used results precede SSS."
+      },
+      {
+        "prompt": "Does matching all three angles (AAA) prove two triangles congruent?",
+        "solution": "No. Side-2 and side-5 equilateral triangles have matching angles but unequal sides.",
+        "check": "isometries cannot map length 2 to 5."
+      },
+      {
+        "prompt": "A proof uses CPCTC before it proves the triangles congruent. Fix the order.",
+        "solution": "First give SAS/ASA facts, then conclude congruence, then use CPCTC.",
+        "check": "CPCTC hypothesis is now established."
+      },
+      {
+        "prompt": "In ABCD, AB = AD and BC = DC. Prove AC bisects angle BAD.",
+        "solution": "AB=AD,BC=DC,AC=AC imply ABC≅ADC by SSS; BAC=DAC by CPCTC.",
+        "check": "A↔A,B↔D,C↔C is the ordered match."
+      },
+      {
+        "prompt": "Three pairs of equal sides are given, and no angles. Can you use SAS right away?",
+        "solution": "No. Use SSS.",
+        "check": "SAS requires an included-angle equality not among the givens."
+      }
+    ]
+  },
+  "4.9": {
+    "placeholder": "Quiz and reteach: awaiting replacement from Euclid. This is not an assessment."
+  }
+}
