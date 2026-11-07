@@ -213,3 +213,9 @@ test('Unit 4 student-facing output carries no internal builder labels',()=>{
  assert.ok(files.length>100,files.length);
  for(const f of files){const text=read(f).toLowerCase();for(const bad of ['original problem','.md','signoff','in class:','student version'])assert.ok(!text.includes(bad),`${f}: ${bad}`);}
 });
+test('Unit 4 angle-expression labels are parenthesized, as in 4.7 WE2',()=>{
+ const dir=p=>fs.readdirSync(new URL('../'+p,import.meta.url));
+ const files=[...dir('public/geometry/decks').filter(d=>d.startsWith('u04-')).map(d=>`public/geometry/decks/${d}/deck.json`),...dir('public/geometry/forms').filter(f=>f.startsWith('unit04')).map(f=>'public/geometry/forms/'+f),...dir('public/geometry/figures/u04').map(f=>'public/geometry/figures/u04/'+f)];
+ for(const f of files){const text=read(f);assert.doesNotMatch(text,/(?<![(\w])\d*[a-z] ?[+\-−] ?\d+ ?°/,f);}
+ for(const [file,labels] of [['u04-l07-s09',['(2x + 7)°','(4x − 9)°']],['u04-l15-s10',['(3x + 2)°','(5x − 16)°']],['u04-l06-s05',['(2y + 5)°']],['u04-l14-s05',['(3x + 4)°','(5x − 20)°']]])for(const l of labels)assert.ok(read(`public/geometry/figures/u04/${file}.svg`).includes('>'+l+'</text>'),file+' '+l);
+});

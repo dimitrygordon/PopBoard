@@ -25,7 +25,7 @@ try{
    await page.evaluate(async()=>{await document.fonts.ready;await Promise.all(document.getAnimations().map(a=>a.finished.catch(()=>{})));});
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,label);
    assert.equal(await page.$$eval('.gx-learner-text,.gx-proof',es=>es.some(e=>e.scrollWidth>e.clientWidth+1)),false,label);
-   if(slug==='u04-l13')assert.equal(await page.$('.gx-figure-slot'),null);
+   if(slug==='u04-l13')assert.ok(await page.$('.gx-figure-slot svg'),'4.13 worked example shows Leo\'s figure');
    else assert.match(await page.$eval('.gx-proof',e=>e.textContent),/Swapping A with B and D with E/);
    assert.equal(await page.$eval('.gx-lesson',e=>e.textContent.includes('Figure coming')),false);
    await page.screenshot({path:`${out}/${size.width}x${size.height}-${label}.png`,fullPage:true});shots++;
