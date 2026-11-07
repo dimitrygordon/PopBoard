@@ -14,7 +14,7 @@ O={
  "Check yourself: keep current question after Euclid errata pass.",
  "Exit ticket."],
  exit=["Triangle KLM ≅ triangle RST. Which angle matches angle M, and which side matches LM?",
-       "In one sentence: why can't you swap the letters in a congruence statement?"]),
+       "Why must corresponding positions stay matched when you rewrite a congruence statement?"]),
 "4.2":dict(goals=["I can build triangles from three given parts and record whether every build comes out the same.",
  "I can name the included angle of two sides and the included side of two angles, and explain why SSA and AAA are not tests."],
  hook="Straw-and-pipe-cleaner stations: SSS, SAS, ASA, SSA, AAA. Each pair builds from the card and tries to make a triangle that does not match a neighbor's.",
@@ -113,19 +113,22 @@ O={
  "Check yourself.",
  "Exit ticket."],
  exit=["Angle P = angle Q. Which sides are equal?","Why is 'flip the if and then' not a proof?"]),
-"4.10":dict(goals=["I can explain the plan of the SSS proof: build a SAS copy on the other side, then use two isosceles triangles.",
- "I can say why SSS is a theorem in this course, and why its proof may not use SSS."],
+"4.10":dict(goals=["I can explain the plan of the SSS proof: build a SAS copy on the other side of AB from the Ruler and Protractor Postulates, then use isosceles triangles.",
+ "I can finish all three cases (interior, exterior, endpoint) and say why SSS is a theorem in this course and why its proof may not use SSS."],
  hook="Rigid frames: a triangle of straws stays rigid but a square frame wobbles. Why? Students push on both.",
- slides=["Title and target. Jacobs 4.6, pp. 163 to 164, Theorem 11.",
- "Get started: the frame demo. 'Is a triangle rigid because of a rule we assumed, or one we can prove?'",
- "The big idea: SSS is proved from SAS and the isosceles theorems. In this course it is a theorem, not a postulate.",
- "Worked example 1: the SSS proof, main case only (CG crosses AB between A and B), one row per reveal. The exterior and endpoint cases move to the 4.15 Proof clinic; the kite example moves to 4.14.",
- "Try it: the main-case figure with C draggable only while CG still crosses inside AB; a note says the other cases are in 4.15.",
- "Common mistake: a proof that covers only the interior case. Learner names the missing cases.",
- "Practice: one item per subpage. Reveal 1 shows the worked solution; Reveal 2 shows the second check.",
- "Check yourself.",
- "Exit ticket."],
- exit=["Which earlier theorems does the SSS proof use?","Why does a triangle frame not wobble?"]),
+ slides=["Day 1, title and target. Jacobs 4.6, pp. 163 to 164, Theorem 11. Banner: 'Two-day lesson'.",
+ "Day 1, get started: the frame demo. 'Is a triangle rigid because of a rule we assumed, or one we can prove?'",
+ "Day 1, big idea: SSS is proved from SAS and the isosceles theorems. In this course it is a theorem, not a postulate.",
+ "Day 1, Worked example 1: the copy rows (Ruler and Protractor Postulates, not the 4.12 compass copy), then the interior case, one row per reveal.",
+ "Day 1, Try it: interior-case figure with C draggable only while CG crosses inside AB.",
+ "Day 1, exit check: 'What did we build triangle ABG from, and why not the compass?' plus \"What's confusing?\"",
+ "Day 2, Worked example 2: exterior case (larger and smaller angles named, then subtract) and endpoint case, one row per reveal. Done before any later lesson uses SSS.",
+ "Day 2, Try it: drag C across all three cases; the slide names the case and shows add, subtract or single-triangle.",
+ "Day 2, common mistake: 'SSS is a postulate in this course.' Learner corrects it.",
+ "Day 2, practice: one item per subpage. Reveal 1 shows the worked solution; Reveal 2 shows the second check.",
+ "Day 2, check yourself.",
+ "Day 2, exit ticket."],
+ exit=["Which earlier theorems does the SSS proof use, and which postulates build triangle ABG?","In the exterior case, why do we subtract instead of add?"]),
 "4.11":dict(goals=["I can build two different triangles from the same SSA data with compass and ruler.",
  "I can explain why SSA is not a congruence test even when the sides are long."],
  hook="Swinging door: fix side AB and the angle at A, then swing a fixed-length 'door' BC from B. It hits the ray in two places.",
@@ -134,7 +137,7 @@ O={
  "The big idea: SSA can give two, one or no triangles, so it is not a test.",
  "Worked example 1 (learner layer): swinging-door compass arc from B meets the ray twice. No coordinates or sqrt(10) on any student screen.",
  "Worked example 2 (learner layer): the same picture twice as big; still two triangles.",
- "Try it: plan's sandbox. Slider for BC length shows 0, 1 or 2 intersections.",
+ "Try it: plan's sandbox. Slider for BC length. The readout says 0, 1 or 2 nondegenerate triangles (real triangles, not flat ones), counting only points C past A on the ray. See the builder count rule. [Sign-off patch R2]",
  "Common mistake: 'SSA works if the sides are long.' Learner uses the doubled example.",
  "Practice: one item per subpage. Reveal 1 shows the worked solution; Reveal 2 shows the second check.",
  "Check yourself: replace the trig-based answer per Euclid.",
@@ -184,3 +187,20 @@ O={
  "Exit ticket."],
  exit=["Name the fastest route for one diagram from today and why.","What is missing when you only have SSA?"]),
 }
+O["4.10"]["label"]="Two-day lesson: Day 1 interior case, Day 2 exterior and endpoint cases"
+O["4.14"]["label"]="Class day also covers 4.15 Review"
+O["4.14"]["slides"]=O["4.14"]["slides"]+["Review launch (merged from 4.15): hand out the 4.15 review bank as the self-paced set; 10 minutes of class time on items the exit tickets flagged."]
+DAY_DELTA=0  # 4.10 gains a day (+1); 4.15 Review stops being its own class day (-1)
+DAYPLAN="""4.10 SSS is now two class days. To pay for the extra day, the 4.15 Review is merged into the 4.14 class day: 4.14 teaches its three worked examples (including the convex kite), then launches the 4.15 review bank as a self-paced set (homework plus 10 minutes in class). The 4.15 route stays as the review page, but it is no longer a separate class day. The unit stays at 16 class days, and the year stays at 180.
+
+| Class day | Lesson |
+|---|---|
+| 1 to 9 | 4.1 to 4.9 (unchanged) |
+| 10 | 4.10 Day 1: SSS interior case |
+| 11 | 4.10 Day 2: SSS exterior and endpoint cases |
+| 12 | 4.11 Why SSA Fails |
+| 13 | 4.12 Constructing Congruent Triangles |
+| 14 | 4.13 Justifying Earlier Constructions |
+| 15 | 4.14 Mixed Proof Practice + 4.15 Review launch |
+| 16 | 4.16 Unit 4 Assessment (Forms A and B, v2) |"""
+O["4.15"]={"label":"Not a separate class day: launched in 4.14; self-paced review page"}

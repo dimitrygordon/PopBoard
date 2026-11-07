@@ -1,73 +1,54 @@
-# Geometry template v2 and errata
+# Geometry v2: round 2 and final Unit 4
 
-## Scope and hold
+## Review and release boundary
 
-The Unit 4 content build was put on hold at 2:03 AM ET on November 7, 2026. Socrates is revising 4.10 into a two-day lesson, and Euclid is replacing the quiz and both assessment forms. Do not activate the draft pilot or treat its old forms as approved. No merge is authorized by this PR. Final math and pedagogy stamps from Euclid and Socrates are still required.
+Round 2 was completed and pushed as three review-specific commits, ending at `c465bb005f5e108953669d5616454f2132aa99da`. Euclid R1 to R5, Socrates 1 to 4 and Leo's notebook styles are implemented. PR 170 stays draft and unmerged. Implementation evidence is not a math, pedagogy or design stamp.
 
-Work already completed before the hold is preserved in `tools/geometry/drafts/`, the source snapshots in `tools/geometry/spec-src/`, and this directory. The Unit 4 diagram handoff was already drafted before the hold; it is retained as historical draft material, not a current instruction to Leo. No additional Unit 4 content or art work was done after the hold. None of the new pilot worked examples, activities or forms are built into public course routes.
+Unit 4 was subsequently released from its content hold by the coordinator. The final shared SPEC-unit04.md was snapshotted into this directory without modifying Socrates' shared source. The final spec supersedes the original parked draft and both old assessment forms.
 
 ## Active implementation
 
-- Existing reader and plain-JS Geometry renderer extended, not replaced.
-- `worked-example`: statement/reason rows, one row per Next step, Back, Show all.
-- `common-mistake`: fictional work followed by an explicit correction reveal.
-- `practice`: separate solution and second-check reveals, in that order.
-- `exit-ticket`: two prompts followed by the fixed last line `What's confusing?`.
-- All 180 lessons carry a Jacobs citation on the cover and in catalog/deck metadata. The 141 regular lessons have common-mistake and exit-ticket slides.
-- Existing lesson 1.10 is the template demonstration. Its worked proof is the already-existing segment-addition example, not new Unit 4 content.
-- Mobile learner pages put the side panel after the page instead of covering the proof controls. Text remains scrollable at every width. Existing non-template reader and all 44 interactive placements are retained.
-- Course remains text only, without narration.
+- Plain-JS shared reader and Geometry page renderer are extended, not replaced. No narration.
+- Worked examples reveal one statement/reason row per tap, with a prediction prompt in the next row, Back and Show all.
+- Every worked-example, practice and common-mistake screen has an explicit figure slot. Figures sit beside text on desktop and landscape and above it on 390 portrait.
+- Practice has separate solution and second-check reveals plus the paper-first instruction. The fixed final exit question is a numbered item.
+- Leo's self-hosted title/body/math fonts, wobble buttons, ruled/circled proof rows, reduced-motion-safe reveals, index cards, red strikes, notched exits and dark tokens are in use.
+- All 180 lesson covers carry Jacobs metadata. Short public source relationships distinguish related review scope, the inclusive trapezoid adaptation and the tangent-angle corollary.
+- All 20 original errata remain corrected. Round 2 completed the reflection incidence argument, identity-dilation exception, tiny-tolerance intercepted-arc selection, repeated secant-intersection guards, approximate calculations and source corrections.
 
-## Content boundary and sources
+## Final Unit 4
 
-Only explicitly selected learner fields are used in slides and readable HTML. Private builder certificates, coordinates, comments and answer-key sections are never copied wholesale into a public deck. The browser sweep injects builder sentinel fields to verify that the renderer ignores them. Completed pilot draft answers use Euclid's fill file with Socrates' learner wording; the draft is not active during the hold.
+- Thirteen regular lessons have 12 to 14 screens, including subpages. All regular lessons have the final learner worked examples, individual practice solutions/checks, common mistake and exit ticket.
+- 4.10 has 14 screens across two class days: Day 1 covers the interior case; Day 2 covers exterior and endpoint cases, including the A/B and D/E relabeling justification. It is completed before later lessons use SSS.
+- 4.14 includes the moved convex-kite proof and fourth practice item, then launches the 4.15 self-paced review. The class-day budget remains 16 days.
+- 4.13 puts the angle-bisector proof in class and keeps the longer perpendicular-bisector proof collapsed as an optional extension. The final approved half-turn incidence proof supersedes the round-2 reflection exposition on this active route; it proves the midpoint/betweenness and ray statements explicitly.
+- 4.9 uses ten new independently keyed quiz items and eight reveal-on-demand reteach links to worked examples. 4.15 retains its 16-item review bank. Both assessment forms are replaced with 12 new items each, not reused review items.
+- Standalone learner forms at `geometry/forms/unit04-a.html` and `unit04-b.html` contain all 24 given-only SVGs and no answer keys. The two SSA item-12 figures and review item 16 carry their own full inline ray/circle/ticks/dimensions, without coordinate or radical labels.
+- Teacher keys are separate in UNIT04-KEYS.md. No private coordinate certificate, staff instruction or builder blob is exported into student DOM. Explicit student solutions are revealed on request.
+- 4.1 uses C=(1,2), D=(7,2), with squared corresponding side lengths 25, 5 and 20.
+- Guided tasks add drag/keyboard correspondence matching, exact rigid-motion frames, draggable ASA rays, drag-to-order proofs, CPCTC locking, isosceles apex/turn exploration, exact reflected frames, constrained/all-case SSS exploration and a radius/crossing guard. All 44 existing interactive placements remain.
+- SSA counts use distinct strictly forward nondegenerate triangles. The slider rejects a hit at A, backward intersections, flat triangles and duplicate tangent roots. One valid hit does not imply tangency.
 
-`python3 tools/geometry/export-v2.py` regenerates citation metadata from the checked-in `spec-src/data.py` and preserves the held learner draft from the checked-in source snapshots. `node tools/geometry/build.mjs` regenerates the active course. `--check` verifies deterministic outputs.
+## Source and art boundary
 
-## Errata status
+The exporter uses an explicit learner-field allowlist. Regular worked solutions use Socrates' learner paraphrases of Euclid's mathematics. Quiz/review/form answers and independent checks are selected individually from the final builder bank and matched to the final learner prompt ids. Staff labels and backend certificates are removed, never copied wholesale.
 
-E05 was applied first. All 20 errata have implementation fixes and regression coverage, pending Euclid's review. Exact prose replacements are used where the erratum supplies prose. E06 and E11 provide builder directions, so their mathematical requirements are implemented as learner statements. E09 takes the inclusive-convention option, retaining rectangles and excluding oblique parallelograms. E18 to E20 are behavioral changes, not text substitutions.
+Of 143 Unit 4 figure slots, 49 have supplied SVGs and 94 intentionally show `Figure coming` plus the lesson id pending Leo's art. All mandatory standalone assessment and SSA figures are supplied. The current exact-construction art commission is LEO-DIAGRAMS-unit04.md, also regenerated at `/workspace/geometry-v2/LEO-DIAGRAMS-unit04.md`. That handoff, not the old parked draft, is current. Leo's final visual pass and Euclid/Socrates implementation stamps are still required before merge.
 
-| ID | Status | Correction |
-|---|---|---|
-| E01 | Applied | Distinct coplanar lines |
-| E02 | Applied | Two distinct points |
-| E03 | Applied | Division by a nonzero number |
-| E04 | Applied | Radius-length chords, not circumference; preview labeled |
-| E05 | Applied first | Triangle versus stage-1-and-later Koch symmetry |
-| E06 | Applied | M defined, opposite-side intersections and betweenness before use |
-| E07 | Applied | Ladder needs its length, one leg and a right angle |
-| E08 | Applied | Distinct lines, vertical cases, plus 9.10 qualification |
-| E09 | Applied | Inclusive isosceles trapezoid convention |
-| E10 | Applied | Image/preimage scale factor |
-| E11 | Applied | Explicit dilation postulates and collinear case |
-| E12 | Applied | Minor and major circular-segment domains |
-| E13 | Applied | Cylinder slice orientation and clipping |
-| E14 | Applied | Right circular cone and cylinder hypothesis |
-| E15 | Applied | Convex regular polyhedra |
-| E16 | Applied | Shorter great-circle arcs, nonantipodal and antipodal cases |
-| E17 | Applied | Nondegenerate convex spherical triangles |
-| E18 | Applied | Scale-relative exact-diameter predicate; 179 degrees is not exact |
-| E19 | Applied | True inside/outside regime, constrained On mode, separate tangents |
-| E20 | Applied | Strict skip domain and compound-cycle labeling |
+`tools/geometry/drafts/` preserves pre-hold history only. It is not imported by the build and the old exporter no longer rewrites it.
 
-The exact source quotations, requested changes and Jacobs anchors are retained in `tools/geometry/errata.json` and `ERRATA.md`. Regenerated decks keep body and readable HTML duplicates synchronized, including reused review content.
-
-## Decisions and conflicts
-
-- Unit 4 now takes precedence over the earlier full-pilot request: preserved drafts, no activation. Both forms are pending, not just Form B.
-- The spec's 10 slide slots and 12 to 14 screen target had been reconciled in the held draft using subpages. The revised two-day SSS spec supersedes that draft; do not use its old counts as acceptance for the new Unit 4.
-- `data.py` omits review/assessment mappings and the legacy design lesson 12.12. Review/exam covers use the appropriate Jacobs chapter review ranges, MR/FR for exams; 12.12 is labeled review/assessment scope rather than inventing a book example. Every regular mapping provided by `data.py` is checked exactly.
-- Historical Unit 4 4.1 coordinates corrected per Euclid to C=(1,2), D=(7,2), with squared side lengths 25, 5 and 20. No pilot art is activated by that correction.
-- Specialized Unit 4 interactions and the learner-specific worked examples are held. The live template demonstration uses only existing 1.10 mathematics.
-
-## Verification commands
+## Rebuild and verify
 
 ```sh
+python3 tools/geometry/export-v2.py
+python3 tools/geometry/export-unit04.py
+node tools/geometry/build.mjs
+python3 tools/geometry/export-v2.py --check
+python3 tools/geometry/export-unit04.py --check
 node tools/geometry/build.mjs --check
-node --test tests/geometry-course.test.mjs tests/geometry-v2.test.mjs
-# In public/: python3 -m http.server 8768 --bind 127.0.0.1
-node tests/geometry-v2-browser.mjs
+node --test tests/geometry-course.test.mjs tests/geometry-v2.test.mjs tests/geometry-review.test.mjs tests/geometry-unit04.test.mjs
+# Serve public/ with python3 -m http.server 8772 --bind 127.0.0.1
+GEOMETRY_BASE=http://127.0.0.1:8772 node tests/geometry-v2-browser.mjs
+node tests/geometry-template-shots.mjs
+node tests/geometry-unit04-browser.mjs
 ```
-
-Screenshots and the browser result JSON are on the shared box under `/workspace/geometry-v2/template-screenshots/`. The prior Unit 4 screenshots under `screenshots/` predate the hold and are not the active-template evidence.

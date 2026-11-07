@@ -21,16 +21,16 @@ L={
  mistake="Jordan wrote triangle ABC ≅ triangle FED. That is not just a new order. It says A matches F, which is false here. Write triangle ABC ≅ triangle DEF only when those letters really match. Use = for lengths and angle measures, and ≅ for figures."),
 "4.2":dict(
  we1=("Flashlight beams (informal, adapted from the airplane example on Jacobs p. 146).",[
-  ("Tape a segment NT on the floor. Two students stand at N and T and aim flashlights inward at fixed angles.","This fixes one side and the two angles at its ends."),
+  ("Tape a segment NT on the floor. Two students stand at N and T and aim flashlights inward at fixed angles, both on the same side of NT.","This fixes one side and the two angles at its ends."),
   ("The beams cross at one point. Call it W.","Two straight beams that are not the same line cross at most once."),
-  ("A second team copies the same segment length and the same two angles, then lays their tape on top of the first.","Same recipe, same starting segment."),
+  ("A second team copies the same segment length and the same two angles, lays their tape on top of the first, and points the beams inward on the same side of segment NT.","Same recipe, same starting segment, same side."),
   ("Their beams follow the same paths, so they cross at the same W.","The angles point the beams the same way."),
   ("So this recipe (two angles and the side between them) seems to give only one triangle. We will prove it in 4.4.","Today it is a conjecture, not a theorem.")]),
- we2=("Same angles, different size (original counterexample).",[
-  ("Draw an equilateral triangle with sides 2 and another with sides 5.","Two triangles to compare."),
-  ("In each one, all three angles are equal. So the angles match.","The isosceles theorem (coming in 4.7 and 4.8) will show this."),
-  ("But the sides are 2 and 5, so the triangles are not congruent.","Congruent shapes have equal lengths."),
-  ("So matching all three angles (AAA) is not enough.","One counterexample breaks the rule.")]),
+ we2=("Same angles, different size (original counterexample; wording from UNIT04-SIGNOFF.md (d)).",[
+  ("Here are two triangles with corresponding angles marked equal as given information. All three pairs of angles are marked.","Given. The picture shows equilateral triangles, but the matching angles are told to us, not proved."),
+  ("A corresponding side is 2 in one and 5 in the other.","Given."),
+  ("They cannot be congruent, because congruence preserves corresponding lengths.","Congruent shapes have equal matching lengths."),
+  ("Thus AAA does not guarantee congruence.","One counterexample breaks the rule.")]),
  practice=[("Which angle is included between sides AB and AC?","Angle BAC.","Both sides start at A, and A is the middle letter."),
   ("Which side is included between angles A and B?","Side AB.","Its ends are the two angle corners. AC would sit between angles A and C instead."),
   ("Does matching all three angles (AAA) fix the size?","No. The side 2 and side 5 equilateral triangles have matching angles but different lengths.","A slide, turn or flip keeps a side of length 2 at length 2. It can never become 5.")],
@@ -141,18 +141,32 @@ L={
   ("Why does equilateral mean equiangular?","Use Theorem 9 on two different pairs of equal sides.","That gives A = B and B = C, so all three are equal.")],
  mistake="Flipping the if and then does not prove the converse. Theorem 10 needs its own proof (the ASA self-comparison)."),
 "4.10":dict(
- we1=("Proof of SSS, main case (adapted from Theorem 11, Jacobs p. 164).",[
-  ("Goal: triangle ABC ≅ triangle DEF, where AB = DE, BC = EF and CA = FD.","Given."),
-  ("On the other side of AB from C, build triangle ABG ≅ triangle DEF, so AC = AG and BC = BG.","Copy angle D at A and mark AG = DF, then use SAS."),
-  ("Draw CG. In this case, CG crosses AB between A and B.","The main case, taught today."),
-  ("Triangles ACG and BCG are isosceles.","AC = AG and BC = BG."),
-  ("Their base angles at C and G are equal. Add the two pairs: angle ACB = angle AGB.","Theorem 9, then angle addition."),
-  ("Triangle ABC ≅ triangle ABG.","SAS: AC = AG, angle C = angle G, BC = BG."),
-  ("Triangle ABG ≅ triangle DEF, so triangle ABC ≅ triangle DEF.","Two triangles congruent to the same triangle are congruent to each other.")]),
+ days=2,
+ we1=("Day 1. Proof of SSS, interior case (adapted from Theorem 11, Jacobs p. 164; copy rows from UNIT04-SIGNOFF.md (c)).",[
+  ("AB = DE, AC = DF and BC = EF.","The original givens. Goal: triangle ABC ≅ triangle DEF."),
+  ("On the side of line AB away from C, draw ray AG so that angle BAG = angle EDF.","Angle existence and uniqueness (Protractor Postulate). This is not the compass angle copy from 4.12, which needs SSS. The angle is between 0 and 180 degrees because DEF is a real triangle."),
+  ("On that ray, choose G so that AG = DF.","Segment existence and uniqueness (Ruler Postulate). DF is more than 0, so G exists, is not A, and is off line AB."),
+  ("Triangle ABG ≅ triangle DEF, so BG = EF.","SAS (AB = DE, AG = DF, included angle BAG = EDF), then CPCTC."),
+  ("AC = AG and BC = BG.","AC = DF and AG = DF; BC = EF and BG = EF."),
+  ("Draw CG. In this case, CG crosses AB between A and B.","The interior case, taught on Day 1."),
+  ("Triangles ACG and BCG are isosceles, so angle ACG = angle AGC and angle BCG = angle BGC.","Theorem 9."),
+  ("Add: angle ACB = angle ACG + angle BCG = angle AGC + angle BGC = angle AGB.","Angle addition, because CG runs inside both angles."),
+  ("Triangle ABC ≅ triangle ABG.","SAS: AC = AG, included angle ACB = AGB, BC = BG."),
+  ("Triangle ABG ≅ triangle DEF, so triangle ABC ≅ triangle DEF.","Two triangles congruent to the same triangle are congruent to each other. A matches D, B matches E, G matches F.")]),
+ we2=("Day 2. The exterior and endpoint cases (same setup as Day 1, rows 1 to 5).",[
+  ('The exterior intersection can be past A or past B, and the endpoint can be A or B. It is enough to show the past-B and through-B versions: the other versions follow by exchanging A with B and, in the matching target triangle, D with E. All side correspondences and SAS steps stay matched under that exchange.',"Which cases we must show. [Sign-off patch R2]"),
+  ("Exterior case: line CG meets line AB outside segment AB, past B.","Same G, same equal sides as Day 1."),
+  ("Here angle ACG is the larger angle at C and angle BCG is the smaller one. At G, angle AGC is larger and angle BGC is smaller.","Name the angles before subtracting."),
+  ("Angle ACG = angle AGC and angle BCG = angle BGC.","Theorem 9 in triangles ACG and BCG."),
+  ("Subtract: angle ACB = angle ACG - angle BCG = angle AGC - angle BGC = angle AGB.","Angle subtraction."),
+  ("Endpoint case: CG passes through B, so C, B and G are on one line.","The endpoint representative after that relabeling. [Sign-off patch R2]"),
+  ("Then ray CB is ray CG and ray GB is ray GC, so angle ACB is angle ACG and angle AGB is angle AGC.","The rays along CG are the rays through B."),
+  ("Triangle ACG is isosceles (AC = AG), so angle ACG = angle AGC. That means angle ACB = angle AGB.","Theorem 9 in the one triangle that remains."),
+  ("In every case, SAS gives triangle ABC ≅ triangle ABG, and the Day 1 finish gives triangle ABC ≅ triangle DEF.","So SSS holds for all triangles before 4.12 to 4.14 use it.")]),
  practice=[("Two triangles both have sides 3, 4 and 5. Are they congruent?","Yes, by SSS.","A flip may change which way it faces, but not the lengths."),
   ("Can the SSS proof use SSS for its helper triangles?","No. It uses the isosceles base-angle theorem, which came from SAS.","Nothing in the proof leans on SSS itself.")],
- mistake="SSS is a theorem in this course, not an assumption. A complete proof also covers the other two cases (see 4.15).",
- moved_out="The exterior and endpoint cases of Worked example 1 go to 4.15 Review (Proof clinic slide). Worked example 2 (the kite) and Practice 2 go to 4.14 as Worked example 3 and Practice 4."),
+ mistake="'SSS is a postulate in this course' is the misconception. SSS is a theorem proved from SAS here. (Some other valid axiom systems do postulate SSS.) A complete proof covers all three cases, which is why Day 2 exists.",
+ moved_out="Worked example 2 of Euclid's 4.10 (the kite) and its Practice 2 are taught in 4.14 as Worked example 3 and Practice 4. All three SSS cases now stay in 4.10 (Day 1 and Day 2)."),
 "4.11":dict(
  we1=("Swinging door: one SSA recipe, two triangles (student version of Euclid's example).",[
   ("Draw a ray from A. Mark B above it so that AB = 5 and the angle at A is fixed.","These are the given side and angle."),
@@ -167,8 +181,8 @@ L={
   ("The two third sides are still different.","So long sides don't rescue SSA.")]),
  practice=[("In Worked example 1, which angle is included between AB and BC?","Angle ABC, not angle BAC.","The two sides share the point B."),
   ("Do the two triangles in Worked example 1 have the same angle A?","Yes. Both use ray AB and the same ray from A.","The two rays are exactly the same in both triangles."),
-  ("Why does AC1 = 3 and AC2 = 5 prove the triangles are not congruent?","The other two sides match, but the third sides differ.","One triangle has sides 3, BC and 5 (all different). The other has sides 5, BC and 5, so it is isosceles.")],
- mistake="SSA sometimes gives one triangle, but not always, so it is never a test. If the arc just touches the ray, you get one right triangle (we prove lengths for that later).",
+  ("Why does AC1 = 3 and AC2 = 5 prove the triangles are not congruent?","The other two sides match, but the third sides differ.","Call the shared compass length r. The perimeters are 3 + r + 5 = 8 + r and 5 + r + 5 = 10 + r. They differ, so even changing the vertex matching cannot make the triangles congruent.")],
+ mistake="SSA is not a universal congruence test. In the special pictured case, the circle is tangent to the supporting line at a point C strictly beyond A on the ray, and BC is perpendicular to the line. Then ABC is one nondegenerate (real, not flat) right triangle. A single intersection on a ray is not always a tangency.",
  builder_only="Euclid's coordinate version (A = (0,0), B = (4,3), circle radius sqrt(10)) and the doubled-coordinate version stay builder-only, for checking the diagram. Students never see coordinates or sqrt(10) in 4.11."),
 "4.12":dict(
  we1=("Copy a triangle by SSS (adapted from Construction 5, Jacobs p. 171).",[
@@ -183,12 +197,20 @@ L={
   ("Mark DF = AC along the new ray.","Compass copy."),
   ("DE = AB, DF = AC, angle EDF = angle BAC, so triangle DEF ≅ triangle ABC.","SAS. The angle copy itself works because of SSS.")]),
  practice=[("AB = 5, AC = 4, BC = 3. After DE = 5, what radii do you use?","Radius 4 at D and radius 3 at E.","Each radius is the side that touches that corner."),
-  ("Do the top and bottom crossing points give different triangles?","No. Flipping across DE swaps them and keeps every length.","SSS works for both."),
+  ("Do the top and bottom crossing points give noncongruent copies?","No. They give two distinct congruent copies. Reflection across line DE exchanges them and preserves every length; SSS applies to each.","Flipping across DE swaps them."),
   ("Can you mark a ruler reading instead of using the compass and still call it an exact construction?","No. Measuring adds error and uses a different tool.","Constructions copy lengths with the compass, not with numbers.")],
  mistake="'It looks equal' is not a reason. Name the three equal parts, then cite SSS or SAS."),
 "4.13":dict(
  we1=("Optional extension: the perpendicular bisector construction, proved in three stages.",[
   ("Circles of the same radius at A and B cross at P and Q, on opposite sides of AB. Let M be the point where PQ meets AB.","Define M before using it."),
+  ('N is the midpoint of segment AB. The Ruler Postulate guarantees every segment has a midpoint, so N exists before we draw anything.','The Ruler Postulate guarantees every segment has a midpoint. [Sign-off patch R2, student paraphrase]'),
+  ('Turn the whole picture halfway around N. This half-turn moves A to where B was, and B to where A was.','Half-turn: a rotation of 180 degrees about a point (Unit 3). [Sign-off patch R2, student paraphrase]'),
+  ('A half-turn keeps every distance the same. So the circle around A lands on the circle around B, and the circle around B lands on the circle around A.','Rotations preserve distance (Unit 3). The two circles have equal radii. [Sign-off patch R2, student paraphrase]'),
+  ('The half-turn also flips the two sides of line AB. P is on one side and Q is on the other. So P lands on Q, and Q lands on P.','P and Q are the only two points where the circles cross. [Sign-off patch R2, student paraphrase]'),
+  ('A half-turn sends each point straight through N to the other side. The point lands the same distance from N as it started.','Definition of a half-turn. [Sign-off patch R2, student paraphrase]'),
+  ('P lands on Q. So N is exactly halfway from P to Q. N is the midpoint of PQ.','Use the last two rows together. [Sign-off patch R2, student paraphrase]'),
+  ('N is on segment PQ and on segment AB. So PQ crosses AB at N. That crossing point is M, so M is N. M is between A and B and between P and Q, and ray PM is ray PQ.','Two different lines cross in at most one point. [Sign-off patch R2, student paraphrase]'),
+  ("M is between A and B, and also between P and Q. So ray PM is ray PQ.","Shown by the half-turn rows just above."),
   ("AP = BP, AQ = BQ, PQ = PQ, so triangle APQ ≅ triangle BPQ.","SSS."),
   ("So angle APM = angle BPM.","CPCTC, and PM lies along PQ."),
   ("AP = BP and PM = PM, so triangle APM ≅ triangle BPM.","SAS."),
@@ -220,24 +242,25 @@ L={
   ("In Worked example 2, what is the angle next to the 40 degree angle?","140 degrees, because a linear pair adds to 180.","40 + 140 = 180."),
   ("Two sides and a non-included angle match. Can you use SSS?","No. The third side is not known.","That is SSA, and 4.11 showed SSA can fail.")],
  mistake="Not every proof needs congruent triangles. Vertical angles alone solve Worked example 2.",
- moved_in="From 4.10: Worked example 3 (the kite, SSS then CPCTC) and Practice 4 (AB = 2x + 1, AD = 11)."),
+ moved_in="From 4.10: Worked example 3 (the convex kite, SSS then CPCTC) and Practice 4 (AB = 2x + 1, AD = 11)."),
 }
 # Moved items, learner versions (kept here so values sit next to their source)
 MOVED={
 "4.14_we3":("Worked example 3, moved from 4.10: the kite (original).",[
-  ("Quadrilateral ABCD has AB = AD and CB = CD.","Given."),
+  ("Convex quadrilateral ABCD has AB = AD and CB = CD.","Given. Convex matters: it keeps diagonal AC inside angle BAD."),
   ("AC = AC.","A segment equals itself."),
   ("Triangle ABC ≅ triangle ADC.","SSS."),
-  ("Angle BAC = angle DAC and angle BCA = angle DCA.","CPCTC. So AC bisects both angles. Saying the diagonals are perpendicular would need more proof.")]),
-"4.14_p4":("Practice 4, moved from 4.10: in the kite, AB = 2x + 1 and AD = 11. Find x.","The equal sides give 2x + 1 = 11, so x = 5.","Plug in: 2(5) + 1 = 11."),
-"4.15_clinic":("Proof clinic, moved from 4.10: the other two SSS cases.",[
+  ("Angle BAC = angle DAC and angle BCA = angle DCA.","CPCTC. Because ABCD is convex, AC is inside both angles, so AC bisects them. Saying the diagonals are perpendicular would need more proof.")]),
+"4.14_p4":("Practice 4, moved from 4.10: in the convex kite, AB = 2x + 1 and AD = 11. Find x.","The equal sides give 2x + 1 = 11, so x = 5.","Plug in: 2(5) + 1 = 11."),
+"4.15_clinic":("Optional review repeat of 4.10 Day 2: the other two SSS cases.",[
   ("Case 2: CG meets line AB outside segment AB.","Same setup as the 4.10 proof."),
   ("Subtract the equal base angles instead of adding them. You still get angle ACB = angle AGB.","Theorem 9, then angle subtraction."),
   ("Case 3: CG passes through A or B, so A, C, G (or B, C, G) are on one line.","Only one isosceles triangle remains."),
   ("That one isosceles triangle gives angle ACB = angle AGB directly.","Theorem 9."),
   ("In every case, SAS finishes the proof.","So SSS holds for all triangles.")]),
 }
-# Quiz, review and form items: learner versions keyed Q1 to Q16 (bank order) and B2, B7 (Form B variants)
+# (Bank prompts now live in bank_u04.py.)
+# Quiz, review and form items (v1, superseded; kept only for history): learner versions keyed Q1 to Q16 (bank order) and B2, B7 (Form B variants)
 BANK={
 "Q1":"Triangle ABC ≅ triangle PQR. Which side matches CA?",
 "Q2":"Triangle ABC ≅ triangle DEF, BC = 2x + 3 and EF = 15. Find x.",

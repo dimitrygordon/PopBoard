@@ -930,10 +930,17 @@
   },
   "4.13": {
     "relationship": "",
-    "section": "4.7",
-    "pages": "169 to 175",
+    "section": "4.6; 4.7",
+    "pages": "163 to 168; 169 to 175",
     "note": "",
     "references": [
+      {
+        "section": "4.6",
+        "pages": [
+          163,
+          168
+        ]
+      },
       {
         "section": "4.7",
         "pages": [

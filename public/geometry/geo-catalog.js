@@ -1492,7 +1492,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 12,
   "pages": [],
   "standards": [],
   "built": true,
@@ -1523,7 +1523,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 7,
+  "slides": 12,
   "pages": [],
   "standards": [],
   "built": true,
@@ -1554,7 +1554,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 12,
   "pages": [],
   "standards": [
    "G.T.2"
@@ -1587,7 +1587,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 12,
   "pages": [],
   "standards": [
    "G.T.2"
@@ -1620,7 +1620,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 12,
   "pages": [],
   "standards": [
    "G.GF.3"
@@ -1653,7 +1653,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 12,
   "pages": [],
   "standards": [],
   "built": true,
@@ -1684,7 +1684,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 12,
   "pages": [],
   "standards": [
    "G.T.1b"
@@ -1717,7 +1717,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 12,
   "pages": [],
   "standards": [
    "G.T.1b"
@@ -1750,7 +1750,7 @@ export const DECKS = [
    ],
    "relationship": "related review scope"
   },
-  "slides": 6,
+  "slides": 21,
   "pages": [],
   "standards": [],
   "built": true,
@@ -1781,7 +1781,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 14,
   "pages": [],
   "standards": [
    "G.T.2"
@@ -1814,7 +1814,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 7,
+  "slides": 12,
   "pages": [],
   "standards": [],
   "built": true,
@@ -1845,7 +1845,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 7,
+  "slides": 12,
   "pages": [],
   "standards": [
    "G.GF.6",
@@ -1866,9 +1866,16 @@ export const DECKS = [
   "tag": "GEOMETRY · UNIT 4 · LESSON 4.13",
   "sub": "Unit 4: Triangle Congruence",
   "jacobs": {
-   "section": "4.7",
-   "pages": "169 to 175",
+   "section": "4.6; 4.7",
+   "pages": "163 to 168; 169 to 175",
    "references": [
+    {
+     "section": "4.6",
+     "pages": [
+      163,
+      168
+     ]
+    },
     {
      "section": "4.7",
      "pages": [
@@ -1879,7 +1886,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 12,
   "pages": [],
   "standards": [],
   "built": true,
@@ -1910,7 +1917,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 14,
   "pages": [],
   "standards": [],
   "built": true,
@@ -1941,7 +1948,7 @@ export const DECKS = [
    ],
    "relationship": "related review scope"
   },
-  "slides": 7,
+  "slides": 21,
   "pages": [],
   "standards": [],
   "built": true,
@@ -1972,7 +1979,7 @@ export const DECKS = [
    ],
    "relationship": "related review scope"
   },
-  "slides": 7,
+  "slides": 28,
   "pages": [],
   "standards": [
    "G.T.2 (SAS",

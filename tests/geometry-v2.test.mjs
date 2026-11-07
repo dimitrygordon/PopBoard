@@ -27,12 +27,6 @@ test('all regular lessons have common mistakes and exits ending with the fixed q
   const exit=slides.at(-1);assert.equal(exit.geo.kind,'exit-ticket');assert.equal((exit.geo.body.match(/<li>/g)||[]).length,3);assert.ok(text(exit.geo.body).trim().endsWith("What's confusing?"),d.slug);
  }
 });
-test('Unit 4 pilot is held, with completed work preserved outside public',()=>{
- assert.ok(read('tools/geometry/drafts/u04-v2.json').includes('Worked example'));
- assert.ok(!read('tools/geometry/build.mjs').includes('pilot(page'));
- assert.ok(!fs.existsSync(new URL('../public/geometry/forms/unit04-a.html',import.meta.url)));
- for(const d of DECKS.filter(d=>d.q===4))assert.ok(!deck(d).slides.some(s=>s.geo.kind==='worked-example'));
-});
 test('existing lesson 1.10 exercises every template type and complete step/reason schema',()=>{
  const slides=deck(DECKS.find(d=>d.slug==='u01-l10')).slides;
  for(const kind of ['worked-example','common-mistake','practice','exit-ticket'])assert.ok(slides.some(s=>s.geo.kind===kind),kind);
@@ -46,7 +40,7 @@ test('builder metadata and raw coordinate certificates are absent from exported 
 test('E01 to E17: corrected learner text present and superseded text gone from every deck',()=>{
  const errata=JSON.parse(read('tools/geometry/errata.json'));
  const joined=text(all.map(d=>JSON.stringify(d)).join('\n'));
- const witnesses={E06:'Reflection in AB fixes each center and circle',E09:"Under this course's inclusive trapezoid convention",E11:'Postulate (assumed here, not proved by proportional sides)'};
+ const witnesses={E06:'The half-turn also flips the two sides of line AB',E09:"Under this course's inclusive trapezoid convention",E11:'Postulate (assumed here, not proved by proportional sides)'};
  for(const e of errata.slice(0,17)){
   const old=e.id==='E14'?'Cone, πr2 + πrℓ.':e.old;
   assert.ok(!joined.includes(old),`${e.id}: old text remains`);

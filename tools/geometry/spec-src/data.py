@@ -63,7 +63,7 @@ M={
 "4.10":(["4.6"],"","SSS is a postulate (it is a theorem in this course). Surface it: ask what SSS was proved from (SAS plus isosceles theorems, p. 164)."),
 "4.11":(["4.6"],"","SSA works if the sides are long. Surface it: build two triangles from the same SSA data."),
 "4.12":(["4.7"],"","A construction is correct if it looks right. Surface it: name the congruence test behind each step."),
-"4.13":(["4.7"],"","Old constructions were already proved. Surface it: ask why the bisector construction from 2.5 works."),
+"4.13":(["4.6","4.7"],"","Old constructions were already proved. Surface it: ask why the bisector construction from 2.5 works."),
 "4.14":(["4R"],"","Every proof needs triangles congruent first. Surface it: a proof solvable by vertical angles alone."),
 "5.1":(["5.1"],"","Multiplying an inequality by a negative keeps the sign. Surface it: -2x < 6."),
 "5.2":(["5.2"],"","The exterior angle equals the sum of the remote interior angles here. Surface it: ask why only 'greater than' is allowed before the parallel postulate."),

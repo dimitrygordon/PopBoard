@@ -187,3 +187,17 @@ html[data-course="geometry"][data-theme="dark"] body { background: #1F1D1A; }
 }
 
 :root[data-theme="dark"] .gx-figure-slot svg { filter: invert(.92); }
+
+.gx-activity-figure { max-width: 420px; width: 100%; touch-action: none; transform-origin: center; }
+.gx-activity-figure svg { width: 100%; height: auto; max-width: none; }
+.gx-activity-figure [data-handle] { cursor: grab; }
+.gx-activity-figure [data-handle]:focus-visible { outline: 2px solid currentColor; }
+.gx-activity-feedback { margin-top: 12px; }
+.gx-optional summary { cursor: pointer; min-height: 44px; }
+:root[data-theme="dark"] .gx-activity-figure svg { filter: invert(.92); }
+
+.gx-ordered-proof { min-height: 52px; border: 1px dashed var(--gx-dim); padding: 12px 12px 12px 36px; }
+.gx-proof-unavailable .gx-proof-applicability { opacity: .45; }
+
+.gx-unit-4 .gx-figure-layout { grid-template-columns: minmax(0, 1.3fr) minmax(0, 2fr); }
+@media (max-width: 599px) and (orientation: portrait) { .gx-unit-4 .gx-figure-layout { grid-template-columns: 1fr; } }

@@ -5,6 +5,7 @@
 //   geometry/art/manifest.json  { "pages": { "3.4/3": "art/3.4-p3.svg" }, "figs": { "slopes": "art/slopes.png" } }
 //   a page entry replaces that page's figure, a figs entry replaces that figure on every page that uses it.
 import { createBoard, createPanel } from "./gx-core.js";
+import { mountActivity } from "./geo-activities.js";
 import { FIGS, FIG_W, FIG_H } from "./geo-figures.js";
 
 const here = (p) => new URL(p, import.meta.url).href;
@@ -18,7 +19,7 @@ const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<
 const mathInto = (root) => {
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); const nodes = [];
   while (walker.nextNode()) if (!walker.currentNode.parentElement.closest("svg, .m, button, .gx-tag")) nodes.push(walker.currentNode);
-  const math = /\b[A-Z]{2,4}(?:\s*[+−=≠]\s*(?:[A-Z]{2,4}|[0-9]+))*/g;
+  const math = /\b(?:[A-Z]{1,4}|[0-9]+(?:\.[0-9]+)?[a-z]?|[a-z])(?:\s*[+−=≠×÷-]\s*(?:[A-Z]{1,4}|[0-9]+(?:\.[0-9]+)?[a-z]?|[a-z]))+\b|\b[A-Z][A-Z′]{1,5}\b|\b[0-9]+(?:\.[0-9]+)?°?/g;
   for (const node of nodes) {
     const parts = node.textContent.split(new RegExp(`(${math.source})`, "g"));
     if (parts.length < 2) continue;
@@ -32,10 +33,10 @@ export function mount({ stage, tools, slide, meta, reduce }) {
   const G = slide.geo;
   if (!G) return null;
   const layer = document.createElement("div");
-  layer.className = `gx-layer gx-k-${G.kind}${reduce ? " gx-reduce" : ""}`;
+  layer.className = `gx-layer gx-unit-${meta.q} gx-k-${G.kind}${reduce ? " gx-reduce" : ""}`;
   stage.appendChild(layer);
   stage.classList.add("gx-host");
-  const reading = ["worked-example", "common-mistake", "practice", "exit-ticket"].includes(G.kind) || (G.v2 && G.kind === "text");
+  const reading = ["worked-example", "common-mistake", "practice", "exit-ticket", "activity"].includes(G.kind) || (G.v2 && G.kind === "text");
   stage.classList.toggle("gx-reading", reading);
   let board = null, panel = null, inner = null, dead = false;
   const key = `${meta.q}.${meta.lesson}/${slide.n}`;
@@ -58,6 +59,11 @@ export function mount({ stage, tools, slide, meta, reduce }) {
   } else if (reading) {
     layer.innerHTML = `<div class="gx-lesson"><p class="gx-tag">${esc(G.tag)}</p><h2 class="gx-head">${esc(G.title)}</h2><div class="gx-content"></div></div>`;
     let content = layer.querySelector(".gx-content");
+    if (G.optional) {
+      const details=document.createElement("details"),summary=document.createElement("summary");
+      summary.textContent="Optional extension: open the proof";details.className="gx-optional";details.append(summary);
+      const body=document.createElement("div");details.append(body);content.append(details);content=body;
+    }
     if (["worked-example", "practice", "common-mistake"].includes(G.kind)) {
       content.classList.add("gx-figure-layout");
       const figure = document.createElement("figure"); figure.className = "gx-figure-slot";
@@ -71,7 +77,9 @@ export function mount({ stage, tools, slide, meta, reduce }) {
     const para = (text) => { const p = document.createElement("p"); p.textContent = text; content.append(p); return p; };
     const actions = document.createElement("div"); actions.className = "gx-actions";
     const button = (label, fn) => { const b = document.createElement("button"); b.type = "button"; b.textContent = label; b.onclick = fn; actions.append(b); return b; };
-    if (G.kind === "worked-example") {
+    if (G.kind === "activity") {
+      inner=mountActivity(content,G.activity,G.task);
+    } else if (G.kind === "worked-example") {
       para(G.prompt); content.append(actions);
       const status = para(""); status.className = "gx-step-status"; status.setAttribute("aria-live", "polite");
       const table = document.createElement("table"); table.className = "gx-proof"; content.append(table);

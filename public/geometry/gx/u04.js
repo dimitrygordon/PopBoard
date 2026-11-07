@@ -1,4 +1,5 @@
 // Unit 4 interactives: which three parts fix a triangle (4.2), SSA ambiguous case (4.11), copy a triangle by SSS (4.12).
+import { rayTrianglePoints } from "../geo-invariants.js";
 import { M, P, lab, txt, createSteps, deg, num, shape } from "./kit.js";
 
 // triangle from SSS: base from A along direction 0, apex above
@@ -20,7 +21,7 @@ export const GX = {
         if (mode === "SSS" || mode === "SAS" || mode === "ASA") { const t = sss(O, a, b, c); if (t) out.push(t); }
         if (mode === "SSA") {
           // angle A, side AB = c, side BC = a: C lies on the ray from A at distance a from B
-          const dir = M.polar(O, 1, angA), Bp = P(O.x + c, O.y), xs = M.lineCircleX(O, dir, Bp, a).filter((q) => M.dot(M.sub(q, O), M.sub(dir, O)) > 0);
+          const dir = M.polar(O, 1, angA), Bp = P(O.x + c, O.y), xs = rayTrianglePoints(O, Bp, a, dir);
           for (const q of xs) out.push([O, Bp, q]);
         }
         if (mode === "AAA") { const k = 0.6, Bc = P(O.x + c * k, O.y), cs = M.circleX(O, b * k, Bc, a * k); if (cs.length) out.push([O, Bc, cs[0].y < cs[1].y ? cs[0] : cs[1]]); }
@@ -47,8 +48,8 @@ export const GX = {
     how: "Drag B to set AB, and drag the hollow point on the bar to set the swinging side BC. Then step through.",
     kind: "construction",
     mount(B, U) {
-      const A = B.point(200, 740, { label: "A" }), Bp = B.point(520, 300, { label: "B" }), R = B.point(1360, 120, { label: "BC", constrain: (q) => P(M.clamp(q.x, 1060, 1540), 120) });
-      const L = () => { const a = R.x - 1040, dir = P(1500, A.y), xs = M.lineCircleX(A, dir, Bp, a).filter((q) => q.x > A.x).sort((p, q) => p.x - q.x); return { a, dir, xs }; };
+      const A = B.point(200, 740, { label: "A" }), Bp = B.point(600, 440, { label: "B" }), R = B.point(1250.818510677892, 120, { label: "BC", constrain: (q) => P(M.clamp(q.x, 1060, 1540), 120) });
+      const L = () => { const a = (R.x - 1040)*1.5, dir = P(1500, A.y), xs = rayTrianglePoints(A, Bp, a, dir).sort((p, q) => p.x - q.x); return { a, dir, xs }; };
       const base = (g) => {
         g.seg(P(1040, 120), R, { w: "bold" }); txt(g, P(1040, 70), "length of BC", { small: true, anchor: "start" });
         g.seg(A, P(1560, A.y)); g.arrow(A, P(1560, A.y)); g.seg(A, Bp, { w: "bold" });
@@ -60,8 +61,9 @@ export const GX = {
         { say: "Join B to each crossing. Each triangle has the same angle A, side AB and side BC.", draw: (g, t) => { const s = L(); s.xs.forEach((q, i) => g.edge(Bp, q, t, { w: i ? "main" : "bold", dash: i > 0 })); } }
       ];
       steps.intro = "angle A, side AB and a length for BC are given.";
-      createSteps(B, U, steps, base, { done: "Two crossings: two triangles. One crossing (BC at least AB, or BC exactly the height): one. None: no triangle." });
-      const sh = () => { const s = L(); const h = Math.abs(M.cross(M.unit(M.sub(s.dir, A)), M.sub(Bp, A))); U.read(`<p>BC = ${num(s.a / 100, 2)}, AB = ${num(M.dist(A, Bp) / 100, 2)}, height from B = ${num(h / 100, 2)}. Triangles: <b>${s.xs.length}</b>.</p>`); };
+      createSteps(B, U, steps, base, { done: "Count distinct points strictly forward of A that make nondegenerate triangles. Discard a hit at A, backward hits, flat triangles and repeated tangent roots. One triangle does not always mean a tangency or a right angle." });
+      const slider=U.slider({label:"BC length",min:.3,max:7.5,step:.01,value:L().a/100,fmt:v=>num(v,2)},v=>{R.x=1040+v*100/1.5;B.update();});
+      const sh = () => { const s = L();slider.set(s.a/100); const h = Math.abs(M.cross(M.unit(M.sub(s.dir, A)), M.sub(Bp, A))); U.read(`<p>BC = ${num(s.a / 100, 2)}, AB = ${num(M.dist(A, Bp) / 100, 2)}, height from B = ${num(h / 100, 2)}. Nondegenerate triangles: <b>${s.xs.length}</b> (0, 1 or 2). One valid forward hit does not by itself imply tangency.</p>`); };
       const old = B.update; B.update = () => { old(); sh(); }; sh();
     }
   },

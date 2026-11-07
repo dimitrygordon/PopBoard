@@ -11,8 +11,8 @@ const setup=name=>{
  GX[name].mount(board,{read(s){message=s;},choice(){}});
  return {points,board,get message(){return message;}};
 };
-test('R1 reflection incidence proof and R2 identity-dilation wording reach all learner copies',()=>{
- const a=JSON.stringify(deck('u04-l13'));
+test('R1 reflection source and R2 identity-dilation learner copies remain corrected',()=>{
+ const a=read('tools/geometry/content/u01-u04.mjs');
  for(const text of ['Reflection in AB fixes each center and circle','Thus PQ meets AB at M=N, between A and B','Ray PM is ray PQ'])assert.ok(a.includes(text));
  assert.ok(!a.includes('establish M lies between'));
  const b=JSON.stringify(deck('u08-l03'));
@@ -22,7 +22,7 @@ test('R1 reflection incidence proof and R2 identity-dilation wording reach all l
 });
 test('R3 actual inscribed module selects the intercepted arc on both sides of both endpoints',()=>{
  const ins=setup('inscribed'),O={x:700,y:460};
- for(const offset of [-0.25,0.25,-1e-5,1e-5])for(const endpoint of [0,120]){
+ for(const offset of [-0.25,0.25,-1e-5,1e-5,-1e-7,1e-7])for(const endpoint of [0,120]){
   const a=M.polar(O,340,0),b=M.polar(O,340,120),p=M.polar(O,340,endpoint+offset);
   [a,b,p].forEach((q,i)=>Object.assign(ins.points[i],q));ins.board.update();
   const values=[...ins.message.matchAll(/≈ ([0-9.]+)°/g)].map(m=>+m[1]);

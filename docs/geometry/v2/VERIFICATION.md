@@ -39,3 +39,20 @@ Verified November 7, 2026 (ET), local Python HTTP server on port 8772.
 - R1: reflection incidence lemma completed. R2: identity dilation and k=3 supporting-line answer corrected. R3: tiny-tolerance arc order, distinct secant intersections/rays and approximate rounding tested through the actual modules. R4: curated public source relationships and correct tangent/design/review anchors. R5: corrected historical scalene coordinates; shared final spec already carries the corrected coordinates, so it was not overwritten.
 - Socrates: next-row prediction, explicit figure slots, paper-first practice instruction and numbered final exit question implemented. Leo: self-hosted fonts, math spans, wobble buttons, ruled/circled/fading proof rows, index-card reveals, red strikes and notched exits implemented. Literata is bundled with its OFL license.
 - No merge, undraft or production deployment. This is implementation evidence, not reviewer approval.
+
+## Final Unit 4 implementation
+
+Verified locally November 7, 2026 (ET). Final source snapshot, not the held draft, is active.
+
+- Full Geometry suite: 30 passed, zero failed or skipped, including all 44 original interactives mounting, drawing and responding to input.
+- Whole-course browser sweep: 1,242 generated page mounts, 208 local links/decks/assets, no builder sentinel leaks or page errors.
+- Changed Unit 4 pages: 230 pages at each requested width, 690 mounts total. Solutions, checks, corrections and optional proofs were opened while builder sentinel fields remained absent from student DOM. No text horizontal overflow.
+- New task behavior checks: wrong/correct and reordered vertex matching; SAS move order; ASA draggable endpoints; both SSS days including both endpoint representatives; radius 4/5/6 crossing regimes; proof-order/CPCTC lock; all five final-spec SSA count fixtures through the actual interactive.
+- Final quiz, review, both forms and teacher keys are checked against exact prompt ids and selected answers. Both printable forms have 12 standalone inline SVGs and no answer key or backend coordinate labels. SVG label bounds are checked for both mandatory SSA figures.
+- Thirty-three Unit 4 screenshots: three representative lessons (4.1, 4.10 and 4.13), including both 4.10 days and activities, covers and both form-12 SSA items at 1440x900, 844x390 and 390x844. Root: `/workspace/geometry-v2/template-screenshots/u4/`; summary: `verification.json`. Whole-course cover sweep is in `u4/sweep/`.
+- Personally inspected desktop and portrait worked examples, the SSS activity and the phone Form A SSA figure. Found a cropped lower dimension label, reserved additional SVG bottom space and retook the evidence. Long desktop SSS proof rows use the existing card's vertical scroll; no proof text is removed.
+- `git diff --check`, deterministic citation/content exports and deterministic generated build passed. PR stays draft. No merge, undraft or deployment.
+
+### Remaining review and art work
+
+94 Unit 4 figure slots remain explicit clean placeholders for Leo. All mandatory standalone test diagrams and the required SSA figures are supplied. The regenerated current art commission names every lesson and bank item and includes the final exact constructions. Euclid and Socrates must review this implementation, and Leo must give his visual stamp; these checks do not substitute for their approvals.
