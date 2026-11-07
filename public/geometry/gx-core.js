@@ -125,12 +125,12 @@ export function createPanel(tools, { title, how }) {
 
 // Step-by-step construction player. steps: [{ say, draw(g, t) }]; earlier steps draw with t = 1.
 // The board's own draw(g) runs first (givens), then the steps.
-export function createSteps(B, U, steps, base, { done = "" } = {}) {
+export function createSteps(B, U, steps, base, { done = "", notice = null } = {}) {
   let n = 0, t = 1, anim = 0;
   const cap = document.createElement("p"); cap.className = "gx-step"; cap.setAttribute("aria-live", "polite");
   U.el.querySelector(".gx-ctl").before(cap);
-  const say = () => { cap.innerHTML = n === 0 ? `Start: ${steps.intro || "the givens are drawn. Tap Next step."}` : `Step ${n} of ${steps.length}: ${steps[n - 1].say}${n === steps.length && done ? ` <b>${done}</b>` : ""}`; };
-  B.draw((g) => { base(g, n); for (let i = 0; i < n; i++) steps[i].draw(g, i === n - 1 ? t : 1); });
+  const say = () => { cap.innerHTML = (notice && notice()) || (n === 0 ? `Start: ${steps.intro || "the givens are drawn. Tap Next step."}` : `Step ${n} of ${steps.length}: ${steps[n - 1].say}${n === steps.length && done ? ` <b>${done}</b>` : ""}`); };
+  B.draw((g) => { base(g, n); if(notice && notice()){say();return;} for (let i = 0; i < n; i++) steps[i].draw(g, i === n - 1 ? t : 1); if(notice)say(); });
   const play = () => {
     cancelAnimationFrame(anim);
     if (B.reduce) { t = 1; B.update(); return; }

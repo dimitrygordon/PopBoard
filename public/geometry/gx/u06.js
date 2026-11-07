@@ -1,5 +1,6 @@
 // Unit 6 interactives: parallelogram measures (6.2), Varignon midpoint quadrilateral (6.7), turtle walk (6.9),
 // regular pentagon and star polygons (6.10).
+import { starMax, starCycles } from "../geo-invariants.js";
 import { M, P, lab, txt, createSteps, deg, num, shape, tick } from "./kit.js";
 
 export const GX = {
@@ -86,9 +87,11 @@ export const GX = {
         { say: "Join every second mark: the star {5/2}. Use the sliders for other stars {n/k}.", draw: (g, t) => { const s = L(); const W = Array.from({ length: sn }, (_, i) => M.polar(O, s.r, 90 + (360 / sn) * i)); for (let i = 0; i < sn; i++) g.edge(W[i], W[(i + sk) % sn], t, { w: "main" }); } }
       ];
       steps.intro = "a center O and radius OR are given.";
-      createSteps(B, U, steps, base, { done: "An n-pointed star {n/k} joins every kth of n equally spaced points." });
-      U.slider({ label: "Star n", min: 5, max: 12, value: sn }, (v) => { sn = v; B.update(); });
-      U.slider({ label: "Star k", min: 1, max: 5, value: sk }, (v) => { sk = v; B.update(); });
+      createSteps(B, U, steps, base, { done: "The skip satisfies 1≤k&lt;n/2. If gcd(n,k)>1 this is a compound of separate cycles, not one n-pointed star." });
+      const describe = () => { const cycles=starCycles(sn,sk); U.read(`<p>{${sn}/${sk}}: ${cycles===1 ? "one circuit" : `a compound of ${cycles} cycles, not one n-pointed star`}. The point angle is 180 minus 360k/n degrees.</p>`); };
+      U.slider({ label: "Star n", min: 5, max: 12, value: sn }, (v) => { sn = v; sk=Math.min(sk,starMax(sn)); skip.input.max=starMax(sn);skip.set(sk); B.update();describe(); });
+      const skip=U.slider({ label: "Star k", min: 1, max: starMax(sn), value: sk }, (v) => { sk = v; B.update();describe(); });
+      describe();
     }
   }
 };

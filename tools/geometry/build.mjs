@@ -5,6 +5,9 @@
 //   public/geometry/covers/*.svg           unit covers and the course card (public/geometry/geo-covers.js)
 // Usage: node tools/geometry/build.mjs [--check]   (--check verifies the outputs are current, writes nothing)
 import fs from "node:fs";
+import { unit04 } from "./u04-template.mjs";
+import { unit04Figure } from "./u04-art.mjs";
+import { worked, practice, mistake, exitBody } from "./template-v2.mjs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -14,6 +17,8 @@ const CHECK = process.argv.includes("--check");
 const plan = fs.readFileSync(path.join(ROOT, "docs/geometry/progression.md"), "utf8");
 const content = {};
 for (const f of ["u01-u04", "u05-u08", "u09-u12"]) Object.assign(content, (await import(pathToFileURL(path.join(ROOT, `tools/geometry/content/${f}.mjs`)))).default);
+const citations = JSON.parse(fs.readFileSync(path.join(ROOT, "tools/geometry/jacobs-map.json"), "utf8"));
+const unit04Data = JSON.parse(fs.readFileSync(path.join(ROOT, "tools/geometry/u04-v2.json"), "utf8"));
 const { coverSvg } = await import(pathToFileURL(path.join(PUB, "geo-covers.js")));
 const artMap = JSON.parse(fs.readFileSync(path.join(ROOT, "tools/geometry/art-map.json"), "utf8"));
 
@@ -100,17 +105,33 @@ const decks = {}, catalog = [], missing = [];
 for (const u of units) {
   const lessonsWithText = u.lessons.filter((l) => content[l.key]);
   for (const l of u.lessons) {
-    const kind = kindOf(l), c = content[l.key], stds = stdsFor(l), pages = [];
+    const kind = kindOf(l), c = content[l.key], source = citations[l.key], jacobs = source && { section: source.section, pages: source.pages, references: source.references, relationship: source.relationship }, stds = stdsFor(l), pages = [];
     if (kind === "other") missing.push(l.key);
-    const page = (title, geo, extra = {}) => pages.push({ n: pages.length + 1, title, items: [], ...extra, geo: { tag: tagFor(l), title, ...geo } });
-    page(l.title, { kind: "cover", title: l.title, target: md(l.target), stds: stds.join(" \u00b7 "), cover: `geometry/${coverFor(l)}` }, { html: `<h2>${esc(l.title)}</h2><p>${md(l.target)}</p>` });
-    if (kind === "lesson") {
+    if (!jacobs) throw new Error(`Missing Jacobs citation for ${l.key}`);
+    const page = (title, geo, extra = {}) => {
+      const n=pages.length+1;
+      if(l.q===4 && ["worked-example","practice","common-mistake"].includes(geo.kind))geo={...geo,figure:unit04Figure(l.lesson,n,geo.figure)};
+      pages.push({ n, title, items: [], ...extra, geo: { tag: tagFor(l), title, ...geo } });
+    };
+    page(l.title, { kind: "cover", jacobs, title: l.title, target: md(l.target) + (l.key === "4.10" ? "<br>Two-day lesson: Day 1 interior case; Day 2 exterior and endpoint cases." : ""), stds: stds.join(" \u00b7 "), cover: `geometry/${coverFor(l)}` }, { html: `<h2>${esc(l.title)}</h2><p>${md(l.target)}</p>` });
+    if (l.q === 4) {
+      unit04(page, l, c, unit04Data[l.key], GXMAP[l.key]);
+    } else if (kind === "lesson") {
       const hook = `<p class="gx-lead">${md(l.hook)}</p><p class="gx-goal"><b>Goal:</b> ${md(l.target)}</p>`;
       page("Get started", { kind: "text", body: hook, fig: c.fig }, { html: hook });
       page("The big idea", { kind: "text", body: c.idea, fig: c.fig }, { html: c.idea });
       if (GXMAP[l.key]) { const how = md(l.inter.replace(/^Interactive: (sandbox|construction)\.\s*/, "")); page("Try it", { kind: "gx", gx: GXMAP[l.key] }, { html: `<p>${how}</p><p>Use the controls in the panel. Drag the hollow points on the board.</p>` }); }
+      for (const example of c.workedExamples || []) worked(page, { ...example, figure: example.figure || c.figure });
+      for (const item of c.practice || []) practice(page, { ...item, figure: item.figure || c.figure });
       const q = `<p class="gx-q">${c.check[0]}</p><p class="gx-hint">Work it out, then press <b>Show the answer</b>.</p>`;
       page("Check yourself", { kind: "text", body: q, fig: c.checkFig || null }, { html: `<p>${c.check[0]}</p>`, reveal: plain(c.check[1]) });
+      const commonMistake = c.commonMistake || {
+        prompt: source.misconception ? `A student says: ${source.misconception.split(" Surface it:")[0]}` : "A student says one successful drawing proves every case. What is missing?",
+        correction: c.idea + (!source.misconception ? "<p>A drawing can suggest a conjecture. A general claim requires a reason covering every stated case.</p>" : "")
+      };
+      mistake(page, commonMistake.prompt, commonMistake.correction, commonMistake.figure || c.figure);
+      const exit = exitBody(c.exitTicket || [plain(c.check[0]), "Explain the reason behind your answer in one sentence."]);
+      page("Exit ticket", { kind: "exit-ticket", body: exit }, { html: exit });
     } else {
       // review, assessment, project and exam lessons are built from the plan itself
       const scope = kind === "midterm" ? units.slice(0, 6) : kind === "final" ? units : [u];
@@ -125,8 +146,8 @@ for (const u of units) {
       }
     }
     const slug = `u${pad(l.q)}-l${pad(l.lesson)}`;
-    decks[slug] = { key: `U${pad(l.q)}-L${pad(l.lesson)}`, slides: pages };
-    catalog.push({ key: `U${pad(l.q)}-L${pad(l.lesson)}`, slug, q: l.q, module: u.title, lesson: l.lesson, title: l.title, tag: tagFor(l), sub: `Unit ${l.q}: ${u.title}`, slides: pages.length, pages: [], standards: stds, built: true, cover: coverFor(l), kind, gx: GXMAP[l.key] || null });
+    decks[slug] = { jacobs, key: `U${pad(l.q)}-L${pad(l.lesson)}`, slides: pages };
+    catalog.push({ key: `U${pad(l.q)}-L${pad(l.lesson)}`, slug, q: l.q, module: u.title, lesson: l.lesson, title: l.title, tag: tagFor(l), sub: `Unit ${l.q}: ${u.title}`, jacobs, slides: pages.length, pages: [], standards: stds, built: true, cover: coverFor(l), kind, gx: GXMAP[l.key] || null });
   }
 }
 if (missing.length) throw new Error(`lessons with no text and no generated kind: ${missing.join(" ")}`);
@@ -137,6 +158,13 @@ outputs.set(path.join(PUB, "geo-catalog.js"), `// Geometry catalog, generated by
 for (const [slug, d] of Object.entries(decks)) outputs.set(path.join(PUB, "decks", slug, "deck.json"), JSON.stringify(d) + "\n");
 for (let n = 1; n <= 12; n++) outputs.set(path.join(PUB, "covers", `u${pad(n)}.svg`), coverSvg(n));
 outputs.set(path.join(PUB, "covers", "course.svg"), coverSvg("course"));
+// Printable learners receive only prompts and given figures, never a hidden key.
+for (const form of ["A", "B"]) {
+  const items=unit04Data["4.16"].forms[form];
+  const figures=decks["u04-l16"].slides.filter(s=>s.geo.kind==="practice").slice(form==="A"?0:12,form==="A"?12:24);
+  const body=items.map((item,i)=>`<section class="item"><h2>${i+1}.</h2><p>${esc(item.prompt)}</p><figure>${figures[i].geo.figure.svg}</figure><div class="work" aria-label="Space for working"></div></section>`).join("");
+  outputs.set(path.join(PUB,"forms",`unit04-${form.toLowerCase()}.html`),`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Unit 4, Form ${form}</title><style>body{max-width:850px;margin:24px auto;padding:16px;font:18px/1.4 Georgia,serif;color:#111;background:white}h1{font-size:30px}.item{break-inside:avoid;border-top:1px dashed #777;padding:12px 0}h2{display:inline;font-size:20px}figure{margin:0;width:100%;max-width:500px}svg{width:100%;height:auto}.work{min-height:130px}@media screen{.item:last-child{min-height:calc(100svh - 32px)}}@media print{body{margin:0;padding:0}.item{break-after:page}.item:last-child{break-after:auto}button,a{display:none}}</style></head><body><h1>Geometry Unit 4: Form ${form}</h1><p>Name: ____________________ Date: ______________</p><p>Show equations, proof reasons and ordered correspondence. All figures are supplied inline. Do not use trig or the distance formula for SSA explanations.</p><p>Original aligned items. Related scope: Jacobs 4.2 to 4.7, pp. 139 to 175; Chapter 4 review, pp. 176 to 180.</p>${body}</body></html>\n`);
+}
 let stale = 0;
 for (const [f, s] of outputs) {
   const old = fs.existsSync(f) ? fs.readFileSync(f, "utf8") : null;

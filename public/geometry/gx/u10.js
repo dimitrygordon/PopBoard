@@ -1,11 +1,12 @@
 // Unit 10 interactives: a circle's center from two chords (10.2), inscribed angle (10.5), secant and tangent angles (10.9),
 // circumcircle (10.11), incircle (10.12), triangle centers and the Euler line (10.13), Napoleon's theorem (10.14).
+import { isDiameter, circleRegime } from "../geo-invariants.js";
 import { M, P, lab, txt, createSteps, deg, num, shape, tick, onCircle } from "./kit.js";
 
 // the arc from x to y (degrees) that does not contain any of the points in avoid
 const arcAvoid = (O, x, y, avoid) => {
   const a = M.dirDeg(O, x), b = M.dirDeg(O, y), ccw = (((b - a) % 360) + 360) % 360;
-  const inside = (p) => { const d = (((M.dirDeg(O, p) - a) % 360) + 360) % 360; return d > 0.5 && d < ccw - 0.5; };
+  const inside = (p) => { const d = (((M.dirDeg(O, p) - a) % 360) + 360) % 360; return d > 1e-10 && d < ccw - 1e-10; };
   return avoid.some(inside) ? 360 - ccw : ccw;
 };
 const perpBisector = (a, b) => { const m = M.mid(a, b), v = M.perp(M.unit(M.sub(b, a))); return [M.add(m, M.mul(v, -2000)), M.add(m, M.mul(v, 2000))]; };
@@ -40,6 +41,7 @@ export const GX = {
       B.draw((g) => {
         g.circle(O, r); g.dot(O); lab(g, O, "O", P(O.x, O.y - 100));
         g.seg(Pp, A, { w: "bold" }); g.seg(Pp, Bb, { w: "bold" }); g.seg(O, A); g.seg(O, Bb);
+        if (M.dist(A,Bb)<1e-9*r || M.dist(A,Pp)<1e-9*r || M.dist(Bb,Pp)<1e-9*r) { U.read("<p>Undefined: choose three distinct points.</p>"); return; }
         const arc = arcAvoid(O, A, Bb, [Pp]), ins = M.angle(A, Pp, Bb);
         const a0 = M.dirDeg(O, A), a1 = M.dirDeg(O, Bb), ccw = (((a1 - a0) % 360) + 360) % 360;
         if (Math.abs(ccw - arc) < 0.01) g.arc(O, r, a0, a1, { w: "bold" }); else g.arc(O, r, a1, a0, { w: "bold" });
@@ -47,22 +49,38 @@ export const GX = {
         if (arc <= 180) g.angle(A, O, Bb, 2, 60);
         lab(g, A, "A", O); lab(g, Bb, "B", O); lab(g, Pp, "P", O);
         txt(g, P(1300, 360), `arc AB = ${deg(arc)}`); txt(g, P(1300, 430), `\u2220APB = ${deg(ins)}`, { bold: true });
-        U.read(`<p>The inscribed angle is half its intercepted arc: ${deg(ins)} = \u00bd \u00d7 ${deg(arc)}. Slide P along the same arc and the angle stays put. Cross A or B onto the other arc and P intercepts the other arc, so the angle becomes the supplement.${Math.abs(arc - 180) < 1.5 ? " AB is a diameter, so the angle is 90\u00b0." : ""}</p>`);
+        U.read(`<p>The inscribed angle is half its intercepted arc. Measured angle ≈ ${deg(ins)}; half the intercepted arc ≈ ${deg(arc / 2)}. Slide P along the same arc and the angle stays put. Cross A or B onto the other arc and P intercepts the other arc, so the angle becomes the supplement.${isDiameter(arc) ? " AB is a diameter, so the angle is 90\u00b0." : ""}</p>`);
       });
     }
   },
   secant: {
     title: "Secant and tangent angles",
-    how: "Drag the vertex V inside, onto, or outside the circle. Drag A or C to swing the two lines.",
+    how: "Use Free drag for inside/outside, On circle to constrain V exactly, or Tangents for a separate tangent construction. Drag A or C to swing the secants.",
     mount(B, U) {
       const O = P(700, 460), r = 300, on = onCircle(O, r);
-      const V = B.point(1250, 300, { label: "V" }), A = B.point(...Object.values(M.polar(O, r, 120)), { label: "A", constrain: on }), C = B.point(...Object.values(M.polar(O, r, 230)), { label: "C", constrain: on });
+      let mode = "free";
+      const V = B.point(1250, 300, { label: "V", constrain: (q) => mode === "on" ? on(q) : q }), A = B.point(...Object.values(M.polar(O, r, 120)), { label: "A", constrain: on }), C = B.point(...Object.values(M.polar(O, r, 230)), { label: "C", constrain: on });
+      U.choice("Vertex mode", [["free","Free drag"],["on","On circle"],["tangent","Tangents"]],mode,(v)=>{
+        mode=v;
+        if(mode==="on") Object.assign(V,on(V));
+        if(mode==="tangent" && M.dist(V,O)<=r) Object.assign(V,P(O.x+1.8*r,O.y));
+        B.update();
+      });
       B.draw((g) => {
         g.circle(O, r); g.dot(O, 4);
-        const d = M.dist(V, O), where = Math.abs(d - r) < 12 ? "on" : d < r ? "inside" : "outside";
+        if(mode==="tangent") {
+          const d=M.dist(V,O);
+          if(d<=r) { U.read("<p>Undefined: move V strictly outside for two tangents.</p>"); return; }
+          const a=M.dirDeg(O,V), offset=Math.acos(r/d)*180/Math.PI;
+          const T=M.polar(O,r,a+offset), S=M.polar(O,r,a-offset);
+          g.seg(V,T);g.seg(V,S);g.seg(O,T,{dash:true});g.seg(O,S,{dash:true});
+          g.right(O,T,V);g.right(O,S,V);lab(g,V,"V",O);lab(g,T,"T",O);lab(g,S,"S",O);
+          U.read(`<p>Separate tangent construction: OT and OS are perpendicular to VT and VS. Measured angle V ≈ ${deg(M.angle(T,V,S))}. Tangents are not inferred from a near-secant.</p>`);return;
+        }
+        const d = M.dist(V, O), where = circleRegime(d,r);
         const hits = (X) => M.lineCircleX(V, X, O, r);
         const h1 = hits(A), h2 = hits(C);
-        if (h1.length < 2 || h2.length < 2) return;
+        if (M.dist(V,A)<1e-9*r || M.dist(V,C)<1e-9*r || M.dist(A,C)<1e-9*r || h1.length < 2 || h2.length < 2 || M.dist(h1[0],h1[1]) < 1e-9*r || M.dist(h2[0],h2[1]) < 1e-9*r || M.angle(A,V,C) < 1e-8 || Math.abs(M.angle(A,V,C)-180) < 1e-8) { U.read("<p>Undefined: choose distinct rays with two intersections. For tangents use Tangents mode.</p>"); return; }
         const other = (h, X) => (M.dist(h[0], X) > M.dist(h[1], X) ? h[0] : h[1]);
         const A2 = other(h1, A), C2 = other(h2, C);
         g.line(V, A, { w: "bold" }); g.line(V, C, { w: "bold" });
@@ -71,15 +89,15 @@ export const GX = {
         const ang = M.angle(A, V, C);
         g.angle(A, V, C, 1, 60);
         let msg;
-        if (where === "inside") { const x = arcAvoid(O, A, C, [A2, C2]), y = arcAvoid(O, A2, C2, [A, C]); msg = `Inside: angle = \u00bd(arc + vertical arc) = \u00bd(${deg(x)} + ${deg(y)}) = ${deg((x + y) / 2)}.`; }
-        else if (where === "on") { const x = arcAvoid(O, A, C, [V]); msg = `On the circle: an inscribed angle, \u00bd \u00d7 ${deg(x)} = ${deg(x / 2)}.`; }
+        if (where === "inside") { const x = arcAvoid(O, A, C, [A2, C2]), y = arcAvoid(O, A2, C2, [A, C]); msg = `Inside: angle = \u00bd(arc + vertical arc) ≈ \u00bd(${deg(x)} + ${deg(y)}) ≈ ${deg((x + y) / 2)}.`; }
+        else if (where === "on") { const x = arcAvoid(O, A, C, [V]); msg = `On the circle: an inscribed angle, \u00bd \u00d7 ${deg(x)} ≈ ${deg(x / 2)}.`; }
         else {
           const nA = M.dist(V, A) < M.dist(V, A2) ? A : A2, fA = nA === A ? A2 : A, nC = M.dist(V, C) < M.dist(V, C2) ? C : C2, fC = nC === C ? C2 : C;
           const far = arcAvoid(O, fA, fC, [nA, nC]), near = arcAvoid(O, nA, nC, [fA, fC]);
-          msg = `Outside: angle = \u00bd(far arc \u2212 near arc) = \u00bd(${deg(far)} \u2212 ${deg(near)}) = ${deg((far - near) / 2)}. Swing a line until it just touches the circle to see the tangent case.`;
+          msg = `Outside: angle = \u00bd(far arc \u2212 near arc) ≈ \u00bd(${deg(far)} \u2212 ${deg(near)}) ≈ ${deg((far - near) / 2)}. Choose Tangents for the separate tangent construction.`;
         }
         txt(g, P(1320, 760), `\u2220V = ${deg(ang)}`, { bold: true });
-        U.read(`<p>${msg} Measured: ${deg(ang)}.</p>`);
+        U.read(`<p>${msg} Measured ≈ ${deg(ang)}.</p>`);
       });
     }
   },
