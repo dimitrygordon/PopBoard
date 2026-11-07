@@ -52,3 +52,12 @@ GEOMETRY_BASE=http://127.0.0.1:8772 node tests/geometry-v2-browser.mjs
 node tests/geometry-template-shots.mjs
 node tests/geometry-unit04-browser.mjs
 ```
+
+
+## Review round 3: template and learner rebuild
+
+Leo's five template fixes are isolated in f2542359. Missing art now creates no student DOM slot or column. The staff-only PLACEHOLDER-SLIDES.md inventory records 221 pending figures, including 94 in Unit 4. Keep the figure schema for future art.
+
+The Unit 4 exporter now reads proof tables, practice and misconception corrections directly from the checked-in signed-off learner section, rather than relying on stale Python proof snapshots. Eight R2 paraphrase rows are compared verbatim in tests. The 4.14 common-mistake prompt is the narrow allowlisted snapshot from u4-art/slots.json in spec-src/art-prompts-u04.json; its correction comes from the current spec. No other art-slot fields cross that boundary.
+
+All worked-proof viewports use the same sentence-aware because prefix. The SVG helper places live 32-unit labels around exact construction geometry; assessment thumbnails stack at full width. Every label on both forms is audited against other label boxes, actual SVG strokes, viewBox boundaries and the 16px minimum at all three widths. Item 12 can align to the viewport top without preceding empty writing space. Printed writing areas remain intact.

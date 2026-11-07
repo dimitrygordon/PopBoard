@@ -12,6 +12,7 @@ from ovr_u04 import O
 spec=(ROOT/'docs/geometry/v2/SPEC-unit04.md').read_text()
 sections={m[1]:m[2] for m in re.finditer(r'^## (4\.\d+) [^\n]+\n(.*?)(?=^## |\Z)',spec,re.M|re.S)}
 prompts=json.loads((ROOT/'tools/geometry/spec-src/bank-u04.json').read_text())
+art_prompts=json.loads((ROOT/'tools/geometry/spec-src/art-prompts-u04.json').read_text())
 def clean(s):
  s=re.sub(r'\s*\[Sign-off patch[^\]]*\]','',s)
  s=re.sub(r'; (?:copy rows|wording) from UNIT04-SIGNOFF\.md \([a-z]\)','',s)
@@ -21,14 +22,25 @@ def strip_quotes(s):
 unit={}
 for lid,lr in L.items():
  ov=O[lid]
- examples=[dict(title=clean(lr[k][0]),steps=[dict(step=clean(a),reason=clean(b)) for a,b in lr[k][1]],optional=lid=='4.13' and k=='we1') for k in ['we1','we2']]
+ # Read only the signed-off learner section. Builder prose cannot enter these tables.
+ learner=sections[lid].split('**Learner layer**',1)[1].split('**Builder and answer-key layer**',1)[0]
+ examples=[]
+ for m in re.finditer(r'  - Worked example (\d+)[^\n]*:\n(.*?)(?=^  - |\Z)',learner,re.M|re.S):
+  title=re.search(r'^    \*(.*?)\*',m[2],re.M)[1]
+  rows=[]
+  for row in re.findall(r'^    \| (.*?) \|$',m[2],re.M):
+   step,reason=row.split(' | ',1)
+   if step!='Step':rows.append(dict(step=clean(step),reason=clean(reason)))
+  if not rows:raise ValueError('No learner proof rows: '+lid)
+  examples.append(dict(title=clean(title),steps=rows,optional=lid=='4.13' and m[1]=='1'))
+ if len(examples)<2:raise ValueError('Missing learner examples: '+lid)
  if lid=='4.13':examples.reverse()
- practice=[dict(prompt=clean(a),solution=clean(b),check=clean(c)) for a,b,c in lr['practice']]
- if lid=='4.14':
-  t,rows=MOVED['4.14_we3'];examples.append(dict(title=clean(t),steps=[dict(step=clean(a),reason=clean(b)) for a,b in rows],optional=False))
-  a,b,c=MOVED['4.14_p4'];practice.append(dict(prompt=clean(a),solution=clean(b),check=clean(c)))
+ practice=[dict(prompt=clean(a),solution=clean(b),check=clean(c)) for a,b,c in re.findall(r'^    \d+\. (.*?)\n       - Reveal 1 \(worked solution\): (.*?)\n       - Reveal 2 \(second check\): (.*)',learner,re.M)]
+ if not practice:raise ValueError('Missing learner practice: '+lid)
+ misconception=re.search(r'^  - Common mistake: (.*)',learner,re.M)[1]
  idea=next(s for s in ov['slides'] if 'big idea:' in s.lower()).split(': ',1)[1]
- unit[lid]=dict(goals=ov['goals'],hook=ov['hook'],idea=clean(idea),examples=examples,practice=practice,mistake=clean(lr['mistake']),exit=ov['exit'],days=lr.get('days',1))
+ unit[lid]=dict(goals=ov['goals'],hook=ov['hook'],idea=clean(idea),examples=examples,practice=practice,mistake=clean(misconception),exit=ov['exit'],days=lr.get('days',1))
+ if lid in art_prompts:unit[lid]['mistakePrompt']=clean(art_prompts[lid])
 # Bank solutions are selected individually from Euclid, paired to Socrates' exact prompt ids.
 def parse_bank(body,prefix,count):
  body=strip_quotes(body)
@@ -54,7 +66,7 @@ assessment=sections['4.16'].split('- Builder and answer-key layer',1)[1]
 unit['4.16']=dict(forms={form:parse_bank(assessment.split('### Form '+form,1)[1].split('### ',1)[0],form,12) for form in ['A','B']})
 write(ROOT/'tools/geometry/u04-v2.json',json.dumps(unit,ensure_ascii=False,indent=2)+'\n')
 # Current art handoff is staff-only, with exact figures quoted from the final spec.
-lines=['# Unit 4: current figure commission from the final spec','', 'Student wording: Socrates. Math: Euclid. Build: PR 170. No builder text or coordinate certificates should be drawn as learner labels. All art is editable SVG, black strokes on white, live labels, separate given and conclusion layers.','', 'Source SHA-256: '+hashlib.sha256(spec.encode()).hexdigest(),'', 'Figure slots exist on every worked-example, practice, check and common-mistake screen. Slots without a specific supplied SVG currently show Figure coming plus the lesson id. Replace each slot with its own correct givens, not a reused diagram with different letters.','']
+lines=['# Unit 4: current figure commission from the final spec','', 'Student wording: Socrates. Math: Euclid. Build: PR 170. No builder text or coordinate certificates should be drawn as learner labels. All art is editable SVG, black strokes on white, live labels, separate given and conclusion layers.','', 'Source SHA-256: '+hashlib.sha256(spec.encode()).hexdigest(),'', 'Figure slots exist on every worked-example, practice, check and common-mistake screen. Slots without a supplied SVG are omitted from the student DOM until art arrives; text uses the full width. See PLACEHOLDER-SLIDES.md for the missing-art inventory. Fill each planned slot with its own correct givens, not a reused diagram with different letters.','']
 for lid,body in sections.items():
  lines+=['## '+lid,'']
  regular=unit[lid].get('examples',[])

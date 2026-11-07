@@ -27,7 +27,7 @@ test('4.10 has both class days, all three cases, and explicit representative rel
  assert.match(all,/Two-day lesson/);assert.ok(slides.some(s=>s.title==='Day 1: exit check'));
  assert.ok(slides.some(s=>s.title==='Day 2: finish the theorem'));
  assert.equal(slides.filter(s=>s.geo.kind==='activity').length,2);
- for(const text of ['Protractor Postulate','Ruler Postulate','interior case','exterior intersection','endpoint can be A or B','exchanging A with B','Subtract: angle ACB','ray CB is ray CG'])assert.ok(all.includes(text),text);
+ for(const text of ['Protractor Postulate','Ruler Postulate','interior case','can cross outside the segment past A or past B','pass right through A or through B','exchanging A with B','Subtract: angle ACB','ray CB is ray CG'])assert.ok(all.includes(text),text);
 });
 test('4.13 uses the approved half-turn incidence argument and keeps the long proof optional',()=>{
  const examples=deck(13).slides.filter(s=>s.geo.kind==='worked-example');
@@ -74,4 +74,35 @@ test('only learner fields cross the export boundary; parked drafts are never act
  assert.doesNotMatch(all,/BUILDER_SENTINEL|builder_only|builderOnly|Backend|B&W diagram spec|Sign-off patch|sqrt\(10\)|sqrt\(234\)|UNIT04-SIGNOFF/i);
  assert.ok(!read('tools/geometry/build.mjs').includes('drafts/'));
  assert.ok(read('docs/geometry/v2/UNIT04-KEYS.md').includes('A-12:'));
+});
+
+test('every signed-off R2 student paraphrase is exported verbatim without its staff tag',()=>{
+ const spec=read('docs/geometry/v2/SPEC-unit04.md');let count=0;
+ for(const section of spec.split(/^## /m).slice(1)){
+  const match=section.match(/^(4\.\d+)/);if(!match)continue;const lid=match[1];
+  const learner=(section.split('**Learner layer**')[1]||'').split('**Builder and answer-key layer**')[0];
+  const rows=Object.values(source[lid].examples||[]).flatMap(e=>e.steps);
+  for(const line of learner.split('\n').filter(l=>l.includes('[Sign-off patch R2, student paraphrase]'))){
+   const [step,reason]=line.trim().slice(2,-2).split(' | ').map(t=>t.replace(/\s*\[Sign-off patch[^\]]*\]/g,'').trim());
+   assert.ok(rows.some(r=>r.step===step&&r.reason===reason),`${lid}: ${step}`);count++;
+  }
+ }
+ assert.equal(count,8);
+ assert.match(source['4.10'].examples[1].steps[0].step,/swap the names A and B/);
+});
+test('missing art is inventoried and cannot generate student placeholder markup',()=>{
+ execFileSync('node',['tools/geometry/figure-inventory.mjs','--check']);
+ const inventory=read('docs/geometry/v2/PLACEHOLDER-SLIDES.md');
+ assert.match(inventory,/\| 4.13 \| 4: Worked example/);
+ const renderer=read('public/geometry/geo-page.js');assert.ok(!renderer.includes('Figure coming'));
+ assert.match(renderer,/includes\(G.kind\) && \(G.figure\?\.svg \|\| G.figure\?\.src\)/);
+ for(let n=1;n<=16;n++)assert.ok(!JSON.stringify(deck(n)).includes('Figure coming'));
+});
+
+test('4.14 art-slot prompt and current learner correction describe the same vertical-angle mistake',()=>{
+ const edits=JSON.parse(read('tools/geometry/spec-src/art-prompts-u04.json'));
+ const slide=deck(14).slides.find(s=>s.geo.kind==='common-mistake').geo;
+ assert.equal(slide.prompt,edits['4.14']);assert.match(slide.prompt,/vertical angles already give/);
+ assert.match(slide.correction,/Vertical angles alone give that angle in one step/);
+ assert.ok(!slide.prompt.includes('non-included angle'));
 });

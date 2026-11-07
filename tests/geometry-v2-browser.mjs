@@ -25,7 +25,8 @@ try{
     if(stage.innerHTML.includes('BUILDER_SENTINEL_731'))throw new Error('builder layer rendered '+d.slug);
     if(/Original exact coordinate certificate|sqrt\(10\)|backend coordinate/i.test(stage.textContent+tools.textContent))throw new Error('builder certificate leaked '+d.slug);
     if(slide.geo.kind==='exit-ticket'&&stage.querySelector('ol li:last-child')?.textContent!=="What's confusing?")throw new Error('exit ending '+d.slug);
-    if(['worked-example','practice','common-mistake'].includes(slide.geo.kind)&&!stage.querySelector('.gx-figure-slot'))throw new Error('missing figure slot '+d.slug);
+    if(['worked-example','practice','common-mistake'].includes(slide.geo.kind)&&!!stage.querySelector('.gx-figure-slot')!==!!(slide.geo.figure?.svg||slide.geo.figure?.src))throw new Error('figure visibility '+d.slug);
+    if(stage.textContent.includes('Figure coming'))throw new Error('placeholder leaked '+d.slug);
     if(slide.geo.kind==='worked-example'){
      if(stage.querySelector('.gx-prediction td')?.textContent!=='What comes next? Decide, then tap.')throw new Error('missing prediction');
      const buttons=[...stage.querySelectorAll('button')];buttons.find(b=>b.textContent==='Next step').click();if(stage.querySelectorAll('tbody tr').length!==1)throw new Error('one-row reveal');

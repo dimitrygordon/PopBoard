@@ -796,7 +796,7 @@ Each worked example shows one step at a time: step text on the left, its reason 
 
     | Step | Reason |
     |---|---|
-    | The exterior intersection can be past A or past B, and the endpoint can be A or B. It is enough to show the past-B and through-B versions: the other versions follow by exchanging A with B and, in the matching target triangle, D with E. All side correspondences and SAS steps stay matched under that exchange. | Which cases we must show. [Sign-off patch R2] |
+    | The line CG can cross outside the segment past A or past B. It can also pass right through A or through B. We only need to prove the past-B and through-B cases. The A cases work the same way: swap the names A and B, and swap D and E in the other triangle. | Swapping A with B and D with E turns the givens AC=DF and BC=EF into each other, so we have exactly the same facts, and every matching side and SAS step still works. [Sign-off patch R2, student paraphrase] |
     | Exterior case: line CG meets line AB outside segment AB, past B. | Same G, same equal sides as Day 1. |
     | Here angle ACG is the larger angle at C and angle BCG is the smaller one. At G, angle AGC is larger and angle BGC is smaller. | Name the angles before subtracting. |
     | Angle ACG = angle AGC and angle BCG = angle BGC. | Theorem 9 in triangles ACG and BCG. |
@@ -1178,7 +1178,7 @@ Each worked example shows one step at a time: step text on the left, its reason 
     4. (Moved from 4.10) in the convex kite, AB = 2x + 1 and AD = 11. Find x.
        - Reveal 1 (worked solution): The equal sides give 2x + 1 = 11, so x = 5.
        - Reveal 2 (second check): Plug in: 2(5) + 1 = 11.
-  - Common mistake: Not every proof needs congruent triangles. Vertical angles alone solve Worked example 2.
+  - Common mistake: Jordan draws two triangles and proves them congruent just to find an angle in Worked example 2. Not every proof needs congruent triangles. Vertical angles alone give that angle in one step, so check for a direct angle fact first.
   - Moved in: From 4.10: Worked example 3 (the convex kite, SSS then CPCTC) and Practice 4 (AB = 2x + 1, AD = 11).
 - **Builder and answer-key layer** (Euclid; not shown to students):
 - Precise math *(Math by Euclid, /workspace/geometry/math/UNIT04-FILL-v2.md)*:

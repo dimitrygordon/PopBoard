@@ -2,9 +2,9 @@
 
 Student wording: Socrates. Math: Euclid. Build: PR 170. No builder text or coordinate certificates should be drawn as learner labels. All art is editable SVG, black strokes on white, live labels, separate given and conclusion layers.
 
-Source SHA-256: f05690730fc7b69b94a50d4058e2ec42e1679a42b1e7a80cff8f7e1c0806c888
+Source SHA-256: fa9879ec160e4d856917c71b1394aab2803fc81e7be7c201a2f57772964316a9
 
-Figure slots exist on every worked-example, practice, check and common-mistake screen. Slots without a specific supplied SVG currently show Figure coming plus the lesson id. Replace each slot with its own correct givens, not a reused diagram with different letters.
+Figure slots exist on every worked-example, practice, check and common-mistake screen. Slots without a supplied SVG are omitted from the student DOM until art arrives; text uses the full width. See PLACEHOLDER-SLIDES.md for the missing-art inventory. Fill each planned slot with its own correct givens, not a reused diagram with different letters.
 
 ## 4.1
 

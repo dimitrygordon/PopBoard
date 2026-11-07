@@ -745,8 +745,8 @@
         "title": "Day 2. The exterior and endpoint cases (same setup as Day 1, rows 1 to 5).",
         "steps": [
           {
-            "step": "The exterior intersection can be past A or past B, and the endpoint can be A or B. It is enough to show the past-B and through-B versions: the other versions follow by exchanging A with B and, in the matching target triangle, D with E. All side correspondences and SAS steps stay matched under that exchange.",
-            "reason": "Which cases we must show."
+            "step": "The line CG can cross outside the segment past A or past B. It can also pass right through A or through B. We only need to prove the past-B and through-B cases. The A cases work the same way: swap the names A and B, and swap D and E in the other triangle.",
+            "reason": "Swapping A with B and D with E turns the givens AC=DF and BC=EF into each other, so we have exactly the same facts, and every matching side and SAS step still works."
           },
           {
             "step": "Exterior case: line CG meets line AB outside segment AB, past B.",
@@ -1178,17 +1178,18 @@
         "check": "That is SSA, and 4.11 showed SSA can fail."
       },
       {
-        "prompt": "Practice 4, moved from 4.10: in the convex kite, AB = 2x + 1 and AD = 11. Find x.",
+        "prompt": "(Moved from 4.10) in the convex kite, AB = 2x + 1 and AD = 11. Find x.",
         "solution": "The equal sides give 2x + 1 = 11, so x = 5.",
         "check": "Plug in: 2(5) + 1 = 11."
       }
     ],
-    "mistake": "Not every proof needs congruent triangles. Vertical angles alone solve Worked example 2.",
+    "mistake": "Jordan draws two triangles and proves them congruent just to find an angle in Worked example 2. Not every proof needs congruent triangles. Vertical angles alone give that angle in one step, so check for a direct angle fact first.",
     "exit": [
       "Name the fastest route for one diagram from today and why.",
       "What is missing when you only have SSA?"
     ],
-    "days": 1
+    "days": 1,
+    "mistakePrompt": "Jordan proves two triangles congruent just to find an angle that vertical angles already give."
   },
   "4.9": {
     "practice": [

@@ -74,16 +74,15 @@ export function mount({ stage, tools, slide, meta, reduce }) {
       summary.textContent="Optional extension: open the proof";details.className="gx-optional";details.append(summary);
       const body=document.createElement("div");details.append(body);content.append(details);content=body;
     }
-    if (["worked-example", "practice", "common-mistake"].includes(G.kind)) {
+    if (["worked-example", "practice", "common-mistake"].includes(G.kind) && (G.figure?.svg || G.figure?.src)) {
       content.classList.add("gx-figure-layout");
       const figure = document.createElement("figure"); figure.className = "gx-figure-slot";
       const alt = G.figure?.alt || `Figure for lesson ${meta.q}.${meta.lesson}`;
       if (G.figure?.svg) { figure.innerHTML = G.figure.svg; const svg = figure.querySelector("svg"); svg?.setAttribute("role", "img"); svg?.setAttribute("aria-label", alt); }
       else if (G.figure?.src) figure.innerHTML = `<img src="${esc(G.figure.src)}" alt="${esc(alt)}">`;
-      else { figure.classList.add("gx-figure-placeholder"); figure.innerHTML = `<span>Figure coming</span><small>Lesson ${esc(meta.q)}.${esc(meta.lesson)}</small>`; }
       const text = document.createElement("div"); text.className = "gx-learner-text";
       content.append(figure, text); content = text;
-    }
+    } else if (["worked-example", "practice", "common-mistake"].includes(G.kind)) content.classList.add("gx-learner-text");
     const para = (text) => { const p = document.createElement("p"); p.textContent = text; content.append(p); return p; };
     const actions = document.createElement("div"); actions.className = "gx-actions";
     const used = (b) => { b.disabled=true;b.classList.remove("gx-primary");b.classList.add("gx-used");const mark=document.createElement("span");mark.className="gx-used-check";mark.textContent="✓";mark.setAttribute("aria-hidden","true");b.append(" ",mark); };
