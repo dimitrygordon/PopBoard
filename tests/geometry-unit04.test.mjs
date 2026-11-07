@@ -196,3 +196,14 @@ test('no generated Unit 4 angle arc reaches past 25% of its shorter adjacent sid
  }
  assert.ok(count>=38,count);
 });
+test('Form B item 8 (u04-l16-s23) is a readable isosceles HIK with labeled legs',()=>{
+ const svg=bankFigure('B-8');assert.match(svg,/viewBox="40 0 520 624"/);
+ const seg=[...svg.matchAll(/<path d="M([\d.]+),([\d.]+)L([\d.]+),([\d.]+)"/g)].map(m=>m.slice(1).map(Number));
+ assert.equal(seg.length,3,'three sides only, no tick marks');
+ const len=([a,b,c,d])=>Math.hypot(c-a,d-b),[hi,ik,kh]=seg.map(len);
+ assert.ok(Math.abs(hi-kh)<1e-6);const ratio=ik/hi;assert.ok(ratio>=0.45&&ratio<=0.55,ratio);
+ for(const label of ['5h − 8','2h + 43','Not to scale.','>H<','>I<','>K<'])assert.ok(svg.includes(label),label);
+ const arcs=[...svg.matchAll(/data-arc-r="([\d.]+)" data-arc-side="([\d.]+)"/g)];assert.equal(arcs.length,2);
+ for(const a of arcs)assert.ok(Math.abs(a[1]/a[2]-0.2)<0.001);
+ const deck=JSON.parse(read('public/geometry/decks/u04-l16/deck.json'));assert.ok(JSON.stringify(deck.slides[22]).includes('data-figure=\\"u04-b8\\"'));
+});
