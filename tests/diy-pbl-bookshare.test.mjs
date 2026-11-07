@@ -118,11 +118,15 @@ test("Leo art webp exists for s01-s18; no Leo-art-pending badge in code", () => 
   assert.ok(PLACEMENTS.s01 && PLACEMENTS.s05 && PLACEMENTS.s11);
 });
 
-test("narration text is gone from the site; read-aloud speaks the article", () => {
+test("narration text is gone from the site; read-aloud speaks the article", async () => {
   assert.ok(!existsSync(join(DIR, "script.md")));
   for (const sl of SLIDES) assert.equal(sl.narration, undefined);
   const man = JSON.parse(readFileSync(join(DIR, "narration", "manifest.json"), "utf8"));
-  for (const sl of SLIDES) assert.equal(man.pages[String(sl.n)].text, sl.article.trim());
+  const { spoken } = await import(pathToFileURL(join(PUB, "..", "tools", "diy-pbl-bookshare", "spoken.mjs")).href);
+  for (const sl of SLIDES) assert.equal(man.pages[String(sl.n)].text, spoken(sl.article));
+  // audio skips APA citations; screen keeps them
+  assert.ok(!/Wolpert-Gawron, 2016|\(pp?\. \d/.test(JSON.stringify(man)));
+  assert.match(SLIDES.find((x) => x.n === 5).article, /\(Wolpert-Gawron, 2016, p\. 80\)/);
 });
 
 test("no em-dashes in bookshare sources", () => {
