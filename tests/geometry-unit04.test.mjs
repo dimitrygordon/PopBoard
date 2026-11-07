@@ -157,7 +157,7 @@ test('round 5: every Unit 4 figure slot is filled and every art mapping is consu
  for(const row of wiring){const key=row.deck+'-'+row.slide;assert.ok(!seen.has(key));seen.add(key);const slide=deck(Number(row.deck.slice(-2))).slides[row.slide-1];assert.equal(slide.geo.figure.svg,read('public/geometry/figures/u04/'+row.file));assert.equal(slide.geo.figure.alt,row.alt);assert.deepEqual(Object.keys(row).sort(),['alt','deck','file','slide']);}
 });
 test('round 5: corrected canonical art keeps the assigned live labels',()=>{
- for(const [file,labels] of [['u04-l04-s10',['2x+3','11']],['u04-l07-s05',['(3x+5)°','(5x-17)°']],['u04-l14-s12',['2x+1','11']]]){
+ for(const [file,labels] of [['u04-l04-s10',['2x+3','11']],['u04-l07-s05',['(3x + 5)°','(5x − 17)°']],['u04-l14-s12',['2x+1','11']]]){
   const svg=read('public/geometry/figures/u04/'+file+'.svg');for(const label of labels)assert.ok(svg.includes('>'+label+'</text>'),file+': '+label);
   const models={'u04-l04-s10':[[0,0],[18.3051,0],[6.1017,9.1526],[12.2034,-9.1526]],'u04-l07-s05':[[0,2.3439],[-3,0],[3,0]],'u04-l14-s12':[[0,8.8],[-6.6,0],[0,-4.4],[6.6,0]]};
   const model=models[file],dots=[...svg.matchAll(/<circle cx="([^"]+)" cy="([^"]+)" r="3"/g)].map(m=>m.slice(1).map(Number)),distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
@@ -181,4 +181,18 @@ test('round 5: final SSA titles and explicit compass facts reach learner pages',
  assert.equal(reasons[0],'One compass setting, centered at O, gives OU = OV.');
  assert.equal(reasons[1],'One new compass setting, used from both U and V, so UX = VX.');
  assert.equal(reasons[2],'Compass settings and a shared side.');
+});
+test('no generated Unit 4 angle arc reaches past 25% of its shorter adjacent side',()=>{
+ const files=[...fs.readdirSync(new URL('../public/geometry/decks/',import.meta.url)).filter(d=>d.startsWith('u04-')).map(d=>`public/geometry/decks/${d}/deck.json`),'public/geometry/forms/unit04-a.html','public/geometry/forms/unit04-b.html'];
+ let count=0;
+ for(const f of files){
+  const text=read(f).replace(/\\"/g,'"');
+  for(const m of text.matchAll(/<path d="M([-\d.e]+),([-\d.e]+)Q([-\d.e]+),([-\d.e]+) ([-\d.e]+),([-\d.e]+)" fill="none" stroke="black" stroke-width="1.2"([^>]*)\/>/g)){
+   const a=m[7].match(/data-arc-r="([\d.]+)" data-arc-side="([\d.]+)"/);assert.ok(a,`${f}: arc without radius data`);
+   const [px,py,ox,oy,qx,qy]=m.slice(1,7).map(Number),r=Number(a[1]),side=Number(a[2]);
+   assert.ok(Math.abs(Math.hypot(px-ox,py-oy)-r)<0.01&&Math.abs(Math.hypot(qx-ox,qy-oy)-r)<0.01,`${f}: arc radius data mismatch`);
+   assert.ok(r<=0.25*side+1e-9,`${f}: arc ratio ${r/side}`);count++;
+  }
+ }
+ assert.ok(count>=38,count);
 });
