@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import puppeteer from 'puppeteer-core';
 const base=process.env.GEOMETRY_BASE||'http://127.0.0.1:8772';
 const out=process.env.GEOMETRY_SHOTS||'/workspace/geometry-v2/template-screenshots/r2';fs.mkdirSync(out,{recursive:true});
-const slides=JSON.parse(fs.readFileSync(new URL('../public/geometry/decks/u01-l10/deck.json',import.meta.url))).slides;
+const slides=JSON.parse(fs.readFileSync(new URL('../public/geometry/decks/u01-l03/deck.json',import.meta.url))).slides;
 const b=await puppeteer.launch({executablePath:'/usr/bin/google-chrome',args:['--no-sandbox']});
 const errors=[];let count=0;
 try {
@@ -12,7 +12,7 @@ try {
   await page.setViewport(size);
   for(const kind of ['cover','worked-example','practice','common-mistake','exit-ticket']){
    const n=slides.findIndex(s=>s.geo.kind===kind)+1;
-   await page.goto(`${base}/study-geometry-story.html?lesson=u01-l10&page=${n}`,{waitUntil:'networkidle0'});
+   await page.goto(`${base}/study-geometry-story.html?lesson=u01-l03&page=${n}`,{waitUntil:'networkidle0'});
    await page.waitForSelector('.gx-k-'+kind);
    if(kind==='worked-example'){
     await page.click('.gx-actions button:nth-child(2)');await page.click('.gx-actions button:nth-child(2)');
@@ -30,7 +30,7 @@ try {
   }
  }
  await page.emulateMediaFeatures([{name:'prefers-reduced-motion',value:'reduce'}]);
- await page.goto(`${base}/study-geometry-story.html?lesson=u01-l10&page=4`,{waitUntil:'networkidle0'});await page.click('.gx-actions button:nth-child(2)');
+ await page.goto(`${base}/study-geometry-story.html?lesson=u01-l03&page=5`,{waitUntil:'networkidle0'});await page.click('.gx-actions button:nth-child(2)');
  assert.equal(await page.$eval('.gx-new-step',e=>getComputedStyle(e).animationName),'none');
  assert.deepEqual(errors,[]);console.log(`PASS: ${count} settled screenshots; figure layout, Literata math, no overflow, reduced motion, no errors.`);
 } finally {await b.close();}

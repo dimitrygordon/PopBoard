@@ -12,7 +12,7 @@ for(const d of DECKS){
   if(!['worked-example','practice','common-mistake'].includes(g.kind)||g.figure?.svg||g.figure?.src)continue;
   const lid=`${d.q}.${d.lesson}`;
   const slot=g.kind==='worked-example'?`Worked example ${lid==='4.13'?3-example:example}`:g.kind==='practice'?s.title:`Common mistake`;
-  const ref=d.q===4?`SPEC-unit04.md §${lid}, Learner layer / ${slot}; Diagram specs for Leo`:'No figure-specific spec commissioned; lesson '+lid+' / '+slot;
+  const ref=d.q===1?`LEO-DIAGRAMS-unit01.md, slot u01-l${String(d.lesson).padStart(2,'0')}-s${String(i+1).padStart(2,'0')}`:d.q===4?`SPEC-unit04.md §${lid}, Learner layer / ${slot}; Diagram specs for Leo`:'No figure-specific spec commissioned; lesson '+lid+' / '+slot;
   rows.push(`| ${lid} | ${i+1}: ${s.title.replaceAll('|','/')} | ${ref} |`);
  }
 }

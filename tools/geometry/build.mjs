@@ -7,6 +7,7 @@
 import fs from "node:fs";
 import { unit04 } from "./u04-template.mjs";
 import { unit04Figure } from "./u04-art.mjs";
+import { unit01, unit01Slots } from "./u01-template.mjs";
 import { worked, practice, mistake, exitBody } from "./template-v2.mjs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -19,6 +20,7 @@ const content = {};
 for (const f of ["u01-u04", "u05-u08", "u09-u12"]) Object.assign(content, (await import(pathToFileURL(path.join(ROOT, `tools/geometry/content/${f}.mjs`)))).default);
 const citations = JSON.parse(fs.readFileSync(path.join(ROOT, "tools/geometry/jacobs-map.json"), "utf8"));
 const unit04Data = JSON.parse(fs.readFileSync(path.join(ROOT, "tools/geometry/u04-v2.json"), "utf8"));
+const unit01Data = JSON.parse(fs.readFileSync(path.join(ROOT, "tools/geometry/u01-v2.json"), "utf8"));
 const { coverSvg } = await import(pathToFileURL(path.join(PUB, "geo-covers.js")));
 const artMap = JSON.parse(fs.readFileSync(path.join(ROOT, "tools/geometry/art-map.json"), "utf8"));
 
@@ -114,7 +116,9 @@ for (const u of units) {
       pages.push({ n, title, items: [], ...extra, geo: { tag: tagFor(l), title, ...geo } });
     };
     page(l.title, { kind: "cover", jacobs, title: l.title, target: md(l.target) + (l.key === "4.10" ? "<br>Two-day lesson: Day 1 interior case; Day 2 exterior and endpoint cases." : ""), stds: stds.join(" \u00b7 "), cover: `geometry/${coverFor(l)}` }, { html: `<h2>${esc(l.title)}</h2><p>${md(l.target)}</p>` });
-    if (l.q === 4) {
+    if (l.q === 1) {
+      unit01(page, l, c, unit01Data[l.key], GXMAP[l.key], unit01Data);
+    } else if (l.q === 4) {
       unit04(page, l, c, unit04Data[l.key], GXMAP[l.key]);
     } else if (kind === "lesson") {
       const hook = `<p class="gx-lead">${md(l.hook)}</p><p class="gx-goal"><b>Goal:</b> ${md(l.target)}</p>`;
@@ -164,6 +168,24 @@ for (const form of ["A", "B"]) {
   const figures=decks["u04-l16"].slides.filter(s=>s.geo.kind==="practice").slice(form==="A"?0:12,form==="A"?12:24);
   const body=items.map((item,i)=>`<section class="item"><h2>${i+1}.</h2><p>${esc(item.prompt)}</p><figure>${figures[i].geo.figure.svg}</figure><div class="work" aria-label="Space for working"></div></section>`).join("");
   outputs.set(path.join(PUB,"forms",`unit04-${form.toLowerCase()}.html`),`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Unit 4, Form ${form}</title><style>body{max-width:850px;margin:24px auto;padding:16px;font:18px/1.4 Georgia,serif;color:#111;background:white}h1{font-size:30px}.item{break-inside:avoid;border-top:1px dashed #777;padding:12px 0}h2{display:inline;font-size:20px}figure{margin:0;width:100%;max-width:500px}svg{width:100%;height:auto}.work{min-height:130px}@media screen{.item:last-child{min-height:calc(100svh - 32px)}}@media print{body{margin:0;padding:0}.item{break-after:page}.item:last-child{break-after:auto}button,a{display:none}}</style></head><body><h1>Geometry Unit 4: Form ${form}</h1><p>Name: ____________________ Date: ______________</p><p>Show equations, proof reasons and ordered correspondence. All figures are supplied inline. Do not use trig or the distance formula for SSA explanations.</p><p>Original aligned items. Related scope: Jacobs 4.2 to 4.7, pp. 139 to 175; Chapter 4 review, pp. 176 to 180.</p>${body}</body></html>\n`);
+}
+for (const form of ["A", "B"]) {
+  const items=unit01Data["1.14"].forms[form];
+  const figures=decks["u01-l14"].slides.filter(s=>s.geo.kind==="practice").slice(form==="A"?0:12,form==="A"?12:24);
+  const body=items.map((item,i)=>`<section class="item"><h2>${i+1}.</h2><p>${esc(item.prompt)}</p>${figures[i].geo.figure.svg?`<figure>${figures[i].geo.figure.svg}</figure>`:""}<div class="work" aria-label="Space for working"></div></section>`).join("");
+  outputs.set(path.join(PUB,"forms",`unit01-${form.toLowerCase()}.html`),`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Unit 1, Form ${form}</title><style>body{max-width:850px;margin:24px auto;padding:16px;font:18px/1.4 Georgia,serif;color:#111;background:white}h1{font-size:30px}.item{break-inside:avoid;border-top:1px dashed #777;padding:12px 0}h2{display:inline;font-size:20px}figure{margin:0;width:100%;max-width:500px}svg{width:100%;height:auto}.work{min-height:130px}@media print{body{margin:0;padding:0}.item{break-after:page}.item:last-child{break-after:auto}a{display:none}}</style></head><body><h1>Geometry Unit 1: Form ${form}</h1><p>Name: ____________________ Date: ______________</p><p>Show every reason. A drawing is not evidence unless the problem gives it.</p><p>Original aligned items. Related scope: Jacobs Introduction and Chapters 1 and 2.</p>${body}</body></html>\n`);
+}
+// Unit 1 figure inventory for Leo: every slot that still needs supplied art, with its spec text and builder data.
+{
+  const builderFor=(id)=>{const [,L,S]=id.match(/l(\d+)-s(\d+)/).map(Number);const v=unit01Data[`1.${L}`];if(L===13)return v.practice[S-3].diagram;if(L===14){const f=S<16?"A":"B";return v.forms[f][S-(f==="A"?4:16)].diagram;}const key={5:"W1",6:"W2",9:"P1",10:"P2",11:"P3"}[S];return key?v.builderDiagrams[key]||"":"";};
+  const by=(st)=>unit01Slots.filter(s=>s.status===st);
+  const lines=["# Unit 1: figure commission from the final spec","","Student wording: Socrates. Math: Euclid. Build: feat/geometry-v2-u01. Black strokes on white, live text labels, no color coding, separate given and conclusion layers (class=\"conclusion\" for anything revealed with the answer). Builder coordinates are layout data only; never draw them as learner labels.","","Wire supplied SVGs in tools/geometry/u01-art-wiring.json as {slot, file, alt}, with files in public/geometry/figures/u01/u01-<slot>.svg. A supplied file replaces any generator figure for that slot.","",`Counts: ${unit01Slots.length} figure slots. ${by("generator").length} drawn by the generator, ${by("leo").length} supplied by Leo, ${by("none").length} live text only, ${by("pending").length} NEED LEO ART.`,"","## Needs Leo art (tracked placeholders, omitted from the student DOM until delivered)",""];
+  for(const s of by("pending"))lines.push(`- [ ] ${s.id}: ${s.spec}`,`  - Builder spec: ${builderFor(s.id)||"none given"}`);
+  lines.push("","## Drawn by the generator (review for style; replace by wiring an SVG if wanted)","");
+  for(const s of by("generator"))lines.push(`- ${s.id}: ${s.spec}`,`  - Builder spec: ${builderFor(s.id)||"none given"}`);
+  lines.push("","## Supplied by Leo","");for(const s of by("leo"))lines.push(`- [x] ${s.id}`);
+  lines.push("","## Live text only (no figure)","");for(const s of by("none"))lines.push(`- ${s.id}: ${s.spec}`);
+  outputs.set(path.join(ROOT,"docs/geometry/v2/LEO-DIAGRAMS-unit01.md"),lines.join("\n")+"\n");
 }
 let stale = 0;
 for (const [f, s] of outputs) {

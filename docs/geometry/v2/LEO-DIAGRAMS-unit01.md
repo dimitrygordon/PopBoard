@@ -1,0 +1,227 @@
+# Unit 1: figure commission from the final spec
+
+Student wording: Socrates. Math: Euclid. Build: feat/geometry-v2-u01. Black strokes on white, live text labels, no color coding, separate given and conclusion layers (class="conclusion" for anything revealed with the answer). Builder coordinates are layout data only; never draw them as learner labels.
+
+Wire supplied SVGs in tools/geometry/u01-art-wiring.json as {slot, file, alt}, with files in public/geometry/figures/u01/u01-<slot>.svg. A supplied file replaces any generator figure for that slot.
+
+Counts: 112 figure slots. 64 drawn by the generator, 0 supplied by Leo, 16 live text only, 32 NEED LEO ART.
+
+## Needs Leo art (tracked placeholders, omitted from the student DOM until delivered)
+
+- [ ] u01-l02-s06: Table with columns n, guess, new rule, and rows n = 0, 1, 2, 3.
+  - Builder spec: A four-row n/f/g table at 0, 1, 2, 3; no geometric drawing.
+- [ ] u01-l02-s10: Text panel: the rule 'for every x' and one circled failing case. The 100 checks get no 'proved' badge.
+  - Builder spec: Quantifier statement and one circled counterexample row; do not depict 100 checks as a proof badge.
+- [ ] u01-l05-s10: Three drawings, a circle, a bow-tie and a triangle, each with a checklist beside it.
+  - Builder spec: Circle, bow-tie and triangle as three black line drawings, each with a text condition checklist.
+- [ ] u01-l06-s08: A compass on a source segment, then the same compass at a new point, with the caption UNCHANGED OPENING. No number labels.
+  - Builder spec: none given
+- [ ] u01-l07-s06: Two boxes, 'point' and 'line', with arrows both ways. Then a separate list of starting words and rules.
+  - Builder spec: Two-node dependency graph with arrows both ways; then a separate primitive/axiom ledger.
+- [ ] u01-l07-s08: A dictionary chain of word boxes ending in an arrow back to 'point'.
+  - Builder spec: none given
+- [ ] u01-l07-s11: Two columns, System A and System B, each with its own list of starting words and rules.
+  - Builder spec: Two parallel columns labeled System A and System B, with distinct primitive/axiom ledgers; no geometric drawing.
+- [ ] u01-l08-s05: Truth table with columns P, Q, 'if P then Q', 'if not Q then not P'. Rows TT, TF, FT, FF. Both 'if' columns read T, F, T, T.
+  - Builder spec: Four-column truth table P, Q, P⇒Q, ¬Q⇒¬P; use four rows TT, TF, FT, FF and values T, F, T, T for both implications.
+- [ ] u01-l08-s06: Table of four rows for (P, Q): (T, T), (T, F), (F, T), (F, F). The two false entries are boxed.
+  - Builder spec: Four-row truth table with the two false entries outlined separately.
+- [ ] u01-l08-s09: Truth table with columns P, Q, 'if P then Q', 'if not Q then not P' and the four rows.
+  - Builder spec: Four-column truth table P, Q, P⇒Q, ¬Q⇒¬P; use four rows TT, TF, FT, FF and values T, F, T, T for both implications.
+- [ ] u01-l09-s06: Two number cards, (1, 1, 1) and (0, 2, 3), each with a three-box checklist.
+  - Builder spec: Two triple cards with a three-position condition checklist; no geometric drawing.
+- [ ] u01-l10-s06: Two-column chain with the reasons: definition, substitution, distributive property, integers add to integers.
+  - Builder spec: An algebra chain with reasons definition, substitution, distributivity, integer closure.
+- [ ] u01-l10-s08: Kim's four lines on cards, ready to drag into order.
+  - Builder spec: none given
+- [ ] u01-l10-s09: Blank two-column table: Statements | Reasons.
+  - Builder spec: No geometric diagram is needed; use live mathematical text.
+- [ ] u01-l10-s10: Two number cards, 2 and -2, and the factoring x² - y² = (x - y)(x + y).
+  - Builder spec: Two signed-number cards 2, -2 and an algebra factorization; no geometric drawing.
+- [ ] u01-l10-s11: Arrow diagram: a crossed-out loop from 'conclusion' back to itself, next to a chain of arrows from 'given' to 'conclusion'.
+  - Builder spec: Dependency graph with a forbidden self-loop and a separate hypothesis-to-conclusion chain.
+- [ ] u01-l11-s06: Equation chain with a box that says 'n must be an integer'.
+  - Builder spec: Equation chain with the declared integer domain boxed; do not accept the real solution as an integer solution.
+- [ ] u01-l11-s08: A proof outline with three boxes: 'Assume the opposite', 'Clash', 'Reject the opposite'.
+  - Builder spec: none given
+- [ ] u01-l11-s10: Text panel: the goal statement and its opposite, lined up one above the other.
+  - Builder spec: Two quantifier statements with aligned negation signs; no geometric drawing.
+- [ ] u01-l12-s06: Three dots P, Q, R and a table of the lines {P, Q}, {Q, R}, {P, R}. No arrowheads.
+  - Builder spec: Three point dots and a separate incidence table; do not draw a finite two-point set with line arrowheads.
+- [ ] u01-l12-s08: Three labeled boxes, ASSUMED, DEFINED and PROVED, with the definition card in DEFINED.
+  - Builder spec: none given
+- [ ] u01-l12-s10: Boxes T and L with arrows both ways, and a separate 'postulates' box with no arrow into T or L.
+  - Builder spec: Two-node directed cycle labeled T, L and separate axiom node with no incoming proof edge.
+- [ ] u01-l12-s11: Three boxes: CONJECTURE, POSTULATE, THEOREM. The arrow into THEOREM says 'needs a proof from the current postulates'.
+  - Builder spec: Three status boxes CONJECTURE, POSTULATE, THEOREM, with “proof from current axioms” required on the last transition.
+- [ ] u01-l13-s07: Points A, B, C in a row, with blank panels for segment AB, ray AB and line AB.
+  - Builder spec: A=(0, 0), B=(6, 0), C=(8, 0). Three panels: segment AB with endpoint dots, ray AB with one arrow, line AB with two arrows. No finite endpoint dot on a line.
+- [ ] u01-l13-s10: Segment AB = 5, and a ray from P with room for an arc.
+  - Builder spec: Source segment AB=5; elsewhere ray PX and radius-5 arc centered P, forward intersection Q. Live labels AB, P, Q and retained construction arc.
+- [ ] u01-l14-s10: A table with four point rows and two line columns. No arrowheads.
+  - Builder spec: Incidence table with four point rows and two line columns; do not draw arrowheads suggesting complete Euclidean lines.
+- [ ] u01-l14-s11: Three inventory cards with columns COMPASS and METAL.
+  - Builder spec: Three labeled inventory cards with columns COMPASS and METAL; no color coding.
+- [ ] u01-l14-s15: A blank table with columns 'P marked' and 'P on l'.
+  - Builder spec: A three-rule dependency diagram and a four-row Boolean table M, L. Tiny witness panels label marked/unmarked by text, not color.
+- [ ] u01-l14-s22: Arrow chain A to B to C, with an empty truth-value table below.
+  - Builder spec: Three-node implication chain A→B→C, with the counterassignment printed in a separate table.
+- [ ] u01-l14-s23: Four observation cards labeled SWITCH and LAMP, with ON or OFF written in words.
+  - Builder spec: Four observation cards labeled SWITCH, LAMP and ON/OFF in text; no colored status lights.
+- [ ] u01-l14-s24: A table with columns PAIR, SUM and PRODUCT.
+  - Builder spec: Two pair records with SUM and PRODUCT columns; an exact “xy=1” validator below.
+- [ ] u01-l14-s27: A blank table with point rows and line columns.
+  - Builder spec: Four-point/three-line incidence table for the given sets; highlight the two PQ memberships.
+
+## Drawn by the generator (review for style; replace by wiring an SVG if wanted)
+
+- u01-l01-s05: Two separate segments that look about the same length, with no tick marks. A second panel shows a ruler with marks at 0 and 3 for one segment and 5 and 8 for the other.
+  - Builder spec: Two disjoint, unmarked segments of visibly similar lengths; a separate exact ruler panel [0, 3] and [5, 8]. Do not add equality marks in the initial panel.
+- u01-l01-s06: Two copies of segment AB, each labeled AB = 7 cm. One copy is drawn twice as wide. A third panel, marked 'only if the problem says so', shows a doubled segment.
+  - Builder spec: Two identical labeled segment panels, one drawn twice as wide; both labels read AB=7 cm. A separate actual-doubling panel is explicitly hypothetical.
+- u01-l01-s08: Two angles that look alike, numbered 1 and 2, with no arc marks.
+  - Builder spec: none given
+- u01-l01-s09: Two route maps. Map 1: M drawn off segment PQ, with the note 'M is between P and Q'. Map 2: M drawn on the segment, strictly between P and Q. No equal-length ticks.
+  - Builder spec: Two route-map panels, one with a misplaced off-segment M and the note M BETWEEN P AND Q, the corrected panel with M strictly between P and Q. No equal-length ticks. Builder countermodel: P=(0,0), M=(2,0), Q=(6,0); coordinates appear only in the check/reveal, not as extra initial givens.
+- u01-l01-s10: Segments AB and CD with no marks. After the reveal, the same letters with AB labeled 3 and CD labeled 4.
+  - Builder spec: Separate AB and CD segments, first unmarked sketch, then countermodel AB=3, CD=4; labels in the countermodel only.
+- u01-l01-s11: Two drawings of a segment of length 5. One legend says 1 unit = 20 pixels; the other says 1 unit = 40 pixels.
+  - Builder spec: Side-by-side representations of a given length 5, with scale legends 1 unit per 20 pixels and 1 unit per 40 pixels.
+- u01-l02-s08: Circle with 6 points and all chords drawn, no three chords through one inside point.
+  - Builder spec: none given
+- u01-l02-s11: A small box {1, 2, 3} inside a big box labeled 'positive whole numbers', with 4 in the big box only.
+  - Builder spec: Two nested domain boxes, D inside positive integers, with 4 outside D.
+- u01-l03-s05: Points A, B, C in a row. Three panels: segment AB with dots at both ends, ray AB with a dot at A and an arrow past B, line AB with arrows both ways.
+  - Builder spec: A=(0, 0), B=(2, 0), C=(4, 0). Three panels: segment AB with endpoint dots, ray AB with one arrow, line AB with two arrows. No finite endpoint dot on a line.
+- u01-l03-s06: A, B, C on one straight street in that order, and D off the street. Draw the street and the lines from D to A, B and C, with arrows.
+  - Builder spec: A=(0, 0), B=(2, 0), C=(5, 0), D=(1, 3); draw the common horizontal line and the three D-to-base lines with arrows.
+- u01-l03-s08: A segment with endpoint dots next to a line with arrows on both ends.
+  - Builder spec: none given
+- u01-l03-s09: A, B, C on a line in that order. Panels: ray BA, ray BC, both rays together, and their overlap (just the point B). Then segment AC with endpoint dots.
+  - Builder spec: Use A=(-3,0), B=(0,0), C=(4,0), with the order explicitly given. Separate B-left and B-right ray panels, then a union panel with two arrows and an overlap panel with the single point B. Show the finite A-to-C route with endpoint dots. Coordinates are builder layout data, not a distance exercise.
+- u01-l03-s10: Points A, B and X in a row, with X past B. Two panels: ray AB and ray BA, each with its endpoint dot and arrow.
+  - Builder spec: A=(0, 0), B=(3, 0), X=(5, 0); two separate ray panels with correctly placed endpoint dots and arrowheads.
+- u01-l03-s11: A number line with endpoint dots at 0 and 6 and a dot at 2.
+  - Builder spec: One line model with endpoint dots at 0, 6 and an interior dot at 2; no coordinate-plane distance calculation.
+- u01-l04-s05: Circle O for the Earth. Cities A and B on the circle with a 6 degree angle at O. Parallel sunlight lines. The curved arc AB is labeled 600 km, not the straight chord.
+  - Builder spec: Circle O, cities A, B on same meridian section, central angle 6; parallel sunlight rays and local radius directions. City separation is curved arc 600, not chord.
+- u01-l04-s06: Point O with one ray at 0 degrees and one at 40 degrees, drawn twice: once with long rays, once with short rays, the same arc mark on both.
+  - Builder spec: O=(0, 0), one ray at 0 degrees, one at 40 degrees; two panels with different visible truncation lengths, identical angle arcs.
+- u01-l04-s08: The same angle drawn with long rays and with short rays, side by side.
+  - Builder spec: none given
+- u01-l04-s09: Circle O with cities A and B, an 8 degree angle at O, and the curved arc labeled 800 km.
+  - Builder spec: Circle O, cities A, B on same meridian section, central angle 8; parallel sunlight rays and local radius directions. City separation is curved arc 800, not chord.
+- u01-l04-s10: Circle O, two city marks with a 7.5 degree angle at O, and the curved arc labeled 835 km. No chord label.
+  - Builder spec: Circle O, two radial city markers central angle 7.5 degrees, curved meridian arc 835 km; no chord distance label.
+- u01-l04-s11: One center angle with both the straight chord and the curved arc drawn. Only the arc has the 'fraction of the circle' bracket.
+  - Builder spec: One central angle with both chord and curved arc visibly distinct; only the arc receives the fraction-of-circumference bracket.
+- u01-l05-s05: Convex triangle with vertices A1, A2, A3. Any diagonal from A1 would be dashed; there are none.
+  - Builder spec: Convex 3-gon A1, ..., A3 in circular order, diagonals from A1 only; no crossings in polygon boundary.
+- u01-l05-s06: Closed path A to B to C to D and back to A. Side AB crosses side CD at a marked point X.
+  - Builder spec: Builder certificate only: A=(0, 0), B=(3, 3), C=(0, 3), D=(3, 0), X=(1.5, 1.5). Student labels are A, B, C, D, X and the given interior crossing; do not display coordinate-average calculations.
+- u01-l05-s08: Part of a simple polygon boundary with corners A and B, and a point D given strictly between them on side AB. D does not bend the boundary. No total side or vertex count is shown.
+  - Builder spec: none given
+- u01-l05-s09: Convex pentagon A1 to A5, with dashed diagonals from A1 only.
+  - Builder spec: Convex 5-gon A1, ..., A5 in circular order, diagonals from A1 only; no crossings in polygon boundary.
+- u01-l05-s11: A rhombus with every side labeled 5 and angles labeled 60, 120, 60, 120 degrees.
+  - Builder spec: Four vectors forming rhombus A=(0, 0), B=(5, 0), D=(2.5, 5 sqrt(3)/2), C=B+D; builder-only coordinates. Student labels are four 5 s and the given angles.
+- u01-l06-s05: Segment AB = 3 on the left. On the right, ray PX with an arc centered at P that crosses the ray at Q. Keep the arc visible.
+  - Builder spec: Source segment AB=3; elsewhere ray PX and radius-3 arc centered P, forward intersection Q. Live labels AB, P, Q and retained construction arc.
+- u01-l06-s06: Panel 1: segment AB = 4 and a crossed-out arc drawn with opening 6. Panel 2: an arc with opening 4 meeting the ray at Q.
+  - Builder spec: Source AB=4, target ray from P; first panel crossed-out changed opening 6, second panel fixed opening 4 and forward intersection Q.
+- u01-l06-s09: Segments labeled a and b, with a > b > 0 printed. Ray PX with Q marked so PQ = a, the circle of radius b around Q, and its crossing points T (inside PQ) and U (past Q). Construction arcs stay visible; TQ gets the tick that matches b. Both rules are printed on the screen.
+  - Builder spec: Two given source segments labeled a and b, with a>b>0 printed. Draw ray PX, marked Q with PQ=a, and the radius-b circle at Q. Label the interior intersection T and the farther intersection U; keep the construction arcs. Tick TQ with the b source, not PT. Put the provided addition rule and intersection assumption on the student screen. Any coordinates or 9/4/5/13 certificate belong only to the builder/check reveal.
+- u01-l06-s10: Circle centered at P, a ray going right, crossing Q on the right and crossing R on the left. Only the right half has the ray arrow.
+  - Builder spec: Center P, ray to the right, circle radius AB; right intersection Q, left intersection R; only the right half-line has the ray arrow.
+- u01-l06-s11: Circle O with U and V at the two ends of a diameter, and W placed at the center O with its own label.
+  - Builder spec: Circle O, U and V at opposite endpoints of a diameter, W=O; separate labels to avoid suggesting W is a boundary point.
+- u01-l07-s10: Two points P and Q. Text, crossed out: 'two different lines l and m both pass through P and Q.'
+  - Builder spec: Two distinct named points P, Q with candidate lines l, m; the crossed-out double-line assertion is text, not a misleading drawing of two unique Euclidean straight lines.
+- u01-l08-s08: A square and a 2 by 3 rectangle, each labeled.
+  - Builder spec: none given
+- u01-l08-s10: Two marked angles, 30 degrees and 110 degrees. Note: acute means more than 0 and less than 90 degrees.
+  - Builder spec: Two given angle panels 30 and 110 degrees; acute means strictly between 0 and 90 as a stipulated definition here.
+- u01-l08-s11: Two nested circles: 'divisible by 6' inside 'divisible by 3', with the number 3 in the outer ring only.
+  - Builder spec: Integer-divisibility inclusion diagram, with 3 in the larger class but not the smaller; no unproved rectangle/parallelogram implication.
+- u01-l09-s05: Optional sketch: a quadrilateral with given angle labels 90, 60, 120 and 90 degrees, marked 'not to scale'.
+  - Builder spec: No geometric diagram is needed; use live mathematical text.
+- u01-l09-s08: Parallelogram with its four sides labeled a, b, a, b in order around the shape, and the printed given POSITIVE, UNEQUAL a AND b. No reliance on proportions or tick styles to show the sides differ. The kite card keeps its given equal-side marks.
+  - Builder spec: none given
+- u01-l09-s09: Segment AB and a point P off the segment, with PA and PB marked equal as a given.
+  - Builder spec: No geometric diagram is needed; use live mathematical text.
+- u01-l09-s10: Two quadrilaterals labeled 1 by 1 and 1 by 1.001.
+  - Builder spec: Two labeled quadrilateral panels with exact dimensions 1×1 and 1×1.001; do not infer equality from raster appearance.
+- u01-l09-s11: Number line of angle measures from 0 to 180 degrees, with open circles at 0 and 90.
+  - Builder spec: Number line of angle measures 0 to 180, open endpoints 0, 90 on the acute interval.
+- u01-l11-s11: Two boxes, L and M, with Q inside M. Colors are written as the words RED and BLUE.
+  - Builder spec: Two set boxes, L and M, Q explicitly inside M; use text RED/BLUE, not color-dependent styling.
+- u01-l12-s05: Three boxes in a row: 4, then the rule 2x + 1, then 9.
+  - Builder spec: Input/rule/output boxes 4→2x+1→9.
+- u01-l12-s09: Circle U inside circle V, with W labeled on U. A note says 'U inside V' is a stated rule, not read from the picture.
+  - Builder spec: Class-inclusion diagram U inside V, W labeled on U; all containment is a stated axiom, not inferred from an unmarked picture.
+- u01-l13-s05: Two unmarked segments. Answer side only: a ruler panel with marks at 0 and 5, and at 7 and 12.
+  - Builder spec: Two disjoint, unmarked segments of visibly similar lengths; a separate exact ruler panel [0, 5] and [7, 12]. Do not add equality marks in the initial panel.
+- u01-l13-s08: Circle O, cities A and B, a 6 degree angle at O, and the curved arc labeled 600 km.
+  - Builder spec: Circle O, cities A, B on same meridian section, central angle 6; parallel sunlight rays and local radius directions. City separation is curved arc 600, not chord.
+- u01-l13-s09: Convex four-sided polygon A1 to A4, with dashed diagonals from A1 only.
+  - Builder spec: Convex 4-gon A1, ..., A4 in circular order, diagonals from A1 only; no crossings in polygon boundary.
+- u01-l13-s12: Two nested circles: 'divisible by 10' inside 'divisible by 5'.
+  - Builder spec: Divisibility-class inclusion diagram with the declared integer domain.
+- u01-l13-s16: Three boxes: input, rule, output (output left blank).
+  - Builder spec: Input/rule/output boxes 4→2x+1→9.
+- u01-l13-s17: One segment PQ with two GIVEN boxes, PQ = 4 and PQ = 6, and a NOT TO SCALE caption. Only one segment is drawn.
+  - Builder spec: One segment PQ with two separate GIVEN boxes, PQ=4 and PQ=6, and a NOT TO SCALE caption. Reveal the conflicting equation 4=6 in a text panel. Do not draw two different segments or silently choose one label.
+- u01-l13-s18: Two cards with simple closed paths, then a bow-tie card with the printed given 'X is inside both AB and CD'. No coordinates on the student card.
+  - Builder spec: Show two checked simple-path cards and a third bow-tie card with A=(0,0), B=(4,4), C=(0,4), D=(4,0), X=(2,2). Explicitly print X IS INTERIOR TO BOTH AB AND CD as given information. Coordinates are builder-only; no midpoint computation is assigned.
+- u01-l14-s04: Two angles named alpha and beta, each with one arc mark. One is drawn too wide and labeled 'not to scale'.
+  - Builder spec: Two angle panels labeled alpha, beta with identical single arcs; one deliberately distorted panel is flagged not to scale.
+- u01-l14-s05: Flow boxes: 40, then the formula, then an empty output box.
+  - Builder spec: Input 40 flows through the displayed formula to 1681; the output is factored into 41×41. No geometric diagram is needed.
+- u01-l14-s06: Points P, Q, R with line l through P and Q, line m through P and R, and the line through Q and R. Every line has arrows.
+  - Builder spec: P=(0, 0), Q=(4, 0), R=(1, 3); l=PQ, m=PR, third line QR; all full lines have arrows.
+- u01-l14-s07: Circle O with an arc labeled 900 km, the circumference labeled 43,200 km and the center angle marked '?'. A separate sunlight sketch is labeled 'assumed'.
+  - Builder spec: Circle O with meridian arc 900 km, total circumference 43,200 km, central angle unknown; separate parallel-sunlight schematic labeled assumed.
+- u01-l14-s08: The open three-sided path on a grid. The finishing segment is left for the student to draw.
+  - Builder spec: Exact three-sided open rectangular trace; dashed proposed closing segment DA, then a separate closed-chain reveal.
+- u01-l14-s09: Two overlapping circles with equal-radius marks, centers M and N, and shared point X. No coordinates shown.
+  - Builder spec: Two overlapping circles of radius 2, centers M=(-1.5, 0), N=(1.5, 0), upper crossing X=(0, sqrt(7)/2). Coordinates are builder-only; student data are equal radii and common-point marks.
+- u01-l14-s12: Three empty panels for the student's records.
+  - Builder spec: Three panels: repeated-name record; three dots on one line; three noncollinear dots.
+- u01-l14-s14: Two arrows, a to b and b to a.
+  - Builder spec: Two directed strict-order arrows a→b and b→a, with the derived forbidden self-loop shown in the reveal.
+- u01-l14-s16: Circle with chords AB and CD and no tick marks.
+  - Builder spec: Circle with chords AB, CD and no equality ticks; second admissible panel shifts D. No radius/chord theorem is invoked.
+- u01-l14-s17: A chain of four boxes, with '+ 3' on each arrow and the rule printed above.
+  - Builder spec: Four-node recurrence chain with+3 on each arrow and the universal rule printed above.
+- u01-l14-s18: Four markers A, B, C, D, no three in a line, with room to draw the lines.
+  - Builder spec: A=(0, 0), B=(4, 0), C=(1, 3), D=(5, 4); six pair-lines with arrows. These coordinates have no collinear triple.
+- u01-l14-s19: Two circles, each with a 9 degree center angle, arcs labeled 1,000 km and 1,500 km.
+  - Builder spec: Two circle schematics with identical 9 degree central angles and separately labeled 1,000 and 1,500 km arcs; not a chord comparison.
+- u01-l14-s20: A five-sided shape with a dent, a dashed segment from B to D, and W marked on it outside the shape. Only B, D and W are labeled.
+  - Builder spec: Builder certificate only: A=(0, 0), B=(4, 0), C=(2, 1), D=(4, 4), E=(0, 4), W=(4, 2). Show the concave boundary and dashed BD. Student labels are only B, D, W and the stipulated outside incidence.
+- u01-l14-s21: Points P and Q, with a circle around each passing through the other center.
+  - Builder spec: P=(0, 0), Q=(3, 0), two radius 3 circles centered at the respective points; label membership witnesses without requiring any circle-congruence theorem.
+- u01-l14-s26: A fork: H leads to E on one branch and to not E on the other.
+  - Builder spec: H branches to E and not E; the fork joins at a contradiction marker, then not H is the conclusion.
+
+## Supplied by Leo
+
+
+## Live text only (no figure)
+
+- u01-l02-s05: No drawing needed; show the work as live text. Table: n = 0, 1, 2 with values 1, 3, 5.
+- u01-l02-s09: No drawing needed; show the work as live text. Table: n, f(n), g(n) for n = 0, 1, 2, 5.
+- u01-l07-s05: No drawing needed; show the work as live text. Three columns: 'Undefined term', 'Rules about it', 'Proved from the rules'.
+- u01-l07-s09: No drawing needed; show the work as live text.
+- u01-l10-s05: No drawing needed; show the work as live text. Two-column table: Statements | Reasons.
+- u01-l11-s05: No drawing needed; show the work as live text. Two-column table with a row labeled 'Contradiction'.
+- u01-l11-s09: No drawing needed; show the work as live text. Blank two-column table with a 'Contradiction' row.
+- u01-l13-s03: No drawing needed; live text only.
+- u01-l13-s04: No drawing needed; live text only.
+- u01-l13-s06: No drawing needed; live text only.
+- u01-l13-s11: No drawing needed; live text only.
+- u01-l13-s13: No drawing needed; live text only.
+- u01-l13-s14: No drawing needed; live text only.
+- u01-l13-s15: No drawing needed; live text only.
+- u01-l14-s13: No drawing needed; live text only.
+- u01-l14-s25: No drawing needed; live text only.

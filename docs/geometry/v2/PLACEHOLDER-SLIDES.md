@@ -2,21 +2,70 @@
 
 Planned worked-example, practice and common-mistake art across the current course. Missing art is not rendered: no empty column, placeholder text or substitute geometry. Unit 4 references the current signed-off spec; other units have no figure-specific commission yet. Screen numbers include the cover.
 
-Total: 127 missing figures. Unit 4: 0.
+Total: 176 missing figures. Unit 4: 0.
 
 | Lesson | Slide | Spec figure reference |
 |---|---|---|
-| 1.1 | 5: Common mistake | No figure-specific spec commissioned; lesson 1.1 / Common mistake |
-| 1.2 | 6: Common mistake | No figure-specific spec commissioned; lesson 1.2 / Common mistake |
-| 1.3 | 5: Common mistake | No figure-specific spec commissioned; lesson 1.3 / Common mistake |
-| 1.4 | 5: Common mistake | No figure-specific spec commissioned; lesson 1.4 / Common mistake |
-| 1.5 | 6: Common mistake | No figure-specific spec commissioned; lesson 1.5 / Common mistake |
-| 1.6 | 6: Common mistake | No figure-specific spec commissioned; lesson 1.6 / Common mistake |
-| 1.7 | 5: Common mistake | No figure-specific spec commissioned; lesson 1.7 / Common mistake |
-| 1.8 | 5: Common mistake | No figure-specific spec commissioned; lesson 1.8 / Common mistake |
-| 1.9 | 5: Common mistake | No figure-specific spec commissioned; lesson 1.9 / Common mistake |
-| 1.11 | 5: Common mistake | No figure-specific spec commissioned; lesson 1.11 / Common mistake |
-| 1.12 | 5: Common mistake | No figure-specific spec commissioned; lesson 1.12 / Common mistake |
+| 1.1 | 12: Check yourself | LEO-DIAGRAMS-unit01.md, slot u01-l01-s12 |
+| 1.2 | 5: Worked example | LEO-DIAGRAMS-unit01.md, slot u01-l02-s05 |
+| 1.2 | 6: Worked example | LEO-DIAGRAMS-unit01.md, slot u01-l02-s06 |
+| 1.2 | 9: Practice 1 | LEO-DIAGRAMS-unit01.md, slot u01-l02-s09 |
+| 1.2 | 10: Practice 2 | LEO-DIAGRAMS-unit01.md, slot u01-l02-s10 |
+| 1.2 | 12: Check yourself | LEO-DIAGRAMS-unit01.md, slot u01-l02-s12 |
+| 1.3 | 12: Check yourself | LEO-DIAGRAMS-unit01.md, slot u01-l03-s12 |
+| 1.4 | 12: Check yourself | LEO-DIAGRAMS-unit01.md, slot u01-l04-s12 |
+| 1.5 | 10: Practice 2 | LEO-DIAGRAMS-unit01.md, slot u01-l05-s10 |
+| 1.5 | 12: Check yourself | LEO-DIAGRAMS-unit01.md, slot u01-l05-s12 |
+| 1.6 | 8: Common mistake | LEO-DIAGRAMS-unit01.md, slot u01-l06-s08 |
+| 1.6 | 12: Check yourself | LEO-DIAGRAMS-unit01.md, slot u01-l06-s12 |
+| 1.7 | 5: Worked example | LEO-DIAGRAMS-unit01.md, slot u01-l07-s05 |
+| 1.7 | 6: Worked example | LEO-DIAGRAMS-unit01.md, slot u01-l07-s06 |
+| 1.7 | 8: Common mistake | LEO-DIAGRAMS-unit01.md, slot u01-l07-s08 |
+| 1.7 | 9: Practice 1 | LEO-DIAGRAMS-unit01.md, slot u01-l07-s09 |
+| 1.7 | 11: Practice 3 | LEO-DIAGRAMS-unit01.md, slot u01-l07-s11 |
+| 1.7 | 12: Check yourself | LEO-DIAGRAMS-unit01.md, slot u01-l07-s12 |
+| 1.8 | 5: Worked example | LEO-DIAGRAMS-unit01.md, slot u01-l08-s05 |
+| 1.8 | 6: Worked example | LEO-DIAGRAMS-unit01.md, slot u01-l08-s06 |
+| 1.8 | 9: Practice 1 | LEO-DIAGRAMS-unit01.md, slot u01-l08-s09 |
+| 1.8 | 12: Check yourself | LEO-DIAGRAMS-unit01.md, slot u01-l08-s12 |
+| 1.9 | 6: Worked example | LEO-DIAGRAMS-unit01.md, slot u01-l09-s06 |
+| 1.9 | 12: Check yourself | LEO-DIAGRAMS-unit01.md, slot u01-l09-s12 |
+| 1.10 | 5: Worked example | LEO-DIAGRAMS-unit01.md, slot u01-l10-s05 |
+| 1.10 | 6: Worked example | LEO-DIAGRAMS-unit01.md, slot u01-l10-s06 |
+| 1.10 | 8: Common mistake | LEO-DIAGRAMS-unit01.md, slot u01-l10-s08 |
+| 1.10 | 9: Practice 1 | LEO-DIAGRAMS-unit01.md, slot u01-l10-s09 |
+| 1.10 | 10: Practice 2 | LEO-DIAGRAMS-unit01.md, slot u01-l10-s10 |
+| 1.10 | 11: Practice 3 | LEO-DIAGRAMS-unit01.md, slot u01-l10-s11 |
+| 1.10 | 12: Check yourself | LEO-DIAGRAMS-unit01.md, slot u01-l10-s12 |
+| 1.11 | 5: Worked example | LEO-DIAGRAMS-unit01.md, slot u01-l11-s05 |
+| 1.11 | 6: Worked example | LEO-DIAGRAMS-unit01.md, slot u01-l11-s06 |
+| 1.11 | 8: Common mistake | LEO-DIAGRAMS-unit01.md, slot u01-l11-s08 |
+| 1.11 | 9: Practice 1 | LEO-DIAGRAMS-unit01.md, slot u01-l11-s09 |
+| 1.11 | 10: Practice 2 | LEO-DIAGRAMS-unit01.md, slot u01-l11-s10 |
+| 1.11 | 12: Check yourself | LEO-DIAGRAMS-unit01.md, slot u01-l11-s12 |
+| 1.12 | 6: Worked example | LEO-DIAGRAMS-unit01.md, slot u01-l12-s06 |
+| 1.12 | 8: Common mistake | LEO-DIAGRAMS-unit01.md, slot u01-l12-s08 |
+| 1.12 | 10: Practice 2 | LEO-DIAGRAMS-unit01.md, slot u01-l12-s10 |
+| 1.12 | 11: Practice 3 | LEO-DIAGRAMS-unit01.md, slot u01-l12-s11 |
+| 1.12 | 12: Check yourself | LEO-DIAGRAMS-unit01.md, slot u01-l12-s12 |
+| 1.13 | 3: Review item 1 | LEO-DIAGRAMS-unit01.md, slot u01-l13-s03 |
+| 1.13 | 4: Review item 2 | LEO-DIAGRAMS-unit01.md, slot u01-l13-s04 |
+| 1.13 | 6: Review item 4 | LEO-DIAGRAMS-unit01.md, slot u01-l13-s06 |
+| 1.13 | 7: Review item 5 | LEO-DIAGRAMS-unit01.md, slot u01-l13-s07 |
+| 1.13 | 10: Review item 8 | LEO-DIAGRAMS-unit01.md, slot u01-l13-s10 |
+| 1.13 | 11: Review item 9 | LEO-DIAGRAMS-unit01.md, slot u01-l13-s11 |
+| 1.13 | 13: Review item 11 | LEO-DIAGRAMS-unit01.md, slot u01-l13-s13 |
+| 1.13 | 14: Review item 12 | LEO-DIAGRAMS-unit01.md, slot u01-l13-s14 |
+| 1.13 | 15: Review item 13 | LEO-DIAGRAMS-unit01.md, slot u01-l13-s15 |
+| 1.14 | 10: Form A: item 7 | LEO-DIAGRAMS-unit01.md, slot u01-l14-s10 |
+| 1.14 | 11: Form A: item 8 | LEO-DIAGRAMS-unit01.md, slot u01-l14-s11 |
+| 1.14 | 13: Form A: item 10 | LEO-DIAGRAMS-unit01.md, slot u01-l14-s13 |
+| 1.14 | 15: Form A: item 12 | LEO-DIAGRAMS-unit01.md, slot u01-l14-s15 |
+| 1.14 | 22: Form B: item 7 | LEO-DIAGRAMS-unit01.md, slot u01-l14-s22 |
+| 1.14 | 23: Form B: item 8 | LEO-DIAGRAMS-unit01.md, slot u01-l14-s23 |
+| 1.14 | 24: Form B: item 9 | LEO-DIAGRAMS-unit01.md, slot u01-l14-s24 |
+| 1.14 | 25: Form B: item 10 | LEO-DIAGRAMS-unit01.md, slot u01-l14-s25 |
+| 1.14 | 27: Form B: item 12 | LEO-DIAGRAMS-unit01.md, slot u01-l14-s27 |
 | 2.1 | 5: Common mistake | No figure-specific spec commissioned; lesson 2.1 / Common mistake |
 | 2.2 | 5: Common mistake | No figure-specific spec commissioned; lesson 2.2 / Common mistake |
 | 2.3 | 5: Common mistake | No figure-specific spec commissioned; lesson 2.3 / Common mistake |

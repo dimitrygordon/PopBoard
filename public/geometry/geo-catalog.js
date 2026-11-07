@@ -24,7 +24,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1"
@@ -57,7 +57,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 7,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1"
@@ -90,7 +90,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1"
@@ -123,7 +123,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1"
@@ -156,7 +156,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 7,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1"
@@ -189,7 +189,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 7,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1",
@@ -223,7 +223,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1"
@@ -256,7 +256,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1",
@@ -290,7 +290,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1",
@@ -324,7 +324,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 8,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1",
@@ -358,7 +358,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1"
@@ -398,7 +398,7 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1"
@@ -438,7 +438,7 @@ export const DECKS = [
    ],
    "relationship": "related review scope"
   },
-  "slides": 7,
+  "slides": 20,
   "pages": [],
   "standards": [
    "G.GF.1"
@@ -478,7 +478,7 @@ export const DECKS = [
    ],
    "relationship": "related review scope"
   },
-  "slides": 7,
+  "slides": 28,
   "pages": [],
   "standards": [
    "G.GF.1",

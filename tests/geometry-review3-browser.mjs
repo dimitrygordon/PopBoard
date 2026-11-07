@@ -70,7 +70,7 @@ try{
  await page.evaluate(async()=>{await document.fonts.ready;await Promise.all(document.getAnimations().map(a=>a.finished.catch(()=>{})));});
  await page.screenshot({path:`${out}/390x844-4.14-common-mistake.png`,fullPage:true});shots++;
  await page.setViewport({width:1440,height:900});
- await page.goto(`${base}/study-geometry-story.html?lesson=u01-l10&page=5`,{waitUntil:'networkidle0'});
+ await page.goto(`${base}/study-geometry-story.html?lesson=u01-l10&page=9`,{waitUntil:'networkidle0'});
  await page.click('.gx-actions button:nth-child(1)');await page.click('.gx-actions button:nth-child(2)');
  assert.equal(await page.$$eval('.gx-actions button',bs=>bs.every(b=>b.classList.contains('gx-used')&&getComputedStyle(b).opacity==='1'&&b.textContent.includes('✓'))),true);
  assert.deepEqual(errors,[]);console.log(`PASS: ${shots} review screenshots, all assessment label bounds/separation at three sizes, no blank before item 12, no placeholders/overflow, used reveal styles.`);

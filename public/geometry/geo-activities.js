@@ -53,13 +53,13 @@ export function mountActivity(host,id,task={}) {
   for(const label of [...moves].reverse())button(label,()=>{if(label!==moves[step]){feedback.textContent='That is not the next alignment. Preserve the side correspondence and chosen half-plane.';return;}step++;frame();correct();});
   button('Reset',()=>{step=0;frame();correct();});correct();
  }else{
-  prompt.textContent=id==='4.14'?'Choose a test first, then order the proof. Use the shortest valid route.':'Build the proof in order. CPCTC stays locked until congruence has been established.';
+  prompt.textContent=id.startsWith('1.')?(task.prompt||'Put the steps in order.'):id==='4.14'?'Choose a test first, then order the proof. Use the shortest valid route.':'Build the proof in order. CPCTC stays locked until congruence has been established.';
   const rows=(task.steps||[]).map(s=>({step:s.step,reason:s.reason}));let next=0,started=id!=='4.14';
   const list=document.createElement('ol');list.className='gx-ordered-proof';host.insertBefore(list,actions);
   if(!started)for(const test of ['SSS','SAS','ASA','SSA'])button(test,()=>{started=test==='SSS';feedback.textContent=started?'Three side pairs are available. Now order the proof.':'Check the actual givens before choosing a test.';});
   const buttons=[];const congruence=rows.findIndex(r=>r.step.includes('≅'));
   const refresh=()=>buttons.forEach(({button,row})=>{button.disabled=id==='4.6'&&row.reason.includes('CPCTC')&&next<=congruence;});
-  const choose=row=>{if(!started){feedback.textContent='Choose the test first.';return;}if(rows[next]!==row){feedback.textContent='This is the first out-of-order line. Establish its hypotheses first.';return;}const li=document.createElement('li');li.textContent=row.step+' Because '+row.reason;list.append(li);next++;refresh();feedback.textContent=next===rows.length?'Proof complete: each conclusion has its hypotheses.':`${next} of ${rows.length} lines ordered.`;};
+  const choose=row=>{if(!started){feedback.textContent='Choose the test first.';return;}if(rows[next]!==row){feedback.textContent='This is the first out-of-order line. Establish its hypotheses first.';return;}const li=document.createElement('li');li.textContent=id.startsWith('1.')?row.step+' '+row.reason:row.step+' Because '+row.reason;list.append(li);next++;refresh();feedback.textContent=next===rows.length?'Proof complete: each conclusion has its hypotheses.':`${next} of ${rows.length} lines ordered.`;};
   for(const row of [...rows].reverse()){
    const b=button(row.step,()=>choose(row));b.draggable=true;b.ondragstart=e=>e.dataTransfer.setData('text/plain',String(rows.indexOf(row)));buttons.push({button:b,row});
   }
