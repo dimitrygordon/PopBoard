@@ -31,7 +31,7 @@ test('4.10 has both class days, all three cases, and explicit representative rel
 });
 test('4.13 uses the approved half-turn incidence argument and keeps the long proof optional',()=>{
  const examples=deck(13).slides.filter(s=>s.geo.kind==='worked-example');
- assert.equal(examples[0].geo.optional,false);assert.match(examples[0].geo.prompt,/In class: the angle bisector/);
+ assert.equal(examples[0].geo.optional,false);assert.match(examples[0].geo.prompt,/^The angle bisector construction/);
  assert.equal(examples[1].geo.optional,true);assert.equal(examples[1].geo.steps.length,14);
  const all=JSON.stringify(examples[1]);for(const s of ['half-turn','midpoint','M is between A and B','ray PM is ray PQ'])assert.ok(all.includes(s));
 });
@@ -206,4 +206,10 @@ test('Form B item 8 (u04-l16-s23) is a readable isosceles HIK with labeled legs'
  const arcs=[...svg.matchAll(/data-arc-r="([\d.]+)" data-arc-side="([\d.]+)"/g)];assert.equal(arcs.length,2);
  for(const a of arcs)assert.ok(Math.abs(a[1]/a[2]-0.2)<0.001);
  const deck=JSON.parse(read('public/geometry/decks/u04-l16/deck.json'));assert.ok(JSON.stringify(deck.slides[22]).includes('data-figure=\\"u04-b8\\"'));
+});
+test('Unit 4 student-facing output carries no internal builder labels',()=>{
+ const dir=p=>fs.readdirSync(new URL('../'+p,import.meta.url));
+ const files=[...dir('public/geometry/decks').filter(d=>d.startsWith('u04-')).map(d=>`public/geometry/decks/${d}/deck.json`),...dir('public/geometry/forms').filter(f=>f.startsWith('unit04')).map(f=>'public/geometry/forms/'+f),...dir('public/geometry/figures/u04').map(f=>'public/geometry/figures/u04/'+f)];
+ assert.ok(files.length>100,files.length);
+ for(const f of files){const text=read(f).toLowerCase();for(const bad of ['original problem','.md','signoff','in class:','student version'])assert.ok(!text.includes(bad),`${f}: ${bad}`);}
 });

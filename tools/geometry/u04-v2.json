@@ -34,7 +34,7 @@
         "optional": false
       },
       {
-        "title": "Use a match to find x (original problem).",
+        "title": "Use a match to find x.",
         "steps": [
           {
             "step": "Triangle ABC ≅ triangle PQR, with AB = 2x + 1 and PQ = 9.",
@@ -204,7 +204,7 @@
         "optional": false
       },
       {
-        "title": "A midpoint proof (original problem).",
+        "title": "A midpoint proof.",
         "steps": [
           {
             "step": "M is the midpoint of AD and of BC.",
@@ -293,7 +293,7 @@
         "optional": false
       },
       {
-        "title": "Two triangles sharing a side (original problem).",
+        "title": "Two triangles sharing a side.",
         "steps": [
           {
             "step": "C and D are on opposite sides of AB. Angle CAB ≅ angle DBA and angle CBA ≅ angle DAB.",
@@ -548,7 +548,7 @@
         "optional": false
       },
       {
-        "title": "Find the base angles (original problem).",
+        "title": "Find the base angles.",
         "steps": [
           {
             "step": "AB = AC, angle B = (3x + 5) degrees, angle C = (5x - 17) degrees.",
@@ -974,7 +974,7 @@
     "idea": "constructions are proved, not eyeballed. Name every point (define M) before using it.",
     "examples": [
       {
-        "title": "In class: the angle bisector construction (adapted from Jacobs p. 171).",
+        "title": "The angle bisector construction (adapted from Jacobs p. 171).",
         "steps": [
           {
             "step": "Mark U and V on the two rays of the angle so that OU = OV.",

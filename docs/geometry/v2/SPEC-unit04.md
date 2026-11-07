@@ -71,7 +71,7 @@ Each worked example shows one step at a time: step text on the left, its reason 
     | Angles: angle A ≅ angle E, angle B ≅ angle F, angle C ≅ angle D. | Each angle uses its matching letter. |
     | All six come from the statement itself, not from how the picture looks. | The order of letters is part of what congruent means. |
   - Worked example 2:
-    *Use a match to find x (original problem).* Reveal one row per tap:
+    *Use a match to find x.* Reveal one row per tap:
 
     | Step | Reason |
     |---|---|
@@ -232,7 +232,7 @@ Each worked example shows one step at a time: step text on the left, its reason 
     | The angles at A and D are equal, so ray AC lies along ray DF. Because AC = DF, C lands on F. | Equal angle, then equal length. |
     | All three corners land on D, E, F, so triangle ABC ≅ triangle DEF. | Definition of congruence by rigid motions. We did not use SSS or the triangle angle sum. |
   - Worked example 2:
-    *A midpoint proof (original problem).* Reveal one row per tap:
+    *A midpoint proof.* Reveal one row per tap:
 
     | Step | Reason |
     |---|---|
@@ -314,7 +314,7 @@ Each worked example shows one step at a time: step text on the left, its reason 
     | Rays DF and EF cross at only one point, F. So C lands on F. | Two different lines cross at most once. |
     | So triangle ABC ≅ triangle DEF, without SSS or the angle sum. | Definition of congruence. |
   - Worked example 2:
-    *Two triangles sharing a side (original problem).* Reveal one row per tap:
+    *Two triangles sharing a side.* Reveal one row per tap:
 
     | Step | Reason |
     |---|---|
@@ -554,7 +554,7 @@ Each worked example shows one step at a time: step text on the left, its reason 
     | Triangle ABD ≅ triangle ACD. | SAS. |
     | Angle B ≅ angle C. | CPCTC. |
   - Worked example 2:
-    *Find the base angles (original problem).* Reveal one row per tap:
+    *Find the base angles.* Reveal one row per tap:
 
     | Step | Reason |
     |---|---|
@@ -777,7 +777,7 @@ Each worked example shows one step at a time: step text on the left, its reason 
 - Exit ticket: (1) Which earlier theorems does the SSS proof use, and which postulates build triangle ABG? (2) In the exterior case, why do we subtract instead of add? (3) What's confusing?
 - **Learner layer** (Socrates; student-facing, 9th to 10th grade reading level; same math and values as the builder layer):
   - Worked example 1:
-    *Day 1. Proof of SSS, interior case (adapted from Theorem 11, Jacobs p. 164; copy rows from UNIT04-SIGNOFF.md (c)).* Reveal one row per tap:
+    *Day 1. Proof of SSS, interior case (adapted from Theorem 11, Jacobs p. 164).* Reveal one row per tap:
 
     | Step | Reason |
     |---|---|
@@ -1066,7 +1066,7 @@ Each worked example shows one step at a time: step text on the left, its reason 
     | AM = BM, and angles AMP and BMP are equal. | CPCTC. |
     | Those two angles add to 180, so each is 90. PQ is the perpendicular bisector of AB. | Linear pair. |
   - Worked example 2:
-    *In class: the angle bisector construction (adapted from Jacobs p. 171).* Reveal one row per tap:
+    *The angle bisector construction (adapted from Jacobs p. 171).* Reveal one row per tap:
 
     | Step | Reason |
     |---|---|

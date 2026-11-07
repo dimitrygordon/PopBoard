@@ -2,13 +2,13 @@
 
 Student wording: Socrates. Math: Euclid. Build: PR 170. No builder text or coordinate certificates should be drawn as learner labels. All art is editable SVG, black strokes on white, live labels, separate given and conclusion layers.
 
-Source SHA-256: 0d472978fe78fb5003b0a6cfd6c093da1d35afb32b4441e1b99560c51a67d398
+Source SHA-256: 2e632019edf2b7932ccfecc03558c1db88b7c7b62c7d988580a29da34389c16f
 
 Figure slots exist on every worked-example, practice, check and common-mistake screen. Slots without a supplied SVG are omitted from the student DOM until art arrives; text uses the full width. See PLACEHOLDER-SLIDES.md for the missing-art inventory. Fill each planned slot with its own correct givens, not a reused diagram with different letters.
 
 ## 4.1
 
-Slots: get-started / big-idea art; List the six matching parts (adapted from Jacobs p. 140)., Use a match to find x (original problem).; common mistake; 3 practice figures; check-yourself.
+Slots: get-started / big-idea art; List the six matching parts (adapted from Jacobs p. 140)., Use a match to find x.; common mistake; 3 practice figures; check-yourself.
 
 Two scalene triangles with six explicit names. Use A=(0,0),B=(5,0),C=(1,2) and E=(9,1),F=(9,6),D=(7,2) (R2-4: A=(0,0), B=(5,0), C=(1,2); E=(9,1), F=(9,6), D=(7,2). Squared sides 25, 5, 20.) [Sign-off patch R2], a rotated translated copy. One/two/three ticks on corresponding sides, with labels outside triangles.
 
@@ -20,13 +20,13 @@ Aircraft as horizontal segment NT with two downward inward light rays to W, endp
 
 ## 4.3
 
-Slots: get-started / big-idea art; Why SAS works (based on the SAS picture, Jacobs p. 147)., A midpoint proof (original problem).; common mistake; 3 practice figures; check-yourself.
+Slots: get-started / big-idea art; Why SAS works (based on the SAS picture, Jacobs p. 147)., A midpoint proof.; common mistake; 3 practice figures; check-yourself.
 
 For W1 use AB=6,AC=9, included angle 40 degrees and a rotated/reflected copy; three motion frames, mirror DE dashed. W2 intersecting segments AD,BC at M with midpoint ticks and vertical-angle arcs. Preserve distinct vertices.
 
 ## 4.4
 
-Slots: get-started / big-idea art; Why ASA works (based on the ASA picture, Jacobs p. 147)., Two triangles sharing a side (original problem).; common mistake; 3 practice figures; check-yourself.
+Slots: get-started / big-idea art; Why ASA works (based on the ASA picture, Jacobs p. 147)., Two triangles sharing a side.; common mistake; 3 practice figures; check-yourself.
 
 Corrected coordinates (Euclid, U4-FIGURE-COORDS.md): A=(0,0), B=(18.3051,0), C=(6.1017,9.1526), D=(12.2034,-9.1526); CA=DB=11. Practice 3, u04-l04-s10, states DB=11. Do not reuse the unscaled shared-side model whose CA=DB=sqrt(13). Ready to draw. The slot stays omitted from the student DOM until the SVG lands.
 
@@ -46,7 +46,7 @@ W1 B=(0,0),D=(5,0),A=(2,3),C=(2,-3); AB,CB ticks and ABD,CBD arcs. AD,CD ticks a
 
 ## 4.7
 
-Slots: get-started / big-idea art; Proof of Theorem 9 (adapted from Jacobs p. 158)., Find the base angles (original problem).; common mistake; 3 practice figures; check-yourself.
+Slots: get-started / big-idea art; Proof of Theorem 9 (adapted from Jacobs p. 158)., Find the base angles.; common mistake; 3 practice figures; check-yourself.
 
 Corrected coordinates (Euclid, U4-FIGURE-COORDS.md): A=(0,2.3439), B=(-3,0), C=(3,0); base angles 38 degrees, apex 104. Worked example 2, u04-l07-s05, solves both base angles as 38 degrees. Do not reuse the rotated 3-4-5 model, whose base angles are about 53.13 degrees. Ready to draw. The slot stays omitted from the student DOM until the SVG lands.
 
@@ -106,7 +106,7 @@ D=(0,0),E=(5,0), circles radii 4 and 3; F=(3.2,2.4), other intersection (3.2,-2.
 
 ## 4.13
 
-Slots: get-started / big-idea art; In class: the angle bisector construction (adapted from Jacobs p. 171)., Optional extension: the perpendicular bisector construction, proved in three stages.; common mistake; 3 practice figures; check-yourself.
+Slots: get-started / big-idea art; The angle bisector construction (adapted from Jacobs p. 171)., Optional extension: the perpendicular bisector construction, proved in three stages.; common mistake; 3 practice figures; check-yourself.
 
 A=(-5,0),B=(5,0), radius 6, P=(0,sqrt(11)),Q=(0,-sqrt(11)),M=(0,0). Add M label before any proof mentions it. W2 rays at 0 and 70 degrees, U,V at radius 4, choose X on interior angle bisector farther than O. Wrong-case SVG uses tangent circles with just one crossing.
 
