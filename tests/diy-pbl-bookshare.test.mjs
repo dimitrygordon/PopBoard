@@ -69,7 +69,7 @@ test("Round 1 structure: key terms, split conclude/discuss, resources APA", () =
   assert.equal(SLIDES.find(s => s.kind==="conclude").title, "Conclude with direction");
   assert.equal(SLIDES.find(s => s.kind==="discuss").title, "Discussion questions");
   assert.equal(SLIDES.find(s => s.kind==="discuss").questions.length, 3);
-  assert.match(SLIDES.find(s => s.kind==="discuss").questions[0], /In the video/);
+  assert.match(SLIDES.find(s => s.kind==="discuss").questions[0], /In this Bookshare/);
   assert.match(SLIDES.find(s => s.kind==="discuss").questions[0], /Invention Unit checklist/);
   assert.match(SLIDES.find(s => s.kind==="discuss").questions[2], /student-created rubric/);
   assert.equal(SLIDES.filter(s => s.kind==="resources")[0].kind, "resources");

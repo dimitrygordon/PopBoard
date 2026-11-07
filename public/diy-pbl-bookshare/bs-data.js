@@ -552,12 +552,12 @@ export const SLIDES = [
     "kicker": "Discuss",
     "idea": null,
     "kind": "discuss",
-    "guide": "Apply an idea from the video to your classroom.",
+    "guide": "Apply an idea from this Bookshare to your classroom.",
     "bullets": [],
     "questions": [
-      "In the video, Wolpert-Gawron's planning order (design toward what you love, then look back at the standards, then fill the gaps) was compared with backward design. Choose a unit you will teach. Which order would you plan it in, and what would you put in the empty rows of your pacing checklist to keep it flexible? Explain how your choice connects to an idea from the presentation. Refer to one assignment shown in the actual Invention Unit checklist.",
-      "The presentation shared five ways to assess writing quickly and argued that in STEM, communication is the content. Pick one real-world genre from the video (problem statement, executive summary with BIRAC, business letter, or lab report) and describe how you would use it in your subject. Which feedback tip would you pair it with, and how does that tip shift who does the work?",
-      "The book insists that the top level of a rubric be called \"Able to Teach This Topic.\" In addition to the approaches in the presentation (student-created quizzes, student-translated rubrics, backchanneling), what other way could students in your classroom prove they can teach a concept? What evidence would convince you, and what is one risk of the approach? Compare your proposal with one descriptor in the student-created rubric shown in the video."
+      "In this Bookshare, Wolpert-Gawron's planning order (design toward what you love, then look back at the standards, then fill the gaps) was compared with backward design. Choose a unit you will teach. Which order would you plan it in, and what would you put in the empty rows of your pacing checklist to keep it flexible? Explain how your choice connects to an idea from the presentation. Refer to one assignment shown in the actual Invention Unit checklist.",
+      "The presentation shared five ways to assess writing quickly and argued that in STEM, communication is the content. Pick one real-world genre from this Bookshare (problem statement, executive summary with BIRAC, business letter, or lab report) and describe how you would use it in your subject. Which feedback tip would you pair it with, and how does that tip shift who does the work?",
+      "The book insists that the top level of a rubric be called \"Able to Teach This Topic.\" In addition to the approaches in the presentation (student-created quizzes, student-translated rubrics, backchanneling), what other way could students in your classroom prove they can teach a concept? What evidence would convince you, and what is one risk of the approach? Compare your proposal with one descriptor in the student-created rubric shown in this Bookshare."
     ],
     "narration": "Here are my three discussion questions. Each one asks you to take an idea from this video into your own classroom. First, planning order, and the empty rows of the checklist. Second, a real-world genre paired with a feedback tip. Third, other ways students can prove they're able to teach. Thanks for watching.",
     "hold_after": 20
