@@ -1,4 +1,4 @@
-// Presenter shell for DIY PBL Bookshare: Friction Lesson pattern with NO audio.
+// Presenter shell for DIY PBL Bookshare: Friction Lesson pattern. Optional read-aloud audio (Altair), off by default.
 // Script text stays in the side column as Dimitry's teleprompter. Hide text / Full screen
 // collapses the side so only the looping storyboard art remains.
 import { timeline, fx } from "./bs-engine.js";
@@ -27,6 +27,29 @@ function applySideTab() {
   w.querySelector(".bs-tab-narration").hidden = sideTab !== "narration";
 }
 const reducedQ = matchMedia("(prefers-reduced-motion: reduce)");
+/* Read aloud: narration/manifest.json maps slide -> { text, audio }. Off by default (Dimitry narrates live);
+   the choice is saved. When on, each slide's audio starts with the slide; auto-advance waits for it to end. */
+const manifest = fetch("diy-pbl-bookshare/narration/manifest.json").then((r) => (r.ok ? r.json() : null)).catch(() => null);
+let readOn = false, voiceAudio = null;
+try { readOn = localStorage.getItem("popboard.diy-pbl.read") === "1"; } catch (e) {}
+function stopVoice() { if (voiceAudio) { voiceAudio.pause(); voiceAudio.removeAttribute("src"); voiceAudio.load(); voiceAudio = null; } }
+function voiceFor(n) {
+  stopVoice();
+  if (!readOn) return;
+  manifest.then((m) => {
+    const e = m && m.pages && m.pages[String(n)];
+    if (!e || !e.audio || !readOn || state.i + 1 !== n) return;
+    const a = new Audio("diy-pbl-bookshare/narration/" + e.audio);
+    a.onended = () => { if (voiceAudio === a) { voiceAudio = null; maybeAdvance(); } };
+    voiceAudio = a;
+    if (state.playing) a.play().catch(() => {});
+  });
+}
+function syncRead() {
+  const b = document.getElementById("readBtn"); if (!b) return;
+  b.setAttribute("aria-pressed", String(readOn));
+  b.textContent = readOn ? "🔊 Reading aloud" : "🔈 Read aloud";
+}
 const state = { i: 0, T: null, playing: true, auto: false, prog: null, autoTimer: 0, navBusy: false, flipToken: 0, drawIn: null };
 try { state.auto = localStorage.getItem("popboard.diy-pbl.auto") === "1"; } catch (e) {}
 
@@ -80,6 +103,7 @@ function stopPage() {
   state.animDone = false;
   clearFlipClones();
   scene.querySelectorAll(".bs-scene").forEach((n) => n.classList.remove("is-settled", "is-leaving", "is-drawing", "is-drawn"));
+  stopVoice();
   scene.replaceChildren(); scene.classList.remove("staged"); side.replaceChildren();
   scene.style.opacity = "";
   scene.style.transition = "";
@@ -123,6 +147,7 @@ function render(i) {
   // Side: kicker + title + bullets/script. Do NOT inject .guide here (A3: no duplicate caption).
   side.innerHTML = `<p class="kicker">${fx(p.kicker)}</p><h2>${fx(p.title)}</h2>` + (p.side || "");
   applySideTab();
+  voiceFor(n);
   // Full-screen caption: guide only (no title duplicate with on-art headings)
   $("flCapT").innerHTML = "";
   $("flCapQ").innerHTML = fx(p.cap || p.guide || "");
@@ -159,6 +184,7 @@ function startClock(T) {
 function maybeAdvance() {
   clearTimeout(state.autoTimer);
   if (!state.auto || !state.animDone || state.i >= PAGES.length - 1) return;
+  if (voiceAudio && !voiceAudio.ended) return; // wait for read-aloud to finish
   state.autoTimer = setTimeout(() => { if (state.playing) go(1); }, 4000);
 }
 
@@ -208,6 +234,7 @@ function setPlaying(on) {
   const all = [...(state.T ? state.T.anims : []), state.prog].filter(Boolean);
   all.forEach((a) => { if (a.playState === "finished" || a.playState === "idle") return; on ? a.play() : a.pause(); });
   if (!on) clearTimeout(state.autoTimer); else maybeAdvance();
+  if (voiceAudio) { on ? voiceAudio.play().catch(() => {}) : voiceAudio.pause(); }
   const b = $("playBtn"); b.setAttribute("aria-pressed", String(on));
   b.textContent = on ? "❚❚ Pause" : "▶ Play"; b.setAttribute("aria-label", on ? "Pause" : "Play");
 }
@@ -252,6 +279,13 @@ $("playBtn").onclick = () => setPlaying(!state.playing);
 $("replayBtn").onclick = () => { render(state.i); afterRenderDrawIn(); };
 $("textBtn").onclick = () => setCollapsed(!document.body.classList.contains("fl-full"));
 $("fsBtn").onclick = toggleFullscreen;
+$("readBtn").onclick = () => {
+  readOn = !readOn;
+  try { localStorage.setItem("popboard.diy-pbl.read", readOn ? "1" : "0"); } catch (e) {}
+  syncRead();
+  if (readOn) voiceFor(state.i + 1); else { stopVoice(); maybeAdvance(); }
+};
+syncRead();
 const autoBtn = $("autoBtn");
 const syncAuto = () => autoBtn.setAttribute("aria-pressed", String(state.auto));
 autoBtn.onclick = () => {
