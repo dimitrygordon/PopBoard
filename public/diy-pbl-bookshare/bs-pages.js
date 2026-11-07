@@ -3,6 +3,8 @@ import { ART, h, fx } from "./bs-engine.js";
 import { SLIDES } from "./bs-data.js";
 import { PLACEMENTS, applyPlace } from "./bs-placements.js";
 import { s09Cards, keytermsCards, S09_LABEL_SLOTS } from "./bs-layouts.js";
+import { placeDecor, startDecorMotions, cancelDecorMotions } from "./bs-decor.js";
+import { R6_DECOR } from "./bs-r6-decor-data.js";
 
 export { SLIDES };
 
@@ -767,6 +769,7 @@ const BUILDERS = {
 
 
 
+
 function placeFigureCard(root, slide) {
   const fig = slide.figure;
   if (!fig || !fig.src) return;
@@ -894,6 +897,11 @@ export const PAGES = SLIDES.map((slide) => ({
     root.dataset.kind = slide.kind || "";
     if (slide.idea) root.dataset.idea = String(slide.idea);
 
+    // Leo Round 7 moving pieces (loop.md). Merge pack defaults with any slide.decor.
+    const pack = R6_DECOR[artId] || [];
+    const slideDecor = Array.isArray(slide.decor) ? slide.decor : [];
+    const decorSlide = { ...slide, art: artId, decor: slideDecor.length ? slideDecor : pack };
+    placeDecor(root, decorSlide, ensureDesignLayer);
     // On-art title + bullets for teaching / exemplar slides
     buildOnArtIdeaPanel(root, slide);
     if (slide.figure) placeFigureCard(root, slide);
@@ -1024,3 +1032,4 @@ export const PAGES = SLIDES.map((slide) => ({
 }));
 
 export const PAGE_COUNT = PAGES.length;
+export { startDecorMotions, cancelDecorMotions, placeDecor };

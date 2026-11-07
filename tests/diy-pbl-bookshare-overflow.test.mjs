@@ -60,7 +60,9 @@ async function settle(page) {
 function launchOpts() {
   return {
     executablePath: CHROME,
-    args: ["--no-sandbox", "--disk-cache-size=1"],
+    // Layout checks settle the scene themselves; skip the 3s pencil draw-in
+    // on every navigation so the full suite fits its 600s timeout.
+    args: ["--no-sandbox", "--disk-cache-size=1", "--force-prefers-reduced-motion=reduce"],
     headless: "new",
   };
 }
