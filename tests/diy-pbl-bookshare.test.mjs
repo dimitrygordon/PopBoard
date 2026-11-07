@@ -23,7 +23,7 @@ test("30 pages with titles, builds, and teleprompter script", () => {
     assert.ok(p.title);
     assert.equal(typeof p.build, "function");
     assert.match(p.side, /bs-script/);
-    assert.match(p.side, /Script \(read aloud\)/);
+    assert.match(p.side, /data-tab="narration"/);
   }
 });
 
@@ -82,7 +82,7 @@ test("Round 1 structure: key terms, split conclude/discuss, resources APA", () =
   assert.match(SLIDES.filter(s => s.kind==="resources")[1].resources.map((r) => r.html).join(" "), /airnow\.gov/);
 });
 
-test("no audio controls; fullscreen hides text; script kept in normal view", () => {
+test("optional read-aloud (Altair, off by default); fullscreen hides text; script kept in normal view", () => {
   const html = readFileSync(join(PUB, "study-diy-pbl-bookshare.html"), "utf8");
   const app = readFileSync(join(DIR, "bs-app.js"), "utf8");
   const css = readFileSync(join(DIR, "bs.css"), "utf8");
@@ -95,7 +95,14 @@ test("no audio controls; fullscreen hides text; script kept in normal view", () 
   // On-art panels must remain in full view (resources, terms, discuss, takeaways)
   assert.ok(!/body\.fl-full[^{]*\.bs-resources-panel\s*\{\s*display:\s*none/.test(css));
   assert.match(css, /\.bs-takeaways/);
-  assert.ok(!app.includes("new Audio"));
+  assert.match(html, /id="readBtn"[^>]*aria-pressed="false"/);
+  assert.match(app, /popboard\.diy-pbl\.read/);
+  const man = JSON.parse(readFileSync(join(DIR, "narration", "manifest.json"), "utf8"));
+  assert.equal(man.voice, "altair");
+  for (let n = 1; n <= 30; n++) {
+    const e = man.pages[String(n)];
+    assert.ok(e && e.audio && existsSync(join(DIR, "narration", e.audio)), `slide ${n} audio`);
+  }
 });
 
 test("Leo art webp exists for s01-s18; no Leo-art-pending badge in code", () => {
@@ -355,4 +362,10 @@ test("decor hook: 1920x1080 coords, pivot, presets, reduced-motion static", asyn
   assert.match(css, /prefers-reduced-motion:\s*reduce/);
   assert.match(decor, /transformOrigin|decorOrigin/);
   assert.match(decor, /keyframes/);
+});
+
+test("every slide carries Leo's article text for the Article tab", async () => {
+  const { SLIDES } = await import("../public/diy-pbl-bookshare/bs-data.js");
+  assert.equal(SLIDES.length, 30);
+  for (const s of SLIDES) assert.ok(s.article && s.article.trim().length > 20, `slide ${s.n} article`);
 });

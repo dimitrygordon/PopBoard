@@ -1,128 +1,126 @@
 {
-  "voice": null,
-  "note": "Live narration by Dimitry. No audio files.",
+  "voice": "altair",
+  "note": "Read-aloud audio, xAI TTS voice Altair. Dimitry can still narrate live.",
   "pages": {
     "1": {
-      "text": "Hi everyone, I'm Dimitry. My Book Share is DIY Project Based Learning for Math and Science by Heather Wolpert-Gawron, an award-winning middle school teacher and Edutopia blogger. I'm a physics and Earth and space science teacher in training, so I picked this book because I want my students doing science, not just reading about it. Over the next fifteen minutes or so, I'll teach you four big ideas, the key terms behind them, what each idea looks like in real classrooms, and three questions to chew on.",
-      "audio": null,
-      "words": 87,
-      "hold_after": null
+      "text": "Hi everyone, I'm Dimitry. My Book Share is DIY Project Based Learning for Math and Science, by Heather Wolpert-Gawron. She's an award-winning middle school teacher and Edutopia blogger. I'm training to teach physics and Earth and space science, and I picked this book because I want my students doing science, and not just reading about it. Over the next twenty-two minutes or so, I'll teach you four big ideas, the key terms behind them, what each one looks like in a real classroom, and three questions to chew on.",
+      "audio": "p1.mp3"
     },
     "2": {
-      "text": "Wolpert-Gawron opens with a comparison I can't shake. At Disneyland, the story of a ride starts the second you step into line. The walls, the ceiling, even the ground all build toward the ride. At Six Flags, she jokes, the d\u00e9cor needs some serious work. She admits she used to teach with disconnected daily lessons, each one teaching a skill, but never adding up to a story. Project Based Learning, or PBL, is the Disneyland version. Every lesson lives inside one story about a problem that has to get solved. So hang onto this. Is your current unit a line, or is it a story?",
-      "audio": null,
-      "words": 124,
-      "hold_after": null
+      "text": "Wolpert-Gawron opens with a comparison I can't shake. At Disneyland, the story of a ride starts the second you step into line. The walls, the ceiling, even the ground all build toward the ride. At Six Flags, she jokes, the décor needs some serious work. She admits she used to teach with disconnected daily lessons, each one teaching a skill, but never adding up to a story. Project Based Learning, or PBL, is the Disneyland version. Every lesson lives inside one story about a problem that has to get solved. So hang onto this. Is your current unit a line, or is it a story?",
+      "audio": "p2.mp3"
     },
     "3": {
-      "text": "Idea one: PBL is a unit, not a project. The author gives us an elevator speech for it. PBL is learning through identifying a real world problem and developing its solution, and kids show what they learn as they journey through the unit, not just at the end. That last part is the key. She draws a sharp line between assigning a project and doing Project Based Learning. Assigning a project is just an assessment you tack on at the end. PBL is the whole unit: every lesson, exploration, piece of research, and presentation, all driven by one driving question. In her words, it's about the process, not the end project.",
-      "audio": null,
-      "words": 111,
-      "hold_after": null
+      "text": "Idea one: PBL is a unit, not a project. The author gives us an elevator speech for it. PBL is learning through identifying a real world problem and developing its solution, and kids show what they learn as they journey through the unit, not just at the end. That last bit is the one to watch. She draws a hard line between assigning a project and doing Project Based Learning. Assigning a project is an assessment you tack on at the end. PBL is the whole unit. Every lesson, exploration, piece of research, and presentation, all driven by one driving question. In her words, it's about the process, not the end project.",
+      "audio": "p3.mp3"
     },
     "4": {
-      "text": "So how does she build that story? Every unit in the book uses the same moves. It starts with an entry event, something that hooks students into the problem. In the Galapagos unit, an eighth grader films a video playing the head of the Smithsonian, inviting seventh grade \"explorers\" to research an island and decide which species to save. Then comes role play. Students aren't students anymore; they're doctors, inventors, field scientists, or theme park engineers. And the work goes to an authentic audience, meaning real people outside the teacher who care about the answer: a board, a principal, local STEM professionals, or other classes. She also leans on the author A. J. Juliani's distinction between algorithmic tasks, which follow one set path to one answer, and heuristic tasks, which require trial and error. PBL lives in the heuristic world.",
-      "audio": null,
-      "words": 140,
-      "hold_after": null
+      "text": "So how does she build that story? Every unit in the book uses the same moves. It starts with an entry event, something that hooks students into the problem. In the Galapagos unit, an eighth grader films a video playing the head of the Smithsonian, inviting the seventh grade \"explorers\" to research an island and decide which species to save. Then comes role play. Students aren't students anymore. They're doctors, inventors, field scientists, or theme park engineers. And the work goes to an authentic audience. Real people, outside the teacher, who care about the answer. A board, a principal, local STEM professionals, or other classes. She also borrows a distinction from the author A. J. Juliani. Algorithmic tasks follow one set path to one answer. Heuristic tasks take trial and error. PBL lives in the heuristic world.",
+      "audio": "p4.mp3"
     },
     "5": {
       "text": "Here's what idea one looks like across classrooms. The author borrows an elementary roller coaster unit from teachers Emily Cruz and Melanie Valencia. Kids build coasters out of foam tubing, marbles, and tape. A curve, a hill, then a loop, recording why each trial worked or failed. In a middle school Invention Unit, kids find an everyday problem at home and pitch a fix. In my own high school physics class, I'd turn that coaster into an energy unit. The driving question might be: can your coaster carry a marble through a loop without falling off at the top? Students predict in PhET's Energy Skate Park, then build, film their trials in slow motion on a phone, and revise. The final pitch goes to a \"park safety board\" made up of other teachers. It's the same skills an energy worksheet covers. The difference is that somebody's waiting on the answer.",
-      "audio": null,
-      "words": 148,
-      "hold_after": null
+      "audio": "p5.mp3"
     },
     "6": {
-      "text": "Idea two: design toward what you love, then backplan to the standards. The author admits she doesn't start with the standards. She calls standards-first planning, in her words, \"a stinky model.\" Instead, she uses three steps. One, design toward what you love, meaning your interests and the interests of the age group you teach. Two, look back at the standards. Three, fill in the gaps. Her reasoning is that enthusiasm is \"trickle down.\" If the teacher's bored, the kids will be too. She calls this a teacher's maker movement. Students make products, so teachers should get to make curriculum. And when one teacher can't hit every standard, she says find a cross-curricular partner. The Galapagos unit came out of her working with a seventh grade science teacher.",
-      "audio": null,
-      "words": 134,
-      "hold_after": null
+      "text": "This is a real student idea from the Invention Unit. Jacob calls it the Smart Drawer. If your hands are full, or a drawer is hard to open, you step on a floor pad and a sensor opens it for you. Before anybody pitches anything, students walk through their homes and list three to five problems in each major space. That gives them somewhere to start. She also has them break a Rube Goldberg machine down into its steps. The point is to study the sequence. Nobody has to build another machine. I'd run that same routine before I ask my physics students to design a solution.",
+      "audio": "p6.mp3"
     },
     "7": {
-      "text": "The tool that keeps this from turning into chaos is the checklist. Every unit starts with a pacing checklist that lays out the assignments and deadlines, and it goes to students, parents, and administrators on day one. She backplans it by entering the final presentation date first and working backward. She also leaves a few empty rows on purpose, because a good guide has to stay flexible when the learning reveals a gap. She treats the checklist like a contract: the teacher promises not to wing it, and the students promise to plan ahead. One line from the book stuck with me: \"The mystery defeats achievement.\" If we want students to own their learning, we have to show them where the unit is going.",
-      "audio": null,
-      "words": 124,
-      "hold_after": null
+      "text": "This is the student work behind that coaster example, and these photos are right there in the book. Students marked the track dimensions and labeled potential and kinetic energy. The teaching directions say to document each trial and explain why it worked or didn't. That's the part I'd want to assess. A loop that works is fun to watch. I'd still want the student to explain the run that failed, point to the change they made, and show me what happened on the next trial. My high school version is just a proposal. These elementary classroom examples are already in the book.",
+      "audio": "p7.mp3"
     },
     "8": {
-      "text": "Let me push on this a little. In our coursework we've been studying backward design. You start with the learning goals and the evidence of learning, before any activities. She even owns it: 'Call me bass-ackward, but I don't design projects around the Common Core Standards.' So at first, her approach sounds like the exact opposite. Look closer, though. Her steps two and three are backward design. She just puts the hook first. So there's a real tension here. Starting from passion can get kids hooked on a unit. But if you never get to step three, you end up with a fun project that misses the standards. For my Earth and space class, I'm drafting an air quality unit. I'd start with what hooks my students, the air in their own town. Then I'd check it against the standards and fill the holes before day one.",
-      "audio": null,
-      "words": 133,
-      "hold_after": null
+      "text": "Idea two: design toward what you love, then backplan to the standards. The author admits she doesn't start with the standards. She calls standards-first planning, in her words, \"a stinky model.\" Instead, she uses three steps. One, design toward what you love, meaning your interests and the interests of the age group you teach. Two, look back at the standards. Three, fill in the gaps. Her reasoning is that enthusiasm is \"trickle down.\" If the teacher's bored, the kids will be too. She calls this a teacher's maker movement. Students make products, so teachers should get to make curriculum. And when one teacher can't hit every standard, she says find a cross-curricular partner. The Galapagos unit came out of her working with a seventh grade science teacher.",
+      "audio": "p8.mp3"
     },
     "9": {
-      "text": "Idea three: communication is the content. This idea runs through every chapter. The author quotes her earlier book: \"If it doesn't exist outside of school, then it isn't worthy enough to be taught within school.\" So her students don't write generic essays. They write the genres real STEM professionals write. In the Genius Unit, students play doctors writing a scientific lab report to a patient's family. In the Invention Unit, they write a problem statement, which is a short, researched case that a problem is real, plus three to five questions to guide more research. They also write a business letter asking a company to fund their invention. In the Galapagos and Theme Park units, they write an executive summary, a short pitch to a busy decision maker. Her point is that writing isn't a break from math and science. It's how math and science get shared.",
-      "audio": null,
-      "words": 147,
-      "hold_after": null
+      "text": "The checklist keeps all this from turning into chaos. Every unit starts with a pacing checklist that lays out the assignments and deadlines, and it goes to students, parents, and administrators on day one. She backplans it by putting in the final presentation date first and working backward. She also leaves a few empty rows on purpose, because a good guide has to stay flexible when the learning turns up a gap. She treats the checklist like a contract. The teacher promises not to wing it, and the students promise to plan ahead. One line from the book stuck with me: \"The mystery defeats achievement.\" If we want students to own their learning, we have to show them where the unit's headed. In my physics class, an empty row might turn into a reteach day, after a quick check shows students still think heavier objects fall faster. Or it might be a second build day, if every coaster fails the loop. Those empty rows aren't wasted time. The schedule bends to whatever the kids still need.",
+      "audio": "p9.mp3"
     },
     "10": {
-      "text": "Two tools from this idea are worth stealing. The first is writing with numeracy, which means teaching students how to put numbers into their writing correctly, as evidence. She builds a reference sheet of rules, like spelling out a number that starts a sentence. The second is BIRAC, an engineering-style outline she uses for the Theme Park executive summary. B is background, posing the question. I is issues, what might get in the way. R is recommendations. A is analysis, the evidence that the plan works. And C is consequences, what happens if the board says yes or no. The Invention Unit also has real math in it: a break-even analysis, where cost equals variable cost times units plus fixed cost, written C equals v x plus F, and revenue equals price times units, written R equals p x. Students graph both lines in Desmos and find where they cross.",
-      "audio": null,
-      "words": 150,
-      "hold_after": null
+      "text": "This is the actual Invention Unit checklist. It has a date assigned, an assignment, and a deadline. Look at the order. The needs analysis comes before the problem statement, and the design and cost analysis come before the final business letter and presentation. Students can see how the pieces fit together. The author also tells us to leave some empty boxes for our own assignments or for students' individual goals. In my class, I'd fill those when a quick check tells me we need another lesson or another trial.",
+      "audio": "p10.mp3"
     },
     "11": {
-      "text": "If every STEM teacher assigns writing, somebody has to grade it. So each unit ends with a tip on assessing writing quickly. Tip one: focus your feedback on one skill at a time, instead of what she calls a \"bloody explosion of red pen.\" Tip two: use an oral feedback sheet. You conference with the student, and the student takes the notes, because, as she asks, isn't the one doing the work the one doing the learning? Tip three: use a key of feedback symbols instead of writing out full sentences. Tip four: comment rather than correct. Instead of fixing errors, tell the student, \"In your math assignment, I see three equations that do not add up,\" and let them hunt. Tip five: train students to give each other the first round of feedback, before the work ever gets to you. Here's how I'd use tip four in physics. Instead of circling a wrong sign on an acceleration, I'd write, \"One of your forces points the wrong way,\" and let the student find it. They do the thinking, and I spend less time grading.",
-      "audio": null,
-      "words": 141,
-      "hold_after": null
+      "text": "Let me push on this a little. In our coursework we've been studying backward design. You start with the learning goals and the evidence of learning, before any activities. She even owns it: 'Call me bass-ackward, but I don't design projects around the Common Core Standards.' So at first, her approach sounds like the exact opposite. Look closer, though. Her steps two and three are backward design. She just puts the hook first. So there's a real tension here. Starting from passion can get kids hooked on a unit. But if you never get to step three, you end up with a fun project that misses the standards. For my Earth and space class, I'm drafting an air quality unit. I'd start with what hooks my students, the air in their own town. Then I'd check it against the standards and fill the holes before day one.",
+      "audio": "p11.mp3"
     },
     "12": {
-      "text": "Here's idea three in practice. In a middle school math class, the break-even analysis gives students a real reason to write and graph linear equations. In a biology class, the Galapagos executive summary turns natural selection and biodiversity into a funding argument. In my Earth and space air quality unit, students could pull real readings from the EPA's AirNow site, write them up using the numeracy rules, and present a BIRAC summary to a local audience, maybe the school board, on how to protect students on poor air days. And in my physics class, a lab report written as an engineer's memo to a client is still a lab report. It just has an audience now. That's the shift: the same content, but students have to explain it to someone who needs it.",
-      "audio": null,
-      "words": 133,
-      "hold_after": null
+      "text": "Idea three: communication is the content. The author quotes her earlier book: \"If it doesn't exist outside of school, then it isn't worthy enough to be taught within school.\" So her students don't write generic essays. They write the genres real STEM professionals write. In the Genius Unit, students play doctors writing a scientific lab report to a patient's family. In the Invention Unit, they write a problem statement. That's a short, researched case that a problem is real, plus three to five questions to guide more research. They also write a business letter asking a company to fund their invention. In the Galapagos and Theme Park units, they write an executive summary, which is a short pitch to a busy decision maker. Her point is that writing is how math and science get shared, so it belongs in our classes.",
+      "audio": "p12.mp3"
     },
     "13": {
-      "text": "Idea four: teach them to be teachers. The final unit in the book is called Teach Them to Be Teachers, and it's built on a line she credits to Aristotle: teaching is the highest form of understanding. Students pick a topic they know and love, teach it to the class with a lesson plan and an activity, and then write a persuasive letter to an administrator pitching it as a new elective. But the deeper move happens all through the book: students learn to write assessments, not just take them. She teaches them Costa's Levels of Questioning. Level one is input: recall, define, list. Level two is process: compare, infer, sequence. Level three is output: predict, hypothesize, evaluate, create. She makes it physical with a two-pound weight, a twenty-five-pound weight, and a hundred-pound barbell she can't actually lift. Each level is a harder workout for the brain.",
-      "audio": null,
-      "words": 147,
-      "hold_after": null
+      "text": "Here's another student artifact. Kevin wrote a business letter about an invention he calls the Dust Mite, a flying vacuum, and he asks a company to fund it. I like that students write to a specific reader with a specific request. I wouldn't take his performance claims on faith, though. In physics, we'd ask whether that design could actually lift its own weight and still power the vacuum. That gives the next investigation a reason to exist, and it gives Kevin something concrete to revise.",
+      "audio": "p13.mp3"
     },
     "14": {
-      "text": "She uses four tools for this. First, the student-created assessment. In the Genius Unit, each student reads one article and builds a ten-question quiz in Google Forms for their classmates, mixing up question levels and formats. Second, the student-created rubric. Students translate the district rubric into their own words, and the author insists on one thing. The top score is called \"Able to Teach This Topic.\" Third, the backchannel. While a classmate presents, the audience types questions into a shared Google Doc in real time. Here's the twist. The author grades the audience on their questions, counting how many are level two or level three. She also has student teams write a collaboration constitution, a group contract, at the start of a unit. At the end, they can only grade each other on rules they wrote into it.",
-      "audio": null,
-      "words": 139,
-      "hold_after": null
+      "text": "Two tools from this idea are worth stealing. The first is writing with numeracy. That means teaching students to put numbers into their writing correctly, as evidence. She builds a reference sheet of rules, like spelling out a number when it starts a sentence. The second is BIRAC. It's an engineering-style outline she uses for the Theme Park executive summary. B is background, where you pose the question. I is issues, what might get in the way. R is recommendations. A is analysis, the evidence that the plan works. And C is consequences, what happens if the board says yes, or says no. The Invention Unit has real math in it too, a break-even analysis. Cost equals variable cost times units, plus fixed cost. You write that as C equals v x plus F. Revenue equals price times units, so R equals p x. Students graph both lines in Desmos and find where they cross.",
+      "audio": "p14.mp3"
     },
     "15": {
-      "text": "Here's how idea four travels. In an ELA or history class, students can teach a short lesson on a skill and score their own classmates' quizzes, which is real data analysis. In a math class, the \"Able to Teach\" rubric level could mean a student explains a solution well enough that a peer can solve the next problem. In my physics class, I'd have each lab group teach one concept, say friction, momentum, or energy transfer, to the rest of the class, and write a three-question quiz with one question at each Costa level. I'd also borrow the backchannel. My quieter students often have the best questions, and a shared doc gives them a voice without having to raise a hand.",
-      "audio": null,
-      "words": 121,
-      "hold_after": null
+      "text": "If every STEM teacher assigns writing, somebody has to grade it. So each unit ends with a tip on assessing writing quickly. Tip one: focus your feedback on one skill at a time, instead of what she calls a \"bloody explosion of red pen.\" Tip two: use an oral feedback sheet. You conference with the student, and the student takes the notes, because, as she asks, isn't the one doing the work the one doing the learning? Tip three: use a key of feedback symbols instead of writing out full sentences. Tip four: comment rather than correct. Instead of fixing errors, tell the student, \"In your math assignment, I see three equations that do not add up,\" and let them hunt. Tip five: train students to give each other the first round of feedback, before the work ever gets to you. Here's how I'd use tip four in physics. Instead of circling a wrong sign on an acceleration, I'd write, \"One of your forces points the wrong way,\" and let the student find it. They do the thinking, and I spend less time grading.",
+      "audio": "p15.mp3"
     },
     "16": {
-      "text": "Now for where I'd push back. This book came out in 2016, and some of its tools are gone. TodaysMeet, the backchannel site she uses, shut down years ago. So treat the tools as examples, and swap in whatever your school uses, like a shared Google Doc or a Canvas discussion. Second, the Teach Them to Be Teachers unit uses a multiple intelligences quiz and mentions learning styles. Research by Pashler and colleagues found little evidence that matching instruction to learning styles improves learning. So I'd keep the variety of activities and drop the labels. Third, look at the Genius Unit's student lab reports. They're creative and well written, but some of their brain science claims are shaky. Authentic work still needs a content check. Fourth, most of the book's evidence is teacher stories and student samples, not controlled studies. That doesn't make it wrong. I'd just pair it with a more systematic framework, like the PBLWorks Gold Standard design elements, and watch my own data. If quiz scores drop during a unit, the project needs more direct instruction built in. PBL changes what the teacher does. The teacher still has to teach.",
-      "audio": null,
-      "words": 131,
-      "hold_after": null
+      "text": "Here's idea three in practice. In a middle school math class, the break-even analysis gives students an actual reason to write and graph linear equations. In a biology class, the Galapagos executive summary turns natural selection and biodiversity into a funding argument. In my Earth and space air quality unit, students could pull real readings from the EPA's AirNow site and write them up using the numeracy rules. Then they'd present a BIRAC summary to a local audience, maybe the school board, on how to protect students on poor air days. And in my physics class, a lab report written as an engineer's memo to a client is still a lab report. It just has an audience now. The content doesn't change. Students just have to explain it to somebody who needs it.",
+      "audio": "p16.mp3"
     },
     "17": {
-      "text": "Here are the book's key terms in one place. A driving question is the real-world problem that anchors the whole unit. An entry event hooks students into it. An authentic audience is someone outside the teacher who needs the answer. Backplanning means setting the final date first and working backward on the pacing checklist. A problem statement is a short, researched case that a problem is real. BIRAC is the five-part outline for an executive summary. Costa's Levels of Questioning sort questions into input, process, and output. And 'Able to Teach This Topic' is the top rubric score: a student understands it well enough to teach it.",
-      "audio": null,
-      "words": 107,
-      "hold_after": null
+      "text": "This is a student-created marine torguana from the Galapagos Unit. The creature is made up, but students have to tie their design to the island's real habitat. Their explorers' journal covers the habitat, animal facts, and theories about why the species is disappearing. Then they pitch a protection plan. I'd ask students to defend one feature of their creature with evidence about its environment. The drawing is a fun way in. The explanation is where I find out whether the science holds up.",
+      "audio": "p17.mp3"
     },
     "18": {
-      "text": "So here's what I hope you take away. One: PBL is a unit, not a project, so build the whole story around a real problem. Two: design toward what you and your students love, then backplan to the standards and fill the gaps, with a checklist that makes the journey visible. Three: in STEM, communication is the content, so give students real genres and real audiences, and use quick feedback tools so you're not buried. Four: teach students to be teachers, by having them write the questions, the rubrics, and the lessons.",
-      "audio": null,
-      "words": 92,
-      "hold_after": null
+      "text": "Idea four: teach them to be teachers. The last unit in the book is called Teach Them to Be Teachers. It's built on a line she credits to Aristotle: teaching is the highest form of understanding. Students pick a topic they know and love, teach it to the class with a lesson plan and an activity, and then write a persuasive letter to an administrator, pitching it as a new elective. There's a bigger thread running through the whole book, though. Students learn to write assessments, and not only take them. She teaches them Costa's Levels of Questioning. Level one is input: recall, define, list. Level two is process: compare, infer, sequence. Level three is output: predict, hypothesize, evaluate, create. Costa's levels also give me a quick check on my own tests. If every question on my unit test is level one, I'm only testing whether students memorized, not whether they understand. She makes it physical with a two-pound weight, a twenty-five-pound weight, and a hundred-pound barbell she can't actually lift. Each level is a harder workout for the brain.",
+      "audio": "p18.mp3"
     },
     "19": {
-      "text": "Here are my three discussion questions. Each one asks you to take an idea from this video into your own classroom. First, planning order and the empty rows of the checklist. Second, a real-world genre paired with a feedback tip. Third, other ways students can prove they're able to teach. Thanks for watching.",
-      "audio": null,
-      "words": 53,
-      "hold_after": 20
+      "text": "Let me show what those question levels actually sound like. The book asks whether you agree with Shakespeare that people have seven ages in their lifetime, and why. That's one of her level three examples. Here's how I'd turn the framework into friction questions. Level one asks what the coefficient of friction means. Level two has students compare two force graphs and explain what the slopes tell us. Level three asks them to design a fair test of whether contact area changes sliding friction. Those physics questions are mine, by the way. I'd check the questions students write before they hand them to classmates.",
+      "audio": "p19.mp3"
     },
     "20": {
-      "text": "The book, its free printable resources, and everything else I referenced are listed here and in the materials I've shared with this video.",
-      "audio": null,
-      "words": 23,
-      "hold_after": null
+      "text": "She uses four tools for this. First, the student-created assessment. In the Genius Unit, each student reads one article and builds a ten-question quiz in Google Forms for their classmates, mixing up question levels and formats. Second, the student-created rubric. Students translate the district rubric into their own words, and the author insists on one thing. The top score is called \"Able to Teach This Topic.\" Third, the backchannel. While a classmate presents, the audience types questions into a shared Google Doc in real time. Here's the twist. The author grades the audience on their questions, counting how many are level two or level three. She also has student teams write a collaboration constitution, a group contract, at the start of a unit. At the end, they can only grade each other on rules they wrote into it.",
+      "audio": "p20.mp3"
+    },
+    "21": {
+      "text": "This is a student-created rubric from the book. At the top, the students wrote, \"Able to Teach.\" One descriptor says, \"Great evidence, quotes.\" Another says, \"Every piece of the prompt is included clearly.\" They know what those words mean because they helped write them. For a physics explanation, I'd ask the class what convincing evidence looks like. We'd still need accurate physics and clear criteria. Students could help put those expectations into words they'd actually use when they're reviewing a partner's work.",
+      "audio": "p21.mp3"
+    },
+    "22": {
+      "text": "The collaboration constitution makes a lot more sense once you see what students actually wrote. This team agreed to answer messages within three hours and to talk through problems before asking the teacher to step in. I wouldn't copy that three-hour deadline into my class. My students have different responsibilities and different access at home, so I'd have them agree on something realistic. The assignment also asks them to write a sentence they can use when somebody isn't participating. That way they have the words for an awkward conversation before they need them.",
+      "audio": "p22.mp3"
+    },
+    "23": {
+      "text": "Here's idea four in other classrooms. In an ELA or history class, students can teach a short lesson on a skill and score their own classmates' quizzes, which is real data analysis. In a math class, the \"Able to Teach\" level could mean a student explains a solution well enough that a classmate can solve the next problem. In my physics class, I'd have each lab group teach one concept to the rest of the class. Say friction, momentum, or energy transfer. They'd write a three-question quiz, with one question at each Costa level. I'd also borrow the backchannel. My quieter students often have the best questions, and a shared doc gives them a voice without having to raise a hand.",
+      "audio": "p23.mp3"
+    },
+    "24": {
+      "text": "Now for where I'd push back. This book came out in 2016, and some of its tools are gone. TodaysMeet, the backchannel site she uses, shut down years ago. So treat the tools as examples, and swap in whatever your school uses, like a shared Google Doc or a Canvas discussion. Second, the Teach Them to Be Teachers unit uses a multiple intelligences quiz and mentions learning styles. Research by Pashler and colleagues found little evidence that matching instruction to learning styles improves learning. So I'd keep the variety of activities and drop the labels. Third, look at the Genius Unit's student lab reports. They're creative and well written, but some of their brain science claims are shaky. Authentic work still needs a content check. Fourth, most of the book's evidence is teacher stories and student samples, not controlled studies. That doesn't make it wrong. I'd just pair it with a more systematic framework, like the PBLWorks Gold Standard design elements, and watch my own data. If quiz scores drop during a unit, the project needs more direct instruction built in. PBL changes what the teacher does. The teacher still has to teach.",
+      "audio": "p24.mp3"
+    },
+    "25": {
+      "text": "This is a good example of why that content check matters. In the fictional patient report, the student recommends a second opinion. That's a smart choice for the audience. Elsewhere, though, the report makes claims about brain structure I'd want students to go verify. I'd use it as a revision example. We can give the student credit for those communication choices and still ask whether the evidence supports the science.",
+      "audio": "p25.mp3"
+    },
+    "26": {
+      "text": "Here are the book's key terms in one place. A driving question is the real-world problem that anchors the whole unit. An entry event hooks students into it. An authentic audience is someone outside the teacher who needs the answer. Backplanning means setting the final date first and working backward on the pacing checklist. A problem statement is a short, researched case that a problem is real. BIRAC is the five-part outline for an executive summary. Costa's Levels of Questioning sort questions into input, process, and output. And 'Able to Teach This Topic' is the top rubric score: a student understands it well enough to teach it.",
+      "audio": "p26.mp3"
+    },
+    "27": {
+      "text": "So, four things to take with you. One, PBL is a unit, not a project, so build the whole story around a real problem. Two, design toward what you and your students love, then backplan to the standards and fill the gaps, with a checklist that shows everyone where the unit's headed. Three, in STEM, communication is the content. Give students real genres and real audiences, and use quick feedback tools so you don't get buried. Four, teach students to be teachers, by having them write the questions, the rubrics, and the lessons.",
+      "audio": "p27.mp3"
+    },
+    "28": {
+      "text": "Here are my three discussion questions. Each one asks you to take an idea from this video into your own classroom. First, planning order, and the empty rows of the checklist. Second, a real-world genre paired with a feedback tip. Third, other ways students can prove they're able to teach. Thanks for watching.",
+      "audio": "p28.mp3"
+    },
+    "29": {
+      "text": "The book, its free printable resources, and everything else I mentioned are listed here, and in the materials I've shared with this video.",
+      "audio": "p29.mp3"
+    },
+    "30": {
+      "text": "And the free tools I named along the way: PhET Energy Skate Park, AirNow, and the Desmos graphing calculator.",
+      "audio": "p30.mp3"
     }
-  },
-  "pageCount": 30,
-  "totalWords": 3398
+  }
 }
