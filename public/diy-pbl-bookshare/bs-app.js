@@ -13,21 +13,8 @@ import { ART } from "./bs-engine.js";
 
 const $ = (id) => document.getElementById(id);
 const scene = $("flScene"), side = $("flSide");
-// Article / Narration tabs in the side panel (delegated; side is re-rendered per page).
-let sideTab = "article";
-side.addEventListener("click", (e) => {
-  const b = e.target.closest(".bs-tab"); if (!b) return;
-  sideTab = b.dataset.tab; applySideTab();
-});
-function applySideTab() {
-  const w = side.querySelector(".bs-tabs"); if (!w) return;
-  w.dataset.tab = sideTab;
-  w.querySelectorAll(".bs-tab").forEach((t) => t.setAttribute("aria-selected", String(t.dataset.tab === sideTab)));
-  w.querySelector(".bs-tab-article").hidden = sideTab !== "article";
-  w.querySelector(".bs-tab-narration").hidden = sideTab !== "narration";
-}
 const reducedQ = matchMedia("(prefers-reduced-motion: reduce)");
-/* Read aloud: narration/manifest.json maps slide -> { text, audio }. Off by default (Dimitry narrates live);
+/* Read aloud: narration/manifest.json maps slide -> { text, audio }. Off by default (reads the Article text);
    the choice is saved. When on, each slide's audio starts with the slide; auto-advance waits for it to end. */
 const manifest = fetch("diy-pbl-bookshare/narration/manifest.json").then((r) => (r.ok ? r.json() : null)).catch(() => null);
 let readOn = false, voiceAudio = null;
@@ -146,7 +133,6 @@ function render(i) {
 
   // Side: kicker + title + bullets/script. Do NOT inject .guide here (A3: no duplicate caption).
   side.innerHTML = `<p class="kicker">${fx(p.kicker)}</p><h2>${fx(p.title)}</h2>` + (p.side || "");
-  applySideTab();
   voiceFor(n);
   // Full-screen caption: guide only (no title duplicate with on-art headings)
   $("flCapT").innerHTML = "";

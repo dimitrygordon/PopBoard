@@ -10,8 +10,10 @@ const DIR = join(PUB, "diy-pbl-bookshare");
 const TITLE = "Dimitry's DIY Project Based Learning for Math and Science Bookshare";
 const { PAGES, PAGE_COUNT } = await import(pathToFileURL(join(DIR, "bs-pages.js")).href);
 const { SLIDES } = await import(pathToFileURL(join(DIR, "bs-data.js")).href);
+// Old spoken narration was removed from the site (Nov 7); wording tests read the archive.
+const NARR = JSON.parse(readFileSync(join(PUB, "..", "docs", "diy-pbl-bookshare", "narration-archive.json"), "utf8"));
 const { PLACEMENTS } = await import(pathToFileURL(join(DIR, "bs-placements.js")).href);
-const files = ["bs-pages.js", "bs-engine.js", "bs-app.js", "bs.css", "bs-data.js", "bs-placements.js", "bs-transitions.js", "script.md"]
+const files = ["bs-pages.js", "bs-engine.js", "bs-app.js", "bs.css", "bs-data.js", "bs-placements.js", "bs-transitions.js"]
   .map((f) => readFileSync(join(DIR, f), "utf8"))
   .concat(readFileSync(join(PUB, "study-diy-pbl-bookshare.html"), "utf8"));
 
@@ -23,7 +25,8 @@ test("30 pages with titles, builds, and teleprompter script", () => {
     assert.ok(p.title);
     assert.equal(typeof p.build, "function");
     assert.match(p.side, /bs-script/);
-    assert.match(p.side, /data-tab="narration"/);
+    assert.match(p.side, /bs-article/);
+    assert.doesNotMatch(p.side, /Narration|bs-tab/);
   }
 });
 
@@ -42,7 +45,7 @@ test("canonical title and Courses band wiring", () => {
 test("slide 1 uses real book title, author, and bg_cover (no floating cover_display)", () => {
   assert.equal(SLIDES[0].title, "DIY Project Based Learning for Math and Science");
   assert.notEqual(SLIDES[0].title, "Title");
-  assert.match(SLIDES[0].narration, /twenty-two minutes or so/);
+  assert.match(NARR[0].narration, /twenty-two minutes or so/);
   assert.ok(existsSync(join(DIR, "art", "s01", "bg_cover.webp")));
   assert.ok(existsSync(join(DIR, "art", "s01", "bg.webp")));
   const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
@@ -53,7 +56,7 @@ test("slide 1 uses real book title, author, and bg_cover (no floating cover_disp
 });
 
 test("Tesla fixes: slide 5 fall-off wording; slide 10 C = vx + F and R = px", () => {
-  assert.match(SLIDES.find(s => s.id==="s05").narration, /without falling off at the top/);
+  assert.match(NARR.find(s => s.id==="s05").narration, /without falling off at the top/);
   assert.match(SLIDES.find(s => s.id==="s05").bullets.join(" "), /without falling off at the top/);
   // Round 3: equations live on chips; bullet 3 is the short break-even line
   assert.match(SLIDES.find(s => s.id==="s10").bullets.join(" "), /where cost meets revenue/);
@@ -61,7 +64,7 @@ test("Tesla fixes: slide 5 fall-off wording; slide 10 C = vx + F and R = px", ()
   const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
   assert.match(pages, /C = vx \+ F/);
   assert.match(pages, /R = px/);
-  assert.ok(!/C = mx \+ b/.test(SLIDES.find(s => s.id==="s10").narration));
+  assert.ok(!/C = mx \+ b/.test(NARR.find(s => s.id==="s10").narration));
 });
 
 test("Round 1 structure: key terms, split conclude/discuss, resources APA", () => {
@@ -115,14 +118,11 @@ test("Leo art webp exists for s01-s18; no Leo-art-pending badge in code", () => 
   assert.ok(PLACEMENTS.s01 && PLACEMENTS.s05 && PLACEMENTS.s11);
 });
 
-test("script.md word count is 3200 to 3600", () => {
-  const script = readFileSync(join(DIR, "script.md"), "utf8");
-  const m = script.match(/\*\*Total words \(read-aloud\):\*\* (\d+)/);
-  assert.ok(m);
-  const n = Number(m[1]);
-  assert.ok(n >= 3200 && n <= 3600, `words ${n}`);
-  const words = SLIDES.reduce((a, s) => a + s.narration.split(/\s+/).length, 0);
-  assert.equal(words, n);
+test("narration text is gone from the site; read-aloud speaks the article", () => {
+  assert.ok(!existsSync(join(DIR, "script.md")));
+  for (const sl of SLIDES) assert.equal(sl.narration, undefined);
+  const man = JSON.parse(readFileSync(join(DIR, "narration", "manifest.json"), "utf8"));
+  for (const sl of SLIDES) assert.equal(man.pages[String(sl.n)].text, sl.article.trim());
 });
 
 test("no em-dashes in bookshare sources", () => {
@@ -192,10 +192,10 @@ test("transitions: no motif FLIP; script quiet-fades; layouts JSON wired", () =>
 });
 
 test("Round 2 depth passages and Gold Standard bullet", () => {
-  assert.match(SLIDES.find(s => s.id === "s07").narration, /empty row might turn into a reteach day/);
-  assert.match(SLIDES.find(s => s.id === "s11").narration, /One of your forces points the wrong way/);
-  assert.match(SLIDES.find(s => s.id === "s13").narration, /Costa's levels also give me a quick check/);
-  assert.match(SLIDES.find(s => s.id === "s16").narration, /PBLWorks Gold Standard/);
+  assert.match(NARR.find(s => s.id === "s07").narration, /empty row might turn into a reteach day/);
+  assert.match(NARR.find(s => s.id === "s11").narration, /One of your forces points the wrong way/);
+  assert.match(NARR.find(s => s.id === "s13").narration, /Costa's levels also give me a quick check/);
+  assert.match(NARR.find(s => s.id === "s16").narration, /PBLWorks Gold Standard/);
   assert.ok(SLIDES.find(s => s.id === "s16").bullets.some((b) => /PBLWorks Gold Standard/.test(b)));
   const pages = readFileSync(join(DIR, "bs-pages.js"), "utf8");
   assert.match(pages, /bs-surface--idea/);
@@ -268,11 +268,11 @@ test("QA: no stray curled-paper sprites; keyterms cards.json; draw-in 40% line",
 });
 
 test("Round 4 Wendell voice: Socrates three script locks", () => {
-  assert.match(SLIDES[0].narration, /twenty-two minutes or so/);
-  assert.match(SLIDES.find(s => s.id === "s04").narration, /borrows a distinction from the author A\. J\. Juliani/);
-  assert.match(SLIDES.find(s => s.id === "s14").narration, /Here's the twist\. The author grades/);
-  assert.doesNotMatch(SLIDES[0].narration, /fifteen minutes(?! or so)/);
-  assert.doesNotMatch(SLIDES.find(s => s.id === "s14").narration, /The twist:/);
+  assert.match(NARR[0].narration, /twenty-two minutes or so/);
+  assert.match(NARR.find(s => s.id === "s04").narration, /borrows a distinction from the author A\. J\. Juliani/);
+  assert.match(NARR.find(s => s.id === "s14").narration, /Here's the twist\. The author grades/);
+  assert.doesNotMatch(NARR[0].narration, /fifteen minutes(?! or so)/);
+  assert.doesNotMatch(NARR.find(s => s.id === "s14").narration, /The twist:/);
 });
 
 test("Round 3: tip 5, APA alpha order, no cite-only bullets, break-even wording", () => {

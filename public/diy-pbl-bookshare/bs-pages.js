@@ -878,15 +878,8 @@ function sideHTML(slide) {
   if (slide.chapter) {
     parts.push(`<p class="aside">${fx(slide.chapter)}</p>`);
   }
-  // Leo: panel opens on the article text; Narration tab shows the spoken script.
-  parts.push(`<div class="bs-script bs-tabs" data-tab="article">`
-    + `<div class="bs-tab-row" role="tablist">`
-    + `<button type="button" class="bs-tab" role="tab" data-tab="article" aria-selected="true">Article</button>`
-    + `<button type="button" class="bs-tab" role="tab" data-tab="narration" aria-selected="false">Narration</button>`
-    + `</div>`
-    + `<div class="bs-script-text bs-tab-article" role="tabpanel">${fx(slide.article || "")}</div>`
-    + `<div class="bs-script-text bs-tab-narration" role="tabpanel" hidden>${fx(slide.narration)}</div>`
-    + `</div>`);
+  // Article text only (Dimitry, Nov 7). Read-aloud audio speaks this same text.
+  parts.push(`<div class="bs-script"><div class="bs-script-text bs-article">${fx(slide.article || "")}</div></div>`);
   return parts.join("");
 }
 

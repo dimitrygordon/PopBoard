@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Render Bookshare read-aloud audio with xAI TTS (voice "altair"): one mp3 per slide.
 //   XAI_API_KEY=... node tools/diy-pbl-bookshare/render-narration.mjs [--force]
-// Offline only; the browser never calls TTS. Text = SLIDES[n].narration from bs-data.js.
+// Offline only; the browser never calls TTS. Text = SLIDES[n].article from bs-data.js.
 import { writeFileSync, existsSync, renameSync, rmSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { join, dirname } from "node:path";
@@ -25,7 +25,7 @@ async function tts(text) {
 }
 const pages = {};
 async function one(s) {
-  const n = String(s.n), text = String(s.narration || "").trim();
+  const n = String(s.n), text = String(s.article || "").trim();
   if (!text) { pages[n] = { text: "" }; return; }
   const name = `p${n}.mp3`, ap = join(DIR, name);
   if (force || !existsSync(ap)) {
@@ -40,6 +40,6 @@ const q = [...SLIDES];
 await Promise.all(Array.from({ length: 6 }, async () => { while (q.length) await one(q.shift()); }));
 const sorted = Object.fromEntries(Object.entries(pages).sort((a, b) => a[0] - b[0]));
 const MAN = join(DIR, "manifest.json");
-writeFileSync(MAN + ".tmp", JSON.stringify({ voice: VOICE, note: "Read-aloud audio, xAI TTS voice Altair. Dimitry can still narrate live.", pages: sorted }, null, 2) + "\n");
+writeFileSync(MAN + ".tmp", JSON.stringify({ voice: VOICE, note: "Read-aloud audio, xAI TTS voice Altair. Speaks the Article text.", pages: sorted }, null, 2) + "\n");
 renameSync(MAN + ".tmp", MAN);
 console.log("done");
