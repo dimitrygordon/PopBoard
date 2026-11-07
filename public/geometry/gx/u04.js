@@ -2,7 +2,7 @@
 import { M, P, lab, txt, createSteps, deg, num, shape } from "./kit.js";
 
 // triangle from SSS: base from A along direction 0, apex above
-const sss = (A, a, b, c) => { const cs = M.circleX(A, b, P(A.x + c, A.y), a); return cs.length ? [A, P(A.x + c, A.y), cs[0].y < cs[1].y ? cs[0] : cs[1]] : null; };
+const sss = (A, a, b, c) => { const cs = M.circleX(A, b, P(A.x + c, A.y), a); return cs.length===2 ? [A, P(A.x + c, A.y), cs[0].y < cs[1].y ? cs[0] : cs[1]] : null; };
 
 export const GX = {
   parts: {
@@ -11,12 +11,13 @@ export const GX = {
     mount(B, U) {
       const A = B.point(140, 700, { label: "A" }), Bb = B.point(620, 700, { label: "B" }), C = B.point(320, 300, { label: "C" });
       let mode = "SSS";
-      U.choice("Parts", [["SSS", "SSS"], ["SAS", "SAS"], ["SSA", "SSA"], ["AAA", "AAA"]], mode, (v) => { mode = v; B.update(); });
+      U.choice("Parts", [["SSS", "SSS"], ["SAS", "SAS"], ["ASA", "ASA"], ["SSA", "SSA"], ["AAA", "AAA"]], mode, (v) => { mode = v; B.update(); });
       B.draw((g) => {
         shape(g, [A, Bb, C], ["A", "B", "C"], { w: "bold" });
         const c = M.dist(A, Bb), b = M.dist(A, C), a = M.dist(Bb, C), angA = M.angle(Bb, A, C);
+        if(c<1e-6 || b<1e-6 || a<1e-6 || Math.abs(M.cross(M.sub(Bb,A),M.sub(C,A)))<1e-9*c*b) { U.read("<p>Undefined: choose three distinct, noncollinear vertices.</p>");return; }
         const O = P(900, 700), out = [];
-        if (mode === "SSS" || mode === "SAS") { const t = sss(O, a, b, c); if (t) out.push(t); }
+        if (mode === "SSS" || mode === "SAS" || mode === "ASA") { const t = sss(O, a, b, c); if (t) out.push(t); }
         if (mode === "SSA") {
           // angle A, side AB = c, side BC = a: C lies on the ray from A at distance a from B
           const dir = M.polar(O, 1, angA), Bp = P(O.x + c, O.y), xs = M.lineCircleX(O, dir, Bp, a).filter((q) => M.dot(M.sub(q, O), M.sub(dir, O)) > 0);
@@ -24,13 +25,15 @@ export const GX = {
         }
         if (mode === "AAA") { const k = 0.6, Bc = P(O.x + c * k, O.y), cs = M.circleX(O, b * k, Bc, a * k); if (cs.length) out.push([O, Bc, cs[0].y < cs[1].y ? cs[0] : cs[1]]); }
         out.forEach((t, i) => shape(g, t, ["A'", "B'", i ? "C''" : "C'"], { w: i ? "main" : "bold", dash: i > 0 }));
-        const marks = { SSS: [[A, Bb, 1], [A, C, 2], [Bb, C, 3]], SAS: [[A, Bb, 1], [A, C, 2]], SSA: [[A, Bb, 1], [Bb, C, 2]], AAA: [] };
+        const marks = { SSS: [[A, Bb, 1], [A, C, 2], [Bb, C, 3]], SAS: [[A, Bb, 1], [A, C, 2]], ASA: [[A, Bb, 1]], SSA: [[A, Bb, 1], [Bb, C, 2]], AAA: [] };
         for (const [p, q, n] of marks[mode]) g.ticks(p, q, n);
         if (mode !== "SSS") g.angle(Bb, A, C, 1, 60);
+        if (mode === "ASA") g.angle(C, Bb, A, 2, 60);
         if (mode === "AAA") { g.angle(C, Bb, A, 2, 60); g.angle(A, C, Bb, 3, 60); }
         const verdict = {
-          SSS: "SSS always gives one triangle (up to congruence). It fixes the triangle.",
-          SAS: "SAS always gives one triangle. It fixes the triangle.",
+          SSS: "Conjecture: SSS fixes a triangle up to congruence. Proof waits until 4.10.",
+          SAS: "Conjecture: SAS fixes a triangle. Proof follows in 4.3.",
+          ASA: "Conjecture: ASA fixes a triangle. Proof follows in 4.4.",
           SSA: out.length === 2 ? "SSA gives <b>two different triangles</b> here, so it does not fix the triangle." : `SSA gives ${out.length} triangle${out.length === 1 ? "" : "s"} for these lengths. Drag C to make BC shorter than AB and see a second one.`,
           AAA: "AAA gives the same shape at any size, so it does not fix the triangle (only its shape)."
         }[mode];

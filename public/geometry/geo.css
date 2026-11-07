@@ -80,3 +80,37 @@ html[data-course="geometry"] .ac-stds.on-cover { display: none; }
 
 /* ---- library page: text at least 16px on desktop ---- */
 @media (min-width:700px){ html[data-course="geometry"] .lib-card .strip, html[data-course="geometry"] .lib-card .badge { font-size: 16px; } }
+
+/* V2 learner pages keep readable text and controls on the page at every width. */
+.gx-citation { font-size: max(12px, 1.1cqw); line-height: 1.3; color: var(--gx-dim); }
+.gx-cover-text { max-height: 100%; overflow-y: auto; }
+.gx-lesson { height: 100%; overflow-y: auto; padding: 3cqw 4cqw; box-sizing: border-box; font-size: clamp(16px, 1.7cqw, 23px); line-height: 1.4; }
+.gx-lesson p { margin: 0 0 .65em; }
+.gx-content { max-width: 80ch; }
+.gx-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.gx-actions button, .gx-actions select { min-height: 44px; padding: 8px 12px; background: var(--gx-paper); color: var(--gx-ink); border: 1px solid currentColor; border-radius: 4px; font: inherit; cursor: pointer; }
+.gx-actions button:disabled { opacity: .5; cursor: default; }
+.gx-actions button:focus-visible, .gx-actions select:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
+.gx-actions [hidden], .gx-content [hidden] { display: none; }
+.gx-actions label { display: grid; gap: 8px; }
+.gx-proof { border-collapse: collapse; width: 100%; table-layout: fixed; font: inherit; }
+.gx-proof th, .gx-proof td { text-align: left; vertical-align: top; padding: 8px; border-bottom: 1px solid var(--gx-dim); overflow-wrap: anywhere; }
+.gx-proof th:first-child { width: 57%; }
+.gx-solution, .gx-second-check, .gx-correction { border-left: 3px solid currentColor; padding-left: 12px; }
+.gx-content svg { height: 200px; max-width: 360px; }
+.gx-confusing { font-weight: 700; margin-top: 1em !important; }
+@media (max-width: 699px) and (orientation: portrait) {
+  html[data-course="geometry"] .stage.gx-reading { aspect-ratio: auto; min-height: 480px; }
+  .gx-lesson { padding: 18px; font-size: 16px; }
+  .gx-proof th, .gx-proof td { padding: 6px; }
+}
+@media (max-width: 900px) {
+  html[data-course="geometry"] body:has(.gx-reading) { overflow-y: auto; height: auto; min-height: 100dvh; }
+  html[data-course="geometry"] .story:has(.gx-reading) { display: block; }
+  .story:has(.gx-reading) .stage-wrap { flex: none; }
+  html[data-course="geometry"] .stage.gx-reading { width: 100%; aspect-ratio: auto; min-height: 480px; }
+  .story:has(.gx-reading) .panel { position: relative; height: auto !important; max-height: none; margin-top: 16px; }
+  .story:has(.gx-reading) .panel-body { overflow: visible; }
+  .story:has(.gx-reading) .sheet-handle { display: none; }
+  .gx-lesson { padding: 18px; font-size: 16px; }
+}

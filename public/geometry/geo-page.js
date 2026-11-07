@@ -21,6 +21,8 @@ export function mount({ stage, tools, slide, meta, reduce }) {
   layer.className = `gx-layer gx-k-${G.kind}`;
   stage.appendChild(layer);
   stage.classList.add("gx-host");
+  const reading = ["worked-example", "common-mistake", "practice", "exit-ticket"].includes(G.kind) || (G.v2 && G.kind === "text");
+  stage.classList.toggle("gx-reading", reading);
   let board = null, panel = null, inner = null, dead = false;
   const key = `${meta.q}.${meta.lesson}/${slide.n}`;
 
@@ -38,7 +40,39 @@ export function mount({ stage, tools, slide, meta, reduce }) {
 
   if (G.kind === "cover") {
     layer.innerHTML = `<div class="gx-cover-art">${G.cover ? `<img src="${esc(G.cover)}" alt="">` : ""}</div>
-      <div class="gx-cover-text"><p class="gx-tag">${esc(G.tag)}</p><h1 class="gx-title">${esc(G.title)}</h1>${G.target ? `<p class="gx-target">${G.target}</p>` : ""}${G.stds ? `<p class="gx-stds">${esc(G.stds)}</p>` : ""}</div>`;
+      <div class="gx-cover-text"><p class="gx-tag">${esc(G.tag)}</p><h1 class="gx-title">${esc(G.title)}</h1>${G.target ? `<p class="gx-target">${G.target}</p>` : ""}${G.stds ? `<p class="gx-stds">${esc(G.stds)}</p>` : ""}${G.jacobs ? `<p class="gx-citation">${G.jacobs.references.length ? `Jacobs ${esc(G.jacobs.section)}, pp. ${esc(G.jacobs.pages)}` : "Supplement, beyond the textbook. No direct Jacobs section."}</p>` : ""}</div>`;
+  } else if (reading) {
+    layer.innerHTML = `<div class="gx-lesson"><p class="gx-tag">${esc(G.tag)}</p><h2 class="gx-head">${esc(G.title)}</h2><div class="gx-content"></div></div>`;
+    const content = layer.querySelector(".gx-content");
+    const para = (text) => { const p = document.createElement("p"); p.textContent = text; content.append(p); return p; };
+    const actions = document.createElement("div"); actions.className = "gx-actions";
+    const button = (label, fn) => { const b = document.createElement("button"); b.type = "button"; b.textContent = label; b.onclick = fn; actions.append(b); return b; };
+    if (G.kind === "worked-example") {
+      para(G.prompt); content.append(actions);
+      const status = para(""); status.setAttribute("aria-live", "polite");
+      const table = document.createElement("table"); table.className = "gx-proof"; content.append(table);
+      let count = 0;
+      const draw = () => {
+        table.innerHTML = count ? `<thead><tr><th scope="col">Step</th><th scope="col">Reason</th></tr></thead><tbody>${G.steps.slice(0,count).map(s=>`<tr><td>${esc(s.step)}</td><td>${esc(s.reason)}</td></tr>`).join("")}</tbody>` : "";
+        status.textContent = `${G.optional ? "Optional extension. " : ""}${count} of ${G.steps.length} steps shown.`;
+        back.disabled = count===0; next.disabled=count===G.steps.length;
+      };
+      const back = button("Back",()=>{count=Math.max(0,count-1);draw();});
+      const next = button("Next step",()=>{count=Math.min(G.steps.length,count+1);draw();});
+      button("Show all",()=>{count=G.steps.length;draw();}); draw();
+    } else if (G.kind === "practice") {
+      para(G.prompt); content.append(actions);
+      const solution = para(""); solution.className = "gx-solution";
+      const check = para(""); check.className = "gx-second-check";
+      solution.hidden = check.hidden = true;
+      const first = button("Reveal solution",()=>{solution.textContent=G.solution; solution.hidden=false; first.disabled=true; first.setAttribute("aria-expanded","true"); second.hidden=false;});
+      const second = button("Reveal second check",()=>{check.textContent=G.check;check.hidden=false;second.disabled=true;second.setAttribute("aria-expanded","true");});
+      first.setAttribute("aria-expanded","false"); second.setAttribute("aria-expanded","false"); second.hidden=true;
+    } else if (G.kind === "common-mistake") {
+      para(G.prompt); para("Find the error and explain your correction before revealing it."); content.append(actions);
+      const correction=document.createElement("div"); correction.hidden=true; correction.className="gx-correction";content.append(correction);
+      const reveal=button("Reveal correction",()=>{correction.innerHTML=G.correction;correction.hidden=false;reveal.disabled=true;reveal.setAttribute("aria-expanded","true");});reveal.setAttribute("aria-expanded","false");
+    } else content.innerHTML=G.body;
   } else if (G.kind === "gx") {
     const [file, name] = String(G.gx).split(".");
     layer.innerHTML = `<h2 class="gx-head">${esc(G.title)}</h2><div class="gx-board-host"></div>`;
@@ -63,7 +97,7 @@ export function mount({ stage, tools, slide, meta, reduce }) {
       if (board) board.destroy();
       if (panel) panel.destroy();
       layer.remove();
-      stage.classList.remove("gx-host");
+      stage.classList.remove("gx-host", "gx-reading");
     }
   };
 }

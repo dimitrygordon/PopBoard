@@ -1,0 +1,2887 @@
+{
+  "1.1": {
+    "section": "Intro",
+    "pages": "1 to 5",
+    "note": "",
+    "references": [
+      {
+        "section": "Intro",
+        "pages": [
+          1,
+          5
+        ]
+      }
+    ],
+    "misconception": "A figure that looks equal is equal. Surface it: students guess before measuring, then record guess vs. measured."
+  },
+  "1.2": {
+    "section": "Ind",
+    "pages": "6 to 6",
+    "note": "",
+    "references": [
+      {
+        "section": "Ind",
+        "pages": [
+          6,
+          6
+        ]
+      }
+    ],
+    "misconception": "Enough examples prove a rule. Surface it: have them predict 6-point regions as 32 before counting 31."
+  },
+  "1.3": {
+    "section": "1.1",
+    "pages": "8 to 12",
+    "note": "",
+    "references": [
+      {
+        "section": "1.1",
+        "pages": [
+          8,
+          12
+        ]
+      }
+    ],
+    "misconception": "Lines are segments with ends. Surface it: ask how many points a line has; anyone saying 'two' has the misconception."
+  },
+  "1.4": {
+    "section": "1.2",
+    "pages": "13 to 17",
+    "note": "",
+    "references": [
+      {
+        "section": "1.2",
+        "pages": [
+          13,
+          17
+        ]
+      }
+    ],
+    "misconception": "Angle size depends on ray length. Surface it: show the same angle with long and short rays and ask which is bigger."
+  },
+  "1.5": {
+    "section": "1.3",
+    "pages": "18 to 23",
+    "note": "",
+    "references": [
+      {
+        "section": "1.3",
+        "pages": [
+          18,
+          23
+        ]
+      }
+    ],
+    "misconception": "Any closed figure is a polygon (circles, curved sides). Surface it: sort card with a circle and a crossed figure."
+  },
+  "1.6": {
+    "section": "1.4",
+    "pages": "24 to 29",
+    "note": "",
+    "references": [
+      {
+        "section": "1.4",
+        "pages": [
+          24,
+          29
+        ]
+      }
+    ],
+    "misconception": "The compass is only for circles, not for transferring lengths. Surface it: ask them to copy a segment without a ruler."
+  },
+  "1.7": {
+    "section": "1.5",
+    "pages": "30 to 34",
+    "note": "",
+    "references": [
+      {
+        "section": "1.5",
+        "pages": [
+          30,
+          34
+        ]
+      }
+    ],
+    "misconception": "Every word can be defined. Surface it: dictionary chase for 'point' loops back on itself."
+  },
+  "1.8": {
+    "section": "2.1",
+    "pages": "42 to 45",
+    "note": "",
+    "references": [
+      {
+        "section": "2.1",
+        "pages": [
+          42,
+          45
+        ]
+      }
+    ],
+    "misconception": "The converse of a true statement is true. Surface it: 'If it's a square, it's a rectangle' flipped."
+  },
+  "1.9": {
+    "section": "2.2",
+    "pages": "46 to 49",
+    "note": "",
+    "references": [
+      {
+        "section": "2.2",
+        "pages": [
+          46,
+          49
+        ]
+      }
+    ],
+    "misconception": "A definition only has to work one way. Surface it: a 'kite' definition that also admits non-kites."
+  },
+  "1.10": {
+    "section": "2.3",
+    "pages": "50 to 54",
+    "note": "",
+    "references": [
+      {
+        "section": "2.3",
+        "pages": [
+          50,
+          54
+        ]
+      }
+    ],
+    "misconception": "A proof is a list of true facts in any order. Surface it: give shuffled proof lines to reorder."
+  },
+  "1.11": {
+    "section": "2.4",
+    "pages": "55 to 59",
+    "note": "",
+    "references": [
+      {
+        "section": "2.4",
+        "pages": [
+          55,
+          59
+        ]
+      }
+    ],
+    "misconception": "Indirect proof means proving the opposite is true. Surface it: ask what the contradiction contradicts."
+  },
+  "1.12": {
+    "section": "2.5; 2.6",
+    "pages": "60 to 64; 65 to 70",
+    "note": "",
+    "references": [
+      {
+        "section": "2.5",
+        "pages": [
+          60,
+          64
+        ]
+      },
+      {
+        "section": "2.6",
+        "pages": [
+          65,
+          70
+        ]
+      }
+    ],
+    "misconception": "Theorems and postulates are the same kind of thing. Surface it: sort statements by 'proved or assumed'."
+  },
+  "1.13": {
+    "section": "1R; 2R",
+    "pages": "35 to 38; 71 to 74",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "1R",
+        "pages": [
+          35,
+          38
+        ]
+      },
+      {
+        "section": "2R",
+        "pages": [
+          71,
+          74
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "1.14": {
+    "section": "1R; 2R",
+    "pages": "35 to 38; 71 to 74",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "1R",
+        "pages": [
+          35,
+          38
+        ]
+      },
+      {
+        "section": "2R",
+        "pages": [
+          71,
+          74
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "2.1": {
+    "section": "3.1",
+    "pages": "78 to 83",
+    "note": "",
+    "references": [
+      {
+        "section": "3.1",
+        "pages": [
+          78,
+          83
+        ]
+      }
+    ],
+    "misconception": "Algebra steps don't need reasons. Surface it: solve an equation and name each property."
+  },
+  "2.2": {
+    "section": "3.2",
+    "pages": "84 to 90",
+    "note": "",
+    "references": [
+      {
+        "section": "3.2",
+        "pages": [
+          84,
+          90
+        ]
+      }
+    ],
+    "misconception": "Distance can be negative. Surface it: points at -3 and 5 on a ruler, compute both ways."
+  },
+  "2.3": {
+    "section": "3.2",
+    "pages": "84 to 90",
+    "note": "Coordinate midpoint formula is beyond Jacobs 3.2 (Jacobs gives the number-line midpoint).",
+    "references": [
+      {
+        "section": "3.2",
+        "pages": [
+          84,
+          90
+        ]
+      }
+    ],
+    "misconception": "Midpoint is the difference of the endpoints over 2. Surface it: endpoints -2 and 8."
+  },
+  "2.4": {
+    "section": "3.3",
+    "pages": "91 to 97",
+    "note": "",
+    "references": [
+      {
+        "section": "3.3",
+        "pages": [
+          91,
+          97
+        ]
+      }
+    ],
+    "misconception": "Read the wrong protractor scale. Surface it: an obtuse angle that reads 50 on the inner scale."
+  },
+  "2.5": {
+    "section": "3.4",
+    "pages": "98 to 104",
+    "note": "",
+    "references": [
+      {
+        "section": "3.4",
+        "pages": [
+          98,
+          104
+        ]
+      }
+    ],
+    "misconception": "Bisecting means drawing any line through the middle by eye. Surface it: ask how they know it's exact."
+  },
+  "2.6": {
+    "section": "3.5",
+    "pages": "105 to 109",
+    "note": "",
+    "references": [
+      {
+        "section": "3.5",
+        "pages": [
+          105,
+          109
+        ]
+      }
+    ],
+    "misconception": "Complementary angles must be adjacent. Surface it: two separate 30 and 60 angles; are they complementary?"
+  },
+  "2.7": {
+    "section": "3.6",
+    "pages": "110 to 116",
+    "note": "",
+    "references": [
+      {
+        "section": "3.6",
+        "pages": [
+          110,
+          116
+        ]
+      }
+    ],
+    "misconception": "Vertical means 'up and down'. Surface it: vertical angles drawn on a tilted X."
+  },
+  "2.8": {
+    "section": "3.7",
+    "pages": "117 to 122",
+    "note": "",
+    "references": [
+      {
+        "section": "3.7",
+        "pages": [
+          117,
+          122
+        ]
+      }
+    ],
+    "misconception": "Perpendicular lines must be horizontal and vertical. Surface it: a tilted right angle."
+  },
+  "2.9": {
+    "section": "3.7; 4.7",
+    "pages": "117 to 122; 169 to 175",
+    "note": "",
+    "references": [
+      {
+        "section": "3.7",
+        "pages": [
+          117,
+          122
+        ]
+      },
+      {
+        "section": "4.7",
+        "pages": [
+          169,
+          175
+        ]
+      }
+    ],
+    "misconception": "Any arc width works for every step. Surface it: an arc smaller than half the segment."
+  },
+  "2.10": {
+    "section": "4.7; 6.2",
+    "pages": "169 to 175; 219 to 224",
+    "note": "",
+    "references": [
+      {
+        "section": "4.7",
+        "pages": [
+          169,
+          175
+        ]
+      },
+      {
+        "section": "6.2",
+        "pages": [
+          219,
+          224
+        ]
+      }
+    ],
+    "misconception": "Parallel construction just means 'draw it looking parallel'. Surface it: ask which angle pair the copy made equal."
+  },
+  "2.11": {
+    "section": "3.5; 3.6",
+    "pages": "105 to 109; 110 to 116",
+    "note": "",
+    "references": [
+      {
+        "section": "3.5",
+        "pages": [
+          105,
+          109
+        ]
+      },
+      {
+        "section": "3.6",
+        "pages": [
+          110,
+          116
+        ]
+      }
+    ],
+    "misconception": "Vertical angles are equal 'because they look it'. Surface it: require a theorem name per line."
+  },
+  "2.12": {
+    "section": "1.4",
+    "pages": "24 to 29",
+    "note": "",
+    "references": [
+      {
+        "section": "1.4",
+        "pages": [
+          24,
+          29
+        ]
+      }
+    ],
+    "misconception": "Construction art is decoration, not math. Surface it: ask which construction each step of the design used."
+  },
+  "2.13": {
+    "section": "3R",
+    "pages": "123 to 128",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "3R",
+        "pages": [
+          123,
+          128
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "2.14": {
+    "section": "3R",
+    "pages": "123 to 128",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "3R",
+        "pages": [
+          123,
+          128
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "2.15": {
+    "section": "3R",
+    "pages": "123 to 128",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "3R",
+        "pages": [
+          123,
+          128
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "3.1": {
+    "section": "8.1",
+    "pages": "298 to 304",
+    "note": "Motion postulates (per Euclid, ANSWERS.md sec. 1): state here, as explicit postulates, that translations, rotations and reflections exist and preserve distance, angle measure, collinearity and betweenness (a reflection swaps half-planes). They are assumed, not proved, and every later congruence-by-motion argument (3.12, 4.3, 4.4) cites them.",
+    "references": [
+      {
+        "section": "8.1",
+        "pages": [
+          298,
+          304
+        ]
+      }
+    ],
+    "misconception": "The image and preimage are the same figure. Surface it: label A and A' on a slide."
+  },
+  "3.2": {
+    "section": "8.1",
+    "pages": "298 to 304",
+    "note": "",
+    "references": [
+      {
+        "section": "8.1",
+        "pages": [
+          298,
+          304
+        ]
+      }
+    ],
+    "misconception": "A translation can turn the figure. Surface it: overlay a tilted image and ask if it's a translation."
+  },
+  "3.3": {
+    "section": "8.2",
+    "pages": "305 to 311",
+    "note": "",
+    "references": [
+      {
+        "section": "8.2",
+        "pages": [
+          305,
+          311
+        ]
+      }
+    ],
+    "misconception": "Reflecting moves each point the same distance in one direction. Surface it: reflect over a slanted line."
+  },
+  "3.4": {
+    "section": "8.1; 8.2",
+    "pages": "298 to 304; 305 to 311",
+    "note": "",
+    "references": [
+      {
+        "section": "8.1",
+        "pages": [
+          298,
+          304
+        ]
+      },
+      {
+        "section": "8.2",
+        "pages": [
+          305,
+          311
+        ]
+      }
+    ],
+    "misconception": "Rotation is always about the origin. Surface it: rotate about a vertex of the figure."
+  },
+  "3.5": {
+    "section": "8.2",
+    "pages": "305 to 311",
+    "note": "",
+    "references": [
+      {
+        "section": "8.2",
+        "pages": [
+          305,
+          311
+        ]
+      }
+    ],
+    "misconception": "Order of reflections doesn't matter. Surface it: reflect over two crossing lines in both orders."
+  },
+  "3.6": {
+    "section": "8.3",
+    "pages": "312 to 318",
+    "note": "",
+    "references": [
+      {
+        "section": "8.3",
+        "pages": [
+          312,
+          318
+        ]
+      }
+    ],
+    "misconception": "Only one sequence of motions maps one figure to another. Surface it: collect different class sequences."
+  },
+  "3.7": {
+    "section": "8.3",
+    "pages": "312 to 318",
+    "note": "",
+    "references": [
+      {
+        "section": "8.3",
+        "pages": [
+          312,
+          318
+        ]
+      }
+    ],
+    "misconception": "Dilations are rigid motions. Surface it: measure a side after a dilation."
+  },
+  "3.8": {
+    "section": "8R",
+    "pages": "325 to 329",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "8R",
+        "pages": [
+          325,
+          329
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "3.9": {
+    "section": "6.1",
+    "pages": "212 to 218",
+    "note": "",
+    "references": [
+      {
+        "section": "6.1",
+        "pages": [
+          212,
+          218
+        ]
+      }
+    ],
+    "misconception": "A rectangle has diagonal lines of symmetry. Surface it: paper-fold a rectangle along a diagonal."
+  },
+  "3.10": {
+    "section": "7.2",
+    "pages": "265 to 269",
+    "note": "",
+    "references": [
+      {
+        "section": "7.2",
+        "pages": [
+          265,
+          269
+        ]
+      }
+    ],
+    "misconception": "Point symmetry and line symmetry are the same. Surface it: the letter N and the letter A."
+  },
+  "3.11": {
+    "section": "8.4",
+    "pages": "319 to 324",
+    "note": "",
+    "references": [
+      {
+        "section": "8.4",
+        "pages": [
+          319,
+          324
+        ]
+      }
+    ],
+    "misconception": "Any shape tessellates. Surface it: try regular pentagons."
+  },
+  "3.12": {
+    "section": "8.3",
+    "pages": "312 to 318",
+    "note": "Jacobs defines congruence by parts (4.2) and adds the isometry definition in 8.3, p. 312; this course leads with the isometry definition.",
+    "references": [
+      {
+        "section": "8.3",
+        "pages": [
+          312,
+          318
+        ]
+      }
+    ],
+    "misconception": "Congruent means 'same shape'. Surface it: two similar triangles of different size."
+  },
+  "3.13": {
+    "section": "8R",
+    "pages": "325 to 329",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "8R",
+        "pages": [
+          325,
+          329
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "3.14": {
+    "section": "8R",
+    "pages": "325 to 329",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "8R",
+        "pages": [
+          325,
+          329
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "4.1": {
+    "section": "4.2",
+    "pages": "139 to 145",
+    "note": "",
+    "references": [
+      {
+        "section": "4.2",
+        "pages": [
+          139,
+          145
+        ]
+      }
+    ],
+    "misconception": "Order of letters in a congruence statement doesn't matter. Surface it: triangle ABC ≅ triangle FED vs triangle ABC ≅ triangle DEF (use = only for lengths and measures)."
+  },
+  "4.2": {
+    "section": "4.3",
+    "pages": "146 to 150",
+    "note": "",
+    "references": [
+      {
+        "section": "4.3",
+        "pages": [
+          146,
+          150
+        ]
+      }
+    ],
+    "misconception": "Three matching parts of any kind is always enough. Surface it: SSA and AAA counterexample cards."
+  },
+  "4.3": {
+    "section": "4.3",
+    "pages": "146 to 150",
+    "note": "Jacobs takes SAS as Postulate 6 (p. 147); this course justifies it from rigid motions.",
+    "references": [
+      {
+        "section": "4.3",
+        "pages": [
+          146,
+          150
+        ]
+      }
+    ],
+    "misconception": "The included angle can be any angle. Surface it: mark a non-included angle and ask if SAS applies."
+  },
+  "4.4": {
+    "section": "4.3",
+    "pages": "146 to 150",
+    "note": "Jacobs takes ASA as Postulate 5 (p. 147); this course justifies it from rigid motions.",
+    "references": [
+      {
+        "section": "4.3",
+        "pages": [
+          146,
+          150
+        ]
+      }
+    ],
+    "misconception": "ASA and AAS are the same test. Surface it: mark which side is between the angles."
+  },
+  "4.5": {
+    "section": "4.4",
+    "pages": "151 to 156",
+    "note": "",
+    "references": [
+      {
+        "section": "4.4",
+        "pages": [
+          151,
+          156
+        ]
+      }
+    ],
+    "misconception": "You can use what you're proving as a reason. Surface it: a proof that cites the goal."
+  },
+  "4.6": {
+    "section": "4.4",
+    "pages": "151 to 156",
+    "note": "",
+    "references": [
+      {
+        "section": "4.4",
+        "pages": [
+          151,
+          156
+        ]
+      }
+    ],
+    "misconception": "CPCTC can be used before the triangles are proved congruent. Surface it: reorder a flawed proof."
+  },
+  "4.7": {
+    "section": "4.5",
+    "pages": "157 to 162",
+    "note": "",
+    "references": [
+      {
+        "section": "4.5",
+        "pages": [
+          157,
+          162
+        ]
+      }
+    ],
+    "misconception": "Base angles are the angles at the bottom of the picture. Surface it: an isosceles triangle drawn upside down."
+  },
+  "4.8": {
+    "section": "4.5",
+    "pages": "157 to 162",
+    "note": "",
+    "references": [
+      {
+        "section": "4.5",
+        "pages": [
+          157,
+          162
+        ]
+      }
+    ],
+    "misconception": "Equiangular and equilateral are separate facts to memorize. Surface it: ask which theorem gives each."
+  },
+  "4.9": {
+    "section": "4R",
+    "pages": "176 to 180",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "4R",
+        "pages": [
+          176,
+          180
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "4.10": {
+    "section": "4.6",
+    "pages": "163 to 168",
+    "note": "",
+    "references": [
+      {
+        "section": "4.6",
+        "pages": [
+          163,
+          168
+        ]
+      }
+    ],
+    "misconception": "SSS is a postulate (it is a theorem in this course). Surface it: ask what SSS was proved from (SAS plus isosceles theorems, p. 164)."
+  },
+  "4.11": {
+    "section": "4.6",
+    "pages": "163 to 168",
+    "note": "",
+    "references": [
+      {
+        "section": "4.6",
+        "pages": [
+          163,
+          168
+        ]
+      }
+    ],
+    "misconception": "SSA works if the sides are long. Surface it: build two triangles from the same SSA data."
+  },
+  "4.12": {
+    "section": "4.7",
+    "pages": "169 to 175",
+    "note": "",
+    "references": [
+      {
+        "section": "4.7",
+        "pages": [
+          169,
+          175
+        ]
+      }
+    ],
+    "misconception": "A construction is correct if it looks right. Surface it: name the congruence test behind each step."
+  },
+  "4.13": {
+    "section": "4.7",
+    "pages": "169 to 175",
+    "note": "",
+    "references": [
+      {
+        "section": "4.7",
+        "pages": [
+          169,
+          175
+        ]
+      }
+    ],
+    "misconception": "Old constructions were already proved. Surface it: ask why the bisector construction from 2.5 works."
+  },
+  "4.14": {
+    "section": "4R",
+    "pages": "176 to 180",
+    "note": "",
+    "references": [
+      {
+        "section": "4R",
+        "pages": [
+          176,
+          180
+        ]
+      }
+    ],
+    "misconception": "Every proof needs triangles congruent first. Surface it: a proof solvable by vertical angles alone."
+  },
+  "4.15": {
+    "section": "4R",
+    "pages": "176 to 180",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "4R",
+        "pages": [
+          176,
+          180
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "4.16": {
+    "section": "4R",
+    "pages": "176 to 180",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "4R",
+        "pages": [
+          176,
+          180
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "5.1": {
+    "section": "5.1",
+    "pages": "184 to 189",
+    "note": "",
+    "references": [
+      {
+        "section": "5.1",
+        "pages": [
+          184,
+          189
+        ]
+      }
+    ],
+    "misconception": "Multiplying an inequality by a negative keeps the sign. Surface it: -2x < 6."
+  },
+  "5.2": {
+    "section": "5.2",
+    "pages": "190 to 194",
+    "note": "",
+    "references": [
+      {
+        "section": "5.2",
+        "pages": [
+          190,
+          194
+        ]
+      }
+    ],
+    "misconception": "The exterior angle equals the sum of the remote interior angles here. Surface it: ask why only 'greater than' is allowed before the parallel postulate."
+  },
+  "5.3": {
+    "section": "5.3",
+    "pages": "195 to 199",
+    "note": "",
+    "references": [
+      {
+        "section": "5.3",
+        "pages": [
+          195,
+          199
+        ]
+      }
+    ],
+    "misconception": "The longest side is next to the largest angle. Surface it: label a scalene triangle and ask for the side opposite."
+  },
+  "5.4": {
+    "section": "5.4",
+    "pages": "200 to 205",
+    "note": "",
+    "references": [
+      {
+        "section": "5.4",
+        "pages": [
+          200,
+          205
+        ]
+      }
+    ],
+    "misconception": "Any three lengths make a triangle. Surface it: 2, 3, 6 straws."
+  },
+  "5.5": {
+    "section": "Supplement",
+    "pages": "No direct Jacobs section",
+    "note": "Supplement: not in Jacobs. Kept and labeled Supplement on slide 1; proof route before the parallel postulate in Euclid ANSWERS.md sec. 3.",
+    "references": [],
+    "misconception": "A wider angle always gives a longer side regardless of the other sides. Surface it: change a side length too."
+  },
+  "5.6": {
+    "section": "6.2",
+    "pages": "219 to 224",
+    "note": "",
+    "references": [
+      {
+        "section": "6.2",
+        "pages": [
+          219,
+          224
+        ]
+      }
+    ],
+    "misconception": "Parallel tests assume the lines are parallel first. Surface it: ask what is given and what is proved."
+  },
+  "5.7": {
+    "section": "5R; 6R",
+    "pages": "206 to 209; 249 to 254",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "5R",
+        "pages": [
+          206,
+          209
+        ]
+      },
+      {
+        "section": "6R",
+        "pages": [
+          249,
+          254
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "5.8": {
+    "section": "6.3",
+    "pages": "225 to 229",
+    "note": "",
+    "references": [
+      {
+        "section": "6.3",
+        "pages": [
+          225,
+          229
+        ]
+      }
+    ],
+    "misconception": "The parallel postulate can be proved. Surface it: brief history of failed attempts (p. 225ff)."
+  },
+  "5.9": {
+    "section": "6.4",
+    "pages": "230 to 235",
+    "note": "",
+    "references": [
+      {
+        "section": "6.4",
+        "pages": [
+          230,
+          235
+        ]
+      }
+    ],
+    "misconception": "Same-side interior angles are equal. Surface it: measure them on a slanted transversal."
+  },
+  "5.10": {
+    "section": "6.5",
+    "pages": "236 to 241",
+    "note": "",
+    "references": [
+      {
+        "section": "6.5",
+        "pages": [
+          236,
+          241
+        ]
+      }
+    ],
+    "misconception": "Angle sum 180 is true on any surface. Surface it: preview the sphere (16.1) as a teaser."
+  },
+  "5.11": {
+    "section": "6.5",
+    "pages": "236 to 241",
+    "note": "",
+    "references": [
+      {
+        "section": "6.5",
+        "pages": [
+          236,
+          241
+        ]
+      }
+    ],
+    "misconception": "Exterior angle equals the adjacent interior angle. Surface it: label the remote interiors."
+  },
+  "5.12": {
+    "section": "6.6",
+    "pages": "242 to 248",
+    "note": "",
+    "references": [
+      {
+        "section": "6.6",
+        "pages": [
+          242,
+          248
+        ]
+      }
+    ],
+    "misconception": "HL works for any triangle. Surface it: an obtuse triangle with matching side and 'hypotenuse'."
+  },
+  "5.13": {
+    "section": "11.6",
+    "pages": "461 to 467",
+    "note": "Jacobs treats slope in 11.6 (Thms 52 to 53, p. 463); this course moves it earlier.",
+    "references": [
+      {
+        "section": "11.6",
+        "pages": [
+          461,
+          467
+        ]
+      }
+    ],
+    "misconception": "Perpendicular slopes are negatives, not negative reciprocals. Surface it: slope 2 and slope -2 on a grid."
+  },
+  "5.14": {
+    "section": "11.6",
+    "pages": "461 to 467",
+    "note": "Writing line equations is beyond Jacobs.",
+    "references": [
+      {
+        "section": "11.6",
+        "pages": [
+          461,
+          467
+        ]
+      }
+    ],
+    "misconception": "Perpendicular line uses the same intercept. Surface it: substitute the point back in."
+  },
+  "5.15": {
+    "section": "6R",
+    "pages": "249 to 254",
+    "note": "",
+    "references": [
+      {
+        "section": "6R",
+        "pages": [
+          249,
+          254
+        ]
+      }
+    ],
+    "misconception": "Two-column is the only valid proof form. Surface it: accept a flowchart and a paragraph version."
+  },
+  "5.16": {
+    "section": "5R; 6R",
+    "pages": "206 to 209; 249 to 254",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "5R",
+        "pages": [
+          206,
+          209
+        ]
+      },
+      {
+        "section": "6R",
+        "pages": [
+          249,
+          254
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "5.17": {
+    "section": "5R; 6R",
+    "pages": "206 to 209; 249 to 254",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "5R",
+        "pages": [
+          206,
+          209
+        ]
+      },
+      {
+        "section": "6R",
+        "pages": [
+          249,
+          254
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "6.1": {
+    "section": "7.1",
+    "pages": "258 to 264",
+    "note": "",
+    "references": [
+      {
+        "section": "7.1",
+        "pages": [
+          258,
+          264
+        ]
+      }
+    ],
+    "misconception": "A square is not a rectangle. Surface it: quadrilateral family tree sort."
+  },
+  "6.2": {
+    "section": "7.2",
+    "pages": "265 to 269",
+    "note": "",
+    "references": [
+      {
+        "section": "7.2",
+        "pages": [
+          265,
+          269
+        ]
+      }
+    ],
+    "misconception": "Parallelogram diagonals are equal. Surface it: measure on a slanted parallelogram."
+  },
+  "6.3": {
+    "section": "7.2",
+    "pages": "265 to 269",
+    "note": "",
+    "references": [
+      {
+        "section": "7.2",
+        "pages": [
+          265,
+          269
+        ]
+      }
+    ],
+    "misconception": "Diagonals bisect the angles in every parallelogram. Surface it: measure on a non-rhombus."
+  },
+  "6.4": {
+    "section": "7.3",
+    "pages": "270 to 275",
+    "note": "",
+    "references": [
+      {
+        "section": "7.3",
+        "pages": [
+          270,
+          275
+        ]
+      }
+    ],
+    "misconception": "One pair of parallel sides is enough. Surface it: a trapezoid."
+  },
+  "6.5": {
+    "section": "7.4",
+    "pages": "276 to 280",
+    "note": "",
+    "references": [
+      {
+        "section": "7.4",
+        "pages": [
+          276,
+          280
+        ]
+      }
+    ],
+    "misconception": "A rhombus is a square. Surface it: a tilted rhombus with no right angles."
+  },
+  "6.6": {
+    "section": "7.5",
+    "pages": "281 to 285",
+    "note": "Kites are beyond Jacobs 7.5.",
+    "references": [
+      {
+        "section": "7.5",
+        "pages": [
+          281,
+          285
+        ]
+      }
+    ],
+    "misconception": "All trapezoids are isosceles. Surface it: a right trapezoid."
+  },
+  "6.7": {
+    "section": "7.6",
+    "pages": "286 to 291",
+    "note": "",
+    "references": [
+      {
+        "section": "7.6",
+        "pages": [
+          286,
+          291
+        ]
+      }
+    ],
+    "misconception": "The midsegment is half of any side. Surface it: which side is it parallel to?"
+  },
+  "6.8": {
+    "section": "Supplement",
+    "pages": "No direct Jacobs section",
+    "note": "Coordinate proof of quadrilaterals is beyond Jacobs (needed for G.QP.2).",
+    "references": [],
+    "misconception": "Showing one pair of slopes equal proves a parallelogram. Surface it: a trapezoid on a grid."
+  },
+  "6.9": {
+    "section": "7.1; 14.1",
+    "pages": "258 to 264; 572 to 578",
+    "note": "",
+    "references": [
+      {
+        "section": "7.1",
+        "pages": [
+          258,
+          264
+        ]
+      },
+      {
+        "section": "14.1",
+        "pages": [
+          572,
+          578
+        ]
+      }
+    ],
+    "misconception": "Exterior angle sum grows with sides. Surface it: walk the polygon on the floor."
+  },
+  "6.10": {
+    "section": "14.1",
+    "pages": "572 to 578",
+    "note": "",
+    "references": [
+      {
+        "section": "14.1",
+        "pages": [
+          572,
+          578
+        ]
+      }
+    ],
+    "misconception": "Every equilateral polygon is regular. Surface it: a rhombus."
+  },
+  "6.11": {
+    "section": "7R",
+    "pages": "292 to 295",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "7R",
+        "pages": [
+          292,
+          295
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "6.12": {
+    "section": "7R",
+    "pages": "292 to 295",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "7R",
+        "pages": [
+          292,
+          295
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "6.13": {
+    "section": "MR",
+    "pages": "330 to 336",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "MR",
+        "pages": [
+          330,
+          336
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "6.14": {
+    "section": "MR",
+    "pages": "330 to 336",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "MR",
+        "pages": [
+          330,
+          336
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "6.15": {
+    "section": "MR",
+    "pages": "330 to 336",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "MR",
+        "pages": [
+          330,
+          336
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "6.16": {
+    "section": "MR",
+    "pages": "330 to 336",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "MR",
+        "pages": [
+          330,
+          336
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "7.1": {
+    "section": "9.1",
+    "pages": "338 to 343",
+    "note": "",
+    "references": [
+      {
+        "section": "9.1",
+        "pages": [
+          338,
+          343
+        ]
+      }
+    ],
+    "misconception": "Area and perimeter grow together. Surface it: same perimeter, different areas with string."
+  },
+  "7.2": {
+    "section": "9.2",
+    "pages": "344 to 350",
+    "note": "",
+    "references": [
+      {
+        "section": "9.2",
+        "pages": [
+          344,
+          350
+        ]
+      }
+    ],
+    "misconception": "Area units are linear units. Surface it: ask for the units on a 3 cm by 4 cm answer."
+  },
+  "7.3": {
+    "section": "9.3",
+    "pages": "351 to 357",
+    "note": "",
+    "references": [
+      {
+        "section": "9.3",
+        "pages": [
+          351,
+          357
+        ]
+      }
+    ],
+    "misconception": "The height is always a side. Surface it: an obtuse triangle with an outside altitude."
+  },
+  "7.4": {
+    "section": "9.4",
+    "pages": "358 to 364",
+    "note": "",
+    "references": [
+      {
+        "section": "9.4",
+        "pages": [
+          358,
+          364
+        ]
+      }
+    ],
+    "misconception": "Parallelogram area uses the slanted side. Surface it: shear a paper parallelogram into a rectangle."
+  },
+  "7.5": {
+    "section": "9.1; 9.2; 9.3; 9.4",
+    "pages": "338 to 343; 344 to 350; 351 to 357; 358 to 364",
+    "note": "",
+    "references": [
+      {
+        "section": "9.1",
+        "pages": [
+          338,
+          343
+        ]
+      },
+      {
+        "section": "9.2",
+        "pages": [
+          344,
+          350
+        ]
+      },
+      {
+        "section": "9.3",
+        "pages": [
+          351,
+          357
+        ]
+      },
+      {
+        "section": "9.4",
+        "pages": [
+          358,
+          364
+        ]
+      }
+    ],
+    "misconception": "Overlapping regions get counted once automatically. Surface it: an L-shape split two ways."
+  },
+  "7.6": {
+    "section": "9.5",
+    "pages": "365 to 370",
+    "note": "",
+    "references": [
+      {
+        "section": "9.5",
+        "pages": [
+          365,
+          370
+        ]
+      }
+    ],
+    "misconception": "a squared plus b squared equals c squared for any triangle. Surface it: test an obtuse triangle."
+  },
+  "7.7": {
+    "section": "9.5",
+    "pages": "365 to 370",
+    "note": "Pythagorean fractal is beyond Jacobs.",
+    "references": [
+      {
+        "section": "9.5",
+        "pages": [
+          365,
+          370
+        ]
+      }
+    ],
+    "misconception": "The converse is the same theorem. Surface it: ask what is given in each direction."
+  },
+  "7.8": {
+    "section": "9R",
+    "pages": "371 to 375",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "9R",
+        "pages": [
+          371,
+          375
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "7.9": {
+    "section": "4.1",
+    "pages": "132 to 138",
+    "note": "Jacobs states the distance formula in 4.1 before proving Pythagoras; this course develops it after 9.5.",
+    "references": [
+      {
+        "section": "4.1",
+        "pages": [
+          132,
+          138
+        ]
+      }
+    ],
+    "misconception": "Distance formula is a new fact to memorize. Surface it: draw the right triangle on the grid first."
+  },
+  "7.10": {
+    "section": "4.1",
+    "pages": "132 to 138",
+    "note": "Perimeter and area on the coordinate plane extends Jacobs 4.1.",
+    "references": [
+      {
+        "section": "4.1",
+        "pages": [
+          132,
+          138
+        ]
+      }
+    ],
+    "misconception": "Count diagonal grid squares as 1 unit. Surface it: a diagonal side of length root 2."
+  },
+  "7.11": {
+    "section": "4.1",
+    "pages": "132 to 138",
+    "note": "Coordinate proof is beyond Jacobs.",
+    "references": [
+      {
+        "section": "4.1",
+        "pages": [
+          132,
+          138
+        ]
+      }
+    ],
+    "misconception": "One numeric example is a proof. Surface it: compare a specific example with variable coordinates."
+  },
+  "7.12": {
+    "section": "4.1",
+    "pages": "132 to 138",
+    "note": "Coordinate proof is beyond Jacobs.",
+    "references": [
+      {
+        "section": "4.1",
+        "pages": [
+          132,
+          138
+        ]
+      }
+    ],
+    "misconception": "Placement of axes doesn't matter for ease. Surface it: compare a corner-at-origin set-up with a random one."
+  },
+  "7.13": {
+    "section": "9R",
+    "pages": "371 to 375",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "9R",
+        "pages": [
+          371,
+          375
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "7.14": {
+    "section": "9R",
+    "pages": "371 to 375",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "9R",
+        "pages": [
+          371,
+          375
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "8.1": {
+    "section": "10.1",
+    "pages": "378 to 384",
+    "note": "",
+    "references": [
+      {
+        "section": "10.1",
+        "pages": [
+          378,
+          384
+        ]
+      }
+    ],
+    "misconception": "Proportions can be cross-multiplied with any pairing. Surface it: set up a ratio with mismatched parts."
+  },
+  "8.2": {
+    "section": "10.5",
+    "pages": "407 to 413",
+    "note": "Jacobs uses dilations as motivation in 10.5; this course defines similarity by them.",
+    "references": [
+      {
+        "section": "10.5",
+        "pages": [
+          407,
+          413
+        ]
+      }
+    ],
+    "misconception": "A dilation adds a fixed amount to lengths. Surface it: scale factor 2 on a 3-4-5 triangle."
+  },
+  "8.3": {
+    "section": "10.5",
+    "pages": "407 to 413",
+    "note": "",
+    "references": [
+      {
+        "section": "10.5",
+        "pages": [
+          407,
+          413
+        ]
+      }
+    ],
+    "misconception": "Dilations change angles. Surface it: measure angles before and after."
+  },
+  "8.4": {
+    "section": "10.2",
+    "pages": "385 to 391",
+    "note": "Jacobs defines similarity by correspondence (10.2); this course defines it by transformations.",
+    "references": [
+      {
+        "section": "10.2",
+        "pages": [
+          385,
+          391
+        ]
+      }
+    ],
+    "misconception": "Similar means 'roughly the same shape'. Surface it: two rectangles of different proportions."
+  },
+  "8.5": {
+    "section": "10.2",
+    "pages": "385 to 391",
+    "note": "",
+    "references": [
+      {
+        "section": "10.2",
+        "pages": [
+          385,
+          391
+        ]
+      }
+    ],
+    "misconception": "Corresponding sides are found by position on the page. Surface it: a rotated similar polygon."
+  },
+  "8.6": {
+    "section": "10.3",
+    "pages": "392 to 398",
+    "note": "",
+    "references": [
+      {
+        "section": "10.3",
+        "pages": [
+          392,
+          398
+        ]
+      }
+    ],
+    "misconception": "The side-splitter ratio uses the parallel segment. Surface it: label which pieces are proportional."
+  },
+  "8.7": {
+    "section": "10.3",
+    "pages": "392 to 398",
+    "note": "Partitioning a segment by coordinates is beyond Jacobs.",
+    "references": [
+      {
+        "section": "10.3",
+        "pages": [
+          392,
+          398
+        ]
+      }
+    ],
+    "misconception": "A 2:3 ratio means the point is 2/3 of the way. Surface it: ask for 2 parts of 5."
+  },
+  "8.8": {
+    "section": "10R",
+    "pages": "420 to 424",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "10R",
+        "pages": [
+          420,
+          424
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "8.9": {
+    "section": "10.4",
+    "pages": "399 to 406",
+    "note": "",
+    "references": [
+      {
+        "section": "10.4",
+        "pages": [
+          399,
+          406
+        ]
+      }
+    ],
+    "misconception": "You need all three angles. Surface it: ask why two are enough (the angle sum)."
+  },
+  "8.10": {
+    "section": "10.5",
+    "pages": "407 to 413",
+    "note": "",
+    "references": [
+      {
+        "section": "10.5",
+        "pages": [
+          407,
+          413
+        ]
+      }
+    ],
+    "misconception": "SSA similarity works. Surface it: counterexample card."
+  },
+  "8.11": {
+    "section": "Supplement",
+    "pages": "No direct Jacobs section",
+    "note": "Supplement: not a numbered Jacobs theorem (Euclid searched). Closest Jacobs item: 10.3, p. 397, Set II, ex. 48. Label Supplement on slide 1; needed for G.T.1f.",
+    "references": [],
+    "misconception": "The bisector cuts the opposite side in half. Surface it: measure on a scalene triangle."
+  },
+  "8.12": {
+    "section": "10.6",
+    "pages": "414 to 419",
+    "note": "",
+    "references": [
+      {
+        "section": "10.6",
+        "pages": [
+          414,
+          419
+        ]
+      }
+    ],
+    "misconception": "Area scales by k, not k squared. Surface it: tile a doubled square."
+  },
+  "8.13": {
+    "section": "10.6",
+    "pages": "414 to 419",
+    "note": "Self-similar fractals are beyond Jacobs 10.6.",
+    "references": [
+      {
+        "section": "10.6",
+        "pages": [
+          414,
+          419
+        ]
+      }
+    ],
+    "misconception": "Every repeated pattern is self-similar. Surface it: a tiled floor vs. a Sierpinski triangle."
+  },
+  "8.14": {
+    "section": "10.4",
+    "pages": "399 to 406",
+    "note": "",
+    "references": [
+      {
+        "section": "10.4",
+        "pages": [
+          399,
+          406
+        ]
+      }
+    ],
+    "misconception": "Shadow lengths aren't proportional at different times. Surface it: ask why both shadows must be measured at once."
+  },
+  "8.15": {
+    "section": "10R",
+    "pages": "420 to 424",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "10R",
+        "pages": [
+          420,
+          424
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "8.16": {
+    "section": "10R",
+    "pages": "420 to 424",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "10R",
+        "pages": [
+          420,
+          424
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "9.1": {
+    "section": "11.1",
+    "pages": "428 to 433",
+    "note": "",
+    "references": [
+      {
+        "section": "11.1",
+        "pages": [
+          428,
+          433
+        ]
+      }
+    ],
+    "misconception": "The geometric mean is the average. Surface it: 4 and 9 give 6, not 6.5."
+  },
+  "9.2": {
+    "section": "11.2",
+    "pages": "434 to 440",
+    "note": "",
+    "references": [
+      {
+        "section": "11.2",
+        "pages": [
+          434,
+          440
+        ]
+      }
+    ],
+    "misconception": "A second proof of a theorem is pointless. Surface it: ask what the similarity proof uses that the area proof did not."
+  },
+  "9.3": {
+    "section": "11.3",
+    "pages": "441 to 447",
+    "note": "",
+    "references": [
+      {
+        "section": "11.3",
+        "pages": [
+          441,
+          447
+        ]
+      }
+    ],
+    "misconception": "The hypotenuse is 2 times the leg. Surface it: measure a 45-45-90 drawn on grid paper."
+  },
+  "9.4": {
+    "section": "11.3",
+    "pages": "441 to 447",
+    "note": "",
+    "references": [
+      {
+        "section": "11.3",
+        "pages": [
+          441,
+          447
+        ]
+      }
+    ],
+    "misconception": "The root 3 goes on the hypotenuse. Surface it: ask which side is opposite the 60 degree angle."
+  },
+  "9.5": {
+    "section": "11.4",
+    "pages": "448 to 453",
+    "note": "",
+    "references": [
+      {
+        "section": "11.4",
+        "pages": [
+          448,
+          453
+        ]
+      }
+    ],
+    "misconception": "Trig ratios depend on the triangle's size. Surface it: compare tan 30 in two sizes."
+  },
+  "9.6": {
+    "section": "11.4",
+    "pages": "448 to 453",
+    "note": "",
+    "references": [
+      {
+        "section": "11.4",
+        "pages": [
+          448,
+          453
+        ]
+      }
+    ],
+    "misconception": "Opposite and adjacent are fixed sides. Surface it: switch the reference angle."
+  },
+  "9.7": {
+    "section": "11.5",
+    "pages": "454 to 460",
+    "note": "",
+    "references": [
+      {
+        "section": "11.5",
+        "pages": [
+          454,
+          460
+        ]
+      }
+    ],
+    "misconception": "Sine can exceed 1. Surface it: ask which side is always the longest."
+  },
+  "9.8": {
+    "section": "11R",
+    "pages": "475 to 482",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "11R",
+        "pages": [
+          475,
+          482
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "9.9": {
+    "section": "11.4; 11.5",
+    "pages": "448 to 453; 454 to 460",
+    "note": "",
+    "references": [
+      {
+        "section": "11.4",
+        "pages": [
+          448,
+          453
+        ]
+      },
+      {
+        "section": "11.5",
+        "pages": [
+          454,
+          460
+        ]
+      }
+    ],
+    "misconception": "sin inverse means 1 over sin. Surface it: compare calculator outputs."
+  },
+  "9.10": {
+    "section": "11.6",
+    "pages": "461 to 467",
+    "note": "",
+    "references": [
+      {
+        "section": "11.6",
+        "pages": [
+          461,
+          467
+        ]
+      }
+    ],
+    "misconception": "Slope and angle are proportional. Surface it: slope 1 is 45 degrees, slope 2 isn't 90."
+  },
+  "9.11": {
+    "section": "11.4; 11.5",
+    "pages": "448 to 453; 454 to 460",
+    "note": "",
+    "references": [
+      {
+        "section": "11.4",
+        "pages": [
+          448,
+          453
+        ]
+      },
+      {
+        "section": "11.5",
+        "pages": [
+          454,
+          460
+        ]
+      }
+    ],
+    "misconception": "Angle of depression is measured from the vertical. Surface it: draw the horizontal line first."
+  },
+  "9.12": {
+    "section": "11R",
+    "pages": "475 to 482",
+    "note": "",
+    "references": [
+      {
+        "section": "11R",
+        "pages": [
+          475,
+          482
+        ]
+      }
+    ],
+    "misconception": "Always reach for Pythagoras first. Surface it: problems where only one angle and one side are known."
+  },
+  "9.13": {
+    "section": "11.7",
+    "pages": "468 to 474",
+    "note": "",
+    "references": [
+      {
+        "section": "11.7",
+        "pages": [
+          468,
+          474
+        ]
+      }
+    ],
+    "misconception": "The Law of Sines always gives one triangle. Surface it: the ambiguous case (Euclid to confirm Jacobs' coverage)."
+  },
+  "9.14": {
+    "section": "11R",
+    "pages": "475 to 482",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "11R",
+        "pages": [
+          475,
+          482
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "9.15": {
+    "section": "11R",
+    "pages": "475 to 482",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "11R",
+        "pages": [
+          475,
+          482
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "10.1": {
+    "section": "12.1",
+    "pages": "484 to 490",
+    "note": "",
+    "references": [
+      {
+        "section": "12.1",
+        "pages": [
+          484,
+          490
+        ]
+      }
+    ],
+    "misconception": "A chord and a radius are the same. Surface it: label card sort."
+  },
+  "10.2": {
+    "section": "12.1",
+    "pages": "484 to 490",
+    "note": "",
+    "references": [
+      {
+        "section": "12.1",
+        "pages": [
+          484,
+          490
+        ]
+      }
+    ],
+    "misconception": "Any line through a chord's midpoint passes through the center. Surface it: it must also be perpendicular."
+  },
+  "10.3": {
+    "section": "12.2",
+    "pages": "491 to 496",
+    "note": "",
+    "references": [
+      {
+        "section": "12.2",
+        "pages": [
+          491,
+          496
+        ]
+      }
+    ],
+    "misconception": "A tangent can touch at two points. Surface it: drag a line across a circle."
+  },
+  "10.4": {
+    "section": "12.3",
+    "pages": "497 to 503",
+    "note": "",
+    "references": [
+      {
+        "section": "12.3",
+        "pages": [
+          497,
+          503
+        ]
+      }
+    ],
+    "misconception": "Arc measure is arc length. Surface it: same arc degrees on two circles."
+  },
+  "10.5": {
+    "section": "12.4",
+    "pages": "504 to 509",
+    "note": "",
+    "references": [
+      {
+        "section": "12.4",
+        "pages": [
+          504,
+          509
+        ]
+      }
+    ],
+    "misconception": "An inscribed angle equals its arc. Surface it: measure both."
+  },
+  "10.6": {
+    "section": "12.4; 13.2",
+    "pages": "504 to 509; 536 to 541",
+    "note": "",
+    "references": [
+      {
+        "section": "12.4",
+        "pages": [
+          504,
+          509
+        ]
+      },
+      {
+        "section": "13.2",
+        "pages": [
+          536,
+          541
+        ]
+      }
+    ],
+    "misconception": "Any quadrilateral can be inscribed in a circle. Surface it: try a non-isosceles trapezoid."
+  },
+  "10.7": {
+    "section": "12.5",
+    "pages": "510 to 515",
+    "note": "Present as a corollary of earlier circle-angle theorems (Euclid ANSWERS.md): tangents PA, PB give right angles OAP and OBP (12.2), the quadrilateral angle sum (Ch 7) gives angle APB + angle AOB = 180, so angle APB = 180 minus the minor arc AB.",
+    "references": [
+      {
+        "section": "12.5",
+        "pages": [
+          510,
+          515
+        ]
+      }
+    ],
+    "misconception": "A circumscribed angle equals the arc. Surface it: measure."
+  },
+  "10.8": {
+    "section": "12R; 13R",
+    "pages": "522 to 526; 566 to 570",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "12R",
+        "pages": [
+          522,
+          526
+        ]
+      },
+      {
+        "section": "13R",
+        "pages": [
+          566,
+          570
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "10.9": {
+    "section": "12.5",
+    "pages": "510 to 515",
+    "note": "",
+    "references": [
+      {
+        "section": "12.5",
+        "pages": [
+          510,
+          515
+        ]
+      }
+    ],
+    "misconception": "Every secant angle is half the sum of arcs. Surface it: vertex inside vs. outside."
+  },
+  "10.10": {
+    "section": "12.6",
+    "pages": "516 to 521",
+    "note": "",
+    "references": [
+      {
+        "section": "12.6",
+        "pages": [
+          516,
+          521
+        ]
+      }
+    ],
+    "misconception": "Segment products use whole lengths for chords. Surface it: label the pieces."
+  },
+  "10.11": {
+    "section": "13.1",
+    "pages": "530 to 535",
+    "note": "",
+    "references": [
+      {
+        "section": "13.1",
+        "pages": [
+          530,
+          535
+        ]
+      }
+    ],
+    "misconception": "The circumcenter is always inside. Surface it: an obtuse triangle."
+  },
+  "10.12": {
+    "section": "13.3",
+    "pages": "542 to 547",
+    "note": "",
+    "references": [
+      {
+        "section": "13.3",
+        "pages": [
+          542,
+          547
+        ]
+      }
+    ],
+    "misconception": "Incenter and circumcenter are the same point. Surface it: construct both on one triangle."
+  },
+  "10.13": {
+    "section": "13.4",
+    "pages": "548 to 553",
+    "note": "",
+    "references": [
+      {
+        "section": "13.4",
+        "pages": [
+          548,
+          553
+        ]
+      }
+    ],
+    "misconception": "Medians and altitudes are the same segment. Surface it: a scalene triangle."
+  },
+  "10.14": {
+    "section": "13.6; 13.5",
+    "pages": "561 to 565; 554 to 560",
+    "note": "",
+    "references": [
+      {
+        "section": "13.6",
+        "pages": [
+          561,
+          565
+        ]
+      },
+      {
+        "section": "13.5",
+        "pages": [
+          554,
+          560
+        ]
+      }
+    ],
+    "misconception": "Surprising coincidences are luck. Surface it: drag the triangle and watch Napoleon's triangle stay equilateral."
+  },
+  "10.15": {
+    "section": "12R; 13R",
+    "pages": "522 to 526; 566 to 570",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "12R",
+        "pages": [
+          522,
+          526
+        ]
+      },
+      {
+        "section": "13R",
+        "pages": [
+          566,
+          570
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "10.16": {
+    "section": "12R; 13R",
+    "pages": "522 to 526; 566 to 570",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "12R",
+        "pages": [
+          522,
+          526
+        ]
+      },
+      {
+        "section": "13R",
+        "pages": [
+          566,
+          570
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "11.1": {
+    "section": "14.2",
+    "pages": "579 to 584",
+    "note": "",
+    "references": [
+      {
+        "section": "14.2",
+        "pages": [
+          579,
+          584
+        ]
+      }
+    ],
+    "misconception": "Perimeter of a regular polygon needs every side measured. Surface it: give one side and n."
+  },
+  "11.2": {
+    "section": "14.3",
+    "pages": "585 to 590",
+    "note": "",
+    "references": [
+      {
+        "section": "14.3",
+        "pages": [
+          585,
+          590
+        ]
+      }
+    ],
+    "misconception": "The apothem is the radius. Surface it: label both on a hexagon."
+  },
+  "11.3": {
+    "section": "14.4",
+    "pages": "591 to 597",
+    "note": "",
+    "references": [
+      {
+        "section": "14.4",
+        "pages": [
+          591,
+          597
+        ]
+      }
+    ],
+    "misconception": "Pi equals 22/7 or 3.14 exactly. Surface it: compare the polygon perimeters as n grows."
+  },
+  "11.4": {
+    "section": "14.4",
+    "pages": "591 to 597",
+    "note": "",
+    "references": [
+      {
+        "section": "14.4",
+        "pages": [
+          591,
+          597
+        ]
+      }
+    ],
+    "misconception": "C = pi r. Surface it: measure a can with string."
+  },
+  "11.5": {
+    "section": "14.5",
+    "pages": "598 to 604",
+    "note": "",
+    "references": [
+      {
+        "section": "14.5",
+        "pages": [
+          598,
+          604
+        ]
+      }
+    ],
+    "misconception": "Doubling r doubles area. Surface it: tile two circles."
+  },
+  "11.6": {
+    "section": "14.6",
+    "pages": "605 to 611",
+    "note": "",
+    "references": [
+      {
+        "section": "14.6",
+        "pages": [
+          605,
+          611
+        ]
+      }
+    ],
+    "misconception": "Arc length equals arc degrees. Surface it: same 60 degree arc on two radii."
+  },
+  "11.7": {
+    "section": "14.6",
+    "pages": "605 to 611",
+    "note": "",
+    "references": [
+      {
+        "section": "14.6",
+        "pages": [
+          605,
+          611
+        ]
+      }
+    ],
+    "misconception": "Segment area equals sector area. Surface it: subtract the triangle visibly."
+  },
+  "11.8": {
+    "section": "14.6",
+    "pages": "605 to 611",
+    "note": "Core, not enrichment: Jacobs 14.6, p. 608, heading The Radian, Set I ex. 26 to 30 (PDF p. 628). Derive angle = s/r, 180 degrees = pi radians.",
+    "references": [
+      {
+        "section": "14.6",
+        "pages": [
+          605,
+          611
+        ]
+      }
+    ],
+    "misconception": "Radians are a different kind of angle. Surface it: lay radius-length string along the arc."
+  },
+  "11.9": {
+    "section": "14R",
+    "pages": "612 to 616",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "14R",
+        "pages": [
+          612,
+          616
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "11.10": {
+    "section": "14R",
+    "pages": "612 to 616",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "14R",
+        "pages": [
+          612,
+          616
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "12.1": {
+    "section": "15.1",
+    "pages": "618 to 625",
+    "note": "",
+    "references": [
+      {
+        "section": "15.1",
+        "pages": [
+          618,
+          625
+        ]
+      }
+    ],
+    "misconception": "Two lines that don't meet are parallel. Surface it: skew lines with two pencils."
+  },
+  "12.2": {
+    "section": "15.SG; 15.2; 15.3",
+    "pages": "626 to 627; 628 to 633; 634 to 639",
+    "note": "Nets and cross sections extend Jacobs 15.2 to 15.3.",
+    "references": [
+      {
+        "section": "15.SG",
+        "pages": [
+          626,
+          627
+        ]
+      },
+      {
+        "section": "15.2",
+        "pages": [
+          628,
+          633
+        ]
+      },
+      {
+        "section": "15.3",
+        "pages": [
+          634,
+          639
+        ]
+      }
+    ],
+    "misconception": "A cube's cross section is always a square. Surface it: the hexagon slice."
+  },
+  "12.3": {
+    "section": "15.4",
+    "pages": "640 to 646",
+    "note": "",
+    "references": [
+      {
+        "section": "15.4",
+        "pages": [
+          640,
+          646
+        ]
+      }
+    ],
+    "misconception": "Slanted stacks have more volume. Surface it: shear a stack of coins."
+  },
+  "12.4": {
+    "section": "15.4; 15.6",
+    "pages": "640 to 646; 654 to 661",
+    "note": "",
+    "references": [
+      {
+        "section": "15.4",
+        "pages": [
+          640,
+          646
+        ]
+      },
+      {
+        "section": "15.6",
+        "pages": [
+          654,
+          661
+        ]
+      }
+    ],
+    "misconception": "Volume of a cylinder uses the diameter. Surface it: units check."
+  },
+  "12.5": {
+    "section": "15.5; 15.6",
+    "pages": "647 to 653; 654 to 661",
+    "note": "",
+    "references": [
+      {
+        "section": "15.5",
+        "pages": [
+          647,
+          653
+        ]
+      },
+      {
+        "section": "15.6",
+        "pages": [
+          654,
+          661
+        ]
+      }
+    ],
+    "misconception": "A pyramid is half a prism. Surface it: pour rice from pyramid into prism."
+  },
+  "12.6": {
+    "section": "15.7",
+    "pages": "662 to 669",
+    "note": "",
+    "references": [
+      {
+        "section": "15.7",
+        "pages": [
+          662,
+          669
+        ]
+      }
+    ],
+    "misconception": "Sphere volume is 4 pi r squared. Surface it: units check (cubic vs. square)."
+  },
+  "12.7": {
+    "section": "15R; 16R",
+    "pages": "683 to 688; 713 to 717",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "15R",
+        "pages": [
+          683,
+          688
+        ]
+      },
+      {
+        "section": "16R",
+        "pages": [
+          713,
+          717
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "12.8": {
+    "section": "15.3; 15.5; 15.6; 15.7",
+    "pages": "634 to 639; 647 to 653; 654 to 661; 662 to 669",
+    "note": "",
+    "references": [
+      {
+        "section": "15.3",
+        "pages": [
+          634,
+          639
+        ]
+      },
+      {
+        "section": "15.5",
+        "pages": [
+          647,
+          653
+        ]
+      },
+      {
+        "section": "15.6",
+        "pages": [
+          654,
+          661
+        ]
+      },
+      {
+        "section": "15.7",
+        "pages": [
+          662,
+          669
+        ]
+      }
+    ],
+    "misconception": "Surface area and volume are interchangeable. Surface it: units on each."
+  },
+  "12.9": {
+    "section": "Supplement",
+    "pages": "No direct Jacobs section",
+    "note": "Composite solids with algebraic expressions (G.TS.4) are beyond Jacobs exercises; Euclid to confirm.",
+    "references": [],
+    "misconception": "Shared faces count toward surface area. Surface it: two stacked cubes."
+  },
+  "12.10": {
+    "section": "15.8",
+    "pages": "670 to 676",
+    "note": "",
+    "references": [
+      {
+        "section": "15.8",
+        "pages": [
+          670,
+          676
+        ]
+      }
+    ],
+    "misconception": "Volume scales by k squared. Surface it: build a doubled cube from unit cubes."
+  },
+  "12.11": {
+    "section": "15.9",
+    "pages": "677 to 682",
+    "note": "",
+    "references": [
+      {
+        "section": "15.9",
+        "pages": [
+          677,
+          682
+        ]
+      }
+    ],
+    "misconception": "There are infinitely many regular polyhedra. Surface it: try to build one from hexagons."
+  },
+  "12.12": {
+    "section": "15R; 16R",
+    "pages": "683 to 688; 713 to 717",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "15R",
+        "pages": [
+          683,
+          688
+        ]
+      },
+      {
+        "section": "16R",
+        "pages": [
+          713,
+          717
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "12.13": {
+    "section": "15R; 16R",
+    "pages": "683 to 688; 713 to 717",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "15R",
+        "pages": [
+          683,
+          688
+        ]
+      },
+      {
+        "section": "16R",
+        "pages": [
+          713,
+          717
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "12.14": {
+    "section": "16.1",
+    "pages": "690 to 695",
+    "note": "",
+    "references": [
+      {
+        "section": "16.1",
+        "pages": [
+          690,
+          695
+        ]
+      }
+    ],
+    "misconception": "Straight lines on a sphere are like latitude lines. Surface it: string on a ball between two cities."
+  },
+  "12.15": {
+    "section": "FR",
+    "pages": "718 to 727",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "FR",
+        "pages": [
+          718,
+          727
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "12.16": {
+    "section": "FR",
+    "pages": "718 to 727",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "FR",
+        "pages": [
+          718,
+          727
+        ]
+      }
+    ],
+    "misconception": ""
+  },
+  "12.17": {
+    "section": "FR",
+    "pages": "718 to 727",
+    "note": "Review and assessment scope",
+    "references": [
+      {
+        "section": "FR",
+        "pages": [
+          718,
+          727
+        ]
+      }
+    ],
+    "misconception": ""
+  }
+}

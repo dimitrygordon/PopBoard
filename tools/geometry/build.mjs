@@ -5,6 +5,7 @@
 //   public/geometry/covers/*.svg           unit covers and the course card (public/geometry/geo-covers.js)
 // Usage: node tools/geometry/build.mjs [--check]   (--check verifies the outputs are current, writes nothing)
 import fs from "node:fs";
+import { worked, practice, mistake, exitBody } from "./template-v2.mjs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -14,6 +15,8 @@ const CHECK = process.argv.includes("--check");
 const plan = fs.readFileSync(path.join(ROOT, "docs/geometry/progression.md"), "utf8");
 const content = {};
 for (const f of ["u01-u04", "u05-u08", "u09-u12"]) Object.assign(content, (await import(pathToFileURL(path.join(ROOT, `tools/geometry/content/${f}.mjs`)))).default);
+const citations = JSON.parse(fs.readFileSync(path.join(ROOT, "tools/geometry/jacobs-map.json"), "utf8"));
+// Unit 4 pilot content is held in drafts until the revised specification is approved.
 const { coverSvg } = await import(pathToFileURL(path.join(PUB, "geo-covers.js")));
 const artMap = JSON.parse(fs.readFileSync(path.join(ROOT, "tools/geometry/art-map.json"), "utf8"));
 
@@ -100,17 +103,27 @@ const decks = {}, catalog = [], missing = [];
 for (const u of units) {
   const lessonsWithText = u.lessons.filter((l) => content[l.key]);
   for (const l of u.lessons) {
-    const kind = kindOf(l), c = content[l.key], stds = stdsFor(l), pages = [];
+    const kind = kindOf(l), c = content[l.key], source = citations[l.key], jacobs = source && { section: source.section, pages: source.pages, references: source.references }, stds = stdsFor(l), pages = [];
     if (kind === "other") missing.push(l.key);
+    if (!jacobs) throw new Error(`Missing Jacobs citation for ${l.key}`);
     const page = (title, geo, extra = {}) => pages.push({ n: pages.length + 1, title, items: [], ...extra, geo: { tag: tagFor(l), title, ...geo } });
-    page(l.title, { kind: "cover", title: l.title, target: md(l.target), stds: stds.join(" \u00b7 "), cover: `geometry/${coverFor(l)}` }, { html: `<h2>${esc(l.title)}</h2><p>${md(l.target)}</p>` });
+    page(l.title, { kind: "cover", jacobs, title: l.title, target: md(l.target), stds: stds.join(" \u00b7 "), cover: `geometry/${coverFor(l)}` }, { html: `<h2>${esc(l.title)}</h2><p>${md(l.target)}</p>` });
     if (kind === "lesson") {
       const hook = `<p class="gx-lead">${md(l.hook)}</p><p class="gx-goal"><b>Goal:</b> ${md(l.target)}</p>`;
       page("Get started", { kind: "text", body: hook, fig: c.fig }, { html: hook });
       page("The big idea", { kind: "text", body: c.idea, fig: c.fig }, { html: c.idea });
       if (GXMAP[l.key]) { const how = md(l.inter.replace(/^Interactive: (sandbox|construction)\.\s*/, "")); page("Try it", { kind: "gx", gx: GXMAP[l.key] }, { html: `<p>${how}</p><p>Use the controls in the panel. Drag the hollow points on the board.</p>` }); }
+      for (const example of c.workedExamples || []) worked(page, example);
+      for (const item of c.practice || []) practice(page, item);
       const q = `<p class="gx-q">${c.check[0]}</p><p class="gx-hint">Work it out, then press <b>Show the answer</b>.</p>`;
       page("Check yourself", { kind: "text", body: q, fig: c.checkFig || null }, { html: `<p>${c.check[0]}</p>`, reveal: plain(c.check[1]) });
+      const commonMistake = c.commonMistake || {
+        prompt: source.misconception ? `A student says: ${source.misconception.split(" Surface it:")[0]}` : "A student says one successful drawing proves every case. What is missing?",
+        correction: c.idea + (!source.misconception ? "<p>A drawing can suggest a conjecture. A general claim requires a reason covering every stated case.</p>" : "")
+      };
+      mistake(page, commonMistake.prompt, commonMistake.correction);
+      const exit = exitBody(c.exitTicket || [plain(c.check[0]), "Explain the reason behind your answer in one sentence."]);
+      page("Exit ticket", { kind: "exit-ticket", body: exit }, { html: exit });
     } else {
       // review, assessment, project and exam lessons are built from the plan itself
       const scope = kind === "midterm" ? units.slice(0, 6) : kind === "final" ? units : [u];
@@ -125,8 +138,8 @@ for (const u of units) {
       }
     }
     const slug = `u${pad(l.q)}-l${pad(l.lesson)}`;
-    decks[slug] = { key: `U${pad(l.q)}-L${pad(l.lesson)}`, slides: pages };
-    catalog.push({ key: `U${pad(l.q)}-L${pad(l.lesson)}`, slug, q: l.q, module: u.title, lesson: l.lesson, title: l.title, tag: tagFor(l), sub: `Unit ${l.q}: ${u.title}`, slides: pages.length, pages: [], standards: stds, built: true, cover: coverFor(l), kind, gx: GXMAP[l.key] || null });
+    decks[slug] = { jacobs, key: `U${pad(l.q)}-L${pad(l.lesson)}`, slides: pages };
+    catalog.push({ key: `U${pad(l.q)}-L${pad(l.lesson)}`, slug, q: l.q, module: u.title, lesson: l.lesson, title: l.title, tag: tagFor(l), sub: `Unit ${l.q}: ${u.title}`, jacobs, slides: pages.length, pages: [], standards: stds, built: true, cover: coverFor(l), kind, gx: GXMAP[l.key] || null });
   }
 }
 if (missing.length) throw new Error(`lessons with no text and no generated kind: ${missing.join(" ")}`);

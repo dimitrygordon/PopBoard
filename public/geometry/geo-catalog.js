@@ -10,7 +10,20 @@ export const DECKS = [
   "title": "Euclid, the Surfer, and the Spotter",
   "tag": "GEOMETRY · UNIT 1 · LESSON 1.1",
   "sub": "Unit 1: Seeing and Reasoning",
-  "slides": 4,
+  "jacobs": {
+   "section": "Intro",
+   "pages": "1 to 5",
+   "references": [
+    {
+     "section": "Intro",
+     "pages": [
+      1,
+      5
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.1"
@@ -29,7 +42,20 @@ export const DECKS = [
   "title": "Inductive Reasoning",
   "tag": "GEOMETRY · UNIT 1 · LESSON 1.2",
   "sub": "Unit 1: Seeing and Reasoning",
-  "slides": 5,
+  "jacobs": {
+   "section": "Ind",
+   "pages": "6 to 6",
+   "references": [
+    {
+     "section": "Ind",
+     "pages": [
+      6,
+      6
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.GF.1"
@@ -48,7 +74,20 @@ export const DECKS = [
   "title": "Lines in Designing a City",
   "tag": "GEOMETRY · UNIT 1 · LESSON 1.3",
   "sub": "Unit 1: Seeing and Reasoning",
-  "slides": 4,
+  "jacobs": {
+   "section": "1.1",
+   "pages": "8 to 12",
+   "references": [
+    {
+     "section": "1.1",
+     "pages": [
+      8,
+      12
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.1"
@@ -67,7 +106,20 @@ export const DECKS = [
   "title": "Angles and Measuring the Earth",
   "tag": "GEOMETRY · UNIT 1 · LESSON 1.4",
   "sub": "Unit 1: Seeing and Reasoning",
-  "slides": 4,
+  "jacobs": {
+   "section": "1.2",
+   "pages": "13 to 17",
+   "references": [
+    {
+     "section": "1.2",
+     "pages": [
+      13,
+      17
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.1"
@@ -86,7 +138,20 @@ export const DECKS = [
   "title": "Polygons, Polyhedra, and Patterns",
   "tag": "GEOMETRY · UNIT 1 · LESSON 1.5",
   "sub": "Unit 1: Seeing and Reasoning",
-  "slides": 5,
+  "jacobs": {
+   "section": "1.3",
+   "pages": "18 to 23",
+   "references": [
+    {
+     "section": "1.3",
+     "pages": [
+      18,
+      23
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.GF.1"
@@ -105,7 +170,20 @@ export const DECKS = [
   "title": "Constructions: Telling Time with Shadows",
   "tag": "GEOMETRY · UNIT 1 · LESSON 1.6",
   "sub": "Unit 1: Seeing and Reasoning",
-  "slides": 5,
+  "jacobs": {
+   "section": "1.4",
+   "pages": "24 to 29",
+   "references": [
+    {
+     "section": "1.4",
+     "pages": [
+      24,
+      29
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.GF.1",
@@ -125,7 +203,20 @@ export const DECKS = [
   "title": "We Can't Go On Like This",
   "tag": "GEOMETRY · UNIT 1 · LESSON 1.7",
   "sub": "Unit 1: Seeing and Reasoning",
-  "slides": 4,
+  "jacobs": {
+   "section": "1.5",
+   "pages": "30 to 34",
+   "references": [
+    {
+     "section": "1.5",
+     "pages": [
+      30,
+      34
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.1"
@@ -144,7 +235,20 @@ export const DECKS = [
   "title": "Conditional Statements",
   "tag": "GEOMETRY · UNIT 1 · LESSON 1.8",
   "sub": "Unit 1: Seeing and Reasoning",
-  "slides": 4,
+  "jacobs": {
+   "section": "2.1",
+   "pages": "42 to 45",
+   "references": [
+    {
+     "section": "2.1",
+     "pages": [
+      42,
+      45
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.1",
@@ -164,7 +268,20 @@ export const DECKS = [
   "title": "Definitions as Biconditionals",
   "tag": "GEOMETRY · UNIT 1 · LESSON 1.9",
   "sub": "Unit 1: Seeing and Reasoning",
-  "slides": 4,
+  "jacobs": {
+   "section": "2.2",
+   "pages": "46 to 49",
+   "references": [
+    {
+     "section": "2.2",
+     "pages": [
+      46,
+      49
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.1",
@@ -184,7 +301,20 @@ export const DECKS = [
   "title": "Direct Proof",
   "tag": "GEOMETRY · UNIT 1 · LESSON 1.10",
   "sub": "Unit 1: Seeing and Reasoning",
-  "slides": 4,
+  "jacobs": {
+   "section": "2.3",
+   "pages": "50 to 54",
+   "references": [
+    {
+     "section": "2.3",
+     "pages": [
+      50,
+      54
+     ]
+    }
+   ]
+  },
+  "slides": 8,
   "pages": [],
   "standards": [
    "G.GF.1",
@@ -204,7 +334,20 @@ export const DECKS = [
   "title": "Indirect Proof",
   "tag": "GEOMETRY · UNIT 1 · LESSON 1.11",
   "sub": "Unit 1: Seeing and Reasoning",
-  "slides": 4,
+  "jacobs": {
+   "section": "2.4",
+   "pages": "55 to 59",
+   "references": [
+    {
+     "section": "2.4",
+     "pages": [
+      55,
+      59
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.1"
@@ -223,7 +366,27 @@ export const DECKS = [
   "title": "A Deductive System",
   "tag": "GEOMETRY · UNIT 1 · LESSON 1.12",
   "sub": "Unit 1: Seeing and Reasoning",
-  "slides": 4,
+  "jacobs": {
+   "section": "2.5; 2.6",
+   "pages": "60 to 64; 65 to 70",
+   "references": [
+    {
+     "section": "2.5",
+     "pages": [
+      60,
+      64
+     ]
+    },
+    {
+     "section": "2.6",
+     "pages": [
+      65,
+      70
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.1"
@@ -242,6 +405,26 @@ export const DECKS = [
   "title": "Review",
   "tag": "GEOMETRY · UNIT 1 · LESSON 1.13",
   "sub": "Unit 1: Seeing and Reasoning",
+  "jacobs": {
+   "section": "1R; 2R",
+   "pages": "35 to 38; 71 to 74",
+   "references": [
+    {
+     "section": "1R",
+     "pages": [
+      35,
+      38
+     ]
+    },
+    {
+     "section": "2R",
+     "pages": [
+      71,
+      74
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [
@@ -261,6 +444,26 @@ export const DECKS = [
   "title": "Unit 1 Assessment",
   "tag": "GEOMETRY · UNIT 1 · LESSON 1.14",
   "sub": "Unit 1: Seeing and Reasoning",
+  "jacobs": {
+   "section": "1R; 2R",
+   "pages": "35 to 38; 71 to 74",
+   "references": [
+    {
+     "section": "1R",
+     "pages": [
+      35,
+      38
+     ]
+    },
+    {
+     "section": "2R",
+     "pages": [
+      71,
+      74
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [
@@ -281,7 +484,20 @@ export const DECKS = [
   "title": "Algebra in Proofs",
   "tag": "GEOMETRY · UNIT 2 · LESSON 2.1",
   "sub": "Unit 2: Lines, Angles, and Constructions",
-  "slides": 4,
+  "jacobs": {
+   "section": "3.1",
+   "pages": "78 to 83",
+   "references": [
+    {
+     "section": "3.1",
+     "pages": [
+      78,
+      83
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -298,7 +514,20 @@ export const DECKS = [
   "title": "The Ruler Postulate and Distance",
   "tag": "GEOMETRY · UNIT 2 · LESSON 2.2",
   "sub": "Unit 2: Lines, Angles, and Constructions",
-  "slides": 4,
+  "jacobs": {
+   "section": "3.2",
+   "pages": "84 to 90",
+   "references": [
+    {
+     "section": "3.2",
+     "pages": [
+      84,
+      90
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.1"
@@ -317,7 +546,20 @@ export const DECKS = [
   "title": "Midpoints on a Number Line and Grid",
   "tag": "GEOMETRY · UNIT 2 · LESSON 2.3",
   "sub": "Unit 2: Lines, Angles, and Constructions",
-  "slides": 4,
+  "jacobs": {
+   "section": "3.2",
+   "pages": "84 to 90",
+   "references": [
+    {
+     "section": "3.2",
+     "pages": [
+      84,
+      90
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.7"
@@ -336,7 +578,20 @@ export const DECKS = [
   "title": "The Protractor Postulate and Angles",
   "tag": "GEOMETRY · UNIT 2 · LESSON 2.4",
   "sub": "Unit 2: Lines, Angles, and Constructions",
-  "slides": 4,
+  "jacobs": {
+   "section": "3.3",
+   "pages": "91 to 97",
+   "references": [
+    {
+     "section": "3.3",
+     "pages": [
+      91,
+      97
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.1"
@@ -355,7 +610,20 @@ export const DECKS = [
   "title": "Bisection by Construction",
   "tag": "GEOMETRY · UNIT 2 · LESSON 2.5",
   "sub": "Unit 2: Lines, Angles, and Constructions",
-  "slides": 5,
+  "jacobs": {
+   "section": "3.4",
+   "pages": "98 to 104",
+   "references": [
+    {
+     "section": "3.4",
+     "pages": [
+      98,
+      104
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.GF.6"
@@ -374,7 +642,20 @@ export const DECKS = [
   "title": "Complements and Supplements",
   "tag": "GEOMETRY · UNIT 2 · LESSON 2.6",
   "sub": "Unit 2: Lines, Angles, and Constructions",
-  "slides": 4,
+  "jacobs": {
+   "section": "3.5",
+   "pages": "105 to 109",
+   "references": [
+    {
+     "section": "3.5",
+     "pages": [
+      105,
+      109
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.4"
@@ -393,7 +674,20 @@ export const DECKS = [
   "title": "Linear Pairs and Vertical Angles",
   "tag": "GEOMETRY · UNIT 2 · LESSON 2.7",
   "sub": "Unit 2: Lines, Angles, and Constructions",
-  "slides": 5,
+  "jacobs": {
+   "section": "3.6",
+   "pages": "110 to 116",
+   "references": [
+    {
+     "section": "3.6",
+     "pages": [
+      110,
+      116
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.GF.4"
@@ -412,7 +706,20 @@ export const DECKS = [
   "title": "Perpendicular Lines",
   "tag": "GEOMETRY · UNIT 2 · LESSON 2.8",
   "sub": "Unit 2: Lines, Angles, and Constructions",
-  "slides": 4,
+  "jacobs": {
+   "section": "3.7",
+   "pages": "117 to 122",
+   "references": [
+    {
+     "section": "3.7",
+     "pages": [
+      117,
+      122
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.4"
@@ -431,7 +738,27 @@ export const DECKS = [
   "title": "Constructing Perpendiculars",
   "tag": "GEOMETRY · UNIT 2 · LESSON 2.9",
   "sub": "Unit 2: Lines, Angles, and Constructions",
-  "slides": 5,
+  "jacobs": {
+   "section": "3.7; 4.7",
+   "pages": "117 to 122; 169 to 175",
+   "references": [
+    {
+     "section": "3.7",
+     "pages": [
+      117,
+      122
+     ]
+    },
+    {
+     "section": "4.7",
+     "pages": [
+      169,
+      175
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.GF.4",
@@ -451,7 +778,27 @@ export const DECKS = [
   "title": "Copying Angles and Constructing Parallels",
   "tag": "GEOMETRY · UNIT 2 · LESSON 2.10",
   "sub": "Unit 2: Lines, Angles, and Constructions",
-  "slides": 5,
+  "jacobs": {
+   "section": "4.7; 6.2",
+   "pages": "169 to 175; 219 to 224",
+   "references": [
+    {
+     "section": "4.7",
+     "pages": [
+      169,
+      175
+     ]
+    },
+    {
+     "section": "6.2",
+     "pages": [
+      219,
+      224
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.GF.4",
@@ -471,7 +818,27 @@ export const DECKS = [
   "title": "Writing Angle Proofs",
   "tag": "GEOMETRY · UNIT 2 · LESSON 2.11",
   "sub": "Unit 2: Lines, Angles, and Constructions",
-  "slides": 4,
+  "jacobs": {
+   "section": "3.5; 3.6",
+   "pages": "105 to 109; 110 to 116",
+   "references": [
+    {
+     "section": "3.5",
+     "pages": [
+      105,
+      109
+     ]
+    },
+    {
+     "section": "3.6",
+     "pages": [
+      110,
+      116
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.3"
@@ -490,7 +857,20 @@ export const DECKS = [
   "title": "Construction Art",
   "tag": "GEOMETRY · UNIT 2 · LESSON 2.12",
   "sub": "Unit 2: Lines, Angles, and Constructions",
-  "slides": 5,
+  "jacobs": {
+   "section": "1.4",
+   "pages": "24 to 29",
+   "references": [
+    {
+     "section": "1.4",
+     "pages": [
+      24,
+      29
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [],
   "built": true,
@@ -507,6 +887,19 @@ export const DECKS = [
   "title": "Review",
   "tag": "GEOMETRY · UNIT 2 · LESSON 2.13",
   "sub": "Unit 2: Lines, Angles, and Constructions",
+  "jacobs": {
+   "section": "3R",
+   "pages": "123 to 128",
+   "references": [
+    {
+     "section": "3R",
+     "pages": [
+      123,
+      128
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [],
@@ -524,6 +917,19 @@ export const DECKS = [
   "title": "Unit 2 Assessment",
   "tag": "GEOMETRY · UNIT 2 · LESSON 2.14",
   "sub": "Unit 2: Lines, Angles, and Constructions",
+  "jacobs": {
+   "section": "3R",
+   "pages": "123 to 128",
+   "references": [
+    {
+     "section": "3R",
+     "pages": [
+      123,
+      128
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [
@@ -544,6 +950,19 @@ export const DECKS = [
   "title": "Flex / Reteach",
   "tag": "GEOMETRY · UNIT 2 · LESSON 2.15",
   "sub": "Unit 2: Lines, Angles, and Constructions",
+  "jacobs": {
+   "section": "3R",
+   "pages": "123 to 128",
+   "references": [
+    {
+     "section": "3R",
+     "pages": [
+      123,
+      128
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [],
@@ -561,7 +980,20 @@ export const DECKS = [
   "title": "What Is a Transformation?",
   "tag": "GEOMETRY · UNIT 3 · LESSON 3.1",
   "sub": "Unit 3: Rigid Motions and Symmetry",
-  "slides": 4,
+  "jacobs": {
+   "section": "8.1",
+   "pages": "298 to 304",
+   "references": [
+    {
+     "section": "8.1",
+     "pages": [
+      298,
+      304
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.TS.1"
@@ -580,7 +1012,20 @@ export const DECKS = [
   "title": "Translations",
   "tag": "GEOMETRY · UNIT 3 · LESSON 3.2",
   "sub": "Unit 3: Rigid Motions and Symmetry",
-  "slides": 5,
+  "jacobs": {
+   "section": "8.1",
+   "pages": "298 to 304",
+   "references": [
+    {
+     "section": "8.1",
+     "pages": [
+      298,
+      304
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.TS.1"
@@ -599,7 +1044,20 @@ export const DECKS = [
   "title": "Reflections",
   "tag": "GEOMETRY · UNIT 3 · LESSON 3.3",
   "sub": "Unit 3: Rigid Motions and Symmetry",
-  "slides": 5,
+  "jacobs": {
+   "section": "8.2",
+   "pages": "305 to 311",
+   "references": [
+    {
+     "section": "8.2",
+     "pages": [
+      305,
+      311
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.TS.1"
@@ -618,7 +1076,27 @@ export const DECKS = [
   "title": "Rotations",
   "tag": "GEOMETRY · UNIT 3 · LESSON 3.4",
   "sub": "Unit 3: Rigid Motions and Symmetry",
-  "slides": 5,
+  "jacobs": {
+   "section": "8.1; 8.2",
+   "pages": "298 to 304; 305 to 311",
+   "references": [
+    {
+     "section": "8.1",
+     "pages": [
+      298,
+      304
+     ]
+    },
+    {
+     "section": "8.2",
+     "pages": [
+      305,
+      311
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.TS.1"
@@ -637,7 +1115,20 @@ export const DECKS = [
   "title": "Compositions of Reflections",
   "tag": "GEOMETRY · UNIT 3 · LESSON 3.5",
   "sub": "Unit 3: Rigid Motions and Symmetry",
-  "slides": 5,
+  "jacobs": {
+   "section": "8.2",
+   "pages": "305 to 311",
+   "references": [
+    {
+     "section": "8.2",
+     "pages": [
+      305,
+      311
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.TS.1"
@@ -656,7 +1147,20 @@ export const DECKS = [
   "title": "Mapping One Figure onto Another",
   "tag": "GEOMETRY · UNIT 3 · LESSON 3.6",
   "sub": "Unit 3: Rigid Motions and Symmetry",
-  "slides": 5,
+  "jacobs": {
+   "section": "8.3",
+   "pages": "312 to 318",
+   "references": [
+    {
+     "section": "8.3",
+     "pages": [
+      312,
+      318
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.TS.1"
@@ -675,7 +1179,20 @@ export const DECKS = [
   "title": "Rigid Motions Preserve Distance and Angle",
   "tag": "GEOMETRY · UNIT 3 · LESSON 3.7",
   "sub": "Unit 3: Rigid Motions and Symmetry",
-  "slides": 4,
+  "jacobs": {
+   "section": "8.3",
+   "pages": "312 to 318",
+   "references": [
+    {
+     "section": "8.3",
+     "pages": [
+      312,
+      318
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.TS.1"
@@ -694,6 +1211,19 @@ export const DECKS = [
   "title": "Quiz and Reteach",
   "tag": "GEOMETRY · UNIT 3 · LESSON 3.8",
   "sub": "Unit 3: Rigid Motions and Symmetry",
+  "jacobs": {
+   "section": "8R",
+   "pages": "325 to 329",
+   "references": [
+    {
+     "section": "8R",
+     "pages": [
+      325,
+      329
+     ]
+    }
+   ]
+  },
   "slides": 6,
   "pages": [],
   "standards": [
@@ -713,7 +1243,20 @@ export const DECKS = [
   "title": "Line Symmetry",
   "tag": "GEOMETRY · UNIT 3 · LESSON 3.9",
   "sub": "Unit 3: Rigid Motions and Symmetry",
-  "slides": 4,
+  "jacobs": {
+   "section": "6.1",
+   "pages": "212 to 218",
+   "references": [
+    {
+     "section": "6.1",
+     "pages": [
+      212,
+      218
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.TS.1"
@@ -732,7 +1275,20 @@ export const DECKS = [
   "title": "Point and Rotational Symmetry",
   "tag": "GEOMETRY · UNIT 3 · LESSON 3.10",
   "sub": "Unit 3: Rigid Motions and Symmetry",
-  "slides": 4,
+  "jacobs": {
+   "section": "7.2",
+   "pages": "265 to 269",
+   "references": [
+    {
+     "section": "7.2",
+     "pages": [
+      265,
+      269
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.TS.1"
@@ -751,7 +1307,20 @@ export const DECKS = [
   "title": "Symmetry in Fractals and Tessellations",
   "tag": "GEOMETRY · UNIT 3 · LESSON 3.11",
   "sub": "Unit 3: Rigid Motions and Symmetry",
-  "slides": 5,
+  "jacobs": {
+   "section": "8.4",
+   "pages": "319 to 324",
+   "references": [
+    {
+     "section": "8.4",
+     "pages": [
+      319,
+      324
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.TS.1"
@@ -770,7 +1339,20 @@ export const DECKS = [
   "title": "Congruence Defined by Rigid Motions",
   "tag": "GEOMETRY · UNIT 3 · LESSON 3.12",
   "sub": "Unit 3: Rigid Motions and Symmetry",
-  "slides": 4,
+  "jacobs": {
+   "section": "8.3",
+   "pages": "312 to 318",
+   "references": [
+    {
+     "section": "8.3",
+     "pages": [
+      312,
+      318
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.TS.1"
@@ -789,6 +1371,19 @@ export const DECKS = [
   "title": "Review",
   "tag": "GEOMETRY · UNIT 3 · LESSON 3.13",
   "sub": "Unit 3: Rigid Motions and Symmetry",
+  "jacobs": {
+   "section": "8R",
+   "pages": "325 to 329",
+   "references": [
+    {
+     "section": "8R",
+     "pages": [
+      325,
+      329
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [
@@ -808,6 +1403,19 @@ export const DECKS = [
   "title": "Unit 3 Assessment",
   "tag": "GEOMETRY · UNIT 3 · LESSON 3.14",
   "sub": "Unit 3: Rigid Motions and Symmetry",
+  "jacobs": {
+   "section": "8R",
+   "pages": "325 to 329",
+   "references": [
+    {
+     "section": "8R",
+     "pages": [
+      325,
+      329
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [
@@ -827,7 +1435,20 @@ export const DECKS = [
   "title": "Corresponding Parts",
   "tag": "GEOMETRY · UNIT 4 · LESSON 4.1",
   "sub": "Unit 4: Triangle Congruence",
-  "slides": 4,
+  "jacobs": {
+   "section": "4.2",
+   "pages": "139 to 145",
+   "references": [
+    {
+     "section": "4.2",
+     "pages": [
+      139,
+      145
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -844,7 +1465,20 @@ export const DECKS = [
   "title": "How Little Information Is Enough?",
   "tag": "GEOMETRY · UNIT 4 · LESSON 4.2",
   "sub": "Unit 4: Triangle Congruence",
-  "slides": 5,
+  "jacobs": {
+   "section": "4.3",
+   "pages": "146 to 150",
+   "references": [
+    {
+     "section": "4.3",
+     "pages": [
+      146,
+      150
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [],
   "built": true,
@@ -861,7 +1495,20 @@ export const DECKS = [
   "title": "SAS from Rigid Motions",
   "tag": "GEOMETRY · UNIT 4 · LESSON 4.3",
   "sub": "Unit 4: Triangle Congruence",
-  "slides": 4,
+  "jacobs": {
+   "section": "4.3",
+   "pages": "146 to 150",
+   "references": [
+    {
+     "section": "4.3",
+     "pages": [
+      146,
+      150
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.2"
@@ -880,7 +1527,20 @@ export const DECKS = [
   "title": "ASA from Rigid Motions",
   "tag": "GEOMETRY · UNIT 4 · LESSON 4.4",
   "sub": "Unit 4: Triangle Congruence",
-  "slides": 4,
+  "jacobs": {
+   "section": "4.3",
+   "pages": "146 to 150",
+   "references": [
+    {
+     "section": "4.3",
+     "pages": [
+      146,
+      150
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.2"
@@ -899,7 +1559,20 @@ export const DECKS = [
   "title": "Congruence Proofs",
   "tag": "GEOMETRY · UNIT 4 · LESSON 4.5",
   "sub": "Unit 4: Triangle Congruence",
-  "slides": 4,
+  "jacobs": {
+   "section": "4.4",
+   "pages": "151 to 156",
+   "references": [
+    {
+     "section": "4.4",
+     "pages": [
+      151,
+      156
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.3"
@@ -918,7 +1591,20 @@ export const DECKS = [
   "title": "CPCTC",
   "tag": "GEOMETRY · UNIT 4 · LESSON 4.6",
   "sub": "Unit 4: Triangle Congruence",
-  "slides": 4,
+  "jacobs": {
+   "section": "4.4",
+   "pages": "151 to 156",
+   "references": [
+    {
+     "section": "4.4",
+     "pages": [
+      151,
+      156
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -935,7 +1621,20 @@ export const DECKS = [
   "title": "Isosceles Triangle Theorem",
   "tag": "GEOMETRY · UNIT 4 · LESSON 4.7",
   "sub": "Unit 4: Triangle Congruence",
-  "slides": 4,
+  "jacobs": {
+   "section": "4.5",
+   "pages": "157 to 162",
+   "references": [
+    {
+     "section": "4.5",
+     "pages": [
+      157,
+      162
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.1b"
@@ -954,7 +1653,20 @@ export const DECKS = [
   "title": "Converse and Equilateral Corollaries",
   "tag": "GEOMETRY · UNIT 4 · LESSON 4.8",
   "sub": "Unit 4: Triangle Congruence",
-  "slides": 4,
+  "jacobs": {
+   "section": "4.5",
+   "pages": "157 to 162",
+   "references": [
+    {
+     "section": "4.5",
+     "pages": [
+      157,
+      162
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.1b"
@@ -973,6 +1685,19 @@ export const DECKS = [
   "title": "Quiz and Reteach",
   "tag": "GEOMETRY · UNIT 4 · LESSON 4.9",
   "sub": "Unit 4: Triangle Congruence",
+  "jacobs": {
+   "section": "4R",
+   "pages": "176 to 180",
+   "references": [
+    {
+     "section": "4R",
+     "pages": [
+      176,
+      180
+     ]
+    }
+   ]
+  },
   "slides": 6,
   "pages": [],
   "standards": [],
@@ -990,7 +1715,20 @@ export const DECKS = [
   "title": "SSS Proved from SAS",
   "tag": "GEOMETRY · UNIT 4 · LESSON 4.10",
   "sub": "Unit 4: Triangle Congruence",
-  "slides": 4,
+  "jacobs": {
+   "section": "4.6",
+   "pages": "163 to 168",
+   "references": [
+    {
+     "section": "4.6",
+     "pages": [
+      163,
+      168
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.2"
@@ -1009,7 +1747,20 @@ export const DECKS = [
   "title": "Why SSA Fails",
   "tag": "GEOMETRY · UNIT 4 · LESSON 4.11",
   "sub": "Unit 4: Triangle Congruence",
-  "slides": 5,
+  "jacobs": {
+   "section": "4.6",
+   "pages": "163 to 168",
+   "references": [
+    {
+     "section": "4.6",
+     "pages": [
+      163,
+      168
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [],
   "built": true,
@@ -1026,7 +1777,20 @@ export const DECKS = [
   "title": "Constructing Congruent Triangles",
   "tag": "GEOMETRY · UNIT 4 · LESSON 4.12",
   "sub": "Unit 4: Triangle Congruence",
-  "slides": 5,
+  "jacobs": {
+   "section": "4.7",
+   "pages": "169 to 175",
+   "references": [
+    {
+     "section": "4.7",
+     "pages": [
+      169,
+      175
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.GF.6",
@@ -1046,7 +1810,20 @@ export const DECKS = [
   "title": "Justifying Earlier Constructions",
   "tag": "GEOMETRY · UNIT 4 · LESSON 4.13",
   "sub": "Unit 4: Triangle Congruence",
-  "slides": 4,
+  "jacobs": {
+   "section": "4.7",
+   "pages": "169 to 175",
+   "references": [
+    {
+     "section": "4.7",
+     "pages": [
+      169,
+      175
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -1063,7 +1840,20 @@ export const DECKS = [
   "title": "Mixed Proof Practice",
   "tag": "GEOMETRY · UNIT 4 · LESSON 4.14",
   "sub": "Unit 4: Triangle Congruence",
-  "slides": 4,
+  "jacobs": {
+   "section": "4R",
+   "pages": "176 to 180",
+   "references": [
+    {
+     "section": "4R",
+     "pages": [
+      176,
+      180
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -1080,6 +1870,19 @@ export const DECKS = [
   "title": "Review",
   "tag": "GEOMETRY · UNIT 4 · LESSON 4.15",
   "sub": "Unit 4: Triangle Congruence",
+  "jacobs": {
+   "section": "4R",
+   "pages": "176 to 180",
+   "references": [
+    {
+     "section": "4R",
+     "pages": [
+      176,
+      180
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [],
@@ -1097,6 +1900,19 @@ export const DECKS = [
   "title": "Unit 4 Assessment",
   "tag": "GEOMETRY · UNIT 4 · LESSON 4.16",
   "sub": "Unit 4: Triangle Congruence",
+  "jacobs": {
+   "section": "4R",
+   "pages": "176 to 180",
+   "references": [
+    {
+     "section": "4R",
+     "pages": [
+      176,
+      180
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [
@@ -1120,7 +1936,20 @@ export const DECKS = [
   "title": "Properties of Inequality",
   "tag": "GEOMETRY · UNIT 5 · LESSON 5.1",
   "sub": "Unit 5: Inequalities and Parallel Lines",
-  "slides": 4,
+  "jacobs": {
+   "section": "5.1",
+   "pages": "184 to 189",
+   "references": [
+    {
+     "section": "5.1",
+     "pages": [
+      184,
+      189
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -1137,7 +1966,20 @@ export const DECKS = [
   "title": "Exterior Angle Inequality",
   "tag": "GEOMETRY · UNIT 5 · LESSON 5.2",
   "sub": "Unit 5: Inequalities and Parallel Lines",
-  "slides": 5,
+  "jacobs": {
+   "section": "5.2",
+   "pages": "190 to 194",
+   "references": [
+    {
+     "section": "5.2",
+     "pages": [
+      190,
+      194
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [],
   "built": true,
@@ -1154,7 +1996,20 @@ export const DECKS = [
   "title": "Side and Angle Inequalities",
   "tag": "GEOMETRY · UNIT 5 · LESSON 5.3",
   "sub": "Unit 5: Inequalities and Parallel Lines",
-  "slides": 4,
+  "jacobs": {
+   "section": "5.3",
+   "pages": "195 to 199",
+   "references": [
+    {
+     "section": "5.3",
+     "pages": [
+      195,
+      199
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.1h"
@@ -1173,7 +2028,20 @@ export const DECKS = [
   "title": "Triangle Inequality",
   "tag": "GEOMETRY · UNIT 5 · LESSON 5.4",
   "sub": "Unit 5: Inequalities and Parallel Lines",
-  "slides": 5,
+  "jacobs": {
+   "section": "5.4",
+   "pages": "200 to 205",
+   "references": [
+    {
+     "section": "5.4",
+     "pages": [
+      200,
+      205
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.T.1g"
@@ -1192,7 +2060,12 @@ export const DECKS = [
   "title": "Hinge Theorem and Converse",
   "tag": "GEOMETRY · UNIT 5 · LESSON 5.5",
   "sub": "Unit 5: Inequalities and Parallel Lines",
-  "slides": 4,
+  "jacobs": {
+   "section": "Supplement",
+   "pages": "No direct Jacobs section",
+   "references": []
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.1i"
@@ -1211,7 +2084,20 @@ export const DECKS = [
   "title": "Proving Lines Parallel",
   "tag": "GEOMETRY · UNIT 5 · LESSON 5.6",
   "sub": "Unit 5: Inequalities and Parallel Lines",
-  "slides": 4,
+  "jacobs": {
+   "section": "6.2",
+   "pages": "219 to 224",
+   "references": [
+    {
+     "section": "6.2",
+     "pages": [
+      219,
+      224
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.4"
@@ -1230,6 +2116,26 @@ export const DECKS = [
   "title": "Quiz and Reteach",
   "tag": "GEOMETRY · UNIT 5 · LESSON 5.7",
   "sub": "Unit 5: Inequalities and Parallel Lines",
+  "jacobs": {
+   "section": "5R; 6R",
+   "pages": "206 to 209; 249 to 254",
+   "references": [
+    {
+     "section": "5R",
+     "pages": [
+      206,
+      209
+     ]
+    },
+    {
+     "section": "6R",
+     "pages": [
+      249,
+      254
+     ]
+    }
+   ]
+  },
   "slides": 5,
   "pages": [],
   "standards": [],
@@ -1247,7 +2153,20 @@ export const DECKS = [
   "title": "The Parallel Postulate",
   "tag": "GEOMETRY · UNIT 5 · LESSON 5.8",
   "sub": "Unit 5: Inequalities and Parallel Lines",
-  "slides": 4,
+  "jacobs": {
+   "section": "6.3",
+   "pages": "225 to 229",
+   "references": [
+    {
+     "section": "6.3",
+     "pages": [
+      225,
+      229
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -1264,7 +2183,20 @@ export const DECKS = [
   "title": "Parallel Lines and Angles",
   "tag": "GEOMETRY · UNIT 5 · LESSON 5.9",
   "sub": "Unit 5: Inequalities and Parallel Lines",
-  "slides": 5,
+  "jacobs": {
+   "section": "6.4",
+   "pages": "230 to 235",
+   "references": [
+    {
+     "section": "6.4",
+     "pages": [
+      230,
+      235
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.GF.4"
@@ -1283,7 +2215,20 @@ export const DECKS = [
   "title": "Angle Sum of a Triangle",
   "tag": "GEOMETRY · UNIT 5 · LESSON 5.10",
   "sub": "Unit 5: Inequalities and Parallel Lines",
-  "slides": 4,
+  "jacobs": {
+   "section": "6.5",
+   "pages": "236 to 241",
+   "references": [
+    {
+     "section": "6.5",
+     "pages": [
+      236,
+      241
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.1a"
@@ -1302,7 +2247,20 @@ export const DECKS = [
   "title": "Exterior Angle Theorem (Equality)",
   "tag": "GEOMETRY · UNIT 5 · LESSON 5.11",
   "sub": "Unit 5: Inequalities and Parallel Lines",
-  "slides": 4,
+  "jacobs": {
+   "section": "6.5",
+   "pages": "236 to 241",
+   "references": [
+    {
+     "section": "6.5",
+     "pages": [
+      236,
+      241
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -1319,7 +2277,20 @@ export const DECKS = [
   "title": "AAS and HL",
   "tag": "GEOMETRY · UNIT 5 · LESSON 5.12",
   "sub": "Unit 5: Inequalities and Parallel Lines",
-  "slides": 4,
+  "jacobs": {
+   "section": "6.6",
+   "pages": "242 to 248",
+   "references": [
+    {
+     "section": "6.6",
+     "pages": [
+      242,
+      248
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.2"
@@ -1338,7 +2309,20 @@ export const DECKS = [
   "title": "Slopes of Parallel and Perpendicular Lines",
   "tag": "GEOMETRY · UNIT 5 · LESSON 5.13",
   "sub": "Unit 5: Inequalities and Parallel Lines",
-  "slides": 5,
+  "jacobs": {
+   "section": "11.6",
+   "pages": "461 to 467",
+   "references": [
+    {
+     "section": "11.6",
+     "pages": [
+      461,
+      467
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.GF.5"
@@ -1357,7 +2341,20 @@ export const DECKS = [
   "title": "Writing Equations of Parallel and Perpendicular Lines",
   "tag": "GEOMETRY · UNIT 5 · LESSON 5.14",
   "sub": "Unit 5: Inequalities and Parallel Lines",
-  "slides": 4,
+  "jacobs": {
+   "section": "11.6",
+   "pages": "461 to 467",
+   "references": [
+    {
+     "section": "11.6",
+     "pages": [
+      461,
+      467
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.5"
@@ -1376,7 +2373,20 @@ export const DECKS = [
   "title": "Proof Practice",
   "tag": "GEOMETRY · UNIT 5 · LESSON 5.15",
   "sub": "Unit 5: Inequalities and Parallel Lines",
-  "slides": 4,
+  "jacobs": {
+   "section": "6R",
+   "pages": "249 to 254",
+   "references": [
+    {
+     "section": "6R",
+     "pages": [
+      249,
+      254
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -1393,6 +2403,26 @@ export const DECKS = [
   "title": "Review",
   "tag": "GEOMETRY · UNIT 5 · LESSON 5.16",
   "sub": "Unit 5: Inequalities and Parallel Lines",
+  "jacobs": {
+   "section": "5R; 6R",
+   "pages": "206 to 209; 249 to 254",
+   "references": [
+    {
+     "section": "5R",
+     "pages": [
+      206,
+      209
+     ]
+    },
+    {
+     "section": "6R",
+     "pages": [
+      249,
+      254
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [],
@@ -1410,6 +2440,26 @@ export const DECKS = [
   "title": "Unit 5 Assessment",
   "tag": "GEOMETRY · UNIT 5 · LESSON 5.17",
   "sub": "Unit 5: Inequalities and Parallel Lines",
+  "jacobs": {
+   "section": "5R; 6R",
+   "pages": "206 to 209; 249 to 254",
+   "references": [
+    {
+     "section": "5R",
+     "pages": [
+      206,
+      209
+     ]
+    },
+    {
+     "section": "6R",
+     "pages": [
+      249,
+      254
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [
@@ -1435,7 +2485,20 @@ export const DECKS = [
   "title": "The Quadrilateral Family",
   "tag": "GEOMETRY · UNIT 6 · LESSON 6.1",
   "sub": "Unit 6: Quadrilaterals and Polygons",
-  "slides": 4,
+  "jacobs": {
+   "section": "7.1",
+   "pages": "258 to 264",
+   "references": [
+    {
+     "section": "7.1",
+     "pages": [
+      258,
+      264
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -1452,7 +2515,20 @@ export const DECKS = [
   "title": "Properties of Parallelograms",
   "tag": "GEOMETRY · UNIT 6 · LESSON 6.2",
   "sub": "Unit 6: Quadrilaterals and Polygons",
-  "slides": 5,
+  "jacobs": {
+   "section": "7.2",
+   "pages": "265 to 269",
+   "references": [
+    {
+     "section": "7.2",
+     "pages": [
+      265,
+      269
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.QP.1"
@@ -1471,7 +2547,20 @@ export const DECKS = [
   "title": "Diagonals and Point Symmetry",
   "tag": "GEOMETRY · UNIT 6 · LESSON 6.3",
   "sub": "Unit 6: Quadrilaterals and Polygons",
-  "slides": 4,
+  "jacobs": {
+   "section": "7.2",
+   "pages": "265 to 269",
+   "references": [
+    {
+     "section": "7.2",
+     "pages": [
+      265,
+      269
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.QP.1"
@@ -1490,7 +2579,20 @@ export const DECKS = [
   "title": "Proving a Quadrilateral Is a Parallelogram",
   "tag": "GEOMETRY · UNIT 6 · LESSON 6.4",
   "sub": "Unit 6: Quadrilaterals and Polygons",
-  "slides": 4,
+  "jacobs": {
+   "section": "7.3",
+   "pages": "270 to 275",
+   "references": [
+    {
+     "section": "7.3",
+     "pages": [
+      270,
+      275
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.QP.2"
@@ -1509,7 +2611,20 @@ export const DECKS = [
   "title": "Rectangles, Rhombuses, Squares",
   "tag": "GEOMETRY · UNIT 6 · LESSON 6.5",
   "sub": "Unit 6: Quadrilaterals and Polygons",
-  "slides": 4,
+  "jacobs": {
+   "section": "7.4",
+   "pages": "276 to 280",
+   "references": [
+    {
+     "section": "7.4",
+     "pages": [
+      276,
+      280
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.QP.2"
@@ -1528,7 +2643,20 @@ export const DECKS = [
   "title": "Trapezoids and Kites",
   "tag": "GEOMETRY · UNIT 6 · LESSON 6.6",
   "sub": "Unit 6: Quadrilaterals and Polygons",
-  "slides": 4,
+  "jacobs": {
+   "section": "7.5",
+   "pages": "281 to 285",
+   "references": [
+    {
+     "section": "7.5",
+     "pages": [
+      281,
+      285
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.QP.2"
@@ -1547,7 +2675,20 @@ export const DECKS = [
   "title": "Midsegment Theorem",
   "tag": "GEOMETRY · UNIT 6 · LESSON 6.7",
   "sub": "Unit 6: Quadrilaterals and Polygons",
-  "slides": 5,
+  "jacobs": {
+   "section": "7.6",
+   "pages": "286 to 291",
+   "references": [
+    {
+     "section": "7.6",
+     "pages": [
+      286,
+      291
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.T.1d",
@@ -1567,7 +2708,12 @@ export const DECKS = [
   "title": "Coordinate Proofs with Slope and Midpoint",
   "tag": "GEOMETRY · UNIT 6 · LESSON 6.8",
   "sub": "Unit 6: Quadrilaterals and Polygons",
-  "slides": 4,
+  "jacobs": {
+   "section": "Supplement",
+   "pages": "No direct Jacobs section",
+   "references": []
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.3",
@@ -1587,7 +2733,27 @@ export const DECKS = [
   "title": "Polygon Angle Sums",
   "tag": "GEOMETRY · UNIT 6 · LESSON 6.9",
   "sub": "Unit 6: Quadrilaterals and Polygons",
-  "slides": 5,
+  "jacobs": {
+   "section": "7.1; 14.1",
+   "pages": "258 to 264; 572 to 578",
+   "references": [
+    {
+     "section": "7.1",
+     "pages": [
+      258,
+      264
+     ]
+    },
+    {
+     "section": "14.1",
+     "pages": [
+      572,
+      578
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.QP.3"
@@ -1606,7 +2772,20 @@ export const DECKS = [
   "title": "Regular Polygons and Star Patterns",
   "tag": "GEOMETRY · UNIT 6 · LESSON 6.10",
   "sub": "Unit 6: Quadrilaterals and Polygons",
-  "slides": 5,
+  "jacobs": {
+   "section": "14.1",
+   "pages": "572 to 578",
+   "references": [
+    {
+     "section": "14.1",
+     "pages": [
+      572,
+      578
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.QP.3"
@@ -1625,6 +2804,19 @@ export const DECKS = [
   "title": "Review",
   "tag": "GEOMETRY · UNIT 6 · LESSON 6.11",
   "sub": "Unit 6: Quadrilaterals and Polygons",
+  "jacobs": {
+   "section": "7R",
+   "pages": "292 to 295",
+   "references": [
+    {
+     "section": "7R",
+     "pages": [
+      292,
+      295
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [],
@@ -1642,6 +2834,19 @@ export const DECKS = [
   "title": "Unit 6 Assessment",
   "tag": "GEOMETRY · UNIT 6 · LESSON 6.12",
   "sub": "Unit 6: Quadrilaterals and Polygons",
+  "jacobs": {
+   "section": "7R",
+   "pages": "292 to 295",
+   "references": [
+    {
+     "section": "7R",
+     "pages": [
+      292,
+      295
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [
@@ -1664,6 +2869,19 @@ export const DECKS = [
   "title": "Midterm Review 1",
   "tag": "GEOMETRY · UNIT 6 · LESSON 6.13",
   "sub": "Unit 6: Quadrilaterals and Polygons",
+  "jacobs": {
+   "section": "MR",
+   "pages": "330 to 336",
+   "references": [
+    {
+     "section": "MR",
+     "pages": [
+      330,
+      336
+     ]
+    }
+   ]
+  },
   "slides": 2,
   "pages": [],
   "standards": [],
@@ -1681,6 +2899,19 @@ export const DECKS = [
   "title": "Midterm Review 2",
   "tag": "GEOMETRY · UNIT 6 · LESSON 6.14",
   "sub": "Unit 6: Quadrilaterals and Polygons",
+  "jacobs": {
+   "section": "MR",
+   "pages": "330 to 336",
+   "references": [
+    {
+     "section": "MR",
+     "pages": [
+      330,
+      336
+     ]
+    }
+   ]
+  },
   "slides": 2,
   "pages": [],
   "standards": [],
@@ -1698,6 +2929,19 @@ export const DECKS = [
   "title": "Midterm Exam Part 1",
   "tag": "GEOMETRY · UNIT 6 · LESSON 6.15",
   "sub": "Unit 6: Quadrilaterals and Polygons",
+  "jacobs": {
+   "section": "MR",
+   "pages": "330 to 336",
+   "references": [
+    {
+     "section": "MR",
+     "pages": [
+      330,
+      336
+     ]
+    }
+   ]
+  },
   "slides": 2,
   "pages": [],
   "standards": [],
@@ -1715,6 +2959,19 @@ export const DECKS = [
   "title": "Midterm Exam Part 2",
   "tag": "GEOMETRY · UNIT 6 · LESSON 6.16",
   "sub": "Unit 6: Quadrilaterals and Polygons",
+  "jacobs": {
+   "section": "MR",
+   "pages": "330 to 336",
+   "references": [
+    {
+     "section": "MR",
+     "pages": [
+      330,
+      336
+     ]
+    }
+   ]
+  },
   "slides": 2,
   "pages": [],
   "standards": [],
@@ -1732,7 +2989,20 @@ export const DECKS = [
   "title": "What Is Area?",
   "tag": "GEOMETRY · UNIT 7 · LESSON 7.1",
   "sub": "Unit 7: Area, Pythagoras, and Coordinates",
-  "slides": 4,
+  "jacobs": {
+   "section": "9.1",
+   "pages": "338 to 343",
+   "references": [
+    {
+     "section": "9.1",
+     "pages": [
+      338,
+      343
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -1749,7 +3019,20 @@ export const DECKS = [
   "title": "Rectangles and Squares",
   "tag": "GEOMETRY · UNIT 7 · LESSON 7.2",
   "sub": "Unit 7: Area, Pythagoras, and Coordinates",
-  "slides": 4,
+  "jacobs": {
+   "section": "9.2",
+   "pages": "344 to 350",
+   "references": [
+    {
+     "section": "9.2",
+     "pages": [
+      344,
+      350
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.QP.4"
@@ -1768,7 +3051,20 @@ export const DECKS = [
   "title": "Triangles",
   "tag": "GEOMETRY · UNIT 7 · LESSON 7.3",
   "sub": "Unit 7: Area, Pythagoras, and Coordinates",
-  "slides": 5,
+  "jacobs": {
+   "section": "9.3",
+   "pages": "351 to 357",
+   "references": [
+    {
+     "section": "9.3",
+     "pages": [
+      351,
+      357
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.QP.4"
@@ -1787,7 +3083,20 @@ export const DECKS = [
   "title": "Parallelograms and Trapezoids",
   "tag": "GEOMETRY · UNIT 7 · LESSON 7.4",
   "sub": "Unit 7: Area, Pythagoras, and Coordinates",
-  "slides": 4,
+  "jacobs": {
+   "section": "9.4",
+   "pages": "358 to 364",
+   "references": [
+    {
+     "section": "9.4",
+     "pages": [
+      358,
+      364
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.QP.4"
@@ -1806,7 +3115,41 @@ export const DECKS = [
   "title": "Irregular and Composite Polygons",
   "tag": "GEOMETRY · UNIT 7 · LESSON 7.5",
   "sub": "Unit 7: Area, Pythagoras, and Coordinates",
-  "slides": 4,
+  "jacobs": {
+   "section": "9.1; 9.2; 9.3; 9.4",
+   "pages": "338 to 343; 344 to 350; 351 to 357; 358 to 364",
+   "references": [
+    {
+     "section": "9.1",
+     "pages": [
+      338,
+      343
+     ]
+    },
+    {
+     "section": "9.2",
+     "pages": [
+      344,
+      350
+     ]
+    },
+    {
+     "section": "9.3",
+     "pages": [
+      351,
+      357
+     ]
+    },
+    {
+     "section": "9.4",
+     "pages": [
+      358,
+      364
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.QP.4"
@@ -1825,7 +3168,20 @@ export const DECKS = [
   "title": "The Pythagorean Theorem by Area",
   "tag": "GEOMETRY · UNIT 7 · LESSON 7.6",
   "sub": "Unit 7: Area, Pythagoras, and Coordinates",
-  "slides": 5,
+  "jacobs": {
+   "section": "9.5",
+   "pages": "365 to 370",
+   "references": [
+    {
+     "section": "9.5",
+     "pages": [
+      365,
+      370
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.T.1c"
@@ -1844,7 +3200,20 @@ export const DECKS = [
   "title": "Converse and Pythagorean Fractals",
   "tag": "GEOMETRY · UNIT 7 · LESSON 7.7",
   "sub": "Unit 7: Area, Pythagoras, and Coordinates",
-  "slides": 5,
+  "jacobs": {
+   "section": "9.5",
+   "pages": "365 to 370",
+   "references": [
+    {
+     "section": "9.5",
+     "pages": [
+      365,
+      370
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [],
   "built": true,
@@ -1861,6 +3230,19 @@ export const DECKS = [
   "title": "Quiz and Reteach",
   "tag": "GEOMETRY · UNIT 7 · LESSON 7.8",
   "sub": "Unit 7: Area, Pythagoras, and Coordinates",
+  "jacobs": {
+   "section": "9R",
+   "pages": "371 to 375",
+   "references": [
+    {
+     "section": "9R",
+     "pages": [
+      371,
+      375
+     ]
+    }
+   ]
+  },
   "slides": 6,
   "pages": [],
   "standards": [],
@@ -1878,7 +3260,20 @@ export const DECKS = [
   "title": "Developing the Distance Formula",
   "tag": "GEOMETRY · UNIT 7 · LESSON 7.9",
   "sub": "Unit 7: Area, Pythagoras, and Coordinates",
-  "slides": 4,
+  "jacobs": {
+   "section": "4.1",
+   "pages": "132 to 138",
+   "references": [
+    {
+     "section": "4.1",
+     "pages": [
+      132,
+      138
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.7"
@@ -1897,7 +3292,20 @@ export const DECKS = [
   "title": "Perimeter and Area on the Coordinate Plane",
   "tag": "GEOMETRY · UNIT 7 · LESSON 7.10",
   "sub": "Unit 7: Area, Pythagoras, and Coordinates",
-  "slides": 4,
+  "jacobs": {
+   "section": "4.1",
+   "pages": "132 to 138",
+   "references": [
+    {
+     "section": "4.1",
+     "pages": [
+      132,
+      138
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.7"
@@ -1916,7 +3324,20 @@ export const DECKS = [
   "title": "Coordinate Proofs with Distance",
   "tag": "GEOMETRY · UNIT 7 · LESSON 7.11",
   "sub": "Unit 7: Area, Pythagoras, and Coordinates",
-  "slides": 4,
+  "jacobs": {
+   "section": "4.1",
+   "pages": "132 to 138",
+   "references": [
+    {
+     "section": "4.1",
+     "pages": [
+      132,
+      138
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.3",
@@ -1936,7 +3357,20 @@ export const DECKS = [
   "title": "Coordinate Proof Practice",
   "tag": "GEOMETRY · UNIT 7 · LESSON 7.12",
   "sub": "Unit 7: Area, Pythagoras, and Coordinates",
-  "slides": 4,
+  "jacobs": {
+   "section": "4.1",
+   "pages": "132 to 138",
+   "references": [
+    {
+     "section": "4.1",
+     "pages": [
+      132,
+      138
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.GF.3"
@@ -1955,6 +3389,19 @@ export const DECKS = [
   "title": "Review",
   "tag": "GEOMETRY · UNIT 7 · LESSON 7.13",
   "sub": "Unit 7: Area, Pythagoras, and Coordinates",
+  "jacobs": {
+   "section": "9R",
+   "pages": "371 to 375",
+   "references": [
+    {
+     "section": "9R",
+     "pages": [
+      371,
+      375
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [],
@@ -1972,6 +3419,19 @@ export const DECKS = [
   "title": "Unit 7 Assessment",
   "tag": "GEOMETRY · UNIT 7 · LESSON 7.14",
   "sub": "Unit 7: Area, Pythagoras, and Coordinates",
+  "jacobs": {
+   "section": "9R",
+   "pages": "371 to 375",
+   "references": [
+    {
+     "section": "9R",
+     "pages": [
+      371,
+      375
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [
@@ -1994,7 +3454,20 @@ export const DECKS = [
   "title": "Ratio and Proportion",
   "tag": "GEOMETRY · UNIT 8 · LESSON 8.1",
   "sub": "Unit 8: Similarity and Dilations",
-  "slides": 4,
+  "jacobs": {
+   "section": "10.1",
+   "pages": "378 to 384",
+   "references": [
+    {
+     "section": "10.1",
+     "pages": [
+      378,
+      384
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -2011,7 +3484,20 @@ export const DECKS = [
   "title": "Dilations",
   "tag": "GEOMETRY · UNIT 8 · LESSON 8.2",
   "sub": "Unit 8: Similarity and Dilations",
-  "slides": 5,
+  "jacobs": {
+   "section": "10.5",
+   "pages": "407 to 413",
+   "references": [
+    {
+     "section": "10.5",
+     "pages": [
+      407,
+      413
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.TS.2"
@@ -2030,7 +3516,20 @@ export const DECKS = [
   "title": "Properties of Dilations",
   "tag": "GEOMETRY · UNIT 8 · LESSON 8.3",
   "sub": "Unit 8: Similarity and Dilations",
-  "slides": 5,
+  "jacobs": {
+   "section": "10.5",
+   "pages": "407 to 413",
+   "references": [
+    {
+     "section": "10.5",
+     "pages": [
+      407,
+      413
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.TS.2"
@@ -2049,7 +3548,20 @@ export const DECKS = [
   "title": "Similarity Defined by Transformations",
   "tag": "GEOMETRY · UNIT 8 · LESSON 8.4",
   "sub": "Unit 8: Similarity and Dilations",
-  "slides": 4,
+  "jacobs": {
+   "section": "10.2",
+   "pages": "385 to 391",
+   "references": [
+    {
+     "section": "10.2",
+     "pages": [
+      385,
+      391
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.3"
@@ -2068,7 +3580,20 @@ export const DECKS = [
   "title": "Similar Polygons",
   "tag": "GEOMETRY · UNIT 8 · LESSON 8.5",
   "sub": "Unit 8: Similarity and Dilations",
-  "slides": 4,
+  "jacobs": {
+   "section": "10.2",
+   "pages": "385 to 391",
+   "references": [
+    {
+     "section": "10.2",
+     "pages": [
+      385,
+      391
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -2085,7 +3610,20 @@ export const DECKS = [
   "title": "The Side-Splitter Theorem",
   "tag": "GEOMETRY · UNIT 8 · LESSON 8.6",
   "sub": "Unit 8: Similarity and Dilations",
-  "slides": 5,
+  "jacobs": {
+   "section": "10.3",
+   "pages": "392 to 398",
+   "references": [
+    {
+     "section": "10.3",
+     "pages": [
+      392,
+      398
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.T.1e"
@@ -2104,7 +3642,20 @@ export const DECKS = [
   "title": "Partitioning a Segment",
   "tag": "GEOMETRY · UNIT 8 · LESSON 8.7",
   "sub": "Unit 8: Similarity and Dilations",
-  "slides": 4,
+  "jacobs": {
+   "section": "10.3",
+   "pages": "392 to 398",
+   "references": [
+    {
+     "section": "10.3",
+     "pages": [
+      392,
+      398
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -2121,6 +3672,19 @@ export const DECKS = [
   "title": "Quiz and Reteach",
   "tag": "GEOMETRY · UNIT 8 · LESSON 8.8",
   "sub": "Unit 8: Similarity and Dilations",
+  "jacobs": {
+   "section": "10R",
+   "pages": "420 to 424",
+   "references": [
+    {
+     "section": "10R",
+     "pages": [
+      420,
+      424
+     ]
+    }
+   ]
+  },
   "slides": 6,
   "pages": [],
   "standards": [],
@@ -2138,7 +3702,20 @@ export const DECKS = [
   "title": "AA Similarity",
   "tag": "GEOMETRY · UNIT 8 · LESSON 8.9",
   "sub": "Unit 8: Similarity and Dilations",
-  "slides": 4,
+  "jacobs": {
+   "section": "10.4",
+   "pages": "399 to 406",
+   "references": [
+    {
+     "section": "10.4",
+     "pages": [
+      399,
+      406
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.3"
@@ -2157,7 +3734,20 @@ export const DECKS = [
   "title": "SAS and SSS Similarity",
   "tag": "GEOMETRY · UNIT 8 · LESSON 8.10",
   "sub": "Unit 8: Similarity and Dilations",
-  "slides": 4,
+  "jacobs": {
+   "section": "10.5",
+   "pages": "407 to 413",
+   "references": [
+    {
+     "section": "10.5",
+     "pages": [
+      407,
+      413
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.3"
@@ -2176,7 +3766,12 @@ export const DECKS = [
   "title": "Angle Bisector Theorem",
   "tag": "GEOMETRY · UNIT 8 · LESSON 8.11",
   "sub": "Unit 8: Similarity and Dilations",
-  "slides": 4,
+  "jacobs": {
+   "section": "Supplement",
+   "pages": "No direct Jacobs section",
+   "references": []
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.1f"
@@ -2195,7 +3790,20 @@ export const DECKS = [
   "title": "Perimeters and Areas of Similar Figures",
   "tag": "GEOMETRY · UNIT 8 · LESSON 8.12",
   "sub": "Unit 8: Similarity and Dilations",
-  "slides": 4,
+  "jacobs": {
+   "section": "10.6",
+   "pages": "414 to 419",
+   "references": [
+    {
+     "section": "10.6",
+     "pages": [
+      414,
+      419
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -2212,7 +3820,20 @@ export const DECKS = [
   "title": "Self-Similarity and Fractals",
   "tag": "GEOMETRY · UNIT 8 · LESSON 8.13",
   "sub": "Unit 8: Similarity and Dilations",
-  "slides": 5,
+  "jacobs": {
+   "section": "10.6",
+   "pages": "414 to 419",
+   "references": [
+    {
+     "section": "10.6",
+     "pages": [
+      414,
+      419
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [],
   "built": true,
@@ -2229,7 +3850,20 @@ export const DECKS = [
   "title": "Indirect Measurement Lab",
   "tag": "GEOMETRY · UNIT 8 · LESSON 8.14",
   "sub": "Unit 8: Similarity and Dilations",
-  "slides": 4,
+  "jacobs": {
+   "section": "10.4",
+   "pages": "399 to 406",
+   "references": [
+    {
+     "section": "10.4",
+     "pages": [
+      399,
+      406
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.4"
@@ -2248,6 +3882,19 @@ export const DECKS = [
   "title": "Review",
   "tag": "GEOMETRY · UNIT 8 · LESSON 8.15",
   "sub": "Unit 8: Similarity and Dilations",
+  "jacobs": {
+   "section": "10R",
+   "pages": "420 to 424",
+   "references": [
+    {
+     "section": "10R",
+     "pages": [
+      420,
+      424
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [],
@@ -2265,6 +3912,19 @@ export const DECKS = [
   "title": "Unit 8 Assessment",
   "tag": "GEOMETRY · UNIT 8 · LESSON 8.16",
   "sub": "Unit 8: Similarity and Dilations",
+  "jacobs": {
+   "section": "10R",
+   "pages": "420 to 424",
+   "references": [
+    {
+     "section": "10R",
+     "pages": [
+      420,
+      424
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [
@@ -2288,7 +3948,20 @@ export const DECKS = [
   "title": "Proportions in a Right Triangle",
   "tag": "GEOMETRY · UNIT 9 · LESSON 9.1",
   "sub": "Unit 9: Right Triangles and Trigonometry",
-  "slides": 4,
+  "jacobs": {
+   "section": "11.1",
+   "pages": "428 to 433",
+   "references": [
+    {
+     "section": "11.1",
+     "pages": [
+      428,
+      433
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -2305,7 +3978,20 @@ export const DECKS = [
   "title": "Pythagorean Theorem by Similarity",
   "tag": "GEOMETRY · UNIT 9 · LESSON 9.2",
   "sub": "Unit 9: Right Triangles and Trigonometry",
-  "slides": 4,
+  "jacobs": {
+   "section": "11.2",
+   "pages": "434 to 440",
+   "references": [
+    {
+     "section": "11.2",
+     "pages": [
+      434,
+      440
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.1c"
@@ -2324,7 +4010,20 @@ export const DECKS = [
   "title": "45-45-90 Triangles",
   "tag": "GEOMETRY · UNIT 9 · LESSON 9.3",
   "sub": "Unit 9: Right Triangles and Trigonometry",
-  "slides": 4,
+  "jacobs": {
+   "section": "11.3",
+   "pages": "441 to 447",
+   "references": [
+    {
+     "section": "11.3",
+     "pages": [
+      441,
+      447
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.7"
@@ -2343,7 +4042,20 @@ export const DECKS = [
   "title": "30-60-90 Triangles",
   "tag": "GEOMETRY · UNIT 9 · LESSON 9.4",
   "sub": "Unit 9: Right Triangles and Trigonometry",
-  "slides": 4,
+  "jacobs": {
+   "section": "11.3",
+   "pages": "441 to 447",
+   "references": [
+    {
+     "section": "11.3",
+     "pages": [
+      441,
+      447
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.7"
@@ -2362,7 +4074,20 @@ export const DECKS = [
   "title": "Ratios Belong to Angles",
   "tag": "GEOMETRY · UNIT 9 · LESSON 9.5",
   "sub": "Unit 9: Right Triangles and Trigonometry",
-  "slides": 5,
+  "jacobs": {
+   "section": "11.4",
+   "pages": "448 to 453",
+   "references": [
+    {
+     "section": "11.4",
+     "pages": [
+      448,
+      453
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.T.5"
@@ -2381,7 +4106,20 @@ export const DECKS = [
   "title": "The Tangent Ratio",
   "tag": "GEOMETRY · UNIT 9 · LESSON 9.6",
   "sub": "Unit 9: Right Triangles and Trigonometry",
-  "slides": 4,
+  "jacobs": {
+   "section": "11.4",
+   "pages": "448 to 453",
+   "references": [
+    {
+     "section": "11.4",
+     "pages": [
+      448,
+      453
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.6"
@@ -2400,7 +4138,20 @@ export const DECKS = [
   "title": "Sine and Cosine",
   "tag": "GEOMETRY · UNIT 9 · LESSON 9.7",
   "sub": "Unit 9: Right Triangles and Trigonometry",
-  "slides": 4,
+  "jacobs": {
+   "section": "11.5",
+   "pages": "454 to 460",
+   "references": [
+    {
+     "section": "11.5",
+     "pages": [
+      454,
+      460
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.6"
@@ -2419,6 +4170,19 @@ export const DECKS = [
   "title": "Quiz and Reteach",
   "tag": "GEOMETRY · UNIT 9 · LESSON 9.8",
   "sub": "Unit 9: Right Triangles and Trigonometry",
+  "jacobs": {
+   "section": "11R",
+   "pages": "475 to 482",
+   "references": [
+    {
+     "section": "11R",
+     "pages": [
+      475,
+      482
+     ]
+    }
+   ]
+  },
   "slides": 6,
   "pages": [],
   "standards": [
@@ -2438,7 +4202,27 @@ export const DECKS = [
   "title": "Inverse Trig",
   "tag": "GEOMETRY · UNIT 9 · LESSON 9.9",
   "sub": "Unit 9: Right Triangles and Trigonometry",
-  "slides": 4,
+  "jacobs": {
+   "section": "11.4; 11.5",
+   "pages": "448 to 453; 454 to 460",
+   "references": [
+    {
+     "section": "11.4",
+     "pages": [
+      448,
+      453
+     ]
+    },
+    {
+     "section": "11.5",
+     "pages": [
+      454,
+      460
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.6"
@@ -2457,7 +4241,20 @@ export const DECKS = [
   "title": "Trig and Slope",
   "tag": "GEOMETRY · UNIT 9 · LESSON 9.10",
   "sub": "Unit 9: Right Triangles and Trigonometry",
-  "slides": 4,
+  "jacobs": {
+   "section": "11.6",
+   "pages": "461 to 467",
+   "references": [
+    {
+     "section": "11.6",
+     "pages": [
+      461,
+      467
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.6"
@@ -2476,7 +4273,27 @@ export const DECKS = [
   "title": "Angles of Elevation and Depression",
   "tag": "GEOMETRY · UNIT 9 · LESSON 9.11",
   "sub": "Unit 9: Right Triangles and Trigonometry",
-  "slides": 4,
+  "jacobs": {
+   "section": "11.4; 11.5",
+   "pages": "448 to 453; 454 to 460",
+   "references": [
+    {
+     "section": "11.4",
+     "pages": [
+      448,
+      453
+     ]
+    },
+    {
+     "section": "11.5",
+     "pages": [
+      454,
+      460
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.6"
@@ -2495,7 +4312,20 @@ export const DECKS = [
   "title": "Mixed Applications",
   "tag": "GEOMETRY · UNIT 9 · LESSON 9.12",
   "sub": "Unit 9: Right Triangles and Trigonometry",
-  "slides": 4,
+  "jacobs": {
+   "section": "11R",
+   "pages": "475 to 482",
+   "references": [
+    {
+     "section": "11R",
+     "pages": [
+      475,
+      482
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.T.6"
@@ -2514,7 +4344,20 @@ export const DECKS = [
   "title": "Laws of Sines and Cosines (Enrichment)",
   "tag": "GEOMETRY · UNIT 9 · LESSON 9.13",
   "sub": "Unit 9: Right Triangles and Trigonometry",
-  "slides": 4,
+  "jacobs": {
+   "section": "11.7",
+   "pages": "468 to 474",
+   "references": [
+    {
+     "section": "11.7",
+     "pages": [
+      468,
+      474
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -2531,6 +4374,19 @@ export const DECKS = [
   "title": "Review",
   "tag": "GEOMETRY · UNIT 9 · LESSON 9.14",
   "sub": "Unit 9: Right Triangles and Trigonometry",
+  "jacobs": {
+   "section": "11R",
+   "pages": "475 to 482",
+   "references": [
+    {
+     "section": "11R",
+     "pages": [
+      475,
+      482
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [],
@@ -2548,6 +4404,19 @@ export const DECKS = [
   "title": "Unit 9 Assessment",
   "tag": "GEOMETRY · UNIT 9 · LESSON 9.15",
   "sub": "Unit 9: Right Triangles and Trigonometry",
+  "jacobs": {
+   "section": "11R",
+   "pages": "475 to 482",
+   "references": [
+    {
+     "section": "11R",
+     "pages": [
+      475,
+      482
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [
@@ -2569,7 +4438,20 @@ export const DECKS = [
   "title": "Circle Vocabulary",
   "tag": "GEOMETRY · UNIT 10 · LESSON 10.1",
   "sub": "Unit 10: Circles and Concurrence",
-  "slides": 4,
+  "jacobs": {
+   "section": "12.1",
+   "pages": "484 to 490",
+   "references": [
+    {
+     "section": "12.1",
+     "pages": [
+      484,
+      490
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.CI.1"
@@ -2588,7 +4470,20 @@ export const DECKS = [
   "title": "Radii and Chords",
   "tag": "GEOMETRY · UNIT 10 · LESSON 10.2",
   "sub": "Unit 10: Circles and Concurrence",
-  "slides": 5,
+  "jacobs": {
+   "section": "12.1",
+   "pages": "484 to 490",
+   "references": [
+    {
+     "section": "12.1",
+     "pages": [
+      484,
+      490
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.CI.2"
@@ -2607,7 +4502,20 @@ export const DECKS = [
   "title": "Tangents",
   "tag": "GEOMETRY · UNIT 10 · LESSON 10.3",
   "sub": "Unit 10: Circles and Concurrence",
-  "slides": 4,
+  "jacobs": {
+   "section": "12.2",
+   "pages": "491 to 496",
+   "references": [
+    {
+     "section": "12.2",
+     "pages": [
+      491,
+      496
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.CI.2"
@@ -2626,7 +4534,20 @@ export const DECKS = [
   "title": "Central Angles and Arcs",
   "tag": "GEOMETRY · UNIT 10 · LESSON 10.4",
   "sub": "Unit 10: Circles and Concurrence",
-  "slides": 4,
+  "jacobs": {
+   "section": "12.3",
+   "pages": "497 to 503",
+   "references": [
+    {
+     "section": "12.3",
+     "pages": [
+      497,
+      503
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.CI.2"
@@ -2645,7 +4566,20 @@ export const DECKS = [
   "title": "Inscribed Angles",
   "tag": "GEOMETRY · UNIT 10 · LESSON 10.5",
   "sub": "Unit 10: Circles and Concurrence",
-  "slides": 5,
+  "jacobs": {
+   "section": "12.4",
+   "pages": "504 to 509",
+   "references": [
+    {
+     "section": "12.4",
+     "pages": [
+      504,
+      509
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.CI.2"
@@ -2664,7 +4598,27 @@ export const DECKS = [
   "title": "Angles on a Diameter and Cyclic Quadrilaterals",
   "tag": "GEOMETRY · UNIT 10 · LESSON 10.6",
   "sub": "Unit 10: Circles and Concurrence",
-  "slides": 4,
+  "jacobs": {
+   "section": "12.4; 13.2",
+   "pages": "504 to 509; 536 to 541",
+   "references": [
+    {
+     "section": "12.4",
+     "pages": [
+      504,
+      509
+     ]
+    },
+    {
+     "section": "13.2",
+     "pages": [
+      536,
+      541
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.CI.2"
@@ -2683,7 +4637,20 @@ export const DECKS = [
   "title": "Circumscribed Angles",
   "tag": "GEOMETRY · UNIT 10 · LESSON 10.7",
   "sub": "Unit 10: Circles and Concurrence",
-  "slides": 4,
+  "jacobs": {
+   "section": "12.5",
+   "pages": "510 to 515",
+   "references": [
+    {
+     "section": "12.5",
+     "pages": [
+      510,
+      515
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.CI.2"
@@ -2702,6 +4669,26 @@ export const DECKS = [
   "title": "Quiz and Reteach",
   "tag": "GEOMETRY · UNIT 10 · LESSON 10.8",
   "sub": "Unit 10: Circles and Concurrence",
+  "jacobs": {
+   "section": "12R; 13R",
+   "pages": "522 to 526; 566 to 570",
+   "references": [
+    {
+     "section": "12R",
+     "pages": [
+      522,
+      526
+     ]
+    },
+    {
+     "section": "13R",
+     "pages": [
+      566,
+      570
+     ]
+    }
+   ]
+  },
   "slides": 6,
   "pages": [],
   "standards": [],
@@ -2719,7 +4706,20 @@ export const DECKS = [
   "title": "Secant and Tangent Angles",
   "tag": "GEOMETRY · UNIT 10 · LESSON 10.9",
   "sub": "Unit 10: Circles and Concurrence",
-  "slides": 5,
+  "jacobs": {
+   "section": "12.5",
+   "pages": "510 to 515",
+   "references": [
+    {
+     "section": "12.5",
+     "pages": [
+      510,
+      515
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.CI.3"
@@ -2738,7 +4738,20 @@ export const DECKS = [
   "title": "Segment Lengths in Circles",
   "tag": "GEOMETRY · UNIT 10 · LESSON 10.10",
   "sub": "Unit 10: Circles and Concurrence",
-  "slides": 4,
+  "jacobs": {
+   "section": "12.6",
+   "pages": "516 to 521",
+   "references": [
+    {
+     "section": "12.6",
+     "pages": [
+      516,
+      521
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.CI.3"
@@ -2757,7 +4770,20 @@ export const DECKS = [
   "title": "Circumcenter",
   "tag": "GEOMETRY · UNIT 10 · LESSON 10.11",
   "sub": "Unit 10: Circles and Concurrence",
-  "slides": 5,
+  "jacobs": {
+   "section": "13.1",
+   "pages": "530 to 535",
+   "references": [
+    {
+     "section": "13.1",
+     "pages": [
+      530,
+      535
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.GF.6"
@@ -2776,7 +4802,20 @@ export const DECKS = [
   "title": "Incenter",
   "tag": "GEOMETRY · UNIT 10 · LESSON 10.12",
   "sub": "Unit 10: Circles and Concurrence",
-  "slides": 5,
+  "jacobs": {
+   "section": "13.3",
+   "pages": "542 to 547",
+   "references": [
+    {
+     "section": "13.3",
+     "pages": [
+      542,
+      547
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.GF.6"
@@ -2795,7 +4834,20 @@ export const DECKS = [
   "title": "Centroid and Orthocenter",
   "tag": "GEOMETRY · UNIT 10 · LESSON 10.13",
   "sub": "Unit 10: Circles and Concurrence",
-  "slides": 5,
+  "jacobs": {
+   "section": "13.4",
+   "pages": "548 to 553",
+   "references": [
+    {
+     "section": "13.4",
+     "pages": [
+      548,
+      553
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.GF.6"
@@ -2814,7 +4866,27 @@ export const DECKS = [
   "title": "Napoleon's Theorem and Surprises (Enrichment)",
   "tag": "GEOMETRY · UNIT 10 · LESSON 10.14",
   "sub": "Unit 10: Circles and Concurrence",
-  "slides": 5,
+  "jacobs": {
+   "section": "13.6; 13.5",
+   "pages": "561 to 565; 554 to 560",
+   "references": [
+    {
+     "section": "13.6",
+     "pages": [
+      561,
+      565
+     ]
+    },
+    {
+     "section": "13.5",
+     "pages": [
+      554,
+      560
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [],
   "built": true,
@@ -2831,6 +4903,26 @@ export const DECKS = [
   "title": "Review",
   "tag": "GEOMETRY · UNIT 10 · LESSON 10.15",
   "sub": "Unit 10: Circles and Concurrence",
+  "jacobs": {
+   "section": "12R; 13R",
+   "pages": "522 to 526; 566 to 570",
+   "references": [
+    {
+     "section": "12R",
+     "pages": [
+      522,
+      526
+     ]
+    },
+    {
+     "section": "13R",
+     "pages": [
+      566,
+      570
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [],
@@ -2848,6 +4940,26 @@ export const DECKS = [
   "title": "Unit 10 Assessment",
   "tag": "GEOMETRY · UNIT 10 · LESSON 10.16",
   "sub": "Unit 10: Circles and Concurrence",
+  "jacobs": {
+   "section": "12R; 13R",
+   "pages": "522 to 526; 566 to 570",
+   "references": [
+    {
+     "section": "12R",
+     "pages": [
+      522,
+      526
+     ]
+    },
+    {
+     "section": "13R",
+     "pages": [
+      566,
+      570
+     ]
+    }
+   ]
+  },
   "slides": 7,
   "pages": [],
   "standards": [
@@ -2870,7 +4982,20 @@ export const DECKS = [
   "title": "Perimeter of a Regular Polygon",
   "tag": "GEOMETRY · UNIT 11 · LESSON 11.1",
   "sub": "Unit 11: Regular Polygons and Circle Measure",
-  "slides": 4,
+  "jacobs": {
+   "section": "14.2",
+   "pages": "579 to 584",
+   "references": [
+    {
+     "section": "14.2",
+     "pages": [
+      579,
+      584
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.QP.4"
@@ -2889,7 +5014,20 @@ export const DECKS = [
   "title": "Area of a Regular Polygon",
   "tag": "GEOMETRY · UNIT 11 · LESSON 11.2",
   "sub": "Unit 11: Regular Polygons and Circle Measure",
-  "slides": 4,
+  "jacobs": {
+   "section": "14.3",
+   "pages": "585 to 590",
+   "references": [
+    {
+     "section": "14.3",
+     "pages": [
+      585,
+      590
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.QP.4"
@@ -2908,7 +5046,20 @@ export const DECKS = [
   "title": "From Polygons to Pi",
   "tag": "GEOMETRY · UNIT 11 · LESSON 11.3",
   "sub": "Unit 11: Regular Polygons and Circle Measure",
-  "slides": 5,
+  "jacobs": {
+   "section": "14.4",
+   "pages": "591 to 597",
+   "references": [
+    {
+     "section": "14.4",
+     "pages": [
+      591,
+      597
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [],
   "built": true,
@@ -2925,7 +5076,20 @@ export const DECKS = [
   "title": "Circumference",
   "tag": "GEOMETRY · UNIT 11 · LESSON 11.4",
   "sub": "Unit 11: Regular Polygons and Circle Measure",
-  "slides": 4,
+  "jacobs": {
+   "section": "14.4",
+   "pages": "591 to 597",
+   "references": [
+    {
+     "section": "14.4",
+     "pages": [
+      591,
+      597
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.CI.3"
@@ -2944,7 +5108,20 @@ export const DECKS = [
   "title": "Area of a Circle",
   "tag": "GEOMETRY · UNIT 11 · LESSON 11.5",
   "sub": "Unit 11: Regular Polygons and Circle Measure",
-  "slides": 5,
+  "jacobs": {
+   "section": "14.5",
+   "pages": "598 to 604",
+   "references": [
+    {
+     "section": "14.5",
+     "pages": [
+      598,
+      604
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.CI.3"
@@ -2963,7 +5140,20 @@ export const DECKS = [
   "title": "Arc Length",
   "tag": "GEOMETRY · UNIT 11 · LESSON 11.6",
   "sub": "Unit 11: Regular Polygons and Circle Measure",
-  "slides": 4,
+  "jacobs": {
+   "section": "14.6",
+   "pages": "605 to 611",
+   "references": [
+    {
+     "section": "14.6",
+     "pages": [
+      605,
+      611
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.CI.3"
@@ -2982,7 +5172,20 @@ export const DECKS = [
   "title": "Sectors and Segments",
   "tag": "GEOMETRY · UNIT 11 · LESSON 11.7",
   "sub": "Unit 11: Regular Polygons and Circle Measure",
-  "slides": 4,
+  "jacobs": {
+   "section": "14.6",
+   "pages": "605 to 611",
+   "references": [
+    {
+     "section": "14.6",
+     "pages": [
+      605,
+      611
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.CI.3"
@@ -3001,7 +5204,20 @@ export const DECKS = [
   "title": "Radians (Enrichment)",
   "tag": "GEOMETRY · UNIT 11 · LESSON 11.8",
   "sub": "Unit 11: Regular Polygons and Circle Measure",
-  "slides": 4,
+  "jacobs": {
+   "section": "14.6",
+   "pages": "605 to 611",
+   "references": [
+    {
+     "section": "14.6",
+     "pages": [
+      605,
+      611
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -3018,6 +5234,19 @@ export const DECKS = [
   "title": "Review",
   "tag": "GEOMETRY · UNIT 11 · LESSON 11.9",
   "sub": "Unit 11: Regular Polygons and Circle Measure",
+  "jacobs": {
+   "section": "14R",
+   "pages": "612 to 616",
+   "references": [
+    {
+     "section": "14R",
+     "pages": [
+      612,
+      616
+     ]
+    }
+   ]
+  },
   "slides": 6,
   "pages": [],
   "standards": [],
@@ -3035,6 +5264,19 @@ export const DECKS = [
   "title": "Unit 11 Assessment",
   "tag": "GEOMETRY · UNIT 11 · LESSON 11.10",
   "sub": "Unit 11: Regular Polygons and Circle Measure",
+  "jacobs": {
+   "section": "14R",
+   "pages": "612 to 616",
+   "references": [
+    {
+     "section": "14R",
+     "pages": [
+      612,
+      616
+     ]
+    }
+   ]
+  },
   "slides": 6,
   "pages": [],
   "standards": [
@@ -3055,7 +5297,20 @@ export const DECKS = [
   "title": "Lines and Planes in Space",
   "tag": "GEOMETRY · UNIT 12 · LESSON 12.1",
   "sub": "Unit 12: Solids and Design",
-  "slides": 4,
+  "jacobs": {
+   "section": "15.1",
+   "pages": "618 to 625",
+   "references": [
+    {
+     "section": "15.1",
+     "pages": [
+      618,
+      625
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -3072,7 +5327,34 @@ export const DECKS = [
   "title": "Solids, Nets, and Cross Sections",
   "tag": "GEOMETRY · UNIT 12 · LESSON 12.2",
   "sub": "Unit 12: Solids and Design",
-  "slides": 5,
+  "jacobs": {
+   "section": "15.SG; 15.2; 15.3",
+   "pages": "626 to 627; 628 to 633; 634 to 639",
+   "references": [
+    {
+     "section": "15.SG",
+     "pages": [
+      626,
+      627
+     ]
+    },
+    {
+     "section": "15.2",
+     "pages": [
+      628,
+      633
+     ]
+    },
+    {
+     "section": "15.3",
+     "pages": [
+      634,
+      639
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.TS.3"
@@ -3091,7 +5373,20 @@ export const DECKS = [
   "title": "Cavalieri's Principle",
   "tag": "GEOMETRY · UNIT 12 · LESSON 12.3",
   "sub": "Unit 12: Solids and Design",
-  "slides": 5,
+  "jacobs": {
+   "section": "15.4",
+   "pages": "640 to 646",
+   "references": [
+    {
+     "section": "15.4",
+     "pages": [
+      640,
+      646
+     ]
+    }
+   ]
+  },
+  "slides": 7,
   "pages": [],
   "standards": [
    "G.TS.4"
@@ -3110,7 +5405,27 @@ export const DECKS = [
   "title": "Volume of Prisms and Cylinders",
   "tag": "GEOMETRY · UNIT 12 · LESSON 12.4",
   "sub": "Unit 12: Solids and Design",
-  "slides": 4,
+  "jacobs": {
+   "section": "15.4; 15.6",
+   "pages": "640 to 646; 654 to 661",
+   "references": [
+    {
+     "section": "15.4",
+     "pages": [
+      640,
+      646
+     ]
+    },
+    {
+     "section": "15.6",
+     "pages": [
+      654,
+      661
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.TS.4"
@@ -3129,7 +5444,27 @@ export const DECKS = [
   "title": "Volume of Pyramids and Cones",
   "tag": "GEOMETRY · UNIT 12 · LESSON 12.5",
   "sub": "Unit 12: Solids and Design",
-  "slides": 4,
+  "jacobs": {
+   "section": "15.5; 15.6",
+   "pages": "647 to 653; 654 to 661",
+   "references": [
+    {
+     "section": "15.5",
+     "pages": [
+      647,
+      653
+     ]
+    },
+    {
+     "section": "15.6",
+     "pages": [
+      654,
+      661
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.TS.4"
@@ -3148,7 +5483,20 @@ export const DECKS = [
   "title": "Volume of Spheres",
   "tag": "GEOMETRY · UNIT 12 · LESSON 12.6",
   "sub": "Unit 12: Solids and Design",
-  "slides": 4,
+  "jacobs": {
+   "section": "15.7",
+   "pages": "662 to 669",
+   "references": [
+    {
+     "section": "15.7",
+     "pages": [
+      662,
+      669
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.TS.4"
@@ -3167,6 +5515,26 @@ export const DECKS = [
   "title": "Quiz and Reteach",
   "tag": "GEOMETRY · UNIT 12 · LESSON 12.7",
   "sub": "Unit 12: Solids and Design",
+  "jacobs": {
+   "section": "15R; 16R",
+   "pages": "683 to 688; 713 to 717",
+   "references": [
+    {
+     "section": "15R",
+     "pages": [
+      683,
+      688
+     ]
+    },
+    {
+     "section": "16R",
+     "pages": [
+      713,
+      717
+     ]
+    }
+   ]
+  },
   "slides": 5,
   "pages": [],
   "standards": [
@@ -3186,7 +5554,41 @@ export const DECKS = [
   "title": "Surface Area",
   "tag": "GEOMETRY · UNIT 12 · LESSON 12.8",
   "sub": "Unit 12: Solids and Design",
-  "slides": 4,
+  "jacobs": {
+   "section": "15.3; 15.5; 15.6; 15.7",
+   "pages": "634 to 639; 647 to 653; 654 to 661; 662 to 669",
+   "references": [
+    {
+     "section": "15.3",
+     "pages": [
+      634,
+      639
+     ]
+    },
+    {
+     "section": "15.5",
+     "pages": [
+      647,
+      653
+     ]
+    },
+    {
+     "section": "15.6",
+     "pages": [
+      654,
+      661
+     ]
+    },
+    {
+     "section": "15.7",
+     "pages": [
+      662,
+      669
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.TS.4"
@@ -3205,7 +5607,12 @@ export const DECKS = [
   "title": "Composite Solids and Algebraic Expressions",
   "tag": "GEOMETRY · UNIT 12 · LESSON 12.9",
   "sub": "Unit 12: Solids and Design",
-  "slides": 4,
+  "jacobs": {
+   "section": "Supplement",
+   "pages": "No direct Jacobs section",
+   "references": []
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.TS.4"
@@ -3224,7 +5631,20 @@ export const DECKS = [
   "title": "Similar Solids",
   "tag": "GEOMETRY · UNIT 12 · LESSON 12.10",
   "sub": "Unit 12: Solids and Design",
-  "slides": 4,
+  "jacobs": {
+   "section": "15.8",
+   "pages": "670 to 676",
+   "references": [
+    {
+     "section": "15.8",
+     "pages": [
+      670,
+      676
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.TS.3"
@@ -3243,7 +5663,20 @@ export const DECKS = [
   "title": "Regular Polyhedra",
   "tag": "GEOMETRY · UNIT 12 · LESSON 12.11",
   "sub": "Unit 12: Solids and Design",
-  "slides": 4,
+  "jacobs": {
+   "section": "15.9",
+   "pages": "677 to 682",
+   "references": [
+    {
+     "section": "15.9",
+     "pages": [
+      677,
+      682
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -3260,7 +5693,27 @@ export const DECKS = [
   "title": "Design Project Launch",
   "tag": "GEOMETRY · UNIT 12 · LESSON 12.12",
   "sub": "Unit 12: Solids and Design",
-  "slides": 4,
+  "jacobs": {
+   "section": "15R; 16R",
+   "pages": "683 to 688; 713 to 717",
+   "references": [
+    {
+     "section": "15R",
+     "pages": [
+      683,
+      688
+     ]
+    },
+    {
+     "section": "16R",
+     "pages": [
+      713,
+      717
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [
    "G.TS.5"
@@ -3279,6 +5732,26 @@ export const DECKS = [
   "title": "Design Project Work and Presentations",
   "tag": "GEOMETRY · UNIT 12 · LESSON 12.13",
   "sub": "Unit 12: Solids and Design",
+  "jacobs": {
+   "section": "15R; 16R",
+   "pages": "683 to 688; 713 to 717",
+   "references": [
+    {
+     "section": "15R",
+     "pages": [
+      683,
+      688
+     ]
+    },
+    {
+     "section": "16R",
+     "pages": [
+      713,
+      717
+     ]
+    }
+   ]
+  },
   "slides": 2,
   "pages": [],
   "standards": [
@@ -3298,7 +5771,20 @@ export const DECKS = [
   "title": "Geometry on a Sphere (Enrichment)",
   "tag": "GEOMETRY · UNIT 12 · LESSON 12.14",
   "sub": "Unit 12: Solids and Design",
-  "slides": 4,
+  "jacobs": {
+   "section": "16.1",
+   "pages": "690 to 695",
+   "references": [
+    {
+     "section": "16.1",
+     "pages": [
+      690,
+      695
+     ]
+    }
+   ]
+  },
+  "slides": 6,
   "pages": [],
   "standards": [],
   "built": true,
@@ -3315,6 +5801,19 @@ export const DECKS = [
   "title": "Final Review",
   "tag": "GEOMETRY · UNIT 12 · LESSON 12.15",
   "sub": "Unit 12: Solids and Design",
+  "jacobs": {
+   "section": "FR",
+   "pages": "718 to 727",
+   "references": [
+    {
+     "section": "FR",
+     "pages": [
+      718,
+      727
+     ]
+    }
+   ]
+  },
   "slides": 2,
   "pages": [],
   "standards": [],
@@ -3332,6 +5831,19 @@ export const DECKS = [
   "title": "Final Exam Part 1",
   "tag": "GEOMETRY · UNIT 12 · LESSON 12.16",
   "sub": "Unit 12: Solids and Design",
+  "jacobs": {
+   "section": "FR",
+   "pages": "718 to 727",
+   "references": [
+    {
+     "section": "FR",
+     "pages": [
+      718,
+      727
+     ]
+    }
+   ]
+  },
   "slides": 2,
   "pages": [],
   "standards": [],
@@ -3349,6 +5861,19 @@ export const DECKS = [
   "title": "Final Exam Part 2",
   "tag": "GEOMETRY · UNIT 12 · LESSON 12.17",
   "sub": "Unit 12: Solids and Design",
+  "jacobs": {
+   "section": "FR",
+   "pages": "718 to 727",
+   "references": [
+    {
+     "section": "FR",
+     "pages": [
+      718,
+      727
+     ]
+    }
+   ]
+  },
   "slides": 2,
   "pages": [],
   "standards": [],

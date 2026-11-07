@@ -169,7 +169,7 @@ Semester 1: Units 1 to 6 (92 days, includes midterm). Semester 2: Units 7 to 12 
 | 5.9 | Parallel Lines and Angles | I can prove angle relationships formed by parallel lines and a transversal. | Translate one angle along a transversal with patty paper. | Interactive: sandbox. Drag a transversal across two parallels; all 8 angles update. |
 | 5.10 | Angle Sum of a Triangle | I can prove interior angles of a triangle sum to 180 degrees. | Tear corners off a paper triangle, then prove it. | |
 | 5.11 | Exterior Angle Theorem (Equality) | I can prove an exterior angle equals the sum of the remote interior angles. | Puzzle chains with missing angles. | |
-| 5.12 | AAS and HL | I can prove AAS and HL using the angle sum, and explain why HL needs a right angle. | Ladder against a wall: why one length and a right angle suffice. | |
+| 5.12 | AAS and HL | I can prove AAS and HL using the angle sum, and explain why HL needs a right angle. | Ladder against a wall: why its length, one leg length and the right angle fix the triangle. | |
 | 5.13 | Slopes of Parallel and Perpendicular Lines | I can decide if lines are parallel, perpendicular, or neither from slopes or equations (used computationally here; proved in 9.10). | Rotate a line 90 degrees on graph paper and track rise and run. | Interactive: sandbox. Rotate a line by 90 degrees and compare slopes. |
 | 5.14 | Writing Equations of Parallel and Perpendicular Lines | I can write an equation of a line parallel or perpendicular to a given line through a point. | Design straight bike paths on a town grid. | |
 | 5.15 | Proof Practice | I can combine parallel lines and congruence in a proof. | Proof stations. | |
