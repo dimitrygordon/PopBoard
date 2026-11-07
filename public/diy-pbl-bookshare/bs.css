@@ -1973,3 +1973,14 @@ body.fl-full .bs-design-layer .bs-paper-group .bs-apa li {
     animation: none !important;
   }
 }
+
+/* Article / Narration tabs (Leo): same panel, same fonts */
+.bs-tab-row { display: flex; gap: 6px; margin-bottom: 0.8cqh; }
+.bs-tab {
+  font: inherit; font-family: var(--f-body); font-size: 14px; font-weight: 700;
+  padding: 3px 12px; border-radius: 999px; cursor: pointer;
+  border: 2px solid rgba(36,51,158,.35); background: transparent; color: inherit;
+}
+.bs-tab[aria-selected="true"] { background: rgba(36,51,158,.12); border-color: rgba(36,51,158,.7); }
+.bs-tab:focus-visible { outline: 3px solid #F0B23A; outline-offset: 2px; }
+.bs-script-text[hidden] { display: none !important; }

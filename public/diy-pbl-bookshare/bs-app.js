@@ -13,6 +13,19 @@ import { ART } from "./bs-engine.js";
 
 const $ = (id) => document.getElementById(id);
 const scene = $("flScene"), side = $("flSide");
+// Article / Narration tabs in the side panel (delegated; side is re-rendered per page).
+let sideTab = "article";
+side.addEventListener("click", (e) => {
+  const b = e.target.closest(".bs-tab"); if (!b) return;
+  sideTab = b.dataset.tab; applySideTab();
+});
+function applySideTab() {
+  const w = side.querySelector(".bs-tabs"); if (!w) return;
+  w.dataset.tab = sideTab;
+  w.querySelectorAll(".bs-tab").forEach((t) => t.setAttribute("aria-selected", String(t.dataset.tab === sideTab)));
+  w.querySelector(".bs-tab-article").hidden = sideTab !== "article";
+  w.querySelector(".bs-tab-narration").hidden = sideTab !== "narration";
+}
 const reducedQ = matchMedia("(prefers-reduced-motion: reduce)");
 const state = { i: 0, T: null, playing: true, auto: false, prog: null, autoTimer: 0, navBusy: false, flipToken: 0, drawIn: null };
 try { state.auto = localStorage.getItem("popboard.diy-pbl.auto") === "1"; } catch (e) {}
@@ -109,6 +122,7 @@ function render(i) {
 
   // Side: kicker + title + bullets/script. Do NOT inject .guide here (A3: no duplicate caption).
   side.innerHTML = `<p class="kicker">${fx(p.kicker)}</p><h2>${fx(p.title)}</h2>` + (p.side || "");
+  applySideTab();
   // Full-screen caption: guide only (no title duplicate with on-art headings)
   $("flCapT").innerHTML = "";
   $("flCapQ").innerHTML = fx(p.cap || p.guide || "");
