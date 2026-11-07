@@ -56,3 +56,19 @@ Verified locally November 7, 2026 (ET). Final source snapshot, not the held draf
 ### Remaining review and art work
 
 94 Unit 4 figure slots remain explicit clean placeholders for Leo. All mandatory standalone test diagrams and the required SSA figures are supplied. The regenerated current art commission names every lesson and bank item and includes the final exact constructions. Euclid and Socrates must review this implementation, and Leo must give his visual stamp; these checks do not substitute for their approvals.
+
+
+## Review round 3, November 7, 2026 (ET)
+
+- Full suite: 38 passed, 0 failed, 0 skipped, including all 44 actual interactive mount/draw/drag checks.
+- Course browser sweep: 1242 page mounts, 208 links/assets and 552 screenshots; no builder DOM leaks or renderer errors. All missing figure metadata now corresponds to no student slot, not placeholder text.
+- Unit 4 browser sweep: 690 page mounts at 1440x900, 844x390 and 390x844, 33 screenshots; no builder leaks, text overflow or page errors. Matching, SAS motion order, ASA endpoints, both SSS days, radius cases, CPCTC ordering and the five SSA count fixtures pass.
+- Template screenshots: 15 settled captures; mid-proof prediction, layout, Literata math and reduced-motion checks pass. Leo's 1.10 worked-example, common-mistake and exit-ticket images were opened at desktop and phone sizes.
+- Review browser: 21 primary screenshots plus six full-item companions. Every label in both 12-item forms is checked for label overlap, actual SVG stroke contact, viewBox bounds and a rendered size of at least 16px at all three sizes. The three 4.11 figures receive the same label audit at desktop and phone widths. Item 12 aligns to the viewport top; the full-item companions retain all dimensions in landscape.
+- Exact 4.12 flat-input reproduction is driven through the real SVG keyboard handles after Show all. The copied apex and SSS success narration disappear, the undefined/flat-input notice appears, and the successful construction returns after moving C off the line. Node tests also cover coincident vertices, nearby valid triangles on both sides of the line, and scale-aware validity.
+- All eight tagged student-paraphrase rows match the current spec without staff tags. The rebuilt spec snapshot matches the shared file byte-for-byte: SHA-256 fa9879ec160e4d856917c71b1394aab2803fc81e7be7c201a2f57772964316a9. The 4.14 art-slot prompt and updated spec correction both discuss unnecessary congruence when vertical angles suffice; the actual page was checked after revealing.
+- Citation export, Unit 4 export, build and missing-art inventory checks are deterministic. Diff whitespace checks pass. Teacher keys and builder layers remain outside the student DOM; learner reveal solutions are intentionally present in public deck data.
+
+Evidence directory: /workspace/geometry-v2/template-screenshots/r3/. Main filenames use WIDTHxHEIGHT and worked-example, common-mistake, exit-ticket, 4.13-worked, 4.10-day2-worked, form-a-item12, form-b-item12, 4.11-we1, 4.11-we2, 4.11-common-mistake and 4.12-flat-input. Landscape form companions end in -item12-full.png. The settled 4.14 correction is 390x844-4.14-common-mistake.png. Browser sweep evidence is in course-sweep/ and unit04-sweep/.
+
+Missing-art inventory: /workspace/geometry-v2/PLACEHOLDER-SLIDES.md (also checked in under docs/geometry/v2/), 221 course slots, including 94 Unit 4 slots. The newly supplied external art was not bulk-published. Corrected coordinates for 4.4 Practice 3, 4.7 Worked example 2 and 4.14 Practice 4 were not found in the specified review, art snapshot or commission; existing art flags still describe their conflicts. No replacement coordinates or alt text were guessed. Those three slots remain absent, with explicit holds in the regenerated art commission. No new independent reviewer stamp is claimed.

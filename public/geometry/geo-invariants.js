@@ -24,3 +24,11 @@ export function rayTrianglePoints(A,B,r,through) {
  }
  return out;
 }
+
+
+// Relative to side lengths, so validity does not depend on drawing scale or position.
+export function isNondegenerateTriangle(A,B,C) {
+ if(![A,B,C].every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y)))return false;
+ const ab=Math.hypot(B.x-A.x,B.y-A.y),ac=Math.hypot(C.x-A.x,C.y-A.y),bc=Math.hypot(C.x-B.x,C.y-B.y),scale=Math.max(ab,ac,bc);
+ return scale>0&&Math.min(ab,ac,bc)>1e-9*scale&&Math.abs((B.x-A.x)*(C.y-A.y)-(B.y-A.y)*(C.x-A.x))>1e-9*scale*scale;
+}

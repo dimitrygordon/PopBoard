@@ -61,3 +61,10 @@ Leo's five template fixes are isolated in f2542359. Missing art now creates no s
 The Unit 4 exporter now reads proof tables, practice and misconception corrections directly from the checked-in signed-off learner section, rather than relying on stale Python proof snapshots. Eight R2 paraphrase rows are compared verbatim in tests. The 4.14 common-mistake prompt is the narrow allowlisted snapshot from u4-art/slots.json in spec-src/art-prompts-u04.json; its correction comes from the current spec. No other art-slot fields cross that boundary.
 
 All worked-proof viewports use the same sentence-aware because prefix. The SVG helper places live 32-unit labels around exact construction geometry; assessment thumbnails stack at full width. Every label on both forms is audited against other label boxes, actual SVG strokes, viewBox boundaries and the 16px minimum at all three widths. Item 12 can align to the viewport top without preceding empty writing space. Printed writing areas remain intact.
+
+
+### Euclid re-review R2
+
+4.11 now chooses the original and doubled SSA configurations independently, with consistent numeric labels and alt text. The fitted doubled diagram visibly identifies scale factor 2. The misconception uses its own tangent circle and right-angle contact mark.
+
+4.12 validates source and copied triangle nondegeneracy relative to side scale, and requires two distinct circle intersections. The shared construction stepper accepts an optional notice callback, which suppresses invalid construction steps and their success narration and refreshes on drag; all other constructions keep their original behavior. Three new focused math tests and the actual keyboard-driven browser reproduction cover the fix.

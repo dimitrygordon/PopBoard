@@ -28,6 +28,8 @@ For W1 use AB=6,AC=9, included angle 40 degrees and a rotated/reflected copy; th
 
 Slots: get-started / big-idea art; Why ASA works (based on the ASA picture, Jacobs p. 147)., Two triangles sharing a side (original problem).; common mistake; 3 practice figures; check-yourself.
 
+Pending corrected coordinates: Practice 3, u04-l04-s10, states DB=11. Do not reuse the unscaled shared-side model whose CA=DB=sqrt(13). The supplied art flags still request Euclid approval; replacement coordinates were not present in the inspected handoffs. This slot stays omitted from the student DOM.
+
 Two triangles on opposite sides of shared horizontal AB, with C above and D below. Use C=(2,3),D=(4,-3),A=(0,0),B=(6,0). Mark C angle at A matching D angle at B, and vice versa.
 
 ## 4.5
@@ -45,6 +47,8 @@ W1 B=(0,0),D=(5,0),A=(2,3),C=(2,-3); AB,CB ticks and ABD,CBD arcs. AD,CD ticks a
 ## 4.7
 
 Slots: get-started / big-idea art; Proof of Theorem 9 (adapted from Jacobs p. 158)., Find the base angles (original problem).; common mistake; 3 practice figures; check-yourself.
+
+Pending corrected coordinates: Worked example 2, u04-l07-s05, solves both base angles as 38 degrees. Do not reuse the rotated 3-4-5 model, whose base angles are about 53.13 degrees. The supplied art flags still request Euclid approval; replacement coordinates were not present in the inspected handoffs. This slot stays omitted from the student DOM.
 
 Proof SVG is isosceles ABC with A=(0,4),B=(-3,0),C=(3,0),D=(0,0). W2 rotate the figure 90 degrees so base is vertical; retain leg ticks and expression labels at B,C.
 
@@ -90,6 +94,8 @@ Three proof SVG panels with A=(-2,0),B=(2,0),C=(t,h),G=(t,-h),h>0: t=0 interior,
 
 Slots: get-started / big-idea art; Swinging door: one SSA recipe, two triangles (student version of Euclid's example)., Bigger doesn't fix it (student version).; common mistake; 3 practice figures; check-yourself.
 
+PR170 Euclid re-review R2: Worked example 2 uses A=(0,0), B=(8,6), C1=(6,0), C2=(10,0), AB=10, AC1=6, AC2=10, with the common circle centered at B. Label scale factor 2 if fitted to the same screen bounds as Worked example 1. The common-mistake figure is separate: A=(0,0), B=(4,3), C=(4,0), circle radius 3 at B, one contact C strictly beyond A, and an explicit right-angle mark at C. Never reuse the two-crossing figure for this pictured tangent correction.
+
 Use A=(0,0),B=(4,3),C1=(3,0),C2=(5,0), uniform scale. Draw full radius-sqrt(10) circle at B, label two intersections distinctly, angle arc at A shared. For W2 draw doubled copy at same screen scale or label scale factor. Reject tangent/no-intersection cases if UI says two triangles.
 
 ## 4.12
@@ -109,6 +115,8 @@ A=(-5,0),B=(5,0), radius 6, P=(0,sqrt(11)),Q=(0,-sqrt(11)),M=(0,0). Add M label 
 Slots: get-started / big-idea art; Diagonal of a quadrilateral, by SSS (original)., Vertical angles only (original)., Worked example 3, moved from 4.10: the kite (original).; common mistake; 4 practice figures; check-yourself.
 
 Include the convex kite moved from 4.10. Review bank is launched here, not a separate class day.
+
+Pending corrected coordinates: Practice 4, u04-l14-s12, states AD=11. Do not reuse the unscaled kite with AB=AD=5. The supplied art flags still request Euclid approval; replacement coordinates were not present in the inspected handoffs. This slot stays omitted from the student DOM.
 
 W1 draw convex quadrilateral with unequal adjacent sides, opposite-side tick pairs and AC diagonal. W2 crossing lines with A,O,B collinear and C,O,D collinear, opposite angles labeled 3x+4 and 5x-20.
 

@@ -55,6 +55,7 @@ test('all 24 learner print items have independent inline figures, no answer key 
   assert.ok(!html.includes(last.solution));
  }
  assert.match(bankFigure('4.15-16'),/<circle/);
+ for(const [form,labels] of [['A',['(2e + 14)°','(5e - 16)°']],['B',['(4f - 11)°','(2f + 15)°']]])for(const label of labels)assert.ok(bankFigure(form+'-7').includes(label),'base-angle expressions, not leg lengths');
 });
 test('SSA ray counts reject duplicate tangency, the vertex, backward roots and flat triangles',()=>{
  const A={x:0,y:0},B={x:4,y:3},ray={x:1,y:0};
@@ -105,4 +106,36 @@ test('4.14 art-slot prompt and current learner correction describe the same vert
  assert.equal(slide.prompt,edits['4.14']);assert.match(slide.prompt,/vertical angles already give/);
  assert.match(slide.correction,/Vertical angles alone give that angle in one step/);
  assert.ok(!slide.prompt.includes('non-included angle'));
+});
+
+
+test('4.11 second worked figure doubles every given and both circle crossings',()=>{
+ const examples=deck(11).slides.filter(s=>s.geo.kind==='worked-example').map(s=>s.geo.figure);
+ for(const label of ['AB = 5','AC1 = 3','AC2 = 5'])assert.ok(examples[0].svg.includes(label));
+ for(const label of ['AB = 10','AC1 = 6','AC2 = 10','Scale factor 2'])assert.ok(examples[1].svg.includes(label));
+ assert.match(examples[1].alt,/AB = 10, AC1 = 6, AC2 = 10/);assert.notEqual(examples[0].svg,examples[1].svg);
+ const svg=examples[1].svg,circle=svg.match(/<circle cx="([^"]+)" cy="([^"]+)" r="([^"]+)"/).slice(1).map(Number);
+ const lines=[...svg.matchAll(/<path d="M(-?[0-9.e+]+),(-?[0-9.e+]+)L(-?[0-9.e+]+),(-?[0-9.e+]+)"/g)].map(m=>m.slice(1).map(Number));
+ const hits=lines.filter(([x,y])=>Math.hypot(x-circle[0],y-circle[1])<1e-8).slice(0,2);
+ assert.equal(hits.length,2);for(const [x,y,a,b] of hits)assert.ok(Math.abs(Math.hypot(a-x,b-y)-circle[2])<1e-8);
+});
+test('4.11 misconception has its own tangent circle and perpendicular contact mark',()=>{
+ const {figure}=deck(11).slides.find(s=>s.geo.kind==='common-mistake').geo;
+ assert.match(figure.alt,/once at C strictly beyond A/);assert.match(figure.alt,/right-angle mark/);
+ assert.ok(!figure.svg.includes('C1'));assert.ok(figure.svg.includes('BC = 3'));
+ const [cx,cy,r]=figure.svg.match(/<circle cx="([^"]+)" cy="([^"]+)" r="([^"]+)"/).slice(1).map(Number);
+ assert.ok(Math.abs(cy+r-300)<1e-8);assert.ok(Number.isFinite(cx));
+});
+test('triangle copy rejects flat and coincident inputs but admits nearby valid triangles at different scales',async()=>{
+ const {copyTriangleState}=await import('../public/geometry/gx/u04.js');
+ const {isNondegenerateTriangle}=await import('../public/geometry/geo-invariants.js');
+ const a={x:160,y:640},b={x:560,y:640},d={x:860,y:700};
+ for(const c of [{x:300,y:640},a,b])assert.equal(copyTriangleState(a,b,c,d).F,null);
+ assert.equal(copyTriangleState(a,a,{x:300,y:300},d).F,null);
+ for(const dy of [-.01,-.001,.001,.01]){
+  const c={x:300,y:640+dy};const state=copyTriangleState(a,b,c,d);assert.ok(state.F,dy);assert.ok(isNondegenerateTriangle(d,state.E,state.F));
+  assert.ok(Math.abs(Math.hypot(state.F.x-d.x,state.F.y-d.y)-Math.hypot(c.x-a.x,c.y-a.y))<1e-6);
+ }
+ for(const k of [.001,1,1000]){const points=[a,b,{x:300,y:640.001}].map(p=>({x:p.x*k,y:p.y*k}));assert.ok(isNondegenerateTriangle(...points));}
+ assert.ok(!isNondegenerateTriangle(a,b,{x:300,y:640+1e-10}));
 });
