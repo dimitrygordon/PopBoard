@@ -24,16 +24,19 @@ try{
     const m=mount({stage,tools,slide,meta:d,reduce:true});
     if(stage.innerHTML.includes('BUILDER_SENTINEL_731'))throw new Error('builder layer rendered '+d.slug);
     if(/Original exact coordinate certificate|sqrt\(10\)|backend coordinate/i.test(stage.textContent+tools.textContent))throw new Error('builder certificate leaked '+d.slug);
-    if(slide.geo.kind==='exit-ticket'&&!stage.textContent.trim().endsWith("What's confusing?"))throw new Error('exit ending '+d.slug);
+    if(slide.geo.kind==='exit-ticket'&&stage.querySelector('ol li:last-child')?.textContent!=="What's confusing?")throw new Error('exit ending '+d.slug);
+    if(['worked-example','practice','common-mistake'].includes(slide.geo.kind)&&!stage.querySelector('.gx-figure-slot'))throw new Error('missing figure slot '+d.slug);
     if(slide.geo.kind==='worked-example'){
+     if(stage.querySelector('.gx-prediction td')?.textContent!=='What comes next? Decide, then tap.')throw new Error('missing prediction');
      const buttons=[...stage.querySelectorAll('button')];buttons.find(b=>b.textContent==='Next step').click();if(stage.querySelectorAll('tbody tr').length!==1)throw new Error('one-row reveal');
-     buttons.find(b=>b.textContent==='Show all').click();if(stage.querySelectorAll('tbody tr').length!==slide.geo.steps.length)throw new Error('show all');
-     buttons.find(b=>b.textContent==='Back').click();if(stage.querySelectorAll('tbody tr').length!==slide.geo.steps.length-1)throw new Error('back');
+     buttons.find(b=>b.textContent==='Show all').click();if(stage.querySelectorAll('tbody tr').length!==slide.geo.steps.length)throw new Error('show all');if(stage.querySelector('.gx-prediction'))throw new Error('prediction after all');
+     buttons.find(b=>b.textContent==='Back').click();if(stage.querySelectorAll('tbody tr').length!==slide.geo.steps.length-1)throw new Error('back');if(!stage.querySelector('.gx-prediction'))throw new Error('prediction after back');
     }
     if(slide.geo.kind==='common-mistake'){
      const correction=stage.querySelector('.gx-correction');if(!correction.hidden)throw new Error('correction starts visible');stage.querySelector('button').click();if(correction.hidden)throw new Error('correction reveal');
     }
     if(slide.geo.kind==='practice'){
+     if(!stage.textContent.includes('Try it on paper first, then reveal.'))throw new Error('practice instruction');
      const buttons=[...stage.querySelectorAll('button')];if(!buttons[1].hidden)throw new Error('second reveal starts visible');
      buttons[0].click();if(stage.querySelector('.gx-solution').hidden||!stage.querySelector('.gx-second-check').hidden)throw new Error('first reveal');
      buttons[1].click();if(stage.querySelector('.gx-second-check').hidden)throw new Error('second reveal');
@@ -66,7 +69,7 @@ try{
  console.log(interactive);
 
  // Covers, decks, shared reader, generated links and art are all real local files, not soft-404s.
- const urls=new Set([base+'/study-geometry.html',base+'/study-geometry-story.html',...rendered.links]);
+ const urls=new Set([base+'/study-geometry.html',base+'/study-geometry-story.html',base+'/fonts/literata.ttf',base+'/fonts/patrick-hand.woff2',base+'/fonts/cabin-sketch-bold.woff2',...rendered.links]);
  for(const d of DECKS){urls.add(base+`/geometry/decks/${d.slug}/deck.json`);urls.add(base+'/geometry/'+d.cover);}
  for(const url of urls){const r=await fetch(url);assert.equal(r.status,200,url);linksChecked++;}
  const d=DECKS.find(d=>d.slug==='u01-l10'),slides=deck(d).slides;
@@ -79,6 +82,7 @@ try{
    if(state==='worked-example'){await page.click('.gx-actions button:nth-child(2)');await page.click('.gx-actions button:nth-child(2)');assert.equal(await page.$$eval('.gx-proof tbody tr',r=>r.length),2);}
    if(state==='practice'){await page.click('.gx-actions button:nth-child(1)');await page.click('.gx-actions button:nth-child(2)');}
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+1),false,'horizontal overflow');
+   await page.evaluate(async()=>{await document.fonts.ready;await Promise.all(document.getAnimations().map(a=>a.finished.catch(()=>{})));});
    await page.screenshot({path:`${out}/${viewport.width}x${viewport.height}-${state}.png`,fullPage:true});
   }
   // All 180 lesson routes at all requested widths, with cover citations and working navigation.

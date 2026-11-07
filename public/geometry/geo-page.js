@@ -14,11 +14,25 @@ const gxCache = {};
 const loadGx = (file) => (gxCache[file] = gxCache[file] || import(here(`gx/${file}.js`)));
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
+// Mark segment names and equations without treating lesson prose as markup.
+const mathInto = (root) => {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); const nodes = [];
+  while (walker.nextNode()) if (!walker.currentNode.parentElement.closest("svg, .m, button, .gx-tag")) nodes.push(walker.currentNode);
+  const math = /\b[A-Z]{2,4}(?:\s*[+−=≠]\s*(?:[A-Z]{2,4}|[0-9]+))*/g;
+  for (const node of nodes) {
+    const parts = node.textContent.split(new RegExp(`(${math.source})`, "g"));
+    if (parts.length < 2) continue;
+    const frag = document.createDocumentFragment();
+    parts.forEach((part,i) => { if (i%2) { const span=document.createElement("span");span.className="m";span.textContent=part;frag.append(span); } else frag.append(document.createTextNode(part)); });
+    node.replaceWith(frag);
+  }
+};
+
 export function mount({ stage, tools, slide, meta, reduce }) {
   const G = slide.geo;
   if (!G) return null;
   const layer = document.createElement("div");
-  layer.className = `gx-layer gx-k-${G.kind}`;
+  layer.className = `gx-layer gx-k-${G.kind}${reduce ? " gx-reduce" : ""}`;
   stage.appendChild(layer);
   stage.classList.add("gx-host");
   const reading = ["worked-example", "common-mistake", "practice", "exit-ticket"].includes(G.kind) || (G.v2 && G.kind === "text");
@@ -61,27 +75,27 @@ export function mount({ stage, tools, slide, meta, reduce }) {
       para(G.prompt); content.append(actions);
       const status = para(""); status.className = "gx-step-status"; status.setAttribute("aria-live", "polite");
       const table = document.createElement("table"); table.className = "gx-proof"; content.append(table);
-      let count = 0;
+      let count = 0, previousCount = 0;
       const draw = () => {
-        table.innerHTML = `<thead><tr><th scope="col">Statement</th><th scope="col">Reason</th></tr></thead><tbody>${G.steps.slice(0,count).map((s,i)=>`<tr><td><span class="gx-step-number">${i+1}</span> ${esc(s.step)}</td><td>${esc(s.reason)}</td></tr>`).join("")}</tbody>${count < G.steps.length ? '<tfoot><tr class="gx-prediction"><td>What comes next? Decide, then tap.</td><td></td></tr></tfoot>' : ''}`;
+        table.innerHTML = `<thead><tr><th scope="col">Statement</th><th scope="col">Reason</th></tr></thead><tbody>${G.steps.slice(0,count).map((s,i)=>`<tr${i >= previousCount ? ' class="gx-new-step"' : ""}><td><span class="gx-step-number">${i+1}</span> ${esc(s.step)}</td><td>${esc(s.reason)}</td></tr>`).join("")}</tbody>${count < G.steps.length ? '<tfoot><tr class="gx-prediction"><td>What comes next? Decide, then tap.</td><td></td></tr></tfoot>' : ''}`;
         status.textContent = `${G.optional ? "Optional extension. " : ""}${count} of ${G.steps.length} steps shown.`;
-        back.disabled = count===0; next.disabled=count===G.steps.length;
+        back.disabled = count===0; next.disabled=count===G.steps.length; previousCount=count; mathInto(table);
       };
       const back = button("Back",()=>{count=Math.max(0,count-1);draw();});
       const next = button("Next step",()=>{count=Math.min(G.steps.length,count+1);draw();});
-      button("Show all",()=>{count=G.steps.length;draw();}); draw();
+      button("Show all",()=>{count=G.steps.length;draw();}); next.classList.add("gx-primary"); draw();
     } else if (G.kind === "practice") {
       para(G.prompt); para("Try it on paper first, then reveal."); content.append(actions);
       const solution = para(""); solution.className = "gx-solution";
       const check = para(""); check.className = "gx-second-check";
       solution.hidden = check.hidden = true;
-      const first = button("Reveal solution",()=>{solution.textContent=G.solution; solution.hidden=false; first.disabled=true; first.setAttribute("aria-expanded","true"); second.hidden=false;});
-      const second = button("Reveal second check",()=>{check.textContent=G.check;check.hidden=false;second.disabled=true;second.setAttribute("aria-expanded","true");});
-      first.setAttribute("aria-expanded","false"); second.setAttribute("aria-expanded","false"); second.hidden=true;
+      const first = button("Reveal solution",()=>{solution.textContent=G.solution; mathInto(solution); solution.hidden=false; first.disabled=true; first.setAttribute("aria-expanded","true"); second.hidden=false;});
+      const second = button("Reveal second check",()=>{check.textContent=G.check; mathInto(check);check.hidden=false;second.disabled=true;second.setAttribute("aria-expanded","true");});
+      first.classList.add("gx-primary"); first.setAttribute("aria-expanded","false"); second.setAttribute("aria-expanded","false"); second.hidden=true;
     } else if (G.kind === "common-mistake") {
       para(G.prompt).className = "gx-wrong"; para("Try it on paper first, then reveal."); content.append(actions);
       const correction=document.createElement("div"); correction.hidden=true; correction.className="gx-correction";content.append(correction);
-      const reveal=button("Reveal correction",()=>{correction.innerHTML=G.correction;correction.hidden=false;reveal.disabled=true;reveal.setAttribute("aria-expanded","true");});reveal.setAttribute("aria-expanded","false");
+      const reveal=button("Reveal correction",()=>{correction.innerHTML=G.correction; mathInto(correction);correction.hidden=false;reveal.disabled=true;reveal.setAttribute("aria-expanded","true");});reveal.setAttribute("aria-expanded","false");
     } else content.innerHTML=G.body;
   } else if (G.kind === "gx") {
     const [file, name] = String(G.gx).split(".");
@@ -100,6 +114,7 @@ export function mount({ stage, tools, slide, meta, reduce }) {
     const fh = layer.querySelector(".gx-fig");
     if (G.fig || G.art) figInto(fh, G.fig); else layer.classList.add("gx-nofig");
   }
+  mathInto(layer);
   return {
     destroy() {
       dead = true;

@@ -26,3 +26,16 @@ For each size `1440x900`, `844x390`, `390x844`:
 Machine-readable results: `/workspace/geometry-v2/template-screenshots/verification.json`.
 
 Unit 4 pilot-specific screen counts and replacement assessments are intentionally not acceptance targets in this PR: the revised spec is pending. The completed pre-hold pilot work is archived, not activated.
+
+## Round 2: Euclid, Socrates and Leo
+
+Verified November 7, 2026 (ET), local Python HTTP server on port 8772.
+
+- Full Geometry suite: 22 passed, zero failed or skipped, including all 44 interactive mounts and drags.
+- Browser sweep: 1,113 page mounts, 197 links/assets, no builder sentinel leaks or renderer errors.
+- Focused template evidence: 15 settled screenshots, five states at 1440x900, 844x390 and 390x844. Checked side-by-side versus stacked figure layout, Literata math, prediction visibility, separate practice reveals, reduced motion and horizontal overflow.
+- Personally inspected the 390 and 1440 worked-example screenshots after animations settled. Both proof rows, the segment figure and prediction prompt are readable, with no overlap.
+- Screenshot root: `/workspace/geometry-v2/template-screenshots/r2/`. Files: `<size>-cover.png`, `<size>-worked-example.png`, `<size>-practice.png`, `<size>-common-mistake.png`, `<size>-exit-ticket.png`. Full cover sweep and `verification.json` are beside them.
+- R1: reflection incidence lemma completed. R2: identity dilation and k=3 supporting-line answer corrected. R3: tiny-tolerance arc order, distinct secant intersections/rays and approximate rounding tested through the actual modules. R4: curated public source relationships and correct tangent/design/review anchors. R5: corrected historical scalene coordinates; shared final spec already carries the corrected coordinates, so it was not overwritten.
+- Socrates: next-row prediction, explicit figure slots, paper-first practice instruction and numbered final exit question implemented. Leo: self-hosted fonts, math spans, wobble buttons, ruled/circled/fading proof rows, index-card reveals, red strikes and notched exits implemented. Literata is bundled with its OFL license.
+- No merge, undraft or production deployment. This is implementation evidence, not reviewer approval.

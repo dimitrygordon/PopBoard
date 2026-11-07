@@ -75,3 +75,14 @@ test('content schema rejects missing reason rows or incomplete two-stage practic
  const output=[];worked((...args)=>output.push(args),{title:'Proof',steps:[{step:'A = A',reason:'Reflexive'}],builder_only:'private'});
  assert.ok(!JSON.stringify(output).includes('private'));
 });
+
+test('Socrates: figure schema on every proof, practice and mistake and numbered exit question',()=>{
+ for(const data of all)for(const slide of data.slides){
+  if(['worked-example','practice','common-mistake'].includes(slide.geo.kind))assert.ok(slide.geo.figure && 'svg' in slide.geo.figure);
+  if(slide.geo.kind==='exit-ticket')assert.match(slide.geo.body,/<li>What's confusing\?<\/li><\/ol>$/);
+ }
+ const slides=deck(DECKS.find(d=>d.slug==='u01-l10')).slides;
+ for(const slide of slides.filter(s=>['worked-example','practice','common-mistake'].includes(s.geo.kind))){
+  assert.match(slide.geo.figure.svg,/M20 80H460M125 70V90M355 70V90/);assert.match(slide.geo.figure.alt,/AB = CD/);
+ }
+});
