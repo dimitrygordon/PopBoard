@@ -80,3 +80,17 @@ test('Socrates: figure schema on every proof, practice and mistake and numbered 
   assert.match(slide.geo.figure.svg,/M20 80H460M125 70V90M355 70V90/);assert.match(slide.geo.figure.alt,/AB = CD/);
  }
 });
+
+
+test('review 3: sentence reasons preserve named results and point labels',async()=>{
+ const {reasonAfterBecause}=await import('../public/geometry/geo-page.js');
+ for(const [reason,expected] of [['Given.','given.'],['Which cases we must show.','which cases we must show.'],['Same G, so match the vertices.','same G, so match the vertices.'],['SAS','SAS'],['Theorem 11','Theorem 11'],['A maps to B.','A maps to B.'],['A segment equals itself.','a segment equals itself.'],['Segment Addition Postulate.','Segment Addition Postulate.']])assert.equal(reasonAfterBecause(reason),expected);
+});
+test('review 3: full-size mistake heading, restrained claim strike, used buttons and outer ticket notches',()=>{
+ const css=read('public/geometry/geo.css'),renderer=read('public/geometry/geo-page.js');
+ assert.match(css,/common-mistake \.gx-head \{ font-size: 40px/);assert.match(css,/common-mistake \.gx-head \{ font-size: 28px/);
+ assert.match(css,/line-through 1\.5px rgba\(200,85,61,\.7\)/);assert.match(renderer,/claim.className="gx-wrong"/);
+ assert.match(css,/minmax\(300px, 1fr\)/);assert.match(css,/button\.gx-used:disabled[^}]*opacity: 1/);
+ assert.match(renderer,/mark.textContent="✓"/);assert.match(css,/stage\.gx-exit-host \{ mask: radial-gradient/);
+ assert.ok(!css.includes('td:nth-child(2)::before'));
+});

@@ -10,7 +10,7 @@ function scene(points,draw,circles=[]) {
  const k=Math.min(470/(hi[0]-lo[0]||1),230/(hi[1]-lo[1]||1));
  const at=p=>[65+(p[0]-lo[0])*k,300-(p[1]-lo[1])*k];let body='';
  const line=(a,b,dash=false)=>{a=at(a);b=at(b);body+=`<path d="M${a}L${b}" fill="none" stroke="black" stroke-width="1.5"${dash?' stroke-dasharray="6 5"':''}/>`;};
- const text=(p,s,dx=0,dy=-12)=>{const [x,y]=at(p);body+=`<text x="${x+dx}" y="${y+dy}" fill="black" text-anchor="middle" font-family="serif" font-size="22">${esc(s)}</text>`;};
+ const text=(p,s,dx=0,dy=-12)=>{const [x,y]=at(p);body+=`<text x="${x+dx}" y="${y+dy}" fill="black" text-anchor="middle" font-family="serif" font-size="32">${esc(s)}</text>`;};
  const g={line,text,at,
   arrow(a,b){line(a,b);const aa=at(a),bb=at(b),d=Math.hypot(bb[0]-aa[0],bb[1]-aa[1]),ux=(bb[0]-aa[0])/d,uy=(bb[1]-aa[1])/d;body+=`<path d="M${bb[0]-8*ux-4*uy},${bb[1]-8*uy+4*ux}L${bb}L${bb[0]-8*ux+4*uy},${bb[1]-8*uy-4*ux}" fill="none" stroke="black" stroke-width="1.5"/>`;},
   handle(p,name){const [x,y]=at(p);body+=`<circle cx="${x}" cy="${y}" r="9" fill="white" stroke="black" stroke-width="2" data-handle="${esc(name)}" tabindex="0" role="slider" aria-label="Drag ${esc(name)} horizontally"/>`;},
@@ -19,7 +19,7 @@ function scene(points,draw,circles=[]) {
   labels(names){names.forEach((n,i)=>text(points[n],n, i%2?-14:12, i%3?24:-12));},
   ticks(a,b,n=1){const aa=at(a),bb=at(b),d=Math.hypot(bb[0]-aa[0],bb[1]-aa[1]);for(let i=0;i<n;i++){const t=(i-(n-1)/2)*6;const x=(aa[0]+bb[0])/2+t*(bb[0]-aa[0])/d,y=(aa[1]+bb[1])/2+t*(bb[1]-aa[1])/d;const dx=5*(bb[1]-aa[1])/d,dy=-5*(bb[0]-aa[0])/d;body+=`<path d="M${x-dx},${y-dy}L${x+dx},${y+dy}" stroke="black" stroke-width="1.5"/>`; }},
   angle(a,o,b,label=''){const aa=at(a),oo=at(o),bb=at(b),d1=Math.hypot(aa[0]-oo[0],aa[1]-oo[1]),d2=Math.hypot(bb[0]-oo[0],bb[1]-oo[1]);const p=[oo[0]+24*(aa[0]-oo[0])/d1,oo[1]+24*(aa[1]-oo[1])/d1],q=[oo[0]+24*(bb[0]-oo[0])/d2,oo[1]+24*(bb[1]-oo[1])/d2];body+=`<path d="M${p}Q${oo} ${q}" fill="none" stroke="black" stroke-width="1.2"/>`;if(label)text(o,label,0,42);},
-  dimension(a,b,label,offset=30){const aa=at(a),bb=at(b);const y=Math.max(aa[1],bb[1])+offset;body+=`<path d="M${aa[0]},${y-4}V${y+4}M${aa[0]},${y}H${bb[0]}M${bb[0]},${y-4}V${y+4}" stroke="black" stroke-width="1"/><text x="${(aa[0]+bb[0])/2}" y="${y+20}" text-anchor="middle" font-family="serif" font-size="19">${esc(label)}</text>`;}
+  dimension(a,b,label,offset=30){const aa=at(a),bb=at(b);const y=Math.max(aa[1],bb[1])+offset;body+=`<path d="M${aa[0]},${y-4}V${y+4}M${aa[0]},${y}H${bb[0]}M${bb[0]},${y-4}V${y+4}" stroke="black" stroke-width="1"/><text x="${(aa[0]+bb[0])/2}" y="${y+20}" text-anchor="middle" font-family="serif" font-size="32">${esc(label)}</text>`;}
  };
  draw(g);return svg(body);
 }
@@ -43,9 +43,9 @@ function pair(names,base,third,labels=[],marks=[],angles=[]){
 }
 function sas(names,b,c,angle){
  const apex=polar(c,angle),[a,d]=names;
- return pair(names,b,apex,[[a[0],a[1],String(b)],[a[0],a[2],String(c)],[d[0],d[1],String(b)],[d[0],d[2],String(c)]],[[a[0],a[1],1],[d[0],d[1],1],[a[0],a[2],2],[d[0],d[2],2]],[[a[1],a[0],a[2]],[d[1],d[0],d[2]]]).replace('</svg>',`<text x="300" y="30" text-anchor="middle" font-family="serif" font-size="20">Included angles given: ${angle}°</text></svg>`);
+ return pair(names,b,apex,[[a[0],a[1],String(b)],[a[0],a[2],String(c)],[d[0],d[1],String(b)],[d[0],d[2],String(c)]],[[a[0],a[1],1],[d[0],d[1],1],[a[0],a[2],2],[d[0],d[2],2]],[[a[1],a[0],a[2]],[d[1],d[0],d[2]]]).replace('</svg>',`<text x="300" y="30" text-anchor="middle" font-family="serif" font-size="32">Included angles given: ${angle}°</text></svg>`);
 }
-function asa(names,base,a,b){const x=base*Math.tan(rad(b))/(Math.tan(rad(a))+Math.tan(rad(b))),h=x*Math.tan(rad(a));return pair(names,base,[x,h],[],[],names.flatMap(a=>[[a[2],a[0],a[1]],[a[0],a[1],a[2]]])).replace('</svg>',`<text x="300" y="30" text-anchor="middle" font-family="serif" font-size="20">Given endpoint angles: ${a}°, ${b}°; included side ${base}</text></svg>`);}
+function asa(names,base,a,b){const x=base*Math.tan(rad(b))/(Math.tan(rad(a))+Math.tan(rad(b))),h=x*Math.tan(rad(a));return pair(names,base,[x,h],[],[],names.flatMap(a=>[[a[2],a[0],a[1]],[a[0],a[1],a[2]]])).replace('</svg>',`<text x="300" y="30" text-anchor="middle" font-family="serif" font-size="32">Angles ${a}°, ${b}°; side ${base}</text></svg>`);}
 function cross(names,a,b,tilt=55){
  const q=polar(b,tilt),p={[names[0]]:[0,0],[names[1]]:[-a,0],[names[2]]:[a,0],[names[3]]:q,[names[4]]:[-q[0],-q[1]]};
  return scene(p,g=>{g.line(p[names[1]],p[names[2]]);g.line(p[names[3]],p[names[4]]);g.labels(Object.keys(p));g.ticks(p[names[0]],p[names[1]]);g.ticks(p[names[0]],p[names[2]]);g.ticks(p[names[0]],p[names[3]],2);g.ticks(p[names[0]],p[names[4]],2);g.text(p[names[1]],String(a),0,42);g.text(p[names[3]],String(b),18,0);});
@@ -75,7 +75,7 @@ export function bankFigure(id){
  }
  if(n===7){const [names,d,a,b]=cfg.iso;return iso(names,Math.tan(rad(d)),a,b);}
  if(n===8){const [names,h,a,b]=cfg.con;return iso(names,h,a,b,false);}
- if(n===9){const [a,b,l,d,e]=cfg.aaa;const x=l*Math.tan(rad(e))/(Math.tan(rad(d))+Math.tan(rad(e))),h=x*Math.tan(rad(d));const p={[a[0]]:[0,0],[a[1]]:[l,0],[a[2]]:[x,h],[b[0]]:[l+5,0],[b[1]]:[l+5+2.5*l,0],[b[2]]:[l+5+2.5*x,2.5*h]};return scene(p,g=>{g.poly([...a]);g.poly([...b]);g.labels(Object.keys(p));g.dimension(p[a[0]],p[a[1]],String(l));g.dimension(p[b[0]],p[b[1]],String(l*2.5));}).replace('</svg>',`<text x="300" y="30" text-anchor="middle" font-family="serif" font-size="18">Matching angles GIVEN: ${d}°, ${e}°, ${180-d-e}°</text></svg>`);}
+ if(n===9){const [a,b,l,d,e]=cfg.aaa;const x=l*Math.tan(rad(e))/(Math.tan(rad(d))+Math.tan(rad(e))),h=x*Math.tan(rad(d));const p={[a[0]]:[0,0],[a[1]]:[l,0],[a[2]]:[x,h],[b[0]]:[l+5,0],[b[1]]:[l+5+2.5*l,0],[b[2]]:[l+5+2.5*x,2.5*h]};return scene(p,g=>{g.poly([...a]);g.poly([...b]);g.labels(Object.keys(p));g.dimension(p[a[0]],p[a[1]],String(l));g.dimension(p[b[0]],p[b[1]],String(l*2.5));}).replace('</svg>',`<text x="300" y="30" text-anchor="middle" font-family="serif" font-size="32">Given: ${d}°, ${e}°, ${180-d-e}°</text></svg>`);}
  if(n===10){if(f==='quiz'){const p={C:[0,0],D:[8,0],A:[3,4],B:[3,-4]};return scene(p,g=>{g.poly(['A','C','D']);g.poly(['B','C','D']);g.labels(Object.keys(p));g.ticks(p.C,p.A);g.ticks(p.C,p.B);g.angle(p.A,p.C,p.D);g.angle(p.B,p.C,p.D);});}return kite(cfg.kite);}
  if(n===11){const [names,l,r]=cfg.circle;
   const main=circles(names,l,r),thumb=circles(names,l,l/2);
@@ -97,13 +97,13 @@ export function motionFigure(step=0){
  const model=[[0,0],[5,0],[1,2]],p={D:[380,200],E:[530,200],F:[410,260]};
  model.forEach(([x,y],i)=>{p['ABC'[i]]=step===0?[140+30*y,130+30*x]:step===1?[380+30*y,200+30*x]:step===2?[380+30*x,200-30*y]:[380+30*x,200+30*y];});
  let body='';const line=(a,b,dash='')=>body+=`<path d="M${a}L${b}" fill="none" stroke="black" stroke-width="1.5" ${dash}/>`;
- for(const names of ['DEF','ABC']){[...names].forEach((n,i)=>line(p[n],p[names[(i+1)%3]],names==='DEF'?'stroke-dasharray="5 4"':''));[...names].forEach(n=>body+=`<text x="${p[n][0]}" y="${p[n][1]+(names==='DEF'?26:-12)}" fill="black" font-size="22" font-family="serif" text-anchor="middle">${n}</text>`);}
+ for(const names of ['DEF','ABC']){[...names].forEach((n,i)=>line(p[n],p[names[(i+1)%3]],names==='DEF'?'stroke-dasharray="5 4"':''));[...names].forEach(n=>body+=`<text x="${p[n][0]}" y="${p[n][1]+(names==='DEF'?26:-12)}" fill="black" font-size="32" font-family="serif" text-anchor="middle">${n}</text>`);}
  return svg(body);
 }
 export function asaRaysFigure(d=[100,290],e=[480,290]){
  const dx=e[0]-d[0],dy=e[1]-d[1],length=Math.hypot(dx,dy),x=length*Math.tan(rad(60))/(Math.tan(rad(40))+Math.tan(rad(60))),h=x*Math.tan(rad(40));
  const f=[d[0]+(x*dx+h*dy)/length,d[1]+(x*dy-h*dx)/length];
  let body=`<path d="M${d}L${e}M${d}L${f}L${e}" fill="none" stroke="black" stroke-width="1.5"/>`;
- for(const [n,p] of [['D',d],['E',e],['F',f]]){body+=`<text x="${p[0]}" y="${p[1]+(n==='F'?-15:30)}" font-family="serif" font-size="22" text-anchor="middle">${n}</text>`;if(n!=='F')body+=`<circle cx="${p[0]}" cy="${p[1]}" r="9" fill="white" stroke="black" data-handle="${n}" tabindex="0" role="button" aria-label="Drag ${n}"/>`;}
- return svg(body+`<text x="300" y="36" text-anchor="middle" font-family="serif" font-size="20">Fixed endpoint angles: D = 40°, E = 60°</text>`);
+ for(const [n,p] of [['D',d],['E',e],['F',f]]){body+=`<text x="${p[0]}" y="${p[1]+(n==='F'?-15:30)}" font-family="serif" font-size="32" text-anchor="middle">${n}</text>`;if(n!=='F')body+=`<circle cx="${p[0]}" cy="${p[1]}" r="9" fill="white" stroke="black" data-handle="${n}" tabindex="0" role="button" aria-label="Drag ${n}"/>`;}
+ return svg(body+`<text x="300" y="36" text-anchor="middle" font-family="serif" font-size="32">Fixed endpoint angles: D = 40°, E = 60°</text>`);
 }

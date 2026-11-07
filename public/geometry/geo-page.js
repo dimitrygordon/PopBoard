@@ -15,6 +15,15 @@ const gxCache = {};
 const loadGx = (file) => (gxCache[file] = gxCache[file] || import(here(`gx/${file}.js`)));
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
+// Lowercase sentence words, never named results, acronyms or mathematical point labels.
+export const reasonAfterBecause = (reason) => {
+  const text=String(reason || "");
+  if (/^(?:Segment Addition Postulate|Ruler Postulate|Protractor Postulate|Theorem|Unit|Jacobs|Euclid)\b/.test(text)) return text;
+  if (/^A (?:segment|drawing|reflection|rotation|translation|half-turn)\b/.test(text)) return "a"+text.slice(1);
+  const ordinary=/^(Add|Angle|Compass|Congruent|Define|Definition|Each|Either|Equal|Every|First|Given|Half|Linear|Matching|Name|Now|One|Only|Pick|Read|Rotations|Same|Second|Segment|Shown|So|Solve|Substitute|Substitution|Subtract|Swapping|The|Their|These|This|Today|Two|Use|Vertical|Which)\b/;
+  return ordinary.test(text) ? text[0].toLowerCase()+text.slice(1) : text;
+};
+
 // Mark segment names and equations without treating lesson prose as markup.
 const mathInto = (root) => {
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); const nodes = [];
@@ -36,6 +45,7 @@ export function mount({ stage, tools, slide, meta, reduce }) {
   layer.className = `gx-layer gx-unit-${meta.q} gx-k-${G.kind}${reduce ? " gx-reduce" : ""}`;
   stage.appendChild(layer);
   stage.classList.add("gx-host");
+  stage.classList.toggle("gx-exit-host",G.kind === "exit-ticket");
   const reading = ["worked-example", "common-mistake", "practice", "exit-ticket", "activity"].includes(G.kind) || (G.v2 && G.kind === "text");
   stage.classList.toggle("gx-reading", reading);
   let board = null, panel = null, inner = null, dead = false;
@@ -76,6 +86,7 @@ export function mount({ stage, tools, slide, meta, reduce }) {
     }
     const para = (text) => { const p = document.createElement("p"); p.textContent = text; content.append(p); return p; };
     const actions = document.createElement("div"); actions.className = "gx-actions";
+    const used = (b) => { b.disabled=true;b.classList.remove("gx-primary");b.classList.add("gx-used");const mark=document.createElement("span");mark.className="gx-used-check";mark.textContent="✓";mark.setAttribute("aria-hidden","true");b.append(" ",mark); };
     const button = (label, fn) => { const b = document.createElement("button"); b.type = "button"; b.textContent = label; b.onclick = fn; actions.append(b); return b; };
     if (G.kind === "activity") {
       inner=mountActivity(content,G.activity,G.task);
@@ -85,7 +96,7 @@ export function mount({ stage, tools, slide, meta, reduce }) {
       const table = document.createElement("table"); table.className = "gx-proof"; content.append(table);
       let count = 0, previousCount = 0;
       const draw = () => {
-        table.innerHTML = `<thead><tr><th scope="col">Statement</th><th scope="col">Reason</th></tr></thead><tbody>${G.steps.slice(0,count).map((s,i)=>`<tr${i >= previousCount ? ' class="gx-new-step"' : ""}><td><span class="gx-step-number">${i+1}</span> ${esc(s.step)}</td><td>${esc(s.reason)}</td></tr>`).join("")}</tbody>${count < G.steps.length ? '<tfoot><tr class="gx-prediction"><td>What comes next? Decide, then tap.</td><td></td></tr></tfoot>' : ''}`;
+        table.innerHTML = `<thead><tr><th scope="col">Statement</th><th scope="col">Reason</th></tr></thead><tbody>${G.steps.slice(0,count).map((s,i)=>`<tr${i >= previousCount ? ' class="gx-new-step"' : ""}><td><span class="gx-step-number">${i+1}</span> ${esc(s.step)}</td><td><span class="gx-because">because </span>${esc(reasonAfterBecause(s.reason))}</td></tr>`).join("")}</tbody>${count < G.steps.length ? '<tfoot><tr class="gx-prediction"><td>What comes next? Decide, then tap.</td><td></td></tr></tfoot>' : ''}`;
         status.textContent = `${G.optional ? "Optional extension. " : ""}${count} of ${G.steps.length} steps shown.`;
         back.disabled = count===0; next.disabled=count===G.steps.length; previousCount=count; mathInto(table);
       };
@@ -97,13 +108,16 @@ export function mount({ stage, tools, slide, meta, reduce }) {
       const solution = para(""); solution.className = "gx-solution";
       const check = para(""); check.className = "gx-second-check";
       solution.hidden = check.hidden = true;
-      const first = button("Reveal solution",()=>{solution.textContent=G.solution; mathInto(solution); solution.hidden=false; first.disabled=true; first.setAttribute("aria-expanded","true"); second.hidden=false;});
-      const second = button("Reveal second check",()=>{check.textContent=G.check; mathInto(check);check.hidden=false;second.disabled=true;second.setAttribute("aria-expanded","true");});
+      const first = button("Reveal solution",()=>{solution.textContent=G.solution; mathInto(solution); solution.hidden=false; used(first); first.setAttribute("aria-expanded","true"); second.hidden=false;});
+      const second = button("Reveal second check",()=>{check.textContent=G.check; mathInto(check);check.hidden=false;used(second);second.setAttribute("aria-expanded","true");});
       first.classList.add("gx-primary"); first.setAttribute("aria-expanded","false"); second.setAttribute("aria-expanded","false"); second.hidden=true;
     } else if (G.kind === "common-mistake") {
-      para(G.prompt).className = "gx-wrong"; para("Try it on paper first, then reveal."); content.append(actions);
+      const prompt=para("");prompt.className="gx-mistake-prompt";
+      const parts=String(G.prompt).match(/^((?:A student|Jordan)(?: says| writes| claims| calls)?(?::\s*|\s+))(.*)$/s);
+      if(parts)prompt.append(document.createTextNode(parts[1]));
+      const claim=document.createElement("span");claim.className="gx-wrong";claim.textContent=parts?parts[2]:G.prompt;prompt.append(claim); para("Try it on paper first, then reveal."); content.append(actions);
       const correction=document.createElement("div"); correction.hidden=true; correction.className="gx-correction";content.append(correction);
-      const reveal=button("Reveal correction",()=>{correction.innerHTML=G.correction; mathInto(correction);correction.hidden=false;reveal.disabled=true;reveal.setAttribute("aria-expanded","true");});reveal.setAttribute("aria-expanded","false");
+      const reveal=button("Reveal correction",()=>{correction.innerHTML=G.correction; mathInto(correction);correction.hidden=false;used(reveal);reveal.setAttribute("aria-expanded","true");});reveal.setAttribute("aria-expanded","false");
     } else content.innerHTML=G.body;
   } else if (G.kind === "gx") {
     const [file, name] = String(G.gx).split(".");
@@ -130,7 +144,7 @@ export function mount({ stage, tools, slide, meta, reduce }) {
       if (board) board.destroy();
       if (panel) panel.destroy();
       layer.remove();
-      stage.classList.remove("gx-host", "gx-reading");
+      stage.classList.remove("gx-host", "gx-reading", "gx-exit-host");
     }
   };
 }
