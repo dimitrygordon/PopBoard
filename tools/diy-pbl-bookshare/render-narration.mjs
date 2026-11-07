@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { spoken } from "./spoken.mjs";
 // Render Bookshare read-aloud audio with xAI TTS (voice "altair"): one mp3 per slide.
 //   XAI_API_KEY=... node tools/diy-pbl-bookshare/render-narration.mjs [--force]
 // Offline only; the browser never calls TTS. Text = SLIDES[n].article from bs-data.js.
@@ -25,7 +26,7 @@ async function tts(text) {
 }
 const pages = {};
 async function one(s) {
-  const n = String(s.n), text = String(s.article || "").trim();
+  const n = String(s.n), text = spoken(s.article || "");
   if (!text) { pages[n] = { text: "" }; return; }
   const name = `p${n}.mp3`, ap = join(DIR, name);
   if (force || !existsSync(ap)) {
