@@ -28,7 +28,7 @@ For W1 use AB=6,AC=9, included angle 40 degrees and a rotated/reflected copy; th
 
 Slots: get-started / big-idea art; Why ASA works (based on the ASA picture, Jacobs p. 147)., Two triangles sharing a side (original problem).; common mistake; 3 practice figures; check-yourself.
 
-Pending corrected coordinates: Practice 3, u04-l04-s10, states DB=11. Do not reuse the unscaled shared-side model whose CA=DB=sqrt(13). The supplied art flags still request Euclid approval; replacement coordinates were not present in the inspected handoffs. This slot stays omitted from the student DOM.
+Corrected coordinates (Euclid, U4-FIGURE-COORDS.md): A=(0,0), B=(18.3051,0), C=(6.1017,9.1526), D=(12.2034,-9.1526); CA=DB=11. Practice 3, u04-l04-s10, states DB=11. Do not reuse the unscaled shared-side model whose CA=DB=sqrt(13). Ready to draw. The slot stays omitted from the student DOM until the SVG lands.
 
 Two triangles on opposite sides of shared horizontal AB, with C above and D below. Use C=(2,3),D=(4,-3),A=(0,0),B=(6,0). Mark C angle at A matching D angle at B, and vice versa.
 
@@ -48,7 +48,7 @@ W1 B=(0,0),D=(5,0),A=(2,3),C=(2,-3); AB,CB ticks and ABD,CBD arcs. AD,CD ticks a
 
 Slots: get-started / big-idea art; Proof of Theorem 9 (adapted from Jacobs p. 158)., Find the base angles (original problem).; common mistake; 3 practice figures; check-yourself.
 
-Pending corrected coordinates: Worked example 2, u04-l07-s05, solves both base angles as 38 degrees. Do not reuse the rotated 3-4-5 model, whose base angles are about 53.13 degrees. The supplied art flags still request Euclid approval; replacement coordinates were not present in the inspected handoffs. This slot stays omitted from the student DOM.
+Corrected coordinates (Euclid, U4-FIGURE-COORDS.md): A=(0,2.3439), B=(-3,0), C=(3,0); base angles 38 degrees, apex 104. Worked example 2, u04-l07-s05, solves both base angles as 38 degrees. Do not reuse the rotated 3-4-5 model, whose base angles are about 53.13 degrees. Ready to draw. The slot stays omitted from the student DOM until the SVG lands.
 
 Proof SVG is isosceles ABC with A=(0,4),B=(-3,0),C=(3,0),D=(0,0). W2 rotate the figure 90 degrees so base is vertical; retain leg ticks and expression labels at B,C.
 
@@ -116,7 +116,7 @@ Slots: get-started / big-idea art; Diagonal of a quadrilateral, by SSS (original
 
 Include the convex kite moved from 4.10. Review bank is launched here, not a separate class day.
 
-Pending corrected coordinates: Practice 4, u04-l14-s12, states AD=11. Do not reuse the unscaled kite with AB=AD=5. The supplied art flags still request Euclid approval; replacement coordinates were not present in the inspected handoffs. This slot stays omitted from the student DOM.
+Corrected coordinates (Euclid, U4-FIGURE-COORDS.md): kite A=(0,8.8), B=(-6.6,0), C=(0,-4.4), D=(6.6,0); AB=AD=11, CB=CD=7.932. Practice 4, u04-l14-s12, states AD=11. Do not reuse the unscaled kite with AB=AD=5. Ready to draw. The slot stays omitted from the student DOM until the SVG lands.
 
 W1 draw convex quadrilateral with unequal adjacent sides, opposite-side tick pairs and AC diagonal. W2 crossing lines with A,O,B collinear and C,O,D collinear, opposite angles labeled 3x+4 and 5x-20.
 

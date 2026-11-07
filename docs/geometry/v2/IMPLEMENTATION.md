@@ -68,3 +68,12 @@ All worked-proof viewports use the same sentence-aware because prefix. The SVG h
 4.11 now chooses the original and doubled SSA configurations independently, with consistent numeric labels and alt text. The fitted doubled diagram visibly identifies scale factor 2. The misconception uses its own tangent circle and right-angle contact mark.
 
 4.12 validates source and copied triangle nondegeneracy relative to side scale, and requires two distinct circle intersections. The shared construction stepper accepts an optional notice callback, which suppresses invalid construction steps and their success narration and refreshes on drag; all other constructions keep their original behavior. Three new focused math tests and the actual keyboard-driven browser reproduction cover the fix.
+
+
+## Review round 4
+
+Socrates' final reason ruling supersedes the round-3 prefix rule: proof reasons render exactly as authored, with original capitalization and no injected word. The capitalization helper was removed. Phone reasons retain their separate color and indentation.
+
+Figure roots lose fixed width/height attributes at mount; a specific full-width, auto-height rule overrides legacy content SVG sizing. The existing 300px desktop minimum remains. Uniformly enlarged SSA layouts leave room for side labels beside OP/LM and point labels beside Q1/N1 without colliding with the circle, angle mark or other strokes. Side-label width hints conservatively reflect measured browser glyph widths, avoiding the old oversized text box that displaced them far from the segment. Exact construction coordinates and givens are unchanged.
+
+The art commission is synced byte-for-byte with the shared LEO-DIAGRAMS-unit04.md and its three approved Euclid coordinate corrections. The exporter reproduces those corrections rather than restoring stale holds. None of those three SVGs was drawn or wired; Leo owns the full redraw. A regression test keeps the slots unpopulated.

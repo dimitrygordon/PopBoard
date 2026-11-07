@@ -4,15 +4,15 @@ const rad=d=>d*Math.PI/180;
 const polar=(r,d)=>[r*Math.cos(rad(d)),r*Math.sin(rad(d))];
 const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 const svg=body=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">${body}</svg>`;
-function scene(points,draw,circles=[],centered=false,height=400) {
+function scene(points,draw,circles=[],centered=false,height=400,plotHeight=230,bottom=300) {
  const bounds=[...Object.values(points),...circles.flatMap(([p,r])=>[[p[0]-r,p[1]-r],[p[0]+r,p[1]+r]])];
  const xs=bounds.map(p=>p[0]),ys=bounds.map(p=>p[1]),lo=[Math.min(...xs),Math.min(...ys)],hi=[Math.max(...xs),Math.max(...ys)];
- const k=Math.min(470/(hi[0]-lo[0]||1),230/(hi[1]-lo[1]||1));
+ const k=Math.min(470/(hi[0]-lo[0]||1),plotHeight/(hi[1]-lo[1]||1));
  const left=centered?(600-(hi[0]-lo[0])*k)/2:65;
- const at=p=>[left+(p[0]-lo[0])*k,300-(p[1]-lo[1])*k];let body='';const labels=[],strokes=[];
+ const at=p=>[left+(p[0]-lo[0])*k,bottom-(p[1]-lo[1])*k];let body='';const labels=[],strokes=[];
  const sample=(a,b)=>{const n=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/2));for(let i=0;i<=n;i++)strokes.push([a[0]+(b[0]-a[0])*i/n,a[1]+(b[1]-a[1])*i/n]);};
  const line=(a,b,dash=false)=>{a=at(a);b=at(b);sample(a,b);body+=`<path d="M${a}L${b}" fill="none" stroke="black" stroke-width="1.5"${dash?' stroke-dasharray="6 5"':''}/>`;};
- const text=(p,s,dx=0,dy=-12)=>{const [x,y]=at(p);labels.push({x,y,s:String(s),dx,dy});};
+ const text=(p,s,dx=0,dy=-12,widthHint=null)=>{const [x,y]=at(p);labels.push({x,y,s:String(s),dx,dy,widthHint});};
  const g={line,text,at,
   arrow(a,b){line(a,b);const aa=at(a),bb=at(b),d=Math.hypot(bb[0]-aa[0],bb[1]-aa[1]),ux=(bb[0]-aa[0])/d,uy=(bb[1]-aa[1])/d;body+=`<path d="M${bb[0]-8*ux-4*uy},${bb[1]-8*uy+4*ux}L${bb}L${bb[0]-8*ux+4*uy},${bb[1]-8*uy-4*ux}" fill="none" stroke="black" stroke-width="1.5"/>`;},
   handle(p,name){const [x,y]=at(p);body+=`<circle cx="${x}" cy="${y}" r="9" fill="white" stroke="black" stroke-width="2" data-handle="${esc(name)}" tabindex="0" role="slider" aria-label="Drag ${esc(name)} horizontally"/>`;},
@@ -25,7 +25,7 @@ function scene(points,draw,circles=[],centered=false,height=400) {
  };
  draw(g);
  // Place live labels in free space without changing the exact construction.
- const box=(label,x,y)=>{const width=[...label.s].reduce((w,c)=>w+(/[il1 ]/.test(c)?.5:/[MW]/.test(c)?1:.7)*32,0);return {l:x-width/2-3,r:x+width/2+3,t:y-34,b:y+11};};
+ const box=(label,x,y)=>{const width=label.widthHint||[...label.s].reduce((w,c)=>w+(/[il1 ]/.test(c)?.5:/[MW]/.test(c)?1:.7)*32,0);return {l:x-width/2-3,r:x+width/2+3,t:y-34,b:y+11};};
  const placed=labels.filter(l=>l.fixed).map(l=>box(l,l.x,l.y));
  for(const label of labels){
   let x=label.x+label.dx,y=label.y+label.dy;
@@ -51,7 +51,7 @@ export function sssFigure(t=0,marked=true,draggable=false){
 export function ssaFigure(form='review'){
  const cfg={double:{names:['A','B','C1','C2'],p:[[0,0],[8,6],[6,0],[10,0]],len:[10,6,10]},review:{names:['A','B','C1','C2'],p:[[0,0],[4,3],[3,0],[5,0]],len:[5,3,5]},A:{names:['O','P','Q1','Q2'],p:[[0,0],[6,8],[2,0],[10,0]],len:[10,2,10]},B:{names:['L','M','N1','N2'],p:[[0,0],[8,15],[5,0],[11,0]],len:[17,5,11]}}[form];
  const [a,b,c,d]=cfg.p,r=dist(b,c),p=Object.fromEntries(cfg.names.map((n,i)=>[n,cfg.p[i]]));
- return scene(p,g=>{g.circle(b,r);g.arrow(a,[d[0]+2,0]);g.line(a,b);g.line(b,c);g.line(b,d);g.text(a,cfg.names[0],-40,0);g.text(b,cfg.names[1],0,-20);g.text(c,cfg.names[2],0,42);g.text(d,cfg.names[3],0,42);g.ticks(b,c);g.ticks(b,d);g.angle(b,a,d);g.text(a,`${cfg.names[0]}${cfg.names[1]} = ${cfg.len[0]}`,-115,-72);g.dimension(a,c,`${cfg.names[0]}${cfg.names[2]} = ${cfg.len[1]}`,92);g.dimension(a,d,`${cfg.names[0]}${cfg.names[3]} = ${cfg.len[2]}`,148);},[[b,r]],true,520).replace('viewBox="0 0 600 400"',form==='double'?'viewBox="0 40 600 540"':'viewBox="0 40 600 480"').replace('</svg>',form==='double'?'<text x="300" y="548" text-anchor="middle" font-family="serif" font-size="32">Scale factor 2; fitted drawing.</text></svg>':'</svg>');
+ return scene(p,g=>{g.circle(b,r);g.arrow(a,[d[0]+2,0]);g.line(a,b);g.line(b,c);g.line(b,d);g.text(a,cfg.names[0],-40,0);g.text(b,cfg.names[1],0,-20);g.text(c,cfg.names[2],0,44);g.text(d,cfg.names[3],0,44);g.ticks(b,c);g.ticks(b,d);g.angle(b,a,d);const midpoint=[(a[0]+b[0])/2,b[1]/2],labelAt=g.at(midpoint);g.text(midpoint,`${cfg.names[0]}${cfg.names[1]} = ${cfg.len[0]}`,(form==='B'?195:185)-labelAt[0],360-labelAt[1],form==='B'?120:112);g.dimension(a,c,`${cfg.names[0]}${cfg.names[2]} = ${cfg.len[1]}`,92);g.dimension(a,d,`${cfg.names[0]}${cfg.names[3]} = ${cfg.len[2]}`,148);},[[b,r]],true,720,400,500).replace('viewBox="0 0 600 400"',form==='double'?'viewBox="0 40 600 740"':'viewBox="0 40 600 680"').replace('</svg>',form==='double'?'<text x="300" y="748" text-anchor="middle" font-family="serif" font-size="32">Scale factor 2; fitted drawing.</text></svg>':'</svg>');
 }
 export function ssaTangentFigure(){
  const p={A:[0,0],B:[4,3],C:[4,0]};

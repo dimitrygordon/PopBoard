@@ -15,15 +15,6 @@ const gxCache = {};
 const loadGx = (file) => (gxCache[file] = gxCache[file] || import(here(`gx/${file}.js`)));
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
-// Lowercase sentence words, never named results, acronyms or mathematical point labels.
-export const reasonAfterBecause = (reason) => {
-  const text=String(reason || "");
-  if (/^(?:Segment Addition Postulate|Ruler Postulate|Protractor Postulate|Theorem|Unit|Jacobs|Euclid)\b/.test(text)) return text;
-  if (/^A (?:segment|drawing|reflection|rotation|translation|half-turn)\b/.test(text)) return "a"+text.slice(1);
-  const ordinary=/^(Add|Angle|Compass|Congruent|Define|Definition|Each|Either|Equal|Every|First|Given|Half|Linear|Matching|Name|Now|One|Only|Pick|Read|Rotations|Same|Second|Segment|Shown|So|Solve|Substitute|Substitution|Subtract|Swapping|The|Their|These|This|Today|Two|Use|Vertical|Which)\b/;
-  return ordinary.test(text) ? text[0].toLowerCase()+text.slice(1) : text;
-};
-
 // Mark segment names and equations without treating lesson prose as markup.
 const mathInto = (root) => {
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); const nodes = [];
@@ -78,7 +69,7 @@ export function mount({ stage, tools, slide, meta, reduce }) {
       content.classList.add("gx-figure-layout");
       const figure = document.createElement("figure"); figure.className = "gx-figure-slot";
       const alt = G.figure?.alt || `Figure for lesson ${meta.q}.${meta.lesson}`;
-      if (G.figure?.svg) { figure.innerHTML = G.figure.svg; const svg = figure.querySelector("svg"); svg?.setAttribute("role", "img"); svg?.setAttribute("aria-label", alt); }
+      if (G.figure?.svg) { figure.innerHTML = G.figure.svg; const svg = figure.querySelector("svg"); svg?.removeAttribute("width"); svg?.removeAttribute("height"); svg?.setAttribute("role", "img"); svg?.setAttribute("aria-label", alt); }
       else if (G.figure?.src) figure.innerHTML = `<img src="${esc(G.figure.src)}" alt="${esc(alt)}">`;
       const text = document.createElement("div"); text.className = "gx-learner-text";
       content.append(figure, text); content = text;
@@ -95,7 +86,7 @@ export function mount({ stage, tools, slide, meta, reduce }) {
       const table = document.createElement("table"); table.className = "gx-proof"; content.append(table);
       let count = 0, previousCount = 0;
       const draw = () => {
-        table.innerHTML = `<thead><tr><th scope="col">Statement</th><th scope="col">Reason</th></tr></thead><tbody>${G.steps.slice(0,count).map((s,i)=>`<tr${i >= previousCount ? ' class="gx-new-step"' : ""}><td><span class="gx-step-number">${i+1}</span> ${esc(s.step)}</td><td><span class="gx-because">because </span>${esc(reasonAfterBecause(s.reason))}</td></tr>`).join("")}</tbody>${count < G.steps.length ? '<tfoot><tr class="gx-prediction"><td>What comes next? Decide, then tap.</td><td></td></tr></tfoot>' : ''}`;
+        table.innerHTML = `<thead><tr><th scope="col">Statement</th><th scope="col">Reason</th></tr></thead><tbody>${G.steps.slice(0,count).map((s,i)=>`<tr${i >= previousCount ? ' class="gx-new-step"' : ""}><td><span class="gx-step-number">${i+1}</span> ${esc(s.step)}</td><td>${esc(s.reason)}</td></tr>`).join("")}</tbody>${count < G.steps.length ? '<tfoot><tr class="gx-prediction"><td>What comes next? Decide, then tap.</td><td></td></tr></tfoot>' : ''}`;
         status.textContent = `${G.optional ? "Optional extension. " : ""}${count} of ${G.steps.length} steps shown.`;
         back.disabled = count===0; next.disabled=count===G.steps.length; previousCount=count; mathInto(table);
       };

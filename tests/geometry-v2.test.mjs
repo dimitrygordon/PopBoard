@@ -82,9 +82,8 @@ test('Socrates: figure schema on every proof, practice and mistake and numbered 
 });
 
 
-test('review 3: sentence reasons preserve named results and point labels',async()=>{
- const {reasonAfterBecause}=await import('../public/geometry/geo-page.js');
- for(const [reason,expected] of [['Given.','given.'],['Which cases we must show.','which cases we must show.'],['Same G, so match the vertices.','same G, so match the vertices.'],['SAS','SAS'],['Theorem 11','Theorem 11'],['A maps to B.','A maps to B.'],['A segment equals itself.','a segment equals itself.'],['Segment Addition Postulate.','Segment Addition Postulate.']])assert.equal(reasonAfterBecause(reason),expected);
+test('review 4: worked reasons render verbatim with no prefix or capitalization rewrite',()=>{
+ const renderer=read('public/geometry/geo-page.js');assert.ok(renderer.includes('<td>${esc(s.reason)}</td>'));assert.ok(!renderer.includes('reasonAfterBecause'));assert.ok(!renderer.includes('gx-because'));
 });
 test('review 3: full-size mistake heading, restrained claim strike, used buttons and outer ticket notches',()=>{
  const css=read('public/geometry/geo.css'),renderer=read('public/geometry/geo-page.js');

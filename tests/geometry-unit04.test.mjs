@@ -139,3 +139,11 @@ test('triangle copy rejects flat and coincident inputs but admits nearby valid t
  for(const k of [.001,1,1000]){const points=[a,b,{x:300,y:640.001}].map(p=>({x:p.x*k,y:p.y*k}));assert.ok(isNondegenerateTriangle(...points));}
  assert.ok(!isNondegenerateTriangle(a,b,{x:300,y:640+1e-10}));
 });
+
+
+test('round 4: corrected art coordinates are synced but the three figures remain unwired',()=>{
+ const commission=read('docs/geometry/v2/LEO-DIAGRAMS-unit04.md');
+ for(const marker of ['A=(0,0), B=(18.3051,0)','A=(0,2.3439)','kite A=(0,8.8)'])assert.ok(commission.includes(marker));
+ assert.ok(!commission.includes('Pending corrected coordinates'));
+ for(const [lesson,page] of [[4,10],[7,5],[14,12]])assert.ok(!deck(lesson).slides[page-1].geo.figure?.svg);
+});

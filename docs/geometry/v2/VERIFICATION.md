@@ -72,3 +72,18 @@ Verified locally November 7, 2026 (ET). Final source snapshot, not the held draf
 Evidence directory: /workspace/geometry-v2/template-screenshots/r3/. Main filenames use WIDTHxHEIGHT and worked-example, common-mistake, exit-ticket, 4.13-worked, 4.10-day2-worked, form-a-item12, form-b-item12, 4.11-we1, 4.11-we2, 4.11-common-mistake and 4.12-flat-input. Landscape form companions end in -item12-full.png. The settled 4.14 correction is 390x844-4.14-common-mistake.png. Browser sweep evidence is in course-sweep/ and unit04-sweep/.
 
 Missing-art inventory: /workspace/geometry-v2/PLACEHOLDER-SLIDES.md (also checked in under docs/geometry/v2/), 221 course slots, including 94 Unit 4 slots. The newly supplied external art was not bulk-published. Corrected coordinates for 4.4 Practice 3, 4.7 Worked example 2 and 4.14 Practice 4 were not found in the specified review, art snapshot or commission; existing art flags still describe their conflicts. No replacement coordinates or alt text were guessed. Those three slots remain absent, with explicit holds in the regenerated art commission. No new independent reviewer stamp is claimed.
+
+
+## Review round 4, November 7, 2026 (ET)
+
+Round 4 supersedes round 3's because/capitalization rule and its three coordinate holds.
+
+- Full suite: 39 tests, including all 44 interactive mount/draw/drag checks. The reason regression now checks verbatim authored text, not prefixing or lowercasing.
+- Round-4 browser evidence: 15 primary captures plus six full-item companions at 1440x900, 844x390 and 390x844. Targets: 1.10 worked example, 4.13 worked example, 4.11 Worked example 2, and both Form item-12 pages. All requested views were opened and visually inspected. No horizontal overflow or page errors.
+- At 1440px, measured figure columns and root SVGs are 314px wide. Computed effective label sizes: 1.10 = 17.01px, 4.11 WE2 = 16.75px, 4.1 = 16.75px. At 844px, columns are 300px and labels remain at least 16px. Root SVG width and height attributes are absent, and SVG width equals column width.
+- Verbatim revealed reasons are compared to deck data at every requested viewport. Phone reasons remain visually separate without a prefix.
+- Bbox checks cover every label against every other label and all actual SVG strokes on all 24 form figures at all three widths. The ten quiz and five supplied review-bank figures also pass at 500px and 300px. Label bounds and the 16px minimum are checked too. Additional proximity assertions keep the OP/LM labels beside their segments and Q1/N1 labels beside their points. At desktop the nearest side-label gaps are 7.83px (A) and 8.94px (B), with point-label gaps of 12.67px.
+- Complete browser sweeps passed: 690 Unit 4 page mounts and 33 screenshots; 1242 course mounts, 208 links/assets and 552 screenshots. No builder DOM leaks, renderer errors or Unit 4 overflow. Existing interactive boundary scenarios pass.
+- Art commission sync, citation export, Unit 4 export, build and missing-art inventory are deterministic. The three coordinate revisions are approved in the commission but their art remains unwired.
+
+Evidence: /workspace/geometry-v2/template-screenshots/r4/. Primary filenames are WIDTHxHEIGHT-1.10-worked.png, WIDTHxHEIGHT-4.13-worked.png, WIDTHxHEIGHT-4.11-we2.png and WIDTHxHEIGHT-form-a-item12.png / form-b-item12.png. Full-item companions end in -item12-full.png. verification.json records font, width and proximity measurements. Per-form and bank audit JSON files record the collision results. Full-course and Unit 4 sweep evidence is in course-sweep/ and unit04-sweep/.
