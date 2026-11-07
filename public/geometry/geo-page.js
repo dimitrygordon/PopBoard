@@ -40,7 +40,7 @@ export function mount({ stage, tools, slide, meta, reduce }) {
 
   if (G.kind === "cover") {
     layer.innerHTML = `<div class="gx-cover-art">${G.cover ? `<img src="${esc(G.cover)}" alt="">` : ""}</div>
-      <div class="gx-cover-text"><p class="gx-tag">${esc(G.tag)}</p><h1 class="gx-title">${esc(G.title)}</h1>${G.target ? `<p class="gx-target">${G.target}</p>` : ""}${G.stds ? `<p class="gx-stds">${esc(G.stds)}</p>` : ""}${G.jacobs ? `<p class="gx-citation">${G.jacobs.references.length ? `Jacobs ${esc(G.jacobs.section)}, pp. ${esc(G.jacobs.pages)}` : "Supplement, beyond the textbook. No direct Jacobs section."}</p>` : ""}</div>`;
+      <div class="gx-cover-text"><p class="gx-tag">${esc(G.tag)}</p><h1 class="gx-title">${esc(G.title)}</h1>${G.target ? `<p class="gx-target">${G.target}</p>` : ""}${G.stds ? `<p class="gx-stds">${esc(G.stds)}</p>` : ""}${G.jacobs ? `<p class="gx-citation">${G.jacobs.references.length ? `Jacobs ${esc(G.jacobs.section)}, pp. ${esc(G.jacobs.pages)}${G.jacobs.relationship ? ` (${esc(G.jacobs.relationship)})` : ""}` : "Supplement, beyond the textbook. No direct Jacobs section."}</p>` : ""}</div>`;
   } else if (reading) {
     layer.innerHTML = `<div class="gx-lesson"><p class="gx-tag">${esc(G.tag)}</p><h2 class="gx-head">${esc(G.title)}</h2><div class="gx-content"></div></div>`;
     const content = layer.querySelector(".gx-content");

@@ -58,7 +58,7 @@ The exact source quotations, requested changes and Jacobs anchors are retained i
 - Unit 4 now takes precedence over the earlier full-pilot request: preserved drafts, no activation. Both forms are pending, not just Form B.
 - The spec's 10 slide slots and 12 to 14 screen target had been reconciled in the held draft using subpages. The revised two-day SSS spec supersedes that draft; do not use its old counts as acceptance for the new Unit 4.
 - `data.py` omits review/assessment mappings and the legacy design lesson 12.12. Review/exam covers use the appropriate Jacobs chapter review ranges, MR/FR for exams; 12.12 is labeled review/assessment scope rather than inventing a book example. Every regular mapping provided by `data.py` is checked exactly.
-- The old Unit 4 4.1 diagram coordinates labeled "scalene" actually produce two equal sides. This conflict is recorded in the historical Leo draft and awaits Euclid; no replacement art is activated.
+- Historical Unit 4 4.1 coordinates corrected per Euclid to C=(1,2), D=(7,2), with squared side lengths 25, 5 and 20. No pilot art is activated by that correction.
 - Specialized Unit 4 interactions and the learner-specific worked examples are held. The live template demonstration uses only existing 1.10 mathematics.
 
 ## Verification commands

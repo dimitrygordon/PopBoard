@@ -21,7 +21,8 @@ export const DECKS = [
       5
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -53,7 +54,8 @@ export const DECKS = [
       6
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -85,7 +87,8 @@ export const DECKS = [
       12
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -117,7 +120,8 @@ export const DECKS = [
       17
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -149,7 +153,8 @@ export const DECKS = [
       23
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -181,7 +186,8 @@ export const DECKS = [
       29
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -214,7 +220,8 @@ export const DECKS = [
       34
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -246,7 +253,8 @@ export const DECKS = [
       45
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -279,7 +287,8 @@ export const DECKS = [
       49
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -312,7 +321,8 @@ export const DECKS = [
       54
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 8,
   "pages": [],
@@ -345,7 +355,8 @@ export const DECKS = [
       59
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -384,7 +395,8 @@ export const DECKS = [
       70
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -423,7 +435,8 @@ export const DECKS = [
       74
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -462,7 +475,8 @@ export const DECKS = [
       74
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -495,7 +509,8 @@ export const DECKS = [
       83
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -525,7 +540,8 @@ export const DECKS = [
       90
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -557,7 +573,8 @@ export const DECKS = [
       90
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -589,7 +606,8 @@ export const DECKS = [
       97
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -621,7 +639,8 @@ export const DECKS = [
       104
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -653,7 +672,8 @@ export const DECKS = [
       109
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -685,7 +705,8 @@ export const DECKS = [
       116
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -717,7 +738,8 @@ export const DECKS = [
       122
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -756,7 +778,8 @@ export const DECKS = [
       175
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -796,7 +819,8 @@ export const DECKS = [
       224
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -836,7 +860,8 @@ export const DECKS = [
       116
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -868,7 +893,8 @@ export const DECKS = [
       29
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -898,7 +924,8 @@ export const DECKS = [
       128
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -928,7 +955,8 @@ export const DECKS = [
       128
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -961,7 +989,8 @@ export const DECKS = [
       128
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -991,7 +1020,8 @@ export const DECKS = [
       304
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -1023,7 +1053,8 @@ export const DECKS = [
       304
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -1055,7 +1086,8 @@ export const DECKS = [
       311
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -1094,7 +1126,8 @@ export const DECKS = [
       311
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -1126,7 +1159,8 @@ export const DECKS = [
       311
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -1158,7 +1192,8 @@ export const DECKS = [
       318
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -1190,7 +1225,8 @@ export const DECKS = [
       318
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -1222,7 +1258,8 @@ export const DECKS = [
       329
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 6,
   "pages": [],
@@ -1254,7 +1291,8 @@ export const DECKS = [
       218
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -1286,7 +1324,8 @@ export const DECKS = [
       269
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -1318,7 +1357,8 @@ export const DECKS = [
       324
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -1350,7 +1390,8 @@ export const DECKS = [
       318
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -1382,7 +1423,8 @@ export const DECKS = [
       329
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -1414,7 +1456,8 @@ export const DECKS = [
       329
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -1446,7 +1489,8 @@ export const DECKS = [
       145
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -1476,7 +1520,8 @@ export const DECKS = [
       150
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -1506,7 +1551,8 @@ export const DECKS = [
       150
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -1538,7 +1584,8 @@ export const DECKS = [
       150
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -1570,7 +1617,8 @@ export const DECKS = [
       156
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -1602,7 +1650,8 @@ export const DECKS = [
       156
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -1632,7 +1681,8 @@ export const DECKS = [
       162
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -1664,7 +1714,8 @@ export const DECKS = [
       162
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -1696,7 +1747,8 @@ export const DECKS = [
       180
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 6,
   "pages": [],
@@ -1726,7 +1778,8 @@ export const DECKS = [
       168
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -1758,7 +1811,8 @@ export const DECKS = [
       168
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -1788,7 +1842,8 @@ export const DECKS = [
       175
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -1821,7 +1876,8 @@ export const DECKS = [
       175
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -1851,7 +1907,8 @@ export const DECKS = [
       180
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -1881,7 +1938,8 @@ export const DECKS = [
       180
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -1911,7 +1969,8 @@ export const DECKS = [
       180
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -1947,7 +2006,8 @@ export const DECKS = [
       189
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -1977,7 +2037,8 @@ export const DECKS = [
       194
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -2007,7 +2068,8 @@ export const DECKS = [
       199
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -2039,7 +2101,8 @@ export const DECKS = [
       205
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -2063,7 +2126,8 @@ export const DECKS = [
   "jacobs": {
    "section": "Supplement",
    "pages": "No direct Jacobs section",
-   "references": []
+   "references": [],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -2095,7 +2159,8 @@ export const DECKS = [
       224
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -2134,7 +2199,8 @@ export const DECKS = [
       254
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 5,
   "pages": [],
@@ -2164,7 +2230,8 @@ export const DECKS = [
       229
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -2194,7 +2261,8 @@ export const DECKS = [
       235
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -2226,7 +2294,8 @@ export const DECKS = [
       241
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -2258,7 +2327,8 @@ export const DECKS = [
       241
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -2288,7 +2358,8 @@ export const DECKS = [
       248
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -2320,7 +2391,8 @@ export const DECKS = [
       467
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -2352,7 +2424,8 @@ export const DECKS = [
       467
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -2384,7 +2457,8 @@ export const DECKS = [
       254
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -2421,7 +2495,8 @@ export const DECKS = [
       254
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -2458,7 +2533,8 @@ export const DECKS = [
       254
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -2496,7 +2572,8 @@ export const DECKS = [
       264
      ]
     }
-   ]
+   ],
+   "relationship": "adapted convention"
   },
   "slides": 6,
   "pages": [],
@@ -2526,7 +2603,8 @@ export const DECKS = [
       269
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -2558,7 +2636,8 @@ export const DECKS = [
       269
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -2590,7 +2669,8 @@ export const DECKS = [
       275
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -2622,7 +2702,8 @@ export const DECKS = [
       280
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -2654,7 +2735,8 @@ export const DECKS = [
       285
      ]
     }
-   ]
+   ],
+   "relationship": "adapted convention"
   },
   "slides": 6,
   "pages": [],
@@ -2686,7 +2768,8 @@ export const DECKS = [
       291
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -2711,7 +2794,8 @@ export const DECKS = [
   "jacobs": {
    "section": "Supplement",
    "pages": "No direct Jacobs section",
-   "references": []
+   "references": [],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -2751,7 +2835,8 @@ export const DECKS = [
       578
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -2783,7 +2868,8 @@ export const DECKS = [
       578
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -2815,7 +2901,8 @@ export const DECKS = [
       295
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -2845,7 +2932,8 @@ export const DECKS = [
       295
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -2880,7 +2968,8 @@ export const DECKS = [
       336
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 2,
   "pages": [],
@@ -2910,7 +2999,8 @@ export const DECKS = [
       336
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 2,
   "pages": [],
@@ -2940,7 +3030,8 @@ export const DECKS = [
       336
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 2,
   "pages": [],
@@ -2970,7 +3061,8 @@ export const DECKS = [
       336
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 2,
   "pages": [],
@@ -3000,7 +3092,8 @@ export const DECKS = [
       343
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -3030,7 +3123,8 @@ export const DECKS = [
       350
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -3062,7 +3156,8 @@ export const DECKS = [
       357
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -3094,7 +3189,8 @@ export const DECKS = [
       364
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -3147,7 +3243,8 @@ export const DECKS = [
       364
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -3179,7 +3276,8 @@ export const DECKS = [
       370
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -3211,7 +3309,8 @@ export const DECKS = [
       370
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -3241,7 +3340,8 @@ export const DECKS = [
       375
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 6,
   "pages": [],
@@ -3271,7 +3371,8 @@ export const DECKS = [
       138
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -3303,7 +3404,8 @@ export const DECKS = [
       138
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -3335,7 +3437,8 @@ export const DECKS = [
       138
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -3368,7 +3471,8 @@ export const DECKS = [
       138
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -3400,7 +3504,8 @@ export const DECKS = [
       375
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -3430,7 +3535,8 @@ export const DECKS = [
       375
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -3465,7 +3571,8 @@ export const DECKS = [
       384
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -3495,7 +3602,8 @@ export const DECKS = [
       413
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -3527,7 +3635,8 @@ export const DECKS = [
       413
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -3559,7 +3668,8 @@ export const DECKS = [
       391
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -3591,7 +3701,8 @@ export const DECKS = [
       391
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -3621,7 +3732,8 @@ export const DECKS = [
       398
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -3653,7 +3765,8 @@ export const DECKS = [
       398
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -3683,7 +3796,8 @@ export const DECKS = [
       424
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 6,
   "pages": [],
@@ -3713,7 +3827,8 @@ export const DECKS = [
       406
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -3745,7 +3860,8 @@ export const DECKS = [
       413
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -3769,7 +3885,8 @@ export const DECKS = [
   "jacobs": {
    "section": "Supplement",
    "pages": "No direct Jacobs section",
-   "references": []
+   "references": [],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -3801,7 +3918,8 @@ export const DECKS = [
       419
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -3831,7 +3949,8 @@ export const DECKS = [
       419
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -3861,7 +3980,8 @@ export const DECKS = [
       406
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -3893,7 +4013,8 @@ export const DECKS = [
       424
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -3923,7 +4044,8 @@ export const DECKS = [
       424
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -3959,7 +4081,8 @@ export const DECKS = [
       433
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -3989,7 +4112,8 @@ export const DECKS = [
       440
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -4021,7 +4145,8 @@ export const DECKS = [
       447
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -4053,7 +4178,8 @@ export const DECKS = [
       447
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -4085,7 +4211,8 @@ export const DECKS = [
       453
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -4117,7 +4244,8 @@ export const DECKS = [
       453
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -4149,7 +4277,8 @@ export const DECKS = [
       460
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -4172,16 +4301,17 @@ export const DECKS = [
   "sub": "Unit 9: Right Triangles and Trigonometry",
   "jacobs": {
    "section": "11R",
-   "pages": "475 to 482",
+   "pages": "475 to 480",
    "references": [
     {
      "section": "11R",
      "pages": [
       475,
-      482
+      480
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 6,
   "pages": [],
@@ -4220,7 +4350,8 @@ export const DECKS = [
       460
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -4252,7 +4383,8 @@ export const DECKS = [
       467
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -4291,7 +4423,8 @@ export const DECKS = [
       460
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -4314,16 +4447,17 @@ export const DECKS = [
   "sub": "Unit 9: Right Triangles and Trigonometry",
   "jacobs": {
    "section": "11R",
-   "pages": "475 to 482",
+   "pages": "475 to 480",
    "references": [
     {
      "section": "11R",
      "pages": [
       475,
-      482
+      480
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -4355,7 +4489,8 @@ export const DECKS = [
       474
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -4376,16 +4511,17 @@ export const DECKS = [
   "sub": "Unit 9: Right Triangles and Trigonometry",
   "jacobs": {
    "section": "11R",
-   "pages": "475 to 482",
+   "pages": "475 to 480",
    "references": [
     {
      "section": "11R",
      "pages": [
       475,
-      482
+      480
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -4406,16 +4542,17 @@ export const DECKS = [
   "sub": "Unit 9: Right Triangles and Trigonometry",
   "jacobs": {
    "section": "11R",
-   "pages": "475 to 482",
+   "pages": "475 to 480",
    "references": [
     {
      "section": "11R",
      "pages": [
       475,
-      482
+      480
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -4449,7 +4586,8 @@ export const DECKS = [
       490
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -4481,7 +4619,8 @@ export const DECKS = [
       490
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -4513,7 +4652,8 @@ export const DECKS = [
       496
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -4545,7 +4685,8 @@ export const DECKS = [
       503
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -4577,7 +4718,8 @@ export const DECKS = [
       509
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -4616,7 +4758,8 @@ export const DECKS = [
       541
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -4638,17 +4781,32 @@ export const DECKS = [
   "tag": "GEOMETRY · UNIT 10 · LESSON 10.7",
   "sub": "Unit 10: Circles and Concurrence",
   "jacobs": {
-   "section": "12.5",
-   "pages": "510 to 515",
+   "section": "7.1; 12.2; 12.6",
+   "pages": "258 to 264; 491 to 496; 516 to 521",
    "references": [
     {
-     "section": "12.5",
+     "section": "7.1",
      "pages": [
-      510,
-      515
+      258,
+      264
+     ]
+    },
+    {
+     "section": "12.2",
+     "pages": [
+      491,
+      496
+     ]
+    },
+    {
+     "section": "12.6",
+     "pages": [
+      516,
+      521
      ]
     }
-   ]
+   ],
+   "relationship": "derived corollary"
   },
   "slides": 6,
   "pages": [],
@@ -4687,7 +4845,8 @@ export const DECKS = [
       570
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 6,
   "pages": [],
@@ -4717,7 +4876,8 @@ export const DECKS = [
       515
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -4749,7 +4909,8 @@ export const DECKS = [
       521
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -4781,7 +4942,8 @@ export const DECKS = [
       535
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -4813,7 +4975,8 @@ export const DECKS = [
       547
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -4845,7 +5008,8 @@ export const DECKS = [
       553
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -4884,7 +5048,8 @@ export const DECKS = [
       560
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -4921,7 +5086,8 @@ export const DECKS = [
       570
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -4958,7 +5124,8 @@ export const DECKS = [
       570
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 7,
   "pages": [],
@@ -4993,7 +5160,8 @@ export const DECKS = [
       584
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -5025,7 +5193,8 @@ export const DECKS = [
       590
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -5057,7 +5226,8 @@ export const DECKS = [
       597
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -5087,7 +5257,8 @@ export const DECKS = [
       597
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -5119,7 +5290,8 @@ export const DECKS = [
       604
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -5151,7 +5323,8 @@ export const DECKS = [
       611
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -5183,7 +5356,8 @@ export const DECKS = [
       611
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -5215,7 +5389,8 @@ export const DECKS = [
       611
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -5245,7 +5420,8 @@ export const DECKS = [
       616
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 6,
   "pages": [],
@@ -5275,7 +5451,8 @@ export const DECKS = [
       616
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 6,
   "pages": [],
@@ -5308,7 +5485,8 @@ export const DECKS = [
       625
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -5352,7 +5530,8 @@ export const DECKS = [
       639
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -5384,7 +5563,8 @@ export const DECKS = [
       646
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 7,
   "pages": [],
@@ -5423,7 +5603,8 @@ export const DECKS = [
       661
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -5462,7 +5643,8 @@ export const DECKS = [
       661
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -5494,7 +5676,8 @@ export const DECKS = [
       669
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -5533,7 +5716,8 @@ export const DECKS = [
       717
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 5,
   "pages": [],
@@ -5586,7 +5770,8 @@ export const DECKS = [
       669
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -5610,7 +5795,8 @@ export const DECKS = [
   "jacobs": {
    "section": "Supplement",
    "pages": "No direct Jacobs section",
-   "references": []
+   "references": [],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -5642,7 +5828,8 @@ export const DECKS = [
       676
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -5674,7 +5861,8 @@ export const DECKS = [
       682
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -5694,24 +5882,39 @@ export const DECKS = [
   "tag": "GEOMETRY · UNIT 12 · LESSON 12.12",
   "sub": "Unit 12: Solids and Design",
   "jacobs": {
-   "section": "15R; 16R",
-   "pages": "683 to 688; 713 to 717",
+   "section": "15.2; 15.3; 15.4; 15.6",
+   "pages": "628 to 633; 634 to 639; 640 to 646; 654 to 661",
    "references": [
     {
-     "section": "15R",
+     "section": "15.2",
      "pages": [
-      683,
-      688
+      628,
+      633
      ]
     },
     {
-     "section": "16R",
+     "section": "15.3",
      "pages": [
-      713,
-      717
+      634,
+      639
+     ]
+    },
+    {
+     "section": "15.4",
+     "pages": [
+      640,
+      646
+     ]
+    },
+    {
+     "section": "15.6",
+     "pages": [
+      654,
+      661
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 6,
   "pages": [],
@@ -5750,7 +5953,8 @@ export const DECKS = [
       717
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 2,
   "pages": [],
@@ -5782,7 +5986,8 @@ export const DECKS = [
       695
      ]
     }
-   ]
+   ],
+   "relationship": ""
   },
   "slides": 6,
   "pages": [],
@@ -5812,7 +6017,8 @@ export const DECKS = [
       727
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 2,
   "pages": [],
@@ -5842,7 +6048,8 @@ export const DECKS = [
       727
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 2,
   "pages": [],
@@ -5872,7 +6079,8 @@ export const DECKS = [
       727
      ]
     }
-   ]
+   ],
+   "relationship": "related review scope"
   },
   "slides": 2,
   "pages": [],

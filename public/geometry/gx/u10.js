@@ -6,7 +6,7 @@ import { M, P, lab, txt, createSteps, deg, num, shape, tick, onCircle } from "./
 // the arc from x to y (degrees) that does not contain any of the points in avoid
 const arcAvoid = (O, x, y, avoid) => {
   const a = M.dirDeg(O, x), b = M.dirDeg(O, y), ccw = (((b - a) % 360) + 360) % 360;
-  const inside = (p) => { const d = (((M.dirDeg(O, p) - a) % 360) + 360) % 360; return d > 0.5 && d < ccw - 0.5; };
+  const inside = (p) => { const d = (((M.dirDeg(O, p) - a) % 360) + 360) % 360; return d > 1e-10 && d < ccw - 1e-10; };
   return avoid.some(inside) ? 360 - ccw : ccw;
 };
 const perpBisector = (a, b) => { const m = M.mid(a, b), v = M.perp(M.unit(M.sub(b, a))); return [M.add(m, M.mul(v, -2000)), M.add(m, M.mul(v, 2000))]; };
@@ -80,7 +80,7 @@ export const GX = {
         const d = M.dist(V, O), where = circleRegime(d,r);
         const hits = (X) => M.lineCircleX(V, X, O, r);
         const h1 = hits(A), h2 = hits(C);
-        if (M.dist(V,A)<1e-9*r || M.dist(V,C)<1e-9*r || M.dist(A,C)<1e-9*r || h1.length < 2 || h2.length < 2) { U.read("<p>Undefined: choose distinct rays with two intersections. For tangents use Tangents mode.</p>"); return; }
+        if (M.dist(V,A)<1e-9*r || M.dist(V,C)<1e-9*r || M.dist(A,C)<1e-9*r || h1.length < 2 || h2.length < 2 || M.dist(h1[0],h1[1]) < 1e-9*r || M.dist(h2[0],h2[1]) < 1e-9*r || M.angle(A,V,C) < 1e-8 || Math.abs(M.angle(A,V,C)-180) < 1e-8) { U.read("<p>Undefined: choose distinct rays with two intersections. For tangents use Tangents mode.</p>"); return; }
         const other = (h, X) => (M.dist(h[0], X) > M.dist(h[1], X) ? h[0] : h[1]);
         const A2 = other(h1, A), C2 = other(h2, C);
         g.line(V, A, { w: "bold" }); g.line(V, C, { w: "bold" });
@@ -89,15 +89,15 @@ export const GX = {
         const ang = M.angle(A, V, C);
         g.angle(A, V, C, 1, 60);
         let msg;
-        if (where === "inside") { const x = arcAvoid(O, A, C, [A2, C2]), y = arcAvoid(O, A2, C2, [A, C]); msg = `Inside: angle = \u00bd(arc + vertical arc) = \u00bd(${deg(x)} + ${deg(y)}) = ${deg((x + y) / 2)}.`; }
-        else if (where === "on") { const x = arcAvoid(O, A, C, [V]); msg = `On the circle: an inscribed angle, \u00bd \u00d7 ${deg(x)} = ${deg(x / 2)}.`; }
+        if (where === "inside") { const x = arcAvoid(O, A, C, [A2, C2]), y = arcAvoid(O, A2, C2, [A, C]); msg = `Inside: angle = \u00bd(arc + vertical arc) ≈ \u00bd(${deg(x)} + ${deg(y)}) ≈ ${deg((x + y) / 2)}.`; }
+        else if (where === "on") { const x = arcAvoid(O, A, C, [V]); msg = `On the circle: an inscribed angle, \u00bd \u00d7 ${deg(x)} ≈ ${deg(x / 2)}.`; }
         else {
           const nA = M.dist(V, A) < M.dist(V, A2) ? A : A2, fA = nA === A ? A2 : A, nC = M.dist(V, C) < M.dist(V, C2) ? C : C2, fC = nC === C ? C2 : C;
           const far = arcAvoid(O, fA, fC, [nA, nC]), near = arcAvoid(O, nA, nC, [fA, fC]);
-          msg = `Outside: angle = \u00bd(far arc \u2212 near arc) = \u00bd(${deg(far)} \u2212 ${deg(near)}) = ${deg((far - near) / 2)}. Choose Tangents for the separate tangent construction.`;
+          msg = `Outside: angle = \u00bd(far arc \u2212 near arc) ≈ \u00bd(${deg(far)} \u2212 ${deg(near)}) ≈ ${deg((far - near) / 2)}. Choose Tangents for the separate tangent construction.`;
         }
         txt(g, P(1320, 760), `\u2220V = ${deg(ang)}`, { bold: true });
-        U.read(`<p>${msg} Measured: ${deg(ang)}.</p>`);
+        U.read(`<p>${msg} Measured ≈ ${deg(ang)}.</p>`);
       });
     }
   },

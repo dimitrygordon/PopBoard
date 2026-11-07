@@ -39,7 +39,7 @@ Original numeric application. ABC≅PQR, AB=2x+1,PQ=9,BC=7,PR=10. First correspo
 3. ABC≅DEF, AC=3x-2,DF=13. Find x. AC=DF, so 3x-2=13,3x=15,x=5. Second check: 3(5)-2=13.
 
 ### Diagram specifications
-Two scalene triangles with six explicit names. Use A=(0,0),B=(5,0),C=(1,3) and E=(9,1),F=(9,6),D=(6,2), a rotated translated copy. One/two/three ticks on corresponding sides, with labels outside triangles.
+Two scalene triangles with six explicit names. Use A=(0,0),B=(5,0),C=(1,2) and E=(9,1),F=(9,6),D=(7,2), a rotated translated copy. One/two/three ticks on corresponding sides, with labels outside triangles.
 
 ### Common-mistake correction
 Writing ABC=FED is not a harmless reordering. Use ABC≅DEF only when its matching is correct; use = only for lengths/measures.

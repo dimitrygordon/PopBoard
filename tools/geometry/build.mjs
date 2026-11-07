@@ -103,7 +103,7 @@ const decks = {}, catalog = [], missing = [];
 for (const u of units) {
   const lessonsWithText = u.lessons.filter((l) => content[l.key]);
   for (const l of u.lessons) {
-    const kind = kindOf(l), c = content[l.key], source = citations[l.key], jacobs = source && { section: source.section, pages: source.pages, references: source.references }, stds = stdsFor(l), pages = [];
+    const kind = kindOf(l), c = content[l.key], source = citations[l.key], jacobs = source && { section: source.section, pages: source.pages, references: source.references, relationship: source.relationship }, stds = stdsFor(l), pages = [];
     if (kind === "other") missing.push(l.key);
     if (!jacobs) throw new Error(`Missing Jacobs citation for ${l.key}`);
     const page = (title, geo, extra = {}) => pages.push({ n: pages.length + 1, title, items: [], ...extra, geo: { tag: tagFor(l), title, ...geo } });

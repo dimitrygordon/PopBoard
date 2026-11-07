@@ -8,7 +8,7 @@ Export each worked-example, activity, common-mistake and practice figure separat
 
 ## 4.1 Corresponding Parts
 - Existing reusable base: `correspond`. Do not reuse a generic figure with mismatched labels.
-- Exact construction, labels and measures: Two scalene triangles with six explicit names. Use A=(0,0),B=(5,0),C=(1,3) and E=(9,1),F=(9,6),D=(6,2), a rotated translated copy. One/two/three ticks on corresponding sides, with labels outside triangles.
+- Exact construction, labels and measures: Two scalene triangles with six explicit names. Use A=(0,0),B=(5,0),C=(1,2) and E=(9,1),F=(9,6),D=(7,2), a rotated translated copy. One/two/three ticks on corresponding sides, with labels outside triangles.
 - Worked example 1: List the six matching parts (adapted from Jacobs p. 140). Use these explicit givens and label order: We are told triangle ABC ≅ triangle EFD.
 - Worked example 2: Use a match to find x (original problem). Use these explicit givens and label order: Triangle ABC ≅ triangle PQR, with AB = 2x + 1 and PQ = 9.
 - Common-mistake card: Given A matches D, B matches E and C matches F, Jordan writes triangle ABC ≅ triangle FED. Find the mismatch. Keep only the givens on the first frame. Put the corrected names/marks on a separate reveal layer.
@@ -152,6 +152,6 @@ Export each worked-example, activity, common-mistake and practice figure separat
 - Form A uses the first 12 review-item figures, givens only. Form B remains a placeholder until Euclid replaces it.
 
 ## Source conflicts needing review
-- 4.1 calls the triangles scalene, but the supplied coordinates give AB=BC=5 (and EF=FD=5). Preserve the exact correspondence; ask Euclid whether to change the coordinates or the word before final art. Current matching task has no scalene claim.
+- 4.1 uses Euclid's corrected scalene coordinates C=(1,2), D=(7,2). Corresponding squared lengths are 25, 5 and 20 under (x,y) → (9−y,1+x). This correction does not activate the held pilot.
 - 4.10 has one main-case example and two practice items after the approved moves. The implementation splits its seven proof rows over three pages, giving 12 screens without inventing an example.
 - 4.13 optional perpendicular-bisector example starts collapsed; the angle-bisector example is first. M and its incidence must appear before its first use.

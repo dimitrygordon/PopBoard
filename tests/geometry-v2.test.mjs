@@ -16,7 +16,7 @@ test('180 citations match the checked-in Jacobs source map, including every cove
  const sourceMap=JSON.parse(source);
  for(const [i,d] of DECKS.entries()){
   const ref=refs[`${d.q}.${d.lesson}`];assert.ok(ref.section&&ref.pages,d.slug);
-  const expectedRef={section:ref.section,pages:ref.pages,references:ref.references};
+  const expectedRef={section:ref.section,pages:ref.pages,references:ref.references,relationship:ref.relationship};
   assert.deepEqual(all[i].jacobs,expectedRef);assert.deepEqual(all[i].slides[0].geo.jacobs,expectedRef);
   const expected=sourceMap[`${d.q}.${d.lesson}`];if(expected){assert.equal(ref.section,expected.section);assert.equal(ref.pages,expected.pages);}
  }
@@ -46,7 +46,7 @@ test('builder metadata and raw coordinate certificates are absent from exported 
 test('E01 to E17: corrected learner text present and superseded text gone from every deck',()=>{
  const errata=JSON.parse(read('tools/geometry/errata.json'));
  const joined=text(all.map(d=>JSON.stringify(d)).join('\n'));
- const witnesses={E06:'First define M=PQ∩AB',E09:"Under this course's inclusive trapezoid convention",E11:'Postulate (assumed here, not proved by proportional sides)'};
+ const witnesses={E06:'Reflection in AB fixes each center and circle',E09:"Under this course's inclusive trapezoid convention",E11:'Postulate (assumed here, not proved by proportional sides)'};
  for(const e of errata.slice(0,17)){
   const old=e.id==='E14'?'Cone, πr2 + πrℓ.':e.old;
   assert.ok(!joined.includes(old),`${e.id}: old text remains`);
