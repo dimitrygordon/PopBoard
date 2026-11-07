@@ -33,7 +33,7 @@ Unit 4 was subsequently released from its content hold by the coordinator. The f
 
 The exporter uses an explicit learner-field allowlist. Regular worked solutions use Socrates' learner paraphrases of Euclid's mathematics. Quiz/review/form answers and independent checks are selected individually from the final builder bank and matched to the final learner prompt ids. Staff labels and backend certificates are removed, never copied wholesale.
 
-Of 143 Unit 4 figure slots, 49 have supplied SVGs and 94 intentionally show `Figure coming` plus the lesson id pending Leo's art. All mandatory standalone assessment and SSA figures are supplied. The current exact-construction art commission is LEO-DIAGRAMS-unit04.md, also regenerated at `/workspace/geometry-v2/LEO-DIAGRAMS-unit04.md`. That handoff, not the old parked draft, is current. Leo's final visual pass and Euclid/Socrates implementation stamps are still required before merge.
+All 143 Unit 4 figure slots now have supplied SVGs: 94 mapped Leo files and 49 retained programmer figures. No Unit 4 art placeholder is rendered. All mandatory standalone assessment and SSA figures are supplied. The current exact-construction art commission is LEO-DIAGRAMS-unit04.md, also regenerated at `/workspace/geometry-v2/LEO-DIAGRAMS-unit04.md`. That handoff, not the old parked draft, is current. Leo's final visual pass and Euclid/Socrates implementation stamps are still required before merge.
 
 `tools/geometry/drafts/` preserves pre-hold history only. It is not imported by the build and the old exporter no longer rewrites it.
 
@@ -86,3 +86,10 @@ All 143 Unit 4 proof, practice, check and mistake figure slots now have inline S
 Conclusion groups are hidden on mount. Practice solution/check and misconception correction reveal only the current figure's conclusions; proofs show them only when all rows are shown. Back re-hides proof conclusions. Print CSS keeps conclusions hidden even after an on-screen reveal. SVG viewBoxes and uncapped full-width/auto-height layout are unchanged. Missing-art inventory: 127 course figures, zero in Unit 4.
 
 Canonical spot checks compare every pairwise point distance after uniform scaling to Euclid's approved models for 4.4 Practice 3, 4.7 Worked example 2 and 4.14 Practice 4, to within 0.000001 model unit. The live labels are 2x+3 and 11; (3x+5) degrees and (5x-17) degrees; 2x+1 and 11, respectively. Source rounding tolerances are documented by Leo; no coordinates were invented or redrawn.
+
+
+## Review round 5B: final learner wording
+
+The shared final SPEC-unit04.md is snapshotted byte-for-byte and rebuilt. 4.11 now says "Swinging door: one SSA recipe, two triangles." and "Bigger doesn't fix it." with no student-version aside in any Unit 4 learner data. 4.13's in-class proof reasons explicitly state that one compass setting at O gives OU = OV and one new setting used from both U and V gives UX = VX.
+
+4.11 Worked example 2 uses the permitted caption "Not to scale." rather than "Same shape, twice as big." The model lengths are exactly doubled, but both diagrams are independently fitted to the same screen bounds, so the page does not display twice the physical size. The alt text makes that distinction explicit. No exact givens or geometry changed.

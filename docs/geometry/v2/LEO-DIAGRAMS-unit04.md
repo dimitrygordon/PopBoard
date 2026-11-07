@@ -2,7 +2,7 @@
 
 Student wording: Socrates. Math: Euclid. Build: PR 170. No builder text or coordinate certificates should be drawn as learner labels. All art is editable SVG, black strokes on white, live labels, separate given and conclusion layers.
 
-Source SHA-256: fa9879ec160e4d856917c71b1394aab2803fc81e7be7c201a2f57772964316a9
+Source SHA-256: 0d472978fe78fb5003b0a6cfd6c093da1d35afb32b4441e1b99560c51a67d398
 
 Figure slots exist on every worked-example, practice, check and common-mistake screen. Slots without a supplied SVG are omitted from the student DOM until art arrives; text uses the full width. See PLACEHOLDER-SLIDES.md for the missing-art inventory. Fill each planned slot with its own correct givens, not a reused diagram with different letters.
 
@@ -92,9 +92,9 @@ Three proof SVG panels with A=(-2,0),B=(2,0),C=(t,h),G=(t,-h),h>0: t=0 interior,
 
 ## 4.11
 
-Slots: get-started / big-idea art; Swinging door: one SSA recipe, two triangles (student version of Euclid's example)., Bigger doesn't fix it (student version).; common mistake; 3 practice figures; check-yourself.
+Slots: get-started / big-idea art; Swinging door: one SSA recipe, two triangles., Bigger doesn't fix it.; common mistake; 3 practice figures; check-yourself.
 
-PR170 Euclid re-review R2: Worked example 2 uses A=(0,0), B=(8,6), C1=(6,0), C2=(10,0), AB=10, AC1=6, AC2=10, with the common circle centered at B. Label scale factor 2 if fitted to the same screen bounds as Worked example 1. The common-mistake figure is separate: A=(0,0), B=(4,3), C=(4,0), circle radius 3 at B, one contact C strictly beyond A, and an explicit right-angle mark at C. Never reuse the two-crossing figure for this pictured tangent correction.
+PR170 Euclid re-review R2: Worked example 2 uses A=(0,0), B=(8,6), C1=(6,0), C2=(10,0), AB=10, AC1=6, AC2=10, with the common circle centered at B. Round 5 caption: Not to scale. Both examples are fitted to the same screen bounds. The common-mistake figure is separate: A=(0,0), B=(4,3), C=(4,0), circle radius 3 at B, one contact C strictly beyond A, and an explicit right-angle mark at C. Never reuse the two-crossing figure for this pictured tangent correction.
 
 Use A=(0,0),B=(4,3),C1=(3,0),C2=(5,0), uniform scale. Draw full radius-sqrt(10) circle at B, label two intersections distinctly, angle arc at A shared. For W2 draw doubled copy at same screen scale or label scale factor. Reject tangent/no-intersection cases if UI says two triangles.
 

@@ -812,7 +812,7 @@
     "idea": "SSA can give two, one or no triangles, so it is not a test.",
     "examples": [
       {
-        "title": "Swinging door: one SSA recipe, two triangles (student version of Euclid's example).",
+        "title": "Swinging door: one SSA recipe, two triangles.",
         "steps": [
           {
             "step": "Draw a ray from A. Mark B above it so that AB = 5 and the angle at A is fixed.",
@@ -842,7 +842,7 @@
         "optional": false
       },
       {
-        "title": "Bigger doesn't fix it (student version).",
+        "title": "Bigger doesn't fix it.",
         "steps": [
           {
             "step": "Draw the same picture twice as big. AB is now 10, and the angle at A doesn't change.",
@@ -978,11 +978,11 @@
         "steps": [
           {
             "step": "Mark U and V on the two rays of the angle so that OU = OV.",
-            "reason": "First compass step."
+            "reason": "One compass setting, centered at O, gives OU = OV."
           },
           {
             "step": "Draw equal arcs from U and V that meet at X inside the angle.",
-            "reason": "Second compass step."
+            "reason": "One new compass setting, used from both U and V, so UX = VX."
           },
           {
             "step": "OU = OV, UX = VX, OX = OX.",

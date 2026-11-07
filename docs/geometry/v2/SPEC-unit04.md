@@ -876,7 +876,7 @@ Each worked example shows one step at a time: step text on the left, its reason 
 - Exit ticket: (1) Sketch SSA data that makes two triangles. (2) Does making every length bigger fix SSA? Why? (3) What's confusing?
 - **Learner layer** (Socrates; student-facing, 9th to 10th grade reading level; same math and values as the builder layer):
   - Worked example 1:
-    *Swinging door: one SSA recipe, two triangles (student version of Euclid's example).* Reveal one row per tap:
+    *Swinging door: one SSA recipe, two triangles.* Reveal one row per tap:
 
     | Step | Reason |
     |---|---|
@@ -887,7 +887,7 @@ Each worked example shows one step at a time: step text on the left, its reason 
     | But AC1 = 3 and AC2 = 5, so the triangles are not congruent. | Their third sides are different. |
     | So SSA is not a congruence test. | One counterexample is enough. |
   - Worked example 2:
-    *Bigger doesn't fix it (student version).* Reveal one row per tap:
+    *Bigger doesn't fix it.* Reveal one row per tap:
 
     | Step | Reason |
     |---|---|
@@ -1070,8 +1070,8 @@ Each worked example shows one step at a time: step text on the left, its reason 
 
     | Step | Reason |
     |---|---|
-    | Mark U and V on the two rays of the angle so that OU = OV. | First compass step. |
-    | Draw equal arcs from U and V that meet at X inside the angle. | Second compass step. |
+    | Mark U and V on the two rays of the angle so that OU = OV. | One compass setting, centered at O, gives OU = OV. |
+    | Draw equal arcs from U and V that meet at X inside the angle. | One new compass setting, used from both U and V, so UX = VX. |
     | OU = OV, UX = VX, OX = OX. | Compass settings and a shared side. |
     | Triangle OUX ≅ triangle OVX. | SSS. |
     | Angle UOX = angle VOX, so OX bisects the angle. | CPCTC. X must be inside the angle and not at O. |

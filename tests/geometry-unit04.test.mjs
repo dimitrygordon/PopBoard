@@ -112,7 +112,7 @@ test('4.14 art-slot prompt and current learner correction describe the same vert
 test('4.11 second worked figure doubles every given and both circle crossings',()=>{
  const examples=deck(11).slides.filter(s=>s.geo.kind==='worked-example').map(s=>s.geo.figure);
  for(const label of ['AB = 5','AC1 = 3','AC2 = 5'])assert.ok(examples[0].svg.includes(label));
- for(const label of ['AB = 10','AC1 = 6','AC2 = 10','Scale factor 2'])assert.ok(examples[1].svg.includes(label));
+ for(const label of ['AB = 10','AC1 = 6','AC2 = 10','Not to scale.'])assert.ok(examples[1].svg.includes(label));
  assert.match(examples[1].alt,/AB = 10, AC1 = 6, AC2 = 10/);assert.notEqual(examples[0].svg,examples[1].svg);
  const svg=examples[1].svg,circle=svg.match(/<circle cx="([^"]+)" cy="([^"]+)" r="([^"]+)"/).slice(1).map(Number);
  const lines=[...svg.matchAll(/<path d="M(-?[0-9.e+]+),(-?[0-9.e+]+)L(-?[0-9.e+]+),(-?[0-9.e+]+)"/g)].map(m=>m.slice(1).map(Number));
@@ -170,4 +170,15 @@ test('round 5: mapped art replaces any fallback while unmapped programmer art su
  const {unit04Figure}=await import('../tools/geometry/u04-art.mjs');const ours={svg:'programmer SVG',alt:'original'};
  assert.equal(unit04Figure(16,4,ours),ours);assert.notEqual(unit04Figure(4,10,ours),ours);
  assert.equal(unit04Figure(4,10,ours).svg,read('public/geometry/figures/u04/u04-l04-s10.svg'));
+});
+
+test('round 5: final SSA titles and explicit compass facts reach learner pages',()=>{
+ const examples=deck(11).slides.filter(s=>s.geo.kind==='worked-example');
+ assert.deepEqual(examples.map(s=>s.geo.prompt),['Swinging door: one SSA recipe, two triangles.',"Bigger doesn't fix it."]);
+ for(let n=1;n<=16;n++)assert.doesNotMatch(JSON.stringify(deck(n)),/student version/i);
+ assert.ok(examples[1].geo.figure.svg.includes('>Not to scale.</text>'));assert.ok(!examples[1].geo.figure.svg.includes('Scale factor 2; fitted drawing.'));
+ const reasons=deck(13).slides.find(s=>s.geo.kind==='worked-example').geo.steps.map(s=>s.reason);
+ assert.equal(reasons[0],'One compass setting, centered at O, gives OU = OV.');
+ assert.equal(reasons[1],'One new compass setting, used from both U and V, so UX = VX.');
+ assert.equal(reasons[2],'Compass settings and a shared side.');
 });

@@ -35,15 +35,18 @@ try{
      live.destroy();mounts++;
     }
    }
+   if([...document.querySelector('.stage').querySelectorAll('.conclusion')].some(g=>getComputedStyle(g).display!=='none'))throw new Error('reveal affected a different figure');
    stage.remove();tools.remove();return{mounts,layers};
   },base);mounts+=sweep.mounts;layers+=sweep.layers;
   const targets=[['u04-l13',4,'4.13-worked',false],['u04-l04',10,'4.4-practice3',false],['u04-l07',5,'4.7-we2',false]];
-  if(size.width!==844)targets.push(['u04-l11',5,'4.11-we2',false],['u04-l13',4,'4.13-worked-revealed',true],['u04-l04',10,'4.4-practice3-revealed',true],['u04-l12',7,'4.12-common-mistake',false],['u04-l12',7,'4.12-correction-revealed',true]);
+  if(size.width!==844)targets.push(['u04-l11',4,'4.11-we1',false],['u04-l11',5,'4.11-we2',false],['u04-l13',4,'4.13-worked-revealed',true],['u04-l04',10,'4.4-practice3-revealed',true],['u04-l12',7,'4.12-common-mistake',false],['u04-l12',7,'4.12-correction-revealed',true]);
   for(const [slug,n,label,reveal] of targets){
    await page.goto(`${base}/study-geometry-story.html?lesson=${slug}&page=${n}`,{waitUntil:'domcontentloaded'});await page.waitForSelector('.gx-figure-slot svg');
    if(reveal)await page.$$eval('.gx-actions button',bs=>bs.find(b=>['Show all','Reveal solution','Reveal correction'].includes(b.textContent)).click());
-   else if(label==='4.13-worked'||label==='4.7-we2'||label==='4.11-we2'){await page.click('.gx-actions button:nth-child(2)');await page.click('.gx-actions button:nth-child(2)');}
+   else if(label==='4.13-worked'||label==='4.7-we2'||label==='4.11-we2'||label==='4.11-we1'){await page.click('.gx-actions button:nth-child(2)');await page.click('.gx-actions button:nth-child(2)');}
    await settle();
+   if(slug==='u04-l11'){const text=await page.$eval('.gx-learner-text',e=>e.textContent);assert.ok(text.includes(n===4?'Swinging door: one SSA recipe, two triangles.':"Bigger doesn't fix it."));assert.ok(!text.includes('student version'));if(n===5)assert.ok(await page.$eval('.gx-figure-slot',e=>e.textContent.includes('Not to scale.')));}
+   if(slug==='u04-l13'){assert.ok((await page.$eval('.gx-proof',e=>e.textContent)).includes('One compass setting, centered at O, gives OU = OV.'));}
    const m=await page.$eval('.gx-figure-slot',e=>{const s=e.querySelector('svg'),r=s.getBoundingClientRect();return{column:e.getBoundingClientRect().width,svg:r.width,ratio:r.width/r.height,viewRatio:s.viewBox.baseVal.width/s.viewBox.baseVal.height,minFont:Math.min(...[...e.querySelectorAll('text')].filter(t=>getComputedStyle(t.closest('.conclusion')||t).display!=='none').map(t=>parseFloat(getComputedStyle(t).fontSize)*Math.hypot(t.getScreenCTM().a,t.getScreenCTM().b))),layers:[...e.querySelectorAll('.conclusion')].filter(g=>g.children.length).map(g=>getComputedStyle(g).display!=='none')};});
    assert.ok(m.minFont>=15.99,JSON.stringify(m));if(size.width===1440)assert.ok(m.column>=300);assert.ok(Math.abs(m.svg-m.column)<1);assert.ok(Math.abs(m.ratio-m.viewRatio)<.001);
    if(reveal){assert.ok(m.layers.length,'nonempty conclusion');assert.ok(m.layers.every(Boolean));}else assert.ok(m.layers.every(v=>!v));

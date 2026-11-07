@@ -7,7 +7,7 @@ const exit=(page,items,title='Exit ticket',before='')=>{const body=before+exitBo
 const slot=(lid,index)=>{
  if(lid==='4.1'&&index===0)return figure(correspondenceFigure(),'Two scalene congruent triangles ABC and EFD, with matching side ticks.');
  if(lid==='4.10')return figure(sssFigure(index?4:0,!!index),index?'SSS exterior case: CG meets AB beyond B.':'SSS interior case: CG crosses between A and B.');
- if(lid==='4.11')return figure(ssaFigure(index?'double':'review'),index?'Doubled SSA figure, scale factor 2, fitted to the page: A, B, C1 and C2; AB = 10, AC1 = 6, AC2 = 10. The circle centered at B passes through both C points.':'One ray from A, one circle at B and two possible triangles: AB = 5, AC1 = 3, AC2 = 5.');
+ if(lid==='4.11')return figure(ssaFigure(index?'double':'review'),index?'Doubled SSA model, fitted to the page, not drawn at twice the displayed size: A, B, C1 and C2; AB = 10, AC1 = 6, AC2 = 10. The circle centered at B passes through both C points.':'One ray from A, one circle at B and two possible triangles: AB = 5, AC1 = 3, AC2 = 5.');
  return null;
 };
 const bankItem=(page,item,title)=>practice(page,{...item,figure:figure(bankFigure(item.id),`Givens for ${title}.`)},title);
