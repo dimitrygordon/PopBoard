@@ -114,3 +114,12 @@ html[data-course="geometry"] .ac-stds.on-cover { display: none; }
   .story:has(.gx-reading) .sheet-handle { display: none; }
   .gx-lesson { padding: 18px; font-size: 16px; }
 }
+
+/* Every proof, practice and mistake keeps its figure with the learner text. */
+.gx-figure-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 24px; }
+.gx-learner-text { min-width: 0; }
+.gx-figure-slot { margin: 0; min-width: 0; align-self: start; }
+.gx-figure-slot svg, .gx-figure-slot img { width: 100%; height: auto; max-width: 100%; }
+.gx-figure-placeholder { min-height: 140px; border: 1px dashed #B9B0A2; border-radius: 10px; display: grid; align-content: center; justify-items: center; color: var(--gx-dim); }
+.gx-figure-placeholder small { display: block; }
+@media (max-width: 599px) and (orientation: portrait) { .gx-figure-layout { grid-template-columns: 1fr; gap: 12px; } }

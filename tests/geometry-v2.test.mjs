@@ -24,7 +24,7 @@ test('180 citations match the checked-in Jacobs source map, including every cove
 test('all regular lessons have common mistakes and exits ending with the fixed question',()=>{
  for(const d of DECKS.filter(d=>d.kind==='lesson')){
   const slides=deck(d).slides;assert.ok(slides.some(s=>s.geo.kind==='common-mistake'),d.slug);
-  const exit=slides.at(-1);assert.equal(exit.geo.kind,'exit-ticket');assert.equal((exit.geo.body.match(/<li>/g)||[]).length,2);assert.ok(text(exit.geo.body).trim().endsWith("What's confusing?"),d.slug);
+  const exit=slides.at(-1);assert.equal(exit.geo.kind,'exit-ticket');assert.equal((exit.geo.body.match(/<li>/g)||[]).length,3);assert.ok(text(exit.geo.body).trim().endsWith("What's confusing?"),d.slug);
  }
 });
 test('Unit 4 pilot is held, with completed work preserved outside public',()=>{

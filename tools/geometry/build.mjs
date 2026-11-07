@@ -113,15 +113,15 @@ for (const u of units) {
       page("Get started", { kind: "text", body: hook, fig: c.fig }, { html: hook });
       page("The big idea", { kind: "text", body: c.idea, fig: c.fig }, { html: c.idea });
       if (GXMAP[l.key]) { const how = md(l.inter.replace(/^Interactive: (sandbox|construction)\.\s*/, "")); page("Try it", { kind: "gx", gx: GXMAP[l.key] }, { html: `<p>${how}</p><p>Use the controls in the panel. Drag the hollow points on the board.</p>` }); }
-      for (const example of c.workedExamples || []) worked(page, example);
-      for (const item of c.practice || []) practice(page, item);
+      for (const example of c.workedExamples || []) worked(page, { ...example, figure: example.figure || c.figure });
+      for (const item of c.practice || []) practice(page, { ...item, figure: item.figure || c.figure });
       const q = `<p class="gx-q">${c.check[0]}</p><p class="gx-hint">Work it out, then press <b>Show the answer</b>.</p>`;
       page("Check yourself", { kind: "text", body: q, fig: c.checkFig || null }, { html: `<p>${c.check[0]}</p>`, reveal: plain(c.check[1]) });
       const commonMistake = c.commonMistake || {
         prompt: source.misconception ? `A student says: ${source.misconception.split(" Surface it:")[0]}` : "A student says one successful drawing proves every case. What is missing?",
         correction: c.idea + (!source.misconception ? "<p>A drawing can suggest a conjecture. A general claim requires a reason covering every stated case.</p>" : "")
       };
-      mistake(page, commonMistake.prompt, commonMistake.correction);
+      mistake(page, commonMistake.prompt, commonMistake.correction, commonMistake.figure || c.figure);
       const exit = exitBody(c.exitTicket || [plain(c.check[0]), "Explain the reason behind your answer in one sentence."]);
       page("Exit ticket", { kind: "exit-ticket", body: exit }, { html: exit });
     } else {

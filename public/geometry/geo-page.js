@@ -43,17 +43,27 @@ export function mount({ stage, tools, slide, meta, reduce }) {
       <div class="gx-cover-text"><p class="gx-tag">${esc(G.tag)}</p><h1 class="gx-title">${esc(G.title)}</h1>${G.target ? `<p class="gx-target">${G.target}</p>` : ""}${G.stds ? `<p class="gx-stds">${esc(G.stds)}</p>` : ""}${G.jacobs ? `<p class="gx-citation">${G.jacobs.references.length ? `Jacobs ${esc(G.jacobs.section)}, pp. ${esc(G.jacobs.pages)}${G.jacobs.relationship ? ` (${esc(G.jacobs.relationship)})` : ""}` : "Supplement, beyond the textbook. No direct Jacobs section."}</p>` : ""}</div>`;
   } else if (reading) {
     layer.innerHTML = `<div class="gx-lesson"><p class="gx-tag">${esc(G.tag)}</p><h2 class="gx-head">${esc(G.title)}</h2><div class="gx-content"></div></div>`;
-    const content = layer.querySelector(".gx-content");
+    let content = layer.querySelector(".gx-content");
+    if (["worked-example", "practice", "common-mistake"].includes(G.kind)) {
+      content.classList.add("gx-figure-layout");
+      const figure = document.createElement("figure"); figure.className = "gx-figure-slot";
+      const alt = G.figure?.alt || `Figure for lesson ${meta.q}.${meta.lesson}`;
+      if (G.figure?.svg) { figure.innerHTML = G.figure.svg; const svg = figure.querySelector("svg"); svg?.setAttribute("role", "img"); svg?.setAttribute("aria-label", alt); }
+      else if (G.figure?.src) figure.innerHTML = `<img src="${esc(G.figure.src)}" alt="${esc(alt)}">`;
+      else { figure.classList.add("gx-figure-placeholder"); figure.innerHTML = `<span>Figure coming</span><small>Lesson ${esc(meta.q)}.${esc(meta.lesson)}</small>`; }
+      const text = document.createElement("div"); text.className = "gx-learner-text";
+      content.append(figure, text); content = text;
+    }
     const para = (text) => { const p = document.createElement("p"); p.textContent = text; content.append(p); return p; };
     const actions = document.createElement("div"); actions.className = "gx-actions";
     const button = (label, fn) => { const b = document.createElement("button"); b.type = "button"; b.textContent = label; b.onclick = fn; actions.append(b); return b; };
     if (G.kind === "worked-example") {
       para(G.prompt); content.append(actions);
-      const status = para(""); status.setAttribute("aria-live", "polite");
+      const status = para(""); status.className = "gx-step-status"; status.setAttribute("aria-live", "polite");
       const table = document.createElement("table"); table.className = "gx-proof"; content.append(table);
       let count = 0;
       const draw = () => {
-        table.innerHTML = count ? `<thead><tr><th scope="col">Step</th><th scope="col">Reason</th></tr></thead><tbody>${G.steps.slice(0,count).map(s=>`<tr><td>${esc(s.step)}</td><td>${esc(s.reason)}</td></tr>`).join("")}</tbody>` : "";
+        table.innerHTML = `<thead><tr><th scope="col">Statement</th><th scope="col">Reason</th></tr></thead><tbody>${G.steps.slice(0,count).map((s,i)=>`<tr><td><span class="gx-step-number">${i+1}</span> ${esc(s.step)}</td><td>${esc(s.reason)}</td></tr>`).join("")}</tbody>${count < G.steps.length ? '<tfoot><tr class="gx-prediction"><td>What comes next? Decide, then tap.</td><td></td></tr></tfoot>' : ''}`;
         status.textContent = `${G.optional ? "Optional extension. " : ""}${count} of ${G.steps.length} steps shown.`;
         back.disabled = count===0; next.disabled=count===G.steps.length;
       };
@@ -61,7 +71,7 @@ export function mount({ stage, tools, slide, meta, reduce }) {
       const next = button("Next step",()=>{count=Math.min(G.steps.length,count+1);draw();});
       button("Show all",()=>{count=G.steps.length;draw();}); draw();
     } else if (G.kind === "practice") {
-      para(G.prompt); content.append(actions);
+      para(G.prompt); para("Try it on paper first, then reveal."); content.append(actions);
       const solution = para(""); solution.className = "gx-solution";
       const check = para(""); check.className = "gx-second-check";
       solution.hidden = check.hidden = true;
@@ -69,7 +79,7 @@ export function mount({ stage, tools, slide, meta, reduce }) {
       const second = button("Reveal second check",()=>{check.textContent=G.check;check.hidden=false;second.disabled=true;second.setAttribute("aria-expanded","true");});
       first.setAttribute("aria-expanded","false"); second.setAttribute("aria-expanded","false"); second.hidden=true;
     } else if (G.kind === "common-mistake") {
-      para(G.prompt); para("Find the error and explain your correction before revealing it."); content.append(actions);
+      para(G.prompt).className = "gx-wrong"; para("Try it on paper first, then reveal."); content.append(actions);
       const correction=document.createElement("div"); correction.hidden=true; correction.className="gx-correction";content.append(correction);
       const reveal=button("Reveal correction",()=>{correction.innerHTML=G.correction;correction.hidden=false;reveal.disabled=true;reveal.setAttribute("aria-expanded","true");});reveal.setAttribute("aria-expanded","false");
     } else content.innerHTML=G.body;
