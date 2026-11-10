@@ -99,7 +99,7 @@
   var ptr = { tx: 0, ty: 0, x: 0, y: 0 };
   var wxKey = "", clouds = [], drops = [], beads = [], flakes = [], cloudSprites = [], hillCv = null, hillKey = "";
   var shoot = null, nextShoot = 0, sat = null, nextSat = 0, flash = null, nextFlash = 0;
-  var astro = null, hub = { x: 0, y: 0, r: 0, top: 0, bottom: 0 };
+  var astro = null, hub = { x: 0, y: 0, r: 0, top: 0, bottom: 0 }, plaqueBox = null;
   var V = [0, 0, 0], P = [0, 0, 0], Q = [0, 0, 0];
 
   function te() { return T / (phone ? 9 / 14 : 1); }        // desktop-equivalent intro time
@@ -156,7 +156,7 @@
   /* ---------------- sky colours ---------------- */
   var SKY = [[-18, [6, 10, 28], [12, 18, 44], [22, 28, 62]], [-9, [16, 20, 56], [48, 40, 96], [120, 70, 110]],
     [-3, [40, 52, 112], [150, 96, 150], [255, 128, 96]], [2, [70, 110, 180], [230, 150, 170], [255, 170, 100]],
-    [8, [96, 156, 226], [170, 200, 236], [255, 214, 170]], [25, [70, 140, 230], [140, 190, 245], [210, 230, 252]], [90, [50, 120, 220], [120, 175, 240], [196, 222, 250]]];
+    [8, [96, 156, 226], [170, 200, 236], [255, 214, 170]], [25, [34, 92, 192], [122, 172, 228], [228, 234, 236]], [90, [26, 80, 180], [112, 164, 226], [222, 230, 236]]];
   function skyColors(wk) {
     var a = sky.sunAlt, i = 0; while (i < SKY.length - 2 && SKY[i + 1][0] <= a) i++;
     var A = SKY[i], B = SKY[i + 1], t = sstep(clamp((a - A[0]) / (B[0] - A[0]), 0, 1));
@@ -210,6 +210,7 @@
     if (!astroEl) return;
     var b = astroEl.getBoundingClientRect();
     hub.x = b.left + b.width / 2; hub.y = b.top + b.height / 2; hub.r = b.width / 2; hub.top = b.top; hub.bottom = b.bottom;
+    var pq = doc.querySelector("a.study-pill"), pb = pq && pq.getBoundingClientRect(); plaqueBox = pb && pb.width ? { left: pb.left, right: pb.right, top: pb.top, bottom: pb.bottom } : null;
   }
 
   /* ---------------- the dome shutters (SVG, regenerated on resize) ---------------- */
@@ -276,6 +277,8 @@
     s.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + (-R - 8) + ' ' + (-R - 8) + ' ' + (2 * R + 16) + ' ' + (2 * R + 16) + '" aria-hidden="true" focusable="false">');
     s.push('<defs><path id="obsTxtTop" d="' + arcD(G.tIn + (phone ? 6.5 : 8.5), -88, 88) + '"/><path id="obsTxtBot" d="' + arcD(G.tOut - (phone ? 6 : 8), 268, 92) + '"/></defs>');
 
+    // the face: invisible at night (the sky shows through), warm parchment by day
+    s.push('<g id="obsFace" opacity="0"><circle class="obs-face" r="' + R + '"/><circle class="obs-face-in" r="' + G.tIn + '"/></g>');
     // rete: the star-pointer lattice, turned by sidereal time (drawn first, under the rings)
     s.push('<g id="obsRete" opacity="0">');
     s.push(ring(G.cap, 1.1, BRASS, .9) + ring(G.Req, .5, BRASS, .45));
@@ -349,7 +352,7 @@
     s.push("</svg>");
     astroEl.innerHTML = s.join("");
     function $(id) { return astroEl.querySelector("#" + id); }
-    astro = { G: G, rete: $("obsRete"), eye: $("obsEye"), knurl: $("obsKnurl"), iris: $("obsIris"), ringI: $("obsRingI"), ringM: $("obsRingM"),
+    astro = { G: G, face: $("obsFace"), rete: $("obsRete"), eye: $("obsEye"), knurl: $("obsKnurl"), iris: $("obsIris"), ringI: $("obsRingI"), ringM: $("obsRingM"),
       ringO: $("obsRingO"), hand: $("obsHand"), sec: $("obsSec"), sun: $("obsSun"), moonMark: $("obsMoonMark"), t1: $("obsTxt1"), t2: $("obsTxt2"),
       irisLen: TAU * (G.eye + 2), cache: {}, handA: null, secA: null };
     ringText = ""; updateRingText();
@@ -365,13 +368,9 @@
     if (!astro || !sky) return;
     var lc = sky.lc, w = weather(), t = sky.t, parts = [];
     parts.push("MOON " + phaseName(sky.phase) + " " + Math.round(sky.illum * 100) + "%");
-    if (sky.night < .3 && sky.sunAlt > -4) {
-      var dark = crossing(t, lc, -12, true, 24); if (dark) parts.push("NEXT DARK " + fmtTime(dark, lc));
-    } else {
-      var h = localHMS(t, lc)[0];
-      if (h >= 12) { var set = crossing(t - 12 * 36e5, lc, -.833, true, 24); if (set) parts.push("SUNSET " + fmtTime(set, lc)); }
-      else { var rise = crossing(t, lc, -.833, false, 24); if (rise) parts.push("SUNRISE " + fmtTime(rise, lc)); }
-    }
+    // always look ahead: daylight shows when it next gets dark, night shows the next sunrise
+    if (sky.night < .3) { var dark = crossing(t, lc, -12, true, 26); if (dark) parts.push("NEXT DARK " + fmtTime(dark, lc)); }
+    else { var rise = crossing(t, lc, -.833, false, 26); if (rise) parts.push("SUNRISE " + fmtTime(rise, lc)); }
     parts.push((isFinite(w.temp) ? Math.round(w.temp) + "°F " : "") + (WXWORD[w.kind] || "CLEAR"));
     var txt = parts.join("  ·  ");
     var lat = Math.abs(lc.lat).toFixed(2) + "° " + (lc.lat >= 0 ? "N" : "S"), lon = Math.abs(lc.lon).toFixed(2) + "° " + (lc.lon >= 0 ? "E" : "W");
@@ -394,6 +393,7 @@
       setAttr(el, "transform", u >= 1 ? "" : "rotate(" + f1(from * (1 - e)) + ") scale(" + (1 + .06 * (1 - e)).toFixed(3) + ")");
     }
     assemble(astro.ringO, "ringO", -80);
+    setOp(astro.face, clamp(seg("ringO") * 2, 0, 1));
     if (astro.ringM) assemble(astro.ringM, "ringM", 110);
     assemble(astro.ringI, "ringI", -150);
     var ue = seg("eye"); setOp(astro.eye, ue); setAttr(astro.eye, "transform", ue >= 1 ? "" : "scale(" + (.7 + .3 * outCubic(ue)).toFixed(3) + ")");
@@ -414,27 +414,49 @@
 
   /* ---------------- weather props (sprites + particles) ---------------- */
   function makeCloud(seed, w, h, nightK, heavy) {
+    var r = seeded(seed), lobes = [], base = h * (.7 + r() * .08);
+    // main heads: uneven sizes and spacing, one or two towering, never a row of equal bubbles
+    var n = 3 + (r() * 4 | 0), x = w * (.1 + r() * .06), peak = 1 + (r() * (n - 2) | 0);
+    for (var i = 0; i < n; i++) {
+      var big = i === peak || (i === peak + 1 && r() < .4), rr = h * (big ? .28 + r() * .14 : .1 + r() * .14);
+      x += (i ? rr * (.7 + r() * .5) : 0); if (x > w * .88) break;
+      lobes.push([x, base - rr * (.45 + r() * .5), rr]); x += rr * (.35 + r() * .45);
+    }
+    // a ragged fringe of small curls along the upper edges
+    lobes.slice().forEach(function (l) {
+      var k = 2 + (r() * 4 | 0);
+      for (var j = 0; j < k; j++) { var an = Math.PI * (1.05 + r() * .9), d = l[2] * (.82 + r() * .2), rs = l[2] * (.16 + r() * .24); lobes.push([l[0] + Math.cos(an) * d, l[1] + Math.sin(an) * d, rs]); }
+    });
+    // a broken, slightly lifted base instead of a smooth ellipse
+    var x0 = lobes[0][0] - lobes[0][2] * .6, x1 = 0; lobes.forEach(function (l) { x1 = Math.max(x1, l[0] + l[2] * .5); });
+    for (var bx = x0; bx < x1; bx += h * (.06 + r() * .07)) lobes.push([bx, base - h * (.04 + r() * .05), h * (.05 + r() * .06)]);
+    // fit the sprite to the drawing: shift so nothing is cut at the top or the sides
+    var minX = 1e9, maxX = -1e9, minY = 1e9; lobes.forEach(function (l) { minX = Math.min(minX, l[0] - l[2]); maxX = Math.max(maxX, l[0] + l[2]); minY = Math.min(minY, l[1] - l[2]); });
+    var sx = 3 - minX, sy = 3 - minY; lobes.forEach(function (l) { l[0] += sx; l[1] += sy; }); x0 += sx; x1 += sx; base += sy;
+    var maxY = base; lobes.forEach(function (l) { maxY = Math.max(maxY, l[1] + l[2]); }); w = Math.ceil(maxX - minX + 6); h = Math.ceil(maxY + 3);
     var c = doc.createElement("canvas"); c.width = Math.ceil(w * dpr); c.height = Math.ceil(h * dpr);
-    var g = c.getContext("2d"), r = seeded(seed), lobes = [], n = 5 + (r() * 4 | 0);
-    g.scale(dpr, dpr);
-    for (var i = 0; i < n; i++) { var u = (i + .5) / n, rr = h * (.2 + .22 * Math.sin(u * Math.PI) + r() * .08); lobes.push([w * (.12 + .76 * u) + (r() - .5) * w * .05, h * .66 - rr * .55, rr]); }
-    function shape(c) { c.beginPath(); lobes.forEach(function (l) { c.moveTo(l[0] + l[2], l[1]); c.arc(l[0], l[1], l[2], 0, TAU); }); c.moveTo(w * .9, h * .64); c.ellipse(w / 2, h * .64, w * .4, h * .13, 0, 0, TAU); }
-    var line = nightK > .5 ? [196, 204, 216] : [255, 255, 255], shade = nightK > .5 ? [110, 120, 140] : [140, 156, 182];
+    var g = c.getContext("2d"); g.scale(dpr, dpr);
+    function shape(cx) { cx.beginPath(); lobes.forEach(function (l) { cx.moveTo(l[0] + l[2], l[1]); cx.arc(l[0], l[1], l[2], 0, TAU); }); cx.rect(x0, base - h * .1, x1 - x0, h * .08); }
+    var top = h; lobes.forEach(function (l) { top = Math.min(top, l[1] - l[2]); });
+    var line = nightK > .5 ? [196, 204, 216] : [255, 255, 255], shade = nightK > .5 ? [120, 130, 150] : [126, 142, 170];
     var body = nightK > .5 ? [12, 18, 30] : [226, 233, 244];
     if (heavy) { line = mixc(line, [150, 156, 170], .35); body = mixc(body, [70, 76, 92], nightK > .5 ? .2 : .5); }
+    // fades from full at the crown to nothing at the base, the way an engraver lifts the burin
+    function fade(col, a0, a1) { var lg = g.createLinearGradient(0, top, 0, base); lg.addColorStop(0, rgba(col, a0)); lg.addColorStop(.55, rgba(col, a0 * .6)); lg.addColorStop(1, rgba(col, a1)); return lg; }
     g.save(); shape(g); g.clip();
-    g.fillStyle = rgba(body, nightK > .5 ? .78 : .7); g.fillRect(0, 0, w, h);
-    g.lineWidth = .8; g.lineCap = "round";
-    g.strokeStyle = rgba(line, nightK > .5 ? .5 : .9); g.beginPath();
-    for (var x = -h; x < w + h; x += 3.4) { g.moveTo(x, 0); g.lineTo(x + h * .34, h); } g.stroke();
-    var lg = g.createLinearGradient(0, h * .35, 0, h * .78); lg.addColorStop(0, rgba(shade, 0)); lg.addColorStop(1, rgba(shade, nightK > .5 ? .7 : .85));
-    g.strokeStyle = lg; g.beginPath(); for (var x2 = -h; x2 < w + h; x2 += 3) { g.moveTo(x2, 0); g.lineTo(x2 - h * .45, h); } g.stroke();
+    g.fillStyle = fade(body, nightK > .5 ? .82 : .78, nightK > .5 ? .5 : .4); g.fillRect(0, 0, w, h);
+    g.lineCap = "round"; g.lineWidth = .8;
+    g.strokeStyle = fade(line, nightK > .5 ? .5 : .9, 0); g.beginPath();
+    for (var hx = -h; hx < w + h; hx += 3.2 + r() * .8) { var y0 = top + r() * 3; g.moveTo(hx, y0); g.lineTo(hx + (base - y0) * .34, base); } g.stroke();
+    // cross-hatching only in the shaded crowns' undersides, also fading out downward
+    g.strokeStyle = fade(shade, nightK > .5 ? .5 : .6, 0); g.lineWidth = .7; g.beginPath();
+    lobes.forEach(function (l) { if (l[2] < h * .14) return; for (var q = -l[2]; q < l[2]; q += 3) { g.moveTo(l[0] + q, l[1] + l[2] * .15); g.lineTo(l[0] + q - l[2] * .35, l[1] + l[2] * .95); } });
+    g.stroke();
     g.restore();
-    // inner scallops, faint, then a crisp outer silhouette only
-    g.strokeStyle = rgba(line, nightK > .5 ? .22 : .4); g.lineWidth = .8;
-    g.save(); shape(g); g.clip(); lobes.forEach(function (l, i) { if (i % 2) { g.beginPath(); g.arc(l[0], l[1] + l[2] * .25, l[2] * .8, Math.PI * 1.15, Math.PI * 1.85); g.stroke(); } }); g.restore();
+    // crisp outer silhouette only, strong on top, dissolving at the base
     var o = doc.createElement("canvas"); o.width = c.width; o.height = c.height; var og = o.getContext("2d"); og.scale(dpr, dpr);
-    og.strokeStyle = rgba(line, nightK > .5 ? .7 : .95); og.lineWidth = 2.2; shape(og); og.stroke();
+    var ol = og.createLinearGradient(0, top, 0, base); ol.addColorStop(0, rgba(line, nightK > .5 ? .75 : .95)); ol.addColorStop(.7, rgba(line, nightK > .5 ? .45 : .6)); ol.addColorStop(1, rgba(line, .05));
+    og.strokeStyle = ol; og.lineWidth = 2; shape(og); og.stroke();
     og.globalCompositeOperation = "destination-out"; shape(og); og.fill();
     g.setTransform(1, 0, 0, 1, 0, 0); g.drawImage(o, 0, 0);
     return { cv: c, w: w, h: h };
@@ -442,8 +464,9 @@
   function setupWeather(wk) {
     var nightK = sky.night > .5 ? 1 : 0, heavy = wk === "rain" || wk === "storm" || wk === "snow", r = seeded(29);
     var n = { partly: 5, cloudy: 11, rain: 9, storm: 10, snow: 8, fog: 3 }[wk] || 0, sc = phone ? .62 : 1;
-    cloudSprites = []; for (var i = 0; i < Math.min(n, 5); i++) cloudSprites.push(makeCloud(101 + i * 17, 300 * sc * (1 + r() * .5), 120 * sc * (1 + r() * .3), nightK, heavy));
-    clouds = []; for (var j = 0; j < n; j++) clouds.push({ x: r() * 1.3 - .15, y: .14 + r() * (wk === "cloudy" || heavy ? .5 : .42), s: .8 + r() * .7, k: j % Math.max(1, cloudSprites.length), v: .5 + r() });
+    cloudSprites = []; for (var i = 0; i < Math.min(n, 7); i++) { var cw = 300 * sc * (.55 + r() * 1.0); cloudSprites.push(makeCloud(101 + i * 17, cw, cw * (.36 + r() * .14), nightK, heavy)); }
+    clouds = []; for (var j = 0; j < n; j++) clouds.push({ x: r() * 1.3 - .15, y: .1 + r() * (wk === "cloudy" || heavy ? .55 : .45), s: .65 + r() * .8, k: j % Math.max(1, cloudSprites.length), v: .5 + r() });
+    clouds.sort(function (a, b) { return a.s - b.s; }); // small, far clouds first
     var area = clamp(W * H / (1280 * 800), .35, 1.6);
     drops = []; var m = Math.round((wk === "rain" ? 170 : wk === "storm" ? 230 : 0) * area);
     for (var d = 0; d < m; d++) drops.push({ x: r(), y: r(), z: .4 + r() * .6 });
@@ -487,8 +510,11 @@
     ctx.fillStyle = lg; ctx.fillRect(0, 0, W, H);
     // slow radial vignette, never a flat sky
     var vx = W / 2 + Math.sin(t / 37) * W * .06, vg = ctx.createRadialGradient(vx, cam.hy, H * .2, vx, cam.hy, Math.max(W, H) * .95);
-    vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(2,4,9," + (.5 * sky.night + .08).toFixed(3) + ")");
+    vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(2,4,9," + (.5 * sky.night + .08 * sky.night).toFixed(3) + ")");
     ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+    // daylight haze: the sky pales toward a milky horizon
+    var day = clamp((sky.sunAlt + 2) / 12, 0, 1) * (1 - sky.night);
+    if (day > .02) { var hz = ctx.createLinearGradient(0, cam.hy * .45, 0, cam.hy); hz.addColorStop(0, "rgba(236,238,234,0)"); hz.addColorStop(.7, "rgba(236,238,234," + (.28 * day).toFixed(3) + ")"); hz.addColorStop(1, "rgba(240,238,228," + (.62 * day).toFixed(3) + ")"); ctx.fillStyle = hz; ctx.fillRect(0, cam.hy * .45, W, cam.hy * .55 + 2); }
     // airglow: a forest-green band at the horizon on clear nights
     var ag = sky.night * (1 - (WXCLOUD[wk] || 0));
     if (ag > .02) { var g2 = ctx.createLinearGradient(0, cam.hy - H * .2, 0, cam.hy); g2.addColorStop(0, "rgba(94,156,118,0)"); g2.addColorStop(1, "rgba(94,156,118," + (.2 * ag).toFixed(3) + ")"); ctx.fillStyle = g2; ctx.fillRect(0, cam.hy - H * .2, W, H * .2); }
@@ -557,6 +583,14 @@
     }
     return out;
   }
+  // true when a label's text box (screen px) touches the astrolabe disc or the nameplate
+  function labelHitsAstro(txt, x, y, fsz, align) {
+    var w = ctx.measureText(txt).width, x0 = align === "left" ? x : x - w / 2, x1 = x0 + w, y0 = y - fsz * .8, y1 = y + fsz * .25, pad = 6;
+    var nx = clamp(hub.x, x0, x1), ny = clamp(hub.y, y0, y1);
+    if (hub.r && Math.hypot(nx - hub.x, ny - hub.y) < hub.r + pad) return true;
+    var pl = plaqueBox; if (pl && x1 > pl.left - pad && x0 < pl.right + pad && y1 > pl.top - pad && y0 < pl.bottom + pad) return true;
+    return y1 > cam.hy - 6 || x0 < leafVis + 8 || x1 > W - leafVis - 8;
+  }
   function drawConstellations(F, vis, ox, oy) {
     if (!CAT || !NAMED.length || vis < .03) return;
     var sl = [leafVis, W - leafVis], list = visibleNamed(F, sl);
@@ -600,39 +634,58 @@
           segs.forEach(function (q) { [[q[0], q[1]], [q[2], q[3]]].forEach(function (v) { var dd = Math.hypot(v[0] - hub.x, v[1] - hub.y); if (dd > bd && !inHub(v[0], v[1] + 16)) { bd = dd; best = v; } }); });
           if (!best) continue; lx = best[0]; ly = best[1] + (best[1] < hub.y ? -12 : 20);
         }
-        ctx.fillStyle = rgba(CREAM, .62 * vis * la); ctx.fillText(c.n.toUpperCase(), lx, ly);
+        var lbl = c.n.toUpperCase();
+        if (labelHitsAstro(lbl, lx + ox, ly + oy, fsz, "center")) continue;
+        ctx.fillStyle = rgba(CREAM, .62 * vis * la); ctx.fillText(lbl, lx, ly);
       }
     }
     // Polaris, when it is in the slit
     if (project(enu(POLARIS[0], POLARIS[1], F, V), P) && P[2] > .05 && P[0] > sl[0] && P[0] < sl[1] && P[1] > 0) {
-      var pa = clamp((t - 5.2) / .6, 0, 1); if (pa > 0) { ctx.fillStyle = rgba(CREAM, .62 * vis * pa); ctx.textAlign = "left"; ctx.fillText("POLARIS", P[0] + 9, P[1] + 4); }
+      var pa = clamp((t - 5.2) / .6, 0, 1); if (pa > 0) { ctx.fillStyle = rgba(CREAM, .62 * vis * pa); ctx.textAlign = "left"; if (!labelHitsAstro("POLARIS", P[0] + 9 + ox, P[1] + 4 + oy, fsz, "left")) ctx.fillText("POLARIS", P[0] + 9, P[1] + 4); }
     }
     if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
     ctx.restore();
   }
-  function moonPlace(F) {
+  function moonHalo(r, wk) { // halo radius: wider with humidity or cloud
+    var cover = WXCLOUD[wk] || 0, hum = isFinite(weather().hum) ? weather().hum / 100 : .5;
+    return r * (3.2 + 4 * Math.max(cover, hum * .6));
+  }
+  function moonPlace(F, wk) {
     var mv = sky.moonVec; if (sky.moonAlt < -.5 || sky.illum < .04) return null; // a new moon is invisible in the real sky too
-    var r = phone ? 19 : 25, sl = [leafVis, W - leafVis], x, y;
+    var r = phone ? 15 : 25, sl = [leafVis, W - leafVis], x, y, halo = moonHalo(r, wk);
     if (project(mv, P)) { x = P[0]; y = P[1]; } else { x = mv[0] > 0 ? 0 : W; y = cam.hy - sky.moonAlt / 70 * (cam.hy - 40); }
-    x = clamp(x, sl[0] + r + 18, sl[1] - r - 18); y = clamp(y, r + 22, cam.hy - r * .2);
-    // keep it clear of the eyepiece and card, sliding it sideways in the sky
-    var cardHalf = (phone ? 175 : 205);
-    if (Math.abs(x - hub.x) < cardHalf + r && y > hub.top + 10 && y < hub.bottom) {
-      x = x < hub.x ? hub.x - cardHalf - r : hub.x + cardHalf + r;
-      if (x < sl[0] + r + 8 || x > sl[1] - r - 8) { x = clamp(x, sl[0] + r + 8, sl[1] - r - 8); y = Math.min(y, hub.top - r - 6); if (y < r + 8) y = r + 8; }
+    if (phone) {
+      // phones: the slit is narrower than the astrolabe, so the moon lives in the open sky above the ring,
+      // disc and halo kept at least 16px inside the slit and clear of the ring
+      var M = 16, room = hub.top - M - 4;                          // vertical space above the ring
+      halo = Math.min(halo, room / 2, (sl[1] - sl[0]) / 2 - M);
+      if (halo < r * 1.4) { r = Math.floor(halo / 1.4); if (r < 8) return null; }
+      x = clamp(x, sl[0] + M + halo, sl[1] - M - halo); y = M + halo;
+      return finishMoon(mv, x, y, r, halo);
     }
+    x = clamp(x, sl[0] + r + 18, sl[1] - r - 18); y = clamp(y, r + 22, cam.hy - r * .2);
+    // keep the disc in open sky, clear of the astrolabe: push it out along the radius from the hub
+    var need = hub.r + r + 14, dx = x - hub.x, dy = y - hub.y, dd = Math.hypot(dx, dy) || 1;
+    if (hub.r && dd < need) {
+      x = hub.x + dx / dd * need; y = hub.y + dy / dd * need;
+      if (y < r + 22 || y > cam.hy - r) { y = clamp(y, r + 22, cam.hy - r); var hx = Math.sqrt(Math.max(0, need * need - (y - hub.y) * (y - hub.y))); x = hub.x + (dx < 0 ? -hx : hx); }
+      x = clamp(x, sl[0] + r + 18, sl[1] - r - 18);
+    }
+    return finishMoon(mv, x, y, r, halo);
+  }
+  function finishMoon(mv, x, y, r, halo) {
     // the bright limb faces the sun along the great circle between them
     var sv = sky.sunVec, d = sv[0] * mv[0] + sv[1] * mv[1] + sv[2] * mv[2], tx = sv[0] - d * mv[0], ty = sv[1] - d * mv[1], tz = sv[2] - d * mv[2], tl = Math.hypot(tx, ty, tz) || 1, ang = 0;
     var e = .03, pv = [mv[0] + tx / tl * e, mv[1] + ty / tl * e, mv[2] + tz / tl * e];
     if (project(mv, P) && project(pv, Q)) ang = Math.atan2(Q[1] - P[1], Q[0] - P[0]);
     else ang = Math.atan2(-(tz / tl), -(tx / tl)); // off-screen moon: approximate with the local east/up direction
-    return { x: x, y: y, r: r, ang: ang };
+    return { x: x, y: y, r: r, ang: ang, halo: halo };
   }
   function drawMoon(mp, wk, ox, oy) {
     var u = seg("moon"); if (!mp || u <= 0) return;
     var vis = clamp(sky.night * 1.1 + .55, 0, 1), cover = (WXCLOUD[wk] || 0), r = mp.r;
     var startY = hillAt(mp.x) + r * 1.6, y = lerp(startY, mp.y, outCubic(u)) + oy, x = mp.x + ox;
-    var hum = isFinite(weather().hum) ? weather().hum / 100 : .5, halo = r * (3.2 + 4 * Math.max(cover, hum * .6));
+    var halo = mp.halo;
     var hg = ctx.createRadialGradient(x, y, r * .8, x, y, halo);
     hg.addColorStop(0, "rgba(244,235,211," + (.2 * vis * (.35 + .65 * sky.illum) * (1 - cover * .4)).toFixed(3) + ")"); hg.addColorStop(1, "rgba(244,235,211,0)");
     ctx.fillStyle = hg; ctx.fillRect(x - halo, y - halo, halo * 2, halo * 2);
@@ -775,7 +828,7 @@
     drawGrid(F, vis, ptr.x * 2, ptr.y);
     drawStars(F, vis, t, ptr.x * 2, ptr.y);
     drawConstellations(F, sky.night * (1 - cover * .6), ptr.x * 2, ptr.y);
-    var mp = moonPlace(F); drawMoon(mp, wk, ptr.x * 4, ptr.y * 2);
+    var mp = moonPlace(F, wk); drawMoon(mp, wk, phone ? 0 : ptr.x * 4, phone ? 0 : ptr.y * 2);
     // shooting stars and the rare satellite
     var night = sky.night > .5 && cover < .7;
     if (night && !reduce) {

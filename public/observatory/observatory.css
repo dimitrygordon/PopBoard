@@ -28,7 +28,10 @@ html.obs {
   --obs-s: clamp(540px, calc(100vh - 140px), 620px);
   --obs-cy: calc(var(--obs-s) / 2 + max(24px, (100vh - var(--obs-s) - 90px) * 0.45));
   --obs-card-w: 340px;
-  --obs-card-top: calc(var(--obs-cy) - var(--obs-card-h, 310px) / 2);
+  --obs-card-top: calc(var(--obs-cy) - var(--obs-card-h, 310px) / 2 + 14px);
+  /* mascot: how much of him rises above the card, kept inside the inscription ring (inner edge = s * 0.3648) */
+  --obs-rig: 96px;
+  --obs-peek: clamp(30px, calc(var(--obs-s) * 0.3648 - 16px - var(--obs-card-h, 310px) / 2 + 14px), 60px);
   --obs-plaque-top: calc(var(--obs-cy) + var(--obs-s) / 2 + 14px);
   /* intro values, driven by observatory.js (defaults = final state) */
   --obs-card: 1;
@@ -41,9 +44,13 @@ html.obs {
 @media (max-width: 699px) {
   html.obs {
     --obs-s: min(360px, calc(100vw - 24px));
-    --obs-cy: calc(var(--obs-s) / 2 + max(22px, (100vh - 700px) * 0.35) + env(safe-area-inset-top, 0px));
+    /* open sky above the ring for the moon on taller phones */
+    --obs-cy: calc(var(--obs-s) / 2 + clamp(22px, (100vh - 640px) * 0.5, 110px) + env(safe-area-inset-top, 0px));
     --obs-card-w: min(340px, calc(100vw - 32px));
-    --obs-card-top: calc(var(--obs-cy) + 28px);
+    /* the card starts below the centre so the whole upper half of the astrolabe stays clear, mascot included */
+    --obs-rig: 70px;
+    --obs-peek: 43px;
+    --obs-card-top: calc(var(--obs-cy) + var(--obs-peek) + 6px);
     --obs-plaque-top: calc(var(--obs-card-top) + var(--obs-card-h, 330px) + 18px);
   }
 }
@@ -99,8 +106,22 @@ html.obs #obs-astro {
 #obs-astro .obs-it { font-style: italic; font-weight: 500; }
 #obs-astro .obs-band { stroke: rgba(9, 11, 15, .6); }
 #obs-astro .obs-dot { fill: rgb(9, 11, 15); }
-html[data-obs-day] #obs-astro .obs-band { stroke: rgba(42, 33, 16, .42); }
-html[data-obs-day] #obs-astro .obs-dot { fill: rgb(70, 58, 34); }
+#obs-astro .obs-face, #obs-astro .obs-face-in { fill: none; }
+/* daylight: a solid brass instrument on a warm parchment face, engraved in dark ink */
+html[data-obs-day] #obs-astro .obs-face { fill: #C99A45; }
+html[data-obs-day] #obs-astro .obs-face-in { fill: #EADDBF; }
+html[data-obs-day] #obs-astro .obs-band { stroke: #C99A45; }
+html[data-obs-day] #obs-astro #obsRingI .obs-band { stroke: #B8873A; }
+html[data-obs-day] #obs-astro .obs-dot { fill: #EADDBF; stroke: #4A3410; stroke-width: .8; }
+html[data-obs-day] #obs-astro [stroke="#D9A441"], html[data-obs-day] #obs-astro [stroke="#F2C46B"] { stroke: #4A3410; }
+html[data-obs-day] #obs-astro text { fill: #33240A; }
+html[data-obs-day] #obs-astro #obsRingI text { fill: #2A1D07; opacity: 1; }
+html[data-obs-day] #obs-astro #obsRete [fill="#D9A441"] { fill: #B8873A; stroke: #4A3410; }
+html[data-obs-day] #obs-astro #obsRete [fill="#F2C46B"] { fill: #4A3410; }
+html[data-obs-day] #obs-astro #obsHand path:first-child { fill: #8A6420; stroke: #3A2808; }
+html[data-obs-day] #obs-astro #obsSec circle, html[data-obs-day] #obs-astro #obsSun circle:nth-child(2) { fill: #4A3410; }
+html[data-obs-day] #obs-astro #obsMoonMark path { fill: #4A3410; }
+html[data-obs-day] #obs-astro svg { filter: drop-shadow(0 10px 24px rgba(40, 52, 70, .32)); }
 
 /* ---------- the sign-in card: parchment in the eyepiece ---------- */
 html.obs #login, html.obs #teacherLogin, html.obs #teacherSignup {
@@ -139,10 +160,10 @@ html.obs:not(.obs-js) .la-card, html.obs:not(.obs-js) #login { animation: obs-ca
 /* the mascot peeks over the eyepiece rim (rig behavior unchanged) */
 html.obs .la-card .login-logo {
   position: absolute; left: 50%; top: 1px; translate: -50% -100%; margin: 0 !important;
-  width: 112px; height: 74px; clip-path: inset(-400px -400px 0 -400px); z-index: 1;
+  width: var(--obs-rig); height: var(--obs-peek); clip-path: inset(-400px -400px 0 -400px); z-index: 1;
 }
-html.obs .la-card .la-logo { position: absolute; left: 0; top: 0; width: 112px; height: 112px; margin: 0; }
-html.obs .la-card .login-logo > img { position: absolute; left: 0; top: 0; width: 112px !important; height: 112px !important; max-width: none; }
+html.obs .la-card .la-logo { position: absolute; left: 0; top: 0; width: var(--obs-rig); height: var(--obs-rig); margin: 0; }
+html.obs .la-card .login-logo > img { position: absolute; left: 0; top: 0; width: var(--obs-rig) !important; height: var(--obs-rig) !important; max-width: none; }
 html.obs .la-card .la-rig { filter: drop-shadow(0 -2px 6px rgba(7, 11, 20, .35)); }
 
 html.obs .la-card h2 {
@@ -162,6 +183,10 @@ html.obs .la-card .login-input {
   padding: 9px 10px 7px !important; min-height: 40px !important; height: 40px; margin-bottom: 7px !important;
   transform: none !important;
 }
+/* the Join button's magnetic drift (login-alive.js) can reach ~38px; in this compact card the fields
+   stay on top so a drifting button never takes a click meant for an input */
+html.obs .la-card .login-input { position: relative; z-index: 2; }
+html.obs .la-card .login-buttons { position: relative; z-index: 1; }
 html.obs .la-card .login-input::placeholder { color: rgba(31, 29, 26, .52); opacity: 1; font-style: italic; }
 html.obs .la-card .login-input:hover { border-bottom-color: var(--obs-brass-lo) !important; }
 html.obs .la-card .login-input:focus {
