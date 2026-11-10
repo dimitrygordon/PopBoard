@@ -1,0 +1,252 @@
+/* observatory.css - "The Jasper Observatory" homepage (art direction: Leo).
+   Dome shutters, sky canvas, brass astrolabe, and the parchment sign-in card.
+   Scoped to html.obs (set only by index.html). Purely visual: no IDs,
+   inputs, or behavior from app.js are changed. */
+
+@font-face {
+  font-family: "Cormorant Garamond"; font-style: normal; font-weight: 300 700; font-display: swap;
+  src: url("/observatory/fonts/cormorant-garamond.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Cormorant Garamond"; font-style: italic; font-weight: 300 700; font-display: swap;
+  src: url("/observatory/fonts/cormorant-garamond-italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Literata"; font-style: normal; font-weight: 200 900; font-display: swap;
+  src: url("/observatory/fonts/literata.woff2") format("woff2");
+}
+
+html.obs {
+  --obs-ink: #1F1D1A;
+  --obs-cream: #EDE6D6;
+  --obs-brass: #D9A441;
+  --obs-brass-hi: #F2C46B;
+  --obs-brass-lo: #8A6420;
+  --obs-green: #2F5D46;
+  --obs-night: #070B14;
+  /* desktop: astrolabe ~620px, centred slightly above the middle */
+  --obs-s: clamp(540px, calc(100vh - 140px), 620px);
+  --obs-cy: calc(var(--obs-s) / 2 + max(24px, (100vh - var(--obs-s) - 90px) * 0.45));
+  --obs-card-w: 340px;
+  --obs-card-top: calc(var(--obs-cy) - var(--obs-card-h, 310px) / 2);
+  --obs-plaque-top: calc(var(--obs-cy) + var(--obs-s) / 2 + 14px);
+  /* intro values, driven by observatory.js (defaults = final state) */
+  --obs-card: 1;
+  --obs-focus: 1;
+  --obs-plaque: 1;
+  --obs-seam: 0;
+  --obs-shade: 0;
+  background: var(--obs-night) !important;
+}
+@media (max-width: 699px) {
+  html.obs {
+    --obs-s: min(360px, calc(100vw - 24px));
+    --obs-cy: calc(var(--obs-s) / 2 + max(22px, (100vh - 700px) * 0.35) + env(safe-area-inset-top, 0px));
+    --obs-card-w: min(340px, calc(100vw - 32px));
+    --obs-card-top: calc(var(--obs-cy) + 28px);
+    --obs-plaque-top: calc(var(--obs-card-top) + var(--obs-card-h, 330px) + 18px);
+  }
+}
+/* phone keyboard open: astrolabe slides up and shrinks, never over the inputs */
+@media (max-width: 699px) and (max-height: 560px) {
+  html.obs {
+    --obs-s: 210px;
+    --obs-cy: 112px;
+    --obs-card-top: calc(var(--obs-cy) + 6px);
+  }
+}
+
+html.obs body.la-on, html.obs body { background: transparent !important; }
+html.obs body.la-on { min-height: calc(var(--obs-plaque-top) + 72px); }
+html.obs body:not(.obs-off) #la-sky { display: none !important; }
+
+/* ---------- the dome ---------- */
+#obs { display: none; }
+html.obs #obs {
+  display: block; position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 100%, #0E1A2B 0%, #070B14 70%);
+}
+html.obs body.obs-off #obs, html.obs body.obs-off #obs-astro,
+html.pb-restoring #obs, html.pb-restoring #obs-astro { display: none !important; }
+#obs-sky { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.obs-leaf {
+  position: absolute; top: -2px; bottom: -2px; width: calc(50% + 2px); will-change: transform;
+  background: linear-gradient(90deg, #0c1d14 0%, #1b3b2b 40%, #2F5D46 76%, #27503d 92%, #1a3629 100%);
+}
+.obs-leaf-l { left: 0; }
+.obs-leaf-r { right: 0; background: linear-gradient(270deg, #0c1d14 0%, #1b3b2b 40%, #2F5D46 76%, #27503d 92%, #1a3629 100%); }
+/* darkness inside the dome, lifting as the shutters open */
+.obs-shade { position: absolute; inset: 0; background: #03060b; opacity: var(--obs-shade, 0); }
+html.obs:not(.obs-js) .obs-shade { opacity: .62; }
+.obs-leaf svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.obs-seam {
+  position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; margin-left: -0.5px;
+  background: var(--obs-brass-hi); opacity: var(--obs-seam);
+  box-shadow: 0 0 8px 2px rgba(242, 196, 107, .8), 0 0 46px 9px rgba(217, 164, 65, .3), 0 0 120px 26px rgba(217, 164, 65, .1);
+}
+/* before observatory.js runs: closed dome with the amber seam */
+html.obs:not(.obs-js) .obs-seam { opacity: .9; }
+
+/* ---------- the astrolabe ---------- */
+#obs-astro { display: none; }
+html.obs #obs-astro {
+  display: block; position: absolute; left: 50%; top: var(--obs-cy); z-index: 2; pointer-events: none;
+  width: var(--obs-s); height: var(--obs-s); translate: -50% -50%;
+  transition: width .35s ease, height .35s ease, top .35s ease;
+}
+#obs-astro svg { width: 100%; height: 100%; display: block; overflow: visible; }
+#obs-astro text { font-family: "Cormorant Garamond", "IM Fell English", Georgia, serif; font-weight: 600; font-variant-numeric: lining-nums; }
+#obs-astro .obs-it { font-style: italic; font-weight: 500; }
+#obs-astro .obs-band { stroke: rgba(9, 11, 15, .6); }
+#obs-astro .obs-dot { fill: rgb(9, 11, 15); }
+html[data-obs-day] #obs-astro .obs-band { stroke: rgba(42, 33, 16, .42); }
+html[data-obs-day] #obs-astro .obs-dot { fill: rgb(70, 58, 34); }
+
+/* ---------- the sign-in card: parchment in the eyepiece ---------- */
+html.obs #login, html.obs #teacherLogin, html.obs #teacherSignup {
+  position: absolute !important; left: 50%; top: var(--obs-card-top); z-index: 3 !important;
+  width: var(--obs-card-w); max-width: calc(100vw - 32px) !important; margin: 0 !important;
+  translate: -50% 0; box-sizing: border-box;
+  transition: top .35s ease;
+}
+html.obs .la-card {
+  background: var(--obs-cream) !important;
+  border: 1px solid var(--obs-brass-lo) !important;
+  border-radius: 10px !important;
+  padding: 18px 26px 14px !important;
+  color: var(--obs-ink);
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  box-shadow:
+    inset 0 0 0 4px var(--obs-cream), inset 0 0 0 5px rgba(138, 100, 32, .38),
+    0 0 0 3px rgba(7, 11, 20, .6), 0 0 0 4px rgba(217, 164, 65, .5),
+    0 30px 60px -18px rgba(0, 0, 0, .75) !important;
+  overflow: visible;
+}
+html.obs .la-card::after { display: none !important; }
+html.obs .la-card::before { opacity: .07 !important; mix-blend-mode: multiply !important; }
+html.obs .la-card.la-enter { animation: none !important; }
+html.obs.obs-js #login, html.obs.obs-js #teacherLogin, html.obs.obs-js #teacherSignup {
+  opacity: calc(var(--obs-card) * (.84 + .16 * var(--obs-focus)));
+  filter: blur(calc((1 - var(--obs-focus)) * 3px));
+}
+html.obs.obs-done #login, html.obs.obs-done #teacherLogin, html.obs.obs-done #teacherSignup { filter: none; opacity: 1; }
+html.obs.obs-swap .la-card:not(.hidden) { animation: obs-swap .45s ease both !important; }
+@keyframes obs-swap { from { opacity: .2; filter: blur(3px); } to { opacity: 1; filter: none; } }
+/* no-JS fallback: the form appears at 2 s no matter what */
+html.obs:not(.obs-js) .la-card, html.obs:not(.obs-js) #login { animation: obs-card-in .5s ease 2s both !important; }
+@keyframes obs-card-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* the mascot peeks over the eyepiece rim (rig behavior unchanged) */
+html.obs .la-card .login-logo {
+  position: absolute; left: 50%; top: 1px; translate: -50% -100%; margin: 0 !important;
+  width: 112px; height: 74px; clip-path: inset(-400px -400px 0 -400px); z-index: 1;
+}
+html.obs .la-card .la-logo { position: absolute; left: 0; top: 0; width: 112px; height: 112px; margin: 0; }
+html.obs .la-card .login-logo > img { position: absolute; left: 0; top: 0; width: 112px !important; height: 112px !important; max-width: none; }
+html.obs .la-card .la-rig { filter: drop-shadow(0 -2px 6px rgba(7, 11, 20, .35)); }
+
+html.obs .la-card h2 {
+  font-family: "Cormorant Garamond", "IM Fell English", Georgia, serif !important;
+  font-weight: 600 !important; font-variant: small-caps; letter-spacing: .1em !important;
+  font-size: 29px !important; line-height: 1.05 !important; margin: 4px 0 10px !important;
+  background: none !important; -webkit-text-fill-color: var(--obs-ink) !important; color: var(--obs-ink) !important;
+}
+html.obs .la-card h2::after {
+  content: ""; display: block; width: 132px; height: 8px; margin: 5px auto 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='132' height='8' viewBox='0 0 132 8'%3E%3Cpath d='M2 4h52M78 4h52' stroke='%238A6420' stroke-width='.8' stroke-linecap='round'/%3E%3Cpath d='M66 .6l3.4 3.4L66 7.4 62.6 4z' fill='none' stroke='%238A6420' stroke-width='.8'/%3E%3Ccircle cx='57' cy='4' r='.9' fill='%238A6420'/%3E%3Ccircle cx='75' cy='4' r='.9' fill='%238A6420'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+html.obs .la-card .login-input {
+  font-family: "Literata", Georgia, serif !important; font-size: 15px !important; color: var(--obs-ink) !important;
+  background: #F6F1E4 !important; border: 0 !important; border-bottom: 1px solid var(--obs-ink) !important;
+  border-radius: 3px 3px 0 0 !important; box-shadow: none !important;
+  padding: 9px 10px 7px !important; min-height: 40px !important; height: 40px; margin-bottom: 7px !important;
+  transform: none !important;
+}
+html.obs .la-card .login-input::placeholder { color: rgba(31, 29, 26, .52); opacity: 1; font-style: italic; }
+html.obs .la-card .login-input:hover { border-bottom-color: var(--obs-brass-lo) !important; }
+html.obs .la-card .login-input:focus {
+  background: #FBF8EF !important; border-bottom: 2px solid var(--obs-brass-lo) !important; padding-bottom: 6px !important;
+  box-shadow: 0 1px 0 0 var(--obs-brass) !important; outline: none;
+}
+html.obs .la-card .login-buttons { margin-top: 6px; }
+html.obs .la-card .login-buttons button {
+  font-family: "Literata", Georgia, serif !important; font-weight: 600 !important; font-size: 15px !important; letter-spacing: .06em;
+  background: var(--obs-brass) !important; color: var(--obs-ink) !important;
+  border: 1px solid var(--obs-brass-lo) !important; border-radius: 6px !important;
+  min-width: 150px; height: 40px; padding: 0 22px !important;
+  box-shadow: inset 0 1px 0 var(--obs-brass-hi), 0 2px 0 var(--obs-brass-lo) !important;
+}
+html.obs .la-card .login-buttons button:hover { background: var(--obs-brass-hi) !important; }
+html.obs .la-card button:focus-visible, html.obs .la-card a.login-link:focus-visible { outline: 2px solid var(--obs-ink) !important; outline-offset: 3px; }
+html.obs .la-card .login-link-row { margin-top: 10px !important; opacity: 1 !important; gap: 8px; }
+html.obs .la-card a.login-link.la-pill {
+  font-family: "Literata", Georgia, serif !important; font-size: 13px !important; font-weight: 500 !important;
+  color: #5a4214 !important; opacity: 1 !important; padding: 4px 16px !important;
+  background: transparent !important; border: 1px solid var(--obs-brass-lo) !important; border-radius: 999px !important;
+  box-shadow: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+}
+html.obs .la-card a.login-link.la-pill:hover { background: rgba(217, 164, 65, .16) !important; }
+html.obs .la-card .login-note { font-family: "Literata", Georgia, serif; font-style: italic; font-size: 12px; color: #5a4214; opacity: 1; margin: 8px 0 0; }
+@media (max-width: 699px) {
+  html.obs .la-card { padding: 20px 20px 16px !important; }
+  html.obs .la-card .login-input { font-size: 16px !important; min-height: 44px !important; height: 44px; }
+  html.obs .la-card .login-buttons button { height: 44px; }
+}
+@media (max-width: 699px) and (max-height: 560px) {
+  html.obs .la-card .login-logo { display: none; }
+}
+
+/* ---------- "Explore the Study Lab": an engraved brass nameplate ---------- */
+html.obs a.study-pill {
+  font-variant-numeric: lining-nums;
+  position: absolute !important; top: var(--obs-plaque-top); bottom: auto !important; left: 50%;
+  transform: translateX(-50%) translateY(calc((1 - var(--obs-plaque)) * 8px)) !important; opacity: var(--obs-plaque);
+  animation: none !important; z-index: 4;
+  height: 40px; padding: 0 26px 0 22px; gap: 10px; border-radius: 3px;
+  font-family: "Cormorant Garamond", Georgia, serif; font-weight: 700; font-size: 15px; letter-spacing: .16em; text-transform: uppercase;
+  color: #3a2808 !important; text-shadow: 0 1px 0 rgba(242, 196, 107, .9);
+  background:
+    radial-gradient(circle at 9px 50%, #8A6420 0 1.6px, #F2C46B 1.7px 2.4px, transparent 2.5px),
+    radial-gradient(circle at calc(100% - 9px) 50%, #8A6420 0 1.6px, #F2C46B 1.7px 2.4px, transparent 2.5px),
+    var(--obs-brass) !important;
+  border: 1px solid var(--obs-brass-lo) !important;
+  box-shadow: inset 0 1px 0 var(--obs-brass-hi), inset 0 0 0 3px var(--obs-brass), inset 0 0 0 4px rgba(138, 100, 32, .55), 0 6px 18px rgba(0, 0, 0, .45) !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  transition: background-color .2s, box-shadow .2s, opacity .3s;
+}
+html.obs a.study-pill:hover, html.obs a.study-pill:focus-visible {
+  background:
+    radial-gradient(circle at 9px 50%, #8A6420 0 1.6px, #F2C46B 1.7px 2.4px, transparent 2.5px),
+    radial-gradient(circle at calc(100% - 9px) 50%, #8A6420 0 1.6px, #F2C46B 1.7px 2.4px, transparent 2.5px),
+    var(--obs-brass-hi) !important;
+  color: #2a1c04 !important;
+}
+html.obs a.study-pill:focus-visible { outline: 2px solid var(--obs-cream); outline-offset: 3px; }
+html.obs a.study-pill:active { transform: translateX(-50%) scale(.97) !important; }
+html.obs .study-pill-moon { background: #1F1D1A; border-radius: 50%; box-shadow: 0 0 0 1px var(--obs-brass-lo); }
+html.obs .study-pill-moon::after { display: none; }
+@media (max-width: 699px) {
+  html.obs a.study-pill { font-size: 14px; letter-spacing: .13em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.obs #obs-astro, html.obs #login, html.obs #teacherLogin, html.obs #teacherSignup { transition: none; }
+  html.obs:not(.obs-js) .la-card, html.obs:not(.obs-js) #login { animation: none !important; }
+  html.obs .obs-leaf-l { transform: translateX(calc(-50vw + 96px)); }
+  html.obs .obs-leaf-r { transform: translateX(calc(50vw - 96px)); }
+  html.obs:not(.obs-js) .obs-seam, html.obs:not(.obs-js) .obs-shade { opacity: 0; }
+}
+@media print {
+  html.obs #obs, html.obs #obs-astro { display: none !important; }
+}
+
+/* no-JS fallback: if observatory.js never arrives, the shutters still open */
+@media (prefers-reduced-motion: no-preference) {
+  html.obs:not(.obs-js) .obs-leaf-l { animation: obs-open-l 2.3s ease-in-out 6s both; }
+  html.obs:not(.obs-js) .obs-leaf-r { animation: obs-open-r 2.3s ease-in-out 6s both; }
+  html.obs:not(.obs-js) .obs-seam { animation: obs-seam-out .6s ease 6s both; }
+  html.obs:not(.obs-js) .obs-shade { animation: obs-seam-out 1.6s ease 6s both; }
+}
+@keyframes obs-open-l { to { transform: translateX(calc(-50vw + 96px)); } }
+@keyframes obs-open-r { to { transform: translateX(calc(50vw - 96px)); } }
+@keyframes obs-seam-out { to { opacity: 0; } }

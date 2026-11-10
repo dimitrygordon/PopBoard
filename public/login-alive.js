@@ -324,7 +324,9 @@
     var ap = activePanel();
     if (ap) { var br = ap.getBoundingClientRect(); if (br.width) lastRect = { el: ap, r: br }; }
     typing.energy *= Math.pow(0.25, dt);
-    if ((ap || now < sendoffUntil || doc.documentElement.hasAttribute("data-astro")) && win.__laSky) win.__laSky.frame(now, dt);
+    // the homepage observatory (observatory.js) draws its own sky while a sign-in panel is showing
+    var obsDrew = !!(ap && win.__obsFrame && win.__obsFrame(now, dt));
+    if (!obsDrew && (ap || now < sendoffUntil || doc.documentElement.hasAttribute("data-astro")) && win.__laSky) win.__laSky.frame(now, dt);
     if (now < sendoffUntil) stepBurst(now, dt);
     else if (ap) {
       for (var i = 0; i < rigs.length; i++) updateRig(rigs[i], now, dt);

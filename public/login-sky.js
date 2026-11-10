@@ -63,10 +63,13 @@
     if ((c >= 51 && c <= 67) || (c >= 80 && c <= 82)) return "rain"; if ((c >= 71 && c <= 77) || c === 85 || c === 86) return "snow"; if (c >= 95) return "storm"; return "clear"; }
   function fetchWx() {
     if (dbgWx || !win.fetch) return;
-    var u = "https://api.open-meteo.com/v1/forecast?latitude=" + loc.lat.toFixed(3) + "&longitude=" + loc.lon.toFixed(3) + "&current=weather_code,cloud_cover,is_day";
+    var u = "https://api.open-meteo.com/v1/forecast?latitude=" + loc.lat.toFixed(3) + "&longitude=" + loc.lon.toFixed(3) + "&current=weather_code,cloud_cover,is_day,temperature_2m,relative_humidity_2m,wind_direction_10m&temperature_unit=fahrenheit";
     var ctl = win.AbortController ? new AbortController() : null; if (ctl) setTimeout(function () { ctl.abort(); }, 6000);
     fetch(u, ctl ? { signal: ctl.signal } : {}).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
-      if (!j || !j.current) return; wx.real = wmo(j.current.weather_code | 0); wx.src = "open-meteo"; applyMode(true); paintStatic();
+      if (!j || !j.current) return; wx.real = wmo(j.current.weather_code | 0); wx.src = "open-meteo";
+      // extra readings for the homepage observatory (observatory.js): temperature (F), humidity (%), wind direction (deg, from)
+      wx.temp = j.current.temperature_2m; wx.hum = j.current.relative_humidity_2m; wx.windDir = j.current.wind_direction_10m;
+      applyMode(true); paintStatic();
     }).catch(function () {});
   }
   function geo() {
