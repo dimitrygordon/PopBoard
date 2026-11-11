@@ -5,6 +5,22 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "IM Fell English";
+  src: url("../fonts/imfell-english.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IM Fell English SC";
+  src: url("../fonts/imfell-english-sc.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -71,16 +87,17 @@ html, body {
 }
 
 #place {
-  font-size: 0.7rem;
-  letter-spacing: 0.18em;
-  font-variant: small-caps;
-  text-transform: lowercase;
-  font-weight: 600;
+  font-family: "IM Fell English SC", "IM Fell English", Literata, Palatino, serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 400;
 }
 
 #when {
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
+  font-family: "IM Fell English", Literata, Palatino, serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
   opacity: 0.85;
 }
 

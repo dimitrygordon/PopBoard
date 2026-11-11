@@ -5,7 +5,7 @@ const RAD = Math.PI / 180;
 const CELL = 31.25;
 const COLS = 1024;
 const ROWS = 768;
-const EXAG = 2.5;
+const EXAG = 2.9;
 const BASE_M = 100;
 const JASPER = { lat: 38.3914, lon: -86.9311 };
 const REDUCE = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -132,7 +132,7 @@ function skyColors(alt, wxKind) {
   // Day uses the hazy r4 landscape gradient (muted zenith, cream-white horizon),
   // not the bright mid-blue the raw login-sky table makes in this upward camera.
   if (alt >= 8) {
-    const r4 = [[72, 122, 186], [176, 198, 214], [234, 228, 216]];
+    const r4 = [[176, 196, 214], [228, 220, 206], [237, 228, 210]];
     const haze = clamp((alt - 8) / 18, 0, 1);
     for (let k = 0; k < 3; k++) c[k] = lerp3(c[k], r4[k], haze * 0.88);
   }
@@ -449,9 +449,18 @@ void main(){
   if (uSeason > 1.5 && uSeason < 2.5) isPlow = step(0.48, pid);
   vec3 cropCol = mix(uField, uWheat, isWheat);
   cropCol = mix(cropCol, uPlowed, isPlow);
-  // slight per-plot wash variation, kept inside the season palette
-  cropCol = mix(cropCol, uGrass, 0.12 * (pid - 0.5));
+  vec3 sage = vec3(0.561, 0.604, 0.435);
+  vec3 stubbleG = vec3(0.784, 0.612, 0.333);
+  if (uSeason > 1.5 && uSeason < 2.5) {
+    float varp = hash21(plot + 5.3);
+    if (varp < 0.28) cropCol = stubbleG;
+    else if (varp > 0.78) cropCol = mix(cropCol, sage, 0.55);
+    else cropCol = mix(cropCol, uPlowed, 0.15 * varp);
+  } else {
+    cropCol = mix(cropCol, uGrass, 0.12 * (pid - 0.5));
+  }
   vec3 grassCol = mix(uGrass, uField, 0.18 * (hash21(plot + 3.1) - 0.4));
+  if (uSeason > 1.5 && uSeason < 2.5) grassCol = mix(grassCol, sage, 0.35 * step(0.5, hash21(plot + 2.2)));
 
   // woodland wash at a large scale, never high-frequency camouflage
   vec3 bareForest = mix(uForest, uForestB, smoothstep(0.2, 0.8, n1));
@@ -484,34 +493,35 @@ void main(){
     wash = mix(wash, uSnowCol, hold * (0.85 + 0.15 * n3));
   }
 
-  // cream paper first, then a quiet posterized watercolor wash
-  float coverAmt = 0.52 + 0.08 * n2;
-  if (cls < 0.5) coverAmt = 0.72;
-  if (cls > 3.5 && cls < 6.5) coverAmt = 0.56;
+  // cream paper first, then watercolor wash. Water and near fields keep more pigment.
+  float coverAmt = 0.62 + 0.08 * n2;
+  if (cls < 0.5) coverAmt = 0.88;
+  if (cls > 3.5 && cls < 6.5) coverAmt = 0.70;
   vec3 col = mix(uPaper, wash, coverAmt);
   vec3 post = vec3(poster(col.r, 7.0, n3), poster(col.g, 7.0, n3 * 0.8), poster(col.b, 7.0, n2));
-  col = mix(col, post, 0.28);
-  col += (n4 - 0.5) * 0.02;
+  col = mix(col, post, 0.22);
+  col += (n4 - 0.5) * 0.016;
 
   col *= mix(vec3(1.0), uNightMul * 1.15, uNight * 0.92);
   col *= mix(0.72, 1.04, ndl);
   col += uRim * uTwi * pow(clamp(dot(N, uSunDir), 0.0, 1.0), 4.0) * 0.55;
 
-  // crop and grass row strokes, alternating direction per plot
+  float dist = length(vWorld - cameraPosition);
+  // crop and grass row strokes, stronger in the near band, with field-edge ink
   if (cls > 5.5 && cls < 7.6 && uSnow < 0.5) {
     float ang = pid > 0.5 ? 0.0 : 1.5708;
     if (pid > 0.82) ang = 0.65;
     float row = dot(wz, vec2(cos(ang), sin(ang)));
     float sp = mix(4.6, 6.2, pid);
     float g = abs(fract(row / sp) - 0.5);
-    float inkA = 0.30 * uRow;
-    if (uSeason > 1.5 && uSeason < 2.5) inkA *= step(0.18, fract(row * 0.13 + pid)) * 0.9;
+    float nearF = 1.0 - smoothstep(280.0, 1400.0, dist);
+    float inkA = (0.22 + 0.38 * nearF) * uRow;
+    if (uSeason > 1.5 && uSeason < 2.5) inkA *= step(0.16, fract(row * 0.13 + pid)) * 0.95;
     if (uSeason > 2.5) inkA *= 0.5;
-    if (cls < 6.5) inkA *= 0.55;
+    if (cls < 6.5) inkA *= 0.6;
     col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.16, g)) * inkA);
-    // plot boundary, a light ink rule
     float edge = min(min(pf.x, 1.0 - pf.x), min(pf.y, 1.0 - pf.y));
-    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.035, edge)) * 0.22);
+    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.028, edge)) * (0.18 + 0.38 * nearF));
   }
 
   // woods keep a hard edge against fields
@@ -523,18 +533,21 @@ void main(){
     col = mix(col, uInkUse, 0.28);
   }
 
-  // water: engraved ripple lines, quiet wash, moonlight glint at night
+  // water: a visible engraved ribbon with ripple lines and inked banks
   if (cls < 0.5) {
-    float rip = sin(wz.x * 0.28 + uTime * 0.7) * 0.5 + sin(wz.y * 0.41 + 1.7) * 0.5;
+    vec3 river = vec3(0.361, 0.455, 0.467);
+    col = mix(col, mix(uPaper, river, 0.9), 0.55);
+    float rip = sin(wz.x * 0.28 + uTime * 0.55) * 0.5 + sin(wz.y * 0.41 + 1.7) * 0.5;
     float cd = length(wz - uCursor.xz);
     rip += 0.6 * sin(cd * 0.22 - uTime * 2.4) * exp(-cd * 0.012) * uCursor.y;
     float line = abs(fract((wz.x * 0.09 + wz.y * 0.11) + rip * 0.08) - 0.5);
-    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.07, line)) * 0.32);
+    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.07, line)) * 0.42);
     float line2 = abs(fract((wz.x * 0.05 - wz.y * 0.08) * 1.1 + 0.3) - 0.5);
-    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.08, line2)) * 0.12);
+    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.08, line2)) * 0.16);
+    if (forestN < 0.5 && nCls > 0.5) col = mix(col, uInkUse, 0.4);
     vec3 R = reflect(-L, N);
     float spec = pow(clamp(dot(R, V), 0.0, 1.0), 120.0);
-    col += mix(uRim, uPaper, 1.0 - uNight) * spec * mix(0.15, 1.6, uNight);
+    col += mix(uRim, uPaper, 1.0 - uNight) * spec * mix(0.12, 1.6, uNight);
   }
 
   // ink contours every 10 m, heavy every 50 m, with line wobble
@@ -568,20 +581,26 @@ void main(){
   col *= 0.96 + 0.08 * noise21(wz * 0.55);
   col += (n3 - 0.5) * 0.025;
 
-  float dist = length(vWorld - cameraPosition);
   float graze = pow(1.0 - clamp(dot(N, V), 0.0, 1.0), 1.6);
-  // ink the ridge silhouette
-  float ridge = graze * smoothstep(0.15, 0.55, 1.0 - N.y);
-  col = mix(col, uInkUse * mix(0.55, 1.2, uNight), ridge * 0.42 * (1.0 - uSnow * 0.5));
+  // 3 to 5 receding hill bands: ink local height crests plus grazing silhouettes
+  vec2 fwd = normalize(vWorld.xz - cameraPosition.xz);
+  vec2 duv = vec2(fwd.x / ((uSize.x - 1.0) * 31.25), -fwd.y / ((uSize.y - 1.0) * 31.25));
+  float hF = heightM(clamp(vUv + duv * 3.0, 0.0, 1.0));
+  float hB = heightM(clamp(vUv - duv * 3.0, 0.0, 1.0));
+  float peak = h - max(hF, hB);
+  float crest = smoothstep(0.35, 1.8, peak + (n3 - 0.5) * 0.4);
+  float ridge = max(graze * smoothstep(0.12, 0.5, 1.0 - N.y), crest);
+  float band = abs(fract(dist / 1200.0 + n3 * 0.08) - 0.5);
+  float bandW = 1.0 - smoothstep(0.0, 0.18, band);
+  float ridgeInk = ridge * (0.42 + 0.28 * bandW) * (1.0 - uSnow * 0.5);
 
-  // far hills fade toward sky color; far woods stay a wash, not sprites
-  float farF = smoothstep(1800.0, 8500.0, dist);
-  vec3 farC = mix(uSkyH, uPaper, 0.4 + 0.2 * uNight);
-  col = mix(col, farC, farF * 0.55);
-  if (forestHere > 0.5) {
-    // keep a tint of woods wash on far hills so they do not flatten to paper
-    col = mix(col, mix(bareForest, farC, 0.55), farF * 0.2);
-  }
+  // aerial fade to paper and amber toward the horizon, then re-ink the ridges
+  float air = smoothstep(1400.0, 9500.0, dist);
+  vec3 airC = mix(uPaper, vec3(0.94, 0.86, 0.70), 0.32);
+  airC = mix(airC, uSkyH, 0.2 + 0.25 * uNight);
+  col = mix(col, airC, air * 0.58);
+  if (forestHere > 0.5) col = mix(col, mix(bareForest, airC, 0.55), air * 0.15);
+  col = mix(col, uInkUse * mix(0.55, 1.2, uNight), ridgeInk * (1.0 - air * 0.3));
 
   if (uDawnMist > 0.01) {
     float valley = clamp((165.0 - h) / 40.0, 0.0, 1.0);
@@ -627,29 +646,41 @@ ${NOISE_GLSL}
 void main(){
   vec3 d = normalize(vDir);
   float h = d.y;
+  // Cream paper first. Day: muted blue only near zenith, parchment everywhere else.
+  vec3 paper = vec3(0.929, 0.902, 0.839);
   vec3 col;
-  // Wide pale band near the horizon so day reads as the hazy r4 gradient,
-  // not a flat mid-blue wall in the upward-tilted camera.
-  if (h > 0.42) col = mix(uMid, uTop, clamp((h - 0.42) / 0.58, 0.0, 1.0));
-  else if (h > 0.0) col = mix(uHor, uMid, pow(h / 0.42, 0.75));
-  else col = mix(uHor, uHor * 0.75, clamp(-h * 2.0, 0.0, 1.0));
+  if (uNight < 0.45) {
+    float zen = smoothstep(0.38, 0.82, h);
+    float horB = 1.0 - smoothstep(0.0, 0.28, h);
+    col = mix(uMid, paper, 0.45);
+    col = mix(col, uTop, zen * 0.7);
+    col = mix(col, uHor, horB * 0.85);
+    // faint amber haze along the horizon
+    vec3 amber = vec3(0.95, 0.82, 0.62);
+    col = mix(col, amber, horB * 0.22 * (1.0 - uNight));
+  } else {
+    if (h > 0.42) col = mix(uMid, uTop, clamp((h - 0.42) / 0.58, 0.0, 1.0));
+    else if (h > 0.0) col = mix(uHor, uMid, pow(h / 0.42, 0.75));
+    else col = mix(uHor, uHor * 0.75, clamp(-h * 2.0, 0.0, 1.0));
+  }
   float sun = pow(clamp(dot(d, normalize(uSunDir)), 0.0, 1.0), 520.0);
   float glow = pow(clamp(dot(d, normalize(uSunDir)), 0.0, 1.0), 22.0);
   if (uSunDir.y > -0.08) {
-    float sunAmt = (1.0 - uNight) * mix(0.35, 1.0, uTwi);
-    col += vec3(1.0, 0.93, 0.78) * sun * 0.9 * sunAmt;
-    col += vec3(1.0, 0.78, 0.5) * glow * 0.22 * sunAmt;
+    float sunAmt = (1.0 - uNight) * mix(0.25, 1.0, uTwi);
+    col += vec3(1.0, 0.93, 0.78) * sun * 0.55 * sunAmt;
+    col += vec3(1.0, 0.82, 0.55) * glow * 0.12 * sunAmt;
   }
   if (uMilky > 0.01 && uNight > 0.4) {
     vec3 mw = normalize(vec3(0.35, 0.15, 0.9));
     float band = 1.0 - abs(dot(d, mw));
     col += vec3(0.7, 0.72, 0.9) * smoothstep(0.15, 0.0, 1.0 - band) * 0.18 * uMilky * uNight;
   }
-  // paper grain in screen space so the dome does not show rings
-  float g = noise21(gl_FragCoord.xy * 0.31);
-  float fleck = hash21(gl_FragCoord.xy * 0.73 + 19.0);
-  col *= 0.975 + 0.045 * g;
-  col += (fleck - 0.5) * 0.014;
+  // paper grain, screen space
+  float g = noise21(gl_FragCoord.xy * 0.28);
+  float fleck = hash21(gl_FragCoord.xy * 0.81 + 19.0);
+  float fiber = noise21(gl_FragCoord.xy * vec2(0.07, 0.9));
+  col *= 0.97 + 0.05 * g;
+  col += (fleck - 0.5) * 0.016 + (fiber - 0.5) * 0.012;
   gl_FragColor = vec4(col, 1.0);
 }
 `;
@@ -691,9 +722,20 @@ void main(){
   float d = length(iPos.xz - uCursor.xz);
   float infl = exp(-d * d / (140.0 * 140.0)) * uCursor.y * uRuffle;
   float tilt = (wind + infl * sin(uTime * 18.0 + iPhase * 6.28) * 0.35) * uv.y;
-  float close = smoothstep(50.0, 180.0, dist);
-  float sx = iScale.x * (lod < 0.5 ? 1.0 : 1.55) * mix(0.42, 1.0, close);
-  float sy = iScale.y * (lod < 0.5 ? 1.0 : 1.25) * mix(0.42, 1.0, close);
+  float close = smoothstep(40.0, 200.0, dist);
+  float sx = iScale.x * (lod < 0.5 ? 1.0 : 1.18) * mix(0.5, 1.0, close);
+  float sy = iScale.y * (lod < 0.5 ? 1.0 : 1.06) * mix(0.5, 1.0, close);
+  // plant the trunk in the ground a little so billboards do not float on slopes
+  iPos.y -= 1.8;
+  // cap near-tree screen height at about 12% of the frame
+  vec4 c0 = projectionMatrix * viewMatrix * vec4(iPos, 1.0);
+  vec4 c1 = projectionMatrix * viewMatrix * vec4(iPos + camU * sy, 1.0);
+  float ndcH = abs(c1.y / max(0.001, c1.w) - c0.y / max(0.001, c0.w));
+  if (ndcH > 0.24) {
+    float cap = 0.24 / ndcH;
+    sx *= cap;
+    sy *= cap;
+  }
   vec3 p = iPos + camR * ((position.x + tilt) * sx) + camU * (position.y * sy);
   vShade = 0.86 + 0.14 * sin(iPhase * 20.0);
   gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
@@ -1214,29 +1256,82 @@ function makeCloudSprite() {
   const g = cv.getContext("2d");
   const rng = mulberry(19);
   g.clearRect(0, 0, 512, 256);
-  for (let i = 0; i < 9; i++) {
-    const cx = 80 + rng() * 350, cy = 80 + rng() * 100, rx = 50 + rng() * 90, ry = 28 + rng() * 40;
-    const grd = g.createRadialGradient(cx, cy, 8, cx, cy, rx);
-    grd.addColorStop(0, "rgba(255,255,255,0.95)");
-    grd.addColorStop(1, "rgba(255,255,255,0)");
+  // One tight cumulus (login-sky lobe layout, extra overlap), inked union outline, wash + hatch.
+  const base = [
+    [90, 120, 70], [150, 96, 86], [215, 108, 76],
+    [258, 124, 60], [180, 136, 72], [120, 138, 62],
+    [200, 86, 54], [230, 92, 50], [165, 88, 48]
+  ];
+  const sc = 1.28;
+  const circles = base.map(function (b) {
+    return {
+      x: 256 + (b[0] - 174) * sc,
+      y: 142 + (b[1] - 118) * sc,
+      r: b[2] * sc
+    };
+  });
+  function fillUnion(list) {
+    g.fillStyle = "rgba(236, 224, 200, 0.94)";
+    list.forEach(function (c) {
+      g.beginPath();
+      g.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+      g.fill();
+    });
+    const cx = 256, cy = 118;
+    const grd = g.createRadialGradient(cx, cy, 8, cx, cy + 10, 150);
+    grd.addColorStop(0, "rgba(247, 239, 220, 0.55)");
+    grd.addColorStop(1, "rgba(247, 239, 220, 0)");
     g.fillStyle = grd;
     g.beginPath();
-    g.ellipse(cx, cy, rx, ry, (rng() - 0.5) * 0.5, 0, Math.PI * 2);
+    g.arc(cx, cy, 150, 0, Math.PI * 2);
     g.fill();
   }
-  g.globalCompositeOperation = "source-atop";
-  g.strokeStyle = "rgba(42,33,24,0.22)";
-  g.lineWidth = 1;
-  for (let y = 20; y < 240; y += 7) {
+  function strokeUnion(list) {
     g.beginPath();
-    for (let x = 10; x < 500; x += 6) {
-      const yy = y + Math.sin(x * 0.04 + y) * 2;
+    list.forEach(function (c) {
+      const steps = 96;
+      let drawing = false;
+      for (let i = 0; i <= steps; i++) {
+        const a = (i / steps) * Math.PI * 2;
+        const x = c.x + Math.cos(a) * c.r;
+        const y = c.y + Math.sin(a) * c.r;
+        let inside = false;
+        for (let j = 0; j < list.length; j++) {
+          const o = list[j];
+          if (o === c) continue;
+          if (Math.hypot(x - o.x, y - o.y) < o.r - 0.85) { inside = true; break; }
+        }
+        if (!inside) {
+          if (!drawing) { g.moveTo(x, y); drawing = true; }
+          else g.lineTo(x, y);
+        } else {
+          drawing = false;
+        }
+      }
+    });
+    g.stroke();
+  }
+  fillUnion(circles);
+  g.strokeStyle = "rgba(42,33,24,0.72)";
+  g.lineWidth = 1.7;
+  g.lineJoin = "round";
+  g.lineCap = "round";
+  strokeUnion(circles);
+  // engraved hatch, clipped to the wash
+  g.globalCompositeOperation = "source-atop";
+  g.strokeStyle = "rgba(42,33,24,0.26)";
+  g.lineWidth = 1;
+  for (let y = 18; y < 240; y += 6) {
+    g.beginPath();
+    for (let x = 10; x < 500; x += 5) {
+      const yy = y + Math.sin(x * 0.045 + y * 0.2) * 2.2;
       if (x === 10) g.moveTo(x, yy); else g.lineTo(x, yy);
     }
     g.stroke();
   }
   const tex = new THREE.CanvasTexture(cv);
   tex.colorSpace = THREE.NoColorSpace;
+  tex.flipY = false;
   return tex;
 }
 
@@ -1255,10 +1350,10 @@ function buildClouds() {
   for (let i = 0; i < 16; i++) {
     clouds.push({
       az: rng() * Math.PI * 2,
-      alt: 0.12 + rng() * 0.35,
-      r: 1800 + rng() * 3200,
-      sx: 420 + rng() * 700,
-      sy: 180 + rng() * 260,
+      alt: 0.16 + rng() * 0.38,
+      r: 2200 + rng() * 2800,
+      sx: 520 + rng() * 820,
+      sy: 220 + rng() * 280,
       phase: rng() * 6.28,
       part: 0
     });
@@ -1270,16 +1365,20 @@ function layoutClouds(dt) {
   const m = new THREE.Matrix4(), q = new THREE.Quaternion(), p = new THREE.Vector3(), s = new THREE.Vector3();
   const look = new THREE.Vector3();
   camera.getWorldDirection(look);
-  const nCloud = wx.kind === "clear" ? 2 : wx.kind === "partly" ? 7 : 16;
+  const nCloud = wx.kind === "clear" ? 6 : wx.kind === "partly" ? 9 : 16;
   const hide = wx.kind === "clear" && clock.period === "night" ? 1 : nCloud;
   cloudMesh.count = hide;
-  cloudMesh.material.opacity = (clock.night > 0.5 ? 0.55 : 0.82) * (wx.kind === "storm" ? 0.92 : 0.8);
-  const tint = clock.night > 0.5 ? 0x5a6480 : clock.twi > 0.4 ? 0xd9a090 : 0xf4f6fa;
+  cloudMesh.material.opacity = (clock.night > 0.5 ? 0.5 : 0.88) * (wx.kind === "storm" ? 0.92 : 0.86);
+  const tint = clock.night > 0.5 ? 0x5a6480 : clock.twi > 0.4 ? 0xd9a090 : 0xf0e6d0;
   cloudMesh.material.color.setHex(tint);
+  camera.getWorldDirection(look);
+  const baseAz = Math.atan2(look.x, look.z);
   for (let i = 0; i < 16; i++) {
     const c = clouds[i];
-    if (!state.frozen) c.az += dt * 0.012 * (wx.kind === "storm" ? 2.2 : 1);
-    const alt = c.alt, az = c.az;
+    if (!state.frozen) c.phase += dt * 0.08 * (wx.kind === "storm" ? 2.2 : 1);
+    const spread = (i / Math.max(1, hide - 1) - 0.5) * 1.55;
+    const az = (i < hide) ? baseAz + spread + Math.sin(c.phase) * 0.08 : c.az;
+    const alt = 0.18 + (i % 3) * 0.11 + Math.sin(c.phase * 0.7) * 0.03;
     p.set(Math.sin(az) * Math.cos(alt) * c.r, Math.sin(alt) * c.r, Math.cos(az) * Math.cos(alt) * c.r);
     const sp = new THREE.Vector3().copy(p).add(camera.position);
     sp.project(camera);
@@ -1294,7 +1393,7 @@ function layoutClouds(dt) {
     }
     look.set(p.x, p.y, p.z).normalize();
     q.setFromUnitVectors(new THREE.Vector3(0, 0, 1), look);
-    s.set(c.sx * (1 + c.part * 0.2), c.sy * (1 - c.part * 0.15), 1);
+    s.set(c.sx * (1 + c.part * 0.2), c.sx * 0.5 * (1 - c.part * 0.15), 1);
     m.compose(p, q, s);
     cloudMesh.setMatrixAt(i, m);
   }
@@ -1613,7 +1712,7 @@ let treeRecords = [];
 
 function scatterTrees() {
   const rng = mulberry(2026);
-  const maxN = 4800;
+  const maxN = 6200;
   const pos = [], scale = [], frame = [], frameClump = [], phase = [], kind = [];
   treeRecords = [];
   // Pack stands in woods along the river corridor first, so the hero view is dense.
@@ -1636,8 +1735,8 @@ function scatterTrees() {
     for (let px = px0; px <= px1; px += step) {
       const cls = coverPx(px, py);
       let chance = 0;
-      if (cls === 4) chance = 0.72;
-      else if (cls === 5) chance = 0.8;
+      if (cls === 4) chance = 0.88;
+      else if (cls === 5) chance = 0.92;
       else if (cls === 8) chance = 0.22;
       else if (cls === 1) chance = 0.04;
       else if (cls === 6) chance = 0.0;
@@ -1647,6 +1746,8 @@ function scatterTrees() {
       const hd = heightPx(px, py + 2), hu = heightPx(px, py - 2);
       const slope = Math.abs(hl - hr) + Math.abs(hd - hu);
       if (cls === 4 && slope > 4) chance = Math.min(1, chance + 0.18);
+      const wet = coverPx(px + 2, py) === 0 || coverPx(px - 2, py) === 0 || coverPx(px, py + 2) === 0 || coverPx(px, py - 2) === 0;
+      if (wet && (cls === 4 || cls === 5)) chance = 1.0;
       if (rng() > chance) continue;
       cands.push({ px: px, py: py, cls: cls });
     }
@@ -1657,10 +1758,10 @@ function scatterTrees() {
   }
   for (let ci = 0; ci < cands.length && pos.length / 3 < maxN; ci++) {
     const px = cands[ci].px, py = cands[ci].py, cls = cands[ci].cls;
-    const stand = cls === 4 || cls === 5 ? 2 + ((rng() * 3) | 0) : 1;
+    const stand = cls === 4 || cls === 5 ? 3 + ((rng() * 4) | 0) : 1;
     for (let s = 0; s < stand && pos.length / 3 < maxN; s++) {
-      const jx = (px + (rng() - 0.5) * 1.4);
-      const jy = (py + (rng() - 0.5) * 1.4);
+      const jx = (px + (rng() - 0.5) * 1.05);
+      const jy = (py + (rng() - 0.5) * 1.05);
       const w = pxToWorld(jx, jy);
       const c2 = coverPx(jx, jy);
       if (c2 === 0 || c2 === 2 || c2 === 3) continue;
@@ -1671,7 +1772,7 @@ function scatterTrees() {
       const tall = (specName === "cedar" ? 15 + rng() * 8 : 13 + rng() * 11);
       const wid = tall * (specName === "cedar" ? 0.48 : 0.72) * (0.85 + rng() * 0.3);
       pos.push(w.x, yOf(hm), w.z);
-      scale.push(wid * 3.1, tall * 3.2);
+      scale.push(wid * 2.15, tall * 2.2);
       frame.push(fr.full);
       frameClump.push(fr.clump);
       phase.push(rng());
@@ -1679,7 +1780,50 @@ function scatterTrees() {
       treeRecords.push({ spec: specName, slot: slot, cls: c2 });
     }
   }
-  const n = pos.length / 3;
+  // drop lone trees so woods read as stands, not orange balls
+  const n0 = pos.length / 3;
+  const mark = new Uint8Array(n0);
+  const r2 = 48 * 48;
+  const cell = 60;
+  const buckets = {};
+  function key(x, z) { return ((x / cell) | 0) + ":" + ((z / cell) | 0); }
+  for (let i = 0; i < n0; i++) {
+    const k = key(pos[i * 3], pos[i * 3 + 2]);
+    if (!buckets[k]) buckets[k] = [];
+    buckets[k].push(i);
+  }
+  for (let i = 0; i < n0; i++) {
+    if (mark[i]) continue;
+    const x = pos[i * 3], z = pos[i * 3 + 2];
+    const gx = (x / cell) | 0, gz = (z / cell) | 0;
+    for (let ox = -1; ox <= 1 && !mark[i]; ox++) {
+      for (let oz = -1; oz <= 1 && !mark[i]; oz++) {
+        const list = buckets[gx + ox + ":" + (gz + oz)];
+        if (!list) continue;
+        for (let li = 0; li < list.length; li++) {
+          const j = list[li];
+          if (j === i) continue;
+          const dx = x - pos[j * 3], dz = z - pos[j * 3 + 2];
+          if (dx * dx + dz * dz < r2) { mark[i] = 1; mark[j] = 1; break; }
+        }
+      }
+    }
+  }
+  let w3 = 0;
+  for (let i = 0; i < n0; i++) {
+    if (!mark[i]) continue;
+    if (w3 !== i) {
+      pos[w3 * 3] = pos[i * 3]; pos[w3 * 3 + 1] = pos[i * 3 + 1]; pos[w3 * 3 + 2] = pos[i * 3 + 2];
+      scale[w3 * 2] = scale[i * 2]; scale[w3 * 2 + 1] = scale[i * 2 + 1];
+      frame[w3] = frame[i]; frameClump[w3] = frameClump[i];
+      phase[w3] = phase[i]; kind[w3] = kind[i];
+      treeRecords[w3] = treeRecords[i];
+    }
+    w3++;
+  }
+  pos.length = w3 * 3;
+  treeRecords.length = w3;
+  const n = w3;
   VEG.treesPlaced = n;
   VEG.trees = n;
   const plane = new THREE.PlaneGeometry(1, 1);
@@ -1960,15 +2104,15 @@ function addWindow(group, w, h, d, x, y, z, name) {
 function placeholderChurch() {
   const g = new THREE.Group();
   g.name = "church";
-  addWashMesh(g, new THREE.BoxGeometry(14, 8, 10), hexRgb("#8A7A66"), 0, 4, 0);
-  const roof = new THREE.ConeGeometry(9.2, 4.2, 4);
+  addWashMesh(g, new THREE.BoxGeometry(9, 5, 7), hexRgb("#8A7A66"), 0, 2.5, 0);
+  const roof = new THREE.ConeGeometry(6.2, 2.8, 4);
   roof.rotateY(Math.PI / 4);
-  addWashMesh(g, roof, hexRgb("#5A4638"), 0, 10.1, 0);
-  addWashMesh(g, new THREE.BoxGeometry(4.2, 14, 4.2), hexRgb("#8A7A66"), 0, 11, -2.2);
-  addWashMesh(g, new THREE.ConeGeometry(3.1, 8, 4), hexRgb("#4A3A2C"), 0, 22, -2.2);
-  addWindow(g, 1.2, 2.2, 0.3, 3.2, 3.6, 5.05, "window_nave_e");
-  addWindow(g, 1.2, 2.2, 0.3, -3.2, 3.6, 5.05, "window_nave_w");
-  addWindow(g, 1.1, 2.6, 0.3, 0, 14, -0.05, "window_tower");
+  addWashMesh(g, roof, hexRgb("#5A4638"), 0, 6.4, 0);
+  addWashMesh(g, new THREE.BoxGeometry(2.6, 7.5, 2.6), hexRgb("#8A7A66"), 0, 6.2, -1.4);
+  addWashMesh(g, new THREE.ConeGeometry(1.9, 4.2, 4), hexRgb("#4A3A2C"), 0, 12.0, -1.4);
+  addWindow(g, 0.9, 1.5, 0.25, 2.0, 2.4, 3.55, "window_nave_e");
+  addWindow(g, 0.9, 1.5, 0.25, -2.0, 2.4, 3.55, "window_nave_w");
+  addWindow(g, 0.8, 1.6, 0.25, 0, 8.2, -0.05, "window_tower");
   return g;
 }
 
@@ -2002,8 +2146,8 @@ function placeholderBarn() {
 function placeholderSilo() {
   const g = new THREE.Group();
   g.name = "silo";
-  addWashMesh(g, new THREE.CylinderGeometry(2.4, 2.6, 10, 10), hexRgb("#A8A094"), 0, 5, 0);
-  addWashMesh(g, new THREE.SphereGeometry(2.5, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), hexRgb("#8A8078"), 0, 10, 0);
+  addWashMesh(g, new THREE.CylinderGeometry(2.2, 2.4, 6.2, 10), hexRgb("#A8A094"), 0, 3.1, 0);
+  addWashMesh(g, new THREE.SphereGeometry(2.3, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), hexRgb("#8A8078"), 0, 6.2, 0);
   return g;
 }
 
@@ -2016,38 +2160,80 @@ function placeholderHay() {
   return g;
 }
 
-function styleLoadedModel(root, fallbackRgb) {
+const MODEL_WASH = {
+  church: {
+    wall: [191, 158, 115],
+    stone_dark: [140, 115, 87],
+    clock: [237, 230, 214],
+    metal: [217, 164, 65],
+    door: [56, 41, 31],
+    hand: [42, 33, 24],
+    lantern: [237, 229, 214],
+    roof: [82, 140, 107],
+    trim: [209, 184, 143]
+  },
+  farmhouse: {
+    wall: [242, 237, 224],
+    trim: [219, 209, 189],
+    door: [59, 43, 33],
+    wood: [115, 87, 56],
+    roof: [92, 87, 79],
+    chimney: [158, 87, 61]
+  },
+  barn: {
+    wall: [156, 56, 43],
+    trim: [237, 229, 214],
+    roof: [133, 128, 117],
+    door: [237, 229, 214],
+    stone: [158, 143, 117],
+    wood: [102, 76, 46],
+    earth: [158, 128, 82]
+  },
+  silo: {
+    wall: [148, 153, 148],
+    stone: [158, 148, 128],
+    metal: [115, 120, 117],
+    trim: [102, 102, 99],
+    roof: [128, 133, 130],
+    window: [64, 64, 61]
+  },
+  haybale: {
+    hay: [201, 166, 107],
+    twine: [173, 140, 82]
+  }
+};
+
+function styleLoadedModel(root, kind) {
+  const pal = MODEL_WASH[kind] || {};
+  const fallback = {
+    church: [191, 158, 115],
+    farmhouse: [242, 237, 224],
+    barn: [156, 56, 43],
+    silo: [148, 153, 148],
+    haybale: [201, 166, 107]
+  }[kind] || hexRgb("#8A7A66");
   root.traverse(function (obj) {
     if (!obj.isMesh) return;
     const n = (obj.name || "").toLowerCase();
-    const mn = (obj.material && obj.material.name) ? String(obj.material.name).toLowerCase() : "";
-    const isWin = n.indexOf("window") === 0 || n.indexOf("window") !== -1 || mn === "window";
-    if (isWin) {
-      obj.name = obj.name && obj.name.indexOf("window") === 0 ? obj.name : "window_" + obj.id;
-      obj.material = makeWindowMat();
-      return;
-    }
-    let rgb = fallbackRgb || hexRgb("#8A7A66");
-    if (n.indexOf("roof") !== -1 || mn.indexOf("roof") !== -1) rgb = hexRgb("#5A4638");
-    else if (n.indexOf("barn") !== -1 || mn.indexOf("barn") !== -1) rgb = hexRgb("#8B3A2A");
-    else if (n.indexOf("silo") !== -1) rgb = hexRgb("#A8A094");
-    else if (n.indexOf("hay") !== -1) rgb = hexRgb("#C9A66B");
-    else if (n.indexOf("farm") !== -1 || n.indexOf("house") !== -1 || n.indexOf("white") !== -1) rgb = hexRgb("#E8E0D0");
-    else if (obj.material && obj.material.color) {
-      const c = obj.material.color;
-      rgb = [Math.round(c.r * 255), Math.round(c.g * 255), Math.round(c.b * 255)];
-    }
-    obj.material = makeWashMat(rgb);
+    const raw = Array.isArray(obj.material) ? obj.material : [obj.material];
+    const styled = raw.map(function (src) {
+      const mn = (src && src.name) ? String(src.name).toLowerCase() : "";
+      const isWin = kind !== "silo" && (mn === "window" || n.indexOf("window") === 0 || n.indexOf("lancet") === 0 || n === "rose" || n.indexOf("rear_window") === 0);
+      if (isWin) return makeWindowMat();
+      const rgb = pal[mn] || pal[n] || fallback;
+      return makeWashMat(rgb);
+    });
+    obj.material = styled.length === 1 ? styled[0] : styled;
   });
   return root;
 }
 
 const MODEL_FILES = {
-  church: ["church.glb", "st-joseph.glb", "st_joseph.glb"],
+  church: ["st_joseph_church.glb", "church.glb", "st-joseph.glb", "st_joseph.glb"],
   farmhouse: ["farmhouse.glb", "house.glb"],
-  barn: ["barn.glb", "red-barn.glb"],
-  silo: ["silo.glb"],
-  haybale: ["haybale.glb", "hay-bale.glb", "hay.glb"]
+  barn: ["bank_barn.glb", "barn.glb", "red-barn.glb"],
+  silo: ["grain_silo.glb", "silo.glb"],
+  haybale: ["hay_bale.glb", "haybale.glb", "hay-bale.glb", "hay.glb"]
 };
 
 async function tryLoadModel(kind) {
@@ -2125,7 +2311,7 @@ function scatterBuildings() {
     const s = sites[i];
     if (used[s.kind] >= cap[s.kind]) continue;
     const obj = makers[s.kind]();
-    const sc = (s.kind === "silo" ? 1.15 : 1.25) * EXAG * 0.42;
+    const sc = s.kind === "silo" ? 0.62 : (s.kind === "barn" ? 0.78 : 0.7);
     obj.scale.setScalar(sc);
     placeOnGround(obj, s.x, s.z, s.yaw);
     landmarkGroup.add(obj);
@@ -2134,6 +2320,63 @@ function scatterBuildings() {
   LAND.farmhouse = used.farmhouse;
   LAND.barn = used.barn;
   LAND.silo = used.silo;
+}
+
+function scatterPathFarms() {
+  if (!path.length) return;
+  const rng = mulberry(109);
+  const step = 640;
+  const added = { farmhouse: 0, barn: 0, silo: 0, haybale: 0 };
+  for (let s = 480; s < path.len - 400; s += step) {
+    const p = pathSample(s + (rng() - 0.5) * 70);
+    const side = rng() < 0.5 ? 1 : -1;
+    const right = p.heading + Math.PI / 2;
+    let x, z, ok = false;
+    for (let k = 0; k < 7; k++) {
+      const dist = 180 + rng() * 140 + k * 28;
+      x = p.x + Math.sin(right) * side * dist;
+      z = p.z + Math.cos(right) * side * dist;
+      const cls = coverWorld(x, z);
+      if (cls !== 0 && cls !== 4 && cls !== 5) { ok = true; break; }
+    }
+    if (!ok) continue;
+    const yaw = p.heading + (rng() - 0.5) * 0.7;
+    const house = placeholderFarmhouse();
+    placeOnGround(house, x, z, yaw);
+    landmarkGroup.add(house);
+    added.farmhouse++;
+    const bx = x + Math.sin(yaw + 1.15) * 24;
+    const bz = z + Math.cos(yaw + 1.15) * 24;
+    if (coverWorld(bx, bz) !== 0) {
+      const barn = placeholderBarn();
+      placeOnGround(barn, bx, bz, yaw + 0.05);
+      landmarkGroup.add(barn);
+      added.barn++;
+    }
+    if (rng() < 0.6) {
+      const sx = x + Math.sin(yaw - 0.95) * 16;
+      const sz = z + Math.cos(yaw - 0.95) * 16;
+      if (coverWorld(sx, sz) !== 0) {
+        const silo = placeholderSilo();
+        placeOnGround(silo, sx, sz, yaw);
+        landmarkGroup.add(silo);
+        added.silo++;
+      }
+    }
+    for (let hi = 0; hi < 4; hi++) {
+      const hx = bx + Math.sin(yaw + 0.5 + hi * 0.7) * (9 + hi * 3);
+      const hz = bz + Math.cos(yaw + 0.5 + hi * 0.7) * (9 + hi * 3);
+      const cls = coverWorld(hx, hz);
+      if (cls === 0 || cls === 4) continue;
+      const hay = placeholderHay();
+      placeOnGround(hay, hx, hz, rng() * 6.28);
+      landmarkGroup.add(hay);
+      added.haybale++;
+    }
+  }
+  LAND.farmhouse += added.farmhouse;
+  LAND.barn += added.barn;
+  LAND.silo += added.silo;
 }
 
 function skinLandmarks() {
@@ -2157,25 +2400,19 @@ async function swapInGltfModels() {
   for (let i = 0; i < kinds.length; i++) {
     const scene = await tryLoadModel(kinds[i]);
     if (!scene) continue;
-    const fallback = {
-      church: hexRgb("#8A7A66"),
-      farmhouse: hexRgb("#E8E0D0"),
-      barn: hexRgb("#8B3A2A"),
-      silo: hexRgb("#A8A094"),
-      haybale: hexRgb("#C9A66B")
-    }[kinds[i]];
     loaded[kinds[i]] = scene;
-    styleLoadedModel(scene, fallback);
+    styleLoadedModel(scene, kinds[i]);
   }
   if (!Object.keys(loaded).length) return;
   if (loaded.church && churchMesh) {
-    const xf = { p: churchMesh.position.clone(), r: churchMesh.rotation.clone(), s: churchMesh.scale.clone() };
+    const xf = { p: churchMesh.position.clone(), r: churchMesh.rotation.clone() };
     while (churchMesh.children.length) churchMesh.remove(churchMesh.children[0]);
     const proto = loaded.church.clone();
     churchMesh.add(proto);
     churchMesh.position.copy(xf.p);
     churchMesh.rotation.copy(xf.r);
-    churchMesh.scale.copy(xf.s);
+    // Models are authored in meters, origin at ground center.
+    churchMesh.scale.set(1, 1, 1);
   }
   function replaceKind(kind, proto) {
     const doomed = [];
@@ -2184,9 +2421,10 @@ async function swapInGltfModels() {
     });
     doomed.forEach(function (ch) {
       const nu = proto.clone();
+      nu.name = kind;
       nu.position.copy(ch.position);
       nu.rotation.copy(ch.rotation);
-      nu.scale.copy(ch.scale);
+      nu.scale.set(1, 1, 1);
       landmarkGroup.add(nu);
       landmarkGroup.remove(ch);
     });
@@ -2194,18 +2432,21 @@ async function swapInGltfModels() {
   if (loaded.farmhouse) replaceKind("farmhouse", loaded.farmhouse);
   if (loaded.barn) replaceKind("barn", loaded.barn);
   if (loaded.silo) replaceKind("silo", loaded.silo);
+  if (loaded.haybale) replaceKind("haybale", loaded.haybale);
   if (loaded.haybale && hayMesh) {
     hayMesh.visible = false;
-    const rng = mulberry(77);
     const n = Math.min(hayMesh.count, 90);
     const dummy = new THREE.Object3D();
     for (let i = 0; i < n; i++) {
       hayMesh.getMatrixAt(i, dummy.matrix);
       dummy.matrix.decompose(dummy.position, dummy.quaternion, dummy.scale);
       const b = loaded.haybale.clone();
+      b.name = "haybale";
       b.position.copy(dummy.position);
+      b.position.y = yOf(heightWorld(dummy.position.x, dummy.position.z));
       b.quaternion.copy(dummy.quaternion);
-      b.scale.copy(dummy.scale);
+      b.scale.set(1, 1, 1);
+      b.visible = clock.season === "autumn";
       landmarkGroup.add(b);
     }
   }
@@ -2222,7 +2463,7 @@ function buildTown() {
   const h = heightPx(church[0], church[1]);
   churchMesh = placeholderChurch();
   churchMesh.position.set(w.x, yOf(h), w.z);
-  churchMesh.scale.setScalar(EXAG * 0.55);
+  churchMesh.scale.setScalar(0.72);
   landmarkGroup.add(churchMesh);
   LAND.church = 1;
 
@@ -2283,6 +2524,7 @@ function buildTown() {
   scene.add(firePts);
 
   scatterBuildings();
+  scatterPathFarms();
 
   const hayN = 90;
   const hayGeo = new THREE.CylinderGeometry(2.2, 2.2, 2.4, 8, 1, false);
@@ -2364,7 +2606,12 @@ function applySkin() {
   const grassOn = clock.season !== "winter" || wx.kind === "snow";
   if (grassMesh) grassMesh.visible = grassOn;
   if (clumpMesh) clumpMesh.visible = grassOn;
-  if (hayMesh) hayMesh.visible = clock.season === "autumn";
+  if (hayMesh) hayMesh.visible = clock.season === "autumn" && !LAND.fromGltf.haybale;
+  if (landmarkGroup) {
+    landmarkGroup.children.forEach(function (ch) {
+      if (ch.name === "haybale") ch.visible = clock.season === "autumn";
+    });
+  }
   if (windowPts) windowPts.material.opacity = night > 0.45 ? clamp((night - 0.45) / 0.4, 0, 0.95) : 0;
   if (firePts) firePts.material.opacity = (clock.season === "summer" && night > 0.5) ? 0.85 : 0;
   if (starPts) starPts.visible = night > 0.15;
@@ -2867,7 +3114,7 @@ async function init() {
   buildGrass();
   buildTown();
   applySkin();
-  swapInGltfModels();
+  await swapInGltfModels();
   bindInput();
   placeCamera();
   fillGrass(camera.position.x, camera.position.z);
