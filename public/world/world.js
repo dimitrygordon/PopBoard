@@ -5454,7 +5454,10 @@ async function tryLoadGlb(names) {
       if (gltf && gltf.scene) {
         return { scene: gltf.scene, file: list[i] };
       }
-    } catch (err) {}
+    } catch (err) {
+      jhsTiming.err = (jhsTiming.err ? jhsTiming.err + " | " : "") + (list[i] + ": " + (err && err.message ? err.message : String(err)));
+      console.warn("glb", list[i], err);
+    }
   }
   return null;
 }
@@ -5610,7 +5613,7 @@ function maybeUpgradeJhs() {
   if (!jhsRoot || !JHS_GLB_FULL || jhsTiming.schoolFile === JHS_GLB_FULL) return;
   const w = jhsWorldOrigin();
   const dist = camera ? Math.hypot(camera.position.x - w.x, camera.position.z - w.z) : 1e9;
-  const onJhs = tour.phase === "hold" && getTourStops()[tour.stop] && getTourStops()[tour.stop].name === "jhs";
+  const onJhs = tour.phase === "hold" && tour.stop === 0;
   if (!(onJhs || dist < 1400)) return;
   jhsUpgradeQueued = true;
   loadJhsSchool(JHS_GLB_FULL, false).then(function () {
@@ -7052,7 +7055,7 @@ async function swapInGltfModels() {
     }
   }
   placeFixedLandmarks(loaded);
-  invalidateTourStops();
+  if (tour.phase !== "flyin") invalidateTourStops();
   skinLandmarks();
   if (glOk && renderer) renderer.render(scene, camera);
 }
@@ -10972,9 +10975,21 @@ async function init() {
   expose();
   if (!dbgWx) setTimeout(fetchWx, 400);
   startLoop();
-  // Fly-in starts on the placeholder. School and other glbs load in the background.
-  swapInGltfModels().catch(function (err) { console.warn("gltf swap", err); });
-  loadJhsProgressive().catch(function (err) { console.warn("jhs load", err); });
+  // Fly-in starts on the placeholder. Load the school first so it is not
+  // racing Meshopt parse with the other landmarks, then swap the rest.
+  (async function () {
+    try {
+      await loadJhsProgressive();
+    } catch (err) {
+      jhsTiming.err = String(err && err.message ? err.message : err);
+      console.warn("jhs load", err);
+    }
+    try {
+      await swapInGltfModels();
+    } catch (err) {
+      console.warn("gltf swap", err);
+    }
+  })();
 }
 
 init().catch(function (e) {
