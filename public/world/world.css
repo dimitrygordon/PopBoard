@@ -63,14 +63,19 @@ html, body {
   pointer-events: none;
   display: flex;
   flex-direction: column;
-  gap: 0.1rem;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  gap: 0.08rem;
+  padding: 0.38rem 0.62rem 0.32rem;
+  border: 1.5px solid rgba(42, 33, 24, 0.55);
+  background: rgba(237, 230, 214, 0.62);
+  box-shadow: inset 0 0 0 3px rgba(237, 230, 214, 0.35);
 }
 
 #place {
-  font-size: 0.78rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  font-variant: small-caps;
+  text-transform: lowercase;
+  font-weight: 600;
 }
 
 #when {
@@ -98,11 +103,17 @@ html, body {
 body[data-sky="day"] #caption,
 body[data-sky="dawn"] #caption {
   color: #2A2118;
-  text-shadow: 0 1px 0 rgba(237, 230, 214, 0.55);
+  text-shadow: none;
+  border-color: rgba(42, 33, 24, 0.55);
+  background: rgba(237, 230, 214, 0.62);
 }
 
-body[data-sky="dusk"] #caption {
+body[data-sky="dusk"] #caption,
+body[data-sky="night"] #caption {
   color: #EDE6D6;
+  border-color: rgba(237, 230, 214, 0.45);
+  background: rgba(7, 11, 20, 0.45);
+  box-shadow: inset 0 0 0 3px rgba(7, 11, 20, 0.25);
 }
 
 #fallbackImg {

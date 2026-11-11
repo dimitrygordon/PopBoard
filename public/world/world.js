@@ -1,4 +1,5 @@
 import * as THREE from "../vendor/three/three.module.min.js";
+import { GLTFLoader } from "../vendor/three/GLTFLoader.js";
 
 const RAD = Math.PI / 180;
 const CELL = 31.25;
@@ -128,6 +129,13 @@ function skyColors(alt, wxKind) {
   let t = clamp((alt - A[0]) / (B[0] - A[0]), 0, 1);
   t = t * t * (3 - 2 * t);
   const c = [lerp3(A[1], B[1], t), lerp3(A[2], B[2], t), lerp3(A[3], B[3], t)];
+  // Day uses the hazy r4 landscape gradient (muted zenith, cream-white horizon),
+  // not the bright mid-blue the raw login-sky table makes in this upward camera.
+  if (alt >= 8) {
+    const r4 = [[72, 122, 186], [176, 198, 214], [234, 228, 216]];
+    const haze = clamp((alt - 8) / 18, 0, 1);
+    for (let k = 0; k < 3; k++) c[k] = lerp3(c[k], r4[k], haze * 0.88);
+  }
   const gray = WXCLOUD[wxKind] * (wxKind === "partly" ? .25 : .7);
   const dim = wxKind === "storm" ? .45 : wxKind === "rain" ? .25 : 0;
   for (let k = 0; k < 3; k++) {
@@ -401,13 +409,19 @@ varying vec3 vWorld;
 varying vec3 vN;
 varying vec2 vUv;
 ${NOISE_GLSL}
-float coverClass(){
-  float r = texture2D(uCover, vUv).r;
+float coverAt(vec2 uv){
+  float r = texture2D(uCover, uv).r;
   return floor(r * 255.0 + 0.5);
+}
+float coverClass(){
+  return coverAt(vUv);
 }
 float heightM(vec2 uv){
   vec4 tex = texture2D(uHeight, uv);
   return (tex.r * 255.0 * 256.0 + tex.g * 255.0) / 10.0 + 100.0;
+}
+float poster(float v, float steps, float n){
+  return floor(v * steps + n * 0.35 + 0.5) / steps;
 }
 void main(){
   float cls = coverClass();
@@ -417,124 +431,164 @@ void main(){
   vec3 L = normalize(mix(uMoonDir, uSunDir, 1.0 - uNight));
   if (L.y < 0.02) L = normalize(vec3(L.x, 0.02, L.z));
   float ndl = clamp(dot(N, L), 0.0, 1.0);
-  float shade = mix(0.45, 1.0, ndl);
   vec2 wz = vWorld.xz;
-  float n1 = noise21(wz * 0.02);
-  float n2 = noise21(wz * 0.08 + 17.0);
-  float n3 = noise21(wz * 0.35);
+  float n1 = noise21(wz * 0.018);
+  float n2 = noise21(wz * 0.07 + 17.0);
+  float n3 = noise21(wz * 0.32);
+  float n4 = noise21(wz * 1.1 + 4.0);
 
-  vec2 plot = floor(wz / 140.0);
+  // ruled field rectangles, slightly warped, alternating row direction
+  vec2 plotUv = wz / 150.0;
+  plotUv += vec2(noise21(plotUv * 0.35) - 0.5, noise21(plotUv * 0.35 + 8.0) - 0.5) * 0.18;
+  vec2 plot = floor(plotUv);
+  vec2 pf = fract(plotUv);
   float pid = hash21(plot);
   float isWheat = 0.0;
   if (uSeason > 0.5 && uSeason < 1.5 && uMonth >= 6.0 && uMonth <= 7.0) isWheat = step(0.55, pid);
   float isPlow = 0.0;
-  if (uSeason > 1.5 && uSeason < 2.5) isPlow = step(0.5, pid);
+  if (uSeason > 1.5 && uSeason < 2.5) isPlow = step(0.48, pid);
   vec3 cropCol = mix(uField, uWheat, isWheat);
   cropCol = mix(cropCol, uPlowed, isPlow);
+  // slight per-plot wash variation, kept inside the season palette
+  cropCol = mix(cropCol, uGrass, 0.12 * (pid - 0.5));
+  vec3 grassCol = mix(uGrass, uField, 0.18 * (hash21(plot + 3.1) - 0.4));
 
-  vec3 bareForest = mix(uForest, uForestB, smoothstep(0.3, 0.8, n1));
+  // woodland wash at a large scale, never high-frequency camouflage
+  vec3 bareForest = mix(uForest, uForestB, smoothstep(0.2, 0.8, n1));
   if (uSeason > 1.5 && uSeason < 2.5) {
-    float m = n2;
-    if (m < 0.35) bareForest = vec3(0.851, 0.643, 0.255);
-    else if (m < 0.60) bareForest = vec3(0.710, 0.337, 0.180);
-    else if (m < 0.80) bareForest = vec3(0.541, 0.392, 0.125);
-    else bareForest = vec3(0.72, 0.66, 0.52);
+    float m = noise21(wz * 0.0075);
+    float m2 = noise21(wz * 0.013 + 5.0);
+    vec3 amber = vec3(0.851, 0.643, 0.255);
+    vec3 rust = vec3(0.710, 0.337, 0.180);
+    vec3 ochre = vec3(0.541, 0.392, 0.125);
+    vec3 bare = mix(uPaper, vec3(0.70, 0.64, 0.50), 0.45);
+    bareForest = mix(amber, ochre, smoothstep(0.25, 0.75, m));
+    bareForest = mix(bareForest, rust, smoothstep(0.72, 0.92, m2) * 0.55);
+    bareForest = mix(bareForest, bare, smoothstep(0.82, 0.97, m) * 0.35);
   }
-  vec2 ts = 1.0 / uSize;
-  float c1 = floor(texture2D(uCover, vUv + vec2(ts.x * 2.0, 0.0)).r * 255.0 + 0.5);
-  float c2 = floor(texture2D(uCover, vUv + vec2(0.0, ts.y * 2.0)).r * 255.0 + 0.5);
-  if (cls > 0.5 && c1 > 0.5 && c2 > 0.5) cls = mix(cls, (cls + c1 + c2) / 3.0, 0.45);
 
-  vec3 col = uGrass;
-  if (cls < 0.5) col = uWater;
-  else if (cls < 1.5) col = mix(uGrass, vec3(0.62, 0.58, 0.48), 0.55);
-  else if (cls < 2.5) col = mix(vec3(0.55, 0.45, 0.38), uPaper, 0.15 + 0.2 * n3);
-  else if (cls < 3.5) col = vec3(0.66, 0.53, 0.38);
-  else if (cls < 4.5) col = bareForest;
-  else if (cls < 5.5) col = uCedar;
-  else if (cls < 6.5) col = uGrass;
-  else if (cls < 7.5) col = cropCol;
-  else col = mix(uGrass, uWater, 0.35 + 0.2 * n1);
+  // hard class, no neighbor averaging (that read as camouflage blobs)
+  vec3 wash = grassCol;
+  if (cls < 0.5) wash = uWater;
+  else if (cls < 1.5) wash = mix(grassCol, vec3(0.62, 0.58, 0.48), 0.4);
+  else if (cls < 2.5) wash = mix(vec3(0.55, 0.45, 0.38), uPaper, 0.2 + 0.15 * n3);
+  else if (cls < 3.5) wash = mix(vec3(0.64, 0.54, 0.40), uPaper, 0.2);
+  else if (cls < 4.5) wash = bareForest;
+  else if (cls < 5.5) wash = uCedar;
+  else if (cls < 6.5) wash = grassCol;
+  else if (cls < 7.5) wash = cropCol;
+  else wash = mix(grassCol, uWater, 0.28 + 0.15 * n1);
 
   if (uSnow > 0.5 && cls > 0.5) {
     float hold = cls > 3.5 && cls < 6.5 ? 0.55 : 0.88;
-    col = mix(col, uSnowCol, hold * (0.85 + 0.15 * n3));
+    wash = mix(wash, uSnowCol, hold * (0.85 + 0.15 * n3));
   }
 
-  col = mix(uPaper, col, 0.92);
+  // cream paper first, then a quiet posterized watercolor wash
+  float coverAmt = 0.52 + 0.08 * n2;
+  if (cls < 0.5) coverAmt = 0.72;
+  if (cls > 3.5 && cls < 6.5) coverAmt = 0.56;
+  vec3 col = mix(uPaper, wash, coverAmt);
+  vec3 post = vec3(poster(col.r, 7.0, n3), poster(col.g, 7.0, n3 * 0.8), poster(col.b, 7.0, n2));
+  col = mix(col, post, 0.28);
+  col += (n4 - 0.5) * 0.02;
+
   col *= mix(vec3(1.0), uNightMul * 1.15, uNight * 0.92);
-  col *= shade;
+  col *= mix(0.72, 1.04, ndl);
   col += uRim * uTwi * pow(clamp(dot(N, uSunDir), 0.0, 1.0), 4.0) * 0.55;
 
-  // crop rows
-  if (cls > 6.5 && cls < 7.5 && uSnow < 0.5) {
+  // crop and grass row strokes, alternating direction per plot
+  if (cls > 5.5 && cls < 7.6 && uSnow < 0.5) {
     float ang = pid > 0.5 ? 0.0 : 1.5708;
+    if (pid > 0.82) ang = 0.65;
     float row = dot(wz, vec2(cos(ang), sin(ang)));
-    float sp = 5.5;
+    float sp = mix(4.6, 6.2, pid);
     float g = abs(fract(row / sp) - 0.5);
-    float inkA = 0.28 * uRow;
-    if (uSeason > 1.5 && uSeason < 2.5) inkA *= step(0.2, fract(row * 0.15 + pid));
-    if (uSeason > 2.5) inkA *= 0.55;
-    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.18, g)) * inkA);
+    float inkA = 0.30 * uRow;
+    if (uSeason > 1.5 && uSeason < 2.5) inkA *= step(0.18, fract(row * 0.13 + pid)) * 0.9;
+    if (uSeason > 2.5) inkA *= 0.5;
+    if (cls < 6.5) inkA *= 0.55;
+    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.16, g)) * inkA);
+    // plot boundary, a light ink rule
+    float edge = min(min(pf.x, 1.0 - pf.x), min(pf.y, 1.0 - pf.y));
+    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.035, edge)) * 0.22);
   }
 
-  // water ripples and glint
+  // woods keep a hard edge against fields
+  vec2 ts = 1.0 / uSize;
+  float nCls = max(coverAt(vUv + vec2(ts.x, 0.0)), max(coverAt(vUv + vec2(-ts.x, 0.0)), max(coverAt(vUv + vec2(0.0, ts.y)), coverAt(vUv + vec2(0.0, -ts.y)))));
+  float forestHere = step(3.5, cls) * step(cls, 5.5);
+  float forestN = step(3.5, nCls) * step(nCls, 5.5);
+  if (forestHere < 0.5 && forestN > 0.5 && cls > 0.5) {
+    col = mix(col, uInkUse, 0.28);
+  }
+
+  // water: engraved ripple lines, quiet wash, moonlight glint at night
   if (cls < 0.5) {
-    float rip = sin(wz.x * 0.35 + uTime * 1.6) * 0.5 + sin(wz.y * 0.5 + uTime * 1.1) * 0.5;
+    float rip = sin(wz.x * 0.28 + uTime * 0.7) * 0.5 + sin(wz.y * 0.41 + 1.7) * 0.5;
     float cd = length(wz - uCursor.xz);
-    rip += 0.8 * sin(cd * 0.25 - uTime * 3.0) * exp(-cd * 0.012) * uCursor.y;
-    float line = abs(fract((wz.x + wz.y) * 0.12 + rip * 0.15) - 0.5);
-    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.08, line)) * 0.28);
+    rip += 0.6 * sin(cd * 0.22 - uTime * 2.4) * exp(-cd * 0.012) * uCursor.y;
+    float line = abs(fract((wz.x * 0.09 + wz.y * 0.11) + rip * 0.08) - 0.5);
+    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.07, line)) * 0.32);
+    float line2 = abs(fract((wz.x * 0.05 - wz.y * 0.08) * 1.1 + 0.3) - 0.5);
+    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.08, line2)) * 0.12);
     vec3 R = reflect(-L, N);
-    float spec = pow(clamp(dot(R, V), 0.0, 1.0), 80.0);
-    float fres = pow(1.0 - clamp(dot(N, V), 0.0, 1.0), 3.0);
-    col += mix(uRim, uPaper, 1.0 - uNight) * (spec * 2.2 + fres * 0.35);
+    float spec = pow(clamp(dot(R, V), 0.0, 1.0), 120.0);
+    col += mix(uRim, uPaper, 1.0 - uNight) * spec * mix(0.15, 1.6, uNight);
   }
 
-  // contours every 10 m, heavier every 50 m
-  float hw = h + (n3 - 0.5) * 0.6;
+  // ink contours every 10 m, heavy every 50 m, with line wobble
+  float hw = h + (n3 - 0.5) * 0.85 + (n4 - 0.5) * 0.3;
   float c10 = abs(fract(hw / 10.0) - 0.5);
   float fw = fwidth(hw / 10.0) + 0.001;
-  float l10 = 1.0 - smoothstep(0.0, fw * 0.9, c10);
+  float l10 = 1.0 - smoothstep(0.0, fw * 1.05, c10);
   float c50 = abs(fract(hw / 50.0) - 0.5);
   float fw5 = fwidth(hw / 50.0) + 0.001;
-  float l50 = 1.0 - smoothstep(0.0, fw5 * 0.7, c50);
-  float contour = max(l10 * 0.35, l50 * 0.7);
-  if (cls < 0.5) contour *= 0.15;
+  float l50 = 1.0 - smoothstep(0.0, fw5 * 0.8, c50);
+  float contour = max(l10 * 0.38, l50 * 0.78);
+  if (cls < 0.5) contour *= 0.12;
   col = mix(col, uInkUse, contour);
 
-  // hatching on shaded slopes
-  float hatchAmt = clamp((0.42 - ndl) / 0.42, 0.0, 1.0) * (1.0 - uSnow * 0.6);
+  // hatching on shaded slopes; denser on the shadow side
+  float hatchAmt = clamp((0.48 - ndl) / 0.48, 0.0, 1.0) * (1.0 - uSnow * 0.6);
+  hatchAmt *= 0.55 + 0.45 * clamp(1.0 - N.y, 0.0, 1.0);
   if (cls > 0.5 && hatchAmt > 0.02) {
-    vec2 fc = gl_FragCoord.xy + vec2(n3 * 2.0);
+    vec2 fc = gl_FragCoord.xy + vec2(n3 * 2.4, n4 * 1.6);
     float spc = uHatch;
     float h45 = abs(fract(dot(fc, vec2(0.707, 0.707)) / spc) - 0.5);
     float hat = 1.0 - smoothstep(0.0, 0.16, h45);
-    if (uSeason > 1.5 && uSeason < 2.5 && uTwi > 0.3) {
+    if ((uSeason > 1.5 && uSeason < 2.5 && uTwi > 0.3) || ndl < 0.18) {
       float h135 = abs(fract(dot(fc, vec2(-0.707, 0.707)) / (spc * 1.15)) - 0.5);
-      hat = max(hat, 1.0 - smoothstep(0.0, 0.16, h135));
+      hat = max(hat, (1.0 - smoothstep(0.0, 0.16, h135)) * 0.7);
     }
-    col = mix(col, uInkUse, hat * hatchAmt * 0.28);
+    col = mix(col, uInkUse, hat * hatchAmt * 0.30);
   }
 
   // paper grain
-  col *= 0.96 + 0.08 * noise21(wz * 0.6);
-  col += (n3 - 0.5) * 0.03;
+  col *= 0.96 + 0.08 * noise21(wz * 0.55);
+  col += (n3 - 0.5) * 0.025;
 
-  // keep land darker than the sky so the horizon reads as a silhouette band
   float dist = length(vWorld - cameraPosition);
-  float graze = pow(1.0 - clamp(dot(N, V), 0.0, 1.0), 1.8);
-  col *= 0.78 + 0.22 * ndl;
-  col = mix(col, uInkUse * mix(0.55, 1.2, uNight), graze * 0.22 * (1.0 - uSnow * 0.5));
+  float graze = pow(1.0 - clamp(dot(N, V), 0.0, 1.0), 1.6);
+  // ink the ridge silhouette
+  float ridge = graze * smoothstep(0.15, 0.55, 1.0 - N.y);
+  col = mix(col, uInkUse * mix(0.55, 1.2, uNight), ridge * 0.42 * (1.0 - uSnow * 0.5));
 
-  // dawn valley mist, close range only
+  // far hills fade toward sky color; far woods stay a wash, not sprites
+  float farF = smoothstep(1800.0, 8500.0, dist);
+  vec3 farC = mix(uSkyH, uPaper, 0.4 + 0.2 * uNight);
+  col = mix(col, farC, farF * 0.55);
+  if (forestHere > 0.5) {
+    // keep a tint of woods wash on far hills so they do not flatten to paper
+    col = mix(col, mix(bareForest, farC, 0.55), farF * 0.2);
+  }
+
   if (uDawnMist > 0.01) {
     float valley = clamp((165.0 - h) / 40.0, 0.0, 1.0);
     float mist = uDawnMist * valley * smoothstep(60.0, 700.0, dist) * exp(-dist * 0.0007) * 0.28;
     col = mix(col, uPaper * mix(1.0, 0.45, uNight), mist);
   }
 
-  // weather fog only (valleys first). Clear air keeps the engraved land sharp.
   float fogH = mix(0.0, 0.00022, uFog);
   float valleyF = mix(1.0, 1.8, clamp((160.0 - h) / 50.0, 0.0, 1.0) * uFog);
   float fog = 1.0 - exp(-dist * fogH * valleyF);
@@ -544,7 +598,6 @@ void main(){
 
   col += uLightning * 0.45 * vec3(0.85, 0.9, 1.0);
 
-  // developed rooftops: tiny ink rectangles
   if (cls > 1.5 && cls < 2.5) {
     vec2 room = fract(wz / 18.0);
     float roof = step(0.25, room.x) * step(room.x, 0.78) * step(0.3, room.y) * step(room.y, 0.8);
@@ -570,25 +623,33 @@ uniform vec3 uTop, uMid, uHor;
 uniform vec3 uSunDir, uMoonDir;
 uniform float uNight, uTwi, uSunSize, uMilky;
 varying vec3 vDir;
+${NOISE_GLSL}
 void main(){
   vec3 d = normalize(vDir);
   float h = d.y;
-  float t = clamp(h * 0.5 + 0.5, 0.0, 1.0);
   vec3 col;
-  if (h > 0.15) col = mix(uMid, uTop, clamp((h - 0.15) / 0.85, 0.0, 1.0));
-  else if (h > 0.0) col = mix(uHor, uMid, h / 0.15);
-  else col = mix(uHor, uHor * 0.7, clamp(-h * 2.0, 0.0, 1.0));
-  float sun = pow(clamp(dot(d, normalize(uSunDir)), 0.0, 1.0), 400.0);
-  float glow = pow(clamp(dot(d, normalize(uSunDir)), 0.0, 1.0), 16.0);
+  // Wide pale band near the horizon so day reads as the hazy r4 gradient,
+  // not a flat mid-blue wall in the upward-tilted camera.
+  if (h > 0.42) col = mix(uMid, uTop, clamp((h - 0.42) / 0.58, 0.0, 1.0));
+  else if (h > 0.0) col = mix(uHor, uMid, pow(h / 0.42, 0.75));
+  else col = mix(uHor, uHor * 0.75, clamp(-h * 2.0, 0.0, 1.0));
+  float sun = pow(clamp(dot(d, normalize(uSunDir)), 0.0, 1.0), 520.0);
+  float glow = pow(clamp(dot(d, normalize(uSunDir)), 0.0, 1.0), 22.0);
   if (uSunDir.y > -0.08) {
-    col += vec3(1.0, 0.92, 0.75) * sun * 1.4 * (1.0 - uNight);
-    col += vec3(1.0, 0.7, 0.4) * glow * 0.35 * (1.0 - uNight * 0.6);
+    float sunAmt = (1.0 - uNight) * mix(0.35, 1.0, uTwi);
+    col += vec3(1.0, 0.93, 0.78) * sun * 0.9 * sunAmt;
+    col += vec3(1.0, 0.78, 0.5) * glow * 0.22 * sunAmt;
   }
   if (uMilky > 0.01 && uNight > 0.4) {
     vec3 mw = normalize(vec3(0.35, 0.15, 0.9));
     float band = 1.0 - abs(dot(d, mw));
     col += vec3(0.7, 0.72, 0.9) * smoothstep(0.15, 0.0, 1.0 - band) * 0.18 * uMilky * uNight;
   }
+  // paper grain in screen space so the dome does not show rings
+  float g = noise21(gl_FragCoord.xy * 0.31);
+  float fleck = hash21(gl_FragCoord.xy * 0.73 + 19.0);
+  col *= 0.975 + 0.045 * g;
+  col += (fleck - 0.5) * 0.014;
   gl_FragColor = vec4(col, 1.0);
 }
 `;
@@ -596,6 +657,7 @@ void main(){
 const SPRITE_VERT = /* glsl */`
 attribute vec2 iScale;
 attribute float iFrame;
+attribute float iFrameClump;
 attribute float iPhase;
 attribute float iKind;
 uniform float uTime;
@@ -603,15 +665,25 @@ uniform vec3 uCursor;
 uniform float uWind;
 uniform float uRuffle;
 uniform float uReduce;
+uniform float uLodNear;
+uniform float uLodMid;
 varying vec2 vUv;
 varying float vFrame;
 varying float vKind;
 varying float vShade;
+varying float vLod;
 void main(){
   vUv = uv;
-  vFrame = iFrame;
   vKind = iKind;
   vec3 iPos = (instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+  float dist = length(cameraPosition - iPos);
+  float lod = dist < uLodNear ? 0.0 : (dist < uLodMid ? 1.0 : 2.0);
+  vLod = lod;
+  vFrame = lod < 0.5 ? iFrame : iFrameClump;
+  if (lod > 1.5) {
+    gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
+    return;
+  }
   vec3 camR = normalize(vec3(cameraPosition.z - iPos.z, 0.0, iPos.x - cameraPosition.x));
   if (length(camR) < 0.001) camR = vec3(1.0, 0.0, 0.0);
   vec3 camU = vec3(0.0, 1.0, 0.0);
@@ -619,8 +691,11 @@ void main(){
   float d = length(iPos.xz - uCursor.xz);
   float infl = exp(-d * d / (140.0 * 140.0)) * uCursor.y * uRuffle;
   float tilt = (wind + infl * sin(uTime * 18.0 + iPhase * 6.28) * 0.35) * uv.y;
-  vec3 p = iPos + camR * ((position.x + tilt) * iScale.x) + camU * (position.y * iScale.y);
-  vShade = 0.85 + 0.15 * sin(iPhase * 20.0);
+  float close = smoothstep(50.0, 180.0, dist);
+  float sx = iScale.x * (lod < 0.5 ? 1.0 : 1.55) * mix(0.42, 1.0, close);
+  float sy = iScale.y * (lod < 0.5 ? 1.0 : 1.25) * mix(0.42, 1.0, close);
+  vec3 p = iPos + camR * ((position.x + tilt) * sx) + camU * (position.y * sy);
+  vShade = 0.86 + 0.14 * sin(iPhase * 20.0);
   gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
 }
 `;
@@ -634,16 +709,17 @@ varying vec2 vUv;
 varying float vFrame;
 varying float vKind;
 varying float vShade;
+varying float vLod;
 void main(){
+  if (vLod > 1.5) discard;
   float cols = uAtlasGrid.x;
-  float fx = fract(vFrame);
-  float ix = floor(vFrame);
+  float ix = floor(vFrame + 0.5);
   vec2 cell = vec2(mod(ix, cols), floor(ix / cols));
-  vec2 uv = (vUv + cell) / uAtlasGrid;
+  vec2 uv = (vUv * 0.90 + 0.05 + cell) / uAtlasGrid;
   vec4 s = texture2D(uAtlas, uv);
-  if (s.a < 0.18) discard;
+  if (s.a < 0.16) discard;
   vec3 col = s.rgb * vShade;
-  col = mix(col, uInkUse, 0.12 * (1.0 - uNight));
+  col = mix(col, uInkUse, 0.08 * (1.0 - uNight));
   col += uLightning * 0.3;
   gl_FragColor = vec4(col, s.a);
 }
@@ -653,28 +729,46 @@ const GRASS_VERT = /* glsl */`
 attribute vec2 iScale;
 attribute float iPhase;
 attribute float iKind;
+attribute vec2 iLean;
 uniform float uTime;
 uniform vec3 uCursor;
 uniform float uWind;
 uniform float uReduce;
-uniform float uK;
+uniform float uLodNear;
+uniform float uLodMid;
 varying float vKind;
 varying float vY;
+varying float vX;
+varying float vLod;
 void main(){
   vKind = iKind;
   vY = uv.y;
+  vX = uv.x;
   vec3 iPos = (instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+  float dist = length(cameraPosition - iPos);
+  // kind 0,1,2 = full blades (near only); kind 3 = mid clump
+  float wantMid = step(2.5, iKind);
+  float lod = dist < uLodNear ? 0.0 : (dist < uLodMid ? 1.0 : 2.0);
+  vLod = lod;
+  if (wantMid < 0.5 && lod > 0.5) {
+    gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
+    return;
+  }
+  if (wantMid > 0.5 && (lod < 0.5 || lod > 1.5)) {
+    gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
+    return;
+  }
   float d = length(iPos.xz - uCursor.xz);
   vec2 away = iPos.xz - uCursor.xz;
   if (length(away) < 0.001) away = vec2(1.0, 0.0);
   away = normalize(away);
   float infl = exp(-d * d / (90.0 * 90.0)) * uCursor.y;
-  float wind = sin(uTime * 1.6 + iPhase * 6.28 + iPos.x * 0.08) * 0.12 * uWind;
-  float bend = (wind + infl * 0.7) * (1.0 - uReduce) * uv.y * uv.y;
+  float wind = sin(uTime * 1.6 + iPhase * 6.28 + iPos.x * 0.08) * 0.14 * uWind;
+  float bend = (wind + infl * 0.7 + iLean.x) * (1.0 - uReduce) * uv.y * uv.y;
   vec3 camR = normalize(vec3(cameraPosition.z - iPos.z, 0.0, iPos.x - cameraPosition.x));
   if (length(camR) < 0.001) camR = vec3(1.0, 0.0, 0.0);
   vec3 p = iPos;
-  p.xz += away * bend * iScale.y * 0.6;
+  p.xz += (away * bend + iLean * uv.y) * iScale.y * 0.55;
   p += camR * (position.x * iScale.x);
   p.y += position.y * iScale.y * (1.0 - infl * 0.15);
   gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
@@ -682,13 +776,22 @@ void main(){
 `;
 
 const GRASS_FRAG = /* glsl */`
-uniform vec3 uGrass, uWheat, uInkUse;
+uniform vec3 uGrass, uWheat, uInkUse, uCorn;
 varying float vKind;
 varying float vY;
+varying float vX;
+varying float vLod;
 void main(){
-  vec3 col = mix(uGrass, uWheat, step(0.5, vKind));
-  col = mix(col, uInkUse, 0.25 * (1.0 - vY));
-  gl_FragColor = vec4(col, 0.92);
+  if (vLod > 1.5) discard;
+  vec3 col = uGrass;
+  if (vKind > 0.5 && vKind < 1.5) col = uWheat;
+  else if (vKind > 1.5 && vKind < 2.5) col = uCorn;
+  // wash body, ink outline along the blade edge and base
+  float edge = min(vX, 1.0 - vX);
+  float inkA = (1.0 - smoothstep(0.0, 0.16, edge)) * 0.55 + (1.0 - vY) * 0.18;
+  col = mix(col, uInkUse, inkA);
+  col = mix(col, uInkUse, 0.12 * (1.0 - vY));
+  gl_FragColor = vec4(col, 0.93);
 }
 `;
 
@@ -718,6 +821,60 @@ void main(){
 }
 `;
 
+
+
+const BUILDING_VERT = /* glsl */`
+varying vec3 vN;
+varying vec3 vWorld;
+void main(){
+  vec3 objectNormal = normal;
+#ifdef USE_INSTANCING
+  vec4 mw = modelMatrix * instanceMatrix * vec4(position, 1.0);
+  vN = normalize(mat3(modelMatrix * instanceMatrix) * objectNormal);
+#else
+  vec4 mw = modelMatrix * vec4(position, 1.0);
+  vN = normalize(normalMatrix * objectNormal);
+#endif
+  vWorld = mw.xyz;
+  gl_Position = projectionMatrix * viewMatrix * mw;
+}
+`;
+
+const BUILDING_FRAG = /* glsl */`
+uniform vec3 uWash, uInkUse, uPaper, uNightMul;
+uniform float uNight;
+varying vec3 vN;
+varying vec3 vWorld;
+${NOISE_GLSL}
+void main(){
+  vec3 N = normalize(vN);
+  vec3 V = normalize(cameraPosition - vWorld);
+  float ndv = abs(dot(N, V));
+  float rim = pow(1.0 - ndv, 2.4);
+  vec3 wash = mix(uPaper, uWash, 0.68);
+  float g = noise21(vWorld.xz * 0.35 + vWorld.y * 0.25);
+  wash *= 0.96 + 0.07 * g;
+  wash = mix(wash, uNightMul * 1.05, uNight * 0.55);
+  vec3 col = mix(wash, uInkUse, clamp(rim * 0.92, 0.0, 0.8));
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
+
+const WINDOW_FRAG = /* glsl */`
+uniform vec3 uGlow, uInkUse;
+uniform float uNight;
+varying vec3 vN;
+varying vec3 vWorld;
+void main(){
+  vec3 N = normalize(vN);
+  vec3 V = normalize(cameraPosition - vWorld);
+  float rim = pow(1.0 - abs(dot(N, V)), 2.6);
+  vec3 dark = vec3(0.12, 0.10, 0.08);
+  vec3 col = mix(dark, uGlow, clamp(uNight, 0.0, 1.0));
+  col = mix(col, uInkUse, rim * 0.7);
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
 
 /* ---------- renderer and camera ---------- */
 const canvas = document.getElementById("world");
@@ -855,7 +1012,10 @@ function makeCoverTex() {
 let terrainMat, skyMat, treeMat, grassMat, moonMat, heightTex, coverTex;
 let terrainMesh, treeMesh, grassMesh, hayMesh, windowPts, firePts, cloudMesh;
 let starPts, constLines, moonMesh, sunState = {};
-let churchMesh, labelMesh;
+let churchMesh, labelMesh, landmarkGroup;
+const washMats = [];
+const windowMats = [];
+const LAND = { church: 0, farmhouse: 0, barn: 0, silo: 0, hay: 0, fromGltf: {} };
 
 function terrainUniforms() {
   return {
@@ -914,11 +1074,6 @@ function buildTerrain() {
       const px = (i / wSeg) * (COLS - 1);
       const x = (px - (COLS - 1) / 2) * CELL;
       let h = heightPx(px, py);
-      const cls = coverPx(px, py);
-      if (cls === 4 || cls === 5) {
-        const n = Math.sin(px * 1.7) * Math.cos(py * 1.3) * 0.5 + 0.5;
-        h += (cls === 5 ? 11 : 8) + n * 8;
-      }
       pos[v++] = x;
       pos[v++] = yOf(h);
       pos[v++] = z;
@@ -1159,123 +1314,257 @@ function drawWobblyCircle(ctx, cx, cy, r, rng) {
   ctx.closePath();
 }
 
-function makeTreeAtlas() {
-  const COL = 8, ROW = 4, S = 128;
-  const cv = document.createElement("canvas");
-  cv.width = COL * S; cv.height = ROW * S;
-  const ctx = cv.getContext("2d");
-  function cell(i, j, draw) {
-    ctx.save();
-    ctx.translate(i * S, j * S);
-    draw(ctx, S, mulberry(101 + i * 13 + j * 91));
-    ctx.restore();
-  }
-  function trunk(ctx, s, rng, cx, top) {
-    ctx.strokeStyle = "rgba(42,33,24,0.9)";
-    ctx.lineWidth = 1.3 + rng() * 0.8;
-    ctx.lineCap = "round";
-    ctx.beginPath();
-    ctx.moveTo(cx + (rng() - 0.5) * 2, s * 0.96);
-    ctx.quadraticCurveTo(cx + (rng() - 0.5) * 5, s * 0.78, cx + (rng() - 0.5) * 3, top);
-    ctx.stroke();
-  }
-  function leafy(ctx, s, rng, fill, blossom) {
-    const cx = s * 0.5, cy = s * 0.46;
-    trunk(ctx, s, rng, cx, cy + s * 0.16);
-    const n = 3 + (rng() * 3 | 0);
-    for (let i = 0; i < n; i++) {
-      const ox = (rng() - 0.5) * s * 0.24, oy = (rng() - 0.5) * s * 0.2;
-      const r = s * (0.15 + rng() * 0.15);
-      ctx.fillStyle = fill;
-      ctx.globalAlpha = 0.72 + rng() * 0.22;
-      drawWobblyCircle(ctx, cx + ox, cy + oy, r, rng);
-      ctx.fill();
-      ctx.globalAlpha = 0.9;
-      ctx.strokeStyle = "rgba(42,33,24,0.72)";
-      ctx.lineWidth = 1 + rng() * 0.7;
-      ctx.stroke();
+const LOD_NEAR = 380;
+const LOD_MID = 2300;
+const VEG = { trees: 0, blades: 0, clumps: 0, treesPlaced: 0 };
+
+const SPECIES = {
+  oak: { id: 0, angle: 26, depth: 6, len: 0.20, shrink: 0.73, tw: 3.4, spread: 1.15, twigs: 3, leaf: 0.055, cone: 0 },
+  maple: { id: 1, angle: 34, depth: 6, len: 0.18, shrink: 0.70, tw: 2.6, spread: 1.32, twigs: 3, leaf: 0.05, cone: 0 },
+  sycamore: { id: 2, angle: 22, depth: 6, len: 0.22, shrink: 0.74, tw: 3.8, spread: 1.08, twigs: 3, leaf: 0.06, cone: 0 },
+  cedar: { id: 3, angle: 16, depth: 6, len: 0.16, shrink: 0.78, tw: 2.4, spread: 0.5, twigs: 3, leaf: 0.055, cone: 1 }
+};
+const SPEC_LIST = ["oak", "maple", "sycamore", "cedar"];
+
+function growTree(spec, seed) {
+  const rng = mulberry(seed >>> 0);
+  const segs = [];
+  const tips = [];
+  function branch(x, y, ang, len, w, depth) {
+    const a = ang + (rng() - 0.5) * 0.16;
+    const x1 = x + Math.cos(a) * len;
+    const y1 = y + Math.sin(a) * len;
+    segs.push({ x: x, y: y, x1: x1, y1: y1, w: w, depth: depth });
+    if (depth <= 0 || len < 0.018) {
+      tips.push({ x: x1, y: y1, a: a });
+      return;
     }
-    if (blossom) {
-      ctx.globalAlpha = 0.9;
-      for (let k = 0; k < 10; k++) {
-        ctx.fillStyle = rng() > 0.45 ? "#F2D6E0" : "#F7F4EA";
-        ctx.beginPath();
-        ctx.arc(cx + (rng() - 0.5) * s * 0.4, cy + (rng() - 0.5) * s * 0.32, 1.6 + rng() * 2.2, 0, 6.28);
-        ctx.fill();
-      }
-    }
-    ctx.globalAlpha = 1;
-  }
-  function bare(ctx, s, rng) {
-    const cx = s * 0.5;
-    ctx.strokeStyle = "rgba(42,33,24,0.92)";
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.lineWidth = 1.6;
-    ctx.beginPath();
-    ctx.moveTo(cx, s * 0.96);
-    ctx.lineTo(cx + (rng() - 0.5) * 4, s * 0.38);
-    ctx.stroke();
-    const branches = 5 + (rng() * 4 | 0);
-    for (let i = 0; i < branches; i++) {
-      const y = s * (0.4 + rng() * 0.42);
-      const len = s * (0.12 + rng() * 0.22);
-      const dir = rng() > 0.5 ? 1 : -1;
-      const a = (0.3 + rng() * 0.7) * dir;
-      ctx.lineWidth = 0.7 + rng() * 0.7;
-      ctx.beginPath();
-      ctx.moveTo(cx, y);
-      ctx.quadraticCurveTo(cx + dir * len * 0.5, y - len * 0.3, cx + Math.cos(a) * len, y - Math.sin(Math.abs(a)) * len);
-      ctx.stroke();
-      if (rng() > 0.4) {
-        const bx = cx + Math.cos(a) * len * 0.7, by = y - Math.sin(Math.abs(a)) * len * 0.7;
-        ctx.lineWidth = 0.6;
-        ctx.beginPath();
-        ctx.moveTo(bx, by);
-        ctx.lineTo(bx + dir * len * 0.35, by - len * 0.25);
-        ctx.stroke();
+    branch(x1, y1, a + (rng() - 0.5) * 0.14, len * spec.shrink * (0.9 + rng() * 0.18), w * 0.72, depth - 1);
+    const sides = spec.cone ? 2 : (1 + ((rng() * spec.twigs) | 0));
+    for (let i = 0; i < sides; i++) {
+      const dir = i % 2 === 0 ? 1 : -1;
+      const da = dir * (spec.angle * RAD) * (0.7 + rng() * 0.55) * spec.spread;
+      if (spec.cone) {
+        const drop = 0.08 + rng() * 0.12;
+        branch(x1, y1 - drop * 0.15, a + da, len * spec.shrink * (0.55 + rng() * 0.25), w * 0.5, depth - 1);
+      } else {
+        branch(x1, y1, a + da, len * spec.shrink * (0.62 + rng() * 0.28), w * 0.52, depth - 1);
       }
     }
   }
-  function cedar(ctx, s, rng) {
-    const cx = s * 0.5;
-    trunk(ctx, s, rng, cx, s * 0.22);
-    ctx.fillStyle = "#3E5A45";
-    ctx.strokeStyle = "rgba(42,33,24,0.75)";
-    const layers = 4 + (rng() * 2 | 0);
+  branch(0, 0, Math.PI / 2, spec.len, spec.tw, spec.depth);
+  if (tips.length > 4 && !spec.cone) {
+    const ys = tips.map(function (t) { return t.y; }).sort(function (a, b) { return a - b; });
+    const cap = ys[Math.floor(ys.length * 0.82)] + spec.len * 0.08;
+    const keep = tips.filter(function (t) { return t.y <= cap; });
+    if (keep.length >= 3) {
+      const segs2 = segs.filter(function (s) { return s.y1 <= cap + 0.02; });
+      return { segs: segs2, tips: keep, spec: spec };
+    }
+  }
+  return { segs: segs, tips: tips, spec: spec };
+}
+
+function drawGrownTree(ctx, S, grown, opt) {
+  const rng = mulberry(opt.seed ^ 7919);
+  const cx = S * 0.5, base = S * 0.96, sc = S * (opt.lod === "clump" ? 0.82 : 0.9);
+  const ink = "rgba(42,33,24," + (opt.inkA == null ? 0.84 : opt.inkA) + ")";
+  function tx(x, y) { return [cx + x * sc, base - y * sc]; }
+  const leavesOn = grown.spec.cone ? (opt.leaves !== false) : !!opt.leaves;
+  const colors = opt.colors || ["#D9A441"];
+
+  if (grown.spec.cone) {
+    const cx = S * 0.5;
+    ctx.strokeStyle = ink;
+    ctx.lineCap = "round";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, S * 0.96);
+    ctx.lineTo(cx + (rng() - 0.5) * 3, S * 0.28);
+    ctx.stroke();
+    const layers = 5;
     for (let i = 0; i < layers; i++) {
-      const y = s * (0.22 + i * 0.14);
-      const w = s * (0.12 + i * 0.07) * (0.85 + rng() * 0.25);
-      const h = s * 0.16;
-      ctx.globalAlpha = 0.8;
+      const y = S * (0.22 + i * 0.13);
+      const w = S * (0.10 + i * 0.075) * (0.9 + rng() * 0.2);
+      const hh = S * 0.15;
+      ctx.fillStyle = colors[i % colors.length];
+      ctx.globalAlpha = 0.86;
       ctx.beginPath();
-      ctx.moveTo(cx + (rng() - 0.5) * 3, y - h * 0.7);
-      ctx.lineTo(cx - w, y + h * 0.5);
-      ctx.lineTo(cx + w, y + h * 0.5);
+      ctx.moveTo(cx + (rng() - 0.5) * 2, y - hh * 0.75);
+      ctx.lineTo(cx - w, y + hh * 0.5);
+      ctx.lineTo(cx + w, y + hh * 0.5);
       ctx.closePath();
       ctx.fill();
       ctx.globalAlpha = 1;
+      ctx.strokeStyle = ink;
       ctx.lineWidth = 1;
       ctx.stroke();
-      ctx.strokeStyle = "rgba(42,33,24,0.35)";
-      for (let x = -w; x < w; x += 4) {
+    }
+    ctx.globalAlpha = 1;
+    return;
+  }
+
+  if (opt.lod === "clump" && leavesOn) {
+    ctx.strokeStyle = ink;
+    ctx.lineWidth = 1.6;
+    ctx.lineCap = "round";
+    const t0 = tx(0, 0), t1 = tx(0, 0.22);
+    ctx.beginPath();
+    ctx.moveTo(t0[0] + (rng() - 0.5) * 2, t0[1]);
+    ctx.lineTo(t1[0], t1[1]);
+    ctx.stroke();
+    const n = grown.spec.cone ? 3 : (5 + (rng() * 3 | 0));
+    for (let i = 0; i < n; i++) {
+      const ox = (rng() - 0.5) * S * (grown.spec.cone ? 0.18 : 0.30);
+      const oy = (rng() - 0.5) * S * (grown.spec.cone ? 0.22 : 0.22) - S * 0.12;
+      const r = S * (0.16 + rng() * 0.16);
+      ctx.fillStyle = colors[(rng() * colors.length) | 0];
+      ctx.globalAlpha = 0.82 + rng() * 0.16;
+      if (grown.spec.cone) {
         ctx.beginPath();
-        ctx.moveTo(cx + x, y + h * 0.4);
-        ctx.lineTo(cx + x * 0.3, y - h * 0.2);
-        ctx.stroke();
+        ctx.moveTo(cx + ox, base - S * 0.82 + oy);
+        ctx.lineTo(cx + ox - r, base - S * 0.42 + oy);
+        ctx.lineTo(cx + ox + r, base - S * 0.42 + oy);
+        ctx.closePath();
+      } else {
+        drawWobblyCircle(ctx, cx + ox, S * 0.46 + oy, r, rng);
       }
-      ctx.strokeStyle = "rgba(42,33,24,0.75)";
+      ctx.fill();
+      ctx.globalAlpha = 0.88;
+      ctx.strokeStyle = ink;
+      ctx.lineWidth = 1 + rng() * 0.6;
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    return;
+  }
+
+  const tips = grown.tips;
+  if (leavesOn && !grown.spec.cone && tips.length) {
+    let sx = 0, sy = 0;
+    for (let i = 0; i < tips.length; i++) { const p = tx(tips[i].x, tips[i].y); sx += p[0]; sy += p[1]; }
+    const cxC = sx / tips.length, cyC = sy / tips.length;
+    ctx.fillStyle = colors[0];
+    ctx.globalAlpha = 0.38;
+    drawWobblyCircle(ctx, cxC, cyC, S * 0.28, rng);
+    ctx.fill();
+    ctx.globalAlpha = 0.22;
+    drawWobblyCircle(ctx, cxC + (rng() - 0.5) * S * 0.12, cyC + (rng() - 0.5) * S * 0.1, S * 0.2, rng);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.strokeStyle = ink;
+  const segs = grown.segs;
+  for (let i = 0; i < segs.length; i++) {
+    const s = segs[i];
+    const a = tx(s.x, s.y), b = tx(s.x1, s.y1);
+    ctx.lineWidth = Math.max(0.55, s.w * (S / 128));
+    ctx.globalAlpha = 0.78 + 0.2 * (s.w / grown.spec.tw);
+    ctx.beginPath();
+    ctx.moveTo(a[0], a[1]);
+    ctx.lineTo(b[0], b[1]);
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  if (!leavesOn) return;
+  for (let i = 0; i < tips.length; i++) {
+    const p = tx(tips[i].x, tips[i].y);
+    const dabs = grown.spec.cone ? 1 : 2 + (rng() * 2 | 0);
+    for (let d = 0; d < dabs; d++) {
+      const px = p[0] + (rng() - 0.5) * S * 0.06;
+      const py = p[1] + (rng() - 0.5) * S * 0.06;
+      const r = S * grown.spec.leaf * (0.7 + rng() * 0.7);
+      ctx.fillStyle = colors[(rng() * colors.length) | 0];
+      ctx.globalAlpha = 0.78 + rng() * 0.2;
+      if (grown.spec.cone) {
+        ctx.beginPath();
+        ctx.moveTo(px, py - r * 1.2);
+        ctx.lineTo(px - r, py + r * 0.5);
+        ctx.lineTo(px + r, py + r * 0.5);
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalAlpha = 0.8;
+        ctx.strokeStyle = ink;
+        ctx.lineWidth = 0.7;
+        ctx.stroke();
+      } else {
+        drawWobblyCircle(ctx, px, py, r, rng);
+        ctx.fill();
+        if (rng() > 0.55) {
+          ctx.globalAlpha = 0.7;
+          ctx.strokeStyle = ink;
+          ctx.lineWidth = 0.55;
+          ctx.stroke();
+        }
+      }
     }
   }
-  const springFill = ["#7FA866", "#6E9A58", "#8BB36E", "#5E8A4A"];
-  const summerFill = ["#2F5D46", "#3A6B50", "#4E7D57", "#2A5340"];
-  const autumnFill = ["#D9A441", "#B5562E", "#8A6420", "#C9842C", "#A65A32", "#D9A441", "#8A6420", "#B5562E"];
-  const leaf0 = clock.season === "spring" ? springFill : summerFill;
-  for (let i = 0; i < 8; i++) cell(i, 0, function (c, s, r) { leafy(c, s, r, leaf0[i % 4], false); });
-  for (let i = 0; i < 8; i++) cell(i, 1, function (c, s, r) { leafy(c, s, r, autumnFill[i], false); });
-  for (let i = 0; i < 8; i++) cell(i, 2, function (c, s, r) { bare(c, s, r); });
-  for (let i = 0; i < 4; i++) cell(i, 3, function (c, s, r) { cedar(c, s, r); });
-  for (let i = 4; i < 8; i++) cell(i, 3, function (c, s, r) { leafy(c, s, r, springFill[i % 4], true); });
+  if (opt.blossom) {
+    ctx.globalAlpha = 0.9;
+    for (let k = 0; k < 8; k++) {
+      const t = tips[(rng() * tips.length) | 0];
+      const p = tx(t.x, t.y);
+      ctx.fillStyle = rng() > 0.45 ? "#F2D6E0" : "#F7F4EA";
+      ctx.beginPath();
+      ctx.arc(p[0] + (rng() - 0.5) * 6, p[1] + (rng() - 0.5) * 6, 1.5 + rng() * 2.0, 0, 6.28);
+      ctx.fill();
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+
+function leafColors(specName, season) {
+  if (specName === "cedar") return ["#3E5A45", "#2F4A38", "#4A6A50"];
+  if (season === "spring") return ["#7FA866", "#6E9A58", "#8BB36E", "#5E8A4A"];
+  if (season === "summer") return ["#2F5D46", "#3A6B50", "#4E7D57", "#2A5340"];
+  if (season === "autumn") return ["#D9A441", "#B5562E", "#8A6420", "#C9842C", "#A65A32"];
+  return ["#C4BBA8"];
+}
+
+// Atlas 8x8. Rows 0-2 full leafy oak/maple/sycamore (same seeds as bare rows 6-7).
+// Row 3 cedar full. Row 4 hardwood clumps. Row 5 cedar clumps + extra. Row 6 bare oak. Row 7 bare maple/sycamore.
+const ATLAS_COL = 8, ATLAS_ROW = 8, ATLAS_S = 128;
+const TREE_SEED0 = 44021;
+
+function makeTreeAtlas() {
+  const COL = ATLAS_COL, ROW = ATLAS_ROW, S = ATLAS_S;
+  const cv = document.createElement("canvas");
+  cv.width = COL * S; cv.height = ROW * S;
+  const ctx = cv.getContext("2d");
+  function paint(ix, iy, specName, seed, lod, leaves, blossom, season) {
+    ctx.save();
+    ctx.translate(ix * S, iy * S);
+    ctx.clearRect(0, 0, S, S);
+    ctx.beginPath();
+    ctx.rect(4, 4, S - 8, S - 8);
+    ctx.clip();
+    const grown = growTree(SPECIES[specName], seed);
+    drawGrownTree(ctx, S, grown, {
+      seed: seed,
+      lod: lod,
+      leaves: leaves,
+      blossom: !!blossom,
+      colors: leafColors(specName, season || clock.season),
+      inkA: 0.86
+    });
+    ctx.restore();
+  }
+  const season = clock.season;
+  for (let i = 0; i < 8; i++) paint(i, 0, "oak", TREE_SEED0 + i, "full", true, false, season);
+  for (let i = 0; i < 8; i++) paint(i, 1, "maple", TREE_SEED0 + 80 + i, "full", true, season === "spring", season);
+  for (let i = 0; i < 8; i++) paint(i, 2, "sycamore", TREE_SEED0 + 160 + i, "full", true, false, season);
+  for (let i = 0; i < 8; i++) paint(i, 3, "cedar", TREE_SEED0 + 240 + i, "full", true, true, season);
+  for (let i = 0; i < 8; i++) {
+    const names = ["oak", "maple", "sycamore", "oak", "maple", "sycamore", "oak", "maple"];
+    paint(i, 4, names[i], TREE_SEED0 + 20 + i, "clump", true, false, season);
+  }
+  for (let i = 0; i < 4; i++) paint(i, 5, "cedar", TREE_SEED0 + 248 + i, "clump", true, true, season);
+  for (let i = 4; i < 8; i++) paint(i, 5, i % 2 ? "oak" : "maple", TREE_SEED0 + 30 + i, "clump", true, season === "spring", season);
+  for (let i = 0; i < 8; i++) paint(i, 6, "oak", TREE_SEED0 + i, "full", false, false, "winter");
+  for (let i = 0; i < 4; i++) paint(i, 7, "maple", TREE_SEED0 + 80 + i, "full", false, false, "winter");
+  for (let i = 4; i < 8; i++) paint(i, 7, "sycamore", TREE_SEED0 + 160 + (i - 4), "full", false, false, "winter");
   const tex = new THREE.CanvasTexture(cv);
   tex.colorSpace = THREE.NoColorSpace;
   tex.flipY = false;
@@ -1285,58 +1574,125 @@ function makeTreeAtlas() {
   return tex;
 }
 
-function pickTreeFrame(cls, season, rng) {
-  if (cls === 5) return 24 + (rng() * 4 | 0);
-  if (season === "winter") return cls === 5 ? 24 + (rng() * 4 | 0) : (rng() < 0.18 ? 24 + (rng() * 4 | 0) : 16 + (rng() * 8 | 0));
-  if (season === "autumn") {
-    if (rng() < 0.20) return 16 + (rng() * 8 | 0);
-    return 8 + (rng() * 8 | 0);
+function framesFor(specName, seedSlot, season, cls) {
+  // seedSlot 0-7
+  const cedar = specName === "cedar" || cls === 5;
+  let full, clump, bare;
+  if (cedar) {
+    full = 24 + (seedSlot % 8);
+    clump = 40 + (seedSlot % 4);
+    bare = full;
+  } else if (specName === "oak") {
+    full = 0 + (seedSlot % 8);
+    clump = 32 + (seedSlot % 8);
+    bare = 48 + (seedSlot % 8);
+  } else if (specName === "maple") {
+    full = 8 + (seedSlot % 8);
+    clump = 32 + ((seedSlot + 1) % 8);
+    bare = 56 + (seedSlot % 4);
+  } else {
+    full = 16 + (seedSlot % 8);
+    clump = 32 + ((seedSlot + 2) % 8);
+    bare = 60 + (seedSlot % 4);
   }
-  if (season === "spring") return rng() < 0.08 ? 28 + (rng() * 4 | 0) : (rng() * 8 | 0);
-  return rng() * 8 | 0;
+  const winterish = season === "winter";
+  const autumnBare = season === "autumn" && !cedar && ((seedSlot * 17) % 10) < 2;
+  if (winterish || autumnBare) return { full: bare, clump: bare };
+  return { full: full, clump: clump };
 }
+
+function pickSpecies(cls, rng) {
+  if (cls === 5) return "cedar";
+  const r = rng();
+  if (r < 0.38) return "oak";
+  if (r < 0.70) return "maple";
+  return "sycamore";
+}
+
+let treeRecords = [];
 
 function scatterTrees() {
   const rng = mulberry(2026);
-  const maxN = 5200;
-  const pos = [], scale = [], frame = [], phase = [], kind = [];
-  const half = 1500;
-  for (let k = 0; k < path.length; k++) {
-    const p = path[k];
-    const tries = 520;
-    for (let t = 0; t < tries && pos.length / 3 < maxN; t++) {
-      const ox = (rng() - 0.5) * 2 * half, oz = (rng() - 0.5) * 2 * half;
-      const x = p.x + ox, z = p.z + oz;
-      const wp = worldToPx(x, z);
-      if (wp.px < 2 || wp.py < 2 || wp.px > COLS - 3 || wp.py > ROWS - 3) continue;
-      const cls = coverPx(wp.px, wp.py);
-      if (cls === 0 || cls === 2 || cls === 3) continue;
-      if (cls === 1 && rng() > 0.12) continue;
-      if (cls === 6 && rng() > 0.08) continue;
-      if (cls === 7 && rng() > 0.03) continue;
-      if (cls === 8 && rng() > 0.2) continue;
-      if (cls === 4 && rng() > 0.85) continue;
-      const h = heightPx(wp.px, wp.py);
-      const tall = cls === 5 ? 16 + rng() * 8 : 11 + rng() * 9;
-      pos.push(x, yOf(h), z);
-      const w = tall * (0.55 + rng() * 0.25) * (cls === 5 ? 0.7 : 1);
-      scale.push(w * 2.4, tall * 2.6);
-      frame.push(pickTreeFrame(cls, clock.season, rng));
+  const maxN = 4800;
+  const pos = [], scale = [], frame = [], frameClump = [], phase = [], kind = [];
+  treeRecords = [];
+  // Pack stands in woods along the river corridor first, so the hero view is dense.
+  let minx = 1e9, maxx = -1e9, minz = 1e9, maxz = -1e9;
+  for (let i = 0; i < path.length; i++) {
+    const p = path[i];
+    if (p.x < minx) minx = p.x; if (p.x > maxx) maxx = p.x;
+    if (p.z < minz) minz = p.z; if (p.z > maxz) maxz = p.z;
+  }
+  const pad = 2200;
+  const a = worldToPx(minx - pad, maxz + pad);
+  const b = worldToPx(maxx + pad, minz - pad);
+  const px0 = Math.max(2, Math.min(a.px, b.px) | 0);
+  const px1 = Math.min(COLS - 3, Math.max(a.px, b.px) | 0);
+  const py0 = Math.max(2, Math.min(a.py, b.py) | 0);
+  const py1 = Math.min(ROWS - 3, Math.max(a.py, b.py) | 0);
+  const step = 2;
+  const cands = [];
+  for (let py = py0; py <= py1; py += step) {
+    for (let px = px0; px <= px1; px += step) {
+      const cls = coverPx(px, py);
+      let chance = 0;
+      if (cls === 4) chance = 0.72;
+      else if (cls === 5) chance = 0.8;
+      else if (cls === 8) chance = 0.22;
+      else if (cls === 1) chance = 0.04;
+      else if (cls === 6) chance = 0.0;
+      else if (cls === 7) chance = 0.0;
+      else continue;
+      const hl = heightPx(px - 2, py), hr = heightPx(px + 2, py);
+      const hd = heightPx(px, py + 2), hu = heightPx(px, py - 2);
+      const slope = Math.abs(hl - hr) + Math.abs(hd - hu);
+      if (cls === 4 && slope > 4) chance = Math.min(1, chance + 0.18);
+      if (rng() > chance) continue;
+      cands.push({ px: px, py: py, cls: cls });
+    }
+  }
+  for (let i = cands.length - 1; i > 0; i--) {
+    const j = (rng() * (i + 1)) | 0;
+    const tmp = cands[i]; cands[i] = cands[j]; cands[j] = tmp;
+  }
+  for (let ci = 0; ci < cands.length && pos.length / 3 < maxN; ci++) {
+    const px = cands[ci].px, py = cands[ci].py, cls = cands[ci].cls;
+    const stand = cls === 4 || cls === 5 ? 2 + ((rng() * 3) | 0) : 1;
+    for (let s = 0; s < stand && pos.length / 3 < maxN; s++) {
+      const jx = (px + (rng() - 0.5) * 1.4);
+      const jy = (py + (rng() - 0.5) * 1.4);
+      const w = pxToWorld(jx, jy);
+      const c2 = coverPx(jx, jy);
+      if (c2 === 0 || c2 === 2 || c2 === 3) continue;
+      const hm = heightPx(jx, jy);
+      const specName = pickSpecies(c2 === 5 ? 5 : cls, rng);
+      const slot = (rng() * 8) | 0;
+      const fr = framesFor(specName, slot, clock.season, c2);
+      const tall = (specName === "cedar" ? 15 + rng() * 8 : 13 + rng() * 11);
+      const wid = tall * (specName === "cedar" ? 0.48 : 0.72) * (0.85 + rng() * 0.3);
+      pos.push(w.x, yOf(hm), w.z);
+      scale.push(wid * 3.1, tall * 3.2);
+      frame.push(fr.full);
+      frameClump.push(fr.clump);
       phase.push(rng());
-      kind.push(cls === 5 ? 1 : 0);
+      kind.push(specName === "cedar" ? 1 : 0);
+      treeRecords.push({ spec: specName, slot: slot, cls: c2 });
     }
   }
   const n = pos.length / 3;
+  VEG.treesPlaced = n;
+  VEG.trees = n;
   const plane = new THREE.PlaneGeometry(1, 1);
   plane.translate(0, 0.5, 0);
   plane.setAttribute("iScale", new THREE.InstancedBufferAttribute(new Float32Array(scale), 2));
   plane.setAttribute("iFrame", new THREE.InstancedBufferAttribute(new Float32Array(frame), 1));
+  plane.setAttribute("iFrameClump", new THREE.InstancedBufferAttribute(new Float32Array(frameClump), 1));
   plane.setAttribute("iPhase", new THREE.InstancedBufferAttribute(new Float32Array(phase), 1));
   plane.setAttribute("iKind", new THREE.InstancedBufferAttribute(new Float32Array(kind), 1));
   treeMat = new THREE.ShaderMaterial({
     uniforms: {
       uAtlas: { value: makeTreeAtlas() },
-      uAtlasGrid: { value: new THREE.Vector2(8, 4) },
+      uAtlasGrid: { value: new THREE.Vector2(ATLAS_COL, ATLAS_ROW) },
       uTime: { value: 0 },
       uCursor: { value: new THREE.Vector3() },
       uWind: { value: 1 },
@@ -1344,7 +1700,9 @@ function scatterTrees() {
       uReduce: { value: REDUCE ? 1 : 0 },
       uInkUse: { value: colU(INK) },
       uNight: { value: 0 },
-      uLightning: { value: 0 }
+      uLightning: { value: 0 },
+      uLodNear: { value: LOD_NEAR },
+      uLodMid: { value: LOD_MID }
     },
     vertexShader: SPRITE_VERT,
     fragmentShader: TREE_FRAG,
@@ -1366,63 +1724,158 @@ function scatterTrees() {
   return n;
 }
 
-const grassState = { cx: 1e9, cz: 1e9 };
-function buildGrass() {
-  const N = 2800;
-  const plane = new THREE.PlaneGeometry(1, 1);
-  plane.translate(0, 0.5, 0);
-  plane.setAttribute("iScale", new THREE.InstancedBufferAttribute(new Float32Array(N * 2), 2));
-  plane.setAttribute("iPhase", new THREE.InstancedBufferAttribute(new Float32Array(N), 1));
-  plane.setAttribute("iKind", new THREE.InstancedBufferAttribute(new Float32Array(N), 1));
-  grassMat = new THREE.ShaderMaterial({
-    uniforms: {
-      uTime: { value: 0 },
-      uCursor: { value: new THREE.Vector3() },
-      uWind: { value: 1 },
-      uReduce: { value: REDUCE ? 1 : 0 },
-      uK: { value: 40 },
-      uGrass: { value: colU(SKINS.autumn.grass) },
-      uWheat: { value: colU(SKINS.autumn.wheat) },
-      uInkUse: { value: colU(INK) }
-    },
-    vertexShader: GRASS_VERT,
-    fragmentShader: GRASS_FRAG,
-    transparent: true,
-    depthWrite: false
-  });
-  grassMesh = new THREE.InstancedMesh(plane, grassMat, N);
-  grassMesh.frustumCulled = false;
-  scene.add(grassMesh);
-  grassMesh._pos = new Float32Array(N * 3);
+function syncTreeFrames() {
+  if (!treeMesh || !treeRecords.length) return;
+  const full = treeMesh.geometry.attributes.iFrame.array;
+  const clump = treeMesh.geometry.attributes.iFrameClump.array;
+  for (let i = 0; i < treeRecords.length; i++) {
+    const r = treeRecords[i];
+    const fr = framesFor(r.spec, r.slot, clock.season, r.cls);
+    full[i] = fr.full;
+    clump[i] = fr.clump;
+  }
+  treeMesh.geometry.attributes.iFrame.needsUpdate = true;
+  treeMesh.geometry.attributes.iFrameClump.needsUpdate = true;
+  if (treeMat && treeMat.uniforms.uAtlas.value) {
+    treeMat.uniforms.uAtlas.value.dispose();
+    treeMat.uniforms.uAtlas.value = makeTreeAtlas();
+  }
 }
 
-function fillGrass(cx, cz) {
-  if (!grassMesh) return;
-  const rng = mulberry((cx * 13 + cz * 7) | 0);
-  const pos = grassMesh._pos;
-  const scale = grassMesh.geometry.attributes.iScale.array;
-  const phase = grassMesh.geometry.attributes.iPhase.array;
-  const kind = grassMesh.geometry.attributes.iKind.array;
+function makeBladeGeo() {
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array([
+    -0.46, 0.0, 0.0,
+     0.46, 0.0, 0.0,
+    -0.30, 0.42, 0.03,
+     0.30, 0.42, 0.03,
+    -0.14, 0.78, 0.05,
+     0.14, 0.78, 0.05,
+     0.00, 1.00, 0.07
+  ]);
+  const uv = new Float32Array([
+    0, 0, 1, 0,
+    0, 0.42, 1, 0.42,
+    0, 0.78, 1, 0.78,
+    0.5, 1
+  ]);
+  const idx = new Uint16Array([
+    0, 1, 2, 1, 3, 2,
+    2, 3, 4, 3, 5, 4,
+    4, 5, 6
+  ]);
+  geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
+  geo.setIndex(new THREE.BufferAttribute(idx, 1));
+  return geo;
+}
+
+function makeClumpGeo() {
+  // a few overlapping blades in one mesh, used as the mid-distance tuft
+  const geo = new THREE.BufferGeometry();
+  const pos = [], uv = [], idx = [];
+  const blades = 5;
+  for (let b = 0; b < blades; b++) {
+    const lean = (b - 2) * 0.16;
+    const base = pos.length / 3;
+    const xs = [-0.5 + lean, 0.5 + lean, -0.22 + lean * 1.2, 0.22 + lean * 1.2, lean];
+    const ys = [0, 0, 0.55, 0.55, 1];
+    for (let k = 0; k < 5; k++) {
+      pos.push(xs[k] * 0.55, ys[k], (b - 2) * 0.04);
+      uv.push(k === 4 ? 0.5 : (k % 2), ys[k]);
+    }
+    idx.push(base, base + 1, base + 2, base + 1, base + 3, base + 2, base + 2, base + 3, base + 4);
+  }
+  geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(pos), 3));
+  geo.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(uv), 2));
+  geo.setIndex(new THREE.BufferAttribute(new Uint16Array(idx), 1));
+  return geo;
+}
+
+const BLADE_N = 5200;
+const CLUMP_N = 1400;
+const grassState = { cx: 1e9, cz: 1e9 };
+let clumpMesh, clumpMat;
+
+function grassUniforms() {
+  return {
+    uTime: { value: 0 },
+    uCursor: { value: new THREE.Vector3() },
+    uWind: { value: 1 },
+    uReduce: { value: REDUCE ? 1 : 0 },
+    uGrass: { value: colU(SKINS.autumn.grass) },
+    uWheat: { value: colU(SKINS.autumn.wheat) },
+    uCorn: { value: colU(SKINS.summer.field) },
+    uInkUse: { value: colU(INK) },
+    uLodNear: { value: LOD_NEAR },
+    uLodMid: { value: LOD_MID }
+  };
+}
+
+function buildGrass() {
+  function makeMesh(geo, N) {
+    geo.setAttribute("iScale", new THREE.InstancedBufferAttribute(new Float32Array(N * 2), 2));
+    geo.setAttribute("iPhase", new THREE.InstancedBufferAttribute(new Float32Array(N), 1));
+    geo.setAttribute("iKind", new THREE.InstancedBufferAttribute(new Float32Array(N), 1));
+    geo.setAttribute("iLean", new THREE.InstancedBufferAttribute(new Float32Array(N * 2), 2));
+    const mat = new THREE.ShaderMaterial({
+      uniforms: grassUniforms(),
+      vertexShader: GRASS_VERT,
+      fragmentShader: GRASS_FRAG,
+      transparent: true,
+      depthWrite: false,
+      side: THREE.DoubleSide
+    });
+    const mesh = new THREE.InstancedMesh(geo, mat, N);
+    mesh.frustumCulled = false;
+    mesh._pos = new Float32Array(N * 3);
+    scene.add(mesh);
+    return { mesh: mesh, mat: mat };
+  }
+  const near = makeMesh(makeBladeGeo(), BLADE_N);
+  grassMesh = near.mesh;
+  grassMat = near.mat;
+  const mid = makeMesh(makeClumpGeo(), CLUMP_N);
+  clumpMesh = mid.mesh;
+  clumpMat = mid.mat;
+}
+
+function fillBand(mesh, maxN, cx, cz, rad, kindForce, minR) {
+  if (!mesh) return 0;
+  const rng = mulberry(((cx * 13 + cz * 7 + rad) | 0) >>> 0);
+  const pos = mesh._pos;
+  const scale = mesh.geometry.attributes.iScale.array;
+  const phase = mesh.geometry.attributes.iPhase.array;
+  const kind = mesh.geometry.attributes.iKind.array;
+  const lean = mesh.geometry.attributes.iLean.array;
   let n = 0, tries = 0;
-  const rad = 220;
   const season = clock.season;
   const wheatOn = season === "summer" && clock.month >= 6 && clock.month <= 7;
-  while (n < 2800 && tries < 9000) {
+  const cornOn = season === "summer";
+  const limit = maxN * 3.2;
+  while (n < maxN && tries < limit) {
     tries++;
-    const a = rng() * 6.28, r = Math.sqrt(rng()) * rad;
+    const a = rng() * 6.28, r = minR + Math.sqrt(rng()) * (rad - minR);
     const x = cx + Math.cos(a) * r, z = cz + Math.sin(a) * r;
     const cls = coverWorld(x, z);
     if (cls !== 6 && cls !== 7 && cls !== 8) continue;
-    if (season === "winter" && wx.kind !== "snow" && rng() > 0.35) continue;
+    if (season === "winter" && wx.kind !== "snow" && rng() > 0.3) continue;
     if (season === "autumn" && cls === 7) continue;
     const h = heightWorld(x, z);
     pos[n * 3] = x; pos[n * 3 + 1] = yOf(h); pos[n * 3 + 2] = z;
-    const isWheat = wheatOn && cls === 7 && rng() > 0.3;
-    const tall = isWheat ? 1.6 + rng() * 0.8 : (cls === 7 ? 1.3 + rng() * 0.7 : 0.6 + rng() * 0.5);
-    scale[n * 2] = 0.12 + rng() * 0.1;
-    scale[n * 2 + 1] = tall * (season === "spring" ? 0.55 : 1) * EXAG * 0.55;
+    let knd = 0;
+    if (kindForce != null) knd = kindForce;
+    else if (cornOn && cls === 7 && rng() > 0.55) knd = 2;
+    else if (wheatOn && cls === 7 && rng() > 0.3) knd = 1;
+    const tall = knd === 2 ? 2.4 + rng() * 0.8 : knd === 1 ? 1.6 + rng() * 0.7 : (cls === 7 ? 1.2 + rng() * 0.6 : 0.55 + rng() * 0.5);
+    const wide = knd === 3 ? 1.4 + rng() * 0.8 : 0.08 + rng() * 0.1;
+    scale[n * 2] = wide;
+    scale[n * 2 + 1] = tall * (season === "spring" ? 0.55 : 1) * EXAG * (knd === 3 ? 0.7 : 0.55);
     phase[n] = rng();
-    kind[n] = isWheat ? 1 : 0;
+    kind[n] = knd;
+    const ang = rng() * 6.28, amt = (rng() - 0.5) * 0.35;
+    lean[n * 2] = Math.cos(ang) * amt;
+    lean[n * 2 + 1] = Math.sin(ang) * amt;
     n++;
   }
   const dummy = new THREE.Object3D();
@@ -1430,31 +1883,348 @@ function fillGrass(cx, cz) {
     dummy.position.set(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]);
     dummy.scale.set(1, 1, 1);
     dummy.updateMatrix();
-    grassMesh.setMatrixAt(i, dummy.matrix);
+    mesh.setMatrixAt(i, dummy.matrix);
   }
-  grassMesh.count = n;
-  grassMesh.instanceMatrix.needsUpdate = true;
-  grassMesh.geometry.attributes.iScale.needsUpdate = true;
-  grassMesh.geometry.attributes.iPhase.needsUpdate = true;
-  grassMesh.geometry.attributes.iKind.needsUpdate = true;
+  mesh.count = n;
+  mesh.instanceMatrix.needsUpdate = true;
+  mesh.geometry.attributes.iScale.needsUpdate = true;
+  mesh.geometry.attributes.iPhase.needsUpdate = true;
+  mesh.geometry.attributes.iKind.needsUpdate = true;
+  mesh.geometry.attributes.iLean.needsUpdate = true;
+  return n;
+}
+
+function fillGrass(cx, cz) {
+  if (!grassMesh) return;
+  VEG.blades = fillBand(grassMesh, BLADE_N, cx, cz, 200, null, 0);
+  VEG.clumps = clumpMesh ? fillBand(clumpMesh, CLUMP_N, cx, cz, 900, 3, 200) : 0;
   grassState.cx = cx; grassState.cz = cz;
 }
 
+
+const washMatCache = {};
+const windowMatCache = { mat: null };
+function makeWashMat(rgb) {
+  const key = rgb[0] + "," + rgb[1] + "," + rgb[2];
+  if (washMatCache[key]) return washMatCache[key];
+  const mat = new THREE.ShaderMaterial({
+    uniforms: {
+      uWash: { value: colU(rgb) },
+      uInkUse: { value: colU(INK) },
+      uPaper: { value: colU(PAPER) },
+      uNightMul: { value: colU(NIGHT_MUL) },
+      uNight: { value: 0 }
+    },
+    vertexShader: BUILDING_VERT,
+    fragmentShader: BUILDING_FRAG
+  });
+  washMats.push(mat);
+  washMatCache[key] = mat;
+  return mat;
+}
+
+function makeWindowMat() {
+  if (windowMatCache.mat) return windowMatCache.mat;
+  const mat = new THREE.ShaderMaterial({
+    uniforms: {
+      uGlow: { value: colU(WINDOW) },
+      uInkUse: { value: colU(INK) },
+      uNight: { value: 0 }
+    },
+    vertexShader: BUILDING_VERT,
+    fragmentShader: WINDOW_FRAG
+  });
+  windowMats.push(mat);
+  windowMatCache.mat = mat;
+  return mat;
+}
+
+function addWashMesh(group, geo, rgb, x, y, z, rx, ry, rz) {
+  const mesh = new THREE.Mesh(geo, makeWashMat(rgb));
+  mesh.position.set(x || 0, y || 0, z || 0);
+  if (rx) mesh.rotation.x = rx;
+  if (ry) mesh.rotation.y = ry;
+  if (rz) mesh.rotation.z = rz;
+  group.add(mesh);
+  return mesh;
+}
+
+function addWindow(group, w, h, d, x, y, z, name) {
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), makeWindowMat());
+  mesh.position.set(x, y, z);
+  mesh.name = name || "window_0";
+  group.add(mesh);
+  return mesh;
+}
+
+function placeholderChurch() {
+  const g = new THREE.Group();
+  g.name = "church";
+  addWashMesh(g, new THREE.BoxGeometry(14, 8, 10), hexRgb("#8A7A66"), 0, 4, 0);
+  const roof = new THREE.ConeGeometry(9.2, 4.2, 4);
+  roof.rotateY(Math.PI / 4);
+  addWashMesh(g, roof, hexRgb("#5A4638"), 0, 10.1, 0);
+  addWashMesh(g, new THREE.BoxGeometry(4.2, 14, 4.2), hexRgb("#8A7A66"), 0, 11, -2.2);
+  addWashMesh(g, new THREE.ConeGeometry(3.1, 8, 4), hexRgb("#4A3A2C"), 0, 22, -2.2);
+  addWindow(g, 1.2, 2.2, 0.3, 3.2, 3.6, 5.05, "window_nave_e");
+  addWindow(g, 1.2, 2.2, 0.3, -3.2, 3.6, 5.05, "window_nave_w");
+  addWindow(g, 1.1, 2.6, 0.3, 0, 14, -0.05, "window_tower");
+  return g;
+}
+
+function placeholderFarmhouse() {
+  const g = new THREE.Group();
+  g.name = "farmhouse";
+  addWashMesh(g, new THREE.BoxGeometry(9, 5.2, 7), hexRgb("#E8E0D0"), 0, 2.6, 0);
+  const roof = new THREE.ConeGeometry(6.6, 3.2, 4);
+  roof.rotateY(Math.PI / 4);
+  addWashMesh(g, roof, hexRgb("#6A5344"), 0, 6.8, 0);
+  addWashMesh(g, new THREE.BoxGeometry(3.2, 4.2, 3.2), hexRgb("#E8E0D0"), 5.4, 2.1, 0);
+  addWindow(g, 1.3, 1.5, 0.25, -2.0, 2.8, 3.55, "window_l");
+  addWindow(g, 1.3, 1.5, 0.25, 1.6, 2.8, 3.55, "window_r");
+  addWindow(g, 1.0, 1.3, 0.25, 5.4, 2.4, 1.7, "window_s");
+  return g;
+}
+
+function placeholderBarn() {
+  const g = new THREE.Group();
+  g.name = "barn";
+  addWashMesh(g, new THREE.BoxGeometry(12, 6, 8), hexRgb("#8B3A2A"), 0, 3, 0);
+  addWashMesh(g, new THREE.BoxGeometry(11.2, 2.4, 6.2), hexRgb("#8B3A2A"), 0, 6.8, 0);
+  const cap = new THREE.ConeGeometry(7.2, 2.6, 4);
+  cap.rotateY(Math.PI / 4);
+  addWashMesh(g, cap, hexRgb("#3A2A22"), 0, 9.2, 0);
+  addWindow(g, 1.1, 1.4, 0.25, -3.2, 4.2, 4.05, "window_loft_l");
+  addWindow(g, 1.1, 1.4, 0.25, 3.2, 4.2, 4.05, "window_loft_r");
+  return g;
+}
+
+function placeholderSilo() {
+  const g = new THREE.Group();
+  g.name = "silo";
+  addWashMesh(g, new THREE.CylinderGeometry(2.4, 2.6, 10, 10), hexRgb("#A8A094"), 0, 5, 0);
+  addWashMesh(g, new THREE.SphereGeometry(2.5, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), hexRgb("#8A8078"), 0, 10, 0);
+  return g;
+}
+
+function placeholderHay() {
+  const g = new THREE.Group();
+  g.name = "haybale";
+  const cyl = new THREE.CylinderGeometry(1.15, 1.15, 1.6, 10);
+  cyl.rotateZ(Math.PI / 2);
+  addWashMesh(g, cyl, hexRgb("#C9A66B"), 0, 1.15, 0);
+  return g;
+}
+
+function styleLoadedModel(root, fallbackRgb) {
+  root.traverse(function (obj) {
+    if (!obj.isMesh) return;
+    const n = (obj.name || "").toLowerCase();
+    const mn = (obj.material && obj.material.name) ? String(obj.material.name).toLowerCase() : "";
+    const isWin = n.indexOf("window") === 0 || n.indexOf("window") !== -1 || mn === "window";
+    if (isWin) {
+      obj.name = obj.name && obj.name.indexOf("window") === 0 ? obj.name : "window_" + obj.id;
+      obj.material = makeWindowMat();
+      return;
+    }
+    let rgb = fallbackRgb || hexRgb("#8A7A66");
+    if (n.indexOf("roof") !== -1 || mn.indexOf("roof") !== -1) rgb = hexRgb("#5A4638");
+    else if (n.indexOf("barn") !== -1 || mn.indexOf("barn") !== -1) rgb = hexRgb("#8B3A2A");
+    else if (n.indexOf("silo") !== -1) rgb = hexRgb("#A8A094");
+    else if (n.indexOf("hay") !== -1) rgb = hexRgb("#C9A66B");
+    else if (n.indexOf("farm") !== -1 || n.indexOf("house") !== -1 || n.indexOf("white") !== -1) rgb = hexRgb("#E8E0D0");
+    else if (obj.material && obj.material.color) {
+      const c = obj.material.color;
+      rgb = [Math.round(c.r * 255), Math.round(c.g * 255), Math.round(c.b * 255)];
+    }
+    obj.material = makeWashMat(rgb);
+  });
+  return root;
+}
+
+const MODEL_FILES = {
+  church: ["church.glb", "st-joseph.glb", "st_joseph.glb"],
+  farmhouse: ["farmhouse.glb", "house.glb"],
+  barn: ["barn.glb", "red-barn.glb"],
+  silo: ["silo.glb"],
+  haybale: ["haybale.glb", "hay-bale.glb", "hay.glb"]
+};
+
+async function tryLoadModel(kind) {
+  const names = MODEL_FILES[kind] || [];
+  const loader = new GLTFLoader();
+  for (let i = 0; i < names.length; i++) {
+    const url = "./models/" + names[i];
+    try {
+      const res = await fetch(url);
+      if (!res.ok) continue;
+      const buf = await res.arrayBuffer();
+      const gltf = await new Promise(function (resolve, reject) {
+        loader.parse(buf, "./models/", resolve, reject);
+      });
+      if (gltf && gltf.scene) {
+        LAND.fromGltf[kind] = names[i];
+        return gltf.scene;
+      }
+    } catch (err) {}
+  }
+  return null;
+}
+
+function placeOnGround(obj, x, z, yaw) {
+  const h = heightWorld(x, z);
+  obj.position.set(x, yOf(h), z);
+  obj.rotation.y = yaw || 0;
+}
+
+function isCropAdjacent(px, py) {
+  const n = [coverPx(px + 1, py), coverPx(px - 1, py), coverPx(px, py + 1), coverPx(px, py - 1)];
+  for (let i = 0; i < 4; i++) if (n[i] === 1 || n[i] === 2 || n[i] === 4) return true;
+  return false;
+}
+
+function scatterBuildings() {
+  const rng = mulberry(91);
+  const sites = [];
+  let minx = 1e9, maxx = -1e9, minz = 1e9, maxz = -1e9;
+  for (let i = 0; i < path.length; i++) {
+    const p = path[i];
+    if (p.x < minx) minx = p.x; if (p.x > maxx) maxx = p.x;
+    if (p.z < minz) minz = p.z; if (p.z > maxz) maxz = p.z;
+  }
+  const pad = 1800;
+  const a = worldToPx(minx - pad, maxz + pad);
+  const b = worldToPx(maxx + pad, minz - pad);
+  const px0 = Math.max(2, Math.min(a.px, b.px) | 0);
+  const px1 = Math.min(COLS - 3, Math.max(a.px, b.px) | 0);
+  const py0 = Math.max(2, Math.min(a.py, b.py) | 0);
+  const py1 = Math.min(ROWS - 3, Math.max(a.py, b.py) | 0);
+  for (let py = py0; py <= py1; py += 3) {
+    for (let px = px0; px <= px1; px += 3) {
+      const cls = coverPx(px, py);
+      let kind = null;
+      if (cls === 2 || cls === 1) {
+        if (rng() < 0.22) kind = rng() < 0.55 ? "farmhouse" : (rng() < 0.7 ? "barn" : "silo");
+      } else if ((cls === 7 || cls === 6) && isCropAdjacent(px, py) && rng() < 0.08) {
+        kind = rng() < 0.4 ? "farmhouse" : (rng() < 0.75 ? "barn" : "silo");
+      }
+      if (!kind) continue;
+      const w = pxToWorld(px + (rng() - 0.5), py + (rng() - 0.5));
+      if (coverWorld(w.x, w.z) === 0) continue;
+      sites.push({ kind: kind, x: w.x, z: w.z, yaw: rng() * Math.PI * 2 });
+    }
+  }
+  for (let i = sites.length - 1; i > 0; i--) {
+    const j = (rng() * (i + 1)) | 0;
+    const tmp = sites[i]; sites[i] = sites[j]; sites[j] = tmp;
+  }
+  const cap = { farmhouse: 28, barn: 18, silo: 12 };
+  const used = { farmhouse: 0, barn: 0, silo: 0 };
+  const makers = { farmhouse: placeholderFarmhouse, barn: placeholderBarn, silo: placeholderSilo };
+  for (let i = 0; i < sites.length; i++) {
+    const s = sites[i];
+    if (used[s.kind] >= cap[s.kind]) continue;
+    const obj = makers[s.kind]();
+    const sc = (s.kind === "silo" ? 1.15 : 1.25) * EXAG * 0.42;
+    obj.scale.setScalar(sc);
+    placeOnGround(obj, s.x, s.z, s.yaw);
+    landmarkGroup.add(obj);
+    used[s.kind]++;
+  }
+  LAND.farmhouse = used.farmhouse;
+  LAND.barn = used.barn;
+  LAND.silo = used.silo;
+}
+
+function skinLandmarks() {
+  const night = clock.night;
+  const ink = night > 0.45 ? INK_NIGHT : INK;
+  for (let i = 0; i < washMats.length; i++) {
+    const u = washMats[i].uniforms;
+    u.uInkUse.value.set(ink[0] / 255, ink[1] / 255, ink[2] / 255);
+    u.uNight.value = night;
+  }
+  for (let i = 0; i < windowMats.length; i++) {
+    const u = windowMats[i].uniforms;
+    u.uInkUse.value.set(ink[0] / 255, ink[1] / 255, ink[2] / 255);
+    u.uNight.value = night;
+  }
+}
+
+async function swapInGltfModels() {
+  const kinds = ["church", "farmhouse", "barn", "silo", "haybale"];
+  const loaded = {};
+  for (let i = 0; i < kinds.length; i++) {
+    const scene = await tryLoadModel(kinds[i]);
+    if (!scene) continue;
+    const fallback = {
+      church: hexRgb("#8A7A66"),
+      farmhouse: hexRgb("#E8E0D0"),
+      barn: hexRgb("#8B3A2A"),
+      silo: hexRgb("#A8A094"),
+      haybale: hexRgb("#C9A66B")
+    }[kinds[i]];
+    loaded[kinds[i]] = scene;
+    styleLoadedModel(scene, fallback);
+  }
+  if (!Object.keys(loaded).length) return;
+  if (loaded.church && churchMesh) {
+    const xf = { p: churchMesh.position.clone(), r: churchMesh.rotation.clone(), s: churchMesh.scale.clone() };
+    while (churchMesh.children.length) churchMesh.remove(churchMesh.children[0]);
+    const proto = loaded.church.clone();
+    churchMesh.add(proto);
+    churchMesh.position.copy(xf.p);
+    churchMesh.rotation.copy(xf.r);
+    churchMesh.scale.copy(xf.s);
+  }
+  function replaceKind(kind, proto) {
+    const doomed = [];
+    landmarkGroup.children.forEach(function (ch) {
+      if (ch.name === kind) doomed.push(ch);
+    });
+    doomed.forEach(function (ch) {
+      const nu = proto.clone();
+      nu.position.copy(ch.position);
+      nu.rotation.copy(ch.rotation);
+      nu.scale.copy(ch.scale);
+      landmarkGroup.add(nu);
+      landmarkGroup.remove(ch);
+    });
+  }
+  if (loaded.farmhouse) replaceKind("farmhouse", loaded.farmhouse);
+  if (loaded.barn) replaceKind("barn", loaded.barn);
+  if (loaded.silo) replaceKind("silo", loaded.silo);
+  if (loaded.haybale && hayMesh) {
+    hayMesh.visible = false;
+    const rng = mulberry(77);
+    const n = Math.min(hayMesh.count, 90);
+    const dummy = new THREE.Object3D();
+    for (let i = 0; i < n; i++) {
+      hayMesh.getMatrixAt(i, dummy.matrix);
+      dummy.matrix.decompose(dummy.position, dummy.quaternion, dummy.scale);
+      const b = loaded.haybale.clone();
+      b.position.copy(dummy.position);
+      b.quaternion.copy(dummy.quaternion);
+      b.scale.copy(dummy.scale);
+      landmarkGroup.add(b);
+    }
+  }
+  skinLandmarks();
+  if (glOk && renderer) renderer.render(scene, camera);
+}
+
 function buildTown() {
+  landmarkGroup = new THREE.Group();
+  scene.add(landmarkGroup);
+
   const church = meta.landmarks.jasper_st_joseph;
   const w = pxToWorld(church[0], church[1]);
   const h = heightPx(church[0], church[1]);
-  const g = new THREE.Group();
-  const ink = new THREE.MeshBasicMaterial({ color: 0x2A2118 });
-  const base = new THREE.Mesh(new THREE.BoxGeometry(9, 14, 9), ink);
-  base.position.y = 7;
-  const spire = new THREE.Mesh(new THREE.ConeGeometry(3.2, 22, 4), ink);
-  spire.position.y = 25;
-  g.add(base); g.add(spire);
-  g.position.set(w.x, yOf(h), w.z);
-  g.scale.setScalar(2.2);
-  churchMesh = g;
-  scene.add(g);
+  churchMesh = placeholderChurch();
+  churchMesh.position.set(w.x, yOf(h), w.z);
+  churchMesh.scale.setScalar(EXAG * 0.55);
+  landmarkGroup.add(churchMesh);
+  LAND.church = 1;
 
   const cv = document.createElement("canvas");
   cv.width = 256; cv.height = 64;
@@ -1472,6 +2242,7 @@ function buildTown() {
   labelMesh = new THREE.Mesh(new THREE.PlaneGeometry(180, 45), mat);
   labelMesh.position.set(w.x + 40, yOf(h) + 28, w.z + 20);
   labelMesh.rotation.x = -0.2;
+  labelMesh.visible = false;
   scene.add(labelMesh);
 
   const rng = mulberry(77);
@@ -1511,14 +2282,15 @@ function buildTown() {
   }));
   scene.add(firePts);
 
+  scatterBuildings();
+
   const hayN = 90;
   const hayGeo = new THREE.CylinderGeometry(2.2, 2.2, 2.4, 8, 1, false);
   hayGeo.rotateZ(Math.PI / 2);
-  const hayMat = new THREE.MeshBasicMaterial({ color: 0xC9A66B });
-  hayMesh = new THREE.InstancedMesh(hayGeo, hayMat, hayN);
+  hayMesh = new THREE.InstancedMesh(hayGeo, makeWashMat(hexRgb("#C9A66B")), hayN);
   const m = new THREE.Matrix4(), q = new THREE.Quaternion(), ps = new THREE.Vector3(), sc = new THREE.Vector3();
   let hi = 0;
-  for (let t = 0; t < 800 && hi < hayN; t++) {
+  for (let tr = 0; tr < 800 && hi < hayN; tr++) {
     const k = (rng() * path.length) | 0;
     const p = path[k];
     const x = p.x + (rng() - 0.5) * 1800, z = p.z + (rng() - 0.5) * 1400;
@@ -1530,9 +2302,9 @@ function buildTown() {
     hayMesh.setMatrixAt(hi++, m);
   }
   hayMesh.count = hi;
+  LAND.hay = hi;
   scene.add(hayMesh);
 }
-
 
 function applySkin() {
   const s = SKINS[clock.season];
@@ -1579,29 +2351,27 @@ function applySkin() {
     set(treeMat.uniforms.uInkUse, ink);
     treeMat.uniforms.uNight.value = night;
   }
-  if (grassMat) {
-    set(grassMat.uniforms.uGrass, s.grass);
-    set(grassMat.uniforms.uWheat, s.wheat);
-    set(grassMat.uniforms.uInkUse, ink);
-    const show = !(clock.season === "winter" && wx.kind !== "snow") || clock.season !== "winter";
-    grassMesh.visible = clock.season !== "winter" || wx.kind === "snow";
+  if (treeMesh) syncTreeFrames();
+  function tintGrass(mat) {
+    if (!mat) return;
+    set(mat.uniforms.uGrass, s.grass);
+    set(mat.uniforms.uWheat, s.wheat);
+    set(mat.uniforms.uCorn, SKINS.summer.field);
+    set(mat.uniforms.uInkUse, ink);
   }
+  tintGrass(grassMat);
+  tintGrass(clumpMat);
+  const grassOn = clock.season !== "winter" || wx.kind === "snow";
+  if (grassMesh) grassMesh.visible = grassOn;
+  if (clumpMesh) clumpMesh.visible = grassOn;
   if (hayMesh) hayMesh.visible = clock.season === "autumn";
   if (windowPts) windowPts.material.opacity = night > 0.45 ? clamp((night - 0.45) / 0.4, 0, 0.95) : 0;
   if (firePts) firePts.material.opacity = (clock.season === "summer" && night > 0.5) ? 0.85 : 0;
   if (starPts) starPts.visible = night > 0.15;
   if (constLines) constLines.visible = night > 0.25;
   if (moonMesh) moonMesh.visible = clock.moonAlt > -4;
-  if (labelMesh) {
-    const nightInk = night > 0.5;
-    labelMesh.material.color.set(nightInk ? 0xEDE6D6 : 0xffffff);
-    labelMesh.material.opacity = nightInk ? 0.7 : 0.9;
-  }
-  if (churchMesh) {
-    churchMesh.children.forEach(function (ch) {
-      ch.material.color.set(night > 0.5 ? 0xEDE6D6 : 0x2A2118);
-    });
-  }
+  if (labelMesh) labelMesh.visible = false;
+  skinLandmarks();
   body.setAttribute("data-sky", clock.period);
   body.setAttribute("data-season", clock.season);
   body.setAttribute("data-wx", wx.kind);
@@ -1973,6 +2743,11 @@ function setCommonUniforms(t) {
     grassMat.uniforms.uCursor.value.copy(cur);
     grassMat.uniforms.uWind.value = state.wind;
   }
+  if (clumpMat) {
+    clumpMat.uniforms.uTime.value = t;
+    clumpMat.uniforms.uCursor.value.copy(cur);
+    clumpMat.uniforms.uWind.value = state.wind;
+  }
 }
 
 function startLoop() {
@@ -2042,9 +2817,20 @@ function expose() {
       if (g) { cursor.tx = g.x; cursor.tz = g.z; cursor.ts = 1; cursor.active = true; cursor.x = g.x; cursor.z = g.z; cursor.strength = 1; }
     },
     measure: measureGroundShare,
-    stats: frameStats,
-    state: function () { return { season: clock.season, period: clock.period, wx: wx.kind, at: clock.now, s: rig.s, pathLen: path.len, night: clock.night, alt: clock.alt, reduce: REDUCE }; },
+    stats: function () {
+      const f = frameStats();
+      f.veg = { trees: VEG.treesPlaced, blades: VEG.blades, clumps: VEG.clumps, lodNear: LOD_NEAR, lodMid: LOD_MID };
+      f.land = { church: LAND.church, farmhouse: LAND.farmhouse, barn: LAND.barn, silo: LAND.silo, hay: LAND.hay, fromGltf: LAND.fromGltf };
+      return f;
+    },
+    state: function () { return { season: clock.season, period: clock.period, wx: wx.kind, at: clock.now, s: rig.s, pathLen: path.len, night: clock.night, alt: clock.alt, reduce: REDUCE, veg: { trees: VEG.treesPlaced, blades: VEG.blades, clumps: VEG.clumps }, land: { church: LAND.church, farmhouse: LAND.farmhouse, barn: LAND.barn, silo: LAND.silo, hay: LAND.hay, fromGltf: LAND.fromGltf } }; },
     _applyWx: function () { applySkin(); },
+    hide: function (name, v) {
+      const on = v !== false;
+      const map = { trees: treeMesh, grass: grassMesh, clumps: clumpMesh, moon: moonMesh, clouds: cloudMesh, church: churchMesh, hay: hayMesh, label: labelMesh, landmarks: landmarkGroup };
+      if (map[name]) map[name].visible = !on ? true : false;
+      if (name === "moonoff" && moonMesh) moonMesh.visible = false;
+    },
     refresh: function (iso) {
       if (iso) { const t = Date.parse(iso); if (!isNaN(t)) refreshClock(t); }
       else refreshClock(parseTime());
@@ -2077,10 +2863,11 @@ async function init() {
   buildTerrain();
   buildSky();
   buildClouds();
-scatterTrees();
+  scatterTrees();
   buildGrass();
   buildTown();
   applySkin();
+  swapInGltfModels();
   bindInput();
   placeCamera();
   fillGrass(camera.position.x, camera.position.z);
@@ -2093,6 +2880,7 @@ scatterTrees();
 }
 
 init().catch(function (e) {
+  window.__bootErr = (e && e.message ? e.message : String(e)) + (e && e.stack ? ("\n" + e.stack) : "");
   console.error(e);
   showFallback();
 });
