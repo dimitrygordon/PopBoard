@@ -88,10 +88,12 @@ html, body {
 
 #place {
   font-family: "IM Fell English SC", "IM Fell English", Literata, Palatino, serif;
-  font-size: 0.78rem;
-  letter-spacing: 0.16em;
+  font-size: 0.74rem;
+  letter-spacing: 0.10em;
   text-transform: uppercase;
   font-weight: 400;
+  max-width: 16rem;
+  line-height: 1.2;
 }
 
 #when {
