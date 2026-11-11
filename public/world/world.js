@@ -106,11 +106,23 @@ function moonAltAz(t, loc) {
   return altAz(m[0], m[1], d, loc.lat, loc.lon);
 }
 
-/* az from south, westward. World: +X east, +Y up, +Z north. */
+/* az from south, westward.
+   World is a right-handed geographic frame: +X east, +Y up, -Z north. */
 function altAzDir(altDeg, azRad) {
   const alt = altDeg * RAD;
   const ca = Math.cos(alt), sa = Math.sin(alt);
-  return new THREE.Vector3(-Math.sin(azRad) * ca, sa, -Math.cos(azRad) * ca);
+  // South (az = 0) is +Z, west (pi/2) is -X, north (pi) is -Z, east is +X.
+  return new THREE.Vector3(-Math.sin(azRad) * ca, sa, Math.cos(azRad) * ca);
+}
+function compassFromDir(dir) {
+  // 0 = north (-Z), 90 = east (+X)
+  let deg = Math.atan2(dir.x, -dir.z) * 180 / Math.PI;
+  if (deg < 0) deg += 360;
+  return deg;
+}
+function offsetNorth(azRad, dist) {
+  // az 0 = north (-Z), pi/2 = east (+X)
+  return { x: Math.sin(azRad) * dist, z: -Math.cos(azRad) * dist };
 }
 
 const CONSTELL = {
@@ -327,7 +339,8 @@ function windDrift() {
   const from = ((wx.windFromDeg != null && isFinite(wx.windFromDeg) ? wx.windFromDeg : 250) * Math.PI / 180);
   const to = from + Math.PI;
   const d = ms * (state.time || 0);
-  return { x: Math.sin(to) * d, z: Math.cos(to) * d, ms: ms };
+  const off = offsetNorth(to, d);
+  return { x: off.x, z: off.z, ms: ms };
 }
 
 function cloudAnchor() {
@@ -403,10 +416,11 @@ function coverPx(px, py) {
   return coverData[y * COLS + x];
 }
 function worldToPx(x, z) {
-  return { px: x / CELL + (COLS - 1) / 2, py: (ROWS - 1) / 2 - z / CELL };
+  // Image y = 0 is north. World -Z is north, so py grows with +Z (south).
+  return { px: x / CELL + (COLS - 1) / 2, py: z / CELL + (ROWS - 1) / 2 };
 }
 function pxToWorld(px, py) {
-  return { x: (px - (COLS - 1) / 2) * CELL, z: ((ROWS - 1) / 2 - py) * CELL };
+  return { x: (px - (COLS - 1) / 2) * CELL, z: (py - (ROWS - 1) / 2) * CELL };
 }
 function heightWorld(x, z) {
   const p = worldToPx(x, z);
@@ -781,7 +795,7 @@ void main(){
   float graze = pow(1.0 - clamp(dot(N, V), 0.0, 1.0), 1.6);
   // Inked ridge crests. Front heaviest in #2A2118; each layer behind thinner and paler.
   vec2 fwd = normalize(vWorld.xz - cameraPosition.xz);
-  vec2 duv = vec2(fwd.x / ((uSize.x - 1.0) * 31.25), -fwd.y / ((uSize.y - 1.0) * 31.25));
+  vec2 duv = vec2(fwd.x / ((uSize.x - 1.0) * 31.25), fwd.y / ((uSize.y - 1.0) * 31.25));
   float hF = heightM(clamp(vUv + duv * 3.0, 0.0, 1.0));
   float hB = heightM(clamp(vUv - duv * 3.0, 0.0, 1.0));
   float peak = h - max(hF, hB);
@@ -924,26 +938,34 @@ void main(){
     col = mix(uHor, uMid, 0.35);
     col = mix(col, uTop, zen * 0.85);
     col = mix(col, uHor, horB * 0.9);
-    vec3 cream = vec3(0.96, 0.90, 0.78);
-    col = mix(col, cream, horB * 0.45 * (1.0 - uNight));
+    vec3 creamDay = vec3(0.96, 0.90, 0.78);
+    col = mix(col, creamDay, horB * 0.45 * (1.0 - uNight));
+    // Dusk and dawn: posterized engraved bands, no airbrushed peach gradient.
+    if (uTwi > 0.12) {
+      vec3 amber = vec3(0.949, 0.769, 0.420);
+      vec3 rose = vec3(0.831, 0.522, 0.502);
+      vec3 cream = vec3(0.945, 0.906, 0.831);
+      float jitter = (hash21(gl_FragCoord.xy * 0.37 + uSeed) - 0.5) * 0.012;
+      float band = h + jitter;
+      vec3 duskCol = cream;
+      if (band < 0.07) duskCol = amber;
+      else if (band < 0.24) duskCol = rose;
+      col = mix(col, duskCol, clamp((uTwi - 0.12) / 0.16, 0.0, 1.0));
+      // Hard bands take over once twilight is on, so the time mix cannot soften the steps.
+      if (uTwi > 0.28) col = duskCol;
+    }
     // light paper stipple
     float stip = hash21(gl_FragCoord.xy * 0.9 + uSeed);
     float grain = noise21(gl_FragCoord.xy * 0.22);
     col *= 0.985 + 0.03 * grain;
     col += (stip - 0.5) * 0.018;
     // Cumulus live as world-space volumes (buildVolClouds). The sky is paper only.
+    // The sun is an engraved disk mesh, not a shader glow.
 
   } else {
     if (h > 0.42) col = mix(uMid, uTop, clamp((h - 0.42) / 0.58, 0.0, 1.0));
     else if (h > 0.0) col = mix(uHor, uMid, pow(h / 0.42, 0.75));
     else col = mix(uHor, uHor * 0.75, clamp(-h * 2.0, 0.0, 1.0));
-  }
-  float sun = pow(clamp(dot(d, normalize(uSunDir)), 0.0, 1.0), 520.0);
-  float glow = pow(clamp(dot(d, normalize(uSunDir)), 0.0, 1.0), 22.0);
-  if (uSunDir.y > -0.08) {
-    float sunAmt = (1.0 - uNight) * mix(0.25, 1.0, uTwi);
-    col += vec3(1.0, 0.93, 0.78) * sun * 0.55 * sunAmt;
-    col += vec3(1.0, 0.82, 0.55) * glow * 0.12 * sunAmt;
   }
   if (uMilky > 0.01 && uNight > 0.4) {
     vec3 mw = normalize(vec3(0.35, 0.15, 0.9));
@@ -1145,7 +1167,8 @@ const MOON_VERT = /* glsl */`
 varying vec3 vN;
 varying vec3 vPos;
 void main(){
-  vN = normalize(normalMatrix * normal);
+  // World-space normal so the terminator faces the world sun, not the view.
+  vN = normalize(mat3(modelMatrix) * normal);
   vPos = (modelMatrix * vec4(position, 1.0)).xyz;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
@@ -1158,7 +1181,9 @@ varying vec3 vPos;
 ${NOISE_GLSL}
 void main(){
   vec3 N = normalize(vN);
-  vec3 L = normalize(uSunDir);
+  // Light the sun-facing limb as a northern-hemisphere observer sees it
+  // (waxing lit on the right). uSunDir is the direction to the sun.
+  vec3 L = normalize(-uSunDir);
   float lit = clamp(dot(N, L), 0.0, 1.0);
   float crat = noise21(N.xy * 7.0 + N.z * 4.0);
   vec3 dark = vec3(0.10, 0.11, 0.16);
@@ -1268,15 +1293,6 @@ try {
   renderer.toneMapping = THREE.NoToneMapping;
   renderer.setClearColor(0x070B14, 1);
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
-  // Projection flip (touchProjection) inverts NDC winding. Invert every
-  // frontFace call so the same front and sky-dome insides still draw.
-  (function () {
-    const gl = renderer.getContext();
-    const origFF = gl.frontFace.bind(gl);
-    gl.frontFace = function (mode) {
-      origFF(mode === gl.CW ? gl.CCW : gl.CW);
-    };
-  })();
 } catch (err) {
   glOk = false;
 }
@@ -1329,22 +1345,13 @@ function targetHorizon() {
   return 0.76;
 }
 
-function touchProjection() {
-  if (!camera) return;
-  camera.updateProjectionMatrix();
-  // +X east, +Z north, OpenGL lookAt puts west on the right when looking north.
-  // Flip NDC x so a human observer sees east on the right, west on the left.
-  camera.projectionMatrix.elements[0] *= -1;
-  camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
-}
-
 function applyFovAndPitch() {
   const aspect = Math.max(0.3, canvas.clientWidth / Math.max(1, canvas.clientHeight));
   camera.aspect = aspect;
   const hor = targetHorizon();
   const baseFov = aspect < 0.7 ? 58 : aspect < 1.1 ? 54 : 48;
   camera.fov = clamp(baseFov / (rig.zoom || 1), 28, 68);
-  touchProjection();
+  camera.updateProjectionMatrix();
   const half = camera.fov * RAD * 0.5;
   const phi = Math.atan(Math.tan(half) * (2 * hor - 1));
   return { horizon: hor, pitch: phi };
@@ -1471,14 +1478,13 @@ function buildTerrain() {
   let v = 0, u = 0;
   for (let j = 0; j <= dSeg; j++) {
     const py = (1 - j / dSeg) * (ROWS - 1);
-    const z = ((ROWS - 1) / 2 - py) * CELL;
     for (let i = 0; i <= wSeg; i++) {
       const px = (i / wSeg) * (COLS - 1);
-      const x = (px - (COLS - 1) / 2) * CELL;
+      const w = pxToWorld(px, py);
       let h = heightPx(px, py);
-      pos[v++] = x;
+      pos[v++] = w.x;
       pos[v++] = yOf(h);
-      pos[v++] = z;
+      pos[v++] = w.z;
       uv[u++] = px / (COLS - 1);
       uv[u++] = py / (ROWS - 1);
     }
@@ -1491,8 +1497,8 @@ function buildTerrain() {
       const b = a + 1;
       const c = a + (wSeg + 1);
       const d = c + 1;
-      idx[t++] = a; idx[t++] = c; idx[t++] = b;
-      idx[t++] = b; idx[t++] = c; idx[t++] = d;
+      idx[t++] = a; idx[t++] = b; idx[t++] = c;
+      idx[t++] = b; idx[t++] = d; idx[t++] = c;
     }
   }
   geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
@@ -1628,32 +1634,41 @@ function buildSky() {
   const sunMat = new THREE.ShaderMaterial({
     uniforms: {},
     vertexShader: /* glsl */`
-      varying vec3 vN;
-      varying vec3 vV;
+      varying vec2 vUv;
       void main(){
-        vN = normalize(normalMatrix * normal);
-        vec4 mv = modelViewMatrix * vec4(position, 1.0);
-        vV = normalize(-mv.xyz);
-        gl_Position = projectionMatrix * mv;
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }
     `,
     fragmentShader: /* glsl */`
-      varying vec3 vN;
-      varying vec3 vV;
+      varying vec2 vUv;
       void main(){
-        float rim = 1.0 - clamp(dot(normalize(vN), normalize(vV)), 0.0, 1.0);
-        float hatch = 1.0 - smoothstep(0.0, 0.12, abs(fract((vN.x + vN.y) * 6.0) - 0.5));
-        vec3 gold = vec3(0.93, 0.78, 0.42);
-        vec3 paper = vec3(0.96, 0.90, 0.70);
-        vec3 col = mix(paper, gold, 0.55 + 0.35 * rim);
-        col = mix(col, vec3(0.28, 0.20, 0.10), hatch * rim * 0.45);
+        vec2 p = vUv * 2.0 - 1.0;
+        float r = length(p);
+        if (r > 1.0) discard;
+        vec3 amber = vec3(0.949, 0.769, 0.420);
+        vec3 cream = vec3(0.98, 0.94, 0.82);
+        vec3 ink = vec3(0.165, 0.129, 0.094);
+        // Slightly lighter than the horizon amber so the disc reads as a cut shape.
+        vec3 col = mix(cream, amber, 0.55);
+        // Fine radiating hatch lines, with occasional pen lifts.
+        float ang = atan(p.y, p.x);
+        float rays = 1.0 - smoothstep(0.0, 0.10, abs(fract(ang * 5.73) - 0.5));
+        rays *= smoothstep(0.08, 0.20, r) * (1.0 - smoothstep(0.74, 0.90, r));
+        float lift = step(0.14, fract(sin(floor(ang * 11.46 + 2.0) * 12.9898) * 43758.5453));
+        col = mix(col, ink, rays * lift * 0.80);
+        // Ink rim.
+        float rim = smoothstep(0.84, 0.91, r) * (1.0 - smoothstep(0.97, 1.0, r));
+        col = mix(col, ink, max(rim, step(0.97, r) * 0.95));
         gl_FragColor = vec4(col, 1.0);
       }
     `,
+    transparent: true,
     depthWrite: false,
-    depthTest: true
+    depthTest: true,
+    side: THREE.DoubleSide
   });
-  sunMesh = new THREE.Mesh(new THREE.SphereGeometry(150, 32, 24), sunMat);
+  sunMesh = new THREE.Mesh(new THREE.PlaneGeometry(320, 320), sunMat);
   sunMesh.renderOrder = -50;
   skyGroup.add(sunMesh);
 }
@@ -1708,12 +1723,6 @@ function makeNameSprite(text, italic) {
   g.fillText(text, 320, 68);
   const tex = new THREE.CanvasTexture(cv);
   tex.colorSpace = THREE.NoColorSpace;
-  // Pre-mirror the map so the projection X flip leaves the letters reading left to right.
-  // Sprite scale.x does not undo that flip (sprites face the camera with a positive size).
-  tex.wrapS = THREE.RepeatWrapping;
-  tex.repeat.x = -1;
-  tex.offset.x = 1;
-  tex.needsUpdate = true;
   const mat = new THREE.SpriteMaterial({
     map: tex,
     transparent: true,
@@ -2015,8 +2024,8 @@ void main(){
 `;
 
 const VOL_CLOUD_FRAG = /* glsl */`
-uniform float uSeed, uTime, uKind, uGray, uRain, uReduce, uNight, uDeck, uShaft, uCirrus, uStreak;
-uniform vec3 uInk, uNightMul, uMoonDir, uLook;
+uniform float uSeed, uTime, uKind, uGray, uRain, uReduce, uNight, uDeck, uShaft, uCirrus, uStreak, uTwi;
+uniform vec3 uInk, uNightMul, uMoonDir, uLook, uSunDir;
 varying vec2 vUv;
 varying vec3 vWorld;
 ${NOISE_GLSL}
@@ -2149,6 +2158,12 @@ void main(){
     vec3 wash = paper;
     if (toneKey > 0.36) wash = midc;
     if (toneKey > 0.62) wash = shade;
+    // Dusk and dawn: undersides lit amber, tops stay cream and inked.
+    if (uTwi > 0.12 && uNight < 0.45) {
+      vec3 amber = vec3(0.949, 0.769, 0.420);
+      if (toneKey > 0.62) wash = amber;
+      else if (toneKey > 0.36) wash = mix(midc, amber, 0.40);
+    }
     float body = 1.0;
     float dens = step(0.36, toneKey);
     float ang0 = -0.08 + 0.18 * p.x * (1.0 - rel);
@@ -2238,7 +2253,9 @@ function makeVolCloudMat(kind, seed, gray) {
       uShaft: { value: 0 },
       uCirrus: { value: 0 },
       uStreak: { value: 0 },
-      uLook: { value: new THREE.Vector3(0, 0, 1) }
+      uTwi: { value: 0 },
+      uLook: { value: new THREE.Vector3(0, 0, 1) },
+      uSunDir: { value: new THREE.Vector3(0.3, 0.8, 0.2) }
     },
     vertexShader: VOL_CLOUD_VERT,
     fragmentShader: VOL_CLOUD_FRAG,
@@ -2296,11 +2313,20 @@ function buildVolClouds() {
     // including a little extra for pans. One common base, none stacked.
     const pts = poissonDiscFan(rngC, nFair, 1500, heroW.x, heroW.z, lookAz - 0.95, lookAz + 0.95, 1600, 7800);
     puffSpec = [];
-    for (let i = 0; i < pts.length; i++) {
-      const sx = 420 + rngC() * 260;
-      const sy = 260 + rngC() * 120;
+    // A few big puffs near the camera, many small ones far. Size follows
+    // distance, not a uniform draw, so the field has a real scale gradient.
+    const sized = pts.map(function (pt) {
+      return { x: pt.x, z: pt.z, dist: Math.hypot(pt.x - heroW.x, pt.z - heroW.z) };
+    }).sort(function (a, b) { return a.dist - b.dist; });
+    for (let i = 0; i < sized.length; i++) {
+      const tFar = clamp((sized[i].dist - 1600) / 6200, 0, 1);
+      let sx;
+      if (i < 3 && tFar < 0.35) sx = 1100 + rngC() * 500;
+      else if (tFar < 0.42) sx = 520 + rngC() * 260;
+      else sx = 150 + rngC() * 200;
+      const sy = sx * (0.46 + rngC() * 0.16);
       puffSpec.push({
-        x: pts[i].x, z: pts[i].z, alt: baseAlt,
+        x: sized[i].x, z: sized[i].z, alt: baseAlt,
         sx: sx, sy: sy, seed: 2.1 + i * 9.3
       });
     }
@@ -2334,8 +2360,9 @@ function buildVolClouds() {
     mesh.frustumCulled = false;
     mesh.renderOrder = 1;
     volCloudGroup.add(mesh);
-    const homeX = (sp.x != null) ? sp.x : (anchor.x + Math.sin(sp.az) * sp.dist);
-    const homeZ = (sp.z != null) ? sp.z : (anchor.z + Math.cos(sp.az) * sp.dist);
+    const off0 = (sp.x != null) ? null : offsetNorth(sp.az, sp.dist);
+    const homeX = (sp.x != null) ? sp.x : (anchor.x + off0.x);
+    const homeZ = (sp.z != null) ? sp.z : (anchor.z + off0.z);
     const homeY = ground + sp.alt;
     volCloudItems.push({
       mesh: mesh, kind: 0,
@@ -2362,9 +2389,9 @@ function buildVolClouds() {
       volCloudGroup.add(mesh);
       volCloudItems.push({
         mesh: mesh, kind: 0,
-        homeX: anchor.x + Math.sin(sp.az) * sp.dist,
+        homeX: anchor.x + offsetNorth(sp.az, sp.dist).x,
         homeY: ground + sp.alt,
-        homeZ: anchor.z + Math.cos(sp.az) * sp.dist,
+        homeZ: anchor.z + offsetNorth(sp.az, sp.dist).z,
         sx: sp.sx, sy: sp.sy, seed: sp.seed, flat: false, shaft: true
       });
     }
@@ -2526,8 +2553,9 @@ function layoutFogBank() {
   ];
   for (let i = 0; i < fogGroup.children.length; i++) {
     const h = homes[i];
-    const x = a.x + Math.sin(h.az) * h.dist + drift.x * 0.4;
-    const z = a.z + Math.cos(h.az) * h.dist + drift.z * 0.4;
+    const off = offsetNorth(h.az, h.dist);
+    const x = a.x + off.x + drift.x * 0.4;
+    const z = a.z + off.z + drift.z * 0.4;
     const y = yOf(heightWorld(x, z)) + h.lift;
     const m = fogGroup.children[i];
     m.position.set(x, y, z);
@@ -3481,7 +3509,7 @@ function layoutFrameTrees() {
   fwd.y = 0;
   if (fwd.length() < 1e-4) fwd.set(0, 0, 1);
   fwd.normalize();
-  const right = new THREE.Vector3(fwd.z, 0, -fwd.x).normalize();
+  const right = new THREE.Vector3(-fwd.z, 0, fwd.x).normalize();
   const halfFovY = (camera.fov * Math.PI / 180) * 0.5;
   const aspect = Math.max(0.4, camera.aspect);
   const halfH = Math.atan(Math.tan(halfFovY) * aspect);
@@ -4427,6 +4455,7 @@ function applySkin() {
   function pushTod(un) {
     if (!un) return;
     if (un.uNight) un.uNight.value = night;
+    if (un.uTwi) un.uTwi.value = clock.twi;
     if (un.uNightMul) set(un.uNightMul, NIGHT_MUL);
     if (un.uInkUse) set(un.uInkUse, ink);
     if (un.uInk) set(un.uInk, ink);
@@ -4538,15 +4567,15 @@ function setMoonPos() {
 function setSunPos() {
   if (!sunMesh) return;
   const dir = altAzDir(clock.alt, clock.sunAz);
-  sunMesh.position.copy(dir.multiplyScalar(6200));
-  // Visible near the horizon so a sunset or dawn check can read compass against the land.
+  sunMesh.position.copy(dir.clone().multiplyScalar(6200));
+  // Face the camera (skyGroup sits on the camera). An engraved disk, not a glowing sphere.
+  sunMesh.lookAt(0, 0, 0);
   sunMesh.visible = clock.alt > -3 && clock.alt < 16;
 }
 
 function sunInfo() {
   const dir = altAzDir(clock.alt, clock.sunAz);
-  let compass = Math.atan2(dir.x, dir.z) * 180 / Math.PI;
-  if (compass < 0) compass += 360;
+  const compass = compassFromDir(dir);
   let ndc = null;
   if (camera && sunMesh) {
     const world = sunMesh.position.clone();
@@ -5523,8 +5552,7 @@ function setCommonUniforms(t) {
   }
   for (let i = 0; i < washMats.length; i++) {
     if (washMats[i].uniforms.uSunDir && clock) {
-      const az = clock.sunAz || 0, alt = (clock.alt || 30) * Math.PI / 180;
-      washMats[i].uniforms.uSunDir.value.set(Math.sin(az) * Math.cos(alt), Math.sin(alt), Math.cos(az) * Math.cos(alt));
+      washMats[i].uniforms.uSunDir.value.copy(altAzDir(clock.alt, clock.sunAz));
     }
   }
 }
@@ -5616,8 +5644,7 @@ function expose() {
           const world = hit.dir.clone().multiplyScalar(R);
           if (skyGroup) world.add(skyGroup.position);
           world.project(camera);
-          let compass = Math.atan2(hit.dir.x, hit.dir.z) * 180 / Math.PI;
-          if (compass < 0) compass += 360;
+          const compass = compassFromDir(hit.dir);
           out.push({
             n: C.n, ra: +cen[0].toFixed(2), dec: +cen[1].toFixed(2),
             alt: +hit.alt.toFixed(2), compass: +compass.toFixed(1),
@@ -5636,7 +5663,7 @@ function expose() {
       fwd.y = 0;
       if (fwd.lengthSq() < 1e-8) fwd.set(0, 0, 1);
       fwd.normalize();
-      const right = new THREE.Vector3(fwd.z, 0, -fwd.x);
+      const right = new THREE.Vector3(-fwd.z, 0, fwd.x);
       const x = camera.position.x + right.x * (rightM || 0) + fwd.x * (alongM || 0);
       const z = camera.position.z + right.z * (rightM || 0) + fwd.z * (alongM || 0);
       const y = yOf(heightWorld(x, z)) + (rig.eye || 48);
@@ -5776,7 +5803,7 @@ function expose() {
       return {
         heading: heading,
         headingDeg: heading * 180 / Math.PI,
-        headingCompass: ((heading * 180 / Math.PI) + 360) % 360,
+        headingCompass: compassFromDir(look),
         eastNdc: eastNdc,
         westNdc: westNdc,
         churchNdc: churchNdc,
@@ -5805,7 +5832,7 @@ function lookClose(px, py, dist, zoom) {
   if (zoom) rig.zoom = clamp(zoom, 0.85, 1.55);
   camera.aspect = aspect;
   camera.fov = clamp(baseFov / (rig.zoom || 1), 28, 68);
-  touchProjection();
+  camera.updateProjectionMatrix();
   camera.position.set(x, y, z);
   const ty = yOf(heightWorld(w.x, w.z)) + 6;
   camera.lookAt(w.x, ty, w.z);
@@ -5873,7 +5900,7 @@ function lookOcclusion() {
   if (pick && pick.c) {
     const hit = dirFromRaDec(pick.c[0], pick.c[1], d);
     lookHorizonAz(Math.atan2(hit.dir.x, hit.dir.z));
-    return { name: pick.n, alt: hit.alt, az: hit.az, compass: Math.atan2(hit.dir.x, hit.dir.z) * 180 / Math.PI };
+    return { name: pick.n, alt: hit.alt, az: hit.az, compass: compassFromDir(hit.dir) };
   }
   return null;
 }
@@ -5882,8 +5909,7 @@ function moonInfo() {
   const p = clock.phase;
   const illum = (1 - Math.cos(2 * Math.PI * p)) / 2;
   const dir = altAzDir(clock.moonAlt, clock.moonAz);
-  let compass = Math.atan2(dir.x, dir.z) * 180 / Math.PI;
-  if (compass < 0) compass += 360;
+  const compass = compassFromDir(dir);
   return {
     at: clock.now,
     alt: clock.moonAlt,
