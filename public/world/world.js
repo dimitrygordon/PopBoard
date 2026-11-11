@@ -6,6 +6,7 @@ const CELL = 31.25;
 const COLS = 1024;
 const ROWS = 768;
 const EXAG = 2.9;
+const HERO = { px: 218, py: 509, eye: 48, pathT: 0.5 };
 const BASE_M = 100;
 const JASPER = { lat: 38.3914, lon: -86.9311 };
 const REDUCE = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -132,7 +133,7 @@ function skyColors(alt, wxKind) {
   // Day uses the hazy r4 landscape gradient (muted zenith, cream-white horizon),
   // not the bright mid-blue the raw login-sky table makes in this upward camera.
   if (alt >= 8) {
-    const r4 = [[176, 196, 214], [228, 220, 206], [237, 228, 210]];
+    const r4 = [[168, 186, 200], [232, 222, 206], [240, 230, 210]];
     const haze = clamp((alt - 8) / 18, 0, 1);
     for (let k = 0; k < 3; k++) c[k] = lerp3(c[k], r4[k], haze * 0.88);
   }
@@ -259,6 +260,7 @@ function fetchWx() {
 
 /* ---------- map data ---------- */
 let heightData, coverData, meta, path = [];
+let riverPathPx = [];
 let heightF32; // meters, length COLS*ROWS
 
 function pxIndex(px, py) {
@@ -325,10 +327,66 @@ async function loadMap() {
     heightF32[i] = (hd[i * 4] * 256 + hd[i * 4 + 1]) / 10 + BASE_M;
     coverData[i] = cd[i * 4];
   }
-  path = (meta.river_path_px || []).map(function (p, i, arr) {
-    const w = pxToWorld(p[0], p[1]);
-    return { px: p[0], py: p[1], x: w.x, z: w.z, h: heightPx(p[0], p[1]) };
-  });
+  riverPathPx = meta.river_path_px || [];
+  carvePatoka();
+  buildRidgePath();
+}
+
+function carvePatoka() {
+  const pts = riverPathPx;
+  if (!pts.length) return;
+  const channel = 4.4;
+  const bank = 6.8;
+  const best = new Float32Array(ROWS * COLS);
+  for (let i = 0; i < best.length; i++) best[i] = 1e9;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const ax = pts[i][0], ay = pts[i][1], bx = pts[i + 1][0], by = pts[i + 1][1];
+    const vx = bx - ax, vy = by - ay;
+    const len2 = vx * vx + vy * vy || 1;
+    const x0 = Math.max(0, Math.floor(Math.min(ax, bx) - bank - 1));
+    const x1 = Math.min(COLS - 1, Math.ceil(Math.max(ax, bx) + bank + 1));
+    const y0 = Math.max(0, Math.floor(Math.min(ay, by) - bank - 1));
+    const y1 = Math.min(ROWS - 1, Math.ceil(Math.max(ay, by) + bank + 1));
+    for (let y = y0; y <= y1; y++) {
+      for (let x = x0; x <= x1; x++) {
+        let u = ((x - ax) * vx + (y - ay) * vy) / len2;
+        if (u < 0) u = 0; else if (u > 1) u = 1;
+        const dx = x - (ax + vx * u), dy = y - (ay + vy * u);
+        const d2 = dx * dx + dy * dy;
+        const idx = y * COLS + x;
+        if (d2 < best[idx]) best[idx] = d2;
+      }
+    }
+  }
+  for (let i = 0; i < best.length; i++) {
+    if (best[i] > bank * bank) continue;
+    const d = Math.sqrt(best[i]);
+    const t = 1 - d / bank;
+    heightF32[i] -= t * t * 16.0;
+    if (d < channel) coverData[i] = 0;
+  }
+}
+
+function buildRidgePath() {
+  const church = (meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
+  const hw = pxToWorld(HERO.px, HERO.py);
+  const cw = pxToWorld(church[0], church[1]);
+  const lx = cw.x - hw.x, lz = cw.z - hw.z;
+  const len = Math.hypot(lx, lz) || 1;
+  const ux = lx / len, uz = lz / len;
+  const rx = uz, rz = -ux;
+  path = [];
+  for (let t = -1800; t <= 1800; t += 60) {
+    let x = hw.x + rx * t, z = hw.z + rz * t;
+    let bestH = heightWorld(x, z), bx = x, bz = z;
+    for (let s = -90; s <= 40; s += 20) {
+      const xx = x + ux * s, zz = z + uz * s;
+      const hh = heightWorld(xx, zz);
+      if (hh > bestH) { bestH = hh; bx = xx; bz = zz; }
+    }
+    const p = worldToPx(bx, bz);
+    path.push({ px: p.px, py: p.py, x: bx, z: bz, h: bestH, lookX: ux, lookZ: uz });
+  }
   let acc = 0;
   path[0].s = 0;
   for (let i = 1; i < path.length; i++) {
@@ -352,7 +410,9 @@ function pathSample(s) {
   const x = lerp(a.x, b.x, u), z = lerp(a.z, b.z, u);
   const hx = b.x - a.x, hz = b.z - a.z;
   const heading = Math.atan2(hx, hz);
-  return { x, z, heading, h: heightWorld(x, z), u: t / L, i, f: u };
+  const lookX = (a.lookX != null && b.lookX != null) ? lerp(a.lookX, b.lookX, u) : Math.sin(heading);
+  const lookZ = (a.lookZ != null && b.lookZ != null) ? lerp(a.lookZ, b.lookZ, u) : Math.cos(heading);
+  return { x, z, heading, h: heightWorld(x, z), u: t / L, i, f: u, lookX: lookX, lookZ: lookZ };
 }
 
 const NOISE_GLSL = /* glsl */`
@@ -507,47 +567,57 @@ void main(){
   col += uRim * uTwi * pow(clamp(dot(N, uSunDir), 0.0, 1.0), 4.0) * 0.55;
 
   float dist = length(vWorld - cameraPosition);
-  // crop and grass row strokes, stronger in the near band, with field-edge ink
-  if (cls > 5.5 && cls < 7.6 && uSnow < 0.5) {
+  // Five receding layers. Mid-distance and back are wash only (no patchwork).
+  float layer = smoothstep(700.0, 7200.0, dist);
+  float nearL = 1.0 - smoothstep(200.0, 1400.0, dist);
+  float midL = smoothstep(900.0, 2000.0, dist) * (1.0 - smoothstep(2800.0, 4600.0, dist));
+  float backL = smoothstep(3800.0, 5600.0, dist);
+  // Drop camouflage patchwork past the near band: flatten to a single wash
+  if (dist > 1100.0) {
+    vec3 farWash = mix(uPaper, wash, 0.42);
+    col = mix(col, farWash, smoothstep(1100.0, 2000.0, dist));
+  }
+
+  // Fields only on slopes that face the camera, ruled furrows in the near band
+  float facing = clamp(dot(N, V), 0.0, 1.0);
+  float slopeFace = facing * smoothstep(0.15, 0.55, 1.0 - N.y);
+  if (cls > 5.5 && cls < 7.6 && uSnow < 0.5 && dist < 1700.0 && (facing > 0.32 || slopeFace > 0.08)) {
     float ang = pid > 0.5 ? 0.0 : 1.5708;
     if (pid > 0.82) ang = 0.65;
     float row = dot(wz, vec2(cos(ang), sin(ang)));
     float sp = mix(4.6, 6.2, pid);
     float g = abs(fract(row / sp) - 0.5);
-    float nearF = 1.0 - smoothstep(280.0, 1400.0, dist);
-    float inkA = (0.22 + 0.38 * nearF) * uRow;
-    if (uSeason > 1.5 && uSeason < 2.5) inkA *= step(0.16, fract(row * 0.13 + pid)) * 0.95;
+    float inkA = (0.18 + 0.42 * nearL) * uRow * smoothstep(0.28, 0.55, facing);
+    if (uSeason > 1.5 && uSeason < 2.5) inkA *= 0.95;
     if (uSeason > 2.5) inkA *= 0.5;
-    if (cls < 6.5) inkA *= 0.6;
-    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.16, g)) * inkA);
+    if (cls < 6.5) inkA *= 0.55;
+    col = mix(col, vec3(0.165, 0.129, 0.094), (1.0 - smoothstep(0.0, 0.16, g)) * inkA);
     float edge = min(min(pf.x, 1.0 - pf.x), min(pf.y, 1.0 - pf.y));
-    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.028, edge)) * (0.18 + 0.38 * nearF));
+    col = mix(col, vec3(0.165, 0.129, 0.094), (1.0 - smoothstep(0.0, 0.028, edge)) * 0.35 * nearL);
   }
 
-  // woods keep a hard edge against fields
   vec2 ts = 1.0 / uSize;
   float nCls = max(coverAt(vUv + vec2(ts.x, 0.0)), max(coverAt(vUv + vec2(-ts.x, 0.0)), max(coverAt(vUv + vec2(0.0, ts.y)), coverAt(vUv + vec2(0.0, -ts.y)))));
   float forestHere = step(3.5, cls) * step(cls, 5.5);
   float forestN = step(3.5, nCls) * step(nCls, 5.5);
-  if (forestHere < 0.5 && forestN > 0.5 && cls > 0.5) {
-    col = mix(col, uInkUse, 0.28);
+  if (forestHere < 0.5 && forestN > 0.5 && cls > 0.5 && dist < 2800.0) {
+    col = mix(col, vec3(0.165, 0.129, 0.094), 0.28 * (1.0 - backL));
   }
 
-  // water: a visible engraved ribbon with ripple lines and inked banks
+  // River: one unbroken ribbon, cream glints, engraved ripple lines, never patches
   if (cls < 0.5) {
-    vec3 river = vec3(0.361, 0.455, 0.467);
-    col = mix(col, mix(uPaper, river, 0.9), 0.55);
-    float rip = sin(wz.x * 0.28 + uTime * 0.55) * 0.5 + sin(wz.y * 0.41 + 1.7) * 0.5;
-    float cd = length(wz - uCursor.xz);
-    rip += 0.6 * sin(cd * 0.22 - uTime * 2.4) * exp(-cd * 0.012) * uCursor.y;
-    float line = abs(fract((wz.x * 0.09 + wz.y * 0.11) + rip * 0.08) - 0.5);
-    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.07, line)) * 0.42);
-    float line2 = abs(fract((wz.x * 0.05 - wz.y * 0.08) * 1.1 + 0.3) - 0.5);
-    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.08, line2)) * 0.16);
-    if (forestN < 0.5 && nCls > 0.5) col = mix(col, uInkUse, 0.4);
-    vec3 R = reflect(-L, N);
-    float spec = pow(clamp(dot(R, V), 0.0, 1.0), 120.0);
-    col += mix(uRim, uPaper, 1.0 - uNight) * spec * mix(0.12, 1.6, uNight);
+    vec3 river = vec3(0.40, 0.50, 0.52);
+    col = mix(uPaper, river, 0.72);
+    float rip = sin(wz.x * 0.22 + wz.y * 0.31 + uTime * 0.35) * 0.5 + sin(wz.x * 0.09 - wz.y * 0.14) * 0.5;
+    float line = abs(fract((wz.x * 0.07 + wz.y * 0.09) + rip * 0.10) - 0.5);
+    col = mix(col, vec3(0.165, 0.129, 0.094), (1.0 - smoothstep(0.0, 0.08, line)) * mix(0.50, 0.12, layer));
+    float line2 = abs(fract((wz.x * 0.045 - wz.y * 0.06) * 1.15 + 0.3) - 0.5);
+    col = mix(col, vec3(0.165, 0.129, 0.094), (1.0 - smoothstep(0.0, 0.09, line2)) * 0.14 * nearL);
+    // cream glints along the ribbon
+    vec3 R = reflect(-L, vec3(0.0, 1.0, 0.0));
+    float spec = pow(clamp(dot(R, V), 0.0, 1.0), 40.0);
+    col = mix(col, vec3(0.96, 0.92, 0.82), clamp(spec * 0.55 + (n4 - 0.35) * 0.08, 0.0, 0.45));
+    if (nCls > 0.5) col = mix(col, vec3(0.165, 0.129, 0.094), 0.35 * (1.0 - layer));
   }
 
   // ink contours every 10 m, heavy every 50 m, with line wobble
@@ -582,25 +652,29 @@ void main(){
   col += (n3 - 0.5) * 0.025;
 
   float graze = pow(1.0 - clamp(dot(N, V), 0.0, 1.0), 1.6);
-  // 3 to 5 receding hill bands: ink local height crests plus grazing silhouettes
+  // Inked ridge crests. Front heaviest in #2A2118; each layer behind thinner and paler.
   vec2 fwd = normalize(vWorld.xz - cameraPosition.xz);
   vec2 duv = vec2(fwd.x / ((uSize.x - 1.0) * 31.25), -fwd.y / ((uSize.y - 1.0) * 31.25));
   float hF = heightM(clamp(vUv + duv * 3.0, 0.0, 1.0));
   float hB = heightM(clamp(vUv - duv * 3.0, 0.0, 1.0));
   float peak = h - max(hF, hB);
-  float crest = smoothstep(0.35, 1.8, peak + (n3 - 0.5) * 0.4);
-  float ridge = max(graze * smoothstep(0.12, 0.5, 1.0 - N.y), crest);
-  float band = abs(fract(dist / 1200.0 + n3 * 0.08) - 0.5);
-  float bandW = 1.0 - smoothstep(0.0, 0.18, band);
-  float ridgeInk = ridge * (0.42 + 0.28 * bandW) * (1.0 - uSnow * 0.5);
+  float crest = smoothstep(0.25, 1.6, peak + (n3 - 0.5) * 0.35);
+  float ridge = max(graze * smoothstep(0.10, 0.48, 1.0 - N.y), crest);
+  vec3 inkFront = vec3(0.165, 0.129, 0.094);
+  vec3 inkBack = vec3(0.55, 0.60, 0.64);
+  vec3 inkCol = mix(inkFront, inkBack, layer);
+  float ridgeAmt = ridge * mix(0.92, 0.22, layer) * (1.0 - uSnow * 0.5);
 
-  // aerial fade to paper and amber toward the horizon, then re-ink the ridges
-  float air = smoothstep(1400.0, 9500.0, dist);
-  vec3 airC = mix(uPaper, vec3(0.94, 0.86, 0.70), 0.32);
-  airC = mix(airC, uSkyH, 0.2 + 0.25 * uNight);
-  col = mix(col, airC, air * 0.58);
-  if (forestHere > 0.5) col = mix(col, mix(bareForest, airC, 0.55), air * 0.15);
-  col = mix(col, uInkUse * mix(0.55, 1.2, uNight), ridgeInk * (1.0 - air * 0.3));
+  // Back ridges: pale blue-gray silhouettes, no detail, inked tops only
+  float air = smoothstep(1600.0, 9000.0, dist);
+  vec3 airC = mix(uPaper, vec3(0.94, 0.88, 0.76), 0.28);
+  airC = mix(airC, vec3(0.72, 0.76, 0.80), backL * 0.85);
+  airC = mix(airC, uSkyH, 0.15 + 0.25 * uNight);
+  col = mix(col, airC, air * mix(0.45, 0.82, backL));
+  if (backL > 0.4) {
+    col = mix(col, vec3(0.70, 0.75, 0.78), (backL - 0.4) * 0.7);
+  }
+  col = mix(col, inkCol, ridgeAmt);
 
   if (uDawnMist > 0.01) {
     float valley = clamp((165.0 - h) / 40.0, 0.0, 1.0);
@@ -617,10 +691,16 @@ void main(){
 
   col += uLightning * 0.45 * vec3(0.85, 0.9, 1.0);
 
-  if (cls > 1.5 && cls < 2.5) {
-    vec2 room = fract(wz / 18.0);
-    float roof = step(0.25, room.x) * step(room.x, 0.78) * step(0.3, room.y) * step(room.y, 0.8);
-    col = mix(col, mix(vec3(0.42, 0.32, 0.26), uInkUse, 0.3), roof * 0.7);
+  // Re-assert the river after aerial fade so it stays one unbroken blue ribbon
+  if (cls < 0.5) {
+    vec3 river = vec3(0.38, 0.50, 0.55);
+    vec3 rib = mix(uPaper, river, 0.82);
+    float rip = sin(wz.x * 0.22 + wz.y * 0.31 + uTime * 0.35) * 0.5 + sin(wz.x * 0.09 - wz.y * 0.14) * 0.5;
+    float line = abs(fract((wz.x * 0.07 + wz.y * 0.09) + rip * 0.10) - 0.5);
+    rib = mix(rib, vec3(0.165, 0.129, 0.094), (1.0 - smoothstep(0.0, 0.08, line)) * 0.42);
+    float spec = pow(clamp(dot(reflect(-L, vec3(0.0, 1.0, 0.0)), V), 0.0, 1.0), 28.0);
+    rib = mix(rib, vec3(0.97, 0.93, 0.82), clamp(spec * 0.7 + (n4 - 0.3) * 0.1, 0.0, 0.5));
+    col = mix(rib, col, 0.12 * layer);
   }
 
   gl_FragColor = vec4(col, 1.0);
@@ -640,24 +720,49 @@ void main(){
 const SKY_FRAG = /* glsl */`
 uniform vec3 uTop, uMid, uHor;
 uniform vec3 uSunDir, uMoonDir;
-uniform float uNight, uTwi, uSunSize, uMilky;
+uniform float uNight, uTwi, uSunSize, uMilky, uSeed;
 varying vec3 vDir;
 ${NOISE_GLSL}
 void main(){
   vec3 d = normalize(vDir);
   float h = d.y;
-  // Cream paper first. Day: muted blue only near zenith, parchment everywhere else.
   vec3 paper = vec3(0.929, 0.902, 0.839);
   vec3 col;
   if (uNight < 0.45) {
-    float zen = smoothstep(0.38, 0.82, h);
-    float horB = 1.0 - smoothstep(0.0, 0.28, h);
-    col = mix(uMid, paper, 0.45);
-    col = mix(col, uTop, zen * 0.7);
-    col = mix(col, uHor, horB * 0.85);
-    // faint amber haze along the horizon
-    vec3 amber = vec3(0.95, 0.82, 0.62);
-    col = mix(col, amber, horB * 0.22 * (1.0 - uNight));
+    // Warm cream haze at the horizon, pale blue-gray at the top, light stipple.
+    float zen = smoothstep(0.12, 0.72, h);
+    float horB = 1.0 - smoothstep(0.0, 0.22, h);
+    col = mix(uHor, uMid, 0.35);
+    col = mix(col, uTop, zen * 0.85);
+    col = mix(col, uHor, horB * 0.9);
+    vec3 cream = vec3(0.96, 0.90, 0.78);
+    col = mix(col, cream, horB * 0.45 * (1.0 - uNight));
+    // light paper stipple
+    float stip = hash21(gl_FragCoord.xy * 0.9 + uSeed);
+    float grain = noise21(gl_FragCoord.xy * 0.22);
+    col *= 0.985 + 0.03 * grain;
+    col += (stip - 0.5) * 0.018;
+    // Engraved cumulus: hatch only, no fill, no outline, paper shows through.
+    // Unique per seed. Flatten into thin streaks toward the horizon.
+    if (h > 0.03 && h < 0.58) {
+      float az = atan(d.x, d.z);
+      // Flatten only near the horizon so mid-sky stays as puffs, not full-width streaks.
+      float flatten = mix(3.4, 1.15, smoothstep(0.06, 0.28, h));
+      vec2 cuv = vec2(az * (2.4 * flatten), h * (9.0 / max(0.5, flatten * 0.35))) + vec2(uSeed * 0.19, uSeed * 0.07);
+      float n = noise21(cuv);
+      n = n * 0.55 + 0.45 * noise21(cuv * 2.05 + 8.4);
+      float band = smoothstep(0.04, 0.11, h) * (1.0 - smoothstep(0.32, 0.52, h));
+      float body = smoothstep(0.56, 0.72, n) * band;
+      // undersides of each puff are denser
+      float under = smoothstep(0.78, 0.64, n);
+      float dens = mix(0.25, 1.0, under);
+      float wob = noise21(vec2(az * 10.0, h * 22.0) + uSeed);
+      float hatch = 1.0 - smoothstep(0.0, 0.22, abs(fract(gl_FragCoord.y / 3.0 + wob * 0.4) - 0.5));
+      // edge of the puff fades so hatches do not run as long bars
+      float edge = smoothstep(0.62, 0.70, n) * (1.0 - smoothstep(0.86, 0.96, n));
+      vec3 inkC = mix(vec3(0.165, 0.129, 0.094), col, 0.2 + 0.5 * horB);
+      col = mix(col, inkC, body * dens * hatch * edge * 0.58);
+    }
   } else {
     if (h > 0.42) col = mix(uMid, uTop, clamp((h - 0.42) / 0.58, 0.0, 1.0));
     else if (h > 0.0) col = mix(uHor, uMid, pow(h / 0.42, 0.75));
@@ -727,12 +832,12 @@ void main(){
   float sy = iScale.y * (lod < 0.5 ? 1.0 : 1.06) * mix(0.5, 1.0, close);
   // plant the trunk in the ground a little so billboards do not float on slopes
   iPos.y -= 1.8;
-  // cap near-tree screen height at about 12% of the frame
+  // cap near-tree screen height; front-ridge crowns may break the ridgeline into the sky
   vec4 c0 = projectionMatrix * viewMatrix * vec4(iPos, 1.0);
   vec4 c1 = projectionMatrix * viewMatrix * vec4(iPos + camU * sy, 1.0);
   float ndcH = abs(c1.y / max(0.001, c1.w) - c0.y / max(0.001, c0.w));
-  if (ndcH > 0.24) {
-    float cap = 0.24 / ndcH;
+  if (ndcH > 0.30) {
+    float cap = 0.30 / ndcH;
     sx *= cap;
     sy *= cap;
   }
@@ -968,8 +1073,8 @@ const cursor = {
 const rig = {
   s: 0,
   headingOff: 0,
-  side: 120,
-  eye: 34,
+  side: 0,
+  eye: 48,
   dragging: false,
   lastX: 0, lastY: 0,
   yawVel: 0
@@ -977,9 +1082,11 @@ const rig = {
 
 function targetHorizon() {
   const aspect = camera.aspect;
-  if (aspect < 0.7) return 0.72;
-  if (aspect < 1.1) return 0.76;
-  return 0.80;
+  // Desktop: geometric horizon ~76% down, leaving room for front-ridge crowns.
+  // Phone: about 75% down (Dimitry). Highest land pixel target 65-80%.
+  if (aspect < 0.7) return 0.75;
+  if (aspect < 1.1) return 0.75;
+  return 0.76;
 }
 
 function applyFovAndPitch() {
@@ -1152,6 +1259,7 @@ function buildTerrain() {
 function buildSky() {
   skyMat = new THREE.ShaderMaterial({
     uniforms: {
+      uSeed: { value: 19.0 },
       uTop: { value: new THREE.Color() },
       uMid: { value: new THREE.Color() },
       uHor: { value: new THREE.Color() },
@@ -1337,6 +1445,9 @@ function makeCloudSprite() {
 
 const clouds = [];
 function buildClouds() {
+  // Pass 3: engraved cumulus live in the sky shader. No sprite billboards.
+  cloudMesh = null;
+  return;
   const tex = makeCloudSprite();
   const geo = new THREE.PlaneGeometry(1, 1);
   const mat = new THREE.MeshBasicMaterial({
@@ -1362,6 +1473,9 @@ function buildClouds() {
 
 function layoutClouds(dt) {
   if (!cloudMesh) return;
+  cloudMesh.visible = false;
+  cloudMesh.count = 0;
+  return;
   const m = new THREE.Matrix4(), q = new THREE.Quaternion(), p = new THREE.Vector3(), s = new THREE.Vector3();
   const look = new THREE.Vector3();
   camera.getWorldDirection(look);
@@ -1413,8 +1527,8 @@ function drawWobblyCircle(ctx, cx, cy, r, rng) {
   ctx.closePath();
 }
 
-const LOD_NEAR = 380;
-const LOD_MID = 2300;
+const LOD_NEAR = 900;
+const LOD_MID = 2800;
 const VEG = { trees: 0, blades: 0, clumps: 0, treesPlaced: 0 };
 
 const SPECIES = {
@@ -1538,6 +1652,34 @@ function drawGrownTree(ctx, S, grown, opt) {
     return;
   }
 
+  // Leafy deciduous: ink-circle crowns over a short trunk, no bare twigs sticking out of the top.
+  if (leavesOn && !grown.spec.cone) {
+    ctx.strokeStyle = ink;
+    ctx.lineWidth = 2.0;
+    ctx.lineCap = "round";
+    const t0 = tx(0, 0), t1 = tx(0, 0.18);
+    ctx.beginPath();
+    ctx.moveTo(t0[0], t0[1]);
+    ctx.lineTo(t1[0], t1[1]);
+    ctx.stroke();
+    const n = 6 + (rng() * 4 | 0);
+    for (let i = 0; i < n; i++) {
+      const ox = (rng() - 0.5) * S * 0.32;
+      const oy = (rng() - 0.5) * S * 0.24 - S * 0.16;
+      const r = S * (0.14 + rng() * 0.16);
+      ctx.fillStyle = colors[(rng() * colors.length) | 0];
+      ctx.globalAlpha = 0.84 + rng() * 0.14;
+      drawWobblyCircle(ctx, cx + ox, S * 0.44 + oy, r, rng);
+      ctx.fill();
+      ctx.globalAlpha = 0.9;
+      ctx.strokeStyle = ink;
+      ctx.lineWidth = 1.05;
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    return;
+  }
+
   const tips = grown.tips;
   if (leavesOn && !grown.spec.cone && tips.length) {
     let sx = 0, sy = 0;
@@ -1589,14 +1731,12 @@ function drawGrownTree(ctx, S, grown, opt) {
         ctx.lineWidth = 0.7;
         ctx.stroke();
       } else {
-        drawWobblyCircle(ctx, px, py, r, rng);
+        drawWobblyCircle(ctx, px, py, r * 1.15, rng);
         ctx.fill();
-        if (rng() > 0.55) {
-          ctx.globalAlpha = 0.7;
-          ctx.strokeStyle = ink;
-          ctx.lineWidth = 0.55;
-          ctx.stroke();
-        }
+        ctx.globalAlpha = 0.85;
+        ctx.strokeStyle = ink;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
       }
     }
   }
@@ -1712,7 +1852,7 @@ let treeRecords = [];
 
 function scatterTrees() {
   const rng = mulberry(2026);
-  const maxN = 6200;
+  const maxN = 8000;
   const pos = [], scale = [], frame = [], frameClump = [], phase = [], kind = [];
   treeRecords = [];
   // Pack stands in woods along the river corridor first, so the hero view is dense.
@@ -1749,7 +1889,44 @@ function scatterTrees() {
       const wet = coverPx(px + 2, py) === 0 || coverPx(px - 2, py) === 0 || coverPx(px, py + 2) === 0 || coverPx(px, py - 2) === 0;
       if (wet && (cls === 4 || cls === 5)) chance = 1.0;
       if (rng() > chance) continue;
-      cands.push({ px: px, py: py, cls: cls });
+      const dw = pxToWorld(px, py);
+      const hw0 = pxToWorld(HERO.px, HERO.py);
+      if (Math.hypot(dw.x - hw0.x, dw.z - hw0.z) < 220) continue;
+      // Keep the look-corridor open between the front crest and the middle ridge
+      const churchP2 = (meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
+      const cw2 = pxToWorld(churchP2[0], churchP2[1]);
+      const lx2 = cw2.x - hw0.x, lz2 = cw2.z - hw0.z;
+      const llen2 = Math.hypot(lx2, lz2) || 1;
+      const along0 = ((dw.x - hw0.x) * lx2 + (dw.z - hw0.z) * lz2) / llen2;
+      const side0 = (dw.x - hw0.x) * (lz2 / llen2) - (dw.z - hw0.z) * (lx2 / llen2);
+      if (along0 > 200 && along0 < 2000 && Math.abs(side0) < 230) continue;
+      cands.push({ px: px, py: py, cls: cls, front: 0 });
+    }
+  }
+  // Dense oaks and maples on the front ridge around the hero viewpoint
+  const heroW = pxToWorld(HERO.px, HERO.py);
+  const churchP = (meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
+  const cw = pxToWorld(churchP[0], churchP[1]);
+  const lx = cw.x - heroW.x, lz = cw.z - heroW.z;
+  const llen = Math.hypot(lx, lz) || 1;
+  const ux = lx / llen, uz = lz / llen;
+  for (let py = Math.max(2, (HERO.py - 36) | 0); py <= Math.min(ROWS - 3, (HERO.py + 12) | 0); py += 1) {
+    for (let px = Math.max(2, (HERO.px - 28) | 0); px <= Math.min(COLS - 3, (HERO.px + 28) | 0); px += 1) {
+      const w = pxToWorld(px, py);
+      const along = (w.x - heroW.x) * ux + (w.z - heroW.z) * uz;
+      const side = (w.x - heroW.x) * uz - (w.z - heroW.z) * ux;
+      // Keep a clearing around the camera. Wings on the front crest; open a center
+      // window so the Patoka gap and the middle ridge can be seen.
+      if (along < 240 || along > 950) continue;
+      if (Math.abs(side) > 520) continue;
+      if (Math.abs(side) < 210) continue;
+      const cls = coverPx(px, py);
+      if (cls === 0) continue;
+      const hm = heightPx(px, py);
+      if (hm < heightPx(HERO.px, HERO.py) - 14) continue;
+      const dens = cls === 4 || cls === 5 ? 0.9 : (cls === 6 || cls === 1 ? 0.5 : 0.32);
+      if (rng() > dens) continue;
+      cands.push({ px: px, py: py, cls: cls === 5 ? 4 : cls, front: 1 });
     }
   }
   for (let i = cands.length - 1; i > 0; i--) {
@@ -1758,21 +1935,24 @@ function scatterTrees() {
   }
   for (let ci = 0; ci < cands.length && pos.length / 3 < maxN; ci++) {
     const px = cands[ci].px, py = cands[ci].py, cls = cands[ci].cls;
-    const stand = cls === 4 || cls === 5 ? 3 + ((rng() * 4) | 0) : 1;
+    const isFront = cands[ci].front === 1;
+    const stand = isFront ? 5 + ((rng() * 4) | 0) : (cls === 4 || cls === 5 ? 3 + ((rng() * 4) | 0) : 1);
     for (let s = 0; s < stand && pos.length / 3 < maxN; s++) {
-      const jx = (px + (rng() - 0.5) * 1.05);
-      const jy = (py + (rng() - 0.5) * 1.05);
+      const jx = (px + (rng() - 0.5) * (isFront ? 0.85 : 1.05));
+      const jy = (py + (rng() - 0.5) * (isFront ? 0.85 : 1.05));
       const w = pxToWorld(jx, jy);
       const c2 = coverPx(jx, jy);
-      if (c2 === 0 || c2 === 2 || c2 === 3) continue;
+      if (c2 === 0 || c2 === 3) continue;
+      if (!isFront && (c2 === 2)) continue;
       const hm = heightPx(jx, jy);
-      const specName = pickSpecies(c2 === 5 ? 5 : cls, rng);
+      let specName = pickSpecies(c2 === 5 && !isFront ? 5 : cls, rng);
+      if (isFront) specName = rng() < 0.48 ? "oak" : "maple";
       const slot = (rng() * 8) | 0;
       const fr = framesFor(specName, slot, clock.season, c2);
-      const tall = (specName === "cedar" ? 15 + rng() * 8 : 13 + rng() * 11);
-      const wid = tall * (specName === "cedar" ? 0.48 : 0.72) * (0.85 + rng() * 0.3);
+      const tall = isFront ? (16 + rng() * 12) : (specName === "cedar" ? 15 + rng() * 8 : 13 + rng() * 11);
+      const wid = tall * (specName === "cedar" ? 0.48 : 0.78) * (0.85 + rng() * 0.3);
       pos.push(w.x, yOf(hm), w.z);
-      scale.push(wid * 2.15, tall * 2.2);
+      scale.push(wid * (isFront ? 2.4 : 2.15), tall * (isFront ? 2.55 : 2.2));
       frame.push(fr.full);
       frameClump.push(fr.clump);
       phase.push(rng());
@@ -2269,6 +2449,12 @@ function isCropAdjacent(px, py) {
   return false;
 }
 
+
+function nearHero(x, z, dist) {
+  const hw = pxToWorld(HERO.px, HERO.py);
+  return Math.hypot(x - hw.x, z - hw.z) < (dist || 1800);
+}
+
 function scatterBuildings() {
   const rng = mulberry(91);
   const sites = [];
@@ -2297,6 +2483,7 @@ function scatterBuildings() {
       if (!kind) continue;
       const w = pxToWorld(px + (rng() - 0.5), py + (rng() - 0.5));
       if (coverWorld(w.x, w.z) === 0) continue;
+      if (nearHero(w.x, w.z, 2000)) continue;
       sites.push({ kind: kind, x: w.x, z: w.z, yaw: rng() * Math.PI * 2 });
     }
   }
@@ -2340,6 +2527,7 @@ function scatterPathFarms() {
       if (cls !== 0 && cls !== 4 && cls !== 5) { ok = true; break; }
     }
     if (!ok) continue;
+    if (nearHero(x, z, 2000)) continue;
     const yaw = p.heading + (rng() - 0.5) * 0.7;
     const house = placeholderFarmhouse();
     placeOnGround(house, x, z, yaw);
@@ -2412,7 +2600,7 @@ async function swapInGltfModels() {
     churchMesh.position.copy(xf.p);
     churchMesh.rotation.copy(xf.r);
     // Models are authored in meters, origin at ground center.
-    churchMesh.scale.set(1, 1, 1);
+    churchMesh.scale.set(1.9, 1.9, 1.9);
   }
   function replaceKind(kind, proto) {
     const doomed = [];
@@ -2463,7 +2651,9 @@ function buildTown() {
   const h = heightPx(church[0], church[1]);
   churchMesh = placeholderChurch();
   churchMesh.position.set(w.x, yOf(h), w.z);
-  churchMesh.scale.setScalar(0.72);
+  churchMesh.scale.setScalar(1.9);
+  const heroW = pxToWorld(HERO.px, HERO.py);
+  churchMesh.rotation.y = Math.atan2(heroW.x - w.x, heroW.z - w.z) + 0.55;
   landmarkGroup.add(churchMesh);
   LAND.church = 1;
 
@@ -2647,17 +2837,22 @@ function setMoonPos() {
 function placeCamera() {
   const aim = applyFovAndPitch();
   const sample = pathSample(rig.s);
-  const right = sample.heading + Math.PI / 2;
-  let x = sample.x + Math.sin(right) * rig.side;
-  let z = sample.z + Math.cos(right) * rig.side;
-  if (coverWorld(x, z) === 0) {
-    x = sample.x - Math.sin(right) * rig.side;
-    z = sample.z - Math.cos(right) * rig.side;
+  let x = sample.x, z = sample.z;
+  if (rig.side) {
+    const right = sample.heading + Math.PI / 2;
+    x = sample.x + Math.sin(right) * rig.side;
+    z = sample.z + Math.cos(right) * rig.side;
   }
   const ground = heightWorld(x, z);
-  const y = yOf(ground + rig.eye);
+  // Eye is world meters above the exaggerated surface, so 40-60 m feels like 40-60 m
+  // against tree and spire heights, not 40-60 m stretched by EXAG.
+  const y = yOf(ground) + rig.eye;
   camera.position.set(x, y, z);
-  const heading = sample.heading + rig.headingOff;
+  const church = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
+  const cw = pxToWorld(church[0], church[1]);
+  const lookX = (sample.lookX != null) ? sample.lookX : (cw.x - x);
+  const lookZ = (sample.lookZ != null) ? sample.lookZ : (cw.z - z);
+  const heading = Math.atan2(lookX, lookZ) + (rig.headingOff || 0);
   const pitch = aim.pitch;
   const look = 1800;
   camera.lookAt(
@@ -3098,7 +3293,7 @@ async function init() {
     return;
   }
   const qT = parseFloat(qs.get("pathT"));
-  rig.s = isFinite(qT) ? clamp(qT, 0, 1) * (path.len || 1) : (path.len * 0.38);
+  rig.s = isFinite(qT) ? clamp(qT, 0, 1) * (path.len || 1) : (path.len * HERO.pathT);
   refreshClock(parseTime());
   if (!glOk) {
     showFallback();
