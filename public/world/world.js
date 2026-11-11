@@ -868,7 +868,9 @@ const SKY_VERT = /* glsl */`
 varying vec3 vDir;
 void main(){
   vec4 cp = modelViewMatrix * vec4(position, 1.0);
-  vDir = normalize((modelMatrix * vec4(position, 1.0)).xyz);
+  // Direction from the camera, not from the world origin. skyGroup sits on the camera,
+  // so using the world position alone biased vDir.y and smeared the milky band.
+  vDir = normalize((modelMatrix * vec4(position, 1.0)).xyz - cameraPosition);
   gl_Position = projectionMatrix * cp;
   gl_Position.z = gl_Position.w;
 }
@@ -940,18 +942,31 @@ void main(){
     col = mix(col, uHor, horB * 0.9);
     vec3 creamDay = vec3(0.96, 0.90, 0.78);
     col = mix(col, creamDay, horB * 0.45 * (1.0 - uNight));
-    // Dusk and dawn: posterized engraved bands, no airbrushed peach gradient.
+    // Dusk and dawn: posterized horizontal bands, hatched transitions, no dither speckle.
     if (uTwi > 0.12) {
-      vec3 amber = vec3(0.949, 0.769, 0.420);
+      vec3 amber = vec3(0.949, 0.769, 0.420); // #F2C46B
       vec3 rose = vec3(0.831, 0.522, 0.502);
       vec3 cream = vec3(0.945, 0.906, 0.831);
-      float jitter = (hash21(gl_FragCoord.xy * 0.37 + uSeed) - 0.5) * 0.012;
-      float band = h + jitter;
+      // h is sin(elevation). Horizon is 0; the top of the hero frame is about 0.60.
+      float el = h;
       vec3 duskCol = cream;
-      if (band < 0.07) duskCol = amber;
-      else if (band < 0.24) duskCol = rose;
+      if (el < 0.10) duskCol = amber;
+      else if (el < 0.28) duskCol = rose;
+      // Hatched transitions (horizontal engraved lines), not a blend or a dither.
+      float hatch = 1.0 - smoothstep(0.0, 0.22, abs(fract(el * 42.0) - 0.5));
+      float lift = step(0.18, hash21(vec2(floor(el * 42.0), floor(gl_FragCoord.x * 0.15) + uSeed)));
+      float wAmber = 1.0 - smoothstep(0.085, 0.115, el);
+      float wRose = smoothstep(0.085, 0.115, el) * (1.0 - smoothstep(0.255, 0.305, el));
+      float wCream = smoothstep(0.255, 0.305, el);
+      // In a narrow band around each step, keep the lower color where the hatch inks, else the upper.
+      if (el > 0.085 && el < 0.115) {
+        duskCol = mix(rose, amber, hatch * lift);
+      } else if (el > 0.255 && el < 0.305) {
+        duskCol = mix(cream, rose, hatch * lift);
+      } else {
+        duskCol = amber * wAmber + rose * wRose + cream * wCream;
+      }
       col = mix(col, duskCol, clamp((uTwi - 0.12) / 0.16, 0.0, 1.0));
-      // Hard bands take over once twilight is on, so the time mix cannot soften the steps.
       if (uTwi > 0.28) col = duskCol;
     }
     // light paper stipple
@@ -967,11 +982,8 @@ void main(){
     else if (h > 0.0) col = mix(uHor, uMid, pow(h / 0.42, 0.75));
     else col = mix(uHor, uHor * 0.75, clamp(-h * 2.0, 0.0, 1.0));
   }
-  if (uMilky > 0.01 && uNight > 0.4) {
-    vec3 mw = normalize(vec3(0.35, 0.15, 0.9));
-    float band = 1.0 - abs(dot(d, mw));
-    col += vec3(0.7, 0.72, 0.9) * smoothstep(0.15, 0.0, 1.0 - band) * 0.18 * uMilky * uNight;
-  }
+  // No milky-way add-on: with the old vDir it smeared into a pale vertical band
+  // on the right of the night and occlusion frames.
   // paper grain, screen space
   float g = noise21(gl_FragCoord.xy * 0.28);
   float fleck = hash21(gl_FragCoord.xy * 0.81 + 19.0);
@@ -1164,26 +1176,25 @@ void main(){
 `;
 
 const MOON_VERT = /* glsl */`
-varying vec3 vN;
 varying vec3 vPos;
+varying vec3 vCenter;
 void main(){
-  // World-space normal so the terminator faces the world sun, not the view.
-  vN = normalize(mat3(modelMatrix) * normal);
   vPos = (modelMatrix * vec4(position, 1.0)).xyz;
+  vCenter = (modelMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
 `;
 
 const MOON_FRAG = /* glsl */`
 uniform vec3 uSunDir;
-varying vec3 vN;
 varying vec3 vPos;
+varying vec3 vCenter;
 ${NOISE_GLSL}
 void main(){
-  vec3 N = normalize(vN);
-  // Light the sun-facing limb as a northern-hemisphere observer sees it
-  // (waxing lit on the right). uSunDir is the direction to the sun.
-  vec3 L = normalize(-uSunDir);
+  // Normal from the sphere center in world space. uSunDir is the world
+  // direction to the sun (same altAzDir as the moon's position).
+  vec3 N = normalize(vPos - vCenter);
+  vec3 L = normalize(uSunDir);
   float lit = clamp(dot(N, L), 0.0, 1.0);
   float crat = noise21(N.xy * 7.0 + N.z * 4.0);
   vec3 dark = vec3(0.10, 0.11, 0.16);
@@ -1649,17 +1660,18 @@ function buildSky() {
         vec3 amber = vec3(0.949, 0.769, 0.420);
         vec3 cream = vec3(0.98, 0.94, 0.82);
         vec3 ink = vec3(0.165, 0.129, 0.094);
-        // Slightly lighter than the horizon amber so the disc reads as a cut shape.
-        vec3 col = mix(cream, amber, 0.55);
-        // Fine radiating hatch lines, with occasional pen lifts.
+        vec3 col = mix(cream, amber, 0.50);
+        // Visible radiating ink hatch, a dozen or so spokes with pen lifts.
         float ang = atan(p.y, p.x);
-        float rays = 1.0 - smoothstep(0.0, 0.10, abs(fract(ang * 5.73) - 0.5));
-        rays *= smoothstep(0.08, 0.20, r) * (1.0 - smoothstep(0.74, 0.90, r));
-        float lift = step(0.14, fract(sin(floor(ang * 11.46 + 2.0) * 12.9898) * 43758.5453));
-        col = mix(col, ink, rays * lift * 0.80);
+        float spokes = 12.0;
+        float slot = abs(fract((ang / 6.2831853) * spokes) - 0.5);
+        float rays = 1.0 - smoothstep(0.0, 0.09, slot);
+        rays *= smoothstep(0.06, 0.16, r) * (1.0 - smoothstep(0.78, 0.93, r));
+        float lift = step(0.12, fract(sin(floor((ang / 6.2831853) * spokes + 3.0) * 12.9898) * 43758.5453));
+        col = mix(col, ink, rays * lift);
         // Ink rim.
-        float rim = smoothstep(0.84, 0.91, r) * (1.0 - smoothstep(0.97, 1.0, r));
-        col = mix(col, ink, max(rim, step(0.97, r) * 0.95));
+        float rim = smoothstep(0.86, 0.92, r) * (1.0 - smoothstep(0.975, 1.0, r));
+        col = mix(col, ink, max(rim, step(0.978, r)));
         gl_FragColor = vec4(col, 1.0);
       }
     `,
@@ -1668,7 +1680,7 @@ function buildSky() {
     depthTest: true,
     side: THREE.DoubleSide
   });
-  sunMesh = new THREE.Mesh(new THREE.PlaneGeometry(320, 320), sunMat);
+  sunMesh = new THREE.Mesh(new THREE.PlaneGeometry(820, 820), sunMat);
   sunMesh.renderOrder = -50;
   skyGroup.add(sunMesh);
 }
@@ -2024,7 +2036,7 @@ void main(){
 `;
 
 const VOL_CLOUD_FRAG = /* glsl */`
-uniform float uSeed, uTime, uKind, uGray, uRain, uReduce, uNight, uDeck, uShaft, uCirrus, uStreak, uTwi;
+uniform float uSeed, uTime, uKind, uGray, uRain, uReduce, uNight, uDeck, uShaft, uCirrus, uStreak, uTwi, uEdgeFade;
 uniform vec3 uInk, uNightMul, uMoonDir, uLook, uSunDir;
 varying vec2 vUv;
 varying vec3 vWorld;
@@ -2112,7 +2124,8 @@ void main(){
     float body = stroke * taper;
     if (body < 0.04) discard;
     col = uInk;
-    alpha = body * 0.30;
+    // Hide the card when it is nearly edge-on, so it cannot read as a vertical tick.
+    alpha = body * 0.30 * smoothstep(0.14, 0.34, uEdgeFade);
     b = body; rel = 0.7; rim = 0.0; hatch = stroke;
   } else if (uStreak > 0.5) {
     // Far deck of flattened streaks sitting just above the ridges.
@@ -2137,23 +2150,22 @@ void main(){
     alpha = 0.9 * body;
     b = body; rel = vUv.y; rim = edge; hatch = line;
   } else {
-    // Fair-weather 3D lobes. Posterized wash, no airbrush gradient.
-    p.y *= 0.82;
-    b = max(b, lobe(p, vec2(0.02, -0.06), 0.40));
-    b = max(b, lobe(p, vec2(-0.48, 0.10), 0.30 + 0.06 * hash21(vec2(s, 1.0))));
-    b = max(b, lobe(p, vec2(0.46, 0.04), 0.28 + 0.07 * hash21(vec2(s, 2.0))));
-    b = max(b, lobe(p, vec2(-0.16, 0.42), 0.26 + 0.05 * hash21(vec2(s, 3.0))));
-    b = max(b, lobe(p, vec2(0.28, 0.38), 0.22 + 0.05 * hash21(vec2(s, 4.0))));
-    b = max(b, lobe(p, vec2(0.06, 0.58), 0.16 + 0.04 * hash21(vec2(s, 5.0))));
+    // Tall lumpy cumulus: a flat base and several stacked lobes, not a thin lens.
+    b = max(b, lobe(p, vec2(0.00, -0.22), 0.50));
+    b = max(b, lobe(p, vec2(-0.46, -0.10), 0.34 + 0.05 * hash21(vec2(s, 1.0))));
+    b = max(b, lobe(p, vec2(0.44, -0.12), 0.32 + 0.06 * hash21(vec2(s, 2.0))));
+    b = max(b, lobe(p, vec2(-0.20, 0.22), 0.30 + 0.05 * hash21(vec2(s, 3.0))));
+    b = max(b, lobe(p, vec2(0.24, 0.28), 0.28 + 0.05 * hash21(vec2(s, 4.0))));
+    b = max(b, lobe(p, vec2(0.02, 0.52), 0.24 + 0.04 * hash21(vec2(s, 5.0))));
+    b = max(b, lobe(p, vec2(-0.10, 0.74), 0.18 + 0.03 * hash21(vec2(s, 6.0))));
     // Flat underside at a common base; puffy tops stay lumpy.
-    b *= smoothstep(-0.55, -0.40, p.y);
+    b *= smoothstep(-0.62, -0.50, p.y);
     if (b < 0.08) discard;
-    rel = clamp((p.y + 0.55) / 1.25, 0.0, 1.0);
-    // Three flat tones: cream paper on lit tops, mid wash, shaded underside.
-    // Tone follows the lobes (plus a little grain), not a hard horizontal cut.
+    rel = clamp((p.y + 0.62) / 1.55, 0.0, 1.0);
+    // Cream tops, mid wash, hatched warm-gray underside (not a blue-gray band).
     vec3 paper = vec3(0.97, 0.93, 0.84);
-    vec3 midc = vec3(0.84, 0.81, 0.74);
-    vec3 shade = vec3(0.68, 0.69, 0.70);
+    vec3 midc = vec3(0.86, 0.80, 0.70);
+    vec3 shade = vec3(0.72, 0.64, 0.52);
     float toneKey = (1.0 - rel) * 0.8 + (1.0 - b) * 0.15 + (noise21(p * 2.6 + vec2(s, 1.3)) - 0.5) * 0.14;
     vec3 wash = paper;
     if (toneKey > 0.36) wash = midc;
@@ -2254,6 +2266,7 @@ function makeVolCloudMat(kind, seed, gray) {
       uCirrus: { value: 0 },
       uStreak: { value: 0 },
       uTwi: { value: 0 },
+      uEdgeFade: { value: 1 },
       uLook: { value: new THREE.Vector3(0, 0, 1) },
       uSunDir: { value: new THREE.Vector3(0.3, 0.8, 0.2) }
     },
@@ -2324,7 +2337,10 @@ function buildVolClouds() {
       if (i < 3 && tFar < 0.35) sx = 1100 + rngC() * 500;
       else if (tFar < 0.42) sx = 520 + rngC() * 260;
       else sx = 150 + rngC() * 200;
-      const sy = sx * (0.46 + rngC() * 0.16);
+      // Height at least ~0.6 of width so near puffs read as stacked cumulus, not saucers.
+      const sy = (i < 3 && tFar < 0.35)
+        ? sx * (0.72 + rngC() * 0.16)
+        : sx * (0.62 + rngC() * 0.12);
       puffSpec.push({
         x: sized[i].x, z: sized[i].z, alt: baseAlt,
         sx: sx, sy: sy, seed: 2.1 + i * 9.3
@@ -2415,6 +2431,13 @@ function layoutVolClouds() {
       // Long axis along the wind (toward). Upright, not camera-tilted.
       const yaw = Math.atan2(drift.x, drift.z);
       it.mesh.rotation.set(0, yaw, 0);
+      const nx = Math.sin(yaw), nz = Math.cos(yaw);
+      const vx = cx - x, vz = cz - z;
+      const vlen = Math.hypot(vx, vz) || 1;
+      const facing = Math.abs((vx * nx + vz * nz) / vlen);
+      if (it.mesh.material && it.mesh.material.uniforms && it.mesh.material.uniforms.uEdgeFade) {
+        it.mesh.material.uniforms.uEdgeFade.value = facing;
+      }
     } else {
       // Upright yaw-only billboard so flat undersides stay on the common base plane.
       it.mesh.rotation.set(0, Math.atan2(cx - x, cz - z), 0);
@@ -5910,6 +5933,16 @@ function moonInfo() {
   const illum = (1 - Math.cos(2 * Math.PI * p)) / 2;
   const dir = altAzDir(clock.moonAlt, clock.moonAz);
   const compass = compassFromDir(dir);
+  const trueSun = sunAltAz(clock.now, loc);
+  const sunDir = altAzDir(trueSun[0], trueSun[1]);
+  const elong = Math.acos(Math.max(-1, Math.min(1, sunDir.dot(dir)))) * 180 / Math.PI;
+  // Visible lit fraction of a sphere: (1 - dot(sunDir, moonDir)) / 2
+  const discLit = (1 - sunDir.dot(dir)) / 2;
+  let viewSunX = null;
+  if (camera) {
+    const vs = sunDir.clone().transformDirection(camera.matrixWorldInverse);
+    viewSunX = +vs.x.toFixed(3);
+  }
   return {
     at: clock.now,
     alt: clock.moonAlt,
@@ -5917,6 +5950,11 @@ function moonInfo() {
     azCompass: compass,
     phase: p,
     illumination: illum,
+    discLit: discLit,
+    elong: elong,
+    trueSunAlt: trueSun[0],
+    trueSunCompass: compassFromDir(sunDir),
+    viewSunX: viewSunX,
     visible: clock.moonAlt > -4,
     night: clock.night,
     period: clock.period,
