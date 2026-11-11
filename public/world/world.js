@@ -4935,13 +4935,26 @@ function updatePlaceCaption(name) {
   if (label) placeEl.textContent = label;
 }
 
+function densifyPxPath(raw, stepPx) {
+  const out = [];
+  if (!raw || !raw.length) return out;
+  for (let i = 0; i < raw.length - 1; i++) {
+    const ax = raw[i][0], ay = raw[i][1], bx = raw[i + 1][0], by = raw[i + 1][1];
+    const len = Math.hypot(bx - ax, by - ay);
+    const n = Math.max(1, Math.round(len / Math.max(0.4, stepPx)));
+    for (let k = 0; k < n; k++) out.push([ax + (bx - ax) * k / n, ay + (by - ay) * k / n]);
+  }
+  out.push(raw[raw.length - 1]);
+  return out;
+}
+
 function narrowPatokaMask() {
-  const pts = riverPathPx;
+  const pts = densifyPxPath(riverPathPx, 1);
   if (!pts.length || !coverData) return;
   // Keep class-0 water only under the real 30-50 m channel (20 m half).
   // Reclassify the leftover wide slab so the mill no longer sits on a blue plate.
   const halfPx = 20 / CELL;
-  const band = 10;
+  const band = 18;
   const best = new Float32Array(ROWS * COLS);
   for (let i = 0; i < best.length; i++) best[i] = 1e9;
   for (let i = 0; i < pts.length - 1; i++) {
@@ -5045,11 +5058,21 @@ function buildOsmRoadMesh(highways) {
     const way = highways[hi];
     const half = osmRoadWidth(way.t) * 0.5;
     if (half <= 0 || !way.pts || way.pts.length < 2) continue;
+    // Drape each segment on the terrain every 18 m so long chords do not fly through the sky.
     const pts = [];
-    for (let i = 0; i < way.pts.length; i++) {
-      const w = pxToWorld(way.pts[i][0], way.pts[i][1]);
-      const y = yOf(heightWorld(w.x, w.z)) + 0.18;
-      pts.push({ x: w.x, y: y, z: w.z });
+    for (let i = 0; i < way.pts.length - 1; i++) {
+      const a = pxToWorld(way.pts[i][0], way.pts[i][1]);
+      const b = pxToWorld(way.pts[i + 1][0], way.pts[i + 1][1]);
+      const dx = b.x - a.x, dz = b.z - a.z;
+      const len = Math.hypot(dx, dz);
+      if (len < 0.5) continue;
+      const steps = Math.max(1, Math.round(len / 18));
+      const start = (i === 0) ? 0 : 1;
+      for (let s = start; s <= steps; s++) {
+        const t = s / steps;
+        const x = a.x + dx * t, z = a.z + dz * t;
+        pts.push({ x: x, y: yOf(heightWorld(x, z)) + 0.18, z: z });
+      }
     }
     for (let i = 0; i < pts.length; i++) {
       const pr = pts[Math.max(0, i - 1)];
