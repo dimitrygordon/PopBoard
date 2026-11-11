@@ -1,8 +1,10 @@
 /* observatory.js - "The Jasper Observatory" homepage (art direction: Leo).
-   The real sky above Jasper is revealed through an opening dome slit, inked over
+   The real sky above Jasper is shown from the first frame, inked over
    like an antique engraved star atlas, the moon rises at its real phase, and a
-   brass astrolabe assembles around the sign-in card.
-   Purely decorative: it never reads or writes auth state, inputs, or app.js data.
+   brass astrolabe assembles around the sign-in plate.
+   The astrolabe is also the sign-in dial: the outer ring picks the mode (it clicks the same existing panel
+   links app.js handles), the middle ring counts filled fields, and on submit the rings lock (an alert() from
+   app.js, its existing error path, shakes them back). It never reads or writes auth state or app.js data.
    login-alive.js calls window.__obsFrame(now, dt) from its single rAF loop.
    Debug: ?obsT=<seconds> freezes the intro clock, ?at=<ISO date> sets the sky time,
    and login-sky.js's ?sky=day|night|dawn|dusk and ?wx=clear|partly|cloudy|rain|storm|snow|fog apply. */
@@ -21,17 +23,18 @@
   function nowMs() { return Date.now() + shiftMs; }
   var JASPER = { lat: 38.3914, lon: -86.9311, src: "fallback" }, JASPER_TZ = "America/Indiana/Vincennes";
 
-  /* Intro timeline in desktop seconds. Phones play the same score at 9/14 speed. */
+  /* Intro timeline in desktop seconds (about 5 s). Phones play the same score at PHONE_RATE (about 4 s).
+     The plate is readable and typeable by 1 s; any key, tap, wheel or focus skips to the end. */
   var TL = {
-    seam: [0, 1.2], shut: [1.2, 3.5], stars: [1.6, 3.7], ink: [3.5, 6.5], moon: [4.5, 8], card: [2, 2.5],
-    ringO: [6, 7.8], ringM: [6.5, 8.4], ringI: [7, 8.9], rete: [7.3, 10], hand: [7.6, 8.8], eye: [8.4, 9.6],
-    focus: [9, 12], shoot: [12.1, 13.1], plaque: [12, 14], end: 14
+    card: [.15, .6], stars: [0, 1.2], ink: [.6, 2.4], moon: [.8, 3.0],
+    ringO: [1.2, 2.5], ringM: [1.45, 2.85], ringI: [1.7, 3.2], rete: [1.6, 3.2], eye: [2.3, 3.0],
+    hop: [3.0, 4.2], plaque: [3.0, 4.2], shoot: [4.15, 4.85], end: 5
   };
+  var PHONE_RATE = 4 / 5, INK_STROKE = .7; // seconds one constellation takes to ink
 
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
   function lerp(a, b, t) { return a + (b - a) * t; }
   function sstep(t) { return t * t * (3 - 2 * t); }
-  function inOut(t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
   function outCubic(t) { return 1 - Math.pow(1 - t, 3); }
   function outBack(t, s) { var u = t - 1; return 1 + (s + 1) * u * u * u + s * u * u; }
   function mixc(a, b, t) { return [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)]; }
@@ -82,27 +85,23 @@
     try { return new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: tz(lc) }).format(new Date(t)).replace(/\u202f/g, " "); }
     catch (e) { var d = new Date(t); return d.getHours() + ":" + ("0" + d.getMinutes()).slice(-2); }
   }
-  function localHMS(t, lc) {
-    try {
-      var p = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "numeric", second: "numeric", hourCycle: "h23", timeZone: tz(lc) }).formatToParts(new Date(t)), o = {};
-      p.forEach(function (x) { o[x.type] = +x.value; }); return [o.hour % 24, o.minute, o.second];
-    } catch (e) { var d = new Date(t); return [d.getHours(), d.getMinutes(), d.getSeconds()]; }
-  }
+
 
   /* ---------------- state ---------------- */
-  var obsEl, cv, ctx, leafL, leafR, seamEl, astroEl;
-  var W = 0, H = 0, dpr = 1, phone = false, leafVis = 96;
+  var obsEl, cv, ctx, astroEl;
+  var W = 0, H = 0, dpr = 1, phone = false, edge = 0; // edge: side margin of the open sky (full width)
   var cam = { cx: 0, cy: 0, f: 1, ct: 1, st: 0, hy: 0 };
   var T = 0, perf0 = 0, speed = 1, done = false, lastT = -1, active = true;
   var CAT = null, NAMED = [], inkPlan = null, POLARIS = [37.95, 89.26];
   var sky = null, skyAt = 0, ringText = "", ringText2 = "", ringKey = "", ringAt = 0, cardFloor = 0;
   var ptr = { tx: 0, ty: 0, x: 0, y: 0 };
-  var wxKey = "", clouds = [], drops = [], beads = [], flakes = [], cloudSprites = [], hillCv = null, hillKey = "";
+  var wxKey = "", clouds = [], drops = [], flakes = [], cloudSprites = [], hillCv = null, hillKey = "";
   var shoot = null, nextShoot = 0, sat = null, nextSat = 0, flash = null, nextFlash = 0;
   var astro = null, hub = { x: 0, y: 0, r: 0, top: 0, bottom: 0 }, plaqueBox = null;
   var V = [0, 0, 0], P = [0, 0, 0], Q = [0, 0, 0];
 
-  function te() { return T / (phone ? 9 / 14 : 1); }        // desktop-equivalent intro time
+  function rate() { return phone ? PHONE_RATE : 1; }
+  function te() { return T / rate(); }        // desktop-equivalent intro time
   function seg(k) { var r = TL[k]; return clamp((te() - r[0]) / (r[1] - r[0]), 0, 1); }
   function drift() { return reduce ? 0 : (performance.now() / 1000 - perf0) * (360 / 86164) * 2; } // gentle extra sidereal drift
 
@@ -129,7 +128,7 @@
     if (rk !== ringKey || skyAt - ringAt > 30000) { ringKey = rk; ringAt = skyAt; updateRingText(); }
   }
 
-  /* ---------------- camera: rectilinear view facing south through the slit ---------------- */
+  /* ---------------- camera: rectilinear view facing south ---------------- */
   function setupCam() {
     cam.cx = W / 2; cam.cy = H / 2; cam.hy = H * (phone ? .86 : .88); cam.f = H * .62;
     var tilt = Math.atan((cam.hy - cam.cy) / cam.f); cam.ct = Math.cos(tilt); cam.st = Math.sin(tilt);
@@ -139,19 +138,7 @@
     var X = -v[0], Y = v[1] * cam.st + v[2] * cam.ct;
     o[0] = cam.cx + cam.f * X / Z; o[1] = cam.cy - cam.f * Y / Z; o[2] = v[2]; return true;
   }
-  function slit() { // current left/right edges of the open slit, in px
-    var open = shutterOpen(), half = W / 2 - leafVis;
-    return [W / 2 - open * half, W / 2 + open * half, open];
-  }
-  function shutterOpen() {
-    var t = te();
-    if (t < 1.2) return 0;
-    if (t < 1.5) { var u = (t - 1.2) / .3; return .02 * u + Math.sin(t * 90) * .004 * (1 - u); } // mechanical judder
-    if (t < 2.3) return lerp(.02, .45, inOut((t - 1.5) / .8));
-    if (t < 2.55) return .45 + Math.sin((t - 2.3) / .25 * Math.PI) * .004;                     // first stop
-    if (t < 3.5) return lerp(.45, 1, inOut((t - 2.55) / .95));
-    return 1;
-  }
+  function view() { return [edge, W - edge]; } // left/right edges of the open sky, in px
 
   /* ---------------- sky colours ---------------- */
   var SKY = [[-18, [6, 10, 28], [12, 18, 44], [22, 28, 62]], [-9, [16, 20, 56], [48, 40, 96], [120, 70, 110]],
@@ -201,8 +188,7 @@
     var wasPhone = phone; phone = w < 700;
     if (w === W && h === H && d === dpr) return;
     W = w; H = h; dpr = d; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-    leafVis = phone ? 24 : clamp(Math.round(W * .075), 56, 120);
-    setupCam(); buildLeaves(); hillKey = ""; wxKey = "";
+    setupCam(); hillKey = ""; wxKey = "";
     if (!astro || wasPhone !== phone) buildAstro();
     measureHub();
   }
@@ -213,44 +199,10 @@
     var pq = doc.querySelector("a.study-pill"), pb = pq && pq.getBoundingClientRect(); plaqueBox = pb && pb.width ? { left: pb.left, right: pb.right, top: pb.top, bottom: pb.bottom } : null;
   }
 
-  /* ---------------- the dome shutters (SVG, regenerated on resize) ---------------- */
-  function leafSVG(side, w, h) {
-    var L = side === "l", id = "obsL" + side, s = [];
-    var inner = L ? w : 0, dir = L ? -1 : 1, n = Math.max(3, Math.round(w / 120)), trim = 9;
-    s.push('<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '" aria-hidden="true">');
-    s.push('<defs><pattern id="' + id + 'r" width="6" height="18" patternUnits="userSpaceOnUse"><circle cx="3" cy="9" r="1.3" fill="' + BRASS_LO + '"/><circle cx="2.6" cy="8.6" r=".5" fill="' + BRASS_HI + '" opacity=".75"/></pattern>');
-    s.push('<pattern id="' + id + 'h" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(' + (L ? 35 : -35) + ')"><path d="M0 0V5" stroke="#EDE6D6" stroke-width=".6" opacity=".11"/></pattern>');
-    s.push('<linearGradient id="' + id + 'm" x1="' + (L ? 0 : 1) + '" x2="' + (L ? 1 : 0) + '" y1="0" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></linearGradient>');
-    s.push('<mask id="' + id + 'k"><rect width="' + w + '" height="' + h + '" fill="url(#' + id + 'm)"/></mask></defs>');
-    s.push('<rect width="' + w + '" height="' + h + '" fill="url(#' + id + 'h)" mask="url(#' + id + 'k)"/>');
-    // dome ribs: curved, as if arching over the viewer
-    for (var j = 1; j < 8; j++) {
-      var y = h * j / 8, bow = h * .03;
-      s.push('<path d="M0 ' + (y + 2).toFixed(1) + 'Q' + (w / 2) + ' ' + (y + 2 - bow).toFixed(1) + ' ' + w + ' ' + (y + 2).toFixed(1) + '" stroke="#06100b" stroke-width="2" fill="none" opacity=".55"/>');
-      s.push('<path d="M0 ' + y.toFixed(1) + 'Q' + (w / 2) + ' ' + (y - bow).toFixed(1) + ' ' + w + ' ' + y.toFixed(1) + '" stroke="' + BRASS_LO + '" stroke-width=".9" fill="none" opacity=".8"/>');
-    }
-    // riveted panel seams
-    for (var i = 1; i < n; i++) {
-      var x = Math.round(L ? i * (w - trim) / n : trim + i * (w - trim) / n);
-      s.push('<path d="M' + x + ' 0V' + h + '" stroke="#06100b" stroke-width="1.4"/><path d="M' + (x + 1) + ' 0V' + h + '" stroke="#EDE6D6" stroke-width=".6" opacity=".12"/>');
-      s.push('<rect x="' + (x - 8) + '" y="0" width="6" height="' + h + '" fill="url(#' + id + 'r)"/><rect x="' + (x + 3) + '" y="9" width="6" height="' + h + '" fill="url(#' + id + 'r)"/>');
-    }
-    // brass trim along the slit edge, with bolts, and the dark weather seal
-    var tx = L ? w - trim : 0;
-    s.push('<rect x="' + tx + '" y="0" width="' + trim + '" height="' + h + '" fill="#4a3612"/>');
-    s.push('<path d="M' + (L ? tx + .5 : trim - .5) + ' 0V' + h + '" stroke="' + BRASS + '" stroke-width=".9"/>');
-    s.push('<path d="M' + (L ? w - 1 : 1) + ' 0V' + h + '" stroke="#04070c" stroke-width="2"/>');
-    for (var b = 23; b < h; b += 46) s.push('<circle cx="' + (tx + trim / 2) + '" cy="' + b + '" r="1.6" fill="' + BRASS + '"/><circle cx="' + (tx + trim / 2 - .5) + '" cy="' + (b - .5) + '" r=".6" fill="' + BRASS_HI + '"/>');
-    s.push('</svg>');
-    return s.join("");
-  }
-  function buildLeaves() {
-    var w = Math.ceil(W / 2) + 2, h = H + 4;
-    leafL.innerHTML = leafSVG("l", w, h); leafR.innerHTML = leafSVG("r", w, h);
-  }
-
   /* ---------------- the astrolabe (SVG) ---------------- */
-  var ROMAN = ["XII", "I", "II", "III", "IIII", "V", "VI", "VII", "VIII", "IX", "X", "XI"];
+  /* the mode dial: each stop names an existing sign-in panel */
+  var MODES = [{ word: "STUDENT", label: "Student", panel: "login" }, { word: "TEACHER", label: "Teacher", panel: "teacherLogin" }, { word: "NEW ACCOUNT", label: "New account", panel: "teacherSignup" }];
+  var DETENT = 60, NOTCH = 18; // degrees between mode stops; degrees per combination notch
   var SIGNS = ["ARIES", "TAVRVS", "GEMINI", "CANCER", "LEO", "VIRGO", "LIBRA", "SCORPIO", "SAGITTARIVS", "CAPRICORNVS", "AQVARIVS", "PISCES"];
   var RETE_STARS = [["Sirius", 101.29, -16.72], ["Rigel", 78.63, -8.2], ["Betelgeuse", 88.79, 7.41], ["Procyon", 114.83, 5.22],
     ["Aldebaran", 68.98, 16.51], ["Regulus", 152.09, 11.97], ["Spica", 201.3, -11.16], ["Arcturus", 213.92, 19.18],
@@ -268,24 +220,22 @@
 
   function buildAstro() {
     var R = phone ? 180 : 310, s = [], G = {};
-    G.R = R; G.hIn = R - (phone ? 20 : 28);
-    G.zOut = G.hIn; G.zIn = phone ? G.hIn : R - 54;
-    G.tOut = G.zIn; G.tIn = G.tOut - (phone ? 22 : 24);
+    G.R = R; G.hIn = R - (phone ? 22 : 30);                    // outer band: the mode dial
+    G.zOut = G.hIn; G.zIn = G.hIn - (phone ? 12 : 26);          // middle band: combination notches (zodiac on desktop)
+    G.tOut = G.zIn; G.tIn = G.tOut - (phone ? 22 : 24);         // inner band: engraved readings
     G.cap = G.tIn - 5; G.Req = G.cap / Math.tan((90 + 23.44) / 2 * RAD);
     G.eye = phone ? 44 : G.tIn - 4;
-    var fs = phone ? 8.5 : 11;
-    s.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + (-R - 8) + ' ' + (-R - 8) + ' ' + (2 * R + 16) + ' ' + (2 * R + 16) + '" aria-hidden="true" focusable="false">');
+    s.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + (-R - 18) + ' ' + (-R - 18) + ' ' + (2 * R + 36) + ' ' + (2 * R + 36) + '" aria-hidden="true" focusable="false">');
     s.push('<defs><path id="obsTxtTop" d="' + arcD(G.tIn + (phone ? 6.5 : 8.5), -88, 88) + '"/><path id="obsTxtBot" d="' + arcD(G.tOut - (phone ? 6 : 8), 268, 92) + '"/></defs>');
-
     // the face: invisible at night (the sky shows through), warm parchment by day
     s.push('<g id="obsFace" opacity="0"><circle class="obs-face" r="' + R + '"/><circle class="obs-face-in" r="' + G.tIn + '"/></g>');
-    // rete: the star-pointer lattice, turned by sidereal time (drawn first, under the rings)
+
+    // rete: the star-pointer lattice, turned by sidereal time, with an alidade arm tipped by the North Star
     s.push('<g id="obsRete" opacity="0">');
     s.push(ring(G.cap, 1.1, BRASS, .9) + ring(G.Req, .5, BRASS, .45));
     var ecl = [];
     for (var l = 0; l <= 360; l += 4) { var e = eqOf(l * RAD, 0), p = retePos(e[0], e[1], G.Req); ecl.push((l ? "L" : "M") + f1(p[0]) + " " + f1(p[1])); }
     s.push('<path d="' + ecl.join("") + 'Z" fill="none" stroke="' + BRASS + '" stroke-width="1" opacity=".85"/>');
-    // fretwork: four curled bars from the Capricorn circle
     for (var q = 0; q < 4; q++) {
       var a0 = 45 + q * 90, o1 = pt(G.cap, a0), o2 = pt(G.cap * .78, a0 + 14), o3 = pt(G.cap * .62, a0 - 6);
       s.push('<path d="M' + f1(o1[0]) + " " + f1(o1[1]) + "Q" + f1(o2[0]) + " " + f1(o2[1]) + " " + f1(o3[0]) + " " + f1(o3[1]) + '" fill="none" stroke="' + BRASS + '" stroke-width="1.6" opacity=".7" stroke-linecap="round"/>');
@@ -298,9 +248,11 @@
       s.push('<circle cx="' + f1(tip[0]) + '" cy="' + f1(tip[1]) + '" r="1.1" fill="' + BRASS_HI + '"/>');
       if (!phone) { var lp = pt(r - 9, a); s.push('<text class="obs-it" x="' + f1(lp[0]) + '" y="' + f1(lp[1]) + '" font-size="7.5" fill="' + BRASS + '" opacity=".8" text-anchor="middle" dominant-baseline="middle" transform="rotate(' + f1(a) + " " + f1(lp[0]) + " " + f1(lp[1]) + ')">' + st[0] + "</text>"); }
     });
+    var arm = G.cap - 2;
+    s.push('<g id="obsArm"><path d="M-2.2 0L0 ' + (-arm + 10) + 'L2.2 0Z" fill="' + BRASS + '" stroke="' + BRASS_LO + '" stroke-width=".5"/>' + starPath(0, -arm + 4, phone ? 6 : 8, "obs-polaris") + "</g>");
     s.push("</g>");
 
-    // eyepiece rim around the card (knurled, it turns as the lens focuses)
+    // eyepiece rim around the plate (knurled, it turns as it appears)
     s.push('<g id="obsEye" opacity="0">' + ring(G.eye, 1.3) + ring(G.eye - 5, .6, BRASS, .8) + '<g id="obsKnurl">');
     for (var k = 0; k < 360; k += phone ? 6 : 3) { var k0 = pt(G.eye - 5, k), k1 = pt(G.eye, k); s.push('<path d="M' + f1(k0[0]) + " " + f1(k0[1]) + "L" + f1(k1[0]) + " " + f1(k1[1]) + '" stroke="' + BRASS + '" stroke-width=".6" opacity=".7"/>'); }
     s.push('</g><circle id="obsIris" r="' + (G.eye + 2) + '" fill="none" stroke="' + BRASS_HI + '" stroke-width="1.4" stroke-dasharray="' + f1(TAU * (G.eye + 2)) + '" stroke-dashoffset="' + f1(TAU * (G.eye + 2)) + '" transform="rotate(-90)"/></g>');
@@ -311,51 +263,66 @@
     if (!phone) s.push('<text font-size="10" letter-spacing="2.1" fill="#EDE6D6" opacity=".78"><textPath id="obsTxt2" href="#obsTxtBot" startOffset="50%" text-anchor="middle"></textPath></text>');
     s.push("</g>");
 
-    // middle ring: zodiac / ecliptic degrees with today's sun and moon (desktop)
+    // middle ring: the combination wheel. One notch per filled field; the North Star mark comes home to 12 o'clock on submit.
+    s.push('<g id="obsRingM" opacity="0">' + band(G.zIn, G.zOut) + ring(G.zIn, .9) + ring(G.zOut, .9));
+    var tk = [];
+    for (var dg = 0; dg < 360; dg += phone ? 2 : 1) {
+      var aa = phone ? dg : lamAngle(dg), len = phone ? (dg % NOTCH === 0 ? 7 : 3) : dg % 30 === 0 ? G.zOut - G.zIn : dg % 5 === 0 ? 7 : 3.5, t0 = pt(G.zOut - len, aa), t1 = pt(G.zOut, aa);
+      tk.push("M" + f1(t0[0]) + " " + f1(t0[1]) + "L" + f1(t1[0]) + " " + f1(t1[1]));
+    }
+    s.push('<path d="' + tk.join("") + '" stroke="' + BRASS + '" stroke-width=".55" opacity=".85"/>');
     if (!phone) {
-      s.push('<g id="obsRingM" opacity="0">' + band(G.zIn, G.zOut) + ring(G.zIn, .9) + ring(G.zOut, .9));
-      var tk = [];
-      for (var dg = 0; dg < 360; dg++) {
-        var aa = lamAngle(dg), len = dg % 30 === 0 ? G.zOut - G.zIn : dg % 5 === 0 ? 7 : 3.5, t0 = pt(G.zOut - len, aa), t1 = pt(G.zOut, aa);
-        tk.push("M" + f1(t0[0]) + " " + f1(t0[1]) + "L" + f1(t1[0]) + " " + f1(t1[1]));
-      }
-      s.push('<path d="' + tk.join("") + '" stroke="' + BRASS + '" stroke-width=".55" opacity=".85"/>');
       for (var z = 0; z < 12; z++) {
         var c0 = lamAngle(z * 30), c1 = lamAngle(z * 30 + 30), mida = ((c0 + c1) / 2 + 360) % 360, top = mida >= 270 || mida <= 90;
         var lo = Math.min(c0, c1), hi = Math.max(c0, c1);
-        var d = top ? arcD(G.zIn + 6.5, lo, hi) : arcD(G.zIn + 13.5, hi, lo); // upright both ways: clockwise on top, counter-clockwise below
+        var d = top ? arcD(G.zIn + 6.5, lo, hi) : arcD(G.zIn + 13.5, hi, lo);
         s.push('<path id="obsZ' + z + '" d="' + d + '" fill="none"/><text font-size="8.6" letter-spacing="2.2" fill="' + BRASS_HI + '" opacity=".9"><textPath href="#obsZ' + z + '" startOffset="50%" text-anchor="middle">' + SIGNS[z] + "</textPath></text>");
       }
       s.push('<g id="obsSun"><circle class="obs-dot" r="6.6"/><circle r="3.4" fill="' + BRASS_HI + '"/>');
       for (var ry = 0; ry < 8; ry++) { var r0 = pt(4.6, ry * 45), r1 = pt(6.8, ry * 45); s.push('<path d="M' + f1(r0[0]) + " " + f1(r0[1]) + "L" + f1(r1[0]) + " " + f1(r1[1]) + '" stroke="' + BRASS_HI + '" stroke-width=".8" stroke-linecap="round"/>'); }
-      s.push('</g><g id="obsMoonMark"><circle class="obs-dot" r="6.2"/><path d="M1.6 -4.2A4.4 4.4 0 1 0 1.6 4.2A3.3 3.3 0 1 1 1.6 -4.2Z" fill="#EDE6D6"/></g></g>');
+      s.push('</g><g id="obsMoonMark"><circle class="obs-dot" r="6.2"/><path d="M1.6 -4.2A4.4 4.4 0 1 0 1.6 4.2A3.3 3.3 0 1 1 1.6 -4.2Z" fill="#EDE6D6"/></g>');
     }
+    var zm = (G.zIn + G.zOut) / 2;
+    s.push('<g id="obsHome"><circle id="obsGlint" cy="' + (-zm) + '" r="' + (phone ? 11 : 16) + '" fill="' + BRASS_HI + '" opacity="0"/><circle class="obs-dot" cy="' + (-zm) + '" r="' + (phone ? 6 : 9) + '"/>' + starPath(0, -zm, phone ? 5.5 : 8, "obs-polaris") + "</g>");
+    s.push("</g>");
 
-    // outer ring: 24 hours of Jasper time, noon at the top
+    // outer ring: the mode dial. Three engraved stops, a detent every 60 degrees.
     s.push('<g id="obsRingO" opacity="0">' + band(G.hIn, R) + ring(R, 1.3) + ring(R - 3, .55, BRASS, .8) + ring(G.hIn, .9));
     var ht = [];
-    for (var i = 0; i < 96; i++) {
-      var ha = i * 3.75, hl = i % 4 === 0 ? (phone ? 6 : 8) : i % 2 === 0 ? 4.5 : 2.6, h0 = pt(G.hIn, ha), h1 = pt(G.hIn + hl, ha);
+    for (var i = 0; i < 72; i++) {
+      var ha = i * 5, det = ha % DETENT === 0, hl = det ? G.R - G.hIn - 6 : i % 2 === 0 ? 4.5 : 2.6, h0 = pt(G.hIn, ha), h1 = pt(G.hIn + hl, ha);
+      if (det && ha / DETENT < MODES.length) continue; // the words sit on these stops
       ht.push("M" + f1(h0[0]) + " " + f1(h0[1]) + "L" + f1(h1[0]) + " " + f1(h1[1]));
     }
     s.push('<path d="' + ht.join("") + '" stroke="' + BRASS + '" stroke-width=".7"/>');
-    for (var hr = 0; hr < 24; hr++) {
-      var na = (hr - 12) * 15, np = pt(R - (phone ? 8.5 : 11.5), na);
-      s.push('<text x="' + f1(np[0]) + '" y="' + f1(np[1]) + '" font-size="' + fs + '" fill="' + BRASS_HI + '" text-anchor="middle" dominant-baseline="central" transform="rotate(' + na + " " + f1(np[0]) + " " + f1(np[1]) + ')">' + ROMAN[hr % 12] + "</text>");
-    }
+    var wr = (G.hIn + R) / 2, wfs = phone ? 9.5 : 13, half = phone ? 30 : 26;
+    MODES.forEach(function (m, mi) {
+      var a = mi * DETENT;
+      s.push('<path id="obsW' + mi + 'a" d="' + arcD(wr - wfs * .34, a - half, a + half) + '" fill="none"/><path id="obsW' + mi + 'b" d="' + arcD(wr + wfs * .34, a + half, a - half) + '" fill="none"/>');
+      s.push('<g class="obs-word" id="obsWord' + mi + '"><text font-size="' + wfs + '" letter-spacing="' + (phone ? 1.6 : 3) + '" fill="' + BRASS_HI + '"><textPath href="#obsW' + mi + 'a" startOffset="50%" text-anchor="middle">' + m.word + '</textPath></text>' +
+        '<text font-size="' + wfs + '" letter-spacing="' + (phone ? 1.6 : 3) + '" fill="' + BRASS_HI + '" display="none"><textPath href="#obsW' + mi + 'b" startOffset="50%" text-anchor="middle">' + m.word + "</textPath></text></g>");
+    });
+    for (var o = MODES.length; o < 360 / DETENT; o++) s.push(starPath(pt(wr, o * DETENT)[0], pt(wr, o * DETENT)[1], phone ? 3.4 : 4.6, ""));
     s.push("</g>");
 
-    // time hand and the ticking seconds bead
-    var tipR = R + 7, tail = phone ? G.tIn + 2 : G.zIn - 2;
-    s.push('<g id="obsHand" opacity="0"><path d="M0 ' + (-tipR) + "L3.2 " + (-(G.hIn - 2)) + "L0 " + (-tail) + "L-3.2 " + (-(G.hIn - 2)) + 'Z" fill="' + BRASS + '" stroke="' + BRASS_LO + '" stroke-width=".7"/><circle cy="' + (-tipR - 2.5) + '" r="2.2" fill="none" stroke="' + BRASS + '" stroke-width="1"/><path d="M0 ' + (-(R - 2)) + "V" + (-(G.hIn + 2)) + '" stroke="' + BRASS_LO + '" stroke-width=".8"/></g>');
-    s.push('<g id="obsSec" opacity="0"><circle cy="' + (-(G.hIn + 2.4)) + '" r="1.7" fill="' + BRASS_HI + '"/></g>');
+    // the fixed brass index at 12 o'clock that the chosen word sits under
+    s.push('<g id="obsIndex" opacity="0"><path d="M0 ' + (-R + 3) + 'L' + (phone ? 6 : 8) + " " + (-R - (phone ? 11 : 15)) + "L" + (-(phone ? 6 : 8)) + " " + (-R - (phone ? 11 : 15)) + 'Z" fill="' + BRASS + '" stroke="' + BRASS_LO + '" stroke-width=".8"/><circle cy="' + (-R - (phone ? 13 : 18)) + '" r="' + (phone ? 2.2 : 3) + '" fill="' + BRASS_HI + '" stroke="' + BRASS_LO + '" stroke-width=".6"/></g>');
+    // the lock flash: all rings glow once when they align
+    s.push('<g id="obsFlash" opacity="0" fill="none" stroke="' + BRASS_HI + '">' + '<circle r="' + (R - 1) + '" stroke-width="3"/><circle r="' + G.zOut + '" stroke-width="2"/><circle r="' + G.tOut + '" stroke-width="2"/><circle r="' + G.tIn + '" stroke-width="2"/></g>');
     s.push("</svg>");
     astroEl.innerHTML = s.join("");
     function $(id) { return astroEl.querySelector("#" + id); }
     astro = { G: G, face: $("obsFace"), rete: $("obsRete"), eye: $("obsEye"), knurl: $("obsKnurl"), iris: $("obsIris"), ringI: $("obsRingI"), ringM: $("obsRingM"),
-      ringO: $("obsRingO"), hand: $("obsHand"), sec: $("obsSec"), sun: $("obsSun"), moonMark: $("obsMoonMark"), t1: $("obsTxt1"), t2: $("obsTxt2"),
-      irisLen: TAU * (G.eye + 2), cache: {}, handA: null, secA: null };
+      ringO: $("obsRingO"), index: $("obsIndex"), glint: $("obsGlint"), flash: $("obsFlash"), sun: $("obsSun"), moonMark: $("obsMoonMark"), t1: $("obsTxt1"), t2: $("obsTxt2"),
+      words: MODES.map(function (m, i) { var g = $("obsWord" + i); return { g: g, a: g.children[0], b: g.children[1] }; }),
+      irisLen: TAU * (G.eye + 2), cache: {} };
     ringText = ""; updateRingText();
+    if (dial.layout) dial.layout();
+  }
+  function starPath(x, y, r, cls) { // an eight-point engraved star
+    var p = [];
+    for (var i = 0; i < 16; i++) { var a = i * Math.PI / 8, rr = i % 2 ? r * .36 : (i % 4 ? r * .62 : r); p.push((i ? "L" : "M") + f1(x + Math.sin(a) * rr) + " " + f1(y - Math.cos(a) * rr)); }
+    return '<path' + (cls ? ' class="' + cls + '"' : "") + ' d="' + p.join("") + 'Z" fill="' + BRASS_HI + '" stroke="' + BRASS_LO + '" stroke-width=".5"/>';
   }
 
   function phaseName(p) {
@@ -385,32 +352,177 @@
   var cssCache = {};
   function setVar(k, v) { v = (+v).toFixed(3); if (cssCache[k] !== v) { cssCache[k] = v; root.style.setProperty(k, v); } }
 
-  function updateAstro(F) {
+  function updateAstro(F, dt) {
     if (!astro) return;
-    function assemble(el, key, from) {
+    dial.step(dt, F);
+    function assemble(el, key, from, extra) {
       var u = seg(key), e = u >= 1 ? 1 : outBack(u, 1.15);
       setOp(el, clamp(u * 3, 0, 1));
-      setAttr(el, "transform", u >= 1 ? "" : "rotate(" + f1(from * (1 - e)) + ") scale(" + (1 + .06 * (1 - e)).toFixed(3) + ")");
+      setAttr(el, "transform", "rotate(" + (from * (1 - e) + (extra || 0)).toFixed(2) + ")" + (u >= 1 ? "" : " scale(" + (1 + .06 * (1 - e)).toFixed(3) + ")"));
     }
-    assemble(astro.ringO, "ringO", -80);
+    assemble(astro.ringO, "ringO", -80, dial.ang.x);
+    assemble(astro.ringM, "ringM", 110, dial.mid.x);
+    assemble(astro.ringI, "ringI", -150, dial.shake.x * .5);
+    setOp(astro.index, clamp(seg("ringO") * 2 - .5, 0, 1));
     setOp(astro.face, clamp(seg("ringO") * 2, 0, 1));
-    if (astro.ringM) assemble(astro.ringM, "ringM", 110);
-    assemble(astro.ringI, "ringI", -150);
     var ue = seg("eye"); setOp(astro.eye, ue); setAttr(astro.eye, "transform", ue >= 1 ? "" : "scale(" + (.7 + .3 * outCubic(ue)).toFixed(3) + ")");
-    var fz = inOut(seg("focus"));
-    setAttr(astro.knurl, "transform", fz >= 1 ? "" : "rotate(" + f1(-70 * (1 - fz)) + ")");
-    setAttr(astro.iris, "stroke-dashoffset", f1(astro.irisLen * (1 - fz)));
-    setOp(astro.iris, fz >= 1 ? .55 : .9);
-    // rete: flies in, then follows local sidereal time (a full turn per sidereal day)
+    setAttr(astro.knurl, "transform", ue >= 1 ? "" : "rotate(" + f1(-70 * (1 - outCubic(ue))) + ")");
+    setAttr(astro.iris, "stroke-dashoffset", f1(astro.irisLen * (1 - outCubic(ue))));
+    setOp(astro.iris, ue >= 1 ? .55 : .9);
+    // rete: flies in, then follows local sidereal time; on submit its North Star arm swings home (dial.rete)
     var ur = seg("rete"), er = ur >= 1 ? 1 : outBack(ur, 1.1);
     setOp(astro.rete, clamp(ur * 2.5, 0, 1) * .95);
-    setAttr(astro.rete, "transform", "rotate(" + (F.L + 70 * (1 - er)).toFixed(2) + ")");
-    // hand: sweeps into place, then ticks once a minute; the bead ticks each second
-    var hms = localHMS(nowMs(), sky.lc), target = ((hms[0] + hms[1] / 60) - 12) * 15, uh = seg("hand");
-    if (astro.handA == null || uh < 1) astro.handA = target - 200 * (1 - outBack(uh, 1.2)); else astro.handA += (target - astro.handA) * .25;
-    setOp(astro.hand, clamp(uh * 3, 0, 1)); setAttr(astro.hand, "transform", "rotate(" + astro.handA.toFixed(2) + ")");
-    setOp(astro.sec, clamp(uh * 3, 0, 1)); setAttr(astro.sec, "transform", "rotate(" + hms[2] * 6 + ")");
+    setAttr(astro.rete, "transform", "rotate(" + (dial.rete.x + 70 * (1 - er)).toFixed(2) + ")");
+    setOp(astro.flash, dial.flash);
+    dial.words();
   }
+
+  /* ---------------- the dial: the outer ring chooses the sign-in mode ----------------
+     Selecting a stop clicks the same existing (now hidden) panel links app.js already handles,
+     so the panel switch runs exactly the old code paths. Inputs stay plain <input>s in the plate. */
+  function spring(x, k, c) {
+    return { x: x, v: 0, t: x, k: k, c: c, step: function (dt) {
+      if (reduce || !dt) { if (reduce) { this.x = this.t; this.v = 0; } return; }
+      var n = Math.max(1, Math.ceil(dt / .008)), h = dt / n;
+      for (var i = 0; i < n; i++) { this.v += (this.k * (this.t - this.x) - this.c * this.v) * h; this.x += this.v * h; }
+    } };
+  }
+  var SWITCH = { "0>1": ["teacherLoginBtn"], "1>2": ["showTeacherSignUpBtn"], "2>1": ["backToTeacherLoginBtn"], "1>0": ["backToMainLoginBtn"],
+    "0>2": ["teacherLoginBtn", "showTeacherSignUpBtn"], "2>0": ["backToTeacherLoginBtn", "backToMainLoginBtn"] };
+  var dial = {
+    mode: 0, ang: spring(0, 190, 15), mid: spring(-3 * NOTCH, 150, 13), rete: spring(0, 70, 12), shake: spring(0, 320, 9),
+    flash: 0, flashAt: -1, locked: false, lockAt: -1e9, back: false, filled: -1, need: 3, glint: 0, drag: null,
+    el: null, hit: null, radios: [], lastWordAng: null, scale: 1,
+    modeOfPanel: function (p) { for (var i = 0; i < MODES.length; i++) if (p && p.id === MODES[i].panel) return i; return 0; },
+    sync: function (p) {           // the panel changed (by the dial or by app.js): follow it
+      var m = dial.modeOfPanel(p);
+      if (m !== dial.mode) { dial.mode = m; dial.locked = false; dial.back = false; dial.filled = -1; }
+      if (!dial.drag) dial.ang.t = -m * DETENT;
+      dial.radios.forEach(function (r, i) { r.setAttribute("aria-checked", i === m ? "true" : "false"); r.tabIndex = i === m ? 0 : -1; });
+    },
+    select: function (m, focus) {
+      m = clamp(m | 0, 0, MODES.length - 1);
+      var from = dial.modeOfPanel(activePanel());
+      dial.ang.t = -m * DETENT;
+      if (m !== from) (SWITCH[from + ">" + m] || []).forEach(function (id) { var a = doc.getElementById(id); if (a) a.click(); });
+      dial.sync(activePanel());
+      if (focus && dial.radios[m]) dial.radios[m].focus({ preventScroll: true });
+    },
+    lock: function () {           // submit: rings align, the North Star arm swings home, a soft flash
+      dial.locked = true; dial.back = false; dial.lockAt = performance.now();
+      dial.mid.t = 0; dial.rete.t = Math.round(dial.rete.x / 360) * 360; dial.flashAt = performance.now() + (reduce ? 0 : 420);
+    },
+    reject: function () {         // the existing error path fired: the lock shakes back one notch
+      if (!dial.locked && performance.now() - dial.lockAt > 1500) return;
+      dial.locked = false; dial.back = true; dial.flashAt = -1;
+      if (!reduce) { dial.shake.v += 240; dial.mid.v -= 160; }
+    },
+    step: function (dt, F) {
+      var p = activePanel(), ins = p ? p.querySelectorAll("input.login-input") : [], n = 0;
+      for (var i = 0; i < ins.length; i++) if (ins[i].value) n++;
+      if (n !== dial.filled) { if (dial.filled >= 0 && n > dial.filled) dial.glint = 1; dial.filled = n; dial.back = false; }
+      dial.need = ins.length || 3;
+      if (dial.locked && performance.now() - dial.lockAt > 20000) dial.locked = false; // nothing came back: let go
+      if (!dial.locked) {
+        dial.mid.t = (n - dial.need - (dial.back ? 1 : 0)) * NOTCH;
+        var d = ((F.L - dial.rete.t) % 360 + 540) % 360 - 180; dial.rete.t += d; // follow sidereal time, unwrapped
+      }
+      if (!dial.started) { dial.rete.x = dial.rete.t; dial.started = true; } // no swing on the first frame
+      dial.ang.step(dt); dial.mid.step(dt); dial.rete.step(dt); dial.shake.step(dt);
+      var fa = dial.flashAt > 0 ? (performance.now() - dial.flashAt) / 1000 : -1;
+      dial.flash = fa < 0 ? 0 : fa < .12 ? fa / .12 * .9 : Math.max(0, .9 * (1 - (fa - .12) / .9));
+      dial.glint = Math.max(0, dial.glint - (dt || 0) * 2.2);
+      if (astro && astro.glint) setOp(astro.glint, dial.glint * .7);
+    },
+    words: function () {          // keep each word upright and the radio buttons over the words
+      if (!astro || !astro.words) return;
+      var a = dial.ang.x + dial.shake.x, key = a.toFixed(1) + "|" + dial.scale.toFixed(3);
+      if (key === dial.lastWordAng) return; dial.lastWordAng = key;
+      astro.words.forEach(function (w, i) {
+        var sa = ((i * DETENT + a) % 360 + 360) % 360, low = sa > 100 && sa < 260;
+        setAttr(w.a, "display", low ? "none" : "inline"); setAttr(w.b, "display", low ? "inline" : "none");
+        setAttr(w.g, "class", "obs-word" + (i === dial.mode ? " obs-word-on" : ""));
+        var r = dial.radios[i]; if (!r) return;
+        var G = astro.G, wr = (G.hIn + G.R) / 2 * dial.scale, rad = sa * RAD, half = dial.size / 2;
+        r.style.transform = "translate(" + (half + Math.sin(rad) * wr).toFixed(1) + "px," + (half - Math.cos(rad) * wr).toFixed(1) + "px) translate(-50%,-50%) rotate(" + (low ? sa - 180 : sa).toFixed(1) + "deg)";
+      });
+    },
+    layout: function () {         // size the hit ring and buttons to the drawn astrolabe
+      if (!dial.el || !astro) return;
+      var G = astro.G, size = dial.el.offsetWidth || 1; dial.size = size; dial.scale = size / (2 * G.R + 36);
+      var ro = (G.R + 12) * dial.scale, ri = (G.hIn - 8) * dial.scale, c = size / 2;
+      function circ(r) { return "M" + (c - r) + " " + c + "a" + r + " " + r + " 0 1 0 " + 2 * r + " 0a" + r + " " + r + " 0 1 0 " + -2 * r + " 0Z"; }
+      dial.hit.style.clipPath = "path(evenodd, '" + circ(ro) + circ(ri) + "')";
+      var bw = (phone ? 74 : 112) * dial.scale * (phone ? 1.9 : 1.6), bh = (G.R - G.hIn + 10) * dial.scale;
+      dial.radios.forEach(function (r) { r.style.width = bw.toFixed(0) + "px"; r.style.height = bh.toFixed(0) + "px"; });
+      dial.lastWordAng = null; dial.words();
+    },
+    build: function () {
+      var el = doc.createElement("div"); el.id = "obs-dial"; el.setAttribute("role", "radiogroup"); el.setAttribute("aria-label", "Sign-in mode");
+      var hit = doc.createElement("div"); hit.className = "obs-ring-hit"; hit.setAttribute("aria-hidden", "true"); el.appendChild(hit);
+      MODES.forEach(function (m, i) {
+        var b = doc.createElement("button"); b.type = "button"; b.className = "obs-mode"; b.setAttribute("role", "radio"); b.textContent = m.label;
+        b.addEventListener("click", function (e) { e.preventDefault(); dial.select(i, false); });
+        el.appendChild(b); dial.radios.push(b);
+      });
+      el.addEventListener("keydown", function (e) {
+        var k = e.key, m = dial.mode;
+        if (k === "ArrowRight" || k === "ArrowDown") m++; else if (k === "ArrowLeft" || k === "ArrowUp") m--; else if (k === "Home") m = 0; else if (k === "End") m = MODES.length - 1; else return;
+        e.preventDefault(); dial.select(clamp(m, 0, MODES.length - 1), true);
+      });
+      // drag or flick the ring (mouse: around the ring; touch: swipe left or right anywhere on it)
+      function down(e, radio) { // a press on the ring or on a word: a drag if it moves, a tap if it does not
+        if (e.button > 0) return;
+        var b = el.getBoundingClientRect(), cx = b.left + b.width / 2, cy = b.top + b.height / 2;
+        dial.drag = { id: e.pointerId, radio: radio, touch: e.pointerType !== "mouse", cx: cx, cy: cy, x0: e.clientX, a0: Math.atan2(e.clientX - cx, cy - e.clientY) / RAD, start: dial.ang.x, moved: false, lastA: dial.ang.x, lastT: performance.now(), vel: 0 };
+        try { hit.setPointerCapture(e.pointerId); } catch (er) {}
+        if (radio == null || e.pointerType !== "mouse") e.preventDefault();
+      }
+      hit.addEventListener("pointerdown", function (e) { down(e, null); });
+      dial.radios.forEach(function (r, i) { r.addEventListener("pointerdown", function (e) { down(e, i); }); });
+      hit.addEventListener("pointermove", function (e) {
+        var d = dial.drag; if (!d || d.id !== e.pointerId) return;
+        var delta;
+        if (d.touch) delta = (e.clientX - d.x0) / Math.max(1, b2r()) / RAD;
+        else { var a = Math.atan2(e.clientX - d.cx, d.cy - e.clientY) / RAD; delta = ((a - d.a0) % 360 + 540) % 360 - 180; }
+        if (Math.abs(delta) > 2.5) d.moved = true;
+        var lo = -(MODES.length - 1) * DETENT, x = d.start + delta;
+        if (x > 0) x = x * .3; else if (x < lo) x = lo + (x - lo) * .3; // rubber band past the end stops
+        var now = performance.now(), dtm = Math.max(1, now - d.lastT); d.vel = (x - d.lastA) / dtm * 1000; d.lastA = x; d.lastT = now;
+        var before = Math.round(-dial.ang.x / DETENT); dial.ang.x = dial.ang.t = x; dial.ang.v = 0;
+        if (Math.round(-x / DETENT) !== before && astro && astro.index) dial.glint = Math.max(dial.glint, .6); // detent tick
+      });
+      function b2r() { return astro ? (astro.G.hIn + astro.G.R) / 2 * dial.scale : 100; }
+      function end(e) {
+        var d = dial.drag; if (!d || d.id !== e.pointerId) return; dial.drag = null;
+        if (!d.moved && d.radio != null) { dial.select(d.radio, false); return; }
+        if (!d.moved) { // a tap on the ring: the word nearest the tap, if any
+          var a = Math.atan2(e.clientX - d.cx, d.cy - e.clientY) / RAD, best = -1, bd = 34;
+          MODES.forEach(function (m, i) { var sa = i * DETENT + dial.ang.x, dd = Math.abs(((a - sa) % 360 + 540) % 360 - 180); if (dd < bd) { bd = dd; best = i; } });
+          if (best >= 0) dial.select(best, false); else dial.ang.t = -dial.mode * DETENT;
+          return;
+        }
+        var proj = dial.ang.x + clamp(d.vel, -400, 400) * .05; // a flick carries up to 20 degrees past the release point
+        dial.select(clamp(Math.round(-proj / DETENT), 0, MODES.length - 1), false);
+      }
+      hit.addEventListener("pointerup", end); hit.addEventListener("pointercancel", end);
+      var first = doc.getElementById("login"); (first && first.parentNode ? first.parentNode : doc.body).insertBefore(el, first || null);
+      dial.el = el; dial.hit = hit;
+      if (win.ResizeObserver) new ResizeObserver(function () { dial.layout(); }).observe(el);
+    },
+    hooks: function () {
+      // submit: a click on the active plate's own button (keyboard activation of a button is a click too)
+      doc.addEventListener("click", function (e) {
+        var b = e.target && e.target.closest && e.target.closest(".login-buttons button"), p = activePanel();
+        if (b && p && p.contains(b)) dial.lock();
+      }, true);
+      // errors in app.js surface through alert() (ui-toast.js turns it into a toast); observe and pass straight through
+      try {
+        var _alert = win.alert;
+        if (typeof _alert === "function") win.alert = function () { if (activePanel()) dial.reject(); return _alert.apply(this, arguments); };
+      } catch (e) {}
+    }
+  };
 
   /* ---------------- weather props (sprites + particles) ---------------- */
   function makeCloud(seed, w, h, nightK, heavy) {
@@ -472,7 +584,6 @@
     for (var d = 0; d < m; d++) drops.push({ x: r(), y: r(), z: .4 + r() * .6 });
     flakes = []; var fsn = wk === "snow" ? Math.round(120 * area) : 0;
     for (var f = 0; f < fsn; f++) flakes.push({ x: r(), y: r(), z: .4 + r() * .6, ph: r() * TAU, rot: r() * TAU });
-    beads = []; if (wk === "rain" || wk === "storm") for (var b = 0; b < (phone ? 18 : 34); b++) beads.push({ side: b % 2, dx: Math.pow(r(), 1.6) * (phone ? 26 : 64), y: r(), r: 1.1 + r() * 2.6, v: r() < .3 ? .01 + r() * .03 : 0 });
     nextFlash = 0;
   }
   function windX() { var w = weather().wind; return isFinite(w) ? Math.sin(w * RAD) : -.6; } // facing south: west is screen right
@@ -537,14 +648,14 @@
     ctx.restore();
   }
   function starAppear(mag) {
-    var t = te(), on = 1.6 + clamp((mag + 1.5) / 7, 0, 1) * 2.1;
+    var t = te(), on = TL.stars[0] + clamp((mag + 1.5) / 7, 0, 1) * (TL.stars[1] - TL.stars[0] - .3);
     if (t < on) return 0; var d = t - on;
     if (d < 1 / 30) return 1.7;                      // a one-frame twinkle-on
     return Math.min(1, .55 + d / .35 * .45);
   }
   function drawStars(F, vis, t, ox, oy) {
     if (!CAT || vis < .02) return;
-    var S = CAT.s, sl = slit(), x0 = sl[0] - 4, x1 = sl[1] + 4;
+    var S = CAT.s, sl = view(), x0 = sl[0] - 4, x1 = sl[1] + 4;
     if (x1 - x0 < 6) return;
     ctx.save(); ctx.translate(ox, oy);
     for (var i = 0; i < S.length; i++) {
@@ -589,14 +700,14 @@
     var nx = clamp(hub.x, x0, x1), ny = clamp(hub.y, y0, y1);
     if (hub.r && Math.hypot(nx - hub.x, ny - hub.y) < hub.r + pad) return true;
     var pl = plaqueBox; if (pl && x1 > pl.left - pad && x0 < pl.right + pad && y1 > pl.top - pad && y0 < pl.bottom + pad) return true;
-    return y1 > cam.hy - 6 || x0 < leafVis + 8 || x1 > W - leafVis - 8;
+    return y1 > cam.hy - 6 || x0 < edge + 8 || x1 > W - edge - 8;
   }
   function drawConstellations(F, vis, ox, oy) {
     if (!CAT || !NAMED.length || vis < .03) return;
-    var sl = [leafVis, W - leafVis], list = visibleNamed(F, sl);
+    var sl = [edge, W - edge], list = visibleNamed(F, sl);
     if (!inkPlan) { // order is fixed once, left to right, like a quill sweeping the plate
       var ord = list.slice().sort(function (a, b) { return a.x - b.x; }).map(function (o) { return o.c.n; });
-      inkPlan = {}; var n = ord.length, step = n > 1 ? 2.0 / (n - 1) : 0;
+      inkPlan = {}; var n = ord.length, step = n > 1 ? (TL.ink[1] - TL.ink[0] - INK_STROKE) / (n - 1) : 0;
       ord.forEach(function (nm, i) { inkPlan[nm] = TL.ink[0] + i * step; });
     }
     var t = te();
@@ -605,7 +716,7 @@
     ctx.font = "italic 500 " + fsz + "px 'Cormorant Garamond', Georgia, serif"; ctx.textAlign = "center";
     if ("letterSpacing" in ctx) ctx.letterSpacing = phone ? "1.5px" : "2.2px";
     for (var i = 0; i < list.length; i++) {
-      var o = list[i], c = o.c, st = inkPlan[c.n] != null ? inkPlan[c.n] : TL.ink[0] + 1.5, p = clamp((t - st) / 1.0, 0, 1);
+      var o = list[i], c = o.c, st = inkPlan[c.n] != null ? inkPlan[c.n] : TL.ink[0] + .6, p = clamp((t - st) / INK_STROKE, 0, 1);
       if (p <= 0) continue;
       var segs = [], total = 0;
       for (var k = 0; k < c.segs.length; k++) {
@@ -626,9 +737,9 @@
       ctx.fillStyle = rgba(CREAM, .5 * vis);
       blots.forEach(function (b) { ctx.beginPath(); ctx.arc(b[0], b[1], 1.5, 0, TAU); ctx.fill(); });
       if (pen && p < 1) { ctx.fillStyle = "rgba(242,196,107," + (.9 * vis).toFixed(3) + ")"; ctx.beginPath(); ctx.arc(pen[0], pen[1], 1.6, 0, TAU); ctx.fill(); }
-      var la = clamp((t - st - .85) / .5, 0, 1);
+      var la = clamp((t - st - INK_STROKE * .8) / .4, 0, 1);
       if (la > 0 && segs.length) {
-        var lx = o.x, ly = o.y + (phone ? 20 : 26), inHub = function (x, y) { return Math.hypot(x - hub.x, y - hub.y) < hub.r + 12 || y > cam.hy - 12 || x < leafVis + 30 || x > W - leafVis - 30; };
+        var lx = o.x, ly = o.y + (phone ? 20 : 26), inHub = function (x, y) { return Math.hypot(x - hub.x, y - hub.y) < hub.r + 12 || y > cam.hy - 12 || x < edge + 30 || x > W - edge - 30; };
         if (inHub(lx, ly)) { // try the vertex farthest from the astrolabe
           var best = null, bd = -1;
           segs.forEach(function (q) { [[q[0], q[1]], [q[2], q[3]]].forEach(function (v) { var dd = Math.hypot(v[0] - hub.x, v[1] - hub.y); if (dd > bd && !inHub(v[0], v[1] + 16)) { bd = dd; best = v; } }); });
@@ -639,9 +750,9 @@
         ctx.fillStyle = rgba(CREAM, .62 * vis * la); ctx.fillText(lbl, lx, ly);
       }
     }
-    // Polaris, when it is in the slit
+    // Polaris, when it is in view
     if (project(enu(POLARIS[0], POLARIS[1], F, V), P) && P[2] > .05 && P[0] > sl[0] && P[0] < sl[1] && P[1] > 0) {
-      var pa = clamp((t - 5.2) / .6, 0, 1); if (pa > 0) { ctx.fillStyle = rgba(CREAM, .62 * vis * pa); ctx.textAlign = "left"; if (!labelHitsAstro("POLARIS", P[0] + 9 + ox, P[1] + 4 + oy, fsz, "left")) ctx.fillText("POLARIS", P[0] + 9, P[1] + 4); }
+      var pa = clamp((t - TL.ink[1] + .4) / .4, 0, 1); if (pa > 0) { ctx.fillStyle = rgba(CREAM, .62 * vis * pa); ctx.textAlign = "left"; if (!labelHitsAstro("POLARIS", P[0] + 9 + ox, P[1] + 4 + oy, fsz, "left")) ctx.fillText("POLARIS", P[0] + 9, P[1] + 4); }
     }
     if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
     ctx.restore();
@@ -652,11 +763,11 @@
   }
   function moonPlace(F, wk) {
     var mv = sky.moonVec; if (sky.moonAlt < -.5 || sky.illum < .04) return null; // a new moon is invisible in the real sky too
-    var r = phone ? 15 : 25, sl = [leafVis, W - leafVis], x, y, halo = moonHalo(r, wk);
+    var r = phone ? 15 : 25, sl = [edge, W - edge], x, y, halo = moonHalo(r, wk);
     if (project(mv, P)) { x = P[0]; y = P[1]; } else { x = mv[0] > 0 ? 0 : W; y = cam.hy - sky.moonAlt / 70 * (cam.hy - 40); }
     if (phone) {
-      // phones: the slit is narrower than the astrolabe, so the moon lives in the open sky above the ring,
-      // disc and halo kept at least 16px inside the slit and clear of the ring
+      // phones: the screen is barely wider than the astrolabe, so the moon lives in the open sky above the ring,
+      // disc and halo kept at least 16px from every edge and clear of the ring
       var M = 16, room = hub.top - M - 4;                          // vertical space above the ring
       halo = Math.min(halo, room / 2, (sl[1] - sl[0]) / 2 - M);
       if (halo < r * 1.4) { r = Math.floor(halo / 1.4); if (r < 8) return null; }
@@ -743,7 +854,7 @@
     ctx.globalAlpha = 1;
     if (wk === "cloudy" || wk === "rain" || wk === "storm") { ctx.fillStyle = sky.night > .5 ? "rgba(14,18,28,.28)" : "rgba(170,178,192,.22)"; ctx.fillRect(0, 0, W, cam.hy); }
   }
-  function drawPrecip(wk, dt, sl) {
+  function drawPrecip(wk, dt) {
     var night = sky.night > .5;
     if (drops.length) {
       var wx = windX() * .22;
@@ -762,15 +873,6 @@
         for (var a = 0; a < 3; a++) { var an = q.rot + a * Math.PI / 3, cx = Math.cos(an) * s, cy = Math.sin(an) * s; ctx.moveTo(fx - cx, fy - cy); ctx.lineTo(fx + cx, fy + cy); }
       }
       ctx.stroke();
-    }
-    if (beads.length && sl[2] > .6) { // droplets beading on the glass at the slit edge
-      for (var b = 0; b < beads.length; b++) {
-        var e = beads[b]; if (!reduce && e.v) { e.y += e.v * dt; if (e.y > 1.02) e.y = -.02; }
-        var bx = e.side ? sl[1] - 3 - e.dx : sl[0] + 3 + e.dx, by = e.y * H;
-        ctx.fillStyle = "rgba(8,12,20,.35)"; ctx.beginPath(); ctx.arc(bx, by, e.r, 0, TAU); ctx.fill();
-        ctx.strokeStyle = "rgba(237,230,214,.55)"; ctx.lineWidth = .7; ctx.beginPath(); ctx.arc(bx, by, e.r * .7, Math.PI * 1.05, Math.PI * 1.55); ctx.stroke();
-        ctx.strokeStyle = "rgba(237,230,214,.22)"; ctx.beginPath(); ctx.arc(bx, by, e.r, Math.PI * .15, Math.PI * .85); ctx.stroke();
-      }
     }
   }
   function drawFog(wk, t) {
@@ -794,8 +896,8 @@
     ctx.fillStyle = "rgba(255,250,236," + (vis * fade).toFixed(3) + ")"; ctx.beginPath(); ctx.arc(hx, hy, 1.3, 0, TAU); ctx.fill(); ctx.restore();
   }
   function launchShoot(t, intro) {
-    var sl = [leafVis, W - leafVis], w = sl[1] - sl[0];
-    if (intro) shoot = { intro: true, t0: (TL.shoot[0]) * (phone ? 9 / 14 : 1), dur: .9 * (phone ? .8 : 1), x0: sl[0] + w * .12, y0: H * .1, dx: w * .42, dy: H * .16 };
+    var sl = [edge, W - edge], w = sl[1] - sl[0];
+    if (intro) shoot = { intro: true, t0: TL.shoot[0] * rate(), dur: (TL.shoot[1] - TL.shoot[0]) * rate() * .95, x0: sl[0] + w * .12, y0: H * .1, dx: w * .42, dy: H * .16 };
     else { var dir = Math.random() < .5 ? 1 : -1, x0 = sl[0] + w * (dir > 0 ? .1 + Math.random() * .4 : .5 + Math.random() * .4); shoot = { t0: t, dur: .7 + Math.random() * .5, x0: x0, y0: H * (.06 + Math.random() * .3), dx: dir * w * (.25 + Math.random() * .2), dy: H * (.08 + Math.random() * .12) }; }
   }
   function drawSatellite(t, vis, sl) {
@@ -808,7 +910,7 @@
   function frame(now, dt) {
     if (!active || !cv) return false;
     dt = Math.min(dt || 0, .05);
-    var endT = TL.end * (phone ? 9 / 14 : 1);
+    var endT = TL.end * rate();
     if (!isNaN(freezeT)) T = freezeT;
     else if (reduce) T = endT;
     else if (T < endT) T = Math.min(endT, T + dt * speed);
@@ -819,7 +921,7 @@
     var hk = (sky.night > .5 ? "n" : sky.sunAlt > 8 ? "d" : "t") + W + "x" + H;
     if (hk !== hillKey) { hillKey = hk; buildHills(); }
     if (!reduce) { var k = 1 - Math.pow(.004, dt); ptr.x += (ptr.tx - ptr.x) * k; ptr.y += (ptr.ty - ptr.y) * k; }
-    var F = frameOf(nowMs(), sky.lc, drift()), sl = slit();
+    var F = frameOf(nowMs(), sky.lc, drift()), sl = view();
     var cover = WXCLOUD[wk] || 0, vis = sky.night * (1 - cover * .85);
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -838,7 +940,7 @@
         if (!nextShoot) nextShoot = t + 20 + Math.random() * 20;
         if (!shoot && t > nextShoot) { launchShoot(t, false); nextShoot = t + 20 + Math.random() * 20; }
         if (!nextSat) nextSat = t + 50 + Math.random() * 40;
-        if (!sat && t > nextSat) { var yy = H * (.12 + Math.random() * .3); sat = { t0: t, dur: 22 + Math.random() * 8, x0: leafVis - 10, x1: W - leafVis + 10, y0: yy, y1: yy + H * (Math.random() * .2 - .1) }; if (Math.random() < .5) { var tmp = sat.x0; sat.x0 = sat.x1; sat.x1 = tmp; } nextSat = t + 75 + Math.random() * 35; }
+        if (!sat && t > nextSat) { var yy = H * (.12 + Math.random() * .3); sat = { t0: t, dur: 22 + Math.random() * 8, x0: edge - 10, x1: W - edge + 10, y0: yy, y1: yy + H * (Math.random() * .2 - .1) }; if (Math.random() < .5) { var tmp = sat.x0; sat.x0 = sat.x1; sat.x1 = tmp; } nextSat = t + 75 + Math.random() * 35; }
       }
       drawShooting(shoot && shoot.intro ? T : t, sky.night, sl);
       drawSatellite(t, sky.night, sl);
@@ -846,20 +948,14 @@
     drawClouds(wk, t, dt, ptr.x * 6, ptr.y * 3);
     if (hillCv) ctx.drawImage(hillCv, -20 + ptr.x * 8, hillCv.top + ptr.y * 2, W + 40, H * .3);
     drawFog(wk, t);
-    drawPrecip(wk, dt, sl);
+    drawPrecip(wk, dt);
 
-    // DOM: shutters, seam, astrolabe, card focus, plaque
-    var half = W / 2 - leafVis, open = sl[2];
-    var lx = (-open * half).toFixed(1), rx = (open * half).toFixed(1);
-    if (leafL.__x !== lx) { leafL.__x = lx; leafL.style.transform = "translateX(" + lx + "px)"; }
-    if (leafR.__x !== rx) { leafR.__x = rx; leafR.style.transform = "translateX(" + rx + "px)"; }
-    var tt = te(), seamA = tt < 1.2 ? (.35 + .65 * sstep(clamp(tt / .7, 0, 1))) * (.85 + .15 * Math.sin(tt * 9)) : clamp(1 - open * 4, 0, 1);
-    setVar("--obs-seam", seamA);
-    updateAstro(F);
-    setVar("--obs-card", Math.max(cardFloor, seg("card")));
-    setVar("--obs-focus", inOut(seg("focus")));
+    // DOM: astrolabe, card, plaque
+    updateAstro(F, dt);
+    // the plate fades in on the page clock (from navigation), so it is typeable by ~0.6 s however late this script runs
+    setVar("--obs-card", isNaN(freezeT) ? Math.max(cardFloor, clamp((performance.now() / 1000 - TL.card[0]) / (TL.card[1] - TL.card[0]), 0, 1)) : seg("card"));
+    var hop = seg("hop"); setVar("--obs-hop", hop >= 1 ? 1 : hop <= 0 ? 0 : outBack(hop, 2.2));
     setVar("--obs-plaque", sstep(seg("plaque")));
-    setVar("--obs-shade", tt < 1.2 ? .62 : clamp(.62 * (1 - (tt - 1.2) / 1.9), 0, .62));
     var isDay = sky.night < .3; if (isDay !== root.hasAttribute("data-obs-day")) root.toggleAttribute("data-obs-day", isDay);
     var fin = te() >= TL.end - 1e-3;
     if (fin !== done) { done = fin; root.classList.toggle("obs-done", fin); }
@@ -875,6 +971,7 @@
     if (p) { var h = p.offsetHeight; if (h) root.style.setProperty("--obs-card-h", h + "px"); }
     if (p && shown && p !== shown) { skip(); root.classList.add("obs-swap"); setTimeout(function () { root.classList.remove("obs-swap"); }, 480); }
     shown = p || shown;
+    if (p) dial.sync(p);
     if (active) requestAnimationFrame(measureHub);
   }
   function skip() { if (isNaN(freezeT)) speed = 14; }
@@ -888,11 +985,11 @@
     obsEl = doc.getElementById("obs"); astroEl = doc.getElementById("obs-astro");
     if (!obsEl || !astroEl) return;
     cv = doc.getElementById("obs-sky"); ctx = cv && cv.getContext("2d");
-    leafL = obsEl.querySelector(".obs-leaf-l"); leafR = obsEl.querySelector(".obs-leaf-r"); seamEl = obsEl.querySelector(".obs-seam");
-    if (!ctx || !leafL || !leafR) return;
+    if (!ctx) return;
     perf0 = performance.now() / 1000;
-    T = !isNaN(freezeT) ? freezeT : Math.min(perf0, 1.1); // the CSS dome has been on screen since first paint
-    if (isNaN(freezeT) && perf0 > 2) cardFloor = 1;          // the CSS fallback already showed the form: never hide it again
+    T = !isNaN(freezeT) ? freezeT : 0;
+    if (isNaN(freezeT) && perf0 > 1) cardFloor = 1;          // the CSS fallback already showed the form: never hide it again
+    dial.build(); dial.hooks();
     computeSky(); resize(); loadCat(); computeSky();
     root.classList.add("obs-js");
     win.addEventListener("resize", function () { resize(); watch(); });
@@ -907,7 +1004,7 @@
     frame(performance.now(), 0);
     if (reduce || !win.__loginAlive) selfLoop();
   }
-  win.__obs = { frame: frame, skip: skip, state: function () { return { T: T, te: te(), phone: phone, sky: sky, done: done }; } };
+  win.__obs = { frame: frame, skip: skip, dial: dial, state: function () { return { T: T, te: te(), phone: phone, sky: sky, done: done, mode: dial.mode, locked: dial.locked, ring: dial.ang.x, mid: dial.mid.x }; } };
   win.__obsFrame = function (now, dt) { return frame(now, dt); };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", init); else init();
 })();

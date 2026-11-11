@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="ui-design.css?v=20261021k" />
   <link rel="preload" href="/observatory/fonts/cormorant-garamond.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/observatory/fonts/literata.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="/observatory/observatory.css?v=20261110obs2" />
+  <link rel="stylesheet" href="/observatory/observatory.css?v=20261110obs3" />
   <style>
     @view-transition { navigation: auto; }
     @media (prefers-reduced-motion: reduce) {
@@ -47,13 +47,9 @@
 </head>
 <body>
 
-<!-- The Jasper Observatory: dome, sky canvas, and astrolabe (decorative, see observatory/observatory.js) -->
+<!-- The Jasper Observatory: sky canvas and astrolabe (see observatory/observatory.js) -->
 <div id="obs" aria-hidden="true">
   <canvas id="obs-sky"></canvas>
-  <div class="obs-leaf obs-leaf-l"></div>
-  <div class="obs-leaf obs-leaf-r"></div>
-  <i class="obs-shade"></i>
-  <i class="obs-seam"></i>
 </div>
 <div id="obs-astro" aria-hidden="true"></div>
 
@@ -404,11 +400,11 @@
 <script type="module" src="app.js?v=20261102a"></script>
 <script defer src="ui-toast.js?v=20261021k"></script>
 <script defer src="ui-polish.js?v=20261021k"></script>
-<script defer src="login-sky.js?v=20261110obs2"></script>
+<script defer src="login-sky.js?v=20261110obs3"></script>
 <script type="module" src="study-portal.js?v=20261021j"></script>
 <script defer src="portal-moon.js?v=dv2"></script>
-<script defer src="login-alive.js?v=20261110obs2"></script>
+<script defer src="login-alive.js?v=20261110obs3"></script>
 <script defer src="astro-mode.js?v=20261021k"></script>
-<script defer src="/observatory/observatory.js?v=20261110obs2"></script>
+<script defer src="/observatory/observatory.js?v=20261110obs3"></script>
 </body>
 </html>

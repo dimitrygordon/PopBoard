@@ -1,7 +1,7 @@
 /* observatory.css - "The Jasper Observatory" homepage (art direction: Leo).
-   Dome shutters, sky canvas, brass astrolabe, and the parchment sign-in card.
-   Scoped to html.obs (set only by index.html). Purely visual: no IDs,
-   inputs, or behavior from app.js are changed. */
+   Full-bleed sky canvas, the brass astrolabe dial (it chooses the sign-in mode), and the parchment eyepiece plate.
+   Scoped to html.obs (set only by index.html). No IDs, inputs, or app.js behavior are changed;
+   the old mode links are hidden here and driven by the dial in observatory.js. */
 
 @font-face {
   font-family: "Cormorant Garamond"; font-style: normal; font-weight: 300 700; font-display: swap;
@@ -27,31 +27,28 @@ html.obs {
   /* desktop: astrolabe ~620px, centred slightly above the middle */
   --obs-s: clamp(540px, calc(100vh - 140px), 620px);
   --obs-cy: calc(var(--obs-s) / 2 + max(24px, (100vh - var(--obs-s) - 90px) * 0.45));
-  --obs-card-w: 340px;
-  --obs-card-top: calc(var(--obs-cy) - var(--obs-card-h, 310px) / 2 + 14px);
-  /* mascot: how much of him rises above the card, kept inside the inscription ring (inner edge = s * 0.3648) */
-  --obs-rig: 96px;
-  --obs-peek: clamp(30px, calc(var(--obs-s) * 0.3648 - 16px - var(--obs-card-h, 310px) / 2 + 14px), 60px);
+  /* the eyepiece plate sits a little below the hub so the mascot can stand on it inside the inscription ring */
+  --obs-card-w: 300px;
+  --obs-card-top: calc(var(--obs-cy) - var(--obs-card-h, 230px) / 2 + 34px);
+  /* mascot rig size; he stands on the plate, his feet (the lowest 15% of the art) tucked behind its top edge */
+  --obs-rig: 184px;
   --obs-plaque-top: calc(var(--obs-cy) + var(--obs-s) / 2 + 14px);
   /* intro values, driven by observatory.js (defaults = final state) */
   --obs-card: 1;
-  --obs-focus: 1;
+  --obs-hop: 1;
   --obs-plaque: 1;
-  --obs-seam: 0;
-  --obs-shade: 0;
   background: var(--obs-night) !important;
 }
 @media (max-width: 699px) {
   html.obs {
     --obs-s: min(360px, calc(100vw - 24px));
     /* open sky above the ring for the moon on taller phones */
-    --obs-cy: calc(var(--obs-s) / 2 + clamp(22px, (100vh - 640px) * 0.5, 110px) + env(safe-area-inset-top, 0px));
-    --obs-card-w: min(340px, calc(100vw - 32px));
-    /* the card starts below the centre so the whole upper half of the astrolabe stays clear, mascot included */
-    --obs-rig: 70px;
-    --obs-peek: 43px;
-    --obs-card-top: calc(var(--obs-cy) + var(--obs-peek) + 6px);
-    --obs-plaque-top: calc(var(--obs-card-top) + var(--obs-card-h, 330px) + 18px);
+    --obs-cy: calc(var(--obs-s) / 2 + clamp(22px, (100vh - 560px) * 0.5, 150px) + env(safe-area-inset-top, 0px));
+    --obs-card-w: min(320px, calc(100vw - 40px));
+    /* the plate starts just above the hub; the mascot stands on it below the inscription ring, mode words clear */
+    --obs-rig: 150px;
+    --obs-card-top: calc(var(--obs-cy) + 20px);
+    --obs-plaque-top: calc(var(--obs-card-top) + var(--obs-card-h, 240px) + 18px);
   }
 }
 /* phone keyboard open: astrolabe slides up and shrinks, never over the inputs */
@@ -67,7 +64,7 @@ html.obs body.la-on, html.obs body { background: transparent !important; }
 html.obs body.la-on { min-height: calc(var(--obs-plaque-top) + 72px); }
 html.obs body:not(.obs-off) #la-sky { display: none !important; }
 
-/* ---------- the dome ---------- */
+/* ---------- the sky ---------- */
 #obs { display: none; }
 html.obs #obs {
   display: block; position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
@@ -76,23 +73,6 @@ html.obs #obs {
 html.obs body.obs-off #obs, html.obs body.obs-off #obs-astro,
 html.pb-restoring #obs, html.pb-restoring #obs-astro { display: none !important; }
 #obs-sky { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.obs-leaf {
-  position: absolute; top: -2px; bottom: -2px; width: calc(50% + 2px); will-change: transform;
-  background: linear-gradient(90deg, #0c1d14 0%, #1b3b2b 40%, #2F5D46 76%, #27503d 92%, #1a3629 100%);
-}
-.obs-leaf-l { left: 0; }
-.obs-leaf-r { right: 0; background: linear-gradient(270deg, #0c1d14 0%, #1b3b2b 40%, #2F5D46 76%, #27503d 92%, #1a3629 100%); }
-/* darkness inside the dome, lifting as the shutters open */
-.obs-shade { position: absolute; inset: 0; background: #03060b; opacity: var(--obs-shade, 0); }
-html.obs:not(.obs-js) .obs-shade { opacity: .62; }
-.obs-leaf svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.obs-seam {
-  position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; margin-left: -0.5px;
-  background: var(--obs-brass-hi); opacity: var(--obs-seam);
-  box-shadow: 0 0 8px 2px rgba(242, 196, 107, .8), 0 0 46px 9px rgba(217, 164, 65, .3), 0 0 120px 26px rgba(217, 164, 65, .1);
-}
-/* before observatory.js runs: closed dome with the amber seam */
-html.obs:not(.obs-js) .obs-seam { opacity: .9; }
 
 /* ---------- the astrolabe ---------- */
 #obs-astro { display: none; }
@@ -123,6 +103,27 @@ html[data-obs-day] #obs-astro #obsSec circle, html[data-obs-day] #obs-astro #obs
 html[data-obs-day] #obs-astro #obsMoonMark path { fill: #4A3410; }
 html[data-obs-day] #obs-astro svg { filter: drop-shadow(0 10px 24px rgba(40, 52, 70, .32)); }
 
+/* ---------- the mode dial: accessible buttons over the engraved words, and a drag ring ---------- */
+#obs-dial { display: none; }
+html.obs #obs-dial {
+  display: block; position: absolute; left: 50%; top: var(--obs-cy); z-index: 2; pointer-events: none;
+  width: var(--obs-s); height: var(--obs-s); translate: -50% -50%;
+  transition: width .35s ease, height .35s ease, top .35s ease;
+}
+html.obs body.obs-off #obs-dial, html.pb-restoring #obs-dial { display: none !important; }
+#obs-dial .obs-ring-hit { position: absolute; inset: 0; pointer-events: auto; touch-action: none; cursor: grab; }
+#obs-dial .obs-ring-hit:active { cursor: grabbing; }
+#obs-dial .obs-mode {
+  position: absolute; left: 0; top: 0; pointer-events: auto; cursor: pointer; padding: 0; margin: 0; touch-action: none;
+  background: transparent; border: 0; border-radius: 999px; color: transparent; font-size: 12px; overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+#obs-dial .obs-mode:focus-visible { outline: 2px solid var(--obs-brass-hi); outline-offset: 2px; box-shadow: 0 0 14px rgba(242, 196, 107, .55); }
+#obs-astro .obs-word text { opacity: .6; transition: opacity .25s; }
+#obs-astro .obs-word-on text { opacity: 1; fill: #FFE9B8; }
+#obs-astro .obs-polaris { filter: drop-shadow(0 0 3px rgba(242, 196, 107, .7)); }
+html[data-obs-day] #obs-astro .obs-word-on text { fill: #1E1404; }
+
 /* ---------- the sign-in card: parchment in the eyepiece ---------- */
 html.obs #login, html.obs #teacherLogin, html.obs #teacherSignup {
   position: absolute !important; left: 50%; top: var(--obs-card-top); z-index: 3 !important;
@@ -147,34 +148,29 @@ html.obs .la-card::after { display: none !important; }
 html.obs .la-card::before { opacity: .07 !important; mix-blend-mode: multiply !important; }
 html.obs .la-card.la-enter { animation: none !important; }
 html.obs.obs-js #login, html.obs.obs-js #teacherLogin, html.obs.obs-js #teacherSignup {
-  opacity: calc(var(--obs-card) * (.84 + .16 * var(--obs-focus)));
-  filter: blur(calc((1 - var(--obs-focus)) * 3px));
+  opacity: var(--obs-card);
 }
 html.obs.obs-done #login, html.obs.obs-done #teacherLogin, html.obs.obs-done #teacherSignup { filter: none; opacity: 1; }
 html.obs.obs-swap .la-card:not(.hidden) { animation: obs-swap .45s ease both !important; }
 @keyframes obs-swap { from { opacity: .2; filter: blur(3px); } to { opacity: 1; filter: none; } }
-/* no-JS fallback: the form appears at 2 s no matter what */
-html.obs:not(.obs-js) .la-card, html.obs:not(.obs-js) #login { animation: obs-card-in .5s ease 2s both !important; }
+/* no-JS fallback: the form appears right away */
+html.obs:not(.obs-js) .la-card, html.obs:not(.obs-js) #login { animation: obs-card-in .4s ease .3s both !important; }
 @keyframes obs-card-in { from { opacity: 0; } to { opacity: 1; } }
 
 /* the mascot peeks over the eyepiece rim (rig behavior unchanged) */
 html.obs .la-card .login-logo {
   position: absolute; left: 50%; top: 1px; translate: -50% -100%; margin: 0 !important;
-  width: var(--obs-rig); height: var(--obs-peek); clip-path: inset(-400px -400px 0 -400px); z-index: 1;
+  width: var(--obs-rig); height: calc(var(--obs-rig) * .85); clip-path: inset(-400px -400px 0 -400px); z-index: 1;
 }
-html.obs .la-card .la-logo { position: absolute; left: 0; top: 0; width: var(--obs-rig); height: var(--obs-rig); margin: 0; }
+/* the pop-up hop: he springs up from behind the plate (observatory.js drives --obs-hop, 0 to 1 with overshoot) */
+html.obs .la-card .la-logo { position: absolute; left: 0; top: 0; width: var(--obs-rig); height: var(--obs-rig); margin: 0; translate: 0 calc((1 - var(--obs-hop)) * 88%); }
 html.obs .la-card .login-logo > img { position: absolute; left: 0; top: 0; width: var(--obs-rig) !important; height: var(--obs-rig) !important; max-width: none; }
 html.obs .la-card .la-rig { filter: drop-shadow(0 -2px 6px rgba(7, 11, 20, .35)); }
+/* by day the pale wordmark letters sit on the parchment face: a thin ink outline keeps "PopBoard" readable */
+html.obs[data-obs-day] .la-card .la-rig { filter: drop-shadow(0 0 .6px #3A2808) drop-shadow(0 0 .6px #3A2808) drop-shadow(0 2px 5px rgba(40, 30, 10, .35)); }
 
-html.obs .la-card h2 {
-  font-family: "Cormorant Garamond", "IM Fell English", Georgia, serif !important;
-  font-weight: 600 !important; font-variant: small-caps; letter-spacing: .1em !important;
-  font-size: 29px !important; line-height: 1.05 !important; margin: 4px 0 10px !important;
-  background: none !important; -webkit-text-fill-color: var(--obs-ink) !important; color: var(--obs-ink) !important;
-}
-html.obs .la-card h2::after {
-  content: ""; display: block; width: 132px; height: 8px; margin: 5px auto 0;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='132' height='8' viewBox='0 0 132 8'%3E%3Cpath d='M2 4h52M78 4h52' stroke='%238A6420' stroke-width='.8' stroke-linecap='round'/%3E%3Cpath d='M66 .6l3.4 3.4L66 7.4 62.6 4z' fill='none' stroke='%238A6420' stroke-width='.8'/%3E%3Ccircle cx='57' cy='4' r='.9' fill='%238A6420'/%3E%3Ccircle cx='75' cy='4' r='.9' fill='%238A6420'/%3E%3C/svg%3E") center / contain no-repeat;
+html.obs .la-card h2 { /* visually hidden: the dial shows the mode; screen readers still get the heading */
+  position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
 }
 html.obs .la-card .login-input {
   font-family: "Literata", Georgia, serif !important; font-size: 15px !important; color: var(--obs-ink) !important;
@@ -203,7 +199,7 @@ html.obs .la-card .login-buttons button {
 }
 html.obs .la-card .login-buttons button:hover { background: var(--obs-brass-hi) !important; }
 html.obs .la-card button:focus-visible, html.obs .la-card a.login-link:focus-visible { outline: 2px solid var(--obs-ink) !important; outline-offset: 3px; }
-html.obs .la-card .login-link-row { margin-top: 10px !important; opacity: 1 !important; gap: 8px; }
+html.obs .la-card .login-link-row { display: none !important; } /* replaced by the mode dial */
 html.obs .la-card a.login-link.la-pill {
   font-family: "Literata", Georgia, serif !important; font-size: 13px !important; font-weight: 500 !important;
   color: #5a4214 !important; opacity: 1 !important; padding: 4px 16px !important;
@@ -257,21 +253,8 @@ html.obs .study-pill-moon::after { display: none; }
 @media (prefers-reduced-motion: reduce) {
   html.obs #obs-astro, html.obs #login, html.obs #teacherLogin, html.obs #teacherSignup { transition: none; }
   html.obs:not(.obs-js) .la-card, html.obs:not(.obs-js) #login { animation: none !important; }
-  html.obs .obs-leaf-l { transform: translateX(calc(-50vw + 96px)); }
-  html.obs .obs-leaf-r { transform: translateX(calc(50vw - 96px)); }
-  html.obs:not(.obs-js) .obs-seam, html.obs:not(.obs-js) .obs-shade { opacity: 0; }
 }
 @media print {
   html.obs #obs, html.obs #obs-astro { display: none !important; }
 }
 
-/* no-JS fallback: if observatory.js never arrives, the shutters still open */
-@media (prefers-reduced-motion: no-preference) {
-  html.obs:not(.obs-js) .obs-leaf-l { animation: obs-open-l 2.3s ease-in-out 6s both; }
-  html.obs:not(.obs-js) .obs-leaf-r { animation: obs-open-r 2.3s ease-in-out 6s both; }
-  html.obs:not(.obs-js) .obs-seam { animation: obs-seam-out .6s ease 6s both; }
-  html.obs:not(.obs-js) .obs-shade { animation: obs-seam-out 1.6s ease 6s both; }
-}
-@keyframes obs-open-l { to { transform: translateX(calc(-50vw + 96px)); } }
-@keyframes obs-open-r { to { transform: translateX(calc(50vw - 96px)); } }
-@keyframes obs-seam-out { to { opacity: 0; } }
