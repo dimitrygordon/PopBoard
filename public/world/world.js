@@ -1,25 +1,29 @@
 import * as THREE from "../vendor/three/three.module.min.js";
 import { GLTFLoader } from "../vendor/three/GLTFLoader.js";
+import { MeshoptDecoder } from "../vendor/three/meshopt_decoder.mjs";
 
 const RAD = Math.PI / 180;
 const CELL = 31.25;
 const COLS = 1024;
-const ROWS = 768;
+const ROWS = 1280;
+// World origin stays on the original 1024 x 768 map center so Jasper
+// coordinates and the hero path do not shift when the DEM grows south.
+const ORIGIN_PX = 511.5;
+const ORIGIN_PY = 383.5;
 const EXAG = 2.9;
 const HERO = { px: 218, py: 509, eye: 36, pathT: 0.5 };
 
-// Real-world cells (EPSG:5070, same conversion as jasper_st_joseph in meta.json).
-// place: instanced this pass only if the site is on the DEM and in the hero view
-// and does not sit on top of the spire.
+// Real-world cells (EPSG:5070). Church is at St. Joseph on Kundek/Newton,
+// courthouse at Courthouse Square, southern sites at published lat/lon.
 const LANDMARK_SITES = {
-  jasper_st_joseph:        { px: 174.3, py: 444.6, file: "st_joseph_church.glb", kind: "church", place: true, note: "current cell is the generic Jasper point; real church is about 168.5, 429.7" },
-  jasper_courthouse:       { px: 174.3, py: 444.7, file: "jasper_courthouse.glb", kind: "courthouse", place: false, note: "coincides with current spire cell; registered, not instanced" },
+  jasper_st_joseph:        { px: 168.49, py: 429.67, file: "st_joseph_church.glb", kind: "church", place: true, note: "38.39571, -86.932687, 1029 Kundek St" },
+  jasper_courthouse:       { px: 174.34, py: 444.64, file: "jasper_courthouse.glb", kind: "courthouse", place: true, note: "38.3914, -86.9311, One Courthouse Square" },
   jasper_city_mill:        { px: 185.5, py: 458.6, file: "jasper_city_mill.glb", kind: "mill", place: true, note: "south bank of the Patoka, in the hero gap" },
   jasper_depot:            { px: 180.5, py: 456.2, file: "jasper_depot.glb", kind: "depot", place: true, note: "201 Mill St, in the hero mid-ground" },
-  ferdinand_monastery:     { px: 449.8, py: 1024.7, file: "ferdinand_monastery.glb", kind: "monastery", place: false, note: "south of the DEM" },
-  saint_meinrad_archabbey: { px: 583.6, py: 1216.6, file: "saint_meinrad_archabbey.glb", kind: "archabbey", place: false, note: "Spencer County, outside the DEM" },
-  league_stadium:          { px: 170.2, py: 809.3, file: "league_stadium.glb", kind: "stadium", place: false, note: "just south of the DEM, behind the camera" },
-  huntingburg_town_hall:   { px: 146.2, py: 790.1, file: "huntingburg_town_hall.glb", kind: "townhall", place: false, note: "just south of the DEM, behind the camera" }
+  huntingburg_town_hall:   { px: 136.08, py: 795.64, file: "huntingburg_town_hall.glb", kind: "townhall", place: true, note: "38.2950, -86.9569, historic Town Hall at 311 Geiger St" },
+  league_stadium:          { px: 170.18, py: 809.34, file: "league_stadium.glb", kind: "stadium", place: true, note: "38.290294, -86.945125, 203 S Cherry St" },
+  ferdinand_monastery:     { px: 449.75, py: 1024.74, file: "ferdinand_monastery.glb", kind: "monastery", place: true, note: "38.22306, -86.85222, Monastery Immaculate Conception" },
+  saint_meinrad_archabbey: { px: 577.98, py: 1214.64, file: "saint_meinrad_archabbey.glb", kind: "archabbey", place: true, note: "38.1669178, -86.8128323, 200 Hill Drive" }
 };
 const BASE_M = 100;
 const JASPER = { lat: 38.3914, lon: -86.9311 };
@@ -347,7 +351,7 @@ function windDrift() {
 }
 
 function cloudAnchor() {
-  const churchP = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
+  const churchP = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [168.49, 429.67];
   return pxToWorld(churchP[0], churchP[1]);
 }
 
@@ -420,10 +424,10 @@ function coverPx(px, py) {
 }
 function worldToPx(x, z) {
   // Image y = 0 is north. World -Z is north, so py grows with +Z (south).
-  return { px: x / CELL + (COLS - 1) / 2, py: z / CELL + (ROWS - 1) / 2 };
+  return { px: x / CELL + ORIGIN_PX, py: z / CELL + ORIGIN_PY };
 }
 function pxToWorld(px, py) {
-  return { x: (px - (COLS - 1) / 2) * CELL, z: (py - (ROWS - 1) / 2) * CELL };
+  return { x: (px - ORIGIN_PX) * CELL, z: (py - ORIGIN_PY) * CELL };
 }
 function heightWorld(x, z) {
   const p = worldToPx(x, z);
@@ -505,7 +509,7 @@ function carvePatoka() {
 }
 
 function buildRidgePath() {
-  const church = (meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
+  const church = (meta.landmarks && meta.landmarks.jasper_st_joseph) || [168.49, 429.67];
   const hw = pxToWorld(HERO.px, HERO.py);
   const cw = pxToWorld(church[0], church[1]);
   const lx = cw.x - hw.x, lz = cw.z - hw.z;
@@ -1481,9 +1485,9 @@ function targetHorizon() {
   const aspect = camera.aspect;
   // Geometric aim is a bit below the visible ridge line, because far hills rise
   // into the sky. Phone is taller, so the aim sits lower to keep the ridge near 70%.
-  if (aspect < 0.7) return 0.77;
-  if (aspect < 1.1) return 0.76;
-  return 0.76;
+  if (aspect < 0.7) return 0.70;
+  if (aspect < 1.1) return 0.70;
+  return 0.70;
 }
 
 function applyFovAndPitch() {
@@ -1616,7 +1620,7 @@ function terrainUniforms() {
 }
 
 function buildTerrain() {
-  const wSeg = 320, dSeg = 240;
+  const wSeg = 320, dSeg = 400;
   const geo = new THREE.BufferGeometry();
   const verts = (wSeg + 1) * (dSeg + 1);
   const pos = new Float32Array(verts * 3);
@@ -3594,7 +3598,7 @@ function scatterTrees() {
       const hw0 = pxToWorld(HERO.px, HERO.py);
       if (Math.hypot(dw.x - hw0.x, dw.z - hw0.z) < 220) continue;
       // Keep the look-corridor open between the front crest and the middle ridge
-      const churchP2 = (meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
+      const churchP2 = (meta.landmarks && meta.landmarks.jasper_st_joseph) || [168.49, 429.67];
       const cw2 = pxToWorld(churchP2[0], churchP2[1]);
       const lx2 = cw2.x - hw0.x, lz2 = cw2.z - hw0.z;
       const llen2 = Math.hypot(lx2, lz2) || 1;
@@ -3610,7 +3614,7 @@ function scatterTrees() {
   }
   // Mid-ground woods on the front crest and wings. They do not climb the near frame edges.
   const heroW = pxToWorld(HERO.px, HERO.py);
-  const churchP = (meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
+  const churchP = (meta.landmarks && meta.landmarks.jasper_st_joseph) || [168.49, 429.67];
   const cw = pxToWorld(churchP[0], churchP[1]);
   const lx = cw.x - heroW.x, lz = cw.z - heroW.z;
   const llen = Math.hypot(lx, lz) || 1;
@@ -4352,7 +4356,7 @@ function fillFrontGrass(mesh, maxN, cx, cz) {
   const phase = mesh.geometry.attributes.iPhase.array;
   const kind = mesh.geometry.attributes.iKind.array;
   const lean = mesh.geometry.attributes.iLean.array;
-  const churchP = (meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
+  const churchP = (meta.landmarks && meta.landmarks.jasper_st_joseph) || [168.49, 429.67];
   const cw = pxToWorld(churchP[0], churchP[1]);
   const lx = cw.x - cx, lz = cw.z - cz;
   const llen = Math.hypot(lx, lz) || 1;
@@ -4691,23 +4695,27 @@ function styleLoadedModel(root, kind) {
 }
 
 const MODEL_FILES = {
-  church: ["st_joseph_church.glb", "church.glb", "st-joseph.glb", "st_joseph.glb"],
-  farmhouse: ["farmhouse.glb", "house.glb"],
-  barn: ["bank_barn.glb", "barn.glb", "red-barn.glb"],
-  silo: ["grain_silo.glb", "silo.glb"],
-  haybale: ["hay_bale.glb", "haybale.glb", "hay-bale.glb", "hay.glb"],
-  courthouse: ["jasper_courthouse.glb"],
-  mill: ["jasper_city_mill.glb"],
-  depot: ["jasper_depot.glb"],
-  monastery: ["ferdinand_monastery.glb"],
-  archabbey: ["saint_meinrad_archabbey.glb"],
-  stadium: ["league_stadium.glb"],
-  townhall: ["huntingburg_town_hall.glb"]
+  church: ["st_joseph_church.meshopt.glb", "st_joseph_church.glb"],
+  farmhouse: ["farmhouse.meshopt.glb", "farmhouse.glb"],
+  barn: ["bank_barn.meshopt.glb", "bank_barn.glb"],
+  silo: ["grain_silo.meshopt.glb", "grain_silo.glb"],
+  haybale: ["hay_bale.meshopt.glb", "hay_bale.glb"],
+  courthouse: ["jasper_courthouse.meshopt.glb", "jasper_courthouse.glb"],
+  mill: ["jasper_city_mill.meshopt.glb", "jasper_city_mill.glb"],
+  depot: ["jasper_depot.meshopt.glb", "jasper_depot.glb"],
+  monastery: ["ferdinand_monastery.meshopt.glb", "ferdinand_monastery.glb"],
+  archabbey: ["saint_meinrad_archabbey.meshopt.glb", "saint_meinrad_archabbey.glb"],
+  stadium: ["league_stadium.meshopt.glb", "league_stadium.glb"],
+  townhall: ["huntingburg_town_hall.meshopt.glb", "huntingburg_town_hall.glb"]
 };
 
 async function tryLoadModel(kind) {
   const names = MODEL_FILES[kind] || [];
   const loader = new GLTFLoader();
+  if (MeshoptDecoder) {
+    if (MeshoptDecoder.ready) await MeshoptDecoder.ready;
+    loader.setMeshoptDecoder(MeshoptDecoder);
+  }
   for (let i = 0; i < names.length; i++) {
     const url = "./models/" + names[i];
     try {
@@ -4875,7 +4883,7 @@ function skinLandmarks() {
 }
 
 async function swapInGltfModels() {
-  const kinds = ["church", "farmhouse", "barn", "silo", "haybale", "mill", "depot"];
+  const kinds = ["church", "farmhouse", "barn", "silo", "haybale", "mill", "depot", "courthouse", "townhall", "stadium", "monastery", "archabbey"];
   const loaded = {};
   for (let i = 0; i < kinds.length; i++) {
     const scene = await tryLoadModel(kinds[i]);
@@ -4931,6 +4939,7 @@ async function swapInGltfModels() {
     }
   }
   placeFixedLandmarks(loaded);
+  invalidateTourStops();
   skinLandmarks();
   if (glOk && renderer) renderer.render(scene, camera);
 }
@@ -5792,7 +5801,7 @@ function placeCamera() {
     x = sample.x + Math.sin(right) * rig.side;
     z = sample.z + Math.cos(right) * rig.side;
   }
-  const church = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
+  const church = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [168.49, 429.67];
   const cw = pxToWorld(church[0], church[1]);
   const lookX = (sample.lookX != null) ? sample.lookX : (cw.x - x);
   const lookZ = (sample.lookZ != null) ? sample.lookZ : (cw.z - z);
@@ -6550,20 +6559,32 @@ function testLightningCap() {
 
 
 const LANDMARK_LABELS = {
-  church: "St. Joseph Church",
-  mill: "City Mill",
-  depot: "Depot",
-  farmstead: "Farmstead",
-  river: "Patoka"
+  church: { desktop: "St. Joseph Church", phone: "St. Joseph Church" },
+  courthouse: { desktop: "Dubois County Courthouse", phone: "Jasper Courthouse" },
+  mill: { desktop: "Jasper City Mill", phone: "Jasper City Mill" },
+  depot: { desktop: "Jasper Depot", phone: "Jasper Depot" },
+  river: { desktop: "Patoka River", phone: "Patoka River" },
+  farmstead: { desktop: "Farmstead", phone: "Farmstead" },
+  townhall: { desktop: "Huntingburg Town Hall", phone: "Huntingburg Town Hall" },
+  stadium: { desktop: "League Stadium", phone: "League Stadium" },
+  monastery: { desktop: "Monastery Immaculate Conception", phone: "Ferdinand Monastery" },
+  archabbey: { desktop: "Saint Meinrad Archabbey", phone: "Saint Meinrad Archabbey" }
 };
+
+function usePhoneLandmarkLabel() {
+  return !!(window.matchMedia && window.matchMedia("(max-width: 430px)").matches);
+}
 
 let landmarkBtn = null;
 let landmarkNameWrap = null;
 let landmarkShown = "";
 
 function stopLabel(stop) {
-  if (!stop) return "Patoka";
-  return LANDMARK_LABELS[stop.name] || stop.name || "Patoka";
+  if (!stop) return "Patoka River";
+  const rec = LANDMARK_LABELS[stop.name];
+  if (!rec) return stop.name || "Patoka River";
+  if (typeof rec === "string") return rec;
+  return usePhoneLandmarkLabel() ? rec.phone : rec.desktop;
 }
 
 function projectLandmark(stop) {
@@ -6591,28 +6612,31 @@ function mostCenteredLandmarkIndex() {
   return best;
 }
 
+function onTourStop() {
+  // Mid-glide or a hold on a tour stop (auto or button). After a free pan,
+  // pauseTour clears holdCamera and we fall back to the most-centered stop.
+  return !!(
+    tour.manualTravel ||
+    (tour.enabled && !tour.paused && (tour.phase === "travel" || tour.phase === "hold")) ||
+    (tour.paused && tour.phase === "hold" && state.holdCamera)
+  );
+}
+
 function displayedLandmarkIndex() {
   const stops = getTourStops();
   if (!stops.length) return 0;
-  if (tour.manualTravel || (tour.enabled && !tour.paused && tour.phase === "travel")) {
-    return ((tour.stop % stops.length) + stops.length) % stops.length;
-  }
-  if (tour.enabled && !tour.paused && tour.phase === "hold") {
+  if (onTourStop()) {
     return ((tour.stop % stops.length) + stops.length) % stops.length;
   }
   const c = mostCenteredLandmarkIndex();
   if (c >= 0) return c;
-  return targetLandmarkIndex();
+  return 0;
 }
 
 function targetLandmarkIndex() {
   const stops = getTourStops();
   if (!stops.length) return 0;
-  // Mid-glide (button or auto tour): the next stop is the one after the
-  // current destination, so a tap jumps cleanly ahead and cannot restart
-  // or skip the same leg.
-  const traveling = !!(tour.manualTravel || (tour.enabled && !tour.paused && tour.phase === "travel"));
-  if (traveling) {
+  if (onTourStop()) {
     return (tour.stop + 1) % stops.length;
   }
   const c = mostCenteredLandmarkIndex();
@@ -6680,7 +6704,7 @@ function goToLandmark(index) {
     updateLandmarkButton();
     return;
   }
-  beginTourLeg(currentTourCam(), stops[i]);
+  beginTourLeg(currentTourCam(), stops[i], "button");
   tour.manualTravel = true;
   tour.paused = true;
   setLandmarkLabel(stopLabel(stops[i]), false);
@@ -6715,22 +6739,42 @@ function bindLandmarkButton() {
   updateLandmarkButton();
 }
 
+function tourArcCam(a, b, e) {
+  const dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z;
+  const dist = Math.hypot(dx, dy, dz);
+  // Long legs rise and bow so the camera flies an arc over the valley
+  // instead of cutting a straight chord through the hills. Short hops stay flat.
+  const lift = Math.min(420, Math.max(0, (dist - 600) * 0.045));
+  const bow = Math.min(1800, Math.max(0, (dist - 2500) * 0.12));
+  const hz = Math.hypot(dx, dz) || 1;
+  const mx = (a.x + b.x) * 0.5 + (-dz / hz) * bow;
+  const mz = (a.z + b.z) * 0.5 + (dx / hz) * bow;
+  let my = Math.max(a.y, b.y) + lift;
+  const ground = yOf(heightWorld(mx, mz));
+  if (my < ground + 40) my = ground + 40 + lift * 0.25;
+  const o = 1 - e;
+  const cam = {
+    x: o * o * a.x + 2 * o * e * mx + e * e * b.x,
+    y: o * o * a.y + 2 * o * e * my + e * e * b.y,
+    z: o * o * a.z + 2 * o * e * mz + e * e * b.z,
+    heading: lerpAngle(a.heading, b.heading, e),
+    pitch: a.pitch + (b.pitch - a.pitch) * e
+  };
+  const gy = yOf(heightWorld(cam.x, cam.z));
+  if (cam.y < gy + 24) cam.y = gy + 24;
+  return cam;
+}
+
 function advanceTourLeg(dt, now) {
   tour.t += dt;
   const u = Math.max(0, Math.min(1, tour.t / Math.max(0.01, tour.duration)));
   const e = easeInOutCubic(u);
   const a = tour.from, b = tour.to;
-  const cam = {
-    x: a.x + (b.x - a.x) * e,
-    y: a.y + (b.y - a.y) * e,
-    z: a.z + (b.z - a.z) * e,
-    heading: lerpAngle(a.heading, b.heading, e),
-    pitch: a.pitch + (b.pitch - a.pitch) * e
-  };
+  const cam = tourArcCam(a, b, e);
   applyTourCam(cam);
   if (u >= 1) {
     tour.phase = "hold";
-    tour.holdUntil = now + 7000;
+    tour.holdUntil = now + 4000;
     tour.manualTravel = false;
     tour.lastInput = now;
     applyTourCam(b);
@@ -7012,7 +7056,7 @@ let tourFarmAnchor = null;
 function placeTourFarmstead() {
   if (!landmarkGroup) return;
   const hero = pxToWorld(HERO.px, HERO.py);
-  const ch = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
+  const ch = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [168.49, 429.67];
   const church = pxToWorld(ch[0], ch[1]);
   const lx = church.x - hero.x, lz = church.z - hero.z;
   const len = Math.hypot(lx, lz) || 1;
@@ -7092,7 +7136,7 @@ function findFarmsteadPx() {
     }
   });
   const hero = pxToWorld(HERO.px, HERO.py);
-  const church = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
+  const church = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [168.49, 429.67];
   const cw = pxToWorld(church[0], church[1]);
   const lx = cw.x - hero.x, lz = cw.z - hero.z;
   const llen = Math.hypot(lx, lz) || 1;
@@ -7121,7 +7165,7 @@ function findFarmsteadPx() {
 
 function findRiverTourPx() {
   const hero = pxToWorld(HERO.px, HERO.py);
-  const ch = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
+  const ch = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [168.49, 429.67];
   const church = pxToWorld(ch[0], ch[1]);
   const lx = church.x - hero.x, lz = church.z - hero.z;
   const llen = Math.hypot(lx, lz) || 1;
@@ -7224,14 +7268,20 @@ function frameShortLandmark(target, hide, heightM, opts) {
   // Footprint half-width so eaves and porches count in the projected height.
   const half = Math.max(6, heightM * 0.45);
   let best = { dist: opts.dist0 || 110, eye: opts.eye0 || 12, approach: null, score: 1e9 };
+  let bestAny = null;
   const dists = opts.dists || [80, 90, 100, 110, 122, 136, 150, 170];
   const eyes = opts.eyes || [8, 10, 12, 14, 16];
+  const hMin = opts.hMin != null ? opts.hMin : 0.06;
+  const hMax = opts.hMax != null ? opts.hMax : 0.18;
+  const hTarget = opts.hTarget != null ? opts.hTarget : 0.11;
+  const midTarget = opts.midY != null ? opts.midY : -0.62;
+  const nAng = opts.nAng || 16;
   for (let di = 0; di < dists.length; di++) {
     const dist = dists[di];
     for (let ei = 0; ei < eyes.length; ei++) {
       const eye = eyes[ei];
-      for (let i = 0; i < 20; i++) {
-        const ang = i * Math.PI * 2 / 20;
+      for (let i = 0; i < nAng; i++) {
+        const ang = i * Math.PI * 2 / nAng;
         const x = tw.x + Math.sin(ang) * dist;
         const z = tw.z + Math.cos(ang) * dist;
         if (coverWorld(x, z) === 0) continue;
@@ -7248,23 +7298,31 @@ function frameShortLandmark(target, hide, heightM, opts) {
         const box = projectCorners(tw, baseY, topY, half, camera);
         if (!box.ok) continue;
         if (Math.abs(box.minX) > 0.85 && Math.abs(box.maxX) > 0.85) continue;
-        if (box.minY < -0.96 || box.maxY > -0.08) continue;
+        if (box.minY < -0.98 || box.maxY > -0.12) continue;
         const hFrac = box.hFrac;
-        if (hFrac > 0.38 || hFrac < 0.10) continue;
-        let score = Math.abs(hFrac - 0.22) * 12 + Math.abs(((box.minY + box.maxY) * 0.5) + 0.55) * 0.9;
+        const midY = (box.minY + box.maxY) * 0.5;
+        let score = Math.abs(hFrac - hTarget) * 12 + Math.abs(midY - midTarget) * 0.9;
         // Prefer a longer, higher view so a near bank does not lift the ridge above 65%.
         if (opts.dists) score += Math.max(0, 200 - dist) * 0.012 + Math.max(0, 18 - eye) * 0.08;
+        let hideSteals = false;
         if (hw) {
-          const chHead = Math.atan2(hw.x - x, hw.z - z);
-          let dh = Math.abs(chHead - heading);
-          if (dh > Math.PI) dh = Math.abs(dh - 2 * Math.PI);
-          // Keep St. Joseph out of the look, independent of FOV, so phone and desktop agree.
-          if (dh < 0.95) continue;
           const c = new THREE.Vector3(hw.x, yOf(heightWorld(hw.x, hw.z)) + 22, hw.z).project(camera);
-          const inShot = c.z > 0 && c.z < 1 && Math.abs(c.x) < 0.96 && c.y < 0.20 && c.y > -0.92;
-          if (inShot && Math.abs(c.x) < 0.88) continue;
-          if (inShot) score += 10 + (1 - Math.min(1, Math.abs(c.x))) * 8;
+          const hideBehind = !(c.z > 0 && c.z < 1);
+          if (hideBehind) {
+            score -= 1.5;
+          } else {
+            const inShot = Math.abs(c.x) < 0.96 && c.y < 0.20 && c.y > -0.92;
+            if (inShot) {
+              score += 6 + (1 - Math.min(1, Math.abs(c.x))) * 10;
+              // Only drop the candidate when a neighbor sits in the same lower-third slot.
+              if (Math.abs(c.x) < 0.35 && c.y < -0.15 && c.y > -0.85) hideSteals = true;
+            }
+          }
         }
+        if (!bestAny || score < bestAny.score) {
+          bestAny = { dist: dist, eye: eye, approach: ang, score: score, hFrac: hFrac };
+        }
+        if (hideSteals || hFrac > hMax || hFrac < hMin) continue;
         if (score < best.score) {
           best = { dist: dist, eye: eye, approach: ang, score: score, hFrac: hFrac };
         }
@@ -7274,30 +7332,97 @@ function frameShortLandmark(target, hide, heightM, opts) {
   camera.position.copy(saved);
   camera.quaternion.copy(savedQ);
   camera.updateMatrixWorld(true);
-  return best;
+  if (best.approach != null) return best;
+  return bestAny || best;
+}
+
+let tourStopsCache = null;
+
+function sitePx(key, fallback) {
+  if (meta && meta.landmarks && meta.landmarks[key]) return meta.landmarks[key];
+  const s = LANDMARK_SITES[key];
+  if (s) return [s.px, s.py];
+  return fallback;
+}
+
+function frameNamed(name, target, hide, heightM, dists, eyes, dist0, eye0) {
+  const fr = frameShortLandmark(target, hide, heightM, {
+    dists: dists,
+    eyes: eyes,
+    dist0: dist0,
+    eye0: eye0,
+    hMin: 0.06,
+    hMax: 0.18,
+    hTarget: 0.11,
+    midY: -0.62,
+    nAng: 16
+  });
+  console.info("[frame]", name, "dist", fr.dist, "eye", fr.eye, "approach", fr.approach, "hFrac", fr.hFrac, "score", fr.score);
+  return fr;
 }
 
 function getTourStops() {
-  const church = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
-  const mill = [185.5, 458.6];
-  const depot = [180.5, 456.2];
+  if (tourStopsCache && tourStopsCache.length) return tourStopsCache;
+  const church = sitePx("jasper_st_joseph", [168.49, 429.67]);
+  const court = sitePx("jasper_courthouse", [174.34, 444.64]);
+  const mill = sitePx("jasper_city_mill", [185.5, 458.6]);
+  const depot = sitePx("jasper_depot", [180.5, 456.2]);
   const farm = findFarmsteadPx();
   const river = findRiverTourPx();
+  const hall = sitePx("huntingburg_town_hall", [136.08, 795.64]);
+  const stadium = sitePx("league_stadium", [170.18, 809.34]);
+  const monastery = sitePx("ferdinand_monastery", [449.75, 1024.74]);
+  const abbey = sitePx("saint_meinrad_archabbey", [577.98, 1214.64]);
+  const churchH = landmarkHeightM("church", 36);
+  const courtH = landmarkHeightM("courthouse", 28);
   const millH = landmarkHeightM("mill", 14);
   const depotH = landmarkHeightM("depot", 8);
-  const millFr = frameShortLandmark(mill, church, millH, {
-    dists: [160, 180, 200, 220, 240, 260, 280],
-    eyes: [16, 18, 20, 22, 24, 28],
-    dist0: 220, eye0: 20
-  });
-  const depotFr = frameShortLandmark(depot, church, depotH);
-  return [
-    { name: "church", px: church[0], py: church[1], dist: 500, eye: 46 },
+  const hallH = landmarkHeightM("townhall", 16);
+  const stadH = landmarkHeightM("stadium", 18);
+  const monH = landmarkHeightM("monastery", 40);
+  const abbH = landmarkHeightM("archabbey", 40);
+  const churchD = [1000, 1200, 1400, 1600, 1800];
+  const churchE = [40, 52, 64];
+  const courtD = [280, 360, 450, 560, 700];
+  const courtE = [24, 36, 48];
+  const millD = [180, 240, 320, 420];
+  const millE = [18, 28, 40];
+  const depotD = [120, 180, 240, 320];
+  const depotE = [16, 24, 36];
+  const farmD = [180, 260, 360, 480];
+  const farmE = [16, 26, 38];
+  const hallD = [220, 320, 420, 560];
+  const hallE = [20, 30, 42];
+  const stadD = [500, 700, 950, 1200];
+  const stadE = [28, 40, 56];
+  const abbD = [700, 1000, 1300, 1600];
+  const abbE = [40, 56, 72];
+  const churchFr = frameNamed("church", church, court, churchH, churchD, churchE, 1400, 52);
+  const courtFr = frameNamed("courthouse", court, church, courtH, courtD, courtE, 400, 36);
+  const millFr = frameNamed("mill", mill, church, millH, millD, millE, 280, 28);
+  const depotFr = frameNamed("depot", depot, church, depotH, depotD, depotE, 200, 24);
+  const farmFr = frameNamed("farmstead", [farm.px, farm.py], church, 12, farmD, farmE, 280, 26);
+  const hallFr = frameNamed("townhall", hall, stadium, hallH, hallD, hallE, 360, 30);
+  const stadFr = frameNamed("stadium", stadium, hall, stadH, stadD, stadE, 800, 40);
+  const monFr = frameNamed("monastery", monastery, null, monH, abbD, abbE, 1200, 56);
+  const abbFr = frameNamed("archabbey", abbey, null, abbH, abbD, abbE, 1200, 56);
+  tourStopsCache = [
+    { name: "church", px: church[0], py: church[1], dist: churchFr.dist, eye: churchFr.eye, approach: churchFr.approach, heightM: churchH },
+    { name: "courthouse", px: court[0], py: court[1], dist: courtFr.dist, eye: courtFr.eye, approach: courtFr.approach, heightM: courtH },
     { name: "mill", px: mill[0], py: mill[1], dist: millFr.dist, eye: millFr.eye, approach: millFr.approach, heightM: millH },
     { name: "depot", px: depot[0], py: depot[1], dist: depotFr.dist, eye: depotFr.eye, approach: depotFr.approach, heightM: depotH },
-    { name: "farmstead", px: farm.px, py: farm.py, dist: 170, eye: 14, approach: pickApproach([farm.px, farm.py], church, 170, 14) },
-    { name: "river", px: river.px, py: river.py, dist: 500, eye: 46 }
+    { name: "river", px: river.px, py: river.py, dist: 900, eye: 52 },
+    { name: "farmstead", px: farm.px, py: farm.py, dist: farmFr.dist, eye: farmFr.eye, approach: farmFr.approach, heightM: 12 },
+    { name: "townhall", px: hall[0], py: hall[1], dist: hallFr.dist, eye: hallFr.eye, approach: hallFr.approach, heightM: hallH },
+    { name: "stadium", px: stadium[0], py: stadium[1], dist: stadFr.dist, eye: stadFr.eye, approach: stadFr.approach, heightM: stadH },
+    { name: "monastery", px: monastery[0], py: monastery[1], dist: monFr.dist, eye: monFr.eye, approach: monFr.approach, heightM: monH },
+    { name: "archabbey", px: abbey[0], py: abbey[1], dist: abbFr.dist, eye: abbFr.eye, approach: abbFr.approach, heightM: abbH }
   ];
+  return tourStopsCache;
+}
+
+function invalidateTourStops() {
+  tourStopsCache = null;
 }
 
 function tourCameraAt(stop) {
@@ -7349,14 +7474,22 @@ function applyTourCam(cam) {
   layoutHeldCamera();
 }
 
-function beginTourLeg(fromCam, toStop) {
+function beginTourLeg(fromCam, toStop, kind) {
   tour.from = fromCam;
   tour.to = tourCameraAt(toStop);
   const dx = tour.to.x - tour.from.x, dy = tour.to.y - tour.from.y, dz = tour.to.z - tour.from.z;
   const dist = Math.hypot(dx, dy, dz);
-  const pace = (tour.pace > 0) ? tour.pace : 1.0;
-  const minDur = (tour.minDuration > 0) ? tour.minDuration : 4;
-  tour.duration = Math.max(minDur, dist / pace);
+  // Test hook only: setTourPace still overrides. Production no longer uses
+  // the 1 m/s walking pace, which made legs last 3 to 22 minutes and look stuck.
+  if (tour.pace && tour.pace !== 1) {
+    const minDur = (tour.minDuration > 0) ? tour.minDuration : 4;
+    tour.duration = Math.max(minDur, dist / tour.pace);
+  } else {
+    // Button and auto: 3 s on short hops, up to 6 s on the longest legs,
+    // eased at both ends by easeInOutCubic.
+    const t = clamp(dist / 18000, 0, 1);
+    tour.duration = 3 + t * 3;
+  }
   tour.t = 0;
   tour.phase = "travel";
 }
@@ -7391,10 +7524,11 @@ function pauseTour() {
 
 function resumeTour(now) {
   tour.paused = false;
+  tour.hasRun = true;
   state.holdCamera = true;
   const stops = getTourStops();
   const from = currentTourCam();
-  beginTourLeg(from, stops[tour.stop % stops.length]);
+  beginTourLeg(from, stops[tour.stop % stops.length], "auto");
 }
 
 function stepTour(dt, now) {
@@ -7405,7 +7539,8 @@ function stepTour(dt, now) {
   }
   if (!tour.enabled || REDUCE) return;
   if (tour.paused) {
-    if (tour.lastInput && now - tour.lastInput > 10000) resumeTour(now);
+    const idle = tour.hasRun ? 10000 : 2000;
+    if (tour.lastInput && now - tour.lastInput > idle) resumeTour(now);
     return;
   }
   const stops = getTourStops();

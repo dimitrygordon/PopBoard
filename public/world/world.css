@@ -266,7 +266,7 @@ body[data-sky="night"] #landmark-btn:focus-visible {
     left: calc(10px + env(safe-area-inset-left, 0px));
     bottom: calc(12px + env(safe-area-inset-bottom, 0px));
     padding: 0.30rem 0.46rem 0.26rem;
-    max-width: calc(50vw - 24px);
+    max-width: calc(48vw - 22px);
   }
   #place { font-size: 0.70rem; letter-spacing: 0.12em; }
   #when { font-size: 0.62rem; }
@@ -274,7 +274,20 @@ body[data-sky="night"] #landmark-btn:focus-visible {
     right: calc(10px + env(safe-area-inset-right, 0px));
     bottom: calc(12px + env(safe-area-inset-bottom, 0px));
     padding: 0.34rem 0.48rem 0.32rem 0.56rem;
-    font-size: 0.86rem;
-    max-width: calc(50vw - 24px);
+    font-size: 0.78rem;
+    line-height: 1.15;
+    max-width: calc(52vw - 16px);
+    min-height: 44px;
+    align-items: center;
+  }
+  #landmark-btn .lm-names {
+    height: auto;
+    min-height: 1.15em;
+    max-width: 100%;
+  }
+  #landmark-btn .lm-name {
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 }

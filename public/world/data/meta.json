@@ -2,20 +2,20 @@
   "crs": "EPSG:5070",
   "bbox": [
     778000,
-    1734000,
+    1718000,
     810000,
     1758000
   ],
   "size": [
     1024,
-    768
+    1280
   ],
   "cell_m": 31.25,
   "height": {
     "encoding": "dm = R*256+G, meters = dm/10 + base",
     "base_m": 100.0,
-    "min_m": 128.88674926757812,
-    "max_m": 262.4205017089844
+    "min_m": 121.8,
+    "max_m": 262.4
   },
   "classes": {
     "0": "water",
@@ -30,12 +30,12 @@
   },
   "landmarks": {
     "jasper_st_joseph": [
-      174.3,
-      444.6
+      168.49,
+      429.67
     ],
     "jasper_courthouse": [
-      174.3,
-      444.7
+      174.34,
+      444.64
     ],
     "jasper_city_mill": [
       185.5,
@@ -45,21 +45,21 @@
       180.5,
       456.2
     ],
-    "ferdinand_monastery": [
-      449.8,
-      1024.7
-    ],
-    "saint_meinrad_archabbey": [
-      583.6,
-      1216.6
+    "huntingburg_town_hall": [
+      136.08,
+      795.64
     ],
     "league_stadium": [
-      170.2,
-      809.3
+      170.18,
+      809.34
     ],
-    "huntingburg_town_hall": [
-      146.2,
-      790.1
+    "ferdinand_monastery": [
+      449.75,
+      1024.74
+    ],
+    "saint_meinrad_archabbey": [
+      577.98,
+      1214.64
     ]
   },
   "river_path_px": [
@@ -195,6 +195,7 @@
   "sources": [
     "USGS 3DEP 1/3 arc-second via elevation.nationalmap.gov 3DEPElevation ImageServer (public domain)",
     "USGS NHD flowlines (Patoka River) via hydro.nationalmap.gov (public domain)",
-    "MRLC NLCD 2021 Land Cover L48 via mrlc.gov WCS (public domain)"
+    "MRLC NLCD 2021 Land Cover L48 via mrlc.gov WCS (public domain)",
+    "South extension (rows 768-1279) from USGS 3DEP 1/3 arc-second and MRLC NLCD 2021, same cell size and CRS, to reach Huntingburg, Ferdinand, and St. Meinrad."
   ]
 }
