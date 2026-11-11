@@ -260,7 +260,8 @@ function wmo(c) {
 function fetchWx() {
   if (dbgWx || !window.fetch) return;
   const u = "https://api.open-meteo.com/v1/forecast?latitude=" + loc.lat.toFixed(3) +
-    "&longitude=" + loc.lon.toFixed(3) + "&current=weather_code,cloud_cover,temperature_2m";
+    "&longitude=" + loc.lon.toFixed(3) +
+    "&current=weather_code,cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,temperature_2m";
   const ctl = window.AbortController ? new AbortController() : null;
   if (ctl) setTimeout(function () { ctl.abort(); }, 6000);
   fetch(u, ctl ? { signal: ctl.signal } : {}).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
@@ -268,6 +269,14 @@ function fetchWx() {
     wx.kind = wmo(j.current.weather_code | 0);
     wx.src = "open-meteo";
     wx.temp = j.current.temperature_2m;
+    wx.cover = (j.current.cloud_cover != null ? j.current.cloud_cover : 0) / 100;
+    wx.coverLow = (j.current.cloud_cover_low != null ? j.current.cloud_cover_low : 0) / 100;
+    wx.coverMid = (j.current.cloud_cover_mid != null ? j.current.cloud_cover_mid : 0) / 100;
+    wx.coverHigh = (j.current.cloud_cover_high != null ? j.current.cloud_cover_high : 0) / 100;
+    // Estimate base height (m AGL) from which layer carries the cover.
+    wx.base = wx.coverLow > 0.45 ? 700 : (wx.coverMid > 0.35 ? 1400 : (wx.coverHigh > 0.2 ? 2500 : 1400));
+    if (wx.kind === "fog") wx.base = 180;
+    if (wx.kind === "rain" || wx.kind === "storm") wx.base = Math.min(wx.base, 800);
     if (window.__world) window.__world._applyWx && window.__world._applyWx();
   }).catch(function () {});
 }
@@ -278,6 +287,7 @@ let riverPathPx = [];
 let heightF32; // meters, length COLS*ROWS
 let ridgeGroup = null;
 let riverRibbon = null;
+let riverBanks = null;
 
 
 function pxIndex(px, py) {
@@ -825,31 +835,7 @@ void main(){
     float grain = noise21(gl_FragCoord.xy * 0.22);
     col *= 0.985 + 0.03 * grain;
     col += (stip - 0.5) * 0.018;
-    // 2-3 smaller cumulus volumes: faint cream-to-blue wash under form-following
-    // hatch, noise-scalloped edges, plus thin flattened streaks near the horizon.
-    vec2 uv = gl_FragCoord.xy / max(uRes, vec2(1.0));
-    vec2 frag = gl_FragCoord.xy;
-    vec3 cA = cloudPuff(frag, vec2(0.30, 0.76), 0.058, 1.7);
-    vec3 cB = cloudPuff(frag, vec2(0.66, 0.69), 0.068, 8.9);
-    vec3 cC = cloudPuff(frag, vec2(0.50, 0.84), 0.046, 4.2);
-    float cWash = max(cA.x, max(cB.x, cC.x));
-    float cHatch = max(cA.y, max(cB.y, cC.y));
-    float cRel = cA.x >= cB.x && cA.x >= cC.x ? cA.z : (cB.x >= cC.x ? cB.z : cC.z);
-    vec3 washCol = mix(vec3(0.62, 0.68, 0.76), vec3(0.97, 0.93, 0.84), smoothstep(0.12, 0.84, cRel));
-    col = mix(col, washCol, clamp(cWash, 0.0, 1.0) * 0.70);
-    float streak = 0.0;
-    // gl_FragCoord.y is 0 at the bottom, so the land top (~0.33) sits near uv.y 0.33.
-    // Keep flattened streaks in the cream sky just above the hills.
-    if (uv.y > 0.40 && uv.y < 0.55) {
-      float st = noise21(vec2(uv.x * 6.4 + uSeed, 2.4));
-      float band = smoothstep(0.40, 0.43, uv.y) * (1.0 - smoothstep(0.51, 0.55, uv.y));
-      float curve = uv.y + 0.008 * sin(uv.x * 11.0 + uSeed);
-      float sh = 1.0 - smoothstep(0.0, 0.22, abs(fract(curve * uRes.y / 3.6) - 0.5));
-      float span = smoothstep(0.12, 0.22, uv.x) * (1.0 - smoothstep(0.78, 0.90, uv.x));
-      streak = band * sh * smoothstep(0.72, 0.90, st) * span * 0.28;
-    }
-    vec3 inkC = mix(vec3(0.165, 0.129, 0.094), col, 0.18 + 0.45 * horB);
-    col = mix(col, inkC, clamp(cHatch * 0.42 + streak, 0.0, 1.0));
+    // Cumulus live as world-space volumes (buildVolClouds). The sky is paper only.
 
   } else {
     if (h > 0.42) col = mix(uMid, uTop, clamp((h - 0.42) / 0.58, 0.0, 1.0));
@@ -916,18 +902,34 @@ void main(){
   float infl = exp(-d * d / (140.0 * 140.0)) * uCursor.y * uRuffle;
   float tilt = (wind + infl * sin(uTime * 18.0 + iPhase * 6.28) * 0.35) * uv.y;
   float close = smoothstep(40.0, 200.0, dist);
-  float sx = iScale.x * (lod < 0.5 ? 1.0 : 1.18) * mix(0.5, 1.0, close);
-  float sy = iScale.y * (lod < 0.5 ? 1.0 : 1.06) * mix(0.5, 1.0, close);
-  // plant the trunk in the ground a little so billboards do not float on slopes
+  float isFrame = step(1.5, iKind);
+  float sx = iScale.x * (lod < 0.5 ? 1.0 : 1.18);
+  float sy = iScale.y * (lod < 0.5 ? 1.0 : 1.06);
+  sx *= mix(mix(0.5, 1.0, close), 1.0, isFrame);
+  sy *= mix(mix(0.5, 1.0, close), 1.0, isFrame);
+  // Snap to the terrain and sink slightly so billboards do not float.
   iPos.y -= 1.8;
-  // cap near-tree screen height; front-ridge crowns may break the ridgeline into the sky
   vec4 c0 = projectionMatrix * viewMatrix * vec4(iPos, 1.0);
   vec4 c1 = projectionMatrix * viewMatrix * vec4(iPos + camU * sy, 1.0);
   float ndcH = abs(c1.y / max(0.001, c1.w) - c0.y / max(0.001, c0.w));
-  if (ndcH > 0.16) {
+  if (isFrame < 0.5 && ndcH > 0.16) {
     float cap = 0.16 / ndcH;
     sx *= cap;
     sy *= cap;
+  }
+  if (isFrame > 0.5) {
+    // Painted crowns sit around 0.62 of the cell (atlas Y is not flipped).
+    // Cap the visible crown, not the empty billboard top, at about 55% down.
+    vec4 cC = projectionMatrix * viewMatrix * vec4(iPos + camU * sy * 0.88, 1.0);
+    float baseNdc = c0.y / max(0.001, c0.w);
+    float crNdc = cC.y / max(0.001, cC.w);
+    float maxTop = -0.10;
+    if (crNdc > maxTop) {
+      float cap = (maxTop - baseNdc) / max(0.001, crNdc - baseNdc);
+      cap = clamp(cap, 0.2, 1.0);
+      sx *= cap;
+      sy *= cap;
+    }
   }
   vec3 p = iPos + camR * ((position.x + tilt) * sx) + camU * (position.y * sy);
   vShade = 0.86 + 0.14 * sin(iPhase * 20.0);
@@ -1023,10 +1025,10 @@ void main(){
   else if (vKind > 1.5 && vKind < 2.5) col = uCorn;
   // wash body, ink outline along the blade edge and base
   float edge = min(vX, 1.0 - vX);
-  float inkA = (1.0 - smoothstep(0.0, 0.16, edge)) * 0.55 + (1.0 - vY) * 0.18;
+  float inkA = (1.0 - smoothstep(0.0, 0.22, edge)) * 0.7 + (1.0 - vY) * 0.22;
   col = mix(col, uInkUse, inkA);
-  col = mix(col, uInkUse, 0.12 * (1.0 - vY));
-  gl_FragColor = vec4(col, 0.93);
+  col = mix(col, uInkUse, 0.16 * (1.0 - vY));
+  gl_FragColor = vec4(col, 0.96);
 }
 `;
 
@@ -1076,7 +1078,7 @@ void main(){
 `;
 
 const BUILDING_FRAG = /* glsl */`
-uniform vec3 uWash, uInkUse, uPaper, uNightMul;
+uniform vec3 uWash, uInkUse, uPaper, uNightMul, uSunDir;
 uniform float uNight;
 varying vec3 vN;
 varying vec3 vWorld;
@@ -1087,10 +1089,23 @@ void main(){
   float ndv = abs(dot(N, V));
   float rim = pow(1.0 - ndv, 2.4);
   vec3 wash = mix(uPaper, uWash, 0.68);
-  float g = noise21(vWorld.xz * 0.35 + vWorld.y * 0.25);
-  wash *= 0.96 + 0.07 * g;
+  float g = noise21(vWorld.xz * 0.55 + vWorld.y * 0.28);
+  wash *= 0.95 + 0.08 * g;
+  // Posterize the wash so it reads as a print, not a smooth plastic fill.
+  wash = floor(wash * 5.0 + 0.5) / 5.0;
   wash = mix(wash, uNightMul * 1.05, uNight * 0.55);
   vec3 col = mix(wash, uInkUse, clamp(rim * 0.92, 0.0, 0.8));
+  float ndl = dot(N, normalize(uSunDir));
+  if (ndl < 0.28) {
+    float ang = 0.7;
+    vec2 hp = vWorld.zy * vec2(1.6, 1.1);
+    float sl = abs(fract((hp.x * cos(ang) + hp.y * sin(ang)) * 1.8) - 0.5);
+    float hatch = (1.0 - smoothstep(0.0, 0.16, sl)) * (1.0 - smoothstep(-0.05, 0.28, ndl));
+    // Occasional gaps, like a lifted pen.
+    hatch *= step(0.22, hash21(floor(hp * 4.0)));
+    col = mix(col, uInkUse, hatch * 0.42);
+  }
+  col *= 0.97 + 0.05 * noise21(vWorld.xz * 2.4);
   gl_FragColor = vec4(col, 1.0);
 }
 `;
@@ -1165,7 +1180,10 @@ const rig = {
   eye: 48,
   dragging: false,
   lastX: 0, lastY: 0,
-  yawVel: 0
+  yawVel: 0,
+  zoom: 1,
+  pointers: {},
+  pinch: 0
 };
 
 function targetHorizon() {
@@ -1181,7 +1199,8 @@ function applyFovAndPitch() {
   const aspect = Math.max(0.3, canvas.clientWidth / Math.max(1, canvas.clientHeight));
   camera.aspect = aspect;
   const hor = targetHorizon();
-  camera.fov = aspect < 0.7 ? 58 : aspect < 1.1 ? 54 : 48;
+  const baseFov = aspect < 0.7 ? 58 : aspect < 1.1 ? 54 : 48;
+  camera.fov = clamp(baseFov / (rig.zoom || 1), 28, 68);
   camera.updateProjectionMatrix();
   const half = camera.fov * RAD * 0.5;
   const phi = Math.atan(Math.tan(half) * (2 * hor - 1));
@@ -1558,6 +1577,241 @@ function buildClouds() {
       phase: rng() * 6.28,
       part: 0
     });
+  }
+}
+
+
+const VOL_CLOUD_VERT = /* glsl */`
+varying vec2 vUv;
+varying vec3 vWorld;
+uniform float uTime;
+void main(){
+  vUv = uv;
+  vec4 w = modelMatrix * vec4(position, 1.0);
+  vWorld = w.xyz;
+  gl_Position = projectionMatrix * viewMatrix * w;
+}
+`;
+
+const VOL_CLOUD_FRAG = /* glsl */`
+uniform float uSeed, uTime, uKind, uGray, uRain, uReduce;
+uniform vec3 uInk;
+varying vec2 vUv;
+varying vec3 vWorld;
+${NOISE_GLSL}
+
+float lobe(vec2 p, vec2 c, float r) {
+  vec2 d = (p - c) / max(r, 0.02);
+  float n = (noise21(p * 3.4 + uSeed) - 0.5) * 0.22;
+  float e = length(d) - n;
+  return 1.0 - smoothstep(0.86, 1.08, e);
+}
+
+void main(){
+  // Map the quad to a puff space with origin at the center.
+  vec2 p = (vUv - 0.5) * 2.0;
+  p.y *= 0.82;
+  // 4-5 lumpy lobes of mixed size, not a single dome. Seeds shift the arrangement.
+  float s = uSeed;
+  float b = 0.0;
+  b = max(b, lobe(p, vec2(0.02, -0.06), 0.40));
+  b = max(b, lobe(p, vec2(-0.48, 0.10), 0.30 + 0.06 * hash21(vec2(s, 1.0))));
+  b = max(b, lobe(p, vec2(0.46, 0.04), 0.28 + 0.07 * hash21(vec2(s, 2.0))));
+  b = max(b, lobe(p, vec2(-0.16, 0.42), 0.26 + 0.05 * hash21(vec2(s, 3.0))));
+  b = max(b, lobe(p, vec2(0.28, 0.38), 0.22 + 0.05 * hash21(vec2(s, 4.0))));
+  b = max(b, lobe(p, vec2(0.06, 0.58), 0.16 + 0.04 * hash21(vec2(s, 5.0))));
+  if (uKind < 0.5) {
+    // Fair puffs keep all five lobes. Overcast cards flatten (handled by scale).
+  } else {
+    // Thin flattened streak, noise-scalloped, not a smooth capsule.
+    float yy = p.y / 0.22 + (noise21(vec2(p.x * 3.0, uSeed)) - 0.5) * 0.35;
+    float xx = abs(p.x);
+    float ends = 1.0 - smoothstep(0.72, 1.08, xx);
+    float wav = 1.0 - smoothstep(0.45, 1.0, abs(yy));
+    b = ends * wav * step(0.12, 0.7 + 0.5 * noise21(vec2(p.x * 6.0, uSeed)));
+  }
+  if (b < 0.04) discard;
+  float rel = clamp((p.y + 0.55) / 1.25, 0.0, 1.0);
+  // Visible wash: cream on the lit top, pale gray on the underside.
+  vec3 cream = vec3(0.97, 0.93, 0.84);
+  vec3 gray = mix(vec3(0.62, 0.68, 0.76), vec3(0.52, 0.56, 0.62), uGray);
+  vec3 wash = mix(gray, cream, smoothstep(0.18, 0.82, rel));
+  float body = smoothstep(0.04, 0.55, b);
+  wash = mix(wash, gray, (1.0 - body) * 0.15);
+
+  // Hatch is shading, not the whole cloud. Broken, jittered strokes with tapered ends.
+  // Absolutely no regular stacked arcs (no global concentric psi field).
+  float hatch = 0.0;
+  if (uKind < 0.5) {
+    float dens = mix(1.0, 0.0, smoothstep(0.08, 0.62, rel));
+    dens *= smoothstep(0.08, 0.40, body);
+    float ang0 = -0.08 + 0.22 * p.x * (1.0 - rel);
+    float rowN = noise21(p * 1.4 + vec2(s, 2.4));
+    float ang = ang0 + (hash21(vec2(floor(p.y * 9.0 + p.x * 2.0), s)) - 0.5) * 0.55;
+    vec2 dir = vec2(cos(ang), sin(ang));
+    vec2 nrm = vec2(-sin(ang), cos(ang));
+    float sp = mix(0.055, 0.10, hash21(vec2(s, 8.0)));
+    float row = dot(p, nrm) / sp + rowN * 0.35;
+    float rid = floor(row);
+    float f = fract(row) - 0.5;
+    float along = dot(p, dir);
+    float len = mix(0.30, 0.95, hash21(vec2(rid, s + 1.7)));
+    float start = (hash21(vec2(rid, s + 4.2)) - 0.5) * 1.2;
+    float tt = (along - start) / max(0.08, len);
+    float inS = step(-0.05, tt) * step(tt, 1.05);
+    float taper = smoothstep(-0.05, 0.16, tt) * smoothstep(1.05, 0.84, tt);
+    float gap = step(0.18, hash21(vec2(rid * 13.0, floor(along * 5.0) + s)));
+    float line = 1.0 - smoothstep(0.0, 0.18 * max(0.35, taper), abs(f));
+    hatch = dens * line * taper * inS * gap;
+  } else {
+    float sl = abs(fract(p.x * 1.8 + noise21(p * 2.4) * 0.25) - 0.5);
+    hatch = (1.0 - smoothstep(0.0, 0.14, sl)) * 0.35 * body * step(0.28, hash21(vec2(floor(p.x * 7.0), s)));
+  }
+  vec3 col = mix(wash, uInk, clamp(hatch * 0.70, 0.0, 0.8));
+  // Soft ink rim so the volume reads as an engraving, not a clay blob.
+  float rim = (1.0 - smoothstep(0.18, 0.55, body));
+  col = mix(col, uInk, rim * 0.28);
+  col *= 0.98 + 0.04 * noise21(vWorld.xz * 0.02 + vUv * 6.0);
+  float alpha = body * mix(0.94, 0.80, uGray);
+  if (uRain > 0.5 && vUv.y < 0.42) {
+    // Slanting hatched rain under the belly.
+    float rx = vUv.x * 18.0 + vUv.y * 7.0 + uTime * (1.0 - uReduce) * 0.8;
+    float shaft = 1.0 - smoothstep(0.0, 0.18, abs(fract(rx) - 0.5));
+    shaft *= step(0.35, hash21(vec2(floor(rx), s)));
+    col = mix(col, uInk, shaft * 0.35);
+    alpha = max(alpha, shaft * 0.45 * (1.0 - vUv.y));
+  }
+  if (alpha < 0.06) discard;
+  gl_FragColor = vec4(col, alpha);
+}
+`;
+
+let volCloudGroup = null;
+const volCloudItems = [];
+
+function cloudBaseM() {
+  if (wx.base) return wx.base;
+  if (wx.kind === "fog") return 180;
+  if (wx.kind === "rain" || wx.kind === "storm" || wx.kind === "cloudy") return 700;
+  if (wx.kind === "snow") return 900;
+  return 1400;
+}
+
+function makeVolCloudMat(kind, seed, gray) {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      uSeed: { value: seed },
+      uTime: { value: 0 },
+      uKind: { value: kind },
+      uGray: { value: gray },
+      uRain: { value: 0 },
+      uReduce: { value: REDUCE ? 1 : 0 },
+      uInk: { value: new THREE.Color(0x2A2118) }
+    },
+    vertexShader: VOL_CLOUD_VERT,
+    fragmentShader: VOL_CLOUD_FRAG,
+    transparent: true,
+    depthWrite: false,
+    side: THREE.DoubleSide
+  });
+}
+
+function buildVolClouds() {
+  if (volCloudGroup) {
+    scene.remove(volCloudGroup);
+    volCloudGroup.traverse(function (o) {
+      if (o.geometry) o.geometry.dispose();
+      if (o.material) o.material.dispose();
+    });
+  }
+  volCloudGroup = new THREE.Group();
+  volCloudGroup.name = "volClouds";
+  scene.add(volCloudGroup);
+  volCloudItems.length = 0;
+  const kind = wx.kind || "clear";
+  const gray = (kind === "cloudy" || kind === "rain" || kind === "storm" || kind === "fog") ? 0.7 : 0.0;
+  // Scattered fair-weather puffs. More become a low deck when overcast.
+  const puffs = kind === "clear" ? 3 : kind === "partly" ? 6 : kind === "fog" ? 4 : 10;
+  const puffSpec = [
+    { az: -0.22, el: 0.32, dist: 2800, sx: 520, sy: 300, seed: 1.7 },
+    { az: 0.28, el: 0.24, dist: 3300, sx: 640, sy: 340, seed: 8.9 },
+    { az: 0.04, el: 0.42, dist: 3600, sx: 420, sy: 250, seed: 4.2 },
+    { az: -0.40, el: 0.20, dist: 2400, sx: 480, sy: 260, seed: 11.1 },
+    { az: 0.48, el: 0.30, dist: 4000, sx: 560, sy: 280, seed: 6.4 },
+    { az: -0.08, el: 0.18, dist: 2200, sx: 500, sy: 240, seed: 15.2 },
+    { az: 0.18, el: 0.36, dist: 4400, sx: 580, sy: 300, seed: 19.0 },
+    { az: -0.32, el: 0.28, dist: 3900, sx: 470, sy: 250, seed: 21.5 },
+    { az: 0.36, el: 0.16, dist: 2600, sx: 620, sy: 280, seed: 24.8 },
+    { az: 0.00, el: 0.22, dist: 5000, sx: 700, sy: 260, seed: 27.3 }
+  ];
+  for (let i = 0; i < puffs; i++) {
+    const sp = puffSpec[i % puffSpec.length];
+    const geo = new THREE.PlaneGeometry(1, 1);
+    const mat = makeVolCloudMat(0, sp.seed, gray);
+    mat.uniforms.uRain.value = (kind === "rain" || kind === "storm") ? 1 : 0;
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.frustumCulled = false;
+    mesh.renderOrder = 1;
+    volCloudGroup.add(mesh);
+    const deck = (kind === "cloudy" || kind === "rain" || kind === "storm");
+    volCloudItems.push({
+      mesh: mesh, kind: 0,
+      az: sp.az, el: deck ? sp.el * 0.45 : sp.el,
+      dist: sp.dist, sx: deck ? sp.sx * 1.35 : sp.sx,
+      sy: deck ? sp.sy * 0.55 : sp.sy, seed: sp.seed
+    });
+  }
+  // 2-3 thin flattened streaks just above the far hills (fair and partly).
+  if (kind === "clear" || kind === "partly") {
+    const streaks = [
+      { az: -0.32, el: 0.125, dist: 8200, sx: 1600, sy: 220, seed: 31.0 },
+      { az: 0.10, el: 0.145, dist: 9000, sx: 1400, sy: 200, seed: 33.4 },
+      { az: 0.38, el: 0.115, dist: 7600, sx: 1300, sy: 190, seed: 36.2 }
+    ];
+    for (let i = 0; i < streaks.length; i++) {
+      const sp = streaks[i];
+      const geo = new THREE.PlaneGeometry(1, 1);
+      const mat = makeVolCloudMat(1, sp.seed, 0.15);
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.frustumCulled = false;
+      mesh.renderOrder = 1;
+      volCloudGroup.add(mesh);
+      volCloudItems.push({
+        mesh: mesh, kind: 1,
+        az: sp.az, el: sp.el, dist: sp.dist, sx: sp.sx, sy: sp.sy, seed: sp.seed
+      });
+    }
+  }
+}
+
+function layoutVolClouds() {
+  if (!volCloudGroup || !camera) return;
+  const base = cloudBaseM();
+  const cx = camera.position.x, cy = camera.position.y, cz = camera.position.z;
+  const look = new THREE.Vector3();
+  camera.getWorldDirection(look);
+  const heading = Math.atan2(look.x, look.z);
+  for (let i = 0; i < volCloudItems.length; i++) {
+    const it = volCloudItems[i];
+    const az = heading + it.az;
+    const el = it.el;
+    // Streaks sit just above the far hill line (near the geometric horizon).
+    // Puffs use the weather cloud base, plus the listed elevation.
+    const dist = it.dist;
+    let y;
+    if (it.kind > 0.5) {
+      y = cy + Math.sin(el) * dist;
+    } else {
+      y = cy + base * 0.85 + Math.sin(el) * dist * 0.25;
+    }
+    const x = cx + Math.sin(az) * Math.cos(el) * dist;
+    const z = cz + Math.cos(az) * Math.cos(el) * dist;
+    it.mesh.position.set(x, y, z);
+    it.mesh.scale.set(it.sx, it.sy, 1);
+    it.mesh.lookAt(cx, (it.kind > 0.5 ? y : cy + (y - cy) * 0.35), cz);
+    if (it.mesh.material && it.mesh.material.uniforms) {
+      it.mesh.material.uniforms.uTime.value = state.time || 0;
+    }
   }
 }
 
@@ -1993,7 +2247,7 @@ let treeRecords = [];
 
 function scatterTrees() {
   const rng = mulberry(2026);
-  const maxN = 9500;
+  const maxN = 14000;
   const pos = [], scale = [], frame = [], frameClump = [], phase = [], kind = [];
   treeRecords = [];
   // Pack stands in woods along the river corridor first, so the hero view is dense.
@@ -2128,7 +2382,8 @@ function scatterTrees() {
     const isFront = cands[ci].front === 1 || cands[ci].front === 3;
     const isCorner = cands[ci].front === 3;
     const isMidWood = cands[ci].front === 2;
-    const stand = isCorner ? 9 + ((rng() * 6) | 0) : (isFront ? 8 + ((rng() * 5) | 0) : (isMidWood ? 5 + ((rng() * 4) | 0) : (cls === 4 || cls === 5 ? 3 + ((rng() * 4) | 0) : 1)));
+    // Clumped stands are 3-4x denser than a single scatter.
+    const stand = isCorner ? 12 + ((rng() * 8) | 0) : (isFront ? 16 + ((rng() * 8) | 0) : (isMidWood ? 16 + ((rng() * 8) | 0) : (cls === 4 || cls === 5 ? 10 + ((rng() * 8) | 0) : 2)));
     for (let s = 0; s < stand && pos.length / 3 < maxN; s++) {
       const jx = (px + (rng() - 0.5) * (isCorner ? 0.55 : (isFront ? 0.70 : 1.05)));
       const jy = (py + (rng() - 0.5) * (isCorner ? 0.55 : (isFront ? 0.70 : 1.05)));
@@ -2198,8 +2453,45 @@ function scatterTrees() {
     w3++;
   }
   pos.length = w3 * 3;
+  scale.length = w3 * 2;
+  frame.length = w3;
+  frameClump.length = w3;
+  phase.length = w3;
+  kind.length = w3;
   treeRecords.length = w3;
-  const n = w3;
+  // A few near framing oaks/maples in the lower corners, close to the lens.
+  // Crowns may rise to about 55% down; the center stays open on the river and spire.
+  const halfFovY = ((camera && camera.fov ? camera.fov : 48) * Math.PI / 180) * 0.5;
+  const aspect = (camera && camera.aspect) ? camera.aspect : 1.6;
+  const halfH = Math.atan(Math.tan(halfFovY) * Math.max(0.4, aspect));
+  const frameIdx = [];
+  for (let sideSign = -1; sideSign <= 1; sideSign += 2) {
+    for (let k = 0; k < 4; k++) {
+      const along = 28 + rng() * 16;
+      const edge = along * Math.tan(halfH);
+      const side = sideSign * edge * (0.96 + rng() * 0.10);
+      const x = heroW.x + ux * along + uz * side;
+      const z = heroW.z + uz * along - ux * side;
+      const tp = worldToPx(x, z);
+      if (tp.px < 2 || tp.py < 2 || tp.px > COLS - 3 || tp.py > ROWS - 3) continue;
+      const hm = coverPx(tp.px, tp.py) === 0 ? heightPx(HERO.px, HERO.py) : heightPx(tp.px, tp.py);
+      const specName = rng() < 0.5 ? "oak" : "maple";
+      const slot = (rng() * 8) | 0;
+      const fr = framesFor(specName, slot, clock.season, 4);
+      const tall = 68 + rng() * 18;
+      const wid = tall * 0.92 * (0.9 + rng() * 0.18);
+      const i = pos.length / 3;
+      pos.push(x, yOf(hm), z);
+      scale.push(wid, tall);
+      frame.push(fr.full);
+      frameClump.push(fr.clump);
+      phase.push(rng());
+      kind.push(2);
+      treeRecords.push({ spec: specName, slot: slot, cls: 4, frame: 1 });
+      frameIdx.push(i);
+    }
+  }
+  const n = pos.length / 3;
   VEG.treesPlaced = n;
   VEG.trees = n;
   const plane = new THREE.PlaneGeometry(1, 1);
@@ -2241,7 +2533,132 @@ function scatterTrees() {
   }
   treeMesh.instanceMatrix.needsUpdate = true;
   scene.add(treeMesh);
+  buildTreeContact(pos, scale, n);
+  buildFrameTrees();
   return n;
+}
+
+let frameTreeMesh = null;
+function buildFrameTrees() {
+  if (frameTreeMesh) {
+    scene.remove(frameTreeMesh);
+    if (frameTreeMesh.geometry) frameTreeMesh.geometry.dispose();
+  }
+  const N = 8;
+  const plane = new THREE.PlaneGeometry(1, 1);
+  plane.translate(0, 0.5, 0);
+  plane.setAttribute("iScale", new THREE.InstancedBufferAttribute(new Float32Array(N * 2), 2));
+  plane.setAttribute("iFrame", new THREE.InstancedBufferAttribute(new Float32Array(N), 1));
+  plane.setAttribute("iFrameClump", new THREE.InstancedBufferAttribute(new Float32Array(N), 1));
+  plane.setAttribute("iPhase", new THREE.InstancedBufferAttribute(new Float32Array(N), 1));
+  plane.setAttribute("iKind", new THREE.InstancedBufferAttribute(new Float32Array(N), 1));
+  const rng = mulberry(77);
+  const frA = plane.geometry ? null : null;
+  for (let i = 0; i < N; i++) {
+    const spec = i % 2 ? "oak" : "maple";
+    const fr = framesFor(spec, i, clock.season, 4);
+    plane.attributes.iFrame.array[i] = fr.full;
+    plane.attributes.iFrameClump.array[i] = fr.clump;
+    plane.attributes.iPhase.array[i] = rng();
+    plane.attributes.iKind.array[i] = 2;
+    const tall = 78 + rng() * 16;
+    plane.attributes.iScale.array[i * 2] = tall * 0.9;
+    plane.attributes.iScale.array[i * 2 + 1] = tall;
+  }
+  frameTreeMesh = new THREE.InstancedMesh(plane, treeMat, N);
+  frameTreeMesh.frustumCulled = false;
+  frameTreeMesh.name = "frameTrees";
+  scene.add(frameTreeMesh);
+  layoutFrameTrees();
+}
+
+function layoutFrameTrees() {
+  if (!frameTreeMesh || !camera) return;
+  const fwd = new THREE.Vector3();
+  camera.getWorldDirection(fwd);
+  fwd.y = 0;
+  if (fwd.length() < 1e-4) fwd.set(0, 0, 1);
+  fwd.normalize();
+  const right = new THREE.Vector3(fwd.z, 0, -fwd.x).normalize();
+  const halfFovY = (camera.fov * Math.PI / 180) * 0.5;
+  const aspect = Math.max(0.4, camera.aspect);
+  const halfH = Math.atan(Math.tan(halfFovY) * aspect);
+  const phone = aspect < 0.7;
+  // Far enough that the atlas does not blow up; tight to the real frame edge
+  // so crowns frame the view without covering the spire.
+  const perSide = phone ? 2 : 3;
+  const dummy = new THREE.Object3D();
+  const cx = camera.position.x, cz = camera.position.z;
+  const sc = frameTreeMesh.geometry.attributes.iScale.array;
+  let i = 0;
+  for (let sign = -1; sign <= 1; sign += 2) {
+    for (let k = 0; k < 4; k++) {
+      if (k >= perSide) {
+        dummy.position.set(cx, -9999, cz);
+        dummy.scale.set(0, 0, 0);
+        dummy.updateMatrix();
+        frameTreeMesh.setMatrixAt(i, dummy.matrix);
+        i++;
+        continue;
+      }
+      const along = (phone ? 100 : 95) + k * 12;
+      const edge = along * Math.tan(halfH);
+      const side = sign * edge * (0.88 + k * 0.02);
+      const x = cx + fwd.x * along + right.x * side;
+      const z = cz + fwd.z * along + right.z * side;
+      const y = yOf(heightWorld(x, z));
+      const tall = phone ? 72 + k * 6 : 86 + k * 6;
+      const wid = phone ? 36 + k * 3 : 48 + k * 4;
+      sc[i * 2] = wid;
+      sc[i * 2 + 1] = tall;
+      dummy.position.set(x, y, z);
+      dummy.rotation.set(0, 0, 0);
+      dummy.scale.set(1, 1, 1);
+      dummy.updateMatrix();
+      frameTreeMesh.setMatrixAt(i, dummy.matrix);
+      i++;
+    }
+  }
+  frameTreeMesh.geometry.attributes.iScale.needsUpdate = true;
+  frameTreeMesh.instanceMatrix.needsUpdate = true;
+  frameTreeMesh.count = 8;
+}
+
+function buildTreeContact(pos, scale, n) {
+  // Soft inked contact shadow under near crowns, snapped to the terrain.
+  const N = Math.min(n, 4000);
+  const geo = new THREE.PlaneGeometry(1, 1);
+  geo.rotateX(-Math.PI / 2);
+  const mat = new THREE.MeshBasicMaterial({
+    color: 0x2A2118,
+    transparent: true,
+    opacity: 0.22,
+    depthWrite: false,
+    side: THREE.DoubleSide
+  });
+  const mesh = new THREE.InstancedMesh(geo, mat, N);
+  mesh.frustumCulled = false;
+  mesh.renderOrder = 1;
+  mesh.name = "treeContact";
+  const dummy = new THREE.Object3D();
+  const heroW = pxToWorld(HERO.px, HERO.py);
+  let c = 0;
+  for (let i = 0; i < n && c < N; i++) {
+    const x = pos[i * 3], z = pos[i * 3 + 2];
+    if (Math.hypot(x - heroW.x, z - heroW.z) > 1400) continue;
+    if (treeMesh && treeMesh.geometry.attributes.iKind && treeMesh.geometry.attributes.iKind.array[i] > 1.5) continue;
+    const y = pos[i * 3 + 1] + 0.2;
+    const r = Math.min(11, Math.max(3.5, scale[i * 2] * 0.42));
+    dummy.position.set(x, y, z);
+    dummy.scale.set(r, 1, r * 0.72);
+    dummy.rotation.set(0, 0, 0);
+    dummy.updateMatrix();
+    mesh.setMatrixAt(c, dummy.matrix);
+    c++;
+  }
+  mesh.count = c;
+  mesh.instanceMatrix.needsUpdate = true;
+  scene.add(mesh);
 }
 
 function syncTreeFrames() {
@@ -2414,9 +2831,64 @@ function fillBand(mesh, maxN, cx, cz, rad, kindForce, minR) {
   return n;
 }
 
+function fillFrontGrass(mesh, maxN, cx, cz) {
+  // Visible ground at the bottom of the frame starts about 180 m ahead.
+  // Plant a strip of instanced blades there, below the near woods, skipping water.
+  if (!mesh) return 0;
+  const rng = mulberry(((cx * 19 + cz * 5) | 0) >>> 0);
+  const pos = mesh._pos;
+  const scale = mesh.geometry.attributes.iScale.array;
+  const phase = mesh.geometry.attributes.iPhase.array;
+  const kind = mesh.geometry.attributes.iKind.array;
+  const lean = mesh.geometry.attributes.iLean.array;
+  const churchP = (meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
+  const cw = pxToWorld(churchP[0], churchP[1]);
+  const lx = cw.x - cx, lz = cw.z - cz;
+  const llen = Math.hypot(lx, lz) || 1;
+  const ux = lx / llen, uz = lz / llen;
+  let n = 0, tries = 0;
+  const limit = maxN * 4;
+  while (n < maxN && tries < limit) {
+    tries++;
+    const along = 185 + rng() * 90;
+    const halfW = along * Math.tan(36 * Math.PI / 180);
+    const side = (rng() - 0.5) * 2 * halfW;
+    const x = cx + ux * along + uz * side;
+    const z = cz + uz * along - ux * side;
+    const cls = coverWorld(x, z);
+    if (cls === 0) continue;
+    const h = heightWorld(x, z);
+    pos[n * 3] = x; pos[n * 3 + 1] = yOf(h); pos[n * 3 + 2] = z;
+    const tall = 1.4 + rng() * 1.2;
+    const wide = 0.35 + rng() * 0.45;
+    scale[n * 2] = wide;
+    scale[n * 2 + 1] = tall * EXAG * 0.7;
+    phase[n] = rng();
+    kind[n] = (clock.season === "autumn" && rng() > 0.65) ? 1 : 0;
+    const ang = rng() * 6.28, amt = (rng() - 0.5) * 0.4;
+    lean[n * 2] = Math.cos(ang) * amt;
+    lean[n * 2 + 1] = Math.sin(ang) * amt;
+    n++;
+  }
+  const dummy = new THREE.Object3D();
+  for (let i = 0; i < n; i++) {
+    dummy.position.set(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]);
+    dummy.scale.set(1, 1, 1);
+    dummy.updateMatrix();
+    mesh.setMatrixAt(i, dummy.matrix);
+  }
+  mesh.count = n;
+  mesh.instanceMatrix.needsUpdate = true;
+  mesh.geometry.attributes.iScale.needsUpdate = true;
+  mesh.geometry.attributes.iPhase.needsUpdate = true;
+  mesh.geometry.attributes.iKind.needsUpdate = true;
+  mesh.geometry.attributes.iLean.needsUpdate = true;
+  return n;
+}
+
 function fillGrass(cx, cz) {
   if (!grassMesh) return;
-  VEG.blades = fillBand(grassMesh, BLADE_N, cx, cz, 200, null, 0);
+  VEG.blades = fillFrontGrass(grassMesh, BLADE_N, cx, cz);
   VEG.clumps = clumpMesh ? fillBand(clumpMesh, CLUMP_N, cx, cz, 900, 3, 200) : 0;
   grassState.cx = cx; grassState.cz = cz;
 }
@@ -2433,7 +2905,8 @@ function makeWashMat(rgb) {
       uInkUse: { value: colU(INK) },
       uPaper: { value: colU(PAPER) },
       uNightMul: { value: colU(NIGHT_MUL) },
-      uNight: { value: 0 }
+      uNight: { value: 0 },
+      uSunDir: { value: new THREE.Vector3(0.3, 0.8, 0.2) }
     },
     vertexShader: BUILDING_VERT,
     fragmentShader: BUILDING_FRAG
@@ -3290,6 +3763,7 @@ function smoothCrest(pts, passes) {
 
 function emitRidgeStrip(pts, band) {
   const pos = [];
+  const uv = [];
   const idx = [];
   const cx = camera.position.x, cy = camera.position.y, cz = camera.position.z;
   const n = pts.length;
@@ -3325,6 +3799,8 @@ function emitRidgeStrip(pts, band) {
     const half = Math.max(pixelWorldWidth(wpx, p.dist || 400), 0.18) * 0.5;
     pos.push(p.x - sx * half, p.y - sy * half, p.z - sz * half);
     pos.push(p.x + sx * half, p.y + sy * half, p.z + sz * half);
+    const along = n <= 1 ? 0 : i / (n - 1);
+    uv.push(along, 0, along, 1);
     if (i > 0 && !breaks[i] && !breaks[i - 1]) {
       const a = (i - 1) * 2;
       idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
@@ -3332,14 +3808,39 @@ function emitRidgeStrip(pts, band) {
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
   geo.setIndex(idx);
   geo.computeVertexNormals();
-  const mat = new THREE.MeshBasicMaterial({
-    color: band.color,
+  const mat = new THREE.ShaderMaterial({
+    uniforms: {
+      uColor: { value: new THREE.Color(band.color) },
+      uSeed: { value: (band.d0 || 700) * 0.01 }
+    },
+    vertexShader: /* glsl */`varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+    fragmentShader: /* glsl */`
+      uniform vec3 uColor;
+      uniform float uSeed;
+      varying vec2 vUv;
+      float hash21(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+      void main(){
+        float along = vUv.x;
+        float across = abs(vUv.y - 0.5) * 2.0;
+        float n = hash21(vec2(floor(along * 64.0), uSeed));
+        float n2 = hash21(vec2(floor(along * 24.0), uSeed + 3.1));
+        // Noise on line weight and opacity, plus short gaps like a pen lift.
+        float lift = step(0.16, hash21(vec2(floor(along * 48.0), uSeed + 7.0)));
+        if (lift < 0.5) discard;
+        float halfw = 0.55 + 0.45 * n;
+        if (across > halfw) discard;
+        float edge = 1.0 - smoothstep(halfw * 0.55, halfw, across);
+        float alpha = (0.55 + 0.45 * n2) * edge;
+        gl_FragColor = vec4(uColor, alpha);
+      }
+    `,
     side: THREE.DoubleSide,
     depthTest: true,
     depthWrite: false,
-    transparent: false
+    transparent: true
   });
   const mesh = new THREE.Mesh(geo, mat);
   mesh.renderOrder = 2;
@@ -3427,6 +3928,9 @@ function layoutRiverRibbon() {
   const pos = [];
   const uv = [];
   const idx = [];
+  const bankPos = [];
+  const bankUv = [];
+  const bankIdx = [];
   const n = pts.length;
   for (let i = 0; i < n; i++) {
     const p = pts[i];
@@ -3438,15 +3942,23 @@ function layoutRiverRibbon() {
     const sx = -tz, sz = tx;
     const dist = Math.hypot(p.x - cx, p.z - cz);
     const half = Math.max(70, pixelWorldWidth(7.0, Math.max(dist, 200)) * 0.5);
-    // Lift well above the carved channel so the ribbon is not buried.
-    const y = terrainYAt(p.x, p.z) + 10.0;
-    pos.push(p.x - sx * half, y, p.z - sz * half);
-    pos.push(p.x + sx * half, y, p.z + sz * half);
+    const bankY = terrainYAt(p.x, p.z) + 1.2;
+    const waterY = bankY - 14.0;
+    pos.push(p.x - sx * half, waterY, p.z - sz * half);
+    pos.push(p.x + sx * half, waterY, p.z + sz * half);
+    bankPos.push(p.x - sx * half, waterY, p.z - sz * half);
+    bankPos.push(p.x - sx * (half + 6), bankY, p.z - sz * (half + 6));
+    bankPos.push(p.x + sx * half, waterY, p.z + sz * half);
+    bankPos.push(p.x + sx * (half + 6), bankY, p.z + sz * (half + 6));
     const u = i / (n - 1);
     uv.push(u, 0, u, 1);
+    bankUv.push(u, 0, u, 1, u, 0, u, 1);
     if (i > 0) {
       const a = (i - 1) * 2;
       idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
+      const b = (i - 1) * 4;
+      bankIdx.push(b, b + 1, b + 4, b + 1, b + 5, b + 4);
+      bankIdx.push(b + 2, b + 6, b + 3, b + 3, b + 6, b + 7);
     }
   }
   const geo = new THREE.BufferGeometry();
@@ -3456,7 +3968,6 @@ function layoutRiverRibbon() {
   geo.computeVertexNormals();
   if (!riverRibbon) {
     const mat = makeRiverMat();
-    mat.depthTest = false;
     riverRibbon = new THREE.Mesh(geo, mat);
     riverRibbon.name = "patokaRibbon";
     riverRibbon.renderOrder = 3;
@@ -3466,53 +3977,106 @@ function layoutRiverRibbon() {
     if (riverRibbon.geometry) riverRibbon.geometry.dispose();
     riverRibbon.geometry = geo;
   }
+  const bgeo = new THREE.BufferGeometry();
+  bgeo.setAttribute("position", new THREE.Float32BufferAttribute(bankPos, 3));
+  bgeo.setAttribute("uv", new THREE.Float32BufferAttribute(bankUv, 2));
+  bgeo.setIndex(bankIdx);
+  bgeo.computeVertexNormals();
+  if (!riverBanks) {
+    const bmat = new THREE.ShaderMaterial({
+      uniforms: {},
+      vertexShader: /* glsl */`varying vec2 vUv; varying vec3 vN; varying vec3 vW;
+        void main(){ vUv = uv; vN = normalize(normalMatrix * normal);
+          vec4 w = modelMatrix * vec4(position,1.0); vW = w.xyz;
+          gl_Position = projectionMatrix * viewMatrix * w; }`,
+      fragmentShader: /* glsl */`
+        varying vec2 vUv; varying vec3 vN; varying vec3 vW;
+        float hash21(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+        void main(){
+          vec3 ink = vec3(0.165, 0.129, 0.094);
+          vec3 bank = vec3(0.45, 0.40, 0.30);
+          vec3 col = bank;
+          float sl = abs(fract((vW.x * 0.08 + vW.z * 0.11) * 2.2 + vUv.y * 4.0) - 0.5);
+          float hatch = (1.0 - smoothstep(0.0, 0.14, sl)) * (1.0 - vUv.y) * 0.7;
+          hatch *= step(0.2, hash21(floor(vec2(vUv.x * 40.0, vUv.y * 8.0))));
+          col = mix(col, ink, 0.25 + hatch * 0.55);
+          // Inked shoreline at the top of the bank.
+          float shore = 1.0 - smoothstep(0.0, 0.12, 1.0 - vUv.y);
+          col = mix(col, ink, shore * 0.8);
+          gl_FragColor = vec4(col, 1.0);
+        }`,
+      side: THREE.DoubleSide,
+      depthWrite: true
+    });
+    riverBanks = new THREE.Mesh(bgeo, bmat);
+    riverBanks.name = "patokaBanks";
+    riverBanks.renderOrder = 2;
+    riverBanks.frustumCulled = false;
+    scene.add(riverBanks);
+  } else {
+    if (riverBanks.geometry) riverBanks.geometry.dispose();
+    riverBanks.geometry = bgeo;
+  }
 }
 
 function makeRiverMat() {
-  const cv = document.createElement("canvas");
-  cv.width = 512; cv.height = 64;
-  const ctx = cv.getContext("2d");
-  ctx.fillStyle = "#5C7477";
-  ctx.fillRect(0, 0, 512, 64);
-  ctx.fillStyle = "#6A8286";
-  ctx.fillRect(0, 10, 512, 44);
-  ctx.strokeStyle = "rgba(42,33,24,0.45)";
-  ctx.lineWidth = 1;
-  for (let i = 0; i < 48; i++) {
-    const y = 12 + (i * 9) % 40 + (i % 3);
-    ctx.beginPath();
-    ctx.moveTo(i * 11, y);
-    ctx.bezierCurveTo(i * 11 + 8, y + 2, i * 11 + 16, y - 1, i * 11 + 28, y + 1);
-    ctx.stroke();
-  }
-  ctx.strokeStyle = "rgba(245, 234, 210, 0.55)";
-  ctx.lineWidth = 1.1;
-  for (let i = 0; i < 18; i++) {
-    const y = 22 + (i * 13) % 20;
-    ctx.beginPath();
-    ctx.moveTo(20 + i * 28, y);
-    ctx.lineTo(44 + i * 28, y + 1);
-    ctx.stroke();
-  }
-  ctx.strokeStyle = "rgba(42,33,24,0.7)";
-  ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(0, 1.5); ctx.lineTo(512, 1.5); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(0, 62.5); ctx.lineTo(512, 62.5); ctx.stroke();
-  const tex = new THREE.CanvasTexture(cv);
-  tex.colorSpace = THREE.NoColorSpace;
-  tex.wrapS = THREE.RepeatWrapping;
-  tex.wrapT = THREE.ClampToEdgeWrapping;
-  tex.repeat.set(8, 1);
-  tex.needsUpdate = true;
-  return new THREE.MeshBasicMaterial({
-    map: tex,
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      uTime: { value: 0 },
+      uWind: { value: 1 },
+      uReduce: { value: REDUCE ? 1 : 0 },
+      uWater: { value: new THREE.Color(0x5C7477) },
+      uInk: { value: new THREE.Color(0x2A2118) },
+      uHor: { value: new THREE.Color(0xF0E6D0) },
+      uTop: { value: new THREE.Color(0xB8C4C8) },
+      uTrees: { value: new THREE.Color(0x9A6230) }
+    },
+    vertexShader: /* glsl */`
+      varying vec2 vUv; varying vec3 vW; varying vec3 vN;
+      void main(){
+        vUv = uv;
+        vec3 p = position;
+        vec3 toCam = cameraPosition - p;
+        p += normalize(toCam) * 2.0;
+        vec4 w = modelMatrix * vec4(p, 1.0);
+        vW = w.xyz;
+        vN = vec3(0.0, 1.0, 0.0);
+        gl_Position = projectionMatrix * viewMatrix * w;
+      }
+    `,
+    fragmentShader: /* glsl */`
+      uniform float uTime, uWind, uReduce;
+      uniform vec3 uWater, uInk, uHor, uTop, uTrees;
+      varying vec2 vUv; varying vec3 vW;
+      float hash21(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+      void main(){
+        vec3 V = normalize(cameraPosition - vW);
+        vec3 R = reflect(-V, vec3(0.0, 1.0, 0.0));
+        float skyH = R.y;
+        vec3 sky = mix(uHor, uTop, smoothstep(0.0, 0.55, skyH));
+        vec3 env = mix(uTrees, sky, smoothstep(-0.05, 0.22, skyH));
+        vec3 col = mix(uWater, env, 0.40);
+        float t = uTime * (1.0 - uReduce);
+        // Engraved ripples travel with the current and the wind.
+        float cur = vUv.x * 28.0 - t * 0.7 * (0.6 + 0.4 * uWind);
+        float wind = vUv.x * 11.0 + vUv.y * 3.0 + t * 0.35 * uWind;
+        float rip = abs(fract(cur + sin(vUv.y * 9.0 + t) * 0.18) - 0.5);
+        col = mix(col, uInk, (1.0 - smoothstep(0.0, 0.07, rip)) * 0.38);
+        float glint = abs(fract(wind) - 0.5);
+        float mid = 1.0 - abs(vUv.y - 0.5) * 2.0;
+        col = mix(col, uHor, (1.0 - smoothstep(0.0, 0.05, glint)) * 0.35 * mid);
+        // Inked shoreline at the water edge.
+        float bank = min(vUv.y, 1.0 - vUv.y);
+        col = mix(col, uInk, (1.0 - smoothstep(0.0, 0.08, bank)) * 0.7);
+        gl_FragColor = vec4(col, 1.0);
+      }
+    `,
     side: THREE.DoubleSide,
     depthTest: true,
     depthWrite: false,
     polygonOffset: true,
-    polygonOffsetFactor: -4,
-    polygonOffsetUnits: -4,
-    transparent: false
+    polygonOffsetFactor: -2,
+    polygonOffsetUnits: -2
   });
 }
 
@@ -3552,6 +4116,8 @@ function placeCamera() {
   setMoonPos();
   layoutRidgeLines();
   layoutRiverRibbon();
+  layoutVolClouds();
+  layoutFrameTrees();
   if (Math.hypot(x - grassState.cx, z - grassState.cz) > 80) fillGrass(x, z);
   return { x, y, z, heading, pitch, horizon: aim.horizon, ground };
 }
@@ -3578,12 +4144,32 @@ function pointerToGround(cx, cy) {
 }
 
 function onPointerDown(e) {
+  rig.pointers[e.pointerId] = { x: e.clientX, y: e.clientY };
+  const ids = Object.keys(rig.pointers);
+  if (ids.length === 2) {
+    const a = rig.pointers[ids[0]], b = rig.pointers[ids[1]];
+    rig.pinch = Math.hypot(a.x - b.x, a.y - b.y);
+    rig._zoom0 = rig.zoom;
+    rig.dragging = false;
+    return;
+  }
   rig.dragging = true;
   rig.lastX = e.clientX;
   rig.lastY = e.clientY;
   canvas.setPointerCapture && canvas.setPointerCapture(e.pointerId);
 }
 function onPointerMove(e) {
+  if (rig.pointers[e.pointerId]) {
+    rig.pointers[e.pointerId].x = e.clientX;
+    rig.pointers[e.pointerId].y = e.clientY;
+  }
+  const ids = Object.keys(rig.pointers);
+  if (ids.length === 2 && rig.pinch) {
+    const a = rig.pointers[ids[0]], b = rig.pointers[ids[1]];
+    const d = Math.hypot(a.x - b.x, a.y - b.y);
+    applyZoom((rig._zoom0 || 1) * (d / Math.max(8, rig.pinch)));
+    return;
+  }
   const rect = canvas.getBoundingClientRect();
   cursor.sx = e.clientX / rect.width;
   cursor.sy = e.clientY / rect.height;
@@ -3603,6 +4189,8 @@ function onPointerMove(e) {
   rig.yawVel = 0;
 }
 function onPointerUp(e) {
+  delete rig.pointers[e.pointerId];
+  if (Object.keys(rig.pointers).length < 2) rig.pinch = 0;
   rig.dragging = false;
   try { canvas.releasePointerCapture && canvas.releasePointerCapture(e.pointerId); } catch (err) {}
 }
@@ -3611,13 +4199,68 @@ function onPointerLeave() {
   cursor.active = false;
 }
 
+function mapEdgeOk() {
+  // Refuse a zoom-out that would let the ground frustum hit the DEM rim.
+  if (!camera || !heightF32) return true;
+  const margin = 900;
+  const corners = [[-1, -1], [1, -1], [-1, 0.2], [1, 0.2]];
+  const ray = new THREE.Raycaster();
+  for (let i = 0; i < corners.length; i++) {
+    ray.setFromCamera(new THREE.Vector2(corners[i][0], corners[i][1]), camera);
+    const dir = ray.ray.direction, eye = camera.position;
+    if (Math.abs(dir.y) < 1e-4) continue;
+    const g = yOf(heightWorld(eye.x, eye.z));
+    const t = (g - eye.y) / dir.y;
+    if (t < 0) continue;
+    const x = eye.x + dir.x * t, z = eye.z + dir.z * t;
+    const p = worldToPx(x, z);
+    if (p.px < margin / CELL || p.py < margin / CELL ||
+        p.px > COLS - 1 - margin / CELL || p.py > ROWS - 1 - margin / CELL) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function nearPixelation() {
+  // Stop zoom-in before a terrain cell or a tree atlas cell blows up on screen.
+  if (!camera) return false;
+  const fov = camera.fov * Math.PI / 180;
+  const h = renderer.domElement.height || 800;
+  const worldPerPx = (2 * Math.tan(fov / 2) * 180) / h;
+  return worldPerPx < 0.55;
+}
+
+function applyZoom(next) {
+  const prev = rig.zoom;
+  rig.zoom = clamp(next, 0.85, 1.55);
+  if (camera) applyFovAndPitch();
+  if (rig.zoom < prev && !mapEdgeOk()) {
+    rig.zoom = prev;
+    if (camera) applyFovAndPitch();
+    return;
+  }
+  if (rig.zoom > prev && nearPixelation()) {
+    rig.zoom = prev;
+    if (camera) applyFovAndPitch();
+  }
+}
+
+function onWheel(e) {
+  e.preventDefault();
+  const step = e.deltaY > 0 ? -0.06 : 0.06;
+  applyZoom(rig.zoom + step);
+}
+
 function bindInput() {
   canvas.addEventListener("pointerdown", onPointerDown);
   canvas.addEventListener("pointermove", onPointerMove);
   window.addEventListener("pointerup", onPointerUp);
   canvas.addEventListener("pointerleave", onPointerLeave);
   canvas.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+  canvas.addEventListener("wheel", onWheel, { passive: false });
 }
+
 
 function stepCursor(dt) {
   const k = 40, damp = 6;
@@ -3754,7 +4397,7 @@ function measureGroundShare() {
     _mask.buf = new Uint8Array(w * h * 4);
   }
   const hide = [];
-  [skyGroup, windowPts, firePts, cloudMesh, labelMesh].forEach(function (o) {
+  [skyGroup, windowPts, firePts, cloudMesh, volCloudGroup, labelMesh].forEach(function (o) {
     if (o) { hide.push([o, o.visible]); o.visible = false; }
   });
   const oldFog = terrainMat.uniforms.uFog.value;
@@ -3880,6 +4523,16 @@ function setCommonUniforms(t) {
     clumpMat.uniforms.uCursor.value.copy(cur);
     clumpMat.uniforms.uWind.value = state.wind;
   }
+  if (riverRibbon && riverRibbon.material && riverRibbon.material.uniforms) {
+    if (riverRibbon.material.uniforms.uTime) riverRibbon.material.uniforms.uTime.value = t;
+    if (riverRibbon.material.uniforms.uWind) riverRibbon.material.uniforms.uWind.value = state.wind;
+  }
+  for (let i = 0; i < washMats.length; i++) {
+    if (washMats[i].uniforms.uSunDir && clock) {
+      const az = clock.sunAz || 0, alt = (clock.alt || 30) * Math.PI / 180;
+      washMats[i].uniforms.uSunDir.value.set(Math.sin(az) * Math.cos(alt), Math.sin(alt), Math.cos(az) * Math.cos(alt));
+    }
+  }
 }
 
 function startLoop() {
@@ -3955,7 +4608,10 @@ function expose() {
         riverVis: !!(riverRibbon && riverRibbon.visible),
         riverVerts: riverRibbon && riverRibbon.geometry ? riverRibbon.geometry.attributes.position.count : 0,
         ridges: ridgeGroup ? ridgeGroup.children.length : 0,
-        pathN: (riverPathPx || []).length
+        pathN: (riverPathPx || []).length,
+        clouds: volCloudItems.length,
+        banks: !!(riverBanks),
+        zoom: rig.zoom
       };
     },
     stats: function () {
@@ -3965,7 +4621,7 @@ function expose() {
       return f;
     },
     state: function () { return { season: clock.season, period: clock.period, wx: wx.kind, at: clock.now, s: rig.s, pathLen: path.len, night: clock.night, alt: clock.alt, reduce: REDUCE, veg: { trees: VEG.treesPlaced, blades: VEG.blades, clumps: VEG.clumps }, land: { church: LAND.church, farmhouse: LAND.farmhouse, barn: LAND.barn, silo: LAND.silo, hay: LAND.hay, mill: LAND.mill, depot: LAND.depot, fromGltf: LAND.fromGltf } }; },
-    _applyWx: function () { applySkin(); },
+    _applyWx: function () { applySkin(); buildVolClouds(); layoutVolClouds(); if (glOk) renderer.render(scene, camera); },
     hide: function (name, v) {
       const on = v !== false;
       const map = { trees: treeMesh, grass: grassMesh, clumps: clumpMesh, moon: moonMesh, clouds: cloudMesh, church: churchMesh, hay: hayMesh, label: labelMesh, landmarks: landmarkGroup };
@@ -4004,6 +4660,7 @@ async function init() {
   buildTerrain();
   buildSky();
   buildClouds();
+  buildVolClouds();
   scatterTrees();
   buildGrass();
   buildTown();
