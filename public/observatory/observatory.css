@@ -1,0 +1,290 @@
+/* observatory.css - "The Jasper Observatory" homepage (art direction: Leo).
+   Full-bleed sky canvas, the brass astrolabe dial (it chooses the sign-in mode), and the parchment eyepiece plate.
+   Scoped to html.obs (set only by index.html). No IDs, inputs, or app.js behavior are changed;
+   the old mode links are hidden here and driven by the dial in observatory.js. */
+
+@font-face {
+  font-family: "Cormorant Garamond"; font-style: normal; font-weight: 300 700; font-display: swap;
+  src: url("/observatory/fonts/cormorant-garamond.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Cormorant Garamond"; font-style: italic; font-weight: 300 700; font-display: swap;
+  src: url("/observatory/fonts/cormorant-garamond-italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Literata"; font-style: normal; font-weight: 200 900; font-display: swap;
+  src: url("/observatory/fonts/literata.woff2") format("woff2");
+}
+
+html.obs {
+  --obs-ink: #1F1D1A;
+  --obs-cream: #EDE6D6;
+  --obs-brass: #D9A441;
+  --obs-brass-hi: #F2C46B;
+  --obs-brass-lo: #8A6420;
+  --obs-green: #2F5D46;
+  --obs-night: #070B14;
+  /* desktop: astrolabe ~620px, centred slightly above the middle */
+  --obs-s: clamp(540px, calc(100vh - 140px), 620px);
+  --obs-cy: calc(var(--obs-s) / 2 + max(24px, (100vh - var(--obs-s) - 90px) * 0.45));
+  /* the eyepiece plate sits a little below the hub so the mascot can stand on it inside the inscription ring */
+  --obs-card-w: 300px;
+  --obs-card-top: calc(var(--obs-cy) - var(--obs-card-h, 215px) / 2 + 56px);
+  /* mascot rig size; the whole logo, wordmark and popcorn bucket included, stands clear of the plate's top edge */
+  --obs-rig: 184px;
+  --obs-plaque-top: calc(var(--obs-cy) + var(--obs-s) / 2 + 14px);
+  /* intro values, driven by observatory.js (defaults = final state) */
+  --obs-card: 1;
+  --obs-hop: 1;
+  --obs-plaque: 1;
+  background: var(--obs-night) !important;
+}
+@media (max-width: 699px) {
+  html.obs {
+    --obs-s: min(360px, calc(100vw - 24px));
+    /* open sky above the ring for the moon on taller phones */
+    --obs-cy: calc(var(--obs-s) / 2 + clamp(22px, (100vh - 560px) * 0.5, 150px) + env(safe-area-inset-top, 0px));
+    --obs-card-w: min(320px, calc(100vw - 40px));
+    /* the plate starts below the hub; the whole mascot (wordmark and bucket) stands on it inside the inscription ring */
+    --obs-rig: 150px;
+    --obs-card-top: calc(var(--obs-cy) + 30px);
+    --obs-plaque-top: calc(var(--obs-card-top) + var(--obs-card-h, 240px) + 18px);
+  }
+}
+/* phone keyboard open: astrolabe slides up and shrinks, never over the inputs */
+@media (max-width: 699px) and (max-height: 560px) {
+  html.obs {
+    --obs-s: 210px;
+    --obs-cy: 112px;
+    --obs-card-top: calc(var(--obs-cy) + 6px);
+  }
+}
+
+html.obs body.la-on, html.obs body { background: transparent !important; }
+html.obs body.la-on { min-height: calc(var(--obs-plaque-top) + 72px); }
+html.obs body:not(.obs-off) #la-sky { display: none !important; }
+
+/* ---------- the sky ---------- */
+#obs { display: none; }
+html.obs #obs {
+  display: block; position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 100%, #0E1A2B 0%, #070B14 70%);
+}
+html.obs body.obs-off #obs, html.obs body.obs-off #obs-astro,
+html.pb-restoring #obs, html.pb-restoring #obs-astro { display: none !important; }
+#obs-sky { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+/* ---------- the astrolabe ---------- */
+#obs-astro { display: none; }
+html.obs #obs-astro {
+  display: block; position: absolute; left: 50%; top: var(--obs-cy); z-index: 2; pointer-events: none;
+  width: var(--obs-s); height: var(--obs-s); translate: -50% -50%;
+  transition: width .35s ease, height .35s ease, top .35s ease;
+}
+#obs-astro svg { width: 100%; height: 100%; display: block; overflow: visible; }
+#obs-astro text { font-family: "Cormorant Garamond", "IM Fell English", Georgia, serif; font-weight: 600; font-variant-numeric: lining-nums; }
+#obs-astro .obs-it { font-style: italic; font-weight: 500; }
+#obs-astro .obs-band { stroke: rgba(9, 11, 15, .6); }
+#obs-astro .obs-dot { fill: rgb(9, 11, 15); }
+#obs-astro .obs-face, #obs-astro .obs-face-in { fill: none; }
+/* daylight: a solid brass instrument on a warm parchment face, engraved in dark ink */
+/* at about 85% the brass and parchment let the sky show through, the way the night dial shows its stars */
+html[data-obs-day] #obs-astro .obs-face { fill: rgba(201, 154, 69, .85); }
+html[data-obs-day] #obs-astro .obs-face-in { fill: rgba(234, 221, 191, .85); }
+html[data-obs-day] #obs-astro .obs-band { stroke: rgba(201, 154, 69, .5); }
+html[data-obs-day] #obs-astro #obsRingI .obs-band { stroke: rgba(184, 135, 58, .5); }
+html[data-obs-day] #obs-astro .obs-dot { fill: #EADDBF; stroke: #4A3410; stroke-width: .8; }
+html[data-obs-day] #obs-astro [stroke="#D9A441"], html[data-obs-day] #obs-astro [stroke="#F2C46B"] { stroke: #4A3410; }
+html[data-obs-day] #obs-astro text { fill: #33240A; }
+html[data-obs-day] #obs-astro #obsRingI text { fill: #2A1D07; opacity: 1; }
+html[data-obs-day] #obs-astro #obsRete [fill="#D9A441"] { fill: #B8873A; stroke: #4A3410; }
+html[data-obs-day] #obs-astro #obsRete [fill="#F2C46B"] { fill: #4A3410; }
+html[data-obs-day] #obs-astro #obsHand path:first-child { fill: #8A6420; stroke: #3A2808; }
+html[data-obs-day] #obs-astro #obsSec circle, html[data-obs-day] #obs-astro #obsSun circle:nth-child(2) { fill: #4A3410; }
+html[data-obs-day] #obs-astro #obsMoonMark path { fill: #4A3410; }
+html[data-obs-day] #obs-astro svg { filter: drop-shadow(0 10px 24px rgba(40, 52, 70, .32)); }
+
+/* ---------- the mode dial: accessible buttons over the engraved words, and a drag ring ---------- */
+#obs-dial { display: none; }
+html.obs #obs-dial {
+  display: block; position: absolute; left: 50%; top: var(--obs-cy); z-index: 2; pointer-events: none;
+  width: var(--obs-s); height: var(--obs-s); translate: -50% -50%;
+  transition: width .35s ease, height .35s ease, top .35s ease;
+}
+html.obs body.obs-off #obs-dial, html.pb-restoring #obs-dial { display: none !important; }
+#obs-dial .obs-ring-hit { position: absolute; inset: 0; pointer-events: auto; touch-action: none; cursor: grab; }
+#obs-dial .obs-ring-hit:active { cursor: grabbing; }
+#obs-dial .obs-mode {
+  position: absolute; left: 0; top: 0; pointer-events: auto; cursor: pointer; padding: 0; margin: 0; touch-action: none;
+  background: transparent; border: 0; border-radius: 999px; color: transparent; font-size: 12px; overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+#obs-dial .obs-mode:focus-visible { outline: 2px solid var(--obs-brass-hi); outline-offset: 2px; box-shadow: 0 0 14px rgba(242, 196, 107, .55); }
+#obs-astro .obs-word text { opacity: .75; transition: opacity .25s; }
+#obs-astro .obs-word-on text { opacity: 1; fill: #FFE9B8; }
+#obs-astro .obs-polaris { filter: drop-shadow(0 0 3px rgba(242, 196, 107, .7)); }
+html[data-obs-day] #obs-astro .obs-word-on text { fill: #1E1404; }
+
+/* ---------- the sign-in card: parchment in the eyepiece ---------- */
+html.obs #login, html.obs #teacherLogin, html.obs #teacherSignup {
+  position: absolute !important; left: 50%; top: var(--obs-card-top); z-index: 3 !important;
+  width: var(--obs-card-w); max-width: calc(100vw - 32px) !important; margin: 0 !important;
+  translate: -50% 0; box-sizing: border-box;
+  transition: top .35s ease;
+}
+html.obs .la-card {
+  background: var(--obs-cream) !important;
+  border: 1px solid var(--obs-brass-lo) !important;
+  border-radius: 10px !important;
+  padding: 14px 24px 12px !important;
+  color: var(--obs-ink);
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  box-shadow:
+    inset 0 0 0 4px var(--obs-cream), inset 0 0 0 5px rgba(138, 100, 32, .38),
+    0 0 0 3px rgba(7, 11, 20, .6), 0 0 0 4px rgba(217, 164, 65, .5),
+    0 30px 60px -18px rgba(0, 0, 0, .75) !important;
+  overflow: visible;
+}
+html.obs .la-card::after { display: none !important; }
+html.obs .la-card::before { opacity: .07 !important; mix-blend-mode: multiply !important; }
+html.obs .la-card.la-enter { animation: none !important; }
+html.obs.obs-js #login, html.obs.obs-js #teacherLogin, html.obs.obs-js #teacherSignup {
+  opacity: var(--obs-card);
+}
+html.obs.obs-done #login, html.obs.obs-done #teacherLogin, html.obs.obs-done #teacherSignup { filter: none; opacity: 1; }
+html.obs.obs-swap .la-card:not(.hidden) { animation: obs-swap .45s ease both !important; }
+@keyframes obs-swap { from { opacity: .2; filter: blur(3px); } to { opacity: 1; filter: none; } }
+/* no-JS fallback: the form appears right away */
+html.obs:not(.obs-js) .la-card, html.obs:not(.obs-js) #login { animation: obs-card-in .4s ease .3s both !important; }
+@keyframes obs-card-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* the mascot peeks over the eyepiece rim (rig behavior unchanged) */
+html.obs .la-card .login-logo {
+  position: absolute; left: 50%; top: 1px; translate: -50% -100%; margin: 0 !important;
+  width: var(--obs-rig); height: calc(var(--obs-rig) * .97); clip-path: inset(-400px -400px 0 -400px); z-index: 1;
+}
+/* the pop-up hop: he springs up from behind the plate (observatory.js drives --obs-hop, 0 to 1 with overshoot) */
+html.obs .la-card .la-logo { position: absolute; left: 0; top: 0; width: var(--obs-rig); height: var(--obs-rig); margin: 0; translate: 0 calc((1 - var(--obs-hop)) * 88%); }
+html.obs .la-card .login-logo > img { position: absolute; left: 0; top: 0; width: var(--obs-rig) !important; height: var(--obs-rig) !important; max-width: none; }
+html.obs .la-card .la-rig { filter: drop-shadow(0 -2px 6px rgba(7, 11, 20, .35)); }
+/* by day the pale wordmark letters sit on the parchment face: a thin ink outline keeps "PopBoard" readable */
+html.obs[data-obs-day] .la-card .la-rig { filter: drop-shadow(0 0 .6px #3A2808) drop-shadow(0 0 .6px #3A2808) drop-shadow(0 2px 5px rgba(40, 30, 10, .35)); }
+
+html.obs .la-card h2 { /* visually hidden: the dial shows the mode; screen readers still get the heading */
+  position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+html.obs .la-card .login-input {
+  font-family: "Literata", Georgia, serif !important; font-size: 15px !important; color: var(--obs-ink) !important;
+  background: #F6F1E4 !important; border: 0 !important; border-bottom: 1px solid var(--obs-ink) !important;
+  border-radius: 3px 3px 0 0 !important; box-shadow: none !important;
+  padding: 8px 10px 6px !important; min-height: 38px !important; height: 38px; margin-bottom: 6px !important;
+  transform: none !important;
+}
+/* the Join button's magnetic drift (login-alive.js) can reach ~38px; in this compact card the fields
+   stay on top so a drifting button never takes a click meant for an input */
+html.obs .la-card .login-input { position: relative; z-index: 2; }
+html.obs .la-card .login-buttons { position: relative; z-index: 1; }
+html.obs .la-card .login-input::placeholder { color: rgba(31, 29, 26, .52); opacity: 1; font-style: italic; }
+html.obs .la-card .login-input:hover { border-bottom-color: var(--obs-brass-lo) !important; }
+html.obs .la-card .login-input:focus {
+  background: #FBF8EF !important; border-bottom: 2px solid var(--obs-brass-lo) !important; padding-bottom: 6px !important;
+  box-shadow: 0 1px 0 0 var(--obs-brass) !important; outline: none;
+}
+html.obs .la-card .login-buttons { margin-top: 6px; }
+html.obs .la-card .login-buttons button {
+  font-family: "Literata", Georgia, serif !important; font-weight: 600 !important; font-size: 15px !important; letter-spacing: .06em;
+  background: var(--obs-brass) !important; color: var(--obs-ink) !important;
+  border: 1px solid var(--obs-brass-lo) !important; border-radius: 6px !important;
+  min-width: 150px; height: 40px; padding: 0 22px !important;
+  box-shadow: inset 0 1px 0 var(--obs-brass-hi), 0 2px 0 var(--obs-brass-lo) !important;
+}
+html.obs .la-card .login-buttons button:hover { background: var(--obs-brass-hi) !important; }
+html.obs .la-card button:focus-visible, html.obs .la-card a.login-link:focus-visible { outline: 2px solid var(--obs-ink) !important; outline-offset: 3px; }
+html.obs .la-card .login-link-row { display: none !important; } /* replaced by the mode dial */
+html.obs .la-card a.login-link.la-pill {
+  font-family: "Literata", Georgia, serif !important; font-size: 13px !important; font-weight: 500 !important;
+  color: #5a4214 !important; opacity: 1 !important; padding: 4px 16px !important;
+  background: transparent !important; border: 1px solid var(--obs-brass-lo) !important; border-radius: 999px !important;
+  box-shadow: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+}
+html.obs .la-card a.login-link.la-pill:hover { background: rgba(217, 164, 65, .16) !important; }
+html.obs .la-card .login-note { font-family: "Literata", Georgia, serif; font-style: italic; font-size: 12px; color: #5a4214; opacity: 1; margin: 8px 0 0; }
+@media (max-width: 699px) {
+  html.obs .la-card { padding: 14px 18px 12px !important; }
+  html.obs .la-card .login-input { font-size: 16px !important; min-height: 44px !important; height: 44px; }
+  html.obs .la-card .login-buttons button { height: 44px; }
+}
+@media (max-width: 699px) and (max-height: 560px) {
+  html.obs .la-card .login-logo { display: none; }
+}
+
+/* ---------- failed sign-in: a cream paper slip under the plate (other toasts are unchanged) ---------- */
+#obs-slips { display: none; }
+html.obs #obs-slips {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; position: absolute; left: 50%; z-index: 6;
+  top: calc(var(--obs-card-top) + var(--obs-card-h, 215px) + 10px); translate: -50% 0; width: var(--obs-card-w); pointer-events: none;
+}
+html.obs body.obs-off #obs-slips { display: none; }
+html.obs #obs-slips .ui-toast.obs-slip {
+  pointer-events: auto; position: relative; display: flex; align-items: flex-start; gap: 8px; box-sizing: border-box;
+  max-width: 100%; width: auto; margin: 0; padding: 8px 30px 9px 14px !important; rotate: -.6deg;
+  background: #F6EFDD !important; color: #B5562E !important; border: 1px solid var(--obs-ink) !important; border-radius: 2px !important;
+  box-shadow: inset 0 0 0 3px #F6EFDD, inset 0 0 0 4px rgba(31, 29, 26, .25), 0 6px 14px rgba(0, 0, 0, .35) !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  font-family: "Literata", Georgia, serif !important; font-style: italic; font-size: 14px !important; line-height: 1.35; letter-spacing: 0;
+  animation: obs-slip-in .32s cubic-bezier(.2, 1.4, .4, 1) both;
+}
+html.obs #obs-slips .obs-slip .ui-toast-icon { display: none !important; }
+html.obs #obs-slips .obs-slip .ui-toast-text { color: #B5562E !important; font: inherit !important; }
+html.obs #obs-slips .obs-slip .ui-toast-close {
+  position: absolute; right: 6px; top: 4px; background: none !important; border: 0 !important; box-shadow: none !important;
+  color: var(--obs-ink) !important; opacity: .55; font: 400 17px/1 "Literata", Georgia, serif !important; padding: 2px 4px !important; cursor: pointer;
+}
+html.obs #obs-slips .obs-slip .ui-toast-close:hover { opacity: 1; }
+html.obs #obs-slips .obs-slip.is-leaving { opacity: 0; translate: 0 -4px; transition: opacity .2s, translate .2s; }
+@keyframes obs-slip-in { from { opacity: 0; translate: 0 -10px; rotate: 2deg; } to { opacity: 1; translate: 0 0; rotate: -.6deg; } }
+@media (prefers-reduced-motion: reduce) { html.obs #obs-slips .ui-toast.obs-slip { animation: none; } }
+
+/* ---------- "Explore the Study Lab": an engraved brass nameplate ---------- */
+html.obs a.study-pill {
+  font-variant-numeric: lining-nums;
+  position: absolute !important; top: var(--obs-plaque-top); bottom: auto !important; left: 50%;
+  transform: translateX(-50%) translateY(calc((1 - var(--obs-plaque)) * 8px)) !important; opacity: var(--obs-plaque);
+  animation: none !important; z-index: 4;
+  height: 40px; padding: 0 26px 0 22px; gap: 10px; border-radius: 3px;
+  font-family: "Cormorant Garamond", Georgia, serif; font-weight: 700; font-size: 15px; letter-spacing: .16em; text-transform: uppercase;
+  color: #3a2808 !important; text-shadow: 0 1px 0 rgba(242, 196, 107, .9);
+  background:
+    radial-gradient(circle at 9px 50%, #8A6420 0 1.6px, #F2C46B 1.7px 2.4px, transparent 2.5px),
+    radial-gradient(circle at calc(100% - 9px) 50%, #8A6420 0 1.6px, #F2C46B 1.7px 2.4px, transparent 2.5px),
+    var(--obs-brass) !important;
+  border: 1px solid var(--obs-brass-lo) !important;
+  box-shadow: inset 0 1px 0 var(--obs-brass-hi), inset 0 0 0 3px var(--obs-brass), inset 0 0 0 4px rgba(138, 100, 32, .55), 0 6px 18px rgba(0, 0, 0, .45) !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  transition: background-color .2s, box-shadow .2s, opacity .3s, translate .38s cubic-bezier(.3, .7, .25, 1);
+  translate: 0 var(--obs-slip-shift, 0px); /* phones: steps down out of the way of the sign-in slip */
+}
+@media (prefers-reduced-motion: reduce) { html.obs a.study-pill { transition: background-color .2s, box-shadow .2s, opacity .3s; } }
+html.obs a.study-pill:hover, html.obs a.study-pill:focus-visible {
+  background:
+    radial-gradient(circle at 9px 50%, #8A6420 0 1.6px, #F2C46B 1.7px 2.4px, transparent 2.5px),
+    radial-gradient(circle at calc(100% - 9px) 50%, #8A6420 0 1.6px, #F2C46B 1.7px 2.4px, transparent 2.5px),
+    var(--obs-brass-hi) !important;
+  color: #2a1c04 !important;
+}
+html.obs a.study-pill:focus-visible { outline: 2px solid var(--obs-cream); outline-offset: 3px; }
+html.obs a.study-pill:active { transform: translateX(-50%) scale(.97) !important; }
+html.obs .study-pill-moon { background: #1F1D1A; border-radius: 50%; box-shadow: 0 0 0 1px var(--obs-brass-lo); }
+html.obs .study-pill-moon::after { display: none; }
+@media (max-width: 699px) {
+  html.obs a.study-pill { font-size: 14px; letter-spacing: .13em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.obs #obs-astro, html.obs #login, html.obs #teacherLogin, html.obs #teacherSignup { transition: none; }
+  html.obs:not(.obs-js) .la-card, html.obs:not(.obs-js) #login { animation: none !important; }
+}
+@media print {
+  html.obs #obs, html.obs #obs-astro { display: none !important; }
+}
+
