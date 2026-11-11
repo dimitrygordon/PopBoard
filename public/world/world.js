@@ -1349,7 +1349,7 @@ void main(){
 `;
 
 const BUILDING_FRAG = /* glsl */`
-uniform vec3 uWash, uInkUse, uPaper, uNightMul, uSunDir, uMoonDir;
+uniform vec3 uWash, uInkUse, uPaper, uNightMul, uSunDir, uMoonDir, uFill;
 uniform float uNight, uStorm;
 varying vec3 vN;
 varying vec3 vWorld;
@@ -1388,6 +1388,7 @@ void main(){
     col = mix(col, uInkUse, hatch * mix(0.42, 0.16, uNight));
   }
   col *= 0.97 + 0.05 * noise21(vWorld.xz * 2.4);
+  col += uFill * (0.42 + 0.58 * max(ndl, 0.0)) * (1.0 - 0.70 * uNight);
   if (uStorm > 0.01) {
     float lumaB = dot(col, vec3(0.30, 0.59, 0.11));
     col = mix(col, vec3(lumaB * 0.92, lumaB * 0.95, lumaB * 1.05), 0.40 * uStorm);
@@ -1481,30 +1482,6 @@ void main(){
     col *= mix(1.0, 0.78, uStorm);
   }
   gl_FragColor = vec4(col, 1.0);
-}
-`;
-
-const HALO_VERT = /* glsl */`
-varying vec2 vUv;
-void main(){
-  vUv = uv;
-  vec4 mw = modelMatrix * vec4(position, 1.0);
-  gl_Position = projectionMatrix * viewMatrix * mw;
-}
-`;
-
-const HALO_FRAG = /* glsl */`
-uniform vec3 uWarm;
-uniform float uNight;
-varying vec2 vUv;
-void main(){
-  vec2 p = vUv * 2.0 - 1.0;
-  float r = length(p);
-  float ring = smoothstep(1.0, 0.18, r) * (1.0 - smoothstep(0.12, 0.72, r) * 0.35);
-  ring *= 0.72 + 0.18 * (1.0 - uNight);
-  if (ring < 0.02) discard;
-  vec3 col = mix(uWarm, vec3(1.0, 0.94, 0.78), 0.35);
-  gl_FragColor = vec4(col, ring * 0.55);
 }
 `;
 
@@ -1747,7 +1724,7 @@ const skyDriftT0 = performance.now();
 let churchMesh, labelMesh, landmarkGroup;
 const washMats = [];
 const windowMats = [];
-const LAND = { church: 0, farmhouse: 0, barn: 0, silo: 0, hay: 0, mill: 0, depot: 0, osmHouses: 0, osmShops: 0, osmSheds: 0, osmRoads: 0, osmDowntown: 0, osmLongSplit: 0, osmFences: 0, osmYards: 0, millHalo: 0, fromGltf: {} };
+const LAND = { church: 0, farmhouse: 0, barn: 0, silo: 0, hay: 0, mill: 0, depot: 0, osmHouses: 0, osmShops: 0, osmSheds: 0, osmRoads: 0, osmDowntown: 0, osmLongSplit: 0, osmFences: 0, osmYards: 0, fromGltf: {} };
 
 function terrainUniforms() {
   return {
@@ -4952,8 +4929,9 @@ function fillGrass(cx, cz) {
 
 const washMatCache = {};
 const windowMatCache = { mat: null };
-function makeWashMat(rgb) {
-  const key = rgb[0] + "," + rgb[1] + "," + rgb[2];
+function makeWashMat(rgb, fill) {
+  const fillKey = fill ? (fill[0] + "," + fill[1] + "," + fill[2]) : "0";
+  const key = rgb[0] + "," + rgb[1] + "," + rgb[2] + ":f" + fillKey;
   if (washMatCache[key]) return washMatCache[key];
   const mat = new THREE.ShaderMaterial({
     uniforms: {
@@ -4964,7 +4942,8 @@ function makeWashMat(rgb) {
       uNight: { value: 0 },
       uSunDir: { value: new THREE.Vector3(0.3, 0.8, 0.2) },
       uMoonDir: { value: new THREE.Vector3(0.2, 0.5, 0.4) },
-      uStorm: { value: 0 }
+      uStorm: { value: 0 },
+      uFill: { value: fill ? new THREE.Vector3(fill[0], fill[1], fill[2]) : new THREE.Vector3(0, 0, 0) }
     },
     vertexShader: BUILDING_VERT,
     fragmentShader: BUILDING_FRAG
@@ -5120,13 +5099,13 @@ const MODEL_WASH = {
     roof: [96, 92, 84]
   },
   mill: {
-    wall: [186, 168, 140],
+    wall: [206, 190, 164],
     roof: [110, 92, 74],
     metal: [120, 118, 112],
     wood: [115, 87, 56],
     door: [59, 43, 33],
-    stone: [148, 138, 118],
-    trim: [214, 204, 184],
+    stone: [168, 156, 136],
+    trim: [224, 216, 196],
     wheel: [92, 84, 72]
   },
   depot: {
@@ -5189,7 +5168,7 @@ function styleLoadedModel(root, kind) {
     silo: [148, 153, 148],
     haybale: [201, 166, 107],
     courthouse: [186, 176, 158],
-    mill: [186, 168, 140],
+    mill: [206, 190, 164],
     depot: [186, 168, 145],
     monastery: [214, 204, 186],
     archabbey: [214, 206, 190],
@@ -5205,7 +5184,9 @@ function styleLoadedModel(root, kind) {
       const isWin = kind !== "silo" && (mn === "window" || n.indexOf("window") === 0 || n.indexOf("lancet") === 0 || n === "rose" || n.indexOf("rear_window") === 0);
       if (isWin) return makeWindowMat();
       const rgb = pal[mn] || pal[n] || fallback;
-      return makeWashMat(rgb);
+      const isRoof = mn.indexOf("roof") >= 0 || n.indexOf("roof") >= 0 || mn === "wheel" || mn === "metal" || mn === "door";
+      const fill = (kind === "mill" && !isRoof) ? [0.10, 0.08, 0.05] : null;
+      return makeWashMat(rgb, fill);
     });
     obj.material = styled.length === 1 ? styled[0] : styled;
   });
@@ -5962,33 +5943,6 @@ function buildLotLines(recs, townName) {
   return mesh;
 }
 
-function addMillHalo() {
-  const mill = LANDMARK_SITES.jasper_city_mill || { px: 185.5, py: 458.6 };
-  const w = pxToWorld(mill.px, mill.py);
-  const geo = new THREE.CircleGeometry(34, 48);
-  geo.rotateX(-Math.PI * 0.5);
-  const mat = new THREE.ShaderMaterial({
-    uniforms: {
-      uWarm: { value: new THREE.Vector3(1.0, 0.86, 0.55) },
-      uNight: { value: 0 }
-    },
-    vertexShader: HALO_VERT,
-    fragmentShader: HALO_FRAG,
-    transparent: true,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending,
-    side: THREE.DoubleSide
-  });
-  washMats.push(mat);
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.name = "millHalo";
-  mesh.position.set(w.x, yOf(heightWorld(w.x, w.z)) + 0.32, w.z);
-  mesh.renderOrder = 2;
-  mesh.frustumCulled = false;
-  scene.add(mesh);
-  LAND.millHalo = 1;
-}
-
 function buildOsmTowns() {
   osmTownGroups.length = 0;
   if (!osmData || !osmData.towns) return;
@@ -6214,7 +6168,6 @@ function buildOsmTowns() {
     scene.add(group);
     osmTownGroups.push(group);
   }
-  addMillHalo();
   LAND.osmHouses = nHouse;
   LAND.osmShops = nShop;
   LAND.osmSheds = nShed;
