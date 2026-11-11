@@ -5066,6 +5066,8 @@ function buildOsmRoadMesh(highways) {
       const dx = b.x - a.x, dz = b.z - a.z;
       const len = Math.hypot(dx, dz);
       if (len < 0.5) continue;
+      // Oversimplified OSM ways can jump several kilometers in one chord; skip those.
+      if (len > 250) continue;
       const steps = Math.max(1, Math.round(len / 18));
       const start = (i === 0) ? 0 : 1;
       for (let s = start; s <= steps; s++) {
@@ -5086,7 +5088,7 @@ function buildOsmRoadMesh(highways) {
       const u = i / (pts.length - 1);
       uv.push(u, 0, u, 1);
       if (i > 0) {
-        idx.push(v, v + 1, v + 2, v + 1, v + 3, v + 2);
+        idx.push(v - 2, v - 1, v, v - 1, v + 1, v);
       }
       v += 2;
     }
