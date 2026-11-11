@@ -594,7 +594,7 @@ const TERRAIN_FRAG = /* glsl */`
 uniform vec3 uPaper, uInk, uInkUse, uNightMul, uRim, uSnowCol;
 uniform vec3 uField, uWheat, uPlowed, uGrass, uForest, uForestB, uCedar, uWater;
 uniform vec3 uSunDir, uMoonDir, uSkyH, uSkyM, uSkyT;
-uniform float uNight, uTwi, uRising, uSnow, uFog, uTime, uHatch, uRow, uBend, uSeason;
+uniform float uNight, uTwi, uRising, uSnow, uFog, uRain, uTime, uHatch, uRow, uBend, uSeason;
 uniform float uDawnMist, uMonth, uLightning;
 uniform vec3 uCursor;
 uniform sampler2D uCover;
@@ -793,18 +793,16 @@ void main(){
   col += (n3 - 0.5) * 0.025;
 
   float graze = pow(1.0 - clamp(dot(N, V), 0.0, 1.0), 1.6);
-  // Inked ridge crests. Front heaviest in #2A2118; each layer behind thinner and paler.
+  // Ridges separate by haze and color. At most a faint thin ink on the farthest crests.
   vec2 fwd = normalize(vWorld.xz - cameraPosition.xz);
   vec2 duv = vec2(fwd.x / ((uSize.x - 1.0) * 31.25), fwd.y / ((uSize.y - 1.0) * 31.25));
   float hF = heightM(clamp(vUv + duv * 3.0, 0.0, 1.0));
   float hB = heightM(clamp(vUv - duv * 3.0, 0.0, 1.0));
   float peak = h - max(hF, hB);
-  float crest = smoothstep(0.25, 1.6, peak + (n3 - 0.5) * 0.35);
-  float ridge = max(graze * smoothstep(0.10, 0.48, 1.0 - N.y), crest);
-  vec3 inkFront = vec3(0.165, 0.129, 0.094);
-  vec3 inkBack = vec3(0.55, 0.60, 0.64);
-  vec3 inkCol = mix(inkFront, inkBack, layer);
-  float ridgeAmt = ridge * mix(0.92, 0.22, layer) * (1.0 - uSnow * 0.5);
+  float crest = smoothstep(0.35, 1.8, peak + (n3 - 0.5) * 0.25);
+  float ridge = crest;
+  vec3 inkCol = vec3(0.55, 0.60, 0.64);
+  float ridgeAmt = crest * smoothstep(0.62, 0.90, layer) * 0.20 * (1.0 - uSnow * 0.5);
 
   // Back ridges: pale blue-gray silhouettes, no detail, inked tops only.
   // Pale haze sits between layers so each crest reads against the next.
@@ -827,6 +825,11 @@ void main(){
   col = mix(col, nightSil, uNight * (0.28 + 0.55 * backL));
   vec3 crestInk = mix(inkCol, uInkUse, uNight);
   col = mix(col, crestInk, ridgeAmt * mix(1.0, 0.9, uNight));
+
+  if (uRain > 0.01) {
+    col *= mix(1.0, 0.86, uRain);
+    col = mix(col, vec3(col.r * 0.92, col.g * 0.95, col.b * 1.02), uRain * 0.20);
+  }
 
   if (uDawnMist > 0.01) {
     float valley = clamp((165.0 - h) / 40.0, 0.0, 1.0);
@@ -857,6 +860,15 @@ void main(){
     float sparse = step(0.86, hash21(floor(wz * 0.08)));
     nRib = mix(nRib, vec3(0.93, 0.90, 0.84), clamp(spec * 0.35, 0.0, 0.4) * sparse);
     rib = mix(rib, nRib, uNight);
+    if (uRain > 0.01) {
+      vec2 cell = floor(wz * 0.06);
+      float id = hash21(cell);
+      vec2 ctr = (cell + 0.5) / 0.06;
+      float rad = fract(uTime * 0.55 + id * 3.1);
+      float ring = 1.0 - smoothstep(0.0, 1.15, abs(length(wz - ctr) - rad * 11.0));
+      ring *= (1.0 - rad) * step(0.42, id);
+      rib = mix(rib, mix(uInkUse, vec3(0.20, 0.18, 0.16), uNight), ring * 0.62 * uRain);
+    }
     col = mix(rib, col, 0.12 * layer);
   }
 
@@ -942,30 +954,33 @@ void main(){
     col = mix(col, uHor, horB * 0.9);
     vec3 creamDay = vec3(0.96, 0.90, 0.78);
     col = mix(col, creamDay, horB * 0.45 * (1.0 - uNight));
-    // Dusk and dawn: posterized horizontal bands, hatched transitions, no dither speckle.
+    // Dusk and dawn: one continuous gradient from the sun's position, dithered,
+    // with light hatching on top. No hard bands.
     if (uTwi > 0.12) {
       vec3 amber = vec3(0.949, 0.769, 0.420); // #F2C46B
-      vec3 rose = vec3(0.831, 0.522, 0.502);
+      vec3 peach = vec3(0.96, 0.80, 0.62);
+      vec3 rose = vec3(0.86, 0.58, 0.54);
       vec3 cream = vec3(0.945, 0.906, 0.831);
-      // h is sin(elevation). Horizon is 0; the top of the hero frame is about 0.60.
+      vec3 duskBlue = vec3(0.40, 0.48, 0.62);
+      vec3 S = normalize(uSunDir);
+      float sunDot = dot(d, S);
+      float sunAng = acos(clamp(sunDot, -1.0, 1.0));
+      float aroundSun = exp(-sunAng * sunAng * 7.5);
+      float sunSide = smoothstep(-0.12, 0.55, sunDot);
       float el = h;
-      vec3 duskCol = cream;
-      if (el < 0.10) duskCol = amber;
-      else if (el < 0.28) duskCol = rose;
-      // Hatched transitions (horizontal engraved lines), not a blend or a dither.
-      float hatch = 1.0 - smoothstep(0.0, 0.22, abs(fract(el * 42.0) - 0.5));
-      float lift = step(0.18, hash21(vec2(floor(el * 42.0), floor(gl_FragCoord.x * 0.15) + uSeed)));
-      float wAmber = 1.0 - smoothstep(0.085, 0.115, el);
-      float wRose = smoothstep(0.085, 0.115, el) * (1.0 - smoothstep(0.255, 0.305, el));
-      float wCream = smoothstep(0.255, 0.305, el);
-      // In a narrow band around each step, keep the lower color where the hatch inks, else the upper.
-      if (el > 0.085 && el < 0.115) {
-        duskCol = mix(rose, amber, hatch * lift);
-      } else if (el > 0.255 && el < 0.305) {
-        duskCol = mix(cream, rose, hatch * lift);
-      } else {
-        duskCol = amber * wAmber + rose * wRose + cream * wCream;
-      }
+      float hor = 1.0 - smoothstep(0.0, 0.30, max(el, 0.0));
+      float zen = smoothstep(0.10, 0.78, el);
+      vec3 duskCol = mix(cream, duskBlue, zen * mix(0.40, 0.88, 1.0 - sunSide));
+      vec3 horSun = mix(peach, rose, 0.32 * (1.0 - aroundSun));
+      duskCol = mix(duskCol, horSun, hor * sunSide * 0.88);
+      duskCol = mix(duskCol, mix(cream, duskBlue, 0.38), hor * (1.0 - sunSide) * 0.42);
+      duskCol = mix(duskCol, amber, clamp(aroundSun * 1.2, 0.0, 1.0));
+      float wave = (noise21(vec2(d.x, d.z) * 8.0 + uSeed) - 0.5) * 1.15;
+      float row = el * 26.0 + wave;
+      float hatch = 1.0 - smoothstep(0.0, 0.34, abs(fract(row) - 0.5));
+      float lift = step(0.30, hash21(vec2(floor(row), floor((d.x + d.z) * 20.0) + uSeed)));
+      duskCol = mix(duskCol, mix(duskCol, vec3(0.22, 0.17, 0.13), 0.16), hatch * lift * 0.20 * (0.35 + 0.65 * hor));
+      duskCol += (hash21(gl_FragCoord.xy + uSeed) - 0.5) * 0.04;
       col = mix(col, duskCol, clamp((uTwi - 0.12) / 0.16, 0.0, 1.0));
       if (uTwi > 0.28) col = duskCol;
     }
@@ -1007,6 +1022,7 @@ uniform float uRuffle;
 uniform float uReduce;
 uniform float uLodNear;
 uniform float uLodMid;
+uniform float uCrownCap;
 varying vec2 vUv;
 varying float vFrame;
 varying float vKind;
@@ -1042,8 +1058,9 @@ void main(){
   vec4 c0 = projectionMatrix * viewMatrix * vec4(iPos, 1.0);
   vec4 c1 = projectionMatrix * viewMatrix * vec4(iPos + camU * sy, 1.0);
   float ndcH = abs(c1.y / max(0.001, c1.w) - c0.y / max(0.001, c0.w));
-  if (isFrame < 0.5 && ndcH > 0.16) {
-    float cap = 0.16 / ndcH;
+  float crownCap = uCrownCap > 0.01 ? uCrownCap : 0.16;
+  if (isFrame < 0.5 && ndcH > crownCap) {
+    float cap = crownCap / ndcH;
     sx *= cap;
     sy *= cap;
   }
@@ -1343,8 +1360,23 @@ const rig = {
   lastX: 0, lastY: 0,
   yawVel: 0,
   zoom: 1,
+  fwd: 0,
   pointers: {},
   pinch: 0
+};
+
+const tour = {
+  enabled: false,
+  paused: true,
+  lastInput: 0,
+  stop: 0,
+  phase: "hold",
+  holdUntil: 0,
+  from: null,
+  to: null,
+  t: 0,
+  duration: 1,
+  started: false
 };
 
 function targetHorizon() {
@@ -1429,7 +1461,7 @@ function makeCoverTex() {
 let terrainMat, skyMat, treeMat, grassMat, moonMat, heightTex, coverTex;
 let terrainMesh, treeMesh, grassMesh, hayMesh, windowPts, firePts, cloudMesh;
 let starPts, constLines, moonMesh, sunMesh, sunState = {};
-let SKY_CAT = null, constNameGroup = null, snowPts = null, fogGroup = null;
+let SKY_CAT = null, constNameGroup = null, snowPts = null, fogGroup = null, rainMesh = null, rainLens = null;
 const skyDriftT0 = performance.now();
 
 let churchMesh, labelMesh, landmarkGroup;
@@ -1468,6 +1500,7 @@ function terrainUniforms() {
     uRising: { value: 1 },
     uSnow: { value: 0 },
     uFog: { value: 0 },
+    uRain: { value: 0 },
     uTime: { value: 0 },
     uHatch: { value: 4.5 },
     uRow: { value: 1 },
@@ -1658,20 +1691,12 @@ function buildSky() {
         float r = length(p);
         if (r > 1.0) discard;
         vec3 amber = vec3(0.949, 0.769, 0.420);
-        vec3 cream = vec3(0.98, 0.94, 0.82);
+        vec3 hot = vec3(0.995, 0.91, 0.62);
         vec3 ink = vec3(0.165, 0.129, 0.094);
-        vec3 col = mix(cream, amber, 0.50);
-        // Visible radiating ink hatch, a dozen or so spokes with pen lifts.
-        float ang = atan(p.y, p.x);
-        float spokes = 12.0;
-        float slot = abs(fract((ang / 6.2831853) * spokes) - 0.5);
-        float rays = 1.0 - smoothstep(0.0, 0.09, slot);
-        rays *= smoothstep(0.06, 0.16, r) * (1.0 - smoothstep(0.78, 0.93, r));
-        float lift = step(0.12, fract(sin(floor((ang / 6.2831853) * spokes + 3.0) * 12.9898) * 43758.5453));
-        col = mix(col, ink, rays * lift);
-        // Ink rim.
-        float rim = smoothstep(0.86, 0.92, r) * (1.0 - smoothstep(0.975, 1.0, r));
-        col = mix(col, ink, max(rim, step(0.978, r)));
+        // Soft amber disk, a little brighter than the sky glow so the disc reads. No rays.
+        vec3 col = mix(amber, hot, 0.70 * (1.0 - r * r));
+        float rim = smoothstep(0.82, 0.93, r) * (1.0 - smoothstep(0.980, 1.0, r));
+        col = mix(col, ink, max(rim * 0.95, step(0.985, r) * 0.90));
         gl_FragColor = vec4(col, 1.0);
       }
     `,
@@ -1680,7 +1705,7 @@ function buildSky() {
     depthTest: true,
     side: THREE.DoubleSide
   });
-  sunMesh = new THREE.Mesh(new THREE.PlaneGeometry(820, 820), sunMat);
+  sunMesh = new THREE.Mesh(new THREE.PlaneGeometry(2200, 2200), sunMat);
   sunMesh.renderOrder = -50;
   skyGroup.add(sunMesh);
 }
@@ -2036,7 +2061,7 @@ void main(){
 `;
 
 const VOL_CLOUD_FRAG = /* glsl */`
-uniform float uSeed, uTime, uKind, uGray, uRain, uReduce, uNight, uDeck, uShaft, uCirrus, uStreak, uTwi, uEdgeFade;
+uniform float uSeed, uTime, uKind, uGray, uRain, uReduce, uNight, uDeck, uShaft, uCirrus, uStreak, uTwi, uEdgeFade, uAlphaMul;
 uniform vec3 uInk, uNightMul, uMoonDir, uLook, uSunDir;
 varying vec2 vUv;
 varying vec3 vWorld;
@@ -2072,7 +2097,7 @@ void main(){
   } else if (uDeck > 0.5) {
     // Horizontal world deck. Darker toward the horizon (far fragments). No paper holes.
     float dist = length(vWorld - cameraPosition);
-    rel = clamp(1.0 - dist / 9000.0, 0.0, 1.0);
+    rel = clamp(1.0 - dist / 14000.0, 0.0, 1.0);
     vec3 bot = mix(vec3(0.38, 0.40, 0.44), vec3(0.26, 0.28, 0.32), uGray);
     vec3 midc = mix(vec3(0.52, 0.54, 0.57), vec3(0.38, 0.40, 0.44), uGray);
     vec3 top = mix(vec3(0.62, 0.64, 0.66), vec3(0.48, 0.50, 0.54), uGray);
@@ -2080,35 +2105,38 @@ void main(){
     float tone = yWave < 0.34 ? 0.0 : (yWave < 0.68 ? 1.0 : 2.0);
     vec3 wash = tone < 0.5 ? bot : (tone < 1.5 ? midc : top);
     // Hatch in world-direction (elevation, azimuth), not on the plane UV.
-    // Constant elevation is a screen-horizontal almucantar, so there is no pinch at mid-sky.
+    // Varied spacing, stroke length, waviness, and lumps so the deck is not even ruling.
     vec3 wr = normalize(vWorld - cameraPosition);
     float elev = wr.y;
     float azim = atan(wr.x, wr.z);
-    float wave = (noise21(vec2(azim * 2.4, s)) - 0.5) * 0.035;
-    wave += sin(azim * 5.0 + s) * 0.012;
-    float row = (elev + wave) * 48.0;
+    float wave = (noise21(vec2(azim * 2.2, s)) - 0.5) * 0.055;
+    wave += sin(azim * 4.2 + s) * 0.020;
+    wave += (noise21(vec2(azim * 7.5, elev * 10.0 + s)) - 0.5) * 0.028;
+    float spacing = 28.0 + 24.0 * noise21(vec2(azim * 0.55, s + 3.2));
+    float row = (elev + wave) * spacing;
     float rid = floor(row);
     float f = fract(row) - 0.5;
-    float lift = step(0.10, hash21(vec2(rid * 11.0, floor(azim * 14.0) + s)));
-    float line = 1.0 - smoothstep(0.0, 0.18, abs(f));
-    // Low-frequency lumps: darker masses, lighter breaks. Darker toward the horizon (deck base).
-    float lumps = noise21(vec2(azim * 0.85, elev * 1.6) + vec2(s, 2.0));
-    lumps = lumps * 0.70 + noise21(vec2(azim * 0.35, elev * 0.7 + s)) * 0.30;
-    float dens = mix(0.12, 1.0, lumps) * mix(0.95, 0.22, clamp(elev / 0.85, 0.0, 1.0));
-    hatch = dens * line * lift;
-    col = mix(wash, uInk, clamp(hatch * 0.52, 0.0, 0.66));
-    float layers = 0.0;
-    for (int i = 0; i < 5; i++) {
-      float by = 0.08 + float(i) * 0.14;
-      by += (noise21(vec2(azim * 1.4, s + float(i))) - 0.5) * 0.03;
-      float li = 1.0 - smoothstep(0.0, 0.016, abs(elev - by));
-      float pen = step(0.20, hash21(vec2(floor(azim * 10.0), s + float(i) * 4.0)));
-      layers += li * pen;
-    }
-    col = mix(col, uInk, clamp(layers, 0.0, 1.0) * dens * mix(0.50, 0.14, clamp(elev, 0.0, 1.0)));
+    // Break each almucantar into short strokes of uneven length, with pen lifts.
+    float azSpan = mix(4.0, 13.0, hash21(vec2(rid, s + 2.1)));
+    float along = azim * azSpan + hash21(vec2(rid, s + 6.0)) * 3.0;
+    float segId = floor(along);
+    float segF = fract(along);
+    float segLen = mix(0.28, 0.82, hash21(vec2(rid * 9.0, segId + s)));
+    float inSeg = step(0.0, segF) * step(segF, segLen);
+    float taper = smoothstep(0.0, 0.12, segF) * smoothstep(segLen, segLen - 0.12, segF);
+    float lift = step(0.18, hash21(vec2(rid * 11.0, segId + s)));
+    float line = 1.0 - smoothstep(0.0, 0.22, abs(f));
+    float lumps = noise21(vec2(azim * 0.70, elev * 1.35) + vec2(s, 2.0));
+    lumps = lumps * 0.55 + noise21(vec2(azim * 0.28, elev * 0.6 + s)) * 0.45;
+    lumps = smoothstep(0.18, 0.82, lumps);
+    float dens = mix(0.10, 1.0, lumps) * mix(0.95, 0.20, clamp(elev / 0.85, 0.0, 1.0));
+    hatch = dens * line * lift * inSeg * taper;
+    col = mix(wash, uInk, clamp(hatch * 0.50, 0.0, 0.66));
+    // Soft circular fade so the square deck edge never reads as a seam.
+    float edge = 1.0 - smoothstep(0.74, 0.92, length(vUv - 0.5) * 2.0);
     rim = 1.0 - smoothstep(0.0, 0.12, rel);
     b = 1.0;
-    alpha = 0.96;
+    alpha = 0.96 * edge;
   } else if (uCirrus > 0.5) {
     // A few long, fine, curved strokes. Mesh yaw follows the wind. ~30% ink.
     vec2 q = (vUv - 0.5);
@@ -2118,14 +2146,14 @@ void main(){
     for (int i = 0; i < 3; i++) {
       float off = (float(i) - 1.0) * 0.055;
       float d = abs(q.y - wave - off);
-      float w = 0.010 + float(i) * 0.004;
-      stroke = max(stroke, (1.0 - smoothstep(w, w + 0.018, d)) * (i == 1 ? 1.0 : 0.55));
+      float w = 0.016 + float(i) * 0.006;
+      stroke = max(stroke, (1.0 - smoothstep(w, w + 0.034, d)) * (i == 1 ? 1.0 : 0.45));
     }
     float body = stroke * taper;
     if (body < 0.04) discard;
-    col = uInk;
-    // Hide the card when it is nearly edge-on, so it cannot read as a vertical tick.
-    alpha = body * 0.30 * smoothstep(0.14, 0.34, uEdgeFade);
+    // Faint soft gray, never a hard dark line.
+    col = mix(vec3(0.78, 0.80, 0.82), vec3(0.88, 0.89, 0.90), 0.55);
+    alpha = body * 0.045 * smoothstep(0.22, 0.50, uEdgeFade);
     b = body; rel = 0.7; rim = 0.0; hatch = stroke;
   } else if (uStreak > 0.5) {
     // Far deck of flattened streaks sitting just above the ridges.
@@ -2162,19 +2190,21 @@ void main(){
     b *= smoothstep(-0.62, -0.50, p.y);
     if (b < 0.08) discard;
     rel = clamp((p.y + 0.62) / 1.55, 0.0, 1.0);
-    // Cream tops, mid wash, hatched warm-gray underside (not a blue-gray band).
-    vec3 paper = vec3(0.97, 0.93, 0.84);
-    vec3 midc = vec3(0.86, 0.80, 0.70);
-    vec3 shade = vec3(0.72, 0.64, 0.52);
-    float toneKey = (1.0 - rel) * 0.8 + (1.0 - b) * 0.15 + (noise21(p * 2.6 + vec2(s, 1.3)) - 0.5) * 0.14;
-    vec3 wash = paper;
-    if (toneKey > 0.36) wash = midc;
-    if (toneKey > 0.62) wash = shade;
-    // Dusk and dawn: undersides lit amber, tops stay cream and inked.
+    // Mostly bare cream paper. Undersides a cool pale gray-blue, only slightly
+    // darker than the sky, never brown or taupe. Light hatching.
+    vec3 paper = vec3(0.97, 0.94, 0.86);
+    vec3 shade = vec3(0.78, 0.82, 0.86);
+    float under = 1.0 - smoothstep(0.10, 0.42, rel);
+    float toneKey = under * 0.8 + (1.0 - b) * 0.12 + (noise21(p * 2.6 + vec2(s, 1.3)) - 0.5) * 0.10;
+    vec3 wash = mix(paper, shade, clamp(toneKey, 0.0, 1.0));
+    // Dusk and dawn: undersides amber near the sun, rose farther away. Tops stay cream.
     if (uTwi > 0.12 && uNight < 0.45) {
       vec3 amber = vec3(0.949, 0.769, 0.420);
-      if (toneKey > 0.62) wash = amber;
-      else if (toneKey > 0.36) wash = mix(midc, amber, 0.40);
+      vec3 rose = vec3(0.831, 0.522, 0.502);
+      vec3 toFrag = normalize(vWorld - cameraPosition);
+      float sunNear = smoothstep(0.50, 0.92, dot(toFrag, normalize(uSunDir)));
+      vec3 duskUnder = mix(rose, amber, sunNear);
+      wash = mix(paper, duskUnder, under * 0.92);
     }
     float body = 1.0;
     float dens = step(0.36, toneKey);
@@ -2195,35 +2225,42 @@ void main(){
     float taper = smoothstep(-0.05, 0.16, tt) * smoothstep(1.05, 0.84, tt);
     float gap = step(0.38, hash21(vec2(rid * 13.0, floor(along * 5.0) + s)));
     float line = 1.0 - smoothstep(0.0, 0.18 * max(0.35, taper), abs(f));
-    hatch = dens * line * taper * inS * gap;
-    col = mix(wash, uInk, clamp(hatch * 0.55, 0.0, 0.7));
-    // Inked edge only on the shaded side, with pen lifts.
+    // Light hatching, mostly on the underside, leaving the body as cream paper.
+    hatch = dens * line * taper * inS * gap * mix(0.35, 1.0, under);
+    col = mix(wash, uInk, clamp(hatch * 0.28, 0.0, 0.40));
+    // A light inked edge only on the shaded side, with pen lifts.
     rim = 1.0 - smoothstep(0.08, 0.26, b);
     float shadeSide = 1.0 - smoothstep(0.10, 0.50, rel);
-    float lift = step(0.26, hash21(vec2(floor(p.x * 16.0 + s), floor(p.y * 12.0))));
-    col = mix(col, uInk, rim * shadeSide * lift);
+    float lift = step(0.32, hash21(vec2(floor(p.x * 16.0 + s), floor(p.y * 12.0))));
+    col = mix(col, uInk, rim * shadeSide * lift * 0.55);
     alpha = 0.98;
   }
 
-  if (uRain > 0.5 && vUv.y < 0.72) {
+  if (uShaft > 0.5 && uRain > 0.5 && vUv.y < 0.72) {
     float rx = vUv.x * 70.0 + vUv.y * 36.0 + uTime * (1.0 - uReduce) * 1.1;
     float shaft = 1.0 - smoothstep(0.0, 0.07, abs(fract(rx) - 0.5));
     shaft *= step(0.18, hash21(vec2(floor(rx), s)));
     // Occasional shorter lifts so the shafts do not read as a regular screen.
     shaft *= step(0.12, hash21(vec2(floor(rx), floor(vUv.y * 14.0) + s)));
-    col = mix(col, mix(uInk, vec3(0.62, 0.64, 0.68), 0.7), shaft * 0.28);
-    alpha = max(alpha, shaft * 0.35 * (1.0 - vUv.y * 0.5));
+    col = mix(col, mix(uInk, vec3(0.55, 0.57, 0.60), 0.55), shaft * 0.48);
+    alpha = max(alpha, shaft * 0.55 * (1.0 - vUv.y * 0.45));
   }
-  // Night: dark moonlit body, cream rim only on the moon-facing limb.
+  // Night: indigo a touch lighter than the sky, cream rim on the moon-facing side.
+  // Thin edges are translucent so stars show through.
   if (uNight > 0.01) {
-    vec3 nightBody = vec3(0.055, 0.07, 0.12) * mix(1.0, 0.72, max(uGray, uDeck));
-    nightBody *= 0.85 + 0.15 * noise21(vWorld.xz * 0.02 + vUv * 6.0);
-    vec3 nCol = mix(nightBody * 0.85, nightBody * 1.15, step(0.5, rel));
-    nCol = mix(nCol, uInk, clamp(hatch * 0.28, 0.0, 0.4));
+    vec3 nightBody = vec3(0.085, 0.11, 0.22) * mix(1.0, 0.78, max(uGray, uDeck));
+    nightBody *= 0.90 + 0.14 * noise21(vWorld.xz * 0.02 + vUv * 6.0);
+    vec3 nCol = mix(nightBody * 0.92, nightBody * 1.12, step(0.5, rel));
+    nCol = mix(nCol, uInk, clamp(hatch * 0.16, 0.0, 0.28));
     vec3 toFrag = normalize(vWorld - cameraPosition);
     float moonSide = clamp(dot(normalize(uMoonDir), toFrag), 0.0, 1.0);
-    nCol = mix(nCol, uInk, rim * moonSide * 0.9);
+    vec3 creamRim = vec3(0.93, 0.90, 0.82);
+    nCol = mix(nCol, creamRim, rim * moonSide * 0.85);
     col = mix(col, nCol, uNight);
+    if (uDeck < 0.5 && uShaft < 0.5) {
+      float edgeA = mix(0.22, 0.80, smoothstep(0.08, 0.48, b));
+      alpha = mix(alpha, alpha * edgeA, uNight);
+    }
     if (uRain > 0.5 && vUv.y < 0.55) {
       float rxn = vUv.x * 16.0 + vUv.y * 8.0 + uTime * (1.0 - uReduce) * 1.1;
       float shaftN = 1.0 - smoothstep(0.0, 0.16, abs(fract(rxn) - 0.5));
@@ -2231,6 +2268,7 @@ void main(){
       col = mix(col, mix(uInk * 0.55, vec3(0.16, 0.20, 0.30), 0.45), shaftN * 0.5 * uNight);
     }
   }
+  alpha *= uAlphaMul;
   if (alpha < 0.06) discard;
   gl_FragColor = vec4(col, alpha);
 }
@@ -2267,6 +2305,7 @@ function makeVolCloudMat(kind, seed, gray) {
       uStreak: { value: 0 },
       uTwi: { value: 0 },
       uEdgeFade: { value: 1 },
+      uAlphaMul: { value: 1 },
       uLook: { value: new THREE.Vector3(0, 0, 1) },
       uSunDir: { value: new THREE.Vector3(0.3, 0.8, 0.2) }
     },
@@ -2300,9 +2339,8 @@ function buildVolClouds() {
   if (deck) {
     // Horizontal world ceilings at three altitudes so the deck parallaxes and never follows the camera.
     puffSpec = [
-      { az: 0.0, dist: 200, alt: 620, sx: 14000, sy: 14000, seed: 1.1, flat: 1 },
-      { az: 0.10, dist: 500, alt: 900, sx: 18000, sy: 18000, seed: 4.8, flat: 1 },
-      { az: -0.08, dist: 900, alt: 1220, sx: 24000, sy: 24000, seed: 8.4, flat: 1 }
+      { az: 0.0, dist: 0, alt: 820, sx: 56000, sy: 56000, seed: 1.1, flat: 1 },
+      { az: 0.0, dist: 0, alt: 1180, sx: 56000, sy: 56000, seed: 8.4, flat: 1 }
     ];
   } else if (kind === "fog") {
     puffSpec = [
@@ -2334,8 +2372,9 @@ function buildVolClouds() {
     for (let i = 0; i < sized.length; i++) {
       const tFar = clamp((sized[i].dist - 1600) / 6200, 0, 1);
       let sx;
-      if (i < 3 && tFar < 0.35) sx = 1100 + rngC() * 500;
-      else if (tFar < 0.42) sx = 520 + rngC() * 260;
+      // Near puffs at ~60% of the previous size so the biggest is about 1/5 of the hero frame.
+      if (i < 3 && tFar < 0.35) sx = 660 + rngC() * 300;
+      else if (tFar < 0.42) sx = 400 + rngC() * 200;
       else sx = 150 + rngC() * 200;
       // Height at least ~0.6 of width so near puffs read as stacked cumulus, not saucers.
       const sy = (i < 3 && tFar < 0.35)
@@ -2387,10 +2426,14 @@ function buildVolClouds() {
     });
   }
   if (kind === "rain" || kind === "storm") {
+    // Short veils hanging from the cloud bases, not a screen across the sky dome.
     const curtains = [
-      { az: 0.02, dist: 900, alt: 420, sx: 2000, sy: 1000, seed: 31.1 },
-      { az: 0.16, dist: 1800, alt: 520, sx: 2600, sy: 1200, seed: 32.4 },
-      { az: -0.12, dist: 2800, alt: 620, sx: 3200, sy: 1400, seed: 33.8 }
+      { az: 0.04, dist: 380, alt: 480, sx: 900, sy: 720, seed: 31.1 },
+      { az: 0.20, dist: 820, alt: 540, sx: 1100, sy: 800, seed: 32.4 },
+      { az: -0.16, dist: 1300, alt: 600, sx: 1300, sy: 860, seed: 33.8 },
+      { az: 0.08, dist: 1900, alt: 640, sx: 1500, sy: 900, seed: 34.6 },
+      { az: -0.28, dist: 560, alt: 500, sx: 860, sy: 740, seed: 35.2 },
+      { az: 0.32, dist: 1500, alt: 620, sx: 1600, sy: 880, seed: 36.0 }
     ];
     for (let i = 0; i < curtains.length; i++) {
       const sp = curtains[i];
@@ -2447,6 +2490,18 @@ function layoutVolClouds() {
       const look = new THREE.Vector3();
       camera.getWorldDirection(look);
       if (it.mesh.material.uniforms.uLook) it.mesh.material.uniforms.uLook.value.copy(look);
+      // Keep every cloud at least 10 deg from the moon when it is up.
+      let alphaMul = 1;
+      if (clock && clock.night > 0.15 && clock.moonAlt > -4 && !it.shaft) {
+        const mx = x - cx, my = y - cy, mz = z - cz;
+        const md = Math.hypot(mx, my, mz) || 1;
+        const moon = altAzDir(clock.moonAlt, clock.moonAz);
+        const cdot = (mx * moon.x + my * moon.y + mz * moon.z) / md;
+        const ang = Math.acos(Math.max(-1, Math.min(1, cdot))) * 180 / Math.PI;
+        alphaMul = ang <= 10 ? 0 : (ang < 13 ? (ang - 10) / 3 : 1);
+      }
+      if (it.mesh.material.uniforms.uAlphaMul) it.mesh.material.uniforms.uAlphaMul.value = alphaMul;
+      if (!it.shaft) it.mesh.visible = alphaMul > 0.02;
     }
   }
 }
@@ -2532,6 +2587,177 @@ function layoutSnow() {
     pos[i * 3 + 2] = z0 + drift.z;
   }
   snowPts.geometry.attributes.position.needsUpdate = true;
+}
+
+
+function windToward() {
+  const from = ((wx.windFromDeg != null && isFinite(wx.windFromDeg) ? wx.windFromDeg : 250) * Math.PI / 180);
+  const to = from + Math.PI;
+  const off = offsetNorth(to, 1);
+  const len = Math.hypot(off.x, off.z) || 1;
+  const ms = (wx.windMs != null && isFinite(wx.windMs) ? wx.windMs : 2.8);
+  return { x: off.x / len, z: off.z / len, ms: ms };
+}
+
+function makeRainMat(close) {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      uTime: { value: 0 },
+      uCam: { value: new THREE.Vector3() },
+      uWind: { value: new THREE.Vector3(0.3, 0, 0.8) },
+      uBase: { value: 820 },
+      uGround: { value: 400 },
+      uPixel: { value: 1 },
+      uClose: { value: close ? 1 : 0 }
+    },
+    vertexShader: /* glsl */`
+      attribute float aPhase;
+      attribute vec2 aCorner;
+      uniform float uTime, uBase, uGround, uPixel, uClose;
+      uniform vec3 uCam, uWind;
+      varying float vDist;
+      varying float vAlong;
+      float hash(float n){ return fract(sin(n * 127.1) * 43758.5453); }
+      void main(){
+        float h1 = hash(aPhase);
+        float h2 = hash(aPhase + 17.2);
+        float h3 = hash(aPhase + 31.7);
+        float rad, ang;
+        if (uClose > 0.5) {
+          rad = 4.0 + h1 * 16.0;
+          ang = h2 * 6.2831853;
+        } else {
+          // Most drops stay near the camera; a thinner veil reaches the far hills.
+          // h1 below 0.62 (about 62% of drops) stay in the near/mid field.
+          rad = mix(18.0 + pow(h2, 0.80) * 420.0, 400.0 + pow(h1, 0.70) * 2000.0, step(0.62, h1));
+          ang = (h2 + h3) * 6.2831853;
+        }
+        vec3 hor = normalize(vec3(uWind.x, 0.0, uWind.z));
+        if (length(hor) < 0.01) hor = vec3(0.3, 0.0, 0.8);
+        vec3 right = vec3(-hor.z, 0.0, hor.x);
+        vec3 origin = vec3(uCam.x, 0.0, uCam.z) + right * (cos(ang) * rad) + hor * (sin(ang) * rad);
+        float drop = uBase - uGround + 40.0;
+        float speed = mix(26.0, 48.0, h3);
+        float fall = fract(uTime * speed / drop + aPhase);
+        float y = uBase - fall * drop;
+        float slant = (uBase - y) * 0.14 * (0.6 + 0.4 * length(uWind));
+        origin.x += hor.x * slant;
+        origin.z += hor.z * slant;
+        origin.y = y;
+        vec3 dir = normalize(vec3(hor.x * 0.45, -1.0, hor.z * 0.45));
+        vec3 side = normalize(cross(dir, vec3(0.0, 1.0, 0.0)));
+        if (length(side) < 0.01) side = vec3(1.0, 0.0, 0.0);
+        float dist = length(origin - uCam);
+        vDist = dist;
+        vAlong = aCorner.y;
+        // Ink strokes sized to stay about 1.2-2 px across, short near and longer as veils far out.
+        float pix = max(0.10, dist * 0.00105);
+        float len = uClose > 0.5 ? mix(3.2, 6.5, h3) : mix(3.4, 7.2, h3);
+        float wid = uClose > 0.5 ? pix * 2.1 : pix * mix(1.25, 1.8, h2);
+        len *= mix(1.0, 2.4, smoothstep(500.0, 2000.0, dist));
+        wid *= mix(1.0, 1.35, smoothstep(700.0, 2000.0, dist));
+        vec3 p = origin + dir * (aCorner.y * len) + side * (aCorner.x * wid);
+        gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
+      }
+    `,
+    fragmentShader: /* glsl */`
+      uniform float uClose;
+      varying float vDist;
+      varying float vAlong;
+      void main(){
+        float along = 1.0 - abs(vAlong) * 2.0;
+        float body = smoothstep(0.0, 0.35, along);
+        if (body < 0.05) discard;
+        vec3 ink = vec3(0.165, 0.129, 0.094);
+        vec3 veil = vec3(0.50, 0.54, 0.58);
+        float far = smoothstep(280.0, 1800.0, vDist);
+        vec3 col = mix(ink, veil, far);
+        float alpha = body * mix(0.62, 0.16, far);
+        if (uClose > 0.5) {
+          col = ink;
+          alpha = body * 0.82;
+        }
+        gl_FragColor = vec4(col, alpha);
+      }
+    `,
+    transparent: true,
+    depthWrite: false,
+    depthTest: true,
+    blending: THREE.NormalBlending
+  });
+}
+
+function buildRainGeom(n) {
+  const pos = new Float32Array(n * 4 * 3);
+  const phase = new Float32Array(n * 4);
+  const corner = new Float32Array(n * 4 * 2);
+  const idx = new Uint32Array(n * 6);
+  const corners = [[-0.5, -0.5], [0.5, -0.5], [0.5, 0.5], [-0.5, 0.5]];
+  for (let i = 0; i < n; i++) {
+    const ph = (i * 0.618033) % 1;
+    const b = i * 4;
+    for (let k = 0; k < 4; k++) {
+      phase[b + k] = ph;
+      corner[(b + k) * 2] = corners[k][0];
+      corner[(b + k) * 2 + 1] = corners[k][1];
+    }
+    const o = b;
+    idx[i * 6] = o; idx[i * 6 + 1] = o + 1; idx[i * 6 + 2] = o + 2;
+    idx[i * 6 + 3] = o; idx[i * 6 + 4] = o + 2; idx[i * 6 + 5] = o + 3;
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute("aPhase", new THREE.BufferAttribute(phase, 1));
+  geo.setAttribute("aCorner", new THREE.BufferAttribute(corner, 2));
+  geo.setIndex(new THREE.BufferAttribute(idx, 1));
+  geo.computeBoundingSphere();
+  return geo;
+}
+
+function disposeRain() {
+  [rainMesh, rainLens].forEach(function (m) {
+    if (!m) return;
+    scene.remove(m);
+    if (m.geometry) m.geometry.dispose();
+    if (m.material) m.material.dispose();
+  });
+  rainMesh = null;
+  rainLens = null;
+}
+
+function buildRain() {
+  disposeRain();
+  if (wx.kind !== "rain" && wx.kind !== "storm") return;
+  rainMesh = new THREE.Mesh(buildRainGeom(9000), makeRainMat(false));
+  rainMesh.frustumCulled = false;
+  rainMesh.renderOrder = 3;
+  rainMesh.name = "rainVolume";
+  scene.add(rainMesh);
+  rainLens = new THREE.Mesh(buildRainGeom(48), makeRainMat(true));
+  rainLens.frustumCulled = false;
+  rainLens.renderOrder = 6;
+  rainLens.name = "rainLens";
+  scene.add(rainLens);
+}
+
+function layoutRain() {
+  const on = wx.kind === "rain" || wx.kind === "storm";
+  if (rainMesh) rainMesh.visible = on;
+  if (rainLens) rainLens.visible = on;
+  if (!on || !camera) return;
+  if (!rainMesh) buildRain();
+  const w = windToward();
+  const base = (typeof cloudBaseM === "function" ? cloudBaseM() : 820);
+  const ground = yOf(heightWorld(camera.position.x, camera.position.z));
+  [rainMesh, rainLens].forEach(function (m) {
+    if (!m || !m.material || !m.material.uniforms) return;
+    const u = m.material.uniforms;
+    u.uTime.value = state.time || 0;
+    u.uCam.value.copy(camera.position);
+    u.uWind.value.set(w.x * w.ms, 0, w.z * w.ms);
+    u.uBase.value = ground + base;
+    u.uGround.value = ground + 2;
+  });
 }
 
 function buildFogBank() {
@@ -2651,9 +2877,10 @@ const SPECIES = {
   oak: { id: 0, angle: 26, depth: 6, len: 0.20, shrink: 0.73, tw: 3.4, spread: 1.15, twigs: 3, leaf: 0.055, cone: 0 },
   maple: { id: 1, angle: 34, depth: 6, len: 0.18, shrink: 0.70, tw: 2.6, spread: 1.32, twigs: 3, leaf: 0.05, cone: 0 },
   sycamore: { id: 2, angle: 22, depth: 6, len: 0.22, shrink: 0.74, tw: 3.8, spread: 1.08, twigs: 3, leaf: 0.06, cone: 0 },
-  cedar: { id: 3, angle: 16, depth: 6, len: 0.16, shrink: 0.78, tw: 2.4, spread: 0.5, twigs: 3, leaf: 0.055, cone: 1 }
+  cedar: { id: 3, angle: 16, depth: 6, len: 0.16, shrink: 0.78, tw: 2.4, spread: 0.5, twigs: 3, leaf: 0.055, cone: 1 },
+  pine: { id: 4, angle: 20, depth: 6, len: 0.17, shrink: 0.76, tw: 2.6, spread: 0.7, twigs: 3, leaf: 0.05, cone: 1, pine: 1 }
 };
-const SPEC_LIST = ["oak", "maple", "sycamore", "cedar"];
+const SPEC_LIST = ["oak", "maple", "sycamore", "cedar", "pine"];
 
 function growTree(spec, seed) {
   const rng = mulberry(seed >>> 0);
@@ -2713,23 +2940,24 @@ function drawGrownTree(ctx, S, grown, opt) {
   const cx = S * 0.5;
   const ink = "rgba(42,33,24," + (opt.inkA == null ? 0.84 : opt.inkA) + ")";
   const colors = opt.colors || ["#6B4E2A"];
-  const isCedar = !!(grown.spec && grown.spec.cone);
-  const leavesOn = isCedar ? (opt.leaves !== false) : !!opt.leaves;
+  const isPine = !!(grown.spec && grown.spec.pine);
+  const isCedar = !!(grown.spec && grown.spec.cone) && !isPine;
+  const leavesOn = (isCedar || isPine) ? (opt.leaves !== false) : !!opt.leaves;
 
   // Short trunk at the canvas bottom (atlas flipY is true, so this is the billboard base).
   const trunkBot = S * 0.96;
-  const trunkTop = isCedar ? S * 0.72 : S * 0.78;
+  const trunkTop = (isCedar || isPine) ? S * 0.86 : S * 0.78;
   ctx.strokeStyle = ink;
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
-  ctx.lineWidth = S * (isCedar ? 0.028 : 0.036);
+  ctx.lineWidth = S * ((isCedar || isPine) ? 0.026 : 0.036);
   ctx.globalAlpha = 0.92;
   ctx.beginPath();
   ctx.moveTo(cx + (rng() - 0.5) * 2, trunkBot);
   ctx.quadraticCurveTo(cx + (rng() - 0.5) * 4, (trunkBot + trunkTop) * 0.55, cx, trunkTop);
   ctx.stroke();
   // A hint of two short limbs, kept under the crown so they do not read as stick piles.
-  if (!isCedar) {
+  if (!isCedar && !isPine) {
     ctx.lineWidth = S * 0.016;
     for (let b = 0; b < 2; b++) {
       const dir = b ? 1 : -1;
@@ -2763,56 +2991,82 @@ function drawGrownTree(ctx, S, grown, opt) {
     return;
   }
 
-  if (isCedar) {
-    // Broad cone, not a needle: stacked rounded tiers, base almost as wide as the height.
-    const layers = 5;
-    const crownTop = S * 0.12;
-    const crownBot = trunkTop + S * 0.02;
+  if (isCedar || isPine) {
+    // Eastern red cedar: dense, soft-edged, rounded cone with a blunt top,
+    // height 1.5-2x width, built from overlapping foliage clumps.
+    // White pine: irregular layered tiers with a rounded crown.
+    // No needle tips, no thin vertical spikes.
+    // Fill most of the atlas cell; the billboard scale applies the 1.5-2x aspect.
+    const crownTop = S * 0.06;
+    const crownBot = S * 0.90;
     const H = crownBot - crownTop;
-    for (let i = 0; i < layers; i++) {
-      const t0 = i / layers;
-      const t1 = (i + 1) / layers;
-      const y0 = crownTop + H * t0;
-      const y1 = crownTop + H * t1 + S * 0.03;
-      const w = S * (0.16 + t1 * 0.30) * (0.92 + rng() * 0.14);
-      ctx.fillStyle = colors[i % colors.length];
-      ctx.globalAlpha = 0.92;
-      ctx.beginPath();
-      ctx.moveTo(cx + (rng() - 0.5) * S * 0.04, y0);
-      ctx.quadraticCurveTo(cx - w, (y0 + y1) * 0.5, cx - w * 0.92, y1);
-      ctx.lineTo(cx + w * 0.92, y1);
-      ctx.quadraticCurveTo(cx + w, (y0 + y1) * 0.5, cx + (rng() - 0.5) * S * 0.04, y0);
-      ctx.closePath();
+    const baseHalf = S * 0.44;
+    ctx.globalAlpha = 1;
+    if (isPine) {
+      const capR = baseHalf * 0.46;
+      ctx.fillStyle = colors[0];
+      ctx.globalAlpha = 0.95;
+      drawBlobMass(ctx, cx, crownTop + capR * 0.85, capR * 1.15, capR * 0.95, rng);
       ctx.fill();
-      ctx.save();
-      ctx.clip();
-      ctx.strokeStyle = ink;
-      ctx.globalAlpha = 0.28;
-      ctx.lineWidth = 0.7;
-      for (let hy = (y0 + y1) * 0.55; hy < y1; hy += 2.2) {
-        ctx.beginPath();
-        ctx.moveTo(cx - w, hy);
-        ctx.lineTo(cx + w, hy + 0.5);
-        ctx.stroke();
+      const tiers = 4 + ((rng() * 3) | 0);
+      for (let i = 0; i < tiers; i++) {
+        const t = (i + 0.28) / tiers;
+        const y = crownTop + H * t;
+        const wobble = 0.82 + rng() * 0.28;
+        const half = baseHalf * (0.42 + 0.58 * t) * wobble;
+        const ry = S * (0.10 + rng() * 0.05);
+        ctx.fillStyle = colors[(i + 1) % colors.length];
+        ctx.globalAlpha = 0.93;
+        drawBlobMass(ctx, cx + (rng() - 0.5) * half * 0.16, y, half, ry, rng);
+        ctx.fill();
       }
-      ctx.restore();
-      ctx.globalAlpha = 1;
-      ctx.strokeStyle = ink;
-      ctx.lineWidth = 1.0;
-      // Ink the shaded side only, with pen lifts.
+    } else {
+      ctx.fillStyle = colors[0];
+      ctx.globalAlpha = 0.95;
+      const topR = baseHalf * 0.48;
+      drawBlobMass(ctx, cx, crownTop + topR * 0.70, topR, topR * 0.85, rng);
+      ctx.fill();
+      const clumps = 14 + ((rng() * 6) | 0);
+      for (let i = 0; i < clumps; i++) {
+        const t = Math.pow((i + 1) / clumps, 0.75);
+        const y = crownTop + H * t + (rng() - 0.5) * S * 0.03;
+        const env = 0.48 + 0.52 * Math.sin((t * 0.88 + 0.12) * Math.PI * 0.5);
+        const half = baseHalf * env;
+        const x = cx + (rng() - 0.5) * half * 0.42;
+        const rx = half * (0.50 + rng() * 0.22);
+        const ry = S * (0.09 + (1.0 - t) * 0.04 + rng() * 0.03);
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.globalAlpha = 0.94;
+        drawBlobMass(ctx, x, y, rx, ry, rng);
+        ctx.fill();
+      }
+    }
+    // Hatched shading on the shadow side, clipped to the crown.
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(cx, crownTop);
+    ctx.quadraticCurveTo(cx - baseHalf * 1.05, crownTop + H * 0.45, cx - baseHalf, crownBot);
+    ctx.lineTo(cx + baseHalf, crownBot);
+    ctx.quadraticCurveTo(cx + baseHalf * 1.05, crownTop + H * 0.45, cx, crownTop);
+    ctx.closePath();
+    ctx.clip();
+    ctx.strokeStyle = ink;
+    ctx.lineCap = "round";
+    ctx.lineWidth = 0.7;
+    for (let y = crownTop + S * 0.08; y < crownBot; y += 2.4 + rng() * 1.1) {
+      if (rng() < 0.18) continue;
+      ctx.globalAlpha = 0.16 + ((y - crownTop) / H) * 0.28;
       ctx.beginPath();
-      const steps = 6;
-      let drawing = false;
-      for (let k = 0; k <= steps; k++) {
-        if (rng() < 0.14) { drawing = false; continue; }
-        const tt = k / steps;
-        const px = cx + w * (0.2 + 0.75 * tt);
-        const py = y0 + (y1 - y0) * tt;
-        if (!drawing) { ctx.moveTo(px, py); drawing = true; }
-        else ctx.lineTo(px, py);
+      let started = false;
+      for (let x = cx - baseHalf; x < cx + baseHalf * 0.15; x += 3) {
+        if (rng() < 0.08) { started = false; continue; }
+        const yy = y + Math.sin((x + y) * 0.08) * 1.0;
+        if (!started) { ctx.moveTo(x, yy); started = true; }
+        else ctx.lineTo(x, yy);
       }
       ctx.stroke();
     }
+    ctx.restore();
     ctx.globalAlpha = 1;
     return;
   }
@@ -2918,6 +3172,7 @@ function drawGrownTree(ctx, S, grown, opt) {
 
 function leafColors(specName, season) {
   if (specName === "cedar") return ["#3F5340", "#2F4A38", "#4A5A38", "#35503A"];
+  if (specName === "pine") return ["#3A5A40", "#2C4A34", "#456348", "#334F3A"];
   if (season === "spring") return ["#6A8A58", "#5E7A4A", "#7A945E", "#4E6A40"];
   if (season === "summer") return ["#2F5D46", "#3A6B50", "#4E7D57", "#2A5340"];
   if (season === "autumn") return ["#C46A32", "#D4A044", "#E0B056", "#B85A28", "#C9842C", "#A84820", "#9A5A1C", "#DC8A38"];
@@ -2956,12 +3211,14 @@ function makeTreeAtlas() {
   for (let i = 0; i < 8; i++) paint(i, 0, "oak", TREE_SEED0 + i, "full", true, false, season);
   for (let i = 0; i < 8; i++) paint(i, 1, "maple", TREE_SEED0 + 80 + i, "full", true, season === "spring", season);
   for (let i = 0; i < 8; i++) paint(i, 2, "sycamore", TREE_SEED0 + 160 + i, "full", true, false, season);
-  for (let i = 0; i < 8; i++) paint(i, 3, "cedar", TREE_SEED0 + 240 + i, "full", true, true, season);
+  for (let i = 0; i < 6; i++) paint(i, 3, "cedar", TREE_SEED0 + 240 + i, "full", true, true, season);
+  for (let i = 6; i < 8; i++) paint(i, 3, "pine", TREE_SEED0 + 260 + i, "full", true, true, season);
   for (let i = 0; i < 8; i++) {
     const names = ["oak", "maple", "sycamore", "oak", "maple", "sycamore", "oak", "maple"];
     paint(i, 4, names[i], TREE_SEED0 + 20 + i, "clump", true, false, season);
   }
-  for (let i = 0; i < 4; i++) paint(i, 5, "cedar", TREE_SEED0 + 248 + i, "clump", true, true, season);
+  for (let i = 0; i < 2; i++) paint(i, 5, "cedar", TREE_SEED0 + 248 + i, "clump", true, true, season);
+  for (let i = 2; i < 4; i++) paint(i, 5, "pine", TREE_SEED0 + 268 + i, "clump", true, true, season);
   for (let i = 4; i < 8; i++) paint(i, 5, i % 2 ? "oak" : "maple", TREE_SEED0 + 30 + i, "clump", true, season === "spring", season);
   for (let i = 0; i < 8; i++) paint(i, 6, "oak", TREE_SEED0 + i, "full", false, false, "winter");
   for (let i = 0; i < 4; i++) paint(i, 7, "maple", TREE_SEED0 + 80 + i, "full", false, false, "winter");
@@ -2978,10 +3235,15 @@ function makeTreeAtlas() {
 function framesFor(specName, seedSlot, season, cls) {
   // seedSlot 0-7
   const cedar = specName === "cedar";
+  const pine = specName === "pine";
   let full, clump, bare;
-  if (cedar) {
-    full = 24 + (seedSlot % 8);
-    clump = 40 + (seedSlot % 4);
+  if (pine) {
+    full = 30 + (seedSlot % 2);
+    clump = 42 + (seedSlot % 2);
+    bare = full;
+  } else if (cedar) {
+    full = 24 + (seedSlot % 6);
+    clump = 40 + (seedSlot % 2);
     bare = full;
   } else if (specName === "oak") {
     full = 0 + (seedSlot % 8);
@@ -3003,9 +3265,24 @@ function framesFor(specName, seedSlot, season, cls) {
   return { full: full, clump: clump };
 }
 
-function pickSpecies(cls, rng) {
-  // A few eastern red cedars as broad cones; the stands are oak, maple, and hickory.
-  if (cls === 5 && rng() < 0.10) return "cedar";
+function isFenceOrRidgeCell(px, py) {
+  const cls = coverPx(px, py);
+  let edge = false;
+  const nbs = [[2, 0], [-2, 0], [0, 2], [0, -2], [2, 2], [-2, 2], [2, -2], [-2, -2]];
+  for (let i = 0; i < nbs.length; i++) {
+    const c = coverPx(px + nbs[i][0], py + nbs[i][1]);
+    if ((cls === 4 || cls === 5 || cls === 8) && (c === 7 || c === 1 || c === 2 || c === 6)) edge = true;
+    if ((cls === 7 || cls === 1 || cls === 8) && (c === 4 || c === 5)) edge = true;
+  }
+  const slope = Math.abs(heightPx(px - 2, py) - heightPx(px + 2, py)) + Math.abs(heightPx(px, py - 2) - heightPx(px, py + 2));
+  return edge || slope > 3.5;
+}
+
+function pickSpecies(cls, rng, fenceRidge) {
+  // About 10% of all trees are conifers (mostly eastern red cedar, a few white pines),
+  // concentrated along fencerows and ridge edges.
+  const pConifer = fenceRidge ? 0.28 : (cls === 5 ? 0.18 : 0.04);
+  if (rng() < pConifer) return rng() < 0.82 ? "cedar" : "pine";
   const r = rng();
   if (r < 0.40) return "oak";
   if (r < 0.72) return "maple";
@@ -3134,28 +3411,36 @@ function scatterTrees() {
       if (c2 === 0 || c2 === 3) continue;
       if (!isFront && (c2 === 2)) continue;
       const hm = heightPx(jx, jy);
-      let specName = pickSpecies(c2 === 5 ? 5 : cls, rng);
-      if (isFront || isMidWood) {
+      const fenceRidge = isFenceOrRidgeCell(jx, jy) || isFront || isMidWood;
+      let specName = pickSpecies(c2 === 5 ? 5 : cls, rng, fenceRidge);
+      if ((isFront || isMidWood) && specName !== "cedar" && specName !== "pine") {
         const r = rng();
         specName = r < 0.46 ? "oak" : (r < 0.88 ? "maple" : "sycamore");
       }
-      // Almost no cedars in the near valley; a few may stand farther out.
-      if (Math.hypot(w.x - heroW.x, w.z - heroW.z) < 1400 && specName === "cedar") {
+      // Keep the immediate foreground as hardwoods; conifers may stand from mid-ground out.
+      if (Math.hypot(w.x - heroW.x, w.z - heroW.z) < 420 && (specName === "cedar" || specName === "pine")) {
         specName = rng() < 0.5 ? "oak" : "maple";
       }
       const slot = (rng() * 8) | 0;
-      const fr = framesFor(specName, slot, clock.season, specName === "cedar" ? 5 : 4);
-      // Wider than tall, size varies about +/- 30% so stands read as a rolling canopy.
+      const isConifer = specName === "cedar" || specName === "pine";
+      const fr = framesFor(specName, slot, clock.season, isConifer ? 5 : 4);
+      // Hardwoods are a rolling canopy, wider than tall. Conifers are 1.5-2x tall
+      // versus width, but never taller than the surrounding hardwoods.
       const size = (isMidWood ? 16 : (isFront ? 20 : 14)) * (0.70 + rng() * 0.60);
-      const tall = size;
-      const wid = size * (specName === "cedar" ? 1.12 : 1.42) * (0.94 + rng() * 0.12);
+      let tall = size;
+      let wid = size * 1.42 * (0.94 + rng() * 0.12);
+      if (isConifer) {
+        const aspect = specName === "pine" ? (1.45 + rng() * 0.25) : (1.58 + rng() * 0.32);
+        tall = size * 0.96;
+        wid = (tall / aspect) * 1.12;
+      }
       pos.push(w.x, yOf(hm), w.z);
       scale.push(wid, tall);
       frame.push(fr.full);
       frameClump.push(fr.clump);
       phase.push(rng());
-      kind.push(specName === "cedar" ? 1 : 0);
-      treeRecords.push({ spec: specName, slot: slot, cls: c2 });
+      kind.push(isConifer ? 1 : 0);
+      treeRecords.push({ spec: specName, slot: slot, cls: c2, x: w.x, z: w.z, y: yOf(hm) });
     }
   }
   // drop lone trees so woods read as stands, not orange balls
@@ -3231,7 +3516,8 @@ function scatterTrees() {
       uNight: { value: 0 },
       uLightning: { value: 0 },
       uLodNear: { value: LOD_NEAR },
-      uLodMid: { value: LOD_MID }
+      uLodMid: { value: LOD_MID },
+      uCrownCap: { value: 0.16 }
     },
     vertexShader: SPRITE_VERT,
     fragmentShader: TREE_FRAG,
@@ -4494,6 +4780,7 @@ function applySkin() {
     u.uTwi.value = clock.twi;
     u.uRising.value = clock.rising ? 1 : 0;
     u.uSnow.value = wx.kind === "snow" ? 1 : 0;
+    u.uRain.value = (wx.kind === "rain" || wx.kind === "storm") ? 1 : 0;
     u.uFog.value = wx.kind === "fog" ? 1 : wx.kind === "rain" ? 0.35 : wx.kind === "storm" ? 0.25 : wx.kind === "snow" ? 0.2 : 0;
     u.uHatch.value = s.hatch;
     u.uRow.value = s.row;
@@ -4536,8 +4823,14 @@ function applySkin() {
   }
   tintGrass(grassMat);
   tintGrass(clumpMat);
-  if (riverRibbon && riverRibbon.material) pushTod(riverRibbon.material.uniforms);
-  if (riverBanks && riverBanks.material) pushTod(riverBanks.material.uniforms);
+  if (riverRibbon && riverRibbon.material) {
+    pushTod(riverRibbon.material.uniforms);
+    if (riverRibbon.material.uniforms.uRain) riverRibbon.material.uniforms.uRain.value = (wx.kind === "rain" || wx.kind === "storm") ? 1 : 0;
+  }
+  if (riverBanks && riverBanks.material) {
+    pushTod(riverBanks.material.uniforms);
+    if (riverBanks.material.uniforms.uRain) riverBanks.material.uniforms.uRain.value = (wx.kind === "rain" || wx.kind === "storm") ? 1 : 0;
+  }
   for (let i = 0; i < volCloudItems.length; i++) {
     const m = volCloudItems[i].mesh;
     if (m && m.material) pushTod(m.material.uniforms);
@@ -4559,6 +4852,8 @@ function applySkin() {
   if (constNameGroup) constNameGroup.visible = night > 0.25;
   if (moonMesh) moonMesh.visible = clock.moonAlt > -4;
   if (snowPts) snowPts.visible = wx.kind === "snow";
+  if (rainMesh) rainMesh.visible = wx.kind === "rain" || wx.kind === "storm";
+  if (rainLens) rainLens.visible = wx.kind === "rain" || wx.kind === "storm";
   if (fogGroup) fogGroup.visible = wx.kind === "fog";
   if (labelMesh) labelMesh.visible = false;
   skinLandmarks();
@@ -4590,9 +4885,11 @@ function setMoonPos() {
 function setSunPos() {
   if (!sunMesh) return;
   const dir = altAzDir(clock.alt, clock.sunAz);
-  sunMesh.position.copy(dir.clone().multiplyScalar(6200));
+  // Farther than the terrain so the far ridge can occlude the lower half of the disc.
+  sunMesh.position.copy(dir.clone().multiplyScalar(28000));
   // Face the camera (skyGroup sits on the camera). An engraved disk, not a glowing sphere.
-  sunMesh.lookAt(0, 0, 0);
+  if (camera) sunMesh.lookAt(camera.position);
+  else sunMesh.lookAt(0, 0, 0);
   sunMesh.visible = clock.alt > -3 && clock.alt < 16;
 }
 
@@ -4677,8 +4974,8 @@ const RIDGE_BANDS = [
   { d0: 200, d1: 700, widthPx: 2.2, color: 0x2A2118, taper: false },
   { d0: 700, d1: 1600, widthPx: 1.55, color: 0x3A3228, taper: true },
   { d0: 1600, d1: 3400, widthPx: 1.25, color: 0x4A453C, taper: true },
-  { d0: 3400, d1: 6500, widthPx: 0.9, color: 0x8A949C, taper: false },
-  { d0: 6500, d1: 13000, widthPx: 0.65, color: 0xA0A8B0, taper: false }
+  { d0: 3400, d1: 6500, widthPx: 0.45, color: 0x9AA4AC, taper: false },
+  { d0: 6500, d1: 13000, widthPx: 0.35, color: 0xA8B0B6, taper: false }
 ];
 
 function pixelWorldWidth(px, dist) {
@@ -4768,7 +5065,8 @@ function layoutRidgeLines() {
       }
       cleaned.push(pts[i]);
     }
-    if (cleaned.length >= 8) emitRidgeStrip(smoothCrest(cleaned, 4), bands[b]);
+    // Mid and near crests: no ink stroke. Far crests may keep a faint thin line.
+    if (cleaned.length >= 8 && bands[b].d0 >= 3400) emitRidgeStrip(smoothCrest(cleaned, 4), bands[b]);
   }
 }
 
@@ -4866,7 +5164,7 @@ function emitRidgeStrip(pts, band) {
         float halfw = 0.55 + 0.45 * n;
         if (across > halfw) discard;
         float edge = 1.0 - smoothstep(halfw * 0.55, halfw, across);
-        float alpha = (0.55 + 0.45 * n2) * edge;
+        float alpha = (0.22 + 0.20 * n2) * edge;
         gl_FragColor = vec4(uColor, alpha);
       }
     `,
@@ -5079,7 +5377,8 @@ function makeRiverMat() {
       uTop: { value: new THREE.Color(0xD2DEE2) },
       uTrees: { value: new THREE.Color(0xA87440) },
       uNightMul: { value: colU(NIGHT_MUL) },
-      uMoonDir: { value: new THREE.Vector3(0.2, 0.5, 0.4) }
+      uMoonDir: { value: new THREE.Vector3(0.2, 0.5, 0.4) },
+      uRain: { value: 0 }
     },
     vertexShader: /* glsl */`
       varying vec2 vUv; varying vec3 vW; varying vec3 vN;
@@ -5095,7 +5394,7 @@ function makeRiverMat() {
       }
     `,
     fragmentShader: /* glsl */`
-      uniform float uTime, uWind, uReduce, uNight;
+      uniform float uTime, uWind, uReduce, uNight, uRain;
       uniform vec3 uWater, uInk, uHor, uTop, uTrees, uNightMul, uMoonDir;
       varying vec2 vUv; varying vec3 vW;
       float hash21(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -5130,6 +5429,15 @@ function makeRiverMat() {
         float g2 = moonGl * step(0.72, hash21(floor(vW.xz * 0.07))) * 0.45;
         nightCol = mix(nightCol, cream, clamp(g1 + g2, 0.0, 0.6));
         col = mix(col, nightCol, uNight);
+        if (uRain > 0.01) {
+          vec2 cell = floor(vW.xz * 0.07);
+          float id = hash21(cell);
+          vec2 ctr = (cell + 0.5) / 0.07;
+          float rad = fract(t * 0.65 + id * 2.7);
+          float ring = 1.0 - smoothstep(0.0, 1.4, abs(length(vW.xz - ctr) - rad * 12.0));
+          ring *= (1.0 - rad) * step(0.58, id);
+          col = mix(col, mix(uInk, vec3(0.18, 0.16, 0.14), uNight), ring * 0.45 * uRain);
+        }
         gl_FragColor = vec4(col, 1.0);
       }
     `,
@@ -5152,16 +5460,24 @@ function placeCamera() {
     x = sample.x + Math.sin(right) * rig.side;
     z = sample.z + Math.cos(right) * rig.side;
   }
-  const ground = heightWorld(x, z);
-  // Eye is world meters above the exaggerated surface, so 40-60 m feels like 40-60 m
-  // against tree and spire heights, not 40-60 m stretched by EXAG.
-  const y = yOf(ground) + rig.eye;
-  camera.position.set(x, y, z);
   const church = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
   const cw = pxToWorld(church[0], church[1]);
   const lookX = (sample.lookX != null) ? sample.lookX : (cw.x - x);
   const lookZ = (sample.lookZ != null) ? sample.lookZ : (cw.z - z);
   const heading = Math.atan2(lookX, lookZ) + (rig.headingOff || 0);
+  if (rig.fwd) {
+    x += Math.sin(heading) * rig.fwd;
+    z += Math.cos(heading) * rig.fwd;
+  }
+  let ground = heightWorld(x, z);
+  // Eye is world meters above the exaggerated surface, so 40-60 m feels like 40-60 m
+  // against tree and spire heights, not 40-60 m stretched by EXAG.
+  let y = yOf(ground) + rig.eye;
+  // Terrain collision: if a forward dolly would bury the eye, pull back.
+  if (rig.fwd && y < yOf(ground) + 16) {
+    y = yOf(ground) + Math.max(rig.eye, 16);
+  }
+  camera.position.set(x, y, z);
   const pitch = aim.pitch;
   const look = 1800;
   camera.lookAt(
@@ -5183,6 +5499,7 @@ function placeCamera() {
   layoutVolClouds();
   layoutFrameTrees();
   layoutSnow();
+  layoutRain();
   layoutFogBank();
   if (Math.hypot(x - grassState.cx, z - grassState.cz) > 80) fillGrass(x, z);
   return { x, y, z, heading, pitch, horizon: aim.horizon, ground };
@@ -5215,13 +5532,15 @@ function onPointerDown(e) {
   if (ids.length === 2) {
     const a = rig.pointers[ids[0]], b = rig.pointers[ids[1]];
     rig.pinch = Math.hypot(a.x - b.x, a.y - b.y);
-    rig._zoom0 = rig.zoom;
+    rig._fwd0 = rig.fwd || 0;
     rig.dragging = false;
+    noteInput();
     return;
   }
   rig.dragging = true;
   rig.lastX = e.clientX;
   rig.lastY = e.clientY;
+  noteInput();
   canvas.setPointerCapture && canvas.setPointerCapture(e.pointerId);
 }
 function onPointerMove(e) {
@@ -5233,7 +5552,10 @@ function onPointerMove(e) {
   if (ids.length === 2 && rig.pinch) {
     const a = rig.pointers[ids[0]], b = rig.pointers[ids[1]];
     const d = Math.hypot(a.x - b.x, a.y - b.y);
-    applyZoom((rig._zoom0 || 1) * (d / Math.max(8, rig.pinch)));
+    // Spread (fingers apart) dollies forward; close dollies back.
+    const scale = d / Math.max(8, rig.pinch);
+    applyDollyTo((rig._fwd0 || 0) + (scale - 1) * 520);
+    noteInput();
     return;
   }
   const rect = canvas.getBoundingClientRect();
@@ -5263,6 +5585,52 @@ function onPointerUp(e) {
 function onPointerLeave() {
   cursor.ts = 0;
   cursor.active = false;
+}
+
+function readTouches(touches) {
+  const out = [];
+  for (let i = 0; i < touches.length; i++) out.push({ x: touches[i].clientX, y: touches[i].clientY });
+  return out;
+}
+
+function onTouchStart(e) {
+  e.preventDefault();
+  const pts = readTouches(e.touches);
+  if (pts.length === 2) {
+    rig.pinch = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+    rig._fwd0 = rig.fwd || 0;
+    rig.dragging = false;
+  } else if (pts.length === 1) {
+    rig.dragging = true;
+    rig.lastX = pts[0].x;
+    rig.lastY = pts[0].y;
+  }
+  noteInput();
+}
+
+function onTouchMove(e) {
+  e.preventDefault();
+  const pts = readTouches(e.touches);
+  if (pts.length === 2 && rig.pinch) {
+    const d = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+    const scale = d / Math.max(8, rig.pinch);
+    applyDollyTo((rig._fwd0 || 0) + (scale - 1) * 520);
+    noteInput();
+    return;
+  }
+  if (pts.length === 1 && rig.dragging) {
+    const dx = pts[0].x - rig.lastX, dy = pts[0].y - rig.lastY;
+    rig.lastX = pts[0].x; rig.lastY = pts[0].y;
+    rig.headingOff += dx * 0.0045;
+    rig.s = clamp(rig.s - dy * 1.8, 0, path.len);
+    rig.yawVel = 0;
+    noteInput();
+  }
+}
+
+function onTouchEnd(e) {
+  if (e.touches && e.touches.length < 2) rig.pinch = 0;
+  if (!e.touches || e.touches.length === 0) rig.dragging = false;
 }
 
 function mapEdgeOk() {
@@ -5312,19 +5680,72 @@ function applyZoom(next) {
   }
 }
 
+function applyDolly(deltaM) {
+  return applyDollyTo((rig.fwd || 0) + deltaM);
+}
+
+function applyDollyTo(nextM) {
+  const prev = rig.fwd || 0;
+  let next = clamp(nextM, -700, 2400);
+  const saved = rig.fwd;
+  rig.fwd = next;
+  if (camera && !state.holdCamera) {
+    const before = camera.position.clone();
+    placeCamera();
+    // Refuse a move that clips into a steep rise or walks off the DEM.
+    const g = yOf(heightWorld(camera.position.x, camera.position.z));
+    if (camera.position.y < g + 14 || !mapEdgeOk()) {
+      rig.fwd = saved;
+      placeCamera();
+      return rig.fwd;
+    }
+    // Keep a little clearance from a wall of terrain just ahead.
+    const look = new THREE.Vector3();
+    camera.getWorldDirection(look);
+    look.y = 0;
+    if (look.lengthSq() > 1e-6) {
+      look.normalize();
+      const ax = camera.position.x + look.x * 36;
+      const az = camera.position.z + look.z * 36;
+      const ahead = yOf(heightWorld(ax, az));
+      if (ahead > camera.position.y - 8) {
+        rig.fwd = saved;
+        placeCamera();
+        return rig.fwd;
+      }
+    }
+  }
+  return rig.fwd;
+}
+
+function noteInput() {
+  tour.lastInput = performance.now();
+  if (tour.enabled && !tour.paused) pauseTour();
+}
+
 function onWheel(e) {
   e.preventDefault();
-  const step = e.deltaY > 0 ? -0.06 : 0.06;
-  applyZoom(rig.zoom + step);
+  noteInput();
+  // Mouse wheel, trackpad pinch (often ctrl+wheel), and ctrl+wheel all dolly.
+  const unit = e.deltaMode === 1 ? 16 : (e.deltaMode === 2 ? 80 : 1);
+  const dy = e.deltaY * unit;
+  const step = clamp(Math.abs(dy) * 0.45, 8, 90);
+  // Scroll up / pinch-spread (negative deltaY) moves forward into the scene.
+  applyDolly(dy > 0 ? -step : step);
 }
 
 function bindInput() {
+  canvas.style.touchAction = "none";
   canvas.addEventListener("pointerdown", onPointerDown);
   canvas.addEventListener("pointermove", onPointerMove);
   window.addEventListener("pointerup", onPointerUp);
   canvas.addEventListener("pointerleave", onPointerLeave);
   canvas.addEventListener("contextmenu", function (e) { e.preventDefault(); });
   canvas.addEventListener("wheel", onWheel, { passive: false });
+  canvas.addEventListener("touchstart", onTouchStart, { passive: false });
+  canvas.addEventListener("touchmove", onTouchMove, { passive: false });
+  canvas.addEventListener("touchend", onTouchEnd, { passive: false });
+  canvas.addEventListener("touchcancel", onTouchEnd, { passive: false });
 }
 
 
@@ -5439,7 +5860,7 @@ function measureGroundShare() {
     _mask.buf = new Uint8Array(w * h * 4);
   }
   const hide = [];
-  [skyGroup, windowPts, firePts, cloudMesh, volCloudGroup, labelMesh, snowPts, fogGroup].forEach(function (o) {
+  [skyGroup, windowPts, firePts, cloudMesh, volCloudGroup, labelMesh, snowPts, rainMesh, rainLens, fogGroup].forEach(function (o) {
     if (o) { hide.push([o, o.visible]); o.visible = false; }
   });
   const oldFog = terrainMat.uniforms.uFog.value;
@@ -5580,13 +6001,272 @@ function setCommonUniforms(t) {
   }
 }
 
+
+function lerpAngle(a, b, t) {
+  let d = b - a;
+  while (d > Math.PI) d -= Math.PI * 2;
+  while (d < -Math.PI) d += Math.PI * 2;
+  return a + d * t;
+}
+
+function easeInOutCubic(t) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+function riverPathPoint(i) {
+  const rp = riverPathPx[i];
+  if (!rp) return null;
+  if (Array.isArray(rp)) return { px: rp[0], py: rp[1] };
+  if (rp.px != null) return { px: rp.px, py: rp.py };
+  return null;
+}
+
+function findFarmsteadPx() {
+  if (!landmarkGroup) return { px: 200, py: 470 };
+  const spots = [];
+  landmarkGroup.traverse(function (o) {
+    if (o.name === "barn" || o.name === "farmhouse" || o.name === "silo" || o.name === "haybale") {
+      const p = worldToPx(o.position.x, o.position.z);
+      spots.push({ name: o.name, px: p.px, py: p.py, x: o.position.x, z: o.position.z });
+    }
+  });
+  const hero = pxToWorld(HERO.px, HERO.py);
+  const church = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
+  const cw = pxToWorld(church[0], church[1]);
+  const lx = cw.x - hero.x, lz = cw.z - hero.z;
+  const llen = Math.hypot(lx, lz) || 1;
+  let best = null, bestScore = 1e9;
+  for (let i = 0; i < spots.length; i++) {
+    if (spots[i].name !== "barn" && spots[i].name !== "farmhouse") continue;
+    let nBarn = 0, nSilo = 0, nHay = 0;
+    for (let j = 0; j < spots.length; j++) {
+      if (i === j) continue;
+      if (Math.hypot(spots[i].x - spots[j].x, spots[i].z - spots[j].z) >= 80) continue;
+      if (spots[j].name === "barn" || spots[j].name === "farmhouse") nBarn++;
+      if (spots[j].name === "silo") nSilo++;
+      if (spots[j].name === "haybale") nHay++;
+    }
+    const cluster = nBarn + nSilo + nHay;
+    if (cluster < 1) continue;
+    const dHero = Math.hypot(spots[i].x - hero.x, spots[i].z - hero.z);
+    if (dHero < 1500 || dHero > 5200) continue;
+    const along = ((spots[i].x - hero.x) * lx + (spots[i].z - hero.z) * lz) / llen;
+    const side = Math.abs((spots[i].x - hero.x) * (lz / llen) - (spots[i].z - hero.z) * (lx / llen));
+    const score = Math.abs(dHero - 2600) + side * 0.15 + (along < 0 ? 800 : 0) - cluster * 40;
+    if (score < bestScore) { bestScore = score; best = spots[i]; }
+  }
+  return best || (spots[0] ? spots[0] : { px: 200, py: 470 });
+}
+
+function findRiverTourPx() {
+  const hero = pxToWorld(HERO.px, HERO.py);
+  const ch = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
+  const church = pxToWorld(ch[0], ch[1]);
+  const lx = church.x - hero.x, lz = church.z - hero.z;
+  const llen = Math.hypot(lx, lz) || 1;
+  let best = null, bestScore = 1e9;
+  for (let i = 0; i < (riverPathPx || []).length; i++) {
+    const rp = riverPathPoint(i);
+    if (!rp) continue;
+    const w = pxToWorld(rp.px, rp.py);
+    const along = ((w.x - hero.x) * lx + (w.z - hero.z) * lz) / llen;
+    if (along < 400 || along > 2400) continue;
+    const side = Math.abs((w.x - hero.x) * (lz / llen) - (w.z - hero.z) * (lx / llen));
+    const score = Math.abs(along - 1100) + side * 0.25;
+    if (score < bestScore) { bestScore = score; best = rp; }
+  }
+  return best || { px: 190, py: 480 };
+}
+
+function getTourStops() {
+  const church = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
+  const mill = [185.5, 458.6];
+  const depot = [180.5, 456.2];
+  const farm = findFarmsteadPx();
+  const river = findRiverTourPx();
+  return [
+    { name: "church", px: church[0], py: church[1], dist: 240, aimH: 22, eye: 36 },
+    { name: "mill", px: mill[0], py: mill[1], dist: 150, aimH: 10, eye: 32 },
+    { name: "depot", px: depot[0], py: depot[1], dist: 140, aimH: 8, eye: 32 },
+    { name: "farmstead", px: farm.px, py: farm.py, dist: 110, aimH: 8, eye: 28 },
+    { name: "river", px: river.px, py: river.py, dist: 280, aimH: 2, eye: 36 }
+  ];
+}
+
+function tourCameraAt(stop) {
+  const w = pxToWorld(stop.px, stop.py);
+  const hero = pxToWorld(HERO.px, HERO.py);
+  let bx = hero.x - w.x, bz = hero.z - w.z;
+  const bl = Math.hypot(bx, bz) || 1;
+  bx /= bl; bz /= bl;
+  const d = stop.dist || 240;
+  const x = w.x + bx * d;
+  const z = w.z + bz * d;
+  const y = yOf(heightWorld(x, z)) + (stop.eye || 36);
+  const heading = Math.atan2(w.x - x, w.z - z);
+  // Aim so the model sits in the lower third; sky still fills most of the frame.
+  const aimH = (stop.aimH != null) ? stop.aimH : 12;
+  const targetY = yOf(heightWorld(w.x, w.z)) + aimH;
+  const horiz = Math.hypot(w.x - x, w.z - z) || 1;
+  const altTo = Math.atan2(targetY - y, horiz);
+  const fovY = ((camera && camera.fov) ? camera.fov : 48) * Math.PI / 180;
+  const pitch = altTo + 0.22 * fovY;
+  return { x: x, y: y, z: z, heading: heading, pitch: pitch };
+}
+
+function currentTourCam() {
+  if (!camera) return null;
+  const look = new THREE.Vector3();
+  camera.getWorldDirection(look);
+  const pitch = Math.asin(Math.max(-1, Math.min(1, look.y)));
+  return {
+    x: camera.position.x, y: camera.position.y, z: camera.position.z,
+    heading: Math.atan2(look.x, look.z),
+    pitch: pitch
+  };
+}
+
+function applyTourCam(cam) {
+  if (!camera || !cam) return;
+  state.holdCamera = true;
+  const aim = applyFovAndPitch();
+  const pitch = cam.pitch != null ? cam.pitch : aim.pitch;
+  camera.position.set(cam.x, cam.y, cam.z);
+  const look = 1800;
+  camera.lookAt(
+    cam.x + Math.sin(cam.heading) * look * Math.cos(pitch),
+    cam.y + Math.sin(pitch) * look,
+    cam.z + Math.cos(cam.heading) * look * Math.cos(pitch)
+  );
+  layoutHeldCamera();
+}
+
+function beginTourLeg(fromCam, toStop) {
+  tour.from = fromCam;
+  tour.to = tourCameraAt(toStop);
+  const dx = tour.to.x - tour.from.x, dy = tour.to.y - tour.from.y, dz = tour.to.z - tour.from.z;
+  const dist = Math.hypot(dx, dy, dz);
+  tour.duration = Math.max(4, dist / 1.0);
+  tour.t = 0;
+  tour.phase = "travel";
+}
+
+function pauseTour() {
+  tour.paused = true;
+  tour.lastInput = performance.now();
+  if (camera) {
+    const look = new THREE.Vector3();
+    camera.getWorldDirection(look);
+    const head = Math.atan2(look.x, look.z);
+    let bestS = rig.s, bestD = 1e9;
+    if (path && path.len) {
+      for (let s = 0; s <= path.len; s += 30) {
+        const sm = pathSample(s);
+        const d = Math.hypot(sm.x - camera.position.x, sm.z - camera.position.z);
+        if (d < bestD) { bestD = d; bestS = s; }
+      }
+      rig.s = bestS;
+      const sm = pathSample(rig.s);
+      const baseLookX = (sm.lookX != null) ? sm.lookX : 0;
+      const baseLookZ = (sm.lookZ != null) ? sm.lookZ : 1;
+      const base = Math.atan2(baseLookX, baseLookZ);
+      rig.headingOff = head - base;
+      const dx = camera.position.x - sm.x, dz = camera.position.z - sm.z;
+      rig.fwd = dx * Math.sin(head) + dz * Math.cos(head);
+      rig.eye = Math.max(20, camera.position.y - yOf(heightWorld(camera.position.x, camera.position.z)));
+    }
+  }
+  state.holdCamera = false;
+}
+
+function resumeTour(now) {
+  tour.paused = false;
+  state.holdCamera = true;
+  const stops = getTourStops();
+  const from = currentTourCam();
+  beginTourLeg(from, stops[tour.stop % stops.length]);
+}
+
+function stepTour(dt, now) {
+  if (!tour.enabled || state.frozen || REDUCE) return;
+  if (tour.paused) {
+    if (tour.lastInput && now - tour.lastInput > 10000) resumeTour(now);
+    return;
+  }
+  const stops = getTourStops();
+  if (tour.phase === "hold") {
+    if (now >= tour.holdUntil) {
+      tour.stop = (tour.stop + 1) % stops.length;
+      beginTourLeg(currentTourCam(), stops[tour.stop]);
+    } else {
+      applyTourCam(tourCameraAt(stops[tour.stop % stops.length]));
+    }
+    return;
+  }
+  tour.t += dt;
+  const u = Math.max(0, Math.min(1, tour.t / Math.max(0.01, tour.duration)));
+  const e = easeInOutCubic(u);
+  const a = tour.from, b = tour.to;
+  const cam = {
+    x: a.x + (b.x - a.x) * e,
+    y: a.y + (b.y - a.y) * e,
+    z: a.z + (b.z - a.z) * e,
+    heading: lerpAngle(a.heading, b.heading, e),
+    pitch: a.pitch + (b.pitch - a.pitch) * e
+  };
+  applyTourCam(cam);
+  if (u >= 1) {
+    tour.phase = "hold";
+    tour.holdUntil = now + 7000;
+    applyTourCam(b);
+  }
+}
+
+function lookConifers() {
+  if (!camera || !glOk) return null;
+  const hero = pxToWorld(HERO.px, HERO.py);
+  let best = null, bestScore = 1e9;
+  for (let i = 0; i < treeRecords.length; i++) {
+    const r = treeRecords[i];
+    if (r.spec !== "cedar" && r.spec !== "pine") continue;
+    const d = Math.hypot((r.x || 0) - hero.x, (r.z || 0) - hero.z);
+    if (d < 200 || d > 1100) continue;
+    let neighbors = 0;
+    for (let j = 0; j < treeRecords.length; j++) {
+      if (j === i) continue;
+      const o = treeRecords[j];
+      if (Math.hypot((o.x || 0) - r.x, (o.z || 0) - r.z) < 28) neighbors++;
+    }
+    const score = Math.abs(d - 520) + neighbors * 18;
+    if (score < bestScore) { bestScore = score; best = r; }
+  }
+  if (!best) {
+    for (let i = 0; i < treeRecords.length; i++) {
+      if (treeRecords[i].spec === "cedar" || treeRecords[i].spec === "pine") { best = treeRecords[i]; break; }
+    }
+  }
+  if (!best) return null;
+  if (treeMesh && treeMesh.material && treeMesh.material.uniforms && treeMesh.material.uniforms.uCrownCap) {
+    treeMesh.material.uniforms.uCrownCap.value = 0.52;
+  }
+  const p = worldToPx(best.x, best.z);
+  const cam = tourCameraAt({ px: p.px, py: p.py, dist: 70 });
+  applyTourCam(cam);
+  if (glOk) renderer.render(scene, camera);
+  return { spec: best.spec, px: p.px, py: p.py, dist: Math.hypot(best.x - hero.x, best.z - hero.z) };
+}
+
 function startLoop() {
   function tick(now) {
     const dt = state.lastT ? clamp((now - state.lastT) / 1000, 0, 0.08) : 0.016;
     state.lastT = now;
     if (!state.frozen && !REDUCE) {
-      rig.s += 18 * dt;
-      if (rig.s > path.len) rig.s = 0;
+      if (tour.enabled) {
+        stepTour(dt, now);
+      } else {
+        rig.s += 18 * dt;
+        if (rig.s > path.len) rig.s = 0;
+      }
       state.time += dt;
     }
     if (!dbgAt && now - (state._clk || 0) > 30000) {
@@ -5778,7 +6458,7 @@ function expose() {
       return f;
     },
     state: function () { return { season: clock.season, period: clock.period, wx: wx.kind, at: clock.now, s: rig.s, pathLen: path.len, night: clock.night, alt: clock.alt, reduce: REDUCE, veg: { trees: VEG.treesPlaced, blades: VEG.blades, clumps: VEG.clumps }, land: { church: LAND.church, farmhouse: LAND.farmhouse, barn: LAND.barn, silo: LAND.silo, hay: LAND.hay, mill: LAND.mill, depot: LAND.depot, fromGltf: LAND.fromGltf } }; },
-    _applyWx: function () { buildVolClouds(); buildSnow(); buildFogBank(); applySkin(); layoutVolClouds(); layoutSnow(); layoutFogBank(); if (glOk) renderer.render(scene, camera); },
+    _applyWx: function () { buildVolClouds(); buildSnow(); buildRain(); buildFogBank(); applySkin(); layoutVolClouds(); layoutSnow(); layoutRain(); layoutFogBank(); if (glOk) renderer.render(scene, camera); },
     hide: function (name, v) {
       const on = v !== false;
       const map = { trees: treeMesh, grass: grassMesh, clumps: clumpMesh, moon: moonMesh, clouds: cloudMesh, church: churchMesh, hay: hayMesh, label: labelMesh, landmarks: landmarkGroup };
@@ -5793,6 +6473,35 @@ function expose() {
       if (glOk) renderer.render(scene, camera);
     },
     setZoom: function (z) { applyZoom(z); placeCamera(); if (glOk) renderer.render(scene, camera); },
+    applyDolly: function (d) { const f = applyDolly(d); if (glOk) renderer.render(scene, camera); return f; },
+    dollyInfo: function () {
+      const look = new THREE.Vector3();
+      if (camera) camera.getWorldDirection(look);
+      return {
+        fwd: rig.fwd || 0, eye: rig.eye,
+        pos: camera ? [camera.position.x, camera.position.y, camera.position.z] : null,
+        heading: camera ? Math.atan2(look.x, look.z) : 0
+      };
+    },
+    tourStops: function () { return getTourStops(); },
+    tourState: function () { return { enabled: tour.enabled, paused: tour.paused, stop: tour.stop, phase: tour.phase, lastInput: tour.lastInput }; },
+    tourGoto: function (i) {
+      const stops = getTourStops();
+      const stop = stops[((i % stops.length) + stops.length) % stops.length];
+      tour.stop = ((i % stops.length) + stops.length) % stops.length;
+      tour.paused = true;
+      tour.enabled = false;
+      const cam = tourCameraAt(stop);
+      applyTourCam(cam);
+      if (glOk) renderer.render(scene, camera);
+      return { stop: stop, cam: cam };
+    },
+    lookConifers: function () { return lookConifers(); },
+    lookAwaySun: function () {
+      const dir = altAzDir(clock.alt, clock.sunAz);
+      lookHorizonAz(Math.atan2(-dir.x, -dir.z));
+      return sunInfo();
+    },
     lookClose: function (px, py, dist, zoom) { lookClose(px, py, dist, zoom); },
     lookMoon: function () { return lookMoon(); },
     lookSun: function () { return lookSun(); },
@@ -5867,6 +6576,7 @@ function lookClose(px, py, dist, zoom) {
   layoutVolClouds();
   layoutFrameTrees();
   layoutSnow();
+  layoutRain();
   layoutFogBank();
   fillGrass(x, z);
   if (glOk) renderer.render(scene, camera);
@@ -5886,6 +6596,7 @@ function layoutHeldCamera() {
   layoutVolClouds();
   layoutFrameTrees();
   layoutSnow();
+  layoutRain();
   layoutFogBank();
   if (starPts) placeStars();
 }
@@ -5973,6 +6684,9 @@ async function init() {
   }
   const qT = parseFloat(qs.get("pathT"));
   rig.s = isFinite(qT) ? clamp(qT, 0, 1) * (path.len || 1) : (path.len * HERO.pathT);
+  tour.enabled = qs.get("tour") !== "0" && !qs.has("pathT") && qs.get("freeze") !== "1" && !REDUCE;
+  tour.paused = true;
+  tour.lastInput = performance.now();
   refreshClock(parseTime());
   if (!glOk) {
     showFallback();
@@ -5987,6 +6701,7 @@ async function init() {
   buildClouds();
   buildVolClouds();
   buildSnow();
+  buildRain();
   buildFogBank();
   scatterTrees();
   buildGrass();
