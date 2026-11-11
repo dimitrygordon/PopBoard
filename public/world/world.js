@@ -256,7 +256,7 @@ function refreshClock(now) {
   if (dbgSky && forcedSunAlt(dbgSky) != null) {
     alt = forcedSunAlt(dbgSky);
     rising = dbgSky === "dawn";
-    sunAz = (rising ? -1.75 : 1.75) * (dbgSky === "day" ? .25 : 1);
+    // Keep the real sun azimuth so dusk/dawn light (and a visible sun) stay in the west or east.
   }
   clock.alt = alt;
   clock.rising = rising;
@@ -333,6 +333,44 @@ function windDrift() {
 function cloudAnchor() {
   const churchP = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
   return pxToWorld(churchP[0], churchP[1]);
+}
+
+function poissonDiscXZ(rng, n, minDist, x0, z0, x1, z1) {
+  const pts = [];
+  const min2 = minDist * minDist;
+  let guard = 0;
+  while (pts.length < n && guard < n * 80) {
+    guard++;
+    const x = x0 + rng() * (x1 - x0);
+    const z = z0 + rng() * (z1 - z0);
+    let ok = true;
+    for (let i = 0; i < pts.length; i++) {
+      const dx = pts[i].x - x, dz = pts[i].z - z;
+      if (dx * dx + dz * dz < min2) { ok = false; break; }
+    }
+    if (ok) pts.push({ x: x, z: z });
+  }
+  return pts;
+}
+
+function poissonDiscFan(rng, n, minDist, ox, oz, az0, az1, near, far) {
+  const pts = [];
+  const min2 = minDist * minDist;
+  let guard = 0;
+  while (pts.length < n && guard < n * 80) {
+    guard++;
+    const az = az0 + rng() * (az1 - az0);
+    const dist = near + rng() * (far - near);
+    const x = ox + Math.sin(az) * dist;
+    const z = oz + Math.cos(az) * dist;
+    let ok = true;
+    for (let i = 0; i < pts.length; i++) {
+      const dx = pts[i].x - x, dz = pts[i].z - z;
+      if (dx * dx + dz * dz < min2) { ok = false; break; }
+    }
+    if (ok) pts.push({ x: x, z: z });
+  }
+  return pts;
 }
 
 /* ---------- map data ---------- */
@@ -1230,6 +1268,15 @@ try {
   renderer.toneMapping = THREE.NoToneMapping;
   renderer.setClearColor(0x070B14, 1);
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+  // Projection flip (touchProjection) inverts NDC winding. Invert every
+  // frontFace call so the same front and sky-dome insides still draw.
+  (function () {
+    const gl = renderer.getContext();
+    const origFF = gl.frontFace.bind(gl);
+    gl.frontFace = function (mode) {
+      origFF(mode === gl.CW ? gl.CCW : gl.CW);
+    };
+  })();
 } catch (err) {
   glOk = false;
 }
@@ -1282,13 +1329,22 @@ function targetHorizon() {
   return 0.76;
 }
 
+function touchProjection() {
+  if (!camera) return;
+  camera.updateProjectionMatrix();
+  // +X east, +Z north, OpenGL lookAt puts west on the right when looking north.
+  // Flip NDC x so a human observer sees east on the right, west on the left.
+  camera.projectionMatrix.elements[0] *= -1;
+  camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
+}
+
 function applyFovAndPitch() {
   const aspect = Math.max(0.3, canvas.clientWidth / Math.max(1, canvas.clientHeight));
   camera.aspect = aspect;
   const hor = targetHorizon();
   const baseFov = aspect < 0.7 ? 58 : aspect < 1.1 ? 54 : 48;
   camera.fov = clamp(baseFov / (rig.zoom || 1), 28, 68);
-  camera.updateProjectionMatrix();
+  touchProjection();
   const half = camera.fov * RAD * 0.5;
   const phi = Math.atan(Math.tan(half) * (2 * hor - 1));
   return { horizon: hor, pitch: phi };
@@ -1354,7 +1410,7 @@ function makeCoverTex() {
 
 let terrainMat, skyMat, treeMat, grassMat, moonMat, heightTex, coverTex;
 let terrainMesh, treeMesh, grassMesh, hayMesh, windowPts, firePts, cloudMesh;
-let starPts, constLines, moonMesh, sunState = {};
+let starPts, constLines, moonMesh, sunMesh, sunState = {};
 let SKY_CAT = null, constNameGroup = null, snowPts = null, fogGroup = null;
 const skyDriftT0 = performance.now();
 
@@ -1568,6 +1624,38 @@ function buildSky() {
   moonMesh = new THREE.Mesh(new THREE.SphereGeometry(130, 32, 24), moonMat);
   moonMesh.renderOrder = -50;
   skyGroup.add(moonMesh);
+
+  const sunMat = new THREE.ShaderMaterial({
+    uniforms: {},
+    vertexShader: /* glsl */`
+      varying vec3 vN;
+      varying vec3 vV;
+      void main(){
+        vN = normalize(normalMatrix * normal);
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        vV = normalize(-mv.xyz);
+        gl_Position = projectionMatrix * mv;
+      }
+    `,
+    fragmentShader: /* glsl */`
+      varying vec3 vN;
+      varying vec3 vV;
+      void main(){
+        float rim = 1.0 - clamp(dot(normalize(vN), normalize(vV)), 0.0, 1.0);
+        float hatch = 1.0 - smoothstep(0.0, 0.12, abs(fract((vN.x + vN.y) * 6.0) - 0.5));
+        vec3 gold = vec3(0.93, 0.78, 0.42);
+        vec3 paper = vec3(0.96, 0.90, 0.70);
+        vec3 col = mix(paper, gold, 0.55 + 0.35 * rim);
+        col = mix(col, vec3(0.28, 0.20, 0.10), hatch * rim * 0.45);
+        gl_FragColor = vec4(col, 1.0);
+      }
+    `,
+    depthWrite: false,
+    depthTest: true
+  });
+  sunMesh = new THREE.Mesh(new THREE.SphereGeometry(150, 32, 24), sunMat);
+  sunMesh.renderOrder = -50;
+  skyGroup.add(sunMesh);
 }
 
 function skyNow() {
@@ -1620,6 +1708,12 @@ function makeNameSprite(text, italic) {
   g.fillText(text, 320, 68);
   const tex = new THREE.CanvasTexture(cv);
   tex.colorSpace = THREE.NoColorSpace;
+  // Pre-mirror the map so the projection X flip leaves the letters reading left to right.
+  // Sprite scale.x does not undo that flip (sprites face the camera with a positive size).
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.repeat.x = -1;
+  tex.offset.x = 1;
+  tex.needsUpdate = true;
   const mat = new THREE.SpriteMaterial({
     map: tex,
     transparent: true,
@@ -1964,47 +2058,53 @@ void main(){
     float yWave = rel + (noise21(vWorld.xz * 0.0012 + vec2(s, 0.0)) - 0.5) * 0.05;
     float tone = yWave < 0.34 ? 0.0 : (yWave < 0.68 ? 1.0 : 2.0);
     vec3 wash = tone < 0.5 ? bot : (tone < 1.5 ? midc : top);
-    vec2 fdir = normalize(uLook.xz + vec2(0.0001, 0.0));
-    vec2 rgt = vec2(fdir.y, -fdir.x);
-    vec2 fromCam = vWorld.xz - cameraPosition.xz;
-    float depth = dot(fromCam, fdir);
-    float side = dot(fromCam, rgt);
-    float wave = (noise21(vec2(side * 0.0035, s)) - 0.5) * 22.0;
-    wave += sin(side * 0.008 + s) * 8.0;
-    float row = (depth + wave) / 85.0;
+    // Hatch in world-direction (elevation, azimuth), not on the plane UV.
+    // Constant elevation is a screen-horizontal almucantar, so there is no pinch at mid-sky.
+    vec3 wr = normalize(vWorld - cameraPosition);
+    float elev = wr.y;
+    float azim = atan(wr.x, wr.z);
+    float wave = (noise21(vec2(azim * 2.4, s)) - 0.5) * 0.035;
+    wave += sin(azim * 5.0 + s) * 0.012;
+    float row = (elev + wave) * 48.0;
     float rid = floor(row);
     float f = fract(row) - 0.5;
-    float lift = step(0.12, hash21(vec2(rid * 11.0, floor(side * 0.02) + s)));
+    float lift = step(0.10, hash21(vec2(rid * 11.0, floor(azim * 14.0) + s)));
     float line = 1.0 - smoothstep(0.0, 0.18, abs(f));
-    float dens = mix(0.92, 0.16, rel);
+    // Low-frequency lumps: darker masses, lighter breaks. Darker toward the horizon (deck base).
+    float lumps = noise21(vec2(azim * 0.85, elev * 1.6) + vec2(s, 2.0));
+    lumps = lumps * 0.70 + noise21(vec2(azim * 0.35, elev * 0.7 + s)) * 0.30;
+    float dens = mix(0.12, 1.0, lumps) * mix(0.95, 0.22, clamp(elev / 0.85, 0.0, 1.0));
     hatch = dens * line * lift;
-    col = mix(wash, uInk, clamp(hatch * 0.50, 0.0, 0.62));
-    // A few longer layer breaks, still horizontal, darker toward the deck base.
+    col = mix(wash, uInk, clamp(hatch * 0.52, 0.0, 0.66));
     float layers = 0.0;
     for (int i = 0; i < 5; i++) {
-      float by = 0.12 + float(i) * 0.16;
-      by += (noise21(vec2(side * 0.002, s + float(i))) - 0.5) * 0.04;
-      float li = 1.0 - smoothstep(0.0, 0.018, abs(yWave - by));
-      float pen = step(0.22, hash21(vec2(floor(side * 0.03), s + float(i) * 4.0)));
+      float by = 0.08 + float(i) * 0.14;
+      by += (noise21(vec2(azim * 1.4, s + float(i))) - 0.5) * 0.03;
+      float li = 1.0 - smoothstep(0.0, 0.016, abs(elev - by));
+      float pen = step(0.20, hash21(vec2(floor(azim * 10.0), s + float(i) * 4.0)));
       layers += li * pen;
     }
-    col = mix(col, uInk, clamp(layers, 0.0, 1.0) * mix(0.55, 0.18, rel));
+    col = mix(col, uInk, clamp(layers, 0.0, 1.0) * dens * mix(0.50, 0.14, clamp(elev, 0.0, 1.0)));
     rim = 1.0 - smoothstep(0.0, 0.12, rel);
     b = 1.0;
     alpha = 0.96;
   } else if (uCirrus > 0.5) {
-    // High, thin hatched wisps. World-anchored, almost no body fill.
-    vec2 q = (vUv - 0.5) * vec2(1.0, 3.6);
-    float spine = 1.0 - smoothstep(0.0, 0.55, abs(q.y + (noise21(vec2(q.x * 2.2, s)) - 0.5) * 0.25));
-    float taper = 1.0 - smoothstep(0.15, 0.98, abs(q.x) * 2.0);
-    float row = q.x * 7.0 + q.y * 1.4 + noise21(q * 3.0 + vec2(s, 1.0)) * 0.35;
-    float line = 1.0 - smoothstep(0.0, 0.22, abs(fract(row) - 0.5));
-    float lift = step(0.18, hash21(vec2(floor(row * 3.0), s)));
-    float body = spine * taper;
-    if (body < 0.05) discard;
-    col = mix(vec3(0.93, 0.90, 0.82), uInk, clamp(line * lift * 0.55, 0.0, 0.7));
-    alpha = body * (0.22 + line * lift * 0.35);
-    b = body; rel = 0.6; rim = 0.0; hatch = line;
+    // A few long, fine, curved strokes. Mesh yaw follows the wind. ~30% ink.
+    vec2 q = (vUv - 0.5);
+    float wave = sin(q.x * 3.2 + s) * 0.10 + (noise21(vec2(q.x * 1.6, s)) - 0.5) * 0.07;
+    float taper = 1.0 - smoothstep(0.32, 0.50, abs(q.x));
+    float stroke = 0.0;
+    for (int i = 0; i < 3; i++) {
+      float off = (float(i) - 1.0) * 0.055;
+      float d = abs(q.y - wave - off);
+      float w = 0.010 + float(i) * 0.004;
+      stroke = max(stroke, (1.0 - smoothstep(w, w + 0.018, d)) * (i == 1 ? 1.0 : 0.55));
+    }
+    float body = stroke * taper;
+    if (body < 0.04) discard;
+    col = uInk;
+    alpha = body * 0.30;
+    b = body; rel = 0.7; rim = 0.0; hatch = stroke;
   } else if (uStreak > 0.5) {
     // Far deck of flattened streaks sitting just above the ridges.
     vec2 q = (vUv - 0.5) * vec2(1.0, 2.8);
@@ -2036,6 +2136,8 @@ void main(){
     b = max(b, lobe(p, vec2(-0.16, 0.42), 0.26 + 0.05 * hash21(vec2(s, 3.0))));
     b = max(b, lobe(p, vec2(0.28, 0.38), 0.22 + 0.05 * hash21(vec2(s, 4.0))));
     b = max(b, lobe(p, vec2(0.06, 0.58), 0.16 + 0.04 * hash21(vec2(s, 5.0))));
+    // Flat underside at a common base; puffy tops stay lumpy.
+    b *= smoothstep(-0.55, -0.40, p.y);
     if (b < 0.08) discard;
     rel = clamp((p.y + 0.55) / 1.25, 0.0, 1.0);
     // Three flat tones: cream paper on lit tops, mid wash, shaded underside.
@@ -2181,30 +2283,35 @@ function buildVolClouds() {
       { az: 0.40, dist: 3000, alt: 170, sx: 1800, sy: 260, seed: 21.6 }
     ];
   } else {
-    // 12-20 fair-weather clouds, count from live cloud_cover. Near ones are big and lumpy;
-    // far ones flatten into thin streaks just above the ridges. A few high cirrus wisps.
+    // 12-20 fair-weather cumulus, count from live cloud_cover. Poisson-disc on one
+    // horizontal plane at a common base so they spread across the sky and never stack.
     const cover = weatherCover();
     const nFair = Math.round(12 + 8 * clamp(cover / 0.55, 0, 1));
     const rngC = mulberry(44021);
+    const baseAlt = 900;
+    const heroW = pxToWorld(HERO.px, HERO.py);
+    const churchW = cloudAnchor();
+    const lookAz = Math.atan2(churchW.x - heroW.x, churchW.z - heroW.z);
+    // Wide fan in front of the hero so puffs spread left to right across the sky,
+    // including a little extra for pans. One common base, none stacked.
+    const pts = poissonDiscFan(rngC, nFair, 1500, heroW.x, heroW.z, lookAz - 0.95, lookAz + 0.95, 1600, 7800);
     puffSpec = [];
-    for (let i = 0; i < nFair; i++) {
-      const tFar = i / Math.max(1, nFair - 1);
-      const dist = 750 + tFar * tFar * 6200 + rngC() * 380;
-      const az = -0.60 + (rngC() - 0.5) * 0.95 + (rngC() < 0.18 ? (rngC() - 0.5) * 0.8 : 0);
-      const streak = tFar > 0.62;
-      const alt = streak ? (480 + rngC() * 260) : (820 + (1 - tFar) * 700 + rngC() * 240);
-      const sx = streak ? (900 + rngC() * 700) : (380 + (1 - tFar) * 420 + rngC() * 180);
-      const sy = streak ? (70 + rngC() * 70) : (230 + (1 - tFar) * 180 + rngC() * 80);
-      puffSpec.push({ az: az, dist: dist, alt: alt, sx: sx, sy: sy, seed: 2.1 + i * 9.3, streak: streak });
+    for (let i = 0; i < pts.length; i++) {
+      const sx = 420 + rngC() * 260;
+      const sy = 260 + rngC() * 120;
+      puffSpec.push({
+        x: pts[i].x, z: pts[i].z, alt: baseAlt,
+        sx: sx, sy: sy, seed: 2.1 + i * 9.3
+      });
     }
     const nCirrus = 3 + ((rngC() * 3) | 0);
-    for (let i = 0; i < nCirrus; i++) {
+    const cirrusPts = poissonDiscFan(rngC, nCirrus, 2600, heroW.x, heroW.z, lookAz - 1.1, lookAz + 1.1, 3500, 9000);
+    for (let i = 0; i < cirrusPts.length; i++) {
       puffSpec.push({
-        az: -0.60 + (rngC() - 0.5) * 1.2,
-        dist: 4800 + rngC() * 2800,
-        alt: 2100 + rngC() * 900,
-        sx: 1400 + rngC() * 900,
-        sy: 80 + rngC() * 70,
+        x: cirrusPts[i].x, z: cirrusPts[i].z,
+        alt: 2400 + rngC() * 700,
+        sx: 2600 + rngC() * 1200,
+        sy: 220 + rngC() * 120,
         seed: 80 + i * 13.1,
         cirrus: 1
       });
@@ -2227,13 +2334,13 @@ function buildVolClouds() {
     mesh.frustumCulled = false;
     mesh.renderOrder = 1;
     volCloudGroup.add(mesh);
-    const homeX = anchor.x + Math.sin(sp.az) * sp.dist;
-    const homeZ = anchor.z + Math.cos(sp.az) * sp.dist;
+    const homeX = (sp.x != null) ? sp.x : (anchor.x + Math.sin(sp.az) * sp.dist);
+    const homeZ = (sp.z != null) ? sp.z : (anchor.z + Math.cos(sp.az) * sp.dist);
     const homeY = ground + sp.alt;
     volCloudItems.push({
       mesh: mesh, kind: 0,
       homeX: homeX, homeY: homeY, homeZ: homeZ,
-      sx: sp.sx, sy: sp.sy, seed: sp.seed, flat: !!sp.flat, shaft: !!sp.shaft
+      sx: sp.sx, sy: sp.sy, seed: sp.seed, flat: !!sp.flat, shaft: !!sp.shaft, cirrus: !!sp.cirrus
     });
   }
   if (kind === "rain" || kind === "storm") {
@@ -2277,9 +2384,13 @@ function layoutVolClouds() {
     it.mesh.scale.set(it.sx, it.sy, 1);
     if (it.flat) {
       it.mesh.rotation.set(-Math.PI / 2, 0, 0);
+    } else if (it.cirrus) {
+      // Long axis along the wind (toward). Upright, not camera-tilted.
+      const yaw = Math.atan2(drift.x, drift.z);
+      it.mesh.rotation.set(0, yaw, 0);
     } else {
-      // Billboard faces the camera; the home stays in world space so only wind drifts it.
-      it.mesh.lookAt(cx, cy, cz);
+      // Upright yaw-only billboard so flat undersides stay on the common base plane.
+      it.mesh.rotation.set(0, Math.atan2(cx - x, cz - z), 0);
     }
     if (it.mesh.material && it.mesh.material.uniforms) {
       it.mesh.material.uniforms.uTime.value = state.time || 0;
@@ -4424,6 +4535,38 @@ function setMoonPos() {
   moonMesh.visible = clock.moonAlt > -4;
 }
 
+function setSunPos() {
+  if (!sunMesh) return;
+  const dir = altAzDir(clock.alt, clock.sunAz);
+  sunMesh.position.copy(dir.multiplyScalar(6200));
+  // Visible near the horizon so a sunset or dawn check can read compass against the land.
+  sunMesh.visible = clock.alt > -3 && clock.alt < 16;
+}
+
+function sunInfo() {
+  const dir = altAzDir(clock.alt, clock.sunAz);
+  let compass = Math.atan2(dir.x, dir.z) * 180 / Math.PI;
+  if (compass < 0) compass += 360;
+  let ndc = null;
+  if (camera && sunMesh) {
+    const world = sunMesh.position.clone();
+    if (skyGroup) world.add(skyGroup.position);
+    world.project(camera);
+    ndc = { x: +world.x.toFixed(3), y: +world.y.toFixed(3), z: +world.z.toFixed(3) };
+  }
+  return {
+    at: clock.now, alt: clock.alt, azEngine: clock.sunAz,
+    azCompass: compass, visible: !!(sunMesh && sunMesh.visible),
+    period: clock.period, ndc: ndc
+  };
+}
+
+function lookSun() {
+  const dir = altAzDir(clock.alt, clock.sunAz);
+  lookHorizonAz(Math.atan2(dir.x, dir.z));
+  return sunInfo();
+}
+
 
 function farLiftAt(dist) {
   const t = clamp((dist - 2000) / 8000, 0, 1);
@@ -4982,7 +5125,7 @@ function placeCamera() {
   if (skyMat && skyMat.uniforms && skyMat.uniforms.uRes) {
     skyMat.uniforms.uRes.value.set(renderer.domElement.width, renderer.domElement.height);
   }
-  setMoonPos();
+  setMoonPos(); setSunPos();
   layoutRidgeLines();
   layoutRiverRibbon();
   layoutVolClouds();
@@ -5602,8 +5745,45 @@ function expose() {
     setZoom: function (z) { applyZoom(z); placeCamera(); if (glOk) renderer.render(scene, camera); },
     lookClose: function (px, py, dist, zoom) { lookClose(px, py, dist, zoom); },
     lookMoon: function () { return lookMoon(); },
+    lookSun: function () { return lookSun(); },
     lookOcclusion: function () { return lookOcclusion(); },
-    moon: function () { return moonInfo(); }
+    moon: function () { return moonInfo(); },
+    sun: function () { return sunInfo(); },
+    probeFlip: function () {
+      const look = new THREE.Vector3();
+      camera.getWorldDirection(look);
+      const heading = Math.atan2(look.x, look.z);
+      function ndcOf(vec) {
+        const v = vec.clone();
+        v.project(camera);
+        return [+v.x.toFixed(3), +v.y.toFixed(3), +v.z.toFixed(3)];
+      }
+      const fwd = look.clone(); fwd.y = 0;
+      if (fwd.lengthSq() < 1e-8) fwd.set(0, 0, 1);
+      fwd.normalize();
+      const ahead = camera.position.clone().add(fwd.multiplyScalar(2500));
+      ahead.y = camera.position.y;
+      const east = ahead.clone().add(new THREE.Vector3(800, 0, 0));
+      const west = ahead.clone().add(new THREE.Vector3(-800, 0, 0));
+      const eastNdc = ndcOf(east);
+      const westNdc = ndcOf(west);
+      let churchNdc = null;
+      if (churchMesh) {
+        const p = new THREE.Vector3();
+        churchMesh.getWorldPosition(p);
+        churchNdc = ndcOf(p);
+      }
+      return {
+        heading: heading,
+        headingDeg: heading * 180 / Math.PI,
+        headingCompass: ((heading * 180 / Math.PI) + 360) % 360,
+        eastNdc: eastNdc,
+        westNdc: westNdc,
+        churchNdc: churchNdc,
+        screen: (eastNdc[0] > westNdc[0]) ? "east-on-right" : "east-on-left",
+        sun: sunInfo()
+      };
+    }
   };
 }
 
@@ -5625,13 +5805,13 @@ function lookClose(px, py, dist, zoom) {
   if (zoom) rig.zoom = clamp(zoom, 0.85, 1.55);
   camera.aspect = aspect;
   camera.fov = clamp(baseFov / (rig.zoom || 1), 28, 68);
-  camera.updateProjectionMatrix();
+  touchProjection();
   camera.position.set(x, y, z);
   const ty = yOf(heightWorld(w.x, w.z)) + 6;
   camera.lookAt(w.x, ty, w.z);
   skyGroup.position.copy(camera.position);
   skyGroup.rotation.set(0, 0, 0);
-  setMoonPos();
+  setMoonPos(); setSunPos();
   layoutRidgeLines();
   layoutRiverRibbon();
   layoutVolClouds();
@@ -5650,7 +5830,7 @@ function layoutHeldCamera() {
     camera.getWorldDirection(look);
     skyMat.uniforms.uLookAz.value = Math.atan2(look.x, look.z);
   }
-  setMoonPos();
+  setMoonPos(); setSunPos();
   layoutRidgeLines();
   layoutRiverRibbon();
   layoutVolClouds();
