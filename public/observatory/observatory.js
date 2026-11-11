@@ -143,7 +143,7 @@
   /* ---------------- sky colours ---------------- */
   var SKY = [[-18, [6, 10, 28], [12, 18, 44], [22, 28, 62]], [-9, [16, 20, 56], [48, 40, 96], [120, 70, 110]],
     [-3, [40, 52, 112], [150, 96, 150], [255, 128, 96]], [2, [70, 110, 180], [230, 150, 170], [255, 170, 100]],
-    [8, [96, 156, 226], [170, 200, 236], [255, 214, 170]], [25, [34, 92, 192], [122, 172, 228], [228, 234, 236]], [90, [26, 80, 180], [112, 164, 226], [222, 230, 236]]];
+    [8, [96, 156, 226], [170, 200, 236], [255, 214, 170]], [25, [58, 112, 196], [150, 186, 226], [236, 238, 234]], [90, [48, 102, 188], [140, 178, 222], [232, 236, 234]]];
   function skyColors(wk) {
     var a = sky.sunAlt, i = 0; while (i < SKY.length - 2 && SKY[i + 1][0] <= a) i++;
     var A = SKY[i], B = SKY[i + 1], t = sstep(clamp((a - A[0]) / (B[0] - A[0]), 0, 1));
@@ -202,7 +202,7 @@
   /* ---------------- the astrolabe (SVG) ---------------- */
   /* the mode dial: each stop names an existing sign-in panel */
   var MODES = [{ word: "STUDENT", label: "Student", panel: "login" }, { word: "TEACHER", label: "Teacher", panel: "teacherLogin" }, { word: "NEW ACCOUNT", label: "New account", panel: "teacherSignup" }];
-  var DETENT = 60, NOTCH = 18; // degrees between mode stops; degrees per combination notch
+  var DETENT = 60, STOPS = 6, NOTCH = 18; // degrees between stops; stops on the ring; degrees per combination notch
   var SIGNS = ["ARIES", "TAVRVS", "GEMINI", "CANCER", "LEO", "VIRGO", "LIBRA", "SCORPIO", "SAGITTARIVS", "CAPRICORNVS", "AQVARIVS", "PISCES"];
   var RETE_STARS = [["Sirius", 101.29, -16.72], ["Rigel", 78.63, -8.2], ["Betelgeuse", 88.79, 7.41], ["Procyon", 114.83, 5.22],
     ["Aldebaran", 68.98, 16.51], ["Regulus", 152.09, 11.97], ["Spica", 201.3, -11.16], ["Arcturus", 213.92, 19.18],
@@ -228,7 +228,9 @@
     s.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + (-R - 18) + ' ' + (-R - 18) + ' ' + (2 * R + 36) + ' ' + (2 * R + 36) + '" aria-hidden="true" focusable="false">');
     s.push('<defs><path id="obsTxtTop" d="' + arcD(G.tIn + (phone ? 6.5 : 8.5), -88, 88) + '"/><path id="obsTxtBot" d="' + arcD(G.tOut - (phone ? 6 : 8), 268, 92) + '"/></defs>');
     // the face: invisible at night (the sky shows through), warm parchment by day
-    s.push('<g id="obsFace" opacity="0"><circle class="obs-face" r="' + R + '"/><circle class="obs-face-in" r="' + G.tIn + '"/></g>');
+    var ring = function (r) { return "M" + r + " 0A" + r + " " + r + " 0 1 0 " + -r + " 0A" + r + " " + r + " 0 1 0 " + r + " 0Z"; };
+    // the brass is a true ring around the parchment, so each is see-through on its own (at 85% in daylight)
+    s.push('<g id="obsFace" opacity="0"><path class="obs-face" fill-rule="evenodd" d="' + ring(R) + ring(G.tIn) + '"/><circle class="obs-face-in" r="' + G.tIn + '"/></g>');
 
     // rete: the star-pointer lattice, turned by sidereal time, with an alidade arm tipped by the North Star
     s.push('<g id="obsRete" opacity="0">');
@@ -286,23 +288,23 @@
     s.push('<g id="obsHome"><circle id="obsGlint" cy="' + (-zm) + '" r="' + (phone ? 11 : 16) + '" fill="' + BRASS_HI + '" opacity="0"/><circle class="obs-dot" cy="' + (-zm) + '" r="' + (phone ? 6 : 9) + '"/>' + starPath(0, -zm, phone ? 5.5 : 8, "obs-polaris") + "</g>");
     s.push("</g>");
 
-    // outer ring: the mode dial. Three engraved stops, a detent every 60 degrees.
+    // outer ring: the mode dial. Six stops, a detent every 60 degrees; each word is engraved twice, 180 degrees apart,
+    // so whichever mode sits under the index, the other two are always on the top arc at about 2 and 10 o'clock.
     s.push('<g id="obsRingO" opacity="0">' + band(G.hIn, R) + ring(R, 1.3) + ring(R - 3, .55, BRASS, .8) + ring(G.hIn, .9));
     var ht = [];
     for (var i = 0; i < 72; i++) {
       var ha = i * 5, det = ha % DETENT === 0, hl = det ? G.R - G.hIn - 6 : i % 2 === 0 ? 4.5 : 2.6, h0 = pt(G.hIn, ha), h1 = pt(G.hIn + hl, ha);
-      if (det && ha / DETENT < MODES.length) continue; // the words sit on these stops
+      if (det) continue; // the words sit on these stops
       ht.push("M" + f1(h0[0]) + " " + f1(h0[1]) + "L" + f1(h1[0]) + " " + f1(h1[1]));
     }
     s.push('<path d="' + ht.join("") + '" stroke="' + BRASS + '" stroke-width=".7"/>');
-    var wr = (G.hIn + R) / 2, wfs = phone ? 9.5 : 13, half = phone ? 30 : 26;
-    MODES.forEach(function (m, mi) {
-      var a = mi * DETENT;
-      s.push('<path id="obsW' + mi + 'a" d="' + arcD(wr - wfs * .34, a - half, a + half) + '" fill="none"/><path id="obsW' + mi + 'b" d="' + arcD(wr + wfs * .34, a + half, a - half) + '" fill="none"/>');
-      s.push('<g class="obs-word" id="obsWord' + mi + '"><text font-size="' + wfs + '" letter-spacing="' + (phone ? 1.6 : 3) + '" fill="' + BRASS_HI + '"><textPath href="#obsW' + mi + 'a" startOffset="50%" text-anchor="middle">' + m.word + '</textPath></text>' +
-        '<text font-size="' + wfs + '" letter-spacing="' + (phone ? 1.6 : 3) + '" fill="' + BRASS_HI + '" display="none"><textPath href="#obsW' + mi + 'b" startOffset="50%" text-anchor="middle">' + m.word + "</textPath></text></g>");
-    });
-    for (var o = MODES.length; o < 360 / DETENT; o++) s.push(starPath(pt(wr, o * DETENT)[0], pt(wr, o * DETENT)[1], phone ? 3.4 : 4.6, ""));
+    var wr = (G.hIn + R) / 2, wfs = phone ? 12 : 13, half = phone ? 30 : 26;
+    for (var st = 0; st < STOPS; st++) {
+      var a = st * DETENT, m = MODES[st % MODES.length];
+      s.push('<path id="obsW' + st + 'a" d="' + arcD(wr - wfs * .34, a - half, a + half) + '" fill="none"/><path id="obsW' + st + 'b" d="' + arcD(wr + wfs * .34, a + half, a - half) + '" fill="none"/>');
+      s.push('<g class="obs-word" id="obsWord' + st + '"><text font-size="' + wfs + '" letter-spacing="' + (phone ? 1.3 : 3) + '" fill="' + BRASS_HI + '"><textPath href="#obsW' + st + 'a" startOffset="50%" text-anchor="middle">' + m.word + '</textPath></text>' +
+        '<text font-size="' + wfs + '" letter-spacing="' + (phone ? 1.3 : 3) + '" fill="' + BRASS_HI + '" display="none"><textPath href="#obsW' + st + 'b" startOffset="50%" text-anchor="middle">' + m.word + "</textPath></text></g>");
+    }
     s.push("</g>");
 
     // the fixed brass index at 12 o'clock that the chosen word sits under
@@ -314,7 +316,7 @@
     function $(id) { return astroEl.querySelector("#" + id); }
     astro = { G: G, face: $("obsFace"), rete: $("obsRete"), eye: $("obsEye"), knurl: $("obsKnurl"), iris: $("obsIris"), ringI: $("obsRingI"), ringM: $("obsRingM"),
       ringO: $("obsRingO"), index: $("obsIndex"), glint: $("obsGlint"), flash: $("obsFlash"), sun: $("obsSun"), moonMark: $("obsMoonMark"), t1: $("obsTxt1"), t2: $("obsTxt2"),
-      words: MODES.map(function (m, i) { var g = $("obsWord" + i); return { g: g, a: g.children[0], b: g.children[1] }; }),
+      words: Array.apply(null, Array(STOPS)).map(function (x, st) { var g = $("obsWord" + st); return { g: g, a: g.children[0], b: g.children[1], mode: st % MODES.length, pos: st * DETENT }; }),
       irisLen: TAU * (G.eye + 2), cache: {} };
     ringText = ""; updateRingText();
     if (dial.layout) dial.layout();
@@ -397,13 +399,18 @@
     sync: function (p) {           // the panel changed (by the dial or by app.js): follow it
       var m = dial.modeOfPanel(p);
       if (m !== dial.mode) { dial.mode = m; dial.locked = false; dial.back = false; dial.filled = -1; }
-      if (!dial.drag) dial.ang.t = -m * DETENT;
+      if (!dial.drag) dial.ang.t = dial.angFor(m, dial.ang.t);
       dial.radios.forEach(function (r, i) { r.setAttribute("aria-checked", i === m ? "true" : "false"); r.tabIndex = i === m ? 0 : -1; });
     },
-    select: function (m, focus) {
-      m = clamp(m | 0, 0, MODES.length - 1);
+    angFor: function (m, near) { // the ring angle that brings the copy of mode m nearest to `near` under the index
+      var best = 0, bd = 1e9;
+      for (var st = m; st < STOPS; st += MODES.length) { var t = -st * DETENT, k = Math.round((near - t) / 360), c = t + k * 360, d = Math.abs(c - near); if (d < bd) { bd = d; best = c; } }
+      return best;
+    },
+    select: function (m, focus, at) {
+      m = ((m | 0) % MODES.length + MODES.length) % MODES.length;
       var from = dial.modeOfPanel(activePanel());
-      dial.ang.t = -m * DETENT;
+      dial.ang.t = at != null ? at : dial.angFor(m, dial.ang.x);
       if (m !== from) (SWITCH[from + ">" + m] || []).forEach(function (id) { var a = doc.getElementById(id); if (a) a.click(); });
       dial.sync(activePanel());
       if (focus && dial.radios[m]) dial.radios[m].focus({ preventScroll: true });
@@ -438,13 +445,18 @@
       if (!astro || !astro.words) return;
       var a = dial.ang.x + dial.shake.x, key = a.toFixed(1) + "|" + dial.scale.toFixed(3);
       if (key === dial.lastWordAng) return; dial.lastWordAng = key;
-      astro.words.forEach(function (w, i) {
-        var sa = ((i * DETENT + a) % 360 + 360) % 360, low = sa > 100 && sa < 260;
+      var top = MODES.map(function () { return null; });
+      astro.words.forEach(function (w) {
+        var sa = ((w.pos + a) % 360 + 360) % 360, low = sa > 100 && sa < 260, off = Math.abs(sa > 180 ? sa - 360 : sa);
         setAttr(w.a, "display", low ? "none" : "inline"); setAttr(w.b, "display", low ? "inline" : "none");
-        setAttr(w.g, "class", "obs-word" + (i === dial.mode ? " obs-word-on" : ""));
-        var r = dial.radios[i]; if (!r) return;
-        var G = astro.G, wr = (G.hIn + G.R) / 2 * dial.scale, rad = sa * RAD, half = dial.size / 2;
-        r.style.transform = "translate(" + (half + Math.sin(rad) * wr).toFixed(1) + "px," + (half - Math.cos(rad) * wr).toFixed(1) + "px) translate(-50%,-50%) rotate(" + (low ? sa - 180 : sa).toFixed(1) + "deg)";
+        if (!top[w.mode] || off < top[w.mode].off) top[w.mode] = { w: w, sa: sa, low: low, off: off };
+      });
+      astro.words.forEach(function (w) { setAttr(w.g, "class", "obs-word" + (w.mode === dial.mode && top[w.mode].w === w ? " obs-word-on" : "")); });
+      // each radio button sits over the copy of its word nearest the top of the ring
+      top.forEach(function (o, i) {
+        var r = dial.radios[i]; if (!r || !o) return;
+        var G = astro.G, wr = (G.hIn + G.R) / 2 * dial.scale, rad = o.sa * RAD, half = dial.size / 2;
+        r.style.transform = "translate(" + (half + Math.sin(rad) * wr).toFixed(1) + "px," + (half - Math.cos(rad) * wr).toFixed(1) + "px) translate(-50%,-50%) rotate(" + (o.low ? o.sa - 180 : o.sa).toFixed(1) + "deg)";
       });
     },
     layout: function () {         // size the hit ring and buttons to the drawn astrolabe
@@ -453,7 +465,7 @@
       var ro = (G.R + 12) * dial.scale, ri = (G.hIn - 8) * dial.scale, c = size / 2;
       function circ(r) { return "M" + (c - r) + " " + c + "a" + r + " " + r + " 0 1 0 " + 2 * r + " 0a" + r + " " + r + " 0 1 0 " + -2 * r + " 0Z"; }
       dial.hit.style.clipPath = "path(evenodd, '" + circ(ro) + circ(ri) + "')";
-      var bw = (phone ? 74 : 112) * dial.scale * (phone ? 1.9 : 1.6), bh = (G.R - G.hIn + 10) * dial.scale;
+      var bw = Math.max(44, (phone ? 74 : 112) * dial.scale * (phone ? 1.9 : 1.6)), bh = Math.max(44, (G.R - G.hIn + 10) * dial.scale); // tap targets 44px or more
       dial.radios.forEach(function (r) { r.style.width = bw.toFixed(0) + "px"; r.style.height = bh.toFixed(0) + "px"; });
       dial.lastWordAng = null; dial.words();
     },
@@ -468,7 +480,7 @@
       el.addEventListener("keydown", function (e) {
         var k = e.key, m = dial.mode;
         if (k === "ArrowRight" || k === "ArrowDown") m++; else if (k === "ArrowLeft" || k === "ArrowUp") m--; else if (k === "Home") m = 0; else if (k === "End") m = MODES.length - 1; else return;
-        e.preventDefault(); dial.select(clamp(m, 0, MODES.length - 1), true);
+        e.preventDefault(); dial.select(m, true); // arrows wrap around, as the ring has no end stops
       });
       // drag or flick the ring (mouse: around the ring; touch: swipe left or right anywhere on it)
       function down(e, radio) { // a press on the ring or on a word: a drag if it moves, a tap if it does not
@@ -486,8 +498,7 @@
         if (d.touch) delta = (e.clientX - d.x0) / Math.max(1, b2r()) / RAD;
         else { var a = Math.atan2(e.clientX - d.cx, d.cy - e.clientY) / RAD; delta = ((a - d.a0) % 360 + 540) % 360 - 180; }
         if (Math.abs(delta) > 2.5) d.moved = true;
-        var lo = -(MODES.length - 1) * DETENT, x = d.start + delta;
-        if (x > 0) x = x * .3; else if (x < lo) x = lo + (x - lo) * .3; // rubber band past the end stops
+        var x = d.start + delta; // the ring turns freely; every 60 degrees is a stop
         var now = performance.now(), dtm = Math.max(1, now - d.lastT); d.vel = (x - d.lastA) / dtm * 1000; d.lastA = x; d.lastT = now;
         var before = Math.round(-dial.ang.x / DETENT); dial.ang.x = dial.ang.t = x; dial.ang.v = 0;
         if (Math.round(-x / DETENT) !== before && astro && astro.index) dial.glint = Math.max(dial.glint, .6); // detent tick
@@ -498,17 +509,25 @@
         if (!d.moved && d.radio != null) { dial.select(d.radio, false); return; }
         if (!d.moved) { // a tap on the ring: the word nearest the tap, if any
           var a = Math.atan2(e.clientX - d.cx, d.cy - e.clientY) / RAD, best = -1, bd = 34;
-          MODES.forEach(function (m, i) { var sa = i * DETENT + dial.ang.x, dd = Math.abs(((a - sa) % 360 + 540) % 360 - 180); if (dd < bd) { bd = dd; best = i; } });
-          if (best >= 0) dial.select(best, false); else dial.ang.t = -dial.mode * DETENT;
+          astro.words.forEach(function (w) { var sa = w.pos + dial.ang.x, dd = Math.abs(((a - sa) % 360 + 540) % 360 - 180); if (dd < bd) { bd = dd; best = w; } });
+          if (best) dial.select(best.mode, false, dial.angFor(best.mode, -best.pos + Math.round((dial.ang.x + best.pos) / 360) * 360)); else dial.ang.t = dial.angFor(dial.mode, dial.ang.x);
           return;
         }
         var proj = dial.ang.x + clamp(d.vel, -400, 400) * .05; // a flick carries up to 20 degrees past the release point
-        dial.select(clamp(Math.round(-proj / DETENT), 0, MODES.length - 1), false);
+        var stop = Math.round(-proj / DETENT); dial.select(stop, false, -stop * DETENT); // stop index mod 3 is the mode
       }
       hit.addEventListener("pointerup", end); hit.addEventListener("pointercancel", end);
       var first = doc.getElementById("login"); (first && first.parentNode ? first.parentNode : doc.body).insertBefore(el, first || null);
       dial.el = el; dial.hit = hit;
       if (win.ResizeObserver) new ResizeObserver(function () { dial.layout(); }).observe(el);
+    },
+    slip: function () { // move the toast ui-toast.js just made into the slip holder under the plate (its own close timer still works)
+      var host = doc.querySelector(".ui-toast-host"), el = host && host.lastElementChild;
+      if (!el || !el.classList.contains("ui-toast")) return;
+      var box = doc.getElementById("obs-slips");
+      if (!box) { box = doc.createElement("div"); box.id = "obs-slips"; box.setAttribute("aria-live", "assertive"); doc.body.appendChild(box); }
+      el.classList.add("obs-slip"); box.appendChild(el);
+      while (box.children.length > 2) box.removeChild(box.firstChild);
     },
     hooks: function () {
       // submit: a click on the active plate's own button (keyboard activation of a button is a click too)
@@ -519,7 +538,13 @@
       // errors in app.js surface through alert() (ui-toast.js turns it into a toast); observe and pass straight through
       try {
         var _alert = win.alert;
-        if (typeof _alert === "function") win.alert = function () { if (activePanel()) dial.reject(); return _alert.apply(this, arguments); };
+        if (typeof _alert === "function") win.alert = function () {
+          var signIn = !!activePanel() && (dial.locked || performance.now() - dial.lockAt < 1500);
+          if (activePanel()) dial.reject();
+          var out = _alert.apply(this, arguments);
+          if (signIn) dial.slip(); // the failed sign-in toast becomes a paper slip under the plate; others stay as they are
+          return out;
+        };
       } catch (e) {}
     }
   };
@@ -625,7 +650,7 @@
     ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
     // daylight haze: the sky pales toward a milky horizon
     var day = clamp((sky.sunAlt + 2) / 12, 0, 1) * (1 - sky.night);
-    if (day > .02) { var hz = ctx.createLinearGradient(0, cam.hy * .45, 0, cam.hy); hz.addColorStop(0, "rgba(236,238,234,0)"); hz.addColorStop(.7, "rgba(236,238,234," + (.28 * day).toFixed(3) + ")"); hz.addColorStop(1, "rgba(240,238,228," + (.62 * day).toFixed(3) + ")"); ctx.fillStyle = hz; ctx.fillRect(0, cam.hy * .45, W, cam.hy * .55 + 2); }
+    if (day > .02) { var hz = ctx.createLinearGradient(0, cam.hy * .3, 0, cam.hy); hz.addColorStop(0, "rgba(236,238,234,0)"); hz.addColorStop(.55, "rgba(236,238,234," + (.3 * day).toFixed(3) + ")"); hz.addColorStop(.85, "rgba(240,239,230," + (.6 * day).toFixed(3) + ")"); hz.addColorStop(1, "rgba(244,240,228," + (.8 * day).toFixed(3) + ")"); ctx.fillStyle = hz; ctx.fillRect(0, cam.hy * .3, W, cam.hy * .7 + 2); }
     // airglow: a forest-green band at the horizon on clear nights
     var ag = sky.night * (1 - (WXCLOUD[wk] || 0));
     if (ag > .02) { var g2 = ctx.createLinearGradient(0, cam.hy - H * .2, 0, cam.hy); g2.addColorStop(0, "rgba(94,156,118,0)"); g2.addColorStop(1, "rgba(94,156,118," + (.2 * ag).toFixed(3) + ")"); ctx.fillStyle = g2; ctx.fillRect(0, cam.hy - H * .2, W, H * .2); }
