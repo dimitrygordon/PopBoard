@@ -470,8 +470,9 @@ async function loadMap() {
 function carvePatoka() {
   const pts = riverPathPx;
   if (!pts.length) return;
-  const channel = 5.5;
-  const bank = 8.2;
+  // Carve a gentle trough only. Do not expand cover class 0: that was bleeding
+  // water out of the source river mask onto the adjacent fields.
+  const bank = 11.0;
   const best = new Float32Array(ROWS * COLS);
   for (let i = 0; i < best.length; i++) best[i] = 1e9;
   for (let i = 0; i < pts.length - 1; i++) {
@@ -497,9 +498,8 @@ function carvePatoka() {
     if (best[i] > bank * bank) continue;
     const d = Math.sqrt(best[i]);
     const t = 1 - d / bank;
-    // Shallow trough (was 16 m): a deep cut hides the water from the hero camera.
-    heightF32[i] -= t * t * 5.5;
-    if (d < channel) coverData[i] = 0;
+    // Wider, shallower ramp so the cut reads as a hatched slope, not a dark wall.
+    heightF32[i] -= Math.pow(t, 1.55) * 3.0;
   }
 }
 
@@ -689,7 +689,8 @@ void main(){
   else if (cls < 5.5) wash = uCedar;
   else if (cls < 6.5) wash = grassCol;
   else if (cls < 7.5) wash = cropCol;
-  else wash = mix(grassCol, uWater, 0.28 + 0.15 * n1);
+  else if (cls < 8.5) wash = mix(grassCol, vec3(0.52, 0.50, 0.34), 0.45);
+  else wash = grassCol;
 
   if (uSnow > 0.5 && cls > 0.5) {
     float hold = cls > 3.5 && cls < 6.5 ? 0.55 : 0.88;
@@ -2104,7 +2105,9 @@ void main(){
     b = 1.0; rel = vUv.y; rim = 0.0; hatch = hatchL;
   } else if (uDeck > 0.5) {
     // Horizontal world deck. Darkest overhead, lighter and flatter toward the ridges.
-    // Lumpy rolls of darker hatched gray with thin paler gaps, not a flat dark band.
+    // Small rounded lumps with thin pale gaps, uniform in world XZ so perspective
+    // flattens and crowds them toward the horizon like a stratocumulus underside.
+    // Hatch is horizontal (rows of constant elevation). No diagonal strokes.
     vec3 wr = normalize(vWorld - cameraPosition);
     float elev = wr.y;
     float azim = atan(wr.x, wr.z);
@@ -2116,34 +2119,34 @@ void main(){
     vec3 dark = mix(vec3(0.34, 0.36, 0.40), vec3(0.26, 0.28, 0.32), uGray);
     vec3 wash = mix(pale, midc, up * 0.70);
     wash = mix(wash, dark, up * up * 0.85);
-    float lumps = noise21(vec2(azim * 3.2, elev * 6.0 + s));
-    // Rounded undersides: pattern changes with elevation so rolls do not form vertical pillars.
-    float el = elev * mix(12.0, 32.0, up);
-    float roll = sin(azim * 12.0 + s * 2.0 + el * 0.55) * 0.50
-      + sin(azim * 20.0 + el * 1.15 + s) * 0.35
-      + (lumps - 0.5) * 0.40;
-    float rollDark = smoothstep(-0.05, 0.50, roll) * mix(0.20, 1.0, up);
-    wash = mix(wash, pale, (1.0 - rollDark) * 0.58);
+    vec2 q = vWorld.xz * 0.00335;
+    vec2 qr = vec2(0.866 * q.x - 0.500 * q.y, 0.500 * q.x + 0.866 * q.y);
+    vec2 qs = vec2(0.500 * q.x - 0.866 * q.y, 0.866 * q.x + 0.500 * q.y);
+    float nA = noise21(q + vec2(s, s * 0.37));
+    float nB = noise21(qr * 2.05 + vec2(s + 3.1, s * 0.7));
+    float nC = noise21(qs * 3.9 + vec2(8.2, s));
+    float field = nA * 0.55 + nB * 0.30 + nC * 0.15;
+    // Rounded cells with thin paler gaps; contrast falls off toward the ridges.
+    float lumps = smoothstep(0.36, 0.66, field);
+    float gaps = 1.0 - smoothstep(0.30, 0.48, field);
+    float relief = mix(0.28, 1.0, up);
+    float rollDark = lumps * relief;
+    wash = mix(wash, pale, gaps * 0.62 * mix(0.35, 1.0, up));
     wash = mix(wash, dark, rollDark * 0.58);
-    float wave = (noise21(vec2(azim * 2.2, s)) - 0.5) * 0.055;
-    wave += sin(azim * 4.2 + s) * 0.020;
-    wave += (noise21(vec2(azim * 7.5, elev * 10.0 + s)) - 0.5) * 0.028;
-    float spacing = 28.0 + 24.0 * noise21(vec2(azim * 0.55, s + 3.2));
-    float row = (elev + wave) * spacing;
-    float rid = floor(row);
-    float f = fract(row) - 0.5;
-    float azSpan = mix(4.0, 13.0, hash21(vec2(rid, s + 2.1)));
-    float along = azim * azSpan + hash21(vec2(rid, s + 6.0)) * 3.0;
-    float segId = floor(along);
-    float segF = fract(along);
-    float segLen = mix(0.28, 0.82, hash21(vec2(rid * 9.0, segId + s)));
+    // Horizontal hatch: rows follow constant elevation, broken into short dashes
+    // along azimuth. Spacing tightens toward the horizon with the lumps.
+    float row = elev * mix(52.0, 18.0, up);
+    float f = fract(row + (nC - 0.5) * 0.18) - 0.5;
+    float line = 1.0 - smoothstep(0.0, 0.26, abs(f));
+    float along = azim * mix(7.0, 13.0, hash21(vec2(floor(row), s + 2.1)));
+    float segF = fract(along + hash21(vec2(floor(row), s + 6.0)));
+    float segLen = mix(0.34, 0.80, hash21(vec2(floor(row) * 9.0, floor(along) + s)));
     float inSeg = step(0.0, segF) * step(segF, segLen);
-    float taper = smoothstep(0.0, 0.12, segF) * smoothstep(segLen, segLen - 0.12, segF);
-    float lift = step(0.18, hash21(vec2(rid * 11.0, segId + s)));
-    float line = 1.0 - smoothstep(0.0, 0.22, abs(f));
-    float dens = mix(0.18, 1.0, rollDark) * mix(0.35, 1.0, up);
+    float taper = smoothstep(0.0, 0.10, segF) * smoothstep(segLen, segLen - 0.10, segF);
+    float lift = step(0.16, hash21(vec2(floor(row) * 11.0, floor(along) + s)));
+    float dens = mix(0.16, 1.0, rollDark) * mix(0.28, 1.0, up);
     hatch = dens * line * lift * inSeg * taper;
-    col = mix(wash, uInk, clamp(hatch * 0.46, 0.0, 0.62));
+    col = mix(wash, uInk, clamp(hatch * 0.40, 0.0, 0.55));
     // Soft circular fade so the square deck edge never reads as a seam.
     float edge = 1.0 - smoothstep(0.60, 0.86, length(vUv - 0.5) * 2.0);
     // Leave a lighter band of sky between the cloud base and the far ridges.
@@ -2973,11 +2976,11 @@ function drawGrownTree(ctx, S, grown, opt) {
 
   // Short trunk at the canvas bottom (atlas flipY is true, so this is the billboard base).
   const trunkBot = S * 0.96;
-  const trunkTop = (isCedar || isPine) ? S * 0.86 : S * 0.78;
+  const trunkTop = (isCedar || isPine) ? S * 0.78 : S * 0.78;
   ctx.strokeStyle = ink;
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
-  ctx.lineWidth = S * ((isCedar || isPine) ? 0.026 : 0.036);
+  ctx.lineWidth = S * ((isCedar || isPine) ? 0.034 : 0.036);
   ctx.globalAlpha = 0.92;
   ctx.beginPath();
   ctx.moveTo(cx + (rng() - 0.5) * 2, trunkBot);
@@ -3019,92 +3022,82 @@ function drawGrownTree(ctx, S, grown, opt) {
   }
 
   if (isCedar || isPine) {
-    // Eastern red cedar: dense, soft-edged, rounded cone with a blunt top,
-    // height 1.5-2x width, built from overlapping foliage clumps.
-    // White pine: irregular layered tiers with a rounded crown.
-    // No needle tips, no thin vertical spikes.
-    // One soft cone per tree: blunt rounded tip, slightly lumpy irregular outline,
-    // built from small foliage clumps. Never stacked boxes or horizontal tiers.
-    const crownTop = S * 0.07;
-    const crownBot = S * 0.90;
+    // One blunt rounded cone built from 8-15 soft overlapping foliage clumps.
+    // No filled polygon, no stacked boxes, no faceted silhouette. Smooth
+    // elliptical clumps, muted forest green, short trunk left visible at the base.
+    const crownTop = S * 0.08;
+    const crownBot = S * 0.80;
     const H = crownBot - crownTop;
-    const baseHalf = S * (isPine ? 0.42 : 0.38);
-    ctx.globalAlpha = 1;
+    const baseHalf = S * (isPine ? 0.40 : 0.36);
     function coneHalf(t) {
-      const blunt = 0.20 + 0.80 * Math.pow(Math.max(0, Math.min(1, t)), 0.82);
-      const lump = Math.sin(t * 9.2 + (isPine ? 1.2 : 0.4)) * 0.045
-        + Math.sin(t * 17.0 + 2.1) * 0.025
+      const blunt = 0.22 + 0.78 * Math.pow(Math.max(0, Math.min(1, t)), 0.78);
+      const lump = Math.sin(t * 8.4 + (isPine ? 1.1 : 0.5)) * 0.04
         + (rng() - 0.5) * 0.03;
-      return baseHalf * Math.max(0.12, blunt + lump);
+      return baseHalf * Math.max(0.16, blunt + lump);
     }
-    function softBlob(x, y, rx, ry) {
+    function softClump(x, y, rx, ry, rot) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rot || 0);
       ctx.beginPath();
-      const n = 18;
-      for (let i = 0; i <= n; i++) {
-        const a = (i % n) / n * Math.PI * 2;
-        const j = 0.86 + rng() * 0.22;
-        const px = x + Math.cos(a) * rx * j;
-        const py = y + Math.sin(a) * ry * j;
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-      ctx.closePath();
+      ctx.ellipse(0, 0, Math.max(1.2, rx), Math.max(1.2, ry), 0, 0, Math.PI * 2);
       ctx.fill();
+      ctx.restore();
     }
-    ctx.fillStyle = colors[0];
-    ctx.globalAlpha = 0.96;
-    ctx.beginPath();
-    const steps = 24;
-    const tTip = 0.10;
-    const tipW = coneHalf(tTip);
-    ctx.moveTo(cx - tipW, crownTop + H * tTip);
-    ctx.quadraticCurveTo(cx, crownTop - H * 0.01, cx + tipW, crownTop + H * tTip);
-    for (let i = Math.ceil(tTip * steps); i <= steps; i++) {
-      const tt = i / steps;
-      ctx.lineTo(cx + coneHalf(tt), crownTop + H * tt);
-    }
-    for (let i = steps; i >= Math.ceil(tTip * steps); i--) {
-      const tt = i / steps;
-      ctx.lineTo(cx - coneHalf(tt), crownTop + H * tt);
-    }
-    ctx.closePath();
-    ctx.fill();
-    const tipR = baseHalf * 0.30;
-    softBlob(cx, crownTop + tipR * 0.72, tipR * 1.12, tipR * 0.95);
-    const clumps = (opt.lod === "clump" ? 10 : 18) + ((rng() * 4) | 0);
-    for (let i = 0; i < clumps; i++) {
-      const tt = Math.pow((i + 0.35) / clumps, 0.80);
+    const clumps = [];
+    const nClump = (opt.lod === "clump" ? 8 : 11) + ((rng() * 4) | 0);
+    clumps.push({
+      x: cx,
+      y: crownTop + H * 0.08,
+      rx: coneHalf(0.08) * (1.05 + rng() * 0.15),
+      ry: S * (0.070 + rng() * 0.018),
+      rot: (rng() - 0.5) * 0.25,
+      col: 0
+    });
+    for (let i = 0; i < nClump; i++) {
+      const tt = 0.16 + 0.82 * Math.pow((i + 0.4) / nClump, 0.78);
       const half = coneHalf(tt);
-      const side = (i % 2 ? 1 : -1) * (0.15 + rng() * 0.80);
-      const x = cx + side * half * 0.92;
-      const y = crownTop + H * tt + (rng() - 0.5) * S * 0.016;
-      const rx = Math.max(S * 0.035, half * (0.22 + rng() * 0.12));
-      const ry = S * (0.038 + (1.0 - tt) * 0.02 + rng() * 0.012);
-      ctx.fillStyle = colors[i % colors.length];
-      ctx.globalAlpha = 0.88;
-      softBlob(x, y, rx, ry);
+      const side = (i % 2 ? 1 : -1) * (0.08 + rng() * 0.78);
+      clumps.push({
+        x: cx + side * half * 0.86,
+        y: crownTop + H * tt + (rng() - 0.5) * S * 0.012,
+        rx: Math.max(S * 0.055, half * (0.42 + rng() * 0.22)),
+        ry: S * (0.055 + (1.0 - tt) * 0.028 + rng() * 0.016),
+        rot: side * (0.08 + rng() * 0.22),
+        col: (i + 1) % colors.length
+      });
     }
+    clumps.sort(function (a, b) { return a.y - b.y; });
     ctx.globalAlpha = 1;
-    // Hatched shading on the shadow side, clipped to the crown.
+    clumps.forEach(function (c, i) {
+      const lit = c.x >= cx;
+      ctx.fillStyle = colors[c.col];
+      ctx.globalAlpha = lit ? 0.96 : 0.90;
+      softClump(c.x, c.y, c.rx, c.ry, c.rot);
+      if (lit) {
+        ctx.fillStyle = colors[0];
+        ctx.globalAlpha = 0.22;
+        softClump(c.x + c.rx * 0.12, c.y - c.ry * 0.10, c.rx * 0.62, c.ry * 0.62, c.rot);
+      }
+    });
+    ctx.globalAlpha = 1;
     ctx.save();
     ctx.beginPath();
-    ctx.moveTo(cx, crownTop);
-    ctx.quadraticCurveTo(cx - baseHalf * 1.05, crownTop + H * 0.45, cx - baseHalf, crownBot);
-    ctx.lineTo(cx + baseHalf, crownBot);
-    ctx.quadraticCurveTo(cx + baseHalf * 1.05, crownTop + H * 0.45, cx, crownTop);
-    ctx.closePath();
+    clumps.forEach(function (c) {
+      ctx.ellipse(c.x, c.y, Math.max(1.2, c.rx), Math.max(1.2, c.ry), c.rot || 0, 0, Math.PI * 2);
+    });
     ctx.clip();
     ctx.strokeStyle = ink;
     ctx.lineCap = "round";
     ctx.lineWidth = 0.7;
-    for (let y = crownTop + S * 0.08; y < crownBot; y += 2.4 + rng() * 1.1) {
-      if (rng() < 0.18) continue;
-      ctx.globalAlpha = 0.16 + ((y - crownTop) / H) * 0.28;
+    for (let y = crownTop + S * 0.06; y < crownBot; y += 2.6 + rng() * 1.2) {
+      if (rng() < 0.20) continue;
+      ctx.globalAlpha = 0.14 + ((y - crownTop) / H) * 0.26;
       ctx.beginPath();
       let started = false;
-      for (let x = cx - baseHalf; x < cx + baseHalf * 0.15; x += 3) {
-        if (rng() < 0.08) { started = false; continue; }
-        const yy = y + Math.sin((x + y) * 0.08) * 1.0;
+      for (let x = cx - baseHalf; x < cx + baseHalf * 0.08; x += 3) {
+        if (rng() < 0.10) { started = false; continue; }
+        const yy = y + Math.sin((x + y) * 0.06) * 0.8;
         if (!started) { ctx.moveTo(x, yy); started = true; }
         else ctx.lineTo(x, yy);
       }
@@ -3215,8 +3208,9 @@ function drawGrownTree(ctx, S, grown, opt) {
 }
 
 function leafColors(specName, season) {
-  if (specName === "cedar") return ["#4A5E5A", "#3A4E4C", "#566662", "#3E524E"];
-  if (specName === "pine") return ["#48605C", "#384E4E", "#5A6A66", "#3C524E"];
+  if (specName === "cedar" || specName === "pine") {
+    return ["#3F5A45", "#4A6750", "#35543E", "#4E6B54", "#2F4C3A"];
+  }
   if (season === "spring") return ["#6A8A58", "#5E7A4A", "#7A945E", "#4E6A40"];
   if (season === "summer") return ["#2F5D46", "#3A6B50", "#4E7D57", "#2A5340"];
   if (season === "autumn") return ["#C46A32", "#D4A044", "#E0B056", "#B85A28", "#C9842C", "#A84820", "#9A5A1C", "#DC8A38"];
@@ -5317,8 +5311,9 @@ function layoutRiverRibbon() {
     tx /= tl; tz /= tl;
     const sx = -tz, sz = tx;
     const dist = Math.hypot(p.x - cx, p.z - cz);
-    // Wide enough to read as a continuous ribbon from the upward hero camera.
-    const half = Math.max(150, pixelWorldWidth(16.0, Math.max(dist, 200)) * 0.5);
+    // Stay inside the source river mask (typical half-width ~2.4 cells). A 150 m
+    // floor was flooding the adjacent fields when the camera stood close.
+    const half = Math.min(2.6 * CELL, Math.max(1.6 * CELL, pixelWorldWidth(10.0, Math.max(dist, 400)) * 0.5));
     // Rim is sampled off the centerline so we use the uncarved bank, not the bed.
     const rimL = terrainYAt(p.x - sx * (half + 16), p.z - sz * (half + 16));
     const rimR = terrainYAt(p.x + sx * (half + 16), p.z + sz * (half + 16));
@@ -5382,14 +5377,14 @@ function layoutRiverRibbon() {
         float hash21(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
         void main(){
           vec3 ink = uInk;
-          vec3 bank = vec3(0.58, 0.50, 0.36);
+          vec3 bank = vec3(0.66, 0.58, 0.42);
           vec3 col = bank;
-          float sl = abs(fract((vW.x * 0.08 + vW.z * 0.11) * 2.2 + vUv.y * 4.0) - 0.5);
-          float hatch = (1.0 - smoothstep(0.0, 0.14, sl)) * (1.0 - vUv.y) * 0.7;
-          hatch *= step(0.2, hash21(floor(vec2(vUv.x * 40.0, vUv.y * 8.0))));
-          col = mix(col, ink, 0.25 + hatch * 0.55);
-          float shore = 1.0 - smoothstep(0.0, 0.12, 1.0 - vUv.y);
-          col = mix(col, ink, shore * 0.8);
+          float sl = abs(fract((vW.x * 0.07 + vW.z * 0.02) * 3.4 + vUv.y * 1.2) - 0.5);
+          float hatch = (1.0 - smoothstep(0.0, 0.16, sl)) * (0.35 + 0.45 * (1.0 - vUv.y));
+          hatch *= step(0.18, hash21(floor(vec2(vUv.x * 36.0, vUv.y * 7.0))));
+          col = mix(col, ink, hatch * 0.32);
+          float shore = 1.0 - smoothstep(0.0, 0.18, 1.0 - vUv.y);
+          col = mix(col, ink, shore * 0.22);
           vec3 nightCol = mix(col * uNightMul * 0.4, vec3(0.035, 0.048, 0.09), 0.5);
           nightCol = mix(nightCol, ink, 0.25 + hatch * 0.55 + shore * 0.7);
           col = mix(col, nightCol, uNight);
@@ -6235,16 +6230,115 @@ function pickApproach(target, hide, dist, eye) {
   return bestAng;
 }
 
+function landmarkHeightM(kind, fallback) {
+  let h = fallback;
+  if (!landmarkGroup) return h;
+  landmarkGroup.traverse(function (o) {
+    if (o.name !== kind) return;
+    const b = new THREE.Box3().setFromObject(o);
+    const hh = b.max.y - b.min.y;
+    if (hh > 1 && hh < 80) h = Math.max(h, hh);
+  });
+  return h;
+}
+
+function projectCorners(cx, y0, y1, half, camera) {
+  const pts = [
+    [cx.x - half, y0, cx.z - half], [cx.x + half, y0, cx.z - half],
+    [cx.x - half, y0, cx.z + half], [cx.x + half, y0, cx.z + half],
+    [cx.x - half, y1, cx.z - half], [cx.x + half, y1, cx.z - half],
+    [cx.x - half, y1, cx.z + half], [cx.x + half, y1, cx.z + half]
+  ];
+  let minX = 1, maxX = -1, minY = 1, maxY = -1, any = false;
+  for (let i = 0; i < pts.length; i++) {
+    const p = new THREE.Vector3(pts[i][0], pts[i][1], pts[i][2]).project(camera);
+    if (!(p.z > 0 && p.z < 1)) continue;
+    any = true;
+    if (p.x < minX) minX = p.x;
+    if (p.x > maxX) maxX = p.x;
+    if (p.y < minY) minY = p.y;
+    if (p.y > maxY) maxY = p.y;
+  }
+  return { ok: any, minX: minX, maxX: maxX, minY: minY, maxY: maxY, hFrac: any ? (maxY - minY) / 2 : 0 };
+}
+
+function frameShortLandmark(target, hide, heightM) {
+  if (!camera) return { dist: 110, eye: 12, approach: null };
+  const tw = pxToWorld(target[0], target[1]);
+  const hw = hide ? pxToWorld(hide[0], hide[1]) : null;
+  const saved = camera.position.clone();
+  const savedQ = camera.quaternion.clone();
+  const pitch = applyFovAndPitch().pitch;
+  const baseY = yOf(heightWorld(tw.x, tw.z));
+  const topY = baseY + heightM;
+  // Footprint half-width so eaves and porches count in the projected height.
+  const half = Math.max(6, heightM * 0.45);
+  let best = { dist: 110, eye: 12, approach: null, score: 1e9 };
+  const dists = [80, 90, 100, 110, 122, 136, 150, 170];
+  const eyes = [8, 10, 12, 14, 16];
+  for (let di = 0; di < dists.length; di++) {
+    const dist = dists[di];
+    for (let ei = 0; ei < eyes.length; ei++) {
+      const eye = eyes[ei];
+      for (let i = 0; i < 20; i++) {
+        const ang = i * Math.PI * 2 / 20;
+        const x = tw.x + Math.sin(ang) * dist;
+        const z = tw.z + Math.cos(ang) * dist;
+        if (coverWorld(x, z) === 0) continue;
+        const y = yOf(heightWorld(x, z)) + eye;
+        if (y < topY - 8) continue;
+        const heading = Math.atan2(tw.x - x, tw.z - z);
+        camera.position.set(x, y, z);
+        camera.lookAt(
+          x + Math.sin(heading) * 1800 * Math.cos(pitch),
+          y + Math.sin(pitch) * 1800,
+          z + Math.cos(heading) * 1800 * Math.cos(pitch)
+        );
+        camera.updateMatrixWorld(true);
+        const box = projectCorners(tw, baseY, topY, half, camera);
+        if (!box.ok) continue;
+        if (Math.abs(box.minX) > 0.85 && Math.abs(box.maxX) > 0.85) continue;
+        if (box.minY < -0.96 || box.maxY > -0.08) continue;
+        const hFrac = box.hFrac;
+        if (hFrac > 0.38 || hFrac < 0.10) continue;
+        let score = Math.abs(hFrac - 0.25) * 12 + Math.abs(((box.minY + box.maxY) * 0.5) + 0.55) * 0.9;
+        if (hw) {
+          const chHead = Math.atan2(hw.x - x, hw.z - z);
+          let dh = Math.abs(chHead - heading);
+          if (dh > Math.PI) dh = Math.abs(dh - 2 * Math.PI);
+          // Keep St. Joseph out of the look, independent of FOV, so phone and desktop agree.
+          if (dh < 0.95) continue;
+          const c = new THREE.Vector3(hw.x, yOf(heightWorld(hw.x, hw.z)) + 22, hw.z).project(camera);
+          const inShot = c.z > 0 && c.z < 1 && Math.abs(c.x) < 0.96 && c.y < 0.20 && c.y > -0.92;
+          if (inShot && Math.abs(c.x) < 0.88) continue;
+          if (inShot) score += 10 + (1 - Math.min(1, Math.abs(c.x))) * 8;
+        }
+        if (score < best.score) {
+          best = { dist: dist, eye: eye, approach: ang, score: score, hFrac: hFrac };
+        }
+      }
+    }
+  }
+  camera.position.copy(saved);
+  camera.quaternion.copy(savedQ);
+  camera.updateMatrixWorld(true);
+  return best;
+}
+
 function getTourStops() {
   const church = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
   const mill = [185.5, 458.6];
   const depot = [180.5, 456.2];
   const farm = findFarmsteadPx();
   const river = findRiverTourPx();
+  const millH = landmarkHeightM("mill", 14);
+  const depotH = landmarkHeightM("depot", 8);
+  const millFr = frameShortLandmark(mill, church, millH);
+  const depotFr = frameShortLandmark(depot, church, depotH);
   return [
     { name: "church", px: church[0], py: church[1], dist: 500, eye: 46 },
-    { name: "mill", px: mill[0], py: mill[1], dist: 200, eye: 16, approach: pickApproach(mill, church, 200, 16) },
-    { name: "depot", px: depot[0], py: depot[1], dist: 180, eye: 16, approach: pickApproach(depot, church, 180, 16) },
+    { name: "mill", px: mill[0], py: mill[1], dist: millFr.dist, eye: millFr.eye, approach: millFr.approach, heightM: millH },
+    { name: "depot", px: depot[0], py: depot[1], dist: depotFr.dist, eye: depotFr.eye, approach: depotFr.approach, heightM: depotH },
     { name: "farmstead", px: farm.px, py: farm.py, dist: 170, eye: 14, approach: pickApproach([farm.px, farm.py], church, 170, 14) },
     { name: "river", px: river.px, py: river.py, dist: 500, eye: 46 }
   ];
@@ -6393,12 +6487,31 @@ function pickConifer(preferIsolated, distTarget) {
       if (j === i) continue;
       const o = treeRecords[j];
       const dd = Math.hypot((o.x || 0) - r.x, (o.z || 0) - r.z);
-      if (dd < 26) neighbors++;
-      if (dd < 40 && (o.spec === "cedar" || o.spec === "pine")) coniferN++;
+      if (dd < 36) neighbors++;
+      if (dd < 48 && (o.spec === "cedar" || o.spec === "pine")) coniferN++;
     }
     if (!preferIsolated && coniferN < 2) continue;
-    const score = Math.abs(d - distTarget) + (preferIsolated ? neighbors * 80 : -coniferN * 12);
+    if (preferIsolated && neighbors > 0) continue;
+    const open = (r.cls === 1 || r.cls === 2 || r.cls === 6 || r.cls === 7) ? -40 : 0;
+    const score = Math.abs(d - distTarget) + (preferIsolated ? neighbors * 120 + open : -coniferN * 12);
     if (score < bestScore) { bestScore = score; best = r; }
+  }
+  if (preferIsolated && !best) {
+    for (let i = 0; i < treeRecords.length; i++) {
+      const r = treeRecords[i];
+      if (r.spec !== "cedar" && r.spec !== "pine") continue;
+      const d = Math.hypot((r.x || 0) - hero.x, (r.z || 0) - hero.z);
+      if (d < 200 || d > 1200) continue;
+      let neighbors = 0;
+      for (let j = 0; j < treeRecords.length; j++) {
+        if (j === i) continue;
+        const o = treeRecords[j];
+        const dd = Math.hypot((o.x || 0) - r.x, (o.z || 0) - r.z);
+        if (dd < 36) neighbors++;
+      }
+      const score = Math.abs(d - distTarget) + neighbors * 120;
+      if (score < bestScore) { bestScore = score; best = r; }
+    }
   }
   if (!best) {
     for (let i = 0; i < treeRecords.length; i++) {
@@ -6408,24 +6521,91 @@ function pickConifer(preferIsolated, distTarget) {
   return best;
 }
 
+function treesInFront(tx, tz, camX, camZ, dist) {
+  let n = 0;
+  for (let i = 0; i < treeRecords.length; i++) {
+    const o = treeRecords[i];
+    const dx = (o.x || 0) - camX, dz = (o.z || 0) - camZ;
+    const along = dx * (tx - camX) + dz * (tz - camZ);
+    const span = dist * dist;
+    if (along <= 0 || along >= span) continue;
+    const side2 = (dx * dx + dz * dz) - (along * along) / span;
+    if (side2 < 16 * 16) n++;
+  }
+  return n;
+}
+
 function lookConifers() {
   if (!camera || !glOk) return null;
-  const best = pickConifer(true, 560);
-  if (!best) return null;
   if (treeMesh && treeMesh.material && treeMesh.material.uniforms && treeMesh.material.uniforms.uCrownCap) {
     treeMesh.material.uniforms.uCrownCap.value = 0.55;
   }
-  const p = worldToPx(best.x, best.z);
   const hero = pxToWorld(HERO.px, HERO.py);
-  const cam = tourCameraAt({ px: p.px, py: p.py, dist: 48, eye: 14 });
-  const targetY = (best.y || yOf(heightWorld(best.x, best.z))) + 8;
-  const horiz = Math.hypot(best.x - cam.x, best.z - cam.z) || 1;
-  const altTo = Math.atan2(targetY - cam.y, horiz);
-  const fovY = (camera.fov || 48) * Math.PI / 180;
-  cam.pitch = altTo + 0.18 * fovY;
+  const pitch = applyFovAndPitch().pitch;
+  const saved = camera.position.clone();
+  const savedQ = camera.quaternion.clone();
+  let pick = null, bestScore = 1e9;
+  const dists = [40, 48, 56, 64];
+  for (let i = 0; i < treeRecords.length; i++) {
+    const r = treeRecords[i];
+    if (r.spec !== "cedar" && r.spec !== "pine") continue;
+    const dHero = Math.hypot((r.x || 0) - hero.x, (r.z || 0) - hero.z);
+    if (dHero < 200 || dHero > 1400) continue;
+    let neighbors = 0;
+    for (let j = 0; j < treeRecords.length; j++) {
+      if (j === i) continue;
+      const dd = Math.hypot((treeRecords[j].x || 0) - r.x, (treeRecords[j].z || 0) - r.z);
+      if (dd < 40) neighbors++;
+    }
+    const p = worldToPx(r.x, r.z);
+    const baseY = r.y || yOf(heightWorld(r.x, r.z));
+    const topY = baseY + 11;
+    for (let di = 0; di < dists.length; di++) {
+      const dist = dists[di];
+      for (let k = 0; k < 16; k++) {
+        const ang = k * Math.PI * 2 / 16;
+        const x = r.x + Math.sin(ang) * dist;
+        const z = r.z + Math.cos(ang) * dist;
+        if (coverWorld(x, z) === 0) continue;
+        const blocked = treesInFront(r.x, r.z, x, z, dist);
+        const eye = 10;
+        const y = yOf(heightWorld(x, z)) + eye;
+        const heading = Math.atan2(r.x - x, r.z - z);
+        camera.position.set(x, y, z);
+        camera.lookAt(
+          x + Math.sin(heading) * 1800 * Math.cos(pitch),
+          y + Math.sin(pitch) * 1800,
+          z + Math.cos(heading) * 1800 * Math.cos(pitch)
+        );
+        camera.updateMatrixWorld(true);
+        const b = new THREE.Vector3(r.x, baseY, r.z).project(camera);
+        const tpt = new THREE.Vector3(r.x, topY, r.z).project(camera);
+        if (!(b.z > 0 && b.z < 1) || Math.abs(b.x) > 0.55 || b.y < -0.96 || tpt.y > 0.05) continue;
+        const hFrac = Math.max(0, (tpt.y - b.y) / 2);
+        const score = Math.abs(hFrac - 0.28) * 6 + Math.abs(b.x) * 0.5 + neighbors * 18 + blocked * 28 + Math.abs(dHero - 600) * 0.01;
+        if (score < bestScore) {
+          bestScore = score;
+          pick = { r: r, p: p, dist: dist, eye: eye, approach: ang, heading: heading, blocked: blocked, neighbors: neighbors, hFrac: hFrac };
+        }
+      }
+    }
+  }
+  camera.position.copy(saved);
+  camera.quaternion.copy(savedQ);
+  camera.updateMatrixWorld(true);
+  if (!pick) {
+    const fallback = pickConifer(true, 560);
+    if (!fallback) return null;
+    pick = { r: fallback, p: worldToPx(fallback.x, fallback.z), dist: 48, eye: 10, approach: null };
+  }
+  const cam = tourCameraAt({ px: pick.p.px, py: pick.p.py, dist: pick.dist, eye: pick.eye, approach: pick.approach });
   applyTourCam(cam);
   if (glOk) renderer.render(scene, camera);
-  return { spec: best.spec, px: p.px, py: p.py, dist: Math.hypot(best.x - hero.x, best.z - hero.z), view: "close" };
+  return {
+    spec: pick.r.spec, px: pick.p.px, py: pick.p.py,
+    dist: Math.hypot(pick.r.x - hero.x, pick.r.z - hero.z),
+    view: "close", camDist: pick.dist, neighbors: pick.neighbors, hFrac: pick.hFrac
+  };
 }
 
 function lookConiferStand() {
