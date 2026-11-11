@@ -24,17 +24,22 @@ const LANDMARK_SITES = {
   league_stadium:          { px: 170.18, py: 809.34, file: "league_stadium.glb", kind: "stadium", place: true, note: "38.290294, -86.945125, 203 S Cherry St" },
   ferdinand_monastery:     { px: 449.75, py: 1024.74, file: "ferdinand_monastery.glb", kind: "monastery", place: true, note: "38.22306, -86.85222, Monastery Immaculate Conception" },
   saint_meinrad_archabbey: { px: 577.98, py: 1214.64, file: "saint_meinrad_archabbey.glb", kind: "archabbey", place: true, note: "38.1669178, -86.8128323, 200 Hill Drive" },
-  jasper_high_school:      { px: 118.62, py: 410.52, file: null, kind: "jhs", place: true, note: "38.4023, -86.9493, 1600 Saint Charles St, main OSM building 979904351 inside campus way 264355002. Placeholder until JHS_GLB is set." }
+  jasper_high_school:      { px: 118.62, py: 410.52, file: "jasper_high_school.meshopt.glb", kind: "jhs", place: true, note: "38.4023, -86.9493, 1600 Saint Charles St, main OSM building 979904351 inside campus way 264355002." }
 };
 const BASE_M = 100;
 const JASPER = { lat: 38.3914, lon: -86.9311 };
 const REDUCE = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 // Opening stop. Keep "jhs" as stop 1. One-line model swap is JHS_GLB below.
 const OPENING_STOP = "jhs";
-// One-line model swap: set to "jasper_high_school.meshopt.glb" when Angelo's model is in.
-const JHS_GLB = null;
-// Two/three-story school, eave-plus-parapet. OSM has no height or gym tag on the campus buildings.
-const JHS_HEIGHT_M = 16;
+// First load is the 512-texture variant so the fly-in is not blocked on 4 MB.
+// Full 1024-texture meshopt upgrades on approach so the hero close-up stays sharp.
+const JHS_GLB = "jasper_high_school_512.meshopt.glb";
+const JHS_GLB_FULL = "jasper_high_school.meshopt.glb";
+const JHS_CAMPUS_GLB = "jasper_high_school_campus_512.meshopt.glb";
+const JHS_CAMPUS_GLB_FULL = "jasper_high_school_campus.meshopt.glb";
+// Real model eave/parapet plus HVAC; gym block is ~15 m.
+const JHS_HEIGHT_M = 17;
+const JHS_HALF_M = 108;
 const TOUR_HOLD_JHS = 30;
 const TOUR_HOLD_OTHER = 15;
 const TOUR_ORBIT_ARC = 50 * Math.PI / 180;
@@ -43,6 +48,14 @@ const TOUR_FLYIN_DURATION = 5.5;
 const TOUR_RESUME_MS = 10000;
 const TOUR_ORBIT_END = 0.88;
 const FORE_CLEAR_M = 150;
+
+let jhsRoot = null;
+let jhsCampusRoot = null;
+let jhsCampusDrawn = null;
+let jhsHeroMats = [];
+let jhsFade = null;
+let jhsTiming = { t0: 0, firstPaint: 0, schoolReady: 0, schoolFile: "", campusFile: "", upgraded: false };
+let jhsUpgradeQueued = false;
 
 const qs = new URLSearchParams(location.search);
 const dbgSky = qs.get("sky");
@@ -202,16 +215,29 @@ function skyColors(alt, wxKind) {
   if (alt >= 8) {
     const r4 = [[168, 186, 200], [232, 222, 206], [240, 230, 210]];
     const haze = clamp((alt - 8) / 18, 0, 1);
-    for (let k = 0; k < 3; k++) c[k] = lerp3(c[k], r4[k], haze * 0.88);
+    const hAmt = wxKind === "storm" ? haze * 0.16 : haze * 0.88;
+    for (let k = 0; k < 3; k++) c[k] = lerp3(c[k], r4[k], hAmt);
   }
   const gray = WXCLOUD[wxKind] * (wxKind === "partly" ? .25 : .7);
   const dim = wxKind === "storm" ? .45 : wxKind === "rain" ? .25 : 0;
   for (let k = 0; k < 3; k++) {
     const l = (c[k][0] + c[k][1] + c[k][2]) / 3;
     c[k] = lerp3(c[k], [l, l, l + 6], gray);
-    // Keep the horizon paler in rain so a light band can sit under the cloud base.
-    const dimK = k === 2 ? dim * 0.20 : (k === 1 ? dim * 0.50 : dim);
+    // Rain keeps a slightly paler horizon. Storm must not make a cream fog wall;
+    // the horizon stays no brighter than the light band under the clouds.
+    const dimK = k === 2
+      ? (wxKind === "storm" ? dim * 0.90 : dim * 0.20)
+      : (k === 1 ? dim * 0.50 : dim);
     c[k] = lerp3(c[k], [20, 22, 30], dimK);
+  }
+  if (wxKind === "storm") {
+    // Horizon (c[2]) must not exceed mid (c[1]), the under-cloud band.
+    const midL = (c[1][0] + c[1][1] + c[1][2]) / 3;
+    const horL = (c[2][0] + c[2][1] + c[2][2]) / 3;
+    if (horL > midL) {
+      const s = midL / Math.max(1, horL);
+      c[2] = [c[2][0] * s, c[2][1] * s, c[2][2] * s];
+    }
   }
   return c;
 }
@@ -874,11 +900,20 @@ void main(){
   vec3 airC = mix(uPaper, vec3(0.96, 0.90, 0.78), 0.22);
   airC = mix(airC, vec3(0.76, 0.80, 0.84), backL * 0.80);
   airC = mix(airC, uSkyH, 0.12 + 0.25 * uNight);
+  if (uStorm > 0.01) {
+    // Storm land haze is cool and no brighter than the under-cloud band.
+    vec3 band = uSkyH;
+    airC = mix(vec3(0.48, 0.50, 0.53), band, 0.70);
+    airC = min(airC, band);
+  }
   col = mix(col, airC, air * mix(0.22, 0.80, backL));
   float between = smoothstep(1600.0, 2600.0, dist) * (1.0 - smoothstep(3200.0, 4200.0, dist));
   between = max(between, smoothstep(4000.0, 5200.0, dist) * (1.0 - smoothstep(6200.0, 8000.0, dist)));
   vec3 hazeC = mix(uPaper, vec3(0.90, 0.86, 0.78), 0.45);
   hazeC = mix(hazeC, vec3(0.80, 0.84, 0.88), backL * 0.4);
+  if (uStorm > 0.01) {
+    hazeC = airC;
+  }
   col = mix(col, hazeC, between * 0.22 * (1.0 - ridge * 0.8));
   if (backL > 0.4) {
     col = mix(col, vec3(0.72, 0.76, 0.80), (backL - 0.4) * 0.55);
@@ -917,6 +952,9 @@ void main(){
   float fog = 1.0 - exp(-dist * fogH * valleyF);
   vec3 fogC = mix(uSkyH, uPaper, 0.35 + 0.3 * uFog);
   fogC = mix(fogC, uNightMul * 0.85, uNight * 0.7);
+  if (uStorm > 0.01) {
+    fogC = min(uSkyH, mix(vec3(0.48, 0.50, 0.53), uSkyH, 0.70));
+  }
   col = mix(col, fogC, clamp(fog, 0.0, 0.75));
 
   if (uStrikeAmt > 0.001) {
@@ -986,7 +1024,7 @@ void main(){
 const SKY_FRAG = /* glsl */`
 uniform vec3 uTop, uMid, uHor;
 uniform vec3 uSunDir, uMoonDir;
-uniform float uNight, uTwi, uSunSize, uMilky, uSeed, uLookAz;
+uniform float uNight, uTwi, uSunSize, uMilky, uSeed, uLookAz, uStorm;
 uniform vec2 uRes;
 varying vec3 vDir;
 ${NOISE_GLSL}
@@ -1048,7 +1086,12 @@ void main(){
     col = mix(col, uTop, zen * 0.85);
     col = mix(col, uHor, horB * 0.9);
     vec3 creamDay = vec3(0.96, 0.90, 0.78);
-    col = mix(col, creamDay, horB * 0.45 * (1.0 - uNight));
+    col = mix(col, creamDay, horB * 0.45 * (1.0 - uNight) * (1.0 - uStorm));
+    if (uStorm > 0.01) {
+      // Fold the horizon into the under-cloud band; never a brighter cream wall.
+      col = mix(col, uMid, horB * 0.45);
+      col = min(col, max(uMid, uHor));
+    }
     // Dusk and dawn: one continuous gradient from the sun's position, dithered,
     // with light hatching on top. No hard bands.
     if (uTwi > 0.12) {
@@ -1110,6 +1153,7 @@ attribute float iFrame;
 attribute float iFrameClump;
 attribute float iPhase;
 attribute float iKind;
+attribute vec2 iLean;
 uniform float uTime;
 uniform vec3 uCursor;
 uniform float uWind;
@@ -1176,6 +1220,7 @@ void main(){
     }
   }
   vec3 p = iPos + camR * ((position.x + tilt) * sx) + camU * (position.y * sy);
+  p.xz += iLean * sy * uv.y;
   vShade = 0.86 + 0.14 * sin(iPhase * 20.0);
   gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
 }
@@ -1365,6 +1410,52 @@ void main(){
 #endif
   vWorld = mw.xyz;
   gl_Position = projectionMatrix * viewMatrix * mw;
+}
+`;
+
+const JHS_HERO_VERT = /* glsl */`
+varying vec3 vN;
+varying vec3 vWorld;
+varying vec2 vUv;
+void main(){
+  vUv = uv;
+  vec3 objectNormal = normal;
+#ifdef USE_INSTANCING
+  vec4 mw = modelMatrix * instanceMatrix * vec4(position, 1.0);
+  vN = normalize(mat3(modelMatrix * instanceMatrix) * objectNormal);
+#else
+  vec4 mw = modelMatrix * vec4(position, 1.0);
+  vN = normalize(normalMatrix * objectNormal);
+#endif
+  vWorld = mw.xyz;
+  gl_Position = projectionMatrix * viewMatrix * mw;
+}
+`;
+
+const JHS_HERO_FRAG = /* glsl */`
+uniform sampler2D uMap;
+uniform vec3 uSunDir, uMoonDir, uNightMul, uFill;
+uniform float uNight, uStorm, uOpacity, uHasMap, uWin;
+varying vec3 vN;
+varying vec3 vWorld;
+varying vec2 vUv;
+void main(){
+  vec3 base = uHasMap > 0.5 ? texture2D(uMap, vUv).rgb : vec3(0.72, 0.70, 0.66);
+  vec3 N = normalize(vN);
+  vec3 L = normalize(mix(uMoonDir, uSunDir, 1.0 - uNight));
+  if (L.y < 0.02) L = normalize(vec3(L.x, 0.02, L.z));
+  // Wrap Lambert plus a soft wall fill. No rim or emissive, so walls stay clean.
+  float wrap = dot(N, L) * 0.5 + 0.5;
+  float diff = mix(0.46, 1.0, wrap);
+  vec3 col = base * diff;
+  col += uFill * (0.55 + 0.45 * max(dot(N, L), 0.0));
+  col *= mix(vec3(1.0), uNightMul * 0.55, uNight);
+  if (uStorm > 0.01) {
+    float luma = dot(col, vec3(0.30, 0.59, 0.11));
+    col = mix(col, vec3(luma * 0.94, luma * 0.97, luma * 1.03), 0.28 * uStorm);
+    col *= mix(1.0, 0.78, uStorm);
+  }
+  gl_FragColor = vec4(col, uOpacity * uWin);
 }
 `;
 
@@ -1861,7 +1952,8 @@ function buildSky() {
       uNight: { value: 0 },
       uTwi: { value: 0 },
       uSunSize: { value: 1 },
-      uMilky: { value: 0 }
+      uMilky: { value: 0 },
+      uStorm: { value: 0 }
     },
     vertexShader: SKY_VERT,
     fragmentShader: SKY_FRAG,
@@ -3790,6 +3882,7 @@ function finishTreeMeshes(pos, scale, frame, frameClump, phase, kind) {
   plane.setAttribute("iFrameClump", new THREE.InstancedBufferAttribute(new Float32Array(instN), 1));
   plane.setAttribute("iPhase", new THREE.InstancedBufferAttribute(new Float32Array(instN), 1));
   plane.setAttribute("iKind", new THREE.InstancedBufferAttribute(new Float32Array(instN), 1));
+  plane.setAttribute("iLean", new THREE.InstancedBufferAttribute(new Float32Array(instN * 2), 2));
   treeMat = new THREE.ShaderMaterial({
     uniforms: {
       uAtlas: { value: makeTreeAtlas() },
@@ -3923,6 +4016,7 @@ function refillTreeInstances(cx, cz, force) {
   const seen = new Uint8Array(n);
   function take(i) {
     if (i < 0 || i >= n || seen[i] || picked.length >= maxInst) return;
+    if (treeRecords[i] && treeRecords[i].hidden) return;
     seen[i] = 1;
     picked.push(i);
   }
@@ -3956,6 +4050,7 @@ function refillTreeInstances(cx, cz, force) {
   const iClump = treeMesh.geometry.attributes.iFrameClump.array;
   const iPhase = treeMesh.geometry.attributes.iPhase.array;
   const iKind = treeMesh.geometry.attributes.iKind.array;
+  const iLean = treeMesh.geometry.attributes.iLean.array;
   treeInstId = picked;
   for (let i = 0; i < picked.length; i++) {
     const r = treeRecords[picked[i]];
@@ -3970,6 +4065,8 @@ function refillTreeInstances(cx, cz, force) {
     iClump[i] = r.clump;
     iPhase[i] = r.phase;
     iKind[i] = r.kind;
+    iLean[i * 2] = r.leanX || 0;
+    iLean[i * 2 + 1] = r.leanZ || 0;
   }
   treeMesh.count = picked.length;
   treeMesh.instanceMatrix.needsUpdate = true;
@@ -3978,6 +4075,7 @@ function refillTreeInstances(cx, cz, force) {
   treeMesh.geometry.attributes.iFrameClump.needsUpdate = true;
   treeMesh.geometry.attributes.iPhase.needsUpdate = true;
   treeMesh.geometry.attributes.iKind.needsUpdate = true;
+  if (treeMesh.geometry.attributes.iLean) treeMesh.geometry.attributes.iLean.needsUpdate = true;
   VEG.treesInstanced = picked.length;
 }
 
@@ -4346,8 +4444,77 @@ function scatterTrees() {
       }
     }
   }
+  plantRiverbankTrees(addTreeAt, pos);
   finishTreeMeshes(pos, scale, frame, frameClump, phase, kind);
   return VEG.treesLogical || (pos.length / 3);
+}
+
+function plantRiverbankTrees(addTreeAt, pos) {
+  const raw = riverPathPx || [];
+  if (!raw.length || !addTreeAt) return;
+  const rng = mulberry(4242);
+  const cell = 40;
+  const buckets = {};
+  function key(x, z) { return Math.floor(x / cell) + ":" + Math.floor(z / cell); }
+  function indexRecords() {
+    for (const k in buckets) delete buckets[k];
+    for (let i = 0; i < treeRecords.length; i++) {
+      const r = treeRecords[i];
+      const kk = key(r.x, r.z);
+      if (!buckets[kk]) buckets[kk] = [];
+      buckets[kk].push(i);
+    }
+  }
+  function nearby(x, z, rad, fn) {
+    const x0 = Math.floor((x - rad) / cell), x1 = Math.floor((x + rad) / cell);
+    const z0 = Math.floor((z - rad) / cell), z1 = Math.floor((z + rad) / cell);
+    for (let gx = x0; gx <= x1; gx++) {
+      for (let gz = z0; gz <= z1; gz++) {
+        const list = buckets[gx + ":" + gz];
+        if (!list) continue;
+        for (let i = 0; i < list.length; i++) fn(treeRecords[list[i]]);
+      }
+    }
+  }
+  indexRecords();
+  const maxLogical = 120000;
+  for (let i = 0; i < raw.length; i += 2) {
+    const w = pxToWorld(raw[i][0], raw[i][1]);
+    const nxt = raw[Math.min(raw.length - 1, i + 1)];
+    const nw = pxToWorld(nxt[0], nxt[1]);
+    const lx = nw.x - w.x, lz = nw.z - w.z, ll = Math.hypot(lx, lz) || 1;
+    const nx = -lz / ll, nz = lx / ll;
+    const side = rng() < 0.5 ? 1 : -1;
+    const dist = 8 + rng() * 14;
+    const x = w.x + nx * side * dist;
+    const z = w.z + nz * side * dist;
+    if (coverWorld(x, z) === 0) continue;
+    let near = false;
+    nearby(x, z, 14, function (r) {
+      if (Math.hypot(r.x - x, r.z - z) < 14) near = true;
+    });
+    if (near) continue;
+    if (pos && pos.length / 3 >= maxLogical) break;
+    const p = worldToPx(x, z);
+    if (addTreeAt(p.px, p.py, 4, 1.15, rng() < 0.5 ? "oak" : "maple", 1)) {
+      const r = treeRecords[treeRecords.length - 1];
+      const kk = key(r.x, r.z);
+      if (!buckets[kk]) buckets[kk] = [];
+      buckets[kk].push(treeRecords.length - 1);
+    }
+  }
+  indexRecords();
+  for (let i = 0; i < raw.length; i += 2) {
+    const w = pxToWorld(raw[i][0], raw[i][1]);
+    nearby(w.x, w.z, 32, function (r) {
+      const d = Math.hypot(r.x - w.x, r.z - w.z);
+      if (d < 8 || d > 28) return;
+      const vx = w.x - r.x, vz = w.z - r.z, vl = Math.hypot(vx, vz) || 1;
+      const amt = 0.22 + 0.28 * (1 - (d - 8) / 20);
+      r.leanX = (vx / vl) * amt;
+      r.leanZ = (vz / vl) * amt;
+    });
+  }
 }
 
 let frameTreeMesh = null;
@@ -5223,7 +5390,7 @@ function styleLoadedModel(root, kind) {
     monastery: [214, 204, 186],
     archabbey: [214, 206, 190],
     stadium: [176, 168, 152],
-    townhall: [186, 176, 158]
+    townhall: [214, 202, 182]
   }[kind] || hexRgb("#8A7A66");
   root.traverse(function (obj) {
     if (!obj.isMesh) return;
@@ -5235,7 +5402,7 @@ function styleLoadedModel(root, kind) {
       if (isWin) return makeWindowMat();
       const rgb = pal[mn] || pal[n] || fallback;
       const isRoof = mn.indexOf("roof") >= 0 || n.indexOf("roof") >= 0 || mn === "wheel" || mn === "metal" || mn === "door";
-      const fill = (kind === "mill" && !isRoof) ? [0.10, 0.08, 0.05] : null;
+      const fill = (kind === "mill" && !isRoof) ? [0.10, 0.08, 0.05] : ((kind === "townhall" && !isRoof) ? [0.07, 0.06, 0.045] : null);
       return makeWashMat(rgb, fill);
     });
     obj.material = styled.length === 1 ? styled[0] : styled;
@@ -5261,13 +5428,22 @@ if (JHS_GLB) MODEL_FILES.jhs = [JHS_GLB, String(JHS_GLB).replace(".meshopt.glb",
 
 async function tryLoadModel(kind) {
   const names = MODEL_FILES[kind] || [];
+  const hit = await tryLoadGlb(names);
+  if (!hit) return null;
+  LAND.fromGltf[kind] = hit.file;
+  return hit.scene;
+}
+
+async function tryLoadGlb(names) {
+  const list = Array.isArray(names) ? names : [names];
   const loader = new GLTFLoader();
   if (MeshoptDecoder) {
     if (MeshoptDecoder.ready) await MeshoptDecoder.ready;
     loader.setMeshoptDecoder(MeshoptDecoder);
   }
-  for (let i = 0; i < names.length; i++) {
-    const url = "./models/" + names[i];
+  for (let i = 0; i < list.length; i++) {
+    if (!list[i]) continue;
+    const url = "./models/" + list[i];
     try {
       const res = await fetch(url);
       if (!res.ok) continue;
@@ -5276,12 +5452,196 @@ async function tryLoadModel(kind) {
         loader.parse(buf, "./models/", resolve, reject);
       });
       if (gltf && gltf.scene) {
-        LAND.fromGltf[kind] = names[i];
-        return gltf.scene;
+        return { scene: gltf.scene, file: list[i] };
       }
     } catch (err) {}
   }
   return null;
+}
+
+function jhsWorldOrigin() {
+  const site = LANDMARK_SITES.jasper_high_school;
+  return pxToWorld(site.px, site.py);
+}
+
+function placeJhsRoot(root, name) {
+  const w = jhsWorldOrigin();
+  const h = heightWorld(w.x, w.z);
+  root.name = name;
+  root.position.set(w.x, yOf(h), w.z);
+  root.rotation.set(0, 0, 0);
+  root.scale.set(1, 1, 1);
+  if (landmarkGroup) landmarkGroup.add(root);
+  return root;
+}
+
+function styleJhsModel(root, startOpacity) {
+  const opac = startOpacity == null ? 1 : startOpacity;
+  root.traverse(function (obj) {
+    if (!obj.isMesh) return;
+    const srcs = Array.isArray(obj.material) ? obj.material : [obj.material];
+    const styled = srcs.map(function (src) {
+      const map = src && src.map ? src.map : null;
+      if (map && map.colorSpace != null) map.colorSpace = THREE.NoColorSpace;
+      const mn = ((src && src.name) || (obj.name || "")).toLowerCase();
+      const isWin = !!(src && (src.transparent || (src.opacity != null && src.opacity < 0.99) || (src.transmission && src.transmission > 0.01)))
+        || mn.indexOf("window") >= 0 || mn.indexOf("glass") >= 0;
+      const mat = new THREE.ShaderMaterial({
+        uniforms: {
+          uMap: { value: map },
+          uHasMap: { value: map ? 1 : 0 },
+          uSunDir: { value: new THREE.Vector3(0.3, 0.8, 0.2) },
+          uMoonDir: { value: new THREE.Vector3(0.2, 0.5, 0.4) },
+          uNightMul: { value: colU(NIGHT_MUL) },
+          uFill: { value: new THREE.Vector3(0.07, 0.062, 0.05) },
+          uNight: { value: clock.night || 0 },
+          uStorm: { value: wx.kind === "storm" ? 1 : 0 },
+          uOpacity: { value: opac },
+          uWin: { value: isWin ? 0.55 : 1 }
+        },
+        vertexShader: JHS_HERO_VERT,
+        fragmentShader: JHS_HERO_FRAG,
+        transparent: true,
+        depthWrite: !isWin
+      });
+      jhsHeroMats.push(mat);
+      return mat;
+    });
+    obj.material = styled.length === 1 ? styled[0] : styled;
+    obj.frustumCulled = false;
+    if (obj.geometry && !obj.geometry.attributes.normal) obj.geometry.computeVertexNormals();
+  });
+  return root;
+}
+
+function setJhsOpacity(root, o) {
+  if (!root) return;
+  root.traverse(function (obj) {
+    if (!obj.isMesh) return;
+    const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+    for (let i = 0; i < mats.length; i++) {
+      if (mats[i] && mats[i].uniforms && mats[i].uniforms.uOpacity) mats[i].uniforms.uOpacity.value = o;
+    }
+  });
+}
+
+function hideCoveredCampusDrawings(boxes) {
+  const margin = 8;
+  function inside(x, z) {
+    for (let i = 0; i < boxes.length; i++) {
+      const b = boxes[i];
+      if (x >= b.min.x - margin && x <= b.max.x + margin && z >= b.min.z - margin && z <= b.max.z + margin) return true;
+    }
+    return false;
+  }
+  if (jhsCampusDrawn) {
+    jhsCampusDrawn.traverse(function (ch) {
+      if (!ch.isMesh) return;
+      if (ch.name === "jhs-placeholder") {
+        ch.visible = false;
+        return;
+      }
+      const p = new THREE.Vector3();
+      ch.getWorldPosition(p);
+      if (inside(p.x, p.z)) ch.visible = false;
+    });
+  }
+  let hid = 0;
+  for (let i = 0; i < treeRecords.length; i++) {
+    const r = treeRecords[i];
+    if (inside(r.x, r.z)) { r.hidden = 1; hid++; }
+  }
+  if (hid && camera) {
+    refillTreeInstances._built = false;
+    refillTreeInstances(camera.position.x, camera.position.z, true);
+  }
+  if (LAND) LAND.jhsHiddenTrees = hid;
+}
+
+function jhsWorldBoxes() {
+  const boxes = [];
+  if (jhsRoot) {
+    jhsRoot.updateMatrixWorld(true);
+    boxes.push(new THREE.Box3().setFromObject(jhsRoot));
+  }
+  if (jhsCampusRoot) {
+    jhsCampusRoot.updateMatrixWorld(true);
+    boxes.push(new THREE.Box3().setFromObject(jhsCampusRoot));
+  }
+  return boxes;
+}
+
+async function loadJhsSchool(file, fade) {
+  const hit = await tryLoadGlb([file]);
+  if (!hit) return null;
+  const root = hit.scene;
+  styleJhsModel(root, fade ? 0 : 1);
+  if (jhsRoot && jhsRoot.parent) jhsRoot.parent.remove(jhsRoot);
+  jhsRoot = placeJhsRoot(root, "jhs");
+  LAND.fromGltf = LAND.fromGltf || {};
+  LAND.fromGltf.jhs = hit.file;
+  jhsTiming.schoolFile = hit.file;
+  if (fade) {
+    jhsFade = { t: 0, dur: 0.7, root: jhsRoot };
+  } else {
+    hideCoveredCampusDrawings(jhsWorldBoxes());
+  }
+  if (clock) skinLandmarks();
+  return root;
+}
+
+async function loadJhsCampus(file) {
+  const hit = await tryLoadGlb([file]);
+  if (!hit) return null;
+  const root = hit.scene;
+  styleJhsModel(root, 1);
+  if (jhsCampusRoot && jhsCampusRoot.parent) jhsCampusRoot.parent.remove(jhsCampusRoot);
+  jhsCampusRoot = placeJhsRoot(root, "jhs-campus-model");
+  LAND.fromGltf = LAND.fromGltf || {};
+  LAND.fromGltf.jhsCampus = hit.file;
+  jhsTiming.campusFile = hit.file;
+  hideCoveredCampusDrawings(jhsWorldBoxes());
+  if (clock) skinLandmarks();
+  return root;
+}
+
+function maybeUpgradeJhs() {
+  if (jhsUpgradeQueued || jhsTiming.upgraded) return;
+  if (!jhsRoot || !JHS_GLB_FULL || jhsTiming.schoolFile === JHS_GLB_FULL) return;
+  const w = jhsWorldOrigin();
+  const dist = camera ? Math.hypot(camera.position.x - w.x, camera.position.z - w.z) : 1e9;
+  const onJhs = tour.phase === "hold" && getTourStops()[tour.stop] && getTourStops()[tour.stop].name === "jhs";
+  if (!(onJhs || dist < 1400)) return;
+  jhsUpgradeQueued = true;
+  loadJhsSchool(JHS_GLB_FULL, false).then(function () {
+    jhsTiming.upgraded = true;
+    jhsUpgradeQueued = false;
+    if (JHS_CAMPUS_GLB_FULL && jhsCampusRoot) loadJhsCampus(JHS_CAMPUS_GLB_FULL).catch(function () {});
+  }).catch(function () { jhsUpgradeQueued = false; });
+}
+
+async function loadJhsProgressive() {
+  if (!JHS_GLB) return;
+  const school = await loadJhsSchool(JHS_GLB, true);
+  if (school && !jhsTiming.schoolReady) {
+    jhsTiming.schoolReady = performance.now();
+    if (window.__world) {
+      window.__world.jhsModelReady = true;
+      window.__world.jhsModelMs = jhsTiming.schoolReady - (jhsTiming.t0 || jhsTiming.schoolReady);
+    }
+  }
+  if (JHS_CAMPUS_GLB) await loadJhsCampus(JHS_CAMPUS_GLB);
+}
+
+function stepJhsFade(dt) {
+  if (!jhsFade) return;
+  jhsFade.t += dt;
+  const o = Math.max(0, Math.min(1, jhsFade.t / jhsFade.dur));
+  setJhsOpacity(jhsFade.root, o);
+  if (o >= 1) {
+    hideCoveredCampusDrawings(jhsWorldBoxes());
+    jhsFade = null;
+  }
 }
 
 function placeOnGround(obj, x, z, yaw) {
@@ -5679,7 +6039,7 @@ function buildJhsCampus() {
   const group = new THREE.Group();
   group.name = "jhs-campus";
   const feats = jhsCampusData.feats;
-  const hideMain = !!JHS_GLB;
+  const hideMain = false;
   const mainId = jhsCampusData.building || 979904351;
   let nBld = 0, nField = 0, nPark = 0;
   for (let i = 0; i < feats.length; i++) {
@@ -5736,6 +6096,7 @@ function buildJhsCampus() {
     }
   }
   scene.add(group);
+  jhsCampusDrawn = group;
   if (LAND) {
     LAND.jhsBuildings = nBld;
     LAND.jhsFields = nField;
@@ -6623,6 +6984,15 @@ function skinLandmarks() {
     u.uInkUse.value.set(ink[0] / 255, ink[1] / 255, ink[2] / 255);
     u.uNight.value = night;
   }
+  for (let i = 0; i < jhsHeroMats.length; i++) {
+    const u = jhsHeroMats[i].uniforms;
+    if (!u) continue;
+    if (u.uSunDir) u.uSunDir.value.copy(altAzDir(clock.alt, clock.sunAz));
+    if (u.uMoonDir) u.uMoonDir.value.copy(altAzDir(clock.moonAlt, clock.moonAz));
+    if (u.uNight) u.uNight.value = night;
+    if (u.uStorm) u.uStorm.value = wx.kind === "storm" ? 1 : 0;
+    if (u.uNightMul) u.uNightMul.value.set(NIGHT_MUL[0] / 255, NIGHT_MUL[1] / 255, NIGHT_MUL[2] / 255);
+  }
 }
 
 async function swapInGltfModels() {
@@ -6838,6 +7208,7 @@ function applySkin() {
     skyMat.uniforms.uNight.value = night;
     skyMat.uniforms.uTwi.value = clock.twi;
     skyMat.uniforms.uMilky.value = night > 0.5 ? 0.55 : 0;
+    if (skyMat.uniforms.uStorm) skyMat.uniforms.uStorm.value = wx.kind === "storm" ? 1 : 0;
   }
   if (moonMat) {
     // Terminator uses the real sun, even when ?sky= forces a landscape sun altitude.
@@ -7323,10 +7694,16 @@ function layoutRiverRibbon() {
     const waterY = Math.max(bedY + 1.0, bankY - 3.2);
     pos.push(p.x - sx * half, waterY, p.z - sz * half);
     pos.push(p.x + sx * half, waterY, p.z + sz * half);
+    const nL = (Math.sin(i * 127.1 + p.x * 0.013) * 43758.5453) % 1; const nL01 = nL < 0 ? nL + 1 : nL;
+    const nR = (Math.sin(i * 311.7 + p.z * 0.017) * 43758.5453) % 1; const nR01 = nR < 0 ? nR + 1 : nR;
+    const leftW = 6.0 + 10.0 * nL01 + 3.5 * Math.sin(i * 0.37);
+    const rightW = 5.5 + 11.0 * nR01 + 4.0 * Math.sin(i * 0.21 + 1.7);
+    const leftY = bankY + (nL01 - 0.5) * 1.7;
+    const rightY = bankY + (nR01 - 0.5) * 1.7;
     bankPos.push(p.x - sx * half, waterY, p.z - sz * half);
-    bankPos.push(p.x - sx * (half + 10), bankY, p.z - sz * (half + 10));
+    bankPos.push(p.x - sx * (half + leftW), leftY, p.z - sz * (half + leftW));
     bankPos.push(p.x + sx * half, waterY, p.z + sz * half);
-    bankPos.push(p.x + sx * (half + 10), bankY, p.z + sz * (half + 10));
+    bankPos.push(p.x + sx * (half + rightW), rightY, p.z + sz * (half + rightW));
     const u = i / (n - 1);
     uv.push(u, 0, u, 1);
     bankUv.push(u, 0, u, 1, u, 0, u, 1);
@@ -8408,6 +8785,11 @@ function targetLandmarkIndex() {
   const stops = getTourStops();
   if (!stops.length) return 0;
   if (onTourStop()) {
+    // During travel or fly-in, tour.stop is already the destination.
+    // A tap must land on that same next stop, not skip past it.
+    if (tour.phase === "travel" || tour.phase === "flyin" || tour.manualTravel) {
+      return ((tour.stop % stops.length) + stops.length) % stops.length;
+    }
     return (tour.stop + 1) % stops.length;
   }
   const c = mostCenteredLandmarkIndex();
@@ -8464,6 +8846,8 @@ function goToLandmark(index) {
   const stops = getTourStops();
   if (!stops.length) return;
   const i = ((index % stops.length) + stops.length) % stops.length;
+  if ((tour.phase === "travel" || tour.phase === "flyin") && tour.stop === i) return;
+  if (tour.phase === "hold" && tour.stop === i) return;
   tour.stop = i;
   tour.lastInput = performance.now();
   tour.paused = false;
@@ -8976,7 +9360,27 @@ function scoreRiverView(camX, camY, camZ, heading, samples) {
   }
   if (n < 3 || low < 2) return -1;
   const span = Math.max(0, maxX - minX);
-  return low * 1.6 + span * 8 + Math.max(0, -0.25 - minY) * 6;
+  // Reward an S in screen space: water should swing across the lower third, not run
+  // away as a straight canal.
+  const vis = [];
+  for (let i = 0; i < samples.length; i++) {
+    const p = samples[i];
+    if (Math.hypot(p.x - camX, p.z - camZ) > 700) continue;
+    const v = new THREE.Vector3(p.x, p.y, p.z).project(camera);
+    if (!(v.z > 0 && v.z < 1) || Math.abs(v.x) > 1.05) continue;
+    if (v.y < -0.10 && v.y > -0.96) vis.push({ x: v.x, d: v.z });
+  }
+  vis.sort(function (a, b) { return a.d - b.d; });
+  let turns = 0, prevDir = 0;
+  for (let i = 1; i < vis.length; i++) {
+    const dx = vis[i].x - vis[i - 1].x;
+    if (Math.abs(dx) < 0.04) continue;
+    const dir = dx > 0 ? 1 : -1;
+    if (prevDir && dir !== prevDir) turns++;
+    prevDir = dir;
+  }
+  const sAmt = Math.min(2, turns) * 6 + span * (turns > 0 ? 4 : 0);
+  return low * 1.2 + span * 6 + Math.max(0, -0.25 - minY) * 6 + sAmt;
 }
 
 function findRiverTourPx() {
@@ -9011,12 +9415,18 @@ function findRiverTourPx() {
   const backs = [40, 80, 120, 160];
   const eyes = [12, 16, 20, 24];
   const step = 5;
-  for (let i = 8; i < pts.length - 8; i += step) {
+  for (let i = 14; i < pts.length - 14; i += step) {
     const a = pts[i - 5], b = pts[i], c = pts[i + 5];
     const v1x = b.px - a.px, v1y = b.py - a.py, v2x = c.px - b.px, v2y = c.py - b.py;
     const l1 = Math.hypot(v1x, v1y) || 1, l2 = Math.hypot(v2x, v2y) || 1;
     const dot = (v1x * v2x + v1y * v2y) / (l1 * l2);
     const ang = Math.acos(Math.max(-1, Math.min(1, dot)));
+    const a0 = pts[i - 10], c0 = pts[i];
+    const b0 = pts[i - 5];
+    const a1 = pts[i], b1 = pts[i + 5], c1 = pts[i + 10];
+    const cr0 = (b0.px - a0.px) * (c0.py - b0.py) - (b0.py - a0.py) * (c0.px - b0.px);
+    const cr1 = (b1.px - a1.px) * (c1.py - b1.py) - (b1.py - a1.py) * (c1.px - b1.px);
+    const sCurve = (cr0 * cr1 < 0) ? (Math.abs(cr0) + Math.abs(cr1)) : 0;
     const dMill = Math.hypot(b.px - mill[0], b.py - mill[1]) * CELL;
     if (dMill < 400 || dMill > 5000) continue;
     nBend++;
@@ -9045,7 +9455,7 @@ function findRiverTourPx() {
             const view = scoreRiverView(camX, camY, camZ, heading, worldPts);
             if (view < 0) continue;
             nView++;
-            const score = view + ang * 2.4 - Math.abs(dMill - 1800) / 1200 - Math.max(0, eye - 18) * 0.15;
+            const score = view + ang * 2.4 + sCurve * 0.015 - Math.abs(dMill - 1800) / 1200 - Math.max(0, eye - 18) * 0.15;
             if (score > bestScore) {
               bestScore = score;
               best = {
@@ -9452,8 +9862,10 @@ function getTourStops() {
   const stadH = landmarkHeightM("stadium", 18);
   const monH = landmarkHeightM("monastery", 40);
   const abbH = landmarkHeightM("archabbey", 40);
-  const churchD = [1000, 1200, 1400, 1600, 1800];
-  const churchE = [40, 52, 64];
+  const aspect = Math.max(0.3, (canvas && canvas.clientWidth ? canvas.clientWidth : 1280) / Math.max(1, (canvas && canvas.clientHeight) || 800));
+  const narrow = aspect < 0.7;
+  const churchD = narrow ? [300, 400, 520, 640, 760] : [180, 230, 300, 400, 520];
+  const churchE = [36, 48, 64];
   const courtD = [520, 680, 860, 1040];
   const courtE = [48, 64, 82];
   const millD = [170, 190, 210, 230, 250];
@@ -9462,14 +9874,21 @@ function getTourStops() {
   const depotE = [24, 34, 44];
   const farmD = [220, 300, 400, 520];
   const farmE = [20, 30, 42];
-  const hallD = [520, 640, 780];
-  const hallE = [64, 82];
+  const hallD = narrow ? [260, 340, 440, 560, 700] : [170, 210, 260, 340, 440];
+  const hallE = [36, 52, 68, 84];
   const stadD = [420, 520, 640, 780];
   const stadE = [30, 42, 56];
-  const abbD = [700, 1000, 1300, 1600];
-  const abbE = [40, 56, 72];
-  const widthBand = { wMin: 0.10, wMax: 0.16, wTarget: 0.125 };
-  const churchFr = frameNamed("church", church, court, churchH, churchD, churchE, 1400, 52);
+  const abbD = narrow ? [520, 700, 900, 1100, 1300] : [260, 340, 440, 580, 760];
+  const abbE = [36, 52, 68, 84];
+  const widthBand = { wMin: 0.10, wMax: 0.15, wTarget: 0.125 };
+  const churchFr = frameNamed("church", church, court, churchH, churchD, churchE, narrow ? 520 : 300, 48, Object.assign({ half: 16 }, widthBand));
+  if (churchFr && !(churchFr.wFrac >= 0.10 && churchFr.dist >= FORE_CLEAR_M)) {
+    const nudged = nudgeCloserForWidth(church, churchH, churchFr, Object.assign({ half: 16, minDist: FORE_CLEAR_M, wMin: 0.10 }, widthBand));
+    if (nudged && nudged.wFrac >= 0.10) {
+      churchFr.dist = nudged.dist; churchFr.eye = nudged.eye; churchFr.approach = nudged.approach;
+      churchFr.wFrac = nudged.wFrac; churchFr.hFrac = nudged.hFrac;
+    }
+  }
   const courtFr = frameNamed("courthouse", court, church, courtH, courtD, courtE, 520, 82, { half: 22, hMin: 0.055 });
   if (!(courtFr && courtFr.approach != null && courtFr.hFrac >= 0.07 && courtFr.dist <= 700)) {
     courtFr.dist = 520;
@@ -9481,17 +9900,28 @@ function getTourStops() {
   const millFr = frameNamed("mill", mill, church, millH, millD, millE, 210, 30, Object.assign({}, widthBand, { half: 12, wMin: 0.10, wMax: 0.16, wTarget: 0.12 }));
   const depotFr = frameNamed("depot", depot, church, depotH, depotD, depotE, 210, 34, Object.assign({}, widthBand, { half: 16, wMin: 0.10, wMax: 0.18, wTarget: 0.12 }));
   const farmFr = frameNamed("farmstead", [farm.px, farm.py], church, 12, farmD, farmE, 320, 30);
-  const hallFr = frameNamed("townhall", hall, stadium, hallH, hallD, hallE, 520, 82, { half: 16, wTarget: 0.08, wMin: 0.045, wMax: 0.16, hMin: 0.05, eye0: 82 });
-  if (!(hallFr && hallFr.approach != null && hallFr.hFrac >= 0.05 && hallFr.eye >= 60)) {
-    hallFr.dist = 520;
-    hallFr.eye = 64;
-    hallFr.approach = 4.4505895925855405;
-    hallFr.score = 0;
-    console.info("[frame]", "townhall pinned over rooftops", "dist", hallFr.dist, "eye", hallFr.eye, "approach", hallFr.approach);
+  const hallFr = frameNamed("townhall", hall, stadium, hallH, hallD, hallE, 260, 68, Object.assign({ half: 16, hMin: 0.05, eye0: 68 }, widthBand));
+  if (!(hallFr && hallFr.approach != null && hallFr.wFrac >= 0.10 && hallFr.dist >= FORE_CLEAR_M)) {
+    const nudged = nudgeCloserForWidth(hall, hallH, hallFr, Object.assign({ half: 16, minDist: FORE_CLEAR_M, wMin: 0.10 }, widthBand));
+    if (nudged && nudged.wFrac >= 0.10) {
+      hallFr.dist = nudged.dist; hallFr.eye = nudged.eye; hallFr.approach = nudged.approach;
+      hallFr.wFrac = nudged.wFrac; hallFr.hFrac = nudged.hFrac;
+    }
+    console.info("[frame]", "townhall after nudge", "dist", hallFr.dist, "eye", hallFr.eye, "approach", hallFr.approach, "wFrac", hallFr.wFrac);
   }
   const stadFr = frameNamed("stadium", stadium, hall, stadH, stadD, stadE, 520, 42, Object.assign({ half: 42 }, widthBand));
-  const monFr = frameNamed("monastery", monastery, null, monH, abbD, abbE, 1200, 56);
-  const abbFr = frameNamed("archabbey", abbey, null, abbH, abbD, abbE, 1200, 56);
+  const monFr = frameNamed("monastery", monastery, null, monH, abbD, abbE, narrow ? 700 : 440, 56, Object.assign({ half: 28 }, widthBand));
+  const abbFr = frameNamed("archabbey", abbey, null, abbH, abbD, abbE, narrow ? 900 : 440, 56, Object.assign({ half: 28 }, widthBand));
+  [[monFr, monastery, monH], [abbFr, abbey, abbH]].forEach(function (pair) {
+    const fr = pair[0], px = pair[1], ht = pair[2];
+    if (fr && !(fr.wFrac >= 0.10 && fr.dist >= FORE_CLEAR_M)) {
+      const nudged = nudgeCloserForWidth(px, ht, fr, Object.assign({ half: 28, minDist: FORE_CLEAR_M, wMin: 0.10 }, widthBand));
+      if (nudged && nudged.wFrac >= 0.10) {
+        fr.dist = nudged.dist; fr.eye = nudged.eye; fr.approach = nudged.approach;
+        fr.wFrac = nudged.wFrac; fr.hFrac = nudged.hFrac;
+      }
+    }
+  });
   tourStopsCache = [
     { name: "church", px: church[0], py: church[1], dist: churchFr.dist, eye: churchFr.eye, approach: churchFr.approach, heightM: churchH },
     { name: "courthouse", px: court[0], py: court[1], dist: courtFr.dist, eye: courtFr.eye, approach: courtFr.approach, heightM: courtH },
@@ -9507,21 +9937,21 @@ function getTourStops() {
   if (OPENING_STOP === "jhs") {
     const jhs = sitePx("jasper_high_school", [118.62, 410.52]);
     const jhsH = landmarkHeightM("jhs", JHS_HEIGHT_M);
-    const jhsD = [420, 540, 680, 820];
-    const jhsE = [32, 48, 64];
-    // Up to about 1/4 screen width, lower third, nothing within 150 m of the lens.
+    const jhsD = narrow ? [1200, 1600, 2000, 2400, 2800] : [520, 640, 760, 880, 1040];
+    const jhsE = [36, 52, 68];
+    // Real model is ~216 m wide; cap at about 1/4 screen width, lower third, 150 m keep-out.
     const jhsFr = frameShortLandmark(jhs, church, jhsH, {
       dists: jhsD,
       eyes: jhsE,
-      dist0: 540,
-      eye0: 48,
-      half: 80,
+      dist0: 760,
+      eye0: 52,
+      half: JHS_HALF_M,
       hMin: 0.08,
-      hMax: 0.25,
-      hTarget: 0.16,
-      wMin: 0.12,
-      wMax: 0.26,
-      wTarget: 0.20,
+      hMax: 0.22,
+      hTarget: 0.14,
+      wMin: 0.16,
+      wMax: 0.25,
+      wTarget: 0.22,
       midY: -0.62,
       nAng: 24,
       minDist: FORE_CLEAR_M,
@@ -9537,7 +9967,7 @@ function getTourStops() {
   const longHor = 0.69;
   for (let i = 0; i < tourStopsCache.length; i++) {
     const s = tourStopsCache[i];
-    if (s.name === "jhs" || s.name === "courthouse" || s.name === "townhall" || s.name === "monastery") {
+    if (s.name === "jhs" || s.name === "courthouse" || s.name === "townhall" || s.name === "monastery" || s.name === "archabbey") {
       s.horizon = longHor;
     }
   }
@@ -9848,15 +10278,7 @@ function stepTour(dt, now) {
     if (tour.holdT >= dur) {
       const stops = getTourStops();
       if (!stops.length) return;
-      tour.stop = (tour.stop + 1) % stops.length;
-      const next = stops[tour.stop];
-      if (REDUCE) {
-        crossfadeToStop(next);
-      } else {
-        beginTourLeg(currentTourCam(), next, "auto");
-        tour.manualTravel = false;
-        setLandmarkLabel(stopLabel(next), false);
-      }
+      goToLandmark((tour.stop + 1) % stops.length);
     }
   }
 }
@@ -10017,6 +10439,8 @@ function startLoop() {
     if (!state.frozen) {
       stepTour(dt, now);
       state.time += dt;
+      stepJhsFade(dt);
+      maybeUpgradeJhs();
     }
     if (!dbgAt && now - (state._clk || 0) > 30000) {
       state._clk = now;
@@ -10078,6 +10502,10 @@ function frameStats() {
 function expose() {
   window.__world = {
     ready: true,
+    jhsModelReady: !!(jhsTiming.schoolReady),
+    firstPaintMs: jhsTiming.firstPaint || 0,
+    jhsModelMs: jhsTiming.schoolReady ? (jhsTiming.schoolReady - (jhsTiming.t0 || jhsTiming.schoolReady)) : 0,
+    jhsTiming: jhsTiming,
     state: state,
     land: LAND,
     veg: VEG,
@@ -10512,7 +10940,6 @@ async function init() {
   buildGrass();
   buildTown();
   applySkin();
-  await swapInGltfModels();
   bindInput();
   const skipFlight = REDUCE || qs.has("pathT") || qs.get("freeze") === "1";
   if (qs.has("pathT")) {
@@ -10539,10 +10966,15 @@ async function init() {
   renderer.render(scene, camera);
   drawWxOverlay(performance.now(), 0);
   updateLandmarkButton();
+  jhsTiming.t0 = performance.now();
+  jhsTiming.firstPaint = jhsTiming.t0;
   state.ready = true;
   expose();
   if (!dbgWx) setTimeout(fetchWx, 400);
   startLoop();
+  // Fly-in starts on the placeholder. School and other glbs load in the background.
+  swapInGltfModels().catch(function (err) { console.warn("gltf swap", err); });
+  loadJhsProgressive().catch(function (err) { console.warn("jhs load", err); });
 }
 
 init().catch(function (e) {
