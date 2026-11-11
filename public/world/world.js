@@ -6,7 +6,7 @@ const CELL = 31.25;
 const COLS = 1024;
 const ROWS = 768;
 const EXAG = 2.9;
-const HERO = { px: 218, py: 509, eye: 48, pathT: 0.5 };
+const HERO = { px: 218, py: 509, eye: 36, pathT: 0.5 };
 
 // Real-world cells (EPSG:5070, same conversion as jasper_st_joseph in meta.json).
 // place: instanced this pass only if the site is on the DEM and in the hero view
@@ -184,9 +184,9 @@ const SKINS = {
     cedar: hexRgb("#2A4A38"), water: hexRgb("#5E8A86"), hatch: 4, row: 1.25, bend: 0.6
   },
   autumn: {
-    field: hexRgb("#C9A66B"), wheat: hexRgb("#C9A66B"), plowed: hexRgb("#A8874F"),
-    grass: hexRgb("#B49A5E"), forest: hexRgb("#D9A441"), forestB: hexRgb("#B5562E"),
-    cedar: hexRgb("#3E5A45"), water: hexRgb("#5C7477"), hatch: 4.5, row: 1.0, bend: 0.0
+    field: hexRgb("#D2B06A"), wheat: hexRgb("#D9B45A"), plowed: hexRgb("#C4A05A"),
+    grass: hexRgb("#9AAA5A"), forest: hexRgb("#D9A441"), forestB: hexRgb("#B5562E"),
+    cedar: hexRgb("#3E5A45"), water: hexRgb("#5C7477"), hatch: 4.2, row: 1.15, bend: 0.0
   },
   winter: {
     field: hexRgb("#DCD6C6"), wheat: hexRgb("#DCD6C6"), plowed: hexRgb("#DCD6C6"),
@@ -456,9 +456,9 @@ float heightM(vec2 uv){
   return (tex.r * 255.0 * 256.0 + tex.g * 255.0) / 10.0 + 100.0;
 }
 float farLift(float dist){
-  float t = clamp((dist - 3000.0) / 7000.0, 0.0, 1.0);
+  float t = clamp((dist - 2000.0) / 8000.0, 0.0, 1.0);
   t = t * t * (3.0 - 2.0 * t);
-  return 1.0 + 1.6 * t;
+  return 1.0 + 1.85 * t;
 }
 void main(){
   vUv = uv;
@@ -534,18 +534,24 @@ void main(){
   if (uSeason > 1.5 && uSeason < 2.5) isPlow = step(0.48, pid);
   vec3 cropCol = mix(uField, uWheat, isWheat);
   cropCol = mix(cropCol, uPlowed, isPlow);
-  vec3 sage = vec3(0.561, 0.604, 0.435);
-  vec3 stubbleG = vec3(0.784, 0.612, 0.333);
+  vec3 sage = vec3(0.42, 0.50, 0.28);
+  vec3 stubbleG = vec3(0.85, 0.68, 0.36);
+  vec3 ochre = vec3(0.78, 0.56, 0.26);
   if (uSeason > 1.5 && uSeason < 2.5) {
     float varp = hash21(plot + 5.3);
-    if (varp < 0.28) cropCol = stubbleG;
-    else if (varp > 0.78) cropCol = mix(cropCol, sage, 0.55);
-    else cropCol = mix(cropCol, uPlowed, 0.15 * varp);
+    if (varp < 0.34) cropCol = stubbleG;
+    else if (varp < 0.55) cropCol = mix(uWheat, ochre, 0.45);
+    else if (varp > 0.88) cropCol = mix(cropCol, sage, 0.40);
+    else cropCol = mix(uWheat, uField, 0.35 + 0.25 * varp);
   } else {
     cropCol = mix(cropCol, uGrass, 0.12 * (pid - 0.5));
   }
-  vec3 grassCol = mix(uGrass, uField, 0.18 * (hash21(plot + 3.1) - 0.4));
-  if (uSeason > 1.5 && uSeason < 2.5) grassCol = mix(grassCol, sage, 0.35 * step(0.5, hash21(plot + 2.2)));
+  vec3 grassCol = mix(uGrass, uField, 0.22 * (hash21(plot + 3.1) - 0.3));
+  if (uSeason > 1.5 && uSeason < 2.5) {
+    float gv = hash21(plot + 2.2);
+    if (gv > 0.72) grassCol = mix(grassCol, sage, 0.45);
+    else grassCol = mix(grassCol, stubbleG, 0.25);
+  }
 
   // woodland wash at a large scale, never high-frequency camouflage
   vec3 bareForest = mix(uForest, uForestB, smoothstep(0.2, 0.8, n1));
@@ -564,9 +570,9 @@ void main(){
   // hard class, no neighbor averaging (that read as camouflage blobs)
   vec3 wash = grassCol;
   if (cls < 0.5) wash = uWater;
-  else if (cls < 1.5) wash = mix(grassCol, vec3(0.62, 0.58, 0.48), 0.4);
-  else if (cls < 2.5) wash = mix(vec3(0.55, 0.45, 0.38), uPaper, 0.2 + 0.15 * n3);
-  else if (cls < 3.5) wash = mix(vec3(0.64, 0.54, 0.40), uPaper, 0.2);
+  else if (cls < 1.5) wash = mix(grassCol, vec3(0.78, 0.64, 0.40), 0.28);
+  else if (cls < 2.5) wash = mix(vec3(0.72, 0.58, 0.40), uWheat, 0.25 + 0.15 * n3);
+  else if (cls < 3.5) wash = mix(vec3(0.76, 0.60, 0.36), uPaper, 0.12);
   else if (cls < 4.5) wash = bareForest;
   else if (cls < 5.5) wash = uCedar;
   else if (cls < 6.5) wash = grassCol;
@@ -597,25 +603,25 @@ void main(){
   float nearL = 1.0 - smoothstep(200.0, 1400.0, dist);
   float midL = smoothstep(900.0, 2000.0, dist) * (1.0 - smoothstep(2800.0, 4600.0, dist));
   float backL = smoothstep(3800.0, 5600.0, dist);
-  // Drop camouflage patchwork past the near band: flatten to a single wash
-  if (dist > 1100.0) {
-    vec3 farWash = mix(uPaper, wash, 0.42);
-    col = mix(col, farWash, smoothstep(1100.0, 2000.0, dist));
+  // Mid fields stay warm (wheat, ochre, a little green), not a gray paper fade.
+  if (dist > 1400.0) {
+    vec3 farWash = mix(wash, mix(uWheat, uPaper, 0.28), 0.40);
+    col = mix(col, farWash, smoothstep(1400.0, 2800.0, dist) * 0.65);
   }
 
   // Fields only on slopes that face the camera, ruled furrows in the near band
   float facing = clamp(dot(N, V), 0.0, 1.0);
   float slopeFace = facing * smoothstep(0.15, 0.55, 1.0 - N.y);
-  if (cls > 5.5 && cls < 7.6 && uSnow < 0.5 && dist < 1700.0 && (facing > 0.32 || slopeFace > 0.08)) {
+  if (cls > 5.5 && cls < 7.6 && uSnow < 0.5 && dist < 2200.0 && (facing > 0.34 || slopeFace > 0.10)) {
     float ang = pid > 0.5 ? 0.0 : 1.5708;
     if (pid > 0.82) ang = 0.65;
     float row = dot(wz, vec2(cos(ang), sin(ang)));
     float sp = mix(4.6, 6.2, pid);
     float g = abs(fract(row / sp) - 0.5);
-    float inkA = (0.18 + 0.42 * nearL) * uRow * smoothstep(0.28, 0.55, facing);
-    if (uSeason > 1.5 && uSeason < 2.5) inkA *= 0.95;
+    float inkA = (0.22 + 0.48 * nearL) * uRow * smoothstep(0.34, 0.62, facing);
+    if (uSeason > 1.5 && uSeason < 2.5) inkA *= 1.05;
     if (uSeason > 2.5) inkA *= 0.5;
-    if (cls < 6.5) inkA *= 0.55;
+    if (cls < 6.5) inkA *= 0.50;
     col = mix(col, vec3(0.165, 0.129, 0.094), (1.0 - smoothstep(0.0, 0.16, g)) * inkA);
     float edge = min(min(pf.x, 1.0 - pf.x), min(pf.y, 1.0 - pf.y));
     col = mix(col, vec3(0.165, 0.129, 0.094), (1.0 - smoothstep(0.0, 0.028, edge)) * 0.35 * nearL);
@@ -690,14 +696,20 @@ void main(){
   vec3 inkCol = mix(inkFront, inkBack, layer);
   float ridgeAmt = ridge * mix(0.92, 0.22, layer) * (1.0 - uSnow * 0.5);
 
-  // Back ridges: pale blue-gray silhouettes, no detail, inked tops only
-  float air = smoothstep(1600.0, 9000.0, dist);
-  vec3 airC = mix(uPaper, vec3(0.94, 0.88, 0.76), 0.28);
-  airC = mix(airC, vec3(0.72, 0.76, 0.80), backL * 0.85);
-  airC = mix(airC, uSkyH, 0.15 + 0.25 * uNight);
-  col = mix(col, airC, air * mix(0.45, 0.82, backL));
+  // Back ridges: pale blue-gray silhouettes, no detail, inked tops only.
+  // Pale haze sits between layers so each crest reads against the next.
+  float air = smoothstep(2200.0, 9500.0, dist);
+  vec3 airC = mix(uPaper, vec3(0.96, 0.90, 0.78), 0.22);
+  airC = mix(airC, vec3(0.76, 0.80, 0.84), backL * 0.80);
+  airC = mix(airC, uSkyH, 0.12 + 0.25 * uNight);
+  col = mix(col, airC, air * mix(0.22, 0.80, backL));
+  float between = smoothstep(1600.0, 2600.0, dist) * (1.0 - smoothstep(3200.0, 4200.0, dist));
+  between = max(between, smoothstep(4000.0, 5200.0, dist) * (1.0 - smoothstep(6200.0, 8000.0, dist)));
+  vec3 hazeC = mix(uPaper, vec3(0.90, 0.86, 0.78), 0.45);
+  hazeC = mix(hazeC, vec3(0.80, 0.84, 0.88), backL * 0.4);
+  col = mix(col, hazeC, between * 0.22 * (1.0 - ridge * 0.8));
   if (backL > 0.4) {
-    col = mix(col, vec3(0.70, 0.75, 0.78), (backL - 0.4) * 0.7);
+    col = mix(col, vec3(0.72, 0.76, 0.80), (backL - 0.4) * 0.55);
   }
   col = mix(col, inkCol, ridgeAmt);
 
@@ -750,39 +762,48 @@ uniform vec2 uRes;
 varying vec3 vDir;
 ${NOISE_GLSL}
 
-float cloudLobe(vec2 frag, vec2 c, vec2 rad, float seed) {
+// body/wash and rel only; hatch is applied once in puff space to avoid moire.
+vec3 cloudLobe(vec2 frag, vec2 c, vec2 rad, float seed) {
   vec2 p = (frag - c) / rad;
   float x = p.x;
   float y = p.y;
-  if (abs(x) > 1.25 || y < -0.72 || y > 1.2) return 0.0;
-  float base = -0.55;
-  if (y < base) return 0.0;
-  float top = 0.38
-    + 0.32 * exp(-pow(x * 1.05, 2.0) * 2.0)
-    + 0.22 * exp(-pow((x - 0.48) * 1.7, 2.0) * 2.8)
-    + 0.22 * exp(-pow((x + 0.50) * 1.7, 2.0) * 2.8)
-    + 0.07 * sin((x + seed) * 7.1);
-  top = max(top, 0.20);
-  if (y > top) return 0.0;
-  float halfw = 0.78 + 0.20 * clamp((top - y) / (top - base), 0.0, 1.0);
-  float body = (1.0 - smoothstep(halfw, halfw + 0.14, abs(x)))
-    * smoothstep(base, base + 0.06, y)
-    * (1.0 - smoothstep(top - 0.04, top + 0.03, y));
-  float rel = (y - base) / (top - base + 0.001);
-  float dens = mix(1.0, 0.14, smoothstep(0.06, 0.80, rel));
-  float wob = noise21(vec2(x * 3.2 + seed, y * 5.2));
-  float hatch = 1.0 - smoothstep(0.0, 0.22, abs(fract(gl_FragCoord.y / 2.5 + wob * 0.32) - 0.5));
-  return body * dens * hatch;
+  if (abs(x) > 1.45 || y < -0.85 || y > 1.4) return vec3(0.0);
+  float base = -0.52;
+  float sc = (noise21(vec2(x * 3.4 + seed, y * 2.2)) - 0.45) * 0.26
+           + (noise21(vec2(x * 7.2 + seed * 1.7, y * 5.4)) - 0.5) * 0.12;
+  float top = 0.32
+    + 0.30 * exp(-pow(x * 1.08, 2.0) * 2.0)
+    + 0.26 * exp(-pow((x - 0.50) * 1.55, 2.0) * 2.5)
+    + 0.26 * exp(-pow((x + 0.48) * 1.55, 2.0) * 2.5)
+    + 0.08 * sin((x + seed) * 6.4)
+    + sc;
+  top = max(top, 0.14);
+  if (y > top + 0.04 || y < base - 0.14) return vec3(0.0);
+  float halfw = 0.70 + 0.24 * clamp((top - y) / (top - base + 0.001), 0.0, 1.0) + sc * 0.4;
+  float body = (1.0 - smoothstep(halfw, halfw + 0.18, abs(x)))
+    * smoothstep(base - 0.04, base + 0.09, y)
+    * (1.0 - smoothstep(top - 0.06, top + 0.05, y));
+  if (body < 0.02) return vec3(0.0);
+  float rel = clamp((y - base) / (top - base + 0.001), 0.0, 1.0);
+  float wash = body * mix(0.85, 0.28, smoothstep(0.08, 0.88, rel));
+  return vec3(wash, 0.0, rel);
 }
-float cloudPuff(vec2 frag, vec2 cUv, float scale, float seed) {
+vec3 cloudPuff(vec2 frag, vec2 cUv, float scale, float seed) {
   vec2 c = cUv * uRes;
-  float px = max(uRes.x * scale, 92.0);
-  vec2 rad = vec2(px, px * 0.80);
-  float b = 0.0;
-  b = max(b, cloudLobe(frag, c + vec2(0.0, 0.02 * rad.y), rad * vec2(1.0, 0.78), seed));
-  b = max(b, cloudLobe(frag, c + vec2(-0.42 * rad.x, 0.20 * rad.y), rad * vec2(0.62, 0.72), seed + 1.3));
-  b = max(b, cloudLobe(frag, c + vec2(0.40 * rad.x, 0.16 * rad.y), rad * vec2(0.60, 0.70), seed + 2.1));
-  return b;
+  float px = max(uRes.x * scale, 54.0);
+  vec2 rad = vec2(px, px * 0.78);
+  vec3 a = cloudLobe(frag, c + vec2(0.0, 0.02 * rad.y), rad * vec2(1.0, 0.80), seed);
+  vec3 b = cloudLobe(frag, c + vec2(-0.42 * rad.x, 0.22 * rad.y), rad * vec2(0.64, 0.74), seed + 1.3);
+  vec3 c2 = cloudLobe(frag, c + vec2(0.40 * rad.x, 0.18 * rad.y), rad * vec2(0.60, 0.72), seed + 2.1);
+  float wash = max(a.x, max(b.x, c2.x));
+  float rel = a.x >= b.x && a.x >= c2.x ? a.z : (b.x >= c2.x ? b.z : c2.z);
+  vec2 p = (frag - c) / rad;
+  float psi = (p.y + 0.50 * p.x * p.x + 0.10 * sin(p.x * 3.6 + seed) + 0.04 * sin(p.x * 7.1 + seed * 2.0)) * mix(8.5, 5.2, rel);
+  float hatchLine = 1.0 - smoothstep(0.0, 0.36, abs(fract(psi) - 0.5));
+  float dens = mix(0.95, 0.0, smoothstep(0.06, 0.62, rel));
+  dens *= smoothstep(0.10, 0.42, clamp(wash, 0.0, 1.0));
+  float hatch = wash > 0.06 ? dens * hatchLine : 0.0;
+  return vec3(wash, hatch, rel);
 }
 
 void main(){
@@ -804,25 +825,31 @@ void main(){
     float grain = noise21(gl_FragCoord.xy * 0.22);
     col *= 0.985 + 0.03 * grain;
     col += (stip - 0.5) * 0.018;
-    // 5 discrete engraved cumulus volumes (screen-space, aspect-stable)
-    // plus short horizon streaks. Hatch only; no fill, no outline.
+    // 2-3 smaller cumulus volumes: faint cream-to-blue wash under form-following
+    // hatch, noise-scalloped edges, plus thin flattened streaks near the horizon.
     vec2 uv = gl_FragCoord.xy / max(uRes, vec2(1.0));
-    float cov = 0.0;
     vec2 frag = gl_FragCoord.xy;
-    cov = max(cov, cloudPuff(frag, vec2(0.18, 0.74), 0.105, 1.7));
-    cov = max(cov, cloudPuff(frag, vec2(0.40, 0.83), 0.090, 4.2));
-    cov = max(cov, cloudPuff(frag, vec2(0.63, 0.71), 0.115, 8.9));
-    cov = max(cov, cloudPuff(frag, vec2(0.85, 0.79), 0.085, 11.3));
-    cov = max(cov, cloudPuff(frag, vec2(0.50, 0.58), 0.095, 15.6));
-    // thin broken streaks just above the land, not mid-sky bars
-    if (uv.y > 0.30 && uv.y < 0.40) {
-      float st = noise21(vec2(uv.x * 7.5 + uSeed, 2.4));
-      float band = smoothstep(0.30, 0.33, uv.y) * (1.0 - smoothstep(0.37, 0.40, uv.y));
-      float sh = 1.0 - smoothstep(0.0, 0.28, abs(fract(gl_FragCoord.y / 2.5) - 0.5));
-      cov = max(cov, band * sh * smoothstep(0.62, 0.84, st) * 0.42);
+    vec3 cA = cloudPuff(frag, vec2(0.30, 0.76), 0.058, 1.7);
+    vec3 cB = cloudPuff(frag, vec2(0.66, 0.69), 0.068, 8.9);
+    vec3 cC = cloudPuff(frag, vec2(0.50, 0.84), 0.046, 4.2);
+    float cWash = max(cA.x, max(cB.x, cC.x));
+    float cHatch = max(cA.y, max(cB.y, cC.y));
+    float cRel = cA.x >= cB.x && cA.x >= cC.x ? cA.z : (cB.x >= cC.x ? cB.z : cC.z);
+    vec3 washCol = mix(vec3(0.62, 0.68, 0.76), vec3(0.97, 0.93, 0.84), smoothstep(0.12, 0.84, cRel));
+    col = mix(col, washCol, clamp(cWash, 0.0, 1.0) * 0.70);
+    float streak = 0.0;
+    // gl_FragCoord.y is 0 at the bottom, so the land top (~0.33) sits near uv.y 0.33.
+    // Keep flattened streaks in the cream sky just above the hills.
+    if (uv.y > 0.40 && uv.y < 0.55) {
+      float st = noise21(vec2(uv.x * 6.4 + uSeed, 2.4));
+      float band = smoothstep(0.40, 0.43, uv.y) * (1.0 - smoothstep(0.51, 0.55, uv.y));
+      float curve = uv.y + 0.008 * sin(uv.x * 11.0 + uSeed);
+      float sh = 1.0 - smoothstep(0.0, 0.22, abs(fract(curve * uRes.y / 3.6) - 0.5));
+      float span = smoothstep(0.12, 0.22, uv.x) * (1.0 - smoothstep(0.78, 0.90, uv.x));
+      streak = band * sh * smoothstep(0.72, 0.90, st) * span * 0.28;
     }
     vec3 inkC = mix(vec3(0.165, 0.129, 0.094), col, 0.18 + 0.45 * horB);
-    col = mix(col, inkC, clamp(cov, 0.0, 1.0) * 0.78);
+    col = mix(col, inkC, clamp(cHatch * 0.42 + streak, 0.0, 1.0));
 
   } else {
     if (h > 0.42) col = mix(uMid, uTop, clamp((h - 0.42) / 0.58, 0.0, 1.0));
@@ -897,8 +924,8 @@ void main(){
   vec4 c0 = projectionMatrix * viewMatrix * vec4(iPos, 1.0);
   vec4 c1 = projectionMatrix * viewMatrix * vec4(iPos + camU * sy, 1.0);
   float ndcH = abs(c1.y / max(0.001, c1.w) - c0.y / max(0.001, c0.w));
-  if (ndcH > 0.14) {
-    float cap = 0.14 / ndcH;
+  if (ndcH > 0.16) {
+    float cap = 0.16 / ndcH;
     sx *= cap;
     sy *= cap;
   }
@@ -925,7 +952,7 @@ void main(){
   vec2 cell = vec2(mod(ix, cols), floor(ix / cols));
   vec2 uv = (vUv * 0.90 + 0.05 + cell) / uAtlasGrid;
   vec4 s = texture2D(uAtlas, uv);
-  if (s.a < 0.16) discard;
+  if (s.a < 0.32) discard;
   vec3 col = s.rgb * vShade;
   col = mix(col, uInkUse, 0.08 * (1.0 - uNight));
   col += uLightning * 0.3;
@@ -1653,11 +1680,6 @@ function drawGrownTree(ctx, S, grown, opt) {
     const cx = S * 0.5;
     ctx.strokeStyle = ink;
     ctx.lineCap = "round";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(cx, S * 0.96);
-    ctx.lineTo(cx + (rng() - 0.5) * 3, S * 0.28);
-    ctx.stroke();
     const layers = 5;
     for (let i = 0; i < layers; i++) {
       const y = S * (0.22 + i * 0.13);
@@ -1709,16 +1731,16 @@ function drawGrownTree(ctx, S, grown, opt) {
         ctx.stroke();
       }
     } else {
-      ctx.lineWidth = 1.1;
-      ctx.beginPath();
-      ctx.moveTo(cx, S * 0.92);
-      ctx.lineTo(cx, S * 0.74);
-      ctx.stroke();
-      const n = 8 + (rng() * 5 | 0);
+      const n = 9 + (rng() * 5 | 0);
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = colors[0];
+      drawWobblyCircle(ctx, cx, S * 0.52, S * 0.20, rng);
+      ctx.fill();
+      ctx.globalAlpha = 1;
       for (let i = 0; i < n; i++) {
         const a = (i / n) * Math.PI * 2 + rng() * 0.5;
-        const ox = Math.cos(a) * S * (0.10 + rng() * 0.12);
-        const oy = Math.sin(a) * S * (0.08 + rng() * 0.08) - S * 0.02;
+        const ox = Math.cos(a) * S * (0.08 + rng() * 0.10);
+        const oy = Math.sin(a) * S * (0.07 + rng() * 0.07) - S * 0.02;
         const r = S * (0.05 + rng() * 0.045);
         ctx.fillStyle = colors[(rng() * colors.length) | 0];
         ctx.globalAlpha = 0.86;
@@ -1749,20 +1771,22 @@ function drawGrownTree(ctx, S, grown, opt) {
   if (leavesOn && !grown.spec.cone) {
     function inkScallop(px, py, r) {
       ctx.fillStyle = colors[(rng() * colors.length) | 0];
-      ctx.globalAlpha = 0.86 + rng() * 0.12;
+      ctx.globalAlpha = 0.88 + rng() * 0.10;
       drawWobblyCircle(ctx, px, py, r, rng);
       ctx.fill();
       ctx.save();
       ctx.clip();
-      ctx.globalAlpha = 0.34;
+      // Ink shade the underside of the scallop; leave the lit top almost clean.
       ctx.strokeStyle = ink;
-      ctx.lineWidth = 0.7;
-      ctx.beginPath();
-      for (let hy = py - r; hy < py + r; hy += 2.0) {
-        ctx.moveTo(px - r * 0.05, hy);
-        ctx.lineTo(px + r, hy + 0.7);
+      for (let hy = py; hy < py + r; hy += 1.7) {
+        const under = (hy - py) / r;
+        ctx.globalAlpha = 0.16 + under * 0.42;
+        ctx.lineWidth = 0.65;
+        ctx.beginPath();
+        ctx.moveTo(px - r * 0.15, hy);
+        ctx.lineTo(px + r * 0.95, hy + 0.6);
+        ctx.stroke();
       }
-      ctx.stroke();
       ctx.restore();
       ctx.globalAlpha = 1;
       ctx.strokeStyle = ink;
@@ -1771,18 +1795,22 @@ function drawGrownTree(ctx, S, grown, opt) {
     }
     ctx.strokeStyle = ink;
     ctx.lineCap = "round";
-    const n = 12 + (rng() * 7 | 0);
-    const crownY = S * 0.48;
-    // short trunk only under the lowest scallops, never rising into the crown
-    ctx.lineWidth = 1.15;
-    ctx.beginPath();
-    ctx.moveTo(cx, S * 0.92);
-    ctx.lineTo(cx + (rng() - 0.5) * 0.8, S * 0.72);
-    ctx.stroke();
+    const n = 14 + (rng() * 6 | 0);
+    const crownY = S * 0.58;
+    // Solid wash under the scallops so field furrows cannot show through as sticks.
+    ctx.globalAlpha = 0.92;
+    for (let u = 0; u < 4; u++) {
+      ctx.fillStyle = colors[(rng() * colors.length) | 0];
+      const ur = S * (0.16 + rng() * 0.08);
+      drawWobblyCircle(ctx, cx + (rng() - 0.5) * S * 0.16, crownY + (rng() - 0.5) * S * 0.10, ur, rng);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    // No trunk. Crowns sit low in the cell.
     for (let i = 0; i < n; i++) {
       const a = (i / n) * Math.PI * 2 + rng() * 0.45;
-      const sx = S * (0.20 + rng() * 0.06);
-      const sy = S * (0.16 + rng() * 0.05);
+      const sx = S * (0.16 + rng() * 0.06);
+      const sy = S * (0.13 + rng() * 0.05);
       const ox = Math.cos(a) * sx * (0.5 + rng() * 0.5);
       const oy = Math.sin(a) * sy * (0.45 + rng() * 0.5) - S * 0.02;
       const r = S * (0.055 + rng() * 0.045);
@@ -1870,7 +1898,7 @@ function leafColors(specName, season) {
   if (specName === "cedar") return ["#3E5A45", "#2F4A38", "#4A6A50"];
   if (season === "spring") return ["#7FA866", "#6E9A58", "#8BB36E", "#5E8A4A"];
   if (season === "summer") return ["#2F5D46", "#3A6B50", "#4E7D57", "#2A5340"];
-  if (season === "autumn") return ["#D9A441", "#B5562E", "#8A6420", "#C9842C", "#A65A32"];
+  if (season === "autumn") return ["#D9A441", "#B5562E", "#8A6420", "#C9842C", "#A65A32", "#3E5A45", "#5A6B38"];
   return ["#C4BBA8"];
 }
 
@@ -1947,8 +1975,9 @@ function framesFor(specName, seedSlot, season, cls) {
     bare = 60 + (seedSlot % 4);
   }
   const winterish = season === "winter";
-  const autumnBare = season === "autumn" && !cedar && ((seedSlot * 17) % 10) < 2;
-  if (winterish || autumnBare) return { full: bare, clump: bare };
+  // Autumn keeps leafy crowns. Bare skeletons were reading as a palisade
+  // of trunks above the packed stands (atlas Y is inverted relative to the billboard).
+  if (winterish) return { full: bare, clump: bare };
   return { full: full, clump: clump };
 }
 
@@ -1964,7 +1993,7 @@ let treeRecords = [];
 
 function scatterTrees() {
   const rng = mulberry(2026);
-  const maxN = 8000;
+  const maxN = 9500;
   const pos = [], scale = [], frame = [], frameClump = [], phase = [], kind = [];
   treeRecords = [];
   // Pack stands in woods along the river corridor first, so the hero view is dense.
@@ -2026,24 +2055,49 @@ function scatterTrees() {
   const lx = cw.x - heroW.x, lz = cw.z - heroW.z;
   const llen = Math.hypot(lx, lz) || 1;
   const ux = lx / llen, uz = lz / llen;
-  for (let py = Math.max(2, (HERO.py - 36) | 0); py <= Math.min(ROWS - 3, (HERO.py + 12) | 0); py += 1) {
-    for (let px = Math.max(2, (HERO.px - 28) | 0); px <= Math.min(COLS - 3, (HERO.px + 28) | 0); px += 1) {
+  // Near corner stands and a closer front crest. Packed oak/maple crowns fill
+  // the bottom of the land band and climb the screen edges; the center stays
+  // open so the river, middle ridge, and spire can read.
+  for (let py = Math.max(2, (HERO.py - 52) | 0); py <= Math.min(ROWS - 3, (HERO.py + 28) | 0); py += 1) {
+    for (let px = Math.max(2, (HERO.px - 48) | 0); px <= Math.min(COLS - 3, (HERO.px + 48) | 0); px += 1) {
       const w = pxToWorld(px, py);
       const along = (w.x - heroW.x) * ux + (w.z - heroW.z) * uz;
       const side = (w.x - heroW.x) * uz - (w.z - heroW.z) * ux;
-      // Keep a clearing around the camera. Wings on the front crest; open a center
-      // window so the Patoka gap and the middle ridge can be seen.
-      if (along < 240 || along > 950) continue;
-      if (Math.abs(side) > 560) continue;
-      if (Math.abs(side) < 190) continue;
+      const absS = Math.abs(side);
+      if (Math.hypot(w.x - heroW.x, w.z - heroW.z) < 48) continue;
+      // Center window for the valley and spire.
+      if (along > 60 && along < 2000 && absS < 170) continue;
+      const nearCorner = along >= 30 && along <= 420 && absS >= 160 && absS <= 780;
+      const crestWing = along >= 180 && along <= 900 && absS >= 180 && absS <= 620;
+      if (!nearCorner && !crestWing) continue;
       const cls = coverPx(px, py);
       if (cls === 0) continue;
       const hm = heightPx(px, py);
-      if (hm < heightPx(HERO.px, HERO.py) - 14) continue;
-      const dens = cls === 4 || cls === 5 ? 0.96 : (cls === 6 || cls === 1 ? 0.62 : 0.42);
+      if (hm < heightPx(HERO.px, HERO.py) - 18) continue;
+      const edge = clamp((absS - 160) / 400, 0, 1);
+      const close = 1 - clamp((along - 30) / 500, 0, 1);
+      const dens = (nearCorner ? 0.78 + 0.22 * edge * close : 0.70) * (cls === 4 || cls === 5 ? 1 : (cls === 6 || cls === 1 ? 0.75 : 0.55));
       if (rng() > dens) continue;
-      cands.push({ px: px, py: py, cls: cls === 5 ? 4 : cls, front: 1 });
+      cands.push({ px: px, py: py, cls: cls === 5 ? 4 : cls, front: nearCorner ? 3 : 1 });
     }
+  }
+  // Packed near-corner stands along the view frustum edges, so crowns fill the
+  // bottom of the land band and climb the left and right of the frame.
+  const edgeTan = Math.tan(26 * Math.PI / 180);
+  for (let k = 0; k < 420; k++) {
+    const along = 80 + rng() * 420;
+    const edge = along * edgeTan;
+    const inward = rng() < 0.55 ? (0.42 + rng() * 0.62) : (0.22 + rng() * 0.35);
+    const side = edge * inward * (rng() < 0.5 ? -1 : 1);
+    if (Math.abs(side) < 55 && along < 1400) continue;
+    const x = heroW.x + ux * along + uz * side;
+    const z = heroW.z + uz * along - ux * side;
+    const p = worldToPx(x, z);
+    const px = p.px, py = p.py;
+    if (px < 2 || py < 2 || px > COLS - 3 || py > ROWS - 3) continue;
+    if (coverPx(px, py) === 0) continue;
+    if (rng() > 0.9) continue;
+    cands.push({ px: px, py: py, cls: 4, front: 3 });
   }
   // Clumped woods on the middle ridge, kept off the spire and out of the river gap.
   const midPx = churchP[0], midPy = churchP[1];
@@ -2068,14 +2122,16 @@ function scatterTrees() {
     const j = (rng() * (i + 1)) | 0;
     const tmp = cands[i]; cands[i] = cands[j]; cands[j] = tmp;
   }
+  cands.sort(function (a, b) { return (b.front || 0) - (a.front || 0); });
   for (let ci = 0; ci < cands.length && pos.length / 3 < maxN; ci++) {
     const px = cands[ci].px, py = cands[ci].py, cls = cands[ci].cls;
-    const isFront = cands[ci].front === 1;
+    const isFront = cands[ci].front === 1 || cands[ci].front === 3;
+    const isCorner = cands[ci].front === 3;
     const isMidWood = cands[ci].front === 2;
-    const stand = isFront ? 7 + ((rng() * 5) | 0) : (isMidWood ? 5 + ((rng() * 4) | 0) : (cls === 4 || cls === 5 ? 3 + ((rng() * 4) | 0) : 1));
+    const stand = isCorner ? 9 + ((rng() * 6) | 0) : (isFront ? 8 + ((rng() * 5) | 0) : (isMidWood ? 5 + ((rng() * 4) | 0) : (cls === 4 || cls === 5 ? 3 + ((rng() * 4) | 0) : 1)));
     for (let s = 0; s < stand && pos.length / 3 < maxN; s++) {
-      const jx = (px + (rng() - 0.5) * (isFront ? 0.85 : 1.05));
-      const jy = (py + (rng() - 0.5) * (isFront ? 0.85 : 1.05));
+      const jx = (px + (rng() - 0.5) * (isCorner ? 0.55 : (isFront ? 0.70 : 1.05)));
+      const jy = (py + (rng() - 0.5) * (isCorner ? 0.55 : (isFront ? 0.70 : 1.05)));
       const w = pxToWorld(jx, jy);
       const c2 = coverPx(jx, jy);
       if (c2 === 0 || c2 === 3) continue;
@@ -2083,13 +2139,16 @@ function scatterTrees() {
       const hm = heightPx(jx, jy);
       let specName = pickSpecies(c2 === 5 && !isFront ? 5 : cls, rng);
       if (isFront || isMidWood) specName = rng() < 0.48 ? "oak" : "maple";
+      // Keep cedars out of the hero stand so cone trunks do not read as sticks.
+      if (Math.hypot(w.x - heroW.x, w.z - heroW.z) < 900) specName = rng() < 0.48 ? "oak" : "maple";
       const slot = (rng() * 8) | 0;
-      const fr = framesFor(specName, slot, clock.season, c2);
+      // Pass the chosen species, not raw cover: class 5 would still pick cedar frames.
+      const fr = framesFor(specName, slot, clock.season, specName === "cedar" ? 5 : 4);
       const isMid = cands[ci].front === 2;
-      const tall = isFront ? (8 + rng() * 5) : (isMid ? (7 + rng() * 4) : (specName === "cedar" ? 9 + rng() * 5 : 7 + rng() * 5));
-      const wid = tall * (specName === "cedar" ? 0.48 : 0.78) * (0.85 + rng() * 0.3);
+      const tall = isCorner ? (10 + rng() * 6) : (isFront ? (8 + rng() * 5) : (isMid ? (7 + rng() * 4) : (specName === "cedar" ? 9 + rng() * 5 : 7 + rng() * 5)));
+      const wid = tall * (specName === "cedar" ? 0.48 : 0.82) * (0.85 + rng() * 0.3);
       pos.push(w.x, yOf(hm), w.z);
-      scale.push(wid * 1.28, tall * 1.35);
+      scale.push(wid * (isCorner ? 1.45 : 1.28), tall * (isCorner ? 1.55 : 1.35));
       frame.push(fr.full);
       frameClump.push(fr.clump);
       phase.push(rng());
@@ -3058,9 +3117,9 @@ function setMoonPos() {
 
 
 function farLiftAt(dist) {
-  const t = clamp((dist - 3000) / 7000, 0, 1);
+  const t = clamp((dist - 2000) / 8000, 0, 1);
   const s = t * t * (3 - 2 * t);
-  return 1 + 1.6 * s;
+  return 1 + 1.85 * s;
 }
 function terrainYAt(x, z) {
   const h = heightWorld(x, z);
@@ -3111,11 +3170,11 @@ function placeFixedLandmarks(loaded) {
 }
 
 const RIDGE_BANDS = [
-  { d0: 200, d1: 700, widthPx: 2.2, color: 0x2A2118 },
-  { d0: 700, d1: 1500, widthPx: 1.6, color: 0x4A4034 },
-  { d0: 1500, d1: 3200, widthPx: 1.2, color: 0x6A6E72 },
-  { d0: 3200, d1: 6500, widthPx: 0.9, color: 0x8A949C },
-  { d0: 6500, d1: 13000, widthPx: 0.65, color: 0xA0A8B0 }
+  { d0: 200, d1: 700, widthPx: 2.2, color: 0x2A2118, taper: false },
+  { d0: 700, d1: 1600, widthPx: 1.55, color: 0x3A3228, taper: true },
+  { d0: 1600, d1: 3400, widthPx: 1.25, color: 0x4A453C, taper: true },
+  { d0: 3400, d1: 6500, widthPx: 0.9, color: 0x8A949C, taper: false },
+  { d0: 6500, d1: 13000, widthPx: 0.65, color: 0xA0A8B0, taper: false }
 ];
 
 function pixelWorldWidth(px, dist) {
@@ -3192,20 +3251,40 @@ function layoutRidgeLines() {
   }
   for (let b = 0; b < bands.length; b++) {
     const pts = crests[b];
-    if (pts.length < 4) continue;
+    if (pts.length < 6) continue;
     const cleaned = [pts[0]];
     for (let i = 1; i < pts.length; i++) {
       const pr = cleaned[cleaned.length - 1];
       const jump = Math.hypot(pts[i].x - pr.x, pts[i].z - pr.z);
       const yJump = Math.abs(pts[i].y - pr.y);
-      if (jump > 240 || yJump > 80) {
-        if (cleaned.length >= 5) emitRidgeStrip(cleaned, bands[b]);
+      if (jump > 320 || yJump > 120) {
+        if (cleaned.length >= 8) emitRidgeStrip(smoothCrest(cleaned, 4), bands[b]);
         cleaned.length = 0;
       }
       cleaned.push(pts[i]);
     }
-    if (cleaned.length >= 5) emitRidgeStrip(cleaned, bands[b]);
+    if (cleaned.length >= 8) emitRidgeStrip(smoothCrest(cleaned, 4), bands[b]);
   }
+}
+
+function smoothCrest(pts, passes) {
+  let cur = pts.slice();
+  for (let p = 0; p < passes; p++) {
+    if (cur.length < 3) break;
+    const out = [cur[0]];
+    for (let i = 1; i < cur.length - 1; i++) {
+      const a = cur[i - 1], b = cur[i], c = cur[i + 1];
+      out.push({
+        x: a.x * 0.22 + b.x * 0.56 + c.x * 0.22,
+        y: a.y * 0.22 + b.y * 0.56 + c.y * 0.22,
+        z: a.z * 0.22 + b.z * 0.56 + c.z * 0.22,
+        dist: b.dist
+      });
+    }
+    out.push(cur[cur.length - 1]);
+    cur = out;
+  }
+  return cur;
 }
 
 
@@ -3213,10 +3292,21 @@ function emitRidgeStrip(pts, band) {
   const pos = [];
   const idx = [];
   const cx = camera.position.x, cy = camera.position.y, cz = camera.position.z;
-  for (let i = 0; i < pts.length; i++) {
+  const n = pts.length;
+  // Occasional small breaks so a mid crest does not read as one stray pen stroke.
+  const breaks = {};
+  if (band.taper && n > 16) {
+    const nBreak = 1 + ((n / 28) | 0);
+    for (let b = 0; b < nBreak; b++) {
+      const at = (4 + ((b + 1) * (n - 8) / (nBreak + 1)) | 0);
+      breaks[at] = 1;
+      if (at + 1 < n - 3) breaks[at + 1] = 1;
+    }
+  }
+  for (let i = 0; i < n; i++) {
     const p = pts[i];
     const pr = pts[Math.max(0, i - 1)];
-    const nx = pts[Math.min(pts.length - 1, i + 1)];
+    const nx = pts[Math.min(n - 1, i + 1)];
     const tx = nx.x - pr.x, tz = nx.z - pr.z;
     const vx = p.x - cx, vy = p.y - cy, vz = p.z - cz;
     // camera-facing sideways
@@ -3225,10 +3315,17 @@ function emitRidgeStrip(pts, band) {
     if (Math.hypot(sx, sy, sz) < 1e-6) { sx = -tz; sy = 0; sz = tx; }
     const sl = Math.hypot(sx, sy, sz) || 1;
     sx /= sl; sy /= sl; sz /= sl;
-    const half = Math.max(pixelWorldWidth(band.widthPx, p.dist || 400), 0.25) * 0.5;
+    let env = 1;
+    if (band.taper) {
+      const t = n <= 1 ? 1 : i / (n - 1);
+      env = Math.sin(t * Math.PI);
+      env = env * env * (3 - 2 * env);
+    }
+    const wpx = band.widthPx * (0.22 + 0.78 * env);
+    const half = Math.max(pixelWorldWidth(wpx, p.dist || 400), 0.18) * 0.5;
     pos.push(p.x - sx * half, p.y - sy * half, p.z - sz * half);
     pos.push(p.x + sx * half, p.y + sy * half, p.z + sz * half);
-    if (i > 0) {
+    if (i > 0 && !breaks[i] && !breaks[i - 1]) {
       const a = (i - 1) * 2;
       idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
     }
