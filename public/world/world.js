@@ -1496,9 +1496,9 @@ function targetHorizon() {
   const aspect = camera.aspect;
   // Geometric aim sits a little under the visible ridge so flood-from-top
   // stays in the 66-74 band after towns and woods fill the south.
-  if (aspect < 0.7) return 0.725;
-  if (aspect < 1.1) return 0.73;
-  return 0.73;
+  if (aspect < 0.7) return 0.73;
+  if (aspect < 1.1) return 0.735;
+  return 0.735;
 }
 
 function applyFovAndPitch() {
@@ -5036,7 +5036,10 @@ function landmarkAvoidList() {
   for (let i = 0; i < keys.length; i++) {
     const s = LANDMARK_SITES[keys[i]];
     const w = pxToWorld(s.px, s.py);
-    list.push({ x: w.x, z: w.z, r: keys[i].indexOf("stadium") >= 0 || keys[i].indexOf("courthouse") >= 0 ? 55 : 42 });
+    let r = 42;
+    if (keys[i].indexOf("stadium") >= 0 || keys[i].indexOf("courthouse") >= 0) r = 55;
+    if (keys[i].indexOf("mill") >= 0 || keys[i].indexOf("depot") >= 0) r = 80;
+    list.push({ x: w.x, z: w.z, r: r });
   }
   const hw = pxToWorld(HERO.px, HERO.py);
   list.push({ x: hw.x, z: hw.z, r: 80 });
