@@ -1,21 +1,28 @@
-# Dubois County flyover: data prototype (not for merge)
+# Dubois County flyover (prototype, not for merge)
 
-Status: data stage only. No 3D scene has been built yet. Work stopped here at Dimitry's request so he can review the style idea first.
+A 3D engraved-atlas view of Jasper and the Patoka River valley, under a live sky. The camera sits low and looks slightly up, so the land is a band along the bottom of the frame and the sky (stars, moon, weather) fills the rest.
 
-## What is here
-- `data/height.png` 1024 x 768, 31.25 m cells, EPSG:5070 bbox 778000,1734000 to 810000,1758000 (about 32 x 24 km: Jasper in the west, Patoka Lake in the east). Height is 16-bit packed in an 8-bit RGB PNG (meters = (R*256+G)/10 + 100) so a browser canvas can decode it without precision loss. Range 128.9 m to 262.4 m. Water bodies are flattened to a level surface.
-- `data/cover.png` 1024 x 768 grayscale, simplified land cover class per cell: 0 water, 1 developed open, 2 developed, 3 barren, 4 deciduous forest, 5 evergreen, 6 grass and pasture, 7 crops, 8 wetland. The Patoka River centerline from NHD is burned in as a 2 cell water channel.
-- `data/meta.json` bounds, encoding, class table, the St. Joseph church landmark cell, and a smoothed Patoka valley drift path (pixel coords, west to east).
-- `../../tools/world/build_world_data.py` rebuilds all three from the raw downloads.
+## Open
+- Local: serve `public/` and visit `/world/`.
+- Branch preview: `https://proto-dubois-flyover.popboard.pages.dev/world/`
 
-Total size: about 0.9 MB.
+## Controls
+- The view drifts slowly east along the Patoka valley when idle.
+- Drag to yaw and to move forward or back. The upward tilt stays put.
+- Move the cursor over the land to part grass and wheat, ruffle trees, ripple the water, and open a gap in the clouds.
 
-## Sources (all public domain, US Government works)
-- USGS 3D Elevation Program (3DEP), 1/3 arc-second DEM, via the 3DEPElevation ImageServer exportImage endpoint at elevation.nationalmap.gov.
-- MRLC National Land Cover Database (NLCD) 2021, Land Cover L48, via the mrlc.gov WCS.
-- USGS National Hydrography Dataset (NHD) flowlines named Patoka River, via hydro.nationalmap.gov.
+## Debug query
+- `?season=spring|summer|autumn|winter`
+- `?sky=dawn|day|dusk|night`
+- `?wx=clear|partly|cloudy|rain|storm|snow|fog`
+- `?at=` an ISO date, for example `2026-10-15T13:00:00`
+- `?pathT=0.38` freezes the camera along the valley path (0 to 1)
+- `?freeze=1` stops drift and wind
+- `?hud=1` shows horizon share and frame time
 
-Raw downloads are kept out of the repo.
+Snow lies on the ground only when the weather is snow. Winter trees are bare branches with a few dark cedars.
 
-## Not done yet
-Three.js scene, contour shader, tree and wheat instancing, water, sky, weather, season and time of day skins, fallbacks, frames. See /workspace/home-redesign/WORLD.md for Leo's spec.
+## Data
+`data/height.png`, `data/cover.png`, and `data/meta.json` are a 32 by 24 km USGS 3DEP / NLCD / NHD extract. See the previous commit on this branch for sources. Rebuild with `tools/world/build_world_data.py`.
+
+Reduced motion freezes the scene. Without WebGL, a still 2D engraving of the same view is shown instead.

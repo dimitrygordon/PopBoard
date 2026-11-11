@@ -1,0 +1,115 @@
+@font-face {
+  font-family: Literata;
+  src: url("../fonts/literata.ttf") format("truetype");
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #070B14;
+  color: #EDE6D6;
+  font-family: Literata, "Palatino Linotype", Palatino, "Times New Roman", serif;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: none;
+}
+
+#world, #wx, #fallback, #still {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#wx, #fallback, #still {
+  pointer-events: none;
+}
+
+#fallback {
+  z-index: 2;
+  background: #EDE6D6;
+  color: #2A2118;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+#fallback[hidden] { display: none; }
+
+#fallback p {
+  margin: 0 1.2rem 1.2rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+}
+
+#still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#caption {
+  position: fixed;
+  left: 1.1rem;
+  bottom: 0.9rem;
+  z-index: 3;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+#place {
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+#when {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+}
+
+#hud {
+  position: fixed;
+  right: 0.8rem;
+  top: 0.7rem;
+  z-index: 4;
+  font: 11px/1.4 ui-monospace, Menlo, monospace;
+  background: rgba(7, 11, 20, 0.55);
+  color: #EDE6D6;
+  padding: 0.4rem 0.55rem;
+  border-radius: 4px;
+  pointer-events: none;
+  white-space: pre;
+}
+
+#hud[hidden] { display: none; }
+
+body[data-sky="day"] #caption,
+body[data-sky="dawn"] #caption {
+  color: #2A2118;
+  text-shadow: 0 1px 0 rgba(237, 230, 214, 0.55);
+}
+
+body[data-sky="dusk"] #caption {
+  color: #EDE6D6;
+}
+
+#fallbackImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+#still { z-index: 1; }
