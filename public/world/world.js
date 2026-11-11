@@ -189,7 +189,9 @@ function skyColors(alt, wxKind) {
   for (let k = 0; k < 3; k++) {
     const l = (c[k][0] + c[k][1] + c[k][2]) / 3;
     c[k] = lerp3(c[k], [l, l, l + 6], gray);
-    c[k] = lerp3(c[k], [20, 22, 30], dim);
+    // Keep the horizon paler in rain so a light band can sit under the cloud base.
+    const dimK = k === 2 ? dim * 0.20 : (k === 1 ? dim * 0.50 : dim);
+    c[k] = lerp3(c[k], [20, 22, 30], dimK);
   }
   return c;
 }
@@ -2085,30 +2087,44 @@ void main(){
   float alpha = 0.0;
 
   if (uShaft > 0.5) {
-    // World-fixed rain curtains: fine slanted shafts, otherwise invisible.
-    float rx = vUv.x * 70.0 + vUv.y * 36.0 + uTime * (1.0 - uReduce) * 1.1;
-    float shaft = 1.0 - smoothstep(0.0, 0.07, abs(fract(rx) - 0.5));
-    shaft *= step(0.18, hash21(vec2(floor(rx), s)));
-    shaft *= step(0.12, hash21(vec2(floor(rx), floor(vUv.y * 14.0) + s)));
-    if (shaft < 0.05) discard;
-    col = mix(uInk, vec3(0.62, 0.64, 0.68), 0.7);
-    alpha = shaft * 0.38 * (1.0 - vUv.y * 0.35);
-    b = 1.0; rel = vUv.y; rim = 0.0;
+    // Gray hatched curtain, tapering toward the ground and the sides, slanted with the wind.
+    float x = vUv.x * 2.0 - 1.0;
+    float y = vUv.y;
+    float side = 1.0 - smoothstep(0.42 + 0.50 * y, 1.02, abs(x));
+    float vert = smoothstep(0.0, 0.10, y) * smoothstep(1.0, 0.86, y);
+    float rx = vUv.x * 22.0 + vUv.y * 14.0 + uTime * (1.0 - uReduce) * 0.9;
+    float hatchL = 1.0 - smoothstep(0.0, 0.20, abs(fract(rx) - 0.5));
+    hatchL *= step(0.16, hash21(vec2(floor(rx), s)));
+    hatchL *= step(0.10, hash21(vec2(floor(rx), floor(vUv.y * 11.0) + s)));
+    float body = side * vert;
+    if (body < 0.04) discard;
+    vec3 gray = vec3(0.50, 0.54, 0.58);
+    col = mix(gray, mix(uInk, vec3(0.40, 0.44, 0.48), 0.45), hatchL * 0.50);
+    alpha = body * mix(0.16, 0.42, hatchL) * (0.55 + 0.45 * y);
+    b = 1.0; rel = vUv.y; rim = 0.0; hatch = hatchL;
   } else if (uDeck > 0.5) {
-    // Horizontal world deck. Darker toward the horizon (far fragments). No paper holes.
-    float dist = length(vWorld - cameraPosition);
-    rel = clamp(1.0 - dist / 14000.0, 0.0, 1.0);
-    vec3 bot = mix(vec3(0.38, 0.40, 0.44), vec3(0.26, 0.28, 0.32), uGray);
-    vec3 midc = mix(vec3(0.52, 0.54, 0.57), vec3(0.38, 0.40, 0.44), uGray);
-    vec3 top = mix(vec3(0.62, 0.64, 0.66), vec3(0.48, 0.50, 0.54), uGray);
-    float yWave = rel + (noise21(vWorld.xz * 0.0012 + vec2(s, 0.0)) - 0.5) * 0.05;
-    float tone = yWave < 0.34 ? 0.0 : (yWave < 0.68 ? 1.0 : 2.0);
-    vec3 wash = tone < 0.5 ? bot : (tone < 1.5 ? midc : top);
-    // Hatch in world-direction (elevation, azimuth), not on the plane UV.
-    // Varied spacing, stroke length, waviness, and lumps so the deck is not even ruling.
+    // Horizontal world deck. Darkest overhead, lighter and flatter toward the ridges.
+    // Lumpy rolls of darker hatched gray with thin paler gaps, not a flat dark band.
     vec3 wr = normalize(vWorld - cameraPosition);
     float elev = wr.y;
     float azim = atan(wr.x, wr.z);
+    float dist = length(vWorld - cameraPosition);
+    rel = clamp(1.0 - dist / 14000.0, 0.0, 1.0);
+    float up = smoothstep(0.02, 0.58, elev);
+    vec3 pale = mix(vec3(0.70, 0.72, 0.74), vec3(0.60, 0.62, 0.65), uGray);
+    vec3 midc = mix(vec3(0.50, 0.52, 0.55), vec3(0.40, 0.42, 0.46), uGray);
+    vec3 dark = mix(vec3(0.34, 0.36, 0.40), vec3(0.26, 0.28, 0.32), uGray);
+    vec3 wash = mix(pale, midc, up * 0.70);
+    wash = mix(wash, dark, up * up * 0.85);
+    float lumps = noise21(vec2(azim * 3.2, elev * 6.0 + s));
+    // Rounded undersides: pattern changes with elevation so rolls do not form vertical pillars.
+    float el = elev * mix(12.0, 32.0, up);
+    float roll = sin(azim * 12.0 + s * 2.0 + el * 0.55) * 0.50
+      + sin(azim * 20.0 + el * 1.15 + s) * 0.35
+      + (lumps - 0.5) * 0.40;
+    float rollDark = smoothstep(-0.05, 0.50, roll) * mix(0.20, 1.0, up);
+    wash = mix(wash, pale, (1.0 - rollDark) * 0.58);
+    wash = mix(wash, dark, rollDark * 0.58);
     float wave = (noise21(vec2(azim * 2.2, s)) - 0.5) * 0.055;
     wave += sin(azim * 4.2 + s) * 0.020;
     wave += (noise21(vec2(azim * 7.5, elev * 10.0 + s)) - 0.5) * 0.028;
@@ -2116,7 +2132,6 @@ void main(){
     float row = (elev + wave) * spacing;
     float rid = floor(row);
     float f = fract(row) - 0.5;
-    // Break each almucantar into short strokes of uneven length, with pen lifts.
     float azSpan = mix(4.0, 13.0, hash21(vec2(rid, s + 2.1)));
     float along = azim * azSpan + hash21(vec2(rid, s + 6.0)) * 3.0;
     float segId = floor(along);
@@ -2126,17 +2141,20 @@ void main(){
     float taper = smoothstep(0.0, 0.12, segF) * smoothstep(segLen, segLen - 0.12, segF);
     float lift = step(0.18, hash21(vec2(rid * 11.0, segId + s)));
     float line = 1.0 - smoothstep(0.0, 0.22, abs(f));
-    float lumps = noise21(vec2(azim * 0.70, elev * 1.35) + vec2(s, 2.0));
-    lumps = lumps * 0.55 + noise21(vec2(azim * 0.28, elev * 0.6 + s)) * 0.45;
-    lumps = smoothstep(0.18, 0.82, lumps);
-    float dens = mix(0.10, 1.0, lumps) * mix(0.95, 0.20, clamp(elev / 0.85, 0.0, 1.0));
+    float dens = mix(0.18, 1.0, rollDark) * mix(0.35, 1.0, up);
     hatch = dens * line * lift * inSeg * taper;
-    col = mix(wash, uInk, clamp(hatch * 0.50, 0.0, 0.66));
+    col = mix(wash, uInk, clamp(hatch * 0.46, 0.0, 0.62));
     // Soft circular fade so the square deck edge never reads as a seam.
-    float edge = 1.0 - smoothstep(0.74, 0.92, length(vUv - 0.5) * 2.0);
+    float edge = 1.0 - smoothstep(0.60, 0.86, length(vUv - 0.5) * 2.0);
+    // Leave a lighter band of sky between the cloud base and the far ridges.
+    float gap0 = mix(0.022, 0.040, uRain);
+    float gap1 = mix(0.078, 0.125, uRain);
+    float skyGap = smoothstep(gap0, gap1, elev);
+    float scallop = 0.5 + 0.5 * sin(azim * 10.5 + s) + 0.28 * (lumps - 0.5);
+    skyGap *= smoothstep(0.0, 0.42, skyGap / max(0.12, 0.38 + scallop * 0.25));
     rim = 1.0 - smoothstep(0.0, 0.12, rel);
     b = 1.0;
-    alpha = 0.96 * edge;
+    alpha = 0.96 * edge * skyGap;
   } else if (uCirrus > 0.5) {
     // A few long, fine, curved strokes. Mesh yaw follows the wind. ~30% ink.
     vec2 q = (vUv - 0.5);
@@ -2427,13 +2445,15 @@ function buildVolClouds() {
   }
   if (kind === "rain" || kind === "storm") {
     // Short veils hanging from the cloud bases, not a screen across the sky dome.
+    const heroW = pxToWorld(HERO.px, HERO.py);
+    const lookAz = Math.atan2(anchor.x - heroW.x, anchor.z - heroW.z);
+    const base = cloudBaseM();
+    // 4 curtains hanging from the cloud base down to the land, slanted with the wind.
     const curtains = [
-      { az: 0.04, dist: 380, alt: 480, sx: 900, sy: 720, seed: 31.1 },
-      { az: 0.20, dist: 820, alt: 540, sx: 1100, sy: 800, seed: 32.4 },
-      { az: -0.16, dist: 1300, alt: 600, sx: 1300, sy: 860, seed: 33.8 },
-      { az: 0.08, dist: 1900, alt: 640, sx: 1500, sy: 900, seed: 34.6 },
-      { az: -0.28, dist: 560, alt: 500, sx: 860, sy: 740, seed: 35.2 },
-      { az: 0.32, dist: 1500, alt: 620, sx: 1600, sy: 880, seed: 36.0 }
+      { side: -0.18, dist: 620, sx: 520, seed: 31.1 },
+      { side: 0.10, dist: 980, sx: 680, seed: 32.4 },
+      { side: 0.28, dist: 1480, sx: 820, seed: 33.8 },
+      { side: -0.08, dist: 1980, sx: 960, seed: 34.6 }
     ];
     for (let i = 0; i < curtains.length; i++) {
       const sp = curtains[i];
@@ -2446,12 +2466,13 @@ function buildVolClouds() {
       mesh.frustumCulled = false;
       mesh.renderOrder = 2;
       volCloudGroup.add(mesh);
+      const az = lookAz + sp.side;
       volCloudItems.push({
         mesh: mesh, kind: 0,
-        homeX: anchor.x + offsetNorth(sp.az, sp.dist).x,
-        homeY: ground + sp.alt,
-        homeZ: anchor.z + offsetNorth(sp.az, sp.dist).z,
-        sx: sp.sx, sy: sp.sy, seed: sp.seed, flat: false, shaft: true
+        homeX: heroW.x + Math.sin(az) * sp.dist,
+        homeY: ground + base * 0.48,
+        homeZ: heroW.z + Math.cos(az) * sp.dist,
+        sx: sp.sx, sy: base * 0.96, seed: sp.seed, flat: false, shaft: true
       });
     }
   }
@@ -2470,6 +2491,11 @@ function layoutVolClouds() {
     it.mesh.scale.set(it.sx, it.sy, 1);
     if (it.flat) {
       it.mesh.rotation.set(-Math.PI / 2, 0, 0);
+    } else if (it.shaft) {
+      const yaw = Math.atan2(cx - x, cz - z);
+      const w = windToward();
+      const lean = Math.atan2((w.ms || 0) * 0.28, 12.0);
+      it.mesh.rotation.set(-lean, yaw, 0);
     } else if (it.cirrus) {
       // Long axis along the wind (toward). Upright, not camera-tilted.
       const yaw = Math.atan2(drift.x, drift.z);
@@ -2650,12 +2676,13 @@ function makeRainMat(close) {
         float dist = length(origin - uCam);
         vDist = dist;
         vAlong = aCorner.y;
-        // Ink strokes sized to stay about 1.2-2 px across, short near and longer as veils far out.
+        // Near strokes are longer and darker; far ones soften into a veil. Fine ink, ~1.5 px.
         float pix = max(0.10, dist * 0.00105);
-        float len = uClose > 0.5 ? mix(3.2, 6.5, h3) : mix(3.4, 7.2, h3);
-        float wid = uClose > 0.5 ? pix * 2.1 : pix * mix(1.25, 1.8, h2);
-        len *= mix(1.0, 2.4, smoothstep(500.0, 2000.0, dist));
-        wid *= mix(1.0, 1.35, smoothstep(700.0, 2000.0, dist));
+        float far = smoothstep(280.0, 1800.0, dist);
+        float len = uClose > 0.5 ? mix(7.0, 12.0, h3) : mix(8.0, 16.0, h3);
+        float wid = uClose > 0.5 ? pix * 1.8 : pix * mix(1.2, 1.6, h2);
+        len *= mix(1.0, 0.55, far);
+        wid *= mix(1.0, 1.25, far);
         vec3 p = origin + dir * (aCorner.y * len) + side * (aCorner.x * wid);
         gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
       }
@@ -2668,14 +2695,14 @@ function makeRainMat(close) {
         float along = 1.0 - abs(vAlong) * 2.0;
         float body = smoothstep(0.0, 0.35, along);
         if (body < 0.05) discard;
-        vec3 ink = vec3(0.165, 0.129, 0.094);
-        vec3 veil = vec3(0.50, 0.54, 0.58);
+        vec3 ink = vec3(0.30, 0.36, 0.42);
+        vec3 veil = vec3(0.55, 0.58, 0.62);
         float far = smoothstep(280.0, 1800.0, vDist);
         vec3 col = mix(ink, veil, far);
-        float alpha = body * mix(0.62, 0.16, far);
+        float alpha = body * mix(0.50, 0.16, far);
         if (uClose > 0.5) {
           col = ink;
-          alpha = body * 0.82;
+          alpha = body * 0.55;
         }
         gl_FragColor = vec4(col, alpha);
       }
@@ -2996,51 +3023,68 @@ function drawGrownTree(ctx, S, grown, opt) {
     // height 1.5-2x width, built from overlapping foliage clumps.
     // White pine: irregular layered tiers with a rounded crown.
     // No needle tips, no thin vertical spikes.
-    // Fill most of the atlas cell; the billboard scale applies the 1.5-2x aspect.
-    const crownTop = S * 0.06;
+    // One soft cone per tree: blunt rounded tip, slightly lumpy irregular outline,
+    // built from small foliage clumps. Never stacked boxes or horizontal tiers.
+    const crownTop = S * 0.07;
     const crownBot = S * 0.90;
     const H = crownBot - crownTop;
-    const baseHalf = S * 0.44;
+    const baseHalf = S * (isPine ? 0.42 : 0.38);
     ctx.globalAlpha = 1;
-    if (isPine) {
-      const capR = baseHalf * 0.46;
-      ctx.fillStyle = colors[0];
-      ctx.globalAlpha = 0.95;
-      drawBlobMass(ctx, cx, crownTop + capR * 0.85, capR * 1.15, capR * 0.95, rng);
-      ctx.fill();
-      const tiers = 4 + ((rng() * 3) | 0);
-      for (let i = 0; i < tiers; i++) {
-        const t = (i + 0.28) / tiers;
-        const y = crownTop + H * t;
-        const wobble = 0.82 + rng() * 0.28;
-        const half = baseHalf * (0.42 + 0.58 * t) * wobble;
-        const ry = S * (0.10 + rng() * 0.05);
-        ctx.fillStyle = colors[(i + 1) % colors.length];
-        ctx.globalAlpha = 0.93;
-        drawBlobMass(ctx, cx + (rng() - 0.5) * half * 0.16, y, half, ry, rng);
-        ctx.fill();
-      }
-    } else {
-      ctx.fillStyle = colors[0];
-      ctx.globalAlpha = 0.95;
-      const topR = baseHalf * 0.48;
-      drawBlobMass(ctx, cx, crownTop + topR * 0.70, topR, topR * 0.85, rng);
-      ctx.fill();
-      const clumps = 14 + ((rng() * 6) | 0);
-      for (let i = 0; i < clumps; i++) {
-        const t = Math.pow((i + 1) / clumps, 0.75);
-        const y = crownTop + H * t + (rng() - 0.5) * S * 0.03;
-        const env = 0.48 + 0.52 * Math.sin((t * 0.88 + 0.12) * Math.PI * 0.5);
-        const half = baseHalf * env;
-        const x = cx + (rng() - 0.5) * half * 0.42;
-        const rx = half * (0.50 + rng() * 0.22);
-        const ry = S * (0.09 + (1.0 - t) * 0.04 + rng() * 0.03);
-        ctx.fillStyle = colors[i % colors.length];
-        ctx.globalAlpha = 0.94;
-        drawBlobMass(ctx, x, y, rx, ry, rng);
-        ctx.fill();
-      }
+    function coneHalf(t) {
+      const blunt = 0.20 + 0.80 * Math.pow(Math.max(0, Math.min(1, t)), 0.82);
+      const lump = Math.sin(t * 9.2 + (isPine ? 1.2 : 0.4)) * 0.045
+        + Math.sin(t * 17.0 + 2.1) * 0.025
+        + (rng() - 0.5) * 0.03;
+      return baseHalf * Math.max(0.12, blunt + lump);
     }
+    function softBlob(x, y, rx, ry) {
+      ctx.beginPath();
+      const n = 18;
+      for (let i = 0; i <= n; i++) {
+        const a = (i % n) / n * Math.PI * 2;
+        const j = 0.86 + rng() * 0.22;
+        const px = x + Math.cos(a) * rx * j;
+        const py = y + Math.sin(a) * ry * j;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.fillStyle = colors[0];
+    ctx.globalAlpha = 0.96;
+    ctx.beginPath();
+    const steps = 24;
+    const tTip = 0.10;
+    const tipW = coneHalf(tTip);
+    ctx.moveTo(cx - tipW, crownTop + H * tTip);
+    ctx.quadraticCurveTo(cx, crownTop - H * 0.01, cx + tipW, crownTop + H * tTip);
+    for (let i = Math.ceil(tTip * steps); i <= steps; i++) {
+      const tt = i / steps;
+      ctx.lineTo(cx + coneHalf(tt), crownTop + H * tt);
+    }
+    for (let i = steps; i >= Math.ceil(tTip * steps); i--) {
+      const tt = i / steps;
+      ctx.lineTo(cx - coneHalf(tt), crownTop + H * tt);
+    }
+    ctx.closePath();
+    ctx.fill();
+    const tipR = baseHalf * 0.30;
+    softBlob(cx, crownTop + tipR * 0.72, tipR * 1.12, tipR * 0.95);
+    const clumps = (opt.lod === "clump" ? 10 : 18) + ((rng() * 4) | 0);
+    for (let i = 0; i < clumps; i++) {
+      const tt = Math.pow((i + 0.35) / clumps, 0.80);
+      const half = coneHalf(tt);
+      const side = (i % 2 ? 1 : -1) * (0.15 + rng() * 0.80);
+      const x = cx + side * half * 0.92;
+      const y = crownTop + H * tt + (rng() - 0.5) * S * 0.016;
+      const rx = Math.max(S * 0.035, half * (0.22 + rng() * 0.12));
+      const ry = S * (0.038 + (1.0 - tt) * 0.02 + rng() * 0.012);
+      ctx.fillStyle = colors[i % colors.length];
+      ctx.globalAlpha = 0.88;
+      softBlob(x, y, rx, ry);
+    }
+    ctx.globalAlpha = 1;
     // Hatched shading on the shadow side, clipped to the crown.
     ctx.save();
     ctx.beginPath();
@@ -3171,8 +3215,8 @@ function drawGrownTree(ctx, S, grown, opt) {
 }
 
 function leafColors(specName, season) {
-  if (specName === "cedar") return ["#3F5340", "#2F4A38", "#4A5A38", "#35503A"];
-  if (specName === "pine") return ["#3A5A40", "#2C4A34", "#456348", "#334F3A"];
+  if (specName === "cedar") return ["#4A5E5A", "#3A4E4C", "#566662", "#3E524E"];
+  if (specName === "pine") return ["#48605C", "#384E4E", "#5A6A66", "#3C524E"];
   if (season === "spring") return ["#6A8A58", "#5E7A4A", "#7A945E", "#4E6A40"];
   if (season === "summer") return ["#2F5D46", "#3A6B50", "#4E7D57", "#2A5340"];
   if (season === "autumn") return ["#C46A32", "#D4A044", "#E0B056", "#B85A28", "#C9842C", "#A84820", "#9A5A1C", "#DC8A38"];
@@ -3430,9 +3474,9 @@ function scatterTrees() {
       let tall = size;
       let wid = size * 1.42 * (0.94 + rng() * 0.12);
       if (isConifer) {
-        const aspect = specName === "pine" ? (1.45 + rng() * 0.25) : (1.58 + rng() * 0.32);
-        tall = size * 0.96;
-        wid = (tall / aspect) * 1.12;
+        const aspect = specName === "pine" ? (1.50 + rng() * 0.22) : (1.62 + rng() * 0.28);
+        tall = size * 0.70;
+        wid = tall / aspect;
       }
       pos.push(w.x, yOf(hm), w.z);
       scale.push(wid, tall);
@@ -4732,6 +4776,7 @@ function buildTown() {
 
   scatterBuildings();
   scatterPathFarms();
+  placeTourFarmstead();
 
   const hayN = 90;
   const hayGeo = new THREE.CylinderGeometry(2.2, 2.2, 2.4, 8, 1, false);
@@ -6021,7 +6066,79 @@ function riverPathPoint(i) {
   return null;
 }
 
+let tourFarmAnchor = null;
+
+function placeTourFarmstead() {
+  if (!landmarkGroup) return;
+  const hero = pxToWorld(HERO.px, HERO.py);
+  const ch = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
+  const church = pxToWorld(ch[0], ch[1]);
+  const lx = church.x - hero.x, lz = church.z - hero.z;
+  const len = Math.hypot(lx, lz) || 1;
+  const ux = lx / len, uz = lz / len;
+  const rx = uz, rz = -ux;
+  let found = null;
+  const millW = pxToWorld(185.5, 458.6);
+  const alongs = [1500, 1680, 1360, 1840, 1200, 2000];
+  const sides = [720, 820, 620, 920, -720, -840, 520, -560];
+  for (let a = 0; a < alongs.length && !found; a++) {
+    for (let s = 0; s < sides.length; s++) {
+      const x = hero.x + ux * alongs[a] + rx * sides[s];
+      const z = hero.z + uz * alongs[a] + rz * sides[s];
+      if (Math.hypot(x - church.x, z - church.z) < 700) continue;
+      if (Math.hypot(x - millW.x, z - millW.z) < 650) continue;
+      let ok = true;
+      const pads = [[0, 0], [22, 0], [-18, 14], [20, 18], [-12, -16], [10, 26], [-24, 8], [30, -12]];
+      for (let i = 0; i < pads.length; i++) {
+        const c = coverWorld(x + pads[i][0], z + pads[i][1]);
+        if (c === 0 || c === 3 || c === 4) { ok = false; break; }
+      }
+      if (!ok) continue;
+      found = { x: x, z: z };
+      break;
+    }
+  }
+  if (!found) {
+    found = { x: hero.x + ux * 1600 + rx * 780, z: hero.z + uz * 1600 + rz * 780 };
+  }
+  const yaw = Math.atan2(ux, uz) + 0.55;
+  function tag(obj) {
+    obj.userData = obj.userData || {};
+    obj.userData.tourFarm = true;
+    landmarkGroup.add(obj);
+  }
+  const house = placeholderFarmhouse();
+  house.scale.setScalar(1.05);
+  placeOnGround(house, found.x, found.z, yaw);
+  tag(house);
+  const bx = found.x + Math.sin(yaw + 1.15) * 26;
+  const bz = found.z + Math.cos(yaw + 1.15) * 26;
+  const barn = placeholderBarn();
+  barn.scale.setScalar(1.25);
+  placeOnGround(barn, bx, bz, yaw + 0.04);
+  tag(barn);
+  const sx = bx + Math.sin(yaw - 0.95) * 16;
+  const sz = bz + Math.cos(yaw - 0.95) * 16;
+  const silo = placeholderSilo();
+  silo.scale.setScalar(1.05);
+  placeOnGround(silo, sx, sz, yaw);
+  tag(silo);
+  const rng = mulberry(421);
+  for (let hi = 0; hi < 5; hi++) {
+    const hx = bx + Math.sin(yaw + 0.55 + hi * 0.55) * (10 + hi * 2.4);
+    const hz = bz + Math.cos(yaw + 0.55 + hi * 0.55) * (10 + hi * 2.4);
+    const cls = coverWorld(hx, hz);
+    if (cls === 0 || cls === 3) continue;
+    const hay = placeholderHay();
+    hay.scale.setScalar(1.15);
+    placeOnGround(hay, hx, hz, rng() * 6.28);
+    tag(hay);
+  }
+  tourFarmAnchor = worldToPx(bx, bz);
+}
+
 function findFarmsteadPx() {
+  if (tourFarmAnchor) return { px: tourFarmAnchor.px, py: tourFarmAnchor.py };
   if (!landmarkGroup) return { px: 200, py: 470 };
   const spots = [];
   landmarkGroup.traverse(function (o) {
@@ -6078,6 +6195,46 @@ function findRiverTourPx() {
   return best || { px: 190, py: 480 };
 }
 
+function pickApproach(target, hide, dist, eye) {
+  if (!camera) return null;
+  const tw = pxToWorld(target[0], target[1]);
+  const hw = hide ? pxToWorld(hide[0], hide[1]) : null;
+  const saved = camera.position.clone();
+  const savedQ = camera.quaternion.clone();
+  const pitch = applyFovAndPitch().pitch;
+  const targetY = yOf(heightWorld(tw.x, tw.z)) + 8;
+  let bestAng = null, bestScore = 1e9;
+  for (let i = 0; i < 20; i++) {
+    const ang = i * Math.PI * 2 / 20;
+    const x = tw.x + Math.sin(ang) * dist;
+    const z = tw.z + Math.cos(ang) * dist;
+    if (coverWorld(x, z) === 0) continue;
+    const y = yOf(heightWorld(x, z)) + eye;
+    if (y < targetY - 18) continue;
+    const heading = Math.atan2(tw.x - x, tw.z - z);
+    camera.position.set(x, y, z);
+    camera.lookAt(
+      x + Math.sin(heading) * 1800 * Math.cos(pitch),
+      y + Math.sin(pitch) * 1800,
+      z + Math.cos(heading) * 1800 * Math.cos(pitch)
+    );
+    camera.updateMatrixWorld(true);
+    const m = new THREE.Vector3(tw.x, targetY, tw.z).project(camera);
+    if (!(m.z > 0 && m.z < 1) || Math.abs(m.x) > 0.62 || m.y > -0.08 || m.y < -0.82) continue;
+    let score = Math.abs(m.x) * 0.5 + Math.abs(m.y + 0.48) * 1.0;
+    if (hw) {
+      const c = new THREE.Vector3(hw.x, yOf(heightWorld(hw.x, hw.z)) + 22, hw.z).project(camera);
+      const inShot = c.z > 0 && c.z < 1 && Math.abs(c.x) < 0.95 && Math.abs(c.y) < 0.95;
+      if (inShot) score += 10 + (1 - Math.min(1, Math.abs(c.x))) * 8;
+    }
+    if (score < bestScore) { bestScore = score; bestAng = ang; }
+  }
+  camera.position.copy(saved);
+  camera.quaternion.copy(savedQ);
+  camera.updateMatrixWorld(true);
+  return bestAng;
+}
+
 function getTourStops() {
   const church = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [174.3, 444.6];
   const mill = [185.5, 458.6];
@@ -6085,32 +6242,33 @@ function getTourStops() {
   const farm = findFarmsteadPx();
   const river = findRiverTourPx();
   return [
-    { name: "church", px: church[0], py: church[1], dist: 240, aimH: 22, eye: 36 },
-    { name: "mill", px: mill[0], py: mill[1], dist: 150, aimH: 10, eye: 32 },
-    { name: "depot", px: depot[0], py: depot[1], dist: 140, aimH: 8, eye: 32 },
-    { name: "farmstead", px: farm.px, py: farm.py, dist: 110, aimH: 8, eye: 28 },
-    { name: "river", px: river.px, py: river.py, dist: 280, aimH: 2, eye: 36 }
+    { name: "church", px: church[0], py: church[1], dist: 500, eye: 46 },
+    { name: "mill", px: mill[0], py: mill[1], dist: 200, eye: 16, approach: pickApproach(mill, church, 200, 16) },
+    { name: "depot", px: depot[0], py: depot[1], dist: 180, eye: 16, approach: pickApproach(depot, church, 180, 16) },
+    { name: "farmstead", px: farm.px, py: farm.py, dist: 170, eye: 14, approach: pickApproach([farm.px, farm.py], church, 170, 14) },
+    { name: "river", px: river.px, py: river.py, dist: 500, eye: 46 }
   ];
 }
 
 function tourCameraAt(stop) {
   const w = pxToWorld(stop.px, stop.py);
   const hero = pxToWorld(HERO.px, HERO.py);
-  let bx = hero.x - w.x, bz = hero.z - w.z;
-  const bl = Math.hypot(bx, bz) || 1;
-  bx /= bl; bz /= bl;
   const d = stop.dist || 240;
-  const x = w.x + bx * d;
-  const z = w.z + bz * d;
-  const y = yOf(heightWorld(x, z)) + (stop.eye || 36);
+  let x, z;
+  if (stop.approach != null && isFinite(stop.approach)) {
+    x = w.x + Math.sin(stop.approach) * d;
+    z = w.z + Math.cos(stop.approach) * d;
+  } else {
+    let bx = hero.x - w.x, bz = hero.z - w.z;
+    const bl = Math.hypot(bx, bz) || 1;
+    bx /= bl; bz /= bl;
+    x = w.x + bx * d;
+    z = w.z + bz * d;
+  }
+  const y = yOf(heightWorld(x, z)) + (stop.eye || 46);
   const heading = Math.atan2(w.x - x, w.z - z);
-  // Aim so the model sits in the lower third; sky still fills most of the frame.
-  const aimH = (stop.aimH != null) ? stop.aimH : 12;
-  const targetY = yOf(heightWorld(w.x, w.z)) + aimH;
-  const horiz = Math.hypot(w.x - x, w.z - z) || 1;
-  const altTo = Math.atan2(targetY - y, horiz);
-  const fovY = ((camera && camera.fov) ? camera.fov : 48) * Math.PI / 180;
-  const pitch = altTo + 0.22 * fovY;
+  // Always keep Dimitry's sky-up pitch so land stays in the bottom third to sixth.
+  const pitch = (stop.pitch != null) ? stop.pitch : applyFovAndPitch().pitch;
   return { x: x, y: y, z: z, heading: heading, pitch: pitch };
 }
 
@@ -6222,22 +6380,24 @@ function stepTour(dt, now) {
   }
 }
 
-function lookConifers() {
-  if (!camera || !glOk) return null;
+function pickConifer(preferIsolated, distTarget) {
   const hero = pxToWorld(HERO.px, HERO.py);
   let best = null, bestScore = 1e9;
   for (let i = 0; i < treeRecords.length; i++) {
     const r = treeRecords[i];
     if (r.spec !== "cedar" && r.spec !== "pine") continue;
     const d = Math.hypot((r.x || 0) - hero.x, (r.z || 0) - hero.z);
-    if (d < 200 || d > 1100) continue;
-    let neighbors = 0;
+    if (d < 200 || d > 1200) continue;
+    let neighbors = 0, coniferN = 0;
     for (let j = 0; j < treeRecords.length; j++) {
       if (j === i) continue;
       const o = treeRecords[j];
-      if (Math.hypot((o.x || 0) - r.x, (o.z || 0) - r.z) < 28) neighbors++;
+      const dd = Math.hypot((o.x || 0) - r.x, (o.z || 0) - r.z);
+      if (dd < 26) neighbors++;
+      if (dd < 40 && (o.spec === "cedar" || o.spec === "pine")) coniferN++;
     }
-    const score = Math.abs(d - 520) + neighbors * 18;
+    if (!preferIsolated && coniferN < 2) continue;
+    const score = Math.abs(d - distTarget) + (preferIsolated ? neighbors * 80 : -coniferN * 12);
     if (score < bestScore) { bestScore = score; best = r; }
   }
   if (!best) {
@@ -6245,15 +6405,42 @@ function lookConifers() {
       if (treeRecords[i].spec === "cedar" || treeRecords[i].spec === "pine") { best = treeRecords[i]; break; }
     }
   }
+  return best;
+}
+
+function lookConifers() {
+  if (!camera || !glOk) return null;
+  const best = pickConifer(true, 560);
   if (!best) return null;
   if (treeMesh && treeMesh.material && treeMesh.material.uniforms && treeMesh.material.uniforms.uCrownCap) {
-    treeMesh.material.uniforms.uCrownCap.value = 0.52;
+    treeMesh.material.uniforms.uCrownCap.value = 0.55;
   }
   const p = worldToPx(best.x, best.z);
-  const cam = tourCameraAt({ px: p.px, py: p.py, dist: 70 });
+  const hero = pxToWorld(HERO.px, HERO.py);
+  const cam = tourCameraAt({ px: p.px, py: p.py, dist: 48, eye: 14 });
+  const targetY = (best.y || yOf(heightWorld(best.x, best.z))) + 8;
+  const horiz = Math.hypot(best.x - cam.x, best.z - cam.z) || 1;
+  const altTo = Math.atan2(targetY - cam.y, horiz);
+  const fovY = (camera.fov || 48) * Math.PI / 180;
+  cam.pitch = altTo + 0.18 * fovY;
   applyTourCam(cam);
   if (glOk) renderer.render(scene, camera);
-  return { spec: best.spec, px: p.px, py: p.py, dist: Math.hypot(best.x - hero.x, best.z - hero.z) };
+  return { spec: best.spec, px: p.px, py: p.py, dist: Math.hypot(best.x - hero.x, best.z - hero.z), view: "close" };
+}
+
+function lookConiferStand() {
+  if (!camera || !glOk) return null;
+  const best = pickConifer(false, 640);
+  if (!best) return null;
+  if (treeMesh && treeMesh.material && treeMesh.material.uniforms && treeMesh.material.uniforms.uCrownCap) {
+    treeMesh.material.uniforms.uCrownCap.value = 0.16;
+  }
+  const p = worldToPx(best.x, best.z);
+  const hero = pxToWorld(HERO.px, HERO.py);
+  const cam = tourCameraAt({ px: p.px, py: p.py, dist: 200, eye: 46 });
+  applyTourCam(cam);
+  if (glOk) renderer.render(scene, camera);
+  return { spec: best.spec, px: p.px, py: p.py, dist: Math.hypot(best.x - hero.x, best.z - hero.z), view: "stand" };
 }
 
 function startLoop() {
@@ -6497,6 +6684,7 @@ function expose() {
       return { stop: stop, cam: cam };
     },
     lookConifers: function () { return lookConifers(); },
+    lookConiferStand: function () { return lookConiferStand(); },
     lookAwaySun: function () {
       const dir = altAzDir(clock.alt, clock.sunAz);
       lookHorizonAz(Math.atan2(-dir.x, -dir.z));
