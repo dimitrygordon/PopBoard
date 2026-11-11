@@ -293,3 +293,16 @@ body[data-sky="night"] #landmark-btn:focus-visible {
     word-break: break-word;
   }
 }
+
+#tour-fade {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  background: #F3EBDA;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+}
+#tour-fade.is-on {
+  opacity: 0.92;
+}

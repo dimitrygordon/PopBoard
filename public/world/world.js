@@ -23,11 +23,25 @@ const LANDMARK_SITES = {
   huntingburg_town_hall:   { px: 136.08, py: 795.64, file: "huntingburg_town_hall.glb", kind: "townhall", place: true, note: "38.2950, -86.9569, historic Town Hall at 311 Geiger St" },
   league_stadium:          { px: 170.18, py: 809.34, file: "league_stadium.glb", kind: "stadium", place: true, note: "38.290294, -86.945125, 203 S Cherry St" },
   ferdinand_monastery:     { px: 449.75, py: 1024.74, file: "ferdinand_monastery.glb", kind: "monastery", place: true, note: "38.22306, -86.85222, Monastery Immaculate Conception" },
-  saint_meinrad_archabbey: { px: 577.98, py: 1214.64, file: "saint_meinrad_archabbey.glb", kind: "archabbey", place: true, note: "38.1669178, -86.8128323, 200 Hill Drive" }
+  saint_meinrad_archabbey: { px: 577.98, py: 1214.64, file: "saint_meinrad_archabbey.glb", kind: "archabbey", place: true, note: "38.1669178, -86.8128323, 200 Hill Drive" },
+  jasper_high_school:      { px: 118.62, py: 410.52, file: null, kind: "jhs", place: true, note: "38.4023, -86.9493, 1600 Saint Charles St, main OSM building 979904351 inside campus way 264355002. Placeholder until JHS_GLB is set." }
 };
 const BASE_M = 100;
 const JASPER = { lat: 38.3914, lon: -86.9311 };
 const REDUCE = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+// Opening stop. Keep "jhs" as stop 1. One-line model swap is JHS_GLB below.
+const OPENING_STOP = "jhs";
+// One-line model swap: set to "jasper_high_school.meshopt.glb" when Angelo's model is in.
+const JHS_GLB = null;
+const JHS_HEIGHT_M = 12;
+const TOUR_HOLD_JHS = 30;
+const TOUR_HOLD_OTHER = 15;
+const TOUR_ORBIT_ARC = 50 * Math.PI / 180;
+const TOUR_ORBIT_ARC_JHS = 75 * Math.PI / 180;
+const TOUR_FLYIN_DURATION = 5.5;
+const TOUR_RESUME_MS = 10000;
+const TOUR_ORBIT_END = 0.88;
+const FORE_CLEAR_M = 150;
 
 const qs = new URLSearchParams(location.search);
 const dbgSky = qs.get("sky");
@@ -453,14 +467,16 @@ async function loadImageData(url) {
 }
 
 async function loadMap() {
-  const [hImg, cImg, m, osm] = await Promise.all([
+  const [hImg, cImg, m, osm, campus] = await Promise.all([
     loadImageData("./data/height.png"),
     loadImageData("./data/cover.png"),
     fetch("./data/meta.json").then(function (r) { return r.json(); }),
-    fetch("./data/osm.json").then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+    fetch("./data/osm.json").then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+    fetch("./data/jhs-campus.json").then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
   ]);
   meta = m;
   osmData = osm;
+  jhsCampusData = campus;
   const n = COLS * ROWS;
   heightF32 = new Float32Array(n);
   coverData = new Uint8Array(n);
@@ -475,6 +491,7 @@ async function loadMap() {
   clearLeftoverWaterNearMill();
   thickenPatokaWoodsCover();
   paintTownYards();
+  paintJhsCampusCover();
   buildRidgePath();
 }
 
@@ -586,9 +603,11 @@ float heightM(vec2 uv){
   return (tex.r * 255.0 * 256.0 + tex.g * 255.0) / 10.0 + 100.0;
 }
 float farLift(float dist){
-  float t = clamp((dist - 2000.0) / 8000.0, 0.0, 1.0);
-  t = t * t * (3.0 - 2.0 * t);
-  return 1.0 + 1.85 * t;
+  // Old lift was 1.0 + 1.85 * t (2.85x at 10 km) and read as mountain ranges.
+  // Keep a light residual so far hills still meet the sky-up horizon, about
+  // one eighth of the old extra lift, and stay hazy and low.
+  float t = smoothstep(2500.0, 11000.0, dist);
+  return 1.0 + 0.24 * t;
 }
 void main(){
   vUv = uv;
@@ -850,7 +869,7 @@ void main(){
 
   // Back ridges: pale blue-gray silhouettes, no detail, inked tops only.
   // Pale haze sits between layers so each crest reads against the next.
-  float air = smoothstep(2200.0, 9500.0, dist);
+  float air = smoothstep(1600.0, 8500.0, dist);
   vec3 airC = mix(uPaper, vec3(0.96, 0.90, 0.78), 0.22);
   airC = mix(airC, vec3(0.76, 0.80, 0.84), backL * 0.80);
   airC = mix(airC, uSkyH, 0.12 + 0.25 * uNight);
@@ -1628,12 +1647,19 @@ const tour = {
   phase: "hold",
   holdUntil: 0,
   from: null,
+  mid: null,
   to: null,
+  parked: null,
   t: 0,
   duration: 1,
   pace: 1,
   started: false,
-  manualTravel: false
+  manualTravel: false,
+  released: false,
+  holdT: 0,
+  holdDuration: 0,
+  orbitArc: 0,
+  orbitTarget: null
 };
 
 function targetHorizon() {
@@ -4296,6 +4322,29 @@ function scatterTrees() {
       addTreeAt(px + (rng() - 0.5) * 0.6, py + (rng() - 0.5) * 0.6, 4, 0.85, rng() < 0.18 ? "cedar" : "oak", 1);
     }
   }
+  // Maples along the JHS campus edge.
+  if (jhsCampusData && jhsCampusData.school) {
+    const ring = jhsCampusData.school;
+    for (let i = 0; i < ring.length - 1 && pos.length / 3 < maxLogical; i++) {
+      const a = pxToWorld(ring[i][0], ring[i][1]);
+      const b = pxToWorld(ring[i + 1][0], ring[i + 1][1]);
+      const len = Math.hypot(b.x - a.x, b.z - a.z);
+      const steps = Math.max(1, Math.round(len / 22));
+      const nx = -(b.z - a.z) / (len || 1);
+      const nz = (b.x - a.x) / (len || 1);
+      // Step inward from the ring so the trunks sit on the lawn, not in the street.
+      const inward = insideJhsCampus(a.x + nx * 12, a.z + nz * 12) ? 1 : -1;
+      for (let s = 0; s < steps; s++) {
+        const t0 = (s + 0.5) / steps;
+        const x = a.x + (b.x - a.x) * t0 + nx * inward * (10 + rng() * 4);
+        const z = a.z + (b.z - a.z) * t0 + nz * inward * (10 + rng() * 4);
+        if (!insideJhsCampus(x, z)) continue;
+        if (jhsNearCampusBuilding(x, z, 16)) continue;
+        const p = worldToPx(x, z);
+        addTreeAt(p.px, p.py, 6, 1.4, "maple", 1);
+      }
+    }
+  }
   finishTreeMeshes(pos, scale, frame, frameClump, phase, kind);
   return VEG.treesLogical || (pos.length / 3);
 }
@@ -5207,6 +5256,7 @@ const MODEL_FILES = {
   stadium: ["league_stadium.meshopt.glb", "league_stadium.glb"],
   townhall: ["huntingburg_town_hall.meshopt.glb", "huntingburg_town_hall.glb"]
 };
+if (JHS_GLB) MODEL_FILES.jhs = [JHS_GLB, String(JHS_GLB).replace(".meshopt.glb", ".glb")];
 
 async function tryLoadModel(kind) {
   const names = MODEL_FILES[kind] || [];
@@ -5252,9 +5302,11 @@ function nearHero(x, z, dist) {
 }
 
 let osmData = null;
+let jhsCampusData = null;
 const osmTownGroups = [];
 
 const STOP_PLACE = {
+  jhs: "Jasper",
   church: "Jasper",
   courthouse: "Jasper",
   mill: "Jasper",
@@ -5439,6 +5491,257 @@ function thickenPatokaWoodsCover() {
   }
 }
 
+
+function jhsSchoolRingPx() {
+  return (jhsCampusData && jhsCampusData.school) ? jhsCampusData.school : null;
+}
+
+function pointInPxRing(px, py, ring) {
+  if (!ring || ring.length < 3) return false;
+  let inside = false;
+  const n = ring.length;
+  let j = n - 1;
+  for (let i = 0; i < n; i++) {
+    const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
+    if ((yi > py) !== (yj > py) && px < (xj - xi) * (py - yi) / ((yj - yi) || 1e-9) + xi) inside = !inside;
+    j = i;
+  }
+  return inside;
+}
+
+function insideJhsCampus(x, z) {
+  const ring = jhsSchoolRingPx();
+  if (!ring) return false;
+  const p = worldToPx(x, z);
+  return pointInPxRing(p.px, p.py, ring);
+}
+
+function jhsNearCampusBuilding(x, z, pad) {
+  if (!jhsCampusData || !jhsCampusData.feats) return false;
+  const feats = jhsCampusData.feats;
+  for (let i = 0; i < feats.length; i++) {
+    if (feats[i].k !== "building") continue;
+    const c = feats[i].c;
+    const w = pxToWorld(c[0], c[1]);
+    if (Math.hypot(x - w.x, z - w.z) < (pad || 16)) return true;
+  }
+  return false;
+}
+
+function paintJhsCampusCover() {
+  const ring = jhsSchoolRingPx();
+  if (!ring || !coverData) return;
+  let minx = 1e9, miny = 1e9, maxx = -1e9, maxy = -1e9;
+  for (let i = 0; i < ring.length; i++) {
+    if (ring[i][0] < minx) minx = ring[i][0];
+    if (ring[i][1] < miny) miny = ring[i][1];
+    if (ring[i][0] > maxx) maxx = ring[i][0];
+    if (ring[i][1] > maxy) maxy = ring[i][1];
+  }
+  const x0 = Math.max(0, Math.floor(minx) - 1);
+  const x1 = Math.min(COLS - 1, Math.ceil(maxx) + 1);
+  const y0 = Math.max(0, Math.floor(miny) - 1);
+  const y1 = Math.min(ROWS - 1, Math.ceil(maxy) + 1);
+  let n = 0;
+  for (let y = y0; y <= y1; y++) {
+    for (let x = x0; x <= x1; x++) {
+      if (!pointInPxRing(x + 0.5, y + 0.5, ring)) continue;
+      const idx = y * COLS + x;
+      if (coverData[idx] === 0) continue;
+      coverData[idx] = 6;
+      n++;
+    }
+  }
+  if (LAND) LAND.jhsYard = n;
+}
+
+function closeRingPx(pts) {
+  if (!pts || pts.length < 3) return [];
+  const out = pts.slice();
+  const a = out[0], b = out[out.length - 1];
+  if (Math.hypot(a[0] - b[0], a[1] - b[1]) > 0.05) out.push([a[0], a[1]]);
+  return out;
+}
+
+function makePrismGeo(ptsPx, ht) {
+  let pts = [];
+  for (let i = 0; i < ptsPx.length; i++) {
+    const w = pxToWorld(ptsPx[i][0], ptsPx[i][1]);
+    pts.push(w);
+  }
+  if (pts.length > 1 && Math.hypot(pts[0].x - pts[pts.length - 1].x, pts[0].z - pts[pts.length - 1].z) < 0.3) pts = pts.slice(0, -1);
+  const n = pts.length;
+  if (n < 3) return null;
+  let area = 0;
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    area += pts[i].x * pts[j].z - pts[j].x * pts[i].z;
+  }
+  if (area < 0) pts.reverse();
+  const pos = [];
+  const idx = [];
+  for (let i = 0; i < n; i++) pos.push(pts[i].x, ht, pts[i].z);
+  for (let i = 0; i < n; i++) pos.push(pts[i].x, 0, pts[i].z);
+  for (let i = 1; i < n - 1; i++) idx.push(0, i, i + 1);
+  for (let i = 1; i < n - 1; i++) idx.push(n, n + i + 1, n + i);
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    const b = pos.length / 3;
+    pos.push(pts[i].x, 0, pts[i].z, pts[j].x, 0, pts[j].z, pts[j].x, ht, pts[j].z, pts[i].x, ht, pts[i].z);
+    idx.push(b, b + 1, b + 2, b, b + 2, b + 3);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  return geo;
+}
+
+function makeFlatRingGeo(ptsPx, y) {
+  let pts = [];
+  for (let i = 0; i < ptsPx.length; i++) {
+    const w = pxToWorld(ptsPx[i][0], ptsPx[i][1]);
+    pts.push(w);
+  }
+  if (pts.length > 1 && Math.hypot(pts[0].x - pts[pts.length - 1].x, pts[0].z - pts[pts.length - 1].z) < 0.3) pts = pts.slice(0, -1);
+  const n = pts.length;
+  if (n < 3) return null;
+  let area = 0;
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    area += pts[i].x * pts[j].z - pts[j].x * pts[i].z;
+  }
+  if (area < 0) pts.reverse();
+  const pos = [];
+  const idx = [];
+  for (let i = 0; i < n; i++) pos.push(pts[i].x, y, pts[i].z);
+  for (let i = 1; i < n - 1; i++) idx.push(0, i, i + 1);
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  return geo;
+}
+
+function makeTrackGeo(ptsPx, band, y) {
+  let pts = [];
+  for (let i = 0; i < ptsPx.length; i++) {
+    const w = pxToWorld(ptsPx[i][0], ptsPx[i][1]);
+    pts.push(w);
+  }
+  if (pts.length > 1 && Math.hypot(pts[0].x - pts[pts.length - 1].x, pts[0].z - pts[pts.length - 1].z) < 0.3) pts = pts.slice(0, -1);
+  if (pts.length < 3) return null;
+  let cx = 0, cz = 0;
+  for (let i = 0; i < pts.length; i++) { cx += pts[i].x; cz += pts[i].z; }
+  cx /= pts.length; cz /= pts.length;
+  // Oriented box from the first edge.
+  const e0x = pts[1].x - pts[0].x, e0z = pts[1].z - pts[0].z;
+  const el = Math.hypot(e0x, e0z) || 1;
+  const ux = e0x / el, uz = e0z / el;
+  const vx = -uz, vz = ux;
+  let minU = 1e9, maxU = -1e9, minV = 1e9, maxV = -1e9;
+  for (let i = 0; i < pts.length; i++) {
+    const du = (pts[i].x - cx) * ux + (pts[i].z - cz) * uz;
+    const dv = (pts[i].x - cx) * vx + (pts[i].z - cz) * vz;
+    if (du < minU) minU = du; if (du > maxU) maxU = du;
+    if (dv < minV) minV = dv; if (dv > maxV) maxV = dv;
+  }
+  const hu = (maxU - minU) * 0.5 + band;
+  const hv = (maxV - minV) * 0.5 + band;
+  const innerU = Math.max(4, hu - band);
+  const innerV = Math.max(4, hv - band);
+  const pos = [];
+  const idx = [];
+  const N = 48;
+  for (let i = 0; i <= N; i++) {
+    const a = (i / N) * Math.PI * 2;
+    const c = Math.cos(a), s = Math.sin(a);
+    const ox = cx + (c * hu) * ux + (s * hv) * vx;
+    const oz = cz + (c * hu) * uz + (s * hv) * vz;
+    const ix = cx + (c * innerU) * ux + (s * innerV) * vx;
+    const iz = cz + (c * innerU) * uz + (s * innerV) * vz;
+    pos.push(ox, y, oz, ix, y, iz);
+  }
+  for (let i = 0; i < N; i++) {
+    const b = i * 2;
+    idx.push(b, b + 1, b + 2, b + 1, b + 3, b + 2);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  return geo;
+}
+
+function buildJhsCampus() {
+  if (!jhsCampusData || !jhsCampusData.feats) return;
+  const group = new THREE.Group();
+  group.name = "jhs-campus";
+  const feats = jhsCampusData.feats;
+  const hideMain = !!JHS_GLB;
+  const mainId = jhsCampusData.building || 979904351;
+  let nBld = 0, nField = 0, nPark = 0;
+  for (let i = 0; i < feats.length; i++) {
+    const f = feats[i];
+    const ring = closeRingPx(f.pts);
+    if (ring.length < 4) continue;
+    const c = pxToWorld(f.c[0], f.c[1]);
+    const gy = yOf(heightWorld(c.x, c.z));
+    if (f.k === "building") {
+      if (hideMain && f.id === mainId) continue;
+      const ht = (f.id === mainId) ? JHS_HEIGHT_M : 5.5;
+      const geo = makePrismGeo(ring, ht);
+      if (!geo) continue;
+      const mesh = new THREE.Mesh(geo, makeWashMat(f.id === mainId ? [154, 152, 146] : [148, 146, 140]));
+      mesh.position.y = gy;
+      mesh.name = f.id === mainId ? "jhs-placeholder" : "jhs-outbuilding";
+      group.add(mesh);
+      nBld++;
+      continue;
+    }
+    if (f.k === "parking") {
+      const geo = makeFlatRingGeo(ring, 0.08);
+      if (!geo) continue;
+      const mesh = new THREE.Mesh(geo, makeWashMat([140, 136, 126]));
+      mesh.position.y = gy;
+      mesh.name = "jhs-parking";
+      group.add(mesh);
+      nPark++;
+      continue;
+    }
+    if (f.k === "soccer" || f.k === "baseball" || f.k === "tennis") {
+      const yOff = 0.10;
+      let rgb = [122, 132, 78];
+      if (f.k === "baseball") rgb = [168, 142, 96];
+      if (f.k === "tennis") rgb = [110, 122, 88];
+      const geo = makeFlatRingGeo(ring, yOff);
+      if (geo) {
+        const mesh = new THREE.Mesh(geo, makeWashMat(rgb));
+        mesh.position.y = gy;
+        mesh.name = "jhs-field-" + f.k;
+        group.add(mesh);
+        nField++;
+      }
+      // Athletic track around the southern soccer pitch (OSM maps it as soccer).
+      if (f.id === 363541249) {
+        const track = makeTrackGeo(ring, 8.5, yOff + 0.04);
+        if (track) {
+          const tm = new THREE.Mesh(track, makeWashMat([165, 106, 74]));
+          tm.position.y = gy;
+          tm.name = "jhs-track";
+          group.add(tm);
+        }
+      }
+    }
+  }
+  scene.add(group);
+  if (LAND) {
+    LAND.jhsBuildings = nBld;
+    LAND.jhsFields = nField;
+    LAND.jhsParking = nPark;
+  }
+}
+
 function paintTownYards() {
   if (!coverData || !osmData || !osmData.towns) return;
   const avoid = landmarkAvoidList();
@@ -5602,6 +5905,7 @@ function landmarkAvoidList() {
     if (keys[i].indexOf("mill") >= 0) r = 110;
     if (keys[i].indexOf("depot") >= 0) r = 95;
     if (keys[i].indexOf("church") >= 0 || keys[i].indexOf("st_joseph") >= 0) r = 55;
+    if (keys[i].indexOf("high_school") >= 0 || s.kind === "jhs") r = 70;
     list.push({ x: w.x, z: w.z, r: r, kind: s.kind || keys[i] });
   }
   const hw = pxToWorld(HERO.px, HERO.py);
@@ -5995,6 +6299,7 @@ function buildOsmTowns() {
       const px = b.c[0], py = b.c[1];
       const w = pxToWorld(px, py);
       if (tooCloseToLandmark(w.x, w.z, avoid)) continue;
+      if (insideJhsCampus(w.x, w.z)) continue;
       if (coverWorld(w.x, w.z) === 0) continue;
       const kind = (b.k === "shop" || b.k === "shed") ? b.k : "house";
       const downtown = isDowntownBuilding(name, px, py, kind);
@@ -6456,6 +6761,7 @@ function buildTown() {
   scatterPathFarms();
   placeTourFarmstead();
   buildOsmTowns();
+  buildJhsCampus();
 
   const hayN = 90;
   const hayGeo = new THREE.CylinderGeometry(2.2, 2.2, 2.4, 8, 1, false);
@@ -6649,9 +6955,11 @@ function lookSun() {
 
 
 function farLiftAt(dist) {
-  const t = clamp((dist - 2000) / 8000, 0, 1);
-  const s = t * t * (3 - 2 * t);
-  return 1 + 1.85 * s;
+  const t = dist <= 2500 ? 0 : (dist >= 11000 ? 1 : (function (x) {
+    const u = (x - 2500) / 8500;
+    return u * u * (3 - 2 * u);
+  })(dist));
+  return 1 + 0.24 * t;
 }
 function terrainYAt(x, z) {
   const h = heightWorld(x, z);
@@ -7309,6 +7617,10 @@ function pointerToGround(cx, cy) {
 }
 
 function onPointerDown(e) {
+  if (tour.phase === "flyin") {
+    skipFlyIn();
+    return;
+  }
   rig.pointers[e.pointerId] = { x: e.clientX, y: e.clientY };
   const ids = Object.keys(rig.pointers);
   if (ids.length === 2) {
@@ -7332,6 +7644,10 @@ function onPointerMove(e) {
   }
   const ids = Object.keys(rig.pointers);
   if (ids.length === 2 && rig.pinch) {
+    if (tour.phase === "flyin") {
+      skipFlyIn();
+      return;
+    }
     const a = rig.pointers[ids[0]], b = rig.pointers[ids[1]];
     const d = Math.hypot(a.x - b.x, a.y - b.y);
     // Spread (fingers apart) dollies forward; close dollies back.
@@ -7363,6 +7679,7 @@ function onPointerUp(e) {
   if (Object.keys(rig.pointers).length < 2) rig.pinch = 0;
   rig.dragging = false;
   try { canvas.releasePointerCapture && canvas.releasePointerCapture(e.pointerId); } catch (err) {}
+  markTourReleased();
 }
 function onPointerLeave() {
   cursor.ts = 0;
@@ -7412,7 +7729,10 @@ function onTouchMove(e) {
 
 function onTouchEnd(e) {
   if (e.touches && e.touches.length < 2) rig.pinch = 0;
-  if (!e.touches || e.touches.length === 0) rig.dragging = false;
+  if (!e.touches || e.touches.length === 0) {
+    rig.dragging = false;
+    markTourReleased();
+  }
 }
 
 function mapEdgeOk() {
@@ -7501,12 +7821,19 @@ function applyDollyTo(nextM) {
 }
 
 function noteInput() {
-  tour.lastInput = performance.now();
-  if (tour.enabled && !tour.paused) pauseTour();
+  if (tour.phase === "flyin") {
+    skipFlyIn();
+    return;
+  }
+  if (tour.phase === "hold" || tour.phase === "travel") pauseTour();
 }
 
 function onWheel(e) {
   e.preventDefault();
+  if (tour.phase === "flyin") {
+    skipFlyIn();
+    return;
+  }
   noteInput();
   // Mouse wheel, trackpad pinch (often ctrl+wheel), and ctrl+wheel all dolly.
   const unit = e.deltaMode === 1 ? 16 : (e.deltaMode === 2 ? 80 : 1);
@@ -8000,6 +8327,7 @@ function testLightningCap() {
 
 
 const LANDMARK_LABELS = {
+  jhs: { desktop: "Jasper High School", phone: "Jasper High School" },
   church: { desktop: "St. Joseph Church", phone: "St. Joseph Church" },
   courthouse: { desktop: "Dubois County Courthouse", phone: "Jasper Courthouse" },
   mill: { desktop: "Jasper City Mill", phone: "Jasper City Mill" },
@@ -8054,12 +8382,13 @@ function mostCenteredLandmarkIndex() {
 }
 
 function onTourStop() {
-  // Mid-glide or a hold on a tour stop (auto or button). After a free pan,
+  // Mid-glide, opening fly-in, or a hold on a landmark. After a free pan,
   // pauseTour clears holdCamera and we fall back to the most-centered stop.
   return !!(
+    tour.phase === "flyin" ||
     tour.manualTravel ||
-    (tour.enabled && !tour.paused && (tour.phase === "travel" || tour.phase === "hold")) ||
-    (tour.paused && tour.phase === "hold" && state.holdCamera)
+    (tour.phase === "travel") ||
+    (tour.phase === "hold" && state.holdCamera)
   );
 }
 
@@ -8123,10 +8452,11 @@ function updateLandmarkButton() {
   if (!stops.length) return;
   const shown = displayedLandmarkIndex();
   const next = targetLandmarkIndex();
-  setLandmarkLabel(stopLabel(stops[shown]), false);
+  if (tour.phase !== "flyin") setLandmarkLabel(stopLabel(stops[shown]), false);
   landmarkBtn.setAttribute("aria-label", "Next landmark: " + stopLabel(stops[next]));
-  const moving = !!(tour.manualTravel || (tour.enabled && !tour.paused && tour.phase === "travel"));
+  const moving = !!(tour.phase === "flyin" || tour.manualTravel || tour.phase === "travel");
   landmarkBtn.classList.toggle("is-moving", moving);
+  if (tour.phase === "flyin") return;
 }
 
 function goToLandmark(index) {
@@ -8135,20 +8465,16 @@ function goToLandmark(index) {
   const i = ((index % stops.length) + stops.length) % stops.length;
   tour.stop = i;
   tour.lastInput = performance.now();
-  tour.paused = true;
+  tour.paused = false;
+  tour.released = false;
+  tour.parked = null;
+  if (tour.phase === "flyin") tour.phase = "travel";
   if (REDUCE) {
-    applyTourCam(tourCameraAt(stops[i]));
-    tour.phase = "hold";
-    tour.manualTravel = false;
-    updatePlaceCaption(stops[i].name);
-    setLandmarkLabel(stopLabel(stops[i]), true);
-    if (glOk) renderer.render(scene, camera);
-    updateLandmarkButton();
+    crossfadeToStop(stops[i]);
     return;
   }
   beginTourLeg(currentTourCam(), stops[i], "button");
-  tour.manualTravel = true;
-  tour.paused = true;
+  tour.manualTravel = false;
   setLandmarkLabel(stopLabel(stops[i]), false);
   updateLandmarkButton();
 }
@@ -8176,9 +8502,32 @@ function bindLandmarkButton() {
   const stops = getTourStops();
   if (stops.length) {
     landmarkShown = "";
-    setLandmarkLabel(stopLabel(stops[displayedLandmarkIndex()]), true);
+    if (REDUCE || qs.has("pathT") || qs.get("freeze") === "1") {
+      setLandmarkLabel(stopLabel(stops[0]), true);
+    } else if (landmarkNameWrap) {
+      landmarkNameWrap.innerHTML = "";
+    }
   }
   updateLandmarkButton();
+}
+
+function fadeInLandmarkLabel(text) {
+  if (!landmarkNameWrap) return;
+  if (REDUCE) {
+    setLandmarkLabel(text, true);
+    return;
+  }
+  landmarkShown = text;
+  landmarkNameWrap.innerHTML = "";
+  const incoming = document.createElement("span");
+  incoming.className = "lm-name";
+  incoming.textContent = text;
+  landmarkNameWrap.appendChild(incoming);
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      incoming.classList.add("is-current");
+    });
+  });
 }
 
 function tourArcCam(a, b, e) {
@@ -8215,13 +8564,7 @@ function advanceTourLeg(dt, now) {
   const cam = tourArcCam(a, b, e);
   applyTourCam(cam);
   if (u >= 1) {
-    tour.phase = "hold";
-    tour.holdUntil = now + 4000;
-    tour.manualTravel = false;
-    tour.lastInput = now;
-    applyTourCam(b);
-    const stops = getTourStops();
-    updatePlaceCaption(stops[tour.stop % stops.length].name);
+    arriveAtStop(b, now, tour.phase === "flyin");
   }
 }
 
@@ -8607,6 +8950,34 @@ function findFarmsteadPx() {
   return best || (spots[0] ? spots[0] : { px: 200, py: 470 });
 }
 
+function scoreRiverView(camX, camY, camZ, heading, samples) {
+  const pitch = applyFovAndPitch().pitch;
+  camera.position.set(camX, camY, camZ);
+  camera.lookAt(
+    camX + Math.sin(heading) * 1800 * Math.cos(pitch),
+    camY + Math.sin(pitch) * 1800,
+    camZ + Math.cos(heading) * 1800 * Math.cos(pitch)
+  );
+  camera.updateMatrixWorld(true);
+  let n = 0, low = 0, minY = 1, minX = 1, maxX = -1;
+  for (let i = 0; i < samples.length; i++) {
+    const p = samples[i];
+    if (Math.hypot(p.x - camX, p.z - camZ) > 700) continue;
+    const v = new THREE.Vector3(p.x, p.y, p.z).project(camera);
+    if (!(v.z > 0 && v.z < 1) || Math.abs(v.x) > 1.05) continue;
+    n++;
+    if (v.y < minY) minY = v.y;
+    if (v.y < -0.15 && v.y > -0.95 && Math.abs(v.x) < 0.95) {
+      low++;
+      if (v.x < minX) minX = v.x;
+      if (v.x > maxX) maxX = v.x;
+    }
+  }
+  if (n < 3 || low < 2) return -1;
+  const span = Math.max(0, maxX - minX);
+  return low * 1.6 + span * 8 + Math.max(0, -0.25 - minY) * 6;
+}
+
 function findRiverTourPx() {
   const mill = sitePx("jasper_city_mill", [185.5, 458.6]);
   const raw = riverPathPx || [];
@@ -8621,49 +8992,78 @@ function findRiverTourPx() {
     }
   }
   if (raw.length) pts.push({ px: raw[raw.length - 1][0], py: raw[raw.length - 1][1] });
+  const worldPts = [];
+  for (let i = 0; i < pts.length; i += 3) {
+    const w = pxToWorld(pts[i].px, pts[i].py);
+    worldPts.push({ x: w.x, y: yOf(heightWorld(w.x, w.z)) + 1.5, z: w.z });
+  }
+  const fallback = { px: 155, py: 536.8, dist: 140, eye: 16, approach: 0.4 };
+  if (!camera || pts.length < 12) {
+    console.info("[frame] river fallback, pts", pts.length, "raw", raw.length);
+    return fallback;
+  }
+  const saved = camera.position.clone();
+  const savedQ = camera.quaternion.clone();
   let best = null, bestScore = -1e9;
-  for (let i = 6; i < pts.length - 6; i++) {
-    const a = pts[i - 3], b = pts[i], c = pts[i + 3];
+  let nBend = 0, nTried = 0, nView = 0;
+  const sides = [22, 36, 52, 70];
+  const backs = [40, 80, 120, 160];
+  const eyes = [12, 16, 20, 24];
+  const step = 5;
+  for (let i = 8; i < pts.length - 8; i += step) {
+    const a = pts[i - 5], b = pts[i], c = pts[i + 5];
     const v1x = b.px - a.px, v1y = b.py - a.py, v2x = c.px - b.px, v2y = c.py - b.py;
     const l1 = Math.hypot(v1x, v1y) || 1, l2 = Math.hypot(v2x, v2y) || 1;
     const dot = (v1x * v2x + v1y * v2y) / (l1 * l2);
     const ang = Math.acos(Math.max(-1, Math.min(1, dot)));
-    if (ang < 0.28) continue;
     const dMill = Math.hypot(b.px - mill[0], b.py - mill[1]) * CELL;
-    if (dMill < 450 || dMill > 7000) continue;
-    let woods = 0;
-    const tw = (c.px - a.px), ty = (c.py - a.py);
-    const tl = Math.hypot(tw, ty) || 1;
-    const sx = -ty / tl, sy = tw / tl;
-    for (let s = -2; s <= 2; s++) {
-      const clsL = coverPx(b.px + sx * 3 + s * 0.5, b.py + sy * 3 + s * 0.5);
-      const clsR = coverPx(b.px - sx * 3 + s * 0.5, b.py - sy * 3 + s * 0.5);
-      if (clsL === 4 || clsL === 5 || clsL === 8) woods++;
-      if (clsR === 4 || clsR === 5 || clsR === 8) woods++;
-    }
-    const score = ang * 4.2 + woods * 0.55 - Math.abs(dMill - 1800) / 2500;
-    if (score > bestScore) {
-      bestScore = score;
-      const aw = pxToWorld(a.px, a.py);
-      const bw = pxToWorld(b.px, b.py);
-      const cw = pxToWorld(c.px, c.py);
-      const ux = cw.x - aw.x, uz = cw.z - aw.z;
-      const ul = Math.hypot(ux, uz) || 1;
-      const tx = ux / ul, tz = uz / ul;
-      const nx = -tz, nz = tx;
-      const midX = (aw.x + cw.x) * 0.5, midZ = (aw.z + cw.z) * 0.5;
-      const sign = ((bw.x - midX) * nx + (bw.z - midZ) * nz) >= 0 ? 1 : -1;
-      const camX = bw.x + nx * sign * 70 - tx * 400;
-      const camZ = bw.z + nz * sign * 70 - tz * 400;
-      best = {
-        px: b.px, py: b.py,
-        dist: Math.hypot(camX - bw.x, camZ - bw.z),
-        eye: 36,
-        approach: Math.atan2(bw.x - camX, bw.z - camZ)
-      };
+    if (dMill < 400 || dMill > 5000) continue;
+    nBend++;
+    const aw = pxToWorld(a.px, a.py);
+    const bw = pxToWorld(b.px, b.py);
+    const cw = pxToWorld(c.px, c.py);
+    const ux = cw.x - aw.x, uz = cw.z - aw.z;
+    const ul = Math.hypot(ux, uz) || 1;
+    const tx = ux / ul, tz = uz / ul;
+    const nx = -tz, nz = tx;
+    for (let si = 0; si < sides.length; si++) {
+      for (let bi = 0; bi < backs.length; bi++) {
+        for (let ei = 0; ei < eyes.length; ei++) {
+          for (let sgn = -1; sgn <= 1; sgn += 2) {
+            const camX = bw.x + nx * sgn * sides[si] - tx * backs[bi];
+            const camZ = bw.z + nz * sgn * sides[si] - tz * backs[bi];
+            const cls = coverWorld(camX, camZ);
+            if (cls === 0) continue;
+            const dist = Math.hypot(camX - bw.x, camZ - bw.z);
+            if (dist < 35 || dist > 280) continue;
+            const eye = eyes[ei];
+            const camY = yOf(heightWorld(camX, camZ)) + eye;
+            // Same heading tourCameraAt will use: look at the bend so water sits in the lower third.
+            const heading = Math.atan2(bw.x - camX, bw.z - camZ);
+            nTried++;
+            const view = scoreRiverView(camX, camY, camZ, heading, worldPts);
+            if (view < 0) continue;
+            nView++;
+            const score = view + ang * 2.4 - Math.abs(dMill - 1800) / 1200 - Math.max(0, eye - 18) * 0.15;
+            if (score > bestScore) {
+              bestScore = score;
+              best = {
+                px: b.px, py: b.py,
+                dist: dist,
+                eye: eye,
+                approach: Math.atan2(camX - bw.x, camZ - bw.z)
+              };
+            }
+          }
+        }
+      }
     }
   }
-  return best || { px: 155, py: 536.8, dist: 620, eye: 40 };
+  camera.position.copy(saved);
+  camera.quaternion.copy(savedQ);
+  camera.updateMatrixWorld(true);
+  console.info("[frame] river", best ? ("dist " + best.dist + " eye " + best.eye + " px " + best.px.toFixed(1) + " py " + best.py.toFixed(1) + " score " + bestScore.toFixed(2)) : "none", "pts", pts.length, "bends", nBend, "tried", nTried, "viewOk", nView);
+  return best || fallback;
 }
 
 function pickApproach(target, hide, dist, eye) {
@@ -8735,7 +9135,110 @@ function projectCorners(cx, y0, y1, half, camera) {
     if (p.y < minY) minY = p.y;
     if (p.y > maxY) maxY = p.y;
   }
-  return { ok: any, minX: minX, maxX: maxX, minY: minY, maxY: maxY, hFrac: any ? (maxY - minY) / 2 : 0 };
+  return {
+    ok: any, minX: minX, maxX: maxX, minY: minY, maxY: maxY,
+    hFrac: any ? (maxY - minY) / 2 : 0,
+    wFrac: any ? (maxX - minX) / 2 : 0
+  };
+}
+
+
+function footprintCorners(wx, wz, halfW, halfD, yaw) {
+  const c = Math.cos(yaw || 0), s = Math.sin(yaw || 0);
+  const dx = [halfW, halfW, -halfW, -halfW];
+  const dz = [halfD, -halfD, -halfD, halfD];
+  const out = [];
+  for (let i = 0; i < 4; i++) {
+    out.push({ x: wx + dx[i] * c - dz[i] * s, z: wz + dx[i] * s + dz[i] * c });
+  }
+  return out;
+}
+
+function eachNearbyBuilding(cx, cz, clearM, fn, skipX, skipZ, skipR) {
+  const clear = clearM || FORE_CLEAR_M;
+  const avoidR = skipR || 0;
+  if (osmData && osmData.towns) {
+    const names = Object.keys(osmData.towns);
+    for (let ti = 0; ti < names.length; ti++) {
+      const blds = osmData.towns[names[ti]].buildings || [];
+      for (let i = 0; i < blds.length; i++) {
+        const b = blds[i];
+        const w = pxToWorld(b.c[0], b.c[1]);
+        if (avoidR && Math.hypot(w.x - skipX, w.z - skipZ) < avoidR) continue;
+        const d = Math.hypot(w.x - cx, w.z - cz);
+        if (d > clear) continue;
+        const roof = (b.k === "shop") ? 10 : 7;
+        const y = yOf(heightWorld(w.x, w.z)) + roof;
+        const hw = Math.max(3, (b.w || 8) * 0.5);
+        const hd = Math.max(3, (b.d || 8) * 0.5);
+        fn(w.x, y, w.z, d, footprintCorners(w.x, w.z, hw, hd, b.yaw || 0));
+      }
+    }
+  }
+  if (jhsCampusData && jhsCampusData.feats) {
+    const feats = jhsCampusData.feats;
+    const mainId = jhsCampusData.building || 979904351;
+    for (let i = 0; i < feats.length; i++) {
+      if (feats[i].k !== "building") continue;
+      const c = feats[i].c;
+      const w = pxToWorld(c[0], c[1]);
+      if (avoidR && Math.hypot(w.x - skipX, w.z - skipZ) < avoidR) continue;
+      const d = Math.hypot(w.x - cx, w.z - cz);
+      if (d > clear) continue;
+      const isMain = feats[i].id === mainId;
+      const ht = isMain ? JHS_HEIGHT_M : 5.5;
+      const y = yOf(heightWorld(w.x, w.z)) + ht;
+      const half = isMain ? 40 : 8;
+      fn(w.x, y, w.z, d, footprintCorners(w.x, w.z, half, half, 0));
+    }
+  }
+}
+
+function nearClutterInShot(cx, cy, cz, clearM, skipX, skipZ, skipR) {
+  let hit = false;
+  eachNearbyBuilding(cx, cz, clearM || FORE_CLEAR_M, function (x, y, z, d, corners) {
+    if (hit) return;
+    const pts = (corners && corners.length) ? corners : [{ x: x, z: z }];
+    let minX = 1, maxX = -1, minY = 1, n = 0, low = 0;
+    for (let i = 0; i < pts.length; i++) {
+      const p = new THREE.Vector3(pts[i].x, y, pts[i].z).project(camera);
+      if (!(p.z > 0 && p.z < 1)) continue;
+      if (Math.abs(p.x) > 1.2 && p.y > 0.2) continue;
+      n++;
+      if (p.x < minX) minX = p.x;
+      if (p.x > maxX) maxX = p.x;
+      if (p.y < minY) minY = p.y;
+      if (p.y < -0.15) low++;
+    }
+    if (!n || !low) return;
+    const w = maxX - minX;
+    // Only reject a noticeable roof near the lens, not a sliver of a house 140 m off to the side.
+    if (d < 90 && (w > 0.06 || minY < -0.55)) hit = true;
+    else if (d < 150 && w > 0.13) hit = true;
+    else if (d < 150 && minY < -0.62 && w > 0.08) hit = true;
+  }, skipX, skipZ, skipR);
+  return hit;
+}
+
+function approachOrbitClear(tw, dist, eye, ang, arc, clearM, skipR) {
+  const samples = arc ? [0, 0.5, 1] : [0];
+  for (let s = 0; s < samples.length; s++) {
+    const a = ang + (arc || 0) * samples[s];
+    const x = tw.x + Math.sin(a) * dist;
+    const z = tw.z + Math.cos(a) * dist;
+    const y = yOf(heightWorld(x, z)) + eye;
+    camera.position.set(x, y, z);
+    const heading = Math.atan2(tw.x - x, tw.z - z);
+    const pitch = applyFovAndPitch().pitch;
+    camera.lookAt(
+      x + Math.sin(heading) * 1800 * Math.cos(pitch),
+      y + Math.sin(pitch) * 1800,
+      z + Math.cos(heading) * 1800 * Math.cos(pitch)
+    );
+    camera.updateMatrixWorld(true);
+    if (nearClutterInShot(x, y, z, clearM, tw.x, tw.z, skipR)) return false;
+  }
+  return true;
 }
 
 function frameShortLandmark(target, hide, heightM, opts) {
@@ -8748,19 +9251,25 @@ function frameShortLandmark(target, hide, heightM, opts) {
   const pitch = applyFovAndPitch().pitch;
   const baseY = yOf(heightWorld(tw.x, tw.z));
   const topY = baseY + heightM;
-  // Footprint half-width so eaves and porches count in the projected height.
-  const half = Math.max(6, heightM * 0.45);
-  let best = { dist: opts.dist0 || 110, eye: opts.eye0 || 12, approach: null, score: 1e9 };
+  const half = opts.half != null ? opts.half : Math.max(6, heightM * 0.45);
+  let best = { dist: opts.dist0 || 200, eye: opts.eye0 || 24, approach: null, score: 1e9 };
   let bestAny = null;
-  const dists = opts.dists || [80, 90, 100, 110, 122, 136, 150, 170];
-  const eyes = opts.eyes || [8, 10, 12, 14, 16];
+  const minDist = opts.minDist != null ? opts.minDist : FORE_CLEAR_M;
+  const clearM = opts.clearM != null ? opts.clearM : FORE_CLEAR_M;
+  const dists = opts.dists || [160, 200, 260, 320];
+  const eyes = opts.eyes || [16, 24, 36];
   const hMin = opts.hMin != null ? opts.hMin : 0.06;
   const hMax = opts.hMax != null ? opts.hMax : 0.18;
   const hTarget = opts.hTarget != null ? opts.hTarget : 0.11;
+  const wMin = opts.wMin;
+  const wMax = opts.wMax;
+  const wTarget = opts.wTarget;
   const midTarget = opts.midY != null ? opts.midY : -0.62;
-  const nAng = opts.nAng || 16;
+  const nAng = opts.nAng || 24;
+  const orbitArc = opts.orbitArc || 0;
   for (let di = 0; di < dists.length; di++) {
     const dist = dists[di];
+    if (dist < minDist) continue;
     for (let ei = 0; ei < eyes.length; ei++) {
       const eye = eyes[ei];
       for (let i = 0; i < nAng; i++) {
@@ -8778,15 +9287,30 @@ function frameShortLandmark(target, hide, heightM, opts) {
           z + Math.cos(heading) * 1800 * Math.cos(pitch)
         );
         camera.updateMatrixWorld(true);
+        const skipR = Math.max(half * 1.4, 20);
+        if (nearClutterInShot(x, y, z, clearM, tw.x, tw.z, skipR)) continue;
+        const orbitClear = !orbitArc || approachOrbitClear(tw, dist, eye, ang, orbitArc, clearM, skipR);
+        camera.position.set(x, y, z);
+        camera.lookAt(
+          x + Math.sin(heading) * 1800 * Math.cos(pitch),
+          y + Math.sin(pitch) * 1800,
+          z + Math.cos(heading) * 1800 * Math.cos(pitch)
+        );
+        camera.updateMatrixWorld(true);
         const box = projectCorners(tw, baseY, topY, half, camera);
         if (!box.ok) continue;
         if (Math.abs(box.minX) > 0.85 && Math.abs(box.maxX) > 0.85) continue;
         if (box.minY < -0.98 || box.maxY > -0.12) continue;
         const hFrac = box.hFrac;
+        const wFrac = box.wFrac;
         const midY = (box.minY + box.maxY) * 0.5;
         let score = Math.abs(hFrac - hTarget) * 12 + Math.abs(midY - midTarget) * 0.9;
-        // Prefer a longer, higher view so a near bank does not lift the ridge above 65%.
-        if (opts.dists) score += Math.max(0, 200 - dist) * 0.012 + Math.max(0, 18 - eye) * 0.08;
+        if (wTarget != null) score += Math.abs(wFrac - wTarget) * 16;
+        score += Math.max(0, 18 - eye) * 0.08;
+        if (!orbitClear) score += 2.4;
+        const midCover = coverWorld(x + (tw.x - x) * 0.25, z + (tw.z - z) * 0.25);
+        if (midCover === 3 || midCover === 6 || midCover === 7) score -= 0.6;
+        // no foot-cover penalty: a lane in the lawn should not lose a clear mill or depot shot.
         let hideSteals = false;
         if (hw) {
           const c = new THREE.Vector3(hw.x, yOf(heightWorld(hw.x, hw.z)) + 22, hw.z).project(camera);
@@ -8797,18 +9321,17 @@ function frameShortLandmark(target, hide, heightM, opts) {
             const inShot = Math.abs(c.x) < 0.96 && c.y < 0.20 && c.y > -0.92;
             if (inShot) {
               score += 6 + (1 - Math.min(1, Math.abs(c.x))) * 10;
-              // Only drop the candidate when a neighbor sits in the same lower-third slot.
-              if (Math.abs(c.x) < 0.35 && c.y < -0.15 && c.y > -0.85) hideSteals = true;
+              const closer = c.z < 0.52;
+              if (closer && Math.abs(c.x) < 0.72 && c.y < 0.0 && c.y > -0.9) hideSteals = true;
             }
           }
         }
-        if (!bestAny || score < bestAny.score) {
-          bestAny = { dist: dist, eye: eye, approach: ang, score: score, hFrac: hFrac };
-        }
+        const rec = { dist: dist, eye: eye, approach: ang, score: score, hFrac: hFrac, wFrac: wFrac };
+        if (!bestAny || score < bestAny.score) bestAny = rec;
         if (hideSteals || hFrac > hMax || hFrac < hMin) continue;
-        if (score < best.score) {
-          best = { dist: dist, eye: eye, approach: ang, score: score, hFrac: hFrac };
-        }
+        if (wMin != null && wFrac < wMin) continue;
+        if (wMax != null && wFrac > wMax) continue;
+        if (score < best.score) best = rec;
       }
     }
   }
@@ -8828,8 +9351,8 @@ function sitePx(key, fallback) {
   return fallback;
 }
 
-function frameNamed(name, target, hide, heightM, dists, eyes, dist0, eye0) {
-  const fr = frameShortLandmark(target, hide, heightM, {
+function frameNamed(name, target, hide, heightM, dists, eyes, dist0, eye0, extra) {
+  const opts = {
     dists: dists,
     eyes: eyes,
     dist0: dist0,
@@ -8838,9 +9361,17 @@ function frameNamed(name, target, hide, heightM, dists, eyes, dist0, eye0) {
     hMax: 0.18,
     hTarget: 0.11,
     midY: -0.62,
-    nAng: 16
-  });
-  console.info("[frame]", name, "dist", fr.dist, "eye", fr.eye, "approach", fr.approach, "hFrac", fr.hFrac, "score", fr.score);
+    nAng: 24,
+    minDist: FORE_CLEAR_M,
+    clearM: FORE_CLEAR_M,
+    orbitArc: TOUR_ORBIT_ARC
+  };
+  if (extra) {
+    const keys = Object.keys(extra);
+    for (let i = 0; i < keys.length; i++) opts[keys[i]] = extra[keys[i]];
+  }
+  const fr = frameShortLandmark(target, hide, heightM, opts);
+  console.info("[frame]", name, "dist", fr.dist, "eye", fr.eye, "approach", fr.approach, "hFrac", fr.hFrac, "wFrac", fr.wFrac, "score", fr.score);
   return fr;
 }
 
@@ -8866,27 +9397,42 @@ function getTourStops() {
   const abbH = landmarkHeightM("archabbey", 40);
   const churchD = [1000, 1200, 1400, 1600, 1800];
   const churchE = [40, 52, 64];
-  const courtD = [280, 360, 450, 560, 700];
-  const courtE = [24, 36, 48];
-  const millD = [130, 170, 230, 300];
-  const millE = [16, 24, 34];
-  const depotD = [120, 180, 240, 320];
-  const depotE = [16, 24, 36];
+  const courtD = [520, 680, 860, 1040];
+  const courtE = [48, 64, 82];
+  const millD = [160, 200, 250, 320];
+  const millE = [22, 30, 40];
+  const depotD = [160, 200, 240, 300, 360];
+  const depotE = [24, 34, 44];
   const farmD = [220, 300, 400, 520];
   const farmE = [20, 30, 42];
-  const hallD = [220, 320, 420, 560];
-  const hallE = [20, 30, 42];
-  const stadD = [500, 700, 950, 1200];
-  const stadE = [28, 40, 56];
+  const hallD = [520, 640, 780];
+  const hallE = [64, 82];
+  const stadD = [420, 520, 640, 780];
+  const stadE = [30, 42, 56];
   const abbD = [700, 1000, 1300, 1600];
   const abbE = [40, 56, 72];
+  const widthBand = { wMin: 0.10, wMax: 0.16, wTarget: 0.125 };
   const churchFr = frameNamed("church", church, court, churchH, churchD, churchE, 1400, 52);
-  const courtFr = frameNamed("courthouse", court, church, courtH, courtD, courtE, 400, 36);
-  const millFr = frameNamed("mill", mill, church, millH, millD, millE, 190, 22);
-  const depotFr = frameNamed("depot", depot, church, depotH, depotD, depotE, 200, 24);
+  const courtFr = frameNamed("courthouse", court, church, courtH, courtD, courtE, 520, 82, { half: 22, hMin: 0.055 });
+  if (!(courtFr && courtFr.approach != null && courtFr.hFrac >= 0.07 && courtFr.dist <= 700)) {
+    courtFr.dist = 520;
+    courtFr.eye = 64;
+    courtFr.approach = Math.PI;
+    courtFr.score = 0;
+    console.info("[frame]", "courthouse pinned over rooftops", "dist", courtFr.dist, "eye", courtFr.eye, "approach", courtFr.approach);
+  }
+  const millFr = frameNamed("mill", mill, church, millH, millD, millE, 200, 30, Object.assign({ half: 12 }, widthBand));
+  const depotFr = frameNamed("depot", depot, church, depotH, depotD, depotE, 200, 34, Object.assign({}, widthBand, { half: 16, wMin: 0.08, wMax: 0.18, wTarget: 0.125 }));
   const farmFr = frameNamed("farmstead", [farm.px, farm.py], church, 12, farmD, farmE, 320, 30);
-  const hallFr = frameNamed("townhall", hall, stadium, hallH, hallD, hallE, 360, 30);
-  const stadFr = frameNamed("stadium", stadium, hall, stadH, stadD, stadE, 800, 40);
+  const hallFr = frameNamed("townhall", hall, stadium, hallH, hallD, hallE, 520, 82, { half: 16, wTarget: 0.08, wMin: 0.045, wMax: 0.16, hMin: 0.05, eye0: 82 });
+  if (!(hallFr && hallFr.approach != null && hallFr.hFrac >= 0.05 && hallFr.eye >= 60)) {
+    hallFr.dist = 520;
+    hallFr.eye = 64;
+    hallFr.approach = 4.4505895925855405;
+    hallFr.score = 0;
+    console.info("[frame]", "townhall pinned over rooftops", "dist", hallFr.dist, "eye", hallFr.eye, "approach", hallFr.approach);
+  }
+  const stadFr = frameNamed("stadium", stadium, hall, stadH, stadD, stadE, 520, 42, Object.assign({ half: 42 }, widthBand));
   const monFr = frameNamed("monastery", monastery, null, monH, abbD, abbE, 1200, 56);
   const abbFr = frameNamed("archabbey", abbey, null, abbH, abbD, abbE, 1200, 56);
   tourStopsCache = [
@@ -8894,13 +9440,50 @@ function getTourStops() {
     { name: "courthouse", px: court[0], py: court[1], dist: courtFr.dist, eye: courtFr.eye, approach: courtFr.approach, heightM: courtH },
     { name: "mill", px: mill[0], py: mill[1], dist: millFr.dist, eye: millFr.eye, approach: millFr.approach, heightM: millH },
     { name: "depot", px: depot[0], py: depot[1], dist: depotFr.dist, eye: depotFr.eye, approach: depotFr.approach, heightM: depotH },
-    { name: "river", px: river.px, py: river.py, dist: river.dist || 620, eye: river.eye || 40, approach: river.approach },
+    { name: "river", px: river.px, py: river.py, dist: river.dist || 140, eye: river.eye || 16, approach: river.approach },
     { name: "farmstead", px: farm.px, py: farm.py, dist: farmFr.dist, eye: farmFr.eye, approach: farmFr.approach, heightM: 12 },
     { name: "townhall", px: hall[0], py: hall[1], dist: hallFr.dist, eye: hallFr.eye, approach: hallFr.approach, heightM: hallH },
     { name: "stadium", px: stadium[0], py: stadium[1], dist: stadFr.dist, eye: stadFr.eye, approach: stadFr.approach, heightM: stadH },
     { name: "monastery", px: monastery[0], py: monastery[1], dist: monFr.dist, eye: monFr.eye, approach: monFr.approach, heightM: monH },
     { name: "archabbey", px: abbey[0], py: abbey[1], dist: abbFr.dist, eye: abbFr.eye, approach: abbFr.approach, heightM: abbH }
   ];
+  if (OPENING_STOP === "jhs") {
+    const jhs = sitePx("jasper_high_school", [118.62, 410.52]);
+    const jhsH = landmarkHeightM("jhs", JHS_HEIGHT_M);
+    const jhsD = [420, 540, 680, 820];
+    const jhsE = [32, 48, 64];
+    // Up to about 1/4 screen width, lower third, nothing within 150 m of the lens.
+    const jhsFr = frameShortLandmark(jhs, church, jhsH, {
+      dists: jhsD,
+      eyes: jhsE,
+      dist0: 540,
+      eye0: 48,
+      half: 80,
+      hMin: 0.08,
+      hMax: 0.25,
+      hTarget: 0.16,
+      wMin: 0.12,
+      wMax: 0.26,
+      wTarget: 0.20,
+      midY: -0.62,
+      nAng: 24,
+      minDist: FORE_CLEAR_M,
+      clearM: FORE_CLEAR_M,
+      orbitArc: TOUR_ORBIT_ARC_JHS
+    });
+    console.info("[frame]", "jhs", "dist", jhsFr.dist, "eye", jhsFr.eye, "approach", jhsFr.approach, "hFrac", jhsFr.hFrac, "wFrac", jhsFr.wFrac, "score", jhsFr.score);
+    tourStopsCache.unshift({
+      name: "jhs", px: jhs[0], py: jhs[1],
+      dist: jhsFr.dist, eye: jhsFr.eye, approach: jhsFr.approach, heightM: jhsH
+    });
+  }
+  const longHor = 0.69;
+  for (let i = 0; i < tourStopsCache.length; i++) {
+    const s = tourStopsCache[i];
+    if (s.name === "jhs" || s.name === "courthouse" || s.name === "townhall" || s.name === "monastery") {
+      s.horizon = longHor;
+    }
+  }
   return tourStopsCache;
 }
 
@@ -8925,8 +9508,10 @@ function tourCameraAt(stop) {
   }
   const y = yOf(heightWorld(x, z)) + (stop.eye || 46);
   const heading = Math.atan2(w.x - x, w.z - z);
-  // Always keep Dimitry's sky-up pitch so land stays in the bottom third to sixth.
-  const pitch = (stop.pitch != null) ? stop.pitch : applyFovAndPitch().pitch;
+  const aim = applyFovAndPitch();
+  const hor = (stop.horizon != null) ? stop.horizon : aim.horizon;
+  const half = camera.fov * RAD * 0.5;
+  const pitch = (stop.pitch != null) ? stop.pitch : Math.atan(Math.tan(half) * (2 * hor - 1));
   return { x: x, y: y, z: z, heading: heading, pitch: pitch };
 }
 
@@ -8957,29 +9542,177 @@ function applyTourCam(cam) {
   layoutHeldCamera();
 }
 
+function holdDurationFor(stop) {
+  return (stop && stop.name === "jhs") ? TOUR_HOLD_JHS : TOUR_HOLD_OTHER;
+}
+
+function orbitArcFor(stop) {
+  return (stop && stop.name === "jhs") ? TOUR_ORBIT_ARC_JHS : TOUR_ORBIT_ARC;
+}
+
+function orbitCamAt(base, target, arc, u) {
+  const e = easeInOutCubic(Math.max(0, Math.min(1, u)));
+  const ang = e * (arc || 0);
+  const lx = target.x, lz = target.z;
+  const dx = base.x - lx, dz = base.z - lz;
+  const c = Math.cos(ang), s = Math.sin(ang);
+  const x = lx + dx * c - dz * s;
+  const z = lz + dx * s + dz * c;
+  const eye = Math.max(16, base.y - yOf(heightWorld(base.x, base.z)));
+  const y = yOf(heightWorld(x, z)) + eye;
+  const heading = Math.atan2(lx - x, lz - z);
+  const pitch = (base && base.pitch != null) ? base.pitch : applyFovAndPitch().pitch;
+  return { x: x, y: y, z: z, heading: heading, pitch: pitch };
+}
+
+function ensureTourFade() {
+  let el = document.getElementById("tour-fade");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "tour-fade";
+    document.body.appendChild(el);
+  }
+  return el;
+}
+
+function crossfadeToStop(stop) {
+  const el = ensureTourFade();
+  el.classList.add("is-on");
+  setTimeout(function () {
+    const cam = tourCameraAt(stop);
+    arriveAtStop(cam, performance.now(), false);
+    setLandmarkLabel(stopLabel(stop), true);
+    if (glOk) renderer.render(scene, camera);
+    requestAnimationFrame(function () { el.classList.remove("is-on"); });
+  }, 280);
+}
+
+function arriveAtStop(cam, now, fadeLabel) {
+  const stops = getTourStops();
+  const stop = stops[((tour.stop % stops.length) + stops.length) % stops.length];
+  tour.phase = "hold";
+  tour.holdUntil = 0;
+  tour.holdT = 0;
+  tour.holdDuration = holdDurationFor(stop);
+  tour.orbitArc = orbitArcFor(stop);
+  tour.orbitTarget = stop ? pxToWorld(stop.px, stop.py) : null;
+  tour.manualTravel = false;
+  tour.paused = false;
+  tour.released = false;
+  tour.parked = cam;
+  applyTourCam(cam);
+  if (stop) updatePlaceCaption(stop.name);
+  if (fadeLabel && stop) fadeInLandmarkLabel(stopLabel(stop));
+  else if (stop) setLandmarkLabel(stopLabel(stop), true);
+  updateLandmarkButton();
+}
+
+function flyInStartCam(landCam) {
+  // High wide view over the valley, south-southeast of Jasper, looking toward downtown.
+  const court = sitePx("jasper_courthouse", [174.34, 444.64]);
+  const cw = pxToWorld(court[0], court[1]);
+  const x = (292 - ORIGIN_PX) * CELL;
+  const z = (640 - ORIGIN_PY) * CELL;
+  const y = yOf(heightWorld(x, z)) + 320;
+  const heading = Math.atan2(cw.x - x, cw.z - z);
+  const pitch = landCam && landCam.pitch != null ? landCam.pitch : applyFovAndPitch().pitch;
+  return { x: x, y: y, z: z, heading: heading, pitch: pitch };
+}
+
+function flyInMidCam(landCam, startCam) {
+  // Pass east of downtown so the courthouse slides by, then descend toward the opening stop.
+  const court = sitePx("jasper_courthouse", [174.34, 444.64]);
+  const cw = pxToWorld(court[0], court[1]);
+  const x = cw.x + 880;
+  const z = cw.z + 640;
+  const y = yOf(heightWorld(x, z)) + 150;
+  const heading = lerpAngle(startCam.heading, landCam.heading, 0.48);
+  const pitch = startCam.pitch + (landCam.pitch - startCam.pitch) * 0.48;
+  return { x: x, y: y, z: z, heading: heading, pitch: pitch };
+}
+
+function flyInCamAt(e) {
+  const a = tour.from, m = tour.mid, b = tour.to;
+  const o = 1 - e;
+  const cam = {
+    x: o * o * a.x + 2 * o * e * m.x + e * e * b.x,
+    y: o * o * a.y + 2 * o * e * m.y + e * e * b.y,
+    z: o * o * a.z + 2 * o * e * m.z + e * e * b.z,
+    heading: lerpAngle(a.heading, b.heading, e),
+    pitch: a.pitch + (b.pitch - a.pitch) * e
+  };
+  const gy = yOf(heightWorld(cam.x, cam.z));
+  if (cam.y < gy + 24) cam.y = gy + 24;
+  return cam;
+}
+
+function startFlyIn() {
+  const stops = getTourStops();
+  if (!stops.length) return;
+  tour.stop = 0;
+  tour.paused = true;
+  tour.enabled = false;
+  tour.manualTravel = false;
+  tour.parked = null;
+  const land = tourCameraAt(stops[0]);
+  tour.from = flyInStartCam(land);
+  tour.to = land;
+  tour.mid = flyInMidCam(land, tour.from);
+  tour.duration = TOUR_FLYIN_DURATION;
+  tour.t = 0;
+  tour.phase = "flyin";
+  applyTourCam(tour.from);
+}
+
+function skipFlyIn() {
+  if (tour.phase !== "flyin") return;
+  const land = tour.to || (getTourStops()[0] && tourCameraAt(getTourStops()[0]));
+  arriveAtStop(land, performance.now(), true);
+}
+
+function applyParkedSway(now) {
+  if (!tour.parked || REDUCE || state.frozen) return;
+  const b = tour.parked;
+  const t = now * 0.001;
+  const yaw = Math.sin(t * (Math.PI * 2 / 22)) * (0.55 * Math.PI / 180);
+  const x = b.x + Math.sin(t * (Math.PI * 2 / 26)) * 2.0;
+  const z = b.z + Math.cos(t * (Math.PI * 2 / 29)) * 2.0;
+  const y = b.y + Math.sin(t * (Math.PI * 2 / 31)) * 0.6;
+  applyTourCam({
+    x: x, y: y, z: z,
+    heading: b.heading + yaw,
+    pitch: b.pitch + Math.sin(t * (Math.PI * 2 / 24)) * (0.12 * Math.PI / 180)
+  });
+}
+
 function beginTourLeg(fromCam, toStop, kind) {
   tour.from = fromCam;
   tour.to = tourCameraAt(toStop);
   const dx = tour.to.x - tour.from.x, dy = tour.to.y - tour.from.y, dz = tour.to.z - tour.from.z;
   const dist = Math.hypot(dx, dy, dz);
-  // Test hook only: setTourPace still overrides. Production no longer uses
-  // the 1 m/s walking pace, which made legs last 3 to 22 minutes and look stuck.
+  // Test hook only: setTourPace still overrides. Production button legs
+  // take 3 s on short hops, up to 6 s on the longest legs, eased by easeInOutCubic.
   if (tour.pace && tour.pace !== 1) {
     const minDur = (tour.minDuration > 0) ? tour.minDuration : 4;
     tour.duration = Math.max(minDur, dist / tour.pace);
   } else {
-    // Button and auto: 3 s on short hops, up to 6 s on the longest legs,
-    // eased at both ends by easeInOutCubic.
     const t = clamp(dist / 18000, 0, 1);
     tour.duration = 3 + t * 3;
   }
   tour.t = 0;
   tour.phase = "travel";
+  tour.parked = null;
 }
 
 function pauseTour() {
   tour.paused = true;
   tour.lastInput = performance.now();
+  if (tour.phase === "flyin") {
+    skipFlyIn();
+    return;
+  }
+  tour.phase = "free";
+  tour.parked = null;
   if (camera) {
     const look = new THREE.Vector3();
     camera.getWorldDirection(look);
@@ -9005,38 +9738,70 @@ function pauseTour() {
   state.holdCamera = false;
 }
 
+function markTourReleased() {
+  if (!tour.paused) return;
+  tour.released = true;
+  tour.lastInput = performance.now();
+}
+
 function resumeTour(now) {
   tour.paused = false;
-  tour.hasRun = true;
-  state.holdCamera = true;
+  tour.released = false;
   const stops = getTourStops();
-  const from = currentTourCam();
-  beginTourLeg(from, stops[tour.stop % stops.length], "auto");
+  if (!stops.length) return;
+  const stop = stops[((tour.stop % stops.length) + stops.length) % stops.length];
+  state.holdCamera = true;
+  if (REDUCE) {
+    crossfadeToStop(stop);
+    return;
+  }
+  beginTourLeg(currentTourCam() || tourCameraAt(stop), stop, "resume");
+  tour.manualTravel = false;
+  setLandmarkLabel(stopLabel(stop), false);
 }
 
 function stepTour(dt, now) {
   if (state.frozen) return;
-  if (tour.manualTravel && tour.phase === "travel" && !REDUCE) {
+  if (tour.phase === "flyin" && !REDUCE) {
+    tour.t += dt;
+    const u = Math.max(0, Math.min(1, tour.t / Math.max(0.01, tour.duration)));
+    const e = easeInOutCubic(u);
+    const cam = flyInCamAt(e);
+    applyTourCam(cam);
+    if (u >= 1) arriveAtStop(tour.to, now, true);
+    return;
+  }
+  if (tour.paused) {
+    if (tour.released && now - tour.lastInput > TOUR_RESUME_MS) resumeTour(now);
+    return;
+  }
+  if (tour.phase === "travel" && !REDUCE) {
     advanceTourLeg(dt, now);
     return;
   }
-  if (!tour.enabled || REDUCE) return;
-  if (tour.paused) {
-    const idle = tour.hasRun ? 10000 : 2000;
-    if (tour.lastInput && now - tour.lastInput > idle) resumeTour(now);
-    return;
-  }
-  const stops = getTourStops();
   if (tour.phase === "hold") {
-    if (now >= tour.holdUntil) {
-      tour.stop = (tour.stop + 1) % stops.length;
-      beginTourLeg(currentTourCam(), stops[tour.stop]);
-    } else {
-      applyTourCam(tourCameraAt(stops[tour.stop % stops.length]));
+    tour.holdT = (tour.holdT || 0) + dt;
+    const dur = tour.holdDuration || TOUR_HOLD_OTHER;
+    if (!REDUCE && tour.parked && tour.orbitTarget) {
+      const u = Math.min(1, tour.holdT / Math.max(0.01, dur * TOUR_ORBIT_END));
+      applyTourCam(orbitCamAt(tour.parked, tour.orbitTarget, tour.orbitArc, u));
+    } else if (tour.parked) {
+      applyTourCam(tour.parked);
     }
-    return;
+    if (tour.holdT >= dur) {
+      const stops = getTourStops();
+      if (!stops.length) return;
+      tour.stop = (tour.stop + 1) % stops.length;
+      const next = stops[tour.stop];
+      if (REDUCE) {
+        crossfadeToStop(next);
+      } else {
+        beginTourLeg(currentTourCam(), next, "auto");
+        tour.manualTravel = false;
+        setLandmarkLabel(stopLabel(next), false);
+      }
+    }
   }
-  advanceTourLeg(dt, now);
 }
 
 function pickConifer(preferIsolated, distTarget) {
@@ -9192,13 +9957,8 @@ function startLoop() {
   function tick(now) {
     const dt = state.lastT ? clamp((now - state.lastT) / 1000, 0, 0.08) : 0.016;
     state.lastT = now;
-    if (!state.frozen && !REDUCE) {
-      if (tour.enabled || tour.manualTravel) {
-        stepTour(dt, now);
-      } else {
-        rig.s += 18 * dt;
-        if (rig.s > path.len) rig.s = 0;
-      }
+    if (!state.frozen) {
+      stepTour(dt, now);
       state.time += dt;
     }
     if (!dbgAt && now - (state._clk || 0) > 30000) {
@@ -9470,19 +10230,16 @@ function expose() {
         projections: projections
       };
     },
-    tourState: function () { return { enabled: tour.enabled, paused: tour.paused, stop: tour.stop, phase: tour.phase, lastInput: tour.lastInput, manualTravel: !!tour.manualTravel, duration: tour.duration, t: tour.t }; },
+    tourState: function () { return { enabled: !tour.paused, paused: tour.paused, stop: tour.stop, phase: tour.phase, lastInput: tour.lastInput, manualTravel: !!tour.manualTravel, duration: tour.duration, t: tour.t, holdT: tour.holdT || 0, holdDuration: tour.holdDuration || 0, opening: OPENING_STOP, parked: !!tour.parked, released: !!tour.released }; },
     tourGoto: function (i) {
       const stops = getTourStops();
       const stop = stops[((i % stops.length) + stops.length) % stops.length];
       tour.stop = ((i % stops.length) + stops.length) % stops.length;
       tour.paused = true;
       tour.enabled = false;
-      const cam = tourCameraAt(stop);
-      applyTourCam(cam);
       tour.manualTravel = false;
-      tour.phase = "hold";
-      setLandmarkLabel(stopLabel(stop), true);
-      updateLandmarkButton();
+      const cam = tourCameraAt(stop);
+      arriveAtStop(cam, performance.now(), false);
       if (glOk) renderer.render(scene, camera);
       return { stop: stop, cam: cam };
     },
@@ -9675,7 +10432,7 @@ async function init() {
   }
   const qT = parseFloat(qs.get("pathT"));
   rig.s = isFinite(qT) ? clamp(qT, 0, 1) * (path.len || 1) : (path.len * HERO.pathT);
-  tour.enabled = qs.get("tour") !== "0" && !qs.has("pathT") && qs.get("freeze") !== "1" && !REDUCE;
+  tour.enabled = false;
   tour.paused = true;
   tour.lastInput = performance.now();
   refreshClock(parseTime());
@@ -9700,9 +10457,23 @@ async function init() {
   applySkin();
   await swapInGltfModels();
   bindInput();
+  const skipFlight = REDUCE || qs.has("pathT") || qs.get("freeze") === "1";
+  if (qs.has("pathT")) {
+    placeCamera();
+  } else if (skipFlight) {
+    const stops = getTourStops();
+    tour.stop = 0;
+    tour.phase = "hold";
+    if (stops.length) {
+      tour.parked = tourCameraAt(stops[0]);
+      applyTourCam(tour.parked);
+      updatePlaceCaption(stops[0].name);
+      setLandmarkLabel(stopLabel(stops[0]), true);
+    }
+  } else {
+    startFlyIn();
+  }
   bindLandmarkButton();
-  updatePlaceCaption("church");
-  placeCamera();
   fillGrass(camera.position.x, camera.position.z);
   if (dbgStrike === "bolt" || dbgStrike === "cloud") {
     wx.kind = wx.kind === "storm" ? wx.kind : (dbgWx === "storm" ? "storm" : wx.kind);
