@@ -597,7 +597,7 @@ const TERRAIN_FRAG = /* glsl */`
 uniform vec3 uPaper, uInk, uInkUse, uNightMul, uRim, uSnowCol;
 uniform vec3 uField, uWheat, uPlowed, uGrass, uForest, uForestB, uCedar, uWater;
 uniform vec3 uSunDir, uMoonDir, uSkyH, uSkyM, uSkyT;
-uniform float uNight, uTwi, uRising, uSnow, uFog, uRain, uTime, uHatch, uRow, uBend, uSeason;
+uniform float uNight, uTwi, uRising, uSnow, uFog, uRain, uStorm, uTime, uHatch, uRow, uBend, uSeason;
 uniform float uDawnMist, uMonth, uLightning;
 uniform vec3 uStrikePos;
 uniform float uStrikeAmt, uStrikeRad;
@@ -832,9 +832,18 @@ void main(){
   vec3 crestInk = mix(inkCol, uInkUse, uNight);
   col = mix(col, crestInk, ridgeAmt * mix(1.0, 0.9, uNight));
 
-  if (uRain > 0.01) {
+  if (uRain > 0.01 && uStorm < 0.5) {
     col *= mix(1.0, 0.86, uRain);
     col = mix(col, vec3(col.r * 0.92, col.g * 0.95, col.b * 1.02), uRain * 0.20);
+  }
+  if (uStorm > 0.01) {
+    // About 35% darker and cooler; autumn rust desaturates toward gray.
+    // Strike lighting below still lifts the land locally around a bolt.
+    float luma = dot(col, vec3(0.30, 0.59, 0.11));
+    vec3 desat = mix(col, vec3(luma), 0.62);
+    desat = vec3(desat.r * 0.90, desat.g * 0.95, desat.b * 1.06);
+    col = mix(col, desat, uStorm);
+    col *= mix(1.0, 0.65, uStorm);
   }
 
   if (uDawnMist > 0.01) {
@@ -1101,7 +1110,7 @@ void main(){
 const TREE_FRAG = /* glsl */`
 uniform sampler2D uAtlas;
 uniform vec3 uInkUse, uNightMul;
-uniform float uNight, uLightning;
+uniform float uNight, uLightning, uStorm;
 uniform vec3 uStrikePos;
 uniform float uStrikeAmt, uStrikeRad;
 uniform vec2 uAtlasGrid;
@@ -1128,6 +1137,11 @@ void main(){
   // Dark atlas marks were ink; at night they flip to cream.
   vec3 nightCol = mix(uInkUse * 0.85, nightFill, smoothstep(0.07, 0.32, luma));
   col = mix(col, nightCol, uNight);
+  if (uStorm > 0.01) {
+    float lumaT = dot(col, vec3(0.30, 0.59, 0.11));
+    col = mix(col, vec3(lumaT * 0.90, lumaT * 0.95, lumaT * 1.06), 0.55 * uStorm);
+    col *= mix(1.0, 0.65, uStorm);
+  }
   if (uStrikeAmt > 0.001) {
     float sd = length(vWorld - uStrikePos);
     float fall = exp(-sd * sd / max(1.0, uStrikeRad * uStrikeRad));
@@ -1191,7 +1205,7 @@ void main(){
 
 const GRASS_FRAG = /* glsl */`
 uniform vec3 uGrass, uWheat, uInkUse, uCorn, uNightMul;
-uniform float uNight;
+uniform float uNight, uStorm;
 varying float vKind;
 varying float vY;
 varying float vX;
@@ -1211,6 +1225,11 @@ void main(){
   nightFill = mix(nightFill, vec3(0.03, 0.045, 0.085), 0.55);
   vec3 nightCol = mix(nightFill, uInkUse * 0.85, inkA * 0.85);
   col = mix(col, nightCol, uNight);
+  if (uStorm > 0.01) {
+    float lumaG = dot(col, vec3(0.30, 0.59, 0.11));
+    col = mix(col, vec3(lumaG * 0.90, lumaG * 0.95, lumaG * 1.06), 0.50 * uStorm);
+    col *= mix(1.0, 0.65, uStorm);
+  }
   gl_FragColor = vec4(col, 0.98);
 }
 `;
@@ -1277,7 +1296,7 @@ void main(){
 
 const BUILDING_FRAG = /* glsl */`
 uniform vec3 uWash, uInkUse, uPaper, uNightMul, uSunDir, uMoonDir;
-uniform float uNight;
+uniform float uNight, uStorm;
 varying vec3 vN;
 varying vec3 vWorld;
 ${NOISE_GLSL}
@@ -1315,6 +1334,11 @@ void main(){
     col = mix(col, uInkUse, hatch * mix(0.42, 0.16, uNight));
   }
   col *= 0.97 + 0.05 * noise21(vWorld.xz * 2.4);
+  if (uStorm > 0.01) {
+    float lumaB = dot(col, vec3(0.30, 0.59, 0.11));
+    col = mix(col, vec3(lumaB * 0.92, lumaB * 0.95, lumaB * 1.05), 0.40 * uStorm);
+    col *= mix(1.0, 0.72, uStorm);
+  }
   gl_FragColor = vec4(col, 1.0);
 }
 `;
@@ -1537,6 +1561,7 @@ function terrainUniforms() {
     uSnow: { value: 0 },
     uFog: { value: 0 },
     uRain: { value: 0 },
+    uStorm: { value: 0 },
     uTime: { value: 0 },
     uHatch: { value: 4.5 },
     uRow: { value: 1 },
@@ -2100,9 +2125,9 @@ void main(){
 `;
 
 const VOL_CLOUD_FRAG = /* glsl */`
-uniform float uSeed, uTime, uKind, uGray, uRain, uReduce, uNight, uDeck, uShaft, uCirrus, uStreak, uTwi, uEdgeFade, uAlphaMul;
+uniform float uSeed, uTime, uKind, uGray, uRain, uReduce, uNight, uDeck, uShaft, uCirrus, uStreak, uTwi, uEdgeFade, uAlphaMul, uStorm;
 uniform vec3 uInk, uNightMul, uMoonDir, uLook, uSunDir;
-uniform vec3 uStrikePos;
+uniform vec3 uStrikePos, uStrikeOrigin;
 uniform float uStrikeAmt, uStrikeRad;
 varying vec2 vUv;
 varying vec3 vWorld;
@@ -2205,22 +2230,31 @@ void main(){
     gaps = 1.0 - smoothstep(0.30, 0.48, field);
     float relief = mix(0.28, 1.0, up);
     float rollDark = lumps * relief;
-    wash = mix(wash, pale, gaps * 0.48 * mix(0.30, 0.85, up));
-    wash = mix(wash, dark, rollDark * 0.58);
-    // Horizontal hatch: rows follow constant elevation, broken into short dashes
-    // along azimuth. Spacing tightens toward the horizon with the lumps.
-    float row = elev * mix(52.0, 18.0, up);
-    float f = fract(row + (nC - 0.5) * 0.18) - 0.5;
-    float line = 1.0 - smoothstep(0.0, 0.26, abs(f));
-    float along = azim * mix(7.0, 13.0, hash21(vec2(floor(row), s + 2.1)));
+    // Pale flecks read as a static screen in storm. Keep a little gap only in overcast.
+    wash = mix(wash, pale, gaps * 0.48 * mix(0.30, 0.85, up) * (1.0 - uStorm));
+    wash = mix(wash, dark, rollDark * mix(0.58, 0.82, uStorm));
+    if (uStorm > 0.5) {
+      wash = mix(wash, dark * 0.78, 0.28 + 0.50 * up);
+      vec3 horBand = mix(pale, midc, 0.22);
+      wash = mix(wash, horBand, (1.0 - up) * 0.78);
+    }
+    // Thin ink dashes on lump undersides. The old hatch used elev*18 rows and a
+    // 0.26-wide line, which filled two fat elevation bands and then carved them
+    // into 7-13 azimuth cells, so the upper sky read as dark rectangular tiles
+    // fixed to the view (same screen spots every pass).
+    float row = elev * mix(140.0, 56.0, up);
+    float f = fract(row + (nC - 0.5) * 0.22) - 0.5;
+    float line = 1.0 - smoothstep(0.0, 0.055, abs(f));
+    float along = azim * mix(48.0, 90.0, hash21(vec2(floor(row), s + 2.1)));
     float segF = fract(along + hash21(vec2(floor(row), s + 6.0)));
-    float segLen = mix(0.34, 0.80, hash21(vec2(floor(row) * 9.0, floor(along) + s)));
+    float segLen = mix(0.16, 0.40, hash21(vec2(floor(row) * 9.0, floor(along) + s)));
     float inSeg = step(0.0, segF) * step(segF, segLen);
-    float taper = smoothstep(0.0, 0.10, segF) * smoothstep(segLen, segLen - 0.10, segF);
-    float lift = step(0.16, hash21(vec2(floor(row) * 11.0, floor(along) + s)));
-    float dens = mix(0.16, 1.0, rollDark) * mix(0.28, 1.0, up);
+    float taper = smoothstep(0.0, 0.08, segF) * smoothstep(segLen, segLen - 0.08, segF);
+    float lift = step(0.22, hash21(vec2(floor(row) * 11.0, floor(along) + s)));
+    float dens = mix(0.06, 1.0, rollDark) * mix(0.18, 0.95, up);
+    dens = mix(dens, dens * 1.35, uStorm);
     hatch = dens * line * lift * inSeg * taper;
-    col = mix(wash, uInk, clamp(hatch * 0.40, 0.0, 0.55));
+    col = mix(wash, uInk, clamp(hatch * mix(0.40, 0.62, uStorm), 0.0, 0.70));
     // Soft circular fade so the square deck edge never reads as a seam.
     float edge = 1.0 - smoothstep(0.60, 0.86, length(vUv - 0.5) * 2.0);
     // Leave a lighter band of sky between the cloud base and the far ridges.
@@ -2377,6 +2411,10 @@ void main(){
     } else {
       col = mix(col, mix(col, creamLt, 0.45), k * 0.50);
     }
+    float od = length(vWorld - uStrikeOrigin);
+    float oNear = exp(-od * od / (420.0 * 420.0));
+    float ok = min(0.85, uStrikeAmt * oNear);
+    col = mix(col, creamLt, ok * mix(0.55, 0.72, 1.0 - rel));
     vec3 toFrag = vWorld - cameraPosition;
     vec3 toBolt = uStrikePos - cameraPosition;
     float boltDist = length(toBolt);
@@ -2432,10 +2470,12 @@ function makeVolCloudMat(kind, seed, gray) {
       uStreak: { value: 0 },
       uTwi: { value: 0 },
       uEdgeFade: { value: 1 },
+      uStorm: { value: 0 },
       uAlphaMul: { value: 1 },
       uLook: { value: new THREE.Vector3(0, 0, 1) },
       uSunDir: { value: new THREE.Vector3(0.3, 0.8, 0.2) },
       uStrikePos: { value: new THREE.Vector3() },
+      uStrikeOrigin: { value: new THREE.Vector3() },
       uStrikeAmt: { value: 0 },
       uStrikeRad: { value: 1600 }
     },
@@ -2468,8 +2508,9 @@ function buildVolClouds() {
   // az is world azimuth from the valley anchor (0 = north), not camera-relative.
   if (deck) {
     // Horizontal world ceilings at three altitudes so the deck parallaxes and never follows the camera.
+    const deckAlt = (kind === "storm") ? 680 : 900;
     puffSpec = [
-      { az: 0.0, dist: 0, alt: 900, sx: 56000, sy: 56000, seed: 1.1, flat: 1 }
+      { az: 0.0, dist: 0, alt: deckAlt, sx: 56000, sy: 56000, seed: 1.1, flat: 1 }
     ];
   } else if (kind === "fog") {
     puffSpec = [
@@ -2537,6 +2578,7 @@ function buildVolClouds() {
     const mat = makeVolCloudMat(0, sp.seed, gray);
     mat.uniforms.uDeck.value = deck && !sp.shaft ? 1 : 0;
     mat.uniforms.uRain.value = (kind === "rain" || kind === "storm") ? 1 : 0;
+    if (mat.uniforms.uStorm) mat.uniforms.uStorm.value = (kind === "storm") ? 1 : 0;
     mat.uniforms.uFlat.value = sp.flat ? 1 : 0;
     mat.uniforms.uShaft.value = sp.shaft ? 1 : 0;
     mat.uniforms.uCirrus.value = sp.cirrus ? 1 : 0;
@@ -3691,6 +3733,7 @@ function scatterTrees() {
       uInkUse: { value: colU(INK) },
       uNightMul: { value: colU(NIGHT_MUL) },
       uNight: { value: 0 },
+      uStorm: { value: 0 },
       uLightning: { value: 0 },
       uStrikePos: { value: new THREE.Vector3() },
       uStrikeAmt: { value: 0 },
@@ -3920,7 +3963,7 @@ void main(){
 const FRAME_TREE_FRAG = /* glsl */`
 uniform sampler2D uAtlas;
 uniform vec3 uInkUse, uNightMul;
-uniform float uNight;
+uniform float uNight, uStorm;
 varying vec2 vUv;
 varying float vFrame;
 varying float vShade;
@@ -3936,6 +3979,11 @@ void main(){
   nightFill = mix(nightFill, vec3(0.03, 0.045, 0.08), 0.40);
   vec3 nightCol = mix(uInkUse * 0.9, nightFill, smoothstep(0.07, 0.32, luma));
   col = mix(col, nightCol, uNight);
+  if (uStorm > 0.01) {
+    float lumaT = dot(col, vec3(0.30, 0.59, 0.11));
+    col = mix(col, vec3(lumaT * 0.90, lumaT * 0.95, lumaT * 1.06), 0.55 * uStorm);
+    col *= mix(1.0, 0.65, uStorm);
+  }
   gl_FragColor = vec4(col, s.a);
 }
 `;
@@ -3972,6 +4020,7 @@ function buildFrameTrees() {
       uInkUse: { value: colU(INK) },
       uNightMul: { value: colU(NIGHT_MUL) },
       uNight: { value: 0 },
+      uStorm: { value: 0 },
       uTime: { value: 0 },
       uWind: { value: 1 },
       uReduce: { value: REDUCE ? 1 : 0 }
@@ -4164,6 +4213,7 @@ function grassUniforms() {
     uInkUse: { value: colU(INK) },
     uNightMul: { value: colU(NIGHT_MUL) },
     uNight: { value: 0 },
+    uStorm: { value: 0 },
     uLodNear: { value: LOD_NEAR },
     uLodMid: { value: LOD_MID }
   };
@@ -4350,7 +4400,8 @@ function makeWashMat(rgb) {
       uNightMul: { value: colU(NIGHT_MUL) },
       uNight: { value: 0 },
       uSunDir: { value: new THREE.Vector3(0.3, 0.8, 0.2) },
-      uMoonDir: { value: new THREE.Vector3(0.2, 0.5, 0.4) }
+      uMoonDir: { value: new THREE.Vector3(0.2, 0.5, 0.4) },
+      uStorm: { value: 0 }
     },
     vertexShader: BUILDING_VERT,
     fragmentShader: BUILDING_FRAG
@@ -4773,6 +4824,7 @@ function skinLandmarks() {
     u.uNight.value = night;
     if (u.uSunDir) u.uSunDir.value.copy(altAzDir(clock.alt, clock.sunAz));
     if (u.uMoonDir) u.uMoonDir.value.copy(altAzDir(clock.moonAlt, clock.moonAz));
+    if (u.uStorm) u.uStorm.value = wx.kind === "storm" ? 1 : 0;
   }
   for (let i = 0; i < windowMats.length; i++) {
     const u = windowMats[i].uniforms;
@@ -4954,6 +5006,7 @@ function applySkin() {
     if (un.uInk) set(un.uInk, ink);
     if (un.uMoonDir) un.uMoonDir.value.copy(altAzDir(clock.moonAlt, clock.moonAz));
     if (un.uSunDir) un.uSunDir.value.copy(altAzDir(clock.alt, clock.sunAz));
+    if (un.uStorm) un.uStorm.value = wx.kind === "storm" ? 1 : 0;
   }
   if (u) {
     set(u.uField, s.field); set(u.uWheat, s.wheat); set(u.uPlowed, s.plowed);
@@ -4965,6 +5018,7 @@ function applySkin() {
     u.uRising.value = clock.rising ? 1 : 0;
     u.uSnow.value = wx.kind === "snow" ? 1 : 0;
     u.uRain.value = (wx.kind === "rain" || wx.kind === "storm") ? 1 : 0;
+    if (u.uStorm) u.uStorm.value = wx.kind === "storm" ? 1 : 0;
     u.uFog.value = wx.kind === "fog" ? 1 : wx.kind === "rain" ? 0.35 : wx.kind === "storm" ? 0.25 : wx.kind === "snow" ? 0.2 : 0;
     u.uHatch.value = s.hatch;
     u.uRow.value = s.row;
@@ -4997,6 +5051,10 @@ function applySkin() {
   }
   if (treeMat) pushTod(treeMat.uniforms);
   if (frameTreeMat) pushTod(frameTreeMat.uniforms);
+  for (let ci = 0; ci < volCloudItems.length; ci++) {
+    const cu = volCloudItems[ci].mesh && volCloudItems[ci].mesh.material && volCloudItems[ci].mesh.material.uniforms;
+    if (cu && cu.uStorm) cu.uStorm.value = wx.kind === "storm" ? 1 : 0;
+  }
   if (treeMesh) syncTreeFrames();
   function tintGrass(mat) {
     if (!mat) return;
@@ -5981,6 +6039,7 @@ const strike = {
   kind: "bolt",
   seed: 91771,
   pos: { x: 0, y: 0, z: 0 },
+  origin: { x: 0, y: 0, z: 0 },
   rad: 1600,
   forced: false,
   holdPhase: null,
@@ -6028,8 +6087,10 @@ attribute float aWidthPx;
 attribute float aAlpha;
 uniform vec2 uRes;
 varying float vAlpha;
+varying float vSide;
 void main(){
   vAlpha = aAlpha;
+  vSide = aSide;
   vec4 c0 = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   vec4 c1 = projectionMatrix * modelViewMatrix * vec4(aNext, 1.0);
   vec2 s0 = c0.xy / max(1e-4, c0.w);
@@ -6047,9 +6108,13 @@ const BOLT_FRAG = /* glsl */`
 uniform vec3 uColor;
 uniform float uOpacity;
 uniform float uAmt;
+uniform float uSoft;
 varying float vAlpha;
+varying float vSide;
 void main(){
-  float a = uOpacity * uAmt * vAlpha;
+  float edge = 1.0 - abs(vSide);
+  float soft = mix(1.0, smoothstep(0.0, 0.85, edge), uSoft);
+  float a = uOpacity * uAmt * vAlpha * soft;
   if (a < 0.01) discard;
   gl_FragColor = vec4(uColor, a);
 }
@@ -6061,6 +6126,7 @@ function makeBoltMat(color, opacity) {
       uColor: { value: new THREE.Color(color) },
       uOpacity: { value: opacity },
       uAmt: { value: 0 },
+      uSoft: { value: 0 },
       uRes: { value: new THREE.Vector2(1280, 800) }
     },
     vertexShader: BOLT_VERT,
@@ -6075,8 +6141,9 @@ function makeBoltMat(color, opacity) {
 
 function ensureBoltGroup() {
   if (boltGroup || !scene) return;
-  boltGlowMesh = new THREE.Mesh(new THREE.BufferGeometry(), makeBoltMat(0xDDE6F0, 0.40));
+  boltGlowMesh = new THREE.Mesh(new THREE.BufferGeometry(), makeBoltMat(0xDDE6F0, 0.52));
   boltCoreMesh = new THREE.Mesh(new THREE.BufferGeometry(), makeBoltMat(0xF6EEDC, 1.0));
+  boltGlowMesh.material.uniforms.uSoft.value = 1;
   boltGlowMesh.frustumCulled = false;
   boltCoreMesh.frustumCulled = false;
   boltGlowMesh.renderOrder = 8;
@@ -6269,10 +6336,10 @@ function layoutBoltMesh(path) {
   }
   ensureBoltGroup();
   const coreParts = [polylineToRibbon(path.main, 2.6, 1.0, false, path.seed)];
-  const glowParts = [polylineToRibbon(path.main, 2.6 * 3.6, 1.0 * 3.6, false, path.seed + 1)];
+  const glowParts = [polylineToRibbon(path.main, 2.6 * 4.0, 1.0 * 4.0, false, path.seed + 1)];
   for (let i = 0; i < path.branches.length; i++) {
     coreParts.push(polylineToRibbon(path.branches[i], 1.0, 0.15, true, path.seed + 17 + i));
-    glowParts.push(polylineToRibbon(path.branches[i], 3.4, 0.4, true, path.seed + 31 + i));
+    glowParts.push(polylineToRibbon(path.branches[i], 1.0 * 4.0, 0.15 * 4.0, true, path.seed + 31 + i));
   }
   if (boltCoreMesh.geometry) boltCoreMesh.geometry.dispose();
   if (boltGlowMesh.geometry) boltGlowMesh.geometry.dispose();
@@ -6299,6 +6366,7 @@ function beginStrikeEvent(now, kind, seed) {
   strike.kind = pick;
   strike.seed = useSeed;
   strike.pos = { x: (start.x + end.x) * 0.5, y: (start.y + end.y) * 0.45, z: (start.z + end.z) * 0.5 };
+  strike.origin = { x: start.x, y: start.y, z: start.z };
   strike.rad = pick === "cloud" ? 2200 : 1600;
   strike.nFlashes = 2 + ((rng() * 2) | 0);
   strike.flashes = 0;
@@ -6786,6 +6854,9 @@ function setCommonUniforms(t) {
     if (unifs.uStrikeAmt) unifs.uStrikeAmt.value = strike.amt || 0;
     if (unifs.uStrikeRad) unifs.uStrikeRad.value = strike.rad || 1600;
     if (unifs.uStrikePos) unifs.uStrikePos.value.set(strike.pos.x, strike.pos.y, strike.pos.z);
+    if (unifs.uStrikeOrigin && strike.origin) {
+      unifs.uStrikeOrigin.value.set(strike.origin.x, strike.origin.y, strike.origin.z);
+    }
   }
   if (terrainMat) {
     terrainMat.uniforms.uTime.value = t;
@@ -7061,8 +7132,9 @@ function projectCorners(cx, y0, y1, half, camera) {
   return { ok: any, minX: minX, maxX: maxX, minY: minY, maxY: maxY, hFrac: any ? (maxY - minY) / 2 : 0 };
 }
 
-function frameShortLandmark(target, hide, heightM) {
-  if (!camera) return { dist: 110, eye: 12, approach: null };
+function frameShortLandmark(target, hide, heightM, opts) {
+  opts = opts || {};
+  if (!camera) return { dist: opts.dist0 || 110, eye: opts.eye0 || 12, approach: null };
   const tw = pxToWorld(target[0], target[1]);
   const hw = hide ? pxToWorld(hide[0], hide[1]) : null;
   const saved = camera.position.clone();
@@ -7072,9 +7144,9 @@ function frameShortLandmark(target, hide, heightM) {
   const topY = baseY + heightM;
   // Footprint half-width so eaves and porches count in the projected height.
   const half = Math.max(6, heightM * 0.45);
-  let best = { dist: 110, eye: 12, approach: null, score: 1e9 };
-  const dists = [80, 90, 100, 110, 122, 136, 150, 170];
-  const eyes = [8, 10, 12, 14, 16];
+  let best = { dist: opts.dist0 || 110, eye: opts.eye0 || 12, approach: null, score: 1e9 };
+  const dists = opts.dists || [80, 90, 100, 110, 122, 136, 150, 170];
+  const eyes = opts.eyes || [8, 10, 12, 14, 16];
   for (let di = 0; di < dists.length; di++) {
     const dist = dists[di];
     for (let ei = 0; ei < eyes.length; ei++) {
@@ -7100,7 +7172,9 @@ function frameShortLandmark(target, hide, heightM) {
         if (box.minY < -0.96 || box.maxY > -0.08) continue;
         const hFrac = box.hFrac;
         if (hFrac > 0.38 || hFrac < 0.10) continue;
-        let score = Math.abs(hFrac - 0.25) * 12 + Math.abs(((box.minY + box.maxY) * 0.5) + 0.55) * 0.9;
+        let score = Math.abs(hFrac - 0.22) * 12 + Math.abs(((box.minY + box.maxY) * 0.5) + 0.55) * 0.9;
+        // Prefer a longer, higher view so a near bank does not lift the ridge above 65%.
+        if (opts.dists) score += Math.max(0, 200 - dist) * 0.012 + Math.max(0, 18 - eye) * 0.08;
         if (hw) {
           const chHead = Math.atan2(hw.x - x, hw.z - z);
           let dh = Math.abs(chHead - heading);
@@ -7132,7 +7206,11 @@ function getTourStops() {
   const river = findRiverTourPx();
   const millH = landmarkHeightM("mill", 14);
   const depotH = landmarkHeightM("depot", 8);
-  const millFr = frameShortLandmark(mill, church, millH);
+  const millFr = frameShortLandmark(mill, church, millH, {
+    dists: [160, 180, 200, 220, 240, 260, 280],
+    eyes: [16, 18, 20, 22, 24, 28],
+    dist0: 220, eye0: 20
+  });
   const depotFr = frameShortLandmark(depot, church, depotH);
   return [
     { name: "church", px: church[0], py: church[1], dist: 500, eye: 46 },
