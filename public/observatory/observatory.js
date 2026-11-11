@@ -97,7 +97,7 @@
   var ptr = { tx: 0, ty: 0, x: 0, y: 0 };
   var wxKey = "", clouds = [], drops = [], flakes = [], cloudSprites = [], hillCv = null, hillKey = "";
   var shoot = null, nextShoot = 0, sat = null, nextSat = 0, flash = null, nextFlash = 0;
-  var astro = null, hub = { x: 0, y: 0, r: 0, top: 0, bottom: 0 }, plaqueBox = null;
+  var astro = null, hub = { x: 0, y: 0, r: 0, top: 0, bottom: 0 }, plaqueBox = null, cardBox = null;
   var V = [0, 0, 0], P = [0, 0, 0], Q = [0, 0, 0];
 
   function rate() { return phone ? PHONE_RATE : 1; }
@@ -197,6 +197,7 @@
     var b = astroEl.getBoundingClientRect();
     hub.x = b.left + b.width / 2; hub.y = b.top + b.height / 2; hub.r = b.width / 2; hub.top = b.top; hub.bottom = b.bottom;
     var pq = doc.querySelector("a.study-pill"), pb = pq && pq.getBoundingClientRect(); plaqueBox = pb && pb.width ? { left: pb.left, right: pb.right, top: pb.top, bottom: pb.bottom } : null;
+    var cp = activePanel(), cb = cp && cp.getBoundingClientRect(); cardBox = cb && cb.width ? { left: cb.left, right: cb.right, top: cb.top, bottom: cb.bottom } : null;
   }
 
   /* ---------------- the astrolabe (SVG) ---------------- */
@@ -449,6 +450,9 @@
       astro.words.forEach(function (w) {
         var sa = ((w.pos + a) % 360 + 360) % 360, low = sa > 100 && sa < 260, off = Math.abs(sa > 180 ? sa - 360 : sa);
         setAttr(w.a, "display", low ? "none" : "inline"); setAttr(w.b, "display", low ? "inline" : "none");
+        // phones only show the top of the ring above the plate: words fade out before they reach it, so no letter peeks out beside it
+        if (phone) { var vis = clamp((100 - off) / 14, 0, 1); setAttr(w.g, "opacity", vis.toFixed(2)); setAttr(w.g, "display", vis > 0 ? "inline" : "none"); }
+        else setAttr(w.g, "opacity", "1"), setAttr(w.g, "display", "inline");
         if (!top[w.mode] || off < top[w.mode].off) top[w.mode] = { w: w, sa: sa, low: low, off: off };
       });
       astro.words.forEach(function (w) { setAttr(w.g, "class", "obs-word" + (w.mode === dial.mode && top[w.mode].w === w ? " obs-word-on" : "")); });
@@ -528,6 +532,16 @@
       if (!box) { box = doc.createElement("div"); box.id = "obs-slips"; box.setAttribute("aria-live", "assertive"); doc.body.appendChild(box); }
       el.classList.add("obs-slip"); box.appendChild(el);
       while (box.children.length > 2) box.removeChild(box.firstChild);
+      if (!dial.slipObs && win.MutationObserver) { // the plaque below steps down while a slip shows, and back up once it goes
+        dial.slipObs = new MutationObserver(dial.slipShift);
+        dial.slipObs.observe(box, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
+      }
+      dial.slipShift();
+    },
+    slipShift: function () {
+      var box = doc.getElementById("obs-slips"), h = 0, n = 0;
+      if (box && phone) [].forEach.call(box.children, function (c) { if (!c.classList.contains("is-leaving")) { h += c.offsetHeight; n++; } });
+      root.style.setProperty("--obs-slip-shift", (n ? h + (n - 1) * 6 : 0) + "px");
     },
     hooks: function () {
       // submit: a click on the active plate's own button (keyboard activation of a button is a click too)
@@ -725,6 +739,7 @@
     var nx = clamp(hub.x, x0, x1), ny = clamp(hub.y, y0, y1);
     if (hub.r && Math.hypot(nx - hub.x, ny - hub.y) < hub.r + pad) return true;
     var pl = plaqueBox; if (pl && x1 > pl.left - pad && x0 < pl.right + pad && y1 > pl.top - pad && y0 < pl.bottom + pad) return true;
+    var cd = cardBox; if (cd && x1 > cd.left - pad && x0 < cd.right + pad && y1 > cd.top - pad && y0 < cd.bottom + pad) return true; // no half-hidden names peeking out beside the plate
     return y1 > cam.hy - 6 || x0 < edge + 8 || x1 > W - edge - 8;
   }
   function drawConstellations(F, vis, ox, oy) {

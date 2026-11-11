@@ -261,8 +261,10 @@ html.obs a.study-pill {
   border: 1px solid var(--obs-brass-lo) !important;
   box-shadow: inset 0 1px 0 var(--obs-brass-hi), inset 0 0 0 3px var(--obs-brass), inset 0 0 0 4px rgba(138, 100, 32, .55), 0 6px 18px rgba(0, 0, 0, .45) !important;
   -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
-  transition: background-color .2s, box-shadow .2s, opacity .3s;
+  transition: background-color .2s, box-shadow .2s, opacity .3s, translate .38s cubic-bezier(.3, .7, .25, 1);
+  translate: 0 var(--obs-slip-shift, 0px); /* phones: steps down out of the way of the sign-in slip */
 }
+@media (prefers-reduced-motion: reduce) { html.obs a.study-pill { transition: background-color .2s, box-shadow .2s, opacity .3s; } }
 html.obs a.study-pill:hover, html.obs a.study-pill:focus-visible {
   background:
     radial-gradient(circle at 9px 50%, #8A6420 0 1.6px, #F2C46B 1.7px 2.4px, transparent 2.5px),
