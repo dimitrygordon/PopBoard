@@ -33,7 +33,8 @@ const REDUCE = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motio
 const OPENING_STOP = "jhs";
 // One-line model swap: set to "jasper_high_school.meshopt.glb" when Angelo's model is in.
 const JHS_GLB = null;
-const JHS_HEIGHT_M = 12;
+// Two/three-story school, eave-plus-parapet. OSM has no height or gym tag on the campus buildings.
+const JHS_HEIGHT_M = 16;
 const TOUR_HOLD_JHS = 30;
 const TOUR_HOLD_OTHER = 15;
 const TOUR_ORBIT_ARC = 50 * Math.PI / 180;
@@ -9351,6 +9352,59 @@ function sitePx(key, fallback) {
   return fallback;
 }
 
+function nudgeCloserForWidth(target, heightM, fr, opts) {
+  const minW = opts && opts.wMin != null ? opts.wMin : 0.10;
+  const minDist = opts && opts.minDist != null ? opts.minDist : FORE_CLEAR_M;
+  const clearM = opts && opts.clearM != null ? opts.clearM : FORE_CLEAR_M;
+  if (!fr || fr.approach == null || !camera) return fr;
+  if (fr.wFrac != null && fr.wFrac >= minW && fr.dist >= minDist) return fr;
+  const tw = pxToWorld(target[0], target[1]);
+  const half = opts && opts.half != null ? opts.half : Math.max(6, heightM * 0.45);
+  const skipR = Math.max(half * 1.4, 20);
+  const pitch = applyFovAndPitch().pitch;
+  const baseY = yOf(heightWorld(tw.x, tw.z));
+  const topY = baseY + heightM;
+  const saved = camera.position.clone();
+  const savedQ = camera.quaternion.clone();
+  const start = (fr.wFrac && fr.wFrac > 0.02)
+    ? Math.max(minDist, fr.dist * fr.wFrac / minW)
+    : Math.max(minDist, fr.dist - 20);
+  const tries = [];
+  for (let d = Math.min(fr.dist, start + 8); d >= minDist; d -= 8) tries.push(d);
+  if (!tries.length || tries[tries.length - 1] > minDist) tries.push(minDist);
+  let best = fr;
+  for (let i = 0; i < tries.length; i++) {
+    const dist = tries[i];
+    const ang = fr.approach;
+    const eye = fr.eye;
+    const x = tw.x + Math.sin(ang) * dist;
+    const z = tw.z + Math.cos(ang) * dist;
+    if (coverWorld(x, z) === 0) continue;
+    const y = yOf(heightWorld(x, z)) + eye;
+    const heading = Math.atan2(tw.x - x, tw.z - z);
+    camera.position.set(x, y, z);
+    camera.lookAt(
+      x + Math.sin(heading) * 1800 * Math.cos(pitch),
+      y + Math.sin(pitch) * 1800,
+      z + Math.cos(heading) * 1800 * Math.cos(pitch)
+    );
+    camera.updateMatrixWorld(true);
+    if (nearClutterInShot(x, y, z, clearM, tw.x, tw.z, skipR)) continue;
+    const box = projectCorners(tw, baseY, topY, half, camera);
+    if (!box.ok) continue;
+    best = {
+      dist: dist, eye: eye, approach: ang,
+      hFrac: box.hFrac, wFrac: box.wFrac,
+      score: fr.score, nudged: true
+    };
+    if (box.wFrac >= minW) break;
+  }
+  camera.position.copy(saved);
+  camera.quaternion.copy(savedQ);
+  camera.updateMatrixWorld(true);
+  return best;
+}
+
 function frameNamed(name, target, hide, heightM, dists, eyes, dist0, eye0, extra) {
   const opts = {
     dists: dists,
@@ -9370,8 +9424,11 @@ function frameNamed(name, target, hide, heightM, dists, eyes, dist0, eye0, extra
     const keys = Object.keys(extra);
     for (let i = 0; i < keys.length; i++) opts[keys[i]] = extra[keys[i]];
   }
-  const fr = frameShortLandmark(target, hide, heightM, opts);
-  console.info("[frame]", name, "dist", fr.dist, "eye", fr.eye, "approach", fr.approach, "hFrac", fr.hFrac, "wFrac", fr.wFrac, "score", fr.score);
+  let fr = frameShortLandmark(target, hide, heightM, opts);
+  if (opts.wMin != null && fr && (fr.wFrac == null || fr.wFrac < opts.wMin)) {
+    fr = nudgeCloserForWidth(target, heightM, fr, opts);
+  }
+  console.info("[frame]", name, "dist", fr.dist, "eye", fr.eye, "approach", fr.approach, "hFrac", fr.hFrac, "wFrac", fr.wFrac, "score", fr.score, fr.nudged ? "nudged" : "");
   return fr;
 }
 
@@ -9399,9 +9456,9 @@ function getTourStops() {
   const churchE = [40, 52, 64];
   const courtD = [520, 680, 860, 1040];
   const courtE = [48, 64, 82];
-  const millD = [160, 200, 250, 320];
+  const millD = [170, 190, 210, 230, 250];
   const millE = [22, 30, 40];
-  const depotD = [160, 200, 240, 300, 360];
+  const depotD = [170, 190, 210, 230, 250];
   const depotE = [24, 34, 44];
   const farmD = [220, 300, 400, 520];
   const farmE = [20, 30, 42];
@@ -9421,8 +9478,8 @@ function getTourStops() {
     courtFr.score = 0;
     console.info("[frame]", "courthouse pinned over rooftops", "dist", courtFr.dist, "eye", courtFr.eye, "approach", courtFr.approach);
   }
-  const millFr = frameNamed("mill", mill, church, millH, millD, millE, 200, 30, Object.assign({ half: 12 }, widthBand));
-  const depotFr = frameNamed("depot", depot, church, depotH, depotD, depotE, 200, 34, Object.assign({}, widthBand, { half: 16, wMin: 0.08, wMax: 0.18, wTarget: 0.125 }));
+  const millFr = frameNamed("mill", mill, church, millH, millD, millE, 210, 30, Object.assign({}, widthBand, { half: 12, wMin: 0.10, wMax: 0.16, wTarget: 0.12 }));
+  const depotFr = frameNamed("depot", depot, church, depotH, depotD, depotE, 210, 34, Object.assign({}, widthBand, { half: 16, wMin: 0.10, wMax: 0.18, wTarget: 0.12 }));
   const farmFr = frameNamed("farmstead", [farm.px, farm.py], church, 12, farmD, farmE, 320, 30);
   const hallFr = frameNamed("townhall", hall, stadium, hallH, hallD, hallE, 520, 82, { half: 16, wTarget: 0.08, wMin: 0.045, wMax: 0.16, hMin: 0.05, eye0: 82 });
   if (!(hallFr && hallFr.approach != null && hallFr.hFrac >= 0.05 && hallFr.eye >= 60)) {
