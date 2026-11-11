@@ -623,7 +623,6 @@ void main(){
   col = mix(col, post, 0.22);
   col += (n4 - 0.5) * 0.016;
 
-  col *= mix(vec3(1.0), uNightMul * 1.15, uNight * 0.92);
   col *= mix(0.72, 1.04, ndl);
   col += uRim * uTwi * pow(clamp(dot(N, uSunDir), 0.0, 1.0), 4.0) * 0.55;
 
@@ -652,9 +651,9 @@ void main(){
     if (uSeason > 1.5 && uSeason < 2.5) inkA *= 1.05;
     if (uSeason > 2.5) inkA *= 0.5;
     if (cls < 6.5) inkA *= 0.50;
-    col = mix(col, vec3(0.165, 0.129, 0.094), (1.0 - smoothstep(0.0, 0.16, g)) * inkA);
+    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.16, g)) * inkA);
     float edge = min(min(pf.x, 1.0 - pf.x), min(pf.y, 1.0 - pf.y));
-    col = mix(col, vec3(0.165, 0.129, 0.094), (1.0 - smoothstep(0.0, 0.028, edge)) * 0.35 * nearL);
+    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.028, edge)) * 0.35 * nearL);
   }
 
   vec2 ts = 1.0 / uSize;
@@ -662,7 +661,7 @@ void main(){
   float forestHere = step(3.5, cls) * step(cls, 5.5);
   float forestN = step(3.5, nCls) * step(nCls, 5.5);
   if (forestHere < 0.5 && forestN > 0.5 && cls > 0.5 && dist < 2800.0) {
-    col = mix(col, vec3(0.165, 0.129, 0.094), 0.28 * (1.0 - backL));
+    col = mix(col, uInkUse, 0.28 * (1.0 - backL));
   }
 
   // River: one unbroken ribbon, cream glints, engraved ripple lines, never patches
@@ -671,14 +670,15 @@ void main(){
     col = mix(uPaper, river, 0.72);
     float rip = sin(wz.x * 0.22 + wz.y * 0.31 + uTime * 0.35) * 0.5 + sin(wz.x * 0.09 - wz.y * 0.14) * 0.5;
     float line = abs(fract((wz.x * 0.07 + wz.y * 0.09) + rip * 0.10) - 0.5);
-    col = mix(col, vec3(0.165, 0.129, 0.094), (1.0 - smoothstep(0.0, 0.08, line)) * mix(0.50, 0.12, layer));
+    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.08, line)) * mix(0.50, 0.12, layer));
     float line2 = abs(fract((wz.x * 0.045 - wz.y * 0.06) * 1.15 + 0.3) - 0.5);
-    col = mix(col, vec3(0.165, 0.129, 0.094), (1.0 - smoothstep(0.0, 0.09, line2)) * 0.14 * nearL);
-    // cream glints along the ribbon
+    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.09, line2)) * 0.14 * nearL);
+    // cream / moon glints along the ribbon
     vec3 R = reflect(-L, vec3(0.0, 1.0, 0.0));
     float spec = pow(clamp(dot(R, V), 0.0, 1.0), 40.0);
-    col = mix(col, vec3(0.96, 0.92, 0.82), clamp(spec * 0.55 + (n4 - 0.35) * 0.08, 0.0, 0.45));
-    if (nCls > 0.5) col = mix(col, vec3(0.165, 0.129, 0.094), 0.35 * (1.0 - layer));
+    vec3 glintC = mix(vec3(0.96, 0.92, 0.82), vec3(0.93, 0.90, 0.84), uNight);
+    col = mix(col, glintC, clamp(spec * mix(0.55, 0.85, uNight) + (n4 - 0.35) * 0.08, 0.0, 0.55));
+    if (nCls > 0.5) col = mix(col, uInkUse, 0.35 * (1.0 - layer));
   }
 
   // ink contours every 10 m, heavy every 50 m, with line wobble
@@ -741,7 +741,12 @@ void main(){
   if (backL > 0.4) {
     col = mix(col, vec3(0.72, 0.76, 0.80), (backL - 0.4) * 0.55);
   }
-  col = mix(col, inkCol, ridgeAmt);
+  // Night last, after far wash and haze, so those cannot restore daytime cream.
+  col *= mix(vec3(1.0), uNightMul * 0.72, uNight);
+  vec3 nightSil = vec3(0.035, 0.048, 0.09);
+  col = mix(col, nightSil, uNight * (0.28 + 0.55 * backL));
+  vec3 crestInk = mix(inkCol, uInkUse, uNight);
+  col = mix(col, crestInk, ridgeAmt * mix(1.0, 0.9, uNight));
 
   if (uDawnMist > 0.01) {
     float valley = clamp((165.0 - h) / 40.0, 0.0, 1.0);
@@ -959,7 +964,7 @@ void main(){
 
 const TREE_FRAG = /* glsl */`
 uniform sampler2D uAtlas;
-uniform vec3 uInkUse;
+uniform vec3 uInkUse, uNightMul;
 uniform float uNight, uLightning;
 uniform vec2 uAtlasGrid;
 varying vec2 vUv;
@@ -976,7 +981,12 @@ void main(){
   vec4 s = texture2D(uAtlas, uv);
   if (s.a < 0.32) discard;
   vec3 col = s.rgb * vShade;
-  col = mix(col, uInkUse, 0.08 * (1.0 - uNight));
+  float luma = dot(s.rgb, vec3(0.30, 0.50, 0.20));
+  vec3 nightFill = col * uNightMul * 0.45;
+  nightFill = mix(nightFill, vec3(0.03, 0.045, 0.08), 0.40);
+  // Dark atlas marks were ink; at night they flip to cream.
+  vec3 nightCol = mix(uInkUse * 0.85, nightFill, smoothstep(0.07, 0.32, luma));
+  col = mix(col, nightCol, uNight);
   col += uLightning * 0.3;
   gl_FragColor = vec4(col, s.a);
 }
@@ -1033,7 +1043,8 @@ void main(){
 `;
 
 const GRASS_FRAG = /* glsl */`
-uniform vec3 uGrass, uWheat, uInkUse, uCorn;
+uniform vec3 uGrass, uWheat, uInkUse, uCorn, uNightMul;
+uniform float uNight;
 varying float vKind;
 varying float vY;
 varying float vX;
@@ -1048,8 +1059,11 @@ void main(){
   float inkA = (1.0 - smoothstep(0.0, 0.28, edge)) * 0.82 + (1.0 - vY) * 0.28;
   col = mix(col, uInkUse, inkA);
   col = mix(col, uInkUse, 0.22 * (1.0 - vY));
-  // Slightly deeper wash so the front strip reads against wheat fields.
   col *= 0.88;
+  vec3 nightFill = col * uNightMul * 0.42;
+  nightFill = mix(nightFill, vec3(0.03, 0.045, 0.085), 0.55);
+  vec3 nightCol = mix(nightFill, uInkUse * 0.85, inkA * 0.85);
+  col = mix(col, nightCol, uNight);
   gl_FragColor = vec4(col, 0.98);
 }
 `;
@@ -1071,11 +1085,24 @@ varying vec3 vPos;
 ${NOISE_GLSL}
 void main(){
   vec3 N = normalize(vN);
-  float lit = clamp(dot(N, normalize(uSunDir)), 0.0, 1.0);
-  float crat = noise21(N.xy * 6.0 + N.z * 3.0);
-  vec3 dark = vec3(0.12, 0.13, 0.18);
-  vec3 light = vec3(0.96, 0.94, 0.85) * (0.92 + 0.08 * crat);
-  vec3 col = mix(dark, light, smoothstep(0.02, 0.22, lit));
+  vec3 L = normalize(uSunDir);
+  float lit = clamp(dot(N, L), 0.0, 1.0);
+  float crat = noise21(N.xy * 7.0 + N.z * 4.0);
+  vec3 dark = vec3(0.10, 0.11, 0.16);
+  vec3 light = vec3(0.96, 0.93, 0.84) * (0.86 + 0.14 * crat);
+  vec3 col = mix(dark, light, smoothstep(0.015, 0.16, lit));
+  // Engraved hatch on the unlit face; faint crater rings on the lit face.
+  float sl = abs(fract((N.x * 8.0 + N.y * 11.0) * 1.15 + N.z * 2.0) - 0.5);
+  float hatch = (1.0 - smoothstep(0.0, 0.15, sl)) * (1.0 - smoothstep(0.0, 0.22, lit));
+  hatch *= step(0.2, hash21(floor(N.xy * 16.0)));
+  col = mix(col, vec3(0.06, 0.07, 0.11), hatch * 0.75);
+  float ring = abs(crat - 0.55);
+  col = mix(col, vec3(0.22, 0.20, 0.18), (1.0 - smoothstep(0.0, 0.08, ring)) * lit * 0.28);
+  // Cream ink outline at the limb, a touch heavier on the sun side.
+  vec3 V = normalize(cameraPosition - vPos);
+  float rim = pow(1.0 - abs(dot(N, V)), 2.6);
+  vec3 cream = vec3(0.93, 0.90, 0.84);
+  col = mix(col, cream, rim * (0.55 + 0.35 * lit));
   gl_FragColor = vec4(col, 1.0);
 }
 `;
@@ -1115,7 +1142,8 @@ void main(){
   wash *= 0.95 + 0.08 * g;
   // Posterize the wash so it reads as a print, not a smooth plastic fill.
   wash = floor(wash * 5.0 + 0.5) / 5.0;
-  wash = mix(wash, uNightMul * 1.05, uNight * 0.55);
+  wash = mix(wash, wash * uNightMul * 0.7, uNight);
+  wash = mix(wash, vec3(0.04, 0.055, 0.10), uNight * 0.45);
   vec3 col = mix(wash, uInkUse, clamp(rim * 0.92, 0.0, 0.8));
   float ndl = dot(N, normalize(uSunDir));
   if (ndl < 0.28) {
@@ -1143,7 +1171,8 @@ void main(){
   float rim = pow(1.0 - abs(dot(N, V)), 2.6);
   vec3 dark = vec3(0.12, 0.10, 0.08);
   vec3 col = mix(dark, uGlow, clamp(uNight, 0.0, 1.0));
-  col = mix(col, uInkUse, rim * 0.7);
+  col *= mix(1.0, 1.25, uNight);
+  col = mix(col, uInkUse, rim * mix(0.7, 0.25, uNight));
   gl_FragColor = vec4(col, 1.0);
 }
 `;
@@ -1421,19 +1450,24 @@ function buildSky() {
   const starPos = new Float32Array(STAR_MAX * 3);
   const starCol = new Float32Array(STAR_MAX * 3);
   const starSize = new Float32Array(STAR_MAX);
+  const starMag = new Float32Array(STAR_MAX);
   const starGeo = new THREE.BufferGeometry();
   starGeo.setAttribute("position", new THREE.BufferAttribute(starPos, 3));
   starGeo.setAttribute("color", new THREE.BufferAttribute(starCol, 3));
   starGeo.setAttribute("aSize", new THREE.BufferAttribute(starSize, 1));
+  starGeo.setAttribute("aMag", new THREE.BufferAttribute(starMag, 1));
   const starMat = new THREE.ShaderMaterial({
     uniforms: { uPixel: { value: 1 } },
     vertexShader: /* glsl */`
       attribute float aSize;
+      attribute float aMag;
       attribute vec3 color;
       varying vec3 vCol;
+      varying float vMag;
       uniform float uPixel;
       void main(){
         vCol = color;
+        vMag = aMag;
         vec4 mv = modelViewMatrix * vec4(position, 1.0);
         gl_Position = projectionMatrix * mv;
         gl_PointSize = aSize * uPixel;
@@ -1441,12 +1475,23 @@ function buildSky() {
     `,
     fragmentShader: /* glsl */`
       varying vec3 vCol;
+      varying float vMag;
       void main(){
         vec2 p = gl_PointCoord * 2.0 - 1.0;
         float r = length(p);
-        if (r > 1.0) discard;
-        float a = 1.0 - smoothstep(0.35, 1.0, r);
-        gl_FragColor = vec4(vCol, a);
+        if (r > 1.15) discard;
+        float core = 1.0 - smoothstep(0.0, 0.38, r);
+        float halo = 1.0 - smoothstep(0.18, 1.0, r);
+        float a = max(core, halo * 0.55);
+        // Tiny engraved cross-glint on the bright stars (mag ~1.8 and brighter).
+        if (vMag < 1.85) {
+          float arm = min(abs(p.x), abs(p.y));
+          float reach = max(abs(p.x), abs(p.y));
+          float spike = (1.0 - smoothstep(0.0, 0.085, arm)) * (1.0 - smoothstep(0.12, 1.08, reach));
+          a = max(a, spike * clamp(1.25 - vMag * 0.28, 0.45, 1.15));
+        }
+        if (a < 0.04) discard;
+        gl_FragColor = vec4(vCol, clamp(a, 0.0, 1.0));
       }
     `,
     transparent: true,
@@ -1464,7 +1509,7 @@ function buildSky() {
     new THREE.LineBasicMaterial({
       color: 0xEDE6D6,
       transparent: true,
-      opacity: 0.42,
+      opacity: 0.18,
       depthWrite: false,
       depthTest: true
     })
@@ -1485,7 +1530,7 @@ function buildSky() {
     depthWrite: false,
     depthTest: true
   });
-  moonMesh = new THREE.Mesh(new THREE.SphereGeometry(90, 28, 20), moonMat);
+  moonMesh = new THREE.Mesh(new THREE.SphereGeometry(130, 32, 24), moonMat);
   moonMesh.renderOrder = -50;
   skyGroup.add(moonMesh);
 }
@@ -1503,15 +1548,20 @@ function dirFromRaDec(raDeg, decDeg, d) {
 
 function makeNameSprite(text, italic) {
   const cv = document.createElement("canvas");
-  cv.width = 512;
-  cv.height = 96;
+  cv.width = 640;
+  cv.height = 128;
   const g = cv.getContext("2d");
-  g.clearRect(0, 0, 512, 96);
-  g.font = (italic ? "italic " : "") + '28px "IM Fell English", Palatino, serif';
+  g.clearRect(0, 0, 640, 128);
+  g.font = (italic ? "italic " : "") + '34px "IM Fell English", Palatino, serif';
   g.textAlign = "center";
   g.textBaseline = "middle";
-  g.fillStyle = "rgba(237,230,214,0.88)";
-  g.fillText(text, 256, 50);
+  g.lineJoin = "round";
+  g.miterLimit = 2;
+  g.strokeStyle = "rgba(7,11,20,0.82)";
+  g.lineWidth = 7;
+  g.strokeText(text, 320, 68);
+  g.fillStyle = "rgba(237,230,214,0.96)";
+  g.fillText(text, 320, 68);
   const tex = new THREE.CanvasTexture(cv);
   tex.colorSpace = THREE.NoColorSpace;
   const mat = new THREE.SpriteMaterial({
@@ -1519,10 +1569,10 @@ function makeNameSprite(text, italic) {
     transparent: true,
     depthTest: true,
     depthWrite: false,
-    opacity: 0.82
+    opacity: 0.92
   });
   const sp = new THREE.Sprite(mat);
-  sp.scale.set(1600, 300, 1);
+  sp.scale.set(2000, 400, 1);
   sp.userData.text = text;
   return sp;
 }
@@ -1534,7 +1584,8 @@ function placeStars() {
   const pos = starPts.geometry.attributes.position.array;
   const col = starPts.geometry.attributes.color.array;
   const sz = starPts.geometry.attributes.aSize.array;
-  const cream = [0.93, 0.90, 0.84];
+  const magA = starPts.geometry.attributes.aMag && starPts.geometry.attributes.aMag.array;
+  const cream = [0.95, 0.92, 0.86];
   let n = 0;
   function addStar(raDeg, decDeg, mag) {
     if (n >= pos.length / 3) return;
@@ -1544,11 +1595,12 @@ function placeStars() {
     pos[n * 3] = hit.dir.x * R;
     pos[n * 3 + 1] = hit.dir.y * R;
     pos[n * 3 + 2] = hit.dir.z * R;
-    const b = clamp(1.05 - mag * 0.14, 0.28, 1);
+    const b = clamp(1.12 - mag * 0.12, 0.38, 1);
     col[n * 3] = cream[0] * b;
     col[n * 3 + 1] = cream[1] * b;
     col[n * 3 + 2] = cream[2] * (b * 0.98);
-    sz[n] = Math.max(1.15, 5.6 * Math.pow(10, -0.13 * mag));
+    sz[n] = Math.max(2.6, 11.5 * Math.pow(10, -0.14 * mag));
+    if (magA) magA[n] = mag;
     n++;
   }
   if (SKY_CAT && SKY_CAT.s) {
@@ -1566,13 +1618,36 @@ function placeStars() {
   starPts.geometry.attributes.position.needsUpdate = true;
   starPts.geometry.attributes.color.needsUpdate = true;
   starPts.geometry.attributes.aSize.needsUpdate = true;
+  if (starPts.geometry.attributes.aMag) starPts.geometry.attributes.aMag.needsUpdate = true;
 
-  // Dashed engraved constellation lines (short ink dashes with gaps).
+  const MAJOR_CONST = {
+    Andromeda: 1, Aquila: 1, Aries: 1, Auriga: 1, "Boötes": 1, "Canis Major": 1, "Canis Minor": 1,
+    Cassiopeia: 1, Cepheus: 1, Cygnus: 1, Draco: 1, Gemini: 1, Hercules: 1, Leo: 1, Lyra: 1,
+    Orion: 1, Pegasus: 1, Perseus: 1, Scorpius: 1, Taurus: 1, "Ursa Major": 1, "Ursa Minor": 1,
+    Triangulum: 1, "Corona Borealis": 1
+  };
+  function isMajorConst(name) { return !!(MAJOR_CONST[name]); }
+  function snapToCatalog(ra, dec) {
+    if (!SKY_CAT || !SKY_CAT.s) return [ra, dec];
+    const stars = SKY_CAT.s;
+    const decR = dec * RAD;
+    let best = null, bestD = 0.75;
+    for (let i = 0; i < stars.length; i++) {
+      const s = stars[i];
+      let dra = Math.abs(ra - s[0]);
+      if (dra > 180) dra = 360 - dra;
+      const dd = Math.hypot(dra * Math.cos(decR), dec - s[1]);
+      if (dd < bestD) { bestD = dd; best = s; }
+    }
+    return best ? [best[0], best[1]] : null;
+  }
+
+  // Fainter, thinner dashes, only for major constellations, snapped onto catalog stars.
   const linePos = [];
   function dashLine(a, b) {
     const dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z;
     const len = Math.hypot(dx, dy, dz) || 1;
-    const dash = 140, gap = 110;
+    const dash = 70, gap = 160;
     let t = 0, on = true;
     while (t < len) {
       const t1 = Math.min(len, t + (on ? dash : gap));
@@ -1585,13 +1660,17 @@ function placeStars() {
     }
   }
   function placeLinePair(raA, decA, raB, decB) {
-    const A = dirFromRaDec(raA, decA, d);
-    const B = dirFromRaDec(raB, decB, d);
-    if (A.alt < -2 || B.alt < -2) return;
+    const sa = snapToCatalog(raA, decA);
+    const sb = snapToCatalog(raB, decB);
+    if (!sa || !sb) return;
+    const A = dirFromRaDec(sa[0], sa[1], d);
+    const B = dirFromRaDec(sb[0], sb[1], d);
+    if (A.alt < -1 || B.alt < -1) return;
     dashLine(A.dir.clone().multiplyScalar(R), B.dir.clone().multiplyScalar(R));
   }
   if (SKY_CAT && SKY_CAT.c) {
     SKY_CAT.c.forEach(function (C) {
+      if (!isMajorConst(C.n)) return;
       const L = C.l || [];
       // l is a flat list of ra,dec polylines; breaks may be grouped as sub-arrays or a single flat run.
       if (L.length && Array.isArray(L[0])) {
@@ -1637,7 +1716,7 @@ function placeStars() {
         const C = SKY_CAT.c[i];
         const cen = C.c || [0, 0];
         const hit = dirFromRaDec(cen[0], cen[1], d);
-        const show = hit.alt > 12 && clock.night > 0.25;
+        const show = isMajorConst(C.n) && hit.alt > 8 && clock.night > 0.25;
         names[i].visible = show;
         if (show) {
           names[i].position.copy(hit.dir).multiplyScalar(R * 0.96);
@@ -1774,8 +1853,8 @@ void main(){
 `;
 
 const VOL_CLOUD_FRAG = /* glsl */`
-uniform float uSeed, uTime, uKind, uGray, uRain, uReduce;
-uniform vec3 uInk;
+uniform float uSeed, uTime, uKind, uGray, uRain, uReduce, uNight;
+uniform vec3 uInk, uNightMul, uMoonDir;
 varying vec2 vUv;
 varying vec3 vWorld;
 ${NOISE_GLSL}
@@ -1815,8 +1894,8 @@ void main(){
   float rel = clamp((p.y + 0.55) / 1.25, 0.0, 1.0);
   // Visible wash: cream on the lit top, pale gray on the underside.
   vec3 cream = vec3(0.97, 0.93, 0.84);
-  vec3 gray = mix(vec3(0.62, 0.68, 0.76), vec3(0.52, 0.56, 0.62), uGray);
-  vec3 wash = mix(gray, cream, smoothstep(0.18, 0.82, rel));
+  vec3 gray = mix(vec3(0.62, 0.68, 0.76), vec3(0.40, 0.43, 0.48), uGray);
+  vec3 wash = mix(gray, cream, smoothstep(0.18, 0.82, rel) * (1.0 - uGray * 0.88));
   float body = smoothstep(0.04, 0.55, b);
   wash = mix(wash, gray, (1.0 - body) * 0.15);
 
@@ -1861,7 +1940,7 @@ void main(){
     col = mix(wash, uInk, sh);
   }
   col *= 0.98 + 0.04 * noise21(vWorld.xz * 0.02 + vUv * 6.0);
-  float alpha = body * mix(0.94, 0.80, uGray);
+  float alpha = body * mix(0.94, 0.88, uGray);
   if (uKind > 0.5) alpha *= 0.55 * body;
   if (uRain > 0.5 && vUv.y < 0.55) {
     // Slanting hatched rain shafts under the belly.
@@ -1870,6 +1949,24 @@ void main(){
     shaft *= step(0.22, hash21(vec2(floor(rx), s)));
     col = mix(col, mix(uInk, vec3(0.55, 0.62, 0.72), 0.45), shaft * 0.55);
     alpha = max(alpha, shaft * 0.62 * (1.0 - vUv.y));
+  }
+  // Night: dark moonlit body, cream rim only on the moon-facing limb.
+  if (uNight > 0.01) {
+    vec3 nightBody = vec3(0.055, 0.07, 0.12) * mix(1.0, 0.72, uGray);
+    nightBody *= 0.85 + 0.15 * noise21(vWorld.xz * 0.02 + vUv * 6.0);
+    vec3 nCol = mix(nightBody * 0.85, nightBody * 1.15, smoothstep(0.15, 0.85, rel));
+    // Hatch and outline flip to cream ink at night (uInk is already cream then).
+    nCol = mix(nCol, uInk, clamp(hatch * 0.28, 0.0, 0.4));
+    vec3 toFrag = normalize(vWorld - cameraPosition);
+    float moonSide = clamp(dot(normalize(uMoonDir), toFrag), 0.0, 1.0);
+    nCol = mix(nCol, uInk, rim * moonSide * 0.9);
+    col = mix(col, nCol, uNight);
+    if (uRain > 0.5 && vUv.y < 0.55) {
+      float rxn = vUv.x * 16.0 + vUv.y * 8.0 + uTime * (1.0 - uReduce) * 1.1;
+      float shaftN = 1.0 - smoothstep(0.0, 0.16, abs(fract(rxn) - 0.5));
+      shaftN *= step(0.22, hash21(vec2(floor(rxn), s)));
+      col = mix(col, mix(uInk * 0.55, vec3(0.16, 0.20, 0.30), 0.45), shaftN * 0.5 * uNight);
+    }
   }
   if (alpha < 0.06) discard;
   gl_FragColor = vec4(col, alpha);
@@ -1896,7 +1993,10 @@ function makeVolCloudMat(kind, seed, gray) {
       uGray: { value: gray },
       uRain: { value: 0 },
       uReduce: { value: REDUCE ? 1 : 0 },
-      uInk: { value: new THREE.Color(0x2A2118) }
+      uInk: { value: new THREE.Color(0x2A2118) },
+      uNight: { value: 0 },
+      uNightMul: { value: colU(NIGHT_MUL) },
+      uMoonDir: { value: new THREE.Vector3(0.2, 0.5, 0.4) }
     },
     vertexShader: VOL_CLOUD_VERT,
     fragmentShader: VOL_CLOUD_FRAG,
@@ -1919,21 +2019,34 @@ function buildVolClouds() {
   scene.add(volCloudGroup);
   volCloudItems.length = 0;
   const kind = wx.kind || "clear";
-  const gray = (kind === "cloudy" || kind === "rain" || kind === "storm" || kind === "fog") ? 0.7 : 0.0;
-  // Scattered fair-weather puffs. More become a low deck when overcast.
-  const puffs = kind === "clear" ? 3 : kind === "partly" ? 6 : kind === "fog" ? 5 : 12;
-  const puffSpec = [
-    { az: -0.22, el: 0.32, dist: 2800, sx: 520, sy: 300, seed: 1.7 },
-    { az: 0.28, el: 0.24, dist: 3300, sx: 640, sy: 340, seed: 8.9 },
-    { az: 0.04, el: 0.42, dist: 3600, sx: 420, sy: 250, seed: 4.2 },
-    { az: -0.40, el: 0.20, dist: 2400, sx: 480, sy: 260, seed: 11.1 },
-    { az: 0.48, el: 0.30, dist: 4000, sx: 560, sy: 280, seed: 6.4 },
-    { az: -0.08, el: 0.18, dist: 2200, sx: 500, sy: 240, seed: 15.2 },
-    { az: 0.18, el: 0.36, dist: 4400, sx: 580, sy: 300, seed: 19.0 },
-    { az: -0.32, el: 0.28, dist: 3900, sx: 470, sy: 250, seed: 21.5 },
-    { az: 0.36, el: 0.16, dist: 2600, sx: 620, sy: 280, seed: 24.8 },
-    { az: 0.00, el: 0.22, dist: 5000, sx: 700, sy: 260, seed: 27.3 }
-  ];
+  const deck = (kind === "cloudy" || kind === "rain" || kind === "storm");
+  const gray = deck ? (kind === "rain" || kind === "storm" ? 0.92 : 0.78) : (kind === "fog" ? 0.7 : 0.0);
+  // Scattered fair-weather puffs, or a full low overlapping deck when overcast/rain.
+  let puffSpec;
+  if (deck) {
+    puffSpec = [];
+    const cols = 7, rows = 4;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const az = -1.15 + (c + (r % 2 ? 0.38 : 0)) / (cols - 1) * 2.30;
+        const el = 0.12 + r * 0.18 + (c % 3) * 0.02;
+        const dist = 1400 + r * 700 + (c % 2) * 180;
+        const sx = 1600 + r * 80 + (c % 3) * 220;
+        const sy = 420 + r * 90;
+        puffSpec.push({ az: az, el: el, dist: dist, sx: sx, sy: sy, seed: 3.1 + r * 11.0 + c * 7.3 });
+      }
+    }
+  } else {
+    puffSpec = [
+      { az: -0.22, el: 0.32, dist: 2800, sx: 520, sy: 300, seed: 1.7 },
+      { az: 0.28, el: 0.24, dist: 3300, sx: 640, sy: 340, seed: 8.9 },
+      { az: 0.04, el: 0.42, dist: 3600, sx: 420, sy: 250, seed: 4.2 },
+      { az: -0.40, el: 0.20, dist: 2400, sx: 480, sy: 260, seed: 11.1 },
+      { az: 0.48, el: 0.30, dist: 4000, sx: 560, sy: 280, seed: 6.4 },
+      { az: -0.08, el: 0.18, dist: 2200, sx: 500, sy: 240, seed: 15.2 }
+    ];
+  }
+  const puffs = deck ? puffSpec.length : (kind === "clear" ? 3 : kind === "partly" ? 6 : kind === "fog" ? 5 : puffSpec.length);
   for (let i = 0; i < puffs; i++) {
     const sp = puffSpec[i % puffSpec.length];
     const geo = new THREE.PlaneGeometry(1, 1);
@@ -1943,16 +2056,15 @@ function buildVolClouds() {
     mesh.frustumCulled = false;
     mesh.renderOrder = 1;
     volCloudGroup.add(mesh);
-    const deck = (kind === "cloudy" || kind === "rain" || kind === "storm");
     volCloudItems.push({
       mesh: mesh, kind: 0,
-      az: sp.az, el: deck ? sp.el * 0.45 : (kind === "fog" ? sp.el * 0.25 : sp.el),
-      dist: sp.dist, sx: deck ? sp.sx * 1.45 : (kind === "fog" ? sp.sx * 1.6 : sp.sx),
-      sy: deck ? sp.sy * 0.55 : (kind === "fog" ? sp.sy * 0.7 : sp.sy), seed: sp.seed
+      az: sp.az, el: kind === "fog" ? sp.el * 0.25 : sp.el,
+      dist: sp.dist, sx: kind === "fog" ? sp.sx * 1.6 : sp.sx,
+      sy: kind === "fog" ? sp.sy * 0.7 : sp.sy, seed: sp.seed
     });
     if (kind === "rain" || kind === "storm") {
       // Extra shaft card hanging under the puff so rain reads in the hero frame.
-      const shaftMat = makeVolCloudMat(0, sp.seed + 3.1, 0.55);
+      const shaftMat = makeVolCloudMat(0, sp.seed + 3.1, 0.85);
       shaftMat.uniforms.uRain.value = 1;
       const shaft = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shaftMat);
       shaft.frustumCulled = false;
@@ -1960,29 +2072,8 @@ function buildVolClouds() {
       volCloudGroup.add(shaft);
       volCloudItems.push({
         mesh: shaft, kind: 0, shaft: 1,
-        az: sp.az, el: (deck ? sp.el * 0.45 : sp.el) - 0.08,
-        dist: sp.dist * 0.92, sx: sp.sx * 0.55, sy: sp.sy * 1.8, seed: sp.seed
-      });
-    }
-  }
-  // 2-3 thin flattened streaks just above the far hills (fair and partly).
-  if (kind === "clear" || kind === "partly") {
-    const streaks = [
-      { az: -0.28, el: 0.128, dist: 8400, sx: 1800, sy: 280, seed: 31.0 },
-      { az: 0.12, el: 0.148, dist: 9200, sx: 1600, sy: 260, seed: 33.4 },
-      { az: 0.36, el: 0.118, dist: 7800, sx: 1500, sy: 250, seed: 36.2 }
-    ];
-    for (let i = 0; i < streaks.length; i++) {
-      const sp = streaks[i];
-      const geo = new THREE.PlaneGeometry(1, 1);
-      const mat = makeVolCloudMat(1, sp.seed, 0.15);
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.frustumCulled = false;
-      mesh.renderOrder = 1;
-      volCloudGroup.add(mesh);
-      volCloudItems.push({
-        mesh: mesh, kind: 1,
-        az: sp.az, el: sp.el, dist: sp.dist, sx: sp.sx, sy: sp.sy, seed: sp.seed
+        az: sp.az, el: sp.el - 0.10,
+        dist: sp.dist * 0.92, sx: sp.sx * 0.55, sy: sp.sy * 1.9, seed: sp.seed
       });
     }
   }
@@ -2003,7 +2094,10 @@ function layoutVolClouds() {
     // Puffs use the weather cloud base, plus the listed elevation.
     const dist = it.dist;
     let y;
+    const deck = (wx.kind === "cloudy" || wx.kind === "rain" || wx.kind === "storm");
     if (it.kind > 0.5) {
+      y = cy + Math.sin(el) * dist;
+    } else if (deck) {
       y = cy + Math.sin(el) * dist;
     } else {
       y = cy + base * 0.85 + Math.sin(el) * dist * 0.25;
@@ -2032,12 +2126,37 @@ function buildSnow() {
   for (let i = 0; i < N; i++) ph[i] = rng();
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-  snowPts = new THREE.Points(geo, new THREE.PointsMaterial({
-    color: 0xEDE6D6,
-    size: 3.2,
-    sizeAttenuation: true,
+  geo.setAttribute("aPhase", new THREE.BufferAttribute(ph, 1));
+  snowPts = new THREE.Points(geo, new THREE.ShaderMaterial({
+    uniforms: { uPixel: { value: 1 } },
+    vertexShader: /* glsl */`
+      attribute float aPhase;
+      varying float vPhase;
+      uniform float uPixel;
+      void main(){
+        vPhase = aPhase;
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * mv;
+        float dist = max(40.0, -mv.z);
+        gl_PointSize = clamp(200.0 / dist, 2.6, 8.0) * uPixel;
+      }
+    `,
+    fragmentShader: /* glsl */`
+      varying float vPhase;
+      void main(){
+        vec2 p = gl_PointCoord * 2.0 - 1.0;
+        float r = length(p);
+        float disc = 1.0 - smoothstep(0.32, 1.0, r);
+        float arm = min(min(abs(p.x), abs(p.y)), min(abs(p.x - p.y), abs(p.x + p.y)) * 0.707);
+        float ast = (1.0 - smoothstep(0.0, 0.14, arm)) * (1.0 - smoothstep(0.5, 1.05, r));
+        float useAst = step(0.55, fract(vPhase * 7.13));
+        float a = mix(disc * 0.92, max(disc * 0.28, ast), useAst);
+        if (a < 0.06) discard;
+        vec3 col = mix(vec3(0.93, 0.90, 0.84), vec3(0.32, 0.26, 0.20), useAst * 0.4);
+        gl_FragColor = vec4(col, a);
+      }
+    `,
     transparent: true,
-    opacity: 0.86,
     depthWrite: false,
     depthTest: true
   }));
@@ -2820,6 +2939,7 @@ function scatterTrees() {
       uRuffle: { value: 1 },
       uReduce: { value: REDUCE ? 1 : 0 },
       uInkUse: { value: colU(INK) },
+      uNightMul: { value: colU(NIGHT_MUL) },
       uNight: { value: 0 },
       uLightning: { value: 0 },
       uLodNear: { value: LOD_NEAR },
@@ -3035,7 +3155,7 @@ void main(){
 
 const FRAME_TREE_FRAG = /* glsl */`
 uniform sampler2D uAtlas;
-uniform vec3 uInkUse;
+uniform vec3 uInkUse, uNightMul;
 uniform float uNight;
 varying vec2 vUv;
 varying float vFrame;
@@ -3047,7 +3167,11 @@ void main(){
   vec4 s = texture2D(uAtlas, uv);
   if (s.a < 0.18) discard;
   vec3 col = s.rgb * vShade;
-  col = mix(col, uInkUse, 0.06 * (1.0 - uNight));
+  float luma = dot(s.rgb, vec3(0.30, 0.50, 0.20));
+  vec3 nightFill = col * uNightMul * 0.45;
+  nightFill = mix(nightFill, vec3(0.03, 0.045, 0.08), 0.40);
+  vec3 nightCol = mix(uInkUse * 0.9, nightFill, smoothstep(0.07, 0.32, luma));
+  col = mix(col, nightCol, uNight);
   gl_FragColor = vec4(col, s.a);
 }
 `;
@@ -3079,6 +3203,7 @@ function buildFrameTrees() {
     uniforms: {
       uAtlas: { value: makeFrameTreeAtlas() },
       uInkUse: { value: colU(INK) },
+      uNightMul: { value: colU(NIGHT_MUL) },
       uNight: { value: 0 },
       uTime: { value: 0 },
       uWind: { value: 1 },
@@ -3269,6 +3394,8 @@ function grassUniforms() {
     uWheat: { value: colU(SKINS.autumn.wheat) },
     uCorn: { value: colU(SKINS.summer.field) },
     uInkUse: { value: colU(INK) },
+    uNightMul: { value: colU(NIGHT_MUL) },
+    uNight: { value: 0 },
     uLodNear: { value: LOD_NEAR },
     uLodMid: { value: LOD_MID }
   };
@@ -3375,10 +3502,11 @@ function fillFrontGrass(mesh, maxN, cx, cz) {
   const limit = maxN * 4;
   while (n < maxN && tries < limit) {
     tries++;
-    // The hero camera looks up, and the valley floor drops, so the bottom of
-    // the frame meets the ground around 300-500 m, not the flat-ground 180 m.
-    const along = 300 + rng() * 200;
-    const halfW = along * Math.tan(26 * Math.PI / 180);
+    // Hero camera: valley floor meets the frame around 300-500 m.
+    // Zoomed (holdCamera): plant short, meter-scaled blades close in, not a palisade.
+    const close = !!state.holdCamera;
+    const along = close ? (15 + rng() * 165) : (300 + rng() * 200);
+    const halfW = along * Math.tan((close ? 32 : 26) * Math.PI / 180);
     const side = (rng() - 0.5) * 2 * halfW * (0.50 + 0.50 * rng());
     const x = cx + ux * along + uz * side;
     const z = cz + uz * along - ux * side;
@@ -3386,10 +3514,10 @@ function fillFrontGrass(mesh, maxN, cx, cz) {
     if (cls === 0) continue;
     const h = heightWorld(x, z);
     pos[n * 3] = x; pos[n * 3 + 1] = yOf(h); pos[n * 3 + 2] = z;
-    const tall = 4.6 + rng() * 3.4;
-    const wide = 1.15 + rng() * 1.25;
+    const tall = close ? (0.9 + rng() * 0.9) : (4.6 + rng() * 3.4);
+    const wide = close ? (0.28 + rng() * 0.28) : (1.15 + rng() * 1.25);
     scale[n * 2] = wide;
-    scale[n * 2 + 1] = tall * EXAG * 1.0;
+    scale[n * 2 + 1] = close ? tall : tall * EXAG;
     phase[n] = rng();
     kind[n] = (clock.season === "autumn" && rng() > 0.65) ? 1 : 0;
     const ang = rng() * 6.28, amt = (rng() - 0.5) * 0.4;
@@ -3973,7 +4101,7 @@ function buildTown() {
   geo.setAttribute("position", new THREE.Float32BufferAttribute(wpos, 3));
   geo.setAttribute("color", new THREE.Float32BufferAttribute(wcol, 3));
   windowPts = new THREE.Points(geo, new THREE.PointsMaterial({
-    size: 2.4, vertexColors: true, transparent: true, opacity: 0, depthWrite: false, sizeAttenuation: false
+    size: 6.0, vertexColors: true, transparent: true, opacity: 0, depthWrite: false, sizeAttenuation: false, depthTest: true
   }));
   scene.add(windowPts);
 
@@ -4025,6 +4153,15 @@ function applySkin() {
   const ink = night > 0.45 ? INK_NIGHT : INK;
   const u = terrainMat && terrainMat.uniforms;
   function set(un, rgb) { un.value.set(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255); }
+  function pushTod(un) {
+    if (!un) return;
+    if (un.uNight) un.uNight.value = night;
+    if (un.uNightMul) set(un.uNightMul, NIGHT_MUL);
+    if (un.uInkUse) set(un.uInkUse, ink);
+    if (un.uInk) set(un.uInk, ink);
+    if (un.uMoonDir) un.uMoonDir.value.copy(altAzDir(clock.moonAlt, clock.moonAz));
+    if (un.uSunDir) un.uSunDir.value.copy(altAzDir(clock.alt, clock.sunAz));
+  }
   if (u) {
     set(u.uField, s.field); set(u.uWheat, s.wheat); set(u.uPlowed, s.plowed);
     set(u.uGrass, s.grass); set(u.uForest, s.forest); set(u.uForestB, s.forestB);
@@ -4057,27 +4194,32 @@ function applySkin() {
     skyMat.uniforms.uMoonDir.value.copy(altAzDir(clock.moonAlt, clock.moonAz));
     skyMat.uniforms.uNight.value = night;
     skyMat.uniforms.uTwi.value = clock.twi;
-    skyMat.uniforms.uMilky.value = (clock.season === "summer" && night > 0.5) ? 1 : 0;
+    skyMat.uniforms.uMilky.value = night > 0.5 ? 0.55 : 0;
   }
-  if (moonMat) moonMat.uniforms.uSunDir.value.copy(altAzDir(clock.alt, clock.sunAz));
-  if (treeMat) {
-    set(treeMat.uniforms.uInkUse, ink);
-    treeMat.uniforms.uNight.value = night;
+  if (moonMat) {
+    // Terminator uses the real sun, even when ?sky= forces a landscape sun altitude.
+    const trueSun = sunAltAz(clock.now, loc);
+    moonMat.uniforms.uSunDir.value.copy(altAzDir(trueSun[0], trueSun[1]));
   }
-  if (frameTreeMat) {
-    set(frameTreeMat.uniforms.uInkUse, ink);
-    frameTreeMat.uniforms.uNight.value = night;
-  }
+  if (treeMat) pushTod(treeMat.uniforms);
+  if (frameTreeMat) pushTod(frameTreeMat.uniforms);
   if (treeMesh) syncTreeFrames();
   function tintGrass(mat) {
     if (!mat) return;
     set(mat.uniforms.uGrass, s.grass);
     set(mat.uniforms.uWheat, s.wheat);
     set(mat.uniforms.uCorn, SKINS.summer.field);
-    set(mat.uniforms.uInkUse, ink);
+    pushTod(mat.uniforms);
   }
   tintGrass(grassMat);
   tintGrass(clumpMat);
+  if (riverRibbon && riverRibbon.material) pushTod(riverRibbon.material.uniforms);
+  if (riverBanks && riverBanks.material) pushTod(riverBanks.material.uniforms);
+  for (let i = 0; i < volCloudItems.length; i++) {
+    const m = volCloudItems[i].mesh;
+    if (m && m.material) pushTod(m.material.uniforms);
+  }
+  if (layoutRidgeLines._stamp) layoutRidgeLines._stamp = "";
   const grassOn = clock.season !== "winter" || wx.kind === "snow";
   if (grassMesh) grassMesh.visible = grassOn;
   if (clumpMesh) clumpMesh.visible = grassOn;
@@ -4197,7 +4339,8 @@ function layoutRidgeLines() {
   const stamp = [
     camera.position.x.toFixed(1), camera.position.y.toFixed(1), camera.position.z.toFixed(1),
     look.x.toFixed(3), look.y.toFixed(3), look.z.toFixed(3),
-    camera.fov.toFixed(1), renderer.domElement.width, renderer.domElement.height
+    camera.fov.toFixed(1), renderer.domElement.width, renderer.domElement.height,
+    (clock && clock.night > 0.45) ? "n" : "d"
   ].join("|");
   if (layoutRidgeLines._stamp === stamp && ridgeGroup && ridgeGroup.children.length) return;
   layoutRidgeLines._stamp = stamp;
@@ -4345,9 +4488,10 @@ function emitRidgeStrip(pts, band) {
   geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
   geo.setIndex(idx);
   geo.computeVertexNormals();
+  const night = clock && clock.night > 0.45;
   const mat = new THREE.ShaderMaterial({
     uniforms: {
-      uColor: { value: new THREE.Color(band.color) },
+      uColor: { value: new THREE.Color(night ? 0xEDE6D6 : band.color) },
       uSeed: { value: (band.d0 || 700) * 0.01 }
     },
     vertexShader: /* glsl */`varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
@@ -4524,25 +4668,33 @@ function layoutRiverRibbon() {
   bgeo.computeVertexNormals();
   if (!riverBanks) {
     const bmat = new THREE.ShaderMaterial({
-      uniforms: {},
+      uniforms: {
+        uNight: { value: 0 },
+        uInk: { value: new THREE.Color(0x2A2118) },
+        uNightMul: { value: colU(NIGHT_MUL) }
+      },
       vertexShader: /* glsl */`varying vec2 vUv; varying vec3 vN; varying vec3 vW;
         void main(){ vUv = uv; vN = normalize(normalMatrix * normal);
           vec4 w = modelMatrix * vec4(position,1.0); vW = w.xyz;
           gl_Position = projectionMatrix * viewMatrix * w; }`,
       fragmentShader: /* glsl */`
+        uniform float uNight;
+        uniform vec3 uInk, uNightMul;
         varying vec2 vUv; varying vec3 vN; varying vec3 vW;
         float hash21(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
         void main(){
-          vec3 ink = vec3(0.165, 0.129, 0.094);
+          vec3 ink = uInk;
           vec3 bank = vec3(0.58, 0.50, 0.36);
           vec3 col = bank;
           float sl = abs(fract((vW.x * 0.08 + vW.z * 0.11) * 2.2 + vUv.y * 4.0) - 0.5);
           float hatch = (1.0 - smoothstep(0.0, 0.14, sl)) * (1.0 - vUv.y) * 0.7;
           hatch *= step(0.2, hash21(floor(vec2(vUv.x * 40.0, vUv.y * 8.0))));
           col = mix(col, ink, 0.25 + hatch * 0.55);
-          // Inked shoreline at the top of the bank.
           float shore = 1.0 - smoothstep(0.0, 0.12, 1.0 - vUv.y);
           col = mix(col, ink, shore * 0.8);
+          vec3 nightCol = mix(col * uNightMul * 0.4, vec3(0.035, 0.048, 0.09), 0.5);
+          nightCol = mix(nightCol, ink, 0.25 + hatch * 0.55 + shore * 0.7);
+          col = mix(col, nightCol, uNight);
           gl_FragColor = vec4(col, 1.0);
         }`,
       side: THREE.DoubleSide,
@@ -4565,11 +4717,14 @@ function makeRiverMat() {
       uTime: { value: 0 },
       uWind: { value: 1 },
       uReduce: { value: REDUCE ? 1 : 0 },
+      uNight: { value: 0 },
       uWater: { value: new THREE.Color(0x6E9AA4) },
       uInk: { value: new THREE.Color(0x2A2118) },
       uHor: { value: new THREE.Color(0xF7F0E2) },
       uTop: { value: new THREE.Color(0xD2DEE2) },
-      uTrees: { value: new THREE.Color(0xA87440) }
+      uTrees: { value: new THREE.Color(0xA87440) },
+      uNightMul: { value: colU(NIGHT_MUL) },
+      uMoonDir: { value: new THREE.Vector3(0.2, 0.5, 0.4) }
     },
     vertexShader: /* glsl */`
       varying vec2 vUv; varying vec3 vW; varying vec3 vN;
@@ -4585,8 +4740,8 @@ function makeRiverMat() {
       }
     `,
     fragmentShader: /* glsl */`
-      uniform float uTime, uWind, uReduce;
-      uniform vec3 uWater, uInk, uHor, uTop, uTrees;
+      uniform float uTime, uWind, uReduce, uNight;
+      uniform vec3 uWater, uInk, uHor, uTop, uTrees, uNightMul, uMoonDir;
       varying vec2 vUv; varying vec3 vW;
       float hash21(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
       void main(){
@@ -4610,6 +4765,16 @@ function makeRiverMat() {
         // Inked shoreline at the water edge.
         float bank = min(vUv.y, 1.0 - vUv.y);
         col = mix(col, uInk, (1.0 - smoothstep(0.0, 0.07, bank)) * 0.45);
+        vec3 nightCol = col * uNightMul * 0.45;
+        nightCol = mix(nightCol, vec3(0.04, 0.055, 0.10), 0.55);
+        nightCol = mix(nightCol, uInk, (1.0 - smoothstep(0.0, 0.07, rip)) * 0.35);
+        nightCol = mix(nightCol, uInk, (1.0 - smoothstep(0.0, 0.07, bank)) * 0.55);
+        vec3 Rm = reflect(-V, vec3(0.0, 1.0, 0.0));
+        float moonGl = pow(max(0.0, dot(normalize(Rm), normalize(uMoonDir))), 28.0);
+        vec3 cream = vec3(0.93, 0.90, 0.84);
+        nightCol = mix(nightCol, cream, (1.0 - smoothstep(0.0, 0.05, glint)) * 0.35 * mid);
+        nightCol = mix(nightCol, cream, moonGl * 0.75);
+        col = mix(col, nightCol, uNight);
         gl_FragColor = vec4(col, 1.0);
       }
     `,
@@ -4954,7 +5119,7 @@ function blinkFireflies(now) {
 
 function constBrighten() {
   if (!constLines || !constLines.visible) return;
-  const mid = 0.45 + (cursor.active && cursor.sy < targetHorizon() ? 0.25 : 0);
+  const mid = 0.16 + (cursor.active && cursor.sy < targetHorizon() ? 0.06 : 0);
   constLines.material.opacity = mid;
 }
 
@@ -5129,8 +5294,12 @@ function startLoop() {
     stepCursor(dt);
     placeCamera();
     layoutClouds(dt);
+    const pix = Math.min(2, window.devicePixelRatio || 1);
     if (starPts && starPts.material && starPts.material.uniforms && starPts.material.uniforms.uPixel) {
-      starPts.material.uniforms.uPixel.value = Math.min(2, window.devicePixelRatio || 1);
+      starPts.material.uniforms.uPixel.value = pix;
+    }
+    if (snowPts && snowPts.material && snowPts.material.uniforms && snowPts.material.uniforms.uPixel) {
+      snowPts.material.uniforms.uPixel.value = pix;
     }
     if (clock.night > 0.15 && starPts) placeStars();
     setCommonUniforms(state.frozen || REDUCE ? state.time : state.time);
@@ -5256,7 +5425,7 @@ function expose() {
       return f;
     },
     state: function () { return { season: clock.season, period: clock.period, wx: wx.kind, at: clock.now, s: rig.s, pathLen: path.len, night: clock.night, alt: clock.alt, reduce: REDUCE, veg: { trees: VEG.treesPlaced, blades: VEG.blades, clumps: VEG.clumps }, land: { church: LAND.church, farmhouse: LAND.farmhouse, barn: LAND.barn, silo: LAND.silo, hay: LAND.hay, mill: LAND.mill, depot: LAND.depot, fromGltf: LAND.fromGltf } }; },
-    _applyWx: function () { applySkin(); buildVolClouds(); buildSnow(); buildFogBank(); layoutVolClouds(); layoutSnow(); layoutFogBank(); if (glOk) renderer.render(scene, camera); },
+    _applyWx: function () { buildVolClouds(); buildSnow(); buildFogBank(); applySkin(); layoutVolClouds(); layoutSnow(); layoutFogBank(); if (glOk) renderer.render(scene, camera); },
     hide: function (name, v) {
       const on = v !== false;
       const map = { trees: treeMesh, grass: grassMesh, clumps: clumpMesh, moon: moonMesh, clouds: cloudMesh, church: churchMesh, hay: hayMesh, label: labelMesh, landmarks: landmarkGroup };
@@ -5271,7 +5440,10 @@ function expose() {
       if (glOk) renderer.render(scene, camera);
     },
     setZoom: function (z) { applyZoom(z); placeCamera(); if (glOk) renderer.render(scene, camera); },
-    lookClose: function (px, py, dist, zoom) { lookClose(px, py, dist, zoom); }
+    lookClose: function (px, py, dist, zoom) { lookClose(px, py, dist, zoom); },
+    lookMoon: function () { return lookMoon(); },
+    lookOcclusion: function () { return lookOcclusion(); },
+    moon: function () { return moonInfo(); }
   };
 }
 
@@ -5307,6 +5479,81 @@ function lookClose(px, py, dist, zoom) {
   layoutFogBank();
   fillGrass(x, z);
   if (glOk) renderer.render(scene, camera);
+}
+
+function layoutHeldCamera() {
+  skyGroup.position.copy(camera.position);
+  if (skyMat && skyMat.uniforms && skyMat.uniforms.uLookAz) {
+    const look = new THREE.Vector3();
+    camera.getWorldDirection(look);
+    skyMat.uniforms.uLookAz.value = Math.atan2(look.x, look.z);
+  }
+  setMoonPos();
+  layoutRidgeLines();
+  layoutRiverRibbon();
+  layoutVolClouds();
+  layoutFrameTrees();
+  layoutSnow();
+  layoutFogBank();
+  if (starPts) placeStars();
+}
+
+function lookHorizonAz(azWorld) {
+  if (!camera || !glOk) return;
+  state.holdCamera = true;
+  const aim = applyFovAndPitch();
+  const x = camera.position.x, y = camera.position.y, z = camera.position.z;
+  const look = 1800;
+  const pitch = aim.pitch;
+  camera.lookAt(
+    x + Math.sin(azWorld) * look * Math.cos(pitch),
+    y + Math.sin(pitch) * look,
+    z + Math.cos(azWorld) * look * Math.cos(pitch)
+  );
+  layoutHeldCamera();
+  if (glOk) renderer.render(scene, camera);
+}
+
+function lookMoon() {
+  const dir = altAzDir(clock.moonAlt, clock.moonAz);
+  lookHorizonAz(Math.atan2(dir.x, dir.z));
+  return moonInfo();
+}
+
+function lookOcclusion() {
+  const d = jd2000(skyNow());
+  let pick = null;
+  if (SKY_CAT && SKY_CAT.c) {
+    for (let i = 0; i < SKY_CAT.c.length; i++) {
+      if (SKY_CAT.c[i].n === "Ursa Major") { pick = SKY_CAT.c[i]; break; }
+    }
+  }
+  if (pick && pick.c) {
+    const hit = dirFromRaDec(pick.c[0], pick.c[1], d);
+    lookHorizonAz(Math.atan2(hit.dir.x, hit.dir.z));
+    return { name: pick.n, alt: hit.alt, az: hit.az, compass: Math.atan2(hit.dir.x, hit.dir.z) * 180 / Math.PI };
+  }
+  return null;
+}
+
+function moonInfo() {
+  const p = clock.phase;
+  const illum = (1 - Math.cos(2 * Math.PI * p)) / 2;
+  const dir = altAzDir(clock.moonAlt, clock.moonAz);
+  let compass = Math.atan2(dir.x, dir.z) * 180 / Math.PI;
+  if (compass < 0) compass += 360;
+  return {
+    at: clock.now,
+    alt: clock.moonAlt,
+    azEngine: clock.moonAz,
+    azCompass: compass,
+    phase: p,
+    illumination: illum,
+    visible: clock.moonAlt > -4,
+    night: clock.night,
+    period: clock.period,
+    sunAlt: clock.alt
+  };
 }
 
 async function init() {
