@@ -49,7 +49,7 @@ const JHS_HEIGHT_M = 17;
 // Framing half / apparent width is the school mass (~90 m in a 3/4 view),
 // not the campus apron and not the AABB diagonal that inflated wFrac.
 const JHS_HALF_M = 42;
-const JHS_APPARENT_W = 88;
+const JHS_APPARENT_W = 130;
 // Huntingburg Town Hall model is 11.9 x 19.2 m in plan, 18.2 m to the finial.
 const HALL_APPARENT_W = 16;
 const HALL_HALF_M = 10;
@@ -10101,9 +10101,12 @@ function frameWidthLocked(name, target, hide, heightM, opts) {
   function tryCam(dist, eye, ang) {
     const x = tw.x + Math.sin(ang) * dist;
     const z = tw.z + Math.cos(ang) * dist;
+    if (opts.frontSinMax != null && Math.sin(ang) > opts.frontSinMax) return null;
     if (coverWorld(x, z) === 0) return null;
     const y = yOf(heightWorld(x, z)) + eye;
     if (y < topY - 6) return null;
+    // Don't stand on a ridge and look down on the subject like an aerial.
+    if (yOf(heightWorld(x, z)) - baseY > (opts.maxRise != null ? opts.maxRise : 14)) return null;
     if (opts.occlude !== false && terrainBlocksLook(x, y, z, tw.x, baseY + heightM * 0.55, tw.z)) return null;
     const heading = Math.atan2(tw.x - x, tw.z - z);
     camera.position.set(x, y, z);
@@ -10150,12 +10153,49 @@ function frameWidthLocked(name, target, hide, heightM, opts) {
       }
     }
   }
+  // Last pass for tight town lots: drop the keep-out (keep the width lock
+  // and the "is the subject on screen" test) so a small hall can still
+  // be found among gable cottages.
+  if (best.wFrac == null && opts.looseClear) {
+    const savedClear = opts._loose;
+    const oldClear = clearM;
+    const oldOcclude = opts.occlude;
+    opts.occlude = false;
+    const looseClear = opts.looseClear;
+    for (let ei = 0; ei < eyes.length; ei++) {
+      for (let i = 0; i < 24; i++) {
+        const ang = preferAng + (i / 24 - 0.5) * Math.PI;
+        const x = tw.x + Math.sin(ang) * dist0;
+        const z = tw.z + Math.cos(ang) * dist0;
+        if (opts.frontSinMax != null && Math.sin(ang) > opts.frontSinMax) continue;
+        if (coverWorld(x, z) === 0) continue;
+        if (yOf(heightWorld(x, z)) - baseY > (opts.maxRise != null ? opts.maxRise : 14)) continue;
+        const y = yOf(heightWorld(x, z)) + eyes[ei];
+        const heading = Math.atan2(tw.x - x, tw.z - z);
+        camera.position.set(x, y, z);
+        camera.lookAt(
+          x + Math.sin(heading) * 1800 * Math.cos(pitch),
+          y + Math.sin(pitch) * 1800,
+          z + Math.cos(heading) * 1800 * Math.cos(pitch)
+        );
+        camera.updateMatrixWorld(true);
+        if (nearClutterInShot(x, y, z, looseClear, tw.x, tw.z, skipR, opts.rejectBottom)) continue;
+        const box = projectApparentWidth(tw, baseY, heightM, apparent, camera);
+        if (!box.ok || Math.abs(box.midX) > 0.35) continue;
+        if (box.minY < -0.98 || box.maxY > -0.05) continue;
+        const rec = { dist: dist0, eye: eyes[ei], approach: ang, score: Math.abs(box.wFrac - wTarget) * 22 + Math.abs(box.midX) * 8, hFrac: box.hFrac, wFrac: box.wFrac, midX: box.midX, loose: true };
+        if (!bestAny || rec.score < bestAny.score) bestAny = rec;
+        if (rec.wFrac >= wMin * 0.85 && rec.wFrac <= wMax * 1.2 && rec.score < best.score) best = rec;
+      }
+    }
+    opts.occlude = oldOcclude;
+  }
   camera.position.copy(saved);
   camera.quaternion.copy(savedQ);
   camera.updateMatrixWorld(true);
   let out = (best.wFrac != null) ? best : (bestAny || best);
   if (out.approach == null) {
-    out = { dist: dist0, eye: eyes[Math.min(1, eyes.length - 1)], approach: preferAng, score: 0, pinned: true };
+    out = { dist: dist0, eye: eyes[0], approach: preferAng, score: 0, pinned: true };
   }
   console.info("[frame]", name, "dist", out.dist, "eye", out.eye, "approach", out.approach, "hFrac", out.hFrac, "wFrac", out.wFrac, "score", out.score, "dist0", dist0.toFixed(1), out.pinned ? "pinned" : "");
   return out;
@@ -10260,11 +10300,13 @@ function getTourStops() {
     wMax: 0.15,
     wTarget: 0.13,
     minDist: 70,
-    clearM: 70,
+    clearM: 36,
+    looseClear: 22,
     preferAng: -3 * Math.PI / 4,
-    preferArc: 0.9,
-    eyes: narrow ? [32, 44, 56] : [24, 32, 42],
-    midY: -0.62,
+    preferArc: 1.0,
+    eyes: narrow ? [20, 28, 36] : [14, 18, 24],
+    maxRise: 8,
+    midY: -0.58,
     occlude: true
   });
   const stadFr = frameNamed("stadium", stadium, hall, stadH, stadD, stadE, 520, 42, Object.assign({ half: 42 }, widthBand));
@@ -10307,8 +10349,12 @@ function getTourStops() {
       minDist: FORE_CLEAR_M,
       clearM: FORE_CLEAR_M,
       preferAng: -Math.PI / 4,
-      preferArc: 0.75,
-      eyes: narrow ? [26, 34, 44] : [20, 26, 34],
+      preferArc: 0.85,
+      // After yaw the front faces west. Reject cameras east of the school
+      // (those see the long dark back and overfill the frame).
+      frontSinMax: -0.20,
+      eyes: narrow ? [28, 36, 46] : [24, 30, 38],
+      maxRise: 16,
       midY: -0.62,
       occlude: true
     });
