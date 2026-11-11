@@ -314,6 +314,14 @@ function fetchWx() {
 
 // Slow cloud/precip drift from live 10 m wind. Direction is meteorological (from).
 // Default is a light SW breeze if the fetch has not landed yet.
+function weatherCover() {
+  if (wx.cover != null && isFinite(wx.cover)) return clamp(wx.cover, 0, 1);
+  if (wx.kind === "clear") return 0.16;
+  if (wx.kind === "partly") return 0.40;
+  if (wx.kind === "cloudy" || wx.kind === "rain" || wx.kind === "storm" || wx.kind === "snow") return 0.9;
+  return 0.22;
+}
+
 function windDrift() {
   const ms = (wx.windMs != null && isFinite(wx.windMs) ? wx.windMs : 2.8) * 0.20;
   const from = ((wx.windFromDeg != null && isFinite(wx.windFromDeg) ? wx.windFromDeg : 250) * Math.PI / 180);
@@ -1000,8 +1008,10 @@ varying float vLod;
 void main(){
   if (vLod > 1.5) discard;
   float cols = uAtlasGrid.x;
+  float rows = uAtlasGrid.y;
   float ix = floor(vFrame + 0.5);
-  vec2 cell = vec2(mod(ix, cols), floor(ix / cols));
+  // flipY atlas: row 0 is at the top of the canvas, which is high v. Invert the row.
+  vec2 cell = vec2(mod(ix, cols), rows - 1.0 - floor(ix / cols));
   vec2 uv = (vUv * 0.90 + 0.05 + cell) / uAtlasGrid;
   vec4 s = texture2D(uAtlas, uv);
   if (s.a < 0.32) discard;
@@ -1265,10 +1275,10 @@ const rig = {
 
 function targetHorizon() {
   const aspect = camera.aspect;
-  // Desktop: geometric horizon ~76% down, leaving room for front-ridge crowns.
-  // Phone: about 75% down (Dimitry). Highest land pixel target 65-80%.
-  if (aspect < 0.7) return 0.75;
-  if (aspect < 1.1) return 0.75;
+  // Geometric aim is a bit below the visible ridge line, because far hills rise
+  // into the sky. Phone is taller, so the aim sits lower to keep the ridge near 70%.
+  if (aspect < 0.7) return 0.77;
+  if (aspect < 1.1) return 0.76;
   return 0.76;
 }
 
@@ -1571,6 +1581,27 @@ function dirFromRaDec(raDeg, decDeg, d) {
   return { alt: aa[0], az: aa[1], dir: altAzDir(aa[0], aa[1]) };
 }
 
+// Visual center of the drawn asterism (mean of line vertices), not the catalog box center.
+function constCenterRaDec(C) {
+  const pts = [];
+  const L = C.l || [];
+  for (let li = 0; li < L.length; li++) {
+    const poly = L[li];
+    if (!poly || !poly.length) continue;
+    for (let i = 0; i + 1 < poly.length; i += 2) pts.push([poly[i], poly[i + 1]]);
+  }
+  if (!pts.length) return C.c || [0, 0];
+  let sx = 0, sy = 0, dec = 0;
+  for (let i = 0; i < pts.length; i++) {
+    sx += Math.cos(pts[i][0] * RAD);
+    sy += Math.sin(pts[i][0] * RAD);
+    dec += pts[i][1];
+  }
+  let ra = Math.atan2(sy, sx) / RAD;
+  if (ra < 0) ra += 360;
+  return [ra, dec / pts.length];
+}
+
 function makeNameSprite(text, italic) {
   const cv = document.createElement("canvas");
   cv.width = 640;
@@ -1739,19 +1770,24 @@ function placeStars() {
     if (SKY_CAT && SKY_CAT.c) {
       for (let i = 0; i < names.length && i < SKY_CAT.c.length; i++) {
         const C = SKY_CAT.c[i];
-        const cen = C.c || [0, 0];
+        const cen = constCenterRaDec(C);
         const hit = dirFromRaDec(cen[0], cen[1], d);
+        let ndc = null;
         let inFrame = false;
         if (camera && hit.alt > 0) {
           const world = hit.dir.clone().multiplyScalar(R);
           if (skyGroup) world.add(skyGroup.position);
           world.project(camera);
+          ndc = { x: world.x, y: world.y, z: world.z };
           inFrame = Math.abs(world.x) < 0.88 && Math.abs(world.y) < 0.88 && world.z < 1 && world.z > -1;
         }
         const show = isMajorConst(C.n) && hit.alt > 8 && clock.night > 0.25 && inFrame;
         names[i].visible = show;
         if (show) {
           names[i].position.copy(hit.dir).multiplyScalar(R * 0.96);
+        }
+        if (C.n === "Cygnus" && typeof window !== "undefined") {
+          window.__cygnusProbe = { ra: cen[0], dec: cen[1], alt: hit.alt, az: hit.az, ndc: ndc, show: show };
         }
       }
     }
@@ -1885,8 +1921,8 @@ void main(){
 `;
 
 const VOL_CLOUD_FRAG = /* glsl */`
-uniform float uSeed, uTime, uKind, uGray, uRain, uReduce, uNight, uDeck, uShaft;
-uniform vec3 uInk, uNightMul, uMoonDir;
+uniform float uSeed, uTime, uKind, uGray, uRain, uReduce, uNight, uDeck, uShaft, uCirrus, uStreak;
+uniform vec3 uInk, uNightMul, uMoonDir, uLook;
 varying vec2 vUv;
 varying vec3 vWorld;
 ${NOISE_GLSL}
@@ -1928,31 +1964,69 @@ void main(){
     float yWave = rel + (noise21(vWorld.xz * 0.0012 + vec2(s, 0.0)) - 0.5) * 0.05;
     float tone = yWave < 0.34 ? 0.0 : (yWave < 0.68 ? 1.0 : 2.0);
     vec3 wash = tone < 0.5 ? bot : (tone < 1.5 ? midc : top);
-    vec2 wp = vWorld.xz * 0.012;
-    float ang = 0.06;
-    vec2 dir = vec2(cos(ang), sin(ang));
-    vec2 nrm = vec2(-sin(ang), cos(ang));
-    float row = dot(wp, nrm) / 0.085 + noise21(wp * 1.1 + vec2(s, 3.0)) * 0.22;
+    vec2 fdir = normalize(uLook.xz + vec2(0.0001, 0.0));
+    vec2 rgt = vec2(fdir.y, -fdir.x);
+    vec2 fromCam = vWorld.xz - cameraPosition.xz;
+    float depth = dot(fromCam, fdir);
+    float side = dot(fromCam, rgt);
+    float wave = (noise21(vec2(side * 0.0035, s)) - 0.5) * 22.0;
+    wave += sin(side * 0.008 + s) * 8.0;
+    float row = (depth + wave) / 85.0;
     float rid = floor(row);
     float f = fract(row) - 0.5;
-    float along = dot(wp, dir);
-    float lift = step(0.20, hash21(vec2(rid * 11.0, floor(along * 4.0) + s)));
-    float line = 1.0 - smoothstep(0.0, 0.16, abs(f));
-    float dens = mix(0.9, 0.18, rel);
+    float lift = step(0.12, hash21(vec2(rid * 11.0, floor(side * 0.02) + s)));
+    float line = 1.0 - smoothstep(0.0, 0.18, abs(f));
+    float dens = mix(0.92, 0.16, rel);
     hatch = dens * line * lift;
-    col = mix(wash, uInk, clamp(hatch * 0.48, 0.0, 0.6));
+    col = mix(wash, uInk, clamp(hatch * 0.50, 0.0, 0.62));
+    // A few longer layer breaks, still horizontal, darker toward the deck base.
     float layers = 0.0;
     for (int i = 0; i < 5; i++) {
       float by = 0.12 + float(i) * 0.16;
-      by += (noise21(vec2(wp.x * 3.2, s + float(i))) - 0.5) * 0.05;
+      by += (noise21(vec2(side * 0.002, s + float(i))) - 0.5) * 0.04;
       float li = 1.0 - smoothstep(0.0, 0.018, abs(yWave - by));
-      float pen = step(0.28, hash21(vec2(floor(wp.x * 18.0), s + float(i) * 4.0)));
+      float pen = step(0.22, hash21(vec2(floor(side * 0.03), s + float(i) * 4.0)));
       layers += li * pen;
     }
-    col = mix(col, uInk, clamp(layers, 0.0, 1.0) * mix(0.55, 0.2, rel));
+    col = mix(col, uInk, clamp(layers, 0.0, 1.0) * mix(0.55, 0.18, rel));
     rim = 1.0 - smoothstep(0.0, 0.12, rel);
     b = 1.0;
     alpha = 0.96;
+  } else if (uCirrus > 0.5) {
+    // High, thin hatched wisps. World-anchored, almost no body fill.
+    vec2 q = (vUv - 0.5) * vec2(1.0, 3.6);
+    float spine = 1.0 - smoothstep(0.0, 0.55, abs(q.y + (noise21(vec2(q.x * 2.2, s)) - 0.5) * 0.25));
+    float taper = 1.0 - smoothstep(0.15, 0.98, abs(q.x) * 2.0);
+    float row = q.x * 7.0 + q.y * 1.4 + noise21(q * 3.0 + vec2(s, 1.0)) * 0.35;
+    float line = 1.0 - smoothstep(0.0, 0.22, abs(fract(row) - 0.5));
+    float lift = step(0.18, hash21(vec2(floor(row * 3.0), s)));
+    float body = spine * taper;
+    if (body < 0.05) discard;
+    col = mix(vec3(0.93, 0.90, 0.82), uInk, clamp(line * lift * 0.55, 0.0, 0.7));
+    alpha = body * (0.22 + line * lift * 0.35);
+    b = body; rel = 0.6; rim = 0.0; hatch = line;
+  } else if (uStreak > 0.5) {
+    // Far deck of flattened streaks sitting just above the ridges.
+    vec2 q = (vUv - 0.5) * vec2(1.0, 2.8);
+    float wave = (noise21(vec2(q.x * 1.8, s)) - 0.5) * 0.18;
+    float body = 1.0 - smoothstep(0.22, 0.62, abs(q.y + wave));
+    body *= 1.0 - smoothstep(0.35, 1.02, abs(q.x) * 2.0);
+    if (body < 0.05) discard;
+    float toneKey = (1.0 - body) * 0.5 + (1.0 - vUv.y) * 0.35;
+    vec3 paper = vec3(0.94, 0.90, 0.82);
+    vec3 midc = vec3(0.78, 0.76, 0.72);
+    vec3 shade = vec3(0.62, 0.61, 0.60);
+    vec3 wash = paper;
+    if (toneKey > 0.32) wash = midc;
+    if (toneKey > 0.58) wash = shade;
+    float row = q.x * 9.0 + noise21(q * 2.4 + vec2(s, 2.0)) * 0.3;
+    float line = 1.0 - smoothstep(0.0, 0.2, abs(fract(row) - 0.5));
+    float lift = step(0.2, hash21(vec2(floor(row * 4.0), s)));
+    col = mix(wash, uInk, clamp(line * lift * 0.4, 0.0, 0.55));
+    float edge = 1.0 - smoothstep(0.15, 0.45, vUv.y);
+    col = mix(col, uInk, edge * lift * 0.35);
+    alpha = 0.9 * body;
+    b = body; rel = vUv.y; rim = edge; hatch = line;
   } else {
     // Fair-weather 3D lobes. Posterized wash, no airbrush gradient.
     p.y *= 0.82;
@@ -2059,7 +2133,10 @@ function makeVolCloudMat(kind, seed, gray) {
       uMoonDir: { value: new THREE.Vector3(0.2, 0.5, 0.4) },
       uDeck: { value: 0 },
       uFlat: { value: 0 },
-      uShaft: { value: 0 }
+      uShaft: { value: 0 },
+      uCirrus: { value: 0 },
+      uStreak: { value: 0 },
+      uLook: { value: new THREE.Vector3(0, 0, 1) }
     },
     vertexShader: VOL_CLOUD_VERT,
     fragmentShader: VOL_CLOUD_FRAG,
@@ -2104,16 +2181,36 @@ function buildVolClouds() {
       { az: 0.40, dist: 3000, alt: 170, sx: 1800, sy: 260, seed: 21.6 }
     ];
   } else {
-    puffSpec = [
-      { az: -0.18, dist: 1100, alt: 980, sx: 520, sy: 300, seed: 1.7 },
-      { az: 0.26, dist: 1550, alt: 1120, sx: 640, sy: 340, seed: 8.9 },
-      { az: 0.04, dist: 2600, alt: 1400, sx: 420, sy: 250, seed: 4.2 },
-      { az: -0.38, dist: 3300, alt: 1580, sx: 480, sy: 260, seed: 11.1 },
-      { az: 0.44, dist: 4900, alt: 1980, sx: 620, sy: 300, seed: 6.4 },
-      { az: -0.10, dist: 6400, alt: 2300, sx: 720, sy: 360, seed: 15.2 }
-    ];
+    // 12-20 fair-weather clouds, count from live cloud_cover. Near ones are big and lumpy;
+    // far ones flatten into thin streaks just above the ridges. A few high cirrus wisps.
+    const cover = weatherCover();
+    const nFair = Math.round(12 + 8 * clamp(cover / 0.55, 0, 1));
+    const rngC = mulberry(44021);
+    puffSpec = [];
+    for (let i = 0; i < nFair; i++) {
+      const tFar = i / Math.max(1, nFair - 1);
+      const dist = 750 + tFar * tFar * 6200 + rngC() * 380;
+      const az = -0.60 + (rngC() - 0.5) * 0.95 + (rngC() < 0.18 ? (rngC() - 0.5) * 0.8 : 0);
+      const streak = tFar > 0.62;
+      const alt = streak ? (480 + rngC() * 260) : (820 + (1 - tFar) * 700 + rngC() * 240);
+      const sx = streak ? (900 + rngC() * 700) : (380 + (1 - tFar) * 420 + rngC() * 180);
+      const sy = streak ? (70 + rngC() * 70) : (230 + (1 - tFar) * 180 + rngC() * 80);
+      puffSpec.push({ az: az, dist: dist, alt: alt, sx: sx, sy: sy, seed: 2.1 + i * 9.3, streak: streak });
+    }
+    const nCirrus = 3 + ((rngC() * 3) | 0);
+    for (let i = 0; i < nCirrus; i++) {
+      puffSpec.push({
+        az: -0.60 + (rngC() - 0.5) * 1.2,
+        dist: 4800 + rngC() * 2800,
+        alt: 2100 + rngC() * 900,
+        sx: 1400 + rngC() * 900,
+        sy: 80 + rngC() * 70,
+        seed: 80 + i * 13.1,
+        cirrus: 1
+      });
+    }
   }
-  const puffs = deck ? puffSpec.length : (kind === "clear" ? 5 : kind === "partly" ? 6 : puffSpec.length);
+  const puffs = puffSpec.length;
   const anchor = cloudAnchor();
   const ground = yOf(heightWorld(anchor.x, anchor.z));
   for (let i = 0; i < puffs; i++) {
@@ -2124,6 +2221,8 @@ function buildVolClouds() {
     mat.uniforms.uRain.value = (kind === "rain" || kind === "storm") ? 1 : 0;
     mat.uniforms.uFlat.value = sp.flat ? 1 : 0;
     mat.uniforms.uShaft.value = sp.shaft ? 1 : 0;
+    mat.uniforms.uCirrus.value = sp.cirrus ? 1 : 0;
+    mat.uniforms.uStreak.value = sp.streak ? 1 : 0;
     const mesh = new THREE.Mesh(geo, mat);
     mesh.frustumCulled = false;
     mesh.renderOrder = 1;
@@ -2184,6 +2283,9 @@ function layoutVolClouds() {
     }
     if (it.mesh.material && it.mesh.material.uniforms) {
       it.mesh.material.uniforms.uTime.value = state.time || 0;
+      const look = new THREE.Vector3();
+      camera.getWorldDirection(look);
+      if (it.mesh.material.uniforms.uLook) it.mesh.material.uniforms.uLook.value.copy(look);
     }
   }
 }
@@ -2194,7 +2296,7 @@ function buildSnow() {
     if (snowPts.geometry) snowPts.geometry.dispose();
     if (snowPts.material) snowPts.material.dispose();
   }
-  const N = 900;
+  const N = 3200;
   const pos = new Float32Array(N * 3);
   const ph = new Float32Array(N);
   const rng = mulberry(23);
@@ -2213,8 +2315,8 @@ function buildSnow() {
         vec4 mv = modelViewMatrix * vec4(position, 1.0);
         gl_Position = projectionMatrix * mv;
         float dist = max(40.0, -mv.z);
-        float vary = 0.45 + 0.9 * fract(vPhase * 5.17);
-        gl_PointSize = clamp((70.0 / dist) * vary, 1.05, 3.4) * uPixel;
+        float vary = 0.45 + 2.6 * pow(fract(vPhase * 5.17), 1.2);
+        gl_PointSize = clamp((1400.0 / dist) * vary, 2.4, 28.0) * uPixel;
       }
     `,
     fragmentShader: /* glsl */`
@@ -2222,13 +2324,14 @@ function buildSnow() {
       void main(){
         vec2 p = gl_PointCoord * 2.0 - 1.0;
         float r = length(p);
-        float disc = 1.0 - smoothstep(0.32, 1.0, r);
-        float arm = min(min(abs(p.x), abs(p.y)), min(abs(p.x - p.y), abs(p.x + p.y)) * 0.707);
-        float ast = (1.0 - smoothstep(0.0, 0.14, arm)) * (1.0 - smoothstep(0.5, 1.05, r));
-        float useAst = step(0.55, fract(vPhase * 7.13));
-        float a = mix(disc * 0.92, max(disc * 0.28, ast), useAst);
-        if (a < 0.06) discard;
-        vec3 col = mix(vec3(0.93, 0.90, 0.84), vec3(0.32, 0.26, 0.20), useAst * 0.4);
+        float disc = 1.0 - smoothstep(0.28, 1.0, r);
+        if (disc < 0.05) discard;
+        // Cream flake with a soft ink rim so it reads on both sky and snowed ground.
+        float rim = smoothstep(0.18, 0.55, r) * (1.0 - smoothstep(0.72, 1.0, r));
+        vec3 cream = vec3(0.93, 0.90, 0.84);
+        vec3 ink = vec3(0.28, 0.23, 0.18);
+        vec3 col = mix(cream, ink, rim * 0.85);
+        float a = disc * 0.95;
         gl_FragColor = vec4(col, a);
       }
     `,
@@ -2254,8 +2357,8 @@ function layoutSnow() {
   const a = cloudAnchor();
   const drift = windDrift();
   const tt = (state.time || 0);
-  const half = 1400;
-  const tall = 150;
+  const half = 2800;
+  const tall = 520;
   const N = pos.length / 3;
   for (let i = 0; i < N; i++) {
     // Stable world XZ from the flake seed, plus the same slow wind as the clouds.
@@ -2463,14 +2566,15 @@ function drawGrownTree(ctx, S, grown, opt) {
   ctx.moveTo(cx + (rng() - 0.5) * 2, trunkBot);
   ctx.quadraticCurveTo(cx + (rng() - 0.5) * 4, (trunkBot + trunkTop) * 0.55, cx, trunkTop);
   ctx.stroke();
+  // A hint of two short limbs, kept under the crown so they do not read as stick piles.
   if (!isCedar) {
-    ctx.lineWidth = S * 0.018;
+    ctx.lineWidth = S * 0.016;
     for (let b = 0; b < 2; b++) {
       const dir = b ? 1 : -1;
-      const by = trunkTop + (trunkBot - trunkTop) * (0.25 + rng() * 0.2);
+      const by = trunkTop + (trunkBot - trunkTop) * 0.12;
       ctx.beginPath();
       ctx.moveTo(cx, by);
-      ctx.quadraticCurveTo(cx + dir * S * 0.06, by - S * 0.04, cx + dir * S * 0.12, by - S * 0.08);
+      ctx.quadraticCurveTo(cx + dir * S * 0.04, by - S * 0.02, cx + dir * S * 0.07, by - S * 0.04);
       ctx.stroke();
     }
   }
@@ -2654,7 +2758,7 @@ function leafColors(specName, season) {
   if (specName === "cedar") return ["#3F5340", "#2F4A38", "#4A5A38", "#35503A"];
   if (season === "spring") return ["#6A8A58", "#5E7A4A", "#7A945E", "#4E6A40"];
   if (season === "summer") return ["#2F5D46", "#3A6B50", "#4E7D57", "#2A5340"];
-  if (season === "autumn") return ["#A85A38", "#B07A3A", "#4A5E40", "#8B4A32", "#6B4E2A", "#7A3E2A", "#5C4A28", "#8A6420"];
+  if (season === "autumn") return ["#C46A32", "#D4A044", "#E0B056", "#B85A28", "#C9842C", "#A84820", "#9A5A1C", "#DC8A38"];
   return ["#C4BBA8", "#B8A894", "#A89880"];
 }
 
@@ -2711,7 +2815,7 @@ function makeTreeAtlas() {
 
 function framesFor(specName, seedSlot, season, cls) {
   // seedSlot 0-7
-  const cedar = specName === "cedar" || cls === 5;
+  const cedar = specName === "cedar";
   let full, clump, bare;
   if (cedar) {
     full = 24 + (seedSlot % 8);
@@ -5351,6 +5455,36 @@ function expose() {
     freeze: function (v) { state.frozen = v !== false; },
     unfreeze: function () { state.frozen = false; },
     setPathT: function (t) { state.holdCamera = false; rig.s = clamp(t, 0, 1) * path.len; placeCamera(); if (glOk) renderer.render(scene, camera); },
+    probeConsts: function () {
+      const d = jd2000(skyNow());
+      const R = 8800;
+      const out = [];
+      const heading = (function () {
+        const look = new THREE.Vector3();
+        camera.getWorldDirection(look);
+        return Math.atan2(look.x, look.z);
+      })();
+      if (SKY_CAT && SKY_CAT.c && camera) {
+        for (let i = 0; i < SKY_CAT.c.length; i++) {
+          const C = SKY_CAT.c[i];
+          if (C.n !== "Cygnus" && C.n !== "Draco" && C.n !== "Ursa Minor" && C.n !== "Ursa Major") continue;
+          const cen = constCenterRaDec(C);
+          const hit = dirFromRaDec(cen[0], cen[1], d);
+          const world = hit.dir.clone().multiplyScalar(R);
+          if (skyGroup) world.add(skyGroup.position);
+          world.project(camera);
+          let compass = Math.atan2(hit.dir.x, hit.dir.z) * 180 / Math.PI;
+          if (compass < 0) compass += 360;
+          out.push({
+            n: C.n, ra: +cen[0].toFixed(2), dec: +cen[1].toFixed(2),
+            alt: +hit.alt.toFixed(2), compass: +compass.toFixed(1),
+            ndc: [+world.x.toFixed(3), +world.y.toFixed(3), +world.z.toFixed(3)],
+            inFrame: Math.abs(world.x) < 0.88 && Math.abs(world.y) < 0.88 && world.z < 1 && world.z > -1
+          });
+        }
+      }
+      return { heading: heading, headingDeg: heading * 180 / Math.PI, cygnus: window.__cygnusProbe || null, list: out };
+    },
     panWorld: function (rightM, alongM) {
       if (!camera || !glOk) return null;
       state.holdCamera = true;
