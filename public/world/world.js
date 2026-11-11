@@ -7,6 +7,20 @@ const COLS = 1024;
 const ROWS = 768;
 const EXAG = 2.9;
 const HERO = { px: 218, py: 509, eye: 48, pathT: 0.5 };
+
+// Real-world cells (EPSG:5070, same conversion as jasper_st_joseph in meta.json).
+// place: instanced this pass only if the site is on the DEM and in the hero view
+// and does not sit on top of the spire.
+const LANDMARK_SITES = {
+  jasper_st_joseph:        { px: 174.3, py: 444.6, file: "st_joseph_church.glb", kind: "church", place: true, note: "current cell is the generic Jasper point; real church is about 168.5, 429.7" },
+  jasper_courthouse:       { px: 174.3, py: 444.7, file: "jasper_courthouse.glb", kind: "courthouse", place: false, note: "coincides with current spire cell; registered, not instanced" },
+  jasper_city_mill:        { px: 185.5, py: 458.6, file: "jasper_city_mill.glb", kind: "mill", place: true, note: "south bank of the Patoka, in the hero gap" },
+  jasper_depot:            { px: 180.5, py: 456.2, file: "jasper_depot.glb", kind: "depot", place: true, note: "201 Mill St, in the hero mid-ground" },
+  ferdinand_monastery:     { px: 449.8, py: 1024.7, file: "ferdinand_monastery.glb", kind: "monastery", place: false, note: "south of the DEM" },
+  saint_meinrad_archabbey: { px: 583.6, py: 1216.6, file: "saint_meinrad_archabbey.glb", kind: "archabbey", place: false, note: "Spencer County, outside the DEM" },
+  league_stadium:          { px: 170.2, py: 809.3, file: "league_stadium.glb", kind: "stadium", place: false, note: "just south of the DEM, behind the camera" },
+  huntingburg_town_hall:   { px: 146.2, py: 790.1, file: "huntingburg_town_hall.glb", kind: "townhall", place: false, note: "just south of the DEM, behind the camera" }
+};
 const BASE_M = 100;
 const JASPER = { lat: 38.3914, lon: -86.9311 };
 const REDUCE = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -262,6 +276,9 @@ function fetchWx() {
 let heightData, coverData, meta, path = [];
 let riverPathPx = [];
 let heightF32; // meters, length COLS*ROWS
+let ridgeGroup = null;
+let riverRibbon = null;
+
 
 function pxIndex(px, py) {
   const x = clamp(px, 0, COLS - 1);
@@ -438,16 +455,24 @@ float heightM(vec2 uv){
   vec4 tex = texture2D(uHeight, uv);
   return (tex.r * 255.0 * 256.0 + tex.g * 255.0) / 10.0 + 100.0;
 }
+float farLift(float dist){
+  float t = clamp((dist - 3000.0) / 7000.0, 0.0, 1.0);
+  t = t * t * (3.0 - 2.0 * t);
+  return 1.0 + 1.6 * t;
+}
 void main(){
   vUv = uv;
   vec3 p = position;
+  float dist = length(vec2(p.x, p.z) - vec2(cameraPosition.x, cameraPosition.z));
+  p.y *= farLift(dist);
   float dx = uCell, dz = uCell;
   vec2 ts = 1.0 / uSize;
-  float hl = heightM(uv + vec2(-ts.x, 0.0));
-  float hr = heightM(uv + vec2( ts.x, 0.0));
-  float hd = heightM(uv + vec2(0.0,  ts.y));
-  float hu = heightM(uv + vec2(0.0, -ts.y));
-  vec3 n = normalize(vec3((hl - hr) * uExag, 2.0 * dx, (hd - hu) * uExag));
+  float lift = farLift(dist);
+  float hl = heightM(uv + vec2(-ts.x, 0.0)) * uExag * lift;
+  float hr = heightM(uv + vec2( ts.x, 0.0)) * uExag * lift;
+  float hd = heightM(uv + vec2(0.0,  ts.y)) * uExag * lift;
+  float hu = heightM(uv + vec2(0.0, -ts.y)) * uExag * lift;
+  vec3 n = normalize(vec3(hl - hr, 2.0 * dx, hd - hu));
   vN = n;
   vec4 wp = modelMatrix * vec4(p, 1.0);
   vWorld = wp.xyz;
@@ -720,9 +745,46 @@ void main(){
 const SKY_FRAG = /* glsl */`
 uniform vec3 uTop, uMid, uHor;
 uniform vec3 uSunDir, uMoonDir;
-uniform float uNight, uTwi, uSunSize, uMilky, uSeed;
+uniform float uNight, uTwi, uSunSize, uMilky, uSeed, uLookAz;
+uniform vec2 uRes;
 varying vec3 vDir;
 ${NOISE_GLSL}
+
+float cloudLobe(vec2 frag, vec2 c, vec2 rad, float seed) {
+  vec2 p = (frag - c) / rad;
+  float x = p.x;
+  float y = p.y;
+  if (abs(x) > 1.25 || y < -0.72 || y > 1.2) return 0.0;
+  float base = -0.55;
+  if (y < base) return 0.0;
+  float top = 0.38
+    + 0.32 * exp(-pow(x * 1.05, 2.0) * 2.0)
+    + 0.22 * exp(-pow((x - 0.48) * 1.7, 2.0) * 2.8)
+    + 0.22 * exp(-pow((x + 0.50) * 1.7, 2.0) * 2.8)
+    + 0.07 * sin((x + seed) * 7.1);
+  top = max(top, 0.20);
+  if (y > top) return 0.0;
+  float halfw = 0.78 + 0.20 * clamp((top - y) / (top - base), 0.0, 1.0);
+  float body = (1.0 - smoothstep(halfw, halfw + 0.14, abs(x)))
+    * smoothstep(base, base + 0.06, y)
+    * (1.0 - smoothstep(top - 0.04, top + 0.03, y));
+  float rel = (y - base) / (top - base + 0.001);
+  float dens = mix(1.0, 0.14, smoothstep(0.06, 0.80, rel));
+  float wob = noise21(vec2(x * 3.2 + seed, y * 5.2));
+  float hatch = 1.0 - smoothstep(0.0, 0.22, abs(fract(gl_FragCoord.y / 2.5 + wob * 0.32) - 0.5));
+  return body * dens * hatch;
+}
+float cloudPuff(vec2 frag, vec2 cUv, float scale, float seed) {
+  vec2 c = cUv * uRes;
+  float px = max(uRes.x * scale, 92.0);
+  vec2 rad = vec2(px, px * 0.80);
+  float b = 0.0;
+  b = max(b, cloudLobe(frag, c + vec2(0.0, 0.02 * rad.y), rad * vec2(1.0, 0.78), seed));
+  b = max(b, cloudLobe(frag, c + vec2(-0.42 * rad.x, 0.20 * rad.y), rad * vec2(0.62, 0.72), seed + 1.3));
+  b = max(b, cloudLobe(frag, c + vec2(0.40 * rad.x, 0.16 * rad.y), rad * vec2(0.60, 0.70), seed + 2.1));
+  return b;
+}
+
 void main(){
   vec3 d = normalize(vDir);
   float h = d.y;
@@ -742,27 +804,26 @@ void main(){
     float grain = noise21(gl_FragCoord.xy * 0.22);
     col *= 0.985 + 0.03 * grain;
     col += (stip - 0.5) * 0.018;
-    // Engraved cumulus: hatch only, no fill, no outline, paper shows through.
-    // Unique per seed. Flatten into thin streaks toward the horizon.
-    if (h > 0.03 && h < 0.58) {
-      float az = atan(d.x, d.z);
-      // Flatten only near the horizon so mid-sky stays as puffs, not full-width streaks.
-      float flatten = mix(3.4, 1.15, smoothstep(0.06, 0.28, h));
-      vec2 cuv = vec2(az * (2.4 * flatten), h * (9.0 / max(0.5, flatten * 0.35))) + vec2(uSeed * 0.19, uSeed * 0.07);
-      float n = noise21(cuv);
-      n = n * 0.55 + 0.45 * noise21(cuv * 2.05 + 8.4);
-      float band = smoothstep(0.04, 0.11, h) * (1.0 - smoothstep(0.32, 0.52, h));
-      float body = smoothstep(0.56, 0.72, n) * band;
-      // undersides of each puff are denser
-      float under = smoothstep(0.78, 0.64, n);
-      float dens = mix(0.25, 1.0, under);
-      float wob = noise21(vec2(az * 10.0, h * 22.0) + uSeed);
-      float hatch = 1.0 - smoothstep(0.0, 0.22, abs(fract(gl_FragCoord.y / 3.0 + wob * 0.4) - 0.5));
-      // edge of the puff fades so hatches do not run as long bars
-      float edge = smoothstep(0.62, 0.70, n) * (1.0 - smoothstep(0.86, 0.96, n));
-      vec3 inkC = mix(vec3(0.165, 0.129, 0.094), col, 0.2 + 0.5 * horB);
-      col = mix(col, inkC, body * dens * hatch * edge * 0.58);
+    // 5 discrete engraved cumulus volumes (screen-space, aspect-stable)
+    // plus short horizon streaks. Hatch only; no fill, no outline.
+    vec2 uv = gl_FragCoord.xy / max(uRes, vec2(1.0));
+    float cov = 0.0;
+    vec2 frag = gl_FragCoord.xy;
+    cov = max(cov, cloudPuff(frag, vec2(0.18, 0.74), 0.105, 1.7));
+    cov = max(cov, cloudPuff(frag, vec2(0.40, 0.83), 0.090, 4.2));
+    cov = max(cov, cloudPuff(frag, vec2(0.63, 0.71), 0.115, 8.9));
+    cov = max(cov, cloudPuff(frag, vec2(0.85, 0.79), 0.085, 11.3));
+    cov = max(cov, cloudPuff(frag, vec2(0.50, 0.58), 0.095, 15.6));
+    // thin broken streaks just above the land, not mid-sky bars
+    if (uv.y > 0.30 && uv.y < 0.40) {
+      float st = noise21(vec2(uv.x * 7.5 + uSeed, 2.4));
+      float band = smoothstep(0.30, 0.33, uv.y) * (1.0 - smoothstep(0.37, 0.40, uv.y));
+      float sh = 1.0 - smoothstep(0.0, 0.28, abs(fract(gl_FragCoord.y / 2.5) - 0.5));
+      cov = max(cov, band * sh * smoothstep(0.62, 0.84, st) * 0.42);
     }
+    vec3 inkC = mix(vec3(0.165, 0.129, 0.094), col, 0.18 + 0.45 * horB);
+    col = mix(col, inkC, clamp(cov, 0.0, 1.0) * 0.78);
+
   } else {
     if (h > 0.42) col = mix(uMid, uTop, clamp((h - 0.42) / 0.58, 0.0, 1.0));
     else if (h > 0.0) col = mix(uHor, uMid, pow(h / 0.42, 0.75));
@@ -836,8 +897,8 @@ void main(){
   vec4 c0 = projectionMatrix * viewMatrix * vec4(iPos, 1.0);
   vec4 c1 = projectionMatrix * viewMatrix * vec4(iPos + camU * sy, 1.0);
   float ndcH = abs(c1.y / max(0.001, c1.w) - c0.y / max(0.001, c0.w));
-  if (ndcH > 0.30) {
-    float cap = 0.30 / ndcH;
+  if (ndcH > 0.14) {
+    float cap = 0.14 / ndcH;
     sx *= cap;
     sy *= cap;
   }
@@ -1164,7 +1225,7 @@ let starPts, constLines, moonMesh, sunState = {};
 let churchMesh, labelMesh, landmarkGroup;
 const washMats = [];
 const windowMats = [];
-const LAND = { church: 0, farmhouse: 0, barn: 0, silo: 0, hay: 0, fromGltf: {} };
+const LAND = { church: 0, farmhouse: 0, barn: 0, silo: 0, hay: 0, mill: 0, depot: 0, fromGltf: {} };
 
 function terrainUniforms() {
   return {
@@ -1260,6 +1321,8 @@ function buildSky() {
   skyMat = new THREE.ShaderMaterial({
     uniforms: {
       uSeed: { value: 19.0 },
+      uLookAz: { value: 0.0 },
+      uRes: { value: new THREE.Vector2(1280, 800) },
       uTop: { value: new THREE.Color() },
       uMid: { value: new THREE.Color() },
       uHor: { value: new THREE.Color() },
@@ -1619,62 +1682,111 @@ function drawGrownTree(ctx, S, grown, opt) {
 
   if (opt.lod === "clump" && leavesOn) {
     ctx.strokeStyle = ink;
-    ctx.lineWidth = 1.6;
     ctx.lineCap = "round";
-    const t0 = tx(0, 0), t1 = tx(0, 0.22);
-    ctx.beginPath();
-    ctx.moveTo(t0[0] + (rng() - 0.5) * 2, t0[1]);
-    ctx.lineTo(t1[0], t1[1]);
-    ctx.stroke();
-    const n = grown.spec.cone ? 3 : (5 + (rng() * 3 | 0));
-    for (let i = 0; i < n; i++) {
-      const ox = (rng() - 0.5) * S * (grown.spec.cone ? 0.18 : 0.30);
-      const oy = (rng() - 0.5) * S * (grown.spec.cone ? 0.22 : 0.22) - S * 0.12;
-      const r = S * (0.16 + rng() * 0.16);
-      ctx.fillStyle = colors[(rng() * colors.length) | 0];
-      ctx.globalAlpha = 0.82 + rng() * 0.16;
-      if (grown.spec.cone) {
+    if (grown.spec.cone) {
+      ctx.lineWidth = 1.6;
+      const t0 = tx(0, 0), t1 = tx(0, 0.22);
+      ctx.beginPath();
+      ctx.moveTo(t0[0] + (rng() - 0.5) * 2, t0[1]);
+      ctx.lineTo(t1[0], t1[1]);
+      ctx.stroke();
+      const n = 3;
+      for (let i = 0; i < n; i++) {
+        const ox = (rng() - 0.5) * S * 0.18;
+        const oy = (rng() - 0.5) * S * 0.22 - S * 0.12;
+        const r = S * (0.16 + rng() * 0.10);
+        ctx.fillStyle = colors[(rng() * colors.length) | 0];
+        ctx.globalAlpha = 0.82 + rng() * 0.16;
         ctx.beginPath();
         ctx.moveTo(cx + ox, base - S * 0.82 + oy);
         ctx.lineTo(cx + ox - r, base - S * 0.42 + oy);
         ctx.lineTo(cx + ox + r, base - S * 0.42 + oy);
         ctx.closePath();
-      } else {
-        drawWobblyCircle(ctx, cx + ox, S * 0.46 + oy, r, rng);
+        ctx.fill();
+        ctx.globalAlpha = 0.88;
+        ctx.strokeStyle = ink;
+        ctx.lineWidth = 1 + rng() * 0.6;
+        ctx.stroke();
       }
-      ctx.fill();
-      ctx.globalAlpha = 0.88;
-      ctx.strokeStyle = ink;
-      ctx.lineWidth = 1 + rng() * 0.6;
+    } else {
+      ctx.lineWidth = 1.1;
+      ctx.beginPath();
+      ctx.moveTo(cx, S * 0.92);
+      ctx.lineTo(cx, S * 0.74);
       ctx.stroke();
+      const n = 8 + (rng() * 5 | 0);
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2 + rng() * 0.5;
+        const ox = Math.cos(a) * S * (0.10 + rng() * 0.12);
+        const oy = Math.sin(a) * S * (0.08 + rng() * 0.08) - S * 0.02;
+        const r = S * (0.05 + rng() * 0.045);
+        ctx.fillStyle = colors[(rng() * colors.length) | 0];
+        ctx.globalAlpha = 0.86;
+        drawWobblyCircle(ctx, cx + ox, S * 0.50 + oy, r, rng);
+        ctx.fill();
+        ctx.save();
+        ctx.clip();
+        ctx.globalAlpha = 0.32;
+        ctx.lineWidth = 0.65;
+        ctx.beginPath();
+        for (let hy = S * 0.50 + oy - r; hy < S * 0.50 + oy + r; hy += 2.0) {
+          ctx.moveTo(cx + ox, hy);
+          ctx.lineTo(cx + ox + r, hy + 0.6);
+        }
+        ctx.stroke();
+        ctx.restore();
+        ctx.globalAlpha = 1;
+        ctx.lineWidth = 0.75;
+        ctx.stroke();
+      }
     }
     ctx.globalAlpha = 1;
     return;
   }
 
-  // Leafy deciduous: ink-circle crowns over a short trunk, no bare twigs sticking out of the top.
+  // Leafy deciduous: many small overlapping scalloped ink-circles. No trunk
+  // above the crowns; a short mark sits only under the cluster, or none.
   if (leavesOn && !grown.spec.cone) {
-    ctx.strokeStyle = ink;
-    ctx.lineWidth = 2.0;
-    ctx.lineCap = "round";
-    const t0 = tx(0, 0), t1 = tx(0, 0.18);
-    ctx.beginPath();
-    ctx.moveTo(t0[0], t0[1]);
-    ctx.lineTo(t1[0], t1[1]);
-    ctx.stroke();
-    const n = 6 + (rng() * 4 | 0);
-    for (let i = 0; i < n; i++) {
-      const ox = (rng() - 0.5) * S * 0.32;
-      const oy = (rng() - 0.5) * S * 0.24 - S * 0.16;
-      const r = S * (0.14 + rng() * 0.16);
+    function inkScallop(px, py, r) {
       ctx.fillStyle = colors[(rng() * colors.length) | 0];
-      ctx.globalAlpha = 0.84 + rng() * 0.14;
-      drawWobblyCircle(ctx, cx + ox, S * 0.44 + oy, r, rng);
+      ctx.globalAlpha = 0.86 + rng() * 0.12;
+      drawWobblyCircle(ctx, px, py, r, rng);
       ctx.fill();
-      ctx.globalAlpha = 0.9;
+      ctx.save();
+      ctx.clip();
+      ctx.globalAlpha = 0.34;
       ctx.strokeStyle = ink;
-      ctx.lineWidth = 1.05;
+      ctx.lineWidth = 0.7;
+      ctx.beginPath();
+      for (let hy = py - r; hy < py + r; hy += 2.0) {
+        ctx.moveTo(px - r * 0.05, hy);
+        ctx.lineTo(px + r, hy + 0.7);
+      }
       ctx.stroke();
+      ctx.restore();
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = ink;
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+    }
+    ctx.strokeStyle = ink;
+    ctx.lineCap = "round";
+    const n = 12 + (rng() * 7 | 0);
+    const crownY = S * 0.48;
+    // short trunk only under the lowest scallops, never rising into the crown
+    ctx.lineWidth = 1.15;
+    ctx.beginPath();
+    ctx.moveTo(cx, S * 0.92);
+    ctx.lineTo(cx + (rng() - 0.5) * 0.8, S * 0.72);
+    ctx.stroke();
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2 + rng() * 0.45;
+      const sx = S * (0.20 + rng() * 0.06);
+      const sy = S * (0.16 + rng() * 0.05);
+      const ox = Math.cos(a) * sx * (0.5 + rng() * 0.5);
+      const oy = Math.sin(a) * sy * (0.45 + rng() * 0.5) - S * 0.02;
+      const r = S * (0.055 + rng() * 0.045);
+      inkScallop(cx + ox, crownY + oy, r);
     }
     ctx.globalAlpha = 1;
     return;
@@ -1900,6 +2012,10 @@ function scatterTrees() {
       const along0 = ((dw.x - hw0.x) * lx2 + (dw.z - hw0.z) * lz2) / llen2;
       const side0 = (dw.x - hw0.x) * (lz2 / llen2) - (dw.z - hw0.z) * (lx2 / llen2);
       if (along0 > 200 && along0 < 2000 && Math.abs(side0) < 230) continue;
+      // Clear the mid-valley floor so stray orange blobs do not sit in the gap.
+      const heroH0 = heightPx(HERO.px, HERO.py);
+      if (along0 > 150 && along0 < 2200 && heightPx(px, py) < heroH0 - 6) continue;
+      if (along0 > 400 && along0 < 1900 && Math.abs(side0) < 420 && heightPx(px, py) < heroH0 - 2) continue;
       cands.push({ px: px, py: py, cls: cls, front: 0 });
     }
   }
@@ -1918,15 +2034,34 @@ function scatterTrees() {
       // Keep a clearing around the camera. Wings on the front crest; open a center
       // window so the Patoka gap and the middle ridge can be seen.
       if (along < 240 || along > 950) continue;
-      if (Math.abs(side) > 520) continue;
-      if (Math.abs(side) < 210) continue;
+      if (Math.abs(side) > 560) continue;
+      if (Math.abs(side) < 190) continue;
       const cls = coverPx(px, py);
       if (cls === 0) continue;
       const hm = heightPx(px, py);
       if (hm < heightPx(HERO.px, HERO.py) - 14) continue;
-      const dens = cls === 4 || cls === 5 ? 0.9 : (cls === 6 || cls === 1 ? 0.5 : 0.32);
+      const dens = cls === 4 || cls === 5 ? 0.96 : (cls === 6 || cls === 1 ? 0.62 : 0.42);
       if (rng() > dens) continue;
       cands.push({ px: px, py: py, cls: cls === 5 ? 4 : cls, front: 1 });
+    }
+  }
+  // Clumped woods on the middle ridge, kept off the spire and out of the river gap.
+  const midPx = churchP[0], midPy = churchP[1];
+  for (let py = Math.max(2, (midPy - 22) | 0); py <= Math.min(ROWS - 3, (midPy + 22) | 0); py += 1) {
+    for (let px = Math.max(2, (midPx - 28) | 0); px <= Math.min(COLS - 3, (midPx + 28) | 0); px += 1) {
+      const w = pxToWorld(px, py);
+      const along = (w.x - heroW.x) * ux + (w.z - heroW.z) * uz;
+      const side = (w.x - heroW.x) * uz - (w.z - heroW.z) * ux;
+      if (along < 2000 || along > 3300) continue;
+      if (Math.abs(side) < 90 || Math.abs(side) > 720) continue;
+      if (Math.hypot(w.x - cw.x, w.z - cw.z) < 110) continue;
+      const cls = coverPx(px, py);
+      if (cls === 0 || cls === 3) continue;
+      const hm = heightPx(px, py);
+      if (hm < heightPx(midPx, midPy) - 16) continue;
+      const dens = (cls === 4 || cls === 5) ? 0.72 : 0.28;
+      if (rng() > dens) continue;
+      cands.push({ px: px, py: py, cls: cls === 5 ? 4 : 4, front: 2 });
     }
   }
   for (let i = cands.length - 1; i > 0; i--) {
@@ -1936,7 +2071,8 @@ function scatterTrees() {
   for (let ci = 0; ci < cands.length && pos.length / 3 < maxN; ci++) {
     const px = cands[ci].px, py = cands[ci].py, cls = cands[ci].cls;
     const isFront = cands[ci].front === 1;
-    const stand = isFront ? 5 + ((rng() * 4) | 0) : (cls === 4 || cls === 5 ? 3 + ((rng() * 4) | 0) : 1);
+    const isMidWood = cands[ci].front === 2;
+    const stand = isFront ? 7 + ((rng() * 5) | 0) : (isMidWood ? 5 + ((rng() * 4) | 0) : (cls === 4 || cls === 5 ? 3 + ((rng() * 4) | 0) : 1));
     for (let s = 0; s < stand && pos.length / 3 < maxN; s++) {
       const jx = (px + (rng() - 0.5) * (isFront ? 0.85 : 1.05));
       const jy = (py + (rng() - 0.5) * (isFront ? 0.85 : 1.05));
@@ -1946,13 +2082,14 @@ function scatterTrees() {
       if (!isFront && (c2 === 2)) continue;
       const hm = heightPx(jx, jy);
       let specName = pickSpecies(c2 === 5 && !isFront ? 5 : cls, rng);
-      if (isFront) specName = rng() < 0.48 ? "oak" : "maple";
+      if (isFront || isMidWood) specName = rng() < 0.48 ? "oak" : "maple";
       const slot = (rng() * 8) | 0;
       const fr = framesFor(specName, slot, clock.season, c2);
-      const tall = isFront ? (16 + rng() * 12) : (specName === "cedar" ? 15 + rng() * 8 : 13 + rng() * 11);
+      const isMid = cands[ci].front === 2;
+      const tall = isFront ? (8 + rng() * 5) : (isMid ? (7 + rng() * 4) : (specName === "cedar" ? 9 + rng() * 5 : 7 + rng() * 5));
       const wid = tall * (specName === "cedar" ? 0.48 : 0.78) * (0.85 + rng() * 0.3);
       pos.push(w.x, yOf(hm), w.z);
-      scale.push(wid * (isFront ? 2.4 : 2.15), tall * (isFront ? 2.55 : 2.2));
+      scale.push(wid * 1.28, tall * 1.35);
       frame.push(fr.full);
       frameClump.push(fr.clump);
       phase.push(rng());
@@ -2380,6 +2517,76 @@ const MODEL_WASH = {
   haybale: {
     hay: [201, 166, 107],
     twine: [173, 140, 82]
+  },
+  courthouse: {
+    wall: [186, 176, 158],
+    stone: [168, 158, 140],
+    clock: [237, 230, 214],
+    cupola: [176, 166, 148],
+    trim: [214, 204, 184],
+    metal: [130, 122, 112],
+    hand: [42, 33, 24],
+    door: [56, 41, 31],
+    roof: [96, 92, 84]
+  },
+  mill: {
+    wall: [186, 168, 140],
+    roof: [110, 92, 74],
+    metal: [120, 118, 112],
+    wood: [115, 87, 56],
+    door: [59, 43, 33],
+    stone: [148, 138, 118],
+    trim: [214, 204, 184],
+    wheel: [92, 84, 72]
+  },
+  depot: {
+    brick: [148, 96, 84],
+    roof: [96, 88, 78],
+    wall: [186, 168, 145],
+    trim: [219, 209, 189],
+    chimney: [138, 86, 66],
+    door: [59, 43, 33],
+    platform: [158, 148, 128]
+  },
+  monastery: {
+    roof: [110, 92, 74],
+    wall: [214, 204, 186],
+    stone: [168, 158, 140],
+    metal: [130, 122, 112],
+    door: [56, 41, 31],
+    copper: [110, 130, 112],
+    trim: [219, 209, 189]
+  },
+  archabbey: {
+    wall: [214, 206, 190],
+    roof: [110, 92, 74],
+    door: [56, 41, 31],
+    metal: [130, 122, 112],
+    trim: [219, 209, 189],
+    clock: [237, 230, 214],
+    hand: [42, 33, 24],
+    louver: [92, 86, 76]
+  },
+  stadium: {
+    dirt: [168, 140, 96],
+    wall: [176, 168, 152],
+    metal: [120, 118, 112],
+    trim: [219, 209, 189],
+    roof: [96, 88, 78],
+    seat: [148, 86, 74],
+    shadow: [92, 86, 76]
+  },
+  townhall: {
+    chimney: [138, 86, 66],
+    clock: [237, 230, 214],
+    trim: [219, 209, 189],
+    louver: [92, 86, 76],
+    copper: [110, 130, 112],
+    door: [56, 41, 31],
+    wall: [186, 176, 158],
+    roof: [96, 88, 78],
+    hand: [42, 33, 24],
+    stone: [168, 158, 140]
   }
 };
 
@@ -2390,7 +2597,14 @@ function styleLoadedModel(root, kind) {
     farmhouse: [242, 237, 224],
     barn: [156, 56, 43],
     silo: [148, 153, 148],
-    haybale: [201, 166, 107]
+    haybale: [201, 166, 107],
+    courthouse: [186, 176, 158],
+    mill: [186, 168, 140],
+    depot: [186, 168, 145],
+    monastery: [214, 204, 186],
+    archabbey: [214, 206, 190],
+    stadium: [176, 168, 152],
+    townhall: [186, 176, 158]
   }[kind] || hexRgb("#8A7A66");
   root.traverse(function (obj) {
     if (!obj.isMesh) return;
@@ -2413,7 +2627,14 @@ const MODEL_FILES = {
   farmhouse: ["farmhouse.glb", "house.glb"],
   barn: ["bank_barn.glb", "barn.glb", "red-barn.glb"],
   silo: ["grain_silo.glb", "silo.glb"],
-  haybale: ["hay_bale.glb", "haybale.glb", "hay-bale.glb", "hay.glb"]
+  haybale: ["hay_bale.glb", "haybale.glb", "hay-bale.glb", "hay.glb"],
+  courthouse: ["jasper_courthouse.glb"],
+  mill: ["jasper_city_mill.glb"],
+  depot: ["jasper_depot.glb"],
+  monastery: ["ferdinand_monastery.glb"],
+  archabbey: ["saint_meinrad_archabbey.glb"],
+  stadium: ["league_stadium.glb"],
+  townhall: ["huntingburg_town_hall.glb"]
 };
 
 async function tryLoadModel(kind) {
@@ -2583,7 +2804,7 @@ function skinLandmarks() {
 }
 
 async function swapInGltfModels() {
-  const kinds = ["church", "farmhouse", "barn", "silo", "haybale"];
+  const kinds = ["church", "farmhouse", "barn", "silo", "haybale", "mill", "depot"];
   const loaded = {};
   for (let i = 0; i < kinds.length; i++) {
     const scene = await tryLoadModel(kinds[i]);
@@ -2638,6 +2859,7 @@ async function swapInGltfModels() {
       landmarkGroup.add(b);
     }
   }
+  placeFixedLandmarks(loaded);
   skinLandmarks();
   if (glOk && renderer) renderer.render(scene, camera);
 }
@@ -2834,6 +3056,369 @@ function setMoonPos() {
   moonMesh.visible = clock.moonAlt > -4;
 }
 
+
+function farLiftAt(dist) {
+  const t = clamp((dist - 3000) / 7000, 0, 1);
+  const s = t * t * (3 - 2 * t);
+  return 1 + 1.6 * s;
+}
+function terrainYAt(x, z) {
+  const h = heightWorld(x, z);
+  const dist = Math.hypot(x - camera.position.x, z - camera.position.z);
+  return yOf(h) * farLiftAt(dist);
+}
+
+function placeFixedLandmarks(loaded) {
+  if (!landmarkGroup) return;
+  const keys = Object.keys(LANDMARK_SITES);
+  for (let i = 0; i < keys.length; i++) {
+    const site = LANDMARK_SITES[keys[i]];
+    if (!site.place || site.kind === "church") continue;
+    const proto = loaded[site.kind];
+    if (!proto) continue;
+    if (site.px < 0 || site.py < 0 || site.px > COLS - 1 || site.py > ROWS - 1) continue;
+    const w = pxToWorld(site.px, site.py);
+    let hm = heightPx(site.px, site.py);
+    if (coverPx(site.px, site.py) === 0) {
+      let best = hm, found = false;
+      for (let dy = -3; dy <= 3; dy++) {
+        for (let dx = -3; dx <= 3; dx++) {
+          if (coverPx(site.px + dx, site.py + dy) === 0) continue;
+          const h = heightPx(site.px + dx, site.py + dy);
+          if (!found || h > best) { best = h; found = true; }
+        }
+      }
+      if (found) hm = best;
+    }
+    const mesh = proto.clone();
+    mesh.name = site.kind;
+    mesh.position.set(w.x, yOf(hm), w.z);
+    if (site.kind === "mill") {
+      let nx = w.x, nz = w.z, bestD = 1e12;
+      for (let r = 0; r < riverPathPx.length; r++) {
+        const rw = pxToWorld(riverPathPx[r][0], riverPathPx[r][1]);
+        const d = Math.hypot(rw.x - w.x, rw.z - w.z);
+        if (d < bestD) { bestD = d; nx = rw.x; nz = rw.z; }
+      }
+      mesh.rotation.y = Math.atan2(nz - w.z, -(nx - w.x));
+    } else {
+      const heroW = pxToWorld(HERO.px, HERO.py);
+      mesh.rotation.y = Math.atan2(heroW.x - w.x, heroW.z - w.z);
+    }
+    landmarkGroup.add(mesh);
+    LAND[site.kind] = (LAND[site.kind] || 0) + 1;
+  }
+}
+
+const RIDGE_BANDS = [
+  { d0: 200, d1: 700, widthPx: 2.2, color: 0x2A2118 },
+  { d0: 700, d1: 1500, widthPx: 1.6, color: 0x4A4034 },
+  { d0: 1500, d1: 3200, widthPx: 1.2, color: 0x6A6E72 },
+  { d0: 3200, d1: 6500, widthPx: 0.9, color: 0x8A949C },
+  { d0: 6500, d1: 13000, widthPx: 0.65, color: 0xA0A8B0 }
+];
+
+function pixelWorldWidth(px, dist) {
+  const fov = (camera.fov * Math.PI) / 180;
+  const h = renderer.domElement.height || 800;
+  return (px / h) * 2 * Math.tan(fov / 2) * dist;
+}
+
+function layoutRidgeLines() {
+  if (!camera || !heightF32) return;
+  const look = new THREE.Vector3();
+  camera.getWorldDirection(look);
+  const stamp = [
+    camera.position.x.toFixed(1), camera.position.y.toFixed(1), camera.position.z.toFixed(1),
+    look.x.toFixed(3), look.y.toFixed(3), look.z.toFixed(3),
+    camera.fov.toFixed(1), renderer.domElement.width, renderer.domElement.height
+  ].join("|");
+  if (layoutRidgeLines._stamp === stamp && ridgeGroup && ridgeGroup.children.length) return;
+  layoutRidgeLines._stamp = stamp;
+  if (!ridgeGroup) {
+    ridgeGroup = new THREE.Group();
+    ridgeGroup.name = "ridgeLines";
+    scene.add(ridgeGroup);
+  }
+  while (ridgeGroup.children.length) {
+    const ch = ridgeGroup.children[0];
+    ridgeGroup.remove(ch);
+    if (ch.geometry) ch.geometry.dispose();
+    if (ch.material) ch.material.dispose();
+  }
+  const cx = camera.position.x, cy = camera.position.y, cz = camera.position.z;
+  const lookAz = Math.atan2(look.x, look.z);
+  const fov = (camera.fov * Math.PI) / 180;
+  const half = fov * 0.85;
+  const nRay = 220;
+  const bands = RIDGE_BANDS;
+  const crests = bands.map(function () { return []; });
+  const heroH = yOf(heightPx(HERO.px, HERO.py));
+  for (let r = 0; r < nRay; r++) {
+    const az = lookAz + (-half + (2 * half * r) / (nRay - 1));
+    const dx = Math.sin(az), dz = Math.cos(az);
+    let maxEl = -1e9;
+    const best = [];
+    for (let b = 0; b < bands.length; b++) best[b] = null;
+    // Walk near to far; a new skyline (elev angle rising) is a crest candidate.
+    let d = 120;
+    const dMax = 13000;
+    while (d <= dMax) {
+      const x = cx + dx * d, z = cz + dz * d;
+      const p = worldToPx(x, z);
+      if (p.px < 1 || p.py < 1 || p.px > COLS - 2 || p.py > ROWS - 2) {
+        d += Math.max(36, d * 0.045);
+        continue;
+      }
+      const y = terrainYAt(x, z);
+      const el = Math.atan2(y - cy, d);
+      if (el > maxEl + 0.0009) {
+        maxEl = el;
+        for (let b = 0; b < bands.length; b++) {
+          if (d >= bands[b].d0 && d < bands[b].d1) {
+            best[b] = { x: x, y: y + 2.0, z: z, dist: d };
+          }
+        }
+      }
+      d += Math.max(28, d * 0.04);
+    }
+    for (let b = 0; b < bands.length; b++) {
+      if (!best[b]) continue;
+      // Skip band 0: the camera already sits on that ridge, and a line there
+      // cuts the near fields. The front crest is the tree line on the wings.
+      if (b === 0) continue;
+      crests[b].push(best[b]);
+    }
+  }
+  for (let b = 0; b < bands.length; b++) {
+    const pts = crests[b];
+    if (pts.length < 4) continue;
+    const cleaned = [pts[0]];
+    for (let i = 1; i < pts.length; i++) {
+      const pr = cleaned[cleaned.length - 1];
+      const jump = Math.hypot(pts[i].x - pr.x, pts[i].z - pr.z);
+      const yJump = Math.abs(pts[i].y - pr.y);
+      if (jump > 240 || yJump > 80) {
+        if (cleaned.length >= 5) emitRidgeStrip(cleaned, bands[b]);
+        cleaned.length = 0;
+      }
+      cleaned.push(pts[i]);
+    }
+    if (cleaned.length >= 5) emitRidgeStrip(cleaned, bands[b]);
+  }
+}
+
+
+function emitRidgeStrip(pts, band) {
+  const pos = [];
+  const idx = [];
+  const cx = camera.position.x, cy = camera.position.y, cz = camera.position.z;
+  for (let i = 0; i < pts.length; i++) {
+    const p = pts[i];
+    const pr = pts[Math.max(0, i - 1)];
+    const nx = pts[Math.min(pts.length - 1, i + 1)];
+    const tx = nx.x - pr.x, tz = nx.z - pr.z;
+    const vx = p.x - cx, vy = p.y - cy, vz = p.z - cz;
+    // camera-facing sideways
+    let sx = vy * tz - vz * 0, sy = vz * tx - vx * tz, sz = vx * 0 - vy * tx;
+    // fallback to horizontal perp
+    if (Math.hypot(sx, sy, sz) < 1e-6) { sx = -tz; sy = 0; sz = tx; }
+    const sl = Math.hypot(sx, sy, sz) || 1;
+    sx /= sl; sy /= sl; sz /= sl;
+    const half = Math.max(pixelWorldWidth(band.widthPx, p.dist || 400), 0.25) * 0.5;
+    pos.push(p.x - sx * half, p.y - sy * half, p.z - sz * half);
+    pos.push(p.x + sx * half, p.y + sy * half, p.z + sz * half);
+    if (i > 0) {
+      const a = (i - 1) * 2;
+      idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  const mat = new THREE.MeshBasicMaterial({
+    color: band.color,
+    side: THREE.DoubleSide,
+    depthTest: true,
+    depthWrite: false,
+    transparent: false
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.renderOrder = 2;
+  mesh.frustumCulled = false;
+  mesh.name = "ridgeCrest";
+  ridgeGroup.add(mesh);
+}
+
+const RIVER_VERT = /* glsl */`
+varying vec2 vUv;
+uniform float uTanHalf;
+uniform float uScreenH;
+void main(){
+  vUv = uv;
+  vec3 p = position;
+  vec3 toCam = cameraPosition - p;
+  float dist = length(toCam);
+  // Lift slightly toward the camera so a shallow view still sees a ribbon.
+  p += normalize(toCam) * 4.0;
+  p.y += 1.6;
+  gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(p, 1.0);
+}
+`;
+
+const RIVER_FRAG = /* glsl */`
+varying vec2 vUv;
+void main(){
+  vec3 water = vec3(0.36, 0.47, 0.53);
+  vec3 ink = vec3(0.165, 0.129, 0.094);
+  vec3 cream = vec3(0.96, 0.92, 0.80);
+  vec3 col = water;
+  float rip = abs(fract(vUv.x * 36.0 + sin(vUv.y * 9.0) * 0.18) - 0.5);
+  col = mix(col, ink, (1.0 - smoothstep(0.0, 0.07, rip)) * 0.42);
+  float glint = abs(fract(vUv.x * 16.0 + 0.28 + sin(vUv.y * 5.0) * 0.1) - 0.5);
+  float mid = 1.0 - abs(vUv.y - 0.5) * 2.0;
+  col = mix(col, cream, (1.0 - smoothstep(0.0, 0.055, glint)) * 0.40 * mid);
+  float bank = min(vUv.y, 1.0 - vUv.y);
+  col = mix(col, ink, (1.0 - smoothstep(0.0, 0.07, bank)) * 0.55);
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
+
+function densifyRiverPath() {
+  const src = riverPathPx || [];
+  const out = [];
+  for (let i = 0; i < src.length; i++) {
+    const a = pxToWorld(src[i][0], src[i][1]);
+    out.push({ x: a.x, z: a.z });
+    if (i < src.length - 1) {
+      const b = pxToWorld(src[i + 1][0], src[i + 1][1]);
+      const d = Math.hypot(b.x - a.x, b.z - a.z);
+      const n = Math.max(1, Math.ceil(d / 28));
+      for (let k = 1; k < n; k++) {
+        const t = k / n;
+        out.push({ x: a.x + (b.x - a.x) * t, z: a.z + (b.z - a.z) * t });
+      }
+    }
+  }
+  return out;
+}
+
+function layoutRiverRibbon() {
+  if (!riverPathPx.length || !camera) return;
+  const stamp = [
+    camera.position.x.toFixed(1), camera.position.y.toFixed(1), camera.position.z.toFixed(1),
+    camera.fov.toFixed(1), renderer.domElement.width, renderer.domElement.height, riverPathPx.length
+  ].join("|");
+  if (layoutRiverRibbon._stamp === stamp && riverRibbon) return;
+  layoutRiverRibbon._stamp = stamp;
+  const raw = densifyRiverPath();
+  const cx = camera.position.x, cy = camera.position.y, cz = camera.position.z;
+  const look = new THREE.Vector3();
+  camera.getWorldDirection(look);
+  const lx = look.x, lz = look.z;
+  const llen = Math.hypot(lx, lz) || 1;
+  const pts = [];
+  for (let i = 0; i < raw.length; i++) {
+    const p = raw[i];
+    const along = ((p.x - cx) * lx + (p.z - cz) * lz) / llen;
+    const side = (p.x - cx) * (lz / llen) - (p.z - cz) * (lx / llen);
+    if (along < 280 || along > 5200 || Math.abs(side) > 2200) continue;
+    pts.push(p);
+  }
+  if (pts.length < 3) return;
+  const pos = [];
+  const uv = [];
+  const idx = [];
+  const n = pts.length;
+  for (let i = 0; i < n; i++) {
+    const p = pts[i];
+    const pr = pts[Math.max(0, i - 1)];
+    const nx = pts[Math.min(n - 1, i + 1)];
+    let tx = nx.x - pr.x, tz = nx.z - pr.z;
+    const tl = Math.hypot(tx, tz) || 1;
+    tx /= tl; tz /= tl;
+    const sx = -tz, sz = tx;
+    const dist = Math.hypot(p.x - cx, p.z - cz);
+    const half = Math.max(70, pixelWorldWidth(7.0, Math.max(dist, 200)) * 0.5);
+    // Lift well above the carved channel so the ribbon is not buried.
+    const y = terrainYAt(p.x, p.z) + 10.0;
+    pos.push(p.x - sx * half, y, p.z - sz * half);
+    pos.push(p.x + sx * half, y, p.z + sz * half);
+    const u = i / (n - 1);
+    uv.push(u, 0, u, 1);
+    if (i > 0) {
+      const a = (i - 1) * 2;
+      idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  if (!riverRibbon) {
+    const mat = makeRiverMat();
+    mat.depthTest = false;
+    riverRibbon = new THREE.Mesh(geo, mat);
+    riverRibbon.name = "patokaRibbon";
+    riverRibbon.renderOrder = 3;
+    riverRibbon.frustumCulled = false;
+    scene.add(riverRibbon);
+  } else {
+    if (riverRibbon.geometry) riverRibbon.geometry.dispose();
+    riverRibbon.geometry = geo;
+  }
+}
+
+function makeRiverMat() {
+  const cv = document.createElement("canvas");
+  cv.width = 512; cv.height = 64;
+  const ctx = cv.getContext("2d");
+  ctx.fillStyle = "#5C7477";
+  ctx.fillRect(0, 0, 512, 64);
+  ctx.fillStyle = "#6A8286";
+  ctx.fillRect(0, 10, 512, 44);
+  ctx.strokeStyle = "rgba(42,33,24,0.45)";
+  ctx.lineWidth = 1;
+  for (let i = 0; i < 48; i++) {
+    const y = 12 + (i * 9) % 40 + (i % 3);
+    ctx.beginPath();
+    ctx.moveTo(i * 11, y);
+    ctx.bezierCurveTo(i * 11 + 8, y + 2, i * 11 + 16, y - 1, i * 11 + 28, y + 1);
+    ctx.stroke();
+  }
+  ctx.strokeStyle = "rgba(245, 234, 210, 0.55)";
+  ctx.lineWidth = 1.1;
+  for (let i = 0; i < 18; i++) {
+    const y = 22 + (i * 13) % 20;
+    ctx.beginPath();
+    ctx.moveTo(20 + i * 28, y);
+    ctx.lineTo(44 + i * 28, y + 1);
+    ctx.stroke();
+  }
+  ctx.strokeStyle = "rgba(42,33,24,0.7)";
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(0, 1.5); ctx.lineTo(512, 1.5); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, 62.5); ctx.lineTo(512, 62.5); ctx.stroke();
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.NoColorSpace;
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.ClampToEdgeWrapping;
+  tex.repeat.set(8, 1);
+  tex.needsUpdate = true;
+  return new THREE.MeshBasicMaterial({
+    map: tex,
+    side: THREE.DoubleSide,
+    depthTest: true,
+    depthWrite: false,
+    polygonOffset: true,
+    polygonOffsetFactor: -4,
+    polygonOffsetUnits: -4,
+    transparent: false
+  });
+}
+
 function placeCamera() {
   const aim = applyFovAndPitch();
   const sample = pathSample(rig.s);
@@ -2861,7 +3446,15 @@ function placeCamera() {
     z + Math.cos(heading) * look * Math.cos(pitch)
   );
   skyGroup.position.copy(camera.position);
+  if (skyMat && skyMat.uniforms && skyMat.uniforms.uLookAz) {
+    skyMat.uniforms.uLookAz.value = heading;
+  }
+  if (skyMat && skyMat.uniforms && skyMat.uniforms.uRes) {
+    skyMat.uniforms.uRes.value.set(renderer.domElement.width, renderer.domElement.height);
+  }
   setMoonPos();
+  layoutRidgeLines();
+  layoutRiverRibbon();
   if (Math.hypot(x - grassState.cx, z - grassState.cz) > 80) fillGrass(x, z);
   return { x, y, z, heading, pitch, horizon: aim.horizon, ground };
 }
@@ -3259,13 +3852,22 @@ function expose() {
       if (g) { cursor.tx = g.x; cursor.tz = g.z; cursor.ts = 1; cursor.active = true; cursor.x = g.x; cursor.z = g.z; cursor.strength = 1; }
     },
     measure: measureGroundShare,
+    dbg: function () {
+      return {
+        river: !!(riverRibbon),
+        riverVis: !!(riverRibbon && riverRibbon.visible),
+        riverVerts: riverRibbon && riverRibbon.geometry ? riverRibbon.geometry.attributes.position.count : 0,
+        ridges: ridgeGroup ? ridgeGroup.children.length : 0,
+        pathN: (riverPathPx || []).length
+      };
+    },
     stats: function () {
       const f = frameStats();
       f.veg = { trees: VEG.treesPlaced, blades: VEG.blades, clumps: VEG.clumps, lodNear: LOD_NEAR, lodMid: LOD_MID };
-      f.land = { church: LAND.church, farmhouse: LAND.farmhouse, barn: LAND.barn, silo: LAND.silo, hay: LAND.hay, fromGltf: LAND.fromGltf };
+      f.land = { church: LAND.church, farmhouse: LAND.farmhouse, barn: LAND.barn, silo: LAND.silo, hay: LAND.hay, mill: LAND.mill, depot: LAND.depot, fromGltf: LAND.fromGltf };
       return f;
     },
-    state: function () { return { season: clock.season, period: clock.period, wx: wx.kind, at: clock.now, s: rig.s, pathLen: path.len, night: clock.night, alt: clock.alt, reduce: REDUCE, veg: { trees: VEG.treesPlaced, blades: VEG.blades, clumps: VEG.clumps }, land: { church: LAND.church, farmhouse: LAND.farmhouse, barn: LAND.barn, silo: LAND.silo, hay: LAND.hay, fromGltf: LAND.fromGltf } }; },
+    state: function () { return { season: clock.season, period: clock.period, wx: wx.kind, at: clock.now, s: rig.s, pathLen: path.len, night: clock.night, alt: clock.alt, reduce: REDUCE, veg: { trees: VEG.treesPlaced, blades: VEG.blades, clumps: VEG.clumps }, land: { church: LAND.church, farmhouse: LAND.farmhouse, barn: LAND.barn, silo: LAND.silo, hay: LAND.hay, mill: LAND.mill, depot: LAND.depot, fromGltf: LAND.fromGltf } }; },
     _applyWx: function () { applySkin(); },
     hide: function (name, v) {
       const on = v !== false;
