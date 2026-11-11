@@ -28,6 +28,7 @@ const REDUCE = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motio
 const qs = new URLSearchParams(location.search);
 const dbgSky = qs.get("sky");
 const dbgWx = qs.get("wx");
+const dbgStrike = (qs.get("strike") || "").toLowerCase();
 const dbgSeason = qs.get("season");
 const dbgAt = qs.get("at");
 const SHOW_HUD = qs.get("hud") === "1" || qs.get("debug") === "1";
@@ -472,7 +473,7 @@ function carvePatoka() {
   if (!pts.length) return;
   // Carve a gentle trough only. Do not expand cover class 0: that was bleeding
   // water out of the source river mask onto the adjacent fields.
-  const bank = 11.0;
+  const bank = 13.0;
   const best = new Float32Array(ROWS * COLS);
   for (let i = 0; i < best.length; i++) best[i] = 1e9;
   for (let i = 0; i < pts.length - 1; i++) {
@@ -499,7 +500,7 @@ function carvePatoka() {
     const d = Math.sqrt(best[i]);
     const t = 1 - d / bank;
     // Wider, shallower ramp so the cut reads as a hatched slope, not a dark wall.
-    heightF32[i] -= Math.pow(t, 1.55) * 3.0;
+    heightF32[i] -= Math.pow(t, 1.85) * 1.45;
   }
 }
 
@@ -598,6 +599,8 @@ uniform vec3 uField, uWheat, uPlowed, uGrass, uForest, uForestB, uCedar, uWater;
 uniform vec3 uSunDir, uMoonDir, uSkyH, uSkyM, uSkyT;
 uniform float uNight, uTwi, uRising, uSnow, uFog, uRain, uTime, uHatch, uRow, uBend, uSeason;
 uniform float uDawnMist, uMonth, uLightning;
+uniform vec3 uStrikePos;
+uniform float uStrikeAmt, uStrikeRad;
 uniform vec3 uCursor;
 uniform sampler2D uCover;
 uniform sampler2D uHeight;
@@ -847,7 +850,13 @@ void main(){
   fogC = mix(fogC, uNightMul * 0.85, uNight * 0.7);
   col = mix(col, fogC, clamp(fog, 0.0, 0.75));
 
-  col += uLightning * 0.45 * vec3(0.85, 0.9, 1.0);
+  if (uStrikeAmt > 0.001) {
+    float sd = length(vWorld - uStrikePos);
+    float fall = exp(-sd * sd / max(1.0, uStrikeRad * uStrikeRad));
+    float k = min(0.50, uStrikeAmt * fall);
+    vec3 creamLt = vec3(0.965, 0.933, 0.863);
+    col = mix(col, mix(col, creamLt, 0.62), k);
+  }
 
   // Re-assert the river after aerial fade so it stays one unbroken ribbon.
   if (cls < 0.5) {
@@ -1031,10 +1040,12 @@ varying float vFrame;
 varying float vKind;
 varying float vShade;
 varying float vLod;
+varying vec3 vWorld;
 void main(){
   vUv = uv;
   vKind = iKind;
   vec3 iPos = (instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+  vWorld = iPos;
   float dist = length(cameraPosition - iPos);
   float lod = dist < uLodNear ? 0.0 : (dist < uLodMid ? 1.0 : 2.0);
   vLod = lod;
@@ -1091,12 +1102,15 @@ const TREE_FRAG = /* glsl */`
 uniform sampler2D uAtlas;
 uniform vec3 uInkUse, uNightMul;
 uniform float uNight, uLightning;
+uniform vec3 uStrikePos;
+uniform float uStrikeAmt, uStrikeRad;
 uniform vec2 uAtlasGrid;
 varying vec2 vUv;
 varying float vFrame;
 varying float vKind;
 varying float vShade;
 varying float vLod;
+varying vec3 vWorld;
 void main(){
   if (vLod > 1.5) discard;
   float cols = uAtlasGrid.x;
@@ -1114,7 +1128,13 @@ void main(){
   // Dark atlas marks were ink; at night they flip to cream.
   vec3 nightCol = mix(uInkUse * 0.85, nightFill, smoothstep(0.07, 0.32, luma));
   col = mix(col, nightCol, uNight);
-  col += uLightning * 0.3;
+  if (uStrikeAmt > 0.001) {
+    float sd = length(vWorld - uStrikePos);
+    float fall = exp(-sd * sd / max(1.0, uStrikeRad * uStrikeRad));
+    float k = min(0.48, uStrikeAmt * fall);
+    vec3 creamLt = vec3(0.965, 0.933, 0.863);
+    col = mix(col, mix(col, creamLt, 0.58), k);
+  }
   gl_FragColor = vec4(col, s.a);
 }
 `;
@@ -1379,7 +1399,8 @@ const tour = {
   to: null,
   t: 0,
   duration: 1,
-  started: false
+  started: false,
+  manualTravel: false
 };
 
 function targetHorizon() {
@@ -1512,6 +1533,9 @@ function terrainUniforms() {
     uDawnMist: { value: 0 },
     uMonth: { value: 10 },
     uLightning: { value: 0 },
+    uStrikePos: { value: new THREE.Vector3() },
+    uStrikeAmt: { value: 0 },
+    uStrikeRad: { value: 1600 },
     uCursor: { value: new THREE.Vector3() }
   };
 }
@@ -2066,9 +2090,43 @@ void main(){
 const VOL_CLOUD_FRAG = /* glsl */`
 uniform float uSeed, uTime, uKind, uGray, uRain, uReduce, uNight, uDeck, uShaft, uCirrus, uStreak, uTwi, uEdgeFade, uAlphaMul;
 uniform vec3 uInk, uNightMul, uMoonDir, uLook, uSunDir;
+uniform vec3 uStrikePos;
+uniform float uStrikeAmt, uStrikeRad;
 varying vec2 vUv;
 varying vec3 vWorld;
 ${NOISE_GLSL}
+
+float noise21q(vec2 p){
+  vec2 i = floor(p), f = fract(p);
+  f = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
+  return mix(mix(hash21(i), hash21(i + vec2(1.0, 0.0)), f.x),
+             mix(hash21(i + vec2(0.0, 1.0)), hash21(i + vec2(1.0, 1.0)), f.x), f.y);
+}
+float worley2(vec2 p){
+  vec2 i = floor(p), f = fract(p);
+  float md = 1.0;
+  for (int y = -1; y <= 1; y++) {
+    for (int x = -1; x <= 1; x++) {
+      vec2 g = vec2(float(x), float(y));
+      vec2 o = vec2(hash21(i + g), hash21(i + g + vec2(17.0, 9.0)));
+      vec2 r = g + o - f;
+      md = min(md, dot(r, r));
+    }
+  }
+  return sqrt(md);
+}
+float lumpNoise(vec2 p){
+  vec2 w1 = vec2(noise21q(p * 0.31 + vec2(2.1, 7.7)), noise21q(p * 0.31 + vec2(9.3, 1.8)));
+  vec2 w2 = vec2(noise21q(p * 0.85 + vec2(4.4, 0.6)), noise21q(p * 0.85 + vec2(1.2, 8.9)));
+  vec2 q = p + (w1 - 0.5) * 2.6 + (w2 - 0.5) * 1.3;
+  q = vec2(0.866 * q.x - 0.500 * q.y, 0.500 * q.x + 0.866 * q.y);
+  float c = 1.0 - worley2(q * 1.55);
+  float c2 = 1.0 - worley2(q * 2.7 + vec2(3.2, 5.1));
+  float n = c * 0.68 + c2 * 0.22;
+  n += 0.10 * noise21q(q * 3.4 + vec2(8.0, 1.6));
+  return n;
+}
+
 
 float lobe(vec2 p, vec2 c, float r) {
   vec2 d = (p - c) / max(r, 0.02);
@@ -2084,6 +2142,8 @@ void main(){
   float rel = 0.0;
   float hatch = 0.0;
   float rim = 0.0;
+  float lumps = 0.0;
+  float gaps = 0.0;
   vec3 col = vec3(0.0);
   float alpha = 0.0;
 
@@ -2122,13 +2182,13 @@ void main(){
     vec2 q = vWorld.xz * 0.00335;
     vec2 qr = vec2(0.866 * q.x - 0.500 * q.y, 0.500 * q.x + 0.866 * q.y);
     vec2 qs = vec2(0.500 * q.x - 0.866 * q.y, 0.866 * q.x + 0.500 * q.y);
-    float nA = noise21(q + vec2(s, s * 0.37));
-    float nB = noise21(qr * 2.05 + vec2(s + 3.1, s * 0.7));
-    float nC = noise21(qs * 3.9 + vec2(8.2, s));
+    float nA = lumpNoise(q + vec2(s, s * 0.37));
+    float nB = lumpNoise(qr * 1.62 + vec2(s + 3.1, s * 0.7));
+    float nC = lumpNoise(qs * 2.35 + vec2(8.2, s));
     float field = nA * 0.55 + nB * 0.30 + nC * 0.15;
     // Rounded cells with thin paler gaps; contrast falls off toward the ridges.
-    float lumps = smoothstep(0.36, 0.66, field);
-    float gaps = 1.0 - smoothstep(0.30, 0.48, field);
+    lumps = smoothstep(0.36, 0.66, field);
+    gaps = 1.0 - smoothstep(0.30, 0.48, field);
     float relief = mix(0.28, 1.0, up);
     float rollDark = lumps * relief;
     wash = mix(wash, pale, gaps * 0.62 * mix(0.35, 1.0, up));
@@ -2289,6 +2349,19 @@ void main(){
       col = mix(col, mix(uInk * 0.55, vec3(0.16, 0.20, 0.30), 0.45), shaftN * 0.5 * uNight);
     }
   }
+  if (uStrikeAmt > 0.001) {
+    float sd = length(vWorld.xz - uStrikePos.xz);
+    float near = exp(-sd * sd / max(1.0, uStrikeRad * uStrikeRad));
+    float k = min(0.62, uStrikeAmt * near);
+    vec3 creamLt = vec3(0.965, 0.933, 0.863);
+    if (uDeck > 0.5) {
+      col = mix(col, mix(col, creamLt, 0.58), k * (0.32 + 0.68 * lumps));
+      col = mix(col, creamLt, k * gaps * 0.34);
+      col = mix(col, mix(col, creamLt, 0.42), k * hatch * 0.50);
+    } else {
+      col = mix(col, mix(col, creamLt, 0.45), k * 0.50);
+    }
+  }
   alpha *= uAlphaMul;
   if (alpha < 0.06) discard;
   gl_FragColor = vec4(col, alpha);
@@ -2328,7 +2401,10 @@ function makeVolCloudMat(kind, seed, gray) {
       uEdgeFade: { value: 1 },
       uAlphaMul: { value: 1 },
       uLook: { value: new THREE.Vector3(0, 0, 1) },
-      uSunDir: { value: new THREE.Vector3(0.3, 0.8, 0.2) }
+      uSunDir: { value: new THREE.Vector3(0.3, 0.8, 0.2) },
+      uStrikePos: { value: new THREE.Vector3() },
+      uStrikeAmt: { value: 0 },
+      uStrikeRad: { value: 1600 }
     },
     vertexShader: VOL_CLOUD_VERT,
     fragmentShader: VOL_CLOUD_FRAG,
@@ -3553,6 +3629,9 @@ function scatterTrees() {
       uNightMul: { value: colU(NIGHT_MUL) },
       uNight: { value: 0 },
       uLightning: { value: 0 },
+      uStrikePos: { value: new THREE.Vector3() },
+      uStrikeAmt: { value: 0 },
+      uStrikeRad: { value: 1600 },
       uLodNear: { value: LOD_NEAR },
       uLodMid: { value: LOD_MID },
       uCrownCap: { value: 0.16 }
@@ -5364,7 +5443,10 @@ function layoutRiverRibbon() {
       uniforms: {
         uNight: { value: 0 },
         uInk: { value: new THREE.Color(0x2A2118) },
-        uNightMul: { value: colU(NIGHT_MUL) }
+        uNightMul: { value: colU(NIGHT_MUL) },
+        uStrikePos: { value: new THREE.Vector3() },
+        uStrikeAmt: { value: 0 },
+        uStrikeRad: { value: 1600 }
       },
       vertexShader: /* glsl */`varying vec2 vUv; varying vec3 vN; varying vec3 vW;
         void main(){ vUv = uv; vN = normalize(normalMatrix * normal);
@@ -5373,21 +5455,29 @@ function layoutRiverRibbon() {
       fragmentShader: /* glsl */`
         uniform float uNight;
         uniform vec3 uInk, uNightMul;
+        uniform vec3 uStrikePos;
+        uniform float uStrikeAmt, uStrikeRad;
         varying vec2 vUv; varying vec3 vN; varying vec3 vW;
         float hash21(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
         void main(){
           vec3 ink = uInk;
-          vec3 bank = vec3(0.66, 0.58, 0.42);
+          vec3 bank = vec3(0.76, 0.70, 0.56);
           vec3 col = bank;
           float sl = abs(fract((vW.x * 0.07 + vW.z * 0.02) * 3.4 + vUv.y * 1.2) - 0.5);
-          float hatch = (1.0 - smoothstep(0.0, 0.16, sl)) * (0.35 + 0.45 * (1.0 - vUv.y));
-          hatch *= step(0.18, hash21(floor(vec2(vUv.x * 36.0, vUv.y * 7.0))));
-          col = mix(col, ink, hatch * 0.32);
-          float shore = 1.0 - smoothstep(0.0, 0.18, 1.0 - vUv.y);
-          col = mix(col, ink, shore * 0.22);
+          float hatch = (1.0 - smoothstep(0.0, 0.18, sl)) * (0.22 + 0.28 * (1.0 - vUv.y));
+          hatch *= step(0.22, hash21(floor(vec2(vUv.x * 36.0, vUv.y * 7.0))));
+          col = mix(col, ink, hatch * 0.16);
+          float shore = 1.0 - smoothstep(0.0, 0.22, 1.0 - vUv.y);
+          col = mix(col, ink, shore * 0.10);
           vec3 nightCol = mix(col * uNightMul * 0.4, vec3(0.035, 0.048, 0.09), 0.5);
           nightCol = mix(nightCol, ink, 0.25 + hatch * 0.55 + shore * 0.7);
           col = mix(col, nightCol, uNight);
+          if (uStrikeAmt > 0.001) {
+            float sd = length(vW - uStrikePos);
+            float fall = exp(-sd * sd / max(1.0, uStrikeRad * uStrikeRad));
+            float k = min(0.48, uStrikeAmt * fall);
+            col = mix(col, mix(col, vec3(0.965, 0.933, 0.863), 0.58), k);
+          }
           gl_FragColor = vec4(col, 1.0);
         }`,
       side: THREE.DoubleSide,
@@ -5418,7 +5508,10 @@ function makeRiverMat() {
       uTrees: { value: new THREE.Color(0xA87440) },
       uNightMul: { value: colU(NIGHT_MUL) },
       uMoonDir: { value: new THREE.Vector3(0.2, 0.5, 0.4) },
-      uRain: { value: 0 }
+      uRain: { value: 0 },
+      uStrikePos: { value: new THREE.Vector3() },
+      uStrikeAmt: { value: 0 },
+      uStrikeRad: { value: 1600 }
     },
     vertexShader: /* glsl */`
       varying vec2 vUv; varying vec3 vW; varying vec3 vN;
@@ -5435,7 +5528,8 @@ function makeRiverMat() {
     `,
     fragmentShader: /* glsl */`
       uniform float uTime, uWind, uReduce, uNight, uRain;
-      uniform vec3 uWater, uInk, uHor, uTop, uTrees, uNightMul, uMoonDir;
+      uniform float uStrikeAmt, uStrikeRad;
+      uniform vec3 uWater, uInk, uHor, uTop, uTrees, uNightMul, uMoonDir, uStrikePos;
       varying vec2 vUv; varying vec3 vW;
       float hash21(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
       void main(){
@@ -5458,7 +5552,11 @@ function makeRiverMat() {
         col = mix(col, uHor, (1.0 - smoothstep(0.0, 0.05, glint)) * 0.48 * mid);
         // Inked shoreline at the water edge.
         float bank = min(vUv.y, 1.0 - vUv.y);
-        col = mix(col, uInk, (1.0 - smoothstep(0.0, 0.07, bank)) * 0.45);
+        col = mix(col, uInk, (1.0 - smoothstep(0.0, 0.08, bank)) * 0.16);
+        col = mix(col, uHor, 0.18);
+        float distR = length(vW.xz - cameraPosition.xz);
+        float farW = smoothstep(160.0, 820.0, distR);
+        col = mix(col, mix(uHor, uWater, 0.22), farW * 0.70);
         vec3 nightCol = vec3(0.035, 0.045, 0.07);
         nightCol = mix(nightCol, uInk, (1.0 - smoothstep(0.0, 0.07, bank)) * 0.55);
         vec3 Rm = reflect(-V, vec3(0.0, 1.0, 0.0));
@@ -5477,6 +5575,12 @@ function makeRiverMat() {
           float ring = 1.0 - smoothstep(0.0, 1.4, abs(length(vW.xz - ctr) - rad * 12.0));
           ring *= (1.0 - rad) * step(0.58, id);
           col = mix(col, mix(uInk, vec3(0.18, 0.16, 0.14), uNight), ring * 0.45 * uRain);
+        }
+        if (uStrikeAmt > 0.001) {
+          float sd = length(vW - uStrikePos);
+          float fall = exp(-sd * sd / max(1.0, uStrikeRad * uStrikeRad));
+          float k = min(0.50, uStrikeAmt * fall);
+          col = mix(col, mix(col, vec3(0.965, 0.933, 0.863), 0.62), k);
         }
         gl_FragColor = vec4(col, 1.0);
       }
@@ -5799,21 +5903,631 @@ function stepCursor(dt) {
   cursor.strength = clamp(cursor.strength, 0, 1.4);
 }
 
-let strike = null, nextStrike = 0;
-function stepLightning(now) {
-  if (REDUCE || wx.kind !== "storm") { state.lightning = 0; return 0; }
-  if (!nextStrike) nextStrike = now + 1400;
-  if (!strike && now > nextStrike) {
-    strike = { t: now, x: 0.2 + Math.random() * 0.6, y: 0.08 + Math.random() * 0.18 };
-    nextStrike = now + 3200 + Math.random() * 5000;
-  }
-  if (!strike) { state.lightning = 0; return 0; }
-  const e = (now - strike.t) / 1000;
-  let v = e < 0.05 ? e / 0.05 : Math.exp(-(e - 0.05) * 11);
-  if (e > 0.6) { strike = null; v = 0; }
-  state.lightning = v;
-  return v;
+let boltGroup = null, boltCoreMesh = null, boltGlowMesh = null;
+const strike = {
+  nextAt: 0,
+  t0: 0,
+  amt: 0,
+  flashes: 0,
+  nFlashes: 0,
+  flashTimes: [],
+  inPeak: false,
+  kind: "bolt",
+  seed: 91771,
+  pos: { x: 0, y: 0, z: 0 },
+  rad: 1600,
+  forced: false,
+  holdPhase: null,
+  path: null,
+  visible: false
+};
+
+function lightningFlashCapOk(now, times) {
+  const list = times || strike.flashTimes;
+  while (list.length && now - list[0] > 1000) list.shift();
+  return list.length < 3;
 }
+
+function recordLightningFlash(now) {
+  strike.flashTimes.push(now);
+  while (strike.flashTimes.length && now - strike.flashTimes[0] > 1000) strike.flashTimes.shift();
+}
+
+function flashEnvelope(age, nFlashes) {
+  const n = Math.max(1, Math.min(3, nFlashes || 2));
+  const peaks = n >= 3 ? [0.0, 0.13, 0.26] : (n === 2 ? [0.0, 0.14] : [0.0]);
+  const amps = [1.0, 0.70, 0.42];
+  const half = 0.018;
+  let v = 0;
+  let peakIdx = -1;
+  for (let i = 0; i < peaks.length; i++) {
+    const d = Math.abs(age - peaks[i]);
+    if (d < half * 1.6) {
+      const a = amps[i] * Math.max(0, 1 - d / (half * 1.5));
+      if (a > v) {
+        v = a;
+        peakIdx = i;
+      }
+    }
+  }
+  if (age > 0 && age < 0.42) v = Math.max(v, Math.exp(-age * 7.0) * 0.12);
+  if (age >= 0.42) v = 0;
+  return { amt: Math.min(0.72, v), flashing: v > 0.35, peakIdx: peakIdx };
+}
+
+const BOLT_VERT = /* glsl */`
+attribute vec3 aNext;
+attribute float aSide;
+attribute float aWidthPx;
+attribute float aAlpha;
+uniform vec2 uRes;
+varying float vAlpha;
+void main(){
+  vAlpha = aAlpha;
+  vec4 c0 = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  vec4 c1 = projectionMatrix * modelViewMatrix * vec4(aNext, 1.0);
+  vec2 s0 = c0.xy / max(1e-4, c0.w);
+  vec2 s1 = c1.xy / max(1e-4, c1.w);
+  vec2 dir = s1 - s0;
+  float len = length(dir);
+  if (len < 1e-5) dir = vec2(1.0, 0.0);
+  else dir /= len;
+  vec2 perp = vec2(-dir.y, dir.x);
+  c0.xy += perp * (aWidthPx * 0.5 * aSide) * c0.w * vec2(2.0 / max(1.0, uRes.x), 2.0 / max(1.0, uRes.y));
+  gl_Position = c0;
+}
+`;
+const BOLT_FRAG = /* glsl */`
+uniform vec3 uColor;
+uniform float uOpacity;
+uniform float uAmt;
+varying float vAlpha;
+void main(){
+  float a = uOpacity * uAmt * vAlpha;
+  if (a < 0.01) discard;
+  gl_FragColor = vec4(uColor, a);
+}
+`;
+
+function makeBoltMat(color, opacity) {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      uColor: { value: new THREE.Color(color) },
+      uOpacity: { value: opacity },
+      uAmt: { value: 0 },
+      uRes: { value: new THREE.Vector2(1280, 800) }
+    },
+    vertexShader: BOLT_VERT,
+    fragmentShader: BOLT_FRAG,
+    transparent: true,
+    depthTest: true,
+    depthWrite: false,
+    blending: THREE.NormalBlending,
+    side: THREE.DoubleSide
+  });
+}
+
+function ensureBoltGroup() {
+  if (boltGroup || !scene) return;
+  boltGlowMesh = new THREE.Mesh(new THREE.BufferGeometry(), makeBoltMat(0xDDE6F0, 0.40));
+  boltCoreMesh = new THREE.Mesh(new THREE.BufferGeometry(), makeBoltMat(0xF6EEDC, 1.0));
+  boltGlowMesh.frustumCulled = false;
+  boltCoreMesh.frustumCulled = false;
+  boltGlowMesh.renderOrder = 8;
+  boltCoreMesh.renderOrder = 9;
+  boltGroup = new THREE.Group();
+  boltGroup.name = "lightningBolt";
+  boltGroup.add(boltGlowMesh);
+  boltGroup.add(boltCoreMesh);
+  boltGroup.visible = false;
+  scene.add(boltGroup);
+}
+
+function hideBoltMesh() {
+  if (boltGroup) boltGroup.visible = false;
+  if (boltCoreMesh && boltCoreMesh.material && boltCoreMesh.material.uniforms) {
+    boltCoreMesh.material.uniforms.uAmt.value = 0;
+  }
+  if (boltGlowMesh && boltGlowMesh.material && boltGlowMesh.material.uniforms) {
+    boltGlowMesh.material.uniforms.uAmt.value = 0;
+  }
+}
+
+function setBoltAmt(amt) {
+  if (!boltGroup) return;
+  const on = amt > 0.02 && strike.visible;
+  boltGroup.visible = on;
+  if (boltCoreMesh && boltCoreMesh.material && boltCoreMesh.material.uniforms) {
+    boltCoreMesh.material.uniforms.uAmt.value = amt;
+    const w = canvas ? canvas.clientWidth : 1280;
+    const h = canvas ? canvas.clientHeight : 800;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    boltCoreMesh.material.uniforms.uRes.value.set(w * dpr, h * dpr);
+  }
+  if (boltGlowMesh && boltGlowMesh.material && boltGlowMesh.material.uniforms) {
+    boltGlowMesh.material.uniforms.uAmt.value = amt;
+    const w = canvas ? canvas.clientWidth : 1280;
+    const h = canvas ? canvas.clientHeight : 800;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    boltGlowMesh.material.uniforms.uRes.value.set(w * dpr, h * dpr);
+  }
+}
+
+function polylineToRibbon(pts, widthStart, widthEnd, branch, seed) {
+  const n = (pts.length / 3) | 0;
+  if (n < 2) return null;
+  const rng = mulberry(seed);
+  const pos = [], next = [], side = [], width = [], alpha = [], idx = [];
+  for (let i = 0; i < n; i++) {
+    const i1 = Math.min(n - 1, i + 1);
+    const t = i / (n - 1);
+    const w = widthStart + (widthEnd - widthStart) * t;
+    let a = 1;
+    if (t > 0.10 && t < 0.88 && rng() < 0.08) a = 0;
+    if (branch && t > 0.12 && t < 0.90 && rng() < 0.06) a = 0;
+    if (!branch && t < 0.08) a = 0;
+    const px = pts[i * 3], py = pts[i * 3 + 1], pz = pts[i * 3 + 2];
+    const qx = pts[i1 * 3], qy = pts[i1 * 3 + 1], qz = pts[i1 * 3 + 2];
+    pos.push(px, py, pz, px, py, pz);
+    next.push(qx, qy, qz, qx, qy, qz);
+    side.push(-1, 1);
+    width.push(w, w);
+    alpha.push(a, a);
+  }
+  for (let i = 0; i < n - 1; i++) {
+    const a = i * 2, b = i * 2 + 1, c = (i + 1) * 2, d = (i + 1) * 2 + 1;
+    idx.push(a, b, c, b, d, c);
+  }
+  return { pos: pos, next: next, side: side, width: width, alpha: alpha, idx: idx };
+}
+
+function mergeRibbons(parts) {
+  const pos = [], next = [], side = [], width = [], alpha = [], idx = [];
+  let base = 0;
+  for (let p = 0; p < parts.length; p++) {
+    const r = parts[p];
+    if (!r) continue;
+    for (let i = 0; i < r.pos.length; i++) pos.push(r.pos[i]);
+    for (let i = 0; i < r.next.length; i++) next.push(r.next[i]);
+    for (let i = 0; i < r.side.length; i++) side.push(r.side[i]);
+    for (let i = 0; i < r.width.length; i++) width.push(r.width[i]);
+    for (let i = 0; i < r.alpha.length; i++) alpha.push(r.alpha[i]);
+    for (let i = 0; i < r.idx.length; i++) idx.push(r.idx[i] + base);
+    base += (r.pos.length / 3) | 0;
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute("aNext", new THREE.Float32BufferAttribute(next, 3));
+  geo.setAttribute("aSide", new THREE.Float32BufferAttribute(side, 1));
+  geo.setAttribute("aWidthPx", new THREE.Float32BufferAttribute(width, 1));
+  geo.setAttribute("aAlpha", new THREE.Float32BufferAttribute(alpha, 1));
+  geo.setIndex(idx);
+  return geo;
+}
+
+function midpointDisplace(ax, ay, az, bx, by, bz, depth, spread, rng, out) {
+  if (depth <= 0) {
+    out.push(ax, ay, az);
+    return;
+  }
+  const mx = (ax + bx) * 0.5, my = (ay + by) * 0.5, mz = (az + bz) * 0.5;
+  const dx = bx - ax, dy = by - ay, dz = bz - az;
+  const len = Math.hypot(dx, dy, dz) || 1;
+  const px = -dz / len, pz = dx / len;
+  const jag = (rng() * 2 - 1) * spread * len;
+  const jy = (rng() * 2 - 1) * spread * len * 0.28;
+  const x = mx + px * jag;
+  const y = my + jy;
+  const z = mz + pz * jag;
+  midpointDisplace(ax, ay, az, x, y, z, depth - 1, spread * 0.52, rng, out);
+  midpointDisplace(x, y, z, bx, by, bz, depth - 1, spread * 0.52, rng, out);
+}
+
+function pickStrikeTarget(rng) {
+  if (!camera) return null;
+  const look = new THREE.Vector3();
+  camera.getWorldDirection(look);
+  look.y = 0;
+  if (look.lengthSq() < 1e-8) look.set(0, 0, 1);
+  look.normalize();
+  const cx = camera.position.x, cz = camera.position.z;
+  const baseAz = Math.atan2(look.x, look.z);
+  let best = null, bestScore = -1e9;
+  for (let k = 0; k < 56; k++) {
+    const dist = 480 + rng() * 2100;
+    const az = baseAz + (rng() - 0.5) * 1.15;
+    const x = cx + Math.sin(az) * dist;
+    const z = cz + Math.cos(az) * dist;
+    const p = worldToPx(x, z);
+    if (p.px < 6 || p.py < 6 || p.px > COLS - 7 || p.py > ROWS - 7) continue;
+    const cov = coverWorld(x, z);
+    if (cov === 0) continue;
+    const h = heightWorld(x, z);
+    let peak = 0;
+    for (let d = 0; d < 4; d++) {
+      const ox = x + Math.cos(d * 1.5708) * 90;
+      const oz = z + Math.sin(d * 1.5708) * 90;
+      peak += Math.max(0, h - heightWorld(ox, oz));
+    }
+    const forest = (cov === 4 || cov === 5) ? 1 : 0;
+    const score = forest * 8 + peak * 0.45 + rng() * 2 - Math.abs(az - baseAz) * 2.2;
+    if (score > bestScore) {
+      bestScore = score;
+      const y = yOf(h) + (forest ? 16 : 2);
+      best = { x: x, y: y, z: z, forest: forest };
+    }
+  }
+  return best;
+}
+
+function cloudBaseWorldY(x, z) {
+  const a = (typeof cloudAnchor === "function") ? cloudAnchor() : { x: x, z: z };
+  const ground = yOf(heightWorld(a.x, a.z));
+  return ground + cloudBaseM();
+}
+
+function buildBoltPath(seed, start, end) {
+  const rng = mulberry(seed);
+  const main = [];
+  midpointDisplace(start.x, start.y, start.z, end.x, end.y, end.z, 5, 0.22, rng, main);
+  main.push(end.x, end.y, end.z);
+  const nPts = (main.length / 3) | 0;
+  const nBr = 2 + ((rng() * 3) | 0);
+  const branches = [];
+  for (let b = 0; b < nBr; b++) {
+    const i = 2 + ((rng() * Math.max(1, nPts - 6)) | 0);
+    const sx = main[i * 3], sy = main[i * 3 + 1], sz = main[i * 3 + 2];
+    const len = 80 + rng() * 180;
+    const ang = Math.atan2(end.x - start.x, end.z - start.z) + (rng() - 0.5) * 1.4;
+    const dip = 0.35 + rng() * 0.5;
+    let ex = sx + Math.sin(ang) * len;
+    let ez = sz + Math.cos(ang) * len;
+    let ey = sy - Math.abs(len * dip);
+    const gy = yOf(heightWorld(ex, ez)) + 2;
+    if (ey < gy) ey = gy;
+    const br = [];
+    midpointDisplace(sx, sy, sz, ex, ey, ez, 3, 0.2, rng, br);
+    br.push(ex, ey, ez);
+    branches.push(br);
+  }
+  return { main: main, branches: branches, start: start, end: end, seed: seed };
+}
+
+function layoutBoltMesh(path) {
+  if (!path) {
+    hideBoltMesh();
+    return;
+  }
+  ensureBoltGroup();
+  const coreParts = [polylineToRibbon(path.main, 2.6, 1.0, false, path.seed)];
+  const glowParts = [polylineToRibbon(path.main, 2.6 * 3.6, 1.0 * 3.6, false, path.seed + 1)];
+  for (let i = 0; i < path.branches.length; i++) {
+    coreParts.push(polylineToRibbon(path.branches[i], 1.0, 0.15, true, path.seed + 17 + i));
+    glowParts.push(polylineToRibbon(path.branches[i], 3.4, 0.4, true, path.seed + 31 + i));
+  }
+  if (boltCoreMesh.geometry) boltCoreMesh.geometry.dispose();
+  if (boltGlowMesh.geometry) boltGlowMesh.geometry.dispose();
+  boltCoreMesh.geometry = mergeRibbons(coreParts);
+  boltGlowMesh.geometry = mergeRibbons(glowParts);
+  boltGroup.visible = true;
+}
+
+function beginStrikeEvent(now, kind, seed) {
+  const useSeed = (seed != null) ? seed : (((now * 1000) | 0) ^ 0x9e3779b9);
+  const rng = mulberry(useSeed);
+  const pick = kind || (rng() < 0.62 ? "cloud" : "bolt");
+  const end = pickStrikeTarget(rng);
+  if (!end) return false;
+  const baseY = cloudBaseWorldY(end.x, end.z);
+  const start = {
+    x: end.x + (rng() - 0.5) * 180,
+    y: baseY + 40 + rng() * 80,
+    z: end.z + (rng() - 0.5) * 180
+  };
+  strike.t0 = now;
+  strike.kind = pick;
+  strike.seed = useSeed;
+  strike.pos = { x: (start.x + end.x) * 0.5, y: (start.y + end.y) * 0.45, z: (start.z + end.z) * 0.5 };
+  strike.rad = pick === "cloud" ? 2200 : 1600;
+  strike.nFlashes = 2 + ((rng() * 2) | 0);
+  strike.flashes = 0;
+  strike.inPeak = false;
+  strike.path = pick === "bolt" ? buildBoltPath(useSeed, start, end) : null;
+  strike.visible = pick === "bolt";
+  if (pick === "bolt") layoutBoltMesh(strike.path);
+  else hideBoltMesh();
+  return true;
+}
+
+function applyStrikeEnvelope(now, age) {
+  const env = flashEnvelope(age, strike.nFlashes);
+  if (env.flashing && !strike.inPeak) {
+    if (!lightningFlashCapOk(now)) {
+      env.amt = Math.min(env.amt, 0.08);
+    } else {
+      recordLightningFlash(now);
+      strike.flashes += 1;
+    }
+    strike.inPeak = true;
+  }
+  if (!env.flashing) strike.inPeak = false;
+  strike.amt = env.amt;
+  state.lightning = env.amt;
+  if (strike.visible) setBoltAmt(env.amt);
+  else hideBoltMesh();
+  return env.amt;
+}
+
+function stepLightning(now) {
+  if (REDUCE || wx.kind !== "storm") {
+    strike.amt = 0;
+    state.lightning = 0;
+    hideBoltMesh();
+    if (wx.kind !== "storm") {
+      strike.nextAt = 0;
+      strike.t0 = 0;
+      strike.forced = false;
+    }
+    return 0;
+  }
+  if (strike.forced) {
+    const phase = strike.holdPhase != null ? strike.holdPhase : 0;
+    const env = flashEnvelope(phase, strike.nFlashes || 2);
+    strike.amt = env.amt;
+    state.lightning = env.amt;
+    if (strike.visible) setBoltAmt(env.amt);
+    else hideBoltMesh();
+    return env.amt;
+  }
+  if (strike.t0 && now - strike.t0 < 450) {
+    return applyStrikeEnvelope(now, (now - strike.t0) / 1000);
+  }
+  if (strike.t0 && now - strike.t0 >= 450) {
+    strike.t0 = 0;
+    strike.amt = 0;
+    state.lightning = 0;
+    hideBoltMesh();
+  }
+  if (!strike.nextAt) strike.nextAt = now + 8000 + Math.random() * 22000;
+  if (now >= strike.nextAt) {
+    if (!lightningFlashCapOk(now)) {
+      strike.nextAt = now + 800;
+      return 0;
+    }
+    if (beginStrikeEvent(now)) {
+      strike.nextAt = now + 8000 + Math.random() * 22000;
+      return applyStrikeEnvelope(now, 0);
+    }
+    strike.nextAt = now + 2000;
+  }
+  strike.amt = 0;
+  state.lightning = 0;
+  hideBoltMesh();
+  return 0;
+}
+
+function forceStrike(kind, phase) {
+  if (REDUCE) {
+    strike.amt = 0;
+    state.lightning = 0;
+    hideBoltMesh();
+    strike.forced = false;
+    return { ok: false, reduce: true };
+  }
+  const k = kind === "cloud" ? "cloud" : "bolt";
+  const phaseT = (typeof phase === "number") ? phase : 0;
+  const ok = beginStrikeEvent(performance.now(), k, 91771);
+  strike.forced = true;
+  strike.holdPhase = phaseT;
+  if (!ok) {
+    strike.amt = 0;
+    state.lightning = 0;
+    return { ok: false };
+  }
+  const env = flashEnvelope(phaseT, strike.nFlashes || 2);
+  strike.amt = env.amt;
+  state.lightning = env.amt;
+  if (strike.visible) setBoltAmt(env.amt);
+  else hideBoltMesh();
+  return { ok: true, kind: k, phase: phaseT, amt: env.amt, pos: strike.pos };
+}
+
+function testLightningCap() {
+  const times = [];
+  function tryFlash(t) {
+    while (times.length && t - times[0] > 1000) times.shift();
+    if (times.length >= 3) return false;
+    times.push(t);
+    return true;
+  }
+  const a = tryFlash(0), b = tryFlash(130), c = tryFlash(260), d = tryFlash(400);
+  const e = tryFlash(1100);
+  return { firstThree: !!(a && b && c), fourthBlocked: !d, afterWindow: !!e, ok: !!(a && b && c && !d && e) };
+}
+
+
+const LANDMARK_LABELS = {
+  church: "St. Joseph Church",
+  mill: "City Mill",
+  depot: "Depot",
+  farmstead: "Farmstead",
+  river: "Patoka"
+};
+
+let landmarkBtn = null;
+let landmarkNameWrap = null;
+let landmarkShown = "";
+
+function stopLabel(stop) {
+  if (!stop) return "Patoka";
+  return LANDMARK_LABELS[stop.name] || stop.name || "Patoka";
+}
+
+function projectLandmark(stop) {
+  if (!camera || !stop) return null;
+  const w = pxToWorld(stop.px, stop.py);
+  const y = yOf(heightWorld(w.x, w.z)) + (stop.heightM || 14);
+  const v = new THREE.Vector3(w.x, y, w.z);
+  v.project(camera);
+  const inView = v.z < 1 && v.z > -1 && Math.abs(v.x) < 0.92 && Math.abs(v.y) < 0.92;
+  return { ndcX: v.x, ndcY: v.y, ndcZ: v.z, inView: inView };
+}
+
+function mostCenteredLandmarkIndex() {
+  const stops = getTourStops();
+  let best = -1, bestScore = 1e9;
+  for (let i = 0; i < stops.length; i++) {
+    const p = projectLandmark(stops[i]);
+    if (!p || !p.inView) continue;
+    const score = Math.hypot(p.ndcX, p.ndcY);
+    if (score < bestScore) {
+      bestScore = score;
+      best = i;
+    }
+  }
+  return best;
+}
+
+function displayedLandmarkIndex() {
+  const stops = getTourStops();
+  if (!stops.length) return 0;
+  if (tour.manualTravel || (tour.enabled && !tour.paused && tour.phase === "travel")) {
+    return ((tour.stop % stops.length) + stops.length) % stops.length;
+  }
+  if (tour.enabled && !tour.paused && tour.phase === "hold") {
+    return ((tour.stop % stops.length) + stops.length) % stops.length;
+  }
+  const c = mostCenteredLandmarkIndex();
+  if (c >= 0) return c;
+  return targetLandmarkIndex();
+}
+
+function targetLandmarkIndex() {
+  const stops = getTourStops();
+  if (!stops.length) return 0;
+  const c = mostCenteredLandmarkIndex();
+  if (c >= 0) return (c + 1) % stops.length;
+  return (tour.stop + 1) % stops.length;
+}
+
+function setLandmarkLabel(text, instant) {
+  if (!landmarkNameWrap) return;
+  const reduce = REDUCE || instant || (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  if (text === landmarkShown) return;
+  const prev = landmarkShown;
+  landmarkShown = text;
+  const cur = landmarkNameWrap.querySelector(".lm-name.is-current");
+  if (!cur) {
+    const span = document.createElement("span");
+    span.className = "lm-name is-current";
+    span.textContent = text;
+    landmarkNameWrap.appendChild(span);
+    return;
+  }
+  if (reduce || !prev) {
+    cur.textContent = text;
+    cur.className = "lm-name is-current";
+    const extras = landmarkNameWrap.querySelectorAll(".lm-name:not(.is-current)");
+    for (let i = 0; i < extras.length; i++) extras[i].remove();
+    return;
+  }
+  cur.classList.remove("is-current");
+  cur.classList.add("is-out");
+  const incoming = document.createElement("span");
+  incoming.className = "lm-name is-current";
+  incoming.textContent = text;
+  landmarkNameWrap.appendChild(incoming);
+  setTimeout(function () {
+    if (cur.parentNode) cur.parentNode.removeChild(cur);
+  }, 320);
+}
+
+function updateLandmarkButton() {
+  if (!landmarkBtn) return;
+  const stops = getTourStops();
+  if (!stops.length) return;
+  const shown = displayedLandmarkIndex();
+  const next = targetLandmarkIndex();
+  setLandmarkLabel(stopLabel(stops[shown]), false);
+  landmarkBtn.setAttribute("aria-label", "Next landmark: " + stopLabel(stops[next]));
+  const moving = !!(tour.manualTravel || (tour.enabled && !tour.paused && tour.phase === "travel"));
+  landmarkBtn.classList.toggle("is-moving", moving);
+}
+
+function goToLandmark(index) {
+  const stops = getTourStops();
+  if (!stops.length) return;
+  const i = ((index % stops.length) + stops.length) % stops.length;
+  tour.stop = i;
+  tour.lastInput = performance.now();
+  tour.paused = true;
+  if (REDUCE) {
+    applyTourCam(tourCameraAt(stops[i]));
+    tour.phase = "hold";
+    tour.manualTravel = false;
+    setLandmarkLabel(stopLabel(stops[i]), true);
+    if (glOk) renderer.render(scene, camera);
+    updateLandmarkButton();
+    return;
+  }
+  beginTourLeg(currentTourCam(), stops[i]);
+  tour.manualTravel = true;
+  tour.paused = true;
+  setLandmarkLabel(stopLabel(stops[i]), false);
+  updateLandmarkButton();
+}
+
+function onLandmarkButton(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  goToLandmark(targetLandmarkIndex());
+}
+
+function bindLandmarkButton() {
+  landmarkBtn = document.getElementById("landmark-btn");
+  if (!landmarkBtn) return;
+  landmarkNameWrap = landmarkBtn.querySelector(".lm-names");
+  landmarkBtn.addEventListener("pointerdown", function (e) { e.stopPropagation(); });
+  landmarkBtn.addEventListener("click", onLandmarkButton);
+  landmarkBtn.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onLandmarkButton(e);
+    }
+  });
+  const stops = getTourStops();
+  if (stops.length) {
+    landmarkShown = "";
+    setLandmarkLabel(stopLabel(stops[displayedLandmarkIndex()]), true);
+  }
+  updateLandmarkButton();
+}
+
+function advanceTourLeg(dt, now) {
+  tour.t += dt;
+  const u = Math.max(0, Math.min(1, tour.t / Math.max(0.01, tour.duration)));
+  const e = easeInOutCubic(u);
+  const a = tour.from, b = tour.to;
+  const cam = {
+    x: a.x + (b.x - a.x) * e,
+    y: a.y + (b.y - a.y) * e,
+    z: a.z + (b.z - a.z) * e,
+    heading: lerpAngle(a.heading, b.heading, e),
+    pitch: a.pitch + (b.pitch - a.pitch) * e
+  };
+  applyTourCam(cam);
+  if (u >= 1) {
+    tour.phase = "hold";
+    tour.holdUntil = now + 7000;
+    tour.manualTravel = false;
+    tour.lastInput = now;
+    applyTourCam(b);
+  }
+}
+
+
 
 function drawWxOverlay(now, dt) {
   const cv = wxCanvas, ctx = cv.getContext("2d");
@@ -5855,19 +6569,7 @@ function drawWxOverlay(now, dt) {
   }
   // Screen-space drops removed; rain shafts and snow live in world space.
 
-  const lit = stepLightning(now);
-  if (lit > 0.005) {
-    ctx.fillStyle = "rgba(205,215,255," + (lit * 0.22 * (0.45 + night * 0.55)).toFixed(3) + ")";
-    ctx.fillRect(0, 0, W, H);
-    if (strike) {
-      const R = Math.max(W, H) * 0.5;
-      const g = ctx.createRadialGradient(strike.x * W, strike.y * H, 0, strike.x * W, strike.y * H, R);
-      g.addColorStop(0, "rgba(225,232,255," + (lit * 0.5).toFixed(3) + ")");
-      g.addColorStop(1, "rgba(150,165,255,0)");
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, W, H);
-    }
-  }
+  stepLightning(now);
 }
 
 function blinkFireflies(now) {
@@ -5999,22 +6701,31 @@ function showFallback() {
   if (heightF32) renderStill(cv);
   canvas.style.display = "none";
   wxCanvas.style.display = "none";
+  const lm = document.getElementById("landmark-btn");
+  if (lm) lm.hidden = true;
 }
 
 /* ---------- loop ---------- */
 function setCommonUniforms(t) {
   const cur = new THREE.Vector3(cursor.x, cursor.strength, cursor.z);
   state.wind = wx.kind === "storm" ? 2.4 : wx.kind === "rain" ? 1.5 : 1;
+  function applyStrike(unifs) {
+    if (!unifs) return;
+    if (unifs.uLightning) unifs.uLightning.value = state.lightning;
+    if (unifs.uStrikeAmt) unifs.uStrikeAmt.value = strike.amt || 0;
+    if (unifs.uStrikeRad) unifs.uStrikeRad.value = strike.rad || 1600;
+    if (unifs.uStrikePos) unifs.uStrikePos.value.set(strike.pos.x, strike.pos.y, strike.pos.z);
+  }
   if (terrainMat) {
     terrainMat.uniforms.uTime.value = t;
     terrainMat.uniforms.uCursor.value.copy(cur);
-    terrainMat.uniforms.uLightning.value = state.lightning;
+    applyStrike(terrainMat.uniforms);
   }
   if (treeMat) {
     treeMat.uniforms.uTime.value = t;
     treeMat.uniforms.uCursor.value.copy(cur);
     treeMat.uniforms.uWind.value = state.wind;
-    treeMat.uniforms.uLightning.value = state.lightning;
+    applyStrike(treeMat.uniforms);
     if (frameTreeMat) {
       frameTreeMat.uniforms.uTime.value = t;
       frameTreeMat.uniforms.uWind.value = state.wind;
@@ -6033,7 +6744,16 @@ function setCommonUniforms(t) {
   if (riverRibbon && riverRibbon.material && riverRibbon.material.uniforms) {
     if (riverRibbon.material.uniforms.uTime) riverRibbon.material.uniforms.uTime.value = t;
     if (riverRibbon.material.uniforms.uWind) riverRibbon.material.uniforms.uWind.value = state.wind;
+    applyStrike(riverRibbon.material.uniforms);
   }
+  if (riverBanks && riverBanks.material && riverBanks.material.uniforms) {
+    applyStrike(riverBanks.material.uniforms);
+  }
+  for (let ci = 0; ci < volCloudItems.length; ci++) {
+    const cm = volCloudItems[ci].mesh && volCloudItems[ci].mesh.material;
+    if (cm && cm.uniforms) applyStrike(cm.uniforms);
+  }
+  if (strike.visible) setBoltAmt(strike.amt || 0);
   for (let i = 0; i < washMats.length; i++) {
     if (washMats[i].uniforms.uSunDir && clock) {
       washMats[i].uniforms.uSunDir.value.copy(altAzDir(clock.alt, clock.sunAz));
@@ -6119,13 +6839,16 @@ function placeTourFarmstead() {
   placeOnGround(silo, sx, sz, yaw);
   tag(silo);
   const rng = mulberry(421);
+  const toHero = Math.atan2(hero.x - bx, hero.z - bz);
   for (let hi = 0; hi < 5; hi++) {
-    const hx = bx + Math.sin(yaw + 0.55 + hi * 0.55) * (10 + hi * 2.4);
-    const hz = bz + Math.cos(yaw + 0.55 + hi * 0.55) * (10 + hi * 2.4);
+    const along = (hi - 2) * 5.2;
+    const out = 16 + (hi % 2) * 5.5;
+    const hx = bx + Math.sin(toHero) * out + Math.cos(toHero) * along;
+    const hz = bz + Math.cos(toHero) * out - Math.sin(toHero) * along;
     const cls = coverWorld(hx, hz);
     if (cls === 0 || cls === 3) continue;
     const hay = placeholderHay();
-    hay.scale.setScalar(1.15);
+    hay.scale.setScalar(1.55);
     placeOnGround(hay, hx, hz, rng() * 6.28);
     tag(hay);
   }
@@ -6440,7 +7163,12 @@ function resumeTour(now) {
 }
 
 function stepTour(dt, now) {
-  if (!tour.enabled || state.frozen || REDUCE) return;
+  if (state.frozen) return;
+  if (tour.manualTravel && tour.phase === "travel" && !REDUCE) {
+    advanceTourLeg(dt, now);
+    return;
+  }
+  if (!tour.enabled || REDUCE) return;
   if (tour.paused) {
     if (tour.lastInput && now - tour.lastInput > 10000) resumeTour(now);
     return;
@@ -6455,23 +7183,7 @@ function stepTour(dt, now) {
     }
     return;
   }
-  tour.t += dt;
-  const u = Math.max(0, Math.min(1, tour.t / Math.max(0.01, tour.duration)));
-  const e = easeInOutCubic(u);
-  const a = tour.from, b = tour.to;
-  const cam = {
-    x: a.x + (b.x - a.x) * e,
-    y: a.y + (b.y - a.y) * e,
-    z: a.z + (b.z - a.z) * e,
-    heading: lerpAngle(a.heading, b.heading, e),
-    pitch: a.pitch + (b.pitch - a.pitch) * e
-  };
-  applyTourCam(cam);
-  if (u >= 1) {
-    tour.phase = "hold";
-    tour.holdUntil = now + 7000;
-    applyTourCam(b);
-  }
+  advanceTourLeg(dt, now);
 }
 
 function pickConifer(preferIsolated, distTarget) {
@@ -6628,7 +7340,7 @@ function startLoop() {
     const dt = state.lastT ? clamp((now - state.lastT) / 1000, 0, 0.08) : 0.016;
     state.lastT = now;
     if (!state.frozen && !REDUCE) {
-      if (tour.enabled) {
+      if (tour.enabled || tour.manualTravel) {
         stepTour(dt, now);
       } else {
         rig.s += 18 * dt;
@@ -6657,6 +7369,7 @@ function startLoop() {
     constBrighten();
     if (glOk) renderer.render(scene, camera);
     drawWxOverlay(now, dt);
+    updateLandmarkButton();
     if (state.ready) {
       state.frameMs.push(dt * 1000);
       if (state.frameMs.length > 240) state.frameMs.shift();
@@ -6851,6 +7564,25 @@ function expose() {
       };
     },
     tourStops: function () { return getTourStops(); },
+    forceStrike: forceStrike,
+    lightningInfo: function () {
+      return {
+        amt: strike.amt,
+        kind: strike.kind,
+        nextAt: strike.nextAt,
+        t0: strike.t0,
+        flashTimes: strike.flashTimes.slice(),
+        nFlashes: strike.nFlashes,
+        flashes: strike.flashes,
+        visible: strike.visible,
+        forced: strike.forced,
+        reduce: REDUCE,
+        pos: strike.pos,
+        rad: strike.rad
+      };
+    },
+    testLightningCap: testLightningCap,
+    goToLandmark: goToLandmark,
     tourState: function () { return { enabled: tour.enabled, paused: tour.paused, stop: tour.stop, phase: tour.phase, lastInput: tour.lastInput }; },
     tourGoto: function (i) {
       const stops = getTourStops();
@@ -6860,6 +7592,10 @@ function expose() {
       tour.enabled = false;
       const cam = tourCameraAt(stop);
       applyTourCam(cam);
+      tour.manualTravel = false;
+      tour.phase = "hold";
+      setLandmarkLabel(stopLabel(stop), true);
+      updateLandmarkButton();
       if (glOk) renderer.render(scene, camera);
       return { stop: stop, cam: cam };
     },
@@ -7077,10 +7813,16 @@ async function init() {
   applySkin();
   await swapInGltfModels();
   bindInput();
+  bindLandmarkButton();
   placeCamera();
   fillGrass(camera.position.x, camera.position.z);
+  if (dbgStrike === "bolt" || dbgStrike === "cloud") {
+    wx.kind = wx.kind === "storm" ? wx.kind : (dbgWx === "storm" ? "storm" : wx.kind);
+    if (wx.kind === "storm") forceStrike(dbgStrike, 0);
+  }
   renderer.render(scene, camera);
   drawWxOverlay(performance.now(), 0);
+  updateLandmarkButton();
   state.ready = true;
   expose();
   if (!dbgWx) setTimeout(fetchWx, 400);
