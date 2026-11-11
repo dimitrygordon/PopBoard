@@ -472,6 +472,9 @@ async function loadMap() {
   riverPathPx = meta.river_path_px || [];
   carvePatoka();
   narrowPatokaMask();
+  clearLeftoverWaterNearMill();
+  thickenPatokaWoodsCover();
+  paintTownYards();
   buildRidgePath();
 }
 
@@ -699,7 +702,7 @@ void main(){
   vec3 wash = grassCol;
   if (cls < 0.5) wash = uWater;
   else if (cls < 1.5) wash = mix(grassCol, vec3(0.78, 0.64, 0.40), 0.28);
-  else if (cls < 2.5) wash = mix(vec3(0.72, 0.58, 0.40), uWheat, 0.25 + 0.15 * n3);
+  else if (cls < 2.5) wash = mix(vec3(0.58, 0.56, 0.50), vec3(0.64, 0.60, 0.52), 0.45 + 0.20 * n3);
   else if (cls < 3.5) wash = mix(vec3(0.76, 0.60, 0.36), uPaper, 0.12);
   else if (cls < 4.5) wash = bareForest;
   else if (cls < 5.5) wash = uCedar;
@@ -1394,6 +1397,170 @@ void main(){
 }
 `;
 
+const HOUSE_FRAG = /* glsl */`
+uniform vec3 uWash, uInkUse, uPaper, uNightMul, uSunDir, uMoonDir;
+uniform float uNight, uStorm;
+varying vec3 vN;
+varying vec3 vWorld;
+${NOISE_GLSL}
+void main(){
+  vec3 N = normalize(vN);
+  vec3 V = normalize(cameraPosition - vWorld);
+  float ndv = abs(dot(N, V));
+  float rim = pow(1.0 - ndv, 2.4);
+  vec3 wash = mix(uPaper, uWash, 0.68);
+  float g = noise21(vWorld.xz * 0.55 + vWorld.y * 0.28);
+  wash *= 0.95 + 0.08 * g;
+  float luma = dot(wash, vec3(0.30, 0.59, 0.11));
+  float q = floor(luma * 6.0 + 0.5) / 6.0;
+  wash *= q / max(luma, 0.001);
+  vec3 nightBody = wash * uNightMul * 0.38;
+  nightBody = mix(nightBody, vec3(0.035, 0.048, 0.09), 0.58);
+  wash = mix(wash, nightBody, uNight);
+  float rimAmt = mix(0.92, 0.20, uNight);
+  float rimCap = mix(0.80, 0.26, uNight);
+  vec3 col = mix(wash, uInkUse, clamp(rim * rimAmt, 0.0, rimCap));
+  vec3 L = normalize(mix(uMoonDir, uSunDir, 1.0 - uNight));
+  if (L.y < 0.02) L = normalize(vec3(L.x, 0.02, L.z));
+  float ndl = dot(N, L);
+  float hatchCut = mix(0.28, 0.10, uNight);
+  if (ndl < hatchCut) {
+    float ang = 0.7;
+    vec2 hp = vWorld.zy * vec2(1.6, 1.1);
+    float sl = abs(fract((hp.x * cos(ang) + hp.y * sin(ang)) * 1.8) - 0.5);
+    float hatch = (1.0 - smoothstep(0.0, 0.16, sl)) * (1.0 - smoothstep(-0.05, hatchCut, ndl));
+    hatch *= step(0.22, hash21(floor(hp * 4.0)));
+    col = mix(col, uInkUse, hatch * mix(0.42, 0.16, uNight));
+  }
+  if (abs(N.y) < 0.42) {
+    float board = abs(fract(vWorld.y * 3.4) - 0.5);
+    float line = (1.0 - smoothstep(0.0, 0.07, board)) * mix(0.34, 0.12, uNight);
+    col = mix(col, uInkUse, line);
+  }
+  col *= 0.97 + 0.05 * noise21(vWorld.xz * 2.4);
+  if (uStorm > 0.01) {
+    float lumaB = dot(col, vec3(0.30, 0.59, 0.11));
+    col = mix(col, vec3(lumaB * 0.92, lumaB * 0.95, lumaB * 1.05), 0.40 * uStorm);
+    col *= mix(1.0, 0.72, uStorm);
+  }
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
+
+const ROAD_VERT = /* glsl */`
+varying vec2 vUv;
+varying vec3 vWorld;
+void main(){
+  vUv = uv;
+#ifdef USE_INSTANCING
+  vec4 mw = modelMatrix * instanceMatrix * vec4(position, 1.0);
+#else
+  vec4 mw = modelMatrix * vec4(position, 1.0);
+#endif
+  vWorld = mw.xyz;
+  gl_Position = projectionMatrix * viewMatrix * mw;
+}
+`;
+
+const ROAD_FRAG = /* glsl */`
+uniform vec3 uWash, uInkUse, uPaper, uNightMul, uSunDir, uMoonDir;
+uniform float uNight, uStorm;
+varying vec2 vUv;
+varying vec3 vWorld;
+void main(){
+  vec3 wash = mix(uPaper, uWash, 0.82);
+  vec3 nightBody = wash * uNightMul * 0.42;
+  nightBody = mix(nightBody, vec3(0.04, 0.045, 0.07), 0.5);
+  wash = mix(wash, nightBody, uNight);
+  float edge = min(vUv.y, 1.0 - vUv.y);
+  float inkE = 1.0 - smoothstep(0.0, 0.10, edge);
+  vec3 col = mix(wash, uInkUse, inkE * mix(0.88, 0.28, uNight));
+  if (uStorm > 0.01) {
+    float lumaB = dot(col, vec3(0.30, 0.59, 0.11));
+    col = mix(col, vec3(lumaB, lumaB, lumaB), 0.30 * uStorm);
+    col *= mix(1.0, 0.78, uStorm);
+  }
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
+
+const HALO_VERT = /* glsl */`
+varying vec2 vUv;
+void main(){
+  vUv = uv;
+  vec4 mw = modelMatrix * vec4(position, 1.0);
+  gl_Position = projectionMatrix * viewMatrix * mw;
+}
+`;
+
+const HALO_FRAG = /* glsl */`
+uniform vec3 uWarm;
+uniform float uNight;
+varying vec2 vUv;
+void main(){
+  vec2 p = vUv * 2.0 - 1.0;
+  float r = length(p);
+  float ring = smoothstep(1.0, 0.18, r) * (1.0 - smoothstep(0.12, 0.72, r) * 0.35);
+  ring *= 0.72 + 0.18 * (1.0 - uNight);
+  if (ring < 0.02) discard;
+  vec3 col = mix(uWarm, vec3(1.0, 0.94, 0.78), 0.35);
+  gl_FragColor = vec4(col, ring * 0.55);
+}
+`;
+
+const CANOPY_VERT = /* glsl */`
+varying vec2 vUv;
+varying vec3 vWorld;
+varying float vDist;
+void main(){
+  vUv = uv;
+  vec3 iPos = (modelMatrix * instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+  float sx = length(instanceMatrix[0].xyz);
+  float sy = length(instanceMatrix[1].xyz);
+  vec3 right = vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);
+  vec3 up = vec3(0.0, 1.0, 0.0);
+  vec3 world = iPos + right * position.x * sx + up * position.y * sy;
+  vWorld = world;
+  vDist = length(cameraPosition - world);
+  gl_Position = projectionMatrix * viewMatrix * vec4(world, 1.0);
+}
+`;
+
+const CANOPY_FRAG = /* glsl */`
+uniform vec3 uInkUse, uPaper, uNightMul;
+uniform float uNight, uStorm, uFadeNear, uFadeFar;
+varying vec2 vUv;
+varying vec3 vWorld;
+varying float vDist;
+float hash21c(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+void main(){
+  vec2 p = vUv * 2.0 - 1.0;
+  float r = length(p * vec2(1.0, 1.18));
+  if (r > 1.0) discard;
+  float fade = smoothstep(uFadeNear, uFadeFar, vDist);
+  if (fade < 0.04) discard;
+  float n = hash21c(floor(vWorld.xz * 0.08));
+  vec3 amber = vec3(0.78, 0.48, 0.16);
+  vec3 rust = vec3(0.62, 0.28, 0.12);
+  vec3 gold = vec3(0.82, 0.58, 0.22);
+  vec3 wash = mix(amber, rust, step(0.55, n));
+  wash = mix(wash, gold, step(0.82, n) * 0.65);
+  wash = mix(uPaper, wash, 0.78);
+  vec3 nightBody = wash * uNightMul * 0.36;
+  wash = mix(wash, nightBody, uNight);
+  float edge = smoothstep(1.0, 0.62, r);
+  float inkE = smoothstep(0.78, 0.98, r);
+  vec3 col = mix(wash, uInkUse, inkE * mix(0.45, 0.16, uNight));
+  float alpha = edge * fade * mix(0.88, 0.55, uNight);
+  if (uStorm > 0.01) {
+    float lumaB = dot(col, vec3(0.30, 0.59, 0.11));
+    col = mix(col, vec3(lumaB * 0.92, lumaB * 0.95, lumaB * 1.05), 0.40 * uStorm);
+    col *= mix(1.0, 0.72, uStorm);
+  }
+  gl_FragColor = vec4(col, alpha);
+}
+`;
+
 const WINDOW_FRAG = /* glsl */`
 uniform vec3 uGlow, uInkUse;
 uniform float uNight;
@@ -1580,7 +1747,7 @@ const skyDriftT0 = performance.now();
 let churchMesh, labelMesh, landmarkGroup;
 const washMats = [];
 const windowMats = [];
-const LAND = { church: 0, farmhouse: 0, barn: 0, silo: 0, hay: 0, mill: 0, depot: 0, osmHouses: 0, osmShops: 0, osmSheds: 0, osmRoads: 0, fromGltf: {} };
+const LAND = { church: 0, farmhouse: 0, barn: 0, silo: 0, hay: 0, mill: 0, depot: 0, osmHouses: 0, osmShops: 0, osmSheds: 0, osmRoads: 0, osmDowntown: 0, osmLongSplit: 0, osmFences: 0, osmYards: 0, millHalo: 0, fromGltf: {} };
 
 function terrainUniforms() {
   return {
@@ -3172,7 +3339,7 @@ function drawWobblyCircle(ctx, cx, cy, r, rng) {
 
 const LOD_NEAR = 900;
 const LOD_MID = 2800;
-const VEG = { trees: 0, blades: 0, clumps: 0, treesPlaced: 0 };
+const VEG = { trees: 0, blades: 0, clumps: 0, treesPlaced: 0, treesLogical: 0, treesInstanced: 0, canopyPatches: 0 };
 
 const SPECIES = {
   oak: { id: 0, angle: 26, depth: 6, len: 0.20, shrink: 0.73, tw: 3.4, spread: 1.15, twigs: 3, leaf: 0.055, cone: 0 },
@@ -3600,9 +3767,221 @@ function pickSpecies(cls, rng, fenceRidge) {
 
 let treeRecords = [];
 
+const TREE_INST_MAX = 14000;
+let canopyMesh = null, canopyMat = null;
+let treeInstId = [];
+let treeLodAt = { x: 1e9, z: 1e9 };
+
+function finishTreeMeshes(pos, scale, frame, frameClump, phase, kind) {
+  const n = pos.length / 3;
+  VEG.treesLogical = n;
+  VEG.treesPlaced = n;
+  VEG.trees = n;
+  buildCanopyPatches(pos, scale, n);
+  const plane = new THREE.PlaneGeometry(1, 1);
+  plane.translate(0, 0.5, 0);
+  const instN = Math.min(TREE_INST_MAX, Math.max(1, n));
+  plane.setAttribute("iScale", new THREE.InstancedBufferAttribute(new Float32Array(instN * 2), 2));
+  plane.setAttribute("iFrame", new THREE.InstancedBufferAttribute(new Float32Array(instN), 1));
+  plane.setAttribute("iFrameClump", new THREE.InstancedBufferAttribute(new Float32Array(instN), 1));
+  plane.setAttribute("iPhase", new THREE.InstancedBufferAttribute(new Float32Array(instN), 1));
+  plane.setAttribute("iKind", new THREE.InstancedBufferAttribute(new Float32Array(instN), 1));
+  treeMat = new THREE.ShaderMaterial({
+    uniforms: {
+      uAtlas: { value: makeTreeAtlas() },
+      uAtlasGrid: { value: new THREE.Vector2(ATLAS_COL, ATLAS_ROW) },
+      uTime: { value: 0 },
+      uCursor: { value: new THREE.Vector3() },
+      uWind: { value: 1 },
+      uRuffle: { value: 1 },
+      uReduce: { value: REDUCE ? 1 : 0 },
+      uInkUse: { value: colU(INK) },
+      uNightMul: { value: colU(NIGHT_MUL) },
+      uNight: { value: 0 },
+      uStorm: { value: 0 },
+      uLightning: { value: 0 },
+      uStrikePos: { value: new THREE.Vector3() },
+      uStrikeAmt: { value: 0 },
+      uStrikeRad: { value: 1600 },
+      uLodNear: { value: LOD_NEAR },
+      uLodMid: { value: LOD_MID },
+      uCrownCap: { value: 0.16 }
+    },
+    vertexShader: SPRITE_VERT,
+    fragmentShader: TREE_FRAG,
+    transparent: true,
+    depthWrite: true
+  });
+  treeMesh = new THREE.InstancedMesh(plane, treeMat, instN);
+  treeMesh.frustumCulled = false;
+  treeMesh.count = 0;
+  scene.add(treeMesh);
+  const heroW = pxToWorld(HERO.px, HERO.py);
+  refillTreeInstances(heroW.x, heroW.z, true);
+  buildTreeContact(pos, scale, n);
+  buildFrameTrees();
+}
+
+function buildCanopyPatches(pos, scale, n) {
+  const cell = 90;
+  const buckets = {};
+  function key(x, z) { return ((x / cell) | 0) + ":" + ((z / cell) | 0); }
+  for (let i = 0; i < n; i++) {
+    const k = key(pos[i * 3], pos[i * 3 + 2]);
+    if (!buckets[k]) buckets[k] = [];
+    buckets[k].push(i);
+  }
+  const recs = [];
+  const keys = Object.keys(buckets);
+  for (let ki = 0; ki < keys.length; ki++) {
+    const list = buckets[keys[ki]];
+    if (list.length < 2) continue;
+    let sx = 0, sy = 0, sz = 0, sw = 0, st = 0;
+    for (let i = 0; i < list.length; i++) {
+      const j = list[i];
+      sx += pos[j * 3]; sy += pos[j * 3 + 1]; sz += pos[j * 3 + 2];
+      sw += scale[j * 2]; st += scale[j * 2 + 1];
+    }
+    const inv = 1 / list.length;
+    recs.push({
+      x: sx * inv,
+      y: sy * inv + st * inv * 0.35,
+      z: sz * inv,
+      w: Math.max(28, Math.min(86, sw * inv * 2.8 + list.length * 4)),
+      h: Math.max(12, Math.min(28, st * inv * 1.15))
+    });
+  }
+  if (!recs.length) {
+    VEG.canopyPatches = 0;
+    return;
+  }
+  const plane = new THREE.PlaneGeometry(1, 1);
+  plane.translate(0, 0.5, 0);
+  canopyMat = new THREE.ShaderMaterial({
+    uniforms: {
+      uInkUse: { value: colU(INK) },
+      uPaper: { value: colU(PAPER) },
+      uNightMul: { value: colU(NIGHT_MUL) },
+      uNight: { value: 0 },
+      uStorm: { value: 0 },
+      uFadeNear: { value: 1200 },
+      uFadeFar: { value: 2200 }
+    },
+    vertexShader: CANOPY_VERT,
+    fragmentShader: CANOPY_FRAG,
+    transparent: true,
+    depthWrite: false,
+    side: THREE.DoubleSide
+  });
+  canopyMesh = new THREE.InstancedMesh(plane, canopyMat, recs.length);
+  canopyMesh.frustumCulled = false;
+  canopyMesh.renderOrder = 1;
+  canopyMesh.name = "canopyPatches";
+  const dummy = new THREE.Object3D();
+  for (let i = 0; i < recs.length; i++) {
+    const r = recs[i];
+    dummy.position.set(r.x, r.y, r.z);
+    dummy.rotation.set(0, 0, 0);
+    dummy.scale.set(r.w, r.h, 1);
+    dummy.updateMatrix();
+    canopyMesh.setMatrixAt(i, dummy.matrix);
+  }
+  canopyMesh.instanceMatrix.needsUpdate = true;
+  canopyMesh.count = recs.length;
+  scene.add(canopyMesh);
+  VEG.canopyPatches = recs.length;
+}
+
+function refillTreeInstances(cx, cz, force) {
+  if (!treeMesh || !treeRecords.length) return;
+  const dx = cx - treeLodAt.x, dz = cz - treeLodAt.z;
+  if (!force && dx * dx + dz * dz < 180 * 180) return;
+  treeLodAt.x = cx;
+  treeLodAt.z = cz;
+  const n = treeRecords.length;
+  const cell = 200;
+  const buckets = refillTreeInstances._b || (refillTreeInstances._b = {});
+  if (!refillTreeInstances._built) {
+    for (const k in buckets) delete buckets[k];
+    function key(x, z) { return (Math.floor(x / cell)) + ":" + Math.floor(z / cell); }
+    for (let i = 0; i < n; i++) {
+      const r = treeRecords[i];
+      const k = key(r.x, r.z);
+      if (!buckets[k]) buckets[k] = [];
+      buckets[k].push(i);
+    }
+    refillTreeInstances._built = true;
+    refillTreeInstances._key = key;
+  }
+  const key = refillTreeInstances._key;
+  const maxInst = treeMesh.instanceMatrix.count;
+  const picked = [];
+  const seen = new Uint8Array(n);
+  function take(i) {
+    if (i < 0 || i >= n || seen[i] || picked.length >= maxInst) return;
+    seen[i] = 1;
+    picked.push(i);
+  }
+  const gx = Math.floor(cx / cell), gz = Math.floor(cz / cell);
+  function walkRings(priOnly) {
+    for (let ring = 0; ring <= 16 && picked.length < maxInst; ring++) {
+      for (let ox = -ring; ox <= ring && picked.length < maxInst; ox++) {
+        for (let oz = -ring; oz <= ring && picked.length < maxInst; oz++) {
+          if (Math.max(Math.abs(ox), Math.abs(oz)) !== ring) continue;
+          const list = buckets[(gx + ox) + ":" + (gz + oz)];
+          if (!list) continue;
+          for (let i = 0; i < list.length && picked.length < maxInst; i++) {
+            const r = treeRecords[list[i]];
+            const ddx = r.x - cx, ddz = r.z - cz;
+            const d2 = ddx * ddx + ddz * ddz;
+            if (priOnly) {
+              if (r.pri && d2 < 2800 * 2800) take(list[i]);
+            } else if (d2 < 1600 * 1600) {
+              take(list[i]);
+            }
+          }
+        }
+      }
+    }
+  }
+  walkRings(true);
+  walkRings(false);
+  const dummy = new THREE.Object3D();
+  const iScale = treeMesh.geometry.attributes.iScale.array;
+  const iFrame = treeMesh.geometry.attributes.iFrame.array;
+  const iClump = treeMesh.geometry.attributes.iFrameClump.array;
+  const iPhase = treeMesh.geometry.attributes.iPhase.array;
+  const iKind = treeMesh.geometry.attributes.iKind.array;
+  treeInstId = picked;
+  for (let i = 0; i < picked.length; i++) {
+    const r = treeRecords[picked[i]];
+    dummy.position.set(r.x, r.y, r.z);
+    dummy.rotation.set(0, 0, 0);
+    dummy.scale.set(1, 1, 1);
+    dummy.updateMatrix();
+    treeMesh.setMatrixAt(i, dummy.matrix);
+    iScale[i * 2] = r.wid;
+    iScale[i * 2 + 1] = r.tall;
+    iFrame[i] = r.fr;
+    iClump[i] = r.clump;
+    iPhase[i] = r.phase;
+    iKind[i] = r.kind;
+  }
+  treeMesh.count = picked.length;
+  treeMesh.instanceMatrix.needsUpdate = true;
+  treeMesh.geometry.attributes.iScale.needsUpdate = true;
+  treeMesh.geometry.attributes.iFrame.needsUpdate = true;
+  treeMesh.geometry.attributes.iFrameClump.needsUpdate = true;
+  treeMesh.geometry.attributes.iPhase.needsUpdate = true;
+  treeMesh.geometry.attributes.iKind.needsUpdate = true;
+  VEG.treesInstanced = picked.length;
+}
+
+
+
 function scatterTrees() {
   const rng = mulberry(2026);
-  const maxN = 24000;
+  const maxN = 30000;
   const pos = [], scale = [], frame = [], frameClump = [], phase = [], kind = [];
   treeRecords = [];
   // Plant woods across the whole 32 x 40 km map, with a later bias toward the south half.
@@ -3746,7 +4125,7 @@ function scatterTrees() {
       frameClump.push(fr.clump);
       phase.push(rng());
       kind.push(isConifer ? 1 : 0);
-      treeRecords.push({ spec: specName, slot: slot, cls: c2, x: w.x, z: w.z, y: yOf(hm) });
+      treeRecords.push({ spec: specName, slot: slot, cls: c2, x: w.x, z: w.z, y: yOf(hm), pri: 0, wid: wid, tall: tall, fr: fr.full, clump: fr.clump, phase: phase[phase.length - 1], kind: isConifer ? 1 : 0 });
     }
   }
   // drop lone trees so woods read as stands, not orange balls
@@ -3797,14 +4176,15 @@ function scatterTrees() {
   phase.length = w3;
   kind.length = w3;
   treeRecords.length = w3;
-  const maxAll = 36000;
-  function addTreeAt(jx, jy, cls, sizeMul, forceSpec) {
-    if (pos.length / 3 >= maxAll) return false;
+  const maxLogical = 120000;
+  function addTreeAt(jx, jy, cls, sizeMul, forceSpec, pri) {
+    if (pos.length / 3 >= maxLogical) return false;
     if (jx < 1 || jy < 1 || jx > COLS - 2 || jy > ROWS - 2) return false;
     const c2 = coverPx(jx, jy);
     if (c2 === 0 || c2 === 3) return false;
     const w = pxToWorld(jx, jy);
     if (Math.hypot(w.x - heroW.x, w.z - heroW.z) < 200) return false;
+    if (tooCloseToLandmark(w.x, w.z, landmarkAvoidListCached)) return false;
     const hm = heightPx(jx, jy);
     let specName = forceSpec || pickSpecies(c2 === 5 ? 5 : (cls || c2), rng, false);
     const slot = (rng() * 8) | 0;
@@ -3824,9 +4204,10 @@ function scatterTrees() {
     frameClump.push(fr.clump);
     phase.push(rng());
     kind.push(isConifer ? 1 : 0);
-    treeRecords.push({ spec: specName, slot: slot, cls: c2, x: w.x, z: w.z, y: yOf(hm) });
+    treeRecords.push({ spec: specName, slot: slot, cls: c2, x: w.x, z: w.z, y: yOf(hm), pri: pri ? 1 : 0, wid: wid, tall: tall, fr: fr.full, clump: fr.clump, phase: phase[phase.length - 1], kind: isConifer ? 1 : 0 });
     return true;
   }
+  const landmarkAvoidListCached = landmarkAvoidList();
   function walkWorldWay(pts, stepM, fn) {
     if (!pts || pts.length < 2) return;
     for (let i = 0; i < pts.length - 1; i++) {
@@ -3842,45 +4223,7 @@ function scatterTrees() {
       }
     }
   }
-  // Hedgerows along field edges, and woodlots already come from NLCD forest cells.
-  for (let py = 3; py <= ROWS - 4 && pos.length / 3 < maxAll; py += 2) {
-    for (let px = 3; px <= COLS - 4 && pos.length / 3 < maxAll; px += 2) {
-      const cls = coverPx(px, py);
-      if (cls !== 6 && cls !== 7) continue;
-      const e = coverPx(px + 1, py), w = coverPx(px - 1, py);
-      const s = coverPx(px, py + 1), nbor = coverPx(px, py - 1);
-      const edge = (e !== cls && e > 0) || (s !== cls && s > 0);
-      if (!edge) continue;
-      if (rng() > 0.42) continue;
-      addTreeAt(px + (rng() - 0.5) * 0.6, py + (rng() - 0.5) * 0.6, 4, 0.85, rng() < 0.18 ? "cedar" : "oak");
-    }
-  }
-  // Wooded creek lines from OSM waterways, plus both banks of the Patoka.
-  const waterways = (osmData && osmData.land && osmData.land.waterways) || [];
-  for (let wi = 0; wi < waterways.length && pos.length / 3 < maxAll; wi++) {
-    const way = waterways[wi];
-    const pts = way.pts || way;
-    walkWorldWay(pts, 20, function (x, z, ux, uz) {
-      if (pos.length / 3 >= maxAll) return;
-      const nx = -uz, nz = ux;
-      const side = (rng() < 0.5 ? 1 : -1);
-      const ox = x + nx * side * (12 + rng() * 6);
-      const oz = z + nz * side * (12 + rng() * 6);
-      const p = worldToPx(ox, oz);
-      addTreeAt(p.px, p.py, 4, 0.9, rng() < 0.22 ? "sycamore" : "oak");
-    });
-  }
-  walkWorldWay(riverPathPx, 16, function (x, z, ux, uz) {
-    if (pos.length / 3 >= maxAll) return;
-    const nx = -uz, nz = ux;
-    for (let side = -1; side <= 1; side += 2) {
-      const ox = x + nx * side * (26 + rng() * 6);
-      const oz = z + nz * side * (26 + rng() * 6);
-      const p = worldToPx(ox, oz);
-      addTreeAt(p.px, p.py, 4, 1.05, rng() < 0.2 ? "sycamore" : "oak");
-    }
-  });
-  // Street trees along town streets, offset from the curb, skipped near buildings.
+  // Street and backyard trees: one big maple or oak per lot.
   if (osmData && osmData.towns) {
     const occ = {};
     function occKey(px, py) { return ((px / 1) | 0) + ":" + ((py / 1) | 0); }
@@ -3893,16 +4236,17 @@ function scatterTrees() {
     }
     const streetT = { residential: 1, living_street: 1, tertiary: 1, secondary: 1, primary: 1, unclassified: 1 };
     for (let ti = 0; ti < tnames.length; ti++) {
-      const ways = osmData.towns[tnames[ti]].highways || [];
-      for (let hi = 0; hi < ways.length && pos.length / 3 < maxAll; hi++) {
+      const tname = tnames[ti];
+      const ways = osmData.towns[tname].highways || [];
+      for (let hi = 0; hi < ways.length && pos.length / 3 < maxLogical; hi++) {
         const way = ways[hi];
         if (!streetT[way.t]) continue;
-        walkWorldWay(way.pts, 20, function (x, z, ux, uz) {
-          if (pos.length / 3 >= maxAll) return;
+        walkWorldWay(way.pts, 28, function (x, z, ux, uz) {
+          if (pos.length / 3 >= maxLogical) return;
           const nx = -uz, nz = ux;
           const side = (rng() < 0.5 ? 1 : -1);
-          const ox = x + nx * side * (7 + rng() * 2);
-          const oz = z + nz * side * (7 + rng() * 2);
+          const ox = x + nx * side * (8 + rng() * 3);
+          const oz = z + nz * side * (8 + rng() * 3);
           const p = worldToPx(ox, oz);
           let blocked = false;
           for (let oxp = -1; oxp <= 1 && !blocked; oxp++) {
@@ -3911,63 +4255,72 @@ function scatterTrees() {
             }
           }
           if (blocked) return;
-          addTreeAt(p.px, p.py, 1, 0.8, rng() < 0.15 ? "maple" : "oak");
+          if (tooCloseToLandmark(ox, oz, landmarkAvoidListCached)) return;
+          addTreeAt(p.px, p.py, 1, 1.45, rng() < 0.45 ? "maple" : "oak", 1);
         });
+      }
+      const blds = osmData.towns[tname].buildings || [];
+      for (let bi = 0; bi < blds.length && pos.length / 3 < maxLogical; bi++) {
+        const b = blds[bi];
+        if (isDowntownBuilding(tname, b.c[0], b.c[1], b.k)) continue;
+        const w = pxToWorld(b.c[0], b.c[1]);
+        if (tooCloseToLandmark(w.x, w.z, landmarkAvoidListCached)) continue;
+        const yaw = b.yaw || 0;
+        const back = (b.d || 9) * 0.5 + 7 + rng() * 5;
+        const side = (rng() - 0.5) * (b.w || 8) * 0.45;
+        const fx = Math.sin(yaw), fz = Math.cos(yaw);
+        const sx = Math.cos(yaw), sz = -Math.sin(yaw);
+        const ox = w.x + fx * back + sx * side;
+        const oz = w.z + fz * back + sz * side;
+        const p = worldToPx(ox, oz);
+        addTreeAt(p.px, p.py, 1, 1.5, rng() < 0.5 ? "maple" : "oak", 1);
       }
     }
   }
-  // Framing trees are gone; the land reads open edge to edge.
-  const n = pos.length / 3;
-  VEG.treesPlaced = n;
-  VEG.trees = n;
-  const plane = new THREE.PlaneGeometry(1, 1);
-  plane.translate(0, 0.5, 0);
-  plane.setAttribute("iScale", new THREE.InstancedBufferAttribute(new Float32Array(scale), 2));
-  plane.setAttribute("iFrame", new THREE.InstancedBufferAttribute(new Float32Array(frame), 1));
-  plane.setAttribute("iFrameClump", new THREE.InstancedBufferAttribute(new Float32Array(frameClump), 1));
-  plane.setAttribute("iPhase", new THREE.InstancedBufferAttribute(new Float32Array(phase), 1));
-  plane.setAttribute("iKind", new THREE.InstancedBufferAttribute(new Float32Array(kind), 1));
-  treeMat = new THREE.ShaderMaterial({
-    uniforms: {
-      uAtlas: { value: makeTreeAtlas() },
-      uAtlasGrid: { value: new THREE.Vector2(ATLAS_COL, ATLAS_ROW) },
-      uTime: { value: 0 },
-      uCursor: { value: new THREE.Vector3() },
-      uWind: { value: 1 },
-      uRuffle: { value: 1 },
-      uReduce: { value: REDUCE ? 1 : 0 },
-      uInkUse: { value: colU(INK) },
-      uNightMul: { value: colU(NIGHT_MUL) },
-      uNight: { value: 0 },
-      uStorm: { value: 0 },
-      uLightning: { value: 0 },
-      uStrikePos: { value: new THREE.Vector3() },
-      uStrikeAmt: { value: 0 },
-      uStrikeRad: { value: 1600 },
-      uLodNear: { value: LOD_NEAR },
-      uLodMid: { value: LOD_MID },
-      uCrownCap: { value: 0.16 }
-    },
-    vertexShader: SPRITE_VERT,
-    fragmentShader: TREE_FRAG,
-    transparent: true,
-    depthWrite: true
+  // Thicker woods on both banks of the Patoka, two rows each side.
+  walkWorldWay(riverPathPx, 10, function (x, z, ux, uz) {
+    if (pos.length / 3 >= maxLogical) return;
+    const nx = -uz, nz = ux;
+    for (let side = -1; side <= 1; side += 2) {
+      for (let row = 0; row < 2; row++) {
+        const off = 24 + row * 16 + rng() * 6;
+        const ox = x + nx * side * off;
+        const oz = z + nz * side * off;
+        const p = worldToPx(ox, oz);
+        addTreeAt(p.px, p.py, 4, 1.15, rng() < 0.2 ? "sycamore" : "oak", 1);
+      }
+    }
   });
-  treeMesh = new THREE.InstancedMesh(plane, treeMat, n);
-  treeMesh.frustumCulled = false;
-  const dummy = new THREE.Object3D();
-  for (let i = 0; i < n; i++) {
-    dummy.position.set(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]);
-    dummy.rotation.set(0, 0, 0);
-    dummy.scale.set(1, 1, 1);
-    dummy.updateMatrix();
-    treeMesh.setMatrixAt(i, dummy.matrix);
+  // Wooded creek lines from OSM waterways.
+  const waterways = (osmData && osmData.land && osmData.land.waterways) || [];
+  for (let wi = 0; wi < waterways.length && pos.length / 3 < maxLogical; wi++) {
+    const way = waterways[wi];
+    const pts = way.pts || way;
+    walkWorldWay(pts, 18, function (x, z, ux, uz) {
+      if (pos.length / 3 >= maxLogical) return;
+      const nx = -uz, nz = ux;
+      const side = (rng() < 0.5 ? 1 : -1);
+      const ox = x + nx * side * (12 + rng() * 6);
+      const oz = z + nz * side * (12 + rng() * 6);
+      const p = worldToPx(ox, oz);
+      addTreeAt(p.px, p.py, 4, 0.9, rng() < 0.22 ? "sycamore" : "oak", 1);
+    });
   }
-  treeMesh.instanceMatrix.needsUpdate = true;
-  scene.add(treeMesh);
-  buildTreeContact(pos, scale, n);
-  buildFrameTrees();
-  return n;
+  // Hedgerows along field edges. Restored; no 36k cap truncates them.
+  for (let py = 3; py <= ROWS - 4 && pos.length / 3 < maxLogical; py += 2) {
+    for (let px = 3; px <= COLS - 4 && pos.length / 3 < maxLogical; px += 2) {
+      const cls = coverPx(px, py);
+      if (cls !== 6 && cls !== 7) continue;
+      const e = coverPx(px + 1, py), w = coverPx(px - 1, py);
+      const s = coverPx(px, py + 1), nbor = coverPx(px, py - 1);
+      const edge = (e !== cls && e > 0) || (s !== cls && s > 0);
+      if (!edge) continue;
+      if (rng() > 0.42) continue;
+      addTreeAt(px + (rng() - 0.5) * 0.6, py + (rng() - 0.5) * 0.6, 4, 0.85, rng() < 0.18 ? "cedar" : "oak", 1);
+    }
+  }
+  finishTreeMeshes(pos, scale, frame, frameClump, phase, kind);
+  return VEG.treesLogical || (pos.length / 3);
 }
 
 let frameTreeMesh = null;
@@ -4338,11 +4691,15 @@ function syncTreeFrames() {
   if (!treeMesh || !treeRecords.length) return;
   const full = treeMesh.geometry.attributes.iFrame.array;
   const clump = treeMesh.geometry.attributes.iFrameClump.array;
-  for (let i = 0; i < treeRecords.length; i++) {
-    const r = treeRecords[i];
-    const fr = framesFor(r.spec, r.slot, clock.season, r.cls);
+  const n = treeMesh.count;
+  for (let i = 0; i < n; i++) {
+    const rec = treeRecords[treeInstId[i] != null ? treeInstId[i] : i];
+    if (!rec) continue;
+    const fr = framesFor(rec.spec, rec.slot, clock.season, rec.cls);
     full[i] = fr.full;
     clump[i] = fr.clump;
+    rec.fr = fr.full;
+    rec.clump = fr.clump;
   }
   treeMesh.geometry.attributes.iFrame.needsUpdate = true;
   treeMesh.geometry.attributes.iFrameClump.needsUpdate = true;
@@ -5021,12 +5378,235 @@ function mergeGeos(geos) {
   return out;
 }
 
+function hash01(x, z) {
+  const s = Math.sin(x * 127.1 + z * 311.7) * 43758.5453;
+  return s - Math.floor(s);
+}
+
+function downtownSquarePx(townName) {
+  if (townName === "jasper") return [174.34, 444.64];
+  if (townName === "huntingburg") return [136.08, 795.64];
+  return null;
+}
+
+function downtownRadiusM(townName) {
+  if (townName === "jasper") return 210;
+  if (townName === "huntingburg") return 190;
+  return 0;
+}
+
+function isDowntownBuilding(townName, px, py, kind) {
+  const sq = downtownSquarePx(townName);
+  if (!sq) return false;
+  const dist = Math.hypot(px - sq[0], py - sq[1]) * CELL;
+  if (dist < downtownRadiusM(townName)) return true;
+  if (kind === "shop" && dist < downtownRadiusM(townName) + 80) return true;
+  return false;
+}
+
+function clearLeftoverWaterNearMill() {
+  if (!coverData) return;
+  const mill = (meta && meta.landmarks && meta.landmarks.jasper_city_mill) || [185.5, 458.6];
+  const radPx = 380 / CELL;
+  const keep = 22 / CELL;
+  const pts = densifyPxPath(riverPathPx || [], 1);
+  const x0 = Math.max(0, Math.floor(mill[0] - radPx - 1));
+  const x1 = Math.min(COLS - 1, Math.ceil(mill[0] + radPx + 1));
+  const y0 = Math.max(0, Math.floor(mill[1] - radPx - 1));
+  const y1 = Math.min(ROWS - 1, Math.ceil(mill[1] + radPx + 1));
+  for (let y = y0; y <= y1; y++) {
+    for (let x = x0; x <= x1; x++) {
+      const idx = y * COLS + x;
+      if (coverData[idx] !== 0) continue;
+      const dMill = Math.hypot(x - mill[0], y - mill[1]);
+      if (dMill > radPx) continue;
+      let dRiver = 1e9;
+      for (let i = 0; i < pts.length; i++) {
+        const d = Math.hypot(x - pts[i][0], y - pts[i][1]);
+        if (d < dRiver) dRiver = d;
+      }
+      if (dRiver > keep) coverData[idx] = (dRiver < keep * 1.6) ? 8 : 6;
+    }
+  }
+}
+
+function thickenPatokaWoodsCover() {
+  if (!coverData) return;
+  const pts = densifyPxPath(riverPathPx || [], 1);
+  if (!pts.length) return;
+  const mill = (meta && meta.landmarks && meta.landmarks.jasper_city_mill) || [185.5, 458.6];
+  const inner = 22 / CELL;
+  const outer = 58 / CELL;
+  const plaza = 100 / CELL;
+  for (let i = 0; i < pts.length; i++) {
+    const ax = pts[i][0], ay = pts[i][1];
+    if (Math.hypot(ax - mill[0], ay - mill[1]) < plaza) continue;
+    const x0 = Math.max(0, Math.floor(ax - outer - 1));
+    const x1 = Math.min(COLS - 1, Math.ceil(ax + outer + 1));
+    const y0 = Math.max(0, Math.floor(ay - outer - 1));
+    const y1 = Math.min(ROWS - 1, Math.ceil(ay + outer + 1));
+    for (let y = y0; y <= y1; y++) {
+      for (let x = x0; x <= x1; x++) {
+        const d = Math.hypot(x - ax, y - ay);
+        if (d < inner || d > outer) continue;
+        const idx = y * COLS + x;
+        const cls = coverData[idx];
+        if (cls === 0 || cls === 2 || cls === 4 || cls === 5) continue;
+        coverData[idx] = 4;
+      }
+    }
+  }
+}
+
+function paintTownYards() {
+  if (!coverData || !osmData || !osmData.towns) return;
+  const avoid = landmarkAvoidList();
+  const names = Object.keys(osmData.towns);
+  let nYard = 0, nDown = 0, nPlaza = 0;
+  for (let ti = 0; ti < names.length; ti++) {
+    const name = names[ti];
+    const data = osmData.towns[name];
+    const blds = data.buildings || [];
+    const ways = data.highways || [];
+    const sq = downtownSquarePx(name);
+    const downR = downtownRadiusM(name) / CELL;
+    for (let i = 0; i < blds.length; i++) {
+      const c = blds[i].c;
+      const downtown = isDowntownBuilding(name, c[0], c[1], blds[i].k);
+      const rad = downtown ? 0.55 : 1.15;
+      const x0 = Math.max(0, Math.floor(c[0] - rad - 1));
+      const x1 = Math.min(COLS - 1, Math.ceil(c[0] + rad + 1));
+      const y0 = Math.max(0, Math.floor(c[1] - rad - 1));
+      const y1 = Math.min(ROWS - 1, Math.ceil(c[1] + rad + 1));
+      for (let y = y0; y <= y1; y++) {
+        for (let x = x0; x <= x1; x++) {
+          if (Math.hypot(x - c[0], y - c[1]) > rad) continue;
+          const idx = y * COLS + x;
+          const cls = coverData[idx];
+          if (cls === 0 || cls === 4 || cls === 5) continue;
+          const w = pxToWorld(x, y);
+          if (tooCloseToLandmark(w.x, w.z, avoid)) {
+            coverData[idx] = 6;
+            nPlaza++;
+            continue;
+          }
+          if (downtown || (sq && Math.hypot(x - sq[0], y - sq[1]) < downR)) {
+            coverData[idx] = 2;
+            nDown++;
+          } else {
+            coverData[idx] = 6;
+            nYard++;
+          }
+        }
+      }
+    }
+    for (let hi = 0; hi < ways.length; hi++) {
+      const way = ways[hi];
+      if (!osmRoadWidth(way.t)) continue;
+      const pts = way.pts || [];
+      for (let i = 0; i < pts.length; i++) {
+        const c = pts[i];
+        const rad = 0.55;
+        const x0 = Math.max(0, Math.floor(c[0] - rad - 1));
+        const x1 = Math.min(COLS - 1, Math.ceil(c[0] + rad + 1));
+        const y0 = Math.max(0, Math.floor(c[1] - rad - 1));
+        const y1 = Math.min(ROWS - 1, Math.ceil(c[1] + rad + 1));
+        for (let y = y0; y <= y1; y++) {
+          for (let x = x0; x <= x1; x++) {
+            if (Math.hypot(x - c[0], y - c[1]) > rad) continue;
+            const idx = y * COLS + x;
+            const cls = coverData[idx];
+            if (cls === 0 || cls === 4 || cls === 5) continue;
+            const w = pxToWorld(x, y);
+            if (tooCloseToLandmark(w.x, w.z, avoid)) {
+              coverData[idx] = 6;
+              continue;
+            }
+            if (sq && Math.hypot(x - sq[0], y - sq[1]) < downR) coverData[idx] = 2;
+            else if (cls === 7 || cls === 3 || cls === 1) coverData[idx] = 6;
+          }
+        }
+      }
+    }
+  }
+  for (let i = 0; i < avoid.length; i++) {
+    const a = avoid[i];
+    const p = worldToPx(a.x, a.z);
+    const rad = a.r / CELL;
+    const x0 = Math.max(0, Math.floor(p.px - rad - 1));
+    const x1 = Math.min(COLS - 1, Math.ceil(p.px + rad + 1));
+    const y0 = Math.max(0, Math.floor(p.py - rad - 1));
+    const y1 = Math.min(ROWS - 1, Math.ceil(p.py + rad + 1));
+    for (let y = y0; y <= y1; y++) {
+      for (let x = x0; x <= x1; x++) {
+        const d = Math.hypot(x - p.px, y - p.py);
+        if (d > rad) continue;
+        const idx = y * COLS + x;
+        if (coverData[idx] === 0) continue;
+        coverData[idx] = 6;
+        nPlaza++;
+      }
+    }
+  }
+  LAND.osmYards = nYard;
+  LAND.osmDowntownCells = nDown;
+  LAND.osmPlazaCells = nPlaza;
+}
+
+function makeHouseWashMat(rgb) {
+  const key = "h:" + rgb[0] + "," + rgb[1] + "," + rgb[2];
+  if (washMatCache[key]) return washMatCache[key];
+  const mat = new THREE.ShaderMaterial({
+    uniforms: {
+      uWash: { value: colU(rgb) },
+      uInkUse: { value: colU(INK) },
+      uPaper: { value: colU(PAPER) },
+      uNightMul: { value: colU(NIGHT_MUL) },
+      uNight: { value: 0 },
+      uSunDir: { value: new THREE.Vector3(0.3, 0.8, 0.2) },
+      uMoonDir: { value: new THREE.Vector3(0.2, 0.5, 0.4) },
+      uStorm: { value: 0 }
+    },
+    vertexShader: BUILDING_VERT,
+    fragmentShader: HOUSE_FRAG
+  });
+  washMats.push(mat);
+  washMatCache[key] = mat;
+  return mat;
+}
+
+function makeRoadMat(rgb) {
+  const key = "r:" + rgb[0] + "," + rgb[1] + "," + rgb[2];
+  if (washMatCache[key]) return washMatCache[key];
+  const mat = new THREE.ShaderMaterial({
+    uniforms: {
+      uWash: { value: colU(rgb) },
+      uInkUse: { value: colU(INK) },
+      uPaper: { value: colU(PAPER) },
+      uNightMul: { value: colU(NIGHT_MUL) },
+      uNight: { value: 0 },
+      uSunDir: { value: new THREE.Vector3(0.3, 0.8, 0.2) },
+      uMoonDir: { value: new THREE.Vector3(0.2, 0.5, 0.4) },
+      uStorm: { value: 0 }
+    },
+    vertexShader: ROAD_VERT,
+    fragmentShader: ROAD_FRAG,
+    depthWrite: true,
+    polygonOffset: true,
+    polygonOffsetFactor: -1,
+    polygonOffsetUnits: -1
+  });
+  washMats.push(mat);
+  washMatCache[key] = mat;
+  return mat;
+}
+
 function osmRoadWidth(t) {
   if (t === "motorway" || t === "trunk" || t === "primary") return 10;
-  if (t === "secondary" || t === "tertiary") return 8;
-  if (t === "residential" || t === "living_street" || t === "unclassified") return 6.4;
-  if (t === "service" || t === "road") return 4.4;
-  if (t === "track") return 3.6;
+  if (t === "secondary" || t === "tertiary") return 9;
+  if (t === "residential" || t === "living_street" || t === "unclassified") return 8.5;
+  if (t === "service" || t === "road") return 6.2;
+  if (t === "track") return 4.0;
   return 0;
 }
 
@@ -5036,13 +5616,15 @@ function landmarkAvoidList() {
   for (let i = 0; i < keys.length; i++) {
     const s = LANDMARK_SITES[keys[i]];
     const w = pxToWorld(s.px, s.py);
-    let r = 42;
-    if (keys[i].indexOf("stadium") >= 0 || keys[i].indexOf("courthouse") >= 0) r = 55;
-    if (keys[i].indexOf("mill") >= 0 || keys[i].indexOf("depot") >= 0) r = 80;
-    list.push({ x: w.x, z: w.z, r: r });
+    let r = 48;
+    if (keys[i].indexOf("stadium") >= 0 || keys[i].indexOf("courthouse") >= 0) r = 70;
+    if (keys[i].indexOf("mill") >= 0) r = 110;
+    if (keys[i].indexOf("depot") >= 0) r = 95;
+    if (keys[i].indexOf("church") >= 0 || keys[i].indexOf("st_joseph") >= 0) r = 55;
+    list.push({ x: w.x, z: w.z, r: r, kind: s.kind || keys[i] });
   }
   const hw = pxToWorld(HERO.px, HERO.py);
-  list.push({ x: hw.x, z: hw.z, r: 80 });
+  list.push({ x: hw.x, z: hw.z, r: 80, kind: "hero" });
   return list;
 }
 
@@ -5054,47 +5636,116 @@ function tooCloseToLandmark(x, z, avoid) {
   return false;
 }
 
+function drapeWayPts(wayPts, maxChord) {
+  const pts = [];
+  let split = 0;
+  for (let i = 0; i < wayPts.length - 1; i++) {
+    const a = pxToWorld(wayPts[i][0], wayPts[i][1]);
+    const b = pxToWorld(wayPts[i + 1][0], wayPts[i + 1][1]);
+    const dx = b.x - a.x, dz = b.z - a.z;
+    const len = Math.hypot(dx, dz);
+    if (len < 0.5) continue;
+    if (len > 250) split++;
+    const step = 18;
+    const steps = Math.max(1, Math.round(len / step));
+    const start = (i === 0) ? 0 : 1;
+    for (let s = start; s <= steps; s++) {
+      const t = s / steps;
+      const x = a.x + dx * t, z = a.z + dz * t;
+      pts.push({ x: x, y: yOf(heightWorld(x, z)) + 0.22, z: z });
+    }
+  }
+  return { pts: pts, split: split };
+}
+
+function appendDrapedStrip(pos, uv, idx, pts, half, vStart) {
+  let v = vStart;
+  for (let i = 0; i < pts.length; i++) {
+    const pr = pts[Math.max(0, i - 1)];
+    const nx = pts[Math.min(pts.length - 1, i + 1)];
+    let tx = nx.x - pr.x, tz = nx.z - pr.z;
+    const tl = Math.hypot(tx, tz) || 1;
+    tx /= tl; tz /= tl;
+    const sx = -tz, sz = tx;
+    pos.push(pts[i].x - sx * half, pts[i].y, pts[i].z - sz * half);
+    pos.push(pts[i].x + sx * half, pts[i].y, pts[i].z + sz * half);
+    const u = pts.length > 1 ? i / (pts.length - 1) : 0;
+    uv.push(u, 0, u, 1);
+    if (i > 0) idx.push(v - 2, v - 1, v, v - 1, v + 1, v);
+    v += 2;
+  }
+  return v;
+}
+
 function buildOsmRoadMesh(highways) {
   const pos = [], uv = [], idx = [];
-  let v = 0;
+  let v = 0, split = 0, meshed = 0;
   for (let hi = 0; hi < highways.length; hi++) {
     const way = highways[hi];
     const half = osmRoadWidth(way.t) * 0.5;
     if (half <= 0 || !way.pts || way.pts.length < 2) continue;
-    // Drape each segment on the terrain every 18 m so long chords do not fly through the sky.
-    const pts = [];
-    for (let i = 0; i < way.pts.length - 1; i++) {
-      const a = pxToWorld(way.pts[i][0], way.pts[i][1]);
-      const b = pxToWorld(way.pts[i + 1][0], way.pts[i + 1][1]);
-      const dx = b.x - a.x, dz = b.z - a.z;
-      const len = Math.hypot(dx, dz);
-      if (len < 0.5) continue;
-      // Oversimplified OSM ways can jump several kilometers in one chord; skip those.
-      if (len > 250) continue;
-      const steps = Math.max(1, Math.round(len / 18));
-      const start = (i === 0) ? 0 : 1;
-      for (let s = start; s <= steps; s++) {
-        const t = s / steps;
-        const x = a.x + dx * t, z = a.z + dz * t;
-        pts.push({ x: x, y: yOf(heightWorld(x, z)) + 0.18, z: z });
-      }
+    const draped = drapeWayPts(way.pts, 250);
+    if (draped.pts.length < 2) continue;
+    split += draped.split;
+    v = appendDrapedStrip(pos, uv, idx, draped.pts, half, v);
+    meshed++;
+  }
+  if (idx.length < 3) return { mesh: null, split: split, meshed: 0 };
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  const mat = makeRoadMat([140, 136, 126]);
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.name = "osmRoads";
+  mesh.frustumCulled = true;
+  mesh.renderOrder = 1;
+  return { mesh: mesh, split: split, meshed: meshed };
+}
+
+function buildSquareSidewalks(townName) {
+  const sq = downtownSquarePx(townName);
+  if (!sq) return null;
+  const pos = [], uv = [], idx = [];
+  let v = 0;
+  const cw = pxToWorld(sq[0], sq[1]);
+  const half = 52;
+  const width = 2.4;
+  const corners = [
+    { x: cw.x - half, z: cw.z - half },
+    { x: cw.x + half, z: cw.z - half },
+    { x: cw.x + half, z: cw.z + half },
+    { x: cw.x - half, z: cw.z + half },
+    { x: cw.x - half, z: cw.z - half }
+  ];
+  const draped = [];
+  for (let i = 0; i < corners.length - 1; i++) {
+    const a = corners[i], b = corners[i + 1];
+    const dx = b.x - a.x, dz = b.z - a.z;
+    const len = Math.hypot(dx, dz);
+    const steps = Math.max(2, Math.round(len / 14));
+    const start = (i === 0) ? 0 : 1;
+    for (let s = start; s <= steps; s++) {
+      const t = s / steps;
+      const x = a.x + dx * t, z = a.z + dz * t;
+      draped.push({ x: x, y: yOf(heightWorld(x, z)) + 0.26, z: z });
     }
-    for (let i = 0; i < pts.length; i++) {
-      const pr = pts[Math.max(0, i - 1)];
-      const nx = pts[Math.min(pts.length - 1, i + 1)];
-      let tx = nx.x - pr.x, tz = nx.z - pr.z;
-      const tl = Math.hypot(tx, tz) || 1;
-      tx /= tl; tz /= tl;
-      const sx = -tz, sz = tx;
-      pos.push(pts[i].x - sx * half, pts[i].y, pts[i].z - sz * half);
-      pos.push(pts[i].x + sx * half, pts[i].y, pts[i].z + sz * half);
-      const u = i / (pts.length - 1);
-      uv.push(u, 0, u, 1);
-      if (i > 0) {
-        idx.push(v - 2, v - 1, v, v - 1, v + 1, v);
-      }
-      v += 2;
-    }
+  }
+  v = appendDrapedStrip(pos, uv, idx, draped, width * 0.5, v);
+  // OSM footways and pedestrian paths near the square.
+  const town = osmData && osmData.towns && osmData.towns[townName];
+  const ways = (town && town.highways) || [];
+  for (let hi = 0; hi < ways.length; hi++) {
+    const way = ways[hi];
+    if (way.t !== "footway" && way.t !== "pedestrian" && way.t !== "path") continue;
+    const mid = way.pts && way.pts[way.pts.length >> 1];
+    if (!mid) continue;
+    if (Math.hypot(mid[0] - sq[0], mid[1] - sq[1]) * CELL > 140) continue;
+    const draped2 = drapeWayPts(way.pts, 250);
+    if (draped2.pts.length < 2) continue;
+    for (let k = 0; k < draped2.pts.length; k++) draped2.pts[k].y += 0.04;
+    v = appendDrapedStrip(pos, uv, idx, draped2.pts, 1.15, v);
   }
   if (idx.length < 3) return null;
   const geo = new THREE.BufferGeometry();
@@ -5102,24 +5753,240 @@ function buildOsmRoadMesh(highways) {
   geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
   geo.setIndex(idx);
   geo.computeVertexNormals();
-  const mat = makeWashMat([168, 156, 132]);
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.name = "osmRoads";
-  mesh.frustumCulled = true;
+  const mesh = new THREE.Mesh(geo, makeRoadMat([201, 196, 184]));
+  mesh.name = "osmSidewalks-" + townName;
+  mesh.renderOrder = 1;
   return mesh;
 }
 
-function makeHouseBodyGeo() {
+function makeGableBodyGeo() {
   const body = new THREE.BoxGeometry(1, 1, 1);
   body.translate(0, 0.5, 0);
   return body;
 }
 
-function makeHouseRoofGeo() {
-  const roof = new THREE.ConeGeometry(0.78, 1, 4);
-  roof.rotateY(Math.PI * 0.25);
-  roof.translate(0, 1.15, 0);
+function makeGableRoofGeo() {
+  // Unit gable, ridge along Z. Eaves at y=0, x=+/-0.56; ridge at y=0.5, x=0.
+  // Scale Y by width * tan(pitch) so a 35-45 deg pitch stays true after instancing.
+  const ox = 0.08, oz = 0.07, rise = 0.5;
+  const hw = 0.5 + ox, hd = 0.5 + oz;
+  const pos = [
+    -hw, 0, -hd,  0, rise, -hd,  0, rise, hd,  -hw, 0, hd,
+     hw, 0, -hd,  0, rise, -hd,  0, rise, hd,   hw, 0, hd,
+    -hw, 0, -hd,  hw, 0, -hd,  0, rise, -hd,
+    -hw, 0,  hd,  hw, 0,  hd,  0, rise,  hd,
+    -hw, 0, -hd,  -hw, -0.04, -hd,  -hw, -0.04, hd,  -hw, 0, hd,
+     hw, 0, -hd,   hw, -0.04, -hd,   hw, -0.04, hd,   hw, 0, hd
+  ];
+  const idx = [
+    0, 1, 2, 0, 2, 3,
+    4, 6, 5, 4, 7, 6,
+    8, 9, 10,
+    11, 13, 12,
+    14, 15, 16, 14, 16, 17,
+    18, 20, 19, 18, 21, 20
+  ];
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  return geo;
+}
+
+function makePorchGeo() {
+  const deck = new THREE.BoxGeometry(0.42, 0.22, 0.55);
+  deck.translate(0, 0.11, -0.72);
+  const roof = new THREE.BoxGeometry(0.48, 0.05, 0.58);
+  roof.translate(0, 0.34, -0.72);
+  return mergeGeos([deck, roof]);
+}
+
+function makeGarageBodyGeo() {
+  const g = new THREE.BoxGeometry(0.72, 0.78, 0.70);
+  g.translate(0.86, 0.39, 0.08);
+  return g;
+}
+
+function makeGarageRoofGeo() {
+  const roof = makeGableRoofGeo().clone();
+  roof.rotateY(Math.PI * 0.5);
+  roof.scale(0.72, 0.55, 0.70);
+  roof.translate(0.86, 0.78, 0.08);
   return roof;
+}
+
+function makeLBodyGeo() {
+  const main = new THREE.BoxGeometry(1, 1, 1);
+  main.translate(0, 0.5, 0);
+  const wing = new THREE.BoxGeometry(0.62, 0.92, 0.70);
+  wing.translate(0.81, 0.46, 0.15);
+  return mergeGeos([main, wing]);
+}
+
+function makeLRoofGeo() {
+  const main = makeGableRoofGeo().clone();
+  const wing = makeGableRoofGeo().clone();
+  wing.scale(0.70, 0.70, 0.62);
+  wing.rotateY(Math.PI * 0.5);
+  wing.translate(0.81, 0.92, 0.15);
+  return mergeGeos([main, wing]);
+}
+
+function makeParapetBodyGeo() {
+  const body = new THREE.BoxGeometry(1, 1, 1);
+  body.translate(0, 0.5, 0);
+  return body;
+}
+
+function makeParapetRoofGeo() {
+  const slab = new THREE.BoxGeometry(1.02, 0.10, 1.02);
+  slab.translate(0, 0.05, 0);
+  const n = new THREE.BoxGeometry(1.06, 0.48, 0.06);
+  n.translate(0, 0.24, -0.50);
+  const s = new THREE.BoxGeometry(1.06, 0.48, 0.06);
+  s.translate(0, 0.24, 0.50);
+  const w = new THREE.BoxGeometry(0.06, 0.48, 0.94);
+  w.translate(-0.50, 0.24, 0);
+  const e = new THREE.BoxGeometry(0.06, 0.48, 0.94);
+  e.translate(0.50, 0.24, 0);
+  return mergeGeos([slab, n, s, w, e]);
+}
+
+function houseWallPalettes() {
+  return [
+    { w: 0.40, rgb: [237, 227, 204] },
+    { w: 0.28, rgb: [196, 196, 190] },
+    { w: 0.12, rgb: [168, 176, 148] },
+    { w: 0.12, rgb: [232, 208, 120] },
+    { w: 0.08, rgb: [154, 62, 50] }
+  ];
+}
+
+function houseRoofPalettes() {
+  return [
+    { w: 0.55, rgb: [120, 118, 114] },
+    { w: 0.32, rgb: [90, 100, 112] },
+    { w: 0.13, rgb: [140, 78, 58] }
+  ];
+}
+
+function pickWeighted(list, u) {
+  let acc = 0;
+  for (let i = 0; i < list.length; i++) {
+    acc += list[i].w;
+    if (u <= acc) return list[i].rgb;
+  }
+  return list[list.length - 1].rgb;
+}
+
+function paletteKey(rgb) {
+  return rgb[0] + "," + rgb[1] + "," + rgb[2];
+}
+
+function addInstancedPair(group, bodyGeo, roofGeo, wallMat, roofMat, recs, placeFn, name) {
+  if (!recs.length) return;
+  const bodyMesh = new THREE.InstancedMesh(bodyGeo, wallMat, recs.length);
+  const roofMesh = new THREE.InstancedMesh(roofGeo, roofMat, recs.length);
+  bodyMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  roofMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  const dummy = new THREE.Object3D();
+  for (let i = 0; i < recs.length; i++) {
+    placeFn(dummy, recs[i], bodyMesh, roofMesh, i);
+  }
+  bodyMesh.instanceMatrix.needsUpdate = true;
+  roofMesh.instanceMatrix.needsUpdate = true;
+  bodyMesh.count = recs.length;
+  roofMesh.count = recs.length;
+  bodyMesh.frustumCulled = true;
+  roofMesh.frustumCulled = true;
+  bodyMesh.renderOrder = 2;
+  roofMesh.renderOrder = 2;
+  bodyMesh.name = name + "-body";
+  roofMesh.name = name + "-roof";
+  group.add(bodyMesh);
+  group.add(roofMesh);
+}
+
+function buildLotLines(recs, townName) {
+  const pos = [], uv = [], idx = [];
+  let v = 0, n = 0;
+  for (let i = 0; i < recs.length; i++) {
+    const rec = recs[i];
+    const c = rec.b && rec.b.c ? rec.b.c : rec.c;
+    if (!c) continue;
+    const h = hash01(c[0] * 3.1, c[1] * 5.7);
+    if (h > 0.38) continue;
+    const ww = rec.w || pxToWorld(c[0], c[1]);
+    const yaw = rec._yaw || rec.yaw || 0;
+    const bd = rec._bd || rec.bd || 8;
+    const bw = rec._bw || rec.bw || 8;
+    const fx = Math.sin(yaw), fz = Math.cos(yaw);
+    const sx = Math.cos(yaw), sz = -Math.sin(yaw);
+    const y0 = yOf(heightWorld(ww.x, ww.z)) + 0.28;
+    const driveway = h < 0.22;
+    const pts = [];
+    if (driveway) {
+      const len = 8 + h * 6;
+      const ox = ww.x - fx * (bd * 0.5 + 1);
+      const oz = ww.z - fz * (bd * 0.5 + 1);
+      for (let s = 0; s <= 4; s++) {
+        const t = s / 4;
+        const x = ox - fx * len * t, z = oz - fz * len * t;
+        pts.push({ x: x, y: yOf(heightWorld(x, z)) + 0.24, z: z });
+      }
+      v = appendDrapedStrip(pos, uv, idx, pts, 1.15, v);
+    } else {
+      const len = 6 + h * 5;
+      const ox = ww.x + sx * (bw * 0.45 + 1.5);
+      const oz = ww.z + sz * (bw * 0.45 + 1.5);
+      for (let s = 0; s <= 3; s++) {
+        const t = s / 3;
+        const x = ox + fx * (t - 0.5) * len, z = oz + fz * (t - 0.5) * len;
+        pts.push({ x: x, y: yOf(heightWorld(x, z)) + 0.26, z: z });
+      }
+      v = appendDrapedStrip(pos, uv, idx, pts, 0.12, v);
+    }
+    n++;
+  }
+  if (idx.length < 3) return null;
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  const rgb = [42, 33, 24];
+  const mesh = new THREE.Mesh(geo, makeRoadMat(rgb));
+  mesh.name = "osmLotLines-" + townName;
+  mesh.renderOrder = 2;
+  mesh.userData.count = n;
+  return mesh;
+}
+
+function addMillHalo() {
+  const mill = LANDMARK_SITES.jasper_city_mill || { px: 185.5, py: 458.6 };
+  const w = pxToWorld(mill.px, mill.py);
+  const geo = new THREE.CircleGeometry(34, 48);
+  geo.rotateX(-Math.PI * 0.5);
+  const mat = new THREE.ShaderMaterial({
+    uniforms: {
+      uWarm: { value: new THREE.Vector3(1.0, 0.86, 0.55) },
+      uNight: { value: 0 }
+    },
+    vertexShader: HALO_VERT,
+    fragmentShader: HALO_FRAG,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    side: THREE.DoubleSide
+  });
+  washMats.push(mat);
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.name = "millHalo";
+  mesh.position.set(w.x, yOf(heightWorld(w.x, w.z)) + 0.32, w.z);
+  mesh.renderOrder = 2;
+  mesh.frustumCulled = false;
+  scene.add(mesh);
+  LAND.millHalo = 1;
 }
 
 function buildOsmTowns() {
@@ -5128,14 +5995,25 @@ function buildOsmTowns() {
   const avoid = landmarkAvoidList();
   const towns = osmData.towns;
   const names = Object.keys(towns);
-  let nHouse = 0, nShop = 0, nShed = 0, nRoad = 0;
-  const bodyGeo = makeHouseBodyGeo();
-  const roofGeo = makeHouseRoofGeo();
-  const mats = {
-    house: { wall: makeWashMat([226, 216, 196]), roof: makeWashMat([106, 82, 66]) },
-    shop: { wall: makeWashMat([210, 200, 184]), roof: makeWashMat([90, 82, 70]) },
-    shed: { wall: makeWashMat([196, 180, 154]), roof: makeWashMat([106, 82, 66]) }
-  };
+  let nHouse = 0, nShop = 0, nShed = 0, nRoad = 0, nDown = 0, nSplit = 0, nFence = 0;
+  const bodyRect = makeGableBodyGeo();
+  const roofRect = makeGableRoofGeo();
+  const bodyL = makeLBodyGeo();
+  const roofL = makeLRoofGeo();
+  const porchGeo = makePorchGeo();
+  const garageBody = makeGarageBodyGeo();
+  const garageRoof = makeGarageRoofGeo();
+  const downBody = makeParapetBodyGeo();
+  const downRoof = makeParapetRoofGeo();
+  const shedBody = makeGableBodyGeo();
+  const shedRoof = makeGableRoofGeo();
+  const wallPals = houseWallPalettes();
+  const roofPals = houseRoofPalettes();
+  const downWalls = [
+    { w: 0.62, rgb: [154, 90, 66] },
+    { w: 0.38, rgb: [196, 158, 118] }
+  ];
+  const downRoofRgb = [88, 86, 82];
   const dummy = new THREE.Object3D();
   for (let ti = 0; ti < names.length; ti++) {
     const name = names[ti];
@@ -5145,12 +6023,18 @@ function buildOsmTowns() {
     let sx = 0, sz = 0, sn = 0;
     if (data.highways && data.highways.length) {
       const roads = buildOsmRoadMesh(data.highways);
-      if (roads) {
-        group.add(roads);
-        nRoad += data.highways.length;
+      if (roads.mesh) {
+        group.add(roads.mesh);
+        nRoad += roads.meshed;
+        nSplit += roads.split;
       }
     }
-    const buckets = { house: [], shop: [], shed: [] };
+    const walks = buildSquareSidewalks(name);
+    if (walks) group.add(walks);
+    const houseBuckets = {};
+    const downBuckets = {};
+    const shedList = [];
+    const lotRecs = [];
     const blds = data.buildings || [];
     for (let i = 0; i < blds.length; i++) {
       const b = blds[i];
@@ -5159,51 +6043,166 @@ function buildOsmTowns() {
       if (tooCloseToLandmark(w.x, w.z, avoid)) continue;
       if (coverWorld(w.x, w.z) === 0) continue;
       const kind = (b.k === "shop" || b.k === "shed") ? b.k : "house";
-      buckets[kind].push(b);
+      const downtown = isDowntownBuilding(name, px, py, kind);
+      const u = hash01(px, py);
+      const u2 = hash01(px + 9.1, py - 3.4);
+      const u3 = hash01(px - 2.2, py + 7.7);
+      let yaw = b.yaw || 0;
+      if (!downtown && u3 < 0.5) yaw += Math.PI * 0.5;
+      const sizeJ = 0.75 + u2 * 0.50;
+      let bw, bd, wallH, pitch, proto;
+      if (downtown) {
+        bw = Math.max(8, Math.min(26, (b.w || 12) * 1.06));
+        bd = Math.max(8, Math.min(24, (b.d || 10) * 1.04));
+        wallH = 7.6 + u * 1.8;
+        const wall = pickWeighted(downWalls, u);
+        const key = paletteKey(wall);
+        if (!downBuckets[key]) downBuckets[key] = [];
+        downBuckets[key].push({ b: b, w: w, bw: bw, bd: bd, wallH: wallH, yaw: yaw, wall: wall });
+        nDown++;
+        sx += w.x; sz += w.z; sn++;
+        continue;
+      }
+      if (kind === "shed") {
+        bw = Math.max(4, Math.min(8, (b.w || 5) * sizeJ));
+        bd = Math.max(4, Math.min(8, (b.d || 5) * sizeJ));
+        wallH = 2.6 + u * 0.7;
+        pitch = (35 + u2 * 10) * Math.PI / 180;
+        shedList.push({ b: b, w: w, bw: bw, bd: bd, wallH: wallH, pitch: pitch, yaw: yaw });
+        sx += w.x; sz += w.z; sn++;
+        continue;
+      }
+      bw = Math.max(6.5, Math.min(15, (b.w || 10) * sizeJ));
+      if (bw < 8) bw = 8 + u * 1.2;
+      if (bw > 12) bw = 12 - u2 * 0.8;
+      bw = Math.max(8, Math.min(12, bw));
+      bw *= sizeJ;
+      bw = Math.max(7, Math.min(14, bw));
+      bd = Math.max(7, Math.min(14, (b.d || 9) * sizeJ));
+      wallH = (u < 0.42 ? 3.5 : (u < 0.82 ? 4.3 : 4.9));
+      pitch = (35 + u2 * 10) * Math.PI / 180;
+      proto = "rect";
+      if (u3 > 0.78) proto = "L";
+      else if (u3 > 0.58) proto = "garage";
+      else if (u3 > 0.42) proto = "porch";
+      const wall = pickWeighted(wallPals, hash01(px + 1.3, py + 4.4));
+      const roof = pickWeighted(roofPals, hash01(px - 4.8, py + 2.1));
+      const rec = { b: b, w: w, bw: bw, bd: bd, wallH: wallH, pitch: pitch, yaw: yaw, wall: wall, roof: roof, proto: proto, _bw: bw, _bd: bd, _yaw: yaw };
+      const key = proto + "|" + paletteKey(wall) + "|" + paletteKey(roof);
+      if (!houseBuckets[key]) houseBuckets[key] = [];
+      houseBuckets[key].push(rec);
+      lotRecs.push(rec);
       sx += w.x; sz += w.z; sn++;
     }
-    const kinds = ["house", "shop", "shed"];
-    for (let k = 0; k < kinds.length; k++) {
-      const kind = kinds[k];
-      const recs = buckets[kind];
-      if (!recs.length) continue;
-      const bodyMesh = new THREE.InstancedMesh(bodyGeo, mats[kind].wall, recs.length);
-      const roofMesh = new THREE.InstancedMesh(roofGeo, mats[kind].roof, recs.length);
-      bodyMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-      roofMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-      for (let i = 0; i < recs.length; i++) {
-        const b = recs[i];
-        const ww = pxToWorld(b.c[0], b.c[1]);
-        const wallH = kind === "shop" ? 6.2 : (kind === "shed" ? 3.2 : 4.6);
-        const roofH = kind === "shop" ? 2.1 : (kind === "shed" ? 1.4 : 2.3);
-        const bw = Math.max(5, Math.min(18, b.w || 8));
-        const bd = Math.max(5, Math.min(16, b.d || 8));
-        const yaw = b.yaw || 0;
-        const y0 = yOf(heightWorld(ww.x, ww.z));
-        dummy.position.set(ww.x, y0, ww.z);
-        dummy.rotation.set(0, yaw, 0);
-        dummy.scale.set(bw, wallH, bd);
+    function placeHouse(dummy, rec, bodyMesh, roofMesh, i) {
+      const y0 = yOf(heightWorld(rec.w.x, rec.w.z));
+      dummy.position.set(rec.w.x, y0, rec.w.z);
+      dummy.rotation.set(0, rec.yaw, 0);
+      dummy.scale.set(rec.bw, rec.wallH, rec.bd);
+      dummy.updateMatrix();
+      bodyMesh.setMatrixAt(i, dummy.matrix);
+      dummy.position.set(rec.w.x, y0 + rec.wallH, rec.w.z);
+      dummy.rotation.set(0, rec.yaw, 0);
+      dummy.scale.set(rec.bw, rec.bw * Math.tan(rec.pitch), rec.bd);
+      dummy.updateMatrix();
+      roofMesh.setMatrixAt(i, dummy.matrix);
+    }
+    const keys = Object.keys(houseBuckets);
+    for (let k = 0; k < keys.length; k++) {
+      const recs = houseBuckets[keys[k]];
+      const proto = recs[0].proto;
+      const wallMat = makeHouseWashMat(recs[0].wall);
+      const roofMat = makeHouseWashMat(recs[0].roof);
+      let bodyGeo = bodyRect, roofGeo = roofRect;
+      if (proto === "L") { bodyGeo = bodyL; roofGeo = roofL; }
+      addInstancedPair(group, bodyGeo, roofGeo, wallMat, roofMat, recs, placeHouse, "osm-house-" + proto);
+      if (proto === "porch") {
+        const porchMesh = new THREE.InstancedMesh(porchGeo, wallMat, recs.length);
+        for (let i = 0; i < recs.length; i++) {
+          const rec = recs[i];
+          const y0 = yOf(heightWorld(rec.w.x, rec.w.z));
+          dummy.position.set(rec.w.x, y0, rec.w.z);
+          dummy.rotation.set(0, rec.yaw, 0);
+          dummy.scale.set(rec.bw, rec.wallH, rec.bd);
+          dummy.updateMatrix();
+          porchMesh.setMatrixAt(i, dummy.matrix);
+        }
+        porchMesh.instanceMatrix.needsUpdate = true;
+        porchMesh.count = recs.length;
+        porchMesh.renderOrder = 2;
+        porchMesh.name = "osm-house-porch";
+        group.add(porchMesh);
+      }
+      if (proto === "garage") {
+        const gb = new THREE.InstancedMesh(garageBody, wallMat, recs.length);
+        const gr = new THREE.InstancedMesh(garageRoof, roofMat, recs.length);
+        for (let i = 0; i < recs.length; i++) {
+          const rec = recs[i];
+          const y0 = yOf(heightWorld(rec.w.x, rec.w.z));
+          dummy.position.set(rec.w.x, y0, rec.w.z);
+          dummy.rotation.set(0, rec.yaw, 0);
+          dummy.scale.set(rec.bw, rec.wallH, rec.bd);
+          dummy.updateMatrix();
+          gb.setMatrixAt(i, dummy.matrix);
+          dummy.position.set(rec.w.x, y0, rec.w.z);
+          dummy.updateMatrix();
+          gr.setMatrixAt(i, dummy.matrix);
+        }
+        gb.instanceMatrix.needsUpdate = true;
+        gr.instanceMatrix.needsUpdate = true;
+        gb.count = recs.length;
+        gr.count = recs.length;
+        gb.renderOrder = 2;
+        gr.renderOrder = 2;
+        gb.name = "osm-house-garage-body";
+        gr.name = "osm-house-garage-roof";
+        group.add(gb);
+        group.add(gr);
+      }
+      nHouse += recs.length;
+    }
+    const dkeys = Object.keys(downBuckets);
+    for (let k = 0; k < dkeys.length; k++) {
+      const recs = downBuckets[dkeys[k]];
+      const wallMat = makeHouseWashMat(recs[0].wall);
+      const roofMat = makeHouseWashMat(downRoofRgb);
+      addInstancedPair(group, downBody, downRoof, wallMat, roofMat, recs, function (dummy, rec, bodyMesh, roofMesh, i) {
+        const y0 = yOf(heightWorld(rec.w.x, rec.w.z));
+        dummy.position.set(rec.w.x, y0, rec.w.z);
+        dummy.rotation.set(0, rec.yaw, 0);
+        dummy.scale.set(rec.bw, rec.wallH, rec.bd);
         dummy.updateMatrix();
         bodyMesh.setMatrixAt(i, dummy.matrix);
-        dummy.position.set(ww.x, y0, ww.z);
-        dummy.rotation.set(0, yaw, 0);
-        dummy.scale.set(bw, roofH + wallH * 0.15, bd);
+        dummy.position.set(rec.w.x, y0 + rec.wallH, rec.w.z);
+        dummy.rotation.set(0, rec.yaw, 0);
+        dummy.scale.set(rec.bw, 1, rec.bd);
         dummy.updateMatrix();
         roofMesh.setMatrixAt(i, dummy.matrix);
-      }
-      bodyMesh.instanceMatrix.needsUpdate = true;
-      roofMesh.instanceMatrix.needsUpdate = true;
-      bodyMesh.count = recs.length;
-      roofMesh.count = recs.length;
-      bodyMesh.frustumCulled = true;
-      roofMesh.frustumCulled = true;
-      bodyMesh.name = "osm-" + kind + "-body";
-      roofMesh.name = "osm-" + kind + "-roof";
-      group.add(bodyMesh);
-      group.add(roofMesh);
-      if (kind === "house") nHouse += recs.length;
-      else if (kind === "shop") nShop += recs.length;
-      else nShed += recs.length;
+      }, "osm-downtown");
+      nShop += recs.length;
+    }
+    if (shedList.length) {
+      const wallMat = makeHouseWashMat([196, 180, 154]);
+      const roofMat = makeHouseWashMat([120, 118, 114]);
+      addInstancedPair(group, shedBody, shedRoof, wallMat, roofMat, shedList, function (dummy, rec, bodyMesh, roofMesh, i) {
+        const y0 = yOf(heightWorld(rec.w.x, rec.w.z));
+        dummy.position.set(rec.w.x, y0, rec.w.z);
+        dummy.rotation.set(0, rec.yaw, 0);
+        dummy.scale.set(rec.bw, rec.wallH, rec.bd);
+        dummy.updateMatrix();
+        bodyMesh.setMatrixAt(i, dummy.matrix);
+        dummy.position.set(rec.w.x, y0 + rec.wallH, rec.w.z);
+        dummy.rotation.set(0, rec.yaw, 0);
+        dummy.scale.set(rec.bw, rec.bw * Math.tan(rec.pitch), rec.bd);
+        dummy.updateMatrix();
+        roofMesh.setMatrixAt(i, dummy.matrix);
+      }, "osm-shed");
+      nShed += shedList.length;
+    }
+    const lotMesh = buildLotLines(lotRecs, name);
+    if (lotMesh) {
+      group.add(lotMesh);
+      nFence += lotMesh.userData.count || 0;
     }
     if (!sn) {
       const mid = (data.buildings && data.buildings[0]) ? data.buildings[0].c : [0, 0];
@@ -5215,11 +6214,16 @@ function buildOsmTowns() {
     scene.add(group);
     osmTownGroups.push(group);
   }
+  addMillHalo();
   LAND.osmHouses = nHouse;
   LAND.osmShops = nShop;
   LAND.osmSheds = nShed;
   LAND.osmRoads = nRoad;
+  LAND.osmDowntown = nDown;
+  LAND.osmLongSplit = nSplit;
+  LAND.osmFences = nFence;
 }
+
 
 function cullOsmTowns() {
   if (!osmTownGroups.length || !camera) return;
@@ -5348,8 +6352,9 @@ function skinLandmarks() {
   const ink = night > 0.45 ? INK_NIGHT : INK;
   for (let i = 0; i < washMats.length; i++) {
     const u = washMats[i].uniforms;
-    u.uInkUse.value.set(ink[0] / 255, ink[1] / 255, ink[2] / 255);
-    u.uNight.value = night;
+    if (!u) continue;
+    if (u.uInkUse) u.uInkUse.value.set(ink[0] / 255, ink[1] / 255, ink[2] / 255);
+    if (u.uNight) u.uNight.value = night;
     if (u.uSunDir) u.uSunDir.value.copy(altAzDir(clock.alt, clock.sunAz));
     if (u.uMoonDir) u.uMoonDir.value.copy(altAzDir(clock.moonAlt, clock.moonAz));
     if (u.uStorm) u.uStorm.value = wx.kind === "storm" ? 1 : 0;
@@ -5586,6 +6591,7 @@ function applySkin() {
     if (cu && cu.uStorm) cu.uStorm.value = wx.kind === "storm" ? 1 : 0;
   }
   if (treeMesh) syncTreeFrames();
+  if (canopyMat) pushTod(canopyMat.uniforms);
   function tintGrass(mat) {
     if (!mat) return;
     set(mat.uniforms.uGrass, s.grass);
@@ -7664,11 +8670,12 @@ function findRiverTourPx() {
   if (raw.length) pts.push({ px: raw[raw.length - 1][0], py: raw[raw.length - 1][1] });
   let best = null, bestScore = -1e9;
   for (let i = 6; i < pts.length - 6; i++) {
-    const a = pts[i - 5], b = pts[i], c = pts[i + 5];
+    const a = pts[i - 3], b = pts[i], c = pts[i + 3];
     const v1x = b.px - a.px, v1y = b.py - a.py, v2x = c.px - b.px, v2y = c.py - b.py;
     const l1 = Math.hypot(v1x, v1y) || 1, l2 = Math.hypot(v2x, v2y) || 1;
     const dot = (v1x * v2x + v1y * v2y) / (l1 * l2);
     const ang = Math.acos(Math.max(-1, Math.min(1, dot)));
+    if (ang < 0.28) continue;
     const dMill = Math.hypot(b.px - mill[0], b.py - mill[1]) * CELL;
     if (dMill < 450 || dMill > 7000) continue;
     let woods = 0;
@@ -7681,7 +8688,7 @@ function findRiverTourPx() {
       if (clsL === 4 || clsL === 5 || clsL === 8) woods++;
       if (clsR === 4 || clsR === 5 || clsR === 8) woods++;
     }
-    const score = ang * 2.4 + woods * 0.4 - Math.abs(dMill - 1600) / 2200;
+    const score = ang * 4.2 + woods * 0.55 - Math.abs(dMill - 1800) / 2500;
     if (score > bestScore) {
       bestScore = score;
       const aw = pxToWorld(a.px, a.py);
@@ -7693,12 +8700,12 @@ function findRiverTourPx() {
       const nx = -tz, nz = tx;
       const midX = (aw.x + cw.x) * 0.5, midZ = (aw.z + cw.z) * 0.5;
       const sign = ((bw.x - midX) * nx + (bw.z - midZ) * nz) >= 0 ? 1 : -1;
-      const camX = bw.x + nx * sign * 90 - tx * 500;
-      const camZ = bw.z + nz * sign * 90 - tz * 500;
+      const camX = bw.x + nx * sign * 70 - tx * 400;
+      const camZ = bw.z + nz * sign * 70 - tz * 400;
       best = {
         px: b.px, py: b.py,
         dist: Math.hypot(camX - bw.x, camZ - bw.z),
-        eye: 40,
+        eye: 36,
         approach: Math.atan2(bw.x - camX, bw.z - camZ)
       };
     }
@@ -7908,12 +8915,12 @@ function getTourStops() {
   const churchE = [40, 52, 64];
   const courtD = [280, 360, 450, 560, 700];
   const courtE = [24, 36, 48];
-  const millD = [180, 240, 320, 420];
-  const millE = [18, 28, 40];
+  const millD = [130, 170, 230, 300];
+  const millE = [16, 24, 34];
   const depotD = [120, 180, 240, 320];
   const depotE = [16, 24, 36];
-  const farmD = [180, 260, 360, 480];
-  const farmE = [16, 26, 38];
+  const farmD = [220, 300, 400, 520];
+  const farmE = [20, 30, 42];
   const hallD = [220, 320, 420, 560];
   const hallE = [20, 30, 42];
   const stadD = [500, 700, 950, 1200];
@@ -7922,9 +8929,9 @@ function getTourStops() {
   const abbE = [40, 56, 72];
   const churchFr = frameNamed("church", church, court, churchH, churchD, churchE, 1400, 52);
   const courtFr = frameNamed("courthouse", court, church, courtH, courtD, courtE, 400, 36);
-  const millFr = frameNamed("mill", mill, church, millH, millD, millE, 280, 28);
+  const millFr = frameNamed("mill", mill, church, millH, millD, millE, 190, 22);
   const depotFr = frameNamed("depot", depot, church, depotH, depotD, depotE, 200, 24);
-  const farmFr = frameNamed("farmstead", [farm.px, farm.py], church, 12, farmD, farmE, 280, 26);
+  const farmFr = frameNamed("farmstead", [farm.px, farm.py], church, 12, farmD, farmE, 320, 30);
   const hallFr = frameNamed("townhall", hall, stadium, hallH, hallD, hallE, 360, 30);
   const stadFr = frameNamed("stadium", stadium, hall, stadH, stadD, stadE, 800, 40);
   const monFr = frameNamed("monastery", monastery, null, monH, abbD, abbE, 1200, 56);
@@ -8261,6 +9268,7 @@ function startLoop() {
     if (!state.frozen && !REDUCE) blinkFireflies(now);
     constBrighten();
     cullOsmTowns();
+    if (camera) refillTreeInstances(camera.position.x, camera.position.z, false);
     if (glOk) renderer.render(scene, camera);
     drawWxOverlay(now, dt);
     updateLandmarkButton();
@@ -8430,7 +9438,7 @@ function expose() {
     },
     stats: function () {
       const f = frameStats();
-      f.veg = { trees: VEG.treesPlaced, blades: VEG.blades, clumps: VEG.clumps, lodNear: LOD_NEAR, lodMid: LOD_MID };
+      f.veg = { trees: VEG.treesPlaced, treesLogical: VEG.treesLogical, treesInstanced: VEG.treesInstanced, canopyPatches: VEG.canopyPatches, blades: VEG.blades, clumps: VEG.clumps, lodNear: LOD_NEAR, lodMid: LOD_MID };
       f.land = { church: LAND.church, farmhouse: LAND.farmhouse, barn: LAND.barn, silo: LAND.silo, hay: LAND.hay, mill: LAND.mill, depot: LAND.depot, fromGltf: LAND.fromGltf };
       return f;
     },
