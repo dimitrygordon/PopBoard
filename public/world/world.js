@@ -46,8 +46,14 @@ const JHS_CAMPUS_GLB_FULL = "jasper_high_school_campus.meshopt.glb";
 const JHS_YAW = Math.PI / 2;
 // Real model eave/parapet plus HVAC; gym block is ~15 m.
 const JHS_HEIGHT_M = 17;
-// Framing half is the school mass (~90 x 160 m), not the campus apron.
-const JHS_HALF_M = 68;
+// Framing half / apparent width is the school mass (~90 m in a 3/4 view),
+// not the campus apron and not the AABB diagonal that inflated wFrac.
+const JHS_HALF_M = 42;
+const JHS_APPARENT_W = 88;
+// Huntingburg Town Hall model is 11.9 x 19.2 m in plan, 18.2 m to the finial.
+const HALL_APPARENT_W = 16;
+const HALL_HALF_M = 10;
+const HALL_HEIGHT_M = 18;
 const TOUR_HOLD_JHS = 30;
 const TOUR_HOLD_OTHER = 15;
 const TOUR_ORBIT_ARC = 50 * Math.PI / 180;
@@ -10022,6 +10028,139 @@ function nudgeFartherForWidth(target, heightM, fr, opts) {
   return best;
 }
 
+
+function tanHalfHFov() {
+  applyFovAndPitch();
+  const halfV = camera.fov * RAD * 0.5;
+  return Math.tan(halfV) * Math.max(0.3, camera.aspect);
+}
+
+function terrainBlocksLook(cx, cy, cz, tx, ty, tz) {
+  const dx = tx - cx, dy = ty - cy, dz = tz - cz;
+  const steps = 14;
+  for (let i = 1; i < steps; i++) {
+    const u = i / steps;
+    if (u > 0.88) continue;
+    const x = cx + dx * u, y = cy + dy * u, z = cz + dz * u;
+    if (yOf(heightWorld(x, z)) + 3 > y) return true;
+  }
+  return false;
+}
+
+function projectApparentWidth(tw, baseY, heightM, apparentW, cam) {
+  const look = new THREE.Vector3();
+  cam.getWorldDirection(look);
+  const right = new THREE.Vector3().crossVectors(look, new THREE.Vector3(0, 1, 0));
+  if (right.lengthSq() < 1e-6) right.set(1, 0, 0);
+  else right.normalize();
+  const midY = baseY + heightM * 0.45;
+  const a = new THREE.Vector3(tw.x - right.x * apparentW * 0.5, midY, tw.z - right.z * apparentW * 0.5).project(cam);
+  const b = new THREE.Vector3(tw.x + right.x * apparentW * 0.5, midY, tw.z + right.z * apparentW * 0.5).project(cam);
+  const top = new THREE.Vector3(tw.x, baseY + heightM, tw.z).project(cam);
+  const bot = new THREE.Vector3(tw.x, baseY, tw.z).project(cam);
+  const ok = (a.z > 0 && a.z < 1 && b.z > 0 && b.z < 1);
+  const wFrac = ok ? Math.abs(b.x - a.x) / 2 : 0;
+  const hFrac = (top.z > 0 && top.z < 1 && bot.z > 0 && bot.z < 1) ? Math.abs(top.y - bot.y) / 2 : 0;
+  const midX = (a.x + b.x) * 0.5;
+  const midYndc = (top.y + bot.y) * 0.5;
+  return { ok: ok, wFrac: wFrac, hFrac: hFrac, midX: midX, midY: midYndc, minY: Math.min(top.y, bot.y), maxY: Math.max(top.y, bot.y) };
+}
+
+// Lock the camera distance to a real apparent width and search angles first.
+// Never retreat so far that the subject drops out of the width band, and never
+// return a null approach (that used the hero vector and missed Town Hall).
+function frameWidthLocked(name, target, hide, heightM, opts) {
+  opts = opts || {};
+  if (!camera) return { dist: opts.minDist || 200, eye: opts.eyes ? opts.eyes[0] : 32, approach: opts.preferAng || 0 };
+  const tw = pxToWorld(target[0], target[1]);
+  const tanH = tanHalfHFov();
+  const apparent = opts.apparentW || (opts.half || 16) * 2;
+  const wTarget = opts.wTarget != null ? opts.wTarget : 0.13;
+  const wMin = opts.wMin != null ? opts.wMin : wTarget - 0.03;
+  const wMax = opts.wMax != null ? opts.wMax : wTarget + 0.03;
+  const minDist = opts.minDist != null ? opts.minDist : 70;
+  const clearM = opts.clearM != null ? opts.clearM : minDist;
+  const preferAng = opts.preferAng != null ? opts.preferAng : -Math.PI / 4;
+  const preferArc = opts.preferArc != null ? opts.preferArc : 0.8;
+  const half = opts.half != null ? opts.half : apparent * 0.5;
+  const eyes = opts.eyes || [24, 32, 44];
+  const dist0 = Math.max(minDist, apparent / (2 * wTarget * tanH));
+  const distMul = opts.distMul || [0.94, 1.0, 1.08];
+  const dists = [];
+  for (let i = 0; i < distMul.length; i++) dists.push(Math.max(minDist, dist0 * distMul[i]));
+  const pitch = applyFovAndPitch().pitch;
+  const baseY = yOf(heightWorld(tw.x, tw.z));
+  const topY = baseY + heightM;
+  const midTarget = opts.midY != null ? opts.midY : -0.62;
+  const skipR = Math.max(half * 1.4, 16);
+  const saved = camera.position.clone();
+  const savedQ = camera.quaternion.clone();
+  let best = { score: 1e9 };
+  let bestAny = null;
+
+  function tryCam(dist, eye, ang) {
+    const x = tw.x + Math.sin(ang) * dist;
+    const z = tw.z + Math.cos(ang) * dist;
+    if (coverWorld(x, z) === 0) return null;
+    const y = yOf(heightWorld(x, z)) + eye;
+    if (y < topY - 6) return null;
+    if (opts.occlude !== false && terrainBlocksLook(x, y, z, tw.x, baseY + heightM * 0.55, tw.z)) return null;
+    const heading = Math.atan2(tw.x - x, tw.z - z);
+    camera.position.set(x, y, z);
+    camera.lookAt(
+      x + Math.sin(heading) * 1800 * Math.cos(pitch),
+      y + Math.sin(pitch) * 1800,
+      z + Math.cos(heading) * 1800 * Math.cos(pitch)
+    );
+    camera.updateMatrixWorld(true);
+    if (nearClutterInShot(x, y, z, clearM, tw.x, tw.z, skipR, opts.rejectBottom)) return null;
+    const box = projectApparentWidth(tw, baseY, heightM, apparent, camera);
+    if (!box.ok) return null;
+    if (box.minY < -0.98 || box.maxY > -0.08) return null;
+    if (Math.abs(box.midX) > 0.55) return null;
+    let score = Math.abs(box.wFrac - wTarget) * 22 + Math.abs(box.midY - midTarget) * 0.8 + Math.abs(box.midX) * 6;
+    const da = Math.abs(Math.atan2(Math.sin(ang - preferAng), Math.cos(ang - preferAng)));
+    score += (da / Math.PI) * 3;
+    if (da > preferArc) score += 2.5;
+    return { dist: dist, eye: eye, approach: ang, score: score, hFrac: box.hFrac, wFrac: box.wFrac, midX: box.midX };
+  }
+
+  const nArc = 16;
+  for (let di = 0; di < dists.length; di++) {
+    for (let ei = 0; ei < eyes.length; ei++) {
+      for (let i = 0; i <= nArc; i++) {
+        const ang = preferAng + (i / nArc - 0.5) * 2 * preferArc;
+        const rec = tryCam(dists[di], eyes[ei], ang);
+        if (!rec) continue;
+        if (!bestAny || rec.score < bestAny.score) bestAny = rec;
+        if (rec.wFrac >= wMin && rec.wFrac <= wMax && rec.score < best.score) best = rec;
+      }
+    }
+  }
+  // If the preferred arc is blocked, change the approach at the locked
+  // distance. Do not back away and shrink the subject.
+  if (best.wFrac == null) {
+    for (let ei = 0; ei < eyes.length; ei++) {
+      for (let i = 0; i < 24; i++) {
+        const ang = i * Math.PI * 2 / 24;
+        const rec = tryCam(dist0, eyes[ei], ang);
+        if (!rec) continue;
+        if (!bestAny || rec.score < bestAny.score) bestAny = rec;
+        if (rec.wFrac >= wMin * 0.9 && rec.wFrac <= wMax * 1.15 && rec.score < best.score) best = rec;
+      }
+    }
+  }
+  camera.position.copy(saved);
+  camera.quaternion.copy(savedQ);
+  camera.updateMatrixWorld(true);
+  let out = (best.wFrac != null) ? best : (bestAny || best);
+  if (out.approach == null) {
+    out = { dist: dist0, eye: eyes[Math.min(1, eyes.length - 1)], approach: preferAng, score: 0, pinned: true };
+  }
+  console.info("[frame]", name, "dist", out.dist, "eye", out.eye, "approach", out.approach, "hFrac", out.hFrac, "wFrac", out.wFrac, "score", out.score, "dist0", dist0.toFixed(1), out.pinned ? "pinned" : "");
+  return out;
+}
+
 function frameNamed(name, target, hide, heightM, dists, eyes, dist0, eye0, extra) {
   const opts = {
     dists: dists,
@@ -10068,7 +10207,7 @@ function getTourStops() {
   const courtH = landmarkHeightM("courthouse", 28);
   const millH = landmarkHeightM("mill", 14);
   const depotH = landmarkHeightM("depot", 8);
-  const hallH = landmarkHeightM("townhall", 16);
+  const hallH = landmarkHeightM("townhall", HALL_HEIGHT_M);
   const stadH = landmarkHeightM("stadium", 18);
   const monH = landmarkHeightM("monastery", 40);
   const abbH = landmarkHeightM("archabbey", 40);
@@ -10110,15 +10249,24 @@ function getTourStops() {
   const millFr = frameNamed("mill", mill, church, millH, millD, millE, 210, 30, Object.assign({}, widthBand, { half: 12, wMin: 0.10, wMax: 0.16, wTarget: 0.12 }));
   const depotFr = frameNamed("depot", depot, church, depotH, depotD, depotE, 210, 34, Object.assign({}, widthBand, { half: 16, wMin: 0.10, wMax: 0.18, wTarget: 0.12 }));
   const farmFr = frameNamed("farmstead", [farm.px, farm.py], church, 12, farmD, farmE, 320, 30);
-  const hallFr = frameNamed("townhall", hall, stadium, hallH, hallD, hallE, 240, 72, Object.assign({ half: 22, hMin: 0.05, eye0: 72, preferCenter: true, wTarget: 0.13 }, widthBand));
-  if (!(hallFr && hallFr.approach != null && hallFr.wFrac >= 0.10 && hallFr.dist >= FORE_CLEAR_M)) {
-    const nudged = nudgeCloserForWidth(hall, hallH, hallFr, Object.assign({ half: 22, minDist: FORE_CLEAR_M, wMin: 0.10 }, widthBand));
-    if (nudged && nudged.wFrac >= 0.10) {
-      hallFr.dist = nudged.dist; hallFr.eye = nudged.eye; hallFr.approach = nudged.approach;
-      hallFr.wFrac = nudged.wFrac; hallFr.hFrac = nudged.hFrac;
-    }
-    console.info("[frame]", "townhall after nudge", "dist", hallFr.dist, "eye", hallFr.eye, "approach", hallFr.approach, "wFrac", hallFr.wFrac);
-  }
+  // The hall is only ~16 m across. A 150 m keep-out makes 10-15% width
+  // impossible on desktop, and a half-22 box plus a null approach (hero
+  // vector) is why the last phone shot looked at a hillside, not the hall.
+  // Stand in town with gable cottages around it; reject terrain that hides it.
+  const hallFr = frameWidthLocked("townhall", hall, stadium, hallH, {
+    apparentW: HALL_APPARENT_W,
+    half: HALL_HALF_M,
+    wMin: 0.10,
+    wMax: 0.15,
+    wTarget: 0.13,
+    minDist: 70,
+    clearM: 70,
+    preferAng: -3 * Math.PI / 4,
+    preferArc: 0.9,
+    eyes: narrow ? [32, 44, 56] : [24, 32, 42],
+    midY: -0.62,
+    occlude: true
+  });
   const stadFr = frameNamed("stadium", stadium, hall, stadH, stadD, stadE, 520, 42, Object.assign({ half: 42 }, widthBand));
   const monFr = frameNamed("monastery", monastery, null, monH, abbD, abbE, narrow ? 520 : 340, 56, Object.assign({ half: 40 }, widthBand));
   const abbFr = frameNamed("archabbey", abbey, null, abbH, abbD, abbE, narrow ? 680 : 340, 56, Object.assign({ half: 40, wMin: 0.10, wMax: 0.13, wTarget: 0.11 }, widthBand));
@@ -10139,7 +10287,7 @@ function getTourStops() {
     { name: "depot", px: depot[0], py: depot[1], dist: depotFr.dist, eye: depotFr.eye, approach: depotFr.approach, heightM: depotH },
     { name: "river", px: river.px, py: river.py, dist: river.dist || 140, eye: river.eye || 16, approach: river.approach },
     { name: "farmstead", px: farm.px, py: farm.py, dist: farmFr.dist, eye: farmFr.eye, approach: farmFr.approach, heightM: 12 },
-    { name: "townhall", px: hall[0], py: hall[1], dist: hallFr.dist, eye: hallFr.eye, approach: hallFr.approach, heightM: hallH },
+    { name: "townhall", px: hall[0], py: hall[1], dist: hallFr.dist, eye: hallFr.eye, approach: hallFr.approach, heightM: hallH, wFrac: hallFr.wFrac, hFrac: hallFr.hFrac },
     { name: "stadium", px: stadium[0], py: stadium[1], dist: stadFr.dist, eye: stadFr.eye, approach: stadFr.approach, heightM: stadH },
     { name: "monastery", px: monastery[0], py: monastery[1], dist: monFr.dist, eye: monFr.eye, approach: monFr.approach, heightM: monH },
     { name: "archabbey", px: abbey[0], py: abbey[1], dist: abbFr.dist, eye: abbFr.eye, approach: abbFr.approach, heightM: abbH }
@@ -10147,43 +10295,32 @@ function getTourStops() {
   if (OPENING_STOP === "jhs") {
     const jhs = sitePx("jasper_high_school", [118.62, 410.52]);
     const jhsH = landmarkHeightM("jhs", JHS_HEIGHT_M);
-    const jhsD = narrow ? [900, 1100, 1300, 1500, 1800] : [320, 400, 480, 560, 640];
-    const jhsE = narrow ? [28, 40, 54] : [22, 30, 40, 52];
-    // 20-25% width, closer and lower, SW three-quarter (west front + south side), 150 m keep-out.
-    const jhsFr = frameShortLandmark(jhs, church, jhsH, {
-      dists: jhsD,
-      eyes: jhsE,
-      dist0: narrow ? 1300 : 480,
-      eye0: narrow ? 40 : 30,
+    // 20-25% of the real school mass, closer and lower, SW three-quarter
+    // (west front + south side in afternoon sun). If houses violate the
+    // 150 m keep-out, change the approach; do not back off and shrink the school.
+    const jhsFr = frameWidthLocked("jhs", jhs, church, jhsH, {
+      apparentW: JHS_APPARENT_W,
       half: JHS_HALF_M,
-      hMin: 0.08,
-      hMax: 0.28,
-      hTarget: 0.16,
       wMin: 0.20,
-      wMax: 0.26,
+      wMax: 0.25,
       wTarget: 0.22,
-      midY: -0.62,
-      nAng: 24,
       minDist: FORE_CLEAR_M,
       clearM: FORE_CLEAR_M,
       preferAng: -Math.PI / 4,
-      preferArc: 0.7,
-      orbitArc: TOUR_ORBIT_ARC_JHS
+      preferArc: 0.75,
+      eyes: narrow ? [26, 34, 44] : [20, 26, 34],
+      midY: -0.62,
+      occlude: true
     });
-    if (jhsFr && (jhsFr.wFrac == null || jhsFr.wFrac < 0.20)) {
-      const nudged = nudgeCloserForWidth(jhs, jhsH, jhsFr, { half: JHS_HALF_M, minDist: FORE_CLEAR_M, wMin: 0.20 });
-      if (nudged) {
-        jhsFr.dist = nudged.dist; jhsFr.eye = nudged.eye; jhsFr.approach = nudged.approach;
-        jhsFr.wFrac = nudged.wFrac; jhsFr.hFrac = nudged.hFrac;
-      }
-    }
-    console.info("[frame]", "jhs", "dist", jhsFr.dist, "eye", jhsFr.eye, "approach", jhsFr.approach, "hFrac", jhsFr.hFrac, "wFrac", jhsFr.wFrac, "score", jhsFr.score);
     tourStopsCache.unshift({
       name: "jhs", px: jhs[0], py: jhs[1],
-      dist: jhsFr.dist, eye: jhsFr.eye, approach: jhsFr.approach, heightM: jhsH
+      dist: jhsFr.dist, eye: jhsFr.eye, approach: jhsFr.approach, heightM: jhsH,
+      wFrac: jhsFr.wFrac, hFrac: jhsFr.hFrac
     });
   }
-  const longHor = 0.69;
+  // Phone needs a slightly lower aim so flood-from-top stays in 66-74
+  // after a near hillside or town fill. 0.69 on phone Town Hall landed at 62%.
+  const longHor = narrow ? 0.73 : 0.70;
   for (let i = 0; i < tourStopsCache.length; i++) {
     const s = tourStopsCache[i];
     if (s.name === "jhs" || s.name === "courthouse" || s.name === "townhall" || s.name === "monastery" || s.name === "archabbey") {
