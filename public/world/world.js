@@ -1276,7 +1276,7 @@ void main(){
 `;
 
 const BUILDING_FRAG = /* glsl */`
-uniform vec3 uWash, uInkUse, uPaper, uNightMul, uSunDir;
+uniform vec3 uWash, uInkUse, uPaper, uNightMul, uSunDir, uMoonDir;
 uniform float uNight;
 varying vec3 vN;
 varying vec3 vWorld;
@@ -1289,20 +1289,30 @@ void main(){
   vec3 wash = mix(uPaper, uWash, 0.68);
   float g = noise21(vWorld.xz * 0.55 + vWorld.y * 0.28);
   wash *= 0.95 + 0.08 * g;
-  // Posterize the wash so it reads as a print, not a smooth plastic fill.
-  wash = floor(wash * 5.0 + 0.5) / 5.0;
-  wash = mix(wash, wash * uNightMul * 0.7, uNight);
-  wash = mix(wash, vec3(0.04, 0.055, 0.10), uNight * 0.45);
-  vec3 col = mix(wash, uInkUse, clamp(rim * 0.92, 0.0, 0.8));
-  float ndl = dot(N, normalize(uSunDir));
-  if (ndl < 0.28) {
+  // Posterize by luminance only. Per-channel floors snapped R, G and B
+  // across different steps and painted pink and green camouflage blotches.
+  float luma = dot(wash, vec3(0.30, 0.59, 0.11));
+  float q = floor(luma * 6.0 + 0.5) / 6.0;
+  wash *= q / max(luma, 0.001);
+  vec3 nightBody = wash * uNightMul * 0.38;
+  nightBody = mix(nightBody, vec3(0.035, 0.048, 0.09), 0.58);
+  wash = mix(wash, nightBody, uNight);
+  // Day: dark ink rims. Night: a thin cream edge only, never a flood fill.
+  // uInkUse is cream after dusk, so rim and hatch stay sparse at night.
+  float rimAmt = mix(0.92, 0.20, uNight);
+  float rimCap = mix(0.80, 0.26, uNight);
+  vec3 col = mix(wash, uInkUse, clamp(rim * rimAmt, 0.0, rimCap));
+  vec3 L = normalize(mix(uMoonDir, uSunDir, 1.0 - uNight));
+  if (L.y < 0.02) L = normalize(vec3(L.x, 0.02, L.z));
+  float ndl = dot(N, L);
+  float hatchCut = mix(0.28, 0.10, uNight);
+  if (ndl < hatchCut) {
     float ang = 0.7;
     vec2 hp = vWorld.zy * vec2(1.6, 1.1);
     float sl = abs(fract((hp.x * cos(ang) + hp.y * sin(ang)) * 1.8) - 0.5);
-    float hatch = (1.0 - smoothstep(0.0, 0.16, sl)) * (1.0 - smoothstep(-0.05, 0.28, ndl));
-    // Occasional gaps, like a lifted pen.
+    float hatch = (1.0 - smoothstep(0.0, 0.16, sl)) * (1.0 - smoothstep(-0.05, hatchCut, ndl));
     hatch *= step(0.22, hash21(floor(hp * 4.0)));
-    col = mix(col, uInkUse, hatch * 0.42);
+    col = mix(col, uInkUse, hatch * mix(0.42, 0.16, uNight));
   }
   col *= 0.97 + 0.05 * noise21(vWorld.xz * 2.4);
   gl_FragColor = vec4(col, 1.0);
@@ -1314,14 +1324,16 @@ uniform vec3 uGlow, uInkUse;
 uniform float uNight;
 varying vec3 vN;
 varying vec3 vWorld;
+float hash21w(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 void main(){
   vec3 N = normalize(vN);
   vec3 V = normalize(cameraPosition - vWorld);
   float rim = pow(1.0 - abs(dot(N, V)), 2.6);
-  vec3 dark = vec3(0.12, 0.10, 0.08);
-  vec3 col = mix(dark, uGlow, clamp(uNight, 0.0, 1.0));
-  col *= mix(1.0, 1.25, uNight);
-  col = mix(col, uInkUse, rim * mix(0.7, 0.25, uNight));
+  vec3 dark = vec3(0.08, 0.07, 0.06);
+  float lit = step(0.64, hash21w(floor(vWorld.xz * 0.12 + vWorld.y * 0.18)));
+  vec3 col = mix(dark, uGlow, clamp(uNight, 0.0, 1.0) * lit);
+  col *= mix(1.0, 1.18, uNight * lit);
+  col = mix(col, uInkUse, rim * mix(0.7, 0.22, uNight));
   gl_FragColor = vec4(col, 1.0);
 }
 `;
@@ -2096,35 +2108,37 @@ varying vec2 vUv;
 varying vec3 vWorld;
 ${NOISE_GLSL}
 
-float noise21q(vec2 p){
-  vec2 i = floor(p), f = fract(p);
-  f = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
-  return mix(mix(hash21(i), hash21(i + vec2(1.0, 0.0)), f.x),
-             mix(hash21(i + vec2(0.0, 1.0)), hash21(i + vec2(1.0, 1.0)), f.x), f.y);
+vec2 simplexGrad(vec2 i){
+  float h = hash21(i) * 6.2831853;
+  return vec2(cos(h), sin(h));
 }
-float worley2(vec2 p){
-  vec2 i = floor(p), f = fract(p);
-  float md = 1.0;
-  for (int y = -1; y <= 1; y++) {
-    for (int x = -1; x <= 1; x++) {
-      vec2 g = vec2(float(x), float(y));
-      vec2 o = vec2(hash21(i + g), hash21(i + g + vec2(17.0, 9.0)));
-      vec2 r = g + o - f;
-      md = min(md, dot(r, r));
-    }
-  }
-  return sqrt(md);
+float simplex2(vec2 p){
+  const float K1 = 0.366025404;
+  const float K2 = 0.211324865;
+  vec2 i = floor(p + (p.x + p.y) * K1);
+  vec2 a = p - i + (i.x + i.y) * K2;
+  float m = step(a.y, a.x);
+  vec2 o = vec2(m, 1.0 - m);
+  vec2 b = a - o + K2;
+  vec2 c = a - 1.0 + 2.0 * K2;
+  vec3 h = max(0.5 - vec3(dot(a, a), dot(b, b), dot(c, c)), 0.0);
+  vec3 n = h * h * h * h * vec3(
+    dot(a, simplexGrad(i)),
+    dot(b, simplexGrad(i + o)),
+    dot(c, simplexGrad(i + 1.0))
+  );
+  return clamp(dot(n, vec3(70.0)) * 0.5 + 0.5, 0.0, 1.0);
 }
 float lumpNoise(vec2 p){
-  vec2 w1 = vec2(noise21q(p * 0.31 + vec2(2.1, 7.7)), noise21q(p * 0.31 + vec2(9.3, 1.8)));
-  vec2 w2 = vec2(noise21q(p * 0.85 + vec2(4.4, 0.6)), noise21q(p * 0.85 + vec2(1.2, 8.9)));
-  vec2 q = p + (w1 - 0.5) * 2.6 + (w2 - 0.5) * 1.3;
-  q = vec2(0.866 * q.x - 0.500 * q.y, 0.500 * q.x + 0.866 * q.y);
-  float c = 1.0 - worley2(q * 1.55);
-  float c2 = 1.0 - worley2(q * 2.7 + vec2(3.2, 5.1));
-  float n = c * 0.68 + c2 * 0.22;
-  n += 0.10 * noise21q(q * 3.4 + vec2(8.0, 1.6));
-  return n;
+  float n = 0.0, a = 0.5, s = 0.0;
+  vec2 q = p;
+  for (int k = 0; k < 5; k++) {
+    n += a * simplex2(q);
+    s += a;
+    q = vec2(q.x * 1.85 + q.y * 0.58, q.y * 1.85 - q.x * 0.58) + vec2(3.17, 7.41);
+    a *= 0.5;
+  }
+  return n / max(s, 0.001);
 }
 
 
@@ -2191,7 +2205,7 @@ void main(){
     gaps = 1.0 - smoothstep(0.30, 0.48, field);
     float relief = mix(0.28, 1.0, up);
     float rollDark = lumps * relief;
-    wash = mix(wash, pale, gaps * 0.62 * mix(0.35, 1.0, up));
+    wash = mix(wash, pale, gaps * 0.48 * mix(0.30, 0.85, up));
     wash = mix(wash, dark, rollDark * 0.58);
     // Horizontal hatch: rows follow constant elevation, broken into short dashes
     // along azimuth. Spacing tightens toward the horizon with the lumps.
@@ -2306,14 +2320,16 @@ void main(){
     float taper = smoothstep(-0.05, 0.16, tt) * smoothstep(1.05, 0.84, tt);
     float gap = step(0.38, hash21(vec2(rid * 13.0, floor(along * 5.0) + s)));
     float line = 1.0 - smoothstep(0.0, 0.18 * max(0.35, taper), abs(f));
-    // Light hatching, mostly on the underside, leaving the body as cream paper.
-    hatch = dens * line * taper * inS * gap * mix(0.35, 1.0, under);
-    col = mix(wash, uInk, clamp(hatch * 0.28, 0.0, 0.40));
-    // A light inked edge only on the shaded side, with pen lifts.
-    rim = 1.0 - smoothstep(0.08, 0.26, b);
-    float shadeSide = 1.0 - smoothstep(0.10, 0.50, rel);
-    float lift = step(0.32, hash21(vec2(floor(p.x * 16.0 + s), floor(p.y * 12.0))));
-    col = mix(col, uInk, rim * shadeSide * lift * 0.55);
+    // Engraved hatch on the shadow side (away from the sun) and the flat base.
+    float sunSx = sign(uSunDir.x + 0.0001);
+    float shadow = 1.0 - smoothstep(-0.05, 0.48, p.x * sunSx + rel * 0.12);
+    hatch = dens * line * taper * inS * gap * mix(0.45, 1.0, max(under, shadow));
+    col = mix(wash, uInk, clamp(hatch * 0.52, 0.0, 0.62));
+    // Inked outline around the lobe union, heavier on the shadow side, with pen lifts.
+    rim = 1.0 - smoothstep(0.06, 0.22, b);
+    float lift = step(0.22, hash21(vec2(floor(p.x * 16.0 + s), floor(p.y * 12.0))));
+    col = mix(col, uInk, rim * lift * mix(0.42, 0.88, shadow));
+    col = mix(col, mix(col, uInk, 0.16), shadow * 0.32 * (1.0 - rel * 0.25));
     alpha = 0.98;
   }
 
@@ -2360,6 +2376,23 @@ void main(){
       col = mix(col, mix(col, creamLt, 0.42), k * hatch * 0.50);
     } else {
       col = mix(col, mix(col, creamLt, 0.45), k * 0.50);
+    }
+    vec3 toFrag = vWorld - cameraPosition;
+    vec3 toBolt = uStrikePos - cameraPosition;
+    float boltDist = length(toBolt);
+    vec3 bdir = toBolt / max(1.0, boltDist);
+    float alongB = dot(toFrag, bdir);
+    float perp = length(toFrag - bdir * alongB);
+    float onScreen = 1.0 - smoothstep(40.0, 380.0, perp);
+    float inFront = step(-80.0, alongB) * (1.0 - smoothstep(boltDist + 180.0, boltDist + 520.0, alongB));
+    float fade = onScreen * inFront * clamp(uStrikeAmt / 0.72, 0.0, 1.0);
+    if (uShaft > 0.5) {
+      alpha *= mix(1.0, 0.05, fade);
+    }
+    if (uDeck > 0.5 && uRain > 0.5) {
+      // Soften deck-attached rain strokes in the same cone so they do not
+      // draw a ruled screen across the bolt.
+      col = mix(col, mix(col, creamLt, 0.2), fade * 0.15);
     }
   }
   alpha *= uAlphaMul;
@@ -2436,8 +2469,7 @@ function buildVolClouds() {
   if (deck) {
     // Horizontal world ceilings at three altitudes so the deck parallaxes and never follows the camera.
     puffSpec = [
-      { az: 0.0, dist: 0, alt: 820, sx: 56000, sy: 56000, seed: 1.1, flat: 1 },
-      { az: 0.0, dist: 0, alt: 1180, sx: 56000, sy: 56000, seed: 8.4, flat: 1 }
+      { az: 0.0, dist: 0, alt: 900, sx: 56000, sy: 56000, seed: 1.1, flat: 1 }
     ];
   } else if (kind === "fog") {
     puffSpec = [
@@ -2500,7 +2532,8 @@ function buildVolClouds() {
   const ground = yOf(heightWorld(anchor.x, anchor.z));
   for (let i = 0; i < puffs; i++) {
     const sp = puffSpec[i % puffSpec.length];
-    const geo = new THREE.PlaneGeometry(1, 1);
+    const segs = sp.flat ? 48 : 1;
+    const geo = new THREE.PlaneGeometry(1, 1, segs, segs);
     const mat = makeVolCloudMat(0, sp.seed, gray);
     mat.uniforms.uDeck.value = deck && !sp.shaft ? 1 : 0;
     mat.uniforms.uRain.value = (kind === "rain" || kind === "storm") ? 1 : 0;
@@ -2713,55 +2746,80 @@ function makeRainMat(close) {
       uBase: { value: 820 },
       uGround: { value: 400 },
       uPixel: { value: 1 },
-      uClose: { value: close ? 1 : 0 }
+      uClose: { value: close ? 1 : 0 },
+      uStrikePos: { value: new THREE.Vector3() },
+      uStrikeAmt: { value: 0 }
     },
     vertexShader: /* glsl */`
       attribute float aPhase;
       attribute vec2 aCorner;
-      uniform float uTime, uBase, uGround, uPixel, uClose;
-      uniform vec3 uCam, uWind;
+      uniform float uTime, uBase, uGround, uPixel, uClose, uStrikeAmt;
+      uniform vec3 uCam, uWind, uStrikePos;
       varying float vDist;
       varying float vAlong;
+      varying float vOpac;
+      varying float vClear;
       float hash(float n){ return fract(sin(n * 127.1) * 43758.5453); }
       void main(){
         float h1 = hash(aPhase);
         float h2 = hash(aPhase + 17.2);
         float h3 = hash(aPhase + 31.7);
+        float h4 = hash(aPhase + 53.9);
         float rad, ang;
         if (uClose > 0.5) {
           rad = 4.0 + h1 * 16.0;
           ang = h2 * 6.2831853;
         } else {
-          // Most drops stay near the camera; a thinner veil reaches the far hills.
-          // h1 below 0.62 (about 62% of drops) stay in the near/mid field.
-          rad = mix(18.0 + pow(h2, 0.80) * 420.0, 400.0 + pow(h1, 0.70) * 2000.0, step(0.62, h1));
-          ang = (h2 + h3) * 6.2831853;
+          // Irregular radial bins so strokes do not sit on a ruled grid.
+          rad = mix(16.0 + pow(h2, 0.72) * 460.0, 360.0 + pow(h1, 0.66) * 2100.0, step(0.58, h1));
+          rad *= mix(0.82, 1.28, h4);
+          ang = (h2 * 1.37 + h3 * 0.83 + h4 * 0.41) * 6.2831853;
         }
         vec3 hor = normalize(vec3(uWind.x, 0.0, uWind.z));
         if (length(hor) < 0.01) hor = vec3(0.3, 0.0, 0.8);
         vec3 right = vec3(-hor.z, 0.0, hor.x);
         vec3 origin = vec3(uCam.x, 0.0, uCam.z) + right * (cos(ang) * rad) + hor * (sin(ang) * rad);
         float drop = uBase - uGround + 40.0;
-        float speed = mix(26.0, 48.0, h3);
+        float speed = mix(22.0, 54.0, h3);
         float fall = fract(uTime * speed / drop + aPhase);
         float y = uBase - fall * drop;
-        float slant = (uBase - y) * 0.14 * (0.6 + 0.4 * length(uWind));
+        float slant = (uBase - y) * mix(0.08, 0.22, h4) * (0.55 + 0.45 * length(uWind));
         origin.x += hor.x * slant;
         origin.z += hor.z * slant;
         origin.y = y;
-        vec3 dir = normalize(vec3(hor.x * 0.45, -1.0, hor.z * 0.45));
+        float lean = mix(0.28, 0.62, h2);
+        vec3 dir = normalize(vec3(hor.x * lean, -1.0, hor.z * lean));
         vec3 side = normalize(cross(dir, vec3(0.0, 1.0, 0.0)));
         if (length(side) < 0.01) side = vec3(1.0, 0.0, 0.0);
         float dist = length(origin - uCam);
         vDist = dist;
         vAlong = aCorner.y;
-        // Near strokes are longer and darker; far ones soften into a veil. Fine ink, ~1.5 px.
+        vOpac = mix(0.35, 1.0, h4);
+        // Skip a fraction of strokes so the field has hand-inked gaps.
+        if (h3 < 0.14) vOpac = 0.0;
         float pix = max(0.10, dist * 0.00105);
         float far = smoothstep(280.0, 1800.0, dist);
-        float len = uClose > 0.5 ? mix(7.0, 12.0, h3) : mix(8.0, 16.0, h3);
-        float wid = uClose > 0.5 ? pix * 1.8 : pix * mix(1.2, 1.6, h2);
+        float len = uClose > 0.5 ? mix(5.0, 16.0, h3) : mix(5.0, 26.0, pow(h3, 0.85));
+        float wid = uClose > 0.5 ? pix * mix(1.3, 2.1, h2) : pix * mix(1.0, 1.85, h2);
         len *= mix(1.0, 0.55, far);
         wid *= mix(1.0, 1.25, far);
+        vClear = 1.0;
+        if (uStrikeAmt > 0.02) {
+          vec3 toDrop = origin - uCam;
+          vec3 toBolt = uStrikePos - uCam;
+          float boltDist = length(toBolt);
+          vec3 bdir = toBolt / max(1.0, boltDist);
+          float alongB = dot(toDrop, bdir);
+          float perp = length(toDrop - bdir * alongB);
+          float onScreen = 1.0 - smoothstep(40.0, 380.0, perp);
+          // Drops between the camera and the strike, or just behind it, are
+          // the screen that hides the bolt. Clear that cone, not only a
+          // depth shell around the end point.
+          float inFront = step(-80.0, alongB) * (1.0 - smoothstep(boltDist + 180.0, boltDist + 520.0, alongB));
+          float around = 1.0 - smoothstep(0.0, 480.0, abs(boltDist - alongB));
+          float fade = onScreen * max(inFront * 0.94, around);
+          vClear = mix(1.0, 0.02, clamp(fade * uStrikeAmt / 0.72, 0.0, 1.0));
+        }
         vec3 p = origin + dir * (aCorner.y * len) + side * (aCorner.x * wid);
         gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
       }
@@ -2770,18 +2828,21 @@ function makeRainMat(close) {
       uniform float uClose;
       varying float vDist;
       varying float vAlong;
+      varying float vOpac;
+      varying float vClear;
       void main(){
         float along = 1.0 - abs(vAlong) * 2.0;
         float body = smoothstep(0.0, 0.35, along);
-        if (body < 0.05) discard;
+        float alpha = body * vOpac * vClear;
+        if (alpha < 0.03) discard;
         vec3 ink = vec3(0.30, 0.36, 0.42);
         vec3 veil = vec3(0.55, 0.58, 0.62);
         float far = smoothstep(280.0, 1800.0, vDist);
         vec3 col = mix(ink, veil, far);
-        float alpha = body * mix(0.50, 0.16, far);
+        alpha *= mix(0.58, 0.16, far);
         if (uClose > 0.5) {
           col = ink;
-          alpha = body * 0.55;
+          alpha = body * vOpac * vClear * 0.55;
         }
         gl_FragColor = vec4(col, alpha);
       }
@@ -2863,6 +2924,8 @@ function layoutRain() {
     u.uWind.value.set(w.x * w.ms, 0, w.z * w.ms);
     u.uBase.value = ground + base;
     u.uGround.value = ground + 2;
+    if (u.uStrikeAmt) u.uStrikeAmt.value = (strike && strike.amt) ? strike.amt : 0;
+    if (u.uStrikePos && strike && strike.pos) u.uStrikePos.value.set(strike.pos.x, strike.pos.y, strike.pos.z);
   });
 }
 
@@ -4286,7 +4349,8 @@ function makeWashMat(rgb) {
       uPaper: { value: colU(PAPER) },
       uNightMul: { value: colU(NIGHT_MUL) },
       uNight: { value: 0 },
-      uSunDir: { value: new THREE.Vector3(0.3, 0.8, 0.2) }
+      uSunDir: { value: new THREE.Vector3(0.3, 0.8, 0.2) },
+      uMoonDir: { value: new THREE.Vector3(0.2, 0.5, 0.4) }
     },
     vertexShader: BUILDING_VERT,
     fragmentShader: BUILDING_FRAG
@@ -4707,6 +4771,8 @@ function skinLandmarks() {
     const u = washMats[i].uniforms;
     u.uInkUse.value.set(ink[0] / 255, ink[1] / 255, ink[2] / 255);
     u.uNight.value = night;
+    if (u.uSunDir) u.uSunDir.value.copy(altAzDir(clock.alt, clock.sunAz));
+    if (u.uMoonDir) u.uMoonDir.value.copy(altAzDir(clock.moonAlt, clock.moonAz));
   }
   for (let i = 0; i < windowMats.length; i++) {
     const u = windowMats[i].uniforms;
@@ -6114,13 +6180,16 @@ function midpointDisplace(ax, ay, az, bx, by, bz, depth, spread, rng, out) {
   const dx = bx - ax, dy = by - ay, dz = bz - az;
   const len = Math.hypot(dx, dy, dz) || 1;
   const px = -dz / len, pz = dx / len;
-  const jag = (rng() * 2 - 1) * spread * len;
-  const jy = (rng() * 2 - 1) * spread * len * 0.28;
+  // Each level jogs 15-25% of this segment's length, so the zigzags stay
+  // visible at every scale instead of collapsing toward a straight line.
+  const amt = 0.15 + rng() * 0.10;
+  const jag = (rng() * 2 - 1) * amt * len;
+  const jy = (rng() * 2 - 1) * amt * len * 0.24;
   const x = mx + px * jag;
   const y = my + jy;
   const z = mz + pz * jag;
-  midpointDisplace(ax, ay, az, x, y, z, depth - 1, spread * 0.52, rng, out);
-  midpointDisplace(x, y, z, bx, by, bz, depth - 1, spread * 0.52, rng, out);
+  midpointDisplace(ax, ay, az, x, y, z, depth - 1, spread, rng, out);
+  midpointDisplace(x, y, z, bx, by, bz, depth - 1, spread, rng, out);
 }
 
 function pickStrikeTarget(rng) {
@@ -6169,24 +6238,24 @@ function cloudBaseWorldY(x, z) {
 function buildBoltPath(seed, start, end) {
   const rng = mulberry(seed);
   const main = [];
-  midpointDisplace(start.x, start.y, start.z, end.x, end.y, end.z, 5, 0.22, rng, main);
+  midpointDisplace(start.x, start.y, start.z, end.x, end.y, end.z, 6, 0.20, rng, main);
   main.push(end.x, end.y, end.z);
   const nPts = (main.length / 3) | 0;
   const nBr = 2 + ((rng() * 3) | 0);
   const branches = [];
   for (let b = 0; b < nBr; b++) {
-    const i = 2 + ((rng() * Math.max(1, nPts - 6)) | 0);
+    const i = 4 + ((rng() * Math.max(1, nPts - 10)) | 0);
     const sx = main[i * 3], sy = main[i * 3 + 1], sz = main[i * 3 + 2];
-    const len = 80 + rng() * 180;
-    const ang = Math.atan2(end.x - start.x, end.z - start.z) + (rng() - 0.5) * 1.4;
-    const dip = 0.35 + rng() * 0.5;
+    const len = 140 + rng() * 260;
+    const ang = Math.atan2(end.x - start.x, end.z - start.z) + (rng() < 0.5 ? -1 : 1) * (0.55 + rng() * 0.85);
+    const dip = 0.45 + rng() * 0.45;
     let ex = sx + Math.sin(ang) * len;
     let ez = sz + Math.cos(ang) * len;
     let ey = sy - Math.abs(len * dip);
     const gy = yOf(heightWorld(ex, ez)) + 2;
     if (ey < gy) ey = gy;
     const br = [];
-    midpointDisplace(sx, sy, sz, ex, ey, ez, 3, 0.2, rng, br);
+    midpointDisplace(sx, sy, sz, ex, ey, ez, 5, 0.2, rng, br);
     br.push(ex, ey, ez);
     branches.push(br);
   }
@@ -6219,10 +6288,12 @@ function beginStrikeEvent(now, kind, seed) {
   const end = pickStrikeTarget(rng);
   if (!end) return false;
   const baseY = cloudBaseWorldY(end.x, end.z);
+  const leanAz = Math.atan2((camera && camera.position ? camera.position.x : 0) - end.x, (camera && camera.position ? camera.position.z : 0) - end.z) + (rng() - 0.5) * 1.1;
+  const lean = 260 + rng() * 520;
   const start = {
-    x: end.x + (rng() - 0.5) * 180,
+    x: end.x + Math.sin(leanAz) * lean,
     y: baseY + 40 + rng() * 80,
-    z: end.z + (rng() - 0.5) * 180
+    z: end.z + Math.cos(leanAz) * lean
   };
   strike.t0 = now;
   strike.kind = pick;
@@ -6753,10 +6824,15 @@ function setCommonUniforms(t) {
     const cm = volCloudItems[ci].mesh && volCloudItems[ci].mesh.material;
     if (cm && cm.uniforms) applyStrike(cm.uniforms);
   }
+  if (rainMesh && rainMesh.material && rainMesh.material.uniforms) applyStrike(rainMesh.material.uniforms);
+  if (rainLens && rainLens.material && rainLens.material.uniforms) applyStrike(rainLens.material.uniforms);
   if (strike.visible) setBoltAmt(strike.amt || 0);
   for (let i = 0; i < washMats.length; i++) {
-    if (washMats[i].uniforms.uSunDir && clock) {
+    if (clock && washMats[i].uniforms.uSunDir) {
       washMats[i].uniforms.uSunDir.value.copy(altAzDir(clock.alt, clock.sunAz));
+    }
+    if (clock && washMats[i].uniforms.uMoonDir) {
+      washMats[i].uniforms.uMoonDir.value.copy(altAzDir(clock.moonAlt, clock.moonAz));
     }
   }
 }

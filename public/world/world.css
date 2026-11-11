@@ -260,3 +260,21 @@ body[data-sky="night"] #landmark-btn:focus-visible {
 #landmark-btn[hidden] {
   display: none;
 }
+
+@media (max-width: 430px) {
+  #caption {
+    left: calc(10px + env(safe-area-inset-left, 0px));
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    padding: 0.30rem 0.46rem 0.26rem;
+    max-width: calc(50vw - 24px);
+  }
+  #place { font-size: 0.70rem; letter-spacing: 0.12em; }
+  #when { font-size: 0.62rem; }
+  #landmark-btn {
+    right: calc(10px + env(safe-area-inset-right, 0px));
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    padding: 0.34rem 0.48rem 0.32rem 0.56rem;
+    font-size: 0.86rem;
+    max-width: calc(50vw - 24px);
+  }
+}
