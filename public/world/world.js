@@ -779,6 +779,12 @@ void main(){
       nightRiver = mix(nightRiver, vec3(0.93, 0.90, 0.84), clamp(moonGlint, 0.0, 0.88));
       col = mix(col, nightRiver, uNight);
     }
+    // Storm close-ups: dark slate near #5A6068, slightly lighter than the
+    // darkened land, no leftover day-blue. Night and clear day stay as above.
+    if (uStorm > 0.01 && uNight < 0.01) {
+      vec3 stormRiver = vec3(90.0, 96.0, 104.0) / 255.0;
+      col = mix(col, stormRiver, 0.96 * uStorm);
+    }
     if (nCls > 0.5) col = mix(col, uInkUse, 0.35 * (1.0 - layer));
   }
 
@@ -851,9 +857,11 @@ void main(){
     col *= mix(1.0, 0.86, uRain);
     col = mix(col, vec3(col.r * 0.92, col.g * 0.95, col.b * 1.02), uRain * 0.20);
   }
-  if (uStorm > 0.01) {
+  if (uStorm > 0.01 && cls >= 0.5) {
     // About 35% darker and cooler; autumn rust desaturates toward gray.
     // Strike lighting below still lifts the land locally around a bolt.
+    // Water is already set to storm slate above and is re-asserted below,
+    // so this land-only dim cannot restore a blue tint on the river.
     float luma = dot(col, vec3(0.30, 0.59, 0.11));
     vec3 desat = mix(col, vec3(luma), 0.62);
     desat = vec3(desat.r * 0.90, desat.g * 0.95, desat.b * 1.06);
@@ -890,7 +898,12 @@ void main(){
     float line = abs(fract((wz.x * 0.07 + wz.y * 0.09) + rip * 0.10) - 0.5);
     rib = mix(rib, vec3(0.165, 0.129, 0.094), (1.0 - smoothstep(0.0, 0.08, line)) * 0.42);
     float spec = pow(clamp(dot(reflect(-L, vec3(0.0, 1.0, 0.0)), V), 0.0, 1.0), 28.0);
-    rib = mix(rib, vec3(0.97, 0.93, 0.82), clamp(spec * 0.7 + (n4 - 0.3) * 0.1, 0.0, 0.5));
+    rib = mix(rib, vec3(0.97, 0.93, 0.82), clamp(spec * 0.7 + (n4 - 0.3) * 0.1, 0.0, 0.5) * (1.0 - uStorm));
+    if (uStorm > 0.01) {
+      vec3 stormRiver = vec3(90.0, 96.0, 104.0) / 255.0;
+      rib = mix(rib, stormRiver, 0.96 * uStorm);
+      rib = mix(rib, vec3(0.165, 0.129, 0.094), (1.0 - smoothstep(0.0, 0.08, line)) * 0.28 * uStorm);
+    }
     vec3 nRib = vec3(0.035, 0.045, 0.07);
     nRib = mix(nRib, uInkUse, (1.0 - smoothstep(0.0, 0.08, line)) * 0.35);
     float sparse = step(0.86, hash21(floor(wz * 0.08)));
@@ -904,6 +917,15 @@ void main(){
       float ring = 1.0 - smoothstep(0.0, 1.15, abs(length(wz - ctr) - rad * 11.0));
       ring *= (1.0 - rad) * step(0.42, id);
       rib = mix(rib, mix(uInkUse, vec3(0.20, 0.18, 0.16), uNight), ring * 0.62 * uRain);
+    }
+    if (uStrikeAmt > 0.001) {
+      float sd = length(vWorld - uStrikePos);
+      float fall = exp(-sd * sd / max(1.0, uStrikeRad * uStrikeRad));
+      vec3 toStrike = normalize(uStrikePos - vWorld);
+      vec3 Rf = reflect(-V, vec3(0.0, 1.0, 0.0));
+      float specS = pow(max(0.0, dot(normalize(Rf), toStrike)), 18.0);
+      float k = min(0.88, uStrikeAmt * (fall * 0.50 + specS * 0.90));
+      rib = mix(rib, mix(rib, vec3(0.965, 0.933, 0.863), 0.78), k);
     }
     col = mix(rib, col, 0.12 * layer);
   }
@@ -5707,11 +5729,12 @@ function makeRiverMat() {
         float distR = length(vW.xz - cameraPosition.xz);
         float farW = smoothstep(160.0, 820.0, distR);
         col = mix(col, mix(uHor, uWater, 0.22), farW * 0.70 * (1.0 - uStorm));
-        // Storm water matches the storm-darkened land: cool gray, no leftover
-        // sky reflection. It only brightens as a reflection while a bolt flashes.
+        // Storm water is a dark slate near #5A6068, only slightly lighter
+        // than the storm-darkened land, with no leftover day-blue or sky
+        // tint. It only brightens as a reflection while a bolt flashes.
         if (uStorm > 0.01) {
-          vec3 stormLand = vec3(0.32, 0.325, 0.33);
-          col = mix(col, stormLand, 0.92 * uStorm);
+          vec3 stormRiver = vec3(90.0, 96.0, 104.0) / 255.0;
+          col = mix(col, stormRiver, 0.96 * uStorm);
         }
         // Night: dark ink everywhere except a moon-glint band along the moon azimuth.
         vec3 nightCol = vec3(0.022, 0.024, 0.028);
