@@ -753,17 +753,32 @@ void main(){
   // River: one unbroken ribbon, cream glints, engraved ripple lines, never patches
   if (cls < 0.5) {
     vec3 river = vec3(0.40, 0.50, 0.52);
-    col = mix(uPaper, river, 0.72);
     float rip = sin(wz.x * 0.22 + wz.y * 0.31 + uTime * 0.35) * 0.5 + sin(wz.x * 0.09 - wz.y * 0.14) * 0.5;
     float line = abs(fract((wz.x * 0.07 + wz.y * 0.09) + rip * 0.10) - 0.5);
-    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.08, line)) * mix(0.50, 0.12, layer));
     float line2 = abs(fract((wz.x * 0.045 - wz.y * 0.06) * 1.15 + 0.3) - 0.5);
-    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.09, line2)) * 0.14 * nearL);
-    // cream / moon glints along the ribbon
+    // Day: cream glints. Storm: less paper, no cream sparkle (later storm dim
+    // matches the land). Night: dark ink, lit only on the moon-azimuth glint band.
     vec3 R = reflect(-L, vec3(0.0, 1.0, 0.0));
     float spec = pow(clamp(dot(R, V), 0.0, 1.0), 40.0);
-    vec3 glintC = mix(vec3(0.96, 0.92, 0.82), vec3(0.93, 0.90, 0.84), uNight);
-    col = mix(col, glintC, clamp(spec * mix(0.55, 0.22, uNight) + (n4 - 0.35) * mix(0.08, 0.02, uNight), 0.0, mix(0.55, 0.25, uNight)));
+    vec3 glintC = vec3(0.96, 0.92, 0.82);
+    col = mix(uPaper, river, mix(0.72, 0.95, uStorm));
+    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.08, line)) * mix(0.50, 0.12, layer));
+    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.09, line2)) * 0.14 * nearL);
+    col = mix(col, glintC, clamp(spec * 0.55 + (n4 - 0.35) * 0.08, 0.0, 0.55) * (1.0 - uNight) * (1.0 - uStorm));
+    if (uNight > 0.01) {
+      vec3 nightRiver = vec3(0.022, 0.024, 0.028);
+      vec3 moonD = normalize(uMoonDir);
+      vec3 Rm = reflect(-V, vec3(0.0, 1.0, 0.0));
+      float moonUp = smoothstep(-0.04, 0.10, moonD.y);
+      vec2 moonAz = normalize(moonD.xz + vec2(1e-5));
+      vec2 fromCam = normalize(vWorld.xz - cameraPosition.xz);
+      float azBand = pow(max(0.0, dot(fromCam, moonAz)), 26.0);
+      float moonSpec = pow(max(0.0, dot(normalize(Rm), moonD)), 36.0);
+      float spark = mix(0.55, 1.0, hash21(floor(vWorld.xz * 0.10)));
+      float moonGlint = (moonSpec * 0.95 + azBand * 0.50) * moonUp * spark;
+      nightRiver = mix(nightRiver, vec3(0.93, 0.90, 0.84), clamp(moonGlint, 0.0, 0.88));
+      col = mix(col, nightRiver, uNight);
+    }
     if (nCls > 0.5) col = mix(col, uInkUse, 0.35 * (1.0 - layer));
   }
 
@@ -1435,6 +1450,7 @@ const tour = {
   to: null,
   t: 0,
   duration: 1,
+  pace: 1,
   started: false,
   manualTravel: false
 };
@@ -2238,19 +2254,22 @@ void main(){
       vec3 horBand = mix(pale, midc, 0.22);
       wash = mix(wash, horBand, (1.0 - up) * 0.78);
     }
-    // Thin ink dashes on lump undersides. The old hatch used elev*18 rows and a
-    // 0.26-wide line, which filled two fat elevation bands and then carved them
-    // into 7-13 azimuth cells, so the upper sky read as dark rectangular tiles
-    // fixed to the view (same screen spots every pass).
-    float row = elev * mix(140.0, 56.0, up);
-    float f = fract(row + (nC - 0.5) * 0.22) - 0.5;
-    float line = 1.0 - smoothstep(0.0, 0.055, abs(f));
-    float along = azim * mix(48.0, 90.0, hash21(vec2(floor(row), s + 2.1)));
-    float segF = fract(along + hash21(vec2(floor(row), s + 6.0)));
-    float segLen = mix(0.16, 0.40, hash21(vec2(floor(row) * 9.0, floor(along) + s)));
+    // Thin ink dashes on lump undersides, engraved by hand: row phase and
+    // spacing jitter per cell, warped rows, and uneven stroke lengths. Keep
+    // the stroke thin and the azimuth cells dense so the old rectangular
+    // tiles (fat elev*18 bands carved into 7-13 cells) stay gone.
+    float cellAz = floor(azim * mix(56.0, 102.0, up));
+    float rowScale = mix(140.0, 56.0, up) * mix(0.78, 1.28, hash21(vec2(cellAz, s + 1.3)));
+    float row = elev * rowScale + (nC - 0.5) * 1.35 + hash21(vec2(cellAz, s + 4.7)) * 0.95;
+    float f = fract(row) - 0.5;
+    float lineW = mix(0.038, 0.068, hash21(vec2(floor(row), cellAz + s)));
+    float line = 1.0 - smoothstep(0.0, lineW, abs(f));
+    float along = azim * mix(56.0, 108.0, hash21(vec2(floor(row), s + 2.1)));
+    float segF = fract(along + hash21(vec2(floor(row) + cellAz, s + 6.0)));
+    float segLen = mix(0.07, 0.55, hash21(vec2(floor(row) * 9.0, floor(along) + s)));
     float inSeg = step(0.0, segF) * step(segF, segLen);
-    float taper = smoothstep(0.0, 0.08, segF) * smoothstep(segLen, segLen - 0.08, segF);
-    float lift = step(0.22, hash21(vec2(floor(row) * 11.0, floor(along) + s)));
+    float taper = smoothstep(0.0, 0.06, segF) * smoothstep(segLen, segLen - 0.06, segF);
+    float lift = step(0.16, hash21(vec2(floor(row) * 11.0, floor(along) + s)));
     float dens = mix(0.06, 1.0, rollDark) * mix(0.18, 0.95, up);
     dens = mix(dens, dens * 1.35, uStorm);
     hatch = dens * line * lift * inSeg * taper;
@@ -5570,14 +5589,15 @@ function layoutRiverRibbon() {
         uNightMul: { value: colU(NIGHT_MUL) },
         uStrikePos: { value: new THREE.Vector3() },
         uStrikeAmt: { value: 0 },
-        uStrikeRad: { value: 1600 }
+        uStrikeRad: { value: 1600 },
+        uStorm: { value: 0 }
       },
       vertexShader: /* glsl */`varying vec2 vUv; varying vec3 vN; varying vec3 vW;
         void main(){ vUv = uv; vN = normalize(normalMatrix * normal);
           vec4 w = modelMatrix * vec4(position,1.0); vW = w.xyz;
           gl_Position = projectionMatrix * viewMatrix * w; }`,
       fragmentShader: /* glsl */`
-        uniform float uNight;
+        uniform float uNight, uStorm;
         uniform vec3 uInk, uNightMul;
         uniform vec3 uStrikePos;
         uniform float uStrikeAmt, uStrikeRad;
@@ -5593,6 +5613,11 @@ function layoutRiverRibbon() {
           col = mix(col, ink, hatch * 0.16);
           float shore = 1.0 - smoothstep(0.0, 0.22, 1.0 - vUv.y);
           col = mix(col, ink, shore * 0.10);
+          if (uStorm > 0.01) {
+            float lumaB = dot(col, vec3(0.299, 0.587, 0.114));
+            col = mix(col, vec3(lumaB * 0.90, lumaB * 0.95, lumaB * 1.04), 0.70 * uStorm);
+            col *= mix(1.0, 0.65, uStorm);
+          }
           vec3 nightCol = mix(col * uNightMul * 0.4, vec3(0.035, 0.048, 0.09), 0.5);
           nightCol = mix(nightCol, ink, 0.25 + hatch * 0.55 + shore * 0.7);
           col = mix(col, nightCol, uNight);
@@ -5633,6 +5658,7 @@ function makeRiverMat() {
       uNightMul: { value: colU(NIGHT_MUL) },
       uMoonDir: { value: new THREE.Vector3(0.2, 0.5, 0.4) },
       uRain: { value: 0 },
+      uStorm: { value: 0 },
       uStrikePos: { value: new THREE.Vector3() },
       uStrikeAmt: { value: 0 },
       uStrikeRad: { value: 1600 }
@@ -5651,7 +5677,7 @@ function makeRiverMat() {
       }
     `,
     fragmentShader: /* glsl */`
-      uniform float uTime, uWind, uReduce, uNight, uRain;
+      uniform float uTime, uWind, uReduce, uNight, uRain, uStorm;
       uniform float uStrikeAmt, uStrikeRad;
       uniform vec3 uWater, uInk, uHor, uTop, uTrees, uNightMul, uMoonDir, uStrikePos;
       varying vec2 vUv; varying vec3 vW;
@@ -5680,16 +5706,28 @@ function makeRiverMat() {
         col = mix(col, uHor, 0.18);
         float distR = length(vW.xz - cameraPosition.xz);
         float farW = smoothstep(160.0, 820.0, distR);
-        col = mix(col, mix(uHor, uWater, 0.22), farW * 0.70);
-        vec3 nightCol = vec3(0.035, 0.045, 0.07);
-        nightCol = mix(nightCol, uInk, (1.0 - smoothstep(0.0, 0.07, bank)) * 0.55);
+        col = mix(col, mix(uHor, uWater, 0.22), farW * 0.70 * (1.0 - uStorm));
+        // Storm water matches the storm-darkened land: cool gray, no leftover
+        // sky reflection. It only brightens as a reflection while a bolt flashes.
+        if (uStorm > 0.01) {
+          vec3 stormLand = vec3(0.32, 0.325, 0.33);
+          col = mix(col, stormLand, 0.92 * uStorm);
+        }
+        // Night: dark ink everywhere except a moon-glint band along the moon azimuth.
+        vec3 nightCol = vec3(0.022, 0.024, 0.028);
+        nightCol = mix(nightCol, uInk, (1.0 - smoothstep(0.0, 0.07, bank)) * 0.70);
+        vec3 moonD = normalize(uMoonDir);
         vec3 Rm = reflect(-V, vec3(0.0, 1.0, 0.0));
-        float moonGl = pow(max(0.0, dot(normalize(Rm), normalize(uMoonDir))), 32.0);
+        float moonUp = smoothstep(-0.04, 0.10, moonD.y);
+        vec2 moonAz = normalize(moonD.xz + vec2(1e-5));
+        vec2 fromCam = normalize(vW.xz - cameraPosition.xz);
+        float azBand = pow(max(0.0, dot(fromCam, moonAz)), 26.0);
+        float moonSpec = pow(max(0.0, dot(normalize(Rm), moonD)), 36.0);
+        float midN = 1.0 - abs(vUv.y - 0.5) * 2.0;
+        float spark = mix(0.55, 1.0, hash21(floor(vW.xz * 0.10)));
+        float moonGlint = (moonSpec * 0.95 + azBand * midN * 0.50) * moonUp * spark;
         vec3 cream = vec3(0.93, 0.90, 0.84);
-        float sparse = step(0.88, hash21(floor(vec2(vUv.x * 20.0, vUv.y * 9.0))));
-        float g1 = (1.0 - smoothstep(0.0, 0.03, glint)) * mid * sparse * 0.55;
-        float g2 = moonGl * step(0.72, hash21(floor(vW.xz * 0.07))) * 0.45;
-        nightCol = mix(nightCol, cream, clamp(g1 + g2, 0.0, 0.6));
+        nightCol = mix(nightCol, cream, clamp(moonGlint, 0.0, 0.88));
         col = mix(col, nightCol, uNight);
         if (uRain > 0.01) {
           vec2 cell = floor(vW.xz * 0.07);
@@ -5703,8 +5741,11 @@ function makeRiverMat() {
         if (uStrikeAmt > 0.001) {
           float sd = length(vW - uStrikePos);
           float fall = exp(-sd * sd / max(1.0, uStrikeRad * uStrikeRad));
-          float k = min(0.50, uStrikeAmt * fall);
-          col = mix(col, mix(col, vec3(0.965, 0.933, 0.863), 0.62), k);
+          vec3 toStrike = normalize(uStrikePos - vW);
+          vec3 Rf = reflect(-V, vec3(0.0, 1.0, 0.0));
+          float specS = pow(max(0.0, dot(normalize(Rf), toStrike)), 18.0);
+          float k = min(0.88, uStrikeAmt * (fall * 0.50 + specS * 0.90));
+          col = mix(col, mix(col, vec3(0.965, 0.933, 0.863), 0.78), k);
         }
         gl_FragColor = vec4(col, 1.0);
       }
@@ -6544,6 +6585,13 @@ function displayedLandmarkIndex() {
 function targetLandmarkIndex() {
   const stops = getTourStops();
   if (!stops.length) return 0;
+  // Mid-glide (button or auto tour): the next stop is the one after the
+  // current destination, so a tap jumps cleanly ahead and cannot restart
+  // or skip the same leg.
+  const traveling = !!(tour.manualTravel || (tour.enabled && !tour.paused && tour.phase === "travel"));
+  if (traveling) {
+    return (tour.stop + 1) % stops.length;
+  }
   const c = mostCenteredLandmarkIndex();
   if (c >= 0) return (c + 1) % stops.length;
   return (tour.stop + 1) % stops.length;
@@ -6884,12 +6932,20 @@ function setCommonUniforms(t) {
     clumpMat.uniforms.uWind.value = state.wind;
   }
   if (riverRibbon && riverRibbon.material && riverRibbon.material.uniforms) {
-    if (riverRibbon.material.uniforms.uTime) riverRibbon.material.uniforms.uTime.value = t;
-    if (riverRibbon.material.uniforms.uWind) riverRibbon.material.uniforms.uWind.value = state.wind;
-    applyStrike(riverRibbon.material.uniforms);
+    const ru = riverRibbon.material.uniforms;
+    if (ru.uTime) ru.uTime.value = t;
+    if (ru.uWind) ru.uWind.value = state.wind;
+    if (ru.uStorm) ru.uStorm.value = wx.kind === "storm" ? 1 : 0;
+    if (ru.uNight) ru.uNight.value = clock.night;
+    if (ru.uRain) ru.uRain.value = (wx.kind === "rain" || wx.kind === "storm") ? 1 : 0;
+    if (ru.uMoonDir && clock) ru.uMoonDir.value.copy(altAzDir(clock.moonAlt, clock.moonAz));
+    applyStrike(ru);
   }
   if (riverBanks && riverBanks.material && riverBanks.material.uniforms) {
-    applyStrike(riverBanks.material.uniforms);
+    const bu = riverBanks.material.uniforms;
+    if (bu.uStorm) bu.uStorm.value = wx.kind === "storm" ? 1 : 0;
+    if (bu.uNight) bu.uNight.value = clock.night;
+    applyStrike(bu);
   }
   for (let ci = 0; ci < volCloudItems.length; ci++) {
     const cm = volCloudItems[ci].mesh && volCloudItems[ci].mesh.material;
@@ -7275,7 +7331,9 @@ function beginTourLeg(fromCam, toStop) {
   tour.to = tourCameraAt(toStop);
   const dx = tour.to.x - tour.from.x, dy = tour.to.y - tour.from.y, dz = tour.to.z - tour.from.z;
   const dist = Math.hypot(dx, dy, dz);
-  tour.duration = Math.max(4, dist / 1.0);
+  const pace = (tour.pace > 0) ? tour.pace : 1.0;
+  const minDur = (tour.minDuration > 0) ? tour.minDuration : 4;
+  tour.duration = Math.max(minDur, dist / pace);
   tour.t = 0;
   tour.phase = "travel";
 }
@@ -7737,7 +7795,36 @@ function expose() {
     },
     testLightningCap: testLightningCap,
     goToLandmark: goToLandmark,
-    tourState: function () { return { enabled: tour.enabled, paused: tour.paused, stop: tour.stop, phase: tour.phase, lastInput: tour.lastInput }; },
+    setTourPace: function (mps, minDur) {
+      tour.pace = (mps > 0) ? mps : 1;
+      if (minDur != null && minDur > 0) tour.minDuration = minDur;
+      return { pace: tour.pace, minDuration: tour.minDuration || 4 };
+    },
+    landmarkView: function () {
+      const stops = getTourStops();
+      const shown = displayedLandmarkIndex();
+      const next = targetLandmarkIndex();
+      const projections = stops.map(function (s, i) {
+        const p = projectLandmark(s);
+        return {
+          i: i,
+          name: s.name,
+          label: stopLabel(s),
+          inView: !!(p && p.inView),
+          ndcX: p ? +p.ndcX.toFixed(3) : null,
+          ndcY: p ? +p.ndcY.toFixed(3) : null
+        };
+      });
+      return {
+        shown: shown,
+        next: next,
+        shownLabel: stops[shown] ? stopLabel(stops[shown]) : null,
+        nextLabel: stops[next] ? stopLabel(stops[next]) : null,
+        mostCentered: mostCenteredLandmarkIndex(),
+        projections: projections
+      };
+    },
+    tourState: function () { return { enabled: tour.enabled, paused: tour.paused, stop: tour.stop, phase: tour.phase, lastInput: tour.lastInput, manualTravel: !!tour.manualTravel, duration: tour.duration, t: tour.t }; },
     tourGoto: function (i) {
       const stops = getTourStops();
       const stop = stops[((i % stops.length) + stops.length) % stops.length];
