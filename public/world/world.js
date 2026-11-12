@@ -503,15 +503,28 @@ function coverWorld(x, z) {
 
 let riverAvoidGrid = null;
 function buildRiverAvoidGrid() {
-  riverAvoidGrid = { cell: 40, rad: RIVER_TREE_CLEAR_M };
+  riverAvoidGrid = { cell: 40, rad: RIVER_TREE_CLEAR_M, segs: [] };
   const pts = riverPathPx || [];
   const cell = riverAvoidGrid.cell;
   function key(x, z) { return Math.floor(x / cell) + ":" + Math.floor(z / cell); }
-  for (let i = 0; i < pts.length; i++) {
-    const w = pxToWorld(pts[i][0], pts[i][1]);
+  function addPt(w) {
     const k = key(w.x, w.z);
     if (!riverAvoidGrid[k]) riverAvoidGrid[k] = [];
     riverAvoidGrid[k].push(w);
+  }
+  let prev = null;
+  for (let i = 0; i < pts.length; i++) {
+    const w = pxToWorld(pts[i][0], pts[i][1]);
+    if (prev) {
+      const dx = w.x - prev.x, dz = w.z - prev.z;
+      const len = Math.hypot(dx, dz);
+      const n = Math.max(1, Math.ceil(len / 16));
+      for (let k = 0; k <= n; k++) {
+        addPt({ x: prev.x + dx * (k / n), z: prev.z + dz * (k / n) });
+      }
+      riverAvoidGrid.segs.push({ ax: prev.x, az: prev.z, bx: w.x, bz: w.z });
+    }
+    prev = w;
   }
 }
 function tooCloseToRiver(x, z, rad) {
@@ -10386,8 +10399,8 @@ function getTourStops() {
     }
   }
   if (!churchFr || churchFr.approach == null || churchFr.dist < FORE_CLEAR_M) {
-    churchFr.approach = 0.85;
-    churchFr.dist = narrow ? 240 : 180;
+    churchFr.approach = 2.05;
+    churchFr.dist = narrow ? 360 : 300;
     churchFr.eye = narrow ? 48 : 44;
     churchFr.pinned = true;
     console.info("[frame]", "church pinned 15% three-quarter", "dist", churchFr.dist, "eye", churchFr.eye, "approach", churchFr.approach);
@@ -10426,10 +10439,21 @@ function getTourStops() {
   if (!hallFr || hallFr.approach == null || hallFr.dist < FORE_CLEAR_M || hallFr.wFrac == null) {
     hallFr.approach = -0.85 * Math.PI;
     hallFr.dist = narrow ? 165 : 160;
-    hallFr.eye = narrow ? 56 : 46;
+    hallFr.eye = narrow ? 40 : 32;
     hallFr.pinned = true;
-    console.info("[frame]", "townhall pinned 160 m north-west, raised", "dist", hallFr.dist, "eye", hallFr.eye, "approach", hallFr.approach);
   }
+  (function capHallEye() {
+    const tw = pxToWorld(hall[0], hall[1]);
+    const hallY = yOf(heightWorld(tw.x, tw.z));
+    const cx = tw.x + Math.sin(hallFr.approach) * hallFr.dist;
+    const cz = tw.z + Math.cos(hallFr.approach) * hallFr.dist;
+    const groundY = yOf(heightWorld(cx, cz));
+    const maxCamY = hallY + (narrow ? 34 : 30);
+    if (groundY + hallFr.eye > maxCamY) {
+      hallFr.eye = Math.max(18, maxCamY - groundY);
+    }
+    console.info("[frame]", "townhall cam cap", "dist", hallFr.dist, "eye", hallFr.eye, "approach", hallFr.approach, "rise", (groundY - hallY).toFixed(1));
+  })();
   const stadFr = frameNamed("stadium", stadium, hall, stadH, stadD, stadE, 520, 42, Object.assign({ half: 42 }, widthBand));
   const monFr = frameNamed("monastery", monastery, null, monH, abbD, abbE, narrow ? 520 : 340, 56, Object.assign({ half: 40 }, widthBand));
   const abbFr = frameNamed("archabbey", abbey, null, abbH, abbD, abbE, narrow ? 680 : 340, 56, Object.assign({ half: 40, wMin: 0.10, wMax: 0.13, wTarget: 0.11 }, widthBand));
