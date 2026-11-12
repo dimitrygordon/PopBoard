@@ -1844,11 +1844,12 @@ void main(){
 
 const BUILDING_FRAG = /* glsl */`
 uniform vec3 uWash, uInkUse, uPaper, uNightMul, uSunDir, uMoonDir, uFill, uWinCenter, uWinEdge;
-uniform float uNight, uStorm, uBrick, uTwi, uHardShadow, uMoonStr, uWinOn, uWinLate, uDuskDim;
+uniform float uNight, uStorm, uBrick, uTwi, uHardShadow, uMoonStr, uWinOn, uWinLate, uDuskDim, uWaterClip;
 varying vec3 vN;
 varying vec3 vWorld;
 ${NOISE_GLSL}
 void main(){
+  if (uWaterClip > -1.0e8 && vWorld.y < uWaterClip + 0.02) discard;
   vec3 N = normalize(vN);
   vec3 V = normalize(cameraPosition - vWorld);
   float ndv = abs(dot(N, V));
@@ -2153,6 +2154,7 @@ try {
   renderer.toneMapping = THREE.NoToneMapping;
   renderer.setClearColor(0x070B14, 1);
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+  renderer.localClippingEnabled = true;
 } catch (err) {
   glOk = false;
 }
@@ -5677,10 +5679,10 @@ function fillGrass(cx, cz) {
 
 const washMatCache = {};
 const windowMatCache = {};
-function makeWashMat(rgb, fill, brick) {
+function makeWashMat(rgb, fill, brick, unique) {
   const fillKey = fill ? (fill[0] + "," + fill[1] + "," + fill[2]) : "0";
   const key = rgb[0] + "," + rgb[1] + "," + rgb[2] + ":f" + fillKey + (brick ? ":b" : "");
-  if (washMatCache[key]) return washMatCache[key];
+  if (!unique && washMatCache[key]) return washMatCache[key];
   const mat = new THREE.ShaderMaterial({
     uniforms: {
       uWash: { value: colU(rgb) },
@@ -5700,13 +5702,14 @@ function makeWashMat(rgb, fill, brick) {
       uWinLate: { value: 0 },
       uDuskDim: { value: 0 },
       uWinCenter: { value: colU(WIN_CENTER) },
-      uWinEdge: { value: colU(WIN_EDGE) }
+      uWinEdge: { value: colU(WIN_EDGE) },
+      uWaterClip: { value: -1e10 }
     },
     vertexShader: BUILDING_VERT,
     fragmentShader: BUILDING_FRAG
   });
   washMats.push(mat);
-  washMatCache[key] = mat;
+  if (!unique) washMatCache[key] = mat;
   return mat;
 }
 
@@ -6422,7 +6425,6 @@ function isDowntownBuilding(townName, px, py, kind) {
 
 let millSeat = null;
 let millWaterWheel = null;
-let millPond = null;
 
 function seatMillSiteOnBank() {
   const hint = (meta && meta.landmarks && meta.landmarks.jasper_city_mill) || [185.5, 458.6];
@@ -8172,32 +8174,44 @@ function millRibbonHalf() {
   return Math.max(10.5, Math.min(16.5, dist - 2.6));
 }
 
-function millEdgeWaterY(ex, ez, channelY) {
-  // The lowered mill channel sits below the tan bank slope, so a
-  // flat ribbon is buried under the wheel. Lift only the mill-side
-  // edge to sit just above the local terrain, still a little below
-  // the mill floor, and fade that lift out with the mill falloff.
-  if (!millSeat) return channelY;
-  const infl = millBankInfluence(ex, ez);
-  if (infl <= 0) return channelY;
-  const terr = terrainMeshY(ex, ez);
+function millSurfaceY() {
+  // One flat water height for the whole mill reach, shared by the
+  // ribbon and the wheel, so the surface is a continuous wash with
+  // no stepped pond. Just above the bank under the wheel, just
+  // under the sill, so the plane is not buried and the mill stays dry.
+  if (!millSeat) return null;
   const floor = (millSeat.y != null) ? millSeat.y : terrainMeshY(millSeat.x, millSeat.z);
-  let y = Math.max(channelY, terr + 0.10);
-  const cap = floor - 0.10;
-  if (y > cap) y = cap;
-  return channelY + (y - channelY) * infl;
+  let terr = terrainMeshY(millSeat.x, millSeat.z);
+  if (millSeat.riverPx != null) {
+    const rw = pxToWorld(millSeat.riverPx, millSeat.riverPy);
+    const rdx = rw.x - millSeat.x, rdz = rw.z - millSeat.z;
+    const rl = Math.hypot(rdx, rdz) || 1;
+    const fx = rdx / rl, fz = rdz / rl;
+    const ax = -fz, az = fx;
+    const samples = [5.0, 5.6, 6.2, 8.0];
+    const sides = [-2.0, 0, 2.0];
+    for (let i = 0; i < samples.length; i++) {
+      for (let j = 0; j < sides.length; j++) {
+        terr = Math.max(
+          terr,
+          terrainMeshY(
+            millSeat.x + fx * samples[i] + ax * sides[j],
+            millSeat.z + fz * samples[i] + az * sides[j]
+          )
+        );
+      }
+    }
+  }
+  return Math.min(floor - 0.10, Math.max(terr + 0.08, floor - 0.22));
 }
 
 function millRiverSurfaceY(x, z, bedY, bankY) {
   let y = Math.max(bedY + 2.2, bankY - 2.0);
   const infl = millBankInfluence(x, z);
   if (infl > 0) {
-    // Drop only to just under the mill sill. A drop all the way to the
-    // bed buries the ribbon in the bank under the wheel and lets coarse
-    // terrain chords poke through as pale slabs in the near water.
-    const floor = (millSeat && millSeat.y != null) ? millSeat.y : bankY;
-    const target = Math.max(bedY + 0.25, floor - 0.22);
-    y = y + (target - y) * infl;
+    const target = millSurfaceY();
+    const t = (target != null) ? target : Math.max(bedY + 0.25, bankY - 0.22);
+    y = y + (t - y) * infl;
     y = Math.max(bedY + 0.25, y);
   }
   return y;
@@ -8308,6 +8322,14 @@ function addMillFlume(root, axleX, axleY, axleZ, R, width, wallX) {
   root.add(group);
 }
 
+function clipWashMatBelow(rgb, waterY, fill, brick) {
+  // Fresh wash instance (not the cache) so only the wheel is
+  // clipped to the mill water plane. The opaque ribbon fills the cut.
+  const mat = makeWashMat(rgb, fill, brick, true);
+  mat.uniforms.uWaterClip.value = waterY;
+  return mat;
+}
+
 function buildMillOvershotWheel(root, millY, waterY) {
   hideStockMillGear(root);
   removeNamedChild(root, "mill-water-wheel");
@@ -8318,9 +8340,11 @@ function buildMillOvershotWheel(root, millY, waterY) {
   const axleY = bottom + R;
   const axleZ = -3.15;
   const axleX = wallX - gap - width * 0.5;
-  const wood = makeWashMat((MODEL_WASH.mill && MODEL_WASH.mill.wood) || [115, 87, 56]);
-  const rimMat = makeWashMat((MODEL_WASH.mill && MODEL_WASH.mill.wheel) || [92, 84, 72]);
-  const metal = makeWashMat((MODEL_WASH.mill && MODEL_WASH.mill.metal) || [120, 118, 112]);
+  const wood = clipWashMatBelow((MODEL_WASH.mill && MODEL_WASH.mill.wood) || [115, 87, 56], waterY);
+  const rimMat = clipWashMatBelow((MODEL_WASH.mill && MODEL_WASH.mill.wheel) || [92, 84, 72], waterY);
+  const metal = clipWashMatBelow((MODEL_WASH.mill && MODEL_WASH.mill.metal) || [120, 118, 112], waterY);
+  const woodDry = makeWashMat((MODEL_WASH.mill && MODEL_WASH.mill.wood) || [115, 87, 56]);
+  const metalDry = makeWashMat((MODEL_WASH.mill && MODEL_WASH.mill.metal) || [120, 118, 112]);
   const group = new THREE.Group();
   group.name = "mill-water-wheel";
   group.position.set(axleX, axleY, axleZ);
@@ -8365,11 +8389,11 @@ function buildMillOvershotWheel(root, millY, waterY) {
   hub.rotation.z = Math.PI / 2;
   spin.add(hub);
   const axleLen = width + gap + 1.15;
-  const axle = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, axleLen, 8), metal);
+  const axle = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, axleLen, 8), metalDry);
   axle.rotation.z = Math.PI / 2;
   axle.position.x = (wallX - 0.85 - axleX);
   spin.add(axle);
-  const journal = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.55, 8), wood);
+  const journal = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.55, 8), woodDry);
   journal.rotation.z = Math.PI / 2;
   journal.position.set(wallX - 0.12 - axleX, 0, 0);
   group.add(journal);
@@ -8429,7 +8453,7 @@ function placeFixedLandmarks(loaded) {
       const bedY = terrainMeshY(nx, nz);
       y = bankY;
       if (millSeat) millSeat.y = y;
-      const waterY = millRiverSurfaceY(nx, nz, bedY, bankY);
+      const waterY = millSurfaceY() != null ? millSurfaceY() : millRiverSurfaceY(nx, nz, bedY, bankY);
       mesh.position.set(w.x, y, w.z);
       mesh.rotation.y = yaw;
       const wheel = buildMillOvershotWheel(mesh, y, waterY);
@@ -8711,26 +8735,33 @@ function densifyRiverPath() {
   return out;
 }
 
-function layoutMillPond() {
-  // Terrain-following tailrace under the wheel, same wash as the
-  // ribbon, so the visible water line cuts the wheel even when the
-  // bank slope would bury a flat ribbon. Landward of the river-side
-  // walls stays dry.
+let millWaterDeck = null;
+let millWaterDeckMat = null;
+
+function layoutMillWaterDeck() {
+  // A small, perfectly flat deck at the same Y as the mill ribbon,
+  // covering the wheel and the water in front of it, so the opaque
+  // surface wins in depth over the submerged third. Same wash as the
+  // ribbon, so it does not read as a second, stepped patch.
   if (!millSeat || !riverRibbon) {
-    if (millPond) millPond.visible = false;
+    if (millWaterDeck) millWaterDeck.visible = false;
     return;
   }
-  const rw = (millSeat.riverPx != null)
-    ? pxToWorld(millSeat.riverPx, millSeat.riverPy)
-    : null;
-  if (!rw) return;
-  const rdx = rw.x - millSeat.x, rdz = rw.z - millSeat.z;
-  const rl = Math.hypot(rdx, rdz) || 1;
-  const fx = rdx / rl, fz = rdz / rl;
+  const y = millSurfaceY();
+  if (y == null) return;
+  // Stretch the deck toward the camera, not only toward the path,
+  // so the plane sits in front of the submerged third along the
+  // actual view rays.
+  const toCamX = camera.position.x - millSeat.x;
+  const toCamZ = camera.position.z - millSeat.z;
+  const cl = Math.hypot(toCamX, toCamZ) || 1;
+  const fx = toCamX / cl, fz = toCamZ / cl;
   const ax = -fz, az = fx;
-  const floor = (millSeat.y != null) ? millSeat.y : terrainMeshY(millSeat.x, millSeat.z);
-  const along0 = -11, along1 = 11, across0 = 3.4, across1 = 16.5;
-  const nA = 12, nC = 8;
+  // Tight around the wheel and toward the camera, not out into the
+  // mid-distance channel where a large patch would facet, and not
+  // landward of the river-side walls.
+  const along0 = -7, along1 = 7, across0 = 3.6, across1 = 28;
+  const nA = 4, nC = 4;
   const pos = [], nrm = [], uv = [], idx = [];
   for (let j = 0; j <= nC; j++) {
     const uc = j / nC;
@@ -8740,11 +8771,6 @@ function layoutMillPond() {
       const along = along0 + (along1 - along0) * ua;
       const x = millSeat.x + fx * across + ax * along;
       const z = millSeat.z + fz * across + az * along;
-      const bedY = terrainMeshY(x, z);
-      const bankY = floor;
-      const channelY = millRiverSurfaceY(x, z, bedY, bankY);
-      let y = Math.max(channelY, bedY + 0.12);
-      if (y > floor - 0.10) y = floor - 0.10;
       pos.push(x, y, z);
       nrm.push(0, 1, 0);
       uv.push(ua, 0.5);
@@ -8762,17 +8788,30 @@ function layoutMillPond() {
   geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
   geo.setAttribute("normal", new THREE.Float32BufferAttribute(nrm, 3));
   geo.setIndex(idx);
-  if (!millPond) {
-    millPond = new THREE.Mesh(geo, riverRibbon.material);
-    millPond.name = "millPond";
-    millPond.renderOrder = 4;
-    millPond.frustumCulled = false;
-    scene.add(millPond);
+  // Own material instance so polygon offset can be stronger than the
+  // ribbon's without z-fighting into a visible slab. Uniforms stay
+  // shared with the ribbon so the wash, night, and storm stay in lockstep.
+  const src = riverRibbon.material;
+  if (!millWaterDeckMat) {
+    millWaterDeckMat = makeRiverMat();
+    millWaterDeckMat.uniforms = src.uniforms;
+    millWaterDeckMat.polygonOffset = true;
+    millWaterDeckMat.polygonOffsetFactor = -8;
+    millWaterDeckMat.polygonOffsetUnits = -8;
+  } else if (src && src.uniforms) {
+    millWaterDeckMat.uniforms = src.uniforms;
+  }
+  if (!millWaterDeck) {
+    millWaterDeck = new THREE.Mesh(geo, millWaterDeckMat);
+    millWaterDeck.name = "millWaterDeck";
+    millWaterDeck.renderOrder = 5;
+    millWaterDeck.frustumCulled = false;
+    scene.add(millWaterDeck);
   } else {
-    if (millPond.geometry) millPond.geometry.dispose();
-    millPond.geometry = geo;
-    millPond.material = riverRibbon.material;
-    millPond.visible = true;
+    if (millWaterDeck.geometry) millWaterDeck.geometry.dispose();
+    millWaterDeck.geometry = geo;
+    millWaterDeck.material = millWaterDeckMat;
+    millWaterDeck.visible = true;
   }
 }
 
@@ -8887,13 +8926,8 @@ function layoutRiverRibbon() {
     if (millInfl > 0 && millSeat) {
       const toward = (millSeat.x - p.x) * sx + (millSeat.z - p.z) * sz;
       const millHalf = millRibbonHalf();
-      if (toward >= 0) {
-        halfR = halfR + (millHalf - halfR) * millInfl;
-        waterYR = millEdgeWaterY(p.x + sx * halfR, p.z + sz * halfR, waterY);
-      } else {
-        halfL = halfL + (millHalf - halfL) * millInfl;
-        waterYL = millEdgeWaterY(p.x - sx * halfL, p.z - sz * halfL, waterY);
-      }
+      if (toward >= 0) halfR = halfR + (millHalf - halfR) * millInfl;
+      else halfL = halfL + (millHalf - halfL) * millInfl;
     }
     const pr = (i > 0 && pts[i - 1]) ? pts[i - 1] : p;
     const nx = (i < n - 1 && pts[i + 1]) ? pts[i + 1] : p;
@@ -9023,7 +9057,7 @@ function layoutRiverRibbon() {
     if (riverBanks.geometry) riverBanks.geometry.dispose();
     riverBanks.geometry = bgeo;
   }
-  layoutMillPond();
+  layoutMillWaterDeck();
 }
 
 function makeRiverMat() {
