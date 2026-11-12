@@ -10492,7 +10492,7 @@ function getTourStops() {
   // cream clock and green cupola on the sky. Never come in under 150 m.
   hallFr.approach = -0.65;
   hallFr.dist = narrow ? 180 : 160;
-  hallFr.eye = narrow ? 16 : 12;
+  hallFr.eye = narrow ? 28 : 24;
   hallFr.pinned = true;
   (function capHallEye() {
     const tw = pxToWorld(hall[0], hall[1]);
@@ -10500,10 +10500,11 @@ function getTourStops() {
     const cx = tw.x + Math.sin(hallFr.approach) * hallFr.dist;
     const cz = tw.z + Math.cos(hallFr.approach) * hallFr.dist;
     const groundY = yOf(heightWorld(cx, cz));
-    // Keep the camera near the eave so the cupola and clock break the sky.
-    const maxCamY = hallY + 16;
+    // Stay high enough to look across a lawn, not over a row of rooftops,
+    // while keeping the south three-quarter of the front.
+    const maxCamY = hallY + (narrow ? 34 : 30);
     if (groundY + hallFr.eye > maxCamY) {
-      hallFr.eye = Math.max(8, maxCamY - groundY);
+      hallFr.eye = Math.max(20, maxCamY - groundY);
     }
     console.info("[frame]", "townhall cam cap", "dist", hallFr.dist, "eye", hallFr.eye, "approach", hallFr.approach, "rise", (groundY - hallY).toFixed(1));
   })();
