@@ -10487,23 +10487,23 @@ function getTourStops() {
     occlude: true,
     rejectBottom: -0.72
   });
-  // SSE three-quarter (approach 0.50) at 160 m. Phone a little farther so
-  // the narrow frame stays near 8-12%.
-  if (!hallFr || hallFr.approach == null || hallFr.dist < FORE_CLEAR_M || Math.cos(hallFr.approach) < 0.30) {
-    hallFr.approach = 0.50;
-    hallFr.dist = narrow ? 180 : 160;
-    hallFr.eye = narrow ? 32 : 24;
-    hallFr.pinned = true;
-  }
+  // Always pin a SSW three-quarter at 160 m (phone 180 m). The front
+  // faces SSW, and the ground is lower here, so a modest eye can put the
+  // cream clock and green cupola on the sky. Never come in under 150 m.
+  hallFr.approach = -0.65;
+  hallFr.dist = narrow ? 180 : 160;
+  hallFr.eye = narrow ? 16 : 12;
+  hallFr.pinned = true;
   (function capHallEye() {
     const tw = pxToWorld(hall[0], hall[1]);
     const hallY = yOf(heightWorld(tw.x, tw.z));
     const cx = tw.x + Math.sin(hallFr.approach) * hallFr.dist;
     const cz = tw.z + Math.cos(hallFr.approach) * hallFr.dist;
     const groundY = yOf(heightWorld(cx, cz));
-    const maxCamY = hallY + (narrow ? 36 : 30);
+    // Keep the camera near the eave so the cupola and clock break the sky.
+    const maxCamY = hallY + 16;
     if (groundY + hallFr.eye > maxCamY) {
-      hallFr.eye = Math.max(18, maxCamY - groundY);
+      hallFr.eye = Math.max(8, maxCamY - groundY);
     }
     console.info("[frame]", "townhall cam cap", "dist", hallFr.dist, "eye", hallFr.eye, "approach", hallFr.approach, "rise", (groundY - hallY).toFixed(1));
   })();
@@ -10586,6 +10586,7 @@ function getTourStops() {
     // Desktop JHS at 0.70 flooded 65.38. Tilt the camera up a little so
     // the horizon lands in the 66-74 band without changing the hold pose.
     if (s.name === "jhs") s.horizon = narrow ? 0.72 : 0.725;
+    if (s.name === "townhall") s.horizon = narrow ? 0.73 : 0.72;
   }
   return tourStopsCache;
 }
