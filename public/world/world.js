@@ -6421,6 +6421,7 @@ function isDowntownBuilding(townName, px, py, kind) {
 }
 
 let millSeat = null;
+let millWaterWheel = null;
 
 function seatMillSiteOnBank() {
   const hint = (meta && meta.landmarks && meta.landmarks.jasper_city_mill) || [185.5, 458.6];
@@ -8165,9 +8166,9 @@ function millRibbonHalf() {
   if (!millSeat || millSeat.riverPx == null) return 20;
   const rw = pxToWorld(millSeat.riverPx, millSeat.riverPy);
   const dist = Math.hypot(millSeat.x - rw.x, millSeat.z - rw.z);
-  // Water starts past the plinth and under the wheel (~7 m toward the
-  // river) so a tan strip remains under the walls. Do not change the pin.
-  return Math.max(8.5, Math.min(12.5, dist - 7.2));
+  // Reach under the wheel (and past the 4 m ribbon pull toward the
+  // camera) while leaving the landward walls on the tan bank.
+  return Math.max(10.5, Math.min(16.5, dist - 2.6));
 }
 
 function millRiverSurfaceY(x, z, bedY, bankY) {
@@ -8177,48 +8178,181 @@ function millRiverSurfaceY(x, z, bedY, bankY) {
   return y;
 }
 
-function extendMillWheelToWater(root, millY, waterY) {
-  // Keep the rim under the eave (native top 7.47) and scale about that
-  // point in YZ so the wheel stays circular, drops into the water, and
-  // does not grow through the roof.
-  const topY = 7.47, topZ = -3.15, nativeBottom = -0.15;
-  const target = Math.min(nativeBottom, (waterY - millY) - 0.35);
-  if (target >= nativeBottom - 0.05) return 1;
-  const s = (topY - target) / (topY - nativeBottom);
-  if (s < 1.01 || s > 1.55) return s;
+function hideStockMillGear(root) {
   root.traverse(function (obj) {
-    if (!obj.isMesh) return;
     const n = (obj.name || "").toLowerCase();
-    if (!/^(axle|spoke_|wheel_)/.test(n)) return;
-    const geo = obj.geometry.clone();
-    geo.translate(0, -topY, -topZ);
-    geo.scale(1, s, s);
-    geo.translate(0, topY, topZ);
-    geo.computeVertexNormals();
-    obj.geometry = geo;
+    if (/^(axle|flume|headrace|deck|river_wall)$/.test(n) || /^(spoke_|wheel_|pier_|rail_)/.test(n)) {
+      obj.visible = false;
+    }
   });
-  return s;
 }
 
-function addMillStonePlinth(x, millY, z, yaw, botY) {
-  if (!landmarkGroup) return;
-  for (let i = landmarkGroup.children.length - 1; i >= 0; i--) {
-    if (landmarkGroup.children[i].name === "mill-plinth") {
-      const doomed = landmarkGroup.children[i];
-      landmarkGroup.remove(doomed);
-      if (doomed.geometry) doomed.geometry.dispose();
+function removeNamedChild(root, name) {
+  for (let i = root.children.length - 1; i >= 0; i--) {
+    if (root.children[i].name === name) {
+      const doomed = root.children[i];
+      root.remove(doomed);
+      doomed.traverse(function (obj) {
+        if (obj.geometry) obj.geometry.dispose();
+      });
     }
   }
-  const h = Math.max(0.8, millY - botY);
-  const geo = new THREE.BoxGeometry(1, 1, 1);
-  geo.translate(0, 0.5, 0);
-  const mat = makeWashMat([168, 156, 136]);
+}
+
+function addMillRiverFooting(root, millY, waterY) {
+  removeNamedChild(root, "mill-plinth");
+  // Low, slightly battered fieldstone on the river face only. Landward
+  // sits on the tan bank on the model's own sill.
+  const h = Math.max(0.85, Math.min(1.35, millY - waterY + 0.2));
+  const wallX = -4.20, topOut = 0.84, botOut = 1.36, half = 6.20, flare = 0.14;
+  const pos = new Float32Array([
+    wallX + 0.06, 0.08, -half,
+    wallX + 0.06, 0.08, half,
+    wallX - topOut, 0.08, half,
+    wallX - topOut, 0.08, -half,
+    wallX + 0.14, -h, -half - flare,
+    wallX + 0.14, -h, half + flare,
+    wallX - botOut, -h, half + flare,
+    wallX - botOut, -h, -half - flare
+  ]);
+  const idx = [
+    0, 3, 2, 0, 2, 1,
+    4, 5, 6, 4, 6, 7,
+    3, 7, 6, 3, 6, 2,
+    0, 1, 5, 0, 5, 4,
+    1, 2, 6, 1, 6, 5,
+    0, 4, 7, 0, 7, 3
+  ];
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  const mat = makeWashMat([168, 156, 136], [0.10, 0.08, 0.05], true);
   const mesh = new THREE.Mesh(geo, mat);
   mesh.name = "mill-plinth";
-  mesh.position.set(x, millY - h, z);
-  mesh.rotation.y = yaw;
-  mesh.scale.set(8.9, h, 13.8);
-  landmarkGroup.add(mesh);
+  root.add(mesh);
+  return h;
+}
+
+function addMillFlume(root, axleX, axleY, axleZ, R, width, wallX) {
+  const wood = makeWashMat((MODEL_WASH.mill && MODEL_WASH.mill.wood) || [115, 87, 56]);
+  const group = new THREE.Group();
+  group.name = "mill-flume";
+  const top = axleY + R + 0.18;
+  const xWall = wallX + 0.2;
+  const xOut = axleX - width * 0.55 - 0.15;
+  const len = xWall - xOut;
+  const midX = (xWall + xOut) * 0.5;
+  const zMid = axleZ - 0.15;
+  const troughW = 1.15, board = 0.12, sideH = 0.50;
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(len + 0.2, board, troughW), wood);
+  floor.position.set(midX, top, zMid);
+  group.add(floor);
+  const side = new THREE.BoxGeometry(len + 0.2, sideH, board);
+  const s0 = new THREE.Mesh(side, wood);
+  s0.position.set(midX, top + sideH * 0.5, zMid + troughW * 0.5);
+  const s1 = new THREE.Mesh(side, wood);
+  s1.position.set(midX, top + sideH * 0.5, zMid - troughW * 0.5);
+  group.add(s0);
+  group.add(s1);
+  // Open chute at the crown, feeding -Z so the top turns away toward +Z.
+  const shootLen = 1.85;
+  const shoot = new THREE.Mesh(new THREE.BoxGeometry(troughW * 0.92, board, shootLen), wood);
+  shoot.position.set(axleX, top - 0.04, zMid - troughW * 0.35 - shootLen * 0.28);
+  shoot.rotation.x = -0.18;
+  group.add(shoot);
+  const shootS = new THREE.BoxGeometry(board, sideH * 0.8, shootLen);
+  const ss0 = new THREE.Mesh(shootS, wood);
+  ss0.position.set(axleX + troughW * 0.38, top + 0.18, zMid - 0.85);
+  ss0.rotation.x = -0.18;
+  const ss1 = new THREE.Mesh(shootS, wood);
+  ss1.position.set(axleX - troughW * 0.38, top + 0.18, zMid - 0.85);
+  ss1.rotation.x = -0.18;
+  group.add(ss0);
+  group.add(ss1);
+  const end = new THREE.Mesh(new THREE.BoxGeometry(troughW * 0.92, sideH * 0.55, board), wood);
+  end.position.set(xWall - 0.05, top + sideH * 0.25, zMid);
+  group.add(end);
+  const brace = new THREE.BoxGeometry(0.16, 1.35, 0.16);
+  for (const z of [zMid + 0.4, zMid - 0.4]) {
+    const b = new THREE.Mesh(brace, wood);
+    b.position.set(wallX - 0.45, top - 0.45, z);
+    b.rotation.z = 0.42;
+    group.add(b);
+  }
+  root.add(group);
+}
+
+function buildMillOvershotWheel(root, millY, waterY) {
+  hideStockMillGear(root);
+  removeNamedChild(root, "mill-water-wheel");
+  removeNamedChild(root, "mill-flume");
+  const D = 9.6, R = D * 0.5, width = 1.62, wallX = -4.20, gap = 0.42;
+  const waterLocal = waterY - millY;
+  const bottom = waterLocal - D / 3;
+  const axleY = bottom + R;
+  const axleZ = -3.15;
+  const axleX = wallX - gap - width * 0.5;
+  const wood = makeWashMat((MODEL_WASH.mill && MODEL_WASH.mill.wood) || [115, 87, 56]);
+  const rimMat = makeWashMat((MODEL_WASH.mill && MODEL_WASH.mill.wheel) || [92, 84, 72]);
+  const metal = makeWashMat((MODEL_WASH.mill && MODEL_WASH.mill.metal) || [120, 118, 112]);
+  const group = new THREE.Group();
+  group.name = "mill-water-wheel";
+  group.position.set(axleX, axleY, axleZ);
+  const spin = new THREE.Group();
+  spin.name = "mill-wheel-spin";
+  group.add(spin);
+  const rimThick = 0.20, rimX = width * 0.5 - rimThick;
+  const torus = new THREE.TorusGeometry(R - rimThick * 0.35, rimThick, 8, 28);
+  torus.rotateY(Math.PI / 2);
+  const rim0 = new THREE.Mesh(torus, rimMat);
+  const rim1 = new THREE.Mesh(torus, rimMat);
+  rim0.position.x = rimX;
+  rim1.position.x = -rimX;
+  spin.add(rim0);
+  spin.add(rim1);
+  const nSpokes = 12;
+  const rHub = 0.32, spokeLen = R - rimThick * 2 - rHub;
+  const spokeMid = rHub + spokeLen * 0.5;
+  const spokeGeo = new THREE.BoxGeometry(0.11, spokeLen, 0.16);
+  for (let s = 0; s < 2; s++) {
+    const sx = s ? -rimX : rimX;
+    for (let i = 0; i < nSpokes; i++) {
+      const a = (i / nSpokes) * Math.PI * 2;
+      const mesh = new THREE.Mesh(spokeGeo, wood);
+      mesh.position.set(sx, Math.cos(a) * spokeMid, Math.sin(a) * spokeMid);
+      mesh.rotation.x = a;
+      spin.add(mesh);
+    }
+  }
+  const nBuckets = 18;
+  const bRad = 0.38, bChord = 0.82, bW = width - 0.22;
+  const bGeo = new THREE.BoxGeometry(bW, bRad, bChord);
+  const bR = R - rimThick - bRad * 0.25;
+  for (let i = 0; i < nBuckets; i++) {
+    const a = (i / nBuckets) * Math.PI * 2;
+    const mesh = new THREE.Mesh(bGeo, wood);
+    mesh.position.set(0, Math.cos(a) * bR, Math.sin(a) * bR);
+    mesh.rotation.x = a + 0.22;
+    spin.add(mesh);
+  }
+  const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, width - 0.15, 10), metal);
+  hub.rotation.z = Math.PI / 2;
+  spin.add(hub);
+  const axleLen = width + gap + 1.15;
+  const axle = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, axleLen, 8), metal);
+  axle.rotation.z = Math.PI / 2;
+  axle.position.x = (wallX - 0.85 - axleX);
+  spin.add(axle);
+  const journal = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.55, 8), wood);
+  journal.rotation.z = Math.PI / 2;
+  journal.position.set(wallX - 0.12 - axleX, 0, 0);
+  group.add(journal);
+  root.add(group);
+  millWaterWheel = spin;
+  addMillFlume(root, axleX, axleY, axleZ, R, width, wallX);
+  const footingH = addMillRiverFooting(root, millY, waterY);
+  return { axleY: axleY, bottom: bottom, top: axleY + R, R: R, waterLocal: waterLocal, footingH: footingH };
 }
 
 function placeFixedLandmarks(loaded) {
@@ -8261,26 +8395,19 @@ function placeFixedLandmarks(loaded) {
         }
         yaw = Math.atan2(nz - w.z, -(nx - w.x));
       }
-      // Seat on the rendered bank, not the heightmap water. The 40 m ribbon
-      // was flooding the walls; a local narrower, slightly lower surface
-      // leaves a tan bank, and a stone plinth reads under the walls.
+      // Seat on the rendered bank so the landward sill sits on the tan
+      // bank. A river-side footing and a 3D overshot wheel reach the water.
       let bankY = terrainMeshY(w.x, w.z);
       const rdx = nx - w.x, rdz = nz - w.z;
       const rl = Math.hypot(rdx, rdz) || 1;
       bankY = Math.max(bankY, terrainMeshY(w.x - rdx / rl * 5, w.z - rdz / rl * 5));
       const bedY = terrainMeshY(nx, nz);
       const waterY = millRiverSurfaceY(nx, nz, bedY, bankY);
-      // Natural bank is only ~0.8 m above the lowered water, which dunks
-      // a readable stone plinth. Raise the mill onto a short bank seat
-      // so the foundation stays dry and only the wheel reaches the water.
-      const gradeY = Math.min(bankY, terrainMeshY(w.x, w.z));
-      y = Math.max(bankY + 1.45, waterY + 2.3);
-      const plinthBot = Math.max(gradeY - 0.2, waterY + 0.4);
+      y = bankY;
       mesh.position.set(w.x, y, w.z);
       mesh.rotation.y = yaw;
-      const wheelS = extendMillWheelToWater(mesh, y, waterY);
-      addMillStonePlinth(w.x, y, w.z, yaw, plinthBot);
-      console.info("[mill] bankY", +bankY.toFixed(2), "millY", +y.toFixed(2), "waterY", +waterY.toFixed(2), "plinthBot", +plinthBot.toFixed(2), "wheelS", wheelS);
+      const wheel = buildMillOvershotWheel(mesh, y, waterY);
+      console.info("[mill] bankY", +y.toFixed(2), "waterY", +waterY.toFixed(2), "axleY", +wheel.axleY.toFixed(2), "bottom", +wheel.bottom.toFixed(2), "top", +wheel.top.toFixed(2), "footing", +wheel.footingH.toFixed(2), "ribbonHalf", +millRibbonHalf().toFixed(2));
     } else {
       mesh.position.set(w.x, y, w.z);
       const heroW = pxToWorld(HERO.px, HERO.py);
@@ -11202,7 +11329,7 @@ function getTourStops() {
     const yaw = (millSeat && millSeat.yaw != null) ? millSeat.yaw : Math.atan2(rz - mw.z, -(rx - mw.x));
     const frontApproach = Math.atan2(-Math.sin(yaw), -Math.cos(yaw));
     millFr.approach = lerpAngle(wheelApproach, frontApproach, 0.36);
-    millFr.dist = narrow ? 148 : 74;
+    millFr.dist = narrow ? 148 : 91;
     millFr.eye = narrow ? 30 : 16;
     millFr.horizon = narrow ? 0.66 : 0.69;
     millFr.orbitArc = 32 * Math.PI / 180;
@@ -11831,6 +11958,9 @@ function startLoop() {
       state.time += dt;
       stepJhsFade(dt);
       maybeUpgradeJhs();
+    }
+    if (millWaterWheel) {
+      millWaterWheel.rotation.x = REDUCE ? 0.35 : -state.time * 0.16;
     }
     if (!dbgAt && now - (state._clk || 0) > 30000) {
       state._clk = now;
