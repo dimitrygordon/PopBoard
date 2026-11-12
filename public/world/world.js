@@ -526,23 +526,47 @@ function coverWorld(x, z) {
 // the downhill side; skip those footprints rather than let them float.
 const HOUSE_MAX_FOOTPRINT_DROP = 3.6;
 
-function footprintHeightSpan(x, z, bw, bd, yaw) {
+function footprintSamplePts(x, z, bw, bd, yaw, scale) {
   const fx = Math.sin(yaw), fz = Math.cos(yaw);
   const sx = Math.cos(yaw), sz = -Math.sin(yaw);
-  const hx = (bw || 8) * 0.5, hz = (bd || 8) * 0.5;
-  let lo = heightWorld(x, z), hi = lo;
-  const corners = [
+  const hx = (bw || 8) * 0.5 * scale, hz = (bd || 8) * 0.5 * scale;
+  return [
     [x + sx * hx + fx * hz, z + sz * hx + fz * hz],
     [x - sx * hx + fx * hz, z - sz * hx + fz * hz],
     [x + sx * hx - fx * hz, z + sz * hx - fz * hz],
-    [x - sx * hx - fx * hz, z - sz * hx - fz * hz]
+    [x - sx * hx - fx * hz, z - sz * hx - fz * hz],
+    [x + sx * hx, z + sz * hx],
+    [x - sx * hx, z - sz * hx],
+    [x + fx * hz, z + fz * hz],
+    [x - fx * hz, z - fz * hz]
   ];
-  for (let c = 0; c < corners.length; c++) {
-    const h = heightWorld(corners[c][0], corners[c][1]);
-    if (h < lo) lo = h;
+}
+
+function footprintHeightSpan(x, z, bw, bd, yaw) {
+  // Tight samples (center, corners, mid-edges) keep the 3.6 m skip and
+  // high-point seating on the real footprint. Expanded samples catch a
+  // sharp crest that falls away just outside the walls.
+  let loTight = heightWorld(x, z), hi = loTight;
+  const tight = footprintSamplePts(x, z, bw, bd, yaw, 1);
+  for (let c = 0; c < tight.length; c++) {
+    const h = heightWorld(tight[c][0], tight[c][1]);
+    if (h < loTight) loTight = h;
     if (h > hi) hi = h;
   }
-  return { lo: lo, hi: hi, y0: yOf(hi), drop: yOf(hi) - yOf(lo) };
+  let loCrest = loTight;
+  const expanded = footprintSamplePts(x, z, bw, bd, yaw, 1.25);
+  for (let c = 0; c < expanded.length; c++) {
+    const h = heightWorld(expanded[c][0], expanded[c][1]);
+    if (h < loCrest) loCrest = h;
+  }
+  return {
+    lo: loTight,
+    hi: hi,
+    y0: yOf(hi),
+    drop: yOf(hi) - yOf(loTight),
+    crestDrop: yOf(hi) - yOf(loCrest),
+    yLo: yOf(loCrest)
+  };
 }
 
 function groundYAtFootprint(x, z, bw, bd, yaw) {
@@ -1036,22 +1060,27 @@ void main(){
     col = mix(col, uInkUse, 0.28 * (1.0 - backL));
   }
 
-  // River: one unbroken ribbon, cream glints, engraved ripple lines, never patches
+  // River: soft blue-gray wash, a few broken ripple strokes, ink along the bank.
+  // No ruled hatch stripes and no tiled-slate panel seams from engraved lines.
   if (cls < 0.5) {
-    vec3 river = vec3(0.40, 0.50, 0.52);
-    float nH = hash21(floor(wz * 0.08));
-    float rip = sin(wz.x * 0.18 + wz.y * 0.27 + uTime * 0.35 + nH) * 0.5 + sin(wz.x * 0.07 - wz.y * 0.11 + nH * 4.0) * 0.5;
-    float line = abs(fract((wz.x * 0.045 + wz.y * 0.06) + rip * 0.16 + nH * 0.3) - 0.5);
-    float line2 = abs(fract((wz.x * 0.03 - wz.y * 0.05) * 1.1 + nH) - 0.5);
-    // Day: cream glints. Storm: less paper, no cream sparkle (later storm dim
-    // matches the land). Night: dark ink, lit only on the moon-azimuth glint band.
+    vec3 river = mix(uWater, vec3(0.47, 0.54, 0.57), 0.28);
+    col = mix(uPaper, river, 0.88);
+    vec2 cell = floor(wz * 0.032);
+    float id = hash21(cell);
+    if (id > 0.78) {
+      float ang = hash21(cell + 2.7) * 6.28318;
+      vec2 dir = vec2(cos(ang), sin(ang));
+      vec2 local = wz - (cell + 0.5) / 0.032;
+      float along = dot(local, dir);
+      float across = abs(dot(local, vec2(-dir.y, dir.x)));
+      float len = 3.5 + hash21(cell + 9.1) * 7.0;
+      float stroke = (1.0 - smoothstep(0.0, 0.45, across)) * (1.0 - smoothstep(len * 0.45, len * 0.5 + 0.6, abs(along)));
+      col = mix(col, uInkUse, stroke * 0.22);
+    }
     vec3 R = reflect(-L, vec3(0.0, 1.0, 0.0));
     float spec = pow(clamp(dot(R, V), 0.0, 1.0), 40.0);
     vec3 glintC = vec3(0.96, 0.92, 0.82);
-    col = mix(uPaper, river, mix(0.72, 0.95, uStorm));
-    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.10, line)) * mix(0.28, 0.08, layer) * step(0.28, nH));
-    col = mix(col, uInkUse, (1.0 - smoothstep(0.0, 0.11, line2)) * 0.10 * nearL * step(0.18, nH));
-    col = mix(col, glintC, clamp(spec * 0.55 + (n4 - 0.35) * 0.08, 0.0, 0.55) * (1.0 - uNight) * (1.0 - uStorm));
+    col = mix(col, glintC, clamp(spec * 0.40 + (n4 - 0.35) * 0.05, 0.0, 0.40) * (1.0 - uNight) * (1.0 - uStorm));
     if (uNight > 0.01) {
       vec3 nightRiver = vec3(0.022, 0.024, 0.028);
       vec3 moonD = normalize(uMoonDir);
@@ -1066,13 +1095,11 @@ void main(){
       nightRiver = mix(nightRiver, vec3(0.93, 0.90, 0.84), clamp(moonGlint, 0.0, 0.88));
       col = mix(col, nightRiver, uNight);
     }
-    // Storm close-ups: dark slate near #5A6068, slightly lighter than the
-    // darkened land, no leftover day-blue. Night and clear day stay as above.
     if (uStorm > 0.01 && uNight < 0.01) {
       vec3 stormRiver = vec3(90.0, 96.0, 104.0) / 255.0;
       col = mix(col, stormRiver, 0.96 * uStorm);
     }
-    if (nCls > 0.5) col = mix(col, uInkUse, 0.35 * (1.0 - layer));
+    if (nCls > 0.5) col = mix(col, uInkUse, 0.55 * (1.0 - layer));
   }
 
   // ink contours every 10 m, heavy every 50 m, with line wobble
@@ -1084,7 +1111,7 @@ void main(){
   float fw5 = fwidth(hw / 50.0) + 0.001;
   float l50 = 1.0 - smoothstep(0.0, fw5 * 0.8, c50);
   float contour = max(l10 * 0.38, l50 * 0.78);
-  if (cls < 0.5) contour *= 0.12;
+  if (cls < 0.5) contour = 0.0;
   col = mix(col, uInkUse, contour);
 
   // hatching on shaded slopes; denser on the shadow side
@@ -1189,25 +1216,33 @@ void main(){
     col = mix(col, mix(col, creamLt, 0.62), k);
   }
 
-  // Re-assert the river after aerial fade so it stays one unbroken ribbon.
+  // Re-assert the river after aerial fade as a soft wash, not a hatched slate.
   if (cls < 0.5) {
-    vec3 river = vec3(0.38, 0.50, 0.55);
-    vec3 rib = mix(uPaper, river, 0.82);
-    float rip = sin(wz.x * 0.22 + wz.y * 0.31 + uTime * 0.35) * 0.5 + sin(wz.x * 0.09 - wz.y * 0.14) * 0.5;
-    float line = abs(fract((wz.x * 0.07 + wz.y * 0.09) + rip * 0.10) - 0.5);
-    rib = mix(rib, vec3(0.165, 0.129, 0.094), (1.0 - smoothstep(0.0, 0.08, line)) * 0.42);
+    vec3 river = mix(uWater, vec3(0.47, 0.54, 0.57), 0.28);
+    vec3 rib = mix(uPaper, river, 0.90);
+    vec2 cellR = floor(wz * 0.032);
+    float idR = hash21(cellR);
+    if (idR > 0.78) {
+      float ang = hash21(cellR + 2.7) * 6.28318;
+      vec2 dir = vec2(cos(ang), sin(ang));
+      vec2 local = wz - (cellR + 0.5) / 0.032;
+      float along = dot(local, dir);
+      float across = abs(dot(local, vec2(-dir.y, dir.x)));
+      float len = 3.5 + hash21(cellR + 9.1) * 7.0;
+      float stroke = (1.0 - smoothstep(0.0, 0.45, across)) * (1.0 - smoothstep(len * 0.45, len * 0.5 + 0.6, abs(along)));
+      rib = mix(rib, uInkUse, stroke * 0.22);
+    }
     float spec = pow(clamp(dot(reflect(-L, vec3(0.0, 1.0, 0.0)), V), 0.0, 1.0), 28.0);
-    rib = mix(rib, vec3(0.97, 0.93, 0.82), clamp(spec * 0.7 + (n4 - 0.3) * 0.1, 0.0, 0.5) * (1.0 - uStorm));
+    rib = mix(rib, vec3(0.97, 0.93, 0.82), clamp(spec * 0.45 + (n4 - 0.3) * 0.06, 0.0, 0.35) * (1.0 - uStorm));
     if (uStorm > 0.01) {
       vec3 stormRiver = vec3(90.0, 96.0, 104.0) / 255.0;
       rib = mix(rib, stormRiver, 0.96 * uStorm);
-      rib = mix(rib, vec3(0.165, 0.129, 0.094), (1.0 - smoothstep(0.0, 0.08, line)) * 0.28 * uStorm);
     }
     vec3 nRib = vec3(0.035, 0.045, 0.07);
-    nRib = mix(nRib, uInkUse, (1.0 - smoothstep(0.0, 0.08, line)) * 0.35);
     float sparse = step(0.86, hash21(floor(wz * 0.08)));
     nRib = mix(nRib, vec3(0.93, 0.90, 0.84), clamp(spec * 0.35, 0.0, 0.4) * sparse);
     rib = mix(rib, nRib, uNight);
+    if (nCls > 0.5) rib = mix(rib, uInkUse, 0.55 * (1.0 - layer));
     if (uRain > 0.01) {
       vec2 cell = floor(wz * 0.06);
       float id = hash21(cell);
@@ -7196,6 +7231,47 @@ function addInstancedPair(group, bodyGeo, roofGeo, wallMat, roofMat, recs, place
   roofMesh.name = name + "-roof";
   group.add(bodyMesh);
   group.add(roofMesh);
+  addFoundationSkirts(group, recs, bodyGeo, name);
+}
+
+const HOUSE_SKIRT_MIN = 0.35;
+const HOUSE_SKIRT_MAX = 7.0;
+
+function addFoundationSkirts(group, recs, bodyGeo, name) {
+  // High-point seating stays; a skirt drops from the body to the lowest
+  // tight or crest sample so no sky shows under a downhill eave.
+  if (!recs || !recs.length) return;
+  const heights = new Array(recs.length);
+  let n = 0;
+  for (let i = 0; i < recs.length; i++) {
+    const rec = recs[i];
+    const span = footprintHeightSpan(rec.w.x, rec.w.z, rec.bw, rec.bd, rec.yaw);
+    const h = Math.min(span.crestDrop, HOUSE_SKIRT_MAX);
+    heights[i] = (h > HOUSE_SKIRT_MIN) ? h : 0;
+    if (heights[i]) n++;
+  }
+  if (!n) return;
+  const mat = makeHouseWashMat([116, 106, 92]);
+  const mesh = new THREE.InstancedMesh(bodyGeo, mat, recs.length);
+  const dummy = new THREE.Object3D();
+  let k = 0;
+  for (let i = 0; i < recs.length; i++) {
+    if (!heights[i]) continue;
+    const rec = recs[i];
+    const span = footprintHeightSpan(rec.w.x, rec.w.z, rec.bw, rec.bd, rec.yaw);
+    dummy.position.set(rec.w.x, span.yLo, rec.w.z);
+    dummy.rotation.set(0, rec.yaw, 0);
+    dummy.scale.set(rec.bw, heights[i], rec.bd);
+    dummy.updateMatrix();
+    mesh.setMatrixAt(k, dummy.matrix);
+    k++;
+  }
+  mesh.count = k;
+  mesh.instanceMatrix.needsUpdate = true;
+  mesh.frustumCulled = true;
+  mesh.renderOrder = 2;
+  mesh.name = (name || "osm-house") + "-skirt";
+  group.add(mesh);
 }
 
 function buildLotLines(recs, townName) {
@@ -8317,7 +8393,7 @@ function densifyRiverPath() {
     if (i < src.length - 1) {
       const b = pxToWorld(src[i + 1][0], src[i + 1][1]);
       const d = Math.hypot(b.x - a.x, b.z - a.z);
-      const n = Math.max(1, Math.ceil(d / 10));
+      const n = Math.max(1, Math.ceil(d / 6));
       for (let k = 1; k < n; k++) {
         const t = k / n;
         out.push({ x: a.x + (b.x - a.x) * t, z: a.z + (b.z - a.z) * t });
@@ -8396,14 +8472,14 @@ function layoutRiverRibbon() {
     const rimR = terrainYAt(p.x + sxs[i] * (half + 16), p.z + szs[i] * (half + 16));
     const bankY = Math.max(rimL, rimR) + 0.4;
     const bedY = terrainYAt(p.x, p.z);
-    waterYs[i] = Math.max(bedY + 1.0, bankY - 3.2);
+    waterYs[i] = Math.max(bedY + 2.2, bankY - 2.0);
     bankYs[i] = bankY;
   }
   const smY = waterYs.slice();
   for (let i = 0; i < n; i++) {
     if (!pts[i] || waterYs[i] == null) continue;
     let sum = 0, c = 0;
-    for (let k = i - 3; k <= i + 3; k++) {
+    for (let k = i - 5; k <= i + 5; k++) {
       if (k < 0 || k >= n || !pts[k] || waterYs[k] == null) continue;
       let bridged = false;
       const a = Math.min(i, k), b = Math.max(i, k);
@@ -8589,14 +8665,28 @@ function makeRiverMat() {
         float skyH = R.y;
         vec3 sky = mix(uHor, uTop, smoothstep(0.0, 0.55, skyH));
         vec3 env = mix(uTrees, sky, smoothstep(-0.05, 0.22, skyH));
-        vec3 col = mix(uWater, env, 0.58);
-        col = mix(col, uHor, 0.16);
-        col = mix(col, vec3(0.45, 0.66, 0.70), 0.18);
-        float grain = hash21(vW.xz * 0.35);
-        col = mix(col, col * 0.97, grain * 0.14);
-        float bank = min(vUv.y, 1.0 - vUv.y);
-        col = mix(col, uInk, (1.0 - smoothstep(0.0, 0.14, bank)) * 0.12);
+        // Soft blue-gray wash. Light still tints it, but not enough to facet
+        // into tiled slate panels or pick up ruled hatch stripes.
+        vec3 wash = mix(uWater, vec3(0.47, 0.54, 0.57), 0.30);
+        vec3 col = mix(wash, env, 0.22);
         col = mix(col, uHor, 0.10);
+        float grain = hash21(vW.xz * 0.35);
+        col = mix(col, col * 0.97, grain * 0.10);
+        vec2 cell = floor(vW.xz * 0.032);
+        float idS = hash21(cell);
+        if (idS > 0.78) {
+          float ang = hash21(cell + 2.7) * 6.28318;
+          vec2 dir = vec2(cos(ang), sin(ang));
+          vec2 local = vW.xz - (cell + 0.5) / 0.032;
+          float along = dot(local, dir);
+          float across = abs(dot(local, vec2(-dir.y, dir.x)));
+          float len = 3.5 + hash21(cell + 9.1) * 7.0;
+          float stroke = (1.0 - smoothstep(0.0, 0.45, across)) * (1.0 - smoothstep(len * 0.45, len * 0.5 + 0.6, abs(along)));
+          col = mix(col, uInk, stroke * 0.22);
+        }
+        float bank = min(vUv.y, 1.0 - vUv.y);
+        float bankLine = 1.0 - smoothstep(0.0, 0.045, bank);
+        col = mix(col, uInk, bankLine * 0.55);
         float distR = length(vW.xz - cameraPosition.xz);
         float farW = smoothstep(160.0, 820.0, distR);
         col = mix(col, mix(uHor, uWater, 0.22), farW * 0.70 * (1.0 - uStorm));
@@ -8646,7 +8736,7 @@ function makeRiverMat() {
     `,
     side: THREE.DoubleSide,
     depthTest: true,
-    depthWrite: false,
+    depthWrite: true,
     polygonOffset: true,
     polygonOffsetFactor: -2,
     polygonOffsetUnits: -2
@@ -10954,7 +11044,7 @@ function getTourStops() {
     const yaw = (millSeat && millSeat.yaw != null) ? millSeat.yaw : Math.atan2(rz - mw.z, -(rx - mw.x));
     const frontApproach = Math.atan2(-Math.sin(yaw), -Math.cos(yaw));
     millFr.approach = lerpAngle(wheelApproach, frontApproach, 0.36);
-    millFr.dist = narrow ? 200 : 100;
+    millFr.dist = narrow ? 220 : 74;
     millFr.eye = narrow ? 30 : 16;
     millFr.horizon = narrow ? 0.66 : 0.69;
     millFr.orbitArc = 32 * Math.PI / 180;
