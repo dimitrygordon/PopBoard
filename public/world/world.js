@@ -10490,7 +10490,8 @@ function getTourStops() {
   // Always pin a SSW three-quarter at 160 m (phone 180 m). The front
   // faces SSW, and the ground is lower here, so a modest eye can put the
   // cream clock and green cupola on the sky. Never come in under 150 m.
-  hallFr.approach = -0.65;
+  // SSE three-quarter: the lawn sits in front of the hall, not a near roof.
+  hallFr.approach = 0.50;
   hallFr.dist = narrow ? 180 : 160;
   hallFr.eye = narrow ? 28 : 24;
   hallFr.pinned = true;
