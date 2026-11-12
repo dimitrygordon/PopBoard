@@ -521,6 +521,38 @@ function coverWorld(x, z) {
   return coverPx(p.px, p.py);
 }
 
+// High-point seating keeps walls and roofs joined on gentle ground.
+// A rigid box on a steep exaggerated slope still hangs in open sky on
+// the downhill side; skip those footprints rather than let them float.
+const HOUSE_MAX_FOOTPRINT_DROP = 3.6;
+
+function footprintHeightSpan(x, z, bw, bd, yaw) {
+  const fx = Math.sin(yaw), fz = Math.cos(yaw);
+  const sx = Math.cos(yaw), sz = -Math.sin(yaw);
+  const hx = (bw || 8) * 0.5, hz = (bd || 8) * 0.5;
+  let lo = heightWorld(x, z), hi = lo;
+  const corners = [
+    [x + sx * hx + fx * hz, z + sz * hx + fz * hz],
+    [x - sx * hx + fx * hz, z - sz * hx + fz * hz],
+    [x + sx * hx - fx * hz, z + sz * hx - fz * hz],
+    [x - sx * hx - fx * hz, z - sz * hx - fz * hz]
+  ];
+  for (let c = 0; c < corners.length; c++) {
+    const h = heightWorld(corners[c][0], corners[c][1]);
+    if (h < lo) lo = h;
+    if (h > hi) hi = h;
+  }
+  return { lo: lo, hi: hi, y0: yOf(hi), drop: yOf(hi) - yOf(lo) };
+}
+
+function groundYAtFootprint(x, z, bw, bd, yaw) {
+  return footprintHeightSpan(x, z, bw, bd, yaw).y0;
+}
+
+function footprintTooSteep(x, z, bw, bd, yaw) {
+  return footprintHeightSpan(x, z, bw, bd, yaw).drop > HOUSE_MAX_FOOTPRINT_DROP;
+}
+
 let riverAvoidGrid = null;
 let roadAvoidGrid = null;
 
@@ -7287,6 +7319,7 @@ function buildOsmTowns() {
       if (downtown) {
         bw = Math.max(8, Math.min(26, (b.w || 12) * 1.06));
         bd = Math.max(8, Math.min(24, (b.d || 10) * 1.04));
+        if (footprintTooSteep(w.x, w.z, bw, bd, yaw)) continue;
         wallH = 7.6 + u * 1.8;
         const wall = pickWeighted(downWalls, u);
         const key = paletteKey(wall);
@@ -7299,6 +7332,7 @@ function buildOsmTowns() {
       if (kind === "shed") {
         bw = Math.max(4, Math.min(8, (b.w || 5) * sizeJ));
         bd = Math.max(4, Math.min(8, (b.d || 5) * sizeJ));
+        if (footprintTooSteep(w.x, w.z, bw, bd, yaw)) continue;
         wallH = 2.6 + u * 0.7;
         pitch = (35 + u2 * 10) * Math.PI / 180;
         shedList.push({ b: b, w: w, bw: bw, bd: bd, wallH: wallH, pitch: pitch, yaw: yaw });
@@ -7312,6 +7346,7 @@ function buildOsmTowns() {
       bw *= sizeJ;
       bw = Math.max(7, Math.min(14, bw));
       bd = Math.max(7, Math.min(14, (b.d || 9) * sizeJ));
+      if (footprintTooSteep(w.x, w.z, bw, bd, yaw)) continue;
       wallH = (u < 0.42 ? 3.5 : (u < 0.82 ? 4.3 : 4.9));
       pitch = (35 + u2 * 10) * Math.PI / 180;
       proto = "rect";
@@ -7326,23 +7361,6 @@ function buildOsmTowns() {
       houseBuckets[key].push(rec);
       lotRecs.push(rec);
       sx += w.x; sz += w.z; sn++;
-    }
-    function groundYAtFootprint(x, z, bw, bd, yaw) {
-      const fx = Math.sin(yaw), fz = Math.cos(yaw);
-      const sx = Math.cos(yaw), sz = -Math.sin(yaw);
-      const hx = (bw || 8) * 0.5, hz = (bd || 8) * 0.5;
-      let hm = heightWorld(x, z);
-      const corners = [
-        [x + sx * hx + fx * hz, z + sz * hx + fz * hz],
-        [x - sx * hx + fx * hz, z - sz * hx + fz * hz],
-        [x + sx * hx - fx * hz, z + sz * hx - fz * hz],
-        [x - sx * hx - fx * hz, z - sz * hx - fz * hz]
-      ];
-      for (let c = 0; c < corners.length; c++) {
-        const h = heightWorld(corners[c][0], corners[c][1]);
-        if (h > hm) hm = h;
-      }
-      return yOf(hm);
     }
     function placeHouse(dummy, rec, bodyMesh, roofMesh, i) {
       const y0 = groundYAtFootprint(rec.w.x, rec.w.z, rec.bw, rec.bd, rec.yaw);
@@ -10930,12 +10948,18 @@ function getTourStops() {
         if (d < bestD) { bestD = d; rx = rw.x; rz = rw.z; }
       }
     }
-    millFr.approach = Math.atan2(rx - mw.x, rz - mw.z) + 0.32;
-    millFr.dist = narrow ? 130 : 100;
-    millFr.eye = narrow ? 22 : 16;
-    millFr.horizon = narrow ? 0.70 : 0.69;
+    // Stand off the wheel axis toward the front door so the wheel's
+    // face reads against the water, not as a trough under the flume.
+    const wheelApproach = Math.atan2(rx - mw.x, rz - mw.z);
+    const yaw = (millSeat && millSeat.yaw != null) ? millSeat.yaw : Math.atan2(rz - mw.z, -(rx - mw.x));
+    const frontApproach = Math.atan2(-Math.sin(yaw), -Math.cos(yaw));
+    millFr.approach = lerpAngle(wheelApproach, frontApproach, 0.60);
+    millFr.dist = narrow ? 200 : 100;
+    millFr.eye = narrow ? 30 : 16;
+    millFr.horizon = narrow ? 0.66 : 0.69;
+    millFr.orbitArc = 32 * Math.PI / 180;
     millFr.pinned = true;
-    console.info("[frame]", "mill pinned on river", "dist", millFr.dist, "eye", millFr.eye, "approach", millFr.approach);
+    console.info("[frame]", "mill pinned wheel face", "dist", millFr.dist, "eye", millFr.eye, "approach", millFr.approach);
   }
   const depotFr = frameNamed("depot", depot, church, depotH, depotD, depotE, 210, 34, Object.assign({}, widthBand, { half: 16, wMin: 0.10, wMax: 0.18, wTarget: 0.12 }));
   const farmFr = frameNamed("farmstead", [farm.px, farm.py], church, 12, farmD, farmE, 320, 30);
@@ -11001,7 +11025,7 @@ function getTourStops() {
   tourStopsCache = [
     { name: "church", px: church[0], py: church[1], dist: churchFr.dist, eye: churchFr.eye, approach: churchFr.approach, heightM: churchH },
     { name: "courthouse", px: court[0], py: court[1], dist: courtFr.dist, eye: courtFr.eye, approach: courtFr.approach, heightM: courtH },
-    { name: "mill", px: mill[0], py: mill[1], dist: millFr.dist, eye: millFr.eye, approach: millFr.approach, horizon: millFr.horizon, heightM: millH },
+    { name: "mill", px: mill[0], py: mill[1], dist: millFr.dist, eye: millFr.eye, approach: millFr.approach, horizon: millFr.horizon, orbitArc: millFr.orbitArc, heightM: millH },
     { name: "depot", px: depot[0], py: depot[1], dist: depotFr.dist, eye: depotFr.eye, approach: depotFr.approach, heightM: depotH },
     { name: "river", px: river.px, py: river.py, dist: river.dist || 140, eye: river.eye || 16, approach: river.approach },
     { name: "farmstead", px: farm.px, py: farm.py, dist: farmFr.dist, eye: farmFr.eye, approach: farmFr.approach, horizon: farmFr.horizon, heightM: 12 },
@@ -11130,7 +11154,9 @@ function holdDurationFor(stop) {
 }
 
 function orbitArcFor(stop) {
-  return (stop && stop.name === "jhs") ? TOUR_ORBIT_ARC_JHS : TOUR_ORBIT_ARC;
+  if (stop && stop.name === "jhs") return TOUR_ORBIT_ARC_JHS;
+  if (stop && stop.orbitArc != null && isFinite(stop.orbitArc)) return stop.orbitArc;
+  return TOUR_ORBIT_ARC;
 }
 
 function orbitRingMaxY(base, target, arc, eye) {
