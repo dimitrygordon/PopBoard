@@ -10494,6 +10494,7 @@ function getTourStops() {
   hallFr.approach = 0.10;
   hallFr.dist = narrow ? 180 : 160;
   hallFr.eye = narrow ? 26 : 22;
+  hallFr.zoom = narrow ? 1.18 : 1.22;
   hallFr.pinned = true;
   console.info("[frame]", "townhall pin", "dist", hallFr.dist, "eye", hallFr.eye, "approach", hallFr.approach);
   const stadFr = frameNamed("stadium", stadium, hall, stadH, stadD, stadE, 520, 42, Object.assign({ half: 42 }, widthBand));
@@ -10516,7 +10517,7 @@ function getTourStops() {
     { name: "depot", px: depot[0], py: depot[1], dist: depotFr.dist, eye: depotFr.eye, approach: depotFr.approach, heightM: depotH },
     { name: "river", px: river.px, py: river.py, dist: river.dist || 140, eye: river.eye || 16, approach: river.approach },
     { name: "farmstead", px: farm.px, py: farm.py, dist: farmFr.dist, eye: farmFr.eye, approach: farmFr.approach, heightM: 12 },
-    { name: "townhall", px: hall[0], py: hall[1], dist: hallFr.dist, eye: hallFr.eye, approach: hallFr.approach, heightM: hallH, wFrac: hallFr.wFrac, hFrac: hallFr.hFrac },
+    { name: "townhall", px: hall[0], py: hall[1], dist: hallFr.dist, eye: hallFr.eye, approach: hallFr.approach, zoom: hallFr.zoom, heightM: hallH, wFrac: hallFr.wFrac, hFrac: hallFr.hFrac },
     { name: "stadium", px: stadium[0], py: stadium[1], dist: stadFr.dist, eye: stadFr.eye, approach: stadFr.approach, heightM: stadH },
     { name: "monastery", px: monastery[0], py: monastery[1], dist: monFr.dist, eye: monFr.eye, approach: monFr.approach, heightM: monH },
     { name: "archabbey", px: abbey[0], py: abbey[1], dist: abbFr.dist, eye: abbFr.eye, approach: abbFr.approach, heightM: abbH }
@@ -10601,6 +10602,7 @@ function tourCameraAt(stop) {
   }
   const y = yOf(heightWorld(x, z)) + (stop.eye || 46);
   const heading = Math.atan2(w.x - x, w.z - z);
+  rig.zoom = (stop.zoom != null && isFinite(stop.zoom)) ? clamp(stop.zoom, 0.85, 1.55) : 1;
   const aim = applyFovAndPitch();
   const hor = (stop.horizon != null) ? stop.horizon : aim.horizon;
   const half = camera.fov * RAD * 0.5;
