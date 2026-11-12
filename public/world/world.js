@@ -60,7 +60,7 @@ const JHS_HOLD_EYE_DESKTOP = 24;
 const HALL_APPARENT_W = 20;
 const HALL_HALF_M = 12;
 const HALL_HEIGHT_M = 18;
-const RIVER_TREE_CLEAR_M = 48;
+const RIVER_TREE_CLEAR_M = 60;
 const TOUR_HOLD_JHS = 30;
 const TOUR_HOLD_OTHER = 15;
 const TOUR_ORBIT_ARC = 50 * Math.PI / 180;
@@ -817,7 +817,7 @@ void main(){
   vec3 wash = grassCol;
   if (cls < 0.5) wash = uWater;
   else if (cls < 1.5) wash = mix(grassCol, vec3(0.78, 0.64, 0.40), 0.28);
-  else if (cls < 2.5) wash = mix(vec3(0.58, 0.56, 0.50), vec3(0.64, 0.60, 0.52), 0.45 + 0.20 * n3);
+  else if (cls < 2.5) wash = mix(grassCol, sage, 0.22 + 0.16 * n3);
   else if (cls < 3.5) wash = mix(vec3(0.76, 0.60, 0.36), uPaper, 0.12);
   else if (cls < 4.5) wash = bareForest;
   else if (cls < 5.5) wash = uCedar;
@@ -8144,7 +8144,6 @@ function makeRiverMat() {
         vUv = uv;
         vec3 p = position;
         vec3 toCam = cameraPosition - p;
-        p += normalize(toCam) * 5.0;
         vec4 w = modelMatrix * vec4(p, 1.0);
         vW = w.xyz;
         vN = vec3(0.0, 1.0, 0.0);
@@ -8166,22 +8165,11 @@ function makeRiverMat() {
         vec3 col = mix(uWater, env, 0.58);
         col = mix(col, uHor, 0.16);
         col = mix(col, vec3(0.45, 0.66, 0.70), 0.18);
-        float t = uTime * (1.0 - uReduce);
-        // Ink-hatched ripples, broken up so the water does not read as ruled lines.
-        float nR = hash21(floor(vW.xz * 0.12));
-        float cur = vUv.x * 16.0 - t * 0.55 * (0.6 + 0.4 * uWind);
-        float wind = vUv.x * 8.0 + vUv.y * 2.2 + t * 0.35 * uWind + nR;
-        float rip = abs(fract(cur + sin(vUv.y * 5.0 + t + nR * 3.2) * 0.35 + nR * 0.4) - 0.5);
-        col = mix(col, uInk, (1.0 - smoothstep(0.0, 0.10, rip)) * 0.16 * step(0.22, nR));
-        float hatch2 = abs(fract((vW.x * 0.08 + vW.z * 0.03) + sin(vW.z * 0.05 + t * 0.2) * 0.3) - 0.5);
-        col = mix(col, uInk, (1.0 - smoothstep(0.0, 0.12, hatch2)) * 0.10);
-        float glint = abs(fract(wind) - 0.5);
-        float mid = 1.0 - abs(vUv.y - 0.5) * 2.0;
-        col = mix(col, uHor, (1.0 - smoothstep(0.0, 0.05, glint)) * 0.48 * mid);
-        // Inked shoreline at the water edge.
+        float grain = hash21(vW.xz * 0.35);
+        col = mix(col, col * 0.97, grain * 0.14);
         float bank = min(vUv.y, 1.0 - vUv.y);
-        col = mix(col, uInk, (1.0 - smoothstep(0.0, 0.08, bank)) * 0.16);
-        col = mix(col, uHor, 0.18);
+        col = mix(col, uInk, (1.0 - smoothstep(0.0, 0.14, bank)) * 0.12);
+        col = mix(col, uHor, 0.10);
         float distR = length(vW.xz - cameraPosition.xz);
         float farW = smoothstep(160.0, 820.0, distR);
         col = mix(col, mix(uHor, uWater, 0.22), farW * 0.70 * (1.0 - uStorm));
@@ -10410,6 +10398,14 @@ function getTourStops() {
   const depot = sitePx("jasper_depot", [180.5, 456.2]);
   const farm = findFarmsteadPx();
   const river = findRiverTourPx();
+  // Desktop scored this side-meander (viewOk 30). Phone scoring still
+  // falls back, so pin both to the accepted pose, with a slightly taller
+  // eye on the 390 so the land still sits in the 66-74 band.
+  river.px = 183.5;
+  river.py = 486.8;
+  river.dist = 223.61;
+  river.eye = narrow ? 28 : 24;
+  river.approach = 0.8885215569777869;
   const hall = sitePx("huntingburg_town_hall", [136.08, 795.64]);
   const stadium = sitePx("league_stadium", [170.18, 809.34]);
   const monastery = sitePx("ferdinand_monastery", [449.75, 1024.74]);
@@ -10487,13 +10483,14 @@ function getTourStops() {
     occlude: true,
     rejectBottom: -0.72
   });
-  // Always pin a SSW three-quarter at 160 m (phone 180 m). The front
-  // faces SSW, and the ground is lower here, so a modest eye can put the
-  // cream clock and green cupola on the sky. Never come in under 150 m.
-  // SSE three-quarter: the lawn sits in front of the hall, not a near roof.
-  hallFr.approach = 0.50;
+  // The front faces SSW (approach about -0.28). Orbit a shallow west
+  // three-quarter so the cupola is the near corner, and keep the eye low
+  // enough that the 18 m tower can rise off the roof ridge into open sky.
+  // SSE (0.50) looks into a 60 m exaggerated hill the cupola cannot clear.
+  // Never come in under 150 m; keep 160 m and the lawn.
+  hallFr.approach = -0.50;
   hallFr.dist = narrow ? 180 : 160;
-  hallFr.eye = narrow ? 28 : 24;
+  hallFr.eye = narrow ? 16 : 14;
   hallFr.pinned = true;
   (function capHallEye() {
     const tw = pxToWorld(hall[0], hall[1]);
@@ -10501,11 +10498,10 @@ function getTourStops() {
     const cx = tw.x + Math.sin(hallFr.approach) * hallFr.dist;
     const cz = tw.z + Math.cos(hallFr.approach) * hallFr.dist;
     const groundY = yOf(heightWorld(cx, cz));
-    // Stay high enough to look across a lawn, not over a row of rooftops,
-    // while keeping the south three-quarter of the front.
-    const maxCamY = hallY + (narrow ? 34 : 30);
+    // Cap near the cupola height so we look slightly up at the tower.
+    const maxCamY = hallY + 18;
     if (groundY + hallFr.eye > maxCamY) {
-      hallFr.eye = Math.max(20, maxCamY - groundY);
+      hallFr.eye = Math.max(12, maxCamY - groundY);
     }
     console.info("[frame]", "townhall cam cap", "dist", hallFr.dist, "eye", hallFr.eye, "approach", hallFr.approach, "rise", (groundY - hallY).toFixed(1));
   })();
@@ -10566,9 +10562,9 @@ function getTourStops() {
       // Same angle as desktop. Come in so the brick facade is a real subject
       // on the 390 px frame; 1100 m made it a sliver even at a 24% billboard.
       jhsFr.dist = 620;
-      // Raise the camera so we look across a lawn, not over a row of rooftops.
-      // Same three-quarter angle; 20-25% of the 390 px width; 150 m keep-out.
-      jhsFr.eye = 72;
+      // Same approved angle. A slight lift to clear roof slivers at the
+      // bottom corners, without shrinking the school below 20% of 390.
+      jhsFr.eye = 84;
       jhsFr.pinned = true;
     }
     tourStopsCache.unshift({
