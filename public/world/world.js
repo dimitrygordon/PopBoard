@@ -10483,28 +10483,19 @@ function getTourStops() {
     occlude: true,
     rejectBottom: -0.72
   });
-  // The front faces SSW (approach about -0.28). Orbit a shallow west
-  // three-quarter so the cupola is the near corner, and keep the eye low
-  // enough that the 18 m tower can rise off the roof ridge into open sky.
-  // SSE (0.50) looks into a 60 m exaggerated hill the cupola cannot clear.
-  // Never come in under 150 m; keep 160 m and the lawn.
-  hallFr.approach = -0.50;
+  // The front faces SSW (approach about -0.28). A low eye on that
+  // heading puts a neighbor's roof across the bottom edge. SSE 0.50
+  // keeps the lawn but looks into a 60 m exaggerated hill. Approach
+  // 0.10 at eye 22 (phone 26) stays on the 160 m circle, keeps the lawn
+  // in front of the red facade, and lets the cream clock and green
+  // cupola rise off the hall's own ridge. The 18 m cupola still sits
+  // against downtown neighbors and trees, not bare sky; we do not
+  // raise the tower. Never come in under 150 m.
+  hallFr.approach = 0.10;
   hallFr.dist = narrow ? 180 : 160;
-  hallFr.eye = narrow ? 16 : 14;
+  hallFr.eye = narrow ? 26 : 22;
   hallFr.pinned = true;
-  (function capHallEye() {
-    const tw = pxToWorld(hall[0], hall[1]);
-    const hallY = yOf(heightWorld(tw.x, tw.z));
-    const cx = tw.x + Math.sin(hallFr.approach) * hallFr.dist;
-    const cz = tw.z + Math.cos(hallFr.approach) * hallFr.dist;
-    const groundY = yOf(heightWorld(cx, cz));
-    // Cap near the cupola height so we look slightly up at the tower.
-    const maxCamY = hallY + 18;
-    if (groundY + hallFr.eye > maxCamY) {
-      hallFr.eye = Math.max(12, maxCamY - groundY);
-    }
-    console.info("[frame]", "townhall cam cap", "dist", hallFr.dist, "eye", hallFr.eye, "approach", hallFr.approach, "rise", (groundY - hallY).toFixed(1));
-  })();
+  console.info("[frame]", "townhall pin", "dist", hallFr.dist, "eye", hallFr.eye, "approach", hallFr.approach);
   const stadFr = frameNamed("stadium", stadium, hall, stadH, stadD, stadE, 520, 42, Object.assign({ half: 42 }, widthBand));
   const monFr = frameNamed("monastery", monastery, null, monH, abbD, abbE, narrow ? 520 : 340, 56, Object.assign({ half: 40 }, widthBand));
   const abbFr = frameNamed("archabbey", abbey, null, abbH, abbD, abbE, narrow ? 680 : 340, 56, Object.assign({ half: 40, wMin: 0.10, wMax: 0.13, wTarget: 0.11 }, widthBand));
