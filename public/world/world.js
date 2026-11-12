@@ -6422,6 +6422,7 @@ function isDowntownBuilding(townName, px, py, kind) {
 
 let millSeat = null;
 let millWaterWheel = null;
+let millPond = null;
 
 function seatMillSiteOnBank() {
   const hint = (meta && meta.landmarks && meta.landmarks.jasper_city_mill) || [185.5, 458.6];
@@ -8166,15 +8167,39 @@ function millRibbonHalf() {
   if (!millSeat || millSeat.riverPx == null) return 20;
   const rw = pxToWorld(millSeat.riverPx, millSeat.riverPy);
   const dist = Math.hypot(millSeat.x - rw.x, millSeat.z - rw.z);
-  // Reach under the wheel (and past the 4 m ribbon pull toward the
-  // camera) while leaving the landward walls on the tan bank.
+  // Mill-side half only: reach under the wheel, just outside the
+  // river-side walls, while the far bank keeps its default width.
   return Math.max(10.5, Math.min(16.5, dist - 2.6));
+}
+
+function millEdgeWaterY(ex, ez, channelY) {
+  // The lowered mill channel sits below the tan bank slope, so a
+  // flat ribbon is buried under the wheel. Lift only the mill-side
+  // edge to sit just above the local terrain, still a little below
+  // the mill floor, and fade that lift out with the mill falloff.
+  if (!millSeat) return channelY;
+  const infl = millBankInfluence(ex, ez);
+  if (infl <= 0) return channelY;
+  const terr = terrainMeshY(ex, ez);
+  const floor = (millSeat.y != null) ? millSeat.y : terrainMeshY(millSeat.x, millSeat.z);
+  let y = Math.max(channelY, terr + 0.10);
+  const cap = floor - 0.10;
+  if (y > cap) y = cap;
+  return channelY + (y - channelY) * infl;
 }
 
 function millRiverSurfaceY(x, z, bedY, bankY) {
   let y = Math.max(bedY + 2.2, bankY - 2.0);
   const infl = millBankInfluence(x, z);
-  if (infl > 0) y = Math.max(bedY + 0.25, y - 2.2 * infl);
+  if (infl > 0) {
+    // Drop only to just under the mill sill. A drop all the way to the
+    // bed buries the ribbon in the bank under the wheel and lets coarse
+    // terrain chords poke through as pale slabs in the near water.
+    const floor = (millSeat && millSeat.y != null) ? millSeat.y : bankY;
+    const target = Math.max(bedY + 0.25, floor - 0.22);
+    y = y + (target - y) * infl;
+    y = Math.max(bedY + 0.25, y);
+  }
   return y;
 }
 
@@ -8402,8 +8427,9 @@ function placeFixedLandmarks(loaded) {
       const rl = Math.hypot(rdx, rdz) || 1;
       bankY = Math.max(bankY, terrainMeshY(w.x - rdx / rl * 5, w.z - rdz / rl * 5));
       const bedY = terrainMeshY(nx, nz);
-      const waterY = millRiverSurfaceY(nx, nz, bedY, bankY);
       y = bankY;
+      if (millSeat) millSeat.y = y;
+      const waterY = millRiverSurfaceY(nx, nz, bedY, bankY);
       mesh.position.set(w.x, y, w.z);
       mesh.rotation.y = yaw;
       const wheel = buildMillOvershotWheel(mesh, y, waterY);
@@ -8668,7 +8694,14 @@ function densifyRiverPath() {
     if (i < src.length - 1) {
       const b = pxToWorld(src[i + 1][0], src[i + 1][1]);
       const d = Math.hypot(b.x - a.x, b.z - a.z);
-      const n = Math.max(1, Math.ceil(d / 6));
+      // 6 m along the river; tighten to 3 m near the mill so close-up
+      // water quads stay smooth, without raising bank-noise frequency
+      // on the rest of the Patoka.
+      const nearMill = millSeat && (
+        Math.hypot(a.x - millSeat.x, a.z - millSeat.z) < 140 ||
+        Math.hypot(b.x - millSeat.x, b.z - millSeat.z) < 140
+      );
+      const n = Math.max(1, Math.ceil(d / (nearMill ? 3 : 6)));
       for (let k = 1; k < n; k++) {
         const t = k / n;
         out.push({ x: a.x + (b.x - a.x) * t, z: a.z + (b.z - a.z) * t });
@@ -8676,6 +8709,71 @@ function densifyRiverPath() {
     }
   }
   return out;
+}
+
+function layoutMillPond() {
+  // Terrain-following tailrace under the wheel, same wash as the
+  // ribbon, so the visible water line cuts the wheel even when the
+  // bank slope would bury a flat ribbon. Landward of the river-side
+  // walls stays dry.
+  if (!millSeat || !riverRibbon) {
+    if (millPond) millPond.visible = false;
+    return;
+  }
+  const rw = (millSeat.riverPx != null)
+    ? pxToWorld(millSeat.riverPx, millSeat.riverPy)
+    : null;
+  if (!rw) return;
+  const rdx = rw.x - millSeat.x, rdz = rw.z - millSeat.z;
+  const rl = Math.hypot(rdx, rdz) || 1;
+  const fx = rdx / rl, fz = rdz / rl;
+  const ax = -fz, az = fx;
+  const floor = (millSeat.y != null) ? millSeat.y : terrainMeshY(millSeat.x, millSeat.z);
+  const along0 = -11, along1 = 11, across0 = 3.4, across1 = 16.5;
+  const nA = 12, nC = 8;
+  const pos = [], nrm = [], uv = [], idx = [];
+  for (let j = 0; j <= nC; j++) {
+    const uc = j / nC;
+    const across = across0 + (across1 - across0) * uc;
+    for (let i = 0; i <= nA; i++) {
+      const ua = i / nA;
+      const along = along0 + (along1 - along0) * ua;
+      const x = millSeat.x + fx * across + ax * along;
+      const z = millSeat.z + fz * across + az * along;
+      const bedY = terrainMeshY(x, z);
+      const bankY = floor;
+      const channelY = millRiverSurfaceY(x, z, bedY, bankY);
+      let y = Math.max(channelY, bedY + 0.12);
+      if (y > floor - 0.10) y = floor - 0.10;
+      pos.push(x, y, z);
+      nrm.push(0, 1, 0);
+      uv.push(ua, 0.5);
+    }
+  }
+  const row = nA + 1;
+  for (let j = 0; j < nC; j++) {
+    for (let i = 0; i < nA; i++) {
+      const a = j * row + i;
+      idx.push(a, a + 1, a + row, a + 1, a + row + 1, a + row);
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+  geo.setAttribute("normal", new THREE.Float32BufferAttribute(nrm, 3));
+  geo.setIndex(idx);
+  if (!millPond) {
+    millPond = new THREE.Mesh(geo, riverRibbon.material);
+    millPond.name = "millPond";
+    millPond.renderOrder = 4;
+    millPond.frustumCulled = false;
+    scene.add(millPond);
+  } else {
+    if (millPond.geometry) millPond.geometry.dispose();
+    millPond.geometry = geo;
+    millPond.material = riverRibbon.material;
+    millPond.visible = true;
+  }
 }
 
 function layoutRiverRibbon() {
@@ -8700,7 +8798,7 @@ function layoutRiverRibbon() {
     const p = raw[i];
     const along = ((p.x - cx) * lx + (p.z - cz) * lz) / llen;
     const side = (p.x - cx) * (lz / llen) - (p.z - cz) * (lx / llen);
-    if (along < 36 || along > 6200 || Math.abs(side) > 2400) {
+    if (along < 16 || along > 6200 || Math.abs(side) > 2400) {
       if (run.length >= 3) runs.push(run);
       run = [];
       continue;
@@ -8754,7 +8852,7 @@ function layoutRiverRibbon() {
   for (let i = 0; i < n; i++) {
     if (!pts[i] || waterYs[i] == null) continue;
     let sum = 0, c = 0;
-    for (let k = i - 5; k <= i + 5; k++) {
+    for (let k = i - 8; k <= i + 8; k++) {
       if (k < 0 || k >= n || !pts[k] || waterYs[k] == null) continue;
       let bridged = false;
       const a = Math.min(i, k), b = Math.max(i, k);
@@ -8764,6 +8862,14 @@ function layoutRiverRibbon() {
     }
     if (c) smY[i] = sum / c;
   }
+  const alongP = new Array(n).fill(0);
+  for (let i = 1; i < n; i++) {
+    if (pts[i] && pts[i - 1]) {
+      alongP[i] = alongP[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].z - pts[i - 1].z);
+    } else {
+      alongP[i] = (i > 0 ? alongP[i - 1] : 0);
+    }
+  }
   let alongU = 0;
   for (let i = 0; i < n; i++) {
     const p = pts[i];
@@ -8771,24 +8877,37 @@ function layoutRiverRibbon() {
     const sx = sxs[i], sz = szs[i];
     const waterY = smY[i];
     const bankY = bankYs[i];
-    const nEdge = (Math.sin(i * 19.7 + p.x * 0.021) * 43758.5453) % 1;
+    const iEq = alongP[i] / 6;
+    const nEdge = (Math.sin(iEq * 19.7 + p.x * 0.021) * 43758.5453) % 1;
     const nEdge01 = nEdge < 0 ? nEdge + 1 : nEdge;
-    let half = 20 + (nEdge01 - 0.5) * 5.0 + 1.8 * Math.sin(i * 0.29 + p.z * 0.01);
+    let halfL = 20 + (nEdge01 - 0.5) * 5.0 + 1.8 * Math.sin(iEq * 0.29 + p.z * 0.01);
+    let halfR = halfL;
+    let waterYL = waterY, waterYR = waterY;
     const millInfl = millBankInfluence(p.x, p.z);
-    if (millInfl > 0) half = half + (millRibbonHalf() - half) * millInfl;
+    if (millInfl > 0 && millSeat) {
+      const toward = (millSeat.x - p.x) * sx + (millSeat.z - p.z) * sz;
+      const millHalf = millRibbonHalf();
+      if (toward >= 0) {
+        halfR = halfR + (millHalf - halfR) * millInfl;
+        waterYR = millEdgeWaterY(p.x + sx * halfR, p.z + sz * halfR, waterY);
+      } else {
+        halfL = halfL + (millHalf - halfL) * millInfl;
+        waterYL = millEdgeWaterY(p.x - sx * halfL, p.z - sz * halfL, waterY);
+      }
+    }
     const pr = (i > 0 && pts[i - 1]) ? pts[i - 1] : p;
     const nx = (i < n - 1 && pts[i + 1]) ? pts[i + 1] : p;
-    pos.push(p.x - sx * half, waterY, p.z - sz * half);
-    pos.push(p.x + sx * half, waterY, p.z + sz * half);
+    pos.push(p.x - sx * halfL, waterYL, p.z - sz * halfL);
+    pos.push(p.x + sx * halfR, waterYR, p.z + sz * halfR);
     nrm.push(0, 1, 0, 0, 1, 0);
-    const nL = (Math.sin(i * 127.1 + p.x * 0.013) * 43758.5453) % 1; const nL01 = nL < 0 ? nL + 1 : nL;
-    const nR = (Math.sin(i * 311.7 + p.z * 0.017) * 43758.5453) % 1; const nR01 = nR < 0 ? nR + 1 : nR;
+    const nL = (Math.sin(iEq * 127.1 + p.x * 0.013) * 43758.5453) % 1; const nL01 = nL < 0 ? nL + 1 : nL;
+    const nR = (Math.sin(iEq * 311.7 + p.z * 0.017) * 43758.5453) % 1; const nR01 = nR < 0 ? nR + 1 : nR;
     const cr = (p.x - pr.x) * (nx.z - p.z) - (p.z - pr.z) * (nx.x - p.x);
     const leftInside = cr > 0.05;
     const rightInside = cr < -0.05;
     const bend = Math.min(1, Math.abs(cr) * 0.08);
-    let leftW = 6.0 + 10.0 * nL01 + 3.5 * Math.sin(i * 0.37);
-    let rightW = 5.5 + 11.0 * nR01 + 4.0 * Math.sin(i * 0.21 + 1.7);
+    let leftW = 6.0 + 10.0 * nL01 + 3.5 * Math.sin(iEq * 0.37);
+    let rightW = 5.5 + 11.0 * nR01 + 4.0 * Math.sin(iEq * 0.21 + 1.7);
     let leftY = bankY + (nL01 - 0.5) * 1.7;
     let rightY = bankY + (nR01 - 0.5) * 1.7;
     if (leftInside) { leftW += 8 * bend; leftY -= 1.6 * bend; }
@@ -8797,10 +8916,10 @@ function layoutRiverRibbon() {
     else if (bend > 0.15) { rightW = Math.max(4, rightW - 4 * bend); rightY += 2.2 * bend; }
     const leftBar = leftInside ? Math.min(1, 0.35 + bend) : 0;
     const rightBar = rightInside ? Math.min(1, 0.35 + bend) : 0;
-    bankPos.push(p.x - sx * half, waterY, p.z - sz * half);
-    bankPos.push(p.x - sx * (half + leftW), leftY, p.z - sz * (half + leftW));
-    bankPos.push(p.x + sx * half, waterY, p.z + sz * half);
-    bankPos.push(p.x + sx * (half + rightW), rightY, p.z + sz * (half + rightW));
+    bankPos.push(p.x - sx * halfL, waterYL, p.z - sz * halfL);
+    bankPos.push(p.x - sx * (halfL + leftW), leftY, p.z - sz * (halfL + leftW));
+    bankPos.push(p.x + sx * halfR, waterYR, p.z + sz * halfR);
+    bankPos.push(p.x + sx * (halfR + rightW), rightY, p.z + sz * (halfR + rightW));
     uv.push(alongU * 0.008, 0, alongU * 0.008, 1);
     bankUv.push(alongU * 0.008, 0, alongU * 0.008, 1, alongU * 0.008, 0, alongU * 0.008, 1);
     bankBar.push(leftBar, leftBar, rightBar, rightBar);
@@ -8904,6 +9023,7 @@ function layoutRiverRibbon() {
     if (riverBanks.geometry) riverBanks.geometry.dispose();
     riverBanks.geometry = bgeo;
   }
+  layoutMillPond();
 }
 
 function makeRiverMat() {
