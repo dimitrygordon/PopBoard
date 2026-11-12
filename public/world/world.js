@@ -332,7 +332,8 @@ const clock = {
   winOn: 0,
   winLate: 0,
   moonStr: 0,
-  hardShadow: 1
+  hardShadow: 1,
+  duskDim: 0
 };
 
 function refreshClock(now) {
@@ -366,6 +367,8 @@ function refreshClock(now) {
   const softWx = wx.kind === "cloudy" || wx.kind === "fog" || wx.kind === "rain" || wx.kind === "storm";
   clock.hardShadow = softWx ? 0 : (wx.kind === "partly" ? 0.55 : 1);
   clock.moonStr = illum * moonUp * (softWx ? 0 : 1);
+  // 0 at alt +2, 1 at alt -8. Blue hour reads darker than sunset without waiting for full night.
+  clock.duskDim = clamp((2 - alt) / 10, 0, 1);
 }
 
 refreshClock(parseTime());
@@ -741,7 +744,7 @@ uniform vec3 uField, uWheat, uPlowed, uGrass, uForest, uForestB, uCedar, uWater;
 uniform vec3 uSunDir, uMoonDir, uSkyH, uSkyM, uSkyT;
 uniform float uNight, uTwi, uRising, uSnow, uFog, uRain, uStorm, uTime, uHatch, uRow, uBend, uSeason;
 uniform float uDawnMist, uMonth, uLightning;
-uniform float uHardShadow, uMoonStr, uWinOn, uExag, uCell;
+uniform float uHardShadow, uMoonStr, uWinOn, uDuskDim, uExag, uCell;
 uniform vec2 uFocus;
 uniform vec3 uWinEdge;
 uniform vec3 uStrikePos;
@@ -908,6 +911,7 @@ void main(){
     float nearG = 1.0 - smoothstep(200.0, 1400.0, dist);
     col += uWinEdge * uWinOn * 0.05 * nearG;
   }
+  col *= mix(vec3(1.0), vec3(0.58, 0.60, 0.70), uDuskDim * (1.0 - uNight) * 0.80);
   // Five receding layers. Mid-distance and back are wash only (no patchwork).
   float layer = smoothstep(700.0, 7200.0, dist);
   float nearL = 1.0 - smoothstep(200.0, 1400.0, dist);
@@ -1157,7 +1161,7 @@ void main(){
 const SKY_FRAG = /* glsl */`
 uniform vec3 uTop, uMid, uHor;
 uniform vec3 uSunDir, uMoonDir;
-uniform float uNight, uTwi, uSunSize, uMilky, uSeed, uLookAz, uStorm;
+uniform float uNight, uTwi, uSunSize, uMilky, uSeed, uLookAz, uStorm, uAlt;
 uniform vec2 uRes;
 varying vec3 vDir;
 ${NOISE_GLSL}
@@ -1219,7 +1223,8 @@ void main(){
     col = mix(col, uTop, zen * 0.85);
     col = mix(col, uHor, horB * 0.9);
     vec3 creamDay = vec3(0.96, 0.90, 0.78);
-    col = mix(col, creamDay, horB * 0.45 * (1.0 - uNight) * (1.0 - uStorm));
+    float creamKeep = smoothstep(-8.0, 8.0, uAlt);
+    col = mix(col, creamDay, horB * 0.45 * creamKeep * (1.0 - uStorm));
     if (uStorm > 0.01) {
       // Fold the horizon into the under-cloud band; never a brighter cream wall.
       col = mix(col, uMid, horB * 0.45);
@@ -1246,14 +1251,22 @@ void main(){
       duskCol = mix(duskCol, horSun, hor * sunSide * 0.88);
       duskCol = mix(duskCol, mix(cream, duskBlue, 0.38), hor * (1.0 - sunSide) * 0.42);
       duskCol = mix(duskCol, amber, clamp(aroundSun * 1.2, 0.0, 1.0));
+      // After sunset the afterglow tightens around the sun and the anti-solar
+      // sky deepens, so blue hour is not the same pale dusk wash as sunset.
+      float pastSet = smoothstep(2.0, -8.0, uAlt);
+      vec3 deepBlue = vec3(0.22, 0.28, 0.46);
+      duskCol = mix(duskCol, mix(deepBlue, duskBlue, 0.40), pastSet * zen * 0.90);
+      duskCol = mix(duskCol, deepBlue * 0.85, pastSet * (1.0 - sunSide) * 0.55);
+      duskCol = mix(duskCol, mix(peach, amber, 0.4), pastSet * aroundSun * hor * 0.35);
+      duskCol *= mix(1.0, 0.78, pastSet * 0.85);
       float wave = (noise21(vec2(d.x, d.z) * 8.0 + uSeed) - 0.5) * 1.15;
       float row = el * 26.0 + wave;
       float hatch = 1.0 - smoothstep(0.0, 0.34, abs(fract(row) - 0.5));
       float lift = step(0.30, hash21(vec2(floor(row), floor((d.x + d.z) * 20.0) + uSeed)));
       duskCol = mix(duskCol, mix(duskCol, vec3(0.22, 0.17, 0.13), 0.16), hatch * lift * 0.20 * (0.35 + 0.65 * hor));
       duskCol += (hash21(gl_FragCoord.xy + uSeed) - 0.5) * 0.04;
-      col = mix(col, duskCol, clamp((uTwi - 0.12) / 0.16, 0.0, 1.0));
-      if (uTwi > 0.28) col = duskCol;
+      float duskAmt = max(clamp((uTwi - 0.12) / 0.16, 0.0, 1.0), pastSet * 0.85);
+      col = mix(col, duskCol, duskAmt);
     }
     // light paper stipple
     float stip = hash21(gl_FragCoord.xy * 0.9 + uSeed);
@@ -1568,7 +1581,7 @@ void main(){
 const JHS_HERO_FRAG = /* glsl */`
 uniform sampler2D uMap;
 uniform vec3 uSunDir, uMoonDir, uNightMul, uFill, uColor, uWinCenter, uWinEdge;
-uniform float uNight, uStorm, uOpacity, uHasMap, uWin, uSage, uTwi, uHardShadow, uMoonStr, uWinOn, uWinLate;
+uniform float uNight, uStorm, uOpacity, uHasMap, uWin, uSage, uTwi, uHardShadow, uMoonStr, uWinOn, uWinLate, uDuskDim;
 varying vec3 vN;
 varying vec3 vWorld;
 varying vec2 vUv;
@@ -1599,6 +1612,7 @@ void main(){
   vec3 col = base * diff;
   col += uFill * (0.85 + 0.40 * max(dot(N, L), 0.0));
   col *= mix(vec3(1.0), uNightMul * 0.55, uNight);
+  col *= mix(vec3(1.0), vec3(0.62, 0.60, 0.55), uDuskDim * (1.0 - uNight) * 0.70);
   float ndl = dot(N, L);
   float shadeW = mix(uHardShadow, uMoonStr, uNight);
   vec3 umber = vec3(0.243, 0.208, 0.184);
@@ -1612,24 +1626,27 @@ void main(){
   if (uNight > 0.15 && uMoonStr > 0.01) {
     col += vec3(0.722, 0.776, 0.851) * uMoonStr * max(ndl, 0.0) * 0.14 * uNight;
   }
-  float paneTex = 0.0;
-  if (uSage < 0.5 && abs(N.y) < 0.62 && uHasMap > 0.5) {
-    float lumaW = dot(base, vec3(0.30, 0.59, 0.11));
-    paneTex = step(lumaW, 0.28) * step(base.r, 0.36) * (1.0 - step(0.12, base.r - base.b));
-  }
-  float isGlass = step(uWin, 0.95);
-  float wantWin = max(paneTex, isGlass);
-  if (wantWin > 0.01 && uWinOn > 0.001) {
-    float id = hash21j(floor(vUv * 48.0) + floor(vWorld.xz * 0.08));
+  // School windows must read at the locked 414 m hold. Texture-luma
+  // detection missed the baked facade panes, so punch a regular grid on
+  // vertical walls, plus a richer glow on glass meshes.
+  if (uSage < 0.5 && uWinOn > 0.001 && abs(N.y) < 0.62) {
+    float isGlass = step(uWin, 0.95);
+    float bay = fract(dot(vWorld.xz, vec2(0.34, 0.31)));
+    float story = fract(vWorld.y * 0.38);
+    float pane = step(0.16, bay) * step(bay, 0.58) * step(0.26, story) * step(story, 0.74);
+    vec2 idp = floor(vec2(dot(vWorld.xz, vec2(0.34, 0.31)), vWorld.y * 0.38));
+    float id = hash21j(idp);
     float stay = step(0.22, id);
     float lateOff = step(0.86, id) * uWinLate;
     float turn = smoothstep(id * 0.85, id * 0.85 + 0.18, uWinOn);
-    float lit = stay * (1.0 - lateOff) * turn * wantWin;
-    vec2 pc = fract(vUv * vec2(18.0, 10.0));
+    float lit = stay * (1.0 - lateOff) * turn * max(pane, isGlass);
+    vec2 pc = vec2((bay - 0.16) / 0.42, (story - 0.26) / 0.48);
     float d = length((pc - 0.5) * 2.0);
-    vec3 glow = mix(uWinCenter, uWinEdge, smoothstep(0.12, 0.88, d)) * 1.28;
-    col = mix(col, glow, lit);
-    col += glow * lit * 0.18;
+    vec3 glow = mix(uWinCenter, uWinEdge, smoothstep(0.10, 0.88, d)) * 1.45;
+    col = mix(col, glow, lit * mix(0.92, 1.0, isGlass));
+    col += glow * lit * mix(0.28, 0.48, isGlass);
+    float halo = (1.0 - lit) * pane * turn * stay * (1.0 - lateOff);
+    col = mix(col, glow * 0.55, halo * 0.22);
   }
   if (uStorm > 0.01) {
     float luma = dot(col, vec3(0.30, 0.59, 0.11));
@@ -1660,7 +1677,7 @@ void main(){
 
 const BUILDING_FRAG = /* glsl */`
 uniform vec3 uWash, uInkUse, uPaper, uNightMul, uSunDir, uMoonDir, uFill, uWinCenter, uWinEdge;
-uniform float uNight, uStorm, uBrick, uTwi, uHardShadow, uMoonStr, uWinOn, uWinLate;
+uniform float uNight, uStorm, uBrick, uTwi, uHardShadow, uMoonStr, uWinOn, uWinLate, uDuskDim;
 varying vec3 vN;
 varying vec3 vWorld;
 ${NOISE_GLSL}
@@ -1722,23 +1739,25 @@ void main(){
   }
   col *= 0.97 + 0.05 * noise21(vWorld.xz * 2.4);
   col += uFill * (0.42 + 0.58 * max(ndl, 0.0)) * (1.0 - 0.70 * uNight);
+  col *= mix(vec3(1.0), vec3(0.60, 0.58, 0.54), uDuskDim * (1.0 - uNight) * 0.70);
   if (abs(N.y) < 0.55 && uWinOn > 0.001) {
     vec2 hid = floor(vWorld.xz * 0.07);
     float off = hash21(hid);
     float colx = fract(dot(vWorld.xz, vec2(0.62, 0.58)) + off);
     float rowy = fract(vWorld.y * 0.45 + off * 0.25);
-    float pane = step(0.18, colx) * step(colx, 0.42) * step(0.30, rowy) * step(rowy, 0.72);
+    float pane = step(0.16, colx) * step(colx, 0.50) * step(0.26, rowy) * step(rowy, 0.74);
     float id = hash21(hid + floor(vec2(colx * 6.0, rowy * 5.0)));
-    float stay = step(0.28, id);
+    float stay = step(0.26, id);
     float lateOff = step(0.86, id) * uWinLate;
     float turn = smoothstep(id * 0.85, id * 0.85 + 0.18, uWinOn);
     float lit = pane * stay * (1.0 - lateOff) * turn;
-    vec2 pc = vec2((colx - 0.18) / 0.24, (rowy - 0.30) / 0.42);
+    vec2 pc = vec2((colx - 0.16) / 0.34, (rowy - 0.26) / 0.48);
     float d = length((pc - 0.5) * 2.0);
     vec3 glow = mix(uWinCenter, uWinEdge, smoothstep(0.12, 0.90, d));
     col = mix(col, glow, lit);
-    float spill = pane * turn * stay * (1.0 - lateOff) * smoothstep(0.72, 0.55, rowy) * 0.35;
-    col = mix(col, uWinEdge * 0.55, spill * 0.45);
+    col += glow * lit * 0.20;
+    float spill = pane * turn * stay * (1.0 - lateOff) * smoothstep(0.74, 0.55, rowy) * 0.40;
+    col = mix(col, uWinEdge * 0.55, spill * 0.50);
   }
   if (uStorm > 0.01) {
     float lumaB = dot(col, vec3(0.30, 0.59, 0.11));
@@ -1751,7 +1770,7 @@ void main(){
 
 const HOUSE_FRAG = /* glsl */`
 uniform vec3 uWash, uInkUse, uPaper, uNightMul, uSunDir, uMoonDir, uWinCenter, uWinEdge;
-uniform float uNight, uStorm, uTwi, uHardShadow, uMoonStr, uWinOn, uWinLate;
+uniform float uNight, uStorm, uTwi, uHardShadow, uMoonStr, uWinOn, uWinLate, uDuskDim;
 varying vec3 vN;
 varying vec3 vWorld;
 ${NOISE_GLSL}
@@ -1800,23 +1819,25 @@ void main(){
     col = mix(col, uInkUse, line);
   }
   col *= 0.97 + 0.05 * noise21(vWorld.xz * 2.4);
+  col *= mix(vec3(1.0), vec3(0.60, 0.58, 0.54), uDuskDim * (1.0 - uNight) * 0.70);
   if (abs(N.y) < 0.55 && uWinOn > 0.001) {
     vec2 hid = floor(vWorld.xz * 0.07);
     float off = hash21(hid);
     float colx = fract(dot(vWorld.xz, vec2(0.62, 0.58)) + off);
     float rowy = fract(vWorld.y * 0.45 + off * 0.25);
-    float pane = step(0.18, colx) * step(colx, 0.42) * step(0.30, rowy) * step(rowy, 0.72);
+    float pane = step(0.16, colx) * step(colx, 0.50) * step(0.26, rowy) * step(rowy, 0.74);
     float id = hash21(hid + floor(vec2(colx * 6.0, rowy * 5.0)));
-    float stay = step(0.28, id);
+    float stay = step(0.26, id);
     float lateOff = step(0.86, id) * uWinLate;
     float turn = smoothstep(id * 0.85, id * 0.85 + 0.18, uWinOn);
     float lit = pane * stay * (1.0 - lateOff) * turn;
-    vec2 pc = vec2((colx - 0.18) / 0.24, (rowy - 0.30) / 0.42);
+    vec2 pc = vec2((colx - 0.16) / 0.34, (rowy - 0.26) / 0.48);
     float d = length((pc - 0.5) * 2.0);
     vec3 glow = mix(uWinCenter, uWinEdge, smoothstep(0.12, 0.90, d));
     col = mix(col, glow, lit);
-    float spill = pane * turn * stay * (1.0 - lateOff) * smoothstep(0.72, 0.55, rowy) * 0.35;
-    col = mix(col, uWinEdge * 0.55, spill * 0.45);
+    col += glow * lit * 0.20;
+    float spill = pane * turn * stay * (1.0 - lateOff) * smoothstep(0.74, 0.55, rowy) * 0.40;
+    col = mix(col, uWinEdge * 0.55, spill * 0.50);
   }
   if (uStorm > 0.01) {
     float lumaB = dot(col, vec3(0.30, 0.59, 0.11));
@@ -2168,6 +2189,7 @@ function terrainUniforms() {
     uHardShadow: { value: 1 },
     uMoonStr: { value: 0 },
     uWinOn: { value: 0 },
+    uDuskDim: { value: 0 },
     uFocus: { value: new THREE.Vector2(0, 0) },
     uWinEdge: { value: colU(WIN_EDGE) }
   };
@@ -2232,6 +2254,7 @@ function buildSky() {
       uMoonDir: { value: new THREE.Vector3() },
       uNight: { value: 0 },
       uTwi: { value: 0 },
+      uAlt: { value: 30 },
       uSunSize: { value: 1 },
       uMilky: { value: 0 },
       uStorm: { value: 0 }
@@ -5503,6 +5526,7 @@ function makeWashMat(rgb, fill, brick) {
       uMoonStr: { value: 0 },
       uWinOn: { value: 0 },
       uWinLate: { value: 0 },
+      uDuskDim: { value: 0 },
       uWinCenter: { value: colU(WIN_CENTER) },
       uWinEdge: { value: colU(WIN_EDGE) }
     },
@@ -5899,6 +5923,7 @@ function styleJhsModel(root, startOpacity, sage) {
           uMoonStr: { value: clock.moonStr || 0 },
           uWinOn: { value: clock.winOn || 0 },
           uWinLate: { value: clock.winLate || 0 },
+          uDuskDim: { value: clock.duskDim || 0 },
           uWinCenter: { value: colU(WIN_CENTER) },
           uWinEdge: { value: colU(WIN_EDGE) }
         },
@@ -6662,6 +6687,7 @@ function makeHouseWashMat(rgb) {
       uMoonStr: { value: 0 },
       uWinOn: { value: 0 },
       uWinLate: { value: 0 },
+      uDuskDim: { value: 0 },
       uWinCenter: { value: colU(WIN_CENTER) },
       uWinEdge: { value: colU(WIN_EDGE) }
     },
@@ -7426,6 +7452,7 @@ function pushLightUniforms(u) {
   if (u.uMoonStr) u.uMoonStr.value = clock.moonStr;
   if (u.uWinOn) u.uWinOn.value = clock.winOn;
   if (u.uWinLate) u.uWinLate.value = clock.winLate;
+  if (u.uDuskDim) u.uDuskDim.value = clock.duskDim;
   if (u.uWinCenter) u.uWinCenter.value.set(WIN_CENTER[0] / 255, WIN_CENTER[1] / 255, WIN_CENTER[2] / 255);
   if (u.uWinEdge) u.uWinEdge.value.set(WIN_EDGE[0] / 255, WIN_EDGE[1] / 255, WIN_EDGE[2] / 255);
   if (u.uFocus && camera) u.uFocus.value.set(camera.position.x, camera.position.z);
@@ -7676,6 +7703,7 @@ function applySkin() {
     skyMat.uniforms.uMoonDir.value.copy(altAzDir(clock.moonAlt, clock.moonAz));
     skyMat.uniforms.uNight.value = night;
     skyMat.uniforms.uTwi.value = clock.twi;
+    if (skyMat.uniforms.uAlt) skyMat.uniforms.uAlt.value = clock.alt;
     skyMat.uniforms.uMilky.value = night > 0.5 ? 0.55 : 0;
     if (skyMat.uniforms.uStorm) skyMat.uniforms.uStorm.value = wx.kind === "storm" ? 1 : 0;
   }
