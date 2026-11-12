@@ -1740,7 +1740,9 @@ void main(){
   col *= 0.97 + 0.05 * noise21(vWorld.xz * 2.4);
   col += uFill * (0.42 + 0.58 * max(ndl, 0.0)) * (1.0 - 0.70 * uNight);
   col *= mix(vec3(1.0), vec3(0.60, 0.58, 0.54), uDuskDim * (1.0 - uNight) * 0.70);
-  if (abs(N.y) < 0.55 && uWinOn > 0.001) {
+  // Real landmark windows use WINDOW_FRAG. Skip the procedural grid on brick
+  // walls so the church and Town Hall are not covered in extra panes.
+  if (abs(N.y) < 0.55 && uWinOn > 0.001 && uBrick < 0.5) {
     vec2 hid = floor(vWorld.xz * 0.07);
     float off = hash21(hid);
     float colx = fract(dot(vWorld.xz, vec2(0.62, 0.58)) + off);
