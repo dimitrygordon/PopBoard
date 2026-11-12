@@ -60,7 +60,7 @@ const JHS_HOLD_EYE_DESKTOP = 24;
 const HALL_APPARENT_W = 20;
 const HALL_HALF_M = 12;
 const HALL_HEIGHT_M = 18;
-const RIVER_TREE_CLEAR_M = 26;
+const RIVER_TREE_CLEAR_M = 48;
 const TOUR_HOLD_JHS = 30;
 const TOUR_HOLD_OTHER = 15;
 const TOUR_ORBIT_ARC = 50 * Math.PI / 180;
@@ -4502,9 +4502,10 @@ function scatterTrees() {
     const nx = -uz, nz = ux;
     for (let side = -1; side <= 1; side += 2) {
       for (let row = 0; row < 2; row++) {
-        const off = 24 + row * 16 + rng() * 6;
+        const off = 50 + row * 18 + rng() * 8;
         const ox = x + nx * side * off;
         const oz = z + nz * side * off;
+        if (tooCloseToRiver(ox, oz)) continue;
         const p = worldToPx(ox, oz);
         addTreeAt(p.px, p.py, 4, 1.15, rng() < 0.2 ? "sycamore" : "oak", 1);
       }
@@ -4519,8 +4520,9 @@ function scatterTrees() {
       if (pos.length / 3 >= maxLogical) return;
       const nx = -uz, nz = ux;
       const side = (rng() < 0.5 ? 1 : -1);
-      const ox = x + nx * side * (12 + rng() * 6);
-      const oz = z + nz * side * (12 + rng() * 6);
+      const ox = x + nx * side * (40 + rng() * 12);
+      const oz = z + nz * side * (40 + rng() * 12);
+      if (tooCloseToRiver(ox, oz)) return;
       const p = worldToPx(ox, oz);
       addTreeAt(p.px, p.py, 4, 0.9, rng() < 0.22 ? "sycamore" : "oak", 1);
     });
@@ -4649,11 +4651,11 @@ function plantRiverbankTrees(addTreeAt, pos) {
   indexRecords();
   for (let i = 0; i < raw.length; i += 2) {
     const w = pxToWorld(raw[i][0], raw[i][1]);
-    nearby(w.x, w.z, 32, function (r) {
+    nearby(w.x, w.z, 56, function (r) {
       const d = Math.hypot(r.x - w.x, r.z - w.z);
-      if (d < 8 || d > 28) return;
-      const vx = w.x - r.x, vz = w.z - r.z, vl = Math.hypot(vx, vz) || 1;
-      const amt = 0.22 + 0.28 * (1 - (d - 8) / 20);
+      if (d < 48 || d > 70) return;
+      const vx = r.x - w.x, vz = r.z - w.z, vl = Math.hypot(vx, vz) || 1;
+      const amt = 0.08 + 0.10 * (1 - (d - 48) / 22);
       r.leanX = (vx / vl) * amt;
       r.leanZ = (vz / vl) * amt;
     });
@@ -7871,13 +7873,10 @@ void main(){
   vec3 ink = vec3(0.165, 0.129, 0.094);
   vec3 cream = vec3(0.96, 0.92, 0.80);
   vec3 col = water;
-  float rip = abs(fract(vUv.x * 3.2 + sin(vUv.y * 2.1 + vUv.x * 2.4) * 0.7) - 0.5);
-  col = mix(col, ink, (1.0 - smoothstep(0.0, 0.22, rip)) * 0.07);
-  float glint = abs(fract(vUv.x * 2.1 + 0.28 + sin(vUv.y * 1.6 + vUv.x * 1.3) * 0.55) - 0.5);
-  float mid = 1.0 - abs(vUv.y - 0.5) * 2.0;
-  col = mix(col, cream, (1.0 - smoothstep(0.0, 0.20, glint)) * 0.08 * mid);
+  float grain = fract(sin(dot(vUv, vec2(12.9898, 78.233))) * 43758.5453);
+  col = mix(col, col * 0.96, grain * 0.12);
   float bank = min(vUv.y, 1.0 - vUv.y);
-  col = mix(col, ink, (1.0 - smoothstep(0.0, 0.10, bank)) * 0.40);
+  col = mix(col, ink, (1.0 - smoothstep(0.0, 0.16, bank)) * 0.28);
   gl_FragColor = vec4(col, 1.0);
 }
 `;
@@ -7891,7 +7890,7 @@ function densifyRiverPath() {
     if (i < src.length - 1) {
       const b = pxToWorld(src[i + 1][0], src[i + 1][1]);
       const d = Math.hypot(b.x - a.x, b.z - a.z);
-      const n = Math.max(1, Math.ceil(d / 28));
+      const n = Math.max(1, Math.ceil(d / 10));
       for (let k = 1; k < n; k++) {
         const t = k / n;
         out.push({ x: a.x + (b.x - a.x) * t, z: a.z + (b.z - a.z) * t });
@@ -7915,43 +7914,91 @@ function layoutRiverRibbon() {
   camera.getWorldDirection(look);
   const lx = look.x, lz = look.z;
   const llen = Math.hypot(lx, lz) || 1;
-  const pts = [];
+  // Keep only contiguous runs so a skipped mid-path point cannot
+  // stretch a quad across a gap and crease a ruled seam.
+  const runs = [];
+  let run = [];
   for (let i = 0; i < raw.length; i++) {
     const p = raw[i];
     const along = ((p.x - cx) * lx + (p.z - cz) * lz) / llen;
     const side = (p.x - cx) * (lz / llen) - (p.z - cz) * (lx / llen);
-    if (along < 160 || along > 6200 || Math.abs(side) > 2400) continue;
-    pts.push(p);
+    if (along < 160 || along > 6200 || Math.abs(side) > 2400) {
+      if (run.length >= 3) runs.push(run);
+      run = [];
+      continue;
+    }
+    if (run.length) {
+      const pr = run[run.length - 1];
+      if (Math.hypot(p.x - pr.x, p.z - pr.z) > 80) {
+        if (run.length >= 3) runs.push(run);
+        run = [];
+      }
+    }
+    run.push(p);
   }
-  if (pts.length < 3) return;
+  if (run.length >= 3) runs.push(run);
+  const pts = [];
+  for (let r = 0; r < runs.length; r++) {
+    if (pts.length) pts.push(null);
+    for (let i = 0; i < runs[r].length; i++) pts.push(runs[r][i]);
+  }
+  if (pts.filter(function (p) { return p; }).length < 3) return;
   const pos = [];
   const uv = [];
+  const nrm = [];
   const idx = [];
   const bankPos = [];
   const bankUv = [];
   const bankIdx = [];
   const bankBar = [];
   const n = pts.length;
+  const sxs = new Array(n), szs = new Array(n);
+  const waterYs = new Array(n), bankYs = new Array(n);
   for (let i = 0; i < n; i++) {
     const p = pts[i];
-    const pr = pts[Math.max(0, i - 1)];
-    const nx = pts[Math.min(n - 1, i + 1)];
+    if (!p) continue;
+    let pr = p, nx = p;
+    if (i > 0 && pts[i - 1]) pr = pts[i - 1];
+    if (i < n - 1 && pts[i + 1]) nx = pts[i + 1];
     let tx = nx.x - pr.x, tz = nx.z - pr.z;
     const tl = Math.hypot(tx, tz) || 1;
     tx /= tl; tz /= tl;
-    const sx = -tz, sz = tx;
-    const dist = Math.hypot(p.x - cx, p.z - cz);
-    // Patoka at Jasper is roughly 30-50 m across. Use a 20 m half (40 m water).
+    sxs[i] = -tz; szs[i] = tx;
     const half = 20;
-    // Rim is sampled off the centerline so we use the uncarved bank, not the bed.
-    const rimL = terrainYAt(p.x - sx * (half + 16), p.z - sz * (half + 16));
-    const rimR = terrainYAt(p.x + sx * (half + 16), p.z + sz * (half + 16));
+    const rimL = terrainYAt(p.x - sxs[i] * (half + 16), p.z - szs[i] * (half + 16));
+    const rimR = terrainYAt(p.x + sxs[i] * (half + 16), p.z + szs[i] * (half + 16));
     const bankY = Math.max(rimL, rimR) + 0.4;
     const bedY = terrainYAt(p.x, p.z);
-    // Water sits in the trough, above the carved bed, below the rim.
-    const waterY = Math.max(bedY + 1.0, bankY - 3.2);
+    waterYs[i] = Math.max(bedY + 1.0, bankY - 3.2);
+    bankYs[i] = bankY;
+  }
+  const smY = waterYs.slice();
+  for (let i = 0; i < n; i++) {
+    if (!pts[i] || waterYs[i] == null) continue;
+    let sum = 0, c = 0;
+    for (let k = i - 3; k <= i + 3; k++) {
+      if (k < 0 || k >= n || !pts[k] || waterYs[k] == null) continue;
+      let bridged = false;
+      const a = Math.min(i, k), b = Math.max(i, k);
+      for (let t = a; t <= b; t++) if (!pts[t]) bridged = true;
+      if (bridged) continue;
+      sum += waterYs[k]; c++;
+    }
+    if (c) smY[i] = sum / c;
+  }
+  let alongU = 0;
+  for (let i = 0; i < n; i++) {
+    const p = pts[i];
+    if (!p) { alongU = 0; continue; }
+    const sx = sxs[i], sz = szs[i];
+    const waterY = smY[i];
+    const bankY = bankYs[i];
+    const half = 20;
+    const pr = (i > 0 && pts[i - 1]) ? pts[i - 1] : p;
+    const nx = (i < n - 1 && pts[i + 1]) ? pts[i + 1] : p;
     pos.push(p.x - sx * half, waterY, p.z - sz * half);
     pos.push(p.x + sx * half, waterY, p.z + sz * half);
+    nrm.push(0, 1, 0, 0, 1, 0);
     const nL = (Math.sin(i * 127.1 + p.x * 0.013) * 43758.5453) % 1; const nL01 = nL < 0 ? nL + 1 : nL;
     const nR = (Math.sin(i * 311.7 + p.z * 0.017) * 43758.5453) % 1; const nR01 = nR < 0 ? nR + 1 : nR;
     const cr = (p.x - pr.x) * (nx.z - p.z) - (p.z - pr.z) * (nx.x - p.x);
@@ -7972,14 +8019,16 @@ function layoutRiverRibbon() {
     bankPos.push(p.x - sx * (half + leftW), leftY, p.z - sz * (half + leftW));
     bankPos.push(p.x + sx * half, waterY, p.z + sz * half);
     bankPos.push(p.x + sx * (half + rightW), rightY, p.z + sz * (half + rightW));
-    const u = i / (n - 1);
-    uv.push(u, 0, u, 1);
-    bankUv.push(u, 0, u, 1, u, 0, u, 1);
+    uv.push(alongU * 0.008, 0, alongU * 0.008, 1);
+    bankUv.push(alongU * 0.008, 0, alongU * 0.008, 1, alongU * 0.008, 0, alongU * 0.008, 1);
     bankBar.push(leftBar, leftBar, rightBar, rightBar);
-    if (i > 0) {
-      const a = (i - 1) * 2;
+    const vi = pos.length / 3;
+    const bi = bankPos.length / 3;
+    if (i > 0 && pts[i - 1]) {
+      alongU += Math.hypot(p.x - pts[i - 1].x, p.z - pts[i - 1].z);
+      const a = vi - 4;
       idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
-      const b = (i - 1) * 4;
+      const b = bi - 8;
       bankIdx.push(b, b + 1, b + 4, b + 1, b + 5, b + 4);
       bankIdx.push(b + 2, b + 6, b + 3, b + 3, b + 6, b + 7);
     }
@@ -7987,8 +8036,8 @@ function layoutRiverRibbon() {
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
   geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+  geo.setAttribute("normal", new THREE.Float32BufferAttribute(nrm, 3));
   geo.setIndex(idx);
-  geo.computeVertexNormals();
   if (!riverRibbon) {
     const mat = makeRiverMat();
     riverRibbon = new THREE.Mesh(geo, mat);
@@ -9618,28 +9667,28 @@ function scoreRiverView(camX, camY, camZ, heading, samples) {
   let n = 0, low = 0, minY = 1, minX = 1, maxX = -1;
   for (let i = 0; i < samples.length; i++) {
     const p = samples[i];
-    if (Math.hypot(p.x - camX, p.z - camZ) > 700) continue;
+    if (Math.hypot(p.x - camX, p.z - camZ) > 1100) continue;
     const v = new THREE.Vector3(p.x, p.y, p.z).project(camera);
-    if (!(v.z > 0 && v.z < 1) || Math.abs(v.x) > 1.05) continue;
+    if (!(v.z > 0 && v.z < 1) || Math.abs(v.x) > 1.15) continue;
     n++;
     if (v.y < minY) minY = v.y;
-    if (v.y < -0.15 && v.y > -0.95 && Math.abs(v.x) < 0.95) {
+    if (v.y < 0.05 && v.y > -0.98 && Math.abs(v.x) < 1.05) {
       low++;
       if (v.x < minX) minX = v.x;
       if (v.x > maxX) maxX = v.x;
     }
   }
-  if (n < 3 || low < 2) return -1;
+  if (n < 2) return -1;
   const span = Math.max(0, maxX - minX);
   // Reward an S in screen space: water should swing across the lower third, not run
   // away as a straight canal.
   const vis = [];
   for (let i = 0; i < samples.length; i++) {
     const p = samples[i];
-    if (Math.hypot(p.x - camX, p.z - camZ) > 700) continue;
+    if (Math.hypot(p.x - camX, p.z - camZ) > 1100) continue;
     const v = new THREE.Vector3(p.x, p.y, p.z).project(camera);
-    if (!(v.z > 0 && v.z < 1) || Math.abs(v.x) > 1.05) continue;
-    if (v.y < -0.10 && v.y > -0.96) vis.push({ x: v.x, d: v.z });
+    if (!(v.z > 0 && v.z < 1) || Math.abs(v.x) > 1.15) continue;
+    if (v.y < 0.08 && v.y > -0.98) vis.push({ x: v.x, d: v.z });
   }
   vis.sort(function (a, b) { return a.d - b.d; });
   let turns = 0, prevDir = 0;
@@ -10221,6 +10270,7 @@ function frameWidthLocked(name, target, hide, heightM, opts) {
     const z = tw.z + Math.cos(ang) * dist;
     if (opts.frontSinMax != null && Math.sin(ang) > opts.frontSinMax) return null;
     if (opts.frontCosMax != null && Math.cos(ang) > opts.frontCosMax) return null;
+    if (opts.frontCosMin != null && Math.cos(ang) < opts.frontCosMin) return null;
     if (coverWorld(x, z) === 0) return null;
     const y = yOf(heightWorld(x, z)) + eye;
     if (y < topY - 6) return null;
@@ -10288,6 +10338,7 @@ function frameWidthLocked(name, target, hide, heightM, opts) {
         const z = tw.z + Math.cos(ang) * dist0;
         if (opts.frontSinMax != null && Math.sin(ang) > opts.frontSinMax) continue;
         if (opts.frontCosMax != null && Math.cos(ang) > opts.frontCosMax) continue;
+        if (opts.frontCosMin != null && Math.cos(ang) < opts.frontCosMin) continue;
         if (coverWorld(x, z) === 0) continue;
         if (yOf(heightWorld(x, z)) - baseY > (opts.maxRise != null ? opts.maxRise : 14)) continue;
         const y = yOf(heightWorld(x, z)) + eyes[ei];
@@ -10398,13 +10449,12 @@ function getTourStops() {
       churchFr.wFrac = nudged.wFrac; churchFr.hFrac = nudged.hFrac;
     }
   }
-  if (!churchFr || churchFr.approach == null || churchFr.dist < FORE_CLEAR_M) {
-    churchFr.approach = 2.05;
-    churchFr.dist = narrow ? 360 : 300;
-    churchFr.eye = narrow ? 48 : 44;
-    churchFr.pinned = true;
-    console.info("[frame]", "church pinned 15% three-quarter", "dist", churchFr.dist, "eye", churchFr.eye, "approach", churchFr.approach);
-  }
+  // Always pin St. Joseph at ~15% so the phone shot does not fill the land.
+  churchFr.approach = 2.05;
+  churchFr.dist = narrow ? 700 : 380;
+  churchFr.eye = narrow ? 56 : 48;
+  churchFr.pinned = true;
+  console.info("[frame]", "church pinned 15% three-quarter", "dist", churchFr.dist, "eye", churchFr.eye, "approach", churchFr.approach);
   const courtFr = frameNamed("courthouse", court, church, courtH, courtD, courtE, 520, 82, { half: 22, hMin: 0.055 });
   if (!(courtFr && courtFr.approach != null && courtFr.hFrac >= 0.07 && courtFr.dist <= 700)) {
     courtFr.dist = 520;
@@ -10416,9 +10466,10 @@ function getTourStops() {
   const millFr = frameNamed("mill", mill, church, millH, millD, millE, 210, 30, Object.assign({}, widthBand, { half: 12, wMin: 0.10, wMax: 0.16, wTarget: 0.12 }));
   const depotFr = frameNamed("depot", depot, church, depotH, depotD, depotE, 210, 34, Object.assign({}, widthBand, { half: 16, wMin: 0.10, wMax: 0.18, wTarget: 0.12 }));
   const farmFr = frameNamed("farmstead", [farm.px, farm.py], church, 12, farmD, farmE, 320, 30);
-  // 150 m keep-out wins; 8-12% width is enough. The subject is the red
-  // brick facade and the green spire on the skyline, seen across a lawn.
-  // Front faces north (rotated toward the hero). Stay north of the hall.
+  // 150 m keep-out wins; 8-12% width is enough. The subject is a south
+  // three-quarter of the red facade, with the cream clock and the green
+  // spire breaking the skyline. The front faces south, so stay south of
+  // the hall. Never come in closer than 150 m; grass, not a roof, in front.
   const hallFr = frameWidthLocked("townhall", hall, stadium, hallH, {
     apparentW: HALL_APPARENT_W,
     half: HALL_HALF_M,
@@ -10427,19 +10478,21 @@ function getTourStops() {
     wTarget: 0.10,
     minDist: FORE_CLEAR_M,
     clearM: FORE_CLEAR_M,
-    preferAng: -0.85 * Math.PI,
-    preferArc: 0.45,
-    frontCosMax: -0.25,
-    eyes: narrow ? [40, 52, 64] : [36, 46, 56],
+    preferAng: 0.50,
+    preferArc: 0.55,
+    frontCosMin: 0.30,
+    eyes: narrow ? [28, 36, 44] : [24, 30, 36],
     maxRise: 14,
     midY: -0.58,
     occlude: true,
     rejectBottom: -0.72
   });
-  if (!hallFr || hallFr.approach == null || hallFr.dist < FORE_CLEAR_M || hallFr.wFrac == null) {
-    hallFr.approach = -0.85 * Math.PI;
-    hallFr.dist = narrow ? 165 : 160;
-    hallFr.eye = narrow ? 40 : 32;
+  // SSE three-quarter (approach 0.50) at 160 m. Phone a little farther so
+  // the narrow frame stays near 8-12%.
+  if (!hallFr || hallFr.approach == null || hallFr.dist < FORE_CLEAR_M || Math.cos(hallFr.approach) < 0.30) {
+    hallFr.approach = 0.50;
+    hallFr.dist = narrow ? 180 : 160;
+    hallFr.eye = narrow ? 32 : 24;
     hallFr.pinned = true;
   }
   (function capHallEye() {
@@ -10448,7 +10501,7 @@ function getTourStops() {
     const cx = tw.x + Math.sin(hallFr.approach) * hallFr.dist;
     const cz = tw.z + Math.cos(hallFr.approach) * hallFr.dist;
     const groundY = yOf(heightWorld(cx, cz));
-    const maxCamY = hallY + (narrow ? 34 : 30);
+    const maxCamY = hallY + (narrow ? 36 : 30);
     if (groundY + hallFr.eye > maxCamY) {
       hallFr.eye = Math.max(18, maxCamY - groundY);
     }
@@ -10511,7 +10564,9 @@ function getTourStops() {
       // Same angle as desktop. Come in so the brick facade is a real subject
       // on the 390 px frame; 1100 m made it a sliver even at a 24% billboard.
       jhsFr.dist = 620;
-      jhsFr.eye = 40;
+      // Raise the camera so we look across a lawn, not over a row of rooftops.
+      // Same three-quarter angle; 20-25% of the 390 px width; 150 m keep-out.
+      jhsFr.eye = 72;
       jhsFr.pinned = true;
     }
     tourStopsCache.unshift({
@@ -10528,6 +10583,9 @@ function getTourStops() {
     if (s.name === "jhs" || s.name === "courthouse" || s.name === "townhall" || s.name === "monastery" || s.name === "archabbey") {
       s.horizon = longHor;
     }
+    // Desktop JHS at 0.70 flooded 65.38. Tilt the camera up a little so
+    // the horizon lands in the 66-74 band without changing the hold pose.
+    if (s.name === "jhs") s.horizon = narrow ? 0.72 : 0.725;
   }
   return tourStopsCache;
 }
