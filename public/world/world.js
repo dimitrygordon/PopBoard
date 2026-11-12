@@ -11,6 +11,10 @@ const ROWS = 1280;
 const ORIGIN_PX = 511.5;
 const ORIGIN_PY = 383.5;
 const EXAG = 2.9;
+// Terrain mesh is coarser than the heightmap (~100 m verts vs 31.25 m cells).
+// House seating and river Y must sample this mesh, not the full-res bilinear peak.
+const TERRAIN_WSEG = 320;
+const TERRAIN_DSEG = 400;
 const HERO = { px: 218, py: 509, eye: 36, pathT: 0.5 };
 
 // Real-world cells (EPSG:5070). Church is at St. Joseph on Kundek/Newton,
@@ -542,14 +546,27 @@ function footprintSamplePts(x, z, bw, bd, yaw, scale) {
   ];
 }
 
-function footprintHeightSpan(x, z, bw, bd, yaw) {
-  // Tight samples (center, corners, mid-edges) keep the 3.6 m skip and
-  // high-point seating on the real footprint. Expanded samples catch a
-  // sharp crest that falls away just outside the walls.
-  let loTight = heightWorld(x, z), hi = loTight;
+function footprintHeightSpanHm(x, z, bw, bd, yaw) {
+  // Previous seating: bilinear peak on the full-res heightmap. Kept so
+  // a float scan can compare before/after against the rendered mesh.
+  let loTight = yOf(heightWorld(x, z)), hi = loTight;
   const tight = footprintSamplePts(x, z, bw, bd, yaw, 1);
   for (let c = 0; c < tight.length; c++) {
-    const h = heightWorld(tight[c][0], tight[c][1]);
+    const h = yOf(heightWorld(tight[c][0], tight[c][1]));
+    if (h < loTight) loTight = h;
+    if (h > hi) hi = h;
+  }
+  return { lo: loTight, hi: hi, y0: hi, drop: hi - loTight };
+}
+
+function footprintHeightSpan(x, z, bw, bd, yaw) {
+  // Seat to the rendered terrain mesh, not the full-res heightmap peak.
+  // The mesh is ~100 m between verts, so a sharp crest is a chord under
+  // the peak; sampling the heightmap left houses hanging in open sky.
+  let loTight = terrainMeshY(x, z), hi = loTight;
+  const tight = footprintSamplePts(x, z, bw, bd, yaw, 1);
+  for (let c = 0; c < tight.length; c++) {
+    const h = terrainMeshY(tight[c][0], tight[c][1]);
     if (h < loTight) loTight = h;
     if (h > hi) hi = h;
   }
@@ -558,29 +575,27 @@ function footprintHeightSpan(x, z, bw, bd, yaw) {
   for (let s = 0; s < scales.length; s++) {
     const expanded = footprintSamplePts(x, z, bw, bd, yaw, scales[s]);
     for (let c = 0; c < expanded.length; c++) {
-      const h = heightWorld(expanded[c][0], expanded[c][1]);
+      const h = terrainMeshY(expanded[c][0], expanded[c][1]);
       if (h < loCrest) loCrest = h;
     }
   }
-  // Probe outward from the tight corners so a knife-edge crest still
-  // reports the downhill drop the camera sees under the eave.
   for (let c = 0; c < 4; c++) {
     const dx = tight[c][0] - x, dz = tight[c][1] - z;
     const dl = Math.hypot(dx, dz) || 1;
     const ux = dx / dl, uz = dz / dl;
     for (let k = 0; k < 3; k++) {
       const dist = 4 + k * 5;
-      const h = heightWorld(tight[c][0] + ux * dist, tight[c][1] + uz * dist);
+      const h = terrainMeshY(tight[c][0] + ux * dist, tight[c][1] + uz * dist);
       if (h < loCrest) loCrest = h;
     }
   }
   return {
     lo: loTight,
     hi: hi,
-    y0: yOf(hi),
-    drop: yOf(hi) - yOf(loTight),
-    crestDrop: yOf(hi) - yOf(loCrest),
-    yLo: yOf(loCrest)
+    y0: hi,
+    drop: hi - loTight,
+    crestDrop: hi - loCrest,
+    yLo: loCrest
   };
 }
 
@@ -2350,7 +2365,7 @@ function terrainUniforms() {
 }
 
 function buildTerrain() {
-  const wSeg = 320, dSeg = 400;
+  const wSeg = TERRAIN_WSEG, dSeg = TERRAIN_DSEG;
   const geo = new THREE.BufferGeometry();
   const verts = (wSeg + 1) * (dSeg + 1);
   const pos = new Float32Array(verts * 3);
@@ -6263,6 +6278,7 @@ function nearHero(x, z, dist) {
 }
 
 let osmData = null;
+let seatedBuildings = [];
 let jhsCampusData = null;
 const osmTownGroups = [];
 
@@ -7346,6 +7362,7 @@ function buildLotLines(recs, townName) {
 
 function buildOsmTowns() {
   osmTownGroups.length = 0;
+  seatedBuildings = [];
   if (!osmData || !osmData.towns) return;
   const avoid = landmarkAvoidList();
   const towns = osmData.towns;
@@ -7415,7 +7432,9 @@ function buildOsmTowns() {
         const wall = pickWeighted(downWalls, u);
         const key = paletteKey(wall);
         if (!downBuckets[key]) downBuckets[key] = [];
-        downBuckets[key].push({ b: b, w: w, bw: bw, bd: bd, wallH: wallH, yaw: yaw, wall: wall });
+        const recD = { b: b, w: w, bw: bw, bd: bd, wallH: wallH, yaw: yaw, wall: wall, town: name, index: i, kind: kind, generator: "osm-downtown" };
+        downBuckets[key].push(recD);
+        seatedBuildings.push(recD);
         nDown++;
         sx += w.x; sz += w.z; sn++;
         continue;
@@ -7426,7 +7445,9 @@ function buildOsmTowns() {
         if (footprintTooSteep(w.x, w.z, bw, bd, yaw)) continue;
         wallH = 2.6 + u * 0.7;
         pitch = (35 + u2 * 10) * Math.PI / 180;
-        shedList.push({ b: b, w: w, bw: bw, bd: bd, wallH: wallH, pitch: pitch, yaw: yaw });
+        const recS = { b: b, w: w, bw: bw, bd: bd, wallH: wallH, pitch: pitch, yaw: yaw, town: name, index: i, kind: "shed", generator: "osm-shed" };
+        shedList.push(recS);
+        seatedBuildings.push(recS);
         sx += w.x; sz += w.z; sn++;
         continue;
       }
@@ -7446,11 +7467,12 @@ function buildOsmTowns() {
       else if (u3 > 0.42) proto = "porch";
       const wall = pickWeighted(wallPals, hash01(px + 1.3, py + 4.4));
       const roof = pickWeighted(roofPals, hash01(px - 4.8, py + 2.1));
-      const rec = { b: b, w: w, bw: bw, bd: bd, wallH: wallH, pitch: pitch, yaw: yaw, wall: wall, roof: roof, proto: proto, _bw: bw, _bd: bd, _yaw: yaw };
+      const rec = { b: b, w: w, bw: bw, bd: bd, wallH: wallH, pitch: pitch, yaw: yaw, wall: wall, roof: roof, proto: proto, _bw: bw, _bd: bd, _yaw: yaw, town: name, index: i, kind: kind, generator: "osm-house" };
       const key = proto + "|" + paletteKey(wall) + "|" + paletteKey(roof);
       if (!houseBuckets[key]) houseBuckets[key] = [];
       houseBuckets[key].push(rec);
       lotRecs.push(rec);
+      seatedBuildings.push(rec);
       sx += w.x; sz += w.z; sn++;
     }
     function placeHouse(dummy, rec, bodyMesh, roofMesh, i) {
@@ -8094,10 +8116,36 @@ function farLiftAt(dist) {
   })(dist));
   return 1 + 0.24 * t;
 }
+function terrainVertexY(i, j) {
+  const px = (i / TERRAIN_WSEG) * (COLS - 1);
+  const py = (1 - j / TERRAIN_DSEG) * (ROWS - 1);
+  return yOf(heightPx(px, py));
+}
+
+function terrainMeshY(x, z) {
+  // Same triangulation as buildTerrain, before the view-dependent farLift.
+  const p = worldToPx(x, z);
+  let iF = (p.px / (COLS - 1)) * TERRAIN_WSEG;
+  let jF = (1 - p.py / (ROWS - 1)) * TERRAIN_DSEG;
+  if (!isFinite(iF) || !isFinite(jF)) return yOf(heightWorld(x, z));
+  iF = Math.max(0, Math.min(TERRAIN_WSEG, iF));
+  jF = Math.max(0, Math.min(TERRAIN_DSEG, jF));
+  const i0 = Math.min(TERRAIN_WSEG - 1, Math.floor(iF));
+  const j0 = Math.min(TERRAIN_DSEG - 1, Math.floor(jF));
+  const sv = iF - i0, tv = jF - j0;
+  const y00 = terrainVertexY(i0, j0);
+  const y10 = terrainVertexY(i0 + 1, j0);
+  const y01 = terrainVertexY(i0, j0 + 1);
+  const y11 = terrainVertexY(i0 + 1, j0 + 1);
+  if (sv + tv <= 1) return y00 + sv * (y10 - y00) + tv * (y01 - y00);
+  return y11 + (1 - sv) * (y01 - y11) + (1 - tv) * (y10 - y11);
+}
+
 function terrainYAt(x, z) {
-  const h = heightWorld(x, z);
+  const y = terrainMeshY(x, z);
+  if (!camera) return y;
   const dist = Math.hypot(x - camera.position.x, z - camera.position.z);
-  return yOf(h) * farLiftAt(dist);
+  return y * farLiftAt(dist);
 }
 
 function placeFixedLandmarks(loaded) {
@@ -8511,7 +8559,9 @@ function layoutRiverRibbon() {
     const sx = sxs[i], sz = szs[i];
     const waterY = smY[i];
     const bankY = bankYs[i];
-    const half = 20;
+    const nEdge = (Math.sin(i * 19.7 + p.x * 0.021) * 43758.5453) % 1;
+    const nEdge01 = nEdge < 0 ? nEdge + 1 : nEdge;
+    const half = 20 + (nEdge01 - 0.5) * 5.0 + 1.8 * Math.sin(i * 0.29 + p.z * 0.01);
     const pr = (i > 0 && pts[i - 1]) ? pts[i - 1] : p;
     const nx = (i < n - 1 && pts[i + 1]) ? pts[i + 1] : p;
     pos.push(p.x - sx * half, waterY, p.z - sz * half);
@@ -8620,9 +8670,15 @@ function layoutRiverRibbon() {
             float k = min(0.48, uStrikeAmt * fall);
             col = mix(col, mix(col, vec3(0.965, 0.933, 0.863), 0.58), k);
           }
-          gl_FragColor = vec4(col, 1.0);
+          // Soften the field join: fade and nick the outer edge so the tan
+          // bank does not meet the terrain in a straight ruled stripe.
+          float nick = hash21(floor(vW.xz * 0.11));
+          float outer = smoothstep(0.62 + nick * 0.14, 0.96 + nick * 0.04, vUv.y);
+          if (outer > 0.92 && hash21(vW.xz * 1.7 + nick) > (1.0 - outer) * 1.4) discard;
+          gl_FragColor = vec4(col, 1.0 - outer * 0.92);
         }`,
       side: THREE.DoubleSide,
+      transparent: true,
       depthWrite: true
     });
     riverBanks = new THREE.Mesh(bgeo, bmat);
@@ -11747,8 +11803,129 @@ function frameStats() {
 }
 
 function expose() {
+function scanFloatingBuildings(gapM) {
+  gapM = gapM == null ? 1 : gapM;
+  const rows = [];
+  function cornerInfo(x, z, bw, bd, yaw, y0, yLo) {
+    const pts = [[x, z]].concat(footprintSamplePts(x, z, bw, bd, yaw, 1).slice(0, 4));
+    const corners = [];
+    let maxGapOld = -1e9, maxGapNew = -1e9;
+    for (let c = 0; c < pts.length; c++) {
+      const mx = terrainMeshY(pts[c][0], pts[c][1]);
+      const hm = yOf(heightWorld(pts[c][0], pts[c][1]));
+      const role = c === 0 ? "center" : ("c" + (c - 1));
+      corners.push({ role: role, x: pts[c][0], z: pts[c][1], meshY: mx, hmY: hm });
+      if (c > 0) {
+        if (y0 - mx > maxGapNew) maxGapNew = y0 - mx;
+        if ((yLo != null ? yLo : y0) - mx > maxGapOld) {}
+      }
+    }
+    return corners;
+  }
+  const list = seatedBuildings.slice();
+  if (landmarkGroup) {
+    landmarkGroup.children.forEach(function (ch) {
+      const kind = ch.name || "";
+      if (kind !== "farmhouse" && kind !== "barn" && kind !== "silo" && kind !== "haybale" && kind !== "mill" && kind !== "depot" && kind !== "church") return;
+      const bw = kind === "church" ? 40 : (kind === "farmhouse" || kind === "barn" ? 16 : 8);
+      list.push({
+        w: { x: ch.position.x, z: ch.position.z },
+        bw: bw, bd: bw, yaw: ch.rotation.y || 0,
+        placedY: ch.position.y,
+        town: "", index: -1, kind: kind, generator: "glb-" + kind,
+        skipSpan: true
+      });
+    });
+  }
+  let beforeCorner = 0, afterCorner = 0, beforeCenter = 0, afterCenter = 0;
+  for (let i = 0; i < list.length; i++) {
+    const rec = list[i];
+    const x = rec.w.x, z = rec.w.z, bw = rec.bw, bd = rec.bd, yaw = rec.yaw || 0;
+    const oldS = footprintHeightSpanHm(x, z, bw, bd, yaw);
+    const newS = rec.skipSpan ? null : footprintHeightSpan(x, z, bw, bd, yaw);
+    const y0old = oldS.y0;
+    const y0new = rec.placedY != null ? rec.placedY : newS.y0;
+    const yLo = rec.placedY != null ? rec.placedY : newS.yLo;
+    const centerMesh = terrainMeshY(x, z);
+    const centerHm = yOf(heightWorld(x, z));
+    const tight = footprintSamplePts(x, z, bw, bd, yaw, 1);
+    const corners = [];
+    let maxCornerOld = y0old - centerMesh, maxCornerNew = yLo - centerMesh;
+    corners.push({ role: "center", meshY: centerMesh, hmY: centerHm, gapOld: y0old - centerMesh, gapNew: yLo - centerMesh });
+    for (let c = 0; c < 4; c++) {
+      const mx = terrainMeshY(tight[c][0], tight[c][1]);
+      const hm = yOf(heightWorld(tight[c][0], tight[c][1]));
+      const gapOld = y0old - mx;
+      const gapNew = yLo - mx;
+      if (gapOld > maxCornerOld) maxCornerOld = gapOld;
+      if (gapNew > maxCornerNew) maxCornerNew = gapNew;
+      corners.push({ role: "c" + c, x: tight[c][0], z: tight[c][1], meshY: +mx.toFixed(3), hmY: +hm.toFixed(3), gapOld: +gapOld.toFixed(3), gapNew: +gapNew.toFixed(3) });
+    }
+    const flagOldC = maxCornerOld > gapM;
+    const flagNewC = maxCornerNew > gapM;
+    const flagOldCtr = (y0old - centerMesh) > gapM;
+    const flagNewCtr = (y0new - centerMesh) > gapM;
+    if (flagOldC) beforeCorner++;
+    if (flagNewC) afterCorner++;
+    if (flagOldCtr) beforeCenter++;
+    if (flagNewCtr) afterCenter++;
+    if (flagOldC || flagNewC || flagOldCtr || flagNewCtr) {
+      const wp = worldToPx(x, z);
+      rows.push({
+        generator: rec.generator,
+        kind: rec.kind,
+        town: rec.town || "",
+        index: rec.index,
+        osmId: rec.b && rec.b.id != null ? rec.b.id : null,
+        px: +wp.px.toFixed(2),
+        py: +wp.py.toFixed(2),
+        x: +x.toFixed(2),
+        z: +z.toFixed(2),
+        bw: +bw.toFixed(2),
+        bd: +bd.toFixed(2),
+        yaw: +yaw.toFixed(3),
+        y0old: +y0old.toFixed(3),
+        y0new: +y0new.toFixed(3),
+        yLo: +yLo.toFixed(3),
+        centerMesh: +centerMesh.toFixed(3),
+        centerHm: +centerHm.toFixed(3),
+        centerGapOld: +(y0old - centerMesh).toFixed(3),
+        centerGapNew: +(y0new - centerMesh).toFixed(3),
+        maxCornerGapOld: +maxCornerOld.toFixed(3),
+        maxCornerGapNew: +maxCornerNew.toFixed(3),
+        corners: corners
+      });
+    }
+  }
+  rows.sort(function (a, b) { return b.centerGapOld - a.centerGapOld; });
+  return {
+    total: list.length,
+    osmSeated: seatedBuildings.length,
+    gapM: gapM,
+    beforeCorner: beforeCorner,
+    afterCorner: afterCorner,
+    beforeCenter: beforeCenter,
+    afterCenter: afterCenter,
+    flagged: rows
+  };
+}
+
   window.__world = {
     ready: true,
+    scanFloatingBuildings: scanFloatingBuildings,
+    seatedList: function () { return seatedBuildings; },
+    terrainMeshY: terrainMeshY,
+    projectPoint: function (x, y, z) {
+      if (!camera) return null;
+      const v = new THREE.Vector3(x, y, z).project(camera);
+      const w = renderer.domElement.width, h = renderer.domElement.height;
+      return {
+        ndc: [+v.x.toFixed(3), +v.y.toFixed(3), +v.z.toFixed(3)],
+        sx: +((v.x * 0.5 + 0.5) * w).toFixed(1),
+        sy: +((-v.y * 0.5 + 0.5) * h).toFixed(1),
+        inFrame: Math.abs(v.x) < 1 && Math.abs(v.y) < 1 && v.z < 1 && v.z > -1
+      };
+    },
     jhsModelReady: !!(jhsTiming.schoolReady),
     firstPaintMs: jhsTiming.firstPaint || 0,
     jhsModelMs: jhsTiming.schoolReady ? (jhsTiming.schoolReady - (jhsTiming.t0 || jhsTiming.schoolReady)) : 0,
