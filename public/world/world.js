@@ -10398,14 +10398,6 @@ function getTourStops() {
   const depot = sitePx("jasper_depot", [180.5, 456.2]);
   const farm = findFarmsteadPx();
   const river = findRiverTourPx();
-  // Desktop scored this side-meander (viewOk 30). Phone scoring still
-  // falls back, so pin both to the accepted pose, with a slightly taller
-  // eye on the 390 so the land still sits in the 66-74 band.
-  river.px = 183.5;
-  river.py = 486.8;
-  river.dist = 223.61;
-  river.eye = narrow ? 28 : 24;
-  river.approach = 0.8885215569777869;
   const hall = sitePx("huntingburg_town_hall", [136.08, 795.64]);
   const stadium = sitePx("league_stadium", [170.18, 809.34]);
   const monastery = sitePx("ferdinand_monastery", [449.75, 1024.74]);
@@ -10420,6 +10412,14 @@ function getTourStops() {
   const abbH = landmarkHeightM("archabbey", 40);
   const aspect = Math.max(0.3, (canvas && canvas.clientWidth ? canvas.clientWidth : 1280) / Math.max(1, (canvas && canvas.clientHeight) || 800));
   const narrow = aspect < 0.7;
+  // Desktop scored this side-meander (viewOk 30). Phone scoring still
+  // falls back, so pin both to the accepted pose, with a slightly taller
+  // eye on the 390 so the land still sits in the 66-74 band.
+  river.px = 183.5;
+  river.py = 486.8;
+  river.dist = 223.61;
+  river.eye = narrow ? 28 : 24;
+  river.approach = 0.8885215569777869;
   const churchD = narrow ? [220, 300, 420, 560, 700] : [160, 200, 260, 340, 420];
   const churchE = [36, 48, 64];
   const courtD = [520, 680, 860, 1040];
