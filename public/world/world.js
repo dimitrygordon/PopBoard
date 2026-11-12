@@ -554,10 +554,26 @@ function footprintHeightSpan(x, z, bw, bd, yaw) {
     if (h > hi) hi = h;
   }
   let loCrest = loTight;
-  const expanded = footprintSamplePts(x, z, bw, bd, yaw, 1.25);
-  for (let c = 0; c < expanded.length; c++) {
-    const h = heightWorld(expanded[c][0], expanded[c][1]);
-    if (h < loCrest) loCrest = h;
+  const scales = [1.25, 1.8, 2.4];
+  for (let s = 0; s < scales.length; s++) {
+    const expanded = footprintSamplePts(x, z, bw, bd, yaw, scales[s]);
+    for (let c = 0; c < expanded.length; c++) {
+      const h = heightWorld(expanded[c][0], expanded[c][1]);
+      if (h < loCrest) loCrest = h;
+    }
+  }
+  // Probe outward from the tight corners so a knife-edge crest still
+  // reports the downhill drop the camera sees under the eave.
+  const tight = footprintSamplePts(x, z, bw, bd, yaw, 1);
+  for (let c = 0; c < 4; c++) {
+    const dx = tight[c][0] - x, dz = tight[c][1] - z;
+    const dl = Math.hypot(dx, dz) || 1;
+    const ux = dx / dl, uz = dz / dl;
+    for (let k = 0; k < 3; k++) {
+      const dist = 4 + k * 5;
+      const h = heightWorld(tight[c][0] + ux * dist, tight[c][1] + uz * dist);
+      if (h < loCrest) loCrest = h;
+    }
   }
   return {
     lo: loTight,
@@ -1099,7 +1115,7 @@ void main(){
       vec3 stormRiver = vec3(90.0, 96.0, 104.0) / 255.0;
       col = mix(col, stormRiver, 0.96 * uStorm);
     }
-    if (nCls > 0.5) col = mix(col, uInkUse, 0.55 * (1.0 - layer));
+    if (nCls > 0.5) col = mix(col, uInkUse, 0.10 * (1.0 - layer));
   }
 
   // ink contours every 10 m, heavy every 50 m, with line wobble
@@ -1242,7 +1258,7 @@ void main(){
     float sparse = step(0.86, hash21(floor(wz * 0.08)));
     nRib = mix(nRib, vec3(0.93, 0.90, 0.84), clamp(spec * 0.35, 0.0, 0.4) * sparse);
     rib = mix(rib, nRib, uNight);
-    if (nCls > 0.5) rib = mix(rib, uInkUse, 0.55 * (1.0 - layer));
+    if (nCls > 0.5) rib = mix(rib, uInkUse, 0.10 * (1.0 - layer));
     if (uRain > 0.01) {
       vec2 cell = floor(wz * 0.06);
       float id = hash21(cell);
@@ -7234,7 +7250,7 @@ function addInstancedPair(group, bodyGeo, roofGeo, wallMat, roofMat, recs, place
   addFoundationSkirts(group, recs, bodyGeo, name);
 }
 
-const HOUSE_SKIRT_MIN = 0.35;
+const HOUSE_SKIRT_MIN = 0.2;
 const HOUSE_SKIRT_MAX = 7.0;
 
 function addFoundationSkirts(group, recs, bodyGeo, name) {
@@ -8425,7 +8441,7 @@ function layoutRiverRibbon() {
     const p = raw[i];
     const along = ((p.x - cx) * lx + (p.z - cz) * lz) / llen;
     const side = (p.x - cx) * (lz / llen) - (p.z - cz) * (lx / llen);
-    if (along < 160 || along > 6200 || Math.abs(side) > 2400) {
+    if (along < 36 || along > 6200 || Math.abs(side) > 2400) {
       if (run.length >= 3) runs.push(run);
       run = [];
       continue;
