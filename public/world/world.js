@@ -10953,7 +10953,7 @@ function getTourStops() {
     const wheelApproach = Math.atan2(rx - mw.x, rz - mw.z);
     const yaw = (millSeat && millSeat.yaw != null) ? millSeat.yaw : Math.atan2(rz - mw.z, -(rx - mw.x));
     const frontApproach = Math.atan2(-Math.sin(yaw), -Math.cos(yaw));
-    millFr.approach = lerpAngle(wheelApproach, frontApproach, 0.60);
+    millFr.approach = lerpAngle(wheelApproach, frontApproach, 0.36);
     millFr.dist = narrow ? 200 : 100;
     millFr.eye = narrow ? 30 : 16;
     millFr.horizon = narrow ? 0.66 : 0.69;
