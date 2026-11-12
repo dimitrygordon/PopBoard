@@ -564,7 +564,6 @@ function footprintHeightSpan(x, z, bw, bd, yaw) {
   }
   // Probe outward from the tight corners so a knife-edge crest still
   // reports the downhill drop the camera sees under the eave.
-  const tight = footprintSamplePts(x, z, bw, bd, yaw, 1);
   for (let c = 0; c < 4; c++) {
     const dx = tight[c][0] - x, dz = tight[c][1] - z;
     const dl = Math.hypot(dx, dz) || 1;
