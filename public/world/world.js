@@ -50,10 +50,17 @@ const JHS_HEIGHT_M = 17;
 // not the campus apron and not the AABB diagonal that inflated wFrac.
 const JHS_HALF_M = 42;
 const JHS_APPARENT_W = 130;
+// Hold start is the warm west three-quarter captured at holdT 12.0
+// (snapAtHoldFrac 0.40 of the 30 s, 75 deg orbit) from the prior SW park.
+const JHS_HOLD_APPROACH = -1.277133;
+const JHS_HOLD_DIST_DESKTOP = 414.75;
+const JHS_HOLD_EYE_DESKTOP = 24;
 // Huntingburg Town Hall model is 11.9 x 19.2 m in plan, 18.2 m to the finial.
-const HALL_APPARENT_W = 16;
-const HALL_HALF_M = 10;
+// 3/4 of the red facade plus the clock tower is a bit more than the 16 m short side.
+const HALL_APPARENT_W = 20;
+const HALL_HALF_M = 12;
 const HALL_HEIGHT_M = 18;
+const RIVER_TREE_CLEAR_M = 26;
 const TOUR_HOLD_JHS = 30;
 const TOUR_HOLD_OTHER = 15;
 const TOUR_ORBIT_ARC = 50 * Math.PI / 180;
@@ -492,6 +499,40 @@ function heightWorld(x, z) {
 function coverWorld(x, z) {
   const p = worldToPx(x, z);
   return coverPx(p.px, p.py);
+}
+
+let riverAvoidGrid = null;
+function buildRiverAvoidGrid() {
+  riverAvoidGrid = { cell: 40, rad: RIVER_TREE_CLEAR_M };
+  const pts = riverPathPx || [];
+  const cell = riverAvoidGrid.cell;
+  function key(x, z) { return Math.floor(x / cell) + ":" + Math.floor(z / cell); }
+  for (let i = 0; i < pts.length; i++) {
+    const w = pxToWorld(pts[i][0], pts[i][1]);
+    const k = key(w.x, w.z);
+    if (!riverAvoidGrid[k]) riverAvoidGrid[k] = [];
+    riverAvoidGrid[k].push(w);
+  }
+}
+function tooCloseToRiver(x, z, rad) {
+  if (!riverPathPx || !riverPathPx.length) return false;
+  if (!riverAvoidGrid) buildRiverAvoidGrid();
+  const cell = riverAvoidGrid.cell;
+  const r = rad != null ? rad : riverAvoidGrid.rad;
+  const r2 = r * r;
+  const gx0 = Math.floor((x - r) / cell), gx1 = Math.floor((x + r) / cell);
+  const gz0 = Math.floor((z - r) / cell), gz1 = Math.floor((z + r) / cell);
+  for (let gx = gx0; gx <= gx1; gx++) {
+    for (let gz = gz0; gz <= gz1; gz++) {
+      const list = riverAvoidGrid[gx + ":" + gz];
+      if (!list) continue;
+      for (let i = 0; i < list.length; i++) {
+        const dx = x - list[i].x, dz = z - list[i].z;
+        if (dx * dx + dz * dz < r2) return true;
+      }
+    }
+  }
+  return false;
 }
 function yOf(hm) { return hm * EXAG; }
 
@@ -1449,19 +1490,20 @@ void main(){
 
 const JHS_HERO_FRAG = /* glsl */`
 uniform sampler2D uMap;
-uniform vec3 uSunDir, uMoonDir, uNightMul, uFill;
+uniform vec3 uSunDir, uMoonDir, uNightMul, uFill, uColor;
 uniform float uNight, uStorm, uOpacity, uHasMap, uWin, uSage;
 varying vec3 vN;
 varying vec3 vWorld;
 varying vec2 vUv;
 void main(){
-  vec3 base = uHasMap > 0.5 ? texture2D(uMap, vUv).rgb : vec3(0.72, 0.70, 0.66);
+  vec3 base = uHasMap > 0.5 ? texture2D(uMap, vUv).rgb : uColor;
   if (uSage > 0.01) {
     float luma0 = dot(base, vec3(0.30, 0.59, 0.11));
     float gDom = base.g - max(base.r, base.b);
-    if (gDom > 0.06) {
-      vec3 sage = vec3(0.50, 0.52, 0.40);
-      base = mix(base, sage * (0.72 + 0.36 * luma0), 0.88 * uSage);
+    float yGreen = base.g - base.b;
+    if (gDom > 0.03 || (yGreen > 0.08 && base.g > base.r * 0.82 && base.g > 0.16)) {
+      vec3 sage = vec3(0.47, 0.50, 0.40);
+      base = mix(base, sage * (0.70 + 0.38 * luma0), 0.92 * uSage);
     }
     float bDom = base.b - max(base.r, base.g);
     if (bDom > 0.05) {
@@ -1472,11 +1514,12 @@ void main(){
   vec3 N = normalize(vN);
   vec3 L = normalize(mix(uMoonDir, uSunDir, 1.0 - uNight));
   if (L.y < 0.02) L = normalize(vec3(L.x, 0.02, L.z));
-  // Wrap Lambert plus a soft wall fill. No rim or emissive, so walls stay clean.
+  // Wrap Lambert plus a soft wall fill. Floor is high enough that a back
+  // wall keeps tone when the sun is on the west front.
   float wrap = dot(N, L) * 0.5 + 0.5;
-  float diff = mix(0.46, 1.0, wrap);
+  float diff = mix(0.62, 1.0, wrap);
   vec3 col = base * diff;
-  col += uFill * (0.55 + 0.45 * max(dot(N, L), 0.0));
+  col += uFill * (0.85 + 0.40 * max(dot(N, L), 0.0));
   col *= mix(vec3(1.0), uNightMul * 0.55, uNight);
   if (uStorm > 0.01) {
     float luma = dot(col, vec3(0.30, 0.59, 0.11));
@@ -1484,8 +1527,18 @@ void main(){
     col *= mix(1.0, 0.78, uStorm);
   }
   if (uSage > 0.01) {
+    vec3 wash = vec3(0.54, 0.54, 0.43);
+    float field = smoothstep(0.55, 0.85, abs(N.y));
+    float hx = abs(fract(vWorld.x * 0.08 + vWorld.z * 0.03) - 0.5);
+    float hz = abs(fract(vWorld.z * 0.07 - vWorld.x * 0.025) - 0.5);
+    float fh = (1.0 - smoothstep(0.0, 0.18, hx)) * 0.55 + (1.0 - smoothstep(0.0, 0.18, hz)) * 0.45;
+    float uvEdge = 1.0 - min(
+      smoothstep(0.0, 0.12, min(vUv.x, 1.0 - vUv.x)),
+      smoothstep(0.0, 0.12, min(vUv.y, 1.0 - vUv.y))
+    );
+    col = mix(col, wash * 0.90, field * fh * 0.30 * uSage);
+    col = mix(col, wash * 0.78, field * uvEdge * 0.48 * uSage);
     float edge = pow(1.0 - abs(N.y), 2.2);
-    vec3 wash = vec3(0.58, 0.57, 0.46);
     col = mix(col, wash, edge * 0.42 * uSage);
     float sl = abs(fract((vWorld.x * 0.11 + vWorld.z * 0.07) * 2.4) - 0.5);
     float hatch = (1.0 - smoothstep(0.0, 0.16, sl)) * edge;
@@ -4336,6 +4389,7 @@ function scatterTrees() {
     const w = pxToWorld(jx, jy);
     if (Math.hypot(w.x - heroW.x, w.z - heroW.z) < 200) return false;
     if (tooCloseToLandmark(w.x, w.z, landmarkAvoidListCached)) return false;
+    if (tooCloseToRiver(w.x, w.z)) return false;
     const hm = heightPx(jx, jy);
     let specName = forceSpec || pickSpecies(c2 === 5 ? 5 : (cls || c2), rng, false);
     const slot = (rng() * 8) | 0;
@@ -4535,10 +4589,11 @@ function plantRiverbankTrees(addTreeAt, pos) {
     const lx = nw.x - w.x, lz = nw.z - w.z, ll = Math.hypot(lx, lz) || 1;
     const nx = -lz / ll, nz = lx / ll;
     const side = rng() < 0.5 ? 1 : -1;
-    const dist = 8 + rng() * 14;
+    const dist = 28 + rng() * 16;
     const x = w.x + nx * side * dist;
     const z = w.z + nz * side * dist;
     if (coverWorld(x, z) === 0) continue;
+    if (tooCloseToRiver(x, z)) continue;
     let near = false;
     nearby(x, z, 14, function (r) {
       if (Math.hypot(r.x - x, r.z - z) < 14) near = true;
@@ -4575,11 +4630,11 @@ function plantChurchYardTrees(addTreeAt, pos) {
   let n = 0;
   for (let i = 0; i < 28 && n < 16; i++) {
     const a = rng() * Math.PI * 2;
-    const r = 20 + rng() * 22;
+    const r = 14 + rng() * 24;
     const x = cw.x + Math.sin(a) * r;
     const z = cw.z + Math.cos(a) * r;
     if (coverWorld(x, z) === 0) continue;
-    if (Math.hypot(x - cw.x, z - cw.z) < 16) continue;
+    if (Math.hypot(x - cw.x, z - cw.z) < 12) continue;
     let near = false;
     for (let k = 0; k < treeRecords.length; k++) {
       const tr = treeRecords[k];
@@ -5442,13 +5497,15 @@ const MODEL_WASH = {
     chimney: [138, 86, 66],
     clock: [237, 230, 214],
     trim: [219, 209, 189],
-    louver: [92, 86, 76],
-    copper: [110, 130, 112],
+    louver: [160, 140, 100],
+    copper: [72, 128, 92],
     door: [56, 41, 31],
-    wall: [230, 214, 188],
+    wall: [148, 68, 52],
     roof: [96, 88, 78],
     hand: [42, 33, 24],
-    stone: [210, 196, 172]
+    stone: [200, 184, 158],
+    finial: [72, 128, 92],
+    cupola: [72, 128, 92]
   }
 };
 
@@ -5466,7 +5523,7 @@ function styleLoadedModel(root, kind) {
     monastery: [214, 204, 186],
     archabbey: [214, 206, 190],
     stadium: [176, 168, 152],
-    townhall: [230, 214, 188]
+    townhall: [148, 68, 52]
   }[kind] || hexRgb("#8A7A66");
   root.traverse(function (obj) {
     if (!obj.isMesh) return;
@@ -5476,10 +5533,11 @@ function styleLoadedModel(root, kind) {
       const mn = (src && src.name) ? String(src.name).toLowerCase() : "";
       const isWin = kind !== "silo" && (mn === "window" || n.indexOf("window") === 0 || n.indexOf("lancet") === 0 || n === "rose" || n.indexOf("rear_window") === 0);
       if (isWin) return makeWindowMat();
-      const rgb = pal[mn] || pal[n] || fallback;
-      const isRoof = mn.indexOf("roof") >= 0 || n.indexOf("roof") >= 0 || mn === "wheel" || mn === "metal" || mn === "door";
-      const fill = (kind === "mill" && !isRoof) ? [0.10, 0.08, 0.05] : ((kind === "townhall" && !isRoof) ? [0.12, 0.10, 0.07] : null);
-      const brick = kind === "church" && !isRoof && !isWin;
+      const isSpire = n === "finial" || n.indexOf("cupola") >= 0 || n.indexOf("spire") >= 0 || mn === "copper";
+      const rgb = pal[mn] || pal[n] || (kind === "townhall" && isSpire ? pal.copper : fallback);
+      const isRoof = (mn.indexOf("roof") >= 0 || n.indexOf("roof") >= 0 || mn === "wheel" || mn === "metal" || mn === "door") && !isSpire;
+      const fill = (kind === "mill" && !isRoof) ? [0.10, 0.08, 0.05] : ((kind === "townhall" && !isRoof && !isSpire) ? [0.10, 0.05, 0.04] : null);
+      const brick = (kind === "church" || (kind === "townhall" && (mn === "wall" || n === "wall" || n.indexOf("corner") === 0))) && !isRoof && !isWin && !isSpire;
       return makeWashMat(rgb, fill, brick);
     });
     obj.material = styled.length === 1 ? styled[0] : styled;
@@ -5573,6 +5631,15 @@ function placeJhsRoot(root, name) {
 
 function styleJhsModel(root, startOpacity, sage) {
   const opac = startOpacity == null ? 1 : startOpacity;
+  const autumnFol = [
+    [0.66, 0.36, 0.14],
+    [0.72, 0.50, 0.18],
+    [0.70, 0.38, 0.12],
+    [0.50, 0.24, 0.10],
+    [0.62, 0.46, 0.20],
+    [0.58, 0.30, 0.12]
+  ];
+  let folI = 0;
   root.traverse(function (obj) {
     if (!obj.isMesh) return;
     const srcs = Array.isArray(obj.material) ? obj.material : [obj.material];
@@ -5580,21 +5647,34 @@ function styleJhsModel(root, startOpacity, sage) {
       const map = src && src.map ? src.map : null;
       if (map && map.colorSpace != null) map.colorSpace = THREE.NoColorSpace;
       const mn = ((src && src.name) || (obj.name || "")).toLowerCase();
+      const on = (obj.name || "").toLowerCase();
       const isWin = !!(src && (src.transparent || (src.opacity != null && src.opacity < 0.99) || (src.transmission && src.transmission > 0.01)))
         || mn.indexOf("window") >= 0 || mn.indexOf("glass") >= 0;
+      const isFoliage = mn.indexOf("foliage") >= 0 || mn.indexOf("crown") >= 0 || on.indexOf("crown") >= 0;
+      const isGrass = mn.indexOf("grass") >= 0 || mn.indexOf("field") >= 0 || mn.indexOf("mulch") >= 0 || mn.indexOf("clay") >= 0 || mn.indexOf("apron") >= 0;
+      let uColor = new THREE.Vector3(0.72, 0.70, 0.66);
+      if (isFoliage) {
+        const pal = autumnFol[folI % autumnFol.length];
+        folI++;
+        uColor = new THREE.Vector3(pal[0], pal[1], pal[2]);
+      } else if (src && src.color) {
+        uColor = new THREE.Vector3(src.color.r, src.color.g, src.color.b);
+      }
+      const useSage = sage || isGrass ? 1 : 0;
       const mat = new THREE.ShaderMaterial({
         uniforms: {
-          uMap: { value: map },
-          uHasMap: { value: map ? 1 : 0 },
+          uMap: { value: isFoliage ? null : map },
+          uHasMap: { value: (map && !isFoliage) ? 1 : 0 },
+          uColor: { value: uColor },
           uSunDir: { value: new THREE.Vector3(0.3, 0.8, 0.2) },
           uMoonDir: { value: new THREE.Vector3(0.2, 0.5, 0.4) },
           uNightMul: { value: colU(NIGHT_MUL) },
-          uFill: { value: new THREE.Vector3(0.07, 0.062, 0.05) },
+          uFill: { value: new THREE.Vector3(0.11, 0.10, 0.085) },
           uNight: { value: clock.night || 0 },
           uStorm: { value: wx.kind === "storm" ? 1 : 0 },
           uOpacity: { value: opac },
           uWin: { value: isWin ? 0.55 : 1 },
-          uSage: { value: sage ? 1 : 0 }
+          uSage: { value: useSage }
         },
         vertexShader: JHS_HERO_VERT,
         fragmentShader: JHS_HERO_FRAG,
@@ -6036,7 +6116,7 @@ function paintChurchYardCover() {
   if (!coverData) return;
   const site = (meta && meta.landmarks && meta.landmarks.jasper_st_joseph) || [168.49, 429.67];
   const radPx = 48 / CELL;
-  const keepPx = 12 / CELL;
+  const keepPx = 7 / CELL;
   const x0 = Math.max(0, Math.floor(site[0] - radPx - 1));
   const x1 = Math.min(COLS - 1, Math.ceil(site[0] + radPx + 1));
   const y0 = Math.max(0, Math.floor(site[1] - radPx - 1));
@@ -7753,13 +7833,13 @@ void main(){
   vec3 ink = vec3(0.165, 0.129, 0.094);
   vec3 cream = vec3(0.96, 0.92, 0.80);
   vec3 col = water;
-  float rip = abs(fract(vUv.x * 36.0 + sin(vUv.y * 9.0) * 0.18) - 0.5);
-  col = mix(col, ink, (1.0 - smoothstep(0.0, 0.07, rip)) * 0.42);
-  float glint = abs(fract(vUv.x * 16.0 + 0.28 + sin(vUv.y * 5.0) * 0.1) - 0.5);
+  float rip = abs(fract(vUv.x * 7.5 + sin(vUv.y * 3.2 + vUv.x * 1.1) * 0.45) - 0.5);
+  col = mix(col, ink, (1.0 - smoothstep(0.0, 0.14, rip)) * 0.16);
+  float glint = abs(fract(vUv.x * 4.2 + 0.28 + sin(vUv.y * 2.4 + vUv.x * 0.7) * 0.35) - 0.5);
   float mid = 1.0 - abs(vUv.y - 0.5) * 2.0;
-  col = mix(col, cream, (1.0 - smoothstep(0.0, 0.055, glint)) * 0.40 * mid);
+  col = mix(col, cream, (1.0 - smoothstep(0.0, 0.12, glint)) * 0.16 * mid);
   float bank = min(vUv.y, 1.0 - vUv.y);
-  col = mix(col, ink, (1.0 - smoothstep(0.0, 0.07, bank)) * 0.55);
+  col = mix(col, ink, (1.0 - smoothstep(0.0, 0.10, bank)) * 0.40);
   gl_FragColor = vec4(col, 1.0);
 }
 `;
@@ -10102,6 +10182,7 @@ function frameWidthLocked(name, target, hide, heightM, opts) {
     const x = tw.x + Math.sin(ang) * dist;
     const z = tw.z + Math.cos(ang) * dist;
     if (opts.frontSinMax != null && Math.sin(ang) > opts.frontSinMax) return null;
+    if (opts.frontCosMax != null && Math.cos(ang) > opts.frontCosMax) return null;
     if (coverWorld(x, z) === 0) return null;
     const y = yOf(heightWorld(x, z)) + eye;
     if (y < topY - 6) return null;
@@ -10168,6 +10249,7 @@ function frameWidthLocked(name, target, hide, heightM, opts) {
         const x = tw.x + Math.sin(ang) * dist0;
         const z = tw.z + Math.cos(ang) * dist0;
         if (opts.frontSinMax != null && Math.sin(ang) > opts.frontSinMax) continue;
+        if (opts.frontCosMax != null && Math.cos(ang) > opts.frontCosMax) continue;
         if (coverWorld(x, z) === 0) continue;
         if (yOf(heightWorld(x, z)) - baseY > (opts.maxRise != null ? opts.maxRise : 14)) continue;
         const y = yOf(heightWorld(x, z)) + eyes[ei];
@@ -10289,26 +10371,33 @@ function getTourStops() {
   const millFr = frameNamed("mill", mill, church, millH, millD, millE, 210, 30, Object.assign({}, widthBand, { half: 12, wMin: 0.10, wMax: 0.16, wTarget: 0.12 }));
   const depotFr = frameNamed("depot", depot, church, depotH, depotD, depotE, 210, 34, Object.assign({}, widthBand, { half: 16, wMin: 0.10, wMax: 0.18, wTarget: 0.12 }));
   const farmFr = frameNamed("farmstead", [farm.px, farm.py], church, 12, farmD, farmE, 320, 30);
-  // The hall is only ~16 m across. A 150 m keep-out makes 10-15% width
-  // impossible on desktop, and a half-22 box plus a null approach (hero
-  // vector) is why the last phone shot looked at a hillside, not the hall.
-  // Stand in town with gable cottages around it; reject terrain that hides it.
+  // 150 m keep-out wins; 8-12% width is enough. The subject is the red
+  // brick facade and the green spire on the skyline, seen across a lawn.
+  // Front faces north (rotated toward the hero). Stay north of the hall.
   const hallFr = frameWidthLocked("townhall", hall, stadium, hallH, {
     apparentW: HALL_APPARENT_W,
     half: HALL_HALF_M,
-    wMin: 0.10,
-    wMax: 0.15,
-    wTarget: 0.13,
-    minDist: 70,
-    clearM: 36,
-    looseClear: 22,
-    preferAng: -3 * Math.PI / 4,
-    preferArc: 1.0,
-    eyes: narrow ? [20, 28, 36] : [14, 18, 24],
-    maxRise: 8,
+    wMin: 0.08,
+    wMax: 0.12,
+    wTarget: 0.10,
+    minDist: FORE_CLEAR_M,
+    clearM: FORE_CLEAR_M,
+    preferAng: -0.85 * Math.PI,
+    preferArc: 0.45,
+    frontCosMax: -0.25,
+    eyes: narrow ? [32, 42, 54] : [28, 36, 46],
+    maxRise: 12,
     midY: -0.58,
-    occlude: true
+    occlude: true,
+    rejectBottom: -0.72
   });
+  if (!hallFr || hallFr.approach == null || hallFr.dist < FORE_CLEAR_M) {
+    hallFr.approach = -0.85 * Math.PI;
+    hallFr.dist = 160;
+    hallFr.eye = narrow ? 48 : 36;
+    hallFr.pinned = true;
+    console.info("[frame]", "townhall pinned 150 m north-west", "dist", hallFr.dist, "eye", hallFr.eye, "approach", hallFr.approach);
+  }
   const stadFr = frameNamed("stadium", stadium, hall, stadH, stadD, stadE, 520, 42, Object.assign({ half: 42 }, widthBand));
   const monFr = frameNamed("monastery", monastery, null, monH, abbD, abbE, narrow ? 520 : 340, 56, Object.assign({ half: 40 }, widthBand));
   const abbFr = frameNamed("archabbey", abbey, null, abbH, abbD, abbE, narrow ? 680 : 340, 56, Object.assign({ half: 40, wMin: 0.10, wMax: 0.13, wTarget: 0.11 }, widthBand));
@@ -10337,27 +10426,39 @@ function getTourStops() {
   if (OPENING_STOP === "jhs") {
     const jhs = sitePx("jasper_high_school", [118.62, 410.52]);
     const jhsH = landmarkHeightM("jhs", JHS_HEIGHT_M);
-    // 20-25% of the real school mass, closer and lower, SW three-quarter
-    // (west front + south side in afternoon sun). If houses violate the
-    // 150 m keep-out, change the approach; do not back off and shrink the school.
+    // Landing hold is the orbit-b pose (holdT 12 / 0.40 of 30 s): a warm
+    // west three-quarter of the brick facade. Same angle on phone, 20-25%
+    // of the 390 px width, 150 m keep-out.
     const jhsFr = frameWidthLocked("jhs", jhs, church, jhsH, {
       apparentW: JHS_APPARENT_W,
       half: JHS_HALF_M,
       wMin: 0.20,
       wMax: 0.25,
-      wTarget: 0.22,
+      wTarget: 0.23,
       minDist: FORE_CLEAR_M,
       clearM: FORE_CLEAR_M,
-      preferAng: -Math.PI / 4,
-      preferArc: 0.85,
-      // After yaw the front faces west. Reject cameras east of the school
-      // (those see the long dark back and overfill the frame).
+      preferAng: JHS_HOLD_APPROACH,
+      preferArc: 0.12,
       frontSinMax: -0.20,
-      eyes: narrow ? [28, 36, 46] : [24, 30, 38],
+      eyes: narrow ? [32, 40, 50] : [24, 30, 38],
       maxRise: 16,
       midY: -0.62,
       occlude: true
     });
+    if (!narrow) {
+      jhsFr.approach = JHS_HOLD_APPROACH;
+      jhsFr.dist = JHS_HOLD_DIST_DESKTOP;
+      jhsFr.eye = JHS_HOLD_EYE_DESKTOP;
+      jhsFr.pinned = true;
+    } else {
+      jhsFr.approach = JHS_HOLD_APPROACH;
+      if (!(jhsFr.wFrac >= 0.20 && jhsFr.wFrac <= 0.25) || jhsFr.dist < FORE_CLEAR_M) {
+        const tanH = tanHalfHFov();
+        jhsFr.dist = Math.max(FORE_CLEAR_M, JHS_APPARENT_W / (2 * 0.23 * tanH));
+        if (jhsFr.eye == null) jhsFr.eye = 40;
+        jhsFr.pinned = true;
+      }
+    }
     tourStopsCache.unshift({
       name: "jhs", px: jhs[0], py: jhs[1],
       dist: jhsFr.dist, eye: jhsFr.eye, approach: jhsFr.approach, heightM: jhsH,
