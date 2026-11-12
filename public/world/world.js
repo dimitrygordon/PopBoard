@@ -522,6 +522,60 @@ function coverWorld(x, z) {
 }
 
 let riverAvoidGrid = null;
+let roadAvoidGrid = null;
+
+function buildRoadAvoidGrid() {
+  roadAvoidGrid = { cell: 40, rad: 9 };
+  if (!osmData || !osmData.towns) return;
+  const cell = roadAvoidGrid.cell;
+  function key(x, z) { return Math.floor(x / cell) + ":" + Math.floor(z / cell); }
+  function addPt(x, z) {
+    const k = key(x, z);
+    if (!roadAvoidGrid[k]) roadAvoidGrid[k] = [];
+    roadAvoidGrid[k].push({ x: x, z: z });
+  }
+  const names = Object.keys(osmData.towns);
+  for (let t = 0; t < names.length; t++) {
+    const ways = osmData.towns[names[t]].highways || [];
+    for (let hi = 0; hi < ways.length; hi++) {
+      const way = ways[hi];
+      if (osmRoadWidth(way.t) <= 0 || !way.pts || way.pts.length < 2) continue;
+      let prev = null;
+      for (let i = 0; i < way.pts.length; i++) {
+        const w = pxToWorld(way.pts[i][0], way.pts[i][1]);
+        if (prev) {
+          const dx = w.x - prev.x, dz = w.z - prev.z;
+          const len = Math.hypot(dx, dz);
+          const n = Math.max(1, Math.ceil(len / 12));
+          for (let k = 0; k <= n; k++) addPt(prev.x + dx * (k / n), prev.z + dz * (k / n));
+        }
+        prev = w;
+      }
+    }
+  }
+}
+
+function tooCloseToRoad(x, z, rad) {
+  if (!roadAvoidGrid) buildRoadAvoidGrid();
+  if (!roadAvoidGrid) return false;
+  const cell = roadAvoidGrid.cell;
+  const r = rad != null ? rad : roadAvoidGrid.rad;
+  const r2 = r * r;
+  const gx0 = Math.floor((x - r) / cell), gx1 = Math.floor((x + r) / cell);
+  const gz0 = Math.floor((z - r) / cell), gz1 = Math.floor((z + r) / cell);
+  for (let gx = gx0; gx <= gx1; gx++) {
+    for (let gz = gz0; gz <= gz1; gz++) {
+      const list = roadAvoidGrid[gx + ":" + gz];
+      if (!list) continue;
+      for (let i = 0; i < list.length; i++) {
+        const dx = x - list[i].x, dz = z - list[i].z;
+        if (dx * dx + dz * dz < r2) return true;
+      }
+    }
+  }
+  return false;
+}
+
 function buildRiverAvoidGrid() {
   riverAvoidGrid = { cell: 40, rad: RIVER_TREE_CLEAR_M, segs: [] };
   const pts = riverPathPx || [];
@@ -603,6 +657,7 @@ async function loadMap() {
   riverPathPx = meta.river_path_px || [];
   carvePatoka();
   narrowPatokaMask();
+  seatMillSiteOnBank();
   clearLeftoverWaterNearMill();
   thickenPatokaWoodsCover();
   paintTownYards();
@@ -4518,6 +4573,7 @@ function scatterTrees() {
       const c2 = coverPx(jx, jy);
       if (c2 === 0 || c2 === 3) continue;
       if (tooCloseToRiver(w.x, w.z)) continue;
+      if (tooCloseToRoad(w.x, w.z)) continue;
       if (!isFront && (c2 === 2)) continue;
       const hm = heightPx(jx, jy);
       const fenceRidge = isFenceOrRidgeCell(jx, jy) || isFront || isMidWood;
@@ -4610,6 +4666,7 @@ function scatterTrees() {
     if (Math.hypot(w.x - heroW.x, w.z - heroW.z) < 200) return false;
     if (tooCloseToLandmark(w.x, w.z, landmarkAvoidListCached)) return false;
     if (tooCloseToRiver(w.x, w.z)) return false;
+    if (tooCloseToRoad(w.x, w.z)) return false;
     const hm = heightPx(jx, jy);
     let specName = forceSpec || pickSpecies(c2 === 5 ? 5 : (cls || c2), rng, false);
     const slot = (rng() * 8) | 0;
@@ -4711,7 +4768,7 @@ function scatterTrees() {
         const off = 50 + row * 18 + rng() * 8;
         const ox = x + nx * side * off;
         const oz = z + nz * side * off;
-        if (tooCloseToRiver(ox, oz)) continue;
+        if (tooCloseToRiver(ox, oz) || tooCloseToRoad(ox, oz)) continue;
         const p = worldToPx(ox, oz);
         addTreeAt(p.px, p.py, 4, 1.15, rng() < 0.2 ? "sycamore" : "oak", 1);
       }
@@ -4728,7 +4785,7 @@ function scatterTrees() {
       const side = (rng() < 0.5 ? 1 : -1);
       const ox = x + nx * side * (40 + rng() * 12);
       const oz = z + nz * side * (40 + rng() * 12);
-      if (tooCloseToRiver(ox, oz)) return;
+      if (tooCloseToRiver(ox, oz) || tooCloseToRoad(ox, oz)) return;
       const p = worldToPx(ox, oz);
       addTreeAt(p.px, p.py, 4, 0.9, rng() < 0.22 ? "sycamore" : "oak", 1);
     });
@@ -4777,7 +4834,7 @@ function scatterTrees() {
     const n0 = pos.length / 3;
     let w3 = 0;
     for (let i = 0; i < n0; i++) {
-      if (tooCloseToRiver(pos[i * 3], pos[i * 3 + 2])) continue;
+      if (tooCloseToRiver(pos[i * 3], pos[i * 3 + 2]) || tooCloseToRoad(pos[i * 3], pos[i * 3 + 2])) continue;
       if (w3 !== i) {
         pos[w3 * 3] = pos[i * 3]; pos[w3 * 3 + 1] = pos[i * 3 + 1]; pos[w3 * 3 + 2] = pos[i * 3 + 2];
         scale[w3 * 2] = scale[i * 2]; scale[w3 * 2 + 1] = scale[i * 2 + 1];
@@ -4840,6 +4897,7 @@ function plantRiverbankTrees(addTreeAt, pos) {
     const z = w.z + nz * side * dist;
     if (coverWorld(x, z) === 0) continue;
     if (tooCloseToRiver(x, z)) continue;
+    if (tooCloseToRoad(x, z)) continue;
     let near = false;
     nearby(x, z, 14, function (r) {
       if (Math.hypot(r.x - x, r.z - z) < 14) near = true;
@@ -6146,6 +6204,7 @@ function updatePlaceCaption(name) {
   if (label) placeEl.textContent = label;
 }
 
+
 function densifyPxPath(raw, stepPx) {
   const out = [];
   if (!raw || !raw.length) return out;
@@ -6261,6 +6320,60 @@ function isDowntownBuilding(townName, px, py, kind) {
   if (dist < rad) return true;
   if (kind === "shop" && dist < rad + 80) return true;
   return false;
+}
+
+let millSeat = null;
+
+function seatMillSiteOnBank() {
+  const hint = (meta && meta.landmarks && meta.landmarks.jasper_city_mill) || [185.5, 458.6];
+  const pts = densifyPxPath(riverPathPx || [], 1);
+  if (!pts.length) return;
+  const court = (meta && meta.landmarks && meta.landmarks.jasper_courthouse) || [174.34, 444.64];
+  const inlandM = 8;
+  let best = null, bestScore = 1e12;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const ax = pts[i - 1][0], ay = pts[i - 1][1];
+    const bx = pts[i + 1][0], by = pts[i + 1][1];
+    const px = pts[i][0], py = pts[i][1];
+    const dCourt = Math.hypot(px - court[0], py - court[1]) * CELL;
+    const dHint = Math.hypot(px - hint[0], py - hint[1]) * CELL;
+    if (dCourt > 4800 && dHint > 4800) continue;
+    const vx = bx - ax, vy = by - ay;
+    const len = Math.hypot(vx, vy) || 1;
+    const nx = -vy / len, ny = vx / len;
+    for (let sign = -1; sign <= 1; sign += 2) {
+      let edgeDist = 0;
+      let found = null;
+      for (let step = 1; step <= 28; step++) {
+        const distM = step * 2;
+        const epx = px + nx * sign * (distM / CELL);
+        const epy = py + ny * sign * (distM / CELL);
+        if (coverPx(epx, epy) === 0) continue;
+        const fpx = px + nx * sign * ((distM + inlandM) / CELL);
+        const fpy = py + ny * sign * ((distM + inlandM) / CELL);
+        if (coverPx(fpx, fpy) === 0) continue;
+        found = { px: fpx, py: fpy, riverPx: px, riverPy: py, edgeM: distM };
+        edgeDist = distM;
+        break;
+      }
+      if (!found) continue;
+      const sideToCourt = (court[0] - px) * nx * sign + (court[1] - py) * ny * sign;
+      const preferTown = sideToCourt > 0 ? 0 : 500;
+      const score = dCourt * 0.4 + dHint * 0.12 + edgeDist * 3 + preferTown;
+      if (score < bestScore) { bestScore = score; best = found; }
+    }
+  }
+  if (!best) return;
+  const w = pxToWorld(best.px, best.py);
+  const rw = pxToWorld(best.riverPx, best.riverPy);
+  const yaw = Math.atan2(rw.z - w.z, -(rw.x - w.x));
+  millSeat = { px: best.px, py: best.py, yaw: yaw, x: w.x, z: w.z, riverPx: best.riverPx, riverPy: best.riverPy };
+  if (LANDMARK_SITES.jasper_city_mill) {
+    LANDMARK_SITES.jasper_city_mill.px = best.px;
+    LANDMARK_SITES.jasper_city_mill.py = best.py;
+  }
+  if (meta && meta.landmarks) meta.landmarks.jasper_city_mill = [best.px, best.py];
+  console.info("[mill] seated on bank", "px", +best.px.toFixed(2), "py", +best.py.toFixed(2), "yaw", +yaw.toFixed(3), "edgeM", best.edgeM);
 }
 
 function clearLeftoverWaterNearMill() {
@@ -6961,17 +7074,20 @@ function makeGarageRoofGeo() {
 function makeLBodyGeo() {
   const main = new THREE.BoxGeometry(1, 1, 1);
   main.translate(0, 0.5, 0);
-  const wing = new THREE.BoxGeometry(0.62, 0.92, 0.70);
-  wing.translate(0.81, 0.46, 0.15);
+  const wing = new THREE.BoxGeometry(0.62, 1, 0.70);
+  wing.translate(0.81, 0.5, 0.15);
   return mergeGeos([main, wing]);
 }
 
 function makeLRoofGeo() {
   const main = makeGableRoofGeo().clone();
   const wing = makeGableRoofGeo().clone();
-  wing.scale(0.70, 0.70, 0.62);
+  // Keep eaves at local y=0 so instance scale (bw, rise, bd) leaves the
+  // wing roof on the wing walls. A baked Y offset was multiplied by the
+  // roof rise and floated as a dark pyramid above the house.
+  wing.scale(0.70, 1, 0.62);
   wing.rotateY(Math.PI * 0.5);
-  wing.translate(0.81, 0.92, 0.15);
+  wing.translate(0.81, 0, 0.15);
   return mergeGeos([main, wing]);
 }
 
@@ -7211,8 +7327,25 @@ function buildOsmTowns() {
       lotRecs.push(rec);
       sx += w.x; sz += w.z; sn++;
     }
+    function groundYAtFootprint(x, z, bw, bd, yaw) {
+      const fx = Math.sin(yaw), fz = Math.cos(yaw);
+      const sx = Math.cos(yaw), sz = -Math.sin(yaw);
+      const hx = (bw || 8) * 0.5, hz = (bd || 8) * 0.5;
+      let hm = heightWorld(x, z);
+      const corners = [
+        [x + sx * hx + fx * hz, z + sz * hx + fz * hz],
+        [x - sx * hx + fx * hz, z - sz * hx + fz * hz],
+        [x + sx * hx - fx * hz, z + sz * hx - fz * hz],
+        [x - sx * hx - fx * hz, z - sz * hx - fz * hz]
+      ];
+      for (let c = 0; c < corners.length; c++) {
+        const h = heightWorld(corners[c][0], corners[c][1]);
+        if (h > hm) hm = h;
+      }
+      return yOf(hm);
+    }
     function placeHouse(dummy, rec, bodyMesh, roofMesh, i) {
-      const y0 = yOf(heightWorld(rec.w.x, rec.w.z));
+      const y0 = groundYAtFootprint(rec.w.x, rec.w.z, rec.bw, rec.bd, rec.yaw);
       dummy.position.set(rec.w.x, y0, rec.w.z);
       dummy.rotation.set(0, rec.yaw, 0);
       dummy.scale.set(rec.bw, rec.wallH, rec.bd);
@@ -7237,7 +7370,7 @@ function buildOsmTowns() {
         const porchMesh = new THREE.InstancedMesh(porchGeo, wallMat, recs.length);
         for (let i = 0; i < recs.length; i++) {
           const rec = recs[i];
-          const y0 = yOf(heightWorld(rec.w.x, rec.w.z));
+          const y0 = groundYAtFootprint(rec.w.x, rec.w.z, rec.bw, rec.bd, rec.yaw);
           dummy.position.set(rec.w.x, y0, rec.w.z);
           dummy.rotation.set(0, rec.yaw, 0);
           dummy.scale.set(rec.bw, rec.wallH, rec.bd);
@@ -7255,7 +7388,7 @@ function buildOsmTowns() {
         const gr = new THREE.InstancedMesh(garageRoof, roofMat, recs.length);
         for (let i = 0; i < recs.length; i++) {
           const rec = recs[i];
-          const y0 = yOf(heightWorld(rec.w.x, rec.w.z));
+          const y0 = groundYAtFootprint(rec.w.x, rec.w.z, rec.bw, rec.bd, rec.yaw);
           dummy.position.set(rec.w.x, y0, rec.w.z);
           dummy.rotation.set(0, rec.yaw, 0);
           dummy.scale.set(rec.bw, rec.wallH, rec.bd);
@@ -7284,7 +7417,7 @@ function buildOsmTowns() {
       const wallMat = makeHouseWashMat(recs[0].wall);
       const roofMat = makeHouseWashMat(downRoofRgb);
       addInstancedPair(group, downBody, downRoof, wallMat, roofMat, recs, function (dummy, rec, bodyMesh, roofMesh, i) {
-        const y0 = yOf(heightWorld(rec.w.x, rec.w.z));
+        const y0 = groundYAtFootprint(rec.w.x, rec.w.z, rec.bw, rec.bd, rec.yaw);
         dummy.position.set(rec.w.x, y0, rec.w.z);
         dummy.rotation.set(0, rec.yaw, 0);
         dummy.scale.set(rec.bw, rec.wallH, rec.bd);
@@ -7302,7 +7435,7 @@ function buildOsmTowns() {
       const wallMat = makeHouseWashMat([196, 180, 154]);
       const roofMat = makeHouseWashMat([120, 118, 114]);
       addInstancedPair(group, shedBody, shedRoof, wallMat, roofMat, shedList, function (dummy, rec, bodyMesh, roofMesh, i) {
-        const y0 = yOf(heightWorld(rec.w.x, rec.w.z));
+        const y0 = groundYAtFootprint(rec.w.x, rec.w.z, rec.bw, rec.bd, rec.yaw);
         dummy.position.set(rec.w.x, y0, rec.w.z);
         dummy.rotation.set(0, rec.yaw, 0);
         dummy.scale.set(rec.bw, rec.wallH, rec.bd);
@@ -7380,6 +7513,7 @@ function scatterBuildings() {
       const w = pxToWorld(px + (rng() - 0.5), py + (rng() - 0.5));
       if (coverWorld(w.x, w.z) === 0) continue;
       if (nearHero(w.x, w.z, 2000)) continue;
+      if (nearestOsmBuildingM(w.x, w.z) < 500) continue;
       sites.push({ kind: kind, x: w.x, z: w.z, yaw: rng() * Math.PI * 2 });
     }
   }
@@ -7424,6 +7558,7 @@ function scatterPathFarms() {
     }
     if (!ok) continue;
     if (nearHero(x, z, 2000)) continue;
+    if (nearestOsmBuildingM(x, z) < 600) continue;
     const yaw = p.heading + (rng() - 0.5) * 0.7;
     const house = placeholderFarmhouse();
     placeOnGround(house, x, z, yaw);
@@ -7786,11 +7921,11 @@ function applySkin() {
   body.setAttribute("data-wx", wx.kind);
   const tc = colsOrTheme();
   document.querySelector('meta[name="theme-color"]').setAttribute("content", tc);
-  captionEl.style.color = night > 0.4 || clock.period === "dusk" || clock.period === "night" ? "#EDE6D6" : "#2A2118";
+  if (captionEl) captionEl.style.color = night > 0.4 || clock.period === "dusk" || clock.period === "night" ? "#EDE6D6" : "#2A2118";
   const dtf = new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", month: "long", hour: "numeric", minute: "2-digit", hour12: true });
   const parts = dtf.formatToParts(new Date(clock.now));
   const get = (t) => (parts.find((p) => p.type === t) || {}).value || "";
-  whenEl.textContent = get("month") + "  " + get("hour") + ":" + get("minute") + " " + get("dayPeriod").toLowerCase();
+  if (whenEl) whenEl.textContent = get("month") + "  " + get("hour") + ":" + get("minute") + " " + get("dayPeriod").toLowerCase();
   if (starPts) placeStars();
 }
 
@@ -7880,16 +8015,32 @@ function placeFixedLandmarks(loaded) {
     }
     const mesh = proto.clone();
     mesh.name = site.kind;
-    mesh.position.set(w.x, yOf(hm), w.z);
+    let y = yOf(hm);
     if (site.kind === "mill") {
-      let nx = w.x, nz = w.z, bestD = 1e12;
-      for (let r = 0; r < riverPathPx.length; r++) {
-        const rw = pxToWorld(riverPathPx[r][0], riverPathPx[r][1]);
-        const d = Math.hypot(rw.x - w.x, rw.z - w.z);
-        if (d < bestD) { bestD = d; nx = rw.x; nz = rw.z; }
+      let nx = w.x, nz = w.z, yaw = 0;
+      if (millSeat && millSeat.yaw != null) {
+        yaw = millSeat.yaw;
+        nx = pxToWorld(millSeat.riverPx, millSeat.riverPy).x;
+        nz = pxToWorld(millSeat.riverPx, millSeat.riverPy).z;
+      } else {
+        let bestD = 1e12;
+        for (let r = 0; r < riverPathPx.length; r++) {
+          const rw = pxToWorld(riverPathPx[r][0], riverPathPx[r][1]);
+          const d = Math.hypot(rw.x - w.x, rw.z - w.z);
+          if (d < bestD) { bestD = d; nx = rw.x; nz = rw.z; }
+        }
+        yaw = Math.atan2(nz - w.z, -(nx - w.x));
       }
-      mesh.rotation.y = Math.atan2(nz - w.z, -(nx - w.x));
+      const bankY = yOf(heightWorld(w.x, w.z));
+      const waterY = yOf(heightWorld(nx, nz));
+      const drop = bankY - waterY;
+      // River wall hangs ~3.4 m below the foundation. Lower the mill a little
+      // into a tall bank so the wheel meets the water; do not float it.
+      y = (drop > 3.2) ? (waterY + 3.0) : bankY;
+      mesh.position.set(w.x, y, w.z);
+      mesh.rotation.y = yaw;
     } else {
+      mesh.position.set(w.x, y, w.z);
       const heroW = pxToWorld(HERO.px, HERO.py);
       mesh.rotation.y = Math.atan2(heroW.x - w.x, heroW.z - w.z);
     }
@@ -9790,6 +9941,46 @@ function riverPathPoint(i) {
 }
 
 let tourFarmAnchor = null;
+let osmBldGrid = null;
+
+function buildOsmBldGrid() {
+  osmBldGrid = { cell: 100 };
+  if (!osmData || !osmData.towns) return;
+  const cell = osmBldGrid.cell;
+  const names = Object.keys(osmData.towns);
+  for (let t = 0; t < names.length; t++) {
+    const blds = osmData.towns[names[t]].buildings || [];
+    for (let i = 0; i < blds.length; i++) {
+      const c = blds[i].c;
+      if (!c) continue;
+      const w = pxToWorld(c[0], c[1]);
+      const k = Math.floor(w.x / cell) + ":" + Math.floor(w.z / cell);
+      if (!osmBldGrid[k]) osmBldGrid[k] = [];
+      osmBldGrid[k].push(w);
+    }
+  }
+}
+
+function nearestOsmBuildingM(x, z) {
+  if (!osmBldGrid) buildOsmBldGrid();
+  if (!osmBldGrid) return 1e9;
+  const cell = osmBldGrid.cell;
+  const r = 900;
+  let best = 1e9;
+  const gx0 = Math.floor((x - r) / cell), gx1 = Math.floor((x + r) / cell);
+  const gz0 = Math.floor((z - r) / cell), gz1 = Math.floor((z + r) / cell);
+  for (let gx = gx0; gx <= gx1; gx++) {
+    for (let gz = gz0; gz <= gz1; gz++) {
+      const list = osmBldGrid[gx + ":" + gz];
+      if (!list) continue;
+      for (let i = 0; i < list.length; i++) {
+        const d = Math.hypot(x - list[i].x, z - list[i].z);
+        if (d < best) best = d;
+      }
+    }
+  }
+  return best;
+}
 
 function placeTourFarmstead() {
   if (!landmarkGroup) return;
@@ -9800,30 +9991,35 @@ function placeTourFarmstead() {
   const len = Math.hypot(lx, lz) || 1;
   const ux = lx / len, uz = lz / len;
   const rx = uz, rz = -ux;
-  let found = null;
-  const millW = pxToWorld(185.5, 458.6);
-  const alongs = [1500, 1680, 1360, 1840, 1200, 2000];
-  const sides = [720, 820, 620, 920, -720, -840, 520, -560];
-  for (let a = 0; a < alongs.length && !found; a++) {
+  let found = null, foundScore = 1e12;
+  const millW = millSeat ? { x: millSeat.x, z: millSeat.z } : pxToWorld(185.5, 458.6);
+  const alongs = [2200, 2600, 3000, 1800, 3400, 1600, 3800, 1400, 1200, 4200];
+  const sides = [1400, -1400, 1800, -1800, 1100, -1100, 2200, -2200, 900, -900, 2600, -2600, 720, -720];
+  const pads = [[0, 0], [22, 0], [-18, 14], [20, 18], [-12, -16], [10, 26], [-24, 8], [30, -12], [0, 36], [-28, -20]];
+  for (let a = 0; a < alongs.length; a++) {
     for (let s = 0; s < sides.length; s++) {
       const x = hero.x + ux * alongs[a] + rx * sides[s];
       const z = hero.z + uz * alongs[a] + rz * sides[s];
-      if (Math.hypot(x - church.x, z - church.z) < 700) continue;
-      if (Math.hypot(x - millW.x, z - millW.z) < 650) continue;
-      let ok = true;
-      const pads = [[0, 0], [22, 0], [-18, 14], [20, 18], [-12, -16], [10, 26], [-24, 8], [30, -12]];
+      if (Math.hypot(x - church.x, z - church.z) < 1400) continue;
+      if (Math.hypot(x - millW.x, z - millW.z) < 800) continue;
+      if (nearHero(x, z, 1600)) continue;
+      let field = 0, ok = true;
       for (let i = 0; i < pads.length; i++) {
         const c = coverWorld(x + pads[i][0], z + pads[i][1]);
-        if (c === 0 || c === 3 || c === 4) { ok = false; break; }
+        if (c === 0 || c === 3 || c === 4 || c === 5) { ok = false; break; }
+        if (c === 1 || c === 2 || c === 7) field++;
       }
-      if (!ok) continue;
-      found = { x: x, z: z };
-      break;
+      if (!ok || field < 4) continue;
+      const townM = nearestOsmBuildingM(x, z);
+      if (townM < 750) continue;
+      const score = Math.abs(alongs[a] - 2600) * 0.15 + Math.abs(sides[s]) * 0.02 - Math.min(townM, 1600) * 0.4 - field * 8;
+      if (score < foundScore) { foundScore = score; found = { x: x, z: z, townM: townM }; }
     }
   }
   if (!found) {
-    found = { x: hero.x + ux * 1600 + rx * 780, z: hero.z + uz * 1600 + rz * 780 };
+    found = { x: hero.x + ux * 2600 + rx * 1800, z: hero.z + uz * 2600 + rz * 1800 };
   }
+  console.info("[farm] tour group", "px", +worldToPx(found.x, found.z).px.toFixed(1), "py", +worldToPx(found.x, found.z).py.toFixed(1), "townM", found.townM != null ? +found.townM.toFixed(0) : "?");
   const yaw = Math.atan2(ux, uz) + 0.55;
   function tag(obj) {
     obj.userData = obj.userData || {};
@@ -10718,8 +10914,42 @@ function getTourStops() {
     console.info("[frame]", "courthouse pinned over rooftops", "dist", courtFr.dist, "eye", courtFr.eye, "approach", courtFr.approach);
   }
   const millFr = frameNamed("mill", mill, church, millH, millD, millE, 210, 30, Object.assign({}, widthBand, { half: 12, wMin: 0.10, wMax: 0.16, wTarget: 0.12 }));
+  // Pin from the river so the stop shows mill + wheel + water together,
+  // not a nearby house at a road junction.
+  if (mill && mill[0] != null) {
+    const mw = pxToWorld(mill[0], mill[1]);
+    let rx = mw.x, rz = mw.z, bestD = 1e12;
+    if (millSeat && millSeat.riverPx != null) {
+      const rw = pxToWorld(millSeat.riverPx, millSeat.riverPy);
+      rx = rw.x; rz = rw.z;
+    } else {
+      const rpts = riverPathPx || [];
+      for (let i = 0; i < rpts.length; i++) {
+        const rw = pxToWorld(rpts[i][0], rpts[i][1]);
+        const d = Math.hypot(rw.x - mw.x, rw.z - mw.z);
+        if (d < bestD) { bestD = d; rx = rw.x; rz = rw.z; }
+      }
+    }
+    millFr.approach = Math.atan2(rx - mw.x, rz - mw.z) + 0.32;
+    millFr.dist = narrow ? 130 : 100;
+    millFr.eye = narrow ? 22 : 16;
+    millFr.horizon = narrow ? 0.70 : 0.69;
+    millFr.pinned = true;
+    console.info("[frame]", "mill pinned on river", "dist", millFr.dist, "eye", millFr.eye, "approach", millFr.approach);
+  }
   const depotFr = frameNamed("depot", depot, church, depotH, depotD, depotE, 210, 34, Object.assign({}, widthBand, { half: 16, wMin: 0.10, wMax: 0.18, wTarget: 0.12 }));
   const farmFr = frameNamed("farmstead", [farm.px, farm.py], church, 12, farmD, farmE, 320, 30);
+  if (farm && farm.px != null) {
+    const fw = pxToWorld(farm.px, farm.py);
+    const hw = pxToWorld(HERO.px, HERO.py);
+    // Look at the group from the countryside, so town stays in the distance.
+    farmFr.approach = Math.atan2(fw.x - hw.x, fw.z - hw.z) + Math.PI * 0.65;
+    farmFr.dist = narrow ? 280 : 240;
+    farmFr.eye = narrow ? 28 : 24;
+    farmFr.horizon = 0.70;
+    farmFr.pinned = true;
+    console.info("[frame]", "farmstead pinned in fields", "dist", farmFr.dist, "eye", farmFr.eye, "approach", farmFr.approach);
+  }
   // 150 m keep-out wins; 8-12% width is enough. The subject is a south
   // three-quarter of the red facade, with the cream clock and the green
   // spire breaking the skyline. The front faces south, so stay south of
@@ -10771,10 +11001,10 @@ function getTourStops() {
   tourStopsCache = [
     { name: "church", px: church[0], py: church[1], dist: churchFr.dist, eye: churchFr.eye, approach: churchFr.approach, heightM: churchH },
     { name: "courthouse", px: court[0], py: court[1], dist: courtFr.dist, eye: courtFr.eye, approach: courtFr.approach, heightM: courtH },
-    { name: "mill", px: mill[0], py: mill[1], dist: millFr.dist, eye: millFr.eye, approach: millFr.approach, heightM: millH },
+    { name: "mill", px: mill[0], py: mill[1], dist: millFr.dist, eye: millFr.eye, approach: millFr.approach, horizon: millFr.horizon, heightM: millH },
     { name: "depot", px: depot[0], py: depot[1], dist: depotFr.dist, eye: depotFr.eye, approach: depotFr.approach, heightM: depotH },
     { name: "river", px: river.px, py: river.py, dist: river.dist || 140, eye: river.eye || 16, approach: river.approach },
-    { name: "farmstead", px: farm.px, py: farm.py, dist: farmFr.dist, eye: farmFr.eye, approach: farmFr.approach, heightM: 12 },
+    { name: "farmstead", px: farm.px, py: farm.py, dist: farmFr.dist, eye: farmFr.eye, approach: farmFr.approach, horizon: farmFr.horizon, heightM: 12 },
     { name: "townhall", px: hall[0], py: hall[1], dist: hallFr.dist, eye: hallFr.eye, approach: hallFr.approach, zoom: hallFr.zoom, heightM: hallH, wFrac: hallFr.wFrac, hFrac: hallFr.hFrac },
     { name: "stadium", px: stadium[0], py: stadium[1], dist: stadFr.dist, eye: stadFr.eye, approach: stadFr.approach, heightM: stadH },
     { name: "monastery", px: monastery[0], py: monastery[1], dist: monFr.dist, eye: monFr.eye, approach: monFr.approach, heightM: monH },
@@ -10903,6 +11133,23 @@ function orbitArcFor(stop) {
   return (stop && stop.name === "jhs") ? TOUR_ORBIT_ARC_JHS : TOUR_ORBIT_ARC;
 }
 
+function orbitRingMaxY(base, target, arc, eye) {
+  const lx = target.x, lz = target.z;
+  const dx = base.x - lx, dz = base.z - lz;
+  let maxY = yOf(heightWorld(base.x, base.z)) + eye;
+  const n = 24;
+  const a = arc || 0;
+  for (let i = 1; i <= n; i++) {
+    const ang = a * (i / n);
+    const c = Math.cos(ang), s = Math.sin(ang);
+    const x = lx + dx * c - dz * s;
+    const z = lz + dx * s + dz * c;
+    const y = yOf(heightWorld(x, z)) + eye;
+    if (y > maxY) maxY = y;
+  }
+  return maxY;
+}
+
 function orbitCamAt(base, target, arc, u) {
   const e = easeInOutCubic(Math.max(0, Math.min(1, u)));
   const ang = e * (arc || 0);
@@ -10912,7 +11159,9 @@ function orbitCamAt(base, target, arc, u) {
   const x = lx + dx * c - dz * s;
   const z = lz + dx * s + dz * c;
   const eye = Math.max(16, base.y - yOf(heightWorld(base.x, base.z)));
-  const y = yOf(heightWorld(x, z)) + eye;
+  // Level pans: hold the highest ground+eye on the ring for the whole arc.
+  // The locked JHS hold pose keeps its approved landing Y (lockOrbitY).
+  const y = (base && base.lockOrbitY) ? base.y : orbitRingMaxY(base, target, arc, eye);
   const heading = Math.atan2(lx - x, lz - z);
   const pitch = (base && base.pitch != null) ? base.pitch : applyFovAndPitch().pitch;
   return { x: x, y: y, z: z, heading: heading, pitch: pitch };
@@ -10952,6 +11201,7 @@ function arriveAtStop(cam, now, fadeLabel) {
   tour.manualTravel = false;
   tour.paused = false;
   tour.released = false;
+  if (cam && stop && stop.name === "jhs") cam.lockOrbitY = true;
   tour.parked = cam;
   applyTourCam(cam);
   if (stop) updatePlaceCaption(stop.name);

@@ -71,38 +71,6 @@ html, body {
   height: 100%;
 }
 
-#caption {
-  position: fixed;
-  left: 1.1rem;
-  bottom: 0.9rem;
-  z-index: 3;
-  pointer-events: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.08rem;
-  padding: 0.38rem 0.62rem 0.32rem;
-  border: 1.5px solid rgba(42, 33, 24, 0.55);
-  background: rgba(237, 230, 214, 0.62);
-  box-shadow: inset 0 0 0 3px rgba(237, 230, 214, 0.35);
-}
-
-#place {
-  font-family: "IM Fell English SC", "IM Fell English", Literata, Palatino, serif;
-  font-size: 0.74rem;
-  letter-spacing: 0.10em;
-  text-transform: uppercase;
-  font-weight: 400;
-  max-width: 16rem;
-  line-height: 1.2;
-}
-
-#when {
-  font-family: "IM Fell English", Literata, Palatino, serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.04em;
-  opacity: 0.85;
-}
-
 #hud {
   position: fixed;
   right: 0.8rem;
@@ -118,22 +86,6 @@ html, body {
 }
 
 #hud[hidden] { display: none; }
-
-body[data-sky="day"] #caption,
-body[data-sky="dawn"] #caption {
-  color: #2A2118;
-  text-shadow: none;
-  border-color: rgba(42, 33, 24, 0.55);
-  background: rgba(237, 230, 214, 0.62);
-}
-
-body[data-sky="dusk"] #caption,
-body[data-sky="night"] #caption {
-  color: #EDE6D6;
-  border-color: rgba(237, 230, 214, 0.45);
-  background: rgba(7, 11, 20, 0.45);
-  box-shadow: inset 0 0 0 3px rgba(7, 11, 20, 0.25);
-}
 
 #fallbackImg {
   position: absolute;
@@ -264,14 +216,6 @@ body[data-sky="night"] #landmark-btn:focus-visible {
 }
 
 @media (max-width: 430px) {
-  #caption {
-    left: calc(10px + env(safe-area-inset-left, 0px));
-    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-    padding: 0.30rem 0.46rem 0.26rem;
-    max-width: calc(48vw - 22px);
-  }
-  #place { font-size: 0.70rem; letter-spacing: 0.12em; }
-  #when { font-size: 0.62rem; }
   #landmark-btn {
     right: calc(10px + env(safe-area-inset-right, 0px));
     bottom: calc(12px + env(safe-area-inset-bottom, 0px));
