@@ -1274,7 +1274,7 @@ void main(){
     col *= 0.985 + 0.03 * grain;
     col += (stip - 0.5) * 0.018;
     // Cumulus live as world-space volumes (buildVolClouds). The sky is paper only.
-    // The sun is an engraved disk mesh, not a shader glow.
+    // The sun is a soft filled disk mesh, not a shader glow.
 
   } else {
     if (h > 0.42) col = mix(uMid, uTop, clamp((h - 0.42) / 0.58, 0.0, 1.0));
@@ -1516,26 +1516,27 @@ varying vec3 vCenter;
 ${NOISE_GLSL}
 void main(){
   // Normal from the sphere center in world space. uSunDir is the world
-  // direction to the sun (same altAzDir as the moon's position).
+  // direction to the sun (same altAzDir as the moon's position), so the
+  // terminator follows the real phase. Do not draw a hollow hoop or a
+  // cream ink limb that reads as a sliver on a black body.
   vec3 N = normalize(vPos - vCenter);
   vec3 L = normalize(uSunDir);
-  float lit = clamp(dot(N, L), 0.0, 1.0);
+  float ndl = dot(N, L);
+  float lit = smoothstep(-0.10, 0.20, ndl);
   float crat = noise21(N.xy * 7.0 + N.z * 4.0);
-  vec3 dark = vec3(0.10, 0.11, 0.16);
-  vec3 light = vec3(0.96, 0.93, 0.84) * (0.86 + 0.14 * crat);
-  vec3 col = mix(dark, light, smoothstep(0.015, 0.16, lit));
-  // Engraved hatch on the unlit face; faint crater rings on the lit face.
+  // Earthshine keeps the night face a filled body, even on a crescent.
+  vec3 earth = vec3(0.28, 0.30, 0.36) * (0.88 + 0.16 * crat);
+  vec3 light = vec3(0.96, 0.93, 0.84) * (0.88 + 0.12 * crat);
+  vec3 col = mix(earth, light, lit);
   float sl = abs(fract((N.x * 8.0 + N.y * 11.0) * 1.15 + N.z * 2.0) - 0.5);
-  float hatch = (1.0 - smoothstep(0.0, 0.15, sl)) * (1.0 - smoothstep(0.0, 0.22, lit));
+  float hatch = (1.0 - smoothstep(0.0, 0.15, sl)) * (1.0 - lit);
   hatch *= step(0.2, hash21(floor(N.xy * 16.0)));
-  col = mix(col, vec3(0.06, 0.07, 0.11), hatch * 0.75);
+  col = mix(col, col * 0.82, hatch * 0.35);
   float ring = abs(crat - 0.55);
-  col = mix(col, vec3(0.22, 0.20, 0.18), (1.0 - smoothstep(0.0, 0.08, ring)) * lit * 0.28);
-  // Cream ink outline at the limb, a touch heavier on the sun side.
+  col = mix(col, vec3(0.42, 0.40, 0.36), (1.0 - smoothstep(0.0, 0.08, ring)) * lit * 0.18);
   vec3 V = normalize(cameraPosition - vPos);
-  float rim = pow(1.0 - abs(dot(N, V)), 2.6);
-  vec3 cream = vec3(0.93, 0.90, 0.84);
-  col = mix(col, cream, rim * (0.55 + 0.35 * lit));
+  float fres = pow(1.0 - abs(dot(N, V)), 3.0);
+  col *= 1.0 - fres * 0.12;
   gl_FragColor = vec4(col, 1.0);
 }
 `;
@@ -1582,6 +1583,7 @@ const JHS_HERO_FRAG = /* glsl */`
 uniform sampler2D uMap;
 uniform vec3 uSunDir, uMoonDir, uNightMul, uFill, uColor, uWinCenter, uWinEdge;
 uniform float uNight, uStorm, uOpacity, uHasMap, uWin, uSage, uTwi, uHardShadow, uMoonStr, uWinOn, uWinLate, uDuskDim;
+uniform vec3 uSchool;
 varying vec3 vN;
 varying vec3 vWorld;
 varying vec2 vUv;
@@ -1627,26 +1629,33 @@ void main(){
     col += vec3(0.722, 0.776, 0.851) * uMoonStr * max(ndl, 0.0) * 0.14 * uNight;
   }
   // School windows must read at the locked 414 m hold. Texture-luma
-  // detection missed the baked facade panes, so punch a regular grid on
-  // vertical walls, plus a richer glow on glass meshes.
+  // detection missed the baked facade panes, so punch a world-space grid
+  // on vertical walls. About a third of the rooms stay dark, and the lit
+  // panes keep the #FFD08A to #E0782E gradient so they feel like rooms,
+  // not a dense circuit. Glass (the atrium) is a warm amber glow, not a
+  // lime-white lantern, and dark rooms stay in the glass as well.
   if (uSage < 0.5 && uWinOn > 0.001 && abs(N.y) < 0.62) {
     float isGlass = step(uWin, 0.95);
-    float bay = fract(dot(vWorld.xz, vec2(0.34, 0.31)));
-    float story = fract(vWorld.y * 0.38);
-    float pane = step(0.16, bay) * step(bay, 0.58) * step(0.26, story) * step(story, 0.74);
-    vec2 idp = floor(vec2(dot(vWorld.xz, vec2(0.34, 0.31)), vWorld.y * 0.38));
+    float bayN = dot(vWorld.xz, vec2(0.31, 0.29));
+    float storyN = vWorld.y * 0.34;
+    vec2 idp = floor(vec2(bayN, storyN));
+    float jit = hash21j(idp) * 0.10;
+    float bay = fract(bayN + jit);
+    float story = fract(storyN + jit * 0.4);
+    float pane = step(0.20, bay) * step(bay, 0.54) * step(0.30, story) * step(story, 0.72);
     float id = hash21j(idp);
-    float stay = step(0.22, id);
+    float stay = step(0.30, id);
     float lateOff = step(0.86, id) * uWinLate;
     float turn = smoothstep(id * 0.85, id * 0.85 + 0.18, uWinOn);
-    float lit = stay * (1.0 - lateOff) * turn * max(pane, isGlass);
-    vec2 pc = vec2((bay - 0.16) / 0.42, (story - 0.26) / 0.48);
+    float lit = stay * (1.0 - lateOff) * turn * pane;
+    vec2 pc = vec2((bay - 0.20) / 0.34, (story - 0.30) / 0.42);
     float d = length((pc - 0.5) * 2.0);
-    vec3 glow = mix(uWinCenter, uWinEdge, smoothstep(0.10, 0.88, d)) * 1.45;
-    col = mix(col, glow, lit * mix(0.92, 1.0, isGlass));
-    col += glow * lit * mix(0.28, 0.48, isGlass);
-    float halo = (1.0 - lit) * pane * turn * stay * (1.0 - lateOff);
-    col = mix(col, glow * 0.55, halo * 0.22);
+    float towardEdge = mix(smoothstep(0.10, 0.88, d), 0.70, isGlass);
+    vec3 glow = mix(uWinCenter, uWinEdge, towardEdge);
+    float dim = 0.78 + 0.22 * hash21j(idp + vec2(2.3, 1.1));
+    glow *= dim;
+    col = mix(col, glow, lit * mix(0.88, 0.90, isGlass));
+    col += glow * lit * mix(0.10, 0.18, isGlass);
   }
   if (uStorm > 0.01) {
     float luma = dot(col, vec3(0.30, 0.59, 0.11));
@@ -1659,17 +1668,23 @@ void main(){
     float hx = abs(fract(vWorld.x * 0.08 + vWorld.z * 0.03) - 0.5);
     float hz = abs(fract(vWorld.z * 0.07 - vWorld.x * 0.025) - 0.5);
     float fh = (1.0 - smoothstep(0.0, 0.18, hx)) * 0.55 + (1.0 - smoothstep(0.0, 0.18, hz)) * 0.45;
+    // Soften the mesh edge so the pale moon wash does not stop on a hard cut.
     float uvEdge = 1.0 - min(
-      smoothstep(0.0, 0.12, min(vUv.x, 1.0 - vUv.x)),
-      smoothstep(0.0, 0.12, min(vUv.y, 1.0 - vUv.y))
+      smoothstep(0.0, 0.22, min(vUv.x, 1.0 - vUv.x)),
+      smoothstep(0.0, 0.22, min(vUv.y, 1.0 - vUv.y))
     );
-    col = mix(col, wash * 0.90, field * fh * 0.30 * uSage);
-    col = mix(col, wash * 0.78, field * uvEdge * 0.48 * uSage);
+    col = mix(col, wash * 0.92, field * fh * 0.10 * uSage);
+    col = mix(col, wash * 0.88, field * uvEdge * 0.14 * uSage);
     float edge = pow(1.0 - abs(N.y), 2.2);
-    col = mix(col, wash, edge * 0.42 * uSage);
+    col = mix(col, wash, edge * 0.22 * uSage);
     float sl = abs(fract((vWorld.x * 0.11 + vWorld.z * 0.07) * 2.4) - 0.5);
     float hatch = (1.0 - smoothstep(0.0, 0.16, sl)) * edge;
-    col = mix(col, wash * 0.86, hatch * 0.35 * uSage);
+    col = mix(col, wash * 0.90, hatch * 0.12 * uSage);
+    // Warm amber spill from the atrium onto the near walk.
+    float walk = field * uWinOn;
+    float distS = length(vWorld.xz - uSchool.xz);
+    float spill = walk * smoothstep(70.0, 14.0, distS);
+    col = mix(col, uWinEdge * vec3(0.55, 0.42, 0.22), spill * 0.20);
   }
   gl_FragColor = vec4(col, uOpacity * uWin);
 }
@@ -2378,12 +2393,11 @@ function buildSky() {
         if (r > 1.0) discard;
         vec3 amber = vec3(0.949, 0.769, 0.420);
         vec3 hot = vec3(0.995, 0.91, 0.62);
-        vec3 ink = vec3(0.165, 0.129, 0.094);
-        // Soft amber disk, a little brighter than the sky glow so the disc reads. No rays.
-        vec3 col = mix(amber, hot, 0.70 * (1.0 - r * r));
-        float rim = smoothstep(0.82, 0.93, r) * (1.0 - smoothstep(0.980, 1.0, r));
-        col = mix(col, ink, max(rim * 0.95, step(0.985, r) * 0.90));
-        gl_FragColor = vec4(col, 1.0);
+        // Soft filled warm disk. No engraved ink rim: that read as a hollow hoop
+        // against the gold dusk sky, especially when the ridge clipped the body.
+        vec3 col = mix(hot, amber, smoothstep(0.0, 0.85, r));
+        float a = 1.0 - smoothstep(0.62, 1.0, r);
+        gl_FragColor = vec4(col, a);
       }
     `,
     transparent: true,
@@ -2391,7 +2405,8 @@ function buildSky() {
     depthTest: true,
     side: THREE.DoubleSide
   });
-  sunMesh = new THREE.Mesh(new THREE.PlaneGeometry(2200, 2200), sunMat);
+  // About 1.8 deg across at 28000 m, a readable disk that can settle into the trees.
+  sunMesh = new THREE.Mesh(new THREE.PlaneGeometry(860, 860), sunMat);
   sunMesh.renderOrder = -50;
   skyGroup.add(sunMesh);
 }
@@ -5927,7 +5942,8 @@ function styleJhsModel(root, startOpacity, sage) {
           uWinLate: { value: clock.winLate || 0 },
           uDuskDim: { value: clock.duskDim || 0 },
           uWinCenter: { value: colU(WIN_CENTER) },
-          uWinEdge: { value: colU(WIN_EDGE) }
+          uWinEdge: { value: colU(WIN_EDGE) },
+          uSchool: { value: jhsWorldOrigin() }
         },
         vertexShader: JHS_HERO_VERT,
         fragmentShader: JHS_HERO_FRAG,
@@ -7795,10 +7811,12 @@ function setSunPos() {
   const dir = altAzDir(clock.alt, clock.sunAz);
   // Farther than the terrain so the far ridge can occlude the lower half of the disc.
   sunMesh.position.copy(dir.clone().multiplyScalar(28000));
-  // Face the camera (skyGroup sits on the camera). An engraved disk, not a glowing sphere.
+  // Face the camera (skyGroup sits on the camera). Soft filled disk, not an engraved hoop.
   if (camera) sunMesh.lookAt(camera.position);
   else sunMesh.lookAt(0, 0, 0);
-  sunMesh.visible = clock.alt > -3 && clock.alt < 16;
+  // Hide once the center is below the horizon. A set sun was still being drawn
+  // as a clipped black hoop; the gold afterglow is enough then.
+  sunMesh.visible = clock.alt > -0.35 && clock.alt < 16;
 }
 
 function sunInfo() {
