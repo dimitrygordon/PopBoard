@@ -8148,6 +8148,79 @@ function terrainYAt(x, z) {
   return y * farLiftAt(dist);
 }
 
+function millBankInfluence(x, z) {
+  // Smooth falloff around the mill so a local water drop and a narrower
+  // ribbon do not leave a step, and the Patoka stop (far from the mill)
+  // is unchanged.
+  if (!millSeat) return 0;
+  const d = Math.hypot(x - millSeat.x, z - millSeat.z);
+  const inner = 24, outer = 100;
+  if (d >= outer) return 0;
+  if (d <= inner) return 1;
+  const t = (d - inner) / (outer - inner);
+  return 1 - t * t * (3 - 2 * t);
+}
+
+function millRibbonHalf() {
+  if (!millSeat || millSeat.riverPx == null) return 20;
+  const rw = pxToWorld(millSeat.riverPx, millSeat.riverPy);
+  const dist = Math.hypot(millSeat.x - rw.x, millSeat.z - rw.z);
+  // Water starts past the plinth and under the wheel (~7 m toward the
+  // river) so a tan strip remains under the walls. Do not change the pin.
+  return Math.max(8.5, Math.min(12.5, dist - 7.2));
+}
+
+function millRiverSurfaceY(x, z, bedY, bankY) {
+  let y = Math.max(bedY + 2.2, bankY - 2.0);
+  const infl = millBankInfluence(x, z);
+  if (infl > 0) y = Math.max(bedY + 0.25, y - 2.2 * infl);
+  return y;
+}
+
+function extendMillWheelToWater(root, millY, waterY) {
+  // Keep the rim under the eave (native top 7.47) and scale about that
+  // point in YZ so the wheel stays circular, drops into the water, and
+  // does not grow through the roof.
+  const topY = 7.47, topZ = -3.15, nativeBottom = -0.15;
+  const target = Math.min(nativeBottom, (waterY - millY) - 0.35);
+  if (target >= nativeBottom - 0.05) return 1;
+  const s = (topY - target) / (topY - nativeBottom);
+  if (s < 1.01 || s > 1.55) return s;
+  root.traverse(function (obj) {
+    if (!obj.isMesh) return;
+    const n = (obj.name || "").toLowerCase();
+    if (!/^(axle|spoke_|wheel_)/.test(n)) return;
+    const geo = obj.geometry.clone();
+    geo.translate(0, -topY, -topZ);
+    geo.scale(1, s, s);
+    geo.translate(0, topY, topZ);
+    geo.computeVertexNormals();
+    obj.geometry = geo;
+  });
+  return s;
+}
+
+function addMillStonePlinth(x, millY, z, yaw, botY) {
+  if (!landmarkGroup) return;
+  for (let i = landmarkGroup.children.length - 1; i >= 0; i--) {
+    if (landmarkGroup.children[i].name === "mill-plinth") {
+      const doomed = landmarkGroup.children[i];
+      landmarkGroup.remove(doomed);
+      if (doomed.geometry) doomed.geometry.dispose();
+    }
+  }
+  const h = Math.max(0.8, millY - botY);
+  const geo = new THREE.BoxGeometry(1, 1, 1);
+  geo.translate(0, 0.5, 0);
+  const mat = makeWashMat([168, 156, 136]);
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.name = "mill-plinth";
+  mesh.position.set(x, millY - h, z);
+  mesh.rotation.y = yaw;
+  mesh.scale.set(8.9, h, 13.8);
+  landmarkGroup.add(mesh);
+}
+
 function placeFixedLandmarks(loaded) {
   if (!landmarkGroup) return;
   const keys = Object.keys(LANDMARK_SITES);
@@ -8188,14 +8261,26 @@ function placeFixedLandmarks(loaded) {
         }
         yaw = Math.atan2(nz - w.z, -(nx - w.x));
       }
-      const bankY = yOf(heightWorld(w.x, w.z));
-      const waterY = yOf(heightWorld(nx, nz));
-      const drop = bankY - waterY;
-      // River wall hangs ~3.4 m below the foundation. Lower the mill a little
-      // into a tall bank so the wheel meets the water; do not float it.
-      y = (drop > 3.2) ? (waterY + 3.0) : bankY;
+      // Seat on the rendered bank, not the heightmap water. The 40 m ribbon
+      // was flooding the walls; a local narrower, slightly lower surface
+      // leaves a tan bank, and a stone plinth reads under the walls.
+      let bankY = terrainMeshY(w.x, w.z);
+      const rdx = nx - w.x, rdz = nz - w.z;
+      const rl = Math.hypot(rdx, rdz) || 1;
+      bankY = Math.max(bankY, terrainMeshY(w.x - rdx / rl * 5, w.z - rdz / rl * 5));
+      const bedY = terrainMeshY(nx, nz);
+      const waterY = millRiverSurfaceY(nx, nz, bedY, bankY);
+      // Natural bank is only ~0.8 m above the lowered water, which dunks
+      // a readable stone plinth. Raise the mill onto a short bank seat
+      // so the foundation stays dry and only the wheel reaches the water.
+      const gradeY = Math.min(bankY, terrainMeshY(w.x, w.z));
+      y = Math.max(bankY + 1.45, waterY + 2.3);
+      const plinthBot = Math.max(gradeY - 0.2, waterY + 0.4);
       mesh.position.set(w.x, y, w.z);
       mesh.rotation.y = yaw;
+      const wheelS = extendMillWheelToWater(mesh, y, waterY);
+      addMillStonePlinth(w.x, y, w.z, yaw, plinthBot);
+      console.info("[mill] bankY", +bankY.toFixed(2), "millY", +y.toFixed(2), "waterY", +waterY.toFixed(2), "plinthBot", +plinthBot.toFixed(2), "wheelS", wheelS);
     } else {
       mesh.position.set(w.x, y, w.z);
       const heroW = pxToWorld(HERO.px, HERO.py);
@@ -8535,7 +8620,7 @@ function layoutRiverRibbon() {
     const rimR = terrainYAt(p.x + sxs[i] * (half + 16), p.z + szs[i] * (half + 16));
     const bankY = Math.max(rimL, rimR) + 0.4;
     const bedY = terrainYAt(p.x, p.z);
-    waterYs[i] = Math.max(bedY + 2.2, bankY - 2.0);
+    waterYs[i] = millRiverSurfaceY(p.x, p.z, bedY, bankY);
     bankYs[i] = bankY;
   }
   const smY = waterYs.slice();
@@ -8561,7 +8646,9 @@ function layoutRiverRibbon() {
     const bankY = bankYs[i];
     const nEdge = (Math.sin(i * 19.7 + p.x * 0.021) * 43758.5453) % 1;
     const nEdge01 = nEdge < 0 ? nEdge + 1 : nEdge;
-    const half = 20 + (nEdge01 - 0.5) * 5.0 + 1.8 * Math.sin(i * 0.29 + p.z * 0.01);
+    let half = 20 + (nEdge01 - 0.5) * 5.0 + 1.8 * Math.sin(i * 0.29 + p.z * 0.01);
+    const millInfl = millBankInfluence(p.x, p.z);
+    if (millInfl > 0) half = half + (millRibbonHalf() - half) * millInfl;
     const pr = (i > 0 && pts[i - 1]) ? pts[i - 1] : p;
     const nx = (i < n - 1 && pts[i + 1]) ? pts[i + 1] : p;
     pos.push(p.x - sx * half, waterY, p.z - sz * half);
@@ -11115,7 +11202,7 @@ function getTourStops() {
     const yaw = (millSeat && millSeat.yaw != null) ? millSeat.yaw : Math.atan2(rz - mw.z, -(rx - mw.x));
     const frontApproach = Math.atan2(-Math.sin(yaw), -Math.cos(yaw));
     millFr.approach = lerpAngle(wheelApproach, frontApproach, 0.36);
-    millFr.dist = narrow ? 220 : 74;
+    millFr.dist = narrow ? 148 : 74;
     millFr.eye = narrow ? 30 : 16;
     millFr.horizon = narrow ? 0.66 : 0.69;
     millFr.orbitArc = 32 * Math.PI / 180;
