@@ -8440,7 +8440,7 @@ function makeRiverMat() {
           vec2 cell = floor(vW.xz * 0.07);
           float id = hash21(cell);
           vec2 ctr = (cell + 0.5) / 0.07;
-          float rad = fract(t * 0.65 + id * 2.7);
+          float rad = fract(uTime * 0.65 + id * 2.7);
           float ring = 1.0 - smoothstep(0.0, 1.4, abs(length(vW.xz - ctr) - rad * 12.0));
           ring *= (1.0 - rad) * step(0.58, id);
           col = mix(col, mix(uInk, vec3(0.18, 0.16, 0.14), uNight), ring * 0.45 * uRain);
