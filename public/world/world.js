@@ -4298,6 +4298,7 @@ function scatterTrees() {
       const w = pxToWorld(jx, jy);
       const c2 = coverPx(jx, jy);
       if (c2 === 0 || c2 === 3) continue;
+      if (tooCloseToRiver(w.x, w.z)) continue;
       if (!isFront && (c2 === 2)) continue;
       const hm = heightPx(jx, jy);
       const fenceRidge = isFenceOrRidgeCell(jx, jy) || isFront || isMidWood;
@@ -4549,6 +4550,30 @@ function scatterTrees() {
   }
   plantRiverbankTrees(addTreeAt, pos);
   plantChurchYardTrees(addTreeAt, pos);
+  // Drop any stand that still sits in the 40 m channel (cover class 0 is
+  // only a thin centerline, so woods next to the mask used to stand in the water).
+  (function pruneRiverTrees() {
+    const n0 = pos.length / 3;
+    let w3 = 0;
+    for (let i = 0; i < n0; i++) {
+      if (tooCloseToRiver(pos[i * 3], pos[i * 3 + 2])) continue;
+      if (w3 !== i) {
+        pos[w3 * 3] = pos[i * 3]; pos[w3 * 3 + 1] = pos[i * 3 + 1]; pos[w3 * 3 + 2] = pos[i * 3 + 2];
+        scale[w3 * 2] = scale[i * 2]; scale[w3 * 2 + 1] = scale[i * 2 + 1];
+        frame[w3] = frame[i]; frameClump[w3] = frameClump[i];
+        phase[w3] = phase[i]; kind[w3] = kind[i];
+        treeRecords[w3] = treeRecords[i];
+      }
+      w3++;
+    }
+    pos.length = w3 * 3;
+    scale.length = w3 * 2;
+    frame.length = w3;
+    frameClump.length = w3;
+    phase.length = w3;
+    kind.length = w3;
+    treeRecords.length = w3;
+  })();
   finishTreeMeshes(pos, scale, frame, frameClump, phase, kind);
   return VEG.treesLogical || (pos.length / 3);
 }
@@ -7833,11 +7858,11 @@ void main(){
   vec3 ink = vec3(0.165, 0.129, 0.094);
   vec3 cream = vec3(0.96, 0.92, 0.80);
   vec3 col = water;
-  float rip = abs(fract(vUv.x * 7.5 + sin(vUv.y * 3.2 + vUv.x * 1.1) * 0.45) - 0.5);
-  col = mix(col, ink, (1.0 - smoothstep(0.0, 0.14, rip)) * 0.16);
-  float glint = abs(fract(vUv.x * 4.2 + 0.28 + sin(vUv.y * 2.4 + vUv.x * 0.7) * 0.35) - 0.5);
+  float rip = abs(fract(vUv.x * 3.2 + sin(vUv.y * 2.1 + vUv.x * 2.4) * 0.7) - 0.5);
+  col = mix(col, ink, (1.0 - smoothstep(0.0, 0.22, rip)) * 0.07);
+  float glint = abs(fract(vUv.x * 2.1 + 0.28 + sin(vUv.y * 1.6 + vUv.x * 1.3) * 0.55) - 0.5);
   float mid = 1.0 - abs(vUv.y - 0.5) * 2.0;
-  col = mix(col, cream, (1.0 - smoothstep(0.0, 0.12, glint)) * 0.16 * mid);
+  col = mix(col, cream, (1.0 - smoothstep(0.0, 0.20, glint)) * 0.08 * mid);
   float bank = min(vUv.y, 1.0 - vUv.y);
   col = mix(col, ink, (1.0 - smoothstep(0.0, 0.10, bank)) * 0.40);
   gl_FragColor = vec4(col, 1.0);
@@ -10335,8 +10360,8 @@ function getTourStops() {
   const abbH = landmarkHeightM("archabbey", 40);
   const aspect = Math.max(0.3, (canvas && canvas.clientWidth ? canvas.clientWidth : 1280) / Math.max(1, (canvas && canvas.clientHeight) || 800));
   const narrow = aspect < 0.7;
-  const churchD = narrow ? [420, 560, 700, 860, 1020] : [300, 380, 460, 560, 680];
-  const churchE = [48, 64, 80];
+  const churchD = narrow ? [220, 300, 420, 560, 700] : [160, 200, 260, 340, 420];
+  const churchE = [36, 48, 64];
   const courtD = [520, 680, 860, 1040];
   const courtE = [48, 64, 82];
   const millD = [170, 190, 210, 230, 250];
@@ -10352,13 +10377,20 @@ function getTourStops() {
   const abbD = narrow ? [400, 520, 680, 860, 1040] : [200, 260, 340, 420, 520];
   const abbE = [36, 52, 68, 84];
   const widthBand = { wMin: 0.10, wMax: 0.15, wTarget: 0.125 };
-  const churchFr = frameNamed("church", church, court, churchH, churchD, churchE, narrow ? 700 : 460, 64, Object.assign({ half: 16, rejectBottom: -0.70, wTarget: 0.15, wMin: 0.12, wMax: 0.16 }, widthBand));
-  if (churchFr && !(churchFr.wFrac >= 0.10 && churchFr.dist >= FORE_CLEAR_M)) {
-    const nudged = nudgeCloserForWidth(church, churchH, churchFr, Object.assign({ half: 16, minDist: FORE_CLEAR_M, wMin: 0.10 }, widthBand));
-    if (nudged && nudged.wFrac >= 0.10) {
+  const churchFr = frameNamed("church", church, court, churchH, churchD, churchE, narrow ? 300 : 200, 48, Object.assign({ half: 16, rejectBottom: -0.70, wTarget: 0.15, wMin: 0.13, wMax: 0.17, minDist: FORE_CLEAR_M, clearM: FORE_CLEAR_M }, widthBand));
+  if (churchFr && !(churchFr.wFrac >= 0.13 && churchFr.wFrac <= 0.17 && churchFr.approach != null && churchFr.dist >= FORE_CLEAR_M)) {
+    const nudged = nudgeCloserForWidth(church, churchH, churchFr, Object.assign({ half: 16, minDist: FORE_CLEAR_M, wMin: 0.13, wTarget: 0.15, wMax: 0.17 }, widthBand));
+    if (nudged && nudged.wFrac >= 0.13 && nudged.approach != null) {
       churchFr.dist = nudged.dist; churchFr.eye = nudged.eye; churchFr.approach = nudged.approach;
       churchFr.wFrac = nudged.wFrac; churchFr.hFrac = nudged.hFrac;
     }
+  }
+  if (!churchFr || churchFr.approach == null || churchFr.dist < FORE_CLEAR_M) {
+    churchFr.approach = 0.85;
+    churchFr.dist = narrow ? 240 : 180;
+    churchFr.eye = narrow ? 48 : 44;
+    churchFr.pinned = true;
+    console.info("[frame]", "church pinned 15% three-quarter", "dist", churchFr.dist, "eye", churchFr.eye, "approach", churchFr.approach);
   }
   const courtFr = frameNamed("courthouse", court, church, courtH, courtD, courtE, 520, 82, { half: 22, hMin: 0.055 });
   if (!(courtFr && courtFr.approach != null && courtFr.hFrac >= 0.07 && courtFr.dist <= 700)) {
@@ -10385,18 +10417,18 @@ function getTourStops() {
     preferAng: -0.85 * Math.PI,
     preferArc: 0.45,
     frontCosMax: -0.25,
-    eyes: narrow ? [32, 42, 54] : [28, 36, 46],
-    maxRise: 12,
+    eyes: narrow ? [40, 52, 64] : [36, 46, 56],
+    maxRise: 14,
     midY: -0.58,
     occlude: true,
     rejectBottom: -0.72
   });
-  if (!hallFr || hallFr.approach == null || hallFr.dist < FORE_CLEAR_M) {
+  if (!hallFr || hallFr.approach == null || hallFr.dist < FORE_CLEAR_M || hallFr.wFrac == null) {
     hallFr.approach = -0.85 * Math.PI;
-    hallFr.dist = 160;
-    hallFr.eye = narrow ? 48 : 36;
+    hallFr.dist = narrow ? 165 : 160;
+    hallFr.eye = narrow ? 56 : 46;
     hallFr.pinned = true;
-    console.info("[frame]", "townhall pinned 150 m north-west", "dist", hallFr.dist, "eye", hallFr.eye, "approach", hallFr.approach);
+    console.info("[frame]", "townhall pinned 160 m north-west, raised", "dist", hallFr.dist, "eye", hallFr.eye, "approach", hallFr.approach);
   }
   const stadFr = frameNamed("stadium", stadium, hall, stadH, stadD, stadE, 520, 42, Object.assign({ half: 42 }, widthBand));
   const monFr = frameNamed("monastery", monastery, null, monH, abbD, abbE, narrow ? 520 : 340, 56, Object.assign({ half: 40 }, widthBand));
@@ -10452,12 +10484,11 @@ function getTourStops() {
       jhsFr.pinned = true;
     } else {
       jhsFr.approach = JHS_HOLD_APPROACH;
-      if (!(jhsFr.wFrac >= 0.20 && jhsFr.wFrac <= 0.25) || jhsFr.dist < FORE_CLEAR_M) {
-        const tanH = tanHalfHFov();
-        jhsFr.dist = Math.max(FORE_CLEAR_M, JHS_APPARENT_W / (2 * 0.23 * tanH));
-        if (jhsFr.eye == null) jhsFr.eye = 40;
-        jhsFr.pinned = true;
-      }
+      // Same angle as desktop. Come in so the brick facade is a real subject
+      // on the 390 px frame; 1100 m made it a sliver even at a 24% billboard.
+      jhsFr.dist = 620;
+      jhsFr.eye = 40;
+      jhsFr.pinned = true;
     }
     tourStopsCache.unshift({
       name: "jhs", px: jhs[0], py: jhs[1],
