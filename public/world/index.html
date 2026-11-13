@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Patoka Valley</title>
+  <meta name="theme-color" content="#070B14">
+  <link rel="stylesheet" href="world.css?v=20261113y">
+</head>
+<body>
+  <canvas id="world" aria-label="A drawn flyover of the Patoka River valley under a live sky"></canvas>
+  <canvas id="wx" aria-hidden="true"></canvas>
+  <div id="fallback" hidden>
+    <img id="fallbackImg" src="fallback.jpg" alt="The Patoka River valley, engraved atlas view">
+    <canvas id="still" width="1280" height="800" aria-hidden="true"></canvas>
+    <p>This view needs WebGL. A still engraving of the valley is shown instead.</p>
+  </div>
+  <button type="button" id="landmark-btn" aria-label="Next landmark: City Mill">
+    <span class="lm-names" aria-hidden="true">
+      <span class="lm-name is-current">St. Joseph Church</span>
+    </span>
+    <svg class="lm-arrow" viewBox="0 0 24 16" aria-hidden="true" focusable="false">
+      <path d="M2.2 8.3 C7.0 7.2, 12.4 8.9, 17.8 7.7 L14.2 4.6 M17.8 7.7 L14.6 11.6" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <div id="hud" hidden></div>
+  <script type="module" src="world.js?v=20261113y"></script>
+</body>
+</html>
