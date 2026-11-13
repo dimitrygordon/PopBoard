@@ -173,13 +173,14 @@ html.pb-in-world #la-sky {
      pill's containing block does not grow. */
   box-shadow: 0 50vh 0 0 var(--la-sky-bot);
 }
-/* During the pull, the revealed gap under the pencil line is cream paper,
-   not a full-width sky-bot haze. Unchanged once we are in the world. */
+/* During the pull, continue the sky into the gap so a torn paper edge
+   can read against it. The paper itself is drawn in the ink SVG, cream
+   by day and charcoal at night — never a ruler-straight slab. */
 html.pb-valley-active #pb-valley-sheet {
-  background: #EDE6D6;
+  background: transparent;
 }
 html.pb-valley-active #la-sky {
-  box-shadow: 0 50vh 0 0 #EDE6D6;
+  box-shadow: 0 50vh 0 0 var(--la-sky-bot);
 }
 @media (max-width: 640px) {
   html.pb-valley-active #pb-valley-sheet,

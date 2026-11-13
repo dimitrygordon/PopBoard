@@ -225,6 +225,52 @@
     while (ink.firstChild) ink.removeChild(ink.firstChild);
   }
 
+  var PAPER_DAY = [237, 230, 214]; /* #EDE6D6 */
+  var PAPER_NIGHT = [31, 29, 26]; /* #1F1D1A */
+
+  function decklePath(w, h, paperH, seed) {
+    /* Torn watercolor top: irregular vertices, later displaced. */
+    var top = h - paperH;
+    var n = Math.max(28, Math.round(w / 22));
+    var d = "M0," + h.toFixed(1) + " L" + w.toFixed(1) + "," + h.toFixed(1);
+    var i, x, jag, y;
+    d += " L" + w.toFixed(1) + "," + (top + 6).toFixed(1);
+    for (i = n; i >= 0; i--) {
+      x = (i / n) * w;
+      jag = (hash11(seed + i * 1.13) - 0.5) * 16
+          + (hash11(seed + i * 2.71 + 3) - 0.5) * 10;
+      if (hash11(seed + i + 19) > 0.84) jag -= 8 + 6 * hash11(seed + i * 0.7);
+      y = top + 10 + jag;
+      d += " L" + x.toFixed(1) + "," + y.toFixed(1);
+    }
+    return d + " Z";
+  }
+
+  function appendDeckleFilter(defs, NS) {
+    var filt = document.createElementNS(NS, "filter");
+    filt.setAttribute("id", "pb-deckle");
+    filt.setAttribute("x", "-2%");
+    filt.setAttribute("y", "-20%");
+    filt.setAttribute("width", "104%");
+    filt.setAttribute("height", "140%");
+    filt.setAttribute("color-interpolation-filters", "sRGB");
+    var turb = document.createElementNS(NS, "feTurbulence");
+    turb.setAttribute("type", "fractalNoise");
+    turb.setAttribute("baseFrequency", "0.035 0.14");
+    turb.setAttribute("numOctaves", "2");
+    turb.setAttribute("seed", "7");
+    turb.setAttribute("result", "t");
+    var disp = document.createElementNS(NS, "feDisplacementMap");
+    disp.setAttribute("in", "SourceGraphic");
+    disp.setAttribute("in2", "t");
+    disp.setAttribute("scale", "14");
+    disp.setAttribute("xChannelSelector", "R");
+    disp.setAttribute("yChannelSelector", "G");
+    filt.appendChild(turb);
+    filt.appendChild(disp);
+    defs.appendChild(filt);
+  }
+
   function progress() {
     return Math.max(0, Math.min(1, pull / Math.max(1, thresholdPx())));
   }
@@ -249,24 +295,71 @@
     } else {
       maxH = Math.min(h, BLOOM_MAX_FRAC * h + (p - 1) * h);
     }
-    if (maxH < 4) return;
+    if (maxH < 4 && !(p <= 1 && pull > 4)) return;
 
     var blue = softSky(skyBlue());
     var night = isNightSky();
     var nightBlue = softSky([150, 176, 210]);
     if (!blooms.length) seedBlooms();
 
+    var paperH;
+    if (p <= 1) paperH = Math.max(0, pull - 2);
+    else paperH = Math.min(h, Math.max(pull, maxH) + (p - 1) * h * 0.35);
+    if (paperH < 6) paperH = Math.max(maxH, 6);
+
     var NS = "http://www.w3.org/2000/svg";
     var defs = document.createElementNS(NS, "defs");
+    appendDeckleFilter(defs, NS);
     var clip = document.createElementNS(NS, "clipPath");
     clip.setAttribute("id", "pb-wash-clip");
     var clipRect = document.createElementNS(NS, "rect");
     clipRect.setAttribute("x", "0");
     clipRect.setAttribute("y", String(Math.max(0, h - maxH)));
     clipRect.setAttribute("width", String(w));
-    clipRect.setAttribute("height", String(maxH));
+    clipRect.setAttribute("height", String(Math.max(0, maxH)));
     clip.appendChild(clipRect);
     defs.appendChild(clip);
+
+    var paperCol = night ? PAPER_NIGHT : PAPER_DAY;
+    var paperClip = document.createElementNS(NS, "clipPath");
+    paperClip.setAttribute("id", "pb-paper-clip");
+    var paperPath = decklePath(w, h, paperH, 7);
+    var paperClipP = document.createElementNS(NS, "path");
+    paperClipP.setAttribute("d", paperPath);
+    paperClip.appendChild(paperClipP);
+    defs.appendChild(paperClip);
+
+    var paperG = document.createElementNS(NS, "g");
+    paperG.setAttribute("filter", "url(#pb-deckle)");
+    var paperFill = document.createElementNS(NS, "path");
+    paperFill.setAttribute("d", paperPath);
+    paperFill.setAttribute("fill", "rgb(" + paperCol[0] + "," + paperCol[1] + "," + paperCol[2] + ")");
+    paperG.appendChild(paperFill);
+
+    var grainG = document.createElementNS(NS, "g");
+    grainG.setAttribute("clip-path", "url(#pb-paper-clip)");
+    grainG.setAttribute("opacity", night ? "0.28" : "0.42");
+    grainG.setAttribute("style", "mix-blend-mode:multiply");
+    var grainFilt = document.createElementNS(NS, "filter");
+    grainFilt.setAttribute("id", "pb-paper-grain");
+    grainFilt.setAttribute("x", "0");
+    grainFilt.setAttribute("y", "0");
+    grainFilt.setAttribute("width", "100%");
+    grainFilt.setAttribute("height", "100%");
+    var gTurb = document.createElementNS(NS, "feTurbulence");
+    gTurb.setAttribute("type", "fractalNoise");
+    gTurb.setAttribute("baseFrequency", "0.85");
+    gTurb.setAttribute("numOctaves", "3");
+    gTurb.setAttribute("stitchTiles", "stitch");
+    grainFilt.appendChild(gTurb);
+    defs.appendChild(grainFilt);
+    var grainRect = document.createElementNS(NS, "rect");
+    grainRect.setAttribute("x", "0");
+    grainRect.setAttribute("y", String(h - paperH - 24));
+    grainRect.setAttribute("width", String(w));
+    grainRect.setAttribute("height", String(paperH + 24));
+    grainRect.setAttribute("filter", "url(#pb-paper-grain)");
+    grainG.appendChild(grainRect);
 
     var root = document.createElementNS(NS, "g");
     root.setAttribute("clip-path", "url(#pb-wash-clip)");
@@ -330,14 +423,11 @@
     }
 
     ink.appendChild(defs);
+    ink.appendChild(paperG);
+    ink.appendChild(grainG);
     ink.appendChild(root);
 
-    if (grain) {
-      grain.classList.add("is-on");
-      var pct = (maxH / h) * 100;
-      grain.style.webkitMaskImage = "linear-gradient(to top, #000 0%, #000 " + pct + "%, transparent " + (pct + 4) + "%)";
-      grain.style.maskImage = grain.style.webkitMaskImage;
-    }
+    if (grain) grain.classList.remove("is-on");
   }
 
   function setLine(p) {
