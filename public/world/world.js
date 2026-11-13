@@ -3272,18 +3272,25 @@ void main(){
     vec3 toFrag = normalize(vWorld - cameraPosition);
     float moonSide = clamp(dot(normalize(uMoonDir), toFrag), 0.0, 1.0);
     vec3 creamRim = vec3(0.93, 0.90, 0.82);
-    float topSide = smoothstep(0.12, 0.72, rel);
-    nCol = mix(nCol, creamRim, rim * moonSide * 0.85);
     if (uDive > 0.5) {
-      // Faint cream highlight on the top / moon-facing silhouette. Strong
-      // enough to read as a moonlit rim, not a white cartoon outline.
-      float lit = max(moonSide, smoothstep(0.28, 0.88, rel));
-      nCol = mix(nCol, creamRim, rim * lit * 0.82 + topSide * 0.10);
+      // Clear thin cream rim (#F3E6C4, 1-3 px, 50-70% opacity) on the
+      // upper / moon-facing edge only. Sit inside the opaque body so the
+      // translucent night fringe does not wash it out.
+      vec3 moonCream = vec3(0.953, 0.902, 0.769);
+      float fw = max(fwidth(b), 0.006);
+      float inner = 0.28;
+      float thinRim = smoothstep(inner, inner + 1.2 * fw, b)
+                    * (1.0 - smoothstep(inner + 1.2 * fw, inner + 3.2 * fw, b));
+      float lit = max(pow(moonSide, 0.55), smoothstep(0.48, 0.92, rel));
+      nCol = mix(nCol, moonCream, clamp(thinRim * lit * 0.62, 0.0, 0.70));
+      alpha = max(alpha, thinRim * lit * 0.90);
+    } else {
+      nCol = mix(nCol, creamRim, rim * moonSide * 0.85);
     }
     col = mix(col, nCol, uNight);
     if (uDeck < 0.5 && uShaft < 0.5) {
       float edgeA = mix(0.22, 0.80, smoothstep(0.08, 0.48, b));
-      if (uDive > 0.5) edgeA = mix(0.55, 1.0, smoothstep(0.06, 0.34, b));
+      if (uDive > 0.5) edgeA = mix(0.70, 1.0, smoothstep(0.10, 0.28, b));
       alpha = mix(alpha, alpha * edgeA, uNight);
     }
     if (uRain > 0.5 && vUv.y < 0.55) {
