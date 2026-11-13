@@ -409,23 +409,49 @@
     /* Landing is announced by the iframe after the 1.8s drop. */
   }
 
+
+  /* App-wide CSS sets transition-duration to 0.01ms !important under
+     prefers-reduced-motion, so the required 400ms crossfade is driven here. */
+  function fadeSheets(from, to, ms, done) {
+    markHomeSlide();
+    var t0 = performance.now();
+    function tick(now) {
+      var u = Math.min(1, (now - t0) / ms);
+      var v = from + (to - from) * u;
+      for (var i = 0; i < sheetEls.length; i++) {
+        sheetEls[i].style.transition = "none";
+        sheetEls[i].style.opacity = String(v);
+      }
+      if (u < 1) requestAnimationFrame(tick);
+      else if (done) done();
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function fadeFrame(from, to, ms) {
+    if (!frame) return;
+    var t0 = performance.now();
+    frame.style.transition = "none";
+    function tick(now) {
+      var u = Math.min(1, (now - t0) / ms);
+      frame.style.opacity = String(from + (to - from) * u);
+      if (u < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
   function reducedEnter() {
     beginLoad();
     enterHash();
     waitWorld("ready").then(function () {
       postWorld("start-dive");
       showWorldFrame(1);
-      markHomeSlide();
-      for (var i = 0; i < sheetEls.length; i++) {
-        sheetEls[i].style.transition = "opacity " + FADE_MS + "ms ease";
-        sheetEls[i].style.opacity = "0";
-      }
-      setTimeout(function () {
+      fadeSheets(1, 0, FADE_MS, function () {
         document.documentElement.classList.add("pb-in-world");
         document.documentElement.classList.remove("pb-valley-active");
         setActive(false);
         mode = "world";
-      }, FADE_MS);
+      });
     });
   }
 
@@ -512,13 +538,7 @@
   function reducedExit() {
     markHomeSlide();
     showWorldFrame(1);
-    for (var i = 0; i < sheetEls.length; i++) {
-      sheetEls[i].style.transition = "opacity " + FADE_MS + "ms ease";
-      sheetEls[i].style.opacity = "1";
-    }
-    frame.style.transition = "opacity " + FADE_MS + "ms ease";
-    frame.style.opacity = "0";
-    setTimeout(function () {
+    fadeSheets(0, 1, FADE_MS, function () {
       document.documentElement.classList.remove("pb-in-world", "pb-valley-active");
       if (frame) frame.classList.remove("is-on");
       clearHomeSlide();
@@ -526,7 +546,8 @@
       worldLanded = false;
       leaveHash();
       mode = "home";
-    }, FADE_MS);
+    });
+    fadeFrame(1, 0, FADE_MS);
   }
 
   function onWheel(e) {
