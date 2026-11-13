@@ -3275,7 +3275,10 @@ void main(){
     float topSide = smoothstep(0.12, 0.72, rel);
     nCol = mix(nCol, creamRim, rim * moonSide * 0.85);
     if (uDive > 0.5) {
-      nCol = mix(nCol, creamRim, (0.24 * topSide + 0.55 * rim * max(moonSide, topSide)));
+      // Faint cream highlight on the top / moon-facing silhouette. Strong
+      // enough to read as a moonlit rim, not a white cartoon outline.
+      float lit = max(moonSide, smoothstep(0.28, 0.88, rel));
+      nCol = mix(nCol, creamRim, rim * lit * 0.82 + topSide * 0.10);
     }
     col = mix(col, nCol, uNight);
     if (uDeck < 0.5 && uShaft < 0.5) {
