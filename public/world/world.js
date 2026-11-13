@@ -1844,7 +1844,7 @@ void main(){
 
 const BUILDING_FRAG = /* glsl */`
 uniform vec3 uWash, uInkUse, uPaper, uNightMul, uSunDir, uMoonDir, uFill, uWinCenter, uWinEdge;
-uniform float uNight, uStorm, uBrick, uTwi, uHardShadow, uMoonStr, uWinOn, uWinLate, uDuskDim, uWaterClip;
+uniform float uNight, uStorm, uBrick, uTwi, uHardShadow, uMoonStr, uWinOn, uWinLate, uDuskDim, uWaterClip, uProcWin;
 varying vec3 vN;
 varying vec3 vWorld;
 ${NOISE_GLSL}
@@ -1910,7 +1910,7 @@ void main(){
   col *= mix(vec3(1.0), vec3(0.60, 0.58, 0.54), uDuskDim * (1.0 - uNight) * 0.70);
   // Real landmark windows use WINDOW_FRAG. Skip the procedural grid on brick
   // walls so the church and Town Hall are not covered in extra panes.
-  if (abs(N.y) < 0.55 && uWinOn > 0.001 && uBrick < 0.5) {
+  if (abs(N.y) < 0.55 && uWinOn > 0.001 && uBrick < 0.5 && uProcWin > 0.5) {
     vec2 hid = floor(vWorld.xz * 0.07);
     float off = hash21(hid);
     float colx = fract(dot(vWorld.xz, vec2(0.62, 0.58)) + off);
@@ -1938,11 +1938,43 @@ void main(){
 }
 `;
 
-const HOUSE_FRAG = /* glsl */`
-uniform vec3 uWash, uInkUse, uPaper, uNightMul, uSunDir, uMoonDir, uWinCenter, uWinEdge;
-uniform float uNight, uStorm, uTwi, uHardShadow, uMoonStr, uWinOn, uWinLate, uDuskDim;
+const HOUSE_VERT = /* glsl */`
 varying vec3 vN;
 varying vec3 vWorld;
+varying vec3 vLocal;
+varying vec2 vOrigin;
+varying float vScaleX, vScaleZ, vWallH;
+void main(){
+  vec3 objectNormal = normal;
+#ifdef USE_INSTANCING
+  vec4 mw = modelMatrix * instanceMatrix * vec4(position, 1.0);
+  vN = normalize(mat3(modelMatrix * instanceMatrix) * objectNormal);
+  vOrigin = (modelMatrix * instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xz;
+  vScaleX = length(vec3(instanceMatrix[0][0], instanceMatrix[0][1], instanceMatrix[0][2]));
+  vWallH = length(vec3(instanceMatrix[1][0], instanceMatrix[1][1], instanceMatrix[1][2]));
+  vScaleZ = length(vec3(instanceMatrix[2][0], instanceMatrix[2][1], instanceMatrix[2][2]));
+#else
+  vec4 mw = modelMatrix * vec4(position, 1.0);
+  vN = normalize(normalMatrix * objectNormal);
+  vOrigin = (modelMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xz;
+  vScaleX = 1.0;
+  vScaleZ = 1.0;
+  vWallH = 1.0;
+#endif
+  vLocal = position;
+  vWorld = mw.xyz;
+  gl_Position = projectionMatrix * viewMatrix * mw;
+}
+`;
+
+const HOUSE_FRAG = /* glsl */`
+uniform vec3 uWash, uInkUse, uPaper, uNightMul, uSunDir, uMoonDir, uWinCenter, uWinEdge;
+uniform float uNight, uStorm, uTwi, uHardShadow, uMoonStr, uWinOn, uWinLate, uDuskDim, uWinMode;
+varying vec3 vN;
+varying vec3 vWorld;
+varying vec3 vLocal;
+varying vec2 vOrigin;
+varying float vScaleX, vScaleZ, vWallH;
 ${NOISE_GLSL}
 void main(){
   vec3 N = normalize(vN);
@@ -1990,24 +2022,65 @@ void main(){
   }
   col *= 0.97 + 0.05 * noise21(vWorld.xz * 2.4);
   col *= mix(vec3(1.0), vec3(0.60, 0.58, 0.54), uDuskDim * (1.0 - uNight) * 0.70);
-  if (abs(N.y) < 0.55 && uWinOn > 0.001) {
-    vec2 hid = floor(vWorld.xz * 0.07);
-    float off = hash21(hid);
-    float colx = fract(dot(vWorld.xz, vec2(0.62, 0.58)) + off);
-    float rowy = fract(vWorld.y * 0.45 + off * 0.25);
-    float pane = step(0.16, colx) * step(colx, 0.50) * step(0.26, rowy) * step(rowy, 0.74);
-    float id = hash21(hid + floor(vec2(colx * 6.0, rowy * 5.0)));
-    float stay = step(0.26, id);
-    float lateOff = step(0.86, id) * uWinLate;
-    float turn = smoothstep(id * 0.85, id * 0.85 + 0.18, uWinOn);
-    float lit = pane * stay * (1.0 - lateOff) * turn;
-    vec2 pc = vec2((colx - 0.16) / 0.34, (rowy - 0.26) / 0.48);
-    float d = length((pc - 0.5) * 2.0);
-    vec3 glow = mix(uWinCenter, uWinEdge, smoothstep(0.12, 0.90, d));
-    col = mix(col, glow, lit);
-    col += glow * lit * 0.20;
-    float spill = pane * turn * stay * (1.0 - lateOff) * smoothstep(0.74, 0.55, rowy) * 0.40;
-    col = mix(col, uWinEdge * 0.55, spill * 0.50);
+  if (abs(N.y) < 0.55 && uWinMode > 0.5) {
+    float seed = hash21(vOrigin * 0.017);
+    float wallId = -1.0;
+    vec2 uv = vec2(0.0);
+    float faceW = vScaleX;
+    if (vLocal.z > 0.49 && abs(vLocal.x) <= 0.51) { wallId = 0.0; uv = vec2(vLocal.x + 0.5, vLocal.y); faceW = vScaleX; }
+    else if (vLocal.z < -0.49 && abs(vLocal.x) <= 0.51) { wallId = 1.0; uv = vec2(vLocal.x + 0.5, vLocal.y); faceW = vScaleX; }
+    else if (vLocal.x > 0.49 && abs(vLocal.z) <= 0.51) { wallId = 2.0; uv = vec2(vLocal.z + 0.5, vLocal.y); faceW = vScaleZ; }
+    else if (vLocal.x < -0.49 && abs(vLocal.z) <= 0.51) { wallId = 3.0; uv = vec2(vLocal.z + 0.5, vLocal.y); faceW = vScaleZ; }
+    if (wallId >= 0.0) {
+      float pane = 0.0, frame = 0.0, lit = 0.0;
+      if (uWinMode < 1.5) {
+        float nWin = 2.0 + floor(fract(seed * 7.13) * 3.0);
+        float w0 = floor(fract(seed * 3.17) * 4.0);
+        float slot = mod(wallId - w0 + 4.0, 4.0);
+        float hasWin = step(slot, nWin - 0.5);
+        float houseDark = step(0.333, fract(seed * 13.7));
+        float litN = (1.0 - houseDark) * (1.0 + step(0.50, fract(seed * 19.3)));
+        float xMid = 0.50 + 0.12 * (fract(seed * 5.31 + wallId * 0.19) - 0.5);
+        float xHalf = 0.55 / max(faceW, 1.0);
+        float yMid = 1.65 / max(vWallH, 1.0);
+        float yHalf = 0.60 / max(vWallH, 1.0);
+        vec2 d = abs(uv - vec2(xMid, yMid));
+        float outer = hasWin * step(d.x, xHalf) * step(d.y, yHalf);
+        float inner = hasWin * step(d.x, max(xHalf - 0.015, 0.01)) * step(d.y, max(yHalf - 0.015, 0.01));
+        pane = inner;
+        frame = max(frame, outer - inner);
+        lit = pane * step(slot, litN - 0.5) * uWinOn;
+      } else {
+        float floors = vWallH >= 8.7 ? 3.0 : 2.0;
+        float nAcross = max(2.0, min(4.0, floor(faceW / 4.4 + 0.5)));
+        float xHalf = 0.55 / max(faceW, 1.0);
+        float yHalf = 0.58 / max(vWallH, 1.0);
+        float cell = 1.0 / nAcross;
+        float ix = floor(uv.x / cell);
+        float xMid = (ix + 0.5) * cell;
+        float inRow = step(0.06, uv.x) * step(uv.x, 0.94);
+        for (int f = 0; f < 3; f++) {
+          if (float(f) < floors) {
+            float yMid = (1.50 + float(f) * 3.20) / max(vWallH, 1.0);
+            vec2 d = abs(uv - vec2(xMid, yMid));
+            float outer = inRow * step(d.x, xHalf) * step(d.y, yHalf);
+            float inner = inRow * step(d.x, max(xHalf - 0.012, 0.01)) * step(d.y, max(yHalf - 0.012, 0.01));
+            pane = max(pane, inner);
+            frame = max(frame, outer - inner);
+            float id = hash21(vOrigin + vec2(ix + 1.7, float(f) * 3.1 + wallId));
+            lit = max(lit, inner * step(0.62, id) * uWinOn);
+          }
+        }
+      }
+      if (pane > 0.5 || frame > 0.5) {
+        vec3 dark = mix(vec3(0.11, 0.10, 0.09), vec3(0.05, 0.045, 0.04), uNight);
+        vec3 glow = mix(uWinCenter, uWinEdge, 0.42);
+        vec3 paneCol = mix(dark, glow, lit);
+        paneCol += glow * lit * 0.18;
+        col = mix(col, paneCol, pane);
+        col = mix(col, uInkUse, frame * mix(0.70, 0.22, uNight));
+      }
+    }
   }
   if (uStorm > 0.01) {
     float lumaB = dot(col, vec3(0.30, 0.59, 0.11));
@@ -2110,7 +2183,7 @@ void main(){
 
 const WINDOW_FRAG = /* glsl */`
 uniform vec3 uGlow, uInkUse, uWinCenter, uWinEdge;
-uniform float uNight, uWinOn, uWinLate, uRich;
+uniform float uNight, uWinOn, uWinLate, uRich, uForce;
 varying vec3 vN;
 varying vec3 vWorld;
 float hash21w(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -2124,6 +2197,8 @@ void main(){
   float lateOff = step(0.86, id) * uWinLate;
   float turn = smoothstep(id * 0.85, id * 0.85 + 0.18, uWinOn);
   float lit = stay * (1.0 - lateOff) * turn;
+  if (uForce > 0.5) lit = turn;
+  if (uForce < -0.5) lit = 0.0;
   vec2 pane = fract(vec2(vWorld.x * 1.15 + vWorld.z * 0.35, vWorld.y * 1.35));
   float d = length((pane - 0.5) * 2.0);
   vec3 glow = mix(uWinCenter, uWinEdge, smoothstep(0.12, 0.88, d));
@@ -2751,8 +2826,8 @@ function placeStars() {
   }
   constLines.geometry.setAttribute("position", new THREE.Float32BufferAttribute(linePos, 3));
 
-  // IM Fell italic names at constellation centers, only when well above the horizon.
-  if (constNameGroup) {
+  // Constellation names stay off: the landmark toggle is the only on-screen text.
+  if (false && constNameGroup) {
     if (!constNameGroup.userData.built && SKY_CAT && SKY_CAT.c) {
       SKY_CAT.c.forEach(function (C) {
         const sp = makeNameSprite(C.n, true);
@@ -5703,7 +5778,8 @@ function makeWashMat(rgb, fill, brick, unique) {
       uDuskDim: { value: 0 },
       uWinCenter: { value: colU(WIN_CENTER) },
       uWinEdge: { value: colU(WIN_EDGE) },
-      uWaterClip: { value: -1e10 }
+      uWaterClip: { value: -1e10 },
+      uProcWin: { value: 1 }
     },
     vertexShader: BUILDING_VERT,
     fragmentShader: BUILDING_FRAG
@@ -5713,9 +5789,9 @@ function makeWashMat(rgb, fill, brick, unique) {
   return mat;
 }
 
-function makeWindowMat(rich) {
+function makeWindowMat(rich, unique) {
   const key = rich ? "rich" : "std";
-  if (windowMatCache[key]) return windowMatCache[key];
+  if (!unique && windowMatCache[key]) return windowMatCache[key];
   const mat = new THREE.ShaderMaterial({
     uniforms: {
       uGlow: { value: colU(WIN_CENTER) },
@@ -5724,6 +5800,7 @@ function makeWindowMat(rich) {
       uWinOn: { value: 0 },
       uWinLate: { value: 0 },
       uRich: { value: rich ? 1 : 0 },
+      uForce: { value: 0 },
       uWinCenter: { value: colU(WIN_CENTER) },
       uWinEdge: { value: colU(WIN_EDGE) }
     },
@@ -5731,7 +5808,7 @@ function makeWindowMat(rich) {
     fragmentShader: WINDOW_FRAG
   });
   windowMats.push(mat);
-  windowMatCache[key] = mat;
+  if (!unique) windowMatCache[key] = mat;
   return mat;
 }
 
@@ -5776,9 +5853,9 @@ function placeholderFarmhouse() {
   roof.rotateY(Math.PI / 4);
   addWashMesh(g, roof, hexRgb("#6A5344"), 0, 6.8, 0);
   addWashMesh(g, new THREE.BoxGeometry(3.2, 4.2, 3.2), hexRgb("#E8E0D0"), 5.4, 2.1, 0);
-  addWindow(g, 1.3, 1.5, 0.25, -2.0, 2.8, 3.55, "window_l");
-  addWindow(g, 1.3, 1.5, 0.25, 1.6, 2.8, 3.55, "window_r");
-  addWindow(g, 1.0, 1.3, 0.25, 5.4, 2.4, 1.7, "window_s");
+  addWindow(g, 1.0, 1.15, 0.25, -2.0, 2.4, 3.55, "window_01");
+  addWindow(g, 1.0, 1.15, 0.25, -4.6, 2.4, 0, "window_10");
+  trimFarmWindows(g, "farmhouse");
   return g;
 }
 
@@ -5790,8 +5867,6 @@ function placeholderBarn() {
   const cap = new THREE.ConeGeometry(7.2, 2.6, 4);
   cap.rotateY(Math.PI / 4);
   addWashMesh(g, cap, hexRgb("#3A2A22"), 0, 9.2, 0);
-  addWindow(g, 1.1, 1.4, 0.25, -3.2, 4.2, 4.05, "window_loft_l");
-  addWindow(g, 1.1, 1.4, 0.25, 3.2, 4.2, 4.05, "window_loft_r");
   return g;
 }
 
@@ -5956,7 +6031,10 @@ function styleLoadedModel(root, kind) {
       const isRoof = (mn.indexOf("roof") >= 0 || n.indexOf("roof") >= 0 || mn === "wheel" || mn === "metal" || mn === "door") && !isSpire;
       const fill = (kind === "mill" && !isRoof) ? [0.10, 0.08, 0.05] : ((kind === "townhall" && !isRoof && !isSpire) ? [0.10, 0.05, 0.04] : null);
       const brick = (kind === "church" || (kind === "townhall" && (mn === "wall" || n === "wall" || n.indexOf("corner") === 0))) && !isRoof && !isWin && !isSpire;
-      return makeWashMat(rgb, fill, brick);
+      const farm = (kind === "farmhouse" || kind === "barn" || kind === "silo");
+      const mat = makeWashMat(rgb, fill, brick, farm);
+      if (farm && mat.uniforms.uProcWin) mat.uniforms.uProcWin.value = 0;
+      return mat;
     });
     obj.material = styled.length === 1 ? styled[0] : styled;
   });
@@ -5976,7 +6054,65 @@ function styleLoadedModel(root, kind) {
       if (dy < 0.55 && dx * dz > 40) obj.visible = false;
     });
   }
+  if (kind === "farmhouse" || kind === "barn" || kind === "silo") {
+    trimFarmWindows(root, kind);
+  }
   return root;
+}
+
+function isFarmWindowNode(obj) {
+  const n = (obj.name || "").toLowerCase();
+  return n.indexOf("window") >= 0 || n.indexOf("cupola_open") >= 0;
+}
+
+function detachObject(obj) {
+  if (obj.parent) obj.parent.remove(obj);
+}
+
+function trimFarmWindows(root, kind) {
+  if (kind === "barn" || kind === "silo") {
+    const doomed = [];
+    root.traverse(function (obj) { if (isFarmWindowNode(obj)) doomed.push(obj); });
+    for (let i = 0; i < doomed.length; i++) detachObject(doomed[i]);
+    return;
+  }
+  if (kind !== "farmhouse") return;
+  const wins = [];
+  root.traverse(function (obj) { if (isFarmWindowNode(obj)) wins.push(obj); });
+  if (!wins.length) return;
+  const prefer = { window_01: 0, window_10: 1 };
+  const keep = [null, null];
+  for (let i = 0; i < wins.length; i++) {
+    const n = (wins[i].name || "").toLowerCase();
+    if (prefer[n] != null && !keep[prefer[n]]) keep[prefer[n]] = wins[i];
+  }
+  if (!keep[0] || !keep[1]) {
+    const scored = wins.slice().sort(function (a, b) {
+      return (a.position.y || 0) - (b.position.y || 0);
+    });
+    for (let i = 0; i < scored.length && (!keep[0] || !keep[1]); i++) {
+      if (keep.indexOf(scored[i]) >= 0) continue;
+      let skip = false, p = scored[i].parent;
+      while (p) { if (keep.indexOf(p) >= 0) { skip = true; break; } p = p.parent; }
+      if (skip) continue;
+      if (!keep[0]) keep[0] = scored[i];
+      else if (!keep[1]) keep[1] = scored[i];
+    }
+  }
+  for (let i = 0; i < wins.length; i++) {
+    if (keep.indexOf(wins[i]) < 0) detachObject(wins[i]);
+  }
+  for (let i = 0; i < keep.length; i++) {
+    if (!keep[i]) continue;
+    keep[i].visible = true;
+    keep[i].traverse(function (obj) {
+      if (!obj.isMesh) return;
+      obj.visible = true;
+      const mat = makeWindowMat(false, true);
+      mat.uniforms.uForce.value = i === 0 ? 1 : -1;
+      obj.material = mat;
+    });
+  }
 }
 
 const MODEL_FILES = {
@@ -6902,8 +7038,9 @@ function paintTownYards() {
   LAND.osmPlazaCells = nPlaza;
 }
 
-function makeHouseWashMat(rgb) {
-  const key = "h:" + rgb[0] + "," + rgb[1] + "," + rgb[2];
+function makeHouseWashMat(rgb, winMode) {
+  const mode = winMode || 0;
+  const key = "h:" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ":w" + mode;
   if (washMatCache[key]) return washMatCache[key];
   const mat = new THREE.ShaderMaterial({
     uniforms: {
@@ -6921,10 +7058,11 @@ function makeHouseWashMat(rgb) {
       uWinOn: { value: 0 },
       uWinLate: { value: 0 },
       uDuskDim: { value: 0 },
+      uWinMode: { value: mode },
       uWinCenter: { value: colU(WIN_CENTER) },
       uWinEdge: { value: colU(WIN_EDGE) }
     },
-    vertexShader: BUILDING_VERT,
+    vertexShader: HOUSE_VERT,
     fragmentShader: HOUSE_FRAG
   });
   washMats.push(mat);
@@ -7496,13 +7634,13 @@ function buildOsmTowns() {
     for (let k = 0; k < keys.length; k++) {
       const recs = houseBuckets[keys[k]];
       const proto = recs[0].proto;
-      const wallMat = makeHouseWashMat(recs[0].wall);
-      const roofMat = makeHouseWashMat(recs[0].roof);
+      const wallMat = makeHouseWashMat(recs[0].wall, 1);
+      const roofMat = makeHouseWashMat(recs[0].roof, 0);
       let bodyGeo = bodyRect, roofGeo = roofRect;
       if (proto === "L") { bodyGeo = bodyL; roofGeo = roofL; }
       addInstancedPair(group, bodyGeo, roofGeo, wallMat, roofMat, recs, placeHouse, "osm-house-" + proto);
       if (proto === "porch") {
-        const porchMesh = new THREE.InstancedMesh(porchGeo, wallMat, recs.length);
+        const porchMesh = new THREE.InstancedMesh(porchGeo, makeHouseWashMat(recs[0].wall, 0), recs.length);
         for (let i = 0; i < recs.length; i++) {
           const rec = recs[i];
           const y0 = groundYAtFootprint(rec.w.x, rec.w.z, rec.bw, rec.bd, rec.yaw);
@@ -7519,7 +7657,7 @@ function buildOsmTowns() {
         group.add(porchMesh);
       }
       if (proto === "garage") {
-        const gb = new THREE.InstancedMesh(garageBody, wallMat, recs.length);
+        const gb = new THREE.InstancedMesh(garageBody, makeHouseWashMat(recs[0].wall, 0), recs.length);
         const gr = new THREE.InstancedMesh(garageRoof, roofMat, recs.length);
         for (let i = 0; i < recs.length; i++) {
           const rec = recs[i];
@@ -7549,8 +7687,8 @@ function buildOsmTowns() {
     const dkeys = Object.keys(downBuckets);
     for (let k = 0; k < dkeys.length; k++) {
       const recs = downBuckets[dkeys[k]];
-      const wallMat = makeHouseWashMat(recs[0].wall);
-      const roofMat = makeHouseWashMat(downRoofRgb);
+      const wallMat = makeHouseWashMat(recs[0].wall, 2);
+      const roofMat = makeHouseWashMat(downRoofRgb, 0);
       addInstancedPair(group, downBody, downRoof, wallMat, roofMat, recs, function (dummy, rec, bodyMesh, roofMesh, i) {
         const y0 = groundYAtFootprint(rec.w.x, rec.w.z, rec.bw, rec.bd, rec.yaw);
         dummy.position.set(rec.w.x, y0, rec.w.z);
@@ -7808,6 +7946,7 @@ async function swapInGltfModels() {
       nu.position.copy(ch.position);
       nu.rotation.copy(ch.rotation);
       nu.scale.set(1, 1, 1);
+      if (kind === "farmhouse" || kind === "barn" || kind === "silo") trimFarmWindows(nu, kind);
       landmarkGroup.add(nu);
       landmarkGroup.remove(ch);
     });
@@ -7834,9 +7973,21 @@ async function swapInGltfModels() {
     }
   }
   placeFixedLandmarks(loaded);
+  trimAllFarmWindows();
   if (tour.phase !== "flyin") invalidateTourStops();
   skinLandmarks();
   if (glOk && renderer) renderer.render(scene, camera);
+}
+
+function trimAllFarmWindows() {
+  if (!landmarkGroup) return;
+  for (let i = 0; i < landmarkGroup.children.length; i++) {
+    const ch = landmarkGroup.children[i];
+    const kind = ch.name;
+    if (kind === "farmhouse" || kind === "barn" || kind === "silo") {
+      trimFarmWindows(ch, kind);
+    }
+  }
 }
 
 function buildTown() {
@@ -8043,7 +8194,7 @@ function applySkin() {
   if (firePts) firePts.material.opacity = (clock.season === "summer" && night > 0.5) ? 0.85 : 0;
   if (starPts) starPts.visible = night > 0.15;
   if (constLines) constLines.visible = night > 0.25;
-  if (constNameGroup) constNameGroup.visible = night > 0.25;
+  if (constNameGroup) constNameGroup.visible = false;
   if (moonMesh) moonMesh.visible = clock.moonAlt > -4;
   if (snowPts) snowPts.visible = wx.kind === "snow";
   if (rainMesh) rainMesh.visible = wx.kind === "rain" || wx.kind === "storm";
@@ -10230,33 +10381,7 @@ function drawWxOverlay(now, dt) {
   const night = clock.night;
   // Fog, rain, and snow are world-space meshes. Do not paint them here;
   // a screen overlay would slide with pan.
-  // Night-sky cartouche, same paper-and-ink plate language as #caption / login-sky.
-  if (night > 0.3) {
-    const x = W * 0.045, y = H * 0.055, w = 216, h = 78;
-    ctx.save();
-    ctx.fillStyle = "rgba(18, 20, 28, 0.48)";
-    ctx.strokeStyle = "rgba(237, 230, 214, 0.55)";
-    ctx.lineWidth = 1.4;
-    ctx.beginPath();
-    ctx.rect(x, y, w, h);
-    ctx.fill();
-    ctx.stroke();
-    ctx.strokeStyle = "rgba(237, 230, 214, 0.28)";
-    ctx.lineWidth = 0.8;
-    ctx.strokeRect(x + 4, y + 4, w - 8, h - 8);
-    ctx.fillStyle = "rgba(237,230,214,0.92)";
-    ctx.textAlign = "left";
-    ctx.textBaseline = "top";
-    ctx.font = 'italic 17px "IM Fell English", Palatino, serif';
-    ctx.fillText("The Night Sky", x + 14, y + 10);
-    ctx.font = 'italic 12px "IM Fell English", Palatino, serif';
-    ctx.fillStyle = "rgba(237,230,214,0.8)";
-    ctx.fillText("over Jasper, Indiana", x + 14, y + 32);
-    ctx.font = '11px "IM Fell English SC", "IM Fell English", Palatino, serif';
-    ctx.letterSpacing = "0.08em";
-    ctx.fillText("38°23′ N    86°56′ W", x + 14, y + 52);
-    ctx.restore();
-  }
+  // No night-sky plate. The lower-right landmark toggle is the only on-screen text.
   // Screen-space drops removed; rain shafts and snow live in world space.
 
   stepLightning(now);
@@ -10582,6 +10707,7 @@ function placeTourFarmstead() {
   const barn = placeholderBarn();
   barn.scale.setScalar(1.25);
   placeOnGround(barn, bx, bz, yaw + 0.04);
+  trimFarmWindows(barn, "barn");
   tag(barn);
   const sx = bx + Math.sin(yaw - 0.95) * 16;
   const sz = bz + Math.cos(yaw - 0.95) * 16;
