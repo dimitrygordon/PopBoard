@@ -411,33 +411,42 @@
 
 
   /* App-wide CSS sets transition-duration to 0.01ms !important under
-     prefers-reduced-motion, so the required 400ms crossfade is driven here. */
+     prefers-reduced-motion, so the required 400ms crossfade is driven here
+     on a wall clock (rAF plus a 16ms interval, same idea as the embed dive). */
+  function fadeClock(ms, step, done) {
+    var t0 = performance.now();
+    var finished = false;
+    function tick(now) {
+      if (finished) return;
+      var u = Math.min(1, (now - t0) / ms);
+      step(u);
+      if (u >= 1) {
+        finished = true;
+        clearInterval(id);
+        if (done) done();
+      }
+    }
+    var id = setInterval(function () { tick(performance.now()); }, 16);
+    requestAnimationFrame(tick);
+  }
+
   function fadeSheets(from, to, ms, done) {
     markHomeSlide();
-    var t0 = performance.now();
-    function tick(now) {
-      var u = Math.min(1, (now - t0) / ms);
+    fadeClock(ms, function (u) {
       var v = from + (to - from) * u;
       for (var i = 0; i < sheetEls.length; i++) {
         sheetEls[i].style.transition = "none";
         sheetEls[i].style.opacity = String(v);
       }
-      if (u < 1) requestAnimationFrame(tick);
-      else if (done) done();
-    }
-    requestAnimationFrame(tick);
+    }, done);
   }
 
-  function fadeFrame(from, to, ms) {
-    if (!frame) return;
-    var t0 = performance.now();
+  function fadeFrame(from, to, ms, done) {
+    if (!frame) { if (done) done(); return; }
     frame.style.transition = "none";
-    function tick(now) {
-      var u = Math.min(1, (now - t0) / ms);
+    fadeClock(ms, function (u) {
       frame.style.opacity = String(from + (to - from) * u);
-      if (u < 1) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
+    }, done);
   }
 
   function reducedEnter() {
@@ -445,7 +454,10 @@
     enterHash();
     waitWorld("ready").then(function () {
       postWorld("start-dive");
-      showWorldFrame(1);
+      /* Start the iframe transparent and fade it in over the home. Setting
+         it to 1 immediately would cover the card (iframe z-index is 4). */
+      showWorldFrame(0);
+      fadeFrame(0, 1, FADE_MS);
       fadeSheets(1, 0, FADE_MS, function () {
         document.documentElement.classList.add("pb-in-world");
         document.documentElement.classList.remove("pb-valley-active");
@@ -630,7 +642,10 @@
       worldReady = true;
       if (mode === "dive" && !worldLanded) postWorld("start-dive");
     } else if (d.type === "landed") {
-      onLanded();
+      worldLanded = true;
+      /* During the reduced-motion fade, do not raise the iframe over the
+         fading home; reducedEnter finishes that sequence itself. */
+      if (!(reduce && mode === "dive")) onLanded();
     } else if (d.type === "exit-gesture") {
       if (mode === "world") startExit();
     } else if (d.type === "exit-done") {
