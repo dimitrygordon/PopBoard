@@ -12053,23 +12053,27 @@ function embedDiveSpriteFade(it, x, y, z, cx, cy, cz) {
   const w = Math.max(it.sx || 1, it.sy || it.sx || 1);
   const h = it.sy || w * 0.45;
   const dist = Math.hypot(x - cx, y - cy, z - cz);
-  const u = dist / w;
-  // Soften as a mass reaches ~40–50% of the frame; vanish if it would cross the near plane.
+  const aspect = (camera && camera.aspect) || 1;
+  const vfov = ((camera && camera.fov) || 50) * Math.PI / 180;
+  const worldW = 2 * dist * Math.tan(vfov / 2) * aspect;
+  const widthFrac = w / Math.max(1, worldW);
+  // Soften as a mass reaches ~40–50% of the frame; vanish if it would fill or clip.
+  // Uses on-screen width so phone (narrow FOV, greater distance) matches desktop.
   let fade;
-  if (u >= 1.85) fade = 1;
-  else if (u <= 0.55) fade = 0;
-  else if (u >= 1.15) {
-    const t = (u - 1.15) / 0.70;
-    const s = t * t * (3 - 2 * t);
+  if (widthFrac <= 0.34) fade = 1;
+  else if (widthFrac >= 0.95) fade = 0;
+  else if (widthFrac <= 0.55) {
+    const tt = (0.55 - widthFrac) / 0.21;
+    const s = tt * tt * (3 - 2 * tt);
     fade = 0.70 + 0.30 * s;
   } else {
-    const t = (u - 0.55) / 0.60;
-    fade = 0.70 * (t * t * (3 - 2 * t));
+    const tt = (0.95 - widthFrac) / 0.40;
+    fade = 0.70 * (tt * tt * (3 - 2 * tt));
   }
   const nearest = Math.max(0, dist - 0.5 * w);
   if (nearest < 90) {
-    const t = nearest / 90;
-    fade *= t * t * (3 - 2 * t);
+    const tt = nearest / 90;
+    fade *= tt * tt * (3 - 2 * tt);
   }
   // Dissolve once the camera has dropped under a puff so its silhouette cannot clip the top.
   const horiz = Math.hypot(x - cx, z - cz);
@@ -12082,16 +12086,29 @@ function embedDiveSpriteFade(it, x, y, z, cx, cy, cz) {
   if (camera && fade > 0.02) {
     const v = new THREE.Vector3(x, y, z).project(camera);
     if (isFinite(v.x) && isFinite(v.y) && v.z < 1) {
-      const aspect = camera.aspect || 1;
-      const vfov = (camera.fov || 50) * Math.PI / 180;
       const worldH = 2 * dist * Math.tan(vfov / 2);
-      const worldW = worldH * aspect;
-      const ndcHalfW = w / Math.max(1, worldW);
+      const ndcHalfW = w / Math.max(1, worldH * aspect);
       const ndcHalfH = h / Math.max(1, worldH);
       const ox = Math.max(0, Math.abs(v.x) + ndcHalfW - 1.06);
       const oy = Math.max(0, Math.abs(v.y) + ndcHalfH - 1.06);
       const overflow = Math.max(ox, oy);
       if (overflow > 0) fade *= 1 - clamp(overflow / 0.70, 0, 1);
+    }
+  }
+  // Staged path clouds stay in a tall phone frame all the way to the landing
+  // pose (they sit much farther out). Fade them only in the last 0.27s so the
+  // locked JHS landing is not covered. Unstaged sky puffs are left alone.
+  if (diveCloudBackup && tour && fade > 0.02) {
+    const raw = (tour.t || 0) / (tour.duration || 1.8);
+    if (raw > 0.85) {
+      let staged = false;
+      for (let i = 0; i < diveCloudBackup.length; i++) {
+        if (diveCloudBackup[i].it === it) { staged = true; break; }
+      }
+      if (staged) {
+        const tt = clamp((raw - 0.85) / 0.15, 0, 1);
+        fade *= 1 - tt * tt * (3 - 2 * tt);
+      }
     }
   }
   return fade;
@@ -12134,11 +12151,13 @@ function updateDiveVeil() {
     const dist = Math.hypot(x - cx, y - cy, z - cz);
     const w = Math.max(it.sx || 1, it.sy || it.sx || 1);
     const h = it.sy || w * 0.45;
-    // Already well under this puff: don't leave a cream wash on the landing pose.
-    if (cy < y - 0.75 * h && Math.hypot(x - cx, z - cz) < w * 2.4) continue;
-    const u = dist / w;
-    // Soft full-frame veil as the camera skims a layer (u ~ 1.1–1.3), not a hard hit.
-    const veil = Math.exp(-Math.pow((u - 1.18) / 0.50, 2));
+    // Only veil when the camera is still at this layer's height — never on the landing pose.
+    if (Math.abs(y - cy) > Math.max(h, 280)) continue;
+    const aspect = (camera && camera.aspect) || 1;
+    const vfov = ((camera && camera.fov) || 50) * Math.PI / 180;
+    const worldW = 2 * dist * Math.tan(vfov / 2) * aspect;
+    const widthFrac = w / Math.max(1, worldW);
+    const veil = Math.exp(-Math.pow((widthFrac - 0.48) / 0.16, 2));
     if (veil > peak) peak = veil;
   }
   el.style.opacity = String(Math.max(0, Math.min(0.28, peak * 0.28)));
@@ -12270,7 +12289,17 @@ function stageDiveClouds(start, mid, low, land) {
   }
   // Place around the path, ahead of the camera at a modest off-axis angle so
   // each mass sits mid-left or mid-right (not 90° out of frame). Distance is
-  // ~1.3× sprite width: about 40–50% of the frame when nearest. No rescaling.
+  // ~1.3× sprite width on a 16:10 desktop frame: about 40–50% of the frame
+  // when nearest. On a tall phone the horizontal FOV is much narrower, so
+  // scale azimuth and distance to keep the same on-screen size and placement.
+  // No rescaling of the sprites themselves.
+  const vfov = ((camera && camera.fov) || 50) * Math.PI / 180;
+  const aspect = (camera && camera.aspect) || 1;
+  const hfov = 2 * Math.atan(Math.tan(vfov / 2) * aspect);
+  const worldW = 2 * Math.tan(hfov / 2);
+  const deskW = 2 * Math.tan(Math.atan(Math.tan(vfov / 2) * 1.6));
+  const azMul = Math.min(1, hfov / (2 * Math.atan(Math.tan(vfov / 2) * 1.6)));
+  const distMul = deskW / Math.max(0.2, worldW);
   const slots = [
     { cam: start, pool: "cirrus", az: -26, distMul: 0.38, minDist: 1200, up: -40 },
     { cam: start, pool: "cirrus", az: 28, distMul: 0.40, minDist: 1300, up: 30 },
@@ -12297,8 +12326,8 @@ function stageDiveClouds(start, mid, low, land) {
     used.push(it);
     diveCloudBackup.push({ it: it, homeX: it.homeX, homeY: it.homeY, homeZ: it.homeZ, sx: it.sx, sy: it.sy });
     const heading = sl.cam.heading;
-    const dist = Math.max(sl.minDist, it.sx * sl.distMul);
-    const az = sl.az * Math.PI / 180;
+    const dist = Math.max(sl.minDist * distMul, it.sx * sl.distMul * distMul);
+    const az = sl.az * azMul * Math.PI / 180;
     const along = Math.cos(az) * dist;
     const side = Math.sin(az) * dist;
     it.homeX = sl.cam.x + Math.sin(heading) * along + Math.cos(heading) * side;

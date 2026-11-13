@@ -295,7 +295,7 @@
     ["sky", "wx", "at", "season"].forEach(function (k) {
       if (qs.get(k)) u.searchParams.set(k, qs.get(k));
     });
-    u.searchParams.set("v", "20261113m");
+    u.searchParams.set("v", "20261113n");
     return u.pathname + u.search;
   }
 
