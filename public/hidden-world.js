@@ -92,9 +92,10 @@
     btn.id = "pb-valley-hint";
     btn.textContent = "the valley is below";
     btn.setAttribute("aria-label", "Open the valley below the page");
-    var inkEl = document.createElement("canvas");
+    var inkEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     inkEl.id = "pb-valley-ink";
     inkEl.setAttribute("aria-hidden", "true");
+    inkEl.setAttribute("preserveAspectRatio", "none");
     var grainEl = document.createElement("div");
     grainEl.id = "pb-valley-grain";
     grainEl.setAttribute("aria-hidden", "true");
@@ -164,103 +165,173 @@
   }
 
   function seedBlooms() {
-    blooms = [];
-    /* 5 separate washes, staggered so they stay distinct blots, not one fog bank. */
-    var xs = [0.10, 0.30, 0.50, 0.70, 0.90];
-    var sizes = [0.90, 0.72, 0.84, 0.70, 0.88];
-    var i, k, lobes;
-    for (i = 0; i < xs.length; i++) {
-      lobes = [];
-      for (k = 0; k < 6; k++) {
-        var ang = (i * 1.37 + k * 2.13);
-        var radJ = 0.18 + 0.22 * ((k * 3 + i) % 5) / 4;
-        lobes.push({
-          ox: Math.cos(ang) * radJ * (k === 0 ? 0.15 : 1),
-          oy: Math.sin(ang * 1.15 + i) * radJ * 0.85 * (k === 0 ? 0.2 : 1),
-          s: (k === 0 ? 0.92 : (0.38 + 0.40 * (1 - k / 6))) + 0.06 * Math.sin(i * 2.4 + k)
-        });
-      }
-      blooms.push({
-        x: xs[i],
-        size: sizes[i],
-        phase: i * 1.15,
-        graphite: i % 2 === 0,
-        lobes: lobes
-      });
-    }
+    /* 4 uneven watercolor washes — irregular placement and size, not a row. */
+    blooms = [
+      { x: 0.16, lift: 0.42, rx: 0.22, ry: 0.38, rot: -18, graphite: true,  seed: 11, verts: 11 },
+      { x: 0.44, lift: 0.22, rx: 0.13, ry: 0.28, rot:  22, graphite: false, seed: 27, verts: 9 },
+      { x: 0.61, lift: 0.55, rx: 0.20, ry: 0.36, rot:  -8, graphite: true,  seed: 41, verts: 12 },
+      { x: 0.86, lift: 0.30, rx: 0.14, ry: 0.32, rot:  16, graphite: false, seed: 59, verts: 10 }
+    ];
   }
 
-  function progress() {
-    return Math.max(0, Math.min(1, pull / Math.max(1, thresholdPx())));
+  function hash11(n) {
+    var x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+    return x - Math.floor(x);
+  }
+
+  function washPath(cx, cy, rx, ry, rot, seed, n) {
+    var i, pts = [];
+    var cr = Math.cos(rot * Math.PI / 180);
+    var sr = Math.sin(rot * Math.PI / 180);
+    for (i = 0; i < n; i++) {
+      var t = (i / n) * Math.PI * 2;
+      var jx = 0.68 + 0.42 * hash11(seed + i * 1.7);
+      var jy = 0.62 + 0.48 * hash11(seed + i * 2.9 + 4.2);
+      var wob = (hash11(seed + i * 5.3) - 0.5) * 0.45;
+      var ang = t + wob;
+      var x = Math.cos(ang) * rx * jx;
+      var y = Math.sin(ang) * ry * jy;
+      pts.push([cx + x * cr - y * sr, cy + x * sr + y * cr]);
+    }
+    var d = "M" + pts[0][0].toFixed(1) + "," + pts[0][1].toFixed(1);
+    for (i = 0; i < n; i++) {
+      var p0 = pts[(i - 1 + n) % n];
+      var p1 = pts[i];
+      var p2 = pts[(i + 1) % n];
+      var p3 = pts[(i + 2) % n];
+      var c1x = p1[0] + (p2[0] - p0[0]) / 6;
+      var c1y = p1[1] + (p2[1] - p0[1]) / 6;
+      var c2x = p2[0] - (p3[0] - p1[0]) / 6;
+      var c2y = p2[1] - (p3[1] - p1[1]) / 6;
+      d += "C" + c1x.toFixed(1) + "," + c1y.toFixed(1) + " " +
+           c2x.toFixed(1) + "," + c2y.toFixed(1) + " " +
+           p2[0].toFixed(1) + "," + p2[1].toFixed(1);
+    }
+    return d + "Z";
+  }
+
+  function softSky(rgb) {
+    /* World's soft sky blue mixed toward paper — not a saturated disc. */
+    var paper = [237, 230, 214];
+    return [
+      Math.round(rgb[0] * 0.42 + paper[0] * 0.58),
+      Math.round(rgb[1] * 0.42 + paper[1] * 0.58),
+      Math.round(rgb[2] * 0.42 + paper[2] * 0.58)
+    ];
+  }
+
+  function clearInk() {
+    if (!ink) return;
+    while (ink.firstChild) ink.removeChild(ink.firstChild);
   }
 
   function paintInk(fillFrac) {
     if (!ink) return;
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
     var w = window.innerWidth, h = window.innerHeight;
-    if (ink.width !== Math.round(w * dpr) || ink.height !== Math.round(h * dpr)) {
-      ink.width = Math.round(w * dpr);
-      ink.height = Math.round(h * dpr);
-      ink.style.width = w + "px";
-      ink.style.height = h + "px";
-    }
-    var ctx = ink.getContext("2d");
-    if (!ctx) return;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, w, h);
+    ink.setAttribute("viewBox", "0 0 " + w + " " + h);
+    ink.setAttribute("width", String(w));
+    ink.setAttribute("height", String(h));
+    ink.style.width = w + "px";
+    ink.style.height = h + "px";
+    clearInk();
     var p = fillFrac == null ? progress() : fillFrac;
     if (p <= 0.001) return;
-    /* Blooms stay at most 25% of the viewport during the pull; on the dive they fill. */
-    var maxH = (p > 1 ? p : Math.min(1, p)) * (p > 1 ? h : (BLOOM_MAX_FRAC * h));
-    if (p <= 1) maxH = Math.min(BLOOM_MAX_FRAC * h, p * BLOOM_MAX_FRAC * h * 1.05);
-    else maxH = Math.min(h, BLOOM_MAX_FRAC * h + (p - 1) * h);
-    var blue = skyBlue();
-    var night = isNightSky();
-    var paperCol = [237, 230, 214];
-    var nightBlue = [150, 176, 210];
-    var nightGraphite = [200, 194, 180];
-    if (!blooms.length) seedBlooms();
-    /* Each wash is a small cluster of soft lobes so the edge is irregular,
-       but the whole blot stays inside the 25% band. No full-width veil. */
-    for (var i = 0; i < blooms.length; i++) {
-      var b = blooms[i];
-      var cx = b.x * w;
-      var rise = maxH * (0.55 + 0.35 * (0.5 + 0.5 * Math.sin(b.phase + p * 1.4)));
-      var rad = Math.max(28, Math.min(maxH * 0.85, b.size * maxH * 0.95));
-      var cy = h - Math.min(rise, maxH - rad * 0.55);
-      if (cy - rad < h - maxH) cy = h - maxH + rad;
-      var col, a;
-      if (night) {
-        col = b.graphite ? GRAPHITE : nightBlue;
-        a = (b.graphite ? 0.50 : 0.42) * Math.min(1, 0.40 + p);
-      } else {
-        col = b.graphite ? GRAPHITE : blue;
-        a = (b.graphite ? 0.38 : 0.36) * Math.min(1, 0.40 + p);
-      }
-      var lobes = b.lobes || [{ ox: 0, oy: 0, s: 1 }];
-      var k;
-      for (k = 0; k < lobes.length; k++) {
-        var lx = cx + lobes[k].ox * rad;
-        var ly = cy + lobes[k].oy * rad;
-        var lr = Math.max(18, rad * lobes[k].s);
-        var g = ctx.createRadialGradient(lx, ly, 0, lx, ly, lr);
-        g.addColorStop(0, "rgba(" + col[0] + "," + col[1] + "," + col[2] + "," + a + ")");
-        g.addColorStop(0.55, "rgba(" + col[0] + "," + col[1] + "," + col[2] + "," + (a * 0.42) + ")");
-        g.addColorStop(1, "rgba(" + col[0] + "," + col[1] + "," + col[2] + ",0)");
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(lx, ly, lr, 0, Math.PI * 2);
-        ctx.fill();
-      }
+
+    var maxH;
+    if (p <= 1) {
+      maxH = Math.min(BLOOM_MAX_FRAC * h, p * BLOOM_MAX_FRAC * h * 1.05);
+      /* Stay below the pencil line, which sits at `pull` from the bottom. */
+      if (pull > 0) maxH = Math.min(maxH, Math.max(0, pull - 4));
+    } else {
+      maxH = Math.min(h, BLOOM_MAX_FRAC * h + (p - 1) * h);
     }
+    if (maxH < 4) return;
+
+    var blue = softSky(skyBlue());
+    var night = isNightSky();
+    var nightBlue = softSky([150, 176, 210]);
+    if (!blooms.length) seedBlooms();
+
+    var NS = "http://www.w3.org/2000/svg";
+    var defs = document.createElementNS(NS, "defs");
+    var clip = document.createElementNS(NS, "clipPath");
+    clip.setAttribute("id", "pb-wash-clip");
+    var clipRect = document.createElementNS(NS, "rect");
+    clipRect.setAttribute("x", "0");
+    clipRect.setAttribute("y", String(Math.max(0, h - maxH)));
+    clipRect.setAttribute("width", String(w));
+    clipRect.setAttribute("height", String(maxH));
+    clip.appendChild(clipRect);
+    defs.appendChild(clip);
+
+    var root = document.createElementNS(NS, "g");
+    root.setAttribute("clip-path", "url(#pb-wash-clip)");
+
+    var i;
+    for (i = 0; i < blooms.length; i++) {
+      var b = blooms[i];
+      var grow = Math.min(1, 0.35 + p * 0.85);
+      var rx = b.rx * w * grow;
+      var ry = Math.min(b.ry * maxH * 1.15, maxH * 0.48) * (0.75 + 0.25 * grow);
+      var cx = b.x * w;
+      var cy = h - Math.max(ry * 0.85, Math.min(maxH - 4, b.lift * maxH + ry * 0.15));
+      if (cy - ry < h - maxH + 2) cy = h - maxH + ry + 2;
+      if (cy + ry > h - 2) cy = h - 2 - ry;
+
+      var filt = document.createElementNS(NS, "filter");
+      filt.setAttribute("id", "pb-wash-" + i);
+      filt.setAttribute("x", "-45%");
+      filt.setAttribute("y", "-45%");
+      filt.setAttribute("width", "190%");
+      filt.setAttribute("height", "190%");
+      filt.setAttribute("color-interpolation-filters", "sRGB");
+      var turb = document.createElementNS(NS, "feTurbulence");
+      turb.setAttribute("type", "fractalNoise");
+      turb.setAttribute("baseFrequency", (0.018 + 0.01 * (i % 3)).toFixed(3) + " " + (0.026 + 0.008 * ((i + 1) % 3)).toFixed(3));
+      turb.setAttribute("numOctaves", "3");
+      turb.setAttribute("seed", String(b.seed));
+      turb.setAttribute("result", "turb");
+      var disp = document.createElementNS(NS, "feDisplacementMap");
+      disp.setAttribute("in", "SourceGraphic");
+      disp.setAttribute("in2", "turb");
+      disp.setAttribute("scale", String(16 + i * 5));
+      disp.setAttribute("xChannelSelector", "R");
+      disp.setAttribute("yChannelSelector", "G");
+      filt.appendChild(turb);
+      filt.appendChild(disp);
+      defs.appendChild(filt);
+
+      var col = night
+        ? (b.graphite ? GRAPHITE : nightBlue)
+        : (b.graphite ? GRAPHITE : blue);
+      var aFill = (b.graphite ? 0.18 : 0.16) * Math.min(1, 0.45 + p * 0.7);
+      aFill = Math.max(0.10, Math.min(0.25, aFill));
+      var aEdge = Math.max(0.16, Math.min(0.28, aFill * 1.35));
+
+      var d = washPath(cx, cy, rx, ry, b.rot, b.seed, b.verts);
+      var g = document.createElementNS(NS, "g");
+      g.setAttribute("filter", "url(#pb-wash-" + i + ")");
+      var body = document.createElementNS(NS, "path");
+      body.setAttribute("d", d);
+      body.setAttribute("fill", "rgba(" + col[0] + "," + col[1] + "," + col[2] + "," + aFill.toFixed(3) + ")");
+      var pool = document.createElementNS(NS, "path");
+      pool.setAttribute("d", d);
+      pool.setAttribute("fill", "none");
+      pool.setAttribute("stroke", "rgba(" + col[0] + "," + col[1] + "," + col[2] + "," + aEdge.toFixed(3) + ")");
+      pool.setAttribute("stroke-width", String(Math.max(6, Math.min(rx, ry) * 0.14)));
+      pool.setAttribute("stroke-linejoin", "round");
+      g.appendChild(body);
+      g.appendChild(pool);
+      root.appendChild(g);
+    }
+
+    ink.appendChild(defs);
+    ink.appendChild(root);
 
     if (grain) {
       grain.classList.add("is-on");
-      var maskH = Math.max(8, maxH);
-      grain.style.webkitMaskImage = "linear-gradient(to top, #000 0%, #000 " + Math.max(0, (1 - maskH / h) * 100) + "%, transparent 100%)";
-      grain.style.maskImage = grain.style.webkitMaskImage;
-      /* Keep grain only over the bloom band (from the bottom). */
-      grain.style.webkitMaskImage = "linear-gradient(to top, #000 0%, #000 " + (maskH / h * 100) + "%, transparent " + (maskH / h * 140) + "%)";
+      var pct = (maxH / h) * 100;
+      grain.style.webkitMaskImage = "linear-gradient(to top, #000 0%, #000 " + pct + "%, transparent " + (pct + 4) + "%)";
       grain.style.maskImage = grain.style.webkitMaskImage;
     }
   }
@@ -548,8 +619,7 @@
     setActive(false);
     pull = 0;
     if (ink) {
-      var ctx = ink.getContext("2d");
-      if (ctx) ctx.clearRect(0, 0, ink.width, ink.height);
+      clearInk();
       ink.classList.remove("is-on");
     }
     if (grain) grain.classList.remove("is-on");

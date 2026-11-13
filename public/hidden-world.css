@@ -82,6 +82,9 @@ body.la-on #pb-valley-hint,
   pointer-events: none;
   display: none;
 }
+#pb-valley-ink {
+  overflow: hidden;
+}
 #pb-valley-ink.is-on,
 #pb-valley-grain.is-on { display: block; }
 
@@ -169,6 +172,14 @@ html.pb-in-world #la-sky {
      does not leave a hard horizon line. The sheet stays 100vh so the
      pill's containing block does not grow. */
   box-shadow: 0 50vh 0 0 var(--la-sky-bot);
+}
+/* During the pull, the revealed gap under the pencil line is cream paper,
+   not a full-width sky-bot haze. Unchanged once we are in the world. */
+html.pb-valley-active #pb-valley-sheet {
+  background: #EDE6D6;
+}
+html.pb-valley-active #la-sky {
+  box-shadow: 0 50vh 0 0 #EDE6D6;
 }
 @media (max-width: 640px) {
   html.pb-valley-active #pb-valley-sheet,
