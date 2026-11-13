@@ -1,0 +1,252 @@
+@font-face {
+  font-family: Literata;
+  src: url("../fonts/literata.ttf") format("truetype");
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IM Fell English";
+  src: url("../fonts/imfell-english.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IM Fell English SC";
+  src: url("../fonts/imfell-english-sc.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #070B14;
+  color: #EDE6D6;
+  font-family: Literata, "Palatino Linotype", Palatino, "Times New Roman", serif;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: none;
+}
+
+#world, #wx, #fallback, #still {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#wx, #fallback, #still {
+  pointer-events: none;
+}
+
+#fallback {
+  z-index: 2;
+  background: #EDE6D6;
+  color: #2A2118;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+#fallback[hidden] { display: none; }
+
+#fallback p {
+  margin: 0 1.2rem 1.2rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+}
+
+#still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#hud {
+  position: fixed;
+  right: 0.8rem;
+  top: 0.7rem;
+  z-index: 4;
+  font: 11px/1.4 ui-monospace, Menlo, monospace;
+  background: rgba(7, 11, 20, 0.55);
+  color: #EDE6D6;
+  padding: 0.4rem 0.55rem;
+  border-radius: 4px;
+  pointer-events: none;
+  white-space: pre;
+}
+
+#hud[hidden] { display: none; }
+
+#fallbackImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+#still { z-index: 1; }
+
+
+#landmark-btn {
+  position: fixed;
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 5;
+  box-sizing: border-box;
+  min-height: 44px;
+  margin: 0;
+  padding: 0.4rem 0.62rem 0.38rem 0.78rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.48rem;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  font-family: "IM Fell English", Literata, Palatino, serif;
+  font-size: 0.98rem;
+  letter-spacing: 0.015em;
+  line-height: 1.1;
+  color: #2B2A26;
+  background: #F3EBDA;
+  border: 1px solid #2B2A26;
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 2px #F3EBDA, inset 0 0 0 3px #2B2A26;
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#landmark-btn:focus {
+  outline: none;
+}
+
+#landmark-btn:focus-visible {
+  outline: 2px solid #2B2A26;
+  outline-offset: 3px;
+}
+
+#landmark-btn .lm-names {
+  position: relative;
+  display: block;
+  min-width: 0;
+  height: 1.15em;
+  overflow: hidden;
+}
+
+#landmark-btn .lm-name {
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+#landmark-btn .lm-name.is-current {
+  position: relative;
+  opacity: 1;
+}
+
+#landmark-btn .lm-name.is-out {
+  opacity: 0;
+}
+
+#landmark-btn .lm-arrow {
+  width: 22px;
+  height: 15px;
+  flex: 0 0 auto;
+  display: block;
+  color: #2B2A26;
+}
+
+#landmark-btn.is-moving .lm-arrow {
+  color: #C8892E;
+}
+
+body[data-sky="day"] #landmark-btn,
+body[data-sky="dawn"] #landmark-btn {
+  color: #2B2A26;
+  background: #F3EBDA;
+  border-color: #2B2A26;
+  box-shadow: inset 0 0 0 2px #F3EBDA, inset 0 0 0 3px #2B2A26;
+}
+
+body[data-sky="dusk"] #landmark-btn,
+body[data-sky="night"] #landmark-btn {
+  color: #F3EBDA;
+  background: rgba(36, 35, 33, 0.78);
+  border-color: #F3EBDA;
+  box-shadow: inset 0 0 0 2px rgba(36, 35, 33, 0.78), inset 0 0 0 3px #F3EBDA;
+}
+
+body[data-sky="dusk"] #landmark-btn .lm-arrow,
+body[data-sky="night"] #landmark-btn .lm-arrow {
+  color: #F3EBDA;
+}
+
+body[data-sky="dusk"] #landmark-btn.is-moving .lm-arrow,
+body[data-sky="night"] #landmark-btn.is-moving .lm-arrow {
+  color: #C8892E;
+}
+
+body[data-sky="dusk"] #landmark-btn:focus-visible,
+body[data-sky="night"] #landmark-btn:focus-visible {
+  outline-color: #F3EBDA;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #landmark-btn .lm-name {
+    transition: none;
+  }
+}
+
+#landmark-btn[hidden] {
+  display: none;
+}
+
+@media (max-width: 430px) {
+  #landmark-btn {
+    right: calc(10px + env(safe-area-inset-right, 0px));
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    padding: 0.34rem 0.48rem 0.32rem 0.56rem;
+    font-size: 0.78rem;
+    line-height: 1.15;
+    max-width: calc(52vw - 16px);
+    min-height: 44px;
+    align-items: center;
+  }
+  #landmark-btn .lm-names {
+    height: auto;
+    min-height: 1.15em;
+    max-width: 100%;
+  }
+  #landmark-btn .lm-name {
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+}
+
+#tour-fade {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  background: #F3EBDA;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+}
+#tour-fade.is-on {
+  opacity: 0.92;
+}
