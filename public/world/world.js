@@ -8306,10 +8306,11 @@ function terrainYAt(x, z) {
 function millBankInfluence(x, z) {
   // Smooth falloff around the mill so a local water drop and a narrower
   // ribbon do not leave a step, and the Patoka stop (far from the mill)
-  // is unchanged.
+  // is unchanged. Inner is wide enough that the mill pin's far-right
+  // water stays on the same flat wash.
   if (!millSeat) return 0;
   const d = Math.hypot(x - millSeat.x, z - millSeat.z);
-  const inner = 24, outer = 100;
+  const inner = 80, outer = 160;
   if (d >= outer) return 0;
   if (d <= inner) return 1;
   const t = (d - inner) / (outer - inner);
@@ -8363,7 +8364,9 @@ function millRiverSurfaceY(x, z, bedY, bankY) {
     const target = millSurfaceY();
     const t = (target != null) ? target : Math.max(bedY + 0.25, bankY - 0.22);
     y = y + (t - y) * infl;
-    y = Math.max(bedY + 0.25, y);
+    // Keep water above a low bed, but do not let a path sample that
+    // climbed the bank lift the mill-reach wash into a raised shelf.
+    if (t == null || bedY + 0.25 < t) y = Math.max(bedY + 0.25, y);
   }
   return y;
 }
@@ -8487,8 +8490,13 @@ function buildMillOvershotWheel(root, millY, waterY) {
   removeNamedChild(root, "mill-flume");
   const D = 9.6, R = D * 0.5, width = 1.62, wallX = -4.20, gap = 0.42;
   const waterLocal = waterY - millY;
-  const bottom = waterLocal - D / 3;
-  const axleY = bottom + R;
+  // Geometric D/3 already puts the hub 1.6 m above the water, but the
+  // downward pin view magnifies the lower half, so that cut reads as
+  // only 10-15% of the (2 * rim-top-to-hub) diameter. Lower the axle
+  // until the hub sits just above the water: the waterline then falls
+  // between hub and bottom rim, about a third of the way up.
+  const axleY = waterLocal - 0.40;
+  const bottom = axleY - R;
   const axleZ = -3.15;
   const axleX = wallX - gap - width * 0.5;
   const wood = clipWashMatBelow((MODEL_WASH.mill && MODEL_WASH.mill.wood) || [115, 87, 56], waterY);
@@ -8890,38 +8898,35 @@ let millWaterDeck = null;
 let millWaterDeckMat = null;
 
 function layoutMillWaterDeck() {
-  // A small, perfectly flat deck at the same Y as the mill ribbon,
-  // covering the wheel and the water in front of it, so the opaque
-  // surface wins in depth over the submerged third. Same wash as the
-  // ribbon, so it does not read as a second, stepped patch.
+  // A tight, perfectly flat deck at the same Y as the mill ribbon,
+  // locked to the wheel in mill space. It covers the wheel and a
+  // short reach of river in front so the surface is drawn in front
+  // of the submerged part, without a long camera-facing patch in
+  // the channel.
   if (!millSeat || !riverRibbon) {
     if (millWaterDeck) millWaterDeck.visible = false;
     return;
   }
   const y = millSurfaceY();
-  if (y == null) return;
-  // Stretch the deck toward the camera, not only toward the path,
-  // so the plane sits in front of the submerged third along the
-  // actual view rays.
-  const toCamX = camera.position.x - millSeat.x;
-  const toCamZ = camera.position.z - millSeat.z;
-  const cl = Math.hypot(toCamX, toCamZ) || 1;
-  const fx = toCamX / cl, fz = toCamZ / cl;
-  const ax = -fz, az = fx;
-  // Tight around the wheel and toward the camera, not out into the
-  // mid-distance channel where a large patch would facet, and not
-  // landward of the river-side walls.
-  const along0 = -7, along1 = 7, across0 = 3.6, across1 = 28;
-  const nA = 4, nC = 4;
+  if (y == null || millSeat.yaw == null) return;
+  const wallX = -4.20, gap = 0.42, width = 1.62, axleZ = -3.15;
+  const axleX = wallX - gap - width * 0.5;
+  const yaw = millSeat.yaw;
+  const cy = Math.cos(yaw), sy = Math.sin(yaw);
+  const xx = cy, xz = -sy, zx = sy, zz = cy;
+  const lx0 = axleX + width * 0.5 + 0.6;
+  const lx1 = axleX - width * 0.5 - 16.0;
+  const lz0 = axleZ - 6.0, lz1 = axleZ + 6.0;
+  const nA = 1, nC = 1;
   const pos = [], nrm = [], uv = [], idx = [];
   for (let j = 0; j <= nC; j++) {
     const uc = j / nC;
-    const across = across0 + (across1 - across0) * uc;
+    const lx = lx0 + (lx1 - lx0) * uc;
     for (let i = 0; i <= nA; i++) {
       const ua = i / nA;
-      const along = along0 + (along1 - along0) * ua;
-      const x = millSeat.x + fx * across + ax * along;
-      const z = millSeat.z + fz * across + az * along;
+      const lz = lz0 + (lz1 - lz0) * ua;
+      const x = millSeat.x + xx * lx + zx * lz;
+      const z = millSeat.z + xz * lx + zz * lz;
       pos.push(x, y, z);
       nrm.push(0, 1, 0);
       uv.push(ua, 0.5);
