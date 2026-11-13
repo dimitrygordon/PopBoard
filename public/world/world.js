@@ -9056,6 +9056,25 @@ function layoutRiverRibbon() {
     }
     if (c) smY[i] = sum / c;
   }
+  // Re-anchor the water under the wheel to millSurfaceY after
+  // smoothing, so a climbing downstream sample cannot pull the
+  // waterline up the wheel or flood the mill-side bank. The
+  // far-right pin water stays on the unsmoothed (tight-influence)
+  // river curve.
+  const lockY = millSurfaceY();
+  if (lockY != null && millSeat) {
+    const lockInner = 16, lockOuter = 28;
+    for (let i = 0; i < n; i++) {
+      if (!pts[i] || smY[i] == null) continue;
+      const d = Math.hypot(pts[i].x - millSeat.x, pts[i].z - millSeat.z);
+      if (d <= lockInner) smY[i] = lockY;
+      else if (d < lockOuter) {
+        const u = (d - lockInner) / (lockOuter - lockInner);
+        const w = u * u * (3 - 2 * u);
+        smY[i] = lockY + (smY[i] - lockY) * w;
+      }
+    }
+  }
   const alongP = new Array(n).fill(0);
   for (let i = 1; i < n; i++) {
     if (pts[i] && pts[i - 1]) {
