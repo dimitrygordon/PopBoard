@@ -225,6 +225,10 @@
     while (ink.firstChild) ink.removeChild(ink.firstChild);
   }
 
+  function progress() {
+    return Math.max(0, Math.min(1, pull / Math.max(1, thresholdPx())));
+  }
+
   function paintInk(fillFrac) {
     if (!ink) return;
     var w = window.innerWidth, h = window.innerHeight;
