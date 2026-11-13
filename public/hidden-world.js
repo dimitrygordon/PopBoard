@@ -11,7 +11,7 @@
   var DIVE_MS = 1800;
   var FADE_MS = 400;
   var PAPER = "#EDE6D6";
-  var GRAPHITE = [42, 33, 24];
+  var GRAPHITE = [58, 54, 47]; /* #3A362F */
   var PENCIL = "#3A362F";
 
   var reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -165,13 +165,27 @@
 
   function seedBlooms() {
     blooms = [];
-    var n = 7;
-    for (var i = 0; i < n; i++) {
+    /* 5 separate washes, staggered so they stay distinct blots, not one fog bank. */
+    var xs = [0.10, 0.30, 0.50, 0.70, 0.90];
+    var sizes = [0.90, 0.72, 0.84, 0.70, 0.88];
+    var i, k, lobes;
+    for (i = 0; i < xs.length; i++) {
+      lobes = [];
+      for (k = 0; k < 6; k++) {
+        var ang = (i * 1.37 + k * 2.13);
+        var radJ = 0.18 + 0.22 * ((k * 3 + i) % 5) / 4;
+        lobes.push({
+          ox: Math.cos(ang) * radJ * (k === 0 ? 0.15 : 1),
+          oy: Math.sin(ang * 1.15 + i) * radJ * 0.85 * (k === 0 ? 0.2 : 1),
+          s: (k === 0 ? 0.92 : (0.38 + 0.40 * (1 - k / 6))) + 0.06 * Math.sin(i * 2.4 + k)
+        });
+      }
       blooms.push({
-        x: 0.08 + (i / (n - 1)) * 0.84 + (Math.sin(i * 2.7) * 0.04),
-        r: 0.16 + (i % 3) * 0.05,
-        phase: i * 1.3,
-        graphite: i % 2 === 0
+        x: xs[i],
+        size: sizes[i],
+        phase: i * 1.15,
+        graphite: i % 2 === 0,
+        lobes: lobes
       });
     }
   }
@@ -206,40 +220,39 @@
     var nightBlue = [150, 176, 210];
     var nightGraphite = [200, 194, 180];
     if (!blooms.length) seedBlooms();
+    /* Each wash is a small cluster of soft lobes so the edge is irregular,
+       but the whole blot stays inside the 25% band. No full-width veil. */
     for (var i = 0; i < blooms.length; i++) {
       var b = blooms[i];
       var cx = b.x * w;
-      var rise = maxH * (0.72 + 0.28 * Math.sin(b.phase + p * 2));
-      var cy = h - rise * 0.42;
-      var rad = Math.max(36, (0.40 + 0.70 * p) * b.r * w);
+      var rise = maxH * (0.55 + 0.35 * (0.5 + 0.5 * Math.sin(b.phase + p * 1.4)));
+      var rad = Math.max(28, Math.min(maxH * 0.85, b.size * maxH * 0.95));
+      var cy = h - Math.min(rise, maxH - rad * 0.55);
+      if (cy - rad < h - maxH) cy = h - maxH + rad;
       var col, a;
       if (night) {
-        col = b.graphite ? nightGraphite : nightBlue;
-        a = (b.graphite ? 0.42 : 0.50) * Math.min(1, 0.45 + p);
+        col = b.graphite ? GRAPHITE : nightBlue;
+        a = (b.graphite ? 0.50 : 0.42) * Math.min(1, 0.40 + p);
       } else {
         col = b.graphite ? GRAPHITE : blue;
-        a = (b.graphite ? 0.42 : 0.50) * Math.min(1, 0.45 + p);
+        a = (b.graphite ? 0.38 : 0.36) * Math.min(1, 0.40 + p);
       }
-      var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rad);
-      g.addColorStop(0, "rgba(" + col[0] + "," + col[1] + "," + col[2] + "," + a + ")");
-      g.addColorStop(0.5, "rgba(" + col[0] + "," + col[1] + "," + col[2] + "," + (a * 0.5) + ")");
-      g.addColorStop(1, "rgba(" + col[0] + "," + col[1] + "," + col[2] + ",0)");
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(cx, cy, rad, 0, Math.PI * 2);
-      ctx.fill();
+      var lobes = b.lobes || [{ ox: 0, oy: 0, s: 1 }];
+      var k;
+      for (k = 0; k < lobes.length; k++) {
+        var lx = cx + lobes[k].ox * rad;
+        var ly = cy + lobes[k].oy * rad;
+        var lr = Math.max(18, rad * lobes[k].s);
+        var g = ctx.createRadialGradient(lx, ly, 0, lx, ly, lr);
+        g.addColorStop(0, "rgba(" + col[0] + "," + col[1] + "," + col[2] + "," + a + ")");
+        g.addColorStop(0.55, "rgba(" + col[0] + "," + col[1] + "," + col[2] + "," + (a * 0.42) + ")");
+        g.addColorStop(1, "rgba(" + col[0] + "," + col[1] + "," + col[2] + ",0)");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(lx, ly, lr, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
-    /* Soft wet-paper wash near the bottom, cream so grain reads on day and night. */
-    var wet = ctx.createLinearGradient(0, h - maxH, 0, h);
-    if (night) {
-      wet.addColorStop(0, "rgba(237,230,214,0)");
-      wet.addColorStop(1, "rgba(237,230,214," + (0.22 + 0.18 * Math.min(1, p)) + ")");
-    } else {
-      wet.addColorStop(0, "rgba(42,33,24,0)");
-      wet.addColorStop(1, "rgba(42,33,24," + (0.16 + 0.14 * Math.min(1, p)) + ")");
-    }
-    ctx.fillStyle = wet;
-    ctx.fillRect(0, h - maxH, w, maxH);
 
     if (grain) {
       grain.classList.add("is-on");
@@ -257,9 +270,13 @@
     if (p <= 0.001) {
       line.classList.remove("is-on");
       line.style.transform = "translateX(-50%) scaleX(0)";
+      line.style.bottom = "0px";
       return;
     }
+    /* Sit on the lifted sheet's bottom edge so the line stays clearly
+       above the blooms in the revealed gap. */
     line.classList.add("is-on");
+    line.style.bottom = Math.max(0, pull) + "px";
     line.style.transform = "translateX(-50%) scaleX(" + Math.max(0, Math.min(1, p)) + ")";
   }
 
@@ -295,7 +312,7 @@
     ["sky", "wx", "at", "season"].forEach(function (k) {
       if (qs.get(k)) u.searchParams.set(k, qs.get(k));
     });
-    u.searchParams.set("v", "20261113n");
+    u.searchParams.set("v", "20261113p");
     return u.pathname + u.search;
   }
 
