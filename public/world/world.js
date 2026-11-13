@@ -6316,13 +6316,15 @@ async function loadJhsSchool(file, fade) {
   const hit = await tryLoadGlb([file]);
   if (!hit) return null;
   const root = hit.scene;
-  styleJhsModel(root, fade ? 0 : 1);
+  // Reduced motion freezes the loop, so a 0.7s opacity fade never steps.
+  const useFade = !!(fade && !REDUCE && !state.frozen);
+  styleJhsModel(root, useFade ? 0 : 1);
   if (jhsRoot && jhsRoot.parent) jhsRoot.parent.remove(jhsRoot);
   jhsRoot = placeJhsRoot(root, "jhs");
   LAND.fromGltf = LAND.fromGltf || {};
   LAND.fromGltf.jhs = hit.file;
   jhsTiming.schoolFile = hit.file;
-  if (fade) {
+  if (useFade) {
     jhsFade = { t: 0, dur: 0.7, root: jhsRoot };
   } else {
     hideCoveredCampusDrawings(jhsWorldBoxes());
@@ -12515,6 +12517,9 @@ function startLoop() {
       state.time += dt;
       stepJhsFade(dt);
       maybeUpgradeJhs();
+    } else if (jhsFade) {
+      jhsFade.t = jhsFade.dur;
+      stepJhsFade(0.016);
     }
     if (millWaterWheel) {
       millWaterWheel.rotation.x = REDUCE ? 0.35 : -state.time * 0.16;
