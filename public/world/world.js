@@ -12351,7 +12351,7 @@ function stageDiveClouds(start, mid, low, land) {
   const azMul = Math.min(1, hfov / (2 * Math.atan(Math.tan(vfov / 2) * 1.6)));
   const distMul = deskW / Math.max(0.2, worldW);
   const slots = [
-    { cam: start, pool: "cirrus", az: -26, distMul: 0.38, minDist: 1200, up: -40 },
+    { cam: start, pool: "cirrus", az: -48, distMul: 0.90, minDist: 2500, up: 160 },
     { cam: start, pool: "cirrus", az: 28, distMul: 0.40, minDist: 1300, up: 30 },
     { cam: mid, pool: "cumulus", az: -24, distMul: 1.28, minDist: 700, up: -20 },
     { cam: mid, pool: "cumulus", az: 24, distMul: 1.32, minDist: 700, up: 10 },

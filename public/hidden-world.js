@@ -522,7 +522,7 @@
     ["sky", "wx", "at", "season"].forEach(function (k) {
       if (qs.get(k)) u.searchParams.set(k, qs.get(k));
     });
-    u.searchParams.set("v", "20261113w");
+    u.searchParams.set("v", "20261113x");
     return u.pathname + u.search;
   }
 
