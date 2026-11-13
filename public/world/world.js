@@ -12355,7 +12355,7 @@ function stageDiveClouds(start, mid, low, land) {
     { cam: start, pool: "cirrus", az: 28, distMul: 0.40, minDist: 1300, up: 30 },
     { cam: mid, pool: "cumulus", az: -24, distMul: 1.28, minDist: 700, up: -20 },
     { cam: mid, pool: "cumulus", az: 24, distMul: 1.32, minDist: 700, up: 10 },
-    { cam: mid, pool: "cumulus", az: 16, distMul: 3.05, minDist: 2200, up: 210 },
+    { cam: mid, pool: "cumulus", az: -6, distMul: 3.10, minDist: 2300, up: 220 },
     { cam: low, pool: "cumulus", az: -18, distMul: 1.30, minDist: 700, up: -70 },
     { cam: low, pool: "cumulus", az: 24, distMul: 1.40, minDist: 750, up: -40 }
   ];
