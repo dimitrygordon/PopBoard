@@ -230,13 +230,12 @@
     ];
   }
 
-  function dayWash(graph) {
-    /* Muted sky blue with a little graphite. */
-    return mixRgb(softSky(skyBlue()), GRAPHITE, graph == null ? 0.16 : graph);
+  function dayWash() {
+    return [143, 179, 217]; /* #8FB3D9 soft sky blue */
   }
 
   function nightWash() {
-    return [42, 53, 80]; /* #2A3550 */
+    return [58, 74, 117]; /* #3A4A75 */
   }
 
   function rgba(c, a) {
@@ -389,7 +388,7 @@
     /* Clip to the torn paper, not a straight 25% band, so tendrils stay feathered. */
     root.setAttribute("clip-path", "url(#pb-paper-clip)");
 
-    var i;
+    var i, laid = [];
     for (i = 0; i < blooms.length; i++) {
       var b = blooms[i];
       var rx = b.rx * w * (0.55 + 0.45 * Math.min(1, p));
@@ -399,24 +398,38 @@
       if (cy - ry < h - maxH + 4) cy = h - maxH + ry + 4;
       if (cy + ry > h + ry * 0.35) cy = h + ry * 0.35;
 
-      var col = night ? nightWash() : dayWash(b.graph);
-      var dark = mixRgb(col, night ? [20, 24, 36] : GRAPHITE, 0.28);
-      var a0 = 0.28 + 0.10 * Math.min(1, p); /* interior 28-38% */
-      a0 = Math.max(0.25, Math.min(0.40, a0));
+      var col = night ? nightWash() : dayWash();
+      var cream = [243, 230, 196]; /* #F3E6C4, as on the dive-cloud rims */
+      var a0, stops;
+      if (night) {
+        a0 = Math.max(0.45, Math.min(0.50, 0.45 + 0.05 * Math.min(1, p)));
+        stops = [
+          [0.00, col, a0],
+          [0.55, col, a0 * 0.90],
+          [0.84, col, a0 * 0.62],
+          [0.91, cream, 0.24], /* faint cream glow on the pooled edge */
+          [0.97, cream, 0.08],
+          [1.00, cream, 0]
+        ];
+      } else {
+        a0 = 0.28 + 0.10 * Math.min(1, p);
+        a0 = Math.max(0.25, Math.min(0.40, a0));
+        var dark = mixRgb(col, [110, 145, 185], 0.35);
+        stops = [
+          [0.00, col, a0],
+          [0.55, col, a0 * 0.82],
+          [0.84, col, a0 * 0.55],
+          [0.91, dark, Math.min(0.42, a0 * 1.05)],
+          [0.97, col, 0.08],
+          [1.00, col, 0]
+        ];
+      }
 
       var grad = document.createElementNS(NS, "radialGradient");
       grad.setAttribute("id", "pb-wet-g" + i);
       grad.setAttribute("cx", "50%");
       grad.setAttribute("cy", "58%");
       grad.setAttribute("r", "50%");
-      var stops = [
-        [0.00, col, a0],
-        [0.55, col, a0 * 0.82],
-        [0.84, col, a0 * 0.55],
-        [0.91, dark, Math.min(0.42, a0 * 1.05)], /* ~2-3px pooled edge */
-        [0.97, col, 0.08],
-        [1.00, col, 0]
-      ];
       var s;
       for (s = 0; s < stops.length; s++) {
         var st = document.createElementNS(NS, "stop");
@@ -465,6 +478,46 @@
         g.appendChild(el);
       }
       root.appendChild(g);
+      laid.push({ b: b, rx: rx, ry: ry, cx: cx, cy: cy, parts: parts });
+    }
+
+    /* Day only: a touch of graphite where blooms overlap, not in the body. */
+    if (!night) {
+      var appendEllipses = function (parent, item, fill) {
+        var kk, prr, ell;
+        for (kk = 0; kk < item.parts.length; kk++) {
+          prr = item.parts[kk];
+          ell = document.createElementNS(NS, "ellipse");
+          ell.setAttribute("cx", (item.cx + prr.ox * item.rx).toFixed(1));
+          ell.setAttribute("cy", (item.cy + prr.oy * item.ry).toFixed(1));
+          ell.setAttribute("rx", (item.rx * prr.s).toFixed(1));
+          ell.setAttribute("ry", (item.ry * prr.s * (kk === 0 ? 1 : 0.85)).toFixed(1));
+          if (item.b.rot && kk === 0) {
+            ell.setAttribute("transform", "rotate(" + item.b.rot + " " + item.cx.toFixed(1) + " " + item.cy.toFixed(1) + ")");
+          }
+          ell.setAttribute("fill", fill);
+          parent.appendChild(ell);
+        }
+      };
+      var oi;
+      for (oi = 1; oi < laid.length; oi++) {
+        var mask = document.createElementNS(NS, "mask");
+        mask.setAttribute("id", "pb-olap-" + oi);
+        mask.setAttribute("maskUnits", "userSpaceOnUse");
+        var mj;
+        for (mj = 0; mj < oi; mj++) {
+          var mg = document.createElementNS(NS, "g");
+          mg.setAttribute("filter", "url(#pb-wet-" + mj + ")");
+          appendEllipses(mg, laid[mj], "#fff");
+          mask.appendChild(mg);
+        }
+        defs.appendChild(mask);
+        var og = document.createElementNS(NS, "g");
+        og.setAttribute("mask", "url(#pb-olap-" + oi + ")");
+        og.setAttribute("filter", "url(#pb-wet-" + oi + ")");
+        appendEllipses(og, laid[oi], "rgba(58,54,47,0.14)");
+        root.appendChild(og);
+      }
     }
 
     ink.appendChild(defs);
