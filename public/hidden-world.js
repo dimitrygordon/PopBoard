@@ -414,10 +414,17 @@
      prefers-reduced-motion, so the required 400ms crossfade is driven here
      on a wall clock (rAF plus a 16ms interval, same idea as the embed dive). */
   function fadeClock(ms, step, done) {
-    var t0 = performance.now();
+    /* Start the clock on the first tick so a delayed first frame cannot
+       jump u straight to 1 and snap the crossfade. */
+    var t0 = null;
     var finished = false;
     function tick(now) {
       if (finished) return;
+      if (t0 == null) {
+        t0 = now;
+        step(0);
+        return;
+      }
       var u = Math.min(1, (now - t0) / ms);
       step(u);
       if (u >= 1) {
