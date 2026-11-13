@@ -8306,11 +8306,12 @@ function terrainYAt(x, z) {
 function millBankInfluence(x, z) {
   // Smooth falloff around the mill so a local water drop and a narrower
   // ribbon do not leave a step, and the Patoka stop (far from the mill)
-  // is unchanged. Inner is wide enough that the mill pin's far-right
-  // water stays on the same flat wash.
+  // is unchanged. Keep the flat wash tight around the wheel so the
+  // far-right mill-pin water stays a curved river, not a flattened
+  // plane cut by terrain grid lines.
   if (!millSeat) return 0;
   const d = Math.hypot(x - millSeat.x, z - millSeat.z);
-  const inner = 80, outer = 160;
+  const inner = 24, outer = 100;
   if (d >= outer) return 0;
   if (d <= inner) return 1;
   const t = (d - inner) / (outer - inner);
@@ -8364,9 +8365,7 @@ function millRiverSurfaceY(x, z, bedY, bankY) {
     const target = millSurfaceY();
     const t = (target != null) ? target : Math.max(bedY + 0.25, bankY - 0.22);
     y = y + (t - y) * infl;
-    // Keep water above a low bed, but do not let a path sample that
-    // climbed the bank lift the mill-reach wash into a raised shelf.
-    if (t == null || bedY + 0.25 < t) y = Math.max(bedY + 0.25, y);
+    y = Math.max(bedY + 0.25, y);
   }
   return y;
 }
