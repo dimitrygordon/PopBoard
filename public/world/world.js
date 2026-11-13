@@ -3187,7 +3187,10 @@ void main(){
     b = max(b, lobe(p, vec2(-0.10, 0.74), 0.18 + 0.03 * hash21(vec2(s, 6.0))));
     // Flat underside at a common base; puffy tops stay lumpy.
     b *= smoothstep(-0.62, -0.50, p.y);
-    if (b < 0.08) discard;
+    // When uAlphaMul is lowered (embed dive near-fade, moon clearance), keep
+    // a thin fringe so the silhouette can feather instead of discarding hard.
+    float diveSoft = smoothstep(0.10, 0.98, uAlphaMul);
+    if (b < mix(0.02, 0.08, diveSoft)) discard;
     rel = clamp((p.y + 0.62) / 1.55, 0.0, 1.0);
     // Mostly bare cream paper. Undersides a cool pale gray-blue, only slightly
     // darker than the sky, never brown or taupe. Light hatching.
@@ -3230,11 +3233,13 @@ void main(){
     hatch = dens * line * taper * inS * gap * mix(0.45, 1.0, max(under, shadow));
     col = mix(wash, uInk, clamp(hatch * 0.52, 0.0, 0.62));
     // Inked outline around the lobe union, heavier on the shadow side, with pen lifts.
+    // Soften the ink and feather alpha while a dive sprite is fading so a near
+    // mass never reads as a hard-edged disc. Unchanged when uAlphaMul is 1.
     rim = 1.0 - smoothstep(0.06, 0.22, b);
     float lift = step(0.22, hash21(vec2(floor(p.x * 16.0 + s), floor(p.y * 12.0))));
-    col = mix(col, uInk, rim * lift * mix(0.42, 0.88, shadow));
-    col = mix(col, mix(col, uInk, 0.16), shadow * 0.32 * (1.0 - rel * 0.25));
-    alpha = 0.98;
+    col = mix(col, uInk, rim * lift * mix(0.42, 0.88, shadow) * diveSoft);
+    col = mix(col, mix(col, uInk, 0.16), shadow * 0.32 * (1.0 - rel * 0.25) * diveSoft);
+    alpha = 0.98 * mix(smoothstep(0.04, 0.32, b), 1.0, diveSoft);
   }
 
   if (uShaft > 0.5 && uRain > 0.5 && vUv.y < 0.72) {
@@ -3584,10 +3589,14 @@ function layoutVolClouds() {
         const ang = Math.acos(Math.max(-1, Math.min(1, cdot))) * 180 / Math.PI;
         alphaMul = ang <= 10 ? 0 : (ang < 13 ? (ang - 10) / 3 : 1);
       }
+      if (EMBED && embedLockFly && !it.shaft) {
+        alphaMul *= embedDiveSpriteFade(it, x, y, z, cx, cy, cz);
+      }
       if (it.mesh.material.uniforms.uAlphaMul) it.mesh.material.uniforms.uAlphaMul.value = alphaMul;
       if (!it.shaft) it.mesh.visible = alphaMul > 0.02;
     }
   }
+  updateDiveVeil();
 }
 
 function buildSnow() {
@@ -11987,23 +11996,36 @@ function flyInMidCam(landCam, startCam) {
   return { x: x, y: y, z: z, heading: heading, pitch: pitch };
 }
 
+function lerpTourCam(from, to, t) {
+  return {
+    x: from.x + (to.x - from.x) * t,
+    y: from.y + (to.y - from.y) * t,
+    z: from.z + (to.z - from.z) * t,
+    heading: lerpAngle(from.heading, to.heading, t),
+    pitch: from.pitch + (to.pitch - from.pitch) * t
+  };
+}
+
 function flyInCamAt(e) {
-  const a = tour.from, m = tour.mid, b = tour.to;
+  const a = tour.from, m = tour.mid, m2 = tour.mid2, b = tour.to;
   let cam;
-  // Embed dive: two legs so t=0.5 is actually inside the mid cloud layer.
-  // The quadratic Bezier never visits `m` (it only uses it as a control
-  // point) and read as a high map overview. Standalone fly-in is unchanged.
-  if (EMBED && embedLockFly && m && a && b) {
-    const t = e <= 0.5 ? (e / 0.5) : ((e - 0.5) / 0.5);
-    const from = e <= 0.5 ? a : m;
-    const to = e <= 0.5 ? m : b;
-    cam = {
-      x: from.x + (to.x - from.x) * t,
-      y: from.y + (to.y - from.y) * t,
-      z: from.z + (to.z - from.z) * t,
-      heading: lerpAngle(from.heading, to.heading, t),
-      pitch: from.pitch + (to.pitch - from.pitch) * t
-    };
+  // Embed dive: linear legs through 2–3 cloud layers. t is wall-clock
+  // fraction of the 1.8s drop (not ease-in-out, so mid times stay in the
+  // clouds). The standalone fly-in Bezier is unchanged.
+  if (EMBED && embedLockFly && a && b) {
+    if (m && m2) {
+      let from, to, t;
+      // Spend most of the 1.8s in the cloud layers; only the last 0.27s drops into the landing pose.
+      if (e <= 0.40) { from = a; to = m; t = e / 0.40; }
+      else if (e <= 0.85) { from = m; to = m2; t = (e - 0.40) / 0.45; }
+      else { from = m2; to = b; t = (e - 0.85) / 0.15; }
+      cam = lerpTourCam(from, to, t);
+    } else if (m) {
+      const t = e <= 0.5 ? (e / 0.5) : ((e - 0.5) / 0.5);
+      cam = lerpTourCam(e <= 0.5 ? a : m, e <= 0.5 ? m : b, t);
+    } else {
+      cam = lerpTourCam(a, b, e);
+    }
   } else {
     const o = 1 - e;
     cam = {
@@ -12025,6 +12047,102 @@ let embedLanded = false;
 let embedLockFly = false;
 let embedExitPull = 0;
 let embedWallStart = 0;
+
+
+function embedDiveSpriteFade(it, x, y, z, cx, cy, cz) {
+  const w = Math.max(it.sx || 1, it.sy || it.sx || 1);
+  const h = it.sy || w * 0.45;
+  const dist = Math.hypot(x - cx, y - cy, z - cz);
+  const u = dist / w;
+  // Soften as a mass reaches ~40–50% of the frame; vanish if it would cross the near plane.
+  let fade;
+  if (u >= 1.85) fade = 1;
+  else if (u <= 0.55) fade = 0;
+  else if (u >= 1.15) {
+    const t = (u - 1.15) / 0.70;
+    const s = t * t * (3 - 2 * t);
+    fade = 0.70 + 0.30 * s;
+  } else {
+    const t = (u - 0.55) / 0.60;
+    fade = 0.70 * (t * t * (3 - 2 * t));
+  }
+  const nearest = Math.max(0, dist - 0.5 * w);
+  if (nearest < 90) {
+    const t = nearest / 90;
+    fade *= t * t * (3 - 2 * t);
+  }
+  // Dissolve once the camera has dropped under a puff so its silhouette cannot clip the top.
+  const horiz = Math.hypot(x - cx, z - cz);
+  const bottom = y - 0.5 * h;
+  if (cy < bottom && horiz < w * 1.35) {
+    const under = (bottom - cy) / Math.max(60, h);
+    const close = 1 - clamp(horiz / (w * 1.35), 0, 1);
+    fade *= 1 - clamp(under * 1.15, 0, 1) * close * 0.94;
+  }
+  if (camera && fade > 0.02) {
+    const v = new THREE.Vector3(x, y, z).project(camera);
+    if (isFinite(v.x) && isFinite(v.y) && v.z < 1) {
+      const aspect = camera.aspect || 1;
+      const vfov = (camera.fov || 50) * Math.PI / 180;
+      const worldH = 2 * dist * Math.tan(vfov / 2);
+      const worldW = worldH * aspect;
+      const ndcHalfW = w / Math.max(1, worldW);
+      const ndcHalfH = h / Math.max(1, worldH);
+      const ox = Math.max(0, Math.abs(v.x) + ndcHalfW - 1.06);
+      const oy = Math.max(0, Math.abs(v.y) + ndcHalfH - 1.06);
+      const overflow = Math.max(ox, oy);
+      if (overflow > 0) fade *= 1 - clamp(overflow / 0.70, 0, 1);
+    }
+  }
+  return fade;
+}
+
+function ensureDiveVeil() {
+  let el = document.getElementById("pb-dive-veil");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "pb-dive-veil";
+    el.setAttribute("aria-hidden", "true");
+    document.body.appendChild(el);
+  }
+  return el;
+}
+
+function updateDiveVeil() {
+  if (!EMBED) return;
+  const el = ensureDiveVeil();
+  if (!(embedLockFly && camera) || REDUCE) {
+    el.style.opacity = "0";
+    return;
+  }
+  const night = !!(clock && clock.night > 0.5);
+  el.style.background = night
+    ? "radial-gradient(ellipse at 50% 42%, rgba(186,196,214,0.55) 0%, rgba(28,36,58,0.06) 72%)"
+    : "radial-gradient(ellipse at 50% 42%, rgba(243,235,218,0.72) 0%, rgba(237,230,214,0.04) 72%)";
+  const cx = camera.position.x, cy = camera.position.y, cz = camera.position.z;
+  let peak = 0;
+  const items = (diveCloudBackup && diveCloudBackup.length)
+    ? diveCloudBackup.map(function (b) { return b.it; })
+    : volCloudItems;
+  for (let i = 0; i < items.length; i++) {
+    const it = items[i];
+    if (!it || it.shaft || it.flat) continue;
+    const drift = (typeof windDrift === "function") ? windDrift() : { x: 0, z: 0 };
+    const x = it.homeX + (drift.x || 0);
+    const y = it.homeY;
+    const z = it.homeZ + (drift.z || 0);
+    const dist = Math.hypot(x - cx, y - cy, z - cz);
+    const w = Math.max(it.sx || 1, it.sy || it.sx || 1);
+    const h = it.sy || w * 0.45;
+    // Already well under this puff: don't leave a cream wash on the landing pose.
+    if (cy < y - 0.75 * h && Math.hypot(x - cx, z - cz) < w * 2.4) continue;
+    const u = dist / w;
+    // Soft full-frame veil as the camera skims a layer (u ~ 1.1–1.3), not a hard hit.
+    const veil = Math.exp(-Math.pow((u - 1.18) / 0.50, 2));
+    if (veil > peak) peak = veil;
+  }
+  el.style.opacity = String(Math.max(0, Math.min(0.28, peak * 0.28)));
+}
 
 function notifyParent(type, extra) {
   if (!EMBED) return;
@@ -12073,37 +12191,46 @@ function pickDiveCloud(land, wantCirrus) {
 }
 
 function diveStartCam(land) {
-  // Through the existing cirrus layer, looking toward the locked JHS view.
+  // Above the cirrus altitude, looking toward the locked JHS view. Stay off
+  // the sprites themselves so the first layer is around the path, not on it.
   const heading = land.heading;
-  const cloud = pickDiveCloud(land, true);
-  const back = 700;
-  const x = cloud ? cloud.homeX : (land.x - Math.sin(heading) * back);
-  const z = cloud ? cloud.homeZ : (land.z - Math.cos(heading) * back);
-  const y = cloud ? (cloud.homeY + 40) : (groundAt(x, z) + 2550);
-  const pitch = land.pitch * 0.4 - 0.10;
+  const back = 1600;
+  const x = land.x - Math.sin(heading) * back;
+  const z = land.z - Math.cos(heading) * back;
+  const y = groundAt(x, z) + 2850;
+  const pitch = -0.10;
   return { x: x, y: y, z: z, heading: heading, pitch: pitch };
 }
 
+function diveBetweenCam(land, start) {
+  // At the cumulus deck so side masses fill ~40–50% of the frame, with the
+  // valley in the gaps. (A higher mid read as a map overview with tiny puffs.)
+  const heading = lerpAngle(start.heading, land.heading, 0.45);
+  const u = 0.45;
+  const x = start.x + (land.x - start.x) * u;
+  const z = start.z + (land.z - start.z) * u;
+  const y = Math.max(groundAt(x, z) + 1100, start.y + (land.y - start.y) * 0.60);
+  return {
+    x: x, y: y, z: z, heading: heading,
+    pitch: -0.16
+  };
+}
+
+function diveLowCam(land, start) {
+  // Dropping out of the cumulus deck, valley opening through the last gaps.
+  const heading = lerpAngle(start.heading, land.heading, 0.75);
+  const u = 0.74;
+  const x = start.x + (land.x - start.x) * u;
+  const z = start.z + (land.z - start.z) * u;
+  const y = Math.max(groundAt(x, z) + 640, start.y + (land.y - start.y) * 0.78);
+  return {
+    x: x, y: y, z: z, heading: heading,
+    pitch: -0.18
+  };
+}
+
 function diveMidCam(land, start) {
-  // Sit inside a large existing cumulus so the mid frame is through a layer,
-  // with the valley only glimpsed through gaps — not a high map overview.
-  const heading = lerpAngle(start.heading, land.heading, 0.5);
-  const cloud = pickDiveCloud(land, false);
-  let x, y, z, pitch;
-  if (cloud) {
-    const along = Math.max(80, cloud.sx * 0.18);
-    x = cloud.homeX + Math.sin(heading) * along * 0.2;
-    z = cloud.homeZ + Math.cos(heading) * along * 0.2;
-    y = cloud.homeY - (cloud.sy || cloud.sx * 0.6) * 0.12;
-    // Milder than the landing pitch so cloud masses fill most of the frame.
-    pitch = (start.pitch * 0.55) + (land.pitch * 0.25) - 0.04;
-  } else {
-    x = start.x + (land.x - start.x) * 0.45;
-    z = start.z + (land.z - start.z) * 0.45;
-    y = start.y + (land.y - start.y) * 0.4;
-    pitch = start.pitch + (land.pitch - start.pitch) * 0.3;
-  }
-  return { x: x, y: y, z: z, heading: heading, pitch: pitch };
+  return diveBetweenCam(land, start);
 }
 
 let diveCloudBackup = null;
@@ -12122,42 +12249,61 @@ function restoreDiveClouds() {
   diveCloudBackup = null;
 }
 
-function stageDiveClouds(mid, land) {
+function stageDiveClouds(start, mid, low, land) {
   if (!EMBED) return;
   restoreDiveClouds();
-  if (!mid) return;
-  const heading = mid.heading;
-  // Existing large cumulus, nearest the mid camera, nudged beside the path so
-  // they fill the mid frame. Restored on land and on the way back.
-  const cands = [];
+  const cumulus = [];
+  const cirrus = [];
   for (let i = 0; i < volCloudItems.length; i++) {
     const it = volCloudItems[i];
-    if (!it || it.shaft || it.flat || it.cirrus) continue;
-    if (it.sx < 300) continue;
-    const d = Math.hypot(it.homeX - mid.x, it.homeY - mid.y, it.homeZ - mid.z);
-    cands.push({ it: it, d: d });
+    if (!it || it.shaft || it.flat) continue;
+    if (it.cirrus) cirrus.push(it);
+    else if (it.sx >= 280) cumulus.push(it);
   }
-  cands.sort(function (a, b) { return a.d - b.d; });
+  function nearer(pool, cam) {
+    if (!cam) return pool.slice();
+    return pool.slice().sort(function (a, b) {
+      const da = Math.hypot(a.homeX - cam.x, a.homeY - cam.y, a.homeZ - cam.z);
+      const db = Math.hypot(b.homeX - cam.x, b.homeY - cam.y, b.homeZ - cam.z);
+      return da - db;
+    });
+  }
+  // Place around the path, ahead of the camera at a modest off-axis angle so
+  // each mass sits mid-left or mid-right (not 90° out of frame). Distance is
+  // ~1.3× sprite width: about 40–50% of the frame when nearest. No rescaling.
   const slots = [
-    { side: -0.55, along: 40, up: 40 },
-    { side: 0.70, along: -30, up: 20 },
-    { side: 0.10, along: -180, up: 90 }
+    { cam: start, pool: "cirrus", az: -26, distMul: 0.38, minDist: 1200, up: -40 },
+    { cam: start, pool: "cirrus", az: 28, distMul: 0.40, minDist: 1300, up: 30 },
+    { cam: mid, pool: "cumulus", az: -22, distMul: 1.28, minDist: 700, up: -50 },
+    { cam: mid, pool: "cumulus", az: 20, distMul: 1.32, minDist: 700, up: -30 },
+    { cam: mid, pool: "cumulus", az: 6, distMul: 2.15, minDist: 1100, up: 80 },
+    { cam: low, pool: "cumulus", az: -18, distMul: 1.30, minDist: 700, up: -70 },
+    { cam: low, pool: "cumulus", az: 24, distMul: 1.40, minDist: 750, up: -40 }
   ];
+  const used = [];
   diveCloudBackup = [];
-  const n = Math.min(3, cands.length, slots.length);
-  for (let i = 0; i < n; i++) {
-    const it = cands[i].it;
-    diveCloudBackup.push({ it: it, homeX: it.homeX, homeY: it.homeY, homeZ: it.homeZ, sx: it.sx, sy: it.sy });
-    const sl = slots[i];
-    const dist = Math.max(it.sx * 0.35, 180);
-    it.homeX = mid.x + Math.sin(heading) * sl.along + (-Math.cos(heading)) * sl.side * dist;
-    it.homeZ = mid.z + Math.cos(heading) * sl.along + (Math.sin(heading)) * sl.side * dist;
-    it.homeY = mid.y + sl.up;
-    if (it.sx < 900) {
-      const k = 900 / it.sx;
-      it.sx = 900;
-      it.sy = (it.sy || it.sx * 0.7) * k;
+  for (let s = 0; s < slots.length; s++) {
+    const sl = slots[s];
+    if (!sl.cam) continue;
+    const base = sl.pool === "cirrus" ? cirrus : cumulus;
+    const pool = sl.pool === "cumulus"
+      ? base.slice().sort(function (a, b) { return b.sx - a.sx; })
+      : nearer(base, sl.cam);
+    let it = null;
+    for (let i = 0; i < pool.length; i++) {
+      if (used.indexOf(pool[i]) < 0) { it = pool[i]; break; }
     }
+    if (!it) continue;
+    used.push(it);
+    diveCloudBackup.push({ it: it, homeX: it.homeX, homeY: it.homeY, homeZ: it.homeZ, sx: it.sx, sy: it.sy });
+    const heading = sl.cam.heading;
+    const dist = Math.max(sl.minDist, it.sx * sl.distMul);
+    const az = sl.az * Math.PI / 180;
+    const along = Math.cos(az) * dist;
+    const side = Math.sin(az) * dist;
+    it.homeX = sl.cam.x + Math.sin(heading) * along + Math.cos(heading) * side;
+    it.homeZ = sl.cam.z + Math.cos(heading) * along - Math.sin(heading) * side;
+    it.homeY = sl.cam.y + sl.up;
   }
 }
 
@@ -12175,11 +12321,12 @@ function prepareEmbedDive() {
   tour.parked = null;
   tour.from = diveStartCam(land.cam);
   tour.to = land.cam;
-  tour.mid = diveMidCam(land.cam, tour.from);
+  tour.mid = diveBetweenCam(land.cam, tour.from);
+  tour.mid2 = diveLowCam(land.cam, tour.from);
   tour.duration = 1.8;
   tour.t = 0;
   tour.phase = "hold";
-  stageDiveClouds(tour.mid, land.cam);
+  stageDiveClouds(tour.from, flyInCamAt(0.5), flyInCamAt(1.5 / 1.8), land.cam);
   applyTourCam(tour.from);
   if (glOk) renderer.render(scene, camera);
   notifyParent("ready");
@@ -12217,7 +12364,8 @@ function startEmbedExit() {
   const here = currentTourCam() || (tour.parked ? tour.parked : null);
   const land = openingLand();
   const start = land ? diveStartCam(land.cam) : here;
-  const mid = (land && here) ? diveMidCam(land.cam, start) : here;
+  const mid = (land && start) ? diveLowCam(land.cam, start) : here;
+  const mid2 = (land && start) ? diveBetweenCam(land.cam, start) : here;
   if (!here) {
     notifyParent("exit-done");
     return false;
@@ -12234,6 +12382,7 @@ function startEmbedExit() {
   }
   tour.from = here;
   tour.mid = mid;
+  tour.mid2 = mid2;
   tour.to = start;
   tour.t = 0;
   tour.duration = 1.8;
@@ -12241,6 +12390,7 @@ function startEmbedExit() {
   embedWallStart = performance.now();
   tour.paused = true;
   tour.parked = null;
+  if (land) stageDiveClouds(start, mid2, mid, land.cam);
   return true;
 }
 
@@ -12407,16 +12557,16 @@ function stepTour(dt, now) {
     if (EMBED && embedWallStart) tour.t = (now - embedWallStart) / 1000;
     else tour.t += dt;
     const u = Math.max(0, Math.min(1, tour.t / Math.max(0.01, tour.duration)));
-    const e = easeInOutCubic(u);
+    const e = (EMBED && embedLockFly) ? u : easeInOutCubic(u);
     applyTourCam(flyInCamAt(e));
-    if (u >= 1) notifyParent("exit-done");
+    if (u >= 1) { restoreDiveClouds(); notifyParent("exit-done"); }
     return;
   }
   if (tour.phase === "flyin" && !REDUCE) {
     if (EMBED && embedWallStart) tour.t = (now - embedWallStart) / 1000;
     else tour.t += dt;
     const u = Math.max(0, Math.min(1, tour.t / Math.max(0.01, tour.duration)));
-    const e = easeInOutCubic(u);
+    const e = (EMBED && embedLockFly) ? u : easeInOutCubic(u);
     const cam = flyInCamAt(e);
     applyTourCam(cam);
     if (u >= 1) arriveAtStop(tour.to, now, true);
@@ -12973,8 +13123,11 @@ function scanFloatingBuildings(gapM) {
     holdClouds: prepareEmbedDive,
     holdDiveAt: function (u) {
       if (!tour.from || !tour.to) prepareEmbedDive();
-      const e = easeInOutCubic(Math.max(0, Math.min(1, u)));
-      tour.t = (tour.duration || 1.8) * Math.max(0, Math.min(1, u));
+      const raw = Math.max(0, Math.min(1, u));
+      // Embed drop is linear in wall-clock time so mid-cloud stills at
+      // 0.9s / 1.5s fall in the layers, not at the landing.
+      const e = raw;
+      tour.t = (tour.duration || 1.8) * raw;
       tour.phase = "flyin";
       embedLockFly = true;
       embedHideToggle = true;
@@ -12983,7 +13136,37 @@ function scanFloatingBuildings(gapM) {
       applyTourCam(flyInCamAt(e));
       state.frozen = true;
       if (glOk) renderer.render(scene, camera);
-      return { u: u, t: tour.t };
+      return { u: raw, t: tour.t, e: e };
+    },
+    holdDiveAtSeconds: function (sec) {
+      return this.holdDiveAt((sec || 0) / (tour.duration || 1.8));
+    },
+    diveDebug: function () {
+      if (!camera) return null;
+      const look = new THREE.Vector3();
+      camera.getWorldDirection(look);
+      const staged = diveCloudBackup || [];
+      return {
+        cam: {
+          x: +camera.position.x.toFixed(1), y: +camera.position.y.toFixed(1), z: +camera.position.z.toFixed(1),
+          pitchDeg: +(Math.asin(look.y) * 180 / Math.PI).toFixed(1)
+        },
+        nStaged: staged.length,
+        clouds: staged.map(function (b) {
+          const it = b.it;
+          const dx = it.homeX - camera.position.x, dy = it.homeY - camera.position.y, dz = it.homeZ - camera.position.z;
+          const v = new THREE.Vector3(it.homeX, it.homeY, it.homeZ).project(camera);
+          return {
+            cirrus: !!it.cirrus, sx: it.sx, sy: +((it.sy || 0).toFixed(0)),
+            dist: +Math.hypot(dx, dy, dz).toFixed(1),
+            along: +(dx * look.x + dy * look.y + dz * look.z).toFixed(1),
+            ndc: [+v.x.toFixed(2), +v.y.toFixed(2)],
+            inView: Math.abs(v.x) < 1.15 && Math.abs(v.y) < 1.15 && v.z < 1,
+            alpha: +((it.mesh && it.mesh.material && it.mesh.material.uniforms && it.mesh.material.uniforms.uAlphaMul && it.mesh.material.uniforms.uAlphaMul.value) || 0).toFixed(2),
+            u: +(Math.hypot(dx, dy, dz) / Math.max(1, it.sx)).toFixed(2)
+          };
+        })
+      };
     },
     forceStrike: forceStrike,
     lightningInfo: function () {
