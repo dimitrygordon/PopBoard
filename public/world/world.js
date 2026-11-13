@@ -9097,11 +9097,37 @@ function layoutRiverRibbon() {
     let halfR = halfL;
     let waterYL = waterY, waterYR = waterY;
     const millInfl = millBankInfluence(p.x, p.z);
+    let toward = 0;
     if (millInfl > 0 && millSeat) {
-      const toward = (millSeat.x - p.x) * sx + (millSeat.z - p.z) * sz;
+      toward = (millSeat.x - p.x) * sx + (millSeat.z - p.z) * sz;
       const millHalf = millRibbonHalf();
       if (toward >= 0) halfR = halfR + (millHalf - halfR) * millInfl;
       else halfL = halfL + (millHalf - halfL) * millInfl;
+      // Ragged, slightly curved non-mill bank in the mill pin, so the
+      // near-right tan edge is not a long straight chord. The mill-side
+      // half (and the wheel lock) stay as they are.
+      const extra = (nEdge01 - 0.5) * 6.0 * millInfl + 2.6 * Math.sin(iEq * 0.73 + p.x * 0.02) * millInfl;
+      if (toward >= 0) halfL += extra;
+      else halfR += extra;
+    }
+    // Outside the wheel lock, keep each ribbon edge above the local
+    // terrain so a buried edge cannot let a terrain-water quad (a
+    // different tone, with grid sides) show through. If the edge has
+    // already climbed inland over a field, pull it back toward the
+    // channel so water does not flood the field.
+    for (let side = -1; side <= 1; side += 2) {
+      let h = side < 0 ? halfL : halfR;
+      let xE = p.x + sx * side * h, zE = p.z + sz * side * h;
+      const dE = millSeat ? Math.hypot(xE - millSeat.x, zE - millSeat.z) : 1e9;
+      if (dE <= 28) continue;
+      if (terrainYAt(xE, zE) > waterY + 0.7) {
+        h = Math.max(8, h * 0.72);
+        xE = p.x + sx * side * h;
+        zE = p.z + sz * side * h;
+        if (side < 0) halfL = h; else halfR = h;
+      }
+      const yE = Math.max(waterY, terrainYAt(xE, zE) + 0.18);
+      if (side < 0) waterYL = yE; else waterYR = yE;
     }
     const pr = (i > 0 && pts[i - 1]) ? pts[i - 1] : p;
     const nx = (i < n - 1 && pts[i + 1]) ? pts[i + 1] : p;
@@ -9122,6 +9148,12 @@ function layoutRiverRibbon() {
     else if (bend > 0.15) { leftW = Math.max(4, leftW - 4 * bend); leftY += 2.2 * bend; }
     if (rightInside) { rightW += 8 * bend; rightY -= 1.6 * bend; }
     else if (bend > 0.15) { rightW = Math.max(4, rightW - 4 * bend); rightY += 2.2 * bend; }
+    if (millInfl > 0) {
+      // Extra tan bank over the mill pin's right-hand field corner, so
+      // a curved, ragged bank hides the straight green cover edge.
+      leftW += (5 + 8 * nL01) * millInfl;
+      rightW += (5 + 8 * nR01) * millInfl;
+    }
     const leftBar = leftInside ? Math.min(1, 0.35 + bend) : 0;
     const rightBar = rightInside ? Math.min(1, 0.35 + bend) : 0;
     bankPos.push(p.x - sx * halfL, waterYL, p.z - sz * halfL);
