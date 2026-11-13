@@ -65,8 +65,19 @@
     return [70, 140, 230];
   }
   function parseRgba(str) {
-    var m = /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(str || "");
-    return m ? [+m[1], +m[2], +m[3]] : null;
+    var s = (str || "").trim();
+    var m = /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(s);
+    if (m) return [+m[1], +m[2], +m[3]];
+    m = /^#([0-9a-f]{6})$/i.exec(s);
+    if (m) return [parseInt(m[1].slice(0, 2), 16), parseInt(m[1].slice(2, 4), 16), parseInt(m[1].slice(4, 6), 16)];
+    m = /^#([0-9a-f]{3})$/i.exec(s);
+    if (m) return [parseInt(m[1][0] + m[1][0], 16), parseInt(m[1][1] + m[1][1], 16), parseInt(m[1][2] + m[1][2], 16)];
+    return null;
+  }
+  function isNightSky() {
+    var c = parseRgba(skyBot());
+    if (!c) return false;
+    return (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) < 90;
   }
 
   function $(id) { return document.getElementById(id); }
@@ -112,32 +123,44 @@
     frame = $("pb-valley-world");
   }
 
-  function markHomeSlide() {
-    if (sheetEls.length) return;
-    var ids = ["login", "teacherLogin", "teacherSignup", "boardNameEntry", "la-sky"];
-    ids.forEach(function (id) {
+  /* One wrapper so the card, pill, and sky translate together. Individual
+     transforms lose to the login enter animation and the study-pill bob. */
+  function ensureHomeSheet() {
+    var sheet = $("pb-valley-sheet");
+    if (sheet) return sheet;
+    sheet = document.createElement("div");
+    sheet.id = "pb-valley-sheet";
+    var body = document.body;
+    var nodes = [];
+    ["la-sky", "login", "teacherLogin", "teacherSignup", "boardNameEntry"].forEach(function (id) {
       var el = $(id);
-      if (el) { el.classList.add("pb-home-slide"); sheetEls.push(el); }
+      if (el) nodes.push(el);
     });
-    document.querySelectorAll("a.study-pill").forEach(function (el) {
-      el.classList.add("pb-home-slide");
-      sheetEls.push(el);
+    document.querySelectorAll("a.study-pill").forEach(function (el) { nodes.push(el); });
+    nodes.sort(function (a, b) {
+      var pos = a.compareDocumentPosition(b);
+      if (pos & Node.DOCUMENT_POSITION_FOLLOWING) return -1;
+      if (pos & Node.DOCUMENT_POSITION_PRECEDING) return 1;
+      return 0;
     });
+    if (nodes.length) body.insertBefore(sheet, nodes[0]);
+    else body.insertBefore(sheet, body.firstChild);
+    nodes.forEach(function (el) { sheet.appendChild(el); });
+    return sheet;
   }
 
+  function markHomeSlide() { ensureHomeSheet(); }
+
   function setHomeY(px, opacity) {
-    markHomeSlide();
-    var t = "translateY(" + (-px) + "px)";
-    for (var i = 0; i < sheetEls.length; i++) {
-      sheetEls[i].style.transform = t;
-      if (opacity != null) sheetEls[i].style.opacity = String(opacity);
-    }
+    var sheet = ensureHomeSheet();
+    sheet.style.transform = px ? ("translateY(" + (-px) + "px)") : "";
+    if (opacity != null) sheet.style.opacity = String(opacity);
   }
   function clearHomeSlide() {
-    for (var i = 0; i < sheetEls.length; i++) {
-      sheetEls[i].style.transform = "";
-      sheetEls[i].style.opacity = "";
-    }
+    var sheet = $("pb-valley-sheet");
+    if (!sheet) return;
+    sheet.style.transform = "";
+    sheet.style.opacity = "";
   }
 
   function seedBlooms() {
@@ -178,28 +201,43 @@
     if (p <= 1) maxH = Math.min(BLOOM_MAX_FRAC * h, p * BLOOM_MAX_FRAC * h * 1.05);
     else maxH = Math.min(h, BLOOM_MAX_FRAC * h + (p - 1) * h);
     var blue = skyBlue();
+    var night = isNightSky();
+    var paperCol = [237, 230, 214];
+    var nightBlue = [150, 176, 210];
+    var nightGraphite = [200, 194, 180];
     if (!blooms.length) seedBlooms();
     for (var i = 0; i < blooms.length; i++) {
       var b = blooms[i];
       var cx = b.x * w;
-      var rise = maxH * (0.65 + 0.35 * Math.sin(b.phase + p * 2));
-      var cy = h - rise * 0.45;
-      var rad = Math.max(24, (0.28 + 0.55 * p) * b.r * w);
-      var col = b.graphite ? GRAPHITE : blue;
-      var a = (b.graphite ? 0.28 : 0.34) * Math.min(1, 0.35 + p);
+      var rise = maxH * (0.72 + 0.28 * Math.sin(b.phase + p * 2));
+      var cy = h - rise * 0.42;
+      var rad = Math.max(36, (0.40 + 0.70 * p) * b.r * w);
+      var col, a;
+      if (night) {
+        col = b.graphite ? nightGraphite : nightBlue;
+        a = (b.graphite ? 0.42 : 0.50) * Math.min(1, 0.45 + p);
+      } else {
+        col = b.graphite ? GRAPHITE : blue;
+        a = (b.graphite ? 0.42 : 0.50) * Math.min(1, 0.45 + p);
+      }
       var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rad);
       g.addColorStop(0, "rgba(" + col[0] + "," + col[1] + "," + col[2] + "," + a + ")");
-      g.addColorStop(0.55, "rgba(" + col[0] + "," + col[1] + "," + col[2] + "," + (a * 0.45) + ")");
+      g.addColorStop(0.5, "rgba(" + col[0] + "," + col[1] + "," + col[2] + "," + (a * 0.5) + ")");
       g.addColorStop(1, "rgba(" + col[0] + "," + col[1] + "," + col[2] + ",0)");
       ctx.fillStyle = g;
       ctx.beginPath();
       ctx.arc(cx, cy, rad, 0, Math.PI * 2);
       ctx.fill();
     }
-    /* Soft wet-paper darkening near the bottom. */
+    /* Soft wet-paper wash near the bottom, cream so grain reads on day and night. */
     var wet = ctx.createLinearGradient(0, h - maxH, 0, h);
-    wet.addColorStop(0, "rgba(42,33,24,0)");
-    wet.addColorStop(1, "rgba(42,33,24," + (0.10 + 0.10 * Math.min(1, p)) + ")");
+    if (night) {
+      wet.addColorStop(0, "rgba(237,230,214,0)");
+      wet.addColorStop(1, "rgba(237,230,214," + (0.22 + 0.18 * Math.min(1, p)) + ")");
+    } else {
+      wet.addColorStop(0, "rgba(42,33,24,0)");
+      wet.addColorStop(1, "rgba(42,33,24," + (0.16 + 0.14 * Math.min(1, p)) + ")");
+    }
     ctx.fillStyle = wet;
     ctx.fillRect(0, h - maxH, w, maxH);
 
@@ -225,8 +263,21 @@
     line.style.transform = "translateX(-50%) scaleX(" + Math.max(0, Math.min(1, p)) + ")";
   }
 
+  function syncSheetPadding() {
+    var sheet = document.getElementById("pb-valley-sheet");
+    if (!sheet) return;
+    sheet.style.padding = getComputedStyle(document.body).padding;
+  }
+
   function setActive(on) {
     document.documentElement.classList.toggle("pb-valley-active", !!on);
+    if (on) {
+      try { window.scrollTo(0, 0); } catch (err) {}
+      syncSheetPadding();
+    } else {
+      var sheet = document.getElementById("pb-valley-sheet");
+      if (sheet) sheet.style.padding = "";
+    }
     if (ink) ink.classList.toggle("is-on", !!on);
     if (grain) grain.classList.toggle("is-on", !!on);
   }
@@ -237,7 +288,6 @@
     setHomeY(pull, 1);
     setLine(p);
     paintInk(p);
-    if (edge) edge.style.background = "linear-gradient(to bottom, " + PAPER + ", " + skyBot() + ")";
   }
 
   function worldSrc() {
@@ -245,7 +295,7 @@
     ["sky", "wx", "at", "season"].forEach(function (k) {
       if (qs.get(k)) u.searchParams.set(k, qs.get(k));
     });
-    u.searchParams.set("v", "20261113e");
+    u.searchParams.set("v", "20261113k");
     return u.pathname + u.search;
   }
 
@@ -438,13 +488,11 @@
   }
 
   function fadeSheets(from, to, ms, done) {
-    markHomeSlide();
+    var sheet = ensureHomeSheet();
     fadeClock(ms, function (u) {
       var v = from + (to - from) * u;
-      for (var i = 0; i < sheetEls.length; i++) {
-        sheetEls[i].style.transition = "none";
-        sheetEls[i].style.opacity = String(v);
-      }
+      sheet.style.transition = "none";
+      sheet.style.opacity = String(v);
     }, done);
   }
 
@@ -679,7 +727,7 @@
   function gotoState(name) {
     return new Promise(function (resolve) {
       freezePull = true;
-      beginLoad();
+      if (name !== "hint") beginLoad();
       if (name === "hint") {
         pull = 0;
         mode = "home";
@@ -766,6 +814,9 @@
       else if (location.hash === "#world") openDirect();
     });
     if (location.hash === "#world") openDirect();
+    /* Sky canvas is inserted on DOMContentLoaded; wrap after it exists. */
+    ensureHomeSheet();
+    setTimeout(ensureHomeSheet, 0);
     var want = qs.get("pbValley");
     if (want) {
       /* Used by the frame-capture script. */

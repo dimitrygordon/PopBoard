@@ -11989,14 +11989,31 @@ function flyInMidCam(landCam, startCam) {
 
 function flyInCamAt(e) {
   const a = tour.from, m = tour.mid, b = tour.to;
-  const o = 1 - e;
-  const cam = {
-    x: o * o * a.x + 2 * o * e * m.x + e * e * b.x,
-    y: o * o * a.y + 2 * o * e * m.y + e * e * b.y,
-    z: o * o * a.z + 2 * o * e * m.z + e * e * b.z,
-    heading: lerpAngle(a.heading, b.heading, e),
-    pitch: a.pitch + (b.pitch - a.pitch) * e
-  };
+  let cam;
+  // Embed dive: two legs so t=0.5 is actually inside the mid cloud layer.
+  // The quadratic Bezier never visits `m` (it only uses it as a control
+  // point) and read as a high map overview. Standalone fly-in is unchanged.
+  if (EMBED && embedLockFly && m && a && b) {
+    const t = e <= 0.5 ? (e / 0.5) : ((e - 0.5) / 0.5);
+    const from = e <= 0.5 ? a : m;
+    const to = e <= 0.5 ? m : b;
+    cam = {
+      x: from.x + (to.x - from.x) * t,
+      y: from.y + (to.y - from.y) * t,
+      z: from.z + (to.z - from.z) * t,
+      heading: lerpAngle(from.heading, to.heading, t),
+      pitch: from.pitch + (to.pitch - from.pitch) * t
+    };
+  } else {
+    const o = 1 - e;
+    cam = {
+      x: o * o * a.x + 2 * o * e * m.x + e * e * b.x,
+      y: o * o * a.y + 2 * o * e * m.y + e * e * b.y,
+      z: o * o * a.z + 2 * o * e * m.z + e * e * b.z,
+      heading: lerpAngle(a.heading, b.heading, e),
+      pitch: a.pitch + (b.pitch - a.pitch) * e
+    };
+  }
   const gy = yOf(heightWorld(cam.x, cam.z));
   if (cam.y < gy + 24) cam.y = gy + 24;
   return cam;
@@ -12036,12 +12053,14 @@ function openingLand() {
 function pickDiveCloud(land, wantCirrus) {
   const heading = land.heading;
   let best = null, bestScore = 1e9;
+  let fallback = null, fallbackSx = 0;
   for (let i = 0; i < volCloudItems.length; i++) {
     const it = volCloudItems[i];
     if (!it || it.shaft || it.flat) continue;
     const isCirrus = !!it.cirrus;
     if (wantCirrus !== isCirrus) continue;
     if (!wantCirrus && it.sx < 350) continue;
+    if (it.sx > fallbackSx) { fallbackSx = it.sx; fallback = it; }
     const dx = it.homeX - land.x, dz = it.homeZ - land.z;
     const back = -(dx * Math.sin(heading) + dz * Math.cos(heading));
     const side = Math.abs(-dx * Math.cos(heading) + dz * Math.sin(heading));
@@ -12050,7 +12069,7 @@ function pickDiveCloud(land, wantCirrus) {
     const score = side * 1.2 + Math.abs(back - targetBack);
     if (score < bestScore) { bestScore = score; best = it; }
   }
-  return best;
+  return best || fallback;
 }
 
 function diveStartCam(land) {
@@ -12066,14 +12085,80 @@ function diveStartCam(land) {
 }
 
 function diveMidCam(land, start) {
-  // Through a large existing cumulus on the way down to JHS.
-  const heading = lerpAngle(start.heading, land.heading, 0.55);
+  // Sit inside a large existing cumulus so the mid frame is through a layer,
+  // with the valley only glimpsed through gaps — not a high map overview.
+  const heading = lerpAngle(start.heading, land.heading, 0.5);
   const cloud = pickDiveCloud(land, false);
-  const x = cloud ? cloud.homeX : (start.x + (land.x - start.x) * 0.58);
-  const z = cloud ? cloud.homeZ : (start.z + (land.z - start.z) * 0.58);
-  const y = cloud ? cloud.homeY : (groundAt(x, z) + 980);
-  const pitch = start.pitch + (land.pitch - start.pitch) * 0.45;
+  let x, y, z, pitch;
+  if (cloud) {
+    const along = Math.max(80, cloud.sx * 0.18);
+    x = cloud.homeX + Math.sin(heading) * along * 0.2;
+    z = cloud.homeZ + Math.cos(heading) * along * 0.2;
+    y = cloud.homeY - (cloud.sy || cloud.sx * 0.6) * 0.12;
+    // Milder than the landing pitch so cloud masses fill most of the frame.
+    pitch = (start.pitch * 0.55) + (land.pitch * 0.25) - 0.04;
+  } else {
+    x = start.x + (land.x - start.x) * 0.45;
+    z = start.z + (land.z - start.z) * 0.45;
+    y = start.y + (land.y - start.y) * 0.4;
+    pitch = start.pitch + (land.pitch - start.pitch) * 0.3;
+  }
   return { x: x, y: y, z: z, heading: heading, pitch: pitch };
+}
+
+let diveCloudBackup = null;
+
+function restoreDiveClouds() {
+  if (!diveCloudBackup) return;
+  for (let i = 0; i < diveCloudBackup.length; i++) {
+    const b = diveCloudBackup[i];
+    if (!b.it) continue;
+    b.it.homeX = b.homeX;
+    b.it.homeY = b.homeY;
+    b.it.homeZ = b.homeZ;
+    b.it.sx = b.sx;
+    b.it.sy = b.sy;
+  }
+  diveCloudBackup = null;
+}
+
+function stageDiveClouds(mid, land) {
+  if (!EMBED) return;
+  restoreDiveClouds();
+  if (!mid) return;
+  const heading = mid.heading;
+  // Existing large cumulus, nearest the mid camera, nudged beside the path so
+  // they fill the mid frame. Restored on land and on the way back.
+  const cands = [];
+  for (let i = 0; i < volCloudItems.length; i++) {
+    const it = volCloudItems[i];
+    if (!it || it.shaft || it.flat || it.cirrus) continue;
+    if (it.sx < 300) continue;
+    const d = Math.hypot(it.homeX - mid.x, it.homeY - mid.y, it.homeZ - mid.z);
+    cands.push({ it: it, d: d });
+  }
+  cands.sort(function (a, b) { return a.d - b.d; });
+  const slots = [
+    { side: -0.55, along: 40, up: 40 },
+    { side: 0.70, along: -30, up: 20 },
+    { side: 0.10, along: -180, up: 90 }
+  ];
+  diveCloudBackup = [];
+  const n = Math.min(3, cands.length, slots.length);
+  for (let i = 0; i < n; i++) {
+    const it = cands[i].it;
+    diveCloudBackup.push({ it: it, homeX: it.homeX, homeY: it.homeY, homeZ: it.homeZ, sx: it.sx, sy: it.sy });
+    const sl = slots[i];
+    const dist = Math.max(it.sx * 0.35, 180);
+    it.homeX = mid.x + Math.sin(heading) * sl.along + (-Math.cos(heading)) * sl.side * dist;
+    it.homeZ = mid.z + Math.cos(heading) * sl.along + (Math.sin(heading)) * sl.side * dist;
+    it.homeY = mid.y + sl.up;
+    if (it.sx < 900) {
+      const k = 900 / it.sx;
+      it.sx = 900;
+      it.sy = (it.sy || it.sx * 0.7) * k;
+    }
+  }
 }
 
 function prepareEmbedDive() {
@@ -12094,6 +12179,7 @@ function prepareEmbedDive() {
   tour.duration = 1.8;
   tour.t = 0;
   tour.phase = "hold";
+  stageDiveClouds(tour.mid, land.cam);
   applyTourCam(tour.from);
   if (glOk) renderer.render(scene, camera);
   notifyParent("ready");
@@ -12127,6 +12213,7 @@ function startEmbedDive() {
 }
 
 function startEmbedExit() {
+  restoreDiveClouds();
   const here = currentTourCam() || (tour.parked ? tour.parked : null);
   const land = openingLand();
   const start = land ? diveStartCam(land.cam) : here;
@@ -12158,6 +12245,7 @@ function startEmbedExit() {
 }
 
 function onEmbedLanded() {
+  restoreDiveClouds();
   embedLockFly = false;
   embedHideToggle = false;
   embedLanded = true;

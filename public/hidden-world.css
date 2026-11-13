@@ -34,15 +34,22 @@ body.la-on #pb-valley-hint,
   left: 0;
   right: 0;
   bottom: 0;
-  height: 24px;
+  /* Taller than 24px so the cream feathers into the sky; no hard top edge. */
+  height: 56px;
   z-index: 5;
   pointer-events: none;
-  background: linear-gradient(to bottom, #EDE6D6, var(--la-sky-bot, #16303e));
+  background: linear-gradient(to top,
+    #EDE6D6 0%,
+    rgba(237, 230, 214, 0.55) 32%,
+    rgba(237, 230, 214, 0.18) 62%,
+    transparent 100%);
 }
 
 #pb-valley-hint {
   position: fixed;
   left: 50%;
+  /* Production pill sits at bottom: 20px, height 44px. Keep the hint in the
+     20px gap under the pill, centered, so we do not move the pill. */
   bottom: 2px;
   transform: translateX(-50%);
   z-index: 6;
@@ -67,12 +74,6 @@ body.la-on #pb-valley-hint,
   border-radius: 3px;
 }
 
-/* Leave a 24px band clear under the Study Lab pill so the hint is readable. */
-body.la-on a.study-pill,
-#login:not(.hidden) ~ a.study-pill {
-  bottom: max(48px, calc(env(safe-area-inset-bottom, 0px) + 28px));
-}
-
 #pb-valley-ink,
 #pb-valley-grain {
   position: fixed;
@@ -86,7 +87,7 @@ body.la-on a.study-pill,
 
 #pb-valley-grain {
   z-index: 8;
-  opacity: 0.28;
+  opacity: 0.42;
   mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.14  0 0 0 0 0.12  0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   -webkit-mask-image: linear-gradient(to top, #000 0%, #000 0%, transparent 100%);
@@ -97,11 +98,12 @@ body.la-on a.study-pill,
   position: fixed;
   left: 50%;
   bottom: 0;
-  height: 1.25px;
+  height: 2px;
   width: min(100%, 100vw);
   z-index: 9;
   pointer-events: none;
   background: #3A362F;
+  box-shadow: 0 0 0 1px rgba(237, 230, 214, 0.75), 0 1px 0 rgba(255, 255, 255, 0.35);
   transform: translateX(-50%) scaleX(0);
   transform-origin: 50% 50%;
   border-radius: 1px;
@@ -142,6 +144,42 @@ html.pb-in-world body {
   overflow: hidden;
 }
 
+#pb-valley-sheet {
+  /* Layout-neutral wrapper; no transform at rest. */
+}
+/* While pulling, the sheet is a full-viewport containing block so
+   position:fixed children (sky, study pill) keep their rest placement
+   and then travel with the card. */
+html.pb-valley-active #pb-valley-sheet,
+html.pb-in-world #pb-valley-sheet {
+  /* Viewport-sized containing block: the study pill's bottom:20px must
+     stay 20px from the viewport, then the whole sheet translates. */
+  position: fixed;
+  inset: 0;
+  padding: 20px; /* match body padding so the card does not jump */
+  box-sizing: border-box;
+  z-index: 3;
+  will-change: transform;
+  overflow: visible;
+  background: var(--la-sky-bot, #EDE6D6);
+}
+html.pb-valley-active #la-sky,
+html.pb-in-world #la-sky {
+  /* Continue tonight's bottom sky under the canvas so a 33% translate
+     does not leave a hard horizon line. The sheet stays 100vh so the
+     pill's containing block does not grow. */
+  box-shadow: 0 50vh 0 0 var(--la-sky-bot);
+}
+@media (max-width: 640px) {
+  html.pb-valley-active #pb-valley-sheet,
+  html.pb-in-world #pb-valley-sheet {
+    padding: 12px;
+  }
+}
+html.pb-valley-active .la-card.la-enter,
+html.pb-valley-active a.study-pill {
+  animation: none !important;
+}
 .pb-home-slide {
   transition: none;
   will-change: transform;
