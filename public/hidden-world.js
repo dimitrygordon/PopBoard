@@ -165,12 +165,14 @@
   }
 
   function seedBlooms() {
-    /* 4 uneven watercolor washes — irregular placement and size, not a row. */
+    /* 3 overlapping wet blooms that bleed into each other as they rise. */
     blooms = [
-      { x: 0.16, lift: 0.42, rx: 0.22, ry: 0.38, rot: -18, graphite: true,  seed: 11, verts: 11 },
-      { x: 0.44, lift: 0.22, rx: 0.13, ry: 0.28, rot:  22, graphite: false, seed: 27, verts: 9 },
-      { x: 0.61, lift: 0.55, rx: 0.20, ry: 0.36, rot:  -8, graphite: true,  seed: 41, verts: 12 },
-      { x: 0.86, lift: 0.30, rx: 0.14, ry: 0.32, rot:  16, graphite: false, seed: 59, verts: 10 }
+      { x: 0.26, lift: 0.36, rx: 0.40, ry: 0.62, rot: -10, seed: 11, graph: 0.22,
+        tendrils: [{ ox: -0.22, oy: -0.82, s: 0.38 }, { ox: 0.18, oy: -1.05, s: 0.30 }, { ox: 0.42, oy: -0.58, s: 0.34 }] },
+      { x: 0.52, lift: 0.48, rx: 0.38, ry: 0.70, rot: 8, seed: 29, graph: 0.12,
+        tendrils: [{ ox: -0.30, oy: -0.88, s: 0.36 }, { ox: 0.08, oy: -1.12, s: 0.28 }, { ox: 0.36, oy: -0.70, s: 0.32 }] },
+      { x: 0.78, lift: 0.32, rx: 0.34, ry: 0.58, rot: -6, seed: 47, graph: 0.18,
+        tendrils: [{ ox: -0.28, oy: -0.78, s: 0.34 }, { ox: 0.14, oy: -0.98, s: 0.26 }] }
     ];
   }
 
@@ -218,6 +220,27 @@
       Math.round(rgb[1] * 0.42 + paper[1] * 0.58),
       Math.round(rgb[2] * 0.42 + paper[2] * 0.58)
     ];
+  }
+
+  function mixRgb(a, b, t) {
+    return [
+      Math.round(a[0] + (b[0] - a[0]) * t),
+      Math.round(a[1] + (b[1] - a[1]) * t),
+      Math.round(a[2] + (b[2] - a[2]) * t)
+    ];
+  }
+
+  function dayWash(graph) {
+    /* Muted sky blue with a little graphite. */
+    return mixRgb(softSky(skyBlue()), GRAPHITE, graph == null ? 0.16 : graph);
+  }
+
+  function nightWash() {
+    return [42, 53, 80]; /* #2A3550 */
+  }
+
+  function rgba(c, a) {
+    return "rgba(" + c[0] + "," + c[1] + "," + c[2] + "," + a.toFixed(3) + ")";
   }
 
   function clearInk() {
@@ -289,9 +312,10 @@
 
     var maxH;
     if (p <= 1) {
-      maxH = Math.min(BLOOM_MAX_FRAC * h, p * BLOOM_MAX_FRAC * h * 1.05);
-      /* Stay below the pencil line, which sits at `pull` from the bottom. */
-      if (pull > 0) maxH = Math.min(maxH, Math.max(0, pull - 4));
+      /* Spreads upward with the pull; never more than 25% VH at threshold,
+         and always below the pencil line. */
+      maxH = BLOOM_MAX_FRAC * h * p;
+      if (pull > 0) maxH = Math.min(maxH, Math.max(0, pull - 8));
     } else {
       maxH = Math.min(h, BLOOM_MAX_FRAC * h + (p - 1) * h);
     }
@@ -362,63 +386,84 @@
     grainG.appendChild(grainRect);
 
     var root = document.createElementNS(NS, "g");
-    root.setAttribute("clip-path", "url(#pb-wash-clip)");
+    /* Clip to the torn paper, not a straight 25% band, so tendrils stay feathered. */
+    root.setAttribute("clip-path", "url(#pb-paper-clip)");
 
     var i;
     for (i = 0; i < blooms.length; i++) {
       var b = blooms[i];
-      var grow = Math.min(1, 0.35 + p * 0.85);
-      var rx = b.rx * w * grow;
-      var ry = Math.min(b.ry * maxH * 1.15, maxH * 0.48) * (0.75 + 0.25 * grow);
+      var rx = b.rx * w * (0.55 + 0.45 * Math.min(1, p));
+      var ry = Math.min(b.ry * maxH, maxH * 0.72);
       var cx = b.x * w;
-      var cy = h - Math.max(ry * 0.85, Math.min(maxH - 4, b.lift * maxH + ry * 0.15));
-      if (cy - ry < h - maxH + 2) cy = h - maxH + ry + 2;
-      if (cy + ry > h - 2) cy = h - 2 - ry;
+      var cy = h - Math.min(maxH - 6, ry * 0.55 + b.lift * maxH * 0.25);
+      if (cy - ry < h - maxH + 4) cy = h - maxH + ry + 4;
+      if (cy + ry > h + ry * 0.35) cy = h + ry * 0.35;
+
+      var col = night ? nightWash() : dayWash(b.graph);
+      var dark = mixRgb(col, night ? [20, 24, 36] : GRAPHITE, 0.28);
+      var a0 = 0.28 + 0.10 * Math.min(1, p); /* interior 28-38% */
+      a0 = Math.max(0.25, Math.min(0.40, a0));
+
+      var grad = document.createElementNS(NS, "radialGradient");
+      grad.setAttribute("id", "pb-wet-g" + i);
+      grad.setAttribute("cx", "50%");
+      grad.setAttribute("cy", "58%");
+      grad.setAttribute("r", "50%");
+      var stops = [
+        [0.00, col, a0],
+        [0.55, col, a0 * 0.82],
+        [0.84, col, a0 * 0.55],
+        [0.91, dark, Math.min(0.42, a0 * 1.05)], /* ~2-3px pooled edge */
+        [0.97, col, 0.08],
+        [1.00, col, 0]
+      ];
+      var s;
+      for (s = 0; s < stops.length; s++) {
+        var st = document.createElementNS(NS, "stop");
+        st.setAttribute("offset", (stops[s][0] * 100).toFixed(1) + "%");
+        st.setAttribute("stop-color", rgba(stops[s][1], stops[s][2]));
+        grad.appendChild(st);
+      }
+      defs.appendChild(grad);
 
       var filt = document.createElementNS(NS, "filter");
-      filt.setAttribute("id", "pb-wash-" + i);
-      filt.setAttribute("x", "-45%");
-      filt.setAttribute("y", "-45%");
-      filt.setAttribute("width", "190%");
-      filt.setAttribute("height", "190%");
+      filt.setAttribute("id", "pb-wet-" + i);
+      filt.setAttribute("x", "-50%");
+      filt.setAttribute("y", "-60%");
+      filt.setAttribute("width", "200%");
+      filt.setAttribute("height", "220%");
       filt.setAttribute("color-interpolation-filters", "sRGB");
       var turb = document.createElementNS(NS, "feTurbulence");
       turb.setAttribute("type", "fractalNoise");
-      turb.setAttribute("baseFrequency", (0.018 + 0.01 * (i % 3)).toFixed(3) + " " + (0.026 + 0.008 * ((i + 1) % 3)).toFixed(3));
+      turb.setAttribute("baseFrequency", (0.016 + 0.006 * (i % 3)).toFixed(3) + " " + (0.028 + 0.008 * i).toFixed(3));
       turb.setAttribute("numOctaves", "3");
       turb.setAttribute("seed", String(b.seed));
       turb.setAttribute("result", "turb");
       var disp = document.createElementNS(NS, "feDisplacementMap");
       disp.setAttribute("in", "SourceGraphic");
       disp.setAttribute("in2", "turb");
-      disp.setAttribute("scale", String(16 + i * 5));
+      disp.setAttribute("scale", String(22 + i * 6));
       disp.setAttribute("xChannelSelector", "R");
       disp.setAttribute("yChannelSelector", "G");
       filt.appendChild(turb);
       filt.appendChild(disp);
       defs.appendChild(filt);
 
-      var col = night
-        ? (b.graphite ? GRAPHITE : nightBlue)
-        : (b.graphite ? GRAPHITE : blue);
-      var aFill = (b.graphite ? 0.18 : 0.16) * Math.min(1, 0.45 + p * 0.7);
-      aFill = Math.max(0.10, Math.min(0.25, aFill));
-      var aEdge = Math.max(0.16, Math.min(0.28, aFill * 1.35));
-
-      var d = washPath(cx, cy, rx, ry, b.rot, b.seed, b.verts);
       var g = document.createElementNS(NS, "g");
-      g.setAttribute("filter", "url(#pb-wash-" + i + ")");
-      var body = document.createElementNS(NS, "path");
-      body.setAttribute("d", d);
-      body.setAttribute("fill", "rgba(" + col[0] + "," + col[1] + "," + col[2] + "," + aFill.toFixed(3) + ")");
-      var pool = document.createElementNS(NS, "path");
-      pool.setAttribute("d", d);
-      pool.setAttribute("fill", "none");
-      pool.setAttribute("stroke", "rgba(" + col[0] + "," + col[1] + "," + col[2] + "," + aEdge.toFixed(3) + ")");
-      pool.setAttribute("stroke-width", String(Math.max(6, Math.min(rx, ry) * 0.14)));
-      pool.setAttribute("stroke-linejoin", "round");
-      g.appendChild(body);
-      g.appendChild(pool);
+      g.setAttribute("filter", "url(#pb-wet-" + i + ")");
+      var parts = [{ ox: 0, oy: 0, s: 1 }].concat(b.tendrils || []);
+      var k;
+      for (k = 0; k < parts.length; k++) {
+        var pr = parts[k];
+        var el = document.createElementNS(NS, "ellipse");
+        el.setAttribute("cx", (cx + pr.ox * rx).toFixed(1));
+        el.setAttribute("cy", (cy + pr.oy * ry).toFixed(1));
+        el.setAttribute("rx", (rx * pr.s).toFixed(1));
+        el.setAttribute("ry", (ry * pr.s * (k === 0 ? 1 : 0.85)).toFixed(1));
+        if (b.rot && k === 0) el.setAttribute("transform", "rotate(" + b.rot + " " + cx.toFixed(1) + " " + cy.toFixed(1) + ")");
+        el.setAttribute("fill", "url(#pb-wet-g" + i + ")");
+        g.appendChild(el);
+      }
       root.appendChild(g);
     }
 
