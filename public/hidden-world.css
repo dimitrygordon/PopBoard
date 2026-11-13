@@ -1,0 +1,153 @@
+/* Hidden Patoka Valley: hint, rubber-band pull, and cloud dive.
+   Loaded on the homepage only as a small stylesheet. World assets stay off
+   the first-load path until the user starts a pull or opens #world. */
+
+@font-face {
+  font-family: "Patrick Hand";
+  src: url("/fonts/patrick-hand.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: optional;
+}
+
+#pb-valley-edge,
+#pb-valley-hint,
+#pb-valley-ink,
+#pb-valley-line,
+#pb-valley-grain,
+#pb-valley-world {
+  display: none;
+}
+
+/* Hint + 24px sky fade only on the login homepage, not the logged-in board. */
+body.la-on #pb-valley-edge,
+#login:not(.hidden) ~ #pb-valley-edge {
+  display: block;
+}
+body.la-on #pb-valley-hint,
+#login:not(.hidden) ~ #pb-valley-hint {
+  display: block;
+}
+
+#pb-valley-edge {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24px;
+  z-index: 5;
+  pointer-events: none;
+  background: linear-gradient(to bottom, #EDE6D6, var(--la-sky-bot, #16303e));
+}
+
+#pb-valley-hint {
+  position: fixed;
+  left: 50%;
+  bottom: 2px;
+  transform: translateX(-50%);
+  z-index: 6;
+  margin: 0;
+  padding: 0 8px;
+  border: 0;
+  background: none;
+  font-family: "Patrick Hand", "Architects Daughter", cursive;
+  font-size: 13px;
+  line-height: 20px;
+  letter-spacing: 0.02em;
+  color: #2A2118;
+  opacity: 0.6;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+#pb-valley-hint:focus { outline: none; }
+#pb-valley-hint:focus-visible {
+  outline: 2px solid #3A362F;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* Leave a 24px band clear under the Study Lab pill so the hint is readable. */
+body.la-on a.study-pill,
+#login:not(.hidden) ~ a.study-pill {
+  bottom: max(48px, calc(env(safe-area-inset-bottom, 0px) + 28px));
+}
+
+#pb-valley-ink,
+#pb-valley-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  display: none;
+}
+#pb-valley-ink.is-on,
+#pb-valley-grain.is-on { display: block; }
+
+#pb-valley-grain {
+  z-index: 8;
+  opacity: 0.28;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.14  0 0 0 0 0.12  0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 0%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 0%, #000 0%, transparent 100%);
+}
+
+#pb-valley-line {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  height: 1.25px;
+  width: min(100%, 100vw);
+  z-index: 9;
+  pointer-events: none;
+  background: #3A362F;
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: 50% 50%;
+  border-radius: 1px;
+}
+#pb-valley-line.is-on { display: block; }
+
+#pb-valley-world {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  z-index: 4;
+  background: transparent;
+  pointer-events: none;
+}
+#pb-valley-world.is-on { display: block; }
+html.pb-in-world #pb-valley-world {
+  display: block;
+  pointer-events: auto;
+  z-index: 20;
+}
+
+/* During a pull or dive, hide the hint and sky fade; no copy on the dive. */
+html.pb-valley-active #pb-valley-hint,
+html.pb-valley-active #pb-valley-edge,
+html.pb-in-world #pb-valley-hint,
+html.pb-in-world #pb-valley-edge {
+  display: none !important;
+}
+
+html.pb-valley-active,
+html.pb-in-world {
+  overflow: hidden;
+}
+html.pb-valley-active body,
+html.pb-in-world body {
+  overflow: hidden;
+}
+
+.pb-home-slide {
+  transition: none;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #pb-valley-hint { transition: opacity 0.4s ease; }
+  .pb-home-slide { transition: opacity 0.4s ease; }
+}

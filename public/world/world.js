@@ -83,6 +83,7 @@ let jhsTiming = { t0: 0, firstPaint: 0, schoolReady: 0, schoolFile: "", campusFi
 let jhsUpgradeQueued = false;
 
 const qs = new URLSearchParams(location.search);
+const EMBED = qs.get("embed") === "1";
 const dbgSky = qs.get("sky");
 const dbgWx = qs.get("wx");
 const dbgStrike = (qs.get("strike") || "").toLowerCase();
@@ -9678,6 +9679,11 @@ function noteInput() {
 
 function onWheel(e) {
   e.preventDefault();
+  if (EMBED && (tour.phase === "flyin" || tour.phase === "embedExit")) return;
+  if (EMBED && embedLanded && e.deltaY < 0 && e.clientY < 56) {
+    notifyParent("exit-gesture", { via: "wheel" });
+    return;
+  }
   if (tour.phase === "flyin") {
     skipFlyIn();
     return;
@@ -10301,6 +10307,10 @@ function setLandmarkLabel(text, instant) {
 
 function updateLandmarkButton() {
   if (!landmarkBtn) return;
+  if (EMBED && embedHideToggle) {
+    landmarkBtn.hidden = true;
+    return;
+  }
   const stops = getTourStops();
   if (!stops.length) return;
   const shown = displayedLandmarkIndex();
@@ -10345,6 +10355,10 @@ function onLandmarkButton(e) {
 function bindLandmarkButton() {
   landmarkBtn = document.getElementById("landmark-btn");
   if (!landmarkBtn) return;
+  if (EMBED) {
+    embedHideToggle = true;
+    landmarkBtn.hidden = true;
+  }
   landmarkNameWrap = landmarkBtn.querySelector(".lm-names");
   landmarkBtn.addEventListener("pointerdown", function (e) { e.stopPropagation(); });
   landmarkBtn.addEventListener("click", onLandmarkButton);
@@ -11944,6 +11958,7 @@ function arriveAtStop(cam, now, fadeLabel) {
   if (fadeLabel && stop) fadeInLandmarkLabel(stopLabel(stop));
   else if (stop) setLandmarkLabel(stopLabel(stop), true);
   updateLandmarkButton();
+  if (EMBED && embedLockFly && tour.phase !== "embedExit") onEmbedLanded();
 }
 
 function flyInStartCam(landCam) {
@@ -11985,6 +12000,202 @@ function flyInCamAt(e) {
   return cam;
 }
 
+
+let embedHideToggle = false;
+let embedLanded = false;
+let embedLockFly = false;
+let embedExitPull = 0;
+let embedWallStart = 0;
+
+function notifyParent(type, extra) {
+  if (!EMBED) return;
+  const msg = Object.assign({ source: "pb-world", type: type }, extra || {});
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage(msg, location.origin);
+    }
+  } catch (err) {}
+}
+
+function groundAt(x, z) {
+  return yOf(heightWorld(x, z));
+}
+
+function openingLand() {
+  const stops = getTourStops();
+  if (!stops.length) return null;
+  let i = 0;
+  for (let k = 0; k < stops.length; k++) {
+    if (stops[k].name === OPENING_STOP) { i = k; break; }
+  }
+  return { index: i, stop: stops[i], cam: tourCameraAt(stops[i]) };
+}
+
+function pickDiveCloud(land, wantCirrus) {
+  const heading = land.heading;
+  let best = null, bestScore = 1e9;
+  for (let i = 0; i < volCloudItems.length; i++) {
+    const it = volCloudItems[i];
+    if (!it || it.shaft || it.flat) continue;
+    const isCirrus = !!it.cirrus;
+    if (wantCirrus !== isCirrus) continue;
+    if (!wantCirrus && it.sx < 350) continue;
+    const dx = it.homeX - land.x, dz = it.homeZ - land.z;
+    const back = -(dx * Math.sin(heading) + dz * Math.cos(heading));
+    const side = Math.abs(-dx * Math.cos(heading) + dz * Math.sin(heading));
+    const targetBack = wantCirrus ? 700 : 380;
+    if (back < 80 || back > 1600) continue;
+    const score = side * 1.2 + Math.abs(back - targetBack);
+    if (score < bestScore) { bestScore = score; best = it; }
+  }
+  return best;
+}
+
+function diveStartCam(land) {
+  // Through the existing cirrus layer, looking toward the locked JHS view.
+  const heading = land.heading;
+  const cloud = pickDiveCloud(land, true);
+  const back = 700;
+  const x = cloud ? cloud.homeX : (land.x - Math.sin(heading) * back);
+  const z = cloud ? cloud.homeZ : (land.z - Math.cos(heading) * back);
+  const y = cloud ? (cloud.homeY + 40) : (groundAt(x, z) + 2550);
+  const pitch = land.pitch * 0.4 - 0.10;
+  return { x: x, y: y, z: z, heading: heading, pitch: pitch };
+}
+
+function diveMidCam(land, start) {
+  // Through a large existing cumulus on the way down to JHS.
+  const heading = lerpAngle(start.heading, land.heading, 0.55);
+  const cloud = pickDiveCloud(land, false);
+  const x = cloud ? cloud.homeX : (start.x + (land.x - start.x) * 0.58);
+  const z = cloud ? cloud.homeZ : (start.z + (land.z - start.z) * 0.58);
+  const y = cloud ? cloud.homeY : (groundAt(x, z) + 980);
+  const pitch = start.pitch + (land.pitch - start.pitch) * 0.45;
+  return { x: x, y: y, z: z, heading: heading, pitch: pitch };
+}
+
+function prepareEmbedDive() {
+  const land = openingLand();
+  if (!land) return false;
+  embedHideToggle = true;
+  embedLanded = false;
+  embedLockFly = true;
+  if (landmarkBtn) landmarkBtn.hidden = true;
+  tour.stop = land.index;
+  tour.paused = true;
+  tour.enabled = false;
+  tour.manualTravel = false;
+  tour.parked = null;
+  tour.from = diveStartCam(land.cam);
+  tour.to = land.cam;
+  tour.mid = diveMidCam(land.cam, tour.from);
+  tour.duration = 1.8;
+  tour.t = 0;
+  tour.phase = "hold";
+  applyTourCam(tour.from);
+  if (glOk) renderer.render(scene, camera);
+  notifyParent("ready");
+  return true;
+}
+
+function startEmbedDive() {
+  const land = openingLand();
+  if (!land) return false;
+  if (REDUCE) {
+    embedLockFly = true;
+    embedHideToggle = true;
+    tour.stop = land.index;
+    arriveAtStop(land.cam, performance.now(), true);
+    return true;
+  }
+  if (embedLanded && (tour.phase === "hold" || tour.phase === "travel")) return true;
+  if (tour.phase === "flyin" && embedLockFly) return true;
+  if (!tour.from || !tour.to) prepareEmbedDive();
+  embedHideToggle = true;
+  embedLanded = false;
+  embedLockFly = true;
+  if (landmarkBtn) landmarkBtn.hidden = true;
+  tour.paused = true;
+  tour.t = 0;
+  tour.duration = 1.8;
+  tour.phase = "flyin";
+  embedWallStart = performance.now();
+  applyTourCam(tour.from);
+  return true;
+}
+
+function startEmbedExit() {
+  const here = currentTourCam() || (tour.parked ? tour.parked : null);
+  const land = openingLand();
+  const start = land ? diveStartCam(land.cam) : here;
+  const mid = (land && here) ? diveMidCam(land.cam, start) : here;
+  if (!here) {
+    notifyParent("exit-done");
+    return false;
+  }
+  embedHideToggle = true;
+  embedLanded = false;
+  embedLockFly = true;
+  if (landmarkBtn) landmarkBtn.hidden = true;
+  if (REDUCE) {
+    applyTourCam(start);
+    if (glOk) renderer.render(scene, camera);
+    notifyParent("exit-done");
+    return true;
+  }
+  tour.from = here;
+  tour.mid = mid;
+  tour.to = start;
+  tour.t = 0;
+  tour.duration = 1.8;
+  tour.phase = "embedExit";
+  embedWallStart = performance.now();
+  tour.paused = true;
+  tour.parked = null;
+  return true;
+}
+
+function onEmbedLanded() {
+  embedLockFly = false;
+  embedHideToggle = false;
+  embedLanded = true;
+  if (landmarkBtn) landmarkBtn.hidden = false;
+  updateLandmarkButton();
+  notifyParent("landed");
+}
+
+function bindEmbedExit() {
+  window.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape") return;
+    if (!embedLanded && tour.phase !== "hold") return;
+    e.preventDefault();
+    notifyParent("exit-gesture", { via: "esc" });
+  });
+  let startY = 0, tracking = false;
+  window.addEventListener("pointerdown", function (e) {
+    if (!embedLanded || e.clientY > 56) return;
+    tracking = true;
+    startY = e.clientY;
+  }, true);
+  window.addEventListener("pointermove", function (e) {
+    if (!tracking) return;
+    // Finger moving down (scroll up toward home, which sits above the world).
+    if (e.clientY - startY > Math.min(72, window.innerHeight * 0.12)) {
+      tracking = false;
+      notifyParent("exit-gesture", { via: "drag" });
+    }
+  }, true);
+  window.addEventListener("pointerup", function () { tracking = false; }, true);
+  window.addEventListener("message", function (e) {
+    if (e.origin !== location.origin) return;
+    const d = e.data || {};
+    if (d.source !== "pb-home") return;
+    if (d.type === "start-dive") startEmbedDive();
+    else if (d.type === "hold-clouds") prepareEmbedDive();
+    else if (d.type === "start-exit") startEmbedExit();
+  });
+}
+
 function startFlyIn() {
   const stops = getTourStops();
   if (!stops.length) return;
@@ -12005,6 +12216,7 @@ function startFlyIn() {
 
 function skipFlyIn() {
   if (tour.phase !== "flyin") return;
+  if (EMBED && embedLockFly) return;
   const land = tour.to || (getTourStops()[0] && tourCameraAt(getTourStops()[0]));
   arriveAtStop(land, performance.now(), true);
 }
@@ -12101,8 +12313,18 @@ function resumeTour(now) {
 
 function stepTour(dt, now) {
   if (state.frozen) return;
+  if (tour.phase === "embedExit" && !REDUCE) {
+    if (EMBED && embedWallStart) tour.t = (now - embedWallStart) / 1000;
+    else tour.t += dt;
+    const u = Math.max(0, Math.min(1, tour.t / Math.max(0.01, tour.duration)));
+    const e = easeInOutCubic(u);
+    applyTourCam(flyInCamAt(e));
+    if (u >= 1) notifyParent("exit-done");
+    return;
+  }
   if (tour.phase === "flyin" && !REDUCE) {
-    tour.t += dt;
+    if (EMBED && embedWallStart) tour.t = (now - embedWallStart) / 1000;
+    else tour.t += dt;
     const u = Math.max(0, Math.min(1, tour.t / Math.max(0.01, tour.duration)));
     const e = easeInOutCubic(u);
     const cam = flyInCamAt(e);
@@ -12337,6 +12559,15 @@ function startLoop() {
     requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
+  // Iframes hidden under the homepage can have rAF throttled; keep the
+  // embed dive on a wall-clock timer so the 1.8s drop still completes.
+  if (EMBED) {
+    setInterval(function () {
+      const now = performance.now();
+      if (state.lastT && now - state.lastT < 20) return;
+      tick(now);
+    }, 16);
+  }
 }
 
 function frameStats() {
@@ -12643,6 +12874,24 @@ function scanFloatingBuildings(gapM) {
       };
     },
     tourStops: function () { return getTourStops(); },
+    embed: EMBED,
+    startDive: startEmbedDive,
+    startExit: startEmbedExit,
+    holdClouds: prepareEmbedDive,
+    holdDiveAt: function (u) {
+      if (!tour.from || !tour.to) prepareEmbedDive();
+      const e = easeInOutCubic(Math.max(0, Math.min(1, u)));
+      tour.t = (tour.duration || 1.8) * Math.max(0, Math.min(1, u));
+      tour.phase = "flyin";
+      embedLockFly = true;
+      embedHideToggle = true;
+      embedLanded = false;
+      if (landmarkBtn) landmarkBtn.hidden = true;
+      applyTourCam(flyInCamAt(e));
+      state.frozen = true;
+      if (glOk) renderer.render(scene, camera);
+      return { u: u, t: tour.t };
+    },
     forceStrike: forceStrike,
     lightningInfo: function () {
       return {
@@ -12920,6 +13169,8 @@ async function init() {
   const skipFlight = REDUCE || qs.has("pathT") || qs.get("freeze") === "1";
   if (qs.has("pathT")) {
     placeCamera();
+  } else if (EMBED && !skipFlight) {
+    prepareEmbedDive();
   } else if (skipFlight) {
     const stops = getTourStops();
     tour.stop = 0;
@@ -12930,10 +13181,19 @@ async function init() {
       updatePlaceCaption(stops[0].name);
       setLandmarkLabel(stopLabel(stops[0]), true);
     }
+    if (EMBED) {
+      embedHideToggle = false;
+      embedLanded = true;
+      embedLockFly = false;
+      if (landmarkBtn) landmarkBtn.hidden = false;
+      notifyParent("ready");
+      notifyParent("landed");
+    }
   } else {
     startFlyIn();
   }
   bindLandmarkButton();
+  if (EMBED) bindEmbedExit();
   fillGrass(camera.position.x, camera.position.z);
   if (dbgStrike === "bolt" || dbgStrike === "cloud") {
     wx.kind = wx.kind === "storm" ? wx.kind : (dbgWx === "storm" ? "storm" : wx.kind);
