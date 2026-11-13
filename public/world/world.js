@@ -2992,7 +2992,7 @@ void main(){
 `;
 
 const VOL_CLOUD_FRAG = /* glsl */`
-uniform float uSeed, uTime, uKind, uGray, uRain, uReduce, uNight, uDeck, uShaft, uCirrus, uStreak, uTwi, uEdgeFade, uAlphaMul, uStorm;
+uniform float uSeed, uTime, uKind, uGray, uRain, uReduce, uNight, uDeck, uShaft, uCirrus, uStreak, uTwi, uEdgeFade, uAlphaMul, uStorm, uDive;
 uniform vec3 uInk, uNightMul, uMoonDir, uLook, uSunDir;
 uniform vec3 uStrikePos, uStrikeOrigin;
 uniform float uStrikeAmt, uStrikeRad;
@@ -3208,6 +3208,13 @@ void main(){
       vec3 duskUnder = mix(rose, amber, sunNear);
       wash = mix(paper, duskUnder, under * 0.92);
     }
+    if (uDive > 0.5) {
+      // A hard horizontal underside reads as a clipping plane through the
+      // billboard. Use a gentle rounded belly shade instead.
+      float belly = 1.0 - smoothstep(-0.20, 0.62, p.y);
+      wash = mix(paper, mix(paper, shade, 0.42), belly * 0.40);
+      under = belly * 0.45;
+    }
     float body = 1.0;
     float dens = step(0.36, toneKey);
     float ang0 = -0.08 + 0.18 * p.x * (1.0 - rel);
@@ -3256,15 +3263,24 @@ void main(){
   if (uNight > 0.01) {
     vec3 nightBody = vec3(0.085, 0.11, 0.22) * mix(1.0, 0.78, max(uGray, uDeck));
     nightBody *= 0.90 + 0.14 * noise21(vWorld.xz * 0.02 + vUv * 6.0);
+    // Dive sprites only: a deep blue body with a faint cream moonlit rim so
+    // they read as clouds, not murky gray smudges. Unchanged off the dive.
+    if (uDive > 0.5) nightBody = vec3(0.165, 0.208, 0.314); // #2A3550
     vec3 nCol = mix(nightBody * 0.92, nightBody * 1.12, step(0.5, rel));
+    if (uDive > 0.5) nCol = mix(nightBody * 0.96, nightBody * 1.08, smoothstep(0.05, 0.90, rel));
     nCol = mix(nCol, uInk, clamp(hatch * 0.16, 0.0, 0.28));
     vec3 toFrag = normalize(vWorld - cameraPosition);
     float moonSide = clamp(dot(normalize(uMoonDir), toFrag), 0.0, 1.0);
     vec3 creamRim = vec3(0.93, 0.90, 0.82);
+    float topSide = smoothstep(0.12, 0.72, rel);
     nCol = mix(nCol, creamRim, rim * moonSide * 0.85);
+    if (uDive > 0.5) {
+      nCol = mix(nCol, creamRim, (0.24 * topSide + 0.55 * rim * max(moonSide, topSide)));
+    }
     col = mix(col, nCol, uNight);
     if (uDeck < 0.5 && uShaft < 0.5) {
       float edgeA = mix(0.22, 0.80, smoothstep(0.08, 0.48, b));
+      if (uDive > 0.5) edgeA = mix(0.55, 1.0, smoothstep(0.06, 0.34, b));
       alpha = mix(alpha, alpha * edgeA, uNight);
     }
     if (uRain > 0.5 && vUv.y < 0.55) {
@@ -3308,7 +3324,14 @@ void main(){
       col = mix(col, mix(col, creamLt, 0.2), fade * 0.15);
     }
   }
-  alpha *= uAlphaMul;
+  if (uDive > 0.5 && uAlphaMul < 0.995) {
+    // Eat inward from the silhouette; keep the body solid so the underside
+    // never becomes a gray see-through band (a fake horizontal clip).
+    float inward = smoothstep(0.04, 0.16 + 0.74 * (1.0 - uAlphaMul), b);
+    alpha *= inward;
+  } else {
+    alpha *= uAlphaMul;
+  }
   if (alpha < 0.06) discard;
   gl_FragColor = vec4(col, alpha);
 }
@@ -3347,6 +3370,7 @@ function makeVolCloudMat(kind, seed, gray) {
       uEdgeFade: { value: 1 },
       uStorm: { value: 0 },
       uAlphaMul: { value: 1 },
+      uDive: { value: 0 },
       uLook: { value: new THREE.Vector3(0, 0, 1) },
       uSunDir: { value: new THREE.Vector3(0.3, 0.8, 0.2) },
       uStrikePos: { value: new THREE.Vector3() },
@@ -3593,6 +3617,16 @@ function layoutVolClouds() {
         alphaMul *= embedDiveSpriteFade(it, x, y, z, cx, cy, cz);
       }
       if (it.mesh.material.uniforms.uAlphaMul) it.mesh.material.uniforms.uAlphaMul.value = alphaMul;
+      let diving = false;
+      if (EMBED && embedLockFly && diveCloudBackup) {
+        for (let di = 0; di < diveCloudBackup.length; di++) {
+          if (diveCloudBackup[di].it === it) { diving = true; break; }
+        }
+      }
+      if (it.mesh.material.uniforms.uDive) it.mesh.material.uniforms.uDive.value = diving ? 1 : 0;
+      // Dive sprites must not be sliced by a horizon/haze plane.
+      if (it.mesh.material.depthTest !== undefined) it.mesh.material.depthTest = !diving;
+      if (it.mesh) it.mesh.renderOrder = diving ? 20 : (it.shaft ? 2 : 1);
       if (!it.shaft) it.mesh.visible = alphaMul > 0.02;
     }
   }
@@ -12264,6 +12298,12 @@ function restoreDiveClouds() {
     b.it.homeZ = b.homeZ;
     b.it.sx = b.sx;
     b.it.sy = b.sy;
+    if (b.it.mesh && b.it.mesh.material) {
+      b.it.mesh.material.depthTest = true;
+      if (b.it.mesh.material.uniforms && b.it.mesh.material.uniforms.uDive) {
+        b.it.mesh.material.uniforms.uDive.value = 0;
+      }
+    }
   }
   diveCloudBackup = null;
 }
@@ -12303,9 +12343,9 @@ function stageDiveClouds(start, mid, low, land) {
   const slots = [
     { cam: start, pool: "cirrus", az: -26, distMul: 0.38, minDist: 1200, up: -40 },
     { cam: start, pool: "cirrus", az: 28, distMul: 0.40, minDist: 1300, up: 30 },
-    { cam: mid, pool: "cumulus", az: -22, distMul: 1.28, minDist: 700, up: -50 },
-    { cam: mid, pool: "cumulus", az: 20, distMul: 1.32, minDist: 700, up: -30 },
-    { cam: mid, pool: "cumulus", az: 6, distMul: 2.15, minDist: 1100, up: 80 },
+    { cam: mid, pool: "cumulus", az: -24, distMul: 1.28, minDist: 700, up: -20 },
+    { cam: mid, pool: "cumulus", az: 24, distMul: 1.32, minDist: 700, up: 10 },
+    { cam: mid, pool: "cumulus", az: 8, distMul: 2.20, minDist: 1200, up: 180 },
     { cam: low, pool: "cumulus", az: -18, distMul: 1.30, minDist: 700, up: -70 },
     { cam: low, pool: "cumulus", az: 24, distMul: 1.40, minDist: 750, up: -40 }
   ];
@@ -13192,6 +13232,10 @@ function scanFloatingBuildings(gapM) {
             ndc: [+v.x.toFixed(2), +v.y.toFixed(2)],
             inView: Math.abs(v.x) < 1.15 && Math.abs(v.y) < 1.15 && v.z < 1,
             alpha: +((it.mesh && it.mesh.material && it.mesh.material.uniforms && it.mesh.material.uniforms.uAlphaMul && it.mesh.material.uniforms.uAlphaMul.value) || 0).toFixed(2),
+            uDive: it.mesh && it.mesh.material && it.mesh.material.uniforms && it.mesh.material.uniforms.uDive ? it.mesh.material.uniforms.uDive.value : null,
+            depthTest: it.mesh && it.mesh.material ? it.mesh.material.depthTest : null,
+            renderOrder: it.mesh ? it.mesh.renderOrder : null,
+            homeY: +(it.homeY || 0).toFixed(1),
             u: +(Math.hypot(dx, dy, dz) / Math.max(1, it.sx)).toFixed(2)
           };
         })
