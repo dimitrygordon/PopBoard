@@ -1,0 +1,203 @@
+/* Hidden Patoka Valley: hint, rubber-band pull, and cloud dive.
+   Loaded on the homepage only as a small stylesheet. World assets stay off
+   the first-load path until the user starts a pull or opens #world. */
+
+@font-face {
+  font-family: "Patrick Hand";
+  src: url("/fonts/patrick-hand.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: optional;
+}
+
+#pb-valley-edge,
+#pb-valley-hint,
+#pb-valley-ink,
+#pb-valley-line,
+#pb-valley-grain,
+#pb-valley-world {
+  display: none;
+}
+
+/* Hint + 24px sky fade only on the login homepage, not the logged-in board. */
+body.la-on #pb-valley-edge,
+#login:not(.hidden) ~ #pb-valley-edge {
+  display: block;
+}
+body.la-on #pb-valley-hint,
+#login:not(.hidden) ~ #pb-valley-hint {
+  display: block;
+}
+
+#pb-valley-edge {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* Taller than 24px so the cream feathers into the sky; no hard top edge. */
+  height: 56px;
+  z-index: 5;
+  pointer-events: none;
+  background: linear-gradient(to top,
+    #EDE6D6 0%,
+    rgba(237, 230, 214, 0.55) 32%,
+    rgba(237, 230, 214, 0.18) 62%,
+    transparent 100%);
+}
+
+#pb-valley-hint {
+  position: fixed;
+  left: 50%;
+  /* Production pill sits at bottom: 20px, height 44px. Keep the hint in the
+     20px gap under the pill, centered, so we do not move the pill. */
+  bottom: 2px;
+  transform: translateX(-50%);
+  z-index: 6;
+  margin: 0;
+  padding: 0 8px;
+  border: 0;
+  background: none;
+  font-family: "Patrick Hand", "Architects Daughter", cursive;
+  font-size: 13px;
+  line-height: 20px;
+  letter-spacing: 0.02em;
+  color: #2A2118;
+  opacity: 0.6;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+#pb-valley-hint:focus { outline: none; }
+#pb-valley-hint:focus-visible {
+  outline: 2px solid #3A362F;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+#pb-valley-ink,
+#pb-valley-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  display: none;
+}
+#pb-valley-ink {
+  overflow: hidden;
+}
+#pb-valley-ink.is-on,
+#pb-valley-grain.is-on { display: block; }
+
+#pb-valley-grain {
+  z-index: 8;
+  opacity: 0.42;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.16  0 0 0 0 0.14  0 0 0 0 0.12  0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 0%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 0%, #000 0%, transparent 100%);
+}
+
+#pb-valley-line {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  height: 2px;
+  width: min(100%, 100vw);
+  z-index: 9;
+  pointer-events: none;
+  background: #3A362F;
+  box-shadow: 0 0 0 1px rgba(237, 230, 214, 0.75), 0 1px 0 rgba(255, 255, 255, 0.35);
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: 50% 50%;
+  border-radius: 1px;
+}
+#pb-valley-line.is-on { display: block; }
+
+#pb-valley-world {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  z-index: 4;
+  background: transparent;
+  pointer-events: none;
+}
+#pb-valley-world.is-on { display: block; }
+html.pb-in-world #pb-valley-world {
+  display: block;
+  pointer-events: auto;
+  z-index: 20;
+}
+
+/* During a pull or dive, hide the hint and sky fade; no copy on the dive. */
+html.pb-valley-active #pb-valley-hint,
+html.pb-valley-active #pb-valley-edge,
+html.pb-in-world #pb-valley-hint,
+html.pb-in-world #pb-valley-edge {
+  display: none !important;
+}
+
+html.pb-valley-active,
+html.pb-in-world {
+  overflow: hidden;
+}
+html.pb-valley-active body,
+html.pb-in-world body {
+  overflow: hidden;
+}
+
+#pb-valley-sheet {
+  /* Layout-neutral wrapper; no transform at rest. */
+}
+/* While pulling, the sheet is a full-viewport containing block so
+   position:fixed children (sky, study pill) keep their rest placement
+   and then travel with the card. */
+html.pb-valley-active #pb-valley-sheet,
+html.pb-in-world #pb-valley-sheet {
+  /* Viewport-sized containing block: the study pill's bottom:20px must
+     stay 20px from the viewport, then the whole sheet translates. */
+  position: fixed;
+  inset: 0;
+  padding: 20px; /* match body padding so the card does not jump */
+  box-sizing: border-box;
+  z-index: 3;
+  will-change: transform;
+  overflow: visible;
+  background: var(--la-sky-bot, #EDE6D6);
+}
+html.pb-valley-active #la-sky,
+html.pb-in-world #la-sky {
+  /* Continue tonight's bottom sky under the canvas so a 33% translate
+     does not leave a hard horizon line. The sheet stays 100vh so the
+     pill's containing block does not grow. */
+  box-shadow: 0 50vh 0 0 var(--la-sky-bot);
+}
+/* During the pull, continue the sky into the gap so a torn paper edge
+   can read against it. The paper itself is drawn in the ink SVG, cream
+   by day and charcoal at night — never a ruler-straight slab. */
+html.pb-valley-active #pb-valley-sheet {
+  background: transparent;
+}
+html.pb-valley-active #la-sky {
+  box-shadow: 0 50vh 0 0 var(--la-sky-bot);
+}
+@media (max-width: 640px) {
+  html.pb-valley-active #pb-valley-sheet,
+  html.pb-in-world #pb-valley-sheet {
+    padding: 12px;
+  }
+}
+html.pb-valley-active .la-card.la-enter,
+html.pb-valley-active a.study-pill {
+  animation: none !important;
+}
+.pb-home-slide {
+  transition: none;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #pb-valley-hint { transition: opacity 0.4s ease; }
+  .pb-home-slide { transition: opacity 0.4s ease; }
+}

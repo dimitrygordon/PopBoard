@@ -248,10 +248,6 @@ input.icon-cell::placeholder{ color:var(--text-dimmer); font-size:17px; }
         <img src="physics101/cover.webp" alt="" loading="lazy" width="960" height="477">
         <div class="course-body"><h3>Physics 101</h3><p>Every Physics 101 lesson as a hand-drawn storybook, module by module.</p><span class="course-count" data-count="physics101"></span><div class="course-dots" aria-hidden="true"></div></div>
       </a>
-      <a class="course-card course-geometry" data-course="geometry" href="study-geometry.html">
-        <img src="geometry/covers/course.svg" alt="" loading="lazy" width="1600" height="900">
-        <div class="course-body"><h3>Geometry</h3><p>A full year of geometry: 180 lessons in 12 units, with constructions and 44 interactives.</p><span class="course-count" data-count="geometry"></span></div>
-      </a>
       <a class="course-card course-friction" data-course="friction-lesson" href="study-friction-lesson.html">
         <img src="friction-lesson/art/cover_jasper_push.webp" alt="" loading="lazy" width="900" height="506">
         <div class="course-body"><h3>Dimitry's Friction Lesson</h3><p>The friction lab lesson as a self-playing colored-pencil presentation, 26 pages.</p><span class="course-count">26 PAGES</span></div>
@@ -860,14 +856,6 @@ var BUILTIN_MODULES = [
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5.5C5.5 4 8.5 4 12 6c3.5-2 6.5-2 9-0.5V19c-2.5-1.5-5.5-1.5-9 0.5-3.5-2-6.5-2-9-0.5Z"/><path d="M12 6v13.5"/><path d="M5.5 14.5c1-3 2.5-4.5 4-4.5"/><path d="M14.5 15l4-4M18.5 11h-2.5M18.5 11v2.5"/></svg>'
   },
   {
-    id: "geometry",
-    kind: "builtin",
-    name: "Geometry",
-    description: "A full-year high school Geometry course as black line-art storybooks: 12 units and 180 lessons, from Seeing and Reasoning through constructions, rigid motions, congruence, parallel lines, quadrilaterals, area and Pythagoras, similarity, trigonometry, circles, regular polygons, and solids. Every lesson has a key idea with an exact figure and a Check yourself question, and 44 lessons add an interactive: compass and straightedge constructions you step through, and sandboxes with points you can drag. Search lessons by title, or filter by unit.",
-    file: "study-geometry.html",
-    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l-6 17M12 3l6 17"/><circle cx="12" cy="3.5" r="1.2"/><path d="M7.5 15.5a8 8 0 0 0 9 0"/></svg>'
-  },
-  {
     id: "friction-lesson",
     kind: "builtin",
     name: "Dimitry's Friction Lesson",
@@ -1047,7 +1035,7 @@ function resolveIconHtml(iconType, iconValue) {
    Courses band: the storybook courses sit above the module search
    in their own section, so the module grid below skips them.
    ============================================================ */
-var COURSE_IDS = ["astronomy-course", "physics101", "geometry", "friction-lesson", "diy-pbl-bookshare", "energy-lab"];
+var COURSE_IDS = ["astronomy-course", "physics101", "friction-lesson", "diy-pbl-bookshare", "energy-lab"];
 // Physics 101 module accents M1 to M24, matching --p101-m1..24 in physics101/p101.css.
 var P101_ACCENTS = ["#E2B654","#B5C7A3","#D98B6A","#8FB3D9","#B9A7D1","#8CC5BE","#7F8FC9","#B0A060","#E0A0A0","#A8B86E","#EBC9A0","#9C8C78","#6E9CA8","#B07F9C","#7A9E7E","#AA5B5E","#4AC7E4","#677C3F","#9C7040","#72748E","#36A896","#3583AD","#8A669E","#36815A"];
 
@@ -1062,7 +1050,7 @@ function setupCoursesBand() {
     dot.style.background = color;
     dots.appendChild(dot);
   });
-  [["astronomy", "./astro-course/ac-catalog.js", "lessons"], ["physics101", "./physics101/p101-catalog.js", "lessons"], ["geometry", "./geometry/geo-catalog.js", "lessons"]].forEach(function(c) {
+  [["astronomy", "./astro-course/ac-catalog.js", "lessons"], ["physics101", "./physics101/p101-catalog.js", "lessons"]].forEach(function(c) {
     import(c[1]).then(function(mod) {
       document.querySelector('[data-count="' + c[0] + '"]').textContent = mod.DECKS.length + " " + c[2];
     }).catch(function() {});
