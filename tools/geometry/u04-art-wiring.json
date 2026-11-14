@@ -349,6 +349,12 @@
   },
   {
     "deck": "u04-l11",
+    "slide": 7,
+    "file": "u04-l11-s07.svg",
+    "alt": "Two triangles that share the angle at A, side AB, and side BC. The circle centered at B crosses the ray from A at two points."
+  },
+  {
+    "deck": "u04-l11",
     "slide": 11,
     "file": "u04-l11-s11.svg",
     "alt": "What condition gives one right triangle in the swinging-door picture?"

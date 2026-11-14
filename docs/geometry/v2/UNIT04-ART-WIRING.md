@@ -1,8 +1,8 @@
 # Unit 4 final art integration
 
-94 mapped slots, 94 previously empty slots filled, 0 existing SVGs replaced, 49 programmer SVGs retained. There are 143 of 143 supplied Unit 4 figure slots. Mapping takes precedence over existing SVGs whenever a slot is mapped. The map contains no assessment replacements; all 24 printable form figures are retained and share the corresponding deck figure source.
+95 mapped slots, including Leo's U4-13 figure for u04-l11-s07, and 48 programmer SVGs retained. There are 143 of 143 supplied Unit 4 figure slots. Mapping takes precedence over existing SVGs whenever a slot is mapped. The map contains no assessment replacements; all 24 printable form figures are retained and share the corresponding deck figure source.
 
-Source: /workspace/geometry-v2/u4-art/wiring.json. Only deck, slide, filename and learner alt text are snapshotted; no manifest certificates are exported. The 94 root SVGs are copied byte-for-byte. Their original viewBoxes and hidden conclusion groups are preserved.
+Source: /workspace/geometry-v2/u4-art/wiring.json. Only deck, slide, filename and learner alt text are snapshotted; no manifest certificates are exported. The 95 root SVGs are copied byte-for-byte. Their original viewBoxes and hidden conclusion groups are preserved.
 
 ## Unmapped programmer figures kept
 
@@ -24,7 +24,6 @@ Source: /workspace/geometry-v2/u4-art/wiring.json. Only deck, slide, filename an
 | u04-l10-s08 | Worked example |
 | u04-l11-s04 | Worked example |
 | u04-l11-s05 | Worked example |
-| u04-l11-s07 | Common mistake |
 | u04-l11-s08 | Practice 1 |
 | u04-l11-s09 | Practice 2 |
 | u04-l11-s10 | Practice 3 |
