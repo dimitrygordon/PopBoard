@@ -36,7 +36,7 @@ svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
     <path d="M330.1,244.44L337.36,251.92L350.56,235.64" stroke-width="2" class="draw" pathLength="1" style="--d:2.08s;--t:0.35s"/>
     <path d="M140,67H180A10,10 0 0 1 190,77V151A10,10 0 0 1 180,161H140A10,10 0 0 1 130,151V77A10,10 0 0 1 140,67Z" stroke-width="3" class="draw" pathLength="1" style="--d:2.38s;--t:0.90s"/>
     <path d="M230,67H270A10,10 0 0 1 280,77V151A10,10 0 0 1 270,161H230A10,10 0 0 1 220,151V77A10,10 0 0 1 230,67Z" stroke-width="3" class="draw" pathLength="1" style="--d:3.14s;--t:0.90s"/>
-    <text fill="currentColor" stroke="none" x="56.69" y="349.36" font-size="26" class="fade" style="--d:3.91s"><tspan font-style="italic">PQ</tspan> lies on both <tspan font-style="italic">l</tspan> and <tspan font-style="italic">m</tspan>.</text>
+    <text fill="currentColor" stroke="none" x="32.83" y="349.36" font-size="26" class="fade" style="--d:3.91s"><tspan font-style="italic">P</tspan> and <tspan font-style="italic">Q</tspan> lie on both <tspan font-style="italic">l</tspan> and <tspan font-style="italic">m</tspan>.</text>
   </g>
   </g>
 </svg>

@@ -1,4 +1,4 @@
-// Geometry course: the plan, the generated catalog and decks, every figure, and all 48 interactives in a browser.
+// Geometry course: the plan, the generated catalog and decks, every figure, and all 51 interactives in a browser.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
@@ -15,14 +15,14 @@ test("generated files are current (node tools/geometry/build.mjs --check)", () =
   execFileSync(process.execPath, [join(ROOT, "tools/geometry/build.mjs"), "--check"], { stdio: "pipe" });
 });
 
-test("catalog: 180 lessons in 12 units, 48 interactives, covers and decks exist", async () => {
+test("catalog: 180 lessons in 12 units, 51 interactives, covers and decks exist", async () => {
   const { DECKS, UNITS } = await imp("public/geometry/geo-catalog.js");
   assert.equal(DECKS.length, 180);
   assert.equal(UNITS.length, 12);
   assert.deepEqual([...new Set(DECKS.map((d) => d.q))], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
   const gx = DECKS.filter((d) => d.gx).map((d) => d.gx);
-  assert.equal(gx.length, 48);
-  assert.equal(new Set(gx).size, 48);
+  assert.equal(gx.length, 51);
+  assert.equal(new Set(gx).size, 51);
   for (const d of DECKS) {
     assert.ok(existsSync(join(PUB, "geometry", d.cover)), d.cover);
     const deck = JSON.parse(readFileSync(join(PUB, "geometry/decks", d.slug, "deck.json"), "utf8"));
@@ -65,7 +65,7 @@ test("no em or en dashes and no Jasper mascot art in any Geometry file", () => {
 // ---- browser: open every interactive, check it draws, drag a point, and check for errors ----
 const CHROME = process.env.CHROME || "/usr/bin/google-chrome";
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".mjs": "text/javascript", ".css": "text/css", ".json": "application/json", ".svg": "image/svg+xml", ".png": "image/png", ".webp": "image/webp", ".woff2": "font/woff2" };
-test("all 48 interactives mount, draw and respond to a drag", { skip: !existsSync(CHROME) && "no Chrome", timeout: 240000 }, async () => {
+test("all 51 interactives mount, draw and respond to a drag", { skip: !existsSync(CHROME) && "no Chrome", timeout: 240000 }, async () => {
   const { default: puppeteer } = await import("puppeteer-core");
   const srv = createServer((req, res) => {
     const p = join(PUB, decodeURIComponent(req.url.split("?")[0]));

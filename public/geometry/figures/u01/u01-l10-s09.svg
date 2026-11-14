@@ -19,23 +19,24 @@ svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
   <text fill="currentColor" stroke="none" x="18" y="46.36" font-size="26">Statements</text>
   <text fill="currentColor" stroke="none" x="240" y="46.36" font-size="26">Reasons</text>
   <g data-step="1" class="conclusion" style="--sd:0.00s">
-    <text fill="currentColor" stroke="none" x="18" y="113.36" font-size="26" class="fade" style="--d:0.00s"><tspan font-style="italic">m</tspan> = 4<tspan font-style="italic">r</tspan>, <tspan font-style="italic">n</tspan> = 4<tspan font-style="italic">s</tspan></text>
-    <text fill="currentColor" stroke="none" x="240" y="97.36" font-size="26" class="fade" style="--d:0.12s">definition</text>
-    <text fill="currentColor" stroke="none" x="240" y="129.36" font-size="26" class="fade" style="--d:0.24s">of multiple</text>
-    <text fill="currentColor" stroke="none" x="18" y="193.36" font-size="26" class="fade" style="--d:0.36s"><tspan font-style="italic">m</tspan> + <tspan font-style="italic">n</tspan> = 4<tspan font-style="italic">r</tspan> + 4<tspan font-style="italic">s</tspan></text>
-    <text fill="currentColor" stroke="none" x="240" y="193.36" font-size="26" class="fade" style="--d:0.48s">substitution</text>
-    <text fill="currentColor" stroke="none" x="18" y="273.36" font-size="26" class="fade" style="--d:0.60s"><tspan font-style="italic">m</tspan> + <tspan font-style="italic">n</tspan> = 4(<tspan font-style="italic">r</tspan> + <tspan font-style="italic">s</tspan>)</text>
-    <text fill="currentColor" stroke="none" x="240" y="257.36" font-size="26" class="fade" style="--d:0.72s">distributive</text>
-    <text fill="currentColor" stroke="none" x="240" y="289.36" font-size="26" class="fade" style="--d:0.84s">property</text>
-    <text fill="currentColor" stroke="none" x="18" y="354.36" font-size="26" class="fade" style="--d:0.96s"><tspan font-style="italic">r</tspan> + <tspan font-style="italic">s</tspan> is an</text>
-    <text fill="currentColor" stroke="none" x="18" y="386.36" font-size="26" class="fade" style="--d:1.08s">integer</text>
-    <text fill="currentColor" stroke="none" x="240" y="338.36" font-size="26" class="fade" style="--d:1.20s">integers</text>
-    <text fill="currentColor" stroke="none" x="240" y="370.36" font-size="26" class="fade" style="--d:1.32s">add to</text>
-    <text fill="currentColor" stroke="none" x="240" y="402.36" font-size="26" class="fade" style="--d:1.44s">integers</text>
-    <text fill="currentColor" stroke="none" x="18" y="451.36" font-size="26" class="fade" style="--d:1.56s"><tspan font-style="italic">m</tspan> + <tspan font-style="italic">n</tspan> is a</text>
-    <text fill="currentColor" stroke="none" x="18" y="483.36" font-size="26" class="fade" style="--d:1.68s">multiple of 4</text>
-    <text fill="currentColor" stroke="none" x="240" y="451.36" font-size="26" class="fade" style="--d:1.80s">definition</text>
-    <text fill="currentColor" stroke="none" x="240" y="483.36" font-size="26" class="fade" style="--d:1.92s">of multiple</text>
+    <text fill="currentColor" stroke="none" x="18" y="97.36" font-size="26" class="fade" style="--d:0.00s"><tspan font-style="italic">m</tspan> = 4<tspan font-style="italic">r</tspan>, <tspan font-style="italic">n</tspan> = 4<tspan font-style="italic">s</tspan></text>
+    <text fill="currentColor" stroke="none" x="18" y="129.36" font-size="26" class="fade" style="--d:0.12s">(<tspan font-style="italic">r</tspan>, <tspan font-style="italic">s</tspan> integers)</text>
+    <text fill="currentColor" stroke="none" x="240" y="97.36" font-size="26" class="fade" style="--d:0.24s">definition</text>
+    <text fill="currentColor" stroke="none" x="240" y="129.36" font-size="26" class="fade" style="--d:0.36s">of multiple</text>
+    <text fill="currentColor" stroke="none" x="18" y="193.36" font-size="26" class="fade" style="--d:0.48s"><tspan font-style="italic">m</tspan> + <tspan font-style="italic">n</tspan> = 4<tspan font-style="italic">r</tspan> + 4<tspan font-style="italic">s</tspan></text>
+    <text fill="currentColor" stroke="none" x="240" y="193.36" font-size="26" class="fade" style="--d:0.60s">substitution</text>
+    <text fill="currentColor" stroke="none" x="18" y="273.36" font-size="26" class="fade" style="--d:0.72s"><tspan font-style="italic">m</tspan> + <tspan font-style="italic">n</tspan> = 4(<tspan font-style="italic">r</tspan> + <tspan font-style="italic">s</tspan>)</text>
+    <text fill="currentColor" stroke="none" x="240" y="257.36" font-size="26" class="fade" style="--d:0.84s">distributive</text>
+    <text fill="currentColor" stroke="none" x="240" y="289.36" font-size="26" class="fade" style="--d:0.96s">property</text>
+    <text fill="currentColor" stroke="none" x="18" y="354.36" font-size="26" class="fade" style="--d:1.08s"><tspan font-style="italic">r</tspan> + <tspan font-style="italic">s</tspan> is an</text>
+    <text fill="currentColor" stroke="none" x="18" y="386.36" font-size="26" class="fade" style="--d:1.20s">integer</text>
+    <text fill="currentColor" stroke="none" x="240" y="338.36" font-size="26" class="fade" style="--d:1.32s">integers</text>
+    <text fill="currentColor" stroke="none" x="240" y="370.36" font-size="26" class="fade" style="--d:1.44s">add to</text>
+    <text fill="currentColor" stroke="none" x="240" y="402.36" font-size="26" class="fade" style="--d:1.56s">integers</text>
+    <text fill="currentColor" stroke="none" x="18" y="451.36" font-size="26" class="fade" style="--d:1.68s"><tspan font-style="italic">m</tspan> + <tspan font-style="italic">n</tspan> is a</text>
+    <text fill="currentColor" stroke="none" x="18" y="483.36" font-size="26" class="fade" style="--d:1.80s">multiple of 4</text>
+    <text fill="currentColor" stroke="none" x="240" y="451.36" font-size="26" class="fade" style="--d:1.92s">definition</text>
+    <text fill="currentColor" stroke="none" x="240" y="483.36" font-size="26" class="fade" style="--d:2.04s">of multiple</text>
   </g>
   </g>
 </svg>

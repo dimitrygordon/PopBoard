@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 540" color="#111" role="img" aria-labelledby="u01-l12-s08-title" data-steps="1">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 558" color="#111" role="img" aria-labelledby="u01-l12-s08-title" data-steps="1">
   <title id="u01-l12-s08-title">Sorting statements into assumed, defined and proved</title>
   <style>@media (prefers-reduced-motion: no-preference){
 svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
@@ -16,18 +16,18 @@ svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
     <path d="M46,81H354A6,6 0 0 1 360,87V149A6,6 0 0 1 354,155H46A6,6 0 0 1 40,149V87A6,6 0 0 1 46,81Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
     <text fill="currentColor" stroke="none" x="69.5" y="127.36" font-size="26" class="fade" style="--d:0.77s">Everything in <tspan font-style="italic">U</tspan> is in <tspan font-style="italic">V</tspan></text>
   </g>
-  <path d="M20,186H380A10,10 0 0 1 390,196V338A10,10 0 0 1 380,348H20A10,10 0 0 1 10,338V196A10,10 0 0 1 20,186Z" stroke-width="2"/>
+  <path d="M20,186H380A10,10 0 0 1 390,196V356A10,10 0 0 1 380,366H20A10,10 0 0 1 10,356V196A10,10 0 0 1 20,186Z" stroke-width="2"/>
   <text fill="currentColor" stroke="none" x="30" y="225.36" font-size="26">DEFINED</text>
   <path d="M30,236L145.49,236" stroke-width="2"/>
-  <path d="M46,240H354A6,6 0 0 1 360,246V342A6,6 0 0 1 354,348H46A6,6 0 0 1 40,342V246A6,6 0 0 1 46,240Z" stroke-width="2"/>
-  <text fill="currentColor" stroke="none" x="85.53" y="286.36" font-size="26"><tspan font-style="italic">W</tspan> means in both <tspan font-style="italic">U</tspan></text>
-  <text fill="currentColor" stroke="none" x="166.12" y="320.36" font-size="26">and <tspan font-style="italic">V</tspan></text>
-  <path d="M20,362H380A10,10 0 0 1 390,372V514A10,10 0 0 1 380,524H20A10,10 0 0 1 10,514V372A10,10 0 0 1 20,362Z" stroke-width="2"/>
-  <text fill="currentColor" stroke="none" x="30" y="401.36" font-size="26">PROVED</text>
-  <path d="M30,412L137.04,412" stroke-width="2"/>
+  <path d="M46,246H354A6,6 0 0 1 360,252V348A6,6 0 0 1 354,354H46A6,6 0 0 1 40,348V252A6,6 0 0 1 46,246Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="85.53" y="292.36" font-size="26"><tspan font-style="italic">W</tspan> means in both <tspan font-style="italic">U</tspan></text>
+  <text fill="currentColor" stroke="none" x="166.12" y="326.36" font-size="26">and <tspan font-style="italic">V</tspan></text>
+  <path d="M20,380H380A10,10 0 0 1 390,390V532A10,10 0 0 1 380,542H20A10,10 0 0 1 10,532V390A10,10 0 0 1 20,380Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="30" y="419.36" font-size="26">PROVED</text>
+  <path d="M30,430L137.04,430" stroke-width="2"/>
   <g data-step="1" class="conclusion" style="--sd:0.00s">
-    <path d="M46,433H354A6,6 0 0 1 360,439V501A6,6 0 0 1 354,507H46A6,6 0 0 1 40,501V439A6,6 0 0 1 46,433Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
-    <text fill="currentColor" stroke="none" x="165.87" y="479.36" font-size="26" class="fade" style="--d:0.77s"><tspan font-style="italic">U</tspan> = <tspan font-style="italic">W</tspan></text>
+    <path d="M46,451H354A6,6 0 0 1 360,457V519A6,6 0 0 1 354,525H46A6,6 0 0 1 40,519V457A6,6 0 0 1 46,451Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="165.87" y="497.36" font-size="26" class="fade" style="--d:0.77s"><tspan font-style="italic">U</tspan> = <tspan font-style="italic">W</tspan></text>
   </g>
   </g>
 </svg>

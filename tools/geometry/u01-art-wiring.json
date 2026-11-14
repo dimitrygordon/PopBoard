@@ -7,12 +7,17 @@
   {
     "slot": "u01-hook-l02-h2",
     "file": "u01-hook-l02-h2.svg",
-    "alt": "Table of circle regions for 1 to 10 points: 1, 2, 4, 8, 16, 31, 57, 99, 163, 256. A doubling guess column, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, is crossed out from 6 points on."
+    "alt": "Table of the most regions a circle can be cut into by chords joining 1 to 10 points: 1, 2, 4, 8, 16, 31, 57, 99, 163, 256. A doubling guess column, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, is crossed out from 6 points on, and the 31 is boxed."
   },
   {
     "slot": "u01-hook-l03-h3",
     "file": "u01-hook-l03-h3.svg",
     "alt": "Side view of a three-legged stool and a four-legged chair on a floor drawn with a front and a back edge. All three stool feet touch the floor, marked with dots. The chair stands where the floor dips slightly: three of its feet touch the floor and its front right foot hangs above the dip, with a small arrow across the gap."
+  },
+  {
+    "slot": "u01-hook-l03-h4",
+    "file": "u01-hook-l03-h4.svg",
+    "alt": "A highway overpass seen from the front and a little above. A lower road runs along the ground from the near left into the distance on the right. The overpass, a bridge deck on two pillars, crosses above it from left to right. Each road's center line is a line with arrows at both ends; where the deck hides the road, its edges disappear and its center line is dashed, and the road reappears on the far side. Labels: overpass and road below."
   },
   {
     "slot": "u01-hook-l03-h5",
@@ -57,7 +62,7 @@
   {
     "slot": "u01-hook-l09-h13",
     "file": "u01-hook-l09-h13.svg",
-    "alt": "A checklist with three conditions, orbits the Sun, nearly round and cleared its path, and two columns, Earth and Pluto. Earth gets a check on all three. Pluto gets checks on the first two and a cross on cleared its path."
+    "alt": "A checklist with three conditions, orbits the Sun, nearly round and cleared the area around its orbit, and two columns, Earth and Pluto. Earth gets a check on all three. Pluto gets checks on the first two and a cross on cleared the area around its orbit."
   },
   {
     "slot": "u01-hook-l12-h14",
@@ -72,7 +77,7 @@
   {
     "slot": "u01-l02-hook",
     "file": "u01-hook-l02-h2.svg",
-    "alt": "Table of circle regions for 1 to 10 points: 1, 2, 4, 8, 16, 31, 57, 99, 163, 256. A doubling guess column, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, is crossed out from 6 points on."
+    "alt": "Table of the most regions a circle can be cut into by chords joining 1 to 10 points: 1, 2, 4, 8, 16, 31, 57, 99, 163, 256. A doubling guess column, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, is crossed out from 6 points on, and the 31 is boxed."
   },
   {
     "slot": "u01-l02-s06",
@@ -157,7 +162,7 @@
   {
     "slot": "u01-l09-hook",
     "file": "u01-hook-l09-h13.svg",
-    "alt": "A checklist with three conditions, orbits the Sun, nearly round and cleared its path, and two columns, Earth and Pluto. Earth gets a check on all three. Pluto gets checks on the first two and a cross on cleared its path."
+    "alt": "A checklist with three conditions, orbits the Sun, nearly round and cleared the area around its orbit, and two columns, Earth and Pluto. Earth gets a check on all three. Pluto gets checks on the first two and a cross on cleared the area around its orbit."
   },
   {
     "slot": "u01-l09-s06",
@@ -167,7 +172,7 @@
   {
     "slot": "u01-l10-s06",
     "file": "u01-l10-s06.svg",
-    "alt": "A proof chain. u and v odd; by definition, u = 2a + 1 and v = 2b + 1; by substitution, u + v = 2a + 2b + 2; by the distributive property, u + v = 2(a + b + 1); because integers add to integers, a + b + 1 is an integer; by definition, u + v is even."
+    "alt": "A proof chain. u and v odd; by definition, u = 2a + 1 and v = 2b + 1 (a, b integers); by substitution, u + v = 2a + 2b + 2; by the distributive property, u + v = 2(a + b + 1); because integers add to integers, a + b + 1 is an integer; by definition, u + v is even."
   },
   {
     "slot": "u01-l10-s08",
@@ -177,7 +182,7 @@
   {
     "slot": "u01-l10-s09",
     "file": "u01-l10-s09.svg",
-    "alt": "A blank two-column table headed Statements and Reasons, with five empty rows. Revealed: m = 4r, n = 4s by definition of multiple; m + n = 4r + 4s by substitution; m + n = 4(r + s) by the distributive property; r + s is an integer because integers add to integers; so m + n is a multiple of 4 by definition of multiple."
+    "alt": "A blank two-column table headed Statements and Reasons, with five empty rows. Revealed: m = 4r, n = 4s (r, s integers) by definition of multiple; m + n = 4r + 4s by substitution; m + n = 4(r + s) by the distributive property; r + s is an integer because integers add to integers; so m + n is a multiple of 4 by definition of multiple."
   },
   {
     "slot": "u01-l10-s10",
@@ -272,6 +277,6 @@
   {
     "slot": "u01-l14-s27",
     "file": "u01-l14-s27.svg",
-    "alt": "A blank table with point rows P, Q, R, S and line columns l, m, n. Revealed: l holds P, Q, R; m holds P, Q, S; n holds R and S. The P and Q checks under l and under m are outlined separately, and a caption says PQ lies on both l and m."
+    "alt": "A blank table with point rows P, Q, R, S and line columns l, m, n. Revealed: l holds P, Q, R; m holds P, Q, S; n holds R and S. The P and Q checks under l and under m are outlined separately, and a caption says P and Q lie on both l and m."
   }
 ]

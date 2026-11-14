@@ -139,6 +139,66 @@ html[data-course="geometry"][data-theme="dark"] body { background: #1F1D1A; }
 .gx-stds, .gx-citation { font: 15px/1.4 "Patrick Hand", cursive; color: var(--gx-dim); }
 .gx-content { max-width: none; }
 .gx-figure-layout { grid-template-columns: minmax(340px, 1fr) minmax(0, 2fr); }
+
+/* Practice and common-mistake: scale tall Leo figures to the card, scroll the text. */
+.gx-k-practice,
+.gx-k-common-mistake {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+.gx-k-practice .gx-lesson,
+.gx-k-common-mistake .gx-lesson {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+.gx-k-practice .gx-tag,
+.gx-k-practice .gx-head,
+.gx-k-common-mistake .gx-tag,
+.gx-k-common-mistake .gx-head { flex: none; }
+.gx-k-practice .gx-content.gx-figure-layout,
+.gx-k-common-mistake .gx-content.gx-figure-layout {
+  flex: 1 1 auto;
+  min-height: 0;
+  align-items: stretch;
+}
+.gx-k-practice .gx-figure-slot,
+.gx-k-common-mistake .gx-figure-slot {
+  align-self: stretch;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gx-k-practice .gx-figure-slot svg,
+.gx-k-practice .gx-figure-slot img,
+.gx-k-common-mistake .gx-figure-slot svg,
+.gx-k-common-mistake .gx-figure-slot img {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.gx-k-practice .gx-content svg,
+.gx-k-common-mistake .gx-content svg { height: auto; max-width: none; }
+.gx-k-practice .gx-learner-text,
+.gx-k-common-mistake .gx-learner-text {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 1.25em;
+  box-sizing: border-box;
+}
+
 .gx-lesson .m, .gx-layer .m { font: normal .95em/1.4 "Literata", serif; letter-spacing: .02em; }
 .gx-actions { gap: 10px; }
 .gx-actions button { font: 18px "Patrick Hand", cursive; min-height: 44px; padding: 6px 16px; background: var(--gx-button); border: 1.5px solid var(--gx-ink); border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px; box-shadow: 2px 3px 0 var(--gx-ink); }
@@ -367,26 +427,29 @@ html[data-course="geometry"] .lib-card img.cover {
 }
 
 /* Hook figures on Get started (and other text pages that carry a figure). */
-.gx-hook-layout { grid-template-columns: minmax(340px, 3fr) minmax(0, 2fr); align-items: stretch; }
+.gx-hook-layout { grid-template-columns: minmax(340px, 3fr) minmax(0, 2fr); align-items: stretch; overflow: hidden; }
 .gx-hook-layout .gx-figure-slot {
   display: flex;
   align-items: center;
   justify-content: center;
   min-width: 0;
+  min-height: 0;
 }
 .gx-hook-layout .gx-figure-slot svg,
-.gx-hook-layout .gx-figure-slot img { width: 100%; height: auto; max-height: 100%; object-fit: contain; }
+.gx-hook-layout .gx-figure-slot img { width: 100%; height: 100%; max-width: 100%; max-height: 100%; object-fit: contain; }
 .gx-hook-gallery .gx-figure-slot {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  overflow-y: auto;
+  gap: 8px;
+  overflow: hidden;
   min-height: 0;
   height: 100%;
-  align-items: center;
+  align-items: stretch;
+  justify-content: center;
 }
 .gx-hook-frame {
-  flex: 0 0 auto;
+  flex: 1 1 0;
+  min-height: 0;
   width: 100%;
   max-width: 100%;
   display: grid;
@@ -394,14 +457,16 @@ html[data-course="geometry"] .lib-card img.cover {
 }
 .gx-hook-frame svg, .gx-hook-frame img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+  object-position: center;
 }
 @media (max-width: 599px) and (orientation: portrait) {
-  .gx-hook-layout { grid-template-columns: 1fr; grid-template-rows: minmax(140px, 42%) minmax(0, 1fr); }
-  .gx-hook-gallery .gx-figure-slot { flex-direction: row; overflow-x: auto; overflow-y: hidden; }
-  .gx-hook-frame { flex: 0 0 78%; }
+  .gx-hook-layout { grid-template-columns: 1fr; grid-template-rows: minmax(160px, 48%) minmax(0, 1fr); }
+  .gx-hook-gallery .gx-figure-slot { flex-direction: column; overflow: hidden; }
+  .gx-hook-frame { flex: 1 1 0; }
 }
 
 
@@ -429,13 +494,15 @@ html[data-course="geometry"] .lib-card img.cover {
 .gx-hook-layout .gx-figure-slot {
   min-height: 0;
   max-height: 100%;
-  overflow: auto;
+  overflow: hidden;
   align-self: stretch;
 }
 .gx-hook-layout .gx-learner-text {
   min-width: 0;
   min-height: 0;
   overflow-y: auto;
+  padding-bottom: 1.25em;
+  box-sizing: border-box;
 }
 
 .gx-k-text:has(.gx-hook-layout) .gx-lesson { padding: 14px 18px 12px; }

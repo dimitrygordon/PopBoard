@@ -299,7 +299,7 @@ export const DECKS = [
   "built": true,
   "cover": "figures/u01/u01-cover-l09.svg",
   "kind": "lesson",
-  "gx": null
+  "gx": "u01.kite"
  },
  {
   "key": "U01-L10",
@@ -333,7 +333,7 @@ export const DECKS = [
   "built": true,
   "cover": "figures/u01/u01-cover-l10.svg",
   "kind": "lesson",
-  "gx": null
+  "gx": "u01.shuffle"
  },
  {
   "key": "U01-L11",
@@ -406,7 +406,7 @@ export const DECKS = [
   "built": true,
   "cover": "figures/u01/u01-cover-l12.svg",
   "kind": "lesson",
-  "gx": null
+  "gx": "u01.wall"
  },
  {
   "key": "U01-L13",

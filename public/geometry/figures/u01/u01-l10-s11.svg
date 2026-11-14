@@ -26,7 +26,7 @@ svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
   <path d="M22,290H178A8,8 0 0 1 186,298V338A8,8 0 0 1 178,346H22A8,8 0 0 1 14,338V298A8,8 0 0 1 22,290Z" stroke-width="2"/>
   <text fill="currentColor" stroke="none" x="100" y="327.36" font-size="26" text-anchor="middle">conclusion</text>
   <g data-step="1" class="conclusion" style="--sd:0.00s">
-    <path d="M273,108.63L327,162.63M327,108.63L273,162.63" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.40s"/>
+    <path d="M280,116L320,156M320,116L280,156" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.40s"/>
   </g>
   </g>
 </svg>

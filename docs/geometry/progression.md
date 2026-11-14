@@ -66,10 +66,10 @@ Semester 1: Units 1 to 6 (92 days, includes midterm). Semester 2: Units 7 to 12 
 | 1.6 | Constructions: Telling Time with Shadows | I can copy a segment and draw a circle with compass and straightedge. | Make a paper sundial face using only compass and straightedge. | Interactive: construction. Copy a segment and an equilateral triangle (Euclid I.1). |
 | 1.7 | We Can't Go On Like This | I can explain why geometry needs undefined terms and postulates. | Try to define "point" without circular definitions; dictionary chase. | |
 | 1.8 | Conditional Statements | I can write a conditional, its converse, inverse, and contrapositive. | Sort "if-then" ad slogans into true or false and flip them. | Interactive: sandbox. Toggle P and Q and watch the four related statements. |
-| 1.9 | Definitions as Biconditionals | I can test whether a definition is a good one by checking both directions. | Write a definition of "kite"; classmates hunt for counterexamples. | |
-| 1.10 | Direct Proof | I can write a short chain of reasoning in paragraph and two-column form. | Logic puzzle grid, then the same reasoning as a proof. | |
+| 1.9 | Definitions as Biconditionals | I can test whether a definition is a good one by checking both directions. | Write a definition of "kite"; classmates hunt for counterexamples. | Interactive: sandbox. Drag the corners of a quadrilateral and build a test for kite. |
+| 1.10 | Direct Proof | I can write a short chain of reasoning in paragraph and two-column form. | Logic puzzle grid, then the same reasoning as a proof. | Interactive: sandbox. Drag scrambled proof lines into order. A line locks when every reason it needs is above it. |
 | 1.11 | Indirect Proof | I can prove a statement by showing its opposite leads to a contradiction. | "Which suspect is lying?" contradiction puzzle. | |
-| 1.12 | A Deductive System | I can tell the difference between postulates, definitions, and theorems. | Build a class "axiom wall" on PopBoard; every new theorem must point to its parents. | |
+| 1.12 | A Deductive System | I can tell the difference between postulates, definitions, and theorems. | Build a class "axiom wall" on PopBoard; every new theorem must point to its parents. | Interactive: sandbox. Drag statement cards onto the wall and draw arrows to the cards they use. |
 | 1.13 | Review | I can connect evidence, counterexample, and proof. | Card sort: evidence vs. counterexample vs. proof. | |
 | 1.14 | Unit 1 Assessment | Assess G.GF.1, G.GF.2. | | |
 

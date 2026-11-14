@@ -26,7 +26,7 @@ const artMap = JSON.parse(fs.readFileSync(path.join(ROOT, "tools/geometry/art-ma
 
 // the 48 flagged interactives: lesson -> gx/<file>.js export name
 export const GXMAP = {
-  "1.1": "u01.illusion", "1.2": "u01.chords", "1.3": "u01.streets", "1.4": "u01.earth", "1.5": "u01.sierpinski", "1.6": "u01.euclid", "1.8": "u01.truth",
+  "1.1": "u01.illusion", "1.2": "u01.chords", "1.3": "u01.streets", "1.4": "u01.earth", "1.5": "u01.sierpinski", "1.6": "u01.euclid", "1.8": "u01.truth", "1.9": "u01.kite", "1.10": "u01.shuffle", "1.12": "u01.wall",
   "2.5": "u02.bisect", "2.7": "u02.vertical", "2.9": "u02.perpdrop", "2.10": "u02.parallel", "2.12": "u02.rosette",
   "3.2": "u03.translate", "3.3": "u03.reflect", "3.4": "u03.rotate", "3.5": "u03.tworeflect", "3.6": "u03.golf", "3.11": "u03.tessellate",
   "4.2": "u04.parts", "4.11": "u04.ssa", "4.12": "u04.copytri",

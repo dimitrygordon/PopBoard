@@ -1,4 +1,5 @@
-// Unit 1 interactives: circle chord regions (1.2), Sierpinski stages (1.5), Euclid I.1 (1.6).
+// Unit 1 interactives: illusion, chords, streets, earth, Sierpinski, Euclid I.1, truth table,
+// kite definition tester (1.9), proof shuffle (1.10), and axiom wall (1.12).
 import { M, P, lab, txt, createSteps, onCircle, num, tick, deg } from "./kit.js";
 
 export const GX = {
@@ -267,6 +268,286 @@ export const GX = {
         });
         const cur = impl(p, q), conv = impl(q, p), inv = impl(!p, !q), contra = impl(!q, !p);
         U.read(`<p>Current row: P = ${tf(p)}, Q = ${tf(q)}.</p><p>If P then Q: <b>${tf(cur)}</b>. Converse: ${tf(conv)}. Inverse: ${tf(inv)}. Contrapositive: <b>${tf(contra)}</b>.</p><p>The original and the contrapositive are always true or false together. The converse and the inverse stay together too, but they can differ from the original.</p>`);
+      });
+    }
+  },
+
+  kite: {
+    title: "Definition tester",
+    how: "Drag the four corners of a quadrilateral. Check the boxes that make up your test for kite. The panel says whether the shape passes your test, and whether it is a kite in this course. A rhombus counts as a kite.",
+    mount(B, U) {
+      const A = B.point(700, 180, { label: "A" });
+      const Bb = B.point(1000, 430, { label: "B" });
+      const C = B.point(700, 780, { label: "C" });
+      const D = B.point(400, 430, { label: "D" });
+      const presets = {
+        kite: [[700, 180], [1000, 430], [700, 780], [400, 430]],
+        rhombus: [[700, 200], [980, 450], [700, 700], [420, 450]],
+        para: [[320, 260], [1100, 260], [980, 700], [200, 700]]
+      };
+      const place = (pts) => { [A, Bb, C, D].forEach((p, i) => { p.x = pts[i][0]; p.y = pts[i][1]; }); B.update(); };
+      let usePairs = true, useAdj = false;
+      U.button("Two pairs of equal sides", (b) => { usePairs = !usePairs; b.setAttribute("aria-pressed", String(usePairs)); B.update(); }, { pressed: true });
+      U.button("Each equal pair is adjacent", (b) => { useAdj = !useAdj; b.setAttribute("aria-pressed", String(useAdj)); B.update(); }, { pressed: false });
+      U.row();
+      U.button("Make a kite", () => place(presets.kite));
+      U.button("Make a rhombus", () => place(presets.rhombus));
+      U.button("Make a parallelogram", () => place(presets.para));
+      const eq = (x, y) => Math.abs(x - y) <= 16;
+      B.draw((g) => {
+        const pts = [A, Bb, C, D];
+        g.poly(pts, { w: "bold" });
+        const sides = [[A, Bb, "AB"], [Bb, C, "BC"], [C, D, "CD"], [D, A, "DA"]];
+        const lens = sides.map(([p, q]) => M.dist(p, q));
+        sides.forEach(([p, q, name], i) => {
+          const mid = P((p.x + q.x) / 2, (p.y + q.y) / 2);
+          const away = P(mid.x + (mid.x - 700) * 0.12, mid.y + (mid.y - 480) * 0.12);
+          txt(g, away, `${name} = ${num(lens[i])}`, { small: true });
+        });
+        const [ab, bc, cd, da] = lens;
+        const adjKite = (eq(ab, da) && eq(bc, cd)) || (eq(ab, bc) && eq(da, cd));
+        const twoPairs = adjKite || (eq(ab, cd) && eq(da, bc));
+        let studentPass = false;
+        if (usePairs && useAdj) studentPass = adjKite;
+        else if (usePairs) studentPass = twoPairs;
+        else if (useAdj) studentPass = adjKite;
+        const course = adjKite;
+        const looseHitsPara = usePairs && !useAdj && twoPairs && !course;
+        U.read(`<p>Your test: <b>${studentPass ? "PASS" : "FAIL"}</b>.</p><p>In this course: <b>${course ? "KITE" : "NOT A KITE"}</b>. A rhombus counts as a kite.</p>${looseHitsPara ? "<p>This parallelogram has two pairs of equal sides, so it passes a test that does not require the equal sides to be adjacent. Every adjacent pair has unequal lengths, so it is not a kite.</p>" : ""}`);
+      });
+    }
+  },
+
+  shuffle: {
+    title: "Proof shuffle",
+    how: "Drag the five lines of the first worked example into order. A line locks when every reason it needs sits above it. The Second check stays off the board.",
+    mount(B, U) {
+      const lines = [
+        { id: 1, needs: [], step: "m = 2r and n = 2s, for some integers r and s.", reason: "Definition of a multiple of 2." },
+        { id: 2, needs: [1], step: "m + n = 2r + 2s.", reason: "Substitution." },
+        { id: 3, needs: [2], step: "2r + 2s = 2(r + s).", reason: "Distributive property." },
+        { id: 4, needs: [1], step: "r + s is an integer.", reason: "Adding two integers gives an integer." },
+        { id: 5, needs: [3, 4], step: "So m + n is a multiple of 2.", reason: "Definition of a multiple of 2." }
+      ];
+      const slotsY = [130, 290, 450, 610, 770];
+      const colX = 800;
+      const perm = () => {
+        const a = lines.map((_, i) => i);
+        for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+        return a;
+      };
+      const isValid = (order) => order.every((id, i) => lines[id - 1].needs.every((n) => order.indexOf(n) < i));
+      let start = perm();
+      while (isValid(start.map((i) => lines[i].id))) start = perm();
+      const cards = lines.map((ln, i) => {
+        const pt = B.point(colX, slotsY[start[i]], { label: String(ln.id) });
+        pt.constrain = (q) => P(colX, q.y);
+        return { ...ln, pt };
+      });
+      const pack = () => {
+        const ordered = [...cards].sort((a, b) => a.pt.y - b.pt.y);
+        ordered.forEach((c, i) => { if (!c.pt.grab) { c.pt.y = slotsY[i]; } });
+        return ordered;
+      };
+      B.onChange((kind) => { if (kind === "end") { pack(); B.update(); } });
+      U.button("Shuffle again", () => {
+        let o = perm();
+        while (isValid(o.map((i) => lines[i].id))) o = perm();
+        cards.forEach((c, i) => { c.pt.y = slotsY[o[i]]; });
+        B.update();
+      });
+      const wrap = (s, n = 52) => {
+        const out = []; let line = "";
+        for (const w of s.split(" ")) {
+          const next = line ? line + " " + w : w;
+          if (next.length > n && line) { out.push(line); line = w; } else line = next;
+        }
+        if (line) out.push(line);
+        return out;
+      };
+      B.draw((g) => {
+        const ordered = pack();
+        const orderIds = ordered.map((c) => c.id);
+        let lockedN = 0;
+        ordered.forEach((c, i) => {
+          const locked = c.needs.every((n) => orderIds.indexOf(n) < i);
+          if (locked) lockedN++;
+          const w = 1180, h = 136, x0 = colX - w / 2, y0 = c.pt.y - h / 2;
+          g.poly([P(x0, y0), P(x0 + w, y0), P(x0 + w, y0 + h), P(x0, y0 + h)], { w: locked ? "bold" : "main" });
+          const lines1 = wrap(`${c.id}. ${c.step}`);
+          const lines2 = wrap(c.reason, 52);
+          let y = y0 + 32;
+          lines1.forEach((ln) => { txt(g, P(colX, y), ln, { small: true }); y += 28; });
+          lines2.forEach((ln) => { txt(g, P(colX, y), ln, { small: true }); y += 28; });
+          txt(g, P(x0 + w - 90, y0 + 28), locked ? "LOCKED" : "", { small: true, bold: true });
+        });
+        const all = isValid(orderIds);
+        U.read(all
+          ? "<p>All five lines lock in order. Each reason it needs sits above it.</p>"
+          : `<p>${lockedN} of 5 lines locked. A line locks when every reason it needs sits above it. If a cycle appears, it would read LOOP and would not lock.</p>`);
+      });
+    }
+  },
+
+  wall: {
+    title: "Axiom wall",
+    how: "Drag statement cards onto the wall. Postulates go on the bottom row. A theorem locks only after you draw arrows to the cards it uses. Famous results that are not yet proved stay on the not-proved-yet strip. A cycle is marked LOOP and will not stick.",
+    mount(B, U) {
+      const cards = [
+        { id: "line", kind: "postulate", text: "Every two different points lie on exactly one line.", needs: [], x: 280, y: 780 },
+        { id: "UV", kind: "postulate", text: "Everything in U is in V.", needs: [], x: 820, y: 780 },
+        { id: "W", kind: "definition", text: "W means in both U and V.", needs: [], x: 280, y: 560 },
+        { id: "UW", kind: "theorem", text: "U=W", needs: ["UV", "W"], x: 820, y: 360 },
+        { id: "tri", kind: "famous", text: "A triangle's angles add up to a straight angle.", needs: [], x: 1380, y: 260 },
+        { id: "vert", kind: "famous", text: "Vertical angles are equal.", needs: [], x: 1380, y: 460 },
+        { id: "T", kind: "loop", text: "Theorem T is proved using lemma L.", needs: ["L"], x: 1380, y: 660 },
+        { id: "L", kind: "loop", text: "The only proof of L uses T.", needs: ["T"], x: 1380, y: 820 }
+      ];
+      const pts = cards.map((c) => {
+        const pt = B.point(c.x, c.y, { label: "" });
+        c.pt = pt;
+        return pt;
+      });
+      let arrows = []; // {from, to} from child to parent
+      let arrowMode = false, pending = null;
+      const zone = (p) => {
+        if (p.x >= 1180) return "strip";
+        if (p.y >= 680) return "bottom";
+        return "wall";
+      };
+      const edgesOf = () => {
+        const e = arrows.map((a) => [a.from, a.to]);
+        // implicit intended needs are not auto-drawn; only student arrows
+        return e;
+      };
+      const hasCycle = (edges) => {
+        const seen = {}, stack = {};
+        const adj = {};
+        cards.forEach((c) => { adj[c.id] = []; });
+        edges.forEach(([f, t]) => { if (adj[f]) adj[f].push(t); });
+        const visit = (id) => {
+          if (stack[id]) return true;
+          if (seen[id]) return false;
+          seen[id] = stack[id] = true;
+          for (const n of adj[id]) if (visit(n)) return true;
+          stack[id] = false;
+          return false;
+        };
+        return cards.some((c) => visit(c.id));
+      };
+      const cycNodes = (edges) => {
+        // nodes that lie on any cycle
+        const adj = {};
+        cards.forEach((c) => { adj[c.id] = []; });
+        edges.forEach(([f, t]) => { if (adj[f]) adj[f].push(t); });
+        const on = new Set();
+        const ids = cards.map((c) => c.id);
+        const reach = (start) => {
+          const seen = new Set();
+          const st = [start];
+          while (st.length) {
+            const u = st.pop();
+            if (seen.has(u)) continue;
+            seen.add(u);
+            for (const v of (adj[u] || [])) st.push(v);
+          }
+          return seen;
+        };
+        ids.forEach((a) => {
+          ids.forEach((b) => {
+            if (a === b) return;
+            if (reach(a).has(b) && reach(b).has(a)) { on.add(a); on.add(b); }
+          });
+        });
+        // self-loop
+        edges.forEach(([f, t]) => { if (f === t) on.add(f); });
+        return on;
+      };
+      const used = (child) => new Set(arrows.filter((a) => a.from === child).map((a) => a.to));
+      const wrap = (s, n = 28) => {
+        const out = []; let line = "";
+        for (const w of s.split(" ")) {
+          const next = line ? line + " " + w : w;
+          if (next.length > n && line) { out.push(line); line = w; } else line = next;
+        }
+        if (line) out.push(line);
+        return out;
+      };
+      const drawBtn = U.button("Draw arrow", (b) => {
+        arrowMode = !arrowMode; pending = null;
+        b.setAttribute("aria-pressed", String(arrowMode));
+        B.update();
+      }, { pressed: false });
+      U.button("Clear arrows", () => { arrows = []; pending = null; B.update(); });
+      U.button("Reset", () => { B.reset(); arrows = []; pending = null; arrowMode = false; drawBtn.setAttribute("aria-pressed", "false"); B.update(); });
+      // click-without-drag selects a card in arrow mode
+      cards.forEach((c) => {
+        let down = null;
+        c.pt.el.addEventListener("pointerdown", () => { down = { x: c.pt.x, y: c.pt.y }; });
+        c.pt.el.addEventListener("pointerup", () => {
+          if (!arrowMode || !down) return;
+          if (Math.hypot(c.pt.x - down.x, c.pt.y - down.y) > 14) { down = null; return; }
+          if (!pending) pending = c.id;
+          else if (pending === c.id) pending = null;
+          else {
+            const from = pending, to = c.id;
+            if (!arrows.some((a) => a.from === from && a.to === to) && from !== to) arrows.push({ from, to });
+            pending = null;
+          }
+          down = null;
+          B.update();
+        });
+      });
+      B.draw((g) => {
+        // zone guides
+        g.seg(P(40, 680), P(1160, 680), { w: "thin", dash: true });
+        g.seg(P(1180, 40), P(1180, 860), { w: "thin", dash: true });
+        txt(g, P(600, 860), "Postulates (bottom row)", { small: true });
+        txt(g, P(600, 80), "Theorems and definitions", { small: true });
+        txt(g, P(1390, 80), "Not proved yet", { small: true });
+        const edges = edgesOf();
+        const loopSet = cycNodes(edges);
+        const locked = {};
+        cards.forEach((c) => {
+          const z = zone(c.pt);
+          const uses = used(c.id);
+          const parentsOk = (c.needs || []).every((n) => uses.has(n));
+          let stick = false, tag = "";
+          if (loopSet.has(c.id)) { tag = "LOOP"; stick = false; }
+          else if (c.kind === "postulate") { stick = z === "bottom"; tag = stick ? "ASSUMED" : "will not stick"; }
+          else if (c.kind === "definition") { stick = z === "wall"; tag = stick ? "DEFINED" : (z === "bottom" ? "will not stick" : "DEFINED"); if (z === "strip") tag = "will not stick"; }
+          else if (c.kind === "theorem") {
+            if (z === "wall" && parentsOk) { stick = true; tag = "PROVED"; }
+            else if (z === "wall" && !parentsOk) { tag = "needs arrows"; }
+            else tag = "will not stick";
+          } else if (c.kind === "famous") {
+            stick = z === "strip";
+            tag = stick ? "not proved yet" : "will not stick";
+          } else if (c.kind === "loop") {
+            tag = z === "wall" || z === "bottom" ? "will not stick" : "";
+          }
+          locked[c.id] = { stick, tag, z };
+          const w = c.kind === "famous" || c.kind === "loop" ? 360 : 480;
+          const h = 120, x0 = c.pt.x - w / 2, y0 = c.pt.y - h / 2;
+          g.poly([P(x0, y0), P(x0 + w, y0), P(x0 + w, y0 + h), P(x0, y0 + h)], { w: stick ? "bold" : "thin" });
+          const lines1 = wrap(c.text, c.kind === "famous" || c.kind === "loop" ? 22 : 28);
+          let y = y0 + 34;
+          lines1.forEach((ln) => { txt(g, P(c.pt.x, y), ln, { small: true }); y += 26; });
+          txt(g, P(c.pt.x, y0 + h - 18), tag, { small: true, bold: true });
+        });
+        arrows.forEach((a) => {
+          const from = cards.find((c) => c.id === a.from), to = cards.find((c) => c.id === a.to);
+          if (!from || !to) return;
+          g.seg(from.pt, to.pt, { w: "thin" });
+          g.arrow(from.pt, to.pt);
+        });
+        if (pending) {
+          const from = cards.find((c) => c.id === pending);
+          if (from) txt(g, P(from.pt.x, from.pt.y - 78), "from here", { small: true, bold: true });
+        }
+        const uw = locked.UW;
+        const cycle = loopSet.size > 0;
+        U.read(`<p>${arrowMode ? (pending ? "Tap the card this statement uses." : "Tap a card, then tap the card it uses, to draw an arrow.") : "Drag cards onto the wall, or tap Draw arrow."}</p><p>U=W is ${uw && uw.stick ? "proved" : "a theorem only after arrows to \"Everything in U is in V\" and \"W means in both U and V\""}.${cycle ? " A cycle is marked LOOP and will not stick." : ""}</p>`);
       });
     }
   }

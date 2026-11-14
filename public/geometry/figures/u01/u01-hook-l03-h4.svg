@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" color="#111" role="img" aria-labelledby="u01-hook-l03-h4-title" data-steps="3">
+  <title id="u01-hook-l03-h4-title">An overpass: two roads that never meet and are not parallel</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M72,387.98L218.41,201.07" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.77s"/>
+    <path d="M260.53,147.31L344.53,40.08" stroke-width="2" class="draw" pathLength="1" style="--d:0.66s;--t:0.57s"/>
+    <path d="M132.45,387.95L278.87,201.04" stroke-width="2" class="draw" pathLength="1" style="--d:1.15s;--t:0.77s"/>
+    <path d="M320.98,147.28L387.95,61.79" stroke-width="2" class="draw" pathLength="1" style="--d:1.80s;--t:0.52s"/>
+  </g>
+  <g data-step="2" style="--sd:2.39s">
+    <path d="M53.1,194.4L53.1,300.4L73.1,300.4L73.1,194.4" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.69s"/>
+    <path d="M53.1,300.4L73.1,300.4" stroke-width="2" class="draw" pathLength="1" style="--d:0.58s;--t:0.34s"/>
+    <path d="M313.1,194.4L313.1,300.4L333.1,300.4L333.1,194.4" stroke-width="2" class="draw" pathLength="1" style="--d:0.87s;--t:0.69s"/>
+    <path d="M313.1,300.4L333.1,300.4" stroke-width="2" class="draw" pathLength="1" style="--d:1.46s;--t:0.34s"/>
+    <path d="M35,184L357,184L376.6,150.4L54.6,150.4Z" stroke-width="2" class="draw" pathLength="1" style="--d:1.75s;--t:1.40s"/>
+    <path d="M357,184L357,198L35,198L35,184" stroke-width="2" class="draw" pathLength="1" style="--d:2.94s;--t:0.88s"/>
+    <path d="M376.6,150.4L376.6,164.4L357,198" stroke-width="2" class="draw" pathLength="1" style="--d:3.69s;--t:0.39s"/>
+    <path d="M35.57,187.97L37.78,184.82" stroke-width="1"/>
+    <path d="M35.57,196.69L43.88,184.82" stroke-width="1"/>
+    <path d="M41.33,197.18L49.99,184.82" stroke-width="1"/>
+    <path d="M47.44,197.18L56.09,184.82" stroke-width="1"/>
+    <path d="M53.54,197.18L62.19,184.82" stroke-width="1"/>
+    <path d="M59.64,197.18L68.3,184.82" stroke-width="1"/>
+    <path d="M65.75,197.18L74.4,184.82" stroke-width="1"/>
+    <path d="M71.85,197.18L80.51,184.82" stroke-width="1"/>
+    <path d="M77.95,197.18L86.61,184.82" stroke-width="1"/>
+    <path d="M84.06,197.18L92.71,184.82" stroke-width="1"/>
+    <path d="M90.16,197.18L98.82,184.82" stroke-width="1"/>
+    <path d="M96.27,197.18L104.92,184.82" stroke-width="1"/>
+    <path d="M102.37,197.18L111.03,184.82" stroke-width="1"/>
+    <path d="M108.47,197.18L117.13,184.82" stroke-width="1"/>
+    <path d="M114.58,197.18L123.23,184.82" stroke-width="1"/>
+    <path d="M120.68,197.18L129.34,184.82" stroke-width="1"/>
+    <path d="M126.79,197.18L135.44,184.82" stroke-width="1"/>
+    <path d="M132.89,197.18L141.55,184.82" stroke-width="1"/>
+    <path d="M138.99,197.18L147.65,184.82" stroke-width="1"/>
+    <path d="M145.1,197.18L153.75,184.82" stroke-width="1"/>
+    <path d="M151.2,197.18L159.86,184.82" stroke-width="1"/>
+    <path d="M157.3,197.18L165.96,184.82" stroke-width="1"/>
+    <path d="M163.41,197.18L172.06,184.82" stroke-width="1"/>
+    <path d="M169.51,197.18L178.17,184.82" stroke-width="1"/>
+    <path d="M175.62,197.18L184.27,184.82" stroke-width="1"/>
+    <path d="M181.72,197.18L190.38,184.82" stroke-width="1"/>
+    <path d="M187.82,197.18L196.48,184.82" stroke-width="1"/>
+    <path d="M193.93,197.18L202.58,184.82" stroke-width="1"/>
+    <path d="M200.03,197.18L208.69,184.82" stroke-width="1"/>
+    <path d="M206.14,197.18L214.79,184.82" stroke-width="1"/>
+    <path d="M212.24,197.18L220.9,184.82" stroke-width="1"/>
+    <path d="M218.34,197.18L227,184.82" stroke-width="1"/>
+    <path d="M224.45,197.18L233.1,184.82" stroke-width="1"/>
+    <path d="M230.55,197.18L239.21,184.82" stroke-width="1"/>
+    <path d="M236.66,197.18L245.31,184.82" stroke-width="1"/>
+    <path d="M242.76,197.18L251.41,184.82" stroke-width="1"/>
+    <path d="M248.86,197.18L257.52,184.82" stroke-width="1"/>
+    <path d="M254.97,197.18L263.62,184.82" stroke-width="1"/>
+    <path d="M261.07,197.18L269.73,184.82" stroke-width="1"/>
+    <path d="M267.17,197.18L275.83,184.82" stroke-width="1"/>
+    <path d="M273.28,197.18L281.93,184.82" stroke-width="1"/>
+    <path d="M279.38,197.18L288.04,184.82" stroke-width="1"/>
+    <path d="M285.49,197.18L294.14,184.82" stroke-width="1"/>
+    <path d="M291.59,197.18L300.25,184.82" stroke-width="1"/>
+    <path d="M297.69,197.18L306.35,184.82" stroke-width="1"/>
+    <path d="M303.8,197.18L312.45,184.82" stroke-width="1"/>
+    <path d="M309.9,197.18L318.56,184.82" stroke-width="1"/>
+    <path d="M316.01,197.18L324.66,184.82" stroke-width="1"/>
+    <path d="M322.11,197.18L330.77,184.82" stroke-width="1"/>
+    <path d="M328.21,197.18L336.87,184.82" stroke-width="1"/>
+    <path d="M334.32,197.18L342.97,184.82" stroke-width="1"/>
+    <path d="M340.42,197.18L349.08,184.82" stroke-width="1"/>
+    <path d="M346.52,197.18L355.18,184.82" stroke-width="1"/>
+    <path d="M352.63,197.18L356.43,191.76" stroke-width="1"/>
+  </g>
+  <g data-step="3" style="--sd:6.56s">
+    <path d="M102.29,387.89L248.58,201.13" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.77s"/>
+    <path d="M251.78,197.05L254.25,193.9" stroke-width="1"/>
+    <path d="M257.33,189.96L259.8,186.81" stroke-width="1"/>
+    <path d="M262.88,182.88L265.35,179.73" stroke-width="1"/>
+    <path d="M268.43,175.79L270.9,172.64" stroke-width="1"/>
+    <path d="M273.98,168.71L276.45,165.56" stroke-width="1"/>
+    <path d="M279.53,161.62L282,158.47" stroke-width="1"/>
+    <path d="M290.7,147.37L374.69,40.14" stroke-width="2" class="draw" pathLength="1" style="--d:0.66s;--t:0.57s"/>
+    <path d="M370.98,53.74L374.69,40.14L362.38,47" stroke-width="2" class="fade" style="--d:1.14s"/>
+    <path d="M106,374.29L102.29,387.89L114.6,381.02" stroke-width="2" class="fade" style="--d:1.26s"/>
+    <path d="M58.8,167.2L352.8,167.2" stroke-width="2" class="draw" pathLength="1" style="--d:1.38s;--t:0.89s"/>
+    <path d="M339.8,172.66L352.8,167.2L339.8,161.74" stroke-width="2" class="fade" style="--d:2.14s"/>
+    <path d="M71.8,161.74L58.8,167.2L71.8,172.66" stroke-width="2" class="fade" style="--d:2.26s"/>
+    <text fill="currentColor" stroke="none" x="58.6" y="134.4" font-size="26" class="fade" style="--d:2.38s">overpass</text>
+    <text fill="currentColor" stroke="none" x="384" y="376" font-size="26" text-anchor="end" class="fade" style="--d:2.50s">road below</text>
+  </g>
+  </g>
+</svg>
