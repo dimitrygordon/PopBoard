@@ -1,0 +1,135 @@
+{
+  "lessons": {
+    "1.1": {
+      "hook": "Show the fins illusion. Everyone writes which segment is longer and how sure they are (1 to 5), then measures. Tally the class guesses against the measurement. The fins figure is called the Müller-Lyer illusion. Psychologists still study why it fools us. The segments are equal every time."
+    },
+    "1.2": {
+      "exit": [
+        null,
+        "Why can't checking more examples, by itself, prove a conjecture about infinitely many cases?"
+      ]
+    },
+    "1.3": {
+      "idea": "Point, line and plane are undefined: we describe them with rules instead of definitions. Our first rule, a postulate we accept without proof, is that through two different points there is exactly one line. A segment has two endpoints, a ray has one, and a line has none.",
+      "words": [
+        "point",
+        "line",
+        "plane",
+        "collinear",
+        "coplanar",
+        "segment",
+        "ray",
+        "parallel lines"
+      ],
+      "mistakeCorrection": "Jo confused endpoints with points. A line has no endpoints and infinitely many points. A segment has two different endpoints and infinitely many points between them. Two different points determine a line; they are not the line's only points.",
+      "practice": {
+        "0": {
+          "solution": "Rays BA and BC are opposite rays: they share the endpoint B and point in opposite directions along one line. Together they cover the whole line AC, and only B is on both. The route from A to C with two ends is segment AC, not a ray and not the whole line."
+        }
+      }
+    },
+    "1.4": {
+      "hook": "Tape two toothpicks upright on a ball, at different 'cities' on one north-south line. Light them with sunlight, or with a lamp across the room so its rays are nearly parallel. Measure each shadow. Then repeat on a flat board with a flashlight held close. Both setups give different shadow angles. Which one matches what Eratosthenes assumed, and what would tell the two apart?",
+      "check": [
+        "Name the angle with vertex O, one ray through A and one ray through B, in three ways.",
+        "Angle AOB or angle BOA, with the vertex letter in the middle. You may also write angle O, but only when O is the vertex of just one angle in the figure."
+      ],
+      "examples": {
+        "0": {
+          "title": "Estimate a planet's circumference (made-up numbers)",
+          "steps": {
+            "3": {
+              "reason": "Find the whole from the part. Earth's real distance around the poles is about 40,000 km."
+            }
+          }
+        }
+      }
+    },
+    "1.5": {
+      "hook": "Stage 0 is one shaded triangle. To make the next stage, join the midpoints of each shaded triangle's sides and remove the middle one. Hand-draw stages 0 to 3, count the shaded triangles, and predict stage 4.",
+      "exit": [
+        null,
+        "Stage 0 is one shaded triangle. How many shaded triangles are at stage 4?"
+      ]
+    },
+    "1.6": {
+      "hook": "Push a pencil upright through a sheet of paper on a sunny sill, and draw a circle around it with your compass. In the morning, mark where the tip of the shadow touches the circle. In the afternoon, mark where it touches the circle again. Both marks are one radius from the pencil. Which direction is exactly halfway between them?"
+    },
+    "1.8": {
+      "idea": "A conditional says 'if p, then q.' Swap the parts to get the converse: if q, then p. Put 'not' on both parts to get the inverse. Do both to get the contrapositive: if not q, then not p. A conditional and its contrapositive are always true or false together. The converse and the inverse are also always true or false together, but they can be false even when the original is true.",
+      "practice": {
+        "1": {
+          "prompt": "Max says the negation (the 'not' version) of 'every marked angle is acute' is 'no marked angle is acute.' What is the correct negation? Show that Max's version can be wrong."
+        }
+      }
+    },
+    "1.9": {
+      "practice": {
+        "2": {
+          "prompt": "'An acute angle is an angle whose measure is less than 90 degrees.' In our course, an angle's measure can be any number from 0 to 180 degrees, including 0 and 180. What case slips through?"
+        }
+      }
+    }
+  },
+  "items": {
+    "1.13-2": {
+      "solution": "Assume n² is odd but n is not odd. Every integer is even or odd, so n=2k for an integer k. Then n²=4k²=2(2k²) is even, contradicting the given odd square. Therefore n is odd. For the specified square the possible integers are plus or minus 9, both odd.",
+      "check": "The contrapositive supplies a second route: an even integer 2k has even square 4k². This is equivalent to the claim. No ruler postulate, triangle theorem or drawing is used."
+    },
+    "1.13-3": {
+      "check": "An example that fits every given but breaks the claim: redraw one segment slightly longer while retaining all stated incidence facts. The original assumptions remain true but equality fails."
+    },
+    "1.13-9": {
+      "solution": "It means we do not define 'lies on' with other words. We start with it and write rules about it. Undefined does not mean anything goes: the rules limit what can happen. Theorems are then proved from those rules and our definitions."
+    },
+    "1.13-13": {
+      "solution": "Assume n² is odd but n is not odd. Every integer is even or odd, so n=2k for an integer k. Then n²=4k²=2(2k²) is even, contradicting the given odd square. Therefore n is odd. For the specified square the possible integers are plus or minus 7, both odd. n²=49 is odd and n=7 is odd; this check illustrates the proved universal statement, not a replacement for its proof.",
+      "check": "The contrapositive supplies a second route: an even integer 2k has even square 4k². This is equivalent to the claim. No ruler postulate, triangle theorem or drawing is used."
+    },
+    "1.13-14": {
+      "solution": "The rule z=2x+1 is the given definition of the operation. x=4 is the given input. Substitution derives z=2·4+1=9; the output 9 is a result, not another assumption.",
+      "check": "Running the inverse calculation (9 - 1)/2 returns 4. All required rules are printed here; no ruler or midpoint theorem is used."
+    },
+    "1.13-16": {
+      "check": "Write H for closed and straight-edged, and S for simple polygon. The card has H true and S false, exactly the false case for H implies S. The conclusion uses the given crossing, not an apparent crossing inferred from pixels."
+    },
+    "A1": {
+      "solution": "The angles are congruent because the given marks are givens. The inaccurate rendering should be corrected; the drawing does not cancel an explicit hypothesis. No numerical angle measure follows without a degree label."
+    },
+    "A5": {
+      "check": "Before you add DA, A and D each touch only one drawn side. After you add DA, every corner touches exactly two sides, so the path is closed."
+    },
+    "A8": {
+      "check": "Exhaust the 3 listed objects. S has Metal=true, Compass=false, the exact truth pattern falsifying 'if Metal then Compass'."
+    },
+    "A9": {
+      "solution": "A record A, A, B has repeated points; A, B, C with three collinear locations has distinct names but still fails. A record is a triad if and only if it names exactly three different points and no one line holds all three."
+    },
+    "A10": {
+      "check": "Counterexample to the extra assertion: d=1, e=2, c=4, b=3, a=7 satisfies both givens, but c is 4, not 3. The proved equation gives 7=1+2+4."
+    },
+    "A11": {
+      "solution": "Assume both. The second rule turns a < b and b < a into a < a. The first rule says a < a is never true. That is a contradiction, so the two can't both be true."
+    },
+    "A12": {
+      "check": "Write M for 'P is marked' and L for 'P is on l.' The assumptions are 'if M then L', 'M', and 'not L'. Try all four true/false rows for M and L: no row makes all three true, but every pair of them is true in some row."
+    },
+    "B7": {
+      "solution": "If A is true, the first rule gives B and the second gives C, so 'if A then C' holds. The reverse need not hold: with A false, B false and C true, both rules are true, but 'if C then A' is false.",
+      "check": "An if-then is false only when its 'if' part is true and its 'then' part is false."
+    },
+    "B8": {
+      "check": "Map switch/lamp to (P, Q). The violating row is (T, F); the reverse inference is refuted by (F, T)."
+    },
+    "B10": {
+      "solution": "Move terms: x²-x=x(x-1)=0. The zero-product rule gives x=0 or x=1. Dividing by x only works if x is not 0, so it throws away the solution x = 0."
+    },
+    "B12": {
+      "solution": "It follows in U by uniqueness. It need not follow in E: take points P, Q, R, S and line-sets l={P, Q, R}, m={P, Q, S}, n={R, S}. Every point pair has at least one listed line, but distinct l, m both contain P, Q. This is a toy incidence example that fits E, not a Euclidean plane.",
+      "check": "List six pairs: PQ lies on l, m; PR, QR on l; PS, QS on m; RS on n. Every pair of points has at least one line, so system E's rule holds. But P and Q are on two different lines, l and m, so 'exactly one line' fails."
+    },
+    "1.13-11": {
+      "solution": "The proposed condition admits a quadrilateral with given angles of 90, 60, 120 and 90 degrees, so it is not sufficient. Exact replacement: rectangle if and only if quadrilateral with four right angles. Both necessity and sufficiency are part of the definition."
+    }
+  }
+}

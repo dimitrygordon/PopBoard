@@ -7,7 +7,7 @@
       "I can sort statements about a figure into observed, measured, assumed and proved.",
       "I can explain why an optical illusion is a reason to prove, not just look."
     ],
-    "hook": "Show the fins illusion. Everyone writes which segment is longer and how sure they are (1 to 5), then measures. Tally the class guesses against the measurement.",
+    "hook": "Show the fins illusion. Everyone writes which segment is longer and how sure they are (1 to 5), then measures. Tally the class guesses against the measurement. The fins figure is called the Müller-Lyer illusion. Psychologists still study why it fools us. The segments are equal every time.",
     "idea": "A drawing helps us think, but it is not evidence. A solution may use only four kinds of facts: what we are given, what we measured with a stated tool, what we openly assume, and what we prove.",
     "words": [
       "given",
@@ -218,7 +218,7 @@
     ],
     "exit": [
       "Make a conjecture about the sum of two odd numbers and test it three ways.",
-      "Why can't more examples prove a conjecture?"
+      "Why can't checking more examples, by itself, prove a conjecture about infinitely many cases?"
     ],
     "builderDiagrams": {
       "W1": "No geometric diagram is needed; use live mathematical text.",
@@ -237,11 +237,11 @@
       "I can tell when two distinct lines in a plane meet once or never."
     ],
     "hook": "Each pair sketches a street grid for a new town and marks where streets cross. Which streets never meet? Which corners are on one straight street?",
-    "idea": "Point, line and plane are undefined: we describe them with rules instead of definitions. Through two different points there is exactly one line. A segment has two endpoints, a ray has one, and a line has none.",
+    "idea": "Point, line and plane are undefined: we describe them with rules instead of definitions. Our first rule, a postulate we accept without proof, is that through two different points there is exactly one line. A segment has two endpoints, a ray has one, and a line has none.",
     "words": [
       "point",
       "line",
-      "plane (undefined)",
+      "plane",
       "collinear",
       "coplanar",
       "segment",
@@ -309,14 +309,14 @@
     ],
     "mistake": {
       "prompt": "Jo says 'a line has two points: its ends.'",
-      "correction": "Jo confused endpoints with points. A line has no endpoints and infinitely many points. A nonzero segment has two endpoints and also infinitely many points between them. Two distinct points determine a line; they are not the line's only points.",
+      "correction": "Jo confused endpoints with points. A line has no endpoints and infinitely many points. A segment has two different endpoints and infinitely many points between them. Two different points determine a line; they are not the line's only points.",
       "slot": "A segment with endpoint dots next to a line with arrows on both ends."
     },
     "practice": [
       {
         "prompt": "Three different markers A, B and C sit on one straight road, in that order. Think about ray BA and ray BC. Which road points are on at least one of the rays? Which are on both? What is the route from A to C that has two ends?",
         "slot": "A, B, C on a line in that order. Panels: ray BA, ray BC, both rays together, and their overlap (just the point B). Then segment AC with endpoint dots.",
-        "solution": "Together the two rays cover the whole line AC, because they point opposite ways from B. Only B is on both. The route from A to C with two ends is segment AC, not a ray and not the whole line.",
+        "solution": "Rays BA and BC are opposite rays: they share the endpoint B and point in opposite directions along one line. Together they cover the whole line AC, and only B is on both. The route from A to C with two ends is segment AC, not a ray and not the whole line.",
         "check": "A point on A's side of B is only on ray BA. A point on C's side is only on ray BC. B is on both. Those three cases cover the whole road. Segment AC also leaves out the points past A and past C."
       },
       {
@@ -356,7 +356,7 @@
       "I can name an angle three ways and measure it with a protractor.",
       "I can explain the idea of Eratosthenes' measurement, including what he had to assume."
     ],
-    "hook": "A stick and a flashlight 'sun': two groups at different 'cities' measure shadow angles and compare. Why are the angles different if the sun is the same?",
+    "hook": "Tape two toothpicks upright on a ball, at different 'cities' on one north-south line. Light them with sunlight, or with a lamp across the room so its rays are nearly parallel. Measure each shadow. Then repeat on a flat board with a flashlight held close. Both setups give different shadow angles. Which one matches what Eratosthenes assumed, and what would tell the two apart?",
     "idea": "An angle is two rays with the same endpoint. Its size depends on how far the rays turn apart, not on how long you draw them. Eratosthenes used one angle to estimate the size of the Earth, but only by assuming a model.",
     "words": [
       "angle",
@@ -370,7 +370,7 @@
     "tryit": "Ray-length slider: drag the length of each ray. The angle readout stays the same until you change a ray's direction.",
     "examples": [
       {
-        "title": "Estimate the Earth's circumference.",
+        "title": "Estimate a planet's circumference (made-up numbers)",
         "steps": [
           {
             "step": "Assume: the Earth is a sphere, both cities are on one north-south circle, and sunlight comes in parallel.",
@@ -386,7 +386,7 @@
           },
           {
             "step": "Circumference = 600 · 360 / 6 = 36000 km.",
-            "reason": "Find the whole from the part."
+            "reason": "Find the whole from the part. Earth's real distance around the poles is about 40,000 km."
           },
           {
             "step": "Second check: 36000 / 360 = 100 km per degree, and 6 degrees gives 600 km.",
@@ -445,7 +445,7 @@
     ],
     "check": [
       "Name the angle with vertex O, one ray through A and one ray through B, in three ways.",
-      "Angle AOB, angle BOA, or angle O. The vertex letter goes in the middle."
+      "Angle AOB or angle BOA, with the vertex letter in the middle. You may also write angle O, but only when O is the vertex of just one angle in the figure."
     ],
     "exit": [
       "Draw and name an obtuse angle three ways.",
@@ -467,7 +467,7 @@
       "I can tell a polygon from a figure that is not a polygon, and name polygons by sides.",
       "I can count parts of a pattern stage by stage and describe the rule."
     ],
-    "hook": "Hand-draw the Sierpinski triangle to stage 3. Count the shaded triangles at each stage and predict stage 4 before drawing it.",
+    "hook": "Stage 0 is one shaded triangle. To make the next stage, join the midpoints of each shaded triangle's sides and remove the middle one. Hand-draw stages 0 to 3, count the shaded triangles, and predict stage 4.",
     "idea": "In this course, a polygon is a simple closed path of at least three nonzero straight sides. Consecutive sides meet at their common endpoint and are not collinear; nonconsecutive sides do not meet. Its polygonal region includes its boundary and interior. That region is convex if, for every two points of the region, the entire segment joining them lies in the region. (In plain words: In this course, a polygon is a closed loop of at least three straight sides, each with positive length. Only neighboring sides meet, at their shared endpoint, and neighboring sides are not on the same line. The region is the loop together with its inside. It is convex when, for any two points in that region, boundary included, the whole straight segment between them stays in the region.) A polygon is regular if all sides are equal and all angles are equal.",
     "words": [
       "polygon",
@@ -560,7 +560,7 @@
     ],
     "exit": [
       "Is a circle a polygon? Is a five-point star drawn with crossing lines a polygon? Explain.",
-      "How many shaded triangles are at stage 4 of the Sierpinski triangle?"
+      "Stage 0 is one shaded triangle. How many shaded triangles are at stage 4?"
     ],
     "builderDiagrams": {
       "W1": "Convex 3-gon A1, ..., A3 in circular order, diagonals from A1 only; no crossings in polygon boundary.",
@@ -578,7 +578,7 @@
       "I can copy a segment with a compass, without measuring.",
       "I can construct an equilateral triangle (Euclid I.1) and say why its sides are equal."
     ],
-    "hook": "Make a sundial face using only compass and straightedge: no ruler numbers allowed. Start by copying one segment exactly.",
+    "hook": "Push a pencil upright through a sheet of paper on a sunny sill, and draw a circle around it with your compass. In the morning, mark where the tip of the shadow touches the circle. In the afternoon, mark where it touches the circle again. Both marks are one radius from the pencil. Which direction is exactly halfway between them?",
     "idea": "A construction uses only a compass and a straightedge. The straightedge draws a line through two points. The compass draws a circle, and every point on a circle is the same distance from its center. That is how a compass copies a length with no numbers.",
     "words": [
       "construction",
@@ -802,7 +802,7 @@
       "I can decide which of the four is true for a given statement, with a counterexample when false."
     ],
     "hook": "Sort ad slogans ('If you drink Zoom, you'll run faster') into if-then form, then flip each one. Which flips are still believable?",
-    "idea": "A conditional says 'if p, then q.' Swap the parts to get the converse: if q, then p. Put 'not' on both parts to get the inverse. Do both to get the contrapositive: if not q, then not p. A conditional and its contrapositive are always true or false together. The converse can be false.",
+    "idea": "A conditional says 'if p, then q.' Swap the parts to get the converse: if q, then p. Put 'not' on both parts to get the inverse. Do both to get the contrapositive: if not q, then not p. A conditional and its contrapositive are always true or false together. The converse and the inverse are also always true or false together, but they can be false even when the original is true.",
     "words": [
       "conditional",
       "hypothesis",
@@ -884,7 +884,7 @@
         "check": "6 is even but not a multiple of 4, so the converse is false."
       },
       {
-        "prompt": "Max says the opposite of 'every marked angle is acute' is 'no marked angle is acute.' What is the correct opposite? Show that Max's version can be wrong.",
+        "prompt": "Max says the negation (the 'not' version) of 'every marked angle is acute' is 'no marked angle is acute.' What is the correct negation? Show that Max's version can be wrong.",
         "slot": "Two marked angles, 30 degrees and 110 degrees. Note: acute means more than 0 and less than 90 degrees.",
         "solution": "Correct opposite: at least one marked angle is not acute. With angles of 30 and 110 degrees, 'every angle is acute' is false, but 'no angle is acute' is also false.",
         "check": "The 110 degree angle shows 'every' fails. The 30 degree angle shows 'none' fails."
@@ -1003,7 +1003,7 @@
         "check": "A 1 by 1.001 rectangle looks square when it is small, but its sides are not equal."
       },
       {
-        "prompt": "'An acute angle is an angle whose measure is less than 90 degrees.' In our course, angles go from 0 to 180 degrees. What case slips through?",
+        "prompt": "'An acute angle is an angle whose measure is less than 90 degrees.' In our course, an angle's measure can be any number from 0 to 180 degrees, including 0 and 180. What case slips through?",
         "slot": "Number line of angle measures from 0 to 180 degrees, with open circles at 0 and 90.",
         "solution": "It lets in 0 degrees. Fix: an acute angle has a measure more than 0 and less than 90 degrees.",
         "check": "The fixed test keeps out 0 and 90 and lets in 45. The old test let in 0."
@@ -1405,8 +1405,8 @@
         "id": "1.13-2",
         "prompt": "Use an indirect proof to show: if the square of an integer is odd, then the integer is odd. Then say which integers have a square of 81.",
         "slot": "No drawing needed; live text only.",
-        "solution": "Assume n² is odd but n is not odd. Every integer is even or odd, so n=2k for an integer k. Then n²=4 k²=2(2 k²) is even, contradicting the given odd square. Therefore n is odd. For the specified square the possible integers are plus or minus 9, both odd.",
-        "check": "The contrapositive supplies a second route: an even integer 2k has even square 4 k². This is equivalent to the claim. No ruler postulate, triangle theorem or drawing is used.",
+        "solution": "Assume n² is odd but n is not odd. Every integer is even or odd, so n=2k for an integer k. Then n²=4k²=2(2k²) is even, contradicting the given odd square. Therefore n is odd. For the specified square the possible integers are plus or minus 9, both odd.",
+        "check": "The contrapositive supplies a second route: an even integer 2k has even square 4k². This is equivalent to the claim. No ruler postulate, triangle theorem or drawing is used.",
         "diagram": "No geometric diagram is needed; use live mathematical text."
       },
       {
@@ -1414,7 +1414,7 @@
         "prompt": "Two segments in a drawing have no marks, but they seem equal in length. Were you given that they are equal? How could you make sure?",
         "slot": "Two unmarked segments. Answer side only: a ruler panel with marks at 0 and 5, and at 7 and 12.",
         "solution": "No. Appearance supplies neither measurement nor a hypothesis. If endpoints are on an explicitly calibrated ruler at 0, 5 and 7, 12, both distances equal 5; otherwise obtain an equality mark, measurement assumption or proof.",
-        "check": "Countermodel: redraw one segment slightly longer while retaining all stated incidence facts. The original assumptions remain true but equality fails.",
+        "check": "An example that fits every given but breaks the claim: redraw one segment slightly longer while retaining all stated incidence facts. The original assumptions remain true but equality fails.",
         "diagram": "Two disjoint, unmarked segments of visibly similar lengths; a separate exact ruler panel [0, 5] and [7, 12]. Do not add equality marks in the initial panel."
       },
       {
@@ -1461,7 +1461,7 @@
         "id": "1.13-9",
         "prompt": "In our system, 'incidence' (a point lying on a line) is undefined. What does that mean? Can we assume anything we like about it?",
         "slot": "No drawing needed; live text only.",
-        "solution": "A formal theory begins with primitive objects/relations and assumptions about them rather than defining every term using other terms. Undefined does not mean unrestricted: axioms constrain allowed models. A theorem is derived from those axioms and definitions.",
+        "solution": "It means we do not define 'lies on' with other words. We start with it and write rules about it. Undefined does not mean anything goes: the rules limit what can happen. Theorems are then proved from those rules and our definitions.",
         "check": "Interpret the same incidence axioms in two different labeled diagrams. Renaming points does not change truth; adding an unlicensed incidence can violate an axiom. This separates vocabulary from constraints.",
         "diagram": "No geometric diagram is needed; use live mathematical text."
       },
@@ -1477,7 +1477,7 @@
         "id": "1.13-11",
         "prompt": "Is 'a quadrilateral with at least one right angle' a good definition of a rectangle? If not, write a correct one.",
         "slot": "No drawing needed; live text only.",
-        "solution": "The proposed condition admits a quadrilateral with stipulated angles90,60,120,90degrees, so it is not sufficient. Exact replacement: rectangle if and only if quadrilateral with four right angles. Both necessity and sufficiency are part of the definition.",
+        "solution": "The proposed condition admits a quadrilateral with given angles of 90, 60, 120 and 90 degrees, so it is not sufficient. Exact replacement: rectangle if and only if quadrilateral with four right angles. Both necessity and sufficiency are part of the definition.",
         "check": "Check the replacement in each direction: a named rectangle satisfies the condition by the adopted definition; any object satisfying the full condition is a rectangle. The original counterexample no longer qualifies.",
         "diagram": "No geometric diagram is needed; use live mathematical text."
       },
@@ -1493,16 +1493,16 @@
         "id": "1.13-13",
         "prompt": "Prove indirectly: if an integer's square is odd, the integer is odd. Use it when the square is 49, and check n = 7.",
         "slot": "No drawing needed; live text only.",
-        "solution": "Assume n² is odd but n is not odd. Every integer is even or odd, so n=2k for an integer k. Then n²=4 k²=2(2 k²) is even, contradicting the given odd square. Therefore n is odd. For the specified square the possible integers are plus or minus 7, both odd. n²=49 is odd and n=7 is odd; this check illustrates the proved universal statement, not a replacement for its proof.",
-        "check": "The contrapositive supplies a second route: an even integer 2k has even square 4 k². This is equivalent to the claim. No ruler postulate, triangle theorem or drawing is used.",
+        "solution": "Assume n² is odd but n is not odd. Every integer is even or odd, so n=2k for an integer k. Then n²=4k²=2(2k²) is even, contradicting the given odd square. Therefore n is odd. For the specified square the possible integers are plus or minus 7, both odd. n²=49 is odd and n=7 is odd; this check illustrates the proved universal statement, not a replacement for its proof.",
+        "check": "The contrapositive supplies a second route: an even integer 2k has even square 4k². This is equivalent to the claim. No ruler postulate, triangle theorem or drawing is used.",
         "diagram": "No geometric diagram is needed; use live mathematical text."
       },
       {
         "id": "1.13-14",
         "prompt": "A made-up rule says z = 2x + 1, and you are given x = 4. Which part is the definition, which is the given, and which is the result?",
         "slot": "Three boxes: input, rule, output (output left blank).",
-        "solution": "The rule z=2x+1 is the stipulated definition of the operation. x=4 is the given input. Substitution derives z=2·4+1=9; the output 9 is a result, not another assumption.",
-        "check": "Running the inverse calculation(9-1)/2 returns 4. All required rules are printed here; no ruler or midpoint theorem is used.",
+        "solution": "The rule z=2x+1 is the given definition of the operation. x=4 is the given input. Substitution derives z=2·4+1=9; the output 9 is a result, not another assumption.",
+        "check": "Running the inverse calculation (9 - 1)/2 returns 4. All required rules are printed here; no ruler or midpoint theorem is used.",
         "diagram": "Input/rule/output boxes 4→2x+1→9."
       },
       {
@@ -1518,7 +1518,7 @@
         "prompt": "A designer checks some triangles and other closed paths that don't cross themselves, then guesses: every closed path made of straight segments is a simple polygon. A new card shows the closed path A-B-C-D-A and says that sides AB and CD cross at X, inside both sides. What does this card show? Could more examples that work save the guess?",
         "slot": "Two cards with simple closed paths, then a bow-tie card with the printed given 'X is inside both AB and CD'. No coordinates on the student card.",
         "solution": "The card refutes the universal conjecture. Its path is closed and straight-edged, so it meets the hypothesis, but the stated nonconsecutive crossing violates the definition of a simple polygon. More successful examples cannot erase this valid counterexample. A narrower replacement conjecture would require its own justification.",
-        "check": "Write H for closed and straight-edged, and S for simple polygon. The card has H true and S false, exactly the false case for H implies S. The conclusion uses the stipulated crossing, not an apparent crossing inferred from pixels.",
+        "check": "Write H for closed and straight-edged, and S for simple polygon. The card has H true and S false, exactly the false case for H implies S. The conclusion uses the given crossing, not an apparent crossing inferred from pixels.",
         "diagram": "Show two checked simple-path cards and a third bow-tie card with A=(0,0), B=(4,4), C=(0,4), D=(4,0), X=(2,2). Explicitly print X IS INTERIOR TO BOTH AB AND CD as given information. Coordinates are builder-only; no midpoint computation is assigned."
       }
     ]
@@ -1530,7 +1530,7 @@
           "id": "A1",
           "prompt": "On a construction sheet, two angles carry the same arc mark, but one is drawn much wider than the other. The sheet says matching arc marks are givens. What can you conclude? What should be fixed in the drawing?",
           "slot": "Two angles named alpha and beta, each with one arc mark. One is drawn too wide and labeled 'not to scale'.",
-          "solution": "The angles are congruent because the stipulated marks are givens. The inaccurate rendering should be corrected; the drawing does not cancel an explicit hypothesis. No numerical angle measure follows without a degree label.",
+          "solution": "The angles are congruent because the given marks are givens. The inaccurate rendering should be corrected; the drawing does not cancel an explicit hypothesis. No numerical angle measure follows without a degree label.",
           "check": "Erase the picture and retain the written equal-mark convention: congruence still follows, while a numerical value remains undetermined.",
           "diagram": "Two angle panels labeled alpha, beta with identical single arcs; one deliberately distorted panel is flagged not to scale."
         },
@@ -1563,7 +1563,7 @@
           "prompt": "A pen moves from A = (0, 0) to B = (4, 0) to C = (4, 3) to D = (0, 3) and stops. Is this path a polygon yet? Which single straight segment would finish a simple four-sided polygon?",
           "slot": "The open three-sided path on a grid. The finishing segment is left for the student to draw.",
           "solution": "The trace is open, so it is not a polygon boundary. Add DA. This joins the remaining endpoint D to A without crossing the other edges and closes the four-sided chain.",
-          "check": "The initial trace has endpoints A, D of degree 1; after adding DA, each of the four vertices has two incident boundary edges.",
+          "check": "Before you add DA, A and D each touch only one drawn side. After you add DA, every corner touches exactly two sides, so the path is closed.",
           "diagram": "Exact three-sided open rectangular trace; dashed proposed closing segment DA, then a separate closed-chain reveal."
         },
         {
@@ -1587,14 +1587,14 @@
           "prompt": "A bin holds two compasses, C1 and C2, and one straightedge, S. All three are metal. For this bin, decide whether each claim is true: 'every compass is metal' and 'every metal object is a compass.' For a false claim, name an object that shows it.",
           "slot": "Three inventory cards with columns COMPASS and METAL.",
           "solution": "The first is true on this stated finite bin: C1, C2 are metal. The second is false because S is metal but is a straightedge, not a compass. The claims are converse implications, not equivalent definitions.",
-          "check": "Exhaust the 3 listed objects. S has Metal=true, Compass=false, the exact truth pattern falsifying Metal⇒Compass.",
+          "check": "Exhaust the 3 listed objects. S has Metal=true, Compass=false, the exact truth pattern falsifying 'if Metal then Compass'.",
           "diagram": "Three labeled inventory cards with columns COMPASS and METAL; no color coding."
         },
         {
           "id": "A9",
           "prompt": "A 'triad' means three different points that are not all on one line. A proposed test is 'the record lists three point names.' Give two different records that pass the test but are not triads. Then write an exact 'if and only if' test.",
           "slot": "Three empty panels for the student's records.",
-          "solution": "A record A, A, B has repeated points; A, B, C with three collinear locations has distinct names but still fails. A record is a triad iff it names exactly three distinct points and no single line contains all three.",
+          "solution": "A record A, A, B has repeated points; A, B, C with three collinear locations has distinct names but still fails. A record is a triad if and only if it names exactly three different points and no one line holds all three.",
           "check": "A noncollinear triangle passes the repaired test. Each false positive fails a different required condition, so both conditions are needed.",
           "diagram": "Three panels: repeated-name record; three dots on one line; three noncollinear dots."
         },
@@ -1603,14 +1603,14 @@
           "prompt": "You are given a = b + c and b = d + e. Prove a = d + e + c. A classmate writes c = d + e instead. Which statement follows, and why?",
           "slot": "No drawing needed; live text only.",
           "solution": "Substitute b=d+e into a=b+c: a=(d+e)+c=d+e+c. Nothing identifies c with b, so c=d+e does not follow.",
-          "check": "Counterexample to the extra assertion: d=1, e=2, c=4, b=3, a=7 satisfies both givens but c≠3. The proved equation gives 7=1+2+4.",
+          "check": "Counterexample to the extra assertion: d=1, e=2, c=4, b=3, a=7 satisfies both givens, but c is 4, not 3. The proved equation gives 7=1+2+4.",
           "diagram": "Dependency tree with b feeding into the expression for a; the unsupported c=b edge is crossed out."
         },
         {
           "id": "A11",
           "prompt": "Use only these two rules: x < x is never true, and if x < y and y < z, then x < z. Prove that a < b and b < a can't both be true.",
           "slot": "Two arrows, a to b and b to a.",
-          "solution": "Assume both. Transitivity gives a<a, contradicting irreflexivity. Hence the two inequalities cannot both hold. The rules are explicit premises of this logic task, not an appeal to a later inequality lesson.",
+          "solution": "Assume both. The second rule turns a < b and b < a into a < a. The first rule says a < a is never true. That is a contradiction, so the two can't both be true.",
           "check": "The same substitution with roles reversed also gives b<b. Either violates the first printed rule.",
           "diagram": "Two directed strict-order arrows a→b and b→a, with the derived forbidden self-loop shown in the reveal."
         },
@@ -1619,7 +1619,7 @@
           "prompt": "A system has three assumptions. S: every marked point is on line l. T: point P is marked. U: P is not on l. Can all three be true together? Show that removing any one of them gets rid of this contradiction.",
           "slot": "A blank table with columns 'P marked' and 'P on l'.",
           "solution": "Together S and T put P on l, contradicting U. Delete U: put marked P on l. Delete T: put unmarked P off l and use no marked points. Delete S: put marked P off l. Thus all three assumptions together are inconsistent, and every two-assumption subset has a model.",
-          "check": "Use two Boolean facts M=(P marked), L=(P on l). The assumptions are M⇒L, M, not L. Their conjunction is false in all four truth rows; each two-assumption subset has a satisfying row.",
+          "check": "Write M for 'P is marked' and L for 'P is on l.' The assumptions are 'if M then L', 'M', and 'not L'. Try all four true/false rows for M and L: no row makes all three true, but every pair of them is true in some row.",
           "diagram": "A three-rule dependency diagram and a four-row Boolean table M, L. Tiny witness panels label marked/unmarked by text, not color."
         }
       ],
@@ -1676,8 +1676,8 @@
           "id": "B7",
           "prompt": "A system's only assumptions are 'A implies B' and 'B implies C.' Show that A implies C. Must 'C implies A' also follow? Give true or false values for A, B and C to back up your answer.",
           "slot": "Arrow chain A to B to C, with an empty truth-value table below.",
-          "solution": "If A holds, the first rule gives B and the second gives C, so A⇒C. The reverse need not hold: A=false, B=false, C=true makes both assumptions true but C⇒A false.",
-          "check": "Evaluate the counterassignment directly: F⇒F and F⇒T are true, whereas T⇒F is false.",
+          "solution": "If A is true, the first rule gives B and the second gives C, so 'if A then C' holds. The reverse need not hold: with A false, B false and C true, both rules are true, but 'if C then A' is false.",
+          "check": "An if-then is false only when its 'if' part is true and its 'then' part is false.",
           "diagram": "Three-node implication chain A→B→C, with the counterassignment printed in a separate table."
         },
         {
@@ -1685,7 +1685,7 @@
           "prompt": "A device rule says 'if the switch is on, then the lamp is on.' Four observations of (switch, lamp) are (off, off), (off, on), (on, on) and (on, off). Which one breaks the rule? Does seeing the lamp on prove the switch is on?",
           "slot": "Four observation cards labeled SWITCH and LAMP, with ON or OFF written in words.",
           "solution": "Only (on, off) violates the implication. An on lamp does not certify an on switch because (off, on) is explicitly observed and does not violate the contract.",
-          "check": "Map switch/lamp to(P, Q). The violating row is(T, F); the reverse inference is refuted by(F, T).",
+          "check": "Map switch/lamp to (P, Q). The violating row is (T, F); the reverse inference is refuted by (F, T).",
           "diagram": "Four observation cards labeled SWITCH, LAMP and ON/OFF in text; no colored status lights."
         },
         {
@@ -1700,7 +1700,7 @@
           "id": "B10",
           "prompt": "Solve x² = x for real numbers. A classmate divides both sides by x right away and gets only x = 1. Find every solution and the case that was lost.",
           "slot": "No drawing needed; live text only.",
-          "solution": "Move terms: x²-x=x(x-1)=0. The zero-product rule gives x=0 or x=1. Division by x assumes x≠0 and loses the valid solution 0.",
+          "solution": "Move terms: x²-x=x(x-1)=0. The zero-product rule gives x=0 or x=1. Dividing by x only works if x is not 0, so it throws away the solution x = 0.",
           "check": "Substitution gives 0²=0 and 1²=1. For x not 0 or 1, neither factor is zero, so there is no additional solution.",
           "diagram": "Algebra branch diagram x=0 and x-1=0; the division step is labeled conditional onx≠0."
         },
@@ -1716,8 +1716,8 @@
           "id": "B12",
           "prompt": "System U assumes exactly one line through every two distinct points. System E assumes at least one line through every two distinct points and does not assume uniqueness. (In plain words: For every pair of different points, U requires exactly one line through both points. E requires at least one line through both points, but allows either one or more than one.) Does 'two different lines can't share two different points' hold in both systems? If not, build a small example that breaks it.",
           "slot": "A blank table with point rows and line columns.",
-          "solution": "It follows in U by uniqueness. It need not follow in E: take points P, Q, R, S and line-sets l={P, Q, R}, m={P, Q, S}, n={R, S}. Every point pair has at least one listed line, but distinct l, m both contain P, Q. This is a toy incidence countermodel, not a Euclidean plane.",
-          "check": "List six pairs: PQ lies on l, m; PR, QR on l; PS, QS on m; RS on n. All existential requirements hold while uniqueness fails.",
+          "solution": "It follows in U by uniqueness. It need not follow in E: take points P, Q, R, S and line-sets l={P, Q, R}, m={P, Q, S}, n={R, S}. Every point pair has at least one listed line, but distinct l, m both contain P, Q. This is a toy incidence example that fits E, not a Euclidean plane.",
+          "check": "List six pairs: PQ lies on l, m; PR, QR on l; PS, QS on m; RS on n. Every pair of points has at least one line, so system E's rule holds. But P and Q are on two different lines, l and m, so 'exactly one line' fails.",
           "diagram": "Four-point/three-line incidence table for the given sets; highlight the two PQ memberships."
         }
       ]

@@ -22,7 +22,7 @@ test('regular Unit 1 lessons follow the 13-screen spec order with full examples 
   s.slice(8,11).forEach((x,i)=>{assert.equal(x.geo.solution,v.practice[i].solution);assert.equal(x.geo.check,v.practice[i].check);});
   assert.equal(v.goals.length,3);assert.match(s.at(-1).geo.body,/^<ol>(<li>[^<]+<\/li>){2}<li>What's confusing\?<\/li><\/ol>$/);
  }
- for(const n of [2,5,6])assert.equal(deck(n).slides[6].geo.kind,'gx');
+ for(const n of [1,2,3,4,5,6,8])assert.equal(deck(n).slides[6].geo.kind,'gx');
 });
 test('1.13 review has 16 keyed items and 1.14 has two parallel 12-item forms',()=>{
  const r=deck(13).slides.filter(s=>s.geo.kind==='practice');assert.equal(r.length,16);r.forEach(s=>assert.ok(s.geo.solution&&s.geo.check));

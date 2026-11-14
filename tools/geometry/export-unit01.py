@@ -72,4 +72,37 @@ s13=sections['1.13'];s14=sections['1.14']
 unit['1.13']=dict(practice=bank(s13,lambda i:r'\*\*1\.13\. ?Bank ?'+i.split('-')[1],[f'1.13-{n}' for n in range(1,17)]))
 learner14=s14.split('- Builder and answer-key layer',1)[0];keys14=s14[len(learner14):]
 unit['1.14']=dict(forms={f:bank(learner14.split('  - Form '+f+':',1)[1].split('  - Form ',1)[0]+keys14,lambda i:r'\*\*1\.14\.'+i,[f'{f}{n}' for n in range(1,13)]) for f in 'AB'})
+
+def apply_student_overrides(unit):
+ # Tesla wording suggestions, pending Socrates. SPEC is unchanged; this file is the review list's source of truth with SOCRATES-REVIEW-unit01.md.
+ ov=json.loads((ROOT/'tools/geometry/u01-student-overrides.json').read_text())
+ for lid,patch in ov.get('lessons',{}).items():
+  u=unit[lid]
+  if 'hook' in patch:u['hook']=patch['hook']
+  if 'idea' in patch:u['idea']=patch['idea']
+  if 'words' in patch:u['words']=list(patch['words'])
+  if 'exit' in patch:
+   exit=list(u['exit'])
+   for i,val in enumerate(patch['exit']):
+    if val is not None:exit[i]=val
+   u['exit']=exit
+  if 'mistakeCorrection' in patch:u['mistake']['correction']=patch['mistakeCorrection']
+  if 'check' in patch:u['check']=list(patch['check'])
+  for i,ep in (patch.get('examples') or {}).items():
+   e=u['examples'][int(i)]
+   if 'title' in ep:e['title']=ep['title']
+   for si,sp in (ep.get('steps') or {}).items():
+    if 'step' in sp:e['steps'][int(si)]['step']=sp['step']
+    if 'reason' in sp:e['steps'][int(si)]['reason']=sp['reason']
+  for i,pp in (patch.get('practice') or {}).items():
+   p=u['practice'][int(i)]
+   p.update(pp)
+ def find(iid):
+  if iid.startswith('1.13'):
+   return next(p for p in unit['1.13']['practice'] if p['id']==iid)
+  return unit['1.14']['forms'][iid[0]][int(iid[1:])-1]
+ for iid,fields in ov.get('items',{}).items():
+  item=find(iid)
+  for k,val in fields.items():item[k]=val
+apply_student_overrides(unit)
 write(ROOT/'tools/geometry/u01-v2.json',json.dumps(unit,ensure_ascii=False,indent=2)+'\n')
