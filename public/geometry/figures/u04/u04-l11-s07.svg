@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-labelledby="u04-l11-s07-title"><title id="u04-l11-s07-title">Two different triangles, ABC1 and ABC2, share angle A, side AB, and equal sides BC1 and BC2, so SSA does not prove triangles congruent.</title><g fill="none" stroke="#111" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" font-family="Literata, Georgia, serif"><g id="u04-l11-s07-givens">
+<path d="M515.68,303.52A252.98,252.98 0 0 1 244.32,303.52" stroke-width="1.25"/>
+<path d="M60.00,330.00L560,330" stroke-width="2"/>
+<path d="M546,323L560,330L546,337" stroke-width="2"/>
+<path d="M60.00,330.00L380.00,90.00" stroke-width="3"/>
+<path d="M380.00,90.00L300.00,330.00" stroke-width="2"/>
+<path d="M380.00,90.00L460.00,330.00" stroke-width="2"/>
+<path d="M94.00,330.00A34,34 0 0 0 87.20,309.60" stroke-width="1.25"/><path d="M348.54,212.85L331.46,207.15" stroke-width="2"/><path d="M428.54,207.15L411.46,212.85" stroke-width="2"/>
+<circle cx="60.00" cy="330.00" r="3" fill="#111" stroke="none"/><circle cx="380.00" cy="90.00" r="3" fill="#111" stroke="none"/><circle cx="300.00" cy="330.00" r="3" fill="#111" stroke="none"/><circle cx="460.00" cy="330.00" r="3" fill="#111" stroke="none"/>
+<text x="36.00" y="342.00" font-size="32" text-anchor="middle" stroke="none" fill="#111" font-style="italic">A</text><text x="380.00" y="70.00" font-size="32" text-anchor="middle" stroke="none" fill="#111" font-style="italic">B</text><text x="294.00" y="370.00" font-size="32" text-anchor="middle" stroke="none" fill="#111" font-style="italic">C<tspan font-size="22" dy="7">1</tspan></text><text x="454.00" y="370.00" font-size="32" text-anchor="middle" stroke="none" fill="#111" font-style="italic">C<tspan font-size="22" dy="7">2</tspan></text>
+</g></g></svg>

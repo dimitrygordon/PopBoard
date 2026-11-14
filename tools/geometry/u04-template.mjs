@@ -1,5 +1,5 @@
 import {worked,practice,mistake,exitBody} from './template-v2.mjs';
-import {bankFigure,correspondenceFigure,sssFigure,ssaFigure,ssaTangentFigure,figure} from '../../public/geometry/geo-u04-figures.js';
+import {bankFigure,correspondenceFigure,sssFigure,ssaFigure,figure} from '../../public/geometry/geo-u04-figures.js';
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const p=s=>`<p>${esc(s)}</p>`;
 const text=(page,title,body,extra={})=>page(title,{kind:'text',v2:true,body,...extra},{html:body});
@@ -46,8 +46,8 @@ export function unit04(page,l,c,v,gx){
   if(gx)page('Try it',{kind:'gx',gx},{html:p('Use the controls. A drawing suggests a result; it is not a proof.')});
   else page('Try it',{kind:'activity',activity:l.key,task:{steps:v.examples[0].steps.map(s=>({step:s.step,reason:s.reason}))}},{html:p('Try the guided task. Write a reason for each choice.')});
  }
- const errors={'4.1':'Jordan writes triangle ABC ≅ triangle FED for the cutouts. Find the mismatch.','4.2':'Jordan says any three matching parts guarantee congruence.','4.3':'Jordan calls angle B the included angle between AB and AC.','4.4':'Jordan calls a non-included side ASA.','4.5':'Jordan uses AC = AD to prove AC = AD.','4.6':'Jordan uses CPCTC before proving congruence.','4.7':'Jordan says the base angles are always the bottom ones.','4.8':'Jordan says reversing a true theorem proves its converse.','4.10':'Jordan says SSS is a postulate in this course.','4.11':'Jordan says longer sides make SSA a congruence test.','4.12':'Jordan measures a copy and calls it exact.','4.13':'Jordan uses M without defining it.'};
- mistake(page,v.mistakePrompt||errors[l.key],p(v.mistake),l.key==='4.1'?slot(l.key,0):l.key==='4.11'?figure(ssaTangentFigure(),'Tangent case: A, B and C; AB = 5 and BC = 3. The circle centered at B with radius 3 meets the ray from A once at C strictly beyond A. BC is perpendicular to the ray, with a right-angle mark at C.'):null);
+ const errors={'4.1':'Jordan writes triangle ABC ≅ triangle FED for the cutouts. Find the mismatch.','4.2':'Jordan says any three matching parts guarantee congruence.','4.3':'Jordan calls angle B the included angle between AB and AC.','4.4':'Jordan calls a non-included side ASA.','4.5':'Jordan uses AC = AD to prove AC = AD.','4.6':'Jordan uses CPCTC before proving congruence.','4.7':'Jordan says the base angles are always the bottom ones.','4.8':'Jordan says reversing a true theorem proves its converse.','4.10':'Jordan says SSS is a postulate in this course.','4.11':'Jordan says that if you make the lengths bigger, SSA becomes a congruence test.','4.12':'Jordan measures a copy and calls it exact.','4.13':'Jordan uses M without defining it.'};
+ mistake(page,v.mistakePrompt||errors[l.key],p(v.mistake),l.key==='4.1'?slot(l.key,0):null);
  v.practice.forEach((item,i)=>practice(page,{...item,figure:l.key==='4.11'?slot(l.key,0):null},`Practice ${i+1}`));
  let check=c.check;
  if(l.key==='4.11')check=['What condition gives one right triangle in the swinging-door picture?','The circle is tangent at the perpendicular foot from B, and that foot lies strictly past A on the ray. A single ray crossing is not always a tangency.'];
