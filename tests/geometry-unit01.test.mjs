@@ -73,3 +73,23 @@ test('Unit 1 reasons are shown verbatim, with no added Because prefix',()=>{
 test('Unit 1 generator labels are at least 16px when the figure renders 300px wide',()=>{
  for(const f of studentFiles())for(const m of read(f).matchAll(/<svg[^>]*viewBox=\\?"0 0 (\d+) \d+\\?"[\s\S]*?<\/svg>/g)){const w=+m[1];for(const t of m[0].matchAll(/font-size=\\?"(\d+)/g))assert.ok(+t[1]*300/w>=16,`${f}: ${t[1]}`);}
 });
+test('every Words to know term has a meaning, rendered bold term then meaning on the built page',()=>{
+ const vocab=JSON.parse(read('docs/geometry/v2/VOCAB-unit01.json'));
+ const key=w=>String(w).replace(/^'(.*)'$/,'$1');
+ const h=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+ let n=0;
+ for(let i=1;i<=12;i++){
+  const k=`1.${i}`,words=source[k].words;
+  assert.ok(words.length>0,`${k} has terms`);
+  const page=deck(i).slides.find(p=>JSON.stringify(p).includes("Words to know"));
+  assert.ok(page,`${k} Words to know page`);
+  const html=JSON.stringify(page);
+  for(const w of words){
+   const m=vocab[k]?.[key(w)];
+   assert.ok(typeof m==='string'&&m.trim(),`${k} "${w}" lacks a meaning in VOCAB-unit01.json`);
+   assert.ok(html.includes(JSON.stringify(`<strong>${h(key(w))}</strong> ${h(m)}`).slice(1,-1)),`${k} "${w}" meaning missing on built page`);
+   n++;
+  }
+ }
+ assert.equal(n,72);
+});

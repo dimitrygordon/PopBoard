@@ -10,6 +10,10 @@ const NO_DRAWING=/^(No drawing needed|Figure slot: none needed|None needed)/i;
 const wiring=JSON.parse(fs.readFileSync(new URL('./u01-art-wiring.json',import.meta.url),'utf8'));
 const supplied=new Map(wiring.map(({slot,file,alt})=>[slot,{svg:fs.readFileSync(new URL(`../../public/geometry/figures/u01/${file}`,import.meta.url),'utf8'),alt}]));
 // Every figure slot is classified once: drawn (generator or Leo), none (live text only) or pending (Leo art needed; omitted from the student DOM).
+// Socrates' one-line meanings for every Words to know term, keyed by lesson then term (quotes stripped).
+export const unit01Vocab=JSON.parse(fs.readFileSync(new URL('../../docs/geometry/v2/VOCAB-unit01.json',import.meta.url),'utf8'));
+export const vocabKey=w=>String(w).replace(/^'(.*)'$/,'$1');
+const vocabItem=(lesson,w)=>{const m=unit01Vocab[lesson]?.[vocabKey(w)];if(!m)throw new Error(`VOCAB-unit01.json: no meaning for ${lesson} "${w}"`);return `<li class="gx-vocab"><strong>${esc(vocabKey(w))}</strong> ${esc(m)}</li>`;};
 export const unit01Slots=[];
 const slotFigure=(id,spec)=>{
  const art=supplied.get(id);if(art){unit01Slots.push({id,spec,status:'leo'});return art;}
@@ -36,7 +40,7 @@ export function unit01(page,l,c,v,gx,all){
  }
  text(P,'Get started',p(v.hook)+`<ul>${v.goals.map(s=>`<li>${esc(s)}</li>`).join('')}</ul>`);
  text(P,'The big idea',p(v.idea));
- text(P,'Words to know',`<ul>${v.words.map(w=>`<li>${esc(w)}</li>`).join('')}</ul>`);
+ text(P,'Words to know',`<ul class="gx-vocab-list">${v.words.map(w=>vocabItem(l.key,w)).join('')}</ul>`);
  v.examples.forEach(e=>worked(P,{...e,figure:slotFigure(id(),e.slot)}));
  if(gx)P('Try it',{kind:'gx',gx},{html:p(v.tryit)});
  else P('Try it',{kind:'activity',activity:l.key,task:{prompt:'Put the steps of the first worked example in order. Tap the step that comes next.',steps:v.examples[0].steps.map(s=>({step:s.step,reason:s.reason}))}},{html:p('Put the steps of the first worked example in order. Each step comes with its reason.')});
