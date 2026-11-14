@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 626" color="#111" role="img" aria-labelledby="u01-l10-s06-title" data-steps="5">
+  <title id="u01-l10-s06-title">Direct proof that the sum of two odd numbers is even</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M22,12H378A8,8 0 0 1 386,20V54A8,8 0 0 1 378,62H22A8,8 0 0 1 14,54V20A8,8 0 0 1 22,12Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="32" y="46.36" font-size="26" class="fade" style="--d:0.77s"><tspan font-style="italic">u</tspan> and <tspan font-style="italic">v</tspan> are odd</text>
+  </g>
+  <g data-step="1" style="--sd:1.03s">
+    <path d="M40,66L40,118" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.40s"/>
+    <path d="M34.54,105L40,118L45.46,105" stroke-width="2" class="fade" style="--d:0.34s"/>
+    <text fill="currentColor" stroke="none" x="60" y="101.36" font-size="26" class="fade" style="--d:0.46s">definition of odd</text>
+    <path d="M22,122H378A8,8 0 0 1 386,130V164A8,8 0 0 1 378,172H22A8,8 0 0 1 14,164V130A8,8 0 0 1 22,122Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.58s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="32" y="156.36" font-size="26" class="fade" style="--d:1.35s"><tspan font-style="italic">u</tspan> = 2<tspan font-style="italic">a</tspan> + 1, <tspan font-style="italic">v</tspan> = 2<tspan font-style="italic">b</tspan> + 1</text>
+  </g>
+  <g data-step="2" style="--sd:2.65s">
+    <path d="M40,176L40,228" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.40s"/>
+    <path d="M34.54,215L40,228L45.46,215" stroke-width="2" class="fade" style="--d:0.34s"/>
+    <text fill="currentColor" stroke="none" x="60" y="211.36" font-size="26" class="fade" style="--d:0.46s">substitution</text>
+    <path d="M22,232H378A8,8 0 0 1 386,240V274A8,8 0 0 1 378,282H22A8,8 0 0 1 14,274V240A8,8 0 0 1 22,232Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.58s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="32" y="266.36" font-size="26" class="fade" style="--d:1.35s"><tspan font-style="italic">u</tspan> + <tspan font-style="italic">v</tspan> = 2<tspan font-style="italic">a</tspan> + 2<tspan font-style="italic">b</tspan> + 2</text>
+  </g>
+  <g data-step="3" style="--sd:4.27s">
+    <path d="M40,286L40,338" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.40s"/>
+    <path d="M34.54,325L40,338L45.46,325" stroke-width="2" class="fade" style="--d:0.34s"/>
+    <text fill="currentColor" stroke="none" x="60" y="321.36" font-size="26" class="fade" style="--d:0.46s">distributive property</text>
+    <path d="M22,342H378A8,8 0 0 1 386,350V384A8,8 0 0 1 378,392H22A8,8 0 0 1 14,384V350A8,8 0 0 1 22,342Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.58s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="32" y="376.36" font-size="26" class="fade" style="--d:1.35s"><tspan font-style="italic">u</tspan> + <tspan font-style="italic">v</tspan> = 2(<tspan font-style="italic">a</tspan> + <tspan font-style="italic">b</tspan> + 1)</text>
+  </g>
+  <g data-step="4" style="--sd:5.89s">
+    <path d="M40,396L40,448" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.40s"/>
+    <path d="M34.54,435L40,448L45.46,435" stroke-width="2" class="fade" style="--d:0.34s"/>
+    <text fill="currentColor" stroke="none" x="60" y="431.36" font-size="26" class="fade" style="--d:0.46s">integers add to integers</text>
+    <path d="M22,452H378A8,8 0 0 1 386,460V494A8,8 0 0 1 378,502H22A8,8 0 0 1 14,494V460A8,8 0 0 1 22,452Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.58s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="32" y="486.36" font-size="26" class="fade" style="--d:1.35s"><tspan font-style="italic">a</tspan> + <tspan font-style="italic">b</tspan> + 1 is an integer</text>
+  </g>
+  <g data-step="5" class="conclusion" style="--sd:7.51s">
+    <path d="M40,506L40,558" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.40s"/>
+    <path d="M34.54,545L40,558L45.46,545" stroke-width="2" class="fade" style="--d:0.34s"/>
+    <text fill="currentColor" stroke="none" x="60" y="541.36" font-size="26" class="fade" style="--d:0.46s">definition of even</text>
+    <path d="M22,562H378A8,8 0 0 1 386,570V604A8,8 0 0 1 378,612H22A8,8 0 0 1 14,604V570A8,8 0 0 1 22,562Z" stroke-width="3" class="draw" pathLength="1" style="--d:0.58s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="32" y="596.36" font-size="26" class="fade" style="--d:1.35s"><tspan font-style="italic">u</tspan> + <tspan font-style="italic">v</tspan> is even</text>
+  </g>
+  </g>
+</svg>

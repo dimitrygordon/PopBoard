@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 540" color="#111" role="img" aria-labelledby="u01-l14-s22-title" data-steps="1">
+  <title id="u01-l14-s22-title">Implication chain and a counterassignment for the converse</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <path d="M46,26H94A8,8 0 0 1 102,34V74A8,8 0 0 1 94,82H46A8,8 0 0 1 38,74V34A8,8 0 0 1 46,26Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="62.7" y="63.36" font-size="26"><tspan font-style="italic">A</tspan></text>
+  <path d="M176,26H224A8,8 0 0 1 232,34V74A8,8 0 0 1 224,82H176A8,8 0 0 1 168,74V34A8,8 0 0 1 176,26Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="192.2" y="63.36" font-size="26"><tspan font-style="italic">B</tspan></text>
+  <path d="M108,54L162,54" stroke-width="2"/>
+  <path d="M149,59.46L162,54L149,48.54" stroke-width="2"/>
+  <path d="M306,26H354A8,8 0 0 1 362,34V74A8,8 0 0 1 354,82H306A8,8 0 0 1 298,74V34A8,8 0 0 1 306,26Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="322.37" y="63.36" font-size="26"><tspan font-style="italic">C</tspan></text>
+  <path d="M238,54L292,54" stroke-width="2"/>
+  <path d="M279,59.46L292,54L279,48.54" stroke-width="2"/>
+  <path d="M80,248L320,248" stroke-width="2"/>
+  <path d="M80,300L320,300" stroke-width="1"/>
+  <path d="M160,200L160,296" stroke-width="1"/>
+  <path d="M240,200L240,296" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="112.7" y="231.36" font-size="26"><tspan font-style="italic">A</tspan></text>
+  <text fill="currentColor" stroke="none" x="192.2" y="231.36" font-size="26"><tspan font-style="italic">B</tspan></text>
+  <text fill="currentColor" stroke="none" x="272.37" y="231.36" font-size="26"><tspan font-style="italic">C</tspan></text>
+  <path d="M14,382L386,382" stroke-width="2"/>
+  <path d="M14,434L386,434" stroke-width="1"/>
+  <path d="M138,334L138,430" stroke-width="1"/>
+  <path d="M262,334L262,430" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="39.64" y="365.36" font-size="26"><tspan font-style="italic">A</tspan></text>
+  <path d="M63.13,353.92H83.25M63.13,359.64H83.25M79.51,350.28L87.83,356.78L79.51,363.28" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="95.83" y="365.36" font-size="26"><tspan font-style="italic">B</tspan></text>
+  <text fill="currentColor" stroke="none" x="163.29" y="365.36" font-size="26"><tspan font-style="italic">B</tspan></text>
+  <path d="M187.82,353.92H207.95M187.82,359.64H207.95M204.2,350.28L212.52,356.78L204.2,363.28" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="220.52" y="365.36" font-size="26"><tspan font-style="italic">C</tspan></text>
+  <text fill="currentColor" stroke="none" x="287.82" y="365.36" font-size="26"><tspan font-style="italic">C</tspan></text>
+  <path d="M312,353.92H332.12M312,359.64H332.12M328.38,350.28L336.7,356.78L328.38,363.28" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="344.7" y="365.36" font-size="26"><tspan font-style="italic">A</tspan></text>
+  <g data-step="1" class="conclusion" style="--sd:0.00s">
+    <path d="M70,88Q200,176 330,88" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <path d="M322.3,99.81L330,88L316.17,90.77" stroke-width="2" class="fade" style="--d:0.77s"/>
+    <text fill="currentColor" stroke="none" x="117.06" y="167.36" font-size="26" class="fade" style="--d:0.89s">so <tspan font-style="italic">A</tspan> implies <tspan font-style="italic">C</tspan></text>
+    <text fill="currentColor" stroke="none" x="120" y="283.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.00s">F</text>
+    <text fill="currentColor" stroke="none" x="200" y="283.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.12s">F</text>
+    <text fill="currentColor" stroke="none" x="280" y="283.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.25s">T</text>
+    <text fill="currentColor" stroke="none" x="76" y="417.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.37s">T</text>
+    <text fill="currentColor" stroke="none" x="200" y="417.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.49s">T</text>
+    <text fill="currentColor" stroke="none" x="324" y="417.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.61s">F</text>
+    <path d="M310,389H338A8,8 0 0 1 346,397V419A8,8 0 0 1 338,427H310A8,8 0 0 1 302,419V397A8,8 0 0 1 310,389Z" stroke-width="3" class="draw" pathLength="1" style="--d:1.73s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="200" y="483.36" font-size="26" text-anchor="middle" class="fade" style="--d:2.49s">Both rules hold, but</text>
+    <text fill="currentColor" stroke="none" x="102.98" y="521.36" font-size="26" class="fade" style="--d:2.61s"><tspan font-style="italic">C</tspan> implies <tspan font-style="italic">A</tspan> fails.</text>
+  </g>
+  </g>
+</svg>

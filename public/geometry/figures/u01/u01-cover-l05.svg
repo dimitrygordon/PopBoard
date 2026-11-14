@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" color="#111" role="img" aria-labelledby="u01-cover-l05-title" data-steps="2">
+  <title id="u01-cover-l05-title">Polygons, Polyhedra, and Patterns</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M400,113A126,126 0 1 0 400,365A126,126 0 1 0 400,113" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+    <path d="M400,113L290.88,302L509.12,302L400,113" stroke-width="3" class="draw" pathLength="1" style="--d:0.94s;--t:1.39s"/>
+  </g>
+  <g data-step="2" style="--sd:2.27s">
+    <path d="M345.44,207.5L400,302L454.56,207.5L345.44,207.5" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.30s"/>
+    <path d="M372.72,160.25L400,207.5L427.28,160.25L372.72,160.25" stroke-width="2" class="draw" pathLength="1" style="--d:0.26s;--t:0.30s"/>
+    <path d="M386.36,136.62L400,160.25L413.64,136.62L386.36,136.62" stroke-width="1" class="draw" pathLength="1" style="--d:0.51s;--t:0.30s"/>
+    <path d="M393.18,124.81L400,136.62L406.82,124.81L393.18,124.81" stroke-width="1" class="draw" pathLength="1" style="--d:0.77s;--t:0.30s"/>
+    <path d="M379.54,148.44L386.36,160.25L393.18,148.44L379.54,148.44" stroke-width="1" class="draw" pathLength="1" style="--d:1.02s;--t:0.30s"/>
+    <path d="M406.82,148.44L413.64,160.25L420.46,148.44L406.82,148.44" stroke-width="1" class="draw" pathLength="1" style="--d:1.27s;--t:0.30s"/>
+    <path d="M359.08,183.88L372.72,207.5L386.36,183.88L359.08,183.88" stroke-width="1" class="draw" pathLength="1" style="--d:1.53s;--t:0.30s"/>
+    <path d="M365.9,172.06L372.72,183.88L379.54,172.06L365.9,172.06" stroke-width="1" class="draw" pathLength="1" style="--d:1.78s;--t:0.30s"/>
+    <path d="M352.26,195.69L359.08,207.5L365.9,195.69L352.26,195.69" stroke-width="1" class="draw" pathLength="1" style="--d:2.04s;--t:0.30s"/>
+    <path d="M379.54,195.69L386.36,207.5L393.18,195.69L379.54,195.69" stroke-width="1" class="draw" pathLength="1" style="--d:2.29s;--t:0.30s"/>
+    <path d="M413.64,183.88L427.28,207.5L440.92,183.88L413.64,183.88" stroke-width="1" class="draw" pathLength="1" style="--d:2.55s;--t:0.30s"/>
+    <path d="M420.46,172.06L427.28,183.88L434.1,172.06L420.46,172.06" stroke-width="1" class="draw" pathLength="1" style="--d:2.80s;--t:0.30s"/>
+    <path d="M406.82,195.69L413.64,207.5L420.46,195.69L406.82,195.69" stroke-width="1" class="draw" pathLength="1" style="--d:3.06s;--t:0.30s"/>
+    <path d="M434.1,195.69L440.92,207.5L447.74,195.69L434.1,195.69" stroke-width="1" class="draw" pathLength="1" style="--d:3.31s;--t:0.30s"/>
+    <path d="M318.16,254.75L345.44,302L372.72,254.75L318.16,254.75" stroke-width="2" class="draw" pathLength="1" style="--d:3.57s;--t:0.30s"/>
+    <path d="M331.8,231.12L345.44,254.75L359.08,231.12L331.8,231.12" stroke-width="1" class="draw" pathLength="1" style="--d:3.82s;--t:0.30s"/>
+    <path d="M338.62,219.31L345.44,231.12L352.26,219.31L338.62,219.31" stroke-width="1" class="draw" pathLength="1" style="--d:4.08s;--t:0.30s"/>
+    <path d="M324.98,242.94L331.8,254.75L338.62,242.94L324.98,242.94" stroke-width="1" class="draw" pathLength="1" style="--d:4.33s;--t:0.30s"/>
+    <path d="M352.26,242.94L359.08,254.75L365.9,242.94L352.26,242.94" stroke-width="1" class="draw" pathLength="1" style="--d:4.59s;--t:0.30s"/>
+    <path d="M304.52,278.38L318.16,302L331.8,278.38L304.52,278.38" stroke-width="1" class="draw" pathLength="1" style="--d:4.84s;--t:0.30s"/>
+    <path d="M311.34,266.56L318.16,278.38L324.98,266.56L311.34,266.56" stroke-width="1" class="draw" pathLength="1" style="--d:5.10s;--t:0.30s"/>
+    <path d="M297.7,290.19L304.52,302L311.34,290.19L297.7,290.19" stroke-width="1" class="draw" pathLength="1" style="--d:5.35s;--t:0.30s"/>
+    <path d="M324.98,290.19L331.8,302L338.62,290.19L324.98,290.19" stroke-width="1" class="draw" pathLength="1" style="--d:5.61s;--t:0.30s"/>
+    <path d="M359.08,278.38L372.72,302L386.36,278.38L359.08,278.38" stroke-width="1" class="draw" pathLength="1" style="--d:5.86s;--t:0.30s"/>
+    <path d="M365.9,266.56L372.72,278.38L379.54,266.56L365.9,266.56" stroke-width="1" class="draw" pathLength="1" style="--d:6.12s;--t:0.30s"/>
+    <path d="M352.26,290.19L359.08,302L365.9,290.19L352.26,290.19" stroke-width="1" class="draw" pathLength="1" style="--d:6.37s;--t:0.30s"/>
+    <path d="M379.54,290.19L386.36,302L393.18,290.19L379.54,290.19" stroke-width="1" class="draw" pathLength="1" style="--d:6.63s;--t:0.30s"/>
+    <path d="M427.28,254.75L454.56,302L481.84,254.75L427.28,254.75" stroke-width="2" class="draw" pathLength="1" style="--d:6.88s;--t:0.30s"/>
+    <path d="M440.92,231.12L454.56,254.75L468.2,231.13L440.92,231.12" stroke-width="1" class="draw" pathLength="1" style="--d:7.14s;--t:0.30s"/>
+    <path d="M447.74,219.31L454.56,231.13L461.38,219.31L447.74,219.31" stroke-width="1" class="draw" pathLength="1" style="--d:7.39s;--t:0.30s"/>
+    <path d="M434.1,242.94L440.92,254.75L447.74,242.94L434.1,242.94" stroke-width="1" class="draw" pathLength="1" style="--d:7.65s;--t:0.30s"/>
+    <path d="M461.38,242.94L468.2,254.75L475.02,242.94L461.38,242.94" stroke-width="1" class="draw" pathLength="1" style="--d:7.90s;--t:0.30s"/>
+    <path d="M413.64,278.38L427.28,302L440.92,278.38L413.64,278.38" stroke-width="1" class="draw" pathLength="1" style="--d:8.16s;--t:0.30s"/>
+    <path d="M420.46,266.56L427.28,278.38L434.1,266.56L420.46,266.56" stroke-width="1" class="draw" pathLength="1" style="--d:8.41s;--t:0.30s"/>
+    <path d="M406.82,290.19L413.64,302L420.46,290.19L406.82,290.19" stroke-width="1" class="draw" pathLength="1" style="--d:8.67s;--t:0.30s"/>
+    <path d="M434.1,290.19L440.92,302L447.74,290.19L434.1,290.19" stroke-width="1" class="draw" pathLength="1" style="--d:8.93s;--t:0.30s"/>
+    <path d="M468.2,278.38L481.84,302L495.48,278.38L468.2,278.38" stroke-width="1" class="draw" pathLength="1" style="--d:9.18s;--t:0.30s"/>
+    <path d="M475.02,266.56L481.84,278.38L488.66,266.56L475.02,266.56" stroke-width="1" class="draw" pathLength="1" style="--d:9.44s;--t:0.30s"/>
+    <path d="M461.38,290.19L468.2,302L475.02,290.19L461.38,290.19" stroke-width="1" class="draw" pathLength="1" style="--d:9.69s;--t:0.30s"/>
+    <path d="M488.66,290.19L495.48,302L502.3,290.19L488.66,290.19" stroke-width="1" class="draw" pathLength="1" style="--d:9.95s;--t:0.30s"/>
+  </g>
+  </g>
+</svg>

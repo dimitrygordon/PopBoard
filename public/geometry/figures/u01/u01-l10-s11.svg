@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 380" color="#111" role="img" aria-labelledby="u01-l10-s11-title" data-steps="1">
+  <title id="u01-l10-s11-title">A conclusion cannot be its own premise; a proof runs from the givens</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <path d="M222,172H378A8,8 0 0 1 386,180V220A8,8 0 0 1 378,228H222A8,8 0 0 1 214,220V180A8,8 0 0 1 222,172Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="300" y="209.36" font-size="26" text-anchor="middle">conclusion</text>
+  <path d="M321,172A42,42 0 1 0 279,172" stroke-width="2"/>
+  <path d="M265.08,169.74L279,172L270.87,160.48" stroke-width="2"/>
+  <path d="M22,16H178A8,8 0 0 1 186,24V64A8,8 0 0 1 178,72H22A8,8 0 0 1 14,64V24A8,8 0 0 1 22,16Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="100" y="53.36" font-size="26" text-anchor="middle">given</text>
+  <circle cx="100" cy="126" r="5" fill="currentColor" stroke="none"/>
+  <circle cx="100" cy="208" r="5" fill="currentColor" stroke="none"/>
+  <path d="M100,76L100,116" stroke-width="2"/>
+  <path d="M94.54,103L100,116L105.46,103" stroke-width="2"/>
+  <path d="M100,136L100,198" stroke-width="2"/>
+  <path d="M94.54,185L100,198L105.46,185" stroke-width="2"/>
+  <path d="M100,218L100,258" stroke-width="2"/>
+  <path d="M94.54,245L100,258L105.46,245" stroke-width="2"/>
+  <path d="M22,290H178A8,8 0 0 1 186,298V338A8,8 0 0 1 178,346H22A8,8 0 0 1 14,338V298A8,8 0 0 1 22,290Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="100" y="327.36" font-size="26" text-anchor="middle">conclusion</text>
+  <g data-step="1" class="conclusion" style="--sd:0.00s">
+    <path d="M273,108.63L327,162.63M327,108.63L273,162.63" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.40s"/>
+  </g>
+  </g>
+</svg>

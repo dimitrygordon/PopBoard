@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 420" color="#111" role="img" aria-labelledby="u01-l08-s09-title" data-steps="1">
+  <title id="u01-l08-s09-title">Truth table for a statement and its contrapositive</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <path d="M6,98L396,98" stroke-width="2"/>
+  <path d="M6,148L396,148" stroke-width="1"/>
+  <path d="M6,198L396,198" stroke-width="1"/>
+  <path d="M6,248L396,248" stroke-width="1"/>
+  <path d="M6,298L396,298" stroke-width="1"/>
+  <path d="M58,18L58,294" stroke-width="1"/>
+  <path d="M110,18L110,294" stroke-width="1"/>
+  <path d="M236,18L236,294" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="24.63" y="65.36" font-size="26"><tspan font-style="italic">P</tspan></text>
+  <text fill="currentColor" stroke="none" x="74.62" y="65.36" font-size="26"><tspan font-style="italic">Q</tspan></text>
+  <text fill="currentColor" stroke="none" x="154.43" y="49.36" font-size="26">if <tspan font-style="italic">P</tspan></text>
+  <text fill="currentColor" stroke="none" x="132.16" y="83.36" font-size="26">then <tspan font-style="italic">Q</tspan></text>
+  <text fill="currentColor" stroke="none" x="271.45" y="49.36" font-size="26">if not <tspan font-style="italic">Q</tspan></text>
+  <text fill="currentColor" stroke="none" x="253.19" y="83.36" font-size="26">then not <tspan font-style="italic">P</tspan></text>
+  <text fill="currentColor" stroke="none" x="32" y="132.36" font-size="26" text-anchor="middle">T</text>
+  <text fill="currentColor" stroke="none" x="84" y="132.36" font-size="26" text-anchor="middle">T</text>
+  <text fill="currentColor" stroke="none" x="32" y="182.36" font-size="26" text-anchor="middle">T</text>
+  <text fill="currentColor" stroke="none" x="84" y="182.36" font-size="26" text-anchor="middle">F</text>
+  <text fill="currentColor" stroke="none" x="32" y="232.36" font-size="26" text-anchor="middle">F</text>
+  <text fill="currentColor" stroke="none" x="84" y="232.36" font-size="26" text-anchor="middle">T</text>
+  <text fill="currentColor" stroke="none" x="32" y="282.36" font-size="26" text-anchor="middle">F</text>
+  <text fill="currentColor" stroke="none" x="84" y="282.36" font-size="26" text-anchor="middle">F</text>
+  <g data-step="1" class="conclusion" style="--sd:0.00s">
+    <text fill="currentColor" stroke="none" x="173" y="132.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">T</text>
+    <text fill="currentColor" stroke="none" x="316" y="132.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.12s">T</text>
+    <text fill="currentColor" stroke="none" x="173" y="182.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.24s">F</text>
+    <text fill="currentColor" stroke="none" x="316" y="182.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.36s">F</text>
+    <text fill="currentColor" stroke="none" x="173" y="232.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.48s">T</text>
+    <text fill="currentColor" stroke="none" x="316" y="232.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.60s">T</text>
+    <text fill="currentColor" stroke="none" x="173" y="282.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.72s">T</text>
+    <text fill="currentColor" stroke="none" x="316" y="282.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.84s">T</text>
+    <text fill="currentColor" stroke="none" x="200" y="367.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.96s">The two if columns match.</text>
+  </g>
+  </g>
+</svg>

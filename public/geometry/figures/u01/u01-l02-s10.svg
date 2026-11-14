@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" color="#111" role="img" aria-labelledby="u01-l02-s10-title" data-steps="1">
+  <title id="u01-l02-s10-title">One failing case outweighs 100 cases that work</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <text fill="currentColor" stroke="none" x="73.78" y="43.36" font-size="26">Rule: true for every <tspan font-style="italic">x</tspan></text>
+  <text fill="currentColor" stroke="none" x="200" y="93.36" font-size="26" text-anchor="middle">Ana: 100 cases work</text>
+  <path d="M86.6,116.2L90.6,120.3L97.8,111.4" stroke-width="2"/>
+  <path d="M110.6,116.2L114.6,120.3L121.8,111.4" stroke-width="2"/>
+  <path d="M134.6,116.2L138.6,120.3L145.8,111.4" stroke-width="2"/>
+  <path d="M158.6,116.2L162.6,120.3L169.8,111.4" stroke-width="2"/>
+  <path d="M182.6,116.2L186.6,120.3L193.8,111.4" stroke-width="2"/>
+  <path d="M206.6,116.2L210.6,120.3L217.8,111.4" stroke-width="2"/>
+  <path d="M230.6,116.2L234.6,120.3L241.8,111.4" stroke-width="2"/>
+  <path d="M254.6,116.2L258.6,120.3L265.8,111.4" stroke-width="2"/>
+  <path d="M278.6,116.2L282.6,120.3L289.8,111.4" stroke-width="2"/>
+  <path d="M302.6,116.2L306.6,120.3L313.8,111.4" stroke-width="2"/>
+  <path d="M86.6,134.2L90.6,138.3L97.8,129.4" stroke-width="2"/>
+  <path d="M110.6,134.2L114.6,138.3L121.8,129.4" stroke-width="2"/>
+  <path d="M134.6,134.2L138.6,138.3L145.8,129.4" stroke-width="2"/>
+  <path d="M158.6,134.2L162.6,138.3L169.8,129.4" stroke-width="2"/>
+  <path d="M182.6,134.2L186.6,138.3L193.8,129.4" stroke-width="2"/>
+  <path d="M206.6,134.2L210.6,138.3L217.8,129.4" stroke-width="2"/>
+  <path d="M230.6,134.2L234.6,138.3L241.8,129.4" stroke-width="2"/>
+  <path d="M254.6,134.2L258.6,138.3L265.8,129.4" stroke-width="2"/>
+  <path d="M278.6,134.2L282.6,138.3L289.8,129.4" stroke-width="2"/>
+  <path d="M302.6,134.2L306.6,138.3L313.8,129.4" stroke-width="2"/>
+  <path d="M86.6,152.2L90.6,156.3L97.8,147.4" stroke-width="2"/>
+  <path d="M110.6,152.2L114.6,156.3L121.8,147.4" stroke-width="2"/>
+  <path d="M134.6,152.2L138.6,156.3L145.8,147.4" stroke-width="2"/>
+  <path d="M158.6,152.2L162.6,156.3L169.8,147.4" stroke-width="2"/>
+  <path d="M182.6,152.2L186.6,156.3L193.8,147.4" stroke-width="2"/>
+  <path d="M206.6,152.2L210.6,156.3L217.8,147.4" stroke-width="2"/>
+  <path d="M230.6,152.2L234.6,156.3L241.8,147.4" stroke-width="2"/>
+  <path d="M254.6,152.2L258.6,156.3L265.8,147.4" stroke-width="2"/>
+  <path d="M278.6,152.2L282.6,156.3L289.8,147.4" stroke-width="2"/>
+  <path d="M302.6,152.2L306.6,156.3L313.8,147.4" stroke-width="2"/>
+  <path d="M86.6,170.2L90.6,174.3L97.8,165.4" stroke-width="2"/>
+  <path d="M110.6,170.2L114.6,174.3L121.8,165.4" stroke-width="2"/>
+  <path d="M134.6,170.2L138.6,174.3L145.8,165.4" stroke-width="2"/>
+  <path d="M158.6,170.2L162.6,174.3L169.8,165.4" stroke-width="2"/>
+  <path d="M182.6,170.2L186.6,174.3L193.8,165.4" stroke-width="2"/>
+  <path d="M206.6,170.2L210.6,174.3L217.8,165.4" stroke-width="2"/>
+  <path d="M230.6,170.2L234.6,174.3L241.8,165.4" stroke-width="2"/>
+  <path d="M254.6,170.2L258.6,174.3L265.8,165.4" stroke-width="2"/>
+  <path d="M278.6,170.2L282.6,174.3L289.8,165.4" stroke-width="2"/>
+  <path d="M302.6,170.2L306.6,174.3L313.8,165.4" stroke-width="2"/>
+  <path d="M86.6,188.2L90.6,192.3L97.8,183.4" stroke-width="2"/>
+  <path d="M110.6,188.2L114.6,192.3L121.8,183.4" stroke-width="2"/>
+  <path d="M134.6,188.2L138.6,192.3L145.8,183.4" stroke-width="2"/>
+  <path d="M158.6,188.2L162.6,192.3L169.8,183.4" stroke-width="2"/>
+  <path d="M182.6,188.2L186.6,192.3L193.8,183.4" stroke-width="2"/>
+  <path d="M206.6,188.2L210.6,192.3L217.8,183.4" stroke-width="2"/>
+  <path d="M230.6,188.2L234.6,192.3L241.8,183.4" stroke-width="2"/>
+  <path d="M254.6,188.2L258.6,192.3L265.8,183.4" stroke-width="2"/>
+  <path d="M278.6,188.2L282.6,192.3L289.8,183.4" stroke-width="2"/>
+  <path d="M302.6,188.2L306.6,192.3L313.8,183.4" stroke-width="2"/>
+  <path d="M86.6,206.2L90.6,210.3L97.8,201.4" stroke-width="2"/>
+  <path d="M110.6,206.2L114.6,210.3L121.8,201.4" stroke-width="2"/>
+  <path d="M134.6,206.2L138.6,210.3L145.8,201.4" stroke-width="2"/>
+  <path d="M158.6,206.2L162.6,210.3L169.8,201.4" stroke-width="2"/>
+  <path d="M182.6,206.2L186.6,210.3L193.8,201.4" stroke-width="2"/>
+  <path d="M206.6,206.2L210.6,210.3L217.8,201.4" stroke-width="2"/>
+  <path d="M230.6,206.2L234.6,210.3L241.8,201.4" stroke-width="2"/>
+  <path d="M254.6,206.2L258.6,210.3L265.8,201.4" stroke-width="2"/>
+  <path d="M278.6,206.2L282.6,210.3L289.8,201.4" stroke-width="2"/>
+  <path d="M302.6,206.2L306.6,210.3L313.8,201.4" stroke-width="2"/>
+  <path d="M86.6,224.2L90.6,228.3L97.8,219.4" stroke-width="2"/>
+  <path d="M110.6,224.2L114.6,228.3L121.8,219.4" stroke-width="2"/>
+  <path d="M134.6,224.2L138.6,228.3L145.8,219.4" stroke-width="2"/>
+  <path d="M158.6,224.2L162.6,228.3L169.8,219.4" stroke-width="2"/>
+  <path d="M182.6,224.2L186.6,228.3L193.8,219.4" stroke-width="2"/>
+  <path d="M206.6,224.2L210.6,228.3L217.8,219.4" stroke-width="2"/>
+  <path d="M230.6,224.2L234.6,228.3L241.8,219.4" stroke-width="2"/>
+  <path d="M254.6,224.2L258.6,228.3L265.8,219.4" stroke-width="2"/>
+  <path d="M278.6,224.2L282.6,228.3L289.8,219.4" stroke-width="2"/>
+  <path d="M302.6,224.2L306.6,228.3L313.8,219.4" stroke-width="2"/>
+  <path d="M86.6,242.2L90.6,246.3L97.8,237.4" stroke-width="2"/>
+  <path d="M110.6,242.2L114.6,246.3L121.8,237.4" stroke-width="2"/>
+  <path d="M134.6,242.2L138.6,246.3L145.8,237.4" stroke-width="2"/>
+  <path d="M158.6,242.2L162.6,246.3L169.8,237.4" stroke-width="2"/>
+  <path d="M182.6,242.2L186.6,246.3L193.8,237.4" stroke-width="2"/>
+  <path d="M206.6,242.2L210.6,246.3L217.8,237.4" stroke-width="2"/>
+  <path d="M230.6,242.2L234.6,246.3L241.8,237.4" stroke-width="2"/>
+  <path d="M254.6,242.2L258.6,246.3L265.8,237.4" stroke-width="2"/>
+  <path d="M278.6,242.2L282.6,246.3L289.8,237.4" stroke-width="2"/>
+  <path d="M302.6,242.2L306.6,246.3L313.8,237.4" stroke-width="2"/>
+  <path d="M86.6,260.2L90.6,264.3L97.8,255.4" stroke-width="2"/>
+  <path d="M110.6,260.2L114.6,264.3L121.8,255.4" stroke-width="2"/>
+  <path d="M134.6,260.2L138.6,264.3L145.8,255.4" stroke-width="2"/>
+  <path d="M158.6,260.2L162.6,264.3L169.8,255.4" stroke-width="2"/>
+  <path d="M182.6,260.2L186.6,264.3L193.8,255.4" stroke-width="2"/>
+  <path d="M206.6,260.2L210.6,264.3L217.8,255.4" stroke-width="2"/>
+  <path d="M230.6,260.2L234.6,264.3L241.8,255.4" stroke-width="2"/>
+  <path d="M254.6,260.2L258.6,264.3L265.8,255.4" stroke-width="2"/>
+  <path d="M278.6,260.2L282.6,264.3L289.8,255.4" stroke-width="2"/>
+  <path d="M302.6,260.2L306.6,264.3L313.8,255.4" stroke-width="2"/>
+  <path d="M86.6,278.2L90.6,282.3L97.8,273.4" stroke-width="2"/>
+  <path d="M110.6,278.2L114.6,282.3L121.8,273.4" stroke-width="2"/>
+  <path d="M134.6,278.2L138.6,282.3L145.8,273.4" stroke-width="2"/>
+  <path d="M158.6,278.2L162.6,282.3L169.8,273.4" stroke-width="2"/>
+  <path d="M182.6,278.2L186.6,282.3L193.8,273.4" stroke-width="2"/>
+  <path d="M206.6,278.2L210.6,282.3L217.8,273.4" stroke-width="2"/>
+  <path d="M230.6,278.2L234.6,282.3L241.8,273.4" stroke-width="2"/>
+  <path d="M254.6,278.2L258.6,282.3L265.8,273.4" stroke-width="2"/>
+  <path d="M278.6,278.2L282.6,282.3L289.8,273.4" stroke-width="2"/>
+  <path d="M302.6,278.2L306.6,282.3L313.8,273.4" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="200" y="389.36" font-size="26" text-anchor="middle">Ben: one case fails</text>
+  <path d="M50,380A150,34 0 1 1 350,380A150,34 0 1 1 50,380" stroke-width="3"/>
+  <g data-step="1" class="conclusion" style="--sd:0.00s">
+    <text fill="currentColor" stroke="none" x="200" y="327.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">100 checks: not a proof</text>
+    <text fill="currentColor" stroke="none" x="88.02" y="475.36" font-size="26" class="fade" style="--d:0.12s">Not every <tspan font-style="italic">x</tspan> works,</text>
+    <text fill="currentColor" stroke="none" x="200" y="515.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.24s">so the rule is false.</text>
+  </g>
+  </g>
+</svg>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" color="#111" role="img" aria-labelledby="u01-cover-l14-title" data-steps="3">
+  <title id="u01-cover-l14-title">Unit 1 Assessment</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M400,97A128,128 0 1 0 400,353A128,128 0 1 0 400,97" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+    <path d="M400,105L340,121.08L296.08,165L280,225L296.08,285L340,328.92L400,345L460,328.92L503.92,285L520,225L503.92,165L460,121.08L400,105" stroke-width="1" class="draw" pathLength="1" style="--d:0.94s;--t:1.40s"/>
+  </g>
+  <g data-step="2" style="--sd:2.27s">
+    <path d="M400,105L340,328.92L503.92,165L280,225L503.92,285L340,121.08L400,345L460,121.08L296.08,285L520,225L296.08,165L460,328.92L400,105" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:2.00s"/>
+  </g>
+  <g data-step="3" style="--sd:4.12s">
+    <path d="M400,193.94A31.06,31.06 0 1 0 400,256.06A31.06,31.06 0 1 0 400,193.94" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+    <circle cx="400" cy="105" r="4" fill="currentColor" stroke="none" class="fade" style="--d:0.94s"/>
+    <circle cx="340" cy="121.08" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.06s"/>
+    <circle cx="296.08" cy="165" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.18s"/>
+    <circle cx="280" cy="225" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.30s"/>
+    <circle cx="296.08" cy="285" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.42s"/>
+    <circle cx="340" cy="328.92" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.54s"/>
+    <circle cx="400" cy="345" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.66s"/>
+    <circle cx="460" cy="328.92" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.78s"/>
+    <circle cx="503.92" cy="285" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.90s"/>
+    <circle cx="520" cy="225" r="4" fill="currentColor" stroke="none" class="fade" style="--d:2.02s"/>
+    <circle cx="503.92" cy="165" r="4" fill="currentColor" stroke="none" class="fade" style="--d:2.14s"/>
+    <circle cx="460" cy="121.08" r="4" fill="currentColor" stroke="none" class="fade" style="--d:2.26s"/>
+  </g>
+  </g>
+</svg>

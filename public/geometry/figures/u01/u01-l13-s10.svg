@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 430" color="#111" role="img" aria-labelledby="u01-l13-s10-title" data-steps="4">
+  <title id="u01-l13-s10-title">Copying a length of 5 onto a ray with a compass</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <path d="M60,84L290,84" stroke-width="2"/>
+  <circle cx="60" cy="84" r="3.5" fill="currentColor" stroke="none"/>
+  <circle cx="290" cy="84" r="3.5" fill="currentColor" stroke="none"/>
+  <text fill="currentColor" stroke="none" x="31.39" y="93.36" font-size="26"><tspan font-style="italic">A</tspan></text>
+  <text fill="currentColor" stroke="none" x="304" y="93.36" font-size="26"><tspan font-style="italic">B</tspan></text>
+  <text fill="currentColor" stroke="none" x="138.26" y="63.36" font-size="26"><tspan font-style="italic">AB</tspan> = 5</text>
+  <path d="M60,300L382,300" stroke-width="2"/>
+  <path d="M369,305.46L382,300L369,294.54" stroke-width="2"/>
+  <circle cx="60" cy="300" r="3.5" fill="currentColor" stroke="none"/>
+  <text fill="currentColor" stroke="none" x="31.27" y="309.36" font-size="26"><tspan font-style="italic">P</tspan></text>
+  <text fill="currentColor" stroke="none" x="363.15" y="279.36" font-size="26"><tspan font-style="italic">X</tspan></text>
+  <g data-step="1" class="conclusion" style="--sd:0.00s">
+    <path d="M284.97,131.82A230,230 0 0 0 284.97,36.18" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:0.60s"/>
+  </g>
+  <g data-step="2" class="conclusion" style="--sd:0.66s">
+    <path d="M264.93,404.42A230,230 0 0 0 264.93,195.58" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+  </g>
+  <g data-step="3" class="conclusion" style="--sd:1.75s">
+    <circle cx="290" cy="300" r="3.5" fill="currentColor" stroke="none" class="fade" style="--d:0.00s"/>
+    <text fill="currentColor" stroke="none" x="302" y="336" font-size="26" class="fade" style="--d:0.12s"><tspan font-style="italic">Q</tspan></text>
+  </g>
+  <g data-step="4" class="conclusion" style="--sd:2.20s">
+    <text fill="currentColor" stroke="none" x="136.62" y="343.36" font-size="26" class="fade" style="--d:0.00s"><tspan font-style="italic">PQ</tspan> = 5</text>
+  </g>
+  </g>
+</svg>

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 502" color="#111" role="img" aria-labelledby="u01-l10-s09-title" data-steps="1">
+  <title id="u01-l10-s09-title">Statements and reasons table for the multiples of 4 proof</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <path d="M6,64L394,64" stroke-width="2"/>
+  <path d="M6,144L394,144" stroke-width="1"/>
+  <path d="M6,224L394,224" stroke-width="1"/>
+  <path d="M6,304L394,304" stroke-width="1"/>
+  <path d="M6,418L394,418" stroke-width="1"/>
+  <path d="M6,498L394,498" stroke-width="1"/>
+  <path d="M228,14L228,494" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="18" y="46.36" font-size="26">Statements</text>
+  <text fill="currentColor" stroke="none" x="240" y="46.36" font-size="26">Reasons</text>
+  <g data-step="1" class="conclusion" style="--sd:0.00s">
+    <text fill="currentColor" stroke="none" x="18" y="113.36" font-size="26" class="fade" style="--d:0.00s"><tspan font-style="italic">m</tspan> = 4<tspan font-style="italic">r</tspan>, <tspan font-style="italic">n</tspan> = 4<tspan font-style="italic">s</tspan></text>
+    <text fill="currentColor" stroke="none" x="240" y="97.36" font-size="26" class="fade" style="--d:0.12s">definition</text>
+    <text fill="currentColor" stroke="none" x="240" y="129.36" font-size="26" class="fade" style="--d:0.24s">of multiple</text>
+    <text fill="currentColor" stroke="none" x="18" y="193.36" font-size="26" class="fade" style="--d:0.36s"><tspan font-style="italic">m</tspan> + <tspan font-style="italic">n</tspan> = 4<tspan font-style="italic">r</tspan> + 4<tspan font-style="italic">s</tspan></text>
+    <text fill="currentColor" stroke="none" x="240" y="193.36" font-size="26" class="fade" style="--d:0.48s">substitution</text>
+    <text fill="currentColor" stroke="none" x="18" y="273.36" font-size="26" class="fade" style="--d:0.60s"><tspan font-style="italic">m</tspan> + <tspan font-style="italic">n</tspan> = 4(<tspan font-style="italic">r</tspan> + <tspan font-style="italic">s</tspan>)</text>
+    <text fill="currentColor" stroke="none" x="240" y="257.36" font-size="26" class="fade" style="--d:0.72s">distributive</text>
+    <text fill="currentColor" stroke="none" x="240" y="289.36" font-size="26" class="fade" style="--d:0.84s">property</text>
+    <text fill="currentColor" stroke="none" x="18" y="354.36" font-size="26" class="fade" style="--d:0.96s"><tspan font-style="italic">r</tspan> + <tspan font-style="italic">s</tspan> is an</text>
+    <text fill="currentColor" stroke="none" x="18" y="386.36" font-size="26" class="fade" style="--d:1.08s">integer</text>
+    <text fill="currentColor" stroke="none" x="240" y="338.36" font-size="26" class="fade" style="--d:1.20s">integers</text>
+    <text fill="currentColor" stroke="none" x="240" y="370.36" font-size="26" class="fade" style="--d:1.32s">add to</text>
+    <text fill="currentColor" stroke="none" x="240" y="402.36" font-size="26" class="fade" style="--d:1.44s">integers</text>
+    <text fill="currentColor" stroke="none" x="18" y="451.36" font-size="26" class="fade" style="--d:1.56s"><tspan font-style="italic">m</tspan> + <tspan font-style="italic">n</tspan> is a</text>
+    <text fill="currentColor" stroke="none" x="18" y="483.36" font-size="26" class="fade" style="--d:1.68s">multiple of 4</text>
+    <text fill="currentColor" stroke="none" x="240" y="451.36" font-size="26" class="fade" style="--d:1.80s">definition</text>
+    <text fill="currentColor" stroke="none" x="240" y="483.36" font-size="26" class="fade" style="--d:1.92s">of multiple</text>
+  </g>
+  </g>
+</svg>

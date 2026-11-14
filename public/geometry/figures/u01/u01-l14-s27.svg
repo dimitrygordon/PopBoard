@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 410" color="#111" role="img" aria-labelledby="u01-l14-s27-title" data-steps="1">
+  <title id="u01-l14-s27-title">Incidence table for a system where two lines share two points</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <path d="M15,62L385,62" stroke-width="2"/>
+  <path d="M15,114L385,114" stroke-width="1"/>
+  <path d="M15,166L385,166" stroke-width="1"/>
+  <path d="M15,218L385,218" stroke-width="1"/>
+  <path d="M15,270L385,270" stroke-width="1"/>
+  <path d="M115,14L115,266" stroke-width="1"/>
+  <path d="M205,14L205,266" stroke-width="1"/>
+  <path d="M295,14L295,266" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="65" y="45.36" font-size="26" text-anchor="middle">point</text>
+  <text fill="currentColor" stroke="none" x="156.65" y="45.36" font-size="26"><tspan font-style="italic">l</tspan></text>
+  <text fill="currentColor" stroke="none" x="238.62" y="45.36" font-size="26"><tspan font-style="italic">m</tspan></text>
+  <text fill="currentColor" stroke="none" x="332.48" y="45.36" font-size="26"><tspan font-style="italic">n</tspan></text>
+  <text fill="currentColor" stroke="none" x="57.63" y="97.36" font-size="26"><tspan font-style="italic">P</tspan></text>
+  <text fill="currentColor" stroke="none" x="55.62" y="149.36" font-size="26"><tspan font-style="italic">Q</tspan></text>
+  <text fill="currentColor" stroke="none" x="57.55" y="201.36" font-size="26"><tspan font-style="italic">R</tspan></text>
+  <text fill="currentColor" stroke="none" x="58.44" y="253.36" font-size="26"><tspan font-style="italic">S</tspan></text>
+  <g data-step="1" class="conclusion" style="--sd:0.00s">
+    <path d="M150.1,88.44L157.36,95.92L170.56,79.64" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.35s"/>
+    <path d="M150.1,140.44L157.36,147.92L170.56,131.64" stroke-width="2" class="draw" pathLength="1" style="--d:0.30s;--t:0.35s"/>
+    <path d="M150.1,192.44L157.36,199.92L170.56,183.64" stroke-width="2" class="draw" pathLength="1" style="--d:0.59s;--t:0.35s"/>
+    <path d="M240.1,88.44L247.36,95.92L260.56,79.64" stroke-width="2" class="draw" pathLength="1" style="--d:0.89s;--t:0.35s"/>
+    <path d="M240.1,140.44L247.36,147.92L260.56,131.64" stroke-width="2" class="draw" pathLength="1" style="--d:1.19s;--t:0.35s"/>
+    <path d="M240.1,244.44L247.36,251.92L260.56,235.64" stroke-width="2" class="draw" pathLength="1" style="--d:1.49s;--t:0.35s"/>
+    <path d="M330.1,192.44L337.36,199.92L350.56,183.64" stroke-width="2" class="draw" pathLength="1" style="--d:1.78s;--t:0.35s"/>
+    <path d="M330.1,244.44L337.36,251.92L350.56,235.64" stroke-width="2" class="draw" pathLength="1" style="--d:2.08s;--t:0.35s"/>
+    <path d="M140,67H180A10,10 0 0 1 190,77V151A10,10 0 0 1 180,161H140A10,10 0 0 1 130,151V77A10,10 0 0 1 140,67Z" stroke-width="3" class="draw" pathLength="1" style="--d:2.38s;--t:0.90s"/>
+    <path d="M230,67H270A10,10 0 0 1 280,77V151A10,10 0 0 1 270,161H230A10,10 0 0 1 220,151V77A10,10 0 0 1 230,67Z" stroke-width="3" class="draw" pathLength="1" style="--d:3.14s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="56.69" y="349.36" font-size="26" class="fade" style="--d:3.91s"><tspan font-style="italic">PQ</tspan> lies on both <tspan font-style="italic">l</tspan> and <tspan font-style="italic">m</tspan>.</text>
+  </g>
+  </g>
+</svg>

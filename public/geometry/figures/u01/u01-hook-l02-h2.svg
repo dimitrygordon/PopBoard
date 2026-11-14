@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" color="#111" role="img" aria-labelledby="u01-hook-l02-h2-title" data-steps="2">
+  <title id="u01-hook-l02-h2-title">Circle regions versus the doubling guess</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M14,62L386,62" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:1.00s"/>
+    <path d="M14,110L386,110" stroke-width="1" class="draw" pathLength="1" style="--d:0.85s;--t:1.00s"/>
+    <path d="M14,158L386,158" stroke-width="1" class="draw" pathLength="1" style="--d:1.70s;--t:1.00s"/>
+    <path d="M14,206L386,206" stroke-width="1" class="draw" pathLength="1" style="--d:2.55s;--t:1.00s"/>
+    <path d="M14,254L386,254" stroke-width="1" class="draw" pathLength="1" style="--d:3.40s;--t:1.00s"/>
+    <path d="M14,302L386,302" stroke-width="1" class="draw" pathLength="1" style="--d:4.25s;--t:1.00s"/>
+    <path d="M14,350L386,350" stroke-width="1" class="draw" pathLength="1" style="--d:5.10s;--t:1.00s"/>
+    <path d="M14,398L386,398" stroke-width="1" class="draw" pathLength="1" style="--d:5.95s;--t:1.00s"/>
+    <path d="M14,446L386,446" stroke-width="1" class="draw" pathLength="1" style="--d:6.80s;--t:1.00s"/>
+    <path d="M14,494L386,494" stroke-width="1" class="draw" pathLength="1" style="--d:7.65s;--t:1.00s"/>
+    <path d="M14,542L386,542" stroke-width="1" class="draw" pathLength="1" style="--d:8.50s;--t:1.00s"/>
+    <path d="M124,14L124,538" stroke-width="1" class="draw" pathLength="1" style="--d:9.35s;--t:1.00s"/>
+    <path d="M254,14L254,538" stroke-width="1" class="draw" pathLength="1" style="--d:10.20s;--t:1.00s"/>
+    <text fill="currentColor" stroke="none" x="69" y="45.36" font-size="26" text-anchor="middle" class="fade" style="--d:11.05s">points</text>
+    <text fill="currentColor" stroke="none" x="189" y="45.36" font-size="26" text-anchor="middle" class="fade" style="--d:11.17s">regions</text>
+    <text fill="currentColor" stroke="none" x="320" y="45.36" font-size="26" text-anchor="middle" class="fade" style="--d:11.29s">doubling</text>
+    <text fill="currentColor" stroke="none" x="69" y="95.36" font-size="26" text-anchor="middle" class="fade" style="--d:11.41s">1</text>
+    <text fill="currentColor" stroke="none" x="189" y="95.36" font-size="26" text-anchor="middle" class="fade" style="--d:11.53s">1</text>
+    <text fill="currentColor" stroke="none" x="69" y="143.36" font-size="26" text-anchor="middle" class="fade" style="--d:11.65s">2</text>
+    <text fill="currentColor" stroke="none" x="189" y="143.36" font-size="26" text-anchor="middle" class="fade" style="--d:11.77s">2</text>
+    <text fill="currentColor" stroke="none" x="69" y="191.36" font-size="26" text-anchor="middle" class="fade" style="--d:11.89s">3</text>
+    <text fill="currentColor" stroke="none" x="189" y="191.36" font-size="26" text-anchor="middle" class="fade" style="--d:12.01s">4</text>
+    <text fill="currentColor" stroke="none" x="69" y="239.36" font-size="26" text-anchor="middle" class="fade" style="--d:12.13s">4</text>
+    <text fill="currentColor" stroke="none" x="189" y="239.36" font-size="26" text-anchor="middle" class="fade" style="--d:12.25s">8</text>
+    <text fill="currentColor" stroke="none" x="69" y="287.36" font-size="26" text-anchor="middle" class="fade" style="--d:12.37s">5</text>
+    <text fill="currentColor" stroke="none" x="189" y="287.36" font-size="26" text-anchor="middle" class="fade" style="--d:12.49s">16</text>
+    <text fill="currentColor" stroke="none" x="69" y="335.36" font-size="26" text-anchor="middle" class="fade" style="--d:12.61s">6</text>
+    <text fill="currentColor" stroke="none" x="189" y="335.36" font-size="26" text-anchor="middle" class="fade" style="--d:12.73s">31</text>
+    <text fill="currentColor" stroke="none" x="69" y="383.36" font-size="26" text-anchor="middle" class="fade" style="--d:12.85s">7</text>
+    <text fill="currentColor" stroke="none" x="189" y="383.36" font-size="26" text-anchor="middle" class="fade" style="--d:12.97s">57</text>
+    <text fill="currentColor" stroke="none" x="69" y="431.36" font-size="26" text-anchor="middle" class="fade" style="--d:13.09s">8</text>
+    <text fill="currentColor" stroke="none" x="189" y="431.36" font-size="26" text-anchor="middle" class="fade" style="--d:13.21s">99</text>
+    <text fill="currentColor" stroke="none" x="69" y="479.36" font-size="26" text-anchor="middle" class="fade" style="--d:13.33s">9</text>
+    <text fill="currentColor" stroke="none" x="189" y="479.36" font-size="26" text-anchor="middle" class="fade" style="--d:13.45s">163</text>
+    <text fill="currentColor" stroke="none" x="69" y="527.36" font-size="26" text-anchor="middle" class="fade" style="--d:13.57s">10</text>
+    <text fill="currentColor" stroke="none" x="189" y="527.36" font-size="26" text-anchor="middle" class="fade" style="--d:13.69s">256</text>
+  </g>
+  <g data-step="2" style="--sd:13.96s">
+    <text fill="currentColor" stroke="none" x="320" y="95.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">1</text>
+    <text fill="currentColor" stroke="none" x="320" y="143.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.12s">2</text>
+    <text fill="currentColor" stroke="none" x="320" y="191.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.24s">4</text>
+    <text fill="currentColor" stroke="none" x="320" y="239.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.36s">8</text>
+    <text fill="currentColor" stroke="none" x="320" y="287.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.48s">16</text>
+    <text fill="currentColor" stroke="none" x="320" y="335.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.60s">32</text>
+    <path d="M296.23,325H343.77" stroke-width="2" class="draw" pathLength="1" style="--d:0.72s;--t:0.50s"/>
+    <text fill="currentColor" stroke="none" x="320" y="383.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.15s">64</text>
+    <path d="M296.23,373H343.77" stroke-width="2" class="draw" pathLength="1" style="--d:1.27s;--t:0.50s"/>
+    <text fill="currentColor" stroke="none" x="320" y="431.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.69s">128</text>
+    <path d="M288.35,421H351.65" stroke-width="2" class="draw" pathLength="1" style="--d:1.81s;--t:0.50s"/>
+    <text fill="currentColor" stroke="none" x="320" y="479.36" font-size="26" text-anchor="middle" class="fade" style="--d:2.23s">256</text>
+    <path d="M288.35,469H351.65" stroke-width="2" class="draw" pathLength="1" style="--d:2.35s;--t:0.50s"/>
+    <text fill="currentColor" stroke="none" x="320" y="527.36" font-size="26" text-anchor="middle" class="fade" style="--d:2.78s">512</text>
+    <path d="M288.35,517H351.65" stroke-width="2" class="draw" pathLength="1" style="--d:2.90s;--t:0.50s"/>
+  </g>
+  </g>
+</svg>

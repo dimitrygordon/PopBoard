@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520" color="#111" role="img" aria-labelledby="u01-l07-s06-title" data-steps="5">
+  <title id="u01-l07-s06-title">The point and line definitions loop; the fix is undefined terms plus postulates</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M46,92H154A8,8 0 0 1 162,100V140A8,8 0 0 1 154,148H46A8,8 0 0 1 38,140V100A8,8 0 0 1 46,92Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="100" y="129.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.77s">point</text>
+    <path d="M246,92H354A8,8 0 0 1 362,100V140A8,8 0 0 1 354,148H246A8,8 0 0 1 238,140V100A8,8 0 0 1 246,92Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.89s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="300" y="129.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.65s">line</text>
+    <path d="M128,92Q200,32 272,92" stroke-width="2" class="draw" pathLength="1" style="--d:1.77s;--t:0.90s"/>
+    <path d="M258.52,87.87L272,92L265.51,79.48" stroke-width="2" class="fade" style="--d:2.54s"/>
+    <text fill="currentColor" stroke="none" x="200" y="45.36" font-size="26" text-anchor="middle" class="fade" style="--d:2.66s">uses</text>
+  </g>
+  <g data-step="2" style="--sd:2.93s">
+    <path d="M272,148Q200,208 128,148" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <path d="M141.48,152.13L128,148L134.49,160.52" stroke-width="2" class="fade" style="--d:0.77s"/>
+    <text fill="currentColor" stroke="none" x="200" y="213.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.89s">uses</text>
+  </g>
+  <g data-step="3" style="--sd:4.08s">
+    <text fill="currentColor" stroke="none" x="200" y="267.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">No place to start.</text>
+  </g>
+  <g data-step="4" style="--sd:4.53s">
+    <path d="M22,292H378A8,8 0 0 1 386,300V498A8,8 0 0 1 378,506H22A8,8 0 0 1 14,498V300A8,8 0 0 1 22,292Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="34" y="335.36" font-size="26" class="fade" style="--d:0.77s">Starting words</text>
+    <path d="M34,350L223.46,350" stroke-width="2" class="draw" pathLength="1" style="--d:0.89s;--t:0.68s"/>
+    <text fill="currentColor" stroke="none" x="34" y="387.36" font-size="26" class="fade" style="--d:1.46s">point, line (no definition)</text>
+    <text fill="currentColor" stroke="none" x="34" y="433.36" font-size="26" class="fade" style="--d:1.58s">Rules</text>
+    <path d="M34,448L104.01,448" stroke-width="2" class="draw" pathLength="1" style="--d:1.70s;--t:0.44s"/>
+    <text fill="currentColor" stroke="none" x="34" y="485.36" font-size="26" class="fade" style="--d:2.08s">postulates about them</text>
+  </g>
+  <g data-step="5" class="conclusion" style="--sd:6.88s">
+    <path d="M128,92Q200,32 272,92" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <path d="M258.52,87.87L272,92L265.51,79.48" stroke-width="3" class="fade" style="--d:0.77s"/>
+    <path d="M272,148Q200,208 128,148" stroke-width="3" class="draw" pathLength="1" style="--d:0.89s;--t:0.90s"/>
+    <path d="M141.48,152.13L128,148L134.49,160.52" stroke-width="3" class="fade" style="--d:1.65s"/>
+  </g>
+  </g>
+</svg>

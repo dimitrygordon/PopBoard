@@ -1,1 +1,252 @@
-[]
+[
+  {
+    "slot": "u01-hook-l01-h1",
+    "file": "u01-hook-l01-h1.svg",
+    "alt": "The Mueller-Lyer illusion: two equal horizontal segments, the top one with fins pointing inward and the bottom one with fins pointing outward. A ruler underneath with dashed guides from the segment ends shows both segments have the same length."
+  },
+  {
+    "slot": "u01-hook-l02-h2",
+    "file": "u01-hook-l02-h2.svg",
+    "alt": "Table of circle regions for 1 to 10 points: 1, 2, 4, 8, 16, 31, 57, 99, 163, 256. A doubling guess column, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, is crossed out from 6 points on."
+  },
+  {
+    "slot": "u01-hook-l04-h7",
+    "file": "u01-hook-l04-h7.svg",
+    "alt": "An eye at the vertex of a thin angle formed by two rays. A small near circle labeled Moon and a large far circle labeled Sun both fit exactly inside the same angle. Marked NOT TO SCALE."
+  },
+  {
+    "slot": "u01-hook-l05-h10",
+    "file": "u01-hook-l05-h10.svg",
+    "alt": "Three line drawings. A salt crystal drawn as a cube with one shaded face. A virus shell drawn as an icosahedron. A cube with its 8 corners dotted and hidden edges dashed, with the count 8 corners, 12 edges, 6 faces and 8 minus 12 plus 6 equals 2."
+  },
+  {
+    "slot": "u01-hook-l05-h11",
+    "file": "u01-hook-l05-h11.svg",
+    "alt": "Pascal's triangle, rows 0 to 7, written in a honeycomb. Every odd entry sits in a black-outlined hexagon; even entries have no outline. The outlined cells form stage 3 of the Sierpinski triangle."
+  },
+  {
+    "slot": "u01-hook-l06-h8",
+    "file": "u01-hook-l06-h8.svg",
+    "alt": "Top view of a post at the center of a circle. The morning shadow and the afternoon shadow both reach the circle. Equal compass arcs from the two shadow tips meet on the halfway line, and a dashed ray from the post through that point is labeled N for north."
+  },
+  {
+    "slot": "u01-hook-l06-h9",
+    "file": "u01-hook-l06-h9.svg",
+    "alt": "Two compasses side by side above a page line. Left, Euclid's compass: lifted off the page, its legs snap shut, shown by curved arrows. Right, our compass: lifted, it holds its opening, shown by a dashed line between the tips. Labels: Euclid's compass and our compass."
+  },
+  {
+    "slot": "u01-hook-l07-h12",
+    "file": "u01-hook-l07-h12.svg",
+    "alt": "A paper scroll with rolled ends reading: A point is that which has no part. An arrow points to the word part, with a question mark at its tail."
+  },
+  {
+    "slot": "u01-hook-l09-h13",
+    "file": "u01-hook-l09-h13.svg",
+    "alt": "A checklist with three conditions, orbits the Sun, nearly round and cleared its path, and two columns, Earth and Pluto. Earth gets a check on all three. Pluto gets checks on the first two and a cross on cleared its path."
+  },
+  {
+    "slot": "u01-hook-l12-h14",
+    "file": "u01-hook-l12-h14.svg",
+    "alt": "A globe with its equator. A triangle runs from the North Pole down two meridians a quarter turn apart to the equator and is closed along the equator. Right-angle marks sit at all three corners."
+  },
+  {
+    "slot": "u01-l01-hook",
+    "file": "u01-hook-l01-h1.svg",
+    "alt": "The Mueller-Lyer illusion: two equal horizontal segments, the top one with fins pointing inward and the bottom one with fins pointing outward. A ruler underneath with dashed guides from the segment ends shows both segments have the same length."
+  },
+  {
+    "slot": "u01-l02-hook",
+    "file": "u01-hook-l02-h2.svg",
+    "alt": "Table of circle regions for 1 to 10 points: 1, 2, 4, 8, 16, 31, 57, 99, 163, 256. A doubling guess column, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, is crossed out from 6 points on."
+  },
+  {
+    "slot": "u01-l02-s06",
+    "file": "u01-l02-s06.svg",
+    "alt": "A table with columns n, guess and new rule. Guess is n squared plus 2n plus 2; the new rule adds n(n minus 1)(n minus 2). For n = 0, 1, 2 both columns read 2, 5, 10. At n = 3 the guess gives 17 and the new rule gives 23, which is boxed."
+  },
+  {
+    "slot": "u01-l02-s10",
+    "file": "u01-l02-s10.svg",
+    "alt": "The rule 'true for every x'. Ana's 100 cases that work are shown as a 10 by 10 grid of check marks, with no proved badge. Ben's one failing case is circled. Revealed: 100 checks are not a proof; not every x works, so the rule is false."
+  },
+  {
+    "slot": "u01-l04-hook",
+    "file": "u01-hook-l04-h7.svg",
+    "alt": "An eye at the vertex of a thin angle formed by two rays. A small near circle labeled Moon and a large far circle labeled Sun both fit exactly inside the same angle. Marked NOT TO SCALE."
+  },
+  {
+    "slot": "u01-l05-hook",
+    "file": "u01-hook-l05-h10.svg",
+    "alt": "Three line drawings. A salt crystal drawn as a cube with one shaded face. A virus shell drawn as an icosahedron. A cube with its 8 corners dotted and hidden edges dashed, with the count 8 corners, 12 edges, 6 faces and 8 minus 12 plus 6 equals 2."
+  },
+  {
+    "slot": "u01-l05-s10",
+    "file": "u01-l05-s10.svg",
+    "alt": "Three line drawings, each with a checklist of two items, straight sides and no crossings. Circle: fails straight sides, passes no crossings. Bow-tie: passes straight sides, fails no crossings. Triangle: passes both. The marks appear with the answer."
+  },
+  {
+    "slot": "u01-l06-hook",
+    "file": "u01-hook-l06-h8.svg",
+    "alt": "Top view of a post at the center of a circle. The morning shadow and the afternoon shadow both reach the circle. Equal compass arcs from the two shadow tips meet on the halfway line, and a dashed ray from the post through that point is labeled N for north."
+  },
+  {
+    "slot": "u01-l06-s08",
+    "file": "u01-l06-s08.svg",
+    "alt": "A drafting compass with its needle on one end of a segment and its pencil on the other end. Below, the same compass with the same opening stands at a new point and sweeps an arc. Caption: UNCHANGED OPENING. No numbers."
+  },
+  {
+    "slot": "u01-l07-hook",
+    "file": "u01-hook-l07-h12.svg",
+    "alt": "A paper scroll with rolled ends reading: A point is that which has no part. An arrow points to the word part, with a question mark at its tail."
+  },
+  {
+    "slot": "u01-l07-s06",
+    "file": "u01-l07-s06.svg",
+    "alt": "Two boxes, point and line. An arrow labeled uses goes from point to line, and another labeled uses goes from line back to point, making a loop. Below, a separate list: starting words point and line, with no definition, and rules, the postulates about point and line."
+  },
+  {
+    "slot": "u01-l07-s08",
+    "file": "u01-l07-s08.svg",
+    "alt": "A dictionary chain of four word boxes: point, then location, then position, then place, with an arrow from each word to the word its definition uses. A final arrow runs from place back up to point. Revealed caption: the definitions loop back."
+  },
+  {
+    "slot": "u01-l07-s11",
+    "file": "u01-l07-s11.svg",
+    "alt": "Two columns, System A and System B. System A starts with the words point, line and between and assumes rules R1, R2 and R3. System B starts with point, line and distance and assumes rules R1 and R4. Revealed: a Proved row lists R2 under System B, so R2 is assumed in A but proved in B."
+  },
+  {
+    "slot": "u01-l08-s05",
+    "file": "u01-l08-s05.svg",
+    "alt": "Truth table with columns P, Q, if P then Q, and if not Q then not P. Rows TT, TF, FT, FF. Both if columns read T, F, T, T. Revealed: the F in each if column is boxed and a caption says the two columns match."
+  },
+  {
+    "slot": "u01-l08-s06",
+    "file": "u01-l08-s06.svg",
+    "alt": "Table of the four rows (P, Q) = (T, T), (T, F), (F, T), (F, F), with columns if P, then Q and if Q, then P. The first column reads T, F, T, T and the second reads T, T, F, T. Each F is boxed separately: row (T, F) breaks if P, then Q; row (F, T) breaks if Q, then P."
+  },
+  {
+    "slot": "u01-l08-s09",
+    "file": "u01-l08-s09.svg",
+    "alt": "Truth table with columns P, Q, if P then Q, and if not Q then not P, and rows TT, TF, FT, FF. The two if columns are blank at first. Revealed: both read T, F, T, T, so the statement and its contrapositive match."
+  },
+  {
+    "slot": "u01-l09-hook",
+    "file": "u01-hook-l09-h13.svg",
+    "alt": "A checklist with three conditions, orbits the Sun, nearly round and cleared its path, and two columns, Earth and Pluto. Earth gets a check on all three. Pluto gets checks on the first two and a cross on cleared its path."
+  },
+  {
+    "slot": "u01-l09-s06",
+    "file": "u01-l09-s06.svg",
+    "alt": "Two number cards, (1, 1, 1) and (0, 2, 3), under the test one zero, two positive. Each card has three boxes, one under each number. Revealed: (1, 1, 1) gets greater than 0 in all three boxes and is not balanced; (0, 2, 3) gets equal to 0, greater than 0, greater than 0 and is balanced."
+  },
+  {
+    "slot": "u01-l10-s06",
+    "file": "u01-l10-s06.svg",
+    "alt": "A proof chain. u and v odd; by definition, u = 2a + 1 and v = 2b + 1; by substitution, u + v = 2a + 2b + 2; by the distributive property, u + v = 2(a + b + 1); because integers add to integers, a + b + 1 is an integer; by definition, u + v is even."
+  },
+  {
+    "slot": "u01-l10-s08",
+    "file": "u01-l10-s08.svg",
+    "alt": "Kim's four lines on separate cards, in her random order: m + n = 2(r + s); m = 2r; so m + n is even; n = 2s. Each card has a grip for dragging. Revealed: order numbers 3, 1, 4, 2, putting the definitions first, then the algebra, then the conclusion."
+  },
+  {
+    "slot": "u01-l10-s09",
+    "file": "u01-l10-s09.svg",
+    "alt": "A blank two-column table headed Statements and Reasons, with five empty rows. Revealed: m = 4r, n = 4s by definition of multiple; m + n = 4r + 4s by substitution; m + n = 4(r + s) by the distributive property; r + s is an integer because integers add to integers; so m + n is a multiple of 4 by definition of multiple."
+  },
+  {
+    "slot": "u01-l10-s10",
+    "file": "u01-l10-s10.svg",
+    "alt": "Two number cards, 2 and negative 2, and the factoring x squared minus y squared equals (x minus y)(x plus y). Revealed: 2 squared is 4 and negative 2 squared is 4; if x squared equals y squared the product is 0, so x minus y = 0 or x plus y = 0, which gives x = y or x = negative y."
+  },
+  {
+    "slot": "u01-l10-s11",
+    "file": "u01-l10-s11.svg",
+    "alt": "Arrow diagram. Left: a chain of arrows runs from a box labeled given, through two steps shown as dots, to a box labeled conclusion. Right: a box labeled conclusion with a loop arrow from the box back to itself. Revealed: the loop is crossed out."
+  },
+  {
+    "slot": "u01-l11-s06",
+    "file": "u01-l11-s06.svg",
+    "alt": "Equation chain under a boxed note: n must be an integer. 2n + 1 = 8; subtract 1: 2n = 7; divide by 2: n = 7/2. 7/2 is not an integer, which clashes with the boxed note, marked by a crossed link and the word contradiction. Final boxed conclusion: no integer n solves 2n + 1 = 8."
+  },
+  {
+    "slot": "u01-l11-s08",
+    "file": "u01-l11-s08.svg",
+    "alt": "A proof outline of three boxes joined by arrows: assume the opposite, then clash, then reject the opposite. Revealed: the reject the opposite box is outlined heavily as the end of the proof, and the wrong idea, prove the opposite is true, is crossed out."
+  },
+  {
+    "slot": "u01-l11-s10",
+    "file": "u01-l11-s10.svg",
+    "alt": "Text panel. The goal, some label is wrong, sits above Ivy's start, every label is wrong, with the quantifier words underlined and lined up. Revealed: Ivy's line is crossed out as not the opposite, and the opposite is written beneath: no label is wrong, meaning every label is correct."
+  },
+  {
+    "slot": "u01-l12-hook",
+    "file": "u01-hook-l12-h14.svg",
+    "alt": "A globe with its equator. A triangle runs from the North Pole down two meridians a quarter turn apart to the equator and is closed along the equator. Right-angle marks sit at all three corners."
+  },
+  {
+    "slot": "u01-l12-s06",
+    "file": "u01-l12-s06.svg",
+    "alt": "Three separate dots P, Q and R with no lines drawn between them, and a table whose columns are the lines {P, Q}, {Q, R} and {P, R} and whose rows are the pairs PQ, QR and PR. Each pair gets exactly one check, under its own line. Captions: every two points lie on exactly one line, which holds here; but each line has only two points, so this is not full Euclidean geometry."
+  },
+  {
+    "slot": "u01-l12-s08",
+    "file": "u01-l12-s08.svg",
+    "alt": "Three labeled bins: ASSUMED, DEFINED and PROVED. The DEFINED bin holds the card W means in both U and V. Revealed: the card everything in U is in V goes in ASSUMED, and the card U = W goes in PROVED."
+  },
+  {
+    "slot": "u01-l12-s10",
+    "file": "u01-l12-s10.svg",
+    "alt": "A box labeled postulates at the top, standing alone with no arrow into T or L. Below, boxes T and L with an arrow labeled uses from T to L and another labeled uses from L back to T, a loop. Revealed caption: no arrow comes from the postulates, so neither T nor L is proved."
+  },
+  {
+    "slot": "u01-l12-s11",
+    "file": "u01-l12-s11.svg",
+    "alt": "Three status boxes: CONJECTURE, POSTULATE and THEOREM. The arrow from CONJECTURE into THEOREM is labeled needs a proof from the current postulates. Revealed: an arrow from CONJECTURE to POSTULATE labeled openly add, the system changes."
+  },
+  {
+    "slot": "u01-l13-s07",
+    "file": "u01-l13-s07.svg",
+    "alt": "Points A, B and C in a row. Below, three panels labeled segment AB, ray AB and line AB, blank at first. Revealed: the segment joins A to B with endpoint dots and C off it; the ray starts at A, passes B and C, and has one arrow; the line passes through A, B and C with arrows at both ends."
+  },
+  {
+    "slot": "u01-l13-s10",
+    "file": "u01-l13-s10.svg",
+    "alt": "Segment AB labeled AB = 5, and a ray from P through X. Revealed construction: a compass arc centered at A through B sets the opening; an arc of the same radius centered at P crosses the ray at Q; PQ = 5. The construction arcs stay visible."
+  },
+  {
+    "slot": "u01-l14-s10",
+    "file": "u01-l14-s10.svg",
+    "alt": "A table with four point rows A, B, C, D and two line columns {A, B} and {C, D}, blank at first. No arrowheads. Revealed: A and B are checked under {A, B}, C and D under {C, D}; each point is on exactly one line, and no line holds all four points."
+  },
+  {
+    "slot": "u01-l14-s11",
+    "file": "u01-l14-s11.svg",
+    "alt": "Three inventory cards, C1, C2 and S, each with columns COMPASS and METAL. C1: compass yes, metal yes. C2: compass yes, metal yes. S: compass no, metal yes. Revealed: the S card is outlined heavily; S is metal but not a compass, so every metal object is a compass is false."
+  },
+  {
+    "slot": "u01-l14-s15",
+    "file": "u01-l14-s15.svg",
+    "alt": "A blank table with columns P marked and P on l and four rows. Revealed: the rows read T T, T F, F T, F F, with columns S, T, U giving F in at least one place in every row, so all three cannot hold together. Dropping U leaves row 1, dropping T leaves row 4, dropping S leaves row 2."
+  },
+  {
+    "slot": "u01-l14-s22",
+    "file": "u01-l14-s22.svg",
+    "alt": "An arrow chain A to B to C, with an empty table of truth values for A, B, C below it, and a second empty table for A implies B, B implies C and C implies A. Revealed: a curved arrow shows A implies C; the values A false, B false, C true make A implies B and B implies C true but C implies A false, which is boxed."
+  },
+  {
+    "slot": "u01-l14-s23",
+    "file": "u01-l14-s23.svg",
+    "alt": "The rule if the switch is on, then the lamp is on, above four observation cards written in words: SWITCH OFF, LAMP OFF; SWITCH OFF, LAMP ON; SWITCH ON, LAMP ON; SWITCH ON, LAMP OFF. Revealed: the last card is outlined heavily and breaks the rule; the second card, lamp on with switch off, is allowed."
+  },
+  {
+    "slot": "u01-l14-s24",
+    "file": "u01-l14-s24.svg",
+    "alt": "The database test x + y = 1 above a table with columns PAIR, SUM and PRODUCT, blank at first. Revealed rows: (2, negative 1) has sum 1 and product negative 2; (2, 1/2) has sum 2.5 and product 1. Below: false positive (2, negative 1), false negative (2, 1/2), and a boxed exact test, xy = 1."
+  },
+  {
+    "slot": "u01-l14-s27",
+    "file": "u01-l14-s27.svg",
+    "alt": "A blank table with point rows P, Q, R, S and line columns l, m, n. Revealed: l holds P, Q, R; m holds P, Q, S; n holds R and S. The P and Q checks under l and under m are outlined separately, and a caption says PQ lies on both l and m."
+  }
+]

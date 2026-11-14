@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" color="#111" role="img" aria-labelledby="u01-cover-l09-title" data-steps="3">
+  <title id="u01-cover-l09-title">Definitions as Biconditionals</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M400,95A130,130 0 1 0 400,355A130,130 0 1 0 400,95" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+    <path d="M360,225L440,225" stroke-width="2" class="draw" pathLength="1" style="--d:0.94s;--t:0.46s"/>
+    <circle cx="360" cy="225" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.33s"/>
+    <circle cx="440" cy="225" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.45s"/>
+  </g>
+  <g data-step="2" style="--sd:1.72s">
+    <path d="M404,225A44,44 0 1 0 316,225A44,44 0 1 0 404,225" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+    <path d="M396,225A44,44 0 1 0 484,225A44,44 0 1 0 396,225" stroke-width="1" class="draw" pathLength="1" style="--d:0.94s;--t:1.10s"/>
+    <path d="M414,225A54,54 0 1 0 306,225A54,54 0 1 0 414,225" stroke-width="1" class="draw" pathLength="1" style="--d:1.87s;--t:1.10s"/>
+    <path d="M386,225A54,54 0 1 0 494,225A54,54 0 1 0 386,225" stroke-width="1" class="draw" pathLength="1" style="--d:2.81s;--t:1.10s"/>
+    <path d="M424,225A64,64 0 1 0 296,225A64,64 0 1 0 424,225" stroke-width="1" class="draw" pathLength="1" style="--d:3.74s;--t:1.10s"/>
+    <path d="M376,225A64,64 0 1 0 504,225A64,64 0 1 0 376,225" stroke-width="1" class="draw" pathLength="1" style="--d:4.68s;--t:1.10s"/>
+    <path d="M434,225A74,74 0 1 0 286,225A74,74 0 1 0 434,225" stroke-width="1" class="draw" pathLength="1" style="--d:5.61s;--t:1.10s"/>
+    <path d="M366,225A74,74 0 1 0 514,225A74,74 0 1 0 366,225" stroke-width="1" class="draw" pathLength="1" style="--d:6.55s;--t:1.10s"/>
+    <path d="M446,225A86,86 0 1 0 274,225A86,86 0 1 0 446,225" stroke-width="1" class="draw" pathLength="1" style="--d:7.48s;--t:1.10s"/>
+    <path d="M354,225A86,86 0 1 0 526,225A86,86 0 1 0 354,225" stroke-width="1" class="draw" pathLength="1" style="--d:8.42s;--t:1.10s"/>
+  </g>
+  <g data-step="3" style="--sd:11.22s">
+    <path d="M400,99L400,351" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.80s"/>
+    <circle cx="400" cy="206.67" r="4" fill="currentColor" stroke="none" class="fade" style="--d:0.68s"/>
+    <circle cx="400" cy="243.33" r="4" fill="currentColor" stroke="none" class="fade" style="--d:0.80s"/>
+    <circle cx="400" cy="188.72" r="4" fill="currentColor" stroke="none" class="fade" style="--d:0.92s"/>
+    <circle cx="400" cy="261.28" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.04s"/>
+    <circle cx="400" cy="175.04" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.16s"/>
+    <circle cx="400" cy="274.96" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.28s"/>
+    <circle cx="400" cy="162.74" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.40s"/>
+    <circle cx="400" cy="287.26" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.52s"/>
+    <circle cx="400" cy="148.87" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.64s"/>
+    <circle cx="400" cy="301.13" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.76s"/>
+  </g>
+  </g>
+</svg>

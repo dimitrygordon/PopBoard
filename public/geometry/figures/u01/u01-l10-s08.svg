@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 470" color="#111" role="img" aria-labelledby="u01-l10-s08-title" data-steps="2">
+  <title id="u01-l10-s08-title">Kim's proof lines on cards, to be put in order</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M24,14H280A8,8 0 0 1 288,22V64A8,8 0 0 1 280,72H24A8,8 0 0 1 16,64V22A8,8 0 0 1 24,14Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <circle cx="32" cy="35" r="2" fill="currentColor" stroke="none" class="fade" style="--d:0.77s"/>
+    <circle cx="32" cy="43" r="2" fill="currentColor" stroke="none" class="fade" style="--d:0.89s"/>
+    <circle cx="32" cy="51" r="2" fill="currentColor" stroke="none" class="fade" style="--d:1.00s"/>
+    <circle cx="40" cy="35" r="2" fill="currentColor" stroke="none" class="fade" style="--d:1.12s"/>
+    <circle cx="40" cy="43" r="2" fill="currentColor" stroke="none" class="fade" style="--d:1.25s"/>
+    <circle cx="40" cy="51" r="2" fill="currentColor" stroke="none" class="fade" style="--d:1.37s"/>
+    <text fill="currentColor" stroke="none" x="58" y="52.36" font-size="26" class="fade" style="--d:1.49s"><tspan font-style="italic">m</tspan> + <tspan font-style="italic">n</tspan> = 2(<tspan font-style="italic">r</tspan> + <tspan font-style="italic">s</tspan>)</text>
+  </g>
+  <g data-step="2" class="conclusion" style="--sd:1.76s">
+    <path d="M320,23A20,20 0 1 0 320,63A20,20 0 1 0 320,23" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+    <text fill="currentColor" stroke="none" x="320" y="52.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.94s">3</text>
+  </g>
+  <g data-step="1" style="--sd:2.96s">
+    <path d="M64,98H320A8,8 0 0 1 328,106V148A8,8 0 0 1 320,156H64A8,8 0 0 1 56,148V106A8,8 0 0 1 64,98Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <circle cx="72" cy="119" r="2" fill="currentColor" stroke="none" class="fade" style="--d:0.77s"/>
+    <circle cx="72" cy="127" r="2" fill="currentColor" stroke="none" class="fade" style="--d:0.89s"/>
+    <circle cx="72" cy="135" r="2" fill="currentColor" stroke="none" class="fade" style="--d:1.00s"/>
+    <circle cx="80" cy="119" r="2" fill="currentColor" stroke="none" class="fade" style="--d:1.12s"/>
+    <circle cx="80" cy="127" r="2" fill="currentColor" stroke="none" class="fade" style="--d:1.25s"/>
+    <circle cx="80" cy="135" r="2" fill="currentColor" stroke="none" class="fade" style="--d:1.37s"/>
+    <text fill="currentColor" stroke="none" x="98" y="136.36" font-size="26" class="fade" style="--d:1.49s"><tspan font-style="italic">m</tspan> = 2<tspan font-style="italic">r</tspan></text>
+  </g>
+  <g data-step="2" class="conclusion" style="--sd:4.72s">
+    <path d="M360,107A20,20 0 1 0 360,147A20,20 0 1 0 360,107" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+    <text fill="currentColor" stroke="none" x="360" y="136.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.94s">1</text>
+  </g>
+  <g data-step="1" style="--sd:5.92s">
+    <path d="M16,182H272A8,8 0 0 1 280,190V232A8,8 0 0 1 272,240H16A8,8 0 0 1 8,232V190A8,8 0 0 1 16,182Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <circle cx="24" cy="203" r="2" fill="currentColor" stroke="none" class="fade" style="--d:0.77s"/>
+    <circle cx="24" cy="211" r="2" fill="currentColor" stroke="none" class="fade" style="--d:0.89s"/>
+    <circle cx="24" cy="219" r="2" fill="currentColor" stroke="none" class="fade" style="--d:1.00s"/>
+    <circle cx="32" cy="203" r="2" fill="currentColor" stroke="none" class="fade" style="--d:1.12s"/>
+    <circle cx="32" cy="211" r="2" fill="currentColor" stroke="none" class="fade" style="--d:1.25s"/>
+    <circle cx="32" cy="219" r="2" fill="currentColor" stroke="none" class="fade" style="--d:1.37s"/>
+    <text fill="currentColor" stroke="none" x="50" y="220.36" font-size="26" class="fade" style="--d:1.49s">So <tspan font-style="italic">m</tspan> + <tspan font-style="italic">n</tspan> is even.</text>
+  </g>
+  <g data-step="2" class="conclusion" style="--sd:7.68s">
+    <path d="M312,191A20,20 0 1 0 312,231A20,20 0 1 0 312,191" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+    <text fill="currentColor" stroke="none" x="312" y="220.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.94s">4</text>
+  </g>
+  <g data-step="1" style="--sd:8.88s">
+    <path d="M54,266H310A8,8 0 0 1 318,274V316A8,8 0 0 1 310,324H54A8,8 0 0 1 46,316V274A8,8 0 0 1 54,266Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <circle cx="62" cy="287" r="2" fill="currentColor" stroke="none" class="fade" style="--d:0.77s"/>
+    <circle cx="62" cy="295" r="2" fill="currentColor" stroke="none" class="fade" style="--d:0.89s"/>
+    <circle cx="62" cy="303" r="2" fill="currentColor" stroke="none" class="fade" style="--d:1.00s"/>
+    <circle cx="70" cy="287" r="2" fill="currentColor" stroke="none" class="fade" style="--d:1.12s"/>
+    <circle cx="70" cy="295" r="2" fill="currentColor" stroke="none" class="fade" style="--d:1.25s"/>
+    <circle cx="70" cy="303" r="2" fill="currentColor" stroke="none" class="fade" style="--d:1.37s"/>
+    <text fill="currentColor" stroke="none" x="88" y="304.36" font-size="26" class="fade" style="--d:1.49s"><tspan font-style="italic">n</tspan> = 2<tspan font-style="italic">s</tspan></text>
+  </g>
+  <g data-step="2" class="conclusion" style="--sd:10.64s">
+    <path d="M350,275A20,20 0 1 0 350,315A20,20 0 1 0 350,275" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+    <text fill="currentColor" stroke="none" x="350" y="304.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.94s">2</text>
+  </g>
+  <g data-step="2" class="conclusion" style="--sd:11.84s">
+    <text fill="currentColor" stroke="none" x="200" y="401.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">Definitions first, then the</text>
+    <text fill="currentColor" stroke="none" x="200" y="439.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.12s">algebra, then the conclusion.</text>
+  </g>
+  </g>
+</svg>

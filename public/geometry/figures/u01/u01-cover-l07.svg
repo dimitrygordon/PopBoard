@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" color="#111" role="img" aria-labelledby="u01-cover-l07-title" data-steps="2">
+  <title id="u01-cover-l07-title">We Can't Go On Like This</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M400,99A126,126 0 1 0 400,351A126,126 0 1 0 400,99" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+  </g>
+  <g data-step="2" style="--sd:1.08s">
+    <path d="M489.1,135.9L310.9,135.9L310.9,314.1L489.1,314.1L489.1,135.9" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.30s"/>
+  </g>
+  <g data-step="2" style="--sd:1.53s">
+    <path d="M400,135.9L310.9,225L400,314.1L489.1,225L400,135.9" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.30s"/>
+  </g>
+  <g data-step="2" style="--sd:1.98s">
+    <path d="M355.45,180.45L355.45,269.55L444.55,269.55L444.55,180.45L355.45,180.45" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.30s"/>
+  </g>
+  <g data-step="2" style="--sd:2.43s">
+    <path d="M355.45,225L400,269.55L444.55,225L400,180.45L355.45,225" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.30s"/>
+  </g>
+  <g data-step="2" style="--sd:2.88s">
+    <path d="M377.73,247.27L422.27,247.27L422.27,202.73L377.73,202.73L377.73,247.27" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.30s"/>
+  </g>
+  <g data-step="2" style="--sd:3.33s">
+    <path d="M400,247.27L422.27,225L400,202.73L377.73,225L400,247.27" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.30s"/>
+  </g>
+  <g data-step="2" style="--sd:3.79s">
+    <path d="M411.14,236.14L411.14,213.86L388.86,213.86L388.86,236.14L411.14,236.14" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:0.30s"/>
+  </g>
+  <g data-step="2" style="--sd:4.24s">
+    <path d="M411.14,225L400,213.86L388.86,225L400,236.14L411.14,225" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:0.30s"/>
+  </g>
+  <g data-step="2" style="--sd:4.69s">
+    <path d="M405.57,219.43L394.43,219.43L394.43,230.57L405.57,230.57L405.57,219.43" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:0.30s"/>
+  </g>
+  <g data-step="2" style="--sd:5.14s">
+    <path d="M400,219.43L394.43,225L400,230.57L405.57,225L400,219.43" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:0.30s"/>
+  </g>
+  <g data-step="2" style="--sd:5.59s">
+    <path d="M397.22,222.22L397.22,227.78L402.78,227.78L402.78,222.22L397.22,222.22" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:0.30s"/>
+  </g>
+  <g data-step="2" style="--sd:6.04s">
+    <path d="M397.22,225L400,227.78L402.78,225L400,222.22L397.22,225" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:0.30s"/>
+  </g>
+  <g data-step="2" style="--sd:6.49s">
+    <path d="M398.61,226.39L401.39,226.39L401.39,223.61L398.61,223.61L398.61,226.39" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:0.30s"/>
+  </g>
+  </g>
+</svg>

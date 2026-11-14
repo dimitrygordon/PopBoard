@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 610" color="#111" role="img" aria-labelledby="u01-l12-s06-title" data-steps="4">
+  <title id="u01-l12-s06-title">A three-point system and its incidence table</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <circle cx="96" cy="120" r="4" fill="currentColor" stroke="none" class="fade" style="--d:0.00s"/>
+    <text fill="currentColor" stroke="none" x="62.63" y="129.36" font-size="26" class="fade" style="--d:0.12s"><tspan font-style="italic">P</tspan></text>
+    <circle cx="304" cy="120" r="4" fill="currentColor" stroke="none" class="fade" style="--d:0.24s"/>
+    <text fill="currentColor" stroke="none" x="320.62" y="129.36" font-size="26" class="fade" style="--d:0.36s"><tspan font-style="italic">Q</tspan></text>
+    <circle cx="200" cy="44" r="4" fill="currentColor" stroke="none" class="fade" style="--d:0.48s"/>
+    <text fill="currentColor" stroke="none" x="218.55" y="53.36" font-size="26" class="fade" style="--d:0.60s"><tspan font-style="italic">R</tspan></text>
+    <path d="M10,220L390,220" stroke-width="2" class="draw" pathLength="1" style="--d:0.72s;--t:1.00s"/>
+    <path d="M10,272L390,272" stroke-width="1" class="draw" pathLength="1" style="--d:1.57s;--t:1.00s"/>
+    <path d="M10,324L390,324" stroke-width="1" class="draw" pathLength="1" style="--d:2.42s;--t:1.00s"/>
+    <path d="M10,376L390,376" stroke-width="1" class="draw" pathLength="1" style="--d:3.27s;--t:1.00s"/>
+    <path d="M96,172L96,372" stroke-width="1" class="draw" pathLength="1" style="--d:4.12s;--t:0.70s"/>
+    <path d="M194,172L194,372" stroke-width="1" class="draw" pathLength="1" style="--d:4.71s;--t:0.70s"/>
+    <path d="M292,172L292,372" stroke-width="1" class="draw" pathLength="1" style="--d:5.31s;--t:0.70s"/>
+    <text fill="currentColor" stroke="none" x="53" y="203.36" font-size="26" text-anchor="middle" class="fade" style="--d:5.90s">pair</text>
+    <text fill="currentColor" stroke="none" x="111.52" y="203.36" font-size="26" class="fade" style="--d:6.02s">{<tspan font-style="italic">P</tspan>, <tspan font-style="italic">Q</tspan>}</text>
+    <text fill="currentColor" stroke="none" x="209.44" y="203.36" font-size="26" class="fade" style="--d:6.14s">{<tspan font-style="italic">Q</tspan>, <tspan font-style="italic">R</tspan>}</text>
+    <text fill="currentColor" stroke="none" x="309.45" y="203.36" font-size="26" class="fade" style="--d:6.26s">{<tspan font-style="italic">P</tspan>, <tspan font-style="italic">R</tspan>}</text>
+    <text fill="currentColor" stroke="none" x="36.26" y="255.36" font-size="26" class="fade" style="--d:6.38s"><tspan font-style="italic">PQ</tspan></text>
+    <text fill="currentColor" stroke="none" x="36.18" y="307.36" font-size="26" class="fade" style="--d:6.50s"><tspan font-style="italic">QR</tspan></text>
+    <text fill="currentColor" stroke="none" x="38.19" y="359.36" font-size="26" class="fade" style="--d:6.62s"><tspan font-style="italic">PR</tspan></text>
+  </g>
+  <g data-step="2" style="--sd:6.90s">
+    <path d="M135.1,246.44L142.36,253.92L155.56,237.64" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.35s"/>
+    <path d="M233.1,298.44L240.36,305.92L253.56,289.64" stroke-width="2" class="draw" pathLength="1" style="--d:0.30s;--t:0.35s"/>
+    <path d="M331.1,350.44L338.36,357.92L351.56,341.64" stroke-width="2" class="draw" pathLength="1" style="--d:0.59s;--t:0.35s"/>
+  </g>
+  <g data-step="3" style="--sd:7.94s">
+    <text fill="currentColor" stroke="none" x="200" y="415.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">Every two points lie on</text>
+    <text fill="currentColor" stroke="none" x="200" y="451.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.12s">exactly one line: it holds.</text>
+  </g>
+  <g data-step="4" class="conclusion" style="--sd:8.39s">
+    <text fill="currentColor" stroke="none" x="200" y="509.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">But each line has only two</text>
+    <text fill="currentColor" stroke="none" x="200" y="547.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.12s">points, so this is not full</text>
+    <text fill="currentColor" stroke="none" x="200" y="585.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.24s">Euclidean geometry.</text>
+  </g>
+  </g>
+</svg>

@@ -4,74 +4,10 @@ Student wording: Socrates. Math: Euclid. Build: feat/geometry-v2-u01. Black stro
 
 Wire supplied SVGs in tools/geometry/u01-art-wiring.json as {slot, file, alt}, with files in public/geometry/figures/u01/u01-<slot>.svg. A supplied file replaces any generator figure or the clean waiting slot for that id.
 
-Counts: 112 figure slots. 64 drawn by the generator, 0 supplied by Leo, 16 live text only, 32 NEED LEO ART.
+Counts: 112 figure slots. 64 drawn by the generator, 32 supplied by Leo, 16 live text only, 0 NEED LEO ART.
 
 ## Needs Leo art (clean waiting slots until delivered)
 
-- [ ] u01-l02-s06: Table with columns n, guess, new rule, and rows n = 0, 1, 2, 3.
-  - Builder spec: A four-row n/f/g table at 0, 1, 2, 3; no geometric drawing.
-- [ ] u01-l02-s10: Text panel: the rule 'for every x' and one circled failing case. The 100 checks get no 'proved' badge.
-  - Builder spec: Quantifier statement and one circled counterexample row; do not depict 100 checks as a proof badge.
-- [ ] u01-l05-s10: Three drawings, a circle, a bow-tie and a triangle, each with a checklist beside it.
-  - Builder spec: Circle, bow-tie and triangle as three black line drawings, each with a text condition checklist.
-- [ ] u01-l06-s08: A compass on a source segment, then the same compass at a new point, with the caption UNCHANGED OPENING. No number labels.
-  - Builder spec: none given
-- [ ] u01-l07-s06: Two boxes, 'point' and 'line', with arrows both ways. Then a separate list of starting words and rules.
-  - Builder spec: Two-node dependency graph with arrows both ways; then a separate primitive/axiom ledger.
-- [ ] u01-l07-s08: A dictionary chain of word boxes ending in an arrow back to 'point'.
-  - Builder spec: none given
-- [ ] u01-l07-s11: Two columns, System A and System B, each with its own list of starting words and rules.
-  - Builder spec: Two parallel columns labeled System A and System B, with distinct primitive/axiom ledgers; no geometric drawing.
-- [ ] u01-l08-s05: Truth table with columns P, Q, 'if P then Q', 'if not Q then not P'. Rows TT, TF, FT, FF. Both 'if' columns read T, F, T, T.
-  - Builder spec: Four-column truth table P, Q, P⇒Q, ¬Q⇒¬P; use four rows TT, TF, FT, FF and values T, F, T, T for both implications.
-- [ ] u01-l08-s06: Table of four rows for (P, Q): (T, T), (T, F), (F, T), (F, F). The two false entries are boxed.
-  - Builder spec: Four-row truth table with the two false entries outlined separately.
-- [ ] u01-l08-s09: Truth table with columns P, Q, 'if P then Q', 'if not Q then not P' and the four rows.
-  - Builder spec: Four-column truth table P, Q, P⇒Q, ¬Q⇒¬P; use four rows TT, TF, FT, FF and values T, F, T, T for both implications.
-- [ ] u01-l09-s06: Two number cards, (1, 1, 1) and (0, 2, 3), each with a three-box checklist.
-  - Builder spec: Two triple cards with a three-position condition checklist; no geometric drawing.
-- [ ] u01-l10-s06: Two-column chain with the reasons: definition, substitution, distributive property, integers add to integers.
-  - Builder spec: An algebra chain with reasons definition, substitution, distributivity, integer closure.
-- [ ] u01-l10-s08: Kim's four lines on cards, ready to drag into order.
-  - Builder spec: none given
-- [ ] u01-l10-s09: Blank two-column table: Statements | Reasons.
-  - Builder spec: No geometric diagram is needed; use live mathematical text.
-- [ ] u01-l10-s10: Two number cards, 2 and -2, and the factoring x² - y² = (x - y)(x + y).
-  - Builder spec: Two signed-number cards 2, -2 and an algebra factorization; no geometric drawing.
-- [ ] u01-l10-s11: Arrow diagram: a crossed-out loop from 'conclusion' back to itself, next to a chain of arrows from 'given' to 'conclusion'.
-  - Builder spec: Dependency graph with a forbidden self-loop and a separate hypothesis-to-conclusion chain.
-- [ ] u01-l11-s06: Equation chain with a box that says 'n must be an integer'.
-  - Builder spec: Equation chain with the declared integer domain boxed; do not accept the real solution as an integer solution.
-- [ ] u01-l11-s08: A proof outline with three boxes: 'Assume the opposite', 'Clash', 'Reject the opposite'.
-  - Builder spec: none given
-- [ ] u01-l11-s10: Text panel: the goal statement and its opposite, lined up one above the other.
-  - Builder spec: Two quantifier statements with aligned negation signs; no geometric drawing.
-- [ ] u01-l12-s06: Three dots P, Q, R and a table of the lines {P, Q}, {Q, R}, {P, R}. No arrowheads.
-  - Builder spec: Three point dots and a separate incidence table; do not draw a finite two-point set with line arrowheads.
-- [ ] u01-l12-s08: Three labeled boxes, ASSUMED, DEFINED and PROVED, with the definition card in DEFINED.
-  - Builder spec: none given
-- [ ] u01-l12-s10: Boxes T and L with arrows both ways, and a separate 'postulates' box with no arrow into T or L.
-  - Builder spec: Two-node directed cycle labeled T, L and separate axiom node with no incoming proof edge.
-- [ ] u01-l12-s11: Three boxes: CONJECTURE, POSTULATE, THEOREM. The arrow into THEOREM says 'needs a proof from the current postulates'.
-  - Builder spec: Three status boxes CONJECTURE, POSTULATE, THEOREM, with “proof from current axioms” required on the last transition.
-- [ ] u01-l13-s07: Points A, B, C in a row, with blank panels for segment AB, ray AB and line AB.
-  - Builder spec: A=(0, 0), B=(6, 0), C=(8, 0). Three panels: segment AB with endpoint dots, ray AB with one arrow, line AB with two arrows. No finite endpoint dot on a line.
-- [ ] u01-l13-s10: Segment AB = 5, and a ray from P with room for an arc.
-  - Builder spec: Source segment AB=5; elsewhere ray PX and radius-5 arc centered P, forward intersection Q. Live labels AB, P, Q and retained construction arc.
-- [ ] u01-l14-s10: A table with four point rows and two line columns. No arrowheads.
-  - Builder spec: Incidence table with four point rows and two line columns; do not draw arrowheads suggesting complete Euclidean lines.
-- [ ] u01-l14-s11: Three inventory cards with columns COMPASS and METAL.
-  - Builder spec: Three labeled inventory cards with columns COMPASS and METAL; no color coding.
-- [ ] u01-l14-s15: A blank table with columns 'P marked' and 'P on l'.
-  - Builder spec: A three-rule dependency diagram and a four-row Boolean table M, L. Tiny witness panels label marked/unmarked by text, not color.
-- [ ] u01-l14-s22: Arrow chain A to B to C, with an empty truth-value table below.
-  - Builder spec: Three-node implication chain A→B→C, with the counterassignment printed in a separate table.
-- [ ] u01-l14-s23: Four observation cards labeled SWITCH and LAMP, with ON or OFF written in words.
-  - Builder spec: Four observation cards labeled SWITCH, LAMP and ON/OFF in text; no colored status lights.
-- [ ] u01-l14-s24: A table with columns PAIR, SUM and PRODUCT.
-  - Builder spec: Two pair records with SUM and PRODUCT columns; an exact “xy=1” validator below.
-- [ ] u01-l14-s27: A blank table with point rows and line columns.
-  - Builder spec: Four-point/three-line incidence table for the given sets; highlight the two PQ memberships.
 
 ## Drawn by the generator (review for style; replace by wiring an SVG if wanted)
 
@@ -206,6 +142,38 @@ Counts: 112 figure slots. 64 drawn by the generator, 0 supplied by Leo, 16 live 
 
 ## Supplied by Leo
 
+- [x] u01-l02-s06
+- [x] u01-l02-s10
+- [x] u01-l05-s10
+- [x] u01-l06-s08
+- [x] u01-l07-s06
+- [x] u01-l07-s08
+- [x] u01-l07-s11
+- [x] u01-l08-s05
+- [x] u01-l08-s06
+- [x] u01-l08-s09
+- [x] u01-l09-s06
+- [x] u01-l10-s06
+- [x] u01-l10-s08
+- [x] u01-l10-s09
+- [x] u01-l10-s10
+- [x] u01-l10-s11
+- [x] u01-l11-s06
+- [x] u01-l11-s08
+- [x] u01-l11-s10
+- [x] u01-l12-s06
+- [x] u01-l12-s08
+- [x] u01-l12-s10
+- [x] u01-l12-s11
+- [x] u01-l13-s07
+- [x] u01-l13-s10
+- [x] u01-l14-s10
+- [x] u01-l14-s11
+- [x] u01-l14-s15
+- [x] u01-l14-s22
+- [x] u01-l14-s23
+- [x] u01-l14-s24
+- [x] u01-l14-s27
 
 ## Live text only (no figure)
 

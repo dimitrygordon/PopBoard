@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" color="#111" role="img" aria-labelledby="u01-hook-l05-h10-title" data-steps="3">
+  <title id="u01-hook-l05-h10-title">Polyhedra in nature and Euler's count</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M160.27,60.22L161.97,61.92" stroke-width="1"/>
+    <path d="M149.19,57.63L161.97,70.41" stroke-width="1"/>
+    <path d="M138.11,55.03L161.97,78.89" stroke-width="1"/>
+    <path d="M127.03,52.44L161.97,87.38" stroke-width="1"/>
+    <path d="M115.96,49.85L161.97,95.86" stroke-width="1"/>
+    <path d="M104.88,47.25L161.97,104.35" stroke-width="1"/>
+    <path d="M93.8,44.66L161.97,112.84" stroke-width="1"/>
+    <path d="M86.78,46.13L161.97,121.32" stroke-width="1"/>
+    <path d="M86.78,54.61L161.97,129.81" stroke-width="1"/>
+    <path d="M86.78,63.1L161.97,138.29" stroke-width="1"/>
+    <path d="M86.78,71.58L158.03,142.83" stroke-width="1"/>
+    <path d="M86.78,80.07L146.95,140.24" stroke-width="1"/>
+    <path d="M86.78,88.56L135.87,137.64" stroke-width="1"/>
+    <path d="M86.78,97.04L124.79,135.05" stroke-width="1"/>
+    <path d="M86.78,105.53L113.71,132.46" stroke-width="1"/>
+    <path d="M86.78,114.01L102.63,129.86" stroke-width="1"/>
+    <path d="M86.78,122.5L91.55,127.27" stroke-width="1"/>
+    <path d="M36.61,156.13L85.37,126.91" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.35s"/>
+    <path d="M85.37,126.91L85.37,41.6" stroke-width="2" class="draw" pathLength="1" style="--d:0.30s;--t:0.35s"/>
+    <path d="M36.61,70.83L85.37,41.6" stroke-width="2" class="draw" pathLength="1" style="--d:0.59s;--t:0.35s"/>
+    <path d="M36.61,156.13L36.61,70.83" stroke-width="2" class="draw" pathLength="1" style="--d:0.89s;--t:0.35s"/>
+    <path d="M114.63,174.4L163.39,145.17" stroke-width="2" class="draw" pathLength="1" style="--d:1.19s;--t:0.35s"/>
+    <path d="M163.39,145.17L163.39,59.87" stroke-width="2" class="draw" pathLength="1" style="--d:1.49s;--t:0.35s"/>
+    <path d="M85.37,126.91L163.39,145.17" stroke-width="2" class="draw" pathLength="1" style="--d:1.78s;--t:0.35s"/>
+    <path d="M36.61,156.13L114.63,174.4" stroke-width="2" class="draw" pathLength="1" style="--d:2.08s;--t:0.35s"/>
+    <path d="M85.37,41.6L163.39,59.87" stroke-width="2" class="draw" pathLength="1" style="--d:2.38s;--t:0.35s"/>
+    <text fill="currentColor" stroke="none" x="100" y="219.36" font-size="26" text-anchor="middle" class="fade" style="--d:2.68s">salt crystal</text>
+  </g>
+  <g data-step="2" style="--sd:2.95s">
+    <path d="M258.65,173.44L218.05,112.11" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.35s"/>
+    <path d="M258.65,173.44L341.35,180.72" stroke-width="2" class="draw" pathLength="1" style="--d:0.30s;--t:0.35s"/>
+    <path d="M218.05,112.11L248.15,92.11" stroke-width="2" class="draw" pathLength="1" style="--d:0.59s;--t:0.35s"/>
+    <path d="M258.65,173.44L248.15,92.11" stroke-width="2" class="draw" pathLength="1" style="--d:0.89s;--t:0.35s"/>
+    <path d="M258.65,173.44L324.35,134.51" stroke-width="2" class="draw" pathLength="1" style="--d:1.19s;--t:0.35s"/>
+    <path d="M324.35,134.51L341.35,180.72" stroke-width="2" class="draw" pathLength="1" style="--d:1.49s;--t:0.35s"/>
+    <path d="M324.35,134.51L248.15,92.11" stroke-width="2" class="draw" pathLength="1" style="--d:1.78s;--t:0.35s"/>
+    <path d="M218.05,112.11L258.65,35.28" stroke-width="2" class="draw" pathLength="1" style="--d:2.08s;--t:0.35s"/>
+    <path d="M258.65,35.28L248.15,92.11" stroke-width="2" class="draw" pathLength="1" style="--d:2.38s;--t:0.35s"/>
+    <path d="M341.35,180.72L381.95,103.89" stroke-width="2" class="draw" pathLength="1" style="--d:2.68s;--t:0.35s"/>
+    <path d="M324.35,134.51L381.95,103.89" stroke-width="2" class="draw" pathLength="1" style="--d:2.97s;--t:0.35s"/>
+    <path d="M248.15,92.11L324.35,49.12" stroke-width="2" class="draw" pathLength="1" style="--d:3.27s;--t:0.35s"/>
+    <path d="M324.35,134.51L324.35,49.12" stroke-width="2" class="draw" pathLength="1" style="--d:3.57s;--t:0.35s"/>
+    <path d="M324.35,49.12L381.95,103.89" stroke-width="2" class="draw" pathLength="1" style="--d:3.87s;--t:0.35s"/>
+    <path d="M258.65,35.28L341.35,42.56" stroke-width="2" class="draw" pathLength="1" style="--d:4.16s;--t:0.35s"/>
+    <path d="M258.65,35.28L324.35,49.12" stroke-width="2" class="draw" pathLength="1" style="--d:4.46s;--t:0.35s"/>
+    <path d="M324.35,49.12L341.35,42.56" stroke-width="2" class="draw" pathLength="1" style="--d:4.76s;--t:0.35s"/>
+    <path d="M341.35,42.56L381.95,103.89" stroke-width="2" class="draw" pathLength="1" style="--d:5.06s;--t:0.35s"/>
+    <text fill="currentColor" stroke="none" x="300" y="219.36" font-size="26" text-anchor="middle" class="fade" style="--d:5.36s">virus shell</text>
+  </g>
+  <g data-step="3" style="--sd:8.57s">
+    <path d="M14.57,444.87L80.28,405.48" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.35s"/>
+    <path d="M80.28,405.48L80.28,290.51" stroke-width="2" class="draw" pathLength="1" style="--d:0.30s;--t:0.35s"/>
+    <path d="M14.57,329.9L80.28,290.51" stroke-width="2" class="draw" pathLength="1" style="--d:0.59s;--t:0.35s"/>
+    <path d="M14.57,444.87L14.57,329.9" stroke-width="2" class="draw" pathLength="1" style="--d:0.89s;--t:0.35s"/>
+    <path d="M119.72,469.49L185.43,430.1" stroke-width="2" class="draw" pathLength="1" style="--d:1.19s;--t:0.35s"/>
+    <path d="M185.43,430.1L185.43,315.13" stroke-width="2" class="draw" pathLength="1" style="--d:1.49s;--t:0.35s"/>
+    <path d="M119.72,354.52L185.43,315.13" stroke-width="1" stroke-dasharray="5 5" class="fade" style="--d:1.78s"/>
+    <path d="M119.72,469.49L119.72,354.52" stroke-width="1" stroke-dasharray="5 5" class="fade" style="--d:1.90s"/>
+    <path d="M80.28,405.48L185.43,430.1" stroke-width="2" class="draw" pathLength="1" style="--d:2.02s;--t:0.35s"/>
+    <path d="M14.57,444.87L119.72,469.49" stroke-width="2" class="draw" pathLength="1" style="--d:2.32s;--t:0.35s"/>
+    <path d="M80.28,290.51L185.43,315.13" stroke-width="2" class="draw" pathLength="1" style="--d:2.62s;--t:0.35s"/>
+    <path d="M14.57,329.9L119.72,354.52" stroke-width="1" stroke-dasharray="5 5" class="fade" style="--d:2.92s"/>
+    <circle cx="14.57" cy="444.87" r="3.5" fill="currentColor" stroke="none" class="fade" style="--d:3.04s"/>
+    <circle cx="80.28" cy="405.48" r="3.5" fill="currentColor" stroke="none" class="fade" style="--d:3.16s"/>
+    <circle cx="14.57" cy="329.9" r="3.5" fill="currentColor" stroke="none" class="fade" style="--d:3.28s"/>
+    <circle cx="80.28" cy="290.51" r="3.5" fill="currentColor" stroke="none" class="fade" style="--d:3.40s"/>
+    <circle cx="119.72" cy="469.49" r="3.5" fill="currentColor" stroke="none" class="fade" style="--d:3.52s"/>
+    <circle cx="185.43" cy="430.1" r="3.5" fill="currentColor" stroke="none" class="fade" style="--d:3.64s"/>
+    <circle cx="119.72" cy="354.52" r="3.5" fill="currentColor" stroke="none" class="fade" style="--d:3.76s"/>
+    <circle cx="185.43" cy="315.13" r="3.5" fill="currentColor" stroke="none" class="fade" style="--d:3.88s"/>
+    <text fill="currentColor" stroke="none" x="222" y="321.36" font-size="26" class="fade" style="--d:4.00s">8 corners</text>
+    <text fill="currentColor" stroke="none" x="222" y="365.36" font-size="26" class="fade" style="--d:4.12s">12 edges</text>
+    <text fill="currentColor" stroke="none" x="222" y="409.36" font-size="26" class="fade" style="--d:4.24s">6 faces</text>
+    <text fill="currentColor" stroke="none" x="222" y="459.36" font-size="26" class="fade" style="--d:4.36s">8 − 12 + 6 = 2</text>
+  </g>
+  </g>
+</svg>

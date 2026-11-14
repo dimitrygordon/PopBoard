@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" color="#111" role="img" aria-labelledby="u01-cover-l01-title" data-steps="3">
+  <title id="u01-cover-l01-title">Euclid, the Surfer, and the Spotter</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M400,97A128,128 0 1 0 400,353A128,128 0 1 0 400,97" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+  </g>
+  <g data-step="2" style="--sd:1.08s">
+    <path d="M524,225L276,225" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:0.50s"/>
+    <path d="M522.94,208.81L277.06,241.19" stroke-width="1" class="draw" pathLength="1" style="--d:0.42s;--t:0.50s"/>
+    <path d="M519.77,192.91L280.23,257.09" stroke-width="1" class="draw" pathLength="1" style="--d:0.85s;--t:0.50s"/>
+    <path d="M514.56,177.55L285.44,272.45" stroke-width="1" class="draw" pathLength="1" style="--d:1.27s;--t:0.50s"/>
+    <path d="M507.39,163L292.61,287" stroke-width="1" class="draw" pathLength="1" style="--d:1.70s;--t:0.50s"/>
+    <path d="M498.38,149.51L301.62,300.49" stroke-width="1" class="draw" pathLength="1" style="--d:2.12s;--t:0.50s"/>
+    <path d="M487.68,137.32L312.32,312.68" stroke-width="1" class="draw" pathLength="1" style="--d:2.55s;--t:0.50s"/>
+    <path d="M475.49,126.62L324.51,323.38" stroke-width="1" class="draw" pathLength="1" style="--d:2.97s;--t:0.50s"/>
+    <path d="M462,117.61L338,332.39" stroke-width="1" class="draw" pathLength="1" style="--d:3.40s;--t:0.50s"/>
+    <path d="M447.45,110.44L352.55,339.56" stroke-width="1" class="draw" pathLength="1" style="--d:3.82s;--t:0.50s"/>
+    <path d="M432.09,105.23L367.91,344.77" stroke-width="1" class="draw" pathLength="1" style="--d:4.25s;--t:0.50s"/>
+    <path d="M416.19,102.06L383.81,347.94" stroke-width="1" class="draw" pathLength="1" style="--d:4.67s;--t:0.50s"/>
+    <path d="M400,101L400,349" stroke-width="1" class="draw" pathLength="1" style="--d:5.10s;--t:0.50s"/>
+    <path d="M383.81,102.06L416.19,347.94" stroke-width="1" class="draw" pathLength="1" style="--d:5.52s;--t:0.50s"/>
+    <path d="M367.91,105.23L432.09,344.77" stroke-width="1" class="draw" pathLength="1" style="--d:5.95s;--t:0.50s"/>
+    <path d="M352.55,110.44L447.45,339.56" stroke-width="1" class="draw" pathLength="1" style="--d:6.37s;--t:0.50s"/>
+    <path d="M338,117.61L462,332.39" stroke-width="1" class="draw" pathLength="1" style="--d:6.80s;--t:0.50s"/>
+    <path d="M324.51,126.62L475.49,323.38" stroke-width="1" class="draw" pathLength="1" style="--d:7.22s;--t:0.50s"/>
+    <path d="M312.32,137.32L487.68,312.68" stroke-width="1" class="draw" pathLength="1" style="--d:7.65s;--t:0.50s"/>
+    <path d="M301.62,149.51L498.38,300.49" stroke-width="1" class="draw" pathLength="1" style="--d:8.07s;--t:0.50s"/>
+    <path d="M292.61,163L507.39,287" stroke-width="1" class="draw" pathLength="1" style="--d:8.50s;--t:0.50s"/>
+    <path d="M285.44,177.55L514.56,272.45" stroke-width="1" class="draw" pathLength="1" style="--d:8.92s;--t:0.50s"/>
+    <path d="M280.23,192.91L519.77,257.09" stroke-width="1" class="draw" pathLength="1" style="--d:9.35s;--t:0.50s"/>
+    <path d="M277.06,208.81L522.94,241.19" stroke-width="1" class="draw" pathLength="1" style="--d:9.78s;--t:0.50s"/>
+  </g>
+  <g data-step="3" style="--sd:11.44s">
+    <path d="M356,109.07L356,340.93" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.80s"/>
+    <path d="M444,109.07L444,340.93" stroke-width="3" class="draw" pathLength="1" style="--d:0.68s;--t:0.80s"/>
+  </g>
+  </g>
+</svg>

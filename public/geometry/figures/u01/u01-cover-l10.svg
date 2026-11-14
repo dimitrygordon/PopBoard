@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" color="#111" role="img" aria-labelledby="u01-cover-l10-title" data-steps="2">
+  <title id="u01-cover-l10-title">Direct Proof</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M400,97.52A43.48,43.48 0 1 0 400,184.48A43.48,43.48 0 1 0 400,97.52" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+  </g>
+  <g data-step="1" style="--sd:1.08s">
+    <path d="M442,108.77A43.48,43.48 0 1 0 442,195.74A43.48,43.48 0 1 0 442,108.77" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+  </g>
+  <g data-step="1" style="--sd:2.17s">
+    <path d="M472.75,139.52A43.48,43.48 0 1 0 472.75,226.48A43.48,43.48 0 1 0 472.75,139.52" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+  </g>
+  <g data-step="1" style="--sd:3.25s">
+    <path d="M484,181.52A43.48,43.48 0 1 0 484,268.48A43.48,43.48 0 1 0 484,181.52" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+  </g>
+  <g data-step="1" style="--sd:4.34s">
+    <path d="M472.75,223.52A43.48,43.48 0 1 0 472.75,310.48A43.48,43.48 0 1 0 472.75,223.52" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+  </g>
+  <g data-step="1" style="--sd:5.42s">
+    <path d="M442,254.26A43.48,43.48 0 1 0 442,341.23A43.48,43.48 0 1 0 442,254.26" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+  </g>
+  <g data-step="1" style="--sd:6.51s">
+    <path d="M400,265.52A43.48,43.48 0 1 0 400,352.48A43.48,43.48 0 1 0 400,265.52" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+  </g>
+  <g data-step="1" style="--sd:7.59s">
+    <path d="M358,254.26A43.48,43.48 0 1 0 358,341.23A43.48,43.48 0 1 0 358,254.26" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+  </g>
+  <g data-step="1" style="--sd:8.68s">
+    <path d="M327.25,223.52A43.48,43.48 0 1 0 327.25,310.48A43.48,43.48 0 1 0 327.25,223.52" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+  </g>
+  <g data-step="1" style="--sd:9.77s">
+    <path d="M316,181.52A43.48,43.48 0 1 0 316,268.48A43.48,43.48 0 1 0 316,181.52" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+  </g>
+  <g data-step="1" style="--sd:10.85s">
+    <path d="M327.25,139.52A43.48,43.48 0 1 0 327.25,226.48A43.48,43.48 0 1 0 327.25,139.52" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+  </g>
+  <g data-step="1" style="--sd:11.94s">
+    <path d="M358,108.77A43.48,43.48 0 1 0 358,195.74A43.48,43.48 0 1 0 358,108.77" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+  </g>
+  <g data-step="2" style="--sd:13.02s">
+    <path d="M400,141L442,152.25L472.75,183L484,225L472.75,267L442,297.75L400,309L358,297.75L327.25,267L316,225L327.25,183L358,152.25L400,141" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:1.17s"/>
+    <circle cx="400" cy="141" r="4" fill="currentColor" stroke="none" class="fade" style="--d:0.99s"/>
+    <circle cx="442" cy="152.25" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.11s"/>
+    <circle cx="472.75" cy="183" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.23s"/>
+    <circle cx="484" cy="225" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.35s"/>
+    <circle cx="472.75" cy="267" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.47s"/>
+    <circle cx="442" cy="297.75" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.59s"/>
+    <circle cx="400" cy="309" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.71s"/>
+    <circle cx="358" cy="297.75" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.83s"/>
+    <circle cx="327.25" cy="267" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.95s"/>
+    <circle cx="316" cy="225" r="4" fill="currentColor" stroke="none" class="fade" style="--d:2.07s"/>
+    <circle cx="327.25" cy="183" r="4" fill="currentColor" stroke="none" class="fade" style="--d:2.19s"/>
+    <circle cx="358" cy="152.25" r="4" fill="currentColor" stroke="none" class="fade" style="--d:2.31s"/>
+    <path d="M400,97.52A127.48,127.48 0 1 0 400,352.48A127.48,127.48 0 1 0 400,97.52" stroke-width="2" class="draw" pathLength="1" style="--d:2.43s;--t:1.10s"/>
+  </g>
+  </g>
+</svg>

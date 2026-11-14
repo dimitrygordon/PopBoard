@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 420" color="#111" role="img" aria-labelledby="u01-l08-s05-title" data-steps="4">
+  <title id="u01-l08-s05-title">A statement and its contrapositive have the same truth table</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M6,98L396,98" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:1.00s"/>
+    <path d="M6,148L396,148" stroke-width="1" class="draw" pathLength="1" style="--d:0.85s;--t:1.00s"/>
+    <path d="M6,198L396,198" stroke-width="1" class="draw" pathLength="1" style="--d:1.70s;--t:1.00s"/>
+    <path d="M6,248L396,248" stroke-width="1" class="draw" pathLength="1" style="--d:2.55s;--t:1.00s"/>
+    <path d="M6,298L396,298" stroke-width="1" class="draw" pathLength="1" style="--d:3.40s;--t:1.00s"/>
+    <path d="M58,18L58,294" stroke-width="1" class="draw" pathLength="1" style="--d:4.25s;--t:0.85s"/>
+    <path d="M110,18L110,294" stroke-width="1" class="draw" pathLength="1" style="--d:4.97s;--t:0.85s"/>
+    <path d="M236,18L236,294" stroke-width="1" class="draw" pathLength="1" style="--d:5.70s;--t:0.85s"/>
+    <text fill="currentColor" stroke="none" x="24.63" y="65.36" font-size="26" class="fade" style="--d:6.42s"><tspan font-style="italic">P</tspan></text>
+    <text fill="currentColor" stroke="none" x="74.62" y="65.36" font-size="26" class="fade" style="--d:6.54s"><tspan font-style="italic">Q</tspan></text>
+    <text fill="currentColor" stroke="none" x="154.43" y="49.36" font-size="26" class="fade" style="--d:6.66s">if <tspan font-style="italic">P</tspan></text>
+    <text fill="currentColor" stroke="none" x="132.16" y="83.36" font-size="26" class="fade" style="--d:6.78s">then <tspan font-style="italic">Q</tspan></text>
+    <text fill="currentColor" stroke="none" x="271.45" y="49.36" font-size="26" class="fade" style="--d:6.90s">if not <tspan font-style="italic">Q</tspan></text>
+    <text fill="currentColor" stroke="none" x="253.19" y="83.36" font-size="26" class="fade" style="--d:7.02s">then not <tspan font-style="italic">P</tspan></text>
+    <text fill="currentColor" stroke="none" x="32" y="132.36" font-size="26" text-anchor="middle" class="fade" style="--d:7.14s">T</text>
+    <text fill="currentColor" stroke="none" x="84" y="132.36" font-size="26" text-anchor="middle" class="fade" style="--d:7.26s">T</text>
+    <text fill="currentColor" stroke="none" x="32" y="182.36" font-size="26" text-anchor="middle" class="fade" style="--d:7.38s">T</text>
+    <text fill="currentColor" stroke="none" x="84" y="182.36" font-size="26" text-anchor="middle" class="fade" style="--d:7.50s">F</text>
+    <text fill="currentColor" stroke="none" x="32" y="232.36" font-size="26" text-anchor="middle" class="fade" style="--d:7.62s">F</text>
+    <text fill="currentColor" stroke="none" x="84" y="232.36" font-size="26" text-anchor="middle" class="fade" style="--d:7.74s">T</text>
+    <text fill="currentColor" stroke="none" x="32" y="282.36" font-size="26" text-anchor="middle" class="fade" style="--d:7.86s">F</text>
+    <text fill="currentColor" stroke="none" x="84" y="282.36" font-size="26" text-anchor="middle" class="fade" style="--d:7.98s">F</text>
+  </g>
+  <g data-step="2" style="--sd:8.25s">
+    <text fill="currentColor" stroke="none" x="173" y="132.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">T</text>
+    <text fill="currentColor" stroke="none" x="173" y="182.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.12s">F</text>
+    <text fill="currentColor" stroke="none" x="173" y="232.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.24s">T</text>
+    <text fill="currentColor" stroke="none" x="173" y="282.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.36s">T</text>
+  </g>
+  <g data-step="3" style="--sd:8.88s">
+    <text fill="currentColor" stroke="none" x="316" y="132.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">T</text>
+    <text fill="currentColor" stroke="none" x="316" y="182.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.12s">F</text>
+    <text fill="currentColor" stroke="none" x="316" y="232.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.24s">T</text>
+    <text fill="currentColor" stroke="none" x="316" y="282.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.36s">T</text>
+  </g>
+  <g data-step="4" class="conclusion" style="--sd:9.51s">
+    <path d="M159,155H187A8,8 0 0 1 195,163V183A8,8 0 0 1 187,191H159A8,8 0 0 1 151,183V163A8,8 0 0 1 159,155Z" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <path d="M302,155H330A8,8 0 0 1 338,163V183A8,8 0 0 1 330,191H302A8,8 0 0 1 294,183V163A8,8 0 0 1 302,155Z" stroke-width="3" class="draw" pathLength="1" style="--d:0.77s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="200" y="367.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.53s">The two if columns match:</text>
+    <text fill="currentColor" stroke="none" x="200" y="403.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.65s">same meaning.</text>
+  </g>
+  </g>
+</svg>

@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520" color="#111" role="img" aria-labelledby="u01-l14-s11-title" data-steps="1">
+  <title id="u01-l14-s11-title">Inventory cards for two compasses and a straightedge</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <path d="M18,10H382A8,8 0 0 1 390,18V110A8,8 0 0 1 382,118H18A8,8 0 0 1 10,110V18A8,8 0 0 1 18,10Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="58" y="74.8" font-size="30" text-anchor="middle">C1</text>
+  <path d="M106,22L106,106" stroke-width="1"/>
+  <path d="M252,22L252,106" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="179" y="51.36" font-size="26" text-anchor="middle">COMPASS</text>
+  <text fill="currentColor" stroke="none" x="321" y="51.36" font-size="26" text-anchor="middle">METAL</text>
+  <path d="M118,64L378,64" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="179" y="97.36" font-size="26" text-anchor="middle">yes</text>
+  <text fill="currentColor" stroke="none" x="321" y="97.36" font-size="26" text-anchor="middle">yes</text>
+  <path d="M18,134H382A8,8 0 0 1 390,142V234A8,8 0 0 1 382,242H18A8,8 0 0 1 10,234V142A8,8 0 0 1 18,134Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="58" y="198.8" font-size="30" text-anchor="middle">C2</text>
+  <path d="M106,146L106,230" stroke-width="1"/>
+  <path d="M252,146L252,230" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="179" y="175.36" font-size="26" text-anchor="middle">COMPASS</text>
+  <text fill="currentColor" stroke="none" x="321" y="175.36" font-size="26" text-anchor="middle">METAL</text>
+  <path d="M118,188L378,188" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="179" y="221.36" font-size="26" text-anchor="middle">yes</text>
+  <text fill="currentColor" stroke="none" x="321" y="221.36" font-size="26" text-anchor="middle">yes</text>
+  <path d="M18,258H382A8,8 0 0 1 390,266V358A8,8 0 0 1 382,366H18A8,8 0 0 1 10,358V266A8,8 0 0 1 18,258Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="58" y="322.8" font-size="30" text-anchor="middle">S</text>
+  <path d="M106,270L106,354" stroke-width="1"/>
+  <path d="M252,270L252,354" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="179" y="299.36" font-size="26" text-anchor="middle">COMPASS</text>
+  <text fill="currentColor" stroke="none" x="321" y="299.36" font-size="26" text-anchor="middle">METAL</text>
+  <path d="M118,312L378,312" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="179" y="345.36" font-size="26" text-anchor="middle">no</text>
+  <text fill="currentColor" stroke="none" x="321" y="345.36" font-size="26" text-anchor="middle">yes</text>
+  <g data-step="1" class="conclusion" style="--sd:0.00s">
+    <path d="M18,258H382A8,8 0 0 1 390,266V358A8,8 0 0 1 382,366H18A8,8 0 0 1 10,358V266A8,8 0 0 1 18,258Z" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="22.63" y="417.36" font-size="26" class="fade" style="--d:0.77s"><tspan font-style="italic">S</tspan> is metal but not a compass:</text>
+    <text fill="currentColor" stroke="none" x="200" y="455.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.89s">'every metal object is a</text>
+    <text fill="currentColor" stroke="none" x="200" y="491.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.00s">compass' is false.</text>
+  </g>
+  </g>
+</svg>

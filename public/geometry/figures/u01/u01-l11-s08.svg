@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480" color="#111" role="img" aria-labelledby="u01-l11-s08-title" data-steps="4">
+  <title id="u01-l11-s08-title">The shape of an indirect proof</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M58,20H342A8,8 0 0 1 350,28V72A8,8 0 0 1 342,80H58A8,8 0 0 1 50,72V28A8,8 0 0 1 58,20Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="200" y="59.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.77s">Assume the opposite</text>
+  </g>
+  <g data-step="2" style="--sd:1.03s">
+    <path d="M200,84L200,152" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.44s"/>
+    <path d="M194.54,139L200,152L205.46,139" stroke-width="2" class="fade" style="--d:0.37s"/>
+    <path d="M58,156H342A8,8 0 0 1 350,164V208A8,8 0 0 1 342,216H58A8,8 0 0 1 50,208V164A8,8 0 0 1 58,156Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.49s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="200" y="195.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.26s">Clash</text>
+  </g>
+  <g data-step="3" style="--sd:2.56s">
+    <path d="M200,220L200,288" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.44s"/>
+    <path d="M194.54,275L200,288L205.46,275" stroke-width="2" class="fade" style="--d:0.37s"/>
+    <path d="M58,292H342A8,8 0 0 1 350,300V344A8,8 0 0 1 342,352H58A8,8 0 0 1 50,344V300A8,8 0 0 1 58,292Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.49s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="200" y="331.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.26s">Reject the opposite</text>
+  </g>
+  <g data-step="4" class="conclusion" style="--sd:4.09s">
+    <path d="M58,292H342A8,8 0 0 1 350,300V344A8,8 0 0 1 342,352H58A8,8 0 0 1 50,344V300A8,8 0 0 1 58,292Z" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="200" y="445.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.77s">prove the opposite is true</text>
+    <path d="M28.06,436H371.94" stroke-width="2" class="draw" pathLength="1" style="--d:0.89s;--t:0.50s"/>
+  </g>
+  </g>
+</svg>

@@ -30,7 +30,7 @@ export const DECKS = [
    "G.GF.1"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l01.svg",
   "kind": "lesson",
   "gx": "u01.illusion"
  },
@@ -63,7 +63,7 @@ export const DECKS = [
    "G.GF.1"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l02.svg",
   "kind": "lesson",
   "gx": "u01.chords"
  },
@@ -96,7 +96,7 @@ export const DECKS = [
    "G.GF.1"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l03.svg",
   "kind": "lesson",
   "gx": "u01.streets"
  },
@@ -162,7 +162,7 @@ export const DECKS = [
    "G.GF.1"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l05.svg",
   "kind": "lesson",
   "gx": "u01.sierpinski"
  },
@@ -196,7 +196,7 @@ export const DECKS = [
    "G.GF.6"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l06.svg",
   "kind": "lesson",
   "gx": "u01.euclid"
  },
@@ -229,7 +229,7 @@ export const DECKS = [
    "G.GF.1"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l07.svg",
   "kind": "lesson",
   "gx": null
  },
@@ -263,7 +263,7 @@ export const DECKS = [
    "G.GF.2"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l08.svg",
   "kind": "lesson",
   "gx": "u01.truth"
  },
@@ -297,7 +297,7 @@ export const DECKS = [
    "G.GF.2"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l09.svg",
   "kind": "lesson",
   "gx": null
  },
@@ -331,7 +331,7 @@ export const DECKS = [
    "G.GF.3"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l10.svg",
   "kind": "lesson",
   "gx": null
  },
@@ -364,7 +364,7 @@ export const DECKS = [
    "G.GF.1"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l11.svg",
   "kind": "lesson",
   "gx": null
  },
@@ -404,7 +404,7 @@ export const DECKS = [
    "G.GF.1"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l12.svg",
   "kind": "lesson",
   "gx": null
  },
@@ -444,7 +444,7 @@ export const DECKS = [
    "G.GF.1"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l13.svg",
   "kind": "review",
   "gx": null
  },
@@ -485,7 +485,7 @@ export const DECKS = [
    "G.GF.2"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l14.svg",
   "kind": "assessment",
   "gx": null
  },

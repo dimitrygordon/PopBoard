@@ -42,7 +42,7 @@ const hidden = (el, root) => {
 
 export const TICK = `<svg class="gx-tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13c2 2 3.5 3.6 5 5.5C12 12 15.5 7.5 20 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-export function drawStrokes(root, { reduce = false, onDone } = {}) {
+export function drawStrokes(root, { reduce = false, onDone, together = false } = {}) {
   if (!root) { onDone && onDone(); return; }
   const strokes = [...root.querySelectorAll(STROKE)].filter((el) => !el.closest(".gx-tick") && !hidden(el, root));
   const labels = [...root.querySelectorAll("text")].filter((el) => !hidden(el, root));
@@ -76,13 +76,15 @@ export function drawStrokes(root, { reduce = false, onDone } = {}) {
     let len = 0;
     try { len = el.getTotalLength(); } catch (e) { len = 0; }
     if (!len) continue;
-    const dur = Math.min(900, 280 + len * 1.8);
+    const dur = Math.min(together ? 900 : 900, 280 + len * 1.8);
     el.style.strokeDasharray = String(len);
     el.style.strokeDashoffset = el.hasAttribute("data-grow") ? String(-len) : String(len);
     el.getBoundingClientRect();
-    el.style.transition = `stroke-dashoffset ${dur}ms cubic-bezier(.4,.1,.3,1) ${t}ms`;
+    const delay = together ? 0 : t;
+    el.style.transition = `stroke-dashoffset ${dur}ms cubic-bezier(.4,.1,.3,1) ${delay}ms`;
     requestAnimationFrame(() => { el.style.strokeDashoffset = "0"; });
-    t += dur * 0.55;
+    if (!together) t += dur * 0.55;
+    else t = Math.max(t, dur);
   }
   for (const label of labels) {
     label.style.opacity = "0";
@@ -108,6 +110,8 @@ export function figureLayers(svg) {
   return found.filter((el) => !found.some((other) => other !== el && other.contains(el)));
 }
 
+const hasLeoDraw = (root) => !!(root && root.querySelector && root.querySelector(".draw, .fade"));
+
 export function prepareFigure(svg) {
   if (!svg) return;
   for (const el of figureLayers(svg)) {
@@ -115,9 +119,9 @@ export function prepareFigure(svg) {
     if (!info) continue;
     if (info.kind === "given" || info.step === 0) continue;
     el.style.display = "none";
-    el.classList.remove("gx-layer-on");
+    el.classList.remove("gx-layer-on", "on");
   }
-  svg.classList.remove("gx-given-drawn");
+  svg.classList.remove("gx-given-drawn", "play");
 }
 
 export function revealFigure(svg, { count = 0, all = false, reduce = false } = {}) {
@@ -130,19 +134,35 @@ export function revealFigure(svg, { count = 0, all = false, reduce = false } = {
     const show = info.kind === "given" || info.step === 0 || (info.kind === "step" && info.step <= count) || (info.kind === "conclusion" && all);
     if (!show) {
       el.style.display = "none";
-      el.classList.remove("gx-layer-on");
+      el.classList.remove("gx-layer-on", "on");
       continue;
     }
     const wasHidden = el.style.display === "none" || !el.classList.contains("gx-layer-on");
     el.style.display = "";
     if (info.kind !== "given" && info.step !== 0 && wasHidden) {
-      el.classList.add("gx-layer-on");
-      toDraw.push(el);
+      el.classList.add("gx-layer-on", "on");
+      if (!hasLeoDraw(el)) toDraw.push(el);
     }
   }
   if (first) {
     svg.classList.add("gx-given-drawn");
-    drawStrokes(svg, { reduce });
+    if (hasLeoDraw(svg) || svg.hasAttribute("data-steps")) svg.classList.add("play");
+    else drawStrokes(svg, { reduce });
   }
   for (const el of toDraw) drawStrokes(el, { reduce });
+}
+
+export function playCover(svg, { reduce = false } = {}) {
+  if (!svg) return;
+  prepareFigure(svg);
+  if (hasLeoDraw(svg) || svg.hasAttribute("data-steps")) {
+    for (const el of figureLayers(svg)) {
+      el.style.display = "";
+      el.classList.add("gx-layer-on", "on");
+    }
+    svg.classList.add("play", "gx-given-drawn");
+    return;
+  }
+  svg.classList.add("gx-given-drawn");
+  drawStrokes(svg, { reduce, together: true });
 }

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 450" color="#111" role="img" aria-labelledby="u01-hook-l06-h8-title" data-steps="5">
+  <title id="u01-hook-l06-h8-title">Finding north with two shadow tips on a circle</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M200,190A120,120 0 1 0 200,430A120,120 0 1 0 200,190" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+    <path d="M200,303A7,7 0 1 0 200,317A7,7 0 1 0 200,303" stroke-width="2" class="draw" pathLength="1" style="--d:0.94s;--t:1.10s"/>
+    <circle cx="200" cy="310" r="3" fill="currentColor" stroke="none" class="fade" style="--d:1.87s"/>
+  </g>
+  <g data-step="2" style="--sd:2.14s">
+    <path d="M200,310L140,206.08" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.54s"/>
+    <circle cx="140" cy="206.08" r="3.5" fill="currentColor" stroke="none" class="fade" style="--d:0.46s"/>
+    <text fill="currentColor" stroke="none" x="124" y="175.44" font-size="26" text-anchor="middle" class="fade" style="--d:0.58s">morning</text>
+  </g>
+  <g data-step="3" style="--sd:2.99s">
+    <path d="M200,310L260,206.08" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.54s"/>
+    <circle cx="260" cy="206.08" r="3.5" fill="currentColor" stroke="none" class="fade" style="--d:0.46s"/>
+    <text fill="currentColor" stroke="none" x="276" y="175.44" font-size="26" text-anchor="middle" class="fade" style="--d:0.58s">afternoon</text>
+  </g>
+  <g data-step="4" style="--sd:3.84s">
+    <path d="M207.73,146.81A90,90 0 0 0 191.38,132.18" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:0.52s"/>
+    <path d="M208.62,132.18A90,90 0 0 0 192.27,146.81" stroke-width="1" class="draw" pathLength="1" style="--d:0.44s;--t:0.52s"/>
+  </g>
+  <g data-step="5" style="--sd:4.87s">
+    <path d="M200,310L200,44" stroke-width="2" stroke-dasharray="7 6" class="fade" style="--d:0.00s"/>
+    <path d="M205.46,57L200,44L194.54,57" stroke-width="2" class="fade" style="--d:0.12s"/>
+    <text fill="currentColor" stroke="none" x="224" y="55.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.24s">N</text>
+  </g>
+  </g>
+</svg>

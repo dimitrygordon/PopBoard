@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" color="#111" role="img" aria-labelledby="u01-l11-s06-title" data-steps="4">
+  <title id="u01-l11-s06-title">Indirect proof that no integer n solves 2n + 1 = 8</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M63,18H337A8,8 0 0 1 345,26V66A8,8 0 0 1 337,74H63A8,8 0 0 1 55,66V26A8,8 0 0 1 63,18Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="73.09" y="55.36" font-size="26" class="fade" style="--d:0.77s"><tspan font-style="italic">n</tspan> must be an integer</text>
+    <text fill="currentColor" stroke="none" x="141.76" y="133.36" font-size="26" class="fade" style="--d:0.89s">2<tspan font-style="italic">n</tspan> + 1 = 8</text>
+  </g>
+  <g data-step="2" style="--sd:1.15s">
+    <path d="M200,146L200,190" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.39s"/>
+    <path d="M194.54,177L200,190L205.46,177" stroke-width="2" class="fade" style="--d:0.33s"/>
+    <text fill="currentColor" stroke="none" x="216" y="177.36" font-size="26" class="fade" style="--d:0.45s">subtract 1</text>
+    <text fill="currentColor" stroke="none" x="163.4" y="221.36" font-size="26" class="fade" style="--d:0.57s">2<tspan font-style="italic">n</tspan> = 7</text>
+    <path d="M200,234L200,278" stroke-width="2" class="draw" pathLength="1" style="--d:0.69s;--t:0.39s"/>
+    <path d="M194.54,265L200,278L205.46,265" stroke-width="2" class="fade" style="--d:1.02s"/>
+    <text fill="currentColor" stroke="none" x="216" y="265.36" font-size="26" class="fade" style="--d:1.14s">divide by 2</text>
+    <text fill="currentColor" stroke="none" x="158.56" y="309.36" font-size="26" class="fade" style="--d:1.26s"><tspan font-style="italic">n</tspan> = 7/2</text>
+  </g>
+  <g data-step="3" style="--sd:2.68s">
+    <text fill="currentColor" stroke="none" x="200" y="373.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">7/2 is not an integer</text>
+    <path d="M52,360Q-14,200 55,46" stroke-width="2" class="draw" pathLength="1" style="--d:0.12s;--t:0.90s"/>
+    <path d="M8.75,190.5L30.75,212.5M30.75,190.5L8.75,212.5" stroke-width="3" class="draw" pathLength="1" style="--d:0.89s;--t:0.40s"/>
+    <text fill="currentColor" stroke="none" x="200" y="417.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.23s">Contradiction</text>
+  </g>
+  <g data-step="4" class="conclusion" style="--sd:4.18s">
+    <path d="M38,446H362A8,8 0 0 1 370,454V534A8,8 0 0 1 362,542H38A8,8 0 0 1 30,534V454A8,8 0 0 1 38,446Z" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="82.88" y="485.36" font-size="26" class="fade" style="--d:0.77s">No integer <tspan font-style="italic">n</tspan> solves</text>
+    <text fill="currentColor" stroke="none" x="138.27" y="521.36" font-size="26" class="fade" style="--d:0.89s">2<tspan font-style="italic">n</tspan> + 1 = 8.</text>
+  </g>
+  </g>
+</svg>

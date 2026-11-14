@@ -99,7 +99,14 @@ const kindOf = (l) => {
   return content[l.key] ? "lesson" : "other";
 };
 
-const coverFor = (l) => artMap.lessons[l.key] || artMap.units[String(l.q)] || `covers/u${pad(l.q)}.svg`;
+const coverFor = (l) => {
+  if (l.q === 1) {
+    for (const name of [`u01-cover-l${pad(l.lesson)}.svg`, `u01-l${pad(l.lesson)}-cover.svg`, `u01-l${pad(l.lesson)}-plate.svg`]) {
+      if (fs.existsSync(path.join(PUB, "figures/u01", name))) return `figures/u01/${name}`;
+    }
+  }
+  return artMap.lessons[l.key] || artMap.units[String(l.q)] || `covers/u${pad(l.q)}.svg`;
+};
 const tagFor = (l) => `GEOMETRY \u00b7 UNIT ${l.q} \u00b7 LESSON ${l.q}.${l.lesson}`;
 const stdsFor = (l) => { const a = (l.target.match(/^Assess (G\..+?)\.?$/) || [])[1]; return a ? a.split(",").map((s) => s.trim()) : lessonStds[l.key] || []; };
 

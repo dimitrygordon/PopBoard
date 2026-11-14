@@ -16,7 +16,8 @@ export const vocabKey=w=>String(w).replace(/^'(.*)'$/,'$1');
 const vocabItem=(lesson,w)=>{const m=unit01Vocab[lesson]?.[vocabKey(w)];if(!m)throw new Error(`VOCAB-unit01.json: no meaning for ${lesson} "${w}"`);return `<li class="gx-vocab"><strong>${esc(vocabKey(w))}</strong> ${esc(m)}</li>`;};
 export const unit01Slots=[];
 const slotFigure=(id,spec)=>{
- const art=supplied.get(id);if(art){unit01Slots.push({id,spec,status:'leo'});return art;}
+ const KEEP_GENERATOR=new Set(['u01-l06-s09','u01-l14-s16']);
+ const art=supplied.get(id);if(art && !KEEP_GENERATOR.has(id)){unit01Slots.push({id,spec,status:'leo'});return art;}
  if(NO_DRAWING.test(spec||'')){unit01Slots.push({id,spec,status:'none'});return null;}
  const svg=unit01Figure(id);if(svg){unit01Slots.push({id,spec,status:'generator'});return {svg,alt:spec};}
  unit01Slots.push({id,spec,status:'pending'});
@@ -39,7 +40,10 @@ export function unit01(page,l,c,v,gx,all){
   for(const form of ['A','B'])v.forms[form].forEach((item,i)=>practice(P,{...item,figure:slotFigure(id(),item.slot)},`Form ${form}: item ${i+1}`));
   exit(P,[]);return;
  }
- text(P,'Get started',p(v.hook)+`<ul>${v.goals.map(s=>`<li>${esc(s)}</li>`).join('')}</ul>`);
+ const lessonPad=String(l.lesson).padStart(2,'0');
+ const lessonHooks=[...supplied.entries()].filter(([k])=>k.startsWith(`u01-hook-l${lessonPad}-`)).sort((a,b)=>a[0].localeCompare(b[0],undefined,{numeric:true})).map(([,art])=>art);
+ const hookArt=lessonHooks[0]||supplied.get(sid(l.lesson,2))||supplied.get(`u01-l${lessonPad}-hook`)||supplied.get(`u01-l${lessonPad}-eratosthenes`);
+ text(P,'Get started',p(v.hook)+`<ul>${v.goals.map(s=>`<li>${esc(s)}</li>`).join('')}</ul>`,hookArt?{figure:hookArt,figures:lessonHooks.length>1?lessonHooks:undefined}:{});
  text(P,'The big idea',p(v.idea));
  text(P,'Words to know',`<ul class="gx-vocab-list">${v.words.map(w=>vocabItem(l.key,w)).join('')}</ul>`);
  v.examples.forEach(e=>worked(P,{...e,figure:slotFigure(id(),e.slot)}));
