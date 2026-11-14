@@ -208,3 +208,22 @@ html[data-course="geometry"] .stage.gx-exit-host { mask: radial-gradient(circle 
 .gx-content .gx-figure-slot > svg { display: block; width: 100%; height: auto; max-width: none; }
 
 @media print { .gx-figure-slot .conclusion { display: none !important; } }
+
+.gx-vocab-list { margin: 0; padding-left: 1.15em; }
+.gx-vocab { margin: 0.35em 0; }
+.gx-vocab strong { font-weight: 650; }
+
+.gx-slot-pending { width: 100%; height: auto; display: block; }
+
+.gx-step-number { gap: 0; position: relative; }
+.gx-step-number .gx-tick { position: absolute; width: 28px; height: 28px; left: -1px; top: -1px; overflow: visible; }
+.gx-step-number .gx-tick path { stroke: currentColor; }
+.gx-step-n { position: relative; }
+
+.gx-new-step td { animation: gx-step-in 250ms ease-out both, gx-write 650ms ease-out both; }
+@keyframes gx-write { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .gx-new-step, .gx-new-step td, .gx-solution, .gx-second-check, .gx-correction { animation: none !important; }
+  .gx-figure-slot path, .gx-figure-slot line, .gx-figure-slot polyline, .gx-figure-slot circle, .gx-figure-slot rect, .gx-figure-slot ellipse, .gx-figure-slot text, .gx-tick path { transition: none !important; }
+}

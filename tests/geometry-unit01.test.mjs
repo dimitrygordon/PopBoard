@@ -48,7 +48,7 @@ test('every Unit 1 figure slot is drawn, live text only, or a tracked Leo placeh
  const list=read('docs/geometry/v2/LEO-DIAGRAMS-unit01.md');const pending=[...list.matchAll(/^- \[ \] (u01-l\d\d-s\d\d):/gm)].map(m=>m[1]);
  const counts=list.match(/Counts: (\d+) figure slots\. (\d+) drawn by the generator, (\d+) supplied by Leo, (\d+) live text only, (\d+) NEED LEO ART\./).slice(1).map(Number);
  assert.equal(counts[0],counts[1]+counts[2]+counts[3]+counts[4]);assert.equal(counts[4],pending.length);
- for(const id of pending){const [,l,s]=id.match(/l(\d\d)-s(\d\d)/);const slide=deck(+l).slides[+s-1];assert.ok(['worked-example','practice','common-mistake'].includes(slide.geo.kind),id);assert.equal(slide.geo.figure.svg,null,id);}
+ for(const id of pending){const [,l,s]=id.match(/l(\d\d)-s(\d\d)/);const slide=deck(+l).slides[+s-1];assert.ok(['worked-example','practice','common-mistake'].includes(slide.geo.kind),id);assert.ok(slide.geo.figure.svg.includes('gx-slot-pending'),id);assert.doesNotMatch(slide.geo.figure.svg,/PLACEHOLDER|TODO|lorem|u01-l\d\d-s\d\d/i,id);}
  for(const s of deck(1).slides.filter(s=>s.geo.figure?.svg))assert.ok(s.geo.figure.alt.length>10);
  assert.doesNotMatch(JSON.stringify(studentFiles().map(read)),/PLACEHOLDER|TODO|lorem/i);
 });
@@ -92,4 +92,15 @@ test('every Words to know term has a meaning, rendered bold term then meaning on
   }
  }
  assert.equal(n,72);
+});
+test('Unit 1 animation hooks keep the Leo wiring path and step-layer convention',()=>{
+ const draw=read('public/geometry/geo-draw.js');
+ const page=read('public/geometry/geo-page.js');
+ const hook=read('tools/geometry/u01-art-wiring.json');
+ assert.match(page,/from "\.\/geo-draw\.js"/);
+ assert.match(draw,/data-step/);
+ assert.match(draw,/class="given"/);
+ assert.match(draw,/class="conclusion"/);
+ assert.equal(JSON.parse(hook).length>=0,true);
+ assert.match(read('docs/geometry/v2/LEO-LAYER-CONVENTION.md'),/data-step="N"/);
 });

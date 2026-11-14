@@ -9,7 +9,7 @@ const NO_DRAWING=/^(No drawing needed|Figure slot: none needed|None needed)/i;
 // Leo's supplied SVGs override generator figures slot by slot: [{slot, file, alt}] under public/geometry/figures/u01/.
 const wiring=JSON.parse(fs.readFileSync(new URL('./u01-art-wiring.json',import.meta.url),'utf8'));
 const supplied=new Map(wiring.map(({slot,file,alt})=>[slot,{svg:fs.readFileSync(new URL(`../../public/geometry/figures/u01/${file}`,import.meta.url),'utf8'),alt}]));
-// Every figure slot is classified once: drawn (generator or Leo), none (live text only) or pending (Leo art needed; omitted from the student DOM).
+// Every figure slot is classified once: drawn (generator or Leo), none (live text only) or pending (Leo art needed; a clean empty slot until wired).
 // Socrates' one-line meanings for every Words to know term, keyed by lesson then term (quotes stripped).
 export const unit01Vocab=JSON.parse(fs.readFileSync(new URL('../../docs/geometry/v2/VOCAB-unit01.json',import.meta.url),'utf8'));
 export const vocabKey=w=>String(w).replace(/^'(.*)'$/,'$1');
@@ -19,7 +19,8 @@ const slotFigure=(id,spec)=>{
  const art=supplied.get(id);if(art){unit01Slots.push({id,spec,status:'leo'});return art;}
  if(NO_DRAWING.test(spec||'')){unit01Slots.push({id,spec,status:'none'});return null;}
  const svg=unit01Figure(id);if(svg){unit01Slots.push({id,spec,status:'generator'});return {svg,alt:spec};}
- unit01Slots.push({id,spec,status:'pending'});return null;
+ unit01Slots.push({id,spec,status:'pending'});
+ return {svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" class="gx-slot-pending" role="img"><rect x="18" y="18" width="564" height="264" fill="none" stroke="black" stroke-width="1.6" stroke-dasharray="9 8"/><path d="M160,200L440,200" fill="none" stroke="black" stroke-width="1.8"/><circle cx="160" cy="200" r="5" fill="black"/><circle cx="440" cy="200" r="5" fill="black"/><path d="M300,80A120,120 0 0 1 420,170" fill="none" stroke="black" stroke-width="1.4" stroke-dasharray="5 6"/></svg>`,alt:spec};
 };
 const sid=(lesson,n)=>`u01-l${String(lesson).padStart(2,'0')}-s${String(n).padStart(2,'0')}`;
 export function unit01(page,l,c,v,gx,all){

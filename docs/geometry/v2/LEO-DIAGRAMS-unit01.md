@@ -1,12 +1,12 @@
 # Unit 1: figure commission from the final spec
 
-Student wording: Socrates. Math: Euclid. Build: feat/geometry-v2-u01. Black strokes on white, live text labels, no color coding, separate given and conclusion layers (class="conclusion" for anything revealed with the answer). Builder coordinates are layout data only; never draw them as learner labels.
+Student wording: Socrates. Math: Euclid. Build: feat/geometry-v2-u01. Black strokes on white, live text labels, no color coding. Use class="given" or data-step="0" for marks that draw when the page opens, data-step="N" (1-based, matching the student step table) for marks that draw when that step is revealed, and class="conclusion" for marks that wait for Show all or Reveal. Full layer convention: docs/geometry/v2/LEO-LAYER-CONVENTION.md. Builder coordinates are layout data only; never draw them as learner labels.
 
-Wire supplied SVGs in tools/geometry/u01-art-wiring.json as {slot, file, alt}, with files in public/geometry/figures/u01/u01-<slot>.svg. A supplied file replaces any generator figure for that slot.
+Wire supplied SVGs in tools/geometry/u01-art-wiring.json as {slot, file, alt}, with files in public/geometry/figures/u01/u01-<slot>.svg. A supplied file replaces any generator figure or the clean waiting slot for that id.
 
 Counts: 112 figure slots. 64 drawn by the generator, 0 supplied by Leo, 16 live text only, 32 NEED LEO ART.
 
-## Needs Leo art (tracked placeholders, omitted from the student DOM until delivered)
+## Needs Leo art (clean waiting slots until delivered)
 
 - [ ] u01-l02-s06: Table with columns n, guess, new rule, and rows n = 0, 1, 2, 3.
   - Builder spec: A four-row n/f/g table at 0, 1, 2, 3; no geometric drawing.
