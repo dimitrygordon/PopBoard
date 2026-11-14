@@ -112,6 +112,52 @@ export function figureLayers(svg) {
 
 const hasLeoDraw = (root) => !!(root && root.querySelector && root.querySelector(".draw, .fade"));
 
+const LEO_CAP_MS = 4000;
+
+function parseTime(v) {
+  const s = String(v || "").trim();
+  if (!s) return 0;
+  const n = parseFloat(s);
+  if (!Number.isFinite(n)) return 0;
+  if (/ms$/i.test(s)) return n;
+  return n * 1000;
+}
+
+// Scale Leo's --sd / --d / --t so the last mark finishes in about 4s. Do not edit the SVG files.
+export function capLeoTiming(svg, cap = LEO_CAP_MS) {
+  if (!svg || svg.getAttribute("data-gx-cap") === "1") return;
+  const items = [];
+  let max = 0;
+  for (const el of [svg, ...svg.querySelectorAll("*")]) {
+    const d = parseTime(el.style.getPropertyValue("--d"));
+    const sd = parseTime(el.style.getPropertyValue("--sd"));
+    const tRaw = el.style.getPropertyValue("--t");
+    const t = tRaw ? parseTime(tRaw) : 0;
+    if (!d && !sd && !t) continue;
+    const fade = el.classList && el.classList.contains("fade");
+    const dur = t || (fade ? 450 : 800);
+    items.push({ el, d, sd, t, hasT: !!tRaw });
+    max = Math.max(max, sd + d + dur);
+  }
+  svg.setAttribute("data-gx-cap", "1");
+  if (max <= cap || !items.length) return;
+  const k = cap / max;
+  for (const it of items) {
+    if (it.d) it.el.style.setProperty("--d", (it.d * k / 1000).toFixed(3) + "s");
+    if (it.sd) it.el.style.setProperty("--sd", (it.sd * k / 1000).toFixed(3) + "s");
+    if (it.hasT) it.el.style.setProperty("--t", (it.t * k / 1000).toFixed(3) + "s");
+  }
+}
+
+function clearGhost(svg) {
+  if (!svg) return;
+  svg.classList.remove("gx-ghost");
+  for (const el of figureLayers(svg)) {
+    el.classList.remove("gx-ghost-layer");
+    if (el.style.opacity === "0.35") el.style.opacity = "";
+  }
+}
+
 export function prepareFigure(svg) {
   if (!svg) return;
   for (const el of figureLayers(svg)) {
@@ -126,12 +172,35 @@ export function prepareFigure(svg) {
 
 export function revealFigure(svg, { count = 0, all = false, reduce = false } = {}) {
   if (!svg) return;
+  const layers = figureLayers(svg);
+  const hasGiven = layers.some((el) => {
+    const info = layerKind(el);
+    return info && (info.kind === "given" || info.step === 0);
+  });
+  const hasStep1 = layers.some((el) => {
+    const info = layerKind(el);
+    return info && info.kind === "step" && info.step === 1;
+  });
+  const ghosting = !all && count === 0 && !hasGiven && layers.length > 0;
   const first = !svg.classList.contains("gx-given-drawn");
   const toDraw = [];
-  for (const el of figureLayers(svg)) {
+  clearGhost(svg);
+  for (const el of layers) {
     const info = layerKind(el);
     if (!info) continue;
-    const show = info.kind === "given" || info.step === 0 || (info.kind === "step" && info.step <= count) || (info.kind === "conclusion" && all);
+    const isGiven = info.kind === "given" || info.step === 0;
+    const showReal = isGiven || (info.kind === "step" && info.step <= count) || (info.kind === "conclusion" && all);
+    let show = showReal;
+    let ghost = false;
+    if (ghosting) {
+      if (hasStep1) {
+        show = isGiven || (info.kind === "step" && info.step === 1);
+        ghost = show && !isGiven;
+      } else {
+        show = true;
+        ghost = !isGiven;
+      }
+    }
     if (!show) {
       el.style.display = "none";
       el.classList.remove("gx-layer-on", "on");
@@ -139,15 +208,26 @@ export function revealFigure(svg, { count = 0, all = false, reduce = false } = {
     }
     const wasHidden = el.style.display === "none" || !el.classList.contains("gx-layer-on");
     el.style.display = "";
-    if (info.kind !== "given" && info.step !== 0 && wasHidden) {
+    if (ghost) {
+      el.classList.add("gx-ghost-layer");
+      el.classList.remove("gx-layer-on", "on");
+      continue;
+    }
+    if (!isGiven && wasHidden) {
       el.classList.add("gx-layer-on", "on");
       if (!hasLeoDraw(el)) toDraw.push(el);
     }
   }
-  if (first) {
+  if (ghosting) svg.classList.add("gx-ghost");
+  if (first && !ghosting) {
     svg.classList.add("gx-given-drawn");
-    if (hasLeoDraw(svg) || svg.hasAttribute("data-steps")) svg.classList.add("play");
-    else drawStrokes(svg, { reduce });
+    if (hasLeoDraw(svg) || svg.hasAttribute("data-steps")) {
+      svg.classList.add("play");
+      capLeoTiming(svg);
+    } else drawStrokes(svg, { reduce });
+  } else if (!ghosting && !svg.classList.contains("play") && (hasLeoDraw(svg) || svg.hasAttribute("data-steps"))) {
+    svg.classList.add("gx-given-drawn", "play");
+    capLeoTiming(svg);
   }
   for (const el of toDraw) drawStrokes(el, { reduce });
 }
@@ -161,6 +241,7 @@ export function playCover(svg, { reduce = false } = {}) {
       el.classList.add("gx-layer-on", "on");
     }
     svg.classList.add("play", "gx-given-drawn");
+    capLeoTiming(svg);
     return;
   }
   svg.classList.add("gx-given-drawn");

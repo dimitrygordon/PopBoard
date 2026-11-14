@@ -39,6 +39,10 @@ export function mount({ stage, tools, slide, meta, reduce }) {
   stage.classList.add("gx-host");
   stage.classList.toggle("gx-exit-host",G.kind === "exit-ticket");
   stage.classList.toggle("gx-we-host", G.kind === "worked-example");
+  stage.classList.toggle("gx-cover-host", G.kind === "cover");
+  const hookPage = G.kind === "text" && !!(G.figure || (Array.isArray(G.figures) && G.figures.length));
+  stage.classList.toggle("gx-hook-host", hookPage);
+  stage.classList.toggle("gx-fill-host", hookPage || G.kind === "practice" || G.kind === "common-mistake");
   const reading = ["worked-example", "common-mistake", "practice", "exit-ticket", "activity"].includes(G.kind) || (G.v2 && G.kind === "text");
   stage.classList.toggle("gx-reading", reading);
   let board = null, panel = null, inner = null, dead = false;

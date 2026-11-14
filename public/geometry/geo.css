@@ -416,7 +416,7 @@ html[data-course="geometry"] .stage.gx-we-host { overflow: hidden; }
 .gx-cover-safe svg, .gx-cover-safe img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   display: block;
 }
@@ -427,7 +427,8 @@ html[data-course="geometry"] .lib-card img.cover {
 }
 
 /* Hook figures on Get started (and other text pages that carry a figure). */
-.gx-hook-layout { grid-template-columns: minmax(340px, 3fr) minmax(0, 2fr); align-items: stretch; overflow: hidden; }
+.gx-hook-layout { grid-template-columns: minmax(340px, max-content) minmax(0, 1fr); align-items: stretch; overflow: hidden; }
+.gx-hook-layout .gx-learner-text { overflow-wrap: break-word; word-break: normal; }
 .gx-hook-layout .gx-figure-slot {
   display: flex;
   align-items: center;
@@ -447,21 +448,29 @@ html[data-course="geometry"] .lib-card img.cover {
   align-items: stretch;
   justify-content: center;
 }
+/* Each frame shares the column height; the SVG uses that height and the column
+   can grow (min 340px) with the widest figure. */
 .gx-hook-frame {
   flex: 1 1 0;
   min-height: 0;
-  width: 100%;
+  width: auto;
   max-width: 100%;
   display: grid;
   place-items: center;
+  justify-self: center;
 }
 .gx-hook-frame svg, .gx-hook-frame img {
-  width: 100%;
   height: 100%;
+  width: auto;
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
   object-position: center;
+}
+.gx-hook-gallery .gx-figure-slot {
+  align-items: center;
+  width: max(340px, max-content);
+  max-width: 100%;
 }
 @media (max-width: 599px) and (orientation: portrait) {
   .gx-hook-layout { grid-template-columns: 1fr; grid-template-rows: minmax(160px, 48%) minmax(0, 1fr); }
@@ -507,3 +516,101 @@ html[data-course="geometry"] .lib-card img.cover {
 
 .gx-k-text:has(.gx-hook-layout) .gx-lesson { padding: 14px 18px 12px; }
 .gx-k-text:has(.gx-hook-layout) .gx-head { font-size: clamp(22px, 4.6cqw, 32px); margin: 0 0 0.25em; }
+
+
+/* A faded preview of the next marks when a worked example has no given layer. */
+.gx-ghost-layer { opacity: 0.35; }
+
+/* Hook pages: use spare height in the stage wrap so stacked figures can grow. */
+@media (min-width: 600px) {
+  html[data-course="geometry"] .stage.gx-hook-host,
+  html[data-course="geometry"] .stage.gx-fill-host {
+    aspect-ratio: auto;
+    height: 100%;
+    max-height: 100%;
+    width: var(--stage-w, 100%);
+  }
+}
+
+/* Practice and common-mistake: keep the prompt and Reveal control in view. */
+.gx-k-practice .gx-learner-text,
+.gx-k-common-mistake .gx-learner-text {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  padding-bottom: 0;
+}
+.gx-k-practice .gx-learner-text > p:not(.gx-solution):not(.gx-second-check),
+.gx-k-common-mistake .gx-learner-text > p:not(.gx-correction),
+.gx-k-common-mistake .gx-mistake-prompt {
+  flex: 0 0 auto;
+}
+.gx-k-practice .gx-solution[hidden],
+.gx-k-practice .gx-second-check[hidden],
+.gx-k-common-mistake .gx-correction[hidden] {
+  display: none !important;
+}
+.gx-k-practice .gx-actions,
+.gx-k-common-mistake .gx-actions {
+  flex: 0 0 auto;
+  margin-top: 8px;
+  margin-bottom: 4px;
+  padding-top: 0;
+  background: var(--gx-paper);
+}
+.gx-k-practice .gx-solution,
+.gx-k-practice .gx-second-check,
+.gx-k-common-mistake .gx-correction {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Phone covers: plate on top at full card width in the square-safe zone;
+   title, goal, standards and Jacobs line stack below at full width. */
+@media (max-width: 599px) and (orientation: portrait) {
+  html[data-course="geometry"] .stage.gx-cover-host {
+    aspect-ratio: auto;
+    width: 100%;
+    height: auto;
+    min-height: min(78dvh, 680px);
+    max-height: none;
+  }
+  .stage.gx-cover-host .gx-layer.gx-k-cover {
+    position: absolute;
+    inset: 0;
+    overflow: auto;
+  }
+  .gx-k-cover {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    align-items: stretch;
+    justify-items: stretch;
+    height: 100%;
+  }
+  .gx-k-cover .gx-cover-art {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    aspect-ratio: 1 / 1;
+    container-type: inline-size;
+  }
+  .gx-k-cover .gx-cover-safe {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    aspect-ratio: auto;
+  }
+  .gx-k-cover .gx-cover-text {
+    width: 100%;
+    max-height: none;
+    padding: 12px 18px 18px;
+    overflow-y: auto;
+  }
+  .gx-k-cover .gx-title { font-size: clamp(26px, 8.2vw, 36px); }
+  .gx-k-cover .gx-target { font-size: 17px; }
+  .gx-k-cover .gx-tag, .gx-k-cover .gx-stds, .gx-k-cover .gx-citation { font-size: 14px; }
+}
