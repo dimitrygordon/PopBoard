@@ -246,12 +246,12 @@ L={
 }
 # Moved items, learner versions (kept here so values sit next to their source)
 MOVED={
-"4.14_we3":("Worked example 3, moved from 4.10: the kite (original).",[
+"4.14_we3":("The kite",[
   ("Convex quadrilateral ABCD has AB = AD and CB = CD.","Given. Convex matters: it keeps diagonal AC inside angle BAD."),
   ("AC = AC.","A segment equals itself."),
   ("Triangle ABC ≅ triangle ADC.","SSS."),
   ("Angle BAC = angle DAC and angle BCA = angle DCA.","CPCTC. Because ABCD is convex, AC is inside both angles, so AC bisects them. Saying the diagonals are perpendicular would need more proof.")]),
-"4.14_p4":("Practice 4, moved from 4.10: in the convex kite, AB = 2x + 1 and AD = 11. Find x.","The equal sides give 2x + 1 = 11, so x = 5.","Plug in: 2(5) + 1 = 11."),
+"4.14_p4":("In the convex kite, AB = 2x + 1 and AD = 11. Find x.","The equal sides give 2x + 1 = 11, so x = 5.","Plug in: 2(5) + 1 = 11."),
 "4.15_clinic":("Optional review repeat of 4.10 Day 2: the other two SSS cases.",[
   ("Case 2: CG meets line AB outside segment AB.","Same setup as the 4.10 proof."),
   ("Subtract the equal base angles instead of adding them. You still get angle ACB = angle AGB.","Theorem 9, then angle subtraction."),

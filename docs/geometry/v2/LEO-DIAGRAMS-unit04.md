@@ -2,7 +2,7 @@
 
 Student wording: Socrates. Math: Euclid. Build: PR 170. No builder text or coordinate certificates should be drawn as learner labels. All art is editable SVG, black strokes on white, live labels, separate given and conclusion layers.
 
-Source SHA-256: 2e632019edf2b7932ccfecc03558c1db88b7c7b62c7d988580a29da34389c16f
+Source SHA-256: 90a17907ad0020d3bba6a752c25d314ad37d0021f8c23db6e853d92a38a5571c
 
 Figure slots exist on every worked-example, practice, check and common-mistake screen. Slots without a supplied SVG are omitted from the student DOM until art arrives; text uses the full width. See PLACEHOLDER-SLIDES.md for the missing-art inventory. Fill each planned slot with its own correct givens, not a reused diagram with different letters.
 
@@ -94,7 +94,7 @@ Three proof SVG panels with A=(-2,0),B=(2,0),C=(t,h),G=(t,-h),h>0: t=0 interior,
 
 Slots: get-started / big-idea art; Swinging door: one SSA recipe, two triangles., Bigger doesn't fix it.; common mistake; 3 practice figures; check-yourself.
 
-PR170 Euclid re-review R2: Worked example 2 uses A=(0,0), B=(8,6), C1=(6,0), C2=(10,0), AB=10, AC1=6, AC2=10, with the common circle centered at B. Round 5 caption: Not to scale. Both examples are fitted to the same screen bounds. The common-mistake figure is separate: A=(0,0), B=(4,3), C=(4,0), circle radius 3 at B, one contact C strictly beyond A, and an explicit right-angle mark at C. Never reuse the two-crossing figure for this pictured tangent correction.
+PR170 Euclid re-review R2: Worked example 2 uses A=(0,0), B=(8,6), C1=(6,0), C2=(10,0), AB=10, AC1=6, AC2=10, with the common circle centered at B. Round 5 caption: Not to scale. Both examples are fitted to the same screen bounds. U4-13 common-mistake figure (u04-l11-s07) is Leo's delivered SVG, wired as public/geometry/figures/u04/u04-l11-s07.svg. Construction (staff only, not printed): A=(0,0), B=(8,6), circle centered at B through (6,0) has radius squared 40 and meets the ray at x=6 and x=10. In the SVG, AB=10 and BC1=BC2=sqrt(40) in its own coordinates, both C points lie on the ray, and no coordinates or numbers are on screen. This is not the old tangent case (A=(0,0), B=(4,3), C=(4,0)).
 
 Use A=(0,0),B=(4,3),C1=(3,0),C2=(5,0), uniform scale. Draw full radius-sqrt(10) circle at B, label two intersections distinctly, angle arc at A shared. For W2 draw doubled copy at same screen scale or label scale factor. Reject tangent/no-intersection cases if UI says two triangles.
 
@@ -112,7 +112,7 @@ A=(-5,0),B=(5,0), radius 6, P=(0,sqrt(11)),Q=(0,-sqrt(11)),M=(0,0). Add M label 
 
 ## 4.14
 
-Slots: get-started / big-idea art; Diagonal of a quadrilateral, by SSS (original)., Vertical angles only (original)., Worked example 3, moved from 4.10: the kite (original).; common mistake; 4 practice figures; check-yourself.
+Slots: get-started / big-idea art; Diagonal of a quadrilateral, by SSS (original)., Vertical angles only (original)., The kite.; common mistake; 4 practice figures; check-yourself.
 
 Include the convex kite moved from 4.10. Review bank is launched here, not a separate class day.
 

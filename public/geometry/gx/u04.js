@@ -70,9 +70,9 @@ export const GX = {
         { say: "Join B to each crossing. Each triangle has the same angle A, side AB and side BC.", draw: (g, t) => { const s = L(); s.xs.forEach((q, i) => g.edge(Bp, q, t, { w: i ? "main" : "bold", dash: i > 0 })); } }
       ];
       steps.intro = "angle A, side AB and a length for BC are given.";
-      createSteps(B, U, steps, base, { done: "Count distinct points strictly forward of A that make nondegenerate triangles. Discard a hit at A, backward hits, flat triangles and repeated tangent roots. One triangle does not always mean a tangency or a right angle." });
+      createSteps(B, U, steps, base, { done: "Count the crossings on the ray past A. Each one that makes a real triangle (not flat, not at A) counts once. A circle that just touches the ray counts once. One triangle does not always mean the circle just touches." });
       const slider=U.slider({label:"BC length",min:.3,max:7.5,step:.01,value:L().a/100,fmt:v=>num(v,2)},v=>{R.x=1040+v*100/1.5;B.update();});
-      const sh = () => { const s = L();slider.set(s.a/100); const h = Math.abs(M.cross(M.unit(M.sub(s.dir, A)), M.sub(Bp, A))); U.read(`<p>BC = ${num(s.a / 100, 2)}, AB = ${num(M.dist(A, Bp) / 100, 2)}, height from B = ${num(h / 100, 2)}. Nondegenerate triangles: <b>${s.xs.length}</b> (0, 1 or 2). One valid forward hit does not by itself imply tangency.</p>`); };
+      const sh = () => { const s = L();slider.set(s.a/100); const h = Math.abs(M.cross(M.unit(M.sub(s.dir, A)), M.sub(Bp, A))); U.read(`<p>BC = ${num(s.a / 100, 2)}, AB = ${num(M.dist(A, Bp) / 100, 2)}, height from B = ${num(h / 100, 2)}. Real triangles: <b>${s.xs.length}</b> (0, 1 or 2). One valid forward hit does not by itself imply tangency.</p>`); };
       const old = B.update; B.update = () => { old(); sh(); }; sh();
     }
   },
@@ -90,7 +90,7 @@ export const GX = {
         { say: "Set the compass to BC. From E, draw an arc crossing the first one at F.", draw: (g, t) => { const s = L(); if (s.F) { const d = M.dirDeg(s.E, s.F); g.sweep(s.E, s.a, d - 18, d + 18, t); if (t >= 1) { g.dot(s.F); lab(g, s.F, "F", P(s.F.x, s.F.y + 100)); } } } },
         { say: "Draw DF and EF. Triangle DEF has the same three sides, so it is congruent to ABC.", draw: (g, t) => { const s = L(); if (!s.F) return; g.edge(D, s.F, t, { w: "bold" }); g.edge(s.E, s.F, t, { w: "bold" }); if (t >= 1) { g.ticks(A, Bb, 1); g.ticks(D, s.E, 1); g.ticks(A, C, 2); g.ticks(D, s.F, 2); g.ticks(Bb, C, 3); g.ticks(s.E, s.F, 3); } } }
       ];
-      steps.intro = "triangle ABC and a ray from D are given.";
+      steps.intro = "Triangle ABC and a ray from D are given.";
       createSteps(B, U, steps, base, { done: "SSS: three equal sides make the triangles congruent.", notice: () => L().F ? "" : "Undefined / flat input: choose three distinct, noncollinear vertices. Two distinct circle intersections are required before using SSS." });
     }
   }

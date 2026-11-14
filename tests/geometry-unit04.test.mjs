@@ -104,7 +104,7 @@ test('4.14 art-slot prompt and current learner correction describe the same vert
  const edits=JSON.parse(read('tools/geometry/spec-src/art-prompts-u04.json'));
  const slide=deck(14).slides.find(s=>s.geo.kind==='common-mistake').geo;
  assert.equal(slide.prompt,edits['4.14']);assert.match(slide.prompt,/vertical angles already give/);
- assert.match(slide.correction,/Vertical angles alone give that angle in one step/);
+ assert.match(slide.correction,/Angles AOC and BOD are vertical angles, so they are equal in one step/);
  assert.ok(!slide.prompt.includes('non-included angle'));
 });
 
@@ -119,12 +119,24 @@ test('4.11 second worked figure doubles every given and both circle crossings',(
  const hits=lines.filter(([x,y])=>Math.hypot(x-circle[0],y-circle[1])<1e-8).slice(0,2);
  assert.equal(hits.length,2);for(const [x,y,a,b] of hits)assert.ok(Math.abs(Math.hypot(a-x,b-y)-circle[2])<1e-8);
 });
-test('4.11 misconception has its own tangent circle and perpendicular contact mark',()=>{
+test('4.11 misconception uses Leo\'s two-triangle figure with the Euclid alt text',()=>{
  const {figure}=deck(11).slides.find(s=>s.geo.kind==='common-mistake').geo;
- assert.match(figure.alt,/once at C strictly beyond A/);assert.match(figure.alt,/right-angle mark/);
- assert.ok(!figure.svg.includes('C1'));assert.ok(figure.svg.includes('BC = 3'));
- const [cx,cy,r]=figure.svg.match(/<circle cx="([^"]+)" cy="([^"]+)" r="([^"]+)"/).slice(1).map(Number);
- assert.ok(Math.abs(cy+r-300)<1e-8);assert.ok(Number.isFinite(cx));
+ assert.equal(figure.alt,'Two triangles that share the angle at A, side AB, and side BC. The circle centered at B crosses the ray from A at two points.');
+ assert.equal(figure.svg,read('public/geometry/figures/u04/u04-l11-s07.svg'));
+ assert.ok(!figure.svg.includes('stroke-dasharray="9 8"'));
+ assert.ok(!figure.svg.includes('BC = 3'));
+ assert.match(figure.svg,/>C<tspan[^>]*>1<\/tspan>/);
+ assert.match(figure.svg,/>C<tspan[^>]*>2<\/tspan>/);
+ const labels=[...figure.svg.matchAll(/<text[^>]*>([\s\S]*?)<\/text>/g)].map(m=>m[1].replace(/<[^>]+>/g,''));
+ assert.deepEqual(labels,['A','B','C1','C2']);
+ const pts=[...figure.svg.matchAll(/<circle cx="([\d.]+)" cy="([\d.]+)"/g)].map(m=>m.slice(1).map(Number));
+ const [A,B,C1,C2]=pts,d=(p,q)=>Math.hypot(p[0]-q[0],p[1]-q[1]),scale=d(A,B)/10;
+ assert.ok(Math.abs(d(B,C1)-Math.sqrt(40)*scale)<1e-6);assert.ok(Math.abs(d(B,C2)-Math.sqrt(40)*scale)<1e-6);
+ assert.ok(Math.abs(C1[1]-A[1])<1e-6&&C1[0]>A[0]&&Math.abs(C2[1]-A[1])<1e-6&&C2[0]>A[0]);
+ const commission=read('docs/geometry/v2/LEO-DIAGRAMS-unit04.md');
+ assert.match(commission,/U4-13 common-mistake figure/);
+ assert.match(commission,/A=\(0,0\), B=\(8,6\)/);
+ assert.ok(!commission.includes('A clean empty frame stands in'));
 });
 test('triangle copy rejects flat and coincident inputs but admits nearby valid triangles at different scales',async()=>{
  const {copyTriangleState}=await import('../public/geometry/gx/u04.js');
@@ -150,7 +162,7 @@ test('round 5: corrected art coordinates are synced and their final figures are 
 
 
 test('round 5: every Unit 4 figure slot is filled and every art mapping is consumed exactly',()=>{
- const wiring=JSON.parse(read('tools/geometry/u04-art-wiring.json'));assert.equal(wiring.length,94);
+ const wiring=JSON.parse(read('tools/geometry/u04-art-wiring.json'));assert.equal(wiring.length,95);
  const seen=new Set();let total=0;
  for(let n=1;n<=16;n++)for(const slide of deck(n).slides)if(['worked-example','practice','common-mistake'].includes(slide.geo.kind)){assert.match(slide.geo.figure.svg,/^<svg/);assert.ok(slide.geo.figure.alt);total++;}
  assert.equal(total,143);
