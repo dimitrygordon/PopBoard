@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 340" color="#111" role="img" aria-labelledby="u01-hook-l03-h3-title" data-steps="4">
+  <title id="u01-hook-l03-h3-title">Three feet always touch the floor; a fourth may not</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M14,292L300,292L314,314L352,314L366,292L386,292" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.96s"/>
+    <path d="M30,276L386,276" stroke-width="1" class="draw" pathLength="1" style="--d:0.82s;--t:1.00s"/>
+    <path d="M14,292L30,276" stroke-width="1" class="draw" pathLength="1" style="--d:1.67s;--t:0.35s"/>
+  </g>
+  <g data-step="2" style="--sd:2.11s">
+    <path d="M44,150A60,12 0 1 1 164,150A60,12 0 1 1 44,150" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <path d="M44,150L44,162" stroke-width="2" class="draw" pathLength="1" style="--d:0.77s;--t:0.32s"/>
+    <path d="M164,150L164,162" stroke-width="2" class="draw" pathLength="1" style="--d:1.04s;--t:0.32s"/>
+    <path d="M44,162L46.04,165.11L52.04,168L61.57,170.49L74,172.39L88.47,173.59L104,174L119.53,173.59L134,172.39L146.43,170.49L155.96,168L161.96,165.11L164,162" stroke-width="2" class="draw" pathLength="1" style="--d:1.32s;--t:0.51s"/>
+    <path d="M44.57,158.85L45.47,157.57" stroke-width="1"/>
+    <path d="M46.62,163.97L51.46,157.04" stroke-width="1"/>
+    <path d="M52.61,159.35L53.93,157.46" stroke-width="1"/>
+    <path d="M53.13,167.32L59.09,158.81" stroke-width="1"/>
+    <path d="M58.3,168.66L61,164.8" stroke-width="1"/>
+    <path d="M62.15,162.47L64.03,159.77" stroke-width="1"/>
+    <path d="M63.11,169.81L69.55,160.62" stroke-width="1"/>
+    <path d="M68.62,170.66L73.43,163.79" stroke-width="1"/>
+    <path d="M74.57,164.66L76.79,161.49" stroke-width="1"/>
+    <path d="M75.77,171.67L82.56,161.97" stroke-width="1"/>
+    <path d="M81.54,172.15L87.9,163.07" stroke-width="1"/>
+    <path d="M87.31,172.63L87.9,171.79" stroke-width="1"/>
+    <path d="M89.04,165.97L91.47,162.5" stroke-width="1"/>
+    <path d="M90.36,172.81L97.46,162.66" stroke-width="1"/>
+    <path d="M96.35,172.96L103.43,162.86" stroke-width="1"/>
+    <path d="M102.35,173.12L103.43,171.58" stroke-width="1"/>
+    <path d="M104.57,165.97L106.84,162.73" stroke-width="1"/>
+    <path d="M105.65,173.15L113.06,162.57" stroke-width="1"/>
+    <path d="M111.86,172.99L118.96,162.86" stroke-width="1"/>
+    <path d="M118.08,172.83L118.96,171.58" stroke-width="1"/>
+    <path d="M120.1,164.66L121.85,162.17" stroke-width="1"/>
+    <path d="M120.55,172.73L128.33,161.63" stroke-width="1"/>
+    <path d="M127.03,172.2L133.43,163.07" stroke-width="1"/>
+    <path d="M134.57,162.47L135.7,160.86" stroke-width="1"/>
+    <path d="M134.57,171.18L142.53,159.81" stroke-width="1"/>
+    <path d="M141.11,170.57L145.85,163.79" stroke-width="1"/>
+    <path d="M147,168.06L154.76,156.98" stroke-width="1"/>
+    <path d="M153.09,168.08L155.39,164.8" stroke-width="1"/>
+    <path d="M156.54,163.97L161.38,157.04" stroke-width="1"/>
+    <path d="M162.53,158.85L163.43,157.57" stroke-width="1"/>
+    <path d="M66,168L48,292" stroke-width="2" class="draw" pathLength="1" style="--d:1.75s;--t:0.55s"/>
+    <path d="M142,168L160,292" stroke-width="2" class="draw" pathLength="1" style="--d:2.22s;--t:0.55s"/>
+    <path d="M104,174L104,276" stroke-width="2" class="draw" pathLength="1" style="--d:2.68s;--t:0.50s"/>
+    <circle cx="48" cy="292" r="4.5" fill="currentColor" stroke="none" class="fade" style="--d:3.11s"/>
+    <circle cx="160" cy="292" r="4.5" fill="currentColor" stroke="none" class="fade" style="--d:3.23s"/>
+    <circle cx="104" cy="276" r="4.5" fill="currentColor" stroke="none" class="fade" style="--d:3.35s"/>
+  </g>
+  <g data-step="3" style="--sd:5.73s">
+    <path d="M236,192L332,192L350,176L254,176Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.66s"/>
+    <path d="M236,192L236,202L332,202L332,192" stroke-width="2" class="draw" pathLength="1" style="--d:0.56s;--t:0.49s"/>
+    <path d="M332,202L350,186L350,176" stroke-width="2" class="draw" pathLength="1" style="--d:0.98s;--t:0.36s"/>
+    <path d="M236.57,194.54L237.78,192.82" stroke-width="1"/>
+    <path d="M238.03,201.18L243.88,192.82" stroke-width="1"/>
+    <path d="M244.13,201.18L249.99,192.82" stroke-width="1"/>
+    <path d="M250.24,201.18L256.09,192.82" stroke-width="1"/>
+    <path d="M256.34,201.18L262.19,192.82" stroke-width="1"/>
+    <path d="M262.44,201.18L268.3,192.82" stroke-width="1"/>
+    <path d="M268.55,201.18L274.4,192.82" stroke-width="1"/>
+    <path d="M274.65,201.18L280.51,192.82" stroke-width="1"/>
+    <path d="M280.76,201.18L286.61,192.82" stroke-width="1"/>
+    <path d="M286.86,201.18L292.71,192.82" stroke-width="1"/>
+    <path d="M292.96,201.18L298.82,192.82" stroke-width="1"/>
+    <path d="M299.07,201.18L304.92,192.82" stroke-width="1"/>
+    <path d="M305.17,201.18L311.03,192.82" stroke-width="1"/>
+    <path d="M311.27,201.18L317.13,192.82" stroke-width="1"/>
+    <path d="M317.38,201.18L323.23,192.82" stroke-width="1"/>
+    <path d="M323.48,201.18L329.34,192.82" stroke-width="1"/>
+    <path d="M329.59,201.18L331.43,198.55" stroke-width="1"/>
+    <path d="M242,202L242,292" stroke-width="2" class="draw" pathLength="1" style="--d:1.28s;--t:0.48s"/>
+    <path d="M326,202L326,292" stroke-width="2" class="draw" pathLength="1" style="--d:1.69s;--t:0.48s"/>
+    <path d="M260,206L260,276" stroke-width="2" class="draw" pathLength="1" style="--d:2.10s;--t:0.44s"/>
+    <path d="M344,186L344,276" stroke-width="2" class="draw" pathLength="1" style="--d:2.47s;--t:0.48s"/>
+    <path d="M254,176L254,64" stroke-width="2" class="draw" pathLength="1" style="--d:2.88s;--t:0.52s"/>
+    <path d="M350,176L350,64" stroke-width="2" class="draw" pathLength="1" style="--d:3.33s;--t:0.52s"/>
+    <path d="M254,64L350,64L350,90L254,90L254,64" stroke-width="2" class="draw" pathLength="1" style="--d:3.77s;--t:0.71s"/>
+    <path d="M254.57,71.98L259.59,64.82" stroke-width="1"/>
+    <path d="M254.57,80.7L265.69,64.82" stroke-width="1"/>
+    <path d="M254.74,89.18L271.79,64.82" stroke-width="1"/>
+    <path d="M260.84,89.18L277.9,64.82" stroke-width="1"/>
+    <path d="M266.94,89.18L284,64.82" stroke-width="1"/>
+    <path d="M273.05,89.18L290.11,64.82" stroke-width="1"/>
+    <path d="M279.15,89.18L296.21,64.82" stroke-width="1"/>
+    <path d="M285.26,89.18L302.31,64.82" stroke-width="1"/>
+    <path d="M291.36,89.18L308.42,64.82" stroke-width="1"/>
+    <path d="M297.46,89.18L314.52,64.82" stroke-width="1"/>
+    <path d="M303.57,89.18L320.63,64.82" stroke-width="1"/>
+    <path d="M309.67,89.18L326.73,64.82" stroke-width="1"/>
+    <path d="M315.78,89.18L332.83,64.82" stroke-width="1"/>
+    <path d="M321.88,89.18L338.94,64.82" stroke-width="1"/>
+    <path d="M327.98,89.18L345.04,64.82" stroke-width="1"/>
+    <path d="M334.09,89.18L349.43,67.27" stroke-width="1"/>
+    <path d="M340.19,89.18L349.43,75.99" stroke-width="1"/>
+    <path d="M346.29,89.18L349.43,84.71" stroke-width="1"/>
+  </g>
+  <g data-step="4" style="--sd:10.26s">
+    <circle cx="242" cy="292" r="4.5" fill="currentColor" stroke="none" class="fade" style="--d:0.00s"/>
+    <circle cx="260" cy="276" r="4.5" fill="currentColor" stroke="none" class="fade" style="--d:0.12s"/>
+    <circle cx="344" cy="276" r="4.5" fill="currentColor" stroke="none" class="fade" style="--d:0.24s"/>
+    <path d="M326,288A4,4 0 1 0 326,296A4,4 0 1 0 326,288" stroke-width="2" class="draw" pathLength="1" style="--d:0.36s;--t:1.10s"/>
+    <path d="M342,293L342,313" stroke-width="1" class="draw" pathLength="1" style="--d:1.29s;--t:0.34s"/>
+    <path d="M344.94,300L342,293L339.06,300" stroke-width="1" class="fade" style="--d:1.58s"/>
+    <path d="M339.06,306L342,313L344.94,306" stroke-width="1" class="fade" style="--d:1.70s"/>
+  </g>
+  </g>
+</svg>

@@ -129,7 +129,7 @@ export const DECKS = [
    "G.GF.1"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l04.svg",
   "kind": "lesson",
   "gx": "u01.earth"
  },

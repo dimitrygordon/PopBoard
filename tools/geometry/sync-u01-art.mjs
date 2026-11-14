@@ -26,12 +26,9 @@ for (const wire of LEO_WIRES) {
 }
 
 // Leo is redrawing these; do not copy or wire them. Covers fall back to the unit plate.
+// Leo is still redrawing hook-l03-h4; keep it unwired as a placeholder.
 const HOLD_BACK = new Set([
-  "u01-hook-l03-h3",
   "u01-hook-l03-h4",
-  "u01-hook-l03-h5",
-  "u01-hook-l04-h6",
-  "u01-cover-l04",
 ]);
 // Tesla's generator fixes must not be overwritten if slot files arrive later.
 const KEEP_GENERATOR = new Set(["u01-l06-s09", "u01-l14-s16"]);

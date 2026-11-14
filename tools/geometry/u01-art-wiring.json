@@ -10,6 +10,21 @@
     "alt": "Table of circle regions for 1 to 10 points: 1, 2, 4, 8, 16, 31, 57, 99, 163, 256. A doubling guess column, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, is crossed out from 6 points on."
   },
   {
+    "slot": "u01-hook-l03-h3",
+    "file": "u01-hook-l03-h3.svg",
+    "alt": "Side view of a three-legged stool and a four-legged chair on a floor drawn with a front and a back edge. All three stool feet touch the floor, marked with dots. The chair stands where the floor dips slightly: three of its feet touch the floor and its front right foot hangs above the dip, with a small arrow across the gap."
+  },
+  {
+    "slot": "u01-hook-l03-h5",
+    "file": "u01-hook-l03-h5.svg",
+    "alt": "A laser pointer drawn as a cylinder lying on its side: a rounded back end, a push button on top and a ringed lens end on the right. A straight beam leaves the lens and runs to the right, ending in an arrowhead. A dot at the lens is labeled endpoint."
+  },
+  {
+    "slot": "u01-hook-l04-h6",
+    "file": "u01-hook-l04-h6.svg",
+    "alt": "Cross-section of part of Earth with its center at the bottom. Parallel sunlight lines come straight down. At Syene a vertical well is lit to the bottom. At Alexandria a stick stands straight up from the ground, pointing away from Earth's center, and casts a short shadow. At the top of the stick, the angle between the stick and the sunlight is 7.2 degrees, the same as the angle at Earth's center between the radii to the two cities."
+  },
+  {
     "slot": "u01-hook-l04-h7",
     "file": "u01-hook-l04-h7.svg",
     "alt": "An eye at the vertex of a thin angle formed by two rays. A small near circle labeled Moon and a large far circle labeled Sun both fit exactly inside the same angle. Marked NOT TO SCALE."
@@ -70,9 +85,19 @@
     "alt": "The rule 'true for every x'. Ana's 100 cases that work are shown as a 10 by 10 grid of check marks, with no proved badge. Ben's one failing case is circled. Revealed: 100 checks are not a proof; not every x works, so the rule is false."
   },
   {
+    "slot": "u01-l03-hook",
+    "file": "u01-hook-l03-h3.svg",
+    "alt": "Side view of a three-legged stool and a four-legged chair on a floor drawn with a front and a back edge. All three stool feet touch the floor, marked with dots. The chair stands where the floor dips slightly: three of its feet touch the floor and its front right foot hangs above the dip, with a small arrow across the gap."
+  },
+  {
+    "slot": "u01-l04-eratosthenes",
+    "file": "u01-hook-l04-h6.svg",
+    "alt": "Cross-section of part of Earth with its center at the bottom. Parallel sunlight lines come straight down. At Syene a vertical well is lit to the bottom. At Alexandria a stick stands straight up from the ground, pointing away from Earth's center, and casts a short shadow. At the top of the stick, the angle between the stick and the sunlight is 7.2 degrees, the same as the angle at Earth's center between the radii to the two cities."
+  },
+  {
     "slot": "u01-l04-hook",
-    "file": "u01-hook-l04-h7.svg",
-    "alt": "An eye at the vertex of a thin angle formed by two rays. A small near circle labeled Moon and a large far circle labeled Sun both fit exactly inside the same angle. Marked NOT TO SCALE."
+    "file": "u01-hook-l04-h6.svg",
+    "alt": "Cross-section of part of Earth with its center at the bottom. Parallel sunlight lines come straight down. At Syene a vertical well is lit to the bottom. At Alexandria a stick stands straight up from the ground, pointing away from Earth's center, and casts a short shadow. At the top of the stick, the angle between the stick and the sunlight is 7.2 degrees, the same as the angle at Earth's center between the radii to the two cities."
   },
   {
     "slot": "u01-l05-hook",
