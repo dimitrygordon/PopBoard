@@ -19,6 +19,7 @@
   "coplanar": "Points or lines that all lie in one plane.",
   "segment": "Part of a line between two endpoints, including the endpoints.",
   "ray": "Part of a line that starts at one point and goes on forever one way.",
+  "opposite rays": "Two rays with the same endpoint that together form a line.",
   "parallel lines": "Lines in the same plane that never meet.",
   "plane": "A flat surface that goes on forever in every direction. Undefined, like point and line."
  },
@@ -32,7 +33,7 @@
   "model assumption": "A simplifying idea we accept so a real situation fits the math."
  },
  "1.5": {
-  "polygon": "A closed flat path of at least three straight sides. Each side meets exactly two others, one at each end, and sides that are not neighbors never touch.",
+  "polygon": "A closed loop of at least three straight sides, each with positive length. Only neighboring sides meet, at their shared endpoint, and neighboring sides are not on the same line.",
   "vertex": "A corner of a polygon, where two sides meet.",
   "side": "One of the segments that make up a polygon.",
   "diagonal": "A segment joining two corners of a polygon that are not next to each other.",

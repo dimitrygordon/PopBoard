@@ -19,6 +19,7 @@
         "coplanar",
         "segment",
         "ray",
+        "opposite rays",
         "parallel lines"
       ],
       "mistakeCorrection": "Jo confused endpoints with points. A line has no endpoints and infinitely many points. A segment has two different endpoints and infinitely many points between them. Two different points determine a line; they are not the line's only points.",
@@ -77,7 +78,7 @@
       "check": "The contrapositive supplies a second route: an even integer 2k has even square 4k². This is equivalent to the claim. No ruler postulate, triangle theorem or drawing is used."
     },
     "1.13-3": {
-      "check": "An example that fits every given but breaks the claim: redraw one segment slightly longer while retaining all stated incidence facts. The original assumptions remain true but equality fails."
+      "check": "Here is an example that fits every given but breaks the claim: redraw one segment a little longer, keeping every stated fact about which points lie on which lines. Everything that was given is still true, but the two segments are no longer equal."
     },
     "1.13-9": {
       "solution": "It means we do not define 'lies on' with other words. We start with it and write rules about it. Undefined does not mean anything goes: the rules limit what can happen. Theorems are then proved from those rules and our definitions."
@@ -94,19 +95,19 @@
       "check": "Write H for closed and straight-edged, and S for simple polygon. The card has H true and S false, exactly the false case for H implies S. The conclusion uses the given crossing, not an apparent crossing inferred from pixels."
     },
     "A1": {
-      "solution": "The angles are congruent because the given marks are givens. The inaccurate rendering should be corrected; the drawing does not cancel an explicit hypothesis. No numerical angle measure follows without a degree label."
+      "solution": "The angles are congruent, because the sheet states that equal arc marks are givens. The drawing is wrong and should be fixed, but a bad drawing does not cancel a stated given. No angle measure in degrees follows, because no degree label is given."
     },
     "A5": {
       "check": "Before you add DA, A and D each touch only one drawn side. After you add DA, every corner touches exactly two sides, so the path is closed."
     },
     "A8": {
-      "check": "Exhaust the 3 listed objects. S has Metal=true, Compass=false, the exact truth pattern falsifying 'if Metal then Compass'."
+      "check": "Check all 3 objects. S is metal but is not a compass. That is exactly the case that makes 'if metal, then compass' false."
     },
     "A9": {
       "solution": "A record A, A, B has repeated points; A, B, C with three collinear locations has distinct names but still fails. A record is a triad if and only if it names exactly three different points and no one line holds all three."
     },
     "A10": {
-      "check": "Counterexample to the extra assertion: d=1, e=2, c=4, b=3, a=7 satisfies both givens, but c is 4, not 3. The proved equation gives 7=1+2+4."
+      "check": "Counterexample to the extra claim: d = 1, e = 2, c = 4, b = 3 and a = 7 satisfy both givens, but c is 4, not 3. The proved equation gives 7 = 1 + 2 + 4."
     },
     "A11": {
       "solution": "Assume both. The second rule turns a < b and b < a into a < a. The first rule says a < a is never true. That is a contradiction, so the two can't both be true."
@@ -116,7 +117,7 @@
     },
     "B7": {
       "solution": "If A is true, the first rule gives B and the second gives C, so 'if A then C' holds. The reverse need not hold: with A false, B false and C true, both rules are true, but 'if C then A' is false.",
-      "check": "An if-then is false only when its 'if' part is true and its 'then' part is false."
+      "check": "Check the example directly. 'If A then B' is true, because its 'if' part, A, is false. 'If B then C' is true for the same reason. 'If C then A' is false, because C is true and A is false. An if-then is false only when its 'if' part is true and its 'then' part is false."
     },
     "B8": {
       "check": "Map switch/lamp to (P, Q). The violating row is (T, F); the reverse inference is refuted by (F, T)."
@@ -125,7 +126,7 @@
       "solution": "Move terms: x²-x=x(x-1)=0. The zero-product rule gives x=0 or x=1. Dividing by x only works if x is not 0, so it throws away the solution x = 0."
     },
     "B12": {
-      "solution": "It follows in U by uniqueness. It need not follow in E: take points P, Q, R, S and line-sets l={P, Q, R}, m={P, Q, S}, n={R, S}. Every point pair has at least one listed line, but distinct l, m both contain P, Q. This is a toy incidence example that fits E, not a Euclidean plane.",
+      "solution": "It follows in U by uniqueness. It need not follow in E: take points P, Q, R, S and line-sets l={P, Q, R}, m={P, Q, S}, n={R, S}. Every point pair has at least one listed line, but distinct l, m both contain P, Q. This is a small made-up example that fits system E's rule. It is not a picture of the ordinary plane.",
       "check": "List six pairs: PQ lies on l, m; PR, QR on l; PS, QS on m; RS on n. Every pair of points has at least one line, so system E's rule holds. But P and Q are on two different lines, l and m, so 'exactly one line' fails."
     },
     "1.13-11": {

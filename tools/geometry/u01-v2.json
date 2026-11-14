@@ -246,6 +246,7 @@
       "coplanar",
       "segment",
       "ray",
+      "opposite rays",
       "parallel lines"
     ],
     "tryit": "Street-grid sketch: draw streets as lines and drag two corners. The panel always shows exactly one straight street through them. Mark three corners on one street (collinear) and one corner that is not.",
@@ -1414,7 +1415,7 @@
         "prompt": "Two segments in a drawing have no marks, but they seem equal in length. Were you given that they are equal? How could you make sure?",
         "slot": "Two unmarked segments. Answer side only: a ruler panel with marks at 0 and 5, and at 7 and 12.",
         "solution": "No. Appearance supplies neither measurement nor a hypothesis. If endpoints are on an explicitly calibrated ruler at 0, 5 and 7, 12, both distances equal 5; otherwise obtain an equality mark, measurement assumption or proof.",
-        "check": "An example that fits every given but breaks the claim: redraw one segment slightly longer while retaining all stated incidence facts. The original assumptions remain true but equality fails.",
+        "check": "Here is an example that fits every given but breaks the claim: redraw one segment a little longer, keeping every stated fact about which points lie on which lines. Everything that was given is still true, but the two segments are no longer equal.",
         "diagram": "Two disjoint, unmarked segments of visibly similar lengths; a separate exact ruler panel [0, 5] and [7, 12]. Do not add equality marks in the initial panel."
       },
       {
@@ -1530,7 +1531,7 @@
           "id": "A1",
           "prompt": "On a construction sheet, two angles carry the same arc mark, but one is drawn much wider than the other. The sheet says matching arc marks are givens. What can you conclude? What should be fixed in the drawing?",
           "slot": "Two angles named alpha and beta, each with one arc mark. One is drawn too wide and labeled 'not to scale'.",
-          "solution": "The angles are congruent because the given marks are givens. The inaccurate rendering should be corrected; the drawing does not cancel an explicit hypothesis. No numerical angle measure follows without a degree label.",
+          "solution": "The angles are congruent, because the sheet states that equal arc marks are givens. The drawing is wrong and should be fixed, but a bad drawing does not cancel a stated given. No angle measure in degrees follows, because no degree label is given.",
           "check": "Erase the picture and retain the written equal-mark convention: congruence still follows, while a numerical value remains undetermined.",
           "diagram": "Two angle panels labeled alpha, beta with identical single arcs; one deliberately distorted panel is flagged not to scale."
         },
@@ -1587,7 +1588,7 @@
           "prompt": "A bin holds two compasses, C1 and C2, and one straightedge, S. All three are metal. For this bin, decide whether each claim is true: 'every compass is metal' and 'every metal object is a compass.' For a false claim, name an object that shows it.",
           "slot": "Three inventory cards with columns COMPASS and METAL.",
           "solution": "The first is true on this stated finite bin: C1, C2 are metal. The second is false because S is metal but is a straightedge, not a compass. The claims are converse implications, not equivalent definitions.",
-          "check": "Exhaust the 3 listed objects. S has Metal=true, Compass=false, the exact truth pattern falsifying 'if Metal then Compass'.",
+          "check": "Check all 3 objects. S is metal but is not a compass. That is exactly the case that makes 'if metal, then compass' false.",
           "diagram": "Three labeled inventory cards with columns COMPASS and METAL; no color coding."
         },
         {
@@ -1603,7 +1604,7 @@
           "prompt": "You are given a = b + c and b = d + e. Prove a = d + e + c. A classmate writes c = d + e instead. Which statement follows, and why?",
           "slot": "No drawing needed; live text only.",
           "solution": "Substitute b=d+e into a=b+c: a=(d+e)+c=d+e+c. Nothing identifies c with b, so c=d+e does not follow.",
-          "check": "Counterexample to the extra assertion: d=1, e=2, c=4, b=3, a=7 satisfies both givens, but c is 4, not 3. The proved equation gives 7=1+2+4.",
+          "check": "Counterexample to the extra claim: d = 1, e = 2, c = 4, b = 3 and a = 7 satisfy both givens, but c is 4, not 3. The proved equation gives 7 = 1 + 2 + 4.",
           "diagram": "Dependency tree with b feeding into the expression for a; the unsupported c=b edge is crossed out."
         },
         {
@@ -1677,7 +1678,7 @@
           "prompt": "A system's only assumptions are 'A implies B' and 'B implies C.' Show that A implies C. Must 'C implies A' also follow? Give true or false values for A, B and C to back up your answer.",
           "slot": "Arrow chain A to B to C, with an empty truth-value table below.",
           "solution": "If A is true, the first rule gives B and the second gives C, so 'if A then C' holds. The reverse need not hold: with A false, B false and C true, both rules are true, but 'if C then A' is false.",
-          "check": "An if-then is false only when its 'if' part is true and its 'then' part is false.",
+          "check": "Check the example directly. 'If A then B' is true, because its 'if' part, A, is false. 'If B then C' is true for the same reason. 'If C then A' is false, because C is true and A is false. An if-then is false only when its 'if' part is true and its 'then' part is false.",
           "diagram": "Three-node implication chain A→B→C, with the counterassignment printed in a separate table."
         },
         {
@@ -1716,7 +1717,7 @@
           "id": "B12",
           "prompt": "System U assumes exactly one line through every two distinct points. System E assumes at least one line through every two distinct points and does not assume uniqueness. (In plain words: For every pair of different points, U requires exactly one line through both points. E requires at least one line through both points, but allows either one or more than one.) Does 'two different lines can't share two different points' hold in both systems? If not, build a small example that breaks it.",
           "slot": "A blank table with point rows and line columns.",
-          "solution": "It follows in U by uniqueness. It need not follow in E: take points P, Q, R, S and line-sets l={P, Q, R}, m={P, Q, S}, n={R, S}. Every point pair has at least one listed line, but distinct l, m both contain P, Q. This is a toy incidence example that fits E, not a Euclidean plane.",
+          "solution": "It follows in U by uniqueness. It need not follow in E: take points P, Q, R, S and line-sets l={P, Q, R}, m={P, Q, S}, n={R, S}. Every point pair has at least one listed line, but distinct l, m both contain P, Q. This is a small made-up example that fits system E's rule. It is not a picture of the ordinary plane.",
           "check": "List six pairs: PQ lies on l, m; PR, QR on l; PS, QS on m; RS on n. Every pair of points has at least one line, so system E's rule holds. But P and Q are on two different lines, l and m, so 'exactly one line' fails.",
           "diagram": "Four-point/three-line incidence table for the given sets; highlight the two PQ memberships."
         }

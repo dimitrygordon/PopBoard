@@ -91,7 +91,7 @@ test('every Words to know term has a meaning, rendered bold term then meaning on
    n++;
   }
  }
- assert.equal(n,72);
+ assert.equal(n,73);
 });
 test('Unit 1 animation hooks keep the Leo wiring path and step-layer convention',()=>{
  const draw=read('public/geometry/geo-draw.js');
