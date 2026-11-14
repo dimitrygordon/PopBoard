@@ -132,3 +132,9 @@ export function asaRaysFigure(d=[100,290],e=[480,290]){
  for(const [n,p] of [['D',d],['E',e],['F',f]]){body+=`<text x="${p[0]}" y="${p[1]+(n==='F'?-15:30)}" font-family="serif" font-size="32" text-anchor="middle">${n}</text>`;if(n!=='F')body+=`<circle cx="${p[0]}" cy="${p[1]}" r="9" fill="white" stroke="black" data-handle="${n}" tabindex="0" role="button" aria-label="Drag ${n}"/>`;}
  return svg(body+`<text x="300" y="36" text-anchor="middle" font-family="serif" font-size="32">Fixed endpoint angles: D = 40°, E = 60°</text>`);
 }
+
+// U4-13: reserved slot for Leo's two-triangle figure. Staff spec is in docs/geometry/v2/LEO-DIAGRAMS-unit04.md.
+// The SVG is a clean empty frame with no staff words, slot ids, or coordinates.
+export function leoPendingFigure(){
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" role="img"><rect x="18" y="18" width="564" height="264" fill="none" stroke="black" stroke-width="1.6" stroke-dasharray="9 8"/></svg>';
+}

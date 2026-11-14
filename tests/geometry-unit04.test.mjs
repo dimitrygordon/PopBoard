@@ -104,7 +104,7 @@ test('4.14 art-slot prompt and current learner correction describe the same vert
  const edits=JSON.parse(read('tools/geometry/spec-src/art-prompts-u04.json'));
  const slide=deck(14).slides.find(s=>s.geo.kind==='common-mistake').geo;
  assert.equal(slide.prompt,edits['4.14']);assert.match(slide.prompt,/vertical angles already give/);
- assert.match(slide.correction,/Vertical angles alone give that angle in one step/);
+ assert.match(slide.correction,/Angles AOC and BOD are vertical angles, so they are equal in one step/);
  assert.ok(!slide.prompt.includes('non-included angle'));
 });
 
@@ -119,12 +119,15 @@ test('4.11 second worked figure doubles every given and both circle crossings',(
  const hits=lines.filter(([x,y])=>Math.hypot(x-circle[0],y-circle[1])<1e-8).slice(0,2);
  assert.equal(hits.length,2);for(const [x,y,a,b] of hits)assert.ok(Math.abs(Math.hypot(a-x,b-y)-circle[2])<1e-8);
 });
-test('4.11 misconception has its own tangent circle and perpendicular contact mark',()=>{
+test('4.11 misconception leaves a reserved slot for Leo\'s two-triangle figure',()=>{
  const {figure}=deck(11).slides.find(s=>s.geo.kind==='common-mistake').geo;
- assert.match(figure.alt,/once at C strictly beyond A/);assert.match(figure.alt,/right-angle mark/);
- assert.ok(!figure.svg.includes('C1'));assert.ok(figure.svg.includes('BC = 3'));
- const [cx,cy,r]=figure.svg.match(/<circle cx="([^"]+)" cy="([^"]+)" r="([^"]+)"/).slice(1).map(Number);
- assert.ok(Math.abs(cy+r-300)<1e-8);assert.ok(Number.isFinite(cx));
+ assert.match(figure.alt,/Two triangles that share the angle at A, side AB, and side BC/);
+ assert.match(figure.svg,/stroke-dasharray="9 8"/);
+ assert.ok(!figure.svg.includes('BC = 3'));assert.ok(!figure.svg.includes('C1'));
+ assert.doesNotMatch(figure.svg,/PLACEHOLDER|TODO|lorem|Figure coming/i);
+ const commission=read('docs/geometry/v2/LEO-DIAGRAMS-unit04.md');
+ assert.match(commission,/U4-13 common-mistake figure/);
+ assert.match(commission,/A=\(0,0\), B=\(8,6\)/);
 });
 test('triangle copy rejects flat and coincident inputs but admits nearby valid triangles at different scales',async()=>{
  const {copyTriangleState}=await import('../public/geometry/gx/u04.js');

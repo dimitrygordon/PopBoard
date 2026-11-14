@@ -700,12 +700,12 @@ Each worked example shows one step at a time: step text on the left, its reason 
     > Version 2: ten original aligned items for 4.1 to 4.8 only. No SSS, triangle-angle sum, trig or distance-formula dependency. Keys and second checks are teacher-only until reveal. All diagram specifications are builder-only and use the global editable SVG, black-on-white, live-label rules above. Make a new figure per item, not a review screenshot. Each prompt includes all required givens.
     >
     > 1. **Prompt:** Triangle JKL ≅ triangle VUW. Name the angle matching angle L and the side matching KJ.
-    >    **Worked solution:** L↔W, so angle W; K↔U and J↔V, so side UV.
+    >    **Worked solution:** L matches W, so the angle is angle W. K matches U and J matches V, so the side is UV.
     >    **Independent second check:** Reverse the lists VUW and JKL: W returns to L and UV returns to KJ.
     >    **B&W diagram spec:** Two separated scalene triangles JKL and VUW. Use J=(0,0), K=(6,0), L=(2,4); V=(12,1), U=(12,7), W=(8,3). Display the congruence statement, not answer arrows.
     >
     > 2. **Prompt:** Triangle NOP ≅ triangle ZYX, NP = 4t + 5, and ZX = 37. Find t.
-    >    **Worked solution:** N↔Z and P↔X, so NP=ZX. Solve 4t+5=37, 4t=32, t=8.
+    >    **Worked solution:** N matches Z and P matches X, so NP = ZX. Then 4t + 5 = 37, so 4t = 32 and t = 8.
     >    **Independent second check:** Substitute: 4(8)+5=37. Both first-to-third sides have length 37.
     >    **B&W diagram spec:** Draw NOP with N=(0,0), P=(37,0), O=(12,16), and a rotated congruent ZYX copy. Label NP with the expression and ZX with 37.
     >
@@ -740,12 +740,12 @@ Each worked example shows one step at a time: step text on the left, its reason 
     >    **B&W diagram spec:** J=(0,40), L=(-9,0), K=(9,0). Mark only the two base angles equal and label the leg expressions. The 9,40 coordinates remain builder-only.
     >
     > 9. **Prompt:** Triangles BCD and RST have corresponding angles B=R=31, C=S=67, D=T=82 degrees. Side CD is 4 and side ST is 10. A student claims AAA proves BCD≅RST. Refute the claim using the givens.
-    >    **Worked solution:** The claimed correspondence would require CD=ST, but 4≠10. Equal angles do not force congruence.
+    >    **Worked solution:** That match would need CD = ST, but CD = 4 and ST = 10. Equal angles do not force congruence.
     >    **Independent second check:** All three angle sizes are distinct, so any congruence must match equal-sized angles in exactly this order. No alternative vertex matching rescues the claim.
     >    **B&W diagram spec:** Draw BCD on base CD=4 with endpoint angles C=67,D=82; draw a separate 2.5-times enlarged RST copy. Label the corresponding angles as GIVEN, not derived from the equilateral theorem.
     >
     > 10. **Prompt:** Given AC = BC and angle ACD = angle BCD, reorder these three proof lines and supply the reason for line (iii): (i) AD = BD by CPCTC; (ii) triangle ACD ≅ triangle BCD by SAS; (iii) CD = CD.
-    >    **Worked solution:** First (iii), by reflexivity. Combine it with the two givens to obtain (ii), by SAS. Only then conclude (i), by CPCTC.
+    >    **Worked solution:** First (iii), because a segment equals itself. Combine it with the two givens to obtain (ii), by SAS. Only then conclude (i), by CPCTC.
     >    **Independent second check:** C is the included-angle vertex between AC and CD, and between BC and CD. The CPCTC line now has its congruence hypothesis established.
     >    **B&W diagram spec:** C=(0,0), D=(8,0), A=(3,4), B=(3,-4). Mark AC=BC and the two angle arcs at C. Withhold AD=BD marks until reveal.
     >
@@ -904,7 +904,7 @@ Each worked example shows one step at a time: step text on the left, its reason 
     3. Why does AC1 = 3 and AC2 = 5 prove the triangles are not congruent?
        - Reveal 1 (worked solution): The other two sides match, but the third sides differ.
        - Reveal 2 (second check): Call the shared compass length r. The perimeters are 3 + r + 5 = 8 + r and 5 + r + 5 = 10 + r. They differ, so even changing the vertex matching cannot make the triangles congruent.
-  - Common mistake: SSA is not a universal congruence test. In the special pictured case, the circle is tangent to the supporting line at a point C strictly beyond A on the ray, and BC is perpendicular to the line. Then ABC is one nondegenerate (real, not flat) right triangle. A single intersection on a ray is not always a tangency.
+  - Common mistake: Keep the same angle at A, but make AB = 10. Draw the circle centered at B through the point 6 from A along the ray. That circle also crosses the ray 10 from A. So two different triangles have the same angle at A, the same AB and the same BC. Bigger lengths do not make SSA a test.
   - Builder-only: Euclid's coordinate version (A = (0,0), B = (4,3), circle radius sqrt(10)) and the doubled-coordinate version stay builder-only, for checking the diagram. Students never see coordinates or sqrt(10) in 4.11.
 - **Builder and answer-key layer** (Euclid; not shown to students):
 - Precise math *(Math by Euclid, /workspace/geometry/math/UNIT04-FILL-v2.md)*:
@@ -1071,7 +1071,7 @@ Each worked example shows one step at a time: step text on the left, its reason 
     | Step | Reason |
     |---|---|
     | Mark U and V on the two rays of the angle so that OU = OV. | One compass setting, centered at O, gives OU = OV. |
-    | Draw equal arcs from U and V that meet at X inside the angle. | One new compass setting, used from both U and V, so UX = VX. |
+    | With one compass setting, more than half of UV, draw arcs from U and V that cross at X inside the angle. | One new compass setting, used from both U and V, so UX = VX. |
     | OU = OV, UX = VX, OX = OX. | Compass settings and a shared side. |
     | Triangle OUX ≅ triangle OVX. | SSS. |
     | Angle UOX = angle VOX, so OX bisects the angle. | CPCTC. X must be inside the angle and not at O. |
@@ -1157,7 +1157,7 @@ Each worked example shows one step at a time: step text on the left, its reason 
     | x = 12, so both angles are 40 degrees. | Solve and substitute. |
     | No triangles needed. | Pick the shortest route. |
   - Worked example 3 (moved from 4.10):
-    *Worked example 3, moved from 4.10: the kite (original).* Reveal one row per tap:
+    *The kite.* Reveal one row per tap:
 
     | Step | Reason |
     |---|---|
@@ -1175,10 +1175,10 @@ Each worked example shows one step at a time: step text on the left, its reason 
     3. Two sides and a non-included angle match. Can you use SSS?
        - Reveal 1 (worked solution): No. The third side is not known.
        - Reveal 2 (second check): That is SSA, and 4.11 showed SSA can fail.
-    4. (Moved from 4.10) in the convex kite, AB = 2x + 1 and AD = 11. Find x.
+    4. In the convex kite, AB = 2x + 1 and AD = 11. Find x.
        - Reveal 1 (worked solution): The equal sides give 2x + 1 = 11, so x = 5.
        - Reveal 2 (second check): Plug in: 2(5) + 1 = 11.
-  - Common mistake: Jordan draws two triangles and proves them congruent just to find an angle in Worked example 2. Not every proof needs congruent triangles. Vertical angles alone give that angle in one step, so check for a direct angle fact first.
+  - Common mistake: Jordan draws triangles AOC and BOD and tries to prove them congruent to find the angle in Worked example 2. That cannot work: the two triangles are clearly different sizes. No triangles are needed. Angles AOC and BOD are vertical angles, so they are equal in one step. Check for a direct angle fact first.
   - Moved in: From 4.10: Worked example 3 (the convex kite, SSS then CPCTC) and Practice 4 (AB = 2x + 1, AD = 11).
 - **Builder and answer-key layer** (Euclid; not shown to students):
 - Precise math *(Math by Euclid, /workspace/geometry/math/UNIT04-FILL-v2.md)*:
@@ -1250,13 +1250,13 @@ Each worked example shows one step at a time: step text on the left, its reason 
     > Original aligned item bank. Source scope: Jacobs 4.2 to 4.5 for quiz, Chapter 4 Summary and Review pp. 176 to 180 for review. No claim that these are verbatim book items.
     >
     > 1. **Prompt:** ABC≅PQR. Which side matches CA?
-    >    **Worked solution and second check:** RP, by C↔R,A↔P. Check: third-first positions match.
+    >    **Worked solution and second check:** RP, because C matches R and A matches P. Check: CA uses the third and first letters, and so does RP.
     >
     > 2. **Prompt:** ABC≅DEF,BC=2x+3,EF=15. Find x.
     >    **Worked solution and second check:** 2x+3=15,2x=12,x=6. Check: 2(6)+3=15.
     >
     > 3. **Prompt:** AB=DE,AC=DF,A=D. Name the test.
-    >    **Worked solution and second check:** SAS, since A,D are between the given sides. Check: ray-alignment motion fixes both endpoints.
+    >    **Worked solution and second check:** SAS, because angle A is between sides AB and AC, and angle D is between sides DE and DF. Check: these are the included angles.
     >
     > 4. **Prompt:** A=D,B=E,AB=DE. Name the test.
     >    **Worked solution and second check:** ASA, since AB,DE join the given-angle vertices. Check: two endpoint rays have one intersection.
@@ -1271,10 +1271,10 @@ Each worked example shows one step at a time: step text on the left, its reason 
     >    **Worked solution and second check:** 3x+2=5x-16 gives x=9 and both angles 29. Check: 27+2=45-16=29.
     >
     > 8. **Prompt:** Angle B=angle C in ABC. Prove AB=AC.
-    >    **Worked solution and second check:** Compare ABC with ACB; B=C,C=B,BC=CB imply ASA,then AB=AC by CPCTC. Check: all used results precede SSS.
+    >    **Worked solution and second check:** Compare triangle ABC with triangle ACB. Angle B = angle C, angle C = angle B and BC = CB, so they are congruent by ASA. Then AB = AC by CPCTC. Check: every fact used here was proved before SSS.
     >
     > 9. **Prompt:** Does AAA prove congruence?
-    >    **Worked solution and second check:** No. Side-2 and side-5 equilateral triangles have matching angles but unequal sides. Check: isometries cannot map length 2 to 5.
+    >    **Worked solution and second check:** No. Side-2 and side-5 equilateral triangles have matching angles but unequal sides. Check: A rigid motion keeps lengths, so it cannot turn a side of 2 into a side of 5.
     >
     > 10. **Prompt:** A proof cites CPCTC before congruence. Fix the ordering.
     >    **Worked solution and second check:** First give SAS/ASA facts, then conclude congruence, then use CPCTC. Check: CPCTC hypothesis is now established.
@@ -1289,13 +1289,13 @@ Each worked example shows one step at a time: step text on the left, its reason 
     >    **Worked solution and second check:** Both give DF=4,EF=3,DE=5; SSS proves congruence. Check: reflection in DE exchanges intersections.
     >
     > 14. **Prompt:** Equal-radius circles at A,B meet at P,Q. What must be defined before referring to M?
-    >    **Worked solution and second check:** M=PQ∩AB. With P,Q opposite sides and common radius>AB/2,M lies between A,B. Check: coordinate midpoint model yields M on both lines.
+    >    **Worked solution and second check:** M is the point where segment PQ crosses line AB. P and Q are on opposite sides of line AB, and both circles use the same radius, more than half of AB, so M is between A and B. Check: coordinate midpoint model yields M on both lines.
     >
     > 15. **Prompt:** AB=10,r=5. Can two crossing points define a perpendicular bisector?
     >    **Worked solution and second check:** No. Tangency yields one point. Check: radius must strictly exceed half of 10.
     >
     > 16. **Prompt:** A=(0,0),B=(4,3),C1=(3,0),C2=(5,0). State the SSA failure without trig.
-    >    **Worked solution and second check:** Same rays give equal angle A,AB common,and circle centered B through both C vertices gives BC1=BC2. But AC1=3≠5=AC2. Check: side multisets differ.
+    >    **Worked solution and second check:** The two triangles share angle A, because C1 and C2 are on the same ray from A. They share side AB. BC1 = BC2, because both are radii of the circle centered at B. But AC1 = 3 and AC2 = 5, so the triangles are not congruent. Check: the two triangles do not have the same three side lengths.
     >
     > Reteach links: items 1 to 2 → 4.1; 3 → 4.3; 4 → 4.4; 5 → 4.5; 6 → 4.6; 7 → 4.7; 8 → 4.8; 9 to 10 → criteria/proof order. For review items 11 to 16 use 4.10 to 4.13. Diagram specs reuse the named lesson SVG with givens only, then reveal conclusion marks. End with “What's confusing?”
 
@@ -1351,12 +1351,12 @@ Each worked example shows one step at a time: step text on the left, its reason 
     >
     > 3. **Prompt:** HI = RS = 8, HJ = RT = 13, and angle IHJ = angle SRT = 37 degrees. Prove triangle HIJ ≅ triangle RST and deduce IJ = ST.
     >    **Worked solution:** The two side pairs and their included angles match, so HIJ≅RST by SAS. Then IJ=ST by CPCTC.
-    >    **Independent second check:** The side endpoints share H and R, the marked angle vertices. A ray-alignment rigid motion fixes I to S and J to T.
+    >    **Independent second check:** The two given sides meet at H and at R, which are the marked angle vertices. A rigid motion that lines up the matching rays sends I to S and J to T.
     >    **B&W diagram spec:** Construct HIJ from base HI=8, HJ=13, included angle 37; a rotated RST copy. Two distinct side-tick sets and included-angle arcs only.
     >
     > 4. **Prompt:** Triangles UVW and DFE have angle V = angle F = 48 degrees, angle W = angle E = 73 degrees, and VW = FE = 12. Prove the triangles congruent and identify the side matching UW.
     >    **Worked solution:** VW and FE are included sides between the marked angles, so UVW≅DFE by ASA. UW matches DE.
-    >    **Independent second check:** V↔F and W↔E fix the base endpoints; the two endpoint rays intersect uniquely, forcing U↔D.
+    >    **Independent second check:** V matches F and W matches E. The two rays from the ends of the side cross at only one point, so U must match D.
     >    **B&W diagram spec:** Base VW=12, inward rays 48 at V and 73 at W meet at U. Draw a congruent rotated DFE copy with the same endpoint arcs.
     >
     > 5. **Prompt:** Segments JK and LN meet at O, their common midpoint. JO = 4 and LO = 9. Prove triangle JOL ≅ triangle KON; state KO and NO.
@@ -1385,7 +1385,7 @@ Each worked example shows one step at a time: step text on the left, its reason 
     >    **B&W diagram spec:** Draw base AB=6, angle A=42, angle B=58; rays meet at C. Draw UVW enlarged by 2.5. Label all stated angles as givens and UV=15.
     >
     > 10. **Prompt:** In convex quadrilateral KLMN, KL = KN and LM = NM. A proof starts with angle LKM = NKM by CPCTC. Repair the proof to show KM bisects angle LKN.
-    >    **Worked solution:** First KM=KM by reflexivity. With KL=KN and LM=NM, KLM≅KNM by SSS. Now angle LKM=NKM by CPCTC. In a convex quadrilateral the diagonal KM lies inside angle LKN, so it bisects that angle.
+    >    **Worked solution:** First, KM = KM because a segment equals itself. With KL=KN and LM=NM, KLM≅KNM by SSS. Now angle LKM=NKM by CPCTC. In a convex quadrilateral the diagonal KM lies inside angle LKN, so it bisects that angle.
     >    **Independent second check:** K↔K, L↔N, M↔M matches each of the three side facts. Both equal angles are the two parts of the original angle, not exterior angles.
     >    **B&W diagram spec:** K=(0,5), L=(-4,0), M=(0,-6), N=(4,0). Draw diagonal KM dashed and the two given side-tick classes. Do not mark equal angles before the last reveal.
     >
@@ -1418,7 +1418,7 @@ Each worked example shows one step at a time: step text on the left, its reason 
     >
     > 4. **Prompt:** Triangles NOP and LSR have angle O = angle S = 56 degrees, angle P = angle R = 64 degrees, and OP = SR = 15. Prove the triangles congruent and identify the side matching NP.
     >    **Worked solution:** OP and SR join the marked-angle vertices. Thus NOP≅LSR by ASA, and NP matches LR.
-    >    **Independent second check:** O↔S, P↔R force N↔L by the unique intersection of the endpoint rays, independently confirming correspondence.
+    >    **Independent second check:** O matches S and P matches R. The two rays from the ends of the side cross at only one point, so N must match L.
     >    **B&W diagram spec:** Base OP=15, endpoint inward angles 56 and 64 meet at N. Draw a congruent reflected LSR copy.
     >
     > 5. **Prompt:** Segments AC and BD meet at Z, their common midpoint. AZ = 7 and BZ = 12. Prove triangle AZB ≅ triangle CZD; state CZ and DZ.
@@ -1447,7 +1447,7 @@ Each worked example shows one step at a time: step text on the left, its reason 
     >    **B&W diagram spec:** Draw base DE=8 with angle D=36, E=63; a separate 2.5-times enlarged LMN copy. Angle labels are givens.
     >
     > 10. **Prompt:** In convex quadrilateral RSTU, RS = RU and ST = UT. A proof starts with angle SRT = URT by CPCTC. Repair the proof to show RT bisects angle SRU.
-    >    **Worked solution:** First RT=RT by reflexivity. Then RST≅RUT by SSS using the two given pairs. CPCTC gives angle SRT=URT. Convexity puts RT inside angle SRU, hence RT is its bisector.
+    >    **Worked solution:** First, RT = RT because a segment equals itself. Then RST≅RUT by SSS using the two given pairs. CPCTC gives angle SRT=URT. Convexity puts RT inside angle SRU, hence RT is its bisector.
     >    **Independent second check:** The ordered match R↔R, S↔U, T↔T makes all three SSS equalities corresponding. The conclusion occurs only after congruence.
     >    **B&W diagram spec:** R=(0,6), S=(-5,0), T=(0,-3), U=(5,0). Dashed RT, two different given-side tick classes, no conclusion arcs in prompt.
     >
@@ -1457,7 +1457,7 @@ Each worked example shows one step at a time: step text on the left, its reason 
     >    **B&W diagram spec:** Draw those two circles, centers, J,K, radius labels 12 and GH=18. Separate tangent thumbnail for radius 9. All coordinates builder-only.
     >
     > 12. **Prompt:** Use the supplied figure: N1 and N2 lie on the same ray from L; LM = 17, LN1 = 5, LN2 = 11; both N points lie on one circle centered at M. Prove that triangles LMN1 and LMN2 have matching SSA data but are not congruent. No trig or distance formula.
-    >    **Worked solution:** LM is shared; MN1=MN2 as radii of one circle; angle MLN1=MLN2 because both N points are on the same ray from L. That angle is nonincluded for LM and MN. LN1=5 differs from LN2=11, ruling out the named congruence.
+    >    **Worked solution:** LM is shared; MN1=MN2 as radii of one circle; angle MLN1=MLN2 because both N points are on the same ray from L. That angle is not between sides LM and MN. LN1=5 differs from LN2=11, ruling out the named congruence.
     >    **Independent second check:** With unknown common radius r, perimeters 22+r and 28+r differ, so no alternative correspondence works either. Backend: (8-5)^2+15^2=(8-11)^2+15^2=234 and LM squared is 289.
     >    **B&W diagram spec:** MANDATORY inline figure: L=(0,0), M=(8,15), N1=(5,0), N2=(11,0), ray LN2, circle centered M radius sqrt(234). Draw equal-radius ticks on MN1,MN2 and common angle arc at L. Dimension labels LM=17, LN1=5, LN2=11. Coordinates and radical are builder-only.
     >
