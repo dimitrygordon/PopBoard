@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" color="#111" role="img" aria-labelledby="u01-hook-l03-h5-title" data-steps="2">
+  <title id="u01-hook-l03-h5-title">A laser beam as a model of a ray</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M34,80L150,80" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.53s"/>
+    <path d="M34,112L150,112" stroke-width="2" class="draw" pathLength="1" style="--d:0.45s;--t:0.53s"/>
+    <path d="M34,80A8,16 0 0 0 34,112" stroke-width="2" class="draw" pathLength="1" style="--d:0.90s;--t:0.50s"/>
+    <path d="M144,96A6,16 0 1 1 156,96A6,16 0 1 1 144,96" stroke-width="2" class="draw" pathLength="1" style="--d:1.33s;--t:0.90s"/>
+    <path d="M40.37,110.18L44.12,104.82" stroke-width="1"/>
+    <path d="M46.47,110.18L50.23,104.82" stroke-width="1"/>
+    <path d="M52.58,110.18L56.33,104.82" stroke-width="1"/>
+    <path d="M58.68,110.18L62.43,104.82" stroke-width="1"/>
+    <path d="M64.78,110.18L68.54,104.82" stroke-width="1"/>
+    <path d="M70.89,110.18L74.64,104.82" stroke-width="1"/>
+    <path d="M76.99,110.18L80.75,104.82" stroke-width="1"/>
+    <path d="M83.1,110.18L86.85,104.82" stroke-width="1"/>
+    <path d="M89.2,110.18L92.95,104.82" stroke-width="1"/>
+    <path d="M95.3,110.18L99.06,104.82" stroke-width="1"/>
+    <path d="M101.41,110.18L105.16,104.82" stroke-width="1"/>
+    <path d="M107.51,110.18L111.27,104.82" stroke-width="1"/>
+    <path d="M113.62,110.18L117.37,104.82" stroke-width="1"/>
+    <path d="M119.72,110.18L123.47,104.82" stroke-width="1"/>
+    <path d="M125.82,110.18L129.58,104.82" stroke-width="1"/>
+    <path d="M131.93,110.18L135.68,104.82" stroke-width="1"/>
+    <path d="M138.03,110.18L141.43,105.33" stroke-width="1"/>
+    <path d="M76,80L78,72L98,72L100,80" stroke-width="2" class="draw" pathLength="1" style="--d:2.09s;--t:0.36s"/>
+    <path d="M154,77L172,77" stroke-width="2" class="draw" pathLength="1" style="--d:2.40s;--t:0.34s"/>
+    <path d="M154,115L172,115" stroke-width="2" class="draw" pathLength="1" style="--d:2.69s;--t:0.34s"/>
+    <path d="M148,96A6,19 0 1 1 160,96A6,19 0 1 1 148,96" stroke-width="2" class="draw" pathLength="1" style="--d:2.97s;--t:0.90s"/>
+    <path d="M165,96A7,19 0 1 1 179,96A7,19 0 1 1 165,96" stroke-width="2" class="draw" pathLength="1" style="--d:3.74s;--t:0.90s"/>
+    <path d="M168.5,96A3.5,9 0 1 1 175.5,96A3.5,9 0 1 1 168.5,96" stroke-width="1" class="draw" pathLength="1" style="--d:4.50s;--t:0.90s"/>
+  </g>
+  <g data-step="2" style="--sd:5.42s">
+    <path d="M172,96L384,96" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.60s"/>
+    <path d="M371,101.46L384,96L371,90.54" stroke-width="2" class="fade" style="--d:0.51s"/>
+    <circle cx="172" cy="96" r="4.5" fill="currentColor" stroke="none" class="fade" style="--d:0.63s"/>
+    <path d="M178,122L194,158" stroke-width="1" class="draw" pathLength="1" style="--d:0.75s;--t:0.38s"/>
+    <text fill="currentColor" stroke="none" x="222" y="197.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.07s">endpoint</text>
+  </g>
+  </g>
+</svg>

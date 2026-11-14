@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" color="#111" role="img" aria-labelledby="u01-l05-s10-title" data-steps="1">
+  <title id="u01-l05-s10-title">Circle, bow-tie and triangle tested against two polygon conditions</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <path d="M72,24A46,46 0 1 0 72,116A46,46 0 1 0 72,24" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="72" y="157.36" font-size="26" text-anchor="middle">circle</text>
+  <path d="M150,37H168A4,4 0 0 1 172,41V59A4,4 0 0 1 168,63H150A4,4 0 0 1 146,59V41A4,4 0 0 1 150,37Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="184" y="59.36" font-size="26">straight sides</text>
+  <path d="M150,89H168A4,4 0 0 1 172,93V111A4,4 0 0 1 168,115H150A4,4 0 0 1 146,111V93A4,4 0 0 1 150,89Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="184" y="111.36" font-size="26">no crossings</text>
+  <g data-step="1" class="conclusion" style="--sd:0.00s">
+    <path d="M152,43L166,57M166,43L152,57" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.40s"/>
+    <path d="M150,102.4L156.6,109.2L168.6,94.4" stroke-width="3" class="draw" pathLength="1" style="--d:0.34s;--t:0.35s"/>
+  </g>
+  <path d="M14,170L386,170" stroke-width="1"/>
+  <path d="M26,192L118,272L118,192L26,272L26,192" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="72" y="319.36" font-size="26" text-anchor="middle">bow-tie</text>
+  <path d="M150,199H168A4,4 0 0 1 172,203V221A4,4 0 0 1 168,225H150A4,4 0 0 1 146,221V203A4,4 0 0 1 150,199Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="184" y="221.36" font-size="26">straight sides</text>
+  <path d="M150,251H168A4,4 0 0 1 172,255V273A4,4 0 0 1 168,277H150A4,4 0 0 1 146,273V255A4,4 0 0 1 150,251Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="184" y="273.36" font-size="26">no crossings</text>
+  <g data-step="1" class="conclusion" style="--sd:0.00s">
+    <path d="M150,212.4L156.6,219.2L168.6,204.4" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.35s"/>
+    <path d="M152,257L166,271M166,257L152,271" stroke-width="3" class="draw" pathLength="1" style="--d:0.30s;--t:0.40s"/>
+  </g>
+  <path d="M14,332L386,332" stroke-width="1"/>
+  <path d="M72,352L28.7,427L115.3,427L72,352" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="72" y="481.36" font-size="26" text-anchor="middle">triangle</text>
+  <path d="M150,361H168A4,4 0 0 1 172,365V383A4,4 0 0 1 168,387H150A4,4 0 0 1 146,383V365A4,4 0 0 1 150,361Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="184" y="383.36" font-size="26">straight sides</text>
+  <path d="M150,413H168A4,4 0 0 1 172,417V435A4,4 0 0 1 168,439H150A4,4 0 0 1 146,435V417A4,4 0 0 1 150,413Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="184" y="435.36" font-size="26">no crossings</text>
+  <g data-step="1" class="conclusion" style="--sd:0.00s">
+    <path d="M150,374.4L156.6,381.2L168.6,366.4" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.35s"/>
+    <path d="M150,426.4L156.6,433.2L168.6,418.4" stroke-width="3" class="draw" pathLength="1" style="--d:0.30s;--t:0.35s"/>
+  </g>
+  </g>
+</svg>

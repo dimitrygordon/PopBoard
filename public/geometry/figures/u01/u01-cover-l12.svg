@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" color="#111" role="img" aria-labelledby="u01-cover-l12-title" data-steps="4">
+  <title id="u01-cover-l12-title">A Deductive System</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M362,225L438,225" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.45s"/>
+    <circle cx="362" cy="225" r="4" fill="currentColor" stroke="none" class="fade" style="--d:0.38s"/>
+    <circle cx="438" cy="225" r="4" fill="currentColor" stroke="none" class="fade" style="--d:0.50s"/>
+  </g>
+  <g data-step="2" style="--sd:0.77s">
+    <path d="M438,225A76,76 0 1 0 286,225A76,76 0 1 0 438,225" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+    <path d="M362,225A76,76 0 1 0 514,225A76,76 0 1 0 362,225" stroke-width="2" class="draw" pathLength="1" style="--d:0.94s;--t:1.10s"/>
+  </g>
+  <g data-step="3" style="--sd:2.79s">
+    <path d="M362,225L400,159.18L438,225L400,290.82L362,225" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.81s"/>
+    <circle cx="400" cy="159.18" r="4" fill="currentColor" stroke="none" class="fade" style="--d:0.69s"/>
+    <circle cx="400" cy="290.82" r="4" fill="currentColor" stroke="none" class="fade" style="--d:0.81s"/>
+  </g>
+  <g data-step="4" style="--sd:3.87s">
+    <path d="M400,83.18A76,76 0 1 0 400,235.18A76,76 0 1 0 400,83.18" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+    <path d="M400,214.82A76,76 0 1 0 400,366.82A76,76 0 1 0 400,214.82" stroke-width="1" class="draw" pathLength="1" style="--d:0.94s;--t:1.10s"/>
+    <path d="M400,93A132,132 0 1 0 400,357A132,132 0 1 0 400,93" stroke-width="3" class="draw" pathLength="1" style="--d:1.87s;--t:1.10s"/>
+  </g>
+  </g>
+</svg>

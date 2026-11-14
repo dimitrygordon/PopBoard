@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 740" color="#111" role="img" aria-labelledby="u01-hook-l04-h6-title" data-steps="4">
+  <title id="u01-hook-l04-h6-title">Eratosthenes: parallel sunlight and a 7.2 degree angle</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M392.75,278.34A470,470 0 0 0 71.25,278.34" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:1.00s"/>
+  </g>
+  <g data-step="2" style="--sd:1.00s">
+    <text fill="currentColor" stroke="none" x="330" y="39.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">sunlight</text>
+    <path d="M162,56L162,255.24" stroke-width="1" class="draw" pathLength="1" style="--d:0.12s;--t:0.70s"/>
+    <path d="M157.8,90L162,100L166.2,90" stroke-width="1" class="fade" style="--d:0.71s"/>
+    <path d="M232,56L232,300" stroke-width="1" class="draw" pathLength="1" style="--d:0.83s;--t:0.79s"/>
+    <path d="M227.8,90L232,100L236.2,90" stroke-width="1" class="fade" style="--d:1.50s"/>
+    <path d="M300,56L300,254.95" stroke-width="1" class="draw" pathLength="1" style="--d:1.62s;--t:0.70s"/>
+    <path d="M295.8,90L300,100L304.2,90" stroke-width="1" class="fade" style="--d:2.22s"/>
+    <path d="M360,56L360,267.77" stroke-width="1" class="draw" pathLength="1" style="--d:2.34s;--t:0.72s"/>
+    <path d="M355.8,90L360,100L364.2,90" stroke-width="1" class="fade" style="--d:2.95s"/>
+    <path d="M151.79,56L151.79,256.9" stroke-width="1" class="draw" pathLength="1" style="--d:3.07s;--t:0.70s"/>
+    <path d="M147.59,45.05L151.79,55.05L155.99,45.05" stroke-width="1" class="fade" style="--d:3.67s"/>
+  </g>
+  <g data-step="3" style="--sd:4.94s">
+    <path d="M223,249L223,300" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.40s"/>
+    <path d="M241,249L241,300" stroke-width="2" class="draw" pathLength="1" style="--d:0.34s;--t:0.40s"/>
+    <path d="M223,300L241,300" stroke-width="2" class="draw" pathLength="1" style="--d:0.68s;--t:0.34s"/>
+    <text fill="currentColor" stroke="none" x="250" y="326" font-size="26" class="fade" style="--d:0.97s">Syene</text>
+    <path d="M173.09,253.71L151.79,85.05" stroke-width="3" class="draw" pathLength="1" style="--d:1.09s;--t:0.64s"/>
+    <path d="M173.09,253.71L173.01,253.72L172.93,253.73L172.85,253.74L172.77,253.75L172.69,253.76L172.61,253.77L172.52,253.78L172.44,253.79L172.36,253.8L172.28,253.81L172.2,253.82L172.12,253.83L172.04,253.84L171.95,253.85L171.87,253.86L171.79,253.87L171.71,253.88L171.63,253.89L171.55,253.9L171.47,253.91L171.38,253.93L171.3,253.94L171.22,253.95L171.14,253.96L171.06,253.97L170.98,253.98L170.9,253.99L170.82,254L170.73,254.01L170.65,254.02L170.57,254.03L170.49,254.04L170.41,254.05L170.33,254.06L170.25,254.07L170.16,254.09L170.08,254.1L170,254.11L169.92,254.12L169.84,254.13L169.76,254.14L169.68,254.15L169.6,254.16L169.51,254.17L169.43,254.18L169.35,254.19L169.27,254.2L169.19,254.22L169.11,254.23L169.03,254.24L168.95,254.25L168.86,254.26L168.78,254.27L168.7,254.28L168.62,254.29L168.54,254.3L168.46,254.32L168.38,254.33L168.29,254.34L168.21,254.35L168.13,254.36L168.05,254.37L167.97,254.38L167.89,254.39L167.81,254.4L167.73,254.42L167.64,254.43L167.56,254.44L167.48,254.45L167.4,254.46L167.32,254.47L167.24,254.48L167.16,254.49L167.08,254.51L166.99,254.52L166.91,254.53L166.83,254.54L166.75,254.55L166.67,254.56L166.59,254.57L166.51,254.59L166.43,254.6L166.34,254.61L166.26,254.62L166.18,254.63L166.1,254.64L166.02,254.65L165.94,254.67L165.86,254.68L165.78,254.69L165.7,254.7L165.61,254.71L165.53,254.72L165.45,254.74L165.37,254.75L165.29,254.76L165.21,254.77L165.13,254.78L165.05,254.79L164.96,254.81L164.88,254.82L164.8,254.83L164.72,254.84L164.64,254.85L164.56,254.86L164.48,254.88L164.4,254.89L164.31,254.9L164.23,254.91L164.15,254.92L164.07,254.93L163.99,254.95L163.91,254.96L163.83,254.97L163.75,254.98L163.67,254.99L163.58,255.01L163.5,255.02L163.42,255.03L163.34,255.04L163.26,255.05L163.18,255.07L163.1,255.08L163.02,255.09L162.94,255.1L162.85,255.11L162.77,255.13L162.69,255.14L162.61,255.15L162.53,255.16L162.45,255.17L162.37,255.19L162.29,255.2L162.21,255.21L162.12,255.22L162.04,255.24L161.96,255.25L161.88,255.26L161.8,255.27L161.72,255.28L161.64,255.3L161.56,255.31L161.48,255.32L161.39,255.33L161.31,255.35L161.23,255.36L161.15,255.37L161.07,255.38L160.99,255.4L160.91,255.41L160.83,255.42L160.75,255.43L160.66,255.45L160.58,255.46L160.5,255.47L160.42,255.48L160.34,255.5L160.26,255.51L160.18,255.52L160.1,255.53L160.02,255.55L159.93,255.56L159.85,255.57L159.77,255.58L159.69,255.6L159.61,255.61L159.53,255.62L159.45,255.63L159.37,255.65L159.29,255.66L159.21,255.67L159.12,255.68L159.04,255.7L158.96,255.71L158.88,255.72L158.8,255.74L158.72,255.75L158.64,255.76L158.56,255.77L158.48,255.79L158.39,255.8L158.31,255.81L158.23,255.83L158.15,255.84L158.07,255.85L157.99,255.86L157.91,255.88L157.83,255.89L157.75,255.9L157.67,255.92L157.58,255.93L157.5,255.94L157.42,255.95L157.34,255.97L157.26,255.98L157.18,255.99L157.1,256.01L157.02,256.02L156.94,256.03L156.86,256.05L156.77,256.06L156.69,256.07L156.61,256.09L156.53,256.1L156.45,256.11L156.37,256.12L156.29,256.14L156.21,256.15L156.13,256.16L156.05,256.18L155.97,256.19L155.88,256.2L155.8,256.22L155.72,256.23L155.64,256.24L155.56,256.26L155.48,256.27L155.4,256.28L155.32,256.3L155.24,256.31L155.16,256.32L155.07,256.34L154.99,256.35L154.91,256.36L154.83,256.38L154.75,256.39L154.67,256.41L154.59,256.42L154.51,256.43L154.43,256.45L154.35,256.46L154.27,256.47L154.18,256.49L154.1,256.5L154.02,256.51L153.94,256.53L153.86,256.54L153.78,256.55L153.7,256.57L153.62,256.58L153.54,256.6L153.46,256.61L153.38,256.62L153.3,256.64L153.21,256.65L153.13,256.66L153.05,256.68L152.97,256.69L152.89,256.71L152.81,256.72L152.73,256.73L152.65,256.75L152.57,256.76L152.49,256.77L152.41,256.79L152.32,256.8L152.24,256.82L152.16,256.83L152.08,256.84L152,256.86L151.92,256.87L151.84,256.89" stroke-width="3" class="draw" pathLength="1" style="--d:1.63s;--t:0.34s"/>
+    <text fill="currentColor" stroke="none" x="165.09" y="309.71" font-size="26" text-anchor="end" class="fade" style="--d:1.92s">Alexandria</text>
+    <circle cx="151.79" cy="85.05" r="4" fill="currentColor" stroke="none" class="fade" style="--d:2.04s"/>
+    <path d="M151.79,205.05A120,120 0 0 0 166.83,204.1" stroke-width="2" class="draw" pathLength="1" style="--d:2.16s;--t:0.46s"/>
+    <path d="M156.32,207.81L111.79,211.05" stroke-width="1" class="draw" pathLength="1" style="--d:2.55s;--t:0.39s"/>
+    <text fill="currentColor" stroke="none" x="105.79" y="237.05" font-size="26" text-anchor="end" class="fade" style="--d:2.88s">7.2°</text>
+  </g>
+  <g data-step="4" style="--sd:8.09s">
+    <path d="M232,720L232,300" stroke-width="1" stroke-dasharray="6 6" class="fade" style="--d:0.00s"/>
+    <path d="M232,720L173.09,253.71" stroke-width="1" stroke-dasharray="6 6" class="fade" style="--d:0.12s"/>
+    <path d="M232,560A160,160 0 0 0 211.95,561.26" stroke-width="2" class="draw" pathLength="1" style="--d:0.24s;--t:0.46s"/>
+    <path d="M218.95,560.32L171.95,586.32" stroke-width="1" class="draw" pathLength="1" style="--d:0.63s;--t:0.41s"/>
+    <text fill="currentColor" stroke="none" x="163.95" y="610.32" font-size="26" text-anchor="end" class="fade" style="--d:0.98s">7.2°</text>
+    <circle cx="232" cy="720" r="3.5" fill="currentColor" stroke="none" class="fade" style="--d:1.10s"/>
+  </g>
+  </g>
+</svg>

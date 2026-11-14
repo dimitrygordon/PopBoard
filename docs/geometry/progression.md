@@ -58,18 +58,18 @@ Semester 1: Units 1 to 6 (92 days, includes midterm). Semester 2: Units 7 to 12 
 
 | # | Title | Learning target | Hook / activity | Interactive |
 |---|---|---|---|---|
-| 1.1 | Euclid, the Surfer, and the Spotter | I can explain why we question what our eyes tell us. | Optical illusion line drawings: guess, then measure. | |
+| 1.1 | Euclid, the Surfer, and the Spotter | I can explain why we question what our eyes tell us. | Optical illusion line drawings: guess, then measure. | Interactive: sandbox. Drag the fins on two equal segments; the length readout never moves. |
 | 1.2 | Inductive Reasoning | I can make a conjecture from a pattern and test it. | Circle-and-chords region count (1, 2, 4, 8, 16... then 31) breaks the pattern. | Interactive: sandbox. Place points on a circle, connect all chords, count regions. |
-| 1.3 | Lines in Designing a City | I can use points, lines, and planes to describe a map. | Sketch a street grid for a new town; when do streets never meet? | |
-| 1.4 | Angles and Measuring the Earth | I can name and measure angles and describe how Eratosthenes used them. | Recreate Eratosthenes with a stick, a shadow, and two cities. | |
+| 1.3 | Lines in Designing a City | I can use points, lines, and planes to describe a map. | Sketch a street grid for a new town; when do streets never meet? | Interactive: sandbox. Draw streets through corners and lift one onto an overpass to see skew lines. |
+| 1.4 | Angles and Measuring the Earth | I can name and measure angles and describe how Eratosthenes used them. | Recreate Eratosthenes with a stick, a shadow, and two cities. | Interactive: sandbox. Compare round and flat Earth models and a far or near Sun. |
 | 1.5 | Polygons, Polyhedra, and Patterns | I can classify polygons and see patterns in repeated shapes. | Draw a Sierpinski triangle by hand to stage 3 and count triangles. | Interactive: sandbox. Iterate the Sierpinski triangle and track count, perimeter, and area by stage. |
 | 1.6 | Constructions: Telling Time with Shadows | I can copy a segment and draw a circle with compass and straightedge. | Make a paper sundial face using only compass and straightedge. | Interactive: construction. Copy a segment and an equilateral triangle (Euclid I.1). |
 | 1.7 | We Can't Go On Like This | I can explain why geometry needs undefined terms and postulates. | Try to define "point" without circular definitions; dictionary chase. | |
-| 1.8 | Conditional Statements | I can write a conditional, its converse, inverse, and contrapositive. | Sort "if-then" ad slogans into true or false and flip them. | |
-| 1.9 | Definitions as Biconditionals | I can test whether a definition is a good one by checking both directions. | Write a definition of "kite"; classmates hunt for counterexamples. | |
-| 1.10 | Direct Proof | I can write a short chain of reasoning in paragraph and two-column form. | Logic puzzle grid, then the same reasoning as a proof. | |
+| 1.8 | Conditional Statements | I can write a conditional, its converse, inverse, and contrapositive. | Sort "if-then" ad slogans into true or false and flip them. | Interactive: sandbox. Toggle P and Q and watch the four related statements. |
+| 1.9 | Definitions as Biconditionals | I can test whether a definition is a good one by checking both directions. | Write a definition of "kite"; classmates hunt for counterexamples. | Interactive: sandbox. Drag the corners of a quadrilateral and build a test for kite. |
+| 1.10 | Direct Proof | I can write a short chain of reasoning in paragraph and two-column form. | Logic puzzle grid, then the same reasoning as a proof. | Interactive: sandbox. Drag scrambled proof lines into order. A line locks when every reason it needs is above it. |
 | 1.11 | Indirect Proof | I can prove a statement by showing its opposite leads to a contradiction. | "Which suspect is lying?" contradiction puzzle. | |
-| 1.12 | A Deductive System | I can tell the difference between postulates, definitions, and theorems. | Build a class "axiom wall" on PopBoard; every new theorem must point to its parents. | |
+| 1.12 | A Deductive System | I can tell the difference between postulates, definitions, and theorems. | Build a class "axiom wall" on PopBoard; every new theorem must point to its parents. | Interactive: sandbox. Drag statement cards onto the wall and draw arrows to the cards they use. |
 | 1.13 | Review | I can connect evidence, counterexample, and proof. | Card sort: evidence vs. counterexample vs. proof. | |
 | 1.14 | Unit 1 Assessment | Assess G.GF.1, G.GF.2. | | |
 

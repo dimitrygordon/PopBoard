@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520" color="#111" role="img" aria-labelledby="u01-l14-s15-title" data-steps="1">
+  <title id="u01-l14-s15-title">Truth table for the three assumptions S, T, U</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <path d="M6,62L246,62" stroke-width="2"/>
+  <path d="M6,114L246,114" stroke-width="1"/>
+  <path d="M6,166L246,166" stroke-width="1"/>
+  <path d="M6,218L246,218" stroke-width="1"/>
+  <path d="M6,270L246,270" stroke-width="1"/>
+  <path d="M146,14L146,266" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="18.16" y="45.36" font-size="26"><tspan font-style="italic">P</tspan> marked</text>
+  <text fill="currentColor" stroke="none" x="162.62" y="45.36" font-size="26"><tspan font-style="italic">P</tspan> on <tspan font-style="italic">l</tspan></text>
+  <g data-step="1" class="conclusion" style="--sd:0.00s">
+    <path d="M246,62L396,62" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.60s"/>
+    <path d="M246,114L396,114" stroke-width="1" class="draw" pathLength="1" style="--d:0.51s;--t:0.60s"/>
+    <path d="M246,166L396,166" stroke-width="1" class="draw" pathLength="1" style="--d:1.02s;--t:0.60s"/>
+    <path d="M246,218L396,218" stroke-width="1" class="draw" pathLength="1" style="--d:1.53s;--t:0.60s"/>
+    <path d="M246,270L396,270" stroke-width="1" class="draw" pathLength="1" style="--d:2.04s;--t:0.60s"/>
+    <path d="M296,14L296,266" stroke-width="1" class="draw" pathLength="1" style="--d:2.55s;--t:0.80s"/>
+    <path d="M346,14L346,266" stroke-width="1" class="draw" pathLength="1" style="--d:3.23s;--t:0.80s"/>
+    <path d="M246,14L246,266" stroke-width="1" class="draw" pathLength="1" style="--d:3.92s;--t:0.80s"/>
+    <text fill="currentColor" stroke="none" x="264.44" y="45.36" font-size="26" class="fade" style="--d:4.60s"><tspan font-style="italic">S</tspan></text>
+    <text fill="currentColor" stroke="none" x="314.48" y="45.36" font-size="26" class="fade" style="--d:4.72s"><tspan font-style="italic">T</tspan></text>
+    <text fill="currentColor" stroke="none" x="362.2" y="45.36" font-size="26" class="fade" style="--d:4.84s"><tspan font-style="italic">U</tspan></text>
+    <text fill="currentColor" stroke="none" x="76" y="97.36" font-size="26" text-anchor="middle" class="fade" style="--d:4.96s">T</text>
+    <text fill="currentColor" stroke="none" x="196" y="97.36" font-size="26" text-anchor="middle" class="fade" style="--d:5.08s">T</text>
+    <text fill="currentColor" stroke="none" x="271" y="97.36" font-size="26" text-anchor="middle" class="fade" style="--d:5.20s">T</text>
+    <text fill="currentColor" stroke="none" x="321" y="97.36" font-size="26" text-anchor="middle" class="fade" style="--d:5.32s">T</text>
+    <text fill="currentColor" stroke="none" x="371" y="97.36" font-size="26" text-anchor="middle" class="fade" style="--d:5.44s">F</text>
+    <text fill="currentColor" stroke="none" x="76" y="149.36" font-size="26" text-anchor="middle" class="fade" style="--d:5.56s">T</text>
+    <text fill="currentColor" stroke="none" x="196" y="149.36" font-size="26" text-anchor="middle" class="fade" style="--d:5.68s">F</text>
+    <text fill="currentColor" stroke="none" x="271" y="149.36" font-size="26" text-anchor="middle" class="fade" style="--d:5.80s">F</text>
+    <text fill="currentColor" stroke="none" x="321" y="149.36" font-size="26" text-anchor="middle" class="fade" style="--d:5.92s">T</text>
+    <text fill="currentColor" stroke="none" x="371" y="149.36" font-size="26" text-anchor="middle" class="fade" style="--d:6.04s">T</text>
+    <text fill="currentColor" stroke="none" x="76" y="201.36" font-size="26" text-anchor="middle" class="fade" style="--d:6.16s">F</text>
+    <text fill="currentColor" stroke="none" x="196" y="201.36" font-size="26" text-anchor="middle" class="fade" style="--d:6.28s">T</text>
+    <text fill="currentColor" stroke="none" x="271" y="201.36" font-size="26" text-anchor="middle" class="fade" style="--d:6.40s">T</text>
+    <text fill="currentColor" stroke="none" x="321" y="201.36" font-size="26" text-anchor="middle" class="fade" style="--d:6.52s">F</text>
+    <text fill="currentColor" stroke="none" x="371" y="201.36" font-size="26" text-anchor="middle" class="fade" style="--d:6.64s">F</text>
+    <text fill="currentColor" stroke="none" x="76" y="253.36" font-size="26" text-anchor="middle" class="fade" style="--d:6.76s">F</text>
+    <text fill="currentColor" stroke="none" x="196" y="253.36" font-size="26" text-anchor="middle" class="fade" style="--d:6.88s">F</text>
+    <text fill="currentColor" stroke="none" x="271" y="253.36" font-size="26" text-anchor="middle" class="fade" style="--d:7.00s">T</text>
+    <text fill="currentColor" stroke="none" x="321" y="253.36" font-size="26" text-anchor="middle" class="fade" style="--d:7.12s">F</text>
+    <text fill="currentColor" stroke="none" x="371" y="253.36" font-size="26" text-anchor="middle" class="fade" style="--d:7.24s">T</text>
+    <text fill="currentColor" stroke="none" x="14" y="313.36" font-size="26" class="fade" style="--d:7.36s">Every row has an F: the three</text>
+    <text fill="currentColor" stroke="none" x="14" y="353.36" font-size="26" class="fade" style="--d:7.48s">can't all be true together.</text>
+    <text fill="currentColor" stroke="none" x="14" y="407.36" font-size="26" class="fade" style="--d:7.60s">Drop <tspan font-style="italic">U</tspan>: row 1 works.</text>
+    <text fill="currentColor" stroke="none" x="14" y="447.36" font-size="26" class="fade" style="--d:7.72s">Drop <tspan font-style="italic">T</tspan>: row 4 works.</text>
+    <text fill="currentColor" stroke="none" x="14" y="487.36" font-size="26" class="fade" style="--d:7.84s">Drop <tspan font-style="italic">S</tspan>: row 2 works.</text>
+  </g>
+  </g>
+</svg>

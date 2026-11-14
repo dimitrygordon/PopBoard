@@ -1,0 +1,99 @@
+{
+ "1.1": {
+  "given": "A fact we are told to accept at the start of a problem.",
+  "measurement": "A number found with a tool, like a ruler or protractor, with a unit.",
+  "assumption": "Something we accept without checking. Good work says its assumptions out loud.",
+  "proof": "A chain of reasons that shows a statement must be true.",
+  "not to scale": "The drawing's sizes may be wrong, so use the labels, not your eyes."
+ },
+ "1.2": {
+  "inductive reasoning": "Spotting a pattern in examples and guessing it always holds.",
+  "conjecture": "A guess based on a pattern that has not been proved yet.",
+  "counterexample": "One example that makes a statement false.",
+  "for every": "Means the statement must work in all cases, not just most."
+ },
+ "1.3": {
+  "point": "An exact location with no size. We describe it but do not define it.",
+  "line": "A straight path of points that goes on forever both ways. Undefined, like point.",
+  "collinear": "Points that all lie on one line.",
+  "coplanar": "Points or lines that all lie in one plane.",
+  "segment": "Part of a line between two endpoints, including the endpoints.",
+  "ray": "Part of a line that starts at one point and goes on forever one way.",
+  "opposite rays": "Two rays with the same endpoint that together form a line.",
+  "parallel lines": "Lines in the same plane that never meet.",
+  "plane": "A flat surface that goes on forever in every direction. Undefined, like point and line."
+ },
+ "1.4": {
+  "angle": "Two rays that share an endpoint.",
+  "vertex": "The shared endpoint of an angle's two rays.",
+  "ray": "Part of a line that starts at one point and goes on forever one way.",
+  "central angle": "An angle whose vertex is the center of a circle.",
+  "arc": "A piece of a circle between two points on it.",
+  "chord": "A segment whose endpoints are both on a circle.",
+  "model assumption": "A simplifying idea we accept so a real situation fits the math."
+ },
+ "1.5": {
+  "polygon": "A closed loop of at least three straight sides, each with positive length. Only neighboring sides meet, at their shared endpoint, and neighboring sides are not on the same line.",
+  "vertex": "A corner of a polygon, where two sides meet.",
+  "side": "One of the segments that make up a polygon.",
+  "diagonal": "A segment joining two corners of a polygon that are not next to each other.",
+  "convex": "For any two points in the region, inside or on the edge, the whole segment between them stays in the region.",
+  "regular": "All sides equal and all angles equal.",
+  "polyhedron": "A solid whose faces are all polygons."
+ },
+ "1.6": {
+  "construction": "A drawing made with only a compass and a straightedge.",
+  "compass": "A tool for drawing circles and copying lengths.",
+  "straightedge": "A ruler with no marks, used only to draw straight lines.",
+  "circle": "All the points in a plane the same distance from one center point.",
+  "center": "The fixed point every point of the circle is the same distance from.",
+  "radius": "The distance from the center to the circle, or a segment with that length.",
+  "arc": "A piece of a circle between two points on it."
+ },
+ "1.7": {
+  "undefined term": "A basic word we describe but do not define, like point, line and plane.",
+  "definition": "An exact meaning built from words we already have.",
+  "postulate (axiom)": "A starting rule we accept without proof.",
+  "theorem": "A statement that has been proved from definitions, postulates and earlier theorems."
+ },
+ "1.8": {
+  "conditional": "An if-then statement.",
+  "hypothesis": "The 'if' part of a conditional.",
+  "conclusion": "The 'then' part of a conditional.",
+  "converse": "Swap the if and then parts.",
+  "inverse": "Add 'not' to both parts.",
+  "contrapositive": "Swap the parts and add 'not' to both. It is true exactly when the original is.",
+  "truth table": "A chart that lists every true/false case for a statement."
+ },
+ "1.9": {
+  "biconditional ('if and only if')": "A statement where the conditional and its converse are both true.",
+  "definition": "An exact meaning. Every good definition works as an 'if and only if' statement.",
+  "example": "A case that fits the definition.",
+  "non-example": "A case that does not fit the definition, which helps show its edges.",
+  "counterexample": "One example that makes a statement false."
+ },
+ "1.10": {
+  "given": "A fact we are told to accept at the start of a proof.",
+  "prove": "The statement the proof must reach.",
+  "definition": "An exact meaning we can use as a reason in a proof.",
+  "property": "A rule that numbers or shapes always follow, used as a reason.",
+  "integers add to integers": "Adding two integers (positive, negative or zero) always gives another integer."
+ },
+ "1.11": {
+  "indirect proof": "A proof that assumes the opposite of what we want and shows that leads to something impossible.",
+  "contradiction": "Two statements that cannot both be true.",
+  "negation": "The 'not' version of a statement.",
+  "at least one": "One or more. Its opposite is 'none'.",
+  "none": "Not even one. Its opposite is 'at least one'."
+ },
+ "1.12": {
+  "deductive system": "A body of math built from starting terms and rules using only logic.",
+  "undefined (starting) term": "A basic word we describe but do not define.",
+  "definition": "An exact meaning built from words we already have.",
+  "postulate": "A starting rule we accept without proof.",
+  "rule of inference": "An allowed logical step from statements we have to a new one.",
+  "theorem": "A statement proved inside the system.",
+  "conjecture": "A guess that has not been proved yet.",
+  "not proved yet": "Not yet proved in our course. It may be a famous theorem, but until we prove it from our own postulates, we cannot use it as a reason."
+ }
+}

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 450" color="#111" role="img" aria-labelledby="u01-l14-s24-title" data-steps="1">
+  <title id="u01-l14-s24-title">Testing the reciprocal check with two pairs</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <text fill="currentColor" stroke="none" x="120.37" y="43.36" font-size="26">Test: <tspan font-style="italic">x</tspan> + <tspan font-style="italic">y</tspan> = 1</text>
+  <path d="M6,122L394,122" stroke-width="2"/>
+  <path d="M6,174L394,174" stroke-width="1"/>
+  <path d="M6,226L394,226" stroke-width="1"/>
+  <path d="M146,74L146,222" stroke-width="1"/>
+  <path d="M238,74L238,222" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="76" y="105.36" font-size="26" text-anchor="middle">PAIR</text>
+  <text fill="currentColor" stroke="none" x="192" y="105.36" font-size="26" text-anchor="middle">SUM</text>
+  <text fill="currentColor" stroke="none" x="316" y="105.36" font-size="26" text-anchor="middle">PRODUCT</text>
+  <g data-step="1" class="conclusion" style="--sd:0.00s">
+    <text fill="currentColor" stroke="none" x="76" y="157.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">(2, −1)</text>
+    <text fill="currentColor" stroke="none" x="192" y="157.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.12s">1</text>
+    <text fill="currentColor" stroke="none" x="316" y="157.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.24s">−2</text>
+    <text fill="currentColor" stroke="none" x="76" y="209.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.36s">(2, 1/2)</text>
+    <text fill="currentColor" stroke="none" x="192" y="209.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.48s">2.5</text>
+    <text fill="currentColor" stroke="none" x="316" y="209.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.60s">1</text>
+    <text fill="currentColor" stroke="none" x="14" y="271.36" font-size="26" class="fade" style="--d:0.72s">False positive: (2, −1)</text>
+    <text fill="currentColor" stroke="none" x="14" y="311.36" font-size="26" class="fade" style="--d:0.84s">False negative: (2, 1/2)</text>
+    <path d="M82.51,344H317.49A8,8 0 0 1 325.49,352V396A8,8 0 0 1 317.49,404H82.51A8,8 0 0 1 74.51,396V352A8,8 0 0 1 82.51,344Z" stroke-width="3" class="draw" pathLength="1" style="--d:0.96s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="100.48" y="383.36" font-size="26" class="fade" style="--d:1.73s">Exact test: <tspan font-style="italic">xy</tspan> = 1</text>
+  </g>
+  </g>
+</svg>

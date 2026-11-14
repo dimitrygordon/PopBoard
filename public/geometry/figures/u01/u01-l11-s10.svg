@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 420" color="#111" role="img" aria-labelledby="u01-l11-s10-title" data-steps="1">
+  <title id="u01-l11-s10-title">A statement and its opposite, lined up</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <text fill="currentColor" stroke="none" x="20" y="45.36" font-size="26">GOAL</text>
+  <text fill="currentColor" stroke="none" x="40" y="91.36" font-size="26">some label is wrong</text>
+  <path d="M40,106L111.19,106" stroke-width="3"/>
+  <text fill="currentColor" stroke="none" x="20" y="149.36" font-size="26">IVY STARTS WITH</text>
+  <text fill="currentColor" stroke="none" x="40" y="195.36" font-size="26">every label is wrong</text>
+  <path d="M40,210L109.96,210" stroke-width="3"/>
+  <g data-step="1" class="conclusion" style="--sd:0.00s">
+    <path d="M36,184H301.08" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.50s"/>
+    <text fill="currentColor" stroke="none" x="40" y="237.36" font-size="26" class="fade" style="--d:0.42s">not the opposite</text>
+    <text fill="currentColor" stroke="none" x="20" y="301.36" font-size="26" class="fade" style="--d:0.54s">OPPOSITE</text>
+    <text fill="currentColor" stroke="none" x="40" y="347.36" font-size="26" class="fade" style="--d:0.66s">no label is wrong</text>
+    <path d="M40,362L73.7,362" stroke-width="3" class="draw" pathLength="1" style="--d:0.78s;--t:0.37s"/>
+    <text fill="currentColor" stroke="none" x="40" y="397.36" font-size="26" class="fade" style="--d:1.10s">= every label is correct</text>
+  </g>
+  </g>
+</svg>

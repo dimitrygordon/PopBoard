@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 462" color="#111" role="img" aria-labelledby="u01-l12-s10-title" data-steps="1">
+  <title id="u01-l12-s10-title">A theorem and lemma that only lean on each other</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <path d="M108,22H292A8,8 0 0 1 300,30V70A8,8 0 0 1 292,78H108A8,8 0 0 1 100,70V30A8,8 0 0 1 108,22Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="200" y="59.36" font-size="26" text-anchor="middle">postulates</text>
+  <path d="M64,234H136A8,8 0 0 1 144,242V282A8,8 0 0 1 136,290H64A8,8 0 0 1 56,282V242A8,8 0 0 1 64,234Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="93.48" y="271.36" font-size="26"><tspan font-style="italic">T</tspan></text>
+  <path d="M264,234H336A8,8 0 0 1 344,242V282A8,8 0 0 1 336,290H264A8,8 0 0 1 256,282V242A8,8 0 0 1 264,234Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="293.79" y="271.36" font-size="26"><tspan font-style="italic">L</tspan></text>
+  <path d="M126,234Q200,172 274,234" stroke-width="2"/>
+  <path d="M260.53,229.84L274,234L267.54,221.47" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="200" y="189.36" font-size="26" text-anchor="middle">uses</text>
+  <path d="M274,290Q200,352 126,290" stroke-width="2"/>
+  <path d="M139.47,294.16L126,290L132.46,302.53" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="200" y="357.36" font-size="26" text-anchor="middle">uses</text>
+  <g data-step="1" class="conclusion" style="--sd:0.00s">
+    <text fill="currentColor" stroke="none" x="200" y="405.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">No arrow from the postulates:</text>
+    <text fill="currentColor" stroke="none" x="200" y="441.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.12s">neither one is proved.</text>
+  </g>
+  </g>
+</svg>

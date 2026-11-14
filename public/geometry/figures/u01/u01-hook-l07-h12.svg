@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 330" color="#111" role="img" aria-labelledby="u01-hook-l07-h12-title" data-steps="3">
+  <title id="u01-hook-l07-h12-title">Euclid's definition of a point leans on the word part</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M42,50H358A2,2 0 0 1 360,52V208A2,2 0 0 1 358,210H42A2,2 0 0 1 40,208V52A2,2 0 0 1 42,50Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <path d="M37,37H363A13,13 0 0 1 376,50V50A13,13 0 0 1 363,63H37A13,13 0 0 1 24,50V50A13,13 0 0 1 37,37Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.77s;--t:0.90s"/>
+    <path d="M34,37L34,63" stroke-width="1" class="draw" pathLength="1" style="--d:1.53s;--t:0.35s"/>
+    <path d="M366,37L366,63" stroke-width="1" class="draw" pathLength="1" style="--d:1.83s;--t:0.35s"/>
+    <path d="M37,197H363A13,13 0 0 1 376,210V210A13,13 0 0 1 363,223H37A13,13 0 0 1 24,210V210A13,13 0 0 1 37,197Z" stroke-width="2" class="draw" pathLength="1" style="--d:2.13s;--t:0.90s"/>
+    <path d="M34,197L34,223" stroke-width="1" class="draw" pathLength="1" style="--d:2.89s;--t:0.35s"/>
+    <path d="M366,197L366,223" stroke-width="1" class="draw" pathLength="1" style="--d:3.19s;--t:0.35s"/>
+  </g>
+  <g data-step="2" style="--sd:3.64s">
+    <text fill="currentColor" stroke="none" x="200" y="113.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">“A point is that</text>
+    <text fill="currentColor" stroke="none" x="200" y="161.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.12s">which has no part.”</text>
+  </g>
+  <g data-step="3" style="--sd:4.09s">
+    <path d="M344.49,296L288.49,233.36" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.47s"/>
+    <path d="M301.22,239.41L288.49,233.36L293.08,246.69" stroke-width="2" class="fade" style="--d:0.40s"/>
+    <text fill="currentColor" stroke="none" x="364.49" y="312.24" font-size="34" text-anchor="middle" class="fade" style="--d:0.52s">?</text>
+    <path d="M254.98,175.36L310,175.36" stroke-width="2" class="draw" pathLength="1" style="--d:0.64s;--t:0.41s"/>
+  </g>
+  </g>
+</svg>

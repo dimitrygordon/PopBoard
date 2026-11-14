@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 364" color="#111" role="img" aria-labelledby="u01-hook-l09-h13-title" data-steps="3">
+  <title id="u01-hook-l09-h13-title">Earth and Pluto against the 2006 planet definition</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M271,18A26,26 0 1 0 271,70A26,26 0 1 0 271,18" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+    <path d="M355,39.16A4.84,4.84 0 1 0 355,48.84A4.84,4.84 0 1 0 355,39.16" stroke-width="2" class="draw" pathLength="1" style="--d:0.94s;--t:1.10s"/>
+    <path d="M3,140L397,140" stroke-width="2" class="draw" pathLength="1" style="--d:1.87s;--t:1.00s"/>
+    <path d="M3,200L397,200" stroke-width="1" class="draw" pathLength="1" style="--d:2.72s;--t:1.00s"/>
+    <path d="M3,260L397,260" stroke-width="1" class="draw" pathLength="1" style="--d:3.57s;--t:1.00s"/>
+    <path d="M3,350L397,350" stroke-width="1" class="draw" pathLength="1" style="--d:4.42s;--t:1.00s"/>
+    <path d="M229,104L229,346" stroke-width="1" class="draw" pathLength="1" style="--d:5.27s;--t:0.78s"/>
+    <path d="M313,104L313,346" stroke-width="1" class="draw" pathLength="1" style="--d:5.94s;--t:0.78s"/>
+    <text fill="currentColor" stroke="none" x="271" y="129.36" font-size="26" text-anchor="middle" class="fade" style="--d:6.60s">Earth</text>
+    <text fill="currentColor" stroke="none" x="355" y="129.36" font-size="26" text-anchor="middle" class="fade" style="--d:6.72s">Pluto</text>
+    <text fill="currentColor" stroke="none" x="11" y="179.36" font-size="26" class="fade" style="--d:6.84s">orbits the Sun</text>
+    <text fill="currentColor" stroke="none" x="11" y="239.36" font-size="26" class="fade" style="--d:6.96s">nearly round</text>
+    <text fill="currentColor" stroke="none" x="11" y="298.36" font-size="26" class="fade" style="--d:7.08s">cleared the area</text>
+    <text fill="currentColor" stroke="none" x="11" y="330.36" font-size="26" class="fade" style="--d:7.20s">around its orbit</text>
+  </g>
+  <g data-step="2" style="--sd:7.47s">
+    <path d="M260.2,170.48L268.12,178.64L282.52,160.88" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.35s"/>
+    <path d="M260.2,230.48L268.12,238.64L282.52,220.88" stroke-width="3" class="draw" pathLength="1" style="--d:0.30s;--t:0.35s"/>
+    <path d="M260.2,305.48L268.12,313.64L282.52,295.88" stroke-width="3" class="draw" pathLength="1" style="--d:0.59s;--t:0.35s"/>
+  </g>
+  <g data-step="3" style="--sd:8.52s">
+    <path d="M344.2,170.48L352.12,178.64L366.52,160.88" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.35s"/>
+    <path d="M344.2,230.48L352.12,238.64L366.52,220.88" stroke-width="3" class="draw" pathLength="1" style="--d:0.30s;--t:0.35s"/>
+    <path d="M346,296L364,314M364,296L346,314" stroke-width="3" class="draw" pathLength="1" style="--d:0.59s;--t:0.40s"/>
+  </g>
+  </g>
+</svg>

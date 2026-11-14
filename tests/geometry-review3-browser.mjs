@@ -25,7 +25,7 @@ try{
    await page.evaluate(async()=>{await document.fonts.ready;await Promise.all(document.getAnimations().map(a=>a.finished.catch(()=>{})));});
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,label);
    assert.equal(await page.$$eval('.gx-learner-text,.gx-proof',es=>es.some(e=>e.scrollWidth>e.clientWidth+1)),false,label);
-   if(slug==='u04-l13')assert.equal(await page.$('.gx-figure-slot'),null);
+   if(slug==='u04-l13')assert.ok(await page.$('.gx-figure-slot svg'),'4.13 worked example shows Leo\'s figure');
    else assert.match(await page.$eval('.gx-proof',e=>e.textContent),/Swapping A with B and D with E/);
    assert.equal(await page.$eval('.gx-lesson',e=>e.textContent.includes('Figure coming')),false);
    await page.screenshot({path:`${out}/${size.width}x${size.height}-${label}.png`,fullPage:true});shots++;
@@ -70,7 +70,7 @@ try{
  await page.evaluate(async()=>{await document.fonts.ready;await Promise.all(document.getAnimations().map(a=>a.finished.catch(()=>{})));});
  await page.screenshot({path:`${out}/390x844-4.14-common-mistake.png`,fullPage:true});shots++;
  await page.setViewport({width:1440,height:900});
- await page.goto(`${base}/study-geometry-story.html?lesson=u01-l10&page=5`,{waitUntil:'networkidle0'});
+ await page.goto(`${base}/study-geometry-story.html?lesson=u01-l10&page=9`,{waitUntil:'networkidle0'});
  await page.click('.gx-actions button:nth-child(1)');await page.click('.gx-actions button:nth-child(2)');
  assert.equal(await page.$$eval('.gx-actions button',bs=>bs.every(b=>b.classList.contains('gx-used')&&getComputedStyle(b).opacity==='1'&&b.textContent.includes('✓'))),true);
  assert.deepEqual(errors,[]);console.log(`PASS: ${shots} review screenshots, all assessment label bounds/separation at three sizes, no blank before item 12, no placeholders/overflow, used reveal styles.`);

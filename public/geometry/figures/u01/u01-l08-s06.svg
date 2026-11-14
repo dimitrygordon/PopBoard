@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 440" color="#111" role="img" aria-labelledby="u01-l08-s06-title" data-steps="4">
+  <title id="u01-l08-s06-title">Each if-then statement fails in exactly one row, and the rows differ</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M10,98L390,98" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:1.00s"/>
+    <path d="M10,148L390,148" stroke-width="1" class="draw" pathLength="1" style="--d:0.85s;--t:1.00s"/>
+    <path d="M10,198L390,198" stroke-width="1" class="draw" pathLength="1" style="--d:1.70s;--t:1.00s"/>
+    <path d="M10,248L390,248" stroke-width="1" class="draw" pathLength="1" style="--d:2.55s;--t:1.00s"/>
+    <path d="M10,298L390,298" stroke-width="1" class="draw" pathLength="1" style="--d:3.40s;--t:1.00s"/>
+    <path d="M134,18L134,294" stroke-width="1" class="draw" pathLength="1" style="--d:4.25s;--t:0.85s"/>
+    <path d="M262,18L262,294" stroke-width="1" class="draw" pathLength="1" style="--d:4.97s;--t:0.85s"/>
+    <text fill="currentColor" stroke="none" x="40.59" y="65.36" font-size="26" class="fade" style="--d:5.70s">(<tspan font-style="italic">P</tspan>, <tspan font-style="italic">Q</tspan>)</text>
+    <text fill="currentColor" stroke="none" x="175.95" y="49.36" font-size="26" class="fade" style="--d:5.82s">if <tspan font-style="italic">P</tspan>,</text>
+    <text fill="currentColor" stroke="none" x="157.16" y="83.36" font-size="26" class="fade" style="--d:5.94s">then <tspan font-style="italic">Q</tspan></text>
+    <text fill="currentColor" stroke="none" x="301.94" y="49.36" font-size="26" class="fade" style="--d:6.06s">if <tspan font-style="italic">Q</tspan>,</text>
+    <text fill="currentColor" stroke="none" x="287.16" y="83.36" font-size="26" class="fade" style="--d:6.18s">then <tspan font-style="italic">P</tspan></text>
+    <text fill="currentColor" stroke="none" x="72" y="132.36" font-size="26" text-anchor="middle" class="fade" style="--d:6.30s">(T, T)</text>
+    <text fill="currentColor" stroke="none" x="72" y="182.36" font-size="26" text-anchor="middle" class="fade" style="--d:6.42s">(T, F)</text>
+    <text fill="currentColor" stroke="none" x="72" y="232.36" font-size="26" text-anchor="middle" class="fade" style="--d:6.54s">(F, T)</text>
+    <text fill="currentColor" stroke="none" x="72" y="282.36" font-size="26" text-anchor="middle" class="fade" style="--d:6.66s">(F, F)</text>
+  </g>
+  <g data-step="2" style="--sd:6.93s">
+    <text fill="currentColor" stroke="none" x="198" y="132.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">T</text>
+    <text fill="currentColor" stroke="none" x="198" y="182.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.12s">F</text>
+    <text fill="currentColor" stroke="none" x="198" y="232.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.24s">T</text>
+    <text fill="currentColor" stroke="none" x="198" y="282.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.36s">T</text>
+    <path d="M184,155H212A8,8 0 0 1 220,163V183A8,8 0 0 1 212,191H184A8,8 0 0 1 176,183V163A8,8 0 0 1 184,155Z" stroke-width="3" class="draw" pathLength="1" style="--d:0.48s;--t:0.90s"/>
+  </g>
+  <g data-step="3" style="--sd:8.32s">
+    <text fill="currentColor" stroke="none" x="326" y="132.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">T</text>
+    <text fill="currentColor" stroke="none" x="326" y="182.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.12s">T</text>
+    <text fill="currentColor" stroke="none" x="326" y="232.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.24s">F</text>
+    <text fill="currentColor" stroke="none" x="326" y="282.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.36s">T</text>
+    <path d="M312,205H340A8,8 0 0 1 348,213V233A8,8 0 0 1 340,241H312A8,8 0 0 1 304,233V213A8,8 0 0 1 312,205Z" stroke-width="3" class="draw" pathLength="1" style="--d:0.48s;--t:0.90s"/>
+  </g>
+  <g data-step="4" class="conclusion" style="--sd:9.72s">
+    <text fill="currentColor" stroke="none" x="200" y="369.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">Different rows break them,</text>
+    <text fill="currentColor" stroke="none" x="200" y="407.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.12s">so the two statements differ.</text>
+  </g>
+  </g>
+</svg>

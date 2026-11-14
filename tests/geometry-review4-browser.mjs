@@ -19,7 +19,7 @@ try{
  const page=await b.newPage();page.on('pageerror',e=>errors.push(e.message));
  for(const size of [{width:1440,height:900},{width:844,height:390},{width:390,height:844}]){
   await page.setViewport(size);
-  for(const [slug,n,label] of [['u01-l10',4,'1.10-worked'],['u04-l13',4,'4.13-worked'],['u04-l11',5,'4.11-we2']]){
+  for(const [slug,n,label] of [['u01-l03',5,'1.3-worked'],['u04-l13',4,'4.13-worked'],['u04-l11',5,'4.11-we2']]){
    const data=await(await fetch(`${base}/geometry/decks/${slug}/deck.json`)).json();
    await page.goto(`${base}/study-geometry-story.html?lesson=${slug}&page=${n}`,{waitUntil:'networkidle0'});
    await page.click('.gx-actions button:nth-child(2)');await page.click('.gx-actions button:nth-child(2)');

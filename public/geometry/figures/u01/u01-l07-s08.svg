@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" color="#111" role="img" aria-labelledby="u01-l07-s08-title" data-steps="6">
+  <title id="u01-l07-s08-title">A dictionary chain that loops back to point</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M60,24H240A8,8 0 0 1 248,32V72A8,8 0 0 1 240,80H60A8,8 0 0 1 52,72V32A8,8 0 0 1 60,24Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="150" y="61.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.77s">point</text>
+  </g>
+  <g data-step="2" style="--sd:1.03s">
+    <path d="M150,84L150,128" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.39s"/>
+    <path d="M144.54,115L150,128L155.46,115" stroke-width="2" class="fade" style="--d:0.33s"/>
+    <path d="M60,132H240A8,8 0 0 1 248,140V180A8,8 0 0 1 240,188H60A8,8 0 0 1 52,180V140A8,8 0 0 1 60,132Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.45s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="150" y="169.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.21s">location</text>
+  </g>
+  <g data-step="3" style="--sd:2.52s">
+    <path d="M150,192L150,236" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.39s"/>
+    <path d="M144.54,223L150,236L155.46,223" stroke-width="2" class="fade" style="--d:0.33s"/>
+    <path d="M60,240H240A8,8 0 0 1 248,248V288A8,8 0 0 1 240,296H60A8,8 0 0 1 52,288V248A8,8 0 0 1 60,240Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.45s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="150" y="277.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.21s">position</text>
+  </g>
+  <g data-step="4" style="--sd:4.00s">
+    <path d="M150,300L150,344" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.39s"/>
+    <path d="M144.54,331L150,344L155.46,331" stroke-width="2" class="fade" style="--d:0.33s"/>
+    <path d="M60,348H240A8,8 0 0 1 248,356V396A8,8 0 0 1 240,404H60A8,8 0 0 1 52,396V356A8,8 0 0 1 60,348Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.45s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="150" y="385.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.21s">place</text>
+  </g>
+  <g data-step="5" style="--sd:5.49s">
+    <path d="M254,376Q398,214 254,52" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <path d="M266.72,58.09L254,52L258.56,65.34" stroke-width="3" class="fade" style="--d:0.77s"/>
+  </g>
+  <g data-step="6" class="conclusion" style="--sd:6.52s">
+    <text fill="currentColor" stroke="none" x="200" y="471.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">The definitions loop back.</text>
+  </g>
+  </g>
+</svg>

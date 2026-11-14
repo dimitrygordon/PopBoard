@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 470" color="#111" role="img" aria-labelledby="u01-l10-s10-title" data-steps="1">
+  <title id="u01-l10-s10-title">Equal squares do not force equal numbers</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <path d="M48,16H172A8,8 0 0 1 180,24V104A8,8 0 0 1 172,112H48A8,8 0 0 1 40,104V24A8,8 0 0 1 48,16Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="110" y="79.84" font-size="44" text-anchor="middle">2</text>
+  <path d="M228,16H352A8,8 0 0 1 360,24V104A8,8 0 0 1 352,112H228A8,8 0 0 1 220,104V24A8,8 0 0 1 228,16Z" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="290" y="79.84" font-size="44" text-anchor="middle">−2</text>
+  <text fill="currentColor" stroke="none" x="81.45" y="259.36" font-size="26"><tspan font-style="italic">x</tspan>² − <tspan font-style="italic">y</tspan>² = (<tspan font-style="italic">x</tspan> − <tspan font-style="italic">y</tspan>)(<tspan font-style="italic">x</tspan> + <tspan font-style="italic">y</tspan>)</text>
+  <g data-step="1" class="conclusion" style="--sd:0.00s">
+    <text fill="currentColor" stroke="none" x="110" y="165.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">2² = 4</text>
+    <text fill="currentColor" stroke="none" x="290" y="165.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.12s">(−2)² = 4</text>
+    <text fill="currentColor" stroke="none" x="44.34" y="309.36" font-size="26" class="fade" style="--d:0.24s">If <tspan font-style="italic">x</tspan>² = <tspan font-style="italic">y</tspan>², this product is 0,</text>
+    <text fill="currentColor" stroke="none" x="62.65" y="349.36" font-size="26" class="fade" style="--d:0.36s">so <tspan font-style="italic">x</tspan> − <tspan font-style="italic">y</tspan> = 0 or <tspan font-style="italic">x</tspan> + <tspan font-style="italic">y</tspan> = 0.</text>
+    <path d="M95.45,380H304.55A8,8 0 0 1 312.55,388V432A8,8 0 0 1 304.55,440H95.45A8,8 0 0 1 87.45,432V388A8,8 0 0 1 95.45,380Z" stroke-width="3" class="draw" pathLength="1" style="--d:0.48s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="112.69" y="419.36" font-size="26" class="fade" style="--d:1.25s"><tspan font-style="italic">x</tspan> = <tspan font-style="italic">y</tspan>  or  <tspan font-style="italic">x</tspan> = −<tspan font-style="italic">y</tspan></text>
+  </g>
+  </g>
+</svg>

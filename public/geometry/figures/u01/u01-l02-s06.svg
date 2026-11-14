@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" color="#111" role="img" aria-labelledby="u01-l02-s06-title" data-steps="5">
+  <title id="u01-l02-s06-title">Two rules that agree at n = 0, 1, 2 and differ at n = 3</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <text fill="currentColor" stroke="none" x="14" y="45.36" font-size="26" class="fade" style="--d:0.00s">guess = <tspan font-style="italic">n</tspan>² + 2<tspan font-style="italic">n</tspan> + 2</text>
+    <path d="M10,208L390,208" stroke-width="2" class="draw" pathLength="1" style="--d:0.12s;--t:1.00s"/>
+    <path d="M10,260L390,260" stroke-width="1" class="draw" pathLength="1" style="--d:0.97s;--t:1.00s"/>
+    <path d="M10,312L390,312" stroke-width="1" class="draw" pathLength="1" style="--d:1.82s;--t:1.00s"/>
+    <path d="M10,364L390,364" stroke-width="1" class="draw" pathLength="1" style="--d:2.67s;--t:1.00s"/>
+    <path d="M10,416L390,416" stroke-width="1" class="draw" pathLength="1" style="--d:3.52s;--t:1.00s"/>
+    <path d="M80,160L80,412" stroke-width="1" class="draw" pathLength="1" style="--d:4.37s;--t:0.80s"/>
+    <path d="M220,160L220,412" stroke-width="1" class="draw" pathLength="1" style="--d:5.05s;--t:0.80s"/>
+    <text fill="currentColor" stroke="none" x="37.48" y="191.36" font-size="26" class="fade" style="--d:5.74s"><tspan font-style="italic">n</tspan></text>
+    <text fill="currentColor" stroke="none" x="150" y="191.36" font-size="26" text-anchor="middle" class="fade" style="--d:5.86s">guess</text>
+    <text fill="currentColor" stroke="none" x="45" y="243.36" font-size="26" text-anchor="middle" class="fade" style="--d:5.98s">0</text>
+    <text fill="currentColor" stroke="none" x="150" y="243.36" font-size="26" text-anchor="middle" class="fade" style="--d:6.10s">2</text>
+    <text fill="currentColor" stroke="none" x="45" y="295.36" font-size="26" text-anchor="middle" class="fade" style="--d:6.22s">1</text>
+    <text fill="currentColor" stroke="none" x="150" y="295.36" font-size="26" text-anchor="middle" class="fade" style="--d:6.34s">5</text>
+    <text fill="currentColor" stroke="none" x="45" y="347.36" font-size="26" text-anchor="middle" class="fade" style="--d:6.46s">2</text>
+    <text fill="currentColor" stroke="none" x="150" y="347.36" font-size="26" text-anchor="middle" class="fade" style="--d:6.58s">10</text>
+  </g>
+  <g data-step="2" style="--sd:6.85s">
+    <text fill="currentColor" stroke="none" x="14" y="89.36" font-size="26" class="fade" style="--d:0.00s">new rule = guess</text>
+    <text fill="currentColor" stroke="none" x="54" y="125.36" font-size="26" class="fade" style="--d:0.12s">+ <tspan font-style="italic">n</tspan>(<tspan font-style="italic">n</tspan> − 1)(<tspan font-style="italic">n</tspan> − 2)</text>
+    <text fill="currentColor" stroke="none" x="305" y="191.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.24s">new rule</text>
+  </g>
+  <g data-step="3" style="--sd:7.36s">
+    <text fill="currentColor" stroke="none" x="305" y="243.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">2</text>
+    <text fill="currentColor" stroke="none" x="305" y="295.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.12s">5</text>
+    <text fill="currentColor" stroke="none" x="305" y="347.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.24s">10</text>
+  </g>
+  <g data-step="4" style="--sd:7.87s">
+    <text fill="currentColor" stroke="none" x="45" y="399.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">3</text>
+    <text fill="currentColor" stroke="none" x="150" y="399.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.12s">17</text>
+    <text fill="currentColor" stroke="none" x="305" y="399.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.24s">23</text>
+    <path d="M275,371H335A8,8 0 0 1 343,379V401A8,8 0 0 1 335,409H275A8,8 0 0 1 267,401V379A8,8 0 0 1 275,371Z" stroke-width="3" class="draw" pathLength="1" style="--d:0.36s;--t:0.90s"/>
+  </g>
+  <g data-step="5" class="conclusion" style="--sd:9.14s">
+    <text fill="currentColor" stroke="none" x="14" y="479.36" font-size="26" class="fade" style="--d:0.00s">Same values for <tspan font-style="italic">n</tspan> = 0, 1, 2;</text>
+    <text fill="currentColor" stroke="none" x="14" y="519.36" font-size="26" class="fade" style="--d:0.12s">different at <tspan font-style="italic">n</tspan> = 3.</text>
+  </g>
+  </g>
+</svg>

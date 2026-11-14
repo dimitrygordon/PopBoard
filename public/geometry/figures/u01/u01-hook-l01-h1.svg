@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" color="#111" role="img" aria-labelledby="u01-hook-l01-h1-title" data-steps="2">
+  <title id="u01-hook-l01-h1-title">Mueller-Lyer illusion with a ruler check</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M100,80L300,80" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.70s"/>
+    <path d="M100,80L127.85,60.5" stroke-width="2" class="draw" pathLength="1" style="--d:0.59s;--t:0.37s"/>
+    <path d="M100,80L127.85,99.5" stroke-width="2" class="draw" pathLength="1" style="--d:0.91s;--t:0.37s"/>
+    <path d="M300,80L272.15,60.5" stroke-width="2" class="draw" pathLength="1" style="--d:1.22s;--t:0.37s"/>
+    <path d="M300,80L272.15,99.5" stroke-width="2" class="draw" pathLength="1" style="--d:1.53s;--t:0.37s"/>
+    <path d="M100,200L300,200" stroke-width="2" class="draw" pathLength="1" style="--d:1.85s;--t:0.70s"/>
+    <path d="M100,200L72.15,180.5" stroke-width="2" class="draw" pathLength="1" style="--d:2.44s;--t:0.37s"/>
+    <path d="M100,200L72.15,219.5" stroke-width="2" class="draw" pathLength="1" style="--d:2.75s;--t:0.37s"/>
+    <path d="M300,200L327.85,180.5" stroke-width="2" class="draw" pathLength="1" style="--d:3.07s;--t:0.37s"/>
+    <path d="M300,200L327.85,219.5" stroke-width="2" class="draw" pathLength="1" style="--d:3.38s;--t:0.37s"/>
+  </g>
+  <g data-step="2" style="--sd:3.84s">
+    <path d="M44,300H356A4,4 0 0 1 360,304V352A4,4 0 0 1 356,356H44A4,4 0 0 1 40,352V304A4,4 0 0 1 44,300Z" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <path d="M50,300L50,309" stroke-width="1"/>
+    <path d="M60,300L60,309" stroke-width="1"/>
+    <path d="M70,300L70,309" stroke-width="1"/>
+    <path d="M80,300L80,309" stroke-width="1"/>
+    <path d="M90,300L90,315" stroke-width="1"/>
+    <path d="M100,300L100,309" stroke-width="1"/>
+    <path d="M110,300L110,309" stroke-width="1"/>
+    <path d="M120,300L120,309" stroke-width="1"/>
+    <path d="M130,300L130,309" stroke-width="1"/>
+    <path d="M140,300L140,322" stroke-width="1"/>
+    <path d="M150,300L150,309" stroke-width="1"/>
+    <path d="M160,300L160,309" stroke-width="1"/>
+    <path d="M170,300L170,309" stroke-width="1"/>
+    <path d="M180,300L180,309" stroke-width="1"/>
+    <path d="M190,300L190,315" stroke-width="1"/>
+    <path d="M200,300L200,309" stroke-width="1"/>
+    <path d="M210,300L210,309" stroke-width="1"/>
+    <path d="M220,300L220,309" stroke-width="1"/>
+    <path d="M230,300L230,309" stroke-width="1"/>
+    <path d="M240,300L240,322" stroke-width="1"/>
+    <path d="M250,300L250,309" stroke-width="1"/>
+    <path d="M260,300L260,309" stroke-width="1"/>
+    <path d="M270,300L270,309" stroke-width="1"/>
+    <path d="M280,300L280,309" stroke-width="1"/>
+    <path d="M290,300L290,315" stroke-width="1"/>
+    <path d="M300,300L300,309" stroke-width="1"/>
+    <path d="M310,300L310,309" stroke-width="1"/>
+    <path d="M320,300L320,309" stroke-width="1"/>
+    <path d="M330,300L330,309" stroke-width="1"/>
+    <path d="M340,300L340,322" stroke-width="1"/>
+    <path d="M350,300L350,309" stroke-width="1"/>
+    <path d="M100,60L100,296" stroke-width="1" stroke-dasharray="4 6" class="fade" style="--d:0.77s"/>
+    <path d="M300,60L300,296" stroke-width="1" stroke-dasharray="4 6" class="fade" style="--d:0.89s"/>
+  </g>
+  </g>
+</svg>

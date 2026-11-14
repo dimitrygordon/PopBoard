@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" color="#111" role="img" aria-labelledby="u01-cover-l03-title" data-steps="3">
+  <title id="u01-cover-l03-title">Lines in Designing a City</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M400,97A128,128 0 1 0 400,353A128,128 0 1 0 400,97" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+  </g>
+  <g data-step="2" style="--sd:1.08s">
+    <path d="M473.07,124.81L276.7,238.19" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.50s"/>
+    <path d="M435.17,106.09L314.6,314.91" stroke-width="1" class="draw" pathLength="1" style="--d:0.42s;--t:0.50s"/>
+    <path d="M400,101L400,349" stroke-width="1" class="draw" pathLength="1" style="--d:0.85s;--t:0.50s"/>
+    <path d="M364.83,106.09L485.4,314.91" stroke-width="1" class="draw" pathLength="1" style="--d:1.27s;--t:0.50s"/>
+    <path d="M326.93,124.81L523.3,238.19" stroke-width="2" class="draw" pathLength="1" style="--d:1.70s;--t:0.50s"/>
+    <path d="M349.77,111.63L349.77,338.37" stroke-width="2" class="draw" pathLength="1" style="--d:2.12s;--t:0.50s"/>
+    <path d="M314.6,135.09L435.17,343.91" stroke-width="1" class="draw" pathLength="1" style="--d:2.55s;--t:0.50s"/>
+    <path d="M292.61,163L507.39,287" stroke-width="1" class="draw" pathLength="1" style="--d:2.97s;--t:0.50s"/>
+    <path d="M279.44,196L520.56,196" stroke-width="1" class="draw" pathLength="1" style="--d:3.40s;--t:0.50s"/>
+    <path d="M276.7,211.81L473.07,325.19" stroke-width="2" class="draw" pathLength="1" style="--d:3.82s;--t:0.50s"/>
+    <path d="M279.44,254L520.56,254" stroke-width="1" class="draw" pathLength="1" style="--d:4.25s;--t:0.50s"/>
+    <path d="M292.61,287L507.39,163" stroke-width="1" class="draw" pathLength="1" style="--d:4.67s;--t:0.50s"/>
+    <path d="M326.93,325.19L523.3,211.81" stroke-width="2" class="draw" pathLength="1" style="--d:5.10s;--t:0.50s"/>
+    <path d="M364.83,343.91L485.4,135.09" stroke-width="1" class="draw" pathLength="1" style="--d:5.52s;--t:0.50s"/>
+    <path d="M450.23,338.37L450.23,111.63" stroke-width="2" class="draw" pathLength="1" style="--d:5.95s;--t:0.50s"/>
+  </g>
+  <g data-step="3" style="--sd:7.61s">
+    <path d="M400,167L349.77,196L349.77,254L400,283L450.23,254L450.23,196L400,167" stroke-width="3" class="draw" pathLength="1" style="--d:0.00s;--t:0.88s"/>
+    <circle cx="400" cy="167" r="4" fill="currentColor" stroke="none" class="fade" style="--d:0.75s"/>
+    <circle cx="349.77" cy="196" r="4" fill="currentColor" stroke="none" class="fade" style="--d:0.87s"/>
+    <circle cx="349.77" cy="254" r="4" fill="currentColor" stroke="none" class="fade" style="--d:0.99s"/>
+    <circle cx="400" cy="283" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.11s"/>
+    <circle cx="450.23" cy="254" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.23s"/>
+    <circle cx="450.23" cy="196" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.35s"/>
+  </g>
+  </g>
+</svg>

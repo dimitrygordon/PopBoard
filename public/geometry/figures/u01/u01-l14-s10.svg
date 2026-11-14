@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 430" color="#111" role="img" aria-labelledby="u01-l14-s10-title" data-steps="1">
+  <title id="u01-l14-s10-title">Incidence table for a four-point, two-line system</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <path d="M10,62L390,62" stroke-width="2"/>
+  <path d="M10,114L390,114" stroke-width="1"/>
+  <path d="M10,166L390,166" stroke-width="1"/>
+  <path d="M10,218L390,218" stroke-width="1"/>
+  <path d="M10,270L390,270" stroke-width="1"/>
+  <path d="M110,14L110,266" stroke-width="1"/>
+  <path d="M250,14L250,266" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="60" y="45.36" font-size="26" text-anchor="middle">point</text>
+  <text fill="currentColor" stroke="none" x="148.16" y="45.36" font-size="26">{<tspan font-style="italic">A</tspan>, <tspan font-style="italic">B</tspan>}</text>
+  <text fill="currentColor" stroke="none" x="286.95" y="45.36" font-size="26">{<tspan font-style="italic">C</tspan>, <tspan font-style="italic">D</tspan>}</text>
+  <text fill="currentColor" stroke="none" x="52.7" y="97.36" font-size="26"><tspan font-style="italic">A</tspan></text>
+  <text fill="currentColor" stroke="none" x="52.2" y="149.36" font-size="26"><tspan font-style="italic">B</tspan></text>
+  <text fill="currentColor" stroke="none" x="52.37" y="201.36" font-size="26"><tspan font-style="italic">C</tspan></text>
+  <text fill="currentColor" stroke="none" x="51.33" y="253.36" font-size="26"><tspan font-style="italic">D</tspan></text>
+  <g data-step="1" class="conclusion" style="--sd:0.00s">
+    <path d="M170.1,88.44L177.36,95.92L190.56,79.64" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.35s"/>
+    <path d="M170.1,140.44L177.36,147.92L190.56,131.64" stroke-width="2" class="draw" pathLength="1" style="--d:0.30s;--t:0.35s"/>
+    <path d="M310.1,192.44L317.36,199.92L330.56,183.64" stroke-width="2" class="draw" pathLength="1" style="--d:0.59s;--t:0.35s"/>
+    <path d="M310.1,244.44L317.36,251.92L330.56,235.64" stroke-width="2" class="draw" pathLength="1" style="--d:0.89s;--t:0.35s"/>
+    <text fill="currentColor" stroke="none" x="200" y="333.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.19s">Each point: exactly one line.</text>
+    <text fill="currentColor" stroke="none" x="200" y="373.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.31s">No line holds all four points.</text>
+  </g>
+  </g>
+</svg>

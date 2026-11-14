@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 470" color="#111" role="img" aria-labelledby="u01-l13-s07-title" data-steps="3">
+  <title id="u01-l13-s07-title">Segment, ray and line through A and B</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <circle cx="40" cy="54" r="4" fill="currentColor" stroke="none"/>
+  <text fill="currentColor" stroke="none" x="32.7" y="37.36" font-size="26"><tspan font-style="italic">A</tspan></text>
+  <circle cx="280" cy="54" r="4" fill="currentColor" stroke="none"/>
+  <text fill="currentColor" stroke="none" x="272.2" y="37.36" font-size="26"><tspan font-style="italic">B</tspan></text>
+  <circle cx="360" cy="54" r="4" fill="currentColor" stroke="none"/>
+  <text fill="currentColor" stroke="none" x="352.37" y="37.36" font-size="26"><tspan font-style="italic">C</tspan></text>
+  <path d="M16,92H384A8,8 0 0 1 392,100V198A8,8 0 0 1 384,206H16A8,8 0 0 1 8,198V100A8,8 0 0 1 16,92Z" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="24" y="127.36" font-size="26">segment <tspan font-style="italic">AB</tspan></text>
+  <g data-step="1" class="conclusion" style="--sd:0.00s">
+    <path d="M40,180L280,180" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.78s"/>
+    <circle cx="40" cy="180" r="4" fill="currentColor" stroke="none" class="fade" style="--d:0.66s"/>
+    <text fill="currentColor" stroke="none" x="32.7" y="163.36" font-size="26" class="fade" style="--d:0.78s"><tspan font-style="italic">A</tspan></text>
+    <circle cx="280" cy="180" r="4" fill="currentColor" stroke="none" class="fade" style="--d:0.90s"/>
+    <text fill="currentColor" stroke="none" x="272.2" y="163.36" font-size="26" class="fade" style="--d:1.02s"><tspan font-style="italic">B</tspan></text>
+    <circle cx="360" cy="180" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.14s"/>
+    <text fill="currentColor" stroke="none" x="352.37" y="163.36" font-size="26" class="fade" style="--d:1.26s"><tspan font-style="italic">C</tspan></text>
+  </g>
+  <path d="M16,216H384A8,8 0 0 1 392,224V322A8,8 0 0 1 384,330H16A8,8 0 0 1 8,322V224A8,8 0 0 1 16,216Z" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="24" y="251.36" font-size="26">ray <tspan font-style="italic">AB</tspan></text>
+  <g data-step="2" class="conclusion" style="--sd:1.53s">
+    <path d="M40,304L380,304" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.98s"/>
+    <path d="M367,309.46L380,304L367,298.54" stroke-width="2" class="fade" style="--d:0.83s"/>
+    <circle cx="40" cy="304" r="4" fill="currentColor" stroke="none" class="fade" style="--d:0.95s"/>
+    <text fill="currentColor" stroke="none" x="32.7" y="287.36" font-size="26" class="fade" style="--d:1.07s"><tspan font-style="italic">A</tspan></text>
+    <circle cx="280" cy="304" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.19s"/>
+    <text fill="currentColor" stroke="none" x="272.2" y="287.36" font-size="26" class="fade" style="--d:1.31s"><tspan font-style="italic">B</tspan></text>
+    <circle cx="360" cy="304" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.43s"/>
+    <text fill="currentColor" stroke="none" x="352.37" y="287.36" font-size="26" class="fade" style="--d:1.55s"><tspan font-style="italic">C</tspan></text>
+  </g>
+  <path d="M16,340H384A8,8 0 0 1 392,348V446A8,8 0 0 1 384,454H16A8,8 0 0 1 8,446V348A8,8 0 0 1 16,340Z" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="24" y="375.36" font-size="26">line <tspan font-style="italic">AB</tspan></text>
+  <g data-step="3" class="conclusion" style="--sd:3.36s">
+    <path d="M20,428L380,428" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:1.00s"/>
+    <path d="M367,433.46L380,428L367,422.54" stroke-width="2" class="fade" style="--d:0.85s"/>
+    <path d="M33,422.54L20,428L33,433.46" stroke-width="2" class="fade" style="--d:0.97s"/>
+    <circle cx="40" cy="428" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.09s"/>
+    <text fill="currentColor" stroke="none" x="32.7" y="411.36" font-size="26" class="fade" style="--d:1.21s"><tspan font-style="italic">A</tspan></text>
+    <circle cx="280" cy="428" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.33s"/>
+    <text fill="currentColor" stroke="none" x="272.2" y="411.36" font-size="26" class="fade" style="--d:1.45s"><tspan font-style="italic">B</tspan></text>
+    <circle cx="360" cy="428" r="4" fill="currentColor" stroke="none" class="fade" style="--d:1.57s"/>
+    <text fill="currentColor" stroke="none" x="352.37" y="411.36" font-size="26" class="fade" style="--d:1.69s"><tspan font-style="italic">C</tspan></text>
+  </g>
+  </g>
+</svg>

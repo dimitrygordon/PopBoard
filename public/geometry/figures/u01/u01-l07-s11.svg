@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 670" color="#111" role="img" aria-labelledby="u01-l07-s11-title" data-steps="1">
+  <title id="u01-l07-s11-title">Two systems with different starting words and rules</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <text fill="currentColor" stroke="none" x="100" y="49.36" font-size="26" text-anchor="middle">System A</text>
+  <text fill="currentColor" stroke="none" x="300" y="49.36" font-size="26" text-anchor="middle">System B</text>
+  <path d="M14,70L386,70" stroke-width="2"/>
+  <text fill="currentColor" stroke="none" x="200" y="113.36" font-size="26" text-anchor="middle">Starting words</text>
+  <path d="M200,128L200,250" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="100" y="165.36" font-size="26" text-anchor="middle">point</text>
+  <text fill="currentColor" stroke="none" x="300" y="165.36" font-size="26" text-anchor="middle">point</text>
+  <text fill="currentColor" stroke="none" x="100" y="203.36" font-size="26" text-anchor="middle">line</text>
+  <text fill="currentColor" stroke="none" x="300" y="203.36" font-size="26" text-anchor="middle">line</text>
+  <text fill="currentColor" stroke="none" x="100" y="241.36" font-size="26" text-anchor="middle">between</text>
+  <text fill="currentColor" stroke="none" x="300" y="241.36" font-size="26" text-anchor="middle">distance</text>
+  <path d="M14,262L386,262" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="200" y="305.36" font-size="26" text-anchor="middle">Rules assumed</text>
+  <path d="M200,320L200,446" stroke-width="1"/>
+  <text fill="currentColor" stroke="none" x="85.12" y="357.36" font-size="26"><tspan font-style="italic">R</tspan>1</text>
+  <text fill="currentColor" stroke="none" x="85.12" y="395.36" font-size="26"><tspan font-style="italic">R</tspan>2</text>
+  <text fill="currentColor" stroke="none" x="85.12" y="433.36" font-size="26"><tspan font-style="italic">R</tspan>3</text>
+  <text fill="currentColor" stroke="none" x="285.12" y="357.36" font-size="26"><tspan font-style="italic">R</tspan>1</text>
+  <text fill="currentColor" stroke="none" x="285.12" y="395.36" font-size="26"><tspan font-style="italic">R</tspan>4</text>
+  <g data-step="1" class="conclusion" style="--sd:0.00s">
+    <path d="M14,458L386,458" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:1.00s"/>
+    <text fill="currentColor" stroke="none" x="200" y="501.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.85s">Proved</text>
+    <path d="M200,516L200,556" stroke-width="1" class="draw" pathLength="1" style="--d:0.97s;--t:0.38s"/>
+    <text fill="currentColor" stroke="none" x="285.12" y="547.36" font-size="26" class="fade" style="--d:1.29s"><tspan font-style="italic">R</tspan>2</text>
+    <path d="M14,572L386,572" stroke-width="1" class="draw" pathLength="1" style="--d:1.41s;--t:1.00s"/>
+    <text fill="currentColor" stroke="none" x="93.05" y="615.36" font-size="26" class="fade" style="--d:2.26s"><tspan font-style="italic">R</tspan>2: assumed in A,</text>
+    <text fill="currentColor" stroke="none" x="200" y="653.36" font-size="26" text-anchor="middle" class="fade" style="--d:2.38s">proved in B.</text>
+  </g>
+  </g>
+</svg>

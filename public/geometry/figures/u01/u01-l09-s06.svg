@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 540" color="#111" role="img" aria-labelledby="u01-l09-s06-title" data-steps="3">
+  <title id="u01-l09-s06-title">Checking two triples against the balanced test</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <text fill="currentColor" stroke="none" x="200" y="43.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">Balanced: one 0, two positive</text>
+  </g>
+  <g data-step="1" style="--sd:0.45s">
+    <path d="M22,70H378A8,8 0 0 1 386,78V272A8,8 0 0 1 378,280H22A8,8 0 0 1 14,272V78A8,8 0 0 1 22,70Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="90" y="128.24" font-size="34" text-anchor="middle" class="fade" style="--d:0.77s">(</text>
+    <text fill="currentColor" stroke="none" x="310" y="128.24" font-size="34" text-anchor="middle" class="fade" style="--d:0.89s">)</text>
+    <text fill="currentColor" stroke="none" x="120" y="128.24" font-size="34" text-anchor="middle" class="fade" style="--d:1.00s">1</text>
+    <text fill="currentColor" stroke="none" x="137" y="128.24" font-size="34" class="fade" style="--d:1.12s">,</text>
+    <path d="M90,154H150A6,6 0 0 1 156,160V198A6,6 0 0 1 150,204H90A6,6 0 0 1 84,198V160A6,6 0 0 1 90,154Z" stroke-width="2" class="draw" pathLength="1" style="--d:1.25s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="200" y="128.24" font-size="34" text-anchor="middle" class="fade" style="--d:2.01s">1</text>
+    <text fill="currentColor" stroke="none" x="217" y="128.24" font-size="34" class="fade" style="--d:2.13s">,</text>
+    <path d="M170,154H230A6,6 0 0 1 236,160V198A6,6 0 0 1 230,204H170A6,6 0 0 1 164,198V160A6,6 0 0 1 170,154Z" stroke-width="2" class="draw" pathLength="1" style="--d:2.25s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="280" y="128.24" font-size="34" text-anchor="middle" class="fade" style="--d:3.02s">1</text>
+    <path d="M250,154H310A6,6 0 0 1 316,160V198A6,6 0 0 1 310,204H250A6,6 0 0 1 244,198V160A6,6 0 0 1 250,154Z" stroke-width="2" class="draw" pathLength="1" style="--d:3.14s;--t:0.90s"/>
+  </g>
+  <g data-step="2" style="--sd:4.50s">
+    <text fill="currentColor" stroke="none" x="120" y="188.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">&gt; 0</text>
+    <text fill="currentColor" stroke="none" x="200" y="188.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.12s">&gt; 0</text>
+    <text fill="currentColor" stroke="none" x="280" y="188.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.24s">&gt; 0</text>
+    <text fill="currentColor" stroke="none" x="200" y="251.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.36s">not balanced</text>
+  </g>
+  <g data-step="1" style="--sd:5.13s">
+    <path d="M22,300H378A8,8 0 0 1 386,308V502A8,8 0 0 1 378,510H22A8,8 0 0 1 14,502V308A8,8 0 0 1 22,300Z" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="90" y="358.24" font-size="34" text-anchor="middle" class="fade" style="--d:0.77s">(</text>
+    <text fill="currentColor" stroke="none" x="310" y="358.24" font-size="34" text-anchor="middle" class="fade" style="--d:0.89s">)</text>
+    <text fill="currentColor" stroke="none" x="120" y="358.24" font-size="34" text-anchor="middle" class="fade" style="--d:1.00s">0</text>
+    <text fill="currentColor" stroke="none" x="137" y="358.24" font-size="34" class="fade" style="--d:1.12s">,</text>
+    <path d="M90,384H150A6,6 0 0 1 156,390V428A6,6 0 0 1 150,434H90A6,6 0 0 1 84,428V390A6,6 0 0 1 90,384Z" stroke-width="2" class="draw" pathLength="1" style="--d:1.25s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="200" y="358.24" font-size="34" text-anchor="middle" class="fade" style="--d:2.01s">2</text>
+    <text fill="currentColor" stroke="none" x="217" y="358.24" font-size="34" class="fade" style="--d:2.13s">,</text>
+    <path d="M170,384H230A6,6 0 0 1 236,390V428A6,6 0 0 1 230,434H170A6,6 0 0 1 164,428V390A6,6 0 0 1 170,384Z" stroke-width="2" class="draw" pathLength="1" style="--d:2.25s;--t:0.90s"/>
+    <text fill="currentColor" stroke="none" x="280" y="358.24" font-size="34" text-anchor="middle" class="fade" style="--d:3.02s">3</text>
+    <path d="M250,384H310A6,6 0 0 1 316,390V428A6,6 0 0 1 310,434H250A6,6 0 0 1 244,428V390A6,6 0 0 1 250,384Z" stroke-width="2" class="draw" pathLength="1" style="--d:3.14s;--t:0.90s"/>
+  </g>
+  <g data-step="3" class="conclusion" style="--sd:9.18s">
+    <text fill="currentColor" stroke="none" x="120" y="418.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.00s">= 0</text>
+    <text fill="currentColor" stroke="none" x="200" y="418.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.12s">&gt; 0</text>
+    <text fill="currentColor" stroke="none" x="280" y="418.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.24s">&gt; 0</text>
+    <text fill="currentColor" stroke="none" x="200" y="481.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.36s">balanced</text>
+  </g>
+  </g>
+</svg>

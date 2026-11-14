@@ -24,15 +24,15 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l01.svg",
   "kind": "lesson",
-  "gx": null
+  "gx": "u01.illusion"
  },
  {
   "key": "U01-L02",
@@ -57,13 +57,13 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 7,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l02.svg",
   "kind": "lesson",
   "gx": "u01.chords"
  },
@@ -90,15 +90,15 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l03.svg",
   "kind": "lesson",
-  "gx": null
+  "gx": "u01.streets"
  },
  {
   "key": "U01-L04",
@@ -123,15 +123,15 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l04.svg",
   "kind": "lesson",
-  "gx": null
+  "gx": "u01.earth"
  },
  {
   "key": "U01-L05",
@@ -156,13 +156,13 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 7,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l05.svg",
   "kind": "lesson",
   "gx": "u01.sierpinski"
  },
@@ -189,14 +189,14 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 7,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1",
    "G.GF.6"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l06.svg",
   "kind": "lesson",
   "gx": "u01.euclid"
  },
@@ -223,13 +223,13 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l07.svg",
   "kind": "lesson",
   "gx": null
  },
@@ -256,16 +256,16 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1",
    "G.GF.2"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l08.svg",
   "kind": "lesson",
-  "gx": null
+  "gx": "u01.truth"
  },
  {
   "key": "U01-L09",
@@ -290,16 +290,16 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1",
    "G.GF.2"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l09.svg",
   "kind": "lesson",
-  "gx": null
+  "gx": "u01.kite"
  },
  {
   "key": "U01-L10",
@@ -324,16 +324,16 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 8,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1",
    "G.GF.3"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l10.svg",
   "kind": "lesson",
-  "gx": null
+  "gx": "u01.shuffle"
  },
  {
   "key": "U01-L11",
@@ -358,13 +358,13 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l11.svg",
   "kind": "lesson",
   "gx": null
  },
@@ -398,15 +398,15 @@ export const DECKS = [
    ],
    "relationship": ""
   },
-  "slides": 6,
+  "slides": 13,
   "pages": [],
   "standards": [
    "G.GF.1"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l12.svg",
   "kind": "lesson",
-  "gx": null
+  "gx": "u01.wall"
  },
  {
   "key": "U01-L13",
@@ -438,13 +438,13 @@ export const DECKS = [
    ],
    "relationship": "related review scope"
   },
-  "slides": 7,
+  "slides": 20,
   "pages": [],
   "standards": [
    "G.GF.1"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l13.svg",
   "kind": "review",
   "gx": null
  },
@@ -478,14 +478,14 @@ export const DECKS = [
    ],
    "relationship": "related review scope"
   },
-  "slides": 7,
+  "slides": 28,
   "pages": [],
   "standards": [
    "G.GF.1",
    "G.GF.2"
   ],
   "built": true,
-  "cover": "covers/u01.svg",
+  "cover": "figures/u01/u01-cover-l14.svg",
   "kind": "assessment",
   "gx": null
  },

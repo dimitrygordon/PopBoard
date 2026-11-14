@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 330" color="#111" role="img" aria-labelledby="u01-hook-l04-h7-title" data-steps="4">
+  <title id="u01-hook-l04-h7-title">Moon and Sun fill the same angle at the eye</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M14,150Q40,120 64,150" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.90s"/>
+    <path d="M14,150Q40,180 64,150" stroke-width="2" class="draw" pathLength="1" style="--d:0.77s;--t:0.90s"/>
+    <path d="M48,140A10,10 0 1 0 48,160A10,10 0 1 0 48,140" stroke-width="2" class="draw" pathLength="1" style="--d:1.53s;--t:1.10s"/>
+    <circle cx="51" cy="150" r="4" fill="currentColor" stroke="none" class="fade" style="--d:2.46s"/>
+  </g>
+  <g data-step="2" style="--sd:2.73s">
+    <path d="M58,150L384,86.63" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:0.96s"/>
+    <path d="M58,150L384,213.37" stroke-width="1" class="draw" pathLength="1" style="--d:0.82s;--t:0.96s"/>
+  </g>
+  <g data-step="3" style="--sd:4.52s">
+    <path d="M142,133.97A16.03,16.03 0 1 0 142,166.03A16.03,16.03 0 1 0 142,133.97" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+    <text fill="currentColor" stroke="none" x="142" y="213.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.94s">Moon</text>
+  </g>
+  <g data-step="4" style="--sd:5.73s">
+    <path d="M326,98.86A51.14,51.14 0 1 0 326,201.14A51.14,51.14 0 1 0 326,98.86" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+    <text fill="currentColor" stroke="none" x="326" y="244.5" font-size="26" text-anchor="middle" class="fade" style="--d:0.94s">Sun</text>
+    <text fill="currentColor" stroke="none" x="200" y="313.36" font-size="26" text-anchor="middle" class="fade" style="--d:1.06s">NOT TO SCALE</text>
+  </g>
+  </g>
+</svg>

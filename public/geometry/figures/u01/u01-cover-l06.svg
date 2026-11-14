@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" color="#111" role="img" aria-labelledby="u01-cover-l06-title" data-steps="3">
+  <title id="u01-cover-l06-title">Constructions: Telling Time with Shadows</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M400,183A42,42 0 1 0 400,267A42,42 0 1 0 400,183" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+  </g>
+  <g data-step="2" style="--sd:1.08s">
+    <path d="M400,141A42,42 0 1 0 400,225A42,42 0 1 0 400,141" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+    <path d="M363.63,162A42,42 0 1 0 363.63,246A42,42 0 1 0 363.63,162" stroke-width="2" class="draw" pathLength="1" style="--d:0.94s;--t:1.10s"/>
+    <path d="M363.63,204A42,42 0 1 0 363.63,288A42,42 0 1 0 363.63,204" stroke-width="2" class="draw" pathLength="1" style="--d:1.87s;--t:1.10s"/>
+    <path d="M400,225A42,42 0 1 0 400,309A42,42 0 1 0 400,225" stroke-width="2" class="draw" pathLength="1" style="--d:2.81s;--t:1.10s"/>
+    <path d="M436.37,204A42,42 0 1 0 436.37,288A42,42 0 1 0 436.37,204" stroke-width="2" class="draw" pathLength="1" style="--d:3.74s;--t:1.10s"/>
+    <path d="M436.37,162A42,42 0 1 0 436.37,246A42,42 0 1 0 436.37,162" stroke-width="2" class="draw" pathLength="1" style="--d:4.68s;--t:1.10s"/>
+  </g>
+  <g data-step="3" style="--sd:6.85s">
+    <path d="M400,141A84,84 0 1 0 400,309A84,84 0 1 0 400,141" stroke-width="1" class="draw" pathLength="1" style="--d:0.00s;--t:1.10s"/>
+    <path d="M400,99L290.88,162L290.88,288L400,351L509.12,288L509.12,162L400,99" stroke-width="2" class="draw" pathLength="1" style="--d:0.94s;--t:1.40s"/>
+    <path d="M400,141L400,99" stroke-width="1" class="draw" pathLength="1" style="--d:2.12s;--t:0.38s"/>
+    <path d="M327.25,183L290.88,162" stroke-width="1" class="draw" pathLength="1" style="--d:2.45s;--t:0.38s"/>
+    <path d="M327.25,267L290.88,288" stroke-width="1" class="draw" pathLength="1" style="--d:2.78s;--t:0.38s"/>
+    <path d="M400,309L400,351" stroke-width="1" class="draw" pathLength="1" style="--d:3.10s;--t:0.38s"/>
+    <path d="M472.75,267L509.12,288" stroke-width="1" class="draw" pathLength="1" style="--d:3.43s;--t:0.38s"/>
+    <path d="M472.75,183L509.12,162" stroke-width="1" class="draw" pathLength="1" style="--d:3.76s;--t:0.38s"/>
+    <path d="M400,95A130,130 0 1 0 400,355A130,130 0 1 0 400,95" stroke-width="3" class="draw" pathLength="1" style="--d:4.08s;--t:1.10s"/>
+  </g>
+  </g>
+</svg>

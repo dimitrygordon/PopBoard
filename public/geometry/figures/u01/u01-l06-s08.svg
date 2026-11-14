@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 620" color="#111" role="img" aria-labelledby="u01-l06-s08-title" data-steps="3">
+  <title id="u01-l06-s08-title">A compass stores a length and carries it to a new point</title>
+  <style>@media (prefers-reduced-motion: no-preference){
+svg.play .draw,[data-step].on .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:u01-draw var(--t,.8s) ease-in-out forwards}
+svg.play .fade,[data-step].on .fade{opacity:0;animation:u01-fade .45s ease-out forwards}
+svg.play .draw,svg.play .fade{animation-delay:calc(var(--sd,0s) + var(--d,0s))}
+[data-step].on .draw,[data-step].on .fade{animation-delay:var(--d,0s)}
+@keyframes u01-draw{to{stroke-dashoffset:0}}
+@keyframes u01-fade{to{opacity:1}}
+}</style>
+  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif">
+  <g data-step="1" style="--sd:0.00s">
+    <path d="M50,214L210,214" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:0.62s"/>
+    <circle cx="50" cy="214" r="3.5" fill="currentColor" stroke="none" class="fade" style="--d:0.53s"/>
+    <circle cx="210" cy="214" r="3.5" fill="currentColor" stroke="none" class="fade" style="--d:0.65s"/>
+    <g class="fade" style="--d:0.77s">
+      <path d="M119.12,81.28L56.97,194.93L63.03,198.43L130.38,87.78Z" stroke-width="2"/>
+      <path d="M55.67,194.18L64.33,199.18" stroke-width="2"/>
+      <path d="M58.61,195.88L50,214L50,214L61.39,197.48Z" stroke-width="2" fill="currentColor"/>
+      <path d="M139.2,84.48L145.26,90.53" stroke-width="1"/>
+      <path d="M134.72,87.07L153.66,106" stroke-width="1"/>
+      <path d="M133.03,92.44L162.06,121.47" stroke-width="1"/>
+      <path d="M144.22,110.7L170.46,136.95" stroke-width="1"/>
+      <path d="M155.41,128.97L178.86,152.42" stroke-width="1"/>
+      <path d="M166.6,147.23L183.87,164.5" stroke-width="1"/>
+      <path d="M177.79,165.49L179.39,167.09" stroke-width="1"/>
+      <path d="M129.62,87.78L179.54,169.23L186.46,165.23L140.88,81.28Z" stroke-width="2"/>
+      <path d="M175.21,171.73L180.21,180.39L195.79,171.39L190.79,162.73Z" stroke-width="2"/>
+      <path d="M184.1,178.14L197.6,201.53L205.4,197.03L191.9,173.64Z" stroke-width="2"/>
+      <path d="M188,175.89L201.5,199.28" stroke-width="1"/>
+      <path d="M197.6,201.53L206.2,210.42L208.8,208.92L205.4,197.03Z" stroke-width="2"/>
+      <path d="M206.2,210.42L210,214L210,214L208.8,208.92Z" stroke-width="1" fill="currentColor"/>
+      <path d="M130,64.44A11,11 0 1 0 130,86.44A11,11 0 1 0 130,64.44" stroke-width="2"/>
+      <circle cx="130" cy="75.44" r="2.5" fill="currentColor" stroke="none" class="fade" style="--d:1.19s"/>
+      <path d="M136,64.44L136,37.44L124,37.44L124,64.44Z" stroke-width="2"/>
+      <path d="M125.5,59.94L134.5,59.94" stroke-width="1"/>
+      <path d="M125.5,55.44L134.5,55.44" stroke-width="1"/>
+      <path d="M125.5,50.94L134.5,50.94" stroke-width="1"/>
+      <path d="M125.5,46.44L134.5,46.44" stroke-width="1"/>
+      <path d="M125.5,41.94L134.5,41.94" stroke-width="1"/>
+    </g>
+  </g>
+  <g data-step="2" style="--sd:1.46s">
+    <path d="M238,120Q384,150 300,286" stroke-width="1" stroke-dasharray="5 6" class="fade" style="--d:0.00s"/>
+    <path d="M302.19,272.07L300,286L311.48,277.81" stroke-width="1" class="fade" style="--d:0.12s"/>
+    <circle cx="178" cy="476" r="3.5" fill="currentColor" stroke="none" class="fade" style="--d:0.24s"/>
+    <g class="fade" style="--d:0.36s">
+      <path d="M247.12,343.28L184.97,456.93L191.03,460.43L258.38,349.78Z" stroke-width="2"/>
+      <path d="M183.67,456.18L192.33,461.18" stroke-width="2"/>
+      <path d="M186.61,457.88L178,476L178,476L189.39,459.48Z" stroke-width="2" fill="currentColor"/>
+      <path d="M267.2,346.48L273.26,352.53" stroke-width="1"/>
+      <path d="M262.72,349.07L281.66,368" stroke-width="1"/>
+      <path d="M261.03,354.44L290.06,383.47" stroke-width="1"/>
+      <path d="M272.22,372.7L298.46,398.95" stroke-width="1"/>
+      <path d="M283.41,390.97L306.86,414.42" stroke-width="1"/>
+      <path d="M294.6,409.23L311.87,426.5" stroke-width="1"/>
+      <path d="M305.79,427.49L307.39,429.09" stroke-width="1"/>
+      <path d="M257.62,349.78L307.54,431.23L314.46,427.23L268.88,343.28Z" stroke-width="2"/>
+      <path d="M303.21,433.73L308.21,442.39L323.79,433.39L318.79,424.73Z" stroke-width="2"/>
+      <path d="M312.1,440.14L325.6,463.53L333.4,459.03L319.9,435.64Z" stroke-width="2"/>
+      <path d="M316,437.89L329.5,461.28" stroke-width="1"/>
+      <path d="M325.6,463.53L334.2,472.42L336.8,470.92L333.4,459.03Z" stroke-width="2"/>
+      <path d="M334.2,472.42L338,476L338,476L336.8,470.92Z" stroke-width="1" fill="currentColor"/>
+      <path d="M258,326.44A11,11 0 1 0 258,348.44A11,11 0 1 0 258,326.44" stroke-width="2"/>
+      <circle cx="258" cy="337.44" r="2.5" fill="currentColor" stroke="none" class="fade" style="--d:0.78s"/>
+      <path d="M264,326.44L264,299.44L252,299.44L252,326.44Z" stroke-width="2"/>
+      <path d="M253.5,321.94L262.5,321.94" stroke-width="1"/>
+      <path d="M253.5,317.44L262.5,317.44" stroke-width="1"/>
+      <path d="M253.5,312.94L262.5,312.94" stroke-width="1"/>
+      <path d="M253.5,308.44L262.5,308.44" stroke-width="1"/>
+      <path d="M253.5,303.94L262.5,303.94" stroke-width="1"/>
+    </g>
+  </g>
+  <g data-step="3" style="--sd:2.51s">
+    <path d="M321.81,546.14A160,160 0 0 0 321.81,405.86" stroke-width="2" class="draw" pathLength="1" style="--d:0.00s;--t:1.00s"/>
+    <path d="M178,476L338,476" stroke-width="1" stroke-dasharray="5 6" class="fade" style="--d:0.85s"/>
+    <text fill="currentColor" stroke="none" x="200" y="595.36" font-size="26" text-anchor="middle" class="fade" style="--d:0.97s">UNCHANGED OPENING</text>
+  </g>
+  </g>
+</svg>
