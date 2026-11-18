@@ -3,7 +3,7 @@
 ## Module cover
 - Path: `public/energy-lab/cover.webp`
 - Size: 960 x 540 CSS px (16:9)
-- Used by: Energy Lab hub header (and available for the study library card)
+- Used by: Energy Lab hub header
 
 ## Scene card thumbnails
 - Directory: `public/energy-lab/thumbs/`

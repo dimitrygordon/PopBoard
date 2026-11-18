@@ -32,7 +32,12 @@ test("Courses band links the course libraries with existing cover art", () => {
 test("module grid skips the courses; Energy Lab stays a module", () => {
   assert.match(html, /var COURSE_IDS = \["astronomy-course", "physics101", "geometry", "friction-lesson", "diy-pbl-bookshare"\];/);
   assert.match(html, /BUILTIN_MODULES\.filter\(function\(m\) \{ return COURSE_IDS\.indexOf\(m\.id\) === -1; \}\)/);
-  assert.match(html, /id: "energy-lab"[\s\S]*?name: "Energy Lab"[\s\S]*?file: "study-energy-lab\.html"[\s\S]*?cover: "energy-lab\/cover\.webp"/);
+  const card = html.split('id: "energy-lab"')[1].split('id: "atom-builder"')[0];
+  assert.match(card, /name: "Energy Lab"/);
+  assert.match(card, /file: "study-energy-lab\.html"/);
+  assert.doesNotMatch(card, /cover:/);
+  assert.match(card, /stroke="currentColor" stroke-width="1\.75" stroke-linecap="round" stroke-linejoin="round"/);
+  assert.match(card, /<path d="M13 2 6 13h5l-1 9 8-12h-5z"\/>/);
 });
 
 test("Physics 101 accent dots match p101.css module accents", () => {
