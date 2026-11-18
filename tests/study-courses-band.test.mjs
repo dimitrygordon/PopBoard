@@ -16,21 +16,23 @@ test("Courses band comes before the search box and the module grid", () => {
   assert.match(html, /<h2 id="coursesHeading">Courses<\/h2>/);
 });
 
-test("Courses band links both course libraries with existing cover art", () => {
+test("Courses band links the course libraries with existing cover art", () => {
   assert.match(html, /href="study-astronomy-course\.html"/);
   assert.match(html, /href="study-physics101\.html"/);
   assert.match(html, /href="study-geometry\.html"/);
   assert.match(html, /href="study-friction-lesson\.html"/);
   assert.match(html, /href="study-diy-pbl-bookshare\.html"/);
-  assert.match(html, /href="study-energy-lab\.html"/);
+  const band = html.slice(html.indexOf('id="coursesBand"'), html.indexOf('id="searchInput"'));
+  assert.doesNotMatch(band, /energy-lab|Energy Lab/);
   for (const src of html.matchAll(/class="course-card[^]*?<img src="([^"]+)"/g)) {
     assert.ok(existsSync(join(PUB, src[1])), src[1]);
   }
 });
 
-test("module grid skips the two courses; other modules stay", () => {
-  assert.match(html, /var COURSE_IDS = \["astronomy-course", "physics101", "geometry", "friction-lesson", "diy-pbl-bookshare", "energy-lab"\];/);
+test("module grid skips the courses; Energy Lab stays a module", () => {
+  assert.match(html, /var COURSE_IDS = \["astronomy-course", "physics101", "geometry", "friction-lesson", "diy-pbl-bookshare"\];/);
   assert.match(html, /BUILTIN_MODULES\.filter\(function\(m\) \{ return COURSE_IDS\.indexOf\(m\.id\) === -1; \}\)/);
+  assert.match(html, /id: "energy-lab"[\s\S]*?name: "Energy Lab"[\s\S]*?file: "study-energy-lab\.html"[\s\S]*?cover: "energy-lab\/cover\.webp"/);
 });
 
 test("Physics 101 accent dots match p101.css module accents", () => {
