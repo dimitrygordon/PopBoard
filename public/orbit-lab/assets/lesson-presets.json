@@ -33,7 +33,8 @@
       "showSatellites": false,
       "showReadouts": false,
       "readoutToggle": false,
-      "autoPath": "slow"
+      "autoPath": "slow",
+      "airTimeDecimals": 0
     },
     "l4-s6": {
       "module": "orbit-lab",

@@ -145,3 +145,11 @@ test("both modules import the vendored three.js and GLTFLoader, not a CDN copy",
   assert.match(scene, /vendor\/three\/meshopt_decoder\.mjs/);
   assert.doesNotMatch(scene, /cdn\.jsdelivr|unpkg|cdnjs/);
 });
+
+test("L1 shows air time in whole seconds so both lobs read the same", () => {
+  const p = resolvePreset(olLessons, "l1-s8");
+  assert.equal(p.airTimeDecimals, 0);
+  const at8 = olLessons.l1_cap.at_teaching_height_8_km;
+  assert.equal(at8.slow.t_s.toFixed(p.airTimeDecimals), at8.fast.t_s.toFixed(p.airTimeDecimals));
+  assert.match(read("public/orbit-lab/ol-ui.js"), /toFixed\(airTimeDecimals\(\)\)/);
+});

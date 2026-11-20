@@ -179,9 +179,14 @@ function syncSpeedLabel() {
   $("speedVal").textContent = `${Math.round(v)} m/s`;
 }
 
+// L1 shows whole seconds so 40.5 vs 40.6 s can't read as "faster stays up longer".
+function airTimeDecimals() {
+  return Number.isInteger(preset.airTimeDecimals) ? preset.airTimeDecimals : 1;
+}
+
 function statusFor(path, v) {
   if (path.kind === "lob" || path.kind === "drop") {
-    return `Lands after ${path.t.toFixed(1)} s, ${ (path.range / 1000).toFixed(1) } km downrange.`;
+    return `Lands after ${path.t.toFixed(airTimeDecimals())} s, ${ (path.range / 1000).toFixed(1) } km downrange.`;
   }
   if (path.kind === "escape") return "This shot does not come back.";
   return "This shot never lands.";
