@@ -26,15 +26,45 @@ button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 3px s
   display: flex; gap: 8px; align-items: center; }
 .hud .title { margin: 0 auto 0 4px; min-width: 0; font-weight: 600; font-size: 1.05rem; letter-spacing: -0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .study-back-btn { display: inline-flex; gap: 4px; align-items: center; }
+
+.credits { position: relative; z-index: 7; flex: 0 0 auto; }
+.credits summary {
+  list-style: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: inherit;
+  background: #111;
+  border: 1px solid var(--ol-border);
+  border-radius: 12px;
+  min-width: var(--ol-hit);
+  min-height: var(--ol-hit);
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+}
+.credits summary::-webkit-details-marker, .credits summary::marker { display: none; }
+.credits summary:focus-visible { outline: 3px solid var(--ol-accent); outline-offset: 2px; }
+.credits p {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  width: min(22rem, calc(100vw - 24px));
+  margin: 0;
+  padding: 10px 12px;
+  background: rgba(12, 12, 12, 0.94);
+  border: 1px solid var(--ol-border);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: #ccc;
+  line-height: 1.4;
+  pointer-events: auto;
+}
 .stage { position: fixed; inset: 0; background: #000; }
 #scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
 
-.note, .asset-flag, .credit, .status { position: fixed; z-index: 4; left: 16px; right: 16px; margin: 0; pointer-events: none; }
+.note, .status { position: fixed; z-index: 4; left: 16px; right: 16px; margin: 0; pointer-events: none; }
 .note { top: calc(max(8px, env(safe-area-inset-top)) + 56px); font-size: 0.95rem; max-width: 36rem; }
-.asset-flag { top: calc(max(8px, env(safe-area-inset-top)) + 112px); font-size: 0.8rem; color: #888; max-width: 36rem; }
-.credit { bottom: calc(var(--ol-ctl, 170px) + 36px); font-size: 0.7rem; color: #777; max-width: 36rem; }
-.credit a { color: inherit; }
-.status { bottom: calc(var(--ol-ctl, 170px) + 12px); font-weight: 500; }
+.status { bottom: calc(var(--ol-ctl, 170px) + 12px); font-weight: 500; max-width: 36rem; }
 
 .readouts { position: fixed; z-index: 5; top: calc(max(8px, env(safe-area-inset-top)) + 56px); right: max(12px, env(safe-area-inset-right));
   margin: 0; padding: 10px 12px; border-radius: 12px; background: var(--ol-chip); border: 1px solid var(--ol-border); min-width: 10rem; font-variant-numeric: tabular-nums; }
@@ -61,9 +91,8 @@ input[type="range"] { width: 100%; }
 @media (max-width: 600px) {
   .hud .title { font-size: 0.95rem; }
   .hud .back-label { display: none; }
-  .hud button { padding: 0 8px; }
+  .hud button, .credits summary { padding: 0 8px; }
   .note { font-size: 0.9rem; right: 12px; }
-  .asset-flag { display: none; }
   .readouts { top: auto; bottom: calc(var(--ol-ctl, 190px) + 8px); right: 12px; left: auto; }
   .controls { width: auto; left: 0; right: 0; transform: none; border-radius: 16px 16px 0 0;
     padding-bottom: max(12px, env(safe-area-inset-bottom)); }

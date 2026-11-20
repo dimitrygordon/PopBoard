@@ -96,12 +96,27 @@ export async function createScene(canvas) {
     return { x: p.x, y: p.y, z: p.z, radius: pose.radius || p.length(), direction: { x: d.x, y: d.y, z: d.z }, loaded: true };
   }
 
+  function isNarrow() {
+    const aspect = Math.max(0.2, camera.aspect || 1);
+    return (typeof innerWidth === "number" && innerWidth <= 600) || aspect < 0.75;
+  }
+
+  // Pull back far enough that a radius fits in the visible band (HUD and controls excluded).
+  function distanceToFit(radius, usableV, usableH) {
+    const aspect = Math.max(0.2, camera.aspect || 1);
+    const vFov = (camera.fov * Math.PI) / 180;
+    const hFov = 2 * Math.atan(Math.tan(vFov / 2) * aspect);
+    const halfV = Math.atan(Math.tan(vFov / 2) * usableV);
+    const halfH = Math.atan(Math.tan(hFov / 2) * usableH);
+    return radius / Math.min(Math.tan(halfV), Math.tan(halfH));
+  }
+
   function applyCamera(mode) {
       camera.up.set(0, 1, 0);
+      const narrow = isNarrow();
       if (mode === "scale-wide") {
         // Frame Earth at the origin and the Moon at ~60 R_E on +X.
         // Portrait: rotate so the 60 R_E gap runs along the long axis.
-        const narrow = (typeof innerWidth === "number" && innerWidth <= 600) || camera.aspect < 0.75;
         if (narrow) {
           camera.up.set(1, 0, 0);
           camera.position.set(30, 0, 160);
@@ -111,8 +126,11 @@ export async function createScene(canvas) {
           camera.lookAt(30, 0, 0);
         }
       } else if (mode === "scale-iss") {
-        camera.position.set(1.6, 1.1, 2.6);
-        camera.lookAt(0, 0, 0);
+        // Whole Earth, plus the ISS/Hubble ring and enlarged station, in the visible band.
+        const dist = distanceToFit(1.25, narrow ? 0.40 : 0.62, 0.86);
+        const dir = new THREE.Vector3(0.55, 0.38, 1).normalize();
+        camera.position.copy(dir.multiplyScalar(dist));
+        camera.lookAt(0, narrow ? -0.45 : -0.12, 0);
       } else if (mode === "cannon-close") {
         const m = getMuzzle();
         const origin = new THREE.Vector3(m.x, m.y, m.z);
@@ -123,15 +141,19 @@ export async function createScene(canvas) {
         let side = new THREE.Vector3().crossVectors(dir, radial);
         if (side.lengthSq() < 1e-8) side.set(0, 0, 1);
         side.normalize();
-        const narrow = (typeof innerWidth === "number" && innerWidth <= 600) || camera.aspect < 0.75;
-        const sideD = narrow ? 0.85 : 0.55;
-        const radD = narrow ? 0.4 : 0.18;
-        camera.position.copy(origin).addScaledVector(side, sideD).addScaledVector(radial, radD).addScaledVector(dir, -0.08);
-        camera.lookAt(origin.clone().addScaledVector(dir, narrow ? 0.08 : 0.16).addScaledVector(radial, narrow ? -0.12 : 0));
+        // Narrow: side view of the muzzle, already sitting above the controls.
+        // Landscape: look toward the mountain body, not up the barrel, so the
+        // cannon stays in the open band above the control panel.
+        const sideD = narrow ? 0.9 : 1.05;
+        const radD = narrow ? 0.42 : 0.32;
+        camera.position.copy(origin).addScaledVector(side, sideD).addScaledVector(radial, radD).addScaledVector(dir, narrow ? -0.06 : 0.05);
+        camera.lookAt(origin.clone().addScaledVector(dir, narrow ? 0.14 : -0.22).addScaledVector(radial, narrow ? -0.1 : -0.04));
       } else {
-        // Three-quarter view that keeps the not-to-scale mountain on the limb.
-        camera.position.set(1.4, 1.2, 3.0);
-        camera.lookAt(0.35, 0.05, 0);
+        // Three-quarter view that keeps the not-to-scale mountain on the limb, above the controls.
+        const dist = distanceToFit(1.45, narrow ? 0.40 : 0.64, 0.88);
+        const dir = new THREE.Vector3(0.7, 0.4, 1).normalize();
+        camera.position.copy(dir.multiplyScalar(dist));
+        camera.lookAt(0.35, narrow ? -0.4 : -0.05, 0);
       }
   }
 

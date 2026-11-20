@@ -20,10 +20,6 @@ const preset = presetFromSearch(data.lessons) || { id: "default", mode: "circles
 const scene = await createScene($("scene"));
 await loadAssetMap();
 await scene.trySkybox(assetCandidates("skybox"));
-if ($("assetFlag")) {
-  $("assetFlag").textContent = "Meshes load from gravity-orbits by filename. If a file is missing, a placeholder is shown.";
-}
-
 let cut = false;
 let angle = 0.7; // radians from +X, counterclockwise; start off the axis so both arrows are on screen
 const RADIUS = 1.6;
@@ -34,7 +30,18 @@ const BODY_ASSET = { Earth: "earth", Mars: "mars", "1P/Halley": "comet", Halley:
 
 
 await applyPreset(preset);
+layoutHud();
 wire();
+
+function layoutHud() {
+  const ctl = document.querySelector(".controls");
+  if (!ctl) return;
+  const h = Math.ceil(ctl.getBoundingClientRect().height);
+  document.documentElement.style.setProperty("--kc-ctl", `${h + 16}px`);
+}
+addEventListener("resize", layoutHud);
+new ResizeObserver(layoutHud).observe(document.querySelector(".controls") || document.body);
+
 
 function wire() {
   $("cutBtn")?.addEventListener("click", cutPull);

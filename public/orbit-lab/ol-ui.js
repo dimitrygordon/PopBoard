@@ -8,7 +8,7 @@ import { createScene } from "./ol-scene.js";
 
 const $ = (id) => document.getElementById(id);
 
-const CRAFT_VISUAL = { ISS: 0.06, Hubble: 0.035, GPS: 0.05, GEO: 0.055 };
+const CRAFT_VISUAL = { ISS: 0.09, Hubble: 0.055, GPS: 0.07, GEO: 0.08 };
 const CRAFT_ASSET = { ISS: "iss", Hubble: "hubble", GPS: "gps", GEO: "geo" };
 const MOON_SCALE = 1737.4 / 6380;
 
@@ -34,18 +34,23 @@ await Promise.all([
   scene.tryEarth(assetCandidates("earth")),
   loadCannon ? scene.tryCannon(assetCandidates("cannon")) : Promise.resolve(false)
 ]);
-if ($("assetFlag")) {
-  $("assetFlag").textContent = scene.loaded.earth
-    ? "Meshes load from gravity-orbits by filename. If a file is missing, a placeholder is shown."
-    : "Earth mesh is missing, so a placeholder globe is shown.";
-}
-
 const cannonAnchor = { x: R + h, y: 0, z: 0 };
 // Placeholder cannon sits on the surface of the unit sphere at the launch radius.
 const launchR = (R + h) / R;
 
 await applyPreset(preset);
+layoutHud();
 wire();
+
+function layoutHud() {
+  const ctl = document.querySelector(".controls");
+  if (!ctl) return;
+  const h = Math.ceil(ctl.getBoundingClientRect().height);
+  document.documentElement.style.setProperty("--ol-ctl", `${h + 16}px`);
+}
+addEventListener("resize", layoutHud);
+new ResizeObserver(layoutHud).observe(document.querySelector(".controls") || document.body);
+
 
 function wire() {
   $("fireBtn")?.addEventListener("click", () => fire(Number($("speed").value)));
@@ -73,8 +78,6 @@ function wire() {
 async function applyPreset(p) {
   $("presetName").textContent = titleFor(p);
   $("note").textContent = noteFor(p);
-  $("assetFlag").hidden = false;
-
   const cannonMode = (p.mode || "cannon") === "cannon";
   $("cannonControls").hidden = !cannonMode;
   $("satControls").hidden = p.showSatellites === false && p.mode !== "scale";
@@ -107,10 +110,8 @@ async function applyPreset(p) {
     $("cannonControls").hidden = true;
     $("satControls").hidden = false;
     const bodies = p.bodies || ["ISS"];
-    // Set the camera before meshes finish so a late screenshot is never at the origin.
-    const wantMoon = bodies.includes("Moon");
-    const narrow = typeof innerWidth === "number" && innerWidth <= 600;
-    scene.setCamera(wantMoon && !narrow ? "scale-wide" : "scale-iss");
+    // Earth + ISS (and Hubble) in frame at every width. Moon is a pull-back, not the start.
+    scene.setCamera("scale-iss");
     fillSats(bodies);
     const first = bodies[0];
     await showSatellite(first, { all: true, bodies });
@@ -193,16 +194,12 @@ async function showSatellite(key, opts = {}) {
   }
   setReadouts(entry);
   if (opts.all && keys.includes("Moon")) {
-    const narrow = typeof innerWidth === "number" && innerWidth <= 600;
-    $("status").textContent = narrow
-      ? "The ISS sits just above Earth. Open Moon to see the true distance. Orbits are to true scale; the stations are enlarged."
-      : "Earth, the ISS, Hubble, and the Moon. Orbits are to true scale. The stations are enlarged; the Moon is true size at the true distance.";
+    $("status").textContent = "The ISS sits just above Earth. Open Moon to see the true distance. Orbits are to true scale; the stations are enlarged.";
   } else {
     $("status").textContent = scaleCaption(entry);
   }
 
-  const narrow = typeof innerWidth === "number" && innerWidth <= 600;
-  if (key === "Moon" || (maxR > 10 && !(opts.all && narrow))) scene.setCamera("scale-wide");
+  if (key === "Moon") scene.setCamera("scale-wide");
   else scene.setCamera("scale-iss");
 }
 

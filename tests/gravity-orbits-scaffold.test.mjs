@@ -187,3 +187,14 @@ test("placePath remaps a physical lob onto a visual muzzle without changing the 
   assert.ok(Math.abs(r0 - 1.25) < 1e-6, r0);
   assert.ok(r1 < r0);
 });
+
+test("study pages have no developer-facing asset notes; credits are behind a Credits control", () => {
+  for (const name of ["public/study-orbit-lab.html", "public/study-kepler-circles.html"]) {
+    const html = read(name);
+    assert.doesNotMatch(html, /Meshes load from gravity-orbits|placeholder is shown|asset-flag|assetFlag/);
+    assert.match(html, /<details class="credits">/);
+    assert.match(html, /<summary>Credits<\/summary>/);
+    assert.match(html, /Solar System Scope/);
+  }
+  assert.doesNotMatch(read("public/orbit-lab/ol-ui.js") + read("public/kepler-circles/kc-ui.js"), /Meshes load from gravity-orbits|placeholder is shown/);
+});
