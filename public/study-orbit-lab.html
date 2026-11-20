@@ -25,7 +25,9 @@
     <summary>Credits</summary>
     <p>Textures by Solar System Scope, CC BY 4.0. ISS, Hubble, Galilean maps: NASA. Star map: NASA / Ernie Wright (SVS).</p>
   </details>
-  <button id="readoutToggle" type="button" hidden aria-pressed="false">Show g and period</button>
+  <div class="hud-extra">
+    <button id="readoutToggle" type="button" hidden aria-pressed="false">Show g and period</button>
+  </div>
 </header>
 
 <main id="stage" class="stage">
@@ -41,6 +43,7 @@
   <p><span class="k">Altitude</span> <span id="readAlt">—</span></p>
   <p class="warn" id="readWarn" hidden>This preset is not a Tesla-verified unit constant.</p>
 </section>
+<div class="dock">
 <p class="status" id="status" role="status" aria-live="polite"></p>
 
 <section class="controls" aria-label="Orbit Lab controls">
@@ -57,6 +60,7 @@
     <div class="row" id="sats"></div>
   </div>
 </section>
+</div>
 
 <script type="module" src="orbit-lab/ol-ui.js"></script>
 <script type="module" src="astro-course/story-return.js"></script>

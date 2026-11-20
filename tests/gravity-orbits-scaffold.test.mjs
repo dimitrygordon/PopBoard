@@ -198,3 +198,15 @@ test("study pages have no developer-facing asset notes; credits are behind a Cre
   }
   assert.doesNotMatch(read("public/orbit-lab/ol-ui.js") + read("public/kepler-circles/kc-ui.js"), /Meshes load from gravity-orbits|placeholder is shown/);
 });
+
+test("HUD titles can wrap and sliders use Leo green with a grey track", () => {
+  for (const cssPath of ["public/orbit-lab/orbit-lab.css", "public/kepler-circles/kepler-circles.css"]) {
+    const css = read(cssPath);
+    assert.doesNotMatch(css, /\.hud \.title[^}]*text-overflow:\s*ellipsis/);
+    assert.match(css, /\.hud \.title[^}]*white-space:\s*normal/);
+    assert.match(css, /accent-color:\s*#4caf50/i);
+    assert.match(css, /::-webkit-slider-runnable-track/);
+    assert.match(css, /::-webkit-slider-thumb/);
+    assert.match(css, /#cccccc/i);
+  }
+});

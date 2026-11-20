@@ -40,16 +40,21 @@ const launchR = (R + h) / R;
 
 await applyPreset(preset);
 layoutHud();
+requestAnimationFrame(() => requestAnimationFrame(layoutHud));
 wire();
 
 function layoutHud() {
+  const root = document.documentElement;
+  const hud = document.querySelector(".hud");
+  if (hud) root.style.setProperty("--ol-hud", `${Math.ceil(hud.getBoundingClientRect().bottom) + 8}px`);
   const ctl = document.querySelector(".controls");
-  if (!ctl) return;
-  const h = Math.ceil(ctl.getBoundingClientRect().height);
-  document.documentElement.style.setProperty("--ol-ctl", `${h + 16}px`);
+  if (ctl) root.style.setProperty("--ol-ctl", `${Math.ceil(ctl.getBoundingClientRect().height) + 16}px`);
 }
 addEventListener("resize", layoutHud);
-new ResizeObserver(layoutHud).observe(document.querySelector(".controls") || document.body);
+const hudEl = document.querySelector(".hud");
+if (hudEl) new ResizeObserver(layoutHud).observe(hudEl);
+const ctlEl = document.querySelector(".controls");
+if (ctlEl) new ResizeObserver(layoutHud).observe(ctlEl);
 
 
 function wire() {
@@ -115,6 +120,7 @@ async function applyPreset(p) {
     fillSats(bodies);
     const first = bodies[0];
     await showSatellite(first, { all: true, bodies });
+    layoutHud();
   }
 }
 
@@ -215,9 +221,14 @@ function setReadouts(entry) {
 }
 
 function syncSpeedLabel() {
-  const v = Number($("speed").value);
+  const el = $("speed");
+  const v = Number(el.value);
   // L5 student-facing task should not label the circular-orbit speed.
   $("speedVal").textContent = `${Math.round(v)} m/s`;
+  const min = Number(el.min) || 0;
+  const max = Number(el.max) || 100;
+  const pct = max === min ? 0 : ((v - min) / (max - min)) * 100;
+  el.style.setProperty("--slide", `${pct}%`);
 }
 
 // L1 shows whole seconds so 40.5 vs 40.6 s can't read as "faster stays up longer".

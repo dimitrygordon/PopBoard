@@ -48,17 +48,26 @@ export async function createScene(canvas) {
   ro.observe(canvas.parentElement || canvas);
   setTimeout(resize, 0);
   setTimeout(resize, 200);
-  (function loop() {
-    if (!running) return;
-    requestAnimationFrame(loop);
-    const dt = Math.min(clock.getDelta(), 0.05);
-    if (anim && !reduce) anim(dt);
-    renderer.render(scene, camera);
-  })();
+  let loopStarted = false;
+  function paint() { renderer.render(scene, camera); }
+  function startLoop() {
+    if (loopStarted) return;
+    loopStarted = true;
+    clock.getDelta();
+    (function loop() {
+      if (!running) return;
+      requestAnimationFrame(loop);
+      const dt = Math.min(clock.getDelta(), 0.05);
+      if (anim && !reduce) anim(dt);
+      paint();
+    })();
+  }
+  paint();
+  startLoop();
 
   return {
     scene, camera, renderer, root,
-    resize,
+    resize, paint, startLoop,
     clear() { root.clear(); anim = null; },
     setCamera(pos, look = [0, 0, 0]) {
       lastCam = { pos, look };
@@ -72,6 +81,7 @@ export async function createScene(canvas) {
       geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
       const line = new THREE.Line(geo, new THREE.LineBasicMaterial({ color }));
       root.add(line);
+      paint();
       return line;
     },
     addDot(p, r, color = GREY, scale = 1) {
@@ -81,6 +91,7 @@ export async function createScene(canvas) {
       );
       mesh.position.set(p.x * scale, p.y * scale, (p.z || 0) * scale);
       root.add(mesh);
+      paint();
       return mesh;
     },
     addEmptyFocus(p, scale = 1) {
@@ -90,6 +101,7 @@ export async function createScene(canvas) {
       );
       ring.position.set(p.x * scale, p.y * scale, 0);
       root.add(ring);
+      paint();
       return ring;
     },
     addArrow(from, to, color = GREEN) {
@@ -100,6 +112,7 @@ export async function createScene(canvas) {
       const arrow = new THREE.ArrowHelper(dir, new THREE.Vector3(from.x, from.y, from.z || 0), len, color, len * 0.28, len * 0.16);
       arrow.userData.kind = "arrow";
       root.add(arrow);
+      paint();
       return arrow;
     },
     onTick(fn) { anim = fn; },
@@ -114,6 +127,7 @@ export async function createScene(canvas) {
       tex.colorSpace = THREE.SRGBColorSpace;
       scene.background = tex;
       stars.visible = false;
+      paint();
       return true;
     },
     async tryGlb(urls) {
@@ -133,6 +147,7 @@ export async function createScene(canvas) {
         if (away.lengthSq() > 1e-12) orientAxisToward(model, new THREE.Vector3(1, 0, 0), away);
       }
       root.add(model);
+      paint();
       return model;
     },
     pointAxis(obj, localAxis, worldDir) {

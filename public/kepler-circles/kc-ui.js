@@ -31,16 +31,22 @@ const BODY_ASSET = { Earth: "earth", Mars: "mars", "1P/Halley": "comet", Halley:
 
 await applyPreset(preset);
 layoutHud();
+requestAnimationFrame(() => requestAnimationFrame(layoutHud));
+scene.startLoop();
 wire();
 
 function layoutHud() {
+  const root = document.documentElement;
+  const hud = document.querySelector(".hud");
+  if (hud) root.style.setProperty("--kc-hud", `${Math.ceil(hud.getBoundingClientRect().bottom) + 8}px`);
   const ctl = document.querySelector(".controls");
-  if (!ctl) return;
-  const h = Math.ceil(ctl.getBoundingClientRect().height);
-  document.documentElement.style.setProperty("--kc-ctl", `${h + 16}px`);
+  if (ctl) root.style.setProperty("--kc-ctl", `${Math.ceil(ctl.getBoundingClientRect().height) + 16}px`);
 }
 addEventListener("resize", layoutHud);
-new ResizeObserver(layoutHud).observe(document.querySelector(".controls") || document.body);
+const hudEl = document.querySelector(".hud");
+if (hudEl) new ResizeObserver(layoutHud).observe(hudEl);
+const ctlEl = document.querySelector(".controls");
+if (ctlEl) new ResizeObserver(layoutHud).observe(ctlEl);
 
 
 function wire() {
