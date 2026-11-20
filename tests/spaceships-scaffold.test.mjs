@@ -71,16 +71,35 @@ test("model-viewer is vendored at 4.4.0 and only loaded on the detail page", () 
   assert.match(hook, /meshoptDecoderLocation:\s*["']vendor\/model-viewer\/meshopt_decoder\.js["']/);
 });
 
-test("fleet.json has 19 listed craft, real assets, and verified fact rows", () => {
+const WAVE1_IDS = [
+  "apollo-lunar-module", "cassini-huygens", "chandra", "curiosity", "dawn",
+  "galileo", "hubble", "ingenuity", "jwst", "juno", "kepler", "parker-solar-probe",
+  "perseverance", "tess", "viking-lander", "voyager", "iss", "saturn-v", "space-shuttle"
+];
+const WAVE2_IDS = [
+  "gemini", "mercury-friendship-7", "apollo-soyuz", "skylab", "pioneer-10",
+  "magellan", "mro", "lro", "osiris-rex", "insight", "spirit-opportunity",
+  "spitzer", "fermi", "swift", "terra", "aqua", "landsat-8", "soho", "stardust",
+  "deep-impact", "messenger", "mars-odyssey", "sdo", "stereo", "deep-space-1",
+  "near-shoemaker", "ladee", "explorer-1", "compton", "wmap"
+];
+const GITHUB_SOURCE_IDS = new Set(["skylab", "sdo", "stereo"]);
+
+test("fleet.json has 49 listed craft, real assets, and verified fact rows", () => {
   assert.equal(fleet.schemaVersion, 1);
   assert.ok(Array.isArray(fleet.craft));
-  assert.equal(fleet.craft.length, 19, fleet.craft.length);
+  assert.equal(fleet.craft.length, 49, fleet.craft.length);
   const ids = fleet.craft.map((c) => c.id);
-  for (const extra of ["iss", "saturn-v", "space-shuttle"]) {
-    assert.ok(ids.includes(extra), `missing extra ${extra}`);
+  for (const extra of ["iss", "saturn-v", "space-shuttle", ...WAVE2_IDS]) {
+    assert.ok(ids.includes(extra), `missing ${extra}`);
   }
+  assert.equal(ids.filter((id) => WAVE1_IDS.includes(id)).length, 19);
+  assert.equal(ids.filter((id) => WAVE2_IDS.includes(id)).length, 30);
   const unique = new Set();
+  let wave1Facts = 0;
+  let wave2Facts = 0;
   for (const craft of fleet.craft) {
+    const wave2 = WAVE2_IDS.includes(craft.id);
     assert.match(craft.id, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
     assert.equal(unique.has(craft.id), false, `duplicate id ${craft.id}`);
     unique.add(craft.id);
@@ -90,13 +109,19 @@ test("fleet.json has 19 listed craft, real assets, and verified fact rows", () =
     assert.ok(craft.glb.startsWith("models/") && craft.glb.endsWith(".glb"));
     assert.ok(craft.usdz.startsWith("models/") && craft.usdz.endsWith(".usdz"));
     assert.equal(craft.credit, "3D model courtesy NASA");
-    assert.match(craft.sourceUrl, /^https:\/\/science\.nasa\.gov\/3d-resources\//);
+    if (GITHUB_SOURCE_IDS.has(craft.id)) {
+      assert.match(craft.sourceUrl, /^https:\/\/github\.com\/nasa\/NASA-3D-Resources\//);
+    } else {
+      assert.match(craft.sourceUrl, /^https:\/\/science\.nasa\.gov\/3d-resources\//);
+    }
     assert.ok(Array.isArray(craft.facts) && craft.facts.length >= 1);
     for (const row of craft.facts) {
       assert.ok(row.label);
       assert.ok(row.value);
       assert.doesNotMatch(row.value, /PLACEHOLDER/);
-      assert.equal(row.verified, true);
+      assert.equal(row.verified, true, `${craft.id} ${row.label}`);
+      if (wave2) wave2Facts += 1;
+      else wave1Facts += 1;
     }
     assert.equal(craft.placeholder, false);
     assert.ok(existsSync(new URL("public/spaceships/" + craft.still, root)), `missing still ${craft.still}`);
@@ -106,8 +131,18 @@ test("fleet.json has 19 listed craft, real assets, and verified fact rows", () =
       assert.equal(craft.cameraOrbit, "45deg 70deg auto");
     }
   }
+  assert.equal(wave1Facts, 151);
+  assert.equal(wave2Facts, 240);
+  assert.equal(fleet.craft.filter((c) => (c.tags || []).includes("earth-observer")).map((c) => c.id).sort().join(","), "aqua,landsat-8,terra");
+  for (const id of ["aqua", "mars-odyssey"]) {
+    const status = fleet.craft.find((c) => c.id === id).facts.find((r) => r.label === "Status");
+    assert.equal(status.recheckBeforePublish, true, id);
+    assert.equal(status.verified, true, id);
+  }
   assert.ok(existsSync(new URL("public/spaceships/" + fleet.placeholderGlb, root)));
   assert.ok(existsSync(new URL("public/spaceships/" + fleet.placeholderStill, root)));
+  assert.equal(existsSync(new URL("public/spaceships/models/rosetta.glb", root)), false);
+  assert.equal(existsSync(new URL("public/spaceships/models/gpm.usdz", root)), false);
 });
 
 test("docs list the exact asset paths and fleet.json fields Angelo needs", () => {
@@ -125,6 +160,16 @@ test("docs list the exact asset paths and fleet.json fields Angelo needs", () =>
   }
 });
 
+test("the gallery has an Earth observers filter for the earth-observer tag", () => {
+  const js = read("public/spaceships/ss-gallery.js");
+  assert.match(js, /earth-observer/);
+  assert.match(js, /Earth observers/);
+  assert.match(js, /TAG_LABELS/);
+  const viewer = read("public/spaceships/ss-viewer.js");
+  assert.match(viewer, /ph-label/);
+  assert.match(viewer, /PLACEHOLDER/);
+});
+
 test("the viewer falls back to the placeholder GLB, honors reduced motion, and probes USDZ", () => {
   const js = read("public/spaceships/ss-viewer.js");
   assert.match(js, /assetExists/);
@@ -140,7 +185,7 @@ test("the viewer falls back to the placeholder GLB, honors reduced motion, and p
   assert.match(js, /3D model courtesy NASA|craft\.credit/);
 });
 
-test("Tesla fact-check wording and sources are applied, and all rows are verified", () => {
+test("Tesla fact-check wording and sources are applied for wave 1 and wave 2", () => {
   const expect = {
     "voyager|Status": "Both are still in contact from interstellar space. Since Nov. 14, 2026, Voyager 1 has sent only a basic radio signal and no data while engineers work on a computer problem.",
     "perseverance|Status": "Operating (as of Nov 2026). Science is paused while engineers fix a radio problem.",
@@ -152,7 +197,17 @@ test("Tesla fact-check wording and sources are applied, and all rows are verifie
     "juno|Status": "Operating in an extended mission (last confirmed mid-2026)",
     "cassini-huygens|Fun fact": "Cassini found evidence of a global ocean of liquid water under the icy crust of Saturn's moon Enceladus.",
     "iss|Mass": "about 420,000 kg (925,000 pounds)",
-    "voyager|Mass": "about 722 kg each at launch"
+    "voyager|Mass": "about 722 kg each at launch",
+    "mars-odyssey|Status": "Odyssey has paused its science because one of the spinning wheels it uses to point itself stopped working. Engineers are testing it and hope to restart science in late November 2026.",
+    "spirit-opportunity|Fun fact": "Opportunity drove 45.16 km (28.06 miles) on Mars. That was the record for driving on another world until Perseverance passed it in October 2026.",
+    "aqua|Status": "Still working, but out of fuel for orbit boosts, so it is slowly drifting lower (as of November 2026).",
+    "deep-impact|Real size": "The flyby spacecraft was about 3.3 m long, 1.7 m wide and 2.3 m high.",
+    "stardust|Real size": "Its body was about 1.7 m tall, and its solar panels stretched 4.8 m tip to tip.",
+    "spitzer|Real size": "About 4 m (13 ft) tall.",
+    "mercury-friendship-7|Real size": "About 2.7 m (9 ft) tall and 1.9 m wide at the bottom, small enough that Glenn barely fit inside.",
+    "gemini|Real size": "About 5.7 m long and 3 m across the base.",
+    "compton|Fun fact": "At about 16,300 kg, it was the heaviest astrophysics payload the Space Shuttle had carried up to that time.",
+    "mercury-friendship-7|Fun fact": "At each sunrise Glenn saw glowing specks drifting outside his window and called them fireflies. They turned out to be bits of frost from the capsule's small steering thrusters, which Scott Carpenter proved on the next flight by tapping the wall."
   };
   const found = {};
   let verified = 0;
@@ -169,11 +224,37 @@ test("Tesla fact-check wording and sources are applied, and all rows are verifie
       }
     }
   }
-  assert.equal(Object.keys(found).length, 11);
-  assert.equal(verified, 151);
+  assert.equal(Object.keys(found).length, 21);
+  assert.equal(verified, 391);
   assert.equal(found["voyager|Status"].recheckBeforePublish, true);
   assert.equal(found["perseverance|Status"].recheckBeforePublish, true);
+  assert.equal(found["mars-odyssey|Status"].recheckBeforePublish, true);
+  assert.equal(found["aqua|Status"].recheckBeforePublish, true);
+  const soho = fleet.craft.find((c) => c.id === "soho");
+  assert.equal(soho.subtitle, "Has watched the Sun for three decades");
+  assert.match(soho.facts.find((r) => r.label === "About").value, /./);
+  const swiftAbout = fleet.craft.find((c) => c.id === "swift").facts.find((r) => r.label === "About");
+  assert.match(swiftAbout.value, /minute and a half, all on its own/);
+  const sdoAbout = fleet.craft.find((c) => c.id === "sdo").facts.find((r) => r.label === "About");
+  assert.match(sdoAbout.value, /every 10 seconds/);
+  const meta = read("docs/spaceships-fleet-meta.json");
+  assert.match(meta, /20\.13 m/);
+  assert.doesNotMatch(meta, /arrays span about 18\.5 m/);
+  assert.match(meta, /science\.nasa\.gov\/mission\/aqua\//);
+  assert.doesNotMatch(meta, /aqua\.nasa\.gov\/announcements\/aqua-status/);
+  assert.match(meta, /20010072227\.pdf/);
+  assert.doesNotMatch(meta, /space\.jpl\.nasa\.gov\/msl\/QuickLooks\/groQL\.html/);
+  assert.match(meta, /Lunar_Reconnaissance_Orbiter/);
+  assert.match(meta, /nasas-fermi-telescope-finds-giant-structure-in-our-galaxy/);
+  assert.doesNotMatch(meta, /mission_pages\/GLAST\/news\/new-structure/);
+  assert.match(meta, /science\.nasa\.gov\/mission\/landsat-8\//);
+  assert.doesNotMatch(meta, /landsat\.gsfc\.nasa\.gov\/satellites\/landsat-8/);
+  assert.match(meta, /rocket-evolution-jupiter-c-to-sls/);
+  assert.doesNotMatch(meta, /explorer1\.jpl\.nasa\.gov/);
   assert.match(docs, /recheckBeforePublish/);
+  assert.match(docs, /earth-observer/);
+  assert.match(docs, /Earth observers/);
+  assert.match(docs, /spaceships-fleet-meta\.json/);
 });
 
 test("placeholder GLB is a valid 1 m Y-up box", () => {

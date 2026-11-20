@@ -38,7 +38,13 @@ async function showCraft(fleet, craft) {
     dt.textContent = row.label || "";
     const dd = document.createElement("dd");
     dd.textContent = row.value || "";
-    if (row.verified === false) dd.dataset.placeholder = "true";
+    if (row.verified === false) {
+      const mark = document.createElement("span");
+      mark.className = "ph-label";
+      mark.textContent = "PLACEHOLDER";
+      dt.append(" ", mark);
+      dd.dataset.placeholder = "true";
+    }
     wrap.append(dt, dd);
     facts.append(wrap);
   }

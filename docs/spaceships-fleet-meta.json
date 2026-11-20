@@ -1,0 +1,1153 @@
+{
+  "craft": [
+    {
+      "id": "apollo-lunar-module",
+      "wave": 1,
+      "extra_beyond_reserved_16": false,
+      "nasa_model_title": "Apollo Lunar Module",
+      "model_source_url": "https://science.nasa.gov/3d-resources/apollo-lunar-module/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1969-059C",
+        "https://airandspace.si.edu/amp-stories/lunar-module/index.html"
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        9.027,
+        7.04,
+        9.026
+      ],
+      "triangles": 96488,
+      "scale_note": "Scaled to the 7.04 m height; leg span comes out at about 9.0 m.",
+      "glb_bytes": 978192,
+      "usdz_bytes": 5174637
+    },
+    {
+      "id": "cassini-huygens",
+      "wave": 1,
+      "extra_beyond_reserved_16": false,
+      "nasa_model_title": "Cassini-Huygens (A)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/cassini-huygens-a/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/cassini/quick-facts/"
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        17.983,
+        11.663,
+        13.106
+      ],
+      "triangles": 25735,
+      "scale_note": "Model is in metres as supplied; the high-gain dish measures 4.0 m.",
+      "glb_bytes": 662680,
+      "usdz_bytes": 3233972
+    },
+    {
+      "id": "chandra",
+      "wave": 1,
+      "extra_beyond_reserved_16": false,
+      "nasa_model_title": "Chandra X-ray Observatory",
+      "model_source_url": "https://science.nasa.gov/3d-resources/chandra-x-ray-observatory/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.chandra.harvard.edu/about/specs.html"
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        13.78,
+        5.138,
+        19.507
+      ],
+      "triangles": 29363,
+      "scale_note": "Model is in metres as supplied (13.8 x 19.5 m), matching the published size.",
+      "glb_bytes": 495492,
+      "usdz_bytes": 2802602
+    },
+    {
+      "id": "curiosity",
+      "wave": 1,
+      "extra_beyond_reserved_16": false,
+      "nasa_model_title": "Curiosity Rover (MSL) (Clean)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/curiosity-rover-msl/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/msl-curiosity/"
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        2.777,
+        2.213,
+        3.945
+      ],
+      "triangles": 47378,
+      "scale_note": "Model is in metres as supplied; robotic arm is shown deployed, which adds length.",
+      "glb_bytes": 971548,
+      "usdz_bytes": 7174404
+    },
+    {
+      "id": "dawn",
+      "wave": 1,
+      "extra_beyond_reserved_16": false,
+      "nasa_model_title": "Dawn",
+      "model_source_url": "https://science.nasa.gov/3d-resources/dawn/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/dawn/technology/spacecraft/",
+        "https://www.jpl.nasa.gov/news/press_kits/dawn-launch.pdf"
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        19.7,
+        2.2,
+        2.215
+      ],
+      "triangles": 30388,
+      "scale_note": "Scaled to the 19.7 m solar-array span.",
+      "glb_bytes": 636692,
+      "usdz_bytes": 2702425
+    },
+    {
+      "id": "galileo",
+      "wave": 1,
+      "extra_beyond_reserved_16": false,
+      "nasa_model_title": "Galileo",
+      "model_source_url": "https://science.nasa.gov/3d-resources/galileo/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/galileo/",
+        "https://www.jpl.nasa.gov/news/press_kits/galileo-end.pdf"
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        11.486,
+        8.685,
+        13.742
+      ],
+      "triangles": 12426,
+      "scale_note": "Source units were unlabelled; scaled so the high-gain antenna is 4.8 m across. The antenna is shown fully open, as designed, not as it was stuck in flight.",
+      "glb_bytes": 307700,
+      "usdz_bytes": 977132
+    },
+    {
+      "id": "hubble",
+      "wave": 1,
+      "extra_beyond_reserved_16": false,
+      "nasa_model_title": "Hubble Space Telescope (A)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/hubble-space-telescope-a/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/hubble/observatory/design/",
+        "https://science.nasa.gov/mission/hubble/overview/about-hubble/"
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        11.511,
+        13.2,
+        12.592
+      ],
+      "triangles": 7670,
+      "scale_note": "Source was in inches; converted and scaled to the 13.2 m length.",
+      "glb_bytes": 329008,
+      "usdz_bytes": 1220104
+    },
+    {
+      "id": "ingenuity",
+      "wave": 1,
+      "extra_beyond_reserved_16": false,
+      "nasa_model_title": "Ingenuity Mars Helicopter",
+      "model_source_url": "https://science.nasa.gov/3d-resources/ingenuity-mars-helicopter/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/mars-2020-perseverance/ingenuity-mars-helicopter/"
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.986,
+        0.562,
+        1.106
+      ],
+      "triangles": 9060,
+      "scale_note": "Model is in metres as supplied; rotor span measures about 1.1 m.",
+      "glb_bytes": 296344,
+      "usdz_bytes": 1080240
+    },
+    {
+      "id": "jwst",
+      "wave": 1,
+      "extra_beyond_reserved_16": false,
+      "nasa_model_title": "James Webb Space Telescope (A)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/james-webb-space-telescope-a/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/webb/fact-sheet/"
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        24.086,
+        12.513,
+        14.773
+      ],
+      "triangles": 492954,
+      "scale_note": "Model is in metres as supplied; the sunshield measures about 14.2 m wide, matching the published size.",
+      "glb_bytes": 4457576,
+      "usdz_bytes": 11716176
+    },
+    {
+      "id": "juno",
+      "wave": 1,
+      "extra_beyond_reserved_16": false,
+      "nasa_model_title": "Juno (A)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/juno-a/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.jpl.nasa.gov/news/press_kits/juno/facts/",
+        "https://science.nasa.gov/mission/juno/"
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        19.212,
+        4.257,
+        20.133
+      ],
+      "triangles": 17051,
+      "scale_note": "Arrays stretched in wave 2; model spans 20.13 m, matching NASA's 'more than 20 m'.",
+      "glb_bytes": 614904,
+      "usdz_bytes": 2494904
+    },
+    {
+      "id": "kepler",
+      "wave": 1,
+      "extra_beyond_reserved_16": false,
+      "nasa_model_title": "Kepler (A)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/kepler-a/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://ntrs.nasa.gov/api/citations/20100002027/downloads/20100002027.pdf"
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        2.488,
+        4.7,
+        2.5
+      ],
+      "triangles": 8990,
+      "scale_note": "Scaled to the 4.7 m height.",
+      "glb_bytes": 440004,
+      "usdz_bytes": 2554135
+    },
+    {
+      "id": "parker-solar-probe",
+      "wave": 1,
+      "extra_beyond_reserved_16": false,
+      "nasa_model_title": "Parker Solar Probe",
+      "model_source_url": "https://science.nasa.gov/3d-resources/parker-solar-probe/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/parker-solar-probe/",
+        "https://www.nasa.gov/wp-content/uploads/2018/02/parkersolarprobe%5Fpresskit%5Faugust2018%5Ffinal.pdf"
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        5.748,
+        5.263,
+        6.611
+      ],
+      "triangles": 39245,
+      "scale_note": "Model is in metres as supplied (antennas and boom included in the bounding box).",
+      "glb_bytes": 989176,
+      "usdz_bytes": 2561485
+    },
+    {
+      "id": "perseverance",
+      "wave": 1,
+      "extra_beyond_reserved_16": false,
+      "nasa_model_title": "Mars 2020 Perseverance Rover",
+      "model_source_url": "https://science.nasa.gov/3d-resources/mars-2020-perseverance-rover/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.jpl.nasa.gov/news/press_kits/mars_2020/landing/mission/spacecraft/perseverance_rover/"
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        2.705,
+        1.846,
+        3.108
+      ],
+      "triangles": 199458,
+      "scale_note": "Model is in metres as supplied; the camera mast is stowed, as in NASA's file, so it stands about 1.85 m tall.",
+      "glb_bytes": 3162308,
+      "usdz_bytes": 8076110
+    },
+    {
+      "id": "tess",
+      "wave": 1,
+      "extra_beyond_reserved_16": false,
+      "nasa_model_title": "Transiting Exoplanet Survey Satellite (TESS) (A)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/transiting-exoplanet-survey-satellite-tess-a/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Transiting_Exoplanet_Survey_Satellite",
+        "https://apnews.com/article/0551fb1867ec46418b2eac029c6c65cb"
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        3.7,
+        1.822,
+        1.593
+      ],
+      "triangles": 18314,
+      "scale_note": "Source units were unlabelled; scaled to the 3.7 m solar-panel span.",
+      "glb_bytes": 555176,
+      "usdz_bytes": 1464908
+    },
+    {
+      "id": "viking-lander",
+      "wave": 1,
+      "extra_beyond_reserved_16": false,
+      "nasa_model_title": "Viking Lander",
+      "model_source_url": "https://science.nasa.gov/3d-resources/viking-lander/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://ntrs.nasa.gov/api/citations/19840027185/downloads/19840027185.pdf",
+        "https://californiasciencecenter.org/exhibits/air-and-space/collection/viking-lander"
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        3.731,
+        2.0,
+        2.798
+      ],
+      "triangles": 99526,
+      "scale_note": "Source units were unlabelled; scaled to the 2 m height (footpads to antenna). The sampler arm is extended.",
+      "glb_bytes": 1658412,
+      "usdz_bytes": 6074355
+    },
+    {
+      "id": "voyager",
+      "wave": 1,
+      "extra_beyond_reserved_16": false,
+      "nasa_model_title": "Voyager Probe (B)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/voyager-probe-b/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/voyager/fact-sheet/",
+        "https://pds-rings.seti.org/voyager/spacecraft/vg1host.html",
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1977-084A",
+        "https://www.nasa.gov/news-release/nasas-voyager-1-makes-history-reaching-one-light-day-from-earth/"
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        7.443,
+        10.597,
+        16.234
+      ],
+      "triangles": 19949,
+      "scale_note": "Scaled so the high-gain antenna is 3.66 m across.",
+      "glb_bytes": 476196,
+      "usdz_bytes": 2649951
+    },
+    {
+      "id": "iss",
+      "wave": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "International Space Station (ISS) (B)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/international-space-station-iss-b/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.nasa.gov/international-space-station/space-station-facts-and-figures/"
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        14.643,
+        71.655,
+        109.0
+      ],
+      "triangles": 169496,
+      "scale_note": "Scaled to 109 m end to end; NASA's model is an older station layout and is untextured, so the materials are approximate.",
+      "glb_bytes": 2154800,
+      "usdz_bytes": 8932019
+    },
+    {
+      "id": "saturn-v",
+      "wave": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Saturn V",
+      "model_source_url": "https://science.nasa.gov/3d-resources/saturn-v/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.nasa.gov/learning-resources/for-kids-and-students/what-was-the-saturn-v/"
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        17.154,
+        110.6,
+        17.154
+      ],
+      "triangles": 34382,
+      "scale_note": "Scaled to 110.6 m (363 ft). The fins make it about 17 m wide.",
+      "glb_bytes": 226076,
+      "usdz_bytes": 1734153
+    },
+    {
+      "id": "space-shuttle",
+      "wave": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Space Shuttle (D)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/space-shuttle-d/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.nasa.gov/reference/the-space-shuttle/"
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        37.24,
+        14.059,
+        23.72
+      ],
+      "triangles": 19339,
+      "scale_note": "Source was in inches; scaled to the 37.24 m length.",
+      "glb_bytes": 443576,
+      "usdz_bytes": 3070070
+    },
+    {
+      "id": "gemini",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Gemini",
+      "model_source_url": "https://science.nasa.gov/3d-resources/gemini/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1965-100A",
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1965-104A",
+        "https://ntrs.nasa.gov/api/citations/19680016105/downloads/19680016105.pdf",
+        "https://www.nasa.gov/missions/gemini/dual-gemini-flights-achieved-crucial-spaceflight-milestones/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        3.06,
+        5.8,
+        3.057
+      ],
+      "triangles": 38840,
+      "scale_note": "Scaled to the 5.8 m (19 ft) length of capsule plus adapter; NASA's 1968 spacecraft description gives 18.82 ft (5.74 m).",
+      "glb_bytes": 476724,
+      "usdz_bytes": 2699132
+    },
+    {
+      "id": "mercury-friendship-7",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Atlas 6 (Friendship 7)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/atlas-6-friendship-7/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1962-003A",
+        "https://www.nasa.gov/image-article/mercury-spacecraft/",
+        "https://www.nasa.gov/wp-content/uploads/2015/03/167718main_early_years.pdf"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        1.89,
+        2.912,
+        1.89
+      ],
+      "triangles": 164262,
+      "scale_note": "NASA's Atlas 6 model is the capsule only. Scaled to the 1.89 m heat shield; height comes out at 2.91 m (NASA: 2.9 m).",
+      "glb_bytes": 726380,
+      "usdz_bytes": 5874045
+    },
+    {
+      "id": "apollo-soyuz",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Apollo Soyuz",
+      "model_source_url": "https://science.nasa.gov/3d-resources/apollo-soyuz/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1975-066A",
+        "https://www.nasa.gov/apollo-soyuz-test-project/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        21.645,
+        9.634,
+        5.124
+      ],
+      "triangles": 32992,
+      "scale_note": "Model is in metres as supplied (Apollo, docking module and Soyuz end to end: 21.6 m).",
+      "glb_bytes": 504208,
+      "usdz_bytes": 2351599
+    },
+    {
+      "id": "skylab",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Skylab",
+      "model_source_url": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models/Skylab",
+      "no_science_nasa_gov_page": true,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1973-027A",
+        "https://www.nasa.gov/history/SP-4219/Chapter9.html",
+        "https://airandspace.si.edu/explore/stories/skylab",
+        "https://www.smithsonianmag.com/air-space-magazine/orbiting-in-a-fuel-tank-180947752/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        36.1,
+        10.978,
+        27.817
+      ],
+      "triangles": 25084,
+      "scale_note": "Scaled to 36.1 m, the length with an Apollo command and service module docked (25.1 m station + 11.0 m CSM). Shows one workshop solar wing, as flown after the launch damage.",
+      "glb_bytes": 453896,
+      "usdz_bytes": 1720051
+    },
+    {
+      "id": "pioneer-10",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Pioneer 10",
+      "model_source_url": "https://science.nasa.gov/3d-resources/pioneer/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1972-012A",
+        "https://science.nasa.gov/mission/pioneer-10/",
+        "https://space.physics.uiowa.edu/pioneer/other/plaque.html"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        4.516,
+        8.247,
+        2.541
+      ],
+      "triangles": 8192,
+      "scale_note": "Model is in metres as supplied; the dish measures 2.74 m, matching NASA.",
+      "glb_bytes": 382316,
+      "usdz_bytes": 2739959
+    },
+    {
+      "id": "magellan",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Magellan",
+      "model_source_url": "https://science.nasa.gov/3d-resources/magellan/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/magellan/",
+        "https://space.skyrocket.de/doc_sdat/magellan.htm"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        8.909,
+        4.531,
+        3.7
+      ],
+      "triangles": 7364,
+      "scale_note": "Model is in metres as supplied; the dish measures 3.7 m.",
+      "glb_bytes": 347024,
+      "usdz_bytes": 3365258
+    },
+    {
+      "id": "mro",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Mars Reconnaissance Orbiter (MRO) (C)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/mars-reconnaissance-orbiter-mro-c/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.jpl.nasa.gov/news/press_kits/mro-arrival.pdf",
+        "https://science.nasa.gov/mission/mars-reconnaissance-orbiter/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        13.6,
+        5.031,
+        6.92
+      ],
+      "triangles": 14695,
+      "scale_note": "Scaled to the 13.6 m solar panel span.",
+      "glb_bytes": 460120,
+      "usdz_bytes": 2093195
+    },
+    {
+      "id": "lro",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Lunar Reconnaissance Orbiter (B)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/lunar-reconnaissance-orbiter-b/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/wp-content/uploads/2024/01/lro-fact-sheet-bdf26a.pdf",
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2009-031A",
+        "https://en.wikipedia.org/wiki/Lunar_Reconnaissance_Orbiter",
+        "https://www.cbc.ca/news/science/shadowy-moon-crater-coldest-spot-yet-measured-1.851001"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        5.446,
+        3.663,
+        5.505
+      ],
+      "triangles": 8130,
+      "scale_note": "Model is in metres as supplied (5.4 x 5.5 x 3.7 m with the solar array out).",
+      "glb_bytes": 396340,
+      "usdz_bytes": 3397140
+    },
+    {
+      "id": "osiris-rex",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Origins, Spectral Interpretation, Resource Identification, and Security - Regolith Explorer (OSIRIS-REx)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/origins-spectral-interpretation-resource-identification-and-security-regolith-explorer-osiris-rex/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.nasa.gov/wp-content/uploads/2016/06/osiris%5Frex%5Ffactsheet5-25.pdf",
+        "https://science.nasa.gov/wp-content/uploads/2023/09/osirisrexpresskit-2023.pdf",
+        "https://science.nasa.gov/mission/osiris-apex/",
+        "https://www.nasa.gov/missions/surprise-again-asteroid-bennu-reveals-its-surface-is-like-a-plastic-ball-pit/",
+        "https://science.nasa.gov/blogs/osiris-rex/2024/02/15/nasa-announces-osiris-rex-bulk-sample-mass/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        2.456,
+        2.149,
+        6.2
+      ],
+      "triangles": 117201,
+      "scale_note": "Scaled to the 6.2 m length with solar arrays deployed.",
+      "glb_bytes": 1886112,
+      "usdz_bytes": 7297094
+    },
+    {
+      "id": "insight",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "InSight Cruise Lander",
+      "model_source_url": "https://science.nasa.gov/3d-resources/insight-cruise-lander/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.jpl.nasa.gov/news/press_kits/insight/landing/facts/",
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2018-042A",
+        "https://science.nasa.gov/mission/insight/",
+        "https://www.nasa.gov/missions/insight/nasas-insight-still-hunting-marsquakes-as-power-levels-diminish/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        6.0,
+        1.549,
+        2.712
+      ],
+      "triangles": 146889,
+      "scale_note": "Scaled to the 6.0 m span with panels deployed (NASA: about 6 m).",
+      "glb_bytes": 2925788,
+      "usdz_bytes": 10217283
+    },
+    {
+      "id": "spirit-opportunity",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Mars Exploration Rover - Spirit and Opportunity",
+      "model_source_url": "https://science.nasa.gov/3d-resources/mars-exploration-rover-spirit-and-opportunity/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2003-027A",
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2003-032A",
+        "https://science.nasa.gov/mission/mars-exploration-rovers-spirit-and-opportunity/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        2.279,
+        1.584,
+        1.648
+      ],
+      "triangles": 29686,
+      "scale_note": "One model stands for both identical rovers. Model is in metres as supplied (2.28 x 1.65 x 1.58 m).",
+      "glb_bytes": 972620,
+      "usdz_bytes": 9491193
+    },
+    {
+      "id": "spitzer",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Spitzer Space Telescope",
+      "model_source_url": "https://science.nasa.gov/3d-resources/spitzer-space-telescope/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.spitzer.caltech.edu/mission/fast-facts",
+        "https://www.jpl.nasa.gov/news/press_kits/spitzer/quick-facts/",
+        "https://science.nasa.gov/mission/spitzer/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        1.604,
+        4.45,
+        2.088
+      ],
+      "triangles": 62159,
+      "scale_note": "Scaled to 4.45 m tall. JPL's quick facts round the height to 4 m; flag for Tesla.",
+      "glb_bytes": 1248932,
+      "usdz_bytes": 3937270
+    },
+    {
+      "id": "fermi",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Fermi Gamma-ray Large Area Space Telescope",
+      "model_source_url": "https://science.nasa.gov/3d-resources/fermi-gamma-ray-large-area-space-telescope/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://fermi.gsfc.nasa.gov/ssc/library/support/Fermi_Fact_Sheet.pdf",
+        "https://fermi.gsfc.nasa.gov/overview.html",
+        "https://www.nasa.gov/universe/nasas-fermi-telescope-finds-giant-structure-in-our-galaxy/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        2.057,
+        2.913,
+        15.0
+      ],
+      "triangles": 171397,
+      "scale_note": "Scaled to the 15 m solar panel span.",
+      "glb_bytes": 2129484,
+      "usdz_bytes": 9898151
+    },
+    {
+      "id": "swift",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Swift",
+      "model_source_url": "https://science.nasa.gov/3d-resources/swift/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/swift/swift-boost-mission/cast/",
+        "https://science.nasa.gov/blogs/swift/2026/11/02/nasas-swift-observatory-to-re-enter-atmosphere/",
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2004-047A",
+        "https://swift.gsfc.nasa.gov/about_swift/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        7.647,
+        5.64,
+        5.414
+      ],
+      "triangles": 38007,
+      "scale_note": "Scaled to the 5.64 m height (NASA rounds to 5.6 m).",
+      "glb_bytes": 1018052,
+      "usdz_bytes": 3008819
+    },
+    {
+      "id": "terra",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Terra",
+      "model_source_url": "https://science.nasa.gov/3d-resources/terra/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://terra.nasa.gov/about",
+        "https://science.nasa.gov/blogs/science-news/2026/11/17/nasas-terra-mission-to-end/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        7.756,
+        5.851,
+        14.834
+      ],
+      "triangles": 117119,
+      "scale_note": "Source was in millimetre-like units; scaled so the main body is 6.8 m long.",
+      "glb_bytes": 1326628,
+      "usdz_bytes": 6748048
+    },
+    {
+      "id": "aqua",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Aqua (A)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/aqua-a/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/aqua/about-aqua-spacecraft-and-instruments/",
+        "https://science.nasa.gov/mission/aqua/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        4.772,
+        8.831,
+        16.7
+      ],
+      "triangles": 114807,
+      "scale_note": "Scaled to NASA's 16.7 m deployed length.",
+      "glb_bytes": 1456252,
+      "usdz_bytes": 6758583
+    },
+    {
+      "id": "landsat-8",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Landsat 8",
+      "model_source_url": "https://science.nasa.gov/3d-resources/landsat-8/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://svs.gsfc.nasa.gov/11490/",
+        "https://science.nasa.gov/mission/landsat-8/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        4.97,
+        10.037,
+        12.259
+      ],
+      "triangles": 77079,
+      "scale_note": "Model is in metres as supplied; the body measures about 4.9 m, matching NASA's 16 ft.",
+      "glb_bytes": 1102700,
+      "usdz_bytes": 4615478
+    },
+    {
+      "id": "soho",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Solar and Heliospheric Observatory (SOHO)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/solar-and-heliospheric-observatory-soho/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://soho.nascom.nasa.gov/about/spacecraft.html",
+        "https://science.nasa.gov/mission/soho/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        9.5,
+        3.168,
+        3.808
+      ],
+      "triangles": 26539,
+      "scale_note": "Scaled to the 9.5 m solar panel span.",
+      "glb_bytes": 584756,
+      "usdz_bytes": 1866731
+    },
+    {
+      "id": "stardust",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Stardust",
+      "model_source_url": "https://science.nasa.gov/3d-resources/stardust/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.jpl.nasa.gov/news/press_kits/stardust.pdf",
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1999-003A"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        2.818,
+        1.386,
+        4.8
+      ],
+      "triangles": 14445,
+      "scale_note": "Scaled to the 4.8 m solar array span.",
+      "glb_bytes": 563292,
+      "usdz_bytes": 4501563
+    },
+    {
+      "id": "deep-impact",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Deep Impact (EPOXI)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/deep-impact/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.jpl.nasa.gov/news/press_kits/deep-impact-launch.pdf",
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2005-001A"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        2.876,
+        1.989,
+        3.913
+      ],
+      "triangles": 27618,
+      "scale_note": "NASA's EPOXI model (flyby craft with impactor attached). Model is in metres as supplied.",
+      "glb_bytes": 942592,
+      "usdz_bytes": 4310780
+    },
+    {
+      "id": "messenger",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "MErcury Surface, Space ENvironment, GEochemistry, and Ranging (MESSENGER)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/mercury-surface-space-environment-geochemistry-and-ranging-messenger/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/messenger/",
+        "https://www.jhuapl.edu/sites/default/files/2023-03/MESSENGER_Launch_Press_Kit.pdf",
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2004-030A"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        5.276,
+        2.64,
+        6.957
+      ],
+      "triangles": 11332,
+      "scale_note": "Model is in metres as supplied.",
+      "glb_bytes": 461512,
+      "usdz_bytes": 3449942
+    },
+    {
+      "id": "mars-odyssey",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Mars Odyssey",
+      "model_source_url": "https://science.nasa.gov/3d-resources/mars-odyssey/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/odyssey/",
+        "https://www.jpl.nasa.gov/news/press_kits/odysseylaunch.pdf",
+        "https://science.nasa.gov/blogs/mars/2026/11/19/nasas-perseverance-odyssey-teams-investigate-technical-issues/",
+        "https://www.jpl.nasa.gov/news/nasas-next-spacecraft-to-the-red-planet/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        5.669,
+        3.36,
+        8.221
+      ],
+      "triangles": 8532,
+      "scale_note": "Model is in metres as supplied.",
+      "glb_bytes": 757648,
+      "usdz_bytes": 6203369
+    },
+    {
+      "id": "sdo",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Solar Dynamics Observatory",
+      "model_source_url": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models/Solar%20Dynamics%20Observatory",
+      "no_science_nasa_gov_page": true,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://sdo.gsfc.nasa.gov/assets/docs/sdo_factsheet.pdf",
+        "https://sdo.gsfc.nasa.gov/mission/project/specs.php"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        5.418,
+        4.5,
+        5.42
+      ],
+      "triangles": 259120,
+      "scale_note": "Scaled to the 4.5 m length along the Sun-pointing axis. The solar panel span comes out at 5.4 m, shorter than NASA's 6.25 m; flag for a fix like Juno's if it matters.",
+      "glb_bytes": 2937776,
+      "usdz_bytes": 6337456
+    },
+    {
+      "id": "stereo",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Solar TErrestrial RElations Observatory (STEREO)",
+      "model_source_url": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models/Solar%20TErrestrial%20RElations%20Observatory%20(STEREO)",
+      "no_science_nasa_gov_page": true,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://stereo.gsfc.nasa.gov/spacecraft.shtml",
+        "https://science.nasa.gov/mission/stereo/",
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2006-047A",
+        "https://www.nasa.gov/centers-and-facilities/goddard/after-seventeen-years-a-spacecraft-makes-its-first-visit-home/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        6.47,
+        4.994,
+        5.013
+      ],
+      "triangles": 37722,
+      "scale_note": "Source in millimetre-like units; scaled to the 6.47 m solar array span.",
+      "glb_bytes": 829964,
+      "usdz_bytes": 2682398
+    },
+    {
+      "id": "deep-space-1",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Deep Space 1",
+      "model_source_url": "https://science.nasa.gov/3d-resources/deep-space-1/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/deep-space-1/",
+        "https://www.jpl.nasa.gov/nmp/ds1/quick_facts.html",
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1998-061A",
+        "https://www.nasa.gov/history/25-years-ago-launch-of-deep-space-1-technology-demonstration-spacecraft/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        11.75,
+        2.209,
+        1.954
+      ],
+      "triangles": 13800,
+      "scale_note": "Scaled to the 11.75 m solar wing span (NSSDCA).",
+      "glb_bytes": 316392,
+      "usdz_bytes": 1780690
+    },
+    {
+      "id": "near-shoemaker",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "NEAR Shoemaker",
+      "model_source_url": "https://science.nasa.gov/3d-resources/near-shoemaker/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/near-shoemaker/",
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1996-008A"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        5.294,
+        2.865,
+        5.294
+      ],
+      "triangles": 9312,
+      "scale_note": "Model is in metres as supplied.",
+      "glb_bytes": 254876,
+      "usdz_bytes": 1364399
+    },
+    {
+      "id": "ladee",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Lunar Atmosphere and Dust Environment Explorer (LADEE)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/lunar-atmosphere-and-dust-environment-explorer-ladee/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2013-047A",
+        "https://science.nasa.gov/mission/ladee/in-depth/",
+        "https://www.nasa.gov/wp-content/uploads/2015/12/ladee-press-kit-08292013.pdf",
+        "https://www.nasa.gov/news-release/nasa-laser-communication-system-sets-record-with-data-transmissions-to-and-from-moon/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        1.379,
+        2.37,
+        1.344
+      ],
+      "triangles": 49522,
+      "scale_note": "Scaled to the 2.37 m height (NSSDCA). NASA's model is slimmer than the real 1.85 m width (comes out at 1.38 m); flag for Tesla.",
+      "glb_bytes": 1210468,
+      "usdz_bytes": 3823514
+    },
+    {
+      "id": "explorer-1",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Explorer Jupiter-C Rocket",
+      "model_source_url": "https://science.nasa.gov/3d-resources/explorer-jupiter-c-rocket/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/explorer-1/about/",
+        "https://science.nasa.gov/mission/explorer-1/history/then-now-educator-resources/rocket-evolution-jupiter-c-to-sls/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        2.998,
+        21.72,
+        2.998
+      ],
+      "triangles": 6550,
+      "scale_note": "The model is the whole Juno I (Jupiter-C) rocket with Explorer 1 on top, scaled to NASA's 21.72 m (71.25 ft).",
+      "glb_bytes": 381596,
+      "usdz_bytes": 811589
+    },
+    {
+      "id": "compton",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Gamma Ray Observatory",
+      "model_source_url": "https://science.nasa.gov/3d-resources/gamma-ray-observatory/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1991-027B",
+        "https://ntrs.nasa.gov/api/citations/20010072227/downloads/20010072227.pdf",
+        "https://heasarc.gsfc.nasa.gov/docs/cgro/cgro/",
+        "https://www.nasa.gov/centers-and-facilities/goddard/nasa-celebrates-25-years-of-breakthrough-gamma-ray-science/"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        10.161,
+        8.118,
+        21.3
+      ],
+      "triangles": 4155,
+      "scale_note": "NASA's model is simplified and low-poly. Scaled to the 21.3 m solar array span.",
+      "glb_bytes": 342556,
+      "usdz_bytes": 663710
+    },
+    {
+      "id": "wmap",
+      "wave": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Wilkinson Microwave Anisotropy Probe (WMAP)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/wilkinson-microwave-anisotropy-probe-wmap/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://wmap.gsfc.nasa.gov/mission/",
+        "https://science.nasa.gov/mission/wmap/",
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2001-027A"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        4.925,
+        3.674,
+        5.0
+      ],
+      "triangles": 110236,
+      "scale_note": "Scaled to the 5.0 m sunshield; height comes out at 3.67 m (NASA: 3.8 m).",
+      "glb_bytes": 1683244,
+      "usdz_bytes": 6729536
+    }
+  ]
+}

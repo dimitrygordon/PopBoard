@@ -48,6 +48,8 @@ body.ss-viewer .hud > * { pointer-events: auto; }
 .card h2 { margin: 0; font-size: 0.95rem; font-weight: 600; line-height: 1.25; color: #fff; }
 .card .tag { margin: 2px 0 0; font-size: 0.75rem; color: var(--ss-muted); text-transform: capitalize; }
 .card .ph { margin: 2px 0 0; font-size: 0.7rem; color: var(--ss-muted); letter-spacing: 0.04em; }
+#facts .ph-label { font-size: 0.65rem; letter-spacing: 0.04em; color: var(--ss-muted); font-weight: 500; }
+
 .empty { margin: 24px 16px; text-align: center; color: var(--ss-muted); }
 
 .stage { position: fixed; inset: 0 0 var(--ss-dock, 210px) 0; background: #000; }

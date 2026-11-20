@@ -1,6 +1,6 @@
 # Spaceships assets
 
-Scaffold on `feat/spaceships`. Local only. Do not push, open a PR, or merge until Dimitry OKs a single production ship.
+Wave 2 is on `feat/spaceships-wave2`, based on the shipped wave 1 module. Local only. Do not push, open a PR, or deploy until Dimitry OKs shipping wave 2.
 
 This file is the contract for Angelo's handoff in `/workspace/angelo/spaceships/`. Drop files under `public/spaceships/` using the paths below. The gallery and viewer load `fleet.json` and resolve every asset path relative to that folder. Models are fetched only on the detail page (`study-spaceship.html`). The gallery never loads a GLB or USDZ.
 
@@ -40,7 +40,7 @@ Vendor code is not in this folder. `<model-viewer>` is pinned at `@google/model-
 ## Units and files
 
 - GLB: real-world meters, Y-up, PBR materials, meshopt + WebP. One file per craft at `models/<id>.glb`.
-- USDZ: same scale and orientation as the GLB, for iOS Quick Look (`ios-src`). One file per craft at `models/<id>.usdz`. JWST's USDZ is about 11 MB and should be tested on a real iPhone before this ships; this environment cannot run Quick Look.
+- USDZ: same scale and orientation as the GLB, for iOS Quick Look (`ios-src`). One file per craft at `models/<id>.usdz`. JWST's USDZ is about 11.17 MB, still the largest file (InSight 10.22 MB, Fermi 9.90 MB, Spirit/Opportunity 9.49 MB). Test those on a real iPhone before this ships; this environment cannot run Quick Look.
 - Still: a single still image per craft, at `stills/<id>.webp`. Used as the gallery card and as the model-viewer poster. Width around 960 px is plenty. PNG is acceptable if you change the `still` field to match.
 - If a GLB is missing, the viewer keeps the poster, shows a "3D model not in yet" banner, and loads `models/_placeholder.glb` so students can still rotate a box. If a USDZ is missing, `ios-src` is left unset. Do not replace `_placeholder.glb` with a NASA mesh.
 
@@ -53,7 +53,7 @@ Vendor code is not in this folder. `<model-viewer>` is pinned at `@google/model-
 | `id` | string | yes | URL slug. Letters, numbers, and hyphens only. Matches the filename stem. |
 | `name` | string | yes | Display name on the card and the detail title. |
 | `subtitle` | string | no | One short line under the name. Use labelled placeholder text until Tesla verifies. |
-| `tags` | string[] | no | Gallery filters only. Not science facts. Current buckets: `crewed`, `probe`, `observatory`, `rover`, `rotorcraft`, `lander`. |
+| `tags` | string[] | no | Gallery filters only. Not science facts. Current buckets: `crewed`, `probe`, `observatory`, `earth-observer`, `rover`, `rotorcraft`, `lander`. The `earth-observer` chip is labelled Earth observers. |
 | `listed` | boolean | no | Default `true`. If `false`, the craft is omitted from the gallery but still opens by deep link. |
 | `placeholder` | boolean | no | `true` while the GLB or still is still a stand-in. `false` once those files exist. Fact values can still be unverified. |
 | `still` | string | yes | Path relative to `public/spaceships/`, e.g. `stills/voyager.webp`. |
@@ -63,13 +63,15 @@ Vendor code is not in this folder. `<model-viewer>` is pinned at `@google/model-
 | `sourceUrl` | string | yes | Per-model source link. Until a per-model URL is known, `https://science.nasa.gov/3d-resources/` is fine. |
 | `sourceLabel` | string | no | Link text. Default `NASA 3D Resources`. |
 | `cameraOrbit` | string | no | model-viewer `camera-orbit`, e.g. `45deg 70deg auto`. Used for ISS and Chandra, whose long axis runs along Z. |
-| `facts` | object[] | yes | Shown in the fact panel. Each item is `{ "label": string, "value": string, "verified": boolean }`, with optional `sources` (URL list) and `recheckBeforePublish`. |
+| `facts` | object[] | yes | Shown in the fact panel. Each item is `{ "label": string, "value": string, "verified": boolean }`, with optional `sources` (URL list) and `recheckBeforePublish`. Per-craft source notes and scale notes are in `docs/spaceships-fleet-meta.json`. |
 
-Do not invent numeric or historical facts. Tesla fact-checked the fleet on Nov 20, 2026 (America/New_York). All current fact rows are `verified: true`, with Tesla's student wording applied to 11 rows. `voyager` Status and `perseverance` Status are time-sensitive and must be rechecked before publish.
+Do not invent numeric or historical facts. Tesla fact-checked wave 1 (19 craft, 151 rows) and wave 2 (30 craft, 240 rows) on Nov 20, 2026 (America/New_York). All 391 fact rows are `verified: true`. Wave 1 keeps Tesla's student wording on 11 rows. Wave 2 applies his student wording and source URLs for 1 Must fix and 16 Should fixes (including Juno's `scale_note` of 20.13 m and the `fleet_meta` source fixes in `docs/spaceships-fleet-meta.json`). Time-sensitive status lines that must be rechecked before publish: `voyager`, `perseverance`, `aqua`, `mars-odyssey`, and `terra`. Unverified fact rows, if any are added later, still get a PLACEHOLDER label in the viewer. Skylab, SDO, and STEREO have no science.nasa.gov model page; their `sourceUrl` is the NASA 3D Resources GitHub folder for that model.
 
-## Scaffold ids
+## Listed ids
 
-Nineteen listed craft: the original sixteen reserved ids plus Angelo's three extras (`iss`, `saturn-v`, `space-shuttle`). You may add, remove, or rename entries later, as long as each `id` stays unique and matches the file stem.
+Forty-nine listed craft: the original sixteen reserved ids, Angelo's three wave 1 extras (`iss`, `saturn-v`, `space-shuttle`), and thirty wave 2 craft. Rosetta and GPM were built as spares and are not listed. You may add, remove, or rename entries later, as long as each `id` stays unique and matches the file stem.
+
+Wave 1:
 
 | id | Display name |
 |---|---|
@@ -93,7 +95,42 @@ Nineteen listed craft: the original sixteen reserved ids plus Angelo's three ext
 | `saturn-v` | Saturn V |
 | `space-shuttle` | Space Shuttle Orbiter |
 
-ISS and Chandra use `cameraOrbit` `45deg 70deg auto`.
+Wave 2:
+
+| id | Display name |
+|---|---|
+| `gemini` | Gemini |
+| `mercury-friendship-7` | Mercury Friendship 7 |
+| `apollo-soyuz` | Apollo-Soyuz |
+| `skylab` | Skylab |
+| `pioneer-10` | Pioneer 10 |
+| `magellan` | Magellan |
+| `mro` | Mars Reconnaissance Orbiter |
+| `lro` | Lunar Reconnaissance Orbiter |
+| `osiris-rex` | OSIRIS-REx |
+| `insight` | InSight Mars Lander |
+| `spirit-opportunity` | Spirit and Opportunity |
+| `spitzer` | Spitzer Space Telescope |
+| `fermi` | Fermi Gamma-ray Space Telescope |
+| `swift` | Neil Gehrels Swift Observatory |
+| `terra` | Terra |
+| `aqua` | Aqua |
+| `landsat-8` | Landsat 8 |
+| `soho` | SOHO |
+| `stardust` | Stardust |
+| `deep-impact` | Deep Impact |
+| `messenger` | MESSENGER |
+| `mars-odyssey` | 2001 Mars Odyssey |
+| `sdo` | Solar Dynamics Observatory |
+| `stereo` | STEREO |
+| `deep-space-1` | Deep Space 1 |
+| `near-shoemaker` | NEAR Shoemaker |
+| `ladee` | LADEE |
+| `explorer-1` | Explorer 1 |
+| `compton` | Compton Gamma Ray Observatory |
+| `wmap` | WMAP |
+
+ISS and Chandra use `cameraOrbit` `45deg 70deg auto`. Juno's GLB, USDZ, and still were replaced in wave 2 so the solar-array span is 20.1 m; Tesla's size line ("more than 20 m across the solar arrays") is still accurate and stays verified.
 
 ## Viewer behavior Angelo can rely on
 
