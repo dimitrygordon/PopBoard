@@ -1,0 +1,77 @@
+{
+  "title": "Orbit Lab lesson presets",
+  "constants_source": "orbit-lab/assets/orbits.json",
+  "cannon": {
+    "altitude_m": 8000,
+    "altitude_note": "Teaching height for the schematic Newton's mountain, on the order of a very high peak. Not a Tesla-verified measured summit. The L1 cap below keeps the slow and faster flight times within well under 1% for cannon altitudes from 1 km to 1000 km."
+  },
+  "l1_cap": {
+    "preset": "l1-s8",
+    "speed_cap_m_s": 600,
+    "slow_m_s": 300,
+    "fast_m_s": 600,
+    "method": "Exact inverse-square Kepler transfer from apoapsis at r = R_E + h to first intersection with the spherical Earth, using Tesla-verified GM_E = 3.98e14 m^3/s^2 and R_E = 6.38e6 m. The faster lob is twice the slow lob, matching the Lesson 1 student prompt.",
+    "at_teaching_height_8_km": {
+      "slow": { "v_m_s": 300, "t_s": 40.523473, "range_m": 12151.964, "arc_deg": 0.109131, "circ_percent": 0.030314 },
+      "fast": { "v_m_s": 600, "t_s": 40.611711, "range_m": 24356.849, "arc_deg": 0.218737, "circ_percent": 0.060760 },
+      "dt_percent": 0.217746,
+      "dt_s": 0.088238
+    },
+    "robustness": "With GM_E and R_E each shifted by 0.5% (and with the deck product G M = 6.67e-11 * 5.97e24), dt stays between 0.216% and 0.220%. At a 1000 km cannon height, dt is 0.258%, still well under 1%."
+  },
+  "presets": {
+    "l1-s8": {
+      "module": "orbit-lab",
+      "url": "study-orbit-lab.html?preset=l1-s8",
+      "aliases": ["l1", "L1_S8_suborbital_lob"],
+      "mode": "cannon",
+      "speedMax_m_s": 600,
+      "speedDefault_m_s": 300,
+      "suggested_m_s": [300, 600],
+      "suggested_labels": ["Slow", "Faster"],
+      "lockOrbitEscape": true,
+      "showSatellites": false,
+      "showReadouts": false,
+      "readoutToggle": false,
+      "autoPath": "slow"
+    },
+    "l4-s6": {
+      "module": "orbit-lab",
+      "url": "study-orbit-lab.html?preset=l4-s6",
+      "aliases": ["l4", "L4_S6_scale_walk"],
+      "mode": "scale",
+      "bodies": ["ISS", "Hubble", "Moon"],
+      "trueScale": true,
+      "showReadouts": false,
+      "readoutToggle": true,
+      "lockOrbitEscape": true
+    },
+    "l5-s8": {
+      "module": "orbit-lab",
+      "url": "study-orbit-lab.html?preset=l5-s8",
+      "aliases": ["l5", "L5_S8_newtons_cannon"],
+      "mode": "cannon",
+      "speedMax_m_s": null,
+      "speedDefault_m_s": null,
+      "shotFractionsOfCircular": [0.25, 0.5, 0.75, 0.9, 1],
+      "shotLabels": ["Shot 1", "Shot 2", "Shot 3", "Shot 4", "Shot 5"],
+      "lockOrbitEscape": false,
+      "showSatellites": true,
+      "satelliteKeys": ["ISS", "GPS", "GEO"],
+      "showReadouts": true,
+      "readoutToggle": true,
+      "hideCircularSpeedLabel": true
+    },
+    "l5-s12": {
+      "module": "orbit-lab",
+      "url": "study-orbit-lab.html?preset=l5-s12",
+      "aliases": ["L5_S12_optional_orbits"],
+      "mode": "scale",
+      "bodies": ["ISS", "GPS", "GEO"],
+      "trueScale": true,
+      "showReadouts": true,
+      "readoutToggle": true,
+      "note": "Optional depth after the S12 calculations, not the S8 starting state."
+    }
+  }
+}

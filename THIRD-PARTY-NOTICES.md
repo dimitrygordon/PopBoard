@@ -36,3 +36,7 @@ These subsets (Latin, Greek, and arrows) in `public/fonts/` come from Google Fon
 - `patrick-hand.woff2`: Patrick Hand by Patrick Wagesreiter.
 - `gochi-hand.woff2`: Gochi Hand by Huerta Tipografica.
 - `itim.woff2`: Itim by Cadson Demak.
+
+## Jost font
+
+`public/fonts/jost-latin-400.woff2`, `jost-latin-500.woff2`, `jost-latin-600.woff2`, and `jost-latin-700.woff2` are Latin subsets of Jost by indestructible type (Owen Earl), from Fontsource (`jost@5`). Licensed under the SIL Open Font License 1.1 (https://openfontlicense.org).

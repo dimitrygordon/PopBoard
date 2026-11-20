@@ -1,0 +1,39 @@
+{
+  "title": "Kepler and Circles lesson presets",
+  "constants_source": "kepler-circles/assets/kepler.json",
+  "presets": {
+    "l2-s5": {
+      "module": "kepler-circles",
+      "url": "study-kepler-circles.html?preset=l2-s5",
+      "aliases": ["l2", "L2_S5_cut_the_string"],
+      "mode": "circles",
+      "direction": "counterclockwise",
+      "showVelocity": true,
+      "showForce": true,
+      "forceLabel": "F",
+      "forceInward": true,
+      "neverOutwardForce": true,
+      "cutPull": true,
+      "cutButton": "Cut the inward pull"
+    },
+    "l3-s6": {
+      "module": "kepler-circles",
+      "url": "study-kepler-circles.html?preset=l3-s6",
+      "aliases": ["l3", "L3_S6_eccentricity"],
+      "mode": "ellipses",
+      "bodies": ["Earth", "Mars", "Halley"],
+      "eccentricities": { "Earth": 0.017, "Mars": 0.093, "Halley": 0.967 },
+      "orbitsToScale": true,
+      "bodiesNotToScale": true,
+      "sunAtFocus": true,
+      "drawEmptyFocus": true
+    },
+    "jupiter-moons": {
+      "module": "kepler-circles",
+      "url": "study-kepler-circles.html?preset=jupiter-moons",
+      "aliases": ["jupiter_moons"],
+      "mode": "moons",
+      "note": "Galilean moons, nearly circular. Not one of the five unit Explore-in-3D links."
+    }
+  }
+}

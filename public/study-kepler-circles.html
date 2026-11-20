@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="shared/layout/layout.css">
+<script type="module" src="shared/layout/layout.js"></script>
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<title>Kepler and Circles // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<link rel="stylesheet" href="kepler-circles/kepler-circles.css">
+</head>
+<body class="kc">
+<h1 class="sr-only">Kepler and Circles</h1>
+<p class="sr-only">Circular motion with a tangent velocity arrow and an inward force arrow, and to-scale Kepler ellipses. Open a lesson preset with a ?preset= link.</p>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title" id="presetName">Kepler and Circles</p>
+</header>
+
+<main id="stage" class="stage">
+  <canvas id="scene" role="img" aria-label="Circular path or Kepler ellipses"></canvas>
+</main>
+
+<p class="note" id="note"></p>
+<p class="asset-flag" id="assetFlag">3D meshes load from kepler-circles/assets when Angelo's GLBs and skybox arrive. Placeholder shapes are shown until then.</p>
+<p class="status" id="status" role="status" aria-live="polite"></p>
+
+<section class="controls" aria-label="Kepler and Circles controls">
+  <div class="row modes" role="tablist" aria-label="View">
+    <button type="button" id="modeCircles" aria-pressed="true">Circles</button>
+    <button type="button" id="modeEllipses" aria-pressed="false">Ellipses</button>
+    <button type="button" id="modeMoons" aria-pressed="false">Jupiter's moons</button>
+  </div>
+  <div id="circleControls">
+    <div class="row">
+      <button type="button" class="primary" id="cutBtn">Cut the inward pull</button>
+      <button type="button" id="resetBtn">Reset</button>
+    </div>
+  </div>
+  <div id="ellipseControls" hidden>
+    <div class="row">
+      <button type="button" id="zoomInner" aria-pressed="true">Earth and Mars</button>
+      <button type="button" id="zoomFull" aria-pressed="false">Full comet orbit</button>
+    </div>
+  </div>
+</section>
+
+<script type="module" src="kepler-circles/kc-ui.js"></script>
+<script type="module" src="astro-course/story-return.js"></script>
+</body>
+</html>
