@@ -21,6 +21,14 @@
     <span class="back-label">Back</span>
   </button>
   <p class="title" id="presetName">Kepler and Circles</p>
+  <button type="button" id="resetViewBtn">Reset view</button>
+  <details class="about" id="about">
+    <summary>About this view</summary>
+    <div class="about-panel">
+      <p class="note" id="note"></p>
+      <p class="note" id="detail" hidden></p>
+    </div>
+  </details>
   <details class="credits">
     <summary>Credits</summary>
     <p>Textures by Solar System Scope, CC BY 4.0. ISS, Hubble, Galilean maps: NASA. Star map: NASA / Ernie Wright (SVS).</p>
@@ -30,8 +38,6 @@
 <main id="stage" class="stage">
   <canvas id="scene" role="img" aria-label="Circular path or Kepler ellipses"></canvas>
 </main>
-
-<p class="note" id="note"></p>
 <div class="dock">
 <p class="status" id="status" role="status" aria-live="polite"></p>
 

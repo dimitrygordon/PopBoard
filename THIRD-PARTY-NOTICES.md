@@ -25,7 +25,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 ## three.js r170
 
-`public/vendor/three/three.module.min.js` is three.js 0.170.0 (https://github.com/mrdoob/three.js), vendored unmodified from the npm package `three@0.170.0` (`build/three.module.min.js`). MIT License; full text in `public/vendor/three/three.LICENSE`.
+`public/vendor/three/three.module.min.js` is three.js 0.170.0 (https://github.com/mrdoob/three.js), vendored unmodified from the npm package `three@0.170.0` (`build/three.module.min.js`). MIT License; full text in `public/vendor/three/three.LICENSE`. `public/vendor/three/OrbitControls.js` is the r170 `examples/jsm/controls/OrbitControls.js` file from the same three.js tree, with only the `three` import rewritten to the vendored module. Same MIT License.
 
 ## Astronomy Course storybook fonts
 

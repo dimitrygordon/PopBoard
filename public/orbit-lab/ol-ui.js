@@ -11,6 +11,7 @@ const $ = (id) => document.getElementById(id);
 const CRAFT_VISUAL = { ISS: 0.09, Hubble: 0.055, GPS: 0.07, GEO: 0.08 };
 const CRAFT_ASSET = { ISS: "iss", Hubble: "hubble", GPS: "gps", GEO: "geo" };
 const MOON_SCALE = 1737.4 / 6380;
+const SAT_PHASE = { ISS: 0, Hubble: 1.15, Moon: 0.7, GPS: 2.1, GEO: 3.4 };
 
 
 $("studyBackBtn").addEventListener("click", (e) => {
@@ -29,35 +30,44 @@ const l1 = l1Speeds(data.lessons);
 const scene = await createScene($("scene"));
 await loadAssetMap();
 const loadCannon = (preset.mode || "cannon") === "cannon";
+const cannonAnchor = { x: R + h, y: 0, z: 0 };
+// Placeholder cannon sits on the surface of the unit sphere at the launch radius.
+const launchR = (R + h) / R;
+let satGen = 0;
+// Wire before the long loads so early taps on Fire, shots, and presets are not dropped.
+wire();
 await Promise.all([
   scene.trySkybox(assetCandidates("skybox")),
   scene.tryEarth(assetCandidates("earth")),
   loadCannon ? scene.tryCannon(assetCandidates("cannon")) : Promise.resolve(false)
 ]);
-const cannonAnchor = { x: R + h, y: 0, z: 0 };
-// Placeholder cannon sits on the surface of the unit sphere at the launch radius.
-const launchR = (R + h) / R;
 
 await applyPreset(preset);
 layoutHud();
 requestAnimationFrame(() => requestAnimationFrame(layoutHud));
-wire();
 
 function layoutHud() {
   const root = document.documentElement;
   const hud = document.querySelector(".hud");
   if (hud) root.style.setProperty("--ol-hud", `${Math.ceil(hud.getBoundingClientRect().bottom) + 8}px`);
-  const ctl = document.querySelector(".controls");
-  if (ctl) root.style.setProperty("--ol-ctl", `${Math.ceil(ctl.getBoundingClientRect().height) + 16}px`);
+  const dock = document.querySelector(".dock");
+  if (dock) root.style.setProperty("--ol-ctl", `${Math.ceil(dock.getBoundingClientRect().height)}px`);
 }
 addEventListener("resize", layoutHud);
 const hudEl = document.querySelector(".hud");
 if (hudEl) new ResizeObserver(layoutHud).observe(hudEl);
-const ctlEl = document.querySelector(".controls");
-if (ctlEl) new ResizeObserver(layoutHud).observe(ctlEl);
+const dockEl = document.querySelector(".dock");
+if (dockEl) new ResizeObserver(layoutHud).observe(dockEl);
 
 
 function wire() {
+  $("resetViewBtn")?.addEventListener("click", () => scene.resetView());
+  for (const d of document.querySelectorAll(".hud details")) {
+    d.addEventListener("toggle", () => {
+      if (!d.open) return;
+      for (const o of document.querySelectorAll(".hud details")) if (o !== d) o.open = false;
+    });
+  }
   $("fireBtn")?.addEventListener("click", () => fire(Number($("speed").value)));
   $("speed")?.addEventListener("input", syncSpeedLabel);
   $("readoutToggle")?.addEventListener("click", () => {
@@ -83,6 +93,9 @@ function wire() {
 async function applyPreset(p) {
   $("presetName").textContent = titleFor(p);
   $("note").textContent = noteFor(p);
+  $("status").textContent = teaserFor(p);
+  const detail = $("detail");
+  if (detail) { detail.hidden = true; detail.textContent = ""; }
   const cannonMode = (p.mode || "cannon") === "cannon";
   $("cannonControls").hidden = !cannonMode;
   $("satControls").hidden = p.showSatellites === false && p.mode !== "scale";
@@ -100,6 +113,9 @@ async function applyPreset(p) {
     const start = p.speedDefault_m_s ?? p.suggested_m_s?.[0] ?? shots[0] ?? 0;
     $("speed").min = 0;
     $("speed").max = max;
+    // L5 must be able to hold the exact circular speed. A step of 10 snaps 7,893 m/s
+    // to 7,890 m/s, which is still a long lob.
+    $("speed").step = p.lockOrbitEscape ? 10 : "any";
     $("speed").value = start;
     fillShots(p, max);
     syncSpeedLabel();
@@ -133,7 +149,7 @@ function fillShots(p) {
     speeds.forEach((v, i) => box.append(shotBtn(labels[i], v)));
     return;
   }
-  l5ShotSpeeds(data.lessons, GM, R, h).forEach((s) => box.append(shotBtn(s.label, Math.round(s.v))));
+  l5ShotSpeeds(data.lessons, GM, R, h).forEach((s) => box.append(shotBtn(s.label, s.v)));
 }
 
 function shotBtn(label, v) {
@@ -158,8 +174,16 @@ function fillSats(keys) {
   }
 }
 
+function restoreCannonView() {
+  const p = preset;
+  if ((p.mode || "cannon") !== "cannon") return;
+  scene.setCannonVisible(true, launchR, scene.loaded.cannon ? 1 : (p.lockOrbitEscape ? 0.05 : 1));
+  scene.setCamera(p.lockOrbitEscape ? "cannon-close" : "cannon-wide");
+}
+
 function fire(v, opts = {}) {
   const p = preset;
+  restoreCannonView();
   if (p.lockOrbitEscape && v > (p.speedMax_m_s ?? l1.cap) + 1e-6) v = p.speedMax_m_s ?? l1.cap;
   const path = samplePath(v, h, GM, R);
   const pose = scene.getMuzzle();
@@ -167,9 +191,12 @@ function fire(v, opts = {}) {
   const arcScale = p.lockOrbitEscape ? 28 : 1;
   const pts = placePath(path.points, R, pose, arcScale);
   scene.setPath(pts, R);
-  const seconds = reducedMotion() ? 0 : 1.6;
-  scene.playAlong(pts, R, seconds);
-  if (pts[0]) scene.setProjectileAt(pts[0], R);
+  const loops = path.kind === "circular" || path.kind === "elliptical" || path.kind === "orbit";
+  const seconds = reducedMotion() ? 0 : (loops ? 8 : path.kind === "escape" ? 5 : 2.4);
+  scene.playAlong(pts, R, seconds, {
+    loop: loops,
+    impact: path.kind === "lob" || path.kind === "drop"
+  });
   if (opts.announce !== false) $("status").textContent = statusFor(path, v);
   // Cannon-mode readouts, if visible, describe this launch radius, not a satellite.
   if ((p.mode || "cannon") === "cannon" && !$("readouts").hidden) {
@@ -179,8 +206,10 @@ function fire(v, opts = {}) {
 }
 
 async function showSatellite(key, opts = {}) {
+  const my = ++satGen;
   const entry = orbitEntry(data.orbits, key === "Hubble" ? "Hubble" : key);
   if (!entry) { $("status").textContent = `${key} is not in orbits.json.`; return; }
+  scene.setCannonVisible(false);
   scene.clearSatellites();
   const keys = opts.all ? (opts.bodies || [key]) : [key];
   let maxR = 0;
@@ -190,22 +219,27 @@ async function showSatellite(key, opts = {}) {
     const rr = e.r_m / R;
     maxR = Math.max(maxR, rr);
     scene.addOrbitRing(rr, k === key ? 0x4caf50 : 0x666666);
+    const phase = SAT_PHASE[k] || 0;
     if (k === "Moon") {
-      await scene.addMoon(assetCandidates("moon"), rr, MOON_SCALE);
+      await scene.addMoon(assetCandidates("moon"), rr, MOON_SCALE, phase);
     } else {
       const kind = CRAFT_ASSET[k];
-      if (kind) await scene.addCraft(assetCandidates(kind), rr, CRAFT_VISUAL[k] || 0.05);
-      else scene.addBodyMarker(rr, k, k === key ? 0x4caf50 : 0xcccccc);
+      if (kind) await scene.addCraft(assetCandidates(kind), rr, CRAFT_VISUAL[k] || 0.05, phase);
+      else scene.addBodyMarker(rr, k, k === key ? 0x4caf50 : 0xcccccc, phase);
     }
+    if (my !== satGen) return;
   }
+  if (my !== satGen) return;
   setReadouts(entry);
-  if (opts.all && keys.includes("Moon")) {
-    $("status").textContent = "The ISS sits just above Earth. Open Moon to see the true distance. Orbits are to true scale; the stations are enlarged.";
-  } else {
-    $("status").textContent = scaleCaption(entry);
+  $("status").textContent = shortScaleCaption(entry, key, opts);
+  const detail = $("detail");
+  if (detail) {
+    detail.hidden = false;
+    detail.textContent = fullScaleCaption(entry, key, opts);
   }
 
   if (key === "Moon") scene.setCamera("scale-wide");
+  else if (maxR > 1.5) scene.setCamera("scale-fit", maxR * 1.18);
   else scene.setCamera("scale-iss");
 }
 
@@ -260,10 +294,34 @@ function noteFor(p) {
   return "Newton's cannon and Earth-orbit presets.";
 }
 
-function scaleCaption(entry) {
-  if (entry.name === "ISS") return "ISS at 400 km. The orbit is to true scale. The station is enlarged, not to scale.";
-  if (entry.name?.includes("Hubble")) return "Hubble at 480 km. Optional on this lesson. The orbit is to true scale; the telescope is enlarged, not to scale. Do not use a readout on the exit ticket.";
-  return entry.name || "";
+function teaserFor(p) {
+  if (p.id === "l1-s8") return "Short, slow lobs that hit the ground. Faster is twice the slow shot.";
+  if (p.id === "l4-s6") return "ISS at 400 km. Orbit to scale; station enlarged.";
+  if (p.id === "l5-s8") return "Fire at five rising speeds. Find the shot that never lands.";
+  if (p.id === "l5-s12") return "ISS, GPS, and GEO to scale.";
+  return "";
+}
+
+function shortScaleCaption(entry, key, opts = {}) {
+  const k = key || entry.name || "";
+  if (opts.all && (opts.bodies || []).includes("Moon") && (k === "ISS" || entry.name === "ISS")) {
+    return "ISS sits just above Earth. Open Moon for the true distance.";
+  }
+  if (k === "ISS" || entry.name === "ISS") return "ISS at 400 km. Orbit to scale; station enlarged.";
+  if (k === "Hubble" || entry.name?.includes("Hubble")) return "Hubble at 480 km. Orbit to scale; telescope enlarged.";
+  if (k === "Moon" || entry.name?.includes("Moon")) return "Moon at true scale. Open to compare with the ISS distance.";
+  if (k === "GPS" || entry.name?.includes("GPS")) return "GPS orbit, to scale.";
+  if (k === "GEO" || entry.name?.includes("Geostationary") || entry.name?.includes("GEO")) return "GEO orbit, to scale.";
+  return entry.name || k || "";
+}
+
+function fullScaleCaption(entry, key, opts = {}) {
+  if (opts.all && (opts.bodies || []).includes("Moon")) {
+    return "The ISS sits just above Earth. Open Moon to see the true distance. Orbits are to true scale; the stations are enlarged.";
+  }
+  if (key === "ISS" || entry.name === "ISS") return "ISS at 400 km. The orbit is to true scale. The station is enlarged, not to scale.";
+  if (key === "Hubble" || entry.name?.includes("Hubble")) return "Hubble at 480 km. Optional on this lesson. The orbit is to true scale; the telescope is enlarged, not to scale. Do not use a readout on the exit ticket.";
+  return entry.name || key || "";
 }
 
 function hide(id, yes) { $(id).hidden = !!yes; }
