@@ -1,15 +1,19 @@
-# Dubois County flyover (prototype, not for merge)
+# Patoka Valley
 
 A 3D engraved-atlas view of Jasper and the Patoka River valley, under a live sky. The camera sits low and looks slightly up, so the land is a band along the bottom of the frame and the sky (stars, moon, weather) fills the rest.
 
+This is a Study library module. It is not loaded on the login page.
+
 ## Open
-- Local: serve `public/` and visit `/world/`.
-- Branch preview: `https://proto-dubois-flyover.popboard.pages.dev/world/`
+- Local: serve `public/` and visit `/study-patoka-valley`.
+- `/world/` redirects to the same module.
 
 ## Controls
 - The view drifts slowly east along the Patoka valley when idle.
 - Drag to yaw and to move forward or back. The upward tilt stays put.
+- Pinch or scroll to zoom. Reset view returns to the opening look at Jasper High School.
 - Move the cursor over the land to part grass and wheat, ruffle trees, ripple the water, and open a gap in the clouds.
+- The landmark button steps through labeled sites.
 
 ## Debug query
 - `?season=spring|summer|autumn|winter`

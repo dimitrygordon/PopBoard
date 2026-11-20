@@ -2,6 +2,11 @@ import * as THREE from "../vendor/three/three.module.min.js";
 import { GLTFLoader } from "../vendor/three/GLTFLoader.js";
 import { MeshoptDecoder } from "../vendor/three/meshopt_decoder.mjs";
 
+const WORLD_BASE = new URL("./", import.meta.url);
+function worldUrl(rel) {
+  return new URL(rel, WORLD_BASE).href;
+}
+
 const RAD = Math.PI / 180;
 const CELL = 31.25;
 const COLS = 1024;
@@ -84,6 +89,14 @@ let jhsUpgradeQueued = false;
 
 const qs = new URLSearchParams(location.search);
 const EMBED = qs.get("embed") === "1";
+function preferLightTextures() {
+  const w = Math.min(window.innerWidth || 800, window.innerHeight || 800);
+  const ua = navigator.userAgent || "";
+  const mobile = /Mobi|Android|iPhone|iPad|iPod/i.test(ua);
+  const save = !!(navigator.connection && (navigator.connection.saveData || navigator.connection.effectiveType === "2g" || navigator.connection.effectiveType === "slow-2g"));
+  return mobile || w <= 500 || save;
+}
+const LIGHT_CLIENT = preferLightTextures();
 const dbgSky = qs.get("sky");
 const dbgWx = qs.get("wx");
 const dbgStrike = (qs.get("strike") || "").toLowerCase();
@@ -724,11 +737,11 @@ async function loadImageData(url) {
 
 async function loadMap() {
   const [hImg, cImg, m, osm, campus] = await Promise.all([
-    loadImageData("./data/height.png"),
-    loadImageData("./data/cover.png"),
-    fetch("./data/meta.json").then(function (r) { return r.json(); }),
-    fetch("./data/osm.json").then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
-    fetch("./data/jhs-campus.json").then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+    loadImageData(worldUrl("data/height.png")),
+    loadImageData(worldUrl("data/cover.png")),
+    fetch(worldUrl("data/meta.json")).then(function (r) { return r.json(); }),
+    fetch(worldUrl("data/osm.json")).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+    fetch(worldUrl("data/jhs-campus.json")).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
   ]);
   meta = m;
   osmData = osm;
@@ -2229,7 +2242,7 @@ try {
   renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
   renderer.toneMapping = THREE.NoToneMapping;
   renderer.setClearColor(0x070B14, 1);
-  renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+  renderer.setPixelRatio(Math.min(LIGHT_CLIENT ? 1.25 : 2, window.devicePixelRatio || 1));
   renderer.localClippingEnabled = true;
 } catch (err) {
   glOk = false;
@@ -6202,13 +6215,13 @@ async function tryLoadGlb(names) {
   }
   for (let i = 0; i < list.length; i++) {
     if (!list[i]) continue;
-    const url = "./models/" + list[i];
+    const url = worldUrl("models/" + list[i]);
     try {
       const res = await fetch(url);
       if (!res.ok) continue;
       const buf = await res.arrayBuffer();
       const gltf = await new Promise(function (resolve, reject) {
-        loader.parse(buf, "./models/", resolve, reject);
+        loader.parse(buf, worldUrl("models/"), resolve, reject);
       });
       if (gltf && gltf.scene) {
         return { scene: gltf.scene, file: list[i] };
@@ -6402,6 +6415,7 @@ async function loadJhsCampus(file) {
 }
 
 function maybeUpgradeJhs() {
+  if (LIGHT_CLIENT) return;
   if (jhsUpgradeQueued || jhsTiming.upgraded) return;
   if (!jhsRoot || !JHS_GLB_FULL || jhsTiming.schoolFile === JHS_GLB_FULL) return;
   const w = jhsWorldOrigin();
@@ -9539,7 +9553,7 @@ function onPointerDown(e) {
   rig.lastX = e.clientX;
   rig.lastY = e.clientY;
   noteInput();
-  canvas.setPointerCapture && canvas.setPointerCapture(e.pointerId);
+  try { if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId); } catch (err) {}
 }
 function onPointerMove(e) {
   if (rig.pointers[e.pointerId]) {
@@ -10433,6 +10447,70 @@ function bindLandmarkButton() {
     }
   }
   updateLandmarkButton();
+}
+
+function resetView() {
+  rig.zoom = 1;
+  rig.headingOff = 0;
+  rig.side = 0;
+  rig.yawVel = 0;
+  rig.fwd = 0;
+  rig.dragging = false;
+  const stops = getTourStops();
+  if (!stops.length) {
+    applyFovAndPitch();
+    if (glOk && renderer) renderer.render(scene, camera);
+    return;
+  }
+  tour.stop = 0;
+  tour.paused = true;
+  tour.enabled = false;
+  tour.manualTravel = false;
+  tour.released = false;
+  tour.t = 0;
+  const land = tourCameraAt(stops[0]);
+  tour.from = land;
+  tour.to = land;
+  tour.parked = land;
+  tour.phase = "hold";
+  applyTourCam(land);
+  applyFovAndPitch();
+  updatePlaceCaption(stops[0].name);
+  setLandmarkLabel(stopLabel(stops[0]), true);
+  updateLandmarkButton();
+  if (glOk && renderer) renderer.render(scene, camera);
+}
+
+function cameraPose() {
+  if (!camera) return null;
+  return {
+    x: camera.position.x,
+    y: camera.position.y,
+    z: camera.position.z,
+    rotX: camera.rotation.x,
+    rotY: camera.rotation.y,
+    rotZ: camera.rotation.z,
+    zoom: rig.zoom
+  };
+}
+
+function bindModuleChrome() {
+  const back = document.getElementById("studyBackBtn");
+  if (back) {
+    back.addEventListener("pointerdown", function (e) { e.stopPropagation(); });
+    back.addEventListener("click", function (e) {
+      e.preventDefault();
+      location.href = "study.html" + location.search;
+    });
+  }
+  const resetBtn = document.getElementById("resetViewBtn");
+  if (resetBtn) {
+    resetBtn.addEventListener("pointerdown", function (e) { e.stopPropagation(); });
+    resetBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      resetView();
+    });
+  }
 }
 
 function fadeInLandmarkLabel(text) {
@@ -13017,6 +13095,8 @@ function scanFloatingBuildings(gapM) {
 
   window.__world = {
     ready: true,
+    resetView: resetView,
+    cameraPose: cameraPose,
     scanFloatingBuildings: scanFloatingBuildings,
     seatedList: function () { return seatedBuildings; },
     terrainMeshY: terrainMeshY,
@@ -13552,6 +13632,7 @@ async function init() {
     startFlyIn();
   }
   bindLandmarkButton();
+  bindModuleChrome();
   if (EMBED) bindEmbedExit();
   fillGrass(camera.position.x, camera.position.z);
   if (dbgStrike === "bolt" || dbgStrike === "cloud") {
