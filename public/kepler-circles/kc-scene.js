@@ -191,7 +191,7 @@ export async function createScene(canvas) {
       const tex = await loadTexture(url);
       if (!tex) return false;
       prepareSkyboxTexture(tex, renderer);
-      dimSkybox(scene, tex, 0.42);
+      dimSkybox(scene, tex, (typeof innerWidth === "number" && innerWidth <= 900) ? 0.24 : 0.42);
       stars.visible = true;
       paint();
       return true;

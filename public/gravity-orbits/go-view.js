@@ -28,6 +28,7 @@ export function setControlDistances(controls, minDistance, maxDistance) {
 
 export function limitsForMode(mode) {
   if (mode === "cannon-close") return { min: 0.15, max: 6 };
+  if (mode === "lob-arc") return { min: 0.04, max: 8 };
   if (mode === "cannon-wide") return { min: 1.2, max: 24 };
   if (mode === "scale-iss") return { min: 1.6, max: 28 };
   if (mode === "scale-wide") return { min: 16, max: 420 };
@@ -125,8 +126,8 @@ export function makePointStars({ count = 2200, radius = 400, sizePx = 1.7, seed 
 export function makeStarLayers() {
   const group = new THREE.Group();
   group.name = "stars";
-  group.add(makePointStars({ count: 2000, radius: 420, sizePx: 1.25, seed: 7 }));
-  group.add(makePointStars({ count: 420, radius: 400, sizePx: 2.15, seed: 19 }));
+  group.add(makePointStars({ count: 2600, radius: 420, sizePx: 1.45, seed: 7 }));
+  group.add(makePointStars({ count: 520, radius: 400, sizePx: 2.2, seed: 19 }));
   return group;
 }
 

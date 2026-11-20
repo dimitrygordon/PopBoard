@@ -10,7 +10,7 @@ from pathlib import Path
 
 from playwright.sync_api import sync_playwright, TimeoutError as PwTimeout
 
-OUT = Path("/workspace/popboard-gravity-orbits-shots/v3")
+OUT = Path("/workspace/popboard-gravity-orbits-shots/v4")
 OUT.mkdir(parents=True, exist_ok=True)
 
 IPHONE = dict(
@@ -71,43 +71,88 @@ def new_context(browser, device, video_name=None):
     ctx.on("console", on_console)
     ctx.on("pageerror", on_page_error)
     page = ctx.new_page()
+    transferred = []
     try:
         cdp = ctx.new_cdp_session(page)
         cdp.send("Network.setCacheDisabled", {"cacheDisabled": True})
+        cdp.send("Network.enable")
+        pending = {}
+
+        def on_resp(params):
+            pending[params["requestId"]] = {
+                "url": params["response"]["url"],
+                "status": params["response"]["status"],
+            }
+
+        def on_fin(params):
+            rec = pending.get(params["requestId"])
+            if rec:
+                transferred.append((rec["url"], rec["status"], params.get("encodedDataLength") or 0, "cdp"))
+
+        cdp.on("Network.responseReceived", on_resp)
+        cdp.on("Network.loadingFinished", on_fin)
     except Exception:
-        pass
-    transferred = []
-
-    def on_response(resp):
-        try:
-            transferred.append((resp.url, resp.status, resp.headers.get("content-length") or 0, resp.request.resource_type))
-        except Exception:
-            pass
-
-    page.on("response", on_response)
+        def on_response(resp):
+            try:
+                transferred.append((resp.url, resp.status, resp.headers.get("content-length") or 0, resp.request.resource_type))
+            except Exception:
+                pass
+        page.on("response", on_response)
     return ctx, page, errors, page_errors, transferred
 
 
 def bytes_for(transferred, path_substr=None):
     total = 0
     seen = set()
+    sums = {}
     for url, status, clen, _rt in transferred:
         if status >= 400:
+            continue
+        if str(url).startswith("blob:"):
             continue
         if path_substr and path_substr not in url:
             continue
         key = url.split("?")[0]
-        if key in seen:
-            continue
-        seen.add(key)
         try:
-            total += int(clen)
+            n = int(clen)
         except (TypeError, ValueError):
-            pass
-    return total, seen
+            n = 0
+        sums[key] = sums.get(key, 0) + n
+        seen.add(key)
+    total = sum(sums.values())
+    return total, seen, sums
 
 
-def wait_ol(page, timeout=45000):
+def snapshot_weight(transferred, results, key, *, mobile=False, forbid=(), require=()):
+    total, urls, sums = bytes_for(transferred)
+    names = [u.split("/")[-1] for u in urls]
+    rec = {
+        "bytes": total,
+        "mb": round(total / 1e6, 2),
+        "files": len(urls),
+        "has2k": any("starmap_2020_2k" in u for u in urls),
+        "has4k": any("starmap_2020_4k" in u for u in urls),
+        "glbs": sorted(n for n in names if n.endswith(".glb")),
+    }
+    results["weights"][key] = rec
+    if mobile and total > 7_000_000:
+        results["ok"] = False
+        results["failures"].append({"where": f"{key} first-load weight", "mb": rec["mb"]})
+    if mobile and rec["has4k"]:
+        results["ok"] = False
+        results["failures"].append({"where": f"{key} loaded 4k skybox on mobile", "rec": rec})
+    for name in forbid:
+        if any(name in u for u in urls):
+            results["ok"] = False
+            results["failures"].append({"where": f"{key} lazy-load", "unexpected": name, "glbs": rec["glbs"]})
+    for name in require:
+        if not any(name in u for u in urls):
+            results["ok"] = False
+            results["failures"].append({"where": f"{key} missing asset", "expected": name, "glbs": rec["glbs"]})
+    return rec
+
+
+def wait_ol(page, timeout=45000, cannon=False):
     page.wait_for_function(
         "() => window.__orbitLab && window.__orbitLab.ready",
         timeout=timeout,
@@ -116,7 +161,12 @@ def wait_ol(page, timeout=45000):
         "() => window.__orbitLab && window.__orbitLab.loaded && window.__orbitLab.loaded.earth",
         timeout=timeout,
     )
-    page.wait_for_timeout(400)
+    if cannon:
+        page.wait_for_function(
+            "() => window.__orbitLab && window.__orbitLab.loaded && window.__orbitLab.loaded.cannon",
+            timeout=timeout,
+        )
+    page.wait_for_timeout(500)
 
 
 def wait_kc(page, timeout=45000):
@@ -187,14 +237,91 @@ def run():
     with sync_playwright() as p:
         browser = p.chromium.launch(channel="chrome", headless=True)
 
+        # ---- Video: L1 Fire Slow then Faster at 390, with mid-flight and landing frames ----
+        ctx, page, errors, page_errors, transferred = new_context(browser, IPHONE, video_name="l1-slow-then-faster")
+        page.goto(f"{base}/study-orbit-lab.html?preset=l1-s8", wait_until="domcontentloaded", timeout=60000)
+        wait_ol(page, cannon=True)
+        snapshot_weight(transferred, results, "l1-mobile", mobile=True, require=("starmap_2020_2k.jpg", "earth_2k.glb", "newton_cannon.glb"))
+        if errors or page_errors:
+            results["failures"].append({"where": "L1 load (slow-then-faster)", "console": errors, "page": page_errors})
+        page.screenshot(path=str(OUT / "l1-390-before.png"), full_page=False)
+        results["shots"].append("l1-390-before.png")
+        home_cam = cam(page)
+        shot0 = page.evaluate("() => window.__orbitLab.shotCam")
+        if shot0 != "globe":
+            results["ok"] = False
+            results["failures"].append({"where": "L1 starts on the globe", "shotCam": shot0})
+
+        page.locator("#fireBtn").click()
+        page.wait_for_timeout(1700)
+        if page.evaluate("() => window.__orbitLab.shotCam") != "lob":
+            results["ok"] = False
+            results["failures"].append({"where": "L1 Slow close-up camera", "shotCam": page.evaluate("() => window.__orbitLab.shotCam"), "cam": cam(page)})
+            audit("Fire close-up (Slow)", "no", False, "camera did not cut to the lob view")
+        else:
+            audit("Fire close-up (Slow)", "no", True, "camera flew to the mountain close-up")
+        page.screenshot(path=str(OUT / "l1-390-slow-midflight.png"), full_page=False)
+        results["shots"].append("l1-390-slow-midflight.png")
+        page.wait_for_function("() => window.__orbitLab && window.__orbitLab.projectile && window.__orbitLab.projectile.flying === false", timeout=8000)
+        page.wait_for_timeout(250)
+        s_slow = page.locator("#status").inner_text()
+        page.screenshot(path=str(OUT / "l1-390-slow-landed.png"), full_page=False)
+        results["shots"].append("l1-390-slow-landed.png")
+        if "Lands after" not in s_slow or "12.2" not in s_slow:
+            results["ok"] = False
+            results["failures"].append({"where": "L1 Slow landing readout", "status": s_slow})
+
+        page.locator('#shots button[data-v]').nth(1).click()
+        page.wait_for_timeout(1700)
+        page.screenshot(path=str(OUT / "l1-390-faster-midflight.png"), full_page=False)
+        results["shots"].append("l1-390-faster-midflight.png")
+        page.wait_for_function("() => window.__orbitLab && window.__orbitLab.projectile && window.__orbitLab.projectile.flying === false", timeout=8000)
+        page.wait_for_timeout(250)
+        s_fast = page.locator("#status").inner_text()
+        hist = page.evaluate("() => window.__orbitLab.pathHistory")
+        page.screenshot(path=str(OUT / "l1-390-faster-landed.png"), full_page=False)
+        results["shots"].append("l1-390-faster-landed.png")
+        if "Lands after" not in s_fast or "24.4" not in s_fast:
+            results["ok"] = False
+            results["failures"].append({"where": "L1 Faster landing readout", "status": s_fast})
+        if not hist:
+            results["ok"] = False
+            results["failures"].append({"where": "L1 kept previous trail", "pathHistory": hist})
+            audit("Slow then Faster trails", "no", False, f"history={hist}")
+        else:
+            audit("Slow then Faster trails", "no", True, f"{s_slow} | {s_fast}; history={hist}")
+
+        lob_cam = cam(page)
+        page.locator("#resetViewBtn").click()
+        page.wait_for_timeout(1000)
+        shot_home = page.evaluate("() => window.__orbitLab.shotCam")
+        home2 = cam(page)
+        if shot_home != "globe" or dist(lob_cam, home2) < 0.4:
+            results["ok"] = False
+            results["failures"].append({"where": "Reset view back to the globe", "shotCam": shot_home, "lob": lob_cam, "home": home2})
+            audit("Reset view after Fire", "no", False, f"shotCam={shot_home}")
+        else:
+            audit("Reset view after Fire", "no", True, "returned to the globe")
+
+        if errors or page_errors:
+            results["ok"] = False
+            results["failures"].append({"where": "L1 slow-then-faster console", "console": errors, "page": page_errors})
+        ctx.close()
+        tmp = OUT / "video-tmp" / "l1-slow-then-faster"
+        vids = list(tmp.glob("*.webm")) if tmp.exists() else []
+        if vids:
+            dest = OUT / "l1-390-slow-then-faster.webm"
+            vids[0].replace(dest)
+            results["videos"]["l1-slow-then-faster"] = str(dest)
+
         # ---- Video + screenshots: L1 fire and drag at iPhone size ----
         ctx, page, errors, page_errors, transferred = new_context(browser, IPHONE, video_name="l1-fire-and-rotate")
         page.goto(f"{base}/study-orbit-lab.html?preset=l1-s8", wait_until="domcontentloaded", timeout=60000)
-        wait_ol(page)
+        wait_ol(page, cannon=True)
         if errors or page_errors:
             results["failures"].append({"where": "L1 load", "console": errors, "page": page_errors})
-        page.screenshot(path=str(OUT / "l1-390-before.png"), full_page=False)
-        results["shots"].append("l1-390-before.png")
+        page.screenshot(path=str(OUT / "l1-390-after-load.png"), full_page=False)
+        results["shots"].append("l1-390-after-load.png")
 
         # Drag rotate
         b, a, d = drag_rotate(page)
@@ -210,7 +337,7 @@ def run():
         # Reset view restores a different pose than the dragged one (back toward framing)
         cam_dragged = cam(page)
         page.locator("#resetViewBtn").click()
-        page.wait_for_timeout(400)
+        page.wait_for_timeout(1000)
         cam_reset = cam(page)
         if dist(cam_dragged, cam_reset) < 0.01:
             results["ok"] = False
@@ -329,9 +456,7 @@ def run():
             results["ok"] = False
             results["failures"].append({"where": "L1 console after interact", "console": errors, "page": page_errors})
 
-        # weight
-        total, urls = bytes_for(transferred)
-        results["weights"]["l1-mobile"] = {"bytes": total, "mb": round(total / 1e6, 2), "files": len(urls)}
+        # first-load weight was snapped in the Slow-then-Faster session
 
         # dock height
         dock = page.evaluate(
@@ -359,6 +484,8 @@ def run():
         ctx, page, errors, page_errors, transferred = new_context(browser, IPHONE)
         page.goto(f"{base}/study-orbit-lab.html?preset=l4-s6", wait_until="domcontentloaded", timeout=60000)
         wait_ol(page)
+        page.wait_for_timeout(1500)
+        snapshot_weight(transferred, results, "l4-mobile", mobile=True, require=("starmap_2020_2k.jpg", "earth_2k.glb", "iss.glb"), forbid=("hubble.glb", "moon_2k.glb"))
         page.screenshot(path=str(OUT / "l4-390-before.png"), full_page=False)
         results["shots"].append("l4-390-before.png")
         b, a, d = drag_rotate(page)
@@ -400,16 +527,27 @@ def run():
         if errors or page_errors:
             results["ok"] = False
             results["failures"].append({"where": "L4 console", "console": errors, "page": page_errors})
-        total, urls = bytes_for(transferred)
-        results["weights"]["l4-mobile"] = {"bytes": total, "mb": round(total / 1e6, 2), "files": len(urls)}
         ctx.close()
 
         # ---- L5 mobile ----
         ctx, page, errors, page_errors, transferred = new_context(browser, IPHONE)
         page.goto(f"{base}/study-orbit-lab.html?preset=l5-s8", wait_until="domcontentloaded", timeout=60000)
-        wait_ol(page)
+        wait_ol(page, cannon=True)
+        snapshot_weight(transferred, results, "l5-mobile", mobile=True, require=("starmap_2020_2k.jpg", "earth_2k.glb", "newton_cannon.glb"), forbid=("iss.glb", "hubble.glb", "gps.glb", "geo_comsat.glb", "moon_2k.glb"))
         page.screenshot(path=str(OUT / "l5-390-before.png"), full_page=False)
         results["shots"].append("l5-390-before.png")
+        # A short lob should cut to the mountain close-up.
+        page.locator("#shots button[data-v]").nth(0).click()
+        page.wait_for_timeout(200)
+        page.locator("#fireBtn").click()
+        page.wait_for_timeout(900)
+        if page.evaluate("() => window.__orbitLab.shotCam") != "lob":
+            results["ok"] = False
+            results["failures"].append({"where": "L5 lob close-up", "shotCam": page.evaluate("() => window.__orbitLab.shotCam")})
+            audit("L5 lob close-up", "no", False, "did not cut to the mountain view")
+        else:
+            audit("L5 lob close-up", "no", True, "close-up on a short lob")
+        page.wait_for_function("() => window.__orbitLab && window.__orbitLab.projectile && window.__orbitLab.projectile.flying === false", timeout=8000)
         shots = page.locator("#shots button[data-v]")
         n = shots.count()
         if n != 5:
@@ -445,6 +583,14 @@ def run():
             audit("L5 Fire (orbit speed)", "no", False, st)
         else:
             audit("L5 Fire (orbit speed)", "no", True, st)
+        # Orbit-speed shots should pull back to the globe as the ball goes around.
+        shot_orbit = page.evaluate("() => window.__orbitLab.shotCam")
+        if shot_orbit != "globe":
+            results["ok"] = False
+            results["failures"].append({"where": "L5 orbit pull-back", "shotCam": shot_orbit})
+            audit("L5 orbit pull-back", "no", False, f"shotCam={shot_orbit}")
+        else:
+            audit("L5 orbit pull-back", "no", True, "camera back on the globe")
         for key in ("ISS", "GPS", "GEO"):
             page.locator(f'button[data-sat="{key}"]').scroll_into_view_if_needed()
             page.locator(f'button[data-sat="{key}"]').click()
@@ -467,14 +613,13 @@ def run():
         if errors or page_errors:
             results["ok"] = False
             results["failures"].append({"where": "L5 console", "console": errors, "page": page_errors})
-        total, urls = bytes_for(transferred)
-        results["weights"]["l5-mobile"] = {"bytes": total, "mb": round(total / 1e6, 2), "files": len(urls)}
         ctx.close()
 
         # ---- L2 / L3 Kepler ----
         ctx, page, errors, page_errors, transferred = new_context(browser, IPHONE, video_name="l2-rotate")
         page.goto(f"{base}/study-kepler-circles.html?preset=l2-s5", wait_until="domcontentloaded", timeout=60000)
         wait_kc(page)
+        snapshot_weight(transferred, results, "l2-mobile", mobile=True, require=("starmap_2020_2k.jpg",), forbid=("jupiter_2k.glb", "earth_2k.glb", "io.glb", "europa.glb"))
         page.screenshot(path=str(OUT / "l2-390-before.png"), full_page=False)
         results["shots"].append("l2-390-before.png")
         b, a, d = drag_rotate(page, "__keplerCircles")
@@ -543,8 +688,6 @@ def run():
         if errors or page_errors:
             results["ok"] = False
             results["failures"].append({"where": "L2 console", "console": errors, "page": page_errors})
-        total, urls = bytes_for(transferred)
-        results["weights"]["l2-mobile"] = {"bytes": total, "mb": round(total / 1e6, 2), "files": len(urls)}
         page.screenshot(path=str(OUT / "l2-390-after.png"), full_page=False)
         results["shots"].append("l2-390-after.png")
         ctx.close()
@@ -563,6 +706,7 @@ def run():
         results["shots"].append("l3-390-before.png")
         # wait a bit for GLBs
         page.wait_for_timeout(2500)
+        snapshot_weight(transferred, results, "l3-mobile", mobile=True, require=("starmap_2020_2k.jpg",), forbid=("jupiter_2k.glb", "io.glb", "europa.glb", "ganymede.glb", "callisto.glb"))
         page.screenshot(path=str(OUT / "l3-390-after-load.png"), full_page=False)
         results["shots"].append("l3-390-after-load.png")
         st = page.locator("#status").inner_text()
@@ -572,15 +716,13 @@ def run():
         if errors or page_errors:
             results["ok"] = False
             results["failures"].append({"where": "L3 console", "console": errors, "page": page_errors})
-        total, urls = bytes_for(transferred)
-        results["weights"]["l3-mobile"] = {"bytes": total, "mb": round(total / 1e6, 2), "files": len(urls)}
         # dock at 375 later
         ctx.close()
 
         # ---- 375x667 layout ----
         ctx, page, errors, page_errors, transferred = new_context(browser, IPHONE_SE)
         page.goto(f"{base}/study-orbit-lab.html?preset=l1-s8", wait_until="domcontentloaded", timeout=60000)
-        wait_ol(page)
+        wait_ol(page, cannon=True)
         page.screenshot(path=str(OUT / "l1-375-before.png"), full_page=False)
         results["shots"].append("l1-375-before.png")
         dock = page.evaluate(
@@ -598,7 +740,7 @@ def run():
         # ---- Desktop L1 ----
         ctx, page, errors, page_errors, transferred = new_context(browser, DESKTOP)
         page.goto(f"{base}/study-orbit-lab.html?preset=l1-s8", wait_until="domcontentloaded", timeout=60000)
-        wait_ol(page)
+        wait_ol(page, cannon=True)
         page.screenshot(path=str(OUT / "l1-1280-before.png"), full_page=False)
         results["shots"].append("l1-1280-before.png")
         b, a, d = drag_rotate(page)
@@ -637,8 +779,7 @@ def run():
         if errors or page_errors:
             results["ok"] = False
             results["failures"].append({"where": "desktop console", "console": errors, "page": page_errors})
-        total, urls = bytes_for(transferred)
-        results["weights"]["l1-desktop"] = {"bytes": total, "mb": round(total / 1e6, 2), "files": len(urls)}
+        snapshot_weight(transferred, results, "l1-desktop", mobile=False)
         ctx.close()
 
         browser.close()

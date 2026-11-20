@@ -243,10 +243,9 @@ test("Fire animates along the path and does not snap the ball back to the muzzle
   assert.match(scene, /pushTrail|trailPts/);
 });
 
-test("skybox prefers the 4k map, with sRGB, mipmaps, anisotropy, and a point-star layer", () => {
+test("skybox uses the 2k map under 900px, with sRGB, mipmaps, anisotropy, and a point-star layer", () => {
   const assets = read("public/gravity-orbits/go-assets.js");
-  assert.match(assets, /deviceMemory/);
-  assert.doesNotMatch(assets, /max-width:\s*600px\)\)\.matches\) return true/);
+  assert.match(assets, /max-width:\s*900px/);
   const view = read("public/gravity-orbits/go-view.js");
   assert.match(view, /SRGBColorSpace/);
   assert.match(view, /generateMipmaps = true/);
@@ -287,9 +286,40 @@ test("Kepler positions obey the second law: equal areas in equal times", () => {
   assert.ok(Math.abs(p0.y) < 1e-9);
 });
 
-test("assetCandidates lists the 4k starmap first when memory is not tight", () => {
+test("assetCandidates lists the 2k starmap first on mobile and the 4k map on desktop", () => {
   assert.equal(preferMobileSkybox(), false);
-  const list = assetCandidates("skybox");
-  assert.ok(list[0].includes("starmap_2020_4k.jpg"), list[0]);
-  assert.ok(list.some((u) => u.includes("starmap_2020_2k.jpg")));
+  const desktop = assetCandidates("skybox", { mobile: false });
+  assert.ok(desktop[0].includes("starmap_2020_4k.jpg"), desktop[0]);
+  const mobile = assetCandidates("skybox", { mobile: true });
+  assert.ok(mobile[0].includes("starmap_2020_2k.jpg"), mobile[0]);
+  assert.ok(mobile.some((u) => u.includes("starmap_2020_4k.jpg")));
+});
+
+test("Fire frames a lob close-up and keeps the previous trail; L4 lazy-loads craft", () => {
+  const ui = read("public/orbit-lab/ol-ui.js");
+  assert.match(ui, /frameShot/);
+  assert.match(ui, /keepPrevious:\s*true|keepPrevious:\s*isLob/);
+  assert.match(ui, /flyHome/);
+  assert.match(ui, /setHomeCamera\("cannon-wide"\)/);
+  assert.doesNotMatch(ui, /showSatellite\(first,\s*\{\s*all:\s*true/);
+  const scene = read("public/orbit-lab/ol-scene.js");
+  assert.match(scene, /function lobPose|function flyTo/);
+  assert.match(scene, /pathHistory/);
+});
+
+test("placePath can drop a lob onto the visual ground without changing the default radius ratio", () => {
+  const { GM, R } = constants(orbits);
+  const path = samplePath(300, 8000, GM, R, 32);
+  const pose = { x: 1.04, y: 0, z: 0, radius: 1.04, direction: { x: 0, y: 1, z: 0 } };
+  const plain = placePath(path.points, R, pose, 28);
+  const r0 = Math.hypot(plain[0].x, plain[0].y, plain[0].z);
+  const r1 = Math.hypot(plain[plain.length - 1].x, plain[plain.length - 1].y, plain[plain.length - 1].z);
+  const phys0 = Math.hypot(path.points[0].x, path.points[0].y, path.points[0].z);
+  const phys1 = Math.hypot(path.points[path.points.length - 1].x, path.points[path.points.length - 1].y, path.points[path.points.length - 1].z);
+  assert.ok(Math.abs(r1 / r0 - phys1 / phys0) < 1e-6);
+  const dropped = placePath(path.points, R, pose, 28, { groundRadius: 1.002 });
+  const d0 = Math.hypot(dropped[0].x, dropped[0].y, dropped[0].z) / R;
+  const d1 = Math.hypot(dropped[dropped.length - 1].x, dropped[dropped.length - 1].y, dropped[dropped.length - 1].z) / R;
+  assert.ok(Math.abs(d0 - 1.04) < 1e-6, "starts at the muzzle");
+  assert.ok(Math.abs(d1 - 1.002) < 1e-4, "lands on the visual ground");
 });

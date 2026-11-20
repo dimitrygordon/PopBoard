@@ -43,9 +43,10 @@ export async function loadAssetMap() {
 }
 
 export function preferMobileSkybox() {
-  // 2k only when device memory is tight. Otherwise prefer the 4k starmap on every width.
-  const mem = typeof navigator !== "undefined" ? Number(navigator.deviceMemory) : NaN;
-  return Number.isFinite(mem) && mem > 0 && mem <= 2;
+  // 2k starmap on small screens; the point-star layer carries sharpness. 4k on wider desktops.
+  if (typeof matchMedia === "function" && matchMedia("(max-width: 900px)").matches) return true;
+  if (typeof innerWidth === "number" && innerWidth > 0 && innerWidth <= 900) return true;
+  return false;
 }
 
 export function assetCandidates(kind, opts = {}) {

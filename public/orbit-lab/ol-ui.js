@@ -107,7 +107,7 @@ async function applyPreset(p) {
   $("readoutToggle").textContent = $("readouts").hidden ? "Show g and period" : "Hide g and period";
 
   if (cannonMode) {
-    scene.setCamera(p.lockOrbitEscape ? "cannon-close" : "cannon-wide");
+    scene.setHomeCamera("cannon-wide");
     const max = p.lockOrbitEscape ? (p.speedMax_m_s ?? l1.cap) : Math.ceil(vEsc(R + h, GM));
     const shots = p.lockOrbitEscape ? (p.suggested_m_s || [l1.slow]) : l5ShotSpeeds(data.lessons, GM, R, h).map((s) => Math.round(s.v));
     const start = p.speedDefault_m_s ?? p.suggested_m_s?.[0] ?? shots[0] ?? 0;
@@ -123,7 +123,7 @@ async function applyPreset(p) {
     scene.setProjectileAt(cannonAnchor, R);
     const muzzle = scene.getMuzzle();
     if (muzzle.loaded) scene.setProjectileAt({ x: muzzle.x * R, y: muzzle.y * R, z: muzzle.z * R }, R);
-    if (p.autoPath === "slow") fire(l1.slow, { announce: false });
+    scene.clearPathHistory?.();
     hide("satControls", p.showSatellites === false);
     if (p.showSatellites) fillSats(p.satelliteKeys || ["ISS", "GPS", "GEO"]);
   } else {
@@ -135,7 +135,7 @@ async function applyPreset(p) {
     scene.setCamera("scale-iss");
     fillSats(bodies);
     const first = bodies[0];
-    await showSatellite(first, { all: true, bodies });
+    await showSatellite(first);
     layoutHud();
   }
 }
@@ -178,7 +178,6 @@ function restoreCannonView() {
   const p = preset;
   if ((p.mode || "cannon") !== "cannon") return;
   scene.setCannonVisible(true, launchR, scene.loaded.cannon ? 1 : (p.lockOrbitEscape ? 0.05 : 1));
-  scene.setCamera(p.lockOrbitEscape ? "cannon-close" : "cannon-wide");
 }
 
 function fire(v, opts = {}) {
@@ -186,16 +185,35 @@ function fire(v, opts = {}) {
   restoreCannonView();
   if (p.lockOrbitEscape && v > (p.speedMax_m_s ?? l1.cap) + 1e-6) v = p.speedMax_m_s ?? l1.cap;
   const path = samplePath(v, h, GM, R);
-  const pose = scene.getMuzzle();
-  // L1 close-up: stretch the 12/24 km arcs so they read next to the (not-to-scale) cannon.
-  const arcScale = p.lockOrbitEscape ? 28 : 1;
-  const pts = placePath(path.points, R, pose, arcScale);
-  scene.setPath(pts, R);
   const loops = path.kind === "circular" || path.kind === "elliptical" || path.kind === "orbit";
+  const isLob = path.kind === "lob" || path.kind === "drop";
+  // L1: stretch the 12/24 km arcs so they read as a parabola over the surface.
+  // L5 lobs stay at true Earth scale so rising ranges can be compared on the way to orbit.
+  const arcScale = p.lockOrbitEscape && isLob ? 28 : 1;
+  if (loops || path.kind === "escape") {
+    scene.clearPathHistory();
+    scene.setCannonScale(1);
+    scene.flyHome(reducedMotion() ? 0 : 0.8);
+  } else {
+    // Scale the mountain down first so the muzzle and the arc share the frame.
+    scene.setCannonScale(p.lockOrbitEscape ? 0.10 : 0.09);
+  }
+  const pose = scene.getMuzzle();
+  const pts = placePath(path.points, R, pose, arcScale, isLob ? { groundRadius: 1.002 } : {});
+  if (isLob) {
+    scene.frameShot(pts, R, {
+      keepPrevious: true,
+      extras: scene.framedPoints,
+      cannonScale: false,
+      seconds: reducedMotion() ? 0 : 0.6
+    });
+  }
+  scene.setPath(pts, R);
   const seconds = reducedMotion() ? 0 : (loops ? 8 : path.kind === "escape" ? 5 : 2.4);
   scene.playAlong(pts, R, seconds, {
     loop: loops,
-    impact: path.kind === "lob" || path.kind === "drop"
+    impact: isLob,
+    keepPrevious: isLob
   });
   if (opts.announce !== false) $("status").textContent = statusFor(path, v);
   // Cannon-mode readouts, if visible, describe this launch radius, not a satellite.
