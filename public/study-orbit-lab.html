@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="shared/layout/layout.css">
+<script type="module" src="shared/layout/layout.js"></script>
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<title>Orbit Lab // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<link rel="stylesheet" href="orbit-lab/orbit-lab.css">
+</head>
+<body class="ol">
+<h1 class="sr-only">Orbit Lab</h1>
+<p class="sr-only">Newton's cannon and Earth-orbit presets. Open a lesson preset with a ?preset= link.</p>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title" id="presetName">Orbit Lab</p>
+  <details class="credits">
+    <summary>Credits</summary>
+    <p>Textures by Solar System Scope, CC BY 4.0. ISS, Hubble, Galilean maps: NASA. Star map: NASA / Ernie Wright (SVS).</p>
+  </details>
+  <div class="hud-extra">
+    <button id="readoutToggle" type="button" hidden aria-pressed="false">Show g and period</button>
+  </div>
+</header>
+
+<main id="stage" class="stage">
+  <canvas id="scene" role="img" aria-label="Earth and the cannon or satellite orbit"></canvas>
+</main>
+
+<p class="note" id="note"></p>
+
+<section class="readouts" id="readouts" hidden aria-live="polite">
+  <p class="read-name" id="readName"></p>
+  <p><span class="k">g</span> <span id="readG">—</span></p>
+  <p><span class="k">Period</span> <span id="readT">—</span></p>
+  <p><span class="k">Altitude</span> <span id="readAlt">—</span></p>
+  <p class="warn" id="readWarn" hidden>This preset is not a Tesla-verified unit constant.</p>
+</section>
+<div class="dock">
+<p class="status" id="status" role="status" aria-live="polite"></p>
+
+<section class="controls" aria-label="Orbit Lab controls">
+  <div id="cannonControls">
+    <div class="speed-row">
+      <label for="speed">Launch speed <span id="speedVal">0 m/s</span></label>
+      <input id="speed" type="range" min="0" max="600" value="300" step="10">
+    </div>
+    <div class="row" id="shots"></div>
+    <button type="button" class="primary" id="fireBtn">Fire</button>
+  </div>
+  <div id="satControls" hidden>
+    <p class="dim">Presets</p>
+    <div class="row" id="sats"></div>
+  </div>
+</section>
+</div>
+
+<script type="module" src="orbit-lab/ol-ui.js"></script>
+<script type="module" src="astro-course/story-return.js"></script>
+</body>
+</html>

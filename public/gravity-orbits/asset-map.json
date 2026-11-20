@@ -1,0 +1,62 @@
+{
+  "title": "Gravity and Orbits shared asset map",
+  "root": "/gravity-orbits/",
+  "defaultVariant": "2k",
+  "notes": [
+    "Reference files by these names. Do not bake textures or materials; Earth maps may be updated under the same filenames.",
+    "Planet and moon GLBs: radius 1 = that body's radius.",
+    "Spacecraft are in meters, Y-up.",
+    "newton_cannon is in Earth radii (exaggerated mountain ~0.30 R_E, not to scale).",
+    "comet: 1 unit = 1 km, dust_tail along +X (point +X away from the Sun).",
+    "stopper: 1 unit = 1 m, keep the string_attach empty.",
+    "4k planet GLBs are not shipped. earth_night maps are not shipped (dark-side shader skipped)."
+  ],
+  "models": {
+    "earth": "models/earth_2k.glb",
+    "moon": "models/moon_2k.glb",
+    "mars": "models/mars_2k.glb",
+    "jupiter": "models/jupiter_2k.glb",
+    "io": "models/io.glb",
+    "europa": "models/europa.glb",
+    "ganymede": "models/ganymede.glb",
+    "callisto": "models/callisto.glb",
+    "sun": "models/sun.glb",
+    "comet": "models/comet.glb",
+    "stopper": "models/stopper.glb",
+    "iss": "models/iss.glb",
+    "hubble": "models/hubble.glb",
+    "gps": "models/gps.glb",
+    "geo": "models/geo_comsat.glb",
+    "cannon": "models/newton_cannon.glb",
+    "skybox": "models/starmap_2020_4k.jpg",
+    "skyboxMobile": "models/starmap_2020_2k.jpg"
+  },
+  "nodes": {
+    "earth": { "surface": "earth_surface", "clouds": "earth_clouds", "atmosphere": "earth_atmosphere" },
+    "cannon": { "muzzle": "cannon_muzzle", "cascabel": "cannon_cascabel", "hide": ["earth_surface"] },
+    "comet": { "nucleus": "comet_nucleus", "tail": "dust_tail", "tailAxis": "+X" },
+    "stopper": { "attach": "string_attach" },
+    "sun": { "surface": "sun_surface", "glow": "sun_glow" }
+  },
+  "units": {
+    "earth": "body-radius",
+    "moon": "body-radius",
+    "mars": "body-radius",
+    "jupiter": "body-radius",
+    "io": "body-radius",
+    "europa": "body-radius",
+    "ganymede": "body-radius",
+    "callisto": "body-radius",
+    "sun": "body-radius",
+    "iss": "meters",
+    "hubble": "meters",
+    "gps": "meters",
+    "geo": "meters",
+    "cannon": "earth-radii",
+    "comet": "km",
+    "stopper": "meters"
+  },
+  "scales": {
+    "moonVsEarth": { "numerator": 1737.4, "denominator": 6380 }
+  }
+}

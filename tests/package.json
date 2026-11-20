@@ -48,7 +48,8 @@
     "test:physics101": "node --test physics101-course.test.mjs",
     "test:friction": "node --test friction-lesson.test.mjs study-courses-band.test.mjs",
     "shots:friction": "node friction-lesson-shots.mjs",
-    "test:geometry": "node --test geometry-course.test.mjs study-courses-band.test.mjs"
+    "test:geometry": "node --test geometry-course.test.mjs study-courses-band.test.mjs",
+    "test:gravityorbits": "node --test gravity-orbits-scaffold.test.mjs"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.2",

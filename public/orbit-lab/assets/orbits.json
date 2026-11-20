@@ -1,0 +1,127 @@
+{
+  "title": "Orbit Lab reference numbers",
+  "module": "Orbit Lab",
+  "units": {
+    "length_in_glb": "For earth_*.glb, 1 unit = 1 Earth radius = R_E.",
+    "R_E_m": 6380000.0,
+    "satellite_glbs": "iss, hubble, gps, geo_comsat are in meters, origin at mesh center, Y-up.",
+    "moon_glb": "moon_*.glb has radius 1 = 1 lunar radius (1,737.4 km, LRO/LOLA reference). Scale by (1737.4 / 6380) relative to earth_*.glb."
+  },
+  "constants": {
+    "GM_E": 398000000000000.0,
+    "GM_E_unit": "m^3 s^-2",
+    "R_E": 6380000.0,
+    "R_E_unit": "m",
+    "notes": "Tesla-verified unit values. Do not change GM_E or R_E."
+  },
+  "formulas": {
+    "g": "g(r) = GM_E / r^2   (N/kg or m/s^2)",
+    "period_circular": "T = 2 * pi * sqrt(r^3 / GM_E)",
+    "r": "r is measured from Earth's center. For a circular orbit, r = R_E + altitude."
+  },
+  "surface": {
+    "name": "Earth surface",
+    "r_m": 6380000.0,
+    "r_km": 6380.0,
+    "r_earth_radii": 1.0,
+    "g_N_per_kg_computed": 9.7778,
+    "period_s_computed": 5075.389190659518,
+    "period_min_computed": 84.5898198443253,
+    "period_h_computed": 1.409830330738755,
+    "altitude_m": 0.0,
+    "altitude_km": 0.0,
+    "g_N_per_kg": 9.7778,
+    "period_h": 1.409830330738755,
+    "period_min": 84.5898198443253,
+    "notes": "Mean radius used in the unit, not the IAU equatorial radius."
+  },
+  "orbits": {
+    "ISS": {
+      "name": "ISS",
+      "r_m": 6780000.0,
+      "r_km": 6780.0,
+      "r_earth_radii": 1.0626959247648904,
+      "g_N_per_kg_computed": 8.6581,
+      "period_s_computed": 5560.103463850638,
+      "period_min_computed": 92.6683910641773,
+      "period_h_computed": 1.5444731844029551,
+      "altitude_m": 400000,
+      "altitude_km": 400.0,
+      "g_N_per_kg": 8.6581,
+      "period_h": 1.5444731844029551,
+      "period_min": 92.6683910641773,
+      "notes": "Altitude 400 km is the unit value."
+    },
+    "Hubble": {
+      "name": "Hubble Space Telescope",
+      "r_m": 6860000.0,
+      "r_km": 6860.0,
+      "r_earth_radii": 1.0752351097178683,
+      "g_N_per_kg_computed": 8.4574,
+      "period_s_computed": 5658.802098120315,
+      "period_min_computed": 94.31336830200526,
+      "period_h_computed": 1.5718894717000875,
+      "altitude_m": 480000,
+      "altitude_km": 480.0,
+      "g_N_per_kg": 8.46,
+      "g_N_per_kg_note": "Tesla-verified teaching value; g_N_per_kg_computed uses g=GM_E/r^2.",
+      "period_h": 1.5718894717000875,
+      "period_min": 94.31336830200526,
+      "notes": "Altitude 480 km and g=8.46 N/kg are Tesla-verified teaching values."
+    },
+    "GEO": {
+      "name": "Geostationary",
+      "r_m": 42145000,
+      "r_km": 42145.0,
+      "r_earth_radii": 6.605799373040752,
+      "g_N_per_kg_computed": 0.2241,
+      "period_s_computed": 86170.26322300654,
+      "period_min_computed": 1436.1710537167755,
+      "period_h_computed": 23.936184228612927,
+      "g_N_per_kg": 0.2241,
+      "period_h": 23.93,
+      "period_h_note": "Tesla-verified teaching value; period_h_computed uses T=2\u03c0\u221a(r\u00b3/GM_E).",
+      "notes": "r=42,145 km from Earth's center and T=23.93 h are Tesla-verified teaching values (sidereal day), not altitude above the surface."
+    },
+    "Moon": {
+      "name": "Moon (mean distance)",
+      "altitude_m": 378020000.0,
+      "altitude_km": 378020.0,
+      "r_m": 384400000.0,
+      "r_km": 384400.0,
+      "r_earth_radii": 60.25078369905956,
+      "g_N_per_kg": 0.002693,
+      "g_N_per_kg_computed": 0.002693,
+      "period_s_computed": 2373632.068584483,
+      "period_days_computed": 27.47259338639448,
+      "period_days_sidereal": 27.3217,
+      "mean_radius_km": 1737.4,
+      "notes": "For the Lesson 4 Scale Walk. Mean distance 384,400 km and sidereal period 27.3217 days are from the NASA NSSDC Moon Fact Sheet, https://nssdc.gsfc.nasa.gov/planetary/factsheet/moonfact.html. period_s_computed uses the circular two-body formula with the unit GM_E and this mean distance; it is close to, but not identical to, the sidereal month (the real orbit is slightly eccentric and around the barycenter). R_E = 6.38e6 m is the unit value, so r/R_E is about 60.25. Do not display a g readout during the Lesson 4 S6 task.",
+      "source": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/moonfact.html"
+    }
+  },
+  "optional_presets": {
+    "GPS": {
+      "name": "GPS (typical circular MEO)",
+      "r_m": 26560000.0,
+      "r_km": 26560.0,
+      "r_earth_radii": 4.163009404388715,
+      "g_N_per_kg_computed": 0.5642,
+      "period_s_computed": 43110.23977505667,
+      "period_min_computed": 718.5039962509444,
+      "period_h_computed": 11.975066604182407,
+      "altitude_m": 20180000,
+      "altitude_km": 20180.0,
+      "g_N_per_kg": 0.5642,
+      "period_h": 11.975066604182407,
+      "period_min": 718.5039962509444,
+      "notes": "Not a Tesla-verified unit constant. Typical GPS altitude of 20,180 km (about 20,200 km is also commonly quoted). Period and g are computed from GM_E and R_E so students can compare LEO, GPS, and GEO. Cite as a typical operational altitude, e.g. GPS program documentation / NASA GPS overview."
+    }
+  },
+  "lesson_presets": {
+    "L1_S8_suborbital_lob": "Orbit Lab starting at Newton's cannon, slow horizontal lob that hits the ground. Stay suborbital. Use newton_cannon.glb.",
+    "L4_S6_scale_walk": "Earth with ISS orbit at 400 km true scale (R_E=6.38e6 m). Hubble at 480 km may be shown as a second low ring. Include the Moon at 384,400 km if you show the Scale Walk distance. Turn off or ignore g and period readouts. Do not have students record a g value.",
+    "L5_S8_newtons_cannon": "Newton's cannon on the mountain, horizontal launch, increasing speeds from a lob to the shot that never lands. Use newton_cannon.glb.",
+    "L5_S12_optional_orbits": "Presets for ISS (400 km), GPS (typical 20,180 km), and GEO (r=42,145 km, T=23.93 h)."
+  }
+}

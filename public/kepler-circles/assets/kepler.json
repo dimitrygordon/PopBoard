@@ -1,0 +1,258 @@
+{
+  "title": "Kepler and Circles reference numbers",
+  "module": "Kepler and Circles",
+  "sources": [
+    {
+      "name": "NASA NSSDC Jovian Satellite Fact Sheet",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/joviansatfact.html",
+      "used_for": "Galilean moon semi-major axes, periods, eccentricities, and radii in Jovian radii"
+    },
+    {
+      "name": "NASA NSSDC Jupiter Fact Sheet",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/jupiterfact.html",
+      "used_for": "Jupiter equatorial radius 71,492 km"
+    },
+    {
+      "name": "NASA NSSDC Mars Fact Sheet",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html",
+      "used_for": "Mars semi-major axis, period, and mean/equatorial radius. Official eccentricity is 0.0934; the unit uses e=0.093."
+    },
+    {
+      "name": "NASA NSSDC Sun Fact Sheet",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html",
+      "used_for": "Solar equatorial radius 695,700 km"
+    },
+    {
+      "name": "NASA NSSDC Earth Fact Sheet",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html",
+      "used_for": "Earth semi-major axis and official eccentricity 0.0167. The unit uses e=0.017."
+    },
+    {
+      "name": "NASA NSSDC Comet Fact Sheet",
+      "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/cometfact.html",
+      "used_for": "1P/Halley period 76.1 yr, perihelion 0.587 AU, semi-major axis 17.94 AU, eccentricity 0.967, inclination 162.2 deg."
+    },
+    {
+      "name": "NASA Science: 1P/Halley",
+      "url": "https://science.nasa.gov/solar-system/comets/1p-halley/",
+      "used_for": "Halley nucleus diameter about 11 km (6.8 miles), orbital period 76.1 years."
+    }
+  ],
+  "units": {
+    "jupiter_glb": "jupiter_*.glb has radius 1 = 1 Jupiter equatorial radius (R_J = 71,492 km).",
+    "moon_glbs": "io.glb, europa.glb, ganymede.glb, callisto.glb each have radius 1 = that moon's mean radius. Scale them by (moon_radius_km / R_J_km) to place them next to Jupiter.",
+    "mars_glb": "mars_*.glb has radius 1 = 1 Mars equatorial radius (3,396.2 km).",
+    "sun_glb": "sun.glb has radius 1 = 1 solar equatorial radius (695,700 km).",
+    "earth_in_kepler": "For Sun-centered Kepler views, reuse earth_*.glb (radius 1 = R_E). Scale by (R_E_km / R_sun_km) = 6380/695700 relative to sun.glb if you ever need true body scale. For the eccentricity comparison, enlarge the planets and the comet; mark them not to scale.",
+    "comet_glb": "comet.glb is 1P/Halley-style icy nucleus. 1 unit = 1 km. The nucleus is about 11 km across (NASA). Optional mesh dust_tail is hideable, non-emissive, and not to scale. Point any tail away from the Sun in the app.",
+    "stopper_glb": "stopper.glb is a lab-style rubber stopper for the L2 circular-motion / cut-the-string demo. 1 unit = 1 meter. The stopper is about 0.03 m in radius. Empty string_attach marks the string connection. Do not add an outward (centrifugal) force arrow.",
+    "sun_at_one_focus": "Place the Sun at the origin (one focus). The geometric center of an ellipse is at (-a*e, 0) if perihelion is on the +X axis. Perihelion is then at (a*(1-e), 0) and aphelion at (-a*(1+e), 0). The other focus is at (-2*a*e, 0) and must stay empty. There is no object at the second focus."
+  },
+  "jupiter": {
+    "equatorial_radius_km": 71492,
+    "equatorial_radius_m": 71492000,
+    "source": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/jupiterfact.html"
+  },
+  "galilean_moons": {
+    "Io": {
+      "semi_major_axis_km": 421800,
+      "semi_major_axis_jovian_radii": 5.91,
+      "period_days": 1.769138,
+      "eccentricity": 0.004,
+      "mean_radius_km": 1821.6,
+      "diameter_km": 3643,
+      "notes": "Tidally locked (rotation = orbit). Nearly circular.",
+      "radius_in_jupiter_radii": 0.025479773960722877,
+      "semi_major_axis_m": 421800000.0,
+      "period_s": 152853.5232,
+      "period_h": 42.459312000000004
+    },
+    "Europa": {
+      "semi_major_axis_km": 671100,
+      "semi_major_axis_jovian_radii": 9.4,
+      "period_days": 3.551181,
+      "eccentricity": 0.009,
+      "mean_radius_km": 1560.8,
+      "diameter_km": 3122,
+      "notes": "Tidally locked. Nearly circular; the 1:2:4 resonance with Io and Ganymede keeps a small eccentricity.",
+      "radius_in_jupiter_radii": 0.021831813349745426,
+      "semi_major_axis_m": 671100000.0,
+      "period_s": 306822.0384,
+      "period_h": 85.228344
+    },
+    "Ganymede": {
+      "semi_major_axis_km": 1070400,
+      "semi_major_axis_jovian_radii": 14.97,
+      "period_days": 7.154553,
+      "eccentricity": 0.001,
+      "mean_radius_km": 2631.2,
+      "diameter_km": 5262,
+      "notes": "Largest moon in the solar system. Tidally locked. Nearly circular.",
+      "radius_in_jupiter_radii": 0.03680411794326638,
+      "semi_major_axis_m": 1070400000.0,
+      "period_s": 618153.3792,
+      "period_h": 171.709272
+    },
+    "Callisto": {
+      "semi_major_axis_km": 1882700,
+      "semi_major_axis_jovian_radii": 26.33,
+      "period_days": 16.689017,
+      "eccentricity": 0.007,
+      "mean_radius_km": 2410.3,
+      "diameter_km": 4821,
+      "notes": "Tidally locked. Not part of the Io-Europa-Ganymede resonance. Nearly circular.",
+      "radius_in_jupiter_radii": 0.03371426173557881,
+      "semi_major_axis_m": 1882700000.0,
+      "period_s": 1441931.0688,
+      "period_h": 400.536408
+    }
+  },
+  "moon_radii_source_note": "Diameters (Io 3643, Europa 3122, Ganymede 5262, Callisto 4821 km) are from the NASA NSSDC Solar System Small Worlds Fact Sheet, https://nssdc.gsfc.nasa.gov/planetary/factsheet/galileanfact_table.html. Mean radii are half those diameters (Ganymede 2631.2 km matches the commonly cited value).",
+  "mars": {
+    "eccentricity_unit_value": 0.093,
+    "eccentricity_nssdc": 0.0934,
+    "semi_major_axis_km": 227956000.0,
+    "semi_major_axis_au": 1.5237917420438258,
+    "perihelion_km": 206756092.0,
+    "aphelion_km": 249155908.0,
+    "period_days": 686.98,
+    "equatorial_radius_km": 3396.2,
+    "mean_radius_km": 3389.5,
+    "notes": "The lesson uses e=0.093 to show that Mars is only slightly elliptical, not a stretched oval. Perihelion and aphelion here are a(1-e) and a(1+e) with e=0.093 and a=227.956 million km, which students can plot around the Sun. NSSDC quotes e=0.0934 and slightly different peri/aph.",
+    "source": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html",
+    "perihelion_km_from_unit_e": 206756092.0,
+    "aphelion_km_from_unit_e": 249155908.0,
+    "semi_major_axis_solar_radii": 327.6642230846629,
+    "perihelion_solar_radii": 297.19145033778926,
+    "aphelion_solar_radii": 358.1369958315366,
+    "name": "Mars",
+    "eccentricity": 0.093,
+    "linear_eccentricity_au": 0.1417126320100758,
+    "perihelion_au": 1.3820791100337502,
+    "aphelion_au": 1.6655043740539015,
+    "sun_at_origin_placement": {
+      "description": "Sun at (0,0). Perihelion along +X. The second focus is empty.",
+      "ellipse_center_au": [
+        -0.1417126320100758,
+        0,
+        0
+      ],
+      "perihelion_au": [
+        1.3820791100337502,
+        0,
+        0
+      ],
+      "aphelion_au": [
+        -1.6655043740539015,
+        0,
+        0
+      ],
+      "empty_focus_au": [
+        -0.2834252640201516,
+        0,
+        0
+      ]
+    }
+  },
+  "sun": {
+    "equatorial_radius_km": 695700,
+    "source": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html"
+  },
+  "teaching_notes": {
+    "orbits_nearly_circular": "All four Galilean eccentricities are <0.01. Most student textbooks overdraw ellipses; keep these orbits visually circular and use Mars at e=0.093 as the slightly-stretched example.",
+    "resonance": "Io, Europa, and Ganymede are in a 1:2:4 mean-motion resonance (periods 1.77, 3.55, 7.15 days).",
+    "sun_not_at_center": "The Sun sits at one focus, not at the center of the ellipse. The other focus is empty.",
+    "no_outward_force": "The L2 circular-motion demo must never depict an outward (centrifugal) force. The real force is inward. After the inward pull is removed, the path is a straight tangent."
+  },
+  "au_km": 149597870.7,
+  "earth": {
+    "name": "Earth",
+    "semi_major_axis_au": 1.000000864317115,
+    "semi_major_axis_km": 149598000.0,
+    "semi_major_axis_solar_radii": 215.03234152652004,
+    "eccentricity": 0.017,
+    "linear_eccentricity_au": 0.017000014693390957,
+    "perihelion_au": 0.983000849623724,
+    "aphelion_au": 1.0170008790105058,
+    "perihelion_km": 147054834.0,
+    "aphelion_km": 152141166.0,
+    "sun_at_origin_placement": {
+      "description": "Sun at (0,0). Perihelion along +X. The second focus is empty.",
+      "ellipse_center_au": [
+        -0.017000014693390957,
+        0,
+        0
+      ],
+      "perihelion_au": [
+        0.983000849623724,
+        0,
+        0
+      ],
+      "aphelion_au": [
+        -1.0170008790105058,
+        0,
+        0
+      ],
+      "empty_focus_au": [
+        -0.03400002938678191,
+        0,
+        0
+      ]
+    },
+    "period_days": 365.256,
+    "semi_major_axis_km_nssdc": 149598000.0,
+    "eccentricity_unit_value": 0.017,
+    "eccentricity_nssdc": 0.0167,
+    "equatorial_radius_km": 6378.1,
+    "unit_R_E_km": 6380.0,
+    "notes": "The lesson uses e=0.017. NSSDC lists 0.0167. By eye this orbit is indistinguishable from a circle. Source: https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html",
+    "source": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html"
+  },
+  "halley": {
+    "name": "1P/Halley",
+    "semi_major_axis_au": 17.94,
+    "semi_major_axis_km": 2683785800.358,
+    "semi_major_axis_solar_radii": 3857.6768727296244,
+    "eccentricity": 0.967,
+    "linear_eccentricity_au": 17.34798,
+    "perihelion_au": 0.5920200000000005,
+    "aphelion_au": 35.287980000000005,
+    "perihelion_km": 88564931.41181408,
+    "aphelion_km": 5279006669.304186,
+    "sun_at_origin_placement": {
+      "description": "Sun at (0,0). Perihelion along +X. The second focus is empty.",
+      "ellipse_center_au": [
+        -17.34798,
+        0,
+        0
+      ],
+      "perihelion_au": [
+        0.5920200000000005,
+        0,
+        0
+      ],
+      "aphelion_au": [
+        -35.287980000000005,
+        0,
+        0
+      ],
+      "empty_focus_au": [
+        -34.69596,
+        0,
+        0
+      ]
+    },
+    "period_years": 76.1,
+    "perihelion_au_nssdc": 0.587,
+    "perihelion_au_from_ae": 0.5920200000000005,
+    "inclination_deg": 162.2,
+    "nucleus_diameter_km": 11,
+    "notes": "NASA NSSDC Comet Fact Sheet values: period 76.1 years, perihelion 0.587 AU, semi-major axis 17.94 AU, eccentricity 0.967, inclination 162.2 deg (retrograde). https://nssdc.gsfc.nasa.gov/planetary/factsheet/cometfact.html. The widely used 'about 17.8 AU' is a rounded figure; this file uses the NSSDC 17.94 AU. q=a(1-e)=0.592 AU is slightly above the tabulated perihelion 0.587 AU because a and e are rounded in the table. For the Lesson 3 comparison, draw a planar ellipse (ignore the 162 deg tilt) so students can see the shape. Nucleus diameter about 11 km: https://science.nasa.gov/solar-system/comets/1p-halley/. The other focus is empty.",
+    "source": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/cometfact.html"
+  },
+  "lesson_presets": {
+    "L2_S5_cut_the_string": "Circular path with velocity tangent and force (or acceleration) inward, toward the center. Use stopper.glb (or a generic orbiting mass). Include a 'cut the inward pull' action so the object goes straight along the tangent (path C). Never draw an outward / centrifugal force. If there were an outward force, path A would happen, and it does not.",
+    "L3_S6_eccentricity": "Starting state: Earth's orbit (e=0.017) and 1P/Halley's orbit (e=0.967, a=17.94 AU) to scale, with the Sun at one focus and the other focus empty. Also show Mars (e=0.093) if available. Earth looks like a circle by eye; Mars is only slightly oval; the comet is the clearly stretched path. Planet and comet bodies should be enlarged and marked not to scale; the orbits are to scale with each other.",
+    "jupiter_moons": "Galilean moons around Jupiter, nearly circular, for later Kepler work (Io period, T^2 vs a^3)."
+  }
+}
