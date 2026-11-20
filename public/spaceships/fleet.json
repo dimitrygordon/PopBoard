@@ -1,0 +1,539 @@
+{
+  "schemaVersion": 1,
+  "module": "spaceships",
+  "note": "Scaffold fleet. Names and ids match NASA 3D Resources titles so Angelo can drop files in. Every fact value is labelled placeholder text until Tesla verifies it. Do not treat these as science facts.",
+  "source": "https://science.nasa.gov/3d-resources/",
+  "credit": "3D model courtesy NASA",
+  "placeholderGlb": "models/_placeholder.glb",
+  "placeholderStill": "stills/_placeholder.webp",
+  "craft": [
+    {
+      "id": "apollo-lunar-module",
+      "name": "Apollo Lunar Module",
+      "subtitle": "[PLACEHOLDER: Tesla will verify]",
+      "tags": [
+        "crewed"
+      ],
+      "listed": true,
+      "placeholder": true,
+      "still": "stills/apollo-lunar-module.webp",
+      "glb": "models/apollo-lunar-module.glb",
+      "usdz": "models/apollo-lunar-module.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/",
+      "sourceLabel": "NASA 3D Resources",
+      "facts": [
+        {
+          "label": "Launch",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Destination",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Size",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "id": "cassini-huygens",
+      "name": "Cassini-Huygens",
+      "subtitle": "[PLACEHOLDER: Tesla will verify]",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": true,
+      "still": "stills/cassini-huygens.webp",
+      "glb": "models/cassini-huygens.glb",
+      "usdz": "models/cassini-huygens.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/",
+      "sourceLabel": "NASA 3D Resources",
+      "facts": [
+        {
+          "label": "Launch",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Destination",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Size",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "id": "chandra",
+      "name": "Chandra X-ray Observatory",
+      "subtitle": "[PLACEHOLDER: Tesla will verify]",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": true,
+      "still": "stills/chandra.webp",
+      "glb": "models/chandra.glb",
+      "usdz": "models/chandra.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/",
+      "sourceLabel": "NASA 3D Resources",
+      "facts": [
+        {
+          "label": "Launch",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Destination",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Size",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "id": "curiosity",
+      "name": "Curiosity Rover",
+      "subtitle": "[PLACEHOLDER: Tesla will verify]",
+      "tags": [
+        "rover"
+      ],
+      "listed": true,
+      "placeholder": true,
+      "still": "stills/curiosity.webp",
+      "glb": "models/curiosity.glb",
+      "usdz": "models/curiosity.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/",
+      "sourceLabel": "NASA 3D Resources",
+      "facts": [
+        {
+          "label": "Launch",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Destination",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Size",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "id": "dawn",
+      "name": "Dawn",
+      "subtitle": "[PLACEHOLDER: Tesla will verify]",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": true,
+      "still": "stills/dawn.webp",
+      "glb": "models/dawn.glb",
+      "usdz": "models/dawn.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/",
+      "sourceLabel": "NASA 3D Resources",
+      "facts": [
+        {
+          "label": "Launch",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Destination",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Size",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "id": "galileo",
+      "name": "Galileo",
+      "subtitle": "[PLACEHOLDER: Tesla will verify]",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": true,
+      "still": "stills/galileo.webp",
+      "glb": "models/galileo.glb",
+      "usdz": "models/galileo.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/",
+      "sourceLabel": "NASA 3D Resources",
+      "facts": [
+        {
+          "label": "Launch",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Destination",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Size",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "id": "hubble",
+      "name": "Hubble Space Telescope",
+      "subtitle": "[PLACEHOLDER: Tesla will verify]",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": true,
+      "still": "stills/hubble.webp",
+      "glb": "models/hubble.glb",
+      "usdz": "models/hubble.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/",
+      "sourceLabel": "NASA 3D Resources",
+      "facts": [
+        {
+          "label": "Launch",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Destination",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Size",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "id": "ingenuity",
+      "name": "Ingenuity Mars Helicopter",
+      "subtitle": "[PLACEHOLDER: Tesla will verify]",
+      "tags": [
+        "rotorcraft"
+      ],
+      "listed": true,
+      "placeholder": true,
+      "still": "stills/ingenuity.webp",
+      "glb": "models/ingenuity.glb",
+      "usdz": "models/ingenuity.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/",
+      "sourceLabel": "NASA 3D Resources",
+      "facts": [
+        {
+          "label": "Launch",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Destination",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Size",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "id": "jwst",
+      "name": "James Webb Space Telescope",
+      "subtitle": "[PLACEHOLDER: Tesla will verify]",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": true,
+      "still": "stills/jwst.webp",
+      "glb": "models/jwst.glb",
+      "usdz": "models/jwst.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/",
+      "sourceLabel": "NASA 3D Resources",
+      "facts": [
+        {
+          "label": "Launch",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Destination",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Size",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "id": "juno",
+      "name": "Juno",
+      "subtitle": "[PLACEHOLDER: Tesla will verify]",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": true,
+      "still": "stills/juno.webp",
+      "glb": "models/juno.glb",
+      "usdz": "models/juno.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/",
+      "sourceLabel": "NASA 3D Resources",
+      "facts": [
+        {
+          "label": "Launch",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Destination",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Size",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "id": "kepler",
+      "name": "Kepler",
+      "subtitle": "[PLACEHOLDER: Tesla will verify]",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": true,
+      "still": "stills/kepler.webp",
+      "glb": "models/kepler.glb",
+      "usdz": "models/kepler.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/",
+      "sourceLabel": "NASA 3D Resources",
+      "facts": [
+        {
+          "label": "Launch",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Destination",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Size",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "id": "parker-solar-probe",
+      "name": "Parker Solar Probe",
+      "subtitle": "[PLACEHOLDER: Tesla will verify]",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": true,
+      "still": "stills/parker-solar-probe.webp",
+      "glb": "models/parker-solar-probe.glb",
+      "usdz": "models/parker-solar-probe.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/",
+      "sourceLabel": "NASA 3D Resources",
+      "facts": [
+        {
+          "label": "Launch",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Destination",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Size",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "id": "perseverance",
+      "name": "Perseverance Rover",
+      "subtitle": "[PLACEHOLDER: Tesla will verify]",
+      "tags": [
+        "rover"
+      ],
+      "listed": true,
+      "placeholder": true,
+      "still": "stills/perseverance.webp",
+      "glb": "models/perseverance.glb",
+      "usdz": "models/perseverance.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/",
+      "sourceLabel": "NASA 3D Resources",
+      "facts": [
+        {
+          "label": "Launch",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Destination",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Size",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "id": "tess",
+      "name": "TESS",
+      "subtitle": "[PLACEHOLDER: Tesla will verify]",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": true,
+      "still": "stills/tess.webp",
+      "glb": "models/tess.glb",
+      "usdz": "models/tess.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/",
+      "sourceLabel": "NASA 3D Resources",
+      "facts": [
+        {
+          "label": "Launch",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Destination",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Size",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "id": "viking-lander",
+      "name": "Viking Lander",
+      "subtitle": "[PLACEHOLDER: Tesla will verify]",
+      "tags": [
+        "lander"
+      ],
+      "listed": true,
+      "placeholder": true,
+      "still": "stills/viking-lander.webp",
+      "glb": "models/viking-lander.glb",
+      "usdz": "models/viking-lander.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/",
+      "sourceLabel": "NASA 3D Resources",
+      "facts": [
+        {
+          "label": "Launch",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Destination",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Size",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        }
+      ]
+    },
+    {
+      "id": "voyager",
+      "name": "Voyager",
+      "subtitle": "[PLACEHOLDER: Tesla will verify]",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": true,
+      "still": "stills/voyager.webp",
+      "glb": "models/voyager.glb",
+      "usdz": "models/voyager.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/",
+      "sourceLabel": "NASA 3D Resources",
+      "facts": [
+        {
+          "label": "Launch",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Destination",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        },
+        {
+          "label": "Size",
+          "value": "[PLACEHOLDER: Tesla will verify]",
+          "verified": false
+        }
+      ]
+    }
+  ]
+}
