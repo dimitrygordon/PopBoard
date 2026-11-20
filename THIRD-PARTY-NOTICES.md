@@ -60,3 +60,7 @@ Satellite surface detail in the GPS and GEO teaching models uses Poly Haven and 
 ## Spaceships placeholder and NASA credit
 
 Placeholder stills in `public/spaceships/stills/` and the 1 m box `public/spaceships/models/_placeholder.glb` are PopBoard scaffold stand-ins, not NASA models. Official spacecraft meshes, USDZ files, and stills will be NASA media. Credit NASA. No NASA insignia or endorsement. Source: https://science.nasa.gov/3d-resources/
+
+## meshoptimizer meshopt decoder 1.2
+
+`public/vendor/model-viewer/meshopt_decoder.js` is the meshopt decoder from meshoptimizer 1.2 (https://github.com/zeux/meshoptimizer), copied from Angelo's Spaceships handoff. MIT License (Copyright (c) 2016-2026 Arseny Kapoulkine); full text in `public/vendor/model-viewer/meshopt.LICENSE`. model-viewer loads it only when `ModelViewerElement.meshoptDecoderLocation` is set, which the Spaceships detail page does so the meshopt-compressed NASA GLBs can decode. Do not load this from a CDN.

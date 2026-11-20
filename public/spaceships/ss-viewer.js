@@ -71,7 +71,10 @@ async function showCraft(fleet, craft) {
   viewer.setAttribute("ar", "");
   viewer.setAttribute("ar-modes", "webxr scene-viewer quick-look");
   viewer.setAttribute("ar-scale", "fixed");
+  viewer.setAttribute("shadow-intensity", "0");
   viewer.setAttribute("poster", still);
+  if (craft.cameraOrbit) viewer.setAttribute("camera-orbit", craft.cameraOrbit);
+  else viewer.removeAttribute("camera-orbit");
 
   if (!reducedMotion()) viewer.setAttribute("auto-rotate", "");
   else viewer.removeAttribute("auto-rotate");
@@ -80,13 +83,26 @@ async function showCraft(fleet, craft) {
   const placeholderGlb = assetUrl(fleet.placeholderGlb || "models/_placeholder.glb");
   const glbOk = await assetExists(wantedGlb);
   const src = glbOk ? wantedGlb : placeholderGlb;
-  $("fallbackBanner").hidden = glbOk;
-  $("status").textContent = glbOk ? "" : "Placeholder model";
+  const usePlaceholder = (url) => (url || "").includes("_placeholder.glb");
+  const markFallback = (fallback) => {
+    $("fallbackBanner").hidden = !fallback;
+    $("status").textContent = fallback ? "Placeholder model" : "";
+  };
+  markFallback(!glbOk);
   $("posterLabel").textContent = glbOk ? "Loading 3D model" : "Loading placeholder model";
   if (!glbOk && !(await assetExists(src))) {
     $("status").textContent = "The 3D model could not be loaded.";
     return;
   }
+  viewer.addEventListener("error", () => {
+    if (!usePlaceholder(viewer.src) && placeholderGlb) {
+      markFallback(true);
+      viewer.src = placeholderGlb;
+    }
+  }, { once: true });
+  viewer.addEventListener("load", () => {
+    markFallback(usePlaceholder(viewer.src));
+  }, { once: true });
   viewer.src = src;
 
   const usdz = assetUrl(craft.usdz);

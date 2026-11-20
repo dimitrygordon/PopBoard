@@ -35,12 +35,12 @@ public/spaceships/
     <id>.webp                 # Angelo: gallery card and viewer poster
 ```
 
-Vendor code is not in this folder. `<model-viewer>` is pinned at `@google/model-viewer@4.4.0` in `public/vendor/model-viewer/model-viewer.min.js`.
+Vendor code is not in this folder. `<model-viewer>` is pinned at `@google/model-viewer@4.4.0` in `public/vendor/model-viewer/model-viewer.min.js`. The NASA GLBs use `EXT_meshopt_compression`. The detail page sets `self.ModelViewerElement.meshoptDecoderLocation` to `vendor/model-viewer/meshopt_decoder.js` (meshoptimizer 1.2, MIT) before loading model-viewer. Without that hook the GLBs will not decode.
 
 ## Units and files
 
-- GLB: real-world meters, Y-up, PBR materials. meshopt + WebP is fine. One file per craft at `models/<id>.glb`.
-- USDZ: same scale and orientation as the GLB, for iOS Quick Look (`ios-src`). One file per craft at `models/<id>.usdz`.
+- GLB: real-world meters, Y-up, PBR materials, meshopt + WebP. One file per craft at `models/<id>.glb`.
+- USDZ: same scale and orientation as the GLB, for iOS Quick Look (`ios-src`). One file per craft at `models/<id>.usdz`. JWST's USDZ is about 11 MB and should be tested on a real iPhone before this ships; this environment cannot run Quick Look.
 - Still: a single still image per craft, at `stills/<id>.webp`. Used as the gallery card and as the model-viewer poster. Width around 960 px is plenty. PNG is acceptable if you change the `still` field to match.
 - If a GLB is missing, the viewer keeps the poster, shows a "3D model not in yet" banner, and loads `models/_placeholder.glb` so students can still rotate a box. If a USDZ is missing, `ios-src` is left unset. Do not replace `_placeholder.glb` with a NASA mesh.
 
@@ -55,20 +55,21 @@ Vendor code is not in this folder. `<model-viewer>` is pinned at `@google/model-
 | `subtitle` | string | no | One short line under the name. Use labelled placeholder text until Tesla verifies. |
 | `tags` | string[] | no | Gallery filters only. Not science facts. Current buckets: `crewed`, `probe`, `observatory`, `rover`, `rotorcraft`, `lander`. |
 | `listed` | boolean | no | Default `true`. If `false`, the craft is omitted from the gallery but still opens by deep link. |
-| `placeholder` | boolean | no | `true` while assets or facts are still stand-ins. |
+| `placeholder` | boolean | no | `true` while the GLB or still is still a stand-in. `false` once those files exist. Fact values can still be unverified. |
 | `still` | string | yes | Path relative to `public/spaceships/`, e.g. `stills/voyager.webp`. |
 | `glb` | string | yes | Path relative to `public/spaceships/`, e.g. `models/voyager.glb`. |
 | `usdz` | string | no | Path relative to `public/spaceships/`, e.g. `models/voyager.usdz`. |
 | `credit` | string | yes | Shown on the detail page. Use `3D model courtesy NASA`. |
 | `sourceUrl` | string | yes | Per-model source link. Until a per-model URL is known, `https://science.nasa.gov/3d-resources/` is fine. |
 | `sourceLabel` | string | no | Link text. Default `NASA 3D Resources`. |
-| `facts` | object[] | yes | Shown in the fact panel. Each item is `{ "label": string, "value": string, "verified": boolean }`. |
+| `cameraOrbit` | string | no | model-viewer `camera-orbit`, e.g. `45deg 70deg auto`. Used for ISS and Chandra, whose long axis runs along Z. |
+| `facts` | object[] | yes | Shown in the fact panel. Each item is `{ "label": string, "value": string, "verified": boolean }`, with optional `sources` (URL list) and `recheckBeforePublish`. |
 
-Do not invent numeric or historical facts. Until Tesla verifies a row, keep `verified` as `false` and put labelled placeholder text in `value`, for example `[PLACEHOLDER: Tesla will verify]`.
+Do not invent numeric or historical facts. Tesla fact-checked the fleet on Nov 20, 2026 (America/New_York). All current fact rows are `verified: true`, with Tesla's student wording applied to 11 rows. `voyager` Status and `perseverance` Status are time-sensitive and must be rechecked before publish.
 
 ## Scaffold ids
 
-These sixteen ids are reserved so files can land without a rename. You may add, remove, or rename entries later, as long as each `id` stays unique and matches the file stem.
+Nineteen listed craft: the original sixteen reserved ids plus Angelo's three extras (`iss`, `saturn-v`, `space-shuttle`). You may add, remove, or rename entries later, as long as each `id` stays unique and matches the file stem.
 
 | id | Display name |
 |---|---|
@@ -88,6 +89,11 @@ These sixteen ids are reserved so files can land without a rename. You may add, 
 | `tess` | TESS |
 | `viking-lander` | Viking Lander |
 | `voyager` | Voyager |
+| `iss` | International Space Station |
+| `saturn-v` | Saturn V |
+| `space-shuttle` | Space Shuttle Orbiter |
+
+ISS and Chandra use `cameraOrbit` `45deg 70deg auto`.
 
 ## Viewer behavior Angelo can rely on
 
