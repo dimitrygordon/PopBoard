@@ -1,6 +1,10 @@
 import * as THREE from "../vendor/three/three.module.min.js";
 import { firstExisting, reducedMotion, ellipsePoints, emptyFocus } from "./kc-model.js";
 import { loadGlb, loadTexture, fitToSize, prepareComet, orientAxisToward } from "../gravity-orbits/go-load.js";
+import {
+  attachOrbitControls, setControlDistances, limitsForCameraDistance, applyControlFrame,
+  prepareSkyboxTexture, dimSkybox, makeStarLayers, keplerPosition
+} from "../gravity-orbits/go-view.js";
 
 const GREEN = 0x4caf50;
 const GREY = 0xcccccc;
@@ -22,7 +26,7 @@ export async function createScene(canvas) {
   scene.add(fill);
   const root = new THREE.Group();
   scene.add(root);
-  const stars = starfield();
+  const stars = makeStarLayers();
   scene.add(stars);
 
   let running = true;
@@ -30,6 +34,11 @@ export async function createScene(canvas) {
   let lastCam = null;
   const reduce = reducedMotion();
   const clock = new THREE.Clock();
+  const movers = [];
+  const spinners = [];
+  let keplerTime = 0;
+
+  const controls = attachOrbitControls(camera, canvas, { minDistance: 1.5, maxDistance: 120 });
 
   function resize() {
     const w = Math.max(1, canvas.clientWidth || canvas.parentElement?.clientWidth || innerWidth);
@@ -37,10 +46,6 @@ export async function createScene(canvas) {
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
-    if (lastCam) {
-      camera.position.set(...lastCam.pos);
-      camera.lookAt(...lastCam.look);
-    }
   }
   resize();
   addEventListener("resize", resize);
@@ -48,8 +53,35 @@ export async function createScene(canvas) {
   ro.observe(canvas.parentElement || canvas);
   setTimeout(resize, 0);
   setTimeout(resize, 200);
-  let loopStarted = false;
+
+  function stepKepler(dt) {
+    keplerTime += dt;
+    for (const m of movers) {
+      const p = keplerPosition(m.a, m.e, keplerTime + (m.t0 || 0), m.period, m.scale);
+      m.obj.position.set(p.x, p.y, p.z);
+      if (m.comet) {
+        const away = new THREE.Vector3(p.x, p.y, p.z);
+        if (away.lengthSq() > 1e-12) orientAxisToward(m.obj, new THREE.Vector3(1, 0, 0), away);
+      }
+    }
+    for (const s of spinners) s.obj.rotation.y += s.rate * dt;
+  }
+
+  function stamp() {
+    canvas.dataset.ready = "1";
+    canvas.dataset.camX = String(camera.position.x);
+    canvas.dataset.camY = String(camera.position.y);
+    canvas.dataset.camZ = String(camera.position.z);
+    globalThis.__keplerCircles = {
+      ready: true,
+      reduced: reduce,
+      camera: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
+      target: { x: controls.target.x, y: controls.target.y, z: controls.target.z }
+    };
+  }
+
   function paint() { renderer.render(scene, camera); }
+  let loopStarted = false;
   function startLoop() {
     if (loopStarted) return;
     loopStarted = true;
@@ -58,21 +90,42 @@ export async function createScene(canvas) {
       if (!running) return;
       requestAnimationFrame(loop);
       const dt = Math.min(clock.getDelta(), 0.05);
+      if (!reduce) stepKepler(dt);
       if (anim && !reduce) anim(dt);
+      controls.update();
+      stamp();
       paint();
     })();
   }
   paint();
   startLoop();
 
+  function applyLastCam() {
+    if (!lastCam) return;
+    camera.up.set(0, 1, 0);
+    camera.position.set(...lastCam.pos);
+    const look = lastCam.look || [0, 0, 0];
+    camera.lookAt(...look);
+    const dist = camera.position.distanceTo(new THREE.Vector3(...look));
+    const lim = limitsForCameraDistance(dist);
+    setControlDistances(controls, lim.min, lim.max);
+    applyControlFrame(controls, camera, look);
+  }
+
   return {
-    scene, camera, renderer, root,
+    scene, camera, renderer, root, controls,
     resize, paint, startLoop,
-    clear() { root.clear(); anim = null; },
+    resetView() { applyLastCam(); },
+    clear() {
+      root.clear();
+      anim = null;
+      movers.length = 0;
+      spinners.length = 0;
+      keplerTime = 0;
+    },
     setCamera(pos, look = [0, 0, 0]) {
       lastCam = { pos, look };
-      camera.position.set(...pos);
-      camera.lookAt(...look);
+      applyLastCam();
     },
     addLine(points, color = GREEN, scale = 1) {
       const pos = [];
@@ -118,15 +171,28 @@ export async function createScene(canvas) {
     onTick(fn) { anim = fn; },
     stopTick() { anim = null; },
     reduced: reduce,
+    keplerOrbit(obj, { a, e = 0, scale = 1, period = 18, t0 = 0, comet = false } = {}) {
+      movers.push({ obj, a, e, scale, period, t0, comet });
+      const p = keplerPosition(a, e, t0, period, scale);
+      obj.position.set(p.x, p.y, p.z);
+      if (comet) {
+        const away = new THREE.Vector3(p.x, p.y, p.z);
+        if (away.lengthSq() > 1e-12) orientAxisToward(obj, new THREE.Vector3(1, 0, 0), away);
+      }
+      return obj;
+    },
+    spin(obj, rate = 0.08) {
+      spinners.push({ obj, rate });
+      return obj;
+    },
     async trySkybox(urls) {
       const url = await firstExisting(urls);
       if (!url) return false;
       const tex = await loadTexture(url);
       if (!tex) return false;
-      tex.mapping = THREE.EquirectangularReflectionMapping;
-      tex.colorSpace = THREE.SRGBColorSpace;
-      scene.background = tex;
-      stars.visible = false;
+      prepareSkyboxTexture(tex, renderer);
+      dimSkybox(scene, tex, (typeof innerWidth === "number" && innerWidth <= 900) ? 0.24 : 0.42);
+      stars.visible = true;
       paint();
       return true;
     },
@@ -142,7 +208,6 @@ export async function createScene(canvas) {
       if (comet) prepareComet(model, { showTail: false });
       model.position.set(p.x * scale, p.y * scale, (p.z || 0) * scale);
       if (comet) {
-        // dust_tail is along +X; point +X away from the Sun at the origin.
         const away = new THREE.Vector3(model.position.x, model.position.y, model.position.z);
         if (away.lengthSq() > 1e-12) orientAxisToward(model, new THREE.Vector3(1, 0, 0), away);
       }
@@ -167,7 +232,7 @@ export async function createScene(canvas) {
       };
       return line;
     },
-    dispose() { running = false; ro.disconnect(); renderer.dispose(); }
+    dispose() { running = false; ro.disconnect(); controls.dispose(); renderer.dispose(); }
   };
 }
 
@@ -176,18 +241,3 @@ export function circlePoints(radius, steps = 128) {
 }
 
 export { ellipsePoints, emptyFocus };
-
-function starfield() {
-  const n = 500, pos = new Float32Array(n * 3);
-  for (let i = 0; i < n; i++) {
-    const r = 80 + Math.random() * 120;
-    const th = Math.random() * Math.PI * 2;
-    const ph = Math.acos(2 * Math.random() - 1);
-    pos[i * 3] = r * Math.sin(ph) * Math.cos(th);
-    pos[i * 3 + 1] = r * Math.sin(ph) * Math.sin(th);
-    pos[i * 3 + 2] = r * Math.cos(ph);
-  }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-  return new THREE.Points(geo, new THREE.PointsMaterial({ color: GREY, size: 0.2, transparent: true, opacity: 0.65 }));
-}

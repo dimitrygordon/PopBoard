@@ -4,6 +4,7 @@ import {
   emptyFocus, assetCandidates, loadAssetMap, reducedMotion
 } from "./kc-model.js";
 import { createScene, circlePoints } from "./kc-scene.js";
+import { visualKeplerPeriod } from "../gravity-orbits/go-view.js";
 
 const $ = (id) => document.getElementById(id);
 const GREEN = 0x4caf50;
@@ -19,6 +20,7 @@ const data = await loadKeplerData();
 const preset = presetFromSearch(data.lessons) || { id: "default", mode: "circles" };
 const scene = await createScene($("scene"));
 await loadAssetMap();
+wire();
 await scene.trySkybox(assetCandidates("skybox"));
 let cut = false;
 let angle = 0.7; // radians from +X, counterclockwise; start off the axis so both arrows are on screen
@@ -33,23 +35,29 @@ await applyPreset(preset);
 layoutHud();
 requestAnimationFrame(() => requestAnimationFrame(layoutHud));
 scene.startLoop();
-wire();
 
 function layoutHud() {
   const root = document.documentElement;
   const hud = document.querySelector(".hud");
   if (hud) root.style.setProperty("--kc-hud", `${Math.ceil(hud.getBoundingClientRect().bottom) + 8}px`);
-  const ctl = document.querySelector(".controls");
-  if (ctl) root.style.setProperty("--kc-ctl", `${Math.ceil(ctl.getBoundingClientRect().height) + 16}px`);
+  const dock = document.querySelector(".dock");
+  if (dock) root.style.setProperty("--kc-ctl", `${Math.ceil(dock.getBoundingClientRect().height)}px`);
 }
 addEventListener("resize", layoutHud);
 const hudEl = document.querySelector(".hud");
 if (hudEl) new ResizeObserver(layoutHud).observe(hudEl);
-const ctlEl = document.querySelector(".controls");
-if (ctlEl) new ResizeObserver(layoutHud).observe(ctlEl);
+const dockEl = document.querySelector(".dock");
+if (dockEl) new ResizeObserver(layoutHud).observe(dockEl);
 
 
 function wire() {
+  $("resetViewBtn")?.addEventListener("click", () => scene.resetView());
+  for (const d of document.querySelectorAll(".hud details")) {
+    d.addEventListener("toggle", () => {
+      if (!d.open) return;
+      for (const o of document.querySelectorAll(".hud details")) if (o !== d) o.open = false;
+    });
+  }
   $("cutBtn")?.addEventListener("click", cutPull);
   $("resetBtn")?.addEventListener("click", () => { cut = false; angle = 0; applyPreset(preset); });
   $("modeCircles")?.addEventListener("click", () => openMode("circles"));
@@ -68,6 +76,8 @@ async function applyPreset(p) {
   cut = false;
   $("presetName").textContent = titleFor(p);
   $("note").textContent = noteFor(p);
+  const detail = $("detail");
+  if (detail) { detail.hidden = true; detail.textContent = ""; }
   const mode = p.mode || "circles";
   $("circleControls").hidden = mode !== "circles";
   if ($("ellipseControls")) $("ellipseControls").hidden = mode !== "ellipses";
@@ -98,7 +108,8 @@ async function setupCircles(_p, my = loadGen) {
   const omega = 0.7; // display rate only, not a published lab number
   if (reducedMotion()) {
     scene.stopTick();
-    $("status").textContent = "Motion is paused (reduced motion). Velocity is tangent. The force arrow points inward. Cut the inward pull to see the straight path.";
+    $("status").textContent = "Motion is paused (reduced motion). Velocity is tangent. Force points inward.";
+    setDetail("Motion is paused (reduced motion). Velocity is tangent. The force arrow points toward the center. Cut the inward pull to see the straight path.");
     return;
   }
   scene.onTick((dt) => {
@@ -126,7 +137,8 @@ async function setupCircles(_p, my = loadGen) {
     if (stringLine) stringLine.userData.setEnds({ x: 0, y: 0, z: 0 }, { x, y, z: 0 });
     placeVectors(angle);
   });
-  $("status").textContent = "Velocity is along the tangent. The force arrow points toward the center. There is no outward force.";
+  $("status").textContent = "Velocity is tangent. Force points inward. There is no outward force.";
+  setDetail("Velocity is along the tangent. The force arrow points toward the center. There is no outward force.");
 }
 
 function placeVectors(th) {
@@ -148,7 +160,8 @@ function cutPull() {
   $("cutBtn").disabled = true;
   if (fArrow) { scene.root.remove(fArrow); fArrow = null; }
   if (stringLine) stringLine.visible = false;
-  $("status").textContent = "The inward pull is gone. The stopper goes straight along the tangent (path C).";
+  $("status").textContent = "The inward pull is gone. The stopper goes straight (path C).";
+  setDetail("The inward pull is gone. The stopper goes straight along the tangent (path C).");
 }
 
 async function setupEllipses(p, zoom = "inner", my = ++loadGen) {
@@ -169,8 +182,10 @@ async function setupEllipses(p, zoom = "inner", my = ++loadGen) {
   const sunSize = zoom === "full" ? 0.36 : 0.44;
   const sunGltf = await scene.tryGlb(assetCandidates("sun"));
   if (my !== loadGen) return;
-  if (sunGltf) scene.addModel(sunGltf.scene, { p: { x: 0, y: 0, z: 0 }, visualSize: sunSize });
-  else scene.addDot({ x: 0, y: 0, z: 0 }, zoom === "full" ? 0.18 : 0.22, 0xcccccc);
+  const sun = sunGltf
+    ? scene.addModel(sunGltf.scene, { p: { x: 0, y: 0, z: 0 }, visualSize: sunSize })
+    : scene.addDot({ x: 0, y: 0, z: 0 }, zoom === "full" ? 0.18 : 0.22, 0xcccccc);
+  scene.spin(sun, 0.04);
   const bodySize = zoom === "full" ? 0.2 : 0.32;
   for (const o of orbits) {
     scene.addLine(ellipsePoints(o.a, o.e), o.color, scale);
@@ -179,15 +194,27 @@ async function setupEllipses(p, zoom = "inner", my = ++loadGen) {
     const isComet = kind === "comet";
     const gltf = kind ? await scene.tryGlb(assetCandidates(kind)) : null;
     if (my !== loadGen) return;
-    if (gltf) scene.addModel(gltf.scene, { p: peri, visualSize: isComet ? bodySize * 1.1 : bodySize, scale, comet: isComet });
-    else scene.addDot(peri, zoom === "full" ? 0.1 : 0.16, o.color, scale);
+    const mesh = gltf
+      ? scene.addModel(gltf.scene, { p: peri, visualSize: isComet ? bodySize * 1.1 : bodySize, scale, comet: isComet })
+      : scene.addDot(peri, zoom === "full" ? 0.1 : 0.16, o.color, scale);
+    scene.keplerOrbit(mesh, {
+      a: o.a,
+      e: o.e,
+      scale,
+      period: visualKeplerPeriod(realPeriod(o), { cap: o.e > 0.5 ? 64 : 40 }),
+      comet: isComet
+    });
     if (p.drawEmptyFocus !== false) scene.addEmptyFocus(emptyFocus(o.a, o.e), scale);
   }
   $("zoomInner")?.setAttribute("aria-pressed", String(zoom === "inner"));
   $("zoomFull")?.setAttribute("aria-pressed", String(zoom === "full"));
-  $("status").textContent = zoom === "full"
-    ? "Full comet orbit at the same scale. The Sun sits at one focus. The far empty ring is the other focus."
-    : "Earth (e = 0.017) looks like a circle. Mars (e = 0.093) is only slightly oval. The comet is the stretched path leaving the frame. The Sun sits at one focus. The other focus is empty. Planet and comet sizes are not to scale; the orbits are.";
+  if (zoom === "full") {
+    $("status").textContent = "Full comet orbit at the same scale. The Sun sits at one focus.";
+    setDetail("Full comet orbit at the same scale. The Sun sits at one focus. The far empty ring is the other focus.");
+  } else {
+    $("status").textContent = "Earth (e = 0.017) looks like a circle. The comet leaves the frame.";
+    setDetail("Earth (e = 0.017) looks like a circle. Mars (e = 0.093) is only slightly oval. The comet is the stretched path leaving the frame. The Sun sits at one focus. The other focus is empty. Planet and comet sizes are not to scale; the orbits are.");
+  }
 }
 
 async function setupMoons(my = ++loadGen) {
@@ -197,9 +224,12 @@ async function setupMoons(my = ++loadGen) {
   scene.setCamera([0, 4.5, 10], [0, 0, 0]);
   const jup = await scene.tryGlb(assetCandidates("jupiter"));
   if (my !== loadGen) return;
-  if (jup) scene.addModel(jup.scene, { p: { x: 0, y: 0, z: 0 }, radius: 0.55 });
-  else scene.addDot({ x: 0, y: 0, z: 0 }, 0.55, 0xc8b48a);
+  const jupiter = jup
+    ? scene.addModel(jup.scene, { p: { x: 0, y: 0, z: 0 }, radius: 0.55 })
+    : scene.addDot({ x: 0, y: 0, z: 0 }, 0.55, 0xc8b48a);
+  scene.spin(jupiter, 0.08);
   const moonAsset = { Io: "io", Europa: "europa", Ganymede: "ganymede", Callisto: "callisto" };
+  const ioP = moons.find((m) => m.name === "Io")?.period_s || 152854;
   for (const m of moons) {
     scene.addLine(ellipsePoints(m.a, m.e), 0x4caf50, scale);
     const kind = moonAsset[m.name];
@@ -207,10 +237,14 @@ async function setupMoons(my = ++loadGen) {
     const pos = { x: m.a * (1 - m.e), y: 0, z: 0 };
     const gltf = kind ? await scene.tryGlb(assetCandidates(kind)) : null;
     if (my !== loadGen) return;
-    if (gltf) scene.addModel(gltf.scene, { p: pos, visualSize: vis, scale });
-    else scene.addDot(pos, Math.max(0.06, m.radius * 8), 0xcccccc, scale);
+    const mesh = gltf
+      ? scene.addModel(gltf.scene, { p: pos, visualSize: vis, scale })
+      : scene.addDot(pos, Math.max(0.06, m.radius * 8), 0xcccccc, scale);
+    const period = 10 * ((m.period_s || ioP) / ioP);
+    scene.keplerOrbit(mesh, { a: m.a, e: m.e, scale, period: Math.max(8, period) });
   }
-  $("status").textContent = "Jupiter's four Galilean moons, nearly circular. Periods and distances come from kepler.json.";
+  $("status").textContent = "Jupiter's four Galilean moons, nearly circular.";
+  setDetail("Jupiter's four Galilean moons, nearly circular. Periods and distances come from kepler.json.");
 }
 
 function faceInward(obj, x, y) {
@@ -232,6 +266,23 @@ function noteFor(p) {
   if (p.id === "l2-s5") return "Watch the tangent velocity arrow and the inward force arrow, then cut the inward pull. The module never draws an outward force.";
   if (p.id === "l3-s6") return "Earth, Mars, and a comet, with orbits to scale. Look first, then check which path looks almost like a circle.";
   return "Circular motion and Kepler ellipses.";
+}
+
+function setDetail(text) {
+  const el = $("detail");
+  if (!el) return;
+  el.hidden = !text;
+  el.textContent = text || "";
+}
+
+function realPeriod(o) {
+  if (o.period_s) return o.period_s;
+  const raw = o.name === "Earth" ? data.kepler.earth
+    : o.name === "Mars" ? data.kepler.mars
+    : data.kepler.halley;
+  if (raw?.period_days) return raw.period_days * 86400;
+  if (raw?.period_years) return raw.period_years * 365.25 * 86400;
+  return 365.25 * 86400 * Math.pow(o.a || 1, 1.5);
 }
 
 function syncModeButtons(mode) {

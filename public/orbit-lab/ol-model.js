@@ -178,7 +178,7 @@ export function formatPeriod(seconds) {
 
 /** Remap a physical path (meters, launch at +X, velocity +Y) onto a visual muzzle pose, in meters.
  *  visual pose is in Earth radii. arcScale stretches the angular span for close-up L1 lobs only. */
-export function placePath(points, R, pose, arcScale = 1) {
+export function placePath(points, R, pose, arcScale = 1, opts = {}) {
   if (!points?.length) return [];
   const r0 = Math.hypot(points[0].x, points[0].y, points[0].z || 0) || R;
   const ox = pose.x ?? 0, oy = pose.y ?? 0, oz = pose.z ?? 0;
@@ -191,12 +191,21 @@ export function placePath(points, R, pose, arcScale = 1) {
   let tlen = Math.hypot(tx, ty, tz);
   if (tlen < 1e-8) { tx = -ery; ty = erx; tz = 0; tlen = Math.hypot(tx, ty, tz) || 1; }
   tx /= tlen; ty /= tlen; tz /= tlen;
+  const ground = opts.groundRadius;
+  const landRatio = (opts.landRadius ?? R) / r0;
+  const dropSpan = 1 - landRatio;
   const out = [];
   for (const p of points) {
     const x = p.x, y = p.y, z = p.z || 0;
     const r = Math.hypot(x, y, z);
     const th = Math.atan2(y, x) * arcScale;
-    const rVis = (r / r0) * visR0;
+    let rVis = (r / r0) * visR0;
+    // Presentation only: stretch the drop so a lob from a not-to-scale mountain
+    // meets the visible Earth, without changing the physical readout.
+    if (ground != null && visR0 > ground && dropSpan > 1e-12) {
+      const frac = (r / r0 - landRatio) / dropSpan;
+      rVis = ground + frac * (visR0 - ground);
+    }
     const c = Math.cos(th), s = Math.sin(th);
     out.push({
       x: (rVis * (c * erx + s * tx)) * R,

@@ -8,7 +8,7 @@
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#000000">
 <title>Orbit Lab // PopBoard</title>
-<link rel="icon" type="image/png" href="popboard-logo.png">
+<link rel="icon" type="image/png" href="popboard-icon.png">
 <link rel="stylesheet" href="orbit-lab/orbit-lab.css">
 </head>
 <body class="ol">
@@ -21,6 +21,14 @@
     <span class="back-label">Back</span>
   </button>
   <p class="title" id="presetName">Orbit Lab</p>
+  <button type="button" id="resetViewBtn">Reset view</button>
+  <details class="about" id="about">
+    <summary>About this view</summary>
+    <div class="about-panel">
+      <p class="note" id="note"></p>
+      <p class="note" id="detail" hidden></p>
+    </div>
+  </details>
   <details class="credits">
     <summary>Credits</summary>
     <p>Textures by Solar System Scope, CC BY 4.0. ISS, Hubble, Galilean maps: NASA. Star map: NASA / Ernie Wright (SVS).</p>
@@ -33,8 +41,6 @@
 <main id="stage" class="stage">
   <canvas id="scene" role="img" aria-label="Earth and the cannon or satellite orbit"></canvas>
 </main>
-
-<p class="note" id="note"></p>
 
 <section class="readouts" id="readouts" hidden aria-live="polite">
   <p class="read-name" id="readName"></p>

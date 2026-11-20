@@ -43,8 +43,9 @@ export async function loadAssetMap() {
 }
 
 export function preferMobileSkybox() {
-  if (typeof matchMedia === "function" && matchMedia("(max-width: 600px)").matches) return true;
-  if (typeof innerWidth === "number" && innerWidth <= 600) return true;
+  // 2k starmap on small screens; the point-star layer carries sharpness. 4k on wider desktops.
+  if (typeof matchMedia === "function" && matchMedia("(max-width: 900px)").matches) return true;
+  if (typeof innerWidth === "number" && innerWidth > 0 && innerWidth <= 900) return true;
   return false;
 }
 

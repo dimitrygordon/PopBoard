@@ -139,11 +139,16 @@ test("Tesla-verified constants are the ones the model uses, and L1 sample paths 
 });
 
 test("both modules import the vendored three.js and GLTFLoader, not a CDN copy", () => {
-  const scene = read("public/orbit-lab/ol-scene.js") + read("public/kepler-circles/kc-scene.js") + read("public/gravity-orbits/go-load.js");
+  const scene = read("public/orbit-lab/ol-scene.js") + read("public/kepler-circles/kc-scene.js") + read("public/gravity-orbits/go-load.js") + read("public/gravity-orbits/go-view.js");
   assert.match(scene, /vendor\/three\/three\.module\.min\.js/);
   assert.match(scene, /vendor\/three\/GLTFLoader\.js/);
   assert.match(scene, /vendor\/three\/meshopt_decoder\.mjs/);
+  assert.match(scene, /vendor\/three\/OrbitControls\.js/);
   assert.doesNotMatch(scene, /cdn\.jsdelivr|unpkg|cdnjs/);
+  const oc = read("public/vendor/three/OrbitControls.js");
+  assert.match(oc, /from '\.\/three\.module\.min\.js'/);
+  assert.doesNotMatch(oc, /from 'three'/);
+  assert.match(oc, /class OrbitControls/);
 });
 
 test("L1 shows air time in whole seconds so both lobs read the same", () => {
@@ -209,4 +214,112 @@ test("HUD titles can wrap and sliders use Leo green with a grey track", () => {
     assert.match(css, /::-webkit-slider-thumb/);
     assert.match(css, /#cccccc/i);
   }
+});
+
+test("both pages have Reset view, About this view, and compact mobile controls", () => {
+  for (const name of ["public/study-orbit-lab.html", "public/study-kepler-circles.html"]) {
+    const html = read(name);
+    assert.match(html, /id="resetViewBtn"/);
+    assert.match(html, />Reset view</);
+    assert.match(html, /<details class="about"/);
+    assert.match(html, /<summary>About this view<\/summary>/);
+  }
+  for (const cssPath of ["public/orbit-lab/orbit-lab.css", "public/kepler-circles/kepler-circles.css"]) {
+    const css = read(cssPath);
+    assert.match(css, /max-height:\s*35vh/);
+    assert.match(css, /\.about/);
+  }
+  assert.match(read("public/orbit-lab/ol-ui.js") + read("public/kepler-circles/kc-ui.js"), /resetViewBtn/);
+  assert.match(read("public/orbit-lab/ol-scene.js") + read("public/kepler-circles/kc-scene.js"), /resetView\s*\(/);
+});
+
+test("Fire animates along the path and does not snap the ball back to the muzzle", () => {
+  const ui = read("public/orbit-lab/ol-ui.js");
+  assert.match(ui, /scene\.playAlong\(/);
+  assert.doesNotMatch(ui, /playAlong\([\s\S]{0,400}setProjectileAt\(pts\[0\]/);
+  const scene = read("public/orbit-lab/ol-scene.js");
+  assert.match(scene, /loop:\s*loops|opts\.loop/);
+  assert.match(scene, /placeImpact|impact/);
+  assert.match(scene, /pushTrail|trailPts/);
+});
+
+test("skybox uses the 2k map under 900px, with sRGB, mipmaps, anisotropy, and a point-star layer", () => {
+  const assets = read("public/gravity-orbits/go-assets.js");
+  assert.match(assets, /max-width:\s*900px/);
+  const view = read("public/gravity-orbits/go-view.js");
+  assert.match(view, /SRGBColorSpace/);
+  assert.match(view, /generateMipmaps = true/);
+  assert.match(view, /LinearMipmapLinearFilter/);
+  assert.match(view, /anisotropy/);
+  assert.match(view, /sizeAttenuation:\s*false/);
+  assert.match(view, /makeRoundStarSprite|createRadialGradient/);
+  const scenes = read("public/orbit-lab/ol-scene.js") + read("public/kepler-circles/kc-scene.js");
+  assert.match(scenes, /makeStarLayers/);
+  assert.match(scenes, /stars\.visible = true/);
+  assert.doesNotMatch(scenes, /stars\.visible = false/);
+  assert.match(scenes, /setPixelRatio\(Math\.min\(devicePixelRatio \|\| 1, 2\)\)/);
+});
+
+import { keplerPosition } from "../public/gravity-orbits/go-orbit.js";
+import { assetCandidates, preferMobileSkybox } from "../public/gravity-orbits/go-assets.js";
+
+test("Kepler positions obey the second law: equal areas in equal times", () => {
+  const a = 1, e = 0.8, P = 1, scale = 1;
+  const area = (t0, t1, steps = 48) => {
+    let A = 0;
+    let prev = keplerPosition(a, e, t0, P, scale);
+    for (let i = 1; i <= steps; i++) {
+      const t = t0 + (t1 - t0) * (i / steps);
+      const p = keplerPosition(a, e, t, P, scale);
+      A += 0.5 * (prev.x * p.y - prev.y * p.x);
+      prev = p;
+    }
+    return Math.abs(A);
+  };
+  const peri = area(0, 0.08);
+  const mid = area(0.25, 0.33);
+  const apo = area(0.46, 0.54);
+  assert.ok(Math.abs(peri - apo) / apo < 0.04, `peri ${peri} apo ${apo}`);
+  assert.ok(Math.abs(mid - apo) / apo < 0.04, `mid ${mid} apo ${apo}`);
+  const p0 = keplerPosition(a, e, 0, P, scale);
+  assert.ok(Math.abs(p0.x - a * (1 - e)) < 1e-9);
+  assert.ok(Math.abs(p0.y) < 1e-9);
+});
+
+test("assetCandidates lists the 2k starmap first on mobile and the 4k map on desktop", () => {
+  assert.equal(preferMobileSkybox(), false);
+  const desktop = assetCandidates("skybox", { mobile: false });
+  assert.ok(desktop[0].includes("starmap_2020_4k.jpg"), desktop[0]);
+  const mobile = assetCandidates("skybox", { mobile: true });
+  assert.ok(mobile[0].includes("starmap_2020_2k.jpg"), mobile[0]);
+  assert.ok(mobile.some((u) => u.includes("starmap_2020_4k.jpg")));
+});
+
+test("Fire frames a lob close-up and keeps the previous trail; L4 lazy-loads craft", () => {
+  const ui = read("public/orbit-lab/ol-ui.js");
+  assert.match(ui, /frameShot/);
+  assert.match(ui, /keepPrevious:\s*true|keepPrevious:\s*isLob/);
+  assert.match(ui, /flyHome/);
+  assert.match(ui, /setHomeCamera\("cannon-wide"\)/);
+  assert.doesNotMatch(ui, /showSatellite\(first,\s*\{\s*all:\s*true/);
+  const scene = read("public/orbit-lab/ol-scene.js");
+  assert.match(scene, /function lobPose|function flyTo/);
+  assert.match(scene, /pathHistory/);
+});
+
+test("placePath can drop a lob onto the visual ground without changing the default radius ratio", () => {
+  const { GM, R } = constants(orbits);
+  const path = samplePath(300, 8000, GM, R, 32);
+  const pose = { x: 1.04, y: 0, z: 0, radius: 1.04, direction: { x: 0, y: 1, z: 0 } };
+  const plain = placePath(path.points, R, pose, 28);
+  const r0 = Math.hypot(plain[0].x, plain[0].y, plain[0].z);
+  const r1 = Math.hypot(plain[plain.length - 1].x, plain[plain.length - 1].y, plain[plain.length - 1].z);
+  const phys0 = Math.hypot(path.points[0].x, path.points[0].y, path.points[0].z);
+  const phys1 = Math.hypot(path.points[path.points.length - 1].x, path.points[path.points.length - 1].y, path.points[path.points.length - 1].z);
+  assert.ok(Math.abs(r1 / r0 - phys1 / phys0) < 1e-6);
+  const dropped = placePath(path.points, R, pose, 28, { groundRadius: 1.002 });
+  const d0 = Math.hypot(dropped[0].x, dropped[0].y, dropped[0].z) / R;
+  const d1 = Math.hypot(dropped[dropped.length - 1].x, dropped[dropped.length - 1].y, dropped[dropped.length - 1].z) / R;
+  assert.ok(Math.abs(d0 - 1.04) < 1e-6, "starts at the muzzle");
+  assert.ok(Math.abs(d1 - 1.002) < 1e-4, "lands on the visual ground");
 });
