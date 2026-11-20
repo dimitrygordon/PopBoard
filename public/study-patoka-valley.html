@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Patoka Valley // PopBoard</title>
+  <meta name="theme-color" content="#070B14">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" type="image/png" href="popboard-icon.png">
+  <link rel="stylesheet" href="world/world.css?v=20261120a">
+</head>
+<body>
+  <h1 class="sr-only">Patoka Valley</h1>
+  <p class="sr-only">A drawn flyover of the Patoka River valley in Dubois County, Indiana. Drag to look around, pinch or scroll to zoom, and use Reset view to return to the opening look.</p>
+
+  <header class="valley-hud">
+    <button id="studyBackBtn" class="valley-btn" type="button" data-study-back aria-label="Back to Study library">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      <span class="back-label">Back</span>
+    </button>
+    <p class="valley-title">Patoka Valley</p>
+    <button type="button" id="resetViewBtn" class="valley-btn">Reset view</button>
+  </header>
+
+  <canvas id="world" aria-label="A drawn flyover of the Patoka River valley under a live sky"></canvas>
+  <canvas id="wx" aria-hidden="true"></canvas>
+  <div id="fallback" hidden>
+    <img id="fallbackImg" src="world/fallback.jpg" alt="The Patoka River valley, engraved atlas view">
+    <canvas id="still" width="1280" height="800" aria-hidden="true"></canvas>
+    <p>This view needs WebGL. A still engraving of the valley is shown instead.</p>
+  </div>
+  <button type="button" id="landmark-btn" aria-label="Next landmark: City Mill">
+    <span class="lm-names" aria-hidden="true">
+      <span class="lm-name is-current">St. Joseph Church</span>
+    </span>
+    <svg class="lm-arrow" viewBox="0 0 24 16" aria-hidden="true" focusable="false">
+      <path d="M2.2 8.3 C7.0 7.2, 12.4 8.9, 17.8 7.7 L14.2 4.6 M17.8 7.7 L14.6 11.6" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <div id="hud" hidden></div>
+  <script type="module" src="world/world.js?v=20261120a"></script>
+  <script type="module" src="astro-course/story-return.js"></script>
+</body>
+</html>

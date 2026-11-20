@@ -4,5 +4,10 @@
 /friction-lesson/media/*   /404.html  404
 /friction-lesson/art/*     /404.html  404
 
+# Old flyover path now lives in the Study library.
+/world              /study-patoka-valley  302
+/world/             /study-patoka-valley  302
+/world/index.html   /study-patoka-valley  302
+
 # SPA shell only when no static file matches.
 /*    /index.html   200
