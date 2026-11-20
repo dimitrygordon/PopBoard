@@ -1,0 +1,1171 @@
+{
+  "schemaVersion": 1,
+  "module": "spaceships",
+  "note": "Nineteen official NASA spacecraft. GLB, USDZ, and stills are wired. Fact rows were checked by Tesla on Nov 20, 2026 (America/New_York). Eleven wording fixes from that review are applied. Voyager Status and Perseverance Status are time-sensitive and need a recheck before publish.",
+  "source": "https://science.nasa.gov/3d-resources/",
+  "credit": "3D model courtesy NASA",
+  "placeholderGlb": "models/_placeholder.glb",
+  "placeholderStill": "stills/_placeholder.webp",
+  "craft": [
+    {
+      "id": "apollo-lunar-module",
+      "name": "Apollo Lunar Module",
+      "subtitle": "The lander that carried astronauts to the Moon's surface",
+      "tags": [
+        "crewed",
+        "lander"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/apollo-lunar-module.webp",
+      "glb": "models/apollo-lunar-module.glb",
+      "usdz": "models/apollo-lunar-module.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/apollo-lunar-module/",
+      "sourceLabel": "NASA 3D Resources: Apollo Lunar Module",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Apollo crewed Moon landings",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "1969 (Apollo 11, first landing)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Retired (last flew 1972)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "7.04 m tall, 9.4 m across the landing legs",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "15,103 kg (Apollo 11 LM, fueled)",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "The Lunar Module was a two-part spacecraft built only to fly in space and land on the Moon. Two astronauts rode it down to the surface while a third stayed in orbit. When it was time to leave, the top half blasted off and used the bottom half as its launch pad.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "It never needed to be streamlined, because it never flew through air. That is why it looks so boxy and spidery.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "cassini-huygens",
+      "name": "Cassini-Huygens",
+      "subtitle": "Orbited Saturn for 13 years and dropped a probe on Titan",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/cassini-huygens.webp",
+      "glb": "models/cassini-huygens.glb",
+      "usdz": "models/cassini-huygens.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/cassini-huygens-a/",
+      "sourceLabel": "NASA 3D Resources: Cassini-Huygens (A)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Saturn orbiter and Titan probe",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA, ESA, and the Italian Space Agency (ASI)",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "1997",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Mission ended 2017 (dove into Saturn on purpose)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "6.7 m high, 4 m wide",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "5,712 kg at launch (with fuel and the Huygens probe)",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Cassini spent 13 years orbiting Saturn, studying its rings, its storms, and its moons. It carried Europe's Huygens probe, which parachuted to the surface of Titan in 2005. At the end, Cassini was steered into Saturn so it could never crash into and contaminate a moon that might host life.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Cassini found evidence of a global ocean of liquid water under the icy crust of Saturn's moon Enceladus.",
+          "verified": true,
+          "sources": [
+            "https://science.nasa.gov/mission/cassini/quick-facts/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chandra",
+      "name": "Chandra X-ray Observatory",
+      "subtitle": "A space telescope that sees the universe in X-rays",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/chandra.webp",
+      "glb": "models/chandra.glb",
+      "usdz": "models/chandra.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/chandra-x-ray-observatory/",
+      "sourceLabel": "NASA 3D Resources: Chandra X-ray Observatory",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "X-ray space telescope",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA (operated by the Smithsonian Astrophysical Observatory)",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "1999 (Space Shuttle Columbia)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Operating (as of Nov 2026)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "13.8 m long, 19.5 m across the solar arrays",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "4,800 kg",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Chandra studies the hottest, most violent places in the universe, like exploding stars and matter falling into black holes. X-rays cannot get through Earth's air, so an X-ray telescope has to work in space. Its mirrors are shaped like nested barrels so X-rays skim off them at shallow angles.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Chandra's mirrors are among the smoothest ever made.",
+          "verified": true
+        }
+      ],
+      "cameraOrbit": "45deg 70deg auto"
+    },
+    {
+      "id": "curiosity",
+      "name": "Curiosity Rover",
+      "subtitle": "A car-sized science lab exploring Gale Crater on Mars",
+      "tags": [
+        "rover"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/curiosity.webp",
+      "glb": "models/curiosity.glb",
+      "usdz": "models/curiosity.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/curiosity-rover-msl/",
+      "sourceLabel": "NASA 3D Resources: Curiosity Rover (MSL) (Clean)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Mars Science Laboratory",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA / JPL",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "2011 (landed 2012)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Operating (as of Nov 2026)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "about 3 m long, 2.7 m wide, 2.2 m tall",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "899 kg",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Curiosity is a nuclear-powered rover about the size of a small car. It drills into rocks and analyzes them in onboard labs to learn whether Mars once had conditions that could support microbes. It found that Gale Crater once held a lake of fresh water.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Curiosity was lowered to the ground on cables by a hovering rocket stage called the sky crane.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "dawn",
+      "name": "Dawn",
+      "subtitle": "The first spacecraft to orbit two different worlds beyond Earth",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/dawn.webp",
+      "glb": "models/dawn.glb",
+      "usdz": "models/dawn.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/dawn/",
+      "sourceLabel": "NASA 3D Resources: Dawn",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Asteroid belt orbiter (Vesta and Ceres)",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA / JPL",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "2007",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Mission ended 2018 (out of fuel, still orbiting Ceres)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "19.7 m across the solar arrays",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "1,217.7 kg at launch",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Dawn explored the two biggest objects in the asteroid belt, Vesta and the dwarf planet Ceres. It used ion engines that push gently but for a very long time, which let it leave orbit around one world and travel to another. At Ceres it found bright salt deposits left by briny water.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Dawn's ion engines pushed with about the force of a sheet of paper resting on your hand.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "galileo",
+      "name": "Galileo",
+      "subtitle": "The first spacecraft to orbit Jupiter",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/galileo.webp",
+      "glb": "models/galileo.glb",
+      "usdz": "models/galileo.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/galileo/",
+      "sourceLabel": "NASA 3D Resources: Galileo",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Jupiter orbiter and atmospheric probe",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA / JPL (with partners in Germany and other countries)",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "1989 (Space Shuttle Atlantis)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Mission ended 2003 (sent into Jupiter on purpose)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "5.3 m high; magnetometer boom reaches 11 m; high-gain antenna 4.8 m across",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "2,223 kg for the orbiter at launch, with fuel. The probe added another 339 kg.",
+          "verified": true,
+          "sources": [
+            "https://science.nasa.gov/mission/galileo/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Galileo orbited Jupiter 34 times and dropped a probe into the giant planet's atmosphere. It gave strong evidence that the moon Europa hides a salty ocean under its ice. To protect Europa, Galileo was steered into Jupiter at the end of its mission.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Galileo's big umbrella-like antenna never fully opened, so engineers rewrote its software to send data through a much smaller antenna.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "hubble",
+      "name": "Hubble Space Telescope",
+      "subtitle": "The school-bus-sized telescope orbiting Earth since 1990",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/hubble.webp",
+      "glb": "models/hubble.glb",
+      "usdz": "models/hubble.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/hubble-space-telescope-a/",
+      "sourceLabel": "NASA 3D Resources: Hubble Space Telescope (A)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Visible and ultraviolet space telescope",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA and ESA",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "1990 (Space Shuttle Discovery)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Operating (as of Nov 2026)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "13.2 m long, 4.2 m wide",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "about 12,200 kg (after the last servicing mission in 2009)",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Hubble orbits above the blurring effect of Earth's air, so it takes extremely sharp pictures of planets, nebulas, and galaxies. Astronauts visited it five times to repair and upgrade it. Its measurements helped show that the expansion of the universe is speeding up.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Hubble has no rocket thrusters. It turns by spinning heavy wheels inside, using Newton's third law.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "ingenuity",
+      "name": "Ingenuity Mars Helicopter",
+      "subtitle": "The first aircraft to fly on another planet",
+      "tags": [
+        "rotorcraft"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/ingenuity.webp",
+      "glb": "models/ingenuity.glb",
+      "usdz": "models/ingenuity.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/ingenuity-mars-helicopter/",
+      "sourceLabel": "NASA 3D Resources: Ingenuity Mars Helicopter",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Mars technology demonstration (rode with Perseverance)",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA / JPL",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "2020 (first flight April 19, 2021)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Flights ended January 2024 (rotor damage)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "0.49 m tall, rotors 1.2 m tip to tip",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "1.8 kg",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Ingenuity was a small solar-powered helicopter that proved powered flight is possible on Mars, where the air is about 1% as thick as Earth's. It was planned for five test flights and ended up making 72. It also scouted the terrain ahead of the Perseverance rover.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Its rotor blades spun at about 2,400 revolutions per minute to get enough lift in Mars's thin air.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "jwst",
+      "name": "James Webb Space Telescope",
+      "subtitle": "The largest space telescope ever launched",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/jwst.webp",
+      "glb": "models/jwst.glb",
+      "usdz": "models/jwst.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/james-webb-space-telescope-a/",
+      "sourceLabel": "NASA 3D Resources: James Webb Space Telescope (A)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Infrared space telescope",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA, ESA, and the Canadian Space Agency (CSA)",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "2021 (Ariane 5)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Operating (as of Nov 2026)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "sunshield 21.2 m x 14.2 m (about a tennis court)",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "about 6,200 kg",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Webb sees infrared light, which lets it look through dust clouds and back to some of the first galaxies that formed after the Big Bang. Its gold-coated mirror is 6.5 m across, made of 18 hexagonal segments. A five-layer sunshield keeps the telescope colder than minus 220 degrees Celsius so its own heat does not swamp the faint signals.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Webb had to unfold itself in space, like origami, because it was too big to fit inside any rocket.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "juno",
+      "name": "Juno",
+      "subtitle": "A solar-powered spacecraft orbiting Jupiter's poles",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/juno.webp",
+      "glb": "models/juno.glb",
+      "usdz": "models/juno.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/juno-a/",
+      "sourceLabel": "NASA 3D Resources: Juno (A)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Jupiter polar orbiter",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA / JPL (led by Southwest Research Institute)",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "2011 (arrived 2016)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Operating in an extended mission (last confirmed mid-2026)",
+          "verified": true,
+          "sources": [
+            "https://science.nasa.gov/mission/juno/",
+            "https://www.sci.news/space/juno-close-up-thebe-14746.html"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "body 3.5 m; more than 20 m across the solar arrays",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "3,625 kg at launch",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Juno loops over Jupiter's poles to study what is inside the giant planet, including its gravity, magnetic field, and deep atmosphere. It is the first solar-powered spacecraft sent that far from the Sun, so it needs enormous solar arrays. Its radiation vault shields its electronics from Jupiter's intense radiation.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "At Jupiter, Juno's huge solar arrays make only about 500 watts, enough for about five old-style 100-watt light bulbs. Near Earth, the same arrays would make about 14,000 watts.",
+          "verified": true,
+          "sources": [
+            "https://www.jpl.nasa.gov/news/nasas-juno-spacecraft-breaks-solar-power-distance-record/",
+            "https://www.jpl.nasa.gov/news/press_kits/juno/facts/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kepler",
+      "name": "Kepler",
+      "subtitle": "The planet hunter that found thousands of worlds",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/kepler.webp",
+      "glb": "models/kepler.glb",
+      "usdz": "models/kepler.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/kepler-a/",
+      "sourceLabel": "NASA 3D Resources: Kepler (A)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Exoplanet survey telescope",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "2009",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Retired 2018 (out of fuel)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "4.7 m tall, 2.7 m wide",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "1,052.4 kg at launch",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Kepler stared at the same patch of sky for years, measuring the brightness of about 150,000 stars. When a planet passes in front of its star, the star dims very slightly, and Kepler watched for those dips. It showed that planets are common around other stars.",
+          "verified": true,
+          "sources": [
+            "https://science.nasa.gov/mission/kepler/",
+            "https://www.nasa.gov/history/10-years-ago-kepler-planet-finder-is-launched/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Kepler's camera was the largest NASA had ever flown in space at the time, with about 95 million pixels.",
+          "verified": true,
+          "sources": [
+            "https://www.jpl.nasa.gov/news/press_kits/Kepler-presskit-2-19-smfile.pdf"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "parker-solar-probe",
+      "name": "Parker Solar Probe",
+      "subtitle": "The spacecraft that flies through the Sun's outer atmosphere",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/parker-solar-probe.webp",
+      "glb": "models/parker-solar-probe.glb",
+      "usdz": "models/parker-solar-probe.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/parker-solar-probe/",
+      "sourceLabel": "NASA 3D Resources: Parker Solar Probe",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Close-up study of the Sun's corona and solar wind",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA (built by Johns Hopkins APL)",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "2018",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Operating (as of Nov 2026)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "about 3 m tall; heat shield 2.3 m across",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "685 kg at launch",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Parker Solar Probe dives closer to the Sun than any spacecraft before it, passing through the Sun's outer atmosphere, the corona. A thick carbon heat shield always faces the Sun, keeping the instruments behind it near room temperature. It studies how the solar wind gets its speed.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "At closest approach it moves at about 700,000 km/h, the fastest speed of any human-made object.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "perseverance",
+      "name": "Perseverance Rover",
+      "subtitle": "Collecting rock samples in Jezero Crater on Mars",
+      "tags": [
+        "rover"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/perseverance.webp",
+      "glb": "models/perseverance.glb",
+      "usdz": "models/perseverance.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/mars-2020-perseverance-rover/",
+      "sourceLabel": "NASA 3D Resources: Mars 2020 Perseverance Rover",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Mars 2020: search for signs of ancient life",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA / JPL",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "2020 (landed 2021)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Operating (as of Nov 2026). Science is paused while engineers fix a radio problem.",
+          "verified": true,
+          "sources": [
+            "https://science.nasa.gov/blogs/mars/2026/11/19/nasas-perseverance-odyssey-teams-investigate-technical-issues/"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "about 3 m long, 2.7 m wide, 2.2 m tall",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "1,025 kg",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Perseverance explores an ancient river delta in Jezero Crater, looking for signs that microbes once lived on Mars. It drills rock cores and seals them in tubes for a possible future mission to bring back to Earth. It also carried the Ingenuity helicopter.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Perseverance carries two microphones. In 2021 it made the first audio recording on Mars using a microphone, capturing a Martian breeze.",
+          "verified": true,
+          "sources": [
+            "https://www.jpl.nasa.gov/news/press_kits/mars_2020/landing/mission/spacecraft/perseverance_rover/",
+            "https://www.nasa.gov/news-release/nasas-mars-perseverance-rover-provides-front-row-seat-to-landing-first-audio-recording-of-red-planet/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tess",
+      "name": "TESS",
+      "subtitle": "Searching the nearest, brightest stars for new planets",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/tess.webp",
+      "glb": "models/tess.glb",
+      "usdz": "models/tess.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/transiting-exoplanet-survey-satellite-tess-a/",
+      "sourceLabel": "NASA 3D Resources: Transiting Exoplanet Survey Satellite (TESS) (A)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Transiting Exoplanet Survey Satellite",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA (led by MIT)",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "2018 (Falcon 9)",
+          "verified": true,
+          "sources": [
+            "https://www.nasa.gov/news-release/nasa-planet-hunter-on-its-way-to-orbit/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Operating (as of Nov 2026)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "about 3.9 m across its solar panels",
+          "verified": true,
+          "sources": [
+            "https://spaceflightnow.com/2018/04/19/all-sky-surveyor-launched-from-cape-canaveral-on-the-hunt-for-exoplanets/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "362 kg at launch",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "TESS uses four wide-angle cameras to watch most of the sky for tiny dips in starlight caused by orbiting planets. It focuses on bright, nearby stars, so other telescopes like Webb can follow up on the planets it finds. It took over the planet-hunting job from Kepler.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "TESS's orbit is timed with the Moon: it goes around Earth twice for every one lunar orbit.",
+          "verified": true,
+          "sources": [
+            "https://tess.mit.edu/tess-spacecraft/",
+            "https://heasarc.gsfc.nasa.gov/docs/tess/docs/TESS_observatory_guide_v1.1.pdf"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "viking-lander",
+      "name": "Viking Lander",
+      "subtitle": "The first US spacecraft to land and work on Mars",
+      "tags": [
+        "lander"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/viking-lander.webp",
+      "glb": "models/viking-lander.glb",
+      "usdz": "models/viking-lander.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/viking-lander/",
+      "sourceLabel": "NASA 3D Resources: Viking Lander",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Viking 1 and 2: Mars landers and orbiters",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "1975 (landed 1976)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Mission ended 1982 (Lander 1, last contact)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "about 3 m wide, 2 m tall",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "572 kg without fuel (657 kg fueled at launch)",
+          "verified": true,
+          "sources": [
+            "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1975-075C"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Two Viking landers touched down on Mars in 1976 and sent back the first color pictures from its surface. They scooped up soil and ran experiments to test for life. The results were puzzling, and scientists still discuss them today.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Viking Lander 1 kept working for more than six years on Mars.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "voyager",
+      "name": "Voyager",
+      "subtitle": "Twin probes now travelling between the stars",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/voyager.webp",
+      "glb": "models/voyager.glb",
+      "usdz": "models/voyager.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/voyager-probe-b/",
+      "sourceLabel": "NASA 3D Resources: Voyager Probe (B)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Grand tour of the outer planets, now interstellar",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA / JPL",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "1977 (Voyager 1 and 2)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Both are still in contact from interstellar space. Since Nov. 14, 2026, Voyager 1 has sent only a basic radio signal and no data while engineers work on a computer problem.",
+          "verified": true,
+          "sources": [
+            "https://science.nasa.gov/blogs/voyager/2026/11/18/voyager-1-engineers-analyze-data-issue-ready-to-confirm-light-day/",
+            "https://www.nasa.gov/news-release/nasas-voyager-1-makes-history-reaching-one-light-day-from-earth/"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "high-gain antenna 3.7 m across; magnetometer boom 13 m",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "about 722 kg each at launch",
+          "verified": true,
+          "sources": [
+            "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1977-084A"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "The twin Voyagers flew past Jupiter and Saturn, and Voyager 2 went on to Uranus and Neptune, the only spacecraft ever to visit them. Both have now left the Sun's bubble of solar wind and are in interstellar space. Each carries a golden record with sounds and images from Earth.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "In November 2026 Voyager 1 reached one light-day from Earth, so its radio signals take a full day to arrive.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "iss",
+      "name": "International Space Station",
+      "subtitle": "A football-field-sized lab where astronauts live and work",
+      "tags": [
+        "crewed"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/iss.webp",
+      "glb": "models/iss.glb",
+      "usdz": "models/iss.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/international-space-station-iss-b/",
+      "sourceLabel": "NASA 3D Resources: International Space Station (ISS) (B)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Crewed orbiting laboratory",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA, Roscosmos, ESA, JAXA, and CSA",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "1998 (first module)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Operating, crewed (as of Nov 2026)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "109 m end to end",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "about 420,000 kg (925,000 pounds)",
+          "verified": true,
+          "sources": [
+            "https://www.nasa.gov/international-space-station/space-station-facts-and-figures/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "The ISS circles Earth about every 90 minutes, about 400 km up. People have lived on board continuously since November 2000, running experiments on how space affects bodies, plants, and materials. It was built piece by piece over many years by five space agencies.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "The station and its crew are in free fall around Earth. That is why astronauts float, even though gravity there is still about 90% as strong as on the ground.",
+          "verified": true,
+          "sources": [
+            "https://www.nasa.gov/learning-resources/for-kids-and-students/what-is-microgravity-grades-5-8/"
+          ]
+        }
+      ],
+      "cameraOrbit": "45deg 70deg auto"
+    },
+    {
+      "id": "saturn-v",
+      "name": "Saturn V",
+      "subtitle": "The rocket that launched astronauts to the Moon",
+      "tags": [
+        "crewed"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/saturn-v.webp",
+      "glb": "models/saturn-v.glb",
+      "usdz": "models/saturn-v.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/saturn-v/",
+      "sourceLabel": "NASA 3D Resources: Saturn V",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Apollo Moon rocket (and the Skylab launch)",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "1967 (first flight)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Retired (last flight 1973)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "about 110.6 m tall (363 ft)",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "about 2.8 million kg fully fueled",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Saturn V was a three-stage rocket that sent the Apollo astronauts to the Moon. Its first stage burned for less than three minutes but lifted the whole rocket off the pad. It is still one of the most powerful rockets ever flown.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Standing on the pad, the Saturn V was taller than the Statue of Liberty including its base.",
+          "verified": true,
+          "sources": [
+            "https://www.nasa.gov/learning-resources/for-kids-and-students/what-was-the-saturn-v/",
+            "https://home.nps.gov/stli/learn/historyculture/statue-statistics.htm"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "space-shuttle",
+      "name": "Space Shuttle Orbiter",
+      "subtitle": "The winged spaceplane that flew 135 missions",
+      "tags": [
+        "crewed"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/space-shuttle.webp",
+      "glb": "models/space-shuttle.glb",
+      "usdz": "models/space-shuttle.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/space-shuttle-d/",
+      "sourceLabel": "NASA 3D Resources: Space Shuttle (D)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Space Transportation System",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "1981 (first flight)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Retired 2011",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "37.2 m long, 23.8 m wingspan, 17.3 m tall",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "The Space Shuttle orbiter launched like a rocket and landed like a glider. It carried astronauts and large cargo, launched and repaired the Hubble Space Telescope, and helped build the ISS. Heat-resistant tiles on its belly protected it when it came back through the atmosphere.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "The orbiter had no engines working during landing. It glided all the way down to the runway.",
+          "verified": true
+        }
+      ]
+    }
+  ]
+}

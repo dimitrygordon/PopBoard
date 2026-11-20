@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="shared/layout/layout.css">
+<script type="module" src="shared/layout/layout.js"></script>
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<title>Spaceship // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-icon.png">
+<link rel="stylesheet" href="spaceships/spaceships.css">
+<script>self.ModelViewerElement = { meshoptDecoderLocation: "vendor/model-viewer/meshopt_decoder.js" };</script>
+<script type="module" src="vendor/model-viewer/model-viewer.min.js"></script>
+</head>
+<body class="ss-viewer">
+<h1 class="sr-only" id="pageTitle">Spaceship</h1>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Spaceships gallery">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title" id="hudTitle">Spaceships</p>
+</header>
+
+<main id="stage" class="stage">
+  <model-viewer
+    id="viewer"
+    hidden
+    camera-controls
+    touch-action="pan-y"
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+    ar-scale="fixed"
+    shadow-intensity="0"
+    environment-image="neutral"
+    alt="3D model of a NASA spacecraft">
+    <div slot="poster" class="poster" id="poster">
+      <img id="posterImg" alt="">
+      <p id="posterLabel">Loading 3D model</p>
+    </div>
+  </model-viewer>
+  <p class="banner" id="fallbackBanner" hidden>The NASA 3D model is not in yet. This green box is a stand-in you can still turn around.</p>
+  <div class="missing" id="missing" hidden>
+    <h2>That spacecraft is not in this fleet</h2>
+    <p><a id="missingLink" href="study-spaceships.html">Back to Spaceships</a></p>
+  </div>
+</main>
+
+<section class="dock" id="dock" hidden>
+  <p class="status" id="status" role="status" aria-live="polite"></p>
+  <p class="craft-name" id="craftName"></p>
+  <p class="subtitle" id="subtitle"></p>
+  <dl class="facts" id="facts"></dl>
+  <div class="ar-row">
+    <button type="button" class="primary" id="arBtn" hidden>View in your space</button>
+  </div>
+  <p class="credit" id="credit"></p>
+</section>
+
+<script type="module" src="spaceships/ss-viewer.js"></script>
+<script type="module" src="astro-course/story-return.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+@font-face { font-family: "Jost"; src: url("../fonts/jost-latin-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Jost"; src: url("../fonts/jost-latin-500.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Jost"; src: url("../fonts/jost-latin-600.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Jost"; src: url("../fonts/jost-latin-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
+
+:root {
+  --ss-bg: #000000;
+  --ss-ink: #cccccc;
+  --ss-accent: #4caf50;
+  --ss-chip: rgba(12, 12, 12, 0.88);
+  --ss-border: #333333;
+  --ss-muted: #888888;
+  --ss-hit: 44px;
+  --pb-body-font: "Jost", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; min-height: 100%; background: var(--ss-bg); color: var(--ss-ink);
+  font-family: "Jost", system-ui, sans-serif; line-height: 1.45; -webkit-tap-highlight-color: transparent; }
+body.ss-gallery { overflow-x: hidden; }
+body.ss-viewer { height: 100%; overflow: hidden; overscroll-behavior: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+button, input, label { font: inherit; color: inherit; }
+button { background: #111; border: 1px solid var(--ss-border); border-radius: 12px; min-width: var(--ss-hit); min-height: var(--ss-hit); padding: 0 12px; cursor: pointer; }
+button.primary, button[aria-pressed="true"] { background: var(--ss-accent); border-color: var(--ss-accent); color: #000; font-weight: 600; }
+button:focus-visible, input:focus-visible, a:focus-visible, model-viewer:focus-visible { outline: 3px solid var(--ss-accent); outline-offset: 2px; }
+a { color: var(--ss-accent); }
+
+.hud { position: sticky; z-index: 6; top: 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) 8px max(8px, env(safe-area-inset-left));
+  background: rgba(0, 0, 0, 0.92); }
+body.ss-viewer .hud { position: fixed; left: 0; right: 0; background: transparent; pointer-events: none; }
+body.ss-viewer .hud > * { pointer-events: auto; }
+.hud .title { margin: 0; flex: 1 1 10rem; min-width: 0; font-weight: 600; font-size: 1.05rem; letter-spacing: -0.02em; line-height: 1.2; }
+.study-back-btn { display: inline-flex; gap: 4px; align-items: center; }
+
+.search { flex: 1 1 12rem; min-width: 0; display: flex; }
+.search input { width: 100%; min-height: var(--ss-hit); padding: 0 12px; background: #111; border: 1px solid var(--ss-border); border-radius: 12px; }
+.filters { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
+.filters button { min-height: 40px; padding: 0 10px; font-size: 0.85rem; }
+
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;
+  padding: 8px max(12px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
+.card { display: flex; flex-direction: column; min-width: 0; color: inherit; text-decoration: none;
+  background: #0c0c0c; border: 1px solid var(--ss-border); border-radius: 14px; overflow: hidden; }
+.card img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #000; }
+.card .meta { padding: 8px 10px 10px; min-width: 0; }
+.card h2 { margin: 0; font-size: 0.95rem; font-weight: 600; line-height: 1.25; color: #fff; }
+.card .tag { margin: 2px 0 0; font-size: 0.75rem; color: var(--ss-muted); text-transform: capitalize; }
+.card .ph { margin: 2px 0 0; font-size: 0.7rem; color: var(--ss-muted); letter-spacing: 0.04em; }
+.empty { margin: 24px 16px; text-align: center; color: var(--ss-muted); }
+
+.stage { position: fixed; inset: 0 0 var(--ss-dock, 210px) 0; background: #000; }
+#viewer { width: 100%; height: 100%; background: #000; --poster-color: #000; --ar-button-display: none; }
+#viewer::part(default-progress-bar) { background: var(--ss-accent); }
+.poster { display: grid; place-items: center; width: 100%; height: 100%; background: #000; color: var(--ss-ink); }
+.poster img { max-width: 70%; max-height: 70%; object-fit: contain; }
+.banner { position: absolute; left: 12px; right: 12px; bottom: 12px; margin: 0; padding: 8px 10px;
+  background: var(--ss-chip); border: 1px solid var(--ss-border); border-radius: 12px; font-size: 0.85rem; z-index: 2; }
+.missing { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 12px; height: 100%; padding: 16px; text-align: center; }
+.missing h2 { margin: 0 0 8px; color: #fff; font-size: 1.1rem; }
+
+.dock { position: fixed; z-index: 5; left: 0; right: 0; bottom: 0; max-height: 42vh;
+  padding: 12px 14px max(12px, env(safe-area-inset-bottom));
+  background: var(--ss-chip); border-top: 1px solid var(--ss-border); overflow: auto; -webkit-overflow-scrolling: touch; }
+.dock .craft-name { margin: 0 0 2px; font-weight: 600; color: #fff; font-size: 1.05rem; line-height: 1.2; }
+.dock .subtitle { margin: 0 0 8px; color: var(--ss-muted); font-size: 0.85rem; }
+.facts { margin: 0 0 10px; display: grid; gap: 4px; }
+.facts div { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 8px; font-size: 0.9rem; }
+.facts dt { margin: 0; color: var(--ss-muted); }
+.facts dd { margin: 0; min-width: 0; }
+.ar-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+#arBtn { min-height: var(--ss-hit); }
+.credit { margin: 0; font-size: 0.75rem; color: var(--ss-muted); line-height: 1.35; }
+.status { margin: 0 0 8px; font-size: 0.85rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; }
+}
+
+@media (min-width: 700px) {
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .dock { left: 50%; right: auto; transform: translateX(-50%); width: min(560px, calc(100% - 16px));
+    bottom: max(12px, env(safe-area-inset-bottom)); border: 1px solid var(--ss-border); border-radius: 16px;
+    padding-bottom: 12px; }
+  .stage { inset: 0; }
+  .banner { left: 50%; right: auto; transform: translateX(-50%); width: min(560px, calc(100% - 16px));
+    bottom: calc(var(--ss-dock, 210px) + 16px); }
+}
+
+@media (min-width: 1100px) {
+  .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  .hud .title { font-size: 0.82rem; flex: 1 1 5.5rem; }
+  .hud button { padding: 0 8px; min-height: 40px; font-size: 0.75rem; }
+  .hud .back-label { display: none; }
+  .card h2 { font-size: 0.88rem; }
+  .facts div { grid-template-columns: 6.2rem minmax(0, 1fr); font-size: 0.85rem; }
+}
+
+@media (max-width: 390px) {
+  .hud { gap: 6px; }
+  .grid { gap: 8px; padding-left: 10px; padding-right: 10px; }
+  .card .meta { padding: 6px 8px 8px; }
+  .dock { padding: 10px 10px max(12px, env(safe-area-inset-bottom)); }
+  .dock .craft-name { font-size: 0.95rem; }
+}

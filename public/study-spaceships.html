@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="shared/layout/layout.css">
+<script type="module" src="shared/layout/layout.js"></script>
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<title>Spaceships // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-icon.png">
+<link rel="stylesheet" href="spaceships/spaceships.css">
+</head>
+<body class="ss-gallery">
+<h1 class="sr-only">Spaceships</h1>
+<p class="sr-only">A gallery of official NASA spacecraft. Open a craft to view it in 3D or in AR.</p>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title">Spaceships</p>
+  <form class="search" id="searchForm" role="search">
+    <label class="sr-only" for="search">Search spacecraft</label>
+    <input id="search" type="search" placeholder="Search" autocomplete="off">
+  </form>
+  <div class="filters" id="filters" role="toolbar" aria-label="Filter by type"></div>
+</header>
+
+<main>
+  <div class="grid" id="grid"></div>
+  <p class="empty" id="empty" hidden>No spacecraft match that search.</p>
+</main>
+
+<script type="module" src="spaceships/ss-gallery.js"></script>
+<script type="module" src="astro-course/story-return.js"></script>
+</body>
+</html>
