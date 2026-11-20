@@ -13,10 +13,17 @@ from urllib.parse import urlparse
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1] / "public"
-OUT = Path("/workspace/popboard-spaceships-shots/wired")
+OUT = Path("/workspace/popboard-spaceships-shots/wave2")
 OUT.mkdir(parents=True, exist_ok=True)
 FLEET = json.loads((ROOT / "spaceships/fleet.json").read_text())
 CRAFT_IDS = [c["id"] for c in FLEET["craft"] if c.get("listed") is not False]
+WAVE2_IDS = {
+    "gemini", "mercury-friendship-7", "apollo-soyuz", "skylab", "pioneer-10",
+    "magellan", "mro", "lro", "osiris-rex", "insight", "spirit-opportunity",
+    "spitzer", "fermi", "swift", "terra", "aqua", "landsat-8", "soho", "stardust",
+    "deep-impact", "messenger", "mars-odyssey", "sdo", "stereo", "deep-space-1",
+    "near-shoemaker", "ladee", "explorer-1", "compton", "wmap",
+}
 
 IPHONE = dict(
     viewport={"width": 390, "height": 844},
@@ -58,7 +65,7 @@ MIME = {
 }
 
 SHOT_ALL_ON = {"iphone-390"}
-SHOT_SAMPLE = {"voyager", "iss", "chandra", "jwst", "ingenuity", "space-shuttle"}
+SHOT_SAMPLE = {"voyager", "iss", "chandra", "jwst", "ingenuity", "space-shuttle", "juno", "terra", "insight", "gemini"}
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -249,11 +256,20 @@ def run_gallery(context, base, tag, measure=False):
     page = open_page(context, base + "/study-spaceships.html")
     page.wait_for_selector(".card", timeout=15000)
     # Wait for cards to render from fleet.json
-    page.wait_for_function("() => document.querySelectorAll('.card').length >= 19", timeout=15000)
+    page.wait_for_function("() => document.querySelectorAll('.card').length >= 49", timeout=15000)
     count = page.locator(".card").count()
-    check(count == 19, f"{tag} gallery shows 19 cards (got {count})")
-    for extra in ("iss", "saturn-v", "space-shuttle"):
+    check(count == 49, f"{tag} gallery shows 49 cards (got {count})")
+    for extra in ("iss", "saturn-v", "space-shuttle", "terra", "aqua", "landsat-8", "insight", "gemini"):
         check(page.locator(f".card[data-id='{extra}']").count() == 1, f"{tag} gallery lists {extra}")
+    earth_btn = page.locator("#filters button", has_text="Earth observers")
+    check(earth_btn.count() == 1, f"{tag} gallery has an Earth observers filter")
+    earth_btn.click()
+    page.wait_for_timeout(100)
+    earth_ids = page.locator(".card").evaluate_all("els => els.map(e => e.dataset.id).sort()")
+    check(earth_ids == ["aqua", "landsat-8", "terra"], f"{tag} Earth observers filter shows Terra, Aqua, Landsat 8 (got {earth_ids})")
+    page.locator("#filters button", has_text="All").click()
+    page.wait_for_timeout(100)
+    check(page.locator(".card").count() == 49, f"{tag} All filter restores 49 cards")
     check(not overflow_x(page), f"{tag} gallery does not overflow horizontally")
     # Confirm the gallery did not fetch a model.
     model_gets = [t for t in page.transfers if t["method"] != "HEAD" and t["path"].endswith((".glb", ".usdz", "model-viewer.min.js"))]
@@ -297,7 +313,20 @@ def run_viewer(context, base, tag, craft_id, measure=False, take_shot=False, tak
     check("3D model courtesy NASA" in page.locator("#credit").inner_text(), f"{tag} {craft_id} NASA credit")
     facts_text = page.locator("#facts").inner_text()
     check("PLACEHOLDER" not in facts_text, f"{tag} {craft_id} facts are not placeholders")
+    check(page.locator("#facts .ph-label").count() == 0, f"{tag} {craft_id} has no placeholder labels")
     check(len(facts_text.strip()) > 0, f"{tag} {craft_id} fact panel has text")
+    if craft_id == "juno":
+        dim = info["dim"] if info else [0, 0, 0]
+        check(max(dim) > 19.5, f"{tag} juno array span is about 20.1 m (dims {dim})")
+    if craft_id == "mars-odyssey":
+        check("one of the spinning wheels" in facts_text, f"{tag} mars-odyssey status uses Tesla wording")
+    if craft_id == "aqua":
+        check("out of fuel for orbit boosts" in facts_text, f"{tag} aqua status uses Tesla wording")
+    if craft_id == "spirit-opportunity":
+        check("until Perseverance passed it in October 2026" in facts_text, f"{tag} spirit-opportunity fun fact uses Tesla wording")
+    if craft_id == "soho":
+        sub = page.locator("#subtitle").inner_text()
+        check(sub == "Has watched the Sun for three decades", f"{tag} soho subtitle uses Tesla wording ({sub!r})")
     if craft_id == "voyager":
         check("Voyager 1 has sent only a basic radio signal" in facts_text, f"{tag} voyager status uses Tesla wording")
         check("about 722 kg each at launch" in facts_text, f"{tag} voyager mass uses Tesla wording")

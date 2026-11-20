@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "module": "spaceships",
-  "note": "Nineteen official NASA spacecraft. GLB, USDZ, and stills are wired. Fact rows were checked by Tesla on Nov 20, 2026 (America/New_York). Eleven wording fixes from that review are applied. Voyager Status and Perseverance Status are time-sensitive and need a recheck before publish.",
+  "note": "Forty-nine official NASA 3D Resources models wired from Angelo's pack. Wave 1 (19 craft) facts were checked by Tesla on Nov 20, 2026 and are verified:true. Wave 2 (30 craft) facts were checked by Tesla on Nov 20, 2026 (America/New_York); all 240 rows are verified:true, with his student wording on the Must and Should fact fixes. mars-odyssey Status and aqua Status are time-sensitive and must be rechecked before publish. Rosetta and GPM were built as spares and are not in this fleet. Per-craft source notes live in docs/spaceships-fleet-meta.json.",
   "source": "https://science.nasa.gov/3d-resources/",
   "credit": "3D model courtesy NASA",
   "placeholderGlb": "models/_placeholder.glb",
@@ -1163,6 +1163,1827 @@
         {
           "label": "Fun fact",
           "value": "The orbiter had no engines working during landing. It glided all the way down to the runway.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "gemini",
+      "name": "Gemini",
+      "subtitle": "The two-person capsule that practiced the moves for the Moon",
+      "tags": [
+        "crewed"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/gemini.webp",
+      "glb": "models/gemini.glb",
+      "usdz": "models/gemini.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/gemini/",
+      "sourceLabel": "NASA 3D Resources: Gemini",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Project Gemini: 10 crewed flights in Earth orbit (1965 to 1966)",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "1965 (first crewed flight, Gemini 3)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Retired (last flight Gemini 12, November 1966)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "About 5.7 m long and 3 m across the base.",
+          "verified": true,
+          "sources": [
+            "https://ntrs.nasa.gov/api/citations/19680016105/downloads/19680016105.pdf"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "3,663 kg (Gemini 7 at launch)",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Gemini carried two astronauts and was the bridge between Mercury and Apollo. Its crews practiced what a Moon trip would need: spacewalks, flights of up to two weeks, and meeting and docking with another spacecraft in orbit.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "In December 1965, Gemini 6A and Gemini 7 flew within about 30 cm (1 foot) of each other. It was the first time two crewed spacecraft met in orbit.",
+          "verified": true,
+          "sources": [
+            "https://www.nasa.gov/missions/gemini/dual-gemini-flights-achieved-crucial-spaceflight-milestones/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mercury-friendship-7",
+      "name": "Mercury Friendship 7",
+      "subtitle": "The capsule that carried John Glenn around Earth",
+      "tags": [
+        "crewed"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/mercury-friendship-7.webp",
+      "glb": "models/mercury-friendship-7.glb",
+      "usdz": "models/mercury-friendship-7.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/atlas-6-friendship-7/",
+      "sourceLabel": "NASA 3D Resources: Atlas 6 (Friendship 7)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Mercury-Atlas 6: first American crewed orbital flight",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "February 20, 1962",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Retired after one flight (now at the Smithsonian's National Air and Space Museum)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "About 2.7 m (9 ft) tall and 1.9 m wide at the bottom, small enough that Glenn barely fit inside.",
+          "verified": true,
+          "sources": [
+            "https://www.nasa.gov/wp-content/uploads/2015/03/167718main_early_years.pdf"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "about 1,350 kg",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "John Glenn flew Friendship 7 around Earth three times in just under five hours. A warning signal suggested the heat shield might be loose, so he kept the retrorocket pack strapped on during reentry. The heat shield turned out to be fine.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "At each sunrise Glenn saw glowing specks drifting outside his window and called them fireflies. They turned out to be bits of frost from the capsule's small steering thrusters, which Scott Carpenter proved on the next flight by tapping the wall.",
+          "verified": true,
+          "sources": [
+            "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1962-003A"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "apollo-soyuz",
+      "name": "Apollo-Soyuz",
+      "subtitle": "The 1975 handshake in orbit between American and Soviet crews",
+      "tags": [
+        "crewed"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/apollo-soyuz.webp",
+      "glb": "models/apollo-soyuz.glb",
+      "usdz": "models/apollo-soyuz.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/apollo-soyuz/",
+      "sourceLabel": "NASA 3D Resources: Apollo Soyuz",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Apollo-Soyuz Test Project: first joint U.S.-Soviet spaceflight",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA and the Soviet space program",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "July 15, 1975 (both spacecraft)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Retired (Apollo splashed down July 24, 1975)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "Apollo command and service module about 11 m long and 3.9 m wide",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "about 14,860 kg (the Apollo side, at launch)",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Three American astronauts and two Soviet cosmonauts met in orbit during the Cold War. A docking module built for the mission let the two very different spacecraft connect, and the crews visited each other's ships, shared meals and ran experiments together.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "On July 17, 1975, Tom Stafford and Alexei Leonov shook hands through the open hatch between the two spacecraft.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "skylab",
+      "name": "Skylab",
+      "subtitle": "America's first space station",
+      "tags": [
+        "crewed"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/skylab.webp",
+      "glb": "models/skylab.glb",
+      "usdz": "models/skylab.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models/Skylab",
+      "sourceLabel": "NASA 3D Resources: Skylab (GitHub mirror)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "First U.S. space station; three crews lived aboard in 1973 and 1974",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "May 14, 1973",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Fell back to Earth July 11, 1979 (pieces landed in the Indian Ocean and Western Australia)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "about 36 m long with an Apollo spacecraft docked",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "about 90,600 kg (station at launch)",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Skylab was built from a leftover Saturn V rocket stage. A shield tore off during launch, so the first crew put up a sunshade to cool it down. Three crews stayed 28, 59 and 84 days, studying the Sun, Earth, and how the human body copes with space.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "The workshop was so roomy that astronauts could run laps around a ring of storage lockers.",
+          "verified": true,
+          "sources": [
+            "https://www.smithsonianmag.com/air-space-magazine/orbiting-in-a-fuel-tank-180947752/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pioneer-10",
+      "name": "Pioneer 10",
+      "subtitle": "The first spacecraft to cross the asteroid belt and fly past Jupiter",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/pioneer-10.webp",
+      "glb": "models/pioneer-10.glb",
+      "usdz": "models/pioneer-10.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/pioneer/",
+      "sourceLabel": "NASA 3D Resources: Pioneer 10",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Jupiter flyby, then out of the solar system",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "March 2, 1972 (U.S. time)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Last signal received January 23, 2003",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "2.74 m dish antenna; 6.6 m magnetometer boom",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "258 kg at launch",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Pioneer 10 proved a spacecraft could survive the asteroid belt and Jupiter's radiation. It took the first close-up pictures of Jupiter in December 1973, then kept going outward and became one of the first human-made objects headed out of the solar system.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "It carries a gold-anodized aluminum plaque with drawings of a man and a woman and a map showing where Earth is, in case anyone ever finds it.",
+          "verified": true,
+          "sources": [
+            "https://space.physics.uiowa.edu/pioneer/other/plaque.html"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "magellan",
+      "name": "Magellan",
+      "subtitle": "Mapped Venus through its clouds with radar",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/magellan.webp",
+      "glb": "models/magellan.glb",
+      "usdz": "models/magellan.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/magellan/",
+      "sourceLabel": "NASA 3D Resources: Magellan",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Venus radar-mapping orbiter",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA / JPL",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "May 4, 1989 (from Space Shuttle Atlantis)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Mission ended October 1994 (steered into Venus's atmosphere)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "3.7 m dish antenna",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "3,445 kg at launch",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Thick clouds hide the surface of Venus, but radar can see through them. Magellan bounced radar off the ground and mapped 98% of the planet, revealing volcanoes, lava plains and surprisingly few craters.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "To save money, Magellan was built partly from spare parts left over from earlier missions, including a spare Voyager dish antenna.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "mro",
+      "name": "Mars Reconnaissance Orbiter",
+      "subtitle": "Takes the sharpest pictures of Mars from orbit",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/mro.webp",
+      "glb": "models/mro.glb",
+      "usdz": "models/mro.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/mars-reconnaissance-orbiter-mro-c/",
+      "sourceLabel": "NASA 3D Resources: Mars Reconnaissance Orbiter (MRO) (C)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Mars orbiter: high-resolution imaging and relay for landers",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA / JPL",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "August 12, 2005",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Operating (as of Nov 2026)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "13.6 m across its solar panels, 6.5 m tall; 3 m dish antenna",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "2,180 kg at launch (including 1,149 kg of fuel)",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "MRO's HiRISE camera can make out features on Mars about 1 meter across. The orbiter studies layered rocks, ice and dust storms, and it relays messages between rovers on the surface and Earth.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "In 2012 it photographed the Curiosity rover drifting down to Mars under its parachute.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "lro",
+      "name": "Lunar Reconnaissance Orbiter",
+      "subtitle": "Mapping the Moon in fine detail since 2009",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/lro.webp",
+      "glb": "models/lro.glb",
+      "usdz": "models/lro.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/lunar-reconnaissance-orbiter-b/",
+      "sourceLabel": "NASA 3D Resources: Lunar Reconnaissance Orbiter (B)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Lunar orbiter mapping the Moon",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "June 18, 2009",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Operating (as of Nov 2026)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "3.9 m long, 2.7 m wide, 2.6 m tall (folded for launch)",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "1,916 kg at launch",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "LRO maps the Moon's surface, temperatures and radiation to help plan future landings. Its cameras have photographed the Apollo landing sites, showing the descent stages, rover tracks and astronaut footpaths.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "It measured about -238 C inside permanently shadowed craters near the Moon's south pole, one of the coldest places measured in the solar system.",
+          "verified": true,
+          "sources": [
+            "https://www.cbc.ca/news/science/shadowy-moon-crater-coldest-spot-yet-measured-1.851001"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "osiris-rex",
+      "name": "OSIRIS-REx",
+      "subtitle": "Grabbed rock and dust from asteroid Bennu and sent it to Earth",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/osiris-rex.webp",
+      "glb": "models/osiris-rex.glb",
+      "usdz": "models/osiris-rex.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/origins-spectral-interpretation-resource-identification-and-security-regolith-explorer-osiris-rex/",
+      "sourceLabel": "NASA 3D Resources: Origins, Spectral Interpretation, Resource Identification, and Security - Regolith Explorer (OSIRIS-REx)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Asteroid sample return from Bennu; now OSIRIS-APEX, headed for asteroid Apophis",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "September 8, 2016",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Operating as OSIRIS-APEX, on its way to Apophis (arrival 2029; as of Nov 2026)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "6.2 m long with solar arrays out, 2.43 m wide, 3.15 m tall",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "2,110 kg at launch, fueled (880 kg empty)",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "OSIRIS-REx studied asteroid Bennu for two years, then touched it for a few seconds in October 2020 to collect a sample. Its capsule landed in the Utah desert on September 24, 2023, carrying 121.6 grams of material from the early solar system.",
+          "verified": true,
+          "sources": [
+            "https://science.nasa.gov/blogs/osiris-rex/2024/02/15/nasa-announces-osiris-rex-bulk-sample-mass/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Bennu's surface was so loose that the sampling arm sank in as if it were pressing into a ball pit.",
+          "verified": true,
+          "sources": [
+            "https://www.nasa.gov/missions/surprise-again-asteroid-bennu-reveals-its-surface-is-like-a-plastic-ball-pit/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "insight",
+      "name": "InSight Mars Lander",
+      "subtitle": "Listened for marsquakes to study the inside of Mars",
+      "tags": [
+        "lander"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/insight.webp",
+      "glb": "models/insight.glb",
+      "usdz": "models/insight.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/insight-cruise-lander/",
+      "sourceLabel": "NASA 3D Resources: InSight Cruise Lander",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Mars lander studying the planet's deep interior",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA / JPL",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "May 5, 2018 (landed November 26, 2018)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Mission ended December 2022 (dust covered its solar panels)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "about 6 m across with solar panels open",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "about 358 kg (lander)",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "InSight set a seismometer on the Martian ground to feel marsquakes. It recorded more than 1,300 of them, which let scientists measure the thickness of Mars's crust and the size of its liquid core.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Each round solar panel unfolded like a hand fan and was about 2.2 m across.",
+          "verified": true,
+          "sources": [
+            "https://www.nasa.gov/missions/insight/nasas-insight-still-hunting-marsquakes-as-power-levels-diminish/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "spirit-opportunity",
+      "name": "Spirit and Opportunity",
+      "subtitle": "Twin rovers that found signs of ancient water on Mars",
+      "tags": [
+        "rover"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/spirit-opportunity.webp",
+      "glb": "models/spirit-opportunity.glb",
+      "usdz": "models/spirit-opportunity.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/mars-exploration-rover-spirit-and-opportunity/",
+      "sourceLabel": "NASA 3D Resources: Mars Exploration Rover - Spirit and Opportunity",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Mars Exploration Rovers (two identical rovers)",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA / JPL",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "2003 (both landed January 2004)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Retired: Spirit last heard from March 2010, Opportunity June 2018",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "1.5 m tall, 2.3 m wide, 1.6 m long",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "185 kg each",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Each rover was planned to work for about 90 Martian days. Spirit lasted more than six years and Opportunity almost 15. Both found rocks and minerals that formed in water, showing that early Mars was much wetter than today.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Opportunity drove 45.16 km (28.06 miles) on Mars. That was the record for driving on another world until Perseverance passed it in October 2026.",
+          "verified": true,
+          "sources": [
+            "https://science.nasa.gov/mission/mars-exploration-rovers-spirit-and-opportunity/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "spitzer",
+      "name": "Spitzer Space Telescope",
+      "subtitle": "Saw the universe in infrared, the light of heat",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/spitzer.webp",
+      "glb": "models/spitzer.glb",
+      "usdz": "models/spitzer.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/spitzer-space-telescope/",
+      "sourceLabel": "NASA 3D Resources: Spitzer Space Telescope",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Infrared space telescope, one of NASA's four Great Observatories",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA / JPL / Caltech",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "August 25, 2003",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Retired January 30, 2020",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "About 4 m (13 ft) tall.",
+          "verified": true,
+          "sources": [
+            "https://www.jpl.nasa.gov/news/press_kits/spitzer/quick-facts/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "950 kg at launch",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Spitzer detected infrared light, which is heat, so it could see through dust clouds to find newborn stars and study planets around other stars. It had to stay very cold, so it trailed behind Earth in its own orbit around the Sun.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "In 2017 it helped reveal seven Earth-size planets around the star TRAPPIST-1.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "fermi",
+      "name": "Fermi Gamma-ray Space Telescope",
+      "subtitle": "Watches the sky for the most energetic light in the universe",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/fermi.webp",
+      "glb": "models/fermi.glb",
+      "usdz": "models/fermi.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/fermi-gamma-ray-large-area-space-telescope/",
+      "sourceLabel": "NASA 3D Resources: Fermi Gamma-ray Large Area Space Telescope",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Gamma-ray observatory",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA, U.S. Department of Energy, and partners in France, Germany, Italy, Japan and Sweden",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "June 11, 2008",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Operating (as of Nov 2026)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "2.9 m tall; solar panels 15 m tip to tip",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "4,303 kg at launch",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Gamma rays are the highest-energy form of light. Fermi scans the whole sky about every three hours, catching gamma-ray bursts, flaring black holes and spinning neutron stars called pulsars.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Fermi found two giant bubbles of gamma rays above and below the center of our Milky Way, each about 25,000 light-years tall.",
+          "verified": true,
+          "sources": [
+            "https://www.nasa.gov/universe/nasas-fermi-telescope-finds-giant-structure-in-our-galaxy/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "swift",
+      "name": "Neil Gehrels Swift Observatory",
+      "subtitle": "Raced to catch gamma-ray bursts, the biggest explosions in the universe",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/swift.webp",
+      "glb": "models/swift.glb",
+      "usdz": "models/swift.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/swift/",
+      "sourceLabel": "NASA 3D Resources: Swift",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Gamma-ray burst observatory",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA, with partners in the UK and Italy",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "November 20, 2004",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Re-entered Earth's atmosphere November 4, 2026, after its orbit decayed",
+          "verified": true,
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "5.6 m tall; solar panels 4 m long",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "1,470 kg",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "When Swift spotted a gamma-ray burst, it turned itself toward the burst in about a minute and a half, all on its own, to watch the fading afterglow in X-rays, ultraviolet and visible light. It also studied comets, exploding stars and black holes for almost 22 years.",
+          "verified": true,
+          "sources": [
+            "https://swift.gsfc.nasa.gov/about_swift/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It was named after the swift, a small bird that can turn quickly in flight.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "terra",
+      "name": "Terra",
+      "subtitle": "The flagship of NASA's Earth-watching satellites",
+      "tags": [
+        "earth-observer"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/terra.webp",
+      "glb": "models/terra.glb",
+      "usdz": "models/terra.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/terra/",
+      "sourceLabel": "NASA 3D Resources: Terra",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Earth Observing System flagship: land, oceans, air and energy balance",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA, with instruments from Japan and Canada",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "December 18, 1999",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Ending: science data stops December 1, 2026; power-off planned January 2027 (as of Nov 17, 2026)",
+          "verified": true,
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "body 6.8 m long, 3.5 m across (about the size of a small school bus)",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "5,190 kg at launch",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Terra's instruments measure land, oceans, clouds, air pollution and Earth's energy balance at the same time. Designed for six years, it worked for 27, building a long record of wildfires, ice, forests and cities.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Its MODIS camera images nearly the whole Earth every one to two days.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "aqua",
+      "name": "Aqua",
+      "subtitle": "Tracks Earth's water: clouds, rain, ice and oceans",
+      "tags": [
+        "earth-observer"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/aqua.webp",
+      "glb": "models/aqua.glb",
+      "usdz": "models/aqua.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/aqua-a/",
+      "sourceLabel": "NASA 3D Resources: Aqua (A)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Earth Observing System water-cycle mission",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA, with instruments from Japan and Brazil",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "May 4, 2002",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Still working, but out of fuel for orbit boosts, so it is slowly drifting lower (as of November 2026).",
+          "verified": true,
+          "recheckBeforePublish": true,
+          "sources": [
+            "https://science.nasa.gov/mission/aqua/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "4.8 m x 16.7 m x 8 m with its solar array out",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "2,934 kg at launch",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Aqua is named for water. It measures water vapor, clouds, rain, sea ice, snow and ocean temperatures, helping weather forecasters and climate scientists. It crosses the equator in the afternoon, so it sees places at a different time of day than Terra.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Aqua was designed to last six years and has been working for more than 24.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "landsat-8",
+      "name": "Landsat 8",
+      "subtitle": "Part of the longest-running record of Earth's land from space",
+      "tags": [
+        "earth-observer"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/landsat-8.webp",
+      "glb": "models/landsat-8.glb",
+      "usdz": "models/landsat-8.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/landsat-8/",
+      "sourceLabel": "NASA 3D Resources: Landsat 8",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Earth land-imaging satellite",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA and the U.S. Geological Survey",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "February 11, 2013",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Operating (as of Nov 2026)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "about 4.9 m (16 ft) tall; solar array about 9.8 m (32 ft) long",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "about 2,780 kg (6,133 lb)",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Landsat satellites have photographed Earth's land since 1972. Landsat 8 covers the whole planet every 16 days, so scientists can track crops, forests, glaciers, cities and wildfire scars over decades.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Each Landsat 8 scene covers a strip of ground about 185 km wide.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "soho",
+      "name": "SOHO",
+      "subtitle": "Has watched the Sun for three decades",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/soho.webp",
+      "glb": "models/soho.glb",
+      "usdz": "models/soho.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/solar-and-heliospheric-observatory-soho/",
+      "sourceLabel": "NASA 3D Resources: Solar and Heliospheric Observatory (SOHO)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Solar and Heliospheric Observatory",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "ESA and NASA",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "December 2, 1995",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Operating (as of Nov 2026)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "4.3 m tall; 9.5 m across its solar panels",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "1,850 kg at launch",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "SOHO sits about 1.5 million km from Earth, at a spot where it can see the Sun all the time. It studies the Sun's interior, its outer atmosphere and the solar wind, and it gives early warning of solar storms.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Although it was built to study the Sun, SOHO is the greatest comet finder in history. It passed 5,000 comets in 2024, most of them spotted by volunteers looking at its images.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "stardust",
+      "name": "Stardust",
+      "subtitle": "Caught comet dust and brought it home",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/stardust.webp",
+      "glb": "models/stardust.glb",
+      "usdz": "models/stardust.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/stardust/",
+      "sourceLabel": "NASA 3D Resources: Stardust",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Comet Wild 2 sample return",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA / JPL",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "February 7, 1999",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Retired March 24, 2011 (sample capsule landed January 15, 2006)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "Its body was about 1.7 m tall, and its solar panels stretched 4.8 m tip to tip.",
+          "verified": true,
+          "sources": [
+            "https://www.jpl.nasa.gov/news/press_kits/stardust.pdf"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "385 kg at launch",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Stardust flew through the dust around comet Wild 2 in 2004 and caught tiny particles. Its capsule parachuted into Utah in 2006, the first time material from a comet was brought back to Earth.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "It caught the dust in aerogel, one of the lightest solids ever made, which slowed the speeding grains gently, like a very soft catcher's mitt.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "deep-impact",
+      "name": "Deep Impact",
+      "subtitle": "Fired an impactor into a comet to see what's inside",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/deep-impact.webp",
+      "glb": "models/deep-impact.glb",
+      "usdz": "models/deep-impact.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/deep-impact/",
+      "sourceLabel": "NASA 3D Resources: Deep Impact (EPOXI)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Comet Tempel 1 impact, later extended as EPOXI",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA / JPL",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "January 12, 2005",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Contact lost August 2013; mission ended September 2013",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "The flyby spacecraft was about 3.3 m long, 1.7 m wide and 2.3 m high.",
+          "verified": true,
+          "sources": [
+            "https://www.jpl.nasa.gov/news/press_kits/deep-impact-launch.pdf"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "973 kg at launch (601 kg flyby craft + 372 kg impactor)",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "On July 4, 2005, Deep Impact released a 372 kg impactor into the path of comet Tempel 1. The flyby spacecraft watched the crash, which blasted out a bright cloud of dust and ice and showed what the comet's surface was made of.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "The impactor hit the comet at about 10 km per second, or roughly 37,000 km/h.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "messenger",
+      "name": "MESSENGER",
+      "subtitle": "The first spacecraft to orbit Mercury",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/messenger.webp",
+      "glb": "models/messenger.glb",
+      "usdz": "models/messenger.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/mercury-surface-space-environment-geochemistry-and-ranging-messenger/",
+      "sourceLabel": "NASA 3D Resources: MErcury Surface, Space ENvironment, GEochemistry, and Ranging (MESSENGER)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Mercury orbiter",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA / Johns Hopkins APL",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "August 3, 2004",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Mission ended April 30, 2015 (crashed into Mercury as planned)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "body 1.27 m x 1.42 m x 1.85 m; sunshade about 2.5 m tall; 3.6 m magnetometer boom",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "about 1,108 kg at launch, more than half of it fuel",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "MESSENGER used flybys of Earth, Venus and Mercury to slow down enough to enter orbit around Mercury in March 2011. It mapped the whole planet and found evidence of water ice in polar craters that never see sunlight.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "A heat-resistant sunshade kept the spacecraft near room temperature while its sunny side faced up to about 370 C (700 F).",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "mars-odyssey",
+      "name": "2001 Mars Odyssey",
+      "subtitle": "The longest-working spacecraft at Mars",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/mars-odyssey.webp",
+      "glb": "models/mars-odyssey.glb",
+      "usdz": "models/mars-odyssey.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/mars-odyssey/",
+      "sourceLabel": "NASA 3D Resources: Mars Odyssey",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Mars orbiter: mapping and communications relay",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA / JPL",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "April 7, 2001",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Odyssey has paused its science because one of the spinning wheels it uses to point itself stopped working. Engineers are testing it and hope to restart science in late November 2026.",
+          "verified": true,
+          "recheckBeforePublish": true,
+          "sources": [
+            "https://science.nasa.gov/blogs/mars/2026/11/19/nasas-perseverance-odyssey-teams-investigate-technical-issues/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "body 2.2 m long, 1.7 m tall, 2.6 m wide; solar array 5.7 m",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "725 kg at launch",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Odyssey mapped the minerals of Mars and found large amounts of water ice just under the surface near the poles. For years it has also relayed messages between rovers on Mars and Earth.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "It is named after the book and film 2001: A Space Odyssey.",
+          "verified": true,
+          "sources": [
+            "https://www.jpl.nasa.gov/news/nasas-next-spacecraft-to-the-red-planet/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sdo",
+      "name": "Solar Dynamics Observatory",
+      "subtitle": "Films the Sun in ultra-high definition",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/sdo.webp",
+      "glb": "models/sdo.glb",
+      "usdz": "models/sdo.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models/Solar%20Dynamics%20Observatory",
+      "sourceLabel": "NASA 3D Resources: Solar Dynamics Observatory (GitHub mirror)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Solar observatory studying the Sun's magnetic activity",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "February 11, 2010",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Operating (as of Nov 2026)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "4.5 m tall, 2.2 m wide; 6.25 m across its solar panels",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "3,100 kg at launch, fueled",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "SDO photographs the whole Sun in several colors of light about every 10 seconds. It tracks sunspots, flares and the Sun's magnetic field to help scientists understand and predict space weather.",
+          "verified": true,
+          "sources": [
+            "https://sdo.gsfc.nasa.gov/assets/docs/sdo_factsheet.pdf"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "SDO sends back about 1.5 terabytes of data every day.",
+          "verified": true,
+          "sources": [
+            "https://sdo.gsfc.nasa.gov/assets/docs/sdo_factsheet.pdf"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stereo",
+      "name": "STEREO",
+      "subtitle": "Twin spacecraft that gave the first 3D views of solar storms",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/stereo.webp",
+      "glb": "models/stereo.glb",
+      "usdz": "models/stereo.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models/Solar%20TErrestrial%20RElations%20Observatory%20(STEREO)",
+      "sourceLabel": "NASA 3D Resources: Solar TErrestrial RElations Observatory (STEREO) (GitHub mirror)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Solar Terrestrial Relations Observatory (two spacecraft)",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "October 25, 2006 (U.S. time)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "STEREO-A operating (as of Nov 2026); STEREO-B lost contact in 2014",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "1.14 m tall, 2.03 m deep, 6.47 m wide with solar arrays",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "about 620 kg each",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "The two STEREO spacecraft spread out ahead of and behind Earth in its orbit around the Sun. Seeing from two angles, they made 3D views of eruptions on the Sun, and in 2011 they let scientists see the entire Sun at once for the first time.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "STEREO-A has gone all the way around the Sun and caught up with Earth again from behind, passing Earth in 2023.",
+          "verified": true,
+          "sources": [
+            "https://www.nasa.gov/centers-and-facilities/goddard/after-seventeen-years-a-spacecraft-makes-its-first-visit-home/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "deep-space-1",
+      "name": "Deep Space 1",
+      "subtitle": "Proved that ion engines work in deep space",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/deep-space-1.webp",
+      "glb": "models/deep-space-1.glb",
+      "usdz": "models/deep-space-1.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/deep-space-1/",
+      "sourceLabel": "NASA 3D Resources: Deep Space 1",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Technology test mission, then asteroid and comet flybys",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA / JPL",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "October 24, 1998",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Retired December 18, 2001",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "2.5 m tall, 2.1 m deep, 1.7 m wide; solar wings span 11.75 m",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "486 kg at launch",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Deep Space 1 tested 12 new technologies, including an ion engine that used electricity to push out xenon gas. It then flew past asteroid Braille and comet Borrelly and took close-up pictures of the comet's core.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Its ion engine ran for more than 16,000 hours, a record at the time.",
+          "verified": true,
+          "sources": [
+            "https://science.nasa.gov/mission/deep-space-1/",
+            "https://www.nasa.gov/history/25-years-ago-launch-of-deep-space-1-technology-demonstration-spacecraft/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "near-shoemaker",
+      "name": "NEAR Shoemaker",
+      "subtitle": "The first spacecraft to orbit and land on an asteroid",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/near-shoemaker.webp",
+      "glb": "models/near-shoemaker.glb",
+      "usdz": "models/near-shoemaker.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/near-shoemaker/",
+      "sourceLabel": "NASA 3D Resources: NEAR Shoemaker",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Asteroid 433 Eros orbiter",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA / Johns Hopkins APL",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "February 17, 1996",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Mission ended February 28, 2001, after landing on Eros",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "body about 1.7 m wide; 1.5 m dish antenna; four solar panels",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "805 kg at launch",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "NEAR orbited asteroid 433 Eros for a year and mapped its rocky, cratered surface. It was not built to land, but on February 12, 2001 the team set it down gently on Eros, and it kept sending data from the surface for about two more weeks.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "It was renamed in honor of Eugene Shoemaker, a planetary geologist famous for studying impact craters.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "ladee",
+      "name": "LADEE",
+      "subtitle": "Studied the Moon's thin atmosphere and floating dust",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/ladee.webp",
+      "glb": "models/ladee.glb",
+      "usdz": "models/ladee.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/lunar-atmosphere-and-dust-environment-explorer-ladee/",
+      "sourceLabel": "NASA 3D Resources: Lunar Atmosphere and Dust Environment Explorer (LADEE)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Lunar orbiter studying the Moon's exosphere and dust",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "September 6, 2013 (U.S. time), from Wallops Island, Virginia",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Mission ended April 18, 2014 (impacted the Moon's far side as planned)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "about 2.37 m tall, 1.85 m wide",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "383 kg at launch",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "The Moon has an extremely thin atmosphere called an exosphere. LADEE flew low over the Moon to sample it and to check whether dust floats above the surface. It also tested sending data by laser.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "Its laser link sent data from the Moon at 622 megabits per second, a record for laser communication from that distance at the time.",
+          "verified": true,
+          "sources": [
+            "https://www.nasa.gov/news-release/nasa-laser-communication-system-sets-record-with-data-transmissions-to-and-from-moon/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "explorer-1",
+      "name": "Explorer 1",
+      "subtitle": "America's first satellite, on its Juno I rocket",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/explorer-1.webp",
+      "glb": "models/explorer-1.glb",
+      "usdz": "models/explorer-1.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/explorer-jupiter-c-rocket/",
+      "sourceLabel": "NASA 3D Resources: Explorer Jupiter-C Rocket",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "First U.S. Earth satellite",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "U.S. Army and JPL (Explorer 1 moved to NASA after NASA formed in late 1958)",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "January 31, 1958 (U.S. time)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Stopped transmitting May 23, 1958; burned up in the atmosphere March 31, 1970",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "rocket 21.72 m tall with the satellite; Explorer 1 itself 2.05 m long",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "Explorer 1: 13.9 kg (30.66 lb)",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Explorer 1 was a slim tube riding on top of the rocket's last stage. Its cosmic-ray instrument, built by James Van Allen's team, found belts of trapped radiation around Earth, now called the Van Allen belts.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "The satellite stayed joined to the rocket's small last stage, so the whole 2 m piece circled Earth together.",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "id": "compton",
+      "name": "Compton Gamma Ray Observatory",
+      "subtitle": "NASA's heavyweight gamma-ray Great Observatory",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/compton.webp",
+      "glb": "models/compton.glb",
+      "usdz": "models/compton.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/gamma-ray-observatory/",
+      "sourceLabel": "NASA 3D Resources: Gamma Ray Observatory",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Gamma-ray observatory, one of NASA's four Great Observatories",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "April 5, 1991 (from Space Shuttle Atlantis)",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Deorbited June 4, 2000 (steered into the Pacific Ocean)",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "about 9.1 m long, 4.6 m wide; solar arrays span 21.3 m",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "about 16,300 kg",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "Compton carried four instruments that covered a huge range of gamma-ray energies. It found that gamma-ray bursts come from all directions in the sky, a clue that they happen in faraway galaxies rather than in our own.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "At about 16,300 kg, it was the heaviest astrophysics payload the Space Shuttle had carried up to that time.",
+          "verified": true,
+          "sources": [
+            "https://www.nasa.gov/centers-and-facilities/goddard/nasa-celebrates-25-years-of-breakthrough-gamma-ray-science/",
+            "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1991-027B"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wmap",
+      "name": "WMAP",
+      "subtitle": "Measured the age of the universe from the Big Bang's afterglow",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/wmap.webp",
+      "glb": "models/wmap.glb",
+      "usdz": "models/wmap.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/wilkinson-microwave-anisotropy-probe-wmap/",
+      "sourceLabel": "NASA 3D Resources: Wilkinson Microwave Anisotropy Probe (WMAP)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Mapping the cosmic microwave background",
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "value": "June 30, 2001",
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "value": "Science ended August 2010; turned off October 2010",
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "value": "3.8 m tall; 5.0 m wide across its sunshield",
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "value": "840 kg at launch",
+          "verified": true
+        },
+        {
+          "label": "About",
+          "value": "WMAP mapped the cosmic microwave background, faint heat left over from the early universe, across the whole sky. Its measurements pinned the age of the universe at about 13.77 billion years and showed how much of it is normal matter, dark matter and dark energy.",
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "value": "It worked about 1.5 million km from Earth, on the side away from the Sun, where it could stay shaded and very cold.",
           "verified": true
         }
       ]

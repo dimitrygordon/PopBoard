@@ -11,7 +11,8 @@ $("studyBackBtn").addEventListener("click", (e) => {
 
 $("searchForm").addEventListener("submit", (e) => e.preventDefault());
 
-const TAG_ORDER = ["crewed", "observatory", "probe", "rover", "lander", "rotorcraft"];
+const TAG_ORDER = ["crewed", "observatory", "earth-observer", "probe", "rover", "lander", "rotorcraft"];
+const TAG_LABELS = { "earth-observer": "Earth observers" };
 const fleet = await loadFleet();
 const all = listedCraft(fleet);
 const tags = TAG_ORDER.filter((t) => all.some((c) => (c.tags || []).includes(t)));
@@ -43,7 +44,7 @@ function renderFilters() {
     return btn;
   };
   bar.append(make("", "All"));
-  for (const tag of tags) bar.append(make(tag, tag));
+  for (const tag of tags) bar.append(make(tag, TAG_LABELS[tag] || tag));
 }
 
 function render() {
@@ -76,7 +77,7 @@ function render() {
     if (craft.tags && craft.tags[0]) {
       const tag = document.createElement("p");
       tag.className = "tag";
-      tag.textContent = craft.tags[0];
+      tag.textContent = TAG_LABELS[craft.tags[0]] || craft.tags[0];
       meta.append(tag);
     }
     if (craft.placeholder) {
