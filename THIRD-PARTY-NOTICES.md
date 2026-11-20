@@ -40,3 +40,15 @@ These subsets (Latin, Greek, and arrows) in `public/fonts/` come from Google Fon
 ## Jost font
 
 `public/fonts/jost-latin-400.woff2`, `jost-latin-500.woff2`, `jost-latin-600.woff2`, and `jost-latin-700.woff2` are Latin subsets of Jost by indestructible type (Owen Earl), from Fontsource (`jost@5`). Licensed under the SIL Open Font License 1.1 (https://openfontlicense.org).
+
+## Gravity and Orbits 3D assets
+
+Planet and moon maps in `public/gravity-orbits/models/` (Earth, Moon, Mars, Jupiter, and related bodies) use textures by Solar System Scope, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). https://www.solarsystemscope.com/textures/
+
+ISS and Hubble 3D models, and Galilean moon maps, are NASA media. Credit NASA. No NASA insignia or endorsement.
+
+Star map `starmap_2020_4k.jpg` (and the mobile downscale `starmap_2020_2k.jpg`) is NASA SVS "Deep Star Maps 2020." Credit NASA / Ernie Wright.
+
+Orbital facts in `orbits.json` and `kepler.json` cite NSSDC Earth, Moon, Mars, Jupiter, Jovian Satellite, and Comet Fact Sheets, and NASA Science 1P/Halley.
+
+Satellite surface detail in the GPS and GEO teaching models uses Poly Haven and TextureCan material, CC0.

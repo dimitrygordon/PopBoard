@@ -1,7 +1,7 @@
 import { forwardStudyQuery } from "../board-return.js?v=20261022a";
 import {
   loadKeplerData, presetFromSearch, bodyOrbit, galilean, ellipsePoints,
-  emptyFocus, assetCandidates, reducedMotion
+  emptyFocus, assetCandidates, loadAssetMap, reducedMotion
 } from "./kc-model.js";
 import { createScene, circlePoints } from "./kc-scene.js";
 
@@ -18,14 +18,22 @@ $("studyBackBtn").addEventListener("click", (e) => {
 const data = await loadKeplerData();
 const preset = presetFromSearch(data.lessons) || { id: "default", mode: "circles" };
 const scene = await createScene($("scene"));
-scene.trySkybox(assetCandidates("skybox"));
+await loadAssetMap();
+await scene.trySkybox(assetCandidates("skybox"));
+if ($("assetFlag")) {
+  $("assetFlag").textContent = "Meshes load from gravity-orbits by filename. If a file is missing, a placeholder is shown.";
+}
 
 let cut = false;
 let angle = 0.7; // radians from +X, counterclockwise; start off the axis so both arrows are on screen
 const RADIUS = 1.6;
 let vArrow = null, fArrow = null, mass = null;
+let stringLine = null;
+let loadGen = 0;
+const BODY_ASSET = { Earth: "earth", Mars: "mars", "1P/Halley": "comet", Halley: "comet" };
 
-applyPreset(preset);
+
+await applyPreset(preset);
 wire();
 
 function wire() {
@@ -42,7 +50,8 @@ function openMode(mode) {
   applyPreset({ ...preset, mode, id: preset.id });
 }
 
-function applyPreset(p) {
+async function applyPreset(p) {
+  const my = ++loadGen;
   cut = false;
   $("presetName").textContent = titleFor(p);
   $("note").textContent = noteFor(p);
@@ -52,17 +61,26 @@ function applyPreset(p) {
   $("cutBtn").disabled = false;
   syncModeButtons(mode);
   scene.clear();
-  if (mode === "circles") setupCircles(p);
-  else if (mode === "moons") setupMoons();
-  else setupEllipses(p, "inner");
+  scene.stopTick();
+  if (mode === "circles") await setupCircles(p, my);
+  else if (mode === "moons") await setupMoons(my);
+  else await setupEllipses(p, "inner", my);
 }
 
-function setupCircles() {
-  scene.setCamera([0, 0.15, 7.0]);
+async function setupCircles(_p, my = loadGen) {
+  scene.setCamera([0, 0.15, innerWidth <= 600 ? 10 : 7.0]);
   scene.addLine(circlePoints(RADIUS), 0x3a3a3a);
   // Center (inward pull points here). No outward arrow is ever created.
   scene.addDot({ x: 0, y: 0, z: 0 }, 0.06, 0xcccccc);
-  mass = scene.addDot({ x: RADIUS, y: 0, z: 0 }, 0.1, GREEN);
+  const stopperGltf = await scene.tryGlb(assetCandidates("stopper"));
+  if (my !== loadGen) return;
+  if (stopperGltf) {
+    mass = scene.addModel(stopperGltf.scene, { p: { x: RADIUS, y: 0, z: 0 }, visualSize: 0.14 });
+  } else {
+    mass = scene.addDot({ x: RADIUS, y: 0, z: 0 }, 0.1, GREEN);
+  }
+  stringLine = scene.addDynamicLine(0xcccccc);
+  stringLine.userData.setEnds({ x: 0, y: 0, z: 0 }, { x: RADIUS, y: 0, z: 0 });
   placeVectors(0);
   const omega = 0.7; // display rate only, not a published lab number
   if (reducedMotion()) {
@@ -79,6 +97,8 @@ function setupCircles() {
       const x = RADIUS * Math.cos(th) - mass.userData.s * Math.sin(th);
       const y = RADIUS * Math.sin(th) + mass.userData.s * Math.cos(th);
       mass.position.set(x, y, 0);
+      faceInward(mass, x, y);
+      if (stringLine) stringLine.visible = false;
       if (vArrow) {
         scene.root.remove(vArrow);
         vArrow = scene.addArrow({ x, y, z: 0 }, { x: x - 0.9 * Math.sin(th), y: y + 0.9 * Math.cos(th), z: 0 }, GREEN);
@@ -89,6 +109,8 @@ function setupCircles() {
     const x = RADIUS * Math.cos(angle);
     const y = RADIUS * Math.sin(angle);
     mass.position.set(x, y, 0);
+    faceInward(mass, x, y);
+    if (stringLine) stringLine.userData.setEnds({ x: 0, y: 0, z: 0 }, { x, y, z: 0 });
     placeVectors(angle);
   });
   $("status").textContent = "Velocity is along the tangent. The force arrow points toward the center. There is no outward force.";
@@ -112,10 +134,11 @@ function cutPull() {
   cut = true;
   $("cutBtn").disabled = true;
   if (fArrow) { scene.root.remove(fArrow); fArrow = null; }
+  if (stringLine) stringLine.visible = false;
   $("status").textContent = "The inward pull is gone. The stopper goes straight along the tangent (path C).";
 }
 
-function setupEllipses(p, zoom = "inner") {
+async function setupEllipses(p, zoom = "inner", my = ++loadGen) {
   const names = p.bodies || ["Earth", "Mars", "Halley"];
   const orbits = names.map((n) => bodyOrbit(data.kepler, n)).filter(Boolean);
   // Default view frames Earth and Mars clearly. The comet path is still drawn
@@ -125,13 +148,26 @@ function setupEllipses(p, zoom = "inner") {
   const fit = zoom === "full" ? fullFit : innerFit;
   const scale = 8 / fit;
   scene.clear();
-  scene.setCamera(zoom === "full" ? [0, 0, 20] : [0, 0, 14]);
-  scene.addDot({ x: 0, y: 0, z: 0 }, zoom === "full" ? 0.18 : 0.22, 0xcccccc);
+  const narrow = (typeof innerWidth === "number" && innerWidth <= 600);
+  scene.setCamera(zoom === "full"
+    ? (narrow ? [0, 0, 44] : [0, 0, 20])
+    : (narrow ? [0, 0, 32] : [0, 0, 14]));
+
+  const sunSize = zoom === "full" ? 0.36 : 0.44;
+  const sunGltf = await scene.tryGlb(assetCandidates("sun"));
+  if (my !== loadGen) return;
+  if (sunGltf) scene.addModel(sunGltf.scene, { p: { x: 0, y: 0, z: 0 }, visualSize: sunSize });
+  else scene.addDot({ x: 0, y: 0, z: 0 }, zoom === "full" ? 0.18 : 0.22, 0xcccccc);
+  const bodySize = zoom === "full" ? 0.2 : 0.32;
   for (const o of orbits) {
     scene.addLine(ellipsePoints(o.a, o.e), o.color, scale);
     const peri = { x: o.a * (1 - o.e), y: 0, z: 0 };
-    const bodyR = zoom === "full" ? 0.1 : 0.16;
-    scene.addDot(peri, bodyR, o.color, scale);
+    const kind = BODY_ASSET[o.name] || BODY_ASSET[names.find((n) => bodyOrbit(data.kepler, n)?.name === o.name)];
+    const isComet = kind === "comet";
+    const gltf = kind ? await scene.tryGlb(assetCandidates(kind)) : null;
+    if (my !== loadGen) return;
+    if (gltf) scene.addModel(gltf.scene, { p: peri, visualSize: isComet ? bodySize * 1.1 : bodySize, scale, comet: isComet });
+    else scene.addDot(peri, zoom === "full" ? 0.1 : 0.16, o.color, scale);
     if (p.drawEmptyFocus !== false) scene.addEmptyFocus(emptyFocus(o.a, o.e), scale);
   }
   $("zoomInner")?.setAttribute("aria-pressed", String(zoom === "inner"));
@@ -141,17 +177,35 @@ function setupEllipses(p, zoom = "inner") {
     : "Earth (e = 0.017) looks like a circle. Mars (e = 0.093) is only slightly oval. The comet is the stretched path leaving the frame. The Sun sits at one focus. The other focus is empty. Planet and comet sizes are not to scale; the orbits are.";
 }
 
-function setupMoons() {
+async function setupMoons(my = ++loadGen) {
   const moons = galilean(data.kepler);
   const maxA = Math.max(...moons.map((m) => m.a));
   const scale = 5 / maxA;
   scene.setCamera([0, 4.5, 10], [0, 0, 0]);
-  scene.addDot({ x: 0, y: 0, z: 0 }, 0.55, 0xc8b48a);
+  const jup = await scene.tryGlb(assetCandidates("jupiter"));
+  if (my !== loadGen) return;
+  if (jup) scene.addModel(jup.scene, { p: { x: 0, y: 0, z: 0 }, radius: 0.55 });
+  else scene.addDot({ x: 0, y: 0, z: 0 }, 0.55, 0xc8b48a);
+  const moonAsset = { Io: "io", Europa: "europa", Ganymede: "ganymede", Callisto: "callisto" };
   for (const m of moons) {
     scene.addLine(ellipsePoints(m.a, m.e), 0x4caf50, scale);
-    scene.addDot({ x: m.a * (1 - m.e), y: 0, z: 0 }, Math.max(0.06, m.radius * 8), 0xcccccc, scale);
+    const kind = moonAsset[m.name];
+    const vis = Math.max(0.07, (m.radius || 0.03) * 8);
+    const pos = { x: m.a * (1 - m.e), y: 0, z: 0 };
+    const gltf = kind ? await scene.tryGlb(assetCandidates(kind)) : null;
+    if (my !== loadGen) return;
+    if (gltf) scene.addModel(gltf.scene, { p: pos, visualSize: vis, scale });
+    else scene.addDot(pos, Math.max(0.06, m.radius * 8), 0xcccccc, scale);
   }
   $("status").textContent = "Jupiter's four Galilean moons, nearly circular. Periods and distances come from kepler.json.";
+}
+
+function faceInward(obj, x, y) {
+  if (!obj || typeof scene.pointAxis !== "function") return;
+  const len = Math.hypot(x, y);
+  if (len < 1e-8) return;
+  // Stopper string_attach is along +Y in the GLB; point that axis inward.
+  scene.pointAxis(obj, { x: 0, y: 1, z: 0 }, { x: -x / len, y: -y / len, z: 0 });
 }
 
 function titleFor(p) {

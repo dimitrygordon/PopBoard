@@ -1,12 +1,17 @@
 import { forwardStudyQuery } from "../board-return.js?v=20261022a";
 import {
   loadOrbitData, constants, orbitEntry, gAt, periodAt, vCirc, vEsc,
-  samplePath, presetFromSearch, l1Speeds, l5ShotSpeeds,
-  formatNum, formatPeriod, assetCandidates, reducedMotion
+  samplePath, placePath, presetFromSearch, l1Speeds, l5ShotSpeeds,
+  formatNum, formatPeriod, assetCandidates, loadAssetMap, reducedMotion
 } from "./ol-model.js";
 import { createScene } from "./ol-scene.js";
 
 const $ = (id) => document.getElementById(id);
+
+const CRAFT_VISUAL = { ISS: 0.06, Hubble: 0.035, GPS: 0.05, GEO: 0.055 };
+const CRAFT_ASSET = { ISS: "iss", Hubble: "hubble", GPS: "gps", GEO: "geo" };
+const MOON_SCALE = 1737.4 / 6380;
+
 
 $("studyBackBtn").addEventListener("click", (e) => {
   e.preventDefault();
@@ -22,14 +27,24 @@ const preset = presetFromSearch(data.lessons) || { id: "default", mode: "cannon"
 const l1 = l1Speeds(data.lessons);
 
 const scene = await createScene($("scene"));
-scene.trySkybox(assetCandidates("skybox"));
-scene.tryMesh(scene.earth, assetCandidates("earth"), 1);
+await loadAssetMap();
+const loadCannon = (preset.mode || "cannon") === "cannon";
+await Promise.all([
+  scene.trySkybox(assetCandidates("skybox")),
+  scene.tryEarth(assetCandidates("earth")),
+  loadCannon ? scene.tryCannon(assetCandidates("cannon")) : Promise.resolve(false)
+]);
+if ($("assetFlag")) {
+  $("assetFlag").textContent = scene.loaded.earth
+    ? "Meshes load from gravity-orbits by filename. If a file is missing, a placeholder is shown."
+    : "Earth mesh is missing, so a placeholder globe is shown.";
+}
 
 const cannonAnchor = { x: R + h, y: 0, z: 0 };
 // Placeholder cannon sits on the surface of the unit sphere at the launch radius.
 const launchR = (R + h) / R;
 
-applyPreset(preset);
+await applyPreset(preset);
 wire();
 
 function wire() {
@@ -55,7 +70,7 @@ function wire() {
   });
 }
 
-function applyPreset(p) {
+async function applyPreset(p) {
   $("presetName").textContent = titleFor(p);
   $("note").textContent = noteFor(p);
   $("assetFlag").hidden = false;
@@ -80,18 +95,25 @@ function applyPreset(p) {
     $("speed").value = start;
     fillShots(p, max);
     syncSpeedLabel();
-    scene.setCannonVisible(true, launchR, p.lockOrbitEscape ? 0.05 : 1);
+    scene.setCannonVisible(true, launchR, scene.loaded.cannon ? 1 : (p.lockOrbitEscape ? 0.05 : 1));
     scene.setProjectileAt(cannonAnchor, R);
+    const muzzle = scene.getMuzzle();
+    if (muzzle.loaded) scene.setProjectileAt({ x: muzzle.x * R, y: muzzle.y * R, z: muzzle.z * R }, R);
     if (p.autoPath === "slow") fire(l1.slow, { announce: false });
     hide("satControls", p.showSatellites === false);
     if (p.showSatellites) fillSats(p.satelliteKeys || ["ISS", "GPS", "GEO"]);
   } else {
-    scene.setCamera(p.bodies?.includes("Moon") ? "scale-wide" : "scale-iss");
+    scene.setCannonVisible(false);
     $("cannonControls").hidden = true;
     $("satControls").hidden = false;
-    fillSats(p.bodies || ["ISS"]);
-    const first = (p.bodies || ["ISS"])[0];
-    showSatellite(first, { all: true, bodies: p.bodies });
+    const bodies = p.bodies || ["ISS"];
+    // Set the camera before meshes finish so a late screenshot is never at the origin.
+    const wantMoon = bodies.includes("Moon");
+    const narrow = typeof innerWidth === "number" && innerWidth <= 600;
+    scene.setCamera(wantMoon && !narrow ? "scale-wide" : "scale-iss");
+    fillSats(bodies);
+    const first = bodies[0];
+    await showSatellite(first, { all: true, bodies });
   }
 }
 
@@ -133,9 +155,14 @@ function fire(v, opts = {}) {
   const p = preset;
   if (p.lockOrbitEscape && v > (p.speedMax_m_s ?? l1.cap) + 1e-6) v = p.speedMax_m_s ?? l1.cap;
   const path = samplePath(v, h, GM, R);
-  scene.setPath(path.points, R);
+  const pose = scene.getMuzzle();
+  // L1 close-up: stretch the 12/24 km arcs so they read next to the (not-to-scale) cannon.
+  const arcScale = p.lockOrbitEscape ? 28 : 1;
+  const pts = placePath(path.points, R, pose, arcScale);
+  scene.setPath(pts, R);
   const seconds = reducedMotion() ? 0 : 1.6;
-  scene.playAlong(path.points, R, seconds);
+  scene.playAlong(pts, R, seconds);
+  if (pts[0]) scene.setProjectileAt(pts[0], R);
   if (opts.announce !== false) $("status").textContent = statusFor(path, v);
   // Cannon-mode readouts, if visible, describe this launch radius, not a satellite.
   if ((p.mode || "cannon") === "cannon" && !$("readouts").hidden) {
@@ -144,21 +171,38 @@ function fire(v, opts = {}) {
   }
 }
 
-function showSatellite(key, opts = {}) {
+async function showSatellite(key, opts = {}) {
   const entry = orbitEntry(data.orbits, key === "Hubble" ? "Hubble" : key);
   if (!entry) { $("status").textContent = `${key} is not in orbits.json.`; return; }
   scene.clearSatellites();
   const keys = opts.all ? (opts.bodies || [key]) : [key];
+  let maxR = 0;
   for (const k of keys) {
     const e = orbitEntry(data.orbits, k === "Hubble" ? "Hubble" : k);
     if (!e) continue;
     const rr = e.r_m / R;
+    maxR = Math.max(maxR, rr);
     scene.addOrbitRing(rr, k === key ? 0x4caf50 : 0x666666);
-    scene.addBodyMarker(rr, k, k === key ? 0x4caf50 : 0xcccccc);
+    if (k === "Moon") {
+      await scene.addMoon(assetCandidates("moon"), rr, MOON_SCALE);
+    } else {
+      const kind = CRAFT_ASSET[k];
+      if (kind) await scene.addCraft(assetCandidates(kind), rr, CRAFT_VISUAL[k] || 0.05);
+      else scene.addBodyMarker(rr, k, k === key ? 0x4caf50 : 0xcccccc);
+    }
   }
   setReadouts(entry);
-  $("status").textContent = scaleCaption(entry);
-  if (entry.r_m / R > 10) scene.setCamera("scale-wide");
+  if (opts.all && keys.includes("Moon")) {
+    const narrow = typeof innerWidth === "number" && innerWidth <= 600;
+    $("status").textContent = narrow
+      ? "The ISS sits just above Earth. Open Moon to see the true distance. Orbits are to true scale; the stations are enlarged."
+      : "Earth, the ISS, Hubble, and the Moon. Orbits are to true scale. The stations are enlarged; the Moon is true size at the true distance.";
+  } else {
+    $("status").textContent = scaleCaption(entry);
+  }
+
+  const narrow = typeof innerWidth === "number" && innerWidth <= 600;
+  if (key === "Moon" || (maxR > 10 && !(opts.all && narrow))) scene.setCamera("scale-wide");
   else scene.setCamera("scale-iss");
 }
 
@@ -201,16 +245,16 @@ function titleFor(p) {
 }
 
 function noteFor(p) {
-  if (p.id === "l1-s8") return "Stay on short, slow lobs that hit the ground. The faster shot is twice the slow shot. Orbit and escape are locked out.";
-  if (p.id === "l4-s6") return "True-scale Earth. The ISS sits just above the surface. Use what you see, not a readout, for the S6 task. g and period stay hidden unless you choose to show them later.";
-  if (p.id === "l5-s8") return "Fire horizontally at five rising speeds and find the shot that never lands. Satellite presets are there for the later S12 check, not to skip the calculations.";
+  if (p.id === "l1-s8") return "Stay on short, slow lobs that hit the ground. The faster shot is twice the slow shot. Orbit and escape are locked out. The mountain is not to scale.";
+  if (p.id === "l4-s6") return "True-scale Earth. The ISS sits just above the surface. Use what you see, not a readout, for the S6 task. g and period stay hidden unless you choose to show them later. The station and Hubble are enlarged, not to scale; their orbits are.";
+  if (p.id === "l5-s8") return "Fire horizontally at five rising speeds and find the shot that never lands. Satellite presets are there for the later S12 check, not to skip the calculations. The mountain is not to scale.";
   if (p.id === "l5-s12") return "ISS, GPS, and GEO to scale, after you have done the S12 calculations.";
   return "Newton's cannon and Earth-orbit presets.";
 }
 
 function scaleCaption(entry) {
-  if (entry.name === "ISS") return "ISS at 400 km, drawn to true scale.";
-  if (entry.name?.includes("Hubble")) return "Hubble at 480 km. Optional on this lesson. Do not use a readout on the exit ticket.";
+  if (entry.name === "ISS") return "ISS at 400 km. The orbit is to true scale. The station is enlarged, not to scale.";
+  if (entry.name?.includes("Hubble")) return "Hubble at 480 km. Optional on this lesson. The orbit is to true scale; the telescope is enlarged, not to scale. Do not use a readout on the exit ticket.";
   return entry.name || "";
 }
 

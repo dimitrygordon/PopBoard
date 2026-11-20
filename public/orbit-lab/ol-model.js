@@ -2,10 +2,12 @@
 // inverse-square cannon flights. Numbers shown as final come from the JSON.
 // The only added teaching geometry is the schematic cannon height and the L1 cap.
 
+import { loadAssetMap, assetCandidates, firstExisting, preferMobileSkybox } from "../gravity-orbits/go-assets.js";
+export { loadAssetMap, assetCandidates, firstExisting, preferMobileSkybox };
+
 export const ORBITS_URL = new URL("./assets/orbits.json", import.meta.url);
 export const PRESETS_URL = new URL("./assets/lesson-presets.json", import.meta.url);
 
-const ASSET_ROOT = new URL("./assets/", import.meta.url);
 
 export function reducedMotion() {
   return typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -173,33 +175,34 @@ export function formatPeriod(seconds) {
   return `${seconds.toFixed(0)} s`;
 }
 
-export function assetCandidates(kind) {
-  const names = {
-    skybox: ["skybox.webp", "skybox.jpg", "skybox.png", "skybox.hdr"],
-    earth: ["models/earth.meshopt.glb", "models/earth.glb", "earth.meshopt.glb", "earth.glb"],
-    cannon: ["models/newton_cannon.meshopt.glb", "models/newton_cannon.glb", "newton_cannon.meshopt.glb", "newton_cannon.glb"],
-    iss: ["models/iss.meshopt.glb", "models/iss.glb", "iss.meshopt.glb", "iss.glb"],
-    hubble: ["models/hubble.meshopt.glb", "models/hubble.glb", "hubble.meshopt.glb", "hubble.glb"],
-    gps: ["models/gps.meshopt.glb", "models/gps.glb", "gps.meshopt.glb", "gps.glb"],
-    geo: ["models/geo_comsat.meshopt.glb", "models/geo_comsat.glb", "models/geo.meshopt.glb", "models/geo.glb", "geo_comsat.meshopt.glb", "geo_comsat.glb"],
-    moon: ["models/moon.meshopt.glb", "models/moon.glb", "moon.meshopt.glb", "moon.glb"]
-  };
-  return (names[kind] || []).map((rel) => new URL(rel, ASSET_ROOT).href);
-}
 
-export async function firstExisting(urls) {
-  for (const url of urls) {
-    try {
-      const res = await fetch(url, { method: "HEAD" });
-      if (res.ok) return url;
-    } catch (e) { /* try the next name */ }
+/** Remap a physical path (meters, launch at +X, velocity +Y) onto a visual muzzle pose, in meters.
+ *  visual pose is in Earth radii. arcScale stretches the angular span for close-up L1 lobs only. */
+export function placePath(points, R, pose, arcScale = 1) {
+  if (!points?.length) return [];
+  const r0 = Math.hypot(points[0].x, points[0].y, points[0].z || 0) || R;
+  const ox = pose.x ?? 0, oy = pose.y ?? 0, oz = pose.z ?? 0;
+  const visR0 = Math.hypot(ox, oy, oz) || pose.radius || 1;
+  let erx = ox / visR0, ery = oy / visR0, erz = oz / visR0;
+  if (!Number.isFinite(erx)) { erx = 1; ery = 0; erz = 0; }
+  let tx = pose.direction?.x ?? 0, ty = pose.direction?.y ?? 1, tz = pose.direction?.z ?? 0;
+  const dot = tx * erx + ty * ery + tz * erz;
+  tx -= dot * erx; ty -= dot * ery; tz -= dot * erz;
+  let tlen = Math.hypot(tx, ty, tz);
+  if (tlen < 1e-8) { tx = -ery; ty = erx; tz = 0; tlen = Math.hypot(tx, ty, tz) || 1; }
+  tx /= tlen; ty /= tlen; tz /= tlen;
+  const out = [];
+  for (const p of points) {
+    const x = p.x, y = p.y, z = p.z || 0;
+    const r = Math.hypot(x, y, z);
+    const th = Math.atan2(y, x) * arcScale;
+    const rVis = (r / r0) * visR0;
+    const c = Math.cos(th), s = Math.sin(th);
+    out.push({
+      x: (rVis * (c * erx + s * tx)) * R,
+      y: (rVis * (c * ery + s * ty)) * R,
+      z: (rVis * (c * erz + s * tz)) * R
+    });
   }
-  // Some static hosts reject HEAD; try a range GET as a fallback for the first few.
-  for (const url of urls) {
-    try {
-      const res = await fetch(url, { headers: { Range: "bytes=0-1" } });
-      if (res.ok || res.status === 206) return url;
-    } catch (e) { /* skip */ }
-  }
-  return null;
+  return out;
 }

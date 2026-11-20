@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { flight, constants, resolvePreset, l1Speeds, samplePath } from "../public/orbit-lab/ol-model.js";
+import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { flight, constants, resolvePreset, l1Speeds, samplePath, placePath } from "../public/orbit-lab/ol-model.js";
 import { bodyOrbit, emptyFocus, resolvePreset as kcPreset } from "../public/kepler-circles/kc-model.js";
 
 const root = new URL("../", import.meta.url);
@@ -139,7 +139,7 @@ test("Tesla-verified constants are the ones the model uses, and L1 sample paths 
 });
 
 test("both modules import the vendored three.js and GLTFLoader, not a CDN copy", () => {
-  const scene = read("public/orbit-lab/ol-scene.js") + read("public/kepler-circles/kc-scene.js");
+  const scene = read("public/orbit-lab/ol-scene.js") + read("public/kepler-circles/kc-scene.js") + read("public/gravity-orbits/go-load.js");
   assert.match(scene, /vendor\/three\/three\.module\.min\.js/);
   assert.match(scene, /vendor\/three\/GLTFLoader\.js/);
   assert.match(scene, /vendor\/three\/meshopt_decoder\.mjs/);
@@ -152,4 +152,38 @@ test("L1 shows air time in whole seconds so both lobs read the same", () => {
   const at8 = olLessons.l1_cap.at_teaching_height_8_km;
   assert.equal(at8.slow.t_s.toFixed(p.airTimeDecimals), at8.fast.t_s.toFixed(p.airTimeDecimals));
   assert.match(read("public/orbit-lab/ol-ui.js"), /toFixed\(airTimeDecimals\(\)\)/);
+});
+
+test("shared asset map ships 2k/default GLBs and not 4k planet files", () => {
+  const map = JSON.parse(read("public/gravity-orbits/asset-map.json"));
+  const models = map.models;
+  assert.equal(models.earth, "models/earth_2k.glb");
+  assert.equal(models.moon, "models/moon_2k.glb");
+  assert.equal(models.mars, "models/mars_2k.glb");
+  assert.equal(models.jupiter, "models/jupiter_2k.glb");
+  assert.equal(models.cannon, "models/newton_cannon.glb");
+  assert.equal(models.skybox, "models/starmap_2020_4k.jpg");
+  assert.equal(models.skyboxMobile, "models/starmap_2020_2k.jpg");
+  for (const kind of Object.keys(models)) {
+    assert.ok(existsSync(new URL("public/gravity-orbits/" + models[kind], root)), models[kind]);
+  }
+  const files = readdirSync(new URL("public/gravity-orbits/models/", root));
+  assert.equal(files.filter((f) => f.includes("_4k.glb") || f.includes("earth_night")).length, 0);
+  const loaders = read("public/orbit-lab/ol-model.js") + read("public/kepler-circles/kc-model.js");
+  assert.match(loaders, /gravity-orbits\/go-assets\.js/);
+  assert.match(read("public/orbit-lab/ol-scene.js"), /function placeholderGlobe/);
+  assert.match(read("THIRD-PARTY-NOTICES.md"), /Solar System Scope/);
+  assert.match(read("THIRD-PARTY-NOTICES.md"), /NASA \/ Ernie Wright/);
+});
+
+test("placePath remaps a physical lob onto a visual muzzle without changing the last radius ratio", () => {
+  const { GM, R } = constants(orbits);
+  const path = samplePath(300, 8000, GM, R, 32);
+  const pose = { x: 1.25, y: 0, z: 0, radius: 1.25, direction: { x: 0, y: 1, z: 0 } };
+  const pts = placePath(path.points, R, pose, 1);
+  assert.equal(pts.length, path.points.length);
+  const r0 = Math.hypot(pts[0].x, pts[0].y, pts[0].z) / R;
+  const r1 = Math.hypot(pts[pts.length - 1].x, pts[pts.length - 1].y, pts[pts.length - 1].z) / R;
+  assert.ok(Math.abs(r0 - 1.25) < 1e-6, r0);
+  assert.ok(r1 < r0);
 });

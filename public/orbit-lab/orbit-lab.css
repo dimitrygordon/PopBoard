@@ -29,9 +29,11 @@ button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 3px s
 .stage { position: fixed; inset: 0; background: #000; }
 #scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
 
-.note, .asset-flag, .status { position: fixed; z-index: 4; left: 16px; right: 16px; margin: 0; pointer-events: none; }
+.note, .asset-flag, .credit, .status { position: fixed; z-index: 4; left: 16px; right: 16px; margin: 0; pointer-events: none; }
 .note { top: calc(max(8px, env(safe-area-inset-top)) + 56px); font-size: 0.95rem; max-width: 36rem; }
 .asset-flag { top: calc(max(8px, env(safe-area-inset-top)) + 112px); font-size: 0.8rem; color: #888; max-width: 36rem; }
+.credit { bottom: calc(var(--ol-ctl, 170px) + 36px); font-size: 0.7rem; color: #777; max-width: 36rem; }
+.credit a { color: inherit; }
 .status { bottom: calc(var(--ol-ctl, 170px) + 12px); font-weight: 500; }
 
 .readouts { position: fixed; z-index: 5; top: calc(max(8px, env(safe-area-inset-top)) + 56px); right: max(12px, env(safe-area-inset-right));

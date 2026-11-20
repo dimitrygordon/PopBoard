@@ -1,1 +1,1 @@
-Drop compressed GLBs and a star skybox here. See docs/gravity-orbits-assets.md for the filename list the loader already tries.
+GLBs and the skybox live in `public/gravity-orbits/`, referenced by the name map in `public/gravity-orbits/asset-map.json`. This folder still holds `orbits.json` and `lesson-presets.json`. If a mesh file is missing, the module keeps its procedural placeholder.

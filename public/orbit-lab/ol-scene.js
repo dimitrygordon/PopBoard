@@ -1,7 +1,6 @@
 import * as THREE from "../vendor/three/three.module.min.js";
-import { GLTFLoader } from "../vendor/three/GLTFLoader.js";
-import { MeshoptDecoder } from "../vendor/three/meshopt_decoder.mjs";
 import { firstExisting, reducedMotion } from "./ol-model.js";
+import { loadGlb, loadTexture, prepareEarth, prepareCannon, muzzlePose, fitToSize } from "../gravity-orbits/go-load.js";
 
 const GREEN = 0x4caf50;
 const GREY = 0xcccccc;
@@ -13,24 +12,37 @@ export async function createScene(canvas) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.setClearColor(0x000000, 1);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
   const root = new THREE.Group();
   scene.add(root);
-  const lights = new THREE.AmbientLight(0xffffff, 0.55);
-  scene.add(lights);
-  const key = new THREE.DirectionalLight(0xffffff, 0.8);
-  key.position.set(4, 2, 6);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.32));
+  const key = new THREE.DirectionalLight(0xffffff, 1.2);
+  key.position.set(4, 1.4, 2.2);
   scene.add(key);
+  const fill = new THREE.DirectionalLight(0x8899aa, 0.35);
+  fill.position.set(-3, -0.8, -2);
+  scene.add(fill);
+  const rim = new THREE.DirectionalLight(0xffffff, 0.7);
+  rim.position.set(0, 2, 10);
+  scene.add(rim);
 
-  const earth = placeholderGlobe();
-  earth.name = "earth";
-  root.add(earth);
+  const earthGroup = new THREE.Group();
+  earthGroup.name = "earth";
+  earthGroup.add(placeholderGlobe());
+  root.add(earthGroup);
+
+  const cannonGroup = new THREE.Group();
+  cannonGroup.name = "cannon";
   const cannonMark = new THREE.Mesh(
     new THREE.ConeGeometry(0.012, 0.04, 10),
     new THREE.MeshBasicMaterial({ color: GREEN })
   );
   cannonMark.rotation.z = -Math.PI / 2;
   cannonMark.visible = false;
-  root.add(cannonMark);
+  cannonGroup.add(cannonMark);
+  cannonGroup.visible = false;
+  root.add(cannonGroup);
+
   const pathLine = makeLine();
   root.add(pathLine);
   const projectile = placeholderDot(0.02);
@@ -46,6 +58,10 @@ export async function createScene(canvas) {
   let anim = null;
   let running = true;
   const reduce = reducedMotion();
+  let cannonLoaded = false;
+  let earthLoaded = false;
+  let skyboxLoaded = false;
+  let cameraMode = null;
 
   function resize() {
     const w = Math.max(1, canvas.clientWidth || canvas.parentElement?.clientWidth || innerWidth);
@@ -53,6 +69,7 @@ export async function createScene(canvas) {
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    if (cameraMode) applyCamera(cameraMode);
   }
   resize();
   addEventListener("resize", resize);
@@ -70,32 +87,73 @@ export async function createScene(canvas) {
   }
   requestAnimationFrame(frame);
 
-  return {
-    scene, camera, renderer, root, earth, pathLine, projectile, satellites, stars,
-    resize,
-    setCannonVisible(on, radius = 1.001, scale = 1) {
-      cannonMark.visible = !!on;
-      cannonMark.position.set(radius, 0, 0.0);
-      cannonMark.scale.setScalar(scale);
-      projectile.scale.setScalar(Math.min(1, scale * 2));
-    },
-    setCamera(mode) {
+  function getMuzzle() {
+    if (!cannonLoaded) {
+      return { x: 1.00125, y: 0, z: 0, radius: 1.00125, direction: { x: 0, y: 1, z: 0 }, loaded: false };
+    }
+    const pose = muzzlePose(cannonGroup);
+    const p = pose.position, d = pose.direction;
+    return { x: p.x, y: p.y, z: p.z, radius: pose.radius || p.length(), direction: { x: d.x, y: d.y, z: d.z }, loaded: true };
+  }
+
+  function applyCamera(mode) {
+      camera.up.set(0, 1, 0);
       if (mode === "scale-wide") {
-        camera.position.set(20, 18, 80);
-        camera.lookAt(0, 0, 0);
+        // Frame Earth at the origin and the Moon at ~60 R_E on +X.
+        // Portrait: rotate so the 60 R_E gap runs along the long axis.
+        const narrow = (typeof innerWidth === "number" && innerWidth <= 600) || camera.aspect < 0.75;
+        if (narrow) {
+          camera.up.set(1, 0, 0);
+          camera.position.set(30, 0, 160);
+          camera.lookAt(30, 0, 0);
+        } else {
+          camera.position.set(30, 8, 90);
+          camera.lookAt(30, 0, 0);
+        }
       } else if (mode === "scale-iss") {
-        // Whole Earth, slight 3/4 view, so the ISS ring sits just above the limb.
         camera.position.set(1.6, 1.1, 2.6);
         camera.lookAt(0, 0, 0);
       } else if (mode === "cannon-close") {
-        // Side view of the limb, ~500 km across, so the 12 and 24 km lobs are visible.
-        const r = 1.00125;
-        camera.position.set(r + 0.01, 0.02, 0.09);
-        camera.lookAt(r, 0.015, 0);
+        const m = getMuzzle();
+        const origin = new THREE.Vector3(m.x, m.y, m.z);
+        const dir = new THREE.Vector3(m.direction.x, m.direction.y, m.direction.z);
+        if (dir.lengthSq() < 1e-8) dir.set(0, 1, 0);
+        dir.normalize();
+        const radial = origin.lengthSq() > 1e-8 ? origin.clone().normalize() : new THREE.Vector3(1, 0, 0);
+        let side = new THREE.Vector3().crossVectors(dir, radial);
+        if (side.lengthSq() < 1e-8) side.set(0, 0, 1);
+        side.normalize();
+        const narrow = (typeof innerWidth === "number" && innerWidth <= 600) || camera.aspect < 0.75;
+        const sideD = narrow ? 0.85 : 0.55;
+        const radD = narrow ? 0.4 : 0.18;
+        camera.position.copy(origin).addScaledVector(side, sideD).addScaledVector(radial, radD).addScaledVector(dir, -0.08);
+        camera.lookAt(origin.clone().addScaledVector(dir, narrow ? 0.08 : 0.16).addScaledVector(radial, narrow ? -0.12 : 0));
       } else {
-        camera.position.set(0.4, 1.0, 3.5);
-        camera.lookAt(0, 0, 0);
+        // Three-quarter view that keeps the not-to-scale mountain on the limb.
+        camera.position.set(1.4, 1.2, 3.0);
+        camera.lookAt(0.35, 0.05, 0);
       }
+  }
+
+  const api = {
+    scene, camera, renderer, root, earth: earthGroup, pathLine, projectile, satellites, stars,
+    resize,
+    get loaded() { return { earth: earthLoaded, cannon: cannonLoaded, skybox: skyboxLoaded }; },
+    getMuzzle,
+    setCannonVisible(on, radius = 1.001, scale = 1) {
+      cannonGroup.visible = !!on;
+      if (!cannonLoaded) {
+        cannonMark.visible = !!on;
+        cannonMark.position.set(radius, 0, 0);
+        cannonMark.scale.setScalar(scale);
+      } else {
+        cannonMark.visible = false;
+      }
+      projectile.scale.setScalar(on && scale < 1 ? 0.15 : (cannonLoaded && on ? 0.25 : 1));
+    },
+    setCamera(mode) {
+      cameraMode = mode;
+      applyCamera(mode);
     },
     setPath(points, R) {
       const pos = [];
@@ -135,7 +193,6 @@ export async function createScene(canvas) {
     },
     clearSatellites() { satellites.clear(); },
     addOrbitRing(rOverR, color = GREEN) {
-      // Ring in the XY plane, same plane as the cannon paths.
       const inner = Math.max(0.001, rOverR - 0.01);
       const g = new THREE.RingGeometry(inner, rOverR + 0.01, 160);
       const m = new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide, transparent: true, opacity: 0.95 });
@@ -158,26 +215,70 @@ export async function createScene(canvas) {
       tex.colorSpace = THREE.SRGBColorSpace;
       scene.background = tex;
       stars.visible = false;
+      skyboxLoaded = true;
       return true;
     },
-    async tryMesh(target, urls, scale = 1) {
+    async tryEarth(urls) {
       const url = await firstExisting(urls);
       if (!url) return false;
       const gltf = await loadGlb(url);
       if (!gltf) return false;
       const model = gltf.scene;
-      model.scale.setScalar(scale);
-      target.clear?.();
-      if (target.isObject3D && target.geometry) {
-        // replace placeholder globe in place
-        const parent = target.parent;
-        model.name = target.name;
-        parent.remove(target);
-        parent.add(model);
-      } else {
-        target.add(model);
-      }
+      prepareEarth(model);
+      earthGroup.clear();
+      earthGroup.add(model);
+      earthLoaded = true;
       return true;
+    },
+    async tryCannon(urls) {
+      const url = await firstExisting(urls);
+      if (!url) return false;
+      const gltf = await loadGlb(url);
+      if (!gltf) return false;
+      const model = gltf.scene;
+      prepareCannon(model);
+      cannonGroup.clear();
+      cannonGroup.add(model);
+      cannonLoaded = true;
+      return true;
+    },
+    async addCraft(urls, rOverR, visualSize = 0.055) {
+      const group = new THREE.Group();
+      group.position.set(rOverR, 0, 0);
+      const url = await firstExisting(urls);
+      if (url) {
+        const gltf = await loadGlb(url);
+        if (gltf) {
+          const model = gltf.scene;
+          fitToSize(model, visualSize);
+          group.add(model);
+          satellites.add(group);
+          return group;
+        }
+      }
+      const fallback = placeholderDot(visualSize * 0.5, GREEN);
+      group.add(fallback);
+      satellites.add(group);
+      return group;
+    },
+    async addMoon(urls, rOverR, radiusScale) {
+      const group = new THREE.Group();
+      group.position.set(rOverR, 0, 0);
+      const url = await firstExisting(urls);
+      if (url) {
+        const gltf = await loadGlb(url);
+        if (gltf) {
+          const model = gltf.scene;
+          model.scale.setScalar(radiusScale);
+          group.add(model);
+          satellites.add(group);
+          return group;
+        }
+      }
+      const fallback = placeholderDot(radiusScale, GREY);
+      group.add(fallback);
+      satellites.add(group);
+      return group;
     },
     dispose() {
       running = false;
@@ -185,6 +286,7 @@ export async function createScene(canvas) {
       renderer.dispose();
     }
   };
+  return api;
 }
 
 function placeholderGlobe() {
@@ -226,27 +328,4 @@ function makeStarfield() {
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
   return new THREE.Points(geo, new THREE.PointsMaterial({ color: GREY, size: 0.12, sizeAttenuation: true, opacity: 0.7, transparent: true }));
-}
-
-async function loadTexture(url) {
-  return new Promise((resolve) => {
-    new THREE.TextureLoader().load(url, resolve, undefined, () => resolve(null));
-  });
-}
-
-async function loadGlb(url) {
-  const loader = new GLTFLoader();
-  if (MeshoptDecoder) {
-    if (MeshoptDecoder.ready) await MeshoptDecoder.ready;
-    loader.setMeshoptDecoder(MeshoptDecoder);
-  }
-  try {
-    const res = await fetch(url);
-    if (!res.ok) return null;
-    const buf = await res.arrayBuffer();
-    return await new Promise((resolve, reject) => loader.parse(buf, url.replace(/[^/]+$/, ""), resolve, reject));
-  } catch (e) {
-    console.warn("glb failed", url, e);
-    return null;
-  }
 }

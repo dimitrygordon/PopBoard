@@ -31,28 +31,26 @@ Method: exact Kepler transfer from apoapsis at `r = R_E + h` to the first inters
 
 Time difference: 0.088 s, or **0.218%**. With `GM_E` and `R_E` each shifted by 0.5% (and with the deck product `G M = 6.67e-11 * 5.97e24`), the gap stays between 0.216% and 0.220%. At a 1000 km cannon height it is 0.258%. Orbit and escape are locked out of this preset.
 
-## Asset paths the scaffold already looks for
+## Shared 3D assets
 
-Copy Angelo's files into the matching folder. Meshopt GLBs are preferred; a plain `.glb` is a fallback. The existing vendor loader is `public/vendor/three/GLTFLoader.js` plus `meshopt_decoder.mjs`. A procedural globe, stars, and markers stand in until the files arrive.
+Meshes and the skybox live in `public/gravity-orbits/`. A small name map, `public/gravity-orbits/asset-map.json`, points lesson kinds (`earth`, `moon`, `iss`, `cannon`, …) at Angelo's filenames (`earth_2k.glb`, `newton_cannon.glb`, …). Both modules load that map and keep procedural placeholders if a file is missing. Files are referenced by name so later Earth material updates can drop in under the same filenames; nothing is baked into the modules.
 
-### Orbit Lab (`public/orbit-lab/assets/`)
+Default planet/moon maps are the 2k (mobile) variants. 4k planet GLBs and the Earth night maps are not shipped.
 
-- `orbits.json` (already copied from `/workspace/angelo/gravity-orbits/orbits.json`)
-- `lesson-presets.json`
-- Skybox, first match: `skybox.webp`, `skybox.jpg`, `skybox.png`, `skybox.hdr`
-- `models/earth.meshopt.glb` or `earth.glb` (1 unit = 1 Earth radius)
-- `models/newton_cannon.meshopt.glb` or `newton_cannon.glb`
-- `models/iss.meshopt.glb`, `hubble.meshopt.glb`, `gps.meshopt.glb`, `geo_comsat.meshopt.glb` (meters, Y-up)
-- `models/moon.meshopt.glb` (radius 1 = 1 lunar radius; scale by 1737.4 / 6380 against Earth)
+### Units
 
-### Kepler and Circles (`public/kepler-circles/assets/`)
+- Planets and moons: radius 1 = that body's radius. Scale the Moon vs Earth by 1737.4 / 6380.
+- Spacecraft: meters, Y-up. Orbits are drawn to true scale; the craft meshes are enlarged and labeled not to scale.
+- `newton_cannon.glb`: Earth radii, exaggerated mountain about 0.30 R_E, not to scale. The cannon GLB's own `earth_surface` is hidden in favor of `earth_2k.glb`. Teaching flight times still use the 8 km Tesla geometry.
+- Comet: 1 unit = 1 km, `dust_tail` along +X (pointed away from the Sun, hidden by default).
+- Stopper: 1 unit = 1 m, keep the `string_attach` empty.
 
-- `kepler.json` (already copied)
-- `lesson-presets.json`
-- Same skybox names as above
-- `models/sun.glb` (radius 1 = 1 solar radius)
-- `models/earth.glb`, `mars.glb`, `comet.glb` (comet: 1 unit = 1 km)
-- `models/stopper.glb` (1 unit = 1 m) for L2
-- `models/jupiter.glb`, `io.glb`, `europa.glb`, `ganymede.glb`, `callisto.glb`
+### Skybox
 
-Earth GLB units and satellite units follow Angelo's `orbits.json` `units` field. Kepler body units follow `kepler.json` `units`.
+- Desktop: `models/starmap_2020_4k.jpg` (NASA SVS Deep Star Maps 2020, 4096×2048, 3.17 MB).
+- Mobile (`max-width: 600px`): `models/starmap_2020_2k.jpg`, a 2048×1024 downscale (~516 KB) generated from the 4k file.
+
+### Skipped
+
+- `earth_night_2k.jpg` is not used. A correct dark-side-only night shader would replace or hook Earth's material, and later Earth material updates should drop in under the same node names without a baked custom shader.
+- 4k planet/moon GLBs are not shipped.

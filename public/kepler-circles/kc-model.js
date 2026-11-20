@@ -1,6 +1,8 @@
+import { loadAssetMap, assetCandidates, firstExisting, preferMobileSkybox } from "../gravity-orbits/go-assets.js";
+export { loadAssetMap, assetCandidates, firstExisting, preferMobileSkybox };
+
 export const KEPLER_URL = new URL("./assets/kepler.json", import.meta.url);
 export const PRESETS_URL = new URL("./assets/lesson-presets.json", import.meta.url);
-const ASSET_ROOT = new URL("./assets/", import.meta.url);
 
 export function reducedMotion() {
   return typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -77,35 +79,3 @@ export function galilean(kepler) {
   }));
 }
 
-export function assetCandidates(kind) {
-  const names = {
-    skybox: ["skybox.webp", "skybox.jpg", "skybox.png", "skybox.hdr"],
-    sun: ["models/sun.meshopt.glb", "models/sun.glb", "sun.glb"],
-    earth: ["models/earth.meshopt.glb", "models/earth.glb", "earth.glb"],
-    mars: ["models/mars.meshopt.glb", "models/mars.glb", "mars.glb"],
-    comet: ["models/comet.meshopt.glb", "models/comet.glb", "comet.glb"],
-    stopper: ["models/stopper.meshopt.glb", "models/stopper.glb", "stopper.glb"],
-    jupiter: ["models/jupiter.meshopt.glb", "models/jupiter.glb", "jupiter.glb"],
-    io: ["models/io.meshopt.glb", "models/io.glb", "io.glb"],
-    europa: ["models/europa.meshopt.glb", "models/europa.glb", "europa.glb"],
-    ganymede: ["models/ganymede.meshopt.glb", "models/ganymede.glb", "ganymede.glb"],
-    callisto: ["models/callisto.meshopt.glb", "models/callisto.glb", "callisto.glb"]
-  };
-  return (names[kind] || []).map((rel) => new URL(rel, ASSET_ROOT).href);
-}
-
-export async function firstExisting(urls) {
-  for (const url of urls) {
-    try {
-      const res = await fetch(url, { method: "HEAD" });
-      if (res.ok) return url;
-    } catch (e) { /* next */ }
-  }
-  for (const url of urls) {
-    try {
-      const res = await fetch(url, { headers: { Range: "bytes=0-1" } });
-      if (res.ok || res.status === 206) return url;
-    } catch (e) { /* next */ }
-  }
-  return null;
-}

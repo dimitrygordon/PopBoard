@@ -1,7 +1,6 @@
 import * as THREE from "../vendor/three/three.module.min.js";
-import { GLTFLoader } from "../vendor/three/GLTFLoader.js";
-import { MeshoptDecoder } from "../vendor/three/meshopt_decoder.mjs";
 import { firstExisting, reducedMotion, ellipsePoints, emptyFocus } from "./kc-model.js";
+import { loadGlb, loadTexture, fitToSize, prepareComet, orientAxisToward } from "../gravity-orbits/go-load.js";
 
 const GREEN = 0x4caf50;
 const GREY = 0xcccccc;
@@ -13,10 +12,14 @@ export async function createScene(canvas) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.setClearColor(0x000000, 1);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
   scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-  const key = new THREE.DirectionalLight(0xffffff, 0.7);
+  const key = new THREE.DirectionalLight(0xffffff, 1.05);
   key.position.set(3, 4, 6);
   scene.add(key);
+  const fill = new THREE.PointLight(0xffffff, 0.8, 40);
+  fill.position.set(0, 0, 6);
+  scene.add(fill);
   const root = new THREE.Group();
   scene.add(root);
   const stars = starfield();
@@ -24,6 +27,7 @@ export async function createScene(canvas) {
 
   let running = true;
   let anim = null;
+  let lastCam = null;
   const reduce = reducedMotion();
   const clock = new THREE.Clock();
 
@@ -33,6 +37,10 @@ export async function createScene(canvas) {
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    if (lastCam) {
+      camera.position.set(...lastCam.pos);
+      camera.lookAt(...lastCam.look);
+    }
   }
   resize();
   addEventListener("resize", resize);
@@ -53,6 +61,7 @@ export async function createScene(canvas) {
     resize,
     clear() { root.clear(); anim = null; },
     setCamera(pos, look = [0, 0, 0]) {
+      lastCam = { pos, look };
       camera.position.set(...pos);
       camera.lookAt(...look);
     },
@@ -99,9 +108,7 @@ export async function createScene(canvas) {
     async trySkybox(urls) {
       const url = await firstExisting(urls);
       if (!url) return false;
-      const tex = await new Promise((resolve) => {
-        new THREE.TextureLoader().load(url, resolve, undefined, () => resolve(null));
-      });
+      const tex = await loadTexture(url);
       if (!tex) return false;
       tex.mapping = THREE.EquirectangularReflectionMapping;
       tex.colorSpace = THREE.SRGBColorSpace;
@@ -112,19 +119,38 @@ export async function createScene(canvas) {
     async tryGlb(urls) {
       const url = await firstExisting(urls);
       if (!url) return null;
-      const loader = new GLTFLoader();
-      if (MeshoptDecoder) {
-        if (MeshoptDecoder.ready) await MeshoptDecoder.ready;
-        loader.setMeshoptDecoder(MeshoptDecoder);
+      return loadGlb(url);
+    },
+    addModel(gltfScene, { p = { x: 0, y: 0, z: 0 }, visualSize, radius, scale = 1, comet = false } = {}) {
+      const model = gltfScene;
+      if (visualSize) fitToSize(model, visualSize);
+      else if (radius != null) model.scale.setScalar(radius);
+      if (comet) prepareComet(model, { showTail: false });
+      model.position.set(p.x * scale, p.y * scale, (p.z || 0) * scale);
+      if (comet) {
+        // dust_tail is along +X; point +X away from the Sun at the origin.
+        const away = new THREE.Vector3(model.position.x, model.position.y, model.position.z);
+        if (away.lengthSq() > 1e-12) orientAxisToward(model, new THREE.Vector3(1, 0, 0), away);
       }
-      try {
-        const res = await fetch(url);
-        if (!res.ok) return null;
-        const buf = await res.arrayBuffer();
-        return await new Promise((resolve, reject) => loader.parse(buf, url.replace(/[^/]+$/, ""), resolve, reject));
-      } catch (e) {
-        return null;
-      }
+      root.add(model);
+      return model;
+    },
+    pointAxis(obj, localAxis, worldDir) {
+      orientAxisToward(obj, localAxis, worldDir);
+    },
+    addDynamicLine(color = GREY) {
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.Float32BufferAttribute([0, 0, 0, 0, 0, 0], 3));
+      const line = new THREE.Line(geo, new THREE.LineBasicMaterial({ color }));
+      root.add(line);
+      line.userData.setEnds = (a, b) => {
+        const arr = line.geometry.attributes.position.array;
+        arr[0] = a.x; arr[1] = a.y; arr[2] = a.z || 0;
+        arr[3] = b.x; arr[4] = b.y; arr[5] = b.z || 0;
+        line.geometry.attributes.position.needsUpdate = true;
+        line.geometry.computeBoundingSphere();
+      };
+      return line;
     },
     dispose() { running = false; ro.disconnect(); renderer.dispose(); }
   };
