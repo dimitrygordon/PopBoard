@@ -125,14 +125,20 @@ const WAVE3_B5_IDS = [
 ];
 // Wave 3 batch 5 rows stay verified:false until Tesla clears them.
 const WAVE3_B5_TESLA_CLEARED = true;
+const SPACEX_IDS = [
+  "spacex-starship", "spacex-falcon-9", "spacex-crew-dragon"
+];
+// SpaceX batch rows stay verified:false until Tesla clears them. Flip this to true with his pass.
+const SPACEX_TESLA_CLEARED = true;
+const ANGELO_COMMERCIAL_CREDIT = "3D model built by Angelo (Grok Bot) in Blender from published dimensions; not an official SpaceX model";
 const GITHUB_SOURCE_IDS = new Set(["skylab", "sdo", "stereo", "rosetta"]);
 
-test("fleet.json has 189 listed craft, real assets, and verified fact rows", () => {
+test("fleet.json has 192 listed craft, real assets, and verified fact rows", () => {
   assert.equal(fleet.schemaVersion, 1);
   assert.ok(Array.isArray(fleet.craft));
-  assert.equal(fleet.craft.length, 189, fleet.craft.length);
+  assert.equal(fleet.craft.length, 192, fleet.craft.length);
   const ids = fleet.craft.map((c) => c.id);
-  for (const extra of ["iss", "saturn-v", "space-shuttle", ...WAVE2_IDS, ...WAVE3_B1_IDS, ...WAVE3_B2_4_IDS, ...WAVE3_B5_IDS]) {
+  for (const extra of ["iss", "saturn-v", "space-shuttle", ...WAVE2_IDS, ...WAVE3_B1_IDS, ...WAVE3_B2_4_IDS, ...WAVE3_B5_IDS, ...SPACEX_IDS]) {
     assert.ok(ids.includes(extra), `missing ${extra}`);
   }
   assert.equal(ids.filter((id) => WAVE1_IDS.includes(id)).length, 19);
@@ -142,17 +148,21 @@ test("fleet.json has 189 listed craft, real assets, and verified fact rows", () 
   assert.equal(ids.filter((id) => WAVE3_B3_IDS.includes(id)).length, 29);
   assert.equal(ids.filter((id) => WAVE3_B4_IDS.includes(id)).length, 21);
   assert.equal(ids.filter((id) => WAVE3_B5_IDS.includes(id)).length, 32);
+  assert.equal(ids.filter((id) => SPACEX_IDS.includes(id)).length, 3);
   const unique = new Set();
   let wave1Facts = 0;
   let wave2Facts = 0;
   let wave3b1Facts = 0;
   let wave3b24Facts = 0;
   let wave3b5Facts = 0;
+  let spacexFacts = 0;
   for (const craft of fleet.craft) {
     const wave2 = WAVE2_IDS.includes(craft.id);
     const wave3b1 = WAVE3_B1_IDS.includes(craft.id);
     const wave3b24 = WAVE3_B2_4_IDS.includes(craft.id);
     const wave3b5 = WAVE3_B5_IDS.includes(craft.id);
+    const spacex = SPACEX_IDS.includes(craft.id);
+    const commercial = (craft.tags || []).includes("commercial");
     assert.match(craft.id, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
     assert.equal(unique.has(craft.id), false, `duplicate id ${craft.id}`);
     unique.add(craft.id);
@@ -161,17 +171,30 @@ test("fleet.json has 189 listed craft, real assets, and verified fact rows", () 
     assert.ok(craft.still.startsWith("stills/") && craft.still.endsWith(".webp"));
     assert.ok(craft.glb.startsWith("models/") && craft.glb.endsWith(".glb"));
     assert.ok(craft.usdz.startsWith("models/") && craft.usdz.endsWith(".usdz"));
-    assert.equal(craft.credit, "3D model courtesy NASA");
-    if (GITHUB_SOURCE_IDS.has(craft.id)) {
-      assert.match(craft.sourceUrl, /^https:\/\/github\.com\/nasa\/NASA-3D-Resources\//);
+    if (commercial) {
+      assert.equal(craft.credit, ANGELO_COMMERCIAL_CREDIT, craft.id);
+      assert.match(craft.sourceUrl, /^https:\/\/en\.wikipedia\.org\/wiki\//);
+      assert.ok(spacex, `${craft.id} commercial tag is only for the SpaceX batch`);
     } else {
-      assert.match(craft.sourceUrl, /^https:\/\/science\.nasa\.gov\/3d-resources\//);
+      assert.equal(craft.credit, "3D model courtesy NASA");
+      if (GITHUB_SOURCE_IDS.has(craft.id)) {
+        assert.match(craft.sourceUrl, /^https:\/\/github\.com\/nasa\/NASA-3D-Resources\//);
+      } else {
+        assert.match(craft.sourceUrl, /^https:\/\/science\.nasa\.gov\/3d-resources\//);
+      }
     }
     assert.ok(Array.isArray(craft.facts) && craft.facts.length >= 1);
     for (const row of craft.facts) {
       assert.ok(row.label);
       assert.ok(row.value);
       assert.doesNotMatch(row.value, /PLACEHOLDER/);
+      assert.doesNotMatch(row.value, /\u2014/);
+      if (spacex) {
+        assert.equal(row.verified, SPACEX_TESLA_CLEARED, `${craft.id} ${row.label}`);
+        assert.ok(Array.isArray(row.sources) && row.sources.length >= 1, `${craft.id} ${row.label} sources`);
+        spacexFacts += 1;
+        continue;
+      }
       if (wave3b5) {
         assert.equal(row.verified, WAVE3_B5_TESLA_CLEARED, `${craft.id} ${row.label}`);
         assert.ok(Array.isArray(row.sources) && row.sources.length >= 1, `${craft.id} ${row.label} sources`);
@@ -209,6 +232,16 @@ test("fleet.json has 189 listed craft, real assets, and verified fact rows", () 
   assert.equal(wave3b1Facts, 239);
   assert.equal(wave3b24Facts, 454);
   assert.equal(wave3b5Facts, 176);
+  assert.equal(spacexFacts, 20);
+  const starship = fleet.craft.find((c) => c.id === "spacex-starship");
+  assert.equal(starship.subtitle, "The tallest and most powerful rocket ever flown (shown: Block 2)");
+  assert.ok(starship.tags.includes("rockets") && starship.tags.includes("commercial"));
+  assert.ok(fleet.craft.find((c) => c.id === "spacex-falcon-9").tags.includes("rockets"));
+  assert.ok(fleet.craft.find((c) => c.id === "spacex-crew-dragon").tags.includes("crewed"));
+  for (const id of SPACEX_IDS) {
+    const glb = new URL("public/spaceships/models/" + id + ".glb", root);
+    assert.ok(statSync(glb).size <= 3_000_000, `${id} glb over 3 MB`);
+  }
   for (const id of WAVE3_B5_IDS) {
     const tags = fleet.craft.find((c) => c.id === id).tags;
     assert.ok(tags.includes("planets-moons") || tags.includes("small-bodies"), id);
@@ -245,6 +278,7 @@ test("the gallery has an Earth observers filter for the earth-observer tag", () 
   assert.match(js, /earth-observer/);
   assert.match(js, /Earth observers/);
   assert.match(js, /TAG_LABELS/);
+  assert.match(js, /"commercial"/);
   const viewer = read("public/spaceships/ss-viewer.js");
   assert.match(viewer, /ph-label/);
   assert.match(viewer, /PLACEHOLDER/);
@@ -294,7 +328,7 @@ test("Tesla fact-check wording and sources are applied for wave 1 and wave 2", (
   const found = {};
   let verified = 0;
   for (const craft of fleet.craft) {
-    if (WAVE3_B1_IDS.includes(craft.id) || WAVE3_B2_4_IDS.includes(craft.id) || WAVE3_B5_IDS.includes(craft.id)) continue;
+    if (WAVE3_B1_IDS.includes(craft.id) || WAVE3_B2_4_IDS.includes(craft.id) || WAVE3_B5_IDS.includes(craft.id) || SPACEX_IDS.includes(craft.id)) continue;
     for (const row of craft.facts) {
       assert.equal(row.verified, true, `${craft.id} ${row.label}`);
       verified += 1;

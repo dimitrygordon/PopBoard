@@ -12967,6 +12967,257 @@
           ]
         }
       ]
+    },
+    {
+      "id": "spacex-starship",
+      "name": "SpaceX Starship",
+      "subtitle": "The tallest and most powerful rocket ever flown (shown: Block 2)",
+      "tags": [
+        "rockets",
+        "commercial"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/spacex-starship.webp",
+      "glb": "models/spacex-starship.glb",
+      "usdz": "models/spacex-starship.usdz",
+      "credit": "3D model built by Angelo (Grok Bot) in Blender from published dimensions; not an official SpaceX model",
+      "sourceUrl": "https://en.wikipedia.org/wiki/SpaceX_Starship",
+      "sourceLabel": "Wikipedia: SpaceX Starship (dimensions reference)",
+      "facts": [
+        {
+          "label": "Maker",
+          "value": "SpaceX",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Starship",
+            "https://en.wikipedia.org/wiki/SpaceX_Super_Heavy",
+            "https://en.wikipedia.org/wiki/Starship_(spacecraft)"
+          ]
+        },
+        {
+          "label": "Version shown",
+          "value": "Block 2 (V2): Super Heavy booster + Starship upper stage",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Starship",
+            "https://en.wikipedia.org/wiki/SpaceX_Super_Heavy",
+            "https://en.wikipedia.org/wiki/Starship_(spacecraft)"
+          ]
+        },
+        {
+          "label": "First flight",
+          "value": "April 20, 2023 (Block 2 flew 2025, retired after Flight 11)",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Starship",
+            "https://en.wikipedia.org/wiki/SpaceX_Super_Heavy",
+            "https://en.wikipedia.org/wiki/Starship_(spacecraft)"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 123 m tall, 9 m wide",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Starship",
+            "https://en.wikipedia.org/wiki/SpaceX_Super_Heavy",
+            "https://en.wikipedia.org/wiki/Starship_(spacecraft)"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "about 5,000 t fully fuelled",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Starship",
+            "https://en.wikipedia.org/wiki/SpaceX_Super_Heavy",
+            "https://en.wikipedia.org/wiki/Starship_(spacecraft)"
+          ]
+        },
+        {
+          "label": "Engines",
+          "value": "33 Raptors on the booster, 6 on the ship (3 vacuum)",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Starship",
+            "https://en.wikipedia.org/wiki/SpaceX_Super_Heavy",
+            "https://en.wikipedia.org/wiki/Starship_(spacecraft)"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Both stages are built from stainless steel and designed to be caught and reused. The ship's belly is covered in black hexagonal heat tiles.",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Starship",
+            "https://en.wikipedia.org/wiki/SpaceX_Super_Heavy",
+            "https://en.wikipedia.org/wiki/Starship_(spacecraft)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "spacex-falcon-9",
+      "name": "Falcon 9 Block 5",
+      "subtitle": "SpaceX's reusable workhorse rocket",
+      "tags": [
+        "rockets",
+        "commercial"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/spacex-falcon-9.webp",
+      "glb": "models/spacex-falcon-9.glb",
+      "usdz": "models/spacex-falcon-9.usdz",
+      "credit": "3D model built by Angelo (Grok Bot) in Blender from published dimensions; not an official SpaceX model",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Falcon_9_Block_5",
+      "sourceLabel": "Wikipedia: Falcon 9 Block 5 (dimensions reference)",
+      "facts": [
+        {
+          "label": "Maker",
+          "value": "SpaceX",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Falcon_9_Block_5",
+            "https://en.wikipedia.org/wiki/Falcon_9",
+            "https://www.spacex.com/vehicles/falcon-9/"
+          ]
+        },
+        {
+          "label": "Version shown",
+          "value": "Block 5 with payload fairing",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Falcon_9_Block_5",
+            "https://en.wikipedia.org/wiki/Falcon_9",
+            "https://www.spacex.com/vehicles/falcon-9/"
+          ]
+        },
+        {
+          "label": "First flight",
+          "value": "May 11, 2018",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Falcon_9_Block_5",
+            "https://en.wikipedia.org/wiki/Falcon_9",
+            "https://www.spacex.com/vehicles/falcon-9/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "69.8 m tall, 3.7 m wide (5.2 m fairing)",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Falcon_9_Block_5",
+            "https://en.wikipedia.org/wiki/Falcon_9",
+            "https://www.spacex.com/vehicles/falcon-9/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "about 549 t at liftoff",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Falcon_9_Block_5",
+            "https://en.wikipedia.org/wiki/Falcon_9",
+            "https://www.spacex.com/vehicles/falcon-9/"
+          ]
+        },
+        {
+          "label": "Engines",
+          "value": "9 Merlin 1D on the booster, 1 Merlin Vacuum on the second stage",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Falcon_9_Block_5",
+            "https://en.wikipedia.org/wiki/Falcon_9",
+            "https://www.spacex.com/vehicles/falcon-9/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "The first stage flies back and lands on its four legs, steering with titanium grid fins, so it can fly again.",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Falcon_9_Block_5",
+            "https://en.wikipedia.org/wiki/Falcon_9",
+            "https://www.spacex.com/vehicles/falcon-9/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "spacex-crew-dragon",
+      "name": "Crew Dragon",
+      "subtitle": "SpaceX's astronaut capsule, with its trunk",
+      "tags": [
+        "crewed",
+        "commercial"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/spacex-crew-dragon.webp",
+      "glb": "models/spacex-crew-dragon.glb",
+      "usdz": "models/spacex-crew-dragon.usdz",
+      "credit": "3D model built by Angelo (Grok Bot) in Blender from published dimensions; not an official SpaceX model",
+      "sourceUrl": "https://en.wikipedia.org/wiki/SpaceX_Dragon_2",
+      "sourceLabel": "Wikipedia: SpaceX Dragon 2 (dimensions reference)",
+      "facts": [
+        {
+          "label": "Maker",
+          "value": "SpaceX",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Dragon_2",
+            "https://www.spacex.com/vehicles/dragon/"
+          ]
+        },
+        {
+          "label": "First crewed flight",
+          "value": "May 30, 2020 (Demo-2)",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Dragon_2",
+            "https://www.spacex.com/vehicles/dragon/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "8.1 m tall with trunk, 4 m wide",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Dragon_2",
+            "https://www.spacex.com/vehicles/dragon/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "about 12,500 kg at undocking (capsule + trunk)",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Dragon_2",
+            "https://www.spacex.com/vehicles/dragon/"
+          ]
+        },
+        {
+          "label": "Crew",
+          "value": "4 (up to 7 in an emergency)",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Dragon_2",
+            "https://www.spacex.com/vehicles/dragon/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Eight SuperDraco engines can pull the capsule away from a failing rocket. The trunk carries solar cells and radiators and is thrown away before reentry.",
+          "verified": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Dragon_2",
+            "https://www.spacex.com/vehicles/dragon/"
+          ]
+        }
+      ]
     }
   ]
 }
