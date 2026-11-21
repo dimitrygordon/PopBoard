@@ -1274,8 +1274,7 @@
         {
           "label": "Status",
           "sources": [
-            "https://en.wikipedia.org/wiki/Aura_(satellite)",
-            "https://science.nasa.gov/mission/aura/"
+            "https://science.nasa.gov/missions/potential-evolution-of-the-aura-mission/"
           ],
           "verified": false
         },
@@ -1446,7 +1445,6 @@
         {
           "label": "Status",
           "sources": [
-            "https://en.wikipedia.org/wiki/CloudSat",
             "https://science.nasa.gov/mission/cloudsat/"
           ],
           "verified": false
@@ -1533,7 +1531,7 @@
           "label": "Status",
           "sources": [
             "https://en.wikipedia.org/wiki/Cyclone_Global_Navigation_Satellite_System",
-            "https://science.nasa.gov/mission/cygnss/"
+            "https://www.rdworldonline.com/how-cygnss-solar-panels-will-deorbit/"
           ],
           "verified": false
         },
@@ -1622,8 +1620,6 @@
         {
           "label": "Status",
           "sources": [
-            "https://en.wikipedia.org/wiki/Deep_Space_Climate_Observatory",
-            "https://science.nasa.gov/mission/dscovr/",
             "https://epic.gsfc.nasa.gov/"
           ],
           "verified": false
@@ -1649,7 +1645,8 @@
         {
           "label": "About",
           "sources": [
-            "https://science.nasa.gov/mission/dscovr/",
+            "https://www.ospo.noaa.gov/operations/swfo/status.html",
+            "https://www.noaa.gov/news-release/noaas-solar-1-enters-new-era-of-space-weather-monitoring",
             "https://epic.gsfc.nasa.gov/"
           ],
           "verified": false
@@ -1657,8 +1654,7 @@
         {
           "label": "Fun fact",
           "sources": [
-            "https://science.nasa.gov/mission/dscovr/",
-            "https://epic.gsfc.nasa.gov/"
+            "https://en.wikipedia.org/wiki/Deep_Space_Climate_Observatory"
           ],
           "verified": false
         }
@@ -1670,7 +1666,7 @@
         1.4
       ],
       "triangles": 8786,
-      "scale_note": "Scaled so the body is 1.4 m across (Wikipedia: undeployed 1.4 x 1.8 m). Approximate; Tesla check.",
+      "scale_note": "Scaled so the body is 1.4 m across (Wikipedia: undeployed 1.4 x 1.8 m). UNVERIFIED: eoPortal gives the bus as 1.37 m x 1.87 m, so the model may be up to 1.34 times too small; I found no NASA or NOAA page with the body size, so it was not rescaled.",
       "glb_bytes": 292836,
       "usdz_bytes": 652499
     },
@@ -1774,7 +1770,7 @@
       "no_science_nasa_gov_page": false,
       "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
       "fact_sources": [
-        "https://www.goes.noaa.gov/",
+        "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
         "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
         "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite"
       ],
@@ -1782,7 +1778,7 @@
         {
           "label": "Mission",
           "sources": [
-            "https://www.goes.noaa.gov/",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite"
           ],
@@ -1791,7 +1787,7 @@
         {
           "label": "Agency",
           "sources": [
-            "https://www.goes.noaa.gov/",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite"
           ],
@@ -1801,7 +1797,7 @@
           "label": "Launch",
           "sources": [
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite",
-            "https://www.goes.noaa.gov/",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites"
           ],
           "verified": false
@@ -1810,7 +1806,7 @@
           "label": "Status",
           "sources": [
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite",
-            "https://www.goes.noaa.gov/",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites"
           ],
           "verified": false
@@ -1819,7 +1815,7 @@
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite",
-            "https://www.goes.noaa.gov/",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites"
           ],
           "verified": false
@@ -1827,7 +1823,7 @@
         {
           "label": "About",
           "sources": [
-            "https://www.goes.noaa.gov/",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite"
           ],
@@ -1836,7 +1832,7 @@
         {
           "label": "Fun fact",
           "sources": [
-            "https://www.goes.noaa.gov/",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite"
           ],
@@ -1924,7 +1920,7 @@
         {
           "label": "Fun fact",
           "sources": [
-            "https://science.nasa.gov/mission/grace/"
+            "https://science.nasa.gov/missions/grace/lumps-bumps-and-gravity-space-scales-weigh-planet-earth/"
           ],
           "verified": false
         }
@@ -2318,8 +2314,7 @@
         {
           "label": "Status",
           "sources": [
-            "https://en.wikipedia.org/wiki/Sentinel-6_Michael_Freilich",
-            "https://science.nasa.gov/mission/sentinel-6/"
+            "https://science.nasa.gov/blogs/sentinel-6/2026/11/16/nasa-european-sea-level-satellite-prepped-for-new-role/"
           ],
           "verified": false
         },
@@ -2342,7 +2337,7 @@
         {
           "label": "About",
           "sources": [
-            "https://science.nasa.gov/mission/sentinel-6/"
+            "https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Sentinel-6/New_Copernicus_satellite_to_monitor_sea-level_rise_launched"
           ],
           "verified": false
         },
@@ -2420,8 +2415,8 @@
         {
           "label": "Mass",
           "sources": [
-            "https://en.wikipedia.org/wiki/Landsat_1",
-            "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
+            "https://earth.esa.int/eogateway/missions/landsat-1-to-landsat-3/description",
+            "https://www.usgs.gov/landsat-missions/landsat-1"
           ],
           "verified": false
         },
@@ -2494,18 +2489,15 @@
         {
           "label": "Status",
           "sources": [
-            "https://en.wikipedia.org/wiki/Landsat_4",
-            "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
-            "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
+            "https://aerospace.org/reentries/13367",
+            "https://en.wikipedia.org/wiki/Landsat_4"
           ],
           "verified": false
         },
         {
           "label": "Real size",
           "sources": [
-            "https://en.wikipedia.org/wiki/Landsat_4",
-            "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
-            "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
+            "https://space.jpl.nasa.gov/msl/QuickLooks/landsat4QL.html"
           ],
           "verified": false
         },
@@ -2537,14 +2529,14 @@
       ],
       "needs_tesla_verification": true,
       "model_size_m_gltf_xyz": [
-        2.004,
-        2.258,
-        4.0
+        2.154,
+        2.427,
+        4.3
       ],
       "triangles": 34117,
-      "scale_note": "NASA's model covers Landsat 4 and 5. Scaled to about 4 m long as a rough anchor; Tesla check.",
-      "glb_bytes": 823344,
-      "usdz_bytes": 4150529
+      "scale_note": "NASA's model covers Landsat 4 and 5. Scaled to about 4.3 m long (JPL Landsat 4 Quicklook via Tesla S4; that page did not answer curl, recheck).",
+      "glb_bytes": 823572,
+      "usdz_bytes": 4150499
     },
     {
       "id": "landsat-7",
@@ -2775,7 +2767,6 @@
         {
           "label": "Mass",
           "sources": [
-            "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation",
             "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf"
           ],
           "verified": false
@@ -2855,8 +2846,7 @@
         {
           "label": "Real size",
           "sources": [
-            "https://en.wikipedia.org/wiki/QuikSCAT",
-            "https://science.nasa.gov/mission/quikscat/"
+            "https://www.eoportal.org/satellite-missions/quikscat"
           ],
           "verified": false
         },
@@ -2878,7 +2868,7 @@
         {
           "label": "Fun fact",
           "sources": [
-            "https://science.nasa.gov/mission/quikscat/"
+            "https://www.eoportal.org/satellite-missions/quikscat"
           ],
           "verified": false
         }
@@ -2890,7 +2880,7 @@
         2.892
       ],
       "triangles": 67785,
-      "scale_note": "NASA's model is treated as metres as supplied. Approximate; Tesla check.",
+      "scale_note": "NASA's model is in metres as supplied. Checked after Tesla S8: the body comes out about 1.8 x 1.8 x 2.2 m against eoPortal's 2.2 x 1.7 x 1.4 m, close enough that I did not rescale; the axis match is my reading.",
       "glb_bytes": 1216028,
       "usdz_bytes": 3979165
     },
@@ -3080,67 +3070,71 @@
       "no_science_nasa_gov_page": false,
       "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
       "fact_sources": [
-        "https://oceancolor.gsfc.nasa.gov/data/seawifs/",
+        "https://www.eoportal.org/satellite-missions/orbview-2",
         "https://en.wikipedia.org/wiki/OrbView-2"
       ],
       "fact_rows": [
         {
           "label": "Mission",
           "sources": [
-            "https://oceancolor.gsfc.nasa.gov/data/seawifs/"
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
           ],
           "verified": false
         },
         {
           "label": "Agency",
           "sources": [
-            "https://oceancolor.gsfc.nasa.gov/data/seawifs/"
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
           ],
           "verified": false
         },
         {
           "label": "Launch",
           "sources": [
-            "https://en.wikipedia.org/wiki/OrbView-2",
-            "https://oceancolor.gsfc.nasa.gov/data/seawifs/"
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
           ],
           "verified": false
         },
         {
           "label": "Status",
           "sources": [
-            "https://en.wikipedia.org/wiki/OrbView-2",
-            "https://oceancolor.gsfc.nasa.gov/data/seawifs/"
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
           ],
           "verified": false
         },
         {
           "label": "Real size",
           "sources": [
-            "https://en.wikipedia.org/wiki/OrbView-2",
-            "https://oceancolor.gsfc.nasa.gov/data/seawifs/"
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
           ],
           "verified": false
         },
         {
           "label": "Mass",
           "sources": [
-            "https://en.wikipedia.org/wiki/OrbView-2",
-            "https://oceancolor.gsfc.nasa.gov/data/seawifs/"
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
           ],
           "verified": false
         },
         {
           "label": "About",
           "sources": [
-            "https://oceancolor.gsfc.nasa.gov/data/seawifs/"
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
           ],
           "verified": false
         },
         {
           "label": "Fun fact",
           "sources": [
-            "https://oceancolor.gsfc.nasa.gov/data/seawifs/"
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
           ],
           "verified": false
         }
@@ -3195,8 +3189,8 @@
         {
           "label": "Status",
           "sources": [
-            "https://en.wikipedia.org/wiki/Suomi_NPP",
-            "https://science.nasa.gov/mission/suomi-npp/"
+            "https://www.nesdis.noaa.gov/news/noaa-deorbit-the-suomi-npp-satellite-after-more-15-years-service",
+            "https://www.nesdis.noaa.gov/news/update-4-cessation-of-suomi-national-polar-orbiting-partnership-s-npp-data-users-november-02-2026-1540-utc-and-decommissioning-issued-november-2-2026-1800-utc"
           ],
           "verified": false
         },
@@ -3414,7 +3408,7 @@
         1.24
       ],
       "triangles": 21059,
-      "scale_note": "Scaled to the 3.9 m solar panel span (JPL TOMS-EP Quicklook, from memory; that page did not respond on recheck. Tesla check).",
+      "scale_note": "Scaled to a 3.9 m solar panel span from memory (JPL Quicklook). Tesla: the 3.9 m span is UNVERIFIED (no fetched source); the body matches eoPortal's stowed 1.16 m x 1.77 m.",
       "glb_bytes": 663764,
       "usdz_bytes": 1862464
     },
@@ -3457,24 +3451,21 @@
         {
           "label": "Status",
           "sources": [
-            "https://en.wikipedia.org/wiki/Tropical_Rainfall_Measuring_Mission",
-            "https://science.nasa.gov/mission/trmm/"
+            "https://www.eoportal.org/satellite-missions/trmm"
           ],
           "verified": false
         },
         {
           "label": "Real size",
           "sources": [
-            "https://en.wikipedia.org/wiki/Tropical_Rainfall_Measuring_Mission",
-            "https://science.nasa.gov/mission/trmm/"
+            "https://www.eoportal.org/satellite-missions/trmm"
           ],
           "verified": false
         },
         {
           "label": "Mass",
           "sources": [
-            "https://en.wikipedia.org/wiki/Tropical_Rainfall_Measuring_Mission",
-            "https://science.nasa.gov/mission/trmm/"
+            "https://www.eoportal.org/satellite-missions/trmm"
           ],
           "verified": false
         },
@@ -3495,14 +3486,14 @@
       ],
       "needs_tesla_verification": true,
       "model_size_m_gltf_xyz": [
-        3.7,
-        10.489,
-        3.897
+        5.1,
+        14.458,
+        5.371
       ],
       "triangles": 51404,
-      "scale_note": "Scaled so the body is 3.7 m wide (from memory of NASA figures). Approximate; Tesla check.",
-      "glb_bytes": 785996,
-      "usdz_bytes": 3173725
+      "scale_note": "Scaled so the body is 5.1 m long (eoPortal), which gives about 14.5 m across the solar paddles (eoPortal: 14.6 m). Rescaled after Tesla S7.",
+      "glb_bytes": 790592,
+      "usdz_bytes": 3173684
     },
     {
       "id": "acrimsat",
@@ -3574,7 +3565,7 @@
         {
           "label": "Fun fact",
           "sources": [
-            "https://science.nasa.gov/mission/acrimsat/"
+            "https://www.jpl.nasa.gov/news/press_kits/acrimsat.pdf"
           ],
           "verified": false
         }

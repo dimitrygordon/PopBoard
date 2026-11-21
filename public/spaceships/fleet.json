@@ -3118,13 +3118,12 @@
         },
         {
           "label": "Status",
-          "value": "Operating, drifting to a lower orbit as planned (as of Nov 2026; recheck)",
+          "value": "Operating; out of fuel for orbit adjustments, so its timing slowly drifts; expected to run until about 2028 (as of Nov 2026; recheck)",
           "verified": false,
+          "recheckBeforePublish": true,
           "sources": [
-            "https://en.wikipedia.org/wiki/Aura_(satellite)",
-            "https://science.nasa.gov/mission/aura/"
-          ],
-          "recheckBeforePublish": true
+            "https://science.nasa.gov/missions/potential-evolution-of-the-aura-mission/"
+          ]
         },
         {
           "label": "Real size",
@@ -3292,10 +3291,9 @@
         },
         {
           "label": "Status",
-          "value": "Decommissioned December 15, 2023",
+          "value": "Science ended December 20, 2023; spacecraft shut down in April 2024",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/CloudSat",
             "https://science.nasa.gov/mission/cloudsat/"
           ],
           "recheckBeforePublish": true
@@ -3379,13 +3377,13 @@
         },
         {
           "label": "Status",
-          "value": "Operating with fewer satellites as orbits decay (as of Nov 2026; recheck)",
+          "value": "Seven of eight still flying; planned to be brought down around January 1, 2027 (as of Nov 2026; recheck)",
           "verified": false,
+          "recheckBeforePublish": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Cyclone_Global_Navigation_Satellite_System",
-            "https://science.nasa.gov/mission/cygnss/"
-          ],
-          "recheckBeforePublish": true
+            "https://www.rdworldonline.com/how-cygnss-solar-panels-will-deorbit/"
+          ]
         },
         {
           "label": "Real size",
@@ -3469,14 +3467,12 @@
         },
         {
           "label": "Status",
-          "value": "Operating (as of Nov 2026; recheck)",
+          "value": "Operating (EPIC images as of Nov 2026; recheck)",
           "verified": false,
+          "recheckBeforePublish": true,
           "sources": [
-            "https://en.wikipedia.org/wiki/Deep_Space_Climate_Observatory",
-            "https://science.nasa.gov/mission/dscovr/",
             "https://epic.gsfc.nasa.gov/"
-          ],
-          "recheckBeforePublish": true
+          ]
         },
         {
           "label": "Real size",
@@ -3500,20 +3496,20 @@
         },
         {
           "label": "About",
-          "value": "DSCOVR sits about 1.5 million km toward the Sun, where it watches the solar wind and gives about an hour's warning of geomagnetic storms. NASA's EPIC camera on board photographs the whole sunlit Earth many times a day.",
+          "value": "DSCOVR sits about 1.5 million km toward the Sun. For years it was the main early warning for solar storms, a job NOAA's SOLAR-1 took over in 2026. NASA's EPIC camera on board photographs the whole sunlit Earth many times a day.",
           "verified": false,
           "sources": [
-            "https://science.nasa.gov/mission/dscovr/",
+            "https://www.ospo.noaa.gov/operations/swfo/status.html",
+            "https://www.noaa.gov/news-release/noaas-solar-1-enters-new-era-of-space-weather-monitoring",
             "https://epic.gsfc.nasa.gov/"
           ]
         },
         {
           "label": "Fun fact",
-          "value": "It was first built in the 1990s as Triana, then waited in storage for about ten years before it finally launched.",
+          "value": "It was built in the 1990s as Triana, sat in storage for about 8 years, and finally launched in 2015.",
           "verified": false,
           "sources": [
-            "https://science.nasa.gov/mission/dscovr/",
-            "https://epic.gsfc.nasa.gov/"
+            "https://en.wikipedia.org/wiki/Deep_Space_Climate_Observatory"
           ]
         }
       ]
@@ -3630,7 +3626,7 @@
           "value": "Geostationary weather satellites watching the Americas",
           "verified": false,
           "sources": [
-            "https://www.goes.noaa.gov/",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite"
           ]
@@ -3640,7 +3636,7 @@
           "value": "NOAA, with spacecraft built and launched through NASA",
           "verified": false,
           "sources": [
-            "https://www.goes.noaa.gov/",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite"
           ]
@@ -3651,7 +3647,7 @@
           "verified": false,
           "sources": [
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite",
-            "https://www.goes.noaa.gov/",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites"
           ]
         },
@@ -3659,12 +3655,12 @@
           "label": "Status",
           "value": "GOES satellites in service (as of Nov 2026)",
           "verified": false,
+          "recheckBeforePublish": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite",
-            "https://www.goes.noaa.gov/",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites"
-          ],
-          "recheckBeforePublish": true
+          ]
         },
         {
           "label": "Real size",
@@ -3672,7 +3668,7 @@
           "verified": false,
           "sources": [
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite",
-            "https://www.goes.noaa.gov/",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites"
           ]
         },
@@ -3681,17 +3677,17 @@
           "value": "GOES satellites orbit about 35,800 km up, where they match Earth's spin and stay over the same spot. They take a fresh picture of the Americas every few minutes to track storms, hurricanes and wildfires.",
           "verified": false,
           "sources": [
-            "https://www.goes.noaa.gov/",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite"
           ]
         },
         {
           "label": "Fun fact",
-          "value": "From that height, one satellite can see almost a whole half of the Earth at once.",
+          "value": "From that height, one satellite can see about 40% of the Earth at once.",
           "verified": false,
           "sources": [
-            "https://www.goes.noaa.gov/",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite"
           ]
@@ -3777,10 +3773,10 @@
         },
         {
           "label": "Fun fact",
-          "value": "They measured the distance between each other to within about the width of a red blood cell.",
+          "value": "They measured the distance between each other to within about one micron, a millionth of a metre, far thinner than a human hair.",
           "verified": false,
           "sources": [
-            "https://science.nasa.gov/mission/grace/"
+            "https://science.nasa.gov/missions/grace/lumps-bumps-and-gravity-space-scales-weigh-planet-earth/"
           ]
         }
       ]
@@ -3917,11 +3913,11 @@
           "label": "Status",
           "value": "Operating (as of Nov 2026; recheck)",
           "verified": false,
+          "recheckBeforePublish": true,
           "sources": [
             "https://en.wikipedia.org/wiki/ICESat-2",
             "https://icesat-2.gsfc.nasa.gov/"
-          ],
-          "recheckBeforePublish": true
+          ]
         },
         {
           "label": "Real size",
@@ -4172,13 +4168,12 @@
         },
         {
           "label": "Status",
-          "value": "Operating (as of Nov 2026; recheck)",
+          "value": "Operating; hands the reference role to its twin Sentinel-6B in January 2027 (as of Nov 2026; recheck)",
           "verified": false,
+          "recheckBeforePublish": true,
           "sources": [
-            "https://en.wikipedia.org/wiki/Sentinel-6_Michael_Freilich",
-            "https://science.nasa.gov/mission/sentinel-6/"
-          ],
-          "recheckBeforePublish": true
+            "https://science.nasa.gov/blogs/sentinel-6/2026/11/16/nasa-european-sea-level-satellite-prepped-for-new-role/"
+          ]
         },
         {
           "label": "Real size",
@@ -4200,10 +4195,10 @@
         },
         {
           "label": "About",
-          "value": "Sentinel-6 Michael Freilich continues the sea-level record that began in 1992. It maps 90% of the world's ice-free ocean every 10 days.",
+          "value": "Sentinel-6 Michael Freilich continues the sea-level record that began in 1992. It maps 95% of the world's ice-free ocean every 10 days.",
           "verified": false,
           "sources": [
-            "https://science.nasa.gov/mission/sentinel-6/"
+            "https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Sentinel-6/New_Copernicus_satellite_to_monitor_sea-level_rise_launched"
           ]
         },
         {
@@ -4278,11 +4273,11 @@
         },
         {
           "label": "Mass",
-          "value": "about 1,800 kg (Wikipedia: 1,800 kg; NASA lists 953 kg)",
+          "value": "about 950 kg (2,100 lb)",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/Landsat_1",
-            "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
+            "https://earth.esa.int/eogateway/missions/landsat-1-to-landsat-3/description",
+            "https://www.usgs.gov/landsat-missions/landsat-1"
           ]
         },
         {
@@ -4349,23 +4344,21 @@
         },
         {
           "label": "Status",
-          "value": "Retired June 15, 2001",
+          "value": "Retired June 15, 2001; re-entered the atmosphere October 8, 2025 (recheck)",
           "verified": false,
+          "recheckBeforePublish": true,
           "sources": [
-            "https://en.wikipedia.org/wiki/Landsat_4",
-            "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
-            "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
-          ],
-          "recheckBeforePublish": true
+            "https://aerospace.org/reentries/13367",
+            "https://en.wikipedia.org/wiki/Landsat_4"
+          ]
         },
         {
           "label": "Real size",
-          "value": "about 4 m long (Wikipedia gives no full size)",
+          "value": "about 4.3 m long",
           "verified": false,
+          "recheckBeforePublish": true,
           "sources": [
-            "https://en.wikipedia.org/wiki/Landsat_4",
-            "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
-            "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
+            "https://space.jpl.nasa.gov/msl/QuickLooks/landsat4QL.html"
           ]
         },
         {
@@ -4530,11 +4523,11 @@
           "label": "Status",
           "value": "Operating (as of Nov 2026; recheck)",
           "verified": false,
+          "recheckBeforePublish": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Orbiting_Carbon_Observatory_2",
             "https://science.nasa.gov/mission/oco-2/"
-          ],
-          "recheckBeforePublish": true
+          ]
         },
         {
           "label": "Real size",
@@ -4619,11 +4612,11 @@
           "label": "Status",
           "value": "Series retired; NOAA-19 decommissioned in 2025 (recheck)",
           "verified": false,
+          "recheckBeforePublish": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation",
             "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf"
-          ],
-          "recheckBeforePublish": true
+          ]
         },
         {
           "label": "Real size",
@@ -4636,10 +4629,10 @@
         },
         {
           "label": "Mass",
-          "value": "about 2,230 kg at launch (NOAA-N)",
+          "value": "about 1,420 kg at launch (NOAA-19)",
           "verified": false,
+          "recheckBeforePublish": true,
           "sources": [
-            "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation",
             "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf"
           ]
         },
@@ -4708,19 +4701,18 @@
           "label": "Status",
           "value": "Antenna stopped spinning November 23, 2009; spacecraft decommissioned in 2018 (recheck)",
           "verified": false,
+          "recheckBeforePublish": true,
           "sources": [
             "https://en.wikipedia.org/wiki/QuikSCAT",
             "https://science.nasa.gov/mission/quikscat/"
-          ],
-          "recheckBeforePublish": true
+          ]
         },
         {
           "label": "Real size",
-          "value": "about 7.5 m with its solar array (model)",
+          "value": "spacecraft body 2.2 m x 1.7 m x 1.4 m",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/QuikSCAT",
-            "https://science.nasa.gov/mission/quikscat/"
+            "https://www.eoportal.org/satellite-missions/quikscat"
           ]
         },
         {
@@ -4742,10 +4734,10 @@
         },
         {
           "label": "Fun fact",
-          "value": "It was built and launched in about a year, very fast for a NASA satellite, to replace a lost Japanese satellite instrument.",
+          "value": "It was built in about a year, very fast for a NASA satellite, to replace NASA's NSCAT wind sensor, lost when the Japanese satellite carrying it failed in 1997.",
           "verified": false,
           "sources": [
-            "https://science.nasa.gov/mission/quikscat/"
+            "https://www.eoportal.org/satellite-missions/quikscat"
           ]
         }
       ]
@@ -4949,7 +4941,8 @@
           "value": "Ocean color imaging with the SeaWiFS sensor",
           "verified": false,
           "sources": [
-            "https://oceancolor.gsfc.nasa.gov/data/seawifs/"
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
           ]
         },
         {
@@ -4957,7 +4950,8 @@
           "value": "Orbital Sciences, with NASA buying the science data",
           "verified": false,
           "sources": [
-            "https://oceancolor.gsfc.nasa.gov/data/seawifs/"
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
           ]
         },
         {
@@ -4965,8 +4959,8 @@
           "value": "August 1, 1997",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/OrbView-2",
-            "https://oceancolor.gsfc.nasa.gov/data/seawifs/"
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
           ]
         },
         {
@@ -4974,8 +4968,8 @@
           "value": "Contact lost December 2010",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/OrbView-2",
-            "https://oceancolor.gsfc.nasa.gov/data/seawifs/"
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
           ],
           "recheckBeforePublish": true
         },
@@ -4983,18 +4977,20 @@
           "label": "Real size",
           "value": "a small satellite, about 3 m across with its solar panels",
           "verified": false,
+          "recheckBeforePublish": true,
           "sources": [
-            "https://en.wikipedia.org/wiki/OrbView-2",
-            "https://oceancolor.gsfc.nasa.gov/data/seawifs/"
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
           ]
         },
         {
           "label": "Mass",
-          "value": "about 309 kg (Wikipedia, OrbView-2)",
+          "value": "about 300 to 390 kg (sources differ)",
           "verified": false,
+          "recheckBeforePublish": true,
           "sources": [
-            "https://en.wikipedia.org/wiki/OrbView-2",
-            "https://oceancolor.gsfc.nasa.gov/data/seawifs/"
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
           ]
         },
         {
@@ -5002,7 +4998,8 @@
           "value": "SeaWiFS measured the color of the ocean. Greener water has more phytoplankton, tiny plants that make about half the oxygen produced on Earth.",
           "verified": false,
           "sources": [
-            "https://oceancolor.gsfc.nasa.gov/data/seawifs/"
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
           ]
         },
         {
@@ -5010,7 +5007,8 @@
           "value": "It was the first commercial satellite NASA bought science data from instead of building its own.",
           "verified": false,
           "sources": [
-            "https://oceancolor.gsfc.nasa.gov/data/seawifs/"
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
           ]
         }
       ]
@@ -5058,13 +5056,13 @@
         },
         {
           "label": "Status",
-          "value": "Decommissioned November 2, 2026 (recheck)",
+          "value": "Stopped sending data November 2, 2026; NOAA plans to lower it for re-entry over the South Pacific from December 1 to about December 12, 2026 (recheck)",
           "verified": false,
+          "recheckBeforePublish": true,
           "sources": [
-            "https://en.wikipedia.org/wiki/Suomi_NPP",
-            "https://science.nasa.gov/mission/suomi-npp/"
-          ],
-          "recheckBeforePublish": true
+            "https://www.nesdis.noaa.gov/news/noaa-deorbit-the-suomi-npp-satellite-after-more-15-years-service",
+            "https://www.nesdis.noaa.gov/news/update-4-cessation-of-suomi-national-polar-orbiting-partnership-s-npp-data-users-november-02-2026-1540-utc-and-decommissioning-issued-november-2-2026-1800-utc"
+          ]
         },
         {
           "label": "Real size",
@@ -5236,15 +5234,15 @@
           "label": "Status",
           "value": "Ended December 2006 (recheck)",
           "verified": false,
+          "recheckBeforePublish": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
             "https://www.eoportal.org/satellite-missions/toms"
-          ],
-          "recheckBeforePublish": true
+          ]
         },
         {
           "label": "Real size",
-          "value": "1.1 m wide, 1.8 m tall; 3.9 m across the solar panels",
+          "value": "1.2 m wide, 1.8 m tall; 3.9 m across the solar panels",
           "verified": false,
           "sources": [
             "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
@@ -5323,11 +5321,10 @@
         },
         {
           "label": "Status",
-          "value": "Ended April 15, 2015; re-entered June 16, 2015",
+          "value": "Science ended April 2015; re-entered June 16, 2015",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/Tropical_Rainfall_Measuring_Mission",
-            "https://science.nasa.gov/mission/trmm/"
+            "https://www.eoportal.org/satellite-missions/trmm"
           ],
           "recheckBeforePublish": true
         },
@@ -5336,17 +5333,15 @@
           "value": "body about 5.1 m long, 3.7 m wide",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/Tropical_Rainfall_Measuring_Mission",
-            "https://science.nasa.gov/mission/trmm/"
+            "https://www.eoportal.org/satellite-missions/trmm"
           ]
         },
         {
           "label": "Mass",
-          "value": "3,524 kg at launch",
+          "value": "3,620 kg at launch",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/Tropical_Rainfall_Measuring_Mission",
-            "https://science.nasa.gov/mission/trmm/"
+            "https://www.eoportal.org/satellite-missions/trmm"
           ]
         },
         {
@@ -5446,10 +5441,10 @@
         },
         {
           "label": "Fun fact",
-          "value": "It hitched a ride to orbit on the same rocket as the much bigger Terra satellite.",
+          "value": "It rode to orbit as the second passenger on a Taurus rocket, tucked under Korea's KOMPSAT satellite.",
           "verified": false,
           "sources": [
-            "https://science.nasa.gov/mission/acrimsat/"
+            "https://www.jpl.nasa.gov/news/press_kits/acrimsat.pdf"
           ]
         }
       ]
@@ -5586,11 +5581,11 @@
           "label": "Status",
           "value": "Operating (as of Nov 2026; recheck)",
           "verified": false,
+          "recheckBeforePublish": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Global_Precipitation_Measurement",
             "https://science.nasa.gov/mission/gpm/"
-          ],
-          "recheckBeforePublish": true
+          ]
         },
         {
           "label": "Real size",
