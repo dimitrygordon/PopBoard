@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "module": "spaceships",
-  "note": "One hundred fifty-seven official NASA 3D Resources models wired from Angelo's pack. Wave 1 (19 craft) facts were checked by Tesla on Nov 20, 2026 and are verified:true. Wave 2 (30 craft) facts were checked by Tesla on Nov 20, 2026 (America/New_York); all 240 rows are verified:true, with his student wording on the Must and Should fact fixes. Wave 3 batch 1 (30 Earth-observing craft, including GPM re-anchored to 13 m) was checked by Tesla on Nov 20, 2026 (America/New_York); his 2 Must and 18 Should fixes are applied and all batch 1 rows are verified:true. Every batch 1 Status row and each row Tesla flagged is recheckBeforePublish. mars-odyssey Status and aqua Status are time-sensitive and must be rechecked before publish. Per-craft source notes live in docs/spaceships-fleet-meta.json. Wave 3 batches 2 to 4 (78 items) were checked by Tesla on Nov 20, 2026 (America/New_York) and cleared after his fixes; all their rows are verified:true, and their Status rows plus each row flagged for a recheck are recheckBeforePublish.",
+  "note": "One hundred eighty-nine official NASA 3D Resources models wired from Angelo's pack. Wave 1 (19 craft) facts were checked by Tesla on Nov 20, 2026 and are verified:true. Wave 2 (30 craft) facts were checked by Tesla on Nov 20, 2026 (America/New_York); all 240 rows are verified:true, with his student wording on the Must and Should fact fixes. Wave 3 batch 1 (30 Earth-observing craft, including GPM re-anchored to 13 m) was checked by Tesla on Nov 20, 2026 (America/New_York); his 2 Must and 18 Should fixes are applied and all batch 1 rows are verified:true. Every batch 1 Status row and each row Tesla flagged is recheckBeforePublish. mars-odyssey Status and aqua Status are time-sensitive and must be rechecked before publish. Per-craft source notes live in docs/spaceships-fleet-meta.json. Wave 3 batches 2 to 4 (78 items) were checked by Tesla on Nov 20, 2026 (America/New_York) and cleared after his fixes; all their rows are verified:true, and their Status rows plus each row flagged for a recheck are recheckBeforePublish. Wave 3 batch 5 (24 planet and moon globes, 8 asteroids, true size; the viewer uses ar-scale auto for them) is not yet checked by Tesla: all its rows are verified:false.",
   "source": "https://science.nasa.gov/3d-resources/",
   "credit": "3D model courtesy NASA",
   "placeholderGlb": "models/_placeholder.glb",
@@ -10916,6 +10916,2021 @@
           "verified": true,
           "sources": [
             "https://www.nasa.gov/humans-in-space/artemis/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "jupiter",
+      "name": "Jupiter",
+      "subtitle": "The biggest planet, a gas giant with a storm bigger than Earth",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/jupiter.webp",
+      "glb": "models/jupiter.glb",
+      "usdz": "models/jupiter.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/jupiter/",
+      "sourceLabel": "NASA 3D Resources: Jupiter",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Gas giant planet",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "142,984 km across at the equator",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Jupiter",
+            "https://science.nasa.gov/jupiter/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "the Sun, every 11.9 years",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Pioneer 10 and 11, Voyager 1 and 2, Galileo, Juno and others",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Jupiter is more than twice as massive as all the other planets combined. The Great Red Spot is a storm that has raged for centuries.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Jupiter spins once in under 10 hours, the fastest of any planet, which flattens it at the poles.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "callisto",
+      "name": "Callisto",
+      "subtitle": "Jupiter's most cratered moon",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/callisto.webp",
+      "glb": "models/callisto.glb",
+      "usdz": "models/callisto.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/jupiter-callisto/",
+      "sourceLabel": "NASA 3D Resources: Jupiter - Callisto",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Moon of Jupiter",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "4,821 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Callisto_(moon)",
+            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "Jupiter, every 16.7 days",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Voyager, Galileo and Juno flybys",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Callisto's surface is one of the most heavily cratered in the solar system, and may hide a salty ocean deep inside.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "europa",
+      "name": "Europa",
+      "subtitle": "An icy moon with a hidden ocean",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/europa.webp",
+      "glb": "models/europa.glb",
+      "usdz": "models/europa.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/jupiter-europa/",
+      "sourceLabel": "NASA 3D Resources: Jupiter - Europa",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Moon of Jupiter",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/jupiter-moons/europa/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "3,122 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Europa_(moon)",
+            "https://science.nasa.gov/jupiter/jupiter-moons/europa/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "Jupiter, every 3.6 days",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/jupiter-moons/europa/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Voyager, Galileo and Juno; Europa Clipper is on its way",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/jupiter-moons/europa/"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "About",
+          "value": "Under its icy shell Europa likely has a salty ocean with more water than all of Earth's oceans, one of the best places to look for life.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/jupiter-moons/europa/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "NASA's Europa Clipper launched in October 2024 and is due to arrive in 2030.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/jupiter-moons/europa/"
+          ],
+          "recheckBeforePublish": true
+        }
+      ]
+    },
+    {
+      "id": "ganymede",
+      "name": "Ganymede",
+      "subtitle": "The largest moon in the solar system",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/ganymede.webp",
+      "glb": "models/ganymede.glb",
+      "usdz": "models/ganymede.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/jupiter-ganymede/",
+      "sourceLabel": "NASA 3D Resources: Jupiter - Ganymede",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Moon of Jupiter",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/jupiter-moons/ganymede/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "5,268 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ganymede_(moon)",
+            "https://science.nasa.gov/jupiter/jupiter-moons/ganymede/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "Jupiter, every 7.2 days",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/jupiter-moons/ganymede/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Voyager, Galileo and Juno; ESA's JUICE is on its way",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/jupiter-moons/ganymede/"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "About",
+          "value": "Ganymede is bigger than the planet Mercury and is the only moon known to have its own magnetic field.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/jupiter-moons/ganymede/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "io",
+      "name": "Io",
+      "subtitle": "The most volcanic world we know",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/io.webp",
+      "glb": "models/io.glb",
+      "usdz": "models/io.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/jupiter-io-a/",
+      "sourceLabel": "NASA 3D Resources: Jupiter - Io (A)",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Moon of Jupiter",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/jupiter-moons/io/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "3,643 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Io_(moon)",
+            "https://science.nasa.gov/jupiter/jupiter-moons/io/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "Jupiter, every 1.8 days",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/jupiter-moons/io/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Voyager, Galileo, New Horizons and Juno",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/jupiter-moons/io/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Jupiter's gravity squeezes Io as it orbits, heating its insides and powering hundreds of active volcanoes.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/jupiter-moons/io/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Some of Io's volcanic plumes rise hundreds of kilometres above the surface.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/jupiter/jupiter-moons/io/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mars",
+      "name": "Mars",
+      "subtitle": "The red planet, home to NASA's rovers",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/mars.webp",
+      "glb": "models/mars.glb",
+      "usdz": "models/mars.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/mars/",
+      "sourceLabel": "NASA 3D Resources: Mars Image Texture",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Rocky planet",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mars/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "6,779 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mars",
+            "https://science.nasa.gov/mars/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "the Sun, every 687 Earth days",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mars/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "many orbiters, landers and rovers since 1965",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mars/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Mars has the tallest volcano in the solar system, Olympus Mons, and a canyon, Valles Marineris, that would stretch across the United States.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mars/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Its red color comes from iron oxide, rust, in the dust.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mars/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "neptune",
+      "name": "Neptune",
+      "subtitle": "The windiest planet",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/neptune.webp",
+      "glb": "models/neptune.glb",
+      "usdz": "models/neptune.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/neptune/",
+      "sourceLabel": "NASA 3D Resources: Neptune",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Ice giant planet",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/neptune/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "49,528 km across at the equator",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Neptune",
+            "https://science.nasa.gov/neptune/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "the Sun, every 165 years",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/neptune/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Voyager 2 in 1989",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/neptune/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Neptune has the fastest winds measured on any planet, over 2,000 km/h.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/neptune/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It was found in 1846 by math before anyone saw it, from the way it tugged on Uranus.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/neptune/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "triton",
+      "name": "Triton",
+      "subtitle": "Neptune's big moon that orbits backward",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/triton.webp",
+      "glb": "models/triton.glb",
+      "usdz": "models/triton.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/neptune-triton/",
+      "sourceLabel": "NASA 3D Resources: Neptune - Triton",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Moon of Neptune",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/neptune/moons/triton/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "2,707 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Triton_(moon)",
+            "https://science.nasa.gov/neptune/moons/triton/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "Neptune, every 5.9 days, backward",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/neptune/moons/triton/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Voyager 2 in 1989",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/neptune/moons/triton/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Triton orbits opposite to Neptune's spin, a sign it was captured from the Kuiper Belt. Voyager 2 saw geysers of nitrogen gas.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/neptune/moons/triton/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It is one of the coldest surfaces measured in the solar system, about minus 235 degrees C.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/neptune/moons/triton/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pluto",
+      "name": "Pluto",
+      "subtitle": "The dwarf planet with a heart",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/pluto.webp",
+      "glb": "models/pluto.glb",
+      "usdz": "models/pluto.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/pluto/",
+      "sourceLabel": "NASA 3D Resources: Pluto",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Dwarf planet in the Kuiper Belt",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/dwarf-planets/pluto/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "2,377 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Pluto",
+            "https://science.nasa.gov/dwarf-planets/pluto/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "the Sun, every 248 years",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/dwarf-planets/pluto/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "New Horizons in 2015",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/dwarf-planets/pluto/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "New Horizons found mountains of water ice, glaciers of nitrogen ice and a blue haze on Pluto.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/dwarf-planets/pluto/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "The big bright heart-shaped plain is named Tombaugh Regio, after the astronomer who found Pluto.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/dwarf-planets/pluto/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "charon",
+      "name": "Charon",
+      "subtitle": "Pluto's giant moon",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/charon.webp",
+      "glb": "models/charon.glb",
+      "usdz": "models/charon.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/pluto-charon/",
+      "sourceLabel": "NASA 3D Resources: Pluto - Charon",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Moon of Pluto",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/dwarf-planets/pluto/moons/charon/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "1,212 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Charon_(moon)",
+            "https://science.nasa.gov/dwarf-planets/pluto/moons/charon/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "Pluto, every 6.4 days",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/dwarf-planets/pluto/moons/charon/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "New Horizons in 2015",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/dwarf-planets/pluto/moons/charon/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Charon is about half Pluto's size, so the two orbit a point between them. Its north pole has a reddish cap.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/dwarf-planets/pluto/moons/charon/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Pluto and Charon always show each other the same face.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/dwarf-planets/pluto/moons/charon/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "saturn",
+      "name": "Saturn",
+      "subtitle": "The ringed planet",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/saturn.webp",
+      "glb": "models/saturn.glb",
+      "usdz": "models/saturn.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/saturn/",
+      "sourceLabel": "NASA 3D Resources: Saturn",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Gas giant planet",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "120,536 km across at the equator; main rings about 274,000 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Saturn",
+            "https://en.wikipedia.org/wiki/Rings_of_Saturn",
+            "https://science.nasa.gov/saturn/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "the Sun, every 29.4 years",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Pioneer 11, Voyager 1 and 2, Cassini",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Saturn's rings are mostly water ice, from dust grains to chunks as big as houses, yet they are often only about 10 m thick.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Saturn is less dense than water.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dione",
+      "name": "Dione",
+      "subtitle": "An icy moon of Saturn with bright cliffs",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/dione.webp",
+      "glb": "models/dione.glb",
+      "usdz": "models/dione.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/saturn-dione/",
+      "sourceLabel": "NASA 3D Resources: Saturn - Dione",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Moon of Saturn",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/dione/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "1,123 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Dione_(moon)",
+            "https://science.nasa.gov/saturn/moons/dione/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "Saturn, every 2.7 days",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/dione/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Voyager and Cassini",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/dione/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Bright streaks on Dione turned out to be ice cliffs hundreds of metres high, seen up close by Cassini.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/dione/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enceladus",
+      "name": "Enceladus",
+      "subtitle": "A small moon that sprays its ocean into space",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/enceladus.webp",
+      "glb": "models/enceladus.glb",
+      "usdz": "models/enceladus.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/saturn-enceladus/",
+      "sourceLabel": "NASA 3D Resources: Saturn - Enceladus",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Moon of Saturn",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/enceladus/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "504 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Enceladus",
+            "https://science.nasa.gov/saturn/moons/enceladus/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "Saturn, every 1.4 days",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/enceladus/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Voyager and Cassini",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/enceladus/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Jets near Enceladus's south pole shoot water from an ocean under the ice. Cassini flew through them and found salts and organic molecules.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/enceladus/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Its fresh ice makes it one of the most reflective objects in the solar system.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/enceladus/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "iapetus",
+      "name": "Iapetus",
+      "subtitle": "The two-toned moon",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/iapetus.webp",
+      "glb": "models/iapetus.glb",
+      "usdz": "models/iapetus.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/saturn-iapetus/",
+      "sourceLabel": "NASA 3D Resources: Saturn - Iapetus",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Moon of Saturn",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/iapetus/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "1,469 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Iapetus_(moon)",
+            "https://science.nasa.gov/saturn/moons/iapetus/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "Saturn, every 79 days",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/iapetus/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Voyager and Cassini",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/iapetus/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "One side of Iapetus is dark as coal and the other bright as snow. It also has a ridge along its equator up to 20 km high.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/iapetus/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mimas",
+      "name": "Mimas",
+      "subtitle": "The moon with one giant crater",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/mimas.webp",
+      "glb": "models/mimas.glb",
+      "usdz": "models/mimas.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/saturn-mimas/",
+      "sourceLabel": "NASA 3D Resources: Saturn - Mimas",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Moon of Saturn",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/mimas/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "396 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mimas_(moon)",
+            "https://science.nasa.gov/saturn/moons/mimas/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "Saturn, every 0.9 days",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/mimas/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Voyager and Cassini",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/mimas/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "The crater Herschel is about a third as wide as Mimas itself.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/mimas/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "The crater gives Mimas a look often compared to the Death Star.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/mimas/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rhea",
+      "name": "Rhea",
+      "subtitle": "Saturn's second-largest moon",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/rhea.webp",
+      "glb": "models/rhea.glb",
+      "usdz": "models/rhea.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/saturn-rhea/",
+      "sourceLabel": "NASA 3D Resources: Saturn - Rhea",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Moon of Saturn",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/rhea/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "1,528 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Rhea_(moon)",
+            "https://science.nasa.gov/saturn/moons/rhea/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "Saturn, every 4.5 days",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/rhea/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Voyager and Cassini",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/rhea/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Rhea is a cold, cratered ball of ice and rock. Cassini detected a very thin atmosphere of oxygen and carbon dioxide.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/rhea/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tethys",
+      "name": "Tethys",
+      "subtitle": "An icy moon with a huge canyon",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/tethys.webp",
+      "glb": "models/tethys.glb",
+      "usdz": "models/tethys.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/saturn-tethys/",
+      "sourceLabel": "NASA 3D Resources: Saturn - Tethys",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Moon of Saturn",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/tethys/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "1,062 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Tethys_(moon)",
+            "https://science.nasa.gov/saturn/moons/tethys/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "Saturn, every 1.9 days",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/tethys/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Voyager and Cassini",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/tethys/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Tethys is almost all water ice. A canyon called Ithaca Chasma runs about three quarters of the way around it.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/tethys/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "titan",
+      "name": "Titan",
+      "subtitle": "A moon with a thick atmosphere and methane lakes",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/titan.webp",
+      "glb": "models/titan.glb",
+      "usdz": "models/titan.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/saturn-titan/",
+      "sourceLabel": "NASA 3D Resources: Saturn - Titan",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Moon of Saturn",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/titan/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "5,149 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Titan_(moon)",
+            "https://science.nasa.gov/saturn/moons/titan/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "Saturn, every 16 days",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/titan/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Voyager, Cassini and the Huygens lander; Dragonfly is planned",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/titan/"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "About",
+          "value": "Titan has rain, rivers and seas, but of liquid methane and ethane. Huygens landed there in 2005.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/titan/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Its air is thick enough that a person could fly with strap-on wings.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/saturn/moons/titan/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ariel",
+      "name": "Ariel",
+      "subtitle": "The brightest moon of Uranus",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/ariel.webp",
+      "glb": "models/ariel.glb",
+      "usdz": "models/ariel.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/uranus-ariel/",
+      "sourceLabel": "NASA 3D Resources: Uranus - Ariel",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Moon of Uranus",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/ariel/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "1,158 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ariel_(moon)",
+            "https://science.nasa.gov/uranus/moons/ariel/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "Uranus, every 2.5 days",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/ariel/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Voyager 2 in 1986",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/ariel/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Ariel has the youngest-looking surface of Uranus's big moons, crossed by long valleys.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/ariel/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "miranda",
+      "name": "Miranda",
+      "subtitle": "A patchwork moon with the tallest cliff known",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/miranda.webp",
+      "glb": "models/miranda.glb",
+      "usdz": "models/miranda.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/uranus-miranda/",
+      "sourceLabel": "NASA 3D Resources: Uranus - Miranda",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Moon of Uranus",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/miranda/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "472 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Miranda_(moon)",
+            "https://science.nasa.gov/uranus/moons/miranda/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "Uranus, every 1.4 days",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/miranda/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Voyager 2 in 1986",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/miranda/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Miranda looks stitched together from different terrains. Its cliff Verona Rupes is roughly 20 km high.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/miranda/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Only about half of it has ever been photographed.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/miranda/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oberon",
+      "name": "Oberon",
+      "subtitle": "The outermost big moon of Uranus",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/oberon.webp",
+      "glb": "models/oberon.glb",
+      "usdz": "models/oberon.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/uranus-oberon/",
+      "sourceLabel": "NASA 3D Resources: Uranus - Oberon",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Moon of Uranus",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/oberon/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "1,523 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Oberon_(moon)",
+            "https://science.nasa.gov/uranus/moons/oberon/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "Uranus, every 13.5 days",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/oberon/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Voyager 2 in 1986",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/oberon/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Oberon is old and heavily cratered, with dark material on some crater floors.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/oberon/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "titania",
+      "name": "Titania",
+      "subtitle": "The largest moon of Uranus",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/titania.webp",
+      "glb": "models/titania.glb",
+      "usdz": "models/titania.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/uranus-titania/",
+      "sourceLabel": "NASA 3D Resources: Uranus - Titania",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Moon of Uranus",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/titania/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "1,577 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Titania_(moon)",
+            "https://science.nasa.gov/uranus/moons/titania/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "Uranus, every 8.7 days",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/titania/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Voyager 2 in 1986",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/titania/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Titania has huge fault valleys, signs that its crust stretched long ago.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/titania/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "umbriel",
+      "name": "Umbriel",
+      "subtitle": "The darkest moon of Uranus",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/umbriel.webp",
+      "glb": "models/umbriel.glb",
+      "usdz": "models/umbriel.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/uranus-umbriel/",
+      "sourceLabel": "NASA 3D Resources: Uranus - Umbriel",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Moon of Uranus",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/umbriel/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "1,169 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Umbriel",
+            "https://science.nasa.gov/uranus/moons/umbriel/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "Uranus, every 4.1 days",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/umbriel/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Voyager 2 in 1986",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/umbriel/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Umbriel is dark and old, with a mysterious bright ring on one crater, nicknamed the fluorescent Cheerio.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/uranus/moons/umbriel/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "venus",
+      "name": "Venus",
+      "subtitle": "The hottest planet, hidden under clouds",
+      "tags": [
+        "planets-moons"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/venus.webp",
+      "glb": "models/venus.glb",
+      "usdz": "models/venus.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/venus/",
+      "sourceLabel": "NASA 3D Resources: Venus",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Rocky planet",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/venus/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "12,104 km across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Venus",
+            "https://science.nasa.gov/venus/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "the Sun, every 225 Earth days",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/venus/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Mariner, Venera, Pioneer Venus, Magellan and others",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/venus/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Venus's thick carbon dioxide air traps heat, making the surface about 465 degrees C, hot enough to melt lead.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/venus/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "A day on Venus is longer than its year, and it spins backward.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/venus/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bennu",
+      "name": "Bennu (radar model)",
+      "subtitle": "The asteroid OSIRIS-REx sampled, as first mapped by radar",
+      "tags": [
+        "small-bodies"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/bennu.webp",
+      "glb": "models/bennu.glb",
+      "usdz": "models/bennu.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/1999-rq36-asteroid/",
+      "sourceLabel": "NASA 3D Resources: 1999 RQ36 asteroid",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Near-Earth asteroid (101955) Bennu, formerly 1999 RQ36",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/solar-system/asteroids/101955-bennu/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 565 m across at the equator",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/101955_Bennu",
+            "https://science.nasa.gov/solar-system/asteroids/101955-bennu/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "the Sun, every 1.2 years",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/solar-system/asteroids/101955-bennu/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "OSIRIS-REx, 2018 to 2021",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/solar-system/asteroids/101955-bennu/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "This is the shape worked out from radar before OSIRIS-REx arrived. Up close, Bennu turned out to be a loose rubble pile covered in boulders.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/solar-system/asteroids/101955-bennu/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "OSIRIS-REx brought about 122 g of Bennu to Earth in 2023.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/solar-system/asteroids/101955-bennu/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geographos",
+      "name": "Geographos",
+      "subtitle": "One of the most stretched-out asteroids known",
+      "tags": [
+        "small-bodies"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/geographos.webp",
+      "glb": "models/geographos.glb",
+      "usdz": "models/geographos.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/asteroid-1620-geographos/",
+      "sourceLabel": "NASA 3D Resources: Asteroid 1620 Geographos",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Near-Earth asteroid (1620) Geographos",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/1620_Geographos"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 5.0 x 2.0 x 2.1 km",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/1620_Geographos"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "the Sun, every 1.4 years",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/1620_Geographos"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "radar from Earth (Clementine was meant to fly by)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/1620_Geographos"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Radar from Goldstone revealed its long, thin shape, about three times longer than it is wide.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/1620_Geographos"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kleopatra",
+      "name": "Kleopatra",
+      "subtitle": "The dog-bone asteroid",
+      "tags": [
+        "small-bodies"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/kleopatra.webp",
+      "glb": "models/kleopatra.glb",
+      "usdz": "models/kleopatra.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/asteroid-216-kleopatra/",
+      "sourceLabel": "NASA 3D Resources: Asteroid 216 Kleopatra",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Main-belt asteroid (216) Kleopatra",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/216_Kleopatra"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 270 km long (estimates vary)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/216_Kleopatra"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "the Sun, every 4.7 years",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/216_Kleopatra"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "radar and telescopes from Earth",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/216_Kleopatra"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Kleopatra's shape looks like a dog's chew bone, and it has two small moons.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/216_Kleopatra"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vesta",
+      "name": "Vesta",
+      "subtitle": "A giant asteroid with a mountain twice the height of Everest",
+      "tags": [
+        "small-bodies"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/vesta.webp",
+      "glb": "models/vesta.glb",
+      "usdz": "models/vesta.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/asteroid-4-vesta-a/",
+      "sourceLabel": "NASA 3D Resources: Asteroid 4 Vesta (A)",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Main-belt asteroid (4) Vesta",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/solar-system/asteroids/4-vesta/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 569 x 554 x 452 km",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/4_Vesta",
+            "https://science.nasa.gov/solar-system/asteroids/4-vesta/"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "the Sun, every 3.6 years",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/solar-system/asteroids/4-vesta/"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "Dawn, 2011 to 2012",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/solar-system/asteroids/4-vesta/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Vesta has a huge impact basin, Rheasilvia, with a central peak about 20 km high.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/solar-system/asteroids/4-vesta/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Some meteorites found on Earth came from Vesta.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/solar-system/asteroids/4-vesta/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "toutatis",
+      "name": "Toutatis",
+      "subtitle": "A tumbling peanut-shaped asteroid",
+      "tags": [
+        "small-bodies"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/toutatis.webp",
+      "glb": "models/toutatis.glb",
+      "usdz": "models/toutatis.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/asteroid-4179-toutatis/",
+      "sourceLabel": "NASA 3D Resources: Asteroid 4179 Toutatis",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Near-Earth asteroid (4179) Toutatis",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/4179_Toutatis"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 4.75 x 2.4 x 1.95 km",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/4179_Toutatis"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "the Sun, every 4 years",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/4179_Toutatis"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "China's Chang'e 2 flyby in 2012",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/4179_Toutatis"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Toutatis does not spin around one axis; it tumbles.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/4179_Toutatis"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mithra",
+      "name": "Mithra",
+      "subtitle": "A two-lobed near-Earth asteroid",
+      "tags": [
+        "small-bodies"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/mithra.webp",
+      "glb": "models/mithra.glb",
+      "usdz": "models/mithra.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/asteroid-4486-mithra/",
+      "sourceLabel": "NASA 3D Resources: Asteroid 4486 Mithra",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Near-Earth asteroid (4486) Mithra",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/4486_Mithra"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 2.4 km long; about 1.85 km across on average",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/4486_Mithra"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "the Sun, every 3.2 years",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/4486_Mithra"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "radar from Earth",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/4486_Mithra"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Radar images in 2000 showed Mithra as one of the most oddly shaped asteroids yet seen, with two lobes.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/4486_Mithra"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "golevka",
+      "name": "Golevka",
+      "subtitle": "A small asteroid nudged by sunlight",
+      "tags": [
+        "small-bodies"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/golevka.webp",
+      "glb": "models/golevka.glb",
+      "usdz": "models/golevka.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/asteroid-6489-golevka/",
+      "sourceLabel": "NASA 3D Resources: Asteroid 6489 Golevka",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Near-Earth asteroid (6489) Golevka",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/6489_Golevka"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 0.53 km across on average",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/6489_Golevka"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "the Sun, every 4 years",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/6489_Golevka"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "radar from Earth",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/6489_Golevka"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Radar tracking of Golevka gave the first measurement of the Yarkovsky effect: sunlight absorbed and re-radiated as heat slowly pushes an asteroid off course.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/6489_Golevka"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1996-hw1",
+      "name": "1996 HW1",
+      "subtitle": "A contact binary asteroid",
+      "tags": [
+        "small-bodies"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/1996-hw1.webp",
+      "glb": "models/1996-hw1.glb",
+      "usdz": "models/1996-hw1.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/asteroid-8567-1996-hw1/",
+      "sourceLabel": "NASA 3D Resources: Asteroid 8567 1996 HW1",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Near-Earth asteroid (8567) 1996 HW1",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/(8567)_1996_HW1"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 3.8 km long",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/(8567)_1996_HW1"
+          ]
+        },
+        {
+          "label": "Orbits",
+          "value": "the Sun, every 3.6 years",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/(8567)_1996_HW1"
+          ]
+        },
+        {
+          "label": "Visited by",
+          "value": "radar from Earth",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/(8567)_1996_HW1"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Its two lobes are touching, making it a contact binary like a cosmic snowman.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/(8567)_1996_HW1"
           ]
         }
       ]

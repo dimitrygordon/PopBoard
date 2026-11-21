@@ -14,14 +14,16 @@ $("searchForm").addEventListener("submit", (e) => e.preventDefault());
 const TAG_ORDER = [
   "crewed", "observatory", "earth-observer", "probe", "rover", "lander", "rotorcraft",
   "heliophysics", "comms", "cubesat", "crew-gear", "tools", "hubble-servicing",
-  "instruments", "robots", "rockets", "ground", "concept"
+  "instruments", "robots", "rockets", "ground", "concept", "planets-moons", "small-bodies"
 ];
 const TAG_LABELS = {
   "earth-observer": "Earth observers",
   "cubesat": "CubeSats",
   "crew-gear": "crew gear",
   "hubble-servicing": "Hubble servicing",
-  "concept": "concepts"
+  "concept": "concepts",
+  "planets-moons": "Planets and moons",
+  "small-bodies": "Asteroids"
 };
 const fleet = await loadFleet();
 const all = listedCraft(fleet);

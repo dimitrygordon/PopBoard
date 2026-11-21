@@ -115,14 +115,24 @@ const WAVE3_B4_IDS = [
 const WAVE3_B2_4_IDS = [...WAVE3_B2_IDS, ...WAVE3_B3_IDS, ...WAVE3_B4_IDS];
 // Wave 3 batches 2 to 4 stay verified:false until Tesla clears them. Flip this to true with his pass.
 const WAVE3_B2_4_TESLA_CLEARED = true;
+const WAVE3_B5_IDS = [
+  "jupiter", "callisto", "europa", "ganymede", "io", "mars",
+  "neptune", "triton", "pluto", "charon", "saturn", "dione",
+  "enceladus", "iapetus", "mimas", "rhea", "tethys", "titan",
+  "ariel", "miranda", "oberon", "titania", "umbriel", "venus",
+  "bennu", "geographos", "kleopatra", "vesta", "toutatis", "mithra",
+  "golevka", "1996-hw1"
+];
+// Wave 3 batch 5 rows stay verified:false until Tesla clears them.
+const WAVE3_B5_TESLA_CLEARED = false;
 const GITHUB_SOURCE_IDS = new Set(["skylab", "sdo", "stereo", "rosetta"]);
 
-test("fleet.json has 157 listed craft, real assets, and verified fact rows", () => {
+test("fleet.json has 189 listed craft, real assets, and verified fact rows", () => {
   assert.equal(fleet.schemaVersion, 1);
   assert.ok(Array.isArray(fleet.craft));
-  assert.equal(fleet.craft.length, 157, fleet.craft.length);
+  assert.equal(fleet.craft.length, 189, fleet.craft.length);
   const ids = fleet.craft.map((c) => c.id);
-  for (const extra of ["iss", "saturn-v", "space-shuttle", ...WAVE2_IDS, ...WAVE3_B1_IDS, ...WAVE3_B2_4_IDS]) {
+  for (const extra of ["iss", "saturn-v", "space-shuttle", ...WAVE2_IDS, ...WAVE3_B1_IDS, ...WAVE3_B2_4_IDS, ...WAVE3_B5_IDS]) {
     assert.ok(ids.includes(extra), `missing ${extra}`);
   }
   assert.equal(ids.filter((id) => WAVE1_IDS.includes(id)).length, 19);
@@ -131,15 +141,18 @@ test("fleet.json has 157 listed craft, real assets, and verified fact rows", () 
   assert.equal(ids.filter((id) => WAVE3_B2_IDS.includes(id)).length, 28);
   assert.equal(ids.filter((id) => WAVE3_B3_IDS.includes(id)).length, 29);
   assert.equal(ids.filter((id) => WAVE3_B4_IDS.includes(id)).length, 21);
+  assert.equal(ids.filter((id) => WAVE3_B5_IDS.includes(id)).length, 32);
   const unique = new Set();
   let wave1Facts = 0;
   let wave2Facts = 0;
   let wave3b1Facts = 0;
   let wave3b24Facts = 0;
+  let wave3b5Facts = 0;
   for (const craft of fleet.craft) {
     const wave2 = WAVE2_IDS.includes(craft.id);
     const wave3b1 = WAVE3_B1_IDS.includes(craft.id);
     const wave3b24 = WAVE3_B2_4_IDS.includes(craft.id);
+    const wave3b5 = WAVE3_B5_IDS.includes(craft.id);
     assert.match(craft.id, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
     assert.equal(unique.has(craft.id), false, `duplicate id ${craft.id}`);
     unique.add(craft.id);
@@ -159,6 +172,12 @@ test("fleet.json has 157 listed craft, real assets, and verified fact rows", () 
       assert.ok(row.label);
       assert.ok(row.value);
       assert.doesNotMatch(row.value, /PLACEHOLDER/);
+      if (wave3b5) {
+        assert.equal(row.verified, WAVE3_B5_TESLA_CLEARED, `${craft.id} ${row.label}`);
+        assert.ok(Array.isArray(row.sources) && row.sources.length >= 1, `${craft.id} ${row.label} sources`);
+        wave3b5Facts += 1;
+        continue;
+      }
       if (wave3b24) {
         assert.equal(row.verified, WAVE3_B2_4_TESLA_CLEARED, `${craft.id} ${row.label}`);
         assert.ok(Array.isArray(row.sources) && row.sources.length >= 1, `${craft.id} ${row.label} sources`);
@@ -189,6 +208,11 @@ test("fleet.json has 157 listed craft, real assets, and verified fact rows", () 
   assert.equal(wave2Facts, 240);
   assert.equal(wave3b1Facts, 239);
   assert.equal(wave3b24Facts, 454);
+  assert.equal(wave3b5Facts, 176);
+  for (const id of WAVE3_B5_IDS) {
+    const tags = fleet.craft.find((c) => c.id === id).tags;
+    assert.ok(tags.includes("planets-moons") || tags.includes("small-bodies"), id);
+  }
   assert.equal(fleet.craft.filter((c) => (c.tags || []).includes("earth-observer")).map((c) => c.id).sort().join(","), ["aqua", "landsat-8", "terra", ...WAVE3_B1_IDS, "cubesat-icecube", "cubesat-mirata", "desdyni"].sort().join(","));
   for (const id of ["aqua", "mars-odyssey"]) {
     const status = fleet.craft.find((c) => c.id === id).facts.find((r) => r.label === "Status");
@@ -232,6 +256,8 @@ test("the viewer falls back to the placeholder GLB, honors reduced motion, and p
   assert.match(js, /placeholderGlb/);
   assert.match(js, /fallbackBanner/);
   assert.match(js, /ios-src/);
+  assert.match(js, /AR_AUTO_TAGS = \["planets-moons", "small-bodies"\]/);
+  assert.match(js, /arAuto \? "auto" : "fixed"/);
   assert.match(js, /reducedMotion/);
   assert.match(js, /auto-rotate/);
   assert.match(js, /canActivateAR|activateAR/);
@@ -268,7 +294,7 @@ test("Tesla fact-check wording and sources are applied for wave 1 and wave 2", (
   const found = {};
   let verified = 0;
   for (const craft of fleet.craft) {
-    if (WAVE3_B1_IDS.includes(craft.id) || WAVE3_B2_4_IDS.includes(craft.id)) continue;
+    if (WAVE3_B1_IDS.includes(craft.id) || WAVE3_B2_4_IDS.includes(craft.id) || WAVE3_B5_IDS.includes(craft.id)) continue;
     for (const row of craft.facts) {
       assert.equal(row.verified, true, `${craft.id} ${row.label}`);
       verified += 1;
