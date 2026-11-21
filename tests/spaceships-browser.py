@@ -366,7 +366,15 @@ def run_viewer(context, base, tag, craft_id, measure=False, take_shot=False, tak
         is_unit_cube = all(abs(v - 1) < 0.02 for v in dim)
         check(not is_unit_cube, f"{tag} {craft_id} dimensions are not the 1 m box {dim}")
     check(page.locator("#craftName").inner_text() != "", f"{tag} {craft_id} fact panel has a name")
-    check("3D model courtesy NASA" in page.locator("#credit").inner_text(), f"{tag} {craft_id} NASA credit")
+    credit_text = page.locator("#credit").inner_text()
+    craft_row = next(c for c in FLEET["craft"] if c["id"] == craft_id)
+    expected_credit = craft_row.get("credit") or "3D model courtesy NASA"
+    check(expected_credit in credit_text, f"{tag} {craft_id} credit matches fleet")
+    if "commercial" in (craft_row.get("tags") or []):
+        check("3D model courtesy NASA" not in credit_text, f"{tag} {craft_id} has no NASA credit")
+        check("Angelo" in credit_text and "not an official SpaceX model" in credit_text, f"{tag} {craft_id} Angelo commercial credit")
+    else:
+        check("3D model courtesy NASA" in credit_text, f"{tag} {craft_id} NASA credit")
     facts_text = page.locator("#facts").inner_text()
     if craft_id in UNVERIFIED_IDS:
         n_rows = page.locator("#facts dt").count()

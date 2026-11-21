@@ -11281,6 +11281,279 @@
       "scale_note": "Scaled to 3.78 km long (Wikipedia). Rock material is my choice.",
       "glb_bytes": 484008,
       "usdz_bytes": 958926
+    },
+    {
+      "id": "spacex-starship",
+      "model_source": "built (procedural Blender, scripts/build_starship.py)",
+      "model_license": "original work by Angelo; no third-party mesh",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/SpaceX_Starship",
+        "https://en.wikipedia.org/wiki/SpaceX_Super_Heavy",
+        "https://en.wikipedia.org/wiki/Starship_(spacecraft)"
+      ],
+      "fact_rows": [
+        {
+          "label": "Maker",
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Starship",
+            "https://en.wikipedia.org/wiki/SpaceX_Super_Heavy",
+            "https://en.wikipedia.org/wiki/Starship_(spacecraft)"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Version shown",
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Starship",
+            "https://en.wikipedia.org/wiki/SpaceX_Super_Heavy",
+            "https://en.wikipedia.org/wiki/Starship_(spacecraft)"
+          ],
+          "verified": true
+        },
+        {
+          "label": "First flight",
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Starship",
+            "https://en.wikipedia.org/wiki/SpaceX_Super_Heavy",
+            "https://en.wikipedia.org/wiki/Starship_(spacecraft)"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Starship",
+            "https://en.wikipedia.org/wiki/SpaceX_Super_Heavy",
+            "https://en.wikipedia.org/wiki/Starship_(spacecraft)"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Starship",
+            "https://en.wikipedia.org/wiki/SpaceX_Super_Heavy",
+            "https://en.wikipedia.org/wiki/Starship_(spacecraft)"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Engines",
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Starship",
+            "https://en.wikipedia.org/wiki/SpaceX_Super_Heavy",
+            "https://en.wikipedia.org/wiki/Starship_(spacecraft)"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Starship",
+            "https://en.wikipedia.org/wiki/SpaceX_Super_Heavy",
+            "https://en.wikipedia.org/wiki/Starship_(spacecraft)"
+          ],
+          "verified": true
+        }
+      ],
+      "sourcing_notes": [
+        "NASA 3D Resources: no SpaceX models",
+        "BlendSwap #27853 (CC0, Anyll Markevich) requires sign-in to download: https://blendswap.com/blend/27853",
+        "Sketchfab SpaceX models need login; licenses not confirmed"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        18.5,
+        123.1,
+        12.2
+      ],
+      "triangles": 48086,
+      "glb_bytes": 1433432,
+      "usdz_bytes": 2788759,
+      "requested_by": "Dimitry, Nov 21 2026 5:15 AM ET (rockets) and 5:16 AM ET (Roadster, suit)",
+      "render_credits": [
+        "HDRI 'Kloofendal 48d Partly Cloudy (Pure Sky)' by Greg Zaal and Jarod Guest, Poly Haven, CC0 (stills only)",
+        "Concrete Floor 02 by Rob Tuytel, Poly Haven, CC0 (stills only)",
+        "Earth backdrop: NASA Blue Marble, public domain (Roadster still only)"
+      ],
+      "tesla_cleared": "2026-11-21",
+      "tesla_report": "/workspace/angelo/spaceships/TESLA-factcheck-spacex.md",
+      "tesla_optional_fix": "subtitle set to 'The tallest and most powerful rocket ever flown (shown: Block 2)'"
+    },
+    {
+      "id": "spacex-falcon-9",
+      "model_source": "built (procedural Blender, scripts/build_falcon9.py)",
+      "model_license": "original work by Angelo; no third-party mesh",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Falcon_9_Block_5",
+        "https://en.wikipedia.org/wiki/Falcon_9",
+        "https://www.spacex.com/vehicles/falcon-9/"
+      ],
+      "fact_rows": [
+        {
+          "label": "Maker",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Falcon_9_Block_5",
+            "https://en.wikipedia.org/wiki/Falcon_9",
+            "https://www.spacex.com/vehicles/falcon-9/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Version shown",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Falcon_9_Block_5",
+            "https://en.wikipedia.org/wiki/Falcon_9",
+            "https://www.spacex.com/vehicles/falcon-9/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "First flight",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Falcon_9_Block_5",
+            "https://en.wikipedia.org/wiki/Falcon_9",
+            "https://www.spacex.com/vehicles/falcon-9/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Falcon_9_Block_5",
+            "https://en.wikipedia.org/wiki/Falcon_9",
+            "https://www.spacex.com/vehicles/falcon-9/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Falcon_9_Block_5",
+            "https://en.wikipedia.org/wiki/Falcon_9",
+            "https://www.spacex.com/vehicles/falcon-9/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Engines",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Falcon_9_Block_5",
+            "https://en.wikipedia.org/wiki/Falcon_9",
+            "https://www.spacex.com/vehicles/falcon-9/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Falcon_9_Block_5",
+            "https://en.wikipedia.org/wiki/Falcon_9",
+            "https://www.spacex.com/vehicles/falcon-9/"
+          ],
+          "verified": true
+        }
+      ],
+      "sourcing_notes": [
+        "Sketchfab 'Crew Dragon Falcon 9' (MaTte0) and 'Falcon 9 - Crew Dragon' (KUBAHA) need login; licenses not confirmed",
+        "Poly Pizza only had low-poly cartoon versions"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        5.228,
+        69.8,
+        5.2
+      ],
+      "triangles": 21900,
+      "glb_bytes": 218644,
+      "usdz_bytes": 1460834,
+      "requested_by": "Dimitry, Nov 21 2026 5:15 AM ET (rockets) and 5:16 AM ET (Roadster, suit)",
+      "render_credits": [
+        "HDRI 'Kloofendal 48d Partly Cloudy (Pure Sky)' by Greg Zaal and Jarod Guest, Poly Haven, CC0 (stills only)",
+        "Concrete Floor 02 by Rob Tuytel, Poly Haven, CC0 (stills only)",
+        "Earth backdrop: NASA Blue Marble, public domain (Roadster still only)"
+      ],
+      "tesla_cleared": "2026-11-21",
+      "tesla_report": "/workspace/angelo/spaceships/TESLA-factcheck-spacex.md"
+    },
+    {
+      "id": "spacex-crew-dragon",
+      "model_source": "built (procedural Blender, scripts/build_dragon.py)",
+      "model_license": "original work by Angelo; no third-party mesh",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/SpaceX_Dragon_2",
+        "https://www.spacex.com/vehicles/dragon/"
+      ],
+      "fact_rows": [
+        {
+          "label": "Maker",
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Dragon_2",
+            "https://www.spacex.com/vehicles/dragon/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "First crewed flight",
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Dragon_2",
+            "https://www.spacex.com/vehicles/dragon/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Dragon_2",
+            "https://www.spacex.com/vehicles/dragon/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Dragon_2",
+            "https://www.spacex.com/vehicles/dragon/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Crew",
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Dragon_2",
+            "https://www.spacex.com/vehicles/dragon/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/SpaceX_Dragon_2",
+            "https://www.spacex.com/vehicles/dragon/"
+          ],
+          "verified": true
+        }
+      ],
+      "sourcing_notes": [
+        "No CC0/CC-BY no-login Crew Dragon GLB found"
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        4.079,
+        8.1,
+        4.079
+      ],
+      "triangles": 13400,
+      "glb_bytes": 212308,
+      "usdz_bytes": 1332944,
+      "requested_by": "Dimitry, Nov 21 2026 5:15 AM ET (rockets) and 5:16 AM ET (Roadster, suit)",
+      "render_credits": [
+        "HDRI 'Kloofendal 48d Partly Cloudy (Pure Sky)' by Greg Zaal and Jarod Guest, Poly Haven, CC0 (stills only)",
+        "Concrete Floor 02 by Rob Tuytel, Poly Haven, CC0 (stills only)",
+        "Earth backdrop: NASA Blue Marble, public domain (Roadster still only)"
+      ],
+      "tesla_cleared": "2026-11-21",
+      "tesla_report": "/workspace/angelo/spaceships/TESLA-factcheck-spacex.md"
     }
   ]
 }
