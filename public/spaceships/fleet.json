@@ -10971,7 +10971,7 @@
         },
         {
           "label": "About",
-          "value": "Jupiter is more than twice as massive as all the other planets combined. The Great Red Spot is a storm that has raged for centuries.",
+          "value": "Jupiter is more than twice as massive as all the other planets combined. The Great Red Spot is a storm that has been watched for nearly two centuries.",
           "verified": false,
           "sources": [
             "https://science.nasa.gov/jupiter/"
@@ -11008,7 +11008,8 @@
           "value": "Moon of Jupiter",
           "verified": false,
           "sources": [
-            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/"
+            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/",
+            "https://science.nasa.gov/missions/juno/juno-detected-the-final-missing-auroral-signature-from-jupiters-four-largest-moons/"
           ]
         },
         {
@@ -11017,7 +11018,8 @@
           "verified": false,
           "sources": [
             "https://en.wikipedia.org/wiki/Callisto_(moon)",
-            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/"
+            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/",
+            "https://science.nasa.gov/missions/juno/juno-detected-the-final-missing-auroral-signature-from-jupiters-four-largest-moons/"
           ]
         },
         {
@@ -11025,15 +11027,17 @@
           "value": "Jupiter, every 16.7 days",
           "verified": false,
           "sources": [
-            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/"
+            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/",
+            "https://science.nasa.gov/missions/juno/juno-detected-the-final-missing-auroral-signature-from-jupiters-four-largest-moons/"
           ]
         },
         {
           "label": "Visited by",
-          "value": "Voyager, Galileo and Juno flybys",
+          "value": "Pioneer, Voyager and Galileo flybys; Juno has photographed it from afar",
           "verified": false,
           "sources": [
-            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/"
+            "https://science.nasa.gov/missions/juno/juno-detected-the-final-missing-auroral-signature-from-jupiters-four-largest-moons/",
+            "https://atmos.nmsu.edu/data_and_services/atmospheres_data/JUNO/logs/Satellite_close_passes.pdf"
           ]
         },
         {
@@ -11041,7 +11045,8 @@
           "value": "Callisto's surface is one of the most heavily cratered in the solar system, and may hide a salty ocean deep inside.",
           "verified": false,
           "sources": [
-            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/"
+            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/",
+            "https://science.nasa.gov/missions/juno/juno-detected-the-final-missing-auroral-signature-from-jupiters-four-largest-moons/"
           ]
         }
       ]
@@ -11268,7 +11273,7 @@
         },
         {
           "label": "Real size",
-          "value": "6,779 km across",
+          "value": "6,792 km across at the equator",
           "verified": false,
           "sources": [
             "https://en.wikipedia.org/wiki/Mars",
@@ -11368,7 +11373,7 @@
         },
         {
           "label": "Fun fact",
-          "value": "It was found in 1846 by math before anyone saw it, from the way it tugged on Uranus.",
+          "value": "It was the first planet found by math: in 1846, astronomers spotted it right where calculations of its pull on Uranus said it would be.",
           "verified": false,
           "sources": [
             "https://science.nasa.gov/neptune/"
@@ -11598,7 +11603,8 @@
           "value": "Gas giant planet",
           "verified": false,
           "sources": [
-            "https://science.nasa.gov/saturn/"
+            "https://science.nasa.gov/saturn/",
+            "https://science.nasa.gov/saturn/facts/"
           ]
         },
         {
@@ -11608,7 +11614,8 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Saturn",
             "https://en.wikipedia.org/wiki/Rings_of_Saturn",
-            "https://science.nasa.gov/saturn/"
+            "https://science.nasa.gov/saturn/",
+            "https://science.nasa.gov/saturn/facts/"
           ]
         },
         {
@@ -11616,7 +11623,8 @@
           "value": "the Sun, every 29.4 years",
           "verified": false,
           "sources": [
-            "https://science.nasa.gov/saturn/"
+            "https://science.nasa.gov/saturn/",
+            "https://science.nasa.gov/saturn/facts/"
           ]
         },
         {
@@ -11624,15 +11632,16 @@
           "value": "Pioneer 11, Voyager 1 and 2, Cassini",
           "verified": false,
           "sources": [
-            "https://science.nasa.gov/saturn/"
+            "https://science.nasa.gov/saturn/",
+            "https://science.nasa.gov/saturn/facts/"
           ]
         },
         {
           "label": "About",
-          "value": "Saturn's rings are mostly water ice, from dust grains to chunks as big as houses, yet they are often only about 10 m thick.",
+          "value": "Saturn's rings are mostly water ice, from dust grains to chunks as big as houses, yet they are typically only about 10 m thick.",
           "verified": false,
           "sources": [
-            "https://science.nasa.gov/saturn/"
+            "https://science.nasa.gov/saturn/facts/"
           ]
         },
         {
@@ -11640,7 +11649,8 @@
           "value": "Saturn is less dense than water.",
           "verified": false,
           "sources": [
-            "https://science.nasa.gov/saturn/"
+            "https://science.nasa.gov/saturn/",
+            "https://science.nasa.gov/saturn/facts/"
           ]
         }
       ]
@@ -11822,7 +11832,7 @@
         },
         {
           "label": "About",
-          "value": "One side of Iapetus is dark as coal and the other bright as snow. It also has a ridge along its equator up to 20 km high.",
+          "value": "One side of Iapetus is dark as coal and the other bright as snow. It also has a ridge of mountains along its equator about 10 km high, taller than Mount Everest.",
           "verified": false,
           "sources": [
             "https://science.nasa.gov/saturn/moons/iapetus/"
@@ -12058,7 +12068,7 @@
         },
         {
           "label": "Visited by",
-          "value": "Voyager, Cassini and the Huygens lander; Dragonfly is planned",
+          "value": "Pioneer 11, Voyager, Cassini and the Huygens lander; Dragonfly is planned",
           "verified": false,
           "sources": [
             "https://science.nasa.gov/saturn/moons/titan/"
@@ -12075,10 +12085,11 @@
         },
         {
           "label": "Fun fact",
-          "value": "Its air is thick enough that a person could fly with strap-on wings.",
+          "value": "Titan's air is thick and its gravity is weak, so a person with big strap-on wings might be able to flap and fly.",
           "verified": false,
           "sources": [
-            "https://science.nasa.gov/saturn/moons/titan/"
+            "https://www.planetary.org/articles/what-would-it-be-like-to-stand-on-the-surface-of-titan",
+            "https://www.nbcnews.com/id/wbna54582533"
           ]
         }
       ]
@@ -12172,6 +12183,7 @@
           "verified": false,
           "sources": [
             "https://en.wikipedia.org/wiki/Miranda_(moon)",
+            "https://en.wikipedia.org/wiki/Verona_Rupes",
             "https://science.nasa.gov/uranus/moons/miranda/"
           ]
         },
@@ -12193,15 +12205,16 @@
         },
         {
           "label": "About",
-          "value": "Miranda looks stitched together from different terrains. Its cliff Verona Rupes is roughly 20 km high.",
+          "value": "Miranda looks stitched together from different terrains. Its cliff Verona Rupes may be 5 to 20 km high, possibly the tallest cliff in the solar system.",
           "verified": false,
           "sources": [
+            "https://en.wikipedia.org/wiki/Verona_Rupes",
             "https://science.nasa.gov/uranus/moons/miranda/"
           ]
         },
         {
           "label": "Fun fact",
-          "value": "Only about half of it has ever been photographed.",
+          "value": "Less than half of it has ever been photographed.",
           "verified": false,
           "sources": [
             "https://science.nasa.gov/uranus/moons/miranda/"
@@ -12381,6 +12394,7 @@
           "value": "Umbriel is dark and old, with a mysterious bright ring on one crater, nicknamed the fluorescent Cheerio.",
           "verified": false,
           "sources": [
+            "https://sos.noaa.gov/catalog/datasets/umbriel-uranus-moon/",
             "https://science.nasa.gov/uranus/moons/umbriel/"
           ]
         }
@@ -12541,7 +12555,7 @@
           "value": "Near-Earth asteroid (1620) Geographos",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/1620_Geographos"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=1620"
           ]
         },
         {
@@ -12549,7 +12563,8 @@
           "value": "about 5.0 x 2.0 x 2.1 km",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/1620_Geographos"
+            "https://en.wikipedia.org/wiki/1620_Geographos",
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=1620"
           ]
         },
         {
@@ -12557,20 +12572,21 @@
           "value": "the Sun, every 1.4 years",
           "verified": false,
           "sources": [
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=1620",
             "https://en.wikipedia.org/wiki/1620_Geographos"
           ]
         },
         {
-          "label": "Visited by",
+          "label": "Studied by",
           "value": "radar from Earth (Clementine was meant to fly by)",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/1620_Geographos"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=1620"
           ]
         },
         {
           "label": "About",
-          "value": "Radar from Goldstone revealed its long, thin shape, about three times longer than it is wide.",
+          "value": "Radar from Goldstone revealed its long, thin shape, about two and a half times longer than it is wide.",
           "verified": false,
           "sources": [
             "https://en.wikipedia.org/wiki/1620_Geographos"
@@ -12599,15 +12615,17 @@
           "value": "Main-belt asteroid (216) Kleopatra",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/216_Kleopatra"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=216"
           ]
         },
         {
           "label": "Real size",
-          "value": "about 270 km long (estimates vary)",
+          "value": "about 270 km long and 60 km wide (2021 telescope images); this model is the older 2000 radar shape, scaled to about 236 km long",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/216_Kleopatra"
+            "https://www.eso.org/public/news/eso2113/",
+            "https://www.aanda.org/articles/aa/full_html/2021/09/aa40874-21/T2.html",
+            "https://www.science.org/doi/10.1126/science.288.5467.836"
           ]
         },
         {
@@ -12615,15 +12633,16 @@
           "value": "the Sun, every 4.7 years",
           "verified": false,
           "sources": [
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=216",
             "https://en.wikipedia.org/wiki/216_Kleopatra"
           ]
         },
         {
-          "label": "Visited by",
+          "label": "Studied by",
           "value": "radar and telescopes from Earth",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/216_Kleopatra"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=216"
           ]
         },
         {
@@ -12631,7 +12650,7 @@
           "value": "Kleopatra's shape looks like a dog's chew bone, and it has two small moons.",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/216_Kleopatra"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=216"
           ]
         }
       ]
@@ -12665,8 +12684,7 @@
           "value": "about 569 x 554 x 452 km",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/4_Vesta",
-            "https://science.nasa.gov/solar-system/asteroids/4-vesta/"
+            "https://en.wikipedia.org/wiki/4_Vesta"
           ]
         },
         {
@@ -12687,10 +12705,10 @@
         },
         {
           "label": "About",
-          "value": "Vesta has a huge impact basin, Rheasilvia, with a central peak about 20 km high.",
+          "value": "Vesta has a huge impact basin, Rheasilvia, with a central peak about 22 km high, about two and a half times the height of Mount Everest.",
           "verified": false,
           "sources": [
-            "https://science.nasa.gov/solar-system/asteroids/4-vesta/"
+            "https://en.wikipedia.org/wiki/4_Vesta"
           ]
         },
         {
@@ -12724,7 +12742,7 @@
           "value": "Near-Earth asteroid (4179) Toutatis",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/4179_Toutatis"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4179"
           ]
         },
         {
@@ -12732,7 +12750,8 @@
           "value": "about 4.75 x 2.4 x 1.95 km",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/4179_Toutatis"
+            "https://en.wikipedia.org/wiki/4179_Toutatis",
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4179"
           ]
         },
         {
@@ -12740,6 +12759,7 @@
           "value": "the Sun, every 4 years",
           "verified": false,
           "sources": [
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4179",
             "https://en.wikipedia.org/wiki/4179_Toutatis"
           ]
         },
@@ -12748,7 +12768,7 @@
           "value": "China's Chang'e 2 flyby in 2012",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/4179_Toutatis"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4179"
           ]
         },
         {
@@ -12756,7 +12776,7 @@
           "value": "Toutatis does not spin around one axis; it tumbles.",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/4179_Toutatis"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4179"
           ]
         }
       ]
@@ -12782,7 +12802,7 @@
           "value": "Near-Earth asteroid (4486) Mithra",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/4486_Mithra"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4486"
           ]
         },
         {
@@ -12790,23 +12810,25 @@
           "value": "about 2.4 km long; about 1.85 km across on average",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/4486_Mithra"
+            "https://en.wikipedia.org/wiki/4486_Mithra",
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4486"
           ]
         },
         {
           "label": "Orbits",
-          "value": "the Sun, every 3.2 years",
+          "value": "the Sun, every 3.3 years",
           "verified": false,
           "sources": [
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4486",
             "https://en.wikipedia.org/wiki/4486_Mithra"
           ]
         },
         {
-          "label": "Visited by",
+          "label": "Studied by",
           "value": "radar from Earth",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/4486_Mithra"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4486"
           ]
         },
         {
@@ -12814,7 +12836,7 @@
           "value": "Radar images in 2000 showed Mithra as one of the most oddly shaped asteroids yet seen, with two lobes.",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/4486_Mithra"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4486"
           ]
         }
       ]
@@ -12840,7 +12862,7 @@
           "value": "Near-Earth asteroid (6489) Golevka",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/6489_Golevka"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=6489"
           ]
         },
         {
@@ -12848,7 +12870,8 @@
           "value": "about 0.53 km across on average",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/6489_Golevka"
+            "https://en.wikipedia.org/wiki/6489_Golevka",
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=6489"
           ]
         },
         {
@@ -12856,15 +12879,16 @@
           "value": "the Sun, every 4 years",
           "verified": false,
           "sources": [
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=6489",
             "https://en.wikipedia.org/wiki/6489_Golevka"
           ]
         },
         {
-          "label": "Visited by",
+          "label": "Studied by",
           "value": "radar from Earth",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/6489_Golevka"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=6489"
           ]
         },
         {
@@ -12872,6 +12896,7 @@
           "value": "Radar tracking of Golevka gave the first measurement of the Yarkovsky effect: sunlight absorbed and re-radiated as heat slowly pushes an asteroid off course.",
           "verified": false,
           "sources": [
+            "https://www.science.org/doi/10.1126/science.1091452",
             "https://en.wikipedia.org/wiki/6489_Golevka"
           ]
         }
@@ -12898,7 +12923,7 @@
           "value": "Near-Earth asteroid (8567) 1996 HW1",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/(8567)_1996_HW1"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=8567"
           ]
         },
         {
@@ -12906,23 +12931,25 @@
           "value": "about 3.8 km long",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/(8567)_1996_HW1"
+            "https://en.wikipedia.org/wiki/(8567)_1996_HW1",
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=8567"
           ]
         },
         {
           "label": "Orbits",
-          "value": "the Sun, every 3.6 years",
+          "value": "the Sun, every 2.9 years",
           "verified": false,
           "sources": [
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=8567",
             "https://en.wikipedia.org/wiki/(8567)_1996_HW1"
           ]
         },
         {
-          "label": "Visited by",
+          "label": "Studied by",
           "value": "radar from Earth",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/(8567)_1996_HW1"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=8567"
           ]
         },
         {
@@ -12930,7 +12957,7 @@
           "value": "Its two lobes are touching, making it a contact binary like a cosmic snowman.",
           "verified": false,
           "sources": [
-            "https://en.wikipedia.org/wiki/(8567)_1996_HW1"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=8567"
           ]
         }
       ]

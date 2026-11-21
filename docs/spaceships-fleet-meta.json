@@ -9229,13 +9229,15 @@
       "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
       "fact_sources": [
         "https://science.nasa.gov/jupiter/jupiter-moons/callisto/",
-        "https://en.wikipedia.org/wiki/Callisto_(moon)"
+        "https://en.wikipedia.org/wiki/Callisto_(moon)",
+        "https://science.nasa.gov/missions/juno/juno-detected-the-final-missing-auroral-signature-from-jupiters-four-largest-moons/"
       ],
       "fact_rows": [
         {
           "label": "What it is",
           "sources": [
-            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/"
+            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/",
+            "https://science.nasa.gov/missions/juno/juno-detected-the-final-missing-auroral-signature-from-jupiters-four-largest-moons/"
           ],
           "verified": false
         },
@@ -9243,28 +9245,32 @@
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Callisto_(moon)",
-            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/"
+            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/",
+            "https://science.nasa.gov/missions/juno/juno-detected-the-final-missing-auroral-signature-from-jupiters-four-largest-moons/"
           ],
           "verified": false
         },
         {
           "label": "Orbits",
           "sources": [
-            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/"
+            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/",
+            "https://science.nasa.gov/missions/juno/juno-detected-the-final-missing-auroral-signature-from-jupiters-four-largest-moons/"
           ],
           "verified": false
         },
         {
           "label": "Visited by",
           "sources": [
-            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/"
+            "https://science.nasa.gov/missions/juno/juno-detected-the-final-missing-auroral-signature-from-jupiters-four-largest-moons/",
+            "https://atmos.nmsu.edu/data_and_services/atmospheres_data/JUNO/logs/Satellite_close_passes.pdf"
           ],
           "verified": false
         },
         {
           "label": "About",
           "sources": [
-            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/"
+            "https://science.nasa.gov/jupiter/jupiter-moons/callisto/",
+            "https://science.nasa.gov/missions/juno/juno-detected-the-final-missing-auroral-signature-from-jupiters-four-largest-moons/"
           ],
           "verified": false
         }
@@ -9837,13 +9843,15 @@
       "fact_sources": [
         "https://science.nasa.gov/saturn/",
         "https://en.wikipedia.org/wiki/Saturn",
-        "https://en.wikipedia.org/wiki/Rings_of_Saturn"
+        "https://en.wikipedia.org/wiki/Rings_of_Saturn",
+        "https://science.nasa.gov/saturn/facts/"
       ],
       "fact_rows": [
         {
           "label": "What it is",
           "sources": [
-            "https://science.nasa.gov/saturn/"
+            "https://science.nasa.gov/saturn/",
+            "https://science.nasa.gov/saturn/facts/"
           ],
           "verified": false
         },
@@ -9852,35 +9860,39 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Saturn",
             "https://en.wikipedia.org/wiki/Rings_of_Saturn",
-            "https://science.nasa.gov/saturn/"
+            "https://science.nasa.gov/saturn/",
+            "https://science.nasa.gov/saturn/facts/"
           ],
           "verified": false
         },
         {
           "label": "Orbits",
           "sources": [
-            "https://science.nasa.gov/saturn/"
+            "https://science.nasa.gov/saturn/",
+            "https://science.nasa.gov/saturn/facts/"
           ],
           "verified": false
         },
         {
           "label": "Visited by",
           "sources": [
-            "https://science.nasa.gov/saturn/"
+            "https://science.nasa.gov/saturn/",
+            "https://science.nasa.gov/saturn/facts/"
           ],
           "verified": false
         },
         {
           "label": "About",
           "sources": [
-            "https://science.nasa.gov/saturn/"
+            "https://science.nasa.gov/saturn/facts/"
           ],
           "verified": false
         },
         {
           "label": "Fun fact",
           "sources": [
-            "https://science.nasa.gov/saturn/"
+            "https://science.nasa.gov/saturn/",
+            "https://science.nasa.gov/saturn/facts/"
           ],
           "verified": false
         }
@@ -10293,7 +10305,8 @@
       "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
       "fact_sources": [
         "https://science.nasa.gov/saturn/moons/titan/",
-        "https://en.wikipedia.org/wiki/Titan_(moon)"
+        "https://en.wikipedia.org/wiki/Titan_(moon)",
+        "https://www.planetary.org/articles/what-would-it-be-like-to-stand-on-the-surface-of-titan"
       ],
       "fact_rows": [
         {
@@ -10335,7 +10348,8 @@
         {
           "label": "Fun fact",
           "sources": [
-            "https://science.nasa.gov/saturn/moons/titan/"
+            "https://www.planetary.org/articles/what-would-it-be-like-to-stand-on-the-surface-of-titan",
+            "https://www.nbcnews.com/id/wbna54582533"
           ],
           "verified": false
         }
@@ -10424,7 +10438,8 @@
       "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
       "fact_sources": [
         "https://science.nasa.gov/uranus/moons/miranda/",
-        "https://en.wikipedia.org/wiki/Miranda_(moon)"
+        "https://en.wikipedia.org/wiki/Miranda_(moon)",
+        "https://en.wikipedia.org/wiki/Verona_Rupes"
       ],
       "fact_rows": [
         {
@@ -10438,6 +10453,7 @@
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Miranda_(moon)",
+            "https://en.wikipedia.org/wiki/Verona_Rupes",
             "https://science.nasa.gov/uranus/moons/miranda/"
           ],
           "verified": false
@@ -10459,6 +10475,7 @@
         {
           "label": "About",
           "sources": [
+            "https://en.wikipedia.org/wiki/Verona_Rupes",
             "https://science.nasa.gov/uranus/moons/miranda/"
           ],
           "verified": false
@@ -10617,7 +10634,8 @@
       "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
       "fact_sources": [
         "https://science.nasa.gov/uranus/moons/umbriel/",
-        "https://en.wikipedia.org/wiki/Umbriel"
+        "https://en.wikipedia.org/wiki/Umbriel",
+        "https://sos.noaa.gov/catalog/datasets/umbriel-uranus-moon/"
       ],
       "fact_rows": [
         {
@@ -10652,6 +10670,7 @@
         {
           "label": "About",
           "sources": [
+            "https://sos.noaa.gov/catalog/datasets/umbriel-uranus-moon/",
             "https://science.nasa.gov/uranus/moons/umbriel/"
           ],
           "verified": false
@@ -10816,34 +10835,37 @@
       "no_science_nasa_gov_page": false,
       "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
       "fact_sources": [
-        "https://en.wikipedia.org/wiki/1620_Geographos"
+        "https://en.wikipedia.org/wiki/1620_Geographos",
+        "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=1620"
       ],
       "fact_rows": [
         {
           "label": "What it is",
           "sources": [
-            "https://en.wikipedia.org/wiki/1620_Geographos"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=1620"
           ],
           "verified": false
         },
         {
           "label": "Real size",
           "sources": [
-            "https://en.wikipedia.org/wiki/1620_Geographos"
+            "https://en.wikipedia.org/wiki/1620_Geographos",
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=1620"
           ],
           "verified": false
         },
         {
           "label": "Orbits",
           "sources": [
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=1620",
             "https://en.wikipedia.org/wiki/1620_Geographos"
           ],
           "verified": false
         },
         {
-          "label": "Visited by",
+          "label": "Studied by",
           "sources": [
-            "https://en.wikipedia.org/wiki/1620_Geographos"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=1620"
           ],
           "verified": false
         },
@@ -10876,54 +10898,60 @@
       "no_science_nasa_gov_page": false,
       "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
       "fact_sources": [
-        "https://en.wikipedia.org/wiki/216_Kleopatra"
+        "https://en.wikipedia.org/wiki/216_Kleopatra",
+        "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=216",
+        "https://www.eso.org/public/news/eso2113/",
+        "https://www.aanda.org/articles/aa/full_html/2021/09/aa40874-21/T2.html"
       ],
       "fact_rows": [
         {
           "label": "What it is",
           "sources": [
-            "https://en.wikipedia.org/wiki/216_Kleopatra"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=216"
           ],
           "verified": false
         },
         {
           "label": "Real size",
           "sources": [
-            "https://en.wikipedia.org/wiki/216_Kleopatra"
+            "https://www.eso.org/public/news/eso2113/",
+            "https://www.aanda.org/articles/aa/full_html/2021/09/aa40874-21/T2.html",
+            "https://www.science.org/doi/10.1126/science.288.5467.836"
           ],
           "verified": false
         },
         {
           "label": "Orbits",
           "sources": [
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=216",
             "https://en.wikipedia.org/wiki/216_Kleopatra"
           ],
           "verified": false
         },
         {
-          "label": "Visited by",
+          "label": "Studied by",
           "sources": [
-            "https://en.wikipedia.org/wiki/216_Kleopatra"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=216"
           ],
           "verified": false
         },
         {
           "label": "About",
           "sources": [
-            "https://en.wikipedia.org/wiki/216_Kleopatra"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=216"
           ],
           "verified": false
         }
       ],
       "needs_tesla_verification": true,
       "model_size_m_gltf_xyz": [
-        217000.0,
-        93616.281,
-        81496.078
+        236530.0,
+        102041.742,
+        88830.719
       ],
       "triangles": 4092,
-      "scale_note": "Scaled to 217 km long, the size of this older radar shape. Newer telescope work (Wikipedia) gives about 267 x 61 x 48 km, longer and thinner than this model. Rock material is my choice.",
-      "glb_bytes": 530244,
+      "scale_note": "This is the Ostro et al. 2000 radar shape (217 x 94 x 81 km), scaled x1.09 to about 236 x 102 x 89 km so its volume matches the 2021 VLT/SPHERE result (equivalent diameter 118.75 km; Ostro shape 109 km per Shepard 2018). The 2021 VLT shape is 267 x 61 x 48 km, longer and much thinner; no freely licensed copy of that mesh was found quickly, so it is not used. Rock material is my choice.",
+      "glb_bytes": 530232,
       "usdz_bytes": 1068637
     },
     {
@@ -10950,8 +10978,7 @@
         {
           "label": "Real size",
           "sources": [
-            "https://en.wikipedia.org/wiki/4_Vesta",
-            "https://science.nasa.gov/solar-system/asteroids/4-vesta/"
+            "https://en.wikipedia.org/wiki/4_Vesta"
           ],
           "verified": false
         },
@@ -10972,7 +10999,7 @@
         {
           "label": "About",
           "sources": [
-            "https://science.nasa.gov/solar-system/asteroids/4-vesta/"
+            "https://en.wikipedia.org/wiki/4_Vesta"
           ],
           "verified": false
         },
@@ -10986,14 +11013,14 @@
       ],
       "needs_tesla_verification": true,
       "model_size_m_gltf_xyz": [
-        570430.938,
-        518207.344,
-        572600.0
+        567083.688,
+        515166.5,
+        569240.0
       ],
       "triangles": 800000,
-      "scale_note": "Scaled to 572.6 km long. NASA's shape is rounder than the real Vesta: its short axis is 518 km against the real 452 km (Wikipedia, JPL). NASA's 800,000-triangle mesh reduced to 3%. Rock material is my choice.",
-      "glb_bytes": 1543788,
-      "usdz_bytes": 2612811
+      "scale_note": "Scaled to 569.2 km long (JPL: 569.24 x 554.48 x 452.46 km). NASA's shape is rounder than the real Vesta: its short axis is about 515 km against the real 452 km, about 1.15 times too thick (Wikipedia, JPL). NASA's 800,000-triangle mesh reduced to 3%. Rock material is my choice.",
+      "glb_bytes": 1543912,
+      "usdz_bytes": 2612930
     },
     {
       "id": "toutatis",
@@ -11005,26 +11032,29 @@
       "no_science_nasa_gov_page": false,
       "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
       "fact_sources": [
-        "https://en.wikipedia.org/wiki/4179_Toutatis"
+        "https://en.wikipedia.org/wiki/4179_Toutatis",
+        "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4179"
       ],
       "fact_rows": [
         {
           "label": "What it is",
           "sources": [
-            "https://en.wikipedia.org/wiki/4179_Toutatis"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4179"
           ],
           "verified": false
         },
         {
           "label": "Real size",
           "sources": [
-            "https://en.wikipedia.org/wiki/4179_Toutatis"
+            "https://en.wikipedia.org/wiki/4179_Toutatis",
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4179"
           ],
           "verified": false
         },
         {
           "label": "Orbits",
           "sources": [
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4179",
             "https://en.wikipedia.org/wiki/4179_Toutatis"
           ],
           "verified": false
@@ -11032,14 +11062,14 @@
         {
           "label": "Visited by",
           "sources": [
-            "https://en.wikipedia.org/wiki/4179_Toutatis"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4179"
           ],
           "verified": false
         },
         {
           "label": "About",
           "sources": [
-            "https://en.wikipedia.org/wiki/4179_Toutatis"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4179"
           ],
           "verified": false
         }
@@ -11065,41 +11095,44 @@
       "no_science_nasa_gov_page": false,
       "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
       "fact_sources": [
-        "https://en.wikipedia.org/wiki/4486_Mithra"
+        "https://en.wikipedia.org/wiki/4486_Mithra",
+        "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4486"
       ],
       "fact_rows": [
         {
           "label": "What it is",
           "sources": [
-            "https://en.wikipedia.org/wiki/4486_Mithra"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4486"
           ],
           "verified": false
         },
         {
           "label": "Real size",
           "sources": [
-            "https://en.wikipedia.org/wiki/4486_Mithra"
+            "https://en.wikipedia.org/wiki/4486_Mithra",
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4486"
           ],
           "verified": false
         },
         {
           "label": "Orbits",
           "sources": [
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4486",
             "https://en.wikipedia.org/wiki/4486_Mithra"
           ],
           "verified": false
         },
         {
-          "label": "Visited by",
+          "label": "Studied by",
           "sources": [
-            "https://en.wikipedia.org/wiki/4486_Mithra"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4486"
           ],
           "verified": false
         },
         {
           "label": "About",
           "sources": [
-            "https://en.wikipedia.org/wiki/4486_Mithra"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4486"
           ],
           "verified": false
         }
@@ -11125,40 +11158,45 @@
       "no_science_nasa_gov_page": false,
       "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
       "fact_sources": [
-        "https://en.wikipedia.org/wiki/6489_Golevka"
+        "https://en.wikipedia.org/wiki/6489_Golevka",
+        "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=6489",
+        "https://www.science.org/doi/10.1126/science.1091452"
       ],
       "fact_rows": [
         {
           "label": "What it is",
           "sources": [
-            "https://en.wikipedia.org/wiki/6489_Golevka"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=6489"
           ],
           "verified": false
         },
         {
           "label": "Real size",
           "sources": [
-            "https://en.wikipedia.org/wiki/6489_Golevka"
+            "https://en.wikipedia.org/wiki/6489_Golevka",
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=6489"
           ],
           "verified": false
         },
         {
           "label": "Orbits",
           "sources": [
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=6489",
             "https://en.wikipedia.org/wiki/6489_Golevka"
           ],
           "verified": false
         },
         {
-          "label": "Visited by",
+          "label": "Studied by",
           "sources": [
-            "https://en.wikipedia.org/wiki/6489_Golevka"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=6489"
           ],
           "verified": false
         },
         {
           "label": "About",
           "sources": [
+            "https://www.science.org/doi/10.1126/science.1091452",
             "https://en.wikipedia.org/wiki/6489_Golevka"
           ],
           "verified": false
@@ -11185,41 +11223,44 @@
       "no_science_nasa_gov_page": false,
       "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
       "fact_sources": [
-        "https://en.wikipedia.org/wiki/(8567)_1996_HW1"
+        "https://en.wikipedia.org/wiki/(8567)_1996_HW1",
+        "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=8567"
       ],
       "fact_rows": [
         {
           "label": "What it is",
           "sources": [
-            "https://en.wikipedia.org/wiki/(8567)_1996_HW1"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=8567"
           ],
           "verified": false
         },
         {
           "label": "Real size",
           "sources": [
-            "https://en.wikipedia.org/wiki/(8567)_1996_HW1"
+            "https://en.wikipedia.org/wiki/(8567)_1996_HW1",
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=8567"
           ],
           "verified": false
         },
         {
           "label": "Orbits",
           "sources": [
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=8567",
             "https://en.wikipedia.org/wiki/(8567)_1996_HW1"
           ],
           "verified": false
         },
         {
-          "label": "Visited by",
+          "label": "Studied by",
           "sources": [
-            "https://en.wikipedia.org/wiki/(8567)_1996_HW1"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=8567"
           ],
           "verified": false
         },
         {
           "label": "About",
           "sources": [
-            "https://en.wikipedia.org/wiki/(8567)_1996_HW1"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=8567"
           ],
           "verified": false
         }
