@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "module": "spaceships",
-  "note": "Seventy-nine official NASA 3D Resources models wired from Angelo's pack. Wave 1 (19 craft) facts were checked by Tesla on Nov 20, 2026 and are verified:true. Wave 2 (30 craft) facts were checked by Tesla on Nov 20, 2026 (America/New_York); all 240 rows are verified:true, with his student wording on the Must and Should fact fixes. Wave 3 batch 1 (30 Earth-observing craft, including GPM re-anchored to 13 m) is wired with Angelo's facts and per-row sources; every batch 1 row is verified:false until Tesla's fact check clears, and every batch 1 Status row is recheckBeforePublish. mars-odyssey Status and aqua Status are time-sensitive and must be rechecked before publish. Rosetta is held for wave 3 batch 2. Per-craft source notes live in docs/spaceships-fleet-meta.json.",
+  "note": "Seventy-nine official NASA 3D Resources models wired from Angelo's pack. Wave 1 (19 craft) facts were checked by Tesla on Nov 20, 2026 and are verified:true. Wave 2 (30 craft) facts were checked by Tesla on Nov 20, 2026 (America/New_York); all 240 rows are verified:true, with his student wording on the Must and Should fact fixes. Wave 3 batch 1 (30 Earth-observing craft, including GPM re-anchored to 13 m) was checked by Tesla on Nov 20, 2026 (America/New_York); his 2 Must and 18 Should fixes are applied and all batch 1 rows are verified:true. Every batch 1 Status row and each row Tesla flagged is recheckBeforePublish. mars-odyssey Status and aqua Status are time-sensitive and must be rechecked before publish. Rosetta is held for wave 3 batch 2. Per-craft source notes live in docs/spaceships-fleet-meta.json.",
   "source": "https://science.nasa.gov/3d-resources/",
   "credit": "3D model courtesy NASA",
   "placeholderGlb": "models/_placeholder.glb",
@@ -3007,7 +3007,7 @@
         {
           "label": "Mission",
           "value": "Ocean surface salinity mapping (Aquarius instrument on Argentina's SAC-D satellite)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/aquarius/"
           ]
@@ -3015,7 +3015,7 @@
         {
           "label": "Agency",
           "value": "NASA and CONAE (Argentina)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/aquarius/"
           ]
@@ -3023,7 +3023,7 @@
         {
           "label": "Launch",
           "value": "June 10, 2011",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/SAC-D",
             "https://science.nasa.gov/mission/aquarius/"
@@ -3032,7 +3032,7 @@
         {
           "label": "Status",
           "value": "Ended June 8, 2015, after a power failure on the SAC-D spacecraft",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/SAC-D",
             "https://science.nasa.gov/mission/aquarius/"
@@ -3042,7 +3042,7 @@
         {
           "label": "Real size",
           "value": "about 2.7 m x 5.0 m (8.9 x 16.4 ft)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/SAC-D",
             "https://science.nasa.gov/mission/aquarius/"
@@ -3051,7 +3051,7 @@
         {
           "label": "Mass",
           "value": "about 1,350 kg at launch (2,977 lb)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/SAC-D",
             "https://science.nasa.gov/mission/aquarius/"
@@ -3060,7 +3060,7 @@
         {
           "label": "About",
           "value": "Aquarius used microwave radiometers to sense how salty the top layer of the ocean is. Salt changes how dense seawater is, so the maps help explain ocean currents, rain and evaporation.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/aquarius/"
           ]
@@ -3068,7 +3068,7 @@
         {
           "label": "Fun fact",
           "value": "It could detect a change of about 0.2 grams of salt in a kilogram of seawater, roughly a pinch of salt in a gallon of water.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/aquarius/"
           ]
@@ -3094,7 +3094,7 @@
         {
           "label": "Mission",
           "value": "Earth Observing System mission for atmospheric chemistry: ozone, air quality and climate gases",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/aura/"
           ]
@@ -3102,7 +3102,7 @@
         {
           "label": "Agency",
           "value": "NASA, with instruments from the Netherlands, Finland and the UK",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/aura/"
           ]
@@ -3110,7 +3110,7 @@
         {
           "label": "Launch",
           "value": "July 15, 2004",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Aura_(satellite)",
             "https://science.nasa.gov/mission/aura/"
@@ -3119,7 +3119,7 @@
         {
           "label": "Status",
           "value": "Operating; out of fuel for orbit adjustments, so its timing slowly drifts; expected to run until about 2028 (as of Nov 2026; recheck)",
-          "verified": false,
+          "verified": true,
           "recheckBeforePublish": true,
           "sources": [
             "https://science.nasa.gov/missions/potential-evolution-of-the-aura-mission/"
@@ -3128,7 +3128,7 @@
         {
           "label": "Real size",
           "value": "4.7 m x 17.4 m x 6.9 m with its solar array out",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Aura_(satellite)",
             "https://science.nasa.gov/mission/aura/"
@@ -3137,7 +3137,7 @@
         {
           "label": "Mass",
           "value": "2,970 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Aura_(satellite)",
             "https://science.nasa.gov/mission/aura/"
@@ -3146,7 +3146,7 @@
         {
           "label": "About",
           "value": "Aura's instruments measure ozone, nitrogen dioxide, carbon monoxide and other gases from the ground up into the stratosphere. Its data track the ozone hole and city air pollution.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/aura/"
           ]
@@ -3154,7 +3154,7 @@
         {
           "label": "Fun fact",
           "value": "Aura is Latin for breeze.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/aura/"
           ]
@@ -3180,7 +3180,7 @@
         {
           "label": "Mission",
           "value": "Cloud and aerosol profiling with lidar",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/calipso/"
           ]
@@ -3188,7 +3188,7 @@
         {
           "label": "Agency",
           "value": "NASA and CNES (France)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/calipso/"
           ]
@@ -3196,7 +3196,7 @@
         {
           "label": "Launch",
           "value": "April 28, 2006 (with CloudSat)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/CALIPSO",
             "https://science.nasa.gov/mission/calipso/"
@@ -3205,7 +3205,7 @@
         {
           "label": "Status",
           "value": "Science ended August 2023; spacecraft decommissioned in 2023",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/CALIPSO",
             "https://science.nasa.gov/mission/calipso/"
@@ -3215,7 +3215,7 @@
         {
           "label": "Real size",
           "value": "body about 1.5 m x 1.8 m x 2.3 m",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/CALIPSO",
             "https://science.nasa.gov/mission/calipso/"
@@ -3224,7 +3224,7 @@
         {
           "label": "Mass",
           "value": "587 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/CALIPSO",
             "https://science.nasa.gov/mission/calipso/"
@@ -3233,7 +3233,7 @@
         {
           "label": "About",
           "value": "CALIPSO fired short laser pulses at Earth and timed the light that bounced back. That gave vertical slices through clouds, dust, smoke and pollution, showing how high each layer sat.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/calipso/"
           ]
@@ -3241,7 +3241,7 @@
         {
           "label": "Fun fact",
           "value": "It flew in the A-Train, a line of satellites crossing the equator within minutes of each other, so scientists could combine their views.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/calipso/"
           ]
@@ -3267,7 +3267,7 @@
         {
           "label": "Mission",
           "value": "Cloud-profiling radar mission",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/cloudsat/"
           ]
@@ -3275,7 +3275,7 @@
         {
           "label": "Agency",
           "value": "NASA, with the Canadian Space Agency",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/cloudsat/"
           ]
@@ -3283,7 +3283,7 @@
         {
           "label": "Launch",
           "value": "April 28, 2006 (with CALIPSO)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/CloudSat",
             "https://science.nasa.gov/mission/cloudsat/"
@@ -3292,7 +3292,7 @@
         {
           "label": "Status",
           "value": "Science ended December 20, 2023; spacecraft shut down in April 2024",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/cloudsat/"
           ],
@@ -3301,7 +3301,7 @@
         {
           "label": "Real size",
           "value": "body 2.54 m x 2.03 m x 2.29 m",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/CloudSat",
             "https://science.nasa.gov/mission/cloudsat/"
@@ -3310,7 +3310,7 @@
         {
           "label": "Mass",
           "value": "700 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/CloudSat",
             "https://science.nasa.gov/mission/cloudsat/"
@@ -3319,7 +3319,7 @@
         {
           "label": "About",
           "value": "CloudSat's radar was about 1,000 times more sensitive than a weather radar. It measured how much water and ice clouds hold, and how high, helping improve weather and climate models.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/cloudsat/"
           ]
@@ -3327,7 +3327,7 @@
         {
           "label": "Fun fact",
           "value": "It was planned to last 22 months and worked for more than 17 years.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/cloudsat/"
           ]
@@ -3353,7 +3353,7 @@
         {
           "label": "Mission",
           "value": "Ocean surface wind speed in tropical storms, using reflected GPS signals",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/cygnss/"
           ]
@@ -3361,7 +3361,7 @@
         {
           "label": "Agency",
           "value": "NASA",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/cygnss/"
           ]
@@ -3369,7 +3369,7 @@
         {
           "label": "Launch",
           "value": "December 15, 2016 (all eight on one Pegasus rocket)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Cyclone_Global_Navigation_Satellite_System",
             "https://science.nasa.gov/mission/cygnss/"
@@ -3378,7 +3378,7 @@
         {
           "label": "Status",
           "value": "Seven of eight still flying; planned to be brought down around January 1, 2027 (as of Nov 2026; recheck)",
-          "verified": false,
+          "verified": true,
           "recheckBeforePublish": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Cyclone_Global_Navigation_Satellite_System",
@@ -3388,7 +3388,7 @@
         {
           "label": "Real size",
           "value": "each about 1.6 m x 0.5 m x 0.2 m with panels out",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Cyclone_Global_Navigation_Satellite_System",
             "https://science.nasa.gov/mission/cygnss/"
@@ -3397,7 +3397,7 @@
         {
           "label": "Mass",
           "value": "about 29 kg each",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Cyclone_Global_Navigation_Satellite_System",
             "https://science.nasa.gov/mission/cygnss/"
@@ -3406,7 +3406,7 @@
         {
           "label": "About",
           "value": "Each CYGNSS microsatellite listens to GPS signals that bounce off the ocean. Rough, windy water scatters the signal differently from calm water, so the satellites can measure winds even through heavy rain in a hurricane.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/cygnss/"
           ]
@@ -3414,7 +3414,7 @@
         {
           "label": "Fun fact",
           "value": "All eight satellites rode to orbit together on one rocket launched from an airplane.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/cygnss/"
           ]
@@ -3440,7 +3440,7 @@
         {
           "label": "Mission",
           "value": "Space weather warning and whole-Earth imaging from the Sun-Earth L1 point",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/dscovr/",
             "https://epic.gsfc.nasa.gov/"
@@ -3449,7 +3449,7 @@
         {
           "label": "Agency",
           "value": "NOAA, NASA and the U.S. Air Force",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/dscovr/",
             "https://epic.gsfc.nasa.gov/"
@@ -3458,7 +3458,7 @@
         {
           "label": "Launch",
           "value": "February 11, 2015",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Deep_Space_Climate_Observatory",
             "https://science.nasa.gov/mission/dscovr/",
@@ -3468,7 +3468,7 @@
         {
           "label": "Status",
           "value": "Operating (EPIC images as of Nov 2026; recheck)",
-          "verified": false,
+          "verified": true,
           "recheckBeforePublish": true,
           "sources": [
             "https://epic.gsfc.nasa.gov/"
@@ -3477,7 +3477,7 @@
         {
           "label": "Real size",
           "value": "about 1.4 m x 1.8 m before its solar arrays opened",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Deep_Space_Climate_Observatory",
             "https://science.nasa.gov/mission/dscovr/",
@@ -3487,7 +3487,7 @@
         {
           "label": "Mass",
           "value": "570 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Deep_Space_Climate_Observatory",
             "https://science.nasa.gov/mission/dscovr/",
@@ -3497,7 +3497,7 @@
         {
           "label": "About",
           "value": "DSCOVR sits about 1.5 million km toward the Sun. For years it was the main early warning for solar storms, a job NOAA's SOLAR-1 took over in 2026. NASA's EPIC camera on board photographs the whole sunlit Earth many times a day.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.ospo.noaa.gov/operations/swfo/status.html",
             "https://www.noaa.gov/news-release/noaas-solar-1-enters-new-era-of-space-weather-monitoring",
@@ -3507,7 +3507,7 @@
         {
           "label": "Fun fact",
           "value": "It was built in the 1990s as Triana, sat in storage for about 8 years, and finally launched in 2015.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Deep_Space_Climate_Observatory"
           ]
@@ -3533,7 +3533,7 @@
         {
           "label": "Mission",
           "value": "Technology test for future Landsat-type imagers (New Millennium Program)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/eo-1",
             "https://en.wikipedia.org/wiki/Earth_Observing-1"
@@ -3542,7 +3542,7 @@
         {
           "label": "Agency",
           "value": "NASA",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/eo-1",
             "https://en.wikipedia.org/wiki/Earth_Observing-1"
@@ -3551,7 +3551,7 @@
         {
           "label": "Launch",
           "value": "November 21, 2000",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/eo-1",
             "https://en.wikipedia.org/wiki/Earth_Observing-1"
@@ -3560,7 +3560,7 @@
         {
           "label": "Status",
           "value": "Decommissioned March 30, 2017",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/eo-1",
             "https://en.wikipedia.org/wiki/Earth_Observing-1"
@@ -3570,7 +3570,7 @@
         {
           "label": "Real size",
           "value": "bus about 1.4 m x 1.4 m x 2 m; solar array about 5.25 m",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/eo-1",
             "https://en.wikipedia.org/wiki/Earth_Observing-1"
@@ -3579,7 +3579,7 @@
         {
           "label": "Mass",
           "value": "573 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/eo-1",
             "https://en.wikipedia.org/wiki/Earth_Observing-1"
@@ -3588,7 +3588,7 @@
         {
           "label": "About",
           "value": "EO-1 carried Hyperion, the first imaging spectrometer in Earth orbit to split light into about 220 colors. Its test cameras paved the way for the imager on Landsat 8.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/eo-1",
             "https://en.wikipedia.org/wiki/Earth_Observing-1"
@@ -3597,7 +3597,7 @@
         {
           "label": "Fun fact",
           "value": "It was planned for one year and worked for more than 16.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/eo-1",
             "https://en.wikipedia.org/wiki/Earth_Observing-1"
@@ -3624,7 +3624,7 @@
         {
           "label": "Mission",
           "value": "Geostationary weather satellites watching the Americas",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
@@ -3634,7 +3634,7 @@
         {
           "label": "Agency",
           "value": "NOAA, with spacecraft built and launched through NASA",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
@@ -3644,7 +3644,7 @@
         {
           "label": "Launch",
           "value": "First GOES in 1975; the series continues",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
@@ -3654,7 +3654,7 @@
         {
           "label": "Status",
           "value": "GOES satellites in service (as of Nov 2026)",
-          "verified": false,
+          "verified": true,
           "recheckBeforePublish": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite",
@@ -3665,7 +3665,7 @@
         {
           "label": "Real size",
           "value": "several metres across; varies by generation",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
@@ -3675,7 +3675,7 @@
         {
           "label": "About",
           "value": "GOES satellites orbit about 35,800 km up, where they match Earth's spin and stay over the same spot. They take a fresh picture of the Americas every few minutes to track storms, hurricanes and wildfires.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
@@ -3685,7 +3685,7 @@
         {
           "label": "Fun fact",
           "value": "From that height, one satellite can see about 40% of the Earth at once.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
@@ -3713,7 +3713,7 @@
         {
           "label": "Mission",
           "value": "Mapping Earth's gravity changes caused by moving water and ice",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/grace/"
           ]
@@ -3721,7 +3721,7 @@
         {
           "label": "Agency",
           "value": "NASA and the German Aerospace Center (DLR)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/grace/"
           ]
@@ -3729,7 +3729,7 @@
         {
           "label": "Launch",
           "value": "March 17, 2002",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/GRACE_and_GRACE-FO",
             "https://science.nasa.gov/mission/grace/"
@@ -3738,7 +3738,7 @@
         {
           "label": "Status",
           "value": "Ended October 2017; both satellites re-entered in 2017 and 2018",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/GRACE_and_GRACE-FO",
             "https://science.nasa.gov/mission/grace/"
@@ -3748,7 +3748,7 @@
         {
           "label": "Real size",
           "value": "each 1.9 m x 3.1 m x 0.7 m",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/GRACE_and_GRACE-FO",
             "https://science.nasa.gov/mission/grace/"
@@ -3757,7 +3757,7 @@
         {
           "label": "Mass",
           "value": "487 kg each",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/GRACE_and_GRACE-FO",
             "https://science.nasa.gov/mission/grace/"
@@ -3766,7 +3766,7 @@
         {
           "label": "About",
           "value": "Two identical satellites flew about 220 km apart, one behind the other. Tiny changes in the distance between them showed where Earth's gravity was slightly stronger or weaker, revealing melting ice sheets and shrinking groundwater.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/grace/"
           ]
@@ -3774,7 +3774,7 @@
         {
           "label": "Fun fact",
           "value": "They measured the distance between each other to within about one micron, a millionth of a metre, far thinner than a human hair.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/missions/grace/lumps-bumps-and-gravity-space-scales-weigh-planet-earth/"
           ]
@@ -3800,7 +3800,7 @@
         {
           "label": "Mission",
           "value": "Laser altimetry of ice sheets, clouds and land",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/icesat/"
           ]
@@ -3808,7 +3808,7 @@
         {
           "label": "Agency",
           "value": "NASA",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/icesat/"
           ]
@@ -3816,7 +3816,7 @@
         {
           "label": "Launch",
           "value": "January 13, 2003",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/ICESat",
             "https://science.nasa.gov/mission/icesat/"
@@ -3825,7 +3825,7 @@
         {
           "label": "Status",
           "value": "Ended August 14, 2010; re-entered August 30, 2010",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/ICESat",
             "https://science.nasa.gov/mission/icesat/"
@@ -3835,7 +3835,7 @@
         {
           "label": "Real size",
           "value": "about 2 m x 2 m x 3.1 m",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/ICESat",
             "https://science.nasa.gov/mission/icesat/"
@@ -3844,7 +3844,7 @@
         {
           "label": "Mass",
           "value": "970 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/ICESat",
             "https://science.nasa.gov/mission/icesat/"
@@ -3853,7 +3853,7 @@
         {
           "label": "About",
           "value": "ICESat's laser timed pulses bouncing off the ground to measure height. It showed that the Greenland and Antarctic ice sheets were losing ice and that Arctic sea ice was getting thinner.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/icesat/"
           ]
@@ -3861,7 +3861,7 @@
         {
           "label": "Fun fact",
           "value": "Its laser fired 40 times a second.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/icesat/"
           ]
@@ -3887,7 +3887,7 @@
         {
           "label": "Mission",
           "value": "Laser altimetry of ice sheets, sea ice, forests and oceans",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://icesat-2.gsfc.nasa.gov/"
           ]
@@ -3895,7 +3895,7 @@
         {
           "label": "Agency",
           "value": "NASA",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://icesat-2.gsfc.nasa.gov/"
           ]
@@ -3903,7 +3903,7 @@
         {
           "label": "Launch",
           "value": "September 15, 2018",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/ICESat-2",
             "https://icesat-2.gsfc.nasa.gov/"
@@ -3912,7 +3912,7 @@
         {
           "label": "Status",
           "value": "Operating (as of Nov 2026; recheck)",
-          "verified": false,
+          "verified": true,
           "recheckBeforePublish": true,
           "sources": [
             "https://en.wikipedia.org/wiki/ICESat-2",
@@ -3922,7 +3922,7 @@
         {
           "label": "Real size",
           "value": "about 2.5 m x 1.9 m x 3.8 m at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/ICESat-2",
             "https://icesat-2.gsfc.nasa.gov/"
@@ -3931,7 +3931,7 @@
         {
           "label": "Mass",
           "value": "1,514 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/ICESat-2",
             "https://icesat-2.gsfc.nasa.gov/"
@@ -3940,7 +3940,7 @@
         {
           "label": "About",
           "value": "ICESat-2's laser splits into six beams and fires 10,000 times a second. It times single particles of light coming back, which lets it measure the height of ice to within a few centimetres.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://icesat-2.gsfc.nasa.gov/"
           ]
@@ -3948,7 +3948,7 @@
         {
           "label": "Fun fact",
           "value": "Its laser pulses are green, so they travel well through air and even shallow water.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://icesat-2.gsfc.nasa.gov/"
           ]
@@ -3974,7 +3974,7 @@
         {
           "label": "Mission",
           "value": "Ocean surface height (radar altimetry)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/jason-1/"
           ]
@@ -3982,7 +3982,7 @@
         {
           "label": "Agency",
           "value": "NASA and CNES (France)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/jason-1/"
           ]
@@ -3990,7 +3990,7 @@
         {
           "label": "Launch",
           "value": "December 7, 2001",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Jason-1",
             "https://science.nasa.gov/mission/jason-1/"
@@ -3999,7 +3999,7 @@
         {
           "label": "Status",
           "value": "Decommissioned July 1, 2013",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Jason-1",
             "https://science.nasa.gov/mission/jason-1/"
@@ -4009,7 +4009,7 @@
         {
           "label": "Real size",
           "value": "body about 1 m across with two solar wings",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Jason-1",
             "https://science.nasa.gov/mission/jason-1/"
@@ -4018,7 +4018,7 @@
         {
           "label": "Mass",
           "value": "500 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Jason-1",
             "https://science.nasa.gov/mission/jason-1/"
@@ -4027,7 +4027,7 @@
         {
           "label": "About",
           "value": "Jason-1 bounced radar pulses off the sea and timed the echoes to map ocean height. Bumps and dips in sea level reveal currents, El Nino and global sea level rise.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/jason-1/"
           ]
@@ -4035,7 +4035,7 @@
         {
           "label": "Fun fact",
           "value": "It was named after Jason, the hero of the Greek myth who sailed with the Argonauts.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/jason-1/"
           ]
@@ -4061,7 +4061,7 @@
         {
           "label": "Mission",
           "value": "Ocean surface height (radar altimetry)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/OSTM/Jason-2"
           ]
@@ -4069,7 +4069,7 @@
         {
           "label": "Agency",
           "value": "NASA, NOAA, CNES and EUMETSAT",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/OSTM/Jason-2"
           ]
@@ -4077,7 +4077,7 @@
         {
           "label": "Launch",
           "value": "June 20, 2008",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/OSTM/Jason-2"
           ]
@@ -4085,7 +4085,7 @@
         {
           "label": "Status",
           "value": "Decommissioned October 9, 2019",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/OSTM/Jason-2"
           ],
@@ -4094,7 +4094,7 @@
         {
           "label": "Real size",
           "value": "body about 1 m across with two solar wings",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/OSTM/Jason-2"
           ]
@@ -4102,7 +4102,7 @@
         {
           "label": "Mass",
           "value": "510 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/OSTM/Jason-2"
           ]
@@ -4110,7 +4110,7 @@
         {
           "label": "About",
           "value": "Jason-2 continued the sea-level measurements started by TOPEX/Poseidon in 1992. Together the missions show global sea level rising by about 3 mm a year over that time.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/OSTM/Jason-2"
           ]
@@ -4118,7 +4118,7 @@
         {
           "label": "Fun fact",
           "value": "Its radar measured the height of the sea surface from about 1,336 km up.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/OSTM/Jason-2"
           ]
@@ -4144,7 +4144,7 @@
         {
           "label": "Mission",
           "value": "Ocean surface height (radar altimetry)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/sentinel-6/"
           ]
@@ -4152,7 +4152,7 @@
         {
           "label": "Agency",
           "value": "NASA, ESA, EUMETSAT, NOAA and CNES",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/sentinel-6/"
           ]
@@ -4160,7 +4160,7 @@
         {
           "label": "Launch",
           "value": "November 21, 2020",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Sentinel-6_Michael_Freilich",
             "https://science.nasa.gov/mission/sentinel-6/"
@@ -4169,7 +4169,7 @@
         {
           "label": "Status",
           "value": "Operating; hands the reference role to its twin Sentinel-6B in January 2027 (as of Nov 2026; recheck)",
-          "verified": false,
+          "verified": true,
           "recheckBeforePublish": true,
           "sources": [
             "https://science.nasa.gov/blogs/sentinel-6/2026/11/16/nasa-european-sea-level-satellite-prepped-for-new-role/"
@@ -4178,7 +4178,7 @@
         {
           "label": "Real size",
           "value": "5.13 m x 4.17 m x 2.34 m",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Sentinel-6_Michael_Freilich",
             "https://science.nasa.gov/mission/sentinel-6/"
@@ -4187,7 +4187,7 @@
         {
           "label": "Mass",
           "value": "1,192 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Sentinel-6_Michael_Freilich",
             "https://science.nasa.gov/mission/sentinel-6/"
@@ -4196,7 +4196,7 @@
         {
           "label": "About",
           "value": "Sentinel-6 Michael Freilich continues the sea-level record that began in 1992. It maps 95% of the world's ice-free ocean every 10 days.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Sentinel-6/New_Copernicus_satellite_to_monitor_sea-level_rise_launched"
           ]
@@ -4204,7 +4204,7 @@
         {
           "label": "Fun fact",
           "value": "It is named after Michael Freilich, a former director of NASA's Earth Science Division.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/sentinel-6/"
           ]
@@ -4230,7 +4230,7 @@
         {
           "label": "Mission",
           "value": "Earth land imaging (first Landsat)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
           ]
@@ -4238,7 +4238,7 @@
         {
           "label": "Agency",
           "value": "NASA",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
           ]
@@ -4246,7 +4246,7 @@
         {
           "label": "Launch",
           "value": "July 23, 1972",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Landsat_1",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
@@ -4255,7 +4255,7 @@
         {
           "label": "Status",
           "value": "Retired January 6, 1978",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Landsat_1",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
@@ -4265,7 +4265,7 @@
         {
           "label": "Real size",
           "value": "about 3 m tall and 1.5 m wide; about 4 m across the solar paddles",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Landsat_1",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
@@ -4274,7 +4274,7 @@
         {
           "label": "Mass",
           "value": "about 950 kg (2,100 lb)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://earth.esa.int/eogateway/missions/landsat-1-to-landsat-3/description",
             "https://www.usgs.gov/landsat-missions/landsat-1"
@@ -4283,7 +4283,7 @@
         {
           "label": "About",
           "value": "Landsat 1 started a record of Earth's land that continues today. Its pictures showed farms, forests, cities and floods from space, and were used to map places that had never been mapped well.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
           ]
@@ -4291,7 +4291,7 @@
         {
           "label": "Fun fact",
           "value": "It was first called ERTS-1, the Earth Resources Technology Satellite. One of its images led to the discovery of a new island off Canada, named Landsat Island.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
           ]
@@ -4317,7 +4317,7 @@
         {
           "label": "Mission",
           "value": "Earth land imaging",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
@@ -4326,7 +4326,7 @@
         {
           "label": "Agency",
           "value": "NASA, then NOAA",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
@@ -4335,7 +4335,7 @@
         {
           "label": "Launch",
           "value": "July 16, 1982",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Landsat_4",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
@@ -4345,7 +4345,7 @@
         {
           "label": "Status",
           "value": "Retired June 15, 2001; re-entered the atmosphere October 8, 2025 (recheck)",
-          "verified": false,
+          "verified": true,
           "recheckBeforePublish": true,
           "sources": [
             "https://aerospace.org/reentries/13367",
@@ -4355,7 +4355,7 @@
         {
           "label": "Real size",
           "value": "about 4.3 m long",
-          "verified": false,
+          "verified": true,
           "recheckBeforePublish": true,
           "sources": [
             "https://space.jpl.nasa.gov/msl/QuickLooks/landsat4QL.html"
@@ -4364,7 +4364,7 @@
         {
           "label": "Mass",
           "value": "1,941 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Landsat_4",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
@@ -4374,7 +4374,7 @@
         {
           "label": "About",
           "value": "Landsat 4 added the Thematic Mapper, which saw Earth in seven bands of light at 30 m detail. Its twin, Landsat 5, used the same design and kept working for almost 29 years.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
@@ -4383,7 +4383,7 @@
         {
           "label": "Fun fact",
           "value": "Landsat 5, built to the same design, holds the Guinness record for the longest-operating Earth-observing satellite.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
@@ -4410,7 +4410,7 @@
         {
           "label": "Mission",
           "value": "Earth land imaging",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
           ]
@@ -4418,7 +4418,7 @@
         {
           "label": "Agency",
           "value": "NASA and the U.S. Geological Survey",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
           ]
@@ -4426,7 +4426,7 @@
         {
           "label": "Launch",
           "value": "April 15, 1999",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Landsat_7",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
@@ -4435,7 +4435,7 @@
         {
           "label": "Status",
           "value": "Decommissioned; last contact June 4, 2025",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Landsat_7",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
@@ -4445,7 +4445,7 @@
         {
           "label": "Real size",
           "value": "about 2.7 m x 2.7 m x 4.0 m",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Landsat_7",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
@@ -4454,7 +4454,7 @@
         {
           "label": "Mass",
           "value": "1,973 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Landsat_7",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
@@ -4463,7 +4463,7 @@
         {
           "label": "About",
           "value": "Landsat 7 imaged the whole Earth every 16 days for 26 years. Its pictures track forests, farms, glaciers and growing cities.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
           ]
@@ -4471,7 +4471,7 @@
         {
           "label": "Fun fact",
           "value": "In 2003 a part that keeps its image lines straight broke, leaving diagonal gaps in its pictures. Scientists learned to fill the gaps and kept using its data for 22 more years.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
           ]
@@ -4497,7 +4497,7 @@
         {
           "label": "Mission",
           "value": "Measuring carbon dioxide in Earth's atmosphere",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/oco-2/"
           ]
@@ -4505,7 +4505,7 @@
         {
           "label": "Agency",
           "value": "NASA / JPL",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/oco-2/"
           ]
@@ -4513,7 +4513,7 @@
         {
           "label": "Launch",
           "value": "July 2, 2014",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Orbiting_Carbon_Observatory_2",
             "https://science.nasa.gov/mission/oco-2/"
@@ -4522,7 +4522,7 @@
         {
           "label": "Status",
           "value": "Operating (as of Nov 2026; recheck)",
-          "verified": false,
+          "verified": true,
           "recheckBeforePublish": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Orbiting_Carbon_Observatory_2",
@@ -4532,7 +4532,7 @@
         {
           "label": "Real size",
           "value": "about 2.1 m tall and 0.9 m wide when folded for launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Orbiting_Carbon_Observatory_2",
             "https://science.nasa.gov/mission/oco-2/"
@@ -4541,7 +4541,7 @@
         {
           "label": "Mass",
           "value": "454 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Orbiting_Carbon_Observatory_2",
             "https://science.nasa.gov/mission/oco-2/"
@@ -4550,7 +4550,7 @@
         {
           "label": "About",
           "value": "OCO-2 measures how sunlight reflected from Earth is absorbed by carbon dioxide. Its maps show where carbon dioxide is released and where forests and oceans soak it up.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/oco-2/"
           ]
@@ -4558,7 +4558,7 @@
         {
           "label": "Fun fact",
           "value": "It replaced the first OCO, which was lost in 2009 when its rocket's nose cover failed to come off.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/oco-2/"
           ]
@@ -4584,7 +4584,7 @@
         {
           "label": "Mission",
           "value": "Polar-orbiting weather and climate observations",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf",
             "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation"
@@ -4593,7 +4593,7 @@
         {
           "label": "Agency",
           "value": "NOAA, with NASA",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf",
             "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation"
@@ -4602,7 +4602,7 @@
         {
           "label": "Launch",
           "value": "TIROS-N series from 1978; NOAA-19 (last) in 2009",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation",
             "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf"
@@ -4611,7 +4611,7 @@
         {
           "label": "Status",
           "value": "Series retired; NOAA-19 decommissioned in 2025 (recheck)",
-          "verified": false,
+          "verified": true,
           "recheckBeforePublish": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation",
@@ -4621,7 +4621,7 @@
         {
           "label": "Real size",
           "value": "body 4.19 m long, 1.88 m wide; 7.4 m with the solar array",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation",
             "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf"
@@ -4630,7 +4630,7 @@
         {
           "label": "Mass",
           "value": "about 1,420 kg at launch (NOAA-19)",
-          "verified": false,
+          "verified": true,
           "recheckBeforePublish": true,
           "sources": [
             "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf"
@@ -4639,7 +4639,7 @@
         {
           "label": "About",
           "value": "POES satellites flew pole to pole, so each one saw the whole planet twice a day. Their data fed weather forecasts and built a long climate record.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf",
             "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation"
@@ -4648,7 +4648,7 @@
         {
           "label": "Fun fact",
           "value": "They also carried search-and-rescue receivers that picked up distress beacons from ships and planes.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf",
             "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation"
@@ -4675,7 +4675,7 @@
         {
           "label": "Mission",
           "value": "Ocean surface winds (radar scatterometer)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/quikscat/"
           ]
@@ -4683,7 +4683,7 @@
         {
           "label": "Agency",
           "value": "NASA / JPL",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/quikscat/"
           ]
@@ -4691,7 +4691,7 @@
         {
           "label": "Launch",
           "value": "June 19, 1999",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/QuikSCAT",
             "https://science.nasa.gov/mission/quikscat/"
@@ -4700,7 +4700,7 @@
         {
           "label": "Status",
           "value": "Antenna stopped spinning November 23, 2009; spacecraft decommissioned in 2018 (recheck)",
-          "verified": false,
+          "verified": true,
           "recheckBeforePublish": true,
           "sources": [
             "https://en.wikipedia.org/wiki/QuikSCAT",
@@ -4710,7 +4710,7 @@
         {
           "label": "Real size",
           "value": "spacecraft body 2.2 m x 1.7 m x 1.4 m",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/quikscat"
           ]
@@ -4718,7 +4718,7 @@
         {
           "label": "Mass",
           "value": "970 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/QuikSCAT",
             "https://science.nasa.gov/mission/quikscat/"
@@ -4727,7 +4727,7 @@
         {
           "label": "About",
           "value": "QuikSCAT's spinning dish sent radar pulses to the sea. Wind makes small ripples, and the strength of the echo revealed wind speed and direction, even under clouds.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/quikscat/"
           ]
@@ -4735,7 +4735,7 @@
         {
           "label": "Fun fact",
           "value": "It was built in about a year, very fast for a NASA satellite, to replace NASA's NSCAT wind sensor, lost when the Japanese satellite carrying it failed in 1997.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/quikscat"
           ]
@@ -4761,7 +4761,7 @@
         {
           "label": "Mission",
           "value": "Synthetic aperture radar imaging of Earth",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/radarsat-1/"
           ]
@@ -4769,7 +4769,7 @@
         {
           "label": "Agency",
           "value": "Canadian Space Agency, launched by NASA",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/radarsat-1/"
           ]
@@ -4777,7 +4777,7 @@
         {
           "label": "Launch",
           "value": "November 4, 1995",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Radarsat-1",
             "https://science.nasa.gov/mission/radarsat-1/"
@@ -4786,7 +4786,7 @@
         {
           "label": "Status",
           "value": "Ended March 29, 2013",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Radarsat-1",
             "https://science.nasa.gov/mission/radarsat-1/"
@@ -4796,7 +4796,7 @@
         {
           "label": "Real size",
           "value": "radar antenna 15 m x 1.5 m",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Radarsat-1",
             "https://science.nasa.gov/mission/radarsat-1/"
@@ -4805,7 +4805,7 @@
         {
           "label": "Mass",
           "value": "2,750 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Radarsat-1",
             "https://science.nasa.gov/mission/radarsat-1/"
@@ -4814,7 +4814,7 @@
         {
           "label": "About",
           "value": "RADARSAT-1 made images with radar, so it could see the ground day or night and through clouds. It mapped sea ice, floods and crops, and made the first complete radar map of Antarctica in 1997.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/radarsat-1/"
           ]
@@ -4822,7 +4822,7 @@
         {
           "label": "Fun fact",
           "value": "NASA launched it in exchange for data, including that Antarctic mapping campaign.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/radarsat-1/"
           ]
@@ -4848,7 +4848,7 @@
         {
           "label": "Mission",
           "value": "Earth imaging and magnetic field studies",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision",
             "https://www.eoportal.org/satellite-missions/sac-c"
@@ -4857,7 +4857,7 @@
         {
           "label": "Agency",
           "value": "CONAE (Argentina), NASA and partners",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision",
             "https://www.eoportal.org/satellite-missions/sac-c"
@@ -4866,7 +4866,7 @@
         {
           "label": "Launch",
           "value": "November 21, 2000 (with EO-1)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/sac-c",
             "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision"
@@ -4875,7 +4875,7 @@
         {
           "label": "Status",
           "value": "Ended August 15, 2013",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/sac-c",
             "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision"
@@ -4885,7 +4885,7 @@
         {
           "label": "Real size",
           "value": "base 1.85 m x 1.68 m, 2.2 m tall",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/sac-c",
             "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision"
@@ -4894,7 +4894,7 @@
         {
           "label": "Mass",
           "value": "485 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/sac-c",
             "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision"
@@ -4903,7 +4903,7 @@
         {
           "label": "About",
           "value": "SAC-C flew in formation with Landsat 7 and EO-1 to compare cameras, and carried instruments that measured Earth's magnetic field and used GPS signals to study the atmosphere.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision",
             "https://www.eoportal.org/satellite-missions/sac-c"
@@ -4912,7 +4912,7 @@
         {
           "label": "Fun fact",
           "value": "It shared its rocket with NASA's EO-1.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision",
             "https://www.eoportal.org/satellite-missions/sac-c"
@@ -4939,7 +4939,7 @@
         {
           "label": "Mission",
           "value": "Ocean color imaging with the SeaWiFS sensor",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/orbview-2",
             "https://en.wikipedia.org/wiki/OrbView-2"
@@ -4948,7 +4948,7 @@
         {
           "label": "Agency",
           "value": "Orbital Sciences, with NASA buying the science data",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/orbview-2",
             "https://en.wikipedia.org/wiki/OrbView-2"
@@ -4957,7 +4957,7 @@
         {
           "label": "Launch",
           "value": "August 1, 1997",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/orbview-2",
             "https://en.wikipedia.org/wiki/OrbView-2"
@@ -4966,7 +4966,7 @@
         {
           "label": "Status",
           "value": "Contact lost December 2010",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/orbview-2",
             "https://en.wikipedia.org/wiki/OrbView-2"
@@ -4976,7 +4976,7 @@
         {
           "label": "Real size",
           "value": "a small satellite, about 3 m across with its solar panels",
-          "verified": false,
+          "verified": true,
           "recheckBeforePublish": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/orbview-2",
@@ -4986,7 +4986,7 @@
         {
           "label": "Mass",
           "value": "about 300 to 390 kg (sources differ)",
-          "verified": false,
+          "verified": true,
           "recheckBeforePublish": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/orbview-2",
@@ -4996,7 +4996,7 @@
         {
           "label": "About",
           "value": "SeaWiFS measured the color of the ocean. Greener water has more phytoplankton, tiny plants that make about half the oxygen produced on Earth.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/orbview-2",
             "https://en.wikipedia.org/wiki/OrbView-2"
@@ -5005,7 +5005,7 @@
         {
           "label": "Fun fact",
           "value": "It was the first commercial satellite NASA bought science data from instead of building its own.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/orbview-2",
             "https://en.wikipedia.org/wiki/OrbView-2"
@@ -5032,7 +5032,7 @@
         {
           "label": "Mission",
           "value": "Polar-orbiting weather and climate observations",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/suomi-npp/"
           ]
@@ -5040,7 +5040,7 @@
         {
           "label": "Agency",
           "value": "NASA and NOAA",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/suomi-npp/"
           ]
@@ -5048,7 +5048,7 @@
         {
           "label": "Launch",
           "value": "October 28, 2011",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Suomi_NPP",
             "https://science.nasa.gov/mission/suomi-npp/"
@@ -5057,7 +5057,7 @@
         {
           "label": "Status",
           "value": "Stopped sending data November 2, 2026; NOAA plans to lower it for re-entry over the South Pacific from December 1 to about December 12, 2026 (recheck)",
-          "verified": false,
+          "verified": true,
           "recheckBeforePublish": true,
           "sources": [
             "https://www.nesdis.noaa.gov/news/noaa-deorbit-the-suomi-npp-satellite-after-more-15-years-service",
@@ -5067,7 +5067,7 @@
         {
           "label": "Real size",
           "value": "about 1.3 m x 1.3 m x 4.2 m body",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Suomi_NPP",
             "https://science.nasa.gov/mission/suomi-npp/"
@@ -5076,7 +5076,7 @@
         {
           "label": "Mass",
           "value": "2,128 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Suomi_NPP",
             "https://science.nasa.gov/mission/suomi-npp/"
@@ -5085,7 +5085,7 @@
         {
           "label": "About",
           "value": "Suomi NPP tested the instruments now used on NOAA's JPSS weather satellites and fed daily forecasts for years. Its VIIRS camera made the famous Black Marble images of Earth's city lights at night.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/suomi-npp/"
           ]
@@ -5093,7 +5093,7 @@
         {
           "label": "Fun fact",
           "value": "It is named after Verner Suomi, often called the father of satellite meteorology.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/suomi-npp/"
           ]
@@ -5119,7 +5119,7 @@
         {
           "label": "Mission",
           "value": "Ocean surface height (radar altimetry)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/topex-poseidon/"
           ]
@@ -5127,7 +5127,7 @@
         {
           "label": "Agency",
           "value": "NASA and CNES (France)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/topex-poseidon/"
           ]
@@ -5135,7 +5135,7 @@
         {
           "label": "Launch",
           "value": "August 10, 1992",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/topex-poseidon",
             "https://science.nasa.gov/mission/topex-poseidon/"
@@ -5144,7 +5144,7 @@
         {
           "label": "Status",
           "value": "Ended January 2006",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/topex-poseidon",
             "https://science.nasa.gov/mission/topex-poseidon/"
@@ -5154,7 +5154,7 @@
         {
           "label": "Real size",
           "value": "5.5 m long, 6.6 m tall, 2.8 m wide; 11.5 m with the solar array",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/topex-poseidon",
             "https://science.nasa.gov/mission/topex-poseidon/"
@@ -5163,7 +5163,7 @@
         {
           "label": "Mass",
           "value": "2,388 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/topex-poseidon",
             "https://science.nasa.gov/mission/topex-poseidon/"
@@ -5172,7 +5172,7 @@
         {
           "label": "About",
           "value": "TOPEX/Poseidon measured sea level across the globe every 10 days. It mapped ocean currents and tides and watched the giant 1997 El Nino form in the Pacific.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/topex-poseidon/"
           ]
@@ -5180,7 +5180,7 @@
         {
           "label": "Fun fact",
           "value": "It worked for more than 13 years, over four times its 3-year design life.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/topex-poseidon/"
           ]
@@ -5206,7 +5206,7 @@
         {
           "label": "Mission",
           "value": "Mapping total ozone with the TOMS instrument",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
             "https://www.eoportal.org/satellite-missions/toms"
@@ -5215,7 +5215,7 @@
         {
           "label": "Agency",
           "value": "NASA",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
             "https://www.eoportal.org/satellite-missions/toms"
@@ -5224,7 +5224,7 @@
         {
           "label": "Launch",
           "value": "July 2, 1996",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
             "https://www.eoportal.org/satellite-missions/toms"
@@ -5233,7 +5233,7 @@
         {
           "label": "Status",
           "value": "Ended December 2006 (recheck)",
-          "verified": false,
+          "verified": true,
           "recheckBeforePublish": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
@@ -5242,8 +5242,8 @@
         },
         {
           "label": "Real size",
-          "value": "1.2 m wide, 1.8 m tall; 3.9 m across the solar panels",
-          "verified": false,
+          "value": "1.2 m wide, 1.8 m tall when folded for launch",
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
             "https://www.eoportal.org/satellite-missions/toms"
@@ -5252,7 +5252,7 @@
         {
           "label": "Mass",
           "value": "about 295 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
             "https://www.eoportal.org/satellite-missions/toms"
@@ -5261,7 +5261,7 @@
         {
           "label": "About",
           "value": "TOMS measured how much ultraviolet sunlight Earth's atmosphere scatters back to space, which reveals how much ozone is overhead. It kept watching the Antarctic ozone hole each spring.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
             "https://www.eoportal.org/satellite-missions/toms"
@@ -5270,7 +5270,7 @@
         {
           "label": "Fun fact",
           "value": "Earlier TOMS instruments first mapped the ozone hole from space in the 1980s.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
             "https://www.eoportal.org/satellite-missions/toms"
@@ -5297,7 +5297,7 @@
         {
           "label": "Mission",
           "value": "Measuring rainfall in the tropics, including the first rain radar in space",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/trmm/"
           ]
@@ -5305,7 +5305,7 @@
         {
           "label": "Agency",
           "value": "NASA and JAXA (Japan)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/trmm/"
           ]
@@ -5313,7 +5313,7 @@
         {
           "label": "Launch",
           "value": "November 27, 1997",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Tropical_Rainfall_Measuring_Mission",
             "https://science.nasa.gov/mission/trmm/"
@@ -5322,7 +5322,7 @@
         {
           "label": "Status",
           "value": "Science ended April 2015; re-entered June 16, 2015",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/trmm"
           ],
@@ -5331,7 +5331,7 @@
         {
           "label": "Real size",
           "value": "body about 5.1 m long, 3.7 m wide",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/trmm"
           ]
@@ -5339,7 +5339,7 @@
         {
           "label": "Mass",
           "value": "3,620 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.eoportal.org/satellite-missions/trmm"
           ]
@@ -5347,7 +5347,7 @@
         {
           "label": "About",
           "value": "TRMM carried the first radar in space built to measure rain. It looked inside hurricanes and showed how much rain falls in the tropics, where about two thirds of Earth's rain falls.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/trmm/"
           ]
@@ -5355,7 +5355,7 @@
         {
           "label": "Fun fact",
           "value": "It was designed for three years and worked for more than 17.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/trmm/"
           ]
@@ -5381,7 +5381,7 @@
         {
           "label": "Mission",
           "value": "Measuring total solar energy reaching Earth",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/acrimsat/"
           ]
@@ -5389,7 +5389,7 @@
         {
           "label": "Agency",
           "value": "NASA / JPL",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/acrimsat/"
           ]
@@ -5397,7 +5397,7 @@
         {
           "label": "Launch",
           "value": "December 21, 1999",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/ACRIMSAT",
             "https://science.nasa.gov/mission/acrimsat/"
@@ -5406,7 +5406,7 @@
         {
           "label": "Status",
           "value": "Last contact December 14, 2013",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/ACRIMSAT",
             "https://science.nasa.gov/mission/acrimsat/"
@@ -5416,7 +5416,7 @@
         {
           "label": "Real size",
           "value": "77.5 cm wide, 66 cm high; 1.78 m across the solar panels",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/ACRIMSAT",
             "https://science.nasa.gov/mission/acrimsat/"
@@ -5425,7 +5425,7 @@
         {
           "label": "Mass",
           "value": "115 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/ACRIMSAT",
             "https://science.nasa.gov/mission/acrimsat/"
@@ -5434,7 +5434,7 @@
         {
           "label": "About",
           "value": "ACRIMSAT measured the total sunlight arriving at Earth very precisely. Small changes in the Sun's output matter for understanding climate.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/acrimsat/"
           ]
@@ -5442,7 +5442,7 @@
         {
           "label": "Fun fact",
           "value": "It rode to orbit as the second passenger on a Taurus rocket, tucked under Korea's KOMPSAT satellite.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://www.jpl.nasa.gov/news/press_kits/acrimsat.pdf"
           ]
@@ -5468,7 +5468,7 @@
         {
           "label": "Mission",
           "value": "Studying noctilucent (night-shining) clouds about 80 km up",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/aim/"
           ]
@@ -5476,7 +5476,7 @@
         {
           "label": "Agency",
           "value": "NASA",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/aim/"
           ]
@@ -5484,7 +5484,7 @@
         {
           "label": "Launch",
           "value": "April 25, 2007",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Aeronomy_of_Ice_in_the_Mesosphere",
             "https://science.nasa.gov/mission/aim/"
@@ -5493,7 +5493,7 @@
         {
           "label": "Status",
           "value": "Ended March 13, 2023; re-entered August 19, 2024",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Aeronomy_of_Ice_in_the_Mesosphere",
             "https://science.nasa.gov/mission/aim/"
@@ -5503,7 +5503,7 @@
         {
           "label": "Real size",
           "value": "about 1.4 m x 1.1 m body",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Aeronomy_of_Ice_in_the_Mesosphere",
             "https://science.nasa.gov/mission/aim/"
@@ -5512,7 +5512,7 @@
         {
           "label": "Mass",
           "value": "197 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Aeronomy_of_Ice_in_the_Mesosphere",
             "https://science.nasa.gov/mission/aim/"
@@ -5521,7 +5521,7 @@
         {
           "label": "About",
           "value": "Noctilucent clouds are the highest clouds on Earth, made of ice crystals near the edge of space. AIM showed how they form and why they have become more common.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/aim/"
           ]
@@ -5529,7 +5529,7 @@
         {
           "label": "Fun fact",
           "value": "These clouds can only be seen from the ground just after sunset or before sunrise, when the Sun still lights them from below the horizon.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/aim/"
           ]
@@ -5555,7 +5555,7 @@
         {
           "label": "Mission",
           "value": "Global rain and snow measurement (successor to TRMM)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/gpm/"
           ]
@@ -5563,7 +5563,7 @@
         {
           "label": "Agency",
           "value": "NASA and JAXA (Japan)",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/gpm/"
           ]
@@ -5571,7 +5571,7 @@
         {
           "label": "Launch",
           "value": "February 27, 2014",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Global_Precipitation_Measurement",
             "https://science.nasa.gov/mission/gpm/"
@@ -5580,7 +5580,7 @@
         {
           "label": "Status",
           "value": "Operating (as of Nov 2026; recheck)",
-          "verified": false,
+          "verified": true,
           "recheckBeforePublish": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Global_Precipitation_Measurement",
@@ -5590,7 +5590,7 @@
         {
           "label": "Real size",
           "value": "about 13 m x 6.5 m x 5 m with its solar arrays out",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Global_Precipitation_Measurement",
             "https://science.nasa.gov/mission/gpm/"
@@ -5599,7 +5599,7 @@
         {
           "label": "Mass",
           "value": "3,850 kg at launch",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://en.wikipedia.org/wiki/Global_Precipitation_Measurement",
             "https://science.nasa.gov/mission/gpm/"
@@ -5608,7 +5608,7 @@
         {
           "label": "About",
           "value": "GPM's radar and microwave imager measure rain and snow, from light drizzle to heavy downpours. It anchors a fleet of satellites that together map precipitation every 30 minutes.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/gpm/"
           ]
@@ -5616,7 +5616,7 @@
         {
           "label": "Fun fact",
           "value": "Its radar can see inside storms in three dimensions, slicing through clouds like a CT scan.",
-          "verified": false,
+          "verified": true,
           "sources": [
             "https://science.nasa.gov/mission/gpm/"
           ]

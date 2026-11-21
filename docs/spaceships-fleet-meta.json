@@ -1168,14 +1168,14 @@
           "sources": [
             "https://science.nasa.gov/mission/aquarius/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/aquarius/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -1183,7 +1183,7 @@
             "https://en.wikipedia.org/wiki/SAC-D",
             "https://science.nasa.gov/mission/aquarius/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -1191,7 +1191,7 @@
             "https://en.wikipedia.org/wiki/SAC-D",
             "https://science.nasa.gov/mission/aquarius/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -1199,7 +1199,7 @@
             "https://en.wikipedia.org/wiki/SAC-D",
             "https://science.nasa.gov/mission/aquarius/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -1207,24 +1207,24 @@
             "https://en.wikipedia.org/wiki/SAC-D",
             "https://science.nasa.gov/mission/aquarius/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/aquarius/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/aquarius/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         3.241,
         5.0,
@@ -1254,14 +1254,14 @@
           "sources": [
             "https://science.nasa.gov/mission/aura/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/aura/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -1269,14 +1269,14 @@
             "https://en.wikipedia.org/wiki/Aura_(satellite)",
             "https://science.nasa.gov/mission/aura/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
           "sources": [
             "https://science.nasa.gov/missions/potential-evolution-of-the-aura-mission/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -1284,7 +1284,7 @@
             "https://en.wikipedia.org/wiki/Aura_(satellite)",
             "https://science.nasa.gov/mission/aura/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -1292,24 +1292,24 @@
             "https://en.wikipedia.org/wiki/Aura_(satellite)",
             "https://science.nasa.gov/mission/aura/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/aura/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/aura/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         8.112,
         17.37,
@@ -1339,14 +1339,14 @@
           "sources": [
             "https://science.nasa.gov/mission/calipso/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/calipso/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -1354,7 +1354,7 @@
             "https://en.wikipedia.org/wiki/CALIPSO",
             "https://science.nasa.gov/mission/calipso/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -1362,7 +1362,7 @@
             "https://en.wikipedia.org/wiki/CALIPSO",
             "https://science.nasa.gov/mission/calipso/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -1370,7 +1370,7 @@
             "https://en.wikipedia.org/wiki/CALIPSO",
             "https://science.nasa.gov/mission/calipso/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -1378,24 +1378,24 @@
             "https://en.wikipedia.org/wiki/CALIPSO",
             "https://science.nasa.gov/mission/calipso/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/calipso/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/calipso/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         7.432,
         1.889,
@@ -1425,14 +1425,14 @@
           "sources": [
             "https://science.nasa.gov/mission/cloudsat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/cloudsat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -1440,14 +1440,14 @@
             "https://en.wikipedia.org/wiki/CloudSat",
             "https://science.nasa.gov/mission/cloudsat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
           "sources": [
             "https://science.nasa.gov/mission/cloudsat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -1455,7 +1455,7 @@
             "https://en.wikipedia.org/wiki/CloudSat",
             "https://science.nasa.gov/mission/cloudsat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -1463,24 +1463,24 @@
             "https://en.wikipedia.org/wiki/CloudSat",
             "https://science.nasa.gov/mission/cloudsat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/cloudsat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/cloudsat/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         2.407,
         3.204,
@@ -1510,14 +1510,14 @@
           "sources": [
             "https://science.nasa.gov/mission/cygnss/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/cygnss/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -1525,7 +1525,7 @@
             "https://en.wikipedia.org/wiki/Cyclone_Global_Navigation_Satellite_System",
             "https://science.nasa.gov/mission/cygnss/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -1533,7 +1533,7 @@
             "https://en.wikipedia.org/wiki/Cyclone_Global_Navigation_Satellite_System",
             "https://www.rdworldonline.com/how-cygnss-solar-panels-will-deorbit/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -1541,7 +1541,7 @@
             "https://en.wikipedia.org/wiki/Cyclone_Global_Navigation_Satellite_System",
             "https://science.nasa.gov/mission/cygnss/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -1549,24 +1549,24 @@
             "https://en.wikipedia.org/wiki/Cyclone_Global_Navigation_Satellite_System",
             "https://science.nasa.gov/mission/cygnss/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/cygnss/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/cygnss/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1.635,
         0.526,
@@ -1598,7 +1598,7 @@
             "https://science.nasa.gov/mission/dscovr/",
             "https://epic.gsfc.nasa.gov/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
@@ -1606,7 +1606,7 @@
             "https://science.nasa.gov/mission/dscovr/",
             "https://epic.gsfc.nasa.gov/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -1615,14 +1615,14 @@
             "https://science.nasa.gov/mission/dscovr/",
             "https://epic.gsfc.nasa.gov/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
           "sources": [
             "https://epic.gsfc.nasa.gov/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -1631,7 +1631,7 @@
             "https://science.nasa.gov/mission/dscovr/",
             "https://epic.gsfc.nasa.gov/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -1640,7 +1640,7 @@
             "https://science.nasa.gov/mission/dscovr/",
             "https://epic.gsfc.nasa.gov/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -1649,17 +1649,17 @@
             "https://www.noaa.gov/news-release/noaas-solar-1-enters-new-era-of-space-weather-monitoring",
             "https://epic.gsfc.nasa.gov/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://en.wikipedia.org/wiki/Deep_Space_Climate_Observatory"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         3.637,
         1.316,
@@ -1690,7 +1690,7 @@
             "https://www.eoportal.org/satellite-missions/eo-1",
             "https://en.wikipedia.org/wiki/Earth_Observing-1"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
@@ -1698,7 +1698,7 @@
             "https://www.eoportal.org/satellite-missions/eo-1",
             "https://en.wikipedia.org/wiki/Earth_Observing-1"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -1706,7 +1706,7 @@
             "https://www.eoportal.org/satellite-missions/eo-1",
             "https://en.wikipedia.org/wiki/Earth_Observing-1"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -1714,7 +1714,7 @@
             "https://www.eoportal.org/satellite-missions/eo-1",
             "https://en.wikipedia.org/wiki/Earth_Observing-1"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -1722,7 +1722,7 @@
             "https://www.eoportal.org/satellite-missions/eo-1",
             "https://en.wikipedia.org/wiki/Earth_Observing-1"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -1730,7 +1730,7 @@
             "https://www.eoportal.org/satellite-missions/eo-1",
             "https://en.wikipedia.org/wiki/Earth_Observing-1"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -1738,7 +1738,7 @@
             "https://www.eoportal.org/satellite-missions/eo-1",
             "https://en.wikipedia.org/wiki/Earth_Observing-1"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -1746,10 +1746,10 @@
             "https://www.eoportal.org/satellite-missions/eo-1",
             "https://en.wikipedia.org/wiki/Earth_Observing-1"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         4.435,
         1.742,
@@ -1782,7 +1782,7 @@
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
@@ -1791,7 +1791,7 @@
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -1800,7 +1800,7 @@
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -1809,7 +1809,7 @@
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -1818,7 +1818,7 @@
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -1827,7 +1827,7 @@
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -1836,10 +1836,10 @@
             "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
             "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         8.0,
         7.258,
@@ -1869,14 +1869,14 @@
           "sources": [
             "https://science.nasa.gov/mission/grace/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/grace/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -1884,7 +1884,7 @@
             "https://en.wikipedia.org/wiki/GRACE_and_GRACE-FO",
             "https://science.nasa.gov/mission/grace/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -1892,7 +1892,7 @@
             "https://en.wikipedia.org/wiki/GRACE_and_GRACE-FO",
             "https://science.nasa.gov/mission/grace/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -1900,7 +1900,7 @@
             "https://en.wikipedia.org/wiki/GRACE_and_GRACE-FO",
             "https://science.nasa.gov/mission/grace/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -1908,24 +1908,24 @@
             "https://en.wikipedia.org/wiki/GRACE_and_GRACE-FO",
             "https://science.nasa.gov/mission/grace/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/grace/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/missions/grace/lumps-bumps-and-gravity-space-scales-weigh-planet-earth/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1.909,
         1.269,
@@ -1955,14 +1955,14 @@
           "sources": [
             "https://science.nasa.gov/mission/icesat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/icesat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -1970,7 +1970,7 @@
             "https://en.wikipedia.org/wiki/ICESat",
             "https://science.nasa.gov/mission/icesat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -1978,7 +1978,7 @@
             "https://en.wikipedia.org/wiki/ICESat",
             "https://science.nasa.gov/mission/icesat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -1986,7 +1986,7 @@
             "https://en.wikipedia.org/wiki/ICESat",
             "https://science.nasa.gov/mission/icesat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -1994,24 +1994,24 @@
             "https://en.wikipedia.org/wiki/ICESat",
             "https://science.nasa.gov/mission/icesat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/icesat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/icesat/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1.422,
         1.049,
@@ -2041,14 +2041,14 @@
           "sources": [
             "https://icesat-2.gsfc.nasa.gov/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://icesat-2.gsfc.nasa.gov/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -2056,7 +2056,7 @@
             "https://en.wikipedia.org/wiki/ICESat-2",
             "https://icesat-2.gsfc.nasa.gov/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -2064,7 +2064,7 @@
             "https://en.wikipedia.org/wiki/ICESat-2",
             "https://icesat-2.gsfc.nasa.gov/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -2072,7 +2072,7 @@
             "https://en.wikipedia.org/wiki/ICESat-2",
             "https://icesat-2.gsfc.nasa.gov/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -2080,24 +2080,24 @@
             "https://en.wikipedia.org/wiki/ICESat-2",
             "https://icesat-2.gsfc.nasa.gov/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://icesat-2.gsfc.nasa.gov/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://icesat-2.gsfc.nasa.gov/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         3.633,
         2.315,
@@ -2127,14 +2127,14 @@
           "sources": [
             "https://science.nasa.gov/mission/jason-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/jason-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -2142,7 +2142,7 @@
             "https://en.wikipedia.org/wiki/Jason-1",
             "https://science.nasa.gov/mission/jason-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -2150,7 +2150,7 @@
             "https://en.wikipedia.org/wiki/Jason-1",
             "https://science.nasa.gov/mission/jason-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -2158,7 +2158,7 @@
             "https://en.wikipedia.org/wiki/Jason-1",
             "https://science.nasa.gov/mission/jason-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -2166,24 +2166,24 @@
             "https://en.wikipedia.org/wiki/Jason-1",
             "https://science.nasa.gov/mission/jason-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/jason-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/jason-1/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1.517,
         2.526,
@@ -2212,59 +2212,59 @@
           "sources": [
             "https://en.wikipedia.org/wiki/OSTM/Jason-2"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://en.wikipedia.org/wiki/OSTM/Jason-2"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
           "sources": [
             "https://en.wikipedia.org/wiki/OSTM/Jason-2"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
           "sources": [
             "https://en.wikipedia.org/wiki/OSTM/Jason-2"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/OSTM/Jason-2"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
           "sources": [
             "https://en.wikipedia.org/wiki/OSTM/Jason-2"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/OSTM/Jason-2"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://en.wikipedia.org/wiki/OSTM/Jason-2"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         2.782,
         1.513,
@@ -2294,14 +2294,14 @@
           "sources": [
             "https://science.nasa.gov/mission/sentinel-6/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/sentinel-6/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -2309,14 +2309,14 @@
             "https://en.wikipedia.org/wiki/Sentinel-6_Michael_Freilich",
             "https://science.nasa.gov/mission/sentinel-6/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
           "sources": [
             "https://science.nasa.gov/blogs/sentinel-6/2026/11/16/nasa-european-sea-level-satellite-prepped-for-new-role/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -2324,7 +2324,7 @@
             "https://en.wikipedia.org/wiki/Sentinel-6_Michael_Freilich",
             "https://science.nasa.gov/mission/sentinel-6/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -2332,24 +2332,24 @@
             "https://en.wikipedia.org/wiki/Sentinel-6_Michael_Freilich",
             "https://science.nasa.gov/mission/sentinel-6/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Sentinel-6/New_Copernicus_satellite_to_monitor_sea-level_rise_launched"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/sentinel-6/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         5.133,
         2.324,
@@ -2379,14 +2379,14 @@
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -2394,7 +2394,7 @@
             "https://en.wikipedia.org/wiki/Landsat_1",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -2402,7 +2402,7 @@
             "https://en.wikipedia.org/wiki/Landsat_1",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -2410,7 +2410,7 @@
             "https://en.wikipedia.org/wiki/Landsat_1",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -2418,24 +2418,24 @@
             "https://earth.esa.int/eogateway/missions/landsat-1-to-landsat-3/description",
             "https://www.usgs.gov/landsat-missions/landsat-1"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         2.02,
         4.58,
@@ -2467,7 +2467,7 @@
             "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
@@ -2475,7 +2475,7 @@
             "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -2484,7 +2484,7 @@
             "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -2492,14 +2492,14 @@
             "https://aerospace.org/reentries/13367",
             "https://en.wikipedia.org/wiki/Landsat_4"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://space.jpl.nasa.gov/msl/QuickLooks/landsat4QL.html"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -2508,7 +2508,7 @@
             "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -2516,7 +2516,7 @@
             "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -2524,10 +2524,10 @@
             "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         2.154,
         2.427,
@@ -2557,14 +2557,14 @@
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -2572,7 +2572,7 @@
             "https://en.wikipedia.org/wiki/Landsat_7",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -2580,7 +2580,7 @@
             "https://en.wikipedia.org/wiki/Landsat_7",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -2588,7 +2588,7 @@
             "https://en.wikipedia.org/wiki/Landsat_7",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -2596,24 +2596,24 @@
             "https://en.wikipedia.org/wiki/Landsat_7",
             "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         4.04,
         2.239,
@@ -2643,14 +2643,14 @@
           "sources": [
             "https://science.nasa.gov/mission/oco-2/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/oco-2/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -2658,7 +2658,7 @@
             "https://en.wikipedia.org/wiki/Orbiting_Carbon_Observatory_2",
             "https://science.nasa.gov/mission/oco-2/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -2666,7 +2666,7 @@
             "https://en.wikipedia.org/wiki/Orbiting_Carbon_Observatory_2",
             "https://science.nasa.gov/mission/oco-2/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -2674,7 +2674,7 @@
             "https://en.wikipedia.org/wiki/Orbiting_Carbon_Observatory_2",
             "https://science.nasa.gov/mission/oco-2/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -2682,24 +2682,24 @@
             "https://en.wikipedia.org/wiki/Orbiting_Carbon_Observatory_2",
             "https://science.nasa.gov/mission/oco-2/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/oco-2/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/oco-2/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1.049,
         2.12,
@@ -2730,7 +2730,7 @@
             "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf",
             "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
@@ -2738,7 +2738,7 @@
             "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf",
             "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -2746,7 +2746,7 @@
             "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation",
             "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -2754,7 +2754,7 @@
             "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation",
             "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -2762,14 +2762,14 @@
             "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation",
             "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
           "sources": [
             "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -2777,7 +2777,7 @@
             "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf",
             "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -2785,10 +2785,10 @@
             "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf",
             "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         7.214,
         4.872,
@@ -2818,14 +2818,14 @@
           "sources": [
             "https://science.nasa.gov/mission/quikscat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/quikscat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -2833,7 +2833,7 @@
             "https://en.wikipedia.org/wiki/QuikSCAT",
             "https://science.nasa.gov/mission/quikscat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -2841,14 +2841,14 @@
             "https://en.wikipedia.org/wiki/QuikSCAT",
             "https://science.nasa.gov/mission/quikscat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://www.eoportal.org/satellite-missions/quikscat"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -2856,24 +2856,24 @@
             "https://en.wikipedia.org/wiki/QuikSCAT",
             "https://science.nasa.gov/mission/quikscat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/quikscat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://www.eoportal.org/satellite-missions/quikscat"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         7.506,
         5.072,
@@ -2903,14 +2903,14 @@
           "sources": [
             "https://science.nasa.gov/mission/radarsat-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/radarsat-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -2918,7 +2918,7 @@
             "https://en.wikipedia.org/wiki/Radarsat-1",
             "https://science.nasa.gov/mission/radarsat-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -2926,7 +2926,7 @@
             "https://en.wikipedia.org/wiki/Radarsat-1",
             "https://science.nasa.gov/mission/radarsat-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -2934,7 +2934,7 @@
             "https://en.wikipedia.org/wiki/Radarsat-1",
             "https://science.nasa.gov/mission/radarsat-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -2942,24 +2942,24 @@
             "https://en.wikipedia.org/wiki/Radarsat-1",
             "https://science.nasa.gov/mission/radarsat-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/radarsat-1/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/radarsat-1/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         15.0,
         2.632,
@@ -2990,7 +2990,7 @@
             "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision",
             "https://www.eoportal.org/satellite-missions/sac-c"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
@@ -2998,7 +2998,7 @@
             "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision",
             "https://www.eoportal.org/satellite-missions/sac-c"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -3006,7 +3006,7 @@
             "https://www.eoportal.org/satellite-missions/sac-c",
             "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -3014,7 +3014,7 @@
             "https://www.eoportal.org/satellite-missions/sac-c",
             "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -3022,7 +3022,7 @@
             "https://www.eoportal.org/satellite-missions/sac-c",
             "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -3030,7 +3030,7 @@
             "https://www.eoportal.org/satellite-missions/sac-c",
             "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -3038,7 +3038,7 @@
             "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision",
             "https://www.eoportal.org/satellite-missions/sac-c"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -3046,10 +3046,10 @@
             "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision",
             "https://www.eoportal.org/satellite-missions/sac-c"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         2.887,
         2.2,
@@ -3080,7 +3080,7 @@
             "https://www.eoportal.org/satellite-missions/orbview-2",
             "https://en.wikipedia.org/wiki/OrbView-2"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
@@ -3088,7 +3088,7 @@
             "https://www.eoportal.org/satellite-missions/orbview-2",
             "https://en.wikipedia.org/wiki/OrbView-2"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -3096,7 +3096,7 @@
             "https://www.eoportal.org/satellite-missions/orbview-2",
             "https://en.wikipedia.org/wiki/OrbView-2"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -3104,7 +3104,7 @@
             "https://www.eoportal.org/satellite-missions/orbview-2",
             "https://en.wikipedia.org/wiki/OrbView-2"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -3112,7 +3112,7 @@
             "https://www.eoportal.org/satellite-missions/orbview-2",
             "https://en.wikipedia.org/wiki/OrbView-2"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -3120,7 +3120,7 @@
             "https://www.eoportal.org/satellite-missions/orbview-2",
             "https://en.wikipedia.org/wiki/OrbView-2"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -3128,7 +3128,7 @@
             "https://www.eoportal.org/satellite-missions/orbview-2",
             "https://en.wikipedia.org/wiki/OrbView-2"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -3136,10 +3136,10 @@
             "https://www.eoportal.org/satellite-missions/orbview-2",
             "https://en.wikipedia.org/wiki/OrbView-2"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         2.941,
         1.262,
@@ -3169,14 +3169,14 @@
           "sources": [
             "https://science.nasa.gov/mission/suomi-npp/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/suomi-npp/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -3184,7 +3184,7 @@
             "https://en.wikipedia.org/wiki/Suomi_NPP",
             "https://science.nasa.gov/mission/suomi-npp/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -3192,7 +3192,7 @@
             "https://www.nesdis.noaa.gov/news/noaa-deorbit-the-suomi-npp-satellite-after-more-15-years-service",
             "https://www.nesdis.noaa.gov/news/update-4-cessation-of-suomi-national-polar-orbiting-partnership-s-npp-data-users-november-02-2026-1540-utc-and-decommissioning-issued-november-2-2026-1800-utc"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -3200,7 +3200,7 @@
             "https://en.wikipedia.org/wiki/Suomi_NPP",
             "https://science.nasa.gov/mission/suomi-npp/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -3208,24 +3208,24 @@
             "https://en.wikipedia.org/wiki/Suomi_NPP",
             "https://science.nasa.gov/mission/suomi-npp/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/suomi-npp/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/suomi-npp/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         2.569,
         4.183,
@@ -3255,14 +3255,14 @@
           "sources": [
             "https://science.nasa.gov/mission/topex-poseidon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/topex-poseidon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -3270,7 +3270,7 @@
             "https://www.eoportal.org/satellite-missions/topex-poseidon",
             "https://science.nasa.gov/mission/topex-poseidon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -3278,7 +3278,7 @@
             "https://www.eoportal.org/satellite-missions/topex-poseidon",
             "https://science.nasa.gov/mission/topex-poseidon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -3286,7 +3286,7 @@
             "https://www.eoportal.org/satellite-missions/topex-poseidon",
             "https://science.nasa.gov/mission/topex-poseidon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -3294,24 +3294,24 @@
             "https://www.eoportal.org/satellite-missions/topex-poseidon",
             "https://science.nasa.gov/mission/topex-poseidon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/topex-poseidon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/topex-poseidon/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         11.5,
         8.541,
@@ -3342,7 +3342,7 @@
             "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
             "https://www.eoportal.org/satellite-missions/toms"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
@@ -3350,7 +3350,7 @@
             "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
             "https://www.eoportal.org/satellite-missions/toms"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -3358,7 +3358,7 @@
             "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
             "https://www.eoportal.org/satellite-missions/toms"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -3366,7 +3366,7 @@
             "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
             "https://www.eoportal.org/satellite-missions/toms"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -3374,7 +3374,7 @@
             "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
             "https://www.eoportal.org/satellite-missions/toms"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -3382,7 +3382,7 @@
             "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
             "https://www.eoportal.org/satellite-missions/toms"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -3390,7 +3390,7 @@
             "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
             "https://www.eoportal.org/satellite-missions/toms"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -3398,10 +3398,10 @@
             "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
             "https://www.eoportal.org/satellite-missions/toms"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         3.9,
         2.427,
@@ -3431,14 +3431,14 @@
           "sources": [
             "https://science.nasa.gov/mission/trmm/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/trmm/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -3446,45 +3446,45 @@
             "https://en.wikipedia.org/wiki/Tropical_Rainfall_Measuring_Mission",
             "https://science.nasa.gov/mission/trmm/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
           "sources": [
             "https://www.eoportal.org/satellite-missions/trmm"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://www.eoportal.org/satellite-missions/trmm"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
           "sources": [
             "https://www.eoportal.org/satellite-missions/trmm"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/trmm/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/trmm/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         5.1,
         14.458,
@@ -3514,14 +3514,14 @@
           "sources": [
             "https://science.nasa.gov/mission/acrimsat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/acrimsat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -3529,7 +3529,7 @@
             "https://en.wikipedia.org/wiki/ACRIMSAT",
             "https://science.nasa.gov/mission/acrimsat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -3537,7 +3537,7 @@
             "https://en.wikipedia.org/wiki/ACRIMSAT",
             "https://science.nasa.gov/mission/acrimsat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -3545,7 +3545,7 @@
             "https://en.wikipedia.org/wiki/ACRIMSAT",
             "https://science.nasa.gov/mission/acrimsat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -3553,24 +3553,24 @@
             "https://en.wikipedia.org/wiki/ACRIMSAT",
             "https://science.nasa.gov/mission/acrimsat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/acrimsat/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://www.jpl.nasa.gov/news/press_kits/acrimsat.pdf"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1.78,
         0.726,
@@ -3600,14 +3600,14 @@
           "sources": [
             "https://science.nasa.gov/mission/aim/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/aim/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -3615,7 +3615,7 @@
             "https://en.wikipedia.org/wiki/Aeronomy_of_Ice_in_the_Mesosphere",
             "https://science.nasa.gov/mission/aim/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -3623,7 +3623,7 @@
             "https://en.wikipedia.org/wiki/Aeronomy_of_Ice_in_the_Mesosphere",
             "https://science.nasa.gov/mission/aim/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -3631,7 +3631,7 @@
             "https://en.wikipedia.org/wiki/Aeronomy_of_Ice_in_the_Mesosphere",
             "https://science.nasa.gov/mission/aim/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -3639,24 +3639,24 @@
             "https://en.wikipedia.org/wiki/Aeronomy_of_Ice_in_the_Mesosphere",
             "https://science.nasa.gov/mission/aim/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/aim/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/aim/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         2.457,
         1.022,
@@ -3686,14 +3686,14 @@
           "sources": [
             "https://science.nasa.gov/mission/gpm/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/gpm/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -3701,7 +3701,7 @@
             "https://en.wikipedia.org/wiki/Global_Precipitation_Measurement",
             "https://science.nasa.gov/mission/gpm/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -3709,7 +3709,7 @@
             "https://en.wikipedia.org/wiki/Global_Precipitation_Measurement",
             "https://science.nasa.gov/mission/gpm/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -3717,7 +3717,7 @@
             "https://en.wikipedia.org/wiki/Global_Precipitation_Measurement",
             "https://science.nasa.gov/mission/gpm/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -3725,24 +3725,24 @@
             "https://en.wikipedia.org/wiki/Global_Precipitation_Measurement",
             "https://science.nasa.gov/mission/gpm/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/gpm/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/gpm/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         5.708,
         8.079,

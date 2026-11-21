@@ -91,7 +91,7 @@ const WAVE3_B1_IDS = [
   "topex-poseidon", "toms-ep", "trmm", "acrimsat", "aim", "gpm"
 ];
 // Wave 3 batch 1 rows stay verified:false until Tesla clears them. Flip this to true with his pass.
-const WAVE3_B1_TESLA_CLEARED = false;
+const WAVE3_B1_TESLA_CLEARED = true;
 const GITHUB_SOURCE_IDS = new Set(["skylab", "sdo", "stereo"]);
 
 test("fleet.json has 79 listed craft, real assets, and verified fact rows", () => {
