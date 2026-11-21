@@ -1,6 +1,6 @@
 # Spaceships assets
 
-Wave 2 is on `feat/spaceships-wave2`, based on the shipped wave 1 module. Local only. Do not push, open a PR, or deploy until Dimitry OKs shipping wave 2.
+Wave 3 batch 1 is on `feat/spaceships-wave3-b1`, based on the shipped wave 2 module (49 craft). Do not merge until Tesla's batch 1 fact check clears.
 
 This file is the contract for Angelo's handoff in `/workspace/angelo/spaceships/`. Drop files under `public/spaceships/` using the paths below. The gallery and viewer load `fleet.json` and resolve every asset path relative to that folder. Models are fetched only on the detail page (`study-spaceship.html`). The gallery never loads a GLB or USDZ.
 
@@ -65,11 +65,11 @@ Vendor code is not in this folder. `<model-viewer>` is pinned at `@google/model-
 | `cameraOrbit` | string | no | model-viewer `camera-orbit`, e.g. `45deg 70deg auto`. Used for ISS and Chandra, whose long axis runs along Z. |
 | `facts` | object[] | yes | Shown in the fact panel. Each item is `{ "label": string, "value": string, "verified": boolean }`, with optional `sources` (URL list) and `recheckBeforePublish`. Per-craft source notes and scale notes are in `docs/spaceships-fleet-meta.json`. |
 
-Do not invent numeric or historical facts. Tesla fact-checked wave 1 (19 craft, 151 rows) and wave 2 (30 craft, 240 rows) on Nov 20, 2026 (America/New_York). All 391 fact rows are `verified: true`. Wave 1 keeps Tesla's student wording on 11 rows. Wave 2 applies his student wording and source URLs for 1 Must fix and 16 Should fixes (including Juno's `scale_note` of 20.13 m and the `fleet_meta` source fixes in `docs/spaceships-fleet-meta.json`). Time-sensitive status lines that must be rechecked before publish: `voyager`, `perseverance`, `aqua`, `mars-odyssey`, and `terra`. Unverified fact rows, if any are added later, still get a PLACEHOLDER label in the viewer. Skylab, SDO, and STEREO have no science.nasa.gov model page; their `sourceUrl` is the NASA 3D Resources GitHub folder for that model.
+Do not invent numeric or historical facts. Tesla fact-checked wave 1 (19 craft, 151 rows) and wave 2 (30 craft, 240 rows) on Nov 20, 2026 (America/New_York). All 391 fact rows are `verified: true`. Wave 1 keeps Tesla's student wording on 11 rows. Wave 2 applies his student wording and source URLs for 1 Must fix and 16 Should fixes (including Juno's `scale_note` of 20.13 m and the `fleet_meta` source fixes in `docs/spaceships-fleet-meta.json`). Time-sensitive status lines that must be rechecked before publish: `voyager`, `perseverance`, `aqua`, `mars-odyssey`, and `terra`. Unverified fact rows, if any are added later, still get a PLACEHOLDER label in the viewer. Skylab, SDO, and STEREO have no science.nasa.gov model page; their `sourceUrl` is the NASA 3D Resources GitHub folder for that model. Wave 3 batch 1 (30 craft, 239 rows) is not yet checked: every batch 1 row is `verified: false` (the viewer shows a PLACEHOLDER label) and carries Angelo's per-row `sources`. Every batch 1 Status row has `recheckBeforePublish: true`.
 
 ## Listed ids
 
-Forty-nine listed craft: the original sixteen reserved ids, Angelo's three wave 1 extras (`iss`, `saturn-v`, `space-shuttle`), and thirty wave 2 craft. Rosetta and GPM were built as spares and are not listed. You may add, remove, or rename entries later, as long as each `id` stays unique and matches the file stem.
+Seventy-nine listed craft: the original sixteen reserved ids, Angelo's three wave 1 extras (`iss`, `saturn-v`, `space-shuttle`), thirty wave 2 craft, and thirty wave 3 batch 1 Earth observers. GPM, a wave 2 spare, ships in wave 3 batch 1 re-anchored to 13 m. Rosetta is held for wave 3 batch 2. You may add, remove, or rename entries later, as long as each `id` stays unique and matches the file stem.
 
 Wave 1:
 
@@ -129,6 +129,41 @@ Wave 2:
 | `explorer-1` | Explorer 1 |
 | `compton` | Compton Gamma Ray Observatory |
 | `wmap` | WMAP |
+
+Wave 3 batch 1 (all tagged `earth-observer`):
+
+| id | Display name |
+|---|---|
+| `aquarius` | Aquarius / SAC-D |
+| `aura` | Aura |
+| `calipso` | CALIPSO |
+| `cloudsat` | CloudSat |
+| `cygnss` | CYGNSS |
+| `dscovr` | DSCOVR |
+| `eo-1` | Earth Observing-1 |
+| `goes` | GOES weather satellite |
+| `grace` | GRACE |
+| `icesat` | ICESat |
+| `icesat-2` | ICESat-2 |
+| `jason-1` | Jason-1 |
+| `jason-2` | OSTM/Jason-2 |
+| `sentinel-6` | Sentinel-6 Michael Freilich |
+| `landsat-1` | Landsat 1 |
+| `landsat-4` | Landsat 4 |
+| `landsat-7` | Landsat 7 |
+| `oco-2` | OCO-2 |
+| `poes` | POES weather satellite |
+| `quikscat` | QuikSCAT |
+| `radarsat-1` | RADARSAT-1 |
+| `sac-c` | SAC-C |
+| `seastar` | SeaStar (SeaWiFS) |
+| `suomi-npp` | Suomi NPP |
+| `topex-poseidon` | TOPEX/Poseidon |
+| `toms-ep` | TOMS Earth Probe |
+| `trmm` | TRMM |
+| `acrimsat` | ACRIMSAT |
+| `aim` | AIM |
+| `gpm` | GPM Core Observatory |
 
 ISS and Chandra use `cameraOrbit` `45deg 70deg auto`. Juno's GLB, USDZ, and still were replaced in wave 2 so the solar-array span is 20.1 m; Tesla's size line ("more than 20 m across the solar arrays") is still accurate and stays verified.
 

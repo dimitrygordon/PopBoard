@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import http.server
 import json
+import os
 import socketserver
 import sys
 import threading
@@ -13,10 +14,18 @@ from urllib.parse import urlparse
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1] / "public"
-OUT = Path("/workspace/popboard-spaceships-shots/wave2")
+OUT = Path(os.environ.get("SS_OUT", "/workspace/popboard-spaceships-shots/wave3-b1"))
 OUT.mkdir(parents=True, exist_ok=True)
 FLEET = json.loads((ROOT / "spaceships/fleet.json").read_text())
 CRAFT_IDS = [c["id"] for c in FLEET["craft"] if c.get("listed") is not False]
+LISTED_COUNT = len(CRAFT_IDS)
+EARTH_IDS = sorted(c["id"] for c in FLEET["craft"] if c.get("listed") is not False and "earth-observer" in (c.get("tags") or []))
+# Craft whose fact rows are still verified:false (pending Tesla) show PLACEHOLDER labels by design.
+UNVERIFIED_IDS = {c["id"] for c in FLEET["craft"] if any(r.get("verified") is False for r in c.get("facts", []))}
+# SS_BASE runs against a deployed site (e.g. a Pages preview). SS_IDS limits the viewer pass.
+REMOTE_BASE = os.environ.get("SS_BASE", "").rstrip("/")
+if os.environ.get("SS_IDS"):
+    CRAFT_IDS = [i for i in os.environ["SS_IDS"].split(",") if i]
 WAVE2_IDS = {
     "gemini", "mercury-friendship-7", "apollo-soyuz", "skylab", "pioneer-10",
     "magellan", "mro", "lro", "osiris-rex", "insight", "spirit-opportunity",
@@ -65,7 +74,7 @@ MIME = {
 }
 
 SHOT_ALL_ON = {"iphone-390"}
-SHOT_SAMPLE = {"voyager", "iss", "chandra", "jwst", "ingenuity", "space-shuttle", "juno", "terra", "insight", "gemini"}
+SHOT_SAMPLE = {"voyager", "iss", "chandra", "jwst", "juno", "terra", "gpm", "suomi-npp", "goes", "radarsat-1", "aura", "landsat-7"}
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -252,24 +261,47 @@ def drag_model(page):
     return before, after
 
 
+def touch_drag_model(page):
+    """Real touch drag (CDP touch events) on touch devices."""
+    box = page.locator("#viewer").bounding_box()
+    if not box:
+        return "", ""
+    x = box["x"] + box["width"] * 0.55
+    y = box["y"] + box["height"] * 0.45
+    page.evaluate("() => { const mv = document.querySelector('model-viewer'); mv.removeAttribute('auto-rotate'); }")
+    page.wait_for_timeout(150)
+    before = camera_orbit(page)
+    cdp = page.context.new_cdp_session(page)
+    cdp.send("Input.dispatchTouchEvent", {"type": "touchStart", "touchPoints": [{"x": x, "y": y}]})
+    for step in range(1, 13):
+        cdp.send("Input.dispatchTouchEvent", {"type": "touchMove", "touchPoints": [{"x": x - step * 8, "y": y}]})
+        page.wait_for_timeout(16)
+    cdp.send("Input.dispatchTouchEvent", {"type": "touchEnd", "touchPoints": []})
+    cdp.detach()
+    page.wait_for_timeout(300)
+    after = camera_orbit(page)
+    return before, after
+
+
 def run_gallery(context, base, tag, measure=False):
-    page = open_page(context, base + "/study-spaceships.html")
+    page = open_page(context, base + "/study-spaceships")
     page.wait_for_selector(".card", timeout=15000)
     # Wait for cards to render from fleet.json
-    page.wait_for_function("() => document.querySelectorAll('.card').length >= 49", timeout=15000)
+    page.wait_for_function(f"() => document.querySelectorAll('.card').length >= {LISTED_COUNT}", timeout=15000)
     count = page.locator(".card").count()
-    check(count == 49, f"{tag} gallery shows 49 cards (got {count})")
-    for extra in ("iss", "saturn-v", "space-shuttle", "terra", "aqua", "landsat-8", "insight", "gemini"):
+    check(count == LISTED_COUNT, f"{tag} gallery shows {LISTED_COUNT} cards (got {count})")
+    for extra in ("iss", "saturn-v", "space-shuttle", "terra", "aqua", "landsat-8", "insight", "gemini", "gpm", "suomi-npp"):
         check(page.locator(f".card[data-id='{extra}']").count() == 1, f"{tag} gallery lists {extra}")
     earth_btn = page.locator("#filters button", has_text="Earth observers")
     check(earth_btn.count() == 1, f"{tag} gallery has an Earth observers filter")
     earth_btn.click()
     page.wait_for_timeout(100)
     earth_ids = page.locator(".card").evaluate_all("els => els.map(e => e.dataset.id).sort()")
-    check(earth_ids == ["aqua", "landsat-8", "terra"], f"{tag} Earth observers filter shows Terra, Aqua, Landsat 8 (got {earth_ids})")
+    check(earth_ids == EARTH_IDS, f"{tag} Earth observers filter shows {len(EARTH_IDS)} earth-observer craft (got {len(earth_ids)}: {earth_ids})")
+    shot(page, f"gallery-earth-{tag}.png")
     page.locator("#filters button", has_text="All").click()
     page.wait_for_timeout(100)
-    check(page.locator(".card").count() == 49, f"{tag} All filter restores 49 cards")
+    check(page.locator(".card").count() == LISTED_COUNT, f"{tag} All filter restores {LISTED_COUNT} cards")
     check(not overflow_x(page), f"{tag} gallery does not overflow horizontally")
     # Confirm the gallery did not fetch a model.
     model_gets = [t for t in page.transfers if t["method"] != "HEAD" and t["path"].endswith((".glb", ".usdz", "model-viewer.min.js"))]
@@ -290,7 +322,7 @@ def run_gallery(context, base, tag, measure=False):
 
 
 def run_viewer(context, base, tag, craft_id, measure=False, take_shot=False, take_drag=False):
-    page = open_page(context, base + f"/study-spaceship.html?id={craft_id}")
+    page = open_page(context, base + f"/study-spaceship?id={craft_id}")
     wait_model_loaded(page, craft_id, timeout=45000)
     info = model_info(page)
     check(info is not None and info["loaded"], f"{tag} {craft_id} model-viewer loaded")
@@ -312,8 +344,12 @@ def run_viewer(context, base, tag, craft_id, measure=False, take_shot=False, tak
     check(page.locator("#craftName").inner_text() != "", f"{tag} {craft_id} fact panel has a name")
     check("3D model courtesy NASA" in page.locator("#credit").inner_text(), f"{tag} {craft_id} NASA credit")
     facts_text = page.locator("#facts").inner_text()
-    check("PLACEHOLDER" not in facts_text, f"{tag} {craft_id} facts are not placeholders")
-    check(page.locator("#facts .ph-label").count() == 0, f"{tag} {craft_id} has no placeholder labels")
+    if craft_id in UNVERIFIED_IDS:
+        n_rows = page.locator("#facts dt").count()
+        check(page.locator("#facts .ph-label").count() == n_rows, f"{tag} {craft_id} unverified rows are labelled PLACEHOLDER pending Tesla")
+    else:
+        check("PLACEHOLDER" not in facts_text, f"{tag} {craft_id} facts are not placeholders")
+        check(page.locator("#facts .ph-label").count() == 0, f"{tag} {craft_id} has no placeholder labels")
     check(len(facts_text.strip()) > 0, f"{tag} {craft_id} fact panel has text")
     if craft_id == "juno":
         dim = info["dim"] if info else [0, 0, 0]
@@ -338,9 +374,10 @@ def run_viewer(context, base, tag, craft_id, measure=False, take_shot=False, tak
     check(not overflow_x(page), f"{tag} {craft_id} does not overflow horizontally")
     if take_shot:
         shot(page, f"viewer-{craft_id}-{tag}.png")
-    before, after = drag_model(page)
+    touch = page.evaluate("() => navigator.maxTouchPoints > 0")
+    before, after = touch_drag_model(page) if touch else drag_model(page)
     moved = before != after and before != "" and after != ""
-    check(moved, f"{tag} {craft_id} drag-rotate changed camera ({before} -> {after})")
+    check(moved, f"{tag} {craft_id} {'touch' if touch else 'mouse'} drag-rotate changed camera ({before} -> {after})")
     if take_drag:
         shot(page, f"viewer-after-drag-{craft_id}-{tag}.png")
     errs = hard_errors(page)
@@ -353,7 +390,7 @@ def run_viewer(context, base, tag, craft_id, measure=False, take_shot=False, tak
 
 
 def run_not_found(context, base, tag):
-    page = open_page(context, base + "/study-spaceship.html?id=does-not-exist")
+    page = open_page(context, base + "/study-spaceship?id=does-not-exist")
     page.wait_for_selector("#missing:visible", timeout=10000)
     check(page.locator("#missing").is_visible(), f"{tag} unknown id shows a not-found state")
     shot(page, f"viewer-missing-{tag}.png")
@@ -390,7 +427,10 @@ def disk_weights():
 
 
 def main():
-    server, base = start_server()
+    if REMOTE_BASE:
+        server, base = None, REMOTE_BASE
+    else:
+        server, base = start_server()
     print("SERVER", base)
     print("CRAFT", len(CRAFT_IDS), CRAFT_IDS)
     weights = {"disk": disk_weights(), "firstLoad": {}}
@@ -424,7 +464,8 @@ def main():
                     context.close()
             browser.close()
     finally:
-        server.shutdown()
+        if server:
+            server.shutdown()
 
     # Drop bulky file lists from the saved report after printing the headline numbers.
     slim = {
