@@ -11,8 +11,18 @@ $("studyBackBtn").addEventListener("click", (e) => {
 
 $("searchForm").addEventListener("submit", (e) => e.preventDefault());
 
-const TAG_ORDER = ["crewed", "observatory", "earth-observer", "probe", "rover", "lander", "rotorcraft"];
-const TAG_LABELS = { "earth-observer": "Earth observers" };
+const TAG_ORDER = [
+  "crewed", "observatory", "earth-observer", "probe", "rover", "lander", "rotorcraft",
+  "heliophysics", "comms", "cubesat", "crew-gear", "tools", "hubble-servicing",
+  "instruments", "robots", "rockets", "ground", "concept"
+];
+const TAG_LABELS = {
+  "earth-observer": "Earth observers",
+  "cubesat": "CubeSats",
+  "crew-gear": "crew gear",
+  "hubble-servicing": "Hubble servicing",
+  "concept": "concepts"
+};
 const fleet = await loadFleet();
 const all = listedCraft(fleet);
 const tags = TAG_ORDER.filter((t) => all.some((c) => (c.tags || []).includes(t)));

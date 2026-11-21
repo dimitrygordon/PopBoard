@@ -1,6 +1,6 @@
 # Spaceships assets
 
-Wave 3 batch 1 is on `feat/spaceships-wave3-b1`, based on the shipped wave 2 module (49 craft). Tesla cleared batch 1 on Nov 20, 2026.
+Wave 3 batches 2 to 4 are on `feat/spaceships-wave3-b2-4`, based on main after wave 3 batch 1 shipped (79 craft). Tesla cleared batches 2 to 4 on Nov 20, 2026.
 
 This file is the contract for Angelo's handoff in `/workspace/angelo/spaceships/`. Drop files under `public/spaceships/` using the paths below. The gallery and viewer load `fleet.json` and resolve every asset path relative to that folder. Models are fetched only on the detail page (`study-spaceship.html`). The gallery never loads a GLB or USDZ.
 
@@ -53,7 +53,7 @@ Vendor code is not in this folder. `<model-viewer>` is pinned at `@google/model-
 | `id` | string | yes | URL slug. Letters, numbers, and hyphens only. Matches the filename stem. |
 | `name` | string | yes | Display name on the card and the detail title. |
 | `subtitle` | string | no | One short line under the name. Use labelled placeholder text until Tesla verifies. |
-| `tags` | string[] | no | Gallery filters only. Not science facts. Current buckets: `crewed`, `probe`, `observatory`, `earth-observer`, `rover`, `rotorcraft`, `lander`. The `earth-observer` chip is labelled Earth observers. |
+| `tags` | string[] | no | Gallery filters only. Not science facts. Current buckets: `crewed`, `probe`, `observatory`, `earth-observer`, `rover`, `rotorcraft`, `lander`, plus wave 3's `heliophysics`, `comms`, `cubesat`, `crew-gear`, `tools`, `hubble-servicing`, `instruments`, `robots`, `rockets`, `ground`, `concept`. The `earth-observer` chip is labelled Earth observers. |
 | `listed` | boolean | no | Default `true`. If `false`, the craft is omitted from the gallery but still opens by deep link. |
 | `placeholder` | boolean | no | `true` while the GLB or still is still a stand-in. `false` once those files exist. Fact values can still be unverified. |
 | `still` | string | yes | Path relative to `public/spaceships/`, e.g. `stills/voyager.webp`. |
@@ -65,11 +65,11 @@ Vendor code is not in this folder. `<model-viewer>` is pinned at `@google/model-
 | `cameraOrbit` | string | no | model-viewer `camera-orbit`, e.g. `45deg 70deg auto`. Used for ISS and Chandra, whose long axis runs along Z. |
 | `facts` | object[] | yes | Shown in the fact panel. Each item is `{ "label": string, "value": string, "verified": boolean }`, with optional `sources` (URL list) and `recheckBeforePublish`. Per-craft source notes and scale notes are in `docs/spaceships-fleet-meta.json`. |
 
-Do not invent numeric or historical facts. Tesla fact-checked wave 1 (19 craft, 151 rows) and wave 2 (30 craft, 240 rows) on Nov 20, 2026 (America/New_York). All 391 fact rows are `verified: true`. Wave 1 keeps Tesla's student wording on 11 rows. Wave 2 applies his student wording and source URLs for 1 Must fix and 16 Should fixes (including Juno's `scale_note` of 20.13 m and the `fleet_meta` source fixes in `docs/spaceships-fleet-meta.json`). Time-sensitive status lines that must be rechecked before publish: `voyager`, `perseverance`, `aqua`, `mars-odyssey`, and `terra`. Unverified fact rows, if any are added later, still get a PLACEHOLDER label in the viewer. Skylab, SDO, and STEREO have no science.nasa.gov model page; their `sourceUrl` is the NASA 3D Resources GitHub folder for that model. Tesla fact-checked wave 3 batch 1 (30 craft, 239 rows) on Nov 20, 2026 (America/New_York) and cleared it after his 2 Must and 18 Should fixes (TRMM and Landsat 4 rescaled). All batch 1 rows are `verified: true` and carry per-row `sources`. Every batch 1 Status row, plus each row Tesla flagged, has `recheckBeforePublish: true`.
+Do not invent numeric or historical facts. Tesla fact-checked wave 1 (19 craft, 151 rows) and wave 2 (30 craft, 240 rows) on Nov 20, 2026 (America/New_York). All 391 fact rows are `verified: true`. Wave 1 keeps Tesla's student wording on 11 rows. Wave 2 applies his student wording and source URLs for 1 Must fix and 16 Should fixes (including Juno's `scale_note` of 20.13 m and the `fleet_meta` source fixes in `docs/spaceships-fleet-meta.json`). Time-sensitive status lines that must be rechecked before publish: `voyager`, `perseverance`, `aqua`, `mars-odyssey`, and `terra`. Unverified fact rows, if any are added later, still get a PLACEHOLDER label in the viewer. Skylab, SDO, and STEREO have no science.nasa.gov model page; their `sourceUrl` is the NASA 3D Resources GitHub folder for that model. Tesla fact-checked wave 3 batch 1 (30 craft, 239 rows) on Nov 20, 2026 (America/New_York) and cleared it after his 2 Must and 18 Should fixes (TRMM and Landsat 4 rescaled). All batch 1 rows are `verified: true` and carry per-row `sources`. Every batch 1 Status row, plus each row Tesla flagged, has `recheckBeforePublish: true`. Tesla fact-checked wave 3 batches 2 to 4 (78 items, 454 rows) on Nov 20, 2026 (America/New_York) and cleared them after his fixes (including DART's NSSDCA bus size and the Roman press kit link). All their rows are `verified: true` and carry per-row `sources`. Every Status row, plus each row Angelo flagged, has `recheckBeforePublish: true`. Rosetta's `sourceUrl` is the NASA 3D Resources GitHub folder (NASA's Rosetta page links the IBEX file).
 
 ## Listed ids
 
-Seventy-nine listed craft: the original sixteen reserved ids, Angelo's three wave 1 extras (`iss`, `saturn-v`, `space-shuttle`), thirty wave 2 craft, and thirty wave 3 batch 1 Earth observers. GPM, a wave 2 spare, ships in wave 3 batch 1 re-anchored to 13 m. Rosetta is held for wave 3 batch 2. You may add, remove, or rename entries later, as long as each `id` stays unique and matches the file stem.
+One hundred fifty-seven listed items: the original sixteen reserved ids, Angelo's three wave 1 extras (`iss`, `saturn-v`, `space-shuttle`), thirty wave 2 craft, thirty wave 3 batch 1 Earth observers, and 78 wave 3 batch 2 to 4 items (28 space physics, astrophysics, comms and planetary craft; 29 crewed hardware, suits, robots and tools; 21 rockets, ground systems, CubeSats, concepts, DART and Orion). GPM, a wave 2 spare, ships in batch 1 at 13 m; Rosetta, the other spare, ships in batch 2. You may add, remove, or rename entries later, as long as each `id` stays unique and matches the file stem.
 
 Wave 1:
 
@@ -164,6 +164,99 @@ Wave 3 batch 1 (all tagged `earth-observer`):
 | `acrimsat` | ACRIMSAT |
 | `aim` | AIM |
 | `gpm` | GPM Core Observatory |
+
+Wave 3 batch 2:
+
+| id | Display name | Tags |
+|---|---|---|
+| `ace` | ACE | heliophysics |
+| `cluster-ii` | Cluster II | heliophysics |
+| `cnofs` | C/NOFS | heliophysics |
+| `firefly` | Firefly | heliophysics, cubesat |
+| `geotail` | Geotail | heliophysics |
+| `polar` | Polar | heliophysics |
+| `wind` | Wind | heliophysics |
+| `themis` | THEMIS | heliophysics |
+| `mms` | MMS | heliophysics |
+| `van-allen-probes` | Van Allen Probes | heliophysics |
+| `rhessi` | RHESSI | heliophysics, observatory |
+| `hinode` | Hinode | heliophysics, observatory |
+| `icon` | ICON | heliophysics |
+| `fuse` | FUSE | observatory |
+| `hete` | HETE-2 | observatory |
+| `ibex` | IBEX | heliophysics |
+| `nicer-sextant` | NICER / SEXTANT | observatory |
+| `swas` | SWAS | observatory |
+| `suzaku` | Suzaku | observatory |
+| `wire` | WIRE | observatory |
+| `spartan-201` | Spartan 201 | heliophysics, observatory |
+| `ulysses` | Ulysses | heliophysics, probe |
+| `clementine` | Clementine | probe |
+| `ssl-1300` | SSL 1300 bus | comms |
+| `roman` | Roman Space Telescope | observatory |
+| `tdrs` | TDRS | comms |
+| `maven` | MAVEN | probe |
+| `rosetta` | Rosetta | probe |
+
+Wave 3 batch 3:
+
+| id | Display name | Tags |
+|---|---|---|
+| `gateway` | Gateway | crewed |
+| `aces-suit` | ACES suit | crew-gear |
+| `astronaut` | Astronaut | crew-gear |
+| `astronaut-glove` | Spacewalk glove | crew-gear |
+| `emu-spacesuit` | EMU spacesuit | crew-gear |
+| `gemini-spacesuit` | Gemini spacesuit | crew-gear |
+| `mark-iii-spacesuit` | Mark III suit | crew-gear |
+| `mercury-spacesuit` | Mercury spacesuit | crew-gear |
+| `z2-spacesuit` | Z-2 suit | crew-gear |
+| `helmet` | Spacesuit helmet | crew-gear |
+| `robonaut-2` | Robonaut 2 | robots |
+| `space-exploration-vehicle` | Space Exploration Vehicle | rover |
+| `habitat-demo-unit` | Habitat Demonstration Unit | crewed |
+| `rassor` | RASSOR | robots |
+| `canadarm` | Canadarm | robots |
+| `curiosity-scarecrow` | Scarecrow | rover |
+| `cos` | Cosmic Origins Spectrograph | hubble-servicing, instruments |
+| `wfpc` | Wide Field Planetary Camera | hubble-servicing, instruments |
+| `flight-support-system` | Flight Support System | hubble-servicing |
+| `slic-carrier` | SLIC carrier | hubble-servicing |
+| `orbital-replacement-unit` | ORU carrier | hubble-servicing |
+| `crew-lock-bag` | Crew lock bag | tools |
+| `pistol-grip-tool` | Pistol grip tool | tools |
+| `grease-gun` | Grease gun | tools |
+| `hammer` | Space hammer | tools |
+| `ratchet` | Ratchet wrench | tools |
+| `wrench` | Wrench | tools |
+| `tether` | Safety tether | tools |
+| `mars-2020-sample-tube` | Mars sample tube | instruments |
+
+Wave 3 batch 4:
+
+| id | Display name | Tags |
+|---|---|---|
+| `agena` | Agena Target Vehicle | rockets, crewed |
+| `ares-1` | Ares I | rockets |
+| `shuttle-external-tank` | Shuttle External Tank | rockets |
+| `shuttle-srb` | Shuttle Solid Rocket Booster | rockets |
+| `orbiter-docking-system` | Orbiter Docking System | crewed |
+| `crawler-transporter` | Crawler-transporter | ground |
+| `mobile-launcher` | Mobile Launcher | ground |
+| `vab` | Vehicle Assembly Building | ground |
+| `dsn-70m` | DSN 70 m antenna | ground |
+| `dsn-34m` | DSN 34 m antenna | ground |
+| `cubesat-1u` | CubeSat 1U | cubesat |
+| `cubesat-2u` | CubeSat 2U | cubesat |
+| `cubesat-icecube` | IceCube | cubesat, earth-observer |
+| `cubesat-mirata` | MiRaTA | cubesat, earth-observer |
+| `constellation-x` | Constellation-X | observatory, concept |
+| `ixo` | IXO | observatory, concept |
+| `atlast` | ATLAST | observatory, concept |
+| `lisa` | LISA | observatory, concept |
+| `desdyni` | DESDynI | earth-observer, concept |
+| `dart` | DART | probe |
+| `orion` | Orion | crewed |
 
 ISS and Chandra use `cameraOrbit` `45deg 70deg auto`. Juno's GLB, USDZ, and still were replaced in wave 2 so the solar-array span is 20.1 m; Tesla's size line ("more than 20 m across the solar arrays") is still accurate and stays verified.
 
