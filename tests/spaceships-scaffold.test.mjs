@@ -124,7 +124,7 @@ const WAVE3_B5_IDS = [
   "golevka", "1996-hw1"
 ];
 // Wave 3 batch 5 rows stay verified:false until Tesla clears them.
-const WAVE3_B5_TESLA_CLEARED = false;
+const WAVE3_B5_TESLA_CLEARED = true;
 const GITHUB_SOURCE_IDS = new Set(["skylab", "sdo", "stereo", "rosetta"]);
 
 test("fleet.json has 189 listed craft, real assets, and verified fact rows", () => {

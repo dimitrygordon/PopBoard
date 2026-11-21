@@ -9168,7 +9168,7 @@
           "sources": [
             "https://science.nasa.gov/jupiter/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -9176,38 +9176,38 @@
             "https://en.wikipedia.org/wiki/Jupiter",
             "https://science.nasa.gov/jupiter/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/jupiter/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/jupiter/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/jupiter/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/jupiter/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         142983872.0,
         133704344.0,
@@ -9239,7 +9239,7 @@
             "https://science.nasa.gov/jupiter/jupiter-moons/callisto/",
             "https://science.nasa.gov/missions/juno/juno-detected-the-final-missing-auroral-signature-from-jupiters-four-largest-moons/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -9248,7 +9248,7 @@
             "https://science.nasa.gov/jupiter/jupiter-moons/callisto/",
             "https://science.nasa.gov/missions/juno/juno-detected-the-final-missing-auroral-signature-from-jupiters-four-largest-moons/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
@@ -9256,7 +9256,7 @@
             "https://science.nasa.gov/jupiter/jupiter-moons/callisto/",
             "https://science.nasa.gov/missions/juno/juno-detected-the-final-missing-auroral-signature-from-jupiters-four-largest-moons/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
@@ -9264,7 +9264,7 @@
             "https://science.nasa.gov/missions/juno/juno-detected-the-final-missing-auroral-signature-from-jupiters-four-largest-moons/",
             "https://atmos.nmsu.edu/data_and_services/atmospheres_data/JUNO/logs/Satellite_close_passes.pdf"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -9272,10 +9272,10 @@
             "https://science.nasa.gov/jupiter/jupiter-moons/callisto/",
             "https://science.nasa.gov/missions/juno/juno-detected-the-final-missing-auroral-signature-from-jupiters-four-largest-moons/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         4820596.0,
         4820600.0,
@@ -9305,7 +9305,7 @@
           "sources": [
             "https://science.nasa.gov/jupiter/jupiter-moons/europa/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -9313,38 +9313,38 @@
             "https://en.wikipedia.org/wiki/Europa_(moon)",
             "https://science.nasa.gov/jupiter/jupiter-moons/europa/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/jupiter/jupiter-moons/europa/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/jupiter/jupiter-moons/europa/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/jupiter/jupiter-moons/europa/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/jupiter/jupiter-moons/europa/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         3121597.5,
         3121600.0,
@@ -9374,7 +9374,7 @@
           "sources": [
             "https://science.nasa.gov/jupiter/jupiter-moons/ganymede/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -9382,31 +9382,31 @@
             "https://en.wikipedia.org/wiki/Ganymede_(moon)",
             "https://science.nasa.gov/jupiter/jupiter-moons/ganymede/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/jupiter/jupiter-moons/ganymede/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/jupiter/jupiter-moons/ganymede/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/jupiter/jupiter-moons/ganymede/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         5268195.5,
         5268200.0,
@@ -9436,7 +9436,7 @@
           "sources": [
             "https://science.nasa.gov/jupiter/jupiter-moons/io/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -9444,38 +9444,38 @@
             "https://en.wikipedia.org/wiki/Io_(moon)",
             "https://science.nasa.gov/jupiter/jupiter-moons/io/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/jupiter/jupiter-moons/io/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/jupiter/jupiter-moons/io/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/jupiter/jupiter-moons/io/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/jupiter/jupiter-moons/io/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         3643197.0,
         3643200.0,
@@ -9505,7 +9505,7 @@
           "sources": [
             "https://science.nasa.gov/mars/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -9513,38 +9513,38 @@
             "https://en.wikipedia.org/wiki/Mars",
             "https://science.nasa.gov/mars/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/mars/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/mars/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mars/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mars/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         6792394.0,
         6752324.5,
@@ -9574,7 +9574,7 @@
           "sources": [
             "https://science.nasa.gov/neptune/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -9582,38 +9582,38 @@
             "https://en.wikipedia.org/wiki/Neptune",
             "https://science.nasa.gov/neptune/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/neptune/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/neptune/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/neptune/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/neptune/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         49527960.0,
         48681072.0,
@@ -9643,7 +9643,7 @@
           "sources": [
             "https://science.nasa.gov/neptune/moons/triton/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -9651,38 +9651,38 @@
             "https://en.wikipedia.org/wiki/Triton_(moon)",
             "https://science.nasa.gov/neptune/moons/triton/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/neptune/moons/triton/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/neptune/moons/triton/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/neptune/moons/triton/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/neptune/moons/triton/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         2706797.5,
         2706800.0,
@@ -9712,7 +9712,7 @@
           "sources": [
             "https://science.nasa.gov/dwarf-planets/pluto/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -9720,38 +9720,38 @@
             "https://en.wikipedia.org/wiki/Pluto",
             "https://science.nasa.gov/dwarf-planets/pluto/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/dwarf-planets/pluto/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/dwarf-planets/pluto/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/dwarf-planets/pluto/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/dwarf-planets/pluto/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         2376598.0,
         2376600.0,
@@ -9781,7 +9781,7 @@
           "sources": [
             "https://science.nasa.gov/dwarf-planets/pluto/moons/charon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -9789,38 +9789,38 @@
             "https://en.wikipedia.org/wiki/Charon_(moon)",
             "https://science.nasa.gov/dwarf-planets/pluto/moons/charon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/dwarf-planets/pluto/moons/charon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/dwarf-planets/pluto/moons/charon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/dwarf-planets/pluto/moons/charon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/dwarf-planets/pluto/moons/charon/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1211999.0,
         1212000.0,
@@ -9853,7 +9853,7 @@
             "https://science.nasa.gov/saturn/",
             "https://science.nasa.gov/saturn/facts/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -9863,7 +9863,7 @@
             "https://science.nasa.gov/saturn/",
             "https://science.nasa.gov/saturn/facts/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
@@ -9871,7 +9871,7 @@
             "https://science.nasa.gov/saturn/",
             "https://science.nasa.gov/saturn/facts/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
@@ -9879,14 +9879,14 @@
             "https://science.nasa.gov/saturn/",
             "https://science.nasa.gov/saturn/facts/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/saturn/facts/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -9894,10 +9894,10 @@
             "https://science.nasa.gov/saturn/",
             "https://science.nasa.gov/saturn/facts/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         273549984.0,
         108723472.0,
@@ -9927,7 +9927,7 @@
           "sources": [
             "https://science.nasa.gov/saturn/moons/dione/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -9935,31 +9935,31 @@
             "https://en.wikipedia.org/wiki/Dione_(moon)",
             "https://science.nasa.gov/saturn/moons/dione/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/saturn/moons/dione/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/saturn/moons/dione/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/saturn/moons/dione/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1122799.0,
         1122800.0,
@@ -9989,7 +9989,7 @@
           "sources": [
             "https://science.nasa.gov/saturn/moons/enceladus/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -9997,38 +9997,38 @@
             "https://en.wikipedia.org/wiki/Enceladus",
             "https://science.nasa.gov/saturn/moons/enceladus/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/saturn/moons/enceladus/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/saturn/moons/enceladus/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/saturn/moons/enceladus/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/saturn/moons/enceladus/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         504199.562,
         504200.0,
@@ -10058,7 +10058,7 @@
           "sources": [
             "https://science.nasa.gov/saturn/moons/iapetus/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -10066,31 +10066,31 @@
             "https://en.wikipedia.org/wiki/Iapetus_(moon)",
             "https://science.nasa.gov/saturn/moons/iapetus/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/saturn/moons/iapetus/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/saturn/moons/iapetus/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/saturn/moons/iapetus/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1468998.75,
         1469000.0,
@@ -10120,7 +10120,7 @@
           "sources": [
             "https://science.nasa.gov/saturn/moons/mimas/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -10128,38 +10128,38 @@
             "https://en.wikipedia.org/wiki/Mimas_(moon)",
             "https://science.nasa.gov/saturn/moons/mimas/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/saturn/moons/mimas/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/saturn/moons/mimas/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/saturn/moons/mimas/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/saturn/moons/mimas/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         396399.656,
         396400.0,
@@ -10189,7 +10189,7 @@
           "sources": [
             "https://science.nasa.gov/saturn/moons/rhea/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -10197,31 +10197,31 @@
             "https://en.wikipedia.org/wiki/Rhea_(moon)",
             "https://science.nasa.gov/saturn/moons/rhea/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/saturn/moons/rhea/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/saturn/moons/rhea/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/saturn/moons/rhea/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1527598.75,
         1527600.0,
@@ -10251,7 +10251,7 @@
           "sources": [
             "https://science.nasa.gov/saturn/moons/tethys/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -10259,31 +10259,31 @@
             "https://en.wikipedia.org/wiki/Tethys_(moon)",
             "https://science.nasa.gov/saturn/moons/tethys/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/saturn/moons/tethys/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/saturn/moons/tethys/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/saturn/moons/tethys/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1062199.0,
         1062200.0,
@@ -10314,7 +10314,7 @@
           "sources": [
             "https://science.nasa.gov/saturn/moons/titan/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -10322,28 +10322,28 @@
             "https://en.wikipedia.org/wiki/Titan_(moon)",
             "https://science.nasa.gov/saturn/moons/titan/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/saturn/moons/titan/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/saturn/moons/titan/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/saturn/moons/titan/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -10351,10 +10351,10 @@
             "https://www.planetary.org/articles/what-would-it-be-like-to-stand-on-the-surface-of-titan",
             "https://www.nbcnews.com/id/wbna54582533"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         5149395.5,
         5149400.0,
@@ -10384,7 +10384,7 @@
           "sources": [
             "https://science.nasa.gov/uranus/moons/ariel/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -10392,31 +10392,31 @@
             "https://en.wikipedia.org/wiki/Ariel_(moon)",
             "https://science.nasa.gov/uranus/moons/ariel/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/uranus/moons/ariel/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/uranus/moons/ariel/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/uranus/moons/ariel/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1157799.0,
         1157800.0,
@@ -10447,7 +10447,7 @@
           "sources": [
             "https://science.nasa.gov/uranus/moons/miranda/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -10456,21 +10456,21 @@
             "https://en.wikipedia.org/wiki/Verona_Rupes",
             "https://science.nasa.gov/uranus/moons/miranda/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/uranus/moons/miranda/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/uranus/moons/miranda/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -10478,17 +10478,17 @@
             "https://en.wikipedia.org/wiki/Verona_Rupes",
             "https://science.nasa.gov/uranus/moons/miranda/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/uranus/moons/miranda/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         471599.594,
         471600.0,
@@ -10518,7 +10518,7 @@
           "sources": [
             "https://science.nasa.gov/uranus/moons/oberon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -10526,31 +10526,31 @@
             "https://en.wikipedia.org/wiki/Oberon_(moon)",
             "https://science.nasa.gov/uranus/moons/oberon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/uranus/moons/oberon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/uranus/moons/oberon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/uranus/moons/oberon/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1522798.75,
         1522800.0,
@@ -10580,7 +10580,7 @@
           "sources": [
             "https://science.nasa.gov/uranus/moons/titania/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -10588,31 +10588,31 @@
             "https://en.wikipedia.org/wiki/Titania_(moon)",
             "https://science.nasa.gov/uranus/moons/titania/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/uranus/moons/titania/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/uranus/moons/titania/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/uranus/moons/titania/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1576798.625,
         1576800.0,
@@ -10643,7 +10643,7 @@
           "sources": [
             "https://science.nasa.gov/uranus/moons/umbriel/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -10651,21 +10651,21 @@
             "https://en.wikipedia.org/wiki/Umbriel",
             "https://science.nasa.gov/uranus/moons/umbriel/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/uranus/moons/umbriel/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/uranus/moons/umbriel/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -10673,10 +10673,10 @@
             "https://sos.noaa.gov/catalog/datasets/umbriel-uranus-moon/",
             "https://science.nasa.gov/uranus/moons/umbriel/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1169399.0,
         1169400.0,
@@ -10706,7 +10706,7 @@
           "sources": [
             "https://science.nasa.gov/venus/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -10714,38 +10714,38 @@
             "https://en.wikipedia.org/wiki/Venus",
             "https://science.nasa.gov/venus/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/venus/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/venus/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/venus/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/venus/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         12103590.0,
         12103600.0,
@@ -10775,7 +10775,7 @@
           "sources": [
             "https://science.nasa.gov/solar-system/asteroids/101955-bennu/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -10783,38 +10783,38 @@
             "https://en.wikipedia.org/wiki/101955_Bennu",
             "https://science.nasa.gov/solar-system/asteroids/101955-bennu/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/solar-system/asteroids/101955-bennu/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/solar-system/asteroids/101955-bennu/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/solar-system/asteroids/101955-bennu/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/solar-system/asteroids/101955-bennu/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         565.0,
         544.475,
@@ -10844,7 +10844,7 @@
           "sources": [
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=1620"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -10852,7 +10852,7 @@
             "https://en.wikipedia.org/wiki/1620_Geographos",
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=1620"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
@@ -10860,24 +10860,25 @@
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=1620",
             "https://en.wikipedia.org/wiki/1620_Geographos"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Studied by",
           "sources": [
-            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=1620"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=1620",
+            "https://en.wikipedia.org/wiki/1620_Geographos"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/1620_Geographos"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         5000.0,
         1955.93,
@@ -10909,7 +10910,7 @@
           "sources": [
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=216"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -10918,7 +10919,7 @@
             "https://www.aanda.org/articles/aa/full_html/2021/09/aa40874-21/T2.html",
             "https://www.science.org/doi/10.1126/science.288.5467.836"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
@@ -10926,24 +10927,25 @@
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=216",
             "https://en.wikipedia.org/wiki/216_Kleopatra"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Studied by",
           "sources": [
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=216"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
-            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=216"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=216",
+            "https://www.eso.org/public/news/eso2113/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         236530.0,
         102041.742,
@@ -10973,45 +10975,45 @@
           "sources": [
             "https://science.nasa.gov/solar-system/asteroids/4-vesta/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/4_Vesta"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
           "sources": [
             "https://science.nasa.gov/solar-system/asteroids/4-vesta/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
             "https://science.nasa.gov/solar-system/asteroids/4-vesta/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/4_Vesta"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/solar-system/asteroids/4-vesta/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         567083.688,
         515166.5,
@@ -11041,7 +11043,7 @@
           "sources": [
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4179"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -11049,7 +11051,7 @@
             "https://en.wikipedia.org/wiki/4179_Toutatis",
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4179"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
@@ -11057,24 +11059,26 @@
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4179",
             "https://en.wikipedia.org/wiki/4179_Toutatis"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Visited by",
           "sources": [
-            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4179"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4179",
+            "https://en.wikipedia.org/wiki/4179_Toutatis"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
-            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4179"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4179",
+            "https://en.wikipedia.org/wiki/4179_Toutatis"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         2358.235,
         1980.192,
@@ -11104,7 +11108,7 @@
           "sources": [
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4486"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -11112,7 +11116,7 @@
             "https://en.wikipedia.org/wiki/4486_Mithra",
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4486"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
@@ -11120,24 +11124,25 @@
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4486",
             "https://en.wikipedia.org/wiki/4486_Mithra"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Studied by",
           "sources": [
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4486"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
-            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4486"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=4486",
+            "https://en.wikipedia.org/wiki/4486_Mithra"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         2350.0,
         1648.371,
@@ -11168,7 +11173,7 @@
           "sources": [
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=6489"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -11176,7 +11181,7 @@
             "https://en.wikipedia.org/wiki/6489_Golevka",
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=6489"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
@@ -11184,14 +11189,14 @@
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=6489",
             "https://en.wikipedia.org/wiki/6489_Golevka"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Studied by",
           "sources": [
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=6489"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -11199,10 +11204,10 @@
             "https://www.science.org/doi/10.1126/science.1091452",
             "https://en.wikipedia.org/wiki/6489_Golevka"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         445.14,
         624.0,
@@ -11232,7 +11237,7 @@
           "sources": [
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=8567"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -11240,7 +11245,7 @@
             "https://en.wikipedia.org/wiki/(8567)_1996_HW1",
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=8567"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Orbits",
@@ -11248,24 +11253,25 @@
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=8567",
             "https://en.wikipedia.org/wiki/(8567)_1996_HW1"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Studied by",
           "sources": [
             "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=8567"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
-            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=8567"
+            "https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=8567",
+            "https://en.wikipedia.org/wiki/(8567)_1996_HW1"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         3780.0,
         1640.295,
