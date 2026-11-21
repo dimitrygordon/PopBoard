@@ -1,5 +1,6 @@
 import { loadFleet, findCraft, assetUrl, galleryQuery, reducedMotion, assetExists } from "./ss-data.js";
 
+const AR_AUTO_TAGS = ["planets-moons", "small-bodies"];
 const $ = (id) => document.getElementById(id);
 
 $("studyBackBtn").addEventListener("click", (e) => {
@@ -76,7 +77,9 @@ async function showCraft(fleet, craft) {
   viewer.setAttribute("touch-action", "pan-y");
   viewer.setAttribute("ar", "");
   viewer.setAttribute("ar-modes", "webxr scene-viewer quick-look");
-  viewer.setAttribute("ar-scale", "fixed");
+  // Planets, moons and asteroids are true size (Jupiter is 143,000 km), so let AR scale them down.
+  const arAuto = (craft.tags || []).some((t) => AR_AUTO_TAGS.includes(t));
+  viewer.setAttribute("ar-scale", arAuto ? "auto" : "fixed");
   viewer.setAttribute("shadow-intensity", "0");
   viewer.setAttribute("poster", still);
   if (craft.cameraOrbit) viewer.setAttribute("camera-orbit", craft.cameraOrbit);

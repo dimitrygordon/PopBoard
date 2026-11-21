@@ -19,6 +19,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 FLEET = json.loads((ROOT / "spaceships/fleet.json").read_text())
 CRAFT_IDS = [c["id"] for c in FLEET["craft"] if c.get("listed") is not False]
 LISTED_COUNT = len(CRAFT_IDS)
+AR_AUTO_IDS = {c["id"] for c in FLEET["craft"] if {"planets-moons", "small-bodies"} & set(c.get("tags") or [])}
 TAG_COUNTS = {}
 for _c in FLEET["craft"]:
     if _c.get("listed") is not False:
@@ -354,7 +355,8 @@ def run_viewer(context, base, tag, craft_id, measure=False, take_shot=False, tak
         check(info["bannerHidden"], f"{tag} {craft_id} fallback banner is hidden")
         check(info["ar"] and info["cameraControls"], f"{tag} {craft_id} ar and camera-controls")
         check(info["arModes"] == "webxr scene-viewer quick-look", f"{tag} {craft_id} ar-modes")
-        check(info["arScale"] == "fixed", f"{tag} {craft_id} ar-scale")
+        want_scale = "auto" if craft_id in AR_AUTO_IDS else "fixed"
+        check(info["arScale"] == want_scale, f"{tag} {craft_id} ar-scale {info['arScale']} (want {want_scale})")
         check(info["touchAction"] == "pan-y", f"{tag} {craft_id} touch-action")
         check(info["iosSrc"] and f"{craft_id}.usdz" in info["iosSrc"], f"{tag} {craft_id} ios-src set")
         if craft_id in ("iss", "chandra"):
