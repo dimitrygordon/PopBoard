@@ -1148,6 +1148,2610 @@
       "scale_note": "Scaled to the 5.0 m sunshield; height comes out at 3.67 m (NASA: 3.8 m).",
       "glb_bytes": 1683244,
       "usdz_bytes": 6729536
+    },
+    {
+      "id": "aquarius",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Aquarius (B)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/aquarius-b/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/aquarius/",
+        "https://en.wikipedia.org/wiki/SAC-D"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/aquarius/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/aquarius/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/SAC-D",
+            "https://science.nasa.gov/mission/aquarius/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/SAC-D",
+            "https://science.nasa.gov/mission/aquarius/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/SAC-D",
+            "https://science.nasa.gov/mission/aquarius/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/SAC-D",
+            "https://science.nasa.gov/mission/aquarius/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/aquarius/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/aquarius/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        3.241,
+        5.0,
+        4.618
+      ],
+      "triangles": 10362,
+      "scale_note": "Scaled so the longest side is 5.0 m (Wikipedia: 2.7 x 5.0 m). Shows the reflector unfurled.",
+      "glb_bytes": 532044,
+      "usdz_bytes": 4414449
+    },
+    {
+      "id": "aura",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Aura (B)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/aura-b/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/aura/",
+        "https://en.wikipedia.org/wiki/Aura_(satellite)"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/aura/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/aura/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Aura_(satellite)",
+            "https://science.nasa.gov/mission/aura/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://science.nasa.gov/missions/potential-evolution-of-the-aura-mission/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Aura_(satellite)",
+            "https://science.nasa.gov/mission/aura/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Aura_(satellite)",
+            "https://science.nasa.gov/mission/aura/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/aura/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/aura/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        8.112,
+        17.37,
+        3.19
+      ],
+      "triangles": 86234,
+      "scale_note": "Scaled to the 17.37 m deployed length (Wikipedia, from NASA).",
+      "glb_bytes": 1347460,
+      "usdz_bytes": 5760658
+    },
+    {
+      "id": "calipso",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Cloud-Aerosol Lidar and Infrared Pathfinder Satellite (CALIPSO)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/cloud-aerosol-lidar-and-infrared-pathfinder-satellite-calipso/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/calipso/",
+        "https://en.wikipedia.org/wiki/CALIPSO"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/calipso/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/calipso/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/CALIPSO",
+            "https://science.nasa.gov/mission/calipso/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/CALIPSO",
+            "https://science.nasa.gov/mission/calipso/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/CALIPSO",
+            "https://science.nasa.gov/mission/calipso/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/CALIPSO",
+            "https://science.nasa.gov/mission/calipso/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/calipso/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/calipso/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        7.432,
+        1.889,
+        1.49
+      ],
+      "triangles": 97163,
+      "scale_note": "Scaled so the body is 1.49 m across (Wikipedia: 1.49 x 1.84 x 2.31 m). Orientation of that axis in NASA's model is my reading; Tesla/Turing check.",
+      "glb_bytes": 1685576,
+      "usdz_bytes": 6195692
+    },
+    {
+      "id": "cloudsat",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "CloudSat (C)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/cloudsat-c/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/cloudsat/",
+        "https://en.wikipedia.org/wiki/CloudSat"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/cloudsat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/cloudsat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/CloudSat",
+            "https://science.nasa.gov/mission/cloudsat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://science.nasa.gov/mission/cloudsat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/CloudSat",
+            "https://science.nasa.gov/mission/cloudsat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/CloudSat",
+            "https://science.nasa.gov/mission/cloudsat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/cloudsat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/cloudsat/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        2.407,
+        3.204,
+        5.525
+      ],
+      "triangles": 11204,
+      "scale_note": "NASA's model is in metres as supplied.",
+      "glb_bytes": 351348,
+      "usdz_bytes": 1378274
+    },
+    {
+      "id": "cygnss",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Cyclone Global Navigation Satellite System (CYGNSS)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/cyclone-global-navigation-satellite-system-cygnss/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/cygnss/",
+        "https://en.wikipedia.org/wiki/Cyclone_Global_Navigation_Satellite_System"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/cygnss/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/cygnss/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cyclone_Global_Navigation_Satellite_System",
+            "https://science.nasa.gov/mission/cygnss/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cyclone_Global_Navigation_Satellite_System",
+            "https://www.rdworldonline.com/how-cygnss-solar-panels-will-deorbit/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cyclone_Global_Navigation_Satellite_System",
+            "https://science.nasa.gov/mission/cygnss/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cyclone_Global_Navigation_Satellite_System",
+            "https://science.nasa.gov/mission/cygnss/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/cygnss/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/cygnss/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        1.635,
+        0.526,
+        0.251
+      ],
+      "triangles": 7338,
+      "scale_note": "Scaled to 1.635 m tip to tip (Wikipedia: 163.5 x 52.1 x 22.9 cm).",
+      "glb_bytes": 348800,
+      "usdz_bytes": 1344559
+    },
+    {
+      "id": "dscovr",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Deep Space Climate Observatory (DSCOVR) (Triana)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/deep-space-climate-observatory-dscovr-triana/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/dscovr/",
+        "https://epic.gsfc.nasa.gov/",
+        "https://en.wikipedia.org/wiki/Deep_Space_Climate_Observatory"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/dscovr/",
+            "https://epic.gsfc.nasa.gov/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/dscovr/",
+            "https://epic.gsfc.nasa.gov/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Deep_Space_Climate_Observatory",
+            "https://science.nasa.gov/mission/dscovr/",
+            "https://epic.gsfc.nasa.gov/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://epic.gsfc.nasa.gov/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Deep_Space_Climate_Observatory",
+            "https://science.nasa.gov/mission/dscovr/",
+            "https://epic.gsfc.nasa.gov/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Deep_Space_Climate_Observatory",
+            "https://science.nasa.gov/mission/dscovr/",
+            "https://epic.gsfc.nasa.gov/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://www.ospo.noaa.gov/operations/swfo/status.html",
+            "https://www.noaa.gov/news-release/noaas-solar-1-enters-new-era-of-space-weather-monitoring",
+            "https://epic.gsfc.nasa.gov/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Deep_Space_Climate_Observatory"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        3.637,
+        1.316,
+        1.4
+      ],
+      "triangles": 8786,
+      "scale_note": "Scaled so the body is 1.4 m across (Wikipedia: undeployed 1.4 x 1.8 m). UNVERIFIED: eoPortal gives the bus as 1.37 m x 1.87 m, so the model may be up to 1.34 times too small; I found no NASA or NOAA page with the body size, so it was not rescaled.",
+      "glb_bytes": 292836,
+      "usdz_bytes": 652499
+    },
+    {
+      "id": "eo-1",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Earth Observing-1 (EO-1)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/earth-observing-1-eo-1/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.eoportal.org/satellite-missions/eo-1",
+        "https://en.wikipedia.org/wiki/Earth_Observing-1"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/eo-1",
+            "https://en.wikipedia.org/wiki/Earth_Observing-1"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/eo-1",
+            "https://en.wikipedia.org/wiki/Earth_Observing-1"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/eo-1",
+            "https://en.wikipedia.org/wiki/Earth_Observing-1"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/eo-1",
+            "https://en.wikipedia.org/wiki/Earth_Observing-1"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/eo-1",
+            "https://en.wikipedia.org/wiki/Earth_Observing-1"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/eo-1",
+            "https://en.wikipedia.org/wiki/Earth_Observing-1"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/eo-1",
+            "https://en.wikipedia.org/wiki/Earth_Observing-1"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/eo-1",
+            "https://en.wikipedia.org/wiki/Earth_Observing-1"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        4.435,
+        1.742,
+        5.25
+      ],
+      "triangles": 37707,
+      "scale_note": "Scaled so the longest side is 5.25 m, the solar array length (eoPortal). Approximate.",
+      "glb_bytes": 772412,
+      "usdz_bytes": 2571787
+    },
+    {
+      "id": "goes",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Geostationary Operational Environmental Satellites",
+      "model_source_url": "https://science.nasa.gov/3d-resources/geostationary-operational-environmental-satellites/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
+        "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
+        "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
+            "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
+            "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
+            "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/goes-east-west/goes-r-series-spacecraft-instruments",
+            "https://www.nesdis.noaa.gov/our-satellites/currently-flying/geostationary-satellites",
+            "https://en.wikipedia.org/wiki/Geostationary_Operational_Environmental_Satellite"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        8.0,
+        7.258,
+        6.627
+      ],
+      "triangles": 39382,
+      "scale_note": "NASA's model has no units and the page does not say which GOES it is. Scaled to about 8 m overall as a rough guess; Tesla check.",
+      "glb_bytes": 858392,
+      "usdz_bytes": 2724960
+    },
+    {
+      "id": "grace",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Gravity Recovery and Climate Experiment (GRACE) (B)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/gravity-recovery-and-climate-experiment-grace-b/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/grace/",
+        "https://en.wikipedia.org/wiki/GRACE_and_GRACE-FO"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/grace/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/grace/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/GRACE_and_GRACE-FO",
+            "https://science.nasa.gov/mission/grace/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/GRACE_and_GRACE-FO",
+            "https://science.nasa.gov/mission/grace/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/GRACE_and_GRACE-FO",
+            "https://science.nasa.gov/mission/grace/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/GRACE_and_GRACE-FO",
+            "https://science.nasa.gov/mission/grace/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/grace/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/missions/grace/lumps-bumps-and-gravity-space-scales-weigh-planet-earth/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        1.909,
+        1.269,
+        3.123
+      ],
+      "triangles": 3737,
+      "scale_note": "Scaled to the 3.123 m length (Wikipedia).",
+      "glb_bytes": 324264,
+      "usdz_bytes": 2228714
+    },
+    {
+      "id": "icesat",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Ice, Clouds, and Land Elevation Satellite (ICESat) (B)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/ice-clouds-and-land-elevation-satellite-icesat-b/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/icesat/",
+        "https://en.wikipedia.org/wiki/ICESat"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/icesat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/icesat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/ICESat",
+            "https://science.nasa.gov/mission/icesat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/ICESat",
+            "https://science.nasa.gov/mission/icesat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/ICESat",
+            "https://science.nasa.gov/mission/icesat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/ICESat",
+            "https://science.nasa.gov/mission/icesat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/icesat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/icesat/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        1.422,
+        1.049,
+        3.1
+      ],
+      "triangles": 27888,
+      "scale_note": "Scaled so the longest side is 3.1 m (Wikipedia). Approximate.",
+      "glb_bytes": 613996,
+      "usdz_bytes": 2670911
+    },
+    {
+      "id": "icesat-2",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Ice, Clouds, and Land Elevation Satellite-2 (ICESat-2) (B)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/ice-clouds-and-land-elevation-satellite-2-icesat-2-b/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://icesat-2.gsfc.nasa.gov/",
+        "https://en.wikipedia.org/wiki/ICESat-2"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://icesat-2.gsfc.nasa.gov/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://icesat-2.gsfc.nasa.gov/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/ICESat-2",
+            "https://icesat-2.gsfc.nasa.gov/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/ICESat-2",
+            "https://icesat-2.gsfc.nasa.gov/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/ICESat-2",
+            "https://icesat-2.gsfc.nasa.gov/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/ICESat-2",
+            "https://icesat-2.gsfc.nasa.gov/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://icesat-2.gsfc.nasa.gov/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://icesat-2.gsfc.nasa.gov/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        3.633,
+        2.315,
+        7.342
+      ],
+      "triangles": 23662,
+      "scale_note": "NASA's model is in metres as supplied.",
+      "glb_bytes": 533632,
+      "usdz_bytes": 2531536
+    },
+    {
+      "id": "jason-1",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Jason 1",
+      "model_source_url": "https://science.nasa.gov/3d-resources/jason-1/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/jason-1/",
+        "https://en.wikipedia.org/wiki/Jason-1"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/jason-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/jason-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Jason-1",
+            "https://science.nasa.gov/mission/jason-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Jason-1",
+            "https://science.nasa.gov/mission/jason-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Jason-1",
+            "https://science.nasa.gov/mission/jason-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Jason-1",
+            "https://science.nasa.gov/mission/jason-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/jason-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/jason-1/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        1.517,
+        2.526,
+        6.341
+      ],
+      "triangles": 83099,
+      "scale_note": "Source appears to be in centimetres; scaled by 0.01. Approximate; Tesla check.",
+      "glb_bytes": 1239500,
+      "usdz_bytes": 5106193
+    },
+    {
+      "id": "jason-2",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Ocean Surface Topography Mission (OSTM Jason-2)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/ocean-surface-topography-mission-ostm-jason-2/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/OSTM/Jason-2"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://en.wikipedia.org/wiki/OSTM/Jason-2"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://en.wikipedia.org/wiki/OSTM/Jason-2"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/OSTM/Jason-2"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/OSTM/Jason-2"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/OSTM/Jason-2"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/OSTM/Jason-2"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/OSTM/Jason-2"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/OSTM/Jason-2"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        2.782,
+        1.513,
+        6.34
+      ],
+      "triangles": 65251,
+      "scale_note": "Scaled to match the Jason-1 model (same Proteus bus). Approximate; Tesla check.",
+      "glb_bytes": 1669196,
+      "usdz_bytes": 4719464
+    },
+    {
+      "id": "sentinel-6",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Jason Continuity of Service (Sentinel-6)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/jason-continuity-of-service-sentinel-6/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/sentinel-6/",
+        "https://en.wikipedia.org/wiki/Sentinel-6_Michael_Freilich"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/sentinel-6/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/sentinel-6/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Sentinel-6_Michael_Freilich",
+            "https://science.nasa.gov/mission/sentinel-6/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://science.nasa.gov/blogs/sentinel-6/2026/11/16/nasa-european-sea-level-satellite-prepped-for-new-role/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Sentinel-6_Michael_Freilich",
+            "https://science.nasa.gov/mission/sentinel-6/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Sentinel-6_Michael_Freilich",
+            "https://science.nasa.gov/mission/sentinel-6/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Sentinel-6/New_Copernicus_satellite_to_monitor_sea-level_rise_launched"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/sentinel-6/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        5.133,
+        2.324,
+        4.371
+      ],
+      "triangles": 22822,
+      "scale_note": "NASA's model is in metres as supplied.",
+      "glb_bytes": 775236,
+      "usdz_bytes": 2251667
+    },
+    {
+      "id": "landsat-1",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Landsat 1, 2, and 3",
+      "model_source_url": "https://science.nasa.gov/3d-resources/landsat-1-2-and-3/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://landsat.gsfc.nasa.gov/satellites/landsat-1/",
+        "https://en.wikipedia.org/wiki/Landsat_1"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Landsat_1",
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Landsat_1",
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Landsat_1",
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://earth.esa.int/eogateway/missions/landsat-1-to-landsat-3/description",
+            "https://www.usgs.gov/landsat-missions/landsat-1"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-1/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        2.02,
+        4.58,
+        3.806
+      ],
+      "triangles": 26738,
+      "scale_note": "NASA's model covers Landsat 1, 2 and 3 (same design). In metres as supplied.",
+      "glb_bytes": 437536,
+      "usdz_bytes": 1940857
+    },
+    {
+      "id": "landsat-4",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Landsat 4 and 5",
+      "model_source_url": "https://science.nasa.gov/3d-resources/landsat-4-and-5/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
+        "https://landsat.gsfc.nasa.gov/satellites/landsat-5/",
+        "https://en.wikipedia.org/wiki/Landsat_4"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Landsat_4",
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://aerospace.org/reentries/13367",
+            "https://en.wikipedia.org/wiki/Landsat_4"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://space.jpl.nasa.gov/msl/QuickLooks/landsat4QL.html"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Landsat_4",
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-4/",
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-5/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        2.154,
+        2.427,
+        4.3
+      ],
+      "triangles": 34117,
+      "scale_note": "NASA's model covers Landsat 4 and 5. Scaled to about 4.3 m long (JPL Landsat 4 Quicklook via Tesla S4; that page did not answer curl, recheck).",
+      "glb_bytes": 823572,
+      "usdz_bytes": 4150499
+    },
+    {
+      "id": "landsat-7",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Landsat 7",
+      "model_source_url": "https://science.nasa.gov/3d-resources/landsat-7/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://landsat.gsfc.nasa.gov/satellites/landsat-7/",
+        "https://en.wikipedia.org/wiki/Landsat_7"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Landsat_7",
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Landsat_7",
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Landsat_7",
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Landsat_7",
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://landsat.gsfc.nasa.gov/satellites/landsat-7/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        4.04,
+        2.239,
+        1.323
+      ],
+      "triangles": 40456,
+      "scale_note": "Scaled to 4.04 m long (Wikipedia: 2.74 x 2.74 x 4.04 m).",
+      "glb_bytes": 718124,
+      "usdz_bytes": 2583054
+    },
+    {
+      "id": "oco-2",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Orbiting Carbon Observatory (OCO) 2",
+      "model_source_url": "https://science.nasa.gov/3d-resources/orbiting-carbon-observatory-oco-2/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/oco-2/",
+        "https://en.wikipedia.org/wiki/Orbiting_Carbon_Observatory_2"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/oco-2/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/oco-2/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Orbiting_Carbon_Observatory_2",
+            "https://science.nasa.gov/mission/oco-2/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Orbiting_Carbon_Observatory_2",
+            "https://science.nasa.gov/mission/oco-2/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Orbiting_Carbon_Observatory_2",
+            "https://science.nasa.gov/mission/oco-2/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Orbiting_Carbon_Observatory_2",
+            "https://science.nasa.gov/mission/oco-2/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/oco-2/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/oco-2/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        1.049,
+        2.12,
+        5.482
+      ],
+      "triangles": 41004,
+      "scale_note": "Scaled so the body is 2.12 m tall (Wikipedia, stowed). Approximate.",
+      "glb_bytes": 957712,
+      "usdz_bytes": 3123036
+    },
+    {
+      "id": "poes",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Polar Operational Environmental Satellite (POES)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/polar-operational-environmental-satellite-poes/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf",
+        "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf",
+            "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf",
+            "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation",
+            "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation",
+            "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation",
+            "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf",
+            "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://www.ospo.noaa.gov/assets/pdf/NOAA_NP_Booklet.pdf",
+            "https://www.eoportal.org/satellite-missions/noaa-poes-series-5th-generation"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        7.214,
+        4.872,
+        7.4
+      ],
+      "triangles": 122653,
+      "scale_note": "Scaled to 7.4 m overall length (eoPortal, NOAA K-N series).",
+      "glb_bytes": 1655180,
+      "usdz_bytes": 6758601
+    },
+    {
+      "id": "quikscat",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Quick Scatterometer (QuikSCAT)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/quick-scatterometer-quikscat/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/quikscat/",
+        "https://en.wikipedia.org/wiki/QuikSCAT"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/quikscat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/quikscat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/QuikSCAT",
+            "https://science.nasa.gov/mission/quikscat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/QuikSCAT",
+            "https://science.nasa.gov/mission/quikscat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/quikscat"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/QuikSCAT",
+            "https://science.nasa.gov/mission/quikscat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/quikscat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/quikscat"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        7.506,
+        5.072,
+        2.892
+      ],
+      "triangles": 67785,
+      "scale_note": "NASA's model is in metres as supplied. Checked after Tesla S8: the body comes out about 1.8 x 1.8 x 2.2 m against eoPortal's 2.2 x 1.7 x 1.4 m, close enough that I did not rescale; the axis match is my reading.",
+      "glb_bytes": 1216028,
+      "usdz_bytes": 3979165
+    },
+    {
+      "id": "radarsat-1",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Radar Satellite-1 (RADARSAT-1)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/radar-satellite-1-radarsat-1/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/radarsat-1/",
+        "https://en.wikipedia.org/wiki/Radarsat-1"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/radarsat-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/radarsat-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Radarsat-1",
+            "https://science.nasa.gov/mission/radarsat-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Radarsat-1",
+            "https://science.nasa.gov/mission/radarsat-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Radarsat-1",
+            "https://science.nasa.gov/mission/radarsat-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Radarsat-1",
+            "https://science.nasa.gov/mission/radarsat-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/radarsat-1/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/radarsat-1/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        15.0,
+        2.632,
+        4.043
+      ],
+      "triangles": 6028,
+      "scale_note": "Scaled to the 15 m radar antenna.",
+      "glb_bytes": 275272,
+      "usdz_bytes": 510058
+    },
+    {
+      "id": "sac-c",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Satellite for Scientific Applications (SAC-C)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/satellite-for-scientific-applications-sac-c/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision",
+        "https://www.eoportal.org/satellite-missions/sac-c"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision",
+            "https://www.eoportal.org/satellite-missions/sac-c"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision",
+            "https://www.eoportal.org/satellite-missions/sac-c"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/sac-c",
+            "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/sac-c",
+            "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/sac-c",
+            "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/sac-c",
+            "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision",
+            "https://www.eoportal.org/satellite-missions/sac-c"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://www.argentina.gob.ar/ciencia/conae/misiones-espaciales/sac-c/perfil-de-la-mision",
+            "https://www.eoportal.org/satellite-missions/sac-c"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        2.887,
+        2.2,
+        1.124
+      ],
+      "triangles": 14936,
+      "scale_note": "Scaled to 2.2 m tall (CONAE). Approximate.",
+      "glb_bytes": 510952,
+      "usdz_bytes": 1272904
+    },
+    {
+      "id": "seastar",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "SeaStar",
+      "model_source_url": "https://science.nasa.gov/3d-resources/seastar/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.eoportal.org/satellite-missions/orbview-2",
+        "https://en.wikipedia.org/wiki/OrbView-2"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/orbview-2",
+            "https://en.wikipedia.org/wiki/OrbView-2"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        2.941,
+        1.262,
+        3.3
+      ],
+      "triangles": 1839,
+      "scale_note": "Scaled to about 3.3 m across the panels; approximate, Tesla check.",
+      "glb_bytes": 317348,
+      "usdz_bytes": 545476
+    },
+    {
+      "id": "suomi-npp",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Suomi National Polar-orbiting Partnership (Suomi NPP)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/suomi-national-polar-orbiting-partnership-suomi-npp/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/suomi-npp/",
+        "https://en.wikipedia.org/wiki/Suomi_NPP"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/suomi-npp/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/suomi-npp/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Suomi_NPP",
+            "https://science.nasa.gov/mission/suomi-npp/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://www.nesdis.noaa.gov/news/noaa-deorbit-the-suomi-npp-satellite-after-more-15-years-service",
+            "https://www.nesdis.noaa.gov/news/update-4-cessation-of-suomi-national-polar-orbiting-partnership-s-npp-data-users-november-02-2026-1540-utc-and-decommissioning-issued-november-2-2026-1800-utc"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Suomi_NPP",
+            "https://science.nasa.gov/mission/suomi-npp/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Suomi_NPP",
+            "https://science.nasa.gov/mission/suomi-npp/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/suomi-npp/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/suomi-npp/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        2.569,
+        4.183,
+        8.959
+      ],
+      "triangles": 2938,
+      "scale_note": "NASA's model is in metres as supplied (4.2 m body).",
+      "glb_bytes": 439704,
+      "usdz_bytes": 2591714
+    },
+    {
+      "id": "topex-poseidon",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "TOPEX-Poseidon",
+      "model_source_url": "https://science.nasa.gov/3d-resources/topex-poseidon/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/topex-poseidon/",
+        "https://www.eoportal.org/satellite-missions/topex-poseidon"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/topex-poseidon/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/topex-poseidon/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/topex-poseidon",
+            "https://science.nasa.gov/mission/topex-poseidon/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/topex-poseidon",
+            "https://science.nasa.gov/mission/topex-poseidon/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/topex-poseidon",
+            "https://science.nasa.gov/mission/topex-poseidon/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/topex-poseidon",
+            "https://science.nasa.gov/mission/topex-poseidon/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/topex-poseidon/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/topex-poseidon/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        11.5,
+        8.541,
+        7.092
+      ],
+      "triangles": 20876,
+      "scale_note": "Scaled to the 11.5 m span (eoPortal).",
+      "glb_bytes": 544924,
+      "usdz_bytes": 1640911
+    },
+    {
+      "id": "toms-ep",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Total Ozone Mapping Spectrometer (TOMS)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/total-ozone-mapping-spectrometer-toms/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
+        "https://www.eoportal.org/satellite-missions/toms"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
+            "https://www.eoportal.org/satellite-missions/toms"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
+            "https://www.eoportal.org/satellite-missions/toms"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
+            "https://www.eoportal.org/satellite-missions/toms"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
+            "https://www.eoportal.org/satellite-missions/toms"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
+            "https://www.eoportal.org/satellite-missions/toms"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
+            "https://www.eoportal.org/satellite-missions/toms"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
+            "https://www.eoportal.org/satellite-missions/toms"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Total_Ozone_Mapping_Spectrometer",
+            "https://www.eoportal.org/satellite-missions/toms"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        3.9,
+        2.427,
+        1.24
+      ],
+      "triangles": 21059,
+      "scale_note": "Scaled to a 3.9 m solar panel span from memory (JPL Quicklook). Tesla: the 3.9 m span is UNVERIFIED (no fetched source); the body matches eoPortal's stowed 1.16 m x 1.77 m.",
+      "glb_bytes": 663764,
+      "usdz_bytes": 1862464
+    },
+    {
+      "id": "trmm",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Tropical Rainfall Measuring Mission (TRMM)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/tropical-rainfall-measuring-mission-trmm/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/trmm/",
+        "https://en.wikipedia.org/wiki/Tropical_Rainfall_Measuring_Mission"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/trmm/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/trmm/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Tropical_Rainfall_Measuring_Mission",
+            "https://science.nasa.gov/mission/trmm/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/trmm"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/trmm"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/trmm"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/trmm/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/trmm/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        5.1,
+        14.458,
+        5.371
+      ],
+      "triangles": 51404,
+      "scale_note": "Scaled so the body is 5.1 m long (eoPortal), which gives about 14.5 m across the solar paddles (eoPortal: 14.6 m). Rescaled after Tesla S7.",
+      "glb_bytes": 790592,
+      "usdz_bytes": 3173684
+    },
+    {
+      "id": "acrimsat",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Active Cavity Irradiance Monitor Satellite (AcrimSAT) (A)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/active-cavity-irradiance-monitor-satellite-acrimsat-a/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/acrimsat/",
+        "https://en.wikipedia.org/wiki/ACRIMSAT"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/acrimsat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/acrimsat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/ACRIMSAT",
+            "https://science.nasa.gov/mission/acrimsat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/ACRIMSAT",
+            "https://science.nasa.gov/mission/acrimsat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/ACRIMSAT",
+            "https://science.nasa.gov/mission/acrimsat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/ACRIMSAT",
+            "https://science.nasa.gov/mission/acrimsat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/acrimsat/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://www.jpl.nasa.gov/news/press_kits/acrimsat.pdf"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        1.78,
+        0.726,
+        1.78
+      ],
+      "triangles": 11544,
+      "scale_note": "Scaled to the 1.78 m panel span (Wikipedia).",
+      "glb_bytes": 399988,
+      "usdz_bytes": 1881167
+    },
+    {
+      "id": "aim",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Aeronomy of Ice in the Mesosphere",
+      "model_source_url": "https://science.nasa.gov/3d-resources/aeronomy-of-ice-in-the-mesosphere/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/aim/",
+        "https://en.wikipedia.org/wiki/Aeronomy_of_Ice_in_the_Mesosphere"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/aim/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/aim/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Aeronomy_of_Ice_in_the_Mesosphere",
+            "https://science.nasa.gov/mission/aim/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Aeronomy_of_Ice_in_the_Mesosphere",
+            "https://science.nasa.gov/mission/aim/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Aeronomy_of_Ice_in_the_Mesosphere",
+            "https://science.nasa.gov/mission/aim/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Aeronomy_of_Ice_in_the_Mesosphere",
+            "https://science.nasa.gov/mission/aim/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/aim/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/aim/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        2.457,
+        1.022,
+        1.1
+      ],
+      "triangles": 112308,
+      "scale_note": "Scaled so the body is 1.1 m across (Wikipedia: 1.4 x 1.1 m). Approximate.",
+      "glb_bytes": 1351216,
+      "usdz_bytes": 6322789
+    },
+    {
+      "id": "gpm",
+      "wave": 3,
+      "batch": 1,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Global Precipitation Measurement",
+      "model_source_url": "https://science.nasa.gov/3d-resources/global-precipitation-measurement/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/gpm/",
+        "https://en.wikipedia.org/wiki/Global_Precipitation_Measurement"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/gpm/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/gpm/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Global_Precipitation_Measurement",
+            "https://science.nasa.gov/mission/gpm/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Global_Precipitation_Measurement",
+            "https://science.nasa.gov/mission/gpm/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Global_Precipitation_Measurement",
+            "https://science.nasa.gov/mission/gpm/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Global_Precipitation_Measurement",
+            "https://science.nasa.gov/mission/gpm/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/gpm/"
+          ],
+          "verified": true
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/gpm/"
+          ],
+          "verified": true
+        }
+      ],
+      "needs_tesla_verification": false,
+      "model_size_m_gltf_xyz": [
+        5.708,
+        8.079,
+        13.0
+      ],
+      "triangles": 236487,
+      "scale_note": "Scaled to 13 m overall (NASA GPM). Built in wave 2 as a spare, then rescaled (the wave 2 spare was wrongly scaled).",
+      "glb_bytes": 2523552,
+      "usdz_bytes": 6629872
     }
   ]
 }
