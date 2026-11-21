@@ -3772,14 +3772,14 @@
           "sources": [
             "https://science.nasa.gov/mission/ace/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/ace/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -3787,7 +3787,7 @@
             "https://en.wikipedia.org/wiki/Advanced_Composition_Explorer",
             "https://science.nasa.gov/mission/ace/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -3795,7 +3795,7 @@
             "https://en.wikipedia.org/wiki/Advanced_Composition_Explorer",
             "https://science.nasa.gov/mission/ace/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -3803,7 +3803,7 @@
             "https://en.wikipedia.org/wiki/Advanced_Composition_Explorer",
             "https://science.nasa.gov/mission/ace/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -3811,24 +3811,24 @@
             "https://en.wikipedia.org/wiki/Advanced_Composition_Explorer",
             "https://science.nasa.gov/mission/ace/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/ace/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/ace/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         5.685,
         1.715,
@@ -3861,7 +3861,7 @@
             "https://www.esa.int/about-us/directorates/science/cluster",
             "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
@@ -3870,7 +3870,7 @@
             "https://www.esa.int/about-us/directorates/science/cluster",
             "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -3879,14 +3879,14 @@
             "https://www.esa.int/about-us/directorates/science/cluster",
             "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
           "sources": [
             "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -3895,7 +3895,7 @@
             "https://www.esa.int/about-us/directorates/science/cluster",
             "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -3904,7 +3904,7 @@
             "https://www.esa.int/about-us/directorates/science/cluster",
             "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -3913,7 +3913,7 @@
             "https://www.esa.int/about-us/directorates/science/cluster",
             "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -3922,10 +3922,10 @@
             "https://www.esa.int/about-us/directorates/science/cluster",
             "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         88.0,
         4.331,
@@ -3956,7 +3956,7 @@
             "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
             "https://www.eoportal.org/satellite-missions/cnofs"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
@@ -3964,7 +3964,7 @@
             "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
             "https://www.eoportal.org/satellite-missions/cnofs"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -3972,7 +3972,7 @@
             "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
             "https://www.eoportal.org/satellite-missions/cnofs"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -3980,7 +3980,7 @@
             "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
             "https://www.eoportal.org/satellite-missions/cnofs"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -3988,7 +3988,7 @@
             "https://www.eoportal.org/satellite-missions/cnofs",
             "https://vefi.gsfc.nasa.gov/vefi/Resources/VEFI_DescriptionREV.pdf"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -3996,7 +3996,7 @@
             "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
             "https://www.eoportal.org/satellite-missions/cnofs"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -4004,7 +4004,7 @@
             "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
             "https://www.eoportal.org/satellite-missions/cnofs"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -4012,10 +4012,10 @@
             "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
             "https://www.eoportal.org/satellite-missions/cnofs"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         20.0,
         20.0,
@@ -4047,7 +4047,7 @@
             "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
             "https://science.nasa.gov/3d-resources/firefly/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
@@ -4055,7 +4055,7 @@
             "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
             "https://science.nasa.gov/3d-resources/firefly/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -4064,7 +4064,7 @@
             "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
             "https://science.nasa.gov/3d-resources/firefly/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -4073,7 +4073,7 @@
             "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
             "https://science.nasa.gov/3d-resources/firefly/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -4082,7 +4082,7 @@
             "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
             "https://science.nasa.gov/3d-resources/firefly/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -4090,7 +4090,7 @@
             "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
             "https://science.nasa.gov/3d-resources/firefly/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -4098,10 +4098,10 @@
             "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
             "https://science.nasa.gov/3d-resources/firefly/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.494,
         0.494,
@@ -4131,14 +4131,14 @@
           "sources": [
             "https://science.nasa.gov/mission/geotail/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/geotail/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -4146,7 +4146,7 @@
             "https://en.wikipedia.org/wiki/Geotail",
             "https://science.nasa.gov/mission/geotail/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -4154,7 +4154,7 @@
             "https://en.wikipedia.org/wiki/Geotail",
             "https://science.nasa.gov/mission/geotail/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -4162,7 +4162,7 @@
             "https://en.wikipedia.org/wiki/Geotail",
             "https://science.nasa.gov/mission/geotail/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -4170,24 +4170,24 @@
             "https://en.wikipedia.org/wiki/Geotail",
             "https://science.nasa.gov/mission/geotail/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/geotail/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/geotail/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         10.323,
         19.76,
@@ -4219,7 +4219,7 @@
             "https://science.nasa.gov/mission/polar/",
             "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
@@ -4227,7 +4227,7 @@
             "https://science.nasa.gov/mission/polar/",
             "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -4236,7 +4236,7 @@
             "https://science.nasa.gov/mission/polar/",
             "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -4245,7 +4245,7 @@
             "https://science.nasa.gov/mission/polar/",
             "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -4254,7 +4254,7 @@
             "https://science.nasa.gov/mission/polar/",
             "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -4263,7 +4263,7 @@
             "https://science.nasa.gov/mission/polar/",
             "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -4271,17 +4271,17 @@
             "https://science.nasa.gov/mission/polar/",
             "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         15.059,
         21.545,
@@ -4312,14 +4312,14 @@
           "sources": [
             "https://science.nasa.gov/mission/wind/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/wind/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -4328,7 +4328,7 @@
             "https://en.wikipedia.org/wiki/Polar_(satellite)",
             "https://science.nasa.gov/mission/wind/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -4337,7 +4337,7 @@
             "https://en.wikipedia.org/wiki/Polar_(satellite)",
             "https://science.nasa.gov/mission/wind/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -4346,7 +4346,7 @@
             "https://en.wikipedia.org/wiki/Polar_(satellite)",
             "https://science.nasa.gov/mission/wind/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -4355,14 +4355,14 @@
             "https://en.wikipedia.org/wiki/Polar_(satellite)",
             "https://science.nasa.gov/mission/wind/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/wind/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -4370,10 +4370,10 @@
             "https://en.wikipedia.org/wiki/Wind_(spacecraft)",
             "https://en.wikipedia.org/wiki/Polar_(satellite)"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         33.174,
         41.788,
@@ -4403,14 +4403,14 @@
           "sources": [
             "https://science.nasa.gov/mission/themis/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/themis/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -4418,7 +4418,7 @@
             "https://en.wikipedia.org/wiki/THEMIS",
             "https://science.nasa.gov/mission/themis/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -4426,7 +4426,7 @@
             "https://en.wikipedia.org/wiki/THEMIS",
             "https://science.nasa.gov/mission/themis/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -4434,7 +4434,7 @@
             "https://en.wikipedia.org/wiki/THEMIS",
             "https://science.nasa.gov/mission/themis/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -4442,24 +4442,24 @@
             "https://en.wikipedia.org/wiki/THEMIS",
             "https://science.nasa.gov/mission/themis/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/themis/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/themis/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         6.086,
         7.207,
@@ -4489,14 +4489,14 @@
           "sources": [
             "https://science.nasa.gov/mission/mms/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/mms/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -4504,7 +4504,7 @@
             "https://en.wikipedia.org/wiki/Magnetospheric_Multiscale_Mission",
             "https://science.nasa.gov/mission/mms/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -4512,7 +4512,7 @@
             "https://en.wikipedia.org/wiki/Magnetospheric_Multiscale_Mission",
             "https://science.nasa.gov/mission/mms/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -4520,7 +4520,7 @@
             "https://en.wikipedia.org/wiki/Magnetospheric_Multiscale_Mission",
             "https://science.nasa.gov/mission/mms/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -4528,24 +4528,24 @@
             "https://en.wikipedia.org/wiki/Magnetospheric_Multiscale_Mission",
             "https://science.nasa.gov/mission/mms/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/mms/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/mms/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         29.023,
         17.019,
@@ -4577,7 +4577,7 @@
             "https://science.nasa.gov/mission/van-allen-probes/",
             "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
@@ -4585,7 +4585,7 @@
             "https://science.nasa.gov/mission/van-allen-probes/",
             "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -4594,7 +4594,7 @@
             "https://science.nasa.gov/mission/van-allen-probes/",
             "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -4603,7 +4603,7 @@
             "https://science.nasa.gov/mission/van-allen-probes/",
             "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -4612,14 +4612,14 @@
             "https://science.nasa.gov/mission/van-allen-probes/",
             "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
           "sources": [
             "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -4627,7 +4627,7 @@
             "https://science.nasa.gov/mission/van-allen-probes/",
             "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -4635,10 +4635,10 @@
             "https://science.nasa.gov/mission/van-allen-probes/",
             "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         39.821,
         12.516,
@@ -4668,14 +4668,14 @@
           "sources": [
             "https://science.nasa.gov/mission/rhessi/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/rhessi/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -4683,7 +4683,7 @@
             "https://en.wikipedia.org/wiki/Reuven_Ramaty_High_Energy_Solar_Spectroscopic_Imager",
             "https://science.nasa.gov/mission/rhessi/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -4691,7 +4691,7 @@
             "https://en.wikipedia.org/wiki/Reuven_Ramaty_High_Energy_Solar_Spectroscopic_Imager",
             "https://science.nasa.gov/mission/rhessi/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -4699,7 +4699,7 @@
             "https://en.wikipedia.org/wiki/Reuven_Ramaty_High_Energy_Solar_Spectroscopic_Imager",
             "https://science.nasa.gov/mission/rhessi/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -4707,24 +4707,24 @@
             "https://en.wikipedia.org/wiki/Reuven_Ramaty_High_Energy_Solar_Spectroscopic_Imager",
             "https://science.nasa.gov/mission/rhessi/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/rhessi/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/rhessi/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         5.76,
         5.758,
@@ -4755,14 +4755,14 @@
           "sources": [
             "https://science.nasa.gov/mission/hinode/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/hinode/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -4770,7 +4770,7 @@
             "https://en.wikipedia.org/wiki/Hinode_(satellite)",
             "https://science.nasa.gov/mission/hinode/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -4778,38 +4778,38 @@
             "https://en.wikipedia.org/wiki/Hinode_(satellite)",
             "https://science.nasa.gov/mission/hinode/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://www.isas.jaxa.jp/en/missions/spacecraft/current/hinode.html"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
           "sources": [
             "https://www.isas.jaxa.jp/en/missions/spacecraft/current/hinode.html"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/hinode/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/hinode/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         10.0,
         4.0,
@@ -4839,14 +4839,14 @@
           "sources": [
             "https://science.nasa.gov/mission/icon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/icon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -4854,7 +4854,7 @@
             "https://en.wikipedia.org/wiki/Ionospheric_Connection_Explorer",
             "https://science.nasa.gov/mission/icon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -4862,7 +4862,7 @@
             "https://en.wikipedia.org/wiki/Ionospheric_Connection_Explorer",
             "https://science.nasa.gov/mission/icon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -4870,7 +4870,7 @@
             "https://en.wikipedia.org/wiki/Ionospheric_Connection_Explorer",
             "https://science.nasa.gov/mission/icon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -4878,24 +4878,24 @@
             "https://en.wikipedia.org/wiki/Ionospheric_Connection_Explorer",
             "https://science.nasa.gov/mission/icon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/icon/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/icon/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1.039,
         2.105,
@@ -4925,14 +4925,14 @@
           "sources": [
             "https://science.nasa.gov/mission/fuse/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/fuse/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -4940,7 +4940,7 @@
             "https://en.wikipedia.org/wiki/Far_Ultraviolet_Spectroscopic_Explorer",
             "https://science.nasa.gov/mission/fuse/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -4948,7 +4948,7 @@
             "https://en.wikipedia.org/wiki/Far_Ultraviolet_Spectroscopic_Explorer",
             "https://science.nasa.gov/mission/fuse/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -4956,7 +4956,7 @@
             "https://en.wikipedia.org/wiki/Far_Ultraviolet_Spectroscopic_Explorer",
             "https://science.nasa.gov/mission/fuse/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -4964,24 +4964,24 @@
             "https://en.wikipedia.org/wiki/Far_Ultraviolet_Spectroscopic_Explorer",
             "https://science.nasa.gov/mission/fuse/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/fuse/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/fuse/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1.764,
         4.501,
@@ -5011,14 +5011,14 @@
           "sources": [
             "https://science.nasa.gov/mission/hete-2/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/hete-2/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -5026,7 +5026,7 @@
             "https://en.wikipedia.org/wiki/High_Energy_Transient_Explorer_2",
             "https://science.nasa.gov/mission/hete-2/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -5034,7 +5034,7 @@
             "https://en.wikipedia.org/wiki/High_Energy_Transient_Explorer_2",
             "https://science.nasa.gov/mission/hete-2/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -5042,7 +5042,7 @@
             "https://en.wikipedia.org/wiki/High_Energy_Transient_Explorer_2",
             "https://science.nasa.gov/mission/hete-2/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -5050,24 +5050,24 @@
             "https://en.wikipedia.org/wiki/High_Energy_Transient_Explorer_2",
             "https://science.nasa.gov/mission/hete-2/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/hete-2/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/hete-2/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1.075,
         1.018,
@@ -5097,14 +5097,14 @@
           "sources": [
             "https://science.nasa.gov/mission/ibex/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/ibex/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -5112,7 +5112,7 @@
             "https://en.wikipedia.org/wiki/Interstellar_Boundary_Explorer",
             "https://science.nasa.gov/mission/ibex/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -5120,7 +5120,7 @@
             "https://en.wikipedia.org/wiki/Interstellar_Boundary_Explorer",
             "https://science.nasa.gov/mission/ibex/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -5128,7 +5128,7 @@
             "https://en.wikipedia.org/wiki/Interstellar_Boundary_Explorer",
             "https://science.nasa.gov/mission/ibex/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -5136,24 +5136,24 @@
             "https://en.wikipedia.org/wiki/Interstellar_Boundary_Explorer",
             "https://science.nasa.gov/mission/ibex/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/ibex/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/ibex/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1.181,
         0.98,
@@ -5189,7 +5189,7 @@
             "https://heasarc.gsfc.nasa.gov/docs/nicer/",
             "https://www.nasa.gov/centers-and-facilities/goddard/nasa-team-first-to-demonstrate-x-ray-navigation-in-space/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
@@ -5199,7 +5199,7 @@
             "https://heasarc.gsfc.nasa.gov/docs/nicer/",
             "https://www.nasa.gov/centers-and-facilities/goddard/nasa-team-first-to-demonstrate-x-ray-navigation-in-space/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -5210,14 +5210,14 @@
             "https://heasarc.gsfc.nasa.gov/docs/nicer/",
             "https://www.nasa.gov/centers-and-facilities/goddard/nasa-team-first-to-demonstrate-x-ray-navigation-in-space/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
           "sources": [
             "https://www.nasa.gov/missions/station/nicer-status-updates/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -5228,7 +5228,7 @@
             "https://heasarc.gsfc.nasa.gov/docs/nicer/",
             "https://www.nasa.gov/centers-and-facilities/goddard/nasa-team-first-to-demonstrate-x-ray-navigation-in-space/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -5239,24 +5239,24 @@
             "https://heasarc.gsfc.nasa.gov/docs/nicer/",
             "https://www.nasa.gov/centers-and-facilities/goddard/nasa-team-first-to-demonstrate-x-ray-navigation-in-space/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://heasarc.gsfc.nasa.gov/docs/nicer/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://www.nasa.gov/centers-and-facilities/goddard/nasa-team-first-to-demonstrate-x-ray-navigation-in-space/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1.161,
         1.055,
@@ -5286,14 +5286,14 @@
           "sources": [
             "https://science.nasa.gov/mission/swas/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/swas/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -5301,7 +5301,7 @@
             "https://en.wikipedia.org/wiki/Submillimeter_Wave_Astronomy_Satellite",
             "https://science.nasa.gov/mission/swas/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -5309,7 +5309,7 @@
             "https://en.wikipedia.org/wiki/Submillimeter_Wave_Astronomy_Satellite",
             "https://science.nasa.gov/mission/swas/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -5317,7 +5317,7 @@
             "https://en.wikipedia.org/wiki/Submillimeter_Wave_Astronomy_Satellite",
             "https://science.nasa.gov/mission/swas/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -5325,24 +5325,24 @@
             "https://en.wikipedia.org/wiki/Submillimeter_Wave_Astronomy_Satellite",
             "https://science.nasa.gov/mission/swas/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/swas/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/swas/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1.09,
         1.63,
@@ -5372,14 +5372,14 @@
           "sources": [
             "https://science.nasa.gov/mission/suzaku/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/suzaku/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -5387,7 +5387,7 @@
             "https://en.wikipedia.org/wiki/Suzaku_(satellite)",
             "https://science.nasa.gov/mission/suzaku/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -5395,7 +5395,7 @@
             "https://en.wikipedia.org/wiki/Suzaku_(satellite)",
             "https://science.nasa.gov/mission/suzaku/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -5403,7 +5403,7 @@
             "https://en.wikipedia.org/wiki/Suzaku_(satellite)",
             "https://science.nasa.gov/mission/suzaku/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -5411,24 +5411,24 @@
             "https://en.wikipedia.org/wiki/Suzaku_(satellite)",
             "https://science.nasa.gov/mission/suzaku/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/suzaku/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/suzaku/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         5.216,
         2.165,
@@ -5458,14 +5458,14 @@
           "sources": [
             "https://science.nasa.gov/mission/wire/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/wire/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -5473,7 +5473,7 @@
             "https://en.wikipedia.org/wiki/Wide_Field_Infrared_Explorer",
             "https://science.nasa.gov/mission/wire/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -5481,7 +5481,7 @@
             "https://en.wikipedia.org/wiki/Wide_Field_Infrared_Explorer",
             "https://science.nasa.gov/mission/wire/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -5489,7 +5489,7 @@
             "https://en.wikipedia.org/wiki/Wide_Field_Infrared_Explorer",
             "https://science.nasa.gov/mission/wire/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -5497,24 +5497,24 @@
             "https://en.wikipedia.org/wiki/Wide_Field_Infrared_Explorer",
             "https://science.nasa.gov/mission/wire/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/wire/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/wire/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1.95,
         2.059,
@@ -5545,7 +5545,7 @@
             "https://en.wikipedia.org/wiki/STS-87",
             "https://en.wikipedia.org/wiki/STS-56"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
@@ -5553,7 +5553,7 @@
             "https://en.wikipedia.org/wiki/STS-87",
             "https://en.wikipedia.org/wiki/STS-56"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -5561,7 +5561,7 @@
             "https://en.wikipedia.org/wiki/STS-87",
             "https://en.wikipedia.org/wiki/STS-56"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -5569,7 +5569,7 @@
             "https://en.wikipedia.org/wiki/STS-87",
             "https://en.wikipedia.org/wiki/STS-56"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -5577,7 +5577,7 @@
             "https://en.wikipedia.org/wiki/STS-87",
             "https://en.wikipedia.org/wiki/STS-56"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -5585,10 +5585,10 @@
             "https://en.wikipedia.org/wiki/STS-87",
             "https://en.wikipedia.org/wiki/STS-56"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         3.332,
         1.528,
@@ -5618,14 +5618,14 @@
           "sources": [
             "https://science.nasa.gov/mission/ulysses/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/ulysses/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -5633,7 +5633,7 @@
             "https://en.wikipedia.org/wiki/Ulysses_(spacecraft)",
             "https://science.nasa.gov/mission/ulysses/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -5641,7 +5641,7 @@
             "https://en.wikipedia.org/wiki/Ulysses_(spacecraft)",
             "https://science.nasa.gov/mission/ulysses/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -5649,7 +5649,7 @@
             "https://en.wikipedia.org/wiki/Ulysses_(spacecraft)",
             "https://science.nasa.gov/mission/ulysses/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -5657,24 +5657,24 @@
             "https://en.wikipedia.org/wiki/Ulysses_(spacecraft)",
             "https://science.nasa.gov/mission/ulysses/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/ulysses/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/ulysses/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         68.023,
         10.203,
@@ -5704,14 +5704,14 @@
           "sources": [
             "https://science.nasa.gov/mission/clementine/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/clementine/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -5719,7 +5719,7 @@
             "https://en.wikipedia.org/wiki/Clementine_(spacecraft)",
             "https://science.nasa.gov/mission/clementine/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -5727,7 +5727,7 @@
             "https://en.wikipedia.org/wiki/Clementine_(spacecraft)",
             "https://science.nasa.gov/mission/clementine/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -5735,7 +5735,7 @@
             "https://en.wikipedia.org/wiki/Clementine_(spacecraft)",
             "https://science.nasa.gov/mission/clementine/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -5743,24 +5743,24 @@
             "https://en.wikipedia.org/wiki/Clementine_(spacecraft)",
             "https://science.nasa.gov/mission/clementine/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/clementine/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/clementine/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         4.132,
         2.18,
@@ -5791,14 +5791,14 @@
           "sources": [
             "https://science.nasa.gov/mission/psyche/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://en.wikipedia.org/wiki/Lanteris_1300"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -5807,7 +5807,7 @@
             "https://en.wikipedia.org/wiki/Lanteris_1300",
             "https://science.nasa.gov/mission/psyche/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -5816,31 +5816,31 @@
             "https://en.wikipedia.org/wiki/Lanteris_1300",
             "https://science.nasa.gov/mission/psyche/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Lanteris_1300"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/psyche/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://en.wikipedia.org/wiki/Lanteris_1300"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         26.833,
         6.127,
@@ -5872,7 +5872,7 @@
             "https://science.nasa.gov/mission/roman-space-telescope/",
             "https://science.nasa.gov/mission/roman-space-telescope/frequently-asked-questions/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
@@ -5880,7 +5880,7 @@
             "https://science.nasa.gov/mission/roman-space-telescope/",
             "https://science.nasa.gov/mission/roman-space-telescope/frequently-asked-questions/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -5889,7 +5889,7 @@
             "https://science.nasa.gov/mission/roman-space-telescope/",
             "https://science.nasa.gov/mission/roman-space-telescope/frequently-asked-questions/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -5897,22 +5897,22 @@
             "https://www.nasa.gov/news-release/nasas-dark-universe-seeking-nancy-grace-roman-space-telescope-launches/",
             "https://www.nasa.gov/news-release/nasa-invites-media-public-to-view-roman-telescopes-first-images/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://science.nasa.gov/mission/roman-space-telescope/frequently-asked-questions/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
           "sources": [
-            "https://assets.science.nasa.gov/content/dam/science/missions/rst/education/Final%20Roman%20Press%20Kit-508compliant.pdf",
+            "https://assets.science.nasa.gov/content/dam/science/missions/rst/education/aug%20Roman%20Press%20Kit-508compliant.pdf",
             "https://en.wikipedia.org/wiki/Nancy_Grace_Roman_Space_Telescope"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -5920,7 +5920,7 @@
             "https://science.nasa.gov/mission/roman-space-telescope/",
             "https://science.nasa.gov/mission/roman-space-telescope/frequently-asked-questions/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -5928,10 +5928,10 @@
             "https://science.nasa.gov/mission/roman-space-telescope/",
             "https://science.nasa.gov/mission/roman-space-telescope/frequently-asked-questions/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         12.7,
         4.814,
@@ -5962,7 +5962,7 @@
             "https://en.wikipedia.org/wiki/Tracking_and_data_relay_satellite",
             "https://en.wikipedia.org/wiki/TDRS-1"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
@@ -5970,7 +5970,7 @@
             "https://en.wikipedia.org/wiki/Tracking_and_data_relay_satellite",
             "https://en.wikipedia.org/wiki/TDRS-1"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -5978,7 +5978,7 @@
             "https://en.wikipedia.org/wiki/Tracking_and_data_relay_satellite",
             "https://en.wikipedia.org/wiki/TDRS-1"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -5986,14 +5986,14 @@
             "https://en.wikipedia.org/wiki/Tracking_and_data_relay_satellite",
             "https://en.wikipedia.org/wiki/TDRS-1"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/TDRS-1"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -6001,7 +6001,7 @@
             "https://en.wikipedia.org/wiki/Tracking_and_data_relay_satellite",
             "https://en.wikipedia.org/wiki/TDRS-1"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -6009,10 +6009,10 @@
             "https://en.wikipedia.org/wiki/Tracking_and_data_relay_satellite",
             "https://en.wikipedia.org/wiki/TDRS-1"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         9.851,
         5.264,
@@ -6044,7 +6044,7 @@
             "https://science.nasa.gov/mission/maven/",
             "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
@@ -6052,7 +6052,7 @@
             "https://science.nasa.gov/mission/maven/",
             "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -6061,7 +6061,7 @@
             "https://science.nasa.gov/mission/maven/",
             "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -6069,7 +6069,7 @@
             "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/",
             "https://science.nasa.gov/mission/maven/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -6078,7 +6078,7 @@
             "https://science.nasa.gov/mission/maven/",
             "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -6087,7 +6087,7 @@
             "https://science.nasa.gov/mission/maven/",
             "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -6095,7 +6095,7 @@
             "https://science.nasa.gov/mission/maven/",
             "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -6103,10 +6103,10 @@
             "https://science.nasa.gov/mission/maven/",
             "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         11.4,
         6.514,
@@ -6135,59 +6135,59 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
           "sources": [
             "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
           "sources": [
             "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
           "sources": [
             "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         31.959,
         6.922,
@@ -6219,7 +6219,7 @@
             "https://www.nasa.gov/news-release/nasa-unveils-initiatives-to-achieve-americas-national-space-policy/",
             "https://www.nasa.gov/mission/gateway/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
@@ -6227,7 +6227,7 @@
             "https://www.nasa.gov/news-release/nasa-unveils-initiatives-to-achieve-americas-national-space-policy/",
             "https://www.nasa.gov/mission/gateway/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -6235,7 +6235,7 @@
             "https://www.nasa.gov/news-release/nasa-unveils-initiatives-to-achieve-americas-national-space-policy/",
             "https://en.wikipedia.org/wiki/Lunar_Gateway"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -6243,7 +6243,7 @@
             "https://www.nasa.gov/news-release/nasa-unveils-initiatives-to-achieve-americas-national-space-policy/",
             "https://en.wikipedia.org/wiki/Lunar_Gateway"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -6252,7 +6252,7 @@
             "https://www.nasa.gov/news-release/nasa-unveils-initiatives-to-achieve-americas-national-space-policy/",
             "https://www.nasa.gov/mission/gateway/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -6260,17 +6260,17 @@
             "https://www.nasa.gov/news-release/nasa-unveils-initiatives-to-achieve-americas-national-space-policy/",
             "https://en.wikipedia.org/wiki/Lunar_Gateway"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://en.wikipedia.org/wiki/Lunar_Gateway"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         17.882,
         38.97,
@@ -6299,38 +6299,38 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Advanced_Crew_Escape_Suit"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Advanced_Crew_Escape_Suit"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Advanced_Crew_Escape_Suit"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Advanced_Crew_Escape_Suit"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://en.wikipedia.org/wiki/Advanced_Crew_Escape_Suit"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.887,
         1.996,
@@ -6359,31 +6359,31 @@
           "sources": [
             "https://science.nasa.gov/3d-resources/astronaut/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://science.nasa.gov/3d-resources/astronaut/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://science.nasa.gov/3d-resources/astronaut/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/3d-resources/astronaut/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1.67,
         1.8,
@@ -6413,14 +6413,14 @@
           "sources": [
             "https://science.nasa.gov/3d-resources/astronaut-glove/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://science.nasa.gov/3d-resources/astronaut-glove/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -6428,24 +6428,24 @@
             "https://en.wikipedia.org/wiki/Astronaut_Glove_Challenge",
             "https://science.nasa.gov/3d-resources/astronaut-glove/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/3d-resources/astronaut-glove/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/3d-resources/astronaut-glove/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.3,
         0.16,
@@ -6474,38 +6474,38 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Extravehicular_Mobility_Unit"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Extravehicular_Mobility_Unit"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Extravehicular_Mobility_Unit"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Extravehicular_Mobility_Unit"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://en.wikipedia.org/wiki/Extravehicular_Mobility_Unit"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1.135,
         2.003,
@@ -6534,31 +6534,31 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Gemini_spacesuit"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Gemini_spacesuit"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Gemini_spacesuit"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Gemini_spacesuit"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.995,
         2.002,
@@ -6587,31 +6587,31 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Mark_III_(space_suit)"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Mark_III_(space_suit)"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Mark_III_(space_suit)"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Mark_III_(space_suit)"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1.113,
         1.99,
@@ -6640,31 +6640,31 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Navy_Mark_IV"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Navy_Mark_IV"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Navy_Mark_IV"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Navy_Mark_IV"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.995,
         2.001,
@@ -6693,38 +6693,38 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Z_series_space_suits"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Z_series_space_suits"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Z_series_space_suits"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Z_series_space_suits"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://en.wikipedia.org/wiki/Z_series_space_suits"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.794,
         1.936,
@@ -6753,31 +6753,31 @@
           "sources": [
             "https://science.nasa.gov/3d-resources/helmet/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://science.nasa.gov/3d-resources/helmet/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://science.nasa.gov/3d-resources/helmet/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/3d-resources/helmet/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.38,
         0.371,
@@ -6806,38 +6806,38 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Robonaut"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Robonaut"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Robonaut"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Robonaut"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://en.wikipedia.org/wiki/Robonaut"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         2.339,
         2.61,
@@ -6867,14 +6867,14 @@
           "sources": [
             "https://science.nasa.gov/3d-resources/space-exploration-vehicle/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://science.nasa.gov/3d-resources/space-exploration-vehicle/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -6882,24 +6882,24 @@
             "https://en.wikipedia.org/wiki/Space_Exploration_Vehicle",
             "https://science.nasa.gov/3d-resources/space-exploration-vehicle/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/3d-resources/space-exploration-vehicle/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/3d-resources/space-exploration-vehicle/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         4.038,
         3.969,
@@ -6928,31 +6928,31 @@
           "sources": [
             "https://science.nasa.gov/3d-resources/habitat-demonstration-unit/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://science.nasa.gov/3d-resources/habitat-demonstration-unit/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://science.nasa.gov/3d-resources/habitat-demonstration-unit/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/3d-resources/habitat-demonstration-unit/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         9.885,
         5.653,
@@ -6981,31 +6981,31 @@
           "sources": [
             "https://science.nasa.gov/3d-resources/regolith-advanced-surface-systems-operations-robot-rassor/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://science.nasa.gov/3d-resources/regolith-advanced-surface-systems-operations-robot-rassor/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://science.nasa.gov/3d-resources/regolith-advanced-surface-systems-operations-robot-rassor/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/3d-resources/regolith-advanced-surface-systems-operations-robot-rassor/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.848,
         0.938,
@@ -7034,38 +7034,38 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Canadarm"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Canadarm"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Canadarm"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Canadarm"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://en.wikipedia.org/wiki/Canadarm"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.395,
         0.77,
@@ -7094,38 +7094,38 @@
           "sources": [
             "https://science.nasa.gov/3d-resources/curiosity-scarescrow-test-rover/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://science.nasa.gov/3d-resources/curiosity-scarescrow-test-rover/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://science.nasa.gov/3d-resources/curiosity-scarescrow-test-rover/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/3d-resources/curiosity-scarescrow-test-rover/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/3d-resources/curiosity-scarescrow-test-rover/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         2.777,
         1.246,
@@ -7154,31 +7154,31 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Cosmic_Origins_Spectrograph"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Cosmic_Origins_Spectrograph"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Cosmic_Origins_Spectrograph"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Cosmic_Origins_Spectrograph"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.937,
         0.94,
@@ -7207,38 +7207,38 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Wide_Field_and_Planetary_Camera_2"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Wide_Field_and_Planetary_Camera_2"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Wide_Field_and_Planetary_Camera_2"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Wide_Field_and_Planetary_Camera_2"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://en.wikipedia.org/wiki/Wide_Field_and_Planetary_Camera_2"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         2.2,
         0.903,
@@ -7268,14 +7268,14 @@
           "sources": [
             "https://science.nasa.gov/3d-resources/flight-system-support/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://science.nasa.gov/3d-resources/flight-system-support/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -7283,17 +7283,17 @@
             "https://en.wikipedia.org/wiki/Hubble_Space_Telescope",
             "https://science.nasa.gov/3d-resources/flight-system-support/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/3d-resources/flight-system-support/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         4.245,
         4.5,
@@ -7323,14 +7323,14 @@
           "sources": [
             "https://science.nasa.gov/3d-resources/super-lightweight-interchangeable/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://science.nasa.gov/3d-resources/super-lightweight-interchangeable/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -7338,17 +7338,17 @@
             "https://en.wikipedia.org/wiki/STS-125",
             "https://science.nasa.gov/3d-resources/super-lightweight-interchangeable/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/3d-resources/super-lightweight-interchangeable/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         4.5,
         4.039,
@@ -7378,14 +7378,14 @@
           "sources": [
             "https://science.nasa.gov/3d-resources/orbital-replacement-unit/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://science.nasa.gov/3d-resources/orbital-replacement-unit/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -7393,17 +7393,17 @@
             "https://en.wikipedia.org/wiki/Hubble_Space_Telescope",
             "https://science.nasa.gov/3d-resources/orbital-replacement-unit/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/3d-resources/orbital-replacement-unit/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         4.5,
         3.669,
@@ -7432,31 +7432,31 @@
           "sources": [
             "https://science.nasa.gov/3d-resources/crew-lock-bag/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://science.nasa.gov/3d-resources/crew-lock-bag/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://science.nasa.gov/3d-resources/crew-lock-bag/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/3d-resources/crew-lock-bag/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.454,
         0.5,
@@ -7485,31 +7485,31 @@
           "sources": [
             "https://science.nasa.gov/3d-resources/pistol-grip-tool/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://science.nasa.gov/3d-resources/pistol-grip-tool/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://science.nasa.gov/3d-resources/pistol-grip-tool/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/3d-resources/pistol-grip-tool/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.076,
         0.348,
@@ -7538,31 +7538,31 @@
           "sources": [
             "https://science.nasa.gov/3d-resources/grease-gun/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://science.nasa.gov/3d-resources/grease-gun/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://science.nasa.gov/3d-resources/grease-gun/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/3d-resources/grease-gun/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.077,
         0.187,
@@ -7591,31 +7591,31 @@
           "sources": [
             "https://science.nasa.gov/3d-resources/hammer/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://science.nasa.gov/3d-resources/hammer/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://science.nasa.gov/3d-resources/hammer/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/3d-resources/hammer/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.156,
         0.069,
@@ -7644,31 +7644,31 @@
           "sources": [
             "https://science.nasa.gov/3d-resources/ratchet/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://science.nasa.gov/3d-resources/ratchet/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://science.nasa.gov/3d-resources/ratchet/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/3d-resources/ratchet/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.059,
         0.062,
@@ -7697,31 +7697,31 @@
           "sources": [
             "https://science.nasa.gov/3d-resources/wrench/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://science.nasa.gov/3d-resources/wrench/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://science.nasa.gov/3d-resources/wrench/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/3d-resources/wrench/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.057,
         0.019,
@@ -7750,31 +7750,31 @@
           "sources": [
             "https://science.nasa.gov/3d-resources/tether/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://science.nasa.gov/3d-resources/tether/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://science.nasa.gov/3d-resources/tether/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/3d-resources/tether/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.116,
         0.124,
@@ -7804,14 +7804,14 @@
           "sources": [
             "https://science.nasa.gov/3d-resources/mars-2020-sample-tube/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://science.nasa.gov/3d-resources/mars-2020-sample-tube/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -7819,24 +7819,24 @@
             "https://en.wikipedia.org/wiki/Mars_2020",
             "https://science.nasa.gov/3d-resources/mars-2020-sample-tube/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/3d-resources/mars-2020-sample-tube/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/3d-resources/mars-2020-sample-tube/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.024,
         0.15,
@@ -7865,38 +7865,38 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Agena_target_vehicle"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Agena_target_vehicle"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Agena_target_vehicle"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Agena_target_vehicle"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://en.wikipedia.org/wiki/Agena_target_vehicle"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         1.517,
         3.649,
@@ -7927,7 +7927,7 @@
             "https://en.wikipedia.org/wiki/Ares_I",
             "https://en.wikipedia.org/wiki/Constellation_program"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
@@ -7935,7 +7935,7 @@
             "https://en.wikipedia.org/wiki/Ares_I",
             "https://en.wikipedia.org/wiki/Constellation_program"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -7943,7 +7943,7 @@
             "https://en.wikipedia.org/wiki/Ares_I",
             "https://en.wikipedia.org/wiki/Constellation_program"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -7951,17 +7951,17 @@
             "https://en.wikipedia.org/wiki/Ares_I",
             "https://en.wikipedia.org/wiki/Constellation_program"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://en.wikipedia.org/wiki/Constellation_program"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         6.79,
         94.0,
@@ -7990,38 +7990,38 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Space_Shuttle_external_tank"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Space_Shuttle_external_tank"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Space_Shuttle_external_tank"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Space_Shuttle_external_tank"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://en.wikipedia.org/wiki/Space_Shuttle_external_tank"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         46.9,
         9.47,
@@ -8050,38 +8050,38 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Space_Shuttle_Solid_Rocket_Booster"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Space_Shuttle_Solid_Rocket_Booster"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Space_Shuttle_Solid_Rocket_Booster"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Space_Shuttle_Solid_Rocket_Booster"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://en.wikipedia.org/wiki/Space_Shuttle_Solid_Rocket_Booster"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         45.5,
         5.859,
@@ -8110,31 +8110,31 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Orbiter_Docking_System"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Orbiter_Docking_System"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Orbiter_Docking_System"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Orbiter_Docking_System"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         2.573,
         4.6,
@@ -8163,21 +8163,21 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Crawler-transporter"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Crawler-transporter"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Crawler-transporter"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -8185,17 +8185,17 @@
             "https://en.wikipedia.org/wiki/Crawler-transporter",
             "https://www.nasa.gov/wp-content/uploads/2019/08/718659main_vab.pdf"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://en.wikipedia.org/wiki/Crawler-transporter"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         40.0,
         7.744,
@@ -8224,31 +8224,31 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Mobile_launcher_platform"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Mobile_launcher_platform"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Mobile_launcher_platform"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Mobile_launcher_platform"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         47.902,
         115.8,
@@ -8277,28 +8277,28 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Vehicle_Assembly_Building"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Vehicle_Assembly_Building"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Vehicle_Assembly_Building"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Vehicle_Assembly_Building"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -8306,10 +8306,10 @@
             "https://www.nasa.gov/wp-content/uploads/2019/08/718659main_vab.pdf",
             "https://en.wikipedia.org/wiki/Vehicle_Assembly_Building"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         175.344,
         160.0,
@@ -8341,7 +8341,7 @@
             "https://www.cdscc.nasa.gov/Pages/Antennas/dss43.html",
             "https://www.jpl.nasa.gov/news/nasa-contacts-voyager-2-using-upgraded-deep-space-network-dish/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
@@ -8349,7 +8349,7 @@
             "https://www.cdscc.nasa.gov/Pages/Antennas/dss43.html",
             "https://www.jpl.nasa.gov/news/nasa-contacts-voyager-2-using-upgraded-deep-space-network-dish/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -8358,7 +8358,7 @@
             "https://www.cdscc.nasa.gov/Pages/Antennas/dss43.html",
             "https://www.jpl.nasa.gov/news/nasa-contacts-voyager-2-using-upgraded-deep-space-network-dish/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
@@ -8366,17 +8366,17 @@
             "https://www.cdscc.nasa.gov/Pages/Antennas/dss43.html",
             "https://www.jpl.nasa.gov/news/nasa-contacts-voyager-2-using-upgraded-deep-space-network-dish/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://www.jpl.nasa.gov/news/nasa-contacts-voyager-2-using-upgraded-deep-space-network-dish/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         70.23,
         73.09,
@@ -8405,31 +8405,31 @@
           "sources": [
             "https://en.wikipedia.org/wiki/NASA_Deep_Space_Network"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/NASA_Deep_Space_Network"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/NASA_Deep_Space_Network"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/NASA_Deep_Space_Network"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         34.189,
         36.97,
@@ -8458,38 +8458,38 @@
           "sources": [
             "https://en.wikipedia.org/wiki/CubeSat"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/CubeSat"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/CubeSat"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/CubeSat"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://en.wikipedia.org/wiki/CubeSat"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.236,
         0.118,
@@ -8518,31 +8518,31 @@
           "sources": [
             "https://en.wikipedia.org/wiki/CubeSat"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/CubeSat"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/CubeSat"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/CubeSat"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.243,
         0.226,
@@ -8571,52 +8571,52 @@
           "sources": [
             "https://en.wikipedia.org/wiki/IceCube_(spacecraft)"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://en.wikipedia.org/wiki/IceCube_(spacecraft)"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
           "sources": [
             "https://en.wikipedia.org/wiki/IceCube_(spacecraft)"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
           "sources": [
             "https://en.wikipedia.org/wiki/IceCube_(spacecraft)"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/IceCube_(spacecraft)"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/IceCube_(spacecraft)"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://www.nasa.gov/missions/station/tiny-satellites-first-global-map-of-ice-clouds/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.11,
         0.391,
@@ -8647,21 +8647,21 @@
           "sources": [
             "https://science.nasa.gov/3d-resources/cubesat-mirata/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/3d-resources/cubesat-mirata/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
           "sources": [
             "https://science.nasa.gov/3d-resources/cubesat-mirata/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -8669,21 +8669,21 @@
             "https://www.nanosats.eu/sat/mirata",
             "https://orbitalradar.com/register/2025-1658"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://science.nasa.gov/3d-resources/cubesat-mirata/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/3d-resources/cubesat-mirata/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
@@ -8691,10 +8691,10 @@
             "https://pmc.ncbi.nlm.nih.gov/articles/PMC5562411/",
             "https://www.nanosats.eu/sat/mirata"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         0.118,
         0.402,
@@ -8723,31 +8723,31 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Constellation-X_Observatory"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Constellation-X_Observatory"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Constellation-X_Observatory"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Constellation-X_Observatory"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         10.0,
         1.635,
@@ -8778,14 +8778,14 @@
           "sources": [
             "https://asd.gsfc.nasa.gov/archive/ixo/technology/spacecraft.html"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://asd.gsfc.nasa.gov/archive/ixo/technology/spacecraft.html"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -8793,17 +8793,17 @@
             "https://asd.gsfc.nasa.gov/archive/ixo/technology/spacecraft.html",
             "https://sci.esa.int/web/ixo/-/45348-spacecraft"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://asd.gsfc.nasa.gov/archive/ixo/technology/spacecraft.html"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         12.353,
         23.0,
@@ -8832,31 +8832,31 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Advanced_Technology_Large-Aperture_Space_Telescope"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Advanced_Technology_Large-Aperture_Space_Telescope"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Advanced_Technology_Large-Aperture_Space_Telescope"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Advanced_Technology_Large-Aperture_Space_Telescope"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         27.185,
         19.479,
@@ -8885,38 +8885,38 @@
           "sources": [
             "https://en.wikipedia.org/wiki/Laser_Interferometer_Space_Antenna"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://en.wikipedia.org/wiki/Laser_Interferometer_Space_Antenna"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
             "https://en.wikipedia.org/wiki/Laser_Interferometer_Space_Antenna"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://en.wikipedia.org/wiki/Laser_Interferometer_Space_Antenna"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://en.wikipedia.org/wiki/Laser_Interferometer_Space_Antenna"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         2.589,
         0.651,
@@ -8946,14 +8946,14 @@
           "sources": [
             "https://assets.science.nasa.gov/content/dam/science/missions/nisar/nisar-jpl/pdf/NISAR_FINAL_9-6-19.pdf"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Used on",
           "sources": [
             "https://assets.science.nasa.gov/content/dam/science/missions/nisar/nisar-jpl/pdf/NISAR_FINAL_9-6-19.pdf"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -8961,17 +8961,17 @@
             "https://en.wikipedia.org/wiki/NISAR_(satellite)",
             "https://assets.science.nasa.gov/content/dam/science/missions/nisar/nisar-jpl/pdf/NISAR_FINAL_9-6-19.pdf"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://assets.science.nasa.gov/content/dam/science/missions/nisar/nisar-jpl/pdf/NISAR_FINAL_9-6-19.pdf"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         4.79,
         10.201,
@@ -8993,7 +8993,8 @@
       "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
       "fact_sources": [
         "https://science.nasa.gov/mission/dart/",
-        "https://en.wikipedia.org/wiki/Double_Asteroid_Redirection_Test"
+        "https://en.wikipedia.org/wiki/Double_Asteroid_Redirection_Test",
+        "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2021-110A"
       ],
       "fact_rows": [
         {
@@ -9001,21 +9002,21 @@
           "sources": [
             "https://science.nasa.gov/mission/dart/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://science.nasa.gov/mission/dart/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
           "sources": [
             "https://science.nasa.gov/mission/dart/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -9023,14 +9024,15 @@
             "https://en.wikipedia.org/wiki/Double_Asteroid_Redirection_Test",
             "https://science.nasa.gov/mission/dart/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
           "sources": [
+            "https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2021-110A",
             "https://en.wikipedia.org/wiki/Double_Asteroid_Redirection_Test"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Mass",
@@ -9038,31 +9040,31 @@
             "https://en.wikipedia.org/wiki/Double_Asteroid_Redirection_Test",
             "https://science.nasa.gov/mission/dart/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://science.nasa.gov/mission/dart/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://science.nasa.gov/mission/dart/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         19.0,
         2.565,
         2.103
       ],
       "triangles": 446371,
-      "scale_note": "Scaled to 19 m across the arrays (two 8.5 m ROSA wings plus the body, Wikipedia); the model body then measures about 2.0 x 2.1 x 2.4 m, close to Wikipedia's 1.8 x 1.9 x 2.6 m. NASA's file is a printable STL with no materials; arrays and body colors are my choice. Triangles cut to 8% to stay under 3 MB.",
+      "scale_note": "Scaled to 19 m across the arrays (two 8.5 m ROSA wings plus the body, Wikipedia); the model body then measures about 2.0 x 2.1 x 2.4 m, close to Wikipedia's 1.8 x 1.9 x 2.6 m. NASA's file is a printable STL with no materials; arrays and body colors are my choice. Triangles cut to 8% to stay under 3 MB. NSSDCA gives the bus as 1.14 x 1.24 x 1.32 m (https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=2021-110A); not rescaled.",
       "glb_bytes": 1589012,
       "usdz_bytes": 2603703
     },
@@ -9086,14 +9088,14 @@
           "sources": [
             "https://www.nasa.gov/humans-in-space/artemis/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Agency",
           "sources": [
             "https://www.nasa.gov/humans-in-space/artemis/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Launch",
@@ -9102,7 +9104,7 @@
             "https://en.wikipedia.org/wiki/Artemis_II",
             "https://en.wikipedia.org/wiki/Orion_(spacecraft)"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Status",
@@ -9110,7 +9112,7 @@
             "https://www.nasa.gov/humans-in-space/artemis/",
             "https://en.wikipedia.org/wiki/Artemis_II"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Real size",
@@ -9119,24 +9121,24 @@
             "https://en.wikipedia.org/wiki/Artemis_II",
             "https://www.nasa.gov/humans-in-space/artemis/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "About",
           "sources": [
             "https://www.nasa.gov/humans-in-space/artemis/"
           ],
-          "verified": false
+          "verified": true
         },
         {
           "label": "Fun fact",
           "sources": [
             "https://www.nasa.gov/humans-in-space/artemis/"
           ],
-          "verified": false
+          "verified": true
         }
       ],
-      "needs_tesla_verification": true,
+      "needs_tesla_verification": false,
       "model_size_m_gltf_xyz": [
         5.02,
         3.273,

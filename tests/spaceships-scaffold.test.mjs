@@ -114,7 +114,7 @@ const WAVE3_B4_IDS = [
 ];
 const WAVE3_B2_4_IDS = [...WAVE3_B2_IDS, ...WAVE3_B3_IDS, ...WAVE3_B4_IDS];
 // Wave 3 batches 2 to 4 stay verified:false until Tesla clears them. Flip this to true with his pass.
-const WAVE3_B2_4_TESLA_CLEARED = false;
+const WAVE3_B2_4_TESLA_CLEARED = true;
 const GITHUB_SOURCE_IDS = new Set(["skylab", "sdo", "stereo", "rosetta"]);
 
 test("fleet.json has 157 listed craft, real assets, and verified fact rows", () => {
