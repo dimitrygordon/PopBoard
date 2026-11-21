@@ -19,13 +19,18 @@ OUT.mkdir(parents=True, exist_ok=True)
 FLEET = json.loads((ROOT / "spaceships/fleet.json").read_text())
 CRAFT_IDS = [c["id"] for c in FLEET["craft"] if c.get("listed") is not False]
 LISTED_COUNT = len(CRAFT_IDS)
+TAG_COUNTS = {}
+for _c in FLEET["craft"]:
+    if _c.get("listed") is not False:
+        for _t in _c.get("tags") or []:
+            TAG_COUNTS[_t] = TAG_COUNTS.get(_t, 0) + 1
 EARTH_IDS = sorted(c["id"] for c in FLEET["craft"] if c.get("listed") is not False and "earth-observer" in (c.get("tags") or []))
 # Craft whose fact rows are still verified:false (pending Tesla) show PLACEHOLDER labels by design.
 UNVERIFIED_IDS = {c["id"] for c in FLEET["craft"] if any(r.get("verified") is False for r in c.get("facts", []))}
 # SS_BASE runs against a deployed site (e.g. a Pages preview). SS_IDS limits the viewer pass.
 REMOTE_BASE = os.environ.get("SS_BASE", "").rstrip("/")
 if os.environ.get("SS_IDS"):
-    CRAFT_IDS = [i for i in os.environ["SS_IDS"].split(",") if i]
+    CRAFT_IDS = [i for i in os.environ["SS_IDS"].replace(",", " ").split() if i]
 WAVE2_IDS = {
     "gemini", "mercury-friendship-7", "apollo-soyuz", "skylab", "pioneer-10",
     "magellan", "mro", "lro", "osiris-rex", "insight", "spirit-opportunity",
@@ -299,6 +304,22 @@ def run_gallery(context, base, tag, measure=False):
     earth_ids = page.locator(".card").evaluate_all("els => els.map(e => e.dataset.id).sort()")
     check(earth_ids == EARTH_IDS, f"{tag} Earth observers filter shows {len(EARTH_IDS)} earth-observer craft (got {len(earth_ids)}: {earth_ids})")
     shot(page, f"gallery-earth-{tag}.png")
+    labels = page.locator("#filters button").evaluate_all("els => els.map(e => e.textContent)")
+    check(len(labels) == len(TAG_COUNTS) + 1, f"{tag} one filter chip per tag plus All ({len(labels)} chips, {len(TAG_COUNTS)} tags)")
+    chip_counts = page.evaluate("""() => {
+      const out = {};
+      const btns = [...document.querySelectorAll('#filters button')];
+      for (let i = 1; i < btns.length; i++) {
+        const b = document.querySelectorAll('#filters button')[i];
+        const label = b.textContent;
+        if (b.getAttribute('aria-pressed') !== 'true') b.click();
+        out[label] = document.querySelectorAll('.card').length;
+        const again = [...document.querySelectorAll('#filters button')].find(x => x.textContent === label);
+        if (again && again.getAttribute('aria-pressed') === 'true') again.click();
+      }
+      return out;
+    }""")
+    check(sorted(chip_counts.values()) == sorted(TAG_COUNTS.values()), f"{tag} every filter chip count matches fleet tags ({chip_counts})")
     page.locator("#filters button", has_text="All").click()
     page.wait_for_timeout(100)
     check(page.locator(".card").count() == LISTED_COUNT, f"{tag} All filter restores {LISTED_COUNT} cards")
@@ -311,7 +332,8 @@ def run_gallery(context, base, tag, measure=False):
     page.fill("#search", "voyager")
     page.wait_for_timeout(100)
     visible = page.locator(".card").count()
-    check(visible == 1, f"{tag} search for voyager leaves 1 card (got {visible})")
+    expect_hits = sum(1 for c in FLEET["craft"] if c.get("listed") is not False and "voyager" in " ".join([c["id"], c["name"], c.get("subtitle") or "", *(c.get("tags") or [])]).lower())
+    check(visible == expect_hits and page.locator(".card[data-id='voyager']").count() == 1, f"{tag} search for voyager shows the {expect_hits} matching cards incl. voyager (got {visible})")
     if tag == "iphone-390":
         shot(page, f"gallery-search-{tag}.png")
     with page.expect_navigation(timeout=20000):

@@ -5622,6 +5622,5302 @@
           ]
         }
       ]
+    },
+    {
+      "id": "ace",
+      "name": "ACE",
+      "subtitle": "An early warning post for solar storms, a million miles out",
+      "tags": [
+        "heliophysics"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/ace.webp",
+      "glb": "models/ace.glb",
+      "usdz": "models/ace.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/advanced-composition-explorer/",
+      "sourceLabel": "NASA 3D Resources: Advanced Composition Explorer",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Measures particles from the Sun, the galaxy and beyond, from the Sun-Earth L1 point",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/ace/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/ace/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "August 25, 1997",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Composition_Explorer",
+            "https://science.nasa.gov/mission/ace/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Operating at L1 (as of Nov 2026; recheck)",
+          "verified": false,
+          "recheckBeforePublish": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Composition_Explorer",
+            "https://science.nasa.gov/mission/ace/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "body about 1.6 m across; about 8.3 m across the solar panels and booms",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Composition_Explorer",
+            "https://science.nasa.gov/mission/ace/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "757 kg at launch",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Composition_Explorer",
+            "https://science.nasa.gov/mission/ace/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "ACE samples the solar wind before it reaches Earth, which gives forecasters up to about an hour of warning before a geomagnetic storm hits.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/ace/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It has been watching the solar wind for nearly three decades, far beyond its planned five-year mission.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/ace/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cluster-ii",
+      "name": "Cluster II",
+      "subtitle": "Four satellites that flew in formation through Earth's magnetic field",
+      "tags": [
+        "heliophysics"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/cluster-ii.webp",
+      "glb": "models/cluster-ii.glb",
+      "usdz": "models/cluster-ii.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/cluster-ii/",
+      "sourceLabel": "NASA 3D Resources: Cluster II",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Four identical spacecraft measuring Earth's magnetosphere in 3D",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cluster_II_(spacecraft)",
+            "https://www.esa.int/about-us/directorates/science/cluster",
+            "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "ESA, with NASA",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cluster_II_(spacecraft)",
+            "https://www.esa.int/about-us/directorates/science/cluster",
+            "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "July 16 and August 9, 2000 (two pairs)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cluster_II_(spacecraft)",
+            "https://www.esa.int/about-us/directorates/science/cluster",
+            "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Ended 2026: all four re-entered, the last (Tango) on September 1, 2026 (recheck)",
+          "verified": false,
+          "recheckBeforePublish": true,
+          "sources": [
+            "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "each about 2.9 m across and 1.3 m tall; wire booms 88 m tip to tip",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cluster_II_(spacecraft)",
+            "https://www.esa.int/about-us/directorates/science/cluster",
+            "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "about 1,200 kg each at launch",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cluster_II_(spacecraft)",
+            "https://www.esa.int/about-us/directorates/science/cluster",
+            "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Flying as a tetrahedron let Cluster tell apart changes in space from changes in time, something one spacecraft cannot do.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cluster_II_(spacecraft)",
+            "https://www.esa.int/about-us/directorates/science/cluster",
+            "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "The four craft were named Salsa, Samba, Rumba and Tango.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cluster_II_(spacecraft)",
+            "https://www.esa.int/about-us/directorates/science/cluster",
+            "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cnofs",
+      "name": "C/NOFS",
+      "subtitle": "Hunted the plasma bubbles that scramble GPS and radio",
+      "tags": [
+        "heliophysics"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/cnofs.webp",
+      "glb": "models/cnofs.glb",
+      "usdz": "models/cnofs.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/communication-and-navigation-outage-forecast-system-cnofs/",
+      "sourceLabel": "NASA 3D Resources: Communication and Navigation Outage Forecast System (CNOFS)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Forecasting ionospheric scintillation that disrupts radio and GPS signals",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
+            "https://www.eoportal.org/satellite-missions/cnofs"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "US Air Force, with NASA instruments",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
+            "https://www.eoportal.org/satellite-missions/cnofs"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "April 16, 2008",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
+            "https://www.eoportal.org/satellite-missions/cnofs"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Re-entered November 28, 2015",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
+            "https://www.eoportal.org/satellite-missions/cnofs"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "body 3.4 m long and 1.2 m wide; electric field booms 20 m tip to tip",
+          "verified": false,
+          "recheckBeforePublish": true,
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/cnofs",
+            "https://vefi.gsfc.nasa.gov/vefi/Resources/VEFI_DescriptionREV.pdf"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "384 kg at launch",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
+            "https://www.eoportal.org/satellite-missions/cnofs"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "C/NOFS flew low over the equator, where bubbles of thin plasma form after sunset and make radio signals twinkle and drop out.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
+            "https://www.eoportal.org/satellite-missions/cnofs"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It was launched from under the wing of an L-1011 airplane on a Pegasus rocket.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
+            "https://www.eoportal.org/satellite-missions/cnofs"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "firefly",
+      "name": "Firefly",
+      "subtitle": "A tiny CubeSat that looked for gamma rays from lightning",
+      "tags": [
+        "heliophysics",
+        "cubesat"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/firefly.webp",
+      "glb": "models/firefly.glb",
+      "usdz": "models/firefly.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/firefly/",
+      "sourceLabel": "NASA 3D Resources: Firefly",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Study terrestrial gamma-ray flashes made by thunderstorms",
+          "verified": false,
+          "sources": [
+            "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
+            "https://science.nasa.gov/3d-resources/firefly/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA and NSF",
+          "verified": false,
+          "sources": [
+            "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
+            "https://science.nasa.gov/3d-resources/firefly/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "November 19, 2013",
+          "verified": false,
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/firefly",
+            "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
+            "https://science.nasa.gov/3d-resources/firefly/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Mission complete",
+          "verified": false,
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/firefly",
+            "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
+            "https://science.nasa.gov/3d-resources/firefly/"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "3U CubeSat, about 10 x 10 x 34 cm",
+          "verified": false,
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/firefly",
+            "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
+            "https://science.nasa.gov/3d-resources/firefly/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Lightning can make bursts of gamma rays, the most energetic light there is. Firefly was a shoebox-sized satellite built to catch them.",
+          "verified": false,
+          "sources": [
+            "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
+            "https://science.nasa.gov/3d-resources/firefly/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "College students from Siena College and the University of Maryland Eastern Shore helped NASA design, build and run it.",
+          "verified": false,
+          "sources": [
+            "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
+            "https://science.nasa.gov/3d-resources/firefly/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "geotail",
+      "name": "Geotail",
+      "subtitle": "Spent 30 years mapping the long tail of Earth's magnetic field",
+      "tags": [
+        "heliophysics"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/geotail.webp",
+      "glb": "models/geotail.glb",
+      "usdz": "models/geotail.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/geotailsat/",
+      "sourceLabel": "NASA 3D Resources: GeoTailSAT",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Study the magnetotail, the part of Earth's magnetic field stretched out by the solar wind",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/geotail/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "JAXA (ISAS) and NASA",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/geotail/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "July 24, 1992",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Geotail",
+            "https://science.nasa.gov/mission/geotail/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Decommissioned November 28, 2022",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Geotail",
+            "https://science.nasa.gov/mission/geotail/"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "body about 2.2 m across, with long booms",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Geotail",
+            "https://science.nasa.gov/mission/geotail/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "about 980 kg at launch",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Geotail",
+            "https://science.nasa.gov/mission/geotail/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Geotail flew through the magnetotail for three decades, measuring how energy stored there snaps back toward Earth and powers auroras.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/geotail/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It used lunar flybys to swing its orbit far out into the tail.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/geotail/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "polar",
+      "name": "Polar",
+      "subtitle": "Imaged auroras from high above the poles",
+      "tags": [
+        "heliophysics"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/polar.webp",
+      "glb": "models/polar.glb",
+      "usdz": "models/polar.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/polar/",
+      "sourceLabel": "NASA 3D Resources: Polar",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Image auroras and measure particles over Earth's poles",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/polar/",
+            "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/polar/",
+            "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "February 24, 1996",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Polar_(satellite)",
+            "https://science.nasa.gov/mission/polar/",
+            "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Decommissioned April 2008",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Polar_(satellite)",
+            "https://science.nasa.gov/mission/polar/",
+            "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "body about 2.4 m across and 1.8 m tall",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Polar_(satellite)",
+            "https://science.nasa.gov/mission/polar/",
+            "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "1,297 kg at launch",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Polar_(satellite)",
+            "https://science.nasa.gov/mission/polar/",
+            "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Polar carried cameras that photographed the whole auroral oval at once, in ultraviolet and visible light, even in daylight.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/polar/",
+            "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Its longest wire antennas stretched 130 m tip to tip, longer than a football field and far longer than the model shows.",
+          "verified": false,
+          "sources": [
+            "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wind",
+      "name": "Wind",
+      "subtitle": "Has measured the solar wind since 1994",
+      "tags": [
+        "heliophysics"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/wind.webp",
+      "glb": "models/wind.glb",
+      "usdz": "models/wind.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/wind/",
+      "sourceLabel": "NASA 3D Resources: Wind",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Measure the solar wind, magnetic fields and particles near L1",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/wind/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/wind/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "November 1, 1994",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wind_(spacecraft)",
+            "https://en.wikipedia.org/wiki/Polar_(satellite)",
+            "https://science.nasa.gov/mission/wind/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Operating (as of Nov 2026; recheck)",
+          "verified": false,
+          "recheckBeforePublish": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wind_(spacecraft)",
+            "https://en.wikipedia.org/wiki/Polar_(satellite)",
+            "https://science.nasa.gov/mission/wind/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "body about 2.4 m across and 1.8 m tall",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wind_(spacecraft)",
+            "https://en.wikipedia.org/wiki/Polar_(satellite)",
+            "https://science.nasa.gov/mission/wind/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "1,250 kg at launch",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wind_(spacecraft)",
+            "https://en.wikipedia.org/wiki/Polar_(satellite)",
+            "https://science.nasa.gov/mission/wind/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Wind sits upstream of Earth and samples the solar wind before it arrives. It still has fuel for decades of operation.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/wind/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Wind and Polar were built as a matched pair on the same drum-shaped design.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wind_(spacecraft)",
+            "https://en.wikipedia.org/wiki/Polar_(satellite)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "themis",
+      "name": "THEMIS",
+      "subtitle": "Five probes that solved where auroral substorms start",
+      "tags": [
+        "heliophysics"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/themis.webp",
+      "glb": "models/themis.glb",
+      "usdz": "models/themis.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/time-history-of-events-and-macroscale-interactions-during-substorms-themis/",
+      "sourceLabel": "NASA 3D Resources: Time History of Events and Macroscale Interactions During Substorms (THEMIS)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Find where and when substorms that brighten auroras begin",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/themis/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/themis/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "February 17, 2007 (five probes on one rocket)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/THEMIS",
+            "https://science.nasa.gov/mission/themis/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Three probes still operating; two became ARTEMIS at the Moon (as of Nov 2026; recheck)",
+          "verified": false,
+          "recheckBeforePublish": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/THEMIS",
+            "https://science.nasa.gov/mission/themis/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "each probe under 1 m across, with long wire booms",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/THEMIS",
+            "https://science.nasa.gov/mission/themis/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "126 kg per probe",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/THEMIS",
+            "https://science.nasa.gov/mission/themis/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "The five probes lined up along the magnetotail so they could time a disturbance as it moved toward Earth.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/themis/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Two probes were sent to orbit the Moon in 2010 and renamed ARTEMIS.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/themis/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mms",
+      "name": "MMS",
+      "subtitle": "Four craft studying how magnetic fields snap and reconnect",
+      "tags": [
+        "heliophysics"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/mms.webp",
+      "glb": "models/mms.glb",
+      "usdz": "models/mms.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/magnetospheric-multiscale-mms-b/",
+      "sourceLabel": "NASA 3D Resources: Magnetospheric Multiscale (MMS) (B)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Study magnetic reconnection in Earth's magnetosphere",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/mms/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/mms/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "March 13, 2015 (UTC)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Magnetospheric_Multiscale_Mission",
+            "https://science.nasa.gov/mission/mms/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Operating (as of Nov 2026; recheck)",
+          "verified": false,
+          "recheckBeforePublish": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Magnetospheric_Multiscale_Mission",
+            "https://science.nasa.gov/mission/mms/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "each about 3.5 m across and 1.2 m tall; booms span about 112 m x 29 m deployed",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Magnetospheric_Multiscale_Mission",
+            "https://science.nasa.gov/mission/mms/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "about 1,360 kg each at launch",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Magnetospheric_Multiscale_Mission",
+            "https://science.nasa.gov/mission/mms/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Reconnection is when magnetic field lines break and rejoin, releasing energy. MMS flies four craft in a tight pyramid to catch it in the act.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/mms/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "MMS set a record for the highest altitude GPS fix, about 187,000 km from Earth.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/mms/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "van-allen-probes",
+      "name": "Van Allen Probes",
+      "subtitle": "Twin craft that flew through Earth's radiation belts",
+      "tags": [
+        "heliophysics"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/van-allen-probes.webp",
+      "glb": "models/van-allen-probes.glb",
+      "usdz": "models/van-allen-probes.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/van-allen-probes/",
+      "sourceLabel": "NASA 3D Resources: Van Allen Probes",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Study the radiation belts around Earth",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/van-allen-probes/",
+            "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/van-allen-probes/",
+            "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "August 30, 2012",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Van_Allen_Probes",
+            "https://science.nasa.gov/mission/van-allen-probes/",
+            "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Science ended in 2019 (Probe B July 2019, Probe A October 2019)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Van_Allen_Probes",
+            "https://science.nasa.gov/mission/van-allen-probes/",
+            "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "each about 1.8 m across (body)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Van_Allen_Probes",
+            "https://science.nasa.gov/mission/van-allen-probes/",
+            "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "about 650 kg each (1,314 kg for both)",
+          "verified": false,
+          "sources": [
+            "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "The probes flew through the belts on purpose, with shielded electronics, and found a third belt that came and went.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/van-allen-probes/",
+            "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "They were originally called RBSP, the Radiation Belt Storm Probes.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/van-allen-probes/",
+            "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rhessi",
+      "name": "RHESSI",
+      "subtitle": "Took X-ray and gamma-ray pictures of solar flares",
+      "tags": [
+        "heliophysics",
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/rhessi.webp",
+      "glb": "models/rhessi.glb",
+      "usdz": "models/rhessi.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/hessi-rhessi/",
+      "sourceLabel": "NASA 3D Resources: HESSI-RHESSI",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Image solar flares in X-rays and gamma rays",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/rhessi/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/rhessi/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "February 5, 2002",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Reuven_Ramaty_High_Energy_Solar_Spectroscopic_Imager",
+            "https://science.nasa.gov/mission/rhessi/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Science ended 2018; re-entered April 20, 2023",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Reuven_Ramaty_High_Energy_Solar_Spectroscopic_Imager",
+            "https://science.nasa.gov/mission/rhessi/"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "about 2.2 m x 5.8 m",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Reuven_Ramaty_High_Energy_Solar_Spectroscopic_Imager",
+            "https://science.nasa.gov/mission/rhessi/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "293 kg at launch",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Reuven_Ramaty_High_Energy_Solar_Spectroscopic_Imager",
+            "https://science.nasa.gov/mission/rhessi/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "RHESSI spun once every four seconds and used grids to rebuild images of flares from high-energy light that cannot be focused by mirrors.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/rhessi/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It was renamed in honor of Reuven Ramaty, a NASA solar physicist.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/rhessi/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hinode",
+      "name": "Hinode",
+      "subtitle": "A Japanese-led solar observatory with US and UK telescopes",
+      "tags": [
+        "heliophysics",
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/hinode.webp",
+      "glb": "models/hinode.glb",
+      "usdz": "models/hinode.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/hinode-solar-b/",
+      "sourceLabel": "NASA 3D Resources: Hinode (Solar-B)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Study the Sun's magnetic fields and how they heat the corona",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/hinode/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "JAXA, with NASA, the UK and ESA",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/hinode/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "September 22, 2006 (UTC)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Hinode_(satellite)",
+            "https://science.nasa.gov/mission/hinode/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Operating (as of Nov 2026; recheck)",
+          "verified": false,
+          "recheckBeforePublish": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Hinode_(satellite)",
+            "https://science.nasa.gov/mission/hinode/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 1.6 x 1.6 x 4 m; 10 m across the solar panels",
+          "verified": false,
+          "sources": [
+            "https://www.isas.jaxa.jp/en/missions/spacecraft/current/hinode.html"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "about 900 kg at launch",
+          "verified": false,
+          "sources": [
+            "https://www.isas.jaxa.jp/en/missions/spacecraft/current/hinode.html"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Hinode carries an optical telescope, an X-ray telescope and an ultraviolet spectrometer that look at the same spots on the Sun together.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/hinode/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Hinode means sunrise in Japanese.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/hinode/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "icon",
+      "name": "ICON",
+      "subtitle": "Studied where Earth's air meets space",
+      "tags": [
+        "heliophysics"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/icon.webp",
+      "glb": "models/icon.glb",
+      "usdz": "models/icon.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/ionospheric-connection-explorer-icon/",
+      "sourceLabel": "NASA 3D Resources: Ionospheric Connection Explorer (ICON)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Study how weather near the ground affects the ionosphere",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/icon/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/icon/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "October 11, 2019 (UTC)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ionospheric_Connection_Explorer",
+            "https://science.nasa.gov/mission/icon/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Contact lost November 25, 2022",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ionospheric_Connection_Explorer",
+            "https://science.nasa.gov/mission/icon/"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "1.93 m tall, 1.06 m across; solar panel 2.54 x 0.84 m",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ionospheric_Connection_Explorer",
+            "https://science.nasa.gov/mission/icon/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "288 kg at launch",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ionospheric_Connection_Explorer",
+            "https://science.nasa.gov/mission/icon/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "ICON looked at the airglow above the horizon to measure winds and temperatures in the upper atmosphere and the plasma it drives.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/icon/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It was launched on a Pegasus rocket dropped from an airplane over the ocean.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/icon/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fuse",
+      "name": "FUSE",
+      "subtitle": "Looked at the universe in far-ultraviolet light",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/fuse.webp",
+      "glb": "models/fuse.glb",
+      "usdz": "models/fuse.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/far-ultraviolet-spectroscopic-explorer/",
+      "sourceLabel": "NASA 3D Resources: Far Ultraviolet Spectroscopic Explorer",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Far-ultraviolet spectroscopy of stars, gas and galaxies",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/fuse/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA, with Canada and France",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/fuse/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "June 24, 1999",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Far_Ultraviolet_Spectroscopic_Explorer",
+            "https://science.nasa.gov/mission/fuse/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Ended October 18, 2007",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Far_Ultraviolet_Spectroscopic_Explorer",
+            "https://science.nasa.gov/mission/fuse/"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "about 5.3 m x 1.9 m",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Far_Ultraviolet_Spectroscopic_Explorer",
+            "https://science.nasa.gov/mission/fuse/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "1,400 kg at launch",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Far_Ultraviolet_Spectroscopic_Explorer",
+            "https://science.nasa.gov/mission/fuse/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "FUSE measured deuterium in space, a clue to how much ordinary matter was made in the Big Bang.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/fuse/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It ran from Johns Hopkins University, one of the first NASA missions operated by a university.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/fuse/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hete",
+      "name": "HETE-2",
+      "subtitle": "Chased gamma-ray bursts and told telescopes where to look",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/hete.webp",
+      "glb": "models/hete.glb",
+      "usdz": "models/hete.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/high-energy-transient-explorer/",
+      "sourceLabel": "NASA 3D Resources: High Energy Transient Explorer",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Detect and locate gamma-ray bursts quickly",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/hete-2/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA, with Japan, France and MIT",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/hete-2/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "October 9, 2000",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/High_Energy_Transient_Explorer_2",
+            "https://science.nasa.gov/mission/hete-2/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Ended March 2008",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/High_Energy_Transient_Explorer_2",
+            "https://science.nasa.gov/mission/hete-2/"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "about 100 x 50 x 50 cm stowed",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/High_Energy_Transient_Explorer_2",
+            "https://science.nasa.gov/mission/hete-2/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "124 kg at launch",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/High_Energy_Transient_Explorer_2",
+            "https://science.nasa.gov/mission/hete-2/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "HETE-2 sent burst positions to the ground within seconds, so other telescopes could catch the fading afterglow.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/hete-2/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It helped link long gamma-ray bursts to the deaths of massive stars.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/hete-2/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ibex",
+      "name": "IBEX",
+      "subtitle": "Maps the edge of the Sun's bubble from Earth orbit",
+      "tags": [
+        "heliophysics"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/ibex.webp",
+      "glb": "models/ibex.glb",
+      "usdz": "models/ibex.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/interstellar-boundary-explorer-ibex/",
+      "sourceLabel": "NASA 3D Resources: Interstellar Boundary Explorer (IBEX)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Map the boundary between the heliosphere and interstellar space",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/ibex/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/ibex/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "October 19, 2008",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Interstellar_Boundary_Explorer",
+            "https://science.nasa.gov/mission/ibex/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Operating (as of Nov 2026; recheck)",
+          "verified": false,
+          "recheckBeforePublish": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Interstellar_Boundary_Explorer",
+            "https://science.nasa.gov/mission/ibex/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 58 x 95 cm",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Interstellar_Boundary_Explorer",
+            "https://science.nasa.gov/mission/ibex/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "about 107 kg (spacecraft) on a 485 kg stack",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Interstellar_Boundary_Explorer",
+            "https://science.nasa.gov/mission/ibex/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "IBEX catches fast neutral atoms that fly in from the edge of the heliosphere, and builds all-sky maps from them.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/ibex/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Its first maps showed a bright ribbon across the sky that nobody had predicted.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/ibex/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nicer-sextant",
+      "name": "NICER / SEXTANT",
+      "subtitle": "An X-ray telescope on the ISS that tested pulsar navigation",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/nicer-sextant.webp",
+      "glb": "models/nicer-sextant.glb",
+      "usdz": "models/nicer-sextant.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/station-explorer-for-x-ray-timing-and-navigation-sextant/",
+      "sourceLabel": "NASA 3D Resources: Station Explorer for X-Ray Timing and Navigation (SEXTANT)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Time X-rays from neutron stars; SEXTANT used pulsars like GPS",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/nicer/",
+            "https://www.nasa.gov/missions/station/nicer-status-updates/",
+            "https://heasarc.gsfc.nasa.gov/docs/nicer/",
+            "https://www.nasa.gov/centers-and-facilities/goddard/nasa-team-first-to-demonstrate-x-ray-navigation-in-space/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/nicer/",
+            "https://www.nasa.gov/missions/station/nicer-status-updates/",
+            "https://heasarc.gsfc.nasa.gov/docs/nicer/",
+            "https://www.nasa.gov/centers-and-facilities/goddard/nasa-team-first-to-demonstrate-x-ray-navigation-in-space/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "June 3, 2017 (to the ISS)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Neutron_Star_Interior_Composition_Explorer",
+            "https://science.nasa.gov/mission/nicer/",
+            "https://www.nasa.gov/missions/station/nicer-status-updates/",
+            "https://heasarc.gsfc.nasa.gov/docs/nicer/",
+            "https://www.nasa.gov/centers-and-facilities/goddard/nasa-team-first-to-demonstrate-x-ray-navigation-in-space/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Science operations ended November 2026, after a pointing motor failed in June 2025; it will be removed from the ISS (recheck)",
+          "verified": false,
+          "recheckBeforePublish": true,
+          "sources": [
+            "https://www.nasa.gov/missions/station/nicer-status-updates/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 1.2 x 1.6 x 1.1 m (model scale approximate)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Neutron_Star_Interior_Composition_Explorer",
+            "https://science.nasa.gov/mission/nicer/",
+            "https://www.nasa.gov/missions/station/nicer-status-updates/",
+            "https://heasarc.gsfc.nasa.gov/docs/nicer/",
+            "https://www.nasa.gov/centers-and-facilities/goddard/nasa-team-first-to-demonstrate-x-ray-navigation-in-space/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "372 kg",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Neutron_Star_Interior_Composition_Explorer",
+            "https://science.nasa.gov/mission/nicer/",
+            "https://www.nasa.gov/missions/station/nicer-status-updates/",
+            "https://heasarc.gsfc.nasa.gov/docs/nicer/",
+            "https://www.nasa.gov/centers-and-facilities/goddard/nasa-team-first-to-demonstrate-x-ray-navigation-in-space/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "NICER measured neutron star sizes by timing X-rays to about 100 nanoseconds. SEXTANT used the same pulses to work out the station's position.",
+          "verified": false,
+          "sources": [
+            "https://heasarc.gsfc.nasa.gov/docs/nicer/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "In 2017 SEXTANT found the station's position to within about 16 km (10 miles) using pulsars alone, while moving at about 28,000 km/h.",
+          "verified": false,
+          "sources": [
+            "https://www.nasa.gov/centers-and-facilities/goddard/nasa-team-first-to-demonstrate-x-ray-navigation-in-space/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "swas",
+      "name": "SWAS",
+      "subtitle": "Searched for water and oxygen in star-forming clouds",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/swas.webp",
+      "glb": "models/swas.glb",
+      "usdz": "models/swas.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/submillimeter-wave-astronomy-satellite-swas/",
+      "sourceLabel": "NASA 3D Resources: Submillimeter Wave Astronomy Satellite (SWAS)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Submillimeter observations of water, oxygen and carbon in interstellar clouds",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/swas/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/swas/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "December 6, 1998 (UTC)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Submillimeter_Wave_Astronomy_Satellite",
+            "https://science.nasa.gov/mission/swas/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Ended 2005",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Submillimeter_Wave_Astronomy_Satellite",
+            "https://science.nasa.gov/mission/swas/"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "about 1.63 m x 1.02 m (body)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Submillimeter_Wave_Astronomy_Satellite",
+            "https://science.nasa.gov/mission/swas/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "288 kg at launch",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Submillimeter_Wave_Astronomy_Satellite",
+            "https://science.nasa.gov/mission/swas/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "SWAS looked at cold clouds where stars form and found far less oxygen gas than expected.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/swas/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It was briefly woken in 2005 to watch Deep Impact hit comet Tempel 1.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/swas/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "suzaku",
+      "name": "Suzaku",
+      "subtitle": "A Japanese X-ray observatory with NASA-built mirrors",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/suzaku.webp",
+      "glb": "models/suzaku.glb",
+      "usdz": "models/suzaku.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/suzaku/",
+      "sourceLabel": "NASA 3D Resources: Suzaku",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "X-ray astronomy of black holes, clusters and hot gas",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/suzaku/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "JAXA, with NASA",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/suzaku/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "July 10, 2005",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Suzaku_(satellite)",
+            "https://science.nasa.gov/mission/suzaku/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Ended September 2, 2015; re-entered January 5, 2025",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Suzaku_(satellite)",
+            "https://science.nasa.gov/mission/suzaku/"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "about 6.5 m long in orbit",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Suzaku_(satellite)",
+            "https://science.nasa.gov/mission/suzaku/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "1,706 kg at launch",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Suzaku_(satellite)",
+            "https://science.nasa.gov/mission/suzaku/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Suzaku carried five X-ray telescopes with mirrors from NASA Goddard and studied hot gas in galaxy clusters.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/suzaku/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Before launch it was called Astro-E2; Suzaku is a red bird from Japanese myth.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/suzaku/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wire",
+      "name": "WIRE",
+      "subtitle": "An infrared telescope that lost its coolant and found a new job",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/wire.webp",
+      "glb": "models/wire.glb",
+      "usdz": "models/wire.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/wide-field-infrared-explorer-wire/",
+      "sourceLabel": "NASA 3D Resources: Wide-Field Infrared Explorer (WIRE)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Infrared survey of starburst galaxies (planned)",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/wire/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/wire/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "March 5, 1999 (UTC)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wide_Field_Infrared_Explorer",
+            "https://science.nasa.gov/mission/wire/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Re-entered May 10, 2011",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wide_Field_Infrared_Explorer",
+            "https://science.nasa.gov/mission/wire/"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "spacecraft body under 1 m across (recheck)",
+          "verified": false,
+          "recheckBeforePublish": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wide_Field_Infrared_Explorer",
+            "https://science.nasa.gov/mission/wire/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "250 kg at launch",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wide_Field_Infrared_Explorer",
+            "https://science.nasa.gov/mission/wire/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "A cover came off early and the frozen hydrogen coolant boiled away within days. Its star tracker was then used to measure starquakes.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/wire/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "That rescue science made WIRE an early space asteroseismology mission.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/wire/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "spartan-201",
+      "name": "Spartan 201",
+      "subtitle": "A Sun-watcher that the Space Shuttle released and caught again",
+      "tags": [
+        "heliophysics",
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/spartan-201.webp",
+      "glb": "models/spartan-201.glb",
+      "usdz": "models/spartan-201.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/spartan-201/",
+      "sourceLabel": "NASA 3D Resources: Spartan 201",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Study the solar corona and solar wind from a free-flying shuttle payload",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/STS-87",
+            "https://en.wikipedia.org/wiki/STS-56"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/STS-87",
+            "https://en.wikipedia.org/wiki/STS-56"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "first flight April 1993 (STS-56)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/STS-87",
+            "https://en.wikipedia.org/wiki/STS-56"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Retired after its last flight in 1998 (STS-95)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/STS-87",
+            "https://en.wikipedia.org/wiki/STS-56"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "About",
+          "value": "Spartan was set loose by the shuttle's robot arm, flew on its own for a couple of days, and was then grabbed and brought home.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/STS-87",
+            "https://en.wikipedia.org/wiki/STS-56"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "On STS-87 in 1997 it tumbled after release, and astronauts caught it by hand on a spacewalk.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/STS-87",
+            "https://en.wikipedia.org/wiki/STS-56"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ulysses",
+      "name": "Ulysses",
+      "subtitle": "The first craft to fly over the Sun's poles",
+      "tags": [
+        "heliophysics",
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/ulysses.webp",
+      "glb": "models/ulysses.glb",
+      "usdz": "models/ulysses.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/ulysses/",
+      "sourceLabel": "NASA 3D Resources: Ulysses",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Study the Sun and solar wind at all latitudes",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/ulysses/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "ESA and NASA",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/ulysses/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "October 6, 1990 (STS-41)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ulysses_(spacecraft)",
+            "https://science.nasa.gov/mission/ulysses/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Ended June 30, 2009",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ulysses_(spacecraft)",
+            "https://science.nasa.gov/mission/ulysses/"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "body about 3.2 x 3.3 x 2.1 m; wire antenna 72 m tip to tip",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ulysses_(spacecraft)",
+            "https://science.nasa.gov/mission/ulysses/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "371 kg at launch",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ulysses_(spacecraft)",
+            "https://science.nasa.gov/mission/ulysses/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "To leave the plane of the planets, Ulysses flew to Jupiter and used its gravity to swing up over the Sun's poles.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/ulysses/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It flew through the tails of three comets by chance.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/ulysses/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "clementine",
+      "name": "Clementine",
+      "subtitle": "Mapped the whole Moon in 1994",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/clementine.webp",
+      "glb": "models/clementine.glb",
+      "usdz": "models/clementine.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/clementine/",
+      "sourceLabel": "NASA 3D Resources: Clementine",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Test lightweight sensors and map the Moon",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/clementine/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "US Ballistic Missile Defense Organization and NASA",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/clementine/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "January 25, 1994",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Clementine_(spacecraft)",
+            "https://science.nasa.gov/mission/clementine/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Lost after a thruster fault in May 1994",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Clementine_(spacecraft)",
+            "https://science.nasa.gov/mission/clementine/"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "octagonal prism 1.88 m high and 1.14 m across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Clementine_(spacecraft)",
+            "https://science.nasa.gov/mission/clementine/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "424 kg at launch",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Clementine_(spacecraft)",
+            "https://science.nasa.gov/mission/clementine/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Clementine mapped the Moon in 11 colors and its radar hinted at ice in craters near the south pole.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/clementine/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It was named after the song, because the craft would be lost and gone forever after the mission.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/clementine/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ssl-1300",
+      "name": "SSL 1300 bus",
+      "subtitle": "A workhorse satellite body, also used for NASA's Psyche",
+      "tags": [
+        "comms"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/ssl-1300.webp",
+      "glb": "models/ssl-1300.glb",
+      "usdz": "models/ssl-1300.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/space-systems-loral-ssl-1300/",
+      "sourceLabel": "NASA 3D Resources: Space Systems Loral (SSL-1300)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Commercial satellite bus, mostly for communications",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/psyche/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "Space Systems Loral (now Lanteris Space Systems)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Lanteris_1300"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "first flown 1989",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/SSL_1300",
+            "https://en.wikipedia.org/wiki/Lanteris_1300",
+            "https://science.nasa.gov/mission/psyche/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Many in service (as of Nov 2026)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/SSL_1300",
+            "https://en.wikipedia.org/wiki/Lanteris_1300",
+            "https://science.nasa.gov/mission/psyche/"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "about 27 m across the solar arrays, depending on the satellite",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Lanteris_1300"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Over a hundred satellites have been built on this bus. NASA chose it for the Psyche asteroid mission.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/psyche/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "In 2015 its builder delivered the 100th satellite built on this design, more than any other communications satellite model in orbit at the time.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Lanteris_1300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "roman",
+      "name": "Roman Space Telescope",
+      "subtitle": "Hubble-sharp images that each cover 100 times more sky",
+      "tags": [
+        "observatory"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/roman.webp",
+      "glb": "models/roman.glb",
+      "usdz": "models/roman.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/nancy-grace-roman-space-telescope-a/",
+      "sourceLabel": "NASA 3D Resources: Nancy Grace Roman Space Telescope 3D Model (A)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Wide-field infrared survey: dark energy, exoplanets and the infrared sky",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/roman-space-telescope/",
+            "https://science.nasa.gov/mission/roman-space-telescope/frequently-asked-questions/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/roman-space-telescope/",
+            "https://science.nasa.gov/mission/roman-space-telescope/frequently-asked-questions/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "August 30, 2026 (Falcon Heavy)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Nancy_Grace_Roman_Space_Telescope",
+            "https://science.nasa.gov/mission/roman-space-telescope/",
+            "https://science.nasa.gov/mission/roman-space-telescope/frequently-asked-questions/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Launched August 30, 2026; due to reach L2 in early December 2026; first images to be released December 7, 2026 (recheck)",
+          "verified": false,
+          "recheckBeforePublish": true,
+          "sources": [
+            "https://www.nasa.gov/news-release/nasas-dark-universe-seeking-nancy-grace-roman-space-telescope-launches/",
+            "https://www.nasa.gov/news-release/nasa-invites-media-public-to-view-roman-telescopes-first-images/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "over 12.7 m (42 ft) long and 4.4 m wide when fully deployed; 2.4 m mirror",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/roman-space-telescope/frequently-asked-questions/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "about 8,000 kg dry (NASA); about 9,200 kg with fuel",
+          "verified": false,
+          "recheckBeforePublish": true,
+          "sources": [
+            "https://assets.science.nasa.gov/content/dam/science/missions/rst/education/Final%20Roman%20Press%20Kit-508compliant.pdf",
+            "https://en.wikipedia.org/wiki/Nancy_Grace_Roman_Space_Telescope"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Roman has a 2.4 m mirror like Hubble's, but its camera sees about 100 times more sky in each picture.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/roman-space-telescope/",
+            "https://science.nasa.gov/mission/roman-space-telescope/frequently-asked-questions/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It is named for Nancy Grace Roman, NASA's first chief astronomer, often called the mother of Hubble.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/roman-space-telescope/",
+            "https://science.nasa.gov/mission/roman-space-telescope/frequently-asked-questions/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tdrs",
+      "name": "TDRS",
+      "subtitle": "The relay satellites that keep the ISS and Hubble in touch",
+      "tags": [
+        "comms"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/tdrs.webp",
+      "glb": "models/tdrs.glb",
+      "usdz": "models/tdrs.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/tracking-and-data-relay-satellites-tdrs-d/",
+      "sourceLabel": "NASA 3D Resources: Tracking and Data Relay Satellites (TDRS) (D)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Relay data between spacecraft in low orbit and the ground",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Tracking_and_data_relay_satellite",
+            "https://en.wikipedia.org/wiki/TDRS-1"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Tracking_and_data_relay_satellite",
+            "https://en.wikipedia.org/wiki/TDRS-1"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "first April 4, 1983 (STS-6); latest August 18, 2017",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Tracking_and_data_relay_satellite",
+            "https://en.wikipedia.org/wiki/TDRS-1"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Fleet operating (as of Nov 2026; recheck)",
+          "verified": false,
+          "recheckBeforePublish": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Tracking_and_data_relay_satellite",
+            "https://en.wikipedia.org/wiki/TDRS-1"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 17 m across the solar arrays (first generation)",
+          "verified": false,
+          "recheckBeforePublish": true,
+          "sources": [
+            "https://en.wikipedia.org/wiki/TDRS-1"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "From geostationary orbit, a few TDRS satellites give near-constant contact with the ISS, Hubble and many others.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Tracking_and_data_relay_satellite",
+            "https://en.wikipedia.org/wiki/TDRS-1"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Before TDRS, astronauts lost contact whenever they flew out of range of a ground station.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Tracking_and_data_relay_satellite",
+            "https://en.wikipedia.org/wiki/TDRS-1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "maven",
+      "name": "MAVEN",
+      "subtitle": "Showed how Mars lost its air to space",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/maven.webp",
+      "glb": "models/maven.glb",
+      "usdz": "models/maven.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/mars-atmosphere-and-volatile-evolution-maven-a/",
+      "sourceLabel": "NASA 3D Resources: Mars Atmosphere and Volatile EvolutioN (MAVEN) (A)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Study the upper atmosphere of Mars and how it escapes",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/maven/",
+            "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/maven/",
+            "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "November 18, 2013",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/MAVEN",
+            "https://science.nasa.gov/mission/maven/",
+            "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Mission ended June 3, 2026; contact was lost December 6, 2025",
+          "verified": false,
+          "sources": [
+            "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/",
+            "https://science.nasa.gov/mission/maven/"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "11.4 m across the solar wings",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/MAVEN",
+            "https://science.nasa.gov/mission/maven/",
+            "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "2,454 kg at launch",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/MAVEN",
+            "https://science.nasa.gov/mission/maven/",
+            "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "MAVEN showed that the solar wind strips gas from Mars, which helps explain how the planet went from wet to dry.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/maven/",
+            "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It also relayed data from the Curiosity and Perseverance rovers.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/maven/",
+            "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rosetta",
+      "name": "Rosetta",
+      "subtitle": "Orbited a comet and dropped a lander on it",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/rosetta.webp",
+      "glb": "models/rosetta.glb",
+      "usdz": "models/rosetta.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models/Rosetta",
+      "sourceLabel": "NASA 3D Resources: Rosetta (GitHub mirror) (GitHub mirror)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Orbit and land on comet 67P/Churyumov-Gerasimenko",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "ESA, with NASA instruments",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "March 2, 2004",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Ended September 30, 2016, with a controlled landing on the comet",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "2.8 x 2.1 x 2.0 m body; 32 m across the solar arrays",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "about 3,000 kg at launch",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Rosetta followed the comet for two years as it passed the Sun and released the Philae lander in 2014.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Its solar arrays had to work at more than 5 times Earth's distance from the Sun.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gateway",
+      "name": "Gateway",
+      "subtitle": "A lunar space station NASA designed, then paused in 2026",
+      "tags": [
+        "crewed"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/gateway.webp",
+      "glb": "models/gateway.glb",
+      "usdz": "models/gateway.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/gateway-lunar-space-station/",
+      "sourceLabel": "NASA 3D Resources: Gateway Lunar Space Station",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Lunar-orbit outpost for Artemis crews",
+          "verified": false,
+          "sources": [
+            "https://www.nasa.gov/news-release/nasa-unveils-initiatives-to-achieve-americas-national-space-policy/",
+            "https://www.nasa.gov/mission/gateway/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA, with ESA, JAXA, CSA, the UAE and industry",
+          "verified": false,
+          "sources": [
+            "https://www.nasa.gov/news-release/nasa-unveils-initiatives-to-achieve-americas-national-space-policy/",
+            "https://www.nasa.gov/mission/gateway/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "Never launched",
+          "verified": false,
+          "sources": [
+            "https://www.nasa.gov/news-release/nasa-unveils-initiatives-to-achieve-americas-national-space-policy/",
+            "https://en.wikipedia.org/wiki/Lunar_Gateway"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Paused in its current form by NASA in March 2026; some hardware to be reused (as of Nov 2026; recheck)",
+          "verified": false,
+          "recheckBeforePublish": true,
+          "sources": [
+            "https://www.nasa.gov/news-release/nasa-unveils-initiatives-to-achieve-americas-national-space-policy/",
+            "https://en.wikipedia.org/wiki/Lunar_Gateway"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "model about 18 x 30 x 39 m",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Lunar_Gateway",
+            "https://www.nasa.gov/news-release/nasa-unveils-initiatives-to-achieve-americas-national-space-policy/",
+            "https://www.nasa.gov/mission/gateway/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Gateway was designed to orbit the Moon in a long, stretched orbit, giving crews a place to live, work and transfer to lunar landers. In 2026 NASA paused it to focus on a base on the lunar surface.",
+          "verified": false,
+          "sources": [
+            "https://www.nasa.gov/news-release/nasa-unveils-initiatives-to-achieve-americas-national-space-policy/",
+            "https://en.wikipedia.org/wiki/Lunar_Gateway"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Its power module was designed to use solar electric propulsion, the same kind of Hall thrusters that drive NASA's Psyche spacecraft.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Lunar_Gateway"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aces-suit",
+      "name": "ACES suit",
+      "subtitle": "The orange launch and entry suit of the shuttle era",
+      "tags": [
+        "crew-gear"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/aces-suit.webp",
+      "glb": "models/aces-suit.glb",
+      "usdz": "models/aces-suit.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/advanced-crew-escape-suit/",
+      "sourceLabel": "NASA 3D Resources: Advanced Crew Escape Suit",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A full pressure suit worn during launch and landing",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Crew_Escape_Suit"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Space Shuttle, 1994 to 2011",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Crew_Escape_Suit"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "sized to the astronaut; model about 2 m tall",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Crew_Escape_Suit"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "If the cabin lost pressure, the suit kept the crew alive. It also carried a parachute harness, life raft and survival gear for bailing out.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Crew_Escape_Suit"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Its orange color, nicknamed the pumpkin suit, makes a crew member easy to spot in the ocean.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Crew_Escape_Suit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "astronaut",
+      "name": "Astronaut",
+      "subtitle": "A spacesuited astronaut, for scale",
+      "tags": [
+        "crew-gear"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/astronaut.webp",
+      "glb": "models/astronaut.glb",
+      "usdz": "models/astronaut.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/astronaut/",
+      "sourceLabel": "NASA 3D Resources: Astronaut",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A generic astronaut in a spacewalk suit",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/astronaut/"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "NASA outreach model",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/astronaut/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "scaled to 1.8 m tall",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/astronaut/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "A person in a suit is the easiest way to judge how big a spacecraft is. Put this next to anything in the fleet in AR.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/astronaut/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "astronaut-glove",
+      "name": "Spacewalk glove",
+      "subtitle": "The hardest part of a spacesuit to get right",
+      "tags": [
+        "crew-gear"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/astronaut-glove.webp",
+      "glb": "models/astronaut-glove.glb",
+      "usdz": "models/astronaut-glove.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/astronaut-glove/",
+      "sourceLabel": "NASA 3D Resources: Astronaut Glove",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A pressurized spacewalk glove",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/astronaut-glove/"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "NASA spacesuits",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/astronaut-glove/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 30 cm long (model scale approximate)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Astronaut_Glove_Challenge",
+            "https://science.nasa.gov/3d-resources/astronaut-glove/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "A pressurized glove fights every finger movement, so hand fatigue is one of the biggest limits on how long a spacewalk can go.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/astronaut-glove/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "NASA ran Centennial Challenges for better astronaut gloves in 2007 and 2009.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/astronaut-glove/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "emu-spacesuit",
+      "name": "EMU spacesuit",
+      "subtitle": "The spacewalk suit used on the shuttle and the ISS",
+      "tags": [
+        "crew-gear"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/emu-spacesuit.webp",
+      "glb": "models/emu-spacesuit.glb",
+      "usdz": "models/emu-spacesuit.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/extravehicular-mobility-unit/",
+      "sourceLabel": "NASA 3D Resources: Extravehicular Mobility Unit",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A self-contained spacewalk suit with its own life support",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Extravehicular_Mobility_Unit"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Space Shuttle and International Space Station, since the early 1980s (first spacewalk in 1983)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Extravehicular_Mobility_Unit"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "model about 2 m tall",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Extravehicular_Mobility_Unit"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "The backpack holds oxygen, a cooling water loop and power for spacewalks that often last six to eight hours.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Extravehicular_Mobility_Unit"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "On a two-person spacewalk, one suit has red stripes on the legs so the two astronauts can be told apart.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Extravehicular_Mobility_Unit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gemini-spacesuit",
+      "name": "Gemini spacesuit",
+      "subtitle": "Worn on America's first spacewalk",
+      "tags": [
+        "crew-gear"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/gemini-spacesuit.webp",
+      "glb": "models/gemini-spacesuit.glb",
+      "usdz": "models/gemini-spacesuit.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/gemini-spacesuit/",
+      "sourceLabel": "NASA 3D Resources: Gemini Spacesuit",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A pressure suit for Gemini missions",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Gemini_spacesuit"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Project Gemini, 1965 to 1966",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Gemini_spacesuit"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "model about 2 m tall",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Gemini_spacesuit"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Gemini suits were built for both cabin wear and spacewalks. Ed White wore one for the first American spacewalk in June 1965.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Gemini_spacesuit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mark-iii-spacesuit",
+      "name": "Mark III suit",
+      "subtitle": "A hard-bodied test suit for walking on other worlds",
+      "tags": [
+        "crew-gear"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/mark-iii-spacesuit.webp",
+      "glb": "models/mark-iii-spacesuit.glb",
+      "usdz": "models/mark-iii-spacesuit.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/mark-iii-spacesuit/",
+      "sourceLabel": "NASA 3D Resources: Mark III Spacesuit",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "An experimental planetary surface suit",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mark_III_(space_suit)"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "NASA test programs",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mark_III_(space_suit)"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "model about 2 m tall",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mark_III_(space_suit)"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "The Mark III mixed hard and soft parts so a wearer could bend, kneel and walk more easily than in older suits.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mark_III_(space_suit)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mercury-spacesuit",
+      "name": "Mercury spacesuit",
+      "subtitle": "The silver suit of America's first astronauts",
+      "tags": [
+        "crew-gear"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/mercury-spacesuit.webp",
+      "glb": "models/mercury-spacesuit.glb",
+      "usdz": "models/mercury-spacesuit.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/mercury-spacesuit/",
+      "sourceLabel": "NASA 3D Resources: Mercury Spacesuit",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A pressure suit for Mercury flights",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Navy_Mark_IV"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Project Mercury, 1961 to 1963",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Navy_Mark_IV"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "model about 2 m tall",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Navy_Mark_IV"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "It was adapted from a Navy high-altitude jet pilot suit and coated in aluminum for the famous silver look.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Navy_Mark_IV"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "z2-spacesuit",
+      "name": "Z-2 suit",
+      "subtitle": "A prototype suit for future Mars and Moon walks",
+      "tags": [
+        "crew-gear"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/z2-spacesuit.webp",
+      "glb": "models/z2-spacesuit.glb",
+      "usdz": "models/z2-spacesuit.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/z2-spacesuit/",
+      "sourceLabel": "NASA 3D Resources: Z2 Spacesuit",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A prototype planetary spacesuit",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Z_series_space_suits"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "NASA test program, 2010s",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Z_series_space_suits"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "model about 1.9 m tall",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Z_series_space_suits"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Z-2 tested a hard upper torso and a rear hatch, so a suit could dock to a rover or habitat instead of being put on inside an airlock.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Z_series_space_suits"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "NASA let the public vote on its cover design in 2014.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Z_series_space_suits"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "helmet",
+      "name": "Spacesuit helmet",
+      "subtitle": "A clear bubble helmet for spacewalks",
+      "tags": [
+        "crew-gear"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/helmet.webp",
+      "glb": "models/helmet.glb",
+      "usdz": "models/helmet.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/helmet/",
+      "sourceLabel": "NASA 3D Resources: Helmet",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A spacesuit pressure helmet",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/helmet/"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "NASA spacesuits",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/helmet/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 38 cm across (model scale approximate)",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/helmet/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "The clear bubble holds pressure; spacewalkers add a visor assembly with lights, cameras and a gold sun visor on top.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/helmet/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "robonaut-2",
+      "name": "Robonaut 2",
+      "subtitle": "The first humanoid robot in space",
+      "tags": [
+        "robots"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/robonaut-2.webp",
+      "glb": "models/robonaut-2.glb",
+      "usdz": "models/robonaut-2.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/robonaut-2/",
+      "sourceLabel": "NASA 3D Resources: Robonaut 2",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A humanoid robot built to use astronaut tools",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Robonaut"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "International Space Station, 2011 to 2018",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Robonaut"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "model about 2.6 m tall with its climbing legs",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Robonaut"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "R2 was built by NASA and General Motors. It flew to the ISS in 2011 on the last flight of Discovery and later got legs for climbing.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Robonaut"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It was the first humanoid robot in space.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Robonaut"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "space-exploration-vehicle",
+      "name": "Space Exploration Vehicle",
+      "subtitle": "A pressurized rover concept you could drive in shirtsleeves",
+      "tags": [
+        "rover"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/space-exploration-vehicle.webp",
+      "glb": "models/space-exploration-vehicle.glb",
+      "usdz": "models/space-exploration-vehicle.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/space-exploration-vehicle/",
+      "sourceLabel": "NASA 3D Resources: Space Exploration Vehicle",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A concept pressurized rover and in-space cabin",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/space-exploration-vehicle/"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "NASA concept and test vehicle, 2008 to 2010s",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/space-exploration-vehicle/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "model about 4 x 6 x 4 m",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Exploration_Vehicle",
+            "https://science.nasa.gov/3d-resources/space-exploration-vehicle/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "The cabin could sit on a 12-wheel chassis on the Moon or Mars, or on a sled with thrusters for visiting asteroids. Crews would climb into suits through ports on the back.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/space-exploration-vehicle/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "An early version drove across the Arizona desert in NASA's Desert RATS field tests.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/space-exploration-vehicle/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "habitat-demo-unit",
+      "name": "Habitat Demonstration Unit",
+      "subtitle": "A test habitat for long stays on other worlds",
+      "tags": [
+        "crewed"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/habitat-demo-unit.webp",
+      "glb": "models/habitat-demo-unit.glb",
+      "usdz": "models/habitat-demo-unit.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/habitat-demonstration-unit/",
+      "sourceLabel": "NASA 3D Resources: Habitat Demonstration Unit",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A full-size test habitat",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/habitat-demonstration-unit/"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "NASA field tests, 2010s",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/habitat-demonstration-unit/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "core about 5 m across (model scale approximate)",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/habitat-demonstration-unit/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "NASA teams lived and worked in the HDU during desert field tests to learn how a surface habitat should be laid out.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/habitat-demonstration-unit/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rassor",
+      "name": "RASSOR",
+      "subtitle": "A digging robot with drums that spin in opposite directions",
+      "tags": [
+        "robots"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/rassor.webp",
+      "glb": "models/rassor.glb",
+      "usdz": "models/rassor.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/regolith-advanced-surface-systems-operations-robot-rassor/",
+      "sourceLabel": "NASA 3D Resources: Regolith Advanced Surface Systems Operations Robot (RASSOR)",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A robot that digs and hauls lunar soil",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/regolith-advanced-surface-systems-operations-robot-rassor/"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "NASA Kennedy Space Center prototype",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/regolith-advanced-surface-systems-operations-robot-rassor/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "model about 1.7 m long",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/regolith-advanced-surface-systems-operations-robot-rassor/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "RASSOR's two bucket drums spin in opposite directions, so their digging forces cancel. That lets a light robot dig in low gravity without getting pushed away.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/regolith-advanced-surface-systems-operations-robot-rassor/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "canadarm",
+      "name": "Canadarm",
+      "subtitle": "The shuttle's robotic arm",
+      "tags": [
+        "robots"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/canadarm.webp",
+      "glb": "models/canadarm.glb",
+      "usdz": "models/canadarm.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/space-shuttle-remote-manipulator-system-canadarm/",
+      "sourceLabel": "NASA 3D Resources: Space Shuttle Remote Manipulator System (Canadarm)",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "The Space Shuttle's remote manipulator arm",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Canadarm"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Space Shuttle, 1981 to 2011",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Canadarm"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "15.2 m long",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Canadarm"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Astronauts used the arm to deploy and catch satellites, including Hubble on its servicing missions, and to move spacewalkers around.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Canadarm"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It was built in Canada and flew on 90 shuttle missions.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Canadarm"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "curiosity-scarecrow",
+      "name": "Scarecrow",
+      "subtitle": "Curiosity's lightweight stand-in for driving tests on Earth",
+      "tags": [
+        "rover"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/curiosity-scarecrow.webp",
+      "glb": "models/curiosity-scarecrow.glb",
+      "usdz": "models/curiosity-scarecrow.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/curiosity-scarescrow-test-rover/",
+      "sourceLabel": "NASA 3D Resources: Curiosity Scarecrow Test Rover",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A mobility test rover",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/curiosity-scarescrow-test-rover/"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Mars Science Laboratory team, Earth testing",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/curiosity-scarescrow-test-rover/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 3 m long, like Curiosity (model)",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/curiosity-scarescrow-test-rover/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Scarecrow has Curiosity's wheels and suspension but almost nothing else, so on Earth it weighs about what Curiosity weighs on Mars.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/curiosity-scarescrow-test-rover/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It has no brain on board: it is driven from a laptop.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/curiosity-scarescrow-test-rover/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cos",
+      "name": "Cosmic Origins Spectrograph",
+      "subtitle": "A Hubble instrument installed on the last servicing mission",
+      "tags": [
+        "hubble-servicing",
+        "instruments"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/cos.webp",
+      "glb": "models/cos.glb",
+      "usdz": "models/cos.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/cosmic-origins-spectrograph/",
+      "sourceLabel": "NASA 3D Resources: Cosmic Origins Spectrograph",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Ultraviolet spectrograph for Hubble",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cosmic_Origins_Spectrograph"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Hubble, installed on Servicing Mission 4 in May 2009",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cosmic_Origins_Spectrograph"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 2.2 m long (model scale approximate)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cosmic_Origins_Spectrograph"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "COS splits ultraviolet light from distant quasars to map the thin gas between galaxies, the cosmic web.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cosmic_Origins_Spectrograph"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wfpc",
+      "name": "Wide Field Planetary Camera",
+      "subtitle": "The wedge-shaped camera that took Hubble's famous pictures",
+      "tags": [
+        "hubble-servicing",
+        "instruments"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/wfpc.webp",
+      "glb": "models/wfpc.glb",
+      "usdz": "models/wfpc.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/wide-field-planetary-camera/",
+      "sourceLabel": "NASA 3D Resources: Wide Field Planetary Camera",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Hubble's main camera in its early years",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wide_Field_and_Planetary_Camera_2"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Hubble, 1990 to 2009 (WF/PC and WFPC2)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wide_Field_and_Planetary_Camera_2"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 2.2 m across (model scale approximate)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wide_Field_and_Planetary_Camera_2"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "WFPC2, installed in 1993 with corrective optics, took the Pillars of Creation and the Hubble Deep Field.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wide_Field_and_Planetary_Camera_2"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "WFPC2 was brought home in 2009 and is now at the Smithsonian's National Air and Space Museum.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wide_Field_and_Planetary_Camera_2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flight-support-system",
+      "name": "Flight Support System",
+      "subtitle": "The cradle that held Hubble in the shuttle's bay",
+      "tags": [
+        "hubble-servicing"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/flight-support-system.webp",
+      "glb": "models/flight-support-system.glb",
+      "usdz": "models/flight-support-system.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/flight-system-support/",
+      "sourceLabel": "NASA 3D Resources: Flight System Support",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A berthing and positioning platform for Hubble servicing",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/flight-system-support/"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Space Shuttle Hubble servicing missions",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/flight-system-support/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 4.5 m across, the width of the payload bay (model scale approximate)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Hubble_Space_Telescope",
+            "https://science.nasa.gov/3d-resources/flight-system-support/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "During servicing, the shuttle's arm parked Hubble on this platform, which could tilt and rotate it so spacewalkers could reach each part.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/flight-system-support/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "slic-carrier",
+      "name": "SLIC carrier",
+      "subtitle": "A lightweight rack that carried new parts up to Hubble",
+      "tags": [
+        "hubble-servicing"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/slic-carrier.webp",
+      "glb": "models/slic-carrier.glb",
+      "usdz": "models/slic-carrier.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/super-lightweight-interchangeable/",
+      "sourceLabel": "NASA 3D Resources: Super Lightweight Interchangeable",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Super Lightweight Interchangeable Carrier for Hubble parts",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/super-lightweight-interchangeable/"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Hubble Servicing Mission 4, 2009",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/super-lightweight-interchangeable/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 4.5 m across (model scale approximate)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/STS-125",
+            "https://science.nasa.gov/3d-resources/super-lightweight-interchangeable/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "The SLIC carried the Wide Field Camera 3 and new batteries up to Hubble in 2009, using a carbon composite frame to save weight.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/super-lightweight-interchangeable/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "orbital-replacement-unit",
+      "name": "ORU carrier",
+      "subtitle": "Carried Hubble's swappable parts in the shuttle's bay",
+      "tags": [
+        "hubble-servicing"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/orbital-replacement-unit.webp",
+      "glb": "models/orbital-replacement-unit.glb",
+      "usdz": "models/orbital-replacement-unit.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/orbital-replacement-unit/",
+      "sourceLabel": "NASA 3D Resources: Orbital Replacement Unit",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "Carrier for Hubble orbital replacement units",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/orbital-replacement-unit/"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Space Shuttle Hubble servicing missions",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/orbital-replacement-unit/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 4.5 m across (model scale approximate)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Hubble_Space_Telescope",
+            "https://science.nasa.gov/3d-resources/orbital-replacement-unit/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Hubble was designed with boxes, called orbital replacement units, that spacewalkers could pull out and replace like drawers.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/orbital-replacement-unit/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crew-lock-bag",
+      "name": "Crew lock bag",
+      "subtitle": "A spacewalker's tool bag",
+      "tags": [
+        "tools"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/crew-lock-bag.webp",
+      "glb": "models/crew-lock-bag.glb",
+      "usdz": "models/crew-lock-bag.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/crew-lock-bag/",
+      "sourceLabel": "NASA 3D Resources: Crew Lock Bag",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A tool and hardware bag for spacewalks",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/crew-lock-bag/"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Spacewalks",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/crew-lock-bag/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 50 cm tall (model scale approximate)",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/crew-lock-bag/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Everything on a spacewalk is tethered or bagged, because anything let go drifts off. This bag carries tools and small parts.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/crew-lock-bag/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pistol-grip-tool",
+      "name": "Pistol grip tool",
+      "subtitle": "The battery drill that spacewalkers use",
+      "tags": [
+        "tools"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/pistol-grip-tool.webp",
+      "glb": "models/pistol-grip-tool.glb",
+      "usdz": "models/pistol-grip-tool.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/pistol-grip-tool/",
+      "sourceLabel": "NASA 3D Resources: Pistol Grip Tool",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A battery-powered torque tool for spacewalks",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/pistol-grip-tool/"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Hubble servicing and the ISS",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/pistol-grip-tool/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 45 cm long (model scale approximate)",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/pistol-grip-tool/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "The pistol grip tool can be set to an exact torque and speed and counts its turns, so a spacewalker does not overtighten a bolt.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/pistol-grip-tool/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "grease-gun",
+      "name": "Grease gun",
+      "subtitle": "A spacewalk lubricant applicator",
+      "tags": [
+        "tools"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/grease-gun.webp",
+      "glb": "models/grease-gun.glb",
+      "usdz": "models/grease-gun.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/grease-gun/",
+      "sourceLabel": "NASA 3D Resources: Grease Gun",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A tool for applying lubricant in space",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/grease-gun/"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Spacewalks",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/grease-gun/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 40 cm long (model scale approximate)",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/grease-gun/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Moving parts on the outside of a station still need grease; spacewalkers have used grease guns to service the ISS robotic arm's grapple mechanisms.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/grease-gun/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hammer",
+      "name": "Space hammer",
+      "subtitle": "Yes, astronauts carry hammers",
+      "tags": [
+        "tools"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/hammer.webp",
+      "glb": "models/hammer.glb",
+      "usdz": "models/hammer.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/hammer/",
+      "sourceLabel": "NASA 3D Resources: Hammer",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A hand hammer",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/hammer/"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "NASA crews",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/hammer/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 36 cm long (model as supplied)",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/hammer/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Even with high-tech tools, a plain hammer still comes in handy, from freeing stuck parts to geology on the Moon.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/hammer/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ratchet",
+      "name": "Ratchet wrench",
+      "subtitle": "A wrench for turning bolts on spacewalks",
+      "tags": [
+        "tools"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/ratchet.webp",
+      "glb": "models/ratchet.glb",
+      "usdz": "models/ratchet.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/ratchet/",
+      "sourceLabel": "NASA 3D Resources: Ratchet",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A ratchet wrench",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/ratchet/"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "NASA spacewalk tool kits",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/ratchet/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 30 cm long (model scale approximate)",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/ratchet/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "A ratchet lets a gloved hand keep turning a bolt without taking the tool off, which matters a lot in stiff pressurized gloves.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/ratchet/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wrench",
+      "name": "Wrench",
+      "subtitle": "A simple open and box wrench",
+      "tags": [
+        "tools"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/wrench.webp",
+      "glb": "models/wrench.glb",
+      "usdz": "models/wrench.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/wrench/",
+      "sourceLabel": "NASA 3D Resources: Wrench",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A combination wrench",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/wrench/"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "NASA spacewalk tool kits",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/wrench/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 30 cm long (model scale approximate)",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/wrench/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Tools for space have big handles and features that are easy to grip in thick gloves.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/wrench/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tether",
+      "name": "Safety tether",
+      "subtitle": "Keeps tools and astronauts from floating away",
+      "tags": [
+        "tools"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/tether.webp",
+      "glb": "models/tether.glb",
+      "usdz": "models/tether.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/tether/",
+      "sourceLabel": "NASA 3D Resources: Tether",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A tool or safety tether with hooks",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/tether/"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Spacewalks",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/tether/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 60 cm (model scale approximate)",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/tether/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "On a spacewalk every tool is clipped on. A lost tool becomes a piece of orbital debris.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/tether/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mars-2020-sample-tube",
+      "name": "Mars sample tube",
+      "subtitle": "Holds rock cores collected by Perseverance",
+      "tags": [
+        "instruments"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/mars-2020-sample-tube.webp",
+      "glb": "models/mars-2020-sample-tube.glb",
+      "usdz": "models/mars-2020-sample-tube.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/mars-2020-sample-tube/",
+      "sourceLabel": "NASA 3D Resources: Mars 2020 sample tube",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A sample tube from the Perseverance rover",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/mars-2020-sample-tube/"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Mars 2020 Perseverance rover, Mars, since 2021",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/mars-2020-sample-tube/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 15 cm long (model scale approximate)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mars_2020",
+            "https://science.nasa.gov/3d-resources/mars-2020-sample-tube/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Perseverance drills rock cores into these tubes, seals them and leaves some on the surface for a possible future return to Earth.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/mars-2020-sample-tube/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "The tubes were cleaned so carefully that they are among the cleanest objects ever sent into space.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/mars-2020-sample-tube/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "agena",
+      "name": "Agena Target Vehicle",
+      "subtitle": "The docking target Gemini crews practiced on",
+      "tags": [
+        "rockets",
+        "crewed"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/agena.webp",
+      "glb": "models/agena.glb",
+      "usdz": "models/agena.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/agena-target-vehicle/",
+      "sourceLabel": "NASA 3D Resources: Agena Target Vehicle",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "An uncrewed upper stage fitted with a docking collar",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Agena_target_vehicle"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Project Gemini, 1966",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Agena_target_vehicle"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 7.9 m long, 1.5 m across (with docking adapter)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Agena_target_vehicle"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Gemini astronauts chased and docked with Agenas to learn rendezvous, a skill Apollo needed for the trip to the Moon. Some crews fired the Agena's engine to boost themselves higher.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Agena_target_vehicle"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Gemini 8 made the first docking of two spacecraft in orbit, with Neil Armstrong in command.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Agena_target_vehicle"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ares-1",
+      "name": "Ares I",
+      "subtitle": "The crew rocket planned for NASA's Constellation program",
+      "tags": [
+        "rockets"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/ares-1.webp",
+      "glb": "models/ares-1.glb",
+      "usdz": "models/ares-1.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/ares-1-a/",
+      "sourceLabel": "NASA 3D Resources: Ares 1 (A)",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A planned two-stage crew launch rocket",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ares_I",
+            "https://en.wikipedia.org/wiki/Constellation_program"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Constellation program (cancelled 2010); one test flight, Ares I-X, in 2009",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ares_I",
+            "https://en.wikipedia.org/wiki/Constellation_program"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 94 m tall (planned design)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ares_I",
+            "https://en.wikipedia.org/wiki/Constellation_program"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Ares I would have put a solid rocket booster derived from the shuttle under an upper stage and the Orion capsule.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ares_I",
+            "https://en.wikipedia.org/wiki/Constellation_program"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Its nickname was The Stick, because of its thin single-column shape.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Constellation_program"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shuttle-external-tank",
+      "name": "Shuttle External Tank",
+      "subtitle": "The orange tank that fed the shuttle's main engines",
+      "tags": [
+        "rockets"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/shuttle-external-tank.webp",
+      "glb": "models/shuttle-external-tank.glb",
+      "usdz": "models/shuttle-external-tank.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/space-shuttle-parts/",
+      "sourceLabel": "NASA 3D Resources: Space Shuttle Parts",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "The Space Shuttle's propellant tank for liquid hydrogen and oxygen",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_external_tank"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Space Shuttle, 1981 to 2011",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_external_tank"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "46.9 m long, 8.4 m across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_external_tank"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "The tank fed the three main engines for about eight and a half minutes, then dropped away and broke up over the ocean. It was the only part of the shuttle that was not reused.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_external_tank"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "The first two tanks were painted white. NASA stopped painting them to save about 270 kg, which left the orange foam showing.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_external_tank"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shuttle-srb",
+      "name": "Shuttle Solid Rocket Booster",
+      "subtitle": "Two of these lifted the shuttle off the pad",
+      "tags": [
+        "rockets"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/shuttle-srb.webp",
+      "glb": "models/shuttle-srb.glb",
+      "usdz": "models/shuttle-srb.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/space-shuttle-parts/",
+      "sourceLabel": "NASA 3D Resources: Space Shuttle Parts",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A reusable solid rocket booster",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_Solid_Rocket_Booster"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Space Shuttle, 1981 to 2011",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_Solid_Rocket_Booster"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "45.5 m long, 3.7 m across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_Solid_Rocket_Booster"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "The two boosters gave most of the thrust at liftoff, burned for about two minutes, then parachuted into the ocean to be recovered and refilled.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_Solid_Rocket_Booster"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Upgraded versions with five segments instead of four now fly on the SLS rocket.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_Solid_Rocket_Booster"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "orbiter-docking-system",
+      "name": "Orbiter Docking System",
+      "subtitle": "The shuttle's docking port for Mir and the ISS",
+      "tags": [
+        "crewed"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/orbiter-docking-system.webp",
+      "glb": "models/orbiter-docking-system.glb",
+      "usdz": "models/orbiter-docking-system.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/space-shuttle-parts/",
+      "sourceLabel": "NASA 3D Resources: Space Shuttle Parts",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "An airlock and docking mechanism in the shuttle's payload bay",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Orbiter_Docking_System"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Space Shuttle visits to Mir and the ISS, 1995 to 2011",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Orbiter_Docking_System"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 4.6 m across the bay (model scale approximate)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Orbiter_Docking_System"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "The system sat in the front of the payload bay. Its docking ring latched onto the station so crews could float between the two.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Orbiter_Docking_System"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crawler-transporter",
+      "name": "Crawler-transporter",
+      "subtitle": "Carries rockets to the launch pad at walking pace",
+      "tags": [
+        "ground"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/crawler-transporter.webp",
+      "glb": "models/crawler-transporter.glb",
+      "usdz": "models/crawler-transporter.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/crawler/",
+      "sourceLabel": "NASA 3D Resources: Crawler",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A tracked vehicle that moves rockets and launch platforms",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Crawler-transporter"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Apollo, Space Shuttle and Artemis, since 1965",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Crawler-transporter"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 40 m x 35 m",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Crawler-transporter"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "The crawler drives under a mobile launcher, lifts it with the rocket on top and carries it about 5.5 to 6.8 km to the pad (6.8 km to Pad 39B, where Artemis launches) while keeping it level.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Crawler-transporter",
+            "https://www.nasa.gov/wp-content/uploads/2019/08/718659main_vab.pdf"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Its top speed with a load is about 1.6 km/h (1 mph).",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Crawler-transporter"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mobile-launcher",
+      "name": "Mobile Launcher",
+      "subtitle": "The launch tower that rides with the SLS rocket",
+      "tags": [
+        "ground"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/mobile-launcher.webp",
+      "glb": "models/mobile-launcher.glb",
+      "usdz": "models/mobile-launcher.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/mobile-launcher/",
+      "sourceLabel": "NASA 3D Resources: Mobile Launcher",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A launch platform with an umbilical tower",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mobile_launcher_platform"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Artemis SLS launches",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mobile_launcher_platform"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 116 m tall: a 108 m tower on a 7.6 m high base",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mobile_launcher_platform"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "The rocket is stacked on the launcher inside the VAB, and the crawler carries both to the pad. Arms on the tower feed propellant, power and air until liftoff.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mobile_launcher_platform"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vab",
+      "name": "Vehicle Assembly Building",
+      "subtitle": "Where NASA stacks its biggest rockets",
+      "tags": [
+        "ground"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/vab.webp",
+      "glb": "models/vab.glb",
+      "usdz": "models/vab.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/vehicle-assembly-building-vab/",
+      "sourceLabel": "NASA 3D Resources: Vehicle Assembly Building (VAB)",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A rocket assembly building at Kennedy Space Center",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Vehicle_Assembly_Building"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Apollo, Space Shuttle and Artemis, since 1966",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Vehicle_Assembly_Building"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "160 m tall, 218 m long, 158 m wide",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Vehicle_Assembly_Building"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "The VAB was built to stack Saturn V rockets standing up. Its high bay doors are the largest in the world.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Vehicle_Assembly_Building"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "Each of its four high bay doors is 456 feet (139 m) tall, the largest doors in the world, and takes about 45 minutes to open.",
+          "verified": false,
+          "sources": [
+            "https://www.nasa.gov/wp-content/uploads/2019/08/718659main_vab.pdf",
+            "https://en.wikipedia.org/wiki/Vehicle_Assembly_Building"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dsn-70m",
+      "name": "DSN 70 m antenna",
+      "subtitle": "The giant dishes that talk to Voyager",
+      "tags": [
+        "ground"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/dsn-70m.webp",
+      "glb": "models/dsn-70m.glb",
+      "usdz": "models/dsn-70m.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/deep-space-network-70-meter/",
+      "sourceLabel": "NASA 3D Resources: Deep Space Network 70-meter",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A 70 m radio antenna of NASA's Deep Space Network",
+          "verified": false,
+          "sources": [
+            "https://www.cdscc.nasa.gov/Pages/Antennas/dss43.html",
+            "https://www.jpl.nasa.gov/news/nasa-contacts-voyager-2-using-upgraded-deep-space-network-dish/"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Goldstone (California), Madrid (Spain) and Canberra (Australia)",
+          "verified": false,
+          "sources": [
+            "https://www.cdscc.nasa.gov/Pages/Antennas/dss43.html",
+            "https://www.jpl.nasa.gov/news/nasa-contacts-voyager-2-using-upgraded-deep-space-network-dish/"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "dish 70 m across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/NASA_Deep_Space_Network",
+            "https://www.cdscc.nasa.gov/Pages/Antennas/dss43.html",
+            "https://www.jpl.nasa.gov/news/nasa-contacts-voyager-2-using-upgraded-deep-space-network-dish/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Three sites spaced around the globe keep at least one dish facing every deep space mission as Earth turns.",
+          "verified": false,
+          "sources": [
+            "https://www.cdscc.nasa.gov/Pages/Antennas/dss43.html",
+            "https://www.jpl.nasa.gov/news/nasa-contacts-voyager-2-using-upgraded-deep-space-network-dish/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "The 70 m dish in Canberra is the only antenna that can send commands to Voyager 2.",
+          "verified": false,
+          "sources": [
+            "https://www.jpl.nasa.gov/news/nasa-contacts-voyager-2-using-upgraded-deep-space-network-dish/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dsn-34m",
+      "name": "DSN 34 m antenna",
+      "subtitle": "The workhorse dishes of the Deep Space Network",
+      "tags": [
+        "ground"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/dsn-34m.webp",
+      "glb": "models/dsn-34m.glb",
+      "usdz": "models/dsn-34m.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/deep-space-network-34-meter/",
+      "sourceLabel": "NASA 3D Resources: Deep Space Network 34-meter",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A 34 m beam waveguide antenna",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/NASA_Deep_Space_Network"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "NASA Deep Space Network, all three sites",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/NASA_Deep_Space_Network"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "dish 34 m across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/NASA_Deep_Space_Network"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "The 34 m dishes handle most deep space traffic and can be linked together to act like a bigger antenna.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/NASA_Deep_Space_Network"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cubesat-1u",
+      "name": "CubeSat 1U",
+      "subtitle": "A satellite the size of a coffee mug box",
+      "tags": [
+        "cubesat"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/cubesat-1u.webp",
+      "glb": "models/cubesat-1u.glb",
+      "usdz": "models/cubesat-1u.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/cubesat-1-ru-generic/",
+      "sourceLabel": "NASA 3D Resources: CubeSat - 1 RU Generic",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A one-unit CubeSat",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/CubeSat"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Universities, companies and NASA, since 2003",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/CubeSat"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "10 x 10 x 10 cm body, no more than 2 kg (early rules said 1.33 kg)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/CubeSat"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "CubeSats are built from standard 10 cm cubes, so they can share rides to orbit in spring-loaded dispensers.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/CubeSat"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "The standard was created in 1999 by Cal Poly and Stanford.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/CubeSat"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cubesat-2u",
+      "name": "CubeSat 2U",
+      "subtitle": "Two CubeSat units stacked together",
+      "tags": [
+        "cubesat"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/cubesat-2u.webp",
+      "glb": "models/cubesat-2u.glb",
+      "usdz": "models/cubesat-2u.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/cubesat-2-ru-generic/",
+      "sourceLabel": "NASA 3D Resources: CubeSat - 2 RU Generic",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A two-unit CubeSat",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/CubeSat"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "Universities, companies and NASA",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/CubeSat"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "10 x 10 x 22.7 cm body",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/CubeSat"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Stacking units gives room for bigger batteries, cameras or experiments while still fitting a standard dispenser.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/CubeSat"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cubesat-icecube",
+      "name": "IceCube",
+      "subtitle": "A CubeSat that mapped cloud ice from space",
+      "tags": [
+        "cubesat",
+        "earth-observer"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/cubesat-icecube.webp",
+      "glb": "models/cubesat-icecube.glb",
+      "usdz": "models/cubesat-icecube.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/cubesat-icecube/",
+      "sourceLabel": "NASA 3D Resources: CubeSat - ICECube",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Test a submillimeter radiometer for measuring cloud ice",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/IceCube_(spacecraft)"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA Goddard",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/IceCube_(spacecraft)"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "launched April 18, 2017 to the ISS; released May 16, 2017",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/IceCube_(spacecraft)"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Mission complete; re-entered October 3, 2018",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/IceCube_(spacecraft)"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "3U CubeSat, about 10 x 10 x 34 cm",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/IceCube_(spacecraft)"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "IceCube made the first global map of cloud ice at 883 GHz, a frequency never used from orbit before.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/IceCube_(spacecraft)"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It was only planned to work for about a month, but it kept collecting data for more than a year.",
+          "verified": false,
+          "sources": [
+            "https://www.nasa.gov/missions/station/tiny-satellites-first-global-map-of-ice-clouds/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cubesat-mirata",
+      "name": "MiRaTA",
+      "subtitle": "A CubeSat that tested a tiny weather sounder",
+      "tags": [
+        "cubesat",
+        "earth-observer"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/cubesat-mirata.webp",
+      "glb": "models/cubesat-mirata.glb",
+      "usdz": "models/cubesat-mirata.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/cubesat-mirata/",
+      "sourceLabel": "NASA 3D Resources: CubeSat - MiRaTa",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Test microwave sounding of temperature and humidity from a CubeSat",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/cubesat-mirata/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA and MIT Lincoln Laboratory",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/cubesat-mirata/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "November 18, 2017",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/cubesat-mirata/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Contact lost in January 2018; re-entered the atmosphere October 23, 2025 (recheck before publish)",
+          "verified": false,
+          "recheckBeforePublish": true,
+          "sources": [
+            "https://www.nanosats.eu/sat/mirata",
+            "https://orbitalradar.com/register/2025-1658"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "3U CubeSat, about 10 x 10 x 34 cm",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/cubesat-mirata/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "MiRaTA tried to do with a shoebox-sized satellite what large weather satellites do with much bigger sounders.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/3d-resources/cubesat-mirata/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It was designed to use GPS signals bending through the atmosphere to check its readings, a new trick for calibrating weather sensors.",
+          "verified": false,
+          "sources": [
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC5562411/",
+            "https://www.nanosats.eu/sat/mirata"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "constellation-x",
+      "name": "Constellation-X",
+      "subtitle": "A planned X-ray observatory that became part of IXO",
+      "tags": [
+        "observatory",
+        "concept"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/constellation-x.webp",
+      "glb": "models/constellation-x.glb",
+      "usdz": "models/constellation-x.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/constellation-x/",
+      "sourceLabel": "NASA 3D Resources: Constellation-X",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A proposed X-ray observatory",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Constellation-X_Observatory"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "NASA concept, 1990s to 2008",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Constellation-X_Observatory"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 10 m long (model scale approximate)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Constellation-X_Observatory"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Constellation-X would have studied black holes and hot gas with large X-ray mirrors. In 2008 it merged with ESA's XEUS into IXO.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Constellation-X_Observatory"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ixo",
+      "name": "IXO",
+      "subtitle": "A proposed X-ray observatory with a 20 m extendable bench",
+      "tags": [
+        "observatory",
+        "concept"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/ixo.webp",
+      "glb": "models/ixo.glb",
+      "usdz": "models/ixo.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/international-x-ray-observatory/",
+      "sourceLabel": "NASA 3D Resources: International X-ray Observatory",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A proposed X-ray observatory",
+          "verified": false,
+          "sources": [
+            "https://asd.gsfc.nasa.gov/archive/ixo/technology/spacecraft.html"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "NASA, ESA and JAXA concept, 2008 to 2011",
+          "verified": false,
+          "sources": [
+            "https://asd.gsfc.nasa.gov/archive/ixo/technology/spacecraft.html"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "about 23 m long with the bench extended",
+          "verified": false,
+          "sources": [
+            "https://asd.gsfc.nasa.gov/archive/ixo/technology/spacecraft.html",
+            "https://sci.esa.int/web/ixo/-/45348-spacecraft"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "IXO planned a mirror more than 3 m across and an optical bench that would extend to a 20 m focal length in space. The project was cancelled; ESA's Athena grew from it.",
+          "verified": false,
+          "sources": [
+            "https://asd.gsfc.nasa.gov/archive/ixo/technology/spacecraft.html"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "atlast",
+      "name": "ATLAST",
+      "subtitle": "A concept for a giant ultraviolet and optical telescope",
+      "tags": [
+        "observatory",
+        "concept"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/atlast.webp",
+      "glb": "models/atlast.glb",
+      "usdz": "models/atlast.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/advanced-technology-large-aperture-space-telescope-atlast/",
+      "sourceLabel": "NASA 3D Resources: Advanced Technology Large-Aperture Space Telescope (ATLAST)",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A proposed large space telescope",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Technology_Large-Aperture_Space_Telescope"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "NASA concept studies, 2000s to 2010s",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Technology_Large-Aperture_Space_Telescope"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "model about 27 m long",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Technology_Large-Aperture_Space_Telescope"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "ATLAST studies looked at mirrors 8 to 16 m across to search for signs of life on planets around other stars. The idea fed into LUVOIR and now the Habitable Worlds Observatory.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Technology_Large-Aperture_Space_Telescope"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lisa",
+      "name": "LISA",
+      "subtitle": "Three spacecraft that will listen for gravitational waves",
+      "tags": [
+        "observatory",
+        "concept"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/lisa.webp",
+      "glb": "models/lisa.glb",
+      "usdz": "models/lisa.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/laser-interferometer-space-antenna-lisa-2006/",
+      "sourceLabel": "NASA 3D Resources: Laser Interferometer Space Antenna (LISA) (2006)",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "One spacecraft of a planned gravitational wave observatory",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Laser_Interferometer_Space_Antenna"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "ESA mission with NASA, planned for the 2030s (2006 NASA design shown)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Laser_Interferometer_Space_Antenna"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "each about 2.6 m across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Laser_Interferometer_Space_Antenna"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Three LISA spacecraft will fly in a triangle 2.5 million km on a side and measure tiny changes in distance with lasers as gravitational waves pass.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Laser_Interferometer_Space_Antenna"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "ESA adopted LISA as a mission in 2024.",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Laser_Interferometer_Space_Antenna"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "desdyni",
+      "name": "DESDynI",
+      "subtitle": "A radar concept that became NISAR",
+      "tags": [
+        "earth-observer",
+        "concept"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/desdyni.webp",
+      "glb": "models/desdyni.glb",
+      "usdz": "models/desdyni.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/deformation-ecosystem-structure-and-dynamics-of-ice-desdyni/",
+      "sourceLabel": "NASA 3D Resources: Deformation, Ecosystem Structure, and Dynamics of Ice (DESDynI)",
+      "facts": [
+        {
+          "label": "What it is",
+          "value": "A proposed radar and lidar Earth mission",
+          "verified": false,
+          "sources": [
+            "https://assets.science.nasa.gov/content/dam/science/missions/nisar/nisar-jpl/pdf/NISAR_FINAL_9-6-19.pdf"
+          ]
+        },
+        {
+          "label": "Used on",
+          "value": "NASA concept, 2007 to 2010s",
+          "verified": false,
+          "sources": [
+            "https://assets.science.nasa.gov/content/dam/science/missions/nisar/nisar-jpl/pdf/NISAR_FINAL_9-6-19.pdf"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "model about 21 m across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/NISAR_(satellite)",
+            "https://assets.science.nasa.gov/content/dam/science/missions/nisar/nisar-jpl/pdf/NISAR_FINAL_9-6-19.pdf"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "DESDynI was planned to measure ground movement from earthquakes, ice sheet changes and forest structure. Its radar part became NISAR, built with India.",
+          "verified": false,
+          "sources": [
+            "https://assets.science.nasa.gov/content/dam/science/missions/nisar/nisar-jpl/pdf/NISAR_FINAL_9-6-19.pdf"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dart",
+      "name": "DART",
+      "subtitle": "Crashed into an asteroid on purpose, and moved it",
+      "tags": [
+        "probe"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/dart.webp",
+      "glb": "models/dart.glb",
+      "usdz": "models/dart.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/double-asteroid-redirection-test-dart/",
+      "sourceLabel": "NASA 3D Resources: Double Asteroid Redirection Test (DART)",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Test planetary defense by hitting an asteroid moon",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/dart/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA (APL)",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/dart/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "November 23, 2021 (10:21 p.m. Pacific), from California",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/dart/"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "Impacted Dimorphos on September 26, 2022 (mission complete)",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Double_Asteroid_Redirection_Test",
+            "https://science.nasa.gov/mission/dart/"
+          ],
+          "recheckBeforePublish": true
+        },
+        {
+          "label": "Real size",
+          "value": "body about 1.8 x 1.9 x 2.6 m; about 19 m across the solar arrays",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Double_Asteroid_Redirection_Test"
+          ]
+        },
+        {
+          "label": "Mass",
+          "value": "about 610 kg at launch",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Double_Asteroid_Redirection_Test",
+            "https://science.nasa.gov/mission/dart/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "DART hit the small moonlet Dimorphos at about 6 km/s and shortened its orbit around Didymos by about 32 minutes.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/dart/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "It steered itself for the final hours using its camera, DRACO.",
+          "verified": false,
+          "sources": [
+            "https://science.nasa.gov/mission/dart/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "orion",
+      "name": "Orion",
+      "subtitle": "NASA's capsule for Artemis crews",
+      "tags": [
+        "crewed"
+      ],
+      "listed": true,
+      "placeholder": false,
+      "still": "stills/orion.webp",
+      "glb": "models/orion.glb",
+      "usdz": "models/orion.usdz",
+      "credit": "3D model courtesy NASA",
+      "sourceUrl": "https://science.nasa.gov/3d-resources/orion-capsule/",
+      "sourceLabel": "NASA 3D Resources: Orion Capsule",
+      "facts": [
+        {
+          "label": "Mission",
+          "value": "Carry astronauts to the Moon and back",
+          "verified": false,
+          "sources": [
+            "https://www.nasa.gov/humans-in-space/artemis/"
+          ]
+        },
+        {
+          "label": "Agency",
+          "value": "NASA, with ESA's service module",
+          "verified": false,
+          "sources": [
+            "https://www.nasa.gov/humans-in-space/artemis/"
+          ]
+        },
+        {
+          "label": "Launch",
+          "value": "first flight December 5, 2014 (EFT-1); Artemis I November 16, 2022; Artemis II, the first crewed flight, April 1, 2026",
+          "verified": false,
+          "sources": [
+            "https://www.nasa.gov/humans-in-space/artemis/",
+            "https://en.wikipedia.org/wiki/Artemis_II",
+            "https://en.wikipedia.org/wiki/Orion_(spacecraft)"
+          ]
+        },
+        {
+          "label": "Status",
+          "value": "In service. Artemis II carried four astronauts around the Moon, April 1 to 10, 2026 (as of Nov 2026; recheck for Artemis III)",
+          "verified": false,
+          "recheckBeforePublish": true,
+          "sources": [
+            "https://www.nasa.gov/humans-in-space/artemis/",
+            "https://en.wikipedia.org/wiki/Artemis_II"
+          ]
+        },
+        {
+          "label": "Real size",
+          "value": "crew module 5.0 m across",
+          "verified": false,
+          "sources": [
+            "https://en.wikipedia.org/wiki/Orion_(spacecraft)",
+            "https://en.wikipedia.org/wiki/Artemis_II",
+            "https://www.nasa.gov/humans-in-space/artemis/"
+          ]
+        },
+        {
+          "label": "About",
+          "value": "Orion's crew module holds four astronauts. Its heat shield is the largest of its kind, built to survive coming home from the Moon at about 40,000 km/h.",
+          "verified": false,
+          "sources": [
+            "https://www.nasa.gov/humans-in-space/artemis/"
+          ]
+        },
+        {
+          "label": "Fun fact",
+          "value": "On Artemis I in 2022, Orion flew farther from Earth than any spacecraft built for humans had before.",
+          "verified": false,
+          "sources": [
+            "https://www.nasa.gov/humans-in-space/artemis/"
+          ]
+        }
+      ]
     }
   ]
 }

@@ -3752,6 +3752,5400 @@
       "scale_note": "Scaled to 13 m overall (NASA GPM). Built in wave 2 as a spare, then rescaled (the wave 2 spare was wrongly scaled).",
       "glb_bytes": 2523552,
       "usdz_bytes": 6629872
+    },
+    {
+      "id": "ace",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Advanced Composition Explorer",
+      "model_source_url": "https://science.nasa.gov/3d-resources/advanced-composition-explorer/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/ace/",
+        "https://en.wikipedia.org/wiki/Advanced_Composition_Explorer"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/ace/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/ace/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Composition_Explorer",
+            "https://science.nasa.gov/mission/ace/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Composition_Explorer",
+            "https://science.nasa.gov/mission/ace/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Composition_Explorer",
+            "https://science.nasa.gov/mission/ace/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Composition_Explorer",
+            "https://science.nasa.gov/mission/ace/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/ace/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/ace/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        5.685,
+        1.715,
+        8.3
+      ],
+      "triangles": 25776,
+      "scale_note": "Scaled to 8.3 m across, the Wikipedia wingspan. Approximate; Tesla check.",
+      "glb_bytes": 671316,
+      "usdz_bytes": 2166266
+    },
+    {
+      "id": "cluster-ii",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Cluster II",
+      "model_source_url": "https://science.nasa.gov/3d-resources/cluster-ii/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Cluster_II_(spacecraft)",
+        "https://www.esa.int/about-us/directorates/science/cluster",
+        "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cluster_II_(spacecraft)",
+            "https://www.esa.int/about-us/directorates/science/cluster",
+            "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cluster_II_(spacecraft)",
+            "https://www.esa.int/about-us/directorates/science/cluster",
+            "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cluster_II_(spacecraft)",
+            "https://www.esa.int/about-us/directorates/science/cluster",
+            "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cluster_II_(spacecraft)",
+            "https://www.esa.int/about-us/directorates/science/cluster",
+            "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cluster_II_(spacecraft)",
+            "https://www.esa.int/about-us/directorates/science/cluster",
+            "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cluster_II_(spacecraft)",
+            "https://www.esa.int/about-us/directorates/science/cluster",
+            "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cluster_II_(spacecraft)",
+            "https://www.esa.int/about-us/directorates/science/cluster",
+            "https://www.esa.int/Space_Safety/Space_Debris/Cluster_s_encore_for_reentry_science_a_success"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        88.0,
+        4.331,
+        88.0
+      ],
+      "triangles": 8898,
+      "scale_note": "NASA's model treated as metres; the 88 m span matches Cluster's wire booms. Approximate; Tesla check.",
+      "glb_bytes": 298472,
+      "usdz_bytes": 1615477
+    },
+    {
+      "id": "cnofs",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Communication and Navigation Outage Forecast System (CNOFS)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/communication-and-navigation-outage-forecast-system-cnofs/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
+        "https://www.eoportal.org/satellite-missions/cnofs"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
+            "https://www.eoportal.org/satellite-missions/cnofs"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
+            "https://www.eoportal.org/satellite-missions/cnofs"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
+            "https://www.eoportal.org/satellite-missions/cnofs"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
+            "https://www.eoportal.org/satellite-missions/cnofs"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/cnofs",
+            "https://vefi.gsfc.nasa.gov/vefi/Resources/VEFI_DescriptionREV.pdf"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
+            "https://www.eoportal.org/satellite-missions/cnofs"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
+            "https://www.eoportal.org/satellite-missions/cnofs"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Communications/Navigation_Outage_Forecasting_System",
+            "https://www.eoportal.org/satellite-missions/cnofs"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        20.0,
+        20.0,
+        20.0
+      ],
+      "triangles": 73654,
+      "scale_note": "Scaled by 0.1, which makes the body 3.6 x 1.2 m (eoPortal: 3.40 x 1.16 m). NASA's booms were short, so I lengthened them from the body outward to 20 m tip to tip on all three axes (NASA VEFI description; recheck).",
+      "glb_bytes": 1493828,
+      "usdz_bytes": 4678897
+    },
+    {
+      "id": "firefly",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Firefly",
+      "model_source_url": "https://science.nasa.gov/3d-resources/firefly/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.eoportal.org/satellite-missions/firefly",
+        "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
+        "https://science.nasa.gov/3d-resources/firefly/"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
+            "https://science.nasa.gov/3d-resources/firefly/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
+            "https://science.nasa.gov/3d-resources/firefly/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/firefly",
+            "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
+            "https://science.nasa.gov/3d-resources/firefly/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/firefly",
+            "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
+            "https://science.nasa.gov/3d-resources/firefly/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://www.eoportal.org/satellite-missions/firefly",
+            "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
+            "https://science.nasa.gov/3d-resources/firefly/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
+            "https://science.nasa.gov/3d-resources/firefly/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://www.nasa.gov/solar-system/nsf-nasa-firefly-cubesat-mission-to-study-link-between-lightning-and-terrestrial-gamma-ray-flashes/",
+            "https://science.nasa.gov/3d-resources/firefly/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.494,
+        0.494,
+        0.628
+      ],
+      "triangles": 23459,
+      "scale_note": "Scaled so the CubeSat body is 10 cm across. Approximate; Tesla check.",
+      "glb_bytes": 616564,
+      "usdz_bytes": 1831555
+    },
+    {
+      "id": "geotail",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "GeoTailSAT",
+      "model_source_url": "https://science.nasa.gov/3d-resources/geotailsat/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/geotail/",
+        "https://en.wikipedia.org/wiki/Geotail"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/geotail/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/geotail/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Geotail",
+            "https://science.nasa.gov/mission/geotail/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Geotail",
+            "https://science.nasa.gov/mission/geotail/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Geotail",
+            "https://science.nasa.gov/mission/geotail/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Geotail",
+            "https://science.nasa.gov/mission/geotail/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/geotail/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/geotail/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        10.323,
+        19.76,
+        2.245
+      ],
+      "triangles": 9312,
+      "scale_note": "Scaled so the solar drum is 2.2 m across (Wikipedia/NASA). Booms in NASA's model are shortened. Approximate; Tesla check.",
+      "glb_bytes": 427796,
+      "usdz_bytes": 947371
+    },
+    {
+      "id": "polar",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Polar",
+      "model_source_url": "https://science.nasa.gov/3d-resources/polar/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/polar/",
+        "https://en.wikipedia.org/wiki/Polar_(satellite)",
+        "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/polar/",
+            "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/polar/",
+            "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Polar_(satellite)",
+            "https://science.nasa.gov/mission/polar/",
+            "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Polar_(satellite)",
+            "https://science.nasa.gov/mission/polar/",
+            "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Polar_(satellite)",
+            "https://science.nasa.gov/mission/polar/",
+            "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Polar_(satellite)",
+            "https://science.nasa.gov/mission/polar/",
+            "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/polar/",
+            "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://pwg.gsfc.nasa.gov/polar/PolarEFI/Instrument/description.text.html"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        15.059,
+        21.545,
+        11.761
+      ],
+      "triangles": 10244,
+      "scale_note": "Scaled so the solar drum is 2.4 m across (Wikipedia). Booms in NASA's model are shortened.",
+      "glb_bytes": 437724,
+      "usdz_bytes": 999043
+    },
+    {
+      "id": "wind",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Wind",
+      "model_source_url": "https://science.nasa.gov/3d-resources/wind/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/wind/",
+        "https://en.wikipedia.org/wiki/Wind_(spacecraft)",
+        "https://en.wikipedia.org/wiki/Polar_(satellite)"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/wind/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/wind/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wind_(spacecraft)",
+            "https://en.wikipedia.org/wiki/Polar_(satellite)",
+            "https://science.nasa.gov/mission/wind/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wind_(spacecraft)",
+            "https://en.wikipedia.org/wiki/Polar_(satellite)",
+            "https://science.nasa.gov/mission/wind/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wind_(spacecraft)",
+            "https://en.wikipedia.org/wiki/Polar_(satellite)",
+            "https://science.nasa.gov/mission/wind/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wind_(spacecraft)",
+            "https://en.wikipedia.org/wiki/Polar_(satellite)",
+            "https://science.nasa.gov/mission/wind/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/wind/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wind_(spacecraft)",
+            "https://en.wikipedia.org/wiki/Polar_(satellite)"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        33.174,
+        41.788,
+        29.731
+      ],
+      "triangles": 25744,
+      "scale_note": "Scaled so the solar drum is 2.4 m across (Wikipedia). Booms in NASA's model are shortened.",
+      "glb_bytes": 660396,
+      "usdz_bytes": 2044367
+    },
+    {
+      "id": "themis",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Time History of Events and Macroscale Interactions During Substorms (THEMIS)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/time-history-of-events-and-macroscale-interactions-during-substorms-themis/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/themis/",
+        "https://en.wikipedia.org/wiki/THEMIS"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/themis/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/themis/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/THEMIS",
+            "https://science.nasa.gov/mission/themis/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/THEMIS",
+            "https://science.nasa.gov/mission/themis/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/THEMIS",
+            "https://science.nasa.gov/mission/themis/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/THEMIS",
+            "https://science.nasa.gov/mission/themis/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/themis/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/themis/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        6.086,
+        7.207,
+        6.09
+      ],
+      "triangles": 11424,
+      "scale_note": "NASA's model is in metres as supplied (about 0.9 m body). Approximate.",
+      "glb_bytes": 292252,
+      "usdz_bytes": 1453571
+    },
+    {
+      "id": "mms",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Magnetospheric Multiscale (MMS) (B)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/magnetospheric-multiscale-mms-b/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/mms/",
+        "https://en.wikipedia.org/wiki/Magnetospheric_Multiscale_Mission"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/mms/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/mms/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Magnetospheric_Multiscale_Mission",
+            "https://science.nasa.gov/mission/mms/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Magnetospheric_Multiscale_Mission",
+            "https://science.nasa.gov/mission/mms/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Magnetospheric_Multiscale_Mission",
+            "https://science.nasa.gov/mission/mms/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Magnetospheric_Multiscale_Mission",
+            "https://science.nasa.gov/mission/mms/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/mms/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/mms/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        29.023,
+        17.019,
+        29.023
+      ],
+      "triangles": 135163,
+      "scale_note": "Scaled by 2, which makes the axial booms 29 m (Wikipedia). Wire booms shortened in NASA's model.",
+      "glb_bytes": 2075776,
+      "usdz_bytes": 7950922
+    },
+    {
+      "id": "van-allen-probes",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Van Allen Probes",
+      "model_source_url": "https://science.nasa.gov/3d-resources/van-allen-probes/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/van-allen-probes/",
+        "https://en.wikipedia.org/wiki/Van_Allen_Probes",
+        "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/van-allen-probes/",
+            "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/van-allen-probes/",
+            "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Van_Allen_Probes",
+            "https://science.nasa.gov/mission/van-allen-probes/",
+            "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Van_Allen_Probes",
+            "https://science.nasa.gov/mission/van-allen-probes/",
+            "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Van_Allen_Probes",
+            "https://science.nasa.gov/mission/van-allen-probes/",
+            "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/van-allen-probes/",
+            "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/van-allen-probes/",
+            "https://www.nasa.gov/wp-content/uploads/2015/03/677837main_rbsp_pk_final81712_lores.pdf"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        39.821,
+        12.516,
+        39.823
+      ],
+      "triangles": 112289,
+      "scale_note": "Scaled so the octagonal body is about 1.8 m across, from memory. Approximate; Tesla check.",
+      "glb_bytes": 2029128,
+      "usdz_bytes": 6940423
+    },
+    {
+      "id": "rhessi",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "HESSI-RHESSI",
+      "model_source_url": "https://science.nasa.gov/3d-resources/hessi-rhessi/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/rhessi/",
+        "https://en.wikipedia.org/wiki/Reuven_Ramaty_High_Energy_Solar_Spectroscopic_Imager"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/rhessi/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/rhessi/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Reuven_Ramaty_High_Energy_Solar_Spectroscopic_Imager",
+            "https://science.nasa.gov/mission/rhessi/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Reuven_Ramaty_High_Energy_Solar_Spectroscopic_Imager",
+            "https://science.nasa.gov/mission/rhessi/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Reuven_Ramaty_High_Energy_Solar_Spectroscopic_Imager",
+            "https://science.nasa.gov/mission/rhessi/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Reuven_Ramaty_High_Energy_Solar_Spectroscopic_Imager",
+            "https://science.nasa.gov/mission/rhessi/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/rhessi/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/rhessi/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        5.76,
+        5.758,
+        2.283
+      ],
+      "triangles": 23306,
+      "scale_note": "Scaled to 5.76 m across the solar panels (Wikipedia).",
+      "glb_bytes": 510796,
+      "usdz_bytes": 1501871
+    },
+    {
+      "id": "hinode",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Hinode (Solar-B)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/hinode-solar-b/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/hinode/",
+        "https://en.wikipedia.org/wiki/Hinode_(satellite)",
+        "https://www.isas.jaxa.jp/en/missions/spacecraft/current/hinode.html"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/hinode/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/hinode/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Hinode_(satellite)",
+            "https://science.nasa.gov/mission/hinode/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Hinode_(satellite)",
+            "https://science.nasa.gov/mission/hinode/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://www.isas.jaxa.jp/en/missions/spacecraft/current/hinode.html"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://www.isas.jaxa.jp/en/missions/spacecraft/current/hinode.html"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/hinode/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/hinode/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        10.0,
+        4.0,
+        3.654
+      ],
+      "triangles": 123597,
+      "scale_note": "Body scaled to 4 m long (JAXA: about 1.6 x 1.6 x 4 m). NASA's solar paddles were too long, so I shortened them from the body outward to 10 m tip to tip (JAXA).",
+      "glb_bytes": 1382372,
+      "usdz_bytes": 6833006
+    },
+    {
+      "id": "icon",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Ionospheric Connection Explorer (ICON)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/ionospheric-connection-explorer-icon/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/icon/",
+        "https://en.wikipedia.org/wiki/Ionospheric_Connection_Explorer"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/icon/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/icon/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ionospheric_Connection_Explorer",
+            "https://science.nasa.gov/mission/icon/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ionospheric_Connection_Explorer",
+            "https://science.nasa.gov/mission/icon/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ionospheric_Connection_Explorer",
+            "https://science.nasa.gov/mission/icon/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ionospheric_Connection_Explorer",
+            "https://science.nasa.gov/mission/icon/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/icon/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/icon/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        1.039,
+        2.105,
+        3.819
+      ],
+      "triangles": 309330,
+      "scale_note": "Scaled so the solar panel is 2.54 m long (Wikipedia).",
+      "glb_bytes": 2934516,
+      "usdz_bytes": 6509600
+    },
+    {
+      "id": "fuse",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Far Ultraviolet Spectroscopic Explorer",
+      "model_source_url": "https://science.nasa.gov/3d-resources/far-ultraviolet-spectroscopic-explorer/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/fuse/",
+        "https://en.wikipedia.org/wiki/Far_Ultraviolet_Spectroscopic_Explorer"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/fuse/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/fuse/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Far_Ultraviolet_Spectroscopic_Explorer",
+            "https://science.nasa.gov/mission/fuse/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Far_Ultraviolet_Spectroscopic_Explorer",
+            "https://science.nasa.gov/mission/fuse/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Far_Ultraviolet_Spectroscopic_Explorer",
+            "https://science.nasa.gov/mission/fuse/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Far_Ultraviolet_Spectroscopic_Explorer",
+            "https://science.nasa.gov/mission/fuse/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/fuse/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/fuse/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        1.764,
+        4.501,
+        5.3
+      ],
+      "triangles": 19599,
+      "scale_note": "Scaled to 5.3 m long (Wikipedia).",
+      "glb_bytes": 510260,
+      "usdz_bytes": 1535101
+    },
+    {
+      "id": "hete",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "High Energy Transient Explorer",
+      "model_source_url": "https://science.nasa.gov/3d-resources/high-energy-transient-explorer/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/hete-2/",
+        "https://en.wikipedia.org/wiki/High_Energy_Transient_Explorer_2"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/hete-2/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/hete-2/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/High_Energy_Transient_Explorer_2",
+            "https://science.nasa.gov/mission/hete-2/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/High_Energy_Transient_Explorer_2",
+            "https://science.nasa.gov/mission/hete-2/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/High_Energy_Transient_Explorer_2",
+            "https://science.nasa.gov/mission/hete-2/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/High_Energy_Transient_Explorer_2",
+            "https://science.nasa.gov/mission/hete-2/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/hete-2/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/hete-2/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        1.075,
+        1.018,
+        1.556
+      ],
+      "triangles": 4452,
+      "scale_note": "NASA's model is in metres as supplied (about 1.6 m with panels). Approximate.",
+      "glb_bytes": 353148,
+      "usdz_bytes": 690190
+    },
+    {
+      "id": "ibex",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Interstellar Boundary Explorer (IBEX)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/interstellar-boundary-explorer-ibex/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/ibex/",
+        "https://en.wikipedia.org/wiki/Interstellar_Boundary_Explorer"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/ibex/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/ibex/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Interstellar_Boundary_Explorer",
+            "https://science.nasa.gov/mission/ibex/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Interstellar_Boundary_Explorer",
+            "https://science.nasa.gov/mission/ibex/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Interstellar_Boundary_Explorer",
+            "https://science.nasa.gov/mission/ibex/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Interstellar_Boundary_Explorer",
+            "https://science.nasa.gov/mission/ibex/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/ibex/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/ibex/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        1.181,
+        0.98,
+        1.123
+      ],
+      "triangles": 8976,
+      "scale_note": "NASA's model is in metres as supplied (about 1.2 m with the solar panels).",
+      "glb_bytes": 395156,
+      "usdz_bytes": 1862770
+    },
+    {
+      "id": "nicer-sextant",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Station Explorer for X-Ray Timing and Navigation (SEXTANT)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/station-explorer-for-x-ray-timing-and-navigation-sextant/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/nicer/",
+        "https://en.wikipedia.org/wiki/Neutron_Star_Interior_Composition_Explorer",
+        "https://www.nasa.gov/missions/station/nicer-status-updates/",
+        "https://heasarc.gsfc.nasa.gov/docs/nicer/",
+        "https://www.nasa.gov/centers-and-facilities/goddard/nasa-team-first-to-demonstrate-x-ray-navigation-in-space/"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/nicer/",
+            "https://www.nasa.gov/missions/station/nicer-status-updates/",
+            "https://heasarc.gsfc.nasa.gov/docs/nicer/",
+            "https://www.nasa.gov/centers-and-facilities/goddard/nasa-team-first-to-demonstrate-x-ray-navigation-in-space/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/nicer/",
+            "https://www.nasa.gov/missions/station/nicer-status-updates/",
+            "https://heasarc.gsfc.nasa.gov/docs/nicer/",
+            "https://www.nasa.gov/centers-and-facilities/goddard/nasa-team-first-to-demonstrate-x-ray-navigation-in-space/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Neutron_Star_Interior_Composition_Explorer",
+            "https://science.nasa.gov/mission/nicer/",
+            "https://www.nasa.gov/missions/station/nicer-status-updates/",
+            "https://heasarc.gsfc.nasa.gov/docs/nicer/",
+            "https://www.nasa.gov/centers-and-facilities/goddard/nasa-team-first-to-demonstrate-x-ray-navigation-in-space/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://www.nasa.gov/missions/station/nicer-status-updates/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Neutron_Star_Interior_Composition_Explorer",
+            "https://science.nasa.gov/mission/nicer/",
+            "https://www.nasa.gov/missions/station/nicer-status-updates/",
+            "https://heasarc.gsfc.nasa.gov/docs/nicer/",
+            "https://www.nasa.gov/centers-and-facilities/goddard/nasa-team-first-to-demonstrate-x-ray-navigation-in-space/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Neutron_Star_Interior_Composition_Explorer",
+            "https://science.nasa.gov/mission/nicer/",
+            "https://www.nasa.gov/missions/station/nicer-status-updates/",
+            "https://heasarc.gsfc.nasa.gov/docs/nicer/",
+            "https://www.nasa.gov/centers-and-facilities/goddard/nasa-team-first-to-demonstrate-x-ray-navigation-in-space/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://heasarc.gsfc.nasa.gov/docs/nicer/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://www.nasa.gov/centers-and-facilities/goddard/nasa-team-first-to-demonstrate-x-ray-navigation-in-space/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        1.161,
+        1.055,
+        1.587
+      ],
+      "triangles": 339620,
+      "scale_note": "Source appears to be in centimetres; scaled by 0.01. Approximate; Tesla check.",
+      "glb_bytes": 2759716,
+      "usdz_bytes": 6316816
+    },
+    {
+      "id": "swas",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Submillimeter Wave Astronomy Satellite (SWAS)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/submillimeter-wave-astronomy-satellite-swas/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/swas/",
+        "https://en.wikipedia.org/wiki/Submillimeter_Wave_Astronomy_Satellite"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/swas/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/swas/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Submillimeter_Wave_Astronomy_Satellite",
+            "https://science.nasa.gov/mission/swas/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Submillimeter_Wave_Astronomy_Satellite",
+            "https://science.nasa.gov/mission/swas/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Submillimeter_Wave_Astronomy_Satellite",
+            "https://science.nasa.gov/mission/swas/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Submillimeter_Wave_Astronomy_Satellite",
+            "https://science.nasa.gov/mission/swas/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/swas/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/swas/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        1.09,
+        1.63,
+        4.11
+      ],
+      "triangles": 12454,
+      "scale_note": "Scaled to 1.63 m tall (Wikipedia). Approximate.",
+      "glb_bytes": 457088,
+      "usdz_bytes": 1141787
+    },
+    {
+      "id": "suzaku",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Suzaku",
+      "model_source_url": "https://science.nasa.gov/3d-resources/suzaku/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/suzaku/",
+        "https://en.wikipedia.org/wiki/Suzaku_(satellite)"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/suzaku/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/suzaku/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Suzaku_(satellite)",
+            "https://science.nasa.gov/mission/suzaku/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Suzaku_(satellite)",
+            "https://science.nasa.gov/mission/suzaku/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Suzaku_(satellite)",
+            "https://science.nasa.gov/mission/suzaku/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Suzaku_(satellite)",
+            "https://science.nasa.gov/mission/suzaku/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/suzaku/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/suzaku/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        5.216,
+        2.165,
+        6.751
+      ],
+      "triangles": 40305,
+      "scale_note": "NASA's model is in metres as supplied (6.75 m).",
+      "glb_bytes": 859224,
+      "usdz_bytes": 2911052
+    },
+    {
+      "id": "wire",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Wide-Field Infrared Explorer (WIRE)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/wide-field-infrared-explorer-wire/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/wire/",
+        "https://en.wikipedia.org/wiki/Wide_Field_Infrared_Explorer"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/wire/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/wire/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wide_Field_Infrared_Explorer",
+            "https://science.nasa.gov/mission/wire/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wide_Field_Infrared_Explorer",
+            "https://science.nasa.gov/mission/wire/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wide_Field_Infrared_Explorer",
+            "https://science.nasa.gov/mission/wire/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wide_Field_Infrared_Explorer",
+            "https://science.nasa.gov/mission/wire/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/wire/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/wire/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        1.95,
+        2.059,
+        1.274
+      ],
+      "triangles": 35480,
+      "scale_note": "Scaled by 0.06, about 2 m tall overall. A SmallSat paper (not checked directly) gives the bus as 0.79 m high and 0.86 m across, so the model may be too big. Recheck.",
+      "glb_bytes": 714876,
+      "usdz_bytes": 2324106
+    },
+    {
+      "id": "spartan-201",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Spartan 201",
+      "model_source_url": "https://science.nasa.gov/3d-resources/spartan-201/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/STS-87",
+        "https://en.wikipedia.org/wiki/STS-56"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://en.wikipedia.org/wiki/STS-87",
+            "https://en.wikipedia.org/wiki/STS-56"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://en.wikipedia.org/wiki/STS-87",
+            "https://en.wikipedia.org/wiki/STS-56"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/STS-87",
+            "https://en.wikipedia.org/wiki/STS-56"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/STS-87",
+            "https://en.wikipedia.org/wiki/STS-56"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/STS-87",
+            "https://en.wikipedia.org/wiki/STS-56"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/STS-87",
+            "https://en.wikipedia.org/wiki/STS-56"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        3.332,
+        1.528,
+        1.455
+      ],
+      "triangles": 32416,
+      "scale_note": "NASA's model is in metres as supplied (3.3 m). Approximate.",
+      "glb_bytes": 561972,
+      "usdz_bytes": 2185074
+    },
+    {
+      "id": "ulysses",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Ulysses",
+      "model_source_url": "https://science.nasa.gov/3d-resources/ulysses/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/ulysses/",
+        "https://en.wikipedia.org/wiki/Ulysses_(spacecraft)"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/ulysses/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/ulysses/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ulysses_(spacecraft)",
+            "https://science.nasa.gov/mission/ulysses/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ulysses_(spacecraft)",
+            "https://science.nasa.gov/mission/ulysses/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ulysses_(spacecraft)",
+            "https://science.nasa.gov/mission/ulysses/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ulysses_(spacecraft)",
+            "https://science.nasa.gov/mission/ulysses/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/ulysses/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/ulysses/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        68.023,
+        10.203,
+        7.73
+      ],
+      "triangles": 6853,
+      "scale_note": "NASA's model is in metres as supplied (68 m wire antenna). The still is framed on the body.",
+      "glb_bytes": 355144,
+      "usdz_bytes": 2938547
+    },
+    {
+      "id": "clementine",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Clementine",
+      "model_source_url": "https://science.nasa.gov/3d-resources/clementine/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/clementine/",
+        "https://en.wikipedia.org/wiki/Clementine_(spacecraft)"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/clementine/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/clementine/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Clementine_(spacecraft)",
+            "https://science.nasa.gov/mission/clementine/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Clementine_(spacecraft)",
+            "https://science.nasa.gov/mission/clementine/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Clementine_(spacecraft)",
+            "https://science.nasa.gov/mission/clementine/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Clementine_(spacecraft)",
+            "https://science.nasa.gov/mission/clementine/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/clementine/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/clementine/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        4.132,
+        2.18,
+        1.601
+      ],
+      "triangles": 9224,
+      "scale_note": "NASA's model is in metres as supplied (body 1.14 m across).",
+      "glb_bytes": 517904,
+      "usdz_bytes": 3633342
+    },
+    {
+      "id": "ssl-1300",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Space Systems Loral (SSL-1300)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/space-systems-loral-ssl-1300/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/SSL_1300",
+        "https://science.nasa.gov/mission/psyche/",
+        "https://en.wikipedia.org/wiki/Lanteris_1300"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/psyche/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Lanteris_1300"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/SSL_1300",
+            "https://en.wikipedia.org/wiki/Lanteris_1300",
+            "https://science.nasa.gov/mission/psyche/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/SSL_1300",
+            "https://en.wikipedia.org/wiki/Lanteris_1300",
+            "https://science.nasa.gov/mission/psyche/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Lanteris_1300"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/psyche/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Lanteris_1300"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        26.833,
+        6.127,
+        8.037
+      ],
+      "triangles": 181028,
+      "scale_note": "Source appears to be in decimetres; scaled by 0.1. Approximate; Tesla check.",
+      "glb_bytes": 2934916,
+      "usdz_bytes": 5159041
+    },
+    {
+      "id": "roman",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Nancy Grace Roman Space Telescope 3D Model (A)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/nancy-grace-roman-space-telescope-a/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/roman-space-telescope/",
+        "https://en.wikipedia.org/wiki/Nancy_Grace_Roman_Space_Telescope",
+        "https://science.nasa.gov/mission/roman-space-telescope/frequently-asked-questions/"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/roman-space-telescope/",
+            "https://science.nasa.gov/mission/roman-space-telescope/frequently-asked-questions/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/roman-space-telescope/",
+            "https://science.nasa.gov/mission/roman-space-telescope/frequently-asked-questions/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Nancy_Grace_Roman_Space_Telescope",
+            "https://science.nasa.gov/mission/roman-space-telescope/",
+            "https://science.nasa.gov/mission/roman-space-telescope/frequently-asked-questions/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://www.nasa.gov/news-release/nasas-dark-universe-seeking-nancy-grace-roman-space-telescope-launches/",
+            "https://www.nasa.gov/news-release/nasa-invites-media-public-to-view-roman-telescopes-first-images/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://science.nasa.gov/mission/roman-space-telescope/frequently-asked-questions/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://assets.science.nasa.gov/content/dam/science/missions/rst/education/Final%20Roman%20Press%20Kit-508compliant.pdf",
+            "https://en.wikipedia.org/wiki/Nancy_Grace_Roman_Space_Telescope"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/roman-space-telescope/",
+            "https://science.nasa.gov/mission/roman-space-telescope/frequently-asked-questions/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/roman-space-telescope/",
+            "https://science.nasa.gov/mission/roman-space-telescope/frequently-asked-questions/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        12.7,
+        4.814,
+        7.636
+      ],
+      "triangles": 292175,
+      "scale_note": "Scaled to 12.7 m long (NASA Roman FAQ: over 12.7 m long, 4.4 m wide deployed). The model is about 4.8 m wide, close to NASA's 4.4 m.",
+      "glb_bytes": 2760716,
+      "usdz_bytes": 6101028
+    },
+    {
+      "id": "tdrs",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Tracking and Data Relay Satellites (TDRS) (D)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/tracking-and-data-relay-satellites-tdrs-d/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Tracking_and_data_relay_satellite",
+        "https://en.wikipedia.org/wiki/TDRS-1"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Tracking_and_data_relay_satellite",
+            "https://en.wikipedia.org/wiki/TDRS-1"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Tracking_and_data_relay_satellite",
+            "https://en.wikipedia.org/wiki/TDRS-1"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Tracking_and_data_relay_satellite",
+            "https://en.wikipedia.org/wiki/TDRS-1"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Tracking_and_data_relay_satellite",
+            "https://en.wikipedia.org/wiki/TDRS-1"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/TDRS-1"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Tracking_and_data_relay_satellite",
+            "https://en.wikipedia.org/wiki/TDRS-1"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Tracking_and_data_relay_satellite",
+            "https://en.wikipedia.org/wiki/TDRS-1"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        9.851,
+        5.264,
+        17.4
+      ],
+      "triangles": 191354,
+      "scale_note": "NASA's file is TDRS (D), which became TDRS-4, a first-generation satellite (STS-29, 1989); its two big dish antennas match the first-generation design. Scaled to 17.4 m across the solar arrays (Wikipedia TDRS-1, citing NASA).",
+      "glb_bytes": 2624660,
+      "usdz_bytes": 4120097
+    },
+    {
+      "id": "maven",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Mars Atmosphere and Volatile EvolutioN (MAVEN) (A)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/mars-atmosphere-and-volatile-evolution-maven-a/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/maven/",
+        "https://en.wikipedia.org/wiki/MAVEN",
+        "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/maven/",
+            "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/maven/",
+            "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/MAVEN",
+            "https://science.nasa.gov/mission/maven/",
+            "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/",
+            "https://science.nasa.gov/mission/maven/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/MAVEN",
+            "https://science.nasa.gov/mission/maven/",
+            "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/MAVEN",
+            "https://science.nasa.gov/mission/maven/",
+            "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/maven/",
+            "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/maven/",
+            "https://www.nasa.gov/news-release/nasa-says-farewell-to-maven-mars-mission-hosts-media-call-today/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        11.4,
+        6.514,
+        4.547
+      ],
+      "triangles": 990709,
+      "scale_note": "Scaled to 11.4 m wingtip to wingtip. NASA's mesh had 1.7 million triangles, reduced to about 12%.",
+      "glb_bytes": 2398176,
+      "usdz_bytes": 7408632
+    },
+    {
+      "id": "rosetta",
+      "wave": 3,
+      "batch": 2,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Rosetta (GitHub mirror)",
+      "model_source_url": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models/Rosetta",
+      "no_science_nasa_gov_page": true,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Rosetta_(spacecraft)"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        31.959,
+        6.922,
+        4.555
+      ],
+      "triangles": 17431,
+      "scale_note": "NASA's model is in metres as supplied (32 m across the arrays). NASA's Rosetta page links the IBEX file, so the source is the GitHub mirror.",
+      "glb_bytes": 599196,
+      "usdz_bytes": 3313619
+    },
+    {
+      "id": "gateway",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Gateway Lunar Space Station",
+      "model_source_url": "https://science.nasa.gov/3d-resources/gateway-lunar-space-station/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.nasa.gov/news-release/nasa-unveils-initiatives-to-achieve-americas-national-space-policy/",
+        "https://en.wikipedia.org/wiki/Lunar_Gateway",
+        "https://www.nasa.gov/mission/gateway/"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://www.nasa.gov/news-release/nasa-unveils-initiatives-to-achieve-americas-national-space-policy/",
+            "https://www.nasa.gov/mission/gateway/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://www.nasa.gov/news-release/nasa-unveils-initiatives-to-achieve-americas-national-space-policy/",
+            "https://www.nasa.gov/mission/gateway/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://www.nasa.gov/news-release/nasa-unveils-initiatives-to-achieve-americas-national-space-policy/",
+            "https://en.wikipedia.org/wiki/Lunar_Gateway"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://www.nasa.gov/news-release/nasa-unveils-initiatives-to-achieve-americas-national-space-policy/",
+            "https://en.wikipedia.org/wiki/Lunar_Gateway"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Lunar_Gateway",
+            "https://www.nasa.gov/news-release/nasa-unveils-initiatives-to-achieve-americas-national-space-policy/",
+            "https://www.nasa.gov/mission/gateway/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://www.nasa.gov/news-release/nasa-unveils-initiatives-to-achieve-americas-national-space-policy/",
+            "https://en.wikipedia.org/wiki/Lunar_Gateway"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Lunar_Gateway"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        17.882,
+        38.97,
+        30.068
+      ],
+      "triangles": 97734,
+      "scale_note": "NASA's model is in metres as supplied (core modules only). Approximate; Tesla check.",
+      "glb_bytes": 2152708,
+      "usdz_bytes": 5634115
+    },
+    {
+      "id": "aces-suit",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Advanced Crew Escape Suit",
+      "model_source_url": "https://science.nasa.gov/3d-resources/advanced-crew-escape-suit/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Advanced_Crew_Escape_Suit"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Crew_Escape_Suit"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Crew_Escape_Suit"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Crew_Escape_Suit"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Crew_Escape_Suit"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Crew_Escape_Suit"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.887,
+        1.996,
+        0.555
+      ],
+      "triangles": 71604,
+      "scale_note": "NASA's model is in metres as supplied (about 2 m tall). Approximate.",
+      "glb_bytes": 1063252,
+      "usdz_bytes": 4412549
+    },
+    {
+      "id": "astronaut",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Astronaut",
+      "model_source_url": "https://science.nasa.gov/3d-resources/astronaut/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/3d-resources/astronaut/"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/astronaut/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/astronaut/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/astronaut/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/astronaut/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        1.67,
+        1.8,
+        0.669
+      ],
+      "triangles": 6379,
+      "scale_note": "Scaled to 1.8 m tall as a human reference. My choice; Tesla check.",
+      "glb_bytes": 91196,
+      "usdz_bytes": 943515
+    },
+    {
+      "id": "astronaut-glove",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Astronaut Glove",
+      "model_source_url": "https://science.nasa.gov/3d-resources/astronaut-glove/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/3d-resources/astronaut-glove/",
+        "https://en.wikipedia.org/wiki/Astronaut_Glove_Challenge"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/astronaut-glove/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/astronaut-glove/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Astronaut_Glove_Challenge",
+            "https://science.nasa.gov/3d-resources/astronaut-glove/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/astronaut-glove/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/astronaut-glove/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.3,
+        0.16,
+        0.173
+      ],
+      "triangles": 842,
+      "scale_note": "Scaled to about 30 cm long. My choice; Tesla check.",
+      "glb_bytes": 50784,
+      "usdz_bytes": 655831
+    },
+    {
+      "id": "emu-spacesuit",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Extravehicular Mobility Unit",
+      "model_source_url": "https://science.nasa.gov/3d-resources/extravehicular-mobility-unit/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Extravehicular_Mobility_Unit"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Extravehicular_Mobility_Unit"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Extravehicular_Mobility_Unit"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Extravehicular_Mobility_Unit"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Extravehicular_Mobility_Unit"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Extravehicular_Mobility_Unit"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        1.135,
+        2.003,
+        1.413
+      ],
+      "triangles": 290169,
+      "scale_note": "NASA's model is in metres as supplied (about 2 m tall). Approximate.",
+      "glb_bytes": 2589280,
+      "usdz_bytes": 6883899
+    },
+    {
+      "id": "gemini-spacesuit",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Gemini Spacesuit",
+      "model_source_url": "https://science.nasa.gov/3d-resources/gemini-spacesuit/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Gemini_spacesuit"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Gemini_spacesuit"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Gemini_spacesuit"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Gemini_spacesuit"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Gemini_spacesuit"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.995,
+        2.002,
+        0.71
+      ],
+      "triangles": 114066,
+      "scale_note": "NASA's model is in metres as supplied (about 2 m tall). Approximate.",
+      "glb_bytes": 1340448,
+      "usdz_bytes": 6285762
+    },
+    {
+      "id": "mark-iii-spacesuit",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Mark III Spacesuit",
+      "model_source_url": "https://science.nasa.gov/3d-resources/mark-iii-spacesuit/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Mark_III_(space_suit)"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mark_III_(space_suit)"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mark_III_(space_suit)"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mark_III_(space_suit)"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mark_III_(space_suit)"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        1.113,
+        1.99,
+        1.131
+      ],
+      "triangles": 67901,
+      "scale_note": "NASA's model is in metres as supplied (about 2 m tall). Approximate.",
+      "glb_bytes": 849632,
+      "usdz_bytes": 4063862
+    },
+    {
+      "id": "mercury-spacesuit",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Mercury Spacesuit",
+      "model_source_url": "https://science.nasa.gov/3d-resources/mercury-spacesuit/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Navy_Mark_IV"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Navy_Mark_IV"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Navy_Mark_IV"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Navy_Mark_IV"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Navy_Mark_IV"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.995,
+        2.001,
+        0.472
+      ],
+      "triangles": 108607,
+      "scale_note": "NASA's model is in metres as supplied (about 2 m tall). Approximate.",
+      "glb_bytes": 1273904,
+      "usdz_bytes": 5963691
+    },
+    {
+      "id": "z2-spacesuit",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Z2 Spacesuit",
+      "model_source_url": "https://science.nasa.gov/3d-resources/z2-spacesuit/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Z_series_space_suits"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Z_series_space_suits"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Z_series_space_suits"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Z_series_space_suits"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Z_series_space_suits"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Z_series_space_suits"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.794,
+        1.936,
+        1.041
+      ],
+      "triangles": 30837,
+      "scale_note": "NASA's model is in metres as supplied (about 1.9 m tall). Approximate.",
+      "glb_bytes": 432504,
+      "usdz_bytes": 1756488
+    },
+    {
+      "id": "helmet",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Helmet",
+      "model_source_url": "https://science.nasa.gov/3d-resources/helmet/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/3d-resources/helmet/"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/helmet/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/helmet/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/helmet/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/helmet/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.38,
+        0.371,
+        0.38
+      ],
+      "triangles": 34664,
+      "scale_note": "Scaled to about 38 cm across. My choice; Tesla check.",
+      "glb_bytes": 312052,
+      "usdz_bytes": 1847671
+    },
+    {
+      "id": "robonaut-2",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Robonaut 2",
+      "model_source_url": "https://science.nasa.gov/3d-resources/robonaut-2/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Robonaut"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Robonaut"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Robonaut"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Robonaut"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Robonaut"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Robonaut"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        2.339,
+        2.61,
+        0.681
+      ],
+      "triangles": 213237,
+      "scale_note": "NASA's model is in metres as supplied. Approximate; Tesla check.",
+      "glb_bytes": 1925576,
+      "usdz_bytes": 6791876
+    },
+    {
+      "id": "space-exploration-vehicle",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Space Exploration Vehicle",
+      "model_source_url": "https://science.nasa.gov/3d-resources/space-exploration-vehicle/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/3d-resources/space-exploration-vehicle/",
+        "https://en.wikipedia.org/wiki/Space_Exploration_Vehicle"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/space-exploration-vehicle/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/space-exploration-vehicle/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Exploration_Vehicle",
+            "https://science.nasa.gov/3d-resources/space-exploration-vehicle/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/space-exploration-vehicle/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/space-exploration-vehicle/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        4.038,
+        3.969,
+        5.91
+      ],
+      "triangles": 412999,
+      "scale_note": "NASA's model is in metres as supplied. Approximate.",
+      "glb_bytes": 2064732,
+      "usdz_bytes": 6875029
+    },
+    {
+      "id": "habitat-demo-unit",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Habitat Demonstration Unit",
+      "model_source_url": "https://science.nasa.gov/3d-resources/habitat-demonstration-unit/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/3d-resources/habitat-demonstration-unit/"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/habitat-demonstration-unit/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/habitat-demonstration-unit/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/habitat-demonstration-unit/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/habitat-demonstration-unit/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        9.885,
+        5.653,
+        4.314
+      ],
+      "triangles": 2264,
+      "scale_note": "Scaled by 0.026 so the core is 5 m across, the inner diameter in NASA's HDU fact sheet (https://www.nasa.gov/wp-content/uploads/2021/11/468441main_hdu_factsheet_508.pdf). The 9.9 m axis includes parts attached in NASA's model.",
+      "glb_bytes": 51260,
+      "usdz_bytes": 596656
+    },
+    {
+      "id": "rassor",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Regolith Advanced Surface Systems Operations Robot (RASSOR)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/regolith-advanced-surface-systems-operations-robot-rassor/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/3d-resources/regolith-advanced-surface-systems-operations-robot-rassor/"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/regolith-advanced-surface-systems-operations-robot-rassor/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/regolith-advanced-surface-systems-operations-robot-rassor/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/regolith-advanced-surface-systems-operations-robot-rassor/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/regolith-advanced-surface-systems-operations-robot-rassor/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.848,
+        0.938,
+        1.657
+      ],
+      "triangles": 1992894,
+      "scale_note": "NASA's model is in metres as supplied. Its 2 million triangles were reduced to about 5%.",
+      "glb_bytes": 2086584,
+      "usdz_bytes": 5969109
+    },
+    {
+      "id": "canadarm",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Space Shuttle Remote Manipulator System (Canadarm)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/space-shuttle-remote-manipulator-system-canadarm/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Canadarm"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Canadarm"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Canadarm"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Canadarm"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Canadarm"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Canadarm"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.395,
+        0.77,
+        15.2
+      ],
+      "triangles": 1080,
+      "scale_note": "Scaled to the 15.2 m length (Wikipedia).",
+      "glb_bytes": 24144,
+      "usdz_bytes": 299395
+    },
+    {
+      "id": "curiosity-scarecrow",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Curiosity Scarecrow Test Rover",
+      "model_source_url": "https://science.nasa.gov/3d-resources/curiosity-scarescrow-test-rover/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/3d-resources/curiosity-scarescrow-test-rover/"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/curiosity-scarescrow-test-rover/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/curiosity-scarescrow-test-rover/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/curiosity-scarescrow-test-rover/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/curiosity-scarescrow-test-rover/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/curiosity-scarescrow-test-rover/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        2.777,
+        1.246,
+        2.745
+      ],
+      "triangles": 16024,
+      "scale_note": "NASA's model is in metres as supplied. Ground plane removed.",
+      "glb_bytes": 455312,
+      "usdz_bytes": 2497317
+    },
+    {
+      "id": "cos",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Cosmic Origins Spectrograph",
+      "model_source_url": "https://science.nasa.gov/3d-resources/cosmic-origins-spectrograph/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Cosmic_Origins_Spectrograph"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cosmic_Origins_Spectrograph"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cosmic_Origins_Spectrograph"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cosmic_Origins_Spectrograph"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Cosmic_Origins_Spectrograph"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.937,
+        0.94,
+        2.2
+      ],
+      "triangles": 264,
+      "scale_note": "Scaled to about 2.2 m long, from memory. Low-poly NASA model. Approximate; Tesla check.",
+      "glb_bytes": 34032,
+      "usdz_bytes": 450876
+    },
+    {
+      "id": "wfpc",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Wide Field Planetary Camera",
+      "model_source_url": "https://science.nasa.gov/3d-resources/wide-field-planetary-camera/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Wide_Field_and_Planetary_Camera_2"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wide_Field_and_Planetary_Camera_2"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wide_Field_and_Planetary_Camera_2"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wide_Field_and_Planetary_Camera_2"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wide_Field_and_Planetary_Camera_2"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Wide_Field_and_Planetary_Camera_2"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        2.2,
+        0.903,
+        2.167
+      ],
+      "triangles": 224,
+      "scale_note": "Scaled to about 2.2 m, from memory. Low-poly NASA model. Approximate; Tesla check.",
+      "glb_bytes": 23696,
+      "usdz_bytes": 266163
+    },
+    {
+      "id": "flight-support-system",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Flight System Support",
+      "model_source_url": "https://science.nasa.gov/3d-resources/flight-system-support/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/3d-resources/flight-system-support/",
+        "https://en.wikipedia.org/wiki/Hubble_Space_Telescope"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/flight-system-support/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/flight-system-support/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Hubble_Space_Telescope",
+            "https://science.nasa.gov/3d-resources/flight-system-support/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/flight-system-support/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        4.245,
+        4.5,
+        2.165
+      ],
+      "triangles": 1292,
+      "scale_note": "Scaled to about 4.5 m across. Approximate; Tesla check.",
+      "glb_bytes": 58884,
+      "usdz_bytes": 357059
+    },
+    {
+      "id": "slic-carrier",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Super Lightweight Interchangeable",
+      "model_source_url": "https://science.nasa.gov/3d-resources/super-lightweight-interchangeable/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/3d-resources/super-lightweight-interchangeable/",
+        "https://en.wikipedia.org/wiki/STS-125"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/super-lightweight-interchangeable/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/super-lightweight-interchangeable/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/STS-125",
+            "https://science.nasa.gov/3d-resources/super-lightweight-interchangeable/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/super-lightweight-interchangeable/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        4.5,
+        4.039,
+        2.55
+      ],
+      "triangles": 5444,
+      "scale_note": "Scaled to about 4.5 m across. Approximate; Tesla check.",
+      "glb_bytes": 175936,
+      "usdz_bytes": 1288853
+    },
+    {
+      "id": "orbital-replacement-unit",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Orbital Replacement Unit",
+      "model_source_url": "https://science.nasa.gov/3d-resources/orbital-replacement-unit/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/3d-resources/orbital-replacement-unit/",
+        "https://en.wikipedia.org/wiki/Hubble_Space_Telescope"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/orbital-replacement-unit/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/orbital-replacement-unit/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Hubble_Space_Telescope",
+            "https://science.nasa.gov/3d-resources/orbital-replacement-unit/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/orbital-replacement-unit/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        4.5,
+        3.669,
+        3.916
+      ],
+      "triangles": 2776,
+      "scale_note": "Scaled to about 4.5 m across. Approximate; Tesla check.",
+      "glb_bytes": 109448,
+      "usdz_bytes": 665328
+    },
+    {
+      "id": "crew-lock-bag",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Crew Lock Bag",
+      "model_source_url": "https://science.nasa.gov/3d-resources/crew-lock-bag/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/3d-resources/crew-lock-bag/"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/crew-lock-bag/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/crew-lock-bag/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/crew-lock-bag/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/crew-lock-bag/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.454,
+        0.5,
+        0.175
+      ],
+      "triangles": 500,
+      "scale_note": "Scaled to about 50 cm. My choice; Tesla check.",
+      "glb_bytes": 44028,
+      "usdz_bytes": 559506
+    },
+    {
+      "id": "pistol-grip-tool",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Pistol Grip Tool",
+      "model_source_url": "https://science.nasa.gov/3d-resources/pistol-grip-tool/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/3d-resources/pistol-grip-tool/"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/pistol-grip-tool/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/pistol-grip-tool/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/pistol-grip-tool/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/pistol-grip-tool/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.076,
+        0.348,
+        0.45
+      ],
+      "triangles": 976,
+      "scale_note": "Scaled to about 45 cm. My choice; Tesla check.",
+      "glb_bytes": 35976,
+      "usdz_bytes": 255729
+    },
+    {
+      "id": "grease-gun",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Grease Gun",
+      "model_source_url": "https://science.nasa.gov/3d-resources/grease-gun/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/3d-resources/grease-gun/"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/grease-gun/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/grease-gun/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/grease-gun/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/grease-gun/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.077,
+        0.187,
+        0.4
+      ],
+      "triangles": 9808,
+      "scale_note": "Scaled to about 40 cm. My choice; Tesla check.",
+      "glb_bytes": 116984,
+      "usdz_bytes": 650122
+    },
+    {
+      "id": "hammer",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Hammer",
+      "model_source_url": "https://science.nasa.gov/3d-resources/hammer/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/3d-resources/hammer/"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/hammer/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/hammer/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/hammer/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/hammer/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.156,
+        0.069,
+        0.356
+      ],
+      "triangles": 692,
+      "scale_note": "NASA's model is in metres as supplied (36 cm).",
+      "glb_bytes": 34136,
+      "usdz_bytes": 177712
+    },
+    {
+      "id": "ratchet",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Ratchet",
+      "model_source_url": "https://science.nasa.gov/3d-resources/ratchet/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/3d-resources/ratchet/"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/ratchet/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/ratchet/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/ratchet/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/ratchet/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.059,
+        0.062,
+        0.3
+      ],
+      "triangles": 5646,
+      "scale_note": "Scaled to about 30 cm. My choice; Tesla check.",
+      "glb_bytes": 74820,
+      "usdz_bytes": 431509
+    },
+    {
+      "id": "wrench",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Wrench",
+      "model_source_url": "https://science.nasa.gov/3d-resources/wrench/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/3d-resources/wrench/"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/wrench/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/wrench/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/wrench/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/wrench/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.057,
+        0.019,
+        0.3
+      ],
+      "triangles": 6310,
+      "scale_note": "Scaled to about 30 cm. My choice; Tesla check.",
+      "glb_bytes": 78292,
+      "usdz_bytes": 463000
+    },
+    {
+      "id": "tether",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Tether",
+      "model_source_url": "https://science.nasa.gov/3d-resources/tether/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/3d-resources/tether/"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/tether/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/tether/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/tether/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/tether/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.116,
+        0.124,
+        0.6
+      ],
+      "triangles": 19284,
+      "scale_note": "Scaled to about 60 cm. My choice; Tesla check.",
+      "glb_bytes": 153380,
+      "usdz_bytes": 1142878
+    },
+    {
+      "id": "mars-2020-sample-tube",
+      "wave": 3,
+      "batch": 3,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Mars 2020 sample tube",
+      "model_source_url": "https://science.nasa.gov/3d-resources/mars-2020-sample-tube/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/3d-resources/mars-2020-sample-tube/",
+        "https://en.wikipedia.org/wiki/Mars_2020"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/mars-2020-sample-tube/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/mars-2020-sample-tube/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mars_2020",
+            "https://science.nasa.gov/3d-resources/mars-2020-sample-tube/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/mars-2020-sample-tube/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/mars-2020-sample-tube/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.024,
+        0.15,
+        0.026
+      ],
+      "triangles": 42416,
+      "scale_note": "Scaled to about 15 cm long, from memory. NASA's file is a printable STL; I gave it a titanium material. Tesla check.",
+      "glb_bytes": 662148,
+      "usdz_bytes": 2538692
+    },
+    {
+      "id": "agena",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Agena Target Vehicle",
+      "model_source_url": "https://science.nasa.gov/3d-resources/agena-target-vehicle/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Agena_target_vehicle"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Agena_target_vehicle"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Agena_target_vehicle"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Agena_target_vehicle"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Agena_target_vehicle"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Agena_target_vehicle"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        1.517,
+        3.649,
+        7.9
+      ],
+      "triangles": 31290,
+      "scale_note": "Scaled to 7.9 m long (26 ft, Wikipedia).",
+      "glb_bytes": 616396,
+      "usdz_bytes": 2027301
+    },
+    {
+      "id": "ares-1",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Ares 1 (A)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/ares-1-a/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Ares_I",
+        "https://en.wikipedia.org/wiki/Constellation_program"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ares_I",
+            "https://en.wikipedia.org/wiki/Constellation_program"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ares_I",
+            "https://en.wikipedia.org/wiki/Constellation_program"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ares_I",
+            "https://en.wikipedia.org/wiki/Constellation_program"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Ares_I",
+            "https://en.wikipedia.org/wiki/Constellation_program"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Constellation_program"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        6.79,
+        94.0,
+        6.79
+      ],
+      "triangles": 3872,
+      "scale_note": "Scaled to 94 m tall (Wikipedia).",
+      "glb_bytes": 71908,
+      "usdz_bytes": 337184
+    },
+    {
+      "id": "shuttle-external-tank",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Space Shuttle Parts",
+      "model_source_url": "https://science.nasa.gov/3d-resources/space-shuttle-parts/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Space_Shuttle_external_tank"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_external_tank"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_external_tank"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_external_tank"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_external_tank"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_external_tank"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        46.9,
+        9.47,
+        9.681
+      ],
+      "triangles": 6326,
+      "scale_note": "Scaled to 46.9 m long (Wikipedia).",
+      "glb_bytes": 208956,
+      "usdz_bytes": 744632
+    },
+    {
+      "id": "shuttle-srb",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Space Shuttle Parts",
+      "model_source_url": "https://science.nasa.gov/3d-resources/space-shuttle-parts/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Space_Shuttle_Solid_Rocket_Booster"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_Solid_Rocket_Booster"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_Solid_Rocket_Booster"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_Solid_Rocket_Booster"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_Solid_Rocket_Booster"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Space_Shuttle_Solid_Rocket_Booster"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        45.5,
+        5.859,
+        5.859
+      ],
+      "triangles": 4114,
+      "scale_note": "Scaled to 45.5 m long (Wikipedia).",
+      "glb_bytes": 59100,
+      "usdz_bytes": 384832
+    },
+    {
+      "id": "orbiter-docking-system",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Space Shuttle Parts",
+      "model_source_url": "https://science.nasa.gov/3d-resources/space-shuttle-parts/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Orbiter_Docking_System"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Orbiter_Docking_System"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Orbiter_Docking_System"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Orbiter_Docking_System"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Orbiter_Docking_System"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        2.573,
+        4.6,
+        3.845
+      ],
+      "triangles": 5362,
+      "scale_note": "Scaled to about 4.6 m across, from memory. Approximate; Tesla check.",
+      "glb_bytes": 214888,
+      "usdz_bytes": 940089
+    },
+    {
+      "id": "crawler-transporter",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Crawler",
+      "model_source_url": "https://science.nasa.gov/3d-resources/crawler/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Crawler-transporter"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Crawler-transporter"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Crawler-transporter"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Crawler-transporter"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Crawler-transporter",
+            "https://www.nasa.gov/wp-content/uploads/2019/08/718659main_vab.pdf"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Crawler-transporter"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        40.0,
+        7.744,
+        32.807
+      ],
+      "triangles": 271349,
+      "scale_note": "Scaled to 40 m long (Wikipedia). Approximate.",
+      "glb_bytes": 2457888,
+      "usdz_bytes": 5141761
+    },
+    {
+      "id": "mobile-launcher",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Mobile Launcher",
+      "model_source_url": "https://science.nasa.gov/3d-resources/mobile-launcher/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Mobile_launcher_platform"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mobile_launcher_platform"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mobile_launcher_platform"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mobile_launcher_platform"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Mobile_launcher_platform"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        47.902,
+        115.8,
+        40.749
+      ],
+      "triangles": 19208,
+      "scale_note": "Scaled to 116 m overall: 25 ft base plus 355 ft tower (NASA Mobile Launcher fact sheet, via Wikipedia). The base footprint then matches the real 48 x 41 m.",
+      "glb_bytes": 350244,
+      "usdz_bytes": 1182815
+    },
+    {
+      "id": "vab",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Vehicle Assembly Building (VAB)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/vehicle-assembly-building-vab/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Vehicle_Assembly_Building"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Vehicle_Assembly_Building"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Vehicle_Assembly_Building"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Vehicle_Assembly_Building"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Vehicle_Assembly_Building"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://www.nasa.gov/wp-content/uploads/2019/08/718659main_vab.pdf",
+            "https://en.wikipedia.org/wiki/Vehicle_Assembly_Building"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        175.344,
+        160.0,
+        249.256
+      ],
+      "triangles": 6458,
+      "scale_note": "Scaled to 160 m tall (Wikipedia).",
+      "glb_bytes": 259196,
+      "usdz_bytes": 1849475
+    },
+    {
+      "id": "dsn-70m",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Deep Space Network 70-meter",
+      "model_source_url": "https://science.nasa.gov/3d-resources/deep-space-network-70-meter/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/NASA_Deep_Space_Network",
+        "https://www.cdscc.nasa.gov/Pages/Antennas/dss43.html",
+        "https://www.jpl.nasa.gov/news/nasa-contacts-voyager-2-using-upgraded-deep-space-network-dish/"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://www.cdscc.nasa.gov/Pages/Antennas/dss43.html",
+            "https://www.jpl.nasa.gov/news/nasa-contacts-voyager-2-using-upgraded-deep-space-network-dish/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://www.cdscc.nasa.gov/Pages/Antennas/dss43.html",
+            "https://www.jpl.nasa.gov/news/nasa-contacts-voyager-2-using-upgraded-deep-space-network-dish/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/NASA_Deep_Space_Network",
+            "https://www.cdscc.nasa.gov/Pages/Antennas/dss43.html",
+            "https://www.jpl.nasa.gov/news/nasa-contacts-voyager-2-using-upgraded-deep-space-network-dish/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://www.cdscc.nasa.gov/Pages/Antennas/dss43.html",
+            "https://www.jpl.nasa.gov/news/nasa-contacts-voyager-2-using-upgraded-deep-space-network-dish/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://www.jpl.nasa.gov/news/nasa-contacts-voyager-2-using-upgraded-deep-space-network-dish/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        70.23,
+        73.09,
+        70.23
+      ],
+      "triangles": 32968,
+      "scale_note": "Scaled so the dish rim is 70 m across (NASA CDSCC DSS-43 page); the whole antenna is then about 73 m tall, which matches NASA.",
+      "glb_bytes": 774956,
+      "usdz_bytes": 3487719
+    },
+    {
+      "id": "dsn-34m",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Deep Space Network 34-meter",
+      "model_source_url": "https://science.nasa.gov/3d-resources/deep-space-network-34-meter/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/NASA_Deep_Space_Network"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/NASA_Deep_Space_Network"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/NASA_Deep_Space_Network"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/NASA_Deep_Space_Network"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/NASA_Deep_Space_Network"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        34.189,
+        36.97,
+        34.134
+      ],
+      "triangles": 31662,
+      "scale_note": "Scaled so the dish rim is 34 m across; the whole antenna is then about 37 m tall.",
+      "glb_bytes": 918076,
+      "usdz_bytes": 4341510
+    },
+    {
+      "id": "cubesat-1u",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "CubeSat - 1 RU Generic",
+      "model_source_url": "https://science.nasa.gov/3d-resources/cubesat-1-ru-generic/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/CubeSat"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/CubeSat"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/CubeSat"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/CubeSat"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/CubeSat"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/CubeSat"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.236,
+        0.118,
+        0.1
+      ],
+      "triangles": 23570,
+      "scale_note": "Scaled so the body is 10 cm across.",
+      "glb_bytes": 569292,
+      "usdz_bytes": 1878617
+    },
+    {
+      "id": "cubesat-2u",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "CubeSat - 2 RU Generic",
+      "model_source_url": "https://science.nasa.gov/3d-resources/cubesat-2-ru-generic/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/CubeSat"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/CubeSat"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/CubeSat"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/CubeSat"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/CubeSat"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.243,
+        0.226,
+        0.1
+      ],
+      "triangles": 36896,
+      "scale_note": "Scaled so the body is 10 cm across.",
+      "glb_bytes": 740420,
+      "usdz_bytes": 2714488
+    },
+    {
+      "id": "cubesat-icecube",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "CubeSat - ICECube",
+      "model_source_url": "https://science.nasa.gov/3d-resources/cubesat-icecube/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/IceCube_(spacecraft)"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://en.wikipedia.org/wiki/IceCube_(spacecraft)"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://en.wikipedia.org/wiki/IceCube_(spacecraft)"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://en.wikipedia.org/wiki/IceCube_(spacecraft)"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/IceCube_(spacecraft)"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/IceCube_(spacecraft)"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/IceCube_(spacecraft)"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://www.nasa.gov/missions/station/tiny-satellites-first-global-map-of-ice-clouds/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.11,
+        0.391,
+        0.1
+      ],
+      "triangles": 57626,
+      "scale_note": "Scaled so the body is 10 cm across.",
+      "glb_bytes": 1007248,
+      "usdz_bytes": 3966067
+    },
+    {
+      "id": "cubesat-mirata",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "CubeSat - MiRaTa",
+      "model_source_url": "https://science.nasa.gov/3d-resources/cubesat-mirata/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/3d-resources/cubesat-mirata/",
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC5562411/",
+        "https://www.nanosats.eu/sat/mirata"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/cubesat-mirata/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/cubesat-mirata/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/cubesat-mirata/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://www.nanosats.eu/sat/mirata",
+            "https://orbitalradar.com/register/2025-1658"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/cubesat-mirata/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/3d-resources/cubesat-mirata/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC5562411/",
+            "https://www.nanosats.eu/sat/mirata"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        0.118,
+        0.402,
+        0.1
+      ],
+      "triangles": 84260,
+      "scale_note": "Scaled so the body is 10 cm across.",
+      "glb_bytes": 1342204,
+      "usdz_bytes": 5636172
+    },
+    {
+      "id": "constellation-x",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Constellation-X",
+      "model_source_url": "https://science.nasa.gov/3d-resources/constellation-x/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Constellation-X_Observatory"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Constellation-X_Observatory"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Constellation-X_Observatory"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Constellation-X_Observatory"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Constellation-X_Observatory"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        10.0,
+        1.635,
+        3.265
+      ],
+      "triangles": 23086,
+      "scale_note": "Scaled to about 10 m, from memory. Concept only. Tesla check.",
+      "glb_bytes": 464392,
+      "usdz_bytes": 1755756
+    },
+    {
+      "id": "ixo",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "International X-ray Observatory",
+      "model_source_url": "https://science.nasa.gov/3d-resources/international-x-ray-observatory/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/International_X-ray_Observatory",
+        "https://asd.gsfc.nasa.gov/archive/ixo/technology/spacecraft.html",
+        "https://sci.esa.int/web/ixo/-/45348-spacecraft"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://asd.gsfc.nasa.gov/archive/ixo/technology/spacecraft.html"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://asd.gsfc.nasa.gov/archive/ixo/technology/spacecraft.html"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://asd.gsfc.nasa.gov/archive/ixo/technology/spacecraft.html",
+            "https://sci.esa.int/web/ixo/-/45348-spacecraft"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://asd.gsfc.nasa.gov/archive/ixo/technology/spacecraft.html"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        12.353,
+        23.0,
+        4.778
+      ],
+      "triangles": 88313,
+      "scale_note": "Scaled to 23 m long deployed (NASA GSFC and ESA IXO spacecraft pages). Concept only.",
+      "glb_bytes": 1417736,
+      "usdz_bytes": 5222065
+    },
+    {
+      "id": "atlast",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Advanced Technology Large-Aperture Space Telescope (ATLAST)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/advanced-technology-large-aperture-space-telescope-atlast/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Advanced_Technology_Large-Aperture_Space_Telescope"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Technology_Large-Aperture_Space_Telescope"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Technology_Large-Aperture_Space_Telescope"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Technology_Large-Aperture_Space_Telescope"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Advanced_Technology_Large-Aperture_Space_Telescope"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        27.185,
+        19.479,
+        19.479
+      ],
+      "triangles": 166913,
+      "scale_note": "NASA's model is in metres as supplied. Concept only. Tesla check.",
+      "glb_bytes": 2422520,
+      "usdz_bytes": 6072317
+    },
+    {
+      "id": "lisa",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Laser Interferometer Space Antenna (LISA) (2006)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/laser-interferometer-space-antenna-lisa-2006/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://en.wikipedia.org/wiki/Laser_Interferometer_Space_Antenna"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Laser_Interferometer_Space_Antenna"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Laser_Interferometer_Space_Antenna"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Laser_Interferometer_Space_Antenna"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Laser_Interferometer_Space_Antenna"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Laser_Interferometer_Space_Antenna"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        2.589,
+        0.651,
+        2.494
+      ],
+      "triangles": 33382,
+      "scale_note": "NASA's model is in metres as supplied (2.6 m).",
+      "glb_bytes": 653180,
+      "usdz_bytes": 2490314
+    },
+    {
+      "id": "desdyni",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Deformation, Ecosystem Structure, and Dynamics of Ice (DESDynI)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/deformation-ecosystem-structure-and-dynamics-of-ice-desdyni/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://assets.science.nasa.gov/content/dam/science/missions/nisar/nisar-jpl/pdf/NISAR_FINAL_9-6-19.pdf",
+        "https://en.wikipedia.org/wiki/NISAR_(satellite)"
+      ],
+      "fact_rows": [
+        {
+          "label": "What it is",
+          "sources": [
+            "https://assets.science.nasa.gov/content/dam/science/missions/nisar/nisar-jpl/pdf/NISAR_FINAL_9-6-19.pdf"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Used on",
+          "sources": [
+            "https://assets.science.nasa.gov/content/dam/science/missions/nisar/nisar-jpl/pdf/NISAR_FINAL_9-6-19.pdf"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/NISAR_(satellite)",
+            "https://assets.science.nasa.gov/content/dam/science/missions/nisar/nisar-jpl/pdf/NISAR_FINAL_9-6-19.pdf"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://assets.science.nasa.gov/content/dam/science/missions/nisar/nisar-jpl/pdf/NISAR_FINAL_9-6-19.pdf"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        4.79,
+        10.201,
+        21.281
+      ],
+      "triangles": 67526,
+      "scale_note": "NASA's model is in metres as supplied. Concept only. Tesla check.",
+      "glb_bytes": 1431876,
+      "usdz_bytes": 5156035
+    },
+    {
+      "id": "dart",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Double Asteroid Redirection Test (DART)",
+      "model_source_url": "https://science.nasa.gov/3d-resources/double-asteroid-redirection-test-dart/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://science.nasa.gov/mission/dart/",
+        "https://en.wikipedia.org/wiki/Double_Asteroid_Redirection_Test"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://science.nasa.gov/mission/dart/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://science.nasa.gov/mission/dart/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://science.nasa.gov/mission/dart/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Double_Asteroid_Redirection_Test",
+            "https://science.nasa.gov/mission/dart/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Double_Asteroid_Redirection_Test"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Mass",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Double_Asteroid_Redirection_Test",
+            "https://science.nasa.gov/mission/dart/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://science.nasa.gov/mission/dart/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://science.nasa.gov/mission/dart/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        19.0,
+        2.565,
+        2.103
+      ],
+      "triangles": 446371,
+      "scale_note": "Scaled to 19 m across the arrays (two 8.5 m ROSA wings plus the body, Wikipedia); the model body then measures about 2.0 x 2.1 x 2.4 m, close to Wikipedia's 1.8 x 1.9 x 2.6 m. NASA's file is a printable STL with no materials; arrays and body colors are my choice. Triangles cut to 8% to stay under 3 MB.",
+      "glb_bytes": 1589012,
+      "usdz_bytes": 2603703
+    },
+    {
+      "id": "orion",
+      "wave": 3,
+      "batch": 4,
+      "extra_beyond_reserved_16": true,
+      "nasa_model_title": "Orion Capsule",
+      "model_source_url": "https://science.nasa.gov/3d-resources/orion-capsule/",
+      "no_science_nasa_gov_page": false,
+      "github_mirror": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models",
+      "fact_sources": [
+        "https://www.nasa.gov/humans-in-space/artemis/",
+        "https://en.wikipedia.org/wiki/Orion_(spacecraft)",
+        "https://en.wikipedia.org/wiki/Artemis_II"
+      ],
+      "fact_rows": [
+        {
+          "label": "Mission",
+          "sources": [
+            "https://www.nasa.gov/humans-in-space/artemis/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Agency",
+          "sources": [
+            "https://www.nasa.gov/humans-in-space/artemis/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Launch",
+          "sources": [
+            "https://www.nasa.gov/humans-in-space/artemis/",
+            "https://en.wikipedia.org/wiki/Artemis_II",
+            "https://en.wikipedia.org/wiki/Orion_(spacecraft)"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Status",
+          "sources": [
+            "https://www.nasa.gov/humans-in-space/artemis/",
+            "https://en.wikipedia.org/wiki/Artemis_II"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Real size",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Orion_(spacecraft)",
+            "https://en.wikipedia.org/wiki/Artemis_II",
+            "https://www.nasa.gov/humans-in-space/artemis/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "About",
+          "sources": [
+            "https://www.nasa.gov/humans-in-space/artemis/"
+          ],
+          "verified": false
+        },
+        {
+          "label": "Fun fact",
+          "sources": [
+            "https://www.nasa.gov/humans-in-space/artemis/"
+          ],
+          "verified": false
+        }
+      ],
+      "needs_tesla_verification": true,
+      "model_size_m_gltf_xyz": [
+        5.02,
+        3.273,
+        5.019
+      ],
+      "triangles": 51736,
+      "scale_note": "Scaled to 5.02 m across (Wikipedia). NASA's file is a printable STL (capsule only, no forward bay cover); the silver back shell and brown heat shield are my choice. Tesla check.",
+      "glb_bytes": 1215280,
+      "usdz_bytes": 3068941
     }
   ]
 }
