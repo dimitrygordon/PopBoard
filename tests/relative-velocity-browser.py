@@ -448,7 +448,8 @@ def run_seams(base):
     for scene in ("river", "truck", "walkway", "kart"):
         for theme in ("light", "dark"):
             name = f"relative-velocity/art/bg-{scene}-{theme}.webp"
-            data = urllib.request.urlopen(f"{base}/{name}?seam=1").read()
+            req = urllib.request.Request(f"{base}/{name}?seam=1", headers={"User-Agent": UA})
+            data = urllib.request.urlopen(req).read()
             r = seam_ratio(data)
             check(r <= SEAM_MAX, f"seam: {name} wraps left to right with no visible step (ratio {r:.2f}, limit {SEAM_MAX})")
 
