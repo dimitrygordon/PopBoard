@@ -3,6 +3,7 @@
 /diy-pbl-bookshare/art/*   /404.html  404
 /friction-lesson/media/*   /404.html  404
 /friction-lesson/art/*     /404.html  404
+/relative-velocity/art/*   /404.html  404
 
 # Old flyover path now lives in the Study library.
 /world              /study-patoka-valley  302

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="shared/layout/layout.css">
+<script type="module" src="shared/layout/layout.js"></script>
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#FCF7EB">
+<title>Relative Velocity Exploration // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  // Theme before first paint: a saved choice wins, else the system setting.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.relative-velocity.theme"); } catch (e) {}
+    if (t !== "dark" && t !== "light") t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
+<link rel="stylesheet" href="relative-velocity/rv.css">
+</head>
+<body class="rv">
+<h1 class="sr-only">Relative Velocity Exploration</h1>
+<p class="sr-only">A river channel lab and three sandboxes for Section 6.3. Time a toy boat in still water, predict its speed upstream and downstream, then turn on the water and compare. Explore a ball thrown from a moving truck, an airport moving walkway and a kart on a boost road, and switch who is watching.</p>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title">Relative Velocity</p>
+  <button id="themeBtn" class="theme-btn" type="button" aria-pressed="false" aria-label="Dark mode">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <span id="themeLabel">Dark</span>
+  </button>
+</header>
+
+<main class="rv-shell">
+  <p class="rv-intro" id="rvIntro" data-str="intro"></p>
+
+  <nav class="rv-tabs" aria-label="Scenes">
+    <div class="rv-tabgroup rv-tabgroup-lab">
+      <p class="rv-group-h">Lab</p>
+      <button type="button" class="rv-tab" data-scene="river" aria-pressed="true"><span data-str="lab.title"></span> <span class="rv-badge" data-str="lab.tag"></span></button>
+    </div>
+    <div class="rv-tabgroup">
+      <p class="rv-group-h" data-str="exploreHeading"></p>
+      <div class="rv-tabrow">
+        <button type="button" class="rv-tab" data-scene="truck" aria-pressed="false" data-str="truck.title"></button>
+        <button type="button" class="rv-tab" data-scene="walkway" aria-pressed="false" data-str="walkway.title"></button>
+        <button type="button" class="rv-tab" data-scene="kart" aria-pressed="false" data-str="kart.title"></button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="rv-grid">
+    <div class="rv-left">
+      <section class="rv-card tape rv-stagecard" aria-label="Scene">
+        <div class="rv-framebar" id="frameBar" role="group" aria-label="Who is watching"></div>
+        <div class="rv-stage" id="stage">
+          <div class="rv-stage-scroll" id="stageScroll">
+          <svg id="sceneSvg" role="img" aria-label="Scene view" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet"></svg>
+          </div>
+        </div>
+        <div class="rv-playbar">
+          <div class="rv-playbtns">
+            <button type="button" id="playBtn" aria-pressed="true">Pause</button>
+            <button type="button" id="actionBtn">Run boat</button>
+            <button type="button" id="resetBtn">Reset</button>
+            <span class="rv-slow" id="slowNote"></span>
+          </div>
+          <!-- On phones the stopwatch docks here, in the controls row (it moves beside the valve on wider screens). -->
+          <div class="rv-sw-dock rv-sw-dock-phone" id="swDockPhone"></div>
+        </div>
+      </section>
+
+      <section class="rv-card tape rv-readout" id="readout" aria-live="polite" aria-label="Vector addition"></section>
+    </div>
+
+    <div class="rv-right">
+      <!-- River Channel Lab: guided steps -->
+      <section class="rv-card tape rv-panel" data-panel="river" aria-label="River Channel Lab steps">
+        <p class="rv-panel-h"><span class="rv-badge" data-str="lab.tag"></span> <span data-str="lab.title"></span></p>
+        <div class="rv-known" id="knownBox"></div>
+        <label class="rv-slider"><span>Channel length</span><input id="lenSlider" type="range"><output id="lenOut"></output></label>
+        <div class="rv-row" role="group" aria-label="Boat heading">
+          <button type="button" data-heading="1" aria-pressed="true">Downstream &rarr;</button>
+          <button type="button" data-heading="-1" aria-pressed="false">&larr; Upstream</button>
+        </div>
+        <div class="rv-valve-row">
+          <div class="rv-valve" id="valve" role="slider" tabindex="0" aria-label="Flow valve" aria-valuemin="0" aria-valuemax="270" aria-valuenow="0">
+            <img id="valveImg" alt="" draggable="false" width="200" height="200">
+            <span class="rv-valve-tag" id="valveTag" aria-hidden="true">Off</span>
+          </div>
+          <p class="rv-valve-label" id="valveLabel"></p>
+          <!-- The stopwatch starts docked here, beside the valve and above the steps; drag it to float it. -->
+          <div class="rv-sw-dock" id="swDock">
+            <div class="rv-stopwatch" id="stopwatch" hidden aria-label="Stopwatch">
+              <div class="rv-sw-face">
+                <img class="rv-sw-img" id="swImg" alt="" draggable="false" width="240" height="334">
+                <p class="rv-sw-time" id="swTime" aria-live="off">0.00 s</p>
+              </div>
+              <div class="rv-sw-btns">
+                <button type="button" id="swStart">Start</button>
+                <button type="button" id="swReset">Reset</button>
+              </div>
+              <p class="rv-sw-cond" id="swCond"></p>
+            </div>
+          </div>
+        </div>
+        <ol class="rv-steps" id="steps">
+          <li data-step="1"><p class="rv-step-h" data-str="lab.step1Title"></p><p class="rv-step-b" data-str="lab.step1Body"></p>
+            <button type="button" class="rv-next" data-next="2">Next: predict</button></li>
+          <li data-step="2"><p class="rv-step-h" data-str="lab.step2Title"></p><p class="rv-step-b" data-str="lab.step2Body"></p>
+            <label class="rv-predict"><span data-str="lab.predictDown"></span><input id="predDown" type="number" inputmode="decimal" step="0.01" min="0" max="5"></label>
+            <label class="rv-predict"><span data-str="lab.predictUp"></span><input id="predUp" type="number" inputmode="decimal" step="0.01" min="0" max="5"></label>
+            <p class="rv-note" id="predNote" data-str="lab.predictLocked"></p>
+            <button type="button" class="rv-next" data-next="3" id="lockPred" disabled>Lock in predictions</button></li>
+          <li data-step="3"><p class="rv-step-h" data-str="lab.step3Title"></p><p class="rv-step-b" data-str="lab.step3Body"></p>
+            <button type="button" class="rv-next" data-next="4">Next: compare</button></li>
+          <li data-step="4"><p class="rv-step-h" data-str="lab.step4Title"></p><p class="rv-step-b" data-str="lab.step4Body"></p>
+            <p class="rv-step-b" data-str="lab.leafQuestion"></p></li>
+        </ol>
+        <div class="rv-row"><button type="button" id="undoTrial">Undo last trial</button><button type="button" id="clearLab">Clear data</button></div>
+      </section>
+
+      <section class="rv-card rv-clip" data-panel="river" aria-label="Data table">
+        <img class="rv-clip-img" id="clipImg" alt="" width="640" height="969">
+        <div class="rv-clip-grid" id="dataTable"></div>
+      </section>
+
+      <section class="rv-card tape rv-results" data-panel="river" id="results" hidden aria-label="Results"></section>
+
+      <!-- Explore sandboxes -->
+      <section class="rv-card tape rv-panel" data-panel="truck" hidden aria-label="Truck controls">
+        <p class="rv-panel-h" data-str="truck.title"></p>
+        <p class="rv-prompt" data-str="truck.prompt"></p>
+        <label class="rv-slider"><span>Truck speed</span><input data-p="truckSpeedMph" type="range"><output data-o="truckSpeedMph"></output></label>
+        <label class="rv-slider"><span>Throw speed (to the truck)</span><input data-p="throwSpeedMph" type="range"><output data-o="throwSpeedMph"></output></label>
+        <div class="rv-row" role="group" aria-label="Throw direction">
+          <button type="button" data-dir="-1">&larr; Backward</button>
+          <button type="button" data-dir="0">Just let go</button>
+          <button type="button" data-dir="1">Forward &rarr;</button>
+        </div>
+      </section>
+
+      <section class="rv-card tape rv-panel" data-panel="walkway" hidden aria-label="Walkway controls">
+        <p class="rv-panel-h" data-str="walkway.title"></p>
+        <p class="rv-prompt" data-str="walkway.prompt"></p>
+        <label class="rv-slider"><span>Belt speed</span><input data-p="beltSpeed" type="range"><output data-o="beltSpeed"></output></label>
+        <label class="rv-slider"><span>Walking speed (to the belt)</span><input data-p="walkSpeed" type="range"><output data-o="walkSpeed"></output></label>
+        <div class="rv-row" role="group" aria-label="Walker direction">
+          <button type="button" data-walk="1">With the belt &rarr;</button>
+          <button type="button" data-walk="0">Stand still</button>
+          <button type="button" data-walk="-1">&larr; Against it</button>
+        </div>
+      </section>
+
+      <section class="rv-card tape rv-panel" data-panel="kart" hidden aria-label="Kart controls">
+        <p class="rv-panel-h" data-str="kart.title"></p>
+        <p class="rv-prompt" data-str="kart.prompt"></p>
+        <label class="rv-slider"><span>Kart speed (to the lane)</span><input data-p="kartSpeedMph" type="range"><output data-o="kartSpeedMph"></output></label>
+        <label class="rv-slider"><span>Boost lane speed</span><input data-p="boostSpeedMph" type="range"><output data-o="boostSpeedMph"></output></label>
+        <label class="rv-slider"><span>Rival speed (to the track)</span><input data-p="rivalSpeedMph" type="range"><output data-o="rivalSpeedMph"></output></label>
+        <div class="rv-row" role="group" aria-label="Boost">
+          <button type="button" data-boost="1">Boost on</button>
+          <button type="button" data-boost="0">Boost off</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+
+<script type="module" src="relative-velocity/rv-ui.js"></script>
+</body>
+</html>

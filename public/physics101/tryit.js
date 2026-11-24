@@ -5,7 +5,7 @@
 // Placement: the Study Questions tab and the end of a Test it sandbox. Never on Read this page slides.
 const ROOT = new URL("../", import.meta.url).href;
 
-// id -> [name, link to the original page, Leo's pencil thumbnail]
+// id -> [name, link to the original page, Leo's pencil thumbnail, optional dark-mode thumbnail]
 export const TARGETS = {
   // from /workspace/physics101/library-port-map.json; astronomy items open the storybook page that holds them
   "3d-cannon": ["Newton's cannon (3D)", "study-astronomy-story.html?deck=d01&page=18", "physics101/tryit/thumbs/study-3d-cannon.svg"],
@@ -35,6 +35,7 @@ export const TARGETS = {
   "projectile": ["Projectile Motion", "study-projectile.html", "physics101/tryit/thumbs/study-projectile.svg"],
   "quantum": ["Quantum Physics", "study-quantum.html", "physics101/tryit/thumbs/study-quantum.svg"],
   "rbmk": ["RBMK Reactor Simulator", "study-rbm.html", "physics101/tryit/thumbs/study-rbmk.svg"],
+  "relative-velocity": ["Relative Velocity Exploration", "study-relative-velocity.html", "physics101/tryit/thumbs/study-relative-velocity.webp", "physics101/tryit/thumbs/study-relative-velocity-dark.webp"],
   "ripple-tank": ["Ripple Tank", "study-ripple-tank.html", "physics101/tryit/thumbs/study-ripple-tank.svg"],
   "rocket-mission": ["Rocket Science & Space Mission", "study-rocket-mission.html", "physics101/tryit/thumbs/study-rocket-mission.svg"],
   "sb-doppler": ["Doppler sandbox", "study-astronomy-story.html?deck=d01&page=14", "physics101/tryit/thumbs/study-sb-doppler.svg"],
@@ -54,10 +55,12 @@ export const TARGETS = {
 const MAP = fetch(ROOT + "physics101/tryit/map.json").then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
-export function tryItCard({ name, caption, href, thumb }) {
+export function tryItCard({ name, caption, href, thumb, thumbDark }) {
   const a = document.createElement("a");
   a.className = "tryit-card"; a.href = new URL(href, ROOT).href;
-  a.innerHTML = `<span class="tryit-thumb" aria-hidden="true">${thumb ? `<img src="${esc(new URL(thumb, ROOT).href)}" alt="" loading="lazy">` : ""}</span>`
+  const img = (src, cls) => `<img${cls ? ` class="${cls}"` : ""} src="${esc(new URL(src, ROOT).href)}" alt="" loading="lazy">`;
+  const pics = !thumb ? "" : thumbDark ? img(thumb, "tryit-light") + img(thumbDark, "tryit-dark") : img(thumb);
+  a.innerHTML = `<span class="tryit-thumb" aria-hidden="true">${pics}</span>`
     + `<span class="tryit-text"><span class="tryit-name">Try it: ${esc(name)}</span><span class="tryit-cap">${esc(caption || "")}</span></span>`;
   return a;
 }
@@ -66,7 +69,7 @@ export function tryItCard({ name, caption, href, thumb }) {
 export async function renderTryIt(host, slug) {
   if (!host || host.closest("#readBox")) return 0;
   const rows = ((await MAP)[slug] || []).filter((r) => TARGETS[r.id]);
-  host.replaceChildren(...rows.map((r) => tryItCard({ name: TARGETS[r.id][0], href: TARGETS[r.id][1], caption: r.caption, thumb: r.thumb || TARGETS[r.id][2] })));
+  host.replaceChildren(...rows.map((r) => tryItCard({ name: TARGETS[r.id][0], href: TARGETS[r.id][1], caption: r.caption, thumb: r.thumb || TARGETS[r.id][2], thumbDark: r.thumb ? null : TARGETS[r.id][3] })));
   host.hidden = !rows.length;
   return rows.length;
 }
